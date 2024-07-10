@@ -90,10 +90,9 @@ class CineDigitalServiceAPI(external_bookings_models.ExternalBookingsClientAPI):
             f"Show #{show_id} not found in Cine Digital Service API for cinemaId={self.cinema_id} & url={self.api_url}"
         )
 
-    def get_venue_movies(self) -> list[external_bookings_models.Movie]:
+    def get_venue_movies(self) -> list[cds_serializers.MediaCDS]:
         data = get_resource(self.api_url, self.account_id, self.token, ResourceCDS.MEDIA)
-        cds_movies = parse_obj_as(list[cds_serializers.MediaCDS], data)
-        return [cds_movie.to_generic_movie() for cds_movie in cds_movies]
+        return parse_obj_as(list[cds_serializers.MediaCDS], data)
 
     def get_movie_poster(self, image_url: str) -> bytes:
         try:

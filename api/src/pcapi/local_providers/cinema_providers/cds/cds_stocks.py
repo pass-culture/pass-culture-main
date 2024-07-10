@@ -4,10 +4,10 @@ import logging
 from typing import Iterator
 
 from pcapi import settings
+from pcapi.connectors.serialization.cine_digital_service_serializers import MediaCDS
 from pcapi.connectors.serialization.cine_digital_service_serializers import ShowCDS
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.external_bookings.cds.client import CineDigitalServiceAPI
-from pcapi.core.external_bookings.models import Movie
 from pcapi.core.offerers.models import Venue
 import pcapi.core.offers.api as offers_api
 import pcapi.core.offers.models as offers_models
@@ -52,7 +52,7 @@ class CDSStocks(LocalProvider):
             api_url=self.apiUrl,
             cinema_api_token=self.apiToken,
         )
-        self.movies: Iterator[Movie] = iter(self.client_cds.get_venue_movies())
+        self.movies: Iterator[MediaCDS] = iter(self.client_cds.get_venue_movies())
         self.media_options = self.client_cds.get_media_options()
         self.shows = self._get_cds_shows()
         self.filtered_movie_showtimes = None
@@ -60,23 +60,17 @@ class CDSStocks(LocalProvider):
             offers_models.PriceCategoryLabel.query.filter(offers_models.PriceCategoryLabel.venue == self.venue).all()
         )
         self.price_category_lists_by_offer: dict[offers_models.Offer, list[offers_models.PriceCategory]] = {}
+        self.provider = venue_provider.provider
 
     def __next__(self) -> list[ProvidableInfo]:
         movie_infos = next(self.movies)
         if movie_infos:
             self.movie_information = movie_infos
-            self.filtered_movie_showtimes = _find_showtimes_by_movie_id(self.shows, int(self.movie_information.id))  # type: ignore[assignment]
+            self.filtered_movie_showtimes = _find_showtimes_by_movie_id(self.shows, self.movie_information.id)  # type: ignore[assignment]
             if not self.filtered_movie_showtimes:
                 return []
 
-        self.product = self.get_movie_product(self.movie_information)
-        if not self.product:
-            logger.info(
-                "Product not found for allocine Id %s",
-                self.movie_information.allocine_id,
-                extra={"allocineId": self.movie_information.allocine_id, "venueId": self.venue.id},
-                technical_message_id="allocineId.not_found",
-            )
+        self.product = self.get_or_create_movie_product(self.movie_information)
 
         providable_information_list = []
 
@@ -132,24 +126,23 @@ class CDSStocks(LocalProvider):
                 offer.extraData.update(self.product.extraData)
         else:
             offer.name = self.movie_information.title
-            if self.movie_information.description:
-                offer.description = self.movie_information.description
+            if self.movie_information.storyline:
+                offer.description = self.movie_information.storyline
             if self.movie_information.duration:
                 offer.durationMinutes = self.movie_information.duration
 
-        if self.movie_information.allocine_id:
-            offer.extraData["allocineId"] = offer.extraData.get("allocineId") or int(self.movie_information.allocine_id)
+        if self.movie_information.allocineid:
+            offer.extraData["allocineId"] = offer.extraData.get("allocineId") or int(self.movie_information.allocineid)
 
-        offer.extraData["visa"] = offer.extraData.get("visa") or self.movie_information.visa
+        offer.extraData["visa"] = offer.extraData.get("visa") or self.movie_information.visanumber
+        offer.product = self.product
 
     def fill_offer_attributes(self, offer: offers_models.Offer) -> None:
         offer.venueId = self.venue.id
         offer.offererAddress = self.venue.offererAddress
         offer.bookingEmail = self.venue.bookingEmail
         offer.withdrawalDetails = self.venue.withdrawalDetails
-        offer.product = self.product
         offer.subcategoryId = subcategories.SEANCE_CINE.id
-
         self.update_from_movie_information(offer)
 
         is_new_offer_to_insert = offer.id is None
@@ -159,8 +152,8 @@ class CDSStocks(LocalProvider):
         last_update_for_current_provider = get_last_update_for_provider(self.provider.id, offer)
 
         if not last_update_for_current_provider or last_update_for_current_provider.date() != datetime.today().date():
-            if self.movie_information.poster_url:
-                image_url = self.movie_information.poster_url
+            if self.movie_information.posterpath:
+                image_url = self.movie_information.posterpath
                 image = self.client_cds.get_movie_poster(image_url)
                 if image:
                     offers_api.create_mediation(
@@ -186,7 +179,7 @@ class CDSStocks(LocalProvider):
         if not showtime:
             raise ValueError(
                 "Could not find showtime for show %s, allocine id %s, venue id %s"
-                % (showtime_uuid, self.movie_information.allocine_id, self.venue.id)
+                % (showtime_uuid, self.movie_information.allocineid, self.venue.id)
             )
 
         show: ShowCDS = showtime["show_information"]
@@ -257,8 +250,8 @@ class CDSStocks(LocalProvider):
         return price_category_label
 
     def get_object_thumb(self) -> bytes:
-        if self.movie_information.poster_url:
-            image_url = self.movie_information.poster_url
+        if self.movie_information.posterpath:
+            image_url = self.movie_information.posterpath
             return self.client_cds.get_movie_poster(image_url)
         return bytes()
 
@@ -285,13 +278,10 @@ class CDSStocks(LocalProvider):
 
         return shows_with_pass_culture_tariff
 
-    def get_movie_product(self, film: Movie) -> offers_models.Product | None:
-        product = None
-        if film.allocine_id:
-            product = offers_repository.get_movie_product_by_allocine_id(str(film.allocine_id))
-
-        if not product and film.visa:
-            product = offers_repository.get_movie_product_by_visa(str(film.visa))
+    def get_or_create_movie_product(self, movie: MediaCDS) -> offers_models.Product | None:
+        generic_movie = movie.to_generic_movie()
+        id_at_providers = _build_movie_uuid(movie.id, self.venue)
+        product = offers_api.upsert_movie_product_from_provider(generic_movie, self.provider, id_at_providers)
 
         return product
 
@@ -316,7 +306,7 @@ def _get_showtimes_uuid_by_idAtProvider(id_at_provider: str) -> str:
     return id_at_provider.split("#")[1]
 
 
-def _build_movie_uuid(movie_information_id: str, venue: Venue) -> str:
+def _build_movie_uuid(movie_information_id: int, venue: Venue) -> str:
     """This must be unique, among all Providers and Venues"""
     return f"{movie_information_id}%{venue.id}%CDS"
 
@@ -325,5 +315,5 @@ def _build_showtime_uuid(showtime_details: ShowCDS) -> str:
     return str(showtime_details.id)
 
 
-def _build_stock_uuid(movie_information_id: str, venue: Venue, showtime_details: ShowCDS) -> str:
+def _build_stock_uuid(movie_information_id: int, venue: Venue, showtime_details: ShowCDS) -> str:
     return f"{_build_movie_uuid(movie_information_id, venue)}#{_build_showtime_uuid(showtime_details)}"

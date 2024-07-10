@@ -1,30 +1,30 @@
 from datetime import datetime
 
 from pcapi.connectors.serialization.cine_digital_service_serializers import IdObjectCDS
+from pcapi.connectors.serialization.cine_digital_service_serializers import MediaCDS
 from pcapi.connectors.serialization.cine_digital_service_serializers import ShowCDS
 from pcapi.connectors.serialization.cine_digital_service_serializers import ShowTariffCDS
 from pcapi.connectors.serialization.cine_digital_service_serializers import ShowsMediaoptionsCDS
-from pcapi.core.external_bookings.models import Movie
 
 
-MOVIE_1 = Movie(
-    id="123",
+MOVIE_1 = MediaCDS(
+    id=123,
     title="Coupez !",
-    duration=120,
-    description="Ca tourne mal",
-    visa="123456",
-    allocine_id="291483",
-    poster_url="https://example.com/coupez.png",
+    duration=7200,
+    storyline="Ca tourne mal",
+    posterpath="https://example.com/coupez.png",
+    visanumber="123456",
+    allocineid="291483",
 )
 
-MOVIE_2 = Movie(
-    id="51",
+MOVIE_2 = MediaCDS(
+    id=51,
     title="Top Gun",
-    duration=150,
-    description="Film sur les avions",
-    visa="333333",
-    allocine_id="2133",
-    poster_url="https://example.com/topgun.png",
+    duration=9000,
+    storyline="Film sur les avions",
+    posterpath="https://example.com/topgun.png",
+    visanumber="333333",
+    allocineid="2133",
 )
 
 MOVIE_1_SHOW_1 = ShowCDS(
