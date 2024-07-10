@@ -55,17 +55,29 @@ class GetSimilarOffersTest:
         query = dict(urllib.parse.parse_qsl(mocked.last_request.query))
         assert query == {"token": "secret token", "foo": "bar"}
 
-    def test_failure(self, requests_mock):
+    def test_timeout_failure(self, requests_mock):
         requests_mock.get(
             "https://example.com/recommendation/similar_offers/1",
             exc=requests.exceptions.ConnectTimeout("a timeout error"),
+        )
+
+        with pytest.raises(recommendation.RecommendationApiTimeoutException) as err:
+            recommendation.get_similar_offers(
+                offer_id=1, user=None, params={"userId": "overridden", "user_id": "overridden"}
+            )
+        assert str(err.value) == ""
+
+    def test_generic_failure(self, requests_mock):
+        requests_mock.get(
+            "https://example.com/recommendation/similar_offers/1",
+            exc=requests.exceptions.TooManyRedirects("too many redirects"),
         )
 
         with pytest.raises(recommendation.RecommendationApiException) as err:
             recommendation.get_similar_offers(
                 offer_id=1, user=None, params={"userId": "overridden", "user_id": "overridden"}
             )
-            assert str(err.value) == "a timeout error"
+        assert str(err.value) == "too many redirects"
 
 
 @override_settings(
@@ -108,13 +120,24 @@ class GetPlaylistTest:
         body = json.loads(mocked.last_request.body)
         assert body == {"body_param": "bar"}
 
-    def test_failure(self, requests_mock):
+    def test_timeout_failure(self, requests_mock):
         requests_mock.post(
             "https://example.com/recommendation/playlist_recommendation/1",
             exc=requests.exceptions.ConnectTimeout("a timeout error"),
         )
         user = users_factories.UserFactory(id=1)
 
+        with pytest.raises(recommendation.RecommendationApiTimeoutException) as err:
+            recommendation.get_playlist(user)
+        assert str(err.value) == ""
+
+    def test_generic_failure(self, requests_mock):
+        requests_mock.post(
+            "https://example.com/recommendation/playlist_recommendation/1",
+            exc=requests.exceptions.TooManyRedirects("too many requests"),
+        )
+        user = users_factories.UserFactory(id=1)
+
         with pytest.raises(recommendation.RecommendationApiException) as err:
             recommendation.get_playlist(user)
-            assert str(err.value) == "a timeout error"
+        assert str(err.value) == "too many requests"
