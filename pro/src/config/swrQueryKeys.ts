@@ -5,6 +5,7 @@ export const GET_OFFERER_BANK_ACCOUNTS_QUERY_KEY = 'getOffererBankAccounts'
 export const GET_CATEGORIES_QUERY_KEY = 'getCategories'
 export const GET_CLASSROOM_PLAYLIST_QUERY_KEY = 'getClassroomPlaylist'
 export const GET_COLLECTIVE_BOOKING_BY_ID_QUERY_KEY = 'getCollectiveBookingById'
+export const GET_COLLECTIVE_FAVORITES = 'getCollectiveFavorites'
 export const GET_COLLECTIVE_OFFER_QUERY_KEY = 'getCollectiveOffer'
 export const GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY =
   'getCollectiveOfferTemplate'
