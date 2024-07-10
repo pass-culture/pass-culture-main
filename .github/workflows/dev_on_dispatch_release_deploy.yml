@@ -29,6 +29,42 @@ jobs:
             exit 1
           fi
 
+  ask-for-review-on-slack:
+    name: "Ask for deployment review on Slack"
+    runs-on: ubuntu-latest
+    needs: check-worflow-ref
+    continue-on-error: true
+    steps:
+      - name: "Authentification to Google"
+        uses: 'google-github-actions/auth@v2'
+        with:
+          workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      - name: "Get Slackbot token Secret"
+        id: 'slackbot-token-secret'
+        uses: 'google-github-actions/get-secretmanager-secrets@v2'
+        with:
+          secrets: |-
+            SLACK_BOT_TOKEN:passculture-metier-ehp/passculture-ci-slack-bot-token
+      - name: "Post a link to Slack for the deployment review"
+        uses: slackapi/slack-github-action@v1.26.0
+        with:
+          channel-id: "CU0SQ8Y58"
+          payload: |
+            {
+                "blocks": [
+                    {
+                        "type": "section",
+                        "text": {
+                            "type": "mrkdwn",
+                            "text": ":rocket: Un déploiement de '${{ github.ref }}' a été demandé sur `${{ github.event.inputs.target_environment }}`: https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}"
+                        }
+                    }
+                ]
+            }
+        env:
+          SLACK_BOT_TOKEN: ${{ steps.secrets.outputs.SLACK_BOT_TOKEN }}
+
   version:
     name: "Version"
     needs: check-worflow-ref
