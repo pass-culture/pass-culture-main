@@ -111,6 +111,7 @@ class GrantedDeposit:
 
 
 class RecreditType(enum.Enum):
+    RECREDIT_15 = "Recredit15"
     RECREDIT_16 = "Recredit16"
     RECREDIT_17 = "Recredit17"
     MANUAL_MODIFICATION = "ManualModification"
