@@ -1,10 +1,8 @@
 import cn from 'classnames'
-import React from 'react'
 import { useLocation } from 'react-router-dom'
 
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { Events } from 'core/FirebaseEvents/constants'
-import fullLink from 'icons/full-link.svg'
 import fullMailIcon from 'icons/full-mail.svg'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -36,13 +34,7 @@ export const LegalInfos = ({
         opensInNewTab
         variant={ButtonVariant.QUATERNARY}
       >
-        <SvgIcon
-          src={fullLink}
-          alt="Site pass.culture.fr (Nouvelle fenêtre)"
-          className={styles['icon-legal-infos']}
-          width="22"
-        />
-        <span>Conditions Générales d’Utilisation</span>
+        Conditions Générales d’Utilisation
       </ButtonLink>
       <span>{' ainsi que notre '}</span>
       <ButtonLink
@@ -55,13 +47,7 @@ export const LegalInfos = ({
         opensInNewTab
         variant={ButtonVariant.QUATERNARY}
       >
-        <SvgIcon
-          src={fullLink}
-          alt="Site pass.culture.fr (Nouvelle fenêtre)"
-          className={styles['icon-legal-infos']}
-          width="22"
-        />
-        <span>Charte des Données Personnelles</span>
+        Charte des Données Personnelles
       </ButtonLink>
       <span>
         {
@@ -78,7 +64,6 @@ export const LegalInfos = ({
         }
         to="mailto:support-pro@passculture.app"
         isExternal
-        opensInNewTab
       >
         <SvgIcon
           src={fullMailIcon}

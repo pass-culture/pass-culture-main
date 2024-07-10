@@ -30,6 +30,7 @@
     height: size.$button-icon-size;
     width: size.$button-icon-size;
     flex-shrink: 0;
+    vertical-align: text-bottom;
   }
 
   &.button-center {
