@@ -12,6 +12,7 @@ import { ActionBar } from '../ActionBar/ActionBar'
 
 import { DEFAULT_DETAILS_INTITIAL_VALUES } from './constants'
 import { DetailsForm } from './DetailsForm'
+import { validationSchema } from './validationSchema'
 
 export type DetailsScreenProps = {
   venues: VenueListItemResponseModel[]
@@ -22,6 +23,7 @@ export const DetailsScreen = ({ venues }: DetailsScreenProps): JSX.Element => {
 
   const formik = useFormik({
     initialValues: DEFAULT_DETAILS_INTITIAL_VALUES,
+    validationSchema,
     onSubmit: () => {},
   })
   const { offer } = useIndividualOfferContext()

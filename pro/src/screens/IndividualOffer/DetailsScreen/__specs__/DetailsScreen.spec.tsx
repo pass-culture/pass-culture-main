@@ -58,7 +58,7 @@ describe('screens:IndividualOffer::Informations', () => {
         categoryId: 'A',
         proLabel: 'Sous catégorie offline de A',
         isEvent: false,
-        conditionalFields: ['ean'],
+        conditionalFields: ['ean', 'showType', 'gtl_id'],
         canBeDuo: true,
         canBeEducational: false,
         canBeWithdrawable: false,
@@ -108,6 +108,44 @@ describe('screens:IndividualOffer::Informations', () => {
     ).toBeInTheDocument()
     expect(
       await screen.findByRole('heading', { name: 'Informations artistiques' })
+    ).toBeInTheDocument()
+  })
+
+  it('should show errors in the form when not all field has been filled', async () => {
+    renderDetailsScreen(props, contextValue)
+
+    await userEvent.click(screen.getByText('Enregistrer les modifications'))
+    expect(
+      screen.getByText('Veuillez sélectionner une catégorie')
+    ).toBeInTheDocument()
+
+    await userEvent.selectOptions(
+      await screen.findByLabelText('Catégorie *'),
+      'A'
+    )
+    await userEvent.click(screen.getByText('Enregistrer les modifications'))
+    expect(
+      screen.getByText('Veuillez sélectionner une sous-catégorie')
+    ).toBeInTheDocument()
+
+    await userEvent.selectOptions(
+      await screen.findByLabelText('Sous-catégorie *'),
+      'physical'
+    )
+
+    await userEvent.click(screen.getByText('Enregistrer les modifications'))
+    expect(screen.getByText('Veuillez renseigner un titre')).toBeInTheDocument()
+    expect(
+      screen.getByText('Veuillez sélectionner un lieu')
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText('Veuillez sélectionner un type de spectacle')
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText('Veuillez sélectionner un sous-type de spectacle')
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText('Veuillez sélectionner un genre musical')
     ).toBeInTheDocument()
   })
 })
