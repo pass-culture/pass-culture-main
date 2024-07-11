@@ -15,7 +15,8 @@ import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 import styles from './Offers.module.scss'
 import { OffersTableBody } from './OffersTableBody/OffersTableBody'
-import { OffersTableHead } from './OffersTableHead/OffersTableHead'
+import { CollectiveOffersTableHead } from './OffersTableHead/CollectiveOffersTableHead'
+import { IndividualOffersTableHead } from './OffersTableHead/IndividualOffersTableHead'
 
 type OffersProps = {
   applyUrlFiltersAndRedirect: (
@@ -113,7 +114,11 @@ export const Offers = ({
                 />
               </div>
               <table>
-                <OffersTableHead audience={audience} />
+                {Audience.INDIVIDUAL === audience ? (
+                  <IndividualOffersTableHead />
+                ) : (
+                  <CollectiveOffersTableHead />
+                )}
                 <OffersTableBody
                   offers={currentPageOffersSubset}
                   selectOffer={setSelectedOffer}

@@ -6,6 +6,7 @@ import {
 } from 'apiClient/v1'
 import { SearchFiltersParams } from 'core/Offers/types'
 import { Audience } from 'core/shared/types'
+import { useActiveFeature } from 'hooks/useActiveFeature'
 
 import { CheckboxCell } from './Cells/CheckboxCell'
 import { CollectiveActionsCells } from './Cells/CollectiveActionsCells'
@@ -36,6 +37,12 @@ export const CollectiveOfferItem = ({
   audience,
   urlSearchFilters,
 }: CollectiveOfferItemProps) => {
+  console.log({ offer })
+
+  const isCollectiveOffersExpirationEnabled = useActiveFeature(
+    'ENABLE_COLLECTIVE_OFFERS_EXPIRATION'
+  )
+
   return (
     <>
       <CheckboxCell
@@ -53,6 +60,9 @@ export const CollectiveOfferItem = ({
         editionOfferLink={editionOfferLink}
         audience={audience}
       />
+
+      {/* <OfferEventDateCell /> */}
+      {isCollectiveOffersExpirationEnabled && <td>ici la date et lheure</td>}
 
       <OfferVenueCell venue={venue} />
 
