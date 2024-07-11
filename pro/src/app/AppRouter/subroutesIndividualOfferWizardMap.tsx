@@ -1,8 +1,5 @@
 /* No need to test this file */
 /* istanbul ignore file */
-import React from 'react'
-import { Navigate } from 'react-router-dom'
-
 import type { RouteConfig } from './routesMap'
 
 export const routesIndividualOfferWizard: RouteConfig[] = [
@@ -112,31 +109,5 @@ export const routesIndividualOfferWizard: RouteConfig[] = [
       import('pages/IndividualOfferWizard/BookingsSummary/BookingsSummary'),
     path: '/offre/individuelle/:offerId/reservations',
     title: 'Réservations - Consulter une offre individuelle',
-  },
-  // Deprecated routes, should be deleted in 6 months (09/04/2024)
-  {
-    element: <Navigate to="../creation/informations" replace={true} />,
-    path: '/offre/individuelle/:offerId/brouillon/informations',
-    title: 'Détails - Brouillon d’une offre individuelle',
-  },
-  {
-    element: <Navigate to="../creation/tarifs" replace={true} />,
-    path: '/offre/individuelle/:offerId/brouillon/tarifs',
-    title: 'Tarifs - Brouillon d’une offre individuelle',
-  },
-  {
-    element: <Navigate to="../creation/stocks" replace={true} />,
-    path: '/offre/individuelle/:offerId/brouillon/stocks',
-    title: 'Stocks et prix - Brouillon d’une offre individuelle',
-  },
-  {
-    element: <Navigate to="../creation/confirmation" replace={true} />,
-    path: '/offre/individuelle/:offerId/brouillon/confirmation',
-    title: 'Confirmation - Brouillon d’une offre individuelle publié',
-  },
-  {
-    element: <Navigate to="../creation/recapitulatif" replace={true} />,
-    path: '/offre/individuelle/:offerId/brouillon/recapitulatif',
-    title: 'Récapitulatif - Brouillon d’une offre individuelle',
   },
 ]
