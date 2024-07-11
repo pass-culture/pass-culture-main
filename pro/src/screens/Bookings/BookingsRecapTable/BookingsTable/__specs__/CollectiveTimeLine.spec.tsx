@@ -48,6 +48,7 @@ describe('collective timeline', () => {
       screen.getByText('Préreservée par l’établissement scolaire')
     ).toBeInTheDocument()
   })
+
   it('should render steps for booked booking', () => {
     const bookingRecap = collectiveBookingFactory({
       bookingStatus: BOOKING_STATUS.BOOKED,
@@ -57,6 +58,7 @@ describe('collective timeline', () => {
       screen.getByText('Réservée par l’établissement scolaire')
     ).toBeInTheDocument()
   })
+
   it('should render steps for confirmed booking', () => {
     const bookingRecap = collectiveBookingFactory({
       bookingStatus: BOOKING_STATUS.CONFIRMED,
@@ -78,6 +80,7 @@ describe('collective timeline', () => {
     expect(screen.getByText('Remboursement effectué')).toBeInTheDocument()
     expect(screen.getByText('25 mars 2023')).toBeInTheDocument()
   })
+
   it('should render steps for cancelled booking', () => {
     const bookingRecap = collectiveBookingFactory({
       bookingStatus: BOOKING_STATUS.CANCELLED,
@@ -93,6 +96,7 @@ describe('collective timeline', () => {
       screen.getByText('Vous avez annulé la réservation')
     ).toBeInTheDocument()
   })
+
   it('should render steps for cancelled booking by fraud', () => {
     const bookingRecap = collectiveBookingFactory({
       bookingStatus: BOOKING_STATUS.CANCELLED,
@@ -108,6 +112,24 @@ describe('collective timeline', () => {
       screen.getByText('Le pass Culture a annulé la réservation')
     ).toBeInTheDocument()
   })
+
+  it('should render steps for cancelled booking by backoffice', () => {
+    const bookingRecap = collectiveBookingFactory({
+      bookingStatus: BOOKING_STATUS.CANCELLED,
+      bookingConfirmationDate: null,
+      bookingCancellationReason:
+        CollectiveBookingCancellationReasons.BACKOFFICE,
+      bookingStatusHistory: [
+        { date: new Date().toISOString(), status: BOOKING_STATUS.PENDING },
+        { date: new Date().toISOString(), status: BOOKING_STATUS.CANCELLED },
+      ],
+    })
+    renderCollectiveTimeLine(bookingRecap, bookingDetails)
+    expect(
+      screen.getByText('Le pass Culture a annulé la réservation')
+    ).toBeInTheDocument()
+  })
+
   it('should render steps for cancelled booking expired', () => {
     const bookingRecap = collectiveBookingFactory({
       bookingStatus: BOOKING_STATUS.CANCELLED,
@@ -151,6 +173,7 @@ describe('collective timeline', () => {
       }
     )
   })
+
   describe('validated booking', () => {
     it('should render steps for validated booking and accepted bankInformation', () => {
       const bookingRecap = collectiveBookingFactory({
@@ -238,6 +261,7 @@ describe('collective timeline', () => {
         })
       ).toBeInTheDocument()
     })
+
     it('should render steps for confirmed booking when event is passed', () => {
       const bookingRecap = collectiveBookingFactory({
         bookingStatus: BOOKING_STATUS.CONFIRMED,
