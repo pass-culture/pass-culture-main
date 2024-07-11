@@ -38,6 +38,7 @@ import {
   ALGOLIA_COLLECTIVE_OFFERS_SUGGESTIONS_INDEX,
 } from 'utils/config'
 import { localStorageAvailable } from 'utils/localStorageAvailable'
+import { sendSentryCustomError } from 'utils/sendSentryCustomError'
 
 import styles from './Autocomplete.module.scss'
 import { Highlight } from './Highlight'
@@ -58,7 +59,7 @@ export type SuggestionItem = AutocompleteQuerySuggestionsHit & {
   offerer: {
     name: string
   }
-  formats: string[]
+  formats: string[] | undefined
 }
 
 const ALGOLIA_NUMBER_RECENT_SEARCHES = 5
@@ -238,7 +239,7 @@ export const Autocomplete = ({
             (elm) => elm.objectID === item.objectID
           )
 
-          if (itemId >= 0 && itemId < 3) {
+          if (itemId >= 0 && itemId < 3 && item.formats) {
             await formik.setFieldValue('formats', [item.formats[0]])
           } else {
             await formik.setFieldValue('formats', [])
@@ -531,11 +532,19 @@ export const Autocomplete = ({
                     >
                       {keywordSuggestionsItems.map((item, index) => {
                         let displayValue = null
-                        const shouldDisplayFormats =
-                          index <= 2 && item.formats.length > 0
+                        if (item.formats === undefined) {
+                          sendSentryCustomError(
+                            new Error('Suggestion sans format'),
+                            { value: item.query },
+                            'adage-suggestion'
+                          )
+                        } else {
+                          const shouldDisplayFormats =
+                            index <= 2 && item.formats.length > 0
 
-                        if (shouldDisplayFormats) {
-                          displayValue = item.formats[0]
+                          if (shouldDisplayFormats) {
+                            displayValue = item.formats[0]
+                          }
                         }
 
                         return (
@@ -562,7 +571,11 @@ export const Autocomplete = ({
                                 attribute={['query']}
                                 tagName="strong"
                               />
-                              {shouldDisplayFormats ? ' dans ' : ''}
+                              {index <= 2 &&
+                              item.formats &&
+                              item.formats.length > 0
+                                ? ' dans '
+                                : ''}
                               <span
                                 className={
                                   styles['dialog-panel-autocomplete-category']
