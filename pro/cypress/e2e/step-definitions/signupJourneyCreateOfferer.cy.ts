@@ -169,10 +169,10 @@ Then('the offerer is created', () => {
     'Votre structure a bien été créée'
   )
   cy.url().should('contain', '/accueil')
-  cy.findAllByTestId('spinner').should('not.exist')
+  cy.findAllByTestId('spinner', { timeout: 30 * 1000 }).should('not.exist')
 
   cy.findByTestId('offerer-details-offerId').select(offererName)
-  cy.findAllByTestId('spinner').should('not.exist')
+  cy.findAllByTestId('spinner', { timeout: 30 * 1000 }).should('not.exist')
 })
 
 Then('An error message is raised', () => {

@@ -116,7 +116,7 @@ When('I add an image to my venue', () => {
   cy.findByText('Suivant').click()
   cy.contains('Prévisualisation de votre image dans l’application pass Culture')
   cy.findByText('Enregistrer').click()
-  cy.findByTestId('global-notification-success').should(
+  cy.findByTestId('global-notification-success', { timeout: 30 * 1000 }).should(
     'contain',
     'Vos modifications ont bien été prises en compte'
   )
