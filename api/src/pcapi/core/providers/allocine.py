@@ -1,16 +1,12 @@
 import logging
 from typing import Iterator
 
-from sqlalchemy import Integer
-
 from pcapi.connectors import api_allocine
 from pcapi.connectors.serialization import allocine_serializers
-from pcapi.core.categories.subcategories_v2 import SEANCE_CINE
+from pcapi.core.offers.models import Movie
 from pcapi.core.offers.models import OfferExtraData
-from pcapi.core.offers.models import Product
 from pcapi.core.providers import constants as providers_constants
 from pcapi.core.providers.models import Provider
-from pcapi.models import db
 from pcapi.repository import transaction
 
 
@@ -20,32 +16,33 @@ MOVIE_SPECIAL_EVENT = "SPECIAL_EVENT"
 
 
 def synchronize_products() -> None:
+    from pcapi.core.offers.api import upsert_movie_product_from_provider
+
     movies = get_movie_list()
-    allocine_ids = [movie.internalId for movie in movies]
-    products_query = Product.query.filter(Product.extraData["allocineId"].cast(Integer).in_(allocine_ids))
-    products_by_allocine_id = {product.extraData["allocineId"]: product for product in products_query}
-    allocine_products_provider_id = _get_allocine_products_provider_id()
+    allocine_products_provider = get_allocine_products_provider()
     with transaction():
         for movie in movies:
-            _upsert_product(products_by_allocine_id, movie, allocine_products_provider_id)
+            id_at_providers = build_movie_id_at_providers(allocine_products_provider.id, movie.internalId)
+            generic_movie = create_generic_movie(movie)
+            upsert_movie_product_from_provider(generic_movie, allocine_products_provider, id_at_providers)
 
 
-def _upsert_product(
-    products_by_allocine_id: dict[int, Product], movie: allocine_serializers.AllocineMovie, provider_id: int
-) -> None:
-    allocine_id = movie.internalId
-    product = products_by_allocine_id.get(allocine_id)
-    if not product:
-        product = create_product(movie, provider_id)
-    else:
-        update_product(product, movie)
-
-    db.session.add(product)
+def create_generic_movie(movie: allocine_serializers.AllocineMovie) -> Movie:
+    movie_data = build_movie_data(movie)
+    return Movie(
+        allocine_id=str(movie.internalId),
+        description=build_description(movie),
+        duration=movie.runtime,
+        extra_data=movie_data,
+        poster_url=movie_data["posterUrl"],
+        title=movie.title,
+        visa=movie_data["visa"],
+    )
 
 
 def create_product(movie: allocine_serializers.AllocineMovie, provider_id: int | None = None) -> Product:
     if not provider_id:
-        provider_id = _get_allocine_products_provider_id()
+        provider_id = get_allocine_products_provider_id()
 
     allocine_id = movie.internalId
     movie_data = build_movie_data(movie)
@@ -60,14 +57,6 @@ def create_product(movie: allocine_serializers.AllocineMovie, provider_id: int |
         subcategoryId=SEANCE_CINE.id,
     )
     return product
-
-
-def update_product(product: Product, movie: allocine_serializers.AllocineMovie) -> None:
-    if product.extraData is None:
-        product.extraData = OfferExtraData()
-
-    movie_data = build_movie_data(movie)
-    product.extraData.update(movie_data)
 
 
 def get_movie_list() -> list[allocine_serializers.AllocineMovie]:
@@ -128,12 +117,8 @@ def _exclude_empty_movies_and_special_events(
     ]
 
 
-def _get_allocine_products_provider_id() -> int:
-    return (
-        Provider.query.filter(Provider.name == providers_constants.ALLOCINE_PRODUCTS_PROVIDER_NAME)
-        .with_entities(Provider.id)
-        .scalar()
-    )
+def get_allocine_products_provider() -> Provider:
+    return Provider.query.filter(Provider.name == providers_constants.ALLOCINE_PRODUCTS_PROVIDER_NAME).one()
 
 
 def build_movie_data(movie: allocine_serializers.AllocineMovie) -> OfferExtraData:

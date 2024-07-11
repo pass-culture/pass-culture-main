@@ -61,7 +61,7 @@ class AllocineMovieListTest:
         ]
         assert movie_data["countries"] == [country["name"] for country in expected_data["countries"]]
         assert movie_data["credits"] == [expected_data["credits"]["edges"][0]["node"]]
-        assert movie_data["eidr"] == expected_data["data"]["eidr"]
+        assert "eidr" not in movie_data
         assert movie_data["productionYear"] == expected_data["data"]["productionYear"]
         assert "diffusionVersion" not in movie_data
         assert movie_data["genres"] == expected_data["genres"]
