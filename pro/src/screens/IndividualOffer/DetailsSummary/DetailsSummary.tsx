@@ -23,7 +23,7 @@ import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { DisplayOfferInAppLink } from '../SummaryScreen/DisplayOfferInAppLink/DisplayOfferInAppLink'
 import { serializeOfferSectionData } from '../SummaryScreen/OfferSection/serializer'
 
-import styles from './SummaryScreen.module.scss'
+import styles from './DetailsSummary.module.scss'
 
 type DetailsSummaryScreenProps = {
   offer: GetIndividualOfferResponseModel
@@ -138,20 +138,28 @@ export function DetailsSummaryScreen({ offer }: DetailsSummaryScreenProps) {
         </SummarySection>
       </SummaryContent>
       <SummaryAside>
-        <div>
-          <SvgIcon src={phoneStrokeIcon} alt="" width="16" />
-          <h2>Aperçu dans l’app</h2>
+        <div className={styles['title-container']}>
+          <SvgIcon
+            src={phoneStrokeIcon}
+            alt=""
+            width="24"
+            className={styles['icon-info-phone']}
+          />
+          <h2 className={styles['title']}>Aperçu dans l’app</h2>
         </div>
 
         <OfferAppPreview offer={offer} />
 
         {mode === OFFER_WIZARD_MODE.READ_ONLY && (
-          <DisplayOfferInAppLink
-            id={offer.id}
-            variant={ButtonVariant.SECONDARY}
-          >
-            Visualiser dans l’app
-          </DisplayOfferInAppLink>
+          <div>
+            <DisplayOfferInAppLink
+              id={offer.id}
+              variant={ButtonVariant.SECONDARY}
+              className={styles['app-link']}
+            >
+              Visualiser dans l’app
+            </DisplayOfferInAppLink>
+          </div>
         )}
       </SummaryAside>
     </SummaryLayout>
