@@ -3,6 +3,7 @@ import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/cons
 import { useIndividualOfferContext } from 'context/IndividualOfferContext/IndividualOfferContext'
 import { useOfferWizardMode } from 'hooks/useOfferWizardMode'
 import { ActionBar } from 'screens/IndividualOffer/ActionBar/ActionBar'
+import { DetailsSummaryScreen } from 'screens/IndividualOffer/DetailsSummary/DetailsSummary'
 import { IndivualOfferLayout } from 'screens/IndividualOffer/IndivualOfferLayout/IndivualOfferLayout'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
@@ -16,7 +17,7 @@ const DetailsSummary = (): JSX.Element | null => {
 
   return (
     <IndivualOfferLayout title="Récapitulatif" offer={offer} mode={mode}>
-      <h1>Details recap</h1>
+      <DetailsSummaryScreen offer={offer} />
       <ActionBar step={OFFER_WIZARD_STEP_IDS.SUMMARY} isDisabled={false} />
     </IndivualOfferLayout>
   )
