@@ -3,6 +3,8 @@
 
 from alembic import op
 
+from pcapi import settings
+
 
 # pre/post deployment: post
 # revision identifiers, used by Alembic.
@@ -13,24 +15,26 @@ depends_on: list[str] | None = None
 
 
 def upgrade() -> None:
-    op.execute("DROP TRIGGER IF EXISTS booking_update ON booking")
-    op.execute(
-        """CREATE CONSTRAINT TRIGGER booking_update
+    if not settings.IS_PROD:
+        op.execute("DROP TRIGGER IF EXISTS booking_update ON booking")
+        op.execute(
+            """CREATE CONSTRAINT TRIGGER booking_update
 AFTER INSERT
 OR UPDATE OF quantity, amount, status, "userId"
 ON booking
 FOR EACH ROW
 WHEN (NEW.status <> 'REIMBURSED')
 EXECUTE PROCEDURE check_booking()"""
-    )
+        )
 
 
 def downgrade() -> None:
-    op.execute("DROP TRIGGER IF EXISTS booking_update ON booking")
-    op.execute(
-        """CREATE CONSTRAINT TRIGGER booking_update
+    if not settings.IS_PROD:
+        op.execute("DROP TRIGGER IF EXISTS booking_update ON booking")
+        op.execute(
+            """CREATE CONSTRAINT TRIGGER booking_update
 AFTER INSERT
 OR UPDATE OF quantity, amount, status, "userId"
 ON booking
 FOR EACH ROW EXECUTE PROCEDURE check_booking()"""
-    )
+        )
