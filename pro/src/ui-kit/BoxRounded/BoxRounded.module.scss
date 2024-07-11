@@ -18,7 +18,8 @@
     display: none;
   }
 }
-@media (min-width: rem.torem(size.$tablet)) {
+
+@media (min-width: size.$tablet) {
   .expandable-box-closed {
     display: flex;
     flex-direction: row-reverse;

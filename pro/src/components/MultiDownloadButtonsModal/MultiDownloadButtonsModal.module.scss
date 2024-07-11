@@ -65,7 +65,7 @@
   }
 }
 
-@media (min-width: rem.torem(size.$tablet)) {
+@media (min-width: size.$tablet) {
   .download-modal-option {
     right: 0;
   }

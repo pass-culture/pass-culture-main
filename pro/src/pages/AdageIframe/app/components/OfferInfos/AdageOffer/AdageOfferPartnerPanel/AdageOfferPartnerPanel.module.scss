@@ -73,7 +73,7 @@
   }
 }
 
-@media (max-width: rem.torem(size.$tablet)) {
+@media (max-width: size.$tablet) {
   .partner-panel-info {
     flex-direction: column;
   }
