@@ -2,6 +2,7 @@ import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
 import { GetIndividualOfferResponseModel } from 'apiClient/v1'
+import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { OfferAppPreview } from 'components/OfferAppPreview/OfferAppPreview'
 import { SummaryAside } from 'components/SummaryLayout/SummaryAside'
 import { SummaryContent } from 'components/SummaryLayout/SummaryContent'
@@ -15,6 +16,7 @@ import { SummarySubSection } from 'components/SummaryLayout/SummarySubSection'
 import { GET_MUSIC_TYPES_QUERY_KEY } from 'config/swrQueryKeys'
 import { useIndividualOfferContext } from 'context/IndividualOfferContext/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
+import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
 import { useOfferWizardMode } from 'hooks/useOfferWizardMode'
 import phoneStrokeIcon from 'icons/stroke-phone.svg'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -123,7 +125,14 @@ export function DetailsSummaryScreen({ offer }: DetailsSummaryScreenProps) {
       <SummaryContent>
         <SummarySection
           title="Détails de l’offre"
-          editLink={''}
+          editLink={getIndividualOfferUrl({
+            offerId: offer.id,
+            step: OFFER_WIZARD_STEP_IDS.DETAILS,
+            mode:
+              mode === OFFER_WIZARD_MODE.READ_ONLY
+                ? OFFER_WIZARD_MODE.EDITION
+                : mode,
+          })}
           aria-label="Modifier les détails de l’offre"
         >
           <SummarySubSection title="A propos de votre offre">
