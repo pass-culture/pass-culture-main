@@ -150,6 +150,12 @@ class Booking(PcObject, Base, Model):
         postgresql_where=cancellationReason.is_not(None),
     )
 
+    cancellationAuthorId: int | None = Column(BigInteger, ForeignKey("user.id"), nullable=True)
+
+    cancellationAuthor: Mapped["users_models.User | None"] = relationship(
+        "User", foreign_keys=[cancellationAuthorId], backref="cancellationAuthorBookings"
+    )
+
     status: BookingStatus = Column(Enum(BookingStatus), nullable=False, default=BookingStatus.CONFIRMED)
     Index("ix_booking_status", status)
 

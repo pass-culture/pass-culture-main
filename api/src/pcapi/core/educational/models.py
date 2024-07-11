@@ -1290,6 +1290,12 @@ class CollectiveBooking(PcObject, Base, Model):
         uselist=False,
     )
 
+    cancellationAuthorId: int | None = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=True)
+
+    cancellationAuthor: sa_orm.Mapped["User | None"] = relationship(
+        "User", foreign_keys=[cancellationAuthorId], backref="cancellationAuthorCollectiveBookings"
+    )
+
     def cancel_booking(
         self,
         reason: CollectiveBookingCancellationReasons,
