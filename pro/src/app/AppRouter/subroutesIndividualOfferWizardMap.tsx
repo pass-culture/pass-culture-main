@@ -19,7 +19,8 @@ export const routesIndividualOfferWizard: RouteConfig[] = [
     title: 'Détails - Modifier une offre individuelle',
   },
   {
-    lazy: () => import('pages/IndividualOfferWizard/Details/Details'),
+    lazy: () =>
+      import('pages/IndividualOfferWizard/DetailsSummary/DetailsSummary'),
     path: '/offre/individuelle/:offerId/details',
     title: 'Détails de l’offre - Consulter une offre individuelle',
   },
