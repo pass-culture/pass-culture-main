@@ -188,6 +188,8 @@ export type { PatchCollectiveOfferArchiveBodyModel } from './models/PatchCollect
 export type { PatchCollectiveOfferBodyModel } from './models/PatchCollectiveOfferBodyModel';
 export type { PatchCollectiveOfferEducationalInstitution } from './models/PatchCollectiveOfferEducationalInstitution';
 export type { PatchCollectiveOfferTemplateBodyModel } from './models/PatchCollectiveOfferTemplateBodyModel';
+export type { PatchDraftOfferBodyModel } from './models/PatchDraftOfferBodyModel';
+export type { PatchDraftOfferDetailsBodyModel } from './models/PatchDraftOfferDetailsBodyModel';
 export type { PatchOfferActiveStatusBodyModel } from './models/PatchOfferActiveStatusBodyModel';
 export type { PatchOfferBodyModel } from './models/PatchOfferBodyModel';
 export type { PatchOffererAddressRequest } from './models/PatchOffererAddressRequest';
@@ -195,6 +197,7 @@ export type { PatchOfferPublishBodyModel } from './models/PatchOfferPublishBodyM
 export { PhoneValidationStatusType } from './models/PhoneValidationStatusType';
 export type { PostCollectiveOfferBodyModel } from './models/PostCollectiveOfferBodyModel';
 export type { PostCollectiveOfferTemplateBodyModel } from './models/PostCollectiveOfferTemplateBodyModel';
+export type { PostDraftOfferBodyModel } from './models/PostDraftOfferBodyModel';
 export type { PostOfferBodyModel } from './models/PostOfferBodyModel';
 export type { PostOffererResponseModel } from './models/PostOffererResponseModel';
 export type { PostOfferOffererAddressBodyModel } from './models/PostOfferOffererAddressBodyModel';

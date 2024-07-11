@@ -16,6 +16,7 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.offers import exceptions
 from pcapi.core.offers import models
+from pcapi.core.offers import serialize as offers_serialization
 import pcapi.core.offers.api as offers_api
 import pcapi.core.offers.repository as offers_repository
 from pcapi.core.offers.validation import check_for_duplicated_price_categories
@@ -228,6 +229,87 @@ def delete_draft_offers(body: offers_serialize.DeleteOfferRequestBody) -> None:
     offers_api.batch_delete_draft_offers(query)
 
 
+@private_api.route("/offers/draft", methods=["POST"])
+@login_required
+@spectree_serialize(
+    response_model=offers_serialize.GetIndividualOfferResponseModel,
+    on_success_status=201,
+    api=blueprint.pro_private_schema,
+)
+def post_draft_offer(
+    body: offers_serialization.PostDraftOfferBodyModel,
+) -> offers_serialize.GetIndividualOfferResponseModel:
+
+    venue: offerers_models.Venue = (
+        offerers_models.Venue.query.filter(offerers_models.Venue.id == body.venue_id)
+        .options(sqla.orm.joinedload(offerers_models.Venue.offererAddress))
+        .first_or_404()
+    )
+    rest.check_user_has_access_to_offerer(current_user, venue.managingOffererId)
+
+    try:
+        with repository.transaction():
+            offer = offers_api.create_draft_offer(body, venue)
+    except exceptions.OfferCreationBaseException as error:
+        raise api_errors.ApiErrors(error.errors, status_code=400)
+
+    return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)
+
+
+@private_api.route("/offers/draft/<int:offer_id>", methods=["PATCH"])
+@login_required
+@spectree_serialize(
+    response_model=offers_serialize.GetIndividualOfferResponseModel,
+    api=blueprint.pro_private_schema,
+)
+def patch_draft_offer(
+    offer_id: int, body: offers_serialization.PatchDraftOfferBodyModel
+) -> offers_serialize.GetIndividualOfferResponseModel:
+    offer = models.Offer.query.options(
+        sqla.orm.joinedload(models.Offer.stocks).joinedload(models.Stock.bookings),
+        sqla.orm.joinedload(models.Offer.venue).joinedload(offerers_models.Venue.managingOfferer),
+        sqla.orm.joinedload(models.Offer.product),
+    ).get(offer_id)
+    if not offer:
+        raise api_errors.ResourceNotFoundError
+
+    rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
+    try:
+        with repository.transaction():
+            offer = offers_api.update_draft_offer(offer, body)
+    except (exceptions.OfferCreationBaseException, exceptions.OfferEditionBaseException) as error:
+        raise api_errors.ApiErrors(error.errors, status_code=400)
+
+    return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)
+
+
+@private_api.route("/offers/draft/<int:offer_id>/details", methods=["PATCH"])
+@login_required
+@spectree_serialize(
+    response_model=offers_serialize.GetIndividualOfferResponseModel,
+    api=blueprint.pro_private_schema,
+)
+def patch_draft_offer_details(
+    offer_id: int, body: offers_serialization.PatchDraftOfferDetailsBodyModel
+) -> offers_serialize.GetIndividualOfferResponseModel:
+    offer = models.Offer.query.options(
+        sqla.orm.joinedload(models.Offer.stocks).joinedload(models.Stock.bookings),
+        sqla.orm.joinedload(models.Offer.venue).joinedload(offerers_models.Venue.managingOfferer),
+        sqla.orm.joinedload(models.Offer.product),
+    ).get(offer_id)
+    if not offer:
+        raise api_errors.ResourceNotFoundError
+
+    rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
+    try:
+        with repository.transaction():
+            offer = offers_api.update_draft_offer_details(offer, body)
+    except (exceptions.OfferCreationBaseException, exceptions.OfferEditionBaseException) as error:
+        raise api_errors.ApiErrors(error.errors, status_code=400)
+
+    return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)
+
+
 @private_api.route("/offers", methods=["POST"])
 @login_required
 @spectree_serialize(
@@ -290,7 +372,7 @@ def post_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.Ge
                 description=body.description,
                 duration_minutes=body.duration_minutes,
                 external_ticket_office_url=body.external_ticket_office_url,
-                extra_data=offers_serialize.deserialize_extra_data(body.extra_data),
+                extra_data=offers_api.deserialize_extra_data(body.extra_data),
                 is_duo=body.is_duo,
                 is_national=body.is_national,
                 mental_disability_compliant=body.mental_disability_compliant,
@@ -419,7 +501,7 @@ def patch_offer(
                 durationMinutes=update_body.get("durationMinutes", offers_api.UNCHANGED),
                 externalTicketOfficeUrl=update_body.get("externalTicketOfficeUrl", offers_api.UNCHANGED),
                 extraData=(
-                    offers_serialize.deserialize_extra_data(update_body["extraData"])
+                    offers_api.deserialize_extra_data(update_body["extraData"])
                     if update_body.get("extraData")
                     else offers_api.UNCHANGED
                 ),
