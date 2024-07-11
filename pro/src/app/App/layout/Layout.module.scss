@@ -21,7 +21,7 @@
     width: 100%;
   }
 
-  @media (min-width: rem.torem(size.$desktop)) {
+  @media (min-width: size.$desktop) {
     margin: 0 auto;
     width: rem.torem(size.$desktop);
 
