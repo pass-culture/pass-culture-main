@@ -178,23 +178,27 @@ describe('AdageHeader', () => {
     })
   })
 
-  it('should display a favorites tab in the header', () => {
+  it('should display a favorites tab in the header', async () => {
     vi.spyOn(apiAdage, 'getEducationalInstitutionWithBudget')
 
     renderAdageHeader(user)
 
-    expect(
-      screen.queryByRole('link', { name: /Mes Favoris/ })
-    ).toBeInTheDocument()
+    await waitFor(() => {
+      expect(
+        screen.queryByRole('link', { name: /Mes Favoris/ })
+      ).toBeInTheDocument()
+    })
   })
 
-  it('should display the user favorite count after the favorite tab name', () => {
+  it('should display the user favorite count after the favorite tab name', async () => {
     vi.spyOn(apiAdage, 'getEducationalInstitutionWithBudget')
 
     renderAdageHeader({ ...user, favoritesCount: 10 })
 
-    expect(
-      screen.queryByRole('link', { name: /Mes Favoris (10)/ })
-    ).toBeInTheDocument()
+    await waitFor(() => {
+      expect(
+        screen.queryByRole('link', { name: /Mes Favoris (10)/ })
+      ).toBeInTheDocument()
+    })
   })
 })
