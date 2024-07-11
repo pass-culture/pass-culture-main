@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { ForwardedRef, forwardRef } from 'react'
 
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import fullTrashIcon from 'icons/full-trash.svg'
@@ -16,33 +16,36 @@ interface EmailInputRowProps {
   onDelete?: () => void
 }
 
-export const EmailInputRow = ({
-  disableForm,
-  displayTrash = true,
-  name,
-  onDelete,
-}: EmailInputRowProps) => {
-  return (
-    <FormLayout.Row className={styles['notification-mail']}>
-      <TextInput
-        label={NOTIFICATIONS_EMAIL_LABEL}
-        name={name}
-        disabled={disableForm}
-        className={styles['notification-mail-input']}
-      />
-      {displayTrash && (
-        <div className={styles['trash']}>
-          <Button
-            onClick={onDelete}
-            icon={fullTrashIcon}
-            iconPosition={IconPositionEnum.CENTER}
-            variant={ButtonVariant.TERNARY}
-            hasTooltip
-          >
-            Supprimer l’email
-          </Button>
-        </div>
-      )}
-    </FormLayout.Row>
-  )
-}
+export const EmailInputRow = forwardRef(
+  (
+    { disableForm, displayTrash = true, name, onDelete }: EmailInputRowProps,
+    inputRef: ForwardedRef<HTMLInputElement>
+  ): JSX.Element => {
+    return (
+      <FormLayout.Row className={styles['notification-mail']}>
+        <TextInput
+          label={NOTIFICATIONS_EMAIL_LABEL}
+          name={name}
+          disabled={disableForm}
+          className={styles['notification-mail-input']}
+          refForInput={inputRef}
+        />
+        {displayTrash && (
+          <div className={styles['trash']}>
+            <Button
+              onClick={onDelete}
+              icon={fullTrashIcon}
+              iconPosition={IconPositionEnum.CENTER}
+              variant={ButtonVariant.TERNARY}
+              hasTooltip
+            >
+              Supprimer l’email
+            </Button>
+          </div>
+        )}
+      </FormLayout.Row>
+    )
+  }
+)
+
+EmailInputRow.displayName = 'EmailInputRow'

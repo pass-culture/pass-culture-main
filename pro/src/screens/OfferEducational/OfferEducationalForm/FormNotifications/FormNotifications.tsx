@@ -1,5 +1,5 @@
 import { FieldArray, useFormikContext } from 'formik'
-import React from 'react'
+import { useRef } from 'react'
 
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OfferEducationalFormValues } from 'core/OfferEducational/types'
@@ -19,12 +19,14 @@ export const FormNotifications = ({
 }: FormNotificationsProps): JSX.Element => {
   const { values } = useFormikContext<OfferEducationalFormValues>()
 
+  const lastButtonRef = useRef<HTMLInputElement>(null)
+
   return (
     <FormLayout.Section title="Notifications">
       <FieldArray name="notificationEmails">
         {({ remove, push }) => (
           <>
-            {values.notificationEmails.map((_, index) => (
+            {values.notificationEmails.map((_, index, self) => (
               <EmailInputRow
                 disableForm={disableForm}
                 displayTrash={index > 0}
@@ -33,12 +35,20 @@ export const FormNotifications = ({
                 onDelete={() => {
                   remove(index)
                 }}
+                ref={index === self.length - 1 ? lastButtonRef : null}
               />
             ))}
             <Button
               variant={ButtonVariant.TERNARY}
               icon={fullMoreIcon}
-              onClick={() => push('')}
+              onClick={() => {
+                push('')
+
+                //  The additional input does not esist just yet
+                setTimeout(() => {
+                  lastButtonRef.current?.focus()
+                })
+              }}
               disabled={values.notificationEmails.length >= 5}
               className={styles['add-notification-button']}
             >
