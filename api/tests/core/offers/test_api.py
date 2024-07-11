@@ -3936,11 +3936,11 @@ class CreateMovieProductFromProviderTest:
 
     def _get_movie(self, allocine_id: str | None = None, visa: str | None = None):
         return models.Movie(
-            id="123",
             title="Mon film",
             duration=90,
             description="description de Mon film",
             poster_url=None,
+            allocine_id=allocine_id,
             visa=visa,
             extra_data={"allocineId": int(allocine_id) if allocine_id else None, "visa": visa},
         )
