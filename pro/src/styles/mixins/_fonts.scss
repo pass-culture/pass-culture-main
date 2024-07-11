@@ -1,11 +1,9 @@
 @use "styles/mixins/_rem.scss" as rem;
 
-// need to use em for accessibility: when root size is 200% line-height should adjust
-$body-line-height: 1.25em;
+$body-line-height: rem.torem(20px);
 $body-font-size: rem.torem(15px);
 $caption-line-height: rem.torem(16px);
 
-/* stylelint-disable pass-culture/no-font-properties */
 @mixin hero() {
   font-size: rem.torem(38px);
   font-style: normal;
@@ -13,95 +11,94 @@ $caption-line-height: rem.torem(16px);
 }
 
 @mixin title1() {
-  font-size: rem.torem(26px);
-  font-style: normal;
-  font-weight: 800;
-  line-height: rem.torem(34px);
+  font-family: var(--typography-title1-font-family);
+  font-size: var(--typography-title1-font-size);
+  line-height: var(--typography-title1-line-height);
 }
 
 @mixin title2() {
-  font-size: rem.torem(22px);
-  font-style: normal;
-  font-weight: 500;
-  line-height: rem.torem(26px);
+  font-family: var(--typography-title2-font-family);
+  font-size: var(--typography-title2-font-size);
+  line-height: var(--typography-title2-line-height);
 }
 
 @mixin title3() {
-  font-size: rem.torem(20px);
-  font-style: normal;
-  font-weight: 700;
-  line-height: rem.torem(24px);
+  font-family: var(--typography-title3-font-family);
+  font-size: var(--typography-title3-font-size);
+  line-height: var(--typography-title3-line-height);
 }
 
 @mixin title4() {
-  font-size: rem.torem(18px);
-  font-style: normal;
-  font-weight: 600;
-  line-height: rem.torem(22px);
+  font-family: var(--typography-title4-font-family);
+  font-size: var(--typography-title4-font-size);
+  line-height: var(--typography-title4-line-height);
 }
 
 @mixin title4-light() {
-  font-size: rem.torem(18px);
-  font-style: normal;
-  font-weight: 500;
-  line-height: rem.torem(22px);
+  //  Mapped to title4
+  @include title4;
 }
 
 @mixin button() {
-  font-size: rem.torem(15px);
-  font-weight: 700;
+  font-family: var(--typography-button-font-family);
+  font-size: var(--typography-button-font-size);
+  line-height: var(--typography-button-line-height);
+  text-transform: uppercase;
 }
 
 @mixin body() {
-  font-size: $body-font-size;
-  font-weight: 400;
-  line-height: $body-line-height;
+  font-family: var(--typography-body-font-family);
+  font-size: var(--typography-body-font-size);
+  line-height: var(--typography-body-line-height);
 }
 
 @mixin body-important() {
-  font-size: $body-font-size;
-  font-weight: 500;
+  font-family: var(--typography-body-semi-bold-font-family);
+  font-size: var(--typography-body-semi-bold-font-size);
+  line-height: var(--typography-body-semi-bold-line-height);
 }
 
 @mixin body-exergue() {
-  font-size: $body-font-size;
-  font-weight: 600;
+  //  Mapped to semi-bold
+  @include body-important;
 }
 
 @mixin caption() {
-  font-size: rem.torem(12px);
-  font-weight: 600;
-  line-height: $caption-line-height;
+  //  Mapped to xs semi-bold
+  //  Corriger la line-height
+  font-family: var(--typography-body-semibold-xs-font-family);
+  font-size: var(--typography-body-semibold-xs-font-size);
+  line-height: var(--typography-body-semibold-xs-line-height);
 }
 
 @mixin preview-text() {
-  font-size: rem.torem(12px);
-  font-weight: 400;
-  line-height: rem.torem(16px);
+  font-family: var(--typography-body-semibold-s-font-family);
+  font-size: var(--typography-body-semibold-s-font-size);
+  line-height: var(--typography-body-semibold-s-line-height);
 }
 
 @mixin highlight() {
-  font-size: rem.torem(12px);
-  font-weight: 600;
+  //  Mapped to xs semi-bold
+  @include caption;
 }
 
 @mixin mini-highlight() {
-  font-size: rem.torem(10px);
-  font-weight: 600;
+  //  Mapped to xs semi-bold
+  @include caption;
 }
 
 @mixin gabarit() {
-  font-size: rem.torem(18px);
-  font-style: normal;
-  font-weight: 300;
+  //  Mapped to body
+  @include body;
 }
 
 @mixin placeholder() {
-  font-size: rem.torem(15px);
-  font-style: italic;
-  font-weight: 400;
+  font-family: var(--typography-body-italic-font-family);
+  font-size: var(--typography-body-italic-font-size);
+  line-height: var(--typography-body-italic-line-height);
 }
 
 @mixin bold() {
+  //  Legacy to be mapped individually
   font-weight: 700;
 }

@@ -1,5 +1,7 @@
 // Global import.
 // Import's order is important.
+@import "design-system/build/css/variables.css";
+@import "design-system/build/css/font-faces.css";
 @import "orejime/dist/orejime";
 @import "global/index";
 @import "components/index";
