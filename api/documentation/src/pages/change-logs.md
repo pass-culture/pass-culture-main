@@ -9,6 +9,8 @@ title: Pass Culture API change logs
 
 - If you were using `/v2/venue/<venue_id>/stocks` to manage stocks, you will have to migrate to this endpoint : [/public/offers/v1/products/ean](/rest-api#tag/Product-offer-bulk-operations/operation/PostProductOfferByEan). The endpoint `/v2/stock` will not be available anymore starting from September, the 31st 2024.
 - If you were using `/v2/bookings` to manage bookings, you will have to migrate to those endpoints [/public/bookings/v1/bookings](/rest-api#tag/Bookings).  The endpoint `/v2/bookings` will not be available anymore starting from March, the 31st 2025.
+
+**You can find a migration tutorial [here](/docs/tutorials/migrate-to-the-new-api).**
 :::
 
 ## June 2024
