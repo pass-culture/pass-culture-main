@@ -27,6 +27,7 @@ import {
   buildVenueOptions,
   buildShowSubTypeOptions,
   onSubcategoryChange,
+  onCategoryChange,
 } from './utils'
 
 type DetailsFormProps = {
@@ -43,7 +44,7 @@ export const DetailsForm = ({
   filteredVenues,
   filteredCategories,
   filteredSubcategories,
-  readonlyFields,
+  readonlyFields: readOnlyFields,
   onImageUpload,
   onImageDelete,
   imageOffer,
@@ -114,7 +115,7 @@ export const DetailsForm = ({
             label="Titre de l’offre"
             maxLength={90}
             name="name"
-            disabled={readonlyFields.includes('name')}
+            disabled={readOnlyFields.includes('name')}
           />
         </FormLayout.Row>
         <FormLayout.Row>
@@ -124,7 +125,7 @@ export const DetailsForm = ({
             label="Description"
             maxLength={1000}
             name="description"
-            disabled={readonlyFields.includes('description')}
+            disabled={readOnlyFields.includes('description')}
           />
         </FormLayout.Row>
         <FormLayout.Row>
@@ -132,7 +133,7 @@ export const DetailsForm = ({
             label="Lieu"
             name="venueId"
             options={venueOptions}
-            disabled={readonlyFields.includes('venueId')}
+            disabled={readOnlyFields.includes('venueId')}
           />
         </FormLayout.Row>
       </FormLayout.Section>
@@ -162,7 +163,18 @@ export const DetailsForm = ({
               label: 'Choisir une catégorie',
               value: DEFAULT_DETAILS_FORM_VALUES.categoryId,
             }}
-            disabled={readonlyFields.includes('categoryId')}
+            disabled={readOnlyFields.includes('categoryId')}
+            onChange={async (event: React.ChangeEvent<HTMLSelectElement>) => {
+              await onCategoryChange({
+                categoryId: event.target.value,
+                readOnlyFields,
+                subcategories: filteredSubcategories,
+                setFieldValue,
+                onSubcategoryChange,
+                subcategoryConditionalFields,
+              })
+              handleChange(event)
+            }}
           />
         </FormLayout.Row>
         {categoryId !== DEFAULT_DETAILS_FORM_VALUES.categoryId && (
@@ -180,10 +192,11 @@ export const DetailsForm = ({
                   newSubCategoryId: event.target.value,
                   subcategories: filteredSubcategories,
                   setFieldValue,
+                  subcategoryConditionalFields,
                 })
                 handleChange(event)
               }}
-              disabled={readonlyFields.includes('subcategoryId')}
+              disabled={readOnlyFields.includes('subcategoryId')}
             />
           </FormLayout.Row>
         )}
@@ -197,7 +210,7 @@ export const DetailsForm = ({
                 label: 'Choisir un genre musical',
                 value: DEFAULT_DETAILS_FORM_VALUES.gtl_id,
               }}
-              disabled={readonlyFields.includes('gtl_id')}
+              disabled={readOnlyFields.includes('gtl_id')}
             />
           </FormLayout.Row>
         )}
@@ -212,7 +225,7 @@ export const DetailsForm = ({
                   label: 'Choisir un type de spectacle',
                   value: DEFAULT_DETAILS_FORM_VALUES.showType,
                 }}
-                disabled={readonlyFields.includes('showType')}
+                disabled={readOnlyFields.includes('showType')}
               />
             </FormLayout.Row>
             <FormLayout.Row>
@@ -224,7 +237,7 @@ export const DetailsForm = ({
                   label: 'Choisir un sous-type',
                   value: DEFAULT_DETAILS_FORM_VALUES.showSubType,
                 }}
-                disabled={readonlyFields.includes('showSubType')}
+                disabled={readOnlyFields.includes('showSubType')}
               />
             </FormLayout.Row>
           </>
@@ -247,7 +260,7 @@ export const DetailsForm = ({
                     label="Intervenant"
                     maxLength={1000}
                     name="speaker"
-                    disabled={readonlyFields.includes('speaker')}
+                    disabled={readOnlyFields.includes('speaker')}
                   />
                 </FormLayout.Row>
               )}
@@ -258,7 +271,7 @@ export const DetailsForm = ({
                     label="Auteur"
                     maxLength={1000}
                     name="author"
-                    disabled={readonlyFields.includes('author')}
+                    disabled={readOnlyFields.includes('author')}
                   />
                 </FormLayout.Row>
               )}
@@ -269,7 +282,7 @@ export const DetailsForm = ({
                     label="Visa d’exploitation"
                     maxLength={1000}
                     name="visa"
-                    disabled={readonlyFields.includes('visa')}
+                    disabled={readOnlyFields.includes('visa')}
                   />
                 </FormLayout.Row>
               )}
@@ -280,7 +293,7 @@ export const DetailsForm = ({
                     label="Metteur en scène"
                     maxLength={1000}
                     name="stageDirector"
-                    disabled={readonlyFields.includes('stageDirector')}
+                    disabled={readOnlyFields.includes('stageDirector')}
                   />
                 </FormLayout.Row>
               )}
@@ -291,7 +304,7 @@ export const DetailsForm = ({
                     label="Interprète"
                     maxLength={1000}
                     name="performer"
-                    disabled={readonlyFields.includes('performer')}
+                    disabled={readOnlyFields.includes('performer')}
                   />
                 </FormLayout.Row>
               )}
@@ -303,7 +316,7 @@ export const DetailsForm = ({
                     countCharacters
                     name="ean"
                     maxLength={13}
-                    disabled={readonlyFields.includes('ean')}
+                    disabled={readOnlyFields.includes('ean')}
                   />
                 </FormLayout.Row>
               )}
@@ -314,7 +327,7 @@ export const DetailsForm = ({
                     isOptional
                     label={'Durée'}
                     name="durationMinutes"
-                    disabled={readonlyFields.includes('durationMinutes')}
+                    disabled={readOnlyFields.includes('durationMinutes')}
                   />
                 </FormLayout.Row>
               )}
