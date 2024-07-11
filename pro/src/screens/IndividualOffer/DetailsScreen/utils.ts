@@ -218,6 +218,9 @@ export function setDefaultInitialValuesFromOffer({
     throw Error('La categorie de l’offre est introuvable')
   }
 
+  const { subcategoryConditionalFields } =
+    buildSubcategoryConditonalFields(subcategory)
+
   return {
     ...DEFAULT_DETAILS_FORM_VALUES,
     name: offer.name,
@@ -228,7 +231,7 @@ export function setDefaultInitialValuesFromOffer({
     showType: offer.extraData.showType ?? DEFAULT_DETAILS_FORM_VALUES.showType,
     showSubType:
       offer.extraData.showSubType ?? DEFAULT_DETAILS_FORM_VALUES.showSubType,
-    subcategoryConditionalFields: [],
+    subcategoryConditionalFields: subcategoryConditionalFields,
     durationMinutes: offer.durationMinutes
       ? deSerializeDurationMinutes(offer.durationMinutes)
       : DEFAULT_DETAILS_FORM_VALUES.durationMinutes,
