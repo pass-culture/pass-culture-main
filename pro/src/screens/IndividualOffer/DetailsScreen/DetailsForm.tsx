@@ -8,9 +8,11 @@ import {
   VenueListItemResponseModel,
 } from 'apiClient/v1'
 import { FormLayout } from 'components/FormLayout/FormLayout'
+import { OnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
 import { ImageUploaderOffer } from 'components/IndividualOfferForm/ImageUploaderOffer/ImageUploaderOffer'
 import { GET_MUSIC_TYPES_QUERY_KEY } from 'config/swrQueryKeys'
 import { showOptionsTree } from 'core/Offers/categoriesSubTypes'
+import { IndividualOfferImage } from 'core/Offers/types'
 import { DurationInput } from 'ui-kit/form/DurationInput/DurationInput'
 import { Select } from 'ui-kit/form/Select/Select'
 import { TextArea } from 'ui-kit/form/TextArea/TextArea'
@@ -32,6 +34,9 @@ type DetailsFormProps = {
   filteredCategories: CategoryResponseModel[]
   filteredSubcategories: SubcategoryResponseModel[]
   readonlyFields: string[]
+  onImageUpload: (values: OnImageUploadArgs) => Promise<void>
+  onImageDelete: () => Promise<void>
+  imageOffer?: IndividualOfferImage
 }
 
 export const DetailsForm = ({
@@ -39,6 +44,9 @@ export const DetailsForm = ({
   filteredCategories,
   filteredSubcategories,
   readonlyFields,
+  onImageUpload,
+  onImageDelete,
+  imageOffer,
 }: DetailsFormProps): JSX.Element => {
   const {
     values: {
@@ -225,13 +233,9 @@ export const DetailsForm = ({
       {subcategoryId !== DEFAULT_DETAILS_FORM_VALUES.subcategoryId && (
         <>
           <ImageUploaderOffer
-            onImageUpload={async () => {}}
-            onImageDelete={async () => {}}
-            imageOffer={{
-              originalUrl: '',
-              url: '',
-              credit: '',
-            }}
+            onImageUpload={onImageUpload}
+            onImageDelete={onImageDelete}
+            imageOffer={imageOffer}
           />
 
           {displayArtisticInformations && (
