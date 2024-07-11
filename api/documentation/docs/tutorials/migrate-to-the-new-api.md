@@ -75,3 +75,7 @@ Finally, to update the payload you are sending us:
     ]
 }
 ```
+
+:::info
+The new endpoint offers you the possibility to indicate a `bookingLimitDatetime` in the stock parameters. The `bookingLimitDatetime` is the date after which it is not possible to book the product.
+:::
