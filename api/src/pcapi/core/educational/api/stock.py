@@ -190,10 +190,12 @@ def _check_start_and_end_dates_in_same_educational_year(
     end_datetime: datetime.datetime, start_datetime: datetime.datetime
 ) -> None:
     start_year = educational_repository.find_educational_year_by_date(start_datetime)
-    assert start_year
+    if not start_year:
+        raise exceptions.StartEducationalYearMissing()
 
     end_year = educational_repository.find_educational_year_by_date(end_datetime)
-    assert end_year
+    if not end_year:
+        raise exceptions.EndEducationalYearMissing()
 
     if start_year.id != end_year.id:
         raise exceptions.StartAndEndEducationalYearDifferent()
