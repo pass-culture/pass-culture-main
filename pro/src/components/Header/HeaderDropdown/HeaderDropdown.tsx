@@ -59,9 +59,8 @@ export const HeaderDropdown = () => {
   const IN_STRUCTURE_CREATION_FUNNEL = pathname.startsWith(
     '/parcours-inscription'
   )
-  const canSeeHisProfile = !(
+  const hideProfile =
     IN_STRUCTURE_CREATION_FUNNEL && offererOptions.length === 0
-  )
 
   const selectedOffererId =
     // TODO remove this when noUncheckedIndexedAccess is enabled in TS config
@@ -251,7 +250,7 @@ export const HeaderDropdown = () => {
               Profil
             </DropdownMenu.Label>
             <div className={styles['menu-email']}>{currentUser?.email}</div>
-            {canSeeHisProfile && (
+            {!hideProfile && (
               <DropdownMenu.Item className={styles['menu-item']} asChild>
                 <ButtonLink icon={fullProfilIcon} to="/profil">
                   Voir mon profil
