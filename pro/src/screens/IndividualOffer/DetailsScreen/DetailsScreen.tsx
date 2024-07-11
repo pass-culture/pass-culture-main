@@ -17,6 +17,7 @@ import { PATCH_SUCCESS_MESSAGE } from 'core/shared/constants'
 import { useNotification } from 'hooks/useNotification'
 
 import { ActionBar } from '../ActionBar/ActionBar'
+import { useIndividualOfferImageUpload } from '../hooks/useIndividualOfferImageUpload'
 import { serializeDurationMinutes } from '../InformationsScreen/serializePatchOffer'
 import {
   getOfferSubtypeFromParam,
@@ -44,6 +45,8 @@ export const DetailsScreen = ({ venues }: DetailsScreenProps): JSX.Element => {
   const notify = useNotification()
   const { mutate } = useSWRConfig()
   const { search } = useLocation()
+  const { imageOffer, onImageDelete, onImageUpload, handleImageOnSubmit } =
+    useIndividualOfferImageUpload()
   const queryParams = new URLSearchParams(search)
   const queryOfferType = queryParams.get('offer-type')
 
@@ -93,9 +96,8 @@ export const DetailsScreen = ({ venues }: DetailsScreenProps): JSX.Element => {
         : await api.patchOffer(offer.id, postOffer)
 
       const receivedOfferId = response.id
+      await handleImageOnSubmit(receivedOfferId)
       await mutate([GET_OFFER_QUERY_KEY, receivedOfferId])
-
-      // replace url to fix back button
     } catch (error) {
       if (!isErrorAPIError(error)) {
         return
@@ -144,6 +146,9 @@ export const DetailsScreen = ({ venues }: DetailsScreenProps): JSX.Element => {
             filteredCategories={filteredCategories}
             filteredSubcategories={filteredSubcategories}
             readonlyFields={readOnlyFields}
+            onImageUpload={onImageUpload}
+            onImageDelete={onImageDelete}
+            imageOffer={imageOffer}
           />
         </FormLayout>
         <ActionBar
