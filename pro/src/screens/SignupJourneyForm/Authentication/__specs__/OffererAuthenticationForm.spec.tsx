@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Form, Formik } from 'formik'
 import React from 'react'
@@ -125,7 +125,7 @@ describe('OffererAuthenticationForm', () => {
     }
   })
 
-  it('should render form', () => {
+  it('should render form', async () => {
     renderOffererAuthenticationForm({
       initialValues: initialValues,
       contextValue: contextValue,
@@ -134,19 +134,21 @@ describe('OffererAuthenticationForm', () => {
     const siretField = screen.getByLabelText('Numéro de SIRET *')
     const nameField = screen.getByLabelText('Raison sociale *')
 
-    expect(siretField).toBeDisabled()
-    expect(siretField).toHaveValue('123 456 789 33333')
+    await waitFor(() => {
+      expect(siretField).toBeDisabled()
+      expect(siretField).toHaveValue('123 456 789 33333')
 
-    expect(nameField).toBeDisabled()
-    expect(nameField).toHaveValue('Test name')
+      expect(nameField).toBeDisabled()
+      expect(nameField).toHaveValue('Test name')
 
-    expect(screen.getByText('Nom public')).toBeInTheDocument()
+      expect(screen.getByText('Nom public')).toBeInTheDocument()
 
-    expect(
-      screen.getByText(
-        'À remplir si le nom de votre structure est différent de la raison sociale. C’est ce nom qui sera visible du public.'
-      )
-    ).toBeInTheDocument()
+      expect(
+        screen.getByText(
+          'À remplir si le nom de votre structure est différent de la raison sociale. C’est ce nom qui sera visible du public.'
+        )
+      ).toBeInTheDocument()
+    })
   })
 
   it('should not render error on submit when publicName is empty or filled', async () => {
