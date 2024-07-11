@@ -193,8 +193,11 @@ def _create_offer_and_stocks_for_allocine_venues(
                 venue=venue,
                 extraData=product.extraData,
             )
+            mediation = offers_factories.MediationFactory(offer=movie_offer)
+            store_public_object_from_sandbox_assets("thumbs", mediation, movie_offer.subcategoryId)
+
             product_stocks = []
-            for daydelta in range(30):
+            for daydelta in range(0, 30, 2):
                 day = datetime.date.today() + datetime.timedelta(days=daydelta)
                 for hour in (0, 5, 11, 17, 21):
                     beginning_datetime = datetime.datetime.combine(day, datetime.time(hour=hour))
