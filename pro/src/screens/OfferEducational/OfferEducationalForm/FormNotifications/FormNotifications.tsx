@@ -1,5 +1,4 @@
 import { FieldArray, useFormikContext } from 'formik'
-import { useRef } from 'react'
 
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OfferEducationalFormValues } from 'core/OfferEducational/types'
@@ -19,14 +18,12 @@ export const FormNotifications = ({
 }: FormNotificationsProps): JSX.Element => {
   const { values } = useFormikContext<OfferEducationalFormValues>()
 
-  const lastButtonRef = useRef<HTMLInputElement>(null)
-
   return (
     <FormLayout.Section title="Notifications">
       <FieldArray name="notificationEmails">
         {({ remove, push }) => (
           <>
-            {values.notificationEmails.map((_, index, self) => (
+            {values.notificationEmails.map((email, index, self) => (
               <EmailInputRow
                 disableForm={disableForm}
                 displayTrash={index > 0}
@@ -35,7 +32,12 @@ export const FormNotifications = ({
                 onDelete={() => {
                   remove(index)
                 }}
-                ref={index === self.length - 1 ? lastButtonRef : null}
+                //  The field should autoFocus only if it's the last of the emails list (the one being just added)
+                //  if the list has more than one emails (the first one is always there and cannot appear)
+                //  and if that last email is empty (otherwise it would focus the last email in an edition form with more than one email)
+                autoFocus={
+                  self.length - 1 === index && self.length > 1 && email === ''
+                }
               />
             ))}
             <Button
@@ -43,11 +45,6 @@ export const FormNotifications = ({
               icon={fullMoreIcon}
               onClick={() => {
                 push('')
-
-                //  The additional input does not esist just yet
-                setTimeout(() => {
-                  lastButtonRef.current?.focus()
-                })
               }}
               disabled={values.notificationEmails.length >= 5}
               className={styles['add-notification-button']}
