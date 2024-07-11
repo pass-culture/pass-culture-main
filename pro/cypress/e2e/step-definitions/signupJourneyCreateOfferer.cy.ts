@@ -1,25 +1,25 @@
-import { When, Then, Given } from '@badeball/cypress-cucumber-preprocessor'
+import { When, Then } from '@badeball/cypress-cucumber-preprocessor'
 const mySiret = '44890182521127'
 const offererName = 'MINISTERE DE LA CULTURE'
 
-Given('I log in with a {string} new account', (nth: string) => {
-  let emailAccount: string // @todo: comptes provisoires avant d'avoir une stratégie de comptes à voir avec Olivier Geber
-  switch (nth) {
-    case 'first':
-      emailAccount = 'pctest.grandpublic.age-more-than-18yo@example.com'
-      break
-    case 'second':
-      emailAccount = 'pctest.autre93.has-signed-up@example.com'
-      break
-    default:
-      emailAccount = 'pctest.autre97.has-signed-up@example.com'
-  }
-  cy.login({
-    email: emailAccount,
-    password: 'user@AZERTY123',
-    redirectUrl: '/parcours-inscription',
-  })
-})
+// Given('I log in with a {string} new account', (nth: string) => {
+//   let emailAccount: string // @todo: comptes provisoires avant d'avoir une stratégie de comptes à voir avec Olivier Geber
+//   switch (nth) {
+//     case 'first':
+//       emailAccount = 'pctest.grandpublic.age-more-than-18yo@example.com'
+//       break
+//     case 'second':
+//       emailAccount = 'pctest.autre93.has-signed-up@example.com'
+//       break
+//     default:
+//       emailAccount = 'pctest.autre97.has-signed-up@example.com'
+//   }
+//   cy.login({
+//     email: emailAccount,
+//     password: 'user@AZERTY123',
+//     redirectUrl: '/parcours-inscription',
+//   })
+// })
 
 When('I start offerer creation', () => {
   cy.findByText('Commencer').click()
