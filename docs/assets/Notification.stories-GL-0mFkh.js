@@ -18,7 +18,7 @@ import{N as e}from"./useNotification-CZUtWPba.js";import{j as i}from"./jsx-runti
     isVisible: true,
     isStickyBarOpen: false
   }
-}`,...(N=(g=c.parameters)==null?void 0:g.docs)==null?void 0:N.source}}};var S,E,x;p.parameters={...p.parameters,docs:{...(S=p.parameters)==null?void 0:S.docs,source:{originalSource:`{
+}`,...(N=(g=c.parameters)==null?void 0:g.docs)==null?void 0:N.source}}};var S,b,O;p.parameters={...p.parameters,docs:{...(S=p.parameters)==null?void 0:S.docs,source:{originalSource:`{
   args: {
     notification: {
       text: 'Vos modifications ont bien été prises en compte, cette opération peut durer plusieurs minutes',
@@ -28,7 +28,7 @@ import{N as e}from"./useNotification-CZUtWPba.js";import{j as i}from"./jsx-runti
     isVisible: true,
     isStickyBarOpen: false
   }
-}`,...(x=(E=p.parameters)==null?void 0:E.docs)==null?void 0:x.source}}};var b,O,I;u.parameters={...u.parameters,docs:{...(b=u.parameters)==null?void 0:b.docs,source:{originalSource:`{
+}`,...(O=(b=p.parameters)==null?void 0:b.docs)==null?void 0:O.source}}};var E,x,I;u.parameters={...u.parameters,docs:{...(E=u.parameters)==null?void 0:E.docs,source:{originalSource:`{
   args: {
     notification: {
       text: 'Ceci est une information',
@@ -38,4 +38,4 @@ import{N as e}from"./useNotification-CZUtWPba.js";import{j as i}from"./jsx-runti
     isVisible: true,
     isStickyBarOpen: false
   }
-}`,...(I=(O=u.parameters)==null?void 0:O.docs)==null?void 0:I.source}}};const X=["Error","Success","Pending","Information"];export{a as Error,u as Information,p as Pending,c as Success,X as __namedExportsOrder,W as default};
+}`,...(I=(x=u.parameters)==null?void 0:x.docs)==null?void 0:I.source}}};const X=["Error","Success","Pending","Information"];export{a as Error,u as Information,p as Pending,c as Success,X as __namedExportsOrder,W as default};
