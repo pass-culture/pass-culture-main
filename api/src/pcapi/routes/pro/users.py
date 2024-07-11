@@ -219,6 +219,7 @@ def signin(body: users_serializers.LoginUserBodyModel) -> users_serializers.Shar
     discard_session()
     login_user(user)
     stamp_session(user)
+    users_api.update_last_connection_date(user)
 
     return users_serializers.SharedLoginUserResponseModel.from_orm(user)
 
