@@ -1261,3 +1261,14 @@ class TiteliveGtlMapping(PcObject, Base, Model):
     gtlLabelLevel4: str = sa.Column(sa.Text, nullable=True, unique=False)
 
     sa.Index("gtl_type_idx", gtlType, postgresql_using="hash")
+
+
+@dataclass
+class Movie:
+    allocine_id: str | None
+    description: str | None
+    duration: int | None
+    poster_url: str | None
+    visa: str | None
+    title: str
+    extra_data: OfferExtraData | None

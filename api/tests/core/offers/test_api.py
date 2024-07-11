@@ -36,8 +36,10 @@ from pcapi.core.offers import repository as offers_repository
 from pcapi.core.offers import serialize
 from pcapi.core.offers.exceptions import NotUpdateProductOrOffers
 from pcapi.core.offers.exceptions import ProductNotFound
+from pcapi.core.providers.allocine import get_allocine_products_provider
 import pcapi.core.providers.factories as providers_factories
 import pcapi.core.providers.repository as providers_repository
+from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
@@ -3916,3 +3918,180 @@ class UpdateUsedStockPriceTest:
 
         assert stock_to_edit.price == decimal.Decimal("50.1")
         assert booking_to_edit.amount == decimal.Decimal("50.1")
+
+
+@pytest.mark.usefixtures("db_session")
+class CreateMovieProductFromProviderTest:
+    @classmethod
+    def setup_class(cls):
+        cls.allocine_provider = get_allocine_products_provider()
+        cls.allocine_stocks_provider = providers_repository.get_provider_by_local_class("AllocineStocks")
+        cls.boost_provider = providers_repository.get_provider_by_local_class("BoostStocks")
+
+    def setup_method(self):
+        models.Product.query.delete()
+
+    def teardown_method(self):
+        models.Product.query.delete()
+
+    def _get_movie(self, allocine_id: str | None = None, visa: str | None = None):
+        return models.Movie(
+            id="123",
+            title="Mon film",
+            duration=90,
+            description="description de Mon film",
+            poster_url=None,
+            visa=visa,
+            extra_data={"allocineId": int(allocine_id) if allocine_id else None, "visa": visa},
+        )
+
+    def test_creates_allocine_product_without_visa_if_does_not_exist(self):
+        # Given
+        movie = self._get_movie(allocine_id="12345")
+
+        # When
+        product = api.upsert_movie_product_from_provider(movie, self.allocine_provider, "idAllocine")
+
+        # Then
+        assert product.extraData["allocineId"] == 12345
+        assert product.extraData.get("visa") is None
+
+    def test_do_nothing_if_no_allocine_id_and_no_visa(self):
+        # Given
+        movie = self._get_movie(allocine_id=None, visa=None)
+
+        # When
+        with assert_num_queries(0):
+            product = api.upsert_movie_product_from_provider(movie, self.allocine_provider, "idAllocine")
+
+        # Then
+        assert product is None
+
+    def test_does_not_create_product_if_exists(self):
+        # Given
+        product = factories.ProductFactory(extraData={"allocineId": 12345})
+        movie = self._get_movie(allocine_id="12345")
+
+        # When
+        new_product = api.upsert_movie_product_from_provider(movie, self.allocine_provider, "idAllocine")
+
+        # Then
+        assert product.id == new_product.id
+
+    def test_updates_product_if_exists(self):
+        # Given
+        product = factories.ProductFactory(extraData={"allocineId": 12345})
+        movie = self._get_movie(allocine_id="12345")
+
+        # When
+        api.upsert_movie_product_from_provider(movie, self.allocine_provider, "idAllocine")
+
+        # Then
+        assert product.lastProvider.id == self.allocine_provider.id
+
+    def test_does_not_update_allocine_product_from_non_allocine_synchro(self):
+        # Given
+        product = factories.ProductFactory(
+            idAtProviders="idAllocine", lastProviderId=self.allocine_provider.id, extraData={"allocineId": 12345}
+        )
+        movie = self._get_movie(allocine_id="12345")
+
+        # When
+        api.upsert_movie_product_from_provider(movie, self.boost_provider, "idBoost")
+
+        # Then
+        assert product.idAtProviders == "idAllocine"
+        assert product.lastProvider.id == self.allocine_provider.id
+
+    def test_updates_allocine_product_from_allocine_stocks_synchro(self):
+        # Given
+        product = factories.ProductFactory(
+            idAtProviders="idAllocine", lastProviderId=self.allocine_provider.id, extraData={"allocineId": 12345}
+        )
+        movie = self._get_movie(allocine_id="12345")
+
+        # When
+        api.upsert_movie_product_from_provider(movie, self.allocine_stocks_provider, "idAllocineStocks")
+
+        # Then
+        assert product.idAtProviders == "idAllocineStocks"
+        assert product.lastProvider.id == self.allocine_stocks_provider.id
+
+    def test_updates_product_from_same_synchro(self):
+        # Given
+        product = factories.ProductFactory(
+            idAtProviders="idBoost1", lastProviderId=self.boost_provider.id, extraData={"allocineId": 12345}
+        )
+        movie = self._get_movie(allocine_id="12345")
+
+        # When
+        api.upsert_movie_product_from_provider(movie, self.boost_provider, "idBoost2")
+
+        # Then
+        assert product.idAtProviders == "idBoost2"
+        assert product.lastProvider.id == self.boost_provider.id
+
+    def test_updates_allocine_id_when_updates_product_by_visa(self):
+        # Given
+        product = factories.ProductFactory(
+            idAtProviders="idBoost", lastProviderId=self.boost_provider.id, extraData={"visa": "54321"}
+        )
+        movie = self._get_movie(allocine_id="12345", visa="54321")
+
+        # When
+        api.upsert_movie_product_from_provider(movie, self.allocine_stocks_provider, "idAllocine")
+
+        # Then
+        assert product.idAtProviders == "idAllocine"
+        assert product.extraData["allocineId"] == 12345
+
+    def test_updates_visa_when_updating_with_visa_provided(self):
+        # Given
+        product = factories.ProductFactory(
+            idAtProviders="idBoost",
+            lastProviderId=self.boost_provider.id,
+            extraData={"allocineId": 12345, "visa": "54321"},
+        )
+        movie = self._get_movie(allocine_id="12345", visa="54322")
+
+        # When
+        api.upsert_movie_product_from_provider(movie, self.allocine_stocks_provider, "idAllocine")
+
+        # Then
+        assert product.idAtProviders == "idAllocine"
+        assert product.extraData["allocineId"] == 12345
+        assert product.extraData["visa"] == "54322"
+
+    def test_keep_visa_when_updating_with_no_visa_provided(self):
+        # Given
+        product = factories.ProductFactory(
+            idAtProviders="idBoost",
+            lastProviderId=self.boost_provider.id,
+            extraData={"allocineId": 12345, "visa": "54321"},
+        )
+        movie = self._get_movie(allocine_id="12345", visa=None)
+
+        # When
+        api.upsert_movie_product_from_provider(movie, self.allocine_stocks_provider, "idAllocine")
+
+        # Then
+        assert product.idAtProviders == "idAllocine"
+        assert product.extraData["allocineId"] == 12345
+        assert product.extraData["visa"] == "54321"
+
+    def test_does_not_update_data_when_provided_data_is_none(self):
+        # Given
+        product = factories.ProductFactory(
+            idAtProviders="idBoost",
+            lastProviderId=self.boost_provider.id,
+            extraData={"allocineId": 12345, "title": "Mon vieux film"},
+        )
+        movie = self._get_movie(allocine_id="12345", visa=None)
+        movie.extra_data = None
+
+        # When
+        api.upsert_movie_product_from_provider(movie, self.allocine_stocks_provider, "idAllocine")
+
+        # Then
+        assert product.idAtProviders == "idAllocine"
+        assert product.extraData == {"allocineId": 12345, "title": "Mon vieux film"}

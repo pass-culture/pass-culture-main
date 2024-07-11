@@ -44,10 +44,12 @@ from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import repository as offerers_repository
 import pcapi.core.offerers.models as offerers_models
 from pcapi.core.offers import models as offers_models
+from pcapi.core.providers.allocine import get_allocine_products_provider
 from pcapi.core.providers.constants import GTL_IDS_BY_MUSIC_GENRE_CODE
 from pcapi.core.providers.constants import MUSIC_SLUG_BY_GTL_ID
 import pcapi.core.providers.exceptions as providers_exceptions
 import pcapi.core.providers.models as providers_models
+from pcapi.core.providers.repository import get_provider_by_local_class
 import pcapi.core.users.models as users_models
 from pcapi.domain import music_types
 from pcapi.models import db
@@ -1937,3 +1939,64 @@ def update_used_stock_price(stock: models.Stock, new_price: float) -> None:
             event=first_finance_event,
             reason=finance_models.PricingLogReason.CHANGE_AMOUNT,
         )
+
+
+def upsert_movie_product_from_provider(
+    movie: offers_models.Movie, provider: providers_models.Provider, id_at_providers: str
+) -> offers_models.Product | None:
+    if not movie.allocine_id and not movie.visa:
+        logger.warning("Cannot create a movie product without allocineId nor visa")
+        return None
+
+    existing_product = None
+    if movie.allocine_id:
+        existing_product = offers_repository.get_movie_product_by_allocine_id(movie.allocine_id)
+    if not existing_product and movie.visa:
+        existing_product = offers_repository.get_movie_product_by_visa(movie.visa)
+
+    with transaction():
+        if existing_product:
+            if _is_allocine(provider.id) or provider.id == existing_product.lastProviderId:
+                _update_movie_product(existing_product, movie, provider.id, id_at_providers)
+            return existing_product
+
+        product = offers_models.Product(
+            description=movie.description,
+            durationMinutes=movie.duration,
+            extraData=None,
+            idAtProviders=id_at_providers,
+            lastProviderId=provider.id,
+            name=movie.title,
+            subcategoryId=subcategories.SEANCE_CINE.id,
+        )
+        _update_product_extra_data(product, movie)
+        db.session.add(product)
+    return product
+
+
+def _is_allocine(provider_id: int) -> bool:
+    allocine_products_provider_id = get_allocine_products_provider().id
+    allocine_stocks_provider_id = get_provider_by_local_class("AllocineStocks").id
+    return provider_id in (allocine_products_provider_id, allocine_stocks_provider_id)
+
+
+def _update_movie_product(
+    product: offers_models.Product, movie: offers_models.Movie, provider_id: int, id_at_providers: str
+) -> None:
+    product.description = movie.description
+    product.durationMinutes = movie.duration
+    product.idAtProviders = id_at_providers
+    product.lastProviderId = provider_id
+    product.name = movie.title
+    _update_product_extra_data(product, movie)
+
+
+def _update_product_extra_data(product: offers_models.Product, movie: offers_models.Movie) -> None:
+    product.extraData = product.extraData or offers_models.OfferExtraData()
+    extra_data = movie.extra_data or offers_models.OfferExtraData()
+    if movie.allocine_id:
+        extra_data["allocineId"] = int(movie.allocine_id)
+    if movie.visa:
+        extra_data["visa"] = movie.visa
+
+    product.extraData.update((key, value) for key, value in extra_data.items() if value is not None)  # type: ignore[typeddict-item]
