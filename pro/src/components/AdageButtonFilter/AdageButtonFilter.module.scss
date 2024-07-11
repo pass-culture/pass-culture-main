@@ -26,7 +26,6 @@
   &-selected {
     @include fonts.bold;
 
-    line-height: rem.torem(20px);
     border: rem.torem(2px) solid var(--color-primary);
   }
 

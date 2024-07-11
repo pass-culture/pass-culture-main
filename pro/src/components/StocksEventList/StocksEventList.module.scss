@@ -108,7 +108,6 @@
   .data {
     display: table-cell;
     padding: rem.torem(12px) 0;
-    line-height: 1;
 
     &::before {
       content: none;

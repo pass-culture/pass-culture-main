@@ -28,12 +28,6 @@
 
 .sub-title {
   @include fonts.highlight;
-
-  line-height: rem.torem(16px);
-}
-
-.venue-address {
-  line-height: rem.torem(20px);
 }
 
 .text {
