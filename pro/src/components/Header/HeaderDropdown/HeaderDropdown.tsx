@@ -2,7 +2,7 @@ import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import cn from 'classnames'
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { useSearchParams } from 'react-router-dom'
+import { useLocation, useSearchParams } from 'react-router-dom'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
@@ -53,6 +53,14 @@ export const HeaderDropdown = () => {
       value: item['id'].toString(),
       label: item['name'],
     })) ?? []
+  )
+
+  const { pathname } = useLocation()
+  const IN_STRUCTURE_CREATION_FUNNEL = pathname.startsWith(
+    '/parcours-inscription'
+  )
+  const canSeeHisProfile = !(
+    IN_STRUCTURE_CREATION_FUNNEL && offererOptions.length === 0
   )
 
   const selectedOffererId =
@@ -243,11 +251,13 @@ export const HeaderDropdown = () => {
               Profil
             </DropdownMenu.Label>
             <div className={styles['menu-email']}>{currentUser?.email}</div>
-            <DropdownMenu.Item className={styles['menu-item']} asChild>
-              <ButtonLink icon={fullProfilIcon} to="/profil">
-                Voir mon profil
-              </ButtonLink>
-            </DropdownMenu.Item>
+            {canSeeHisProfile && (
+              <DropdownMenu.Item className={styles['menu-item']} asChild>
+                <ButtonLink icon={fullProfilIcon} to="/profil">
+                  Voir mon profil
+                </ButtonLink>
+              </DropdownMenu.Item>
+            )}
             <DropdownMenu.Separator
               className={cn(styles['separator'], styles['tablet-only'])}
             />
