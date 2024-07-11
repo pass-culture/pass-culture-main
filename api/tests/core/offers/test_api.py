@@ -33,6 +33,7 @@ from pcapi.core.offers import exceptions
 from pcapi.core.offers import factories
 from pcapi.core.offers import models
 from pcapi.core.offers import repository as offers_repository
+from pcapi.core.offers import serialize
 from pcapi.core.offers.exceptions import NotUpdateProductOrOffers
 from pcapi.core.offers.exceptions import ProductNotFound
 import pcapi.core.providers.factories as providers_factories
@@ -1049,6 +1050,139 @@ class CreateMediationV2Test:
         # Then
         assert models.Mediation.query.count() == 0
         assert len(os.listdir(self.THUMBS_DIR)) == existing_number_of_files
+
+
+@pytest.mark.usefixtures("db_session")
+class CreateDraftOfferTest:
+    def test_create_draft_offer_from_scratch(self):
+        venue = offerers_factories.VenueFactory()
+        body = serialize.PostDraftOfferBodyModel(
+            name="A pretty good offer",
+            subcategoryId=subcategories.SEANCE_CINE.id,
+            venueId=venue.id,
+        )
+        offer = api.create_draft_offer(body, venue=venue)
+
+        assert offer.name == "A pretty good offer"
+        assert offer.subcategoryId == subcategories.SEANCE_CINE.id
+        assert offer.venue == venue
+        assert not offer.description
+        assert not offer.isActive
+        assert offer.validation == models.OfferValidationStatus.DRAFT
+        assert not offer.product
+        assert models.Offer.query.count() == 1
+
+    def test_cannot_create_activation_offer(self):
+        venue = offerers_factories.VenueFactory()
+        body = serialize.PostDraftOfferBodyModel(
+            name="An offer he can't refuse",
+            subcategoryId=subcategories.ACTIVATION_EVENT.id,
+            venueId=venue.id,
+        )
+        with pytest.raises(exceptions.SubCategoryIsInactive) as error:
+            api.create_draft_offer(body, venue=venue)
+
+        msg = "Une offre ne peut être créée ou éditée en utilisant cette sous-catégorie"
+        assert error.value.errors["subcategory"] == [msg]
+
+    def test_cannot_create_offer_when_invalid_subcategory(self):
+        venue = offerers_factories.VenueFactory()
+        body = serialize.PostDraftOfferBodyModel(
+            name="An offer he can't refuse",
+            subcategoryId="TOTO",
+            venueId=venue.id,
+        )
+        with pytest.raises(exceptions.UnknownOfferSubCategory) as error:
+            api.create_draft_offer(body, venue=venue)
+
+        assert error.value.errors["subcategory"] == ["La sous-catégorie de cette offre est inconnue"]
+
+
+@pytest.mark.usefixtures("db_session")
+class UpdateDraftOfferTest:
+    def test_basics(self):
+        offer = factories.OfferFactory(
+            name="Name",
+            subcategoryId=subcategories.ESCAPE_GAME.id,
+            description="description",
+        )
+        body = serialize.PatchDraftOfferBodyModel(
+            name="New name",
+            description="New description",
+        )
+        offer = api.update_draft_offer(offer, body)
+        db.session.flush()
+
+        assert offer.name == "New name"
+        assert offer.description == "New description"
+
+
+@pytest.mark.usefixtures("db_session")
+class UpdateDraftOfferDetailsTest:
+    @mock.patch("pcapi.core.search.async_index_offer_ids")
+    def test_basics(self, mocked_async_index_offer_ids):
+        offer = factories.OfferFactory(
+            subcategoryId=subcategories.ESCAPE_GAME.id,
+            bookingEmail="old@example.com",
+            isDuo=False,
+            audioDisabilityCompliant=None,
+            mentalDisabilityCompliant=None,
+            motorDisabilityCompliant=None,
+            visualDisabilityCompliant=None,
+        )
+        body = serialize.PatchDraftOfferDetailsBodyModel(
+            audioDisabilityCompliant=True,
+            mentalDisabilityCompliant=False,
+            motorDisabilityCompliant=True,
+            visualDisabilityCompliant=False,
+            bookingEmail="new@example.com",
+            isDuo=True,
+        )
+        offer = api.update_draft_offer_details(offer, body)
+        db.session.flush()
+
+        assert offer.audioDisabilityCompliant is True
+        assert offer.mentalDisabilityCompliant is False
+        assert offer.motorDisabilityCompliant is True
+        assert offer.visualDisabilityCompliant is False
+        assert offer.isDuo
+        assert offer.bookingEmail == "new@example.com"
+        mocked_async_index_offer_ids.assert_called_once_with(
+            [offer.id],
+            reason=search.IndexationReason.OFFER_UPDATE,
+            log_extra={
+                "changes": {
+                    "audioDisabilityCompliant",
+                    "mentalDisabilityCompliant",
+                    "motorDisabilityCompliant",
+                    "visualDisabilityCompliant",
+                    "bookingEmail",
+                    "isDuo",
+                },
+            },
+        )
+
+    def test_update_extra_data_should_raise_error_when_mandatory_field_not_provided(self):
+        offer = factories.OfferFactory(subcategoryId=subcategories.SPECTACLE_REPRESENTATION.id)
+        body = serialize.PatchDraftOfferDetailsBodyModel(extraData={"author": "Asimov"})
+        with pytest.raises(api_errors.ApiErrors) as error:
+            api.update_draft_offer_details(offer, body)
+        assert error.value.errors == {
+            "showType": ["Ce champ est obligatoire"],
+            "showSubType": ["Ce champ est obligatoire"],
+        }
+
+    def test_error_when_missing_mandatory_extra_data(self):
+        offer = factories.OfferFactory(
+            subcategoryId=subcategories.SPECTACLE_REPRESENTATION.id, extraData={"showType": 200}
+        )
+        body = serialize.PatchDraftOfferDetailsBodyModel(extraData=None)
+        with pytest.raises(api_errors.ApiErrors) as error:
+            api.update_draft_offer_details(offer, body)
+        assert error.value.errors == {
+            "showType": ["Ce champ est obligatoire"],
+            "showSubType": ["Ce champ est obligatoire"],
+        }
 
 
 @pytest.mark.usefixtures("db_session")

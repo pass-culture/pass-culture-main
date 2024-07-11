@@ -562,6 +562,22 @@ def check_is_duo_compliance(is_duo: bool | None, subcategory: subcategories.Subc
         raise exceptions.OfferCannotBeDuo()
 
 
+def check_accessibility_compliance(
+    audio_disability_compliant: bool | None,
+    mental_disability_compliant: bool | None,
+    motor_disability_compliant: bool | None,
+    visual_disability_compliant: bool | None,
+) -> None:
+    fields = (
+        audio_disability_compliant,
+        mental_disability_compliant,
+        motor_disability_compliant,
+        visual_disability_compliant,
+    )
+    if None in fields:
+        raise exceptions.OfferMustHaveAccessibility()
+
+
 def check_publication_date(offer: models.Offer, publication_date: datetime.datetime | None) -> None:
     if publication_date is None:
         return
