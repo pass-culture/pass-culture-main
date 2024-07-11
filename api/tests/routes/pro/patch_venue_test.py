@@ -1,3 +1,4 @@
+from datetime import datetime
 from decimal import Decimal
 from unittest.mock import patch
 
@@ -45,7 +46,9 @@ def populate_missing_data_from_venue(venue_data: dict, venue: offerers_models.Ve
 class Returns200Test:
     def test_should_update_venue(self, client) -> None:
         # given
-        user_offerer = offerers_factories.UserOffererFactory()
+        user_offerer = offerers_factories.UserOffererFactory(
+            user__lastConnectionDate=datetime.utcnow(),
+        )
         venue = offerers_factories.VenueFactory(name="old name", managingOfferer=user_offerer.offerer)
 
         venue_label = offerers_factories.VenueLabelFactory(label="CAC - Centre d'art contemporain d'intérêt national")
@@ -298,7 +301,9 @@ class Returns200Test:
     def test_edit_venue_booking_email_with_applied_on_all_offers(
         self, mocked_update_all_venue_offers_email_job, client
     ):
-        user_offerer = offerers_factories.UserOffererFactory()
+        user_offerer = offerers_factories.UserOffererFactory(
+            user__lastConnectionDate=datetime.utcnow(),
+        )
         venue = offerers_factories.VenueFactory(
             name="old name", managingOfferer=user_offerer.offerer, bookingEmail="old.venue@email.com"
         )
@@ -364,7 +369,7 @@ class Returns200Test:
     def test_edit_venue_withdrawal_details_with_applied_on_all_offers(
         self, mocked_update_all_venue_offers_withdrawal_details_job, client
     ):
-        user_offerer = offerers_factories.UserOffererFactory()
+        user_offerer = offerers_factories.UserOffererFactory(user__lastConnectionDate=datetime.utcnow())
         venue = offerers_factories.VenueFactory(
             name="old name",
             managingOfferer=user_offerer.offerer,

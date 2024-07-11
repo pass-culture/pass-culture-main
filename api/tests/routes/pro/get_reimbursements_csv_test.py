@@ -113,7 +113,6 @@ def test_with_venue_filter_with_pricings(client, cutoff, fortnight):
     bank_account_id = bank_account_1.id  # avoid extra SQL query below
     queries = AUTHENTICATION_QUERIES
     queries += 1  # check user has access to offerer
-    queries += 1  # select offerer
     queries += 1  # select booking and related items
     queries += 1  # select educational redactor
     with assert_num_queries(queries):
@@ -222,7 +221,6 @@ def test_with_reimbursement_period_filter_with_pricings(client, cutoff, fortnigh
     client = client.with_session_auth(pro.email)
     bank_account_id = bank_account.id  # avoid extra SQL query below
     queries = AUTHENTICATION_QUERIES
-    queries += 1  # select offerer
     queries += 1  # check user has access to offerer
     queries += 1  # select booking and related items
     queries += 1  # select educational redactor
@@ -317,7 +315,6 @@ def test_with_bank_account_filter_with_pricings_collective_use_case(client, cuto
     client = client.with_session_auth(pro.email)
     bank_account_id = bank_account_1.id  # avoid extra SQL query below
     queries = AUTHENTICATION_QUERIES
-    queries += 1  # select offerer
     queries += 1  # check user has access to offerer
     queries += 1  # select booking and related items
     queries += 1  # select educational redactor
@@ -437,7 +434,6 @@ def test_with_reimbursement_period_filter_with_pricings_collective_use_case(clie
     client = client.with_session_auth(pro.email)
     bank_account_id = bank_account.id  # avoid extra SQL query below
     queries = AUTHENTICATION_QUERIES
-    queries += 1  # select offerer
     queries += 1  # check user has access to offerer
     queries += 1  # select booking and related items
     queries += 1  # select educational redactor
