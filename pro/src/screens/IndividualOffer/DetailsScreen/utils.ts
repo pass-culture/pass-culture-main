@@ -76,6 +76,47 @@ export const buildSubcategoryConditonalFields = (
   return { subcategoryConditionalFields }
 }
 
+type onCategoryChangeProps = {
+  readOnlyFields: string[]
+  categoryId: string
+  subcategories: SubcategoryResponseModel[]
+  setFieldValue: (
+    field: string,
+    value: any,
+    shouldValidate?: boolean | undefined
+  ) => Promise<void | FormikErrors<DetailsFormValues>>
+  onSubcategoryChange: (p: OnSubcategoryChangeProps) => Promise<void>
+  subcategoryConditionalFields: string[]
+}
+
+export const onCategoryChange = async ({
+  categoryId,
+  readOnlyFields,
+  subcategories,
+  setFieldValue,
+  onSubcategoryChange,
+  subcategoryConditionalFields,
+}: onCategoryChangeProps) => {
+  if (readOnlyFields.includes('subcategoryId')) {
+    return
+  }
+  const newSubcategoryOptions = buildSubcategoryOptions(
+    subcategories,
+    categoryId
+  )
+  const subcategoryId =
+    newSubcategoryOptions.length === 1
+      ? String(newSubcategoryOptions[0].value)
+      : DEFAULT_DETAILS_FORM_VALUES.subcategoryId
+  await setFieldValue('subcategoryId', subcategoryId, false)
+  await onSubcategoryChange({
+    newSubCategoryId: subcategoryId,
+    subcategories,
+    setFieldValue,
+    subcategoryConditionalFields,
+  })
+}
+
 type OnSubcategoryChangeProps = {
   newSubCategoryId: string
   subcategories: SubcategoryResponseModel[]
@@ -84,23 +125,43 @@ type OnSubcategoryChangeProps = {
     value: any,
     shouldValidate?: boolean | undefined
   ) => Promise<void | FormikErrors<DetailsFormValues>>
+  subcategoryConditionalFields: string[]
 }
 
 export const onSubcategoryChange = async ({
   newSubCategoryId,
   subcategories,
   setFieldValue,
+  subcategoryConditionalFields,
 }: OnSubcategoryChangeProps) => {
   const newSubcategory = subcategories.find(
     (subcategory) => subcategory.id === newSubCategoryId
   )
 
-  const { subcategoryConditionalFields } =
+  const { subcategoryConditionalFields: newSubcategoryConditionalFields } =
     buildSubcategoryConditonalFields(newSubcategory)
   await setFieldValue(
     'subcategoryConditionalFields',
-    subcategoryConditionalFields
+    newSubcategoryConditionalFields
   )
+
+  if (newSubcategoryConditionalFields === subcategoryConditionalFields) {
+    return
+  }
+
+  const fieldsToReset = subcategoryConditionalFields.filter(
+    (field: string) => !newSubcategoryConditionalFields.includes(field)
+  )
+  fieldsToReset.forEach(async (field: string) => {
+    if (field in DEFAULT_DETAILS_FORM_VALUES) {
+      await setFieldValue(
+        field,
+        DEFAULT_DETAILS_FORM_VALUES[
+          field as keyof typeof DEFAULT_DETAILS_FORM_VALUES
+        ]
+      )
+    }
+  })
 }
 
 export const buildVenueOptions = (venues: VenueListItemResponseModel[]) => {
