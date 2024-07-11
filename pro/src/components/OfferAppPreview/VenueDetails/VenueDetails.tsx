@@ -1,4 +1,3 @@
-import cn from 'classnames'
 import React from 'react'
 
 import { GetOfferVenueResponseModel } from 'apiClient/v1'
@@ -29,9 +28,7 @@ export const VenueDetails = ({
       <div className={style['section']}>
         <div className={style['title']}>Où ?</div>
         <div className={style['sub-title']}>Adresse</div>
-        <address className={cn(style['text'], style['venue-address'])}>
-          {venueAddressString}
-        </address>
+        <address className={style['text']}>{venueAddressString}</address>
         <div className={style['sub-title']}>Distance</div>
         <div className={style['text']}>- - km</div>
       </div>
