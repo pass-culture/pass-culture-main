@@ -12,9 +12,11 @@ import { RouteLeavingGuardIndividualOffer } from 'components/RouteLeavingGuardIn
 import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import { GET_OFFER_QUERY_KEY } from 'config/swrQueryKeys'
 import { useIndividualOfferContext } from 'context/IndividualOfferContext/IndividualOfferContext'
+import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
 import { isOfferDisabled } from 'core/Offers/utils/isOfferDisabled'
 import { PATCH_SUCCESS_MESSAGE } from 'core/shared/constants'
 import { useNotification } from 'hooks/useNotification'
+import { useOfferWizardMode } from 'hooks/useOfferWizardMode'
 
 import { ActionBar } from '../ActionBar/ActionBar'
 import { useIndividualOfferImageUpload } from '../hooks/useIndividualOfferImageUpload'
@@ -45,6 +47,7 @@ export const DetailsScreen = ({ venues }: DetailsScreenProps): JSX.Element => {
   const notify = useNotification()
   const { mutate } = useSWRConfig()
   const { search } = useLocation()
+  const mode = useOfferWizardMode()
   const { imageOffer, onImageDelete, onImageUpload, handleImageOnSubmit } =
     useIndividualOfferImageUpload()
   const queryParams = new URLSearchParams(search)
@@ -98,6 +101,16 @@ export const DetailsScreen = ({ venues }: DetailsScreenProps): JSX.Element => {
       const receivedOfferId = response.id
       await handleImageOnSubmit(receivedOfferId)
       await mutate([GET_OFFER_QUERY_KEY, receivedOfferId])
+
+      // replace url to fix back button
+      navigate(
+        getIndividualOfferUrl({
+          step: OFFER_WIZARD_STEP_IDS.DETAILS,
+          offerId: receivedOfferId,
+          mode,
+        }),
+        { replace: true }
+      )
     } catch (error) {
       if (!isErrorAPIError(error)) {
         return
