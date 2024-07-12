@@ -148,7 +148,20 @@ class GetMovieShowtimeListTest:
         valid_edge = copy.deepcopy(payload["movieShowtimeList"]["edges"][0])
         payload["movieShowtimeList"]["edges"].append(valid_edge)
         # one and only movie becomes invalid because of one showtime language
-        payload["movieShowtimeList"]["edges"][0]["node"]["showtimes"][0]["languages"] = [None]
+        payload["movieShowtimeList"]["edges"][0]["node"]["showtimes"][0]["languages"] = ["invalid"]
+
+        requests_mock.get.return_value = MockedResponse(data=payload, status_code=200)
+        api_response = get_movies_showtimes_from_allocine("does not matter")
+
+        expected_result = copy.deepcopy(fixtures.MOVIE_SHOWTIME_LIST)
+        assert api_response == allocine_serializers.AllocineMovieShowtimeListResponse.model_validate(expected_result)
+
+    @patch("pcapi.connectors.api_allocine.requests")
+    def test_accept_showtimes_with_a_none_language(self, requests_mock):
+        payload = copy.deepcopy(fixtures.MOVIE_SHOWTIME_LIST)
+
+        # invalid language should be filtered and the edge kept
+        payload["movieShowtimeList"]["edges"][0]["node"]["showtimes"][0]["languages"].append(None)
 
         requests_mock.get.return_value = MockedResponse(data=payload, status_code=200)
         api_response = get_movies_showtimes_from_allocine("does not matter")
