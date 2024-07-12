@@ -8,6 +8,7 @@
   flex-direction: column;
   justify-content: center;
   flex: 1;
+  width: 100%;
 
   &-item {
     height: 100%;
@@ -90,14 +91,22 @@
   }
 }
 
+@media (min-width: size.$laptop) {
+  .adage-header-link {
+    padding: 0 rem.torem(16px);
+  }
+}
+
 @media (min-width: size.$tablet) {
   .adage-header-menu {
+    width: unset;
     flex-direction: row;
     text-align: center;
     height: rem.torem(61px);
+    border-bottom: none;
   }
 
   .adage-header-link {
-    padding: 0 rem.torem(16px);
+    padding: 0 rem.torem(8px);
   }
 }
