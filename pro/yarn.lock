@@ -20,6 +20,14 @@
     "@algolia/autocomplete-plugin-algolia-insights" "1.17.3"
     "@algolia/autocomplete-shared" "1.17.3"
 
+"@algolia/autocomplete-core@1.17.4":
+  version "1.17.4"
+  resolved "https://registry.yarnpkg.com/@algolia/autocomplete-core/-/autocomplete-core-1.17.4.tgz#43b6160b67cff853e05769c5f15b91ced5eff7c4"
+  integrity sha512-H1CAzj43RDeC4Vq9FW2JLtRDNxhjRG/aPX69nbNrKbYzX9P0YohxrEj3kJ9G+e20y0L0pYboAOeU6wgbKJ6gOA==
+  dependencies:
+    "@algolia/autocomplete-plugin-algolia-insights" "1.17.4"
+    "@algolia/autocomplete-shared" "1.17.4"
+
 "@algolia/autocomplete-js@1.17.3":
   version "1.17.3"
   resolved "https://registry.yarnpkg.com/@algolia/autocomplete-js/-/autocomplete-js-1.17.3.tgz#b6a9ed48188f86e0c7e758bacbe18856820687c2"
@@ -31,6 +39,17 @@
     htm "^3.1.1"
     preact "^10.13.2"
 
+"@algolia/autocomplete-js@1.17.4":
+  version "1.17.4"
+  resolved "https://registry.yarnpkg.com/@algolia/autocomplete-js/-/autocomplete-js-1.17.4.tgz#5bb3990b38123a64568430f3a85e1e92806dc5c3"
+  integrity sha512-ANhINMwusKmsW/xHhgiKvUSLis/Lll9OilueBR9h/lxBlgEJ/hHIOTnZupzksyna1OtGZaW5keAu04E19+CW1w==
+  dependencies:
+    "@algolia/autocomplete-core" "1.17.4"
+    "@algolia/autocomplete-preset-algolia" "1.17.4"
+    "@algolia/autocomplete-shared" "1.17.4"
+    htm "^3.1.1"
+    preact "^10.13.2"
+
 "@algolia/autocomplete-plugin-algolia-insights@1.17.3":
   version "1.17.3"
   resolved "https://registry.yarnpkg.com/@algolia/autocomplete-plugin-algolia-insights/-/autocomplete-plugin-algolia-insights-1.17.3.tgz#62822071d18275876aaa6fd8af21df2f1da95c1a"
@@ -38,15 +57,22 @@
   dependencies:
     "@algolia/autocomplete-shared" "1.17.3"
 
-"@algolia/autocomplete-plugin-query-suggestions@^1.17.3":
-  version "1.17.3"
-  resolved "https://registry.yarnpkg.com/@algolia/autocomplete-plugin-query-suggestions/-/autocomplete-plugin-query-suggestions-1.17.3.tgz#c29db3e9a9eaf667a00a667603a8605518fa5f66"
-  integrity sha512-xsaXquQnHpj635sfB04tj/5tf8dm+/+9ccEkAZL0yAb06RTm75ObqwZeL0CUgRj+PT2wXEjLckoQnCMU7HyIbw==
+"@algolia/autocomplete-plugin-algolia-insights@1.17.4":
+  version "1.17.4"
+  resolved "https://registry.yarnpkg.com/@algolia/autocomplete-plugin-algolia-insights/-/autocomplete-plugin-algolia-insights-1.17.4.tgz#b88e2e54a226da0de47984022f43f8e329607819"
+  integrity sha512-fPABTwZtfD83qAzwnMYjJQ6ohCK7XE2l2++H+dOtV76cCIsAYYAC1bO5DnCbIi6Ma+OkNOgB1jCPI5EYOEsSpg==
   dependencies:
-    "@algolia/autocomplete-core" "1.17.3"
-    "@algolia/autocomplete-js" "1.17.3"
-    "@algolia/autocomplete-preset-algolia" "1.17.3"
-    "@algolia/autocomplete-shared" "1.17.3"
+    "@algolia/autocomplete-shared" "1.17.4"
+
+"@algolia/autocomplete-plugin-query-suggestions@^1.17.4":
+  version "1.17.4"
+  resolved "https://registry.yarnpkg.com/@algolia/autocomplete-plugin-query-suggestions/-/autocomplete-plugin-query-suggestions-1.17.4.tgz#28089cd9f23be91b5ae77e0642402e16e2b0d251"
+  integrity sha512-BvUXJp3H3rUb7TtvHTX10XvmWXVcxDge2ZcVT4DDNz94SIM1UxKCeS/+ILF5Ta8Q5CXv3DAZodKPWCEWGE7amQ==
+  dependencies:
+    "@algolia/autocomplete-core" "1.17.4"
+    "@algolia/autocomplete-js" "1.17.4"
+    "@algolia/autocomplete-preset-algolia" "1.17.4"
+    "@algolia/autocomplete-shared" "1.17.4"
 
 "@algolia/autocomplete-plugin-recent-searches@^1.17.3":
   version "1.17.3"
@@ -65,10 +91,22 @@
   dependencies:
     "@algolia/autocomplete-shared" "1.17.3"
 
+"@algolia/autocomplete-preset-algolia@1.17.4":
+  version "1.17.4"
+  resolved "https://registry.yarnpkg.com/@algolia/autocomplete-preset-algolia/-/autocomplete-preset-algolia-1.17.4.tgz#ca4dd2308615858d932ff2b2546e77c7873d4983"
+  integrity sha512-ijYn6hAGr3luVBVYDubaX600KXolVJH6yZlpeWZ9CNCEewgKIQ9ok3eNGha9EEJ0s9REYbp1TmDQ3T1I1aqcBA==
+  dependencies:
+    "@algolia/autocomplete-shared" "1.17.4"
+
 "@algolia/autocomplete-shared@1.17.3":
   version "1.17.3"
   resolved "https://registry.yarnpkg.com/@algolia/autocomplete-shared/-/autocomplete-shared-1.17.3.tgz#24c91aacc795eca7944c3a166e1eb847be7cc51b"
   integrity sha512-YeX/5s/tUOa9wDTOOcKnMBHVtmmGv7ng+DyxE9UD5wgO6VY+i3Pq9yiJdEUBSSa+X5jV0vxtzS+/VIaqdLxytA==
+
+"@algolia/autocomplete-shared@1.17.4":
+  version "1.17.4"
+  resolved "https://registry.yarnpkg.com/@algolia/autocomplete-shared/-/autocomplete-shared-1.17.4.tgz#446e8b8f1a72d4b9b7cc68f55729d14a8260f6f7"
+  integrity sha512-AM7KntpKinDZGVYfZ4j8zt5ymgYBRXOZg0CFEeHLmViqu5BvQzzoc1aoNHQx6lBjViGckBYP9szA+t2QzRXy3A==
 
 "@algolia/cache-browser-local-storage@4.19.1":
   version "4.19.1"
