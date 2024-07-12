@@ -5,9 +5,7 @@ $body-font-size: rem.torem(15px);
 $caption-line-height: rem.torem(16px);
 
 @mixin hero() {
-  font-size: rem.torem(38px);
-  font-style: normal;
-  font-weight: 500;
+  @include title1;
 }
 
 @mixin title1() {
@@ -35,7 +33,6 @@ $caption-line-height: rem.torem(16px);
 }
 
 @mixin title4-light() {
-  //  Mapped to title4
   @include title4;
 }
 
@@ -52,50 +49,60 @@ $caption-line-height: rem.torem(16px);
   line-height: var(--typography-body-line-height);
 }
 
-@mixin body-important() {
+@mixin gabarit() {
+  @include body;
+}
+
+@mixin body-semibold() {
   font-family: var(--typography-body-semi-bold-font-family);
   font-size: var(--typography-body-semi-bold-font-size);
   line-height: var(--typography-body-semi-bold-line-height);
 }
 
-@mixin body-exergue() {
-  //  Mapped to semi-bold
-  @include body-important;
+@mixin body-important() {
+  @include body-semibold;
 }
 
-@mixin caption() {
-  //  Mapped to xs semi-bold
-  //  Corriger la line-height
+@mixin body-exergue() {
+  @include body-semibold;
+}
+
+@mixin body-semibold-s() {
+  font-family: var(--typography-body-semi-bold-s-font-family);
+  font-size: var(--typography-body-semi-bold-s-font-size);
+  line-height: var(--typography-body-semi-bold-s-line-height);
+}
+
+@mixin preview-text() {
+  @include body-semibold-s;
+}
+
+@mixin body-semibold-xs() {
   font-family: var(--typography-body-semibold-xs-font-family);
   font-size: var(--typography-body-semibold-xs-font-size);
   line-height: var(--typography-body-semibold-xs-line-height);
 }
 
-@mixin preview-text() {
-  font-family: var(--typography-body-semibold-s-font-family);
-  font-size: var(--typography-body-semibold-s-font-size);
-  line-height: var(--typography-body-semibold-s-line-height);
+@mixin caption() {
+  @include body-semibold-xs;
 }
 
 @mixin highlight() {
-  //  Mapped to xs semi-bold
-  @include caption;
+  @include body-semibold-xs;
 }
 
 @mixin mini-highlight() {
-  //  Mapped to xs semi-bold
-  @include caption;
+  @include body-semibold-xs;
 }
 
-@mixin gabarit() {
-  //  Mapped to body
-  @include body;
-}
-
-@mixin placeholder() {
+@mixin body-italic() {
   font-family: var(--typography-body-italic-font-family);
   font-size: var(--typography-body-italic-font-size);
   line-height: var(--typography-body-italic-line-height);
+}
+
+@mixin placeholder() {
+  @include body-italic;
 }
 
 @mixin bold() {
