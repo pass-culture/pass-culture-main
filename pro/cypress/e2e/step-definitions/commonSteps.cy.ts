@@ -16,12 +16,7 @@ When('I go to the {string} page', (page: string) => {
   })
 })
 
-let user_email = ""
-Given('create user with the new interface', () => {
-  cy.request('http://localhost:5001/sanboxes/pro_01_create_pro_user/create_pro_user_new_nav').then((response) => {
-    user_email=response.body.user.email
-  })
-})
+let user_email = ''
 
 // this account is also in the new interface now
 Given('I am logged in', () => {
@@ -32,14 +27,33 @@ Given('I am logged in', () => {
 })
 
 Given('I am logged in with the new interface', () => {
-  cy.login({
-    email: user_email,
-    password: 'user@AZERTY123',
+  cy.request('http://localhost:5001/sanboxes/pro_01_create_pro_user/create_pro_user_new_nav').then((response) => {
+    expect(response.status).to.eq(200)
+    user_email=response.body.user.email
+    cy.login({
+      email: user_email,
+      password: 'user@AZERTY123',
+      redirectUrl: '/parcours-inscription',
+    })
+  })
+})
+
+Given('DataBase is cleaned', () => {
+  cy.visit('/')
+  cy.request(
+    'http://localhost:5001/sanboxes/pro_01_create_pro_user/clean_db'
+  ).then((response) => {
+    expect(response.status).to.eq(200)
   })
 })
 
 Given('create specific invoice', () => {
-  cy.request('http://localhost:5001/sanboxes/pro_02_create_specific_invoice/create_specific_invoice')
+  cy.request(
+    'http://localhost:5001/sanboxes/pro_02_create_specific_invoice/create_specific_invoice'
+  ).then((response) => {
+    expect(response.status).to.eq(200)
+    user_email = response.body.user.email
+  })
 })
 
 // créer un seul scénario createOffers avec son step-def

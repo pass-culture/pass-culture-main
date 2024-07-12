@@ -12,7 +12,7 @@ from pcapi.sandboxes.scripts.utils.helpers import get_pro_user_helper
 
 
 def create_specific_invoice() -> dict:
-    pro_user = users_factories.ProFactory(email="activation_new_nav@example.com")
+    pro_user = users_factories.ProFactory()
     users_factories.UserProNewNavStateFactory(user=pro_user)
     offerer = offerers_factories.OffererFactory(name="0 - Structure avec justificatif et compte bancaire")
     bank_account = finance_factories.BankAccountFactory(offerer=offerer)
