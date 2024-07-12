@@ -1,4 +1,4 @@
-# pass-culture-api
+# PASS-CULTURE-API
 
 Voici le backend de l'application pass Culture; il est lancé via `docker-compose` en utilisant le fichier
 `docker-compose-backend.yml` du répertoire parent de `api`: `pass-culture-main`.
@@ -19,12 +19,16 @@ Spectree :
 * [API pro privée](https://backend.passculture.app/pro/swagger)
 * [API publique d'offres individuelles](https://backend.passculture.app/public/offers/v1/swagger)
 
-## Liens des mocks API:
+## Liens des mocks API
 * [API "Charlie" billeterie](https://mock-api-billeterie.ehp.passculture.team/)
 
-## Installation des dépendances
+## Démarrage du serveur back api
 
-Avec `poetry` et Python **3.11** :
+### 1. Installation des dépendances
+
+#### Poetry
+
+Avec Python **3.11** :
 
 ```shell
 curl -sSL https://install.python-poetry.org | python3 -
@@ -32,11 +36,18 @@ poetry env use python3.11
 poetry install --with dev
 ```
 
-La bonne version de python est à installer soit à travers le gestionnaire de paquet du système d'exploitation,
-soit en utilisant `pyenv`.
 
-La génération de PDF via `weasyprint` nécessite également de suivre
-ces [étapes](https://doc.courtbouillon.org/weasyprint/stable/first_steps.html#installation) d'installation.
+L'activation de l'environnement virtuel se fait par la commande 
+
+```shell
+poetry shell
+```
+
+Pour un usage avancé, se référer à la [documentation de poetry](https://python-poetry.org/docs/)
+
+*NOTE* : L'ajout de dépendance doit se faire par Poetry pour mettre à jour le fichier lock.
+
+#### Squawk 
 
 Le lint des migrations, effectué lors du [hook de precommit](../.githooks/pre-commit), nécessite [Squawk — a linter for Postgres migrations](https://squawkhq.com/).
 
@@ -44,45 +55,70 @@ Le lint des migrations, effectué lors du [hook de precommit](../.githooks/pre-c
 npm install --global squawk-cli
 ```
 
-### Poetry
+### 2. Lancement de l'api
 
-On utilise Poetry pour gérer nos dépendances. Par défaut, Poetry crée l'environnement virtuel dans un dossier
-qui dépend du système d'exploitation.
+Un fois installé les dépendances, on peut utiliser les commandes suivantes (qui utilisent `docker compose`) 
+```shell
+# Start api and backoffice
+pc start-backend
+# Restart after cleaning databases; it will also remove data from your sandbox
+pc restart-backend
+```
 
-La méthode recommandée d'activer son environnement virtuel est avec la commande `poetry shell`.
+## Database de jeu
 
-Pour un usage avancé comme avoir plusieurs environnements virtuels, il existe [d'autres manières d'activer son
-environnement virtuel](https://python-poetry.org/docs/basic-usage#activating-the-virtual-environment).
+Afin de naviguer/tester différentes situations de données, il existe dans api des scripts permettant d'engendrer des
+bases de données "sandbox".
 
-Une gestion plus fine de l'environnement virtuel utilisé par `poetry` peut être trouvée sur ce lien : [Managing environments | Documentation | Poetry](https://python-poetry.org/docs/managing-environments/)
+La plus conséquente est `industrial`, elle se créée depuis via l'une de ces deux commandes:
 
-*NOTE* : Poetry n'est pas utilisé dans les conteneurs Docker, i.e. la commande `flask` est directement accessible.
-*NOTE* : L'ajout de dépendance doit se faire par Poetry pour mettre à jour le fichier lock.
+```bash
+pc sandbox -n industrial
+```
 
-### PostGIS (nécessaire hors docker)
+---
 
-- Verifier que `PostGIS` est bien installé. Si ce n'est pas le cas: pour installer `PostGIS` dans les systèmes d'exploitation qui ne le fournissent pas avec `PostgreSQL`:
-  - Linux : `apt install postgis` pour Ubuntu ou `pacman -S postgis` pour Arch Linux
-  - Windows : après l'installation de `PostgreSQL`, [Stackbuilder](https://www.bostongis.com/PrinterFriendly.aspx?content_name=postgis_tut01)
-    permet d'installer `PostGIS`
-  - MacOS : `PostGIS` est fourni avec la distribution [Postgres.app](https://postgresapp.com/). Si une autre manière
-    d'installer `PostgreSQL` a été choisie, alors la commande d'installation est `brew install postgis`
+Troubleshooting:
 
-### Redis et Postgresql (nécessaire hors docker)
+Si la commande sandbox renvoie des erreurs que je n'arrive pas à résoudre, tester de supprimer et reconstruire sa BDD
+locale. Pour ça:
 
-- Démarrer les services postgresql et redis, par exemple lorsqu'ils ont été installés via _Homebrew_ :
-  ```shell
-  brew services start postgresql
-  brew services start redis
-  ```
+- stopper les images lancées
+- run: `docker rm -f pc-postgres` <= suppression container
+- run: `docker volume rm pass-culture-main_postgres_data` <= suppression données
+- relancer: `pc start-backend`
+- puis relancer: `pc sandbox -n industrial`
+
 
 ## Tests
 
-### Lancement des tests
+Une fois le le backend lancé, les tests peuvent être exécutés avec ou sans docker-compose
 
-**Prérequis au lancement des tests**
+### 1. Lancement des tests avec docker compose
 
-Une base de données de test et un cache redis sont nécessaires à l'exécution des tests.
+```shell
+pc test-backend # Pour lancer tous les tests backend
+pc test-backoffice # pour lancer tous les tests du backoffice
+pc test-backend tests/core/offers/test_api.py::CreateOfferTest::test_create_offer_from_scratch # Pour lancer un test en particulier
+```
+
+### 2. Lancement des tests depuis la ligne de commande dans l'environnement poetry
+
+
+  ```shell
+  pytest -m 'not backoffice' # lance tous les tests hors backoffice
+  pytest -m 'backoffice' # lance tous les tests du backoffice
+  pytest tests/core/offers/test_api.py::CreateOfferTest::test_create_offer_from_scratch # Pour lancer un test en particulier
+  pytest -m backoffice /tests/routes/backoffice/pivots_test.py::GetPivotsPageTest::test_get_pivots_page # Pour lancer un test du backoffice
+  ```
+
+Il également possible d'accéder à `stdin`/`stdout` via le paramètre  `-s`, par exemple pour utiliser des breakpoints.
+
+---
+
+Troubleshoot : 
+
+Si les tests ne se lancent pas avec Docker, il faut recréer la base de données de tests et relancer le cache redis 
 
 * Soit en démarrant les conteneurs de la base de données _pc-postgres-test_ (spécifique aux tests) et du cache
   _redis_ via docker-compose
@@ -104,29 +140,7 @@ docker run -d --name redis -p 6379:6379 \
     redis redis-server
   ```
 
-Les tests pourront ensuite être exécutés avec ou sans docker-compose
-
-* Lancement des tests via docker-compose
-  ```shell
-  pc test-backend # Pour lancer tous les tests
-  pc test-backend tests/core/offers/test_api.py::CreateOfferTest::test_create_offer_from_scratch # Pour lancer un test en particulier
-  ```
-
-* Lancement des tests depuis la ligne de commande dans un `poetry shell`. Il est ainsi très simple d'accéder à
-  `stdin`/`stdout` via le paramètre  `-s`, par exemple pour utiliser des breakpoints.
-  ```shell
-  pytest # Pour lancer tous les tests
-  pytest tests/core/offers/test_api.py::CreateOfferTest::test_create_offer_from_scratch # Pour lancer un test en particulier
-  ```
-
-* Les tests du backoffice ne peuvent pas être exécutés en même temps que le reste. Pour jouer tous les tests en une commande, il est possible
-  d'utiliser dans un `poetry shell`
-  ```shell
-  pytest -m 'not backoffice' && \
-  pytest -m 'backoffice'
-  ```
-
-### Écriture des tests
+### 3. Ecriture des tests 
 
 Les tests utilisent leur propre base de données. Si un test a besoin d'accéder à la base de données, il faut décorer la
 fonction ou la classe avec :
@@ -144,113 +158,18 @@ pytestmark = pytest.mark.usefixtures("db_session")
 Les différentes fixtures utilisées dans les tests sont définies dans `tests/conftest.py`
 
 
+
 ## Secrets et variables d'environnement
 
 Les variables d'environnement nécessaires au bon fonctionnement mais qui porte des données sensibles (identifiants, clés d'API, ...)
 ne sont pas enregistrés dans les fichiers d'environnement du dépôt.
 Il faut les ajouter dans le fichier `api/.env.local.secret` .
 
-
-### Scan du repo par GitGuardian
+## Scan du repo par GitGuardian
 
 Une Github Action est lancée à chaque push sur le repo, lançant un scan de fuites de secrets GitGuardian.
 Pour ignorer un faux positif, il convient d'ajouter un commentaire _inline_ dans le code: `# ggignore`
 cf https://github.com/GitGuardian/ggshield#in-code
-
-## Démarrage du serveur back api
-
-### Option 1 : Lancement via le script `pc` présent dans pass-culture-main
-
-```shell
-pc start-backend
-```
-
-### Option 2 : Lancement manuel (sans docker) pour pouvoir débugger, se connecter à la DB etc...
-
-Si la base de données n'a pas été initialisée, vous devez suivre les étapes suivantes :
-
-* Soit en lançant la commande suivante qui va créer les bases de données pour l'api et pour les tests, installer les extensions postgres et jouer les migrations
-
-  ```shell
-  pc setup-no-docker
-  ```
-
-* Soit en réalisant les étapes suivantes une par une:
-
-  - créer les _users_ suivants:
-
-    ```sql
-    CREATE ROLE pass_culture SUPERUSER LOGIN PASSWORD 'passq';
-    CREATE ROLE pytest SUPERUSER LOGIN PASSWORD 'pytest';
-    ```
-
-  - Ajouter ces variables au fichier `.env.local.secret` à la racine du dossier `api/` (en complétant par le port de
-    votre serveur postgresql, habituellement `5432`):
-
-    ```dotenv
-    DATABASE_URL=postgresql://pass_culture:passq@localhost:<port>/pass_culture
-    DATABASE_URL_TEST=postgresql://pytest:pytest@localhost:<port>/pass_culture_test
-    FLASK_BACKOFFICE_PORT=5002
-    ```
-
-  - créer les _databases_ associés (cf. les commandes `recreate_database` `recreate_database_test` dans le fichier `start_backend_no_docker`)
-
-  - Installer les extensions et jouer les migrations en ayant dans le `poetry shell` :
-
-    ```shell
-    flask install_postgres_extensions
-    alembic upgrade pre@head
-    alembic upgrade post@head
-    ```
-
-- Vous pouvez maintenant lancer l'application Flask
-
-  ```shell
-  python src/pcapi/app.py
-  ```
-
-- Vous pouvez également lancer les tests sans docker depuis un `poetry shell` avec `pytest` de la même façon qu'expliqué précédemment
-
-- Vous pouvez également utiliser les commandes suivantes
-
-  ```shell
-  # Lancer l'API
-  pc start-api-no-docker
-  # Lancer le Backoffice
-  pc start-backoffice-no-docker
-  # Nettoyer les DB, reconstruire la sandbox et jouer les migrations
-  pc restart-api-no-docker
-  # Supprimer et recréer les DB (test et data)
-  pc reset-db-no-docker
-  # Supprimer et recréer la DB de test
-  pc reset-db-test-no-docker
-  ```
-
-Si vous souhaitez (ré)utiliser docker par la suite, n'oubliez pas de commenter `DATABASE_URL` et `DATABASE_URL_TEST` dans `.env.local.secret`, et d'arrêter le service redis-server
-
-### Database de jeu
-
-Afin de naviguer/tester différentes situations de données, il existe dans api des scripts permettant d'engendrer des
-bases de données "sandbox".
-
-La plus conséquente est `industrial`, elle se créée depuis un `poetry shell` via la commande:
-
-```bash
-flask sandbox -n industrial
-```
-
----
-
-Troubleshooting:
-
-Si la commande sandbox renvoie des erreurs que je n'arrive pas à résoudre, tester de supprimer et reconstruire sa BDD
-locale. Pour ça:
-
-- stopper les images lancées
-- run: `docker rm -f pc-postgres` <= suppression container
-- run: `docker volume rm pass-culture-main_postgres_data` <= suppression données
-- relancer: `pc start-backend`
-- puis relancer: `pc sandbox -n industrial`
 
 ## Authentification Backend pour Flask-Admin
 
@@ -274,7 +193,6 @@ Il est possible de se connecter aux bases de données lancées via docker compos
     - password : pytest
     - port : 5433
     - database : pass_culture
-
 
 ## Ajout de données avec les factories
 
@@ -322,10 +240,170 @@ On peut aussi surcharger directement les arguments des factories appelées par d
 Pour une meilleure expérience de développement sur le repo API, des hooks ([pre-commit](api/hooks/pre-commit)
 , [pre-push](api/hooks/pre-push) ) s'exécutent lorsqu'un commit est effectué sur le projet API,
 
-L'environnement python en local est nécessaire pour que les outils d'analyse de code (`isort`, `batch`, `pylint`...) se
-lancent.
+L'environnement python en local est nécessaire pour que les outils d'analyse de code (`isort`, `batch`, `pylint`...) se lancent.
 
 Si les hooks ne se lancent pas, lancer `pc install-hooks` (commande incluse dans `pc install`)
+
+## Ecriture d'une tâche automatique (cron)
+
+Les commandes à lancer régulièrement (par example des synchro journalières) sont définies dans les fichiers `src/pcapi/*/commands.py`
+Pour que les commandes soient enregistrées par Flask, il faut que le fichier `path/to/commands.py` soit référencé dans la fonction `install_commands` de `api/src/pcapi/scripts/install.py`
+
+Pour que les commandes soient exécutées, il faut ouvrir une PR sur le repo pass-culture/pass-culture-deployment
+Les infos sont dans le [README](https://github.com/pass-culture/pass-culture-deployment)
+
+## Lancement du backend sans utiliser docker-compose
+
+### Dépendances
+
+Afin de passer uniquement par les commandes flask, les dépendances suivantes doivent également être installées: 
+
+- Postgresql
+
+  Il est préférable de cibler la version utilisée en production. Celle-ci se retrouve dans le fichier `doker-compose-backend`.
+  À date de rédaction c'est la version `postgresql 15` qui est utilisé. 
+
+  Les informations générales sur les étapes d'installation en fonction des OS sont disponibles sur le lien https://www.postgresql.org/download/
+
+  Nous recommandons d'intaller postgres.app depuis ce lien [Postgres.app](https://postgresapp.com/)
+
+  *note* n'oubliez pas d'initialiser votre base de données, par exemple en faisant:
+    ```shell
+    $ psql -U postgres
+    > CREATE ROLE <myuser> LOGIN password 'secret';
+    > CREATE DATABASE <myuser> ENCODING 'UTF8' OWNER <myuser>;
+    ```
+
+- Postgis
+
+  Verifier que `PostGIS` est bien installé. Pour cela, connectez vous à votre base de données créé ci dessus et faites: 
+
+      ```sql
+      CREATE EXTENSION IF NOT EXISTS postgis;
+      ```
+
+  Si cette commande échoue, il faut installer PostGIS dans les systèmes d'exploitation qui ne le fournissent pas avec PostgreSQL:
+
+  - Ubuntu:
+    * Configurer le repo apt de [postgresql](https://www.postgresql.org/download/linux/ubuntu/)
+    * installer postgis-15
+  ```
+    sudo apt install postgresql-15-postgis-3
+  ```
+  - Windows: après l'installation de `PostgreSQL`, [Stackbuilder](https://www.bostongis.com/PrinterFriendly.aspx?content_name=postgis_tut01)
+    permet d'installer `PostGIS`
+  - MacOS: `PostGIS` est fourni avec la distribution [Postgres.app](https://postgresapp.com/). Si une autre manière
+    d'installer `PostgreSQL` a été choisie, alors la commande d'installation est `brew install postgis`. (*note* a ce jour il n'existe pas de méthode simple pour installer postgis avec postgresql 15 en dehors de l'installation de `posgres.app`)
+
+- Redis
+
+  Le lien officiel pour l'installation: https://redis.io/docs/latest/operate/oss_and_stack/install/install-redis/
+
+### Initialisations
+
+Pour initialiser l'application, vous devez suivre les étapes suivantes :
+
+* Soit en lançant la commande suivante qui va créer les bases de données pour l'api et pour les tests, installer les extensions postgres et jouer les migrations. 
+
+  ```shell
+  pc setup-no-docker
+  ```
+
+* Soit en réalisant les étapes suivantes une par une:
+  
+  - Créer les _users_ suivants depuis `psql`:
+
+  ```sql
+  CREATE ROLE pass_culture SUPERUSER LOGIN PASSWORD 'passq';
+  CREATE ROLE pytest SUPERUSER LOGIN PASSWORD 'pytest';
+  ```
+  - Créer les _databases_ associés à ces rôles
+  
+   (cf. les commandes `recreate_database` `recreate_database_test` dans le fichier `start_backend_no_docker`)
+
+  - Ajouter les variables suivantes au fichier `.env.local.secret` 
+  
+  Il se trouve la racine du dossier `api/` (*note*: modifier `<port>` avec le port de votre serveur postgresql, habituellement `5432`):
+
+    ```dotenv
+    DATABASE_URL=postgresql://pass_culture:passq@localhost:<port>/pass_culture
+    DATABASE_URL_TEST=postgresql://pytest:pytest@localhost:<port>/pass_culture_test
+    FLASK_BACKOFFICE_PORT=5002
+    ```
+
+  - Installer les extensions et jouer les migrations en ayant dans le `poetry shell` :
+
+  ```shell
+  flask install_postgres_extensions
+  alembic upgrade pre@head
+  alembic upgrade post@head
+  ```
+
+### Lancement de l'application
+
+- Soit via python
+
+```shell
+python src/pcapi/app.py # pour l'API
+python src/pcapi/backofficeapp.py # pour le Backoffice 
+```
+
+- Soit via les commandes `pc`
+
+Cette façon de faire s'assure de l'existence des composants logiciels (redis, extensions, postgres)) et d'être dans le bon environnement)
+
+```shell
+# Lancer l'API
+pc start-api-no-docker
+# Lancer le Backoffice
+pc start-backoffice-no-docker
+# Nettoyer les DB, reconstruire la sandbox et jouer les migrations
+pc restart-api-no-docker
+# Supprimer et recréer les DB (test et data)
+pc reset-db-no-docker
+# Supprimer et recréer la DB de test
+pc reset-db-test-no-docker
+```
+
+Pour lancer les tests, utiliser directement `pytest`, cf [lancement des tests depuis la ligne de commandes](#2-lancement-des-tests-depuis-la-ligne-de-commande-dans-lenvironnement-poetry)
+
+Pour recréer la sandbox, utiliser la commande:
+```shell
+flask sandbox -n industrial
+```
+
+*__NOTE__* Si vous souhaitez (ré)utiliser docker par la suite, n'oubliez pas de commenter `DATABASE_URL`, `DATABASE_URL_TEST`et `FLASK_BACKOFFICE_PORT` dans `.env.local.secret`, et d'arrêter le service redis-server
+
+## IDE
+
+### PyCharm(IntelliJ)
+
+#### Lancement des tests
+
+Configurer le working directory par défaut pour être toujours à la racine de ce projet
+![pycharm-test-config][pycharm-test-configuration]
+
+[pycharm-test-configuration]:./README_resources/pycharm_tests_config.jpg
+
+[pycharm-debugging]:./README_resources/pycharm_debugging.jpg
+
+#### Debugging
+
+Pour debugger sous IntelliJ Pycharm, configurer la configuration de lancement python en précisant :
+
+- Le script à lancer : `scr/pcapi/app.py`
+- Les variables d'environnement `DATABASE_URL` et `PORT` (Sinon le port sera 5001)
+- Le répertoire de lancement (Working directory) qui doit pointer vers api
+
+  ![pycharm-test-config][pycharm-debugging]
+
+### VS Code
+
+Le fichier de configuration [vscode](api/.vscode/settings.json) permet notamment de lancer `black` et `isort` lorsqu'un
+fichier est sauvegardé.
+
+Vérifier que l'interpréteur python utilisé par VSCode est le bon. Taper `cmd+shift+P` puis `Python: select interpreter`
+et choisir le python précédemment installé en local (virtual env ou pyenv).
 
 ## Contributing
 
@@ -368,41 +446,3 @@ Lors d'un changement dans le fichier `requirements.py`, une nouvelle image docke
 docker image prune
 ```
 
-## IDE
-
-### PyCharm(IntelliJ)
-
-#### Lancement des tests
-
-Configurer le working directory par défaut pour être toujours à la racine de ce projet
-![pycharm-test-config][pycharm-test-configuration]
-
-[pycharm-test-configuration]:./README_resources/pycharm_tests_config.jpg
-
-[pycharm-debugging]:./README_resources/pycharm_debugging.jpg
-
-### Debugging
-
-Pour debugger sous IntelliJ Pycharm, configurer la configuration de lancement python en précisant :
-
-- Le script à lancer : `scr/pcapi/app.py`
-- Les variables d'environnement `DATABASE_URL` et `PORT` (Sinon le port sera 5001)
-- Le répertoire de lancement (Working directory) qui doit pointer vers api
-
-  ![pycharm-test-config][pycharm-debugging]
-
-#### VS Code
-
-Le fichier de configuration [vscode](api/.vscode/settings.json) permet notamment de lancer `black` et `isort` lorsqu'un
-fichier est sauvegardé.
-
-Vérifier que l'interpréteur python utilisé par VSCode est le bon. Taper `cmd+shift+P` puis `Python: select interpreter`
-et choisir le python précédemment installé en local (virtual env ou pyenv).
-
-## Ecriture d'une tâche automatique (cron)
-
-Les commandes à lancer régulièrement (par example des synchro journalières) sont définies dans les fichiers `src/pcapi/*/commands.py`
-Pour que les commandes soient enregistrées par Flask, il faut que le fichier `path/to/commands.py` soit référencé dans la fonction `install_commands` de `api/src/pcapi/scripts/install.py`
-
-Pour que les commandes soient exécutées, il faut ouvrir une PR sur le repo pass-culture/pass-culture-deployment
-Les infos sont dans le [README](https://github.com/pass-culture/pass-culture-deployment)
