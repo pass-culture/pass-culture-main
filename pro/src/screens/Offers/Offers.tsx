@@ -136,8 +136,7 @@ export const Offers = ({
 
   const areAllIndividualOffersSelected =
     selectedIndividualOffers.length > 0 &&
-    selectedIndividualOffers.length ===
-      offers.filter((offer) => offer.isEditable).length
+    selectedIndividualOffers.length === offers.length
 
   function clearSelectedOfferIds() {
     setSelectedCollectiveOffers([])
@@ -152,11 +151,7 @@ export const Offers = ({
           : offers.filter((offer) => offer.isEditable)
       )
     } else {
-      setSelectedIndividualOffers(
-        areAllIndividualOffersSelected
-          ? []
-          : offers.filter((offer) => offer.isEditable)
-      )
+      setSelectedIndividualOffers(areAllIndividualOffersSelected ? [] : offers)
     }
   }
 

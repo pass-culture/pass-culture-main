@@ -553,8 +553,8 @@ describe('screen Offers', () => {
 
       expect(firstOfferCheckbox).toBeChecked()
       expect(secondOfferCheckbox).toBeChecked()
-      expect(thirdOfferCheckbox).not.toBeChecked()
-      expect(fourthOfferCheckbox).not.toBeChecked()
+      expect(thirdOfferCheckbox).toBeChecked()
+      expect(fourthOfferCheckbox).toBeChecked()
 
       await userEvent.click(screen.getByLabelText('Tout désélectionner'))
 
