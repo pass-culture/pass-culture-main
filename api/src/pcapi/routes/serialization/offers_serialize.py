@@ -77,6 +77,15 @@ class CategoryResponseModel(BaseModel):
         orm_mode = True
 
 
+class PostOfferOffererAddressBodyModel(BaseModel):
+    city: base_serializers.VenueCity
+    label: str
+    latitude: float | str
+    longitude: float | str
+    postalCode: base_serializers.VenuePostalCode
+    street: base_serializers.VenueAddress
+
+
 class PostOfferBodyModel(BaseModel):
     audio_disability_compliant: bool
     booking_contact: EmailStr | None
@@ -97,6 +106,7 @@ class PostOfferBodyModel(BaseModel):
     withdrawal_delay: int | None
     withdrawal_details: str | None
     withdrawal_type: offers_models.WithdrawalTypeEnum | None
+    address: PostOfferOffererAddressBodyModel | None
 
     @validator("name", pre=True)
     def validate_name(cls, name: str, values: dict) -> str:

@@ -197,6 +197,7 @@ export type { PostCollectiveOfferBodyModel } from './models/PostCollectiveOfferB
 export type { PostCollectiveOfferTemplateBodyModel } from './models/PostCollectiveOfferTemplateBodyModel';
 export type { PostOfferBodyModel } from './models/PostOfferBodyModel';
 export type { PostOffererResponseModel } from './models/PostOffererResponseModel';
+export type { PostOfferOffererAddressBodyModel } from './models/PostOfferOffererAddressBodyModel';
 export type { PostVenueBodyModel } from './models/PostVenueBodyModel';
 export type { PostVenueProviderBody } from './models/PostVenueProviderBody';
 export type { PriceCategoryBody } from './models/PriceCategoryBody';

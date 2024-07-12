@@ -1,5 +1,9 @@
+from decimal import Decimal
+from unittest.mock import patch
+
 import pytest
 
+from pcapi.connectors import api_adresse
 from pcapi.core.categories import subcategories_v2 as subcategories
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers.models import Offer
@@ -78,6 +82,143 @@ class Returns200Test:
         assert offer.isActive is False
         assert offer.offererAddress.id == venue.offererAddressId
         assert not offer.futureOffer
+        assert offer.offererAddress == venue.offererAddress
+
+    def test_create_event_offer_with_existing_offerer_address(self, client):
+        # Given
+        venue = offerers_factories.VenueFactory()
+        offerer = venue.managingOfferer
+        # Match the BAN API response
+        offerer_address = offerers_factories.OffererAddressFactory(
+            offerer=offerer,
+            address__banId="75101_9575_00003",
+            address__city="Paris",
+            address__departmentCode="75",
+            address__inseeCode="75056",
+            address__isManualEdition=False,
+            address__latitude=Decimal("48.87171"),
+            address__longitude=Decimal("2.308289"),
+            address__postalCode="75001",
+            address__street="3 Rue de Valois",
+            address__timezone="Europe/Paris",
+        )
+        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
+
+        # When
+        data = {
+            "venueId": venue.id,
+            "bookingContact": "offer@example.com",
+            "bookingEmail": "offer@example.com",
+            "durationMinutes": 60,
+            "name": "La pièce de théâtre",
+            "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
+            "withdrawalType": "no_ticket",
+            "extraData": {"toto": "text", "showType": 200, "showSubType": 201},
+            "externalTicketOfficeUrl": "http://example.net",
+            "audioDisabilityCompliant": False,
+            "mentalDisabilityCompliant": True,
+            "motorDisabilityCompliant": False,
+            "visualDisabilityCompliant": False,
+            "address": {
+                "city": offerer_address.address.city,
+                "label": "some place",
+                "latitude": offerer_address.address.latitude,
+                "longitude": offerer_address.address.longitude,
+                "postalCode": offerer_address.address.postalCode,
+                "street": offerer_address.address.street,
+            },
+        }
+        response = client.with_session_auth("user@example.com").post("/offers", json=data)
+
+        # Then
+        assert response.status_code == 201
+        offer_id = response.json["id"]
+        offer = Offer.query.get(offer_id)
+        assert offer.offererAddress.address == offerer_address.address
+        assert not offer.offererAddress.address.isManualEdition
+
+    def test_create_event_offer_with_non_existing_offerer_address(self, client):
+        # Given
+        venue = offerers_factories.VenueFactory()
+        offerer = venue.managingOfferer
+        offerer_address = offerers_factories.OffererAddressFactory(offerer=offerer)
+        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
+
+        # When
+        data = {
+            "venueId": venue.id,
+            "bookingContact": "offer@example.com",
+            "bookingEmail": "offer@example.com",
+            "durationMinutes": 60,
+            "name": "La pièce de théâtre",
+            "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
+            "withdrawalType": "no_ticket",
+            "extraData": {"toto": "text", "showType": 200, "showSubType": 201},
+            "externalTicketOfficeUrl": "http://example.net",
+            "audioDisabilityCompliant": False,
+            "mentalDisabilityCompliant": True,
+            "motorDisabilityCompliant": False,
+            "visualDisabilityCompliant": False,
+            "address": {
+                "city": "Paris",
+                "label": "some place",
+                "latitude": "48.87171",
+                "longitude": "2.308289",
+                "postalCode": "75001",
+                "street": "3 Rue de Valois",
+            },
+        }
+        response = client.with_session_auth("user@example.com").post("/offers", json=data)
+
+        # Then
+        assert response.status_code == 201
+        offer_id = response.json["id"]
+        offer = Offer.query.get(offer_id)
+        assert offer.offererAddress.address != offerer_address.address
+        assert not offer.offererAddress.address.isManualEdition
+
+    def test_create_event_offer_with_manual_offerer_address(self, client):
+        # Given
+        venue = offerers_factories.VenueFactory()
+        offerer = venue.managingOfferer
+        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
+
+        # When
+        data = {
+            "venueId": venue.id,
+            "bookingContact": "offer@example.com",
+            "bookingEmail": "offer@example.com",
+            "durationMinutes": 60,
+            "name": "La pièce de théâtre",
+            "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
+            "withdrawalType": "no_ticket",
+            "extraData": {"toto": "text", "showType": 200, "showSubType": 201},
+            "externalTicketOfficeUrl": "http://example.net",
+            "audioDisabilityCompliant": False,
+            "mentalDisabilityCompliant": True,
+            "motorDisabilityCompliant": False,
+            "visualDisabilityCompliant": False,
+            "address": {
+                "city": "Paris",
+                "label": "some place",
+                "latitude": "48.87171",
+                "longitude": "2.308289",
+                "postalCode": "75001",
+                "street": "3 Rue de Valois",
+            },
+        }
+        with patch("pcapi.connectors.api_adresse.get_address") as mocked_get_address:
+            mocked_get_address.side_effect = api_adresse.NoResultException
+            response = client.with_session_auth("user@example.com").post("/offers", json=data)
+
+        # Then
+        assert response.status_code == 201
+        offer_id = response.json["id"]
+        offer = Offer.query.get(offer_id)
+        assert offer.offererAddress.address.isManualEdition
+        assert offer.offererAddress.label == "some place"
+        assert offer.offererAddress.address.inseeCode == "06029"
+        assert not offer.offererAddress.address.banId
 
     def when_creating_new_thing_offer(self, client):
         # Given
