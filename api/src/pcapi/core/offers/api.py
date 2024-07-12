@@ -144,6 +144,7 @@ def create_offer(
     extra_data: dict | None = None,
     is_duo: bool | None = None,
     is_national: bool | None = None,
+    offerer_address: offerers_models.OffererAddress | None = None,
     provider: providers_models.Provider | None = None,
     url: str | None = None,
     withdrawal_delay: int | None = None,
@@ -185,7 +186,8 @@ def create_offer(
         withdrawalDelay=withdrawal_delay,
         withdrawalDetails=withdrawal_details,
         withdrawalType=withdrawal_type,
-        offererAddress=venue.offererAddress,
+        # WARNING: quid des offres numériques ici ?
+        offererAddress=offerer_address or venue.offererAddress,
         idAtProvider=id_at_provider,
     )
     repository.add_to_session(offer)

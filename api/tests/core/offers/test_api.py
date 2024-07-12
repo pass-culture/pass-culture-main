@@ -1080,6 +1080,39 @@ class CreateOfferTest:
         assert offer.extraData == {}
         assert not offer.bookingEmail
         assert models.Offer.query.count() == 1
+        assert offer.offererAddress == venue.offererAddress
+
+    def test_create_offer_from_scratch_with_offerer_address(self):
+        venue = offerers_factories.VenueFactory()
+        offerer_address = offerers_factories.OffererAddressFactory(offerer=venue.managingOfferer)
+
+        offer = api.create_offer(
+            venue=venue,
+            name="A pretty good offer",
+            subcategory_id=subcategories.SEANCE_CINE.id,
+            external_ticket_office_url="http://example.net",
+            audio_disability_compliant=True,
+            mental_disability_compliant=True,
+            motor_disability_compliant=True,
+            visual_disability_compliant=True,
+            offerer_address=offerer_address,
+        )
+
+        assert offer.name == "A pretty good offer"
+        assert offer.venue == venue
+        assert offer.subcategoryId == subcategories.SEANCE_CINE.id
+        assert not offer.product
+        assert offer.externalTicketOfficeUrl == "http://example.net"
+        assert offer.audioDisabilityCompliant
+        assert offer.mentalDisabilityCompliant
+        assert offer.motorDisabilityCompliant
+        assert offer.visualDisabilityCompliant
+        assert offer.validation == models.OfferValidationStatus.DRAFT
+        assert offer.extraData == {}
+        assert not offer.bookingEmail
+        assert models.Offer.query.count() == 1
+        assert offer.offererAddress == offerer_address
+        assert offer.offererAddress != venue.offererAddress
 
     def test_create_offer_with_id_at_provider(self):
         venue = offerers_factories.VenueFactory()
