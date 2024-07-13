@@ -16,6 +16,7 @@ import pcapi.core.finance.repository as finance_repository
 import pcapi.core.finance.utils as finance_utils
 from pcapi.core.offers.serialize import serialize_offer_type_educational_or_individual
 from pcapi.models.api_errors import ApiErrors
+from pcapi.models.feature import FeatureToggle
 from pcapi.utils.date import MONTHS_IN_FRENCH
 from pcapi.utils.date import utc_datetime_to_department_timezone
 from pcapi.utils.string import u_nbsp
@@ -82,9 +83,9 @@ class ReimbursementDetails:
         "N° de virement",
         "Intitulé du compte bancaire",
         "IBAN",
-        "Raison sociale du lieu",
+        "Raison sociale du lieu",  # 6
         "Adresse du lieu",
-        "SIRET du lieu",
+        "SIRET du lieu",  # 8
         "Nom de l'offre",
         "N° de réservation (offre collective)",
         "Nom (offre collective)",
@@ -107,6 +108,13 @@ class ReimbursementDetails:
     # typing for the whole method.
     @typing.no_type_check
     def __init__(self, payment_info: namedtuple):
+
+        if FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
+            self.CSV_HEADER[6:9] = [
+                "Raison sociale du partenaire culturel",
+                "Adresse de l'offre",
+                "SIRET du partenaire culturel",
+            ]
         using_legacy_models = hasattr(payment_info, "transaction_label")
 
         # Validation period
@@ -129,11 +137,18 @@ class ReimbursementDetails:
         # Venue info
         self.venue_name = payment_info.venue_name
         self.venue_common_name = payment_info.venue_common_name
-        self.venue_address = _build_full_address(
-            payment_info.venue_address,
-            payment_info.venue_postal_code,
-            payment_info.venue_city,
-        )
+        if FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
+            self.address = _build_full_address(
+                getattr(payment_info, "address_street", None),
+                getattr(payment_info, "address_postal_code", None),
+                getattr(payment_info, "address_city", None),
+            )
+        else:
+            self.address = _build_full_address(
+                payment_info.venue_address,
+                payment_info.venue_postal_code,
+                payment_info.venue_city,
+            )
         self.venue_siret = payment_info.venue_siret
 
         if using_legacy_models:
@@ -199,7 +214,7 @@ class ReimbursementDetails:
             self.bank_account_label,
             self.iban,
             self.venue_name,
-            self.venue_address,
+            self.address,
             self.venue_siret,
             self.offer_name,
             self.collective_booking_id,

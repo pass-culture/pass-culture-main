@@ -10,10 +10,12 @@ import sqlalchemy.sql.sqltypes as sqla_sqltypes
 
 import pcapi.core.bookings.models as bookings_models
 import pcapi.core.educational.models as educational_models
+from pcapi.core.geography import models as geography_models
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.models as offers_models
 import pcapi.core.users.models as users_models
 from pcapi.models import db
+from pcapi.models.feature import FeatureToggle
 import pcapi.utils.date as date_utils
 import pcapi.utils.db as db_utils
 
@@ -100,7 +102,6 @@ def find_offerer_payments(
             offerer_id, reimbursement_period, bank_account_id, invoices_references
         )
     )
-
     return results
 
 
@@ -228,7 +229,7 @@ def _get_sent_pricings_for_individual_bookings(
         .join(models.Cashflow.bankAccount)
     )
 
-    columns: tuple[sqla.sql.elements.Label, ...] = (
+    columns_array = [
         bookings_models.Booking.token.label("booking_token"),
         _truncate_milliseconds(bookings_models.Booking.dateUsed).label("booking_used_date"),
         bookings_models.Booking.quantity.label("booking_quantity"),
@@ -261,9 +262,9 @@ def _get_sent_pricings_for_individual_bookings(
         models.CashflowBatch.label.label("cashflow_batch_label"),
         models.BankAccount.label.label("bank_account_label"),
         models.BankAccount.iban.label("iban"),
-    )
+    ]
 
-    return (
+    query = (
         query.outerjoin(models.Pricing.customRule)
         .filter(
             models.Pricing.status == models.PricingStatus.INVOICED,
@@ -290,8 +291,39 @@ def _get_sent_pricings_for_individual_bookings(
         .join(bookings_models.Booking.stock)
         .join(offers_models.Stock.offer)
         .join(bookings_models.Booking.venue)
-        .order_by(bookings_models.Booking.dateUsed.desc(), bookings_models.Booking.id.desc())
-        .with_entities(*columns)
+    )
+
+    if FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
+        sub = (
+            sqla.select(
+                [
+                    offerers_models.OffererAddress.id,
+                    geography_models.Address.street,
+                    geography_models.Address.postalCode,
+                    geography_models.Address.city,
+                ]
+            )
+            .select_from(offerers_models.OffererAddress)
+            .join(geography_models.Address, offerers_models.OffererAddress.addressId == geography_models.Address.id)
+        )
+        sub_venue = sub.subquery("addresses_venue")
+        sub_offer = sub.subquery("addresses_offer")
+        columns_array.extend(
+            [
+                sqla_func.coalesce(sub_offer.c.street, sub_venue.c.street).label("address_street"),
+                sqla_func.coalesce(sub_offer.c.postalCode, sub_venue.c.postalCode).label("address_postal_code"),
+                sqla_func.coalesce(sub_offer.c.city, sub_venue.c.city).label("address_city"),
+            ]
+        )
+        query = query.join(sub_venue, sub_venue.c.id == offerers_models.Venue.offererAddressId, isouter=True).join(
+            sub_offer, sub_offer.c.id == offers_models.Offer.offererAddressId, isouter=True
+        )
+
+    columns: tuple[sqla.sql.elements.Label, ...] = tuple(columns_array)
+    return (
+        query.order_by(bookings_models.Booking.dateUsed.desc(), bookings_models.Booking.id.desc()).with_entities(
+            *columns
+        )
     ).all()
 
 

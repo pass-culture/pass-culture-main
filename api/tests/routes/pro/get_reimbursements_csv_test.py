@@ -10,9 +10,11 @@ from pcapi.core.educational import models as educational_models
 import pcapi.core.finance.factories as finance_factories
 import pcapi.core.finance.models as finance_models
 import pcapi.core.offerers.factories as offerers_factories
+import pcapi.core.offerers.models as offerers_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.testing import AUTHENTICATION_QUERIES
 from pcapi.core.testing import assert_num_queries
+from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 from pcapi.routes.serialization.reimbursement_csv_serialize import ReimbursementDetails
 from pcapi.utils.date import utc_datetime_to_department_timezone
@@ -102,7 +104,7 @@ def test_with_venue_filter_with_pricings(client, cutoff, fortnight):
         cashflow = finance_factories.CashflowFactory(
             batch=batch, creationDate=cutoff, bankAccount=bank_account, invoices=[invoice]
         )
-        finance_factories.PricingFactory(
+        finance_factories.PricingFactory(  # the offer is created in  PricingFactory->booking( UsedBookingFactory)->stock(StockFactory)->offer(OfferFactory)
             booking__stock__offer__venue=venue, status=finance_models.PricingStatus.INVOICED, cashflows=[cashflow]
         )
     pro = users_factories.ProFactory()
@@ -115,6 +117,7 @@ def test_with_venue_filter_with_pricings(client, cutoff, fortnight):
     queries += 1  # check user has access to offerer
     queries += 1  # select booking and related items
     queries += 1  # select educational redactor
+    queries += 1  # FF retrieving
     with assert_num_queries(queries):
         response = client.get(
             f"/reimbursements/csv?reimbursementPeriodBeginningDate={beginning_date_iso_format}&reimbursementPeriodEndingDate={ending_date_iso_format}&bankAccountId={bank_account_id}&offererId={offerer.id}"
@@ -224,6 +227,8 @@ def test_with_reimbursement_period_filter_with_pricings(client, cutoff, fortnigh
     queries += 1  # check user has access to offerer
     queries += 1  # select booking and related items
     queries += 1  # select educational redactor
+    queries += 1  # FF retrieving
+
     with assert_num_queries(queries):
         response = client.get(
             f"/reimbursements/csv?reimbursementPeriodBeginningDate={beginning_date_iso_format}&reimbursementPeriodEndingDate={ending_date_iso_format}&bankAccountId={bank_account_id}&offererId={offerer.id}"
@@ -318,6 +323,7 @@ def test_with_bank_account_filter_with_pricings_collective_use_case(client, cuto
     queries += 1  # check user has access to offerer
     queries += 1  # select booking and related items
     queries += 1  # select educational redactor
+    queries += 1  # FF retrieving
     with assert_num_queries(queries):
         response = client.get(
             f"/reimbursements/csv?reimbursementPeriodBeginningDate={beginning_date_iso_format}&reimbursementPeriodEndingDate={ending_date_iso_format}&bankAccountId={bank_account_id}&offererId={offerer.id}"
@@ -437,6 +443,7 @@ def test_with_reimbursement_period_filter_with_pricings_collective_use_case(clie
     queries += 1  # check user has access to offerer
     queries += 1  # select booking and related items
     queries += 1  # select educational redactor
+    queries += 1  # FF retrieving
     with assert_num_queries(queries):
         response = client.get(
             f"/reimbursements/csv?reimbursementPeriodBeginningDate={beginning_date_iso_format}&reimbursementPeriodEndingDate={ending_date_iso_format}&bankAccountId={bank_account_id}&offererId={offerer.id}"
@@ -492,3 +499,93 @@ def test_with_reimbursement_period_filter_with_pricings_collective_use_case(clie
         assert row["Montant de la réservation"] == str(collective_booking.collectiveStock.price).replace(".", ",")
         assert row["Barème"].replace("\xa0", " ") == "100 %"
         assert row["Montant remboursé"] == "{:.2f}".format(-pricing.amount / 100).replace(".", ",")
+
+
+@override_features(WIP_ENABLE_OFFER_ADDRESS=True)
+@pytest.mark.usefixtures("db_session")
+@pytest.mark.parametrize(
+    "offer_has_oa, venue_has_oa",
+    [(True, False), (False, True), (True, True), (False, False)],
+)
+def test_with_offer_address_and_venue_address(client, offer_has_oa, venue_has_oa):
+    """This case consider venue with oa and offer with oa"""
+
+    cutoff = datetime.date(year=2023, month=1, day=1)
+    beginning_date_iso_format = (cutoff - datetime.timedelta(days=2)).isoformat()
+    ending_date_iso_format = (cutoff + datetime.timedelta(days=2)).isoformat()
+    ending_date_iso_format = datetime.date(year=2023, month=1, day=16).isoformat()
+    offerer = offerers_factories.OffererFactory()
+    if venue_has_oa:
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer, pricing_point="self")
+    else:
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer, pricing_point="self", offererAddress=None)
+    bank_account = finance_factories.BankAccountFactory(offerer=offerer)
+    offerers_factories.VenueBankAccountLinkFactory(
+        venue=venue, bankAccount=bank_account, timespan=(datetime.datetime.utcnow(),)
+    )
+    batch = finance_factories.CashflowBatchFactory(cutoff=cutoff)
+
+    invoice = finance_factories.InvoiceFactory(bankAccount=bank_account, date=cutoff, reimbursementPoint=venue)
+    cashflow = finance_factories.CashflowFactory(
+        batch=batch, creationDate=cutoff, bankAccount=bank_account, invoices=[invoice]
+    )
+    if offer_has_oa:
+        oa = offerers_factories.OffererAddressFactory(
+            address__street="1 rue de la paix",
+            address__postalCode="75002",
+        )
+        finance_factories.PricingFactory(  # the offer is created in  PricingFactory->booking( UsedBookingFactory)->stock(StockFactory)->offer(OfferFactory)
+            booking__stock__offer__venue=venue,
+            status=finance_models.PricingStatus.INVOICED,
+            cashflows=[cashflow],
+            booking__stock__offer__offererAddress=oa,
+        )
+    else:
+        finance_factories.PricingFactory(  # the offer is created in  PricingFactory->booking( UsedBookingFactory)->stock(StockFactory)->offer(OfferFactory)
+            booking__stock__offer__venue=venue,
+            status=finance_models.PricingStatus.INVOICED,
+            cashflows=[cashflow],
+            booking__stock__offer__offererAddress=None,
+        )
+    pro = users_factories.ProFactory()
+    offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
+    # When
+    client = client.with_session_auth(pro.email)
+    bank_account_id = bank_account.id  # avoid extra SQL query below
+    queries = AUTHENTICATION_QUERIES
+    queries += 1  # select offerer
+    queries += 1  # check user has access to offerer
+    queries += 1  # select booking and related items
+    queries += 1  # select educational redactor
+    queries += 1  # FF retrieving
+    with assert_num_queries(queries):
+        response = client.get(
+            f"/reimbursements/csv?reimbursementPeriodBeginningDate={beginning_date_iso_format}&reimbursementPeriodEndingDate={ending_date_iso_format}&bankAccountId={bank_account_id}&offererId={offerer.id}"
+        )
+        assert response.status_code == 200
+
+    offers = offers_models.Offer.query.all()
+    addresses = offerers_models.OffererAddress.query.all()
+    bookings = bookings_models.Booking.query.all()
+
+    assert response.headers["Content-type"] == "text/csv; charset=utf-8;"
+    assert response.headers["Content-Disposition"] == "attachment; filename=remboursements_pass_culture.csv"
+    reader = csv.DictReader(StringIO(response.data.decode("utf-8-sig")), delimiter=";")
+    assert reader.fieldnames == ReimbursementDetails.CSV_HEADER
+    rows = list(reader)
+    assert len(rows) == 1
+    assert len(bookings) == 1
+    assert len(offers) == 1
+
+    if offer_has_oa and venue_has_oa:
+        assert len(addresses) == 2
+        assert rows[0]["Adresse de l'offre"] == "1 rue de la paix 75002 Paris"
+    elif not venue_has_oa and not offer_has_oa:
+        assert len(addresses) == 0
+        assert rows[0]["Adresse de l'offre"].strip() == ""  # should not happend with venue.offererAddress filled
+    elif offer_has_oa:
+        assert len(addresses) == 1
+        assert rows[0]["Adresse de l'offre"] == "1 rue de la paix 75002 Paris"
+    else:
+        assert len(addresses) == 1
+        assert rows[0]["Adresse de l'offre"] == f"{venue.street} {venue.postalCode} {venue.city}"
