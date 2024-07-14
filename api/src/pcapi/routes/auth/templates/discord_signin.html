@@ -12,6 +12,10 @@
                 </div>
                 <hr class="my-5" />
                 <h1>Associer un compte Discord au pass Culture</h1>
+               
+                <a id="connect-discord" href="{{url_redirection}}" class="btn btn-primary"> 
+                   Connexion Discord
+                </a>
                 <div>
                     <div class="text-warning ">
                         {{ form.error_message}}
@@ -26,6 +30,9 @@
                             </div>
                             <div class="mt-2" >
                                 {{ form.discord_id }}
+                            </div>
+                            <div class="mt-2" >
+                                {{ form.access_token }}
                             </div>
                             <div class="mt-2">
                                 {{ form.email }}
