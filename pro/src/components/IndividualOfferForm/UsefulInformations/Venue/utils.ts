@@ -46,18 +46,12 @@ export const buildVenueOptions = (
     }
   )
 
-  let venueOptions = offererVenues
+  const venueOptions = offererVenues
     .map((venue) => ({
       value: venue.id.toString(),
       label: computeVenueDisplayName(venue),
     }))
     .sort((a, b) => a.label.localeCompare(b.label, 'fr'))
-  if (venueOptions.length !== 1) {
-    venueOptions = [
-      { value: '', label: 'Sélectionner un lieu' }, // TODO: à supprimer lorsque la feature 'WIP_ENABLE_OFFER_ADDRESS' sera déployée
-      ...venueOptions,
-    ]
-  }
 
   return {
     venueOptions,

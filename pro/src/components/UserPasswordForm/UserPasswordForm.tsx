@@ -9,6 +9,7 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 import { PasswordInput } from 'ui-kit/form/PasswordInput/PasswordInput'
 
 import styles from '../UserPhoneForm/UserForm.module.scss'
+
 import { validationSchema } from './validationSchema'
 
 export interface UserPasswordFormProps {
