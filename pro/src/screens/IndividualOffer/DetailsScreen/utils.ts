@@ -76,7 +76,7 @@ export const buildSubcategoryConditonalFields = (
   return { subcategoryConditionalFields }
 }
 
-type onCategoryChangeProps = {
+type OnCategoryChangeProps = {
   readOnlyFields: string[]
   categoryId: string
   subcategories: SubcategoryResponseModel[]
@@ -96,7 +96,7 @@ export const onCategoryChange = async ({
   setFieldValue,
   onSubcategoryChange,
   subcategoryConditionalFields,
-}: onCategoryChangeProps) => {
+}: OnCategoryChangeProps) => {
   if (readOnlyFields.includes('subcategoryId')) {
     return
   }
@@ -181,13 +181,13 @@ export const buildVenueOptions = (venues: VenueListItemResponseModel[]) => {
   return venueOptions
 }
 
-type setDefaultInitialValuesProps = {
+type SetDefaultInitialValuesProps = {
   filteredVenues: VenueListItemResponseModel[]
 }
 
 export function setDefaultInitialValues({
   filteredVenues,
-}: setDefaultInitialValuesProps): DetailsFormValues {
+}: SetDefaultInitialValuesProps): DetailsFormValues {
   let venueId = ''
 
   if (filteredVenues.length === 1) {
@@ -200,7 +200,7 @@ export function setDefaultInitialValues({
   }
 }
 
-type setDefaultInitialValuesFromOfferProps = {
+type SetDefaultInitialValuesFromOfferProps = {
   offer: GetIndividualOfferResponseModel
   subcategories: SubcategoryResponseModel[]
 }
@@ -208,7 +208,7 @@ type setDefaultInitialValuesFromOfferProps = {
 export function setDefaultInitialValuesFromOffer({
   offer,
   subcategories,
-}: setDefaultInitialValuesFromOfferProps): DetailsFormValues {
+}: SetDefaultInitialValuesFromOfferProps): DetailsFormValues {
   const subcategory = subcategories.find(
     (subcategory: SubcategoryResponseModel) =>
       subcategory.id === offer.subcategoryId
@@ -267,7 +267,6 @@ export const serializeDurationMinutes = (
     .split(':')
     .map((s: string) => parseInt(s, 10))
 
-  /* istanbul ignore next: DEBT, TO FIX */
   return minutes + hours * 60
 }
 
