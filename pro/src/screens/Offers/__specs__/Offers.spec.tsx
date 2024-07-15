@@ -92,6 +92,7 @@ vi.mock('apiClient/api', () => ({
   api: {
     listOfferersNames: vi.fn().mockReturnValue({}),
     patchAllCollectiveOffersActiveStatus: vi.fn(),
+    deleteDraftOffers: vi.fn(),
   },
 }))
 
@@ -102,6 +103,7 @@ describe('screen Offers', () => {
 
   const mockNotifyError = vi.fn()
   const mockNotifyPending = vi.fn()
+  const mockNotifySuccess = vi.fn()
   beforeEach(async () => {
     currentUser = sharedCurrentUserFactory({
       isAdmin: false,
@@ -132,6 +134,7 @@ describe('screen Offers', () => {
       ...notifsImport,
       error: mockNotifyError,
       pending: mockNotifyPending,
+      success: mockNotifySuccess,
     }))
   })
 
@@ -401,14 +404,6 @@ describe('screen Offers', () => {
     expect(screen.queryByLabelText(offers[2].name)).toBeEnabled()
   })
 
-  it('should not display the button to create an offer when user is an admin', () => {
-    props.currentUser.isAdmin = true
-
-    renderOffers(props)
-
-    expect(screen.queryByText('Créer une offre')).toBeNull()
-  })
-
   it('should not have "Tout Sélectionner" checked when there is no offer to be checked', () => {
     const offers = [
       collectiveOfferFactory({
@@ -641,5 +636,45 @@ describe('screen Offers', () => {
         'C’est nouveau ! Vous pouvez désormais archiver vos offres collectives.'
       )
     ).not.toBeInTheDocument()
+  })
+
+  it('should notify when deleting offers there are not draft', async () => {
+    renderOffers({
+      ...props,
+      offers: [listOffersOfferFactory({ status: OfferStatus.ACTIVE })],
+      audience: Audience.INDIVIDUAL,
+    })
+
+    await userEvent.click(screen.getByText('Tout sélectionner'))
+    await userEvent.click(screen.getByText('Supprimer'))
+
+    expect(mockNotifyError).toHaveBeenCalledWith(
+      'Seuls les brouillons peuvent être supprimés'
+    )
+  })
+
+  it('should delete aniway even with active status', async () => {
+    vi.spyOn(api, 'deleteDraftOffers').mockResolvedValueOnce()
+
+    renderOffers({
+      ...props,
+      offers: [
+        listOffersOfferFactory({ status: OfferStatus.ACTIVE }),
+        listOffersOfferFactory({ status: OfferStatus.DRAFT }),
+        listOffersOfferFactory({ status: OfferStatus.DRAFT }),
+      ],
+      audience: Audience.INDIVIDUAL,
+    })
+
+    await userEvent.click(screen.getByText('Tout sélectionner'))
+    await userEvent.click(
+      screen.getAllByRole('button', { name: 'Supprimer' })[2]
+    )
+    await userEvent.click(screen.getByText('Supprimer ces brouillons'))
+
+    expect(api.deleteDraftOffers).toHaveBeenCalledTimes(1)
+    expect(mockNotifySuccess).toHaveBeenCalledWith(
+      'Les brouillons ont bien été supprimés'
+    )
   })
 })

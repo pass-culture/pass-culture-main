@@ -1,5 +1,6 @@
 import { ConfirmDialog } from 'components/Dialog/ConfirmDialog/ConfirmDialog'
 import strokeTrashIcon from 'icons/stroke-trash.svg'
+import { pluralizeString } from 'utils/pluralize'
 
 interface DeleteConfirmDialogProps {
   onCancel: () => void
@@ -16,20 +17,10 @@ export const DeleteConfirmDialog = ({
     <ConfirmDialog
       cancelText={'Annuler'}
       confirmText={'Supprimer ces brouillons'}
-      onCancel={() => {
-        onCancel()
-      }}
-      onConfirm={() => {
-        handleDelete()
-      }}
+      onCancel={onCancel}
+      onConfirm={handleDelete}
       icon={strokeTrashIcon}
-      title={
-        nbSelectedOffers === 1
-          ? `Voulez-vous supprimer ce brouillon ?`
-          : `Voulez-vous supprimer ces ${nbSelectedOffers} brouillons ?`
-      }
-    >
-      <></>
-    </ConfirmDialog>
+      title={`Voulez-vous supprimer ${pluralizeString('ce brouillon', nbSelectedOffers)} ?`}
+    />
   )
 }

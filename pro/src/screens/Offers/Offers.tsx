@@ -7,6 +7,7 @@ import {
   CollectiveOfferResponseModel,
   GetOffererResponseModel,
   ListOffersOfferResponseModel,
+  OfferStatus,
   UserRole,
 } from 'apiClient/v1'
 import { Callout } from 'components/Callout/Callout'
@@ -205,11 +206,9 @@ export const Offers = ({
     return ''
   }
 
-  const canDeleteOffers = () => {
-    return (
-      isCollective ? selectedCollectiveOffers : selectedIndividualOffers
-    ).some((offer) => offer.status !== OFFER_STATUS_DRAFT)
-  }
+  const canDeleteOffers = (
+    isCollective ? selectedCollectiveOffers : selectedIndividualOffers
+  ).some((offer) => offer.status === OfferStatus.DRAFT)
 
   const isNewInterfaceActive = useIsNewInterfaceActive()
   const title = isNewInterfaceActive
