@@ -237,7 +237,6 @@ def _update_user_information(
     ine_hash: str | None = None,
     married_name: str | None = None,
     postal_code: str | None = None,
-    commit: bool = False,
 ) -> models.User:
     if first_name is not None:
         user.firstName = first_name
@@ -270,15 +269,13 @@ def _update_user_information(
 
     db.session.add(user)
     db.session.flush()
-    if commit:
-        db.session.commit()
+
     return user
 
 
 def update_user_information_from_external_source(
     user: models.User,
     data: common_fraud_models.IdentityCheckContent,
-    commit: bool = False,
 ) -> models.User:
     first_name = data.get_first_name()
     last_name = data.get_last_name()
@@ -300,7 +297,6 @@ def update_user_information_from_external_source(
         ine_hash=data.get_ine_hash(),
         married_name=data.get_married_name(),
         postal_code=data.get_postal_code(),
-        commit=commit,
     )
 
 
