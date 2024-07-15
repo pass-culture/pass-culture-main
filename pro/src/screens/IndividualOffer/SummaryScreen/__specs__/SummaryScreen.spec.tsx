@@ -161,6 +161,7 @@ describe('Summary', () => {
     expect(screen.getByText('Type d’offre')).toBeInTheDocument()
     expect(screen.getByText('Informations artistiques')).toBeInTheDocument()
     expect(screen.getByText('Informations pratiques')).toBeInTheDocument()
+    expect(screen.getByText('Localisation de l’offre')).toBeInTheDocument()
     expect(screen.getByText('Modalités d’accessibilité')).toBeInTheDocument()
     expect(
       screen.getByText('Notifications des réservations')

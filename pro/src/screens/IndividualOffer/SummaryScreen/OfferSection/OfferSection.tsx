@@ -137,7 +137,7 @@ export const OfferSection = ({
   const practicalInfoDescriptions: Description[] = [
     { title: 'Structure', text: offerData.offererName },
     {
-      title: 'Lieu',
+      title: "Qui propose l'offre",
       text:
         /* istanbul ignore next: DEBT, TO FIX */
         offerData.venuePublicName || offerData.venueName,
@@ -178,6 +178,15 @@ export const OfferSection = ({
     })
   }
 
+  const { venue } = offer
+  const venueName = venue.name ? `${venue.name} – ` : ''
+  const venueDescriptions: Description[] = [
+    {
+      title: 'Localisation',
+      text: `${venueName}${venue.street} ${venue.city} ${venue.postalCode}`,
+    },
+  ]
+
   return (
     <SummarySection
       title="Détails de l’offre"
@@ -197,6 +206,10 @@ export const OfferSection = ({
 
       <SummarySubSection title="Informations pratiques">
         <SummaryDescriptionList descriptions={practicalInfoDescriptions} />
+      </SummarySubSection>
+
+      <SummarySubSection title="Localisation de l’offre">
+        <SummaryDescriptionList descriptions={venueDescriptions} />
       </SummarySubSection>
 
       <AccessibilitySummarySection
