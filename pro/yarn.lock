@@ -2750,6 +2750,11 @@
   resolved "https://registry.yarnpkg.com/@storybook/react-dom-shim/-/react-dom-shim-8.2.1.tgz#ba2c7305c2f9e988df149154b9a001c6aaa62947"
   integrity sha512-c6nfjyqiNduN6qk9yMP3EVNMslTJB+KGpKEDjpNOBGrTLkapp4dKTk8fN3EiFc3jEwhfN+xY+19eXwq7JBWCtg==
 
+"@storybook/react-dom-shim@8.2.2":
+  version "8.2.2"
+  resolved "https://registry.yarnpkg.com/@storybook/react-dom-shim/-/react-dom-shim-8.2.2.tgz#2521ca3d7e3fbc1ec475bd94388598afa482b248"
+  integrity sha512-4fb1/yT9WXHzHjs0In6orIEZxga5eXd9UaXEFGudBgowCjDUVP9LabDdKTbGusz20lfaAkATsRG/W+EcSLoh8w==
+
 "@storybook/react-vite@^8.2.1":
   version "8.2.1"
   resolved "https://registry.yarnpkg.com/@storybook/react-vite/-/react-vite-8.2.1.tgz#347028a1984ea313f941a89733a8cf4bb10b76b1"
@@ -2765,13 +2770,36 @@
     resolve "^1.22.8"
     tsconfig-paths "^4.2.0"
 
-"@storybook/react@8.2.1", "@storybook/react@^8.2.0":
+"@storybook/react@8.2.1":
   version "8.2.1"
   resolved "https://registry.yarnpkg.com/@storybook/react/-/react-8.2.1.tgz#cdd3365ec22caaa1f4b51210a6127c1dcfa0c388"
   integrity sha512-QBhHURQ/UPM9vaqP1ixxzpWhGd2bZw4664hL9s6rtFCi9zvvZWTb/tD3gVMKCDs2JVXwTaZq/Spd0QwZxNEJgQ==
   dependencies:
     "@storybook/global" "^5.0.0"
     "@storybook/react-dom-shim" "8.2.1"
+    "@types/escodegen" "^0.0.6"
+    "@types/estree" "^0.0.51"
+    "@types/node" "^18.0.0"
+    acorn "^7.4.1"
+    acorn-jsx "^5.3.1"
+    acorn-walk "^7.2.0"
+    escodegen "^2.1.0"
+    html-tags "^3.1.0"
+    lodash "^4.17.21"
+    prop-types "^15.7.2"
+    react-element-to-jsx-string "^15.0.0"
+    semver "^7.3.7"
+    ts-dedent "^2.0.0"
+    type-fest "~2.19"
+    util-deprecate "^1.0.2"
+
+"@storybook/react@^8.2.2":
+  version "8.2.2"
+  resolved "https://registry.yarnpkg.com/@storybook/react/-/react-8.2.2.tgz#67ba27a383de47129c9f6c1500d74ebb0874881d"
+  integrity sha512-U4p/RV78yhjEwEzem8U7wE5/3sSpnqreGsPdAHMCIHd69e9tVeF0rwrTJGp917RClPjBKgEcfelCuvOlby4MrA==
+  dependencies:
+    "@storybook/global" "^5.0.0"
+    "@storybook/react-dom-shim" "8.2.2"
     "@types/escodegen" "^0.0.6"
     "@types/estree" "^0.0.51"
     "@types/node" "^18.0.0"
