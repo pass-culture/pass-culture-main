@@ -4,7 +4,10 @@ import React from 'react'
 import { generatePath, Route, Routes } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
-import { GetIndividualOfferResponseModel } from 'apiClient/v1'
+import {
+  GetIndividualOfferResponseModel,
+  GetIndividualOfferWithAddressResponseModel,
+} from 'apiClient/v1'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
@@ -87,7 +90,7 @@ const renderPriceCategories = (
 describe('PriceCategories', () => {
   beforeEach(() => {
     vi.spyOn(api, 'getOffer').mockResolvedValue(
-      {} as GetIndividualOfferResponseModel
+      {} as GetIndividualOfferWithAddressResponseModel
     )
     vi.spyOn(api, 'patchOffer').mockResolvedValue(
       {} as GetIndividualOfferResponseModel

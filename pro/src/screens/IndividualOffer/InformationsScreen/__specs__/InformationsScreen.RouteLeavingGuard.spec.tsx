@@ -6,6 +6,7 @@ import { generatePath, Route, Routes } from 'react-router-dom'
 import { api } from 'apiClient/api'
 import {
   GetIndividualOfferResponseModel,
+  GetIndividualOfferWithAddressResponseModel,
   VenueListItemResponseModel,
 } from 'apiClient/v1'
 import * as useAnalytics from 'app/App/analytics/firebase'
@@ -101,7 +102,7 @@ const scrollIntoViewMock = vi.fn()
 describe('screens:IndividualOffer::Informations::creation', () => {
   let props: InformationsScreenProps
   let contextOverride: IndividualOfferContextValues
-  let offer: GetIndividualOfferResponseModel
+  let offer: GetIndividualOfferWithAddressResponseModel
   const offerId = 12
 
   beforeEach(() => {
@@ -155,7 +156,7 @@ describe('screens:IndividualOffer::Informations::creation', () => {
     }
 
     vi.spyOn(api, 'getOffer').mockResolvedValue(
-      {} as GetIndividualOfferResponseModel
+      {} as GetIndividualOfferWithAddressResponseModel
     )
     vi.spyOn(api, 'postOffer').mockResolvedValue({
       id: offerId,

@@ -3,7 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
 import { api } from 'apiClient/api'
-import { GetIndividualOfferResponseModel } from 'apiClient/v1'
+import { GetIndividualOfferWithAddressResponseModel } from 'apiClient/v1'
 import { IndividualOfferContext } from 'context/IndividualOfferContext/IndividualOfferContext'
 import {
   bookingRecapFactory,
@@ -15,7 +15,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { BookingsSummaryScreen } from '../BookingsSummary'
 
-const render = (offer: GetIndividualOfferResponseModel) => {
+const render = (offer: GetIndividualOfferWithAddressResponseModel) => {
   const contextValue = individualOfferContextValuesFactory({ offer })
 
   renderWithProviders(

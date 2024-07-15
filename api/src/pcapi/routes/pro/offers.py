@@ -78,6 +78,7 @@ def get_offer(offer_id: int) -> offers_serialize.GetIndividualOfferWithAddressRe
         "bookings_count",
         "offerer_address",
         "future_offer",
+        "pending_bookings",
     ]
     try:
         offer = offers_repository.get_offer_by_id(offer_id, load_options=load_all)

@@ -43,6 +43,7 @@ logger = logging.getLogger(__name__)
 
 if typing.TYPE_CHECKING:
     from pcapi.core.bookings.models import Booking
+    from pcapi.core.bookings.models import BookingStatus
     from pcapi.core.criteria.models import Criterion
     from pcapi.core.educational.models import CollectiveOffer
     from pcapi.core.educational.models import CollectiveOfferTemplate
@@ -612,6 +613,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
     sa.Index("ix_offer_offererAddressId", offererAddressId, postgresql_where=offererAddressId.is_not(None))
     isNonFreeOffer: sa_orm.Mapped["bool"] = sa_orm.query_expression()
     bookingsCount: sa_orm.Mapped["int"] = sa_orm.query_expression()
+    hasPendingBookings: sa_orm.Mapped["bool"] = sa_orm.query_expression()
 
     @property
     def isEducational(self) -> bool:

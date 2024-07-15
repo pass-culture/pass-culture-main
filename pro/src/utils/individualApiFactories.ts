@@ -7,7 +7,7 @@ import {
   BookingRecapResponseStockModel,
   BookingRecapStatus,
   CategoryResponseModel,
-  GetIndividualOfferResponseModel,
+  GetIndividualOfferWithAddressResponseModel,
   GetOfferManagingOffererResponseModel,
   GetOfferStockResponseModel,
   GetOfferVenueResponseModel,
@@ -83,8 +83,8 @@ export const listOffersStockFactory = (
 }
 
 export const getIndividualOfferFactory = (
-  customGetIndividualOffer: Partial<GetIndividualOfferResponseModel> = {}
-): GetIndividualOfferResponseModel => {
+  customGetIndividualOffer: Partial<GetIndividualOfferWithAddressResponseModel> = {}
+): GetIndividualOfferWithAddressResponseModel => {
   const currentOfferId = offerId++
 
   return {
@@ -111,6 +111,7 @@ export const getIndividualOfferFactory = (
     audioDisabilityCompliant: true,
     motorDisabilityCompliant: true,
     mentalDisabilityCompliant: true,
+    hasPendingBookings: false,
     priceCategories: [priceCategoryFactory()],
     extraData: {
       author: 'Chuck Norris',

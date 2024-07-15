@@ -465,6 +465,7 @@ class GetIndividualOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
 
 class GetIndividualOfferWithAddressResponseModel(GetIndividualOfferResponseModel):
     address: AddressResponseIsEditableModel | None
+    hasPendingBookings: bool
 
     class Config:
         orm_mode = True
