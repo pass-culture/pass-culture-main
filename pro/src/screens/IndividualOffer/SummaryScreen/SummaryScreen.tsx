@@ -21,7 +21,6 @@ import {
 } from 'core/FirebaseEvents/constants'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
-import { useActiveFeature } from 'hooks/useActiveFeature'
 import { useNotification } from 'hooks/useNotification'
 import { useOfferWizardMode } from 'hooks/useOfferWizardMode'
 import phoneStrokeIcon from 'icons/stroke-phone.svg'
@@ -43,7 +42,6 @@ import { StockSection } from './StockSection/StockSection'
 import styles from './SummaryScreen.module.scss'
 
 export const SummaryScreen = () => {
-  const isFutureOfferEnabled = useActiveFeature('WIP_FUTURE_OFFER')
   const [displayRedirectDialog, setDisplayRedirectDialog] = useState(false)
   const notification = useNotification()
   const mode = useOfferWizardMode()
@@ -52,9 +50,7 @@ export const SummaryScreen = () => {
   const { offer, subCategories } = useIndividualOfferContext()
   const { logEvent } = useAnalytics()
 
-  const showEventPublicationForm = Boolean(
-    isFutureOfferEnabled && offer?.isEvent
-  )
+  const showEventPublicationForm = Boolean(offer?.isEvent)
 
   const onPublish = async (values: EventPublicationFormValues) => {
     // Edition mode offers are already published
@@ -159,13 +155,13 @@ export const SummaryScreen = () => {
                 <br />
                 Vérifiez les informations ci-dessous avant de publier votre
                 offre.
-                {!isFutureOfferEnabled && (
+                {
                   <>
                     <br />
                     Si vous souhaitez la publier plus tard, vous pouvez
                     retrouver votre brouillon dans la liste de vos offres.
                   </>
-                )}
+                }
               </Callout>
 
               {showEventPublicationForm && <EventPublicationForm />}
