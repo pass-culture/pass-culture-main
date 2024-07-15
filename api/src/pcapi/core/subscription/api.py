@@ -2,6 +2,8 @@ import datetime
 import logging
 import typing
 
+from sqlalchemy import exc as sqlalchemy_exceptions
+
 from pcapi import settings
 from pcapi.core.external import batch
 from pcapi.core.external.attributes import api as external_attributes_api
@@ -635,7 +637,11 @@ def activate_beneficiary_if_no_missing_step(user: users_models.User) -> bool:
     source_data = typing.cast(
         common_fraud_models.IdentityCheckContent, subscription_state.identity_fraud_check.source_data()
     )
-    users_api.update_user_information_from_external_source(user, source_data, commit=False)
+    try:
+        users_api.update_user_information_from_external_source(user, source_data, commit=False)
+    except sqlalchemy_exceptions.IntegrityError as e:
+        logger.warning("The user information could not be updated", extra={"exc": str(e), "user": user.id})
+        return False
 
     try:
         activate_beneficiary_for_eligibility(user, subscription_state.identity_fraud_check, user.eligibility)

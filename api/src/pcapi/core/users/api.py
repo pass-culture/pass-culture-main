@@ -224,7 +224,7 @@ def setup_login(
     db.session.add(single_sign_on)
 
 
-def update_user_information(
+def _update_user_information(
     user: models.User,
     first_name: str | None = None,
     last_name: str | None = None,
@@ -287,7 +287,7 @@ def update_user_information_from_external_source(
     if not first_name or not last_name or not birth_date:
         raise exceptions.IncompleteDataException()
 
-    return update_user_information(
+    return _update_user_information(
         user=user,
         first_name=first_name,
         last_name=last_name,
