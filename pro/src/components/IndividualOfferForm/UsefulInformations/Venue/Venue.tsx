@@ -55,9 +55,9 @@ export const Venue = ({
   )
 
   const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
-  const venueOptionsFF = isOfferAddressEnabled
-    ? venueOptions.filter(({ label }) => label !== 'Sélectionner un lieu')
-    : venueOptions
+  if (!isOfferAddressEnabled) {
+    venueOptions.unshift({ label: 'Sélectionner un lieu', value: '' })
+  }
 
   const onOffererChange = async (
     event: React.ChangeEvent<HTMLSelectElement>
@@ -94,7 +94,7 @@ export const Venue = ({
           disabled={isVenueDisabled || readOnlyFields.includes('venueId')}
           label={isOfferAddressEnabled ? `Qui propose l’offre ?` : 'Lieu'}
           name="venueId"
-          options={venueOptionsFF}
+          options={venueOptions}
           onChange={(event) =>
             onVenueChange(setFieldValue, venueList, event.target.value)
           }

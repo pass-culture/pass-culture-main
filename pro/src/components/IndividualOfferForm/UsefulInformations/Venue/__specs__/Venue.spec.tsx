@@ -109,7 +109,7 @@ describe('IndividualOffer section: venue', () => {
     expect(selectOfferer.childNodes.length).toBe(4)
   })
 
-  it('should not automatically select an offerer when the structure is not defined and WIP_ENABLE_OFFER_ADDRESS is disabled', () => {
+  it('should not automatically select an offerer when the structure is not defined', () => {
     renderVenue({
       initialValues,
       onSubmit,
@@ -125,6 +125,36 @@ describe('IndividualOffer section: venue', () => {
   })
 
   it('should automatically select the venue and offerer when there is only one in the list', async () => {
+    props = {
+      offererNames: [props.offererNames[0]],
+      venueList: [props.venueList[0]],
+    }
+    initialValues = setDefaultInitialFormValues(
+      props.offererNames,
+      null,
+      null,
+      props.venueList,
+      true
+    )
+    renderVenue({
+      initialValues,
+      onSubmit,
+      props,
+    })
+    const selectVenue = screen.getByLabelText('Lieu *')
+    const selectOfferer = screen.getByLabelText('Structure *')
+
+    await waitFor(() => {
+      expect(selectOfferer).toHaveValue(firstOfferer.id.toString())
+      expect(selectOfferer).toBeDisabled()
+      expect(selectOfferer.childNodes.length).toBe(1)
+      expect(selectVenue).toHaveValue(venueList[0].id.toString())
+      expect(selectVenue).toBeDisabled()
+      expect(selectVenue.childNodes.length).toBe(2)
+    })
+  })
+
+  it('should automatically select the venue and offerer when there is only one in the list with FF WIP_ENABLE_OFFER_ADDRESS', async () => {
     props = {
       offererNames: [props.offererNames[0]],
       venueList: [props.venueList[0]],
@@ -160,6 +190,24 @@ describe('IndividualOffer section: venue', () => {
       initialValues,
       onSubmit,
       props,
+    })
+    const selectVenue = screen.getByLabelText('Lieu *')
+    const selectOfferer = screen.getByLabelText('Structure *')
+
+    // select a offerer with 1 venue
+    await userEvent.selectOptions(selectOfferer, firstOfferer.id.toString())
+    expect(selectOfferer).toHaveValue(firstOfferer.id.toString())
+
+    expect(selectVenue).toBeDisabled()
+    expect(selectVenue).toHaveValue(venueList[0].id.toString())
+    expect(selectVenue.childNodes.length).toBe(2)
+  })
+
+  it('should automatically select the venue when only one option is available with FF WIP_ENABLE_OFFER_ADDRESS', async () => {
+    renderVenue({
+      initialValues,
+      onSubmit,
+      props,
       options: { features: ['WIP_ENABLE_OFFER_ADDRESS'] },
     })
     const selectVenue = screen.getByLabelText('Qui propose l’offre ? *')
@@ -174,7 +222,7 @@ describe('IndividualOffer section: venue', () => {
     expect(selectVenue.childNodes.length).toBe(1)
   })
 
-  it('should not automatically select the venue when multiple options are available and WIP_ENABLE_OFFER_ADDRESS is disabled', async () => {
+  it('should not automatically select the venue when multiple options are available', async () => {
     renderVenue({
       initialValues,
       onSubmit,
