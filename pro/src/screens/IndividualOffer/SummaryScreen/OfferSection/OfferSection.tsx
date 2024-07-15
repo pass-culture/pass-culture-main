@@ -50,6 +50,8 @@ export const OfferSection = ({
     'WIP_MANDATORY_BOOKING_CONTACT'
   )
 
+  const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
+
   const offerData = serializeOfferSectionData(
     offer,
     categories,
@@ -137,7 +139,7 @@ export const OfferSection = ({
   const practicalInfoDescriptions: Description[] = [
     { title: 'Structure', text: offerData.offererName },
     {
-      title: 'Lieu',
+      title: isOfferAddressEnabled ? 'Lieu' : 'Qui propose l’offre ?',
       text:
         /* istanbul ignore next: DEBT, TO FIX */
         offerData.venuePublicName || offerData.venueName,

@@ -54,7 +54,7 @@ export const buildVenueOptions = (
     .sort((a, b) => a.label.localeCompare(b.label, 'fr'))
   if (venueOptions.length !== 1) {
     venueOptions = [
-      { value: '', label: 'Sélectionner un lieu' },
+      { value: '', label: 'Sélectionner un lieu' }, // TODO: à supprimer lorsque la feature 'WIP_ENABLE_OFFER_ADDRESS' sera déployée
       ...venueOptions,
     ]
   }
