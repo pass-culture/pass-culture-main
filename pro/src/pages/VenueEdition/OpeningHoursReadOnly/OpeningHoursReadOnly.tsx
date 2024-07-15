@@ -61,11 +61,11 @@ export function Hours({ hours }: Hours) {
   )
 }
 
-type openClose = {
+type OpenClose = {
   open: string
   close: string
 }
 
 type Hours = {
-  hours: Array<openClose>
+  hours: Array<OpenClose>
 }
