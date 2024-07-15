@@ -425,6 +425,10 @@ class GetOffererAddressesResponseModel(BaseModel):
     __root__: list[GetOffererAddressResponseModel]
 
 
+class GetOffererAddressesQueryModel(BaseModel):
+    onlyWithOffers: bool = False
+
+
 class PatchOffererAddressRequest(BaseModel):
     label: str
 

@@ -861,8 +861,8 @@ def get_revenues_per_year(
     }
 
 
-def get_offerer_addresses(offerer_id: int) -> BaseQuery:
-    return (
+def get_offerer_addresses(offerer_id: int, only_with_offers: bool = False) -> BaseQuery:
+    query = (
         models.OffererAddress.query.filter(models.OffererAddress.offererId == offerer_id)
         .options(
             sqla_orm.joinedload(models.OffererAddress.address).load_only(
@@ -871,6 +871,15 @@ def get_offerer_addresses(offerer_id: int) -> BaseQuery:
         )
         .order_by(models.OffererAddress.label)
     )
+    if only_with_offers:
+        offerer_address_ids_from_offers = (
+            offers_models.Offer.query.join(models.Venue)
+            .filter(models.Venue.managingOffererId == offerer_id)
+            .with_entities(offers_models.Offer.offererAddressId)
+            .distinct()
+        )
+        query = query.filter(models.OffererAddress.id.in_(offerer_address_ids_from_offers))
+    return query
 
 
 def get_offerer_address_of_offerer(offerer_id: int, offerer_address_id: int) -> models.OffererAddress:
