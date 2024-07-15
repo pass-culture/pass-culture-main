@@ -133,7 +133,7 @@ export const Offerers = ({
                * with h2 and the homepage margin style once the WIP_PARTNER_PAGE FF is removed.
                */}
               <h3 className={styles['title']} style={{ marginTop: '16px' }}>
-                Carnet d’adresses
+                Vos adresses
               </h3>
 
               <p>
