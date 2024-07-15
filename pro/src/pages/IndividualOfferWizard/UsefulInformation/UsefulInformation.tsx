@@ -12,10 +12,11 @@ import { useCurrentUser } from 'hooks/useCurrentUser'
 import { useOfferWizardMode } from 'hooks/useOfferWizardMode'
 import { IndivualOfferLayout } from 'screens/IndividualOffer/IndivualOfferLayout/IndivualOfferLayout'
 import { getTitle } from 'screens/IndividualOffer/IndivualOfferLayout/utils/getTitle'
+import { UsefulInformationScreen } from 'screens/IndividualOffer/UsefulInformationScreen/UsefulInformationScreen'
 import { selectCurrentOffererId } from 'store/user/selectors'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
-const About = (): JSX.Element | null => {
+const UsefulInformation = (): JSX.Element | null => {
   const mode = useOfferWizardMode()
   const { currentUser } = useCurrentUser()
   const { offer } = useIndividualOfferContext()
@@ -53,11 +54,11 @@ const About = (): JSX.Element | null => {
 
   return (
     <IndivualOfferLayout offer={offer} title={getTitle(mode)} mode={mode}>
-      <>Informations pratiques</>
+      <UsefulInformationScreen venues={venuesQuery.data.venues} />
     </IndivualOfferLayout>
   )
 }
 
 // Below exports are used by react-router-dom
 // ts-unused-exports:disable-next-line
-export const Component = About
+export const Component = UsefulInformation
