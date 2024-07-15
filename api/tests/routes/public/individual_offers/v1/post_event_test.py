@@ -43,7 +43,7 @@ class PostEventTest:
         assert created_offer.mentalDisabilityCompliant is True
         assert created_offer.motorDisabilityCompliant is True
         assert created_offer.visualDisabilityCompliant is True
-        assert not created_offer.isDuo
+        assert created_offer.isDuo
         assert created_offer.extraData == {}
         assert created_offer.bookingEmail is None
         assert created_offer.publicationDate is None

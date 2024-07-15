@@ -17,6 +17,7 @@ title: Pass Culture API change logs
 
 - You can now access your provider information using [**this endpoint**](/rest-api#tag/Providers/operation/GetProvider).
 - You can now set your messaging URLs using the API. Futhermore you can now specify them a 2 levels: either at [**provider level**](/rest-api#tag/Providers/operation/UpdateProvider) or at [**venue level**](/rest-api#tag/Providers/operation/UpdateVenueExternalUrls).
+- `enableDoubleDookings` field's default value is now true on event creation or update.
 
 ## June 2024
 
