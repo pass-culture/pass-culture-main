@@ -117,7 +117,7 @@
     "sass": "^1.77.8",
     "storybook": "^8.2.2",
     "storybook-addon-react-router-v6": "^2.0.15",
-    "stylelint": "^16.6.1",
+    "stylelint": "^16.7.0",
     "stylelint-a11y": "^1.2.3",
     "stylelint-config-standard-scss": "^13.1.0",
     "ts-unused-exports": "^10.1.0",
