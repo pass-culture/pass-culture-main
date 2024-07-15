@@ -4,7 +4,7 @@ import { Form, Formik } from 'formik'
 
 import {
   CategoryResponseModel,
-  GetIndividualOfferResponseModel,
+  GetIndividualOfferWithAddressResponseModel,
   GetOffererNameResponseModel,
   SubcategoryResponseModel,
   VenueListItemResponseModel,
@@ -144,10 +144,10 @@ describe('IndividualOfferForm', () => {
     expect(await screen.findByText('Type d’offre')).toBeInTheDocument()
   })
 
-  const imageSectionDataset: (GetIndividualOfferResponseModel | undefined)[] = [
-    getIndividualOfferFactory(),
-    undefined,
-  ]
+  const imageSectionDataset: (
+    | GetIndividualOfferWithAddressResponseModel
+    | undefined
+  )[] = [getIndividualOfferFactory(), undefined]
   it.each(imageSectionDataset)(
     'should render image section when offer is given',
     async (offer) => {

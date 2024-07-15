@@ -11,7 +11,7 @@ import { Routes, Route } from 'react-router-dom'
 import { api } from 'apiClient/api'
 import {
   ApiError,
-  GetIndividualOfferResponseModel,
+  GetIndividualOfferWithAddressResponseModel,
   GetOfferStockResponseModel,
   OfferStatus,
   SubcategoryIdEnum,
@@ -46,7 +46,7 @@ vi.mock('utils/date', async () => {
 })
 
 const renderStockEventScreen = async (
-  apiOffer: GetIndividualOfferResponseModel,
+  apiOffer: GetIndividualOfferWithAddressResponseModel,
   apiStocks: GetOfferStockResponseModel[] = [],
   stocksCount?: number,
   searchParams = ''
@@ -137,7 +137,7 @@ const priceCategoryId = '1'
 const otherPriceCategoryId = '2'
 
 describe('screens:StocksEventEdition', () => {
-  let apiOffer: GetIndividualOfferResponseModel
+  let apiOffer: GetIndividualOfferWithAddressResponseModel
   let apiStocks: GetOfferStockResponseModel[]
 
   beforeEach(() => {

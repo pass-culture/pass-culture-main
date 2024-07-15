@@ -37,7 +37,15 @@ STOCK_LIMIT_TO_DELETE = 50
 
 OFFER_LOAD_OPTIONS = typing.Iterable[
     typing.Literal[
-        "stock", "mediations", "product", "price_category", "venue", "bookings_count", "offerer_address", "future_offer"
+        "stock",
+        "mediations",
+        "product",
+        "price_category",
+        "venue",
+        "bookings_count",
+        "offerer_address",
+        "future_offer",
+        "pending_bookings",
     ]
 ]
 
@@ -823,6 +831,18 @@ def is_non_free_offer_subquery(offer_id: int) -> sa.sql.selectable.Exists:
     )
 
 
+def get_pending_bookings_subquery(offer_id: int) -> sa.sql.selectable.Exists:
+    return (
+        sa.select(bookings_models.Booking.id)
+        .join(models.Stock, models.Stock.id == bookings_models.Booking.stockId)
+        .filter(
+            models.Stock.offerId == offer_id,
+            bookings_models.Booking.status == bookings_models.BookingStatus.CONFIRMED,
+        )
+        .exists()
+    )
+
+
 def get_offer_by_id(offer_id: int, load_options: OFFER_LOAD_OPTIONS = ()) -> models.Offer:
     try:
         query = models.Offer.query.filter(models.Offer.id == offer_id)
@@ -866,6 +886,10 @@ def get_offer_by_id(offer_id: int, load_options: OFFER_LOAD_OPTIONS = ()) -> mod
             )
         if "future_offer" in load_options:
             query = query.outerjoin(models.Offer.futureOffer).options(sa_orm.contains_eager(models.Offer.futureOffer))
+        if "pending_bookings" in load_options:
+            query = query.options(
+                sa_orm.with_expression(models.Offer.hasPendingBookings, get_pending_bookings_subquery(offer_id))
+            )
 
         return query.one()
     except sa_orm.exc.NoResultFound:

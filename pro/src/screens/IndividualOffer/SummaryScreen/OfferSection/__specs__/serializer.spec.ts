@@ -1,6 +1,6 @@
 import {
   CategoryResponseModel,
-  GetIndividualOfferResponseModel,
+  GetIndividualOfferWithAddressResponseModel,
   OfferStatus,
   SubcategoryIdEnum,
   SubcategoryResponseModel,
@@ -15,7 +15,7 @@ import {
 import { serializeOfferSectionData } from '../serializer'
 
 describe('routes::Summary::serializers', () => {
-  let offer: GetIndividualOfferResponseModel
+  let offer: GetIndividualOfferWithAddressResponseModel
   let categories: CategoryResponseModel[]
   let subCategoryList: SubcategoryResponseModel[]
 
