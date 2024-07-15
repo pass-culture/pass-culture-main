@@ -2476,8 +2476,9 @@ class RejectOffererTest(PostEndpointHelper):
         user = users_factories.NonAttachedProFactory()
         offerer = offerers_factories.NotValidatedOffererFactory()
         user_offerer = offerers_factories.UserOffererFactory(user=user, offerer=offerer)
+        form = {"rejection_reason": "ELIGIBILITY"}
 
-        response = self.post_to_endpoint(authenticated_client, offerer_id=offerer.id)
+        response = self.post_to_endpoint(authenticated_client, offerer_id=offerer.id, form=form)
 
         assert response.status_code == 303
 
@@ -2487,6 +2488,7 @@ class RejectOffererTest(PostEndpointHelper):
         assert not offerer.isValidated
         assert not offerer.isActive
         assert offerer.isRejected
+        assert offerer.rejectionReason == offerers_models.OffererRejectionReason.ELIGIBILITY
         assert not user.has_pro_role
         assert user.has_non_attached_pro_role
         assert user_offerer.validationStatus == ValidationStatus.REJECTED
@@ -2499,6 +2501,7 @@ class RejectOffererTest(PostEndpointHelper):
         assert action.userId == user.id
         assert action.offererId == offerer.id
         assert action.venueId is None
+        assert action.extraData == {"rejection_reason": "ELIGIBILITY"}
 
         action = history_models.ActionHistory.query.filter_by(
             actionType=history_models.ActionType.USER_OFFERER_REJECTED
@@ -2514,8 +2517,9 @@ class RejectOffererTest(PostEndpointHelper):
         offerers_factories.UserOffererFactory(user=user)  # already validated
         offerer = offerers_factories.NotValidatedOffererFactory()
         offerers_factories.UserOffererFactory(user=user, offerer=offerer)  # deleted when rejected
+        form = {"rejection_reason": "ELIGIBILITY"}
 
-        response = self.post_to_endpoint(authenticated_client, offerer_id=offerer.id)
+        response = self.post_to_endpoint(authenticated_client, offerer_id=offerer.id, form=form)
 
         assert response.status_code == 303
 
@@ -2523,6 +2527,7 @@ class RejectOffererTest(PostEndpointHelper):
         db.session.refresh(offerer)
         assert offerer.isRejected
         assert user.has_pro_role
+        assert offerer.rejectionReason == offerers_models.OffererRejectionReason.ELIGIBILITY
         assert not user.has_non_attached_pro_role
 
     def test_reject_offerer_returns_404_if_offerer_is_not_found(self, authenticated_client):
@@ -2532,8 +2537,9 @@ class RejectOffererTest(PostEndpointHelper):
 
     def test_cannot_reject_offerer_already_rejected(self, authenticated_client):
         offerer = offerers_factories.RejectedOffererFactory()
+        form = {"rejection_reason": "ELIGIBILITY"}
 
-        response = self.post_to_endpoint(authenticated_client, offerer_id=offerer.id)
+        response = self.post_to_endpoint(authenticated_client, offerer_id=offerer.id, form=form)
 
         assert response.status_code == 303
 
@@ -2542,8 +2548,9 @@ class RejectOffererTest(PostEndpointHelper):
 
     def test_no_script_injection_in_offerer_name(self, legit_user, authenticated_client):
         offerer = offerers_factories.NotValidatedOffererFactory(name="<script>alert('coucou')</script>")
+        form = {"rejection_reason": "ELIGIBILITY"}
 
-        response = self.post_to_endpoint(authenticated_client, offerer_id=offerer.id)
+        response = self.post_to_endpoint(authenticated_client, offerer_id=offerer.id, form=form)
         assert response.status_code == 303
         assert (
             html_parser.extract_alert(authenticated_client.get(response.location).data)
@@ -3446,7 +3453,17 @@ class BatchOffererRejectTest(PostEndpointHelper):
     endpoint = "backoffice_web.validation.batch_reject_offerer"
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
 
-    def test_batch_set_offerer_reject(self, legit_user, authenticated_client):
+    @pytest.mark.parametrize(
+        "rejection_reason",
+        (
+            "ELIGIBILITY",
+            "ERROR",
+            "ADAGE_DECLINED",
+            "OUT_OF_TIME",
+            "OTHER",
+        ),
+    )
+    def test_batch_set_offerer_reject(self, legit_user, authenticated_client, rejection_reason):
         _offerers = offerers_factories.NotValidatedOffererFactory.create_batch(10)
         parameter_ids = ",".join(str(offerer.id) for offerer in _offerers)
         comment = "test comment"
@@ -3454,7 +3471,7 @@ class BatchOffererRejectTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             offerer_id=_offerers[0].id,
-            form={"object_ids": parameter_ids, "comment": comment},
+            form={"object_ids": parameter_ids, "comment": comment, "rejection_reason": rejection_reason},
         )
 
         assert response.status_code == 303
@@ -3470,6 +3487,7 @@ class BatchOffererRejectTest(PostEndpointHelper):
             assert action.offererId == offerer.id
             assert action.venueId is None
             assert action.comment == comment
+            assert action.extraData == {"rejection_reason": rejection_reason}
 
 
 class BatchOffererAttachmentValidateTest(PostEndpointHelper):
