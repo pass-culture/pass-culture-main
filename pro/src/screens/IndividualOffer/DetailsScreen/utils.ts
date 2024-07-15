@@ -72,7 +72,7 @@ export const buildSubcategoryConditonalFields = (
   return { subcategoryConditionalFields }
 }
 
-type onSubcategoryChangeProps = {
+type OnSubcategoryChangeProps = {
   newSubCategoryId: string
   subCategories: SubcategoryResponseModel[]
   setFieldValue: (
@@ -86,7 +86,7 @@ export const onSubcategoryChange = async ({
   newSubCategoryId,
   subCategories,
   setFieldValue,
-}: onSubcategoryChangeProps) => {
+}: OnSubcategoryChangeProps) => {
   const newSubcategory = subCategories.find(
     (subcategory) => subcategory.id === newSubCategoryId
   )
