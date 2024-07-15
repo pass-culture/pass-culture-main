@@ -1520,7 +1520,7 @@ class RejectOffererTest:
         offerers_factories.UserOffererFactory(offerer=offerer)  # removed in reject_offerer()
 
         # When
-        offerers_api.reject_offerer(offerer, admin)
+        offerers_api.reject_offerer(offerer, admin, rejection_reason=offerers_models.OffererRejectionReason.OTHER)
 
         # Then
         assert not offerer.isValidated
@@ -1534,7 +1534,9 @@ class RejectOffererTest:
         user_offerer = offerers_factories.UserNotValidatedOffererFactory(user=user)
 
         # When
-        offerers_api.reject_offerer(user_offerer.offerer, admin)
+        offerers_api.reject_offerer(
+            user_offerer.offerer, admin, rejection_reason=offerers_models.OffererRejectionReason.OTHER
+        )
 
         # Then
         assert not user.has_pro_role
@@ -1547,7 +1549,9 @@ class RejectOffererTest:
         user_offerer = offerers_factories.UserNotValidatedOffererFactory(user=validated_user_offerer.user)
 
         # When
-        offerers_api.reject_offerer(user_offerer.offerer, admin)
+        offerers_api.reject_offerer(
+            user_offerer.offerer, admin, rejection_reason=offerers_models.OffererRejectionReason.OTHER
+        )
 
         # Then
         assert validated_user_offerer.user.has_pro_role
@@ -1559,7 +1563,9 @@ class RejectOffererTest:
         user_offerer = offerers_factories.UserNotValidatedOffererFactory()
 
         # When
-        offerers_api.reject_offerer(user_offerer.offerer, admin)
+        offerers_api.reject_offerer(
+            user_offerer.offerer, admin, rejection_reason=offerers_models.OffererRejectionReason.OTHER
+        )
 
         # Then
         user_offerer_query = offerers_models.UserOfferer.query
@@ -1573,7 +1579,9 @@ class RejectOffererTest:
         offerers_factories.ApiKeyFactory(offerer=user_offerer.offerer)
 
         # When
-        offerers_api.reject_offerer(user_offerer.offerer, admin)
+        offerers_api.reject_offerer(
+            user_offerer.offerer, admin, rejection_reason=offerers_models.OffererRejectionReason.OTHER
+        )
 
         # Then
         user_offerer_query = offerers_models.UserOfferer.query
@@ -1592,7 +1600,7 @@ class RejectOffererTest:
         offerers_factories.UserOffererFactory(offerer=offerer)  # removed in reject_offerer()
 
         # When
-        offerers_api.reject_offerer(offerer, admin)
+        offerers_api.reject_offerer(offerer, admin, rejection_reason=offerers_models.OffererRejectionReason.OTHER)
 
         # Then
         send_new_offerer_rejection_email_to_pro.assert_called_once_with(offerer)
@@ -1609,7 +1617,7 @@ class RejectOffererTest:
         )  # another applicant
 
         # When
-        offerers_api.reject_offerer(offerer, admin)
+        offerers_api.reject_offerer(offerer, admin, rejection_reason=offerers_models.OffererRejectionReason.OTHER)
 
         # Then
         action = history_models.ActionHistory.query.filter_by(

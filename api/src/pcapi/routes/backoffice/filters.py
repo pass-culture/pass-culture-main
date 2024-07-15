@@ -196,6 +196,22 @@ def format_reason_label(reason: str | None) -> str:
     return ""
 
 
+def format_offerer_rejection_reason(rejection_reason: offerers_models.OffererRejectionReason | str) -> str:
+    match rejection_reason:
+        case offerers_models.OffererRejectionReason.ELIGIBILITY | "ELIGIBILITY":
+            return "Le compte pro n'est pas éligible"
+        case offerers_models.OffererRejectionReason.ERROR | "ERROR":
+            return "Activité non éligible, ce compte ne semble pas être un compte pro"
+        case offerers_models.OffererRejectionReason.ADAGE_DECLINED | "ADAGE_DECLINED":
+            return "Refus Adage"
+        case offerers_models.OffererRejectionReason.OUT_OF_TIME | "OUT_OF_TIME":
+            return "Inscription hors délai de réponse de 60 jours"
+        case offerers_models.OffererRejectionReason.OTHER | "OTHER":
+            return "Autre"
+        case _:
+            return rejection_reason
+
+
 def format_booking_cancellation_reason(
     reason: bookings_models.BookingCancellationReasons | educational_models.CollectiveBookingCancellationReasons | None,
 ) -> str:
@@ -1205,6 +1221,7 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_offer_status"] = format_offer_status
     app.jinja_env.filters["format_offer_category"] = format_offer_category
     app.jinja_env.filters["format_offer_subcategory"] = format_offer_subcategory
+    app.jinja_env.filters["format_offerer_rejection_reason"] = format_offerer_rejection_reason
     app.jinja_env.filters["format_collective_offer_formats"] = format_collective_offer_formats
     app.jinja_env.filters["format_subcategories"] = format_subcategories
     app.jinja_env.filters["format_as_badges"] = format_as_badges

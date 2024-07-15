@@ -192,6 +192,14 @@ VENUE_TYPE_DEFAULT_BANNERS: dict[VenueTypeCode, tuple[str, ...]] = {
 }
 
 
+class OffererRejectionReason(enum.Enum):
+    ELIGIBILITY = "ELIGIBILITY"
+    ERROR = "ERROR"
+    ADAGE_DECLINED = "ADAGE_DECLINED"
+    OUT_OF_TIME = "OUT_OF_TIME"
+    OTHER = "OTHER"
+
+
 class Target(enum.Enum):
     EDUCATIONAL = "EDUCATIONAL"
     INDIVIDUAL_AND_EDUCATIONAL = "INDIVIDUAL_AND_EDUCATIONAL"
@@ -985,6 +993,8 @@ class Offerer(
 
     hasNewNavUsers: sa_orm.Mapped["bool | None"] = sa.orm.query_expression()
     hasOldNavUsers: sa_orm.Mapped["bool | None"] = sa.orm.query_expression()
+
+    rejectionReason: OffererRejectionReason = Column(db_utils.MagicEnum(OffererRejectionReason), nullable=True)
 
     def __init__(self, street: str | None = None, **kwargs: typing.Any) -> None:
         if street:

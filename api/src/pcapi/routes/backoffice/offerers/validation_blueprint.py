@@ -139,7 +139,7 @@ def get_reject_offerer_form(offerer_id: int) -> utils.BackofficeResponse:
     if not offerer:
         raise NotFound()
 
-    form = offerer_forms.OptionalCommentForm()
+    form = offerer_forms.OffererRejectionForm()
 
     return render_template(
         "components/turbo/modal_form.html",
@@ -163,13 +163,18 @@ def reject_offerer(offerer_id: int) -> utils.BackofficeResponse:
     if not offerer:
         raise NotFound()
 
-    form = offerer_forms.OptionalCommentForm()
+    form = offerer_forms.OffererRejectionForm()
     if not form.validate():
         flash(utils.build_form_error_msg(form), "warning")
         return _redirect_after_offerer_validation_action()
 
     try:
-        offerers_api.reject_offerer(offerer, current_user, comment=form.comment.data)
+        offerers_api.reject_offerer(
+            offerer,
+            current_user,
+            comment=form.comment.data,
+            rejection_reason=offerers_models.OffererRejectionReason(form.rejection_reason.data),
+        )
     except offerers_exceptions.OffererAlreadyRejectedException:
         flash(Markup("La structure <b>{name}</b> est déjà rejetée").format(name=offerer.name), "warning")
         return _redirect_after_offerer_validation_action()
@@ -308,6 +313,8 @@ def _offerer_batch_action(
             kwargs["tags_to_remove"] = deleted_tags
         if hasattr(form, "comment"):
             kwargs["comment"] = form.comment.data
+        if hasattr(form, "rejection_reason"):
+            kwargs["rejection_reason"] = offerers_models.OffererRejectionReason(form.rejection_reason.data)
 
         api_function(offerer, current_user, **kwargs)
 
@@ -377,7 +384,7 @@ def batch_set_offerer_pending() -> utils.BackofficeResponse:
 @validation_blueprint.route("/offerer/batch-reject-form", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
 def get_batch_reject_offerer_form() -> utils.BackofficeResponse:
-    form = offerer_forms.BatchOptionalCommentForm()
+    form = offerer_forms.BatchOffererRejectionForm()
     return render_template(
         "components/turbo/modal_form.html",
         form=form,
@@ -395,7 +402,7 @@ def batch_reject_offerer() -> utils.BackofficeResponse:
         return _offerer_batch_action(
             offerers_api.reject_offerer,
             "Les structures sélectionnées ont été rejetées",
-            offerer_forms.BatchOptionalCommentForm,
+            offerer_forms.BatchOffererRejectionForm,
         )
     except offerers_exceptions.OffererAlreadyRejectedException:
         flash("Une des structures a déjà été rejetée", "warning")

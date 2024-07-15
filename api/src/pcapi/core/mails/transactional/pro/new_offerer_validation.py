@@ -19,7 +19,11 @@ def send_new_offerer_validation_email_to_pro(offerer: Offerer) -> None:
 
 def get_new_offerer_rejection_email_data(offerer: Offerer) -> models.TransactionalEmailData:
     return models.TransactionalEmailData(
-        template=TransactionalEmail.NEW_OFFERER_REJECTION.value, params={"OFFERER_NAME": offerer.name}
+        template=TransactionalEmail.NEW_OFFERER_REJECTION.value,
+        params={
+            "OFFERER_NAME": offerer.name,
+            "REJECTION_REASON": offerer.rejectionReason.name if offerer.rejectionReason else "",
+        },
     )
 
 

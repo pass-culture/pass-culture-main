@@ -31,6 +31,8 @@
               Lieu : {{ links.build_venue_name_to_details_link(action.venue) }}
             {% elif action.actionType.name == "OFFERER_ATTESTATION_CHECKED" %}
               L'état positif ou négatif de l'attestation {{ action.extraData['provider'] }} a été visualisé
+            {% elif action.extraData and action.actionType.name in ["OFFERER_REJECTED", "USER_OFFERER_REJECTED"] %}
+              Raison : {{ action.extraData["rejection_reason"] | format_offerer_rejection_reason }}
             {% endif %}
             {% if action.comment %}
               <p>
