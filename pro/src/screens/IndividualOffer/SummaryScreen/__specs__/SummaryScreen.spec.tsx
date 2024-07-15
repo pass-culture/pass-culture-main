@@ -345,8 +345,7 @@ describe('Summary', () => {
             mode: OFFER_WIZARD_MODE.CREATION,
           }),
           { offerId: 'AA' }
-        ),
-        { features: ['WIP_FUTURE_OFFER'] }
+        )
       )
 
       await userEvent.click(
