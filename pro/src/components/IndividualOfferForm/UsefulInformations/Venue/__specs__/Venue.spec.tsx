@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Formik } from 'formik'
 import * as yup from 'yup'
@@ -13,6 +13,10 @@ import {
   getOffererNameFactory,
   venueListItemFactory,
 } from 'utils/individualApiFactories'
+import {
+  renderWithProviders,
+  RenderWithProvidersOptions,
+} from 'utils/renderWithProviders'
 
 import { VENUE_DEFAULT_VALUES } from '../constants'
 import { validationSchema } from '../validationSchema'
@@ -22,19 +26,22 @@ const renderVenue = ({
   initialValues,
   onSubmit = vi.fn(),
   props,
+  options,
 }: {
   initialValues: Partial<IndividualOfferFormValues>
   onSubmit: () => void
   props: VenueProps
+  options?: RenderWithProvidersOptions
 }) => {
-  return render(
+  return renderWithProviders(
     <Formik
       initialValues={initialValues}
       onSubmit={onSubmit}
       validationSchema={yup.object().shape(validationSchema)}
     >
       <Venue {...props} />
-    </Formik>
+    </Formik>,
+    options
   )
 }
 
@@ -102,8 +109,12 @@ describe('IndividualOffer section: venue', () => {
     expect(selectOfferer.childNodes.length).toBe(4)
   })
 
-  it('should not automatically select an offerer when the structure is not defined', () => {
-    renderVenue({ initialValues, onSubmit, props })
+  it('should not automatically select an offerer when the structure is not defined and WIP_ENABLE_OFFER_ADDRESS is disabled', () => {
+    renderVenue({
+      initialValues,
+      onSubmit,
+      props,
+    })
 
     const selectVenue = screen.getByLabelText('Lieu *')
 
@@ -129,8 +140,9 @@ describe('IndividualOffer section: venue', () => {
       initialValues,
       onSubmit,
       props,
+      options: { features: ['WIP_ENABLE_OFFER_ADDRESS'] },
     })
-    const selectVenue = screen.getByLabelText('Lieu *')
+    const selectVenue = screen.getByLabelText('Qui propose l’offre ? *')
     const selectOfferer = screen.getByLabelText('Structure *')
 
     await waitFor(() => {
@@ -143,13 +155,14 @@ describe('IndividualOffer section: venue', () => {
     })
   })
 
-  it('should automaticaly select the venue when only one option is available', async () => {
+  it('should automatically select the venue when only one option is available', async () => {
     renderVenue({
       initialValues,
       onSubmit,
       props,
+      options: { features: ['WIP_ENABLE_OFFER_ADDRESS'] },
     })
-    const selectVenue = screen.getByLabelText('Lieu *')
+    const selectVenue = screen.getByLabelText('Qui propose l’offre ? *')
     const selectOfferer = screen.getByLabelText('Structure *')
 
     // select a offerer with 1 venue
@@ -161,7 +174,7 @@ describe('IndividualOffer section: venue', () => {
     expect(selectVenue.childNodes.length).toBe(1)
   })
 
-  it('should not automaticaly select the venue when multiple options are available', async () => {
+  it('should not automatically select the venue when multiple options are available and WIP_ENABLE_OFFER_ADDRESS is disabled', async () => {
     renderVenue({
       initialValues,
       onSubmit,
@@ -248,9 +261,10 @@ describe('IndividualOffer section: venue', () => {
       initialValues,
       onSubmit,
       props,
+      options: { features: ['WIP_ENABLE_OFFER_ADDRESS'] },
     })
 
     expect(screen.getByLabelText('Structure *')).toBeDisabled()
-    expect(screen.getByLabelText('Lieu *')).toBeDisabled()
+    expect(screen.getByLabelText('Qui propose l’offre ? *')).toBeDisabled()
   })
 })
