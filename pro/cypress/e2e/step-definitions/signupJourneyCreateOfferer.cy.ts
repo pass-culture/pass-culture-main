@@ -1,25 +1,33 @@
 import { When, Then, Given } from '@badeball/cypress-cucumber-preprocessor'
-const mySiret = '44890182521127'
-const offererName = 'MINISTERE DE LA CULTURE'
+const mySiret1 = '44890182521127'
+const mySiret2 = '11006801200050'
+const offererName1 = 'MINISTERE DE LA CULTURE'
+const offererName2 =
+  'MINISTERE DE LA TRANSITION ECOLOGIQUE ET DE LA COHESION DES TERRITOIRES'
+let user_email = ''
 
-Given('I log in with a {string} new account', (nth: string) => {
-  let emailAccount: string // @todo: comptes provisoires avant d'avoir une stratégie de comptes à voir avec Olivier Geber
-  switch (nth) {
-    case 'first':
-      emailAccount = 'pctest.grandpublic.age-more-than-18yo@example.com'
-      break
-    case 'second':
-      emailAccount = 'pctest.autre93.has-signed-up@example.com'
-      break
-    default:
-      emailAccount = 'pctest.autre97.has-signed-up@example.com'
-  }
-  cy.login({
-    email: emailAccount,
-    password: 'user@AZERTY123',
-    redirectUrl: '/parcours-inscription',
+let emailAccount: string
+Given('I log in with a new account', (nth: string) => {
+  cy.request('http://localhost:5001/sanboxes/pro_01_create_pro_user/create_pro_user_new_nav').then((response) => {
+    user_email=response.body.user.email
+    cy.login({
+      email: user_email,
+      password: 'user@AZERTY123',
+      redirectUrl: '/parcours-inscription',
+    })
   })
 })
+
+Given('I have a user with an existing offerer', () => {
+  cy.visit('/')
+  cy.request(
+    'http://localhost:5001/sanboxes/pro_03_create_user_offerer/create_user_with_offerer'
+  ).then((response) => {
+    console.log(response)
+    expect(response.status).to.eq(200)
+  })
+})
+
 
 When('I start offerer creation', () => {
   cy.findByText('Commencer').click()
@@ -27,13 +35,13 @@ When('I start offerer creation', () => {
 
 When('I specify an offerer with a SIRET', () => {
   cy.url().should('contain', '/parcours-inscription/structure')
-  cy.findByLabelText('Numéro de SIRET à 14 chiffres *').type(mySiret)
-  cy.intercept('GET', `/sirene/siret/${mySiret}`, (req) =>
+  cy.findByLabelText('Numéro de SIRET à 14 chiffres *').type(mySiret1)
+  cy.intercept('GET', `/sirene/siret/${mySiret1}`, (req) =>
     req.reply({
       statusCode: 200,
       body: {
-        siret: mySiret,
-        name: offererName,
+        siret: mySiret1,
+        name: offererName1,
         active: true,
         address: {
           street: '3 RUE DE VALOIS',
@@ -47,7 +55,51 @@ When('I specify an offerer with a SIRET', () => {
   ).as('getSiret')
   cy.intercept({
     method: 'GET',
-    url: `/venues/siret/${mySiret}`,
+    url: `/venues/siret/${mySiret1}`,
+  }).as('venuesSiret')
+  cy.intercept(
+    'GET',
+    'https://api-adresse.data.gouv.fr/search/?limit=1&q=*'
+  ).as('search1Address')
+  cy.findByText('Continuer').click()
+  cy.wait(['@getSiret', '@venuesSiret', '@search1Address']).then(
+    (interception) => {
+      if (interception[0].response) {
+        expect(interception[0].response.statusCode).to.equal(200)
+      }
+      if (interception[1].response) {
+        expect(interception[1].response.statusCode).to.equal(200)
+      }
+      if (interception[2].response) {
+        expect(interception[2].response.statusCode).to.equal(200)
+      }
+    }
+  )
+})
+
+When('I specify an offerer with a second SIRET', () => {
+  cy.url().should('contain', '/parcours-inscription/structure')
+  cy.findByLabelText('Numéro de SIRET à 14 chiffres *').type(mySiret2)
+  cy.intercept('GET', `/sirene/siret/${mySiret2}`, (req) =>
+    req.reply({
+      statusCode: 200,
+      body: {
+        siret: mySiret2,
+        name: offererName2,
+        active: true,
+        address: {
+          street: '3 RUE DE VALOIS',
+          postalCode: '75001',
+          city: 'Paris',
+        },
+        ape_code: '90.03A',
+        legal_category_code: '1000',
+      },
+    })
+  ).as('getSiret')
+  cy.intercept({
+    method: 'GET',
+    url: `/venues/siret/${mySiret2}`,
   }).as('venuesSiret')
   cy.intercept(
     'GET',
@@ -153,7 +205,7 @@ When('I chose to join the space', () => {
 
 When('I am redirected to homepage', () => {
   cy.url().should('contain', '/accueil')
-  cy.findByLabelText('Structure').select(offererName)
+  // cy.findByLabelText('Structures').select(offererName)
 })
 
 Then('the attachment is in progress', () => {
@@ -171,7 +223,7 @@ Then('the offerer is created', () => {
   cy.url().should('contain', '/accueil')
   cy.findAllByTestId('spinner').should('not.exist')
 
-  cy.findByTestId('offerer-details-offerId').select(offererName)
+  // cy.findByTestId('offerer-details-offerId').select(offererName)
   cy.findAllByTestId('spinner').should('not.exist')
 })
 

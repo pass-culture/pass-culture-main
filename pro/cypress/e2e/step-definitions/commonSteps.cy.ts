@@ -17,6 +17,17 @@ When('I go to the {string} page', (page: string) => {
   cy.findAllByTestId('spinner').should('not.exist')
 })
 
+let user_email = ''
+Given('create user with the new interface', () => {
+  cy.request(
+    'http://localhost:5001/sanboxes/pro_01_create_pro_user/create_pro_user_new_nav'
+  ).then((response) => {
+    expect(response.status).to.eq(200)
+    user_email = response.body.user.email
+    cy.log(user_email)
+  })
+})
+
 // this account is also in the new interface now
 Given('I am logged in', () => {
   cy.login({
