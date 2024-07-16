@@ -14,120 +14,47 @@ import titeLiveLogo from '../logos/logo-titeLive.svg'
 import tmicEllipsesLogo from '../logos/logo-tmic-ellipses.svg'
 import { ProviderInfo } from '../types'
 
+const PROVIDERS_LOGOS: Array<{ id: string; logo: string }> = [
+  { id: 'allociné', logo: allocineLogo },
+  { id: 'leslibraires.fr', logo: librairesLogo },
+  { id: 'titelive', logo: titeLiveLogo },
+  { id: 'fnac', logo: fnacLogo },
+  { id: 'mollat', logo: cdiBookshopLogo },
+  { id: 'cdi-bookshop', logo: cdiBookshopLogo },
+  { id: 'tmic-ellipses', logo: tmicEllipsesLogo },
+  { id: 'praxiel', logo: praxielLogo },
+  { id: 'librisoft', logo: librisoftLogo },
+  { id: 'decitre', logo: decitreLogo },
+  { id: 'ciné office', logo: cineDigitalServiceLogo },
+  { id: 'boost', logo: boostLogo },
+  { id: 'cgr', logo: cgrLogo },
+  { id: 'ems', logo: emsLogo },
+]
+
 export const getProviderInfo = (
   providerName: string
 ): ProviderInfo | undefined => {
   if (!providerName) {
     return
   }
-  const providers: ProviderInfo[] = [
-    {
-      id: 'allociné',
-      logo: allocineLogo,
-      name: 'Allociné',
-      synchronizedOfferMessage: 'Offre synchronisée avec Allociné',
-    },
-    {
-      id: 'leslibraires.fr',
-      logo: librairesLogo,
-      name: 'Leslibraires.fr',
-      synchronizedOfferMessage: 'Offre synchronisée avec Leslibraires.fr',
-    },
-    {
-      id: 'titelive',
-      logo: titeLiveLogo,
-      name: 'Tite Live',
-      synchronizedOfferMessage: 'Offre synchronisée avec Tite Live',
-    },
-    {
-      id: 'fnac',
-      logo: fnacLogo,
-      name: 'Fnac',
-      synchronizedOfferMessage: 'Offre synchronisée avec Fnac',
-    },
-    {
-      id: 'mollat',
-      logo: cdiBookshopLogo,
-      name: 'Mollat',
-      synchronizedOfferMessage: 'Offre synchronisée avec Mollat',
-    },
-    {
-      id: 'cdi-bookshop',
-      logo: cdiBookshopLogo,
-      name: 'CDI-Bookshop',
-      synchronizedOfferMessage: 'Offre synchronisée avec CDI-Bookshop',
-    },
-    {
-      id: 'tmic-ellipses',
-      logo: tmicEllipsesLogo,
-      name: 'TMIC Ellipses',
-      synchronizedOfferMessage: 'Offre synchronisée avec TMIC Ellipses',
-    },
-    {
-      id: 'praxiel',
-      logo: praxielLogo,
-      name: 'Praxiel',
-      synchronizedOfferMessage: 'Offre synchronisée avec Praxiel',
-    },
-    {
-      id: 'librisoft',
-      logo: librisoftLogo,
-      name: 'Librisoft',
-      synchronizedOfferMessage: 'Offre synchronisée avec Librisoft',
-    },
-    {
-      id: 'decitre',
-      logo: decitreLogo,
-      name: 'Decitre',
-      synchronizedOfferMessage: 'Offre synchronisée avec Decitre',
-    },
-    {
-      id: 'pass',
-      logo: passCultureLogo,
-      name: 'Pass Culture API Stocks',
-      synchronizedOfferMessage: 'Offre importée automatiquement',
-    },
-    {
+
+  // Specific case for offers created using the old public Stock API (`/v2/venue/{venue_id}/stocks`)
+  if (providerName === 'Pass Culture API Stocks') {
+    return {
       id: 'individual offers public api',
       logo: passCultureLogo,
       name: 'API Offres Individuelles',
       synchronizedOfferMessage: 'Offre importée automatiquement',
-    },
-    {
-      id: 'ciné office',
-      logo: cineDigitalServiceLogo,
-      name: 'Ciné Office',
-      synchronizedOfferMessage: 'Offre synchronisée avec Ciné Office',
-    },
-    {
-      id: 'boost',
-      logo: boostLogo,
-      name: 'Boost',
-      synchronizedOfferMessage: 'Offre synchronisée avec Boost',
-    },
-    {
-      id: 'cgr',
-      logo: cgrLogo,
-      name: 'CGR',
-      synchronizedOfferMessage: 'Offre synchronisée avec CGR',
-    },
-    {
-      id: 'ems',
-      logo: emsLogo,
-      name: 'EMS',
-      synchronizedOfferMessage: 'Offre synchronisée avec EMS',
-    },
-  ]
-
-  const provider = providers.find((providerInfo) =>
-    providerName.toLowerCase().startsWith(providerInfo.id)
-  )
-  if (provider) {
-    return provider
+    }
   }
+
+  const providerLogo = PROVIDERS_LOGOS.find(({ id }) =>
+    providerName.toLowerCase().startsWith(id)
+  )
+
   return {
     id: providerName.toLowerCase(),
-    logo: '',
+    logo: providerLogo ? providerLogo.logo : '',
     name: providerName,
     synchronizedOfferMessage: `Offre synchronisée avec ${providerName}`,
   }
