@@ -126,7 +126,8 @@ class Returns200Test:
         # when
         venue_id = venue.id
         authenticated_client = client.with_session_auth(email=pro.email)
-        with assert_num_queries(self.number_of_queries):
+        # -1 due to mocking
+        with assert_num_queries(self.number_of_queries - 1):
             response = authenticated_client.get(f"/offers?venueId={venue_id}")
 
             # then
