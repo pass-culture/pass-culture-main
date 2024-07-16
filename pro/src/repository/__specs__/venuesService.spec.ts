@@ -1,6 +1,11 @@
+import { addressResponseIsEditableModelFactory } from 'utils/commonOffersApiFactories'
 import { venueListItemFactory } from 'utils/individualApiFactories'
 
-import { computeVenueDisplayName, formatAndOrderVenues } from '../venuesService'
+import {
+  computeAddressDisplayName,
+  computeVenueDisplayName,
+  formatAndOrderVenues,
+} from '../venuesService'
 
 describe('formatAndOrderVenues', () => {
   it('should sort venues alphabetically', () => {
@@ -94,5 +99,25 @@ describe('computeVenueDisplayName', () => {
     const computedVenueDisplayName = computeVenueDisplayName(venue)
 
     expect(computedVenueDisplayName).toBe('gilbert Joseph - Offre numérique')
+  })
+})
+
+describe('computeAddressDisplayName', () => {
+  it('should format the address without the label', () => {
+    const computedAddressDisplayName = computeAddressDisplayName(
+      addressResponseIsEditableModelFactory({ label: undefined })
+    )
+
+    expect(computedAddressDisplayName).toBe('ma super rue 75008 city')
+  })
+
+  it('should format the address with the the label', () => {
+    const computedAddressDisplayName = computeAddressDisplayName(
+      addressResponseIsEditableModelFactory({ label: 'Mon Label' })
+    )
+
+    expect(computedAddressDisplayName).toBe(
+      'Mon Label - ma super rue 75008 city'
+    )
   })
 })
