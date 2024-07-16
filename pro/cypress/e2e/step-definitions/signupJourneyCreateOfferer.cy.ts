@@ -1,24 +1,33 @@
-import { Given, Then, When } from '@badeball/cypress-cucumber-preprocessor'
+import { When, Then, Given } from '@badeball/cypress-cucumber-preprocessor'
+let userEmail: string
+let mySiret: string
+let offererName: string
 
-const mySiret = '44890182521127'
-const offererName = 'MINISTERE DE LA CULTURE'
+Given('I log in with a new user account', () => {
+  cy.visit('/')
+  cy.url({ timeout: 30 * 1000 }).should('contain', '/connexion')
+  cy.request(
+    'http://localhost:5001/sanboxes/pro_01_common/create_user_new_nav'
+  ).then((response) => {
+    expect(response.status).to.eq(200)
+    userEmail = response.body.user.email
+    cy.login({
+      email: userEmail,
+      password: 'user@AZERTY123',
+      redirectUrl: '/parcours-inscription',
+    })
+  })
+})
 
-Given('I log in with a {string} new account', (nth: string) => {
-  let emailAccount: string // @todo: comptes provisoires avant d'avoir une stratégie de comptes à voir avec Olivier Geber
-  switch (nth) {
-    case 'first':
-      emailAccount = 'signupJourney.age-more-than-18yo@example.com'
-      break
-    case 'second':
-      emailAccount = 'signupJourney93.has-signed-up@example.com'
-      break
-    default:
-      emailAccount = 'signupJourney97.has-signed-up@example.com'
-  }
-  cy.login({
-    email: emailAccount,
-    password: 'user@AZERTY123',
-    redirectUrl: '/parcours-inscription',
+Given('I have a user with an existing offerer', () => {
+  cy.visit('/')
+  cy.request(
+    'http://localhost:5001/sanboxes/pro_02_signup_journey/create_user_with_venue'
+  ).then((response) => {
+    expect(response.status).to.eq(200)
+    userEmail = response.body.email
+    mySiret = response.body.siret
+    offererName = response.body.offerer
   })
 })
 
@@ -26,7 +35,13 @@ When('I start offerer creation', () => {
   cy.findByText('Commencer').click()
 })
 
-When('I specify an offerer with a SIRET', () => {
+When('I specify an offerer with a {string} SIRET', (whichSiret: string) => {
+  switch (whichSiret) {
+    case 'not used':
+      mySiret = '44890182521127'
+      offererName = 'MINISTERE DE LA CULTURE'
+      break
+  }
   cy.url().should('contain', '/parcours-inscription/structure')
   cy.findByLabelText('Numéro de SIRET à 14 chiffres *').type(mySiret)
   cy.intercept('GET', `/sirene/siret/${mySiret}`, (req) =>
@@ -97,7 +112,7 @@ When('I validate the registration', () => {
   cy.findByText('Valider et créer ma structure').click()
 })
 
-When('I add a new offerer', () => {
+When('I chose to add a new offerer', () => {
   cy.url().should('contain', '/parcours-inscription/structure/rattachement')
   cy.intercept(
     'GET',
@@ -163,6 +178,12 @@ Then('the attachment is in progress', () => {
   ).should('be.visible')
 })
 
+Then('the offerer validation is in progress', () => {
+  cy.contains(
+    'Votre structure est en cours de traitement par les équipes du pass Culture'
+  ).should('be.visible')
+})
+
 Then('the offerer is created', () => {
   cy.wait('@createOfferer', { timeout: 60000 })
     .its('response.statusCode')
@@ -172,9 +193,6 @@ Then('the offerer is created', () => {
     'Votre structure a bien été créée'
   )
   cy.url({ timeout: 10000 }).should('contain', '/accueil')
-  cy.findAllByTestId('spinner', { timeout: 30 * 1000 }).should('not.exist')
-
-  cy.findByTestId('offerer-details-offerId').select(offererName)
   cy.findAllByTestId('spinner', { timeout: 30 * 1000 }).should('not.exist')
 })
 
