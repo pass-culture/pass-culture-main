@@ -31,6 +31,7 @@ describe('src | App', () => {
       roles: [UserRole.ADMIN],
       isEmailValidated: true,
       dateCreated: '2022-07-29T12:18:43.087097Z',
+      isImpersonated: false,
     })
     vi.spyOn(api, 'listFeatures').mockResolvedValue([])
   })
