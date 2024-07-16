@@ -75,7 +75,6 @@ Your JSON payload should look something like :
 | **venueId** | Integer | **`false`** | Your administrative venue that handles the offer. Note that it can also be the event location (see `offerVenue`) |
 | **name** | String | **`false`** | Bookable offer name |
 | **description** | String | **`false`** | Describe your offer, the educational purpose. Do not add any pricing detail here, see `educationalPriceDetail` |
-| **subcategoryId** | String | `true` | Deprecated. Use `formats` but keep in mind that at least one must be set |
 | **bookingEmails** | List[String] | **`false`** | Booking notification email addresses |
 | **contactEmail** | String | **`false`** | Contact email shown to the teacher/educational staff |
 | **contactPhone** | String | **`false`** |  Contact phone shown to the teacher/educational staff |
@@ -101,10 +100,7 @@ Your JSON payload should look something like :
 | **imageFile** | String | `true` | base64-encodede image. If set, `imageCredit` becomes mandatory|
 | **imageCredit** | String | `true` | Image author/owner. If set, `imageFile` becomes mandatory|
 
-### subcategoryId and formats
-List of known subcategories can be found using the this route:
-GET `/public/offers/v1/events/categories`
-
+### formats
 List of known formats can be found using this route:
 GET `/v2/collective/offers/formats`
 
