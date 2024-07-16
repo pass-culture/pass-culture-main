@@ -118,6 +118,8 @@ USE_FAST_AND_INSECURE_PASSWORD_HASHING_ALGORITHM = bool(
     int(os.environ.get("USE_FAST_AND_INSECURE_PASSWORD_HASHING_ALGORITHM", False))
 )
 ENABLE_IMPORT_TEST_USERS = bool(int(os.environ.get("ENABLE_IMPORT_TEST_USERS", 1)))
+# Time (in seconds) before we suggest to a user to react to an offer. Default is 24 hours.
+SUGGEST_REACTION_COOLDOWN_IN_SECONDS = int(os.environ.get("SUGGEST_REACTION_COOLDOWN_IN_SECONDS", 24 * 3600))
 
 
 # MAIL
