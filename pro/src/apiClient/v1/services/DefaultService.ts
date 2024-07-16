@@ -109,6 +109,8 @@ import type { StocksResponseModel } from '../models/StocksResponseModel';
 import type { StockStatsResponseModel } from '../models/StockStatsResponseModel';
 import type { StocksUpsertBodyModel } from '../models/StocksUpsertBodyModel';
 import type { SubmitReviewRequestModel } from '../models/SubmitReviewRequestModel';
+import type { SuggestedSubcategoriesQueryModel } from '../models/SuggestedSubcategoriesQueryModel';
+import type { SuggestedSubcategoriesResponseModel } from '../models/SuggestedSubcategoriesResponseModel';
 import type { UserEmailValidationResponseModel } from '../models/UserEmailValidationResponseModel';
 import type { UserHasBookingResponse } from '../models/UserHasBookingResponse';
 import type { UserIdentityBodyModel } from '../models/UserIdentityBodyModel';
@@ -1862,6 +1864,26 @@ export class DefaultService {
       errors: {
         403: `Forbidden`,
         404: `Not Found`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+  /**
+   * get_suggested_subcategories <GET>
+   * @param requestBody
+   * @returns SuggestedSubcategoriesResponseModel OK
+   * @throws ApiError
+   */
+  public getSuggestedSubcategories(
+    requestBody?: SuggestedSubcategoriesQueryModel,
+  ): CancelablePromise<SuggestedSubcategoriesResponseModel> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/offers/suggested-subcategories',
+      body: requestBody,
+      mediaType: 'application/json',
+      errors: {
+        403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
     });

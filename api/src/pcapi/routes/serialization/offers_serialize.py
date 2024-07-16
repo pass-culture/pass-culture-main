@@ -525,6 +525,16 @@ class CategoriesResponseModel(BaseModel):
     subcategories: list[SubcategoryResponseModel]
 
 
+class SuggestedSubcategoriesQueryModel(BaseModel):
+    offer_name: str
+    offer_description: str | None
+    venue_id: int | None
+
+
+class SuggestedSubcategoriesResponseModel(ConfiguredBaseModel):
+    subcategory_ids: list[str]
+
+
 class DeleteOfferRequestBody(BaseModel):
     ids: list[int | None]
 
