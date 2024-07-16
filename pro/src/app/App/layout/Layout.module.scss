@@ -3,6 +3,8 @@
 @use "styles/variables/_size.scss" as size;
 @use "styles/variables/_z-index.scss" as zIndex;
 
+$connect-as-header-height: rem.torem(52px);
+
 .layout {
   display: flex;
   flex-direction: column;
@@ -19,6 +21,10 @@
 
   &-funnel {
     width: 100%;
+  }
+
+  &-connect-as {
+    height: calc(100% - $connect-as-header-height);
   }
 
   @media (min-width: size.$desktop) {
@@ -67,9 +73,10 @@
 }
 
 .connect-as {
+  height: $connect-as-header-height;
   background-color: var(--color-grey-light);
   display: flex;
-  padding: 16px;
+  padding: rem.torem(16px);
   min-width: 100%;
 
   &-icon {
