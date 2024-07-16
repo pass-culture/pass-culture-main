@@ -1,5 +1,6 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_a11y.scss" as a11y;
 @use "styles/variables/_size.scss" as size;
 
 $step-label-height: rem.torem(12px);
@@ -108,6 +109,10 @@ $number-size: rem.torem(30px);
       }
     }
   }
+}
+
+.visually-hidden {
+  @include a11y.visually-hidden;
 }
 
 @media (min-width: size.$tablet) {
