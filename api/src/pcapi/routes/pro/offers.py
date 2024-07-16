@@ -6,12 +6,14 @@ from flask_login import login_required
 import sqlalchemy as sqla
 
 from pcapi import repository
+from pcapi.connectors import subcategory_suggestion
 from pcapi.core.categories import categories
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.categories.categories import TITELIVE_MUSIC_TYPES
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import repository as offerers_repository
+import pcapi.core.offerers.api as offerers_api
 from pcapi.core.offers import exceptions
 from pcapi.core.offers import models
 import pcapi.core.offers.api as offers_api
@@ -465,6 +467,30 @@ def get_categories() -> offers_serialize.CategoriesResponseModel:
             for subcategory in subcategories.ALL_SUBCATEGORIES
         ],
     )
+
+
+@private_api.route("/offers", methods=["GET"])
+@login_required
+@spectree_serialize(
+    response_model=offers_serialize.SuggestedSubcategoriesResponseModel,
+    api=blueprint.pro_private_schema,
+)
+def get_suggested_subcategories(
+    query: offers_serialize.SuggestedSubcategoriesQueryModel,
+) -> offers_serialize.SuggestedSubcategoriesResponseModel:
+    offer_name = query.offer_name
+    offer_description = query.offer_description
+    venue_id = query.venue_id
+
+    venue = None
+    if venue_id is not None:
+        venue = offerers_api.get_venue_by_id(venue_id)
+
+    subcategory_suggestions = subcategory_suggestion.get_suggested_categories(offer_name, offer_description, venue)
+
+    subcategory_ids = [s.subcategory for s in subcategory_suggestions.most_probable_subcategories]
+
+    return offers_serialize.SuggestedSubcategoriesResponseModel(subcategory_ids=subcategory_ids)
 
 
 @private_api.route("/offers/music-types", methods=["GET"])
