@@ -5,6 +5,7 @@ import re
 from flask import url_for
 import pytest
 
+from pcapi import settings
 from pcapi.connectors.entreprise.backends.testing import TestingBackend
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings import models as bookings_models
@@ -15,6 +16,7 @@ from pcapi.core.history import factories as history_factories
 from pcapi.core.history import models as history_models
 from pcapi.core.mails import testing as mails_testing
 from pcapi.core.mails.transactional import sendinblue_template_ids
+from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import factories as offers_factories
@@ -421,6 +423,38 @@ class DeleteOffererTest(PostEndpointHelper):
             html_parser.extract_alert(authenticated_client.get(response.location).data)
             == f"La structure <script>alert('coucou')</script> ({offerer_id}) a été supprimée"
         )
+
+
+class GenerateOffererAPIKeyTest(PostEndpointHelper):
+    endpoint = "backoffice_web.offerer.generate_api_key"
+    endpoint_kwargs = {"offerer_id": 1}
+    needed_permission = perm_models.Permissions.ADVANCED_PRO_SUPPORT
+
+    def test_generate_api_key(self, legit_user, authenticated_client):
+        offerer = offerers_factories.OffererFactory()
+
+        response = self.post_to_endpoint(authenticated_client, offerer_id=offerer.id)
+
+        assert response.status_code == 303
+        assert response.location == url_for("backoffice_web.offerer.get", offerer_id=offerer.id, _external=True)
+        response = authenticated_client.get(response.location)
+        api_key = offerers_models.ApiKey.query.filter_by(offererId=offerer.id).one()
+        alert = html_parser.extract_alert(response.data)
+        assert alert.startswith(f"Nouvelle clé API pour {offerer.name} ({offerer.id}): {api_key.prefix}")
+
+    def test_cant_generate_api_key_because_max_key_per_offerer_reached(self, legit_user, authenticated_client):
+        offerer = offerers_factories.OffererFactory()
+
+        for _ in range(settings.MAX_API_KEY_PER_OFFERER):
+            offerers_api.generate_and_save_api_key(offerer.id)
+
+        response = self.post_to_endpoint(authenticated_client, offerer_id=offerer.id)
+
+        assert response.status_code == 303
+        assert response.location == url_for("backoffice_web.offerer.get", offerer_id=offerer.id, _external=True)
+        response = authenticated_client.get(response.location)
+        alert = html_parser.extract_alert(response.data)
+        assert alert == "Le nombre maximal de clés a été atteint"
 
 
 class UpdateOffererTest(PostEndpointHelper):
