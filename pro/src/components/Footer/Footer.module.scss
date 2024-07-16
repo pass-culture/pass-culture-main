@@ -9,6 +9,7 @@
 
   &-layout-sticky-actions {
     margin-bottom: size.$action-bar-sticky-height;
+    margin-top: rem.torem(24px);
   }
 
   &-layout-funnel {
