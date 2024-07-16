@@ -677,4 +677,21 @@ describe('screen Offers', () => {
       'Les brouillons ont bien été supprimés'
     )
   })
+
+  it('should display a new column "Date de l’évènement" if FF is enabled', () => {
+    const featureOverrides = {
+      features: ['ENABLE_COLLECTIVE_OFFERS_EXPIRATION'],
+    }
+
+    renderOffers(
+      {
+        ...props,
+        offers: [collectiveOfferFactory()],
+        audience: Audience.COLLECTIVE,
+      },
+      featureOverrides
+    )
+
+    expect(screen.getByText('Date de l’évènement'))
+  })
 })

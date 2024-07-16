@@ -315,3 +315,13 @@
   cursor: pointer;
   gap: rem.torem(8px);
 }
+
+.offer-event {
+  min-width: rem.torem(220px);
+  display: flex;
+  flex-direction: column;
+
+  &-hours {
+    @include fonts.caption;
+  }
+}

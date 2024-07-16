@@ -9,7 +9,7 @@ export const CollectiveOffersTableHead = (): JSX.Element => {
   return (
     <thead>
       <tr>
-        <th colSpan={isCollectiveOffersExpirationEnabled ? 4 : 3} />
+        <th colSpan={3} />
 
         {isCollectiveOffersExpirationEnabled && <th>Date de l’évènement</th>}
         <th>Lieu</th>
