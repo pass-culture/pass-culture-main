@@ -188,7 +188,9 @@ class _FIELDS:
     COLLECTIVE_OFFER_DESCRIPTION = Field(
         description="Collective offer description", example="Atelier de peinture à la gouache pour élèves de 5ème"
     )
-    COLLECTIVE_OFFER_SUBCATEGORY_ID = Field(description="Event subcategory id", example="FESTIVAL_MUSIQUE")
+    COLLECTIVE_OFFER_SUBCATEGORY_ID = Field(
+        description="**(deprecated, use formats instead)** Event subcategory id", example="FESTIVAL_MUSIQUE"
+    )
     COLLECTIVE_OFFER_FORMATS = Field(description="Educational Formats", example=["Atelier de pratique"])
     COLLECTIVE_OFFER_BOOKING_EMAILS = Field(
         description="Recipient emails for notifications about bookings, cancellations, etc.",
