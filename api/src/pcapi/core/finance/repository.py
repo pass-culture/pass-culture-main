@@ -229,7 +229,7 @@ def _get_sent_pricings_for_individual_bookings(
         .join(models.Cashflow.bankAccount)
     )
 
-    columns_array = [
+    columns: list[sqla.sql.elements.Label] = [
         bookings_models.Booking.token.label("booking_token"),
         _truncate_milliseconds(bookings_models.Booking.dateUsed).label("booking_used_date"),
         bookings_models.Booking.quantity.label("booking_quantity"),
@@ -294,21 +294,19 @@ def _get_sent_pricings_for_individual_bookings(
     )
 
     if FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
-        sub = (
-            sqla.select(
-                [
-                    offerers_models.OffererAddress.id,
-                    geography_models.Address.street,
-                    geography_models.Address.postalCode,
-                    geography_models.Address.city,
-                ]
-            )
-            .select_from(offerers_models.OffererAddress)
-            .join(geography_models.Address, offerers_models.OffererAddress.addressId == geography_models.Address.id)
+        sub = sqla.select(
+            offerers_models.OffererAddress.id,
+            geography_models.Address.street,
+            geography_models.Address.postalCode,
+            geography_models.Address.city,
+        ).join_from(
+            offerers_models.OffererAddress,
+            geography_models.Address,
+            offerers_models.OffererAddress.addressId == geography_models.Address.id,
         )
         sub_venue = sub.subquery("addresses_venue")
         sub_offer = sub.subquery("addresses_offer")
-        columns_array.extend(
+        columns.extend(
             [
                 sqla_func.coalesce(sub_offer.c.street, sub_venue.c.street).label("address_street"),
                 sqla_func.coalesce(sub_offer.c.postalCode, sub_venue.c.postalCode).label("address_postal_code"),
@@ -319,7 +317,6 @@ def _get_sent_pricings_for_individual_bookings(
             sub_offer, sub_offer.c.id == offers_models.Offer.offererAddressId, isouter=True
         )
 
-    columns: tuple[sqla.sql.elements.Label, ...] = tuple(columns_array)
     return (
         query.order_by(bookings_models.Booking.dateUsed.desc(), bookings_models.Booking.id.desc()).with_entities(
             *columns
