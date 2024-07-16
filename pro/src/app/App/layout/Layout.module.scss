@@ -48,7 +48,7 @@ $connect-as-header-height: rem.torem(52px);
 
 .content-container {
   width: 100%;
-  height: 100%;
+  flex-grow: 1;
   padding: rem.torem(24px) rem.torem(24px) 0;
   background-color: var(--color-white);
   display: flex;
