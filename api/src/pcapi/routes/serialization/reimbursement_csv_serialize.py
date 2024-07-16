@@ -109,12 +109,6 @@ class ReimbursementDetails:
     @typing.no_type_check
     def __init__(self, payment_info: namedtuple):
 
-        if FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
-            self.CSV_HEADER[6:9] = [
-                "Raison sociale du partenaire culturel",
-                "Adresse de l'offre",
-                "SIRET du partenaire culturel",
-            ]
         using_legacy_models = hasattr(payment_info, "transaction_label")
 
         # Validation period
@@ -233,12 +227,26 @@ class ReimbursementDetails:
 
         return rows
 
+    @classmethod
+    def get_csv_headers(cls) -> list[str]:
+        if FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
+            return (
+                cls.CSV_HEADER[0:6]
+                + [
+                    "Raison sociale du partenaire culturel",
+                    "Adresse de l'offre",
+                    "SIRET du partenaire culturel",
+                ]
+                + cls.CSV_HEADER[9:]
+            )
+        return cls.CSV_HEADER
+
 
 def generate_reimbursement_details_csv(reimbursement_details: Iterable[ReimbursementDetails]) -> str:
     output = StringIO()
     csv_lines = [reimbursement_detail.as_csv_row() for reimbursement_detail in reimbursement_details]
     writer = csv.writer(output, dialect=csv.excel, delimiter=";", quoting=csv.QUOTE_NONNUMERIC)
-    writer.writerow(ReimbursementDetails.CSV_HEADER)
+    writer.writerow(ReimbursementDetails.get_csv_headers())
     writer.writerows(csv_lines)
     return output.getvalue()
 

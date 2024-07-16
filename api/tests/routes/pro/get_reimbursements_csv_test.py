@@ -228,7 +228,6 @@ def test_with_reimbursement_period_filter_with_pricings(client, cutoff, fortnigh
     queries += 1  # select booking and related items
     queries += 1  # select educational redactor
     queries += 1  # FF retrieving
-
     with assert_num_queries(queries):
         response = client.get(
             f"/reimbursements/csv?reimbursementPeriodBeginningDate={beginning_date_iso_format}&reimbursementPeriodEndingDate={ending_date_iso_format}&bankAccountId={bank_account_id}&offererId={offerer.id}"
@@ -504,10 +503,15 @@ def test_with_reimbursement_period_filter_with_pricings_collective_use_case(clie
 @override_features(WIP_ENABLE_OFFER_ADDRESS=True)
 @pytest.mark.usefixtures("db_session")
 @pytest.mark.parametrize(
-    "offer_has_oa, venue_has_oa",
-    [(True, False), (False, True), (True, True), (False, False)],
+    "offer_has_oa, venue_has_oa, len_addresses, expected_address",
+    [
+        (True, False, 1, "1 rue de la paix 75002 Paris"),
+        (False, True, 1, "1 boulevard Poissonnière 75000 Paris"),
+        (True, True, 2, "1 rue de la paix 75002 Paris"),
+        (False, False, 0, ""),
+    ],
 )
-def test_with_offer_address_and_venue_address(client, offer_has_oa, venue_has_oa):
+def test_with_offer_address_and_venue_address(client, offer_has_oa, venue_has_oa, len_addresses, expected_address):
     """This case consider venue with oa and offer with oa"""
 
     cutoff = datetime.date(year=2023, month=1, day=1)
@@ -557,7 +561,6 @@ def test_with_offer_address_and_venue_address(client, offer_has_oa, venue_has_oa
     queries += 1  # check user has access to offerer
     queries += 1  # select booking and related items
     queries += 1  # select educational redactor
-    queries += 1  # FF retrieving
     with assert_num_queries(queries):
         response = client.get(
             f"/reimbursements/csv?reimbursementPeriodBeginningDate={beginning_date_iso_format}&reimbursementPeriodEndingDate={ending_date_iso_format}&bankAccountId={bank_account_id}&offererId={offerer.id}"
@@ -571,21 +574,33 @@ def test_with_offer_address_and_venue_address(client, offer_has_oa, venue_has_oa
     assert response.headers["Content-type"] == "text/csv; charset=utf-8;"
     assert response.headers["Content-Disposition"] == "attachment; filename=remboursements_pass_culture.csv"
     reader = csv.DictReader(StringIO(response.data.decode("utf-8-sig")), delimiter=";")
-    assert reader.fieldnames == ReimbursementDetails.CSV_HEADER
+    assert reader.fieldnames == [
+        "Réservations concernées par le remboursement",
+        "Date du justificatif",
+        "N° du justificatif",
+        "N° de virement",
+        "Intitulé du compte bancaire",
+        "IBAN",
+        "Raison sociale du partenaire culturel",
+        "Adresse de l'offre",
+        "SIRET du partenaire culturel",
+        "Nom de l'offre",
+        "N° de réservation (offre collective)",
+        "Nom (offre collective)",
+        "Prénom (offre collective)",
+        "Nom de l'établissement (offre collective)",
+        "Date de l'évènement (offre collective)",
+        "Contremarque",
+        "Date de validation de la réservation",
+        "Intitulé du tarif",
+        "Montant de la réservation",
+        "Barème",
+        "Montant remboursé",
+        "Type d'offre",
+    ]
     rows = list(reader)
     assert len(rows) == 1
     assert len(bookings) == 1
     assert len(offers) == 1
-
-    if offer_has_oa and venue_has_oa:
-        assert len(addresses) == 2
-        assert rows[0]["Adresse de l'offre"] == "1 rue de la paix 75002 Paris"
-    elif not venue_has_oa and not offer_has_oa:
-        assert len(addresses) == 0
-        assert rows[0]["Adresse de l'offre"].strip() == ""  # should not happend with venue.offererAddress filled
-    elif offer_has_oa:
-        assert len(addresses) == 1
-        assert rows[0]["Adresse de l'offre"] == "1 rue de la paix 75002 Paris"
-    else:
-        assert len(addresses) == 1
-        assert rows[0]["Adresse de l'offre"] == f"{venue.street} {venue.postalCode} {venue.city}"
+    assert len(addresses) == len_addresses
+    assert rows[0]["Adresse de l'offre"].strip() == expected_address
