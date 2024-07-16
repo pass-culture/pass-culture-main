@@ -3617,6 +3617,26 @@ def test_public_api(client):
                     "tags": [],
                 }
             },
+            "/native/v1/reaction/available": {
+                "get": {
+                    "description": "",
+                    "operationId": "get__native_v1_reaction_available",
+                    "parameters": [],
+                    "responses": {
+                        "200": {"description": "OK"},
+                        "403": {"description": "Forbidden"},
+                        "422": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
+                            },
+                            "description": "Unprocessable Entity",
+                        },
+                    },
+                    "security": [{"JWTAuth": []}],
+                    "summary": "get_available_reactions <GET>",
+                    "tags": [],
+                }
+            },
             "/native/v1/recommendation/playlist": {
                 "post": {
                     "description": "",

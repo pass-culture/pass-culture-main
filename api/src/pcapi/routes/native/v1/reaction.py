@@ -19,3 +19,19 @@ logger = logging.getLogger(__name__)
 @atomic()
 def post_reaction(user: users_models.User, body: serialization.PostReactionRequest) -> None:
     reactions_api.update_or_create_reaction(user.id, body.offer_id, reaction_type=body.reaction_type)
+
+
+@blueprint.native_route("/reaction/available", methods=["GET"])
+@spectree_serialize(api=blueprint.api)
+@authenticated_and_active_user_required
+def get_available_reactions(user: users_models.User) -> serialization.GetAvailableReactionsResponse:
+    booking_with_available_reactions = reactions_api.get_booking_with_available_reactions(user.id)
+
+    return serialization.GetAvailableReactionsResponse(
+        bookings=[
+            serialization.AvailableReactionBooking(
+                name=booking.stock.offer.name, dateUsed=booking.dateUsed, image=booking.stock.offer.image
+            )
+            for booking in booking_with_available_reactions
+        ]
+    )
