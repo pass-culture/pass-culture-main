@@ -29,8 +29,16 @@
     align-items: flex-start;
   }
 
+  .field-layout-xsmall {
+    max-width: rem.torem(154px);
+  }
+
   .field-layout-small {
-    width: rem.torem(252px);
+    max-width: rem.torem(242px);
+  }
+
+  .field-layout-shrink {
+    width: initial;
   }
 
   .field-layout-footer {
