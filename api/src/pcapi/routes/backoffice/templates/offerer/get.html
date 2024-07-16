@@ -26,6 +26,10 @@
                 {{ build_modal_form("edit-offerer", url_for("backoffice_web.offerer.update_offerer", offerer_id=offerer.id) ,
                 edit_offerer_form, "Modifier les informations", "Modifier les informations de la structure", "Enregistrer") }}
               {% endif %}
+              {% if has_permission("ADVANCED_PRO_SUPPORT") %}
+                {{ build_modal_form("generate-api-key", url_for("backoffice_web.offerer.generate_api_key", offerer_id=offerer.id) ,
+                generate_api_key_form, "Générer une clé API", "Générer une clé API pour la structure " + offerer.name, "Confirmer la génération") }}
+              {% endif %}
               {% if has_permission("PRO_FRAUD_ACTIONS") %}
                 {% if offerer.isActive %}
                   {{ build_modal_form("suspend-offerer", url_for("backoffice_web.offerer.suspend_offerer", offerer_id=offerer.id) ,
