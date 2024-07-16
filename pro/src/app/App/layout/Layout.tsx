@@ -74,6 +74,7 @@ export const Layout = ({ children, layout = 'basic' }: LayoutProps) => {
         )}
         <div
           className={cn(styles['page-layout'], {
+            [styles['page-layout-connect-as']]: currentUser?.isImpersonated,
             [styles['page-layout-funnel']]: layout === 'funnel',
           })}
         >
