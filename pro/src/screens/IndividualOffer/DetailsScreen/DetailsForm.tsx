@@ -28,7 +28,11 @@ import {
   buildShowSubTypeOptions,
   onSubcategoryChange,
   onCategoryChange,
+  onSuggestedSubcategoriesChange,
 } from './utils'
+import { RadioButton } from 'ui-kit/form/RadioButton/RadioButton'
+import styles from './DetailsForm.module.scss'
+import { useIndividualOfferContext } from 'context/IndividualOfferContext/IndividualOfferContext'
 
 type DetailsFormProps = {
   filteredVenues: VenueListItemResponseModel[]
@@ -59,6 +63,7 @@ export const DetailsForm = ({
     handleChange,
     setFieldValue,
   } = useFormikContext<DetailsFormValues>()
+  const { subCategories } = useIndividualOfferContext()
 
   const musicTypesQuery = useSWR(
     GET_MUSIC_TYPES_QUERY_KEY,
@@ -100,6 +105,12 @@ export const DetailsForm = ({
   const displayArtisticInformations = artisticInformationsFields.some((field) =>
     subcategoryConditionalFields.includes(field)
   )
+  const suggestedSubCategoriesIds = ['LIVRE_PAPIER', 'ABO_CONCERT', 'CONCERT']
+
+  console.log(
+    subCategories.find((subcategory) => subcategory.id === 'LIVRE_PAPIER')
+      ?.proLabel
+  )
 
   return (
     <>
@@ -134,6 +145,52 @@ export const DetailsForm = ({
       </FormLayout.Section>
 
       <FormLayout.Section title="Type d’offre">
+        <FormLayout.Row>
+          <div className={styles['suggested-subcategories']}>
+            Sous-catégories suggérées pour votre offre :
+            <div>
+              {suggestedSubCategoriesIds.map((suggestedSubcategoryId) => (
+                <RadioButton
+                  label={
+                    subCategories.find(
+                      (subcategory) => subcategory.id === suggestedSubcategoryId
+                    )?.proLabel ?? ''
+                  }
+                  name="suggestedSubcategories"
+                  value={suggestedSubcategoryId}
+                  key={suggestedSubcategoryId}
+                  withBorder
+                  onChange={(event) => {
+                    onSuggestedSubcategoriesChange({
+                      event,
+                      setFieldValue,
+                      subcategoryConditionalFields,
+                      subcategories: filteredSubcategories,
+                      onSubcategoryChange,
+                    })
+                    handleChange(event)
+                  }}
+                />
+              ))}
+              <RadioButton
+                label="Autre"
+                name="suggestedSubcategories"
+                value="OTHER"
+                withBorder
+                onChange={(event) => {
+                  onSuggestedSubcategoriesChange({
+                    event,
+                    setFieldValue,
+                    subcategoryConditionalFields,
+                    subcategories: filteredSubcategories,
+                    onSubcategoryChange,
+                  })
+                  handleChange(event)
+                }}
+              />
+            </div>
+          </div>
+        </FormLayout.Row>
         <FormLayout.Row
           sideComponent={
             <InfoBox
