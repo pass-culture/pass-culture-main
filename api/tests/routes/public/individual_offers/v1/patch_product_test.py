@@ -61,6 +61,7 @@ class PatchProductTest(PublicAPIVenueEndpointHelper, ProductEndpointHelper):
             isActive=True,
             lastProvider=api_key.provider,
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
+            extraData={"ean": "1234567890124"},
         )
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
@@ -83,6 +84,7 @@ class PatchProductTest(PublicAPIVenueEndpointHelper, ProductEndpointHelper):
             bookingEmail="notify@example.com",
             lastProvider=api_key.provider,
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
+            extraData={"ean": "1234567890124"},
         )
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
@@ -120,6 +122,7 @@ class PatchProductTest(PublicAPIVenueEndpointHelper, ProductEndpointHelper):
             bookingEmail="notify@example.com",
             lastProvider=api_key.provider,
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
+            extraData={"ean": "1234567890124"},
         )
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
@@ -140,6 +143,7 @@ class PatchProductTest(PublicAPIVenueEndpointHelper, ProductEndpointHelper):
             visualDisabilityCompliant=True,
             lastProvider=api_key.provider,
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
+            extraData={"ean": "1234567890124"},
         )
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
@@ -355,6 +359,7 @@ class PatchProductTest(PublicAPIVenueEndpointHelper, ProductEndpointHelper):
             venue=venue,
             lastProvider=api_key.provider,
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
+            extraData={"ean": "1234567890124"},
         )
 
         offer_id = product_offer.id
