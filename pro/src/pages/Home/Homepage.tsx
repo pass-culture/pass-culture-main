@@ -108,7 +108,6 @@ export const Homepage = (): JSX.Element => {
       offererOptions[0]?.value ??
       ''
 
-  console.log('totootot ' + selectedOffererId)
   const selectedOffererQuery = useSWR(
     offererNames && Boolean(selectedOffererId)
       ? [GET_OFFERER_QUERY_KEY, selectedOffererId]
