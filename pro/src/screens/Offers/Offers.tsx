@@ -46,6 +46,7 @@ import { Tabs } from 'ui-kit/Tabs/Tabs'
 import { Titles } from 'ui-kit/Titles/Titles'
 
 import styles from './Offers.module.scss'
+import { CollectiveSearchFilters } from './SearchFilters/CollectiveSearchFilters'
 import { SearchFilters } from './SearchFilters/SearchFilters'
 
 export type OffersProps = {
@@ -292,19 +293,34 @@ export const Offers = ({
         />
       )}
 
-      <SearchFilters
-        applyFilters={applyFilters}
-        audience={audience}
-        categories={categories}
-        disableAllFilters={userHasNoOffers}
-        offerer={offerer}
-        removeOfferer={removeOfferer}
-        resetFilters={resetFilters}
-        selectedFilters={selectedFilters}
-        setSelectedFilters={setSelectedFilters}
-        venues={venues}
-        isRestrictedAsAdmin={isRestrictedAsAdmin}
-      />
+      {audience === Audience.INDIVIDUAL ? (
+        <SearchFilters
+          applyFilters={applyFilters}
+          categories={categories}
+          disableAllFilters={userHasNoOffers}
+          offerer={offerer}
+          removeOfferer={removeOfferer}
+          resetFilters={resetFilters}
+          selectedFilters={selectedFilters}
+          setSelectedFilters={setSelectedFilters}
+          venues={venues}
+          isRestrictedAsAdmin={isRestrictedAsAdmin}
+        />
+      ) : (
+        <CollectiveSearchFilters
+          applyFilters={applyFilters}
+          categories={categories}
+          disableAllFilters={userHasNoOffers}
+          offerer={offerer}
+          removeOfferer={removeOfferer}
+          resetFilters={resetFilters}
+          selectedFilters={selectedFilters}
+          setSelectedFilters={setSelectedFilters}
+          venues={venues}
+          isRestrictedAsAdmin={isRestrictedAsAdmin}
+        />
+      )}
+
       {Audience.COLLECTIVE === audience && (
         <Callout
           className={styles['banner']}
