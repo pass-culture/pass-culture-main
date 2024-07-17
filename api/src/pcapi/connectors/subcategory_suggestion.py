@@ -35,7 +35,7 @@ def get_suggested_categories(
     url = settings.SUBCATEGORY_SUGGESTION_API_URL
     id_token = auth_api.get_id_token_from_google(settings.COMPLIANCE_API_CLIENT_ID)
     if not id_token:  # id_token is None only in development
-        return None
+        id_token = dev_get_id_token_for_compliance(settings.COMPLIANCE_API_CLIENT_ID)
     headers = {
         "Authorization": f"Bearer {id_token}",
     }
@@ -58,3 +58,26 @@ def get_suggested_categories(
         raise SubcategorySuggestionApiException("Serialization failed while requesting subcategory suggestion API")
 
     return results
+
+
+def dev_get_id_token_for_compliance(client_id: str) -> str | None:
+    # This is a fake auth_token; if you want to test it in development env
+    # you have to use the result returned by 'gcloud auth print-access-token'
+    auth_token = "gcloud auth print-access-token"
+
+    try:
+        id_token_response = requests.post(
+            f"https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/{settings.COMPLIANCE_API_SERVICE_ACCOUNT}:generateIdToken",
+            headers={
+                "Authorization": f"Bearer {auth_token}",
+                "Content-Type": "application/json; charset=utf-8",
+            },
+            json={"audience": client_id, "includeEmail": "true"},
+        )
+        id_token = id_token_response.json()["token"]
+    except requests.exceptions.InvalidHeader:
+        # The auth_token has probably not been changed to a correct value
+        return None
+    except Exception as exc:  # pylint: disable=broad-except
+        return None
+    return id_token

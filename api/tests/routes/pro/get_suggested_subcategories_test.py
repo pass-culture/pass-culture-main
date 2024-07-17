@@ -77,3 +77,7 @@ class Returns200Test:
         # Then
         assert response.status_code == 200
         assert response.json == {"subcategoryIds": ["VISITE_GUIDEE", "VISITE", "EVENEMENT_PATRIMOINE"]}
+
+    def test_no_mock(self):
+        pro = users_factories.ProFactory()
+        response = client.with_session_auth(email=pro.email).get()
