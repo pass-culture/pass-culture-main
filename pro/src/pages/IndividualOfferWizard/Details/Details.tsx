@@ -51,6 +51,6 @@ const Details = (): JSX.Element | null => {
   )
 }
 
-// Below exports are used by react-router-dom
+// Lazy-loaded by react-router-dom
 // ts-unused-exports:disable-next-line
 export const Component = Details

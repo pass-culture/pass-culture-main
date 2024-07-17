@@ -51,7 +51,7 @@ jobs:
           files: |
             api/poetry.lock
             pro/yarn.lock
-      # checkout source branch of the pull request 
+      # checkout source branch of the pull request
       - uses: actions/checkout@v4.1.7
         with:
           ref: ${{ github.event.pull_request.head.sha }}
@@ -69,13 +69,13 @@ jobs:
           echo $PUSH_TAGS >> "$GITHUB_OUTPUT"
           echo $API_TAG >> "$GITHUB_OUTPUT"
       - name: "Authentification to Google"
-        uses: 'google-github-actions/auth@v2'
+        uses: "google-github-actions/auth@v2"
         with:
           workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
       - name: "Get Secret"
-        id: 'secrets'
-        uses: 'google-github-actions/get-secretmanager-secrets@v2'
+        id: "secrets"
+        uses: "google-github-actions/get-secretmanager-secrets@v2"
         with:
           secrets: |-
             ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER:passculture-metier-ehp/passculture-main-gcp-workload-identity-provider
@@ -100,7 +100,7 @@ jobs:
         run: ./.github/workflows/scripts/check-image-tag-exists.sh
         env:
           image: pcapi
-          tag: ${{ steps.pcapi-tags.outputs.checksum-tag }} 
+          tag: ${{ steps.pcapi-tags.outputs.checksum-tag }}
       - name: "pcapi-console"
         id: check-console-checksum-tag
         run: ./.github/workflows/scripts/check-image-tag-exists.sh
@@ -120,7 +120,7 @@ jobs:
   build-pcapi:
     name: "[pcapi] build docker image."
     needs: [pcapi-init-job]
-    if: needs.pcapi-init-job.outputs.api-changed == 'true' && needs.pcapi-init-job.outputs.checksum-tag-exists == 'false'
+    if: ${{ (needs.pcapi-init-job.outputs.api-changed == 'true' || needs.pcapi-init-job.outputs.pro-changed == 'true') && needs.pcapi-init-job.outputs.checksum-tag-exists == 'false' }}
     uses: ./.github/workflows/dev_on_workflow_build_docker_image.yml
     with:
       ref: ${{ github.event.pull_request.head.sha }}
@@ -206,18 +206,26 @@ jobs:
 
   test-pro-e2e:
     name: "Tests pro E2E"
+    runs-on: ubuntu-latest
     needs: [pcapi-init-job, build-pcapi]
-    uses: ./.github/workflows/dev_on_workflow_tests_pro_e2e.yml
-    if: |
-      always() &&
-      needs.pcapi-init-job.outputs.api-changed == 'true' || 
-      needs.pcapi-init-job.outputs.pro-changed == 'true'
-    with:
-      tag: ${{ needs.build-pcapi.result == 'skipped' && 'latest' || needs.pcapi-init-job.outputs.checksum-tag }}
-      CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
-    secrets:
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+    steps:
+      - name: Check if E2E tests are required
+        id: check-e2e-required
+        run: |
+          if [[ "${{ needs.pcapi-init-job.outputs.api-changed }}" == "true" || "${{ needs.pcapi-init-job.outputs.pro-changed }}" == "true" ]]; then
+            echo "E2E tests required"
+          else
+            echo "E2E tests not required, marking as success."
+            exit 0
+          fi
+      - name: Run E2E workflow
+        uses: ./.github/workflows/dev_on_workflow_tests_pro_e2e.yml
+        with:
+          tag: ${{ needs.build-pcapi.result == 'skipped' && 'latest' || needs.pcapi-init-job.outputs.checksum-tag }}
+          CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
+          secrets: |-
+            GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+            GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
   dependabot-auto-merge:
     name: "Dependabot"
