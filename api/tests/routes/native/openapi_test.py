@@ -3505,6 +3505,7 @@ def test_public_api(client):
                             "description": "Unprocessable Entity",
                         },
                     },
+                    "security": [{"JWTAuth": []}],
                     "summary": "get_email_update_status <GET>",
                     "tags": [],
                 }
@@ -3588,6 +3589,7 @@ def test_public_api(client):
                             "description": "Unprocessable Entity",
                         },
                     },
+                    "security": [{"JWTAuth": []}],
                     "summary": "update_user_email <POST>",
                     "tags": [],
                 }
