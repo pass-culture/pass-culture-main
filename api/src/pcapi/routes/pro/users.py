@@ -342,7 +342,6 @@ def connect_as(token: str) -> Response:
     flask.session["internal_admin_email"] = token_data.internal_admin_email
     flask.session["internal_admin_id"] = token_data.internal_admin_id
     flask.session["last_login"] = datetime.utcnow().timestamp()
-
     return flask.redirect(token_data.redirect_link, code=302)
 
 
