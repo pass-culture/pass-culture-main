@@ -54,8 +54,8 @@ class GetOffererTest(GetEndpointHelper):
     # - offerer with joined data except tags (1 query)
     # - get offerer tags (1 query)
     # - get all tags for edit form (1 query)
-    # - get feature flag: WIP_ENABLE_PRO_SIDE_NAV (1 query)
-    expected_num_queries = 5
+    # - get feature flag: WIP_CONNECT_AS_EXTENDED (1 query)
+    expected_num_queries = 6
 
     def test_keep_search_parameters_on_top(self, authenticated_client, offerer):
         url = url_for(self.endpoint, offerer_id=offerer.id, q=offerer.name, departments=["75", "77"])
@@ -1235,7 +1235,7 @@ class GetOffererUsersTest(GetEndpointHelper):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
-        assert (url_for("backoffice_web.pro_user.connect_as", user_id=user.id).encode() in response.data) == result
+        assert (url_for("backoffice_web.pro.connect_as").encode() in response.data) == result
 
     def test_get_pro_users_with_one_offerer_invitation_without_user_account(self, authenticated_client, offerer):
         uo1 = offerers_factories.UserOffererFactory(offerer=offerer)

@@ -1,3 +1,47 @@
+{# ----- utils for connect-as links ----- #}
+{# djlint:off #}
+{# this macro must be on one line or it breaks the connect as feature #}
+{% macro _random() %}{{ range(1000000000000) |random }}{% endmacro %}
+{# djlint:on #}
+{% macro build_connect_as_pseudo_link(object_id, object_type, redirect, text_link, class, is_feature_active, has_permission) %}
+  {% if is_feature_active %}
+    {% if has_permission %}
+      {# add some randomness to ids to avoid collisions #}
+      {% set randomness = _random() %}
+      <form id="connect-as-form-{{ object_type }}-{{ object_id }}-{{ randomness }}"
+            class="d-none"
+            target="_blank"
+            rel="noopener"
+            action="{{ url_for("backoffice_web.pro.connect_as") }}"
+            method="post">
+        <input type="hidden"
+               name="csrf_token"
+               value="{{ csrf_token() }}" />
+        <input type="hidden"
+               name="object_type"
+               value="{{ object_type }}" />
+        <input type="hidden"
+               name="object_id"
+               value="{{ object_id }}" />
+        <input type="hidden"
+               name="redirect"
+               value="{{ redirect }}" />
+      </form>
+      <a href="{{ redirect | build_pro_link }}"
+         class="{{ class }}"
+         onclick="document.getElementById('connect-as-form-{{ object_type }}-{{ object_id }}-{{ randomness }}').submit(); return false;">
+        {{ text_link }}<i class="bi bi-box-arrow-up-right"></i>
+      </a>
+    {% else %}
+      {{ text_link }}
+    {% endif %}
+  {% else %}
+    <a href="{{ redirect | build_pro_link }}"
+       class="{{ class }}"
+       target="_blank"
+       rel="noopener">{{ text_link }}<i class="bi bi-box-arrow-up-right"></i></a>
+  {% endif %}
+{% endmacro %}
 {# ----- internal links (backoffice) ----- #}
 {% macro build_public_user_name_to_details_link(user) %}
   {% if user %}
@@ -81,6 +125,9 @@
      target="_top">{{ provider[text_attr] }}</a>
 {% endmacro %}
 {# ----- PC Pro links ----- #}
+{% macro build_pro_offerer_offers_link(offerer, is_feature_active, has_permission) %}
+  {{ build_connect_as_pseudo_link(offerer.id, "offerer", "/offres?structure="~offerer.id~"&from-bo=true", "Offres associées", "fw-bold link-primary", is_feature_active, has_permission) }}
+{% endmacro %}
 {% macro build_offerer_name_to_pc_pro_link(offerer) %}
   <a href="{{ offerer | pc_pro_offerer_link }}"
      class="link-primary"
