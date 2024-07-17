@@ -17,6 +17,7 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import models as offers_models
+from pcapi.core.offers import schemas as offers_schemas
 from pcapi.core.offers import validation as offers_validation
 from pcapi.core.providers import models as providers_models
 from pcapi.core.providers.constants import TITELIVE_MUSIC_GENRES_BY_GTL_ID
@@ -218,25 +219,24 @@ class CreateStockDBError(CreateStockError):
 
 def _create_product(venue: offerers_models.Venue, body: serialization.ProductOfferCreation) -> offers_models.Offer:
     try:
-        created_product = offers_api.create_offer(
-            audio_disability_compliant=body.accessibility.audio_disability_compliant,
-            booking_contact=body.booking_contact,
-            booking_email=body.booking_email,
-            description=body.description,
-            external_ticket_office_url=body.external_ticket_office_url,
-            extra_data=serialization.deserialize_extra_data(body.category_related_fields),
-            is_duo=body.enable_double_bookings,
-            mental_disability_compliant=body.accessibility.mental_disability_compliant,
-            motor_disability_compliant=body.accessibility.motor_disability_compliant,
+        offer_body = offers_schemas.CreateOffer(
             name=body.name,
-            provider=current_api_key.provider,
-            subcategory_id=body.category_related_fields.subcategory_id,
+            subcategoryId=body.category_related_fields.subcategory_id,
+            audioDisabilityCompliant=body.accessibility.audio_disability_compliant,
+            mentalDisabilityCompliant=body.accessibility.mental_disability_compliant,
+            motorDisabilityCompliant=body.accessibility.motor_disability_compliant,
+            visualDisabilityCompliant=body.accessibility.visual_disability_compliant,
+            bookingContact=body.booking_contact,
+            bookingEmail=body.booking_email,
+            description=body.description,
+            externalTicketOfficeUrl=body.external_ticket_office_url,
+            extraData=serialization.deserialize_extra_data(body.category_related_fields),
+            idAtProvider=body.id_at_provider,
+            isDuo=body.enable_double_bookings,
             url=body.location.url if isinstance(body.location, serialization.DigitalLocation) else None,
-            venue=venue,
-            visual_disability_compliant=body.accessibility.visual_disability_compliant,
-            withdrawal_details=body.withdrawal_details,
-            id_at_provider=body.id_at_provider,
-        )
+            withdrawalDetails=body.withdrawal_details,
+        )  # type: ignore[call-arg]
+        created_product = offers_api.create_offer(offer_body, venue=venue, provider=current_api_key.provider)
 
         # To create stocks or publishing the offer we need to flush
         # the session to get the offer id

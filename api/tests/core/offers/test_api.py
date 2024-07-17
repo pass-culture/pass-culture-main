@@ -33,7 +33,7 @@ from pcapi.core.offers import exceptions
 from pcapi.core.offers import factories
 from pcapi.core.offers import models
 from pcapi.core.offers import repository as offers_repository
-from pcapi.core.offers import schemas
+from pcapi.core.offers import schemas as offers_schemas
 from pcapi.core.offers.exceptions import NotUpdateProductOrOffers
 from pcapi.core.offers.exceptions import ProductNotFound
 from pcapi.core.providers.allocine import get_allocine_products_provider
@@ -1058,7 +1058,7 @@ class CreateMediationV2Test:
 class CreateDraftOfferTest:
     def test_create_draft_offer_from_scratch(self):
         venue = offerers_factories.VenueFactory()
-        body = schemas.PostDraftOfferBodyModel(
+        body = offers_schemas.PostDraftOfferBodyModel(
             name="A pretty good offer",
             subcategoryId=subcategories.SEANCE_CINE.id,
             venueId=venue.id,
@@ -1076,7 +1076,7 @@ class CreateDraftOfferTest:
 
     def test_cannot_create_activation_offer(self):
         venue = offerers_factories.VenueFactory()
-        body = schemas.PostDraftOfferBodyModel(
+        body = offers_schemas.PostDraftOfferBodyModel(
             name="An offer he can't refuse",
             subcategoryId=subcategories.ACTIVATION_EVENT.id,
             venueId=venue.id,
@@ -1089,7 +1089,7 @@ class CreateDraftOfferTest:
 
     def test_cannot_create_offer_when_invalid_subcategory(self):
         venue = offerers_factories.VenueFactory()
-        body = schemas.PostDraftOfferBodyModel(
+        body = offers_schemas.PostDraftOfferBodyModel(
             name="An offer he can't refuse",
             subcategoryId="TOTO",
             venueId=venue.id,
@@ -1108,7 +1108,7 @@ class UpdateDraftOfferTest:
             subcategoryId=subcategories.ESCAPE_GAME.id,
             description="description",
         )
-        body = schemas.PatchDraftOfferBodyModel(
+        body = offers_schemas.PatchDraftOfferBodyModel(
             name="New name",
             description="New description",
         )
@@ -1132,7 +1132,7 @@ class UpdateDraftOfferDetailsTest:
             motorDisabilityCompliant=None,
             visualDisabilityCompliant=None,
         )
-        body = schemas.PatchDraftOfferUsefulInformationsBodyModel(
+        body = offers_schemas.PatchDraftOfferUsefulInformationsBodyModel(
             audioDisabilityCompliant=True,
             mentalDisabilityCompliant=False,
             motorDisabilityCompliant=True,
@@ -1166,7 +1166,7 @@ class UpdateDraftOfferDetailsTest:
 
     def test_update_extra_data_should_raise_error_when_mandatory_field_not_provided(self):
         offer = factories.OfferFactory(subcategoryId=subcategories.SPECTACLE_REPRESENTATION.id)
-        body = schemas.PatchDraftOfferUsefulInformationsBodyModel(extraData={"author": "Asimov"})
+        body = offers_schemas.PatchDraftOfferUsefulInformationsBodyModel(extraData={"author": "Asimov"})
         with pytest.raises(api_errors.ApiErrors) as error:
             api.update_draft_offer_useful_informations(offer, body)
         assert error.value.errors == {
@@ -1178,7 +1178,7 @@ class UpdateDraftOfferDetailsTest:
         offer = factories.OfferFactory(
             subcategoryId=subcategories.SPECTACLE_REPRESENTATION.id, extraData={"showType": 200}
         )
-        body = schemas.PatchDraftOfferUsefulInformationsBodyModel(extraData=None)
+        body = offers_schemas.PatchDraftOfferUsefulInformationsBodyModel(extraData=None)
         with pytest.raises(api_errors.ApiErrors) as error:
             api.update_draft_offer_useful_informations(offer, body)
         assert error.value.errors == {
@@ -1192,16 +1192,16 @@ class CreateOfferTest:
     def test_create_offer_from_scratch(self):
         venue = offerers_factories.VenueFactory()
 
-        offer = api.create_offer(
-            venue=venue,
+        body = offers_schemas.CreateOffer(
             name="A pretty good offer",
-            subcategory_id=subcategories.SEANCE_CINE.id,
-            external_ticket_office_url="http://example.net",
-            audio_disability_compliant=True,
-            mental_disability_compliant=True,
-            motor_disability_compliant=True,
-            visual_disability_compliant=True,
+            subcategoryId=subcategories.SEANCE_CINE.id,
+            audioDisabilityCompliant=True,
+            mentalDisabilityCompliant=True,
+            motorDisabilityCompliant=True,
+            visualDisabilityCompliant=True,
+            externalTicketOfficeUrl="http://example.net",
         )
+        offer = api.create_offer(body, venue=venue)
 
         assert offer.name == "A pretty good offer"
         assert offer.venue == venue
@@ -1222,17 +1222,16 @@ class CreateOfferTest:
         venue = offerers_factories.VenueFactory()
         offerer_address = offerers_factories.OffererAddressFactory(offerer=venue.managingOfferer)
 
-        offer = api.create_offer(
-            venue=venue,
+        body = offers_schemas.CreateOffer(
             name="A pretty good offer",
-            subcategory_id=subcategories.SEANCE_CINE.id,
-            external_ticket_office_url="http://example.net",
-            audio_disability_compliant=True,
-            mental_disability_compliant=True,
-            motor_disability_compliant=True,
-            visual_disability_compliant=True,
-            offerer_address=offerer_address,
+            subcategoryId=subcategories.SEANCE_CINE.id,
+            externalTicketOfficeUrl="http://example.net",
+            audioDisabilityCompliant=True,
+            mentalDisabilityCompliant=True,
+            motorDisabilityCompliant=True,
+            visualDisabilityCompliant=True,
         )
+        offer = api.create_offer(body, venue=venue, offerer_address=offerer_address)
 
         assert offer.name == "A pretty good offer"
         assert offer.venue == venue
@@ -1254,17 +1253,16 @@ class CreateOfferTest:
         venue = offerers_factories.VenueFactory()
         provider = providers_factories.APIProviderFactory()
 
-        offer = api.create_offer(
-            venue=venue,
+        body = offers_schemas.CreateOffer(
             name="A pretty good offer",
-            subcategory_id=subcategories.SEANCE_CINE.id,
-            provider=provider,
-            id_at_provider="coucou",
-            audio_disability_compliant=True,
-            mental_disability_compliant=True,
-            motor_disability_compliant=True,
-            visual_disability_compliant=True,
+            subcategoryId=subcategories.SEANCE_CINE.id,
+            audioDisabilityCompliant=True,
+            mentalDisabilityCompliant=True,
+            motorDisabilityCompliant=True,
+            visualDisabilityCompliant=True,
+            idAtProvider="coucou",
         )
+        offer = api.create_offer(body, venue=venue, provider=provider)
 
         assert offer.name == "A pretty good offer"
         assert offer.venue == venue
@@ -1276,16 +1274,16 @@ class CreateOfferTest:
 
     def test_cannot_create_activation_offer(self):
         venue = offerers_factories.VenueFactory()
+        body = offers_schemas.CreateOffer(
+            name="An offer he can't refuse",
+            subcategoryId=subcategories.ACTIVATION_EVENT.id,
+            audioDisabilityCompliant=True,
+            mentalDisabilityCompliant=True,
+            motorDisabilityCompliant=True,
+            visualDisabilityCompliant=True,
+        )
         with pytest.raises(exceptions.SubCategoryIsInactive) as error:
-            api.create_offer(
-                venue=venue,
-                name="An offer he can't refuse",
-                subcategory_id=subcategories.ACTIVATION_EVENT.id,
-                audio_disability_compliant=True,
-                mental_disability_compliant=True,
-                motor_disability_compliant=True,
-                visual_disability_compliant=True,
-            )
+            api.create_offer(body, venue=venue)
 
         assert error.value.errors["subcategory"] == [
             "Une offre ne peut être créée ou éditée en utilisant cette sous-catégorie"
@@ -1293,34 +1291,33 @@ class CreateOfferTest:
 
     def test_cannot_create_offer_when_invalid_subcategory(self):
         venue = offerers_factories.VenueFactory()
+        body = offers_schemas.CreateOffer(
+            name="An offer he can't refuse",
+            subcategoryId="TOTO",
+            audioDisabilityCompliant=True,
+            mentalDisabilityCompliant=True,
+            motorDisabilityCompliant=True,
+            visualDisabilityCompliant=True,
+        )
         with pytest.raises(exceptions.UnknownOfferSubCategory) as error:
-            api.create_offer(
-                venue=venue,
-                name="An offer he can't refuse",
-                subcategory_id="TOTO",
-                audio_disability_compliant=True,
-                mental_disability_compliant=True,
-                motor_disability_compliant=True,
-                visual_disability_compliant=True,
-            )
+            api.create_offer(body, venue=venue)
 
         assert error.value.errors["subcategory"] == ["La sous-catégorie de cette offre est inconnue"]
 
     def test_raise_error_if_extra_data_mandatory_fields_not_provided(self):
         venue = offerers_factories.VenueFactory()
-
+        body = offers_schemas.CreateOffer(
+            name="A pretty good offer",
+            subcategoryId=subcategories.CONCERT.id,
+            audioDisabilityCompliant=True,
+            mentalDisabilityCompliant=True,
+            motorDisabilityCompliant=True,
+            visualDisabilityCompliant=True,
+            bookingContact="booking@conta.ct",
+            withdrawalType=models.WithdrawalTypeEnum.NO_TICKET,
+        )
         with pytest.raises(api_errors.ApiErrors) as error:
-            api.create_offer(
-                venue=venue,
-                name="A pretty good offer",
-                subcategory_id=subcategories.CONCERT.id,
-                booking_contact="booking@conta.ct",
-                withdrawal_type=models.WithdrawalTypeEnum.NO_TICKET,
-                audio_disability_compliant=True,
-                mental_disability_compliant=True,
-                motor_disability_compliant=True,
-                visual_disability_compliant=True,
-            )
+            api.create_offer(body, venue=venue)
 
         assert error.value.errors["musicType"] == ["Ce champ est obligatoire"]
 
