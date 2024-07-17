@@ -2670,12 +2670,12 @@
   dependencies:
     "@storybook/global" "^5.0.0"
 
-"@storybook/builder-vite@8.2.2":
-  version "8.2.2"
-  resolved "https://registry.yarnpkg.com/@storybook/builder-vite/-/builder-vite-8.2.2.tgz#6e387afb00bee8eabc44514ff29418fe68f190f5"
-  integrity sha512-tyt+CjzLEuRHU2NERZSy7JfnTpTJo10HrRysJcRtzclu3TOzx7bWszUJRHho9ttyypBX6w5+8TPcqXh/vu0tig==
+"@storybook/builder-vite@8.2.4":
+  version "8.2.4"
+  resolved "https://registry.yarnpkg.com/@storybook/builder-vite/-/builder-vite-8.2.4.tgz#27cd941915d859c3456b09a590857dfa0ea837ad"
+  integrity sha512-hDx0ZLcnFrIJaVoFMu41d9w1uWmwy/DDUuIbSd0T7xHwWyVqgI8lmaQlBIp81/QmSKaUB964UduHcdIjkoWoYA==
   dependencies:
-    "@storybook/csf-plugin" "8.2.2"
+    "@storybook/csf-plugin" "8.2.4"
     "@types/find-cache-dir" "^3.2.1"
     browser-assert "^1.2.1"
     es-module-lexer "^1.5.0"
@@ -2704,6 +2704,11 @@
     recast "^0.23.5"
     tiny-invariant "^1.3.1"
 
+"@storybook/components@^8.2.4":
+  version "8.2.4"
+  resolved "https://registry.yarnpkg.com/@storybook/components/-/components-8.2.4.tgz#3185c3d5c68700daaad4b8cb3078a2eb0a9e3047"
+  integrity sha512-JLT1RoR/RXX+ZTeFoY85CRHb9Zz3l0PRRUSetEjoIJdnBGeL5C38bs0s9QnYjpCDLUlhdYhTln+GzmbyH8ocpA==
+
 "@storybook/core@8.2.4":
   version "8.2.4"
   resolved "https://registry.yarnpkg.com/@storybook/core/-/core-8.2.4.tgz#04547072b3b66bb142ccb3c28984159b7239767f"
@@ -2721,10 +2726,10 @@
     util "^0.12.4"
     ws "^8.2.3"
 
-"@storybook/csf-plugin@8.2.2":
-  version "8.2.2"
-  resolved "https://registry.yarnpkg.com/@storybook/csf-plugin/-/csf-plugin-8.2.2.tgz#e9c5d7e54e60555589e7a0f6f49e95c5681ee499"
-  integrity sha512-3K2RUpDDvq3DT46qAIj2VBC+fzTTebRUcZUsRfS6G1AzaX9p25iClEHiwcJacFkgQKhkci8A/Ly3Z4JJ3b4Pgw==
+"@storybook/csf-plugin@8.2.4":
+  version "8.2.4"
+  resolved "https://registry.yarnpkg.com/@storybook/csf-plugin/-/csf-plugin-8.2.4.tgz#76fc4b8a487fe7129267810f91efc1041d43a345"
+  integrity sha512-7V2tmeyAwv4/AQiBpB+7fCpphnY1yhcz+Zv9esUOHKqFn5+7u9FKpEXFFcf6fcbqXr2KoNw2F1EnTv3K/SxXrg==
   dependencies:
     unplugin "^1.3.1"
 
@@ -2740,38 +2745,52 @@
   resolved "https://registry.yarnpkg.com/@storybook/global/-/global-5.0.0.tgz#b793d34b94f572c1d7d9e0f44fac4e0dbc9572ed"
   integrity sha512-FcOqPAXACP0I3oJ/ws6/rrPT9WGhu915Cg8D02a9YxLo0DE9zI+a9A5gRGvmQ09fiWPukqI8ZAEoQEdWUKMQdQ==
 
+"@storybook/manager-api@^8.2.4":
+  version "8.2.4"
+  resolved "https://registry.yarnpkg.com/@storybook/manager-api/-/manager-api-8.2.4.tgz#459eab9451263580a15297991099e2590c91a04e"
+  integrity sha512-ayiOtcGupSeLCi2doEsRpALNPo4MBWYruc+e3jjkeVJQIg9A1ipSogNQh8unuOmq9rezO4/vcNBd6MxLs3xLWg==
+
 "@storybook/preset-scss@^1.0.3":
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/@storybook/preset-scss/-/preset-scss-1.0.3.tgz#8ac834545c642dada0f64f510ef08dfb882e9737"
   integrity sha512-o9Iz6wxPeNENrQa2mKlsDKynBfqU2uWaRP80HeWp4TkGgf7/x3DVF2O7yi9N0x/PI1qzzTTpxlQ90D62XmpiTw==
 
-"@storybook/react-dom-shim@8.2.2":
-  version "8.2.2"
-  resolved "https://registry.yarnpkg.com/@storybook/react-dom-shim/-/react-dom-shim-8.2.2.tgz#2521ca3d7e3fbc1ec475bd94388598afa482b248"
-  integrity sha512-4fb1/yT9WXHzHjs0In6orIEZxga5eXd9UaXEFGudBgowCjDUVP9LabDdKTbGusz20lfaAkATsRG/W+EcSLoh8w==
+"@storybook/preview-api@^8.2.4":
+  version "8.2.4"
+  resolved "https://registry.yarnpkg.com/@storybook/preview-api/-/preview-api-8.2.4.tgz#c1681e86f7a45b22ea2978c3fca654a3c7926f01"
+  integrity sha512-IxOiUYYzNnk1OOz3zQBhsa3P1fsgqeMBZcH7TjiQWs9osuWG20oqsFR6+Z3dxoW8IuQHvpnREGKvAbRsDsThcA==
 
-"@storybook/react-vite@^8.2.2":
-  version "8.2.2"
-  resolved "https://registry.yarnpkg.com/@storybook/react-vite/-/react-vite-8.2.2.tgz#26ac76bd1690de7c2340b9e5afebd0b37cfcfdd8"
-  integrity sha512-ahsVRg4Ev3Tr1o1DA2VG8Jkgrou+KIHYJGiXAA9NUVI8WnK9Hgteh+U8BqsyUHcfzZxK1tMlfnXhU324fpB+TQ==
+"@storybook/react-dom-shim@8.2.4":
+  version "8.2.4"
+  resolved "https://registry.yarnpkg.com/@storybook/react-dom-shim/-/react-dom-shim-8.2.4.tgz#f5cfb92f2e6040441fc15fe11928df9c690c3ecf"
+  integrity sha512-p2ypPWuKKFY/ij7yYjvdnrOcfdpxnAJd9D4/2Hm2eVioE4y8HQSND54t9OfkW+498Ez7ph4zW9ez005XqzH/+w==
+
+"@storybook/react-vite@^8.2.4":
+  version "8.2.4"
+  resolved "https://registry.yarnpkg.com/@storybook/react-vite/-/react-vite-8.2.4.tgz#7028a6e8bdb44f19b69512cb83ab8790457ad5b7"
+  integrity sha512-4nDZC4uJKV6YCVzT/es0abQnd28CuU3cN4nyzxaBbI/XtCvYzkT7KLEo8csaS+1o1uEb8lY3ZLZ2a3jYlVPNJA==
   dependencies:
     "@joshwooding/vite-plugin-react-docgen-typescript" "0.3.1"
     "@rollup/pluginutils" "^5.0.2"
-    "@storybook/builder-vite" "8.2.2"
-    "@storybook/react" "8.2.2"
+    "@storybook/builder-vite" "8.2.4"
+    "@storybook/react" "8.2.4"
     find-up "^5.0.0"
     magic-string "^0.30.0"
     react-docgen "^7.0.0"
     resolve "^1.22.8"
     tsconfig-paths "^4.2.0"
 
-"@storybook/react@8.2.2", "@storybook/react@^8.2.0":
-  version "8.2.2"
-  resolved "https://registry.yarnpkg.com/@storybook/react/-/react-8.2.2.tgz#67ba27a383de47129c9f6c1500d74ebb0874881d"
-  integrity sha512-U4p/RV78yhjEwEzem8U7wE5/3sSpnqreGsPdAHMCIHd69e9tVeF0rwrTJGp917RClPjBKgEcfelCuvOlby4MrA==
+"@storybook/react@8.2.4", "@storybook/react@^8.2.0":
+  version "8.2.4"
+  resolved "https://registry.yarnpkg.com/@storybook/react/-/react-8.2.4.tgz#0202f4f36b22afddaa519ad55a8c1c4df3e511ff"
+  integrity sha512-tRkEeFhwq2GeRsPwFc8dINI5L4mXanXaa7/JreB6ZcUeOZD8d81TWXCH9QyGvxfe0LW+DeNujA91mx5Yja35Zw==
   dependencies:
+    "@storybook/components" "^8.2.4"
     "@storybook/global" "^5.0.0"
-    "@storybook/react-dom-shim" "8.2.2"
+    "@storybook/manager-api" "^8.2.4"
+    "@storybook/preview-api" "^8.2.4"
+    "@storybook/react-dom-shim" "8.2.4"
+    "@storybook/theming" "^8.2.4"
     "@types/escodegen" "^0.0.6"
     "@types/estree" "^0.0.51"
     "@types/node" "^18.0.0"
@@ -2787,6 +2806,11 @@
     ts-dedent "^2.0.0"
     type-fest "~2.19"
     util-deprecate "^1.0.2"
+
+"@storybook/theming@^8.2.4":
+  version "8.2.4"
+  resolved "https://registry.yarnpkg.com/@storybook/theming/-/theming-8.2.4.tgz#b8b1b16b60bba982265778069aecaadc7a135822"
+  integrity sha512-B4HQMzTeg1TgV9uPDIoDkMSnP839Y05I9+Tw60cilAD+jTqrCvMlccHfehsTzJk+gioAflunATcbU05TMZoeIQ==
 
 "@teppeis/multimaps@3.0.0":
   version "3.0.0"

@@ -83,7 +83,7 @@
     "@storybook/addon-controls": "^8.2.2",
     "@storybook/preset-scss": "^1.0.3",
     "@storybook/react": "^8.2.0",
-    "@storybook/react-vite": "^8.2.2",
+    "@storybook/react-vite": "^8.2.4",
     "@testing-library/cypress": "^10.0.1",
     "@testing-library/jest-dom": "^6.4.6",
     "@testing-library/react": "^16.0.0",
