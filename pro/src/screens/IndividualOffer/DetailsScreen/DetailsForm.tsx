@@ -29,6 +29,9 @@ import {
   onSubcategoryChange,
   onCategoryChange,
 } from './utils'
+import { RadioButton } from 'ui-kit/form/RadioButton/RadioButton'
+import styles from './DetailsForm.module.scss'
+import { useIndividualOfferContext } from 'context/IndividualOfferContext/IndividualOfferContext'
 
 type DetailsFormProps = {
   filteredVenues: VenueListItemResponseModel[]
@@ -59,6 +62,7 @@ export const DetailsForm = ({
     handleChange,
     setFieldValue,
   } = useFormikContext<DetailsFormValues>()
+  const { subCategories } = useIndividualOfferContext()
 
   const musicTypesQuery = useSWR(
     GET_MUSIC_TYPES_QUERY_KEY,
@@ -105,6 +109,9 @@ export const DetailsForm = ({
   const displayArtisticInformations = artisticInformationsFields.some((field) =>
     subcategoryConditionalFields.includes(field)
   )
+  const apiSubCategoriesIds = ["LIVRE_PAPIER","ABO_CONCERT","CONCERT"]
+
+console.log(subCategories.find(subcategory=>subcategory.id==="LIVRE_PAPIER").proLabel)
 
   return (
     <>
@@ -139,6 +146,35 @@ export const DetailsForm = ({
       </FormLayout.Section>
 
       <FormLayout.Section title="Type d’offre">
+        <FormLayout.Row>
+          <div className={styles["suggested-subcategories"]}>
+            Sous-catégories suggérées pour votre offre :
+            <RadioButton
+              label={subCategories.find(subcategory=>subcategory.id==="LIVRE_PAPIER").proLabel}
+              name="suggestedSubcategories"
+              value="1"
+              withBorder
+            />
+            <RadioButton
+              label={subCategories.find(subcategory=>subcategory.id==="CONCERT").proLabel}
+              name="suggestedSubcategories"
+              value="0"
+              withBorder
+            />
+            <RadioButton
+              label="Catégorie 3"
+              name="suggestedSubcategories"
+              value="1"
+              withBorder
+            />
+            <RadioButton
+              label="Autre"
+              name="suggestedSubcategories"
+              value="0"
+              withBorder
+            />
+          </div>
+        </FormLayout.Row>
         <FormLayout.Row
           sideComponent={
             <InfoBox
