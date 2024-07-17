@@ -57,7 +57,7 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
   const selectedOffererId = useSelector(selectCurrentOffererId)
 
   const selectedOffererQuery = useSWR(
-    [GET_OFFERER_QUERY_KEY, selectedOffererId],
+    selectedOffererId ? [GET_OFFERER_QUERY_KEY, selectedOffererId] : null,
     async ([, offererId]) => {
       try {
         const offerer = await api.getOfferer(Number(offererId))

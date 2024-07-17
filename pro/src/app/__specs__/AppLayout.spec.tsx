@@ -3,14 +3,12 @@ import { userEvent } from '@testing-library/user-event'
 import * as router from 'react-router-dom'
 
 import { api } from 'apiClient/api'
+import { SharedCurrentUserResponseModel } from 'apiClient/v1'
 import { defaultGetOffererResponseModel } from 'utils/individualApiFactories'
-import {
-  renderWithProviders,
-  RenderWithProvidersOptions,
-} from 'utils/renderWithProviders'
+import { renderWithProviders } from 'utils/renderWithProviders'
 import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
-import { AppLayout, AppLayoutProps } from '../AppLayout'
+import { AppLayout } from '../AppLayout'
 
 vi.mock('apiClient/api', () => ({
   api: {
@@ -19,18 +17,20 @@ vi.mock('apiClient/api', () => ({
   },
 }))
 
-const renderApp = async (
-  props: AppLayoutProps,
-  options?: RenderWithProvidersOptions
-) => {
+const renderApp = async (user: SharedCurrentUserResponseModel) => {
   renderWithProviders(
-    <AppLayout {...props}>
+    <AppLayout>
       <p>Sub component</p>
     </AppLayout>,
     {
-      user: sharedCurrentUserFactory(),
+      user,
       initialRouterEntries: ['/'],
-      ...options,
+      storeOverrides: {
+        user: {
+          currentUser: user,
+          selectedOffererId: 1,
+        },
+      },
     }
   )
   await waitFor(() => {
@@ -39,8 +39,6 @@ const renderApp = async (
 }
 
 describe('src | AppLayout', () => {
-  let props: AppLayoutProps
-
   beforeEach(() => {
     vi.spyOn(api, 'getOfferer').mockResolvedValue({
       ...defaultGetOffererResponseModel,
@@ -58,27 +56,27 @@ describe('src | AppLayout', () => {
 
   describe('side navigation', () => {
     it('should render the new header when the WIP_ENABLE_PRO_SIDE_NAV is active', async () => {
-      await renderApp(props, {
-        user: sharedCurrentUserFactory({
+      await renderApp(
+        sharedCurrentUserFactory({
           navState: {
             newNavDate: '2021-01-01',
           },
-        }),
-      })
+        })
+      )
 
       expect(screen.getByTitle('Profil')).toBeInTheDocument()
       expect(screen.queryByAltText('Menu')).not.toBeInTheDocument()
     })
 
     it('should display review banner if user has new nav active', async () => {
-      await renderApp(props, {
-        user: sharedCurrentUserFactory({
+      await renderApp(
+        sharedCurrentUserFactory({
           navState: {
             newNavDate: '2021-01-01',
             eligibilityDate: '2021-01-01',
           },
-        }),
-      })
+        })
+      )
 
       expect(
         screen.getByRole('button', { name: 'Je donne mon avis' })
@@ -86,14 +84,14 @@ describe('src | AppLayout', () => {
     })
 
     it('should not display review banner if user has new nav active but is not eligible (from a/b test)', async () => {
-      await renderApp(props, {
-        user: sharedCurrentUserFactory({
+      await renderApp(
+        sharedCurrentUserFactory({
           navState: {
             newNavDate: '2021-01-01',
             eligibilityDate: null,
           },
-        }),
-      })
+        })
+      )
 
       expect(
         screen.queryByRole('button', { name: 'Je donne mon avis' })
@@ -102,14 +100,14 @@ describe('src | AppLayout', () => {
 
     describe('on smaller screen sizes', () => {
       beforeEach(async () => {
-        await renderApp(props, {
-          user: sharedCurrentUserFactory({
+        await renderApp(
+          sharedCurrentUserFactory({
             navState: {
               newNavDate: '2021-01-01',
             },
             hasPartnerPage: true,
-          }),
-        })
+          })
+        )
 
         global.innerWidth = 500
         global.dispatchEvent(new Event('resize'))
