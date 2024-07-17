@@ -1,12 +1,17 @@
 import { Dispatch, FormEvent, SetStateAction } from 'react'
 
-import { GetOffererResponseModel, OfferStatus } from 'apiClient/v1'
+import {
+  CollectiveOfferDisplayedStatus,
+  EacFormat,
+  GetOffererResponseModel,
+  OfferStatus,
+} from 'apiClient/v1'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import {
-  ALL_CATEGORIES_OPTION,
+  ALL_FORMATS_OPTION,
   ALL_STATUS,
   ALL_VENUES_OPTION,
-  CREATION_MODES_OPTIONS,
+  COLLECTIVE_OFFER_TYPES_OPTIONS,
   DEFAULT_SEARCH_FILTERS,
 } from 'core/Offers/constants'
 import { SearchFiltersParams } from 'core/Offers/types'
@@ -26,7 +31,7 @@ import { Tag, TagVariant } from 'ui-kit/Tag/Tag'
 
 import styles from './SearchFilters.module.scss'
 
-interface SearchFiltersProps {
+interface CollectiveSearchFiltersProps {
   applyFilters: (filters: SearchFiltersParams) => void
   offerer: GetOffererResponseModel | null
   removeOfferer: () => void
@@ -39,18 +44,32 @@ interface SearchFiltersProps {
   isRestrictedAsAdmin?: boolean
 }
 
-const individualFilterStatus = [
+const collectiveFilterStatus = [
   { label: 'Tous', value: ALL_STATUS },
-  { label: 'Brouillon', value: OfferStatus.DRAFT },
-  { label: 'Publiée', value: OfferStatus.ACTIVE },
-  { label: 'Désactivée', value: OfferStatus.INACTIVE },
-  { label: 'Épuisée', value: OfferStatus.SOLD_OUT },
-  { label: 'Expirée', value: OfferStatus.EXPIRED },
-  { label: 'Validation en attente', value: OfferStatus.PENDING },
-  { label: 'Refusée', value: OfferStatus.REJECTED },
+  {
+    label: 'Validation en attente',
+    value: CollectiveOfferDisplayedStatus.PENDING,
+  },
+  {
+    label: 'Refusée',
+    value: CollectiveOfferDisplayedStatus.REJECTED,
+  },
+  { label: 'Publiée sur ADAGE', value: CollectiveOfferDisplayedStatus.ACTIVE },
+  {
+    label: 'Masquée sur ADAGE',
+    value: CollectiveOfferDisplayedStatus.INACTIVE,
+  },
+  { label: 'Préréservée', value: CollectiveOfferDisplayedStatus.PREBOOKED },
+  {
+    label: 'Réservée',
+    value: CollectiveOfferDisplayedStatus.BOOKED,
+  },
+  { label: 'Expirée', value: CollectiveOfferDisplayedStatus.EXPIRED },
+  { label: 'Terminée', value: CollectiveOfferDisplayedStatus.ENDED },
+  { label: 'Archivée', value: CollectiveOfferDisplayedStatus.ARCHIVED },
 ]
 
-export const SearchFilters = ({
+export const CollectiveSearchFilters = ({
   applyFilters,
   selectedFilters,
   setSelectedFilters,
@@ -59,10 +78,13 @@ export const SearchFilters = ({
   removeOfferer,
   disableAllFilters,
   venues,
-  categories,
   isRestrictedAsAdmin = false,
-}: SearchFiltersProps): JSX.Element => {
+}: CollectiveSearchFiltersProps): JSX.Element => {
   const isNewInterfaceActive = useIsNewInterfaceActive()
+  const formats: SelectOption[] = Object.values(EacFormat).map((format) => ({
+    value: format,
+    label: format,
+  }))
 
   const updateSearchFilters = (
     newSearchFilters: Partial<SearchFiltersParams>
@@ -81,12 +103,14 @@ export const SearchFilters = ({
     updateSearchFilters({ venueId: event.currentTarget.value })
   }
 
-  const storeSelectedCategory = (event: FormEvent<HTMLSelectElement>) => {
-    updateSearchFilters({ categoryId: event.currentTarget.value })
+  const storeSelectedFormat = (event: FormEvent<HTMLSelectElement>) => {
+    updateSearchFilters({
+      format: event.currentTarget.value as EacFormat | 'all',
+    })
   }
 
-  const storeCreationMode = (event: FormEvent<HTMLSelectElement>) => {
-    updateSearchFilters({ creationMode: event.currentTarget.value })
+  const storeCollectiveOfferType = (event: FormEvent<HTMLSelectElement>) => {
+    updateSearchFilters({ collectiveOfferType: event.currentTarget.value })
   }
 
   const storeOfferStatus = (event: FormEvent<HTMLSelectElement>) => {
@@ -114,18 +138,13 @@ export const SearchFilters = ({
     applyFilters(selectedFilters)
   }
 
-  const searchByOfferNameLabel = (
-    <span>
-      Nom de l’offre ou <abbr title="European Article Numbering">EAN-13</abbr>
-    </span>
-  )
-  const searchByOfferNamePlaceholder =
-    'Rechercher par nom d’offre ou par EAN-13'
+  const searchByOfferNameLabel = 'Nom de l’offre'
+  const searchByOfferNamePlaceholder = 'Rechercher par nom d’offre'
 
   return (
     <>
       {!isNewInterfaceActive && offerer && (
-        <span className={styles['offerer-filter']}>
+        <span className="offerer-filter">
           {offerer.name}
           <button
             onClick={removeOfferer}
@@ -140,7 +159,6 @@ export const SearchFilters = ({
           </button>
         </span>
       )}
-
       <form
         onSubmit={requestFilteredOffers}
         className={styles['search-filters-form']}
@@ -167,29 +185,30 @@ export const SearchFilters = ({
             />
           </FieldLayout>
 
-          {categories && (
-            <FieldLayout label="Catégories" name="categorie" isOptional>
-              <SelectInput
-                defaultOption={ALL_CATEGORIES_OPTION}
-                onChange={storeSelectedCategory}
-                disabled={disableAllFilters}
-                name="categorie"
-                options={categories}
-                value={selectedFilters.categoryId}
-              />
-            </FieldLayout>
-          )}
-
-          <FieldLayout label="Mode de création" name="creationMode" isOptional>
+          <FieldLayout label="Format" name="format" isOptional>
             <SelectInput
-              onChange={storeCreationMode}
+              defaultOption={ALL_FORMATS_OPTION}
+              onChange={storeSelectedFormat}
               disabled={disableAllFilters}
-              name="creationMode"
-              options={CREATION_MODES_OPTIONS}
-              value={selectedFilters.creationMode}
+              name="format"
+              options={formats}
+              value={selectedFilters.format}
             />
           </FieldLayout>
 
+          <FieldLayout
+            label="Type de l’offre"
+            name="collectiveOfferType"
+            isOptional
+          >
+            <SelectInput
+              onChange={storeCollectiveOfferType}
+              disabled={disableAllFilters}
+              name="collectiveOfferType"
+              options={COLLECTIVE_OFFER_TYPES_OPTIONS}
+              value={selectedFilters.collectiveOfferType}
+            />
+          </FieldLayout>
           <fieldset>
             <legend>Période de l’évènement</legend>
 
@@ -202,35 +221,36 @@ export const SearchFilters = ({
             />
           </fieldset>
         </FormLayout.Row>
-        <FormLayout.Row inline className={styles['reset-filters-row']}>
-          <FieldLayout
-            label={
-              <span className={styles['status-filter-label']}>
-                Statut<Tag variant={TagVariant.BLUE}>Nouveau</Tag>
-              </span>
-            }
+
+        <FieldLayout
+          label={
+            <span className={styles['status-filter-label']}>
+              Statut<Tag variant={TagVariant.BLUE}>Nouveau</Tag>
+            </span>
+          }
+          name="status"
+          isOptional
+          className={styles['status-filter']}
+        >
+          <SelectInput
+            value={selectedFilters.status as OfferStatus}
             name="status"
-            isOptional
-            className={styles['status-filter']}
-          >
-            <SelectInput
-              value={selectedFilters.status as OfferStatus}
-              name="status"
-              onChange={storeOfferStatus}
-              disabled={disableAllFilters || isRestrictedAsAdmin}
-              options={individualFilterStatus}
-            />
-          </FieldLayout>
+            onChange={storeOfferStatus}
+            disabled={disableAllFilters || isRestrictedAsAdmin}
+            options={collectiveFilterStatus}
+          />
+        </FieldLayout>
+
+        <div className={styles['reset-filters']}>
           <Button
             icon={fullRefreshIcon}
             disabled={!hasSearchFilters(selectedFilters)}
             onClick={resetFilters}
             variant={ButtonVariant.TERNARY}
-            className={styles['reset-filters']}
           >
             Réinitialiser les filtres
           </Button>
-        </FormLayout.Row>
+        </div>
         <div className={styles['search-separator']}>
           <div className={styles['separator']} />
           <Button type="submit" disabled={disableAllFilters}>
