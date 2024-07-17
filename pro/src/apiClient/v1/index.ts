@@ -12,6 +12,7 @@ export type { OpenAPIConfig } from './core/OpenAPI';
 
 export type { AdageCulturalPartnersResponseModel } from './models/AdageCulturalPartnersResponseModel';
 export type { Address } from './models/Address';
+export type { AddressModel } from './models/AddressModel';
 export type { AddressResponseIsEditableModel } from './models/AddressResponseIsEditableModel';
 export type { AddressResponseModel } from './models/AddressResponseModel';
 export type { AttachImageFormModel } from './models/AttachImageFormModel';
@@ -194,7 +195,6 @@ export type { PatchDraftOfferUsefulInformationsBodyModel } from './models/PatchD
 export type { PatchOfferActiveStatusBodyModel } from './models/PatchOfferActiveStatusBodyModel';
 export type { PatchOfferBodyModel } from './models/PatchOfferBodyModel';
 export type { PatchOffererAddressRequest } from './models/PatchOffererAddressRequest';
-export type { PatchOfferOffererAddressBodyModel } from './models/PatchOfferOffererAddressBodyModel';
 export type { PatchOfferPublishBodyModel } from './models/PatchOfferPublishBodyModel';
 export { PhoneValidationStatusType } from './models/PhoneValidationStatusType';
 export type { PostCollectiveOfferBodyModel } from './models/PostCollectiveOfferBodyModel';
@@ -202,7 +202,6 @@ export type { PostCollectiveOfferTemplateBodyModel } from './models/PostCollecti
 export type { PostDraftOfferBodyModel } from './models/PostDraftOfferBodyModel';
 export type { PostOfferBodyModel } from './models/PostOfferBodyModel';
 export type { PostOffererResponseModel } from './models/PostOffererResponseModel';
-export type { PostOfferOffererAddressBodyModel } from './models/PostOfferOffererAddressBodyModel';
 export type { PostVenueBodyModel } from './models/PostVenueBodyModel';
 export type { PostVenueProviderBody } from './models/PostVenueProviderBody';
 export type { PriceCategoryBody } from './models/PriceCategoryBody';

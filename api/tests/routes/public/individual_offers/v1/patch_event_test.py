@@ -27,6 +27,7 @@ class PatchEventTest(PublicAPIVenueEndpointHelper):
             bookingContact="contact@example.com",
             bookingEmail="notify@example.com",
             lastProvider=provider,
+            extraData={"gtl_id": "02000000"},
         )
 
     def test_should_raise_404_because_has_no_access_to_venue(self, client: TestClient):
@@ -65,6 +66,7 @@ class PatchEventTest(PublicAPIVenueEndpointHelper):
             bookingContact="contact@example.com",
             bookingEmail="notify@example.com",
             lastProvider=venue_provider.provider,
+            extraData={"gtl_id": "03000000"},
         )
 
         response = client.with_explicit_token(plain_api_key).patch(
@@ -118,6 +120,10 @@ class PatchEventTest(PublicAPIVenueEndpointHelper):
                 "performer": "Pink Pâtisserie",
             },
             lastProvider=venue_provider.provider,
+            withdrawalDelay=86400,
+            withdrawalType=offers_models.WithdrawalTypeEnum.BY_EMAIL,
+            bookingContact="contact@example.com",
+            bookingEmail="notify@example.com",
         )
 
         response = client.with_explicit_token(plain_api_key).patch(
@@ -141,7 +147,6 @@ class PatchEventTest(PublicAPIVenueEndpointHelper):
         assert event_offer.extraData == {
             "author": "Maurice",
             "performer": "Pink Pâtisserie",
-            "stageDirector": "Robert",
         }
 
     def test_patch_all_fields(self, client):
@@ -158,6 +163,7 @@ class PatchEventTest(PublicAPIVenueEndpointHelper):
             withdrawalDelay=86400,
             withdrawalDetails="Around there",
             description="A description",
+            extraData={"gtl_id": "02000000"},
         )
 
         response = client.with_explicit_token(plain_api_key).patch(

@@ -15,9 +15,9 @@ from pydantic.v1.utils import GetterDict
 from pcapi.core.categories.subcategories_v2 import SubcategoryIdEnum
 from pcapi.core.educational.models import CollectiveOfferDisplayedStatus
 from pcapi.core.offerers import models as offerers_models
-from pcapi.core.offerers import schemas as offerers_schemas
 from pcapi.core.offers import models as offers_models
 from pcapi.core.offers import repository as offers_repository
+from pcapi.core.offers import schemas as offers_schemas
 from pcapi.models.offer_mixin import OfferStatus
 from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
 from pcapi.routes.serialization import BaseModel
@@ -75,20 +75,8 @@ class CategoryResponseModel(BaseModel):
         orm_mode = True
 
 
-class PostOfferOffererAddressBodyModel(BaseModel):
-    city: offerers_schemas.VenueCity
-    label: str | None
-    latitude: float | str
-    longitude: float | str
-    postalCode: offerers_schemas.VenuePostalCode
-    street: offerers_schemas.VenueAddress
-
-
-class PatchOfferOffererAddressBodyModel(PostOfferOffererAddressBodyModel): ...
-
-
 class PostOfferBodyModel(BaseModel):
-    address: PostOfferOffererAddressBodyModel | None
+    address: offers_schemas.AddressModel | None
     audio_disability_compliant: bool
     booking_contact: EmailStr | None
     booking_email: EmailStr | None
@@ -132,6 +120,7 @@ class OfferAddressType(enum.Enum):
 
 
 class PatchOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
+    address: offers_schemas.AddressModel | None
     bookingContact: EmailStr | None
     bookingEmail: EmailStr | None
     description: str | None
@@ -147,7 +136,6 @@ class PatchOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
     isDuo: bool | None
     durationMinutes: int | None
     shouldSendMail: bool | None
-    address: PatchOfferOffererAddressBodyModel | None
 
     @validator("name", pre=True, allow_reuse=True)
     def validate_name(cls, name: str) -> str:
