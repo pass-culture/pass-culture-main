@@ -4,7 +4,8 @@ import { useIsNewInterfaceActive } from 'hooks/useIsNewInterfaceActive'
 
 import { Layout } from './App/layout/Layout'
 import { OldLayout } from './App/layout/OldLayout'
-export interface AppLayoutProps {
+
+interface AppLayoutProps {
   children?: React.ReactNode
   layout?: 'basic' | 'funnel' | 'without-nav' | 'sticky-actions'
 }
