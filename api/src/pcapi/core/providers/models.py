@@ -49,7 +49,7 @@ class Provider(PcObject, Base, Model, DeactivableMixin):
     bookingExternalUrl: str = sa.Column(sa.Text(), nullable=True)
     cancelExternalUrl: str = sa.Column(sa.Text(), nullable=True)
     notificationExternalUrl: str = sa.Column(sa.VARCHAR(length=255), nullable=True)
-    hmacKey: str = sa.Column(sa.Text(64), nullable=True)
+    hmacKey: str = sa.Column(sa.Text(), nullable=True)
     pricesInCents: bool = sa.Column(sa.Boolean, nullable=False, default=False, server_default=sa_sql.expression.false())
 
     collectiveOffers: sa_orm.Mapped["CollectiveOffer"] = sa_orm.relationship(
