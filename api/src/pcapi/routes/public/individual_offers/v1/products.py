@@ -34,6 +34,7 @@ from pcapi.routes.public.serialization import venues as venues_serialization
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
 from pcapi.utils import image_conversion
+from pcapi.utils.custom_keys import get_field
 from pcapi.validation.routes.users_authentifications import api_key_required
 from pcapi.validation.routes.users_authentifications import current_api_key
 from pcapi.workers import worker
@@ -721,27 +722,32 @@ def edit_product(body: serialization.ProductOfferEdition) -> serialization.Produ
     utils.check_offer_subcategory(body, offer.subcategoryId)
     try:
         with repository.transaction():
-            updated_offer_from_body = body.dict(exclude_unset=True)
-            updated_offer = offers_api.update_offer(
-                offer,
-                bookingContact=updated_offer_from_body.get("booking_contact", offers_api.UNCHANGED),
-                bookingEmail=updated_offer_from_body.get("booking_email", offers_api.UNCHANGED),
+            updates = body.dict(by_alias=True, exclude_unset=True)
+            dc = updates.get("accessibility", {})
+            extra_data = copy.deepcopy(offer.extraData)
+            offer_body = offers_schemas.UpdateOffer(
+                name=get_field(offer, updates, "name"),
+                audioDisabilityCompliant=get_field(offer, dc, "audioDisabilityCompliant"),
+                mentalDisabilityCompliant=get_field(offer, dc, "mentalDisabilityCompliant"),
+                motorDisabilityCompliant=get_field(offer, dc, "motorDisabilityCompliant"),
+                visualDisabilityCompliant=get_field(offer, dc, "visualDisabilityCompliant"),
+                bookingContact=get_field(offer, updates, "bookingContact"),
+                bookingEmail=get_field(offer, updates, "bookingEmail"),
+                description=get_field(offer, updates, "description"),
                 extraData=(
-                    serialization.deserialize_extra_data(body.category_related_fields, copy.deepcopy(offer.extraData))
-                    if body.category_related_fields
-                    else offers_api.UNCHANGED
+                    serialization.deserialize_extra_data(body.category_related_fields, extra_data)
+                    if "categoryRelatedFields" in updates
+                    else extra_data
                 ),
-                isActive=updated_offer_from_body.get("is_active", offers_api.UNCHANGED),
-                isDuo=updated_offer_from_body.get("enable_double_bookings", offers_api.UNCHANGED),
-                withdrawalDetails=updated_offer_from_body.get("withdrawal_details", offers_api.UNCHANGED),
-                idAtProvider=updated_offer_from_body.get("id_at_provider", offers_api.UNCHANGED),
-                name=updated_offer_from_body.get("name", offers_api.UNCHANGED),
-                description=updated_offer_from_body.get("description", offers_api.UNCHANGED),
-                **utils.compute_accessibility_edition_fields(updated_offer_from_body.get("accessibility")),
-            )
+                isActive=get_field(offer, updates, "isActive"),
+                idAtProvider=get_field(offer, updates, "idAtProvider"),
+                isDuo=get_field(offer, updates, "enableDoubleBookings", col="isDuo"),
+                withdrawalDetails=get_field(offer, updates, "itemCollectionDetails", col="withdrawalDetails"),
+            )  # type: ignore[call-arg]
+            updated_offer = offers_api.update_offer(offer, offer_body)
             if body.image:
                 utils.save_image(body.image, updated_offer)
-            if "stock" in updated_offer_from_body:
+            if "stock" in updates:
                 _upsert_product_stock(updated_offer, body.stock, current_api_key.provider)
     except (offers_exceptions.OfferCreationBaseException, offers_exceptions.OfferEditionBaseException) as e:
         raise api_errors.ApiErrors(e.errors, status_code=400)

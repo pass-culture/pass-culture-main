@@ -69,17 +69,6 @@ def check_venue_id_is_tied_to_api_key(venue_id: int | None) -> None:
         raise api_errors.ApiErrors({"venue_id": ["The venue could not be found"]}, status_code=404)
 
 
-def compute_accessibility_edition_fields(accessibility_payload: dict | None) -> dict:
-    if not accessibility_payload:
-        return {}
-    return {
-        "audioDisabilityCompliant": accessibility_payload.get("audio_disability_compliant", offers_api.UNCHANGED),
-        "mentalDisabilityCompliant": accessibility_payload.get("mental_disability_compliant", offers_api.UNCHANGED),
-        "motorDisabilityCompliant": accessibility_payload.get("motor_disability_compliant", offers_api.UNCHANGED),
-        "visualDisabilityCompliant": accessibility_payload.get("visual_disability_compliant", offers_api.UNCHANGED),
-    }
-
-
 def check_offer_subcategory(
     body: serialization.ProductOfferEdition | serialization.EventOfferEdition, offer_subcategory_id: str
 ) -> None:

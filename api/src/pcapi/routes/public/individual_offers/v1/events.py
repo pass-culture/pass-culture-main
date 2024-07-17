@@ -19,6 +19,7 @@ from pcapi.routes.public.documentation_constants import http_responses
 from pcapi.routes.public.documentation_constants import tags
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
+from pcapi.utils.custom_keys import get_field
 from pcapi.validation.routes.users_authentifications import api_key_required
 from pcapi.validation.routes.users_authentifications import current_api_key
 
@@ -209,27 +210,31 @@ def edit_event(event_id: int, body: serialization.EventOfferEdition) -> serializ
         raise api_errors.ApiErrors({"event_id": ["The event offer could not be found"]}, status_code=404)
     utils.check_offer_subcategory(body, offer.subcategoryId)
 
-    update_body = body.dict(exclude_unset=True)
-
     try:
         with repository.transaction():
-            offer = offers_api.update_offer(
-                offer,
-                bookingContact=update_body.get("booking_contact", offers_api.UNCHANGED),
-                bookingEmail=update_body.get("booking_email", offers_api.UNCHANGED),
-                durationMinutes=update_body.get("event_duration", offers_api.UNCHANGED),
+            updates = body.dict(by_alias=True, exclude_unset=True)
+            dc = updates.get("accessibility", {})
+            extra_data = copy.deepcopy(offer.extraData)
+            offer_body = offers_schemas.UpdateOffer(
+                audioDisabilityCompliant=get_field(offer, dc, "audioDisabilityCompliant"),
+                mentalDisabilityCompliant=get_field(offer, dc, "mentalDisabilityCompliant"),
+                motorDisabilityCompliant=get_field(offer, dc, "motorDisabilityCompliant"),
+                visualDisabilityCompliant=get_field(offer, dc, "visualDisabilityCompliant"),
+                bookingContact=get_field(offer, updates, "bookingContact"),
+                bookingEmail=get_field(offer, updates, "bookingEmail"),
+                description=get_field(offer, updates, "description"),
+                durationMinutes=get_field(offer, updates, "eventDuration", col="durationMinutes"),
                 extraData=(
-                    serialization.deserialize_extra_data(body.category_related_fields, copy.deepcopy(offer.extraData))
-                    if body.category_related_fields
-                    else offers_api.UNCHANGED
+                    serialization.deserialize_extra_data(body.category_related_fields, extra_data)
+                    if "categoryRelatedFields" in updates
+                    else extra_data
                 ),
-                isActive=update_body.get("is_active", offers_api.UNCHANGED),
-                isDuo=update_body.get("enable_double_bookings", offers_api.UNCHANGED),
-                withdrawalDetails=update_body.get("withdrawal_details", offers_api.UNCHANGED),
-                description=update_body.get("description", offers_api.UNCHANGED),
-                idAtProvider=update_body.get("id_at_provider", offers_api.UNCHANGED),
-                **utils.compute_accessibility_edition_fields(update_body.get("accessibility")),
-            )
+                isActive=get_field(offer, updates, "isActive"),
+                idAtProvider=get_field(offer, updates, "idAtProvider"),
+                isDuo=get_field(offer, updates, "enableDoubleBookings", col="isDuo"),
+                withdrawalDetails=get_field(offer, updates, "itemCollectionDetails", col="withdrawalDetails"),
+            )  # type: ignore[call-arg]
+            offer = offers_api.update_offer(offer, offer_body)
             if body.image:
                 utils.save_image(body.image, offer)
     except (offers_exceptions.OfferCreationBaseException, offers_exceptions.OfferEditionBaseException) as error:

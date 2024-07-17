@@ -37,6 +37,7 @@ class PatchEventTest:
             bookingContact="contact@example.com",
             bookingEmail="notify@example.com",
             lastProvider=api_key.provider,
+            extraData={"musicType": 520, "musicSubType": 524},
         )
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
@@ -90,6 +91,10 @@ class PatchEventTest:
                 "performer": "Pink Pâtisserie",
             },
             lastProvider=api_key.provider,
+            withdrawalDelay=86400,
+            withdrawalType=offers_models.WithdrawalTypeEnum.BY_EMAIL,
+            bookingContact="contact@example.com",
+            bookingEmail="notify@example.com",
         )
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
@@ -113,7 +118,6 @@ class PatchEventTest:
         assert event_offer.extraData == {
             "author": "Maurice",
             "performer": "Pink Pâtisserie",
-            "stageDirector": "Robert",
         }
 
     def test_patch_all_fields(self, client):
@@ -130,6 +134,7 @@ class PatchEventTest:
             withdrawalDelay=86400,
             withdrawalDetails="Around there",
             description="A description",
+            extraData={"musicType": 520, "musicSubType": 524},
         )
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
