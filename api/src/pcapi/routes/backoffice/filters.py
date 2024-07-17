@@ -14,6 +14,7 @@ from markupsafe import Markup
 import psycopg2.extras
 import pytz
 
+from pcapi import settings
 from pcapi.connectors.dms.models import GraphQLApplicationStates
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.categories import categories
@@ -1228,6 +1229,12 @@ def format_venue_provider_count(count: dict | None) -> str:
     return f"{actives} actif{'s' if actives>1 else ''} / {inactives} inactif{'s' if inactives>1 else ''}"
 
 
+def build_pro_link(path: str) -> str:
+    if not path.startswith("/"):
+        raise ValueError("PRO link path must start with '/'")
+    return settings.PRO_URL + path
+
+
 def install_template_filters(app: Flask) -> None:
     app.jinja_env.trim_blocks = True
     app.jinja_env.lstrip_blocks = True
@@ -1304,7 +1311,6 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["pc_pro_bank_account_link"] = urls.build_pc_pro_bank_account_link
     app.jinja_env.filters["pc_pro_offer_link"] = urls.build_pc_pro_offer_link
     app.jinja_env.filters["pc_pro_offerer_link"] = urls.build_pc_pro_offerer_link
-    app.jinja_env.filters["pc_pro_offerer_offers_link"] = urls.build_pc_pro_offerer_offers_link
     app.jinja_env.filters["pc_pro_venue_bookings_link"] = urls.build_pc_pro_venue_bookings_link
     app.jinja_env.filters["pc_pro_venue_offers_link"] = urls.build_pc_pro_venue_offers_link
     app.jinja_env.filters["pc_pro_venue_link"] = urls.build_pc_pro_venue_link
@@ -1319,3 +1325,4 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_finance_incident_type"] = format_finance_incident_type
     app.jinja_env.filters["format_finance_incident_type_str"] = format_finance_incident_type_str
     app.jinja_env.filters["format_venue_provider_count"] = format_venue_provider_count
+    app.jinja_env.filters["build_pro_link"] = build_pro_link

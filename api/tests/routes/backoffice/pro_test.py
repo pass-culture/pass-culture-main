@@ -7,15 +7,18 @@ import typing
 from flask import url_for
 import pytest
 
+from pcapi import settings
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.geography import models as geography_models
 from pcapi.core.history import factories as history_factories
 from pcapi.core.history import models as history_models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
+from pcapi.core.offers import factories as offers_factories
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_features
+from pcapi.core.token import SecureToken
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
@@ -23,6 +26,7 @@ from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.routes.backoffice.pro.forms import TypeOptions
 from pcapi.utils import regions as regions_utils
+from pcapi.utils import urls
 from pcapi.utils.human_ids import humanize
 
 from .helpers import button as button_helpers
@@ -995,3 +999,558 @@ class CreateOffererTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, form=form_data)
         assert response.status_code == 400
         assert html_parser.extract_warnings(response.data) == ["Information obligatoire"]
+
+
+class GetConnectAsProUserTest(PostEndpointHelper):
+    endpoint = "backoffice_web.pro.connect_as"
+    needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
+
+    # session + current user + pro user data + WIP_CONNECT_AS
+    expected_num_queries = 4
+
+    @override_features(WIP_CONNECT_AS=True)
+    @pytest.mark.parametrize("roles", [[users_models.UserRole.PRO], [users_models.UserRole.NON_ATTACHED_PRO]])
+    def test_connect_as_user(self, authenticated_client, legit_user, roles):
+        user = users_factories.ProFactory(roles=roles)
+
+        form_data = {"object_type": "user", "object_id": user.id, "redirect": "/"}
+        expected_token_data = {
+            "user_id": user.id,
+            "internal_admin_id": legit_user.id,
+            "internal_admin_email": legit_user.email,
+            "redirect_link": settings.PRO_URL + "/",
+        }
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form=form_data,
+            expected_num_queries=self.expected_num_queries,
+        )
+
+        # check url form
+        assert response.status_code == 303
+        base_url, key_token = response.location.rsplit("/", 1)
+        assert base_url + "/" == urls.build_pc_pro_connect_as_link("")
+        assert SecureToken(token=key_token).data == expected_token_data
+
+    @override_features(WIP_CONNECT_AS=False)
+    def test_connect_as_user_protected_by_feature_flag(self, authenticated_client):
+        user = users_factories.ProFactory()
+
+        form_data = {"object_type": "user", "object_id": user.id, "redirect": "/"}
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form=form_data,
+            expected_num_queries=self.expected_num_queries,
+        )
+
+        assert response.status_code == 303
+        assert response.location == url_for("backoffice_web.home", _external=True)
+        redirected_response = authenticated_client.get(response.location)
+        assert (
+            html_parser.extract_alert(redirected_response.data)
+            == "L'utilisation du « connect as » requiert l'activation de la feature : WIP_CONNECT_AS"
+        )
+
+    @override_features(WIP_CONNECT_AS=True)
+    def test_connect_as_user_invalid_redirect(self, authenticated_client, legit_user):
+        user = users_factories.ProFactory()
+
+        form_data = {"object_type": "user", "object_id": user.id, "redirect": "http://example.com/pouet"}
+
+        # 1 retrieve session
+        # 2 retrieve connected user
+        # 3 rollback transaction
+        expected_num_queries = 3
+        response = self.post_to_endpoint(
+            authenticated_client, form=form_data, expected_num_queries=expected_num_queries
+        )
+
+        # check url form
+        assert response.status_code == 303
+        assert response.location == url_for("backoffice_web.home", _external=True)
+        redirected_response = authenticated_client.get(response.location)
+        assert (
+            html_parser.extract_alert(redirected_response.data)
+            == "Échec de la validation de sécurité, veuillez réessayer"
+        )
+
+    @override_features(WIP_CONNECT_AS=True)
+    def test_connect_as_user_invalid_object_type(self, authenticated_client, legit_user):
+        user = users_factories.ProFactory()
+
+        form_data = {"object_type": "pouet", "object_id": user.id, "redirect": "/deposit"}
+
+        # 1 retrieve session
+        # 2 retrieve connected user
+        # 3 rollback transaction
+        expected_num_queries = 3
+        response = self.post_to_endpoint(
+            authenticated_client, form=form_data, expected_num_queries=expected_num_queries
+        )
+
+        # check url form
+        assert response.status_code == 303
+        assert response.location == url_for("backoffice_web.home", _external=True)
+        redirected_response = authenticated_client.get(response.location)
+        assert (
+            html_parser.extract_alert(redirected_response.data)
+            == "Échec de la validation de sécurité, veuillez réessayer"
+        )
+
+    @override_features(WIP_CONNECT_AS=True)
+    def test_connect_as_user_not_found(self, authenticated_client):
+        form_data = {"object_type": "user", "object_id": 0, "redirect": "/"}
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form=form_data,
+            expected_num_queries=self.expected_num_queries + 1,  # +1 for rollback query
+        )
+        assert response.status_code == 404
+
+    @override_features(WIP_CONNECT_AS=True)
+    def test_connect_as_inactive_user(self, authenticated_client):
+        user = users_factories.ProFactory(isActive=False)
+
+        form_data = {"object_type": "user", "object_id": user.id, "redirect": "/"}
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form=form_data,
+            expected_num_queries=self.expected_num_queries + 1,  # +1 for rollback query
+        )
+
+        assert response.status_code == 303
+        assert response.location == url_for("backoffice_web.home", _external=True)
+        redirected_response = authenticated_client.get(response.location)
+        assert (
+            html_parser.extract_alert(redirected_response.data)
+            == "L'utilisation du « connect as » n'est pas disponible pour les comptes inactifs"
+        )
+
+    @override_features(WIP_CONNECT_AS=True)
+    @pytest.mark.parametrize(
+        "roles,warning",
+        [
+            (
+                [users_models.UserRole.PRO, users_models.UserRole.ADMIN],
+                "L'utilisation du « connect as » n'est pas disponible pour les comptes admin",
+            ),
+            (
+                [users_models.UserRole.PRO, users_models.UserRole.ANONYMIZED],
+                "L'utilisation du « connect as » n'est pas disponible pour les comptes anonymisés",
+            ),
+            ([], ""),
+        ],
+    )
+    def test_connect_as_uneligible_user(self, authenticated_client, roles, warning):
+        user = users_factories.UserFactory(roles=roles)
+
+        form_data = {"object_type": "user", "object_id": user.id, "redirect": "/"}
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form=form_data,
+            expected_num_queries=self.expected_num_queries + 1,  # +1 for rollback query
+        )
+
+        assert response.status_code == 303
+        assert response.location == url_for("backoffice_web.home", _external=True)
+        if warning:
+            redirected_response = authenticated_client.get(response.location)
+            assert html_parser.extract_alert(redirected_response.data) == warning
+
+    @override_features(WIP_CONNECT_AS_EXTENDED=True)
+    def test_connect_as_venue(self, authenticated_client, legit_user):
+        venue = offerers_factories.VenueFactory(
+            managingOfferer=offerers_factories.UserOffererFactory().offerer,
+        )
+
+        form_data = {"object_type": "venue", "object_id": venue.id, "redirect": "/venue"}
+        expected_token_data = {
+            "user_id": venue.managingOfferer.UserOfferers[0].userId,
+            "internal_admin_id": legit_user.id,
+            "internal_admin_email": legit_user.email,
+            "redirect_link": settings.PRO_URL + "/venue",
+        }
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form=form_data,
+            expected_num_queries=self.expected_num_queries,
+        )
+
+        assert response.status_code == 303
+        base_url, key_token = response.location.rsplit("/", 1)
+        assert base_url + "/" == urls.build_pc_pro_connect_as_link("")
+        assert SecureToken(token=key_token).data == expected_token_data
+
+    @override_features(WIP_CONNECT_AS_EXTENDED=False)
+    def test_connect_as_venue_protected_by_feature_flag(self, authenticated_client):
+        venue = offerers_factories.VenueFactory()
+
+        form_data = {"object_type": "venue", "object_id": venue.id, "redirect": "/venue"}
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form=form_data,
+            expected_num_queries=self.expected_num_queries,
+        )
+
+        assert response.status_code == 303
+        assert response.location == url_for("backoffice_web.home", _external=True)
+        redirected_response = authenticated_client.get(response.location)
+        assert (
+            html_parser.extract_alert(redirected_response.data)
+            == "L'utilisation de la version étendue de « connect as » requiert l'activation de la feature : WIP_CONNECT_AS_EXTENDED"
+        )
+
+    @override_features(WIP_CONNECT_AS_EXTENDED=True)
+    def test_connect_as_venue_without_user(self, authenticated_client):
+        venue = offerers_factories.VenueFactory()
+
+        form_data = {"object_type": "venue", "object_id": venue.id, "redirect": "/venue"}
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form=form_data,
+            expected_num_queries=self.expected_num_queries + 1,  # +1 for rollback query
+        )
+
+        assert response.status_code == 303
+        assert response.location == url_for("backoffice_web.home", _external=True)
+        redirected_response = authenticated_client.get(response.location)
+        assert (
+            html_parser.extract_alert(redirected_response.data)
+            == "Aucun utilisateur approprié n'a été trouvé pour se connecter à ce lieu"
+        )
+
+    @override_features(WIP_CONNECT_AS_EXTENDED=True)
+    def test_connect_as_venue_not_found(self, authenticated_client):
+        form_data = {"object_type": "venue", "object_id": 0, "redirect": "/venue"}
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form=form_data,
+            expected_num_queries=self.expected_num_queries + 1,  # +1 for rollback query
+        )
+
+        assert response.status_code == 303
+        assert response.location == url_for("backoffice_web.home", _external=True)
+        redirected_response = authenticated_client.get(response.location)
+        assert (
+            html_parser.extract_alert(redirected_response.data)
+            == "Aucun utilisateur approprié n'a été trouvé pour se connecter à ce lieu"
+        )
+
+    @override_features(WIP_CONNECT_AS_EXTENDED=True)
+    def test_connect_as_venue_without_active_user(self, authenticated_client):
+        venue = offerers_factories.VenueFactory(
+            managingOfferer=offerers_factories.UserOffererFactory(
+                user__isActive=False,
+            ).offerer,
+        )
+
+        form_data = {"object_type": "venue", "object_id": venue.id, "redirect": "/venue"}
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form=form_data,
+            expected_num_queries=self.expected_num_queries + 1,  # +1 for rollback query
+        )
+
+        assert response.status_code == 303
+        assert response.location == url_for("backoffice_web.home", _external=True)
+        redirected_response = authenticated_client.get(response.location)
+        assert (
+            html_parser.extract_alert(redirected_response.data)
+            == "Aucun utilisateur approprié n'a été trouvé pour se connecter à ce lieu"
+        )
+
+    @override_features(WIP_CONNECT_AS_EXTENDED=True)
+    @pytest.mark.parametrize(
+        "roles",
+        [
+            [users_models.UserRole.PRO, users_models.UserRole.ADMIN],
+            [users_models.UserRole.ADMIN],
+            [users_models.UserRole.PRO, users_models.UserRole.ANONYMIZED],
+            [],
+        ],
+    )
+    def test_connect_as_venue_without_eligible_user(self, authenticated_client, roles):
+        venue = offerers_factories.VenueFactory(
+            managingOfferer=offerers_factories.UserOffererFactory(
+                user__roles=roles,
+            ).offerer
+        )
+        form_data = {"object_type": "venue", "object_id": venue.id, "redirect": "/venue"}
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form=form_data,
+            expected_num_queries=self.expected_num_queries + 1,  # +1 for rollback query
+        )
+
+        assert response.status_code == 303
+        assert response.location == url_for("backoffice_web.home", _external=True)
+        redirected_response = authenticated_client.get(response.location)
+        assert (
+            html_parser.extract_alert(redirected_response.data)
+            == "Aucun utilisateur approprié n'a été trouvé pour se connecter à ce lieu"
+        )
+
+    @override_features(WIP_CONNECT_AS_EXTENDED=True)
+    def test_connect_as_offerer(self, authenticated_client, legit_user):
+        user_offerer = offerers_factories.UserOffererFactory()
+        form_data = {"object_type": "offerer", "object_id": user_offerer.offerer.id, "redirect": "/venue"}
+        expected_token_data = {
+            "user_id": user_offerer.userId,
+            "internal_admin_id": legit_user.id,
+            "internal_admin_email": legit_user.email,
+            "redirect_link": settings.PRO_URL + "/venue",
+        }
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form=form_data,
+            expected_num_queries=self.expected_num_queries,
+        )
+
+        assert response.status_code == 303
+        base_url, key_token = response.location.rsplit("/", 1)
+        assert base_url + "/" == urls.build_pc_pro_connect_as_link("")
+        assert SecureToken(token=key_token).data == expected_token_data
+
+    @override_features(WIP_CONNECT_AS_EXTENDED=False)
+    def test_connect_as_offerer_protected_by_feature_flag(self, authenticated_client):
+        user_offerer = offerers_factories.UserOffererFactory()
+
+        form_data = {"object_type": "offerer", "object_id": user_offerer.offerer.id, "redirect": "/venue"}
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form=form_data,
+            expected_num_queries=self.expected_num_queries,
+        )
+
+        assert response.status_code == 303
+        assert response.location == url_for("backoffice_web.home", _external=True)
+        redirected_response = authenticated_client.get(response.location)
+        assert (
+            html_parser.extract_alert(redirected_response.data)
+            == "L'utilisation de la version étendue de « connect as » requiert l'activation de la feature : WIP_CONNECT_AS_EXTENDED"
+        )
+
+    @override_features(WIP_CONNECT_AS_EXTENDED=True)
+    def test_connect_as_offerer_without_user(self, authenticated_client):
+        offerer = offerers_factories.OffererFactory()
+
+        form_data = {"object_type": "offerer", "object_id": offerer.id, "redirect": "/venue"}
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form=form_data,
+            expected_num_queries=self.expected_num_queries + 1,  # +1 for rollback query
+        )
+
+        assert response.status_code == 303
+        assert response.location == url_for("backoffice_web.home", _external=True)
+        redirected_response = authenticated_client.get(response.location)
+        assert (
+            html_parser.extract_alert(redirected_response.data)
+            == "Aucun utilisateur approprié n'a été trouvé pour se connecter à cette structure"
+        )
+
+    @override_features(WIP_CONNECT_AS_EXTENDED=True)
+    def test_connect_as_offerer_not_found(self, authenticated_client):
+        form_data = {"object_type": "offerer", "object_id": 0, "redirect": "/venue"}
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form=form_data,
+            expected_num_queries=self.expected_num_queries + 1,  # +1 for rollback query
+        )
+
+        assert response.status_code == 303
+        assert response.location == url_for("backoffice_web.home", _external=True)
+        redirected_response = authenticated_client.get(response.location)
+        assert (
+            html_parser.extract_alert(redirected_response.data)
+            == "Aucun utilisateur approprié n'a été trouvé pour se connecter à cette structure"
+        )
+
+    @override_features(WIP_CONNECT_AS_EXTENDED=True)
+    def test_connect_as_offerer_without_active_user(self, authenticated_client):
+        user_offerer = offerers_factories.UserOffererFactory(
+            user__isActive=False,
+        )
+
+        form_data = {"object_type": "offerer", "object_id": user_offerer.offerer.id, "redirect": "/venue"}
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form=form_data,
+            expected_num_queries=self.expected_num_queries + 1,  # +1 for rollback query
+        )
+
+        assert response.status_code == 303
+        assert response.location == url_for("backoffice_web.home", _external=True)
+        redirected_response = authenticated_client.get(response.location)
+        assert (
+            html_parser.extract_alert(redirected_response.data)
+            == "Aucun utilisateur approprié n'a été trouvé pour se connecter à cette structure"
+        )
+
+    @override_features(WIP_CONNECT_AS_EXTENDED=True)
+    @pytest.mark.parametrize(
+        "roles",
+        [
+            [users_models.UserRole.PRO, users_models.UserRole.ADMIN],
+            [users_models.UserRole.ADMIN],
+            [users_models.UserRole.PRO, users_models.UserRole.ANONYMIZED],
+            [],
+        ],
+    )
+    def test_connect_as_offerer_without_eligible_user(self, authenticated_client, roles):
+        user_offerer = offerers_factories.UserOffererFactory(
+            user__roles=roles,
+        )
+        form_data = {"object_type": "offerer", "object_id": user_offerer.offerer.id, "redirect": "/venue"}
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form=form_data,
+            expected_num_queries=self.expected_num_queries + 1,  # +1 for rollback query
+        )
+
+        assert response.status_code == 303
+        assert response.location == url_for("backoffice_web.home", _external=True)
+        redirected_response = authenticated_client.get(response.location)
+        assert (
+            html_parser.extract_alert(redirected_response.data)
+            == "Aucun utilisateur approprié n'a été trouvé pour se connecter à cette structure"
+        )
+
+    @override_features(WIP_CONNECT_AS_EXTENDED=True)
+    def test_connect_as_offer(self, authenticated_client, legit_user):
+        user_offerer = offerers_factories.UserOffererFactory()
+        offer = offers_factories.OfferFactory(
+            venue__managingOfferer=user_offerer.offerer,
+        )
+        form_data = {"object_type": "offer", "object_id": offer.id, "redirect": "/venue"}
+        expected_token_data = {
+            "user_id": user_offerer.userId,
+            "internal_admin_id": legit_user.id,
+            "internal_admin_email": legit_user.email,
+            "redirect_link": settings.PRO_URL + "/venue",
+        }
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form=form_data,
+            expected_num_queries=self.expected_num_queries,
+        )
+
+        assert response.status_code == 303
+        base_url, key_token = response.location.rsplit("/", 1)
+        assert base_url + "/" == urls.build_pc_pro_connect_as_link("")
+        assert SecureToken(token=key_token).data == expected_token_data
+
+    @override_features(WIP_CONNECT_AS_EXTENDED=False)
+    def test_connect_as_offer_protected_by_feature_flag(self, authenticated_client):
+        offer = offers_factories.OfferFactory()
+
+        form_data = {"object_type": "offer", "object_id": offer.id, "redirect": "/venue"}
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form=form_data,
+            expected_num_queries=self.expected_num_queries,
+        )
+
+        assert response.status_code == 303
+        assert response.location == url_for("backoffice_web.home", _external=True)
+        redirected_response = authenticated_client.get(response.location)
+        assert (
+            html_parser.extract_alert(redirected_response.data)
+            == "L'utilisation de la version étendue de « connect as » requiert l'activation de la feature : WIP_CONNECT_AS_EXTENDED"
+        )
+
+    @override_features(WIP_CONNECT_AS_EXTENDED=True)
+    def test_connect_as_offer_without_user(self, authenticated_client):
+        offer = offers_factories.OfferFactory()
+
+        form_data = {"object_type": "offer", "object_id": offer.id, "redirect": "/venue"}
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form=form_data,
+            expected_num_queries=self.expected_num_queries + 1,  # +1 for rollback query
+        )
+
+        assert response.status_code == 303
+        assert response.location == url_for("backoffice_web.home", _external=True)
+        redirected_response = authenticated_client.get(response.location)
+        assert (
+            html_parser.extract_alert(redirected_response.data)
+            == "Aucun utilisateur approprié n'a été trouvé pour se connecter à cette offre"
+        )
+
+    @override_features(WIP_CONNECT_AS_EXTENDED=True)
+    def test_connect_as_offer_not_found(self, authenticated_client):
+        form_data = {"object_type": "offer", "object_id": 0, "redirect": "/venue"}
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form=form_data,
+            expected_num_queries=self.expected_num_queries + 1,  # +1 for rollback query
+        )
+
+        assert response.status_code == 303
+        assert response.location == url_for("backoffice_web.home", _external=True)
+        redirected_response = authenticated_client.get(response.location)
+        assert (
+            html_parser.extract_alert(redirected_response.data)
+            == "Aucun utilisateur approprié n'a été trouvé pour se connecter à cette offre"
+        )
+
+    @override_features(WIP_CONNECT_AS_EXTENDED=True)
+    def test_connect_as_offer_without_active_user(self, authenticated_client):
+        user_offerer = offerers_factories.UserOffererFactory(
+            user__isActive=False,
+        )
+        offer = offers_factories.OfferFactory(
+            venue__managingOfferer=user_offerer.offerer,
+        )
+
+        form_data = {"object_type": "offer", "object_id": offer.id, "redirect": "/venue"}
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form=form_data,
+            expected_num_queries=self.expected_num_queries + 1,  # +1 for rollback query
+        )
+
+        assert response.status_code == 303
+        assert response.location == url_for("backoffice_web.home", _external=True)
+        redirected_response = authenticated_client.get(response.location)
+        assert (
+            html_parser.extract_alert(redirected_response.data)
+            == "Aucun utilisateur approprié n'a été trouvé pour se connecter à cette offre"
+        )
+
+    @override_features(WIP_CONNECT_AS_EXTENDED=True)
+    @pytest.mark.parametrize(
+        "roles",
+        [
+            [users_models.UserRole.PRO, users_models.UserRole.ADMIN],
+            [users_models.UserRole.ADMIN],
+            [users_models.UserRole.PRO, users_models.UserRole.ANONYMIZED],
+            [],
+        ],
+    )
+    def test_connect_as_offer_without_eligible_user(self, authenticated_client, roles):
+        user_offerer = offerers_factories.UserOffererFactory(
+            user__roles=roles,
+        )
+        offer = offers_factories.OfferFactory(
+            venue__managingOfferer=user_offerer.offerer,
+        )
+        form_data = {"object_type": "offer", "object_id": offer.id, "redirect": "/venue"}
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form=form_data,
+            expected_num_queries=self.expected_num_queries + 1,  # +1 for rollback query
+        )
+
+        assert response.status_code == 303
+        assert response.location == url_for("backoffice_web.home", _external=True)
+        redirected_response = authenticated_client.get(response.location)
+        assert (
+            html_parser.extract_alert(redirected_response.data)
+            == "Aucun utilisateur approprié n'a été trouvé pour se connecter à cette offre"
+        )

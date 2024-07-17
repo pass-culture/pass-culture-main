@@ -106,11 +106,7 @@
         {% if is_feature_active('WIP_CONNECT_AS') %}
           <td class="fw-bolder">
             {% if row.isActive and (admin_role not in row.roles) and (anonymized_role not in row.roles) %}
-              <a href="{{ url_for('backoffice_web.pro_user.connect_as', user_id=row.id, csrf_token=csrf_token._value() ) }}"
-                 target="_blank"
-                 rel="noopener">
-                <i class="bi bi-arrow-up-right-square-fill"></i>
-              </a>
+              {{ links.build_connect_as_pseudo_link(row.id, "user", "/", "", "", True, has_permission("MANAGE_PRO_ENTITY") ) }}
             {% endif %}
           </td>
         {% endif %}
