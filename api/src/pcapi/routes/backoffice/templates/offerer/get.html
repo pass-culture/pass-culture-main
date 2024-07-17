@@ -151,12 +151,7 @@
             </div>
             <div class="col-4">
               <p class="mb-1">
-                <a href="{{ offerer | pc_pro_offerer_offers_link }}"
-                   target="_blank"
-                   class="fw-bold link-primary">
-                  Offres associées
-                  <i class="bi bi-box-arrow-up-right"></i>
-                </a>
+                {{ links.build_pro_offerer_offers_link(offerer, is_feature_active("WIP_CONNECT_AS_EXTENDED") , has_permission("MANAGE_PRO_ENTITY")) }}
               </p>
               {% set search_params = {
                               "search-0-search_field": "OFFERER",

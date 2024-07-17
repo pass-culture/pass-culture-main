@@ -9,18 +9,28 @@ from flask import url_for
 from flask_login import current_user
 from flask_sqlalchemy import BaseQuery
 from markupsafe import Markup
+from werkzeug.exceptions import NotFound
 
+from pcapi import settings
 from pcapi.connectors import api_adresse
 from pcapi.core.mails import transactional as transactional_mails
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import models as offerers_models
+from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
+from pcapi.core.token import SecureToken
+from pcapi.core.token.serialization import ConnectAsInternalModel
 from pcapi.core.users import api as users_api
+from pcapi.core.users import models as users_models
+from pcapi.models.feature import FeatureToggle
+from pcapi.repository import atomic
+from pcapi.repository import mark_transaction_as_invalid
 from pcapi.routes.backoffice import search_utils
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.pro import forms as pro_forms
 from pcapi.routes.serialization import offerers_serialize
 from pcapi.routes.serialization import venues_serialize
+from pcapi.utils import urls
 
 
 pro_blueprint = utils.child_backoffice_blueprint(
@@ -257,3 +267,140 @@ def create_offerer() -> utils.BackofficeResponse:
 
     flash(Markup("La structure et le lieu <b>{name}</b> ont été créés").format(name=venue.common_name), "success")
     return redirect(url_for("backoffice_web.offerer.get", offerer_id=user_offerer.offererId), code=303)
+
+
+def get_user_id_for_connect_as_base_query() -> BaseQuery:
+    return (
+        users_models.User.query.with_entities(users_models.User.id)
+        .join(users_models.User.UserOfferers)
+        .filter(
+            users_models.User.isActive.is_(True),
+            ~users_models.User.has_admin_role,  # type: ignore[operator] # pylint: disable=invalid-unary-operand-type
+            ~users_models.User.has_anonymized_role,  # type: ignore[operator] # pylint: disable=invalid-unary-operand-type
+            users_models.User.has_pro_role,
+        )
+    )
+
+
+def _check_user_for_user_id(user_id: int) -> int:
+    if not FeatureToggle.WIP_CONNECT_AS.is_active():
+        raise ValueError("L'utilisation du « connect as » requiert l'activation de la feature : WIP_CONNECT_AS")
+    user = users_models.User.query.filter(users_models.User.id == user_id).one_or_none()
+    if not user:
+        raise NotFound()
+
+    if not user.isActive:
+        raise ValueError("L'utilisation du « connect as » n'est pas disponible pour les comptes inactifs")
+
+    if user.has_admin_role:
+        raise ValueError("L'utilisation du « connect as » n'est pas disponible pour les comptes admin")
+
+    if user.has_anonymized_role:
+        raise ValueError("L'utilisation du « connect as » n'est pas disponible pour les comptes anonymisés")
+
+    if not (user.has_non_attached_pro_role or user.has_pro_role):
+        raise ValueError("L'utilisation du « connect as » n'est disponible que pour les comptes pro")
+    return user.id
+
+
+def _get_user_id_from_venue_id(venue_id: int) -> int:
+    if not FeatureToggle.WIP_CONNECT_AS_EXTENDED.is_active():
+        raise ValueError(
+            "L'utilisation de la version étendue de « connect as » requiert l'activation de la feature : WIP_CONNECT_AS_EXTENDED"
+        )
+    query = get_user_id_for_connect_as_base_query()
+    user_id = (
+        query.join(offerers_models.UserOfferer.offerer)
+        .join(offerers_models.Offerer.managedVenues)
+        .filter(offerers_models.Venue.id == venue_id)
+        .order_by(offerers_models.UserOfferer.id)
+        .limit(1)
+        .scalar()
+    )
+    if not user_id:
+        raise ValueError("Aucun utilisateur approprié n'a été trouvé pour se connecter à ce lieu")
+    return user_id
+
+
+def _get_user_id_from_offerer_id(offerer_id: int) -> int:
+    if not FeatureToggle.WIP_CONNECT_AS_EXTENDED.is_active():
+        raise ValueError(
+            "L'utilisation de la version étendue de « connect as » requiert l'activation de la feature : WIP_CONNECT_AS_EXTENDED"
+        )
+    query = get_user_id_for_connect_as_base_query()
+    user_id = (
+        query.filter(offerers_models.UserOfferer.offererId == offerer_id)
+        .order_by(offerers_models.UserOfferer.id)
+        .limit(1)
+        .scalar()
+    )
+
+    if not user_id:
+        raise ValueError("Aucun utilisateur approprié n'a été trouvé pour se connecter à cette structure")
+    return user_id
+
+
+def _get_user_id_from_offer_id(offer_id: int) -> int:
+    if not FeatureToggle.WIP_CONNECT_AS_EXTENDED.is_active():
+        raise ValueError(
+            "L'utilisation de la version étendue de « connect as » requiert l'activation de la feature : WIP_CONNECT_AS_EXTENDED"
+        )
+    query = get_user_id_for_connect_as_base_query()
+    user_id = (
+        query.join(offerers_models.UserOfferer.offerer)
+        .join(offerers_models.Offerer.managedVenues)
+        .join(offerers_models.Venue.offers)
+        .filter(offers_models.Offer.id == offer_id)
+        .order_by(offerers_models.UserOfferer.id)
+        .limit(1)
+        .scalar()
+    )
+    if not user_id:
+        raise ValueError("Aucun utilisateur approprié n'a été trouvé pour se connecter à cette offre")
+    return user_id
+
+
+@pro_blueprint.route("/connect-as", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
+@atomic()
+def connect_as() -> utils.BackofficeResponse:
+    form = pro_forms.ConnectAsForm()
+
+    if not form.validate():
+        flash("Échec de la validation de sécurité, veuillez réessayer", "warning")
+        mark_transaction_as_invalid()
+        return redirect(request.referrer or url_for("backoffice_web.home"), code=303)
+
+    try:
+        match form.object_type.data:
+            case "offer":
+                user_id = _get_user_id_from_offer_id(form.object_id.data)
+            case "offerer":
+                user_id = _get_user_id_from_offerer_id(form.object_id.data)
+            case "venue":
+                user_id = _get_user_id_from_venue_id(form.object_id.data)
+            case "user":
+                user_id = _check_user_for_user_id(form.object_id.data)
+            case _:
+
+                raise ValueError(
+                    Markup("{object_type} non supporté pour le connect as").format(object_type=form.object_type.data)
+                )
+    except ValueError as exp:
+        if exp.args:
+            flash(exp.args[0], "warning")
+        else:
+            flash("Erreur inconnue", "warning")
+        mark_transaction_as_invalid()
+        return redirect(request.referrer or url_for("backoffice_web.home"), code=303)
+
+    token = SecureToken(
+        data=ConnectAsInternalModel(
+            user_id=user_id,
+            internal_admin_id=current_user.id,
+            internal_admin_email=current_user.email,
+            redirect_link=settings.PRO_URL + form.redirect.data,
+        ).dict(),
+        ttl=10,
+    ).token
+    return redirect(urls.build_pc_pro_connect_as_link(token), code=303)
