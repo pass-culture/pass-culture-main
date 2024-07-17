@@ -8,6 +8,9 @@ from spectree import SpecTree
 from spectree import Tag
 
 
+_AUTHENTICATION_ATTRIBUTE = "requires_authentication"
+
+
 def get_model_key(model: type[BaseModel]) -> str:
     return model.__name__
 
@@ -18,13 +21,14 @@ def get_model_schema(model: type[BaseModel]) -> dict:
 
 
 def add_security_scheme(route_function: Callable, auth_key: str, scopes: list[str] | None = None) -> None:
-    """Declare a sufficient security scheme to access the route.
-    The 'auth_key' should correspond to a scheme declared in
-    the SpecTree initialization of the route's BluePrint.
     """
-    if not hasattr(route_function, "requires_authentication"):
-        route_function.requires_authentication = []  # type: ignore[attr-defined]
-    route_function.requires_authentication.append({auth_key: scopes or []})  # type: ignore[attr-defined]
+    Declare a sufficient security scheme to access the route.
+    Will be used by `ExtendedSpecTree` below to document, in the Open API JSON, the security scheme applied to the endpoint.
+    The `auth_key` should correspond to a scheme declared in the SpecTree initialization of the route's BluePrint.
+    """
+    authentication_param = getattr(route_function, _AUTHENTICATION_ATTRIBUTE, [])
+    authentication_param.append({auth_key: scopes or []})
+    setattr(route_function, _AUTHENTICATION_ATTRIBUTE, authentication_param)
 
 
 def build_operation_id(func: Callable) -> str:
@@ -46,14 +50,21 @@ class ExtendedSpecTree(SpecTree):
 
     def _generate_spec(self) -> dict:
         spec = super()._generate_spec()
-        if self.humanize_operation_id:
-            for route in self.backend.find_routes():
-                for method, func in self.backend.parse_func(route):
-                    if self.backend.bypass(func, method) or self.bypass(func):
-                        continue
-                    path_parameter_descriptions = getattr(func, "path_parameter_descriptions", None)
-                    path, _parameters = self.backend.parse_path(route, path_parameter_descriptions)
+        for route in self.backend.find_routes():
+            for method, func in self.backend.parse_func(route):
+                if self.backend.bypass(func, method) or self.bypass(func):
+                    continue
+
+                path_parameter_descriptions = getattr(func, "path_parameter_descriptions", None)
+                path, _ = self.backend.parse_path(route, path_parameter_descriptions)
+
+                if self.humanize_operation_id:
                     spec["paths"][path][method.lower()]["operationId"] = build_operation_id(func)
+
+                # Add security params to spec based on what has been defined using `add_security_scheme`
+                security = deepcopy(getattr(func, _AUTHENTICATION_ATTRIBUTE, None))
+                if security:
+                    spec["paths"][path][method.lower()]["security"] = security
 
         sorted_tags = self._generate_tags_list()
         if sorted_tags:
