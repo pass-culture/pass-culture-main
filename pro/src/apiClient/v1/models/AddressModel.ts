@@ -2,7 +2,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type PatchOfferOffererAddressBodyModel = {
+export type AddressModel = {
   city: string;
   label?: string | null;
   latitude: (number | string);

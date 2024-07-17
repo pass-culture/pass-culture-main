@@ -1420,7 +1420,8 @@ class UpdateOfferTest:
             isDuo=False, bookingEmail="old@example.com", subcategoryId=subcategories.ESCAPE_GAME.id
         )
 
-        offer = api.update_offer(offer, isDuo=True, bookingEmail="new@example.com")
+        body = offers_schemas.UpdateOffer(isDuo=True, bookingEmail="new@example.com")
+        offer = api.update_offer(offer, body)
         db.session.flush()
 
         assert offer.isDuo
@@ -1433,9 +1434,9 @@ class UpdateOfferTest:
 
     def test_update_extra_data_should_raise_error_when_mandatory_field_not_provided(self):
         offer = factories.OfferFactory(subcategoryId=subcategories.SPECTACLE_REPRESENTATION.id)
-
+        body = offers_schemas.UpdateOffer(extraData={"author": "Asimov"})
         with pytest.raises(api_errors.ApiErrors) as error:
-            api.update_offer(offer, extraData={"author": "Asimov"})
+            api.update_offer(offer, body)
 
         assert error.value.errors == {
             "showType": ["Ce champ est obligatoire"],
@@ -1446,8 +1447,9 @@ class UpdateOfferTest:
         offer = factories.OfferFactory(
             subcategoryId=subcategories.SPECTACLE_REPRESENTATION.id, extraData={"showType": 200}
         )
+        body = offers_schemas.UpdateOffer(extraData=None)
         with pytest.raises(api_errors.ApiErrors) as error:
-            offer = api.update_offer(offer, extraData=None)
+            api.update_offer(offer, body)
         assert error.value.errors == {
             "showType": ["Ce champ est obligatoire"],
             "showSubType": ["Ce champ est obligatoire"],
@@ -1456,11 +1458,11 @@ class UpdateOfferTest:
     def test_update_offer_with_existing_ean(self):
         offer = factories.OfferFactory(
             name="Old name",
-            extraData={"ean": "1234567890123"},
+            extraData={"ean": "1234567890123", "gtl_id": "02000000"},
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
         )
-
-        offer = api.update_offer(offer, name="New name", description="new Description")
+        body = offers_schemas.UpdateOffer(name="New name", description="new Description")
+        offer = api.update_offer(offer, body)
         db.session.flush()
 
         assert offer.name == "New name"
@@ -1472,24 +1474,28 @@ class UpdateOfferTest:
             extraData={"ean": "1234567890123", "musicSubType": 524, "musicType": 520},
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
         )
-
-        offer = api.update_offer(
-            offer,
+        body = offers_schemas.UpdateOffer(
             name="New name",
             description="new Description",
-            extraData={"ean": "1234567890124", "musicType": 520, "musicSubType": 524},
+            extraData={"ean": "1234567890124", "gtl_id": "02000000"},
         )
+        offer = api.update_offer(offer, body)
         db.session.flush()
 
         assert offer.name == "New name"
         assert offer.description == "new Description"
-        assert offer.extraData == {"ean": "1234567890124", "musicType": 520, "musicSubType": 524}
+        assert offer.extraData == {
+            "ean": "1234567890124",
+            "gtl_id": "02000000",
+            "musicType": "501",
+            "musicSubType": "-1",
+        }
 
     def test_cannot_update_with_name_too_long(self):
-        offer = factories.OfferFactory(name="Old name")
-
+        offer = factories.OfferFactory(name="Old name", extraData={"ean": "1234567890124"})
+        body = offers_schemas.UpdateOffer(name="Luftballons" * 99)
         with pytest.raises(api_errors.ApiErrors) as error:
-            api.update_offer(offer, name="Luftballons" * 99)
+            api.update_offer(offer, body)
 
         assert error.value.errors == {"name": ["Vous devez saisir moins de 140 caractères"]}
         assert models.Offer.query.one().name == "Old name"
@@ -1499,8 +1505,8 @@ class UpdateOfferTest:
         offer = factories.OfferFactory(
             lastProvider=provider, name="Old name", subcategoryId=subcategories.SEANCE_CINE.id
         )
-
-        api.update_offer(offer, name="Old name", isDuo=True)
+        body = offers_schemas.UpdateOffer(name="Old name", isDuo=True)
+        api.update_offer(offer, body)
 
         offer = models.Offer.query.one()
         assert offer.name == "Old name"
@@ -1511,9 +1517,9 @@ class UpdateOfferTest:
         offer = factories.OfferFactory(
             lastProvider=provider, durationMinutes=90, subcategoryId=subcategories.SEANCE_CINE.id
         )
-
+        body = offers_schemas.UpdateOffer(durationMinutes=120, isDuo=True)
         with pytest.raises(api_errors.ApiErrors) as error:
-            api.update_offer(offer, durationMinutes=120, isDuo=True)
+            api.update_offer(offer, body)
 
         assert error.value.errors == {"durationMinutes": ["Vous ne pouvez pas modifier ce champ"]}
         offer = models.Offer.query.one()
@@ -1526,12 +1532,10 @@ class UpdateOfferTest:
             externalTicketOfficeUrl="http://example.org",
             lastProvider=provider,
             name="Old name",
+            extraData={"ean": "1234567890124"},
         )
-
-        api.update_offer(
-            offer,
-            externalTicketOfficeUrl="https://example.com",
-        )
+        body = offers_schemas.UpdateOffer(externalTicketOfficeUrl="https://example.com")
+        api.update_offer(offer, body)
 
         offer = models.Offer.query.one()
         assert offer.name == "Old name"
@@ -1546,16 +1550,16 @@ class UpdateOfferTest:
             visualDisabilityCompliant=False,
             motorDisabilityCompliant=False,
             mentalDisabilityCompliant=True,
+            extraData={"ean": "1234567890124"},
         )
-
-        api.update_offer(
-            offer,
+        body = offers_schemas.UpdateOffer(
             name="Old name",
             audioDisabilityCompliant=False,
             visualDisabilityCompliant=True,
             motorDisabilityCompliant=True,
             mentalDisabilityCompliant=False,
         )
+        api.update_offer(offer, body)
 
         offer = models.Offer.query.one()
         assert offer.name == "Old name"
@@ -1573,9 +1577,13 @@ class UpdateOfferTest:
             audioDisabilityCompliant=True,
             subcategoryId=subcategories.SEANCE_CINE.id,
         )
-
+        body = offers_schemas.UpdateOffer(
+            durationMinutes=120,
+            isDuo=True,
+            audioDisabilityCompliant=False,
+        )
         with pytest.raises(api_errors.ApiErrors) as error:
-            api.update_offer(offer, durationMinutes=120, isDuo=True, audioDisabilityCompliant=False)
+            api.update_offer(offer, body)
 
         assert error.value.errors == {
             "durationMinutes": ["Vous ne pouvez pas modifier ce champ"],
@@ -1588,9 +1596,9 @@ class UpdateOfferTest:
 
     def test_update_non_approved_offer_fails(self):
         pending_offer = factories.OfferFactory(name="Soliloquy", validation=models.OfferValidationStatus.PENDING)
-
+        body = offers_schemas.UpdateOffer(name="Monologue")
         with pytest.raises(exceptions.RejectedOrPendingOfferNotEditable) as error:
-            api.update_offer(pending_offer, name="Monologue")
+            api.update_offer(pending_offer, body)
 
         assert error.value.errors == {
             "global": ["Les offres refusées ou en attente de validation ne sont pas modifiables"]
@@ -1605,12 +1613,10 @@ class UpdateOfferTest:
         offer = factories.OfferFactory(
             lastProvider=provider,
             name="Offer linked to a provider",
+            extraData={"ean": "1234567890124"},
         )
-
-        api.update_offer(
-            offer,
-            idAtProvider="some_id_at_provider",
-        )
+        body = offers_schemas.UpdateOffer(idAtProvider="some_id_at_provider")
+        api.update_offer(offer, body)
 
         offer = models.Offer.query.one()
         assert offer.name == "Offer linked to a provider"
@@ -1620,13 +1626,11 @@ class UpdateOfferTest:
         offer = factories.OfferFactory(
             lastProvider=None,
             name="Offer linked to a provider",
+            extraData={"ean": "1234567890124"},
         )
-
+        body = offers_schemas.UpdateOffer(idAtProvider="some_id_at_provider")
         with pytest.raises(exceptions.CannotSetIdAtProviderWithoutAProvider) as error:
-            api.update_offer(
-                offer,
-                idAtProvider="some_id_at_provider",
-            )
+            api.update_offer(offer, body)
 
         assert error.value.errors["idAtProvider"] == [
             "Une offre ne peut être créée ou éditée avec un idAtProvider si elle n'a pas de provider"
@@ -1649,14 +1653,13 @@ class UpdateOfferTest:
         offer = factories.OfferFactory(
             lastProvider=provider,
             name="Offer linked to a provider",
+            extraData={"ean": "1234567890124"},
             venue=venue,
         )
 
+        body = offers_schemas.UpdateOffer(idAtProvider=id_at_provider)
         with pytest.raises(exceptions.IdAtProviderAlreadyTaken) as error:
-            api.update_offer(
-                offer,
-                idAtProvider=id_at_provider,
-            )
+            api.update_offer(offer, body)
 
         assert error.value.errors["idAtProvider"] == ["`rolalala` is already taken by another venue offer"]
 
@@ -1675,12 +1678,13 @@ class UpdateOfferTest:
             url="http://example.com" if isDigital else None,
             subcategoryId=subcategories.VOD.id if isDigital else subcategories.SPECTACLE_REPRESENTATION.id,
         )
+        body = offers_schemas.UpdateOffer(name="New name", offererAddress=offerer_address)
         if isDigital:
             with pytest.raises(api_errors.ApiErrors) as error:
-                api.update_offer(offer, name="New name", offererAddress=offerer_address)
+                api.update_offer(offer, body)
                 assert error.value.errors["offerUrl"] == ["Une offre numérique ne peut pas avoir d'adresse"]
         else:
-            api.update_offer(offer, name="New name", offererAddress=offerer_address)
+            api.update_offer(offer, body)
             offer = models.Offer.query.one()
             assert offer.offererAddress == offerer_address
 

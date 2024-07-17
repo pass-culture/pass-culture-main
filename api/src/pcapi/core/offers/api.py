@@ -71,6 +71,7 @@ from pcapi.repository import repository
 from pcapi.repository import transaction
 from pcapi.utils import image_conversion
 import pcapi.utils.cinema_providers as cinema_providers_utils
+from pcapi.utils.custom_keys import get_field
 from pcapi.utils.custom_logic import OPERATIONS
 from pcapi.utils.date import local_datetime_to_default_timezone
 from pcapi.workers import push_notification_job
@@ -352,98 +353,101 @@ def create_offer(
     return offer
 
 
+def get_offerer_address_from_address(
+    venue: offerers_models.Venue, address: offers_schemas.AddressModel
+) -> offerers_models.OffererAddress:
+    address_from_api = offerers_api.create_offerer_address_from_address_api(
+        street=address.street,
+        postal_code=address.postalCode,
+        city=address.city,
+        latitude=float(address.latitude),
+        longitude=float(address.longitude),
+    )
+    return offerers_api.get_or_create_offerer_address(venue.managingOffererId, address_from_api.id, label=address.label)
+
+
 def update_offer(
-    offer: models.Offer,
-    audioDisabilityCompliant: bool | T_UNCHANGED = UNCHANGED,
-    bookingContact: str | None | T_UNCHANGED = UNCHANGED,
-    bookingEmail: str | None | T_UNCHANGED = UNCHANGED,
-    description: str | None | T_UNCHANGED = UNCHANGED,
-    durationMinutes: int | None | T_UNCHANGED = UNCHANGED,
-    externalTicketOfficeUrl: str | None | T_UNCHANGED = UNCHANGED,
-    extraData: dict | None | T_UNCHANGED = UNCHANGED,
-    isActive: bool | T_UNCHANGED = UNCHANGED,
-    isDuo: bool | T_UNCHANGED = UNCHANGED,
-    isNational: bool | T_UNCHANGED = UNCHANGED,
-    mentalDisabilityCompliant: bool | T_UNCHANGED = UNCHANGED,
-    motorDisabilityCompliant: bool | T_UNCHANGED = UNCHANGED,
-    name: str | T_UNCHANGED = UNCHANGED,
-    url: str | None | T_UNCHANGED = UNCHANGED,
-    visualDisabilityCompliant: bool | T_UNCHANGED = UNCHANGED,
-    withdrawalDelay: int | None | T_UNCHANGED = UNCHANGED,
-    withdrawalDetails: str | None | T_UNCHANGED = UNCHANGED,
-    withdrawalType: models.WithdrawalTypeEnum | None | T_UNCHANGED = UNCHANGED,
-    shouldSendMail: bool = False,
-    is_from_private_api: bool = False,
-    idAtProvider: str | None | T_UNCHANGED = UNCHANGED,
-    offererAddress: offerers_models.OffererAddress | None | T_UNCHANGED = UNCHANGED,
+    offer: models.Offer, body: offers_schemas.UpdateOffer, is_from_private_api: bool = False
 ) -> models.Offer:
-    modifications = {
-        field: new_value
-        for field, new_value in locals().items()
-        if field not in ("offer", "shouldSendMail", "is_from_private_api")
-        and new_value is not UNCHANGED  # has the user provided a value for this field
-        and getattr(offer, field) != new_value  # is the value different from what we have on database?
-    }
-    if not modifications:
+    aliases = set(body.dict(by_alias=True))
+    fields = body.dict(by_alias=True, exclude_unset=True)
+
+    _extra_data = deserialize_extra_data(fields.get("extraData", offer.extraData))
+    fields["extraData"] = _format_extra_data(offer.subcategoryId, _extra_data) or {}
+
+    if body.address:
+        fields["offererAddress"] = get_offerer_address_from_address(offer.venue, body.address)
+        fields.pop("address", None)
+
+    should_send_mail = fields.pop("shouldSendMail", False)
+
+    updates = {key: value for key, value in fields.items() if getattr(offer, key) != value}
+    updates_set = set(updates)
+    if not updates:
         return offer
 
-    validation.check_validation_status(offer)
-    if extraData is not UNCHANGED:
-        formatted_extra_data = _format_extra_data(offer.subcategoryId, extraData)
-        validation.check_offer_extra_data(
-            offer.subcategoryId, formatted_extra_data, offer.venue, is_from_private_api, offer
+    if (
+        "audioDisabilityCompliant" in updates
+        or "mentalDisabilityCompliant" in updates
+        or "motorDisabilityCompliant" in updates
+        or "visualDisabilityCompliant" in updates
+    ):
+        validation.check_accessibility_compliance(
+            audio_disability_compliant=get_field(offer, updates, "audioDisabilityCompliant", aliases=aliases),
+            mental_disability_compliant=get_field(offer, updates, "mentalDisabilityCompliant", aliases=aliases),
+            motor_disability_compliant=get_field(offer, updates, "motorDisabilityCompliant", aliases=aliases),
+            visual_disability_compliant=get_field(offer, updates, "visualDisabilityCompliant", aliases=aliases),
         )
-    if isDuo is not UNCHANGED:
-        validation.check_is_duo_compliance(isDuo, offer.subcategory)
+    if "extraData" in updates:
+        extra_data = get_field(offer, updates, "extraData", aliases=aliases)
+        validation.check_offer_extra_data(
+            offer.subcategoryId, extra_data, offer.venue, is_from_private_api, offer=offer
+        )
+    if "isDuo" in updates:
+        is_duo = get_field(offer, updates, "isDuo", aliases=aliases)
+        validation.check_is_duo_compliance(is_duo, offer.subcategory)
 
-    if idAtProvider is not UNCHANGED:
-        validation.check_can_input_id_at_provider(offer.lastProvider, idAtProvider)
-        validation.check_can_input_id_at_provider_for_this_venue(offer.venueId, idAtProvider, offer.id)
+    if "idAtProvider" in updates:
+        id_at_provider = get_field(offer, updates, "idAtProvider", aliases=aliases)
+        validation.check_can_input_id_at_provider(offer.lastProvider, id_at_provider)
+        validation.check_can_input_id_at_provider_for_this_venue(offer.venueId, id_at_provider, offer.id)
 
-    withdrawal_updated = not (
-        withdrawalType is UNCHANGED
-        and withdrawalDelay is UNCHANGED
-        and withdrawalDetails is UNCHANGED
-        and bookingContact is UNCHANGED
-    )
-    if withdrawal_updated:
-        changed_withdrawalType = offer.withdrawalType if withdrawalType is UNCHANGED else withdrawalType
-        changed_withdrawalDelay = offer.withdrawalDelay if withdrawalDelay is UNCHANGED else withdrawalDelay
-        changed_bookingContact = offer.bookingContact if bookingContact is UNCHANGED else bookingContact
+    if (
+        "withdrawalType" in updates
+        or "withdrawalDelay" in updates
+        or "withdrawalDetails" in updates
+        or "bookingContact" in updates
+    ):
+        booking_contact = get_field(offer, updates, "bookingContact", aliases=aliases)
+        withdrawal_delay = get_field(offer, updates, "withdrawalDelay", aliases=aliases)
+        withdrawal_type = get_field(offer, updates, "withdrawalType", aliases=aliases)
+        validation.check_offer_withdrawal(
+            withdrawal_type, withdrawal_delay, offer.subcategoryId, booking_contact, offer.lastProvider
+        )
 
-        if not (withdrawalType is UNCHANGED and withdrawalDelay is UNCHANGED and changed_bookingContact is UNCHANGED):
-            validation.check_offer_withdrawal(
-                changed_withdrawalType,
-                changed_withdrawalDelay,
-                offer.subcategoryId,
-                changed_bookingContact,
-                offer.lastProvider,
-            )
-
+    validation.check_validation_status(offer)
     if offer.lastProvider is not None:
-        validation.check_update_only_allowed_fields_for_offer_from_provider(set(modifications), offer.lastProvider)
-
+        validation.check_update_only_allowed_fields_for_offer_from_provider(updates_set, offer.lastProvider)
     if offer.is_soft_deleted():
         raise pc_object.DeletedRecordException()
-    for key, value in modifications.items():
+
+    for key, value in updates.items():
         setattr(offer, key, value)
     with db.session.no_autoflush:
         validation.check_digital_offer_fields(offer)
     if offer.isFromAllocine:
-        offer.fieldsUpdated = list(set(offer.fieldsUpdated) | set(modifications))
-
+        offer.fieldsUpdated = list(set(offer.fieldsUpdated) | updates_set)
     repository.add_to_session(offer)
 
     logger.info("Offer has been updated", extra={"offer_id": offer.id}, technical_message_id="offer.updated")
 
-    if shouldSendMail and withdrawal_updated:
+    withdrawal_fields = {"bookingContact", "withdrawalDelay", "withdrawalDetails", "withdrawalType"}
+    withdrawal_updated = updates_set & withdrawal_fields
+    if should_send_mail and withdrawal_updated:
         transactional_mails.send_email_for_each_ongoing_booking(offer)
 
-    search.async_index_offer_ids(
-        [offer.id],
-        reason=search.IndexationReason.OFFER_UPDATE,
-        log_extra={"changes": set(modifications.keys())},
-    )
+    reason = search.IndexationReason.OFFER_UPDATE
+    search.async_index_offer_ids([offer.id], reason=reason, log_extra={"changes": updates_set})
 
     return offer
 
