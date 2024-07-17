@@ -15,4 +15,5 @@ export type DetailsFormValues = {
   visa?: string
   durationMinutes?: string | null
   subcategoryConditionalFields: string[]
+  suggestedSubcategory: string
 }
