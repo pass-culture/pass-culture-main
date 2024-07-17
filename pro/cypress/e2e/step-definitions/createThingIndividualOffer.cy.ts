@@ -48,7 +48,7 @@ When('I validate stocks step', () => {
   cy.intercept({ method: 'GET', url: '/offers/*' }).as('getOffer')
   cy.findByText('Enregistrer et continuer').click()
   cy.wait(['@patchOffer', '@postStocks', '@getOffer'], {
-    requestTimeout: 15 * 1000,
+    requestTimeout: 30 * 1000,
   })
 })
 

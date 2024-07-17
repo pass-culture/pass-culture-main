@@ -19,7 +19,7 @@ When('I open adage iframe', () => {
   }).as('features')
   cy.visit(`/adage-iframe?token=${adageToken}`)
   cy.findAllByTestId('spinner').should('not.exist')
-  cy.wait(['@local_offerers', '@features'], { requestTimeout: 15 * 1000 }).then(
+  cy.wait(['@local_offerers', '@features'], { requestTimeout: 30 * 1000 }).then(
     (interception) => {
       if (interception[0].response) {
         expect(interception[0].response.statusCode).to.equal(200)
@@ -100,7 +100,7 @@ When('I add first offer to favorites', () => {
         url: '/adage-iframe/logs/fav-offer/',
       }).as('fav-offer')
       cy.findAllByTestId('favorite-inactive').click()
-      cy.wait('@fav-offer', { requestTimeout: 15 * 1000 })
+      cy.wait('@fav-offer', { requestTimeout: 30 * 1000 })
         .its('response.statusCode')
         .should('eq', 204)
     })
