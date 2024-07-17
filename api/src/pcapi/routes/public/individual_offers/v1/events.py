@@ -9,6 +9,7 @@ from pcapi.core.finance import utils as finance_utils
 from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import models as offers_models
+from pcapi.core.offers import schemas as offers_schemas
 from pcapi.core.offers.validation import check_for_duplicated_price_categories
 from pcapi.models import api_errors
 from pcapi.models import db
@@ -64,30 +65,28 @@ def post_event_offer(body: serialization.EventOfferCreation) -> serialization.Ev
     Create event offer
     """
     venue = utils.retrieve_venue_from_location(body.location)
-    withdrawal_type = _deserialize_has_ticket(body.has_ticket, body.category_related_fields.subcategory_id)
     try:
         with repository.transaction():
-            created_offer = offers_api.create_offer(
-                audio_disability_compliant=body.accessibility.audio_disability_compliant,
-                booking_contact=body.booking_contact,
-                booking_email=body.booking_email,
-                description=body.description,
-                duration_minutes=body.event_duration,
-                external_ticket_office_url=body.external_ticket_office_url,
-                extra_data=serialization.deserialize_extra_data(body.category_related_fields),
-                is_duo=body.enable_double_bookings,
-                mental_disability_compliant=body.accessibility.mental_disability_compliant,
-                motor_disability_compliant=body.accessibility.motor_disability_compliant,
+            offer_body = offers_schemas.CreateOffer(
                 name=body.name,
-                provider=current_api_key.provider,
-                subcategory_id=body.category_related_fields.subcategory_id,
+                subcategoryId=body.category_related_fields.subcategory_id,
+                audioDisabilityCompliant=body.accessibility.audio_disability_compliant,
+                mentalDisabilityCompliant=body.accessibility.mental_disability_compliant,
+                motorDisabilityCompliant=body.accessibility.motor_disability_compliant,
+                visualDisabilityCompliant=body.accessibility.visual_disability_compliant,
+                bookingContact=body.booking_contact,
+                bookingEmail=body.booking_email,
+                description=body.description,
+                durationMinutes=body.event_duration,
+                externalTicketOfficeUrl=body.external_ticket_office_url,
+                extraData=serialization.deserialize_extra_data(body.category_related_fields),
+                idAtProvider=body.id_at_provider,
+                isDuo=body.enable_double_bookings,
                 url=body.location.url if isinstance(body.location, serialization.DigitalLocation) else None,
-                venue=venue,
-                visual_disability_compliant=body.accessibility.visual_disability_compliant,
-                withdrawal_details=body.withdrawal_details,
-                withdrawal_type=withdrawal_type,
-                id_at_provider=body.id_at_provider,
-            )
+                withdrawalDetails=body.withdrawal_details,
+                withdrawalType=_deserialize_has_ticket(body.has_ticket, body.category_related_fields.subcategory_id),
+            )  # type: ignore[call-arg]
+            created_offer = offers_api.create_offer(offer_body, venue=venue, provider=current_api_key.provider)
             # To create the priceCategories, the offer needs to have an id
             db.session.flush()
 

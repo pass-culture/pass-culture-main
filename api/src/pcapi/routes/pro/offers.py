@@ -14,6 +14,7 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.offers import exceptions
 from pcapi.core.offers import models
+from pcapi.core.offers import schemas as offers_schemas
 import pcapi.core.offers.api as offers_api
 import pcapi.core.offers.repository as offers_repository
 from pcapi.core.offers.validation import check_for_duplicated_price_categories
@@ -242,29 +243,11 @@ def post_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.Ge
     rest.check_user_has_access_to_offerer(current_user, venue.managingOffererId)
     try:
         with repository.transaction():
-            offer = offers_api.create_offer(
-                audio_disability_compliant=body.audio_disability_compliant,
-                booking_contact=body.booking_contact,
-                booking_email=body.booking_email,
-                description=body.description,
-                duration_minutes=body.duration_minutes,
-                external_ticket_office_url=body.external_ticket_office_url,
-                extra_data=offers_serialize.deserialize_extra_data(body.extra_data),
-                is_duo=body.is_duo,
-                is_national=body.is_national,
-                mental_disability_compliant=body.mental_disability_compliant,
-                motor_disability_compliant=body.motor_disability_compliant,
-                name=body.name,
-                subcategory_id=body.subcategory_id,
-                url=body.url,
-                venue=venue,
-                visual_disability_compliant=body.visual_disability_compliant,
-                withdrawal_delay=body.withdrawal_delay,
-                withdrawal_details=body.withdrawal_details,
-                withdrawal_type=body.withdrawal_type,
-                is_from_private_api=True,
-            )
-
+            fields = body.dict(by_alias=True)
+            fields.pop("venueId")
+            fields["extraData"] = offers_serialize.deserialize_extra_data(fields["extraData"])
+            offer_body = offers_schemas.CreateOffer(**fields)
+            offer = offers_api.create_offer(offer_body, venue, is_from_private_api=True)
     except exceptions.OfferCreationBaseException as error:
         raise api_errors.ApiErrors(error.errors, status_code=400)
 

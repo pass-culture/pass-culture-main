@@ -1,0 +1,50 @@
+from typing import Any
+
+from pydantic.v1 import EmailStr
+from pydantic.v1 import HttpUrl
+from pydantic.v1 import validator
+
+from pcapi.core.offers import models as offers_models
+from pcapi.routes.serialization import BaseModel
+from pcapi.serialization.utils import to_camel
+
+
+class CreateOffer(BaseModel):
+    name: str
+    subcategory_id: str
+    audio_disability_compliant: bool
+    mental_disability_compliant: bool
+    motor_disability_compliant: bool
+    visual_disability_compliant: bool
+
+    booking_contact: EmailStr | None = None
+    booking_email: EmailStr | None = None
+    description: str | None = None
+    duration_minutes: int | None = None
+    external_ticket_office_url: HttpUrl | None = None
+    extra_data: Any = None
+    id_at_provider: str | None = None
+    is_duo: bool | None = None
+    url: HttpUrl | None = None
+    withdrawal_delay: int | None = None
+    withdrawal_details: str | None = None
+    withdrawal_type: offers_models.WithdrawalTypeEnum | None = None
+
+    # is_national must be placed after url so that the validator
+    # can access the url field in the dict of values
+    # (which contains only previously validated fields)
+    is_national: bool | None = None
+
+    @validator("is_duo")
+    def validate_is_duo(cls, is_duo: bool | None) -> bool:
+        return bool(is_duo)
+
+    @validator("is_national")
+    def validate_is_national(cls, is_national: bool | None, values: dict) -> bool:
+        url = values.get("url")
+        is_national = True if url else bool(is_national)
+        return is_national
+
+    class Config:
+        alias_generator = to_camel
+        extra = "forbid"
