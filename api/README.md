@@ -55,6 +55,10 @@ Le lint des migrations, effectué lors du [hook de precommit](../.githooks/pre-c
 npm install --global squawk-cli
 ```
 
+#### Weasyprint (facultatif)
+
+La génération de PDF via `weasyprint` nécessite également de suivre ces [étapes](https://doc.courtbouillon.org/weasyprint/stable/first_steps.html#installation) d'installation.
+
 ### 2. Lancement de l'api
 
 Un fois installé les dépendances, on peut utiliser les commandes suivantes (qui utilisent `docker compose`) 
@@ -253,6 +257,8 @@ Pour que les commandes soient exécutées, il faut ouvrir une PR sur le repo pas
 Les infos sont dans le [README](https://github.com/pass-culture/pass-culture-deployment)
 
 ## Lancement du backend sans utiliser docker-compose
+
+*Pour repasser sur docker par la suite, la __NOTE__ en fin de ce paragraphe est __importante__*
 
 ### Dépendances
 
