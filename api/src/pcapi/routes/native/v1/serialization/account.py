@@ -125,18 +125,6 @@ class YoungStatusResponse(ConfiguredBaseModel):
 class UserProfileGetterDict(GetterDict):
     def get(self, key: str, default: typing.Any | None = None) -> typing.Any:
         user = self._obj
-        if key == "firstName":
-            return user.firstName if user.firstName != users_models.VOID_FIRST_NAME else None
-        if key == "showEligibleCard":
-            return (
-                relativedelta(user.dateCreated, user.birth_date).years < users_constants.ELIGIBILITY_AGE_18
-                and user.has_beneficiary_role is False
-                and user.eligibility == users_models.EligibilityType.AGE18
-            )
-        if key == "subscriptions":
-            return user.get_notification_subscriptions()
-        if key == "domainsCredit":
-            return users_api.get_domains_credit(user)
         if key == "bookedOffers":
             not_cancelled_bookings = bookings_models.Booking.query.options(
                 joinedload(bookings_models.Booking.stock)
@@ -148,35 +136,47 @@ class UserProfileGetterDict(GetterDict):
             )
 
             return {booking.stock.offer.id: booking.id for booking in not_cancelled_bookings}
-        if key == "isEligibleForBeneficiaryUpgrade":
-            return users_api.is_eligible_for_beneficiary_upgrade(user, user.eligibility)
+        if key == "domainsCredit":
+            return users_api.get_domains_credit(user)
         if key == "eligibilityEndDatetime":
             return users_api.get_eligibility_end_datetime(user.birth_date)
         if key == "eligibilityStartDatetime":
             return users_api.get_eligibility_start_datetime(user.birth_date)
         if key == "firstDepositActivationDate":
             return min((deposit.dateCreated for deposit in user.deposits), default=None)
+        if key == "firstName":
+            return user.firstName if user.firstName != users_models.VOID_FIRST_NAME else None
+        if key == "hasPassword":
+            return user.password is not None
         if key == "isBeneficiary":
             return user.is_beneficiary
-        if key == "subscriptionMessage":
-            user_subscription_state = subscription_api.get_user_subscription_state(user)
-            return user_subscription_state.subscription_message
+        if key == "isEligibleForBeneficiaryUpgrade":
+            return users_api.is_eligible_for_beneficiary_upgrade(user, user.eligibility)
+        if key == "needsToFillCulturalSurvey":
+            return user.needsToFillCulturalSurvey and user.is_beneficiary and _is_cultural_survey_active()
+        if key == "requiresIdCheck":
+            return subscription_api.requires_identity_check_step(user)
+        if key == "showEligibleCard":
+            return (
+                relativedelta(user.dateCreated, user.birth_date).years < users_constants.ELIGIBILITY_AGE_18
+                and user.has_beneficiary_role is False
+                and user.eligibility == users_models.EligibilityType.AGE18
+            )
         if key == "status":
             user_subscription_state = subscription_api.get_user_subscription_state(user)
             return user_subscription_state.young_status
-        if key == "requiresIdCheck":
-            return subscription_api.requires_identity_check_step(user)
-        if key == "hasPassword":
-            return user.password is not None
-        if key == "needsToFillCulturalSurvey":
-            return user.needsToFillCulturalSurvey and user.is_beneficiary and _is_cultural_survey_active()
+        if key == "subscriptions":
+            return user.get_notification_subscriptions()
+        if key == "subscriptionMessage":
+            user_subscription_state = subscription_api.get_user_subscription_state(user)
+            return user_subscription_state.subscription_message
 
         return super().get(key, default)
 
 
 class UserProfileResponse(ConfiguredBaseModel):
-    booked_offers: dict[str, int]
     birth_date: datetime.date | None
+    booked_offers: dict[str, int]
     deposit_activation_date: datetime.datetime | None
     deposit_expiration_date: datetime.datetime | None
     deposit_type: finance_models.DepositType | None
@@ -187,10 +187,10 @@ class UserProfileResponse(ConfiguredBaseModel):
     email: str
     first_deposit_activation_date: datetime.datetime | None
     first_name: str | None
+    has_password: bool
     id: int
     is_beneficiary: bool
     is_eligible_for_beneficiary_upgrade: bool
-    has_password: bool
     last_name: str | None
     needs_to_fill_cultural_survey: bool
     phone_number: str | None
@@ -198,9 +198,9 @@ class UserProfileResponse(ConfiguredBaseModel):
     requires_id_check: bool
     roles: list[users_models.UserRole]
     show_eligible_card: bool
+    status: YoungStatusResponse
     subscription_message: subscription_serialization.SubscriptionMessage | None
     subscriptions: NotificationSubscriptions  # if we send user.notification_subscriptions, pydantic will take the column and not the property
-    status: YoungStatusResponse
 
     _convert_recredit_amount_to_show = validator("recredit_amount_to_show", pre=True, allow_reuse=True)(convert_to_cent)
 
