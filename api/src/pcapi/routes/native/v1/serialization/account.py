@@ -154,6 +154,8 @@ class UserProfileGetterDict(GetterDict):
             return users_api.get_eligibility_end_datetime(user.birth_date)
         if key == "eligibilityStartDatetime":
             return users_api.get_eligibility_start_datetime(user.birth_date)
+        if key == "firstDepositActivationDate":
+            return min((deposit.dateCreated for deposit in user.deposits), default=None)
         if key == "isBeneficiary":
             return user.is_beneficiary
         if key == "subscriptionMessage":
@@ -183,6 +185,7 @@ class UserProfileResponse(ConfiguredBaseModel):
     eligibility_end_datetime: datetime.datetime | None
     eligibility_start_datetime: datetime.datetime | None
     email: str
+    first_deposit_activation_date: datetime.datetime | None
     first_name: str | None
     id: int
     is_beneficiary: bool

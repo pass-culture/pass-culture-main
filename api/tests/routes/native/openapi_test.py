@@ -2248,6 +2248,12 @@ def test_public_api(client):
                             "type": "string",
                         },
                         "email": {"title": "Email", "type": "string"},
+                        "firstDepositActivationDate": {
+                            "format": "date-time",
+                            "nullable": True,
+                            "title": "Firstdepositactivationdate",
+                            "type": "string",
+                        },
                         "firstName": {"nullable": True, "title": "Firstname", "type": "string"},
                         "hasPassword": {"title": "Haspassword", "type": "boolean"},
                         "id": {"title": "Id", "type": "integer"},
