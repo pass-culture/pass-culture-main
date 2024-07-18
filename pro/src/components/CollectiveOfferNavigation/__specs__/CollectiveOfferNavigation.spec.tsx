@@ -23,6 +23,7 @@ import {
   getCollectiveOfferTemplateFactory,
 } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import {
   CollectiveOfferNavigation,
@@ -32,7 +33,15 @@ import {
 
 const renderCollectiveOfferNavigation = (
   props: CollectiveOfferNavigationProps
-) => renderWithProviders(<CollectiveOfferNavigation {...props} />)
+) =>
+  renderWithProviders(<CollectiveOfferNavigation {...props} />, {
+    storeOverrides: {
+      user: {
+        currentUser: sharedCurrentUserFactory(),
+        selectedOffererId: 1,
+      },
+    },
+  })
 
 describe('CollectiveOfferNavigation', () => {
   let offer:
@@ -234,6 +243,7 @@ describe('CollectiveOfferNavigation', () => {
       Events.CLICKED_DUPLICATE_TEMPLATE_OFFER,
       {
         from: OFFER_FROM_TEMPLATE_ENTRIES.OFFER_TEMPLATE_RECAP,
+        offererId: '1',
         offerId: 1,
         offerType: 'collective',
       }
