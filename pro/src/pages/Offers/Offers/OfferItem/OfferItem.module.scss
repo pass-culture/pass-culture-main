@@ -40,8 +40,6 @@
     align-items: flex-start;
 
     &-link {
-      @include fonts.button;
-
       display: block;
       overflow-wrap: break-word;
 

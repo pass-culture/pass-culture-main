@@ -35,7 +35,7 @@ $number-size: rem.torem(30px);
       padding-right: rem.torem(8px);
 
       .inner {
-        @include fonts.button;
+        @include fonts.bold;
 
         border: solid 1px var(--color-grey-dark);
         border-radius: 50%;
