@@ -1732,7 +1732,7 @@ class ShowEligibleCardTest:
         date_of_birth = datetime.utcnow() - relativedelta(years=age, days=5)
         date_of_creation = datetime.utcnow() - relativedelta(years=4)
         user = users_factories.UserFactory(dateOfBirth=date_of_birth, dateCreated=date_of_creation)
-        assert account_serializers.UserProfileResponse._show_eligible_card(user) == expected
+        assert account_serializers.UserProfileResponse.from_orm(user).show_eligible_card == expected
 
     @pytest.mark.parametrize("beneficiary,expected", [(False, True), (True, False)])
     def test_against_beneficiary(self, beneficiary, expected):
@@ -1744,13 +1744,13 @@ class ShowEligibleCardTest:
             dateCreated=date_of_creation,
             roles=roles,
         )
-        assert account_serializers.UserProfileResponse._show_eligible_card(user) == expected
+        assert account_serializers.UserProfileResponse.from_orm(user).show_eligible_card == expected
 
     def test_user_eligible_but_created_after_18(self):
         date_of_birth = datetime.utcnow() - relativedelta(years=18, days=5)
         date_of_creation = datetime.utcnow()
         user = users_factories.UserFactory(dateOfBirth=date_of_birth, dateCreated=date_of_creation)
-        assert account_serializers.UserProfileResponse._show_eligible_card(user) is False
+        assert account_serializers.UserProfileResponse.from_orm(user).show_eligible_card is False
 
 
 class SendPhoneValidationCodeTest:
