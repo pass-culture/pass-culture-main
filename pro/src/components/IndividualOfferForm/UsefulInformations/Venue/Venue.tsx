@@ -57,6 +57,8 @@ export const Venue = ({
   const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
   if (!isOfferAddressEnabled) {
     venueOptions.unshift({ label: 'Sélectionner un lieu', value: '' })
+  } else if (venueOptions[0]) {
+    values.venueId = String(venueOptions[0].value)
   }
 
   const onOffererChange = async (
