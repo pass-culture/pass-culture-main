@@ -1,5 +1,6 @@
 import { format } from 'date-fns'
 import { useState } from 'react'
+import { useSelector } from 'react-redux'
 
 import { api } from 'apiClient/api'
 import {
@@ -12,6 +13,7 @@ import { DialogBox } from 'components/DialogBox/DialogBox'
 import { Events } from 'core/FirebaseEvents/constants'
 import strokeDeskIcon from 'icons/stroke-desk.svg'
 import { daysOfWeek } from 'pages/VenueEdition/OpeningHoursForm/OpeningHoursForm'
+import { selectCurrentOffererId } from 'store/user/selectors'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { BaseRadio } from 'ui-kit/form/shared/BaseRadio/BaseRadio'
@@ -39,6 +41,8 @@ export const DownloadBookingsModal = ({
       ? priceCategoryAndScheduleCountByDate[0].eventDate
       : undefined
   )
+  const selectedOffererId = useSelector(selectCurrentOffererId)
+
   const { logEvent } = useAnalytics()
 
   const handleSubmit = async (
@@ -70,6 +74,7 @@ export const DownloadBookingsModal = ({
       bookingStatus: bookingsType,
       offerId,
       offerType: 'individual',
+      offererId: selectedOffererId?.toString(),
     })
   }
 

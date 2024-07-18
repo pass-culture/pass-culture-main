@@ -1,4 +1,5 @@
 import React from 'react'
+import { useSelector } from 'react-redux'
 
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { FormLayout } from 'components/FormLayout/FormLayout'
@@ -10,6 +11,7 @@ import { Events } from 'core/FirebaseEvents/constants'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { IndividualOfferImage } from 'core/Offers/types'
 import { useOfferWizardMode } from 'hooks/useOfferWizardMode'
+import { selectCurrentOffererId } from 'store/user/selectors'
 import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
 
 import styles from './ImageUploaderOffer.module.scss'
@@ -27,12 +29,15 @@ export const ImageUploaderOffer = ({
   imageOffer,
 }: ImageUploaderOfferProps) => {
   const { offer } = useIndividualOfferContext()
+  const selectedOffererId = useSelector(selectCurrentOffererId)
+
   const mode = useOfferWizardMode()
 
   const { logEvent } = useAnalytics()
 
   const logButtonAddClick = () => {
     logEvent(Events.CLICKED_ADD_IMAGE, {
+      offererId: selectedOffererId?.toString(),
       offerId: offer?.id,
       offerType: 'individual',
       imageType: UploaderModeEnum.OFFER,

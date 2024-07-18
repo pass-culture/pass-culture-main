@@ -1,3 +1,5 @@
+import { useSelector } from 'react-redux'
+
 import { GetIndividualOfferResponseModel } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
@@ -11,6 +13,7 @@ import fullLinkIcon from 'icons/full-link.svg'
 import fullValidateIcon from 'icons/full-validate.svg'
 import fullWaitIcon from 'icons/full-wait.svg'
 import { DisplayOfferInAppLink } from 'screens/IndividualOffer/SummaryScreen/DisplayOfferInAppLink/DisplayOfferInAppLink'
+import { selectCurrentOffererId } from 'store/user/selectors'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
@@ -29,6 +32,7 @@ export const IndividualOfferConfirmationScreen = ({
   const isPublishedInTheFuture = isDateValid(offer.publicationDate)
   const isPendingOffer = offer.status === OFFER_STATUS_PENDING
   const queryString = `?structure=${offer.venue.managingOfferer.id}&lieu=${offer.venue.id}`
+  const selectedOffererId = useSelector(selectCurrentOffererId)
 
   const { date: publicationDate, time: publicationTime } = formatDateTimeParts(
     offer.publicationDate
@@ -105,6 +109,7 @@ export const IndividualOfferConfirmationScreen = ({
                 isEdition: false,
                 offerId: offer.id,
                 offerType: 'individual',
+                offererId: selectedOffererId?.toString(),
               })
             }}
           >

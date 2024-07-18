@@ -1,6 +1,7 @@
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import cn from 'classnames'
 import { useState } from 'react'
+import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { useSWRConfig } from 'swr'
 
@@ -35,6 +36,7 @@ import fullNextIcon from 'icons/full-next.svg'
 import fullPlusIcon from 'icons/full-plus.svg'
 import fullThreeDotsIcon from 'icons/full-three-dots.svg'
 import strokeThingIcon from 'icons/stroke-thing.svg'
+import { selectCurrentOffererId } from 'store/user/selectors'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -72,6 +74,8 @@ export const CollectiveActionsCells = ({
   const navigate = useNavigate()
   const notify = useNotification()
   const { logEvent } = useAnalytics()
+  const selectedOffererId = useSelector(selectCurrentOffererId)
+
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isCancelledBookingModalOpen, setIsCancelledBookingModalOpen] =
     useState(false)
@@ -97,6 +101,7 @@ export const CollectiveActionsCells = ({
   const onDialogConfirm = async (shouldNotDisplayModalAgain: boolean) => {
     logEvent(Events.CLICKED_DUPLICATE_TEMPLATE_OFFER, {
       from: OFFER_FROM_TEMPLATE_ENTRIES.OFFERS_MODAL,
+      offererId: selectedOffererId?.toString(),
       offerId: offer.id,
       offerType: 'collective',
     })
@@ -117,6 +122,7 @@ export const CollectiveActionsCells = ({
       if (!shouldDisplayModal) {
         logEvent(Events.CLICKED_DUPLICATE_TEMPLATE_OFFER, {
           from: OFFER_FROM_TEMPLATE_ENTRIES.OFFERS,
+          offererId: selectedOffererId?.toString(),
           offerId: offer.id,
           offerType: 'collective',
         })
@@ -246,6 +252,7 @@ export const CollectiveActionsCells = ({
                                 from: location.pathname,
                                 offerId: offer.id,
                                 offerType: 'collective',
+                                offererId: selectedOffererId?.toString(),
                               }
                             )
                           }
