@@ -28,7 +28,7 @@
       }
 
       .nav-item {
-        @include fonts.button;
+        @include fonts.bold;
 
         align-items: center;
         color: var(--color-white);

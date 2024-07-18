@@ -130,7 +130,7 @@
     background-color: var(--color-background-secondary);
 
     .base-radio-label {
-      @include fonts.button;
+      @include fonts.bold;
 
       padding: rem.torem(16px) rem.torem(16px) rem.torem(16px) 0;
     }

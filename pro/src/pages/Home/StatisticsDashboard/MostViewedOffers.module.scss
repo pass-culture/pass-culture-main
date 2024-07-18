@@ -8,7 +8,7 @@
 }
 
 .block-title {
-  @include fonts.button;
+  @include fonts.bold;
 }
 
 .caption {
@@ -27,7 +27,7 @@
   gap: rem.torem(16px);
 
   &-rank {
-    @include fonts.button;
+    @include fonts.bold;
   }
 
   &-thumbnail {

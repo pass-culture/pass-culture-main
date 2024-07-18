@@ -78,34 +78,6 @@
       margin-left: rem.torem(16px);
     }
   }
-
-  .logout {
-    @include fonts.button;
-
-    display: none;
-    align-items: center;
-    color: var(--color-input-text-color);
-    padding: 0 rem.torem(24px);
-
-    &-mobile {
-      display: inline-flex;
-      padding: 0;
-      justify-content: center;
-      align-items: center;
-      height: rem.torem(50px);
-      width: rem.torem(50px);
-      margin: 0;
-    }
-
-    @media (min-width: size.$tablet) {
-      display: flex;
-      gap: rem.torem(8px);
-
-      &-mobile {
-        display: none;
-      }
-    }
-  }
 }
 
 .tablet-and-above {

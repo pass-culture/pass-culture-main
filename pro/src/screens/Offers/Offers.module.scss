@@ -2,15 +2,15 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 
 .banner {
-    margin-bottom: rem.torem(16px);
+  margin-bottom: rem.torem(16px);
 
-    &-onboarding {
-        display: flex;
-        flex-direction: column;
-        gap: rem.torem(8px);
-    
-        &-title {
-            @include fonts.button
-        }
+  &-onboarding {
+    display: flex;
+    flex-direction: column;
+    gap: rem.torem(8px);
+
+    &-title {
+      @include fonts.bold;
     }
+  }
 }

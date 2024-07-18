@@ -51,7 +51,7 @@
 }
 
 .label {
-  @include fonts.button;
+  @include fonts.bold;
 
   line-height: rem.torem(20px);
 }

@@ -126,7 +126,7 @@
       }
 
       &-category {
-        @include fonts.button;
+        @include fonts.bold;
 
         color: var(--color-primary);
       }
