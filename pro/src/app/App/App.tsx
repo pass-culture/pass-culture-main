@@ -11,6 +11,7 @@ import { SWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
 import { isErrorAPIError } from 'apiClient/helpers'
+import { useLogExtraProData } from 'app/App/hook/useLogExtraProData'
 import { findCurrentRoute } from 'app/AppRouter/findCurrentRoute'
 import { Notification } from 'components/Notification/Notification'
 import {
@@ -58,6 +59,7 @@ export const App = (): JSX.Element | null => {
   useBeamer(consentedToBeamer)
   useFirebase(consentedToFirebase)
   useLogNavigation()
+  useLogExtraProData()
 
   const isNewInterfaceActive = useIsNewInterfaceActive()
 
