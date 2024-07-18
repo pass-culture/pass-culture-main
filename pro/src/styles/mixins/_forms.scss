@@ -20,7 +20,9 @@
   transition:
     background 150ms ease,
     box-shadow 150ms ease;
+}
 
+@mixin input-theme-nested {
   &:focus {
     outline: solid size.$input-border-width
       var(--color-input-border-color-focus);
@@ -85,12 +87,6 @@
   :disabled + & {
     color: var(--color-input-text-color-disabled);
   }
-}
-
-@mixin input-icon-button-wrapper($icon-width: 32px) {
-  @include input-icon-wrapper($icon-width);
-
-  pointer-events: initial;
 }
 
 @mixin field-layout-footer() {

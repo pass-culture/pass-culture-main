@@ -37,6 +37,8 @@
     border-top-right-radius: 0;
     padding-left: rem.torem(36px);
 
+    @include forms.input-theme-nested;
+
     &-span {
       position: absolute;
       top: 0;

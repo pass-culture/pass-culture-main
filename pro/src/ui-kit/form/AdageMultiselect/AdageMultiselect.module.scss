@@ -23,11 +23,11 @@
 }
 
 .search-input {
-  border: none;
-
   @include forms.input-theme;
 
-  outline: none;
+  border: none;
+
+  @include forms.input-theme-nested;
 }
 
 input[type="search"]::-webkit-search-cancel-button {
