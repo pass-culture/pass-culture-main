@@ -14,38 +14,31 @@ from pcapi.serialization.utils import to_camel
 from pcapi.utils import phone_number as phone_number_utils
 from pcapi.utils.date import format_into_utc_date
 from pcapi.utils.email import sanitize_email
+from pydantic import field_validator, ConfigDict
 
 
 class UserIdentityResponseModel(BaseModel):
     firstName: str
     lastName: str
-
-    class Config:
-        alias_generator = to_camel
-        orm_mode = True
+    model_config = ConfigDict(alias_generator=to_camel, from_attributes=True)
 
 
 class UserIdentityBodyModel(BaseModel):
     first_name: str
     last_name: str
-
-    class Config:
-        alias_generator = to_camel
-        extra = "forbid"
+    model_config = ConfigDict(alias_generator=to_camel, extra="forbid")
 
 
 class UserPhoneResponseModel(BaseModel):
     phoneNumber: str
-
-    class Config:
-        alias_generator = to_camel
-        orm_mode = True
+    model_config = ConfigDict(alias_generator=to_camel, from_attributes=True)
 
 
 class UserPhoneBodyModel(BaseModel):
     phone_number: str
 
-    @validator("phone_number")
+    @field_validator("phone_number")
+    @classmethod
     def validate_phone_number(cls, phone_number: str) -> str:
         if phone_number is None:
             return phone_number
@@ -54,17 +47,15 @@ class UserPhoneBodyModel(BaseModel):
             return phone_number_utils.ParsedPhoneNumber(phone_number).phone_number
         except Exception:
             raise ValueError(f"numéro de téléphone invalide: {phone_number}")
-
-    class Config:
-        alias_generator = to_camel
-        extra = "forbid"
+    model_config = ConfigDict(alias_generator=to_camel, extra="forbid")
 
 
 class UserResetEmailBodyModel(BaseModel):
     email: EmailStr
     password: str
 
-    @validator("email", pre=True)
+    @field_validator("email", mode="before")
+    @classmethod
     @classmethod
     def validate_emails(cls, email: str) -> str:
         try:
@@ -75,9 +66,7 @@ class UserResetEmailBodyModel(BaseModel):
 
 class UserEmailValidationResponseModel(BaseModel):
     newEmail: str | None
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class ProUserCreationBodyV2Model(BaseModel):
@@ -89,33 +78,25 @@ class ProUserCreationBodyV2Model(BaseModel):
     contact_ok: bool
     token: str
 
-    @validator("password")
+    @field_validator("password")
+    @classmethod
     def validate_password_strength(cls, password: str) -> str:
         check_password_strength("password", password)
         return password
-
-    class Config:
-        alias_generator = to_camel
-        extra = "forbid"
+    model_config = ConfigDict(alias_generator=to_camel, extra="forbid")
 
 
 class LoginUserBodyModel(BaseModel):
     identifier: str
     password: str
     captcha_token: str | None = None
-
-    class Config:
-        alias_generator = to_camel
+    model_config = ConfigDict(alias_generator=to_camel)
 
 
 class NavStateResponseModel(BaseModel):
     newNavDate: datetime | None
     eligibilityDate: datetime | None
-
-    class Config:
-        alias_generator = to_camel
-        allow_population_by_field_name = True
-        orm_mode = True
+    model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True, from_attributes=True)
 
 
 class SharedLoginUserResponseModel(BaseModel):
@@ -144,14 +125,9 @@ class SharedLoginUserResponseModel(BaseModel):
     roles: list[users_models.UserRole]
     navState: NavStateResponseModel | None
     hasPartnerPage: bool | None
-
-    class Config:
-        json_encoders = {datetime: format_into_utc_date}
-        orm_mode = True
-        alias_generator = to_camel
-        allow_population_by_field_name = True
-        arbitrary_types_allowed = True
-        use_enum_values = True
+    # TODO[pydantic]: The following keys were removed: `json_encoders`.
+    # Check https://docs.pydantic.dev/dev-v2/migration/#changes-to-config for more information.
+    model_config = ConfigDict(json_encoders={datetime: format_into_utc_date}, from_attributes=True, alias_generator=to_camel, populate_by_name=True, arbitrary_types_allowed=True, use_enum_values=True)
 
     @classmethod
     def from_orm(cls, user: users_models.User) -> "SharedLoginUserResponseModel":
@@ -192,11 +168,9 @@ class SharedCurrentUserResponseModel(BaseModel):
     navState: NavStateResponseModel | None
     hasPartnerPage: bool | None
     isImpersonated: bool = False
-
-    class Config:
-        json_encoders = {datetime: format_into_utc_date}
-        alias_generator = to_camel
-        orm_mode = True
+    # TODO[pydantic]: The following keys were removed: `json_encoders`.
+    # Check https://docs.pydantic.dev/dev-v2/migration/#changes-to-config for more information.
+    model_config = ConfigDict(json_encoders={datetime: format_into_utc_date}, alias_generator=to_camel, from_attributes=True)
 
     @classmethod
     def from_orm(cls, user: users_models.User) -> "SharedCurrentUserResponseModel":
@@ -249,9 +223,7 @@ class GdprUserSerializer(BaseModel):
     postalCode: str | None
     schoolType: users_models.SchoolTypeEnum | None
     validatedBirthDate: date | None
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class GdprMarketing(BaseModel):
@@ -265,9 +237,7 @@ class GdprLoginDeviceHistorySerializer(BaseModel):
     location: str | None
     source: str | None
     os: str | None
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class GdprEmailHistory(BaseModel):
@@ -300,9 +270,7 @@ class GdprBookingSerializer(BaseModel):
 class GdprActionHistorySerializer(BaseModel):
     actionDate: datetime
     actionType: history_models.ActionType
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class GdprBeneficiaryValidation(BaseModel):

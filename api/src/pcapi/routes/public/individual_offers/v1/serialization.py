@@ -27,6 +27,7 @@ from pcapi.routes.public.serialization.utils import StrEnum
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization import utils as serialization_utils
 from pcapi.utils.feature import FeatureToggle
+from pydantic import ConfigDict
 
 
 logger = logging.getLogger(__name__)
@@ -405,9 +406,7 @@ class BaseStockEdition(serialization.ConfiguredBaseModel):
                 raise ValueError(f"Value must be less than {offers_models.Stock.MAX_STOCK_QUANTITY}")
 
         return quantity
-
-    class Config:
-        extra = "forbid"
+    model_config = ConfigDict(extra="forbid")
 
 
 class StockEdition(BaseStockEdition):
@@ -418,9 +417,7 @@ class ProductOfferCreation(OfferCreationBase):
     category_related_fields: product_category_creation_fields
     stock: StockCreation | None
     location: PhysicalLocation | DigitalLocation = LOCATION_FIELD
-
-    class Config:
-        extra = "forbid"
+    model_config = ConfigDict(extra="forbid")
 
 
 class ProductOfferByEanCreation(serialization.ConfiguredBaseModel):
@@ -429,9 +426,7 @@ class ProductOfferByEanCreation(serialization.ConfiguredBaseModel):
     else:
         ean: pydantic_v1.constr(min_length=13, max_length=13) = fields.EAN
     stock: StockCreation
-
-    class Config:
-        extra = "forbid"
+    model_config = ConfigDict(extra="forbid")
 
 
 class ProductsOfferByEanCreation(serialization.ConfiguredBaseModel):
@@ -439,9 +434,7 @@ class ProductsOfferByEanCreation(serialization.ConfiguredBaseModel):
         description="List of product to create or update", max_items=500
     )
     location: PhysicalLocation | DigitalLocation = LOCATION_FIELD
-
-    class Config:
-        extra = "forbid"
+    model_config = ConfigDict(extra="forbid")
 
 
 class DecimalPriceGetterDict(GetterDict):
@@ -457,9 +450,9 @@ class PriceCategoryCreation(serialization.ConfiguredBaseModel):
     else:
         label: pydantic_v1.constr(min_length=1, max_length=50) = fields.PRICE_CATEGORY_LABEL
     price: offer_price_model = fields.PRICE
-
-    class Config:
-        getter_dict = DecimalPriceGetterDict
+    # TODO[pydantic]: The following keys were removed: `getter_dict`.
+    # Check https://docs.pydantic.dev/dev-v2/migration/#changes-to-config for more information.
+    model_config = ConfigDict(getter_dict=DecimalPriceGetterDict)
 
 
 class PriceCategoriesCreation(serialization.ConfiguredBaseModel):
@@ -476,9 +469,7 @@ class PriceCategoriesCreation(serialization.ConfiguredBaseModel):
                 raise ValueError("Price categories must be unique")
             unique_price_categories.append((price_category.label, price_category.price))
         return price_categories
-
-    class Config:
-        extra = "forbid"
+    model_config = ConfigDict(extra="forbid")
 
 
 class EventOfferCreation(OfferCreationBase):
@@ -500,9 +491,7 @@ class EventOfferCreation(OfferCreationBase):
                 raise ValueError("Price categories must be unique")
             unique_price_categories.append((price_category.label, price_category.price))
         return price_categories
-
-    class Config:
-        extra = "forbid"
+    model_config = ConfigDict(extra="forbid")
 
 
 class OfferEditionBase(serialization.ConfiguredBaseModel):
@@ -519,9 +508,7 @@ class OfferEditionBase(serialization.ConfiguredBaseModel):
     image: ImageBody | None
     description: str | None = fields.OFFER_DESCRIPTION_WITH_MAX_LENGTH
     id_at_provider: str | None = fields.ID_AT_PROVIDER_WITH_MAX_LENGTH
-
-    class Config:
-        extra = "forbid"
+    model_config = ConfigDict(extra="forbid")
 
 
 STOCK_EDITION_FIELD = pydantic_v1.Field(
@@ -543,9 +530,7 @@ class ProductOfferEdition(OfferEditionBase):
     stock: StockEdition | None = STOCK_EDITION_FIELD
     name: OfferName | None = fields.OFFER_NAME
     description: str | None = fields.OFFER_DESCRIPTION
-
-    class Config:
-        extra = "forbid"
+    model_config = ConfigDict(extra="forbid")
 
 
 class PriceCategoryEdition(serialization.ConfiguredBaseModel):
@@ -560,9 +545,7 @@ class PriceCategoryEdition(serialization.ConfiguredBaseModel):
         if value and value < 0:
             raise ValueError("Value must be positive")
         return value
-
-    class Config:
-        extra = "forbid"
+    model_config = ConfigDict(extra="forbid")
 
 
 class DateEdition(BaseStockEdition):
@@ -593,18 +576,16 @@ class DatesCreation(serialization.ConfiguredBaseModel):
     dates: list[DateCreation] = pydantic_v1.Field(
         description="Dates to add to the event. If there are different prices and quantity for the same date, you must add several date objects",
     )
-
-    class Config:
-        extra = "forbid"
+    model_config = ConfigDict(extra="forbid")
 
 
 class PriceCategoryResponse(serialization.ConfiguredBaseModel):
     id: int
     label: str = fields.PRICE_CATEGORY_LABEL
     price: pydantic_v1.StrictInt = fields.PRICE
-
-    class Config:
-        getter_dict = DecimalPriceGetterDict
+    # TODO[pydantic]: The following keys were removed: `getter_dict`.
+    # Check https://docs.pydantic.dev/dev-v2/migration/#changes-to-config for more information.
+    model_config = ConfigDict(getter_dict=DecimalPriceGetterDict)
 
 
 class PriceCategoriesResponse(serialization.ConfiguredBaseModel):
@@ -884,6 +865,8 @@ class ImageUploadFile(BaseModel):
     )
     credit: str | None
 
+    # TODO[pydantic]: We couldn't refactor the `validator`, please replace it by `field_validator` manually.
+    # Check https://docs.pydantic.dev/dev-v2/migration/#changes-to-validators for more information.
     @validator("file", pre=True, always=True)
     def validate_file(cls, value: BaseFile | None) -> BaseFile | None:
         if request.files and "file" in request.files:

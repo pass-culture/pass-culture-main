@@ -4,6 +4,7 @@ from pcapi.core.offers import validation
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.image_conversion import CropParams
+from pydantic import ConfigDict
 
 
 class CreateThumbnailBodyModel(BaseModel):
@@ -13,9 +14,7 @@ class CreateThumbnailBodyModel(BaseModel):
     cropping_rect_y: float | None
     cropping_rect_height: float | None
     cropping_rect_width: float | None
-
-    class Config:
-        alias_generator = to_camel
+    model_config = ConfigDict(alias_generator=to_camel)
 
     @property
     def crop_params(self) -> CropParams | None:

@@ -3,13 +3,12 @@ import enum
 
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import to_camel
+from pydantic import ConfigDict
 
 
 class BannerQueryParams(BaseModel):
     is_geolocated: bool = False
-
-    class Config:
-        alias_generator = to_camel
+    model_config = ConfigDict(alias_generator=to_camel)
 
 
 class BannerName(enum.Enum):

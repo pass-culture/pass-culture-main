@@ -22,6 +22,7 @@ from pcapi.routes.serialization.educational_institutions import EducationalInsti
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
 from pcapi.utils.date import isoformat
+from pydantic import model_validator, ConfigDict
 
 
 class CollectiveBookingRecapStatus(Enum):
@@ -47,12 +48,10 @@ class ListCollectiveBookingsQueryModel(BaseModel):
     booking_status_filter: models.CollectiveBookingStatusFilter | None
     booking_period_beginning_date: str | None
     booking_period_ending_date: str | None
+    model_config = ConfigDict(alias_generator=to_camel, extra="forbid")
 
-    class Config:
-        alias_generator = to_camel
-        extra = "forbid"
-
-    @root_validator(pre=True)
+    @model_validator(mode="before")
+    @classmethod
     def booking_period_or_event_date_required(cls, values: dict) -> dict:
         event_date = values.get("eventDate")
         booking_period_beginning_date = values.get("bookingPeriodBeginningDate")
@@ -83,9 +82,7 @@ class CollectiveBookingCollectiveStockResponseModel(BaseModel):
     offer_is_educational: bool
     number_of_tickets: int
     booking_limit_datetime: str | None
-
-    class Config:
-        alias_generator = to_camel
+    model_config = ConfigDict(alias_generator=to_camel)
 
 
 class EducationalRedactorResponseModel(BaseModel):
@@ -109,9 +106,7 @@ class CollectiveBookingResponseModel(BaseModel):
     booking_amount: float
     booking_status_history: list[BookingStatusHistoryResponseModel]
     booking_cancellation_reason: models.CollectiveBookingCancellationReasons | None
-
-    class Config:
-        alias_generator = to_camel
+    model_config = ConfigDict(alias_generator=to_camel)
 
 
 class ListCollectiveBookingsResponseModel(BaseModel):
@@ -119,10 +114,9 @@ class ListCollectiveBookingsResponseModel(BaseModel):
     page: int
     pages: int
     total: int
-
-    class Config:
-        json_encoders = {datetime: format_into_utc_date}
-        alias_generator = to_camel
+    # TODO[pydantic]: The following keys were removed: `json_encoders`.
+    # Check https://docs.pydantic.dev/dev-v2/migration/#changes-to-config for more information.
+    model_config = ConfigDict(json_encoders={datetime: format_into_utc_date}, alias_generator=to_camel)
 
 
 def _get_booking_status(status: models.CollectiveBookingStatus, is_confirmed: bool) -> str:
@@ -437,9 +431,7 @@ class CollectiveBookingEducationalRedactorResponseModel(BaseModel):
     civility: str | None
     firstName: str | None
     lastName: str | None
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class CollectiveBookingByIdResponseModel(BaseModel):
@@ -459,9 +451,7 @@ class CollectiveBookingByIdResponseModel(BaseModel):
     venueDMSApplicationId: int | None
     venueId: int
     offererId: int
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
     @classmethod
     def from_orm(cls, booking: models.CollectiveBooking) -> "CollectiveBookingByIdResponseModel":

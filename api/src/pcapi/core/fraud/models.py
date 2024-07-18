@@ -20,6 +20,7 @@ from pcapi.serialization.utils import to_camel
 
 from .common import models as common_models
 from .ubble import models as ubble_fraud_models
+from pydantic import ConfigDict
 
 
 if TYPE_CHECKING:
@@ -287,9 +288,7 @@ class DMSContent(common_models.IdentityCheckContent):
     processed_datetime: datetime.datetime | None
     registration_datetime: datetime.datetime | None
     state: str | None
-
-    class Config:
-        allow_population_by_field_name = True
+    model_config = ConfigDict(populate_by_name=True)
 
     def get_activity(self) -> str | None:
         return self.activity
@@ -474,11 +473,7 @@ class ProfileCompletionContent(pydantic_v1.BaseModel):
     origin: str  # Where the profile was completed by the user. Can be the APP or DMS
     postal_code: str | None  # Optional because it was not saved up until now
     school_type: users_models.SchoolTypeEnum | None
-
-    class Config:
-        allow_population_by_field_name = True
-        use_enum_values = True
-        alias_generator = to_camel
+    model_config = ConfigDict(populate_by_name=True, use_enum_values=True, alias_generator=to_camel)
 
 
 FRAUD_CHECK_CONTENT_MAPPING = {

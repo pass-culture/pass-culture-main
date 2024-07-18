@@ -15,14 +15,13 @@ from pcapi.routes.serialization import BaseModel
 from pcapi.routes.shared.price import convert_to_cent
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
+from pydantic import ConfigDict
 
 
 class BookOfferRequest(BaseModel):
     stock_id: int
     quantity: int
-
-    class Config:
-        alias_generator = to_camel
+    model_config = ConfigDict(alias_generator=to_camel)
 
 
 class BookOfferResponse(BaseModel):
@@ -38,10 +37,7 @@ class BookingVenueResponse(BaseModel):
     publicName: str | None
     coordinates: Coordinates
     timezone: str
-
-    class Config:
-        orm_mode = True
-        allow_population_by_field_name = True
+    model_config = ConfigDict(from_attributes=True, populate_by_name=True)
 
     @classmethod
     def from_orm(cls, venue: Venue) -> "BookingVenueResponse":
@@ -68,9 +64,7 @@ class BookingOfferResponse(BaseModel):
     withdrawalDetails: str | None
     withdrawalType: WithdrawalTypeEnum | None
     withdrawalDelay: int | None
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class BookingStockResponse(BaseModel):
@@ -82,9 +76,7 @@ class BookingStockResponse(BaseModel):
     priceCategoryLabel: str | None
 
     _convert_price = validator("price", pre=True, allow_reuse=True)(convert_to_cent)
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
     @classmethod
     def from_orm(cls, stock: Stock) -> "BookingStockResponse":
@@ -97,17 +89,13 @@ class BookingStockResponse(BaseModel):
 class BookingActivationCodeResponse(BaseModel):
     code: str
     expirationDate: datetime | None
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class ExternalBookingResponse(BaseModel):
     barcode: str
     seat: str | None
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class BookingReponse(BaseModel):
@@ -137,20 +125,16 @@ class BookingReponse(BaseModel):
         if booking.isExternal:
             serialized.token = None
         return serialized
-
-    class Config:
-        orm_mode = True
-        alias_generator = to_camel
-        allow_population_by_field_name = True
+    model_config = ConfigDict(from_attributes=True, alias_generator=to_camel, populate_by_name=True)
 
 
 class BookingsResponse(BaseModel):
     ended_bookings: list[BookingReponse]
     ongoing_bookings: list[BookingReponse]
     hasBookingsAfter18: bool
-
-    class Config:
-        json_encoders = {datetime: format_into_utc_date}
+    # TODO[pydantic]: The following keys were removed: `json_encoders`.
+    # Check https://docs.pydantic.dev/dev-v2/migration/#changes-to-config for more information.
+    model_config = ConfigDict(json_encoders={datetime: format_into_utc_date})
 
 
 class BookingDisplayStatusRequest(BaseModel):

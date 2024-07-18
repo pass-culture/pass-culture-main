@@ -10,6 +10,9 @@ from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import to_camel
 from pcapi.utils import phone_number as phone_number_utils
 from pcapi.utils.date import time_to_int
+from pydantic import field_validator, ConfigDict
+from pydantic import AfterValidator
+from typing import Annotated
 
 
 SocialMedia = typing.Literal["facebook", "instagram", "snapchat", "twitter"]
@@ -17,19 +20,15 @@ SocialMedias = dict[SocialMedia, pydantic_v1.HttpUrl]
 
 
 class VenueContactModel(BaseModel):
-    class Config:
-        alias_generator = to_camel
-        allow_population_by_field_name = True
-        orm_mode = True
-        anystr_strip_whitespace = True
-        extra = pydantic_v1.Extra.forbid
+    model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True, from_attributes=True, str_strip_whitespace=True, extra=pydantic_v1.Extra.forbid)
 
     email: pydantic_v1.EmailStr | None
     website: str | None
     phone_number: str | None
     social_medias: SocialMedias | None
 
-    @validator("phone_number")
+    @field_validator("phone_number")
+    @classmethod
     def validate_phone_number(cls, phone_number: str) -> str | None:
         if not phone_number:
             return None
@@ -39,7 +38,8 @@ class VenueContactModel(BaseModel):
         except Exception:
             raise ValueError(f"numéro de téléphone invalide: {phone_number}")
 
-    @validator("website")
+    @field_validator("website")
+    @classmethod
     def validate_website_url(cls, website: str) -> str:
         pattern = r"^(?:http(s)?:\/\/)?[\w.-\.-\.@]+(?:\.[\w\.-\.@]+)+[\w\-\._~:\/?#[\]@%!\$&'\(\)\*\+,;=.]+$"
         if website is None or re.match(pattern, website, re.IGNORECASE):
@@ -152,10 +152,9 @@ class BaseVenueResponse(BaseModel):
     publicName: str | None
     openingHours: dict | None
     withdrawalDetails: str | None
-
-    class Config:
-        orm_mode = True
-        getter_dict = VenueResponseGetterDict
+    # TODO[pydantic]: The following keys were removed: `getter_dict`.
+    # Check https://docs.pydantic.dev/dev-v2/migration/#changes-to-config for more information.
+    model_config = ConfigDict(from_attributes=True, getter_dict=VenueResponseGetterDict)
 
 
 class ListOffersVenueResponseModel(BaseModel):
@@ -168,14 +167,17 @@ class ListOffersVenueResponseModel(BaseModel):
 
 
 class OpeningHoursModel(BaseModel):
-    weekday: str
-    timespan: list[list[str]] | None
-
-    @validator("timespan", each_item=True)
     def convert_to_numeric_ranges(cls, timespan: list[str]) -> NumericRange:
         start, end = timespan
         return NumericRange(time_to_int(start), time_to_int(end), "[]")
+    
+    weekday: str
+    timespan: list[ Annotated[list[str], AfterValidator(convert_to_numeric_ranges)] ] = None
 
-    @validator("weekday", each_item=True)
-    def return_weekday_upper(cls, weekday: str) -> str:
-        return weekday.upper()
+
+
+    # TODO[pydantic]: We couldn't refactor the `validator`, please replace it by `field_validator` manually.
+    # Check https://docs.pydantic.dev/dev-v2/migration/#changes-to-validators for more information.
+    # @validator("weekday", each_item=True)
+    # def return_weekday_upper(cls, weekday: str) -> str:
+    #     return weekday.upper()

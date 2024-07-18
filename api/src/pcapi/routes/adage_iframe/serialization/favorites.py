@@ -6,6 +6,7 @@ from pcapi.core.offerers.repository import get_venue_by_id
 from pcapi.routes.adage_iframe.serialization import offers as serialize_offers
 from pcapi.routes.serialization import BaseModel
 from pcapi.utils.date import format_into_utc_date
+from pydantic import ConfigDict
 
 
 logger = logging.getLogger(__name__)
@@ -42,6 +43,6 @@ def serialize_collective_offer_template(
 class FavoritesResponseModel(BaseModel):
     favoritesOffer: list[serialize_offers.CollectiveOfferResponseModel]
     favoritesTemplate: list[serialize_offers.CollectiveOfferTemplateResponseModel]
-
-    class Config:
-        json_encoders = {datetime: format_into_utc_date}
+    # TODO[pydantic]: The following keys were removed: `json_encoders`.
+    # Check https://docs.pydantic.dev/dev-v2/migration/#changes-to-config for more information.
+    model_config = ConfigDict(json_encoders={datetime: format_into_utc_date})

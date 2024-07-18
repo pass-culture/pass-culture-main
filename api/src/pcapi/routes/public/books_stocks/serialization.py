@@ -12,6 +12,9 @@ from pcapi.core.offers import models
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
+from pydantic import Field, ConfigDict
+from decimal import Decimal
+from typing_extensions import Annotated
 
 
 logger = logging.getLogger(__name__)
@@ -19,9 +22,9 @@ logger = logging.getLogger(__name__)
 
 class StocksResponseModel(BaseModel):
     stocks_count: int
-
-    class Config:
-        json_encoders = {datetime: format_into_utc_date}
+    # TODO[pydantic]: The following keys were removed: `json_encoders`.
+    # Check https://docs.pydantic.dev/dev-v2/migration/#changes-to-config for more information.
+    model_config = ConfigDict(json_encoders={datetime: format_into_utc_date})
 
 
 class StockCreationBodyModel(BaseModel):
@@ -32,11 +35,9 @@ class StockCreationBodyModel(BaseModel):
     price: decimal.Decimal | None
     price_category_id: int | None
     quantity: int | None = Field(None, ge=0, le=models.Stock.MAX_STOCK_QUANTITY)
-
-    class Config:
-        alias_generator = to_camel
-        json_encoders = {datetime: format_into_utc_date}
-        extra = "forbid"
+    # TODO[pydantic]: The following keys were removed: `json_encoders`.
+    # Check https://docs.pydantic.dev/dev-v2/migration/#changes-to-config for more information.
+    model_config = ConfigDict(alias_generator=to_camel, json_encoders={datetime: format_into_utc_date}, extra="forbid")
 
 
 class StockEditionBodyModel(BaseModel):
@@ -46,19 +47,12 @@ class StockEditionBodyModel(BaseModel):
     price: decimal.Decimal | None
     price_category_id: int | None
     quantity: int | None = Field(None, ge=0, le=models.Stock.MAX_STOCK_QUANTITY)
-
-    class Config:
-        alias_generator = to_camel
-        extra = "forbid"
+    model_config = ConfigDict(alias_generator=to_camel, extra="forbid")
 
 
 class StockIdResponseModel(BaseModel):
     id: int
-
-    class Config:
-        orm_mode = True
-        allow_population_by_field_name = True
-        arbitrary_types_allowed = True
+    model_config = ConfigDict(from_attributes=True, populate_by_name=True, arbitrary_types_allowed=True)
 
 
 class StocksUpsertBodyModel(BaseModel):
@@ -69,9 +63,7 @@ class StocksUpsertBodyModel(BaseModel):
         stocks: pydantic_v1.conlist(
             StockCreationBodyModel | StockEditionBodyModel, min_items=1, max_items=models.Offer.MAX_STOCKS_PER_OFFER
         )
-
-    class Config:
-        alias_generator = to_camel
+    model_config = ConfigDict(alias_generator=to_camel)
 
 
 class UpdateVenueStockBodyModel(BaseModel):
@@ -82,14 +74,10 @@ class UpdateVenueStockBodyModel(BaseModel):
     if typing.TYPE_CHECKING:  # https://github.com/pydantic/pydantic/issues/156
         price: decimal.Decimal
     else:
-        price: condecimal(gt=0, decimal_places=2)
-
-    class Config:
-        title = "Stock"
+        price: Annotated[Decimal, Field(gt=0, decimal_places=2)]
+    model_config = ConfigDict(title="Stock")
 
 
 class UpdateVenueStocksBodyModel(BaseModel):
     stocks: list[UpdateVenueStockBodyModel]
-
-    class Config:
-        title = "Venue's stocks update body"
+    model_config = ConfigDict(title="Venue's stocks update body")

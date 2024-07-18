@@ -7,6 +7,7 @@ from pcapi import settings
 from pcapi.core.cultural_survey import models as cultural_survey_models
 from pcapi.core.object_storage.backends import gcp as gcp_backend
 from pcapi.tasks.decorator import task
+from pydantic import ConfigDict
 
 
 CULTURAL_SURVEY_ANSWERS_QUEUE_NAME = settings.GCP_CULTURAL_SURVEY_ANSWERS_QUEUE_NAME
@@ -15,9 +16,7 @@ CULTURAL_SURVEY_ANSWERS_QUEUE_NAME = settings.GCP_CULTURAL_SURVEY_ANSWERS_QUEUE_
 class CulturalSurveyTaskAnswer(pydantic_v1.BaseModel):
     question_id: cultural_survey_models.CulturalSurveyQuestionEnum
     answer_ids: list[cultural_survey_models.CulturalSurveyAnswerEnum]
-
-    class Config:
-        use_enum_values = True
+    model_config = ConfigDict(use_enum_values=True)
 
 
 class CulturalSurveyTaskAnswers(pydantic_v1.BaseModel):

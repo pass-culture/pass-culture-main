@@ -23,6 +23,7 @@ from pcapi.routes.shared.validation import phone_number_validator
 from pcapi.serialization.utils import to_camel
 from pcapi.utils import email as email_utils
 from pcapi.validation.routes.offers import check_collective_offer_name_length_is_valid
+from pydantic import field_validator, model_validator, ConfigDict
 
 
 class ListCollectiveOffersQueryModel(BaseModel):
@@ -30,10 +31,7 @@ class ListCollectiveOffersQueryModel(BaseModel):
     venue_id: int | None = fields.VENUE_ID
     period_beginning_date: str | None = fields.PERIOD_BEGINNING_DATE
     period_ending_date: str | None = fields.PERIOD_ENDING_DATE
-
-    class Config:
-        alias_generator = to_camel
-        extra = "forbid"
+    model_config = ConfigDict(alias_generator=to_camel, extra="forbid")
 
 
 class OfferVenueModel(BaseModel):
@@ -42,10 +40,7 @@ class OfferVenueModel(BaseModel):
     addressType: collective_offers_serialize.OfferAddressType
 
     _validated_venue_id = validator("venueId", pre=True, allow_reuse=True)(validate_venue_id)
-
-    class Config:
-        alias_generator = to_camel
-        extra = "forbid"
+    model_config = ConfigDict(alias_generator=to_camel, extra="forbid")
 
 
 def validate_email(email: str) -> str:
@@ -186,9 +181,7 @@ class CollectiveBookingResponseModel(BaseModel):
     reimbursementDate: datetime | None = fields.COLLECTIVE_BOOKING_REIMBURSED_DATA
     dateUsed: datetime | None = fields.COLLECTIVE_BOOKING_DATE_USED
     dateCreated: datetime = fields.COLLECTIVE_BOOKING_DATE_CREATED
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class CollectiveOffersResponseModel(BaseModel):
@@ -199,9 +192,7 @@ class CollectiveOffersResponseModel(BaseModel):
     status: str = fields.COLLECTIVE_OFFER_STATUS
     venueId: int = fields.VENUE_ID
     bookings: Sequence[CollectiveBookingResponseModel]
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
     @classmethod
     def from_orm(cls, offer: CollectiveOffer) -> "CollectiveOffersResponseModel":
@@ -228,9 +219,7 @@ class CollectiveOffersSubCategoryResponseModel(BaseModel):
     label: str
     category: str
     categoryId: str
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
     @classmethod
     def from_orm(cls, subcategory: subcategories.Subcategory) -> "CollectiveOffersSubCategoryResponseModel":
@@ -292,10 +281,7 @@ class GetPublicCollectiveOfferResponseModel(BaseModel):
     bookings: Sequence[CollectiveBookingResponseModel]
     nationalProgram: NationalProgramModel | None
     formats: list[subcategories.EacFormat] | None = fields.COLLECTIVE_OFFER_FORMATS
-
-    class Config:
-        extra = "forbid"
-        orm_mode = True
+    model_config = ConfigDict(extra="forbid", from_attributes=True)
 
     @classmethod
     def from_orm(cls, offer: CollectiveOffer) -> "GetPublicCollectiveOfferResponseModel":
@@ -406,7 +392,8 @@ class PostCollectiveOfferBodyModel(BaseModel):
     _validate_contact_email = email_validator("contact_email")
     _validate_image_file = image_file_validator("image_file")
 
-    @validator("students")
+    @field_validator("students")
+    @classmethod
     def validate_students(cls, students: list[str]) -> list[StudentLevels]:
         return shared_offers.validate_students(students)
 
@@ -428,19 +415,22 @@ class PostCollectiveOfferBodyModel(BaseModel):
         values["formats"] = subcategory.formats
         return values
 
-    @validator("name", pre=True)
+    @field_validator("name", mode="before")
+    @classmethod
     def validate_name(cls, name: str) -> str:
         check_collective_offer_name_length_is_valid(name)
         return name
 
-    @validator("domains", pre=True)
+    @field_validator("domains", mode="before")
+    @classmethod
     def validate_domains(cls, domains: list[str]) -> list[str]:
         if len(domains) == 0:
             raise ValueError("domains must have at least one value")
 
         return domains
 
-    @root_validator(pre=True)
+    @model_validator(mode="before")
+    @classmethod
     def image_validator(cls, values: dict) -> dict:
         image = values.get("image_file")
         credit = values.get("image_credit")
@@ -450,7 +440,8 @@ class PostCollectiveOfferBodyModel(BaseModel):
             )
         return values
 
-    @root_validator(pre=True)
+    @model_validator(mode="before")
+    @classmethod
     def institution_validator(cls, values: dict) -> dict:
         institution_id = values.get("educationalInstitutionId")
         uai = values.get("educationalInstitution")
@@ -465,10 +456,7 @@ class PostCollectiveOfferBodyModel(BaseModel):
             )
 
         return values
-
-    class Config:
-        alias_generator = to_camel
-        extra = "forbid"
+    model_config = ConfigDict(alias_generator=to_camel, extra="forbid")
 
 
 class PatchCollectiveOfferBodyModel(BaseModel):
@@ -521,7 +509,8 @@ class PatchCollectiveOfferBodyModel(BaseModel):
     _validate_booking_emails = emails_validator("bookingEmails")
     _validate_contact_email = email_validator("contactEmail")
 
-    @validator("students")
+    @field_validator("students")
+    @classmethod
     def validate_students(cls, students: list[str] | None) -> list[StudentLevels] | None:
         # TODO(jeremieb): normalize students fields: use enum, not str
         if not students:
@@ -529,26 +518,31 @@ class PatchCollectiveOfferBodyModel(BaseModel):
 
         return shared_offers.validate_students(students)
 
-    @validator("domains")
+    @field_validator("domains")
+    @classmethod
     def validate_domains(cls, domains: list[int]) -> list[int]:
         if len(domains) == 0:
             raise ValueError("domains must have at least one value")
 
         return domains
 
-    @validator("name", allow_reuse=True)
+    @field_validator("name")
+    @classmethod
     def validate_name(cls, name: str | None) -> str | None:
         assert name is not None and name.strip() != ""
         check_collective_offer_name_length_is_valid(name)
         return name
 
-    @validator("domains")
+    @field_validator("domains")
+    @classmethod
     def validate_domains_collective_offer_edition(cls, domains: list[int] | None) -> list[int] | None:
         if domains is None or (domains is not None and len(domains) == 0):
             raise ValueError("domains must have at least one value")
 
         return domains
 
+    # TODO[pydantic]: We couldn't refactor the `validator`, please replace it by `field_validator` manually.
+    # Check https://docs.pydantic.dev/dev-v2/migration/#changes-to-validators for more information.
     @validator("bookingLimitDatetime")
     def validate_booking_limit_datetime(
         cls, booking_limit_datetime: datetime | None, values: dict[str, Any]
@@ -561,18 +555,22 @@ class PatchCollectiveOfferBodyModel(BaseModel):
             raise ValueError("La date limite de réservation ne peut être postérieure à la date de début de l'évènement")
         return booking_limit_datetime
 
-    @validator("beginningDatetime", pre=True)
+    @field_validator("beginningDatetime", mode="before")
+    @classmethod
     def validate_beginning_limit_datetime(cls, beginningDatetime: datetime | None) -> datetime | None:
         if beginningDatetime is None:
             raise ValueError("La date de début de l'évènement ne peut pas être nulle.")
         return beginningDatetime
 
-    @validator("startDatetime", pre=True)
+    @field_validator("startDatetime", mode="before")
+    @classmethod
     def validate_start_limit_datetime(cls, startDatetime: datetime | None) -> datetime | None:
         if startDatetime is None:
             raise ValueError("La date de début de l'évènement ne peut pas être vide.")
         return startDatetime
 
+    # TODO[pydantic]: We couldn't refactor the `validator`, please replace it by `field_validator` manually.
+    # Check https://docs.pydantic.dev/dev-v2/migration/#changes-to-validators for more information.
     @validator("endDatetime", pre=True)
     def validate_end_limit_datetime(cls, endDatetime: datetime | None, values: dict[str, Any]) -> datetime | None:
         start_datetime = values.get("startDatetime")
@@ -582,7 +580,8 @@ class PatchCollectiveOfferBodyModel(BaseModel):
             raise ValueError("La date de fin de l'évènement ne peut précéder la date de début.")
         return endDatetime
 
-    @root_validator(pre=True)
+    @model_validator(mode="before")
+    @classmethod
     def institution_validator(cls, values: dict) -> dict:
         institution_id = values.get("educationalInstitutionId")
         uai = values.get("educationalInstitution")
@@ -593,7 +592,4 @@ class PatchCollectiveOfferBodyModel(BaseModel):
             )
 
         return values
-
-    class Config:
-        alias_generator = to_camel
-        extra = "forbid"
+    model_config = ConfigDict(alias_generator=to_camel, extra="forbid")

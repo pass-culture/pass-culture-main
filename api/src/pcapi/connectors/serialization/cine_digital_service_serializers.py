@@ -6,6 +6,7 @@ from pydantic.v1 import validator
 
 import pcapi.core.external_bookings.models as external_bookings_models
 from pcapi.routes.serialization import BaseModel
+from pydantic import field_validator, ConfigDict
 
 
 class IdObjectCDS(BaseModel):
@@ -14,16 +15,12 @@ class IdObjectCDS(BaseModel):
 
 class ShowTariffCDS(BaseModel):
     tariff: IdObjectCDS = Field(alias="tariffid")
-
-    class Config:
-        allow_population_by_field_name = True
+    model_config = ConfigDict(populate_by_name=True)
 
 
 class ShowsMediaoptionsCDS(BaseModel):
     media_options_id: IdObjectCDS = Field(alias="mediaoptionsid")
-
-    class Config:
-        allow_population_by_field_name = True
+    model_config = ConfigDict(populate_by_name=True)
 
 
 class CinemaParameterCDS(BaseModel):
@@ -36,9 +33,7 @@ class CinemaCDS(BaseModel):
     id: str
     is_internet_sale_gauge_active: bool = Field(alias="internetsalegaugeactive")
     cinema_parameters: list[CinemaParameterCDS] = Field(alias="cinemaParameters", default_factory=list)
-
-    class Config:
-        allow_population_by_field_name = True
+    model_config = ConfigDict(populate_by_name=True)
 
 
 class MediaOptionCDS(BaseModel):
@@ -60,11 +55,10 @@ class ShowCDS(BaseModel):
     screen: IdObjectCDS = Field(alias="screenid")
     media: IdObjectCDS = Field(alias="mediaid")
     shows_mediaoptions_collection: list[ShowsMediaoptionsCDS] = Field(alias="showsMediaoptionsCollection")
+    model_config = ConfigDict(populate_by_name=True)
 
-    class Config:
-        allow_population_by_field_name = True
-
-    @validator("is_empty_seatmap")
+    @field_validator("is_empty_seatmap")
+    @classmethod
     def string_with_no_digit_to_true(cls, value: str | bool) -> bool:
         """
         2022/08/02 a seatmap should be similar to [[1,1,1,0],[1,1,1,0]]
@@ -86,9 +80,7 @@ class MediaCDS(BaseModel):
     storyline: str
     visanumber: str | None
     allocineid: str | None = None
-
-    class Config:
-        allow_population_by_field_name = True
+    model_config = ConfigDict(populate_by_name=True)
 
     def to_generic_movie(self) -> external_bookings_models.Movie:
         return external_bookings_models.Movie(
@@ -105,9 +97,7 @@ class PaymentTypeCDS(BaseModel):
     id: int
     internal_code: str = Field(alias="internalcode")
     is_active: bool = Field(alias="active")
-
-    class Config:
-        allow_population_by_field_name = True
+    model_config = ConfigDict(populate_by_name=True)
 
 
 class TariffCDS(BaseModel):
@@ -115,18 +105,14 @@ class TariffCDS(BaseModel):
     price: float
     is_active: bool = Field(alias="active")
     label: str = Field(alias="labeltariff")
-
-    class Config:
-        allow_population_by_field_name = True
+    model_config = ConfigDict(populate_by_name=True)
 
 
 class VoucherTypeCDS(BaseModel):
     id: int
     code: str | None
     tariff: TariffCDS | None = Field(alias="tariffid")
-
-    class Config:
-        allow_population_by_field_name = True
+    model_config = ConfigDict(populate_by_name=True)
 
 
 class ScreenCDS(BaseModel):
@@ -134,9 +120,7 @@ class ScreenCDS(BaseModel):
     seatmap_front_to_back: bool = Field(alias="seatmapfronttoback")
     seatmap_left_to_right: bool = Field(alias="seatmaplefttoright")
     seatmap_skip_missing_seats: bool = Field(alias="seatmapskipmissingseats")
-
-    class Config:
-        allow_population_by_field_name = True
+    model_config = ConfigDict(populate_by_name=True)
 
 
 class SeatmapCDS(BaseModel):
@@ -158,9 +142,7 @@ class SeatmapCDS(BaseModel):
 class CancelBookingCDS(BaseModel):
     barcodes: list[int]
     paiement_type_id: int = Field(alias="paiementtypeid")
-
-    class Config:
-        allow_population_by_field_name = True
+    model_config = ConfigDict(populate_by_name=True)
 
 
 class CancelBookingsErrorsCDS(BaseModel):
@@ -179,9 +161,7 @@ class TicketSaleCDS(BaseModel):
     voucher_type: str = Field(alias="vouchertype")
     show: IdObjectCDS = Field(alias="showid")
     disabled_person: bool = Field(alias="disabledperson")
-
-    class Config:
-        allow_population_by_field_name = True
+    model_config = ConfigDict(populate_by_name=True)
 
 
 class TransactionPayementCDS(BaseModel):
@@ -189,9 +169,7 @@ class TransactionPayementCDS(BaseModel):
     amount: float
     payement_type: IdObjectCDS = Field(alias="paiementtypeid")
     voucher_type: IdObjectCDS = Field(alias="vouchertypeid")
-
-    class Config:
-        allow_population_by_field_name = True
+    model_config = ConfigDict(populate_by_name=True)
 
 
 class CreateTransactionBodyCDS(BaseModel):
@@ -200,26 +178,20 @@ class CreateTransactionBodyCDS(BaseModel):
     is_cancelled: bool = Field(alias="canceled")
     ticket_sale_collection: list[TicketSaleCDS] = Field(alias="ticketsaleCollection")
     payement_collection: list[TransactionPayementCDS] = Field(alias="paiementCollection")
-
-    class Config:
-        allow_population_by_field_name = True
+    model_config = ConfigDict(populate_by_name=True)
 
 
 class TicketResponseCDS(BaseModel):
     barcode: str
     seat_number: str | None = Field(alias="seatnumber")
-
-    class Config:
-        allow_population_by_field_name = True
+    model_config = ConfigDict(populate_by_name=True)
 
 
 class CreateTransactionResponseCDS(BaseModel):
     id: int
     invoice_id: str = Field(alias="invoiceid")
     tickets: list[TicketResponseCDS]
-
-    class Config:
-        allow_population_by_field_name = True
+    model_config = ConfigDict(populate_by_name=True)
 
 
 class SeatCDS:

@@ -9,18 +9,14 @@ from pcapi.core.subscription import profile_options
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
+from pydantic import field_validator, ConfigDict
 
 
 class CallToActionMessage(BaseModel):
     title: str | None = fields.Field(None, alias="callToActionTitle")
     link: str | None = fields.Field(None, alias="callToActionLink")
     icon: subscription_models.CallToActionIcon | None = fields.Field(None, alias="callToActionIcon")
-
-    class Config:
-        orm_mode = True
-        alias_generator = to_camel
-        allow_population_by_field_name = True
-        use_enum_values = True
+    model_config = ConfigDict(from_attributes=True, alias_generator=to_camel, populate_by_name=True, use_enum_values=True)
 
 
 class SubscriptionMessage(BaseModel):
@@ -28,13 +24,9 @@ class SubscriptionMessage(BaseModel):
     call_to_action: CallToActionMessage | None
     pop_over_icon: subscription_models.PopOverIcon | None
     updated_at: datetime.datetime | None
-
-    class Config:
-        orm_mode = True
-        alias_generator = to_camel
-        allow_population_by_field_name = True
-        json_encoders = {datetime.datetime: format_into_utc_date}
-        use_enum_values = True
+    # TODO[pydantic]: The following keys were removed: `json_encoders`.
+    # Check https://docs.pydantic.dev/dev-v2/migration/#changes-to-config for more information.
+    model_config = ConfigDict(from_attributes=True, alias_generator=to_camel, populate_by_name=True, json_encoders={datetime.datetime: format_into_utc_date}, use_enum_values=True)
 
 
 class SubscriptionMessageV2(BaseModel):
@@ -43,13 +35,9 @@ class SubscriptionMessageV2(BaseModel):
     call_to_action: CallToActionMessage | None
     pop_over_icon: subscription_models.PopOverIcon | None
     updated_at: datetime.datetime | None
-
-    class Config:
-        orm_mode = True
-        alias_generator = to_camel
-        allow_population_by_field_name = True
-        json_encoders = {datetime.datetime: format_into_utc_date}
-        use_enum_values = True
+    # TODO[pydantic]: The following keys were removed: `json_encoders`.
+    # Check https://docs.pydantic.dev/dev-v2/migration/#changes-to-config for more information.
+    model_config = ConfigDict(from_attributes=True, alias_generator=to_camel, populate_by_name=True, json_encoders={datetime.datetime: format_into_utc_date}, use_enum_values=True)
 
 
 class NextSubscriptionStepResponse(BaseModel):
@@ -58,10 +46,7 @@ class NextSubscriptionStepResponse(BaseModel):
     allowed_identity_check_methods: list[subscription_models.IdentityCheckMethod]
     has_identity_check_pending: bool
     subscription_message: SubscriptionMessage | None
-
-    class Config:
-        alias_generator = to_camel
-        allow_population_by_field_name = True
+    model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
 
 
 class SubscriptionStepDetailsResponse(BaseModel):
@@ -69,11 +54,7 @@ class SubscriptionStepDetailsResponse(BaseModel):
     title: subscription_models.SubscriptionStepTitle
     subtitle: str | None
     completion_state: subscription_models.SubscriptionStepCompletionState
-
-    class Config:
-        alias_generator = to_camel
-        allow_population_by_field_name = True
-        use_enum_values = True
+    model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True, use_enum_values=True)
 
 
 class SubscriptionStepperResponse(BaseModel):
@@ -83,10 +64,7 @@ class SubscriptionStepperResponse(BaseModel):
     title: str
     subtitle: str | None
     error_message: str | None
-
-    class Config:
-        alias_generator = to_camel
-        allow_population_by_field_name = True
+    model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
 
 
 class SubscriptionStepperResponseV2(BaseModel):
@@ -98,10 +76,7 @@ class SubscriptionStepperResponseV2(BaseModel):
     title: str
     subtitle: str | None
     subscription_message: SubscriptionMessageV2 | None
-
-    class Config:
-        alias_generator = to_camel
-        allow_population_by_field_name = True
+    model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
 
 
 class ProfileContent(BaseModel):
@@ -112,11 +87,7 @@ class ProfileContent(BaseModel):
     last_name: str
     postal_code: str
     school_type: profile_options.SCHOOL_TYPE_VALUE_ENUM | None
-
-    class Config:
-        alias_generator = to_camel
-        allow_population_by_field_name = True
-        use_enum_values = True
+    model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True, use_enum_values=True)
 
 
 class ProfileResponse(BaseModel):
@@ -131,28 +102,30 @@ class ProfileUpdateRequest(BaseModel):
     last_name: str
     postal_code: str
     school_type_id: profile_options.SCHOOL_TYPE_ID_ENUM | None
+    model_config = ConfigDict(alias_generator=to_camel)
 
-    class Config:
-        alias_generator = to_camel
-
-    @validator("first_name", "last_name", "address", "city", "postal_code")
+    @field_validator("first_name", "last_name", "address", "city", "postal_code")
+    @classmethod
     def mandatory_string_fields_cannot_be_empty(cls, v: str) -> str:
         v = v.strip()
         if not v:
             raise ValueError("This field cannot be empty")
         return v
 
-    @validator("first_name", "last_name")
+    @field_validator("first_name", "last_name")
+    @classmethod
     def string_must_contain_latin_characters(cls, v: str) -> str:
         fraud_utils.validate_name(v)
         return v
 
-    @validator("city")
+    @field_validator("city")
+    @classmethod
     def city_must_be_valid(cls, v: str) -> str:
         fraud_utils.validate_city(v)
         return v
 
-    @validator("address")
+    @field_validator("address")
+    @classmethod
     def address_must_be_valid(cls, v: str) -> str:
         fraud_utils.validate_address(v)
         return v
@@ -162,11 +135,7 @@ class ActivityResponseModel(BaseModel):
     id: profile_options.ACTIVITY_ID_ENUM
     label: str
     description: str | None
-
-    class Config:
-        alias_generator = to_camel
-        allow_population_by_field_name = True
-        orm_mode = True
+    model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True, from_attributes=True)
 
 
 class ActivityTypesResponse(BaseModel):

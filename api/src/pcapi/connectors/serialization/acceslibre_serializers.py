@@ -2,6 +2,7 @@ import pydantic.v1 as pydantic_v1
 
 from pcapi.connectors.acceslibre import AccessibilityInfo
 from pcapi.connectors.acceslibre import ExpectedFieldsEnum as acceslibre_enum
+from pydantic import ConfigDict
 
 
 ENTRANCE_FIELDS = {field.value for field in acceslibre_enum if field.name.startswith("ENTRANCE")}
@@ -50,9 +51,7 @@ class ExternalAccessibilityDataModel(pydantic_v1.BaseModel):
     audioDisability: AudioDisabilityModel = AudioDisabilityModel()
     visualDisability: VisualDisabilityModel = VisualDisabilityModel()
     mentalDisability: MentalDisabilityModel = MentalDisabilityModel()
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
     @classmethod
     def from_orm(cls, accessibility_infos: AccessibilityInfo) -> "ExternalAccessibilityDataModel":

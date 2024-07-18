@@ -24,15 +24,14 @@ from pcapi.routes.native.v1.serialization import subscription as subscription_se
 from pcapi.routes.serialization import ConfiguredBaseModel
 from pcapi.routes.shared.price import convert_to_cent
 from pcapi.utils.email import sanitize_email
+from pydantic import field_validator, ConfigDict
 
 
 class TrustedDevice(ConfiguredBaseModel):
     device_id: str
     os: str | None
     source: str | None
-
-    class Config:
-        anystr_strip_whitespace = True
+    model_config = ConfigDict(str_strip_whitespace=True)
 
 
 class BaseAccountRequest(ConfiguredBaseModel):
@@ -88,7 +87,8 @@ class ChangeEmailTokenContent(ConfiguredBaseModel):
     current_email: pydantic_v1.EmailStr
     new_email: pydantic_v1.EmailStr
 
-    @validator("current_email", "new_email", pre=True)
+    @field_validator("current_email", "new_email", mode="before")
+    @classmethod
     @classmethod
     def validate_emails(cls, email: str) -> str:
         try:
@@ -149,11 +149,10 @@ class UserProfileResponse(ConfiguredBaseModel):
     status: YoungStatusResponse
 
     _convert_recredit_amount_to_show = validator("recreditAmountToShow", pre=True, allow_reuse=True)(convert_to_cent)
+    model_config = ConfigDict(use_enum_values=True)
 
-    class Config:
-        use_enum_values = True
-
-    @validator("firstName", pre=True)
+    @field_validator("firstName", mode="before")
+    @classmethod
     def format_first_name(cls, firstName: str | None) -> str | None:
         return firstName if firstName != users_models.VOID_FIRST_NAME else None
 

@@ -4,6 +4,7 @@ import pydantic.v1 as pydantic_v1
 
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import to_camel
+from pydantic import ConfigDict
 
 
 class Cookie(pydantic_v1.ConstrainedStr):
@@ -31,7 +32,4 @@ class CookieConsentRequest(BaseModel):
     device_id: UUID
 
     user_id: int | None
-
-    class Config:
-        alias_generator = to_camel
-        extra = pydantic_v1.Extra.forbid
+    model_config = ConfigDict(alias_generator=to_camel, extra=pydantic_v1.Extra.forbid)

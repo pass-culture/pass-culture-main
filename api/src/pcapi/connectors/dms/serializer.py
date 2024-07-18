@@ -22,6 +22,7 @@ from pcapi.core.users import models as users_models
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import without_timezone
 from pcapi.utils.date import FrenchParserInfo
+from pydantic import field_validator, model_validator
 
 
 logger = logging.getLogger(__name__)
@@ -194,7 +195,8 @@ class ApplicationDetail(BaseModel):
     status: finance_models.BankAccountApplicationStatus
     label: str | None = None
 
-    @validator("label")
+    @field_validator("label")
+    @classmethod
     def truncate_label(cls: "ApplicationDetail", label: str) -> str:
         return shorten(label, width=100, placeholder="...")
 
@@ -206,7 +208,8 @@ class ApplicationDetail(BaseModel):
     def is_refused(self) -> bool:
         return self.status == finance_models.BankAccountApplicationStatus.REFUSED
 
-    @root_validator(pre=True)
+    @model_validator(mode="before")
+    @classmethod
     def to_representation(cls: "ApplicationDetail", obj: dict) -> dict:
         to_representation: dict[str, Any] = {}
         to_representation["procedure_version"] = obj["application_type"]
@@ -248,7 +251,8 @@ class Annotation(BaseModel):
     updated_at: datetime = Field(alias="updatedAt")
     string_value: str = Field(alias="stringValue")
 
-    @validator("updated_at", pre=False)
+    @field_validator("updated_at")
+    @classmethod
     def strip_timezone(cls, value: datetime) -> datetime:
         return without_timezone(value)
 
@@ -270,7 +274,8 @@ class CheckBoxAnnotation(Annotation):
 class ProcessingErrorPassCulture(FieldAnnotation):
     label: Literal["Erreur traitement pass Culture"]
 
-    @validator("string_value")
+    @field_validator("string_value")
+    @classmethod
     def lower_string_value(cls, string_value: str) -> str:
         return string_value.lower()
 
@@ -292,11 +297,13 @@ class MarkWithoutContinuationApplicationDetail(BaseModel):
     waiting_for_offerer_validation: WaitingForOffererValidation | None
     waiting_for_adage_validation: WaitingForAdageValidation | None
 
-    @validator("updated_at", pre=False)
+    @field_validator("updated_at")
+    @classmethod
     def strip_timezone(cls, value: datetime) -> datetime:
         return without_timezone(value)
 
-    @root_validator(pre=True)
+    @model_validator(mode="before")
+    @classmethod
     def to_representation(cls: "MarkWithoutContinuationApplicationDetail", obj: dict) -> dict:
         to_representation = {}
         to_representation["id"] = obj["id"]

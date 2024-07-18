@@ -16,6 +16,7 @@ from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import isoformat
+from pydantic import model_validator, ConfigDict
 
 
 class BookingRecapResponseBeneficiaryModel(BaseModel):
@@ -36,9 +37,7 @@ class BookingRecapResponseStockModel(BaseModel):
     # collective bookings. We have to adapt the pro front to change name
     offer_isbn: str | None
     offer_name: str
-
-    class Config:
-        alias_generator = to_camel
+    model_config = ConfigDict(alias_generator=to_camel)
 
 
 class BookingRecapStatus(Enum):
@@ -65,9 +64,7 @@ class BookingRecapResponseModel(BaseModel):
     booking_price_category_label: str | None
     booking_token: str | None
     stock: BookingRecapResponseStockModel
-
-    class Config:
-        alias_generator = to_camel
+    model_config = ConfigDict(alias_generator=to_camel)
 
 
 class UserHasBookingResponse(BaseModel):
@@ -190,12 +187,10 @@ class ListBookingsQueryModel(BaseModel):
     booking_period_ending_date: date | None
     offerer_address_id: int | None
     export_type: BookingExportType | None
+    model_config = ConfigDict(alias_generator=to_camel, extra="forbid")
 
-    class Config:
-        alias_generator = to_camel
-        extra = "forbid"
-
-    @root_validator(pre=True)
+    @model_validator(mode="before")
+    @classmethod
     def booking_period_or_event_date_required(cls, values: dict) -> dict:
         event_date = values.get("eventDate")
         booking_period_beginning_date = values.get("bookingPeriodBeginningDate")
@@ -227,10 +222,7 @@ class EventDateScheduleAndPriceCategoriesCountModel(BaseModel):
     event_date: date
     schedule_count: int
     price_categories_count: int
-
-    class Config:
-        alias_generator = to_camel
-        allow_population_by_field_name = True
+    model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
 
 
 class EventDatesInfos(BaseModel):

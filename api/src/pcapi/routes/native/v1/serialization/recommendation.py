@@ -2,6 +2,7 @@ import pydantic.v1 as pydantic_v1
 
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import to_camel
+from pydantic import ConfigDict
 
 
 class SimilarOffersRequestQuery(BaseModel):
@@ -15,9 +16,7 @@ class SimilarOffersRequestQuery(BaseModel):
         if isinstance(v, list):
             return v
         return v.split(",") if v else None
-
-    class Config:
-        extra = "forbid"
+    model_config = ConfigDict(extra="forbid")
 
 
 class RecommendationApiParams(BaseModel):
@@ -34,19 +33,14 @@ class RecommendationApiParams(BaseModel):
 class SimilarOffersResponse(BaseModel):
     results: list[str] = pydantic_v1.Field(default_factory=list)
     params: RecommendationApiParams
-
-    class Config:
-        alias_generator = to_camel
-        allow_population_by_field_name = True
+    model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
 
 
 class PlaylistRequestQuery(BaseModel):
     modelEndpoint: str | None
     longitude: float | None
     latitude: float | None
-
-    class Config:
-        extra = "forbid"
+    model_config = ConfigDict(extra="forbid")
 
 
 class PlaylistRequestBody(BaseModel):
@@ -60,15 +54,10 @@ class PlaylistRequestBody(BaseModel):
     isDuo: bool | None
     isRecoShuffled: bool | None
     offerTypeList: list[dict[str, str]] | None
-
-    class Config:
-        extra = "forbid"
+    model_config = ConfigDict(extra="forbid")
 
 
 class PlaylistResponse(BaseModel):
     playlist_recommended_offers: list[str]
     params: RecommendationApiParams
-
-    class Config:
-        alias_generator = to_camel
-        allow_population_by_field_name = True
+    model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)

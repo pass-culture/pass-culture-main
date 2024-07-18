@@ -1,16 +1,13 @@
 from pcapi.routes.serialization import BaseModel
+from pydantic import ConfigDict
 
 
 class EducationalDomainResponseModel(BaseModel):
     id: int
     name: str
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class EducationalDomainsResponseModel(BaseModel):
     __root__: list[EducationalDomainResponseModel]
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)

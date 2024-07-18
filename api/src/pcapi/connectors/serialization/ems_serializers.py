@@ -3,6 +3,7 @@ from decimal import Decimal
 from pydantic.v1 import validator
 
 from pcapi.routes.serialization import BaseModel
+from pydantic import field_validator
 
 
 class Session(BaseModel):
@@ -22,7 +23,8 @@ class Event(BaseModel):
     duration: int | None
     sessions: list[Session]
 
-    @validator("allocine_id", pre=True)
+    @field_validator("allocine_id", mode="before")
+    @classmethod
     def make_empty_string_null(cls, value: int | str | None) -> int | str | None:
         if value == "":
             return None

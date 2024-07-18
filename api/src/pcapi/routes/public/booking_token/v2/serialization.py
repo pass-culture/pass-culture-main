@@ -11,6 +11,7 @@ from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
 from pcapi.utils.date import isoformat
 from pcapi.utils.human_ids import humanize
+from pydantic import ConfigDict
 
 
 class BookingOfferType(str, Enum):
@@ -102,9 +103,7 @@ class PostBookingStockModel(BaseModel):
 class PostBookingBodyModel(BaseModel):
     stock_id: str
     quantity: int
-
-    class Config:
-        alias_generator = to_camel
+    model_config = ConfigDict(alias_generator=to_camel)
 
 
 class ActivationCode(BaseModel):

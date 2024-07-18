@@ -11,6 +11,7 @@ from pcapi.utils import date as date_utils
 
 from .accessibility import PartialAccessibility
 from .utils import StrEnum
+from pydantic import ConfigDict
 
 
 VenueTypeEnum = StrEnum(  # type: ignore[call-overload]
@@ -66,9 +67,9 @@ class VenueResponse(serialization.ConfiguredBaseModel):
             booking_url=external_urls.bookingExternalUrl if external_urls else None,
             cancel_url=external_urls.cancelExternalUrl if external_urls else None,
         )
-
-    class Config:
-        json_encoders = {datetime.datetime: date_utils.format_into_utc_date}
+    # TODO[pydantic]: The following keys were removed: `json_encoders`.
+    # Check https://docs.pydantic.dev/dev-v2/migration/#changes-to-config for more information.
+    model_config = ConfigDict(json_encoders={datetime.datetime: date_utils.format_into_utc_date})
 
 
 class OffererResponse(serialization.ConfiguredBaseModel):
@@ -87,9 +88,9 @@ class GetOffererVenuesResponse(serialization.ConfiguredBaseModel):
 
 class GetOfferersVenuesResponse(serialization.BaseModel):
     __root__: list[GetOffererVenuesResponse]
-
-    class Config:
-        json_encoders = {datetime.datetime: date_utils.format_into_utc_date}
+    # TODO[pydantic]: The following keys were removed: `json_encoders`.
+    # Check https://docs.pydantic.dev/dev-v2/migration/#changes-to-config for more information.
+    model_config = ConfigDict(json_encoders={datetime.datetime: date_utils.format_into_utc_date})
 
     @classmethod
     def _serialize_offerer_venues(cls, row: OffererVenues) -> GetOffererVenuesResponse:

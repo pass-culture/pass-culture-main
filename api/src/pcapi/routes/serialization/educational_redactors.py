@@ -4,6 +4,7 @@ import pydantic.v1 as pydantic_v1
 
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import to_camel
+from pydantic import ConfigDict
 
 
 class EducationalRedactorQueryModel(BaseModel):
@@ -13,10 +14,7 @@ class EducationalRedactorQueryModel(BaseModel):
     else:
         uai: pydantic_v1.constr(strip_whitespace=True, min_length=3)
         candidate: pydantic_v1.constr(strip_whitespace=True, min_length=3)
-
-    class Config:
-        alias_generator = to_camel
-        extra = "forbid"
+    model_config = ConfigDict(alias_generator=to_camel, extra="forbid")
 
 
 class EducationalRedactor(BaseModel):

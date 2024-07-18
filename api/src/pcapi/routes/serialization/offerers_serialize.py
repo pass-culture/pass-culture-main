@@ -21,6 +21,7 @@ from pcapi.routes.serialization.venues_serialize import BannerMetaModel
 from pcapi.routes.serialization.venues_serialize import DMSApplicationForEAC
 import pcapi.utils.date as date_utils
 from pcapi.utils.email import sanitize_email
+from pydantic import ConfigDict
 
 
 class GetOffererVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
@@ -58,10 +59,9 @@ class GetOffererVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
         venue.hasAdageId = bool(venue.adageId)
         venue.hasVenueProviders = bool(venue.venueProviders)
         return super().from_orm(venue)
-
-    class Config:
-        orm_mode = True
-        json_encoders = {datetime: date_utils.format_into_utc_date}
+    # TODO[pydantic]: The following keys were removed: `json_encoders`.
+    # Check https://docs.pydantic.dev/dev-v2/migration/#changes-to-config for more information.
+    model_config = ConfigDict(from_attributes=True, json_encoders={datetime: date_utils.format_into_utc_date})
 
 
 class OffererApiKey(BaseModel):
@@ -73,9 +73,7 @@ class PostOffererResponseModel(BaseModel):
     name: str
     id: int
     siren: str
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # GetOffererResponseModel includes sensitive information and can be returned only if authenticated user has a validated
@@ -149,19 +147,16 @@ class GetOffererResponseModel(BaseModel):
             GetOffererVenueResponseModel.from_orm(venue, ids_of_venues_with_offers) for venue in venues
         ]
         return res
-
-    class Config:
-        orm_mode = True
-        json_encoders = {datetime: date_utils.format_into_utc_date}
+    # TODO[pydantic]: The following keys were removed: `json_encoders`.
+    # Check https://docs.pydantic.dev/dev-v2/migration/#changes-to-config for more information.
+    model_config = ConfigDict(from_attributes=True, json_encoders={datetime: date_utils.format_into_utc_date})
 
 
 class GetOffererNameResponseModel(BaseModel):
     id: int
     name: str
     allowedOnAdage: bool
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class OffererMemberStatus(enum.Enum):
@@ -180,9 +175,7 @@ class GetOffererMembersResponseModel(BaseModel):
 
 class GetOfferersNamesResponseModel(BaseModel):
     offerersNames: list[GetOffererNameResponseModel]
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class GetOfferersNamesQueryModel(BaseModel):
@@ -193,9 +186,7 @@ class GetOfferersNamesQueryModel(BaseModel):
     # it validated or not.
     validated_for_user: bool | None
     offerer_id: int | None
-
-    class Config:
-        extra = "forbid"
+    model_config = ConfigDict(extra="forbid")
 
 
 class GetEducationalOffererVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
@@ -210,9 +201,7 @@ class GetEducationalOffererVenueResponseModel(BaseModel, AccessibilityCompliance
     collectivePhone: str | None
     collectiveEmail: str | None
     collectiveSubCategoryId: str | None
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class GetEducationalOffererResponseModel(BaseModel):
@@ -220,23 +209,17 @@ class GetEducationalOffererResponseModel(BaseModel):
     name: str
     managedVenues: list[GetEducationalOffererVenueResponseModel]
     allowedOnAdage: bool
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class GetEducationalOfferersResponseModel(BaseModel):
     educationalOfferers: list[GetEducationalOffererResponseModel]
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class GetEducationalOfferersQueryModel(BaseModel):
     offerer_id: int | None
-
-    class Config:
-        extra = "forbid"
+    model_config = ConfigDict(extra="forbid")
 
 
 class GenerateOffererApiKeyResponse(BaseModel):
@@ -267,10 +250,7 @@ class SaveNewOnboardingDataQueryModel(BaseModel):
     venueTypeCode: str
     webPresence: str
     token: str
-
-    class Config:
-        extra = "forbid"
-        anystr_strip_whitespace = True
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
 
 
 class OffererStatsResponseModel(BaseModel):
@@ -293,9 +273,7 @@ class GetOffererBankAccountsResponseModel(BaseModel):
     id: int
     bankAccounts: list[finance_serialize.BankAccountResponseModel]
     managedVenues: list[finance_serialize.ManagedVenues]
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class TopOffersResponseData(offerers_models.TopOffersData):
@@ -357,9 +335,7 @@ class GetOffererV2StatsResponseModel(BaseModel):
     publishedEducationalOffers: int
     pendingPublicOffers: int
     pendingEducationalOffers: int
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class GetOffererAddressResponseModel(BaseModel):
@@ -376,9 +352,7 @@ class GetOffererAddressResponseModel(BaseModel):
         offerer_address.postalCode = offerer_address.address.postalCode
         offerer_address.city = offerer_address.address.city
         return super().from_orm(offerer_address)
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class OffererAddressWithIsEditableGetterDict(GetterDict):
@@ -390,9 +364,9 @@ class OffererAddressWithIsEditableGetterDict(GetterDict):
 
 class GetOffererAddressWithIsEditableResponseModel(GetOffererAddressResponseModel):
     isEditable: bool
-
-    class Config:
-        getter_dict = OffererAddressWithIsEditableGetterDict
+    # TODO[pydantic]: The following keys were removed: `getter_dict`.
+    # Check https://docs.pydantic.dev/dev-v2/migration/#changes-to-config for more information.
+    model_config = ConfigDict(getter_dict=OffererAddressWithIsEditableGetterDict)
 
 
 class OffererAddressRequestModel(BaseModel):
@@ -414,6 +388,4 @@ class OffererAddressResponseModel(BaseModel):
     label: str | None
     offererId: int
     address: AddressResponseModel
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)

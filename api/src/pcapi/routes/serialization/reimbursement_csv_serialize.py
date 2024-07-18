@@ -19,6 +19,7 @@ from pcapi.models.api_errors import ApiErrors
 from pcapi.utils.date import MONTHS_IN_FRENCH
 from pcapi.utils.date import utc_datetime_to_department_timezone
 from pcapi.utils.string import u_nbsp
+from pydantic import field_validator
 
 
 def format_number_as_french(num: int | float) -> str:
@@ -273,7 +274,8 @@ class ReimbursementCsvQueryModel(BaseModel):
 class ReimbursementCsvByInvoicesModel(BaseModel):
     invoicesReferences: list[str]
 
-    @validator("invoicesReferences", pre=True)
+    @field_validator("invoicesReferences", mode="before")
+    @classmethod
     def ensure_invoices_references_is_list(cls, v: list[str] | str) -> list[str]:
         if isinstance(v, str):
             return [v]

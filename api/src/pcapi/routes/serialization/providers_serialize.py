@@ -1,4 +1,5 @@
 from pydantic.v1.main import BaseModel
+from pydantic import ConfigDict
 
 
 class ProviderResponse(BaseModel):
@@ -7,9 +8,7 @@ class ProviderResponse(BaseModel):
     enabledForPro: bool
     isActive: bool
     hasOffererProvider: bool
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class ListProviderResponse(BaseModel):

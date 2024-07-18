@@ -6,6 +6,7 @@ from pcapi.domain.music_types import MusicType
 from pcapi.domain.show_types import ShowType
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import to_camel
+from pydantic import ConfigDict
 
 
 class SubcategoryResponseModelv2(BaseModel):
@@ -17,62 +18,39 @@ class SubcategoryResponseModelv2(BaseModel):
     homepage_label_name: subcategories_v2.HomepageLabelNameEnumv2
     is_event: bool
     online_offline_platform: subcategories_v2.OnlineOfflinePlatformChoicesEnumv2
-
-    class Config:
-        alias_generator = to_camel
-        allow_population_by_field_name = True
-        orm_mode = True
+    model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True, from_attributes=True)
 
 
 class SearchGroupResponseModelv2(BaseModel):
     name: subcategories_v2.SearchGroupNameEnumv2
     value: str | None
-
-    class Config:
-        alias_generator = to_camel
-        allow_population_by_field_name = True
-        orm_mode = True
+    model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True, from_attributes=True)
 
 
 class HomepageLabelResponseModelv2(BaseModel):
     name: subcategories_v2.HomepageLabelNameEnumv2
     value: str | None
-
-    class Config:
-        alias_generator = to_camel
-        allow_population_by_field_name = True
-        orm_mode = True
+    model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True, from_attributes=True)
 
 
 class NativeCategoryResponseModelv2(BaseModel):
     name: subcategories_v2.NativeCategoryIdEnumv2
     value: str | None
     genre_type: subcategories_v2.GenreType | None
-
-    class Config:
-        alias_generator = to_camel
-        allow_population_by_field_name = True
-        orm_mode = True
+    model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True, from_attributes=True)
 
 
 class GenreTypeContentModel(BaseModel):
     name: str
     value: str
-
-    class Config:
-        allow_population_by_field_name = True
-        orm_mode = True
+    model_config = ConfigDict(populate_by_name=True, from_attributes=True)
 
 
 class GenreTypeModel(BaseModel):
     name: subcategories_v2.GenreType
     values: list[GenreTypeContentModel]
     trees: list[BookType] | list[MusicType] | list[ShowType] | list[MovieType]
-
-    class Config:
-        alias_generator = to_camel
-        allow_population_by_field_name = True
-        orm_mode = True
+    model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True, from_attributes=True)
 
 
 class SubcategoriesResponseModelv2(BaseModel):

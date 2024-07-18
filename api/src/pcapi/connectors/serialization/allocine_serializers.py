@@ -208,8 +208,8 @@ class AllocineBacklink(pydantic.BaseModel):
 
 
 class AllocineMovieData(pydantic.BaseModel):
-    eidr: str | None
-    productionYear: int | None
+    eidr: str | None = None
+    productionYear: int | None = None
 
 
 class AllocineMoviePoster(pydantic.BaseModel):
@@ -231,9 +231,9 @@ class AllocineReleaseData(pydantic.BaseModel):
 
 class AllocineMovieRelease(pydantic.BaseModel):
     name: str
-    releaseDate: AllocineReleaseDate | None
+    releaseDate: AllocineReleaseDate | None = None
     data: AllocineReleaseData
-    certificate: str | None
+    certificate: str | None = None
 
     @pydantic.field_validator("certificate", mode="before")
     def get_certificate_from_label(cls, certificate: dict[str, str] | None) -> str | None:
@@ -241,8 +241,8 @@ class AllocineMovieRelease(pydantic.BaseModel):
 
 
 class AllocineMoviePerson(pydantic.BaseModel):
-    firstName: str | None
-    lastName: str | None
+    firstName: str | None = None
+    lastName: str | None = None
 
 
 class AllocineMovieCreditPosition(pydantic.BaseModel):
@@ -255,8 +255,8 @@ class AllocineMovieCredit(pydantic.BaseModel):
 
 
 class AllocineMovieCastItem(pydantic.BaseModel):
-    actor: AllocineMoviePerson | None
-    role: str | None
+    actor: AllocineMoviePerson | None = None
+    role: str | None = None
 
 
 class AllocineMovieCast(pydantic.BaseModel):
@@ -290,8 +290,8 @@ class AllocineMovie(pydantic.BaseModel):
     title: str
     originalTitle: str
     type: str
-    runtime: int | None
-    poster: AllocineMoviePoster | None
+    runtime: int | None = None
+    poster: AllocineMoviePoster | None = None
     synopsis: str
     releases: list[AllocineMovieRelease]
     credits: list[AllocineMovieCredit]
@@ -349,8 +349,8 @@ class AllocineMovieListResponse(pydantic.BaseModel):
 
 class AllocineShowtime(pydantic.BaseModel):
     diffusionVersion: AllocineShowtimeDiffusionVersion
-    experience: list[AllocineShowtimeExperience | None] | AllocineShowtimeExperience | None
-    languages: list[AllocineShowtimeLanguage] | None
+    experience: list[AllocineShowtimeExperience | None] | AllocineShowtimeExperience | None = None
+    languages: list[AllocineShowtimeLanguage] | None = None
     projection: AllocineShowtimeProjection
     startsAt: datetime.datetime
 

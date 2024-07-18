@@ -5,6 +5,7 @@ import logging
 from pydantic.v1 import validator
 
 from pcapi.routes.serialization import BaseModel
+from pydantic import field_validator
 
 
 logger = logging.getLogger(__name__)
@@ -36,7 +37,8 @@ class Film(BaseModel):
     TypeFilm: str
     Seances: list[Seance]
 
-    @validator("Seances")
+    @field_validator("Seances")
+    @classmethod
     def skip_showtimes_with_negative_remaining_quantity(cls, seances: list[Seance]) -> list[Seance]:
         sanitized_showtimes = []
         for seance in seances:

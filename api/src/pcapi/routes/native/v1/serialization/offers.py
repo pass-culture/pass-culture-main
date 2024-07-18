@@ -30,6 +30,7 @@ from pcapi.routes.serialization import BaseModel
 from pcapi.routes.shared.price import convert_to_cent
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
+from pydantic import field_validator, ConfigDict
 
 
 logger = logging.getLogger(__name__)
@@ -37,9 +38,7 @@ logger = logging.getLogger(__name__)
 
 class OfferOffererResponse(BaseModel):
     name: str
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class OfferStockActivationCodeResponse(BaseModel):
@@ -67,11 +66,7 @@ class OfferStockResponse(BaseModel):
         pre=True,
         allow_reuse=True,
     )(lambda quantity: quantity if quantity != "unlimited" else None)
-
-    class Config:
-        orm_mode = True
-        alias_generator = to_camel
-        allow_population_by_field_name = True
+    model_config = ConfigDict(from_attributes=True, alias_generator=to_camel, populate_by_name=True)
 
     @staticmethod
     def _get_cancellation_limit_datetime(stock: Stock) -> datetime | None:
@@ -120,10 +115,7 @@ class OfferVenueResponse(BaseModel):
     isPermanent: bool
     timezone: str
     bannerUrl: str | None
-
-    class Config:
-        orm_mode = True
-        allow_population_by_field_name = True
+    model_config = ConfigDict(from_attributes=True, populate_by_name=True)
 
 
 def get_id_converter(labels_by_id: dict, field_name: str) -> Callable[[str | None], str | None]:
@@ -166,7 +158,8 @@ class OfferExtraData(BaseModel):
     gtlLabels: GtlLabels | None
     genres: list[str] | None
 
-    @validator("genres", pre=True, allow_reuse=True)
+    @field_validator("genres", mode="before")
+    @classmethod
     def convert_movie_types(cls, genres: list[str] | None) -> list[str] | None:
         if not genres:
             return None
@@ -201,9 +194,7 @@ class OfferAccessibilityResponse(BaseModel):
 class OfferImageResponse(BaseModel):
     url: str
     credit: str | None
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 def get_gtl_labels(gtl_id: str) -> GtlLabels | None:
@@ -284,12 +275,9 @@ class BaseOfferResponse(BaseModel):
     subcategoryId: subcategories.SubcategoryIdEnum
     venue: OfferVenueResponse
     withdrawalDetails: str | None
-
-    class Config:
-        orm_mode = True
-        alias_generator = to_camel
-        allow_population_by_field_name = True
-        json_encoders = {datetime: format_into_utc_date}
+    # TODO[pydantic]: The following keys were removed: `json_encoders`.
+    # Check https://docs.pydantic.dev/dev-v2/migration/#changes-to-config for more information.
+    model_config = ConfigDict(from_attributes=True, alias_generator=to_camel, populate_by_name=True, json_encoders={datetime: format_into_utc_date})
 
 
 class OfferResponse(BaseOfferResponse):
@@ -315,24 +303,21 @@ class OfferPreviewResponse(BaseModel):
     last30DaysBookings: int | None
     name: str
     stocks: list[OfferStockResponse]
-
-    class Config:
-        orm_mode = True
-        allow_population_by_field_name = True
+    model_config = ConfigDict(from_attributes=True, populate_by_name=True)
 
 
 class OffersStocksResponse(BaseModel):
     offers: list[OfferPreviewResponse]
-
-    class Config:
-        json_encoders = {datetime: format_into_utc_date}
+    # TODO[pydantic]: The following keys were removed: `json_encoders`.
+    # Check https://docs.pydantic.dev/dev-v2/migration/#changes-to-config for more information.
+    model_config = ConfigDict(json_encoders={datetime: format_into_utc_date})
 
 
 class OffersStocksResponseV2(BaseModel):
     offers: list[OfferResponseV2]
-
-    class Config:
-        json_encoders = {datetime: format_into_utc_date}
+    # TODO[pydantic]: The following keys were removed: `json_encoders`.
+    # Check https://docs.pydantic.dev/dev-v2/migration/#changes-to-config for more information.
+    model_config = ConfigDict(json_encoders={datetime: format_into_utc_date})
 
 
 class OffersStocksRequest(BaseModel):
@@ -340,13 +325,13 @@ class OffersStocksRequest(BaseModel):
 
 
 class OfferReportRequest(BaseModel):
-    class Config:
-        alias_generator = to_camel
+    model_config = ConfigDict(alias_generator=to_camel)
 
     reason: Reason
     custom_reason: str | None
 
-    @validator("custom_reason")
+    @field_validator("custom_reason")
+    @classmethod
     def custom_reason_must_not_be_too_long(cls, content: str | None) -> str | None:
         if not content:
             return None
@@ -358,8 +343,7 @@ class OfferReportRequest(BaseModel):
 
 
 class OfferReportReasons(BaseModel):
-    class Config:
-        alias_generator = to_camel
+    model_config = ConfigDict(alias_generator=to_camel)
 
     reasons: dict[str, ReasonMeta]
 
@@ -368,17 +352,11 @@ class ReportedOffer(BaseModel):
     offer_id: int
     reported_at: datetime
     reason: Reason
-
-    class Config:
-        orm_mode = True
-        alias_generator = to_camel
-        allow_population_by_field_name = True
-        json_encoders = {datetime: format_into_utc_date}
-        use_enum_values = True
+    # TODO[pydantic]: The following keys were removed: `json_encoders`.
+    # Check https://docs.pydantic.dev/dev-v2/migration/#changes-to-config for more information.
+    model_config = ConfigDict(from_attributes=True, alias_generator=to_camel, populate_by_name=True, json_encoders={datetime: format_into_utc_date}, use_enum_values=True)
 
 
 class UserReportedOffersResponse(BaseModel):
     reported_offers: list[ReportedOffer]
-
-    class Config:
-        alias_generator = to_camel
+    model_config = ConfigDict(alias_generator=to_camel)

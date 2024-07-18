@@ -1,6 +1,7 @@
 import typing
 
 from pcapi.routes.adage.v1.serialization.config import AdageBaseResponseModel
+from pydantic import ConfigDict
 
 
 if typing.TYPE_CHECKING:
@@ -15,9 +16,7 @@ class EducationalDepositResponse(AdageBaseResponseModel):
 
 class EducationalDepositsResponse(AdageBaseResponseModel):
     deposits: list[EducationalDepositResponse]
-
-    class Config:
-        title = "List of deposit"
+    model_config = ConfigDict(title="List of deposit")
 
 
 def serialize_educational_deposits(

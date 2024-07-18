@@ -3,13 +3,15 @@ from pydantic.v1.main import BaseModel
 
 from pcapi.models.api_errors import ApiErrors
 from pcapi.serialization.utils import validate_not_empty_string_when_provided
+from pydantic import field_validator
 
 
 class ResetPasswordBodyModel(BaseModel):
     email: str
     token: str
 
-    @validator("email")
+    @field_validator("email")
+    @classmethod
     def validate_email_not_empty(cls, email: str) -> str | None:  # typing: ignore
         if not email or email.isspace():
             errors = ApiErrors()

@@ -6,6 +6,7 @@ from pcapi.routes.public.documentation_constants.fields import LIMIT_DESCRIPTION
 from pcapi.routes.public.documentation_constants.fields import fields
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import to_camel
+from pydantic import field_validator, ConfigDict
 
 
 MAX_LIMIT_EDUCATIONAL_INSTITUTION = 20
@@ -18,9 +19,7 @@ class CollectiveOffersEducationalInstitutionResponseModel(BaseModel):
     institutionType: str = fields.EDUCATIONAL_INSTITUTION_TYPE
     city: str = fields.EDUCATIONAL_INSTITUTION_CITY
     postalCode: str = fields.EDUCATIONAL_INSTITUTION_POSTAL_CODE
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
     @classmethod
     def from_orm(cls, institution: EducationalInstitution) -> "CollectiveOffersEducationalInstitutionResponseModel":
@@ -41,11 +40,9 @@ class GetListEducationalInstitutionsQueryModel(BaseModel):
     uai: str | None = fields.EDUCATIONAL_INSTITUTION_UAI
     limit: int = Field(MAX_LIMIT_EDUCATIONAL_INSTITUTION, description=LIMIT_DESCRIPTION, example=10)
 
-    @validator("limit")
+    @field_validator("limit")
+    @classmethod
     def validate_limit(cls, limit: int) -> int:
         limit = min(limit, MAX_LIMIT_EDUCATIONAL_INSTITUTION)
         return limit
-
-    class Config:
-        alias_generator = to_camel
-        extra = "forbid"
+    model_config = ConfigDict(alias_generator=to_camel, extra="forbid")

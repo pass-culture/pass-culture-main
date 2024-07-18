@@ -2,6 +2,7 @@ import pydantic.v1 as pydantic_v1
 
 from pcapi.core.offerers.models import OffererAddress
 from pcapi.routes.serialization import BaseModel
+from pydantic import ConfigDict
 
 
 class AddressResponseModel(BaseModel):
@@ -13,9 +14,7 @@ class AddressResponseModel(BaseModel):
     city: str
     latitude: float
     longitude: float
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
     @pydantic_v1.validator("latitude", "longitude")
     def round(cls, value: float) -> float:

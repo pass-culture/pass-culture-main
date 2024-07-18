@@ -29,6 +29,7 @@ from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
 from pcapi.utils.image_conversion import CropParam
 from pcapi.utils.image_conversion import CropParams
+from pydantic import field_validator, model_validator, ConfigDict
 
 
 MAX_LONGITUDE = 180
@@ -55,10 +56,9 @@ class DMSApplicationForEAC(BaseModel):
     instructionDate: datetime | None
     processingDate: datetime | None
     userDeletionDate: datetime | None
-
-    class Config:
-        orm_mode = True
-        json_encoders = {datetime: format_into_utc_date}
+    # TODO[pydantic]: The following keys were removed: `json_encoders`.
+    # Check https://docs.pydantic.dev/dev-v2/migration/#changes-to-config for more information.
+    model_config = ConfigDict(from_attributes=True, json_encoders={datetime: format_into_utc_date})
 
     @classmethod
     def from_orm(
@@ -86,11 +86,10 @@ class PostVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
     withdrawalDetails: base.VenueWithdrawalDetails | None
     description: base.VenueDescription | None
     contact: base.VenueContactModel | None
+    model_config = ConfigDict(extra="forbid")
 
-    class Config:
-        extra = "forbid"
-
-    @validator("latitude", pre=True)
+    @field_validator("latitude", mode="before")
+    @classmethod
     @classmethod
     def validate_latitude(cls, raw_latitude: str) -> str:
         try:
@@ -101,7 +100,8 @@ class PostVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
             raise ValueError("La latitude doit être comprise entre -90.0 et +90.0")
         return raw_latitude
 
-    @validator("longitude", pre=True)
+    @field_validator("longitude", mode="before")
+    @classmethod
     @classmethod
     def validate_longitude(cls, raw_longitude: str) -> str:
         try:
@@ -112,6 +112,8 @@ class PostVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
             raise ValueError("La longitude doit être comprise entre -180.0 et +180.0")
         return raw_longitude
 
+    # TODO[pydantic]: We couldn't refactor the `validator`, please replace it by `field_validator` manually.
+    # Check https://docs.pydantic.dev/dev-v2/migration/#changes-to-validators for more information.
     @validator("siret", always=True)
     @classmethod
     def requires_siret_xor_comment(cls, siret: str | None, values: dict) -> str | None:
@@ -124,11 +126,7 @@ class PostVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
 
 class VenueResponseModel(BaseModel):
     id: int
-
-    class Config:
-        orm_mode = True
-        allow_population_by_field_name = True
-        arbitrary_types_allowed = True
+    model_config = ConfigDict(from_attributes=True, populate_by_name=True, arbitrary_types_allowed=True)
 
 
 class VenueStatsResponseModel(BaseModel):
@@ -150,10 +148,9 @@ class GetVenueManagingOffererResponseModel(BaseModel):
     siren: str | None
     street: str | None
     allowedOnAdage: bool
-
-    class Config:
-        orm_mode = True
-        json_encoders = {datetime: format_into_utc_date}
+    # TODO[pydantic]: The following keys were removed: `json_encoders`.
+    # Check https://docs.pydantic.dev/dev-v2/migration/#changes-to-config for more information.
+    model_config = ConfigDict(from_attributes=True, json_encoders={datetime: format_into_utc_date})
 
 
 class BannerMetaModel(BaseModel):
@@ -161,7 +158,8 @@ class BannerMetaModel(BaseModel):
     original_image_url: str | None = None
     crop_params: CropParams = CropParams()
 
-    @validator("crop_params", pre=True)
+    @field_validator("crop_params", mode="before")
+    @classmethod
     @classmethod
     def validate_crop_params(cls, raw_crop_params: CropParams | None) -> CropParams:
         """
@@ -176,9 +174,7 @@ class GetVenuePricingPointResponseModel(BaseModel):
     id: int
     siret: str
     venueName: str
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
     @classmethod
     def from_orm(cls, venue: offerers_models.Venue) -> "GetVenuePricingPointResponseModel":
@@ -189,17 +185,13 @@ class GetVenuePricingPointResponseModel(BaseModel):
 class GetVenueDomainResponseModel(BaseModel):
     id: int
     name: str
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class LegalStatusResponseModel(BaseModel):
     id: int
     name: str
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin):
@@ -235,11 +227,12 @@ class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin
     adageInscriptionDate: datetime | None
     bankAccount: BankAccountResponseModel | None
     isVisibleInApp: bool = True
+    # TODO[pydantic]: The following keys were removed: `json_encoders`.
+    # Check https://docs.pydantic.dev/dev-v2/migration/#changes-to-config for more information.
+    model_config = ConfigDict(from_attributes=True, json_encoders={datetime: format_into_utc_date})
 
-    class Config:
-        orm_mode = True
-        json_encoders = {datetime: format_into_utc_date}
-
+    # TODO[pydantic]: We couldn't refactor the `validator`, please replace it by `field_validator` manually.
+    # Check https://docs.pydantic.dev/dev-v2/migration/#changes-to-validators for more information.
     @validator("bannerMeta")
     @classmethod
     def validate_banner_meta(cls, meta: BannerMetaModel | None, values: dict) -> BannerMetaModel | None:
@@ -295,10 +288,9 @@ class GetCollectiveVenueResponseModel(BaseModel):
     collectiveEmail: str | None
     collectiveSubCategoryId: str | None
     siret: str | None
-
-    class Config:
-        orm_mode = True
-        json_encoders = {datetime: format_into_utc_date}
+    # TODO[pydantic]: The following keys were removed: `json_encoders`.
+    # Check https://docs.pydantic.dev/dev-v2/migration/#changes-to-config for more information.
+    model_config = ConfigDict(from_attributes=True, json_encoders={datetime: format_into_utc_date})
 
     @classmethod
     def from_orm(cls, venue: offerers_models.Venue) -> "GetCollectiveVenueResponseModel":
@@ -349,13 +341,15 @@ class EditVenueCollectiveDataBodyModel(BaseModel):
     _validate_collectivePhone = string_length_validator("collectivePhone", length=50)
     _validate_collectiveEmail = string_length_validator("collectiveEmail", length=150)
 
-    @validator("collectiveStudents")
+    @field_validator("collectiveStudents")
+    @classmethod
     def validate_students(cls, students: list[str]) -> list[educational_models.StudentLevels] | None:
         if not students:
             return []
         return shared_offers.validate_students(students)
 
-    @validator("collectiveSubCategoryId")
+    @field_validator("collectiveSubCategoryId")
+    @classmethod
     @classmethod
     def validate_subcategory_id(cls, subcategory_id: str | None) -> str | None:
         if subcategory_id and not subcategory_id in subcategories_v2.COLLECTIVE_SUBCATEGORIES:
@@ -391,9 +385,7 @@ class VenueListItemResponseModel(BaseModel, AccessibilityComplianceMixin):
                 venue.accessibilityProvider.externalAccessibilityData
             )
         return super().from_orm(venue)
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class GetVenueListResponseModel(BaseModel):
@@ -407,10 +399,7 @@ class VenueListQueryModel(BaseModel):
 
     _string_to_boolean_validated = string_to_boolean_field("validated")
     _string_to_boolean_active_offerers_only = string_to_boolean_field("active_offerers_only")
-
-    class Config:
-        alias_generator = to_camel
-        extra = "forbid"
+    model_config = ConfigDict(alias_generator=to_camel, extra="forbid")
 
 
 class VenueBannerContentModel(BaseModel):
@@ -426,12 +415,10 @@ class VenueBannerContentModel(BaseModel):
     y_crop_percent: CropParam
     height_crop_percent: CropParam
     width_crop_percent: CropParam
+    model_config = ConfigDict(extra=pydantic_v1.Extra.forbid, str_strip_whitespace=True)
 
-    class Config:
-        extra = pydantic_v1.Extra.forbid
-        anystr_strip_whitespace = True
-
-    @root_validator(pre=True)
+    @model_validator(mode="before")
+    @classmethod
     @classmethod
     def validate_banner(cls, values: dict) -> dict:
         """
@@ -498,18 +485,13 @@ class VenueBannerContentModel(BaseModel):
 
 class LinkVenueToPricingPointBodyModel(BaseModel):
     pricingPointId: int
-
-    class Config:
-        extra = "forbid"
+    model_config = ConfigDict(extra="forbid")
 
 
 class VenuesEducationalStatusResponseModel(BaseModel):
     id: int
     name: str
-
-    class Config:
-        orm_mode = True
-        extra = pydantic_v1.Extra.forbid
+    model_config = ConfigDict(from_attributes=True, extra=pydantic_v1.Extra.forbid)
 
 
 class VenuesEducationalStatusesResponseModel(BaseModel):
@@ -556,7 +538,8 @@ class AdageCulturalPartnerResponseModel(BaseModel):
     siteWeb: str | None
     domaineIds: list[int]
 
-    @validator("domaineIds", pre=True)
+    @field_validator("domaineIds", mode="before")
+    @classmethod
     @classmethod
     def transform_domaine_ids(cls, domaine_ids: str | list[int] | None) -> list[int]:
         if not domaine_ids:
@@ -573,9 +556,7 @@ class AdageCulturalPartnerResponseModel(BaseModel):
             ids.append(int(domaine_id))
 
         return ids
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class CulturalPartner(BaseModel):
@@ -583,16 +564,12 @@ class CulturalPartner(BaseModel):
     communeLibelle: str | None
     libelle: str
     regionLibelle: str | None
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class AdageCulturalPartnersResponseModel(BaseModel):
     partners: list[CulturalPartner]
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class VenueOfOffererFromSiretResponseModel(BaseModel):
@@ -601,9 +578,7 @@ class VenueOfOffererFromSiretResponseModel(BaseModel):
     publicName: str | None
     siret: str | None
     isPermanent: bool
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class GetVenuesOfOffererFromSiretResponseModel(BaseModel):

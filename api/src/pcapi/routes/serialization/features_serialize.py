@@ -1,4 +1,5 @@
 from pcapi.routes.serialization import BaseModel
+from pydantic import ConfigDict
 
 
 class FeatureResponseModel(BaseModel):
@@ -7,9 +8,7 @@ class FeatureResponseModel(BaseModel):
     isActive: bool
     name: str
     nameKey: str
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class ListFeatureResponseModel(BaseModel):

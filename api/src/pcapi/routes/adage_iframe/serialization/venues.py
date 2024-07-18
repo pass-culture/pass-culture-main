@@ -1,5 +1,6 @@
 from pcapi.core.offerers import models as offerers_models
 from pcapi.routes.serialization import BaseModel
+from pydantic import ConfigDict
 
 
 class GetRelativeVenuesQueryModel(BaseModel):
@@ -13,9 +14,7 @@ class VenueResponse(BaseModel):
     departementCode: str
     relative: list[int]
     adageId: str | None
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
     @classmethod
     def from_orm(cls, venue: offerers_models.Venue, relative: list[int] | None = None) -> "VenueResponse":

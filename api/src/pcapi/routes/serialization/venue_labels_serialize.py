@@ -1,12 +1,11 @@
 from pcapi.routes.serialization import BaseModel
+from pydantic import ConfigDict
 
 
 class VenueLabelResponseModel(BaseModel):
     id: int
     label: str
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class VenueLabelListResponseModel(BaseModel):

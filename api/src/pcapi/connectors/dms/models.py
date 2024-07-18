@@ -9,6 +9,7 @@ from sqlalchemy.dialects import postgresql
 from pcapi.models import Base
 from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
+from pydantic import ConfigDict
 
 
 class LatestDmsImport(PcObject, Base, Model):
@@ -100,9 +101,7 @@ class DMSMessage(pydantic_v1.BaseModel):
 
     created_at: datetime.datetime = pydantic_v1.Field(alias="createdAt")
     email: str
-
-    class Config:
-        allow_population_by_field_name = True
+    model_config = ConfigDict(populate_by_name=True)
 
     _format_created_at = pydantic_v1.validator("created_at", allow_reuse=True)(parse_dms_datetime)
 

@@ -1,5 +1,6 @@
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.routes.serialization import BaseModel
+from pydantic import ConfigDict
 
 
 class OffererBankInformationStatus(BaseModel):
@@ -12,8 +13,7 @@ class OffererBankInformationStatus(BaseModel):
 
 
 class OffererBasicInfo(BaseModel):
-    class Config:
-        use_enum_values = True
+    model_config = ConfigDict(use_enum_values=True)
 
     id: int
     name: str

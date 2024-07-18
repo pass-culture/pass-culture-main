@@ -1,5 +1,6 @@
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import to_camel
+from pydantic import ConfigDict
 
 
 class EducationalInstitutionResponseModel(BaseModel):
@@ -10,10 +11,7 @@ class EducationalInstitutionResponseModel(BaseModel):
     city: str
     phoneNumber: str
     institutionId: str
-
-    class Config:
-        orm_mode = True
-        extra = "forbid"
+    model_config = ConfigDict(from_attributes=True, extra="forbid")
 
 
 class EducationalInstitutionsResponseModel(BaseModel):
@@ -21,16 +19,10 @@ class EducationalInstitutionsResponseModel(BaseModel):
     page: int
     pages: int
     total: int
-
-    class Config:
-        alias_generator = to_camel
-        extra = "forbid"
+    model_config = ConfigDict(alias_generator=to_camel, extra="forbid")
 
 
 class EducationalInstitutionsQueryModel(BaseModel):
     per_page_limit: int = 1000
     page: int = 1
-
-    class Config:
-        alias_generator = to_camel
-        extra = "forbid"
+    model_config = ConfigDict(alias_generator=to_camel, extra="forbid")

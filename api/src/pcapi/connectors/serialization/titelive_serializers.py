@@ -7,6 +7,7 @@ from pydantic.v1 import generics
 
 from pcapi.routes.serialization import BaseModel
 from pcapi.utils import date as date_utils
+from pydantic import BaseModel
 
 
 logger = logging.getLogger(__name__)
@@ -144,7 +145,7 @@ class TiteliveMusicArticle(TiteliveArticle):
 TiteliveArticleType = typing.TypeVar("TiteliveArticleType", bound=TiteliveArticle)
 
 
-class BaseTiteliveWork(generics.GenericModel, typing.Generic[TiteliveArticleType]):
+class BaseTiteliveWork(BaseModel, typing.Generic[TiteliveArticleType]):
     article: list[TiteliveArticleType]
 
     @pydantic_v1.validator("article", pre=True)

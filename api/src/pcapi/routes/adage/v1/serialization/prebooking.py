@@ -18,6 +18,7 @@ from pcapi.routes.adage.v1.serialization.config import AdageBaseResponseModel
 from pcapi.routes.native.v1.serialization.common_models import Coordinates
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import to_camel
+from pydantic import ConfigDict
 
 
 class MergeInstitutionPrebookingsQueryModel(AdageBaseResponseModel):
@@ -28,9 +29,7 @@ class MergeInstitutionPrebookingsQueryModel(AdageBaseResponseModel):
 
 class GetEducationalBookingsRequest(BaseModel):
     redactorEmail: str | None = Field(description="Email of querying redactor")
-
-    class Config:
-        title = "Prebookings query filters"
+    model_config = ConfigDict(title="Prebookings query filters")
 
 
 class Redactor(AdageBaseResponseModel):
@@ -38,9 +37,7 @@ class Redactor(AdageBaseResponseModel):
     redactorFirstName: str | None
     redactorLastName: str | None
     redactorCivility: str | None
-
-    class Config:
-        alias_generator = to_camel
+    model_config = ConfigDict(alias_generator=to_camel)
 
 
 class Contact(AdageBaseResponseModel):
@@ -91,11 +88,7 @@ class EducationalBookingBaseResponse(AdageBaseResponseModel):
     imageUrl: str | None = Field(description="Url for offer image")
     venueId: int
     offererName: str
-
-    class Config:
-        title = "Prebooking detailed response"
-        alias_generator = to_camel
-        allow_population_by_field_name = True
+    model_config = ConfigDict(title="Prebooking detailed response", alias_generator=to_camel, populate_by_name=True)
 
 
 class EducationalBookingResponse(EducationalBookingBaseResponse):
@@ -104,9 +97,7 @@ class EducationalBookingResponse(EducationalBookingBaseResponse):
 
 class EducationalBookingsResponse(AdageBaseResponseModel):
     prebookings: list[EducationalBookingResponse]
-
-    class Config:
-        title = "List of prebookings"
+    model_config = ConfigDict(title="List of prebookings")
 
 
 class EducationalBookingPerYearResponse(AdageBaseResponseModel):
@@ -125,9 +116,7 @@ class EducationalBookingPerYearResponse(AdageBaseResponseModel):
     venueName: str | None
     offererName: str | None
     formats: typing.Sequence[subcategories.EacFormat] | None
-
-    class Config:
-        use_enum_values = True
+    model_config = ConfigDict(use_enum_values=True)
 
 
 def get_collective_bookings_per_year_response(

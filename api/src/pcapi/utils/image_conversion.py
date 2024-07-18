@@ -17,12 +17,14 @@ from PIL import ImageOps
 from PIL import UnidentifiedImageError
 import PIL.Image
 from pydantic.v1 import confloat
+from pydantic import Field
+from typing_extensions import Annotated
 
 
 if TYPE_CHECKING:
     CropParam = float
 else:
-    CropParam = confloat(ge=0.0, le=1.0)
+    CropParam = Annotated[float, Field(ge=0.0, le=1.0)]
 
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 

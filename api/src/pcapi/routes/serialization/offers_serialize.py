@@ -2,7 +2,7 @@ import datetime
 import decimal
 import enum
 import typing
-from typing import Any
+from typing import List, Any
 
 from pydantic.v1 import EmailStr
 from pydantic.v1 import Field
@@ -32,6 +32,8 @@ from pcapi.routes.serialization.offerers_serialize import GetOffererAddressWithI
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
 from pcapi.validation.routes.offers import check_offer_name_length_is_valid
+from pydantic import field_validator, Field, StringConstraints, ConfigDict
+from typing_extensions import Annotated
 
 
 class SubcategoryGetterDict(GetterDict):
@@ -58,23 +60,16 @@ class SubcategoryResponseModel(BaseModel):
     reimbursement_rule: str
     is_selectable: bool
     can_be_withdrawable: bool
-
-    class Config:
-        alias_generator = to_camel
-        allow_population_by_field_name = True
-        getter_dict = SubcategoryGetterDict
-        orm_mode = True
+    # TODO[pydantic]: The following keys were removed: `getter_dict`.
+    # Check https://docs.pydantic.dev/dev-v2/migration/#changes-to-config for more information.
+    model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True, getter_dict=SubcategoryGetterDict, from_attributes=True)
 
 
 class CategoryResponseModel(BaseModel):
     id: str
     pro_label: str
     is_selectable: bool
-
-    class Config:
-        alias_generator = to_camel
-        allow_population_by_field_name = True
-        orm_mode = True
+    model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True, from_attributes=True)
 
 
 class PostOfferBodyModel(BaseModel):
@@ -98,20 +93,20 @@ class PostOfferBodyModel(BaseModel):
     withdrawal_details: str | None
     withdrawal_type: offers_models.WithdrawalTypeEnum | None
 
+    # TODO[pydantic]: We couldn't refactor the `validator`, please replace it by `field_validator` manually.
+    # Check https://docs.pydantic.dev/dev-v2/migration/#changes-to-validators for more information.
     @validator("name", pre=True)
     def validate_name(cls, name: str, values: dict) -> str:
         check_offer_name_length_is_valid(name)
         return name
 
-    @validator("withdrawal_type")
+    @field_validator("withdrawal_type")
+    @classmethod
     def validate_withdrawal_type(cls, value: offers_models.WithdrawalTypeEnum) -> offers_models.WithdrawalTypeEnum:
         if value == offers_models.WithdrawalTypeEnum.IN_APP:
             raise ValueError("Withdrawal type cannot be in_app for manually created offers")
         return value
-
-    class Config:
-        alias_generator = to_camel
-        extra = "forbid"
+    model_config = ConfigDict(alias_generator=to_camel, extra="forbid")
 
 
 def deserialize_extra_data(initial_extra_data: Any) -> Any:
@@ -153,15 +148,13 @@ class PatchOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
     durationMinutes: int | None
     shouldSendMail: bool | None
 
-    @validator("name", pre=True, allow_reuse=True)
+    @field_validator("name", mode="before")
+    @classmethod
     def validate_name(cls, name: str) -> str:
         if name:
             check_offer_name_length_is_valid(name)
         return name
-
-    class Config:
-        alias_generator = to_camel
-        extra = "forbid"
+    model_config = ConfigDict(alias_generator=to_camel, extra="forbid")
 
 
 class PatchOfferPublishBodyModel(BaseModel):
@@ -172,9 +165,7 @@ class PatchOfferPublishBodyModel(BaseModel):
 class PatchOfferActiveStatusBodyModel(BaseModel):
     is_active: bool
     ids: list[int]
-
-    class Config:
-        alias_generator = to_camel
+    model_config = ConfigDict(alias_generator=to_camel)
 
 
 class PatchAllOffersActiveStatusBodyModel(BaseModel):
@@ -190,9 +181,7 @@ class PatchAllOffersActiveStatusBodyModel(BaseModel):
     status: str | None
     period_beginning_date: datetime.date | None
     period_ending_date: datetime.date | None
-
-    class Config:
-        alias_generator = to_camel
+    model_config = ConfigDict(alias_generator=to_camel)
 
 
 class PatchAllOffersActiveStatusResponseModel(BaseModel):
@@ -206,7 +195,8 @@ class ListOffersStockResponseModel(BaseModel):
     beginningDatetime: datetime.datetime | None
     bookingQuantity: int | None
 
-    @validator("remainingQuantity", pre=True)
+    @field_validator("remainingQuantity", mode="before")
+    @classmethod
     def validate_remaining_quantity(cls, remainingQuantity: int | str) -> int | str:
         if remainingQuantity and remainingQuantity != "0" and not isinstance(remainingQuantity, int):
             return remainingQuantity.lstrip("0")
@@ -261,18 +251,16 @@ class ListOffersOfferResponseModel(BaseModel):
     status: OfferStatus
     isShowcase: bool | None
     address: AddressResponseIsEditableModel | None
-
-    class Config:
-        json_encoders = {datetime.datetime: format_into_utc_date}
-        orm_mode = True
-        getter_dict = ListOffersOfferResponseModelsGetterDict
+    # TODO[pydantic]: The following keys were removed: `json_encoders`, `getter_dict`.
+    # Check https://docs.pydantic.dev/dev-v2/migration/#changes-to-config for more information.
+    model_config = ConfigDict(json_encoders={datetime.datetime: format_into_utc_date}, from_attributes=True, getter_dict=ListOffersOfferResponseModelsGetterDict)
 
 
 class ListOffersResponseModel(BaseModel):
     __root__: list[ListOffersOfferResponseModel]
-
-    class Config:
-        json_encoders = {datetime.datetime: format_into_utc_date}
+    # TODO[pydantic]: The following keys were removed: `json_encoders`.
+    # Check https://docs.pydantic.dev/dev-v2/migration/#changes-to-config for more information.
+    model_config = ConfigDict(json_encoders={datetime.datetime: format_into_utc_date})
 
 
 def _serialize_offer_paginated(offer: offers_models.Offer) -> ListOffersOfferResponseModel:
@@ -318,11 +306,7 @@ class ListOffersQueryModel(BaseModel):
     period_ending_date: datetime.date | None
     collective_offer_type: CollectiveOfferType | None
     offerer_address_id: int | None
-
-    class Config:
-        alias_generator = to_camel
-        extra = "forbid"
-        arbitrary_types_allowed = True
+    model_config = ConfigDict(alias_generator=to_camel, extra="forbid", arbitrary_types_allowed=True)
 
 
 class GetOfferStockResponseModel(BaseModel):
@@ -352,20 +336,16 @@ class GetOfferStockResponseModel(BaseModel):
             stock.hasActivationCode = False
             stock.activationCodesExpirationDatetime = None
         return super().from_orm(stock)
-
-    class Config:
-        allow_population_by_field_name = True
-        orm_mode = True
-        json_encoders = {datetime.datetime: format_into_utc_date}
+    # TODO[pydantic]: The following keys were removed: `json_encoders`.
+    # Check https://docs.pydantic.dev/dev-v2/migration/#changes-to-config for more information.
+    model_config = ConfigDict(populate_by_name=True, from_attributes=True, json_encoders={datetime.datetime: format_into_utc_date})
 
 
 class GetOfferManagingOffererResponseModel(BaseModel):
     id: int
     name: str
     allowedOnAdage: bool
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class GetOfferVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
@@ -379,35 +359,28 @@ class GetOfferVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
     name: str
     postalCode: str | None
     publicName: str | None
-
-    class Config:
-        orm_mode = True
-        json_encoders = {datetime.datetime: format_into_utc_date}
+    # TODO[pydantic]: The following keys were removed: `json_encoders`.
+    # Check https://docs.pydantic.dev/dev-v2/migration/#changes-to-config for more information.
+    model_config = ConfigDict(from_attributes=True, json_encoders={datetime.datetime: format_into_utc_date})
 
 
 class GetOfferLastProviderResponseModel(BaseModel):
     name: str
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class GetOfferMediationResponseModel(BaseModel):
     authorId: str | None
     credit: str | None
     thumbUrl: str | None
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class PriceCategoryResponseModel(BaseModel):
     price: float
     label: str
     id: int
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class IndividualOfferResponseGetterDict(GetterDict):
@@ -465,30 +438,25 @@ class GetIndividualOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
     withdrawalType: offers_models.WithdrawalTypeEnum | None
     status: OfferStatus
     isNonFreeOffer: bool | None
-
-    class Config:
-        orm_mode = True
-        json_encoders = {datetime.datetime: format_into_utc_date}
-        use_enum_values = True
+    # TODO[pydantic]: The following keys were removed: `json_encoders`.
+    # Check https://docs.pydantic.dev/dev-v2/migration/#changes-to-config for more information.
+    model_config = ConfigDict(from_attributes=True, json_encoders={datetime.datetime: format_into_utc_date}, use_enum_values=True)
 
 
 class GetIndividualOfferWithAddressResponseModel(GetIndividualOfferResponseModel):
     address: AddressResponseIsEditableModel | None
-
-    class Config:
-        orm_mode = True
-        json_encoders = {datetime.datetime: format_into_utc_date}
-        use_enum_values = True
-        getter_dict = IndividualOfferResponseGetterDict
+    # TODO[pydantic]: The following keys were removed: `json_encoders`, `getter_dict`.
+    # Check https://docs.pydantic.dev/dev-v2/migration/#changes-to-config for more information.
+    model_config = ConfigDict(from_attributes=True, json_encoders={datetime.datetime: format_into_utc_date}, use_enum_values=True, getter_dict=IndividualOfferResponseGetterDict)
 
 
 class GetStocksResponseModel(ConfiguredBaseModel):
     stocks: list[GetOfferStockResponseModel]
     stock_count: int
     has_stocks: bool
-
-    class Config:
-        json_encoders = {datetime.datetime: format_into_utc_date}
+    # TODO[pydantic]: The following keys were removed: `json_encoders`.
+    # Check https://docs.pydantic.dev/dev-v2/migration/#changes-to-config for more information.
+    model_config = ConfigDict(json_encoders={datetime.datetime: format_into_utc_date})
 
 
 class StockStatsResponseModel(ConfiguredBaseModel):
@@ -496,9 +464,9 @@ class StockStatsResponseModel(ConfiguredBaseModel):
     newest_stock: datetime.datetime | None
     stock_count: int | None
     remaining_quantity: int | None
-
-    class Config:
-        json_encoders = {datetime.datetime: format_into_utc_date}
+    # TODO[pydantic]: The following keys were removed: `json_encoders`.
+    # Check https://docs.pydantic.dev/dev-v2/migration/#changes-to-config for more information.
+    model_config = ConfigDict(json_encoders={datetime.datetime: format_into_utc_date})
 
 
 class StocksQueryModel(BaseModel):
@@ -515,7 +483,7 @@ class DeleteStockListBody(BaseModel):
     if typing.TYPE_CHECKING:
         ids_to_delete: list[int]
     else:
-        ids_to_delete: conlist(int, max_items=offers_repository.STOCK_LIMIT_TO_DELETE)
+        ids_to_delete: Annotated[List[int], Field(max_length=offers_repository.STOCK_LIMIT_TO_DELETE)]
 
 
 class DeleteFilteredStockListBody(BaseModel):
@@ -541,11 +509,9 @@ class CreatePriceCategoryModel(BaseModel):
     if typing.TYPE_CHECKING:
         label: str
     else:
-        label: constr(min_length=1, max_length=50)
+        label: Annotated[str, StringConstraints(min_length=1, max_length=50)]
     price: decimal.Decimal
-
-    class Config:
-        extra = "forbid"
+    model_config = ConfigDict(extra="forbid")
 
 
 class EditPriceCategoryModel(BaseModel):
@@ -553,17 +519,16 @@ class EditPriceCategoryModel(BaseModel):
     if typing.TYPE_CHECKING:
         label: str | None
     else:
-        label: constr(min_length=1, max_length=50) | None
+        label: Annotated[str, StringConstraints(min_length=1, max_length=50)] | None
     price: decimal.Decimal | None
-
-    class Config:
-        extra = "forbid"
+    model_config = ConfigDict(extra="forbid")
 
 
 class PriceCategoryBody(BaseModel):
     price_categories: list[CreatePriceCategoryModel | EditPriceCategoryModel]
 
-    @validator("price_categories")
+    @field_validator("price_categories")
+    @classmethod
     def get_unique_price_categories(
         cls,
         price_categories: list[CreatePriceCategoryModel | EditPriceCategoryModel],
@@ -574,9 +539,7 @@ class PriceCategoryBody(BaseModel):
                 raise ValueError("Price categories must be unique")
             unique_price_categories.append((price_category.label, price_category.price))
         return price_categories
-
-    class Config:
-        alias_generator = to_camel
+    model_config = ConfigDict(alias_generator=to_camel)
 
 
 class MusicTypeResponse(BaseModel):

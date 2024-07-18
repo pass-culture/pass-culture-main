@@ -36,6 +36,7 @@ from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
 from pcapi.utils.image_conversion import CropParams
 from pcapi.validation.routes.offers import check_collective_offer_name_length_is_valid
+from pydantic import field_validator, model_validator, ConfigDict
 
 
 def validate_venue_id(venue_id: int | str | None) -> int | None:
@@ -60,6 +61,8 @@ def empty_to_null(s: str | None) -> str | None:
 
 class EmptyAsNullString(str):
     @classmethod
+    # TODO[pydantic]: We couldn't refactor `__get_validators__`, please create the `__get_pydantic_core_schema__` manually.
+    # Check https://docs.pydantic.dev/latest/migration/#defining-custom-types for more information.
     def __get_validators__(cls) -> typing.Generator[typing.Callable, None, None]:
         yield strip_string
         yield empty_to_null
@@ -80,13 +83,10 @@ class ListCollectiveOffersQueryModel(BaseModel):
     period_ending_date: date | None
     collective_offer_type: CollectiveOfferType | None
     format: subcategories.EacFormat | None
+    model_config = ConfigDict(alias_generator=to_camel, extra="forbid", arbitrary_types_allowed=True)
 
-    class Config:
-        alias_generator = to_camel
-        extra = "forbid"
-        arbitrary_types_allowed = True
-
-    @root_validator(pre=True)
+    @model_validator(mode="before")
+    @classmethod
     def format_status(cls, values: dict) -> dict:
         status = values.get("status")
 
@@ -104,7 +104,8 @@ class CollectiveOffersStockResponseModel(BaseModel):
     startDatetime: datetime | None
     endDatetime: datetime | None
 
-    @validator("remainingQuantity", pre=True)
+    @field_validator("remainingQuantity", mode="before")
+    @classmethod
     def validate_remaining_quantity(cls, remainingQuantity: int | str) -> int | str:
         if remainingQuantity and remainingQuantity != "0" and not isinstance(remainingQuantity, int):
             return remainingQuantity.lstrip("0")
@@ -116,9 +117,7 @@ class EducationalRedactorResponseModel(BaseModel):
     firstName: str | None
     lastName: str | None
     civility: str | None
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class CollectiveOffersBookingResponseModel(BaseModel):
@@ -148,16 +147,14 @@ class CollectiveOfferResponseModel(BaseModel):
     isPublicApi: bool
     nationalProgram: NationalProgramModel | None
     formats: typing.Sequence[subcategories.EacFormat] | None
-
-    class Config:
-        alias_generator = to_camel
+    model_config = ConfigDict(alias_generator=to_camel)
 
 
 class ListCollectiveOffersResponseModel(BaseModel):
     __root__: list[CollectiveOfferResponseModel]
-
-    class Config:
-        json_encoders = {datetime: format_into_utc_date}
+    # TODO[pydantic]: The following keys were removed: `json_encoders`.
+    # Check https://docs.pydantic.dev/dev-v2/migration/#changes-to-config for more information.
+    model_config = ConfigDict(json_encoders={datetime: format_into_utc_date})
 
 
 def serialize_collective_offers_capped(
@@ -249,10 +246,7 @@ def _get_serialize_last_booking(bookings: list[CollectiveBooking]) -> Collective
 class OfferDomain(BaseModel):
     id: int
     name: str
-
-    class Config:
-        alias_generator = to_camel
-        orm_mode = True
+    model_config = ConfigDict(alias_generator=to_camel, from_attributes=True)
 
 
 class GetCollectiveOfferManagingOffererResponseModel(BaseModel):
@@ -261,9 +255,7 @@ class GetCollectiveOfferManagingOffererResponseModel(BaseModel):
     # FIXME (dbaty, 2020-11-09): optional until we populate the database (PC-5693)
     siren: str | None
     allowedOnAdage: bool
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class GetCollectiveOfferVenueResponseModel(BaseModel):
@@ -273,11 +265,9 @@ class GetCollectiveOfferVenueResponseModel(BaseModel):
     name: str
     publicName: str | None
     bannerUrl: str | None = Field(alias="imgUrl")
-
-    class Config:
-        orm_mode = True
-        json_encoders = {datetime: format_into_utc_date}
-        allow_population_by_field_name = True
+    # TODO[pydantic]: The following keys were removed: `json_encoders`.
+    # Check https://docs.pydantic.dev/dev-v2/migration/#changes-to-config for more information.
+    model_config = ConfigDict(from_attributes=True, json_encoders={datetime: format_into_utc_date}, populate_by_name=True)
 
 
 class OfferAddressType(enum.Enum):
@@ -312,11 +302,9 @@ class GetCollectiveOfferCollectiveStockResponseModel(BaseModel):
     numberOfTickets: int | None
     priceDetail: PriceDetail | None = Field(alias="educationalPriceDetail")
     isEditable: bool = Field(alias="isEducationalStockEditable")
-
-    class Config:
-        allow_population_by_field_name = True
-        orm_mode = True
-        json_encoders = {datetime: format_into_utc_date}
+    # TODO[pydantic]: The following keys were removed: `json_encoders`.
+    # Check https://docs.pydantic.dev/dev-v2/migration/#changes-to-config for more information.
+    model_config = ConfigDict(populate_by_name=True, from_attributes=True, json_encoders={datetime: format_into_utc_date})
 
 
 class GetCollectiveOfferBaseResponseModel(BaseModel, AccessibilityComplianceMixin):
@@ -345,20 +333,17 @@ class GetCollectiveOfferBaseResponseModel(BaseModel, AccessibilityComplianceMixi
     nationalProgram: NationalProgramModel | None
     formats: typing.Sequence[subcategories.EacFormat] | None
     isNonFreeOffer: bool | None
-
-    class Config:
-        allow_population_by_field_name = True
-        orm_mode = True
-        json_encoders = {datetime: format_into_utc_date}
-        use_enum_values = True
+    # TODO[pydantic]: The following keys were removed: `json_encoders`.
+    # Check https://docs.pydantic.dev/dev-v2/migration/#changes-to-config for more information.
+    model_config = ConfigDict(populate_by_name=True, from_attributes=True, json_encoders={datetime: format_into_utc_date}, use_enum_values=True)
 
 
 class TemplateDatesModel(BaseModel):
     start: datetime
     end: datetime
-
-    class Config:
-        json_encoders = {datetime: format_into_utc_date}
+    # TODO[pydantic]: The following keys were removed: `json_encoders`.
+    # Check https://docs.pydantic.dev/dev-v2/migration/#changes-to-config for more information.
+    model_config = ConfigDict(json_encoders={datetime: format_into_utc_date})
 
 
 class GetCollectiveOfferTemplateResponseModel(GetCollectiveOfferBaseResponseModel):
@@ -369,10 +354,7 @@ class GetCollectiveOfferTemplateResponseModel(GetCollectiveOfferBaseResponseMode
     contactPhone: str | None
     contactUrl: str | None
     contactForm: OfferContactFormEnum | None
-
-    class Config:
-        orm_mode = True
-        allow_population_by_field_name = True
+    model_config = ConfigDict(from_attributes=True, populate_by_name=True)
 
 
 class CollectiveOfferRedactorModel(BaseModel):
@@ -398,16 +380,12 @@ class GetCollectiveOfferRequestResponseModel(BaseModel):
     comment: str
     dateCreated: date | None
     institution: CollectiveOfferInstitutionModel
-
-    class Config:
-        allow_population_by_field_name = True
+    model_config = ConfigDict(populate_by_name=True)
 
 
 class GetCollectiveOfferProviderResponseModel(BaseModel):
     name: str
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class GetCollectiveOfferResponseModel(GetCollectiveOfferBaseResponseModel):
@@ -437,11 +415,7 @@ class GetCollectiveOfferResponseModel(GetCollectiveOfferBaseResponseModel):
 
 class CollectiveOfferResponseIdModel(BaseModel):
     id: int
-
-    class Config:
-        orm_mode = True
-        allow_population_by_field_name = True
-        arbitrary_types_allowed = True
+    model_config = ConfigDict(from_attributes=True, populate_by_name=True, arbitrary_types_allowed=True)
 
 
 class CollectiveOfferVenueBodyModel(BaseModel):
@@ -450,10 +424,7 @@ class CollectiveOfferVenueBodyModel(BaseModel):
     venueId: int | None
 
     _validated_venue_id = validator("venueId", pre=True, allow_reuse=True)(validate_venue_id)
-
-    class Config:
-        alias_generator = to_camel
-        extra = "forbid"
+    model_config = ConfigDict(alias_generator=to_camel, extra="forbid")
 
 
 def is_intervention_area_valid(
@@ -476,15 +447,18 @@ class DateRangeModel(BaseModel):
     start: datetime
     end: datetime
 
-    @validator("start")
+    @field_validator("start")
+    @classmethod
     def validate_start(cls, start: datetime) -> datetime:
         return utils.without_timezone(start)
 
-    @validator("end")
+    @field_validator("end")
+    @classmethod
     def validate_end(cls, end: datetime) -> datetime:
         return utils.without_timezone(end)
 
-    @root_validator(skip_on_failure=True)
+    @model_validator(skip_on_failure=True)
+    @classmethod
     def validate_end_before_start(cls, values: dict) -> dict:
         if values["start"] > values["end"]:
             raise ValueError("end before start")
@@ -493,7 +467,8 @@ class DateRangeModel(BaseModel):
 
 
 class DateRangeOnCreateModel(DateRangeModel):
-    @validator("start")
+    @field_validator("start")
+    @classmethod
     def validate_start(cls, start: datetime) -> datetime:
         start = super().validate_start(start)
 
@@ -542,7 +517,8 @@ class PostCollectiveOfferBodyModel(BaseModel):
     # mandatory
     formats: typing.Sequence[subcategories.EacFormat] | None
 
-    @validator("students")
+    @field_validator("students")
+    @classmethod
     def validate_students(cls, students: list[str]) -> list[StudentLevels]:
         return shared_offers.validate_students(students)
 
@@ -569,7 +545,8 @@ class PostCollectiveOfferBodyModel(BaseModel):
         values["formats"] = subcategory.formats
         return values
 
-    @validator("name", pre=True)
+    @field_validator("name", mode="before")
+    @classmethod
     def validate_name(cls, name: str) -> str:
         check_collective_offer_name_length_is_valid(name)
         return name
@@ -605,10 +582,7 @@ class PostCollectiveOfferBodyModel(BaseModel):
             else:
                 raise ValueError("Un email doit être renseigné")
         return values
-
-    class Config:
-        alias_generator = to_camel
-        extra = "forbid"
+    model_config = ConfigDict(alias_generator=to_camel, extra="forbid")
 
 
 class PostCollectiveOfferTemplateBodyModel(PostCollectiveOfferBodyModel):
@@ -621,27 +595,17 @@ class PostCollectiveOfferTemplateBodyModel(PostCollectiveOfferBodyModel):
     # when the frontend clients are up to date, dateRange should
     # become mandatory
     dates: DateRangeOnCreateModel | None
-
-    class Config:
-        alias_generator = to_camel
-        extra = "forbid"
+    model_config = ConfigDict(alias_generator=to_camel, extra="forbid")
 
 
 class CollectiveOfferTemplateBodyModel(BaseModel):
     price_detail: PriceDetail | None = Field(alias="educationalPriceDetail")
-
-    class Config:
-        alias_generator = to_camel
-        extra = "forbid"
+    model_config = ConfigDict(alias_generator=to_camel, extra="forbid")
 
 
 class CollectiveOfferTemplateResponseIdModel(BaseModel):
     id: int
-
-    class Config:
-        orm_mode = True
-        allow_population_by_field_name = True
-        arbitrary_types_allowed = True
+    model_config = ConfigDict(from_attributes=True, populate_by_name=True, arbitrary_types_allowed=True)
 
 
 class PatchCollectiveOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
@@ -660,25 +624,29 @@ class PatchCollectiveOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
     nationalProgramId: int | None
     formats: typing.Sequence[subcategories.EacFormat] | None
 
-    @validator("students")
+    @field_validator("students")
+    @classmethod
     def validate_students(cls, students: list[str] | None) -> list[StudentLevels] | None:
         if not students:
             return None
         return shared_offers.validate_students(students)
 
-    @validator("name", allow_reuse=True)
+    @field_validator("name")
+    @classmethod
     def validate_name(cls, name: str | None) -> str | None:
         assert name is not None and name.strip() != ""
         check_collective_offer_name_length_is_valid(name)
         return name
 
-    @validator("description", allow_reuse=True)
+    @field_validator("description")
+    @classmethod
     def validate_description(cls, description: str | None) -> str | None:
         if description is None:
             raise ValueError("Description cannot be NULL.")
         return description
 
-    @validator("domains")
+    @field_validator("domains")
+    @classmethod
     def validate_domains_collective_offer_edition(
         cls,
         domains: list[int] | None,
@@ -688,6 +656,8 @@ class PatchCollectiveOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
 
         return domains
 
+    # TODO[pydantic]: We couldn't refactor the `validator`, please replace it by `field_validator` manually.
+    # Check https://docs.pydantic.dev/dev-v2/migration/#changes-to-validators for more information.
     @validator("interventionArea")
     def validate_intervention_area_not_empty_when_specified(
         cls,
@@ -699,21 +669,20 @@ class PatchCollectiveOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
 
         return intervention_area
 
-    @validator("bookingEmails")
+    @field_validator("bookingEmails")
+    @classmethod
     def validate_booking_emails(cls, booking_emails: list[str]) -> list[str]:
         if not booking_emails:
             raise ValueError("Un email doit être renseigné.")
         return booking_emails
 
-    @validator("venueId", allow_reuse=True)
+    @field_validator("venueId")
+    @classmethod
     def validate_venue_id(cls, venue_id: int | None) -> int | None:
         if venue_id is None:
             raise ValueError("venue_id cannot be NULL.")
         return venue_id
-
-    class Config:
-        alias_generator = to_camel
-        extra = "forbid"
+    model_config = ConfigDict(alias_generator=to_camel, extra="forbid")
 
 
 class PatchCollectiveOfferTemplateBodyModel(PatchCollectiveOfferBodyModel):
@@ -723,7 +692,8 @@ class PatchCollectiveOfferTemplateBodyModel(PatchCollectiveOfferBodyModel):
     contactUrl: str | None
     contactForm: OfferContactFormEnum | None
 
-    @validator("domains")
+    @field_validator("domains")
+    @classmethod
     def validate_domains_collective_offer_template_edition(
         cls,
         domains: list[int] | None,
@@ -742,18 +712,13 @@ class PatchCollectiveOfferTemplateBodyModel(PatchCollectiveOfferBodyModel):
             raise ValueError("error: url and form are both not null")
 
         return values
-
-    class Config:
-        alias_generator = to_camel
-        extra = "forbid"
+    model_config = ConfigDict(alias_generator=to_camel, extra="forbid")
 
 
 class PatchCollectiveOfferActiveStatusBodyModel(BaseModel):
     is_active: bool
     ids: list[int]
-
-    class Config:
-        alias_generator = to_camel
+    model_config = ConfigDict(alias_generator=to_camel)
 
 
 class PatchCollectiveOfferArchiveBodyModel(BaseModel):
@@ -770,18 +735,13 @@ class PatchAllCollectiveOffersActiveStatusBodyModel(BaseModel):
     status: str | None
     period_beginning_date: datetime | None
     period_ending_date: datetime | None
-
-    class Config:
-        alias_generator = to_camel
+    model_config = ConfigDict(alias_generator=to_camel)
 
 
 class PatchCollectiveOfferEducationalInstitution(BaseModel):
     educational_institution_id: int | None
     teacher_email: str | None
-
-    class Config:
-        alias_generator = to_camel
-        extra = "allow"
+    model_config = ConfigDict(alias_generator=to_camel, extra="allow")
 
 
 class AttachImageFormModel(BaseModel):
@@ -790,9 +750,7 @@ class AttachImageFormModel(BaseModel):
     cropping_rect_y: float
     cropping_rect_height: float
     cropping_rect_width: float
-
-    class Config:
-        alias_generator = to_camel
+    model_config = ConfigDict(alias_generator=to_camel)
 
     @property
     def crop_params(self) -> CropParams:
@@ -819,6 +777,4 @@ class AttachImageFormModel(BaseModel):
 
 class AttachImageResponseModel(BaseModel):
     imageUrl: str
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)

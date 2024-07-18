@@ -5,6 +5,7 @@ from pydantic.v1.utils import GetterDict
 
 from pcapi.routes.serialization import ConfiguredBaseModel
 from pcapi.routes.shared.price import convert_to_cent
+from pydantic import ConfigDict
 
 
 class OfferImageResponse(ConfiguredBaseModel):
@@ -37,9 +38,9 @@ class OfferResponse(ConfiguredBaseModel):
     venue: OfferVenueResponse
     image: OfferImageResponse | None
     stocks: list[OfferStockResponse]
-
-    class Config:
-        getter_dict = ActiveStockGetterDict
+    # TODO[pydantic]: The following keys were removed: `getter_dict`.
+    # Check https://docs.pydantic.dev/dev-v2/migration/#changes-to-config for more information.
+    model_config = ConfigDict(getter_dict=ActiveStockGetterDict)
 
 
 class OffersResponse(ConfiguredBaseModel):

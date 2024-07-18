@@ -12,6 +12,7 @@ from pcapi import settings
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
+from pydantic import field_validator, ConfigDict
 
 
 logger = logging.getLogger(__name__)
@@ -124,10 +125,7 @@ class CollectiveStockCreationBodyModel(BaseModel):
     _validate_end_datetime = end_datetime_validator("end_datetime")
     _validate_booking_limit_datetime = booking_limit_datetime_validator("booking_limit_datetime")
     _validate_educational_price_detail = price_detail_validator("educational_price_detail")
-
-    class Config:
-        alias_generator = to_camel
-        extra = "forbid"
+    model_config = ConfigDict(alias_generator=to_camel, extra="forbid")
 
 
 class CollectiveStockEditionBodyModel(BaseModel):
@@ -148,6 +146,8 @@ class CollectiveStockEditionBodyModel(BaseModel):
 
     # FIXME (cgaunet, 2022-04-28): Once edit_collective_stock is not used by legacy code,
     # we can use the same interface as for creation and thus reuse the validator defined above.
+    # TODO[pydantic]: We couldn't refactor the `validator`, please replace it by `field_validator` manually.
+    # Check https://docs.pydantic.dev/dev-v2/migration/#changes-to-validators for more information.
     @validator("bookingLimitDatetime")
     def validate_booking_limit_datetime(
         cls, booking_limit_datetime: datetime | None, values: dict[str, Any]
@@ -162,7 +162,8 @@ class CollectiveStockEditionBodyModel(BaseModel):
 
     # FIXME (cgaunet, 2022-04-28): Once edit_collective_stock is not used by legacy code,
     # we can use the same interface as for creation and thus reuse the validator defined above.
-    @validator("beginningDatetime", pre=True)
+    @field_validator("beginningDatetime", mode="before")
+    @classmethod
     def validate_beginning_limit_datetime(cls, beginningDatetime: datetime | None) -> datetime | None:
         if beginningDatetime is None:
             raise ValueError("La date de début de l'évènement ne peut pas être nulle.")
@@ -170,6 +171,8 @@ class CollectiveStockEditionBodyModel(BaseModel):
 
     # FIXME (cgaunet, 2022-04-28): Once edit_collective_stock is not used by legacy code,
     # we can use the same interface as for creation and thus reuse the validator defined above.
+    # TODO[pydantic]: We couldn't refactor the `validator`, please replace it by `field_validator` manually.
+    # Check https://docs.pydantic.dev/dev-v2/migration/#changes-to-validators for more information.
     @validator("endDatetime")
     def validate_end_limit_datetime(cls, endDatetime: datetime | None, values: dict[str, Any]) -> datetime | None:
         startDatetime = values.get("startDatetime")
@@ -181,15 +184,13 @@ class CollectiveStockEditionBodyModel(BaseModel):
 
     # FIXME (cgaunet, 2022-04-28): Once edit_collective_stock is not used by legacy code,
     # we can use the same interface as for creation and thus reuse the validator defined above.
-    @validator("startDatetime", pre=True)
+    @field_validator("startDatetime", mode="before")
+    @classmethod
     def validate_start_limit_datetime(cls, startDatetime: datetime | None) -> datetime | None:
         if startDatetime is None:
             raise ValueError("La date de début de l'évènement ne peut pas être nulle.")
         return startDatetime
-
-    class Config:
-        alias_generator = to_camel
-        extra = "forbid"
+    model_config = ConfigDict(alias_generator=to_camel, extra="forbid")
 
 
 class CollectiveStockResponseModel(BaseModel):
@@ -204,9 +205,6 @@ class CollectiveStockResponseModel(BaseModel):
     numberOfTickets: int | None
     priceDetail: str | None = Field(alias="educationalPriceDetail")
     isEditable: bool = Field(alias="isEducationalStockEditable")
-
-    class Config:
-        allow_population_by_field_name = True
-        arbitrary_types_allowed = True
-        json_encoders = {datetime: format_into_utc_date}
-        orm_mode = True
+    # TODO[pydantic]: The following keys were removed: `json_encoders`.
+    # Check https://docs.pydantic.dev/dev-v2/migration/#changes-to-config for more information.
+    model_config = ConfigDict(populate_by_name=True, arbitrary_types_allowed=True, json_encoders={datetime: format_into_utc_date}, from_attributes=True)

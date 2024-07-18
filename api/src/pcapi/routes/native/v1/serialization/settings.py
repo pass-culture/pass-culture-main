@@ -2,6 +2,7 @@ import pcapi.core.finance.conf as finance_conf
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.shared.price import convert_to_cent
 from pcapi.serialization.utils import to_camel
+from pydantic import ConfigDict
 
 
 class DepositAmountsByAge(BaseModel):
@@ -23,7 +24,4 @@ class SettingsResponse(BaseModel):
     is_recaptcha_enabled: bool
     object_storage_url: str
     account_unsuspension_limit: int
-
-    class Config:
-        alias_generator = to_camel
-        allow_population_by_field_name = True
+    model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)

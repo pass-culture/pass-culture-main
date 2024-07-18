@@ -10,6 +10,7 @@ from pcapi.core.users.models import ExpenseDomain
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.shared.price import convert_to_cent
 from pcapi.utils.date import format_into_utc_date
+from pydantic import ConfigDict
 
 
 class Coordinates(BaseModel):
@@ -20,9 +21,7 @@ class Coordinates(BaseModel):
 class FavoriteMediationResponse(BaseModel):
     credit: str | None
     url: str
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class FavoriteOfferResponse(BaseModel):
@@ -44,9 +43,7 @@ class FavoriteOfferResponse(BaseModel):
 
     _convert_price = validator("price", pre=True, allow_reuse=True)(convert_to_cent)
     _convert_start_price = validator("startPrice", pre=True, allow_reuse=True)(convert_to_cent)
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
     @classmethod
     def from_orm(cls, offer: Offer) -> "FavoriteOfferResponse":
@@ -59,18 +56,16 @@ class FavoriteOfferResponse(BaseModel):
 class FavoriteResponse(BaseModel):
     id: int
     offer: FavoriteOfferResponse
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class PaginatedFavoritesResponse(BaseModel):
     page: int
     nbFavorites: int
     favorites: list[FavoriteResponse]
-
-    class Config:
-        json_encoders = {datetime: format_into_utc_date}
+    # TODO[pydantic]: The following keys were removed: `json_encoders`.
+    # Check https://docs.pydantic.dev/dev-v2/migration/#changes-to-config for more information.
+    model_config = ConfigDict(json_encoders={datetime: format_into_utc_date})
 
 
 class FavoriteRequest(BaseModel):

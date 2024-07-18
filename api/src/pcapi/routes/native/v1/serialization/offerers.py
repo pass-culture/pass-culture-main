@@ -8,6 +8,7 @@ from pcapi.core.subscription.phone_validation import exceptions as phone_validat
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import base
 from pcapi.utils import phone_number as phone_number_utils
+from pydantic import ConfigDict
 
 
 logger = logging.getLogger(__name__)
@@ -39,6 +40,8 @@ class VenueTypeCode(enum.Enum):
     # These methods are used by pydantic in order to return the enum name and validate the value
     # instead of returning the enum directly.
     @classmethod
+    # TODO[pydantic]: We couldn't refactor `__get_validators__`, please create the `__get_pydantic_core_schema__` manually.
+    # Check https://docs.pydantic.dev/latest/migration/#defining-custom-types for more information.
     def __get_validators__(cls) -> typing.Iterator[typing.Callable]:
         yield cls.validate
 
@@ -115,6 +118,6 @@ class VenueResponse(base.BaseVenueResponse):
     bannerMeta: BannerMetaModel | None
     timezone: str
     contact: VenueContactModel | None
-
-    class Config:
-        getter_dict = VenueResponseGetterDict
+    # TODO[pydantic]: The following keys were removed: `getter_dict`.
+    # Check https://docs.pydantic.dev/dev-v2/migration/#changes-to-config for more information.
+    model_config = ConfigDict(getter_dict=VenueResponseGetterDict)

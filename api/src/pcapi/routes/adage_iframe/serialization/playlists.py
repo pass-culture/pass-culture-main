@@ -3,6 +3,7 @@ import typing
 
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import to_camel
+from pydantic import ConfigDict
 
 
 class LocalOfferersPlaylistOffer(BaseModel):
@@ -12,10 +13,7 @@ class LocalOfferersPlaylistOffer(BaseModel):
     imgUrl: str | None
     publicName: str | None
     city: str | None
-
-    class Config:
-        alias_generator = to_camel
-        allow_population_by_field_name = True
+    model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
 
 
 class LocalOfferersPlaylist(BaseModel):

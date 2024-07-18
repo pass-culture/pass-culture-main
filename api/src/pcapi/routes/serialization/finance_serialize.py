@@ -7,6 +7,7 @@ import pydantic.v1 as pydantic_v1
 import pcapi.core.finance.models as finance_models
 import pcapi.core.finance.utils as finance_utils
 from pcapi.routes.serialization import BaseModel
+from pydantic import ConfigDict
 
 
 logger = logging.getLogger(__name__)
@@ -17,8 +18,7 @@ if TYPE_CHECKING:
 
 
 class FinanceBankAccountResponseModel(BaseModel):
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
     id: int
     label: str
@@ -29,8 +29,7 @@ class FinanceBankAccountListResponseModel(BaseModel):
 
 
 class InvoiceListV2QueryModel(BaseModel):
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
     periodBeginningDate: datetime.date | None
     periodEndingDate: datetime.date | None
@@ -39,8 +38,7 @@ class InvoiceListV2QueryModel(BaseModel):
 
 
 class InvoiceResponseV2Model(BaseModel):
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
     reference: str
     date: datetime.date
@@ -77,9 +75,7 @@ class LinkedVenues(BaseModel):
 
     id: int
     commonName: str
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
     @classmethod
     def from_orm(cls, venue: "offerers_models.Venue") -> "LinkedVenues":
@@ -93,9 +89,7 @@ class ManagedVenues(BaseModel):
     siret: str | None
     bankAccountId: int | None
     hasPricingPoint: bool
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
     @classmethod
     def from_orm(cls, venue: "offerers_models.Venue") -> "ManagedVenues":
@@ -125,9 +119,7 @@ class BankAccountResponseModel(BaseModel):
     dateCreated: datetime.datetime
     dateLastStatusUpdate: datetime.datetime | None
     linkedVenues: list[LinkedVenues]
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
     @classmethod
     def from_orm(cls, bank_account: finance_models.BankAccount) -> "BankAccountResponseModel":

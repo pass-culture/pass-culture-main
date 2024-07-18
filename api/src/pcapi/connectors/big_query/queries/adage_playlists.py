@@ -4,6 +4,7 @@ from pcapi import settings
 import pcapi.core.educational.models as educational_models
 
 from .base import BaseQuery
+from pydantic import ConfigDict
 
 
 class ClassroomPlaylistModel(pydantic_v1.BaseModel):
@@ -80,9 +81,7 @@ class LocalOfferersQuery(BaseQuery):
 class InstitutionRuralLevelModel(pydantic_v1.BaseModel):
     institution_id: int
     institution_rural_level: educational_models.InstitutionRuralLevel | None
-
-    class Config:
-        use_enum_values = True
+    model_config = ConfigDict(use_enum_values=True)
 
 
 class InstitutionRuralLevelQuery(BaseQuery):

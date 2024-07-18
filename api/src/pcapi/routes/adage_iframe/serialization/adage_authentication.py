@@ -10,6 +10,7 @@ from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import to_camel
 
 from .redactor import RedactorPreferences
+from pydantic import ConfigDict
 
 
 logger = logging.getLogger(__name__)
@@ -34,11 +35,7 @@ class EducationalInstitutionProgramModel(BaseModel):
     name: str
     label: str | None
     description: str | None
-
-    class Config:
-        orm_mode = True
-        alias_generator = to_camel
-        allow_population_by_field_name = True
+    model_config = ConfigDict(from_attributes=True, alias_generator=to_camel, populate_by_name=True)
 
 
 class AuthenticatedResponse(BaseModel):
@@ -55,11 +52,7 @@ class AuthenticatedResponse(BaseModel):
     offersCount: int = 0
     institution_rural_level: educational_models.InstitutionRuralLevel | None = None
     programs: list[EducationalInstitutionProgramModel] = Field(default_factory=list)
-
-    class Config:
-        use_enum_values = True
-        alias_generator = to_camel
-        allow_population_by_field_name = True
+    model_config = ConfigDict(use_enum_values=True, alias_generator=to_camel, populate_by_name=True)
 
 
 class RedactorInformation(BaseModel):

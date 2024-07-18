@@ -5,6 +5,7 @@ from pcapi.core.offerers.models import VenueContact
 from pcapi.core.offerers.models import VenueLabel
 from pcapi.core.offerers.models import VenueTypeCode
 from pcapi.routes.serialization import BaseModel
+from pydantic import ConfigDict
 
 
 class GetRelativeVenuesQueryModel(BaseModel):
@@ -14,9 +15,7 @@ class GetRelativeVenuesQueryModel(BaseModel):
 class VenueDomain(BaseModel):
     id: int
     name: str
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class VenueLabelModel(BaseModel):
@@ -27,17 +26,13 @@ class VenueLabelModel(BaseModel):
     def from_orm(cls, venue_label: VenueLabel) -> "VenueLabelModel":
         venue_label.name = venue_label.label
         return super().from_orm(venue_label)
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class OffererModel(BaseModel):
     id: int
     name: str
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class VenueModel(BaseModel):
@@ -103,9 +98,7 @@ class VenueModel(BaseModel):
         venue.address = venue.street
 
         return super().from_orm(venue)
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class GetVenuesResponseModel(BaseModel):

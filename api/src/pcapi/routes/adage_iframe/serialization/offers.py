@@ -21,6 +21,7 @@ from pcapi.routes.shared import validation
 from pcapi.routes.shared.price import convert_to_cent
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
+from pydantic import model_validator, ConfigDict
 
 
 logger = logging.getLogger(__name__)
@@ -28,9 +29,7 @@ logger = logging.getLogger(__name__)
 
 class OfferManagingOffererResponse(BaseModel):
     name: str
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class OfferStockResponse(BaseModel):
@@ -45,12 +44,9 @@ class OfferStockResponse(BaseModel):
     educationalPriceDetail: str | None
 
     _convert_price = validator("price", pre=True, allow_reuse=True)(convert_to_cent)
-
-    class Config:
-        orm_mode = True
-        alias_generator = to_camel
-        allow_population_by_field_name = True
-        json_encoders = {datetime: format_into_utc_date}
+    # TODO[pydantic]: The following keys were removed: `json_encoders`.
+    # Check https://docs.pydantic.dev/dev-v2/migration/#changes-to-config for more information.
+    model_config = ConfigDict(from_attributes=True, alias_generator=to_camel, populate_by_name=True, json_encoders={datetime: format_into_utc_date})
 
 
 class OfferVenueResponse(BaseModel):
@@ -66,10 +62,7 @@ class OfferVenueResponse(BaseModel):
     adageId: str | None
     distance: Decimal | None
     bannerUrl: str | None = Field(alias="imgUrl")
-
-    class Config:
-        orm_mode = True
-        allow_population_by_field_name = True
+    model_config = ConfigDict(from_attributes=True, populate_by_name=True)
 
     @classmethod
     def from_orm(cls, venue: offerers_models.Venue) -> "OfferVenueResponse":
@@ -82,36 +75,24 @@ class OfferVenueResponse(BaseModel):
 class CategoryResponseModel(BaseModel):
     id: str
     pro_label: str
-
-    class Config:
-        alias_generator = to_camel
-        allow_population_by_field_name = True
-        orm_mode = True
+    model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True, from_attributes=True)
 
 
 class SubcategoryResponseModel(BaseModel):
     id: str
     category_id: str
-
-    class Config:
-        alias_generator = to_camel
-        allow_population_by_field_name = True
-        orm_mode = True
+    model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True, from_attributes=True)
 
 
 class CategoriesResponseModel(BaseModel):
     categories: list[CategoryResponseModel]
     subcategories: list[SubcategoryResponseModel]
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class EacFormatsResponseModel(BaseModel):
     formats: typing.Sequence[subcategories.EacFormat]
-
-    class Config:
-        use_enum_values = True
+    model_config = ConfigDict(use_enum_values=True)
 
 
 class OfferAddressType(enum.Enum):
@@ -132,19 +113,13 @@ class CollectiveOfferOfferVenue(BaseModel):
     distance: Decimal | None
 
     _validated_venue_id = validator("venueId", pre=True, allow_reuse=True)(validate_venue_id)
-
-    class Config:
-        alias_generator = to_camel
-        extra = "forbid"
+    model_config = ConfigDict(alias_generator=to_camel, extra="forbid")
 
 
 class OfferDomain(BaseModel):
     id: int
     name: str
-
-    class Config:
-        alias_generator = to_camel
-        orm_mode = True
+    model_config = ConfigDict(alias_generator=to_camel, from_attributes=True)
 
 
 class EducationalInstitutionResponseModel(BaseModel):
@@ -153,10 +128,7 @@ class EducationalInstitutionResponseModel(BaseModel):
     postalCode: str
     city: str
     institutionType: str | None
-
-    class Config:
-        orm_mode = True
-        extra = "forbid"
+    model_config = ConfigDict(from_attributes=True, extra="forbid")
 
 
 class EducationalRedactorResponseModel(BaseModel):
@@ -164,9 +136,7 @@ class EducationalRedactorResponseModel(BaseModel):
     firstName: str | None
     lastName: str | None
     civility: str | None
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class CollectiveOfferResponseModel(BaseModel, common_models.AccessibilityComplianceMixin):
@@ -238,29 +208,24 @@ class CollectiveOfferResponseModel(BaseModel, common_models.AccessibilityComplia
             visualDisabilityCompliant=offer.visualDisabilityCompliant,
             formats=offer.get_formats(),
         )
-
-    class Config:
-        alias_generator = to_camel
-        orm_mode = True
-        allow_population_by_field_name = True
-        json_encoders = {datetime: format_into_utc_date}
-        use_enum_values = True
-        extra = "forbid"
+    # TODO[pydantic]: The following keys were removed: `json_encoders`.
+    # Check https://docs.pydantic.dev/dev-v2/migration/#changes-to-config for more information.
+    model_config = ConfigDict(alias_generator=to_camel, from_attributes=True, populate_by_name=True, json_encoders={datetime: format_into_utc_date}, use_enum_values=True, extra="forbid")
 
 
 class ListCollectiveOffersResponseModel(BaseModel):
     collectiveOffers: list[CollectiveOfferResponseModel]
-
-    class Config:
-        json_encoders = {datetime: format_into_utc_date}
+    # TODO[pydantic]: The following keys were removed: `json_encoders`.
+    # Check https://docs.pydantic.dev/dev-v2/migration/#changes-to-config for more information.
+    model_config = ConfigDict(json_encoders={datetime: format_into_utc_date})
 
 
 class TemplateDatesModel(BaseModel):
     start: datetime
     end: datetime
-
-    class Config:
-        json_encoders = {datetime: format_into_utc_date}
+    # TODO[pydantic]: The following keys were removed: `json_encoders`.
+    # Check https://docs.pydantic.dev/dev-v2/migration/#changes-to-config for more information.
+    model_config = ConfigDict(json_encoders={datetime: format_into_utc_date})
 
 
 class CollectiveOfferTemplateResponseModel(BaseModel, common_models.AccessibilityComplianceMixin):
@@ -337,20 +302,16 @@ class CollectiveOfferTemplateResponseModel(BaseModel, common_models.Accessibilit
             contactUrl=offer.contactUrl,
             contactForm=offer.contactForm,
         )
-
-    class Config:
-        alias_generator = to_camel
-        orm_mode = True
-        allow_population_by_field_name = True
-        json_encoders = {datetime: format_into_utc_date}
-        use_enum_values = True
+    # TODO[pydantic]: The following keys were removed: `json_encoders`.
+    # Check https://docs.pydantic.dev/dev-v2/migration/#changes-to-config for more information.
+    model_config = ConfigDict(alias_generator=to_camel, from_attributes=True, populate_by_name=True, json_encoders={datetime: format_into_utc_date}, use_enum_values=True)
 
 
 class ListCollectiveOfferTemplateResponseModel(BaseModel):
     collectiveOffers: list[CollectiveOfferTemplateResponseModel]
-
-    class Config:
-        json_encoders = {datetime: format_into_utc_date}
+    # TODO[pydantic]: The following keys were removed: `json_encoders`.
+    # Check https://docs.pydantic.dev/dev-v2/migration/#changes-to-config for more information.
+    model_config = ConfigDict(json_encoders={datetime: format_into_utc_date})
 
 
 class CollectiveRequestResponseModel(BaseModel):
@@ -361,11 +322,9 @@ class CollectiveRequestResponseModel(BaseModel):
     total_students: int | None
     total_teachers: int | None
     comment: str
-
-    class Config:
-        alias_generator = to_camel
-        orm_mode = True
-        json_encoders = {datetime: format_into_utc_date}
+    # TODO[pydantic]: The following keys were removed: `json_encoders`.
+    # Check https://docs.pydantic.dev/dev-v2/migration/#changes-to-config for more information.
+    model_config = ConfigDict(alias_generator=to_camel, from_attributes=True, json_encoders={datetime: format_into_utc_date})
 
 
 class PostCollectiveRequestBodyModel(BaseModel):
@@ -376,15 +335,14 @@ class PostCollectiveRequestBodyModel(BaseModel):
     comment: str
 
     _validate_phone_number = validation.phone_number_validator("phone_number", nullable=True)
-
-    class Config:
-        alias_generator = to_camel
+    model_config = ConfigDict(alias_generator=to_camel)
 
 
 class GetTemplateIdsModel(BaseModel):
     ids: typing.Sequence[int]
 
-    @root_validator(pre=True)
+    @model_validator(mode="before")
+    @classmethod
     def format_ids(cls, values: dict) -> dict:
         ids = values.get("ids")
         if not ids:

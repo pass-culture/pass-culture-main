@@ -8,6 +8,7 @@ from pydantic.v1.utils import GetterDict
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
+from pydantic import ConfigDict
 
 
 class PostVenueProviderBody(BaseModel):
@@ -34,9 +35,7 @@ class ProviderResponse(BaseModel):
     id: int
     isActive: bool
     hasOffererProvider: bool
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class VenueProviderGetterDict(GetterDict):
@@ -59,22 +58,18 @@ class VenueProviderResponse(BaseModel):
     quantity: int | None
     venueId: int
     venueIdAtOfferProvider: str | None
-
-    class Config:
-        orm_mode = True
-        getter_dict = VenueProviderGetterDict
+    # TODO[pydantic]: The following keys were removed: `getter_dict`.
+    # Check https://docs.pydantic.dev/dev-v2/migration/#changes-to-config for more information.
+    model_config = ConfigDict(from_attributes=True, getter_dict=VenueProviderGetterDict)
 
 
 class ListVenueProviderResponse(BaseModel):
     venue_providers: list[VenueProviderResponse]
-
-    class Config:
-        json_encoders = {datetime: format_into_utc_date}
+    # TODO[pydantic]: The following keys were removed: `json_encoders`.
+    # Check https://docs.pydantic.dev/dev-v2/migration/#changes-to-config for more information.
+    model_config = ConfigDict(json_encoders={datetime: format_into_utc_date})
 
 
 class ListVenueProviderQuery(BaseModel):
     venue_id: int
-
-    class Config:
-        alias_generator = to_camel
-        extra = "forbid"
+    model_config = ConfigDict(alias_generator=to_camel, extra="forbid")

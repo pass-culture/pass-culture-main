@@ -2,7 +2,7 @@ from copy import deepcopy
 from typing import Any
 from typing import Callable
 
-from pydantic.v1 import BaseModel
+from pydantic import BaseModel
 from spectree import Response
 from spectree import SpecTree
 from spectree import Tag
@@ -44,38 +44,38 @@ class ExtendedSpecTree(SpecTree):
     def _generate_tags_list(self) -> list[dict]:
         return [tag.dict() for tag in self.tags]
 
-    def _generate_spec(self) -> dict:
-        spec = super()._generate_spec()
-        if self.humanize_operation_id:
-            for route in self.backend.find_routes():
-                for method, func in self.backend.parse_func(route):
-                    if self.backend.bypass(func, method) or self.bypass(func):
-                        continue
-                    path_parameter_descriptions = getattr(func, "path_parameter_descriptions", None)
-                    path, _parameters = self.backend.parse_path(route, path_parameter_descriptions)
-                    spec["paths"][path][method.lower()]["operationId"] = build_operation_id(func)
+    # def _generate_spec(self) -> dict:
+    #     spec = super()._generate_spec()
+    #     if self.humanize_operation_id:
+    #         for route in self.backend.find_routes():
+    #             for method, func in self.backend.parse_func(route):
+    #                 if self.backend.bypass(func, method) or self.bypass(func):
+    #                     continue
+    #                 path_parameter_descriptions = getattr(func, "path_parameter_descriptions", None)
+    #                 path, _parameters = self.backend.parse_path(route, path_parameter_descriptions)
+    #                 spec["paths"][path][method.lower()]["operationId"] = build_operation_id(func)
 
-        sorted_tags = self._generate_tags_list()
-        if sorted_tags:
-            spec["tags"] = sorted_tags
+    #     sorted_tags = self._generate_tags_list()
+    #     if sorted_tags:
+    #         spec["tags"] = sorted_tags
 
-        return spec
+        # return spec
 
-    def _add_model(self, model: type[BaseModel]) -> str:
-        model_key = get_model_key(model=model)
-        self.models[model_key] = deepcopy(get_model_schema(model=model))
+    # def _add_model(self, model: type[BaseModel]) -> str:
+    #     model_key = get_model_key(model=model)
+    #     self.models[model_key] = deepcopy(get_model_schema(model=model))
 
-        return model_key
+    #     return model_key
 
-    def _get_model_definitions(self) -> dict:
-        definitions = {}
-        for _name, schema in self.models.items():
-            if "definitions" in schema:
-                for key, value in schema["definitions"].items():
-                    definitions[key] = value
-                del schema["definitions"]
+    # def _get_model_definitions(self) -> dict:
+    #     definitions = {}
+    #     for _name, schema in self.models.items():
+    #         if "definitions" in schema:
+    #             for key, value in schema["definitions"].items():
+    #                 definitions[key] = value
+    #             del schema["definitions"]
 
-        return definitions
+    #     return definitions
 
 
 class ExtendResponse(Response):

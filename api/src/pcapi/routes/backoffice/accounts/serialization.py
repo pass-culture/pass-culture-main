@@ -8,21 +8,18 @@ from pcapi.core.users import models as users_models
 from pcapi.models.beneficiary_import import BeneficiaryImport
 from pcapi.models.beneficiary_import_status import BeneficiaryImportStatus
 from pcapi.routes.serialization import BaseModel
+from pydantic import ConfigDict
 
 
 class SubscriptionItemModel(BaseModel):
-    class Config:
-        orm_mode = True
-        use_enum_values = True
+    model_config = ConfigDict(from_attributes=True, use_enum_values=True)
 
     type: subscription_models.SubscriptionStep
     status: subscription_models.SubscriptionItemStatus
 
 
 class IdCheckItemModel(BaseModel):
-    class Config:
-        orm_mode = True
-        use_enum_values = True
+    model_config = ConfigDict(from_attributes=True, use_enum_values=True)
 
     @classmethod
     def from_orm(cls, fraud_check: fraud_models.BeneficiaryFraudCheck) -> "IdCheckItemModel":

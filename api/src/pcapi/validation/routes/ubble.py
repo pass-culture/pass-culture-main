@@ -11,6 +11,7 @@ import pydantic.v1 as pydantic_v1
 from pcapi import settings
 from pcapi.core.fraud.ubble import models as ubble_fraud_models
 from pcapi.models.api_errors import ForbiddenError
+from pydantic import ConfigDict
 
 
 UBBLE_SIGNATURE_RE = re.compile(r"^ts=(?P<ts>\d+),v1=(?P<v1>\S{64})$")
@@ -29,9 +30,7 @@ class WebhookRequest(pydantic_v1.BaseModel):
 
 class WebhookRequestHeaders(pydantic_v1.BaseModel):
     ubble_signature: str = pydantic_v1.Field(..., regex=UBBLE_SIGNATURE_RE.pattern, alias="Ubble-Signature")
-
-    class Config:
-        extra = "allow"
+    model_config = ConfigDict(extra="allow")
 
 
 # Ubble only consider HTTP status 200 and 201 as success
