@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import {
   useInfiniteHits,
   useInstantSearch,
+  usePagination,
   useStats,
 } from 'react-instantsearch'
 import { useDispatch, useSelector } from 'react-redux'
@@ -67,6 +68,8 @@ export const Offers = ({
   const { nbHits } = useStats()
   const { scopedResults, results: nonScopedResult } = useInstantSearch()
 
+  const { refine } = usePagination()
+
   const isMobileScreen = useMediaQuery('(max-width: 46.5rem)')
 
   const location = useLocation()
@@ -105,6 +108,10 @@ export const Offers = ({
       (offer): offer is CollectiveOfferTemplateResponseModel =>
         !!offer && offerIsBookable(offer)
     )
+
+  useEffect(() => {
+    refine(2)
+  }, [])
 
   useEffect(() => {
     isMobileScreen && dispatch(setSearchView('grid'))

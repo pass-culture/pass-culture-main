@@ -12,12 +12,36 @@ export const OffersTableHead = ({
   return (
     <thead>
       <tr>
-        <th colSpan={3} />
-
-        <th>Lieu</th>
-        <th>{audience === Audience.COLLECTIVE ? 'Établissement' : 'Stocks'}</th>
-        <th>Statut</th>
+        <th />
+        <th scope="col" id="collective-th-checkbox">
+          <span className="visually-hidden">Case à cocher</span>
+        </th>
         <th
+          scope="col"
+          className="visually-hidden"
+          id="collective-th-expiration-date"
+        >
+          <span>Date d expiration</span>
+        </th>
+        <th scope="col" id="collective-th-image">
+          <span className="visually-hidden">Image</span>
+        </th>
+        <th scope="col" id="collective-th-name">
+          <span className="visually-hidden">Nom</span>
+        </th>
+
+        <th scope="col" id="collective-th-venue">
+          Lieu
+        </th>
+        <th scope="col" id="collective-th-institution">
+          {audience === Audience.COLLECTIVE ? 'Établissement' : 'Stocks'}
+        </th>
+        <th scope="col" id="collective-th-status">
+          Statut
+        </th>
+        <th
+          scope="col"
+          id="collective-th-actions"
           className={classNames('th-actions', {
             ['th-actions-eac']: audience === Audience.COLLECTIVE,
           })}

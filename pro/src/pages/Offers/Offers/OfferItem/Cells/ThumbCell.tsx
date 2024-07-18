@@ -18,7 +18,10 @@ export const ThumbCell = ({
   editionOfferLink: string
 }) => {
   return (
-    <td className={styles['thumb-column']}>
+    <td
+      className={styles['thumb-column']}
+      headers={`collective-th-offer-${offer.id} collective-th-image`}
+    >
       <Link
         className={styles['thumb-column-link']}
         title={`${offer.name} - éditer l’offre`}

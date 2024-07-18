@@ -166,7 +166,10 @@ interface CollectiveOfferStatusCellProps {
 export const CollectiveOfferStatusCell = ({
   offer,
 }: CollectiveOfferStatusCellProps) => (
-  <td className={styles['status-column']}>
+  <td
+    className={styles['status-column']}
+    headers={`collective-th-offer-${offer.id} collective-th-status`}
+  >
     {getCollectiveStatusLabel(offer.status, offer.booking?.booking_status)}
   </td>
 )

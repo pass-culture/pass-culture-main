@@ -5,9 +5,7 @@ import {
   ListOffersOfferResponseModel,
 } from 'apiClient/v1'
 import { isOfferEducational } from 'core/OfferEducational/types'
-import { OFFER_STATUS_DRAFT } from 'core/Offers/constants'
 import { SearchFiltersParams } from 'core/Offers/types'
-import { isOfferDisabled } from 'core/Offers/utils/isOfferDisabled'
 import { Audience } from 'core/shared/types'
 import {
   useOfferEditionURL,
@@ -50,46 +48,67 @@ export const OfferItem = ({
     !!isShowcase
   )
 
-  const isOfferInactiveOrExpiredOrDisabled =
-    offer.status === OFFER_STATUS_DRAFT
-      ? false
-      : !offer.isActive ||
-        offer.hasBookingLimitDatetimesPassed ||
-        isOfferDisabled(offer.status)
-
   return (
-    <tr
-      className={cn(styles['offer-item'], {
-        [styles['inactive']]: isOfferInactiveOrExpiredOrDisabled,
-      })}
-      data-testid="offer-item-row"
-    >
+    <>
       {/* TODO the audience prop could probably be removed in the future */}
       {/* as it is redundant with the offer.isEducational property */}
       {audience === Audience.INDIVIDUAL && !isOfferEducational(offer) && (
-        <IndividualOfferItem
-          disabled={disabled}
-          offer={offer}
-          isSelected={isSelected}
-          selectOffer={selectOffer}
-          editionOfferLink={editionOfferLink}
-          editionStockLink={editionStockLink}
-          venue={venue}
-          audience={audience}
-        />
+        <tr
+          className={cn(styles['offer-item'], {
+            [styles['inactive']]: disabled,
+          })}
+          data-testid="offer-item-row"
+        >
+          <IndividualOfferItem
+            disabled={disabled}
+            offer={offer}
+            isSelected={isSelected}
+            selectOffer={selectOffer}
+            editionOfferLink={editionOfferLink}
+            editionStockLink={editionStockLink}
+            venue={venue}
+            audience={audience}
+          />
+        </tr>
       )}
       {audience === Audience.COLLECTIVE && isOfferEducational(offer) && (
-        <CollectiveOfferItem
-          disabled={disabled}
-          offer={offer}
-          isSelected={isSelected}
-          selectOffer={selectOffer}
-          editionOfferLink={editionOfferLink}
-          venue={venue}
-          audience={audience}
-          urlSearchFilters={urlSearchFilters}
-        />
+        <>
+          <tr
+            className={cn(styles['offer-item'], {
+              [styles['inactive']]: disabled,
+            })}
+            data-testid="offer-item-row"
+          >
+            <th
+              scope="rowgroup"
+              rowSpan={2}
+              id={`collective-th-offer-${offer.id}`}
+            >
+              <span className="visually-hidden">{offer.name}</span>
+            </th>
+            <CollectiveOfferItem
+              disabled={disabled}
+              offer={offer}
+              isSelected={isSelected}
+              selectOffer={selectOffer}
+              editionOfferLink={editionOfferLink}
+              venue={venue}
+              audience={audience}
+              urlSearchFilters={urlSearchFilters}
+            />
+          </tr>
+          <tr>
+            <td colSpan={2} />
+            <td
+              className={styles['test-colspan']}
+              colSpan={6}
+              headers={`collective-th-offer-${offer.id} collective-th-expiration-date`}
+            >
+              {offer.id}
+            </td>
+          </tr>
+        </>
       )}
-    </tr>
+    </>
   )
 }

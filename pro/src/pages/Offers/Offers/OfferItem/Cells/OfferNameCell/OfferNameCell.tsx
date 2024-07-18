@@ -72,7 +72,10 @@ export const OfferNameCell = ({
     shouldDisplayWarning(offer.stocks[0])
 
   return (
-    <td className={styles['title-column']}>
+    <td
+      className={styles['title-column']}
+      headers={`collective-th-offer-${offer.id} collective-th-name`}
+    >
       {offer.isShowcase && (
         <Tag
           variant={TagVariant.SMALL_OUTLINE}

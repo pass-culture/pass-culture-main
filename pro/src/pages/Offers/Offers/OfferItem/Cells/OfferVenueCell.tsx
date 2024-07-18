@@ -7,10 +7,16 @@ import styles from '../OfferItem.module.scss'
 
 interface OfferVenueCellProps {
   venue: ListOffersVenueResponseModel
+  offerId: number
 }
 
-export const OfferVenueCell = ({ venue }: OfferVenueCellProps) => {
+export const OfferVenueCell = ({ venue, offerId }: OfferVenueCellProps) => {
   return (
-    <td className={styles['venue-column']}>{computeVenueDisplayName(venue)}</td>
+    <td
+      className={styles['venue-column']}
+      headers={`collective-th-offer-${offerId} collective-th-venue`}
+    >
+      {computeVenueDisplayName(venue)}
+    </td>
   )
 }

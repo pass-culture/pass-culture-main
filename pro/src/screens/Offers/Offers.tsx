@@ -251,6 +251,63 @@ export const Offers = ({
   return (
     <div className="offers-page">
       <Titles action={actionLink} title={title} />
+
+      <button type="button">Focus</button>
+      <table>
+        <thead>
+          <tr>
+            <th scope="col" />
+            <th scope="col" id="col-name" className="visually-hidden">
+              Date expiration
+            </th>
+            <th scope="col" id="col-name">
+              Nom
+            </th>
+            <th scope="col" id="col-venue">
+              Lieu
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th rowSpan={2} scope="row" id="row-line-1">
+              Ligne 1
+            </th>
+            <td />
+            <td headers="row-line-1 col-name">Offre 1</td>
+            <td headers="row-line-1 col-venue">Boulangerie</td>
+          </tr>
+          <tr>
+            <td
+              colSpan={3}
+              style={{ background: 'red' }}
+              scope="colgroup"
+              headers="row-line-1"
+            >
+              22 novembre 1994
+            </td>
+          </tr>
+          <tr>
+            <th rowSpan={2} scope="row" id="row-line-2">
+              Ligne 2
+            </th>
+            <td />
+            <td headers="row-line-2 col-name">Offre 2</td>
+            <td headers="row-line-2 col-venue">Vétérinaire</td>
+          </tr>
+          <tr>
+            <td
+              colSpan={3}
+              style={{ background: 'red' }}
+              scope="colgroup"
+              headers="row-line-1"
+            >
+              10 janvier 2024
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
       {!isNewSideBarNavigation && (
         <Tabs
           nav="Offres individuelles et collectives"
@@ -279,7 +336,6 @@ export const Offers = ({
           ]}
         />
       )}
-
       <SearchFilters
         applyFilters={applyFilters}
         audience={audience}

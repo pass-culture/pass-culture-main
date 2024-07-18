@@ -10,17 +10,22 @@ interface CheckboxCellProps {
   status: OfferStatus | CollectiveOfferStatus
   disabled: boolean
   selectOffer: () => void
+  offerId: number
 }
 
 export const CheckboxCell = ({
   offerName,
+  offerId,
   isSelected,
   status,
   disabled,
   selectOffer,
 }: CheckboxCellProps) => {
   return (
-    <td className={styles['checkbox-column']}>
+    <td
+      className={styles['checkbox-column']}
+      headers={`collective-th-offer-${offerId} collective-th-checkbox`}
+    >
       <BaseCheckbox
         checked={isSelected}
         className="select-offer-checkbox"

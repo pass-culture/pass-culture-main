@@ -44,8 +44,11 @@ export const CollectiveOfferItem = ({
         disabled={disabled}
         isSelected={isSelected}
         selectOffer={() => selectOffer(offer)}
+        offerId={offer.id}
       />
-
+      <td>
+        <span className="visually-hidden">content</span>
+      </td>
       <ThumbCell offer={offer} editionOfferLink={editionOfferLink} />
 
       <OfferNameCell
@@ -54,10 +57,11 @@ export const CollectiveOfferItem = ({
         audience={audience}
       />
 
-      <OfferVenueCell venue={venue} />
+      <OfferVenueCell venue={venue} offerId={offer.id} />
 
       <OfferInstitutionCell
         educationalInstitution={offer.educationalInstitution}
+        offerId={offer.id}
       />
 
       <CollectiveOfferStatusCell offer={offer} />
