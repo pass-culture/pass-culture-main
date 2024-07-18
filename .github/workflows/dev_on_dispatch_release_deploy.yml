@@ -63,7 +63,7 @@ jobs:
                 ]
             }
         env:
-          SLACK_BOT_TOKEN: ${{ steps.secrets.outputs.SLACK_BOT_TOKEN }}
+          SLACK_BOT_TOKEN: ${{ steps.slackbot-token-secret.outputs.SLACK_BOT_TOKEN }}
 
   version:
     name: "Version"
