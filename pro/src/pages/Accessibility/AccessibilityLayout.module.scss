@@ -6,11 +6,11 @@
 }
 
 .layout {
-  @include layout.full-content-side;
-
   margin: unset;
   display: flex;
   flex-direction: column;
+
+  @include layout.full-content-side;
 }
 
 .content {

@@ -124,16 +124,15 @@
 
     color: var(--color-black);
     align-items: flex-start;
-
-    &-pink {
-      color: var(--color-primary);
-    }
-
     background-color: transparent;
     border-radius: rem.torem(4px);
     padding: 0;
     border: none;
     height: auto;
+
+    &-pink {
+      color: var(--color-primary);
+    }
 
     &:hover,
     &:focus-visible {

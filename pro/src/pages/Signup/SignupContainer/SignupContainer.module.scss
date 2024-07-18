@@ -9,13 +9,13 @@
 }
 
 .content {
+  margin-bottom: size.$footer-height;
+
   @include layout.full-content-side;
 
   @media (min-width: size.$tablet) {
     margin-top: size.$top-menu-height;
   }
-
-  margin-bottom: size.$footer-height;
 
   .siren-field {
     margin-bottom: rem.torem(16px);

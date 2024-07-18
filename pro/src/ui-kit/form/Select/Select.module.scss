@@ -10,6 +10,8 @@
   line-height: rem.torem(36px);
   padding-right: rem.torem(forms.$input-right-icon-padding);
 
+  @include formsM.input-theme-nested;
+
   &.filter-variant {
     border-radius: rem.torem(4px);
     padding: 0 size.$input-filter-variant-horizontal-padding;

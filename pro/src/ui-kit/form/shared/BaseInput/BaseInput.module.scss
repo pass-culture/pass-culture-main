@@ -4,6 +4,7 @@
 
 .base-input {
   @include forms.input-theme;
+  @include forms.input-theme-nested;
 
   &.filter-variant {
     border-radius: rem.torem(4px);
@@ -42,7 +43,8 @@
     padding-left: rem.torem(36px);
   }
 
-  &-right-icon, &-left-icon {
+  &-right-icon,
+  &-left-icon {
     @include forms.input-icon-wrapper(rem.torem(16px));
 
     &.filter-variant {
@@ -60,7 +62,9 @@
   }
 
   &-right-button {
-    @include forms.input-icon-button-wrapper(32px);
+    pointer-events: initial;
+
+    @include forms.input-icon-wrapper(rem.torem(32px));
 
     button {
       background: none;

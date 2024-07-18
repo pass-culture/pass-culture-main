@@ -64,6 +64,8 @@ $text-padding-left: calc(
   border: unset;
   box-shadow: unset;
 
+  @include formsM.input-theme-nested;
+
   &:hover,
   &:hover:not(:focus),
   &:focus {
