@@ -31,7 +31,7 @@
   }
 
   &-title {
-    @include fonts.button;
+    @include fonts.bold;
 
     position: relative;
     padding: 0 rem.torem(12px) rem.torem(12px) rem.torem(12px);

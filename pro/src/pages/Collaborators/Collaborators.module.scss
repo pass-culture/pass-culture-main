@@ -25,7 +25,7 @@
   }
 
   .subtitle {
-    @include fonts.button;
+    @include fonts.bold;
 
     margin-bottom: rem.torem(8px);
   }
