@@ -29,7 +29,7 @@ const getDocumentationBaseUrlFromEnv = (): string => {
 const config: Config = {
   title: 'API documentation',
   tagline: '',
-  favicon: 'img/favicon.ico',
+  favicon: 'img/pass_culture_doc.png',
   url: getDocumentationBaseUrlFromEnv(),
   baseUrl: '/',
   onBrokenLinks: 'throw',
@@ -78,7 +78,7 @@ const config: Config = {
       title: 'pass Culture Developers',
       logo: {
         alt: 'pass Culture Logo',
-        src: 'img/passculture_logo.jpeg',
+        src: 'img/pass_culture_doc.png',
       },
       items: [
         {
