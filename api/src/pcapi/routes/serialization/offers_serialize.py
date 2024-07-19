@@ -564,11 +564,12 @@ class PriceCategoryBody(BaseModel):
         cls,
         price_categories: list[CreatePriceCategoryModel | EditPriceCategoryModel],
     ) -> list[CreatePriceCategoryModel | EditPriceCategoryModel]:
-        unique_price_categories = []
+        unique_price_categories = set()
         for price_category in price_categories:
-            if (price_category.label, price_category.price) in unique_price_categories:
+            unique_price_category = (price_category.label, price_category.price)
+            if unique_price_category in unique_price_categories:
                 raise ValueError("Price categories must be unique")
-            unique_price_categories.append((price_category.label, price_category.price))
+            unique_price_categories.add(unique_price_category)
         return price_categories
 
     class Config:
