@@ -113,19 +113,16 @@ def build_new_offer_from_product(
     )
 
 
-def _format_extra_data(subcategory_id: str, extra_data: dict[str, typing.Any] | None) -> models.OfferExtraData | None:
-    """Keep only the fields that are defined in the subcategory conditional fields"""
+def _format_extra_data(subcategory_id: str, extra_data: typing.Any) -> offers_models.OfferExtraData | None:
     if extra_data is None:
         return None
-
-    formatted_extra_data: models.OfferExtraData = {}
-
-    for field_name in subcategories.ALL_SUBCATEGORIES_DICT[subcategory_id].conditional_fields.keys():
-        if extra_data.get(field_name):
-            # FIXME (2023-03-16): Currently not supported by mypy https://github.com/python/mypy/issues/7178
-            formatted_extra_data[field_name] = extra_data.get(field_name)  # type: ignore[literal-required]
-
-    return formatted_extra_data
+    return offers_models.OfferExtraData(
+        **{
+            field_name: value
+            for field_name in subcategories.ALL_SUBCATEGORIES_DICT[subcategory_id].conditional_fields
+            if (value := extra_data.get(field_name))
+        }  # type: ignore[typeddict-item]
+    )
 
 
 def create_offer(
