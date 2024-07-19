@@ -15,6 +15,7 @@ from pcapi.core.bookings import models as bookings_models
 import pcapi.core.finance.models as finance_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.subscription import api as subscription_api
+from pcapi.core.subscription import profile_options
 from pcapi.core.users import api as users_api
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import young_status
@@ -214,7 +215,10 @@ def _is_cultural_survey_active() -> bool:
     return FeatureToggle.ENABLE_NATIVE_CULTURAL_SURVEY.is_active() or FeatureToggle.ENABLE_CULTURAL_SURVEY.is_active()
 
 
-class UserProfileUpdateRequest(ConfiguredBaseModel):
+class UserProfilePatchRequest(ConfiguredBaseModel):
+    activity_id: profile_options.ActivityIdEnum | None
+    city: str | None
+    postal_code: str | None
     subscriptions: NotificationSubscriptions | None
     origin: str | None
 
