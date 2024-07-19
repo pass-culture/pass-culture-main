@@ -285,6 +285,46 @@ class PatchDateTest:
 
 
 @pytest.mark.usefixtures("db_session")
+class PatchDateReturns400Test:
+    def test_should_return_400_because_booking_limit_datetime_is_after_beginning_datetime(self, client):
+        venue, api_key = utils.create_offerer_provider_linked_to_venue()
+        event_offer = offers_factories.EventOfferFactory(
+            venue=venue,
+            lastProvider=api_key.provider,
+        )
+        # dates
+        two_weeks_from_now = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(weeks=2)
+        one_hour_later = two_weeks_from_now + datetime.timedelta(hours=1)
+
+        # event stock 2 weeks from now
+        event_stock = offers_factories.EventStockFactory(
+            offer=event_offer,
+            quantity=10,
+            price=12,
+            priceCategory=None,
+            bookingLimitDatetime=two_weeks_from_now,
+            beginningDatetime=two_weeks_from_now,
+        )
+
+        # tries to set `bookingLimitDatetime` to next month
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
+            f"/public/offers/v1/events/{event_stock.offer.id}/dates/{event_stock.id}",
+            json={
+                "bookingLimitDatetime": date_utils.utc_datetime_to_department_timezone(
+                    one_hour_later, departement_code=venue.departementCode
+                ).isoformat()
+            },
+        )
+
+        assert response.status_code == 400
+        assert response.json == {
+            "bookingLimitDatetime": [
+                "The bookingLimitDatetime must be before the beginning of the event",
+            ],
+        }
+
+
+@pytest.mark.usefixtures("db_session")
 class PatchDateReturns404Test:
     def test_call_with_inactive_venue_provider_returns_404(self, client):
         venue, api_key = utils.create_offerer_provider_linked_to_venue(is_venue_provider_active=False)
