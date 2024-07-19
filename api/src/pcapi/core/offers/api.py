@@ -113,19 +113,16 @@ def build_new_offer_from_product(
     )
 
 
-def _format_extra_data(subcategory_id: str, extra_data: dict[str, typing.Any] | None) -> models.OfferExtraData | None:
-    """Keep only the fields that are defined in the subcategory conditional fields"""
+def _format_extra_data(subcategory_id: str, extra_data: typing.Any) -> offers_models.OfferExtraData | None:
     if extra_data is None:
         return None
-
-    formatted_extra_data: models.OfferExtraData = {}
-
-    for field_name in subcategories.ALL_SUBCATEGORIES_DICT[subcategory_id].conditional_fields.keys():
-        if extra_data.get(field_name):
-            # FIXME (2023-03-16): Currently not supported by mypy https://github.com/python/mypy/issues/7178
-            formatted_extra_data[field_name] = extra_data.get(field_name)  # type: ignore[literal-required]
-
-    return formatted_extra_data
+    return offers_models.OfferExtraData(
+        **{
+            field_name: value
+            for field_name in subcategories.ALL_SUBCATEGORIES_DICT[subcategory_id].conditional_fields
+            if (value := extra_data.get(field_name))
+        }  # type: ignore[typeddict-item]
+    )
 
 
 def create_offer(
@@ -422,9 +419,7 @@ def batch_update_offers(query: BaseQuery, update_fields: dict, send_email_notifi
 
     batch_size = 1000
     for current_start_index in range(0, number_of_offers_to_update, batch_size):
-        offer_ids_batch = offer_ids[
-            current_start_index : min(current_start_index + batch_size, number_of_offers_to_update)
-        ]
+        offer_ids_batch = offer_ids[current_start_index : current_start_index + batch_size]
 
         query_to_update = models.Offer.query.filter(models.Offer.id.in_(offer_ids_batch))
         query_to_update.update(update_fields, synchronize_session=False)
@@ -454,9 +449,7 @@ def batch_update_collective_offers(query: BaseQuery, update_fields: dict) -> Non
     batch_size = 1000
 
     for current_start_index in range(0, number_of_collective_offers_to_update, batch_size):
-        collective_offer_ids_batch = collective_offer_ids[
-            current_start_index : min(current_start_index + batch_size, number_of_collective_offers_to_update)
-        ]
+        collective_offer_ids_batch = collective_offer_ids[current_start_index : current_start_index + batch_size]
 
         query_to_update = educational_models.CollectiveOffer.query.filter(
             educational_models.CollectiveOffer.id.in_(collective_offer_ids_batch)
@@ -476,7 +469,7 @@ def batch_update_collective_offers_template(query: BaseQuery, update_fields: dic
 
     for current_start_index in range(0, number_of_collective_offers_template_to_update, batch_size):
         collective_offer_template_ids_batch = collective_offer_template_ids[
-            current_start_index : min(current_start_index + batch_size, number_of_collective_offers_template_to_update)
+            current_start_index : current_start_index + batch_size
         ]
 
         query_to_update = educational_models.CollectiveOfferTemplate.query.filter(
