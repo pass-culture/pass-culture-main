@@ -264,9 +264,12 @@ def serialize_extra_data(offer: offers_models.Offer) -> CategoryRelatedFields:
 
 
 def deserialize_extra_data(
-    category_related_fields: CategoryRelatedFields, initial_extra_data: offers_models.OfferExtraData | None = None
+    category_related_fields: CategoryRelatedFields | None,
+    initial_extra_data: offers_models.OfferExtraData | None = None,
 ) -> dict[str, str]:
     extra_data: dict = initial_extra_data or {}  # type: ignore[assignment]
+    if not category_related_fields:
+        return extra_data
     for field_name, field_value in category_related_fields.dict(exclude_unset=True).items():
         if field_name == "subcategory_id":
             continue

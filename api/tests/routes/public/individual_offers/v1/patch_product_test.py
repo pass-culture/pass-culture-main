@@ -28,6 +28,7 @@ class PatchProductTest:
             isActive=True,
             lastProvider=api_key.provider,
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
+            extraData={"ean": "1234567890124"},
         )
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
@@ -50,6 +51,7 @@ class PatchProductTest:
             bookingEmail="notify@example.com",
             lastProvider=api_key.provider,
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
+            extraData={"ean": "1234567890124"},
         )
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
@@ -87,6 +89,7 @@ class PatchProductTest:
             bookingEmail="notify@example.com",
             lastProvider=api_key.provider,
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
+            extraData={"ean": "1234567890124"},
         )
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
@@ -107,6 +110,7 @@ class PatchProductTest:
             visualDisabilityCompliant=True,
             lastProvider=api_key.provider,
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
+            extraData={"ean": "1234567890124"},
         )
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
@@ -322,6 +326,7 @@ class PatchProductTest:
             venue=venue,
             lastProvider=api_key.provider,
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
+            extraData={"ean": "1234567890124"},
         )
 
         offer_id = product_offer.id
