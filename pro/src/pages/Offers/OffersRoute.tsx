@@ -146,7 +146,7 @@ export const OffersRoute = (): JSX.Element => {
           initialSearchFilters={apiFilters}
           isLoading={offersQuery.isLoading}
           offerer={offerer}
-          offers={offers}
+          individualOffers={offers}
           redirectWithUrlFilters={redirectWithUrlFilters}
           urlSearchFilters={urlSearchFilters}
           venues={venues}

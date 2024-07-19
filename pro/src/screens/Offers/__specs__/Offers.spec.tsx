@@ -116,7 +116,7 @@ describe('screen Offers', () => {
       currentUser,
       isLoading: false,
       offerer: { ...defaultGetOffererResponseModel },
-      offers: offersRecap,
+      individualOffers: offersRecap,
       urlSearchFilters: DEFAULT_SEARCH_FILTERS,
       initialSearchFilters: DEFAULT_SEARCH_FILTERS,
       audience: Audience.INDIVIDUAL,
@@ -152,7 +152,7 @@ describe('screen Offers', () => {
     renderOffers({
       ...props,
       audience: Audience.INDIVIDUAL,
-      offers: [firstOffer, secondOffer],
+      individualOffers: [firstOffer, secondOffer],
     })
 
     expect(screen.getByLabelText(firstOffer.name)).toBeInTheDocument()
@@ -167,7 +167,7 @@ describe('screen Offers', () => {
       ...props,
       audience: Audience.INDIVIDUAL,
       currentUser: { ...props.currentUser, isAdmin: false },
-      offers: [firstOffer, secondOffer],
+      individualOffers: [firstOffer, secondOffer],
     })
 
     const selectAllOffersCheckbox = screen.queryByLabelText('Tout sélectionner')
@@ -180,7 +180,7 @@ describe('screen Offers', () => {
     renderOffers({
       ...props,
       audience: Audience.INDIVIDUAL,
-      offers: [...offersRecap, listOffersOfferFactory()],
+      individualOffers: [...offersRecap, listOffersOfferFactory()],
     })
 
     screen.getByLabelText(offersRecap[0].name)
@@ -191,7 +191,7 @@ describe('screen Offers', () => {
     renderOffers({
       ...props,
       audience: Audience.INDIVIDUAL,
-      offers: offersRecap,
+      individualOffers: offersRecap,
     })
 
     screen.getByLabelText(offersRecap[0].name)
@@ -204,7 +204,7 @@ describe('screen Offers', () => {
     renderOffers({
       ...props,
       audience: Audience.INDIVIDUAL,
-      offers: offersRecap,
+      individualOffers: offersRecap,
     })
 
     screen.getByLabelText(offersRecap[0].name)
@@ -330,7 +330,7 @@ describe('screen Offers', () => {
   })
 
   it('should indicate that user has no offers yet', () => {
-    renderOffers({ ...props, offers: [] })
+    renderOffers({ ...props, individualOffers: [] })
 
     const noOffersText = screen.getByText('Vous n’avez pas encore créé d’offre')
     expect(noOffersText).toBeInTheDocument()
@@ -397,7 +397,11 @@ describe('screen Offers', () => {
       }),
     ]
 
-    renderOffers({ ...props, offers, audience: Audience.INDIVIDUAL })
+    renderOffers({
+      ...props,
+      individualOffers: offers,
+      audience: Audience.INDIVIDUAL,
+    })
 
     expect(screen.queryByLabelText(offers[0].name)).toBeDisabled()
     expect(screen.queryByLabelText(offers[1].name)).toBeDisabled()
@@ -412,7 +416,11 @@ describe('screen Offers', () => {
       }),
     ]
 
-    renderOffers({ ...props, audience: Audience.COLLECTIVE, offers })
+    renderOffers({
+      ...props,
+      audience: Audience.COLLECTIVE,
+      collectiveOffers: offers,
+    })
 
     expect(screen.getByLabelText('Tout sélectionner')).not.toBeChecked()
   })
@@ -470,7 +478,11 @@ describe('screen Offers', () => {
         }),
       ]
 
-      renderOffers({ ...props, offers, audience: Audience.INDIVIDUAL })
+      renderOffers({
+        ...props,
+        individualOffers: offers,
+        audience: Audience.INDIVIDUAL,
+      })
 
       await userEvent.click(screen.getByLabelText('Tout sélectionner'))
       await userEvent.click(screen.getByText('Publier'))
@@ -495,7 +507,11 @@ describe('screen Offers', () => {
         }),
       ]
 
-      renderOffers({ ...props, audience: Audience.COLLECTIVE, offers })
+      renderOffers({
+        ...props,
+        audience: Audience.COLLECTIVE,
+        collectiveOffers: offers,
+      })
 
       await userEvent.click(screen.getByLabelText('Tout sélectionner'))
       await userEvent.click(screen.getByText('Publier'))
@@ -513,7 +529,11 @@ describe('screen Offers', () => {
         }),
       ]
 
-      renderOffers({ ...props, audience: Audience.COLLECTIVE, offers })
+      renderOffers({
+        ...props,
+        audience: Audience.COLLECTIVE,
+        collectiveOffers: offers,
+      })
 
       await userEvent.click(screen.getByLabelText('Tout sélectionner'))
       await userEvent.click(screen.getByText('Publier'))
@@ -537,7 +557,11 @@ describe('screen Offers', () => {
         }),
       ]
 
-      renderOffers({ ...props, offers, audience: Audience.INDIVIDUAL })
+      renderOffers({
+        ...props,
+        individualOffers: offers,
+        audience: Audience.INDIVIDUAL,
+      })
 
       const firstOfferCheckbox = screen.getByLabelText(offers[0].name)
       const secondOfferCheckbox = screen.getByLabelText(offers[1].name)
@@ -563,7 +587,7 @@ describe('screen Offers', () => {
   it('should display the collective offers format', () => {
     renderOffers({
       ...props,
-      offers: [collectiveOfferFactory()],
+      collectiveOffers: [collectiveOfferFactory()],
       audience: Audience.COLLECTIVE,
     })
     expect(screen.getByRole('combobox', { name: 'Format' }))
@@ -572,7 +596,7 @@ describe('screen Offers', () => {
   it('should filter on the format', async () => {
     renderOffers({
       ...props,
-      offers: [collectiveOfferFactory()],
+      collectiveOffers: [collectiveOfferFactory()],
       audience: Audience.COLLECTIVE,
     })
 
@@ -619,7 +643,11 @@ describe('screen Offers', () => {
   })
 
   it('should display onboarding banner for archivage only in collective offer list', () => {
-    renderOffers({ ...props, audience: Audience.COLLECTIVE, offers: [] })
+    renderOffers({
+      ...props,
+      audience: Audience.COLLECTIVE,
+      collectiveOffers: [],
+    })
 
     expect(
       screen.getByText(
@@ -641,7 +669,9 @@ describe('screen Offers', () => {
   it('should notify when deleting offers there are not draft', async () => {
     renderOffers({
       ...props,
-      offers: [listOffersOfferFactory({ status: OfferStatus.ACTIVE })],
+      individualOffers: [
+        listOffersOfferFactory({ status: OfferStatus.ACTIVE }),
+      ],
       audience: Audience.INDIVIDUAL,
     })
 
@@ -658,7 +688,7 @@ describe('screen Offers', () => {
 
     renderOffers({
       ...props,
-      offers: [
+      individualOffers: [
         listOffersOfferFactory({ status: OfferStatus.ACTIVE }),
         listOffersOfferFactory({ status: OfferStatus.DRAFT }),
         listOffersOfferFactory({ status: OfferStatus.DRAFT }),
@@ -686,7 +716,7 @@ describe('screen Offers', () => {
     renderOffers(
       {
         ...props,
-        offers: [collectiveOfferFactory()],
+        collectiveOffers: [collectiveOfferFactory()],
         audience: Audience.COLLECTIVE,
       },
       featureOverrides
