@@ -652,6 +652,7 @@ def update_user_info(
     marketing_email_subscription: bool | T_UNCHANGED = UNCHANGED,
     new_nav_pro_date: datetime.datetime | None | T_UNCHANGED = UNCHANGED,
     new_nav_pro_eligibility_date: datetime.datetime | None | T_UNCHANGED = UNCHANGED,
+    activity: users_models.ActivityEnum | T_UNCHANGED = UNCHANGED,
     commit: bool = True,
 ) -> history_api.ObjectUpdateSnapshot:
     old_email = None
@@ -725,6 +726,10 @@ def update_user_info(
             )
             pro_new_nav_state.eligibilityDate = new_nav_pro_eligibility_date
         db.session.add(pro_new_nav_state)
+    if activity is not UNCHANGED:
+        if user.activity != activity.value:
+            snapshot.set("activity", old=user.activity, new=activity.value)
+        user.activity = activity.value
 
     # keep using repository as long as user is validated in pcapi.validation.models.user
     if commit:
@@ -1003,6 +1008,7 @@ def update_notification_subscription(
         "marketing_email": subscriptions.marketing_email,
         "subscribed_themes": subscriptions.subscribed_themes,
     }
+    db.session.flush()
 
     logger.info(
         "Notification subscription update",
@@ -1023,8 +1029,6 @@ def update_notification_subscription(
         },
         technical_message_id="subscription_update",
     )
-
-    repository.save(user)
 
 
 def reset_recredit_amount_to_show(user: models.User) -> None:
