@@ -1984,15 +1984,16 @@
   resolved "https://registry.yarnpkg.com/@eslint/js/-/js-8.57.0.tgz#a5417ae8427873f1dd08b70b3574b453e67b5f7f"
   integrity sha512-Ys+3g2TaW7gADOJzPt83SJtCDhMjndcDMFVQ/Tj9iA1BfJzFKD9mAUXT3OenpuPHbI6P/myECxRJrofUsDx/5g==
 
-"@firebase/analytics@^0.10.5":
-  version "0.10.5"
-  resolved "https://registry.yarnpkg.com/@firebase/analytics/-/analytics-0.10.5.tgz#a455028952bdc25b9da2b0070ebb09ca487ee09f"
-  integrity sha512-d0X2ksTOKHMf5zFAMKFZWXa8hSbgohsG507xFsGhF4Uet2b8uEUL/YLrEth67jXEbGEi1UQZX4AaGBxKNiDzjw==
+"@firebase/analytics@^0.10.6":
+  version "0.10.6"
+  resolved "https://registry.yarnpkg.com/@firebase/analytics/-/analytics-0.10.6.tgz#7561d7a8813b039b3bc7b751b9bb0fb79dd53a18"
+  integrity sha512-sB59EwcAvLt0fINGfMWmcRKcdUiYhE4AJNdDXSCSDo4D/ZXFRmb6qwX9YesKHXFB59XTLT03mAjqQcDrdym9qA==
   dependencies:
     "@firebase/component" "0.6.8"
     "@firebase/installations" "0.6.8"
     "@firebase/logger" "0.4.2"
     "@firebase/util" "1.9.7"
+    safevalues "0.6.0"
     tslib "^2.1.0"
 
 "@firebase/app@^0.10.7":
@@ -9008,6 +9009,11 @@ safe-regex-test@^1.0.3:
   version "2.1.2"
   resolved "https://registry.yarnpkg.com/safer-buffer/-/safer-buffer-2.1.2.tgz#44fa161b0187b9549dd84bb91802f9bd8385cd6a"
   integrity sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==
+
+safevalues@0.6.0:
+  version "0.6.0"
+  resolved "https://registry.yarnpkg.com/safevalues/-/safevalues-0.6.0.tgz#425eadbdb699c13d8cfd932485983f858222362a"
+  integrity sha512-MZ7DcTOcIoPXN36/UONVE9BT0pmwlCr9WcS7Pj/q4FxOwr33FkWC0CUWj/THQXYWxf/F7urbhaHaOeFPSqGqHA==
 
 sass@^1.77.8:
   version "1.77.8"
