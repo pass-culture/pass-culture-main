@@ -2,31 +2,23 @@ import {
   CollectiveOfferResponseModel,
   ListOffersOfferResponseModel,
 } from 'apiClient/v1'
-import { SearchFiltersParams } from 'core/Offers/types'
-import { Audience } from 'core/shared/types'
 import { isSameOffer } from 'pages/Offers/utils/isSameOffer'
 
-import { OfferItem } from '../OfferItem/OfferItem'
+import { IndividualOfferRow } from '../OfferRow/IndividualOfferRow'
 
-type OffersTableBodyProps = {
-  offers: CollectiveOfferResponseModel[] | ListOffersOfferResponseModel[]
+type IndividualOffersTableBodyProps = {
+  offers: ListOffersOfferResponseModel[]
   selectOffer: (
     offer: CollectiveOfferResponseModel | ListOffersOfferResponseModel
   ) => void
-  selectedOffers:
-    | CollectiveOfferResponseModel[]
-    | ListOffersOfferResponseModel[]
-  audience: Audience
-  urlSearchFilters: SearchFiltersParams
+  selectedOffers: ListOffersOfferResponseModel[]
 }
 
-export const OffersTableBody = ({
+export const IndividualOffersTableBody = ({
   offers,
   selectOffer,
   selectedOffers,
-  audience,
-  urlSearchFilters,
-}: OffersTableBodyProps) => {
+}: IndividualOffersTableBodyProps) => {
   return (
     <tbody className="offers-list">
       {offers.map((offer) => {
@@ -35,13 +27,11 @@ export const OffersTableBody = ({
         )
 
         return (
-          <OfferItem
+          <IndividualOfferRow
             isSelected={isSelected}
-            key={`${offer.isShowcase ? 'T-' : ''}${offer.id}`}
+            key={offer.id}
             offer={offer}
             selectOffer={selectOffer}
-            audience={audience}
-            urlSearchFilters={urlSearchFilters}
           />
         )
       })}

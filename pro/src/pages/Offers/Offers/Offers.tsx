@@ -14,7 +14,8 @@ import { Pagination } from 'ui-kit/Pagination/Pagination'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 import styles from './Offers.module.scss'
-import { OffersTableBody } from './OffersTableBody/OffersTableBody'
+import { CollectiveOffersTableBody } from './OffersTableBody/CollectiveOffersTableBody'
+import { IndividualOffersTableBody } from './OffersTableBody/IndividualOffersTableBody'
 import { CollectiveOffersTableHead } from './OffersTableHead/CollectiveOffersTableHead'
 import { IndividualOffersTableHead } from './OffersTableHead/IndividualOffersTableHead'
 
@@ -24,20 +25,13 @@ type OffersProps = {
     isRefreshing: boolean
   ) => void
   areAllOffersSelected: boolean
-  audience: Audience
   currentPageNumber: number
-  currentPageOffersSubset:
-    | CollectiveOfferResponseModel[]
-    | ListOffersOfferResponseModel[]
   currentUser: { isAdmin: boolean }
   hasOffers: boolean
   isLoading: boolean
   offersCount: number
   pageCount: number
   resetFilters: () => void
-  selectedOffers:
-    | CollectiveOfferResponseModel[]
-    | ListOffersOfferResponseModel[]
   setSelectedOffer: (
     offer: ListOffersOfferResponseModel | CollectiveOfferResponseModel
   ) => void
@@ -45,7 +39,18 @@ type OffersProps = {
   urlSearchFilters: SearchFiltersParams
   isAtLeastOneOfferChecked: boolean
   isRestrictedAsAdmin?: boolean
-}
+} & (
+  | {
+      audience: Audience.COLLECTIVE
+      currentPageOffersSubset: CollectiveOfferResponseModel[]
+      selectedOffers: CollectiveOfferResponseModel[]
+    }
+  | {
+      audience: Audience.INDIVIDUAL
+      currentPageOffersSubset: ListOffersOfferResponseModel[]
+      selectedOffers: ListOffersOfferResponseModel[]
+    }
+) & { audience: Audience } //  temporary set to have valid types
 
 export const Offers = ({
   areAllOffersSelected,
@@ -115,17 +120,25 @@ export const Offers = ({
               </div>
               <table>
                 {Audience.INDIVIDUAL === audience ? (
-                  <IndividualOffersTableHead />
+                  <>
+                    <IndividualOffersTableHead />
+                    <IndividualOffersTableBody
+                      offers={currentPageOffersSubset}
+                      selectOffer={setSelectedOffer}
+                      selectedOffers={selectedOffers}
+                    />
+                  </>
                 ) : (
-                  <CollectiveOffersTableHead />
+                  <>
+                    <CollectiveOffersTableHead />
+                    <CollectiveOffersTableBody
+                      offers={currentPageOffersSubset}
+                      selectOffer={setSelectedOffer}
+                      selectedOffers={selectedOffers}
+                      urlSearchFilters={urlSearchFilters}
+                    />
+                  </>
                 )}
-                <OffersTableBody
-                  offers={currentPageOffersSubset}
-                  selectOffer={setSelectedOffer}
-                  selectedOffers={selectedOffers}
-                  audience={audience}
-                  urlSearchFilters={urlSearchFilters}
-                />
               </table>
             </>
           )}

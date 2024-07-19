@@ -56,7 +56,6 @@ export type OffersProps = {
   isLoading: boolean
   offerer: GetOffererResponseModel | null
   initialSearchFilters: SearchFiltersParams
-  audience: Audience
   redirectWithUrlFilters: (
     filters: SearchFiltersParams & {
       page?: number
