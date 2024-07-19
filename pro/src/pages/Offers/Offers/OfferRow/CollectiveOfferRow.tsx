@@ -1,10 +1,11 @@
-import {
-  CollectiveOfferResponseModel,
-  ListOffersVenueResponseModel,
-} from 'apiClient/v1'
+import classNames from 'classnames'
+
+import { CollectiveOfferResponseModel } from 'apiClient/v1'
 import { SearchFiltersParams } from 'core/Offers/types'
+import { isOfferDisabled } from 'core/Offers/utils/isOfferDisabled'
 import { Audience } from 'core/shared/types'
 import { useActiveFeature } from 'hooks/useActiveFeature'
+import { useOfferEditionURL } from 'hooks/useOfferEditionURL'
 
 import { CheckboxCell } from './Cells/CheckboxCell'
 import { CollectiveActionsCells } from './Cells/CollectiveActionsCells'
@@ -14,39 +15,42 @@ import { OfferInstitutionCell } from './Cells/OfferInstitutionCell'
 import { OfferNameCell } from './Cells/OfferNameCell/OfferNameCell'
 import { OfferVenueCell } from './Cells/OfferVenueCell'
 import { ThumbCell } from './Cells/ThumbCell'
+import styles from './OfferItem.module.scss'
 
-type CollectiveOfferItemProps = {
-  disabled: boolean
+export type CollectiveOfferRowProps = {
   isSelected: boolean
   offer: CollectiveOfferResponseModel
   selectOffer: (offer: CollectiveOfferResponseModel) => void
-  editionOfferLink: string
-  venue: ListOffersVenueResponseModel
-  audience: Audience
   urlSearchFilters: SearchFiltersParams
 }
 
-export const CollectiveOfferItem = ({
-  disabled,
+export const CollectiveOfferRow = ({
   offer,
   isSelected,
   selectOffer,
-  editionOfferLink,
-  venue,
-  audience,
   urlSearchFilters,
-}: CollectiveOfferItemProps) => {
+}: CollectiveOfferRowProps) => {
   const isCollectiveOffersExpirationEnabled = useActiveFeature(
     'ENABLE_COLLECTIVE_OFFERS_EXPIRATION'
   )
 
+  const editionOfferLink = useOfferEditionURL(
+    true,
+    offer.id,
+    Boolean(offer.isShowcase)
+  )
+
   return (
-    <>
+    <tr
+      className={classNames(styles['offer-item'], {
+        [styles['inactive']]: isOfferDisabled(offer.status),
+      })}
+      data-testid="offer-item-row"
+    >
       <CheckboxCell
         offerName={offer.name}
-        status={offer.status}
-        disabled={disabled}
         isSelected={isSelected}
+        disabled={isOfferDisabled(offer.status)}
         selectOffer={() => selectOffer(offer)}
       />
 
@@ -55,14 +59,14 @@ export const CollectiveOfferItem = ({
       <OfferNameCell
         offer={offer}
         editionOfferLink={editionOfferLink}
-        audience={audience}
+        audience={Audience.COLLECTIVE}
       />
 
       {isCollectiveOffersExpirationEnabled && (
         <OfferEventDateCell offer={offer} />
       )}
 
-      <OfferVenueCell venue={venue} />
+      <OfferVenueCell venue={offer.venue} />
 
       <OfferInstitutionCell
         educationalInstitution={offer.educationalInstitution}
@@ -77,6 +81,6 @@ export const CollectiveOfferItem = ({
         isSelected={isSelected}
         deselectOffer={() => selectOffer(offer)}
       />
-    </>
+    </tr>
   )
 }

@@ -13,7 +13,7 @@ import {
   getDate,
   getRemainingTime,
   shouldDisplayWarning,
-} from 'pages/Offers/Offers/OfferItem/Cells/OfferNameCell/utils'
+} from 'pages/Offers/Offers/OfferRow/Cells/OfferNameCell/utils'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { FORMAT_DD_MM_YYYY_HH_mm, toDateStrippedOfTimezone } from 'utils/date'
 import { formatPrice } from 'utils/formatPrice'
