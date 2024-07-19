@@ -5,6 +5,7 @@ import pathlib
 import pytest
 
 from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.educational import factories as educational_factories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import exceptions
 from pcapi.core.offers import factories as offers_factories
@@ -652,6 +653,53 @@ class CheckOfferExtraDataTest:
             )
             is None
         )
+
+
+class CheckBookingLimitDatetimeTest:
+    def test_check_booking_limit_datetime_should_raise_because_booking_limit_is_one_hour_after(self):
+        venue = offerers_factories.VenueFactory(departementCode=71)
+        offer = offers_factories.OfferFactory(venueId=venue.id)
+        stock = offers_factories.StockFactory(offerId=offer.id)
+
+        beginning_date = datetime.datetime(2024, 7, 19, 8)
+        booking_limit_date = beginning_date + datetime.timedelta(hours=1)
+        with pytest.raises(exceptions.BookingLimitDatetimeTooLate):
+            validation.check_booking_limit_datetime(
+                stock, beginning=beginning_date, booking_limit_datetime=booking_limit_date
+            )
+
+    def test_check_booking_limit_datetime_should_raise(self):
+        stock = offers_factories.StockFactory()
+        collective_stock = educational_factories.CollectiveStockFactory()
+
+        beginning_date = datetime.datetime(2024, 7, 19, 8)
+        booking_limit_date = beginning_date + datetime.timedelta(days=1)
+
+        # with stock
+        with pytest.raises(exceptions.BookingLimitDatetimeTooLate):
+            validation.check_booking_limit_datetime(
+                stock, beginning=beginning_date, booking_limit_datetime=booking_limit_date
+            )
+
+        # with collective stock
+        with pytest.raises(exceptions.BookingLimitDatetimeTooLate):
+            validation.check_booking_limit_datetime(
+                collective_stock, beginning=beginning_date, booking_limit_datetime=booking_limit_date
+            )
+
+        with pytest.raises(exceptions.BookingLimitDatetimeTooLate):
+            validation.check_booking_limit_datetime(
+                None, beginning=beginning_date, booking_limit_datetime=booking_limit_date
+            )
+
+    def test_check_booking_limit_datetime_should_not_raise_because_a_date_is_missing(self):
+        stock = offers_factories.StockFactory()
+
+        beginning_date = datetime.datetime(2024, 7, 19, 8)
+        booking_limit_date = beginning_date + datetime.timedelta(days=1)
+
+        validation.check_booking_limit_datetime(stock, beginning=None, booking_limit_datetime=booking_limit_date)
+        validation.check_booking_limit_datetime(stock, beginning=beginning_date, booking_limit_datetime=None)
 
 
 class CheckPublicationDateTest:
