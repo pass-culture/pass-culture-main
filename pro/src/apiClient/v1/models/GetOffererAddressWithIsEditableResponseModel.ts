@@ -2,7 +2,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type GetOffererAddressResponseModel = {
+export type GetOffererAddressWithIsEditableResponseModel = {
   city: string;
   id: number;
   isEditable: boolean;

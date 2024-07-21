@@ -111,7 +111,7 @@ export type { GetIndividualOfferWithAddressResponseModel } from './models/GetInd
 export type { GetMusicTypesResponse } from './models/GetMusicTypesResponse';
 export type { GetOffererAddressesQueryModel } from './models/GetOffererAddressesQueryModel';
 export type { GetOffererAddressesResponseModel } from './models/GetOffererAddressesResponseModel';
-export type { GetOffererAddressResponseModel } from './models/GetOffererAddressResponseModel';
+export type { GetOffererAddressWithIsEditableResponseModel } from './models/GetOffererAddressWithIsEditableResponseModel';
 export type { GetOffererBankAccountsResponseModel } from './models/GetOffererBankAccountsResponseModel';
 export type { GetOffererMemberResponseModel } from './models/GetOffererMemberResponseModel';
 export type { GetOffererMembersResponseModel } from './models/GetOffererMembersResponseModel';
