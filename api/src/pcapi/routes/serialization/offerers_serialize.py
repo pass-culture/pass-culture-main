@@ -368,7 +368,6 @@ class GetOffererAddressResponseModel(BaseModel):
     street: str | None
     postalCode: str
     city: str
-    isEditable: bool
 
     @classmethod
     def from_orm(cls, offerer_address: offerers_models.OffererAddress) -> "GetOffererAddressResponseModel":
@@ -385,14 +384,26 @@ class OffererAddressWithIsEditableGetterDict(GetterDict):
     def get(self, key: str, default: Any | None = None) -> Any:
         if key == "isEditable":
             return self.get("_isEditable", default)
+        if key == "street":
+            return self._obj.address.street
+        if key == "postalCode":
+            return self._obj.address.postalCode
+        if key == "city":
+            return self._obj.address.city
         return super().get(key, default)
 
 
-class GetOffererAddressWithIsEditableResponseModel(GetOffererAddressResponseModel):
+class GetOffererAddressWithIsEditableResponseModel(BaseModel):
+    id: int
+    label: str | None
+    street: str | None
+    postalCode: str
+    city: str
     isEditable: bool
 
     class Config:
         getter_dict = OffererAddressWithIsEditableGetterDict
+        orm_mode = True
 
 
 class OffererAddressRequestModel(BaseModel):
@@ -402,7 +413,7 @@ class OffererAddressRequestModel(BaseModel):
 
 
 class GetOffererAddressesResponseModel(BaseModel):
-    __root__: list[GetOffererAddressResponseModel]
+    __root__: list[GetOffererAddressWithIsEditableResponseModel]
 
 
 class GetOffererAddressesQueryModel(BaseModel):
