@@ -32,7 +32,7 @@ const renderOfferFavoriteButton = (props: OfferFavoriteButtonProps) => {
 
 describe('OfferFavoriteButton', () => {
   const defaultProps: OfferFavoriteButtonProps = {
-    offer: { ...defaultCollectiveTemplateOffer, isTemplate: true },
+    offer: defaultCollectiveTemplateOffer,
     queryId: 'ABC123',
   }
 
