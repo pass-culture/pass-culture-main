@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
 import {
@@ -6,11 +6,14 @@ import {
   GetCollectiveOfferTemplateResponseModel,
   GetEducationalOffererResponseModel,
 } from 'apiClient/v1'
+import {
+  GET_EDUCATIONAL_DOMAINS_QUERY_KEY,
+  GET_EDUCATIONAL_OFFERERS_QUERY_KEY,
+  GET_NATIONAL_PROGRAMS_QUERY_KEY,
+} from 'config/swrQueryKeys'
 import { getUserOfferersFromOffer } from 'core/OfferEducational/utils/getUserOfferersFromOffer'
 import { serializeEducationalOfferers } from 'core/OfferEducational/utils/serializeEducationalOfferers'
-import { GET_DATA_ERROR_MESSAGE } from 'core/shared/constants'
 import { SelectOption } from 'custom_types/form'
-import { useNotification } from 'hooks/useNotification'
 
 type OfferEducationalFormData = {
   domains: SelectOption[]
@@ -18,7 +21,6 @@ type OfferEducationalFormData = {
   nationalPrograms: SelectOption<number>[]
 }
 
-// TODO: Delete this hook and use useSwr where needed.
 export const useOfferEducationalFormData = (
   offererId: number | null,
   offer?:
@@ -27,76 +29,52 @@ export const useOfferEducationalFormData = (
 ): OfferEducationalFormData & {
   isReady: boolean
 } => {
-  const [isReady, setIsReady] = useState<boolean>(false)
-  const defaultReturnValue: OfferEducationalFormData = {
-    domains: [],
-    offerers: [],
-    nationalPrograms: [],
-  }
-  const [data, setData] = useState<OfferEducationalFormData>(defaultReturnValue)
-  const notify = useNotification()
+  const { data: educationalDomains, isLoading: loadingEducationalDomains } =
+    useSWR(GET_EDUCATIONAL_DOMAINS_QUERY_KEY, () =>
+      api.listEducationalDomains()
+    )
 
-  const loadData = useCallback(
-    async (
-      offerResponse?:
-        | GetCollectiveOfferResponseModel
-        | GetCollectiveOfferTemplateResponseModel
-    ) => {
-      try {
-        const targetOffererId =
-          offerResponse?.venue.managingOfferer.id || offererId
-        const responses = await Promise.all([
-          api.listEducationalDomains(),
-          api.listEducationalOfferers(targetOffererId),
-          api.getNationalPrograms(),
-        ])
-
-        const [
-          domainsResponse,
-          { educationalOfferers },
-          nationalProgramsResponse,
-        ] = responses
-
-        const domains = domainsResponse.map((domain) => ({
-          value: domain.id.toString(),
-          label: domain.name,
-        }))
-
-        const offerersResponse =
-          serializeEducationalOfferers(educationalOfferers)
-
-        const nationalPrograms = nationalProgramsResponse.map(
-          (nationalProgram) => ({
-            label: nationalProgram.name,
-            value: nationalProgram.id,
-          })
-        )
-
-        const offerers = getUserOfferersFromOffer(offerersResponse, offer)
-
-        setData({
-          offerers,
-          domains,
-          nationalPrograms,
-        })
-
-        setIsReady(true)
-      } catch (e) {
-        notify.error(GET_DATA_ERROR_MESSAGE)
-      }
-    },
-    [notify]
+  const { data: nationalPrograms, isLoading: loadingNationalPrograms } = useSWR(
+    GET_NATIONAL_PROGRAMS_QUERY_KEY,
+    () => api.getNationalPrograms()
   )
 
-  useEffect(() => {
-    if (!isReady) {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      loadData(offer)
-    }
-  }, [isReady, offer?.id, loadData, history])
+  const targetOffererId = offer?.venue.managingOfferer.id || offererId
+
+  const { data: educationalOfferers, isLoading: loadingEducationalOfferers } =
+    useSWR(
+      targetOffererId
+        ? [GET_EDUCATIONAL_OFFERERS_QUERY_KEY, targetOffererId]
+        : null,
+      ([, offererId]) => api.listEducationalOfferers(offererId)
+    )
+
+  const domains = (educationalDomains ?? []).map((domain) => ({
+    value: domain.id.toString(),
+    label: domain.name,
+  }))
+
+  const programs = (nationalPrograms ?? []).map((nationalProgram) => ({
+    label: nationalProgram.name,
+    value: nationalProgram.id,
+  }))
+
+  const offerers = educationalOfferers
+    ? getUserOfferersFromOffer(
+        serializeEducationalOfferers(educationalOfferers.educationalOfferers),
+        offer
+      )
+    : []
+
+  const isLoading =
+    loadingEducationalOfferers ||
+    loadingNationalPrograms ||
+    loadingEducationalDomains
 
   return {
-    isReady,
-    ...data,
+    isReady: !isLoading,
+    domains: domains,
+    offerers: offerers,
+    nationalPrograms: programs,
   }
 }
