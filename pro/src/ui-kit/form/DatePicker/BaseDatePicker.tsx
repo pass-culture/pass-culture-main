@@ -18,6 +18,7 @@ export const BaseDatePicker = ({
   className,
   maxDate,
   minDate,
+  id,
   ...props
 }: Props): JSX.Element => {
   const minDateFormatted = isDateValid(minDate)
@@ -33,6 +34,7 @@ export const BaseDatePicker = ({
       type="date"
       min={minDateFormatted}
       max={maxDateFormatted}
+      id={id}
       className={cn(className, styles['date-picker'])}
       {...props}
     />
