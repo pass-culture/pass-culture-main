@@ -65,10 +65,6 @@ html[data-theme="pink"],
   --color-input-bg-color-disabled: var(--color-grey-light);
   --color-input-text-color-disabled: var(--color-grey-dark);
 
-  // TODO used in button, should be remplaced by real disable colors
-  // see ticket PC-27778
-  --color-primary-disabled: #ff99be;
-
   // ADAGE COLORS
   // waiting for designer approval :
   --color-adage-discovery-background: #fbfafc;
@@ -158,10 +154,6 @@ html[data-theme="blue"],
   --color-input-bg-color: var(--color-white);
   --color-input-bg-color-disabled: var(--color-grey-light);
   --color-input-text-color-disabled: var(--color-grey-dark);
-
-  // TODO used in button, should be remplaced by real disable colors
-  // see ticket PC-27778
-  --color-primary-disabled: var(--color-grey-light);
 
   // ADAGE COLORS
   // waiting for designer approval :
