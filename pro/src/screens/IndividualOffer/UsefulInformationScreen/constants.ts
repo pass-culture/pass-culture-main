@@ -1,4 +1,5 @@
 import { WithdrawalTypeEnum } from 'apiClient/v1'
+import { SUBCATEGORIES_FIELDS_DEFAULT_VALUES } from 'components/IndividualOfferForm/Categories/constants'
 import { AccessibilityEnum } from 'core/shared/types'
 
 import { UsefulInformationFormValues } from './types'
@@ -7,7 +8,8 @@ export const DEFAULT_USEFULL_INFORMATION_INTITIAL_VALUES: UsefulInformationFormV
   {
     isNational: false,
     bookingContact: '',
-    withdrawalType: null,
+    withdrawalType: SUBCATEGORIES_FIELDS_DEFAULT_VALUES['withdrawalType'],
+    withdrawalDelay: SUBCATEGORIES_FIELDS_DEFAULT_VALUES['withdrawalDelay'],
     receiveNotificationEmails: false,
     bookingEmail: '',
     externalTicketOfficeUrl: '',

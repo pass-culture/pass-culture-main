@@ -1,5 +1,7 @@
 import { screen, within } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
 
+import { api } from 'apiClient/api'
 import {
   IndividualOfferContext,
   IndividualOfferContextValues,
@@ -7,6 +9,7 @@ import {
 import { CATEGORY_STATUS } from 'core/Offers/constants'
 import {
   categoryFactory,
+  getIndividualOfferFactory,
   individualOfferContextValuesFactory,
   subcategoryFactory,
 } from 'utils/individualApiFactories'
@@ -73,6 +76,9 @@ describe('screens:IndividualOffer::UsefulInformation', () => {
     contextValue = individualOfferContextValuesFactory({
       categories,
       subCategories,
+      offer: getIndividualOfferFactory({
+        id: 3,
+      }),
     })
   })
 
@@ -112,5 +118,47 @@ describe('screens:IndividualOffer::UsefulInformation', () => {
         'URL de votre site ou billetterie'
       )
     ).toBeInTheDocument
+  })
+
+  it('should submit the form with correct payload', async () => {
+    vi.spyOn(api, 'patchOffer').mockResolvedValue(
+      getIndividualOfferFactory({
+        id: 12,
+      })
+    )
+
+    renderUsefulInformationScreen(props, contextValue)
+
+    await userEvent.type(
+      screen.getByLabelText(/Informations de retrait/),
+      'My information'
+    )
+
+    await userEvent.click(screen.getByLabelText(/Visuel/))
+    await userEvent.click(screen.getByLabelText(/Psychique ou cognitif/))
+
+    await userEvent.click(screen.getByText('Enregistrer les modifications'))
+
+    expect(api.patchOffer).toHaveBeenCalledOnce()
+    expect(api.patchOffer).toHaveBeenCalledWith(3, {
+      audioDisabilityCompliant: true,
+      bookingContact: undefined,
+      bookingEmail: null,
+      description: undefined,
+      durationMinutes: undefined,
+      externalTicketOfficeUrl: undefined,
+      extraData: undefined,
+      isDuo: undefined,
+      isNational: true,
+      mentalDisabilityCompliant: false,
+      motorDisabilityCompliant: true,
+      name: undefined,
+      shouldSendMail: false,
+      url: undefined,
+      visualDisabilityCompliant: false,
+      withdrawalDelay: undefined,
+      withdrawalDetails: 'My information',
+      withdrawalType: undefined,
+    })
   })
 })
