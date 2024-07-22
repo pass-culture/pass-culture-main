@@ -3,7 +3,7 @@ import type { StoryObj } from '@storybook/react'
 import { PreferredOrientation } from './PreferredOrientation'
 
 export default {
-  title: 'components/PreferredOrientation',
+  title: 'components/ImageUploader/PreferredOrientation',
   component: PreferredOrientation,
 }
 

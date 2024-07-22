@@ -6,7 +6,7 @@ import { Preview } from '@storybook/react'
 const preview: Preview = {
   decorators: [
     (Story) => (
-      <div data-theme-storybook="pink">
+      <div data-theme-storybook="blue">
         <Story />
       </div>
     ),
