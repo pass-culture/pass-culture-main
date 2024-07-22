@@ -11,24 +11,22 @@ const todayAtMidnight = () => {
   return today
 }
 
-// FIXME(anoukhello - 25/06/2024) this function is obsolete as eventDate no longer exists on bookable offer stock.
-// Add tests on FormStock to cover all validation cases and make typing more robust on validation schema.
-const isBeforeEventDate = (
+const isBookingDateBeforeStartDate = (
   bookingLimitDatetime: Date | null | undefined,
   context: yup.TestContext
 ) => {
-  if (!context.parent.eventDate || !bookingLimitDatetime) {
+  if (!context.parent.startDatetime || !bookingLimitDatetime) {
     return true
   }
 
   if (
     bookingLimitDatetime.toLocaleDateString() ===
-    context.parent.eventDate.toLocaleDateString()
+    context.parent.startDatetime.toLocaleDateString()
   ) {
     return true
   }
 
-  return bookingLimitDatetime < context.parent.eventDate
+  return bookingLimitDatetime < context.parent.startDatetime
 }
 
 export const generateValidationSchema = (
@@ -116,7 +114,7 @@ export const generateValidationSchema = (
         name: 'is-one-true',
         message:
           'La date limite de réservation doit être fixée au plus tard le jour de l’évènement',
-        test: (value, context) => isBeforeEventDate(value, context),
+        test: (value, context) => isBookingDateBeforeStartDate(value, context),
       })
       .nullable(),
     priceDetail: yup
