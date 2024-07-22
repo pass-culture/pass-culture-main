@@ -23,6 +23,7 @@ import pcapi.core.providers.repository as providers_repository
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.repository import repository
+from pcapi.repository import transaction
 from pcapi.routes.serialization.venue_provider_serialize import PostVenueProviderBody
 from pcapi.validation.models.entity_validator import validate
 from pcapi.workers.update_all_offers_active_status_job import update_all_collective_offers_active_status_job
@@ -190,6 +191,12 @@ def connect_venue_to_provider(
     venue_provider.venueIdAtOfferProvider = id_at_provider
 
     repository.save(venue_provider)
+
+    # TODO: For now, we add all permissions to new venue_provider
+    # Soon permissions will depend on the data sent by venue owner
+    with transaction():
+        providers_repository.add_all_permissions_for_venue_provider(venue_provider=venue_provider)
+
     return venue_provider
 
 
