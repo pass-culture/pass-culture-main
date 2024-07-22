@@ -8,7 +8,10 @@ from pcapi.core.providers.exceptions import NoSiretSpecified
 from pcapi.core.providers.exceptions import ProviderWithoutApiImplementation
 from pcapi.core.providers.exceptions import VenueSiretNotRegistered
 import pcapi.core.providers.factories as providers_factories
+from pcapi.core.providers.models import ApiResourceEnum
+from pcapi.core.providers.models import PermissionEnum
 from pcapi.core.providers.models import VenueProvider
+from pcapi.core.providers.repository import get_venue_provider_permission_or_none
 
 
 @pytest.mark.usefixtures("db_session")
@@ -29,6 +32,13 @@ def test_when_venue_id_at_offer_provider_is_given(can_be_synchronized):
     venue_provider = VenueProvider.query.one()
     assert venue_provider.venueIdAtOfferProvider == venue_id_at_offer_provider
     can_be_synchronized.assert_called_once_with("id_for_remote_system")
+    # Check permissions have been added
+    for resource in ApiResourceEnum:
+        for permission in PermissionEnum:
+            assert (
+                get_venue_provider_permission_or_none(venue_provider.id, resource=resource, permission=permission)
+                is not None
+            )
 
 
 @pytest.mark.usefixtures("db_session")
