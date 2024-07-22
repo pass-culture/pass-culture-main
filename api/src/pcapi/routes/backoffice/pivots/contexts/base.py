@@ -108,3 +108,7 @@ class PivotContext:
         db.session.delete(pivot)
         db.session.delete(cinema_provider_pivot)
         return True
+
+    @staticmethod
+    def get_cinema_id(form: forms.EditPivotForm) -> str:
+        return form.cinema_id.data

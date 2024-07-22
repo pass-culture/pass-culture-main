@@ -107,3 +107,7 @@ class AllocineContext(PivotContext):
             db.session.delete(venue_provider)
         db.session.delete(pivot)
         return True
+
+    @staticmethod
+    def get_cinema_id(form: forms.EditPivotForm) -> str:
+        return form.theater_id.data

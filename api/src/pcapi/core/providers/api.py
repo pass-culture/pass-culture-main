@@ -45,6 +45,7 @@ UNCHANGED = T_UNCHANGED.TOKEN
 def create_venue_provider(
     provider_id: int,
     venue_id: int,
+    current_user: users_models.User,
     payload: providers_models.VenueProviderCreationPayload = providers_models.VenueProviderCreationPayload(),
 ) -> providers_models.VenueProvider:
     provider = providers_repository.get_provider_enabled_for_pro_by_id(provider_id)
@@ -79,6 +80,14 @@ def create_venue_provider(
             [venue.id],
             reason=search.IndexationReason.VENUE_PROVIDER_CREATION,
         )
+
+    history_api.add_action(
+        history_models.ActionType.SYNC_VENUE_TO_PROVIDER,
+        author=current_user,
+        venue=venue,
+        provider_name=provider.name,
+    )
+    db.session.commit()
 
     logger.info(
         "La synchronisation d'offre a été activée",
