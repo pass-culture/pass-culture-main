@@ -34,15 +34,25 @@ def create_offerer_provider(with_charlie=False):
 
 
 def create_offerer_provider_linked_to_venue(
-    venue_params=None, is_virtual=False, with_charlie=False, is_venue_provider_active=True
+    venue_params=None,
+    is_virtual=False,
+    with_charlie=False,
+    is_venue_provider_active=True,
+    venue_provider_permissions=None,
 ):
     venue_params = venue_params if venue_params else {}
+    venue_provider_permissions = venue_provider_permissions or []
     provider, api_key = create_offerer_provider(with_charlie)
     if is_virtual:
         venue = offerers_factories.VirtualVenueFactory(**venue_params)
     else:
         venue = offerers_factories.VenueFactory(**venue_params)
-    providers_factories.VenueProviderFactory(
+    venue_provider = providers_factories.VenueProviderFactory(
         venue=venue, provider=provider, venueIdAtOfferProvider="Test", isActive=is_venue_provider_active
     )
+    for permission_tuple in venue_provider_permissions:
+        permission, resource = permission_tuple
+        providers_factories.VenueProviderPermissionFactory(
+            venueProvider=venue_provider, resource=resource, permission=permission
+        )
     return venue, api_key
