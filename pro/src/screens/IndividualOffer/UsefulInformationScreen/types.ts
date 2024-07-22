@@ -6,6 +6,7 @@ export type UsefulInformationFormValues = {
   isNational: boolean
   withdrawalDelay?: number | null
   withdrawalType?: WithdrawalTypeEnum | null
+  withdrawalDetails?: string
   accessibility: AccessibilityFormValues
   receiveNotificationEmails: boolean
   bookingEmail: string

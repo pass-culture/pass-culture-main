@@ -1,11 +1,17 @@
-import { SubcategoryResponseModel } from 'apiClient/v1'
+import { SubcategoryResponseModel, WithdrawalTypeEnum } from 'apiClient/v1'
 import { CATEGORY_STATUS } from 'core/Offers/constants'
+import { AccessibilityEnum } from 'core/shared/types'
 import {
+  getIndividualOfferFactory,
   subcategoryFactory,
   venueListItemFactory,
 } from 'utils/individualApiFactories'
 
-import { getFilteredVenueListBySubcategory } from '../utils'
+import { DEFAULT_USEFULL_INFORMATION_INTITIAL_VALUES } from '../constants'
+import {
+  getFilteredVenueListBySubcategory,
+  setDefaultInitialValuesFromOffer,
+} from '../utils'
 
 const virtualVenueId = 1
 const secondVenueId = 2
@@ -71,5 +77,106 @@ describe('getFilteredVenueListBySubcategory', () => {
     expect(result.length).toEqual(2)
     expect(result[0].id).toEqual(secondVenueId)
     expect(result[1].id).toEqual(thirdVenueId)
+  })
+})
+
+const mockOffer = getIndividualOfferFactory({
+  isEvent: true,
+  isNational: false,
+  withdrawalDetails: 'Detailed info',
+  withdrawalDelay: 3,
+  withdrawalType: WithdrawalTypeEnum.BY_EMAIL,
+  visualDisabilityCompliant: true,
+  mentalDisabilityCompliant: false,
+  audioDisabilityCompliant: true,
+  motorDisabilityCompliant: false,
+  bookingEmail: 'test@example.com',
+  bookingContact: 'Contact Info',
+  url: 'http://example.com',
+  externalTicketOfficeUrl: 'http://external.com',
+})
+
+describe('setDefaultInitialValuesFromOffer', () => {
+  it('should set default initial values from offer correctly', () => {
+    const expectedValues = {
+      isEvent: true,
+      isNational: false,
+      withdrawalDetails: 'Detailed info',
+      withdrawalDelay: 3,
+      withdrawalType: WithdrawalTypeEnum.BY_EMAIL,
+      accessibility: {
+        [AccessibilityEnum.VISUAL]: true,
+        [AccessibilityEnum.MENTAL]: false,
+        [AccessibilityEnum.AUDIO]: true,
+        [AccessibilityEnum.MOTOR]: false,
+        [AccessibilityEnum.NONE]: false,
+      },
+      bookingEmail: 'test@example.com',
+      bookingContact: 'Contact Info',
+      receiveNotificationEmails: true,
+      url: 'http://example.com',
+      externalTicketOfficeUrl: 'http://external.com',
+    }
+
+    const result = setDefaultInitialValuesFromOffer(mockOffer)
+
+    expect(result).toEqual(expectedValues)
+  })
+
+  it('should handle default values for missing properties in the offer', () => {
+    const mockOfferWithMissingProperties = getIndividualOfferFactory({
+      isEvent: false,
+      isNational: true,
+      visualDisabilityCompliant: false,
+      mentalDisabilityCompliant: false,
+      audioDisabilityCompliant: false,
+      motorDisabilityCompliant: false,
+    })
+
+    const expectedValues = {
+      isEvent: false,
+      isNational: true,
+      withdrawalDetails:
+        DEFAULT_USEFULL_INFORMATION_INTITIAL_VALUES['withdrawalDetails'],
+      withdrawalDelay: undefined,
+      withdrawalType: undefined,
+      accessibility: {
+        [AccessibilityEnum.VISUAL]: false,
+        [AccessibilityEnum.MENTAL]: false,
+        [AccessibilityEnum.AUDIO]: false,
+        [AccessibilityEnum.MOTOR]: false,
+        [AccessibilityEnum.NONE]: true,
+      },
+      bookingEmail: '',
+      bookingContact: undefined,
+      receiveNotificationEmails: false,
+      url: DEFAULT_USEFULL_INFORMATION_INTITIAL_VALUES['url'],
+      externalTicketOfficeUrl:
+        DEFAULT_USEFULL_INFORMATION_INTITIAL_VALUES['externalTicketOfficeUrl'],
+    }
+
+    const result = setDefaultInitialValuesFromOffer(
+      mockOfferWithMissingProperties
+    )
+
+    expect(result).toEqual(expectedValues)
+  })
+
+  it('should handle null withdrawalDelay correctly', () => {
+    const mockOfferWithNullWithdrawalDelay = getIndividualOfferFactory({
+      ...mockOffer,
+      withdrawalDelay: null,
+    })
+
+    const expectedValues = {
+      ...setDefaultInitialValuesFromOffer(mockOffer),
+      withdrawalDelay: undefined,
+    }
+
+    const result = setDefaultInitialValuesFromOffer(
+      mockOfferWithNullWithdrawalDelay
+    )
+
+    expect(result).toEqual(expectedValues)
   })
 })
