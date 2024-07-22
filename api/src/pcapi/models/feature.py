@@ -108,6 +108,7 @@ class FeatureToggle(enum.Enum):
     WIP_ENABLE_GOOGLE_SSO = "Activer la connexion SSO pour les jeunes"
     WIP_ENABLE_FINANCE_INCIDENT = "Active les incidents de finance"
     WIP_ENABLE_MARSEILLE = "Activer Marseille en grand"
+    WIP_ENABLE_PUBLIC_API_PERMISSION_SYSTEM = "Activer le système de permissions pour l'API Publique"
     WIP_GOOGLE_MAPS_VENUE_IMAGES = "Activer l'affichage des images des lieux importées depuis Google Maps"
     WIP_CONNECT_AS = "Permettre à un admin de se connecter en tant qu'un compte pro sur PC Pro"
     WIP_ENABLE_NATIONAL_PROGRAM_NEW_RULES_PUBLIC_API = (
@@ -180,6 +181,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_CONNECT_AS,
     FeatureToggle.WIP_ENABLE_MOCK_UBBLE,
     FeatureToggle.WIP_ENABLE_OFFER_ADDRESS,
+    FeatureToggle.WIP_ENABLE_PUBLIC_API_PERMISSION_SYSTEM,
     FeatureToggle.WIP_ENABLE_REMINDER_MARKETING_MAIL_METADATA_DISPLAY,
     FeatureToggle.WIP_ENABLE_TITELIVE_API_FOR_BOOKS,
     FeatureToggle.WIP_SPLIT_OFFER,
