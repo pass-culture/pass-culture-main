@@ -500,13 +500,14 @@ class FilterCollectiveOfferByStatusesTest:
     @pytest.mark.parametrize(
         "status",
         [
+            # CollectiveOfferDisplayedStatus.PENDING,
             CollectiveOfferDisplayedStatus.REJECTED,
             CollectiveOfferDisplayedStatus.PREBOOKED,
             CollectiveOfferDisplayedStatus.BOOKED,
-            CollectiveOfferDisplayedStatus.INACTIVE,
             CollectiveOfferDisplayedStatus.EXPIRED,
             CollectiveOfferDisplayedStatus.ENDED,
             CollectiveOfferDisplayedStatus.ARCHIVED,
+            CollectiveOfferDisplayedStatus.ACTIVE,
         ],
     )
     def test_filter_by_status(self, app, status):
@@ -522,6 +523,99 @@ class FilterCollectiveOfferByStatusesTest:
         # Then
         assert filtered_booked_query.count() == 1
         assert filtered_booked_query.first() == offer
+
+    @pytest.mark.parametrize(
+        "status",
+        [
+            # CollectiveOfferDisplayedStatus.PENDING,
+            CollectiveOfferDisplayedStatus.REJECTED,
+            CollectiveOfferDisplayedStatus.PREBOOKED,
+            CollectiveOfferDisplayedStatus.BOOKED,
+            CollectiveOfferDisplayedStatus.EXPIRED,
+            CollectiveOfferDisplayedStatus.ENDED,
+            CollectiveOfferDisplayedStatus.ARCHIVED,
+            CollectiveOfferDisplayedStatus.ACTIVE,
+        ],
+    )
+    def test_filter_pending(self, app, status):
+        _other_offer = create_collective_offer_by_status(status)
+        pending_offer = create_collective_offer_by_status(CollectiveOfferDisplayedStatus.PENDING)
+
+        base_query = CollectiveOffer.query
+        filtered_booked_query = _filter_collective_offers_by_statuses(base_query, ["PENDING"])
+
+        assert filtered_booked_query.count() == 1
+        assert filtered_booked_query.first() == pending_offer
+
+    def test_all_filters(self, app):
+        all_status = [
+            CollectiveOfferDisplayedStatus.PENDING,
+            CollectiveOfferDisplayedStatus.REJECTED,
+            CollectiveOfferDisplayedStatus.PREBOOKED,
+            CollectiveOfferDisplayedStatus.BOOKED,
+            CollectiveOfferDisplayedStatus.EXPIRED,
+            CollectiveOfferDisplayedStatus.ENDED,
+            CollectiveOfferDisplayedStatus.ARCHIVED,
+            CollectiveOfferDisplayedStatus.ACTIVE,
+        ]
+
+        all_offers_by_status = {s.value: create_collective_offer_by_status(s) for s in all_status}
+
+        base_query = CollectiveOffer.query
+        all_status_values = [enum.value for enum in all_status]
+
+        # When
+        filtered_query = _filter_collective_offers_by_statuses(base_query, all_status_values)
+
+        # Then
+        filtered_query_ids = {order.id for order in filtered_query}
+        assert filtered_query_ids == {order.id for order in all_offers_by_status.values()}
+
+        assert filtered_query.count() == 8
+
+    @pytest.mark.parametrize(
+        "status",
+        [
+            CollectiveOfferDisplayedStatus.PENDING,
+            CollectiveOfferDisplayedStatus.REJECTED,
+            CollectiveOfferDisplayedStatus.PREBOOKED,
+            CollectiveOfferDisplayedStatus.BOOKED,
+            CollectiveOfferDisplayedStatus.EXPIRED,
+            CollectiveOfferDisplayedStatus.ENDED,
+            CollectiveOfferDisplayedStatus.ARCHIVED,
+        ],
+    )
+    def test_filter_statuses_but_one(self, app, status):
+        # # Given
+        all_status = [
+            CollectiveOfferDisplayedStatus.PENDING,
+            CollectiveOfferDisplayedStatus.REJECTED,
+            CollectiveOfferDisplayedStatus.PREBOOKED,
+            CollectiveOfferDisplayedStatus.BOOKED,
+            CollectiveOfferDisplayedStatus.EXPIRED,
+            CollectiveOfferDisplayedStatus.ENDED,
+            CollectiveOfferDisplayedStatus.ARCHIVED,
+        ]
+
+        all_offers_by_status = {s.value: create_collective_offer_by_status(s) for s in all_status}
+        _offer_not_filtered = all_offers_by_status[status.value]
+
+        filtered_status = [status_enum.value for status_enum in all_status if status_enum != status]
+
+        base_query = CollectiveOffer.query
+
+        # When
+        filtered_query = _filter_collective_offers_by_statuses(base_query, filtered_status)
+
+        # Then
+        assert base_query.count() == 7
+
+        filtered_query_ids = {order.id for order in filtered_query}
+
+        assert filtered_query_ids == {
+            order.id for order_status, order in all_offers_by_status.items() if status.value != order_status
+        }
+        assert filtered_query.count() == 6
 
     def test_filter_with_no_statuses(self, app):
         # Given

@@ -394,6 +394,8 @@ def create_collective_offer_by_status(
         case CollectiveOfferDisplayedStatus.PENDING.value:
             kwargs["validation"] = OfferValidationStatus.PENDING
             return CollectiveOfferFactory(**kwargs)
+        case CollectiveOfferDisplayedStatus.ACTIVE.value:
+            return CollectiveOfferFactory(**kwargs)
         case CollectiveOfferDisplayedStatus.INACTIVE.value:
             kwargs["isActive"] = False
             return CollectiveOfferFactory(**kwargs)
@@ -408,13 +410,15 @@ def create_collective_offer_by_status(
         case CollectiveOfferDisplayedStatus.PREBOOKED.value:
             offer = CollectiveOfferFactory(**kwargs)
 
-            stock = CollectiveStockFactory(collectiveOffer=offer)
+            tomorrow = datetime.datetime.utcnow() + datetime.timedelta(days=1)
+            stock = CollectiveStockFactory(beginningDatetime=tomorrow, collectiveOffer=offer)
             _booking = PendingCollectiveBookingFactory(collectiveStock=stock)
             return offer
         case CollectiveOfferDisplayedStatus.BOOKED.value:
             offer = CollectiveOfferFactory(**kwargs)
 
-            stock = CollectiveStockFactory(collectiveOffer=offer)
+            tomorrow = datetime.datetime.utcnow() + datetime.timedelta(days=1)
+            stock = CollectiveStockFactory(beginningDatetime=tomorrow, collectiveOffer=offer)
             _booking = ConfirmedCollectiveBookingFactory(collectiveStock=stock)
             return offer
         case CollectiveOfferDisplayedStatus.ENDED.value:
@@ -423,8 +427,5 @@ def create_collective_offer_by_status(
             stock = CollectiveStockFactory(collectiveOffer=offer, beginningDatetime=yesterday)
             _booking = UsedCollectiveBookingFactory(collectiveStock=stock)
             return offer
-        case CollectiveOfferDisplayedStatus.CANCELLED.value:
-            # FIXME
-            offer = CollectiveOfferFactory(**kwargs)
 
-    raise NotImplementedStatus
+    raise NotImplementedStatus(f"Factory for {status}")
