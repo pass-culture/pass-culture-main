@@ -34,7 +34,8 @@ export const AddActivationCodeForm = ({
       <BaseFileInput
         label="Importer un fichier .csv depuis l’ordinateur"
         fileTypes={['.csv']}
-        isValid={isFileInputDisabled}
+        isValid={!errorMessage}
+        isDisabled={isFileInputDisabled}
         onChange={submitFile}
       />
 
