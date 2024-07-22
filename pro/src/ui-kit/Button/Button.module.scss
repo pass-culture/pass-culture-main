@@ -101,9 +101,9 @@
 
     &:disabled,
     &.button-disabled {
-      background-color: var(--color-white);
-      border-color: var(--color-primary-disabled);
-      color: var(--color-primary-disabled);
+      background-color: var(--color-grey-light);
+      color: var(--color-grey-dark);
+      border-color: var(--color-grey-light);
     }
 
     &:disabled .button-icon,
