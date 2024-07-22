@@ -1,4 +1,5 @@
 import React from 'react'
+import { withRouter } from 'storybook-addon-react-router-v6'
 
 import { HelpLink } from './HelpLink'
 
@@ -11,6 +12,7 @@ export default {
         <Story />
       </div>
     ),
+    withRouter,
   ],
 }
 

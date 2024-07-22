@@ -6,7 +6,7 @@ import { ImageEditor } from './ImageEditor'
 import sampleImage from './sample-image.jpg'
 
 export default {
-  title: 'components/ImageEditor',
+  title: 'components/ImageUploader/ImageEditor',
   component: ImageEditor,
   decorators: [
     (Story: any) => (
