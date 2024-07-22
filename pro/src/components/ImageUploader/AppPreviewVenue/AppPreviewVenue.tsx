@@ -30,6 +30,7 @@ export const AppPreviewVenue = ({
           alt=""
           className={homeStyle['image-preview-shell']}
           src={homeShell}
+          role="presentation"
         />
         <img
           data-testid="app-preview-venue-img-home"
@@ -37,6 +38,7 @@ export const AppPreviewVenue = ({
           className={homeStyle['image-preview-home-preview']}
           onError={showError}
           src={imageUrl}
+          role="presentation"
         />
       </ImagePreview>
       <ImagePreview title="Page Lieu">
@@ -44,17 +46,20 @@ export const AppPreviewVenue = ({
           alt=""
           className={venueStyle['image-preview-blur-venue-preview']}
           src={imageUrl}
+          role="presentation"
         />
         <img
           alt=""
           className={venueStyle['image-preview-shell']}
           src={venueShell}
+          role="presentation"
         />
         <img
           data-testid="app-preview-venue-img"
           alt=""
           className={venueStyle['image-preview-venue-preview']}
           src={imageUrl}
+          role="presentation"
         />
       </ImagePreview>
     </ImagePreviewsWrapper>
