@@ -146,17 +146,34 @@ $number-size: rem.torem(30px);
         }
       }
 
+      .step {
+        justify-content: center;
+      }
+
       .label {
-        margin-left: 50%;
         position: absolute;
-        white-space: nowrap;
-        line-height: $step-label-height;
-        bottom: rem.torem(-17.274px);
+        width: 7rem;
+        text-align: center;
+        top: calc($number-size + rem.torem(4px));
         text-decoration: underline transparent;
         transition: text-decoration 250ms;
+      }
 
-        .inner {
-          margin-left: -50%;
+      &:first-child {
+        //  so that the first label does not overlfow the list container on the left
+        .label {
+          width: unset;
+          left: 0;
+          text-align: left;
+        }
+      }
+
+      &:last-child {
+        //  so that the last label does not overlfow the list container on the right
+        .label {
+          width: unset;
+          right: 0;
+          text-align: right;
         }
       }
     }

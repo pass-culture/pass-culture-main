@@ -1,15 +1,6 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_fonts.scss" as fonts;
 
-// Add padding/margin because stepper labels are absolute positioned
-// 20px is a magical value to visually align the stepper labels
-// TODO (alberict): refactor the stepper component CSS so that the labels
-// can't overflow the container (should be possible with flexbox and/or ::before pseudo-elements)
-.stepper-navigation {
-  padding-left: rem.torem(20px);
-  padding-right: rem.torem(20px);
-}
-
 .eac-layout {
   position: relative;
 
