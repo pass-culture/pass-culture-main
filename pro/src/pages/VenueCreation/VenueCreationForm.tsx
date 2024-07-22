@@ -30,6 +30,7 @@ type VenueFormProps = {
   offerer: GetOffererResponseModel
   updateIsSiretValued: (isSiretValued: boolean) => void
   venueTypes: VenueTypeResponseModel[]
+  isSiretValued: boolean
 }
 
 type ShouldBlockVenueNavigationProps = {
@@ -57,13 +58,13 @@ export const VenueCreationForm = ({
   offerer,
   updateIsSiretValued,
   venueTypes,
+  isSiretValued,
 }: VenueFormProps) => {
   const { initialValues, isSubmitting } =
     useFormikContext<VenueCreationFormValues>()
   const selectedOffererId = useSelector(selectCurrentOffererId)
 
   const [isFieldNameFrozen, setIsFieldNameFrozen] = useState(false)
-  const [isSiretValued, setIsSiretValued] = useState(true)
   const canOffererCreateCollectiveOffer = offerer.allowedOnAdage
   const venueTypesOptions = buildVenueTypesOptions(venueTypes)
 
@@ -81,7 +82,6 @@ export const VenueCreationForm = ({
               isToggleDisabled={false}
               isCreatedEntity
               setIsFieldNameFrozen={setIsFieldNameFrozen}
-              setIsSiretValued={setIsSiretValued}
               updateIsSiretValued={updateIsSiretValued}
               siren={offerer.siren}
             />

@@ -15,14 +15,12 @@ import { Toggle } from 'ui-kit/Toggle/Toggle'
 
 import { isSiretStartingWithSiren, valideSiretLength } from './validationSchema'
 
-export type SiretOrCommentInterface = {
+export type SiretOrCommentFieldsProps = {
   isCreatedEntity: boolean
   initialSiret?: string
   isToggleDisabled?: boolean
   setIsFieldNameFrozen?: (isNameFrozen: boolean) => void
-  // TODO Albéric: not sure why there are two states, could be refactored
   updateIsSiretValued: (isSiretValued: boolean) => void
-  setIsSiretValued?: (isSiretValued: boolean) => void
   siren?: string | null
 }
 
@@ -32,9 +30,8 @@ export const SiretOrCommentFields = ({
   isToggleDisabled = false,
   setIsFieldNameFrozen,
   updateIsSiretValued,
-  setIsSiretValued,
   siren,
-}: SiretOrCommentInterface): JSX.Element => {
+}: SiretOrCommentFieldsProps): JSX.Element => {
   const [isSiretSelected, setIsSiretSelected] = useState(
     !isToggleDisabled || initialSiret.length > 0
   )
@@ -44,9 +41,6 @@ export const SiretOrCommentFields = ({
   const handleToggleClick = () => {
     if (isSiretSelected && setIsFieldNameFrozen) {
       setIsFieldNameFrozen(false)
-    }
-    if (setIsSiretValued) {
-      setIsSiretValued(!isSiretSelected)
     }
     updateIsSiretValued(!isSiretSelected)
     setIsSiretSelected(!isSiretSelected)
