@@ -21,6 +21,8 @@ $action-gap: rem.torem(10px);
 
 .orejime-Notice-actionItem button,
 .orejime-Modal-form button {
+  @include fonts.button;
+
   text-align: center;
   border-radius: rem.torem(30px);
   border: rem.torem(2px) solid var(--color-primary);
@@ -38,8 +40,6 @@ $action-gap: rem.torem(10px);
     outline: rem.torem(1px) solid var(--color-input-text-color);
     outline-offset: rem.torem(2px);
   }
-
-  @include fonts.button;
 }
 
 .orejime-Notice {

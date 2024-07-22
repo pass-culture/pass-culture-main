@@ -83,12 +83,6 @@
 $icon-size: rem.torem(20px);
 
 .clear-button {
-  &-container {
-    position: absolute;
-    top: rem.torem(-4px);
-    right: 0;
-  }
-
   width: calc(#{$icon-size} + #{rem.torem(2px)});
   height: calc(#{$icon-size} + #{rem.torem(2px)});
   border: 1px solid var(--color-white);
@@ -97,6 +91,12 @@ $icon-size: rem.torem(20px);
 
   // Reset button styles
   line-height: 0;
+
+  &-container {
+    position: absolute;
+    top: rem.torem(-4px);
+    right: 0;
+  }
 
   &:focus {
     outline: 1px solid var(--color-black);

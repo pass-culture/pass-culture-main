@@ -117,6 +117,9 @@ def update_venue_provider(body: PostVenueProviderBody) -> VenueProviderResponse:
 
     venue_provider = get_venue_provider_by_venue_and_provider_ids(body.venueId, body.providerId)
 
+    if not venue_provider:
+        raise NotFound
+
     updated = api.update_venue_provider(venue_provider, body)
     return VenueProviderResponse.from_orm(updated)
 

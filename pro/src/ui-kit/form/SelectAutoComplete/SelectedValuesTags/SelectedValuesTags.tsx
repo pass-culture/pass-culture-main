@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import React from 'react'
+import { useRef } from 'react'
 
 import strokeCloseIcon from 'icons/stroke-close.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
@@ -21,15 +21,28 @@ export const SelectedValuesTags = ({
   selectedOptions,
   removeOption,
 }: TagsProps): JSX.Element => {
+  const tagListRef = useRef<HTMLUListElement>(null)
+
+  function onTagRemoved(tag: string, index: number) {
+    const listElements = tagListRef.current?.getElementsByTagName('button')
+    //  When a tag is removed, focus to the next tag button if it exists or to the previous tag button if it exists
+    if (listElements?.[index + 1]) {
+      listElements[index + 1].focus()
+    } else if (listElements?.[index - 1]) {
+      listElements[index - 1].focus()
+    }
+    removeOption(tag)
+  }
+
   return (
-    <div className={styles['multi-select-autocomplete-tags']}>
-      {selectedOptions.map((value: string) => (
-        <span key={`tag-${fieldName}-${value}`} className={styles['tag']}>
+    <ul className={styles['multi-select-autocomplete-tags']} ref={tagListRef}>
+      {selectedOptions.map((value: string, i) => (
+        <li key={`tag-${fieldName}-${value}`} className={styles['tag']}>
           <button
             className={cn(styles['tag-close-button'], {
               [styles['tag-close-button--disabled']]: disabled,
             })}
-            onClick={() => removeOption(value)}
+            onClick={() => onTagRemoved(value, i)}
             title={'Supprimer ' + optionsLabelById[value]}
             type="button"
             disabled={disabled}
@@ -42,8 +55,8 @@ export const SelectedValuesTags = ({
               className={styles['tag-close-button-icon']}
             />
           </button>
-        </span>
+        </li>
       ))}
-    </div>
+    </ul>
   )
 }

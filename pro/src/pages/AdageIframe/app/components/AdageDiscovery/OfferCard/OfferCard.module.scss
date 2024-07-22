@@ -10,7 +10,6 @@ $offer-image-width: rem.torem(216px);
   flex-direction: column;
   width: $offer-image-width;
   gap: rem.torem(16px);
-  z-index: 0;
 }
 
 .offer-link {
@@ -73,7 +72,6 @@ $offer-image-width: rem.torem(216px);
   position: absolute;
   top: rem.torem(12px);
   right: rem.torem(12px);
-  z-index: 1;
 
   &:hover:not(:disabled),
   &:focus-visible {

@@ -1,3 +1,6 @@
+from datetime import datetime
+from datetime import timedelta
+
 import pytest
 
 import pcapi.core.educational.factories as educational_factories
@@ -27,6 +30,25 @@ class SendinblueSendOfferValidationTest:
         assert new_offer_validation_email.template == TransactionalEmail.OFFER_APPROVAL_TO_PRO.value
         assert new_offer_validation_email.params == {
             "OFFER_NAME": "Ma petite offre",
+            "PUBLICATION_DATE": None,
+            "VENUE_NAME": "Mon stade",
+            "PC_PRO_OFFER_LINK": f"{PRO_URL}/offre/individuelle/{offer.id}/recapitulatif",
+        }
+
+    def test_get_validation_approval_correct_email_metadata_when_future_offer(self):
+        # Given
+        offer = offers_factories.OfferFactory(name="Ma petite offre", venue__name="Mon stade")
+        publication_date = datetime.utcnow().replace(minute=0, second=0, microsecond=0) + timedelta(days=30)
+        offers_factories.FutureOfferFactory(offerId=offer.id, publicationDate=publication_date)
+
+        # When
+        new_offer_validation_email = retrieve_data_for_offer_approval_email(offer)
+
+        # Then
+        assert new_offer_validation_email.template == TransactionalEmail.OFFER_APPROVAL_TO_PRO.value
+        assert new_offer_validation_email.params == {
+            "OFFER_NAME": "Ma petite offre",
+            "PUBLICATION_DATE": publication_date.strftime("%d/%m/%Y %H:%M:%S"),
             "VENUE_NAME": "Mon stade",
             "PC_PRO_OFFER_LINK": f"{PRO_URL}/offre/individuelle/{offer.id}/recapitulatif",
         }
@@ -49,6 +71,7 @@ class SendinblueSendOfferValidationTest:
         assert mails_testing.outbox[0]["To"] == "jules.verne@example.com"
         assert mails_testing.outbox[0]["params"] == {
             "OFFER_NAME": offer.name,
+            "PUBLICATION_DATE": None,
             "PC_PRO_OFFER_LINK": f"{PRO_URL}/offre/individuelle/{offer.id}/recapitulatif",
             "VENUE_NAME": venue.name,
         }

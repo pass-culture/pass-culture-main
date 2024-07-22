@@ -1,10 +1,13 @@
 import { screen } from '@testing-library/react'
-import { add } from 'date-fns'
-import React from 'react'
+import { userEvent } from '@testing-library/user-event'
 
-import { CollectiveBookingStatus } from 'apiClient/v1'
+import { OfferStatus } from 'apiClient/v1'
 import { Audience } from 'core/shared/types'
 import { collectiveOfferFactory } from 'utils/collectiveApiFactories'
+import {
+  listOffersOfferFactory,
+  listOffersStockFactory,
+} from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { OfferNameCell, OfferNameCellProps } from '../OfferNameCell'
@@ -24,59 +27,54 @@ const renderOfferNameCell = (props: OfferNameCellProps) =>
   )
 
 describe('OfferNameCell', () => {
-  it('should display warning when limit booking date is in less than 7 days', () => {
-    const tomorrowFns = add(new Date(), {
-      days: 1,
-    }).toISOString()
-
+  it('should display a tag for offer template', () => {
     const eventOffer = collectiveOfferFactory({
-      booking: {
-        id: 1,
-        booking_status: CollectiveBookingStatus.PENDING,
-      },
-      stocks: [
-        {
-          hasBookingLimitDatetimePassed: false,
-          beginningDatetime: '2023-12-22T00:00:00Z',
-          remainingQuantity: 1,
-          bookingLimitDatetime: tomorrowFns,
-        },
-      ],
+      isShowcase: true,
+      name: 'Offre nom',
     })
 
     renderOfferNameCell({
       offer: eventOffer,
       editionOfferLink: '#',
       audience: Audience.COLLECTIVE,
+    })
+
+    expect(screen.getByText('Offre vitrine')).toBeInTheDocument()
+    expect(screen.getByText('Offre nom')).toBeInTheDocument()
+  })
+
+  it('should display a warning for individual offer with stock sold out', () => {
+    const eventOffer = listOffersOfferFactory({
+      status: OfferStatus.ACTIVE,
+      stocks: [listOffersStockFactory({ remainingQuantity: 0 })],
+    })
+
+    renderOfferNameCell({
+      offer: eventOffer,
+      editionOfferLink: '#',
+      audience: Audience.INDIVIDUAL,
     })
 
     expect(screen.getByRole('img', { name: 'Attention' })).toBeInTheDocument()
   })
 
-  it('should not display warning when limit booking date is in more than 7 days', () => {
-    const eightDaysFns = add(new Date(), {
-      days: 8,
-    }).toISOString()
-
-    const eventOffer = collectiveOfferFactory({
+  it('should display how many dates have been used up when the warning button is clicked.', async () => {
+    const eventOffer = listOffersOfferFactory({
+      status: OfferStatus.ACTIVE,
       stocks: [
-        {
-          hasBookingLimitDatetimePassed: false,
-          beginningDatetime: '2022-12-22T00:00:00Z',
-          remainingQuantity: 1,
-          bookingLimitDatetime: eightDaysFns,
-        },
+        listOffersStockFactory({ remainingQuantity: 0 }),
+        listOffersStockFactory({ remainingQuantity: 0 }),
       ],
     })
 
     renderOfferNameCell({
       offer: eventOffer,
       editionOfferLink: '#',
-      audience: Audience.COLLECTIVE,
+      audience: Audience.INDIVIDUAL,
     })
 
-    expect(
-      screen.queryByRole('img', { name: 'Attention' })
-    ).not.toBeInTheDocument()
+    await userEvent.click(screen.getByRole('img', { name: 'Attention' }))
+
+    expect(screen.getByText('2 dates épuisées')).toBeInTheDocument()
   })
 })

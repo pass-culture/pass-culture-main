@@ -97,9 +97,7 @@ const renderStockEventScreen = async (
           element={
             <IndividualOfferContextProvider>
               <Stocks />
-              <ButtonLink link={{ to: '/outside', isExternal: false }}>
-                Go outside !
-              </ButtonLink>
+              <ButtonLink to="/outside">Go outside !</ButtonLink>
             </IndividualOfferContextProvider>
           }
         />

@@ -1,36 +1,14 @@
 import { useFormikContext } from 'formik'
-import React from 'react'
 
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { FORM_DEFAULT_VALUES } from 'components/IndividualOfferForm/constants'
 import { IndividualOfferFormValues } from 'components/IndividualOfferForm/types'
 import { showOptionsTree } from 'core/Offers/categoriesSubTypes'
-import { SelectOption } from 'custom_types/form'
+import { buildShowSubTypeOptions } from 'screens/IndividualOffer/DetailsScreen/utils'
 import { Select } from 'ui-kit/form/Select/Select'
 
 interface ShowTypesProps {
   readOnly?: boolean
-}
-
-const getShowSubTypeOptions = (showType: string): SelectOption[] => {
-  if (showType === FORM_DEFAULT_VALUES.showType) {
-    return []
-  }
-
-  const selectedShowTypeChildren = showOptionsTree.find(
-    (showTypeOption) => showTypeOption.code === parseInt(showType)
-  )?.children
-
-  if (!selectedShowTypeChildren) {
-    return []
-  }
-
-  return selectedShowTypeChildren
-    .map((data) => ({
-      value: data.code.toString(),
-      label: data.label,
-    }))
-    .sort((a, b) => a.label.localeCompare(b.label, 'fr'))
 }
 
 /* istanbul ignore next: DEBT, TO FIX */
@@ -47,7 +25,7 @@ export const ShowTypes = ({
       value: data.code.toString(),
     }))
     .sort((a, b) => a.label.localeCompare(b.label, 'fr'))
-  const showSubTypeOptions = getShowSubTypeOptions(showType)
+  const showSubTypeOptions = buildShowSubTypeOptions(showType)
 
   return (
     <>

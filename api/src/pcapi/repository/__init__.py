@@ -145,14 +145,14 @@ def _manage_session() -> None:
     else:
         db.session.rollback()
 
-    del g._session_to_commit
-    del g._managed_session
+    g.pop("_session_to_commit", None)
+    g.pop("_managed_session", None)
     if success:
         on_commit_callbacks = getattr(g, "_on_commit_callbacks", [])
         for callback in on_commit_callbacks:
             if not callback():
                 break
-    del g._on_commit_callbacks
+    g.pop("_on_commit_callbacks", None)
 
 
 def on_commit(func: typing.Callable[[], typing.Any], *, robust: bool = False) -> None:

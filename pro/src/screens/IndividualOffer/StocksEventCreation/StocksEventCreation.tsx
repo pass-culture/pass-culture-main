@@ -1,4 +1,3 @@
-import classNames from 'classnames'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useSWRConfig } from 'swr'
@@ -10,7 +9,6 @@ import { GET_OFFER_QUERY_KEY } from 'config/swrQueryKeys'
 import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
 import { useNotification } from 'hooks/useNotification'
 import { useOfferWizardMode } from 'hooks/useOfferWizardMode'
-import { useWithoutFrame } from 'hooks/useWithoutFrame'
 
 import { ActionBar } from '../ActionBar/ActionBar'
 
@@ -30,7 +28,6 @@ export const StocksEventCreation = ({
   const notify = useNotification()
 
   const [hasStocks, setHasStocks] = useState<boolean | null>(null)
-  const isWithoutFrame = useWithoutFrame()
 
   const handlePreviousStep = () => {
     /* istanbul ignore next: DEBT, TO FIX */
@@ -62,11 +59,7 @@ export const StocksEventCreation = ({
 
   return (
     <>
-      <div
-        className={classNames(styles['container'], {
-          [styles['container-without-frame']]: isWithoutFrame,
-        })}
-      >
+      <div className={styles['container']}>
         {hasStocks === false && (
           <HelpSection className={styles['help-section']} />
         )}

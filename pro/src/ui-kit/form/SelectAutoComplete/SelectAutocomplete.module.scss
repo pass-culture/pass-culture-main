@@ -19,9 +19,8 @@
   height: 0;
 
   .pellet {
-    @include fonts.body-exergue;
+    @include fonts.caption;
 
-    font-size: rem.torem(9px);
     align-items: center;
     background-color: var(--color-grey-light);
     border-radius: rem.torem(100px);

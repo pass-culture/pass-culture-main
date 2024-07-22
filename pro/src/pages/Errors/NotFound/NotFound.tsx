@@ -22,7 +22,7 @@ export const NotFound = ({ redirect = '/accueil' }: NotFoundProps) => (
     <ButtonLink
       className={styles['nm-redirection-link']}
       variant={ButtonVariant.SECONDARY}
-      link={{ to: redirect, isExternal: false }}
+      to={redirect}
     >
       Retour à la page d’accueil
     </ButtonLink>

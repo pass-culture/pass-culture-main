@@ -54,6 +54,12 @@ export const Stepper = ({
               data-testid={`step-${step.id}`}
             >
               <StepContent step={step} stepIndex={stepIndex} />
+              {isActive && (
+                <span className={styles['visually-hidden']}>
+                  {' '}
+                  (étape en cours)
+                </span>
+              )}
               {!isLastStep && (
                 <div
                   className={cn(

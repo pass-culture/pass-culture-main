@@ -11,12 +11,12 @@
 
   .desk-form-input {
     margin: rem.torem(10px) auto rem.torem(15px);
-    width: rem.torem(328px);
+    max-width: rem.torem(328px);
   }
 
   .desk-form-label {
     margin: 0 auto;
-    width: rem.torem(328px);
+    max-width: rem.torem(328px);
   }
 }
 

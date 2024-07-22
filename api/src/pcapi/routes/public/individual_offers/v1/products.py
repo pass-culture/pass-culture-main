@@ -3,7 +3,9 @@ import datetime
 import logging
 
 from flask import request
+from psycopg2.errorcodes import UNIQUE_VIOLATION
 import sqlalchemy as sqla
+import sqlalchemy.exc as sqla_exc
 
 from pcapi import repository
 from pcapi.core import search
@@ -194,6 +196,86 @@ def get_event_titelive_music_types() -> serialization.GetMusicTypesResponse:
     )
 
 
+class CreateProductError(Exception):
+    msg = "can't create this offer"
+
+
+class CreateProductDBError(CreateProductError):
+    msg = "internal error, can't create this offer"
+
+
+class ExistingVenueWithIdAtProviderError(CreateProductDBError):
+    msg = "`idAtProvider` already exists for this venue, can't create this offer"
+
+
+class CreateStockError(CreateProductError):
+    pass
+
+
+class CreateStockDBError(CreateStockError):
+    pass
+
+
+def _create_product(venue: offerers_models.Venue, body: serialization.ProductOfferCreation) -> offers_models.Offer:
+    try:
+        created_product = offers_api.create_offer(
+            audio_disability_compliant=body.accessibility.audio_disability_compliant,
+            booking_contact=body.booking_contact,
+            booking_email=body.booking_email,
+            description=body.description,
+            external_ticket_office_url=body.external_ticket_office_url,
+            extra_data=serialization.deserialize_extra_data(body.category_related_fields),
+            is_duo=body.enable_double_bookings,
+            mental_disability_compliant=body.accessibility.mental_disability_compliant,
+            motor_disability_compliant=body.accessibility.motor_disability_compliant,
+            name=body.name,
+            provider=current_api_key.provider,
+            subcategory_id=body.category_related_fields.subcategory_id,
+            url=body.location.url if isinstance(body.location, serialization.DigitalLocation) else None,
+            venue=venue,
+            visual_disability_compliant=body.accessibility.visual_disability_compliant,
+            withdrawal_details=body.withdrawal_details,
+            id_at_provider=body.id_at_provider,
+        )
+
+        # To create stocks or publishing the offer we need to flush
+        # the session to get the offer id
+        db.session.flush()
+    except sqla_exc.IntegrityError as error:
+        # a unique constraint violation can only mean that the venueId/idAtProvider
+        # already exists
+        is_offer_table = error.orig.diag.table_name == offers_models.Offer.__tablename__
+        is_unique_constraint_violation = error.orig.pgcode == UNIQUE_VIOLATION
+        unique_id_at_provider_venue_id_is_violated = is_offer_table and is_unique_constraint_violation
+
+        if unique_id_at_provider_venue_id_is_violated:
+            raise ExistingVenueWithIdAtProviderError() from error
+        # Other error are unlikely, but we still need to manage them.
+        raise CreateProductDBError() from error
+    except sqla_exc.SQLAlchemyError as error:
+        raise CreateProductDBError() from error
+
+    return created_product
+
+
+def _create_stock(product: offers_models.Offer, body: serialization.ProductOfferCreation) -> None:
+    if not body.stock:
+        return
+
+    try:
+        offers_api.create_stock(
+            offer=product,
+            price=finance_utils.to_euros(body.stock.price),
+            quantity=serialization.deserialize_quantity(body.stock.quantity),
+            booking_limit_datetime=body.stock.booking_limit_datetime,
+            creating_provider=current_api_key.provider,
+        )
+    except sqla_exc.SQLAlchemyError as error:
+        raise CreateStockDBError() from error
+    except Exception as error:
+        raise CreateStockError() from error
+
+
 @blueprints.public_api.route("/public/offers/v1/products", methods=["POST"])
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
@@ -220,47 +302,24 @@ def post_product_offer(body: serialization.ProductOfferCreation) -> serializatio
 
     try:
         with repository.transaction():
-            created_offer = offers_api.create_offer(
-                audio_disability_compliant=body.accessibility.audio_disability_compliant,
-                booking_contact=body.booking_contact,
-                booking_email=body.booking_email,
-                description=body.description,
-                external_ticket_office_url=body.external_ticket_office_url,
-                extra_data=serialization.deserialize_extra_data(body.category_related_fields),
-                is_duo=body.enable_double_bookings,
-                mental_disability_compliant=body.accessibility.mental_disability_compliant,
-                motor_disability_compliant=body.accessibility.motor_disability_compliant,
-                name=body.name,
-                provider=current_api_key.provider,
-                subcategory_id=body.category_related_fields.subcategory_id,
-                url=body.location.url if isinstance(body.location, serialization.DigitalLocation) else None,
-                venue=venue,
-                visual_disability_compliant=body.accessibility.visual_disability_compliant,
-                withdrawal_details=body.withdrawal_details,
-                id_at_provider=body.id_at_provider,
-            )
+            product = _create_product(venue=venue, body=body)
 
             if body.image:
-                utils.save_image(body.image, created_offer)
+                utils.save_image(body.image, product)
 
-            # To create stocks or publishing the offer we need to flush
-            # the session to get the offer id
-            db.session.flush()
-            if body.stock:
-                offers_api.create_stock(
-                    offer=created_offer,
-                    price=finance_utils.to_euros(body.stock.price),
-                    quantity=serialization.deserialize_quantity(body.stock.quantity),
-                    booking_limit_datetime=body.stock.booking_limit_datetime,
-                    creating_provider=current_api_key.provider,
-                )
-
-            offers_api.publish_offer(created_offer, user=None)
-
+            _create_stock(product=product, body=body)
+            offers_api.publish_offer(product, user=None)
+    except ExistingVenueWithIdAtProviderError as error:
+        raise api_errors.ApiErrors({"error": error.msg}, status_code=400)
+    except CreateProductError as error:
+        # This is very unlikely. Therefore, the error should be logged in
+        # order to check that there is no bug on our side.
+        logger.error("Unlikely create product error encountered", extra={"error": error, "body": body})
+        raise api_errors.ApiErrors({"error": error.msg}, status_code=400)
     except (offers_exceptions.OfferCreationBaseException, offers_exceptions.OfferEditionBaseException) as error:
         raise api_errors.ApiErrors(error.errors, status_code=400)
 
-    return serialization.ProductOfferResponse.build_product_offer(created_offer)
+    return serialization.ProductOfferResponse.build_product_offer(product)
 
 
 @blueprints.public_api.route("/public/offers/v1/products/ean", methods=["POST"])
@@ -648,11 +707,12 @@ def edit_product(body: serialization.ProductOfferEdition) -> serialization.Produ
     Will update only the non-blank fields.
     If you want to keep the current value of certains fields, leave them `undefined`.
     """
-    offer = (
-        utils.retrieve_offer_relations_query(utils.retrieve_offer_query(body.offer_id))
-        .filter(sqla.not_(offers_models.Offer.isEvent))
-        .one_or_none()
-    )
+    query = utils.retrieve_offer_query(body.offer_id)
+    query = utils.retrieve_offer_relations_query(query)
+    query = utils.load_venue_and_provider_query(query)
+    query = query.filter(sqla.not_(offers_models.Offer.isEvent))
+
+    offer = query.one_or_none()
 
     if not offer:
         raise api_errors.ApiErrors({"offerId": ["The product offer could not be found"]}, status_code=404)
@@ -675,6 +735,8 @@ def edit_product(body: serialization.ProductOfferEdition) -> serialization.Produ
                 isDuo=updated_offer_from_body.get("enable_double_bookings", offers_api.UNCHANGED),
                 withdrawalDetails=updated_offer_from_body.get("withdrawal_details", offers_api.UNCHANGED),
                 idAtProvider=updated_offer_from_body.get("id_at_provider", offers_api.UNCHANGED),
+                name=updated_offer_from_body.get("name", offers_api.UNCHANGED),
+                description=updated_offer_from_body.get("description", offers_api.UNCHANGED),
                 **utils.compute_accessibility_edition_fields(updated_offer_from_body.get("accessibility")),
             )
             if body.image:
@@ -684,6 +746,12 @@ def edit_product(body: serialization.ProductOfferEdition) -> serialization.Produ
     except (offers_exceptions.OfferCreationBaseException, offers_exceptions.OfferEditionBaseException) as e:
         raise api_errors.ApiErrors(e.errors, status_code=400)
 
+    # TODO(jeremieb): this should not be needed. BUT since datetime from
+    # db are not timezone aware and those from the request are...
+    # things get complicated during serialization (which does not
+    # know how to serialize timezone-aware datetime). So... reload
+    # everything and use data from the db.
+    offer = query.one_or_none()
     return serialization.ProductOfferResponse.build_product_offer(offer)
 
 

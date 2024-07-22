@@ -7,8 +7,8 @@ import {
   defaultGetOffererVenueResponseModel,
 } from 'utils/individualApiFactories'
 import {
-  RenderWithProvidersOptions,
   renderWithProviders,
+  RenderWithProvidersOptions,
 } from 'utils/renderWithProviders'
 import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
@@ -76,6 +76,12 @@ describe('SideNavLinks', () => {
     vi.spyOn(api, 'getOfferer').mockRejectedValueOnce({})
 
     renderSideNavLinks({
+      storeOverrides: {
+        user: {
+          currentUser: sharedCurrentUserFactory({ hasPartnerPage: false }),
+          selectedOffererId: 1,
+        },
+      },
       user: sharedCurrentUserFactory({ hasPartnerPage: false }),
     })
 

@@ -8,7 +8,6 @@ import { Tab, Tabs } from 'ui-kit/Tabs/Tabs'
 
 import {
   STEP_ID_BANK_INFORMATIONS,
-  STEP_ID_DETAILS,
   STEP_ID_INVOICES,
   STEP_NAMES,
 } from './constants'
@@ -34,11 +33,6 @@ export const ReimbursementsTabs = ({
         id: STEP_ID_INVOICES,
         label: 'Justificatifs',
         url: '/remboursements',
-      },
-      {
-        id: STEP_ID_DETAILS,
-        label: 'Détails',
-        url: '/remboursements/details',
       },
       {
         id: STEP_ID_BANK_INFORMATIONS,

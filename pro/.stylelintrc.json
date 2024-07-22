@@ -1,9 +1,7 @@
 {
   "extends": ["stylelint-config-standard-scss"],
   "rules": {
-    "at-rule-no-unknown": null,
     "no-descending-specificity": null,
-    "scss/at-extend-no-missing-placeholder": null,
     "scss/operator-no-newline-after": null,
     "font-family-no-missing-generic-family-keyword": null,
     "selector-max-type": [
@@ -13,9 +11,5 @@
         "severity": "warning"
       }
     ]
-  },
-  "ignoreFiles": [
-    "src/pages/AdageIframe/app/ui-kit/MultiSelectAutoComplete/MultiSelectAutocomplete.scss",
-    "src/pages/AdageIframe/app/ui-kit/Button/Button.scss"
-  ]
+  }
 }

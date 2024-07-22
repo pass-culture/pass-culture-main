@@ -84,6 +84,30 @@ def test_too_many_bookings_postgresql_exception():
         assert exc.value.errors["global"] == ["La quantité disponible pour cette offre est atteinte."]
 
 
+def test_too_many_bookings_postgresql_exception_not_executed():
+    booking1 = factories.BookingFactory(stock__quantity=1)
+    booking2 = factories.BookingFactory(
+        status=models.BookingStatus.USED,
+        user=users_factories.BeneficiaryGrant18Factory(),
+        offerer=booking1.offerer,
+        quantity=1,
+        amount=booking1.stock.price,
+        token="123456",
+    )
+    booking2.stock = booking1.stock
+    booking2.quantity = 2
+
+    with pytest.raises(ApiErrors) as exc:
+        repository.save(booking2)
+        assert exc.value.errors["global"] == ["La quantité disponible pour cette offre est atteinte."]
+
+    booking2.quantity = 2
+    booking2.status = models.BookingStatus.REIMBURSED
+    # → Shouldn't raise an error as the new status is reimbursed and the check shouldn't take place
+    repository.save(booking2)
+    assert booking2.quantity == 2
+
+
 @pytest.mark.parametrize(
     "booking_date_created, email_at_booking_created_date",
     [

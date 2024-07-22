@@ -19,7 +19,6 @@ from pcapi.core.providers.factories import BoostCinemaDetailsFactory
 from pcapi.core.providers.factories import BoostCinemaProviderPivotFactory
 from pcapi.core.providers.factories import VenueProviderFactory
 from pcapi.core.providers.repository import get_provider_by_local_class
-from pcapi.core.testing import override_features
 from pcapi.local_providers import BoostStocks
 from pcapi.utils.human_ids import humanize
 
@@ -114,34 +113,6 @@ class BoostStocksTest:
 
         assert get_cinema_attr_adapter.call_count == 1
 
-    @override_features(WIP_SYNCHRONIZE_CINEMA_STOCKS_WITH_ALLOCINE_PRODUCTS=True)
-    def should_not_create_offers_and_stocks_if_products_dont_exist(self, requests_mock):
-        venue_provider = self._create_cinema_and_pivot()
-
-        requests_mock.get(
-            "https://cinema-0.example.com/api/cinemas/attributs", json=fixtures.CinemasAttributsEndPointResponse.DATA
-        )
-        requests_mock.get(
-            f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?page=1&per_page=30",
-            json=fixtures.ShowtimesEndpointResponse.PAGE_1_JSON_DATA,
-        )
-        requests_mock.get(
-            f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?page=2&per_page=30",
-            json=fixtures.ShowtimesEndpointResponse.PAGE_2_JSON_DATA,
-        )
-        requests_mock.get("http://example.com/images/158026.jpg", content=bytes())
-        requests_mock.get("http://example.com/images/149489.jpg", content=bytes())
-
-        assert Product.query.count() == 0
-
-        boost_stocks = BoostStocks(venue_provider=venue_provider)
-        boost_stocks.updateObjects()
-
-        assert Offer.query.count() == 0
-        assert Stock.query.count() == 0
-        assert PriceCategory.query.count() == 0
-
-    @override_features(WIP_SYNCHRONIZE_CINEMA_STOCKS_WITH_ALLOCINE_PRODUCTS=False)
     def should_create_offers_with_allocine_id_and_visa_if_products_dont_exist(self, requests_mock):
         venue_provider = self._create_cinema_and_pivot()
 

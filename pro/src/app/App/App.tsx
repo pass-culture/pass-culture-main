@@ -1,6 +1,12 @@
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom'
+import {
+  Navigate,
+  Outlet,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from 'react-router-dom'
 import { SWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
@@ -40,6 +46,12 @@ export const App = (): JSX.Element | null => {
   usePageTitle()
   useFocus()
 
+  // This is to force the offerer if the url comes from the BO
+  // (without breaking everything else)
+  const [searchParams] = useSearchParams()
+  if (searchParams.get('from-bo')) {
+    dispatch(updateSelectedOffererId(Number(searchParams.get('structure'))))
+  }
   // Analytics
   const { consentedToBeamer, consentedToFirebase } = useOrejime()
   useSentry()

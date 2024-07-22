@@ -98,13 +98,7 @@ export const CollectiveOfferPreviewCreationScreen = ({
       <AdagePreviewLayout offer={offer} />
       <ActionsBarSticky>
         <ActionsBarSticky.Left>
-          <ButtonLink
-            variant={ButtonVariant.SECONDARY}
-            link={{
-              to: backRedirectionUrl,
-              isExternal: false,
-            }}
-          >
+          <ButtonLink variant={ButtonVariant.SECONDARY} to={backRedirectionUrl}>
             Étape précédente
           </ButtonLink>
         </ActionsBarSticky.Left>

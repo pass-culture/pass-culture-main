@@ -31,7 +31,7 @@ export interface IndividualOffersActionsBarProps {
   selectedOfferIds: number[]
   toggleSelectAllCheckboxes: () => void
   getUpdateOffersStatusMessage: (selectedOfferIds: number[]) => string
-  canDeleteOffers: () => boolean
+  canDeleteOffers: boolean
 }
 
 const computeAllActivationSuccessMessage = (nbSelectedOffers: number) => {
@@ -174,7 +174,7 @@ export const IndividualOffersActionsBar = ({
   }
 
   const handleOpenDeleteDialog = () => {
-    if (!canDeleteOffers()) {
+    if (!canDeleteOffers) {
       notify.error('Seuls les brouillons peuvent être supprimés')
       return
     }
@@ -218,7 +218,7 @@ export const IndividualOffersActionsBar = ({
             Désactiver
           </Button>
           <Button
-            onClick={() => handleOpenDeleteDialog()}
+            onClick={handleOpenDeleteDialog}
             icon={fullTrashIcon}
             variant={ButtonVariant.SECONDARY}
           >

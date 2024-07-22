@@ -1,10 +1,8 @@
 import cn from 'classnames'
-import React from 'react'
 import { useLocation } from 'react-router-dom'
 
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { Events } from 'core/FirebaseEvents/constants'
-import fullLink from 'icons/full-link.svg'
 import fullMailIcon from 'icons/full-mail.svg'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -31,20 +29,12 @@ export const LegalInfos = ({
         onClick={() =>
           logEvent(Events.CLICKED_CONSULT_CGU, { from: location.pathname })
         }
-        link={{
-          to: 'https://pass.culture.fr/cgu-professionnels/',
-          isExternal: true,
-          target: '_blank',
-        }}
+        to="https://pass.culture.fr/cgu-professionnels/"
+        isExternal
+        opensInNewTab
         variant={ButtonVariant.QUATERNARY}
       >
-        <SvgIcon
-          src={fullLink}
-          alt="Site pass.culture.fr (Nouvelle fenêtre)"
-          className={styles['icon-legal-infos']}
-          width="22"
-        />
-        <span>Conditions Générales d’Utilisation</span>
+        Conditions Générales d’Utilisation
       </ButtonLink>
       <span>{' ainsi que notre '}</span>
       <ButtonLink
@@ -52,20 +42,12 @@ export const LegalInfos = ({
         onClick={() =>
           logEvent(Events.CLICKED_PERSONAL_DATA, { from: location.pathname })
         }
-        link={{
-          to: 'https://pass.culture.fr/donnees-personnelles/',
-          isExternal: true,
-          target: '_blank',
-        }}
+        to="https://pass.culture.fr/donnees-personnelles/"
+        isExternal
+        opensInNewTab
         variant={ButtonVariant.QUATERNARY}
       >
-        <SvgIcon
-          src={fullLink}
-          alt="Site pass.culture.fr (Nouvelle fenêtre)"
-          className={styles['icon-legal-infos']}
-          width="22"
-        />
-        <span>Charte des Données Personnelles</span>
+        Charte des Données Personnelles
       </ButtonLink>
       <span>
         {
@@ -80,11 +62,8 @@ export const LegalInfos = ({
             from: location.pathname,
           })
         }
-        link={{
-          to: 'mailto:support-pro@passculture.app',
-          isExternal: true,
-          target: '_blank',
-        }}
+        to="mailto:support-pro@passculture.app"
+        isExternal
       >
         <SvgIcon
           src={fullMailIcon}

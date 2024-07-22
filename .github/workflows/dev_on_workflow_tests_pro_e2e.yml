@@ -147,18 +147,18 @@ jobs:
           browser: chrome
           config-file: cypress/cypress.config.ts
           env: TAGS="@P0"
-          record: ${{ github.ref == 'refs/heads/master' }} # pour Cypress Cloud
+          record: ${{ github.ref == 'refs/heads/master' }} # for Cypress Cloud
         env:
           CYPRESS_RECORD_KEY: ${{ steps.secrets.outputs.CYPRESS_CLOUD_RECORD_KEY }}
           CYPRESS_PROJECT_ID: ${{ steps.secrets.outputs.CYPRESS_CLOUD_PROJECT_ID }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: "Move cypress videos"
-        if: always()
+        if: ${{ github.ref != 'refs/heads/master' }} # useless on master bc Cypress Cloud
         run: |
           mkdir -p cypress/videos/${{ github.ref }}/${{ github.sha }} && \
           mv cypress/videos/*.mp4 cypress/videos/${{ github.ref }}/${{ github.sha }}/
       - name: "Archive E2E results"
-        if: always()
+        if: ${{ github.ref != 'refs/heads/master' }} # useless on master bc Cypress Cloud
         uses: google-github-actions/upload-cloud-storage@v2
         with:
           path: "pro/cypress/videos"

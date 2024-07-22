@@ -40,7 +40,7 @@ describe('Offerers', () => {
     ).toBeInTheDocument()
   })
 
-  it("should display the carnet d'adresses", () => {
+  it('should display the adresses', () => {
     renderOfferers({
       selectedOfferer: {
         ...defaultGetOffererResponseModel,
@@ -49,6 +49,6 @@ describe('Offerers', () => {
       },
     })
 
-    expect(screen.getByText('Carnet d’adresses')).toBeInTheDocument()
+    expect(screen.getByText('Vos adresses')).toBeInTheDocument()
   })
 })

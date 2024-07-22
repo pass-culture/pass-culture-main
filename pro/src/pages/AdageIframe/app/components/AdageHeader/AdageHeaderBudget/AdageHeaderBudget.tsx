@@ -1,8 +1,6 @@
 import { AdageHeaderLink } from 'apiClient/adage'
-import fullLinkIcon from 'icons/full-link.svg'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './AdageHeaderBudget.module.scss'
 
@@ -19,20 +17,13 @@ export const AdageHeaderBudget = ({
     <div className={styles['adage-header-budget']}>
       <ButtonLink
         variant={ButtonVariant.TERNARY}
-        link={{
-          to: `${document.referrer}adage/passculture/index`,
-          isExternal: true,
-          target: '_blank',
-        }}
+        to={`${document.referrer}adage/passculture/index`}
+        isExternal
+        opensInNewTab
+        icon={null}
         className={styles['adage-header-budget-link']}
         onClick={() => logAdageLinkClick(AdageHeaderLink.ADAGE_LINK)}
       >
-        <SvgIcon
-          width="16"
-          alt="Nouvelle fenêtre"
-          src={fullLinkIcon}
-          className={styles['adage-header-budget-icon']}
-        />
         Solde prévisionnel
       </ButtonLink>
       <div className={styles['adage-header-budget-value']}>

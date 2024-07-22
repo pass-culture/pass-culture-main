@@ -10,7 +10,7 @@
     left: 0;
     min-width: size.$side-nav-width;
     z-index: zIndex.$lateral-menu-z-index-mobile;
-    min-height: calc(100vh - size.$top-menu-height);
+    min-height: 100%;
 
     &::before {
       content: " ";

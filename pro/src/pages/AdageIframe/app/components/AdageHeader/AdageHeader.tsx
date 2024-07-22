@@ -51,7 +51,7 @@ export const AdageHeader = () => {
         <div className={styles['adage-header-nav-brand']}>
           <SvgIcon
             src={logoPassCultureIcon}
-            alt="Logo du pass Culture"
+            alt="pass Culture"
             width="109"
             viewBox="0 0 71 24"
           />
@@ -70,11 +70,9 @@ export const AdageHeader = () => {
           Besoin d’aide pour réserver des offres pass Culture ?
           <ButtonLink
             variant={ButtonVariant.TERNARY}
-            link={{
-              to: `${document.referrer}adage/index/docGet/format/pptx/doc/PRESENTATION_J_UTILISE_PASS_CULTURE`,
-              isExternal: true,
-              download: true,
-            }}
+            to={`${document.referrer}adage/index/docGet/format/pptx/doc/PRESENTATION_J_UTILISE_PASS_CULTURE`}
+            isExternal
+            download
             icon={fullDownloadIcon}
           >
             Télécharger l’aide

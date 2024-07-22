@@ -1,5 +1,5 @@
 import 'regenerator-runtime/runtime'
-import { vi, expect } from 'vitest'
+import { expect, vi } from 'vitest'
 import '@testing-library/jest-dom/vitest'
 import * as matchers from 'vitest-axe/matchers'
 import createFetchMock from 'vitest-fetch-mock'
@@ -28,9 +28,12 @@ fetchMock.mockResponse((req) => {
 // Mock the ResizeObserver for Charts
 class ResizeObserver {
   observe() {}
+
   unobserve() {}
+
   disconnect() {}
 }
+
 window.ResizeObserver = ResizeObserver
 
 /* BELOW WE HANDLE WARNINGS AND ERRORS THROWN INSIDE THE TESTS */
@@ -43,6 +46,14 @@ const acceptableErrors = [
   {
     error:
       "Warning: ReactDOM.render is no longer supported in React 18. Use createRoot instead. Until you switch to the new API, your app will behave as if it's running React 17. Learn more: https://reactjs.org/link/switch-to-createroot",
+    files: [''],
+  },
+  // Radix-ui updates wants us to use `DialogTitle` that always adds a `h2`
+  // RGAA requires the title to be a `h1`
+  // All our dilogs have titles
+  {
+    error:
+      '`DialogContent` requires a `DialogTitle` for the component to be accessible for screen reader users.',
     files: [''],
   },
 ]

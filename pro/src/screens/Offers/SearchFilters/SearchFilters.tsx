@@ -178,22 +178,20 @@ export const SearchFilters = ({
 
   return (
     <>
-      {offerer && (
+      {!isNewInterfaceActive && offerer && (
         <span className="offerer-filter">
           {offerer.name}
-          {!isNewInterfaceActive && (
-            <button
-              onClick={removeOfferer}
-              type="button"
-              data-testid="remove-offerer-filter"
-            >
-              <SvgIcon
-                src={strokeCloseIcon}
-                alt="Supprimer le filtre par structure"
-                className={styles['offerer-close-icon']}
-              />
-            </button>
-          )}
+          <button
+            onClick={removeOfferer}
+            type="button"
+            data-testid="remove-offerer-filter"
+          >
+            <SvgIcon
+              src={strokeCloseIcon}
+              alt="Supprimer le filtre par structure"
+              className={styles['offerer-close-icon']}
+            />
+          </button>
         </span>
       )}
 

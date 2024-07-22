@@ -9,6 +9,7 @@ from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
+from pcapi.repository import db
 from pcapi.repository import repository
 from pcapi.utils.date import format_into_utc_date
 
@@ -17,6 +18,7 @@ class Returns200Test:
     @pytest.mark.usefixtures("db_session")
     def when_account_is_known(self, client, caplog):
         # given
+        now = datetime.datetime.utcnow()
         user = users_factories.BeneficiaryGrant18Factory(
             civility=users_models.GenderEnum.M.value,
             city=None,
@@ -27,7 +29,7 @@ class Returns200Test:
             lastName="Smisse",
             phoneNumber="0612345678",
             postalCode="93020",
-            lastConnectionDate=datetime.datetime(2019, 1, 1),
+            lastConnectionDate=now - datetime.timedelta(minutes=20),
         )
 
         data = {"identifier": user.email, "password": user.clearTextPassword, "captchaToken": "token"}
@@ -36,6 +38,7 @@ class Returns200Test:
         with caplog.at_level(logging.INFO):
             response = client.post("/users/signin", json=data)
 
+        db.session.refresh(user)
         # then
         assert response.status_code == 200
         assert not any("password" in field.lower() for field in response.json)
@@ -64,6 +67,7 @@ class Returns200Test:
             "roles": ["BENEFICIARY"],
             "navState": {"eligibilityDate": None, "newNavDate": None},
         }
+        assert user.lastConnectionDate > now
         assert "Failed authentication attempt" not in caplog.messages
 
     @pytest.mark.usefixtures("db_session")
@@ -142,7 +146,9 @@ class Returns200Test:
     @pytest.mark.usefixtures("db_session")
     def test_whith_user_offerer_and_nav_state(self, client):
         # Given
-        user_offerer = offerer_factories.UserOffererFactory()
+        user_offerer = offerer_factories.UserOffererFactory(
+            user__lastConnectionDate=datetime.datetime.utcnow(),
+        )
         navState = users_factories.UserProNewNavStateFactory(user=user_offerer.user)
         data = {
             "identifier": user_offerer.user.email,
@@ -182,7 +188,7 @@ class Returns200Test:
             "id": user_offerer.user.id,
             "isAdmin": False,
             "isEmailValidated": True,
-            "lastConnectionDate": None,
+            "lastConnectionDate": format_into_utc_date(user_offerer.user.lastConnectionDate),
             "lastName": "Coty",
             "needsToFillCulturalSurvey": True,
             "phoneNumber": None,

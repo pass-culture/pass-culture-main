@@ -7,10 +7,8 @@ import { CalloutVariant } from 'components/Callout/types'
 import { Dialog } from 'components/Dialog/Dialog/Dialog'
 import { MandatoryInfo } from 'components/FormLayout/FormLayoutMandatoryInfo'
 import { useNotification } from 'hooks/useNotification'
-import fullLinkIcon from 'icons/full-link.svg'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { isDateValid } from 'utils/date'
 
 import { createCollectiveRequestPayload } from './createCollectiveRequestPayload'
@@ -165,18 +163,10 @@ export const RequestFormDialog = ({
                 onClick={logContactUrl}
                 variant={ButtonVariant.TERNARYPINK}
                 className={styles['form-description-link-text']}
-                link={{
-                  to: contactUrl,
-                  isExternal: true,
-                  target: '_blank',
-                }}
+                to={contactUrl}
+                isExternal
+                opensInNewTab
               >
-                <SvgIcon
-                  className={styles['form-icon']}
-                  width="20"
-                  alt="Nouvelle fenêtre"
-                  src={fullLinkIcon}
-                />
                 Aller sur le site
               </ButtonLink>
             </div>
@@ -227,13 +217,10 @@ export const RequestFormDialog = ({
         onClick={logContactUrl}
         variant={ButtonVariant.TERNARYPINK}
         className={styles['form-description-link-text']}
-        link={{
-          to: contactUrl,
-          isExternal: true,
-          target: '_blank',
-        }}
+        to={contactUrl}
+        isExternal
+        opensInNewTab
       >
-        <SvgIcon width="20" alt="Nouvelle fenêtre" src={fullLinkIcon} />
         Aller sur le site
       </ButtonLink>
     </div>

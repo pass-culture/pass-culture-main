@@ -7,6 +7,7 @@ import {
   CollectiveOfferResponseModel,
   GetOffererResponseModel,
   ListOffersOfferResponseModel,
+  OfferStatus,
   UserRole,
 } from 'apiClient/v1'
 import { Callout } from 'components/Callout/Callout'
@@ -122,10 +123,7 @@ export const Offers = ({
   const actionLink = displayCreateOfferButton ? (
     <ButtonLink
       variant={ButtonVariant.PRIMARY}
-      link={{
-        isExternal: false,
-        to: `/offre/creation${selectedOffererId ? `?structure=${selectedOffererId}` : ''}`,
-      }}
+      to={`/offre/creation${selectedOffererId ? `?structure=${selectedOffererId}` : ''}`}
       icon={fullPlusIcon}
     >
       Créer une offre
@@ -139,8 +137,7 @@ export const Offers = ({
 
   const areAllIndividualOffersSelected =
     selectedIndividualOffers.length > 0 &&
-    selectedIndividualOffers.length ===
-      offers.filter((offer) => offer.isEditable).length
+    selectedIndividualOffers.length === offers.length
 
   function clearSelectedOfferIds() {
     setSelectedCollectiveOffers([])
@@ -155,11 +152,7 @@ export const Offers = ({
           : offers.filter((offer) => offer.isEditable)
       )
     } else {
-      setSelectedIndividualOffers(
-        areAllIndividualOffersSelected
-          ? []
-          : offers.filter((offer) => offer.isEditable)
-      )
+      setSelectedIndividualOffers(areAllIndividualOffersSelected ? [] : offers)
     }
   }
 
@@ -213,11 +206,9 @@ export const Offers = ({
     return ''
   }
 
-  const canDeleteOffers = () => {
-    return (
-      isCollective ? selectedCollectiveOffers : selectedIndividualOffers
-    ).some((offer) => offer.status !== OFFER_STATUS_DRAFT)
-  }
+  const canDeleteOffers = (
+    isCollective ? selectedCollectiveOffers : selectedIndividualOffers
+  ).some((offer) => offer.status === OfferStatus.DRAFT)
 
   const isNewInterfaceActive = useIsNewInterfaceActive()
   const title = isNewInterfaceActive

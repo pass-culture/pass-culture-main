@@ -72,8 +72,20 @@ describe('FormStock', () => {
     const saveButton = screen.getByText('Enregistrer')
 
     await userEvent.click(saveButton)
-    const requiredField = await screen.findAllByText('Champ requis')
-    expect(requiredField).toHaveLength(5)
+
+    expect(
+      screen.getByText('La date de début est obligatoire')
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText('La date de fin est obligatoire')
+    ).toBeInTheDocument()
+    expect(screen.getByText('L’horaire est obligatoire')).toBeInTheDocument()
+    expect(
+      screen.getByText('Le nombre de participants est obligatoire')
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText('Le prix total TTC est obligatoire')
+    ).toBeInTheDocument()
   })
 
   it('should automatically update end date input when the user edits the start date', async () => {

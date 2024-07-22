@@ -92,6 +92,7 @@ When('I fill activity form without target audience', () => {
 
 When('I validate the registration', () => {
   cy.intercept({ method: 'POST', url: '/offerers/new' }).as('createOfferer')
+  cy.wait(2000) // @todo: delete this when random failures fixed
   cy.findByText('Valider et créer ma structure').click()
 })
 
@@ -168,10 +169,10 @@ Then('the offerer is created', () => {
     'Votre structure a bien été créée'
   )
   cy.url().should('contain', '/accueil')
-  cy.findAllByTestId('spinner').should('not.exist')
+  cy.findAllByTestId('spinner', { timeout: 30 * 1000 }).should('not.exist')
 
   cy.findByTestId('offerer-details-offerId').select(offererName)
-  cy.findAllByTestId('spinner').should('not.exist')
+  cy.findAllByTestId('spinner', { timeout: 30 * 1000 }).should('not.exist')
 })
 
 Then('An error message is raised', () => {

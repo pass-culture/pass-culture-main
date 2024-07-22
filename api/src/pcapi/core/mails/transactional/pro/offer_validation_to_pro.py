@@ -10,10 +10,15 @@ from pcapi.utils.urls import build_pc_pro_offer_link
 def retrieve_data_for_offer_approval_email(
     offer: Offer | educational_models.CollectiveOffer | educational_models.CollectiveOfferTemplate,
 ) -> models.TransactionalEmailData:
+    if isinstance(offer, Offer) and offer.publicationDate:
+        publication_date = offer.publicationDate.strftime("%d/%m/%Y %H:%M:%S")
+    else:
+        publication_date = None
     return models.TransactionalEmailData(
         template=TransactionalEmail.OFFER_APPROVAL_TO_PRO.value,
         params={
             "OFFER_NAME": offer.name,
+            "PUBLICATION_DATE": publication_date,
             "VENUE_NAME": offer.venue.publicName or offer.venue.name,
             "PC_PRO_OFFER_LINK": build_pc_pro_offer_link(offer),
         },

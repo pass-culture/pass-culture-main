@@ -1,4 +1,10 @@
-import { render, screen, waitFor, within } from '@testing-library/react'
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Formik } from 'formik'
 import React from 'react'
@@ -47,6 +53,25 @@ describe('SelectAutocomplete', () => {
       </Formik>
     )
     expect(screen.getByLabelText('Département *')).toBeInTheDocument()
+  })
+
+  it('should toggle the options panel', async () => {
+    render(
+      <Formik initialValues={initialValues} onSubmit={vi.fn()}>
+        <SelectAutocomplete {...props} />
+      </Formik>
+    )
+    await userEvent.type(screen.getByLabelText('Département *'), ' ')
+
+    await userEvent.click(
+      screen.getByRole('img', { name: 'Masquer les options' })
+    )
+    expect(screen.queryByTestId('list')).not.toBeInTheDocument()
+    await userEvent.click(
+      screen.getByRole('img', { name: 'Afficher les options' })
+    )
+
+    expect(screen.getByTestId('list').children).toHaveLength(15)
   })
 
   describe('Options', () => {
@@ -193,21 +218,26 @@ describe('SelectAutocomplete', () => {
       )
     })
 
-    it('should reset filter when the user closes and reopens the field', async () => {
+    it('should filter options with the default filter function when the user types in the field ', async () => {
+      const propsWithoutFilterFunction = { ...props }
+      delete propsWithoutFilterFunction.searchInOptions
+
       render(
         <Formik initialValues={initialValues} onSubmit={vi.fn()}>
           <SelectAutocomplete {...props} />
         </Formik>
       )
       await userEvent.type(screen.getByLabelText('Département *'), 'al')
-      await userEvent.click(
-        screen.getByRole('img', { name: 'Masquer les options' })
+      expect(screen.getByTestId('list').children).toHaveLength(
+        [
+          'Allier',
+          'Alpes',
+          'Hautes-Alpes',
+          'Alpes-Maritimes',
+          'Calvados',
+          'Cantal',
+        ].length
       )
-      await userEvent.click(
-        screen.getByRole('img', { name: 'Afficher les options' })
-      )
-
-      expect(screen.getByTestId('list').children).toHaveLength(15)
     })
 
     it('should warn that there are no results', async () => {
@@ -290,7 +320,34 @@ describe('SelectAutocomplete', () => {
       expect(
         screen.queryByRole('button', { name: 'Aisne' })
       ).not.toBeInTheDocument()
+
+      expect(
+        screen.getByRole('button', { name: 'Ain Supprimer Ain' })
+      ).toHaveFocus()
     })
+
+    it('should focus the next tag when removing a tag from the list', async () => {
+      render(
+        <Formik
+          initialValues={{
+            departement: ['01', '02'],
+            'search-departement': '',
+          }}
+          onSubmit={vi.fn()}
+        >
+          <SelectAutocomplete {...{ ...props, multi: true }} />
+        </Formik>
+      )
+
+      await userEvent.click(
+        screen.getByRole('button', { name: 'Ain Supprimer Ain' })
+      )
+
+      expect(
+        screen.getByRole('button', { name: 'Aisne Supprimer Aisne' })
+      ).toHaveFocus()
+    })
+
     it('should unselect option when the user removes a tag', async () => {
       render(
         <Formik
@@ -307,6 +364,98 @@ describe('SelectAutocomplete', () => {
       await userEvent.click(screen.getByLabelText('Département *'))
       // Ain (01) still selected, Aisne (02) not selected any more
       expect(screen.queryByTestId('select')).toHaveValue(['01'])
+    })
+  })
+
+  describe('keys', () => {
+    it('should close the options panel when the Tab key is pressed', async () => {
+      render(
+        <Formik initialValues={initialValues} onSubmit={vi.fn()}>
+          <SelectAutocomplete {...props} />
+        </Formik>
+      )
+      await userEvent.type(screen.getByLabelText('Département *'), ' ')
+      expect(screen.getByTestId('list').children).toHaveLength(15)
+      await userEvent.tab()
+
+      expect(screen.queryByTestId('list')).not.toBeInTheDocument()
+    })
+
+    it('should close the options panel when the Escape key is pressed', async () => {
+      render(
+        <Formik initialValues={initialValues} onSubmit={vi.fn()}>
+          <SelectAutocomplete {...props} />
+        </Formik>
+      )
+      const inputContainer = screen.getByLabelText('Département *')
+      await userEvent.type(inputContainer, ' ')
+      expect(screen.getByTestId('list').children).toHaveLength(15)
+      fireEvent.keyDown(inputContainer, {
+        key: 'Escape',
+        code: 'Escape',
+        keyCode: 27,
+        charCode: 27,
+      })
+
+      expect(screen.queryByTestId('list')).not.toBeInTheDocument()
+    })
+
+    it('should activate the next option in the list when the down arrow key is pressed and the previous option when the up arrow is pressed', async () => {
+      render(
+        <Formik
+          initialValues={{
+            departement: ['01', '02'],
+            'search-departement': '',
+          }}
+          onSubmit={vi.fn()}
+        >
+          <SelectAutocomplete {...props} multi />
+        </Formik>
+      )
+      const inputContainer = screen.getByLabelText('Département *')
+      await userEvent.type(inputContainer, 'Ai')
+
+      const firstOption = screen.getByRole('option', { name: 'Ain' })
+      const secondOption = screen.getByRole('option', { name: 'Aisne' })
+
+      firstOption.scrollIntoView = vi.fn()
+      secondOption.scrollIntoView = vi.fn()
+
+      fireEvent.keyDown(inputContainer, {
+        key: 'ArrowDown',
+        code: 'ArrowDown',
+        keyCode: 40,
+        charCode: 40,
+      })
+
+      expect(firstOption).toHaveAttribute('data-selected', 'true')
+
+      fireEvent.keyDown(inputContainer, {
+        key: 'ArrowDown',
+        code: 'ArrowDown',
+        keyCode: 40,
+        charCode: 40,
+      })
+
+      expect(secondOption).toHaveAttribute('data-selected', 'true')
+
+      fireEvent.keyDown(inputContainer, {
+        key: 'ArrowDown',
+        code: 'ArrowDown',
+        keyCode: 40,
+        charCode: 40,
+      })
+
+      expect(secondOption).toHaveAttribute('data-selected', 'true')
+
+      fireEvent.keyDown(inputContainer, {
+        key: 'ArrowUp',
+        code: 'ArrowUp',
+        keyCode: 38,
+        charCode: 38,
+      })
+
+      expect(firstOption).toHaveAttribute('data-selected', 'true')
     })
   })
 

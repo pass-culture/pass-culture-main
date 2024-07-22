@@ -146,8 +146,7 @@ describe('StatusToggleButton', () => {
       status: OfferStatus.INACTIVE,
     })
 
-    renderStatusToggleButton(props, { features: ['WIP_FUTURE_OFFER'] })
-
+    renderStatusToggleButton(props)
     await userEvent.click(screen.getByText(/Publier/))
 
     expect(
@@ -176,7 +175,7 @@ describe('StatusToggleButton', () => {
       status: OfferStatus.ACTIVE,
     })
 
-    renderStatusToggleButton(props, { features: ['WIP_FUTURE_OFFER'] })
+    renderStatusToggleButton(props)
 
     await userEvent.click(screen.getByText(/Désactiver/))
 

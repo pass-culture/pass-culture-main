@@ -14,6 +14,8 @@
   overflow: hidden;
   border-radius: rem.torem(6px);
 
+  @include forms.input-theme-nested;
+
   &.has-error {
     @include forms.input-theme-error;
   }

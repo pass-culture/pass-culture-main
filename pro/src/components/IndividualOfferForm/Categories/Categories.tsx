@@ -11,9 +11,12 @@ import { Callout } from 'components/Callout/Callout'
 import { CalloutVariant } from 'components/Callout/types'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { INDIVIDUAL_OFFER_SUBTYPE } from 'core/Offers/constants'
-import { SelectOption } from 'custom_types/form'
 import { useActiveFeature } from 'hooks/useActiveFeature'
 import fullMoreIcon from 'icons/full-more.svg'
+import {
+  buildCategoryOptions,
+  buildSubcategoryOptions,
+} from 'screens/IndividualOffer/DetailsScreen/utils'
 import { Select } from 'ui-kit/form/Select/Select'
 import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
 
@@ -38,27 +41,6 @@ export interface CategoriesProps {
   venueList: VenueListItemResponseModel[]
   isEvent: boolean | null
 }
-
-const buildCategoryOptions = (
-  categories: CategoryResponseModel[]
-): SelectOption[] =>
-  categories
-    .map((category: CategoryResponseModel) => ({
-      value: category.id,
-      label: category.proLabel,
-    }))
-    .sort((a, b) => a.label.localeCompare(b.label, 'fr'))
-
-const buildSubcategoryOptions = (
-  subCategories: SubcategoryResponseModel[],
-  categoryId: string
-): SelectOption[] =>
-  buildCategoryOptions(
-    subCategories.filter(
-      (subCategory: SubcategoryResponseModel) =>
-        subCategory.categoryId === categoryId
-    )
-  )
 
 export const Categories = ({
   categories,
@@ -153,7 +135,7 @@ export const Categories = ({
     await onSubCategoryChange(subCategoryId)
   }
 
-  const hasSubCategory = categoryId !== FORM_DEFAULT_VALUES.categoryId
+  const hasCategory = categoryId !== FORM_DEFAULT_VALUES.categoryId
   const hasMusicType =
     categoryId !== 'LIVRE'
       ? subCategoryFields.includes('gtl_id')
@@ -176,7 +158,7 @@ export const Categories = ({
     >
       <FormLayout.Row
         className={cn({
-          [styles['category-row']]: !(hasSubCategory || showAddVenueBanner),
+          [styles['category-row']]: !(hasCategory || showAddVenueBanner),
         })}
         sideComponent={
           <InfoBox
@@ -184,9 +166,8 @@ export const Categories = ({
               isExternal: true,
               to: 'https://aide.passculture.app/hc/fr/articles/4411999013265--Acteurs-Culturels-Quelle-cat%C3%A9gorie-et-sous-cat%C3%A9gorie-choisir-lors-de-la-cr%C3%A9ation-d-offres-',
               text: 'Quelles catégories choisir ?',
-              target: '_blank',
+              opensInNewTab: true,
             }}
-            svgAlt="Nouvelle fenêtre"
           >
             Une sélection précise de vos catégories permettra au grand public de
             facilement trouver votre offre. Une fois validées, vous ne pourrez
@@ -210,7 +191,7 @@ export const Categories = ({
         />
       </FormLayout.Row>
 
-      {hasSubCategory && (
+      {hasCategory && (
         <FormLayout.Row>
           <Select
             label="Sous-catégorie"

@@ -247,6 +247,7 @@ def _render_offerer_details(offerer_id: int, edit_offerer_form: offerer_forms.Ed
         edit_offerer_form=edit_offerer_form,
         suspension_form=offerer_forms.SuspendOffererForm(),
         delete_offerer_form=empty_forms.EmptyForm(),
+        generate_api_key_form=empty_forms.EmptyForm(),
         fraud_form=fraud_form,
         show_subscription_tab=show_subscription_tab,
         has_offerer_address=row.has_offerer_address,
@@ -339,6 +340,29 @@ def get_revenue_details(offerer_id: int) -> utils.BackofficeResponse:
         "components/revenue_details.html",
         details=details,
     )
+
+
+# TODO: (tcoudray-pass, 16/07/2024) Remove when all the providers have migrated to the new public API
+@offerer_blueprint.route("/api-keys", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
+def generate_api_key(offerer_id: int) -> utils.BackofficeResponse:
+    offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
+    try:
+        clear_key = offerers_api.generate_and_save_api_key(offerer.id)
+        flash(
+            Markup("Nouvelle clé API pour <b>{offerer_name}</b> ({offerer_id}): {api_key}").format(
+                offerer_name=offerer.name,
+                offerer_id=offerer_id,
+                api_key=clear_key,
+            ),
+            "success",
+        )
+    except offerers_exceptions.ApiKeyCountMaxReached:
+        flash("Le nombre maximal de clés a été atteint", "warning")
+    except offerers_exceptions.ApiKeyPrefixGenerationError:
+        flash("La clé n'a pu être générée", "warning")
+
+    return _self_redirect(offerer.id)
 
 
 @offerer_blueprint.route("/suspend", methods=["POST"])

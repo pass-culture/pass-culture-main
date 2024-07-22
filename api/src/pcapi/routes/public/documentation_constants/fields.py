@@ -67,6 +67,14 @@ class _FIELDS:
         description="List of your ids to filter on", example="5edd982915c2a74b9302e443,5edd982915e2a74vb9302e443"
     )
 
+    # Pagination Fields
+    PAGINATION_LIMIT_WITH_DEFAULT = Field(default=50, le=50, gt=0, description="Maximum number of items per page.")
+    PAGINATION_FIRST_INDEX_WITH_DEFAULT = Field(
+        default=1,
+        ge=1,
+        description="The page of results will be fetched starting from `firstIndex` (which is a resource id). **To learn more about cursor-based pagination [see this page](/understanding-our-api/resources/cursor-pagination)**.",
+    )
+
     # Image Fields
     IMAGE_CREDIT = Field(description="Image owner or author", example="Jane Doe")
     IMAGE_FILE = Field(
@@ -99,6 +107,9 @@ class _FIELDS:
     OFFER_ID = Field(description="Offer id", example=12345)
     OFFER_STATUS = Field(description=descriptions.OFFER_STATUS_FIELD_DESCRIPTION, example="ACTIVE")
     OFFER_NAME = Field(description="Offer title", example="Le Petit Prince")
+    OFFER_DESCRIPTION = Field(
+        description="Offer description", example="A great book for kids and old kids.", max_length=1000
+    )
     OFFER_NAME_WITH_MAX_LENGTH = Field(description="Offer title", example="Le Petit Prince", max_length=90)
     OFFER_DESCRIPTION = Field(
         description="Offer description",

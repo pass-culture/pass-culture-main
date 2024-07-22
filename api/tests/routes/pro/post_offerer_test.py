@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import pytest
 
 import pcapi.core.history.models as history_models
@@ -19,7 +21,9 @@ DEFAULT_DIGITAL_VENUE_LABEL = "Offre numérique"
 
 def test_create_virtual_venue(client):
     # given
-    pro = users_factories.ProFactory()
+    pro = users_factories.ProFactory(
+        lastConnectionDate=datetime.utcnow(),
+    )
 
     body = {
         "name": "MINISTERE DE LA CULTURE",
@@ -93,7 +97,9 @@ def test_user_cant_create_same_offerer_twice(client):
 
 def test_when_no_address_is_provided(client):
     # given
-    pro = users_factories.ProFactory()
+    pro = users_factories.ProFactory(
+        lastConnectionDate=datetime.utcnow(),
+    )
     body = {"name": "Test Offerer", "siren": "418166096", "postalCode": "93100", "city": "Montreuil"}
 
     # when

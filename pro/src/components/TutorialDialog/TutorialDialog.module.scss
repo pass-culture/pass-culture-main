@@ -2,10 +2,10 @@
 @use "styles/variables/_size.scss" as size;
 
 .tutorial-box {
+  margin-bottom: rem.torem(8px);
+
   @media (min-width: size.$tablet) {
     width: rem.torem(750px);
     height: rem.torem(620px);
   }
-  
-  margin-bottom: rem.torem(8px);
 }

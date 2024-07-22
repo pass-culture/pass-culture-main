@@ -64,6 +64,7 @@ export const OptionsList = ({
                 id={`option-display-${value}`}
                 key={`option-display-${value}`}
                 onMouseEnter={() => setHoveredOptionIndex(index)}
+                onFocus={() => setHoveredOptionIndex(index)}
                 role="option"
                 tabIndex={-1}
               >

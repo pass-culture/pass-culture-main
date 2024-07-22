@@ -44,31 +44,6 @@ class EMSStocksTest:
         credentials = history_api_call.headers["Authorization"].split("Basic ")[1]
         assert b64decode(credentials).decode() == f"{settings.EMS_API_USER}:{settings.EMS_API_PASSWORD}"
 
-    @override_features(WIP_SYNCHRONIZE_CINEMA_STOCKS_WITH_ALLOCINE_PRODUCTS=True)
-    def should_not_create_offers_and_stocks_if_product_doesnt_exist(self, requests_mock):
-        requests_mock.get("https://fake_url.com?version=0", json=fixtures.DATA_VERSION_0)
-        requests_mock.get("https://example.com/FR/poster/5F988F1C/600/SHJRH.jpg", content=bytes())
-        requests_mock.get("https://example.com/FR/poster/D7C57D16/600/FGMSE.jpg", content=bytes())
-
-        venue = offerers_factories.VenueFactory(
-            bookingEmail="seyne-sur-mer-booking@example.com", withdrawalDetails="Modalité de retrait"
-        )
-        ems_provider = get_provider_by_local_class("EMSStocks")
-        providers_factories.VenueProviderFactory(
-            venue=venue, provider=ems_provider, venueIdAtOfferProvider="9997", isDuoOffers=True
-        )
-        cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(
-            venue=venue, provider=ems_provider, idAtProvider="9997"
-        )
-        providers_factories.EMSCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot)
-
-        assert offers_models.Product.query.count() == 0
-
-        synchronize_ems_venue_providers()
-
-        assert offers_models.Offer.query.count() == 0
-
-    @override_features(WIP_SYNCHRONIZE_CINEMA_STOCKS_WITH_ALLOCINE_PRODUCTS=False)
     def should_fill_and_create_offer_and_stock_information_for_each_movie_if_product_doesnt_exist(self, requests_mock):
         requests_mock.get("https://fake_url.com?version=0", json=fixtures.DATA_VERSION_0)
         requests_mock.get("https://example.com/FR/poster/5F988F1C/600/SHJRH.jpg", content=bytes())

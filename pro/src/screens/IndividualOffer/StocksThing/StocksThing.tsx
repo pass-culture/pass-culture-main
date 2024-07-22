@@ -342,16 +342,19 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
                 data-testid="input-price"
                 rightIcon={strokeEuroIcon}
                 step="0.01"
+                className={styles['field-layout-xsmall']}
               />
               <DatePicker
                 smallLabel
                 name="bookingLimitDatetime"
                 label="Date limite de réservation"
                 isOptional
+                hasLabelLineBreak={false}
                 classNameFooter={styles['field-layout-footer']}
                 minDate={today}
                 maxDate={getMaximumBookingDatetime(maxDateTime)}
                 disabled={readOnlyFields.includes('bookingLimitDatetime')}
+                className={styles['field-layout-small']}
               />
 
               {showExpirationDate && (
@@ -361,6 +364,7 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
                   label="Date d'expiration"
                   classNameFooter={styles['field-layout-footer']}
                   disabled={true}
+                  className={styles['field-layout-small']}
                 />
               )}
               <TextInput
@@ -374,6 +378,7 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
                 type="number"
                 hasDecimal={false}
                 onChange={onChangeQuantity}
+                className={styles['field-layout-xsmall']}
               />
               {mode === OFFER_WIZARD_MODE.EDITION && stocks.length > 0 && (
                 <>
@@ -386,8 +391,10 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
                     }
                     readOnly
                     label="Stock restant"
+                    hasLabelLineBreak={false}
                     isOptional
                     smallLabel
+                    className={styles['field-layout-shrink']}
                     classNameFooter={styles['field-layout-footer']}
                   />
                   <TextInput
@@ -397,6 +404,7 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
                     label="Réservations"
                     isOptional
                     smallLabel
+                    className={styles['field-layout-shrink']}
                     classNameFooter={styles['field-layout-footer']}
                   />
                 </>

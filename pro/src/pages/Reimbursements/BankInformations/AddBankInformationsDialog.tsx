@@ -29,15 +29,12 @@ export const AddBankInformationsDialog = ({
       onCancel={closeDialog}
     >
       <ButtonLink
-        link={{
-          to: DS_BANK_ACCOUNT_PROCEDURE_ID,
-          isExternal: true,
-          target: '_blank',
-        }}
+        to={DS_BANK_ACCOUNT_PROCEDURE_ID}
+        isExternal
+        opensInNewTab
         icon={fullLinkIcon}
         className={styles['link-button']}
         variant={ButtonVariant.PRIMARY}
-        svgAlt="Nouvelle fenêtre"
         onClick={() => {
           logEvent(BankAccountEvents.CLICKED_CONTINUE_TO_DS, {
             offererId,

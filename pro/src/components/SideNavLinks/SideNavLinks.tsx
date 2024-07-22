@@ -57,7 +57,7 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
   const selectedOffererId = useSelector(selectCurrentOffererId)
 
   const selectedOffererQuery = useSWR(
-    [GET_OFFERER_QUERY_KEY, selectedOffererId],
+    selectedOffererId ? [GET_OFFERER_QUERY_KEY, selectedOffererId] : null,
     async ([, offererId]) => {
       try {
         const offerer = await api.getOfferer(Number(offererId))
@@ -112,10 +112,7 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
       <div className={styles['nav-links-first-group']}>
         {selectedOffererQuery.data && isUserOffererValidated && (
           <li className={styles['nav-links-create-offer-wrapper']}>
-            <ButtonLink
-              variant={ButtonVariant.PRIMARY}
-              link={{ isExternal: false, to: createOfferPageUrl }}
-            >
+            <ButtonLink variant={ButtonVariant.PRIMARY} to={createOfferPageUrl}>
               Créer une offre
             </ButtonLink>
           </li>

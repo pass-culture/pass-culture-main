@@ -3,17 +3,16 @@
 @use "styles/variables/_size.scss" as size;
 
 .adage-header-budget {
-  border-left: 1px solid var(--color-grey-medium);
-  padding-left: rem.torem(32px);
-  display: none;
+  border-left: none;
+  border-top: 1px solid var(--color-grey-medium);
+  padding: rem.torem(8px);
+  width: 100%;
 
   &-link {
     @include fonts.highlight;
 
-    display: flex;
-    align-items: center;
+    display: block;
     margin-bottom: rem.torem(4px);
-    white-space: nowrap;
   }
 
   &-icon {
@@ -25,12 +24,24 @@
 
     white-space: nowrap;
     color: var(--color-brand);
-    margin-left: rem.torem(20px);
+    margin-left: 0;
   }
 }
 
 @media (min-width: size.$tablet) {
   .adage-header-budget {
-    display: block;
+    border-left: 1px solid var(--color-grey-medium);
+    border-top: none;
+    padding-left: 0 0 0 rem.torem(32px);
+    width: unset;
+
+    &-link {
+      display: flex;
+      align-items: center;
+    }
+
+    &-value {
+      margin-left: rem.torem(20px);
+    }
   }
 }

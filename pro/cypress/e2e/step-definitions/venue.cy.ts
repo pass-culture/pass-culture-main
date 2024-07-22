@@ -116,7 +116,7 @@ When('I add an image to my venue', () => {
   cy.findByText('Suivant').click()
   cy.contains('Prévisualisation de votre image dans l’application pass Culture')
   cy.findByText('Enregistrer').click()
-  cy.findByTestId('global-notification-success').should(
+  cy.findByTestId('global-notification-success', { timeout: 30 * 1000 }).should(
     'contain',
     'Vos modifications ont bien été prises en compte'
   )
@@ -129,8 +129,8 @@ Then('I should see details of my venue', () => {
 
 When('I go to the venue page in Individual section', () => {
   initValuesAndIntercept()
-  cy.findByText('Votre page partenaire').should('be.visible')
-  cy.findByText('Carnet d’adresses').should('be.visible')
+  cy.findByText('Votre page partenaire').scrollIntoView().should('be.visible')
+  cy.findByText('Vos adresses').scrollIntoView().should('be.visible')
   cy.get('a[aria-label^="Gérer la page de Lieu avec Siret"]').eq(0).click()
   cy.findByText('À propos de votre activité').should('be.visible')
   cy.findByText('Modifier').click()
@@ -151,7 +151,7 @@ When('I go to the venue page in Paramètres généraux', () => {
   cy.findAllByTestId('spinner').should('not.exist')
   cy.url().should('not.include', '/parametres')
   cy.findByText('Paramètres généraux').click()
-  cy.url().should('include', '/structures').and('include', 'lieux')
+  cy.url().should('include', '/parametres')
   cy.findAllByTestId('spinner').should('not.exist')
 })
 

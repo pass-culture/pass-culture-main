@@ -1,48 +1,34 @@
-import { useEffect, useState } from 'react'
+import useSWR, { useSWRConfig } from 'swr'
 
-import {
-  CollectiveOfferResponseModel,
-  CollectiveOfferTemplateResponseModel,
-} from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
-import { useActiveFeature } from 'hooks/useActiveFeature'
+import { GET_COLLECTIVE_FAVORITES } from 'config/swrQueryKeys'
 
 import { AdageOfferListCard } from '../OffersInstantSearch/OffersSearch/Offers/AdageOfferListCard/AdageOfferListCard'
-import { Offer } from '../OffersInstantSearch/OffersSearch/Offers/Offer'
 import { AdageSkeleton } from '../Skeleton/AdageSkeleton'
 
 import styles from './OffersFavorites.module.scss'
 import { OffersFavoritesNoResult } from './OffersFavoritesNoResult/OffersFavoritesNoResult'
 
 export const OffersFavorites = () => {
-  const [favoriteOffers, setFavoriteOffers] = useState<
-    (CollectiveOfferResponseModel | CollectiveOfferTemplateResponseModel)[]
-  >([])
-
-  const [isLoading, setIsLoading] = useState<boolean>(false)
-
-  const isNewOfferCardEnabled = useActiveFeature(
-    'WIP_ENABLE_ADAGE_VISUALIZATION'
+  const { data: offers, isLoading } = useSWR(
+    [GET_COLLECTIVE_FAVORITES],
+    () => apiAdage.getCollectiveFavorites(),
+    { fallbackData: { favoritesTemplate: [], favoritesOffer: [] } }
   )
+  const { mutate } = useSWRConfig()
 
-  // TODO use SWR
-  useEffect(() => {
-    const fetchFavorites = async () => {
-      setIsLoading(true)
-      const offers = (await apiAdage.getCollectiveFavorites()).favoritesTemplate
-      setFavoriteOffers(offers)
-      setIsLoading(false)
-    }
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    fetchFavorites()
-  }, [])
-
-  const favoriteChangeHandler = (isFavorite: boolean, id: number) => {
-    //  Remove favorite from list after it was removed from favorites
+  const favoriteChangeHandler = async (isFavorite: boolean, id: number) => {
     if (!isFavorite) {
-      setFavoriteOffers((prevOffers) =>
-        [...prevOffers].filter((offer) => offer.id !== id)
-      )
+      const newFavoriteOffers = {
+        favoritesTemplate: offers.favoritesTemplate.filter(
+          (offer) => offer.id !== id
+        ),
+        favoritesOffer: offers.favoritesOffer,
+      }
+
+      await mutate([GET_COLLECTIVE_FAVORITES], newFavoriteOffers, {
+        revalidate: false,
+      })
     }
   }
 
@@ -59,30 +45,21 @@ export const OffersFavorites = () => {
   return (
     <>
       <h1 className={styles['title']}>Mes Favoris</h1>
-      {favoriteOffers.length === 0 ? (
+      {offers.favoritesTemplate.length === 0 ? (
         <OffersFavoritesNoResult />
       ) : (
         <ul className={styles['favorite-list']}>
-          {favoriteOffers.map((offer, i) => {
+          {offers.favoritesTemplate.map((offer) => {
             return (
               <li key={offer.id} data-testid="offer-listitem">
-                {isNewOfferCardEnabled ? (
+                {
                   <AdageOfferListCard
                     offer={offer}
-                    afterFavoriteChange={(isFavorite) => {
+                    afterFavoriteChange={(isFavorite) =>
                       favoriteChangeHandler(isFavorite, offer.id)
-                    }}
+                    }
                   />
-                ) : (
-                  <Offer
-                    offer={offer}
-                    queryId=""
-                    position={i}
-                    afterFavoriteChange={(isFavorite) => {
-                      favoriteChangeHandler(isFavorite, offer.id)
-                    }}
-                  />
-                )}
+                }
               </li>
             )
           })}

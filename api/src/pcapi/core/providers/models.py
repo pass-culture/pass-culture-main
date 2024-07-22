@@ -49,7 +49,7 @@ class Provider(PcObject, Base, Model, DeactivableMixin):
     bookingExternalUrl: str = sa.Column(sa.Text(), nullable=True)
     cancelExternalUrl: str = sa.Column(sa.Text(), nullable=True)
     notificationExternalUrl: str = sa.Column(sa.VARCHAR(length=255), nullable=True)
-    hmacKey: str = sa.Column(sa.Text(64), nullable=True)
+    hmacKey: str = sa.Column(sa.Text(), nullable=True)
     pricesInCents: bool = sa.Column(sa.Boolean, nullable=False, default=False, server_default=sa_sql.expression.false())
 
     collectiveOffers: sa_orm.Mapped["CollectiveOffer"] = sa_orm.relationship(
@@ -108,6 +108,44 @@ class Provider(PcObject, Base, Model, DeactivableMixin):
         return sa.and_(cls.isActive.is_(True), cls.apiUrl.is_not(None), cls.name.not_ilike("%praxiel%"))
 
 
+class PermissionEnum(enum.Enum):
+    READ = "READ"
+    WRITE = "WRITE"
+
+
+class ApiResourceEnum(enum.Enum):
+    products = "products"
+    events = "events"
+    bookings = "bookings"
+    collective_events = "collective_events"
+    collective_bookings = "collective_bookings"
+
+
+class VenueProviderPermission(PcObject, Base, Model):
+    """
+    Stores the permission given by the Venue Owner to the provider
+    """
+
+    venueProviderId: int = sa.Column(
+        sa.BigInteger, sa.ForeignKey("venue_provider.id", ondelete="CASCADE"), nullable=False
+    )
+    venueProvider: sa_orm.Mapped["VenueProvider"] = sa_orm.relationship(
+        "VenueProvider", foreign_keys=[venueProviderId], back_populates="permissions"
+    )
+
+    resource: ApiResourceEnum = sa.Column(sa.Enum(ApiResourceEnum, create_constraint=False), nullable=False)
+    permission: PermissionEnum = sa.Column(sa.Enum(PermissionEnum), nullable=False)
+
+    __table_args__ = (
+        sa.UniqueConstraint(
+            "venueProviderId",
+            "resource",
+            "permission",
+            name="unique_venue_provider_resource_permission",
+        ),
+    )
+
+
 class VenueProviderExternalUrls(PcObject, Base, Model, DeactivableMixin):
     """
     Stores external Urls specific for a Venue. It will be set by providers via API.
@@ -156,6 +194,10 @@ class VenueProvider(PcObject, Base, Model, DeactivableMixin):
     # external URLs
     externalUrls: sa_orm.Mapped["VenueProviderExternalUrls"] = sa_orm.relationship(
         "VenueProviderExternalUrls", uselist=False, back_populates="venueProvider"
+    )
+    # permissions
+    permissions: sa_orm.Mapped["VenueProviderPermission"] = sa_orm.relationship(
+        "VenueProviderPermission", uselist=True, back_populates="venueProvider"
     )
 
     # This column is unused by our code but by the data team

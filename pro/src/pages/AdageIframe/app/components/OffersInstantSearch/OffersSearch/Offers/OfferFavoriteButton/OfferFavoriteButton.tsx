@@ -23,6 +23,8 @@ export interface OfferFavoriteButtonProps {
   viewType?: 'grid' | 'list'
 }
 
+// TODO(anoukhello - 11/07/2024) remove the code relating to favorites bookable offers, since
+// it is only allowed to add template offers to favorites
 export const OfferFavoriteButton = ({
   offer,
   queryId,
@@ -112,9 +114,7 @@ export const OfferFavoriteButton = ({
     }
   }
 
-  const buttonText = `${
-    isFavorite ? 'Supprimer des ' : 'Enregistrer en '
-  } favoris`
+  const buttonText = `${isFavorite ? 'Supprimer des ' : 'Mettre en '} favoris`
 
   return (
     <ListIconButton

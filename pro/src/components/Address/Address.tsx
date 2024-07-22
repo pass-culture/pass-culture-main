@@ -6,6 +6,7 @@ import { AdresseData } from 'apiClient/adresse/types'
 import { serializeAdressData } from 'components/Address/serializer'
 import { SelectOption } from 'custom_types/form'
 import { SelectAutocomplete } from 'ui-kit/form/SelectAutoComplete/SelectAutocomplete'
+import { normalizeStrForAdressSearch } from 'utils/searchPatternInOptions'
 
 interface AddressProps {
   description?: string
@@ -92,6 +93,16 @@ export const AddressSelect = ({
     return []
   }
 
+  function searchInOptions(options: SelectOption[], pattern: string) {
+    return options.filter((option) => {
+      return normalizeStrForAdressSearch(pattern || '')
+        .split(' ')
+        .every((word) =>
+          normalizeStrForAdressSearch(option.label).includes(word)
+        )
+    })
+  }
+
   return (
     <SelectAutocomplete
       name="addressAutocomplete"
@@ -101,6 +112,7 @@ export const AddressSelect = ({
       hideArrow={true}
       resetOnOpen={false}
       description={description}
+      searchInOptions={searchInOptions}
     />
   )
 }

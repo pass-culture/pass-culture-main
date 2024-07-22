@@ -26,7 +26,6 @@ import pcapi.routes.public.serialization.accessibility as accessibility_serializ
 from pcapi.routes.public.serialization.utils import StrEnum
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization import utils as serialization_utils
-from pcapi.utils import date as date_utils
 from pcapi.utils.feature import FeatureToggle
 
 
@@ -530,6 +529,11 @@ STOCK_EDITION_FIELD = pydantic_v1.Field(
 )
 
 
+class OfferName(pydantic_v1.ConstrainedStr):
+    min_length = 1
+    max_length = 140
+
+
 class ProductOfferEdition(OfferEditionBase):
     offer_id: int
     category_related_fields: product_category_edition_fields | None = pydantic_v1.Field(
@@ -537,6 +541,8 @@ class ProductOfferEdition(OfferEditionBase):
         description="To override category related fields, the category must be specified, even if it cannot be changed. Other category related fields may be left undefined to keep their current value.",
     )
     stock: StockEdition | None = STOCK_EDITION_FIELD
+    name: OfferName | None = fields.OFFER_NAME
+    description: str | None = fields.OFFER_DESCRIPTION
 
     class Config:
         extra = "forbid"
@@ -614,9 +620,6 @@ class BaseStockResponse(serialization.ConfiguredBaseModel):
     dnBookedQuantity: int = pydantic_v1.Field(..., description="Number of bookings.", example=0, alias="bookedQuantity")
     quantity: pydantic_v1.StrictInt | UNLIMITED_LITERAL = fields.QUANTITY
 
-    class Config:
-        json_encoders = {datetime.datetime: date_utils.format_into_utc_date}
-
     @classmethod
     def build_stock(cls, stock: offers_models.Stock) -> "BaseStockResponse":
         return cls(  # type: ignore[call-arg]
@@ -667,9 +670,6 @@ class OfferResponse(serialization.ConfiguredBaseModel):
     )
     withdrawal_details: str | None = WITHDRAWAL_DETAILS_FIELD
     id_at_provider: str | None = fields.ID_AT_PROVIDER
-
-    class Config:
-        json_encoders = {datetime.datetime: date_utils.format_into_utc_date}
 
     @classmethod
     def build_offer(cls, offer: offers_models.Offer) -> "OfferResponse":
@@ -770,9 +770,6 @@ class EventOffersResponse(serialization.ConfiguredBaseModel):
 
 class GetDatesResponse(serialization.ConfiguredBaseModel):
     dates: list[DateResponse]
-
-    class Config:
-        json_encoders = {datetime.datetime: date_utils.format_into_utc_date}
 
 
 class GetProductsListByEansQuery(serialization.ConfiguredBaseModel):

@@ -48,7 +48,9 @@ export const DialogBox: FunctionComponent<DialogProps> = ({
               />
             </div>
           )}
-          <section className={extraClassNames}>{children}</section>
+          <Dialog.Description asChild>
+            <section className={extraClassNames}>{children}</section>
+          </Dialog.Description>
         </Dialog.Content>
       </Dialog.Overlay>
     </Dialog.Portal>

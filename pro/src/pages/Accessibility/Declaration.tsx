@@ -9,12 +9,7 @@ import styles from './Declaration.module.scss'
 export const Declaration = () => {
   return (
     <AccessibilityLayout>
-      <ButtonLink
-        link={{
-          to: '/accessibilite/',
-        }}
-        icon={fullBackIcon}
-      >
+      <ButtonLink to="/accessibilite/" icon={fullBackIcon}>
         Retour vers la page Informations d’accessibilité
       </ButtonLink>
       <h1 className={styles['heading1-declaration']}>

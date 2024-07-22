@@ -138,11 +138,7 @@
   }
 
   .price-column {
-    width: rem.torem(174px);
-
-    &-without-frame {
-      width: rem.torem(300px);
-    }
+    width: rem.torem(300px);
   }
 
   .filter-input {

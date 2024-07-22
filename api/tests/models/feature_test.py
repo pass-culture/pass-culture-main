@@ -10,6 +10,7 @@ from pcapi.models.feature import FEATURES_DISABLED_BY_DEFAULT
 from pcapi.models.feature import Feature
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.feature import check_feature_flags_completeness
+from pcapi.models.feature import clean_feature_flags
 from pcapi.models.feature import install_feature_flags
 from pcapi.repository import repository
 
@@ -132,3 +133,21 @@ def test_feature_flag_completeness(app, caplog):
     assert caplog.messages == [
         "The following feature flags are present in the database but not present in the code: {'ENABLE_TAKEOFF'}"
     ]
+
+
+@pytest.mark.usefixtures("db_session")
+@patch("pcapi.models.feature.FeatureToggle", TestingFeatureToggle)
+def test_clean_feature_flags(app):
+    Feature.query.delete()
+    install_feature_flags()
+    old_feature = Feature(
+        name="old_feature",
+        description="old_feature_desctiption",
+    )
+    db.session.add(old_feature)
+    db.session.flush()
+
+    clean_feature_flags()
+
+    assert Feature.query.filter_by(name="old_feature").one_or_none() is None
+    assert Feature.query.count() == len(TestingFeatureToggle)

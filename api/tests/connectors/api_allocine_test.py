@@ -1,4 +1,5 @@
 import copy
+from dataclasses import dataclass
 import logging
 from unittest.mock import MagicMock
 from unittest.mock import patch
@@ -9,9 +10,19 @@ from pcapi.connectors.api_allocine import AllocineException
 from pcapi.connectors.api_allocine import get_movie_list_page
 from pcapi.connectors.api_allocine import get_movie_poster_from_allocine
 from pcapi.connectors.api_allocine import get_movies_showtimes_from_allocine
+from pcapi.connectors.api_allocine import parse_movie_showtimes
 from pcapi.connectors.serialization import allocine_serializers
 
 from tests.connectors import fixtures
+
+
+@dataclass
+class MockedResponse:
+    data: dict | list
+    status_code: int
+
+    def json(self):
+        return self.data
 
 
 class GetMovieListTest:
@@ -129,6 +140,35 @@ class GetMovieShowtimeListTest:
         # Then
         assert str(allocine_exception.value) == "Error connecting Allocine API for theater test_id"
 
+    @patch("pcapi.connectors.api_allocine.requests")
+    def test_should_drop_invalid_showtimes_and_move_on(self, requests_mock):
+        payload = copy.deepcopy(fixtures.MOVIE_SHOWTIME_LIST)
+
+        # add one (valid) edge
+        valid_edge = copy.deepcopy(payload["movieShowtimeList"]["edges"][0])
+        payload["movieShowtimeList"]["edges"].append(valid_edge)
+        # one and only movie becomes invalid because of one showtime language
+        payload["movieShowtimeList"]["edges"][0]["node"]["showtimes"][0]["languages"] = ["invalid"]
+
+        requests_mock.get.return_value = MockedResponse(data=payload, status_code=200)
+        api_response = get_movies_showtimes_from_allocine("does not matter")
+
+        expected_result = copy.deepcopy(fixtures.MOVIE_SHOWTIME_LIST)
+        assert api_response == allocine_serializers.AllocineMovieShowtimeListResponse.model_validate(expected_result)
+
+    @patch("pcapi.connectors.api_allocine.requests")
+    def test_accept_showtimes_with_a_none_language(self, requests_mock):
+        payload = copy.deepcopy(fixtures.MOVIE_SHOWTIME_LIST)
+
+        # invalid language should be filtered and the edge kept
+        payload["movieShowtimeList"]["edges"][0]["node"]["showtimes"][0]["languages"].append(None)
+
+        requests_mock.get.return_value = MockedResponse(data=payload, status_code=200)
+        api_response = get_movies_showtimes_from_allocine("does not matter")
+
+        expected_result = copy.deepcopy(fixtures.MOVIE_SHOWTIME_LIST)
+        assert api_response == allocine_serializers.AllocineMovieShowtimeListResponse.model_validate(expected_result)
+
 
 class GetMoviePosterFromAllocineTest:
     @patch("pcapi.connectors.api_allocine.requests.get")
@@ -164,3 +204,99 @@ class GetMoviePosterFromAllocineTest:
             " https://fr.web.img6.acsta.net/pictures/19/10/23/15/11/3506165.jpg"
             " with code 400"
         )
+
+
+def copy_movie_showtime_list():
+    return copy.deepcopy(fixtures.MOVIE_SHOWTIME_LIST)
+
+
+@pytest.fixture(name="json_data")
+def json_data_fixture():
+    return copy_movie_showtime_list()
+
+
+class ParseMovieShowtimesTest:
+    def test_parse_one_error(self, json_data):
+        self.append_valid_edge(json_data)
+
+        # one and only movie becomes invalid because of one showtime language
+        json_data["movieShowtimeList"]["edges"][0]["node"]["showtimes"][0]["languages"].append("oops")
+
+        showtimes = parse_movie_showtimes(json_data, theater_id=1)
+
+        expected_result = copy_movie_showtime_list()
+        assert showtimes == allocine_serializers.AllocineMovieShowtimeListResponse.model_validate(expected_result)
+
+    def test_parse_no_error(self, json_data):
+        showtimes = parse_movie_showtimes(json_data, theater_id=1)
+
+        expected_result = copy.deepcopy(fixtures.MOVIE_SHOWTIME_LIST)
+        assert showtimes == allocine_serializers.AllocineMovieShowtimeListResponse.model_validate(expected_result)
+
+    def test_one_error_mixed_with_some_valid_rows(self, json_data):
+        self.append_invalid_edge(json_data)
+        valid_edge = self.append_valid_edge(json_data)
+
+        showtimes = parse_movie_showtimes(json_data, theater_id=1)
+
+        expected_result = copy_movie_showtime_list()
+        expected_result["movieShowtimeList"]["edges"].append(valid_edge)
+
+        assert showtimes == allocine_serializers.AllocineMovieShowtimeListResponse.model_validate(expected_result)
+
+    def test_many_errors_mixed_with_many_valid_rows(self, json_data):
+        self.append_invalid_edge(json_data)
+        valid_edge1 = self.append_valid_edge(json_data)
+        self.append_invalid_edge(json_data)
+        valid_edge2 = self.append_valid_edge(json_data)
+        self.append_invalid_edge(json_data)
+
+        showtimes = parse_movie_showtimes(json_data, theater_id=1)
+
+        expected_result = copy_movie_showtime_list()
+        expected_result["movieShowtimeList"]["edges"].append(valid_edge1)
+        expected_result["movieShowtimeList"]["edges"].append(valid_edge2)
+
+        assert showtimes == allocine_serializers.AllocineMovieShowtimeListResponse.model_validate(expected_result)
+
+    def test_starts_with_valid_rows_ends_with_errors(self, json_data):
+        valid_edge1 = self.append_valid_edge(json_data)
+        valid_edge2 = self.append_valid_edge(json_data)
+
+        self.append_invalid_edge(json_data)
+        self.append_invalid_edge(json_data)
+
+        showtimes = parse_movie_showtimes(json_data, theater_id=1)
+
+        expected_result = copy.deepcopy(fixtures.MOVIE_SHOWTIME_LIST)
+        expected_result["movieShowtimeList"]["edges"].append(valid_edge1)
+        expected_result["movieShowtimeList"]["edges"].append(valid_edge2)
+
+        assert showtimes == allocine_serializers.AllocineMovieShowtimeListResponse.model_validate(expected_result)
+
+    def test_starts_with_errors_ends_with_valid_rows(self, json_data):
+        self.append_invalid_edge(json_data)
+        self.append_invalid_edge(json_data)
+
+        valid_edge1 = self.append_valid_edge(json_data)
+        valid_edge2 = self.append_valid_edge(json_data)
+
+        showtimes = parse_movie_showtimes(copy.deepcopy(json_data), theater_id=1)
+
+        expected_result = copy.deepcopy(fixtures.MOVIE_SHOWTIME_LIST)
+        expected_result["movieShowtimeList"]["edges"].append(valid_edge1)
+        expected_result["movieShowtimeList"]["edges"].append(valid_edge2)
+
+        assert showtimes == allocine_serializers.AllocineMovieShowtimeListResponse.model_validate(expected_result)
+
+    def append_valid_edge(self, json_data):
+        edge = copy.deepcopy(json_data["movieShowtimeList"]["edges"][0])
+        json_data["movieShowtimeList"]["edges"].append(edge)
+
+        return edge
+
+    def append_invalid_edge(self, json_data):
+        edge = copy.deepcopy(json_data["movieShowtimeList"]["edges"][0])
+        edge["node"]["showtimes"][0]["languages"].append("Unknown")
+
+        json_data["movieShowtimeList"]["edges"].append(edge)

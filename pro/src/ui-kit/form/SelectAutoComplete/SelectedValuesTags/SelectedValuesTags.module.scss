@@ -11,10 +11,6 @@
 .tag {
   @include fonts.highlight;
 
-  &:hover {
-    background-color: var(--color-grey-medium);
-  }
-
   white-space: nowrap;
   justify-content: center;
   border: solid rem.torem(1px) var(--color-grey-light);
@@ -24,6 +20,10 @@
   display: inline-flex;
   line-height: rem.torem(16px);
   padding: 0 rem.torem(4px) rem.torem(1px) rem.torem(4px);
+
+  &:hover {
+    background-color: var(--color-grey-medium);
+  }
 
   &-close-button {
     @include fonts.highlight;

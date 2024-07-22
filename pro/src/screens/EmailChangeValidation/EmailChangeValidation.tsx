@@ -32,10 +32,7 @@ export const EmailChangeValidationScreen = ({
           <p className={styles['subtitle']}>
             Merci d’avoir confirmé votre changement d’adresse email.
           </p>
-          <ButtonLink
-            variant={ButtonVariant.PRIMARY}
-            link={{ to: '/', isExternal: false }}
-          >
+          <ButtonLink variant={ButtonVariant.PRIMARY} to="/">
             Se connecter
           </ButtonLink>
         </section>
@@ -50,10 +47,7 @@ export const EmailChangeValidationScreen = ({
           <p className={styles['subtitle']}>
             Connectez-vous avec votre ancienne adresse email.
           </p>
-          <ButtonLink
-            variant={ButtonVariant.PRIMARY}
-            link={{ to: '/', isExternal: false }}
-          >
+          <ButtonLink variant={ButtonVariant.PRIMARY} to="/">
             Se connecter
           </ButtonLink>
         </section>

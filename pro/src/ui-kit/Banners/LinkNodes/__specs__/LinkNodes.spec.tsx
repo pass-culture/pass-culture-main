@@ -39,7 +39,7 @@ describe('LinkNodes', () => {
       <LinkNode
         href="mailto:support-pro@passculture.app"
         isExternal
-        icon={{ src: fullMailIcon, alt: 'Nouvelle fenêtre, par email' }}
+        icon={{ src: fullMailIcon, alt: '' }}
         label="Contacter le support"
       />
     )
@@ -51,7 +51,7 @@ describe('LinkNodes', () => {
     expect(link).toHaveAttribute('rel', 'noopener noreferrer')
     expect(screen.getByRole('img')).toHaveAttribute(
       'aria-label',
-      'Nouvelle fenêtre, par email'
+      'Nouvelle fenêtre'
     )
   })
 })

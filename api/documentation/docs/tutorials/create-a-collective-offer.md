@@ -1,5 +1,5 @@
 ---
-sidebar_position: 3
+sidebar_position: 2
 ---
 
 # Create a collective offer
@@ -28,7 +28,6 @@ Your JSON payload should look something like :
   "venueId": 1234,
   "name": "Atelier de peinture",
   "description": "Describe your offer",
-  "subcategoryId": "ATELIER_PRATIQUE_ART",
   "formats": [
     "Atelier de pratique"
   ],

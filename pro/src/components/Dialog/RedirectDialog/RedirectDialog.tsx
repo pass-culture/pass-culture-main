@@ -48,7 +48,7 @@ export const RedirectDialog = ({
       <div className={styles['redirect-dialog-actions']}>
         <ButtonLink
           data-testid="redirect-dialog-link"
-          link={redirectLink}
+          {...redirectLink}
           variant={ButtonVariant.PRIMARY}
           onClick={onRedirect}
           icon={withRedirectLinkIcon ? fullLinkIcon : undefined}

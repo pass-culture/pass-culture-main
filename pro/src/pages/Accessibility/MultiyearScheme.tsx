@@ -7,12 +7,7 @@ import styles from './MultiyearScheme.module.scss'
 export const MultiyearScheme = () => {
   return (
     <AccessibilityLayout>
-      <ButtonLink
-        link={{
-          to: '/accessibilite/',
-        }}
-        icon={fullBackIcon}
-      >
+      <ButtonLink to="/accessibilite/" icon={fullBackIcon}>
         Retour vers la page Informations d’accessibilité
       </ButtonLink>
       <h1 className={styles['heading1-scheme']}>

@@ -262,3 +262,42 @@ class HasNoOfferAndAtLeastOnePhysicalVenueAndCreatedSinceXDaysTest:
         ]
 
         assert venues == expected_venues_list
+
+
+class GetOffererAddressesTest:
+    def test_get_offerer_addresses(self):
+        offerer = offerers_factories.OffererFactory()
+        venue_with_two_offers = offerers_factories.VenueFactory(managingOfferer=offerer)
+        # Shouldn't appear in the results
+        offerers_factories.OffererAddressFactory(
+            offerer=offerer,
+            label="1ere adresse",
+            address__street="1 boulevard Poissonnière",
+            address__postalCode="75002",
+            address__city="Paris",
+        )
+        # Should appear in the results
+        offerer_address_with_one_offer = offerers_factories.OffererAddressFactory(
+            offerer=offerer,
+            label="2eme adresse",
+            address__street="20 Avenue de Ségur",
+            address__postalCode="75007",
+            address__city="Paris",
+            address__banId="75107_7560_00001",
+        )
+        # Ensure that we don't return an OffererAddress for every associated offer
+        offerer_address_with_two_offers = offerers_factories.OffererAddressFactory(
+            offerer=offerer,
+            label="3eme adresse",
+            address__street=None,
+            address__postalCode="75008",
+            address__city="Paris",
+            address__banId="75108_7560_00000",
+        )
+        offers_factories.OfferFactory(venue__managingOfferer=offerer, offererAddress=offerer_address_with_one_offer)
+        offers_factories.OfferFactory(venue=venue_with_two_offers, offererAddress=offerer_address_with_two_offers)
+        offers_factories.OfferFactory(venue=venue_with_two_offers, offererAddress=offerer_address_with_two_offers)
+        query = repository.get_offerer_addresses(offerer_id=offerer.id, only_with_offers=True)
+        results = query.all()
+        assert len(results) == 2
+        assert {r.id for r in results} == {offerer_address_with_one_offer.id, offerer_address_with_two_offers.id}

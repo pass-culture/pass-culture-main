@@ -23,22 +23,15 @@ export const CookiesFooter = ({ className }: { className?: string }) => {
           <li>
             <ButtonLink
               variant={ButtonVariant.QUATERNARY}
-              link={{
-                to: 'https://pass.culture.fr/cgu-professionnels/',
-                isExternal: true,
-                target: '_blank',
-              }}
+              to="https://pass.culture.fr/cgu-professionnels/"
+              isExternal
+              opensInNewTab
             >
               CGU professionnels
             </ButtonLink>
           </li>
           <li>
-            <ButtonLink
-              variant={ButtonVariant.QUATERNARY}
-              link={{
-                to: '/accessibilite',
-              }}
-            >
+            <ButtonLink variant={ButtonVariant.QUATERNARY} to="/accessibilite">
               Accessibilité : non conforme
             </ButtonLink>
           </li>
@@ -46,11 +39,9 @@ export const CookiesFooter = ({ className }: { className?: string }) => {
             <ButtonLink
               variant={ButtonVariant.QUATERNARY}
               className={styles['cookies-footer-link']}
-              link={{
-                to: 'https://pass.culture.fr/donnees-personnelles/',
-                isExternal: true,
-                target: '_blank',
-              }}
+              to="https://pass.culture.fr/donnees-personnelles/"
+              isExternal
+              opensInNewTab
             >
               Charte des Données Personnelles
             </ButtonLink>

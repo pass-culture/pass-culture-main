@@ -130,7 +130,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
             ids: [offerId],
           })
           expect(
-            screen.getByText('1 brouillon a bien été supprimé')
+            screen.getByText('Le brouillon a bien été supprimé')
           ).toBeInTheDocument()
         })
 

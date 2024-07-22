@@ -78,10 +78,8 @@ export function PartnerPageIndividualSection({
         <ButtonLink
           variant={ButtonVariant.TERNARY}
           className={styles['details-link']}
-          link={{
-            to: `/structures/${offererId}/lieux/${venueId}`,
-            'aria-label': `Gérer la page ${venueName}`,
-          }}
+          to={`/structures/${offererId}/lieux/${venueId}`}
+          aria-label={`Gérer la page ${venueName}`}
           icon={fullNextIcon}
           onClick={() =>
             logEvent(Events.CLICKED_PAGE_FOR_APP_HOME, {
@@ -98,16 +96,13 @@ export function PartnerPageIndividualSection({
           <ButtonLink
             variant={ButtonVariant.TERNARY}
             icon={fullLinkIcon}
-            link={{
-              to: venuePreviewLink,
-              isExternal: true,
-              target: '_blank',
-            }}
-            svgAlt="Nouvelle fenêtre"
+            to={venuePreviewLink}
+            isExternal
+            opensInNewTab
             className={styles['details-link']}
             onClick={logVenueLinkClick}
           >
-            Voir ma page dans l’application
+            Voir votre page dans l’application
           </ButtonLink>
 
           <Button

@@ -28,7 +28,8 @@ export const Ternary: StoryObj<typeof ButtonLink> = {
   args: {
     children: 'Éditer',
     variant: ButtonVariant.TERNARY,
-    link: { to: '/my-path', isExternal: false },
+    to: '/my-path',
+    isExternal: false,
   },
 }
 
@@ -51,7 +52,8 @@ export const QuaternaryWithIcon: StoryObj<typeof ButtonLink> = {
     children: 'Accueil',
     variant: ButtonVariant.QUATERNARY,
     icon: fullBackIcon,
-    link: { to: '/my-path', isExternal: false },
+    to: '/my-path',
+    isExternal: false,
   },
 }
 

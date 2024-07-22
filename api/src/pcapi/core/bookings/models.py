@@ -474,7 +474,10 @@ Booking.trig_ddl = f"""
     AFTER INSERT
     OR UPDATE OF quantity, amount, status, "userId"
     ON booking
-    FOR EACH ROW EXECUTE PROCEDURE check_booking()
+    FOR EACH ROW
+    -- Happens only for USED to REIMBURSED transition
+    WHEN (NEW.status <> '{BookingStatus.REIMBURSED.value}')
+    EXECUTE PROCEDURE check_booking()
     """
 event.listen(Booking.__table__, "after_create", DDL(Booking.trig_ddl))
 

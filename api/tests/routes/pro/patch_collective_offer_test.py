@@ -580,7 +580,7 @@ class Returns403Test:
 
         # Then
         assert response.status_code == 403
-        assert response.json == {"global": ["Collective offer created by public API is not editable."]}
+        assert response.json == {"global": ["Collective offer created by public API is only editable via API."]}
 
     def test_patch_collective_offer_replacing_by_unknown_venue(self, client):
         # Given

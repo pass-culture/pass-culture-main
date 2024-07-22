@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react'
-import { useDispatch } from 'react-redux'
+import { useState } from 'react'
+import { useSelector } from 'react-redux'
 import {
   generatePath,
   Route,
   Routes,
   useLocation,
+  useNavigate,
   useParams,
 } from 'react-router-dom'
 import useSWR from 'swr'
@@ -17,11 +18,10 @@ import {
   GET_VENUE_QUERY_KEY,
   GET_VENUE_TYPES_QUERY_KEY,
 } from 'config/swrQueryKeys'
-import { SAVED_OFFERER_ID_KEY } from 'core/shared/constants'
 import { SelectOption } from 'custom_types/form'
 import { useIsNewInterfaceActive } from 'hooks/useIsNewInterfaceActive'
 import { CollectiveDataEdition } from 'pages/Offerers/Offerer/VenueV1/VenueEdition/CollectiveDataEdition/CollectiveDataEdition'
-import { updateSelectedOffererId } from 'store/user/reducer'
+import { selectCurrentOffererId } from 'store/user/selectors'
 import { SelectInput } from 'ui-kit/form/Select/SelectInput'
 import { FieldLayout } from 'ui-kit/form/shared/FieldLayout/FieldLayout'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
@@ -36,10 +36,11 @@ export const VenueEdition = (): JSX.Element | null => {
     offererId: string
     venueId: string
   }>()
+  const navigate = useNavigate()
   const [selectedVenueId, setSelectedVenueId] = useState(venueId ?? '')
   const location = useLocation()
-  const dispatch = useDispatch()
   const isNewSideBarNavigation = useIsNewInterfaceActive()
+  const selectedOffererId = useSelector(selectCurrentOffererId)
 
   const venueQuery = useSWR(
     [GET_VENUE_QUERY_KEY, selectedVenueId || venueId],
@@ -58,12 +59,10 @@ export const VenueEdition = (): JSX.Element | null => {
   )
   const venueTypes = venueTypesQuery.data
 
-  useEffect(() => {
-    if (offererId) {
-      localStorage.setItem(SAVED_OFFERER_ID_KEY, offererId)
-      dispatch(updateSelectedOffererId(Number(offererId)))
-    }
-  }, [offererId, dispatch])
+  if (selectedOffererId?.toString() !== offererId) {
+    navigate('/accueil')
+    return null
+  }
 
   if (
     venueQuery.isLoading ||

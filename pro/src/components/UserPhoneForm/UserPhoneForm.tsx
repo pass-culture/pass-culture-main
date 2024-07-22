@@ -14,7 +14,7 @@ import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 
-import styles from './UserPhoneForm.module.scss'
+import styles from './UserForm.module.scss'
 import { validationSchema } from './validationSchema'
 
 export interface UserPhoneFormProps {

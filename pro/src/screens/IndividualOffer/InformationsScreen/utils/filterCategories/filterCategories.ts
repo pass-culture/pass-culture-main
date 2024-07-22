@@ -5,7 +5,7 @@ import {
 } from 'core/Offers/constants'
 
 export const getOfferSubtypeFromParam = (
-  offerType: string | null
+  offerType: string | null | undefined
 ): INDIVIDUAL_OFFER_SUBTYPE | null => {
   switch (offerType) {
     // This is stupid but there is no simple way to cast string to enums

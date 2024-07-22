@@ -211,15 +211,13 @@ export const OfferEducationalStock = <
               <ActionsBarSticky.Left>
                 <ButtonLink
                   variant={ButtonVariant.SECONDARY}
-                  link={{
-                    to:
-                      mode === Mode.CREATION
-                        ? `/offre/collectif/${offer.id}/creation${
-                            requestId ? `?requete=${requestId}` : ''
-                          }`
-                        : '/offres/collectives',
-                    isExternal: false,
-                  }}
+                  to={
+                    mode === Mode.CREATION
+                      ? `/offre/collectif/${offer.id}/creation${
+                          requestId ? `?requete=${requestId}` : ''
+                        }`
+                      : '/offres/collectives'
+                  }
                 >
                   {mode === Mode.CREATION
                     ? 'Étape précédente'

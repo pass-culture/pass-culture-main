@@ -9,9 +9,6 @@ const getOpenAPIJsonUrlFromEnv = (): string => {
   if (env === 'testing' || env === 'staging') {
     return `https://backend.${env}.passculture.team/openapi.json`;
   }
-  if (env === 'integration') {
-    return 'https://backend.staging.passculture.team/openapi.json';
-  }
   if (env === 'production') {
     return 'https://backend.passculture.pro/openapi.json';
   }
@@ -21,9 +18,6 @@ const getOpenAPIJsonUrlFromEnv = (): string => {
 const getDocumentationBaseUrlFromEnv = (): string => {
   if (env === 'testing' || env === 'staging') {
     return `https://developers.${env}.passculture.team`;
-  }
-  if (env === 'integration') {
-    return 'developers.staging.passculture.team';
   }
   if (env === 'production') {
     return 'https://developers.passculture.pro';
@@ -35,7 +29,7 @@ const getDocumentationBaseUrlFromEnv = (): string => {
 const config: Config = {
   title: 'API documentation',
   tagline: '',
-  favicon: 'img/favicon.ico',
+  favicon: 'img/pass_culture_doc.png',
   url: getDocumentationBaseUrlFromEnv(),
   baseUrl: '/',
   onBrokenLinks: 'throw',
@@ -84,7 +78,7 @@ const config: Config = {
       title: 'pass Culture Developers',
       logo: {
         alt: 'pass Culture Logo',
-        src: 'img/passculture_logo.jpeg',
+        src: 'img/pass_culture_doc.png',
       },
       items: [
         {

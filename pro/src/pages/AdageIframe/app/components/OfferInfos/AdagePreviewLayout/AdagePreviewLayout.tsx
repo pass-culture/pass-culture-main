@@ -112,7 +112,7 @@ export const AdagePreviewLayout = ({ offer }: AdagePreviewLayoutProps) => {
     <div className={styles['fake-adage-page']}>
       <div className={styles['fake-adage-page-header']}>
         <div className={styles['fake-adage-page-header-logo']}>
-          <img src={adageLogo} alt="Logo de la plateforme ADAGE" />
+          <img src={adageLogo} alt="Plateforme ADAGE" />
         </div>
         <img
           src={adageBurger}
@@ -126,7 +126,7 @@ export const AdagePreviewLayout = ({ offer }: AdagePreviewLayoutProps) => {
           <div className={styles['fake-adage-page-pass-header']}>
             <SvgIcon
               src={logoPassCultureIcon}
-              alt="Logo du pass Culture"
+              alt="pass Culture"
               width="98"
               viewBox="0 0 71 24"
             />

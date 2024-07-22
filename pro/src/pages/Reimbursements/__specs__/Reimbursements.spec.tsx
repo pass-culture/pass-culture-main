@@ -69,7 +69,6 @@ describe('Reimbursement page', () => {
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
     expect(screen.getByText(/Justificatifs/)).toBeInTheDocument()
-    expect(screen.getByText(/Détails/)).toBeInTheDocument()
     expect(screen.getByText('Informations bancaires')).toBeInTheDocument()
     expect(
       screen.queryByRole('img', {

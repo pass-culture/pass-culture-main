@@ -44,22 +44,10 @@ export const CollectiveOfferSummaryCreationScreen = ({
       />
       <ActionsBarSticky>
         <ActionsBarSticky.Left>
-          <ButtonLink
-            variant={ButtonVariant.SECONDARY}
-            link={{
-              to: backRedirectionUrl,
-              isExternal: false,
-            }}
-          >
+          <ButtonLink variant={ButtonVariant.SECONDARY} to={backRedirectionUrl}>
             Étape précédente
           </ButtonLink>
-          <ButtonLink
-            variant={ButtonVariant.PRIMARY}
-            link={{
-              to: nextRedirectionUrl,
-              isExternal: false,
-            }}
-          >
+          <ButtonLink variant={ButtonVariant.PRIMARY} to={nextRedirectionUrl}>
             Étape suivante
           </ButtonLink>
         </ActionsBarSticky.Left>

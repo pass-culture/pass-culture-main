@@ -10,7 +10,7 @@ export function UnauthenticatedError(): JSX.Element {
         <div className={styles['error-header-brand']}>
           <SvgIcon
             src={logoPassCultureIcon}
-            alt="Logo du pass Culture"
+            alt="pass Culture"
             width="109"
             viewBox="0 0 71 24"
           />

@@ -6,6 +6,7 @@ import { Navigate, useSearchParams } from 'react-router-dom'
 import { api } from 'apiClient/api'
 import { HTTP_STATUS, isErrorAPIError } from 'apiClient/helpers'
 import { AppLayout } from 'app/AppLayout'
+import { RECAPTCHA_ERROR, RECAPTCHA_ERROR_MESSAGE } from 'core/shared/constants'
 import { useInitReCaptcha } from 'hooks/useInitReCaptcha'
 import { useNotification } from 'hooks/useNotification'
 import { useRedirectLoggedUser } from 'hooks/useRedirectLoggedUser'
@@ -56,9 +57,9 @@ export const SignIn = (): JSX.Element => {
   }, [searchParams])
 
   const onSubmit = async (values: SigninFormValues) => {
-    const captchaToken = await getReCaptchaToken('loginUser')
     const { email, password } = values
     try {
+      const captchaToken = await getReCaptchaToken('loginUser')
       const user = await api.signin({
         identifier: email,
         password,
@@ -67,9 +68,13 @@ export const SignIn = (): JSX.Element => {
       dispatch(updateUser(user))
       setshouldRedirect(true)
     } catch (error) {
-      if (isErrorAPIError(error)) {
+      if (isErrorAPIError(error) || error === RECAPTCHA_ERROR) {
         updateUser(null)
-        onHandleFail({ status: error.status, errors: error.body })
+        if (isErrorAPIError(error)) {
+          onHandleFail({ status: error.status, errors: error.body })
+        } else {
+          notify.error(RECAPTCHA_ERROR_MESSAGE)
+        }
       }
     }
   }

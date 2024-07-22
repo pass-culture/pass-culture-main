@@ -45,9 +45,9 @@ def _apply_query_filters(
         query = query.filter(cls.validationStatus.in_(status))
 
     if dms_adage_status:
-        query, is_venue_table_joined = _join_venue(query, is_venue_table_joined)
         query = query.join(
-            educational_models.CollectiveDmsApplication, offerers_models.Venue.collectiveDmsApplications
+            educational_models.CollectiveDmsApplication,
+            educational_models.CollectiveDmsApplication.siret.startswith(offerers_models.Offerer.siren),
         ).filter(
             educational_models.CollectiveDmsApplication.state.in_(
                 [GraphQLApplicationStates[str(state)].value for state in dms_adage_status]
@@ -221,28 +221,30 @@ def list_offerers_to_be_validated(
 
     # Aggregate venues with DMS applications, as a json dictionary returned in a single row
     # For a single offerer, column value is like:
-    # [{'id': 40, 'name': 'accepted_dms eac_with_two_adage_venues', 'siret': '42883745400057', 'state': 'accepte'},
-    # {'id': 41, 'name': 'rejected_dms eac_with_two_adage_venues', 'siret': '42883745400058', 'state': 'refuse'}]
+    # [{'id': 40, 'name': 'accepted_dms eac_with_two_adage_venues', 'siret': '42883745400057', 'state': 'accepte', 'lastChangeDate': 'datetime'},
+    # {'id': 41, 'name': 'rejected_dms eac_with_two_adage_venues', 'siret': '42883745400058', 'state': 'refuse', 'lastChangeDate': 'datetime'}]
     dms_applications_subquery = (
         sa.select(
             sa.func.jsonb_agg(
                 sa.func.jsonb_build_object(
                     "id",
-                    offerers_models.Venue.id,
+                    educational_models.CollectiveDmsApplication.id,
                     "siret",
-                    offerers_models.Venue.siret,
+                    educational_models.CollectiveDmsApplication.siret,
                     "name",
                     offerers_models.Venue.common_name,
                     "state",
-                    offerers_models.Venue.dms_adage_status,
+                    educational_models.CollectiveDmsApplication.state,
+                    "lastChangeDate",
+                    educational_models.CollectiveDmsApplication.lastChangeDate,
                 )
             )
         )
-        .select_from(offerers_models.Venue)
-        .filter(
-            offerers_models.Venue.managingOffererId == offerers_models.Offerer.id,
-            offerers_models.Venue.dms_adage_status.is_not(None),  # type: ignore[attr-defined]
+        .select_from(educational_models.CollectiveDmsApplication)
+        .outerjoin(
+            offerers_models.Venue, offerers_models.Venue.siret == educational_models.CollectiveDmsApplication.siret
         )
+        .filter(educational_models.CollectiveDmsApplication.siret.startswith(offerers_models.Offerer.siren))
         .correlate(offerers_models.Offerer)
         .scalar_subquery()
     )

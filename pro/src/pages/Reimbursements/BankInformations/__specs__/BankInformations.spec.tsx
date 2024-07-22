@@ -80,7 +80,6 @@ describe('BankInformations page', () => {
       )
     ).toBeInTheDocument()
     expect(screen.getByText('Ajouter un compte bancaire')).toBeInTheDocument()
-    expect(screen.getByText('En savoir plus')).toBeInTheDocument()
   })
 
   it('should render message when the user has a valid bank account and no pending one', async () => {
@@ -102,7 +101,6 @@ describe('BankInformations page', () => {
       )
     ).toBeInTheDocument()
     expect(screen.getByText('Ajouter un compte bancaire')).toBeInTheDocument()
-    expect(screen.getByText('En savoir plus')).toBeInTheDocument()
   })
 
   it('should render message when has a pending bank account and no valid one', async () => {
@@ -120,7 +118,6 @@ describe('BankInformations page', () => {
       )
     ).toBeInTheDocument()
     expect(screen.getByText('Ajouter un compte bancaire')).toBeInTheDocument()
-    expect(screen.getByText('En savoir plus')).toBeInTheDocument()
   })
 
   it('should render default page if error on getOffererBankAccountsAndAttachedVenues request', async () => {

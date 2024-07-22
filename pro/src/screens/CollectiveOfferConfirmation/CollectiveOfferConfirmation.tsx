@@ -55,9 +55,13 @@ const pendingOffer = {
   title: 'Offre en cours de validation !',
   description: (
     <>
-      Votre offre est en cours de validation par l’équipe pass Culture, nous
-      vérifions actuellement son éligibilité. Cette vérification pourra prendre
-      jusqu’à 72h.
+      Nous vérifions actuellement la conformité de votre offre.
+      <br />
+      <b>Cette vérification pourra prendre jusqu’à 72h.</b>
+      <br />
+      <b>Vous ne pouvez pas effectuer de modification pour l’instant.</b>
+      <br />
+      Vous recevrez un e-mail de confirmation une fois votre offre validée.
     </>
   ),
   icon: (
@@ -134,19 +138,14 @@ export const CollectiveOfferConfirmationScreen = ({
           <ButtonLink
             variant={ButtonVariant.SECONDARY}
             className={styles['confirmation-action']}
-            link={{ to: '/offres/collectives', isExternal: false }}
+            to="/offres/collectives"
           >
             Voir mes offres
           </ButtonLink>
           <ButtonLink
             variant={ButtonVariant.PRIMARY}
             className={styles['confirmation-action']}
-            link={{
-              to: `/offre/creation${
-                offererId ? `?structure=${offererId}` : ''
-              }`,
-              isExternal: false,
-            }}
+            to={`/offre/creation${offererId ? `?structure=${offererId}` : ''}`}
           >
             Créer une nouvelle offre
           </ButtonLink>

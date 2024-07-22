@@ -32,7 +32,6 @@ vi.mock('apiClient/api', () => ({
 
 const mockLogEvent = vi.fn()
 const mockGetUpdateOffersStatusMessage = vi.fn()
-const mockCanDeleteOffers = vi.fn(() => true)
 
 describe('ActionsBar', () => {
   let props: IndividualOffersActionsBarProps
@@ -41,7 +40,7 @@ describe('ActionsBar', () => {
   beforeEach(() => {
     props = {
       getUpdateOffersStatusMessage: mockGetUpdateOffersStatusMessage,
-      canDeleteOffers: mockCanDeleteOffers,
+      canDeleteOffers: true,
       selectedOfferIds: offerIds,
       clearSelectedOfferIds: vi.fn(),
       toggleSelectAllCheckboxes: vi.fn(),
@@ -143,12 +142,12 @@ describe('ActionsBar', () => {
     })
     expect(props.clearSelectedOfferIds).toHaveBeenCalledTimes(1)
     expect(
-      screen.getByText('2 brouillons ont bien été supprimés')
+      screen.getByText('Les brouillons ont bien été supprimés')
     ).toBeInTheDocument()
   })
 
   it('should not delete offers when a non draft is selected upon deletion', async () => {
-    mockCanDeleteOffers.mockReturnValueOnce(false)
+    props.canDeleteOffers = false
 
     renderActionsBar(props)
 

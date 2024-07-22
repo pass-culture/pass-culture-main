@@ -228,10 +228,7 @@ export const CollectiveDataForm = ({
           <div className={styles['action-bar']}>
             <ButtonLink
               variant={ButtonVariant.SECONDARY}
-              link={{
-                to: `/structures/${venue.managingOfferer.id}/lieux/${venue.id}/collectif`,
-                isExternal: false,
-              }}
+              to={`/structures/${venue.managingOfferer.id}/lieux/${venue.id}/collectif`}
             >
               Annuler et quitter
             </ButtonLink>

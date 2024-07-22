@@ -63,6 +63,7 @@ def save_test_cases_sandbox() -> None:
     create_product_with_multiple_images()
     create_discord_users()
     create_users_with_reactions()
+    create_user_that_booked_some_cinema()  # to suggest reactions on cinema bookings
 
 
 def create_offers_with_gtls() -> None:
@@ -193,8 +194,11 @@ def _create_offer_and_stocks_for_allocine_venues(
                 venue=venue,
                 extraData=product.extraData,
             )
+            mediation = offers_factories.MediationFactory(offer=movie_offer)
+            store_public_object_from_sandbox_assets("thumbs", mediation, movie_offer.subcategoryId)
+
             product_stocks = []
-            for daydelta in range(30):
+            for daydelta in range(0, 30, 2):
                 day = datetime.date.today() + datetime.timedelta(days=daydelta)
                 for hour in (0, 5, 11, 17, 21):
                     beginning_datetime = datetime.datetime.combine(day, datetime.time(hour=hour))
@@ -696,3 +700,14 @@ def create_users_with_reactions() -> None:
         bookings_factories.UsedBookingFactory(stock=stock, user=user_2)
         if reaction_type is not None:
             ReactionFactory(user=user_2, offer=stock.offer, reactionType=reaction_type)
+
+
+def create_user_that_booked_some_cinema() -> None:
+    seance_cine_start = datetime.datetime.utcnow() - datetime.timedelta(hours=25)
+    stock = offers_factories.StockFactory(
+        beginningDatetime=seance_cine_start, quantity=100, offer__subcategoryId=subcategories_v2.SEANCE_CINE.id
+    )
+    for i in range(10):
+        user_email = f"ella-reserveducine-{i}@example.com"
+        user = users_factories.BeneficiaryFactory(email=user_email)
+        bookings_factories.UsedBookingFactory(user=user, stock=stock, dateUsed=seance_cine_start)

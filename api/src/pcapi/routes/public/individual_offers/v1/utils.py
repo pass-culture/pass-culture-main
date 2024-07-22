@@ -183,3 +183,10 @@ def get_price_category_from_event(
         return next(cat for cat in event.priceCategories if cat.id == price_category_id)
     except StopIteration:
         return None
+
+
+def load_venue_and_provider_query(query: sqla_orm.Query) -> sqla_orm.Query:
+    return query.options(
+        sqla_orm.joinedload(offers_models.Offer.lastProvider).joinedload(providers_models.Provider.offererProvider),
+        sqla_orm.joinedload(offers_models.Offer.venue).load_only(offerers_models.Venue.isVirtual),
+    )

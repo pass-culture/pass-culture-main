@@ -46,12 +46,10 @@ export const AddActivationCodeForm = ({
       <div className={styles['activation-codes-upload-template-section']}>
         <p className={styles['activation-codes-upload-gabarit']}>Gabarits</p>
         <ButtonLink
-          link={{
-            isExternal: true,
-            to: '/csvtemplates/CodesActivations-Gabarit.csv',
-            type: 'text/csv',
-            target: '_blank',
-          }}
+          isExternal
+          to="/csvtemplates/CodesActivations-Gabarit.csv"
+          type="text/csv"
+          opensInNewTab
           icon={fullDownloadIcon}
         >
           Gabarit CSV

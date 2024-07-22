@@ -8,10 +8,10 @@ Feature: Search collective offers
     And I select "real_venue 1 eac_2_lieu [BON EAC]" in "Lieu"
     And I select "Projection audiovisuelle" in "Format"
     And I validate my filters
-    Then These results should be displayed
-      |  |  | Titre    | Lieu                              | Établissement           | Status  |
-      |  |  | offer 49 | real_venue 1 eac_2_lieu [BON EAC] | Tous les établissements | publiée |
-      |  |  | offer 47 | real_venue 1 eac_2_lieu [BON EAC] | Tous les établissements | publiée |
-      |  |  | offer 45 | real_venue 1 eac_2_lieu [BON EAC] | Tous les établissements | publiée |
-      |  |  | offer 3  | real_venue 1 eac_2_lieu [BON EAC] | Tous les établissements | publiée |
-      |  |  | offer 1  | real_venue 1 eac_2_lieu [BON EAC] | Tous les établissements | publiée |
+    Then These 5 results should be displayed
+      |  |  | Titre | Lieu                              | Établissement           | Status  |
+      |  |  | offer | real_venue 1 eac_2_lieu [BON EAC] | Tous les établissements | publiée |
+      |  |  | offer | real_venue 1 eac_2_lieu [BON EAC] | Tous les établissements | publiée |
+      |  |  | offer | real_venue 1 eac_2_lieu [BON EAC] | Tous les établissements | publiée |
+      |  |  | offer | real_venue 1 eac_2_lieu [BON EAC] | Tous les établissements | publiée |
+      |  |  | offer | real_venue 1 eac_2_lieu [BON EAC] | Tous les établissements | publiée |

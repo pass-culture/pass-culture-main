@@ -2,29 +2,26 @@ import cn from 'classnames'
 import React, { ForwardedRef, forwardRef, MouseEventHandler } from 'react'
 import { Link } from 'react-router-dom'
 
+import fullLinkIcon from 'icons/full-link.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './Button.module.scss'
 import { ButtonVariant, IconPositionEnum, SharedButtonProps } from './types'
 
 export type LinkProps = {
+  isDisabled?: boolean
+  svgAlt?: string
   isExternal?: boolean
   to: string
-  target?: string
-  rel?: string
+  opensInNewTab?: boolean
   'aria-label'?: string
-  'aria-current'?: 'page'
   type?: string
   download?: boolean
 }
 
-export interface ButtonLinkProps
-  extends SharedButtonProps,
-    React.HTMLProps<HTMLAnchorElement> {
-  link: LinkProps
-  isDisabled?: boolean
-  svgAlt?: string
-}
+type ButtonLinkProps = LinkProps &
+  SharedButtonProps &
+  React.HTMLProps<HTMLAnchorElement>
 
 export const ButtonLink = forwardRef(
   (
@@ -35,10 +32,12 @@ export const ButtonLink = forwardRef(
       isDisabled = false,
       onClick,
       variant = ButtonVariant.TERNARY,
-      link,
       iconPosition = IconPositionEnum.LEFT,
-      svgAlt = '',
+      svgAlt,
       onBlur,
+      isExternal = false,
+      opensInNewTab,
+      to,
       ...props
     }: ButtonLinkProps,
     forwadedRef: ForwardedRef<HTMLAnchorElement>
@@ -51,36 +50,33 @@ export const ButtonLink = forwardRef(
       styles['button-link'],
       className
     )
-    const svgIcon = icon ? (
+    const svgIcon = opensInNewTab ? (
       <SvgIcon
-        src={icon}
-        alt={svgAlt}
+        src={icon ?? fullLinkIcon}
+        alt={svgAlt ?? 'Nouvelle fenêtre'}
         className={styles['button-icon']}
         width="22"
       />
-    ) : (
-      <></>
-    )
+    ) : icon ? (
+      <SvgIcon
+        src={icon}
+        alt={svgAlt ?? ''}
+        className={styles['button-icon']}
+        width="22"
+      />
+    ) : null
 
     let body = (
       <>
-        {
-          /* istanbul ignore next: graphic variation */
-          iconPosition !== IconPositionEnum.RIGHT && svgIcon
-        }
+        {iconPosition !== IconPositionEnum.RIGHT && svgIcon}
         {variant === ButtonVariant.BOX ? (
           <div className={styles['button-arrow-content']}>{children}</div>
         ) : (
           <>{children}</>
         )}
-        {
-          /* istanbul ignore next: graphic variation */
-          iconPosition === IconPositionEnum.RIGHT && svgIcon
-        }
+        {iconPosition === IconPositionEnum.RIGHT && svgIcon}
       </>
     )
-
-    const { to, isExternal, ...linkProps } = link
 
     // react-router v6 accepts relative links
     // That is, if you use "offers" as link, it will be relative to the current path
@@ -105,22 +101,21 @@ export const ButtonLink = forwardRef(
         onClick={callback}
         onBlur={(e) => onBlur?.(e)}
         rel="noopener noreferrer"
-        {...linkProps}
         {...props}
+        target={opensInNewTab ? '_blank' : '_self'}
         ref={forwadedRef}
       >
         {body}
         {disabled}
       </a>
     ) : (
-      /* istanbul ignore next: graphic variation */ <Link
+      <Link
         className={classNames}
         onClick={callback}
         onBlur={(e) => onBlur?.(e)}
         to={absoluteUrl}
-        aria-label={linkProps['aria-label']}
-        aria-current={linkProps['aria-current'] ?? false}
-        target={linkProps.target}
+        aria-label={props['aria-label']}
+        target={opensInNewTab ? '_blank' : '_self'}
         {...props}
         ref={forwadedRef}
       >

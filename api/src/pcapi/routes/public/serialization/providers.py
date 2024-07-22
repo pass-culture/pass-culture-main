@@ -31,3 +31,9 @@ class ProviderUpdate(serialization.ConfiguredBaseModel):
     notification_url: pydantic_v1.HttpUrl | None = fields.PROVIDER_NOTIFICATION_URL
     booking_url: pydantic_v1.HttpUrl | None = fields.PROVIDER_BOOKING_URL
     cancel_url: pydantic_v1.HttpUrl | None = fields.PROVIDER_CANCEL_URL
+
+
+class VenueProviderExternalUrlsUpdate(serialization.ConfiguredBaseModel):
+    notification_url: pydantic_v1.HttpUrl | None = fields.PROVIDER_NOTIFICATION_URL
+    booking_url: pydantic_v1.HttpUrl | None = fields.PROVIDER_BOOKING_URL
+    cancel_url: pydantic_v1.HttpUrl | None = fields.PROVIDER_CANCEL_URL

@@ -22,6 +22,7 @@ interface RadioGroupProps {
   }[]
   className?: string
   withBorder?: boolean
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
 }
 
 export const RadioGroup = ({
@@ -33,6 +34,7 @@ export const RadioGroup = ({
   legend,
   className,
   withBorder,
+  onChange,
 }: RadioGroupProps): JSX.Element => {
   const [, meta] = useField({ name })
 
@@ -60,6 +62,7 @@ export const RadioGroup = ({
             withBorder={withBorder}
             hasError={meta.touched && !!meta.error}
             fullWidth
+            onChange={onChange}
           />
         </div>
       ))}

@@ -27,10 +27,7 @@ export const OffersFavoritesNoResult = () => {
           retrouver facilement !
         </p>
         <ButtonLink
-          link={{
-            to: `/adage-iframe/recherche?token=${adageAuthToken}`,
-            isExternal: false,
-          }}
+          to={`/adage-iframe/recherche?token=${adageAuthToken}`}
           variant={ButtonVariant.PRIMARY}
         >
           Explorer le catalogue

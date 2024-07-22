@@ -72,12 +72,8 @@ const renderInformationsScreen = (
             element={
               <IndividualOfferContext.Provider value={contextValue}>
                 <InformationsScreen {...props} />
-                <ButtonLink link={{ to: '/outside', isExternal: false }}>
-                  Go outside !
-                </ButtonLink>
-                <ButtonLink link={{ to: '/stocks', isExternal: false }}>
-                  Go to stocks !
-                </ButtonLink>
+                <ButtonLink to="/outside">Go outside !</ButtonLink>
+                <ButtonLink to="/stocks">Go to stocks !</ButtonLink>
               </IndividualOfferContext.Provider>
             }
           />

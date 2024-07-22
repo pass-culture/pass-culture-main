@@ -210,7 +210,7 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
                 <ActionsBarSticky.Left>
                   <ButtonLink
                     variant={ButtonVariant.SECONDARY}
-                    link={{ isExternal: false, to: computeOffersUrl({}) }}
+                    to={computeOffersUrl({})}
                   >
                     Annuler et quitter
                   </ButtonLink>

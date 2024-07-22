@@ -7,6 +7,7 @@ import { ProUserCreationBodyV2Model } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { MandatoryInfo } from 'components/FormLayout/FormLayoutMandatoryInfo'
 import { Events } from 'core/FirebaseEvents/constants'
+import { RECAPTCHA_ERROR, RECAPTCHA_ERROR_MESSAGE } from 'core/shared/constants'
 import { useInitReCaptcha } from 'hooks/useInitReCaptcha'
 import { useLogEventOnUnload } from 'hooks/useLogEventOnUnload'
 import { useNotification } from 'hooks/useNotification'
@@ -27,16 +28,19 @@ export const SignupContainer = (): JSX.Element => {
   useInitReCaptcha()
 
   const onSubmit = async (values: ProUserCreationBodyV2Model) => {
-    /* istanbul ignore next : ENV dependant */
-    values.token = await getReCaptchaToken('signup')
-
     try {
+      /* istanbul ignore next : ENV dependant */
+      values.token = await getReCaptchaToken('signup')
       await api.signupProV2({ ...values })
       onHandleSuccess()
     } catch (response) {
-      // TODO type this
-      // @ts-expect-error
-      onHandleFail(response.body ? response.body : {})
+      if (response === RECAPTCHA_ERROR) {
+        notification.error(RECAPTCHA_ERROR_MESSAGE)
+      } else {
+        // TODO type this
+        // @ts-expect-error
+        onHandleFail(response.body ? response.body : {})
+      }
     }
   }
 

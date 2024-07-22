@@ -63,7 +63,7 @@ export const Profile = () => {
 
         <ButtonLink
           variant={ButtonVariant.TERNARY}
-          link={{ to: '/profil', isExternal: false }}
+          to="/profil"
           icon={fullEditIcon}
           onClick={() => logEvent(Events.CLICKED_EDIT_PROFILE)}
         >

@@ -5,17 +5,17 @@ describe('getProviderInfo', () => {
     expect(getProviderInfo('FNAC')).toStrictEqual({
       id: 'fnac',
       logo: expect.any(String),
-      name: 'Fnac',
-      synchronizedOfferMessage: 'Offre synchronisée avec Fnac',
+      name: 'FNAC',
+      synchronizedOfferMessage: 'Offre synchronisée avec FNAC',
     })
   })
 
   it('should return provider information which id match beginning of name', () => {
-    expect(getProviderInfo('titelive stocks')).toStrictEqual({
-      id: 'titelive',
+    expect(getProviderInfo('Titelive stocks')).toStrictEqual({
+      id: 'titelive stocks',
       logo: expect.any(String),
-      name: 'Tite Live',
-      synchronizedOfferMessage: 'Offre synchronisée avec Tite Live',
+      name: 'Titelive stocks',
+      synchronizedOfferMessage: 'Offre synchronisée avec Titelive stocks',
     })
   })
   it('should return provider information if not known by the front', () => {

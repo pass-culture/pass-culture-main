@@ -197,7 +197,7 @@ export const OfferEducationalForm = ({
         <ActionsBarSticky.Left>
           <ButtonLink
             variant={ButtonVariant.SECONDARY}
-            link={{ to: computeCollectiveOffersUrl({}), isExternal: false }}
+            to={computeCollectiveOffersUrl({})}
           >
             Annuler et quitter
           </ButtonLink>

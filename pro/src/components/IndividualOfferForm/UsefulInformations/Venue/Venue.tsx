@@ -11,6 +11,7 @@ import {
   IndividualOfferFormValues,
 } from 'components/IndividualOfferForm/types'
 import { buildAccessibilityFormValues } from 'components/IndividualOfferForm/utils/setDefaultInitialFormValues'
+import { useActiveFeature } from 'hooks/useActiveFeature'
 import { Select } from 'ui-kit/form/Select/Select'
 
 import { buildOffererOptions, buildVenueOptions } from './utils'
@@ -53,6 +54,11 @@ export const Venue = ({
     venueList
   )
 
+  const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
+  if (!isOfferAddressEnabled) {
+    venueOptions.unshift({ label: 'Sélectionner un lieu', value: '' })
+  }
+
   const onOffererChange = async (
     event: React.ChangeEvent<HTMLSelectElement>
   ) => {
@@ -86,7 +92,7 @@ export const Venue = ({
       <FormLayout.Row>
         <Select
           disabled={isVenueDisabled || readOnlyFields.includes('venueId')}
-          label="Lieu"
+          label={isOfferAddressEnabled ? `Qui propose l’offre ?` : 'Lieu'}
           name="venueId"
           options={venueOptions}
           onChange={(event) =>

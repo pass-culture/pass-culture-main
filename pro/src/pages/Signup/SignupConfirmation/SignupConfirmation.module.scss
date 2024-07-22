@@ -9,10 +9,10 @@
 }
 
 .content {
-  @include layout.full-content-side;
-
   display: flex;
   align-items: center;
+
+  @include layout.full-content-side;
 
   @media (min-width: size.$tablet) {
     min-height: 100vh;

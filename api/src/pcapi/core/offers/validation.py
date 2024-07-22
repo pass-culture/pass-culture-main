@@ -32,6 +32,7 @@ from pcapi.utils import date
 logger = logging.getLogger(__name__)
 
 EDITABLE_FIELDS_FOR_OFFER_FROM_PROVIDER = {
+    "name",
     "audioDisabilityCompliant",
     "externalTicketOfficeUrl",
     "mentalDisabilityCompliant",
@@ -42,6 +43,8 @@ EDITABLE_FIELDS_FOR_OFFER_FROM_PROVIDER = {
 EDITABLE_FIELDS_FOR_ALLOCINE_OFFER = {"isDuo"} | EDITABLE_FIELDS_FOR_OFFER_FROM_PROVIDER
 EDITABLE_FIELDS_FOR_ALLOCINE_STOCK = {"bookingLimitDatetime", "price", "priceCategory", "quantity"}
 EDITABLE_FIELDS_FOR_INDIVIDUAL_OFFERS_API_PROVIDER = {
+    "name",
+    "description",
     "isActive",
     "isDuo",
     "bookingContact",
@@ -448,24 +451,22 @@ def check_booking_limit_datetime(
     beginning: datetime.datetime | None,
     booking_limit_datetime: datetime.datetime | None,
 ) -> None:
+    if not (beginning and booking_limit_datetime):  # nothing to check
+        return
+
     if stock:
         if isinstance(stock, educational_models.CollectiveStock):
             offer = stock.collectiveOffer
         else:
             offer = stock.offer
 
-        if beginning and booking_limit_datetime and offer and offer.venue.departementCode is not None:
-            beginning_tz = date.utc_datetime_to_department_timezone(beginning, offer.venue.departementCode)
-            booking_limit_datetime_tz = date.utc_datetime_to_department_timezone(
+        if offer.venue.departementCode is not None:  # update to timezone
+            beginning = date.utc_datetime_to_department_timezone(beginning, offer.venue.departementCode)
+            booking_limit_datetime = date.utc_datetime_to_department_timezone(
                 booking_limit_datetime, offer.venue.departementCode
             )
 
-            same_date = beginning_tz.date() == booking_limit_datetime_tz.date()
-            if not same_date and booking_limit_datetime_tz > beginning_tz:
-                raise exceptions.BookingLimitDatetimeTooLate()
-            return
-
-    if beginning and booking_limit_datetime and booking_limit_datetime > beginning:
+    if booking_limit_datetime > beginning:
         raise exceptions.BookingLimitDatetimeTooLate()
 
 

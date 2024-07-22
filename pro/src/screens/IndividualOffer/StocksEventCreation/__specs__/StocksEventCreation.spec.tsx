@@ -52,9 +52,7 @@ const renderStockEventCreation = async (
         element={
           <>
             <StocksEventCreation {...props} />
-            <ButtonLink link={{ to: '/outside', isExternal: false }}>
-              Go outside !
-            </ButtonLink>
+            <ButtonLink to="/outside">Go outside !</ButtonLink>
             <Notification />
           </>
         }

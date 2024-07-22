@@ -70,9 +70,9 @@ class PostDatesTest:
         assert response.json == {
             "dates": [
                 {
-                    "beginningDatetime": next_month.isoformat(),
+                    "beginningDatetime": date_utils.format_into_utc_date(next_month),
                     "bookedQuantity": 0,
-                    "bookingLimitDatetime": next_week.isoformat(),
+                    "bookingLimitDatetime": date_utils.format_into_utc_date(next_week),
                     "id": first_stock.id,
                     "priceCategory": {
                         "id": first_stock.priceCategoryId,
@@ -83,9 +83,9 @@ class PostDatesTest:
                     "idAtProvider": "id_143556",
                 },
                 {
-                    "beginningDatetime": two_months_from_now.isoformat(),
+                    "beginningDatetime": date_utils.format_into_utc_date(two_months_from_now),
                     "bookedQuantity": 0,
-                    "bookingLimitDatetime": next_week.isoformat(),
+                    "bookingLimitDatetime": date_utils.format_into_utc_date(next_week),
                     "id": second_stock.id,
                     "priceCategory": {
                         "id": second_stock.priceCategoryId,

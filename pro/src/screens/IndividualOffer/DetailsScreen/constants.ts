@@ -1,0 +1,18 @@
+export const DEFAULT_DETAILS_FORM_VALUES = {
+  name: '',
+  description: '',
+  venueId: '',
+  categoryId: '',
+  subcategoryId: '',
+  gtl_id: '',
+  showType: '',
+  showSubType: '',
+  speaker: '',
+  author: '',
+  visa: '',
+  stageDirector: '',
+  performer: '',
+  ean: '',
+  durationMinutes: '',
+  subcategoryConditionalFields: [],
+}

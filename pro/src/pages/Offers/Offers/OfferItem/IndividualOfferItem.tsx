@@ -5,6 +5,9 @@ import {
   ListOffersVenueResponseModel,
 } from 'apiClient/v1'
 import { Audience } from 'core/shared/types'
+import { useActiveFeature } from 'hooks/useActiveFeature'
+import styles from 'pages/Offers/Offers/OfferItem/OfferItem.module.scss'
+import { computeAddressDisplayName } from 'repository/venuesService'
 
 import { CheckboxCell } from './Cells/CheckboxCell'
 import { IndividualActionsCells } from './Cells/IndividualActionsCell'
@@ -35,6 +38,8 @@ export const IndividualOfferItem = ({
   venue,
   audience,
 }: IndividualOfferItemProps) => {
+  const offerAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
+
   return (
     <>
       <CheckboxCell
@@ -53,7 +58,13 @@ export const IndividualOfferItem = ({
         audience={audience}
       />
 
-      <OfferVenueCell venue={venue} />
+      {offerAddressEnabled && offer.address ? (
+        <td className={styles['venue-column']}>
+          {computeAddressDisplayName(offer.address)}
+        </td>
+      ) : (
+        <OfferVenueCell venue={venue} />
+      )}
 
       <OfferRemainingStockCell stocks={offer.stocks} />
 

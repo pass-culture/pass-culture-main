@@ -176,7 +176,7 @@ export const OfferEducationalActions = ({
             <ButtonLink
               variant={ButtonVariant.TERNARY}
               className={style['button-link']}
-              link={{ isExternal: false, to: getBookingLink() }}
+              to={getBookingLink()}
               icon={fullNextIcon}
               iconPosition={IconPositionEnum.LEFT}
               onClick={() =>

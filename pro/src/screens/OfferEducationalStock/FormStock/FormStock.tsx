@@ -90,6 +90,7 @@ export const FormStock = ({
         type="number"
         hasLabelLineBreak={false}
         rightIcon={strokeCollaborator}
+        classNameInput={styles['input-custom-width']}
       />
       <TextInput
         disabled={disablePriceAndParticipantInputs}
@@ -98,6 +99,7 @@ export const FormStock = ({
         step={0.01} // allow user to enter a price with cents
         type="number"
         rightIcon={strokeEuroIcon}
+        classNameInput={styles['input-custom-width']}
       />
     </FormLayout.Row>
   )

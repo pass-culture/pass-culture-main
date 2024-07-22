@@ -42,7 +42,7 @@ describe('OfferShareLink', () => {
 
     const shareLink = screen
       .getByRole('link', {
-        name: /Partager l’offre par email/i,
+        name: /Partager par email/i,
       })
       .getAttribute('href')
 
@@ -54,7 +54,7 @@ describe('OfferShareLink', () => {
     renderOfferShareLink(defaultProps)
 
     const shareLink = screen.getByRole('link', {
-      name: /Partager l’offre par email/i,
+      name: /Partager par email/i,
     })
 
     shareLink.addEventListener('click', (e) => {

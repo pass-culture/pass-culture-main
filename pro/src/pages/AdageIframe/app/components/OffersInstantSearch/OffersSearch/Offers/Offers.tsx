@@ -16,7 +16,6 @@ import {
 } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
 import { GET_COLLECTIVE_OFFER_TEMPLATES_QUERY_KEY } from 'config/swrQueryKeys'
-import { useActiveFeature } from 'hooks/useActiveFeature'
 import { useMediaQuery } from 'hooks/useMediaQuery'
 import fullGoTop from 'icons/full-go-top.svg'
 import fullGrid from 'icons/full-grid.svg'
@@ -40,7 +39,6 @@ import {
 
 import { AdageOfferListCard } from './AdageOfferListCard/AdageOfferListCard'
 import { NoResultsPage } from './NoResultsPage/NoResultsPage'
-import { Offer } from './Offer'
 import styles from './Offers.module.scss'
 import { offerIsBookable } from './utils/offerIsBookable'
 
@@ -72,10 +70,6 @@ export const Offers = ({
   const isMobileScreen = useMediaQuery('(max-width: 46.5rem)')
 
   const location = useLocation()
-
-  const isNewOfferCardEnabled = useActiveFeature(
-    'WIP_ENABLE_ADAGE_VISUALIZATION'
-  )
 
   const results = indexId
     ? scopedResults.find((res) => res.indexId === indexId)?.results
@@ -168,7 +162,7 @@ export const Offers = ({
             {nbHits === 1 ? 'offre' : 'offres'} au total
           </div>
         )}
-        {isNewOfferCardEnabled && !isInSuggestions && (
+        {!isInSuggestions && (
           <ToggleButtonGroup
             className={styles['offer-type-vue']}
             groupLabel="Choix du type de vue des offres"
@@ -191,40 +185,27 @@ export const Offers = ({
         )}
       </div>
       <ul
-        className={
-          styles[
-            `offers-${!isNewOfferCardEnabled || isInSuggestions ? 'list' : adageViewType}`
-          ]
-        }
+        className={styles[`offers-${isInSuggestions ? 'list' : adageViewType}`]}
       >
         {offers.map((offer, index) => (
           <li
             key={`${offer.isTemplate ? 'T' : ''}${offer.id}`}
             data-testid="offer-listitem"
           >
-            {isNewOfferCardEnabled ? (
-              adageViewType === 'list' || isInSuggestions ? (
-                <AdageOfferListCard
-                  offer={offer}
-                  queryId={results.queryID ?? ''}
-                  isInSuggestions={indexId?.startsWith('no_results_offers')}
-                  viewType={adageViewType}
-                  onCardClicked={() => triggerOfferClickLog(offer)}
-                />
-              ) : (
-                <OfferCardComponent
-                  onCardClicked={() => triggerOfferClickLog(offer)}
-                  key={offer.id}
-                  offer={offer}
-                  viewType={adageViewType}
-                />
-              )
-            ) : (
-              <Offer
+            {adageViewType === 'list' || isInSuggestions ? (
+              <AdageOfferListCard
                 offer={offer}
-                position={index}
                 queryId={results.queryID ?? ''}
                 isInSuggestions={indexId?.startsWith('no_results_offers')}
+                viewType={adageViewType}
+                onCardClicked={() => triggerOfferClickLog(offer)}
+              />
+            ) : (
+              <OfferCardComponent
+                onCardClicked={() => triggerOfferClickLog(offer)}
+                key={offer.id}
+                offer={offer}
+                viewType={adageViewType}
               />
             )}
             {adageViewType === 'list' && index === 0 && showDiffuseHelp && (

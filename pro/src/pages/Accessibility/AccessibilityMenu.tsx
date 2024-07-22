@@ -14,9 +14,7 @@ export function AccessibilityMenu() {
 
       <div className={styles['menu-accessibility']}>
         <ButtonLink
-          link={{
-            to: `/accessibilite/engagements`,
-          }}
+          to="/accessibilite/engagements"
           variant={ButtonVariant.BOX}
           icon={strokeRigthIcon}
           iconPosition={IconPositionEnum.RIGHT}
@@ -25,9 +23,7 @@ export function AccessibilityMenu() {
           Les engagements du pass Culture
         </ButtonLink>
         <ButtonLink
-          link={{
-            to: `/accessibilite/declaration`,
-          }}
+          to="/accessibilite/declaration"
           variant={ButtonVariant.BOX}
           icon={strokeRigthIcon}
           className={styles['button-link']}
@@ -36,9 +32,7 @@ export function AccessibilityMenu() {
           Déclaration d’accessibilité
         </ButtonLink>
         <ButtonLink
-          link={{
-            to: `/accessibilite/schema-pluriannuel`,
-          }}
+          to="/accessibilite/schema-pluriannuel"
           variant={ButtonVariant.BOX}
           icon={strokeRigthIcon}
           className={styles['button-link']}

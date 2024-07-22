@@ -168,7 +168,7 @@ class EduconnectContent(common_models.IdentityCheckContent):
     first_name: str
     ine_hash: str
     last_name: str
-    registration_datetime: datetime.datetime
+    registration_datetime: datetime.datetime | None
     school_uai: str | None
     student_level: str | None
 
@@ -187,7 +187,7 @@ class EduconnectContent(common_models.IdentityCheckContent):
     def get_last_name(self) -> str:
         return self.last_name
 
-    def get_registration_datetime(self) -> datetime.datetime:
+    def get_registration_datetime(self) -> datetime.datetime | None:
         return self.registration_datetime
 
 

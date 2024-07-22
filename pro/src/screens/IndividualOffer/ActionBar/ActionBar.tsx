@@ -49,10 +49,7 @@ export const ActionBar = ({
 
     // mode === OFFER_WIZARD_MODE.EDITION
     return step === OFFER_WIZARD_STEP_IDS.SUMMARY ? (
-      <ButtonLink
-        link={{ to: backOfferUrl, isExternal: false }}
-        variant={ButtonVariant.PRIMARY}
-      >
+      <ButtonLink to={backOfferUrl} variant={ButtonVariant.PRIMARY}>
         Retour à la liste des offres
       </ButtonLink>
     ) : (
@@ -92,7 +89,7 @@ export const ActionBar = ({
           {step === OFFER_WIZARD_STEP_IDS.SUMMARY ? (
             <>
               <ButtonLink
-                link={{ to: '/offres', isExternal: false }}
+                to="/offres"
                 variant={ButtonVariant.SECONDARY}
                 onClick={() => {
                   notify.success(

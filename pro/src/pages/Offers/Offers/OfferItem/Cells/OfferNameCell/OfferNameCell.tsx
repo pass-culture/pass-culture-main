@@ -1,4 +1,3 @@
-import React from 'react'
 import { Link } from 'react-router-dom'
 
 import {
@@ -6,10 +5,7 @@ import {
   ListOffersOfferResponseModel,
 } from 'apiClient/v1'
 import { isOfferEducational } from 'core/OfferEducational/types'
-import {
-  OFFER_STATUS_PENDING,
-  OFFER_STATUS_SOLD_OUT,
-} from 'core/Offers/constants'
+import { OFFER_STATUS_SOLD_OUT } from 'core/Offers/constants'
 import { Audience } from 'core/shared/types'
 import fullErrorIcon from 'icons/full-error.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
@@ -20,8 +16,6 @@ import { pluralize } from 'utils/pluralize'
 import { formatLocalTimeDateString } from 'utils/timezone'
 
 import styles from '../../OfferItem.module.scss'
-
-import { getRemainingTime, getDate, shouldDisplayWarning } from './utils'
 
 export interface OfferNameCellProps {
   offer: CollectiveOfferResponseModel | ListOffersOfferResponseModel
@@ -65,12 +59,6 @@ export const OfferNameCell = ({
     computeNumberOfSoldOutStocks() > 0 &&
     offer.status !== OFFER_STATUS_SOLD_OUT
 
-  const shouldShowCollectiveWarning =
-    audience === Audience.COLLECTIVE &&
-    isOfferEducational(offer) &&
-    offer.booking?.booking_status === OFFER_STATUS_PENDING &&
-    shouldDisplayWarning(offer.stocks[0])
-
   return (
     <td className={styles['title-column']}>
       {offer.isShowcase && (
@@ -89,7 +77,7 @@ export const OfferNameCell = ({
         {offer.name}
       </Link>
 
-      {(isOfferEducational(offer) || offer.isEvent) && (
+      {!isOfferEducational(offer) && offer.isEvent && (
         <span className={styles['stocks']}>
           {getDateInformations()}
 
@@ -119,26 +107,6 @@ export const OfferNameCell = ({
                 </span>
               )}
             </>
-          )}
-
-          {shouldShowCollectiveWarning && (
-            <div>
-              &nbsp;
-              <SvgIcon
-                className={styles['sold-out-icon']}
-                src={fullErrorIcon}
-                alt="Attention"
-              />
-              <span className={styles['sold-out-dates']}>
-                La date limite de réservation par le chef d’établissement est
-                dans{' '}
-                {`${
-                  getRemainingTime(offer.stocks[0]) >= 1
-                    ? pluralize(getRemainingTime(offer.stocks[0]), 'jour')
-                    : 'moins d’un jour'
-                } (${getDate(offer.stocks[0])})`}
-              </span>
-            </div>
           )}
         </span>
       )}

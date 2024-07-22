@@ -31,6 +31,9 @@ ACCOUNT_UNSUSPENSION_DELAY = 60  # days
 
 EDUCONNECT_SAML_REQUEST_ID_TTL = 24 * 60 * 60  # 1 day in seconds
 
+GDPR_EXTRACT_DATA_LOCK = "pcapi:core:users:gdpr_extract_data_lock"
+GDPR_EXTRACT_DATA_COUNTER = "pcapi:core:users:gdpr_extract_data_counter"
+
 
 class SuspensionReason(enum.Enum):
     def __str__(self) -> str:

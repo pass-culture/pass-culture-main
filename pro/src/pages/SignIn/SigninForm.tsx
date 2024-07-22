@@ -46,10 +46,7 @@ export const SigninForm = (): JSX.Element => {
         <ButtonLink
           icon={fullKeyIcon}
           variant={ButtonVariant.TERNARY}
-          link={{
-            to: '/demande-mot-de-passe',
-            isExternal: false,
-          }}
+          to="/demande-mot-de-passe"
           onClick={() =>
             logEvent(Events.CLICKED_FORGOTTEN_PASSWORD, {
               from: location.pathname,
@@ -62,10 +59,7 @@ export const SigninForm = (): JSX.Element => {
           <ButtonLink
             className={styles['buttons']}
             variant={ButtonVariant.SECONDARY}
-            link={{
-              to: accountCreationUrl,
-              isExternal: false,
-            }}
+            to={accountCreationUrl}
             onClick={() =>
               logEvent(Events.CLICKED_CREATE_ACCOUNT, {
                 from: location.pathname,

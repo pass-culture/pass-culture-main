@@ -52,7 +52,7 @@ const StatBlock = ({ icon, count, label, link, linkLabel }: StatBlockProps) => (
       <ButtonLink
         variant={ButtonVariant.QUATERNARY}
         icon={fullShowIcon}
-        link={{ to: link, isExternal: false }}
+        to={link}
       >
         {linkLabel}
       </ButtonLink>
@@ -124,12 +124,9 @@ export const OfferStats = ({ offerer, className }: OfferStatsProps) => {
 
               <ButtonLink
                 variant={ButtonVariant.QUATERNARY}
-                link={{
-                  to: 'https://aide.passculture.app/hc/fr/articles/4412007222289--Acteurs-Culturels-Quelles-sont-les-raisons-possibles-de-refus-de-votre-offre-',
-                  isExternal: true,
-                }}
+                to="https://aide.passculture.app/hc/fr/articles/4412007222289--Acteurs-Culturels-Quelles-sont-les-raisons-possibles-de-refus-de-votre-offre-"
+                isExternal
                 icon={fullLinkIcon}
-                svgAlt="Nouvelle fenêtre"
                 onClick={() =>
                   logEvent(Events.CLICKED_HOME_STATS_PENDING_OFFERS_FAQ)
                 }

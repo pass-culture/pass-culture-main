@@ -83,15 +83,14 @@ export const ReimbursementBankAccount = ({
             </span>
           </div>
           <ButtonLink
-            link={{
-              to:
-                bankAccount.status === BankAccountApplicationStatus.A_CORRIGER
-                  ? `https://www.demarches-simplifiees.fr/dossiers/${bankAccount.dsApplicationId}`
-                  : `https://www.demarches-simplifiees.fr/dossiers/${bankAccount.dsApplicationId}/messagerie`,
-              isExternal: true,
-              'aria-label': 'Nouvelle fenêtre',
-              target: '_blank',
-            }}
+            to={
+              bankAccount.status === BankAccountApplicationStatus.A_CORRIGER
+                ? `https://www.demarches-simplifiees.fr/dossiers/${bankAccount.dsApplicationId}`
+                : `https://www.demarches-simplifiees.fr/dossiers/${bankAccount.dsApplicationId}/messagerie`
+            }
+            isExternal
+            aria-label="Nouvelle fenêtre"
+            opensInNewTab
             onClick={() => {
               logEvent(
                 BankAccountEvents.CLICKED_BANK_DETAILS_RECORD_FOLLOW_UP,

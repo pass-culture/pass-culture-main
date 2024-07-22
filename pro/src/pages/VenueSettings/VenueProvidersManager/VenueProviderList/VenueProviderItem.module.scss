@@ -3,25 +3,18 @@
 @use "styles/variables/_size.scss" as size;
 
 .venue-provider-row {
-  align-items: center;
+  align-items: normal;
   display: flex;
   flex-direction: column;
   width: 100%;
-
-  &-without-frame {
-    max-width: rem.torem(900px);
-    align-items: normal;
-  }
+  max-width: rem.torem(900px);
 }
 
 .venue-provider-item-info {
   display: flex;
   flex-direction: column;
   width: 100%;
-
-  &-without-frame {
-    max-width: rem.torem(900px);
-  }
+  max-width: rem.torem(900px);
 }
 
 .provider-name-container {

@@ -7,7 +7,6 @@ import { useAnalytics } from 'app/App/analytics/firebase'
 import { ConfirmDialog } from 'components/Dialog/ConfirmDialog/ConfirmDialog'
 import { GET_OFFER_QUERY_KEY } from 'config/swrQueryKeys'
 import { Events } from 'core/FirebaseEvents/constants'
-import { useActiveFeature } from 'hooks/useActiveFeature'
 import { useNotification } from 'hooks/useNotification'
 import fullHideIcon from 'icons/full-hide.svg'
 import strokeCheckIcon from 'icons/stroke-check.svg'
@@ -23,7 +22,6 @@ export const StatusToggleButton = ({ offer }: StatusToggleButtonProps) => {
   const notification = useNotification()
   const { mutate } = useSWRConfig()
   const { logEvent } = useAnalytics()
-  const isFutureOfferEnabled = useActiveFeature('WIP_FUTURE_OFFER')
   const isPublicationDateInFuture =
     isDateValid(offer.publicationDate) &&
     new Date(offer.publicationDate) > new Date()
@@ -37,7 +35,6 @@ export const StatusToggleButton = ({ offer }: StatusToggleButtonProps) => {
 
   const toggleOfferActiveStatus = async () => {
     if (
-      isFutureOfferEnabled &&
       isPublicationDateInFuture &&
       !offer.isActive &&
       !isPublicationConfirmationModalOpen

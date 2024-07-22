@@ -406,12 +406,10 @@ export const RecurrenceForm = ({
                       onClick={() =>
                         arrayHelpers.push(INITIAL_QUANTITY_PER_PRICE_CATEGORY)
                       }
-                      link={{
-                        to: `#quantityPerPriceCategories[${
-                          values.quantityPerPriceCategories.length - 1
-                        }].quantity`,
-                        isExternal: true,
-                      }}
+                      to={`#quantityPerPriceCategories[${
+                        values.quantityPerPriceCategories.length - 1
+                      }].quantity`}
+                      isExternal
                     >
                       Ajouter d’autres places et tarifs
                     </ButtonLink>

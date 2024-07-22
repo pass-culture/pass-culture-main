@@ -26,7 +26,8 @@ from pcapi.routes.native.v1.serialization.common_models import AccessibilityComp
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import ConfiguredBaseModel
 from pcapi.routes.serialization import base as base_serializers
-from pcapi.routes.serialization.offerers_serialize import AddressResponseModel
+from pcapi.routes.serialization.address_serialize import AddressResponseIsEditableModel
+from pcapi.routes.serialization.address_serialize import retrieve_address_info_from_oa
 from pcapi.routes.serialization.offerers_serialize import GetOffererAddressWithIsEditableResponseModel
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
@@ -212,6 +213,37 @@ class ListOffersStockResponseModel(BaseModel):
         return remainingQuantity
 
 
+class ListOffersOfferResponseModelsGetterDict(GetterDict):
+
+    def get(self, key: str, default: Any | None = None) -> Any:
+        if key == "stocks":
+            # TODO: front pro doesn't need the soft deleted stocks but maybe this could be handled in the request directly
+            return [_serialize_stock(stock) for stock in self._obj.stocks if not stock.isSoftDeleted]
+        if key == "productIsbn":
+            return self._obj.extraData.get("ean") if self._obj.extraData else None
+        if key == "venue":
+            return _serialize_venue(self._obj.venue)
+        if key == "isShowcase":
+            return False
+        if key == "address":
+            offerer_address = None
+            if self._obj.offererAddress:
+                offerer_address = self._obj.offererAddress
+            elif self._obj.venue.offererAddress:
+                offerer_address = self._obj.venue.offererAddress
+            if (
+                not offerer_address
+            ):  # The only offers without oa neither in themselves nor in venues are the numerics ones.
+                return None
+            offererAddress = GetOffererAddressWithIsEditableResponseModel.from_orm(offerer_address)
+            offererAddress.label = offererAddress.label or self._obj.venue.common_name
+            return AddressResponseIsEditableModel(
+                **retrieve_address_info_from_oa(offerer_address),
+                **offererAddress.dict(exclude={"id"}),
+            )
+        return super().get(key, default)
+
+
 class ListOffersOfferResponseModel(BaseModel):
     hasBookingLimitDatetimesPassed: bool
     id: int
@@ -228,6 +260,12 @@ class ListOffersOfferResponseModel(BaseModel):
     venue: base_serializers.ListOffersVenueResponseModel
     status: OfferStatus
     isShowcase: bool | None
+    address: AddressResponseIsEditableModel | None
+
+    class Config:
+        json_encoders = {datetime.datetime: format_into_utc_date}
+        orm_mode = True
+        getter_dict = ListOffersOfferResponseModelsGetterDict
 
 
 class ListOffersResponseModel(BaseModel):
@@ -238,24 +276,7 @@ class ListOffersResponseModel(BaseModel):
 
 
 def _serialize_offer_paginated(offer: offers_models.Offer) -> ListOffersOfferResponseModel:
-    return ListOffersOfferResponseModel(
-        hasBookingLimitDatetimesPassed=offer.hasBookingLimitDatetimesPassed,
-        id=offer.id,
-        isActive=offer.isActive,
-        isEditable=offer.isEditable,
-        isEvent=offer.isEvent,
-        isThing=offer.isThing,
-        isEducational=False,
-        name=offer.name,
-        # TODO: front pro doesn't need the soft deleted stocks but maybe this could be handled in the request directly
-        stocks=[_serialize_stock(stock) for stock in offer.stocks if not stock.isSoftDeleted],
-        thumbUrl=offer.thumbUrl,
-        productIsbn=offer.extraData.get("ean") if offer.extraData else None,
-        subcategoryId=offer.subcategoryId,  # type: ignore[arg-type]
-        venue=_serialize_venue(offer.venue),
-        status=offer.status,
-        isShowcase=False,
-    )
+    return ListOffersOfferResponseModel.from_orm(offer)
 
 
 def _serialize_stock(stock: offers_models.Stock) -> ListOffersStockResponseModel:
@@ -404,19 +425,10 @@ class IndividualOfferResponseGetterDict(GetterDict):
             offererAddress = GetOffererAddressWithIsEditableResponseModel.from_orm(offerer_address)
             offererAddress.label = offererAddress.label or self._obj.venue.common_name
             return AddressResponseIsEditableModel(
-                id=offerer_address.addressId,
-                banId=offerer_address.address.banId,
-                inseeCode=offerer_address.address.inseeCode,
-                longitude=offerer_address.address.longitude,
-                latitude=offerer_address.address.latitude,
+                **retrieve_address_info_from_oa(offerer_address),
                 **offererAddress.dict(exclude={"id"}),
             )
         return super().get(key, default)
-
-
-class AddressResponseIsEditableModel(AddressResponseModel):
-    label: str
-    isEditable: bool
 
 
 class GetIndividualOfferResponseModel(BaseModel, AccessibilityComplianceMixin):

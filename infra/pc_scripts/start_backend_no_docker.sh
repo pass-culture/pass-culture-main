@@ -1,6 +1,6 @@
 #!/bin/bash
 
-API_DIR="$PASS_CULTURE_DIR/pass-culture-main/api"
+API_DIR="$ROOT_PATH/api"
 RUN="${RUN:=''}" # avoid unbound variable error
 
 # Recreate databases
@@ -11,6 +11,8 @@ recreate_database() {
     DROP DATABASE IF EXISTS pass_culture;
     CREATE DATABASE pass_culture WITH OWNER pass_culture;
     ALTER DATABASE pass_culture SET TIMEZONE TO 'UTC';
+    \c pass_culture
+    CREATE EXTENSION IF NOT EXISTS postgis;
 EOF
 }
 recreate_database_test() {
@@ -20,6 +22,8 @@ recreate_database_test() {
     DROP DATABASE IF EXISTS pass_culture_test;
     CREATE DATABASE pass_culture_test WITH OWNER pytest;
     ALTER DATABASE pass_culture_test SET TIMEZONE TO 'UTC';
+    \c pass_culture
+    CREATE EXTENSION IF NOT EXISTS postgis;
 EOF
 }
 
@@ -91,8 +95,23 @@ setup_no_docker() {
         echo "Requirements check failed. Exiting setup."
         return 1
     fi
-    echo "DATABASE_URL=postgresql://pass_culture:passq@localhost:5432/pass_culture" >> $API_DIR/.env.local.secret
-    echo "DATABASE_URL_TEST=postgresql://pytest:pytest@localhost:5432/pass_culture_test" >> $API_DIR/.env.local.secret
+    passculture_db="DATABASE_URL=postgresql://pass_culture:passq@localhost:5432/pass_culture"
+    passculture_test_db="DATABASE_URL_TEST=postgresql://pytest:pytest@localhost:5432/pass_culture_test"
+    backoffice_port="FLASK_BACKOFFICE_PORT=5002"
+    flask_ip="FLASK_IP=::1"
+    secret_file="$API_DIR/.env.local.secret"
+    if ! grep -qF "$passculture_db" "$secret_file"; then
+        echo "$passculture_db" >> "$secret_file"
+    fi
+    if ! grep -qF "$passculture_test_db" "$secret_file"; then
+        echo "$passculture_test_db" >> "$secret_file"
+    fi
+    if ! grep -qF "$backoffice_port" "$secret_file"; then
+        echo "$backoffice_port" >> "$secret_file"
+    fi
+    if ! grep -qF "$flask_ip" "$secret_file"; then
+        echo "$flask_ip" >> "$secret_file"
+    fi
     recreate_database
     recreate_database_test
     flask install_postgres_extensions

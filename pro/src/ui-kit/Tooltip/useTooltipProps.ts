@@ -1,13 +1,26 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 export const useTooltipProps = ({
   onMouseOver,
   onMouseOut,
   onFocus,
   onBlur,
-  onKeyDown,
 }: Partial<React.HTMLProps<HTMLButtonElement | HTMLAnchorElement>>) => {
   const [isTooltipHidden, setIsTooltipHidden] = useState(true)
+
+  useEffect(() => {
+    const closeTooltipOnEscapePressed = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setIsTooltipHidden(true)
+        event.stopPropagation()
+      }
+    }
+    document.addEventListener('keydown', closeTooltipOnEscapePressed)
+
+    return () => {
+      document.removeEventListener('keydown', closeTooltipOnEscapePressed)
+    }
+  }, [])
 
   return {
     isTooltipHidden,
@@ -34,15 +47,6 @@ export const useTooltipProps = ({
     ) => {
       setIsTooltipHidden(true)
       onBlur?.(event)
-    },
-    onKeyDown: (
-      event: React.KeyboardEvent<HTMLButtonElement | HTMLAnchorElement>
-    ) => {
-      if (event.key === 'Escape' && !isTooltipHidden) {
-        setIsTooltipHidden(true)
-        event.stopPropagation()
-      }
-      onKeyDown?.(event)
     },
   }
 }

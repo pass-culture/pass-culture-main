@@ -1553,6 +1553,15 @@ def test_public_api(client):
                     "enum": ["INFO", "ERROR", "WARNING", "CLOCK", "FILE", "MAGNIFYING_GLASS"],
                     "title": "PopOverIcon",
                 },
+                "PostReactionRequest": {
+                    "properties": {
+                        "offerId": {"title": "Offerid", "type": "integer"},
+                        "reactionType": {"$ref": "#/components/schemas/ReactionTypeEnum"},
+                    },
+                    "required": ["offerId", "reactionType"],
+                    "title": "PostReactionRequest",
+                    "type": "object",
+                },
                 "ProfileUpdateRequest": {
                     "properties": {
                         "activityId": {"$ref": "#/components/schemas/ActivityIdEnum"},
@@ -2239,6 +2248,12 @@ def test_public_api(client):
                             "type": "string",
                         },
                         "email": {"title": "Email", "type": "string"},
+                        "firstDepositActivationDate": {
+                            "format": "date-time",
+                            "nullable": True,
+                            "title": "Firstdepositactivationdate",
+                            "type": "string",
+                        },
                         "firstName": {"nullable": True, "title": "Firstname", "type": "string"},
                         "hasPassword": {"title": "Haspassword", "type": "boolean"},
                         "id": {"title": "Id", "type": "integer"},
@@ -2265,27 +2280,28 @@ def test_public_api(client):
                     "required": [
                         "bookedOffers",
                         "email",
+                        "hasPassword",
                         "id",
                         "isBeneficiary",
                         "isEligibleForBeneficiaryUpgrade",
-                        "hasPassword",
                         "needsToFillCulturalSurvey",
                         "requiresIdCheck",
                         "roles",
                         "showEligibleCard",
-                        "subscriptions",
                         "status",
+                        "subscriptions",
                     ],
                     "title": "UserProfileResponse",
                     "type": "object",
                 },
                 "UserProfileUpdateRequest": {
                     "properties": {
+                        "origin": {"nullable": True, "title": "Origin", "type": "string"},
                         "subscriptions": {
                             "anyOf": [{"$ref": "#/components/schemas/NotificationSubscriptions"}],
                             "nullable": True,
                             "title": "NotificationSubscriptions",
-                        }
+                        },
                     },
                     "title": "UserProfileUpdateRequest",
                     "type": "object",
@@ -2443,10 +2459,11 @@ def test_public_api(client):
                         "postalCode": {"nullable": True, "title": "Postalcode", "type": "string"},
                         "publicName": {"nullable": True, "title": "Publicname", "type": "string"},
                         "street": {"nullable": True, "title": "Street", "type": "string"},
+                        "timezone": {"title": "Timezone", "type": "string"},
                         "venueTypeCode": {"$ref": "#/components/schemas/VenueTypeCodeKey"},
                         "withdrawalDetails": {"nullable": True, "title": "Withdrawaldetails", "type": "string"},
                     },
-                    "required": ["isVirtual", "name", "id", "accessibility", "venueTypeCode"],
+                    "required": ["isVirtual", "name", "id", "accessibility", "venueTypeCode", "timezone"],
                     "title": "VenueResponse",
                     "type": "object",
                 },
@@ -3494,6 +3511,7 @@ def test_public_api(client):
                             "description": "Unprocessable Entity",
                         },
                     },
+                    "security": [{"JWTAuth": []}],
                     "summary": "get_email_update_status <GET>",
                     "tags": [],
                 }
@@ -3577,7 +3595,53 @@ def test_public_api(client):
                             "description": "Unprocessable Entity",
                         },
                     },
+                    "security": [{"JWTAuth": []}],
                     "summary": "update_user_email <POST>",
+                    "tags": [],
+                }
+            },
+            "/native/v1/reaction": {
+                "post": {
+                    "description": "",
+                    "operationId": "post__native_v1_reaction",
+                    "parameters": [],
+                    "requestBody": {
+                        "content": {
+                            "application/json": {"schema": {"$ref": "#/components/schemas/PostReactionRequest"}}
+                        }
+                    },
+                    "responses": {
+                        "204": {"description": "No Content"},
+                        "403": {"description": "Forbidden"},
+                        "422": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
+                            },
+                            "description": "Unprocessable Entity",
+                        },
+                    },
+                    "security": [{"JWTAuth": []}],
+                    "summary": "post_reaction <POST>",
+                    "tags": [],
+                }
+            },
+            "/native/v1/reaction/available": {
+                "get": {
+                    "description": "",
+                    "operationId": "get__native_v1_reaction_available",
+                    "parameters": [],
+                    "responses": {
+                        "200": {"description": "OK"},
+                        "403": {"description": "Forbidden"},
+                        "422": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
+                            },
+                            "description": "Unprocessable Entity",
+                        },
+                    },
+                    "security": [{"JWTAuth": []}],
+                    "summary": "get_available_reactions <GET>",
                     "tags": [],
                 }
             },

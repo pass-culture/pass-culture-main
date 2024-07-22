@@ -86,10 +86,8 @@ export const CollectiveDmsTimeline = ({
         </div>
         <ButtonLink
           variant={ButtonVariant.TERNARY}
-          link={{
-            to: collectiveDmsApplicationLink,
-            isExternal: true,
-          }}
+          to={collectiveDmsApplicationLink}
+          isExternal
           icon={fullLinkIcon}
           onClick={() =>
             logClickOnDmsLink(DMSApplicationstatus.EN_CONSTRUCTION)
@@ -99,10 +97,8 @@ export const CollectiveDmsTimeline = ({
         </ButtonLink>
         <ButtonLink
           variant={ButtonVariant.TERNARY}
-          link={{
-            to: collectiveDmsContactSupport,
-            isExternal: true,
-          }}
+          to={collectiveDmsContactSupport}
+          isExternal
           icon={fullLinkIcon}
         >
           Contacter les services des Ministères de l’Education Nationale et de
@@ -130,10 +126,8 @@ export const CollectiveDmsTimeline = ({
         </div>
         <ButtonLink
           variant={ButtonVariant.TERNARY}
-          link={{
-            to: collectiveDmsApplicationLink,
-            isExternal: true,
-          }}
+          to={collectiveDmsApplicationLink}
+          isExternal
           icon={fullLinkIcon}
           onClick={() => logClickOnDmsLink(DMSApplicationstatus.EN_INSTRUCTION)}
         >
@@ -173,10 +167,8 @@ export const CollectiveDmsTimeline = ({
         </div>
         <ButtonLink
           variant={ButtonVariant.TERNARY}
-          link={{
-            to: collectiveDmsApplicationLink,
-            isExternal: true,
-          }}
+          to={collectiveDmsApplicationLink}
+          isExternal
           icon={fullLinkIcon}
           onClick={() => logClickOnDmsLink(DMSApplicationstatus.ACCEPTE)}
         >

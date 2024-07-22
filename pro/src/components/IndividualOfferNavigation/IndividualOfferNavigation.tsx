@@ -5,6 +5,7 @@ import { Step, StepPattern, Stepper } from 'components/Stepper/Stepper'
 import { useIndividualOfferContext } from 'context/IndividualOfferContext/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
+import { useActiveFeature } from 'hooks/useActiveFeature'
 import { useActiveStep } from 'hooks/useActiveStep'
 import { useOfferWizardMode } from 'hooks/useOfferWizardMode'
 import {
@@ -18,6 +19,7 @@ import styles from './IndividualOfferNavigation.module.scss'
 import { LabelBooking } from './LabelBooking/LabelBooking'
 
 export const IndividualOfferNavigation = () => {
+  const isSplitOfferEnabled = useActiveFeature('WIP_SPLIT_OFFER')
   const { offer } = useIndividualOfferContext()
   const activeStep = useActiveStep(Object.values(OFFER_WIZARD_STEP_IDS))
   const mode = useOfferWizardMode()
@@ -35,26 +37,50 @@ export const IndividualOfferNavigation = () => {
   const steps: StepPattern[] = []
 
   // First step/tab: informations form or recap
-  if (mode === OFFER_WIZARD_MODE.READ_ONLY) {
-    steps.push({
-      id: OFFER_WIZARD_STEP_IDS.SUMMARY,
-      label: 'Détails de l’offre',
-      path: getIndividualOfferPath({
-        step: OFFER_WIZARD_STEP_IDS.SUMMARY,
-        mode,
-      }),
-      isActive: true,
-    })
-  } else {
-    steps.push({
-      id: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-      label: 'Détails de l’offre',
-      path: getIndividualOfferPath({
-        step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-        mode,
-      }),
-      isActive: true,
-    })
+  if (!isSplitOfferEnabled) {
+    if (mode === OFFER_WIZARD_MODE.READ_ONLY) {
+      steps.push({
+        id: OFFER_WIZARD_STEP_IDS.SUMMARY,
+        label: 'Détails de l’offre',
+        path: getIndividualOfferPath({
+          step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+          mode,
+        }),
+        isActive: true,
+      })
+    } else {
+      steps.push({
+        id: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+        label: 'Détails de l’offre',
+        path: getIndividualOfferPath({
+          step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+          mode,
+        }),
+        isActive: true,
+      })
+    }
+  }
+  if (isSplitOfferEnabled) {
+    steps.push(
+      {
+        id: OFFER_WIZARD_STEP_IDS.DETAILS,
+        label: 'Détails de l’offre',
+        path: getIndividualOfferPath({
+          step: OFFER_WIZARD_STEP_IDS.DETAILS,
+          mode,
+        }),
+        isActive: true,
+      },
+      {
+        id: OFFER_WIZARD_STEP_IDS.ABOUT,
+        label: 'Informations pratiques',
+        path: getIndividualOfferPath({
+          step: OFFER_WIZARD_STEP_IDS.ABOUT,
+          mode,
+        }),
+        isActive: true,
+      }
+    )
   }
 
   // Intermediate steps depending on isEvent

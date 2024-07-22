@@ -94,9 +94,7 @@ export const VenueOfferSteps = ({
                   )}
                   variant={ButtonVariant.BOX}
                   icon={fullNextIcon}
-                  link={{
-                    to: venueCreationUrl,
-                  }}
+                  to={venueCreationUrl}
                   onClick={() => {
                     logEvent(Events.CLICKED_CREATE_VENUE, {
                       from: location.pathname,
@@ -113,11 +111,9 @@ export const VenueOfferSteps = ({
                     styles['step-button-info']
                   )}
                   variant={ButtonVariant.QUATERNARY}
-                  link={{
-                    to: 'https://aide.passculture.app/hc/fr/articles/4411992075281--Acteurs-Culturels-Comment-cr%C3%A9er-un-lieu-',
-                    isExternal: true,
-                    target: '_blank',
-                  }}
+                  to="https://aide.passculture.app/hc/fr/articles/4411992075281--Acteurs-Culturels-Comment-cr%C3%A9er-un-lieu-"
+                  isExternal
+                  opensInNewTab
                   icon={fullInfoIcon}
                   onClick={() => {
                     logEvent(Events.CLICKED_NO_VENUE, {
@@ -138,9 +134,7 @@ export const VenueOfferSteps = ({
                 isDisabled={!hasVenue}
                 variant={ButtonVariant.BOX}
                 icon={fullNextIcon}
-                link={{
-                  to: `/offre/creation?lieu=${venue.id}&structure=${offerer.id}`,
-                }}
+                to={`/offre/creation?lieu=${venue.id}&structure=${offerer.id}`}
               >
                 Créer une offre
               </ButtonLink>
@@ -152,9 +146,7 @@ export const VenueOfferSteps = ({
                 isDisabled={!hasVenue}
                 variant={ButtonVariant.BOX}
                 icon={fullNextIcon}
-                link={{
-                  to: `remboursements/informations-bancaires?structure=${offerer.id}`,
-                }}
+                to={`remboursements/informations-bancaires?structure=${offerer.id}`}
                 onClick={() => {
                   logEvent(VenueEvents.CLICKED_VENUE_ADD_RIB_BUTTON, {
                     venue_id: venue?.id ?? '',
@@ -171,9 +163,7 @@ export const VenueOfferSteps = ({
                 isDisabled={!venue.hasAdageId}
                 variant={ButtonVariant.BOX}
                 icon={fullNextIcon}
-                link={{
-                  to: `/structures/${offerer.id}/lieux/${venue.id}/collectif`,
-                }}
+                to={`/structures/${offerer.id}/lieux/${venue.id}/collectif`}
               >
                 Renseigner mes informations à destination des enseignants
               </ButtonLink>
@@ -191,9 +181,7 @@ export const VenueOfferSteps = ({
               className={styles['step-button-width']}
               variant={ButtonVariant.BOX}
               icon={fullNextIcon}
-              link={{
-                to: `/structures/${offerer.id}/lieux/${venue.id}/collectif`,
-              }}
+              to={`/structures/${offerer.id}/lieux/${venue.id}/collectif`}
               onClick={() => {
                 logEvent(Events.CLICKED_EAC_DMS_TIMELINE, {
                   from: location.pathname,

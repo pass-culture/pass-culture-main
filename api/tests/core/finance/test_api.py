@@ -2,6 +2,7 @@ import csv
 import datetime
 from decimal import Decimal
 import io
+import json
 import logging
 import pathlib
 from unittest import mock
@@ -22,6 +23,7 @@ import pcapi.core.educational.models as educational_models
 from pcapi.core.educational.models import Ministry
 from pcapi.core.educational.validation import check_institution_fund
 from pcapi.core.finance import api
+from pcapi.core.finance import conf
 from pcapi.core.finance import exceptions
 from pcapi.core.finance import factories
 from pcapi.core.finance import models
@@ -33,10 +35,12 @@ import pcapi.core.offerers.api as offerers_api
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.factories as offers_factories
+from pcapi.core.subscription.ubble import api as ubble_subscription_api
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import clean_temporary_files
 from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
+import pcapi.core.users.api as users_api
 import pcapi.core.users.factories as users_factories
 import pcapi.core.users.models as users_models
 from pcapi.models import db
@@ -45,6 +49,10 @@ from pcapi.utils import human_ids
 import pcapi.utils.db as db_utils
 
 import tests
+from tests.core.subscription.test_factories import IdentificationState
+from tests.core.subscription.test_factories import UbbleIdentificationIncludedDocumentsFactory
+from tests.core.subscription.test_factories import UbbleIdentificationResponseFactory
+from tests.test_utils import json_default
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -1775,7 +1783,7 @@ def test_generate_payment_files(mocked_gdrive_create_file):
     gdrive_file_names = {call.args[1] for call in mocked_gdrive_create_file.call_args_list}
     assert gdrive_file_names == {
         "bank_accounts_20230201_133456.csv",
-        "down_payment_20230201_133456.csv",
+        f"down_payment_{cashflow.batch.label}_20230201_133456.csv",
     }
 
 
@@ -2081,11 +2089,11 @@ def test_generate_payments_file():
         api.price_event(event)
 
     cutoff = datetime.datetime(actual_year, 2, 15)
-    batch_id = api.generate_cashflows(cutoff).id
+    batch = api.generate_cashflows(cutoff)
 
-    n_queries = 2  # select pricings
+    n_queries = 3  # select pricings + select batch
     with assert_num_queries(n_queries):
-        path = api._generate_payments_file(batch_id)
+        path = api._generate_payments_file(batch)
 
     with open(path, encoding="utf-8") as fp:
         reader = csv.DictReader(fp, quoting=csv.QUOTE_NONNUMERIC)
@@ -2306,7 +2314,7 @@ def test_generate_invoice_file():
     with time_machine.travel(datetime.datetime(2023, 2, 1, 12, 34, 56)):
         path = api.generate_invoice_file(cashflow1.batch)
     with zipfile.ZipFile(path) as zfile:
-        with zfile.open("invoices_20230201_133456.csv") as csv_bytefile:
+        with zfile.open(f"invoices_{cashflow1.batch.label}_20230201_133456.csv") as csv_bytefile:
             csv_textfile = io.TextIOWrapper(csv_bytefile)
             reader = csv.DictReader(csv_textfile, quoting=csv.QUOTE_NONNUMERIC)
             rows = list(reader)
@@ -3814,6 +3822,80 @@ class UserRecreditTest:
             assert user.recreditAmountToShow == 30
             assert api._can_be_recredited(user) is False
 
+    @pytest.mark.parametrize("validated_age", [15, 16])
+    def test_can_be_recredited_after_age_substraction(self, validated_age):
+        user = users_factories.UnderageBeneficiaryFactory(subscription_age=17)
+
+        validated_birth_date = datetime.datetime.utcnow() - relativedelta(years=validated_age)
+        users_api.update_user_info(
+            user, users_factories.UserFactory(roles=["ADMIN"]), validated_birth_date=validated_birth_date.date()
+        )
+
+        can_be_recredited_for_validated_age = api._can_be_recredited(user)
+        assert can_be_recredited_for_validated_age
+
+    def test_cannot_be_recredited_for_deposit_using_identity_provider_checks(self):
+        user = users_factories.UnderageBeneficiaryFactory(subscription_age=17)
+
+        sixteen_years_ago = datetime.datetime.utcnow() - relativedelta(years=16)
+        users_api.update_user_info(
+            user, users_factories.UserFactory(roles=["ADMIN"]), validated_birth_date=sixteen_years_ago.date()
+        )
+
+        next_year = datetime.datetime.utcnow() + relativedelta(years=1)
+        with time_machine.travel(next_year):
+            can_be_recredited_for_17 = api._can_be_recredited(user)
+            assert not can_be_recredited_for_17
+
+    def test_cannot_be_recredited_for_deposit_using_support_actions(self, ubble_mocker):
+        yesterday = datetime.datetime.utcnow() - relativedelta(days=1)
+        with time_machine.travel(yesterday):
+            # for some reason, the Ubble fraud check is created after the action history below, so we create the user yesterday
+            user = users_factories.HonorStatementValidatedUserFactory()
+        seventeen_years_ago = datetime.datetime.utcnow() - relativedelta(years=17)
+        users_api.update_user_info(
+            user, users_factories.UserFactory(roles=["ADMIN"]), validated_birth_date=seventeen_years_ago.date()
+        )
+        users_factories.DepositGrantFactory(user=user)
+        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.UBBLE,
+            status=fraud_models.FraudCheckStatus.PENDING,
+            user=user,
+            eligibilityType=users_models.EligibilityType.UNDERAGE,
+            dateCreated=datetime.datetime.utcnow() + relativedelta(days=1),
+        )
+
+        sixteen_years_ago = datetime.datetime.utcnow() - relativedelta(years=16)
+        ubble_response = UbbleIdentificationResponseFactory(
+            identification_state=IdentificationState.VALID,
+            data__attributes__identification_id=fraud_check.thirdPartyId,
+            included=[
+                UbbleIdentificationIncludedDocumentsFactory(
+                    attributes__birth_date=sixteen_years_ago.date().isoformat()
+                ),
+            ],
+        )
+        with ubble_mocker(
+            fraud_check.thirdPartyId,
+            json.dumps(ubble_response.dict(by_alias=True), sort_keys=True, default=json_default),
+        ):
+            ubble_subscription_api.update_ubble_workflow(fraud_check)
+
+        next_year = datetime.datetime.utcnow() + relativedelta(years=1)
+        with time_machine.travel(next_year):
+            can_be_recredited_for_17 = api._can_be_recredited(user)
+            assert not can_be_recredited_for_17
+
+    def test_cannot_be_recredited_when_recredit_was_already_given(self):
+        user = users_factories.BeneficiaryFactory(age=15)
+        factories.RecreditFactory(deposit=user.deposit, recreditType=models.RecreditType.RECREDIT_16)
+        factories.RecreditFactory(deposit=user.deposit, recreditType=models.RecreditType.RECREDIT_17)
+
+        next_year = datetime.datetime.utcnow() + relativedelta(years=1)
+        with time_machine.travel(next_year):
+            can_be_recredited_for_16 = api._can_be_recredited(user)
+            assert not can_be_recredited_for_16
+
     def test_can_be_recredited_no_registration_datetime(self):
         with time_machine.travel("2020-05-02"):
             user = users_factories.UnderageBeneficiaryFactory(
@@ -3852,56 +3934,42 @@ class UserRecreditTest:
         assert api._can_be_recredited(user) is False
         assert mock_has_been_recredited.call_count == 0
 
-    @pytest.mark.parametrize(
-        "user_age,user_recredits,expected_result",
-        [
-            (15, [], False),
-            (16, [], False),
-            (17, [], False),
-            (
-                16,
-                [{"type": models.RecreditType.RECREDIT_16, "date_created": datetime.datetime(2020, 1, 1)}],
-                True,
-            ),
-            (
-                17,
-                [{"type": models.RecreditType.RECREDIT_16, "date_created": datetime.datetime(2020, 1, 1)}],
-                False,
-            ),
-            (
-                17,
-                [
-                    {"type": models.RecreditType.RECREDIT_16, "date_created": datetime.datetime(2019, 1, 1)},
-                    {"type": models.RecreditType.RECREDIT_17, "date_created": datetime.datetime(2020, 1, 1)},
-                ],
-                True,
-            ),
-            (
-                17,
-                [{"type": models.RecreditType.RECREDIT_17, "date_created": datetime.datetime(2020, 1, 1)}],
-                True,
-            ),
-        ],
-    )
-    def test_has_been_recredited(self, user_age, user_recredits, expected_result):
-        if 15 <= user_age <= 17:
-            user = users_factories.UnderageBeneficiaryFactory(
-                dateOfBirth=datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0))
-                - relativedelta(years=user_age)
-            )
-        elif user_age == 18:
-            user = users_factories.BeneficiaryGrant18Factory(
-                dateOfBirth=datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0))
-                - relativedelta(years=user_age)
-            )
-        else:
-            raise ValueError(f"Unexpected age: {user_age}")
+    @pytest.mark.parametrize("user_age", [16, 17])
+    def test_has_not_been_recredited(self, user_age):
+        user = users_factories.UnderageBeneficiaryFactory(
+            dateOfBirth=datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0))
+            - relativedelta(years=user_age)
+        )
 
-        for recredit in user_recredits:
-            factories.RecreditFactory(
-                deposit=user.deposit, recreditType=recredit["type"], dateCreated=recredit["date_created"]
-            )
-        assert api._has_been_recredited(user) == expected_result
+        assert not api._has_been_recredited(user)
+
+    @pytest.mark.parametrize("user_age", [15, 16, 17])
+    def test_has_been_recredited_with_current_recredit(self, user_age):
+        user = users_factories.UnderageBeneficiaryFactory(
+            dateOfBirth=datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0))
+            - relativedelta(years=user_age)
+        )
+        factories.RecreditFactory(
+            deposit=user.deposit,
+            recreditType=conf.RECREDIT_TYPE_AGE_MAPPING[user_age],
+            dateCreated=datetime.datetime(2020, 1, 1),
+        )
+
+        assert api._has_been_recredited(user)
+
+    def test_has_not_been_recredited_for_current_age(self):
+        user_age = 17
+        user = users_factories.UnderageBeneficiaryFactory(
+            dateOfBirth=datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0))
+            - relativedelta(years=user_age)
+        )
+        factories.RecreditFactory(
+            deposit=user.deposit,
+            recreditType=models.RecreditType.RECREDIT_16,
+            dateCreated=datetime.datetime(2020, 1, 1),
+        )
+
+        assert not api._has_been_recredited(user)
 
     def test_has_been_recredited_logs_error_if_no_age(self, caplog):
         user = users_factories.BaseUserFactory(dateOfBirth=None)
@@ -3919,15 +3987,28 @@ class UserRecreditTest:
 
         with time_machine.travel("2020-01-01"):
             # Create users, with their fraud checks
+            last_year = datetime.datetime.utcnow() - relativedelta(years=1)
 
             # Already beneficiary users
             user_15 = users_factories.UnderageBeneficiaryFactory(subscription_age=15)
-            user_16_not_recredited = users_factories.UnderageBeneficiaryFactory(subscription_age=16)
-            user_16_already_recredited = users_factories.UnderageBeneficiaryFactory(subscription_age=16)
-            user_17_not_recredited = users_factories.UnderageBeneficiaryFactory(subscription_age=17)
-            user_17_only_recredited_at_16 = users_factories.UnderageBeneficiaryFactory(subscription_age=17)
-            user_17_already_recredited = users_factories.UnderageBeneficiaryFactory(subscription_age=17)
-            user_17_already_recredited_twice = users_factories.UnderageBeneficiaryFactory(subscription_age=17)
+            user_16_not_recredited = users_factories.UnderageBeneficiaryFactory(
+                subscription_age=16, dateCreated=last_year
+            )
+            user_16_already_recredited = users_factories.UnderageBeneficiaryFactory(
+                subscription_age=16, dateCreated=last_year
+            )
+            user_17_not_recredited = users_factories.UnderageBeneficiaryFactory(
+                subscription_age=17, dateCreated=last_year
+            )
+            user_17_only_recredited_at_16 = users_factories.UnderageBeneficiaryFactory(
+                subscription_age=17, dateCreated=last_year
+            )
+            user_17_already_recredited = users_factories.UnderageBeneficiaryFactory(
+                subscription_age=17, dateCreated=last_year
+            )
+            user_17_already_recredited_twice = users_factories.UnderageBeneficiaryFactory(
+                subscription_age=17, dateCreated=last_year
+            )
 
             id_check_application_date = datetime.datetime(2019, 7, 31)  # Asked for credit before birthday
             fraud_factories.BeneficiaryFraudCheckFactory(

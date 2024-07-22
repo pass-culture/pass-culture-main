@@ -28,18 +28,18 @@ $sub-popin-full-width-breakpoint: rem.torem(673px);
 }
 
 .pop-in {
-  &[data-state='open']{
-    animation: fade-in 150ms ease-out;
-  }
-
-  &[data-state='closed'] {
-    animation: fade-out 150ms ease-in;
-  }
-
   z-index: zIndex.$profil-pop-in-z-index;
   width: 100dvw;
   height: 100dvh;
   margin-top: rem.torem(8px);
+
+  &[data-state="open"] {
+    animation: fade-in 150ms ease-out;
+  }
+
+  &[data-state="closed"] {
+    animation: fade-out 150ms ease-in;
+  }
 
   @media (min-width: size.$mobile) {
     height: auto;
@@ -85,10 +85,6 @@ $sub-popin-full-width-breakpoint: rem.torem(673px);
 }
 
 .sub-popin {
-  &[data-state='open']{
-    animation: fade-in 150ms ease-out;
-  }
-
   z-index: zIndex.$venues-pop-in-z-index;
   width: 100dvw;
   height: 100dvh;
@@ -96,6 +92,10 @@ $sub-popin-full-width-breakpoint: rem.torem(673px);
   background-color: var(--color-white);
   margin-top: calc((100vh - var(--radix-popper-available-height)) * -1);
   overflow-y: scroll;
+
+  &[data-state="open"] {
+    animation: fade-in 150ms ease-out;
+  }
 
   @media (min-width: $sub-popin-full-width-breakpoint) {
     max-height: rem.torem(310px);
@@ -108,7 +108,6 @@ $sub-popin-full-width-breakpoint: rem.torem(673px);
     border: solid rem.torem(1px) var(--color-grey-medium);
   }
 }
-
 
 .sub-menu {
   display: flex;
@@ -235,7 +234,7 @@ $sub-popin-full-width-breakpoint: rem.torem(673px);
   }
 
   &[data-state="checked"] {
-    @include fonts.bold
+    @include fonts.bold;
   }
 
   &-name {
@@ -256,8 +255,6 @@ $sub-popin-full-width-breakpoint: rem.torem(673px);
     &[data-state="checked"] {
       border-radius: 6px;
       border: 1px solid var(--color-grey-dark);
-
-
 
       @media (min-width: $sub-popin-full-width-breakpoint) {
         border: none;
@@ -281,7 +278,7 @@ $sub-popin-full-width-breakpoint: rem.torem(673px);
     margin-top: rem.torem(8px);
     margin-bottom: rem.torem(16px);
 
-    @include fonts.title4
+    @include fonts.title4;
   }
 
   @media (min-width: $sub-popin-full-width-breakpoint) {

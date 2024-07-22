@@ -109,12 +109,13 @@ class OffersTest:
 
         BookingFactory(stock=bookable_stock, user__deposit__expirationDate=datetime(year=2031, month=12, day=31))
         BookingFactory(stock=exhausted_stock, user__deposit__expirationDate=datetime(year=2031, month=12, day=31))
-
         offer_id = offer.id
-        with assert_no_duplicated_queries():
-            response = client.get(f"/native/v1/offer/{offer_id}")
 
-        assert response.status_code == 200
+        # select offer
+        with assert_num_queries(1):
+            with assert_no_duplicated_queries():
+                response = client.get(f"/native/v1/offer/{offer_id}")
+                assert response.status_code == 200
 
         assert response.json["id"] == offer.id
         assert response.json["accessibility"] == {
@@ -252,10 +253,13 @@ class OffersTest:
         offer = offers_factories.OfferFactory(product=product, venue__isPermanent=True)
         offers_factories.ThingStockFactory(offer=offer, price=12.34, quantity=None)
 
-        with assert_no_duplicated_queries():
-            response = client.get(f"/native/v1/offer/{offer.id}")
+        offer_id = offer.id
+        # select offer
+        with assert_num_queries(1):
+            with assert_no_duplicated_queries():
+                response = client.get(f"/native/v1/offer/{offer_id}")
+                assert response.status_code == 200
 
-        assert response.status_code == 200
         assert response.json["stocks"][0]["remainingQuantity"] is None
 
     def test_get_thing_offer(self, client):
@@ -266,10 +270,12 @@ class OffersTest:
         offers_factories.ThingStockFactory(offer=offer, price=12.34)
 
         offer_id = offer.id
-        with assert_no_duplicated_queries():
-            response = client.get(f"/native/v1/offer/{offer_id}")
+        # select offer
+        with assert_num_queries(1):
+            with assert_no_duplicated_queries():
+                response = client.get(f"/native/v1/offer/{offer_id}")
+                assert response.status_code == 200
 
-        assert response.status_code == 200
         assert not response.json["stocks"][0]["beginningDatetime"]
         assert response.json["stocks"][0]["price"] == 1234
         assert response.json["stocks"][0]["priceCategoryLabel"] is None
@@ -309,49 +315,65 @@ class OffersTest:
 
         offer_id = offer.id
         with override_features(**{ff_name: ff_value}):
-            with assert_no_duplicated_queries():
-                response = client.get(f"/native/v1/offer/{offer_id}")
+            # 1. select offer
+            # 2. check cinema venue_provider exists
+            # 3. select active cinema provider
+            # 4. check offer is from current cinema provider
+            # 5. update offer (deactivate)
+            # 6. select offer
+            # 7. select stock
+            # 8. select mediation
+            # 9. select product
+            # 10. select product_mediation
+            # 11. select venue
+            # 12. select provider
+            # 13. select feature
+            # 14. select offerer
+            # 15. select google_places_info
+            with assert_num_queries(15):
+                with assert_no_duplicated_queries():
+                    response = client.get(f"/native/v1/offer/{offer_id}")
+                    assert response.status_code == 200
 
-        assert response.status_code == 200
         assert response.json["isExternalBookingsDisabled"] is booking_disabled
 
     def test_get_digital_offer_with_available_activation_and_no_expiration_date(self, client):
-        # given
         stock = offers_factories.StockWithActivationCodesFactory()
         offer_id = stock.offer.id
 
-        # when
-        with assert_no_duplicated_queries():
-            response = client.get(f"/native/v1/offer/{offer_id}")
+        # select offer
+        # select activation_code
+        with assert_num_queries(2):
+            with assert_no_duplicated_queries():
+                response = client.get(f"/native/v1/offer/{offer_id}")
+                assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         assert response.json["stocks"][0]["activationCode"] == {"expirationDate": None}
 
     def test_get_digital_offer_with_available_activation_code_and_expiration_date(self, client):
-        # given
         stock = offers_factories.StockWithActivationCodesFactory(activationCodes__expirationDate=datetime(2050, 1, 1))
         offer_id = stock.offer.id
 
-        # when
-        with assert_no_duplicated_queries():
-            response = client.get(f"/native/v1/offer/{offer_id}")
+        # select offer
+        # select activation_code
+        with assert_num_queries(2):
+            with assert_no_duplicated_queries():
+                response = client.get(f"/native/v1/offer/{offer_id}")
+                assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         assert response.json["stocks"][0]["activationCode"] == {"expirationDate": "2050-01-01T00:00:00Z"}
 
     def test_get_digital_offer_without_available_activation_code(self, client):
-        # given
         stock = offers_factories.StockWithActivationCodesFactory(activationCodes__expirationDate=datetime(2000, 1, 1))
         offer_id = stock.offer.id
 
-        # when
-        with assert_no_duplicated_queries():
-            response = client.get(f"/native/v1/offer/{offer_id}")
+        # select offer
+        # select activation_code
+        with assert_num_queries(2):
+            with assert_no_duplicated_queries():
+                response = client.get(f"/native/v1/offer/{offer_id}")
+                assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         assert response.json["stocks"][0]["activationCode"] is None
 
     @time_machine.travel("2020-01-01")
@@ -359,13 +381,17 @@ class OffersTest:
         stock = offers_factories.EventStockFactory(beginningDatetime=datetime.utcnow() - timedelta(days=1))
 
         offer_id = stock.offer.id
-        with assert_no_duplicated_queries():
-            response = client.get(f"/native/v1/offer/{offer_id}")
+        # select offer
+        with assert_num_queries(1):
+            with assert_no_duplicated_queries():
+                response = client.get(f"/native/v1/offer/{offer_id}")
 
         assert response.json["isExpired"]
 
     def test_get_offer_not_found(self, client):
-        response = client.get("/native/v1/offer/1")
+        # select offer
+        with assert_num_queries(1):
+            response = client.get("/native/v1/offer/1")
 
         assert response.status_code == 404
 
@@ -375,9 +401,12 @@ class OffersTest:
     def test_get_non_approved_offer(self, client, validation):
         offer = offers_factories.OfferFactory(validation=validation)
 
-        with assert_no_duplicated_queries():
-            response = client.get(f"/native/v1/offer/{offer.id}")
-            assert response.status_code == 404
+        offer_id = offer.id
+        # select offer
+        with assert_num_queries(1):
+            with assert_no_duplicated_queries():
+                response = client.get(f"/native/v1/offer/{offer_id}")
+                assert response.status_code == 404
 
     @override_features(ENABLE_CDS_IMPLEMENTATION=True)
     @patch("pcapi.core.offers.api.external_bookings_api.get_shows_stock")
@@ -406,8 +435,27 @@ class OffersTest:
             offer=offer,
             idAtProviders=f"{offer_id_at_provider}#{show_id}",
         )
+        offer_id = offer.id
 
-        response = client.get(f"/native/v1/offer/{offer.id}")
+        # 1. select offer
+        # 2. check cinema venue_provider exists
+        # 3. select active cinema provider
+        # 4. select cinema_provider_pivot
+        # 5. select feature
+        # 6. update stock
+        # 7. select stock
+        # 8. select offer
+        # 9. select stock
+        # 10. select mediation
+        # 11. select venue
+        # 12. select provider
+        # 13. select offerer
+        # 14. select price_category
+        # 15. select price_category_label
+        # 16. select google_places_info
+        with assert_num_queries(16):
+            response = client.get(f"/native/v1/offer/{offer_id}")
+            assert response.status_code == 200
 
         assert stock.remainingQuantity == 0
         assert response.json["stocks"][0]["isSoldOut"]
@@ -450,8 +498,29 @@ class OffersTest:
             offer=offer, idAtProviders=f"{offer_id_at_provider}#{will_be_sold_out_show}", quantity=96
         )
 
-        response = client.get(f"/native/v1/offer/{offer.id}")
-        assert response.status_code == 200
+        offer_id = offer.id
+        # 1. select offer
+        # 2. check cinema venue_provider exists
+        # 3. select active cinema provider
+        # 4. select cinema_provider_pivot
+        # 5. select feature
+        # 6. select cinema_provider_pivot
+        # 7. select boost_cinema_details
+        # 8. update stock
+        # 9. select stock
+        # 10. select offer
+        # 11. select stock
+        # 12. select mediation
+        # 13. select venue
+        # 14. select provider
+        # 15. select offerer
+        # 16. select price_category
+        # 17. select price_category_label
+        # 18. select price_category
+        # 19. select google_places_info
+        with assert_num_queries(19):
+            response = client.get(f"/native/v1/offer/{offer_id}")
+            assert response.status_code == 200
         assert first_show_stock.remainingQuantity == 96
         assert will_be_sold_out_show_stock.remainingQuantity == 0
 
@@ -492,9 +561,30 @@ class OffersTest:
             offer=offer, idAtProviders=f"{offer_id_at_provider}#{descheduled_show}", quantity=95
         )
 
-        response = client.get(f"/native/v1/offer/{offer.id}")
+        offer_id = offer.id
+        # 1. select offer
+        # 2. check cinema venue_provider exists
+        # 3. select active cinema provider
+        # 4. select cinema_provider_pivot
+        # 5. select feature
+        # 6. check cinema venue_provider exists
+        # 7. select cgr_cinema_details
+        # 8. update stock
+        # 9. select stock
+        # 10. select offer
+        # 11. select stock
+        # 12. select mediation
+        # 13. select venue
+        # 14. select provider
+        # 15. select offerer
+        # 16. select price_category
+        # 17. select price_category_label
+        # 18. select price_category
+        # 19. select google_places_info
+        with assert_num_queries(19):
+            response = client.get(f"/native/v1/offer/{offer_id}")
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         assert still_scheduled_show_stock.remainingQuantity == 95
         assert descheduled_show_stock.remainingQuantity == 0
 
@@ -516,7 +606,24 @@ class OffersTest:
         )
         offers_factories.EventStockFactory(offer=offer, idAtProviders="toto")
 
-        response = client.get(f"/native/v1/offer/{offer.id}")
+        offer_id = offer.id
+        # 1. select offer
+        # 2. check cinema venue_provider exists
+        # 3. select active cinema provider
+        # 4. update offer
+        # 5. select offer
+        # 6. select stock
+        # 7. select mediation
+        # 8. select venue
+        # 9. select provider
+        # 10. select feature
+        # 11. select offerer
+        # 12. select price_category
+        # 13. select price_category_label
+        # 14. select google_places_info
+        with assert_num_queries(14):
+            response = client.get(f"/native/v1/offer/{offer_id}")
+            assert response.status_code == 200
 
         assert response.json["isReleased"] is False
         assert offer.isActive is False
@@ -524,7 +631,11 @@ class OffersTest:
     def should_have_metadata_describing_the_offer(self, client):
         offer = offers_factories.ThingOfferFactory()
 
-        response = client.get(f"/native/v1/offer/{offer.id}")
+        offer_id = offer.id
+        # select offer
+        with assert_num_queries(1):
+            response = client.get(f"/native/v1/offer/{offer_id}")
+            assert response.status_code == 200
 
         assert isinstance(response.json["metadata"], dict)
         assert response.json["metadata"]["@type"] == "Product"
@@ -534,8 +645,11 @@ class OffersTest:
         offers_factories.StockFactory(offer=offer, quantity=1, isSoftDeleted=True)
         non_deleted_stock = offers_factories.StockFactory(offer=offer, quantity=1)
 
-        with assert_no_duplicated_queries():
-            response = client.get(f"/native/v1/offer/{offer.id}")
+        offer_id = offer.id
+        # select offer
+        with assert_num_queries(1):
+            with assert_no_duplicated_queries():
+                response = client.get(f"/native/v1/offer/{offer_id}")
 
         assert response.status_code == 200
         assert len(response.json["stocks"]) == 1

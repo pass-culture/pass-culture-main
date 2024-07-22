@@ -56,7 +56,8 @@ const renderOffers = async (
   filters: Partial<SearchFiltersParams> & {
     page?: number
     audience?: Audience
-  } = DEFAULT_SEARCH_FILTERS
+  } = DEFAULT_SEARCH_FILTERS,
+  features: string[] = []
 ) => {
   const route = computeOffersUrl(filters)
 
@@ -71,6 +72,7 @@ const renderOffers = async (
     {
       user: sharedCurrentUserFactory(),
       initialRouterEntries: [route],
+      features,
     }
   )
 
@@ -752,6 +754,44 @@ describe('route Offers', () => {
         undefined,
         undefined
       )
+    })
+  })
+
+  describe('With WIP_ENABLE_OFFER_ADDRESS FF', () => {
+    it('should display venue header without the FF', async () => {
+      await renderOffers()
+      expect(
+        screen.queryByRole('columnheader', { name: 'Lieu' })
+      ).toBeInTheDocument()
+      expect(
+        screen.queryByRole('columnheader', { name: 'Adresse' })
+      ).not.toBeInTheDocument()
+    })
+
+    it('should display address header with the FF', async () => {
+      await renderOffers(DEFAULT_SEARCH_FILTERS, ['WIP_ENABLE_OFFER_ADDRESS'])
+      expect(
+        screen.queryByRole('columnheader', { name: 'Lieu' })
+      ).not.toBeInTheDocument()
+      expect(
+        screen.queryByRole('columnheader', { name: 'Adresse' })
+      ).toBeInTheDocument()
+    })
+
+    it('should display venue header with the FF for collective offers', async () => {
+      await renderOffers(
+        {
+          ...DEFAULT_SEARCH_FILTERS,
+          audience: Audience.COLLECTIVE,
+        },
+        ['WIP_ENABLE_OFFER_ADDRESS']
+      )
+      expect(
+        screen.queryByRole('columnheader', { name: 'Lieu' })
+      ).not.toBeInTheDocument()
+      expect(
+        screen.queryByRole('columnheader', { name: 'Adresse' })
+      ).toBeInTheDocument()
     })
   })
 })

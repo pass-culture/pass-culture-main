@@ -3,7 +3,6 @@ import cn from 'classnames'
 import { GetIndividualOfferResponseModel, OfferStatus } from 'apiClient/v1'
 import { IndividualOfferNavigation } from 'components/IndividualOfferNavigation/IndividualOfferNavigation'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
-import { useActiveFeature } from 'hooks/useActiveFeature'
 import fullWaitIcon from 'icons/full-wait.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { formatDateTimeParts, isDateValid } from 'utils/date'
@@ -29,7 +28,6 @@ export const IndivualOfferLayout = ({
   offer,
   mode,
 }: IndivualOfferLayoutProps) => {
-  const isFutureOfferEnabled = useActiveFeature('WIP_FUTURE_OFFER')
   const { date: publicationDate, time: publicationTime } = formatDateTimeParts(
     offer?.publicationDate
   )
@@ -52,8 +50,7 @@ export const IndivualOfferLayout = ({
 
         {offer && <p className={styles['offer-title']}>{offer.name}</p>}
 
-        {isFutureOfferEnabled &&
-          mode !== OFFER_WIZARD_MODE.CREATION &&
+        {mode !== OFFER_WIZARD_MODE.CREATION &&
           offer?.status !== OfferStatus.ACTIVE &&
           isDateValid(offer?.publicationDate) &&
           new Date(offer.publicationDate) > new Date() && (

@@ -358,6 +358,12 @@ class AllocineShowtime(pydantic.BaseModel):
     def get_first_projection_mode(cls, projection: list[AllocineShowtimeProjection]) -> AllocineShowtimeProjection:
         return projection[0]
 
+    @pydantic.field_validator("languages", mode="before")
+    def drop_none_values(cls, languages: list | None) -> list | None:
+        if languages:
+            return [l for l in languages if l is not None]
+        return languages
+
 
 class AllocineMovieShowtime(pydantic.BaseModel):
     movie: AllocineMovie

@@ -54,10 +54,17 @@
       flex-direction: column-reverse;
     }
   }
+
+  &-new-interface {
+    .actions-bar-content {
+      max-width: rem.torem(size.$desktop);
+    }
+  }
 }
 
 @media (min-width: size.$laptop) {
   .actions-bar-new-interface {
+    padding-right: size.$main-content-padding;
     padding-left: calc(rem.torem(size.$side-nav-width) + rem.torem(32px));
   }
 }
@@ -65,7 +72,7 @@
 @media (min-width: size.$tablet) {
   .actions-bar {
     position: fixed;
-    box-shadow: 0 2px rem.torem(16px) var(--color-large-shadow);
+    box-shadow: 0 rem.torem(-2px) rem.torem(16px) var(--color-large-shadow);
     border-top: unset;
 
     &-new-interface {

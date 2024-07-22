@@ -2,11 +2,13 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { AddressResponseIsEditableModel } from './AddressResponseIsEditableModel';
 import type { ListOffersStockResponseModel } from './ListOffersStockResponseModel';
 import type { ListOffersVenueResponseModel } from './ListOffersVenueResponseModel';
 import type { OfferStatus } from './OfferStatus';
 import type { SubcategoryIdEnum } from './SubcategoryIdEnum';
 export type ListOffersOfferResponseModel = {
+  address?: AddressResponseIsEditableModel | null;
   hasBookingLimitDatetimesPassed: boolean;
   id: number;
   isActive: boolean;

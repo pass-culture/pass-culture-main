@@ -109,12 +109,10 @@ export const StocksProviderForm = ({
           <ButtonLink
             className={styles['aide-stock-button']}
             icon={fullLinkIcon}
-            link={{
-              isExternal: true,
-              to: 'https://aide.passculture.app/hc/fr/articles/10616916478236',
-              target: '_blank',
-              'aria-label': 'Nouvelle fenêtre',
-            }}
+            isExternal
+            to="https://aide.passculture.app/hc/fr/articles/10616916478236"
+            opensInNewTab
+            aria-label="Nouvelle fenêtre"
             variant={ButtonVariant.QUATERNARY}
           >
             Visitez notre FAQ pour plus d’informations

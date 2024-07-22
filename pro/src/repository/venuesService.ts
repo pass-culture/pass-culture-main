@@ -1,6 +1,7 @@
 import {
-  VenueListItemResponseModel,
+  type AddressResponseIsEditableModel,
   ListOffersVenueResponseModel,
+  VenueListItemResponseModel,
 } from 'apiClient/v1'
 import { SelectOption } from 'custom_types/form'
 
@@ -12,6 +13,15 @@ export const computeVenueDisplayName = (
   } else {
     return venue.publicName || venue.name
   }
+}
+
+export const computeAddressDisplayName = (
+  address: AddressResponseIsEditableModel
+): string => {
+  return (
+    (address.label ? `${address.label} - ` : '') +
+    `${address.street} ${address.postalCode} ${address.city}`
+  )
 }
 
 const sortAlphabeticallyByLabel = (a: SelectOption, b: SelectOption) => {

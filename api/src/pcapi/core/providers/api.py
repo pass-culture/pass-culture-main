@@ -283,6 +283,63 @@ def update_provider_external_urls(
     return provider
 
 
+def update_venue_provider_external_urls(
+    venue_provider: providers_models.VenueProvider,
+    *,
+    notification_external_url: str | None | T_UNCHANGED = UNCHANGED,
+    booking_external_url: str | None | T_UNCHANGED = UNCHANGED,
+    cancel_external_url: str | None | T_UNCHANGED = UNCHANGED,
+) -> None:
+    ticketing_urls_are_unset = booking_external_url is None and cancel_external_url is None
+    ticketing_urls_are_updated = booking_external_url != UNCHANGED or cancel_external_url != UNCHANGED
+
+    venue_provider_external_urls = venue_provider.externalUrls
+    existing_cancel_external_urls = (
+        venue_provider_external_urls.cancelExternalUrl if venue_provider_external_urls else None
+    )
+    existing_booking_external_urls = (
+        venue_provider_external_urls.bookingExternalUrl if venue_provider_external_urls else None
+    )
+
+    # Validation
+    if ticketing_urls_are_unset:
+        validation.check_venue_ticketing_urls_can_be_unset(venue_provider)
+    elif ticketing_urls_are_updated:
+        validation.check_ticketing_urls_are_coherently_set(
+            existing_booking_external_urls if booking_external_url == UNCHANGED else booking_external_url,
+            existing_cancel_external_urls if cancel_external_url == UNCHANGED else cancel_external_url,
+        )
+
+    # Type of operation
+    is_creation = not venue_provider_external_urls and (
+        notification_external_url not in (None, UNCHANGED) or booking_external_url not in (None, UNCHANGED)
+    )
+    is_deletion = venue_provider_external_urls and notification_external_url is None and booking_external_url is None
+
+    if is_deletion:
+        repository.delete(venue_provider_external_urls)
+        return
+
+    if is_creation:
+        venue_provider_external_urls = providers_models.VenueProviderExternalUrls(
+            venueProvider=venue_provider,
+        )
+
+    # Update
+    if notification_external_url != UNCHANGED:
+        venue_provider_external_urls.notificationExternalUrl = notification_external_url
+
+    if booking_external_url != UNCHANGED:
+        venue_provider_external_urls.bookingExternalUrl = booking_external_url
+
+    if cancel_external_url != UNCHANGED:
+        venue_provider_external_urls.cancelExternalUrl = cancel_external_url
+
+    repository.save(venue_provider_external_urls)
+
+    return
+
+
 def _check_provider_can_be_connected(provider: providers_models.Provider, id_at_provider: str | None) -> None:
     if provider.hasOffererProvider:
         return

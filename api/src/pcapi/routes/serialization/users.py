@@ -1,3 +1,4 @@
+from datetime import date
 from datetime import datetime
 
 import flask
@@ -5,6 +6,7 @@ import pydantic.v1 as pydantic_v1
 from pydantic.v1 import EmailStr
 from pydantic.v1.class_validators import validator
 
+from pcapi.core.history import models as history_models
 from pcapi.core.users import models as users_models
 from pcapi.domain.password import check_password_strength
 from pcapi.routes.serialization import BaseModel
@@ -227,3 +229,106 @@ class SubmitReviewRequestModel(BaseModel):
     comment: str
     offererId: int
     location: str
+
+
+class GdprUserSerializer(BaseModel):
+    activity: str | None
+    address: str | None
+    civility: str | None
+    city: str | None
+    culturalSurveyFilledDate: datetime | None
+    departementCode: str | None
+    dateCreated: datetime
+    dateOfBirth: datetime | None
+    email: str
+    firstName: str | None
+    isActive: bool
+    isEmailValidated: bool | None
+    lastName: str | None
+    marriedName: str | None = pydantic_v1.Field(alias="married_name")
+    postalCode: str | None
+    schoolType: users_models.SchoolTypeEnum | None
+    validatedBirthDate: date | None
+
+    class Config:
+        orm_mode = True
+
+
+class GdprMarketing(BaseModel):
+    marketingEmails: bool
+    marketingNotifications: bool
+
+
+class GdprLoginDeviceHistorySerializer(BaseModel):
+    dateCreated: datetime
+    deviceId: str
+    location: str | None
+    source: str | None
+    os: str | None
+
+    class Config:
+        orm_mode = True
+
+
+class GdprEmailHistory(BaseModel):
+    dateCreated: datetime
+    newEmail: str | None
+    oldEmail: str
+
+
+class GdprDepositSerializer(BaseModel):
+    dateCreated: datetime
+    dateUpdated: datetime | None
+    expirationDate: datetime | None
+    amount: float
+    source: str
+    type: str
+
+
+class GdprBookingSerializer(BaseModel):
+    cancellationDate: datetime | None
+    dateCreated: datetime
+    dateUsed: datetime | None
+    quantity: int
+    amount: float
+    status: str
+    name: str
+    venue: str
+    offerer: str
+
+
+class GdprActionHistorySerializer(BaseModel):
+    actionDate: datetime
+    actionType: history_models.ActionType
+
+    class Config:
+        orm_mode = True
+
+
+class GdprBeneficiaryValidation(BaseModel):
+    dateCreated: datetime
+    eligibilityType: str | None
+    status: str | None
+    type: str
+    updatedAt: datetime | None
+
+
+class GdprInternal(BaseModel):
+    user: GdprUserSerializer
+    marketing: GdprMarketing
+    loginDevices: list[GdprLoginDeviceHistorySerializer]
+    emailsHistory: list[GdprEmailHistory]
+    actionsHistory: list[GdprActionHistorySerializer]
+    beneficiaryValidations: list[GdprBeneficiaryValidation]
+    deposits: list[GdprDepositSerializer]
+    bookings: list[GdprBookingSerializer]
+
+
+class GdprExternal(BaseModel):
+    brevo: dict
+
+
+class GdprDataContainer(BaseModel):
+    generationDate: datetime
+    internal: GdprInternal
+    external: GdprExternal

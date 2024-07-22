@@ -139,7 +139,7 @@ class DownloadPublicAccountExtractTest(PostEndpointHelper, StorageFolderManager)
         assert response.status_code == 200
         assert response.headers["Content-Type"] == "application/zip"
         assert int(response.headers["Content-Length"]) == len(expected_data)
-        assert response.headers["Content-Disposition"] == f'attachment; filename="{extract.user.full_name}.zip"'
+        assert response.headers["Content-Disposition"] == f'attachment; filename="{extract.user.email}.zip"'
         assert response.data == expected_data
 
     def test_extract_not_found(self, authenticated_client):

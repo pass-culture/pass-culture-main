@@ -102,7 +102,15 @@ def get_capped_offers_for_filters(
                 offerers_models.Venue.isVirtual,
             )
             .joinedload(offerers_models.Venue.managingOfferer)
-            .load_only(offerers_models.Offerer.id, offerers_models.Offerer.name)
+            .load_only(offerers_models.Offerer.id, offerers_models.Offerer.name),
+            sa_orm.joinedload(models.Offer.venue)
+            .joinedload(offerers_models.Venue.offererAddress)
+            .joinedload(offerers_models.OffererAddress.address),
+            sa_orm.joinedload(models.Offer.venue)
+            .joinedload(offerers_models.Venue.offererAddress)
+            .with_expression(
+                offerers_models.OffererAddress._isEditable, offerers_models.OffererAddress.isEditable.expression  # type: ignore [attr-defined]
+            ),
         )
         .options(
             sa_orm.joinedload(models.Offer.stocks).load_only(
@@ -132,6 +140,12 @@ def get_capped_offers_for_filters(
             .joinedload(models.Product.productMediations)
         )
         .options(sa_orm.joinedload(models.Offer.lastProvider).load_only(providers_models.Provider.localClass))
+        .options(
+            sa_orm.joinedload(models.Offer.offererAddress).joinedload(offerers_models.OffererAddress.address),
+            sa_orm.joinedload(models.Offer.offererAddress).with_expression(
+                offerers_models.OffererAddress._isEditable, offerers_models.OffererAddress.isEditable.expression  # type: ignore [attr-defined]
+            ),
+        )
         .limit(offers_limit)
         .all()
     )

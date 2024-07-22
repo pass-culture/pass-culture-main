@@ -75,15 +75,12 @@ export function AdageOfferPartnerPanel({
           <p className={styles['partner-panel-info-name']}>{venue.name}</p>
           {venue.adageId && !isPreview && (
             <ButtonLink
-              link={{
-                isExternal: true,
-                to: `${document.referrer}adage/ressource/partenaires/id/${venue.adageId}`,
-                target: '_blank',
-              }}
+              isExternal
+              to={`${document.referrer}adage/ressource/partenaires/id/${venue.adageId}`}
+              opensInNewTab
               variant={ButtonVariant.TERNARY}
               className={styles['partner-panel-info-link']}
               icon={fullLinkIcon}
-              svgAlt="Nouvelle fenêtre"
             >
               Voir la page partenaire
             </ButtonLink>

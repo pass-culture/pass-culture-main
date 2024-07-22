@@ -1,5 +1,6 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import * as router from 'react-router-dom'
 import { expect } from 'vitest'
 
 import { api } from 'apiClient/api'
@@ -457,5 +458,16 @@ describe('reimbursementsWithFilters', () => {
         buttonType: 'multiple',
       })
     )
+  })
+  it('should display the bank account section even without context', () => {
+    vi.spyOn(router, 'useOutletContext').mockReturnValue(undefined)
+
+    renderReimbursementsInvoices()
+
+    expect(
+      screen.queryByText(
+        'Vous n’avez pas encore de justificatifs de remboursement disponibles'
+      )
+    ).toBeInTheDocument()
   })
 })

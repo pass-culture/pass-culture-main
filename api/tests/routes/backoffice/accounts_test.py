@@ -52,7 +52,6 @@ from pcapi.routes.backoffice.accounts.blueprint import _get_tunnel_type
 from pcapi.routes.backoffice.accounts.blueprint import _set_steps_with_active_and_disabled
 from pcapi.routes.backoffice.accounts.blueprint import get_eligibility_history
 from pcapi.routes.backoffice.accounts.blueprint import get_public_account_history
-from pcapi.tasks.serialization import gdpr_tasks
 from pcapi.utils import email as email_utils
 
 from .helpers import button as button_helpers
@@ -2555,8 +2554,7 @@ class ExtractPublicAccountTest(PostEndpointHelper):
     expected_queries = 5  # session + user + targeted user with joined data + gdpr insert + featureflag
 
     @override_features(WIP_BENEFICIARY_EXTRACT_TOOL=True)
-    @mock.patch("pcapi.routes.backoffice.accounts.blueprint.extract_beneficiary_data.delay")
-    def test_extract_public_account(self, _mock_extract, authenticated_client, legit_user):
+    def test_extract_public_account(self, authenticated_client, legit_user):
 
         user = users_factories.BeneficiaryFactory()
 
@@ -2576,9 +2574,6 @@ class ExtractPublicAccountTest(PostEndpointHelper):
         assert (
             f"L'extraction des données de l'utilisateur {user.full_name} a été demandée."
             in html_parser.extract_alert(response.data)
-        )
-        _mock_extract.assert_called_once_with(
-            payload=gdpr_tasks.ExtractBeneficiaryDataRequest(extract_id=extract_data.id)
         )
 
     @override_features(WIP_BENEFICIARY_EXTRACT_TOOL=True)
@@ -2601,17 +2596,16 @@ class ExtractPublicAccountTest(PostEndpointHelper):
             dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=8)
         )
 
-        with mock.patch("pcapi.routes.backoffice.accounts.blueprint.extract_beneficiary_data"):
-            response = self.post_to_endpoint(authenticated_client, user_id=expired_gdpr_data_extract.user.id)
-            assert response.status_code == 302
+        response = self.post_to_endpoint(authenticated_client, user_id=expired_gdpr_data_extract.user.id)
 
         expected_url = url_for(
             "backoffice_web.public_accounts.get_public_account",
             user_id=expired_gdpr_data_extract.user.id,
             _external=True,
         )
-        assert response.location == expected_url
 
+        assert response.status_code == 302
+        assert response.location == expected_url
         extract_data = users_models.GdprUserDataExtract.query.all()
         assert len(extract_data) == 2
         assert extract_data[1].user.id == expired_gdpr_data_extract.user.id

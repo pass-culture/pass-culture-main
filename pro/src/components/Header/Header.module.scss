@@ -58,12 +58,11 @@
   .logo {
     display: inline-flex;
     height: 100%;
+    color: var(--color-input-text-color);
 
     svg {
       width: rem.torem(80px);
     }
-
-    color: var(--color-input-text-color);
 
     @media (min-width: size.$laptop) {
       margin-left: rem.torem(16px);

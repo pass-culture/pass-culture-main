@@ -43,26 +43,25 @@ Cypress.on('uncaught:exception', () => {
   return false
 })
 
-Cypress.Commands.add(
-  'login',
-  ({ email, password, redirectUrl}) => {
-    cy.intercept({ method: 'POST', url: '/users/signin' }).as('signinUser')
+Cypress.Commands.add('login', ({ email, password, redirectUrl }) => {
+  cy.intercept({ method: 'POST', url: '/users/signin' }).as('signinUser')
 
-    cy.visit('/connexion')
-      cy.acceptCookies()
+  cy.visit('/connexion')
+  cy.acceptCookies()
 
-    cy.get('#email').type(email)
-    cy.get('#password').type(password)
-    cy.get('button[type=submit]').click()
-    cy.wait('@signinUser')
+  cy.get('#email').type(email)
+  cy.get('#password').type(password)
+  cy.get('button[type=submit]').click()
+  cy.wait('@signinUser')
 
-    cy.url().should('contain', redirectUrl ?? '/accueil')
-    cy.findAllByTestId('spinner').should('not.exist')
-  }
-)
+  cy.url().should('contain', redirectUrl ?? '/accueil')
+  cy.findAllByTestId('spinner').should('not.exist')
+})
 
 Cypress.Commands.add('acceptCookies', () => {
-  cy.get('button').contains('Tout accepter').click()
+  cy.get('button', { timeout: 15 * 1000 })
+    .contains('Tout accepter')
+    .click()
 })
 
 Cypress.Commands.add('setFeatureFlags', (features: Feature[]) => {

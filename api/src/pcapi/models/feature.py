@@ -113,20 +113,15 @@ class FeatureToggle(enum.Enum):
     WIP_ENABLE_NATIONAL_PROGRAM_NEW_RULES_PUBLIC_API = (
         "Activer les nouvelles règles de création et d'édition d'offres collecrives pour l'API publique (collective)"
     )
-    WIP_SYNCHRONIZE_CINEMA_STOCKS_WITH_ALLOCINE_PRODUCTS = (
-        "Synchroniser les offres et stocks de cinéma avec les produits allociné"
-    )
-    WIP_ENABLE_ADAGE_VISUALIZATION = "Activer la nouvelle manière de visualiser les offres dans la recherche d'ADAGE."
     WIP_ENABLE_TITELIVE_API_FOR_BOOKS = "Activer l'utilisation de l'API Titelive pour les synchronisations produits pour les livres(désactive l'utilisation de l'utilisation de FTP pour la synchro)"
     ENABLE_PRO_NEW_NAV_MODIFICATION = "Activer la modification du statut de la navigation du portail pro"
     WIP_ENABLE_NEW_HASHING_ALGORITHM = "Activer le nouveau système de hachage des clés publiques d'API"
     WIP_BENEFICIARY_EXTRACT_TOOL = "Activer l'extraction de données personnelles (RGPD)"
     WIP_ENABLE_OFFER_MARKDOWN_DESCRIPTION = "Activer la description des offres collectives en markdown."
-    WIP_FUTURE_OFFER = "Activer la publication d'offres dans le futur"
     USE_END_DATE_FOR_COLLECTIVE_PRICING = "Utiliser la date de fin du stock collectif comme date de valorisation."
     WIP_ENABLE_OFFER_ADDRESS = "Activer l'association des offres à des adresses."
-    WIP_ENABLE_PRO_WITHOUT_FRAME = "Active la version du portail pro sans frame autour du contenue principal"
     WIP_SPLIT_OFFER = "Activer le nouveau parcours de création/édition d'offre individuelle"
+    ENABLE_COLLECTIVE_OFFERS_EXPIRATION = "Activer la mise en avant des offres collectives sur le point d'expirer"
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -169,6 +164,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.ENABLE_EMS_INTEGRATION,
     FeatureToggle.ENABLE_IOS_OFFERS_LINK_WITH_REDIRECTION,
     FeatureToggle.WIP_ENABLE_NEW_HASHING_ALGORITHM,
+    FeatureToggle.ENABLE_COLLECTIVE_OFFERS_EXPIRATION,
     FeatureToggle.ENABLE_PRO_BOOKINGS_V2,
     FeatureToggle.ENABLE_PRO_NEW_NAV_MODIFICATION,
     FeatureToggle.ENABLE_SWITCH_ALLOCINE_SYNC_TO_EMS_SYNC,
@@ -184,11 +180,8 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_CONNECT_AS,
     FeatureToggle.WIP_ENABLE_MOCK_UBBLE,
     FeatureToggle.WIP_ENABLE_OFFER_ADDRESS,
-    FeatureToggle.WIP_ENABLE_PRO_WITHOUT_FRAME,
     FeatureToggle.WIP_ENABLE_REMINDER_MARKETING_MAIL_METADATA_DISPLAY,
     FeatureToggle.WIP_ENABLE_TITELIVE_API_FOR_BOOKS,
-    FeatureToggle.WIP_SYNCHRONIZE_CINEMA_STOCKS_WITH_ALLOCINE_PRODUCTS,
-    FeatureToggle.WIP_FUTURE_OFFER,
     FeatureToggle.WIP_SPLIT_OFFER,
     # Please keep alphabetic order
 )
@@ -196,14 +189,6 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
 if settings.IS_PROD or settings.IS_STAGING:
     FEATURES_DISABLED_BY_DEFAULT += (FeatureToggle.WIP_ENABLE_FINANCE_INCIDENT,)
     FEATURES_DISABLED_BY_DEFAULT += (FeatureToggle.WIP_ENABLE_NATIONAL_PROGRAM_NEW_RULES_PUBLIC_API,)
-
-if settings.IS_TESTING:
-    testing_features_disabled_by_default = set(FEATURES_DISABLED_BY_DEFAULT)
-    features_to_enable = {
-        FeatureToggle.WIP_SYNCHRONIZE_CINEMA_STOCKS_WITH_ALLOCINE_PRODUCTS,
-    }
-
-    FEATURES_DISABLED_BY_DEFAULT = tuple(testing_features_disabled_by_default - features_to_enable)
 
 
 def add_feature_to_database(feature: Feature) -> None:
@@ -252,6 +237,21 @@ def install_feature_flags() -> None:
             ),
         )
 
+    db.session.commit()
+
+
+def clean_feature_flags() -> None:
+    """Automatically remove old feature flags from database.
+
+    This is done after each deployment and in tests.
+    """
+    installed_flag_names = {f[0] for f in Feature.query.with_entities(Feature.name).all()}
+    defined_flag_name = {f.name for f in list(FeatureToggle)}
+
+    to_remove_flags = installed_flag_names - defined_flag_name
+
+    for flag in to_remove_flags:
+        db.session.execute(text("DELETE FROM feature WHERE name = :name").bindparams(name=flag))
     db.session.commit()
 
 

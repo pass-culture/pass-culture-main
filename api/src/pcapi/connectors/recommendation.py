@@ -14,10 +14,13 @@ from pcapi.utils import requests
 
 
 logger = logging.getLogger(__name__)
-HTTP_TIMEOUT = 5
 
 
 class RecommendationApiException(Exception):
+    pass
+
+
+class RecommendationApiTimeoutException(Exception):
     pass
 
 
@@ -68,14 +71,14 @@ class HttpBackend:
         url = "/".join((settings.RECOMMENDATION_API_URL.rstrip("/"), path.lstrip("/")))
         try:
             if method == "get":
-                response = requests.get(url, params=params, timeout=HTTP_TIMEOUT, disable_synchronous_retry=True)
+                response = requests.get(url, params=params, disable_synchronous_retry=True)
             elif method == "post":
-                response = requests.post(
-                    url, params=params, json=body, timeout=HTTP_TIMEOUT, disable_synchronous_retry=True
-                )
+                response = requests.post(url, params=params, json=body, disable_synchronous_retry=True)
             else:
                 raise ValueError(f"Unexpected method: {method}")
             response.raise_for_status()
+        except requests.exceptions.Timeout:
+            raise RecommendationApiTimeoutException()
         except requests.exceptions.RequestException as exc:
             logger.info("Got error from Recommendation API", extra={"exc": str(exc)}, exc_info=True)
             raise RecommendationApiException(str(exc)) from exc

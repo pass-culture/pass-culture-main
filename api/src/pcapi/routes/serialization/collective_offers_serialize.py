@@ -71,7 +71,8 @@ EmptyStringToNone = EmptyAsNullString | None
 class ListCollectiveOffersQueryModel(BaseModel):
     nameOrIsbn: str | None
     offerer_id: int | None
-    status: CollectiveOfferDisplayedStatus | None
+    # TODO: (raphaelpra, 2024-07-08): Remove the type CollectiveOfferDisplayedStatus when front only use list in request
+    status: list[CollectiveOfferDisplayedStatus] | CollectiveOfferDisplayedStatus | None
     venue_id: int | None
     categoryId: str | None
     creation_mode: str | None
@@ -85,12 +86,23 @@ class ListCollectiveOffersQueryModel(BaseModel):
         extra = "forbid"
         arbitrary_types_allowed = True
 
+    @root_validator(pre=True)
+    def format_status(cls, values: dict) -> dict:
+        status = values.get("status")
+
+        if not isinstance(status, list) and status is not None:
+            values["status"] = [status]
+
+        return values
+
 
 class CollectiveOffersStockResponseModel(BaseModel):
     hasBookingLimitDatetimePassed: bool
     remainingQuantity: int | str
     beginningDatetime: datetime | None
     bookingLimitDatetime: datetime | None
+    startDatetime: datetime | None
+    endDatetime: datetime | None
 
     @validator("remainingQuantity", pre=True)
     def validate_remaining_quantity(cls, remainingQuantity: int | str) -> int | str:
@@ -119,6 +131,7 @@ class CollectiveOfferResponseModel(BaseModel):
     id: int
     isActive: bool
     isEditable: bool
+    isEditableByPcPro: bool
     isEducational: bool
     name: str
     stocks: list[CollectiveOffersStockResponseModel]
@@ -170,6 +183,7 @@ def _serialize_offer_paginated(offer: CollectiveOffer | CollectiveOfferTemplate)
         id=offer.id,
         isActive=False if offer.status == CollectiveOfferStatus.INACTIVE else offer.isActive,
         isEditable=offer.isEditable,
+        isEditableByPcPro=offer.isEditableByPcPro,
         isEducational=True,
         name=offer.name,
         stocks=serialized_stocks,  # type: ignore[arg-type]

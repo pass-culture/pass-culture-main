@@ -27,11 +27,8 @@ export const SummarySection = ({
 
       {typeof editLink === 'string' ? (
         <ButtonLink
-          link={{
-            to: editLink,
-            isExternal: false,
-            'aria-label': props['aria-label'],
-          }}
+          to={editLink}
+          aria-label={props['aria-label']}
           className={style['summary-layout-section-header-edit-link']}
           icon={fullEditIcon}
         >
