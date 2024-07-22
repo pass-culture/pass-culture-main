@@ -95,6 +95,13 @@ class VenueProviderExternalUrlsFactory(BaseFactory):
     notificationExternalUrl = factory.Sequence("https://{}.example.org/notification".format)
 
 
+class VenueProviderPermissionFactory(BaseFactory):
+    class Meta:
+        model = models.VenueProviderPermission
+
+    venueProvider = factory.SubFactory(VenueProviderFactory)
+
+
 class CinemaProviderPivotFactory(BaseFactory):
     class Meta:
         model = models.CinemaProviderPivot

@@ -2,6 +2,7 @@ from datetime import datetime
 from datetime import timedelta
 
 import pytest
+from sqlalchemy.exc import IntegrityError
 
 from pcapi.core.external_bookings import exceptions as external_bookings_exceptions
 import pcapi.core.offerers.factories as offerers_factories
@@ -10,6 +11,7 @@ import pcapi.core.offers.models as offers_models
 from pcapi.core.providers import factories
 from pcapi.core.providers import models
 from pcapi.core.providers import repository
+from pcapi.models import db
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -215,3 +217,126 @@ class GetFutureVenueEventsRequiringATicketingSystemTest:
 
         assert len(future_events) == 1
         assert future_events[0] == expected_event_offer
+
+
+class AddAllPermissionsForVenueProviderTest:
+
+    def test_should_add_all_permissions_for_given_venue_provider(self):
+        venue_provider = factories.VenueProviderFactory()
+
+        assert len(venue_provider.permissions) == 0
+        repository.add_all_permissions_for_venue_provider(venue_provider)
+        db.session.commit()
+
+        for resource in models.ApiResourceEnum:
+            for permission in models.PermissionEnum:
+                venue_provider_permission = repository.get_venue_provider_permission_or_none(
+                    venue_provider.id, resource=resource, permission=permission
+                )
+                assert venue_provider_permission is not None
+
+    def test_should_not_add_permission_if_it_fails(self):
+        venue_provider = factories.VenueProviderFactory()
+        read_permission = factories.VenueProviderPermissionFactory(
+            venueProvider=venue_provider,
+            resource=models.ApiResourceEnum.collective_events,
+            permission=models.PermissionEnum.READ,
+        )
+
+        with pytest.raises(IntegrityError):
+            repository.add_all_permissions_for_venue_provider(venue_provider)
+            db.session.commit()
+
+        db.session.rollback()
+        # assert no permission has been added
+        assert len(venue_provider.permissions) == 1
+        assert venue_provider.permissions[0] == read_permission
+
+
+class GetAllVenueProvidersWithNoPermissionTest:
+
+    def test_should_return_all_venue_providers_with_no_permission(self):
+        # Remove providers that are automatically added for all tests,
+        models.Provider.query.delete()
+
+        venue_provider = factories.VenueProviderFactory()
+        # Allocine VenueProvider
+        factories.AllocineVenueProviderFactory()
+        # Cinema VenueProvider
+        provider_cds = factories.ProviderFactory(name="CDS", localClass="CDSStocks")
+        factories.VenueProviderFactory(provider=provider_cds)
+        # Creates a VenueProvider with permission
+        factories.VenueProviderPermissionFactory(
+            permission=models.PermissionEnum.READ, resource=models.ApiResourceEnum.products
+        )
+        query = repository.get_all_venue_providers_with_no_permission()
+        venue_providers_with_no_permission = query.all()
+
+        assert len(venue_providers_with_no_permission) == 1
+        assert venue_providers_with_no_permission[0] == venue_provider
+
+
+class GetVenueProviderPermissionOrNoneTest:
+
+    def test_should_return_none(self):
+        venue_provider = factories.VenueProviderFactory()
+        factories.VenueProviderPermissionFactory(
+            venueProvider=venue_provider,
+            permission=models.PermissionEnum.READ,
+            resource=models.ApiResourceEnum.products,
+        )
+
+        assert (
+            repository.get_venue_provider_permission_or_none(
+                venue_provider.id,
+                resource=models.ApiResourceEnum.products,
+                permission=models.PermissionEnum.WRITE,
+            )
+            is None
+        )
+        assert (
+            repository.get_venue_provider_permission_or_none(
+                venue_provider.id,
+                resource=models.ApiResourceEnum.collective_bookings,
+                permission=models.PermissionEnum.READ,
+            )
+            is None
+        )
+        assert (
+            repository.get_venue_provider_permission_or_none(
+                12345667899900004444444,
+                resource=models.ApiResourceEnum.collective_bookings,
+                permission=models.PermissionEnum.READ,
+            )
+            is None
+        )
+
+    def test_should_return_venue_provider_permission(self):
+        venue_provider = factories.VenueProviderFactory()
+        read_products_permission = factories.VenueProviderPermissionFactory(
+            venueProvider=venue_provider,
+            permission=models.PermissionEnum.READ,
+            resource=models.ApiResourceEnum.products,
+        )
+        write_events_permission = factories.VenueProviderPermissionFactory(
+            venueProvider=venue_provider,
+            permission=models.PermissionEnum.WRITE,
+            resource=models.ApiResourceEnum.events,
+        )
+
+        assert (
+            repository.get_venue_provider_permission_or_none(
+                venue_provider.id,
+                resource=models.ApiResourceEnum.products,
+                permission=models.PermissionEnum.READ,
+            )
+            is read_products_permission
+        )
+        assert (
+            repository.get_venue_provider_permission_or_none(
+                venue_provider.id,
+                resource=models.ApiResourceEnum.events,
+                permission=models.PermissionEnum.WRITE,
+            )
+            is write_events_permission
+        )
