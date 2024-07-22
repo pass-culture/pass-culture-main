@@ -10,12 +10,14 @@ from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import models as offers_models
 from pcapi.core.offers.validation import check_for_duplicated_price_categories
+from pcapi.core.providers import models as providers_models
 from pcapi.models import api_errors
 from pcapi.models import db
 from pcapi.routes.public import blueprints
 from pcapi.routes.public import spectree_schemas
 from pcapi.routes.public.documentation_constants import http_responses
 from pcapi.routes.public.documentation_constants import tags
+from pcapi.routes.public.services import authorization
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
 from pcapi.validation.routes.users_authentifications import api_key_required
@@ -153,6 +155,7 @@ def get_event(event_id: int) -> serialization.EventOfferResponse:
             {"HTTP_200": (serialization.EventOffersResponse, "The event offers have been returned")}
             # errors
             | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
+            | http_responses.HTTP_403_UNTHAUTHORIZED
             | http_responses.HTTP_404_VENUE_NOT_FOUND
         )
     ),
@@ -165,7 +168,13 @@ def get_events(query: serialization.GetOffersQueryParams) -> serialization.Event
     Return all the events linked to given venue.
     Results are paginated (by default there are `50` events per page).
     """
-    utils.check_venue_id_is_tied_to_api_key(query.venue_id)
+    authorization.check_is_allowed_to_perform_action(
+        current_api_key.provider.id,
+        query.venue_id,
+        resource=providers_models.ApiResourceEnum.events,
+        permission=providers_models.PermissionEnum.READ,
+    )
+
     total_offers_query = utils.retrieve_offers(
         is_event=True,
         firstIndex=query.firstIndex,

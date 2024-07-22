@@ -9200,6 +9200,9 @@
                     "401": {
                         "description": "Authentication is necessary to use this API."
                     },
+                    "403": {
+                        "description": "You do not have the necessary rights to use this API."
+                    },
                     "404": {
                         "description": "The venue could not found for your API key."
                     },
