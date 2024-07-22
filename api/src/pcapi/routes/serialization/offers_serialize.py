@@ -246,7 +246,7 @@ class ListOffersOfferResponseModelsGetterDict(GetterDict):
             ):  # The only offers without oa neither in themselves nor in venues are the numerics ones.
                 return None
             offererAddress = GetOffererAddressWithIsEditableResponseModel.from_orm(offerer_address)
-            offererAddress.label = offererAddress.label or self._obj.venue.common_name
+            offererAddress.label = offererAddress.label if offererAddress.isEditable else self._obj.venue.common_name
             return AddressResponseIsEditableModel(
                 **retrieve_address_info_from_oa(offerer_address),
                 **offererAddress.dict(exclude={"id"}),
