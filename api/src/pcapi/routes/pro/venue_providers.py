@@ -52,9 +52,10 @@ def create_venue_provider(body: PostVenueProviderBody) -> VenueProviderResponse:
 
     try:
         new_venue_provider = api.create_venue_provider(
-            body.providerId,
-            body.venueId,
-            VenueProviderCreationPayload(
+            provider_id=body.providerId,
+            venue_id=body.venueId,
+            current_user=current_user,
+            payload=VenueProviderCreationPayload(
                 isDuo=body.isDuo,
                 price=body.price,
                 quantity=body.quantity,

@@ -3,9 +3,13 @@ from flask import redirect
 from flask import render_template
 from flask import request
 from flask import url_for
+from flask_login import current_user
 from markupsafe import Markup
 import sqlalchemy as sa
 
+from pcapi.core.history import api as history_api
+from pcapi.core.history import models as history_models
+from pcapi.core.offerers import models as offerer_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.models import db
 
@@ -73,9 +77,21 @@ def create_pivot(name: str) -> utils.BackofficeResponse:
         flash(utils.build_form_error_msg(form), "warning")
         return redirect(url_for(".get_pivots", active_tab=name), code=303)
 
+    venue = offerer_models.Venue.query.filter_by(id=form.venue_id.data[0]).one_or_none()
+    if not venue:
+        flash(Markup("Le lieu id={venue_id} n'existe pas").format(venue_id=form.venue_id.data[0]), "warning")
+        return redirect(url_for(".get_pivots", active_tab=name), code=303)
+
     try:
         can_create_pivot = pivot_context.create_pivot(form)
         if can_create_pivot:
+            history_api.add_action(
+                action_type=history_models.ActionType.PIVOT_CREATED,
+                author=current_user,
+                venue=venue,
+                cinema_id=pivot_context.get_cinema_id(form),
+                pivot_name=name,
+            )
             db.session.commit()
     except sa.exc.IntegrityError as exc:
         db.session.rollback()

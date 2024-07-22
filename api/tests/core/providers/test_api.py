@@ -36,10 +36,11 @@ class CreateVenueProviderTest:
         # Given
         providerId = 1
         venueId = 2
+        author = users_factories.UserFactory()
 
         # When
         with pytest.raises(exceptions.ProviderNotFound):
-            api.create_venue_provider(providerId, venueId)
+            api.create_venue_provider(providerId, venueId, current_user=author)
 
         # Then
         assert not providers_models.VenueProvider.query.first()
@@ -72,9 +73,10 @@ class CreateVenueProviderTest:
             apiUrl="https://example.com/api",
             localClass=None,
         )
+        author = users_factories.UserFactory()
 
         # When
-        api.create_venue_provider(provider.id, venue.id)
+        api.create_venue_provider(provider.id, venue.id, current_user=author)
 
         # Then
         assert venue.isPermanent == is_permanent

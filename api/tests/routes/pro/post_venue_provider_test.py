@@ -8,6 +8,7 @@ from pcapi.connectors.serialization.cine_digital_service_serializers import Show
 from pcapi.connectors.serialization.cine_digital_service_serializers import ShowTariffCDS
 from pcapi.connectors.serialization.cine_digital_service_serializers import ShowsMediaoptionsCDS
 from pcapi.core.external_bookings.models import Movie
+from pcapi.core.history import models as history_models
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.providers.factories import CinemaProviderPivotFactory
@@ -54,6 +55,10 @@ class Returns201Test:
         assert venue_provider.providerId == provider.id
         assert venue_provider.venueIdAtOfferProvider == "12345678912345"
         assert "id" in response.json
+        action = history_models.ActionHistory.query.one()
+        assert action.actionType == history_models.ActionType.SYNC_VENUE_TO_PROVIDER
+        assert action.authorUser == user
+        assert action.extraData["provider_name"] == venue_provider.provider.name
 
         venue_provider_id = response.json["id"]
         mock_synchronize_venue_provider.assert_called_once_with(venue_provider_id)

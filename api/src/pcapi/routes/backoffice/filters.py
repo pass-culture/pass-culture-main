@@ -634,6 +634,22 @@ def _format_modified_info_value(value: typing.Any, name: str | None = None) -> s
     return str(value)
 
 
+def format_pivot_name(pivot_name: str) -> str:
+    match pivot_name:
+        case "allocine":
+            return "Allociné"
+        case "boost":
+            return "Boost"
+        case "cgr":
+            return "CGR"
+        case "cineoffice":
+            return "CineOffice"
+        case "ems":
+            return "EMS"
+        case _:
+            return pivot_name
+
+
 def format_modified_info_values(modified_info: typing.Any, name: str | None = None) -> str:
     old_info = modified_info.get("old_info")
     new_info = modified_info.get("new_info")
@@ -1259,6 +1275,7 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_offer_types"] = format_offer_types
     app.jinja_env.filters["format_website"] = format_website
     app.jinja_env.filters["format_venue_target"] = format_venue_target
+    app.jinja_env.filters["format_pivot_name"] = format_pivot_name
     app.jinja_env.filters["format_titelive_id_lectorat"] = format_titelive_id_lectorat
     app.jinja_env.filters["format_date_range"] = format_date_range
     app.jinja_env.filters["parse_referrer"] = parse_referrer
