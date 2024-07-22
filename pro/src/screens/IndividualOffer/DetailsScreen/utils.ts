@@ -4,11 +4,11 @@ import {
   CategoryResponseModel,
   GetIndividualOfferResponseModel,
   OfferStatus,
+  PostOfferBodyModel,
   SubcategoryResponseModel,
   VenueListItemResponseModel,
 } from 'apiClient/v1'
 import { showOptionsTree } from 'core/Offers/categoriesSubTypes'
-import { OfferExtraData } from 'core/Offers/types'
 import { isOfferSynchronized } from 'core/Offers/utils/synchronization'
 import { SelectOption } from 'custom_types/form'
 import { computeVenueDisplayName } from 'repository/venuesService'
@@ -290,8 +290,8 @@ export function setFormReadOnlyFields(
 
 export const serializeExtraData = (
   formValues: DetailsFormValues
-): OfferExtraData => {
-  const extraData: OfferExtraData = {}
+): PostOfferBodyModel['extraData'] => {
+  const extraData: PostOfferBodyModel['extraData'] = {}
   if (formValues.author) {
     extraData.author = formValues.author
   }
