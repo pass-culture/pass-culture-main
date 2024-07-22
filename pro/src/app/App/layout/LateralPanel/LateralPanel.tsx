@@ -41,10 +41,10 @@ export const LateralPanel = ({
       if (event.key === 'Tab') {
         if (event.shiftKey && document.activeElement === firstElement) {
           event.preventDefault()
-          lastElement.focus()
+          lastElement?.focus()
         } else if (!event.shiftKey && document.activeElement === lastElement) {
           event.preventDefault()
-          firstElement.focus()
+          firstElement?.focus()
         }
       }
     }
@@ -62,8 +62,8 @@ export const LateralPanel = ({
     <nav
       id="lateral-panel"
       className={classnames({
-        [styles['lateral-panel-wrapper']]: true,
-        [styles['lateral-panel-wrapper-open']]: lateralPanelOpen,
+        [styles['lateral-panel-wrapper'] ?? '']: true,
+        [styles['lateral-panel-wrapper-open'] ?? '']: lateralPanelOpen,
       })}
       ref={navPanel}
       aria-label="Menu principal"
@@ -72,8 +72,8 @@ export const LateralPanel = ({
         {lateralPanelOpen && (
           <div
             className={classnames({
-              [styles['lateral-panel-nav']]: true,
-              [styles['lateral-panel-nav-open']]: lateralPanelOpen,
+              [styles['lateral-panel-nav'] ?? '']: true,
+              [styles['lateral-panel-nav-open'] ?? '']: lateralPanelOpen,
             })}
           >
             <Button

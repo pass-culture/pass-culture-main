@@ -72,7 +72,7 @@ export const ActivityForm = ({
 
                 <div
                   className={cn(styles['form-row-actions'], {
-                    [styles['first-row']]: index === 0,
+                    [styles['first-row'] ?? '']: index === 0,
                   })}
                 >
                   <ListIconButton

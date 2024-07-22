@@ -67,11 +67,11 @@ export const Venue = ({
       venueList
     )
     if (newVenueOptions.length === 1) {
-      await setFieldValue('venueId', newVenueOptions[0].value)
+      await setFieldValue('venueId', newVenueOptions[0]?.value)
       await onVenueChange(
         setFieldValue,
         venueList,
-        String(newVenueOptions[0].value)
+        String(newVenueOptions[0]?.value)
       )
     }
   }

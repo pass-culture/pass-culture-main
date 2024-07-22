@@ -16,7 +16,8 @@ export function CollectiveBookingStatusCell({
   booking,
   className,
 }: CollectiveBookingStatusCellProps) {
-  const lastBookingStatus = booking.bookingStatusHistory.slice(-1)[0].status
+  const lastBookingStatus =
+    booking.bookingStatusHistory.slice(-1)[0]?.status ?? ''
   const bookingDisplayInfo =
     getCollectiveBookingStatusDisplayInformations(lastBookingStatus)
   if (!bookingDisplayInfo) {

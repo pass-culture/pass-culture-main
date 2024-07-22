@@ -4,7 +4,7 @@ export function findLastIndex<T>(
 ): number {
   let l = array.length
   while (l--) {
-    if (predicate(array[l])) {
+    if (array[l] && predicate(array[l]!)) {
       return l
     }
   }

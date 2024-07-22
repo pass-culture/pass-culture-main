@@ -97,7 +97,7 @@ describe('Homepage', () => {
     vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
       offerersNames: baseOfferersNames,
     })
-    vi.spyOn(api, 'getOfferer').mockResolvedValue(baseOfferers[0])
+    vi.spyOn(api, 'getOfferer').mockResolvedValue(baseOfferers[0]!)
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
@@ -113,7 +113,7 @@ describe('Homepage', () => {
   })
 
   it('the user should see the home offer steps if they do not have any venues', async () => {
-    vi.spyOn(api, 'getOfferer').mockResolvedValue(baseOfferers[1])
+    vi.spyOn(api, 'getOfferer').mockResolvedValue(baseOfferers[1]!)
 
     renderHomePage()
     await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))

@@ -135,7 +135,7 @@ describe('route CollectiveOffers', () => {
     it('should have venue value when user filters by venue', async () => {
       await renderOffers()
       const firstVenueOption = screen.getByRole('option', {
-        name: proVenues[0].name,
+        name: proVenues[0]!.name,
       })
       const venueSelect = screen.getByLabelText('Lieu')
 
@@ -143,7 +143,7 @@ describe('route CollectiveOffers', () => {
       await userEvent.click(screen.getByText('Rechercher'))
 
       expect(mockNavigate).toHaveBeenCalledWith(
-        `/offres/collectives?lieu=${proVenues[0].id}`
+        `/offres/collectives?lieu=${proVenues[0]!.id}`
       )
     })
 

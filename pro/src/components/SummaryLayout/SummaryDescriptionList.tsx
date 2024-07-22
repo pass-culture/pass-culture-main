@@ -30,7 +30,7 @@ export const SummaryDescriptionList = ({
     return null
   }
 
-  if (descriptions.length === 1) {
+  if (descriptions[0] && descriptions.length === 1) {
     const { text, title } = descriptions[0]
     return (
       <div className={cn(style['summary-layout-row'], className)}>

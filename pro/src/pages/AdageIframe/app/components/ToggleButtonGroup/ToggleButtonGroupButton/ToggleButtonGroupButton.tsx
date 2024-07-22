@@ -29,7 +29,7 @@ export function ToggleButtonGroupButton({
     >
       <button
         className={classNames(styles['button-group-button'], {
-          [styles['button-group-button-active']]: isActive,
+          [styles['button-group-button-active'] ?? '']: isActive,
         })}
         {...tooltipProps}
         {...buttonAttrs}

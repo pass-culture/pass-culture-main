@@ -27,7 +27,7 @@ export const PhoneNumberInput = ({
   const [field, meta, helpers] = useField({ name })
 
   const [countryCode, setCountryCode] = useState<CountryCode>(
-    PHONE_CODE_COUNTRY_CODE_OPTIONS[0].value
+    PHONE_CODE_COUNTRY_CODE_OPTIONS[0]!.value
   )
   const [phoneInputValue, setPhoneInputValue] = useState<string>('')
 

@@ -11,7 +11,7 @@ import { isCollectiveOfferTemplate } from 'core/OfferEducational/types'
 
 // FIXME: delete the functions in this file when the ticket front is finished : https://passculture.atlassian.net/browse/PC-30662
 export function canArchiveCollectiveOffer(offer: CollectiveOfferResponseModel) {
-  const startDatetime = offer.stocks[0].beginningDatetime
+  const startDatetime = offer.stocks[0]?.beginningDatetime
 
   const canArchiveThisOffer =
     offer.status === CollectiveOfferStatus.ACTIVE ||

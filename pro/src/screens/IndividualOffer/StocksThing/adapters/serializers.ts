@@ -35,9 +35,9 @@ export const serializeStockThingList = (
     bookingLimitDatetime: isDateValid(formValues.bookingLimitDatetime)
       ? serializeThingBookingLimitDatetime(
           new Date(
-            yearBookingLimitDatetime,
-            monthBookingLimitDatetime,
-            dayBookingLimitDatetime
+            yearBookingLimitDatetime ?? 0,
+            monthBookingLimitDatetime ?? 0,
+            dayBookingLimitDatetime ?? 0
           ),
           departementCode
         )
@@ -61,9 +61,9 @@ export const serializeStockThingList = (
       apiStock.activationCodesExpirationDatetime =
         serializeThingBookingLimitDatetime(
           new Date(
-            yearActivationCodesExpirationDatetime,
-            monthActivationCodesExpirationDatetime,
-            dayActivationCodesExpirationDatetime
+            yearActivationCodesExpirationDatetime ?? 0,
+            monthActivationCodesExpirationDatetime ?? 0,
+            dayActivationCodesExpirationDatetime ?? 0
           ),
           departementCode
         )

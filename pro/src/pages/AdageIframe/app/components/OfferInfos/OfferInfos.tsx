@@ -95,8 +95,8 @@ export const OfferInfos = () => {
         adageUser.role === AdageFrontRoles.READONLY
           ? 'recherche'
           : parentRouteInUrl
-      ]
-    : crumbForCurrentRoute['mon-etablissement']
+      ]!
+    : crumbForCurrentRoute['mon-etablissement']!
 
   if (isTemplateOfferLoading || isBookableOfferLoading) {
     return <Spinner />

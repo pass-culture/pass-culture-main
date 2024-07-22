@@ -112,7 +112,7 @@ export const OfferEducationalForm = ({
         setCurrentOfferer(selectedOfferer)
         setVenuesOptions(venuesOptions)
         if (venuesOptions.length === 1) {
-          await setFieldValue('venueId', venuesOptions[0].value)
+          await setFieldValue('venueId', venuesOptions[0]!.value)
         } else {
           await setFieldValue('venueId', initialValues.venueId)
         }

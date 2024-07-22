@@ -12,7 +12,7 @@ import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { Tag, TagVariant } from 'ui-kit/Tag/Tag'
 
 const OFFER_STATUS_PROPERTIES: Record<
-  string,
+  OfferStatus,
   {
     variant: TagVariant
     icon: string

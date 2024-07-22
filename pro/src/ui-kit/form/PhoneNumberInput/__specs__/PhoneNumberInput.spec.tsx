@@ -24,7 +24,7 @@ describe('PhoneNumberInput', () => {
   it('should show default placeholder', () => {
     renderPhoneNumberInput()
 
-    const defaultCountryCodeOption = PHONE_CODE_COUNTRY_CODE_OPTIONS[0]
+    const defaultCountryCodeOption = PHONE_CODE_COUNTRY_CODE_OPTIONS[0]!
     const defaultPlaceholder = PLACEHOLDER_MAP[defaultCountryCodeOption.value]
 
     expect(screen.getByText(defaultCountryCodeOption.label)).toBeInTheDocument()

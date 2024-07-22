@@ -30,11 +30,11 @@ describe('formatAndOrderVenues', () => {
     expect(sortingValues).toStrictEqual([
       {
         label: 'gilbert Joseph - Offre numérique',
-        value: venues[1].id.toString(),
+        value: venues[1]!.id.toString(),
       },
       {
         label: 'Librairie Fnac',
-        value: venues[0].id.toString(),
+        value: venues[0]!.id.toString(),
       },
     ])
   })
@@ -54,7 +54,7 @@ describe('formatAndOrderVenues', () => {
     expect(formattedValues).toStrictEqual([
       {
         label: 'gilbert Joseph - Offre numérique',
-        value: venues[0].id.toString(),
+        value: venues[0]!.id.toString(),
       },
     ])
   })

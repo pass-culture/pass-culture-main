@@ -116,9 +116,9 @@ describe('StocksEventList', () => {
     ).toHaveLength(
       5 // Number of sortable columns
     )
-    within(screen.getAllByRole('row')[1]).getByText('12,50 € - Label')
-    within(screen.getAllByRole('row')[2]).getByText('5,50 € - Label')
-    within(screen.getAllByRole('row')[3]).getByText('30,50 € - Label')
+    within(screen.getAllByRole('row')[1]!).getByText('12,50 € - Label')
+    within(screen.getAllByRole('row')[2]!).getByText('5,50 € - Label')
+    within(screen.getAllByRole('row')[3]!).getByText('30,50 € - Label')
 
     vi.spyOn(api, 'getStocks').mockResolvedValueOnce({
       stocks: [stock2, stock1, stock3],
@@ -126,7 +126,7 @@ describe('StocksEventList', () => {
       hasStocks: true,
     })
     await userEvent.click(
-      screen.getAllByRole('img', { name: 'Trier par ordre croissant' })[2]
+      screen.getAllByRole('img', { name: 'Trier par ordre croissant' })[2]!
     )
     await waitFor(() => {
       expect(api.getStocks).toHaveBeenCalledWith(
@@ -139,9 +139,9 @@ describe('StocksEventList', () => {
         1
       )
     })
-    within(screen.getAllByRole('row')[1]).getByText('5,50 € - Label')
-    within(screen.getAllByRole('row')[2]).getByText('12,50 € - Label')
-    within(screen.getAllByRole('row')[3]).getByText('30,50 € - Label')
+    within(screen.getAllByRole('row')[1]!).getByText('5,50 € - Label')
+    within(screen.getAllByRole('row')[2]!).getByText('12,50 € - Label')
+    within(screen.getAllByRole('row')[3]!).getByText('30,50 € - Label')
 
     vi.spyOn(api, 'getStocks').mockResolvedValueOnce({
       stocks: [stock3, stock1, stock2],
@@ -162,9 +162,9 @@ describe('StocksEventList', () => {
         1
       )
     })
-    within(screen.getAllByRole('row')[1]).getByText('30,50 € - Label')
-    within(screen.getAllByRole('row')[2]).getByText('12,50 € - Label')
-    within(screen.getAllByRole('row')[3]).getByText('5,50 € - Label')
+    within(screen.getAllByRole('row')[1]!).getByText('30,50 € - Label')
+    within(screen.getAllByRole('row')[2]!).getByText('12,50 € - Label')
+    within(screen.getAllByRole('row')[3]!).getByText('5,50 € - Label')
 
     vi.spyOn(api, 'getStocks').mockResolvedValueOnce({
       stocks: [stock1, stock2, stock3],
@@ -183,9 +183,9 @@ describe('StocksEventList', () => {
         1
       )
     })
-    within(screen.getAllByRole('row')[1]).getByText('12,50 € - Label')
-    within(screen.getAllByRole('row')[2]).getByText('5,50 € - Label')
-    within(screen.getAllByRole('row')[3]).getByText('30,50 € - Label')
+    within(screen.getAllByRole('row')[1]!).getByText('12,50 € - Label')
+    within(screen.getAllByRole('row')[2]!).getByText('5,50 € - Label')
+    within(screen.getAllByRole('row')[3]!).getByText('30,50 € - Label')
   })
 
   it('should filter stocks', async () => {
@@ -317,7 +317,7 @@ describe('StocksEventList', () => {
     expect(allCheckboxes[2]).not.toBeChecked()
 
     // line checkbox partial checks "all checkbox"
-    await userEvent.click(allCheckboxes[1])
+    await userEvent.click(allCheckboxes[1]!)
     expect(selectAllCheckbox).toBeChecked()
     expect(allCheckboxes[1]).toBeChecked()
     expect(allCheckboxes[2]).not.toBeChecked()
@@ -359,7 +359,7 @@ describe('StocksEventList', () => {
     ).toHaveLength(2)
 
     const checkboxes = screen.getAllByRole('checkbox')
-    await userEvent.click(checkboxes[0])
+    await userEvent.click(checkboxes[0]!)
     expect(screen.getByText('2 dates sélectionnées')).toBeInTheDocument()
 
     vi.spyOn(api, 'getStocks').mockResolvedValueOnce({
@@ -400,8 +400,8 @@ describe('StocksEventList', () => {
     await renderStocksEventList([stock1, stock2, stock3])
 
     const checkboxes = screen.getAllByRole('checkbox')
-    await userEvent.click(checkboxes[1])
-    await userEvent.click(checkboxes[3])
+    await userEvent.click(checkboxes[1]!)
+    await userEvent.click(checkboxes[3]!)
     expect(screen.getByText('2 dates sélectionnées')).toBeInTheDocument()
 
     vi.spyOn(api, 'getStocks').mockResolvedValueOnce({
@@ -429,7 +429,7 @@ describe('StocksEventList', () => {
       stockCount: 2,
       hasStocks: true,
     })
-    await userEvent.click(screen.getAllByText('Supprimer')[0])
+    await userEvent.click(screen.getAllByText('Supprimer')[0]!)
     expect(api.deleteStock).toHaveBeenCalledWith(stock1.id)
     expect(api.getStocks).toHaveBeenCalledTimes(1)
   })
@@ -442,7 +442,7 @@ describe('StocksEventList', () => {
       stockCount: 0,
       hasStocks: false,
     })
-    await userEvent.click(screen.getAllByText('Supprimer')[0])
+    await userEvent.click(screen.getAllByText('Supprimer')[0]!)
     expect(api.deleteStock).toHaveBeenCalledTimes(1)
     expect(mockMutate).toHaveBeenCalledTimes(1)
   })
@@ -451,7 +451,7 @@ describe('StocksEventList', () => {
     await renderStocksEventList([stock1, stock2, stock3])
 
     const checkboxes = screen.getAllByRole('checkbox')
-    await userEvent.click(checkboxes[0])
+    await userEvent.click(checkboxes[0]!)
     expect(screen.getByText('3 dates sélectionnées')).toBeInTheDocument()
 
     vi.spyOn(api, 'getStocks').mockResolvedValueOnce({

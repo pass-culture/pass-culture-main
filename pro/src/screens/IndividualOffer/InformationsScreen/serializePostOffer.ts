@@ -46,18 +46,15 @@ const serializeExtraData = (
 }
 
 const serializeDurationMinutes = (durationHour: string): number | null => {
-  /* istanbul ignore next: DEBT, TO FIX */
   if (durationHour.trim().length === 0) {
     return null
   }
 
-  /* istanbul ignore next: DEBT, TO FIX */
   const [hours, minutes] = durationHour
     .split(':')
     .map((s: string) => parseInt(s, 10))
 
-  /* istanbul ignore next: DEBT, TO FIX */
-  return minutes + hours * 60
+  return (minutes || 0) + (hours || 0) * 60
 }
 
 export const serializePostOffer = (

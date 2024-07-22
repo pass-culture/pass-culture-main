@@ -28,7 +28,7 @@ export const DiffuseHelp = ({
   return !shouldHideDiffuseHelp ? (
     <div
       className={cn(styles['diffuse-help'], {
-        [styles['diffuse-help-closed']]: shouldHideDiffuseHelp,
+        [styles['diffuse-help-closed'] ?? '']: shouldHideDiffuseHelp,
       })}
     >
       <div className={styles['diffuse-help-infos']}>

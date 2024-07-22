@@ -29,7 +29,11 @@ export const OfferEventDateCell = ({ offer }: OfferEventDateCellProps) => {
   }
 
   const getFormattedDatesForOffer = (offer: CollectiveOfferResponseModel) => {
-    const offerStock = offer.stocks[0]
+    if (offer.stocks.length === 0) {
+      return []
+    }
+
+    const offerStock = offer.stocks[0]!
 
     const options: Intl.DateTimeFormatOptions = {
       day: '2-digit',
@@ -64,9 +68,11 @@ export const OfferEventDateCell = ({ offer }: OfferEventDateCellProps) => {
         {getFormattedDatesForOffer(offer).map((date) => (
           <span key={date}>{date}</span>
         ))}
-        <span className={styles['offer-event-hours']}>
-          à partir de {formattedTime(offer.stocks[0].startDatetime)}
-        </span>
+        {offer.stocks.length > 0 && (
+          <span className={styles['offer-event-hours']}>
+            à partir de {formattedTime(offer.stocks[0]!.startDatetime)}
+          </span>
+        )}
       </div>
     </td>
   )

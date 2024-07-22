@@ -38,7 +38,7 @@ export const IndivualOfferLayout = ({
     <>
       <div
         className={cn({
-          [styles['title-without-name']]: !offer?.name,
+          [styles['title-without-name'] ?? '']: !offer?.name,
         })}
       >
         <div className={styles['title-container']}>

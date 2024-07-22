@@ -24,8 +24,8 @@ export const FormLayout = ({
   <div
     className={cn(
       style['form-layout'],
-      { [style['full-width-actions']]: fullWidthActions },
-      { [style['medium-width-actions']]: mediumWidthActions },
+      { [style['full-width-actions'] ?? '']: fullWidthActions },
+      { [style['medium-width-actions'] ?? '']: mediumWidthActions },
       className
     )}
   >

@@ -106,7 +106,7 @@ export const onCategoryChange = async ({
   )
   const subcategoryId =
     newSubcategoryOptions.length === 1
-      ? String(newSubcategoryOptions[0].value)
+      ? String(newSubcategoryOptions[0]?.value)
       : DEFAULT_DETAILS_FORM_VALUES.subcategoryId
   await setFieldValue('subcategoryId', subcategoryId, false)
   await onSubcategoryChange({
@@ -191,7 +191,7 @@ export function setDefaultInitialValues({
   let venueId = ''
 
   if (filteredVenues.length === 1) {
-    venueId = String(filteredVenues[0].id)
+    venueId = String(filteredVenues[0]?.id)
   }
 
   return {
@@ -267,7 +267,7 @@ export const serializeDurationMinutes = (
     .split(':')
     .map((s: string) => parseInt(s, 10))
 
-  return minutes + hours * 60
+  return (minutes ?? 0) + (hours ?? 0) * 60
 }
 
 export function setFormReadOnlyFields(

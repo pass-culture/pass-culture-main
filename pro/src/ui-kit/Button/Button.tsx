@@ -48,7 +48,7 @@ export const Button = forwardRef(
             src={icon}
             alt=""
             className={cn(styles['button-icon'], {
-              [styles['has-tooltip']]: hasTooltip,
+              [styles['has-tooltip'] ?? '']: hasTooltip,
             })}
             width="20"
           />
@@ -79,7 +79,7 @@ export const Button = forwardRef(
           styles['button'],
           styles[`button-${variant}`],
           styles[`button-${iconPosition}`],
-          { [styles['loading-spinner']]: isLoading },
+          { [styles['loading-spinner'] ?? '']: isLoading },
           className
         )}
         type={type}

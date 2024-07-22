@@ -193,7 +193,7 @@ describe('screens:SignupJourney::ActivityForm', () => {
       name: 'Supprimer l’url',
     })
 
-    await userEvent.click(trashButtons[0])
+    await userEvent.click(trashButtons[0]!)
     expect(screen.getAllByText('Site internet, réseau social')).toHaveLength(1)
     expect(screen.queryByText('https://example.fr')).not.toBeInTheDocument()
     expect(

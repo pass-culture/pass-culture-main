@@ -59,7 +59,7 @@ export const VenuePlaylist = ({
       }
       observableRef={observableRef}
       className={classNames(styles['playlist-carousel'], {
-        [styles['playlist-carousel-loading']]: isLoading,
+        [styles['playlist-carousel-loading'] ?? '']: isLoading,
       })}
       onLastCarouselElementVisible={() =>
         onWholePlaylistSeen({

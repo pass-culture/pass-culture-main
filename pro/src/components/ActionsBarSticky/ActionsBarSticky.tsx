@@ -35,7 +35,7 @@ export const ActionsBarSticky = ({
       className={classnames(
         style['actions-bar'],
         {
-          [style['actions-bar-new-interface']]:
+          [style['actions-bar-new-interface'] ?? '']:
             isNewInterfaceActive && hasSideNav,
         },
         className
@@ -44,7 +44,7 @@ export const ActionsBarSticky = ({
     >
       <div
         className={classnames(style['actions-bar-content'], {
-          [style['actions-bar-content-new-interface']]:
+          [style['actions-bar-content-new-interface'] ?? '']:
             isNewInterfaceActive && hasSideNav,
         })}
       >

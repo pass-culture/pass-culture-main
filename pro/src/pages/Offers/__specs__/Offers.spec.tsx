@@ -193,7 +193,7 @@ describe('route Offers', () => {
       it('should load offers with selected venue filter', async () => {
         await renderOffers()
         const firstVenueOption = screen.getByRole('option', {
-          name: proVenues[0].name,
+          name: proVenues[0]!.name,
         })
         const venueSelect = screen.getByLabelText('Lieu')
         await userEvent.selectOptions(venueSelect, firstVenueOption)
@@ -205,7 +205,7 @@ describe('route Offers', () => {
             undefined,
             undefined,
             undefined,
-            proVenues[0].id.toString(),
+            proVenues[0]!.id.toString(),
             undefined,
             undefined,
             undefined,
@@ -243,7 +243,7 @@ describe('route Offers', () => {
         const creationModeSelect = screen.getByRole('combobox', {
           name: 'Mode de création',
         })
-        const importedCreationMode = CREATION_MODES_OPTIONS[2].value
+        const importedCreationMode = CREATION_MODES_OPTIONS[2]!.value
         await userEvent.selectOptions(
           creationModeSelect,
           String(importedCreationMode)
@@ -375,7 +375,7 @@ describe('route Offers', () => {
     it('should have venue value when user filters by venue', async () => {
       await renderOffers()
       const firstVenueOption = screen.getByRole('option', {
-        name: proVenues[0].name,
+        name: proVenues[0]!.name,
       })
       const venueSelect = screen.getByLabelText('Lieu')
 
@@ -387,7 +387,7 @@ describe('route Offers', () => {
           undefined,
           undefined,
           undefined,
-          proVenues[0].id.toString(),
+          proVenues[0]!.id.toString(),
           undefined,
           undefined,
           undefined,
@@ -593,8 +593,8 @@ describe('route Offers', () => {
 
       await userEvent.click(nextIcon)
 
-      expect(screen.getByLabelText(offers[10].name)).toBeInTheDocument()
-      expect(screen.queryByLabelText(offers[0].name)).not.toBeInTheDocument()
+      expect(screen.getByLabelText(offers[10]!.name)).toBeInTheDocument()
+      expect(screen.queryByLabelText(offers[0]!.name)).not.toBeInTheDocument()
     })
 
     it('should display previous page when clicking on left arrow', async () => {
@@ -610,8 +610,8 @@ describe('route Offers', () => {
 
       await userEvent.click(previousIcon)
 
-      expect(screen.getByLabelText(offers[0].name)).toBeInTheDocument()
-      expect(screen.queryByText(offers[10].name)).not.toBeInTheDocument()
+      expect(screen.getByLabelText(offers[0]!.name)).toBeInTheDocument()
+      expect(screen.queryByText(offers[10]!.name)).not.toBeInTheDocument()
     })
 
     describe('when 501 offers are fetched', () => {
@@ -638,9 +638,11 @@ describe('route Offers', () => {
           await userEvent.click(nextIcon)
         }
 
-        expect(screen.getByLabelText(offersRecap[499].name)).toBeInTheDocument()
         expect(
-          screen.queryByLabelText(offersRecap[500].name)
+          screen.getByLabelText(offersRecap[499]!.name)
+        ).toBeInTheDocument()
+        expect(
+          screen.queryByLabelText(offersRecap[500]!.name)
         ).not.toBeInTheDocument()
       })
     })
@@ -661,7 +663,7 @@ describe('route Offers', () => {
       await renderOffers(filters)
 
       const firstVenueOption = screen.getByRole('option', {
-        name: proVenues[0].name,
+        name: proVenues[0]!.name,
       })
 
       const venueSelect = screen.getByDisplayValue(ALL_VENUES_OPTION.label)
@@ -675,7 +677,7 @@ describe('route Offers', () => {
           undefined,
           undefined,
           undefined,
-          proVenues[0].id.toString(),
+          proVenues[0]!.id.toString(),
           undefined,
           undefined,
           undefined,
@@ -715,7 +717,7 @@ describe('route Offers', () => {
       await renderOffers(filters)
 
       const venueOptionToSelect = screen.getByRole('option', {
-        name: proVenues[0].name,
+        name: proVenues[0]!.name,
       })
 
       const venueSelect = screen.getByDisplayValue(ALL_VENUES_OPTION.label)
@@ -731,7 +733,7 @@ describe('route Offers', () => {
         undefined,
         undefined,
         undefined,
-        proVenues[0].id.toString(),
+        proVenues[0]!.id.toString(),
         undefined,
         undefined,
         undefined,

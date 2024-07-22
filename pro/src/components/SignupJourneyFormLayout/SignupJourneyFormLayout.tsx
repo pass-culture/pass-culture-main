@@ -16,7 +16,7 @@ export const SignupJourneyFormLayout = ({
   return (
     <div
       className={classNames({
-        [styles['signup-offerer-layout-wrapper-with-footer']]: true,
+        [styles['signup-offerer-layout-wrapper-with-footer'] ?? '']: true,
       })}
     >
       <SignupJourneyStepper />

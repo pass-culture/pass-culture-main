@@ -29,7 +29,7 @@ export const CountryCodeSelect = ({
         src={fullRightIcon}
         alt=""
         className={cn(styles['select-input-icon'], {
-          [styles['select-input-icon-disabled']]: disabled,
+          [styles['select-input-icon-disabled'] ?? '']: disabled,
         })}
         width="16"
       />

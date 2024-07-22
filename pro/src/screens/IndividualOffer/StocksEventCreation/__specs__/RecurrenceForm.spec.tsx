@@ -56,7 +56,7 @@ describe('RecurrenceForm', () => {
 
     const deleteButton = screen.getAllByRole('button', {
       name: 'Supprimer le créneau',
-    })[0]
+    })[0]!
     expect(deleteButton).toBeEnabled()
 
     await userEvent.click(deleteButton)
@@ -79,7 +79,7 @@ describe('RecurrenceForm', () => {
     await userEvent.click(screen.getByText('Ajouter d’autres places et tarifs'))
     const deleteButton = screen.getAllByRole('button', {
       name: 'Supprimer les places',
-    })[0]
+    })[0]!
     expect(deleteButton).toBeEnabled()
     await userEvent.click(screen.getByText('Ajouter d’autres places et tarifs'))
     expect(

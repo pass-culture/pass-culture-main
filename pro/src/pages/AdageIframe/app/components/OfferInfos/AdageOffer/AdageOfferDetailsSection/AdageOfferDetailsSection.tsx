@@ -49,7 +49,7 @@ export function AdageOfferDetailsSection({
               ))}
             </ul>
           ) : (
-            <Tag variant={TagVariant.LIGHT_GREY}>{domains[0].name}</Tag>
+            <Tag variant={TagVariant.LIGHT_GREY}>{domains[0]?.name}</Tag>
           )}
         </div>
       )}

@@ -49,9 +49,9 @@ export const BaseCheckbox = ({
       className={cn(
         styles['base-checkbox'],
         {
-          [styles['with-border']]: withBorder,
-          [styles['has-error']]: hasError,
-          [styles['is-disabled']]: props.disabled,
+          [styles['with-border'] ?? '']: withBorder,
+          [styles['has-error'] ?? '']: hasError,
+          [styles['is-disabled'] ?? '']: props.disabled,
         },
         className
       )}
@@ -59,7 +59,7 @@ export const BaseCheckbox = ({
     >
       <span
         className={cn(styles['base-checkbox-label-row'], {
-          [styles['base-checkbox-label-row-with-description']]:
+          [styles['base-checkbox-label-row-with-description'] ?? '']:
             Boolean(description),
         })}
       >
@@ -83,7 +83,7 @@ export const BaseCheckbox = ({
         <span
           className={cn(styles['base-checkbox-label'], {
             ['visually-hidden']: Boolean(exceptionnallyHideLabelDespiteA11y),
-            [styles['base-checkbox-label-with-description']]:
+            [styles['base-checkbox-label-with-description'] ?? '']:
               Boolean(description),
           })}
         >

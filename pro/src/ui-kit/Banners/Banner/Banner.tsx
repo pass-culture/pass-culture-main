@@ -70,10 +70,10 @@ export const Banner = ({
                 className={cn(
                   styles['bi-banner-text'],
                   {
-                    [styles['with-margin']]: !!links,
+                    [styles['with-margin'] ?? '']: !!links,
                   },
                   {
-                    [styles['provider']]: !!isProvider,
+                    [styles['provider'] ?? '']: !!isProvider,
                   }
                 )}
               >

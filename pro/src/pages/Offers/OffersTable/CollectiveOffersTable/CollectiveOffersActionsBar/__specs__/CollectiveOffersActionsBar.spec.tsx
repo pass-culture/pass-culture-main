@@ -145,7 +145,7 @@ describe('ActionsBar', () => {
     renderActionsBar(props)
 
     await userEvent.click(screen.getByText('Masquer'))
-    const confirmDeactivateButton = screen.getAllByText('Masquer')[1]
+    const confirmDeactivateButton = screen.getAllByText('Masquer')[1]!
     await userEvent.click(confirmDeactivateButton)
 
     expect(mockLogEvent).toHaveBeenCalledTimes(1)
@@ -228,7 +228,7 @@ describe('ActionsBar', () => {
 
     const deactivateButton = screen.getByText('Masquer')
     await userEvent.click(deactivateButton)
-    const confirmDeactivateButton = screen.getAllByText('Masquer')[1]
+    const confirmDeactivateButton = screen.getAllByText('Masquer')[1]!
     await userEvent.click(confirmDeactivateButton)
 
     expect(mockLogEvent).toHaveBeenCalledTimes(1)
@@ -308,7 +308,7 @@ describe('ActionsBar', () => {
     })
 
     await userEvent.click(screen.getByText('Masquer'))
-    const confirmDeactivateButton = screen.getAllByText('Masquer')[1]
+    const confirmDeactivateButton = screen.getAllByText('Masquer')[1]!
     await userEvent.click(confirmDeactivateButton)
 
     expect(api.patchCollectiveOffersActiveStatus).toHaveBeenLastCalledWith({
@@ -340,7 +340,7 @@ describe('ActionsBar', () => {
     })
 
     await userEvent.click(screen.getByText('Masquer'))
-    const confirmDeactivateButton = screen.getAllByText('Masquer')[1]
+    const confirmDeactivateButton = screen.getAllByText('Masquer')[1]!
     await userEvent.click(confirmDeactivateButton)
 
     expect(
@@ -376,7 +376,7 @@ describe('ActionsBar', () => {
     })
 
     await userEvent.click(screen.getByText('Masquer'))
-    const confirmDeactivateButton = screen.getAllByText('Masquer')[1]
+    const confirmDeactivateButton = screen.getAllByText('Masquer')[1]!
     await userEvent.click(confirmDeactivateButton)
 
     expect(

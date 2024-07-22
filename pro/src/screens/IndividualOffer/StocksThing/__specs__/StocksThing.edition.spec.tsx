@@ -231,8 +231,8 @@ describe('screens:StocksThing', () => {
     renderStockThingScreen()
     await screen.findByTestId('stock-thing-form')
 
-    await userEvent.click(screen.getAllByTestId('dropdown-menu-trigger')[1])
-    await userEvent.click(screen.getAllByTestId('dropdown-menu-trigger')[0])
+    await userEvent.click(screen.getAllByTestId('dropdown-menu-trigger')[1]!)
+    await userEvent.click(screen.getAllByTestId('dropdown-menu-trigger')[0]!)
     await userEvent.click(await screen.findByTitle('Supprimer le stock'))
     expect(
       screen.getByText('Voulez-vous supprimer ce stock ?')

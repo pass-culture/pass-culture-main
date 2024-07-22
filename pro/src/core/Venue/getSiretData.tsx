@@ -59,8 +59,8 @@ const getSiretDataRequest = async (
     if (addressData.length === 0) {
       throw Error('Adresse introuvable')
     }
-    const latitude = addressData[0].latitude
-    const longitude = addressData[0].longitude
+    const latitude = addressData[0]?.latitude ?? 0
+    const longitude = addressData[0]?.longitude ?? 0
     return {
       values: {
         address: response.address.street,
@@ -72,7 +72,7 @@ const getSiretDataRequest = async (
         siret: response.siret,
         apeCode: response.ape_code,
         legalCategoryCode: response.legal_category_code,
-        banId: addressData[0].id,
+        banId: addressData[0]?.id ?? '',
       },
     }
   } catch (e) {

@@ -118,7 +118,7 @@ describe('IndividualOffer section: UsefulInformations', () => {
     })
 
     const venueSelect = screen.getByLabelText('Lieu *')
-    await userEvent.selectOptions(venueSelect, venueList[0].id.toString())
+    await userEvent.selectOptions(venueSelect, venueList[0]!.id.toString())
     const withEmail = screen.getByLabelText(
       'Les billets seront envoyés par email'
     )
@@ -144,7 +144,7 @@ describe('IndividualOffer section: UsefulInformations', () => {
         subCategoryFields: ['withdrawalType', 'bookingContact'],
         url: '',
         subcategoryId: 'CONCERT',
-        venueId: venueList[0].id.toString(),
+        venueId: venueList[0]!.id.toString(),
         withdrawalDelay: (60 * 60 * 24).toString(),
         withdrawalDetails: '',
         withdrawalType: 'by_email',
@@ -258,7 +258,7 @@ describe('IndividualOffer section: UsefulInformations', () => {
     })
 
     const venueSelect = screen.getByLabelText('Lieu *')
-    await userEvent.selectOptions(venueSelect, venueList[0].id.toString())
+    await userEvent.selectOptions(venueSelect, venueList[0]!.id.toString())
     const withEmail = screen.getByLabelText(
       'Les billets seront envoyés par email'
     )
@@ -291,7 +291,7 @@ describe('IndividualOffer section: UsefulInformations', () => {
       })
 
       const venueSelect = screen.getByLabelText('Lieu *')
-      await userEvent.selectOptions(venueSelect, venueList[1].id.toString())
+      await userEvent.selectOptions(venueSelect, venueList[1]!.id.toString())
 
       const urlField = await screen.findByLabelText('URL d’accès à l’offre *')
 
@@ -316,7 +316,7 @@ describe('IndividualOffer section: UsefulInformations', () => {
           subCategoryFields: [],
           subcategoryId: 'VIRTUAL_SUB_CATEGORY',
           url: 'https://example.com/routes?params={offerId}',
-          venueId: venueList[1].id.toString(),
+          venueId: venueList[1]!.id.toString(),
           withdrawalDelay: undefined,
           withdrawalDetails: '',
           withdrawalType: undefined,
@@ -333,7 +333,7 @@ describe('IndividualOffer section: UsefulInformations', () => {
       })
 
       const venueSelect = screen.getByLabelText('Lieu *')
-      await userEvent.selectOptions(venueSelect, venueList[1].id.toString())
+      await userEvent.selectOptions(venueSelect, venueList[1]!.id.toString())
 
       const urlField = await screen.findByLabelText('URL d’accès à l’offre *')
       await userEvent.click(urlField)

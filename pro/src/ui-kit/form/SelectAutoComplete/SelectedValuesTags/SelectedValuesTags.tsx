@@ -27,9 +27,9 @@ export const SelectedValuesTags = ({
     const listElements = tagListRef.current?.getElementsByTagName('button')
     //  When a tag is removed, focus to the next tag button if it exists or to the previous tag button if it exists
     if (listElements?.[index + 1]) {
-      listElements[index + 1].focus()
+      listElements[index + 1]!.focus()
     } else if (listElements?.[index - 1]) {
-      listElements[index - 1].focus()
+      listElements[index - 1]!.focus()
     }
     removeOption(tag)
   }
@@ -40,7 +40,7 @@ export const SelectedValuesTags = ({
         <li key={`tag-${fieldName}-${value}`} className={styles['tag']}>
           <button
             className={cn(styles['tag-close-button'], {
-              [styles['tag-close-button--disabled']]: disabled,
+              [styles['tag-close-button--disabled'] ?? '']: disabled,
             })}
             onClick={() => onTagRemoved(value, i)}
             title={'Supprimer ' + optionsLabelById[value]}

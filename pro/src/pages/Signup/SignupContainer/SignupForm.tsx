@@ -77,7 +77,7 @@ export const SignupForm = (): JSX.Element => {
           />
         </FormLayout.Row>
         <LegalInfos
-          className={styles['sign-up-infos-before-signup']}
+          className={styles['sign-up-infos-before-signup'] ?? ''}
           title="Créer mon compte"
         />
         <div className={styles['buttons-field']}>

@@ -87,7 +87,7 @@ describe('setDefaultInitialFormValues', () => {
 
   it('should return venue when there is only one venue', () => {
     const venueId = null
-    venueList = [venueList[0]]
+    venueList = [venueList[0]!]
 
     const initialValues = setDefaultInitialFormValues(
       offererNames,

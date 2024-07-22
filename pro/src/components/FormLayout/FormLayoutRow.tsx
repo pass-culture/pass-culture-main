@@ -34,9 +34,9 @@ export const Row = ({
   ) : (
     <div
       className={cn(style['form-layout-row'], className, {
-        [style['inline-group']]: inline,
-        [style['medium-space-after']]: mdSpaceAfter,
-        [style['small-space-after']]: smSpaceAfter,
+        [style['inline-group'] ?? '']: inline,
+        [style['medium-space-after'] ?? '']: mdSpaceAfter,
+        [style['small-space-after'] ?? '']: smSpaceAfter,
       })}
     >
       {children}

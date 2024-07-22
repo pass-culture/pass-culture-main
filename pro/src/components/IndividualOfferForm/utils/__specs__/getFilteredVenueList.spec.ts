@@ -53,9 +53,9 @@ describe('getFilteredVenueList', () => {
         subCategories.find((s) => s.id === 'ONLINE_OR_OFFLINE')
       )
       expect(result.length).toEqual(3)
-      expect(result[0].id).toEqual(secondVenueId)
-      expect(result[1].id).toEqual(thirdVenueId)
-      expect(result[2].id).toEqual(virtualVenueId)
+      expect(result[0]!.id).toEqual(secondVenueId)
+      expect(result[1]!.id).toEqual(thirdVenueId)
+      expect(result[2]!.id).toEqual(virtualVenueId)
     })
 
     it('should return virtual venues when subCatagory is ONLINE only', () => {
@@ -64,7 +64,7 @@ describe('getFilteredVenueList', () => {
         subCategories.find((s) => s.id === 'ONLINE_ONLY')
       )
       expect(result.length).toEqual(1)
-      expect(result[0].id).toEqual(virtualVenueId)
+      expect(result[0]!.id).toEqual(virtualVenueId)
     })
 
     it('should return not virtual when subCatagory is OFFLINE only', () => {
@@ -73,8 +73,8 @@ describe('getFilteredVenueList', () => {
         subCategories.find((s) => s.id === 'OFFLINE_ONLY')
       )
       expect(result.length).toEqual(2)
-      expect(result[0].id).toEqual(secondVenueId)
-      expect(result[1].id).toEqual(thirdVenueId)
+      expect(result[0]!.id).toEqual(secondVenueId)
+      expect(result[1]!.id).toEqual(thirdVenueId)
     })
   })
 
@@ -85,9 +85,9 @@ describe('getFilteredVenueList', () => {
         CATEGORY_STATUS.ONLINE_OR_OFFLINE
       )
       expect(result.length).toEqual(3)
-      expect(result[0].id).toEqual(secondVenueId)
-      expect(result[1].id).toEqual(thirdVenueId)
-      expect(result[2].id).toEqual(virtualVenueId)
+      expect(result[0]!.id).toEqual(secondVenueId)
+      expect(result[1]!.id).toEqual(thirdVenueId)
+      expect(result[2]!.id).toEqual(virtualVenueId)
     })
 
     it('should return vitual venues when categoryStatus is ONLINE only', () => {
@@ -96,7 +96,7 @@ describe('getFilteredVenueList', () => {
         CATEGORY_STATUS.ONLINE
       )
       expect(result.length).toEqual(1)
-      expect(result[0].id).toEqual(virtualVenueId)
+      expect(result[0]!.id).toEqual(virtualVenueId)
     })
 
     it('should return not virtual when categoryStatus is OFFLINE only', () => {
@@ -105,8 +105,8 @@ describe('getFilteredVenueList', () => {
         CATEGORY_STATUS.OFFLINE
       )
       expect(result.length).toEqual(2)
-      expect(result[0].id).toEqual(secondVenueId)
-      expect(result[1].id).toEqual(thirdVenueId)
+      expect(result[0]!.id).toEqual(secondVenueId)
+      expect(result[1]!.id).toEqual(thirdVenueId)
     })
   })
 })

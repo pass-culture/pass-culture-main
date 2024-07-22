@@ -46,7 +46,7 @@ const getInitialOffererId = (
   }
 
   if (offerers.length === 1) {
-    return offerers[0].id.toString()
+    return offerers[0]!.id.toString()
   }
 
   return DEFAULT_EAC_FORM_VALUES.offererId
@@ -74,7 +74,7 @@ const getInitialVenueId = (
     )
 
     if (currentOfferer?.managedVenues.length === 1) {
-      return currentOfferer.managedVenues[0].id.toString()
+      return currentOfferer.managedVenues[0]!.id.toString()
     }
   }
 

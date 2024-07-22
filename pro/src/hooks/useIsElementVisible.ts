@@ -11,8 +11,8 @@ export const useIsElementVisible = (
   /* istanbul ignore next */
   const callback = (entries: IntersectionObserverEntry[]) => {
     const [entry] = entries
-    setHasVisibilityChanged(entry.isIntersecting !== isElementVisible)
-    setIsElementVisible(entry.isIntersecting)
+    setHasVisibilityChanged(entry?.isIntersecting !== isElementVisible)
+    setIsElementVisible(entry?.isIntersecting ?? false)
   }
 
   const observer = new IntersectionObserver(callback, obeserverOptions)

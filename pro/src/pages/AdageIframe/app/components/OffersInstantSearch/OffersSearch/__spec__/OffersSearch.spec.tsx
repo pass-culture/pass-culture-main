@@ -247,7 +247,7 @@ describe('offersSearch component', () => {
     await userEvent.click(
       screen.getAllByRole('button', {
         name: 'Rechercher',
-      })[1]
+      })[1]!
     )
     await userEvent.click(
       screen.getByRole('button', {
@@ -279,7 +279,7 @@ describe('offersSearch component', () => {
     await userEvent.click(
       screen.getAllByRole('button', {
         name: 'Rechercher',
-      })[1]
+      })[1]!
     )
     await userEvent.click(
       screen.getByRole('button', {
@@ -306,7 +306,7 @@ describe('offersSearch component', () => {
     await userEvent.click(
       screen.getAllByRole('button', {
         name: 'Rechercher',
-      })[1]
+      })[1]!
     )
 
     // Then
@@ -334,7 +334,7 @@ describe('offersSearch component', () => {
     await userEvent.click(
       screen.getAllByRole('button', {
         name: 'Rechercher',
-      })[1]
+      })[1]!
     )
 
     expect(setGeoRadiusMock).not.toHaveBeenCalled()
@@ -403,7 +403,7 @@ describe('offersSearch component', () => {
     await userEvent.click(
       screen.getAllByRole('button', {
         name: 'Rechercher',
-      })[1]
+      })[1]!
     )
 
     //  Reopen localisation filter

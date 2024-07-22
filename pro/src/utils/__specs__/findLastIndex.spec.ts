@@ -21,8 +21,8 @@ describe('findLastIndex', () => {
       (elem) => elem.isTrue
     )
 
-    expect(expectedIndex).toBe(testArray[3].index)
-    expect(anotherExpectedIndex).toBe(anotherArray[1].index)
+    expect(expectedIndex).toBe(testArray[3]!.index)
+    expect(anotherExpectedIndex).toBe(anotherArray[1]!.index)
   })
 
   it('should return -1 when no element satisfies the condition', () => {

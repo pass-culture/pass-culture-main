@@ -28,7 +28,12 @@ const serializeBookingLimitDatetime = (
       departementCode
     )
   }
-  const [year, month, day] = bookingLimitDatetime.split('-')
+  const [year, month, day] = bookingLimitDatetime.split('-') as [
+    string,
+    string,
+    string,
+  ]
+
   const endOfBookingLimitDayUtcDatetime = getUtcDateTimeFromLocalDepartement(
     endOfDay(new Date(parseInt(year), parseInt(month) - 1, parseInt(day))),
     departementCode
@@ -38,12 +43,10 @@ const serializeBookingLimitDatetime = (
 
 export const buildDateTime = (date: string, time: string) => {
   const [hours, minutes] = time.split(':')
-  // False positive, eslint disable can be removed when noUncheckedIndexedAccess is enabled in TS config
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   if (!isDateValid(date) || hours === undefined || minutes === undefined) {
     throw Error('La date ou l’heure est invalide')
   }
-  const [year, month, day] = date.split('-')
+  const [year, month, day] = date.split('-') as [string, string, string]
 
   // new Date(year, month, day, hours, minutes)
   return new Date(

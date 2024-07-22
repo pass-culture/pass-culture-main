@@ -126,8 +126,8 @@ describe('IndividualOffer section: venue', () => {
 
   it('should automatically select the venue and offerer when there is only one in the list', async () => {
     props = {
-      offererNames: [props.offererNames[0]],
-      venueList: [props.venueList[0]],
+      offererNames: [props.offererNames[0]!],
+      venueList: [props.venueList[0]!],
     }
     initialValues = setDefaultInitialFormValues(
       props.offererNames,
@@ -148,7 +148,7 @@ describe('IndividualOffer section: venue', () => {
       expect(selectOfferer).toHaveValue(firstOfferer.id.toString())
       expect(selectOfferer).toBeDisabled()
       expect(selectOfferer.childNodes.length).toBe(1)
-      expect(selectVenue).toHaveValue(venueList[0].id.toString())
+      expect(selectVenue).toHaveValue(venueList[0]!.id.toString())
       expect(selectVenue).toBeDisabled()
       expect(selectVenue.childNodes.length).toBe(2)
     })
@@ -156,8 +156,8 @@ describe('IndividualOffer section: venue', () => {
 
   it('should automatically select the venue and offerer when there is only one in the list with FF WIP_ENABLE_OFFER_ADDRESS', async () => {
     props = {
-      offererNames: [props.offererNames[0]],
-      venueList: [props.venueList[0]],
+      offererNames: [props.offererNames[0]!],
+      venueList: [props.venueList[0]!],
     }
     initialValues = setDefaultInitialFormValues(
       props.offererNames,
@@ -179,7 +179,7 @@ describe('IndividualOffer section: venue', () => {
       expect(selectOfferer).toHaveValue(firstOfferer.id.toString())
       expect(selectOfferer).toBeDisabled()
       expect(selectOfferer.childNodes.length).toBe(1)
-      expect(selectVenue).toHaveValue(venueList[0].id.toString())
+      expect(selectVenue).toHaveValue(venueList[0]!.id.toString())
       expect(selectVenue).toBeDisabled()
       expect(selectVenue.childNodes.length).toBe(1)
     })
@@ -199,7 +199,7 @@ describe('IndividualOffer section: venue', () => {
     expect(selectOfferer).toHaveValue(firstOfferer.id.toString())
 
     expect(selectVenue).toBeDisabled()
-    expect(selectVenue).toHaveValue(venueList[0].id.toString())
+    expect(selectVenue).toHaveValue(venueList[0]!.id.toString())
     expect(selectVenue.childNodes.length).toBe(2)
   })
 
@@ -218,7 +218,7 @@ describe('IndividualOffer section: venue', () => {
     expect(selectOfferer).toHaveValue(firstOfferer.id.toString())
 
     expect(selectVenue).toBeDisabled()
-    expect(selectVenue).toHaveValue(venueList[0].id.toString())
+    expect(selectVenue).toHaveValue(venueList[0]!.id.toString())
     expect(selectVenue.childNodes.length).toBe(1)
   })
 

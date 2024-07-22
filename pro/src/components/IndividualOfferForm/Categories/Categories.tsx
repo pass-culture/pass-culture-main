@@ -98,11 +98,11 @@ export const Categories = ({
       subCategories.find((subcategory) => subcategory.id === newSubCategoryId)
     )
     if (filteredVenueList.length === 1) {
-      await setFieldValue('venueId', filteredVenueList[0].id.toString())
+      await setFieldValue('venueId', filteredVenueList[0]?.id.toString())
       await onVenueChange(
         setFieldValue,
         filteredVenueList,
-        filteredVenueList[0].id.toString()
+        filteredVenueList[0]?.id.toString() ?? ''
       )
     } else if (filteredVenueList.length > 1) {
       // If there are several venues available for this subcategory,
@@ -129,7 +129,7 @@ export const Categories = ({
     )
     const subCategoryId =
       newSubcategoryOptions.length === 1
-        ? String(newSubcategoryOptions[0].value)
+        ? String(newSubcategoryOptions[0]?.value)
         : FORM_DEFAULT_VALUES.subcategoryId
     await setFieldValue('subcategoryId', subCategoryId, false)
     await onSubCategoryChange(subCategoryId)
@@ -158,7 +158,7 @@ export const Categories = ({
     >
       <FormLayout.Row
         className={cn({
-          [styles['category-row']]: !(hasCategory || showAddVenueBanner),
+          [styles['category-row'] ?? '']: !(hasCategory || showAddVenueBanner),
         })}
         sideComponent={
           <InfoBox

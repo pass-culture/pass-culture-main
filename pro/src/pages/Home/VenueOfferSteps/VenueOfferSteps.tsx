@@ -75,8 +75,8 @@ export const VenueOfferSteps = ({
   return (
     <Card
       className={cn(styles['card-wrapper'], className, {
-        [styles['no-shadow']]: hasVenue || isInsidePartnerBlock,
-        [styles['inside-partner-block']]: isInsidePartnerBlock,
+        [styles['no-shadow'] ?? '']: hasVenue || isInsidePartnerBlock,
+        [styles['inside-partner-block'] ?? '']: isInsidePartnerBlock,
       })}
       data-testid={hasVenue ? 'venue-offer-steps' : 'home-offer-steps'}
     >

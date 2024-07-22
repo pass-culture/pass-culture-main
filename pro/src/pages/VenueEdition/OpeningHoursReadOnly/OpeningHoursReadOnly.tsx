@@ -46,15 +46,15 @@ export function Hours({ hours }: Hours) {
     <>
       {hours.length === 1 ? (
         <>
-          de <span className={styles['important']}>{hours[0].open}</span> à{' '}
-          <span className={styles['important']}>{hours[0].close}</span>
+          de <span className={styles['important']}>{hours[0]?.open}</span> à{' '}
+          <span className={styles['important']}>{hours[0]?.close}</span>
         </>
       ) : (
         <>
-          de <span className={styles['important']}>{hours[0].open}</span> à{' '}
-          <span className={styles['important']}>{hours[0].close}</span> et de{' '}
-          <span className={styles['important']}>{hours[1].open}</span> à{' '}
-          <span className={styles['important']}>{hours[1].close}</span>{' '}
+          de <span className={styles['important']}>{hours[0]?.open}</span> à{' '}
+          <span className={styles['important']}>{hours[0]?.close}</span> et de{' '}
+          <span className={styles['important']}>{hours[1]?.open}</span> à{' '}
+          <span className={styles['important']}>{hours[1]?.close}</span>{' '}
         </>
       )}
     </>

@@ -12,8 +12,9 @@ export const getInterventionAreaLabelsToDisplay = (
   const labels: string[] = []
 
   if (
-    interventionArea.includes(MAINLAND_OPTION_VALUE) ||
-    interventionArea.includes(ALL_FRANCE_OPTION_VALUE)
+    (interventionArea.includes(MAINLAND_OPTION_VALUE) ||
+      interventionArea.includes(ALL_FRANCE_OPTION_VALUE)) &&
+    departmentLabelByValue[MAINLAND_OPTION_VALUE]
   ) {
     labels.push(departmentLabelByValue[MAINLAND_OPTION_VALUE])
 

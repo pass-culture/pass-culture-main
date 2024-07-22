@@ -75,8 +75,8 @@ export const FieldLayout = ({
       className={cn(
         styles['field-layout'],
         {
-          [styles['field-layout-small-label']]: smallLabel,
-          [styles['field-layout-inline']]: inline,
+          [styles['field-layout-small-label'] ?? '']: smallLabel,
+          [styles['field-layout-inline'] ?? '']: inline,
         },
         className
       )}

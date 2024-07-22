@@ -59,7 +59,7 @@ export const setDefaultInitialFormValues = (
   let initialOffererId = FORM_DEFAULT_VALUES.offererId
 
   if (offererNames.length === 1) {
-    initialOffererId = offererNames[0].id.toString()
+    initialOffererId = offererNames[0]?.id.toString() ?? ''
   } else if (
     offererId &&
     offererNames.find((offerer) => offerer.id.toString() === offererId)

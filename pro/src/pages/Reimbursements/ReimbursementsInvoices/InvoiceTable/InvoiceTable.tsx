@@ -87,11 +87,14 @@ function sortInvoices(
       )
 
     case InvoicesOrderedBy.CASHFLOW_LABELS:
-      return [...invoices].sort((a, b) =>
-        sortingMode === SortingMode.ASC
-          ? a.cashflowLabels[0].localeCompare(b.cashflowLabels[0])
-          : b.cashflowLabels[0].localeCompare(a.cashflowLabels[0])
-      )
+      return [...invoices].sort((a, b) => {
+        if (a.cashflowLabels.length === 0 || b.cashflowLabels.length === 0) {
+          return 0
+        }
+        return sortingMode === SortingMode.ASC
+          ? a.cashflowLabels[0]!.localeCompare(b.cashflowLabels[0]!)
+          : b.cashflowLabels[0]!.localeCompare(a.cashflowLabels[0]!)
+      })
 
     default:
       return invoices
@@ -419,7 +422,7 @@ export const InvoiceTable = ({ invoices }: InvoiceTableProps) => {
                 <td
                   role="cell"
                   className={cn(styles['data'], styles['amount-column'], {
-                    [styles['negative-amount']]: invoice.amount < 0,
+                    [styles['negative-amount'] ?? '']: invoice.amount < 0,
                   })}
                   data-label="Montant remboursé"
                 >

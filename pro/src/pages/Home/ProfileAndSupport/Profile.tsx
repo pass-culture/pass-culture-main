@@ -35,19 +35,20 @@ export const formatPhoneNumber = (phoneNumber: string | null | undefined) => {
 
     const [internationalPrefix, areaPrefix, number] = parts
     const isReginalNumber = internationalPrefix === '0'
-    const isInternationalNumber = /\+[0-9]+/.test(internationalPrefix)
+    const isInternationalNumber = /\+[0-9]+/.test(internationalPrefix || '')
     if (!(isReginalNumber || isInternationalNumber)) {
       return phoneNumber
     }
 
-    let prefix = internationalPrefix + areaPrefix
+    let prefix = (internationalPrefix || '') + areaPrefix
     if (isInternationalNumber) {
       prefix = [internationalPrefix, areaPrefix].join(' ')
     }
 
-    return [prefix, ...number.split(/([0-9]{2})/g).filter((num) => num)].join(
-      ' '
-    )
+    return [
+      prefix,
+      ...(number || '').split(/([0-9]{2})/g).filter((num) => num),
+    ].join(' ')
   }
   return phoneNumber
 }

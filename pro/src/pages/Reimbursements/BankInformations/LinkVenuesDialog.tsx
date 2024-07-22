@@ -122,7 +122,7 @@ export const LinkVenuesDialog = ({
       <DialogBox
         labelledBy="link-venues-dialog"
         extraClassNames={cn(styles['dialog'], {
-          [styles['dialog-with-banner']]: hasVenuesWithoutPricingPoint,
+          [styles['dialog-with-banner'] ?? '']: hasVenuesWithoutPricingPoint,
         })}
         hasCloseButton={true}
         onDismiss={onCancel}
@@ -224,7 +224,7 @@ export const LinkVenuesDialog = ({
       {showDiscardChangesDialog && (
         <ConfirmDialog
           extraClassNames={cn(styles['discard-dialog'], {
-            [styles['discard-dialog-with-banner']]:
+            [styles['discard-dialog-with-banner'] ?? '']:
               hasVenuesWithoutPricingPoint,
           })}
           icon={strokeWarningIcon}
@@ -241,7 +241,7 @@ export const LinkVenuesDialog = ({
       {showUnlinkVenuesDialog && (
         <ConfirmDialog
           extraClassNames={cn(styles['discard-dialog'], {
-            [styles['discard-dialog-with-banner']]:
+            [styles['discard-dialog-with-banner'] ?? '']:
               hasVenuesWithoutPricingPoint,
           })}
           icon={strokeWarningIcon}

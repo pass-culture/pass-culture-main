@@ -32,7 +32,7 @@ const getRemoteConfigParams = (): Record<string, string> => {
   const remoteConfigValues = getAll(firebaseRemoteConfig)
   const remoteConfigParams: Record<string, string> = {}
   Object.keys(remoteConfigValues).forEach((k) => {
-    remoteConfigParams[k] = remoteConfigValues[k].asString()
+    remoteConfigParams[k] = remoteConfigValues[k]!.asString()
   })
 
   return remoteConfigParams

@@ -60,8 +60,8 @@ export const ButtonImageEdit = ({
       ) : (
         <button
           className={cn(style['button-image-add'], {
-            [style['add-image-venue']]: mode === UploaderModeEnum.VENUE,
-            [style['add-image-offer']]:
+            [style['add-image-venue'] ?? '']: mode === UploaderModeEnum.VENUE,
+            [style['add-image-offer'] ?? '']:
               mode === UploaderModeEnum.OFFER ||
               mode === UploaderModeEnum.OFFER_COLLECTIVE,
           })}

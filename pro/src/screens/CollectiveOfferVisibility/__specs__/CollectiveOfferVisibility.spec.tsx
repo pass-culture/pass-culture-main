@@ -303,7 +303,7 @@ describe('CollectiveOfferVisibility', () => {
       },
     ])
 
-    const institutionSelect = screen.getAllByTestId('select')[0]
+    const institutionSelect = screen.getAllByTestId('select')[0]!
     await userEvent.selectOptions(institutionSelect, '12')
     const teacherInput = screen.getByLabelText(/Prénom et nom de l’enseignant/)
     await userEvent.type(teacherInput, 'Red')
@@ -332,7 +332,7 @@ describe('CollectiveOfferVisibility', () => {
         surname: 'KHTEUR',
       },
     ])
-    const institutionSelect = screen.getAllByTestId('select')[0]
+    const institutionSelect = screen.getAllByTestId('select')[0]!
     await userEvent.selectOptions(institutionSelect, '12')
     const teacherInput = screen.getByLabelText(/Prénom et nom de l’enseignant/)
     await userEvent.type(teacherInput, 'Red')

@@ -17,7 +17,7 @@ const EmailChangeValidation = (): JSX.Element => {
   useEffect(() => {
     const changeEmail = async () => {
       const { expiration_timestamp, token } = parse(location.search)
-      const expiration_date = new Date(expiration_timestamp)
+      const expiration_date = new Date(expiration_timestamp || '')
       const now = new Date(Date.now() / 1000)
       if (expiration_date > now) {
         setIsSuccess(false)
@@ -25,7 +25,7 @@ const EmailChangeValidation = (): JSX.Element => {
       }
 
       try {
-        await api.patchValidateEmail({ token: token })
+        await api.patchValidateEmail({ token: token || '' })
         setIsSuccess(true)
         dispatch(updateUser(null))
       } catch {

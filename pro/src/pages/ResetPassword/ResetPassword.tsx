@@ -26,7 +26,10 @@ export const ResetPassword = (): JSX.Element => {
   const submitChangePassword = async (values: Record<string, string>) => {
     const { newPasswordValue } = values
     try {
-      await api.postNewPassword({ newPassword: newPasswordValue, token })
+      await api.postNewPassword({
+        newPassword: newPasswordValue || '',
+        token: token || '',
+      })
       setPasswordChanged(true)
     } catch {
       setIsBadToken(true)

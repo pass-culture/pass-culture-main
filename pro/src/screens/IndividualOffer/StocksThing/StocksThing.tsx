@@ -76,7 +76,7 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
   // validation is tested in getValidationSchema
   // and it's not possible as is to test it here
   /* istanbul ignore next: DEBT, TO FIX */
-  const minQuantity = stocks.length > 0 ? stocks[0].bookingsQuantity : null
+  const minQuantity = stocks.length > 0 ? stocks[0]!.bookingsQuantity : null
   const isDisabled = isOfferDisabled(offer.status)
   const today = getLocalDepartementDateTimeFromUtc(
     getToday(),
@@ -252,7 +252,7 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
     )
 
     let isDisabled = false
-    if (stocks.length > 0 && stocks[0].hasActivationCode) {
+    if (stocks.length > 0 && stocks[0]!.hasActivationCode) {
       isDisabled = true
     }
 
@@ -264,7 +264,9 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
     })
   }
 
-  actions[0].disabled = isDisabled
+  if (actions.length > 0) {
+    actions[0]!.disabled = isDisabled
+  }
 
   if (offer.isDigital) {
     links = [
@@ -288,16 +290,21 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
 
   const [minExpirationYear, minExpirationMonth, minExpirationDay] =
     getYearMonthDay(formik.values.bookingLimitDatetime)
+
   const [maxDateTimeYear, maxDateTimeMonth, maxDateTimeDay] = getYearMonthDay(
     formik.values.activationCodesExpirationDatetime
   )
   const minExpirationDate = isDateValid(formik.values.bookingLimitDatetime)
-    ? new Date(minExpirationYear, minExpirationMonth, minExpirationDay)
+    ? new Date(
+        minExpirationYear || 0,
+        minExpirationMonth || 0,
+        minExpirationDay || 0
+      )
     : null
   const maxDateTime = isDateValid(
     formik.values.activationCodesExpirationDatetime
   )
-    ? new Date(maxDateTimeYear, maxDateTimeMonth, maxDateTimeDay)
+    ? new Date(maxDateTimeYear || 0, maxDateTimeMonth || 0, maxDateTimeDay || 0)
     : undefined
 
   return (

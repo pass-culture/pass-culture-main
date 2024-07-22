@@ -77,7 +77,7 @@ describe('serializeStockThingList', () => {
       },
       departementCode
     )
-    expect(serializedData[0].quantity).toStrictEqual(0)
+    expect(serializedData[0]!.quantity).toStrictEqual(0)
   })
 
   it('should set null when quantity field is empty', () => {
@@ -90,7 +90,7 @@ describe('serializeStockThingList', () => {
       departementCode
     )
     // null is set in unlimited in api
-    expect(serializedData[0].quantity).toStrictEqual(null)
+    expect(serializedData[0]!.quantity).toStrictEqual(null)
   })
 
   it('should set null when quantity field is ""', () => {
@@ -103,6 +103,6 @@ describe('serializeStockThingList', () => {
       departementCode
     )
     // null is set in unlimited in api
-    expect(serializedData[0].quantity).toStrictEqual(null)
+    expect(serializedData[0]!.quantity).toStrictEqual(null)
   })
 })

@@ -44,7 +44,7 @@ export const AdageHeader = () => {
   return (
     <div
       className={cn([styles['adage-header']], {
-        [styles['adage-header-discovery']]: isDiscoveryPage,
+        [styles['adage-header-discovery'] ?? '']: isDiscoveryPage,
       })}
     >
       <nav className={styles['adage-header-nav']}>

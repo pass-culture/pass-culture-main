@@ -84,14 +84,18 @@ export const CollectiveActionsCells = ({
 
   const isMarseilleActive = useActiveFeature('WIP_ENABLE_MARSEILLE')
 
-  if (!isDateValid(offer.stocks[0].beginningDatetime)) {
+  if (
+    offer.stocks.length > 0 &&
+    !isDateValid(offer.stocks[0]!.beginningDatetime)
+  ) {
     return null
   }
 
   const eventDateFormated = formatBrowserTimezonedDateAsUTC(
-    new Date(offer.stocks[0].beginningDatetime),
+    new Date(offer.stocks[0]?.beginningDatetime ?? ''),
     FORMAT_ISO_DATE_ONLY
   )
+
   const bookingLink = `/reservations/collectives?page=1&offerEventDate=${eventDateFormated}&bookingStatusFilter=booked&offerType=all&offerVenueId=all&bookingId=${offer.booking?.id}`
 
   const onDialogConfirm = async (shouldNotDisplayModalAgain: boolean) => {
@@ -202,11 +206,12 @@ export const CollectiveActionsCells = ({
       <div className={styles['actions-container']}>
         {(offer.status === CollectiveOfferStatus.SOLD_OUT ||
           offer.status === CollectiveOfferStatus.EXPIRED) &&
-          offer.booking && (
+          offer.booking &&
+          offer.stocks.length > 0 && (
             <BookingLinkCell
               bookingId={offer.booking.id}
               bookingStatus={offer.booking.booking_status}
-              offerEventDate={offer.stocks[0].beginningDatetime}
+              offerEventDate={offer.stocks[0]!.beginningDatetime}
               offerId={offer.id}
             />
           )}

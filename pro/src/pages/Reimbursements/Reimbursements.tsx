@@ -41,7 +41,10 @@ export const Reimbursements = (): JSX.Element => {
         const { offerersNames } = await api.listOfferersNames()
         if (offerersNames.length >= 1) {
           const offerer = await api.getOfferer(
-            Number(paramOffererId) || selectedOffererId || offerersNames[0].id
+            Number(paramOffererId) ||
+              selectedOffererId ||
+              offerersNames[0]?.id ||
+              0
           )
 
           setSelectedOfferer(offerer)

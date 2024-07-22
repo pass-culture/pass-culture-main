@@ -65,7 +65,7 @@ export const AccesLibreCollapse = ({
         >
           <SvgIcon
             className={cn(styles['collapse-icon'], {
-              [styles['open']]: isOpen,
+              [styles['open'] ?? '']: isOpen,
             })}
             src={fullDownIcon}
             alt=""
@@ -75,7 +75,7 @@ export const AccesLibreCollapse = ({
       </header>
 
       <div
-        className={cn(styles['content'], { [styles['open']]: isOpen })}
+        className={cn(styles['content'], { [styles['open'] ?? '']: isOpen })}
         id={contentId}
       >
         {isOpen && children}

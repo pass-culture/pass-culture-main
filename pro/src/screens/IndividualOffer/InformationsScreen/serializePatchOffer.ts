@@ -43,7 +43,7 @@ export const serializeDurationMinutes = (
     .split(':')
     .map((s: string) => parseInt(s, 10))
 
-  return minutes + hours * 60
+  return (minutes || 0) + (hours || 0) * 60
 }
 interface SerializePatchOffer {
   offer: GetIndividualOfferResponseModel

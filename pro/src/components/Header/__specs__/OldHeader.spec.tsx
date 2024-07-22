@@ -122,7 +122,7 @@ describe('navigation menu', () => {
 
       renderHeader({ features: ['ENABLE_OFFERER_STATS'] })
 
-      await userEvent.click(screen.getAllByRole('link')[6])
+      await userEvent.click(screen.getAllByRole('link')[6]!)
 
       expect(mockLogEvent).toHaveBeenCalledTimes(1)
       expect(mockLogEvent).toHaveBeenNthCalledWith(1, Events.CLICKED_STATS, {

@@ -57,7 +57,7 @@ export const ReimbursementBankAccount = ({
       bankAccount.status === BankAccountApplicationStatus.A_CORRIGER ? (
         <div
           className={cn(styles['pending-account'], {
-            [styles['needs-correction']]:
+            [styles['needs-correction'] ?? '']:
               bankAccount.status === BankAccountApplicationStatus.A_CORRIGER,
           })}
         >
@@ -70,7 +70,7 @@ export const ReimbursementBankAccount = ({
             alt={''}
             width="48"
             className={cn(styles['status-icon'], {
-              [styles['error-icon']]:
+              [styles['error-icon'] ?? '']:
                 bankAccount.status === BankAccountApplicationStatus.A_CORRIGER,
             })}
           />

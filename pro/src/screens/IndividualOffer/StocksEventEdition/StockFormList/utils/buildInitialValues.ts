@@ -41,7 +41,7 @@ export const buildInitialValues = ({
     }
     const defaultPriceCategoryOptionId =
       priceCategoriesOptions.length === 1
-        ? String(priceCategoriesOptions[0].value)
+        ? String(priceCategoriesOptions[0]?.value)
         : ''
 
     return {

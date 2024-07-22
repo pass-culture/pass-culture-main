@@ -36,7 +36,7 @@ export const AdageHeaderMenu = ({
               to={`/adage-iframe/decouverte?token=${adageAuthToken}`}
               className={({ isActive }) => {
                 return cn(styles['adage-header-link'], {
-                  [styles['adage-header-link-active']]: isActive,
+                  [styles['adage-header-link-active'] ?? '']: isActive,
                 })
               }}
               onClick={() => logAdageLinkClick(AdageHeaderLink.DISCOVERY)}
@@ -57,7 +57,7 @@ export const AdageHeaderMenu = ({
               to={`/adage-iframe/recherche?token=${adageAuthToken}`}
               className={({ isActive }) => {
                 return cn(styles['adage-header-link'], {
-                  [styles['adage-header-link-active']]: isActive,
+                  [styles['adage-header-link-active'] ?? '']: isActive,
                 })
               }}
               onClick={() => logAdageLinkClick(AdageHeaderLink.SEARCH)}
@@ -78,7 +78,7 @@ export const AdageHeaderMenu = ({
               to={`/adage-iframe/mon-etablissement?token=${adageAuthToken}`}
               className={({ isActive }) => {
                 return cn(styles['adage-header-link'], {
-                  [styles['adage-header-link-active']]: isActive,
+                  [styles['adage-header-link-active'] ?? '']: isActive,
                 })
               }}
               onClick={() =>
@@ -110,7 +110,7 @@ export const AdageHeaderMenu = ({
               to={`/adage-iframe/mes-favoris?token=${adageAuthToken}`}
               className={({ isActive }) => {
                 return cn(styles['adage-header-link'], {
-                  [styles['adage-header-link-active']]: isActive,
+                  [styles['adage-header-link-active'] ?? '']: isActive,
                 })
               }}
               onClick={() => logAdageLinkClick(AdageHeaderLink.MY_FAVORITES)}

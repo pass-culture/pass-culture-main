@@ -219,7 +219,7 @@ describe('screens:StocksEventEdition', () => {
     vi.clearAllMocks()
     vi.spyOn(api, 'deleteStock').mockResolvedValue({ id: 1 })
 
-    await userEvent.click(screen.getAllByTestId('dropdown-menu-trigger')[0])
+    await userEvent.click(screen.getAllByTestId('dropdown-menu-trigger')[0]!)
     await userEvent.click(screen.getByTitle('Supprimer le stock'))
 
     expect(
@@ -244,7 +244,7 @@ describe('screens:StocksEventEdition', () => {
     )
     vi.spyOn(api, 'deleteStock').mockResolvedValue({ id: 1 })
 
-    await userEvent.click(screen.getAllByTestId('dropdown-menu-trigger')[0])
+    await userEvent.click(screen.getAllByTestId('dropdown-menu-trigger')[0]!)
     await userEvent.click(screen.getByTitle('Supprimer le stock'))
 
     await waitFor(() => {
@@ -270,7 +270,7 @@ describe('screens:StocksEventEdition', () => {
     )
     vi.spyOn(api, 'deleteStock').mockResolvedValue({ id: 1 })
 
-    await userEvent.click(screen.getAllByTestId('dropdown-menu-trigger')[0])
+    await userEvent.click(screen.getAllByTestId('dropdown-menu-trigger')[0]!)
     await userEvent.click(screen.getByTitle('Supprimer le stock'))
 
     await waitFor(() => {
@@ -289,7 +289,7 @@ describe('screens:StocksEventEdition', () => {
 
   it('should not allow user to delete a stock undeletable', async () => {
     await renderStockEventScreen(apiOffer, [
-      { ...apiStocks[0], isEventDeletable: false },
+      { ...apiStocks[0]!, isEventDeletable: false },
     ])
 
     vi.spyOn(api, 'deleteStock').mockResolvedValue({ id: 1 })
@@ -321,7 +321,7 @@ describe('screens:StocksEventEdition', () => {
     expect(
       await screen.findByText('Le stock a été supprimé.')
     ).toBeInTheDocument()
-    expect(api.deleteStock).toHaveBeenCalledWith(apiStocks[0].id)
+    expect(api.deleteStock).toHaveBeenCalledWith(apiStocks[0]!.id)
     expect(api.deleteStock).toHaveBeenCalledTimes(1)
   })
 
@@ -342,8 +342,8 @@ describe('screens:StocksEventEdition', () => {
       )
     )
 
-    await userEvent.click(screen.getAllByTestId('dropdown-menu-trigger')[1])
-    await userEvent.click(screen.getAllByTestId('dropdown-menu-trigger')[0])
+    await userEvent.click(screen.getAllByTestId('dropdown-menu-trigger')[1]!)
+    await userEvent.click(screen.getAllByTestId('dropdown-menu-trigger')[0]!)
     await userEvent.click(screen.getByTitle('Supprimer le stock'))
     expect(
       screen.getByText('Voulez-vous supprimer cette date ?')
@@ -357,7 +357,7 @@ describe('screens:StocksEventEdition', () => {
         'La suppression des stocks de cette offre n’est possible que depuis le logiciel synchronisé.'
       )
     ).toBeInTheDocument()
-    expect(api.deleteStock).toHaveBeenCalledWith(apiStocks[0].id)
+    expect(api.deleteStock).toHaveBeenCalledWith(apiStocks[0]!.id)
     expect(api.deleteStock).toHaveBeenCalledTimes(1)
   })
 
@@ -375,7 +375,7 @@ describe('screens:StocksEventEdition', () => {
     )
     await userEvent.type(screen.getByLabelText('Horaire 1 *'), '14:15')
     await userEvent.selectOptions(
-      screen.getAllByLabelText('Tarif *')[1],
+      screen.getAllByLabelText('Tarif *')[1]!,
       priceCategoryId
     )
     await userEvent.click(screen.getByText('Valider'))
@@ -440,7 +440,7 @@ describe('screens:StocksEventEdition', () => {
       )
     ).toBeInTheDocument()
     expect(api.deleteStock).toHaveBeenCalledTimes(1)
-    expect(api.deleteStock).toHaveBeenCalledWith(apiStocks[0].id)
+    expect(api.deleteStock).toHaveBeenCalledWith(apiStocks[0]!.id)
   })
 
   it('should save the offer without warning on "Enregistrer les modifications" button click', async () => {

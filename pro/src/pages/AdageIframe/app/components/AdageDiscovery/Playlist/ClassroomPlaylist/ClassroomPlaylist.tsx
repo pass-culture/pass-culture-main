@@ -37,7 +37,7 @@ export const ClassroomPlaylist = ({
   return (
     <Carousel
       className={classNames(styles['playlist-carousel'], {
-        [styles['playlist-carousel-loading']]: isLoading,
+        [styles['playlist-carousel-loading'] ?? '']: isLoading,
       })}
       title={
         <h2 className={styles['playlist-carousel-title']}>

@@ -105,8 +105,8 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
   return (
     <ul
       className={classnames({
-        [styles['nav-links']]: true,
-        [styles['nav-links-open']]: isLateralPanelOpen,
+        [styles['nav-links'] ?? '']: true,
+        [styles['nav-links-open'] ?? '']: isLateralPanelOpen,
       })}
     >
       <div className={styles['nav-links-first-group']}>
@@ -122,7 +122,7 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
             to="/accueil"
             className={({ isActive }) =>
               classnames(styles['nav-links-item'], {
-                [styles['nav-links-item-active']]: isActive,
+                [styles['nav-links-item-active'] ?? '']: isActive,
               })
             }
           >
@@ -153,7 +153,7 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
                 to="/offres"
                 className={({ isActive }) =>
                   classnames(styles['nav-links-item'], {
-                    [styles['nav-links-item-active']]: isActive,
+                    [styles['nav-links-item-active'] ?? '']: isActive,
                   })
                 }
                 end
@@ -167,7 +167,7 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
                 end
                 className={({ isActive }) =>
                   classnames(styles['nav-links-item'], {
-                    [styles['nav-links-item-active']]: isActive,
+                    [styles['nav-links-item-active'] ?? '']: isActive,
                   })
                 }
               >
@@ -179,7 +179,7 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
                 to="/guichet"
                 className={({ isActive }) =>
                   classnames(styles['nav-links-item'], {
-                    [styles['nav-links-item-active']]: isActive,
+                    [styles['nav-links-item-active'] ?? '']: isActive,
                   })
                 }
               >
@@ -192,7 +192,7 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
                   to={`/structures/${offererId}/lieux/${venueId}`}
                   className={({ isActive }) =>
                     classnames(styles['nav-links-item'], {
-                      [styles['nav-links-item-active']]: isActive,
+                      [styles['nav-links-item-active'] ?? '']: isActive,
                     })
                   }
                   end
@@ -232,7 +232,7 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
                 to="/offres/collectives"
                 className={({ isActive }) =>
                   classnames(styles['nav-links-item'], {
-                    [styles['nav-links-item-active']]: isActive,
+                    [styles['nav-links-item-active'] ?? '']: isActive,
                   })
                 }
               >
@@ -245,7 +245,7 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
                 end
                 className={({ isActive }) =>
                   classnames(styles['nav-links-item'], {
-                    [styles['nav-links-item-active']]: isActive,
+                    [styles['nav-links-item-active'] ?? '']: isActive,
                   })
                 }
               >
@@ -258,7 +258,7 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
                   to={`/structures/${offererId}/lieux/${venueId}/collectif`}
                   className={({ isActive }) =>
                     classnames(styles['nav-links-item'], {
-                      [styles['nav-links-item-active']]: isActive,
+                      [styles['nav-links-item-active'] ?? '']: isActive,
                     })
                   }
                   end
@@ -277,7 +277,7 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
               to="/statistiques"
               className={({ isActive }) =>
                 classnames(styles['nav-links-item'], {
-                  [styles['nav-links-item-active']]: isActive,
+                  [styles['nav-links-item-active'] ?? '']: isActive,
                 })
               }
             >
@@ -294,7 +294,7 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
             to="/remboursements"
             className={({ isActive }) =>
               classnames(styles['nav-links-item'], {
-                [styles['nav-links-item-active']]: isActive,
+                [styles['nav-links-item-active'] ?? '']: isActive,
               })
             }
           >
@@ -307,7 +307,7 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
             to="/collaborateurs"
             className={({ isActive }) =>
               classnames(styles['nav-links-item'], {
-                [styles['nav-links-item-active']]: isActive,
+                [styles['nav-links-item-active'] ?? '']: isActive,
               })
             }
           >

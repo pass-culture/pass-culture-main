@@ -32,7 +32,7 @@ export const hasChangesOnStockWithBookings = (
 
     return fieldsWithWarning.some(
       (fieldName: keyof StockEventFormValues) =>
-        initialStock[fieldName] !== stock[fieldName]
+        initialStock && initialStock[fieldName] !== stock[fieldName]
     )
   })
 }

@@ -53,7 +53,7 @@ describe('tutorial modal', () => {
       user: sharedCurrentUserFactory({ hasSeenProTutorials: false }),
     })
 
-    expect(screen.getByText(stepTitles[0])).toBeInTheDocument()
+    expect(screen.getByText(stepTitles[0]!)).toBeInTheDocument()
   })
 
   it("shouldn't show tutorial dialog if user has already seen it", () => {
@@ -61,7 +61,7 @@ describe('tutorial modal', () => {
       user: sharedCurrentUserFactory({ hasSeenProTutorials: true }),
     })
 
-    expect(screen.queryByText(stepTitles[0])).not.toBeInTheDocument()
+    expect(screen.queryByText(stepTitles[0]!)).not.toBeInTheDocument()
   })
 
   describe('interacting with navigation buttons', () => {
@@ -80,10 +80,10 @@ describe('tutorial modal', () => {
           user: sharedCurrentUserFactory({ hasSeenProTutorials: false }),
         })
 
-        expect(screen.getByText(stepTitles[0])).toBeInTheDocument()
+        expect(screen.getByText(stepTitles[0]!)).toBeInTheDocument()
 
         await userEvent.click(screen.getByText('Suivant'))
-        expect(screen.getByText(stepTitles[1])).toBeInTheDocument()
+        expect(screen.getByText(stepTitles[1]!)).toBeInTheDocument()
         expect(
           screen.getByText('Renseignez vos informations bancaires')
         ).toBeInTheDocument()
@@ -95,10 +95,10 @@ describe('tutorial modal', () => {
         ).toBeInTheDocument()
 
         await userEvent.click(screen.getByText('Suivant'))
-        expect(screen.getByText(stepTitles[2])).toBeInTheDocument()
+        expect(screen.getByText(stepTitles[2]!)).toBeInTheDocument()
 
         await userEvent.click(screen.getByText('Suivant'))
-        expect(screen.getByText(stepTitles[3])).toBeInTheDocument()
+        expect(screen.getByText(stepTitles[3]!)).toBeInTheDocument()
       })
     })
 
@@ -148,16 +148,16 @@ describe('tutorial modal', () => {
         await userEvent.click(screen.getByText('Suivant'))
         await userEvent.click(screen.getByText('Suivant'))
 
-        expect(screen.getByText(stepTitles[3])).toBeInTheDocument()
+        expect(screen.getByText(stepTitles[3]!)).toBeInTheDocument()
 
         await userEvent.click(screen.getByText('Précédent'))
-        expect(screen.getByText(stepTitles[2])).toBeInTheDocument()
+        expect(screen.getByText(stepTitles[2]!)).toBeInTheDocument()
 
         await userEvent.click(screen.getByText('Précédent'))
-        expect(screen.getByText(stepTitles[1])).toBeInTheDocument()
+        expect(screen.getByText(stepTitles[1]!)).toBeInTheDocument()
 
         await userEvent.click(screen.getByText('Précédent'))
-        expect(screen.getByText(stepTitles[0])).toBeInTheDocument()
+        expect(screen.getByText(stepTitles[0]!)).toBeInTheDocument()
       })
     })
 
@@ -171,16 +171,16 @@ describe('tutorial modal', () => {
 
       const buttonPrevious = screen.getByText('Précédent')
 
-      expect(screen.getByText(stepTitles[3])).toBeInTheDocument()
+      expect(screen.getByText(stepTitles[3]!)).toBeInTheDocument()
 
       await userEvent.click(buttonPrevious)
-      expect(screen.getByText(stepTitles[2])).toBeInTheDocument()
+      expect(screen.getByText(stepTitles[2]!)).toBeInTheDocument()
 
       await userEvent.click(buttonPrevious)
-      expect(screen.getByText(stepTitles[1])).toBeInTheDocument()
+      expect(screen.getByText(stepTitles[1]!)).toBeInTheDocument()
 
       await userEvent.click(buttonPrevious)
-      expect(screen.getByText(stepTitles[0])).toBeInTheDocument()
+      expect(screen.getByText(stepTitles[0]!)).toBeInTheDocument()
     })
 
     it('should go on the right step when clicking on dots', async () => {
@@ -190,19 +190,19 @@ describe('tutorial modal', () => {
 
       const navDottes = screen.queryAllByTestId('nav-dot')
 
-      expect(screen.getByText(stepTitles[0])).toBeInTheDocument()
+      expect(screen.getByText(stepTitles[0]!)).toBeInTheDocument()
 
-      await userEvent.click(navDottes[3])
-      expect(screen.getByText(stepTitles[3])).toBeInTheDocument()
+      await userEvent.click(navDottes[3]!)
+      expect(screen.getByText(stepTitles[3]!)).toBeInTheDocument()
 
-      await userEvent.click(navDottes[1])
-      expect(screen.getByText(stepTitles[1])).toBeInTheDocument()
+      await userEvent.click(navDottes[1]!)
+      expect(screen.getByText(stepTitles[1]!)).toBeInTheDocument()
 
-      await userEvent.click(navDottes[0])
-      expect(screen.getByText(stepTitles[0])).toBeInTheDocument()
+      await userEvent.click(navDottes[0]!)
+      expect(screen.getByText(stepTitles[0]!)).toBeInTheDocument()
 
-      await userEvent.click(navDottes[2])
-      expect(screen.getByText(stepTitles[2])).toBeInTheDocument()
+      await userEvent.click(navDottes[2]!)
+      expect(screen.getByText(stepTitles[2]!)).toBeInTheDocument()
     })
   })
 

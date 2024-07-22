@@ -171,8 +171,8 @@ describe('Summary', () => {
     expect(screen.getByText('Lien pour le grand public')).toBeInTheDocument()
     expect(screen.getByText('Aperçu dans l’app')).toBeInTheDocument()
 
-    expect(screen.getByText(categories[0].proLabel)).toBeInTheDocument()
-    expect(screen.getByText(subCategories[0].proLabel)).toBeInTheDocument()
+    expect(screen.getByText(categories[0]!.proLabel)).toBeInTheDocument()
+    expect(screen.getByText(subCategories[0]!.proLabel)).toBeInTheDocument()
     expect(screen.getByText('mon offerer')).toBeInTheDocument()
     expect(screen.getByText('ma venue (nom public)')).toBeInTheDocument()
     expect(screen.getByText('détails de retrait')).toBeInTheDocument()

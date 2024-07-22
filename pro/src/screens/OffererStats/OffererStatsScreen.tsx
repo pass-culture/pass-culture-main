@@ -25,7 +25,7 @@ export const OffererStatsScreen = ({
 
   const [iframeUrl, setIframeUrl] = useState('')
   const [selectedOffererId, setSelectedOffererId] = useState(
-    offererOptions[0].value
+    (offererOptions[0] ?? {}).value
   )
   const [selectedVenueId, setSelectedVenueId] = useState('all')
   const [venueOptions, setVenueOptions] = useState<SelectOption[]>([])
@@ -67,9 +67,9 @@ export const OffererStatsScreen = ({
         if (
           !isNewInterfaceActive &&
           sortedVenueOptions.length > 0 &&
-          sortedVenueOptions[0].value.toString()
+          sortedVenueOptions[0]!.value.toString()
         ) {
-          setSelectedVenueId(sortedVenueOptions[0].value.toString())
+          setSelectedVenueId(sortedVenueOptions[0]!.value.toString())
         }
       } else {
         setVenueOptions([])

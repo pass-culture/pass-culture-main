@@ -44,9 +44,11 @@ export const OldLayout = ({ children, layout = 'basic' }: OldLayoutProps) => {
         id="content"
         className={classnames({
           page: true,
-          [styles.container]: layout === 'basic' || layout === 'sticky-actions',
-          [styles['container-sticky-actions']]: layout === 'sticky-actions',
-          [styles['container-without-nav']]: layout === 'without-nav',
+          [styles['container'] ?? '']:
+            layout === 'basic' || layout === 'sticky-actions',
+          [styles['container-sticky-actions'] ?? '']:
+            layout === 'sticky-actions',
+          [styles['container-without-nav'] ?? '']: layout === 'without-nav',
         })}
       >
         {layout === 'funnel' || layout === 'without-nav' ? (

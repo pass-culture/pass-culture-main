@@ -13,10 +13,9 @@ export const computeInitialValues = (
   quantityPerPriceCategories: [
     {
       quantity: '',
-      priceCategory:
-        priceCategoryOptions.length === 1
-          ? String(priceCategoryOptions[0].value)
-          : '',
+      priceCategory: priceCategoryOptions[0]
+        ? String(priceCategoryOptions[0].value)
+        : '',
     },
   ],
   bookingLimitDateInterval: '',

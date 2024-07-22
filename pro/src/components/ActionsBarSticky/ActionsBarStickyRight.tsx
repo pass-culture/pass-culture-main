@@ -14,7 +14,7 @@ export const Right = ({
   return children ? (
     <div
       className={cn(style['right'], {
-        [style['right-inverse']]: inverseWhenSmallerThanTablet,
+        [style['right-inverse'] ?? '']: inverseWhenSmallerThanTablet,
       })}
     >
       {children}

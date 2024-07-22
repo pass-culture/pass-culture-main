@@ -36,8 +36,8 @@ export const ImageUploader = ({
           <img
             alt={'Prévisualisation de l’image'}
             className={cn(styles['image-preview'], {
-              [styles['preview-venue']]: mode === UploaderModeEnum.VENUE,
-              [styles['preview-offer']]:
+              [styles['preview-venue'] ?? '']: mode === UploaderModeEnum.VENUE,
+              [styles['preview-offer'] ?? '']:
                 mode === UploaderModeEnum.OFFER ||
                 mode === UploaderModeEnum.OFFER_COLLECTIVE,
             })}

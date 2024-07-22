@@ -66,13 +66,13 @@ export function AdageOfferListCard({
   return (
     <div
       className={cn(styles['offer-card'], {
-        [styles['offer-card-template']]: offer.isTemplate,
+        [styles['offer-card-template'] ?? '']: offer.isTemplate,
       })}
     >
       {isCollectiveOfferBookable(offer) && (
         <div
           className={cn(styles['offer-headband'], {
-            [styles['offer-headband-prebooked']]: offerPrebooked,
+            [styles['offer-headband-prebooked'] ?? '']: offerPrebooked,
           })}
         >
           <div className={styles['offer-headband-text']}>
@@ -103,7 +103,7 @@ export function AdageOfferListCard({
       )}
       <div
         className={cn(styles['offer-card-container'], {
-          [styles['offer-card-bookable']]: !offer.isTemplate,
+          [styles['offer-card-bookable'] ?? '']: !offer.isTemplate,
         })}
       >
         <div className={styles['offer-card-image']}>

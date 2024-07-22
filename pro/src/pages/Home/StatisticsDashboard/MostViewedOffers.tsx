@@ -36,7 +36,7 @@ export const MostViewedOffers = ({
             <Thumb
               url={topOffer.image?.url}
               className={cn(styles['top-offer-thumbnail'], {
-                [styles['top-offer-thumbnail-placeholder']]:
+                [styles['top-offer-thumbnail-placeholder'] ?? '']:
                   !topOffer.image?.url,
               })}
             />

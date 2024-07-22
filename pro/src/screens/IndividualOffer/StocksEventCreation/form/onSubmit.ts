@@ -71,9 +71,9 @@ export const onSubmit = async (
 const getYearMonthDay = (date: string) => {
   const [year, month, day] = date.split('-')
   return {
-    year: parseInt(year),
-    month: parseInt(month) - 1,
-    day: parseInt(day),
+    year: parseInt(year ?? ''),
+    month: parseInt(month ?? '') - 1,
+    day: parseInt(day ?? ''),
   }
 }
 

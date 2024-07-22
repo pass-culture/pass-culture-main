@@ -168,7 +168,7 @@ export const SelectAutocomplete = ({
       case 'Enter':
         if (isOpen && hoveredOptionIndex !== null) {
           event.preventDefault()
-          await selectOption(String(filteredOptions[hoveredOptionIndex].value))
+          await selectOption(String(filteredOptions[hoveredOptionIndex]?.value))
         }
         break
       case 'Escape':
@@ -226,7 +226,7 @@ export const SelectAutocomplete = ({
   const placeholderDisplay = Array.isArray(field.value)
     ? placeholder ??
       (field.value.length > 1 && pluralLabel ? pluralLabel : label)
-    : placeholder ?? optionsLabelById[field.value]
+    : placeholder ?? (optionsLabelById[field.value] || '')
 
   return (
     <FieldLayout

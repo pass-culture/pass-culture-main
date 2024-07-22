@@ -90,8 +90,8 @@ describe('PriceCategories', () => {
     expect(freeCheckboxes[2]).not.toBeChecked()
 
     // I checked all checkboxes are checked
-    await userEvent.click(freeCheckboxes[0])
-    await userEvent.click(freeCheckboxes[2])
+    await userEvent.click(freeCheckboxes[0]!)
+    await userEvent.click(freeCheckboxes[2]!)
 
     expect(freeCheckboxes[0]).toBeChecked()
     expect(freeCheckboxes[1]).toBeChecked()
@@ -103,9 +103,9 @@ describe('PriceCategories', () => {
     expect(tarifFields[2]).toHaveValue(0)
 
     // I set prices checkboxes are unchecked
-    await userEvent.type(tarifFields[0], '20')
-    await userEvent.type(tarifFields[1], '21')
-    await userEvent.type(tarifFields[2], '0.1')
+    await userEvent.type(tarifFields[0]!, '20')
+    await userEvent.type(tarifFields[1]!, '21')
+    await userEvent.type(tarifFields[2]!, '0.1')
 
     expect(freeCheckboxes[0]).not.toBeChecked()
     expect(freeCheckboxes[1]).not.toBeChecked()
@@ -134,10 +134,10 @@ describe('PriceCategories', () => {
       screen.getAllByRole('button', { name: 'Supprimer le tarif' })[0]
     ).toBeEnabled()
     await userEvent.click(
-      screen.getAllByRole('button', { name: 'Supprimer le tarif' })[0]
+      screen.getAllByRole('button', { name: 'Supprimer le tarif' })[0]!
     )
     await userEvent.click(
-      screen.getAllByRole('button', { name: 'Supprimer le tarif' })[0]
+      screen.getAllByRole('button', { name: 'Supprimer le tarif' })[0]!
     )
     expect(screen.getAllByTestId('delete-button')[0]).toBeDisabled()
 
@@ -163,7 +163,7 @@ describe('PriceCategories', () => {
     ).not.toBeChecked()
 
     await userEvent.click(
-      screen.getAllByRole('button', { name: 'Supprimer le tarif' })[0]
+      screen.getAllByRole('button', { name: 'Supprimer le tarif' })[0]!
     )
     expect(api.deletePriceCategory).toHaveBeenNthCalledWith(1, 42, 66)
     expect(api.postPriceCategories).toHaveBeenNthCalledWith(1, 42, {
@@ -190,7 +190,7 @@ describe('PriceCategories', () => {
 
     // I can cancel
     await userEvent.click(
-      screen.getAllByRole('button', { name: 'Supprimer le tarif' })[1]
+      screen.getAllByRole('button', { name: 'Supprimer le tarif' })[1]!
     )
     expect(
       screen.getByText(
@@ -202,7 +202,7 @@ describe('PriceCategories', () => {
 
     // I can delete
     await userEvent.click(
-      screen.getAllByRole('button', { name: 'Supprimer le tarif' })[1]
+      screen.getAllByRole('button', { name: 'Supprimer le tarif' })[1]!
     )
     await userEvent.click(screen.getByText('Confirmer la supression'))
     expect(api.deletePriceCategory).toHaveBeenNthCalledWith(1, 42, 144)
@@ -218,7 +218,7 @@ describe('PriceCategories', () => {
     expect(screen.getByDisplayValue('Tarif unique')).toBeDisabled()
     const nameFields = screen.getAllByLabelText('Intitulé du tarif *')
     const priceFields = screen.getAllByLabelText('Prix par personne *')
-    await userEvent.type(priceFields[0], '66.7')
+    await userEvent.type(priceFields[0]!, '66.7')
 
     // I add a price category line
     await userEvent.click(screen.getByText('Ajouter un tarif'))
@@ -228,9 +228,9 @@ describe('PriceCategories', () => {
     expect(nameFields[0]).not.toBeDisabled()
 
     // I change the label and remove last line, label is default and field disable
-    await userEvent.type(nameFields[0], 'Tarif Koala')
+    await userEvent.type(nameFields[0]!, 'Tarif Koala')
     await userEvent.click(
-      screen.getAllByRole('button', { name: 'Supprimer le tarif' })[1]
+      screen.getAllByRole('button', { name: 'Supprimer le tarif' })[1]!
     )
     // it keep the input price
     expect(priceFields[0]).toHaveValue(66.7)

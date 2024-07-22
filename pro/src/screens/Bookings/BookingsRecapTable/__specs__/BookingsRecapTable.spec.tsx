@@ -255,7 +255,7 @@ describe('components | BookingsRecapTable', () => {
     const props: Props = { ...defaultProps, bookingsRecap: bookingsRecap }
     renderBookingRecap(props)
 
-    await userEvent.click(screen.getAllByRole('button')[1])
+    await userEvent.click(screen.getAllByRole('button')[1]!)
 
     // when
     await userEvent.type(screen.getByRole('textbox'), 'not findable')
@@ -290,12 +290,12 @@ describe('components | BookingsRecapTable', () => {
 
     // When
     renderBookingRecap(props)
-    await userEvent.click(screen.getAllByRole('button')[1])
+    await userEvent.click(screen.getAllByRole('button')[1]!)
 
     // Then
     const bookingRow = screen.getAllByRole('cell')
     expect(bookingRow[0]).toHaveTextContent('mon booking id')
-    await userEvent.click(bookingRow[0])
+    await userEvent.click(bookingRow[0]!)
 
     expect(mockLogEvent).toHaveBeenCalledTimes(1)
     expect(mockLogEvent).toHaveBeenNthCalledWith(

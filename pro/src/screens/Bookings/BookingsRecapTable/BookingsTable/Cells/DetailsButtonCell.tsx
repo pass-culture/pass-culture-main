@@ -35,7 +35,7 @@ export const DetailsButtonCell = ({
           alt=""
           src={fullUpIcon}
           className={cn(styles['details-dropdown-icon'], {
-            [styles['details-dropdown-icon-up']]: !isExpanded,
+            [styles['details-dropdown-icon-up'] ?? '']: !isExpanded,
           })}
         />
       </Button>

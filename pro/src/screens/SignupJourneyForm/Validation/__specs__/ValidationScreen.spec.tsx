@@ -160,7 +160,7 @@ describe('ValidationScreen', () => {
     it('should navigate to authentification page when clicking the first update button', async () => {
       renderValidationScreen(contextValue)
       await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
-      await userEvent.click(screen.getAllByText('Modifier')[0])
+      await userEvent.click(screen.getAllByText('Modifier')[0]!)
 
       expect(screen.getByText('Authentification')).toBeInTheDocument()
     })
@@ -168,7 +168,7 @@ describe('ValidationScreen', () => {
     it('should navigate to activite page when clicking the second update button', async () => {
       renderValidationScreen(contextValue)
       await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
-      await userEvent.click(screen.getAllByText('Modifier')[1])
+      await userEvent.click(screen.getAllByText('Modifier')[1]!)
 
       expect(screen.getByText('Activite')).toBeInTheDocument()
     })

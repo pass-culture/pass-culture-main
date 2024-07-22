@@ -221,24 +221,24 @@ describe('reimbursementsWithFilters', () => {
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
     const reimbursementCells = await screen.findAllByRole('cell')
-    expect(reimbursementCells[4].innerHTML).toContain('VIR7')
-    expect(reimbursementCells[11].innerHTML).toContain('N/A')
-    expect(reimbursementCells[18].innerHTML).toContain('VIR9, VIR12')
+    expect(reimbursementCells[4]!.innerHTML).toContain('VIR7')
+    expect(reimbursementCells[11]!.innerHTML).toContain('N/A')
+    expect(reimbursementCells[18]!.innerHTML).toContain('VIR9, VIR12')
     const orderButton = screen.getAllByRole('img', {
       name: 'Trier par ordre croissant',
-    })[3]
+    })[3]!
     await userEvent.click(orderButton)
 
     let refreshedCells = screen.getAllByRole('cell')
-    expect(refreshedCells[4].innerHTML).toContain('N/A')
-    expect(refreshedCells[11].innerHTML).toContain('VIR7')
-    expect(refreshedCells[18].innerHTML).toContain('VIR9, VIR12')
+    expect(refreshedCells[4]!.innerHTML).toContain('N/A')
+    expect(refreshedCells[11]!.innerHTML).toContain('VIR7')
+    expect(refreshedCells[18]!.innerHTML).toContain('VIR9, VIR12')
 
     await userEvent.click(orderButton)
     refreshedCells = screen.getAllByRole('cell')
-    expect(reimbursementCells[4].innerHTML).toContain('VIR7')
-    expect(reimbursementCells[11].innerHTML).toContain('N/A')
-    expect(reimbursementCells[18].innerHTML).toContain('VIR9, VIR12')
+    expect(reimbursementCells[4]!.innerHTML).toContain('VIR7')
+    expect(reimbursementCells[11]!.innerHTML).toContain('N/A')
+    expect(reimbursementCells[18]!.innerHTML).toContain('VIR9, VIR12')
   })
 
   it('should contain sort informations for a11y', async () => {
@@ -252,7 +252,7 @@ describe('reimbursementsWithFilters', () => {
     await userEvent.click(
       screen.getAllByRole('img', {
         name: 'Trier par ordre croissant',
-      })[0]
+      })[0]!
     )
     expect(
       screen.getByText('Tri par date ascendant activé.')
@@ -261,7 +261,7 @@ describe('reimbursementsWithFilters', () => {
     await userEvent.click(
       screen.getAllByRole('img', {
         name: 'Trier par ordre décroissant',
-      })[0]
+      })[0]!
     )
     expect(
       screen.getByText('Tri par date descendant activé.')
@@ -270,7 +270,7 @@ describe('reimbursementsWithFilters', () => {
     await userEvent.click(
       screen.getAllByRole('img', {
         name: 'Ne plus trier',
-      })[0]
+      })[0]!
     )
     expect(
       screen.getByText('Tri par date par défaut activé.')
@@ -280,7 +280,7 @@ describe('reimbursementsWithFilters', () => {
     await userEvent.click(
       screen.getAllByRole('img', {
         name: 'Trier par ordre croissant',
-      })[1]
+      })[1]!
     )
     expect(
       screen.getByText('Tri par type de document ascendant activé.')
@@ -289,7 +289,7 @@ describe('reimbursementsWithFilters', () => {
     await userEvent.click(
       screen.getAllByRole('img', {
         name: 'Trier par ordre croissant',
-      })[1]
+      })[1]!
     )
   })
 
@@ -336,12 +336,12 @@ describe('reimbursementsWithFilters', () => {
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
-    await userEvent.click(screen.getAllByTestId('dropdown-menu-trigger')[0])
+    await userEvent.click(screen.getAllByTestId('dropdown-menu-trigger')[0]!)
     await userEvent.click(
       screen.getByText('Télécharger le justificatif comptable (.pdf)')
     )
 
-    await userEvent.click(screen.getAllByTestId('dropdown-menu-trigger')[0])
+    await userEvent.click(screen.getAllByTestId('dropdown-menu-trigger')[0]!)
     await userEvent.click(
       screen.getByText('Télécharger le détail des réservations (.csv)')
     )

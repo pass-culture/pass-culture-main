@@ -14,7 +14,7 @@ export const buildInitialValues = (
   offer: GetIndividualOfferResponseModel,
   stocks: GetOfferStockResponseModel[]
 ): StockThingFormValues => {
-  if (stocks.length === 0) {
+  if (!stocks[0]) {
     return STOCK_THING_FORM_DEFAULT_VALUES
   }
 

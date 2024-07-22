@@ -32,7 +32,7 @@ export const shouldBlockNavigation: BlockerFunction = ({
   let from
   const fromMatchs = Object.keys(collectiveUrlPatterns).filter(
     (stepName): boolean =>
-      collectiveUrlPatterns[stepName].test(currentLocation.pathname)
+      collectiveUrlPatterns[stepName]!.test(currentLocation.pathname)
   )
   if (fromMatchs.length) {
     from = fromMatchs.reverse()[0]
@@ -42,7 +42,7 @@ export const shouldBlockNavigation: BlockerFunction = ({
 
   const toMatchs = Object.keys(collectiveUrlPatterns).filter(
     (stepName): boolean =>
-      nextLocation.pathname.match(collectiveUrlPatterns[stepName]) !== null
+      nextLocation.pathname.match(collectiveUrlPatterns[stepName]!) !== null
   )
   if (toMatchs.length) {
     to = toMatchs.reverse()[0]

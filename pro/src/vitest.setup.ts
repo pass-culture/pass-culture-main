@@ -69,8 +69,8 @@ const findErrorSourceFile = (...data: any[]) => {
     const isSourceFileRegexp = new RegExp('pro/src')
     const lines = item.split('\n')
     for (let j = 0; j < lines.length; j++) {
-      if (isSourceFileRegexp.test(lines[j])) {
-        fileMatching = lines[j]
+      if (lines[j] && isSourceFileRegexp.test(lines[j]!)) {
+        fileMatching = lines[j]!
         break
       }
     }

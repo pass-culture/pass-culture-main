@@ -29,7 +29,7 @@ export const Tooltip = ({
         className={cn(
           styles['tooltip'],
           {
-            [styles['tooltip-hidden']]: visuallyHidden,
+            [styles['tooltip-hidden'] ?? '']: visuallyHidden,
           },
           tooltipContentClassName
         )}

@@ -72,7 +72,7 @@ export const Desk = (): JSX.Element => {
     formik.handleChange(event)
     const inputValue = event.target.value.toUpperCase()
     // QRCODE return a prefix that we want to ignore.
-    const token = inputValue.split(':').reverse()[0]
+    const token = inputValue.split(':').reverse()[0] ?? ''
 
     setToken(token)
     setIsTokenValidated(false)
@@ -179,7 +179,8 @@ export const Desk = (): JSX.Element => {
             aria-live="assertive"
             aria-relevant="all"
             className={cn(styles['desk-message'], {
-              [styles['error']]: message.variant === MESSAGE_VARIANT.ERROR,
+              [styles['error'] ?? '']:
+                message.variant === MESSAGE_VARIANT.ERROR,
             })}
             data-testid="desk-message"
           >

@@ -46,7 +46,7 @@ export const ButtonLink = forwardRef(
       styles['button'],
       styles[`button-${variant}`],
       styles[`button-${iconPosition}`],
-      { [styles[`button-disabled`]]: isDisabled },
+      { [styles['button-disabled'] ?? '']: isDisabled },
       styles['button-link'],
       className
     )

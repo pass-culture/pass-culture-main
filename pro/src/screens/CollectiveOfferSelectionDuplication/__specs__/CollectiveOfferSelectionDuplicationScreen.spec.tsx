@@ -126,7 +126,7 @@ describe('CollectiveOfferConfirmation', () => {
 
     expect(api.getCollectiveOffers).toHaveBeenCalledTimes(1)
 
-    const inputOffer = await waitFor(() => screen.getAllByRole('radio')[0])
+    const inputOffer = await waitFor(() => screen.getAllByRole('radio')[0]!)
     await userEvent.click(inputOffer)
 
     expect(inputOffer).toBeChecked()
@@ -142,7 +142,7 @@ describe('CollectiveOfferConfirmation', () => {
       ).toBeInTheDocument()
     )
 
-    const inputOffer = await waitFor(() => screen.getAllByRole('radio')[0])
+    const inputOffer = await waitFor(() => screen.getAllByRole('radio')[0]!)
     await userEvent.click(inputOffer)
 
     const buttonNextStep = screen.getByText('Étape suivante')

@@ -247,7 +247,7 @@ describe('ReimbursementBankAccount', () => {
       }))
 
       bankAccount.linkedVenues = []
-      managedVenues[0].bankAccountId = null
+      managedVenues[0]!.bankAccountId = null
       renderReimbursementBankAccount(bankAccount, managedVenues)
 
       await userEvent.click(
@@ -302,7 +302,7 @@ describe('ReimbursementBankAccount', () => {
     }))
 
     bankAccount.linkedVenues = []
-    managedVenues[0].bankAccountId = null
+    managedVenues[0]!.bankAccountId = null
     renderReimbursementBankAccount(bankAccount, managedVenues)
 
     await userEvent.click(

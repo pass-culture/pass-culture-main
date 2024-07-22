@@ -221,7 +221,7 @@ export const OfferSection = ({
       })}
       aria-label="Modifier les détails de l’offre"
       className={cn({
-        [styles['cancel-title-margin']]: isEventPublicationFormShown,
+        [styles['cancel-title-margin'] ?? '']: isEventPublicationFormShown,
       })}
     >
       {isSplitOfferEnabled ? (
@@ -265,7 +265,7 @@ export const OfferSection = ({
           })}
           aria-label="Modifier les informations pratiques de l’offre"
           className={cn({
-            [styles['cancel-title-margin']]: isEventPublicationFormShown,
+            [styles['cancel-title-margin'] ?? '']: isEventPublicationFormShown,
           })}
         >
           <SummarySubSection title="Retrait de l’offre">

@@ -67,7 +67,7 @@ export const OfferTypeScreen = (): JSX.Element => {
         if (offerers.offerersNames.length === 0) {
           return
         }
-        const firstoffererId = offerers.offerersNames[0].id
+        const firstoffererId = offerers.offerersNames[0]?.id ?? 0
         return api.getOfferer(firstoffererId)
       }
       return api.getOfferer(Number(offererIdParam))

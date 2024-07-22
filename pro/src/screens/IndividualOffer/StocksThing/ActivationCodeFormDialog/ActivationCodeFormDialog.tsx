@@ -36,7 +36,9 @@ export const ActivationCodeFormDialog = ({
       setIsFileInputDisabled(true)
 
       const currentFile =
-        e.currentTarget.files !== null ? e.currentTarget.files[0] : null
+        e.currentTarget.files !== null && e.currentTarget.files[0]
+          ? e.currentTarget.files[0]
+          : null
       if (currentFile === null) {
         setIsFileInputDisabled(false)
         return

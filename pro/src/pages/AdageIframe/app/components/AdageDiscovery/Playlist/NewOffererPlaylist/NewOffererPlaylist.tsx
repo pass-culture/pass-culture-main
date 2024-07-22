@@ -42,7 +42,7 @@ export const NewOffererPlaylist = ({
         </h2>
       }
       className={classNames(styles['playlist-carousel'], {
-        [styles['playlist-carousel-loading']]: isLoading,
+        [styles['playlist-carousel-loading'] ?? '']: isLoading,
       })}
       observableRef={observableRef}
       onLastCarouselElementVisible={() =>

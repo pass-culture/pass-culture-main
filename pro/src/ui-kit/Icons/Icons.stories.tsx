@@ -31,9 +31,9 @@ export const Icons = () => {
 
     await navigator.clipboard.writeText(target.getAttribute('data-src') ?? '')
 
-    target.classList.add(styles['copy-to-clipboard'])
+    target.classList.add(styles['copy-to-clipboard'] ?? '')
     const timeoutId = setTimeout(() => {
-      target.classList.remove(styles['copy-to-clipboard'])
+      target.classList.remove(styles['copy-to-clipboard'] ?? '')
       clearTimeout(timeoutId)
     }, 600)
   }
@@ -84,8 +84,8 @@ export const Icons = () => {
               {filteredIcons.map((icon) => {
                 const fileNameParts = icon.src.split('/')
                 const iconName = fileNameParts[fileNameParts.length - 1]
-                  .split('.')[0]
-                  .replace('full-', '')
+                  ?.split('.')[0]
+                  ?.replace('full-', '')
                   .replace('stroke-', '')
                   .replace('shadow-', '')
 

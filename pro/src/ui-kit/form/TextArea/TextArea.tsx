@@ -46,7 +46,7 @@ export const TextArea = ({
       <Textarea
         aria-invalid={meta.touched && !!meta.error}
         className={cn(styles['text-area'], {
-          [styles['has-error']]: meta.touched && !!meta.error,
+          [styles['has-error'] ?? '']: meta.touched && !!meta.error,
         })}
         disabled={disabled}
         id={name}

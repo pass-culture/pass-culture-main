@@ -19,7 +19,7 @@ export function DropdownItem({
   return (
     <DropdownMenu.Item
       className={cn(styles['menu-item'], {
-        [styles['menu-item-disabled']]: disabled,
+        [styles['menu-item-disabled'] ?? '']: disabled,
       })}
       title={title}
       onSelect={onSelect}

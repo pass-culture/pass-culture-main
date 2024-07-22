@@ -126,7 +126,7 @@ describe('components | BookingsRecap | Pro user', () => {
 
     await screen.findAllByText(bookingRecap.stock.offerName)
     expect(
-      spyGetBookingsPro.mock.calls[0][NTH_ARGUMENT_GET_BOOKINGS.venueId - 1]
+      spyGetBookingsPro.mock.calls[0]![NTH_ARGUMENT_GET_BOOKINGS.venueId - 1]
     ).toBe(venue.id.toString())
   })
 
@@ -345,16 +345,16 @@ describe('components | BookingsRecap | Pro user', () => {
 
     expect(api.getBookingsPro).toHaveBeenCalledTimes(2)
     expect(
-      spyGetBookingsPro.mock.calls[0][NTH_ARGUMENT_GET_BOOKINGS.page - 1]
+      spyGetBookingsPro.mock.calls[0]![NTH_ARGUMENT_GET_BOOKINGS.page - 1]
     ).toBe(1)
     expect(
-      spyGetBookingsPro.mock.calls[0][NTH_ARGUMENT_GET_BOOKINGS.venueId - 1]
+      spyGetBookingsPro.mock.calls[0]![NTH_ARGUMENT_GET_BOOKINGS.venueId - 1]
     ).toBe(venue.id.toString())
     expect(
-      spyGetBookingsPro.mock.calls[1][NTH_ARGUMENT_GET_BOOKINGS.page - 1]
+      spyGetBookingsPro.mock.calls[1]![NTH_ARGUMENT_GET_BOOKINGS.page - 1]
     ).toBe(2)
     expect(
-      spyGetBookingsPro.mock.calls[1][NTH_ARGUMENT_GET_BOOKINGS.venueId - 1]
+      spyGetBookingsPro.mock.calls[1]![NTH_ARGUMENT_GET_BOOKINGS.venueId - 1]
     ).toBe(venue.id.toString())
   })
 
@@ -379,7 +379,7 @@ describe('components | BookingsRecap | Pro user', () => {
 
     await screen.findAllByText(bookingRecap.stock.offerName)
     expect(
-      spyGetBookingsPro.mock.calls[0][NTH_ARGUMENT_GET_BOOKINGS.eventDate - 1]
+      spyGetBookingsPro.mock.calls[0]![NTH_ARGUMENT_GET_BOOKINGS.eventDate - 1]
     ).toStrictEqual(
       formatBrowserTimezonedDateAsUTC(
         new Date(2020, 5, 8),
@@ -409,12 +409,12 @@ describe('components | BookingsRecap | Pro user', () => {
 
     await screen.findAllByText(bookingRecap.stock.offerName)
     expect(
-      spyGetBookingsPro.mock.calls[0][
+      spyGetBookingsPro.mock.calls[0]![
         NTH_ARGUMENT_GET_BOOKINGS.bookingEndingDate - 1
       ]
     ).toBeUndefined()
     expect(
-      spyGetBookingsPro.mock.calls[0][
+      spyGetBookingsPro.mock.calls[0]![
         NTH_ARGUMENT_GET_BOOKINGS.bookingBeginningDate - 1
       ]
     ).toBeUndefined()
@@ -438,12 +438,12 @@ describe('components | BookingsRecap | Pro user', () => {
 
     await screen.findAllByText(bookingRecap.stock.offerName)
     expect(
-      spyGetBookingsPro.mock.calls[0][
+      spyGetBookingsPro.mock.calls[0]![
         NTH_ARGUMENT_GET_BOOKINGS.bookingBeginningDate - 1
       ]
     ).toStrictEqual(DEFAULT_PRE_FILTERS.bookingBeginningDate)
     expect(
-      spyGetBookingsPro.mock.calls[0][
+      spyGetBookingsPro.mock.calls[0]![
         NTH_ARGUMENT_GET_BOOKINGS.bookingEndingDate - 1
       ]
     ).toStrictEqual(DEFAULT_PRE_FILTERS.bookingEndingDate)
@@ -473,12 +473,12 @@ describe('components | BookingsRecap | Pro user', () => {
 
     await screen.findAllByText(bookingRecap.stock.offerName)
     expect(
-      spyGetBookingsPro.mock.calls[0][
+      spyGetBookingsPro.mock.calls[0]![
         NTH_ARGUMENT_GET_BOOKINGS.bookingBeginningDate - 1
       ]
     ).toStrictEqual('2020-05-10')
     expect(
-      spyGetBookingsPro.mock.calls[0][
+      spyGetBookingsPro.mock.calls[0]![
         NTH_ARGUMENT_GET_BOOKINGS.bookingEndingDate - 1
       ]
     ).toStrictEqual('2020-06-05')

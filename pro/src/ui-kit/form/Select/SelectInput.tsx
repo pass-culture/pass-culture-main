@@ -30,17 +30,17 @@ export const SelectInput = ({
 }: SelectInputProps): JSX.Element => (
   <div
     className={cn(styles['select-input-wrapper'], {
-      [styles['has-description']]: hasDescription,
+      [styles['has-description'] ?? '']: hasDescription,
     })}
   >
     <select
       aria-invalid={hasError}
       {...(hasError ? { 'aria-describedby': `error-${name}` } : {})}
       className={cn(styles['select-input'], className, {
-        [styles['has-error']]: hasError,
-        [styles['has-description']]: hasDescription,
-        [styles['select-input-placeholder']]: field.value === '',
-        [styles['filter-variant']]: filterVariant,
+        [styles['has-error'] ?? '']: hasError,
+        [styles['has-description'] ?? '']: hasDescription,
+        [styles['select-input-placeholder'] ?? '']: field.value === '',
+        [styles['filter-variant'] ?? '']: filterVariant,
       })}
       disabled={disabled}
       id={name}
@@ -58,7 +58,7 @@ export const SelectInput = ({
     </select>
     <div
       className={cn(styles['select-input-icon'], {
-        [styles['filter-variant']]: filterVariant,
+        [styles['filter-variant'] ?? '']: filterVariant,
       })}
     >
       <SvgIcon src={strokeDownIcon} alt="" width="0" />

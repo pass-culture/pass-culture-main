@@ -37,7 +37,7 @@ export const DialogBox: FunctionComponent<DialogProps> = ({
         <Dialog.Content
           aria-labelledby={labelledBy}
           className={cn(styles['dialog-box-content'], {
-            [styles['dialog-box-full-content-width']]: fullContentWidth,
+            [styles['dialog-box-full-content-width'] ?? '']: fullContentWidth,
           })}
         >
           {hasCloseButton && (

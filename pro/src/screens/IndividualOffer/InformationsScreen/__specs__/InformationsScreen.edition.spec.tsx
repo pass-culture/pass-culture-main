@@ -643,7 +643,7 @@ describe('screens:IndividualOffer::Informations:edition', () => {
           withdrawalDelay: 0,
           bookingsCount: 1,
         }
-        contextOverride.subCategories[0].conditionalFields = [
+        contextOverride.subCategories[0]!.conditionalFields = [
           'withdrawalDelay',
           'withdrawalType',
         ]

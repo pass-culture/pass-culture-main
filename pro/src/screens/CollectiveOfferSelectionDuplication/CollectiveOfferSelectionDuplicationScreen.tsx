@@ -169,7 +169,7 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
                   <div
                     key={offer.id}
                     className={cn(styles['offer-selection'], {
-                      [styles['offer-selected']]:
+                      [styles['offer-selected'] ?? '']:
                         formikSelection.values.templateOfferId ===
                         offer.id.toString(),
                     })}

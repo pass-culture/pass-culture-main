@@ -11,8 +11,6 @@ const translateObjectKeysAndValues = (
   Object.entries(originalObject).forEach(([originalKey, originalValue]) => {
     const translatedKey = translationsMap[originalKey] ?? originalKey
 
-    // False positive, eslint disable can be removed when noUncheckedIndexedAccess is enabled in TS config
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     const translatedValue = translationsMap[originalValue] ?? originalValue
 
     result[translatedKey] = translatedValue

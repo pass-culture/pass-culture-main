@@ -47,7 +47,7 @@ export const PartnerPages = ({
   venueTypes,
 }: PartnerPagesProps) => {
   const [selectedVenueId, setSelectedVenueId] = useState<string>(
-    venues.length > 0 ? getSavedVenueId(venues) ?? venues[0].id.toString() : ''
+    venues[0] ? getSavedVenueId(venues) ?? venues[0].id.toString() : ''
   )
 
   const venuesOptions: SelectOption[] = venues.map((venue) => ({
@@ -87,8 +87,6 @@ export const PartnerPages = ({
         </>
       )}
 
-      {/* TODO remove this when noUncheckedIndexedAccess is enabled in TS config */}
-      {/* eslint-disable-next-line @typescript-eslint/no-unnecessary-condition */}
       {selectedVenue && (
         <PartnerPage
           offerer={offerer}

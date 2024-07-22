@@ -89,14 +89,14 @@ describe('Stepper', () => {
     const listItems = await screen.findAllByRole('listitem')
 
     expect(listItems).toHaveLength(4)
-    expect(listItems[0].classList.contains('selectionnable')).toBe(true)
-    expect(listItems[0].classList.contains('active')).toBe(false)
-    expect(listItems[1].classList.contains('selectionnable')).toBe(true)
-    expect(listItems[1].classList.contains('active')).toBe(true)
-    expect(listItems[2].classList.contains('selectionnable')).toBe(true)
-    expect(listItems[2].classList.contains('active')).toBe(false)
-    expect(listItems[3].classList.contains('selectionnable')).toBe(false)
-    expect(listItems[3].classList.contains('active')).toBe(false)
+    expect(listItems[0]!.classList.contains('selectionnable')).toBe(true)
+    expect(listItems[0]!.classList.contains('active')).toBe(false)
+    expect(listItems[1]!.classList.contains('selectionnable')).toBe(true)
+    expect(listItems[1]!.classList.contains('active')).toBe(true)
+    expect(listItems[2]!.classList.contains('selectionnable')).toBe(true)
+    expect(listItems[2]!.classList.contains('active')).toBe(false)
+    expect(listItems[3]!.classList.contains('selectionnable')).toBe(false)
+    expect(listItems[3]!.classList.contains('active')).toBe(false)
   })
 
   it('should trigger onClick', async () => {

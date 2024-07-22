@@ -259,7 +259,7 @@ export const CollectiveOfferNavigation = ({
         tabs={tabs}
         selectedKey={activeStep}
         className={cn(styles['tabs'], {
-          [styles['tabs-active']]: [
+          [styles['tabs-active'] ?? '']: [
             CollectiveOfferStep.DETAILS,
             CollectiveOfferStep.STOCKS,
             CollectiveOfferStep.VISIBILITY,

@@ -183,7 +183,7 @@ describe('screen Offers', () => {
       individualOffers: [...offersRecap, listOffersOfferFactory()],
     })
 
-    screen.getByLabelText(offersRecap[0].name)
+    screen.getByLabelText(offersRecap[0]!.name)
     expect(screen.getByText('2 offres')).toBeInTheDocument()
   })
 
@@ -194,7 +194,7 @@ describe('screen Offers', () => {
       individualOffers: offersRecap,
     })
 
-    screen.getByLabelText(offersRecap[0].name)
+    screen.getByLabelText(offersRecap[0]!.name)
     expect(await screen.findByText('1 offre')).toBeInTheDocument()
   })
 
@@ -207,47 +207,49 @@ describe('screen Offers', () => {
       individualOffers: offersRecap,
     })
 
-    screen.getByLabelText(offersRecap[0].name)
+    screen.getByLabelText(offersRecap[0]!.name)
     expect(await screen.findByText('500+ offres')).toBeInTheDocument()
   })
 
   it('should render venue filter with default option selected and given venues as options', () => {
     const expectedSelectOptions = [
       { id: [ALL_VENUES_OPTION.value], value: ALL_VENUES_OPTION.label },
-      { id: [proVenues[0].id], value: proVenues[0].name },
+      { id: [proVenues[0]!.id], value: proVenues[0]!.name },
       {
-        id: [proVenues[1].id],
-        value: `${proVenues[1].offererName} - Offre numérique`,
+        id: [proVenues[1]!.id],
+        value: `${proVenues[1]!.offererName} - Offre numérique`,
       },
     ]
 
     renderOffers(props)
 
     const defaultOption = screen.getByDisplayValue(
-      expectedSelectOptions[0].value
+      expectedSelectOptions[0]!.value
     )
     expect(defaultOption).toBeInTheDocument()
 
     const firstVenueOption = screen.getByRole('option', {
-      name: expectedSelectOptions[1].value,
+      name: expectedSelectOptions[1]!.value,
     })
     expect(firstVenueOption).toBeInTheDocument()
 
     const secondVenueOption = screen.getByRole('option', {
-      name: expectedSelectOptions[2].value,
+      name: expectedSelectOptions[2]!.value,
     })
     expect(secondVenueOption).toBeInTheDocument()
   })
 
   it('should render venue filter with given venue selected', () => {
     const expectedSelectOptions = [
-      { id: [proVenues[0].id], value: proVenues[0].name },
+      { id: [proVenues[0]!.id], value: proVenues[0]!.name },
     ]
-    const filters = { ...DEFAULT_SEARCH_FILTERS, venueId: proVenues[0].id }
+    const filters = { ...DEFAULT_SEARCH_FILTERS, venueId: proVenues[0]!.id }
 
     renderOffers({ ...props, initialSearchFilters: filters })
 
-    const venueSelect = screen.getByDisplayValue(expectedSelectOptions[0].value)
+    const venueSelect = screen.getByDisplayValue(
+      expectedSelectOptions[0]!.value
+    )
     expect(venueSelect).toBeInTheDocument()
   })
 
@@ -403,9 +405,9 @@ describe('screen Offers', () => {
       audience: Audience.INDIVIDUAL,
     })
 
-    expect(screen.queryByLabelText(offers[0].name)).toBeDisabled()
-    expect(screen.queryByLabelText(offers[1].name)).toBeDisabled()
-    expect(screen.queryByLabelText(offers[2].name)).toBeEnabled()
+    expect(screen.queryByLabelText(offers[0]!.name)).toBeDisabled()
+    expect(screen.queryByLabelText(offers[1]!.name)).toBeDisabled()
+    expect(screen.queryByLabelText(offers[2]!.name)).toBeEnabled()
   })
 
   it('should not have "Tout Sélectionner" checked when there is no offer to be checked', () => {
@@ -458,7 +460,7 @@ describe('screen Offers', () => {
   it('should display actionsBar when at least one offer is selected', async () => {
     renderWithProviders(<Offers {...props} />, { user: currentUser })
 
-    const checkbox = screen.getByLabelText(offersRecap[0].name)
+    const checkbox = screen.getByLabelText(offersRecap[0]!.name)
     await userEvent.click(checkbox)
 
     const actionBar = await screen.findByTestId('actions-bar')
@@ -563,10 +565,10 @@ describe('screen Offers', () => {
         audience: Audience.INDIVIDUAL,
       })
 
-      const firstOfferCheckbox = screen.getByLabelText(offers[0].name)
-      const secondOfferCheckbox = screen.getByLabelText(offers[1].name)
-      const thirdOfferCheckbox = screen.getByLabelText(offers[2].name)
-      const fourthOfferCheckbox = screen.getByLabelText(offers[3].name)
+      const firstOfferCheckbox = screen.getByLabelText(offers[0]!.name)
+      const secondOfferCheckbox = screen.getByLabelText(offers[1]!.name)
+      const thirdOfferCheckbox = screen.getByLabelText(offers[2]!.name)
+      const fourthOfferCheckbox = screen.getByLabelText(offers[3]!.name)
 
       await userEvent.click(screen.getByLabelText('Tout sélectionner'))
 
@@ -698,7 +700,7 @@ describe('screen Offers', () => {
 
     await userEvent.click(screen.getByText('Tout sélectionner'))
     await userEvent.click(
-      screen.getAllByRole('button', { name: 'Supprimer' })[2]
+      screen.getAllByRole('button', { name: 'Supprimer' })[2]!
     )
     await userEvent.click(screen.getByText('Supprimer ces brouillons'))
 

@@ -116,7 +116,7 @@ describe('CollectiveOfferNavigation', () => {
 
     const links = screen.queryAllByRole('link')
     expect(links).toHaveLength(1)
-    expect(links[0].getAttribute('href')).toBe(
+    expect(links[0]!.getAttribute('href')).toBe(
       `/offre/collectif/vitrine/${offerId}/creation`
     )
   })
@@ -126,10 +126,10 @@ describe('CollectiveOfferNavigation', () => {
     renderCollectiveOfferNavigation(props)
     const links = screen.queryAllByRole('link')
     expect(links).toHaveLength(2)
-    expect(links[0].getAttribute('href')).toBe(
+    expect(links[0]!.getAttribute('href')).toBe(
       `/offre/collectif/${offerId}/creation`
     )
-    expect(links[1].getAttribute('href')).toBe(
+    expect(links[1]!.getAttribute('href')).toBe(
       `/offre/${offerId}/collectif/stocks`
     )
   })
@@ -139,10 +139,10 @@ describe('CollectiveOfferNavigation', () => {
     renderCollectiveOfferNavigation(props)
     const links = screen.queryAllByRole('link')
     expect(links).toHaveLength(2)
-    expect(links[0].getAttribute('href')).toBe(
+    expect(links[0]!.getAttribute('href')).toBe(
       `/offre/collectif/${offerId}/creation`
     )
-    expect(links[1].getAttribute('href')).toBe(
+    expect(links[1]!.getAttribute('href')).toBe(
       `/offre/${offerId}/collectif/stocks`
     )
   })
@@ -152,13 +152,13 @@ describe('CollectiveOfferNavigation', () => {
     renderCollectiveOfferNavigation(props)
     const links = screen.queryAllByRole('link')
     expect(links).toHaveLength(3)
-    expect(links[0].getAttribute('href')).toBe(
+    expect(links[0]!.getAttribute('href')).toBe(
       `/offre/collectif/${offerId}/creation`
     )
-    expect(links[1].getAttribute('href')).toBe(
+    expect(links[1]!.getAttribute('href')).toBe(
       `/offre/${offerId}/collectif/stocks`
     )
-    expect(links[2].getAttribute('href')).toBe(
+    expect(links[2]!.getAttribute('href')).toBe(
       `/offre/${offerId}/collectif/visibilite`
     )
   })
@@ -168,16 +168,16 @@ describe('CollectiveOfferNavigation', () => {
     renderCollectiveOfferNavigation(props)
     const links = screen.queryAllByRole('link')
     expect(links).toHaveLength(5)
-    expect(links[0].getAttribute('href')).toBe(
+    expect(links[0]!.getAttribute('href')).toBe(
       `/offre/collectif/${offerId}/creation`
     )
-    expect(links[1].getAttribute('href')).toBe(
+    expect(links[1]!.getAttribute('href')).toBe(
       `/offre/${offerId}/collectif/stocks`
     )
-    expect(links[2].getAttribute('href')).toBe(
+    expect(links[2]!.getAttribute('href')).toBe(
       `/offre/${offerId}/collectif/visibilite`
     )
-    expect(links[3].getAttribute('href')).toBe(
+    expect(links[3]!.getAttribute('href')).toBe(
       `/offre/${offerId}/collectif/creation/recapitulatif`
     )
   })
@@ -200,19 +200,19 @@ describe('CollectiveOfferNavigation', () => {
     const linkItems = await screen.findAllByRole('link')
 
     expect(linkItems).toHaveLength(5)
-    expect(linkItems[0].getAttribute('href')).toBe(
+    expect(linkItems[0]!.getAttribute('href')).toBe(
       `/offre/${offerId}/collectif/edition`
     )
-    expect(linkItems[1].getAttribute('href')).toBe(
+    expect(linkItems[1]!.getAttribute('href')).toBe(
       `/offre/${offerId}/collectif/apercu`
     )
-    expect(linkItems[2].getAttribute('href')).toBe(
+    expect(linkItems[2]!.getAttribute('href')).toBe(
       `/offre/${offerId}/collectif/edition`
     )
-    expect(linkItems[3].getAttribute('href')).toBe(
+    expect(linkItems[3]!.getAttribute('href')).toBe(
       `/offre/${offerId}/collectif/stocks/edition`
     )
-    expect(linkItems[4].getAttribute('href')).toBe(
+    expect(linkItems[4]!.getAttribute('href')).toBe(
       `/offre/${offerId}/collectif/visibilite/edition`
     )
   })

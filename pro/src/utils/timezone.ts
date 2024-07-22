@@ -88,8 +88,8 @@ export function convertTimeFromVenueTimezoneToUtc(
 
   // create a fake date to compute time offset for us
   const userDate = getToday()
-  userDate.setHours(parseInt(hours))
-  userDate.setMinutes(parseInt(minutes))
+  userDate.setHours(parseInt(hours ?? ''))
+  userDate.setMinutes(parseInt(minutes ?? ''))
 
   // get venue time zone : ex: 'Pacific/Pitcairn'
   const venueTimeZone = getDepartmentTimezone(departmentCode)

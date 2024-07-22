@@ -21,12 +21,12 @@ export const BoxRounded = ({
   return (
     <div
       className={cn(styles['expandable-box'], {
-        [styles['expandable-box-closed']]: showButtonModify,
+        [styles['expandable-box-closed'] ?? '']: showButtonModify,
       })}
     >
       <div
         className={cn(styles['modify-button-container'], {
-          [styles['hidden']]: !showButtonModify,
+          [styles['hidden'] ?? '']: !showButtonModify,
         })}
       >
         <Button

@@ -70,7 +70,7 @@ describe('route CollectiveOffers when user is admin', () => {
   })
 
   it('should reset status filter when venue filter is deselected', async () => {
-    const { id: venueId, name: venueName } = proVenues[0]
+    const { id: venueId, name: venueName } = proVenues[0]!
     const filters = {
       venueId: venueId.toString(),
       status: OfferStatus.INACTIVE,
@@ -100,7 +100,7 @@ describe('route CollectiveOffers when user is admin', () => {
   })
 
   it('should not reset or disable status filter when venue filter is deselected while offerer filter is applied', async () => {
-    const { id: venueId, name: venueName } = proVenues[0]
+    const { id: venueId, name: venueName } = proVenues[0]!
     const filters = {
       venueId: venueId.toString(),
       status: OfferStatus.INACTIVE,
@@ -171,7 +171,7 @@ describe('route CollectiveOffers when user is admin', () => {
   })
 
   it('should not reset or disable status filter when offerer filter is removed while venue filter is applied', async () => {
-    const { id: venueId } = proVenues[0]
+    const { id: venueId } = proVenues[0]!
     const offerer = {
       ...defaultGetOffererResponseModel,
       name: 'La structure',
@@ -208,7 +208,7 @@ describe('route CollectiveOffers when user is admin', () => {
   })
 
   it('should enable status filters when venue filter is applied', async () => {
-    const filters = { venueId: proVenues[0].id.toString() }
+    const filters = { venueId: proVenues[0]!.id.toString() }
 
     await renderOffers(filters)
 

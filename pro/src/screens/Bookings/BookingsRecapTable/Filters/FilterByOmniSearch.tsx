@@ -98,7 +98,7 @@ export const FilterByOmniSearch = ({
   return (
     <fieldset
       className={cn(styles['omnisearch-container'], {
-        [styles['omnisearch-container-disabled']]: isDisabled,
+        [styles['omnisearch-container-disabled'] ?? '']: isDisabled,
       })}
     >
       <legend className="visually-hidden">

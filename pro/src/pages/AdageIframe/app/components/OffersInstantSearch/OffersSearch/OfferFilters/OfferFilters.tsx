@@ -173,7 +173,7 @@ export const OfferFilters = ({
                     ? 1
                     : null
                 }
-                isOpen={modalOpenStatus['eventAddressType']}
+                isOpen={modalOpenStatus['eventAddressType'] ?? false}
                 setIsOpen={setModalOpenStatus}
                 filterName="eventAddressType"
                 handleSubmit={formik.handleSubmit}
@@ -205,7 +205,7 @@ export const OfferFilters = ({
                     ? 1
                     : activeLocalisationFilterCount
                 }
-                isOpen={modalOpenStatus['localisation']}
+                isOpen={modalOpenStatus['localisation'] ?? false}
                 setIsOpen={setModalOpenStatus}
                 filterName="localisation"
                 handleSubmit={() => {
@@ -280,7 +280,7 @@ export const OfferFilters = ({
                       name="departments"
                       label="Départements"
                       options={departmentOptions}
-                      isOpen={modalOpenStatus['localisation']}
+                      isOpen={modalOpenStatus['localisation'] ?? false}
                     />
                   </ModalFilterLayout>
                 )}
@@ -298,7 +298,7 @@ export const OfferFilters = ({
                       name="academies"
                       label="Académies"
                       options={academiesOptions}
-                      isOpen={modalOpenStatus['localisation']}
+                      isOpen={modalOpenStatus['localisation'] ?? false}
                     />
                   </ModalFilterLayout>
                 )}
@@ -328,7 +328,7 @@ export const OfferFilters = ({
                 isActive={formik.values.domains.length > 0}
                 title="Domaine artistique"
                 itemsLength={formik.values.domains.length}
-                isOpen={modalOpenStatus['domains']}
+                isOpen={modalOpenStatus['domains'] ?? false}
                 setIsOpen={setModalOpenStatus}
                 filterName="domains"
                 handleSubmit={formik.handleSubmit}
@@ -343,7 +343,7 @@ export const OfferFilters = ({
                     name="domains"
                     label="Domaine artistique"
                     options={domainsOptions}
-                    isOpen={modalOpenStatus['domains']}
+                    isOpen={modalOpenStatus['domains'] ?? false}
                   />
                 </ModalFilterLayout>
               </AdageButtonFilter>
@@ -352,7 +352,7 @@ export const OfferFilters = ({
                 isActive={formik.values.formats.length > 0}
                 title="Format"
                 itemsLength={formik.values.formats.length}
-                isOpen={modalOpenStatus['formats']}
+                isOpen={modalOpenStatus['formats'] ?? false}
                 setIsOpen={setModalOpenStatus}
                 filterName="formats"
                 handleSubmit={formik.handleSubmit}
@@ -367,7 +367,7 @@ export const OfferFilters = ({
                     name="formats"
                     label="Format"
                     options={formatsOptions}
-                    isOpen={modalOpenStatus['formats']}
+                    isOpen={modalOpenStatus['formats'] ?? false}
                   />
                 </ModalFilterLayout>
               </AdageButtonFilter>
@@ -376,7 +376,7 @@ export const OfferFilters = ({
                 isActive={formik.values.students.length > 0}
                 title="Niveau scolaire"
                 itemsLength={formik.values.students.length}
-                isOpen={modalOpenStatus['students']}
+                isOpen={modalOpenStatus['students'] ?? false}
                 setIsOpen={setModalOpenStatus}
                 filterName="students"
                 handleSubmit={formik.handleSubmit}
@@ -391,7 +391,7 @@ export const OfferFilters = ({
                     name="students"
                     label="Niveau scolaire"
                     options={studentsOptionsFiltered}
-                    isOpen={modalOpenStatus['students']}
+                    isOpen={modalOpenStatus['students'] ?? false}
                     sortOptions={(options, selectedOptions) => {
                       //  Implement custom sort to not sort results alphabetically
                       return [...options].sort((option1, option2) => {

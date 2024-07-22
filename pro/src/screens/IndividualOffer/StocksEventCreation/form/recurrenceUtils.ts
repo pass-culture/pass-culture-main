@@ -33,7 +33,8 @@ export const getDatesInInterval = (
   while (currentDate <= end) {
     if (
       days.length === 0 ||
-      days.includes(jsDayToRecurrenceDayMap[currentDate.getDay()])
+      (jsDayToRecurrenceDayMap[currentDate.getDay()] &&
+        days.includes(jsDayToRecurrenceDayMap[currentDate.getDay()]!))
     ) {
       dates.push(currentDate)
     }
@@ -110,11 +111,11 @@ export const isTimeInTheFuture = (
     return false
   }
   const [hours, minutes] = beginningTime.split(':')
-  if (parseInt(hours) > now.getHours()) {
+  if (parseInt(hours ?? '') > now.getHours()) {
     return true
   }
-  if (parseInt(hours) === now.getHours()) {
-    return parseInt(minutes) > now.getMinutes()
+  if (parseInt(hours ?? '') === now.getHours()) {
+    return parseInt(minutes ?? '') > now.getMinutes()
   }
   return false
 }

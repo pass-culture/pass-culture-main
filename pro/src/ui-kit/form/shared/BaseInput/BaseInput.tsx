@@ -47,10 +47,10 @@ export const BaseInput = forwardRef(
             className={cn(
               styles['base-input'],
               {
-                [styles['base-input-with-right-icon']]: hasRightIcon,
-                [styles['base-input-with-left-icon']]: hasLeftIcon,
-                [styles['has-error']]: hasError,
-                [styles['filter-variant']]: filterVariant,
+                [styles['base-input-with-right-icon'] ?? '']: hasRightIcon,
+                [styles['base-input-with-left-icon'] ?? '']: hasLeftIcon,
+                [styles['has-error'] ?? '']: hasError,
+                [styles['filter-variant'] ?? '']: filterVariant,
               },
               className
             )}
@@ -60,10 +60,10 @@ export const BaseInput = forwardRef(
           />
           <span
             className={cn({
-              [styles['base-input-right-icon']]: hasRightIcon,
-              [styles['base-input-left-icon']]: hasLeftIcon,
-              [styles['base-input-right-button']]: hasButton,
-              [styles['filter-variant']]: filterVariant,
+              [styles['base-input-right-icon'] ?? '']: hasRightIcon,
+              [styles['base-input-left-icon'] ?? '']: hasLeftIcon,
+              [styles['base-input-right-button'] ?? '']: hasButton,
+              [styles['filter-variant'] ?? '']: filterVariant,
             })}
           >
             {hasLeftIcon && <SvgIcon src={leftIcon} alt="" />}
@@ -81,8 +81,8 @@ export const BaseInput = forwardRef(
           className={cn(
             styles['base-input'],
             {
-              [styles['has-error']]: hasError,
-              [styles['filter-variant']]: filterVariant,
+              [styles['has-error'] ?? '']: hasError,
+              [styles['filter-variant'] ?? '']: filterVariant,
             },
             className
           )}

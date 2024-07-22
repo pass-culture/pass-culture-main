@@ -121,7 +121,7 @@ export const PriceCategoriesForm = ({
                       currentDeletionIndex,
                       arrayHelpers,
                       values.priceCategories,
-                      values.priceCategories[currentDeletionIndex].id
+                      values.priceCategories[currentDeletionIndex]?.id
                     )
                   }
                   title="En supprimant ce tarif vous allez aussi supprimer l’ensemble des dates qui lui sont associées."
@@ -195,7 +195,7 @@ export const PriceCategoriesForm = ({
                             index,
                             arrayHelpers,
                             values.priceCategories,
-                            values.priceCategories[index].id
+                            values.priceCategories[index]?.id
                           )
                         }
                         hasTooltip={
@@ -216,7 +216,7 @@ export const PriceCategoriesForm = ({
                 icon={fullMoreIcon}
                 onClick={async () => {
                   arrayHelpers.push(INITIAL_PRICE_CATEGORY)
-                  if (values.priceCategories[0].label === UNIQUE_PRICE) {
+                  if (values.priceCategories[0]?.label === UNIQUE_PRICE) {
                     await setFieldValue(`priceCategories[0].label`, '')
                   }
                 }}

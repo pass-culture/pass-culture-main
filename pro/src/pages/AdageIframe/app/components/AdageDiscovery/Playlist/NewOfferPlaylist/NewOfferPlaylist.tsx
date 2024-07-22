@@ -62,7 +62,7 @@ export const NewOfferPlaylist = ({
         </h2>
       }
       className={classNames(styles['playlist-carousel'], {
-        [styles['playlist-carousel-loading']]: loading,
+        [styles['playlist-carousel-loading'] ?? '']: loading,
       })}
       observableRef={observableRef}
       loading={loading}

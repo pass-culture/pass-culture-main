@@ -48,7 +48,7 @@ export const OldHeader = forwardRef(() => {
             <NavLink
               className={({ isActive }) =>
                 cn(styles['nav-item'], {
-                  [styles['nav-item-selected']]: isActive,
+                  [styles['nav-item-selected'] ?? '']: isActive,
                 })
               }
               onClick={() => {
@@ -69,7 +69,7 @@ export const OldHeader = forwardRef(() => {
             <NavLink
               className={({ isActive }) =>
                 cn(styles['nav-item'], {
-                  [styles['nav-item-selected']]: isActive,
+                  [styles['nav-item-selected'] ?? '']: isActive,
                 })
               }
               onClick={() => {
@@ -90,7 +90,7 @@ export const OldHeader = forwardRef(() => {
             <NavLink
               className={({ isActive }) =>
                 cn(styles['nav-item'], {
-                  [styles['nav-item-selected']]: isActive,
+                  [styles['nav-item-selected'] ?? '']: isActive,
                 })
               }
               onClick={() => {
@@ -111,7 +111,7 @@ export const OldHeader = forwardRef(() => {
             <NavLink
               className={({ isActive }) =>
                 cn(styles['nav-item'], {
-                  [styles['nav-item-selected']]: isActive,
+                  [styles['nav-item-selected'] ?? '']: isActive,
                 })
               }
               onClick={() => {
@@ -134,7 +134,7 @@ export const OldHeader = forwardRef(() => {
             <NavLink
               className={({ isActive }) =>
                 cn(styles['nav-item'], {
-                  [styles['nav-item-selected']]: isActive,
+                  [styles['nav-item-selected'] ?? '']: isActive,
                 })
               }
               onClick={() => {
@@ -158,7 +158,7 @@ export const OldHeader = forwardRef(() => {
               <NavLink
                 className={({ isActive }) =>
                   cn(styles['nav-item'], {
-                    [styles['nav-item-selected']]: isActive,
+                    [styles['nav-item-selected'] ?? '']: isActive,
                   })
                 }
                 onClick={() => {

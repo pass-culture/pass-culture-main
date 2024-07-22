@@ -17,7 +17,7 @@ export const DuoCheckbox = ({ isChecked }: DuoCheckboxProps) => {
   return (
     <div
       className={cn(styles['duo-checkbox'], {
-        [styles['duo-checkbox-selected']]: isChecked,
+        [styles['duo-checkbox-selected'] ?? '']: isChecked,
       })}
     >
       <BaseCheckbox

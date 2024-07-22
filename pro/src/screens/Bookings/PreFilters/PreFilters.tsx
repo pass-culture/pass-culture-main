@@ -162,8 +162,8 @@ export const PreFilters = ({
     <>
       <form
         className={classNames(styles['pre-filters-form'], {
-          [styles['has-result']]: hasResult,
-          [styles['refresh-required']]: isRefreshRequired,
+          [styles['has-result'] ?? '']: hasResult,
+          [styles['refresh-required'] ?? '']: isRefreshRequired,
         })}
         onSubmit={requestFilteredBookings}
       >

@@ -128,10 +128,10 @@ function compareHours(start?: string, end?: string): boolean {
   const [endHours, endMinutes] = end.split(':').map(Number)
 
   const startDate = new Date()
-  startDate.setHours(startHours, startMinutes)
+  startDate.setHours(startHours || 0, startMinutes)
 
   const endDate = new Date()
-  endDate.setHours(endHours, endMinutes)
+  endDate.setHours(endHours || 0, endMinutes)
 
   return endDate > startDate
 }

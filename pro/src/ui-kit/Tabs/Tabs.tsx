@@ -38,7 +38,7 @@ export const Tabs = ({
           return (
             <li
               className={cn(styles['tabs-tab'], {
-                [styles['is-selected']]: selectedKey === key,
+                [styles['is-selected'] ?? '']: selectedKey === key,
               })}
               key={`tab_${key}`}
             >

@@ -85,8 +85,8 @@ export const AdageButtonFilter = ({
         disabled={disabled}
         onClick={clickModalButtonHandler}
         className={cn([styles['adage-button']], {
-          [styles['adage-button-is-active']]: isActive,
-          [styles['adage-button-selected']]: isOpen,
+          [styles['adage-button-is-active'] ?? '']: isActive,
+          [styles['adage-button-selected'] ?? '']: isOpen,
         })}
       >
         {title} {isActive && `(${itemsLength})`}

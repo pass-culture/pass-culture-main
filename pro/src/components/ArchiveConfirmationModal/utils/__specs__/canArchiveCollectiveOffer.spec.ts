@@ -111,7 +111,10 @@ describe('canArchiveCollectiveOffer', () => {
         collectiveOfferFactory({
           status: CollectiveOfferStatus.PENDING,
           stocks: [
-            { ...stocks[0], beginningDatetime: String(new Date('2020-01-01')) },
+            {
+              ...stocks[0]!,
+              beginningDatetime: String(new Date('2020-01-01')),
+            },
           ],
           booking: {
             booking_status: CollectiveBookingStatus.USED,
@@ -127,7 +130,7 @@ describe('canArchiveCollectiveOffer', () => {
       canArchiveCollectiveOffer(
         collectiveOfferFactory({
           status: CollectiveOfferStatus.PENDING,
-          stocks: [{ ...stocks[0], beginningDatetime: String(new Date()) }],
+          stocks: [{ ...stocks[0]!, beginningDatetime: String(new Date()) }],
           booking: {
             booking_status: CollectiveBookingStatus.USED,
             id: 1,

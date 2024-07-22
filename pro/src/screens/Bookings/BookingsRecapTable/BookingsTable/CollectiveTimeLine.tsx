@@ -78,7 +78,7 @@ export const CollectiveTimeLine = ({
   const lastHistoryDate = getDateToFrenchText(
     bookingRecap.bookingStatusHistory[
       bookingRecap.bookingStatusHistory.length - 1
-    ].date
+    ]?.date || ''
   )
   const confirmedDate = getDateToFrenchText(
     max([

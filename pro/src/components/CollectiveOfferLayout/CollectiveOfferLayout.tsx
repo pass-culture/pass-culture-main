@@ -78,7 +78,7 @@ export const CollectiveOfferLayout = ({
       <CollectiveOfferNavigation
         activeStep={navigationProps.activeStep}
         className={cn(styles['eac-layout-navigation'], {
-          [styles['stepper-navigation']]: navigationProps.isCreatingOffer,
+          [styles['stepper-navigation'] ?? '']: navigationProps.isCreatingOffer,
         })}
         isCreatingOffer={navigationProps.isCreatingOffer}
         offerId={navigationProps.offerId}

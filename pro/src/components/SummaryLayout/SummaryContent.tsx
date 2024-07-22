@@ -16,7 +16,7 @@ export const SummaryContent = ({
 }: SummaryLayoutContentProps): JSX.Element => (
   <div
     className={cn(style['summary-layout-content'], className, {
-      [style['full-width']]: fullWidth,
+      [style['full-width'] ?? '']: fullWidth,
     })}
   >
     {children}

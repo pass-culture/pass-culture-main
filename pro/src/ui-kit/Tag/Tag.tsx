@@ -19,18 +19,18 @@ export enum TagVariant {
 }
 
 const classByVariant: Record<TagVariant, string> = {
-  [TagVariant.SMALL_OUTLINE]: styles['small-outline'],
-  [TagVariant.LIGHT_GREY]: styles['light-grey'],
-  [TagVariant.DARK_GREY]: styles['dark-grey'],
-  [TagVariant.BLACK]: styles['black'],
-  [TagVariant.PURPLE]: styles['purple'],
-  [TagVariant.LIGHT_PURPLE]: styles['light-purple'],
-  [TagVariant.RED]: styles['red'],
-  [TagVariant.GREEN]: styles['green'],
-  [TagVariant.BLUE]: styles['blue'],
-  [TagVariant.LIGHT_GREEN]: styles['light-green'],
-  [TagVariant.LIGHT_YELLOW]: styles['light-yellow'],
-  [TagVariant.LIGHT_BLUE]: styles['light-blue'],
+  [TagVariant.SMALL_OUTLINE]: styles['small-outline'] ?? '',
+  [TagVariant.LIGHT_GREY]: styles['light-grey'] ?? '',
+  [TagVariant.DARK_GREY]: styles['dark-grey'] ?? '',
+  [TagVariant.BLACK]: styles['black'] ?? '',
+  [TagVariant.PURPLE]: styles['purple'] ?? '',
+  [TagVariant.LIGHT_PURPLE]: styles['light-purple'] ?? '',
+  [TagVariant.RED]: styles['red'] ?? '',
+  [TagVariant.GREEN]: styles['green'] ?? '',
+  [TagVariant.BLUE]: styles['blue'] ?? '',
+  [TagVariant.LIGHT_GREEN]: styles['light-green'] ?? '',
+  [TagVariant.LIGHT_YELLOW]: styles['light-yellow'] ?? '',
+  [TagVariant.LIGHT_BLUE]: styles['light-blue'] ?? '',
 }
 
 interface TagProps {

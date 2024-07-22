@@ -41,7 +41,7 @@ export const PasswordInput = ({
   return (
     <div
       className={cn([styles['password-input-wrapper']], {
-        [styles['password-input-wrapper-error']]: errorShown,
+        [styles['password-input-wrapper-error'] ?? '']: errorShown,
       })}
     >
       <TextInput

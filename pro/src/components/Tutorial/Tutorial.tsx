@@ -60,7 +60,7 @@ export const Tutorial = ({ onFinish }: TutorialProps): JSX.Element => {
 
   const activeStep =
     stepsToShow.find((step: Step) => step.position === activeStepPosition) ??
-    stepsToShow[0]
+    stepsToShow[0]!
 
   useEffect(() => {
     logEvent(Events.TUTO_PAGE_VIEW, {
@@ -71,7 +71,7 @@ export const Tutorial = ({ onFinish }: TutorialProps): JSX.Element => {
   return (
     <div className={styles['tutorial']} data-testid="tutorial-container">
       <activeStep.component
-        contentClassName={styles[activeStep.className]}
+        contentClassName={styles[activeStep.className] ?? ''}
         titleId={TUTO_DIALOG_LABEL_ID}
       />
 
@@ -85,8 +85,9 @@ export const Tutorial = ({ onFinish }: TutorialProps): JSX.Element => {
             return (
               <button
                 className={cn(styles['nav-step'], {
-                  [styles['nav-step-active']]: isActiveStep,
-                  [styles['nav-step-done']]: activeStepPosition > step.position,
+                  [styles['nav-step-active'] ?? '']: isActiveStep,
+                  [styles['nav-step-done'] ?? '']:
+                    activeStepPosition > step.position,
                 })}
                 data-testid="nav-dot"
                 key={step.position}

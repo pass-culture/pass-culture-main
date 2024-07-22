@@ -36,7 +36,7 @@ export const DownloadBookingsModal = ({
   const [bookingsType, setBookingsType] = useState<BookingsExportStatusFilter>()
   const [selectedDate, setSelectedDate] = useState<string | undefined>(
     priceCategoryAndScheduleCountByDate.length === 1
-      ? priceCategoryAndScheduleCountByDate[0].eventDate
+      ? priceCategoryAndScheduleCountByDate[0]?.eventDate
       : undefined
   )
   const { logEvent } = useAnalytics()
@@ -79,7 +79,7 @@ export const DownloadBookingsModal = ({
     priceCategoriesCount: number
   ) => {
     const date = new Date(eventDate)
-    const day = mapDayToFrench(daysOfWeek[(date.getDay() + 6) % 7])
+    const day = mapDayToFrench(daysOfWeek[(date.getDay() + 6) % 7] ?? '')
     return (
       <tr key={eventDate} className={style['table-row']}>
         <td className={style['table-column']}>
@@ -131,7 +131,9 @@ export const DownloadBookingsModal = ({
               <h2 className={style['one-booking-date-section']}>
                 Date de votre évènement :{' '}
                 {format(
-                  new Date(priceCategoryAndScheduleCountByDate[0].eventDate),
+                  new Date(
+                    priceCategoryAndScheduleCountByDate[0]?.eventDate ?? ''
+                  ),
                   FORMAT_DD_MM_YYYY
                 )}
               </h2>

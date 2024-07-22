@@ -46,7 +46,8 @@ export const SurveySatisfaction = ({
   return !shouldHideSurveySatisfaction ? (
     <div
       className={cn(styles['survey-satisfaction'], {
-        [styles['survey-satisfaction-closed']]: shouldHideSurveySatisfaction,
+        [styles['survey-satisfaction-closed'] ?? '']:
+          shouldHideSurveySatisfaction,
       })}
     >
       <div className={styles['survey-satisfaction-infos']}>

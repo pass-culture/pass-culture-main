@@ -18,8 +18,8 @@
     "moduleResolution": "node",
     "noEmit": true,
     "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
     // TODO enable those options and fix the related errors
-    // "noUncheckedIndexedAccess": true,
     // "exactOptionalPropertyTypes": true,
     "noImplicitAny": true,
     "noImplicitReturns": true,

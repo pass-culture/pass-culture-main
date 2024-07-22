@@ -344,7 +344,7 @@ describe('CollectiveDataEdition', () => {
       await userEvent.click(interventionAreaField)
       await waitFor(() =>
         expect(
-          screen.getByLabelText(mainlandOptions[0].label)
+          screen.getByLabelText(mainlandOptions[0]!.label)
         ).not.toBeChecked()
       )
       for await (const option of domtomOptions) {
@@ -382,7 +382,7 @@ describe('CollectiveDataEdition', () => {
         await userEvent.click(screen.getByLabelText(option.label))
       }
 
-      await userEvent.click(screen.getByLabelText(mainlandOptions[0].label))
+      await userEvent.click(screen.getByLabelText(mainlandOptions[0]!.label))
       expect(
         screen.getByRole('option', { name: 'France métropolitaine' })
       ).not.toBeChecked()

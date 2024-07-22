@@ -44,7 +44,8 @@ export function HourLine({ day }: HourLineProps) {
         </th>
         <td
           className={cn(styles['hour-cell'], {
-            [styles['hour-cell-afternoon-displayed']]: isFullLineDisplayed,
+            [styles['hour-cell-afternoon-displayed'] ?? '']:
+              isFullLineDisplayed,
           })}
         >
           <TimePicker
@@ -57,7 +58,8 @@ export function HourLine({ day }: HourLineProps) {
         </td>
         <td
           className={cn(styles['hour-cell'], {
-            [styles['hour-cell-afternoon-displayed']]: isFullLineDisplayed,
+            [styles['hour-cell-afternoon-displayed'] ?? '']:
+              isFullLineDisplayed,
           })}
         >
           <span className={styles['second-hour']}>
@@ -74,7 +76,8 @@ export function HourLine({ day }: HourLineProps) {
         </td>
         <td
           className={cn(styles['hour-cell'], {
-            [styles['hour-cell-afternoon-displayed']]: isFullLineDisplayed,
+            [styles['hour-cell-afternoon-displayed'] ?? '']:
+              isFullLineDisplayed,
           })}
         >
           {!isFullLineDisplayed && (

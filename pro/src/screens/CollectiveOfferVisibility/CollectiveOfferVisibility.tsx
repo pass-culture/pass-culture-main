@@ -172,7 +172,7 @@ export const CollectiveOfferVisibilityScreen = ({
   })
 
   const selectedTeacher: TeacherOption | null = requestId
-    ? teachersOptions[0]
+    ? teachersOptions[0] ?? null
     : teachersOptions.find(
         (teacher) => teacher.value === formik.values.teacher
       ) ?? null
@@ -182,7 +182,7 @@ export const CollectiveOfferVisibilityScreen = ({
         label
           .toLowerCase()
           .includes(formik.values['search-institution'].trim().toLowerCase())
-      )[0]
+      )[0] ?? null
     : institutionsOptions.find(
         (institution) => institution.value === formik.values.institution
       ) ?? null

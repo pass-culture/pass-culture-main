@@ -77,7 +77,11 @@ const computeMaxBookingLimitDatetime = (beginningDate: string) => {
   const [year, month, day] = beginningDate.split('-')
 
   return beginningDate !== ''
-    ? new Date(parseInt(year), parseInt(month) - 1, parseInt(day))
+    ? new Date(
+        parseInt(year ?? ''),
+        parseInt(month ?? '') - 1,
+        parseInt(day ?? '')
+      )
     : undefined
 }
 
@@ -482,7 +486,7 @@ export const StocksEventEdition = ({
 
                     <thead
                       className={cn({
-                        [styles['filters-active']]: areFiltersActive,
+                        [styles['filters-active'] ?? '']: areFiltersActive,
                       })}
                     >
                       <tr>
@@ -806,7 +810,7 @@ export const StocksEventEdition = ({
                               <TextInput
                                 name={`stocks[${index}]bookingsQuantity`}
                                 value={
-                                  formik.values.stocks[index].bookingsQuantity
+                                  formik.values.stocks[index]?.bookingsQuantity
                                 }
                                 readOnly
                                 label="Réservations"

@@ -74,8 +74,9 @@ export const Layout = ({ children, layout = 'basic' }: LayoutProps) => {
         )}
         <div
           className={cn(styles['page-layout'], {
-            [styles['page-layout-connect-as']]: currentUser?.isImpersonated,
-            [styles['page-layout-funnel']]: layout === 'funnel',
+            [styles['page-layout-connect-as'] ?? '']:
+              currentUser?.isImpersonated,
+            [styles['page-layout-funnel'] ?? '']: layout === 'funnel',
           })}
         >
           {(layout === 'basic' || layout === 'sticky-actions') && (
@@ -91,7 +92,7 @@ export const Layout = ({ children, layout = 'basic' }: LayoutProps) => {
             {shouldDisplayNewNavReview && <NewNavReview />}
             <div
               className={cn(styles['content-container'], {
-                [styles['content-container-funnel']]: layout === 'funnel',
+                [styles['content-container-funnel'] ?? '']: layout === 'funnel',
               })}
             >
               <main id="content">

@@ -165,7 +165,7 @@ describe('ActionsBar', () => {
     renderActionsBar(props)
 
     await userEvent.click(screen.getByText('Désactiver'))
-    const confirmDeactivateButton = screen.getAllByText('Désactiver')[1]
+    const confirmDeactivateButton = screen.getAllByText('Désactiver')[1]!
     await userEvent.click(confirmDeactivateButton)
 
     expect(mockLogEvent).toHaveBeenCalledTimes(1)
@@ -223,7 +223,7 @@ describe('ActionsBar', () => {
 
     const deactivateButton = screen.getByText('Désactiver')
     await userEvent.click(deactivateButton)
-    const confirmDeactivateButton = screen.getAllByText('Désactiver')[1]
+    const confirmDeactivateButton = screen.getAllByText('Désactiver')[1]!
     await userEvent.click(confirmDeactivateButton)
 
     expect(mockLogEvent).toHaveBeenCalledTimes(1)
@@ -247,7 +247,7 @@ describe('ActionsBar', () => {
     const deactivateButton = screen.getByText('Désactiver')
 
     await userEvent.click(deactivateButton)
-    const cancelDeactivateButton = screen.getAllByText('Annuler')[1]
+    const cancelDeactivateButton = screen.getAllByText('Annuler')[1]!
     await userEvent.click(cancelDeactivateButton)
 
     expect(mockLogEvent).toHaveBeenCalledTimes(1)
@@ -267,7 +267,7 @@ describe('ActionsBar', () => {
     const deactivateButton = screen.getByText('Désactiver')
 
     await userEvent.click(deactivateButton)
-    const cancelDeactivateButton = screen.getAllByText('Annuler')[1]
+    const cancelDeactivateButton = screen.getAllByText('Annuler')[1]!
     await userEvent.click(cancelDeactivateButton)
 
     expect(mockLogEvent).toHaveBeenCalledTimes(1)

@@ -36,7 +36,7 @@ export function OpeningHoursForm() {
           const dayLabel = mapDayToFrench(day)
           return (
             <DayCheckbox
-              letter={dayLabel[0]}
+              letter={dayLabel[0] ?? ''}
               label={dayLabel}
               name="days"
               value={day.toLowerCase()}

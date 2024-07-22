@@ -66,7 +66,7 @@ describe('OffererStatsScreen', () => {
 
     vi.spyOn(api, 'getOfferer').mockImplementation((offererId) => {
       return new CancelablePromise((resolve) =>
-        resolve(offerers.filter((offerer) => offerer.id === offererId)[0])
+        resolve(offerers.filter((offerer) => offerer.id === offererId)[0]!)
       )
     })
     vi.spyOn(api, 'getOffererStatsDashboardUrl').mockResolvedValue({
@@ -90,7 +90,7 @@ describe('OffererStatsScreen', () => {
   })
 
   it('should not display virtual venue if offerer has no digital offer', async () => {
-    offerers[0].hasDigitalVenueAtLeastOneOffer = false
+    offerers[0]!.hasDigitalVenueAtLeastOneOffer = false
     renderOffererStatsScreen(offererOptions)
 
     await waitFor(() => {

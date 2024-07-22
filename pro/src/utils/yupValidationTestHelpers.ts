@@ -40,5 +40,5 @@ export const getNthParentFormValues = (
     throw new Error('Parent depth is not valid')
   }
 
-  return allParentValues[parentDepth].value
+  return allParentValues[parentDepth]?.value
 }

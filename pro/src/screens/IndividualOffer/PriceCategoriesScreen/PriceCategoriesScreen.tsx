@@ -41,7 +41,10 @@ const hasFieldChange = (
     }
     // have fields which trigger warning been edited ?
     const initialpriceCategory = initialPriceCategories[priceCategory.id]
-    return initialpriceCategory[field] !== priceCategory[field]
+    return (
+      initialpriceCategory &&
+      initialpriceCategory[field] !== priceCategory[field]
+    )
   })
 
 export const arePriceCategoriesChanged = (
@@ -70,8 +73,8 @@ export const arePriceCategoriesChanged = (
       }
       if (
         priceCategory.price !==
-          initialPriceCategories[priceCategory.id].price ||
-        priceCategory.label !== initialPriceCategories[priceCategory.id].label
+          initialPriceCategories[priceCategory.id]?.price ||
+        priceCategory.label !== initialPriceCategories[priceCategory.id]?.label
       ) {
         return true
       }

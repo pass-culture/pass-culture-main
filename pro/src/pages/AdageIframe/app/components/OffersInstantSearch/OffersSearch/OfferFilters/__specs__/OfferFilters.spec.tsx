@@ -60,7 +60,7 @@ describe('OfferFilters', () => {
       screen.getByRole('button', { name: 'Domaine artistique (1)' })
     )
 
-    await userEvent.click(screen.getAllByTestId('search-button-modal')[0])
+    await userEvent.click(screen.getAllByTestId('search-button-modal')[0]!)
 
     expect(handleSubmit).toHaveBeenCalled()
   })
@@ -73,7 +73,7 @@ describe('OfferFilters', () => {
 
     await userEvent.click(screen.getByRole('button', { name: 'Format (2)' }))
 
-    await userEvent.click(screen.getAllByTestId('search-button-modal')[0])
+    await userEvent.click(screen.getAllByTestId('search-button-modal')[0]!)
 
     expect(handleSubmit).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -94,7 +94,7 @@ describe('OfferFilters', () => {
       screen.getByRole('button', { name: 'Niveau scolaire (1)' })
     )
 
-    await userEvent.click(screen.getAllByTestId('search-button-modal')[1])
+    await userEvent.click(screen.getAllByTestId('search-button-modal')[1]!)
 
     expect(handleSubmit).toHaveBeenCalled()
   })
@@ -264,7 +264,7 @@ describe('OfferFilters', () => {
         name: /Localisation des partenaires/,
       })
     )
-    await userEvent.click(screen.getAllByTestId('search-button-modal')[0])
+    await userEvent.click(screen.getAllByTestId('search-button-modal')[0]!)
 
     expect(handleSubmit).toHaveBeenCalled()
   })

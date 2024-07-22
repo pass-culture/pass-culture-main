@@ -89,10 +89,10 @@ export const UsefulInformationForm = ({
   const getFirstWithdrawalTypeEnumValue = () => {
     switch (withdrawalType) {
       case WithdrawalTypeEnum.BY_EMAIL:
-        return ticketSentDateOptions[0].value
+        return ticketSentDateOptions[0]?.value
 
       case WithdrawalTypeEnum.ON_SITE:
-        return ticketWithdrawalHourOptions[0].value
+        return ticketWithdrawalHourOptions[0]?.value
 
       default:
         return undefined

@@ -14,7 +14,7 @@ interface StatusProps {
 export const Status = ({ offer }: StatusProps) => (
   <div
     className={cn(styles['status'], {
-      [styles['multiple-columns']]: offer.isActivable,
+      [styles['multiple-columns'] ?? '']: offer.isActivable,
     })}
     data-testid="status"
   >

@@ -135,8 +135,12 @@ export const AdageDiscovery = () => {
               })
             }
             elements={domainsOptions.map((elm, index) => {
-              const colorAndMotif =
-                colorAndMotifOrder[index % colorAndMotifOrder.length]
+              const colorAndMotif = colorAndMotifOrder[
+                index % colorAndMotifOrder.length
+              ] ?? {
+                color: '',
+                src: '',
+              }
 
               return (
                 <DomainsCard

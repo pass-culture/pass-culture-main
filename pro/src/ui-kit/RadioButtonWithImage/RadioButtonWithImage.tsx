@@ -39,8 +39,8 @@ export const RadioButtonWithImage = ({
         ? styles['layout-column']
         : styles['layout-row'],
       {
-        [styles['is-selected']]: isChecked,
-        [styles['is-disabled']]: disabled,
+        [styles['is-selected'] ?? '']: isChecked,
+        [styles['is-disabled'] ?? '']: disabled,
       },
       className
     )}

@@ -103,7 +103,7 @@ describe('screens | OfferEducational : creation offerer step', () => {
 
       expect(venueSelect).toBeInTheDocument()
       expect(venueSelect).toHaveValue(
-        props.userOfferers[0].managedVenues[0].id.toString()
+        props.userOfferers[0]!.managedVenues[0]!.id.toString()
       )
       expect(venueSelect.children).toHaveLength(1)
       expect(venueSelect).toBeDisabled()
@@ -216,10 +216,10 @@ describe('screens | OfferEducational : creation offerer step', () => {
       renderWithProviders(<OfferEducational {...props} />)
       const venueSelect = await screen.findByLabelText('Lieu *')
       const venuesOptions = venueSelect.children
-      expect(venuesOptions[0].textContent).toEqual('Sélectionner un lieu')
-      expect(venuesOptions[1].textContent).toEqual('A - Venue 3')
-      expect(venuesOptions[2].textContent).toEqual('Venue 1')
-      expect(venuesOptions[3].textContent).toEqual('Venue 2')
+      expect(venuesOptions[0]!.textContent).toEqual('Sélectionner un lieu')
+      expect(venuesOptions[1]!.textContent).toEqual('A - Venue 3')
+      expect(venuesOptions[2]!.textContent).toEqual('Venue 1')
+      expect(venuesOptions[3]!.textContent).toEqual('Venue 2')
     })
   })
 })
