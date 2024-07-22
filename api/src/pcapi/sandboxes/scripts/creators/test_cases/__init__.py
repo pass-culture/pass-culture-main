@@ -673,7 +673,7 @@ def create_product_with_multiple_images() -> None:
 
 def create_discord_users() -> None:
     for i in range(10, 20):
-        user = users_factories.BeneficiaryGrant18Factory(
+        user = users_factories.BeneficiaryFactory(
             email=f"discordUser{i}@test.com", firstName=f"discord{i}", lastName=f"user{i}"
         )
         users_factories.DiscordUserFactory(user=user, discordId=None, hasAccess=True)
@@ -683,8 +683,8 @@ def create_users_with_reactions() -> None:
     # Test case 1 : a user booked an offer and reacted to it
     #   - user_1 booked and reacted to offers linked to a product
     #   - user_2 booked and reacted to offers not linked to a product
-    user_1 = users_factories.BeneficiaryGrant18Factory(email="catherine.foundling@scrying.ca")
-    user_2 = users_factories.BeneficiaryGrant18Factory(email="hakram@scrying.ca")
+    user_1 = users_factories.BeneficiaryFactory(email="catherine.foundling@example.com")
+    user_2 = users_factories.BeneficiaryFactory(email="hakram.ofthehowlingwolves@example.com")
 
     reactions_to_add = [ReactionTypeEnum.LIKE, ReactionTypeEnum.DISLIKE, ReactionTypeEnum.NO_REACTION, None]
     for reaction_type in reactions_to_add:
