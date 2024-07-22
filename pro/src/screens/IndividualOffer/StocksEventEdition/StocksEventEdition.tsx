@@ -467,6 +467,7 @@ export const StocksEventEdition = ({
                   priceCategories={offer.priceCategories ?? []}
                   setIsOpen={setIsRecurrenceModalOpen}
                   handleSubmit={handleRecurrenceSubmit}
+                  idLabelledBy="add-recurrence"
                 />
               </DialogBox>
             )}

@@ -10,11 +10,13 @@ import style from './ModalImageUploadBrowser.module.scss'
 interface ModalImageUploadBrowserProps {
   onImageClientUpload: (values: ImageUploadBrowserFormValues) => void
   mode: UploaderModeEnum
+  idLabelledBy: string
 }
 
 export const ModalImageUploadBrowser = ({
   onImageClientUpload,
   mode,
+  idLabelledBy,
 }: ModalImageUploadBrowserProps) => {
   const orientation = {
     [UploaderModeEnum.OFFER]: 'portrait',
@@ -25,7 +27,9 @@ export const ModalImageUploadBrowser = ({
   return (
     <section className={style['modal-upload-browser']}>
       <header>
-        <h1 className={style['header']}>Ajouter une image</h1>
+        <h1 id={idLabelledBy} className={style['header']}>
+          Ajouter une image
+        </h1>
       </header>
 
       <PreferredOrientation

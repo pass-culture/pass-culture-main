@@ -1,5 +1,4 @@
 import { userEvent } from '@testing-library/user-event'
-import React from 'react'
 
 import { UploaderModeEnum } from 'components/ImageUploader/types'
 import { renderWithProviders } from 'utils/renderWithProviders'
@@ -23,6 +22,7 @@ const defaultProps = {
   onSetCredit: vi.fn(),
   mode: UploaderModeEnum.OFFER,
   submitButtonText: 'Suivant',
+  idLabelledBy: 'some id',
 }
 
 describe('venue image edit', () => {

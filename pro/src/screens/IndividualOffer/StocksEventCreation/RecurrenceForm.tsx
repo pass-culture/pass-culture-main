@@ -42,6 +42,7 @@ interface Props {
   setIsOpen: (p: boolean) => void
   priceCategories: PriceCategoryResponseModel[]
   handleSubmit: (values: RecurrenceFormValues) => Promise<void>
+  idLabelledBy: string
 }
 
 const mapNumberToFrenchOrdinals = (n: number): string => {
@@ -103,6 +104,7 @@ export const RecurrenceForm = ({
   setIsOpen,
   priceCategories,
   handleSubmit,
+  idLabelledBy,
 }: Props): JSX.Element => {
   const priceCategoryOptions = getPriceCategoryOptions(priceCategories)
 
@@ -125,7 +127,9 @@ export const RecurrenceForm = ({
   return (
     <FormikProvider value={formik}>
       <form onSubmit={formik.handleSubmit}>
-        <h1 className={styles['title']}>Ajouter une ou plusieurs dates</h1>
+        <h1 id={idLabelledBy} className={styles['title']}>
+          Ajouter une ou plusieurs dates
+        </h1>
 
         <div className={styles['mandatory']}>
           Tous les champs suivis d’un * sont obligatoires.
