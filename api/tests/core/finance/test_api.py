@@ -3621,6 +3621,27 @@ class CreateDepositTest:
         assert deposit.amount == expected_amount
         assert deposit.user.id == beneficiary.id
 
+    def test_create_underage_deposit_with_birthday_since_registration(self):
+        sixteen_years_ago = datetime.datetime.utcnow() - relativedelta(years=16)
+        beneficiary = users_factories.UserFactory(validatedBirthDate=sixteen_years_ago.date())
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=beneficiary,
+            status=fraud_models.FraudCheckStatus.OK,
+            type=fraud_models.FraudCheckType.EDUCONNECT,
+            eligibilityType=users_models.EligibilityType.UNDERAGE,
+            resultContent=fraud_factories.EduconnectContentFactory(
+                registration_datetime=datetime.datetime.utcnow() - relativedelta(days=1)
+            ),
+        )
+
+        with db.session.no_autoflush:
+            deposit = api.create_deposit(
+                beneficiary, "created by test", beneficiary.eligibility, age_at_registration=15
+            )
+
+        assert deposit.type == models.DepositType.GRANT_15_17
+        assert deposit.amount == Decimal(20 + 30)
+
     @time_machine.travel("2022-09-05 09:00:00")
     def test_create_18_years_old_deposit(self):
         beneficiary = users_factories.UserFactory()
