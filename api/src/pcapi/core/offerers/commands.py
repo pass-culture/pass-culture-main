@@ -10,6 +10,7 @@ from pcapi.core.offerers import synchronize_venues_banners_with_google_places as
 from pcapi.core.offerers import tasks as offerers_tasks
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
+from pcapi.scheduled_tasks.decorators import log_cron_with_transaction
 from pcapi.utils.blueprint import Blueprint
 
 
@@ -63,6 +64,13 @@ def check_active_offerers(dry_run: bool = False, day: int | None = None) -> None
         offerers_tasks.check_offerer_siren_task.delay(
             offerers_tasks.CheckOffererSirenRequest(siren=offerer.siren, tag_when_inactive=not dry_run)
         )
+
+
+@log_cron_with_transaction
+@blueprint.cli.command("send_reminder_email_to_individual_offerers")
+def send_reminder_email_to_individual_offerers() -> None:
+    # This command is called from a cron running every day.
+    offerers_api.send_reminder_email_to_individual_offerers()
 
 
 @blueprint.cli.command("synchronize_venues_banners_with_google_places")
