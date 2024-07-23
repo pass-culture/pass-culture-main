@@ -1,6 +1,6 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import React from 'react'
+import { axe } from 'vitest-axe'
 
 import { api } from 'apiClient/api'
 import * as useAnalytics from 'app/App/analytics/firebase'
@@ -24,12 +24,20 @@ const stepTitles = [
   'Suivez et gérez vos réservations',
 ]
 
-const renderTutorialDialog = (options?: RenderWithProvidersOptions) =>
+const renderTutorialDialog = (options: RenderWithProvidersOptions) =>
   renderWithProviders(<TutorialDialog />, options)
 
 const mockLogEvent = vi.fn()
 
 describe('tutorial modal', () => {
+  it('should check content for accessibility', async () => {
+    const { container } = renderTutorialDialog({
+      user: sharedCurrentUserFactory({ hasSeenProTutorials: false }),
+    })
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+
   it('should trigger an event when the user arrive on /accueil for the first time', async () => {
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
