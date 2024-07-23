@@ -6,5 +6,5 @@ class SigninForm(PCForm):
     email = fields.PCEmailField("Adresse email")
     password = fields.PCPasswordField("Mot de passe")
     discord_id = fields.PCHiddenField("discord_id")
-    redirect_url = fields.PCHiddenField("redirect_url")
+    redirect_url = fields.PCLongHiddenField("redirect_url")
     error_message: str = ""

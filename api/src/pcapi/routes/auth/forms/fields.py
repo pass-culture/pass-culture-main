@@ -65,6 +65,13 @@ class PCHiddenField(PCStringField):
     ]
 
 
+class PCLongHiddenField(PCHiddenField):
+    validators = [
+        validators.DataRequired("Information obligatoire"),
+        validators.Length(max=256, message="doit contenir au maximum %(max)d caractères"),
+    ]
+
+
 class PCEmailField(wtforms.EmailField):
     widget = partial(widget, template="components/forms/string_field.html")
     validators = [
