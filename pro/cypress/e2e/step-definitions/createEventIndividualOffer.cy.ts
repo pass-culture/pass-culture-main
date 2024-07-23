@@ -1,4 +1,4 @@
-import { When, Then } from '@badeball/cypress-cucumber-preprocessor'
+import { Then, When } from '@badeball/cypress-cucumber-preprocessor'
 
 When('I fill in offer details', () => {
   cy.findByLabelText('Catégorie *').select('Spectacle vivant')
@@ -132,8 +132,9 @@ When('I publish my offer', () => {
 
 When('I go to the offers list', () => {
   cy.intercept({ method: 'GET', url: '/offers?*' }).as('getOffers')
+  cy.intercept({ method: 'GET', url: '/venues*' }).as('getVenue')
   cy.findByText('Voir la liste des offres').click()
-  cy.wait('@getOffers')
+  cy.wait(['@getOffers', '@getVenue'], { requestTimeout: 30 * 1000 * 2 })
 })
 
 Then('my new offer should be displayed', () => {
