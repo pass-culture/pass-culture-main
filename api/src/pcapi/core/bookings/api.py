@@ -59,9 +59,7 @@ from pcapi.repository import on_commit
 from pcapi.repository import repository
 from pcapi.repository import transaction
 import pcapi.serialization.utils as serialization_utils
-import pcapi.tasks.external_api_booking_notification_tasks as external_api_booking_notification
 from pcapi.tasks.serialization.external_api_booking_notification_tasks import BookingAction
-from pcapi.tasks.serialization.external_api_booking_notification_tasks import ExternalApiBookingNotificationRequest
 from pcapi.utils import queue
 import pcapi.utils.cinema_providers as cinema_providers_utils
 from pcapi.utils.requests import exceptions as requests_exceptions
@@ -336,7 +334,7 @@ def book_offer(
         },
     )
     track_offer_booked_event(beneficiary.id, stock.offer)
-    _send_external_booking_notification_if_necessary(booking, BookingAction.BOOK)
+    external_bookings_api.send_booking_notification_to_external_service(booking, BookingAction.BOOK)
 
     transactional_mails.send_user_new_booking_to_pro_email(booking, first_venue_booking)
     transactional_mails.send_individual_booking_confirmation_email_to_beneficiary(booking)
@@ -468,7 +466,7 @@ def _cancel_booking(
         technical_message_id="booking.cancelled",
     )
     batch.track_booking_cancellation(booking)
-    _send_external_booking_notification_if_necessary(booking, BookingAction.CANCEL)
+    external_bookings_api.send_booking_notification_to_external_service(booking, BookingAction.CANCEL)
 
     update_external_user(booking.user)
     update_external_pro(booking.venue.bookingEmail)
@@ -537,33 +535,6 @@ def _execute_cancel_booking(
                 stock.quantity -= 1
             repository.save(booking, stock)
     return True
-
-
-def _send_external_booking_notification_if_necessary(booking: Booking, action: BookingAction) -> None:
-    provider = providers_repository.get_provider_enabled_for_pro_by_id(booking.stock.offer.lastProviderId)
-    if (
-        booking.stock.offer.withdrawalType == offers_models.WithdrawalTypeEnum.IN_APP
-        or not provider
-        or not provider.notificationExternalUrl
-    ):
-        return
-
-    try:
-        external_api_notification_request = ExternalApiBookingNotificationRequest.build(booking, action)
-        signature = utils.generate_hmac_signature(provider.hmacKey, external_api_notification_request.json())
-        payload = external_api_booking_notification.ExternalApiBookingNotificationTaskPayload(
-            data=external_api_notification_request,
-            notificationUrl=provider.notificationExternalUrl,
-            signature=signature,
-        )
-        external_api_booking_notification.external_api_booking_notification_task.delay(payload)
-    except Exception as err:  # pylint: disable=broad-except
-        logger.exception(
-            "Error: %s. Could not send external booking notification for: booking: %s, action %s",
-            err,
-            action.value,
-            booking.id,
-        )
 
 
 def _cancel_external_booking(booking: Booking, stock: Stock) -> None:
