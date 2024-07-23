@@ -17,7 +17,6 @@ import sqlalchemy.orm as sa_orm
 from sqlalchemy.orm import declared_attr
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.elements import BinaryExpression
-from sqlalchemy.sql.elements import BooleanClauseList
 from sqlalchemy.sql.elements import False_
 from sqlalchemy.sql.elements import UnaryExpression
 from sqlalchemy.sql.functions import func
@@ -472,16 +471,6 @@ class CollectiveOffer(
             offer_mixin.CollectiveOfferStatus.PENDING,
             offer_mixin.CollectiveOfferStatus.REJECTED,
         ]
-
-    @hybrid_property
-    def is_cancellable(self) -> bool:
-        return self.status not in [offer_mixin.OfferStatus.PENDING, offer_mixin.OfferStatus.REJECTED]
-
-    @is_cancellable.expression  # type: ignore[no-redef]
-    def is_cancellable(cls) -> BooleanClauseList:  # pylint: disable=no-self-argument
-        return cls.validation.not_in(
-            [offer_mixin.OfferValidationStatus.PENDING, offer_mixin.OfferValidationStatus.REJECTED]
-        )
 
     @property
     def isEditableByPcPro(self) -> bool:

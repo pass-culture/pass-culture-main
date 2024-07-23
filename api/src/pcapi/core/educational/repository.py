@@ -497,9 +497,6 @@ def get_collective_offers_for_filters(
     period_ending_date: date | None = None,
     formats: list[subcategories.EacFormat] | None = None,
 ) -> list[educational_models.CollectiveOffer]:
-    """
-    :param statuses: List all allowed status. statuses = None means no filter on status. statuses = [] filter all statuses (ie no results)
-    """
     query = offers_repository.get_collective_offers_by_filters(
         user_id=user_id,
         user_is_admin=user_is_admin,
