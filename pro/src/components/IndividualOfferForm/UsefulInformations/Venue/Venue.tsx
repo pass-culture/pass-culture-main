@@ -1,5 +1,5 @@
 import { useFormikContext } from 'formik'
-import React from 'react'
+import React, { useEffect } from 'react'
 
 import {
   GetOffererNameResponseModel,
@@ -57,9 +57,14 @@ export const Venue = ({
   const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
   if (!isOfferAddressEnabled) {
     venueOptions.unshift({ label: 'Sélectionner un lieu', value: '' })
-  } else if (venueOptions[0]) {
-    values.venueId = String(venueOptions[0].value)
   }
+
+  useEffect(() => {
+    if (isOfferAddressEnabled) {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      setFieldValue('venueId', String(venueOptions[0]?.value || ''))
+    }
+  }, [])
 
   const onOffererChange = async (
     event: React.ChangeEvent<HTMLSelectElement>
