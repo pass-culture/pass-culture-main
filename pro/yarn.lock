@@ -2648,10 +2648,10 @@
     "@storybook/addon-highlight" "8.2.5"
     axe-core "^4.2.0"
 
-"@storybook/addon-controls@^8.2.4":
-  version "8.2.4"
-  resolved "https://registry.yarnpkg.com/@storybook/addon-controls/-/addon-controls-8.2.4.tgz#850680957d20b6f1e320f60da6ca18aa5178ed71"
-  integrity sha512-e56aUYhxyR8zJJstRAUP3WILhWTcvgRf5bysTtiyjFAL7U47cuCr043+IYEsxLkXhuZTKX2pcYSrjBtT5bYkVA==
+"@storybook/addon-controls@^8.2.5":
+  version "8.2.5"
+  resolved "https://registry.yarnpkg.com/@storybook/addon-controls/-/addon-controls-8.2.5.tgz#a39568b5a93d0bebd93055d95574e11c1d24d460"
+  integrity sha512-8IoeEmiOyg5aTIyW4gdUUV/xJZk8y5bACkNhDTIepyfTZLoVNsVXS1tjqrG4EXQR6dNY4XV9dDIUIRI11/K6tQ==
   dependencies:
     dequal "^2.0.2"
     lodash "^4.17.21"
