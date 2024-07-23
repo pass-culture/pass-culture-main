@@ -10,6 +10,7 @@ from pcapi.core.external_bookings.api import _get_external_bookings_client_api
 from pcapi.core.external_bookings.api import book_event_ticket
 from pcapi.core.external_bookings.api import cancel_event_ticket
 from pcapi.core.external_bookings.api import get_active_cinema_venue_provider
+from pcapi.core.external_bookings.api import send_booking_notification_to_external_service
 from pcapi.core.external_bookings.cds.client import CineDigitalServiceAPI
 import pcapi.core.external_bookings.exceptions as external_bookings_exceptions
 import pcapi.core.offerers.factories as offerers_factories
@@ -19,6 +20,7 @@ import pcapi.core.providers.exceptions as providers_exceptions
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.providers.repository import get_provider_by_local_class
 import pcapi.core.users.factories as user_factories
+from pcapi.tasks.serialization.external_api_booking_notification_tasks import BookingAction
 
 
 @pytest.mark.usefixtures("db_session")
@@ -404,3 +406,114 @@ class CancelEventTicketTest:
             hmac=expected_hmac_signature,
             headers={"Content-Type": "application/json"},
         )
+
+
+@pytest.mark.usefixtures("db_session")
+class SendBookingNotificationToExternalServiceTest:
+
+    @patch("pcapi.tasks.external_api_booking_notification_tasks.external_api_booking_notification_task.delay")
+    def test_should_do_nothing_because_notification_info_not_properly_set(self, mock_test):
+        provider = providers_factories.ProviderFactory()
+        offer = offers_factories.OfferFactory(lastProviderId=provider.id)
+        stock = offers_factories.EventStockFactory(
+            offer=offer,
+        )
+        booking = bookings_factories.BookingFactory(stock=stock, quantity=2)
+
+        send_booking_notification_to_external_service(booking=booking, action=BookingAction.BOOK)
+        mock_test.assert_not_called()
+
+    @patch("pcapi.tasks.external_api_booking_notification_tasks.external_api_booking_notification_task.delay")
+    def test_should_do_nothing_because_booking_linked_to_ticketing_system(self, mock_test):
+        provider = providers_factories.PublicApiProviderFactory()
+        offer = offers_factories.EventOfferFactory(
+            withdrawalType=offers_models.WithdrawalTypeEnum.IN_APP,
+            lastProviderId=provider.id,
+        )
+        stock = offers_factories.EventStockFactory(
+            offer=offer,
+        )
+        booking = bookings_factories.BookingFactory(stock=stock, quantity=2)
+
+        send_booking_notification_to_external_service(booking=booking, action=BookingAction.BOOK)
+        mock_test.assert_not_called()
+
+    @patch("pcapi.tasks.external_api_booking_notification_tasks.external_api_booking_notification_task.delay")
+    def test_should_send_notification_to_provider_notification_url(self, mocked_task):
+        provider = providers_factories.PublicApiProviderFactory(notificationExternalUrl="https://myprovider.com/notif")
+        booking_creation_date = datetime.datetime(2024, 5, 12)
+        venue = offerers_factories.VenueFactory()
+        offer = offers_factories.OfferFactory(
+            venue=venue,
+            lastProviderId=provider.id,
+            idAtProvider="une_offre_de_grand_malade",
+            id=42,
+            name="Moins 50 pour cent sur tous les Marc Lévy !",
+            extraData={"ean": "1234567890123"},
+        )
+        stock = offers_factories.StockFactory(
+            offer=offer, idAtProviders="bro_si_ty_vas_pas_direct_ça_va_te_passer_sous_nez_c_marc_lévy_qd_meme"
+        )
+        user = user_factories.BeneficiaryFactory(
+            firstName="Jean",
+            lastName="Potte",
+        )
+        booking = bookings_factories.BookingFactory(
+            user=user, stock=stock, dateCreated=booking_creation_date, quantity=1
+        )
+
+        send_booking_notification_to_external_service(booking=booking, action=BookingAction.BOOK)
+
+        mocked_task.assert_called()
+        assert mocked_task.call_count == 1
+
+        payload = mocked_task.call_args.args[0].data
+        notificationUrl = mocked_task.call_args.args[0].notificationUrl
+
+        # Payload data
+        assert payload.booking_creation_date == booking.dateCreated
+        assert payload.booking_quantity == 1
+        assert payload.offer_ean == "1234567890123"
+        assert payload.offer_id == 42
+        assert payload.offer_id_at_provider == "une_offre_de_grand_malade"
+        assert payload.offer_name == "Moins 50 pour cent sur tous les Marc Lévy !"
+        assert payload.offer_price == 1010
+        assert payload.price_category_id == None
+        assert payload.price_category_label == None
+        assert payload.stock_id == stock.id
+        assert payload.stock_id_at_provider == "bro_si_ty_vas_pas_direct_ça_va_te_passer_sous_nez_c_marc_lévy_qd_meme"
+        assert payload.user_birth_date == user.dateOfBirth.date()
+        assert payload.user_email == user.email
+        assert payload.user_first_name == "Jean"
+        assert payload.user_last_name == "Potte"
+        assert payload.user_phone == user.phoneNumber
+        assert payload.venue_address == venue.street
+        assert payload.venue_department_code == venue.departementCode
+        assert payload.venue_id == venue.id
+        assert payload.venue_name == venue.name
+        assert payload.action == BookingAction.BOOK
+
+        # Notification Url
+        assert notificationUrl == "https://myprovider.com/notif"
+
+    @patch("pcapi.tasks.external_api_booking_notification_tasks.external_api_booking_notification_task.delay")
+    def test_should_send_notification_to_venue_provider_notification_url(self, mocked_task):
+        provider = providers_factories.PublicApiProviderFactory(notificationExternalUrl="https://myprovider.com/notif")
+        booking_creation_date = datetime.datetime(2024, 5, 12)
+        venue = offerers_factories.VenueFactory()
+        venue_provider = providers_factories.VenueProviderFactory(venue=venue, provider=provider)
+        providers_factories.VenueProviderExternalUrlsFactory(
+            venueProvider=venue_provider, notificationExternalUrl="https://myvenue.com/notif"
+        )
+        offer = offers_factories.OfferFactory(venue=venue, lastProviderId=provider.id)
+        stock = offers_factories.StockFactory(offer=offer)
+        booking = bookings_factories.BookingFactory(stock=stock, dateCreated=booking_creation_date, quantity=1)
+
+        send_booking_notification_to_external_service(booking=booking, action=BookingAction.BOOK)
+
+        mocked_task.assert_called()
+        assert mocked_task.call_count == 1
+
+        # Notification Url
+        notificationUrl = mocked_task.call_args.args[0].notificationUrl
+        assert notificationUrl == "https://myvenue.com/notif"
