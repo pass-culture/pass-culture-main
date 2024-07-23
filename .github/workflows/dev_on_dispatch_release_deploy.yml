@@ -57,7 +57,7 @@ jobs:
                         "type": "section",
                         "text": {
                             "type": "mrkdwn",
-                            "text": ":rocket: Un déploiement de '${{ github.ref }}' a été demandé sur `${{ github.event.inputs.target_environment }}`: https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}"
+                            "text": ":rocket: Un <https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}|déploiement> de `${{ github.ref_name }}` a été demandé sur `${{ github.event.inputs.target_environment }}` par ${{ github.actor }}"
                         }
                     }
                 ]
