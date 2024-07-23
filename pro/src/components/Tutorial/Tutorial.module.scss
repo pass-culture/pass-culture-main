@@ -1,5 +1,6 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_a11y.scss" as a11y;
 @use "styles/variables/_size.scss" as size;
 
 .tutorial-box {
@@ -94,4 +95,8 @@
     width: rem.torem(560px);
     flex-direction: row;
   }
+}
+
+.visually-hidden {
+  @include a11y.visually-hidden;
 }
