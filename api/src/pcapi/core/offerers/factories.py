@@ -438,6 +438,7 @@ class IndividualOffererSubscriptionFactory(BaseFactory):
     offerer = factory.SubFactory(NotValidatedOffererFactory)
     isEmailSent = True
     dateEmailSent = factory.LazyFunction(lambda: datetime.date.today() - datetime.timedelta(days=3))
+    dateReminderEmailSent = None
 
 
 class OffererStatsFactory(BaseFactory):
