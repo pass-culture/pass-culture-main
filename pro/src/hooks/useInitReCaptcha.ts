@@ -11,6 +11,17 @@ export const useInitReCaptcha = (): void => {
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       if (gcaptchaScript) {
         gcaptchaScript.remove()
+
+        // Remove all the widgets already added
+        const widgets = document.getElementsByClassName('grecaptcha-badge')
+        for (const widget of widgets) {
+          const parent = widget.parentElement
+          if (parent) {
+            parent.remove()
+          } else {
+            widget.remove()
+          }
+        }
       }
     }
   }, [])
