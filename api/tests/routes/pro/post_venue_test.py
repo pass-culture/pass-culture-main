@@ -1,3 +1,4 @@
+from datetime import datetime
 import pathlib
 
 import pytest
@@ -100,7 +101,9 @@ class Returns201Test:
     )
     def test_register_new_venue(self, client, requests_mock):
         api_adresse_response = get_api_address_response()
-        user = ProFactory()
+        user = ProFactory(
+            lastConnectionDate=datetime.utcnow(),
+        )
         venue_data = create_valid_venue_data(user)
         requests_mock.get(
             """https://api-adresse.data.gouv.fr/search?q=Chemin+de+Chaniaux+48250+Laveyrune&postcode=48250&autocomplete=0&limit=1""",
@@ -197,7 +200,9 @@ class Returns201Test:
 
     @testing.override_features(ENABLE_ZENDESK_SELL_CREATION=True)
     def test_register_new_venue_without_double_model_writing(self, client, requests_mock):
-        user = ProFactory()
+        user = ProFactory(
+            lastConnectionDate=datetime.utcnow(),
+        )
         venue_data = create_valid_venue_data(user)
 
         client = client.with_session_auth(email=user.email)

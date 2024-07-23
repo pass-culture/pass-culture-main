@@ -1,5 +1,3 @@
-import React from 'react'
-
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import fullTrashIcon from 'icons/full-trash.svg'
 import { NOTIFICATIONS_EMAIL_LABEL } from 'screens/OfferEducational/constants/labels'
@@ -14,6 +12,7 @@ interface EmailInputRowProps {
   displayTrash?: boolean
   name: string
   onDelete?: () => void
+  autoFocus?: boolean
 }
 
 export const EmailInputRow = ({
@@ -21,7 +20,8 @@ export const EmailInputRow = ({
   displayTrash = true,
   name,
   onDelete,
-}: EmailInputRowProps) => {
+  autoFocus,
+}: EmailInputRowProps): JSX.Element => {
   return (
     <FormLayout.Row className={styles['notification-mail']}>
       <TextInput
@@ -29,6 +29,7 @@ export const EmailInputRow = ({
         name={name}
         disabled={disableForm}
         className={styles['notification-mail-input']}
+        autoFocus={autoFocus}
       />
       {displayTrash && (
         <div className={styles['trash']}>

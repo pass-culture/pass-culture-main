@@ -188,16 +188,12 @@ describe('Summary', () => {
     expect(screen.getAllByText('ma description')).toHaveLength(2)
   }
 
-  describe('On edition', () => {
-    it('should render component with informations', async () => {
-      renderSummary(customContext)
+  it('should render component with informations on edition', async () => {
+    renderSummary(customContext)
 
-      await expectOfferFields()
-      expect(
-        screen.getByText('Retour à la liste des offres')
-      ).toBeInTheDocument()
-      expect(screen.getByText('Visualiser dans l’app')).toBeInTheDocument()
-    })
+    await expectOfferFields()
+    expect(screen.getByText('Retour à la liste des offres')).toBeInTheDocument()
+    expect(screen.getByText('Visualiser dans l’app')).toBeInTheDocument()
   })
 
   describe('On Creation', () => {
@@ -227,51 +223,71 @@ describe('Summary', () => {
         screen.queryByText('Visualiser dans l’app')
       ).not.toBeInTheDocument()
     })
+    it('should render component with new sections', async () => {
+      vi.spyOn(api, 'getOfferer').mockResolvedValue(
+        defaultGetOffererResponseModel
+      )
+      customContext.offer = getIndividualOfferFactory({ isEvent: true })
 
-    describe('When it is form v3', () => {
-      it('should render component with right buttons', () => {
-        renderSummary(
-          customContext,
-          generatePath(
-            getIndividualOfferPath({
-              step: OFFER_WIZARD_STEP_IDS.SUMMARY,
-              mode: OFFER_WIZARD_MODE.CREATION,
-            }),
-            { offerId: 'AA' }
-          )
+      renderSummary(
+        customContext,
+        generatePath(
+          getIndividualOfferPath({
+            step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+            mode: OFFER_WIZARD_MODE.CREATION,
+          }),
+          { offerId: 'AA' }
+        ),
+        { features: ['WIP_SPLIT_OFFER'] }
+      )
+
+      expect(
+        await screen.findByText('À propos de votre offre')
+      ).toBeInTheDocument()
+    })
+
+    it('should render component with right buttons', () => {
+      renderSummary(
+        customContext,
+        generatePath(
+          getIndividualOfferPath({
+            step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+            mode: OFFER_WIZARD_MODE.CREATION,
+          }),
+          { offerId: 'AA' }
         )
+      )
 
-        expect(screen.getByText('Retour')).toBeInTheDocument()
-        expect(
-          screen.getByText('Sauvegarder le brouillon et quitter')
-        ).toBeInTheDocument()
-        expect(screen.getByText('Publier l’offre')).toBeInTheDocument()
-      })
+      expect(screen.getByText('Retour')).toBeInTheDocument()
+      expect(
+        screen.getByText('Sauvegarder le brouillon et quitter')
+      ).toBeInTheDocument()
+      expect(screen.getByText('Publier l’offre')).toBeInTheDocument()
+    })
 
-      it('should link to creation confirmation page', async () => {
-        vi.spyOn(api, 'getOfferer').mockResolvedValue(
-          defaultGetOffererResponseModel
+    it('should link to creation confirmation page', async () => {
+      vi.spyOn(api, 'getOfferer').mockResolvedValue(
+        defaultGetOffererResponseModel
+      )
+
+      renderSummary(
+        customContext,
+        generatePath(
+          getIndividualOfferPath({
+            step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+            mode: OFFER_WIZARD_MODE.CREATION,
+          }),
+          { offerId: 'AA' }
         )
+      )
 
-        renderSummary(
-          customContext,
-          generatePath(
-            getIndividualOfferPath({
-              step: OFFER_WIZARD_STEP_IDS.SUMMARY,
-              mode: OFFER_WIZARD_MODE.CREATION,
-            }),
-            { offerId: 'AA' }
-          )
-        )
+      await userEvent.click(
+        screen.getByRole('button', { name: /Publier l’offre/ })
+      )
 
-        await userEvent.click(
-          screen.getByRole('button', { name: /Publier l’offre/ })
-        )
-
-        expect(
-          await screen.findByText(/Confirmation page: creation/)
-        ).toBeInTheDocument()
-      })
+      expect(
+        await screen.findByText(/Confirmation page: creation/)
+      ).toBeInTheDocument()
     })
 
     it('should disabled publish button link during submit', async () => {
@@ -329,8 +345,7 @@ describe('Summary', () => {
             mode: OFFER_WIZARD_MODE.CREATION,
           }),
           { offerId: 'AA' }
-        ),
-        { features: ['WIP_FUTURE_OFFER'] }
+        )
       )
 
       await userEvent.click(

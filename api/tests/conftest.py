@@ -39,6 +39,7 @@ from pcapi.utils import requests
 from pcapi.utils.module_loading import import_string
 
 from tests.routes.adage_iframe.utils_create_test_token import create_adage_valid_token_with_email
+from tests.serialization.extended_spec_tree_test import test_extended_spec_tree_blueprint
 from tests.serialization.serialization_decorator_test import test_blueprint
 from tests.serialization.serialization_decorator_test import test_bookings_blueprint
 
@@ -115,6 +116,7 @@ def build_main_app():
         app.register_blueprint(test_blueprint, url_prefix="/test-blueprint")
         # Needed to test that /v2/bookings accepts invalid json
         app.register_blueprint(test_bookings_blueprint, url_prefix="/v2")
+        app.register_blueprint(test_extended_spec_tree_blueprint)
 
         install_database_extensions()
         run_migrations()

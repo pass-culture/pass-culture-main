@@ -5,6 +5,10 @@
 $banner-left-padding: rem.torem(16px);
 
 .bi-banner {
+  border-radius: rem.torem(6px);
+  margin: rem.torem(16px) 0;
+  padding: rem.torem(20px) rem.torem(16px) rem.torem(16px) rem.torem(16px);
+
   &.attention,
   &.notification-info {
     position: relative;
@@ -136,10 +140,6 @@ $banner-left-padding: rem.torem(16px);
       }
     }
   }
-
-  border-radius: rem.torem(6px);
-  margin: rem.torem(16px) 0;
-  padding: rem.torem(20px) rem.torem(16px) rem.torem(16px) rem.torem(16px);
 
   &-text {
     line-height: rem.torem(20px);

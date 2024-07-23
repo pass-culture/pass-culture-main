@@ -1,6 +1,5 @@
 import cn from 'classnames'
 import { format } from 'date-fns-tz'
-import React from 'react'
 
 import {
   FORMAT_DD_MM_YYYY,

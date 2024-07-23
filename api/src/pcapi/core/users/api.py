@@ -2,13 +2,17 @@ from dataclasses import asdict
 import datetime
 from decimal import Decimal
 import enum
+from io import BytesIO
 import logging
 from pathlib import Path
+import random
 import re
 import typing
+import zipfile
 
 from dateutil.relativedelta import relativedelta
 from flask import current_app as app
+from flask import render_template
 from flask import request
 from flask_jwt_extended import create_access_token
 from flask_jwt_extended import create_refresh_token
@@ -16,6 +20,7 @@ from flask_sqlalchemy import BaseQuery
 import sqlalchemy as sa
 from sqlalchemy import func
 from sqlalchemy.orm import Query
+from sqlalchemy.orm import joinedload
 
 from pcapi import settings
 from pcapi.connectors import api_adresse
@@ -30,12 +35,17 @@ from pcapi.core.external.attributes import api as external_attributes_api
 from pcapi.core.external.sendinblue import update_contact_attributes
 from pcapi.core.finance import models as finance_models
 import pcapi.core.finance.api as finance_api
+from pcapi.core.fraud import models as fraud_models
 import pcapi.core.fraud.api as fraud_api
 import pcapi.core.fraud.common.models as common_fraud_models
 from pcapi.core.geography.repository import get_iris_from_address
 import pcapi.core.history.api as history_api
+from pcapi.core.history.api import add_action
 import pcapi.core.history.models as history_models
+from pcapi.core.history.models import ActionType
+from pcapi.core.mails import get_raw_contact_data
 import pcapi.core.mails.transactional as transactional_mails
+from pcapi.core.object_storage import store_public_object
 import pcapi.core.offerers.api as offerers_api
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.models as offers_models
@@ -55,10 +65,11 @@ from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.notifications import push as push_api
 from pcapi.repository import repository
 from pcapi.repository import transaction
-from pcapi.routes.serialization.users import ProUserCreationBodyV2Model
+from pcapi.routes.serialization import users as users_serialization
 from pcapi.utils.clean_accents import clean_accents
 import pcapi.utils.date as date_utils
 import pcapi.utils.email as email_utils
+from pcapi.utils.pdf import generate_pdf_from_html
 import pcapi.utils.phone_number as phone_number_utils
 import pcapi.utils.postal_code as postal_code_utils
 from pcapi.utils.requests import ExternalAPIException
@@ -71,6 +82,33 @@ from . import models
 if typing.TYPE_CHECKING:
     from pcapi.connectors import google_oauth
     from pcapi.routes.native.v1.serialization import account as account_serialization
+
+
+class ExtractBeneficiaryDataCounter:
+    """
+    Counter to coordinate the limitation of extraction performed every day.
+    If reset is called it will reset the counter between 0:00 and 0:10
+    """
+
+    def __init__(self, key: str, max_value: int):
+        self.key = key
+        self.max_value = max_value
+
+    def reset(self) -> None:
+        now = datetime.datetime.utcnow()
+        if now.hour == 0 and now.minute < 10:
+            app.redis_client.delete(self.key)
+
+    def get(self) -> int:
+        raw_counter = app.redis_client.get(self.key)
+        counter = int(raw_counter) if raw_counter else 0
+        return counter
+
+    def is_full(self) -> bool:
+        return self.get() >= self.max_value
+
+    def __iadd__(self, other: int) -> None:
+        app.redis_client.incrby(self.key, other)
 
 
 class T_UNCHANGED(enum.Enum):
@@ -186,7 +224,7 @@ def setup_login(
     db.session.add(single_sign_on)
 
 
-def update_user_information(
+def _update_user_information(
     user: models.User,
     first_name: str | None = None,
     last_name: str | None = None,
@@ -199,7 +237,6 @@ def update_user_information(
     ine_hash: str | None = None,
     married_name: str | None = None,
     postal_code: str | None = None,
-    commit: bool = False,
 ) -> models.User:
     if first_name is not None:
         user.firstName = first_name
@@ -232,15 +269,13 @@ def update_user_information(
 
     db.session.add(user)
     db.session.flush()
-    if commit:
-        db.session.commit()
+
     return user
 
 
 def update_user_information_from_external_source(
     user: models.User,
     data: common_fraud_models.IdentityCheckContent,
-    commit: bool = False,
 ) -> models.User:
     first_name = data.get_first_name()
     last_name = data.get_last_name()
@@ -249,7 +284,7 @@ def update_user_information_from_external_source(
     if not first_name or not last_name or not birth_date:
         raise exceptions.IncompleteDataException()
 
-    return update_user_information(
+    return _update_user_information(
         user=user,
         first_name=first_name,
         last_name=last_name,
@@ -262,7 +297,6 @@ def update_user_information_from_external_source(
         ine_hash=data.get_ine_hash(),
         married_name=data.get_married_name(),
         postal_code=data.get_postal_code(),
-        commit=commit,
     )
 
 
@@ -813,7 +847,7 @@ def get_domains_credit(
     return domains_credit
 
 
-def create_pro_user_V2(pro_user: ProUserCreationBodyV2Model) -> models.User:
+def create_pro_user_V2(pro_user: users_serialization.ProUserCreationBodyV2Model) -> models.User:
     new_pro_user = create_pro_user(pro_user)
     repository.add_to_session(new_pro_user)  # valide user with pcapi.validation.models.user
     history_api.add_action(history_models.ActionType.USER_CREATED, author=new_pro_user, user=new_pro_user)
@@ -831,7 +865,7 @@ def create_pro_user_V2(pro_user: ProUserCreationBodyV2Model) -> models.User:
     return new_pro_user
 
 
-def create_pro_user(pro_user: ProUserCreationBodyV2Model) -> models.User:
+def create_pro_user(pro_user: users_serialization.ProUserCreationBodyV2Model) -> models.User:
     user_kwargs = {
         k: v for k, v in pro_user.dict(by_alias=True).items() if k not in ("contactOk", "token", "_sa_instance_state")
     }
@@ -1811,3 +1845,309 @@ def delete_gdpr_extract(extract_id: int) -> None:
         bucket=settings.GCP_GDPR_EXTRACT_BUCKET,
     )
     models.GdprUserDataExtract.query.filter(models.GdprUserDataExtract.id == extract_id).delete()
+
+
+def _extract_gdpr_marketing_data(user: users_models.User) -> users_serialization.GdprMarketing:
+    notification_subscriptions = user.notificationSubscriptions or {}
+    return users_serialization.GdprMarketing(
+        marketingEmails=notification_subscriptions.get("marketing_email") or False,
+        marketingNotifications=notification_subscriptions.get("marketing_push") or False,
+    )
+
+
+def _extract_gdpr_devices_history(
+    user: users_models.User,
+) -> list[users_serialization.GdprLoginDeviceHistorySerializer]:
+    login_devices_data = (
+        users_models.LoginDeviceHistory.query.filter(users_models.LoginDeviceHistory.user == user)
+        .order_by(users_models.LoginDeviceHistory.id)
+        .all()
+    )
+    return [users_serialization.GdprLoginDeviceHistorySerializer.from_orm(data) for data in login_devices_data]
+
+
+def _extract_gdpr_deposits(user: users_models.User) -> list[users_serialization.GdprDepositSerializer]:
+    deposit_types = {
+        finance_models.DepositType.GRANT_15_17.name: "Pass 15-17",
+        finance_models.DepositType.GRANT_18.name: "Pass 18",
+    }
+    deposits_data = (
+        finance_models.Deposit.query.filter(finance_models.Deposit.user == user)
+        .order_by(finance_models.Deposit.id)
+        .all()
+    )
+    return [
+        users_serialization.GdprDepositSerializer(
+            dateCreated=deposit.dateCreated,
+            dateUpdated=deposit.dateUpdated,
+            expirationDate=deposit.expirationDate,
+            amount=deposit.amount,
+            source=deposit.source,
+            type=deposit_types.get(deposit.type.name, deposit.type.name),
+        )
+        for deposit in deposits_data
+    ]
+
+
+def _extract_gdpr_email_history(user: users_models.User) -> list[users_serialization.GdprEmailHistory]:
+    emails = (
+        users_models.UserEmailHistory.query.filter(
+            users_models.UserEmailHistory.user == user,
+            users_models.UserEmailHistory.eventType.in_(
+                [
+                    users_models.EmailHistoryEventTypeEnum.CONFIRMATION,
+                    users_models.EmailHistoryEventTypeEnum.ADMIN_UPDATE,
+                ]
+            ),
+        )
+        .order_by(users_models.UserEmailHistory.id)
+        .all()
+    )
+    emails_history = []
+    for history in emails:
+        new_email = None
+        if history.newUserEmail:
+            new_email = f"{history.newUserEmail}@{history.newDomainEmail}"
+        emails_history.append(
+            users_serialization.GdprEmailHistory(
+                oldEmail=f"{history.oldUserEmail}@{history.oldDomainEmail}",
+                newEmail=new_email,
+                dateCreated=history.creationDate,
+            )
+        )
+    return emails_history
+
+
+def _extract_gdpr_action_history(user: users_models.User) -> list[users_serialization.GdprActionHistorySerializer]:
+    actions_history = (
+        history_models.ActionHistory.query.filter(
+            history_models.ActionHistory.user == user,
+            history_models.ActionHistory.actionType.in_(
+                [
+                    history_models.ActionType.USER_SUSPENDED,
+                    history_models.ActionType.USER_UNSUSPENDED,
+                    history_models.ActionType.USER_PHONE_VALIDATED,
+                    history_models.ActionType.USER_EMAIL_VALIDATED,
+                ],
+            ),
+        )
+        .order_by(history_models.ActionHistory.id)
+        .all()
+    )
+    return [users_serialization.GdprActionHistorySerializer.from_orm(a) for a in actions_history]
+
+
+def _extract_gdpr_beneficiary_validation(
+    user: users_models.User,
+) -> list[users_serialization.GdprBeneficiaryValidation]:
+    check_types = {
+        fraud_models.FraudCheckType.DMS.name: "Démarches simplifiées",
+        fraud_models.FraudCheckType.EDUCONNECT.name: "ÉduConnect",
+        fraud_models.FraudCheckType.HONOR_STATEMENT.name: "Attestation sur l'honneur",
+        fraud_models.FraudCheckType.INTERNAL_REVIEW.name: "Revue Interne",
+        fraud_models.FraudCheckType.JOUVE.name: "Jouve",
+        fraud_models.FraudCheckType.PHONE_VALIDATION.name: "Validation par téléphone",
+        fraud_models.FraudCheckType.PROFILE_COMPLETION.name: "Complétion du profil",
+        fraud_models.FraudCheckType.UBBLE.name: "Ubble",
+        fraud_models.FraudCheckType.USER_PROFILING.name: "Profilage d'utilisateur",
+    }
+    check_status = {
+        fraud_models.FraudCheckStatus.CANCELED.name: "Annulé",
+        fraud_models.FraudCheckStatus.ERROR.name: "Erreur",
+        fraud_models.FraudCheckStatus.KO.name: "Échec",
+        fraud_models.FraudCheckStatus.OK.name: "Succès",
+        fraud_models.FraudCheckStatus.PENDING.name: "En attente",
+        fraud_models.FraudCheckStatus.STARTED.name: "Commencé",
+        fraud_models.FraudCheckStatus.SUSPICIOUS.name: "Suspect",
+    }
+    eligibility_types = {
+        users_models.EligibilityType.AGE18.name: "Pass 18",
+        users_models.EligibilityType.UNDERAGE.name: "Pass 15-17",
+    }
+    beneficiary_fraud_checks = (
+        fraud_models.BeneficiaryFraudCheck.query.filter(fraud_models.BeneficiaryFraudCheck.user == user)
+        .order_by(fraud_models.BeneficiaryFraudCheck.id)
+        .all()
+    )
+    return [
+        users_serialization.GdprBeneficiaryValidation(
+            dateCreated=fraud_check.dateCreated,
+            eligibilityType=(
+                eligibility_types.get(fraud_check.eligibilityType.name, fraud_check.eligibilityType.name)
+                if fraud_check.eligibilityType
+                else None
+            ),
+            status=check_status.get(fraud_check.status.name, fraud_check.status.name) if fraud_check.status else None,
+            type=check_types.get(fraud_check.type.name, fraud_check.type.name),
+            updatedAt=fraud_check.updatedAt,
+        )
+        for fraud_check in beneficiary_fraud_checks
+    ]
+
+
+def _extract_gdpr_booking_data(user: users_models.User) -> list[users_serialization.GdprBookingSerializer]:
+    booking_status = {
+        bookings_models.BookingStatus.CONFIRMED.name: "Réservé",
+        bookings_models.BookingStatus.USED.name: "Utilisé",
+        bookings_models.BookingStatus.CANCELLED.name: "Annulé",
+        bookings_models.BookingStatus.REIMBURSED.name: "Utilisé",
+    }
+    bookings_data = (
+        bookings_models.Booking.query.filter(
+            bookings_models.Booking.user == user,
+        )
+        .options(
+            joinedload(bookings_models.Booking.stock).joinedload(offers_models.Stock.offer),
+            joinedload(bookings_models.Booking.venue),
+            joinedload(bookings_models.Booking.venue).joinedload(offerers_models.Venue.managingOfferer),
+        )
+        .order_by(bookings_models.Booking.id)
+    )
+    bookings = []
+    for booking_data in bookings_data:
+        offerer = booking_data.venue.managingOfferer
+        bookings.append(
+            users_serialization.GdprBookingSerializer(
+                cancellationDate=booking_data.cancellationDate,
+                dateCreated=booking_data.dateCreated,
+                dateUsed=booking_data.dateUsed,
+                quantity=booking_data.quantity,
+                amount=booking_data.amount,
+                status=booking_status.get(booking_data.status.name, booking_data.status.name),
+                name=booking_data.stock.offer.name,
+                venue=booking_data.venue.common_name,
+                offerer=offerer.name,
+            )
+        )
+    return bookings
+
+
+def _extract_gdpr_brevo_data(user: users_models.User) -> dict:
+    return get_raw_contact_data(user.email)
+
+
+def _dump_gdpr_data_container_as_json_bytes(
+    container: users_serialization.GdprDataContainer,
+) -> tuple[zipfile.ZipInfo, bytes]:
+    json_bytes = container.json(indent=4).encode("utf-8")
+    file_info = zipfile.ZipInfo(
+        filename=f"{container.internal.user.email}.json",
+        date_time=datetime.datetime.utcnow().timetuple()[:6],
+    )
+    return file_info, json_bytes
+
+
+def _dump_gdpr_data_container_as_pdf_bytes(
+    container: users_serialization.GdprDataContainer,
+) -> tuple[zipfile.ZipInfo, bytes]:
+    html_content = render_template("extracts/beneficiary_extract.html", container=container)
+    pdf_bytes = generate_pdf_from_html(html_content=html_content)
+    file_info = zipfile.ZipInfo(
+        filename=f"{container.internal.user.email}.pdf",
+        date_time=datetime.datetime.utcnow().timetuple()[:6],
+    )
+    return file_info, pdf_bytes
+
+
+def _generate_archive_from_gdpr_data_container(container: users_serialization.GdprDataContainer) -> BytesIO:
+    buffer = BytesIO()
+    with zipfile.ZipFile(buffer, "w", allowZip64=False) as zip_file:
+        zip_file.writestr(*_dump_gdpr_data_container_as_json_bytes(container))
+        zip_file.writestr(*_dump_gdpr_data_container_as_pdf_bytes(container))
+    buffer.seek(0)
+    return buffer
+
+
+def _store_gdpr_archive(name: str, archive: bytes) -> None:
+    store_public_object(
+        folder=settings.GCP_GDPR_EXTRACT_FOLDER,
+        object_id=name,
+        blob=archive,
+        content_type="application/zip",
+        bucket=settings.GCP_GDPR_EXTRACT_BUCKET,
+    )
+
+
+def extract_beneficiary_data(extract: users_models.GdprUserDataExtract) -> None:
+    extract.dateProcessed = datetime.datetime.utcnow()
+    user = extract.user
+    data = users_serialization.GdprDataContainer(
+        generationDate=datetime.datetime.utcnow(),
+        internal=users_serialization.GdprInternal(
+            user=users_serialization.GdprUserSerializer.from_orm(user),
+            marketing=_extract_gdpr_marketing_data(user),
+            loginDevices=_extract_gdpr_devices_history(user),
+            emailsHistory=_extract_gdpr_email_history(user),
+            actionsHistory=_extract_gdpr_action_history(user),
+            beneficiaryValidations=_extract_gdpr_beneficiary_validation(user),
+            deposits=_extract_gdpr_deposits(user),
+            bookings=_extract_gdpr_booking_data(user),
+        ),
+        external=users_serialization.GdprExternal(
+            brevo=_extract_gdpr_brevo_data(user),
+        ),
+    )
+    archive = _generate_archive_from_gdpr_data_container(data)
+    _store_gdpr_archive(
+        name=f"{extract.id}.zip",
+        archive=archive.getvalue(),
+    )
+
+    add_action(
+        action_type=ActionType.USER_EXTRACT_DATA,
+        author=extract.authorUser,
+        user=extract.user,
+    )
+    db.session.flush()
+
+
+def _get_extract_beneficiary_data_lock() -> bool:
+    result = app.redis_client.set(
+        constants.GDPR_EXTRACT_DATA_LOCK,
+        "locked",
+        ex=settings.GDPR_LOCK_TIMEOUT,
+        nx=True,
+    )
+    return bool(result)
+
+
+def _release_extract_beneficiary_data_lock() -> None:
+    app.redis_client.delete(constants.GDPR_EXTRACT_DATA_LOCK)
+
+
+def extract_beneficiary_data_command() -> bool:
+    counter = ExtractBeneficiaryDataCounter(
+        key=constants.GDPR_EXTRACT_DATA_COUNTER, max_value=settings.GDPR_MAX_EXTRACT_PER_DAY
+    )
+    counter.reset()
+
+    if not _get_extract_beneficiary_data_lock():
+        return False
+
+    if counter.is_full():
+        return False
+
+    candidates = (
+        users_models.GdprUserDataExtract.query.filter(
+            users_models.GdprUserDataExtract.dateProcessed.is_(None),
+            users_models.GdprUserDataExtract.expirationDate > datetime.datetime.utcnow(),  # type: ignore [operator]
+        )
+        .options(
+            joinedload(users_models.GdprUserDataExtract.user),
+            joinedload(users_models.GdprUserDataExtract.authorUser),
+        )
+        .limit(10)
+        .all()
+    )
+    if not candidates:
+        _release_extract_beneficiary_data_lock()
+        return False
+
+    # choose one at random to avoid being stuck on a buggy extract
+    extract = random.choice(candidates)
+    try:
+        extract_beneficiary_data(extract)
+    finally:
+        _release_extract_beneficiary_data_lock()
+    counter += 1  # type: ignore [misc]
+    return True

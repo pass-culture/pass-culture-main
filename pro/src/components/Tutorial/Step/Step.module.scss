@@ -34,7 +34,7 @@
   }
 
   .subtitle {
-    @include fonts.button;
+    @include fonts.body-important;
 
     line-height: rem.torem(20px);
     margin-bottom: rem.torem(8px);
@@ -122,7 +122,7 @@
     .offers,
     .booking,
     .reimbursements {
-      @include fonts.button;
+      @include fonts.body-important;
 
       display: flex;
       align-items: center;

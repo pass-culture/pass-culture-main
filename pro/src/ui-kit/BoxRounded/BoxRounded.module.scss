@@ -1,23 +1,28 @@
 @use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/variables/_size.scss" as size;
 @use "styles/mixins/_rem.scss" as rem;
 
 .expandable-box {
-  position: relative;
   border-radius: rem.torem(6px);
   border: rem.torem(1px) solid var(--color-grey-medium);
   padding: rem.torem(16px);
+  word-break: break-word;
 }
 
 .modify-button-container {
-  position: absolute;
-  top: rem.torem(16px);
-  right: rem.torem(16px);
-
   svg {
     margin-right: 8px;
   }
 
   &.hidden {
     display: none;
+  }
+}
+
+@media (min-width: size.$tablet) {
+  .expandable-box-closed {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: space-between;
   }
 }

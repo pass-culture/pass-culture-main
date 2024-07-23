@@ -30,6 +30,7 @@ from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import validation as educational_validation
 from pcapi.core.educational.api import offer as educational_api_offer
 import pcapi.core.educational.api.national_program as national_program_api
+from pcapi.core.educational.exceptions import CollectiveOfferNotCancellable
 from pcapi.core.external import compliance
 from pcapi.core.external.attributes.api import update_external_pro
 import pcapi.core.external_bookings.api as external_bookings_api
@@ -68,7 +69,6 @@ from . import models
 from . import repository as offers_repository
 from . import serialize as offers_serialize
 from . import validation
-from ..educational.exceptions import CollectiveOfferNotCancellable
 
 
 logger = logging.getLogger(__name__)
@@ -76,7 +76,6 @@ logger = logging.getLogger(__name__)
 AnyOffer = educational_api_offer.AnyCollectiveOffer | models.Offer
 
 OFFERS_RECAP_LIMIT = 501
-STOCK_LIMIT_TO_DELETE = 50
 
 
 OFFER_LIKE_MODELS = {
@@ -145,6 +144,7 @@ def create_offer(
     extra_data: dict | None = None,
     is_duo: bool | None = None,
     is_national: bool | None = None,
+    offerer_address: offerers_models.OffererAddress | None = None,
     provider: providers_models.Provider | None = None,
     url: str | None = None,
     withdrawal_delay: int | None = None,
@@ -186,7 +186,8 @@ def create_offer(
         withdrawalDelay=withdrawal_delay,
         withdrawalDetails=withdrawal_details,
         withdrawalType=withdrawal_type,
-        offererAddress=venue.offererAddress,
+        # WARNING: quid des offres numériques ici ?
+        offererAddress=offerer_address or venue.offererAddress,
         idAtProvider=id_at_provider,
     )
     repository.add_to_session(offer)

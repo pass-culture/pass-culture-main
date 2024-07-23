@@ -1,5 +1,6 @@
 import { FormikProvider, useFormik } from 'formik'
 import { useState } from 'react'
+import { useSelector } from 'react-redux'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useSWRConfig } from 'swr'
 
@@ -36,6 +37,7 @@ import { useCurrentUser } from 'hooks/useCurrentUser'
 import { useNotification } from 'hooks/useNotification'
 import { useOfferWizardMode } from 'hooks/useOfferWizardMode'
 import strokeMailIcon from 'icons/stroke-mail.svg'
+import { selectCurrentOffererId } from 'store/user/selectors'
 
 import { ActionBar } from '../ActionBar/ActionBar'
 import { useIndividualOfferImageUpload } from '../hooks/useIndividualOfferImageUpload'
@@ -72,6 +74,7 @@ export const InformationsScreen = ({
   const { offer, categories, subCategories } = useIndividualOfferContext()
   const { imageOffer, onImageDelete, onImageUpload, handleImageOnSubmit } =
     useIndividualOfferImageUpload()
+  const selectedOffererId = useSelector(selectCurrentOffererId)
 
   const isBookingContactEnabled = useActiveFeature(
     'WIP_MANDATORY_BOOKING_CONTACT'
@@ -176,6 +179,7 @@ export const InformationsScreen = ({
         offerId: receivedOfferId,
         offerType: 'individual',
         subcategoryId: formik.values.subcategoryId,
+        offererId: selectedOffererId?.toString(),
       })
 
       navigate(

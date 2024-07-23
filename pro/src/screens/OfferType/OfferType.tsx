@@ -42,9 +42,9 @@ export const OfferTypeScreen = (): JSX.Element => {
   const navigate = useNavigate()
   const location = useLocation()
   const queryParams = new URLSearchParams(location.search)
-  const selectedOfferId = useSelector(selectCurrentOffererId)
+  const selectedOffererId = useSelector(selectCurrentOffererId)
   const queryOffererId = isNewInterfaceActive
-    ? selectedOfferId?.toString()
+    ? selectedOffererId?.toString()
     : queryParams.get('structure')
   const queryVenueId = queryParams.get('lieu')
 
@@ -83,6 +83,7 @@ export const OfferTypeScreen = (): JSX.Element => {
         to: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
         from: OFFER_FORM_HOMEPAGE,
         used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
+        offererId: selectedOffererId?.toString(),
       })
 
       const params = new URLSearchParams(location.search)

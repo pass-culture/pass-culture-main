@@ -8,9 +8,3 @@
 .tabs {
   margin: rem.torem(32px) 0;
 }
-
-@media (min-width: size.$tablet) {
-  .stepper {
-    padding: 0 rem.torem(10px);
-  }
-}

@@ -27,6 +27,7 @@ from collections import defaultdict
 import csv
 import datetime
 import decimal
+import functools
 import itertools
 import logging
 import math
@@ -53,6 +54,7 @@ from pcapi.core.educational.api import booking as educational_api_booking
 import pcapi.core.educational.models as educational_models
 from pcapi.core.external import batch as push_notifications
 import pcapi.core.external.attributes.api as external_attributes_api
+from pcapi.core.fraud import models as fraud_models
 from pcapi.core.history import api as history_api
 import pcapi.core.history.models as history_models
 from pcapi.core.logging import log_elapsed
@@ -64,11 +66,13 @@ from pcapi.core.object_storage import store_public_object
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.models as offers_models
 import pcapi.core.reference.models as reference_models
+from pcapi.core.users import utils as users_utils
 import pcapi.core.users.constants as users_constants
 import pcapi.core.users.models as users_models
 from pcapi.domain import reimbursement
 from pcapi.models import db
 from pcapi.models import feature
+from pcapi.repository import on_commit
 from pcapi.repository import transaction
 from pcapi.tasks import finance_tasks
 from pcapi.utils import human_ids
@@ -2248,11 +2252,11 @@ def get_reimbursements_by_venue(
         venue_common_name = venue_pricing_info.common_name
         reimbursed_amount = venue_pricing_info.reimbursed_amount
         booking_amount = -utils.to_eurocents(venue_pricing_info.booking_amount)
-        if venue_pricing_info.venue_id in reimbursements_by_venue:
-            reimbursements_by_venue[venue_pricing_info.venue_id]["reimbursed_amount"] += reimbursed_amount
-            reimbursements_by_venue[venue_pricing_info.venue_id]["validated_booking_amount"] += booking_amount
+        if venue_id in reimbursements_by_venue:
+            reimbursements_by_venue[venue_id]["reimbursed_amount"] += reimbursed_amount
+            reimbursements_by_venue[venue_id]["validated_booking_amount"] += booking_amount
         else:
-            reimbursements_by_venue[venue_pricing_info.venue_id] = {
+            reimbursements_by_venue[venue_id] = {
                 "venue_name": venue_common_name,
                 "reimbursed_amount": reimbursed_amount,
                 "validated_booking_amount": booking_amount,
@@ -2601,6 +2605,7 @@ def create_deposit(
         expirationDate=granted_deposit.expiration_date,
     )
     db.session.add(deposit)
+    db.session.flush()
 
     # Edge-cases: Validation of the registration occurred over a birthday
     # Then we need to add recredit to compensate
@@ -2662,18 +2667,80 @@ def _has_celebrated_birthday_since_credit_or_registration(user: users_models.Use
 
 
 def _has_been_recredited(user: users_models.User) -> bool:
-    if user.age is None:  # helps mypy to use age as index for RECREDIT_TYPE_AGE_MAPPING
+    if user.age is None:
         logger.error("Trying to check recredit for user that has no age", extra={"user_id": user.id})
         return False
+
     if user.deposit is None:
         return False
+
+    known_age_at_deposit = _get_known_age_at_deposit(user)
+    if known_age_at_deposit == user.age:
+        return True
+
     if len(user.deposit.recredits) == 0:
         return False
 
-    assert user.age
+    return conf.RECREDIT_TYPE_AGE_MAPPING[user.age] in [recredit.recreditType for recredit in user.deposit.recredits]
 
-    sorted_recredits = sorted(user.deposit.recredits, key=lambda recredit: recredit.dateCreated)
-    return sorted_recredits[-1].recreditType == conf.RECREDIT_TYPE_AGE_MAPPING[user.age]
+
+def _get_known_age_at_deposit(user: users_models.User) -> int | None:
+    assert user.deposit, f"no deposit was found for {user =}"
+    deposit_date = user.deposit.dateCreated
+
+    identity_provider_birthday_checks = [
+        fraud_check
+        for fraud_check in user.beneficiaryFraudChecks
+        if fraud_check.type in fraud_models.IDENTITY_CHECK_TYPES
+        and fraud_check.status == fraud_models.FraudCheckStatus.OK
+        and fraud_check.source_data().get_birth_date() is not None
+        and fraud_check.dateCreated < deposit_date
+    ]
+    last_identity_provider_birthday_check = max(
+        identity_provider_birthday_checks, key=lambda check: check.dateCreated, default=None
+    )
+
+    birthday_actions = [
+        action
+        for action in user.action_history
+        if action.actionType == history_models.ActionType.INFO_MODIFIED
+        and action.extraData["modified_info"].get("validatedBirthDate") is not None
+        and action.actionDate < deposit_date
+    ]
+    last_birthday_action = max(birthday_actions, key=lambda action: action.actionDate, default=None)
+
+    match last_identity_provider_birthday_check, last_birthday_action:
+        case None, None:
+            if user.dateOfBirth is None:
+                return None
+            known_birthday_at_deposit = user.dateOfBirth.date()
+
+        case check, None:
+            assert check is not None
+            known_birthday_at_deposit = check.source_data().get_birth_date()
+
+        case None, action:
+            assert action is not None
+            known_birthday_at_deposit = datetime.datetime.strptime(
+                action.extraData["modified_info"]["validatedBirthDate"]["new_info"], "%Y-%m-%d"
+            ).date()
+
+        case check, action:
+            assert check is not None
+            assert action is not None
+            if check.dateCreated < action.actionDate:
+                known_birthday_at_deposit = datetime.datetime.strptime(
+                    action.extraData["modified_info"]["validatedBirthDate"]["new_info"], "%Y-%m-%d"
+                ).date()
+            else:
+                known_birthday_at_deposit = check.source_data().get_birth_date()
+
+        case _:
+            raise ValueError(
+                f"unexpected {last_identity_provider_birthday_check = }, {last_birthday_action = } combination for {user =}"
+            )
+
+    return users_utils.get_age_at_date(known_birthday_at_deposit, deposit_date)
 
 
 def recredit_underage_users() -> None:
@@ -2891,7 +2958,7 @@ def create_overpayment_finance_incident(
         comment=origin,
     )
 
-    db.session.commit()
+    db.session.flush()
 
     return incident
 
@@ -2928,7 +2995,7 @@ def create_overpayment_finance_incident_collective_booking(
         comment=origin,
     )
 
-    db.session.commit()
+    db.session.flush()
 
     return incident
 
@@ -2974,7 +3041,7 @@ def create_finance_commercial_gesture(
         finance_incident=incident,
         comment=origin,
     )
-    db.session.commit()
+    db.session.flush()
     return incident
 
 
@@ -3007,7 +3074,7 @@ def create_finance_commercial_gesture_collective_booking(
         finance_incident=incident,
         comment=origin,
     )
-    db.session.commit()
+    db.session.flush()
     return incident
 
 
@@ -3109,19 +3176,32 @@ def validate_finance_overpayment_incident(
         linked_incident_id=finance_incident.id,
     )
 
-    db.session.commit()
+    db.session.flush()
 
     # send mail to pro
-    send_finance_incident_emails(finance_incident)
+    on_commit(
+        functools.partial(
+            send_finance_incident_emails,
+            finance_incident=finance_incident,
+        ),
+    )
     # send mail to beneficiaries or educational redactor
     for booking_incident in finance_incident.booking_finance_incidents:
         if not booking_incident.is_partial:
             if booking_incident.collectiveBooking:
-                educational_api_booking.notify_reimburse_collective_booking(
-                    collective_booking=booking_incident.collectiveBooking, reason="NO_EVENT"
+                on_commit(
+                    functools.partial(
+                        educational_api_booking.notify_reimburse_collective_booking,
+                        collective_booking=booking_incident.collectiveBooking,
+                        reason="NO_EVENT",
+                    ),
                 )
             else:
-                send_booking_cancellation_by_pro_to_beneficiary_email(booking_incident.booking)
+                on_commit(
+                    functools.partial(
+                        send_booking_cancellation_by_pro_to_beneficiary_email, booking=booking_incident.booking
+                    )
+                )
 
 
 def validate_finance_commercial_gesture(
@@ -3163,10 +3243,15 @@ def validate_finance_commercial_gesture(
         linked_incident_id=finance_incident.id,
     )
 
-    db.session.commit()
+    db.session.flush()
 
     # send mail to pro
-    send_commercial_gesture_email(finance_incident)
+    on_commit(
+        functools.partial(
+            send_commercial_gesture_email,
+            finance_incident=finance_incident,
+        ),
+    )
 
 
 def cancel_finance_incident(
@@ -3189,7 +3274,7 @@ def cancel_finance_incident(
         comment=comment,
     )
 
-    db.session.commit()
+    db.session.flush()
 
 
 def are_cashflows_being_generated() -> bool:

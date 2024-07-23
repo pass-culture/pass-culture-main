@@ -9,11 +9,12 @@ interface DisplayOfferInAppLinkProps extends SharedButtonProps {
   icon?: string
   children: React.ReactNode
   onClick?: () => void
+  className?: string
 }
 
 export const DisplayOfferInAppLink: FunctionComponent<
   DisplayOfferInAppLinkProps
-> = ({ id, icon, children, variant, onClick }) => {
+> = ({ id, icon, children, variant, onClick, className }) => {
   const offerPreviewUrl = `${WEBAPP_URL}/offre/${id}`
 
   return (
@@ -22,6 +23,7 @@ export const DisplayOfferInAppLink: FunctionComponent<
       isExternal
       variant={variant}
       icon={icon}
+      className={className}
       onClick={(event) => {
         event.preventDefault()
         onClick?.()

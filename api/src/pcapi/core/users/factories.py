@@ -52,6 +52,7 @@ class BaseUserFactory(BaseFactory):
         age = 40
 
     dateOfBirth = LazyAttribute(lambda o: date.today() - relativedelta(years=o.age))
+    comment = LazyAttribute(lambda o: str(o.__dict__))
     isEmailValidated = False
 
     @classmethod
@@ -63,7 +64,7 @@ class BaseUserFactory(BaseFactory):
     ) -> models.User:
         kwargs.update(**cls._set_non_nullable_attributes(**kwargs))
         instance = super()._create(model_class, *args, **kwargs)
-        cls.set_custom_attributes(instance)
+        cls.set_custom_attributes(instance, **kwargs)
         repository.save(instance)
         return instance
 
@@ -76,21 +77,26 @@ class BaseUserFactory(BaseFactory):
     ) -> models.User:
         kwargs.update(**cls._set_non_nullable_attributes(**kwargs))
         instance = super()._build(model_class, *args, **kwargs)
-        cls.set_custom_attributes(instance)
+        cls.set_custom_attributes(instance, **kwargs)
         return instance
 
     @classmethod
     def _set_non_nullable_attributes(cls, **kwargs: typing.Any) -> dict:
-        kwargs = {}
         password = kwargs.get("password", settings.TEST_DEFAULT_PASSWORD)
+        kwargs["clearTextPassword"] = password
         kwargs["password"] = crypto.hash_password(password)
-        kwargs["email"] = kwargs.get("email", f"{uuid.uuid4()}@passculture.gen")
+
+        if "email" not in kwargs:
+            kwargs["email"] = f"{uuid.uuid4()}@to_override.com"
         return kwargs
 
     @classmethod
     def set_custom_attributes(cls, obj: models.User, **kwargs: typing.Any) -> None:
-        obj.email = f"user.{obj.id}@passculture.gen"
-        obj.clearTextPassword = kwargs.get("password")
+        if obj.email.endswith("@to_override.com"):
+            if obj.firstName and obj.lastName:
+                obj.email = f"{obj.firstName}.{obj.lastName}.{obj.id}@passculture.gen".lower()
+            else:
+                obj.email = f"user.{obj.id}@passculture.gen"
 
     @classmethod
     def beneficiary_fraud_checks(
@@ -170,13 +176,11 @@ class ProfileCompletedUserFactory(PhoneValidatedUserFactory):
     # An easy way to generate email from names without any conversion
     firstName = factory.Faker("first_name", locale="en_UK")
     lastName = factory.Faker("last_name", locale="en_UK")
-    postalCode = factory.Faker("postcode")
+    postalCode = factory.LazyAttribute(lambda o: f"{random.randint(10, 959) * 100:05}")
 
     @classmethod
     def set_custom_attributes(cls, obj: models.User, **kwargs: typing.Any) -> None:
         super().set_custom_attributes(obj)
-        obj.email = f"user.{obj.id}@passculture.gen"
-        obj.postalCode = f"{random.randint(10, 959) * 100:05}"
         if obj.address:
             obj.address = obj.address.replace(",", "")
 
@@ -185,8 +189,6 @@ class ProfileCompletedUserFactory(PhoneValidatedUserFactory):
         cls, obj: models.User, **kwargs: typing.Any
     ) -> list[fraud_models.BeneficiaryFraudCheck]:
         import pcapi.core.fraud.factories as fraud_factories
-
-        obj.email = f"{obj.firstName}.{obj.lastName}.{obj.id}@passculture.gen".lower()
 
         fraud_checks = super().beneficiary_fraud_checks(obj, **kwargs)
         fraud_checks.append(

@@ -1,10 +1,10 @@
 // Store all the query keys used in the application here
 // by using the same query keys we benefit from SWR's cache
 export const GET_BOOKINGS_QUERY_KEY = 'getBookings'
-export const GET_OFFERER_BANK_ACCOUNTS_QUERY_KEY = 'getOffererBankAccounts'
 export const GET_CATEGORIES_QUERY_KEY = 'getCategories'
 export const GET_CLASSROOM_PLAYLIST_QUERY_KEY = 'getClassroomPlaylist'
 export const GET_COLLECTIVE_BOOKING_BY_ID_QUERY_KEY = 'getCollectiveBookingById'
+export const GET_COLLECTIVE_FAVORITES = 'getCollectiveFavorites'
 export const GET_COLLECTIVE_OFFER_QUERY_KEY = 'getCollectiveOffer'
 export const GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY =
   'getCollectiveOfferTemplate'
@@ -32,6 +32,7 @@ export const GET_INVOICES_QUERY_KEY = 'getInvoices'
 export const GET_LOCAL_OFFERERS_PLAYLIST_QUERY_KEY = 'getLocalOfferersPlaylist'
 export const GET_MEMBERS_QUERY_KEY = 'getMembers'
 export const GET_MUSIC_TYPES_QUERY_KEY = 'getMusicTypes'
+export const GET_NATIONAL_PROGRAMS_QUERY_KEY = 'getNationalPrograms'
 export const GET_NEW_OFFERERS_PLAYLIST_QUERY_KEY = 'getNewOfferersPlaylist'
 export const GET_OFFER_QUERY_KEY = 'getOffer'
 export const GET_OFFERER_BANK_ACCOUNTS_AND_ATTACHED_VENUES_QUERY_KEY =

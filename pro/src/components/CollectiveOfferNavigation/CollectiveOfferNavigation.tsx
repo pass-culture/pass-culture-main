@@ -1,5 +1,6 @@
 import cn from 'classnames'
 import { useState } from 'react'
+import { useSelector } from 'react-redux'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useSWRConfig } from 'swr'
 
@@ -22,6 +23,7 @@ import fullArchiveIcon from 'icons/full-archive.svg'
 import fullEditIcon from 'icons/full-edit.svg'
 import fullMoreIcon from 'icons/full-more.svg'
 import fullShowIcon from 'icons/full-show.svg'
+import { selectCurrentOffererId } from 'store/user/selectors'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -65,6 +67,7 @@ export const CollectiveOfferNavigation = ({
   const navigate = useNavigate()
   const location = useLocation()
   const isMarseilleActive = useActiveFeature('WIP_ENABLE_MARSEILLE')
+  const selectedOffererId = useSelector(selectCurrentOffererId)
 
   const offerEditLink = `/offre/${computeURLCollectiveOfferId(
     offerId,
@@ -237,6 +240,7 @@ export const CollectiveOfferNavigation = ({
             onClick={() => {
               logEvent(Events.CLICKED_DUPLICATE_TEMPLATE_OFFER, {
                 from: OFFER_FROM_TEMPLATE_ENTRIES.OFFER_TEMPLATE_RECAP,
+                offererId: selectedOffererId?.toString(),
                 offerId,
                 offerType: 'collective',
               })

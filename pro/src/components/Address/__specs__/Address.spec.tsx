@@ -96,6 +96,13 @@ describe('AddressSelect', () => {
     const adressInput = screen.getByLabelText('Adresse postale *')
 
     await userEvent.type(adressInput, '12 rue ')
+
+    await waitFor(() => {
+      expect(
+        screen.getByText('12 rue des tournesols 75003 Paris')
+      ).toBeInTheDocument()
+    })
+
     const suggestion = screen.getByText('12 rue des tournesols 75003 Paris', {
       selector: 'span',
     })

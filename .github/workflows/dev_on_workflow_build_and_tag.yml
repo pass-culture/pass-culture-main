@@ -49,6 +49,7 @@ jobs:
             PUSH_TOKEN:passculture-metier-ehp/passculture-main-push-token
             ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER:passculture-metier-ehp/passculture-main-gcp-workload-identity-provider
             ARTIFACT_REGISTRY_SERVICE_ACCOUNT:passculture-metier-ehp/passculture-main-artifact-registry-service-account
+            COSIGN_KMS_KEY:passculture-metier-ehp/cosign_kms_key
       - name: "Checkout ref"
         uses: actions/checkout@v4.1.7
         with:
@@ -81,10 +82,12 @@ jobs:
         id: "openid-auth"
         uses: "google-github-actions/auth@v2"
         with:
-          create_credentials_file: false
+          create_credentials_file: true
           token_format: "access_token"
           workload_identity_provider: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
+      - name: Install Cosign
+        uses: sigstore/cosign-installer@v3.5.0
       - name: "Docker login"
         id: "docker-login"
         uses: "docker/login-action@v3"
@@ -94,18 +97,24 @@ jobs:
           password: "${{ steps.openid-auth.outputs.access_token }}"
       - name: "Build and push pcapi image"
         uses: docker/build-push-action@v5
+        id: docker-push-action
         with:
           context: api
           push: true
           target: pcapi
           tags: europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry/pcapi:${{ inputs.tag_number }}
+      - name: Sign image with a kms key
+        run: cosign sign --tlog-upload=false --key gcpkms://${{ steps.secrets.outputs.COSIGN_KMS_KEY }} -a tag=${{ inputs.tag_number }} europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry/pcapi@${{ steps.docker-push-action.outputs.digest }}
       - name: "Build and push pcapi-console image"
         uses: docker/build-push-action@v5
+        id: docker-push-action-console
         with:
           context: api
           push: true
           target: pcapi-console
           tags: europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry/pcapi-console:${{ inputs.tag_number }}
+      - name: Sign image with a kms key
+        run: cosign sign --tlog-upload=false --key gcpkms://${{ steps.secrets.outputs.COSIGN_KMS_KEY }} -a tag=${{ inputs.tag_number }} europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry/pcapi-console@${{ steps.docker-push-action-console.outputs.digest }}
       - name: "Tag Release"
         run: |
           git commit -m "🚀 $TAG_NAME" -n

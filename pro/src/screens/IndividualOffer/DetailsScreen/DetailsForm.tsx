@@ -2,19 +2,24 @@ import { useFormikContext } from 'formik'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
-import { VenueListItemResponseModel } from 'apiClient/v1'
+import {
+  CategoryResponseModel,
+  SubcategoryResponseModel,
+  VenueListItemResponseModel,
+} from 'apiClient/v1'
 import { FormLayout } from 'components/FormLayout/FormLayout'
+import { OnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
 import { ImageUploaderOffer } from 'components/IndividualOfferForm/ImageUploaderOffer/ImageUploaderOffer'
 import { GET_MUSIC_TYPES_QUERY_KEY } from 'config/swrQueryKeys'
-import { useIndividualOfferContext } from 'context/IndividualOfferContext/IndividualOfferContext'
 import { showOptionsTree } from 'core/Offers/categoriesSubTypes'
+import { IndividualOfferImage } from 'core/Offers/types'
 import { DurationInput } from 'ui-kit/form/DurationInput/DurationInput'
 import { Select } from 'ui-kit/form/Select/Select'
 import { TextArea } from 'ui-kit/form/TextArea/TextArea'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
 
-import { DEFAULT_DETAILS_INTITIAL_VALUES } from './constants'
+import { DEFAULT_DETAILS_FORM_VALUES } from './constants'
 import { DetailsFormValues } from './types'
 import {
   buildCategoryOptions,
@@ -22,15 +27,28 @@ import {
   buildVenueOptions,
   buildShowSubTypeOptions,
   onSubcategoryChange,
+  onCategoryChange,
 } from './utils'
 
 type DetailsFormProps = {
-  venues: VenueListItemResponseModel[]
+  filteredVenues: VenueListItemResponseModel[]
+  filteredCategories: CategoryResponseModel[]
+  filteredSubcategories: SubcategoryResponseModel[]
+  readonlyFields: string[]
+  onImageUpload: (values: OnImageUploadArgs) => Promise<void>
+  onImageDelete: () => Promise<void>
+  imageOffer?: IndividualOfferImage
 }
 
-export const DetailsForm = ({ venues }: DetailsFormProps): JSX.Element => {
-  const { categories, subCategories } = useIndividualOfferContext()
-
+export const DetailsForm = ({
+  filteredVenues,
+  filteredCategories,
+  filteredSubcategories,
+  readonlyFields: readOnlyFields,
+  onImageUpload,
+  onImageDelete,
+  imageOffer,
+}: DetailsFormProps): JSX.Element => {
   const {
     values: {
       categoryId,
@@ -48,8 +66,11 @@ export const DetailsForm = ({ venues }: DetailsFormProps): JSX.Element => {
     { fallbackData: [] }
   )
 
-  const categoryOptions = buildCategoryOptions(categories)
-  const subcategoryOptions = buildSubcategoryOptions(subCategories, categoryId)
+  const categoryOptions = buildCategoryOptions(filteredCategories)
+  const subcategoryOptions = buildSubcategoryOptions(
+    filteredSubcategories,
+    categoryId
+  )
   const musicTypesOptions = musicTypesQuery.data.map((data) => ({
     value: data.gtl_id,
     label: data.label,
@@ -62,7 +83,7 @@ export const DetailsForm = ({ venues }: DetailsFormProps): JSX.Element => {
     .sort((a, b) => a.label.localeCompare(b.label, 'fr'))
   const showSubTypeOptions = buildShowSubTypeOptions(showType)
 
-  const venueOptions = buildVenueOptions(venues)
+  const venueOptions = buildVenueOptions(filteredVenues)
 
   // this condition exists in the original code
   // but it is not clear why it is needed
@@ -84,6 +105,7 @@ export const DetailsForm = ({ venues }: DetailsFormProps): JSX.Element => {
   const displayArtisticInformations = artisticInformationsFields.some((field) =>
     subcategoryConditionalFields.includes(field)
   )
+
   return (
     <>
       <FormLayout.Section title="A propos de votre offre">
@@ -93,6 +115,7 @@ export const DetailsForm = ({ venues }: DetailsFormProps): JSX.Element => {
             label="Titre de l’offre"
             maxLength={90}
             name="name"
+            disabled={readOnlyFields.includes('name')}
           />
         </FormLayout.Row>
         <FormLayout.Row>
@@ -102,10 +125,16 @@ export const DetailsForm = ({ venues }: DetailsFormProps): JSX.Element => {
             label="Description"
             maxLength={1000}
             name="description"
+            disabled={readOnlyFields.includes('description')}
           />
         </FormLayout.Row>
         <FormLayout.Row>
-          <Select label="Lieu" name="venueId" options={venueOptions} />
+          <Select
+            label="Lieu"
+            name="venueId"
+            options={venueOptions}
+            disabled={readOnlyFields.includes('venueId')}
+          />
         </FormLayout.Row>
       </FormLayout.Section>
 
@@ -132,11 +161,23 @@ export const DetailsForm = ({ venues }: DetailsFormProps): JSX.Element => {
             options={categoryOptions}
             defaultOption={{
               label: 'Choisir une catégorie',
-              value: DEFAULT_DETAILS_INTITIAL_VALUES.categoryId,
+              value: DEFAULT_DETAILS_FORM_VALUES.categoryId,
+            }}
+            disabled={readOnlyFields.includes('categoryId')}
+            onChange={async (event: React.ChangeEvent<HTMLSelectElement>) => {
+              await onCategoryChange({
+                categoryId: event.target.value,
+                readOnlyFields,
+                subcategories: filteredSubcategories,
+                setFieldValue,
+                onSubcategoryChange,
+                subcategoryConditionalFields,
+              })
+              handleChange(event)
             }}
           />
         </FormLayout.Row>
-        {categoryId !== DEFAULT_DETAILS_INTITIAL_VALUES.categoryId && (
+        {categoryId !== DEFAULT_DETAILS_FORM_VALUES.categoryId && (
           <FormLayout.Row>
             <Select
               label="Sous-catégorie"
@@ -144,16 +185,18 @@ export const DetailsForm = ({ venues }: DetailsFormProps): JSX.Element => {
               options={subcategoryOptions}
               defaultOption={{
                 label: 'Choisir une sous-catégorie',
-                value: DEFAULT_DETAILS_INTITIAL_VALUES.subcategoryId,
+                value: DEFAULT_DETAILS_FORM_VALUES.subcategoryId,
               }}
               onChange={async (event: React.ChangeEvent<HTMLSelectElement>) => {
                 await onSubcategoryChange({
                   newSubCategoryId: event.target.value,
-                  subCategories,
+                  subcategories: filteredSubcategories,
                   setFieldValue,
+                  subcategoryConditionalFields,
                 })
                 handleChange(event)
               }}
+              disabled={readOnlyFields.includes('subcategoryId')}
             />
           </FormLayout.Row>
         )}
@@ -165,8 +208,9 @@ export const DetailsForm = ({ venues }: DetailsFormProps): JSX.Element => {
               options={musicTypesOptions}
               defaultOption={{
                 label: 'Choisir un genre musical',
-                value: DEFAULT_DETAILS_INTITIAL_VALUES.gtl_id,
+                value: DEFAULT_DETAILS_FORM_VALUES.gtl_id,
               }}
+              disabled={readOnlyFields.includes('gtl_id')}
             />
           </FormLayout.Row>
         )}
@@ -179,8 +223,9 @@ export const DetailsForm = ({ venues }: DetailsFormProps): JSX.Element => {
                 options={showTypesOptions}
                 defaultOption={{
                   label: 'Choisir un type de spectacle',
-                  value: DEFAULT_DETAILS_INTITIAL_VALUES.showType,
+                  value: DEFAULT_DETAILS_FORM_VALUES.showType,
                 }}
+                disabled={readOnlyFields.includes('showType')}
               />
             </FormLayout.Row>
             <FormLayout.Row>
@@ -190,23 +235,20 @@ export const DetailsForm = ({ venues }: DetailsFormProps): JSX.Element => {
                 options={showSubTypeOptions}
                 defaultOption={{
                   label: 'Choisir un sous-type',
-                  value: DEFAULT_DETAILS_INTITIAL_VALUES.showSubType,
+                  value: DEFAULT_DETAILS_FORM_VALUES.showSubType,
                 }}
+                disabled={readOnlyFields.includes('showSubType')}
               />
             </FormLayout.Row>
           </>
         )}
       </FormLayout.Section>
-      {subcategoryId !== DEFAULT_DETAILS_INTITIAL_VALUES.subcategoryId && (
+      {subcategoryId !== DEFAULT_DETAILS_FORM_VALUES.subcategoryId && (
         <>
           <ImageUploaderOffer
-            onImageUpload={async () => {}}
-            onImageDelete={async () => {}}
-            imageOffer={{
-              originalUrl: '',
-              url: '',
-              credit: '',
-            }}
+            onImageUpload={onImageUpload}
+            onImageDelete={onImageDelete}
+            imageOffer={imageOffer}
           />
 
           {displayArtisticInformations && (
@@ -218,6 +260,7 @@ export const DetailsForm = ({ venues }: DetailsFormProps): JSX.Element => {
                     label="Intervenant"
                     maxLength={1000}
                     name="speaker"
+                    disabled={readOnlyFields.includes('speaker')}
                   />
                 </FormLayout.Row>
               )}
@@ -228,6 +271,7 @@ export const DetailsForm = ({ venues }: DetailsFormProps): JSX.Element => {
                     label="Auteur"
                     maxLength={1000}
                     name="author"
+                    disabled={readOnlyFields.includes('author')}
                   />
                 </FormLayout.Row>
               )}
@@ -238,6 +282,7 @@ export const DetailsForm = ({ venues }: DetailsFormProps): JSX.Element => {
                     label="Visa d’exploitation"
                     maxLength={1000}
                     name="visa"
+                    disabled={readOnlyFields.includes('visa')}
                   />
                 </FormLayout.Row>
               )}
@@ -248,6 +293,7 @@ export const DetailsForm = ({ venues }: DetailsFormProps): JSX.Element => {
                     label="Metteur en scène"
                     maxLength={1000}
                     name="stageDirector"
+                    disabled={readOnlyFields.includes('stageDirector')}
                   />
                 </FormLayout.Row>
               )}
@@ -258,6 +304,7 @@ export const DetailsForm = ({ venues }: DetailsFormProps): JSX.Element => {
                     label="Interprète"
                     maxLength={1000}
                     name="performer"
+                    disabled={readOnlyFields.includes('performer')}
                   />
                 </FormLayout.Row>
               )}
@@ -269,6 +316,7 @@ export const DetailsForm = ({ venues }: DetailsFormProps): JSX.Element => {
                     countCharacters
                     name="ean"
                     maxLength={13}
+                    disabled={readOnlyFields.includes('ean')}
                   />
                 </FormLayout.Row>
               )}
@@ -279,6 +327,7 @@ export const DetailsForm = ({ venues }: DetailsFormProps): JSX.Element => {
                     isOptional
                     label={'Durée'}
                     name="durationMinutes"
+                    disabled={readOnlyFields.includes('durationMinutes')}
                   />
                 </FormLayout.Row>
               )}

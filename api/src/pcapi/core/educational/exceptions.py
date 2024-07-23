@@ -218,3 +218,13 @@ class StartsBeforeOfferCreation(UpdateCollectiveOfferTemplateError):
 class StartAndEndEducationalYearDifferent(Exception):
     field = "dates.start"
     msg = "start and end dates in different school year"
+
+
+class StartEducationalYearMissing(Exception):
+    field = "dates.start"
+    msg = "no educational year/budget for the given start date"
+
+
+class EndEducationalYearMissing(Exception):
+    field = "dates.end"
+    msg = "no educational year/budget for the given end date"

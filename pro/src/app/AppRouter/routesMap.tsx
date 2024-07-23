@@ -54,11 +54,6 @@ export const routes: RouteConfig[] = [
     children: routesSignup,
   },
   {
-    lazy: () => import('pages/CsvTable/CsvTable'),
-    path: '/remboursements-details',
-    title: 'Gestion financière',
-  },
-  {
     lazy: () => import('pages/Errors/Unavailable/Unavailable'),
     path: UNAVAILABLE_ERROR_PAGE,
     title: 'Page indisponible',

@@ -16,6 +16,7 @@ import pcapi.core.offers.models as offers_models
 from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import finance_serialize
+from pcapi.routes.serialization.address_serialize import AddressResponseModel
 from pcapi.routes.serialization.venues_serialize import BannerMetaModel
 from pcapi.routes.serialization.venues_serialize import DMSApplicationForEAC
 import pcapi.utils.date as date_utils
@@ -400,29 +401,12 @@ class OffererAddressRequestModel(BaseModel):
     street: str
 
 
-class AddressResponseModel(BaseModel):
-    id: int
-    banId: str | None
-    inseeCode: str | None
-    postalCode: str
-    street: str | None
-    city: str
-    latitude: float
-    longitude: float
-
-    class Config:
-        orm_mode = True
-
-    @pydantic_v1.validator("latitude", "longitude")
-    def round(cls, value: float) -> float:
-        """Rounding to five digits to keep consistency
-        with the model definition.
-        """
-        return round(value, 5)
-
-
 class GetOffererAddressesResponseModel(BaseModel):
     __root__: list[GetOffererAddressResponseModel]
+
+
+class GetOffererAddressesQueryModel(BaseModel):
+    onlyWithOffers: bool = False
 
 
 class PatchOffererAddressRequest(BaseModel):

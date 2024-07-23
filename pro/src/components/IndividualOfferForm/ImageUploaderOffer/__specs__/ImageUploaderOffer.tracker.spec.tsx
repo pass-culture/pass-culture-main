@@ -12,6 +12,7 @@ import {
   individualOfferContextValuesFactory,
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import {
   ImageUploaderOffer,
@@ -47,7 +48,15 @@ const renderImageUploaderOffer = (props: ImageUploaderOfferProps) => {
           <ImageUploaderOffer {...props} />
         </Form>
       </Formik>
-    </IndividualOfferContext.Provider>
+    </IndividualOfferContext.Provider>,
+    {
+      storeOverrides: {
+        user: {
+          currentUser: sharedCurrentUserFactory(),
+          selectedOffererId: 1,
+        },
+      },
+    }
   )
 }
 
@@ -73,6 +82,7 @@ describe('ImageUploaderOffer::tracker', () => {
     )
 
     expect(mockLogEvent).toHaveBeenNthCalledWith(1, Events.CLICKED_ADD_IMAGE, {
+      offererId: '1',
       offerId: TEST_OFFER_ID,
       imageType: UploaderModeEnum.OFFER,
       isEdition: false,

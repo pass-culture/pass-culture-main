@@ -109,6 +109,7 @@ export type { GetEducationalOffererVenueResponseModel } from './models/GetEducat
 export type { GetIndividualOfferResponseModel } from './models/GetIndividualOfferResponseModel';
 export type { GetIndividualOfferWithAddressResponseModel } from './models/GetIndividualOfferWithAddressResponseModel';
 export type { GetMusicTypesResponse } from './models/GetMusicTypesResponse';
+export type { GetOffererAddressesQueryModel } from './models/GetOffererAddressesQueryModel';
 export type { GetOffererAddressesResponseModel } from './models/GetOffererAddressesResponseModel';
 export type { GetOffererAddressResponseModel } from './models/GetOffererAddressResponseModel';
 export type { GetOffererBankAccountsResponseModel } from './models/GetOffererBankAccountsResponseModel';
@@ -196,6 +197,7 @@ export type { PostCollectiveOfferBodyModel } from './models/PostCollectiveOfferB
 export type { PostCollectiveOfferTemplateBodyModel } from './models/PostCollectiveOfferTemplateBodyModel';
 export type { PostOfferBodyModel } from './models/PostOfferBodyModel';
 export type { PostOffererResponseModel } from './models/PostOffererResponseModel';
+export type { PostOfferOffererAddressBodyModel } from './models/PostOfferOffererAddressBodyModel';
 export type { PostVenueBodyModel } from './models/PostVenueBodyModel';
 export type { PostVenueProviderBody } from './models/PostVenueProviderBody';
 export type { PriceCategoryBody } from './models/PriceCategoryBody';

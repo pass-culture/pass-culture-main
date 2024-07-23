@@ -32,11 +32,9 @@ $radio-size: rem.torem(16px);
 
   &-icon {
     flex-shrink: 0;
-    size: 44px;
     width: rem.torem(44px);
     height: rem.torem(44px);
     color: var(--color-secondary-light);
-    fill: var(--color-secondary-light); // TODO: delete after all icons update
   }
 
   &:hover {
@@ -50,10 +48,9 @@ $radio-size: rem.torem(16px);
   }
 
   &.is-selected {
+    @include fonts.bold;
+
     border: $border-size-selected solid var(--color-secondary-light);
-
-    @include fonts.button;
-
     background-color: var(--color-background-secondary);
   }
 

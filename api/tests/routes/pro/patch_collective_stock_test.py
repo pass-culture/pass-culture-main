@@ -644,3 +644,97 @@ class Return400Test:
             edited_stock = CollectiveStock.query.get(stock.id)
             assert edited_stock.startDatetime == startDatetime
             assert edited_stock.endDatetime == endDatetime
+
+    @time_machine.travel("2020-11-17 15:00:00")
+    def should_not_accept_payload_with_startDatetime_with_no_educational_year(self, client):
+        # Given
+        startDatetime = datetime(2021, 12, 18)
+        endDatetime = datetime(2021, 12, 19)
+
+        stock = educational_factories.CollectiveStockFactory(
+            beginningDatetime=datetime(2021, 12, 18),
+            startDatetime=startDatetime,
+            endDatetime=endDatetime,
+            price=1200,
+            numberOfTickets=32,
+            bookingLimitDatetime=datetime(2021, 12, 1),
+        )
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=stock.collectiveOffer.venue.managingOfferer,
+        )
+
+        # When
+        stock_edition_payload = {
+            "endDatetime": "2022-12-19T22:00:00Z",
+        }
+
+        client.with_session_auth("user@example.com")
+
+        stock_id = stock.id
+
+        with assert_num_queries(6):
+            # query += 1 -> load session
+            # query += 1 -> load user
+            # query += 1 -> load existing stock
+            # query += 1 -> ensure the offerer is VALIDATED
+            # query += 1 -> check the number of existing stock for the offer id
+            # query += 1 -> find education year for start date
+
+            response = client.patch(f"/collective/stocks/{stock_id}", json=stock_edition_payload)
+
+            # Then
+            assert response.status_code == 400
+            assert response.json == {"code": "START_EDUCATIONAL_YEAR_MISSING"}
+            edited_stock = CollectiveStock.query.get(stock.id)
+            assert edited_stock.startDatetime == startDatetime
+            assert edited_stock.endDatetime == endDatetime
+
+    @time_machine.travel("2020-11-17 15:00:00")
+    def should_not_accept_payload_with_endDatetime_with_no_educational_year(self, client):
+        # Given
+        educational_factories.EducationalYearFactory(
+            beginningDate="2021-09-01T22:00:00Z", expirationDate="2022-07-31T22:00:00Z"
+        )
+        startDatetime = datetime(2021, 12, 18)
+        endDatetime = datetime(2022, 12, 19)
+
+        stock = educational_factories.CollectiveStockFactory(
+            beginningDatetime=datetime(2021, 12, 18),
+            startDatetime=startDatetime,
+            endDatetime=endDatetime,
+            price=1200,
+            numberOfTickets=32,
+            bookingLimitDatetime=datetime(2021, 12, 1),
+        )
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=stock.collectiveOffer.venue.managingOfferer,
+        )
+
+        # When
+        stock_edition_payload = {
+            "endDatetime": "2022-12-19T22:00:00Z",
+        }
+
+        client.with_session_auth("user@example.com")
+
+        stock_id = stock.id
+
+        with assert_num_queries(7):
+            # query += 1 -> load session
+            # query += 1 -> load user
+            # query += 1 -> load existing stock
+            # query += 1 -> ensure the offerer is VALIDATED
+            # query += 1 -> check the number of existing stock for the offer id
+            # query += 1 -> find education year for start date
+            # query += 1 -> find education year for end date
+
+            response = client.patch(f"/collective/stocks/{stock_id}", json=stock_edition_payload)
+
+            # Then
+            assert response.status_code == 400
+            assert response.json == {"code": "END_EDUCATIONAL_YEAR_MISSING"}
+            edited_stock = CollectiveStock.query.get(stock.id)
+            assert edited_stock.startDatetime == startDatetime
+            assert edited_stock.endDatetime == endDatetime

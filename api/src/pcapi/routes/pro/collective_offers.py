@@ -10,6 +10,7 @@ from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import repository as educational_repository
 from pcapi.core.educational.api import adage as educational_api_adage
 from pcapi.core.educational.api import offer as educational_api_offer
+from pcapi.core.educational.exceptions import CollectiveOfferNotCancellable
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offers import api as offers_api
@@ -26,7 +27,6 @@ from pcapi.utils.rest import check_user_has_access_to_offerer
 from pcapi.workers.update_all_offers_active_status_job import update_all_collective_offers_active_status_job
 
 from . import blueprint
-from ...core.educational.exceptions import CollectiveOfferNotCancellable
 
 
 logger = logging.getLogger(__name__)

@@ -1,14 +1,13 @@
 /* istanbul ignore file: DEBT, TO FIX */
 import { PostOfferBodyModel } from 'apiClient/v1'
 import { IndividualOfferFormValues } from 'components/IndividualOfferForm/types'
-import { OfferExtraData } from 'core/Offers/types'
 import { AccessibilityEnum } from 'core/shared/types'
 
 /* istanbul ignore next: DEBT, TO FIX */
 const serializeExtraData = (
   formValues: IndividualOfferFormValues
-): OfferExtraData => {
-  const extraData: OfferExtraData = {}
+): PostOfferBodyModel['extraData'] => {
+  const extraData: PostOfferBodyModel['extraData'] = {}
   if (formValues.author) {
     extraData.author = formValues.author
   }

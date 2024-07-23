@@ -24,6 +24,7 @@ from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.bookings.factories import CancelledBookingFactory
 from pcapi.core.bookings.models import BookingStatus
 import pcapi.core.finance.api as finance_api
+import pcapi.core.finance.models as finance_models
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.fraud.ubble import models as ubble_fraud_models
@@ -108,6 +109,9 @@ class AccountTest:
             validatedBirthDate=datetime(2000, 1, 11),
             **USER_DATA,
         )
+        users_factories.DepositGrantFactory(
+            user=user, type=finance_models.DepositType.GRANT_15_17, dateCreated=datetime(2015, 2, 3)
+        )
 
         booking = BookingFactory(user=user, amount=Decimal("123.45"))
         CancelledBookingFactory(user=user, amount=Decimal("123.45"))
@@ -131,6 +135,7 @@ class AccountTest:
             "birthDate": "2000-01-11",
             "depositType": "GRANT_18",
             "depositActivationDate": "2018-06-01T00:00:00Z",
+            "firstDepositActivationDate": "2015-02-03T00:00:00Z",
             "depositExpirationDate": "2040-01-01T00:00:00Z",
             "eligibility": "age-18",
             "eligibilityEndDatetime": "2019-01-11T11:00:00Z",
@@ -152,7 +157,6 @@ class AccountTest:
         EXPECTED_DATA.update(USER_DATA)
 
         assert response.json == EXPECTED_DATA
-        assert user.dateOfBirth == datetime(2000, 1, 1)
 
     def test_status_contains_subscription_status_when_eligible(self, client):
         user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=18))
@@ -1732,7 +1736,7 @@ class ShowEligibleCardTest:
         date_of_birth = datetime.utcnow() - relativedelta(years=age, days=5)
         date_of_creation = datetime.utcnow() - relativedelta(years=4)
         user = users_factories.UserFactory(dateOfBirth=date_of_birth, dateCreated=date_of_creation)
-        assert account_serializers.UserProfileResponse._show_eligible_card(user) == expected
+        assert account_serializers.UserProfileResponse.from_orm(user).show_eligible_card == expected
 
     @pytest.mark.parametrize("beneficiary,expected", [(False, True), (True, False)])
     def test_against_beneficiary(self, beneficiary, expected):
@@ -1744,13 +1748,13 @@ class ShowEligibleCardTest:
             dateCreated=date_of_creation,
             roles=roles,
         )
-        assert account_serializers.UserProfileResponse._show_eligible_card(user) == expected
+        assert account_serializers.UserProfileResponse.from_orm(user).show_eligible_card == expected
 
     def test_user_eligible_but_created_after_18(self):
         date_of_birth = datetime.utcnow() - relativedelta(years=18, days=5)
         date_of_creation = datetime.utcnow()
         user = users_factories.UserFactory(dateOfBirth=date_of_birth, dateCreated=date_of_creation)
-        assert account_serializers.UserProfileResponse._show_eligible_card(user) is False
+        assert account_serializers.UserProfileResponse.from_orm(user).show_eligible_card is False
 
 
 class SendPhoneValidationCodeTest:

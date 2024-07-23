@@ -1,6 +1,6 @@
 import cx from 'classnames'
 import { useField, useFormikContext } from 'formik'
-import React, { KeyboardEventHandler, useEffect, useRef, useState } from 'react'
+import { KeyboardEventHandler, useEffect, useRef, useState } from 'react'
 
 import { SelectOption } from 'custom_types/form'
 import { getLabelString } from 'utils/getLabelString'
@@ -75,6 +75,7 @@ export const SelectAutocomplete = ({
   >({})
   const containerRef = useRef<HTMLDivElement>(null)
   const listRef = useRef<HTMLUListElement>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
   const [isOpen, setIsOpen] = useState(false)
   const [filteredOptions, setFilteredOptions] = useState(options)
 
@@ -100,7 +101,6 @@ export const SelectAutocomplete = ({
     )
   }, [options])
 
-  /* istanbul ignore next */
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent): void => {
       if (!containerRef.current?.contains(e.target as Node)) {
@@ -125,42 +125,46 @@ export const SelectAutocomplete = ({
     setFilteredOptions(searchInOptions(options, searchField.value))
   }, [searchField.value, options])
 
-  /* istanbul ignore next: DEBT TO FIX */
   const handleKeyDown: KeyboardEventHandler<HTMLDivElement> = async (event) => {
-    /* istanbul ignore next */
     switch (event.key) {
       case 'ArrowUp':
         if (hoveredOptionIndex !== null) {
           if (hoveredOptionIndex <= 0) {
             setHoveredOptionIndex(null)
           } else {
-            setHoveredOptionIndex(hoveredOptionIndex - 1)
+            //  Activate and scroll to the previous element in the list
+            const newIndex = hoveredOptionIndex - 1
+            setHoveredOptionIndex(newIndex)
+            const nextHoveredElement =
+              listRef.current?.getElementsByTagName('li')[newIndex]
+            nextHoveredElement?.scrollIntoView({ block: 'nearest' })
           }
         }
         if (!isOpen) {
           setIsOpen(true)
         }
-        listRef.current?.focus()
         break
       case 'ArrowDown':
         if (hoveredOptionIndex === null) {
           if (filteredOptions.length > 0) {
             setHoveredOptionIndex(0)
           }
-        } else if (hoveredOptionIndex >= filteredOptions.length - 1) {
-          setHoveredOptionIndex(filteredOptions.length - 1)
         } else {
-          setHoveredOptionIndex(hoveredOptionIndex + 1)
+          //  Activate and scroll to the next element in the list
+          const newIndex = Math.min(
+            filteredOptions.length - 1,
+            hoveredOptionIndex + 1
+          )
+          setHoveredOptionIndex(newIndex)
+          const nextHoveredElement =
+            listRef.current?.getElementsByTagName('li')[newIndex]
+          nextHoveredElement?.scrollIntoView({ block: 'nearest' })
         }
         if (!isOpen) {
           setIsOpen(true)
         }
-        listRef.current?.focus()
         break
-      case 'Space':
-        await openField()
-        listRef.current?.focus()
-        break
+      case ' ': //  Space key
       case 'Enter':
         if (isOpen && hoveredOptionIndex !== null) {
           event.preventDefault()
@@ -168,6 +172,7 @@ export const SelectAutocomplete = ({
         }
         break
       case 'Escape':
+        inputRef.current?.focus()
         setHoveredOptionIndex(null)
         setIsOpen(false)
         break
@@ -176,7 +181,6 @@ export const SelectAutocomplete = ({
         setIsOpen(false)
         break
       default:
-        //
         break
     }
   }
@@ -203,7 +207,6 @@ export const SelectAutocomplete = ({
   }
 
   const openField = async () => {
-    /* istanbul ignore next */
     if (!isOpen) {
       setIsOpen(true)
     }
@@ -266,6 +269,7 @@ export const SelectAutocomplete = ({
           aria-required={!isOptional}
           role="combobox"
           leftIcon={leftIcon}
+          ref={inputRef}
         />
         <div
           aria-live="polite"

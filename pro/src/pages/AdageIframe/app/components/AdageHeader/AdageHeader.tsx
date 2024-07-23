@@ -51,7 +51,7 @@ export const AdageHeader = () => {
         <div className={styles['adage-header-nav-brand']}>
           <SvgIcon
             src={logoPassCultureIcon}
-            alt="Logo du pass Culture"
+            alt="pass Culture"
             width="109"
             viewBox="0 0 71 24"
           />

@@ -47,7 +47,9 @@ When('I validate stocks step', () => {
   cy.intercept({ method: 'POST', url: '/stocks/bulk' }).as('postStocks')
   cy.intercept({ method: 'GET', url: '/offers/*' }).as('getOffer')
   cy.findByText('Enregistrer et continuer').click()
-  cy.wait(['@patchOffer', '@postStocks', '@getOffer'])
+  cy.wait(['@patchOffer', '@postStocks', '@getOffer'], {
+    requestTimeout: 30 * 1000,
+  })
 })
 
 Then('my new physical offer should be displayed', () => {

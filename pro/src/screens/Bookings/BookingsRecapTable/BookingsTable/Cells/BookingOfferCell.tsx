@@ -1,6 +1,5 @@
 import cn from 'classnames'
 import { format } from 'date-fns-tz'
-import React from 'react'
 
 import {
   BookingRecapResponseModel,
@@ -13,7 +12,7 @@ import {
   getDate,
   getRemainingTime,
   shouldDisplayWarning,
-} from 'pages/Offers/Offers/OfferItem/Cells/OfferNameCell/utils'
+} from 'pages/Offers/OffersTable/Cells/OfferNameCell/utils'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { FORMAT_DD_MM_YYYY_HH_mm, toDateStrippedOfTimezone } from 'utils/date'
 import { formatPrice } from 'utils/formatPrice'

@@ -33,11 +33,6 @@
     cursor: pointer;
   }
 
-  label:hover,
-  label:focus-within {
-    background-color: var(--color-grey-light);
-  }
-
   .option-hovered {
     background: var(--color-grey-light);
   }

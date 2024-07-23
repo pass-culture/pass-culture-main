@@ -96,12 +96,12 @@ $info-box-margin-left: rem.torem(24px);
   }
 
   &-action {
+    margin-left: rem.torem(24px);
+    text-align: center;
+
     @media (min-width: size.$tablet) {
       min-width: rem.torem(192px);
     }
-
-    margin-left: rem.torem(24px);
-    text-align: center;
 
     &:first-child {
       margin-left: 0;
@@ -134,7 +134,7 @@ $info-box-margin-left: rem.torem(24px);
   color: var(--color-grey-dark);
 }
 
-@media (min-width: size.$tablet) {
+@media (min-width: size.$laptop) {
   .form-layout {
     &-row.inline-group {
       flex-wrap: unset;

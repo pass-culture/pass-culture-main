@@ -7,7 +7,6 @@ import typing
 
 from flask_sqlalchemy import BaseQuery
 import sqlalchemy as sa
-from sqlalchemy import desc
 import sqlalchemy.orm as sa_orm
 from sqlalchemy.sql.expression import extract
 
@@ -514,7 +513,7 @@ def get_collective_offers_for_filters(
         formats=formats,
     )
 
-    query = query.order_by(desc(educational_models.CollectiveOffer.id))
+    query = query.order_by(educational_models.CollectiveOffer.id.desc())
     offers = (
         query.options(
             sa.orm.joinedload(educational_models.CollectiveOffer.venue).joinedload(

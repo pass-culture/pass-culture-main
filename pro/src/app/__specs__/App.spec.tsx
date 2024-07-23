@@ -8,8 +8,8 @@ import * as useAnalytics from 'app/App/analytics/firebase'
 import * as orejime from 'app/App/analytics/orejime'
 import { GET_OFFER_QUERY_KEY } from 'config/swrQueryKeys'
 import {
-  RenderWithProvidersOptions,
   renderWithProviders,
+  RenderWithProvidersOptions,
 } from 'utils/renderWithProviders'
 import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
@@ -17,6 +17,9 @@ import { App } from '../App/App'
 
 vi.mock('app/App/analytics/firebase', () => ({ useFirebase: vi.fn() }))
 vi.mock('app/App/hook/useLogNavigation', () => ({ useLogNavigation: vi.fn() }))
+vi.mock('app/App/hook/useLogExtraProData', () => ({
+  useLogExtraProData: vi.fn(),
+}))
 vi.mock('app/App/hook/usePageTitle', () => ({ usePageTitle: vi.fn() }))
 vi.mock('@sentry/browser', () => ({ setUser: vi.fn() }))
 

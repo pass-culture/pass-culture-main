@@ -22,7 +22,8 @@ export const SignupConfirmation = () => (
             href: 'mailto:support-pro@passculture.app',
             isExternal: true,
             icon: { src: fullMailIcon, alt: 'Nouvelle fenêtre, par email' },
-            label: 'Contacter le support',
+            label:
+              'Contacter notre support par mail à support-pro@passculture.app',
           },
         ]}
       >

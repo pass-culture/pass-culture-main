@@ -26,8 +26,10 @@ def similar_offers(
             user,
             params=query.dict(),
         )
+    except recommendation_api.RecommendationApiTimeoutException:
+        raise ApiErrors({"code": "RECOMMENDATION_API_TIMEOUT"}, status_code=504)
     except recommendation_api.RecommendationApiException:
-        raise ApiErrors({"code": "RECOMMENDATION_API_ERROR"}, status_code=400)
+        raise ApiErrors({"code": "RECOMMENDATION_API_ERROR"}, status_code=502)
     if not raw_response:
         return serializers.SimilarOffersResponse(results=[], params=serializers.RecommendationApiParams())
     return serializers.SimilarOffersResponse.parse_raw(raw_response, content_type="application/json")
@@ -47,8 +49,10 @@ def playlist(
             params=query.dict(),
             body=body.dict(),
         )
+    except recommendation_api.RecommendationApiTimeoutException:
+        raise ApiErrors({"code": "RECOMMENDATION_API_TIMEOUT"}, status_code=504)
     except recommendation_api.RecommendationApiException:
-        raise ApiErrors({"code": "RECOMMENDATION_API_ERROR"}, status_code=400)
+        raise ApiErrors({"code": "RECOMMENDATION_API_ERROR"}, status_code=502)
 
     if not raw_response:
         return serializers.PlaylistResponse(

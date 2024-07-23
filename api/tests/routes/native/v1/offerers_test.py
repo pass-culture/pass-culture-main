@@ -180,3 +180,11 @@ class VenuesTest:
             assert response.status_code == 200
 
         assert response.json["bannerUrl"] is not None
+
+    def test_venue_supports_phone_numbers(self, client):
+        invalid_phone_number = "+33594282769"  # invalid phone number from real data
+        venue = offerer_factories.VenueFactory(
+            venueTypeCode=VenueTypeCode.BOOKSTORE, contact__phone_number=invalid_phone_number
+        )
+        response = client.get(f"/native/v1/venue/{venue.id}")
+        assert response.status_code == 200

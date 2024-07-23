@@ -124,7 +124,7 @@ describe('IndivualOfferLayout', () => {
 
   it('should display provider banner', () => {
     const offer = getIndividualOfferFactory({
-      lastProvider: { name: 'boost' },
+      lastProvider: { name: 'Boost' },
     })
 
     renderIndivualOfferLayout({
@@ -151,31 +151,25 @@ describe('IndivualOfferLayout', () => {
   it('should display publication date when it is in the future', () => {
     const future = addDays(new Date(), 3)
 
-    renderIndivualOfferLayout(
-      {
-        offer: getIndividualOfferFactory({
-          publicationDate: future.toISOString(),
-          status: OfferStatus.INACTIVE,
-        }),
-        mode: OFFER_WIZARD_MODE.READ_ONLY,
-      },
-      { features: ['WIP_FUTURE_OFFER'] }
-    )
+    renderIndivualOfferLayout({
+      offer: getIndividualOfferFactory({
+        publicationDate: future.toISOString(),
+        status: OfferStatus.INACTIVE,
+      }),
+      mode: OFFER_WIZARD_MODE.READ_ONLY,
+    })
 
     expect(screen.getByText(/Publication prévue le/)).toBeInTheDocument()
   })
 
   it('should not display publication date when it is passed', () => {
-    renderIndivualOfferLayout(
-      {
-        offer: getIndividualOfferFactory({
-          publicationDate: '2021-01-01T00:00:00.000Z',
-          status: OfferStatus.INACTIVE,
-        }),
-        mode: OFFER_WIZARD_MODE.READ_ONLY,
-      },
-      { features: ['WIP_FUTURE_OFFER'] }
-    )
+    renderIndivualOfferLayout({
+      offer: getIndividualOfferFactory({
+        publicationDate: '2021-01-01T00:00:00.000Z',
+        status: OfferStatus.INACTIVE,
+      }),
+      mode: OFFER_WIZARD_MODE.READ_ONLY,
+    })
 
     expect(screen.queryByText(/Publication prévue le/)).not.toBeInTheDocument()
   })
@@ -183,16 +177,13 @@ describe('IndivualOfferLayout', () => {
   it('should not display publication date in creation', () => {
     const future = addDays(new Date(), 3)
 
-    renderIndivualOfferLayout(
-      {
-        offer: getIndividualOfferFactory({
-          publicationDate: future.toISOString(),
-          status: OfferStatus.INACTIVE,
-        }),
-        mode: OFFER_WIZARD_MODE.CREATION,
-      },
-      { features: ['WIP_FUTURE_OFFER'] }
-    )
+    renderIndivualOfferLayout({
+      offer: getIndividualOfferFactory({
+        publicationDate: future.toISOString(),
+        status: OfferStatus.INACTIVE,
+      }),
+      mode: OFFER_WIZARD_MODE.CREATION,
+    })
 
     expect(screen.queryByText(/Publication prévue le/)).not.toBeInTheDocument()
   })
@@ -200,15 +191,12 @@ describe('IndivualOfferLayout', () => {
   it('should not display publication date if offer is published', () => {
     const future = addDays(new Date(), 3)
 
-    renderIndivualOfferLayout(
-      {
-        offer: getIndividualOfferFactory({
-          publicationDate: future.toISOString(),
-          status: OfferStatus.ACTIVE,
-        }),
-      },
-      { features: ['WIP_FUTURE_OFFER'] }
-    )
+    renderIndivualOfferLayout({
+      offer: getIndividualOfferFactory({
+        publicationDate: future.toISOString(),
+        status: OfferStatus.ACTIVE,
+      }),
+    })
 
     expect(screen.queryByText(/Publication prévue le/)).not.toBeInTheDocument()
   })

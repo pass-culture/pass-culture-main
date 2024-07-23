@@ -99,6 +99,13 @@ module.exports = {
     '@typescript-eslint/no-floating-promises': 'error',
     '@typescript-eslint/no-unnecessary-condition': 'error',
     'react/self-closing-comp': ['error', { component: true, html: true }],
+    '@typescript-eslint/naming-convention': [
+      'error',
+      {
+        selector: 'typeAlias',
+        format: ['PascalCase'],
+      },
+    ],
 
     'react-hooks/exhaustive-deps': 'warn', // TODO turn into error
   },

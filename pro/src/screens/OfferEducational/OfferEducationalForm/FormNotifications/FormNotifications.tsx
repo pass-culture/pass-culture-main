@@ -1,5 +1,4 @@
 import { FieldArray, useFormikContext } from 'formik'
-import React from 'react'
 
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OfferEducationalFormValues } from 'core/OfferEducational/types'
@@ -24,7 +23,7 @@ export const FormNotifications = ({
       <FieldArray name="notificationEmails">
         {({ remove, push }) => (
           <>
-            {values.notificationEmails.map((_, index) => (
+            {values.notificationEmails.map((email, index, self) => (
               <EmailInputRow
                 disableForm={disableForm}
                 displayTrash={index > 0}
@@ -33,12 +32,20 @@ export const FormNotifications = ({
                 onDelete={() => {
                   remove(index)
                 }}
+                //  The field should autoFocus only if it's the last of the emails list (the one being just added)
+                //  if the list has more than one emails (the first one is always there and cannot appear)
+                //  and if that last email is empty (otherwise it would focus the last email in an edition form with more than one email)
+                autoFocus={
+                  self.length - 1 === index && self.length > 1 && email === ''
+                }
               />
             ))}
             <Button
               variant={ButtonVariant.TERNARY}
               icon={fullMoreIcon}
-              onClick={() => push('')}
+              onClick={() => {
+                push('')
+              }}
               disabled={values.notificationEmails.length >= 5}
               className={styles['add-notification-button']}
             >

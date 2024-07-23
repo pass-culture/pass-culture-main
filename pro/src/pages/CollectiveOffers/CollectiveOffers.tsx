@@ -133,7 +133,7 @@ export const CollectiveOffers = (): JSX.Element => {
           initialSearchFilters={apiFilters}
           isLoading={offersQuery.isLoading}
           offerer={offerer}
-          offers={offersQuery.data}
+          collectiveOffers={offersQuery.data}
           redirectWithUrlFilters={redirectWithUrlFilters}
           urlSearchFilters={urlSearchFilters}
           venues={venues}

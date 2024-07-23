@@ -1,5 +1,4 @@
 from collections import defaultdict
-from copy import deepcopy
 from functools import wraps
 import logging
 from typing import Any
@@ -137,8 +136,6 @@ def spectree_serialize(
         else:
             spectree_response = SpectreeResponse(**response_codes)
 
-        security = deepcopy(getattr(route, "requires_authentication", None))
-
         @wraps(route)
         @api.validate(
             after=after,
@@ -150,7 +147,6 @@ def spectree_serialize(
             json=body_in_kwargs,
             query=query_in_kwargs,
             resp=spectree_response,
-            security=security,
             tags=tags,
         )
         def sync_validate(*args: Any, **kwargs: Any) -> Response:

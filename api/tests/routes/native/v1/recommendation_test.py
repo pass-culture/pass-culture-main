@@ -56,14 +56,28 @@ class SimilarOffersTest:
         RECOMMENDATION_BACKEND="pcapi.connectors.recommendation.HttpBackend",
         RECOMMENDATION_API_URL="https://example.com/recommendation/",
     )
-    def test_failure(self, requests_mock, client):
+    def test_timeout_error(self, requests_mock, client):
         requests_mock.get(
             "https://example.com/recommendation/similar_offers/2",
             exc=requests.exceptions.ConnectTimeout("a timeout error"),
         )
         with testing.assert_num_queries(0):
             response = client.get("/native/v1/recommendation/similar_offers/2")
-            assert response.status_code == 400
+            assert response.status_code == 504
+        assert response.json == {"code": "RECOMMENDATION_API_TIMEOUT"}
+
+    @testing.override_settings(
+        RECOMMENDATION_BACKEND="pcapi.connectors.recommendation.HttpBackend",
+        RECOMMENDATION_API_URL="https://example.com/recommendation/",
+    )
+    def test_generic_error(self, requests_mock, client):
+        requests_mock.get(
+            "https://example.com/recommendation/similar_offers/2",
+            exc=requests.exceptions.TooManyRedirects("a redirect error"),
+        )
+        with testing.assert_num_queries(0):
+            response = client.get("/native/v1/recommendation/similar_offers/2")
+            assert response.status_code == 502
         assert response.json == {"code": "RECOMMENDATION_API_ERROR"}
 
 
@@ -107,7 +121,7 @@ class PlaylistTest:
         RECOMMENDATION_BACKEND="pcapi.connectors.recommendation.HttpBackend",
         RECOMMENDATION_API_URL="https://example.com/recommendation/",
     )
-    def test_failure(self, requests_mock, client, db_session):
+    def test_timeout_error(self, requests_mock, client, db_session):
         user = users_factories.UserFactory(id=3)
         requests_mock.post(
             "https://example.com/recommendation/playlist_recommendation/3",
@@ -118,6 +132,25 @@ class PlaylistTest:
         # User authentication
         with testing.assert_num_queries(1):
             response = client.post("/native/v1/recommendation/playlist")
-            assert response.status_code == 400
+            assert response.status_code == 504
+
+        assert response.json == {"code": "RECOMMENDATION_API_TIMEOUT"}
+
+    @testing.override_settings(
+        RECOMMENDATION_BACKEND="pcapi.connectors.recommendation.HttpBackend",
+        RECOMMENDATION_API_URL="https://example.com/recommendation/",
+    )
+    def test_generic_error(self, requests_mock, client, db_session):
+        user = users_factories.UserFactory(id=3)
+        requests_mock.post(
+            "https://example.com/recommendation/playlist_recommendation/3",
+            exc=requests.exceptions.TooManyRedirects("a redirect error"),
+        )
+
+        client = client.with_token(user.email)
+        # User authentication
+        with testing.assert_num_queries(1):
+            response = client.post("/native/v1/recommendation/playlist")
+            assert response.status_code == 502
 
         assert response.json == {"code": "RECOMMENDATION_API_ERROR"}

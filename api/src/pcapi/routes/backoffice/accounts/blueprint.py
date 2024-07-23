@@ -45,13 +45,10 @@ from pcapi.models.beneficiary_import import BeneficiaryImport
 from pcapi.models.beneficiary_import_status import BeneficiaryImportStatus
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import atomic
-from pcapi.repository import on_commit
 from pcapi.routes.backoffice import search_utils
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.users import forms as user_forms
-from pcapi.tasks.gdpr_tasks import extract_beneficiary_data
-from pcapi.tasks.serialization import gdpr_tasks
 from pcapi.utils import email as email_utils
 
 from . import forms as account_forms
@@ -1279,13 +1276,6 @@ def create_extract_user_gdpr_data(user_id: int) -> utils.BackofficeResponse:
     )
     db.session.add(gdpr_data)
     db.session.flush()
-
-    on_commit(
-        partial(
-            extract_beneficiary_data.delay,
-            payload=gdpr_tasks.ExtractBeneficiaryDataRequest(extract_id=gdpr_data.id),
-        )
-    )
     flash(f"L'extraction des données de l'utilisateur {user.full_name} a été demandée.", "success")
 
     return redirect(url_for(".get_public_account", user_id=user_id))

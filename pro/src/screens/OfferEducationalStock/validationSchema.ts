@@ -76,7 +76,8 @@ export const generateValidationSchema = (
             .test({
               message: 'Les dates doivent être sur la même année scolaire',
               test: (value, context) =>
-                value < getMaxEndDateInSchoolYear(context.parent.startDatetime),
+                value <=
+                getMaxEndDateInSchoolYear(context.parent.startDatetime),
             }),
       }),
     eventTime: yup

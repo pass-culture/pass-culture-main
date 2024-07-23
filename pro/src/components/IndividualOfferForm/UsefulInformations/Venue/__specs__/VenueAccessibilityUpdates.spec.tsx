@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Formik } from 'formik'
 import React from 'react'
@@ -14,6 +14,10 @@ import {
   getOffererNameFactory,
   venueListItemFactory,
 } from 'utils/individualApiFactories'
+import {
+  renderWithProviders,
+  RenderWithProvidersOptions,
+} from 'utils/renderWithProviders'
 
 import { Venue, VenueProps } from '../Venue'
 
@@ -27,12 +31,14 @@ const renderVenue = ({
   initialValues,
   onSubmit = vi.fn(),
   venueProps,
+  options,
 }: {
   initialValues: InitialValues
   onSubmit: () => void
   venueProps: VenueProps
+  options?: RenderWithProvidersOptions
 }) => {
-  const rtlReturn = render(
+  const rtlReturn = renderWithProviders(
     <Formik
       initialValues={initialValues}
       onSubmit={onSubmit}
@@ -42,7 +48,8 @@ const renderVenue = ({
         <Venue {...venueProps} />
         <Accessibility />
       </>
-    </Formik>
+    </Formik>,
+    options
   )
 
   const selectVenue = screen.getByLabelText('Lieu *')

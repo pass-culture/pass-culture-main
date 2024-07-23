@@ -1,4 +1,5 @@
 import cn from 'classnames'
+import { useSelector } from 'react-redux'
 import { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
@@ -27,7 +28,8 @@ import { useNotification } from 'hooks/useNotification'
 import fullHideIcon from 'icons/full-hide.svg'
 import fullNextIcon from 'icons/full-next.svg'
 import strokeCheckIcon from 'icons/stroke-check.svg'
-import { getCollectiveStatusLabel } from 'pages/Offers/Offers/OfferItem/Cells/CollectiveOfferStatusCell/CollectiveOfferStatusCell'
+import { getCollectiveStatusLabel } from 'pages/Offers/OffersTable/Cells/CollectiveOfferStatusCell/CollectiveOfferStatusCell'
+import { selectCurrentOffererId } from 'store/user/selectors'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
@@ -56,6 +58,7 @@ export const OfferEducationalActions = ({
 }: OfferEducationalActionsProps): JSX.Element => {
   const { logEvent } = useAnalytics()
   const notify = useNotification()
+  const selectedOffererId = useSelector(selectCurrentOffererId)
   const lastBookingId = isCollectiveOffer(offer) ? offer.lastBookingId : null
   const lastBookingStatus = isCollectiveOffer(offer)
     ? offer.lastBookingStatus
@@ -186,6 +189,7 @@ export const OfferEducationalActions = ({
                     from: '/offre/collectif/recapitulatif',
                     offerId: offer.id,
                     offerType: 'collective',
+                    offererId: selectedOffererId?.toString(),
                   }
                 )
               }

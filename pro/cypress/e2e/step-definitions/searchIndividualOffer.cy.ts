@@ -14,6 +14,7 @@ When('I select offerer {string} in offer page', (offererName: string) => {
   cy.findByText(/Changer de structure/).click()
   cy.findByTestId('offerers-selection-menu').findByText(offererName).click()
   cy.wait('@getOffererId')
+  cy.findByTestId('header-dropdown-menu-div').should('not.exist')
   cy.findAllByTestId('spinner').should('not.exist')
 })
 

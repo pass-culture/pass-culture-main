@@ -118,6 +118,8 @@ USE_FAST_AND_INSECURE_PASSWORD_HASHING_ALGORITHM = bool(
     int(os.environ.get("USE_FAST_AND_INSECURE_PASSWORD_HASHING_ALGORITHM", False))
 )
 ENABLE_IMPORT_TEST_USERS = bool(int(os.environ.get("ENABLE_IMPORT_TEST_USERS", 1)))
+# Time (in seconds) before we suggest to a user to react to an offer. Default is 24 hours.
+SUGGEST_REACTION_COOLDOWN_IN_SECONDS = int(os.environ.get("SUGGEST_REACTION_COOLDOWN_IN_SECONDS", 24 * 3600))
 
 
 # MAIL
@@ -382,7 +384,6 @@ GOOGLE_DRIVE_SERVICE_ACCOUNT_INFO = os.environ.get("GOOGLE_DRIVE_SERVICE_ACCOUNT
 GOOGLE_BIG_QUERY_BACKEND = os.environ.get("GOOGLE_BIG_QUERY_BACKEND")
 GCP_GDPR_EXTRACT_BUCKET = os.environ.get("GCP_GDPR_EXTRACT_BUCKET", "gdpr-extract-bucket")
 GCP_GDPR_EXTRACT_FOLDER = os.environ.get("GCP_GDPR_EXTRACT_FOLDER", "gdpr-extract-folder")
-GCP_GDPR_EXTRACT_QUEUE = os.environ.get("GCP_GDPR_EXTRACT_QUEUE", "gdpr-extract-queue")
 
 # Backoffice Google SSO
 GOOGLE_CLIENT_ID = secrets_utils.get("GOOGLE_CLIENT_ID")
@@ -561,6 +562,11 @@ RECOMMENDATION_BACKEND = os.environ.get("RECOMMENDATION_BACKEND", "pcapi.connect
 RECOMMENDATION_API_AUTHENTICATION_TOKEN = os.environ.get("RECOMMENDATION_API_AUTHENTICATION_TOKEN", "")
 RECOMMENDATION_API_URL = os.environ.get("RECOMMENDATION_API_URL", "")
 
+
+# SUBCATEGORY SUGGESTION API
+SUBCATEGORY_SUGGESTION_API_URL = "https://compliance.passculture.team/latest/model/categorisation"
+
+
 # PRO TESTS
 MAKE_PROS_BENEFICIARIES_IN_APP = bool(int(os.environ.get("MAKE_PROS_BENEFICIARIES_IN_APP", 0)))
 
@@ -570,3 +576,7 @@ VIRUSTOTAL_API_KEY = secrets_utils.get("VIRUSTOTAL_API_KEY")
 
 # DB STATS CSV EXPORT TO DRIVE
 PG_STAT_FOLDER_ID = secrets_utils.get("PG_STAT_FOLDER_ID", "")
+
+# GDPR configuration
+GDPR_MAX_EXTRACT_PER_DAY = int(os.environ.get("GDPR_MAX_EXTRACT_PER_DAY", "10"))
+GDPR_LOCK_TIMEOUT = int(os.environ.get("GDPR_LOCK_TIMEOUT", "900"))

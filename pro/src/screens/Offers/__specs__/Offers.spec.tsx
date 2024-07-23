@@ -92,6 +92,7 @@ vi.mock('apiClient/api', () => ({
   api: {
     listOfferersNames: vi.fn().mockReturnValue({}),
     patchAllCollectiveOffersActiveStatus: vi.fn(),
+    deleteDraftOffers: vi.fn(),
   },
 }))
 
@@ -102,6 +103,7 @@ describe('screen Offers', () => {
 
   const mockNotifyError = vi.fn()
   const mockNotifyPending = vi.fn()
+  const mockNotifySuccess = vi.fn()
   beforeEach(async () => {
     currentUser = sharedCurrentUserFactory({
       isAdmin: false,
@@ -114,7 +116,7 @@ describe('screen Offers', () => {
       currentUser,
       isLoading: false,
       offerer: { ...defaultGetOffererResponseModel },
-      offers: offersRecap,
+      individualOffers: offersRecap,
       urlSearchFilters: DEFAULT_SEARCH_FILTERS,
       initialSearchFilters: DEFAULT_SEARCH_FILTERS,
       audience: Audience.INDIVIDUAL,
@@ -132,6 +134,7 @@ describe('screen Offers', () => {
       ...notifsImport,
       error: mockNotifyError,
       pending: mockNotifyPending,
+      success: mockNotifySuccess,
     }))
   })
 
@@ -149,7 +152,7 @@ describe('screen Offers', () => {
     renderOffers({
       ...props,
       audience: Audience.INDIVIDUAL,
-      offers: [firstOffer, secondOffer],
+      individualOffers: [firstOffer, secondOffer],
     })
 
     expect(screen.getByLabelText(firstOffer.name)).toBeInTheDocument()
@@ -164,7 +167,7 @@ describe('screen Offers', () => {
       ...props,
       audience: Audience.INDIVIDUAL,
       currentUser: { ...props.currentUser, isAdmin: false },
-      offers: [firstOffer, secondOffer],
+      individualOffers: [firstOffer, secondOffer],
     })
 
     const selectAllOffersCheckbox = screen.queryByLabelText('Tout sélectionner')
@@ -177,7 +180,7 @@ describe('screen Offers', () => {
     renderOffers({
       ...props,
       audience: Audience.INDIVIDUAL,
-      offers: [...offersRecap, listOffersOfferFactory()],
+      individualOffers: [...offersRecap, listOffersOfferFactory()],
     })
 
     screen.getByLabelText(offersRecap[0].name)
@@ -188,7 +191,7 @@ describe('screen Offers', () => {
     renderOffers({
       ...props,
       audience: Audience.INDIVIDUAL,
-      offers: offersRecap,
+      individualOffers: offersRecap,
     })
 
     screen.getByLabelText(offersRecap[0].name)
@@ -201,7 +204,7 @@ describe('screen Offers', () => {
     renderOffers({
       ...props,
       audience: Audience.INDIVIDUAL,
-      offers: offersRecap,
+      individualOffers: offersRecap,
     })
 
     screen.getByLabelText(offersRecap[0].name)
@@ -327,7 +330,7 @@ describe('screen Offers', () => {
   })
 
   it('should indicate that user has no offers yet', () => {
-    renderOffers({ ...props, offers: [] })
+    renderOffers({ ...props, individualOffers: [] })
 
     const noOffersText = screen.getByText('Vous n’avez pas encore créé d’offre')
     expect(noOffersText).toBeInTheDocument()
@@ -394,19 +397,15 @@ describe('screen Offers', () => {
       }),
     ]
 
-    renderOffers({ ...props, offers, audience: Audience.INDIVIDUAL })
+    renderOffers({
+      ...props,
+      individualOffers: offers,
+      audience: Audience.INDIVIDUAL,
+    })
 
     expect(screen.queryByLabelText(offers[0].name)).toBeDisabled()
     expect(screen.queryByLabelText(offers[1].name)).toBeDisabled()
     expect(screen.queryByLabelText(offers[2].name)).toBeEnabled()
-  })
-
-  it('should not display the button to create an offer when user is an admin', () => {
-    props.currentUser.isAdmin = true
-
-    renderOffers(props)
-
-    expect(screen.queryByText('Créer une offre')).toBeNull()
   })
 
   it('should not have "Tout Sélectionner" checked when there is no offer to be checked', () => {
@@ -417,7 +416,11 @@ describe('screen Offers', () => {
       }),
     ]
 
-    renderOffers({ ...props, audience: Audience.COLLECTIVE, offers })
+    renderOffers({
+      ...props,
+      audience: Audience.COLLECTIVE,
+      collectiveOffers: offers,
+    })
 
     expect(screen.getByLabelText('Tout sélectionner')).not.toBeChecked()
   })
@@ -475,7 +478,11 @@ describe('screen Offers', () => {
         }),
       ]
 
-      renderOffers({ ...props, offers, audience: Audience.INDIVIDUAL })
+      renderOffers({
+        ...props,
+        individualOffers: offers,
+        audience: Audience.INDIVIDUAL,
+      })
 
       await userEvent.click(screen.getByLabelText('Tout sélectionner'))
       await userEvent.click(screen.getByText('Publier'))
@@ -500,7 +507,11 @@ describe('screen Offers', () => {
         }),
       ]
 
-      renderOffers({ ...props, audience: Audience.COLLECTIVE, offers })
+      renderOffers({
+        ...props,
+        audience: Audience.COLLECTIVE,
+        collectiveOffers: offers,
+      })
 
       await userEvent.click(screen.getByLabelText('Tout sélectionner'))
       await userEvent.click(screen.getByText('Publier'))
@@ -518,7 +529,11 @@ describe('screen Offers', () => {
         }),
       ]
 
-      renderOffers({ ...props, audience: Audience.COLLECTIVE, offers })
+      renderOffers({
+        ...props,
+        audience: Audience.COLLECTIVE,
+        collectiveOffers: offers,
+      })
 
       await userEvent.click(screen.getByLabelText('Tout sélectionner'))
       await userEvent.click(screen.getByText('Publier'))
@@ -542,7 +557,11 @@ describe('screen Offers', () => {
         }),
       ]
 
-      renderOffers({ ...props, offers, audience: Audience.INDIVIDUAL })
+      renderOffers({
+        ...props,
+        individualOffers: offers,
+        audience: Audience.INDIVIDUAL,
+      })
 
       const firstOfferCheckbox = screen.getByLabelText(offers[0].name)
       const secondOfferCheckbox = screen.getByLabelText(offers[1].name)
@@ -553,8 +572,8 @@ describe('screen Offers', () => {
 
       expect(firstOfferCheckbox).toBeChecked()
       expect(secondOfferCheckbox).toBeChecked()
-      expect(thirdOfferCheckbox).not.toBeChecked()
-      expect(fourthOfferCheckbox).not.toBeChecked()
+      expect(thirdOfferCheckbox).toBeChecked()
+      expect(fourthOfferCheckbox).toBeChecked()
 
       await userEvent.click(screen.getByLabelText('Tout désélectionner'))
 
@@ -568,7 +587,7 @@ describe('screen Offers', () => {
   it('should display the collective offers format', () => {
     renderOffers({
       ...props,
-      offers: [collectiveOfferFactory()],
+      collectiveOffers: [collectiveOfferFactory()],
       audience: Audience.COLLECTIVE,
     })
     expect(screen.getByRole('combobox', { name: 'Format' }))
@@ -577,7 +596,7 @@ describe('screen Offers', () => {
   it('should filter on the format', async () => {
     renderOffers({
       ...props,
-      offers: [collectiveOfferFactory()],
+      collectiveOffers: [collectiveOfferFactory()],
       audience: Audience.COLLECTIVE,
     })
 
@@ -624,7 +643,11 @@ describe('screen Offers', () => {
   })
 
   it('should display onboarding banner for archivage only in collective offer list', () => {
-    renderOffers({ ...props, audience: Audience.COLLECTIVE, offers: [] })
+    renderOffers({
+      ...props,
+      audience: Audience.COLLECTIVE,
+      collectiveOffers: [],
+    })
 
     expect(
       screen.getByText(
@@ -641,5 +664,64 @@ describe('screen Offers', () => {
         'C’est nouveau ! Vous pouvez désormais archiver vos offres collectives.'
       )
     ).not.toBeInTheDocument()
+  })
+
+  it('should notify when deleting offers there are not draft', async () => {
+    renderOffers({
+      ...props,
+      individualOffers: [
+        listOffersOfferFactory({ status: OfferStatus.ACTIVE }),
+      ],
+      audience: Audience.INDIVIDUAL,
+    })
+
+    await userEvent.click(screen.getByText('Tout sélectionner'))
+    await userEvent.click(screen.getByText('Supprimer'))
+
+    expect(mockNotifyError).toHaveBeenCalledWith(
+      'Seuls les brouillons peuvent être supprimés'
+    )
+  })
+
+  it('should delete aniway even with active status', async () => {
+    vi.spyOn(api, 'deleteDraftOffers').mockResolvedValueOnce()
+
+    renderOffers({
+      ...props,
+      individualOffers: [
+        listOffersOfferFactory({ status: OfferStatus.ACTIVE }),
+        listOffersOfferFactory({ status: OfferStatus.DRAFT }),
+        listOffersOfferFactory({ status: OfferStatus.DRAFT }),
+      ],
+      audience: Audience.INDIVIDUAL,
+    })
+
+    await userEvent.click(screen.getByText('Tout sélectionner'))
+    await userEvent.click(
+      screen.getAllByRole('button', { name: 'Supprimer' })[2]
+    )
+    await userEvent.click(screen.getByText('Supprimer ces brouillons'))
+
+    expect(api.deleteDraftOffers).toHaveBeenCalledTimes(1)
+    expect(mockNotifySuccess).toHaveBeenCalledWith(
+      'Les brouillons ont bien été supprimés'
+    )
+  })
+
+  it('should display a new column "Date de l’évènement" if FF is enabled', () => {
+    const featureOverrides = {
+      features: ['ENABLE_COLLECTIVE_OFFERS_EXPIRATION'],
+    }
+
+    renderOffers(
+      {
+        ...props,
+        collectiveOffers: [collectiveOfferFactory()],
+        audience: Audience.COLLECTIVE,
+      },
+      featureOverrides
+    )
+
+    expect(screen.getByText('Date de l’évènement'))
   })
 })

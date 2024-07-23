@@ -2,8 +2,10 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { PostOfferOffererAddressBodyModel } from './PostOfferOffererAddressBodyModel';
 import type { WithdrawalTypeEnum } from './WithdrawalTypeEnum';
 export type PostOfferBodyModel = {
+  address?: PostOfferOffererAddressBodyModel | null;
   audioDisabilityCompliant: boolean;
   bookingContact?: string | null;
   bookingEmail?: string | null;

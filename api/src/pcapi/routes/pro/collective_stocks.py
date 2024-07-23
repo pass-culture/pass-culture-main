@@ -43,6 +43,10 @@ def create_collective_stock(
         raise ApiErrors({"code": "EDUCATIONAL_STOCK_ALREADY_EXISTS"}, status_code=400)
     except educational_exceptions.StartAndEndEducationalYearDifferent:
         raise ApiErrors({"code": "START_AND_END_EDUCATIONAL_YEAR_DIFFERENT"}, status_code=400)
+    except educational_exceptions.StartEducationalYearMissing:
+        raise ApiErrors({"code": "START_EDUCATIONAL_YEAR_MISSING"}, status_code=400)
+    except educational_exceptions.EndEducationalYearMissing:
+        raise ApiErrors({"code": "END_EDUCATIONAL_YEAR_MISSING"}, status_code=400)
 
     return collective_stock_serialize.CollectiveStockResponseModel.from_orm(collective_stock)
 
@@ -90,3 +94,7 @@ def edit_collective_stock(
         raise ApiErrors(error.errors, status_code=400)
     except educational_exceptions.StartAndEndEducationalYearDifferent:
         raise ApiErrors({"code": "START_AND_END_EDUCATIONAL_YEAR_DIFFERENT"}, status_code=400)
+    except educational_exceptions.StartEducationalYearMissing:
+        raise ApiErrors({"code": "START_EDUCATIONAL_YEAR_MISSING"}, status_code=400)
+    except educational_exceptions.EndEducationalYearMissing:
+        raise ApiErrors({"code": "END_EDUCATIONAL_YEAR_MISSING"}, status_code=400)

@@ -2248,6 +2248,12 @@ def test_public_api(client):
                             "type": "string",
                         },
                         "email": {"title": "Email", "type": "string"},
+                        "firstDepositActivationDate": {
+                            "format": "date-time",
+                            "nullable": True,
+                            "title": "Firstdepositactivationdate",
+                            "type": "string",
+                        },
                         "firstName": {"nullable": True, "title": "Firstname", "type": "string"},
                         "hasPassword": {"title": "Haspassword", "type": "boolean"},
                         "id": {"title": "Id", "type": "integer"},
@@ -2274,16 +2280,16 @@ def test_public_api(client):
                     "required": [
                         "bookedOffers",
                         "email",
+                        "hasPassword",
                         "id",
                         "isBeneficiary",
                         "isEligibleForBeneficiaryUpgrade",
-                        "hasPassword",
                         "needsToFillCulturalSurvey",
                         "requiresIdCheck",
                         "roles",
                         "showEligibleCard",
-                        "subscriptions",
                         "status",
+                        "subscriptions",
                     ],
                     "title": "UserProfileResponse",
                     "type": "object",
@@ -3505,6 +3511,7 @@ def test_public_api(client):
                             "description": "Unprocessable Entity",
                         },
                     },
+                    "security": [{"JWTAuth": []}],
                     "summary": "get_email_update_status <GET>",
                     "tags": [],
                 }
@@ -3588,6 +3595,7 @@ def test_public_api(client):
                             "description": "Unprocessable Entity",
                         },
                     },
+                    "security": [{"JWTAuth": []}],
                     "summary": "update_user_email <POST>",
                     "tags": [],
                 }
@@ -3614,6 +3622,26 @@ def test_public_api(client):
                     },
                     "security": [{"JWTAuth": []}],
                     "summary": "post_reaction <POST>",
+                    "tags": [],
+                }
+            },
+            "/native/v1/reaction/available": {
+                "get": {
+                    "description": "",
+                    "operationId": "get__native_v1_reaction_available",
+                    "parameters": [],
+                    "responses": {
+                        "200": {"description": "OK"},
+                        "403": {"description": "Forbidden"},
+                        "422": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
+                            },
+                            "description": "Unprocessable Entity",
+                        },
+                    },
+                    "security": [{"JWTAuth": []}],
+                    "summary": "get_available_reactions <GET>",
                     "tags": [],
                 }
             },

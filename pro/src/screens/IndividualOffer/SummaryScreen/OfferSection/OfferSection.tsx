@@ -49,6 +49,9 @@ export const OfferSection = ({
   const isBookingContactEnabled = useActiveFeature(
     'WIP_MANDATORY_BOOKING_CONTACT'
   )
+  const isSplitOfferEnabled = useActiveFeature('WIP_SPLIT_OFFER')
+
+  const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
 
   const offerData = serializeOfferSectionData(
     offer,
@@ -56,13 +59,6 @@ export const OfferSection = ({
     subCategories,
     musicTypes
   )
-
-  const editLink = getIndividualOfferUrl({
-    offerId: offerData.id,
-    step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-    mode:
-      mode === OFFER_WIZARD_MODE.READ_ONLY ? OFFER_WIZARD_MODE.EDITION : mode,
-  })
 
   if (musicTypesQuery.isLoading) {
     return <Spinner />
@@ -91,10 +87,23 @@ export const OfferSection = ({
     })
   }
 
-  const artisticInfoDescriptions: Description[] = [
+  const aboutDescriptions: Description[] = [
     { title: 'Titre de l’offre', text: offerData.name },
     { title: 'Description', text: offerData.description || '-' },
+    { title: 'Lieu', text: offerData.venuePublicName || offerData.venueName },
   ]
+  const artisticInfoDescriptions: Description[] = []
+  if (!isSplitOfferEnabled) {
+    artisticInfoDescriptions.push({
+      title: 'Titre de l’offre',
+      text: offerData.name,
+    })
+    artisticInfoDescriptions.push({
+      title: 'Description',
+      text: offerData.description || '-',
+    })
+  }
+
   if (conditionalFields.includes('speaker')) {
     artisticInfoDescriptions.push({
       title: 'Intervenant',
@@ -134,21 +143,26 @@ export const OfferSection = ({
     })
   }
 
-  const practicalInfoDescriptions: Description[] = [
-    { title: 'Structure', text: offerData.offererName },
-    {
-      title: 'Lieu',
+  const practicalInfoDescriptions: Description[] = []
+  if (!isSplitOfferEnabled) {
+    practicalInfoDescriptions.push({
+      title: 'Structure',
+      text: offerData.offererName,
+    })
+    practicalInfoDescriptions.push({
+      title: isOfferAddressEnabled ? 'Lieu' : 'Qui propose l’offre ?',
       text:
         /* istanbul ignore next: DEBT, TO FIX */
         offerData.venuePublicName || offerData.venueName,
-    },
-    {
-      title: 'Informations de retrait',
-      text:
-        /* istanbul ignore next: DEBT, TO FIX */
-        offerData.withdrawalDetails || ' - ',
-    },
-  ]
+    })
+  }
+  practicalInfoDescriptions.push({
+    title: 'Informations de retrait',
+    text:
+      /* istanbul ignore next: DEBT, TO FIX */
+      offerData.withdrawalDetails || ' - ',
+  })
+
   if (offerData.withdrawalType) {
     practicalInfoDescriptions.push({
       title: 'Précisez la façon dont vous distribuerez les billets',
@@ -178,55 +192,151 @@ export const OfferSection = ({
     })
   }
 
+  const artisticInformationsFields = [
+    'speaker',
+    'author',
+    'visa',
+    'stageDirector',
+    'performer',
+    'ean',
+    'durationMinutes',
+  ]
+
+  const displayArtisticInformations = artisticInformationsFields.some((field) =>
+    conditionalFields.includes(field)
+  )
+
   return (
     <SummarySection
       title="Détails de l’offre"
-      editLink={editLink}
+      editLink={getIndividualOfferUrl({
+        offerId: offer.id,
+        step: isSplitOfferEnabled
+          ? OFFER_WIZARD_STEP_IDS.DETAILS
+          : OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+        mode:
+          mode === OFFER_WIZARD_MODE.READ_ONLY
+            ? OFFER_WIZARD_MODE.EDITION
+            : mode,
+      })}
       aria-label="Modifier les détails de l’offre"
       className={cn({
         [styles['cancel-title-margin']]: isEventPublicationFormShown,
       })}
     >
-      <SummarySubSection title="Type d’offre">
-        <SummaryDescriptionList descriptions={offerTypeDescriptions} />
-      </SummarySubSection>
+      {isSplitOfferEnabled ? (
+        <>
+          <SummarySubSection title="À propos de votre offre">
+            <SummaryDescriptionList descriptions={aboutDescriptions} />
+          </SummarySubSection>
 
-      <SummarySubSection title="Informations artistiques">
-        <SummaryDescriptionList descriptions={artisticInfoDescriptions} />
-      </SummarySubSection>
+          <SummarySubSection title="Type d’offre">
+            <SummaryDescriptionList descriptions={offerTypeDescriptions} />
+          </SummarySubSection>
 
-      <SummarySubSection title="Informations pratiques">
-        <SummaryDescriptionList descriptions={practicalInfoDescriptions} />
-      </SummarySubSection>
+          {displayArtisticInformations && (
+            <SummarySubSection title="Informations artistiques">
+              <SummaryDescriptionList descriptions={artisticInfoDescriptions} />
+            </SummarySubSection>
+          )}
+        </>
+      ) : (
+        <>
+          <SummarySubSection title="Type d’offre">
+            <SummaryDescriptionList descriptions={offerTypeDescriptions} />
+          </SummarySubSection>
 
-      <AccessibilitySummarySection
-        accessibleItem={offer}
-        accessibleWording="Votre offre est accessible aux publics en situation de handicap :"
-      />
+          <SummarySubSection title="Informations artistiques">
+            <SummaryDescriptionList descriptions={artisticInfoDescriptions} />
+          </SummarySubSection>
+        </>
+      )}
 
-      <SummarySubSection title="Lien pour le grand public">
-        <SummaryDescriptionList
-          descriptions={[
-            {
-              title: 'URL de votre site ou billetterie',
-              /* istanbul ignore next: DEBT, TO FIX */
-              text: offerData.externalTicketOfficeUrl || ' - ',
-            },
-          ]}
-        />
-      </SummarySubSection>
+      {isSplitOfferEnabled ? (
+        <SummarySection
+          title="Informations pratiques"
+          editLink={getIndividualOfferUrl({
+            offerId: offer.id,
+            step: OFFER_WIZARD_STEP_IDS.ABOUT,
+            mode:
+              mode === OFFER_WIZARD_MODE.READ_ONLY
+                ? OFFER_WIZARD_MODE.EDITION
+                : mode,
+          })}
+          aria-label="Modifier les informations pratiques de l’offre"
+          className={cn({
+            [styles['cancel-title-margin']]: isEventPublicationFormShown,
+          })}
+        >
+          <SummarySubSection title="Retrait de l’offre">
+            <SummaryDescriptionList descriptions={practicalInfoDescriptions} />
+          </SummarySubSection>
 
-      <SummarySubSection title="Notifications des réservations">
-        <SummaryDescriptionList
-          descriptions={[
-            {
-              title: 'Email auquel envoyer les notifications',
-              /* istanbul ignore next: DEBT, TO FIX */
-              text: offerData.bookingEmail || ' - ',
-            },
-          ]}
-        />
-      </SummarySubSection>
+          <AccessibilitySummarySection
+            accessibleItem={offer}
+            accessibleWording="Votre offre est accessible aux publics en situation de handicap :"
+          />
+
+          <SummarySubSection title="Lien pour le grand public">
+            <SummaryDescriptionList
+              descriptions={[
+                {
+                  title: 'URL de votre site ou billetterie',
+                  /* istanbul ignore next: DEBT, TO FIX */
+                  text: offerData.externalTicketOfficeUrl || ' - ',
+                },
+              ]}
+            />
+          </SummarySubSection>
+
+          <SummarySubSection title="Notifications des réservations">
+            <SummaryDescriptionList
+              descriptions={[
+                {
+                  title: 'Email auquel envoyer les notifications',
+                  /* istanbul ignore next: DEBT, TO FIX */
+                  text: offerData.bookingEmail || ' - ',
+                },
+              ]}
+            />
+          </SummarySubSection>
+        </SummarySection>
+      ) : (
+        <>
+          <SummarySubSection title="Informations pratiques">
+            <SummaryDescriptionList descriptions={practicalInfoDescriptions} />
+          </SummarySubSection>
+
+          <AccessibilitySummarySection
+            accessibleItem={offer}
+            accessibleWording="Votre offre est accessible aux publics en situation de handicap :"
+          />
+
+          <SummarySubSection title="Lien pour le grand public">
+            <SummaryDescriptionList
+              descriptions={[
+                {
+                  title: 'URL de votre site ou billetterie',
+                  /* istanbul ignore next: DEBT, TO FIX */
+                  text: offerData.externalTicketOfficeUrl || ' - ',
+                },
+              ]}
+            />
+          </SummarySubSection>
+
+          <SummarySubSection title="Notifications des réservations">
+            <SummaryDescriptionList
+              descriptions={[
+                {
+                  title: 'Email auquel envoyer les notifications',
+                  /* istanbul ignore next: DEBT, TO FIX */
+                  text: offerData.bookingEmail || ' - ',
+                },
+              ]}
+            />
+          </SummarySubSection>
+        </>
+      )}
     </SummarySection>
   )
 }

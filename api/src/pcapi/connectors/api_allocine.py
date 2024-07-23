@@ -1,4 +1,6 @@
+from contextlib import suppress
 import logging
+import typing
 
 import pydantic
 
@@ -51,23 +53,32 @@ def get_movie_list_page(after: str = "") -> allocine_serializers.AllocineMovieLi
     return validated_response
 
 
-def filter_invalid_edge(json_data: dict, locs: tuple) -> dict:
-    if not locs or set(locs[:2]) != {"movieShowtimeList", "edges"}:
-        # nothing to do (to complicated or locs is malformed), let it fail
-        return json_data
-
-    invalid_edge = json_data["movieShowtimeList"]["edges"].pop(locs[2])
+def _filter_invalid_edge(json_data: dict, loc: int, theater_id: str) -> dict:
+    invalid_edge = json_data["movieShowtimeList"]["edges"].pop(loc)
 
     logger.error(
         "One allocine show time edge removed (invalid)",
-        extra={"location": locs, "edge": invalid_edge},
+        extra={"theater": theater_id, "location": loc, "edge": invalid_edge},
     )
 
     return json_data
 
 
-def _parse_movie_showtimes(
-    json_data: dict, try_count: int = 0
+def _get_error_loc(err: typing.Mapping) -> int | None:
+    with suppress(KeyError, IndexError, ValueError):
+        return int(err["loc"][2])
+    return None
+
+
+def _has_valid_error_loc(err: typing.Mapping) -> bool:
+    try:
+        return bool(err["loc"] is not None and set(err["loc"][:2]) == {"movieShowtimeList", "edges"})
+    except (KeyError, TypeError):
+        return False
+
+
+def parse_movie_showtimes(
+    json_data: dict, theater_id: str, try_count: int = 0
 ) -> allocine_serializers.AllocineMovieShowtimeListResponse:
     try:
         return allocine_serializers.AllocineMovieShowtimeListResponse.model_validate(json_data)
@@ -77,10 +88,24 @@ def _parse_movie_showtimes(
             raise
 
         data = json_data
-        for err in exc.errors():
-            data = filter_invalid_edge(data, err["loc"])
 
-        return _parse_movie_showtimes(data, try_count + 1)
+        # warning: the reversed sort is very import here. Without it, two (bad)
+        # things could happen:
+        #   1. IndexError because the json data has lost edges and the error
+        #      location index is out of range or
+        #   2. a valid showtime might be ignored (same problem as above but
+        #      with not-out-of-bound index).
+        # Starting from the highest index means that each other index is still
+        # valid after the filter call: eg, indexes are 1, 3, 5; after the 5th
+        # edge has been removed, the 3d will still be at the 3d index, same for
+        # the first one. Which would not be the case without the reversed sort.
+        filtered_locs = [_get_error_loc(err) for err in exc.errors() if _has_valid_error_loc(err)]
+        locs = sorted([loc for loc in filtered_locs if loc is not None], reverse=True)
+
+        for loc in locs:
+            data = _filter_invalid_edge(data, loc, theater_id)
+
+        return parse_movie_showtimes(data, theater_id, try_count + 1)
 
 
 def get_movies_showtimes_from_allocine(theater_id: str) -> allocine_serializers.AllocineMovieShowtimeListResponse:
@@ -95,7 +120,7 @@ def get_movies_showtimes_from_allocine(theater_id: str) -> allocine_serializers.
         raise AllocineException(f"Error getting API Allocine DATA for theater {theater_id}")
 
     try:
-        validated_response = _parse_movie_showtimes(response.json())
+        validated_response = parse_movie_showtimes(response.json(), theater_id)
     except Exception as exc:
         raise AllocineException(f"Error validating Allocine response. Error: {str(exc)}")
 

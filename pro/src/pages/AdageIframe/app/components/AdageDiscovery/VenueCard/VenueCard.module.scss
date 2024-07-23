@@ -68,7 +68,7 @@ $venue-image-width: rem.torem(276px);
   word-break: break-word;
 
   &-name {
-    @include fonts.button;
+    @include fonts.bold;
 
     overflow: hidden;
   }

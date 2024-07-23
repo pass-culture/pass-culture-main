@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import { useEffect, useRef } from 'react'
+import { useEffect, useId, useRef } from 'react'
 
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
@@ -36,6 +36,7 @@ export const BaseCheckbox = ({
   ...props
 }: BaseCheckboxProps): JSX.Element => {
   const checkboxRef = useRef<HTMLInputElement>(null)
+  const id = useId()
 
   useEffect(() => {
     if (checkboxRef.current) {
@@ -54,6 +55,7 @@ export const BaseCheckbox = ({
         },
         className
       )}
+      htmlFor={id}
     >
       <span
         className={cn(styles['base-checkbox-label-row'], {
@@ -67,6 +69,7 @@ export const BaseCheckbox = ({
           type="checkbox"
           {...props}
           className={styles['base-checkbox-input']}
+          id={id}
         />
         {icon && (
           <span className={styles['base-checkbox-icon']}>

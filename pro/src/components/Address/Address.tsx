@@ -1,11 +1,15 @@
 import { FieldInputProps, useField, useFormikContext } from 'formik'
 import { useEffect, useState } from 'react'
+import { useDebouncedCallback } from 'use-debounce'
 
 import { apiAdresse } from 'apiClient/adresse/apiAdresse'
 import { AdresseData } from 'apiClient/adresse/types'
 import { serializeAdressData } from 'components/Address/serializer'
 import { SelectOption } from 'custom_types/form'
 import { SelectAutocomplete } from 'ui-kit/form/SelectAutoComplete/SelectAutocomplete'
+import { normalizeStrForAdressSearch } from 'utils/searchPatternInOptions'
+
+import { DEBOUNCE_TIME_BEFORE_REQUEST } from './constants'
 
 interface AddressProps {
   description?: string
@@ -34,34 +38,34 @@ export const AddressSelect = ({
     setOptions([{ label: selectedField.value, value: selectedField.value }])
   }, [])
 
-  // TODO we should not use useEffect for this but an event handler on the input
-  useEffect(() => {
-    const onSearchFieldChange = async () => {
-      if (searchField.value.length >= 3) {
-        const response = await getSuggestions(searchField.value)
-        setAddressesMap(
-          response.reduce<Record<string, AutocompleteItemProps>>(
-            (acc, add: AutocompleteItemProps) => {
-              acc[add.label] = add
-              return acc
-            },
-            {}
-          )
+  const onSearchFieldChange = async () => {
+    if (searchField.value.length >= 3) {
+      const response = await getSuggestions(searchField.value)
+      setAddressesMap(
+        response.reduce<Record<string, AutocompleteItemProps>>(
+          (acc, add: AutocompleteItemProps) => {
+            acc[add.label] = add
+            return acc
+          },
+          {}
         )
-        setOptions(
-          response.map((item) => ({
-            value: String(item.value),
-            label: item.label,
-          }))
-        )
-      } else if (searchField.value.length === 0) {
-        setOptions([])
-        handleAddressSelect(setFieldValue, undefined, searchField)
-      }
+      )
+      setOptions(
+        response.map((item) => ({
+          value: String(item.value),
+          label: item.label,
+        }))
+      )
+    } else if (searchField.value.length === 0) {
+      setOptions([])
+      handleAddressSelect(setFieldValue, undefined, searchField)
     }
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    onSearchFieldChange()
-  }, [searchField.value])
+  }
+
+  const debouncedOnSearch = useDebouncedCallback(
+    onSearchFieldChange,
+    DEBOUNCE_TIME_BEFORE_REQUEST
+  )
 
   // TODO we should not use useEffect for this but an event handler on the input
   useEffect(() => {
@@ -92,6 +96,16 @@ export const AddressSelect = ({
     return []
   }
 
+  function searchInOptions(options: SelectOption[], pattern: string) {
+    return options.filter((option) => {
+      return normalizeStrForAdressSearch(pattern || '')
+        .split(' ')
+        .every((word) =>
+          normalizeStrForAdressSearch(option.label).includes(word)
+        )
+    })
+  }
+
   return (
     <SelectAutocomplete
       name="addressAutocomplete"
@@ -101,6 +115,8 @@ export const AddressSelect = ({
       hideArrow={true}
       resetOnOpen={false}
       description={description}
+      searchInOptions={searchInOptions}
+      onSearch={debouncedOnSearch}
     />
   )
 }

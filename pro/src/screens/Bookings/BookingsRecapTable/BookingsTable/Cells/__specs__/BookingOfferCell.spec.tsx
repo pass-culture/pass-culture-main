@@ -1,6 +1,5 @@
 import { screen } from '@testing-library/react'
 import { add } from 'date-fns'
-import React from 'react'
 
 import { collectiveBookingFactory } from 'utils/collectiveApiFactories'
 import { bookingRecapFactory } from 'utils/individualApiFactories'

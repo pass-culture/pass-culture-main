@@ -6,9 +6,11 @@ from flask_login import login_required
 import sqlalchemy as sqla
 
 from pcapi import repository
+from pcapi.connectors import api_adresse
 from pcapi.core.categories import categories
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.categories.categories import TITELIVE_MUSIC_TYPES
+from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import repository as offerers_repository
@@ -239,6 +241,45 @@ def post_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.Ge
         .options(sqla.orm.joinedload(offerers_models.Venue.offererAddress))
         .first_or_404()
     )
+    offerer_address: offerers_models.OffererAddress | None = None
+    is_manual_edition: bool = False
+    if body.address:
+        try:
+            address_info = api_adresse.get_address(body.address.street, body.address.postalCode, body.address.city)
+            location_data = offerers_api.LocationData(
+                city=address_info.city,
+                postal_code=address_info.postcode,
+                latitude=address_info.latitude,
+                longitude=address_info.longitude,
+                street=address_info.street,
+                insee_code=address_info.citycode,
+                ban_id=address_info.id,
+            )
+        except api_adresse.NoResultException:
+            insee_code = None
+            if body.address.city and body.address.postalCode:
+                try:
+                    insee_code = api_adresse.get_municipality_centroid(
+                        body.address.city, body.address.postalCode
+                    ).citycode
+                except api_adresse.AdresseException:
+                    pass
+            location_data = offerers_api.LocationData(
+                city=body.address.city,
+                postal_code=body.address.postalCode,
+                latitude=float(body.address.latitude),
+                longitude=float(body.address.longitude),
+                street=body.address.street,
+                insee_code=insee_code,
+                ban_id=None,
+            )
+            is_manual_edition = True
+        address = offerers_api.get_or_create_address(location_data, is_manual_edition=is_manual_edition)
+        offerer_address = offerers_api.get_or_create_offerer_address(
+            venue.managingOffererId, address.id, label=body.address.label
+        )
+    else:
+        offerer_address = venue.offererAddress
     rest.check_user_has_access_to_offerer(current_user, venue.managingOffererId)
     try:
         with repository.transaction():
@@ -255,6 +296,7 @@ def post_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.Ge
                 mental_disability_compliant=body.mental_disability_compliant,
                 motor_disability_compliant=body.motor_disability_compliant,
                 name=body.name,
+                offerer_address=offerer_address,
                 subcategory_id=body.subcategory_id,
                 url=body.url,
                 venue=venue,

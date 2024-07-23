@@ -1,0 +1,325 @@
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/variables/_size.scss" as size;
+@use "styles/variables/_z-index.scss" as zIndex;
+
+.offer-item {
+  display: grid;
+  grid-template-columns: rem.torem(22px) repeat(3, 1fr);
+  grid-template-areas:
+    "check thumb   head    head"
+    ".     thumb   desc    desc"
+    ".     desc2   desc3   desc3"
+    ".     desc4   desc4   desc4"
+    ".     actions actions status";
+
+  &.inactive {
+    .offer-thumb {
+      opacity: 0.5;
+    }
+  }
+
+  td:first-of-type {
+    grid-area: check;
+    padding-top: rem.torem(8px);
+
+    input[type="checkbox"] {
+      margin-right: 0;
+    }
+
+    label {
+      display: inline-flex;
+    }
+  }
+
+  .thumb-column {
+    grid-area: thumb;
+    padding: rem.torem(8px);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+
+    &-link {
+      display: block;
+      overflow-wrap: break-word;
+
+      &:hover,
+      &:focus {
+        text-decoration: underline;
+      }
+    }
+  }
+
+  .title-column {
+    @include fonts.body-exergue;
+
+    grid-column: head;
+    grid-row: head / desc;
+    align-self: center;
+    padding-top: rem.torem(4px);
+
+    .offer-template-tag {
+      margin-bottom: rem.torem(4px);
+    }
+
+    a {
+      display: block;
+    }
+  }
+
+  .status-column {
+    grid-area: status;
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+    justify-self: flex-end;
+  }
+
+  .venue-column,
+  .institution-column,
+  .title-column {
+    display: block;
+    overflow-wrap: anywhere;
+  }
+
+  .venue-column {
+    grid-column: desc2 / desc3;
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+  }
+
+  .institution-column,
+  .stock-column {
+    grid-area: desc4;
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+  }
+
+  .actions-column {
+    grid-area: actions;
+    padding: 0;
+    justify-self: end;
+
+    &-container {
+      display: flex;
+      align-items: center;
+      gap: rem.torem(4px);
+    }
+  }
+}
+
+.isbn {
+  @include fonts.caption;
+
+  color: var(--color-grey-dark);
+}
+
+.stocks {
+  @include fonts.caption;
+
+  color: var(--color-grey-dark);
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.sold-out-button {
+  border: none;
+  background-color: var(--color-white);
+}
+
+.sold-out-dates {
+  background-color: var(--color-white);
+  border-radius: rem.torem(4px);
+  box-shadow: 0 rem.torem(2px) rem.torem(10px) 0
+    rgb(from var(--color-black) r g b / 30%);
+  position: absolute;
+  display: block;
+  top: rem.torem(20px);
+  left: rem.torem(40px);
+  width: max-content;
+  margin-left: rem.torem(8px);
+  padding: rem.torem(8px);
+
+  .sold-out-icon {
+    margin-left: 0;
+    margin-right: rem.torem(4px);
+    margin-top: rem.torem(4px);
+  }
+}
+
+.sold-out-icon {
+  width: rem.torem(16px);
+  height: rem.torem(16px);
+  color: var(--color-error-light);
+  margin-left: rem.torem(4px);
+  margin-top: rem.torem(4px);
+}
+
+@media (min-width: size.$mobile) {
+  .offer-item {
+    grid-template-columns: rem.torem(22px) rem.torem(112px) 1fr rem.torem(105px);
+
+    .thumb-column {
+      padding: rem.torem(8px) rem.torem(16px);
+    }
+
+    .title-column {
+      grid-area: head;
+    }
+
+    .venue-column {
+      grid-area: desc;
+    }
+
+    .institution-column,
+    .stock-column {
+      grid-area: desc3;
+    }
+  }
+}
+
+@media (min-width: size.$tablet) {
+  .offer-item {
+    display: table-row;
+
+    > td {
+      padding: rem.torem(8px);
+    }
+
+    .checkbox-column {
+      width: rem.torem(32px);
+    }
+
+    .venue-column,
+    .institution-column,
+    .title-column {
+      display: table-cell;
+    }
+
+    .venue-column {
+      padding-top: unset;
+      padding-bottom: unset;
+    }
+
+    .thumb-column {
+      padding: rem.torem(8px);
+      max-width: rem.torem(80px);
+
+      a {
+        height: unset;
+      }
+    }
+
+    .institution-column,
+    .stock-column {
+      padding-top: unset;
+      padding-bottom: unset;
+    }
+
+    .status-column {
+      padding-top: unset;
+      padding-bottom: unset;
+    }
+
+    .actions-column {
+      padding: 0 0 0 rem.torem(10px);
+
+      & > div {
+        justify-content: flex-end;
+      }
+    }
+  }
+}
+
+.actions-container {
+  display: flex;
+  gap: rem.torem(8px);
+}
+
+.pop-in {
+  background-color: var(--color-white);
+  border: rem.torem(1px) solid var(--color-grey-light);
+  border-radius: rem.torem(6px);
+  z-index: zIndex.$profil-pop-in-z-index;
+  width: 100dvw;
+  height: 100dvh;
+  padding: rem.torem(8px);
+  box-shadow: 0 rem.torem(3px) rem.torem(4px) var(--color-medium-shadow);
+
+  @media (min-width: size.$mobile) {
+    height: auto;
+    width: rem.torem(270px);
+    margin-left: 0;
+    margin-top: 0;
+  }
+}
+
+.dropdown-button {
+  cursor: pointer;
+  outline: none;
+  border: none;
+  background-color: var(--color-white);
+  color: var(--color-black);
+  height: rem.torem(32px);
+
+  &[data-state="open"] {
+    color: var(--color-secondary-light);
+  }
+
+  &-hide {
+    display: none;
+  }
+}
+
+.menu {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  align-items: flex-start;
+
+  &-item {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    padding: rem.torem(8px);
+
+    &:focus-visible {
+      outline: rem.torem(1px) solid var(--color-input-text-color);
+      outline-offset: rem.torem(2px);
+      border-radius: rem.torem(4px);
+    }
+
+    &[data-highlighted] {
+      outline: none;
+      background: var(--color-grey-light);
+      cursor: pointer;
+    }
+  }
+}
+
+.separator {
+  height: rem.torem(1px);
+  width: rem.torem(20px);
+  background-color: var(--color-black);
+  margin: rem.torem(4px) 0;
+}
+
+.button-cancel-booking {
+  color: var(--color-error);
+}
+
+.status-filter-label {
+  cursor: pointer;
+  gap: rem.torem(8px);
+}
+
+.offer-event {
+  min-width: rem.torem(220px);
+  display: flex;
+  flex-direction: column;
+
+  &-hours {
+    @include fonts.caption;
+  }
+}

@@ -5,6 +5,16 @@
 $checkbox-size: rem.torem(40px);
 
 .checkbox input {
+  position: relative;
+  width: $checkbox-size;
+  height: $checkbox-size;
+  background-color: var(--color-white);
+  border: rem.torem(1px) solid var(--color-grey-dark);
+  border-radius: 50%;
+  transition:
+    border 150ms ease,
+    background 150ms ease;
+
   &:hover,
   &:focus,
   &:checked {
@@ -16,16 +26,6 @@ $checkbox-size: rem.torem(40px);
   &::after {
     content: none;
   }
-
-  position: relative;
-  width: $checkbox-size;
-  height: $checkbox-size;
-  background-color: var(--color-white);
-  border: rem.torem(1px) solid var(--color-grey-dark);
-  border-radius: 50%;
-  transition:
-    border 150ms ease,
-    background 150ms ease;
 
   &:focus-within {
     outline: rem.torem(1px) solid var(--color-black);
@@ -53,7 +53,7 @@ $checkbox-size: rem.torem(40px);
     border: rem.torem(2px) solid var(--color-secondary-light);
     background-color: var(--color-background-secondary);
 
-    @include fonts.button;
+    @include fonts.bold;
 
     &:focus {
       border: rem.torem(2px) solid var(--color-secondary-light);

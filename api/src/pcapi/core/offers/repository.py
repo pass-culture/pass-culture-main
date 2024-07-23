@@ -4,7 +4,7 @@ import logging
 import operator
 import typing
 
-import flask_sqlalchemy
+from flask_sqlalchemy import BaseQuery
 import pytz
 import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
@@ -15,6 +15,7 @@ from sqlalchemy.sql import or_
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.educational import models as educational_models
+from pcapi.core.educational.models import CollectiveOfferDisplayedStatus as DisplayedStatus
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.providers import constants as providers_constants
 from pcapi.core.providers import models as providers_models
@@ -104,7 +105,15 @@ def get_capped_offers_for_filters(
                 offerers_models.Venue.isVirtual,
             )
             .joinedload(offerers_models.Venue.managingOfferer)
-            .load_only(offerers_models.Offerer.id, offerers_models.Offerer.name)
+            .load_only(offerers_models.Offerer.id, offerers_models.Offerer.name),
+            sa_orm.joinedload(models.Offer.venue)
+            .joinedload(offerers_models.Venue.offererAddress)
+            .joinedload(offerers_models.OffererAddress.address),
+            sa_orm.joinedload(models.Offer.venue)
+            .joinedload(offerers_models.Venue.offererAddress)
+            .with_expression(
+                offerers_models.OffererAddress._isEditable, offerers_models.OffererAddress.isEditable.expression  # type: ignore [attr-defined]
+            ),
         )
         .options(
             sa_orm.joinedload(models.Offer.stocks).load_only(
@@ -134,6 +143,12 @@ def get_capped_offers_for_filters(
             .joinedload(models.Product.productMediations)
         )
         .options(sa_orm.joinedload(models.Offer.lastProvider).load_only(providers_models.Provider.localClass))
+        .options(
+            sa_orm.joinedload(models.Offer.offererAddress).joinedload(offerers_models.OffererAddress.address),
+            sa_orm.joinedload(models.Offer.offererAddress).with_expression(
+                offerers_models.OffererAddress._isEditable, offerers_models.OffererAddress.isEditable.expression  # type: ignore [attr-defined]
+            ),
+        )
         .limit(offers_limit)
         .all()
     )
@@ -146,7 +161,7 @@ def get_capped_offers_for_filters(
     return offers
 
 
-def get_offers_by_publication_date(publication_date: datetime.datetime | None = None) -> flask_sqlalchemy.BaseQuery:
+def get_offers_by_publication_date(publication_date: datetime.datetime | None = None) -> BaseQuery:
     if publication_date is None:
         publication_date = datetime.datetime.utcnow()
     publication_date = publication_date.replace(minute=0, second=0, microsecond=0, tzinfo=None)
@@ -154,7 +169,7 @@ def get_offers_by_publication_date(publication_date: datetime.datetime | None = 
     return models.Offer.query.filter(models.Offer.id.in_(future_offers_subquery))
 
 
-def get_offers_by_ids(user: users_models.User, offer_ids: list[int]) -> flask_sqlalchemy.BaseQuery:
+def get_offers_by_ids(user: users_models.User, offer_ids: list[int]) -> BaseQuery:
     query = models.Offer.query
     if not user.has_admin_role:
         query = (
@@ -167,7 +182,7 @@ def get_offers_by_ids(user: users_models.User, offer_ids: list[int]) -> flask_sq
     return query
 
 
-def get_offers_details(offer_ids: list[int]) -> flask_sqlalchemy.BaseQuery:
+def get_offers_details(offer_ids: list[int]) -> BaseQuery:
     return (
         models.Offer.query.options(
             sa_orm.joinedload(models.Offer.stocks)
@@ -206,7 +221,7 @@ def get_offers_by_filters(
     creation_mode: str | None = None,
     period_beginning_date: datetime.date | None = None,
     period_ending_date: datetime.date | None = None,
-) -> flask_sqlalchemy.BaseQuery:
+) -> BaseQuery:
     query = models.Offer.query
 
     if not user_is_admin:
@@ -281,7 +296,7 @@ def get_collective_offers_by_filters(
     period_beginning_date: datetime.date | None = None,
     period_ending_date: datetime.date | None = None,
     formats: list[subcategories.EacFormat] | None = None,
-) -> flask_sqlalchemy.BaseQuery:
+) -> BaseQuery:
     query = educational_models.CollectiveOffer.query.filter(
         educational_models.CollectiveOffer.validation != models.OfferValidationStatus.DRAFT
     )
@@ -371,7 +386,7 @@ def get_collective_offers_template_by_filters(
     period_beginning_date: datetime.date | None = None,
     period_ending_date: datetime.date | None = None,
     formats: list[subcategories.EacFormat] | None = None,
-) -> flask_sqlalchemy.BaseQuery:
+) -> BaseQuery:
     query = educational_models.CollectiveOfferTemplate.query.filter(
         educational_models.CollectiveOfferTemplate.validation != models.OfferValidationStatus.DRAFT
     )
@@ -409,25 +424,19 @@ def get_collective_offers_template_by_filters(
         query = query.filter(educational_models.CollectiveOfferTemplate.name.ilike(search))
     if statuses:
         query_filters: list = []
-        if (
-            educational_models.CollectiveOfferDisplayedStatus.BOOKED.value in statuses
-            or educational_models.CollectiveOfferDisplayedStatus.PREBOOKED.value in statuses
-        ):
+        if DisplayedStatus.BOOKED.value in statuses or DisplayedStatus.PREBOOKED.value in statuses:
             query_filters.append(
                 educational_models.CollectiveOfferTemplate.status == offer_mixin.CollectiveOfferStatus.SOLD_OUT.name
             )
-        if (
-            educational_models.CollectiveOfferDisplayedStatus.ENDED.value in statuses
-            or educational_models.CollectiveOfferDisplayedStatus.EXPIRED.value in statuses
-        ):
+        if DisplayedStatus.ENDED.value in statuses or DisplayedStatus.EXPIRED.value in statuses:
             query_filters.append(
                 educational_models.CollectiveOfferTemplate.status == offer_mixin.CollectiveOfferStatus.EXPIRED.name
             )
         for status in set(statuses) - {
-            educational_models.CollectiveOfferDisplayedStatus.BOOKED.value,
-            educational_models.CollectiveOfferDisplayedStatus.PREBOOKED.value,
-            educational_models.CollectiveOfferDisplayedStatus.ENDED.value,
-            educational_models.CollectiveOfferDisplayedStatus.EXPIRED.value,
+            DisplayedStatus.BOOKED.value,
+            DisplayedStatus.PREBOOKED.value,
+            DisplayedStatus.ENDED.value,
+            DisplayedStatus.EXPIRED.value,
         }:
             query_filters.append(
                 educational_models.CollectiveOfferTemplate.status == offer_mixin.CollectiveOfferStatus[status].name
@@ -443,7 +452,7 @@ def get_collective_offers_template_by_filters(
     return query
 
 
-def _filter_by_creation_mode(query: flask_sqlalchemy.BaseQuery, creation_mode: str) -> flask_sqlalchemy.BaseQuery:
+def _filter_by_creation_mode(query: BaseQuery, creation_mode: str) -> BaseQuery:
     if creation_mode == MANUAL_CREATION_MODE:
         query = query.filter(models.Offer.lastProviderId.is_(None))
     if creation_mode == IMPORTED_CREATION_MODE:
@@ -452,26 +461,25 @@ def _filter_by_creation_mode(query: flask_sqlalchemy.BaseQuery, creation_mode: s
     return query
 
 
-def _filter_by_status(query: flask_sqlalchemy.BaseQuery, status: str) -> flask_sqlalchemy.BaseQuery:
+def _filter_by_status(query: BaseQuery, status: str) -> BaseQuery:
     return query.filter(models.Offer.status == offer_mixin.OfferStatus[status].name)
 
 
-def _filter_collective_offers_by_statuses(
-    query: flask_sqlalchemy.BaseQuery, statuses: list[str] | None
-) -> flask_sqlalchemy.BaseQuery:
+def _filter_collective_offers_by_statuses(query: BaseQuery, statuses: list[str] | None) -> BaseQuery:
     """
     Filter a SQLAlchemy query for CollectiveOffers based on a list of statuses.
 
     This function modifies the input query to filter CollectiveOffers based on their CollectiveOfferDisplayedStatus.
 
     Args:
-      query (flask_sqlalchemy.BaseQuery): The initial query to be filtered.
+      query (BaseQuery): The initial query to be filtered.
       statuses (list[str]): A list of status strings to filter by.
 
     Returns:
-      flask_sqlalchemy.BaseQuery: The modified query with applied filters.
+      BaseQuery: The modified query with applied filters.
     """
     status_filters: list = []
+    status_with_booking_filters: list = []
 
     if statuses is None:
         return query
@@ -480,26 +488,27 @@ def _filter_collective_offers_by_statuses(
         # if statuses is empty we return no orders
         return query.filter(sa.false())
 
-    if (
-        educational_models.CollectiveOfferDisplayedStatus.BOOKED.value in statuses
-        or educational_models.CollectiveOfferDisplayedStatus.PREBOOKED.value in statuses
-        or educational_models.CollectiveOfferDisplayedStatus.EXPIRED.value in statuses
-        or educational_models.CollectiveOfferDisplayedStatus.ENDED.value in statuses
-    ):
+    offer_id_query, query_with_booking = collective_offer_with_booking(query)
+    if DisplayedStatus.BOOKED.value in statuses or DisplayedStatus.PREBOOKED.value in statuses:
+
         allowed_booking_status = set()
-        if educational_models.CollectiveOfferDisplayedStatus.BOOKED.value in statuses:
+        if DisplayedStatus.BOOKED.value in statuses:
             allowed_booking_status.add(educational_models.CollectiveBookingStatus.CONFIRMED.value)
             allowed_booking_status.add(educational_models.CollectiveBookingStatus.USED.value)
             allowed_booking_status.add(educational_models.CollectiveBookingStatus.REIMBURSED.value)
-        if educational_models.CollectiveOfferDisplayedStatus.PREBOOKED.value in statuses:
+        if DisplayedStatus.PREBOOKED.value in statuses:
             allowed_booking_status.add(educational_models.CollectiveBookingStatus.PENDING.value)
 
-        offer_id_query, query = collective_offer_with_booking(query)
-        status_filters.append(offer_id_query.c.status.in_(allowed_booking_status))
-    if educational_models.CollectiveOfferDisplayedStatus.ENDED.value in statuses:
+        status_with_booking_filters.append(
+            and_(
+                offer_id_query.c.status.in_(allowed_booking_status),
+                educational_models.CollectiveOffer.status != offer_mixin.CollectiveOfferStatus.EXPIRED.name,
+            )
+        )
+    if DisplayedStatus.ENDED.value in statuses:
         # Status ENDED == event is passed with a reservation not cancelled
-        offer_id_query, query = collective_offer_with_booking(query)
-        status_filters.append(
+
+        status_with_booking_filters.append(
             and_(
                 offer_id_query.c.status.in_(
                     [
@@ -510,10 +519,10 @@ def _filter_collective_offers_by_statuses(
                 educational_models.CollectiveOffer.status == offer_mixin.CollectiveOfferStatus.EXPIRED.name,
             )
         )
-    if educational_models.CollectiveOfferDisplayedStatus.EXPIRED.value in statuses:
+    if DisplayedStatus.EXPIRED.value in statuses:
         # Status EXPIRED == event is passed without any reservation or cancelled ones
-        offer_id_query, query = collective_offer_with_booking(query)
-        status_filters.append(
+
+        status_with_booking_filters.append(
             and_(
                 offer_id_query.c.status.in_(
                     [
@@ -525,14 +534,27 @@ def _filter_collective_offers_by_statuses(
                 educational_models.CollectiveOffer.status == offer_mixin.CollectiveOfferStatus.EXPIRED.name,
             )
         )
-    for status in set(statuses) - {
-        educational_models.CollectiveOfferDisplayedStatus.BOOKED.value,
-        educational_models.CollectiveOfferDisplayedStatus.PREBOOKED.value,
-        educational_models.CollectiveOfferDisplayedStatus.ENDED.value,
-        educational_models.CollectiveOfferDisplayedStatus.EXPIRED.value,
-    }:
-        status_filters.append(educational_models.CollectiveOffer.status == status)
+    if DisplayedStatus.ARCHIVED.value in statuses:
+        status_filters.append(educational_models.CollectiveOffer.dateArchived != None)
+    if DisplayedStatus.ACTIVE.value in statuses:
+        status_filters.append(
+            and_(
+                educational_models.CollectiveOffer.isActive == True,
+                educational_models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.APPROVED,
+            )
+        )
+    if DisplayedStatus.REJECTED.value in statuses:
+        status_filters.append(
+            educational_models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.REJECTED
+        )
+    if DisplayedStatus.PENDING.value in statuses:
+        status_filters.append(
+            educational_models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.PENDING
+        )
 
+    if status_with_booking_filters:
+        substmt = query_with_booking.filter(or_(*status_with_booking_filters)).subquery()
+        status_filters.append(educational_models.CollectiveOffer.id.in_(sa.select(substmt.c.id)))
     # we apply all the filters
     if status_filters:
         query = query.filter(or_(*status_filters))
@@ -541,8 +563,8 @@ def _filter_collective_offers_by_statuses(
 
 
 def collective_offer_with_booking(
-    query: flask_sqlalchemy.BaseQuery,
-) -> typing.Tuple[flask_sqlalchemy.BaseQuery, flask_sqlalchemy.BaseQuery]:
+    query: BaseQuery,
+) -> typing.Tuple[BaseQuery, BaseQuery]:
     last_booking_query = (
         educational_models.CollectiveBooking.query.with_entities(
             educational_models.CollectiveBooking.collectiveStockId,
@@ -568,13 +590,13 @@ def collective_offer_with_booking(
         )
         .subquery()
     )
-    query = query.join(
+    query_with_booking = query.join(
         offer_id_query,
         and_(
             offer_id_query.c.collectiveOfferId == educational_models.CollectiveOffer.id,
         ),
     )
-    return offer_id_query, query
+    return offer_id_query, query_with_booking
 
 
 def get_products_map_by_provider_reference(id_at_providers: list[str]) -> dict[str, models.Product]:
@@ -720,7 +742,7 @@ def check_stock_consistency() -> list[int]:
     ]
 
 
-def find_event_stocks_happening_in_x_days(number_of_days: int) -> flask_sqlalchemy.BaseQuery:
+def find_event_stocks_happening_in_x_days(number_of_days: int) -> BaseQuery:
     target_day = datetime.datetime.utcnow() + datetime.timedelta(days=number_of_days)
     start = datetime.datetime.combine(target_day, datetime.time.min)
     end = datetime.datetime.combine(target_day, datetime.time.max)
@@ -728,7 +750,7 @@ def find_event_stocks_happening_in_x_days(number_of_days: int) -> flask_sqlalche
     return find_event_stocks_day(start, end)
 
 
-def find_event_stocks_day(start: datetime.datetime, end: datetime.datetime) -> flask_sqlalchemy.BaseQuery:
+def find_event_stocks_day(start: datetime.datetime, end: datetime.datetime) -> BaseQuery:
     return (
         models.Stock.query.filter(models.Stock.beginningDatetime.between(start, end))
         .join(bookings_models.Booking)
@@ -737,7 +759,7 @@ def find_event_stocks_day(start: datetime.datetime, end: datetime.datetime) -> f
     )
 
 
-def get_expired_offers(interval: list[datetime.datetime]) -> flask_sqlalchemy.BaseQuery:
+def get_expired_offers(interval: list[datetime.datetime]) -> BaseQuery:
     """Return a query of offers whose latest booking limit occurs within
     the given interval.
 
@@ -925,9 +947,7 @@ def offer_has_bookable_stocks(offer_id: int) -> bool:
     ).scalar()
 
 
-def _order_stocks_by(
-    query: flask_sqlalchemy.BaseQuery, order_by: StocksOrderedBy, order_by_desc: bool
-) -> flask_sqlalchemy.BaseQuery:
+def _order_stocks_by(query: BaseQuery, order_by: StocksOrderedBy, order_by_desc: bool) -> BaseQuery:
     column: sa_orm.Mapped[int] | sa.cast[sa.Date | sa.Time, sa_orm.Mapped[datetime.datetime | None]]
     match order_by:
         case StocksOrderedBy.DATE:
@@ -957,7 +977,7 @@ def get_filtered_stocks(
     price_category_id: int | None = None,
     order_by: StocksOrderedBy = StocksOrderedBy.BEGINNING_DATETIME,
     order_by_desc: bool = False,
-) -> flask_sqlalchemy.BaseQuery:
+) -> BaseQuery:
     query = (
         models.Stock.query.join(models.Offer)
         .join(offerers_models.Venue)
@@ -1009,14 +1029,14 @@ def hard_delete_filtered_stocks(
 
 
 def get_paginated_stocks(
-    stocks_query: flask_sqlalchemy.BaseQuery,
+    stocks_query: BaseQuery,
     stocks_limit_per_page: int = LIMIT_STOCKS_PER_PAGE,
     page: int = 1,
-) -> flask_sqlalchemy.BaseQuery:
+) -> BaseQuery:
     return stocks_query.offset((page - 1) * stocks_limit_per_page).limit(stocks_limit_per_page)
 
 
-def get_synchronized_offers_with_provider_for_venue(venue_id: int, provider_id: int) -> flask_sqlalchemy.BaseQuery:
+def get_synchronized_offers_with_provider_for_venue(venue_id: int, provider_id: int) -> BaseQuery:
     return models.Offer.query.filter(models.Offer.venueId == venue_id).filter(
         models.Offer.lastProviderId == provider_id
     )
@@ -1051,7 +1071,7 @@ def get_paginated_offer_ids_by_venue_id(venue_id: int, limit: int, page: int = 0
     return [offer_id for offer_id, in query]
 
 
-def exclude_offers_from_inactive_venue_provider(query: flask_sqlalchemy.BaseQuery) -> flask_sqlalchemy.BaseQuery:
+def exclude_offers_from_inactive_venue_provider(query: BaseQuery) -> BaseQuery:
     return (
         query.outerjoin(models.Offer.lastProvider)
         .outerjoin(

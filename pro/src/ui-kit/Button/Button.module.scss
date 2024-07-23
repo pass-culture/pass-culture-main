@@ -30,6 +30,7 @@
     height: size.$button-icon-size;
     width: size.$button-icon-size;
     flex-shrink: 0;
+    vertical-align: text-bottom;
   }
 
   &.button-center {
@@ -100,9 +101,9 @@
 
     &:disabled,
     &.button-disabled {
-      background-color: var(--color-white);
-      border-color: var(--color-primary-disabled);
-      color: var(--color-primary-disabled);
+      background-color: var(--color-grey-light);
+      color: var(--color-grey-dark);
+      border-color: var(--color-grey-light);
     }
 
     &:disabled .button-icon,
@@ -119,20 +120,17 @@
   &-quaternary,
   &-ternary-pink,
   &-quaternary-pink {
-    @include fonts.button;
-
     color: var(--color-black);
     align-items: flex-start;
-
-    &-pink {
-      color: var(--color-primary);
-    }
-
     background-color: transparent;
     border-radius: rem.torem(4px);
     padding: 0;
     border: none;
     height: auto;
+
+    &-pink {
+      color: var(--color-primary);
+    }
 
     &:hover,
     &:focus-visible {

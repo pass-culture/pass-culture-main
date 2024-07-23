@@ -44,6 +44,7 @@ const cancellationReasonTitle = (
     case CollectiveBookingCancellationReasons.EXPIRED:
       return 'Annulé automatiquement'
     case CollectiveBookingCancellationReasons.FRAUD:
+    case CollectiveBookingCancellationReasons.BACKOFFICE:
       return 'Le pass Culture a annulé la réservation'
     default:
       throw new Error('Invalid cancellation reason')

@@ -816,6 +816,7 @@ export class DefaultService {
       body: requestBody,
       mediaType: 'application/json',
       errors: {
+        400: `Bad Request`,
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
@@ -1387,17 +1388,22 @@ export class DefaultService {
   /**
    * get_offerer_addresses <GET>
    * @param offererId
+   * @param onlyWithOffers
    * @returns GetOffererAddressesResponseModel OK
    * @throws ApiError
    */
   public getOffererAddresses(
     offererId: number,
+    onlyWithOffers: boolean = false,
   ): CancelablePromise<GetOffererAddressesResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/offerers/{offerer_id}/addresses',
       path: {
         'offerer_id': offererId,
+      },
+      query: {
+        'onlyWithOffers': onlyWithOffers,
       },
       errors: {
         403: `Forbidden`,

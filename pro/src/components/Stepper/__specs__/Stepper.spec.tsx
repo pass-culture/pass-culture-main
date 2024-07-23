@@ -1,6 +1,6 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import React from 'react'
+import { axe } from 'vitest-axe'
 
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -43,6 +43,12 @@ describe('Stepper', () => {
       activeStep: '2',
       steps: steps,
     }
+  })
+
+  it('should check content for accessibility', async () => {
+    const { container } = renderStepper(props)
+
+    expect(await axe(container)).toHaveNoViolations()
   })
 
   it('should display stepper with number and label', async () => {

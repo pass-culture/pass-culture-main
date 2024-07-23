@@ -18,6 +18,7 @@ interface CheckboxProps {
   icon?: string
   disabled?: boolean
   withBorder?: boolean
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
 }
 
 export const Checkbox = ({
@@ -29,6 +30,7 @@ export const Checkbox = ({
   hideFooter,
   disabled,
   withBorder,
+  ...props
 }: CheckboxProps): JSX.Element => {
   const [field, meta] = useField({ name, type: 'checkbox' })
   return (
@@ -41,6 +43,7 @@ export const Checkbox = ({
         value={value}
         disabled={disabled}
         withBorder={withBorder}
+        {...props}
       />
       {!hideFooter && (
         <div className={styles['checkbox-error']}>

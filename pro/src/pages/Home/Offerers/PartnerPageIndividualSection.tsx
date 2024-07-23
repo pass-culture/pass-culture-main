@@ -102,7 +102,7 @@ export function PartnerPageIndividualSection({
             className={styles['details-link']}
             onClick={logVenueLinkClick}
           >
-            Voir ma page dans l’application
+            Voir votre page dans l’application
           </ButtonLink>
 
           <Button
