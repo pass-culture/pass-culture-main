@@ -580,3 +580,7 @@ PG_STAT_FOLDER_ID = secrets_utils.get("PG_STAT_FOLDER_ID", "")
 # GDPR configuration
 GDPR_MAX_EXTRACT_PER_DAY = int(os.environ.get("GDPR_MAX_EXTRACT_PER_DAY", "10"))
 GDPR_LOCK_TIMEOUT = int(os.environ.get("GDPR_LOCK_TIMEOUT", "900"))
+
+# DISCORD pass culture bot
+DISCORD_CLIENT_SECRET = secrets_utils.get("DISCORD_CLIENT_SECRET")
+DISCORD_BOT_TOKEN = secrets_utils.get("DISCORD_BOT_TOKEN")
