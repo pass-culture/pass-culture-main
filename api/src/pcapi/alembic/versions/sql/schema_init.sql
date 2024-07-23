@@ -6816,7 +6816,6 @@ INSERT INTO public.feature VALUES (91, 'WIP_ENABLE_BOOST_SHOWTIMES_FILTER', 'Act
 INSERT INTO public.feature VALUES (92, 'DISABLE_CGR_EXTERNAL_BOOKINGS', 'Désactiver les réservations externes CGR', false);
 INSERT INTO public.feature VALUES (93, 'API_ADRESSE_AVAILABLE', 'Active les fonctionnalitées liées à l''API Adresse', true);
 INSERT INTO public.feature VALUES (94, 'WIP_ENABLE_SUSPICIOUS_EMAIL_SEND', 'Active l''envoie d''email lors de la détection d''une connexion suspicieuse', false);
-INSERT INTO public.feature VALUES (97, 'WIP_MANDATORY_BOOKING_CONTACT', 'Rend obligatoire offer.bookingContact pour les offres retirables', true);
 INSERT INTO public.feature VALUES (99, 'ENABLE_BEAMER', 'Active Beamer, le système de notifs du portail pro', false);
 INSERT INTO public.feature VALUES (100, 'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY', 'Activer le nouveau parcours de dépôt de coordonnées bancaires', false);
 INSERT INTO public.feature VALUES (102, 'SYNCHRONIZE_TITELIVE_API_MUSIC_PRODUCTS', 'Permettre l''import journalier du référentiel de la musique à travers l''API Titelive', false);

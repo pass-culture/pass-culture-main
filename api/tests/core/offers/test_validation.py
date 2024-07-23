@@ -525,7 +525,6 @@ class CheckOfferWithdrawalTest:
                 provider=None,
             )
 
-    @override_features(WIP_MANDATORY_BOOKING_CONTACT=False)
     def test_withdrawable_event_offer_can_have_no_booking_contact(self):
         assert not validation.check_offer_withdrawal(
             withdrawal_type=WithdrawalTypeEnum.NO_TICKET,
