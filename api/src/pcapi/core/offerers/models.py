@@ -1195,6 +1195,7 @@ class IndividualOffererSubscription(PcObject, Base, Model):
 
     isEmailSent: bool = sa.Column(sa.Boolean, nullable=False, server_default=sa.sql.expression.false(), default=False)
     dateEmailSent: date | None = sa.Column(sa.Date, nullable=True)
+    dateReminderEmailSent: date | None = sa.Column(sa.Date, nullable=True)
 
     isCriminalRecordReceived: bool = sa.Column(
         sa.Boolean, nullable=False, server_default=sa.sql.expression.false(), default=False
@@ -1218,6 +1219,14 @@ class IndividualOffererSubscription(PcObject, Base, Model):
     isCertificateValid: bool = sa.Column(
         sa.Boolean, nullable=False, server_default=sa.sql.expression.false(), default=False
     )
+
+    @hybrid_property
+    def isReminderEmailSent(self) -> bool:
+        return self.dateReminderEmailSent is not None
+
+    @isReminderEmailSent.expression  # type: ignore[no-redef]
+    def isReminderEmailSent(cls) -> Boolean:  # pylint: disable=no-self-argument
+        return cls.dateReminderEmailSent.is_not(sa.null())
 
 
 class OffererStatsData(typing.TypedDict, total=False):

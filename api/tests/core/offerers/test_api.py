@@ -2883,3 +2883,45 @@ class GetOffererAddressTest:
             assert address.postalCode == "75103"
             assert address.latitude == 40.8566
             assert address.longitude == 1.3522
+
+
+class SendReminderEmailToIndividualOfferersTest:
+    @patch("pcapi.core.mails.transactional.send_offerer_individual_subscription_reminder")
+    def test_send_reminder_email_to_individual_offerers(self, mocked_transactional_mail):
+        offerers_factories.IndividualOffererSubscriptionFactory(
+            offerer__validationStatus=ValidationStatus.PENDING, isEmailSent=False
+        )
+        offerers_factories.IndividualOffererSubscriptionFactory(
+            offerer__validationStatus=ValidationStatus.PENDING,
+            dateReminderEmailSent=datetime.date.today() - datetime.timedelta(days=1),
+        )
+        offerers_factories.IndividualOffererSubscriptionFactory(
+            offerer__validationStatus=ValidationStatus.PENDING,
+            isEmailSent=True,
+            dateEmailSent=datetime.date.today() - datetime.timedelta(days=15),
+            isCriminalRecordReceived=False,
+        )
+        offerers_factories.IndividualOffererSubscriptionFactory(offerer__validationStatus=ValidationStatus.VALIDATED)
+        offerers_factories.IndividualOffererSubscriptionFactory(
+            offerer__validationStatus=ValidationStatus.PENDING,
+            isCriminalRecordReceived=True,
+            isCertificateReceived=True,
+            isExperienceReceived=True,
+        )
+        # This one should receive an email
+        offerer = offerers_factories.IndividualOffererSubscriptionFactory(
+            offerer__validationStatus=ValidationStatus.PENDING,
+            isEmailSent=True,
+            dateEmailSent=datetime.date.today() - datetime.timedelta(days=31),
+            isCriminalRecordReceived=False,
+        ).offerer
+        offerers_factories.UserOffererFactory(offerer=offerer)
+
+        # 1 query to get all data
+        # 1 query to update dateReminderEmailSent
+        with assert_num_queries(2):
+            offerers_api.send_reminder_email_to_individual_offerers()
+
+        assert offerer.individualSubscription.isReminderEmailSent is True
+        assert offerer.individualSubscription.dateReminderEmailSent == datetime.date.today()
+        mocked_transactional_mail.assert_called_once_with(offerer.UserOfferers[0].user.email)

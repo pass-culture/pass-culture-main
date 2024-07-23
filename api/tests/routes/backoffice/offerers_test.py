@@ -3990,8 +3990,14 @@ class GetIndividualOffererSubscriptionTest(GetEndpointHelper):
 
     def test_with_subscription_data(self, authenticated_client):
         individual_subscription = offerers_factories.IndividualOffererSubscriptionFactory(
-            isCriminalRecordReceived=True, isExperienceReceived=True
+            isCriminalRecordReceived=True,
+            isExperienceReceived=True,
+            dateReminderEmailSent=datetime.date.today() - datetime.timedelta(days=1),
         )
+        individual_subscription.dateReminderEmailSent = individual_subscription.dateEmailSent + datetime.timedelta(
+            days=30
+        )
+
         offerer = individual_subscription.offerer
         url = url_for(self.endpoint, offerer_id=offerer.id)
 
@@ -4002,7 +4008,7 @@ class GetIndividualOffererSubscriptionTest(GetEndpointHelper):
         self._assert_steps(
             response.data,
             {
-                f"Mail envoyé le {format_date(individual_subscription.dateEmailSent)}": [
+                f"Mail envoyé le {format_date(individual_subscription.dateEmailSent)} Relance envoyée le {format_date(individual_subscription.dateReminderEmailSent)}": [
                     "bi-check-circle-fill",
                     "text-success",
                 ],

@@ -1,5 +1,7 @@
 import dataclasses
+from datetime import date
 from datetime import datetime
+from datetime import timedelta
 import decimal
 import itertools
 import logging
@@ -2775,6 +2777,58 @@ def get_offer_confidence_level(
         )
 
     return offerer_confidence_level or venue_confidence_level
+
+
+# The max number of reminders is defined with homologation team, to ensure that they can handle replies
+MAX_REMINDER_EMAILS_PER_DAY = 80
+
+
+def send_reminder_email_to_individual_offerers() -> None:
+    offerers = (
+        (
+            offerers_models.Offerer.query.join(
+                offerers_models.IndividualOffererSubscription,
+                offerers_models.IndividualOffererSubscription.offererId == offerers_models.Offerer.id,
+            )
+            .options(
+                sa.orm.load_only(offerers_models.Offerer.id),
+                sa.orm.contains_eager(offerers_models.Offerer.individualSubscription).load_only(
+                    offerers_models.IndividualOffererSubscription.dateReminderEmailSent
+                ),
+                sa.orm.joinedload(offerers_models.Offerer.UserOfferers)
+                .load_only(offerers_models.UserOfferer.userId)
+                .joinedload(offerers_models.UserOfferer.user)
+                .load_only(users_models.User.email),
+            )
+            .filter(
+                offerers_models.IndividualOffererSubscription.isEmailSent.is_(True),
+                offerers_models.IndividualOffererSubscription.dateEmailSent.between(
+                    date.today() - timedelta(days=365),
+                    date.today() - timedelta(days=31),
+                ),
+                sa.not_(offerers_models.IndividualOffererSubscription.isReminderEmailSent),
+                sa.or_(
+                    # same as for column and filter "Documents reçus"
+                    offerers_models.IndividualOffererSubscription.isCriminalRecordReceived.is_(False),
+                    offerers_models.IndividualOffererSubscription.isExperienceReceived.is_(False),
+                ),
+                offerers_models.Offerer.isPending,
+            )
+        )
+        .order_by(offerers_models.IndividualOffererSubscription.dateEmailSent)
+        .limit(MAX_REMINDER_EMAILS_PER_DAY)
+        .all()
+    )
+
+    logger.info(
+        "send_reminder_email_to_individual_offerers will send reminder emails to %s individual offerers", len(offerers)
+    )
+
+    for offerer in offerers:
+        offerer.individualSubscription.dateReminderEmailSent = date.today()
+        transactional_mails.send_offerer_individual_subscription_reminder(offerer.UserOfferers[0].user.email)
+
+    db.session.commit()
 
 
 def update_offerer_address(offerer_address_id: int, address_id: int, label: str | None = None) -> None:
