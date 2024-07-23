@@ -2640,12 +2640,12 @@
   resolved "https://registry.yarnpkg.com/@sindresorhus/merge-streams/-/merge-streams-2.3.0.tgz#719df7fb41766bc143369eaa0dd56d8dc87c9958"
   integrity sha512-LtoMMhxAlorcGhmFYI+LhPgbPZCkgP6ra1YL604EeF6U98pLlQ3iWIGMdWSC+vWmPBWBNgmDBAhnAobLROJmwg==
 
-"@storybook/addon-a11y@^8.2.4":
-  version "8.2.4"
-  resolved "https://registry.yarnpkg.com/@storybook/addon-a11y/-/addon-a11y-8.2.4.tgz#db3045a18c6420756f2ca42955a7ce58955a8290"
-  integrity sha512-LyAvwDoAoyQSNwyI/KCq80pNBiLZCFqnAVyLU26QhB+Ydubn8T2kZf/zQ1Nf3eG1wZ4ONoekv06Mw5yY8ZdOjA==
+"@storybook/addon-a11y@^8.2.5":
+  version "8.2.5"
+  resolved "https://registry.yarnpkg.com/@storybook/addon-a11y/-/addon-a11y-8.2.5.tgz#37f712923ac8ed2ea0dd38b487d0b09f1854ab30"
+  integrity sha512-sQxX/6mVSF15JnB/HEPrfY43Z6SvgyzAQYfMvqWS+sQBK04busLJBWElQRgekZo80sDCq52mq98lm+ZgpZs42A==
   dependencies:
-    "@storybook/addon-highlight" "8.2.4"
+    "@storybook/addon-highlight" "8.2.5"
     axe-core "^4.2.0"
 
 "@storybook/addon-controls@^8.2.4":
@@ -2657,10 +2657,10 @@
     lodash "^4.17.21"
     ts-dedent "^2.0.0"
 
-"@storybook/addon-highlight@8.2.4":
-  version "8.2.4"
-  resolved "https://registry.yarnpkg.com/@storybook/addon-highlight/-/addon-highlight-8.2.4.tgz#85eedd166457b47d9844d6872fa33c820949af08"
-  integrity sha512-Ll/2y0m/q9ko9jFt40qsiee4fds6vpcwwxi3mPAVwRV/J7PpMzPkoLxM54bKpeHiWdTeGCXRguXNvyeQMQf3pg==
+"@storybook/addon-highlight@8.2.5":
+  version "8.2.5"
+  resolved "https://registry.yarnpkg.com/@storybook/addon-highlight/-/addon-highlight-8.2.5.tgz#a934623cf101e5c9b09e45f3959e3ae87dc88dea"
+  integrity sha512-fgzmilW3jGD68xYiR8sRjOB+joETc6/2+Fmj4S85BNnKy2ViXc1D+LHIw1id5/oT9MNN1i62D517EXRZkPakGw==
   dependencies:
     "@storybook/global" "^5.0.0"
 
