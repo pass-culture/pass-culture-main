@@ -41,46 +41,65 @@ export const CollectiveOfferRow = ({
   })
 
   return (
-    <tr
-      className={classNames(styles['offer-item'], {
-        [styles['inactive']]: isOfferDisabled(offer.status),
-      })}
-      data-testid="offer-item-row"
-    >
-      <CheckboxCell
-        offerName={offer.name}
-        isSelected={isSelected}
-        disabled={isOfferDisabled(offer.status)}
-        selectOffer={() => selectOffer(offer)}
-      />
+    <>
+      <tr
+        className={classNames(styles['offer-item'], {
+          [styles['inactive']]: isOfferDisabled(offer.status),
+        })}
+        data-testid="offer-item-row"
+      >
+        <th
+          rowSpan={
+            !isCollectiveOffersExpirationEnabled || offer.isShowcase ? 1 : 2
+          }
+          scope="rowgroup"
+          className={styles['reference-row-head']}
+        />
+        <CheckboxCell
+          offerName={offer.name}
+          isSelected={isSelected}
+          disabled={isOfferDisabled(offer.status)}
+          selectOffer={() => selectOffer(offer)}
+        />
+        {isCollectiveOffersExpirationEnabled && (
+          <td className={styles['expiration-date-cell']} />
+        )}
+        <ThumbCell offer={offer} editionOfferLink={editionOfferLink} />
 
-      <ThumbCell offer={offer} editionOfferLink={editionOfferLink} />
+        <OfferNameCell
+          offer={offer}
+          editionOfferLink={editionOfferLink}
+          audience={Audience.COLLECTIVE}
+        />
 
-      <OfferNameCell
-        offer={offer}
-        editionOfferLink={editionOfferLink}
-        audience={Audience.COLLECTIVE}
-      />
+        {isCollectiveOffersExpirationEnabled && (
+          <OfferEventDateCell offer={offer} />
+        )}
 
-      {isCollectiveOffersExpirationEnabled && (
-        <OfferEventDateCell offer={offer} />
+        <OfferVenueCell venue={offer.venue} />
+
+        <OfferInstitutionCell
+          educationalInstitution={offer.educationalInstitution}
+        />
+
+        <CollectiveOfferStatusCell offer={offer} />
+
+        <CollectiveActionsCells
+          offer={offer}
+          editionOfferLink={editionOfferLink}
+          urlSearchFilters={urlSearchFilters}
+          isSelected={isSelected}
+          deselectOffer={() => selectOffer(offer)}
+        />
+      </tr>
+      {isCollectiveOffersExpirationEnabled && !offer.isShowcase && (
+        <tr>
+          <td colSpan={1} />
+          <td colSpan={8} style={{ backgroundColor: 'red' }}>
+            Expire dans x jours
+          </td>
+        </tr>
       )}
-
-      <OfferVenueCell venue={offer.venue} />
-
-      <OfferInstitutionCell
-        educationalInstitution={offer.educationalInstitution}
-      />
-
-      <CollectiveOfferStatusCell offer={offer} />
-
-      <CollectiveActionsCells
-        offer={offer}
-        editionOfferLink={editionOfferLink}
-        urlSearchFilters={urlSearchFilters}
-        isSelected={isSelected}
-        deselectOffer={() => selectOffer(offer)}
-      />
-    </tr>
+    </>
   )
 }

@@ -15,7 +15,7 @@ import { Spinner } from 'ui-kit/Spinner/Spinner'
 import styles from '../OffersTable.module.scss'
 
 import { CollectiveOffersTableBody } from './CollectiveOffersTableBody'
-import { CollectiveOffersTableHead } from './CollectiveOffersTableHead'
+import { CollectiveOffersTableHead } from './CollectiveOffersTableHead/CollectiveOffersTableHead'
 
 type CollectiveOffersTableProps = {
   applyUrlFiltersAndRedirect: (

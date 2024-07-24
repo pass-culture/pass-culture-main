@@ -2,6 +2,11 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/variables/_size.scss" as size;
 @use "styles/variables/_z-index.scss" as zIndex;
+@use "styles/mixins/_a11y.scss" as a11y;
+
+.visually-hidden {
+  @include a11y.visually-hidden;
+}
 
 .offer-item {
   display: grid;
@@ -158,33 +163,29 @@
 @media (min-width: size.$mobile) {
   .offer-item {
     grid-template-columns: rem.torem(22px) rem.torem(112px) 1fr rem.torem(105px);
+  }
 
-    .thumb-column {
-      padding: rem.torem(8px) rem.torem(16px);
-    }
+  .thumb-column {
+    padding: rem.torem(8px) rem.torem(16px);
+  }
 
-    .title-column {
-      grid-area: head;
-    }
+  .title-column {
+    grid-area: head;
+  }
 
-    .venue-column {
-      grid-area: desc;
-    }
+  .venue-column {
+    grid-area: desc;
+  }
 
-    .institution-column,
-    .stock-column {
-      grid-area: desc3;
-    }
+  .institution-column,
+  .stock-column {
+    grid-area: desc3;
   }
 }
 
 @media (min-width: size.$tablet) {
   .offer-item {
     display: table-row;
-
-    > td {
-      padding: rem.torem(8px);
-    }
 
     .checkbox-column {
       width: rem.torem(32px);
@@ -228,6 +229,10 @@
         justify-content: flex-end;
       }
     }
+  }
+
+  td {
+    padding: rem.torem(8px);
   }
 }
 
@@ -322,4 +327,9 @@
   &-hours {
     @include fonts.caption;
   }
+}
+
+.reference-row-head,
+.expiration-date-cell {
+  padding: 0;
 }
