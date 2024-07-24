@@ -533,6 +533,26 @@ class CollectiveOffer(
         )
 
     @property
+    def start(self) -> datetime | None:
+        if not self.collectiveStock:
+            return None
+
+        return self.collectiveStock.startDatetime
+
+    @property
+    def end(self) -> datetime | None:
+        if not self.collectiveStock:
+            return None
+
+        return self.collectiveStock.endDatetime
+
+    @property
+    def dates(self) -> dict | None:
+        if not self.start or not self.end:
+            return None
+        return {"start": self.start, "end": self.end}
+
+    @property
     def hasBookingLimitDatetimePassed(self) -> bool:
         if self.collectiveStock:
             return self.collectiveStock.hasBookingLimitDatetimePassed

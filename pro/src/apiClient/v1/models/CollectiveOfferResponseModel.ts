@@ -10,8 +10,10 @@ import type { EducationalInstitutionResponseModel } from './EducationalInstituti
 import type { ListOffersVenueResponseModel } from './ListOffersVenueResponseModel';
 import type { NationalProgramModel } from './NationalProgramModel';
 import type { SubcategoryIdEnum } from './SubcategoryIdEnum';
+import type { TemplateDatesModel } from './TemplateDatesModel';
 export type CollectiveOfferResponseModel = {
   booking?: CollectiveOffersBookingResponseModel | null;
+  dates?: TemplateDatesModel | null;
   educationalInstitution?: EducationalInstitutionResponseModel | null;
   formats?: Array<EacFormat> | null;
   hasBookingLimitDatetimesPassed: boolean;
