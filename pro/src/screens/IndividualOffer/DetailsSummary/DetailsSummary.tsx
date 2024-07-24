@@ -128,10 +128,7 @@ export function DetailsSummaryScreen({ offer }: DetailsSummaryScreenProps) {
           editLink={getIndividualOfferUrl({
             offerId: offer.id,
             step: OFFER_WIZARD_STEP_IDS.DETAILS,
-            mode:
-              mode === OFFER_WIZARD_MODE.READ_ONLY
-                ? OFFER_WIZARD_MODE.EDITION
-                : mode,
+            mode: OFFER_WIZARD_MODE.EDITION,
           })}
           aria-label="Modifier les détails de l’offre"
         >

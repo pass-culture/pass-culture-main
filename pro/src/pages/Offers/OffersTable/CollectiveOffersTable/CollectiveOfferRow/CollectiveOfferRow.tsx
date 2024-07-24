@@ -34,11 +34,11 @@ export const CollectiveOfferRow = ({
     'ENABLE_COLLECTIVE_OFFERS_EXPIRATION'
   )
 
-  const editionOfferLink = useOfferEditionURL(
-    true,
-    offer.id,
-    Boolean(offer.isShowcase)
-  )
+  const editionOfferLink = useOfferEditionURL({
+    isOfferEducational: true,
+    offerId: offer.id,
+    isShowcase: Boolean(offer.isShowcase),
+  })
 
   return (
     <tr
