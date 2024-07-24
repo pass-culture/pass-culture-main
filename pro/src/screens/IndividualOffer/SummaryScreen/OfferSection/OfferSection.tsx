@@ -46,9 +46,6 @@ export const OfferSection = ({
   )
   const musicTypes = musicTypesQuery.data
 
-  const isBookingContactEnabled = useActiveFeature(
-    'WIP_MANDATORY_BOOKING_CONTACT'
-  )
   const isSplitOfferEnabled = useActiveFeature('WIP_SPLIT_OFFER')
 
   const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
@@ -175,7 +172,7 @@ export const OfferSection = ({
       text: `${humanizeDelay(offerData.withdrawalDelay)} avant le début de l’évènement`,
     })
   }
-  if (isBookingContactEnabled && offerData.bookingContact) {
+  if (offerData.bookingContact) {
     practicalInfoDescriptions.push({
       title: 'Email de contact',
       text:

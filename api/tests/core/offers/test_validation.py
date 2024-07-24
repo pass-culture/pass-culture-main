@@ -14,7 +14,6 @@ from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.offers.models import WithdrawalTypeEnum
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.providers.repository import get_provider_by_local_class
-from pcapi.core.testing import override_features
 from pcapi.models.api_errors import ApiErrors
 
 import tests
@@ -524,16 +523,6 @@ class CheckOfferWithdrawalTest:
                 booking_contact=None,
                 provider=None,
             )
-
-    @override_features(WIP_MANDATORY_BOOKING_CONTACT=False)
-    def test_withdrawable_event_offer_can_have_no_booking_contact(self):
-        assert not validation.check_offer_withdrawal(
-            withdrawal_type=WithdrawalTypeEnum.NO_TICKET,
-            withdrawal_delay=None,
-            subcategory_id=subcategories.FESTIVAL_MUSIQUE.id,
-            booking_contact=None,
-            provider=None,
-        )
 
     def test_withdrawable_event_offer_with_provider_can_be_in_app(self):
         provider = providers_factories.ProviderFactory(
