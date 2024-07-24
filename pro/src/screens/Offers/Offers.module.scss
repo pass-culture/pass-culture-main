@@ -49,42 +49,15 @@
 
   table {
     width: 100%;
+  }
 
-    th {
-      @include fonts.caption;
+  tbody > tr {
+    border-bottom: rem.torem(1px) solid var(--color-grey-medium);
+    margin-top: 1rem;
 
-      padding: 0 rem.torem(8px) rem.torem(10px);
-      text-align: left;
-    }
-
-    th.th-actions {
-      text-align: right;
-
-      &-eac {
-        padding-right: 0;
-      }
-    }
-
-    tbody > tr {
-      border-bottom: rem.torem(1px) solid var(--color-grey-medium);
-      margin-top: 1rem;
-
+    &:first-of-type {
       td {
-        vertical-align: middle;
-      }
-
-      td:last-child {
-        padding-right: 0;
-      }
-
-      td:first-child {
-        padding-left: 0;
-      }
-
-      &:first-child {
-        td {
-          padding-top: 0;
-        }
+        padding-top: 0;
       }
     }
   }
@@ -115,6 +88,33 @@
       display: table-header-group;
     }
   }
+}
+
+th {
+  @include fonts.caption;
+
+  padding: 0 rem.torem(8px) rem.torem(10px);
+  text-align: left;
+}
+
+th.th-actions {
+  text-align: right;
+
+  &-eac {
+    padding-right: 0;
+  }
+}
+
+td {
+  vertical-align: middle;
+}
+
+td:last-child {
+  padding-right: 0;
+}
+
+td:first-of-type {
+  padding-left: 0;
 }
 
 .banner {
