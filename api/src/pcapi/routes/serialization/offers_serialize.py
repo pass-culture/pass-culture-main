@@ -76,7 +76,7 @@ class CategoryResponseModel(BaseModel):
 
 class PostOfferOffererAddressBodyModel(BaseModel):
     city: base_serializers.VenueCity
-    label: str
+    label: str | None
     latitude: float | str
     longitude: float | str
     postalCode: base_serializers.VenuePostalCode

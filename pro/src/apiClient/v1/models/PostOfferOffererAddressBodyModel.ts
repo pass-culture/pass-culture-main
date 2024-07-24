@@ -4,7 +4,7 @@
 /* eslint-disable */
 export type PostOfferOffererAddressBodyModel = {
   city: string;
-  label: string;
+  label?: string | null;
   latitude: (number | string);
   longitude: (number | string);
   postalCode: string;
