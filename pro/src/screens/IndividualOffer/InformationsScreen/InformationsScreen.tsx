@@ -32,7 +32,6 @@ import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
 import { isOfferDisabled } from 'core/Offers/utils/isOfferDisabled'
 import { PATCH_SUCCESS_MESSAGE } from 'core/shared/constants'
-import { useActiveFeature } from 'hooks/useActiveFeature'
 import { useCurrentUser } from 'hooks/useCurrentUser'
 import { useNotification } from 'hooks/useNotification'
 import { useOfferWizardMode } from 'hooks/useOfferWizardMode'
@@ -76,10 +75,6 @@ export const InformationsScreen = ({
     useIndividualOfferImageUpload()
   const selectedOffererId = useSelector(selectCurrentOffererId)
 
-  const isBookingContactEnabled = useActiveFeature(
-    'WIP_MANDATORY_BOOKING_CONTACT'
-  )
-
   const queryParams = new URLSearchParams(location.search)
   const queryOfferType = queryParams.get('offer-type')
 
@@ -105,9 +100,9 @@ export const InformationsScreen = ({
           offererId,
           venueId,
           filteredVenueList,
-          isBookingContactEnabled
+          true
         )
-      : setInitialFormValues(offer, subCategories, isBookingContactEnabled)
+      : setInitialFormValues(offer, subCategories, true)
 
   const [isWithdrawalMailDialogOpen, setIsWithdrawalMailDialogOpen] =
     useState<boolean>(false)

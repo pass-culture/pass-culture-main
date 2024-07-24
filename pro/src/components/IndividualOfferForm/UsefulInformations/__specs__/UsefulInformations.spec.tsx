@@ -47,8 +47,7 @@ const renderUsefulInformations = ({
           Submit
         </Button>
       </Form>
-    </Formik>,
-    { features: ['WIP_MANDATORY_BOOKING_CONTACT'] }
+    </Formik>
   )
 }
 

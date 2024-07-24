@@ -23,7 +23,6 @@ from pcapi.core.providers import models as providers_models
 from pcapi.domain import music_types
 from pcapi.domain import show_types
 from pcapi.models import api_errors
-from pcapi.models.feature import FeatureToggle
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.routes.public.books_stocks import serialization
 from pcapi.utils import date
@@ -419,7 +418,7 @@ def check_offer_withdrawal(
     if is_offer_withdrawable and withdrawal_type is None:
         raise exceptions.WithdrawableEventOfferMustHaveWithdrawal()
 
-    if FeatureToggle.WIP_MANDATORY_BOOKING_CONTACT.is_active() and is_offer_withdrawable and not booking_contact:
+    if is_offer_withdrawable and not booking_contact:
         raise exceptions.WithdrawableEventOfferMustHaveBookingContact()
 
     if withdrawal_type == models.WithdrawalTypeEnum.NO_TICKET and withdrawal_delay is not None:

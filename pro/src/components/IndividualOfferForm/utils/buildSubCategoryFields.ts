@@ -20,7 +20,6 @@ export const buildSubcategoryFields = (
   if (subcategory?.canBeWithdrawable) {
     subcategoryFields.push('withdrawalType')
     subcategoryFields.push('withdrawalDelay')
-
     if (isBookingContactEnabled) {
       subcategoryFields.push('bookingContact')
     }
