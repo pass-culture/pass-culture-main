@@ -9,7 +9,6 @@ import {
   OFFER_STATUS_PENDING,
   OFFER_STATUS_SOLD_OUT,
 } from 'core/Offers/constants'
-import { Audience } from 'core/shared/types'
 import { useActiveFeature } from 'hooks/useActiveFeature'
 import fullErrorIcon from 'icons/full-error.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
@@ -26,13 +25,13 @@ import { getDate, getRemainingTime, shouldDisplayWarning } from './utils'
 export interface OfferNameCellProps {
   offer: CollectiveOfferResponseModel | ListOffersOfferResponseModel
   editionOfferLink: string
-  audience: Audience
+  headers?: string
 }
 
 export const OfferNameCell = ({
   offer,
   editionOfferLink,
-  audience,
+  headers,
 }: OfferNameCellProps) => {
   const { isTooltipHidden, ...tooltipProps } = useTooltipProps({})
   const isCollectiveOffersExpirationEnabled = useActiveFeature(
@@ -65,19 +64,18 @@ export const OfferNameCell = ({
     offer.stocks.filter((stock) => stock.remainingQuantity === 0).length
 
   const shouldShowIndividualWarning =
-    audience === Audience.INDIVIDUAL &&
+    !offer.isEducational &&
     computeNumberOfSoldOutStocks() > 0 &&
     offer.status !== OFFER_STATUS_SOLD_OUT
 
   const shouldShowCollectiveWarning =
-    audience === Audience.COLLECTIVE &&
     isOfferEducational(offer) &&
     offer.booking?.booking_status === OFFER_STATUS_PENDING &&
     shouldDisplayWarning(offer.stocks[0]) &&
     !isCollectiveOffersExpirationEnabled
 
   return (
-    <td className={styles['title-column']}>
+    <td className={styles['title-column']} headers={headers}>
       {offer.isShowcase && (
         <Tag
           variant={TagVariant.SMALL_OUTLINE}

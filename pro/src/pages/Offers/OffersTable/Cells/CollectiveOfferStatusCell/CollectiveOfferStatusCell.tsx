@@ -160,12 +160,14 @@ export const getCollectiveStatusLabel = (
 
 interface CollectiveOfferStatusCellProps {
   offer: CollectiveOfferResponseModel
+  headers?: string
 }
 
 export const CollectiveOfferStatusCell = ({
   offer,
+  headers,
 }: CollectiveOfferStatusCellProps) => (
-  <td className={styles['status-column']}>
+  <td className={styles['status-column']} headers={headers}>
     {getCollectiveStatusLabel(offer.status, offer.booking?.booking_status)}
   </td>
 )

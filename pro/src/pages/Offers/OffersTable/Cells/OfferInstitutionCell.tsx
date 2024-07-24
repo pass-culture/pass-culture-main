@@ -4,10 +4,12 @@ import styles from '../OfferRow.module.scss'
 
 interface OfferInstitutionCellProps {
   educationalInstitution?: EducationalInstitutionResponseModel | null
+  headers?: string
 }
 
 export const OfferInstitutionCell = ({
   educationalInstitution,
+  headers,
 }: OfferInstitutionCellProps) => {
   const { name, institutionType, city } = educationalInstitution || {}
 
@@ -20,7 +22,7 @@ export const OfferInstitutionCell = ({
   }
 
   return (
-    <td className={styles['institution-column']}>
+    <td className={styles['institution-column']} headers={headers}>
       {showEducationalInstitution}
     </td>
   )
