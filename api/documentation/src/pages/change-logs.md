@@ -13,6 +13,11 @@ title: Pass Culture API change logs
 **You can find a migration tutorial [here](/docs/tutorials/migrate-to-the-new-api).**
 :::
 
+## July 2024
+
+- You can now access your provider information using [**this endpoint**](/rest-api#tag/Providers/operation/GetProvider).
+- You can now set your messaging URLs using the API. Futhermore you can now specify them a 2 levels: either at [**provider level**](/rest-api#tag/Providers/operation/UpdateProvider) or at [**venue level**](/rest-api#tag/Providers/operation/UpdateVenueExternalUrls).
+
 ## June 2024
 
 - You can now specify your own id when you [create an individual event offer](/rest-api#tag/Event-offers/operation/PostEventOffer) and/or [create stock for this event](/rest-api#tag/Event-offer-stocks/operation/PostEventStocks). This id is called `idAtProvider` and will be send to your ticketing system when a beneficiary books a ticket.
