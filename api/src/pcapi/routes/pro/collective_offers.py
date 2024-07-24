@@ -10,7 +10,6 @@ from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import repository as educational_repository
 from pcapi.core.educational.api import adage as educational_api_adage
 from pcapi.core.educational.api import offer as educational_api_offer
-from pcapi.core.educational.models import CollectiveOfferDisplayedStatus
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offers import api as offers_api
@@ -42,17 +41,12 @@ logger = logging.getLogger(__name__)
 def get_collective_offers(
     query: collective_offers_serialize.ListCollectiveOffersQueryModel,
 ) -> collective_offers_serialize.ListCollectiveOffersResponseModel:
-    status = None
+    statuses = None
 
     if query.status:
         assert isinstance(query.status, list)
-        # Only 1 status is permitted for the moment
-        # TODO: implement multi status passing
-        if len(query.status) != 1:
-            raise ApiErrors({"status": ["Only 1 status must be provided in query args"]}, status_code=400)
 
-        status_enum: CollectiveOfferDisplayedStatus = query.status[0]
-        status = status_enum.value
+        statuses = [status.value for status in query.status]
 
     capped_offers = educational_api_offer.list_collective_offers_for_pro_user(
         user_id=current_user.id,
@@ -61,7 +55,7 @@ def get_collective_offers(
         offerer_id=query.offerer_id,
         venue_id=query.venue_id,
         name_keywords=query.nameOrIsbn,
-        status=status,
+        statuses=statuses,
         period_beginning_date=query.period_beginning_date,
         period_ending_date=query.period_ending_date,
         offer_type=query.collective_offer_type,
@@ -411,11 +405,13 @@ def patch_all_collective_offers_active_status(
                 if not offerers_api.can_offerer_create_educational_offer(offerer_id):
                     raise ApiErrors({"Partner": ["User not in Adage can't edit the offer"]}, status_code=403)
 
+    statuses = [body.status] if body.status is not None else []
+
     filters = {
         "user_id": current_user.id,
         "is_user_admin": current_user.has_admin_role,
         "offerer_id": body.offerer_id,
-        "status": body.status,
+        "statuses": statuses,
         "venue_id": body.venue_id,
         "provider_id": None,
         "category_id": body.category_id,
@@ -431,6 +427,7 @@ def patch_all_collective_offers_active_status(
 @login_required
 @spectree_serialize(
     on_success_status=204,
+    on_error_statuses=[400, 403],
     api=blueprint.pro_private_schema,
 )
 def patch_collective_offers_active_status(
@@ -443,7 +440,11 @@ def patch_collective_offers_active_status(
                 raise ApiErrors({"Partner": ["User not in Adage can't edit the offer"]}, status_code=403)
 
     collective_query = educational_api_offer.get_query_for_collective_offers_by_ids_for_user(current_user, body.ids)
-    offers_api.batch_update_collective_offers(collective_query, {"isActive": body.is_active})
+    try:
+        offers_api.batch_update_collective_offers(collective_query, {"isActive": body.is_active})
+    except educational_exceptions.CollectiveOfferNotCancellable as error:
+        message = error.args[0]
+        raise ApiErrors({"ids": [message]}, status_code=400)
 
 
 @private_api.route("/collective/offers/archive", methods=["PATCH"])
@@ -460,7 +461,11 @@ def patch_collective_offers_archive(
     if educational_api_offer.query_has_any_archived(collective_query):
         raise ApiErrors({"global": ["One of the offer is already archived"]}, status_code=422)
 
-    offers_api.batch_update_collective_offers(collective_query, {"dateArchived": datetime.utcnow()})
+    try:
+        offers_api.batch_update_collective_offers(collective_query, {"dateArchived": datetime.utcnow()})
+    except educational_exceptions.CollectiveOfferNotCancellable as error:
+        message = error.args[0]
+        raise ApiErrors({"ids": [message]}, status_code=400)
 
 
 @private_api.route("/collective/offers-template/active-status", methods=["PATCH"])

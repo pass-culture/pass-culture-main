@@ -24,10 +24,11 @@ class Returns204Test:
 
         # query += 1 authentication
         # query += 1 load current_user
-        # query += 1 ensure there is no existing archived offer
+        # query += 1 retrieve all offerer_ids relative to offer provided
+        # query += 1 ensure all offers can be archived
         # query += 1 retrieve all collective_order.ids to batch them in pool for update
         # query += 1 update dateArchive on collective_offer
-        with assert_num_queries(5):
+        with assert_num_queries(6):
             response = client.patch("/collective/offers/archive", json=data)
 
         # Then
