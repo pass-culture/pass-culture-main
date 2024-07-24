@@ -7,6 +7,7 @@ interface CheckboxCellProps {
   isSelected: boolean
   disabled?: boolean
   selectOffer: () => void
+  headers?: string
 }
 
 export const CheckboxCell = ({
@@ -14,9 +15,10 @@ export const CheckboxCell = ({
   isSelected,
   disabled,
   selectOffer,
+  headers,
 }: CheckboxCellProps) => {
   return (
-    <td className={styles['checkbox-column']}>
+    <td className={styles['checkbox-column']} headers={headers}>
       <BaseCheckbox
         checked={isSelected}
         className="select-offer-checkbox"

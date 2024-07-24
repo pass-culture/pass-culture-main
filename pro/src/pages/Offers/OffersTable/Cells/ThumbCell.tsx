@@ -12,12 +12,14 @@ import styles from '../OfferRow.module.scss'
 export const ThumbCell = ({
   offer,
   editionOfferLink,
+  headers,
 }: {
   offer: CollectiveOfferResponseModel | ListOffersOfferResponseModel
   editionOfferLink: string
+  headers?: string
 }) => {
   return (
-    <td className={styles['thumb-column']}>
+    <td className={styles['thumb-column']} headers={headers}>
       <Link
         className={styles['thumb-column-link']}
         title={`${offer.name} - éditer l’offre`}

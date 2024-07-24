@@ -6,9 +6,13 @@ import styles from '../../OfferRow.module.scss'
 
 export interface OfferEventDateCellProps {
   offer: CollectiveOfferResponseModel
+  headers?: string
 }
 
-export const OfferEventDateCell = ({ offer }: OfferEventDateCellProps) => {
+export const OfferEventDateCell = ({
+  offer,
+  headers,
+}: OfferEventDateCellProps) => {
   function formattedTime(hour: string | null | undefined) {
     if (!hour) {
       return
@@ -59,7 +63,7 @@ export const OfferEventDateCell = ({ offer }: OfferEventDateCellProps) => {
   }
 
   return (
-    <td>
+    <td headers={headers}>
       <div className={styles['offer-event']}>
         {getFormattedDatesForOffer(offer).map((date) => (
           <span key={date}>{date}</span>

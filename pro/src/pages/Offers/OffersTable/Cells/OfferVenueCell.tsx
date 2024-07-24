@@ -5,10 +5,13 @@ import styles from '../OfferRow.module.scss'
 
 interface OfferVenueCellProps {
   venue: ListOffersVenueResponseModel
+  headers?: string
 }
 
-export const OfferVenueCell = ({ venue }: OfferVenueCellProps) => {
+export const OfferVenueCell = ({ venue, headers }: OfferVenueCellProps) => {
   return (
-    <td className={styles['venue-column']}>{computeVenueDisplayName(venue)}</td>
+    <td className={styles['venue-column']} headers={headers}>
+      {computeVenueDisplayName(venue)}
+    </td>
   )
 }

@@ -3,7 +3,6 @@ import classNames from 'classnames'
 import { ListOffersOfferResponseModel } from 'apiClient/v1'
 import { OFFER_STATUS_DRAFT } from 'core/Offers/constants'
 import { isOfferDisabled } from 'core/Offers/utils/isOfferDisabled'
-import { Audience } from 'core/shared/types'
 import { useActiveFeature } from 'hooks/useActiveFeature'
 import {
   useOfferEditionURL,
@@ -66,11 +65,7 @@ export const IndividualOfferRow = ({
 
       <ThumbCell offer={offer} editionOfferLink={editionOfferLink} />
 
-      <OfferNameCell
-        offer={offer}
-        editionOfferLink={editionOfferLink}
-        audience={Audience.INDIVIDUAL}
-      />
+      <OfferNameCell offer={offer} editionOfferLink={editionOfferLink} />
 
       {offerAddressEnabled && offer.address ? (
         <td className={styles['venue-column']}>

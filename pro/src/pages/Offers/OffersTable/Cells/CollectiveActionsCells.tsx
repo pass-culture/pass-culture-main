@@ -60,6 +60,7 @@ export interface CollectiveActionsCellsProps {
   urlSearchFilters: SearchFiltersParams
   deselectOffer: (offer: CollectiveOfferResponseModel) => void
   isSelected: boolean
+  headers?: string
 }
 
 const LOCAL_STORAGE_HAS_SEEN_MODAL_KEY = 'DUPLICATE_OFFER_MODAL_SEEN'
@@ -70,6 +71,7 @@ export const CollectiveActionsCells = ({
   urlSearchFilters,
   deselectOffer,
   isSelected,
+  headers,
 }: CollectiveActionsCellsProps) => {
   const navigate = useNavigate()
   const notify = useNotification()
@@ -204,7 +206,7 @@ export const CollectiveActionsCells = ({
   }
 
   return (
-    <td className={styles['actions-column']}>
+    <td className={styles['actions-column']} headers={headers}>
       <div className={styles['actions-container']}>
         {(offer.status === CollectiveOfferStatus.SOLD_OUT ||
           offer.status === CollectiveOfferStatus.EXPIRED) &&
