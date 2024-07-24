@@ -229,6 +229,30 @@ class Returns200Test:
         assert response.status_code == 200
         assert response.json["subcategoryId"] is None
 
+    def test_dates_on_offer(self, client):
+        beginningDate = datetime.utcnow() + timedelta(days=100)
+        endDate = datetime.utcnow() + timedelta(days=125)
+        stock = educational_factories.CollectiveStockFactory(
+            beginningDatetime=beginningDate,
+            endDatetime=endDate,
+        )
+        offer = educational_factories.CollectiveOfferFactory(
+            collectiveStock=stock,
+            isActive=True,
+        )
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
+
+        # When
+        client = client.with_session_auth(email="user@example.com")
+        response = client.get(f"/collective/offers/{offer.id}")
+
+        # Then
+        assert response.status_code == 200
+        assert response.json["dates"] == {
+            "start": beginningDate.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
+            "end": endDate.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
+        }
+
 
 @pytest.mark.usefixtures("db_session")
 class Returns403Test:

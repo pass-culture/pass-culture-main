@@ -93,6 +93,13 @@ class Returns200Test:
             endDatetime = dateutil.parser.parse(stock["endDatetime"]).date()
             assert endDatetime == datetime.date(2024, 6, 15)
 
+            dates_json = response_json[0]["dates"]
+            assert isinstance(dates_json, dict)
+            start = dateutil.parser.parse(dates_json["start"]).date()
+            assert start == datetime.date(2024, 6, 8)
+            end = dateutil.parser.parse(dates_json["end"]).date()
+            assert end == datetime.date(2024, 6, 15)
+
     def test_one_inactive_offer(self, client):
         # Given
         user = users_factories.UserFactory()

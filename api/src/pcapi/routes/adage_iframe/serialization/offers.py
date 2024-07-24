@@ -15,6 +15,7 @@ from pcapi.core.educational import models as educational_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.routes.native.v1.serialization import common_models
 from pcapi.routes.serialization import BaseModel
+from pcapi.routes.serialization.collective_offers_serialize import TemplateDatesModel
 from pcapi.routes.serialization.collective_offers_serialize import validate_venue_id
 from pcapi.routes.serialization.national_programs import NationalProgramModel
 from pcapi.routes.shared import validation
@@ -250,14 +251,6 @@ class CollectiveOfferResponseModel(BaseModel, common_models.AccessibilityComplia
 
 class ListCollectiveOffersResponseModel(BaseModel):
     collectiveOffers: list[CollectiveOfferResponseModel]
-
-    class Config:
-        json_encoders = {datetime: format_into_utc_date}
-
-
-class TemplateDatesModel(BaseModel):
-    start: datetime
-    end: datetime
 
     class Config:
         json_encoders = {datetime: format_into_utc_date}
