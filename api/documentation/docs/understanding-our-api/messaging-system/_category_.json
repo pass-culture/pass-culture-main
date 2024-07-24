@@ -1,0 +1,8 @@
+{
+  "label": "Messaging system",
+  "position": 3,
+  "link": {
+    "type": "generated-index",
+    "description": "The pass Culture application provides a messaging system to notify provider when a beneficiary books a product or an event."
+  }
+}
