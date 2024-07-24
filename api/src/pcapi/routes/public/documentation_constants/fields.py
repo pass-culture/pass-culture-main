@@ -5,7 +5,7 @@ from pydantic.v1 import Field
 from pcapi.routes.public.documentation_constants import descriptions
 
 
-_example_datetime_with_tz = "2034-07-24T14:00:00+02:00"
+_example_datetime_with_tz = "2025-07-24T14:00:00+02:00"
 
 
 LIMIT_DESCRIPTION = "Number of items per page"
