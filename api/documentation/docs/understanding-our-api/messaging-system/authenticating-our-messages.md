@@ -1,19 +1,19 @@
 ---
 sidebar_position: 2
-description: How to authenticate notifications coming from the pass Culture application
+description: How to authenticate messages coming from the pass Culture application
 ---
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-# Authenticating our notifications
+# Authenticating our messages
 
-In the provider account creation process, you have been given **an API key**, to authenticate your call to our API, along with **a HMAC key**. 
-**It is the HMAC key that should be used to authenticate our notifications.**
+In the provider account creation process, you have been given **an API key**, to authenticate your call to our API, along with **a HMAC key**.
+**It is the HMAC key that should be used to authenticate our messages.**
 
 ## What happens on our side
 
-When we are about to send you a notification, **we compute the signature of our request payload (i.e. our request body) using the HMAC key**.
+When we are about to send you a message, **we compute the signature of our request payload (i.e. our request body) using the HMAC key**.
 The algorithm used is **sha256**.
 
 Here is how we compute the signature:
@@ -29,7 +29,7 @@ def generate_signature(json_string: str):
 
 ## What should be checked on your side
 
-When you receive a request on one of the notification URLs you indicated to us, you can check that the notification is coming from the pass Culture servers by following this **two steps process** :
+When you receive a request on one of your messaging URLs, you can check message is coming from the pass Culture servers by following this **two steps process** :
 
 1. Check that **the request has a `PassCulture-Signature` header**
 2. Check that **the signature of the request body is equal to the signature given in the `PassCulture-Signature` header**
@@ -64,7 +64,7 @@ def create_ticket():
     if not _verify_signature(request.json, request.headers.get('PassCulture-Signature')):
         # the request body signature doesn't match the signature in the `PassCulture-Signature` header
         return jsonify({"message": "Invalid Signature"}), 401
-    
+
     # ... (your business logic)
 
     return jsonify(response_object), 200
@@ -101,14 +101,14 @@ app.post('/tickets/create', (req, res) => {
 
     if (!signature) {
         // `PassCulture-Signature` header is missing
-        return res.status(403).json({
+        return res.status(401).json({
             message: 'Invalid Signature'
         });
     }
 
     if (!verifySignature(jsonString, signature)) {
         // the request body signature doesn't match the signature in the `PassCulture-Signature` header
-        return res.status(403).json({
+        return res.status(401).json({
             message: 'Invalid Signature'
         });
     }
@@ -160,17 +160,17 @@ class TicketController extends AbstractController
         if (!$signature) {
             return $this->json([
                 'message' => 'Invalid Signature'
-            ], 403);
+            ], 401);
         }
 
         if (!$this->verifySignature($jsonString, $signature)) {
             return $this->json([
                 'message' => 'Invalid Signature'
-            ], 403);
+            ], 401);
         }
 
         // Your business logic goes here...
-        
+
         // Send a response
         return $this->json([
             'message' => 'Data received'

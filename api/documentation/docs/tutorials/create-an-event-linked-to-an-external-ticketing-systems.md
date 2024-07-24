@@ -30,16 +30,14 @@ Once our support team has created your provider account, they will send you an e
 The **API key** and the **HMAC key** are sensitive pieces of information, so **you should store them in a safe place** and **_never_ commit them in plain text**.
 :::
 
-### Step 2: Provide us with your notification URL and your cancellation URL
+### Step 2: Provide us with your booking URL and your cancellation URL
 
-For the pass Culture to be connected with your ticketing system, **you need to have the booking URL and the cancellation URL set in your provider account**.
-
-This set-up is currently done by our support team, so you should send as soon as possible your booking URL and your cancellation URL to [**our support team**](mailto:partenaires.techniques@passculture.app).
+For the pass Culture to be connected with your ticketing system, **you need to have the booking URL and the cancellation URL set at provider level or at venue level**.
+To set the URLs at provider level, you can use [**this endpoint**](/rest-api#tag/Providers/operation/UpdateProvider). To set the URLs at venue level, you can use [**this endpoint**](/rest-api#tag/Providers/operation/UpdateVenueExternalUrls).
 
 :::note
-Keep in mind that, at this stage, you should send us your booking URL and your cancellation URL in your own test environment, as it is a development phase.
+**We recommend defining URLs at provider level**. Define URLs at venue level only if the URLs vary from one venue to the other.
 :::
-
 
 ## Phase 2: Build your integration
 
@@ -47,7 +45,7 @@ At this stage, you should create the two routes (the booking URL and the cancell
 
 When building your integration, **you should pay attention** to two things:
 
-- **the two URLs (booking & cancellation) must be freely accessible** (i.e. not protected by a your own authentication system), the authentication of the notification being done following [**this strategy**](/docs/understanding-our-api/notification-system/authenticating-our-notifications)
+- **the two URLs (booking & cancellation) must be freely accessible** (i.e. not protected by a your own authentication system), the messages authentication being done following [**this strategy**](/docs/understanding-our-api/messaging-system/authenticating-our-messages)
 - **we expect specific response formats** : 
   - for ticket creation, we expect this [**success response**](/docs/understanding-our-api/managing-bookings/connection-with-ticketing-system#success-response) and those [**error responses**](/docs/understanding-our-api/managing-bookings/connection-with-ticketing-system#error-responses)
   - for ticket cancellation, we expect this [**success response**](/docs/understanding-our-api/managing-bookings/connection-with-ticketing-system#expected-response)
@@ -74,7 +72,7 @@ class PassCultureAuthenticationError(Exception):
     pass
 
 
-# Service responsible for authenticating the pass Culture notifications
+# Service responsible for authenticating the pass Culture messages
 class PassCultureAuthenticationService:
     @staticmethod
     def _verify_signature(data: str, signature: str):

@@ -10,8 +10,8 @@ If you have a ticketing system to manage your events tickets, it is possible to 
 
 To connect your ticketing system to the pass Culture application, you need first:
 
-1. **To provide us with a booking and a cancelling URL** that we will request each time a beneficiary book/cancel a ticket for the event. You can find the process **[here](/docs/understanding-our-api/notification-system/setting-up-notifcations)**.
-2. **To implement the notification authentication process** described **[here](/docs/understanding-our-api/notification-system/authenticating-our-notifications)** on your side.
+1. **To provide us with a booking and a cancellation URL** that we will request each time a beneficiary book/cancel a ticket for the event. You can find the process **[here](/docs/understanding-our-api/messaging-system/setting-up-messaging)**.
+2. **To implement the message authentication process** described **[here](/docs/understanding-our-api/messaging-system/authenticating-our-messages)** on your side.
 
 ## Enable ticket booking for an event
 
@@ -31,7 +31,7 @@ We will wait for your response, that must contain a barcode, and forward it to t
 :::warning
 As it is a **synchronous process**, we will display an error to the beneficiary :
 - if **your response doesn't match the expected format**
-- if **your server takes to long (more than ten seconds) to respond** to our request.
+- if **your server takes to long (more than 8 seconds) to respond** to our request.
 :::
 
 ### 📩 Our request payload

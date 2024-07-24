@@ -13,8 +13,8 @@ For **`Products`** (and **`Events`** not linked to a ticketing system), bookings
 
 To be notified when a beneficiary books (or cancels a booking) a product (or an event not linked to a ticketing system), you need:
 
-1. **To provide us with a notification URL** that we will request each time a beneficiary books your offer (or cancels a booking). You can find the process **[here](/docs/understanding-our-api/notification-system/setting-up-notifcations)**.
-2. **To implement the notification authentication process** described **[here](/docs/understanding-our-api/notification-system/authenticating-our-notifications)** on your side.
+1. **To provide us with a notification URL** that we will request each time a beneficiary books your offer (or cancels a booking). You can find the process **[here](/docs/understanding-our-api/messaging-system/setting-up-messaging)**.
+2. **To implement the message authentication process** described **[here](/docs/understanding-our-api/messaging-system/authenticating-our-messages)** on your side.
 
 
 ### Our request payload
