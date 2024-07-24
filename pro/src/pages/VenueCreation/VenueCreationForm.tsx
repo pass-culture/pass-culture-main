@@ -163,8 +163,9 @@ export const VenueCreationForm = ({
             <p className={styles['eac-description-info']}>
               Il s’agit d’un formulaire vous permettant de renseigner vos
               informations EAC. Les informations renseignées seront visibles par
-              les enseignants et chefs d’établissement sur ADAGE (Application
-              dédiée à la généralisation....)
+              les enseignants et chefs d’établissement sur ADAGE (L’Application
+              Dédiée À la Généralisation de l’Éducation artistique et
+              culturelle)
             </p>
 
             <Banner type="notification-info">
