@@ -39,6 +39,7 @@ export const Pagination = ({
         onClick={onNextPageClick}
         type="button"
         className={styles['button']}
+        data-testid="next-page-button"
       >
         <SvgIcon src={strokeRightIcon} alt="Page suivante" width="16" />
       </button>

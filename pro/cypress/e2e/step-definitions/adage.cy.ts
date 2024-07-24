@@ -1,6 +1,7 @@
 import { Given, Then, When } from '@badeball/cypress-cucumber-preprocessor'
 
 let offerText: string
+let offerFromSecondPage: string
 
 Given('I go to adage login page with valid token', () => {
   cy.visit('/connexion')
@@ -175,4 +176,22 @@ Then('offer descriptions are displayed', () => {
 
 When('I go to {string} menu', (menu: string) => {
   cy.contains(menu).click()
+})
+
+When('I go the the next page of searched offers', () => {
+  cy.findByTestId('next-page-button').click()
+  cy.findAllByTestId('card-offer-link')
+    .first()
+    .parent()
+    .within(() => {
+      cy.findAllByTestId('card-offer')
+        .invoke('text')
+        .then((text: string) => {
+          offerFromSecondPage = text
+        })
+    })
+})
+
+Then('the first offer of the second page is displayed', () => {
+  cy.contains(offerFromSecondPage)
 })

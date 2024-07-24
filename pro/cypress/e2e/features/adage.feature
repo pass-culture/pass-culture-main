@@ -64,3 +64,11 @@ Feature: ADAGE discovery
     And "Atelier de pratique" in "Format (1)" filter is selected
     And "Arts numériques" in "Domaine artistique (1)" filter is selected
     Then I see no offer
+
+  Scenario: It should save last page of offers searched when navigating the iframe
+    When I open adage iframe with search page
+    And I chose grid view
+    And I go the the next page of searched offers
+    And I go to "Mes Favoris" menu
+    And I go to "Rechercher" menu
+    Then the first offer of the second page is displayed
