@@ -84,7 +84,8 @@ class Returns200Test:
         assert not offer.futureOffer
         assert offer.offererAddress == venue.offererAddress
 
-    def test_create_event_offer_with_existing_offerer_address(self, client):
+    @pytest.mark.parametrize("oa_label", [None, "some place"])
+    def test_create_event_offer_with_existing_offerer_address(self, oa_label, client):
         # Given
         venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
@@ -121,7 +122,7 @@ class Returns200Test:
             "visualDisabilityCompliant": False,
             "address": {
                 "city": offerer_address.address.city,
-                "label": "some place",
+                "label": oa_label,
                 "latitude": offerer_address.address.latitude,
                 "longitude": offerer_address.address.longitude,
                 "postalCode": offerer_address.address.postalCode,
@@ -135,9 +136,11 @@ class Returns200Test:
         offer_id = response.json["id"]
         offer = Offer.query.get(offer_id)
         assert offer.offererAddress.address == offerer_address.address
+        assert offer.offererAddress.label == oa_label
         assert not offer.offererAddress.address.isManualEdition
 
-    def test_create_event_offer_with_non_existing_offerer_address(self, client):
+    @pytest.mark.parametrize("oa_label", [None, "some place"])
+    def test_create_event_offer_with_non_existing_offerer_address(self, oa_label, client):
         # Given
         venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
@@ -161,7 +164,7 @@ class Returns200Test:
             "visualDisabilityCompliant": False,
             "address": {
                 "city": "Paris",
-                "label": "some place",
+                "label": oa_label,
                 "latitude": "48.87171",
                 "longitude": "2.308289",
                 "postalCode": "75001",
@@ -175,9 +178,11 @@ class Returns200Test:
         offer_id = response.json["id"]
         offer = Offer.query.get(offer_id)
         assert offer.offererAddress.address != offerer_address.address
+        assert offer.offererAddress.label == oa_label
         assert not offer.offererAddress.address.isManualEdition
 
-    def test_create_event_offer_with_manual_offerer_address(self, client):
+    @pytest.mark.parametrize("oa_label", [None, "some place"])
+    def test_create_event_offer_with_manual_offerer_address(self, oa_label, client):
         # Given
         venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
@@ -200,7 +205,7 @@ class Returns200Test:
             "visualDisabilityCompliant": False,
             "address": {
                 "city": "Paris",
-                "label": "some place",
+                "label": oa_label,
                 "latitude": "48.87171",
                 "longitude": "2.308289",
                 "postalCode": "75001",
@@ -216,7 +221,7 @@ class Returns200Test:
         offer_id = response.json["id"]
         offer = Offer.query.get(offer_id)
         assert offer.offererAddress.address.isManualEdition
-        assert offer.offererAddress.label == "some place"
+        assert offer.offererAddress.label == oa_label
         assert offer.offererAddress.address.inseeCode == "06029"
         assert not offer.offererAddress.address.banId
 
