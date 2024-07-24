@@ -3,12 +3,21 @@ import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/compute
 import { OFFER_STATUS_DRAFT, OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
 
-export const useOfferEditionURL = (
-  isOfferEducational: boolean,
-  offerId: number,
-  isShowcase?: boolean,
+type UseOfferEditionURL = {
+  isOfferEducational: boolean
+  offerId: number
+  isShowcase?: boolean
   status?: string
-): string => {
+  isSplitOfferEnabled?: boolean
+}
+
+export const useOfferEditionURL = ({
+  isOfferEducational,
+  offerId,
+  isShowcase,
+  status,
+  isSplitOfferEnabled = false,
+}: UseOfferEditionURL): string => {
   if (isOfferEducational) {
     const id = computeURLCollectiveOfferId(offerId, Boolean(isShowcase))
     return `/offre/${id}/collectif/recapitulatif`
@@ -17,14 +26,18 @@ export const useOfferEditionURL = (
     return getIndividualOfferUrl({
       offerId,
       mode: OFFER_WIZARD_MODE.CREATION,
-      step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+      step: isSplitOfferEnabled
+        ? OFFER_WIZARD_STEP_IDS.DETAILS
+        : OFFER_WIZARD_STEP_IDS.INFORMATIONS,
     })
   }
 
   return getIndividualOfferUrl({
     offerId,
     mode: OFFER_WIZARD_MODE.READ_ONLY,
-    step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+    step: isSplitOfferEnabled
+      ? OFFER_WIZARD_STEP_IDS.DETAILS
+      : OFFER_WIZARD_STEP_IDS.SUMMARY,
   })
 }
 

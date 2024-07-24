@@ -12,6 +12,7 @@ import { RouteLeavingGuardIndividualOffer } from 'components/RouteLeavingGuardIn
 import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import { GET_OFFER_QUERY_KEY } from 'config/swrQueryKeys'
 import { useIndividualOfferContext } from 'context/IndividualOfferContext/IndividualOfferContext'
+import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
 import { isOfferDisabled } from 'core/Offers/utils/isOfferDisabled'
 import { PATCH_SUCCESS_MESSAGE } from 'core/shared/constants'
@@ -111,6 +112,21 @@ export const DetailsScreen = ({ venues }: DetailsScreenProps): JSX.Element => {
         }),
         { replace: true }
       )
+      const nextStep =
+        mode === OFFER_WIZARD_MODE.EDITION
+          ? OFFER_WIZARD_STEP_IDS.SUMMARY
+          : OFFER_WIZARD_STEP_IDS.ABOUT
+
+      navigate(
+        getIndividualOfferUrl({
+          offerId: receivedOfferId,
+          step: nextStep,
+          mode:
+            mode === OFFER_WIZARD_MODE.EDITION
+              ? OFFER_WIZARD_MODE.READ_ONLY
+              : mode,
+        })
+      )
     } catch (error) {
       if (!isErrorAPIError(error)) {
         return
@@ -135,15 +151,22 @@ export const DetailsScreen = ({ venues }: DetailsScreenProps): JSX.Element => {
     const queryOffererId = queryParams.get('structure')
     const queryVenueId = queryParams.get('lieu')
     /* istanbul ignore next: DEBT, TO FIX */
-    navigate({
-      pathname: '/offre/creation',
-      search:
-        queryOffererId && queryVenueId
-          ? `lieu=${queryVenueId}&structure=${queryOffererId}`
-          : queryOffererId && !queryVenueId
-            ? `structure=${queryOffererId}`
-            : '',
-    })
+    mode === OFFER_WIZARD_MODE.CREATION
+      ? navigate({
+          pathname: '/offre/creation',
+          search:
+            queryOffererId && queryVenueId
+              ? `lieu=${queryVenueId}&structure=${queryOffererId}`
+              : queryOffererId && !queryVenueId
+                ? `structure=${queryOffererId}`
+                : '',
+        })
+      : navigate({
+          pathname: getIndividualOfferUrl({
+            step: OFFER_WIZARD_STEP_IDS.DETAILS,
+            mode: OFFER_WIZARD_MODE.READ_ONLY,
+          }),
+        })
   }
 
   const readOnlyFields = setFormReadOnlyFields(offer)
