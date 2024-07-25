@@ -1040,6 +1040,11 @@ def get_collective_offer_template_by_id_for_adage(offer_id: int) -> educational_
 
 def get_collective_offer_templates_by_ids_for_adage(offer_ids: typing.Collection[int]) -> BaseQuery:
     query = _get_collective_offer_template_by_id_for_adage_base_query()
+    # Filter out the archived offers
+    query = query.filter(educational_models.CollectiveOfferTemplate.isArchived == False)
+    # Filter out the offers not displayed on adage
+    query = query.filter(educational_models.CollectiveOfferTemplate.isActive == True)
+
     return query.filter(educational_models.CollectiveOfferTemplate.id.in_(offer_ids))
 
 
