@@ -1,5 +1,6 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_rem.scss" as rem;
+@use "styles/variables/_size.scss" as size;
 
 .offer-date-filter {
   width: rem.torem(173px);
@@ -53,13 +54,10 @@
   &.refresh-required ~ .no-bookings-for-pre-filters {
     padding-top: 0;
   }
-}
 
-.reset-filters {
-  margin-top: rem.torem(30px);
-  margin-bottom: rem.torem(36px);
-  display: flex;
-  justify-content: flex-end;
+  &-filters {
+    margin-bottom: rem.torem(36px);
+  }
 }
 
 .pf-refresh-message {
@@ -68,6 +66,22 @@
   color: var(--color-error-light);
   line-height: rem.torem(16px);
   text-align: center;
+}
+
+.reset-filters-wrapper {
+  align-items: center;
+  min-height: size.$input-min-height;
+  display: flex;
+}
+
+.reset-filters {
+  text-align: left;
+  margin-top: rem.torem(24px);
+  max-height: rem.torem(24px);
+
+  @media (min-width: rem.torem(840px)) {
+    margin-top: rem.torem(0);
+  }
 }
 
 .show-button {
