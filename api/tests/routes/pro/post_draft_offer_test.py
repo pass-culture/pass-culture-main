@@ -19,6 +19,7 @@ class Returns200Test:
             "name": "Celeste",
             "subcategoryId": subcategories.LIVRE_PAPIER.id,
             "venueId": venue.id,
+            "extraData": {"ean": "9782123456803"},
         }
         response = client.with_session_auth("user@example.com").post("/offers/draft", json=data)
         offer_id = response.json["id"]
@@ -28,6 +29,7 @@ class Returns200Test:
         assert response_dict["venue"]["id"] == offer.venue.id
         assert response_dict["name"] == "Celeste"
         assert response_dict["id"] == offer.id
+        assert response_dict["extraData"] == {"ean": "9782123456803"}
         assert not offer.product
 
 
