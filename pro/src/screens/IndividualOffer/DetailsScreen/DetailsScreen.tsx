@@ -5,6 +5,7 @@ import { useSWRConfig } from 'swr'
 import { api } from 'apiClient/api'
 import { isErrorAPIError } from 'apiClient/helpers'
 import { VenueListItemResponseModel } from 'apiClient/v1'
+import { useAnalytics } from 'app/App/analytics/firebase'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { getFilteredVenueListByCategoryStatus } from 'components/IndividualOfferForm/utils/getFilteredVenueList'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
@@ -12,6 +13,10 @@ import { RouteLeavingGuardIndividualOffer } from 'components/RouteLeavingGuardIn
 import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import { GET_OFFER_QUERY_KEY } from 'config/swrQueryKeys'
 import { useIndividualOfferContext } from 'context/IndividualOfferContext/IndividualOfferContext'
+import {
+  Events,
+  OFFER_FORM_NAVIGATION_MEDIUM,
+} from 'core/FirebaseEvents/constants'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
 import { isOfferDisabled } from 'core/Offers/utils/isOfferDisabled'
@@ -44,6 +49,7 @@ export type DetailsScreenProps = {
 }
 
 export const DetailsScreen = ({ venues }: DetailsScreenProps): JSX.Element => {
+  const { logEvent } = useAnalytics()
   const navigate = useNavigate()
   const notify = useNotification()
   const { mutate } = useSWRConfig()
@@ -127,6 +133,17 @@ export const DetailsScreen = ({ venues }: DetailsScreenProps): JSX.Element => {
               : mode,
         })
       )
+
+      logEvent(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+        from: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+        to: nextStep,
+        used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
+        isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
+        isDraft: mode === OFFER_WIZARD_MODE.CREATION,
+        offerId: receivedOfferId,
+        offerType: 'individual',
+        subcategoryId: formValues.subcategoryId,
+      })
     } catch (error) {
       if (!isErrorAPIError(error)) {
         return
