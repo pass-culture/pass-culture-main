@@ -2,6 +2,8 @@
 @use "styles/variables/_size.scss" as size;
 @use "styles/mixins/_fonts.scss" as fonts;
 
+$status-filter-margin-top: rem.torem(24px);
+
 .search-filters-form {
   margin-bottom: rem.torem(32px);
 }
@@ -47,8 +49,10 @@
 }
 
 .reset-filters {
-  display: flex;
-  margin-top: rem.torem(32px);
+  min-height: size.$input-min-height;
+  margin-top: 0;
+  display: block;
+  text-align: left;
 }
 
 .offerer-close-icon {
@@ -59,7 +63,8 @@
 
 .status-filter {
   width: fit-content;
-  margin-top: rem.torem(24px);
+  margin-top: $status-filter-margin-top;
+  margin-bottom: 0;
 }
 
 .status-filter-label {
@@ -68,9 +73,21 @@
   gap: rem.torem(8px);
 }
 
-@media (min-width: size.$tablet) {
+.reset-filters-row {
+  flex-direction: column;
+}
+
+@media (min-width: size.$laptop) {
+  .status-filter {
+    margin-bottom: rem.torem(8px);
+  }
+
+  .reset-filters-row {
+    flex-direction: row;
+  }
+
   .reset-filters {
-    justify-content: flex-end;
-    margin-top: unset;
+    margin-top: $status-filter-margin-top;
+
   }
 }
