@@ -1,3 +1,45 @@
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_fonts.scss" as fonts;
+
+.expiration-cell {
+  padding-top: 0;
+}
+
 .banner {
-  padding: 1rem;
+  padding: rem.torem(8px);
+  border-radius: rem.torem(8px);
+  background-color: var(--color-background-accent-light);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  &.banner-expires-soon {
+    background-color: var(--color-background-alert);
+  }
+
+  &-expiration {
+    display: flex;
+    align-items: center;
+    gap: rem.torem(16px);
+    flex-wrap: wrap;
+
+    &-waiting {
+      @include fonts.highlight;
+
+      display: flex;
+      align-items: center;
+      gap: rem.torem(4px);
+    }
+
+    &-days-badge {
+      @include fonts.highlight;
+
+      background-color: var(--color-alert-dark);
+      display: flex;
+      align-items: center;
+      gap: rem.torem(4px);
+      padding: rem.torem(4px) rem.torem(8px);
+      border-radius: rem.torem(4px);
+    }
+  }
 }

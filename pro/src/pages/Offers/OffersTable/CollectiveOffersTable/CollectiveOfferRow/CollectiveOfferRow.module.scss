@@ -12,10 +12,8 @@
     ".     actions actions status";
   border-bottom: rem.torem(1px) solid var(--color-grey-medium);
 
-  &.inactive {
-    .offer-thumb {
-      opacity: 0.5;
-    }
+  &.collective-row-with-expiration {
+    border-bottom: none;
   }
 }
 
