@@ -833,6 +833,48 @@ class UpdateVenueProviderExternalUrlsTest:
         # Should have deleted `venue_provider_external_urls`
         assert venue_provider.externalUrls == None
 
+    def test_should_delete_venue_provider_external_urls_even_if_it_is_a_partial_unset_of_ticket_urls(self):
+        provider = providers_factories.ProviderFactory()
+        # Venue
+        venue = offerers_factories.VenueFactory()
+        venue_provider = providers_factories.VenueProviderFactory(provider=provider, venue=venue)
+        venue_provider_external_urls = providers_factories.VenueProviderExternalUrlsFactory(
+            venueProvider=venue_provider,
+            notificationExternalUrl=None,
+        )
+
+        assert venue_provider.externalUrls == venue_provider_external_urls
+
+        api.update_venue_provider_external_urls(
+            venue_provider,
+            booking_external_url=None,
+            cancel_external_url=None,
+        )
+
+        # Should have deleted `venue_provider_external_urls`
+        assert venue_provider.externalUrls == None
+
+    def test_should_delete_venue_provider_external_urls_even_if_it_is_a_partial_unset_of_notif_url(self):
+        provider = providers_factories.ProviderFactory()
+        # Venue
+        venue = offerers_factories.VenueFactory()
+        venue_provider = providers_factories.VenueProviderFactory(provider=provider, venue=venue)
+        venue_provider_external_urls = providers_factories.VenueProviderExternalUrlsFactory(
+            venueProvider=venue_provider,
+            bookingExternalUrl=None,
+            cancelExternalUrl=None,
+        )
+
+        assert venue_provider.externalUrls == venue_provider_external_urls
+
+        api.update_venue_provider_external_urls(
+            venue_provider,
+            notification_external_url=None,
+        )
+
+        # Should have deleted `venue_provider_external_urls`
+        assert venue_provider.externalUrls == None
+
     def test_should_create_venue_provider_external_urls(self):
         provider = providers_factories.ProviderFactory()
         # Venue
