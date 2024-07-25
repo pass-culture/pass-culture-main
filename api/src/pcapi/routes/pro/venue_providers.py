@@ -1,5 +1,6 @@
 from flask_login import current_user
 from flask_login import login_required
+from sqlalchemy.orm import exc as orm_exc
 from werkzeug.exceptions import NotFound
 
 import pcapi.core.offerers.models as offerers_models
@@ -128,9 +129,11 @@ def update_venue_provider(body: PostVenueProviderBody) -> VenueProviderResponse:
 @login_required
 @spectree_serialize(on_success_status=204, api=blueprint.pro_private_schema)
 def delete_venue_provider(venue_provider_id: int) -> None:
-    venue_provider = repository.get_venue_provider_by_id(venue_provider_id)
-    if not venue_provider:
+    try:
+        venue_provider = repository.get_venue_provider_by_id(venue_provider_id)
+    except orm_exc.NoResultFound:
         raise NotFound()
+
     rest.check_user_has_access_to_offerer(current_user, venue_provider.venue.managingOffererId)
 
     api.delete_venue_provider(venue_provider, author=current_user)
