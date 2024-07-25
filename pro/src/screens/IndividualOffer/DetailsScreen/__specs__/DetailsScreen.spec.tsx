@@ -25,7 +25,7 @@ const mockLogEvent = vi.fn()
 vi.mock('apiClient/api', () => ({
   api: {
     getMusicTypes: vi.fn(),
-    postOffer: vi.fn(),
+    postDraftOffer: vi.fn(),
   },
 }))
 
@@ -168,8 +168,7 @@ describe('screens:IndividualOffer::Informations', () => {
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
-
-    vi.spyOn(api, 'postOffer').mockResolvedValue(
+    vi.spyOn(api, 'postDraftOffer').mockResolvedValue(
       getIndividualOfferFactory({
         id: 12,
       })
@@ -212,33 +211,24 @@ describe('screens:IndividualOffer::Informations', () => {
       'Clown'
     )
     await userEvent.selectOptions(
-      await screen.findByLabelText(/Sous-type/),
-      'Clown'
-    )
-    await userEvent.selectOptions(
       await screen.findByLabelText(/Genre musical/),
       'Pop'
     )
 
     await userEvent.click(screen.getByText('Enregistrer les modifications'))
 
-    expect(api.postOffer).toHaveBeenCalledOnce()
-    expect(api.postOffer).toHaveBeenCalledWith({
-      audioDisabilityCompliant: false,
+    expect(api.postDraftOffer).toHaveBeenCalledOnce()
+    expect(api.postDraftOffer).toHaveBeenCalledWith({
       description: 'My super description',
-      durationMinutes: undefined,
       extraData: {
         ean: '1234567891234',
         gtl_id: 'pop',
         showSubType: '205',
         showType: '200',
       },
-      mentalDisabilityCompliant: false,
-      motorDisabilityCompliant: false,
       name: 'My super offer',
       subcategoryId: 'physical',
       venueId: 189,
-      visualDisabilityCompliant: false,
     })
     expect(mockLogEvent).toHaveBeenCalledWith(
       Events.CLICKED_OFFER_FORM_NAVIGATION,
