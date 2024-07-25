@@ -462,6 +462,18 @@ class DeleteVenueTest:
         assert offerers_models.Venue.query.count() == 0
         assert educational_models.AdageVenueAddress.query.count() == 0
 
+    def test_delete_cascade_venue_should_remove_playlist(self):
+        venue = offerers_factories.CollectiveVenueFactory()
+        template = educational_factories.CollectiveOfferTemplateFactory(venue=venue)
+
+        playlist = educational_factories.PlaylistFactory(venue=venue, collective_offer_template=template)
+        assert playlist.venue == venue
+
+        offerers_api.delete_venue(venue.id)
+
+        assert offerers_models.Venue.query.count() == 0
+        assert educational_models.CollectivePlaylist.query.count() == 0
+
 
 class EditVenueContactTest:
     def test_create_venue_contact(self, app):
