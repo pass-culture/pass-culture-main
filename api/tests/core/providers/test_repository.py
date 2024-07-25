@@ -4,7 +4,6 @@ from datetime import timedelta
 import pytest
 from sqlalchemy.exc import IntegrityError
 
-from pcapi.core.external_bookings import exceptions as external_bookings_exceptions
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
@@ -74,41 +73,6 @@ class GetAvailableProvidersTest:
 
         providers = list(repository.get_available_providers(venue))
         assert providers == [provider_cds, provider_other]
-
-
-class IsEventExternalTicketApplicableTest:
-    def test_external_ticket_applicable(self):
-        provider = factories.PublicApiProviderFactory(name="Music party")
-        offer = offers_factories.EventOfferFactory(
-            lastProvider=provider, withdrawalType=offers_models.WithdrawalTypeEnum.IN_APP
-        )
-        assert repository.is_event_external_ticket_applicable(offer) is True
-
-    def test_external_ticket_not_applicable_if_offer_not_event(self):
-        provider = factories.PublicApiProviderFactory(name="Music party", isActive=False)
-        offer = offers_factories.OfferFactory(lastProvider=provider)
-        assert repository.is_event_external_ticket_applicable(offer) is False
-
-    def test_external_not_applicable_if_offer_not_in_app(self):
-        provider = factories.PublicApiProviderFactory(name="Music party")
-        offer = offers_factories.EventOfferFactory(lastProvider=provider)
-        assert repository.is_event_external_ticket_applicable(offer) is False
-
-    def test_raises_error_if_offer_in_app_and_provider_inactive(self):
-        provider = factories.PublicApiProviderFactory(name="Music party", isActive=False)
-        offer = offers_factories.EventOfferFactory(
-            lastProvider=provider, withdrawalType=offers_models.WithdrawalTypeEnum.IN_APP
-        )
-        with pytest.raises(external_bookings_exceptions.ExternalBookingException):
-            repository.is_event_external_ticket_applicable(offer)
-
-    def test_raises_error_if_offer_in_app_and_provider_has_not_enabled_charlie(self):
-        provider = factories.PublicApiProviderFactory(name="Music party", bookingExternalUrl=None)
-        offer = offers_factories.EventOfferFactory(
-            lastProvider=provider, withdrawalType=offers_models.WithdrawalTypeEnum.IN_APP
-        )
-        with pytest.raises(external_bookings_exceptions.ExternalBookingException):
-            repository.is_event_external_ticket_applicable(offer)
 
 
 def test_get_allocine_theater():

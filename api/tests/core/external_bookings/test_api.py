@@ -107,6 +107,18 @@ class GetExternalBookingsClientApiTest:
 @pytest.mark.usefixtures("db_session")
 class BookEventTicketTest:
 
+    def test_should_raise_because_no_ticketing_system_set(self):
+        provider = providers_factories.ProviderFactory()
+        offer = offers_factories.EventOfferFactory(
+            withdrawalType=offers_models.WithdrawalTypeEnum.IN_APP, lastProviderId=provider.id
+        )
+        stock = offers_factories.EventStockFactory(offer=offer, idAtProviders="roi_des_forêts!")
+        booking = bookings_factories.BookingFactory(stock=stock, dateCreated=datetime.datetime(2024, 5, 12), quantity=2)
+        user = user_factories.BeneficiaryFactory(firstName="Jean", lastName="Passedemeyeur")
+
+        with pytest.raises(external_bookings_exceptions.ExternalBookingException):
+            book_event_ticket(booking, stock, user, provider, None)
+
     @patch("pcapi.core.external_bookings.api.requests.post")
     def test_should_successfully_book_an_event_ticket(self, requests_post):
         booking_creation_date = datetime.datetime(2024, 5, 12)
@@ -319,6 +331,24 @@ class BookEventTicketTest:
 
 @pytest.mark.usefixtures("db_session")
 class CancelEventTicketTest:
+
+    def test_should_raise_an_error_because_there_is_no_ticketing_service_set(self):
+        provider = providers_factories.ProviderFactory()
+        offer = offers_factories.EventOfferFactory(
+            withdrawalType=offers_models.WithdrawalTypeEnum.IN_APP, lastProviderId=provider.id
+        )
+        stock = offers_factories.EventStockFactory(offer=offer)
+        bookings_factories.BookingFactory(stock=stock, dateCreated=datetime.datetime(2024, 5, 12), quantity=2)
+
+        # book
+        with pytest.raises(external_bookings_exceptions.ExternalBookingException):
+            cancel_event_ticket(
+                barcodes=["ABCDEF"],
+                provider=provider,
+                stock=stock,
+                is_booking_saved=True,
+                venue_provider=None,
+            )
 
     @patch("pcapi.core.external_bookings.api.requests.post")
     def test_should_successfully_cancel_an_event_ticket(self, requests_post):
