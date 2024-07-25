@@ -1,8 +1,8 @@
 import {
-  When,
-  Then,
-  Given,
   DataTable,
+  Given,
+  Then,
+  When,
 } from '@badeball/cypress-cucumber-preprocessor'
 
 // siret of Bar des amis
@@ -35,7 +35,6 @@ function initValuesAndIntercept(): void {
       },
     })
   ).as('getSiretVenue')
-  cy.intercept({ method: 'PATCH', url: '/venues/*' }).as('patchVenue')
 }
 
 Given('I want to add a venue', () => {
@@ -58,10 +57,7 @@ When('I add venue without Siret details', () => {
   )
   cy.findByLabelText('Raison sociale *').type(venueNameWithoutSiret)
   cy.findByLabelText('Adresse postale *')
-  cy.intercept({
-    method: 'GET',
-    url: 'https://api-adresse.data.gouv.fr/search/?limit=5&q=89%20Rue%20la%20Bo%C3%A9tie%2075008%20Paris',
-  }).as('searchAddress')
+
   cy.findByLabelText('Adresse postale *').type('89 Rue la Boétie 75008 Paris')
   cy.wait('@searchAddress').its('response.statusCode').should('eq', 200)
   cy.findByTestId('list').contains('89 Rue la Boétie 75008 Paris').click()
@@ -71,7 +67,6 @@ When('I add venue without Siret details', () => {
 })
 
 When('I validate venue step', () => {
-  cy.intercept({ method: 'POST', url: '/venues' }).as('postVenues')
   cy.findByText('Enregistrer et créer le lieu').click()
   cy.wait('@postVenues').its('response.statusCode').should('eq', 201)
 })
