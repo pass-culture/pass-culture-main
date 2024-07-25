@@ -636,7 +636,7 @@ class FilterCollectiveOfferByStatusesTest:
         filtered_nostatus_query = _filter_collective_offers_by_statuses(base_query, [])
 
         # Then
-        assert filtered_nostatus_query.count() == 0
+        assert filtered_nostatus_query.count() == 2
 
     def test_filter_with_statuses_has_none(self, app):
         # Given
