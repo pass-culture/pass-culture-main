@@ -2,10 +2,12 @@ import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import { api } from 'apiClient/api'
+import * as useAnalytics from 'app/App/analytics/firebase'
 import {
   IndividualOfferContext,
   IndividualOfferContextValues,
 } from 'context/IndividualOfferContext/IndividualOfferContext'
+import { Events } from 'core/FirebaseEvents/constants'
 import { CATEGORY_STATUS } from 'core/Offers/constants'
 import {
   categoryFactory,
@@ -17,6 +19,8 @@ import {
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { DetailsScreen, DetailsScreenProps } from '../DetailsScreen'
+
+const mockLogEvent = vi.fn()
 
 vi.mock('apiClient/api', () => ({
   api: {
@@ -161,6 +165,10 @@ describe('screens:IndividualOffer::Informations', () => {
   })
 
   it('should submit the form with correct payload', async () => {
+    vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
+      logEvent: mockLogEvent,
+    }))
+
     vi.spyOn(api, 'postOffer').mockResolvedValue(
       getIndividualOfferFactory({
         id: 12,
@@ -232,5 +240,18 @@ describe('screens:IndividualOffer::Informations', () => {
       venueId: 189,
       visualDisabilityCompliant: false,
     })
+    expect(mockLogEvent).toHaveBeenCalledWith(
+      Events.CLICKED_OFFER_FORM_NAVIGATION,
+      {
+        from: 'informations',
+        isDraft: false,
+        isEdition: true,
+        offerId: 12,
+        offerType: 'individual',
+        subcategoryId: 'physical',
+        to: 'pratiques',
+        used: 'StickyButtons',
+      }
+    )
   })
 })
