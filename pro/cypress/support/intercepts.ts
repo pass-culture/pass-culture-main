@@ -35,12 +35,12 @@ beforeEach(() => {
     url: '/features',
   }).as('features')
   cy.intercept({ method: 'POST', url: '/offers' }).as('postOffer')
-  cy.intercept({ method: 'GET', url: '/offers/names' }).as('getOffersNames')
+  cy.intercept({ method: 'GET', url: '/offers-names' }).as('getOffersNames')
   cy.intercept({ method: 'GET', url: '/offers/categories' }).as('getCategories')
   cy.intercept({ method: 'GET', url: '/offers/*/stocks/*' }).as('getStocks')
   cy.intercept({ method: 'GET', url: '/offers/*' }).as('getOffer')
-  cy.intercept({ method: 'GET', url: '/offers?offererId=?' }).as(
-    'getOffersForProvider'
+  cy.intercept({ method: 'GET', url: '/offers?offererId*' }).as(
+    'getOffersForOfferer'
   )
   cy.intercept({ method: 'POST', url: '/offerers/new' }).as('createOfferer')
   cy.intercept({ method: 'PATCH', url: '/offers/*' }).as('patchOffer')

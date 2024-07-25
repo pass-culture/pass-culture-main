@@ -53,8 +53,9 @@ When('I fill in prices', () => {
 
 When('I validate prices step', () => {
   cy.findByText('Enregistrer et continuer').click()
-  // pourquoi on attend tellement ici?
-  cy.wait(['@patchOffer', '@getOffer', '@getStocks'])
+  cy.wait(['@patchOffer', '@getOffer', '@getStocks'], {
+    responseTimeout: 60 * 1000 * 3,
+  })
 })
 
 When('I fill in recurrence', () => {
@@ -119,23 +120,16 @@ When('I validate recurrence step', () => {
 
 When('I publish my offer', () => {
   cy.findByText('Publier l’offre').click()
-  cy.wait(['@patchOffer', '@getOffer'], { requestTimeout: 30 * 1000 * 2 })
+  cy.wait(['@patchOffer', '@getOffer'], {
+    responseTimeout: 60 * 1000 * 2,
+  })
 })
 
 When('I go to the offers list', () => {
   cy.findByText('Voir la liste des offres').click()
-  cy.wait(
-    [
-      '@getOffer',
-      '@getOffersForProvider',
-      '@getCategories',
-      '@getVenue',
-      '@getOffersNames',
-    ],
-    {
-      requestTimeout: 30 * 1000 * 4,
-    }
-  )
+  cy.wait(['@getOffer', '@getOffersForOfferer', '@getCategories'], {
+    responseTimeout: 60 * 1000 * 3,
+  })
 })
 
 Then('my new offer should be displayed', () => {

@@ -1,6 +1,7 @@
 @P0
 Feature: Create an individual offer (event)
 
+  # Plante si l'offerer a plusieurs venues
   Scenario: It should create an individual offer (event)
     Given I am logged in
     And I select offerer "Club Dorothy"
