@@ -13,6 +13,7 @@ from pcapi.core.offers import factories as offers_factories
 from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
 from pcapi.notifications.push import testing
+from pcapi.workers.push_notification_job import OFFER_IDS_TO_NOT_NOTIFY
 
 
 @pytest.mark.usefixtures("db_session")
@@ -51,6 +52,22 @@ def test_send_today_events_notifications_only_to_individual_bookings_users():
 
     user_ids = {user_id for data in testing.requests for user_id in data["user_ids"]}
     assert user_ids == {user1.id, user2.id}
+
+
+@pytest.mark.usefixtures("db_session")
+# Set time to evening so that `send_today_events_notifications_metropolitan_france()`
+# finds test stock in its `13:00 - 24:00` window.
+@time_machine.travel("20:00:00")
+def test_do_not_send_notifications_to_banned_offers():
+    in_one_hour = datetime.utcnow() + timedelta(hours=1)
+    stock_today = offers_factories.EventStockFactory(
+        beginningDatetime=in_one_hour, offer__id=OFFER_IDS_TO_NOT_NOTIFY[0], offer__name="my_offer"
+    )
+    bookings_factories.BookingFactory(stock=stock_today)
+
+    send_today_events_notifications_metropolitan_france()
+
+    assert len(testing.requests) == 0
 
 
 @pytest.mark.usefixtures("db_session")
