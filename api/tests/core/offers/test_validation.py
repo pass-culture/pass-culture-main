@@ -524,16 +524,29 @@ class CheckOfferWithdrawalTest:
                 provider=None,
             )
 
-    def test_withdrawable_event_offer_with_provider_can_be_in_app(self):
-        provider = providers_factories.ProviderFactory(
-            name="Technical provider", localClass=None, bookingExternalUrl="url", cancelExternalUrl="url"
-        )
+    def test_withdrawable_event_offer_with_ticketing_service_at_provider_level_can_be_in_app(self):
+        provider = providers_factories.PublicApiProviderFactory(name="Technical provider")
+
         assert not validation.check_offer_withdrawal(
             withdrawal_type=WithdrawalTypeEnum.IN_APP,
             withdrawal_delay=None,
             subcategory_id=subcategories.FESTIVAL_MUSIQUE.id,
             booking_contact="booking@conta.ct",
             provider=provider,
+        )
+
+    def test_withdrawable_event_offer_with_ticketing_service_at_venue_level_can_be_in_app(self):
+        provider = providers_factories.ProviderFactory(name="Technical provider")
+        venue_provider = providers_factories.VenueProviderFactory(provider=provider)
+        providers_factories.VenueProviderExternalUrlsFactory(venueProvider=venue_provider)
+
+        validation.check_offer_withdrawal(
+            withdrawal_type=WithdrawalTypeEnum.IN_APP,
+            withdrawal_delay=None,
+            subcategory_id=subcategories.FESTIVAL_MUSIQUE.id,
+            booking_contact="booking@conta.ct",
+            provider=provider,
+            venue_provider=venue_provider,
         )
 
     def test_withdrawable_event_offer_without_provider_cannot_be_in_app(self):
@@ -546,7 +559,7 @@ class CheckOfferWithdrawalTest:
                 provider=None,
             )
 
-    def test_withdrawable_event_offer_with_provider_without_charlie_implementation_cannot_be_in_app(self):
+    def test_withdrawable_event_offer_with_provider_without_a_ticketing_service_implementation_cannot_be_in_app(self):
         # A provider without bookingExternalUrl or cancelExternalUrl
         provider = providers_factories.ProviderFactory(name="Technical provider", localClass=None)
         with pytest.raises(exceptions.NonLinkedProviderCannotHaveInAppTicket):

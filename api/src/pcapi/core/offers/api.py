@@ -290,8 +290,11 @@ def create_offer(
     withdrawal_type: models.WithdrawalTypeEnum | None = None,
     is_from_private_api: bool = False,
     id_at_provider: str | None = None,
+    venue_provider: providers_models.VenueProvider | None = None,
 ) -> models.Offer:
-    validation.check_offer_withdrawal(withdrawal_type, withdrawal_delay, subcategory_id, booking_contact, provider)
+    validation.check_offer_withdrawal(
+        withdrawal_type, withdrawal_delay, subcategory_id, booking_contact, provider, venue_provider
+    )
     validation.check_offer_subcategory_is_valid(subcategory_id)
     formatted_extra_data = _format_extra_data(subcategory_id, extra_data)
     validation.check_offer_extra_data(subcategory_id, formatted_extra_data, venue, is_from_private_api)

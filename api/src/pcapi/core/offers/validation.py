@@ -443,6 +443,7 @@ def check_offer_withdrawal(
     subcategory_id: str,
     booking_contact: str | None,
     provider: providers_models.Provider | None,
+    venue_provider: providers_models.VenueProvider | None = None,
 ) -> None:
     is_offer_withdrawable = subcategory_id in subcategories.WITHDRAWABLE_SUBCATEGORIES
     if is_offer_withdrawable and withdrawal_type is None:
@@ -460,9 +461,12 @@ def check_offer_withdrawal(
     ):
         raise exceptions.EventWithTicketMustHaveDelay()
 
-    # Only providers that activated the charlie api can create offer with IN_APP withdrawal type
+    # Only providers that have set a ticketing system at provider level or at venue level
+    # can create offers with in app Withdrawal
     if withdrawal_type == models.WithdrawalTypeEnum.IN_APP:
-        if not provider or not provider.hasProviderEnableCharlie:
+        has_ticketing_system_at_provider_level = provider and provider.hasProviderEnableCharlie
+        has_ticketing_system_at_venue_level = venue_provider and venue_provider.hasTicketingService
+        if not (has_ticketing_system_at_provider_level or has_ticketing_system_at_venue_level):
             raise exceptions.NonLinkedProviderCannotHaveInAppTicket()
 
 
