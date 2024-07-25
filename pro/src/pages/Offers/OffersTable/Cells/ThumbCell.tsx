@@ -1,3 +1,4 @@
+import classNames from 'classnames'
 import { Link } from 'react-router-dom'
 
 import {
@@ -13,10 +14,12 @@ export const ThumbCell = ({
   offer,
   editionOfferLink,
   headers,
+  inactive,
 }: {
   offer: CollectiveOfferResponseModel | ListOffersOfferResponseModel
   editionOfferLink: string
   headers?: string
+  inactive?: boolean
 }) => {
   return (
     <td className={styles['thumb-column']} headers={headers}>
@@ -27,7 +30,9 @@ export const ThumbCell = ({
       >
         <Thumb
           url={isOfferEducational(offer) ? offer.imageUrl : offer.thumbUrl}
-          className={styles['offer-thumb']}
+          className={classNames(styles['offer-thumb'], {
+            [styles['thumb-inactive']]: inactive,
+          })}
         />
       </Link>
     </td>

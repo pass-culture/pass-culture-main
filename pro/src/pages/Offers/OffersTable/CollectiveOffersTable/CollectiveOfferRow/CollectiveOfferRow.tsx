@@ -1,6 +1,9 @@
 import classNames from 'classnames'
 
-import { CollectiveOfferResponseModel } from 'apiClient/v1'
+import {
+  CollectiveOfferResponseModel,
+  CollectiveOfferStatus,
+} from 'apiClient/v1'
 import { SearchFiltersParams } from 'core/Offers/types'
 import { isOfferDisabled } from 'core/Offers/utils/isOfferDisabled'
 import { useActiveFeature } from 'hooks/useActiveFeature'
@@ -25,6 +28,16 @@ export type CollectiveOfferRowProps = {
   urlSearchFilters: SearchFiltersParams
 }
 
+function isCollectiveOfferActiveOrPreBooked(
+  offer: CollectiveOfferResponseModel
+) {
+  return (
+    offer.status === CollectiveOfferStatus.ACTIVE ||
+    (offer.status === CollectiveOfferStatus.SOLD_OUT &&
+      offer.booking?.booking_status === 'PENDING')
+  )
+}
+
 export const CollectiveOfferRow = ({
   offer,
   isSelected,
@@ -43,18 +56,21 @@ export const CollectiveOfferRow = ({
 
   const rowId = `collective-offer-${offer.isShowcase ? 'T-' : ''}${offer.id}`
 
+  const hasExpirationRow =
+    isCollectiveOffersExpirationEnabled &&
+    !offer.isShowcase &&
+    isCollectiveOfferActiveOrPreBooked(offer)
+
   return (
     <>
       <tr
         className={classNames(styles['collective-row'], {
-          [styles['inactive']]: isOfferDisabled(offer.status),
+          [styles['collective-row-with-expiration']]: hasExpirationRow,
         })}
         data-testid="offer-item-row"
       >
         <th
-          rowSpan={
-            !isCollectiveOffersExpirationEnabled || offer.isShowcase ? 1 : 2
-          }
+          rowSpan={hasExpirationRow ? 2 : 1}
           scope="rowgroup"
           className={styles['reference-row-head']}
           id={rowId}
@@ -74,6 +90,7 @@ export const CollectiveOfferRow = ({
         <ThumbCell
           offer={offer}
           editionOfferLink={editionOfferLink}
+          inactive={isOfferDisabled(offer.status)}
           headers={`${rowId} collective-offer-head-image`}
         />
 
@@ -114,8 +131,8 @@ export const CollectiveOfferRow = ({
           headers={`${rowId} collective-offer-head-actions`}
         />
       </tr>
-      {isCollectiveOffersExpirationEnabled && !offer.isShowcase && (
-        <tr>
+      {hasExpirationRow && (
+        <tr className={styles['collective-row']}>
           <td colSpan={1} />
           <ExpirationCell
             offer={offer}

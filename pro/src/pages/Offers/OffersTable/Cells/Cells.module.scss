@@ -39,6 +39,10 @@ td:first-of-type {
   }
 }
 
+.thumb-inactive {
+  opacity: 0.5;
+}
+
 .title-column {
   @include fonts.body-exergue;
 
