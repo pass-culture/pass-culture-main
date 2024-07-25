@@ -193,11 +193,11 @@ class VenueProvider(PcObject, Base, Model, DeactivableMixin):
 
     # external URLs
     externalUrls: sa_orm.Mapped["VenueProviderExternalUrls"] = sa_orm.relationship(
-        "VenueProviderExternalUrls", uselist=False, back_populates="venueProvider"
+        "VenueProviderExternalUrls", uselist=False, back_populates="venueProvider", cascade="all,delete"
     )
     # permissions
     permissions: sa_orm.Mapped["VenueProviderPermission"] = sa_orm.relationship(
-        "VenueProviderPermission", uselist=True, back_populates="venueProvider"
+        "VenueProviderPermission", uselist=True, back_populates="venueProvider", cascade="all,delete"
     )
 
     # This column is unused by our code but by the data team
