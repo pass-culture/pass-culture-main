@@ -125,13 +125,6 @@ When('I publish my offer', () => {
   })
 })
 
-When('I go to the offers list', () => {
-  cy.findByText('Voir la liste des offres').click()
-  cy.wait(['@getOffer', '@getOffersForOfferer', '@getCategories'], {
-    responseTimeout: 60 * 1000 * 3,
-  })
-})
-
 Then('my new offer should be displayed', () => {
   cy.url().should('contain', '/offres')
   cy.contains('Le Diner de Devs')

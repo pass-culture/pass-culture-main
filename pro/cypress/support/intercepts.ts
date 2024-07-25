@@ -34,6 +34,8 @@ beforeEach(() => {
     method: 'GET',
     url: '/features',
   }).as('features')
+  cy.intercept({ method: 'GET', url: '/offerers/names' }).as('getOfferersNames')
+  cy.intercept({ method: 'GET', url: '/offerers/*' }).as('getOfferer')
   cy.intercept({ method: 'POST', url: '/offers' }).as('postOffer')
   cy.intercept({ method: 'GET', url: '/offers-names' }).as('getOffersNames')
   cy.intercept({ method: 'GET', url: '/offers/categories' }).as('getCategories')
