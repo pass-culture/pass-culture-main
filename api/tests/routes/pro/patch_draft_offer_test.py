@@ -28,6 +28,8 @@ class Returns200Test:
         data = {
             "name": "New name",
             "description": "New description",
+            "subcategoryId": subcategories.ABO_PLATEFORME_VIDEO.id,
+            "venueId": venue.id,
         }
         response = client.with_session_auth("user@example.com").patch(f"/offers/draft/{offer.id}", json=data)
 

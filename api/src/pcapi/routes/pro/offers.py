@@ -284,14 +284,14 @@ def patch_draft_offer(
     return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)
 
 
-@private_api.route("/offers/draft/<int:offer_id>/details", methods=["PATCH"])
+@private_api.route("/offers/draft/<int:offer_id>/useful-informations", methods=["PATCH"])
 @login_required
 @spectree_serialize(
     response_model=offers_serialize.GetIndividualOfferResponseModel,
     api=blueprint.pro_private_schema,
 )
-def patch_draft_offer_details(
-    offer_id: int, body: offers_serialization.PatchDraftOfferDetailsBodyModel
+def patch_draft_offer_useful_informations(
+    offer_id: int, body: offers_serialization.PatchDraftOfferUsefulInformationsBodyModel
 ) -> offers_serialize.GetIndividualOfferResponseModel:
     offer = models.Offer.query.options(
         sqla.orm.joinedload(models.Offer.stocks).joinedload(models.Stock.bookings),
@@ -304,7 +304,7 @@ def patch_draft_offer_details(
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
     try:
         with repository.transaction():
-            offer = offers_api.update_draft_offer_details(offer, body)
+            offer = offers_api.update_draft_offer_useful_informations(offer, body)
     except (exceptions.OfferCreationBaseException, exceptions.OfferEditionBaseException) as error:
         raise api_errors.ApiErrors(error.errors, status_code=400)
 

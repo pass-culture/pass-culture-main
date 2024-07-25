@@ -183,9 +183,9 @@ def update_draft_offer(offer: models.Offer, body: offers_serialize.PatchDraftOff
     return offer
 
 
-def update_draft_offer_details(
+def update_draft_offer_useful_informations(
     offer: models.Offer,
-    body: offers_serialize.PatchDraftOfferDetailsBodyModel,
+    body: offers_serialize.PatchDraftOfferUsefulInformationsBodyModel,
     is_from_private_api: bool = False,
 ) -> models.Offer:
     aliases = set(body.dict(by_alias=True))

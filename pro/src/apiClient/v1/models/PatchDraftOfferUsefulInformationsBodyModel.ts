@@ -3,7 +3,7 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { WithdrawalTypeEnum } from './WithdrawalTypeEnum';
-export type PatchDraftOfferDetailsBodyModel = {
+export type PatchDraftOfferUsefulInformationsBodyModel = {
   audioDisabilityCompliant?: boolean | null;
   bookingContact?: string | null;
   bookingEmail?: string | null;

@@ -14,7 +14,7 @@ from pcapi.utils.date import format_into_utc_date
 
 @pytest.mark.usefixtures("db_session")
 class Returns200Test:
-    def test_patch_draft_offer_details(self, client):
+    def test_patch_draft_offer_useful_informations(self, client):
         # Given
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
         venue = offerers_factories.VirtualVenueFactory(managingOfferer=user_offerer.offerer)
@@ -34,7 +34,9 @@ class Returns200Test:
             "motorDisabilityCompliant": True,
             "visualDisabilityCompliant": False,
         }
-        response = client.with_session_auth("user@example.com").patch(f"/offers/draft/{offer.id}/details", json=data)
+        response = client.with_session_auth("user@example.com").patch(
+            f"/offers/draft/{offer.id}/useful-informations", json=data
+        )
 
         # Then
         assert response.status_code == 200
@@ -77,7 +79,9 @@ class Returns400Test:
             "thumbCount": 2,
             "subcategoryId": subcategories.LIVRE_PAPIER,
         }
-        response = client.with_session_auth("user@example.com").patch(f"offers/draft/{offer.id}/details", json=data)
+        response = client.with_session_auth("user@example.com").patch(
+            f"offers/draft/{offer.id}/useful-informations", json=data
+        )
 
         # Then
         assert response.status_code == 400
@@ -110,7 +114,9 @@ class Returns400Test:
         data = {
             "visualDisabilityCompliant": True,
         }
-        response = client.with_session_auth("user@example.com").patch(f"/offers/draft/{offer.id}/details", json=data)
+        response = client.with_session_auth("user@example.com").patch(
+            f"/offers/draft/{offer.id}/useful-informations", json=data
+        )
 
         assert response.status_code == 400
         assert response.json["global"] == ["Les offres refusées ou en attente de validation ne sont pas modifiables"]
@@ -131,7 +137,9 @@ class Returns400Test:
         data = {
             "withdrawalType": "no_ticket",
         }
-        response = client.with_session_auth("user@example.com").patch(f"offers/draft/{offer.id}/details", json=data)
+        response = client.with_session_auth("user@example.com").patch(
+            f"offers/draft/{offer.id}/useful-informations", json=data
+        )
 
         assert response.status_code == 400
         msg = "Il ne peut pas y avoir de délai de retrait lorsqu'il s'agit d'un évènement sans ticket"
@@ -151,7 +159,9 @@ class Returns400Test:
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
         data = {"bookingContact": None}
-        response = client.with_session_auth("user@example.com").patch(f"offers/draft/{offer.id}/details", json=data)
+        response = client.with_session_auth("user@example.com").patch(
+            f"offers/draft/{offer.id}/useful-informations", json=data
+        )
 
         assert response.status_code == 400
         msg = "Une offre qui a un ticket retirable doit avoir l'email du contact de réservation"
@@ -173,7 +183,9 @@ class Returns403Test:
 
         # When
         data = {"externalTicketOfficeUrl": "http://example.net"}
-        response = client.with_session_auth("user@example.com").patch(f"/offers/draft/{offer.id}/details", json=data)
+        response = client.with_session_auth("user@example.com").patch(
+            f"/offers/draft/{offer.id}/useful-informations", json=data
+        )
 
         # Then
         assert response.status_code == 403
@@ -186,5 +198,5 @@ class Returns404Test:
     def test_returns_404_if_offer_does_not_exist(self, client):
         email = "user@example.com"
         users_factories.UserFactory(email=email)
-        response = client.with_session_auth(email).patch("/offers/draft/12345/details", json={})
+        response = client.with_session_auth(email).patch("/offers/draft/12345/useful-informations", json={})
         assert response.status_code == 404

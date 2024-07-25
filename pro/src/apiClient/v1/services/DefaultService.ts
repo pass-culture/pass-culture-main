@@ -82,7 +82,7 @@ import type { PatchCollectiveOfferBodyModel } from '../models/PatchCollectiveOff
 import type { PatchCollectiveOfferEducationalInstitution } from '../models/PatchCollectiveOfferEducationalInstitution';
 import type { PatchCollectiveOfferTemplateBodyModel } from '../models/PatchCollectiveOfferTemplateBodyModel';
 import type { PatchDraftOfferBodyModel } from '../models/PatchDraftOfferBodyModel';
-import type { PatchDraftOfferDetailsBodyModel } from '../models/PatchDraftOfferDetailsBodyModel';
+import type { PatchDraftOfferUsefulInformationsBodyModel } from '../models/PatchDraftOfferUsefulInformationsBodyModel';
 import type { PatchOfferActiveStatusBodyModel } from '../models/PatchOfferActiveStatusBodyModel';
 import type { PatchOfferBodyModel } from '../models/PatchOfferBodyModel';
 import type { PatchOffererAddressRequest } from '../models/PatchOffererAddressRequest';
@@ -1806,19 +1806,19 @@ export class DefaultService {
     });
   }
   /**
-   * patch_draft_offer_details <PATCH>
+   * patch_draft_offer_useful_informations <PATCH>
    * @param offerId
    * @param requestBody
    * @returns GetIndividualOfferResponseModel OK
    * @throws ApiError
    */
-  public patchDraftOfferDetails(
+  public patchDraftOfferUsefulInformations(
     offerId: number,
-    requestBody?: PatchDraftOfferDetailsBodyModel,
+    requestBody?: PatchDraftOfferUsefulInformationsBodyModel,
   ): CancelablePromise<GetIndividualOfferResponseModel> {
     return this.httpRequest.request({
       method: 'PATCH',
-      url: '/offers/draft/{offer_id}/details',
+      url: '/offers/draft/{offer_id}/useful-informations',
       path: {
         'offer_id': offerId,
       },

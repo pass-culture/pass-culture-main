@@ -1130,7 +1130,7 @@ class UpdateDraftOfferDetailsTest:
             motorDisabilityCompliant=None,
             visualDisabilityCompliant=None,
         )
-        body = serialize.PatchDraftOfferDetailsBodyModel(
+        body = serialize.PatchDraftOfferUsefulInformationsBodyModel(
             audioDisabilityCompliant=True,
             mentalDisabilityCompliant=False,
             motorDisabilityCompliant=True,
@@ -1138,7 +1138,7 @@ class UpdateDraftOfferDetailsTest:
             bookingEmail="new@example.com",
             isDuo=True,
         )
-        offer = api.update_draft_offer_details(offer, body)
+        offer = api.update_draft_offer_useful_informations(offer, body)
         db.session.flush()
 
         assert offer.audioDisabilityCompliant is True
@@ -1164,9 +1164,9 @@ class UpdateDraftOfferDetailsTest:
 
     def test_update_extra_data_should_raise_error_when_mandatory_field_not_provided(self):
         offer = factories.OfferFactory(subcategoryId=subcategories.SPECTACLE_REPRESENTATION.id)
-        body = serialize.PatchDraftOfferDetailsBodyModel(extraData={"author": "Asimov"})
+        body = serialize.PatchDraftOfferUsefulInformationsBodyModel(extraData={"author": "Asimov"})
         with pytest.raises(api_errors.ApiErrors) as error:
-            api.update_draft_offer_details(offer, body)
+            api.update_draft_offer_useful_informations(offer, body)
         assert error.value.errors == {
             "showType": ["Ce champ est obligatoire"],
             "showSubType": ["Ce champ est obligatoire"],
@@ -1176,9 +1176,9 @@ class UpdateDraftOfferDetailsTest:
         offer = factories.OfferFactory(
             subcategoryId=subcategories.SPECTACLE_REPRESENTATION.id, extraData={"showType": 200}
         )
-        body = serialize.PatchDraftOfferDetailsBodyModel(extraData=None)
+        body = serialize.PatchDraftOfferUsefulInformationsBodyModel(extraData=None)
         with pytest.raises(api_errors.ApiErrors) as error:
-            api.update_draft_offer_details(offer, body)
+            api.update_draft_offer_useful_informations(offer, body)
         assert error.value.errors == {
             "showType": ["Ce champ est obligatoire"],
             "showSubType": ["Ce champ est obligatoire"],
