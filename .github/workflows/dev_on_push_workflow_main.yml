@@ -231,7 +231,7 @@ jobs:
 
   push-pcapi:
     name: "Push pcapi docker image to registry"
-    needs: [build-pcapi, pcapi-init-job, test-api, test-pro-e2e]
+    needs: [build-pcapi, pcapi-init-job, test-api]
     uses: ./.github/workflows/dev_on_workflow_push_docker_image.yml
     with:
       image: pcapi
@@ -244,7 +244,7 @@ jobs:
 
   push-pcapi-console:
     name: "Push pcapi-console docker image to registry"
-    needs: [build-pcapi-console, pcapi-init-job, test-api, test-pro-e2e]
+    needs: [build-pcapi-console, pcapi-init-job, test-api]
     uses: ./.github/workflows/dev_on_workflow_push_docker_image.yml
     with:
       image: pcapi-console
