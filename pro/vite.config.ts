@@ -1,6 +1,7 @@
 import { fileURLToPath, URL } from 'url'
 
 import react from '@vitejs/plugin-react'
+import * as preloads from 'design-system/dist/build/ts/font-preloads'
 import { visualizer } from 'rollup-plugin-visualizer'
 import { defineConfig, PluginOption } from 'vite'
 import { createHtmlPlugin } from 'vite-plugin-html'
@@ -29,6 +30,7 @@ export default defineConfig(({ mode }) => {
         inject: { data: { mode } },
       }),
       visualizer({ filename: 'bundleStats.html' }) as PluginOption,
+      htmlPlugin(),
     ],
     server: { port: 3001 },
     preview: { port: 3001 },
@@ -53,3 +55,19 @@ export default defineConfig(({ mode }) => {
     },
   }
 })
+
+const htmlPlugin = () => {
+  //  Inject the design-system fonts files in the index.html preloads
+  return {
+    name: 'html-transform',
+    transformIndexHtml(html: string) {
+      return html.replace(
+        new RegExp(
+          `<!-- inject:preload-design-system-fonts --><!-- endinject -->`,
+          'g'
+        ),
+        preloads.fontPreloads
+      )
+    },
+  }
+}
