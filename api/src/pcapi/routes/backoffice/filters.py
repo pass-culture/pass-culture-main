@@ -309,6 +309,20 @@ def format_booking_status(
     return "Réservée"
 
 
+def format_collective_booking_status_enum(status: educational_models.CollectiveBookingStatus) -> str:
+    match status:
+        case educational_models.CollectiveBookingStatus.PENDING:
+            return "Pré-réservée"
+        case educational_models.CollectiveBookingStatus.CONFIRMED:
+            return "Confirmée"
+        case educational_models.CollectiveBookingStatus.USED:
+            return "Validée"
+        case educational_models.CollectiveBookingStatus.CANCELLED:
+            return "Annulée"
+        case educational_models.CollectiveBookingStatus.REIMBURSED:
+            return "Remboursée"
+
+
 def format_validation_status(status: validation_status_mixin.ValidationStatus) -> str:
     match status:
         case validation_status_mixin.ValidationStatus.NEW:

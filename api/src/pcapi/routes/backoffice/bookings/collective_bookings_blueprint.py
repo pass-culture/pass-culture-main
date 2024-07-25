@@ -147,7 +147,9 @@ def list_collective_bookings() -> utils.BackofficeResponse:
         form=form,
         mark_as_used_booking_form=empty_forms.EmptyForm(),
         cancel_booking_form=booking_forms.CancelCollectiveBookingForm(),
+        update_booking_status_form=booking_forms.UpdateCollectiveBookingStatusForm(),
         pro_visualisation_link=pro_visualisation_link,
+        is_integration=settings.IS_INTEGRATION or settings.IS_DEV,
     )
 
 
@@ -250,5 +252,52 @@ def mark_booking_as_cancelled(collective_booking_id: int) -> utils.BackofficeRes
         flash(Markup("Une erreur s'est produite : {message}").format(message=str(exc)), "warning")
     else:
         flash(f"La réservation <b>{collective_booking.id}</b> a été annulée", "success")
+
+    return _redirect_after_collective_booking_action()
+
+
+def _update_booking_status(
+    booking: educational_models.CollectiveBooking, status: educational_models.CollectiveBookingStatus
+) -> None:
+    match status:
+        case educational_models.CollectiveBookingStatus.PENDING:
+            booking.status = status
+        case educational_models.CollectiveBookingStatus.CONFIRMED:
+            booking.mark_as_confirmed()
+        case educational_models.CollectiveBookingStatus.USED:
+            booking.status = status
+            booking.dateUsed = datetime.datetime.utcnow()
+        case educational_models.CollectiveBookingStatus.CANCELLED:
+            booking.cancel_booking(reason=educational_models.CollectiveBookingCancellationReasons.BACKOFFICE)
+        case educational_models.CollectiveBookingStatus.REIMBURSED:
+            booking.status = status
+
+
+@collective_bookings_blueprint.route("/<int:collective_booking_id>/status", methods=["POST"])
+@repository.atomic()
+@utils.permission_required(perm_models.Permissions.MANAGE_BOOKINGS)
+def update_collective_booking_status(collective_booking_id: int) -> utils.BackofficeResponse:
+    if not settings.IS_INTEGRATION and not settings.IS_DEV:
+        flash(Markup("Cette action n'est autorisée qu'en intégration"), "warning")
+        return _redirect_after_collective_booking_action()
+
+    collective_booking = educational_models.CollectiveBooking.query.filter_by(id=collective_booking_id).one_or_none()
+    if not collective_booking:
+        raise NotFound()
+
+    form = booking_forms.UpdateCollectiveBookingStatusForm()
+    if not form.validate():
+        flash(utils.build_form_error_msg(form), "warning")
+        return _redirect_after_collective_booking_action()
+
+    try:
+        status = educational_models.CollectiveBookingStatus(form.status.data)
+        _update_booking_status(collective_booking, status)
+    except Exception as exc:  # pylint: disable=broad-except
+        repository.mark_transaction_as_invalid()
+        msg = str(exc) if str(exc) else exc.__class__.__name__
+        flash(Markup("Une erreur s'est produite : {message}").format(message=msg), "warning")
+    else:
+        flash(f"Le statut de la réservation <b>{collective_booking.id}</b> a été mis à jour", "success")
 
     return _redirect_after_collective_booking_action()

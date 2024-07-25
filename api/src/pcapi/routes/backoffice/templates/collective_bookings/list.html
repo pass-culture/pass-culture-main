@@ -7,6 +7,7 @@
 {% extends "layouts/connected.html" %}
 {% set pc_validate_booking_modal_id = random_hash() %}
 {% set pc_cancel_booking_modal_id = random_hash() %}
+{% set pc_integration_update_booking_status_modal_id = random_hash() %}
 {% block page %}
   <div class="pt-3 px-5"
        data-toggle="filters"
@@ -108,6 +109,13 @@
                                  data-bs-target="#overpayment-creation-modal-{{ collective_booking.id }}">Créer un incident</a>
                             </li>
                           {% endif %}
+                          {% if is_integration %}
+                            <li class="dropdown-item p-0">
+                              <a class="btn btn-sm d-block w-100 text-start px-3"
+                                 data-bs-toggle="modal"
+                                 data-bs-target=".pc-integration-update-status-modal-{{ collective_booking.id }}">Modifier le statut de la réservation</a>
+                            </li>
+                          {% endif %}
                         </ul>
                         {% if collective_booking.isCancelled %}
                           <div class="modal modal-lg fade pc-validate-booking-modal-{{ collective_booking.id }}"
@@ -164,6 +172,34 @@
                             </div>
                           </div>
                         {% endif %}
+                            {% if is_integration %}
+                              <div class="modal modal-lg fade pc-integration-update-status-modal-{{ collective_booking.id }}"
+                                   tabindex="-1"
+                                   aria-labelledby="{{ pc_integration_update_booking_status_modal_id }}"
+                                   aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered">
+                                  <div class="modal-content">
+                                    <form action="{{ url_for("backoffice_web.collective_bookings.update_collective_booking_status", collective_booking_id=collective_booking.id) }}"
+                                          name="{{ url_for("backoffice_web.collective_bookings.update_collective_booking_status", collective_booking_id=collective_booking.id) | action_to_name }}"
+                                          method="post"
+                                          data-turbo="false">
+                                      <div class="modal-header"
+                                           id="{{ pc_integration_update_booking_status_modal_id }}">
+                                        <h5 class="modal-title">Modifier le statut de la réservation {{ collective_booking.id }}</h5>
+                                      </div>
+                                      <div class="modal-body row">{{ forms.build_form_fields_group(update_booking_status_form) }}</div>
+                                      <div class="modal-footer">
+                                        <button type="button"
+                                                class="btn btn-outline-primary"
+                                                data-bs-dismiss="modal">Annuler</button>
+                                        <button type="submit"
+                                                class="btn btn-primary">Confirmer</button>
+                                      </div>
+                                    </form>
+                                  </div>
+                                </div>
+                              </div>
+                            {% endif %}
                       {% endif %}
                     </div>
                   </div>

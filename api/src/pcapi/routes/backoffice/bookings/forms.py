@@ -220,6 +220,16 @@ class CancelCollectiveBookingForm(FlaskForm):
     )
 
 
+class UpdateCollectiveBookingStatusForm(FlaskForm):
+    status = fields.PCSelectWithPlaceholderValueField(
+        "Statut",
+        choices=utils.choices_from_enum(
+            educational_models.CollectiveBookingStatus,
+            formatter=filters.format_collective_booking_status_enum,
+        ),
+    )
+
+
 class CancelIndividualBookingForm(FlaskForm):
     reason = fields.PCSelectWithPlaceholderValueField(
         "Raison",
