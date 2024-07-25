@@ -47,7 +47,7 @@ Cypress.Commands.add('login', ({ email, password, redirectUrl }) => {
   cy.intercept({ method: 'POST', url: '/users/signin' }).as('signinUser')
 
   cy.visit('/connexion')
-  cy.acceptCookies()
+  cy.refuseCookies()
 
   cy.get('#email').type(email)
   cy.get('#password').type(password)
@@ -58,9 +58,9 @@ Cypress.Commands.add('login', ({ email, password, redirectUrl }) => {
   cy.findAllByTestId('spinner').should('not.exist')
 })
 
-Cypress.Commands.add('acceptCookies', () => {
+Cypress.Commands.add('refuseCookies', () => {
   cy.get('button', { timeout: 15 * 1000 })
-    .contains('Tout accepter')
+    .contains('Tout refuser')
     .click()
 })
 
