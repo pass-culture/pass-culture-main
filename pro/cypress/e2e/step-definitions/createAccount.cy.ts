@@ -1,4 +1,4 @@
-import { When, Then } from '@badeball/cypress-cucumber-preprocessor'
+import { Then, When } from '@badeball/cypress-cucumber-preprocessor'
 
 When('I fill required information in create account form', () => {
   cy.findByLabelText('Nom *').type('LEMOINE')
@@ -9,7 +9,6 @@ When('I fill required information in create account form', () => {
 })
 
 When('I submit', () => {
-  cy.intercept({ method: 'POST', url: '/v2/users/signup/pro' }).as('signupUser')
   cy.findByText('Créer mon compte').click()
 })
 

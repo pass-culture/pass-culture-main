@@ -39,7 +39,6 @@ When('I want to create {string} offer', (offerType: string) => {
   cy.findByText('Au grand public').click()
   cy.findByText(offerType).click()
 
-  cy.intercept({ method: 'GET', url: '/offers/categories' }).as('getCategories')
   cy.findByText('Étape suivante').click()
   cy.wait('@getCategories')
 })
