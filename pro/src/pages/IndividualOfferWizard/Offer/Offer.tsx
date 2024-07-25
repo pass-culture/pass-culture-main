@@ -10,6 +10,7 @@ import {
 } from 'config/swrQueryKeys'
 import { useIndividualOfferContext } from 'context/IndividualOfferContext/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
+import { useActiveFeature } from 'hooks/useActiveFeature'
 import { useCurrentUser } from 'hooks/useCurrentUser'
 import { useOfferWizardMode } from 'hooks/useOfferWizardMode'
 import { IndivualOfferLayout } from 'screens/IndividualOffer/IndivualOfferLayout/IndivualOfferLayout'
@@ -24,7 +25,8 @@ export const Offer = (): JSX.Element | null => {
   const { offer } = useIndividualOfferContext()
   const [searchParams] = useSearchParams()
 
-  const venueId = searchParams.get('lieu')
+  let venueId = searchParams.get('lieu')
+
   const offererIdFromQueryParam = searchParams.get('structure')
     ? Number(searchParams.get('structure'))
     : undefined
@@ -51,6 +53,8 @@ export const Offer = (): JSX.Element | null => {
     { fallbackData: { offerersNames: [] } }
   )
 
+  const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
+
   const showAdminCreationBanner =
     currentUser.isAdmin &&
     mode === OFFER_WIZARD_MODE.CREATION &&
@@ -58,6 +62,10 @@ export const Offer = (): JSX.Element | null => {
 
   if (venuesQuery.isLoading || offererNamesQuery.isLoading) {
     return <Spinner />
+  }
+
+  if (venueId === null && isOfferAddressEnabled) {
+    venueId = String(venuesQuery.data.venues[0].id)
   }
 
   return (
