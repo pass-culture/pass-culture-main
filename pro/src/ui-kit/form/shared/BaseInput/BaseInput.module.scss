@@ -62,9 +62,9 @@
   }
 
   &-right-button {
-    pointer-events: initial;
-
     @include forms.input-icon-wrapper(rem.torem(32px));
+
+    pointer-events: initial;
 
     button {
       background: none;
