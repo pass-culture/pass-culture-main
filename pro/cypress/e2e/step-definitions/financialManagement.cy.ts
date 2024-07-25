@@ -35,7 +35,9 @@ Then('I can see a link to the next reimbursement help page', () => {
     cy.findByText(/En savoir plus sur les prochains remboursements/)
       .invoke('removeAttr', 'target') // removes target to not open it in a new tab (not supported by cypress)
       .click()
-    cy.origin('https://aide.passculture.app', () => {
+    // En local, ne marche pas, il faut remplacer par
+    //     cy.origin('https://aide.passculture.app', () => {
+    cy.origin('https://passculture.zendesk.com', () => {
       // cloudfare/zendesk "Verify you are human" page cannot be used by cypress robot
       cy.url().should('include', '4411992051601')
     })
@@ -50,7 +52,9 @@ Then(
       cy.findByText(/Connaître les modalités de remboursement/)
         .invoke('removeAttr', 'target') // removes target to not open it in a new tab (not supported by cypress)
         .click()
-      cy.origin('https://aide.passculture.app/', () => {
+      // En local, ne marche pas, il faut remplacer par
+      //     cy.origin('https://aide.passculture.app', () => {
+      cy.origin('https://passculture.zendesk.com', () => {
         // cloudfare/zendesk "Verify you are human" page cannot be used by cypress robot
         cy.url().should('include', '4412007300369')
       })
