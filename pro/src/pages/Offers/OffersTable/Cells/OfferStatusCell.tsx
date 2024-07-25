@@ -1,7 +1,7 @@
 import { OfferStatus } from 'apiClient/v1'
 import { StatusLabel } from 'components/StatusLabel/StatusLabel'
 
-import styles from '../OfferRow.module.scss'
+import styles from './Cells.module.scss'
 
 interface OfferStatusCellProps {
   status: OfferStatus

@@ -7,7 +7,7 @@ import {
 import { isOfferEducational } from 'core/OfferEducational/types'
 import { Thumb } from 'ui-kit/Thumb/Thumb'
 
-import styles from '../OfferRow.module.scss'
+import styles from './Cells.module.scss'
 
 export const ThumbCell = ({
   offer,

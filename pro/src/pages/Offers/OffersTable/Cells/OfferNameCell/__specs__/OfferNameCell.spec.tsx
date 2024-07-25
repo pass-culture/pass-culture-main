@@ -36,7 +36,6 @@ describe('OfferNameCell', () => {
     renderOfferNameCell({
       offer: eventOffer,
       editionOfferLink: '#',
-      audience: Audience.COLLECTIVE,
     })
 
     expect(screen.getByText('Offre vitrine')).toBeInTheDocument()
@@ -52,7 +51,6 @@ describe('OfferNameCell', () => {
     renderOfferNameCell({
       offer: eventOffer,
       editionOfferLink: '#',
-      audience: Audience.INDIVIDUAL,
     })
 
     expect(screen.getByRole('img', { name: 'Attention' })).toBeInTheDocument()
@@ -70,7 +68,6 @@ describe('OfferNameCell', () => {
     renderOfferNameCell({
       offer: eventOffer,
       editionOfferLink: '#',
-      audience: Audience.INDIVIDUAL,
     })
 
     await userEvent.click(screen.getByRole('img', { name: 'Attention' }))

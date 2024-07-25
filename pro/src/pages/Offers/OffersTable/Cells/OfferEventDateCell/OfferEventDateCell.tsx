@@ -2,7 +2,7 @@ import { CollectiveOfferResponseModel } from 'apiClient/v1'
 import { getDateTimeToFrenchText } from 'utils/date'
 import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 
-import styles from '../../OfferRow.module.scss'
+import styles from '../Cells.module.scss'
 
 export interface OfferEventDateCellProps {
   offer: CollectiveOfferResponseModel

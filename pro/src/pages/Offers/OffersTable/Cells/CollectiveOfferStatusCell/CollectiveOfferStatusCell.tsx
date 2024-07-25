@@ -15,7 +15,7 @@ import strokeHourglassIcon from 'icons/stroke-hourglass.svg'
 import strokeThing from 'icons/stroke-thing.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
-import styles from '../../OfferRow.module.scss'
+import styles from '../Cells.module.scss'
 
 import style from './CollectiveOfferStatusCell.module.scss'
 

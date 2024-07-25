@@ -9,12 +9,14 @@ import { useOfferEditionURL } from 'hooks/useOfferEditionURL'
 import { CheckboxCell } from '../../Cells/CheckboxCell'
 import { CollectiveActionsCells } from '../../Cells/CollectiveActionsCells'
 import { CollectiveOfferStatusCell } from '../../Cells/CollectiveOfferStatusCell/CollectiveOfferStatusCell'
+import { ExpirationCell } from '../../Cells/ExpirationCell/ExpirationCell'
 import { OfferEventDateCell } from '../../Cells/OfferEventDateCell/OfferEventDateCell'
 import { OfferInstitutionCell } from '../../Cells/OfferInstitutionCell'
 import { OfferNameCell } from '../../Cells/OfferNameCell/OfferNameCell'
 import { OfferVenueCell } from '../../Cells/OfferVenueCell'
 import { ThumbCell } from '../../Cells/ThumbCell'
-import styles from '../../OfferRow.module.scss'
+
+import styles from './CollectiveOfferRow.module.scss'
 
 export type CollectiveOfferRowProps = {
   isSelected: boolean
@@ -44,7 +46,7 @@ export const CollectiveOfferRow = ({
   return (
     <>
       <tr
-        className={classNames(styles['offer-item'], {
+        className={classNames(styles['collective-row'], {
           [styles['inactive']]: isOfferDisabled(offer.status),
         })}
         data-testid="offer-item-row"
@@ -115,13 +117,10 @@ export const CollectiveOfferRow = ({
       {isCollectiveOffersExpirationEnabled && !offer.isShowcase && (
         <tr>
           <td colSpan={1} />
-          <td
-            colSpan={8}
-            style={{ backgroundColor: 'red' }}
+          <ExpirationCell
+            offer={offer}
             headers={`${rowId} collective-offer-head-expiration`}
-          >
-            Expire dans x jours
-          </td>
+          />
         </tr>
       )}
     </>

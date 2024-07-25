@@ -1,7 +1,7 @@
 import penIcon from 'icons/full-edit.svg'
 import { ListIconButton } from 'ui-kit/ListIconButton/ListIconButton'
 
-import styles from '../OfferRow.module.scss'
+import styles from './Cells.module.scss'
 
 interface EditOfferCellProps {
   editionOfferLink: string

@@ -49,9 +49,8 @@ import {
 } from 'utils/date'
 import { localStorageAvailable } from 'utils/localStorageAvailable'
 
-import styles from '../OfferRow.module.scss'
-
 import { BookingLinkCell } from './BookingLinkCell'
+import styles from './Cells.module.scss'
 import { DuplicateOfferDialog } from './DuplicateOfferCell/DuplicateOfferDialog/DuplicateOfferDialog'
 
 export interface CollectiveActionsCellsProps {
