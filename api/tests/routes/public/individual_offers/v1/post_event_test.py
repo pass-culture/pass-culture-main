@@ -78,7 +78,7 @@ class PostEventTest:
         assert created_offer.futureOffer.isWaitingForPublication
 
     def test_event_creation_with_full_body(self, client, clear_tests_assets_bucket):
-        venue, _ = utils.create_offerer_provider_linked_to_venue(with_charlie=True)
+        venue, _ = utils.create_offerer_provider_linked_to_venue(with_ticketing_service_at_provider_level=True)
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/events",
@@ -190,7 +190,7 @@ class PostEventTest:
         }
 
     def test_event_creation_with_titelive_type(self, client, clear_tests_assets_bucket):
-        venue, _ = utils.create_offerer_provider_linked_to_venue(with_charlie=True)
+        venue, _ = utils.create_offerer_provider_linked_to_venue(with_ticketing_service_at_provider_level=True)
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/events",
             json={
@@ -232,7 +232,7 @@ class PostEventTest:
 
     @override_features(ENABLE_TITELIVE_MUSIC_TYPES_IN_API_OUTPUT=True)
     def test_event_creation_with_titelive_type_with_active_serialization(self, client, clear_tests_assets_bucket):
-        venue, _ = utils.create_offerer_provider_linked_to_venue(with_charlie=True)
+        venue, _ = utils.create_offerer_provider_linked_to_venue(with_ticketing_service_at_provider_level=True)
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/events",
@@ -329,8 +329,8 @@ class PostEventTest:
         created_offer = offers_models.Offer.query.one()
         assert created_offer.withdrawalType == offers_models.WithdrawalTypeEnum.NO_TICKET
 
-    def test_event_with_in_app_ticket(self, client):
-        venue, _ = utils.create_offerer_provider_linked_to_venue(with_charlie=True)
+    def test_event_with_has_ticket_to_true_and_ticketing_service_at_provider_level(self, client):
+        venue, _ = utils.create_offerer_provider_linked_to_venue(with_ticketing_service_at_provider_level=True)
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/events",
@@ -347,8 +347,45 @@ class PostEventTest:
         created_offer = offers_models.Offer.query.one()
         assert created_offer.withdrawalType == offers_models.WithdrawalTypeEnum.IN_APP
 
+    def test_event_with_has_ticket_to_true_and_ticketing_service_at_venue_level(self, client):
+        venue, _ = utils.create_offerer_provider_linked_to_venue(with_ticketing_service_at_venue_level=True)
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
+            "/public/offers/v1/events",
+            json={
+                "categoryRelatedFields": {"category": "FESTIVAL_ART_VISUEL"},
+                "accessibility": utils.ACCESSIBILITY_FIELDS,
+                "location": {"type": "physical", "venueId": venue.id},
+                "name": "Le champ des possibles",
+                "hasTicket": True,
+                "bookingContact": "booking@conta.ct",
+            },
+        )
+        assert response.status_code == 200
+        created_offer = offers_models.Offer.query.one()
+        assert created_offer.withdrawalType == offers_models.WithdrawalTypeEnum.IN_APP
+
+    def test_error_when_event_with_has_ticket_to_true_and_no_ticketing_service_set(self, client):
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
+            "/public/offers/v1/events",
+            json={
+                "categoryRelatedFields": {"category": "FESTIVAL_ART_VISUEL"},
+                "accessibility": utils.ACCESSIBILITY_FIELDS,
+                "location": {"type": "physical", "venueId": venue.id},
+                "name": "Le champ des possibles",
+                "hasTicket": True,
+                "bookingContact": "booking@conta.ct",
+            },
+        )
+        assert response.status_code == 400
+        assert response.json == {
+            "global": "You cannot create an event with `has_ticket=true` because you dont have a ticketing service enabled (neither at provider level nor at venue level)."
+        }
+
     def test_error_when_withdrawable_event_but_no_booking_contact(self, client):
-        venue, _ = utils.create_offerer_provider_linked_to_venue(with_charlie=True)
+        venue, _ = utils.create_offerer_provider_linked_to_venue(with_ticketing_service_at_provider_level=True)
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/events",

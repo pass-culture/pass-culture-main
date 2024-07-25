@@ -259,6 +259,10 @@ class VenueProvider(PcObject, Base, Model, DeactivableMixin):
             return ("global", "Votre lieu est déjà lié à cette source")
         return PcObject.restize_integrity_error(error)
 
+    @property
+    def hasTicketingService(self) -> bool:
+        return bool(self.externalUrls and self.externalUrls.bookingExternalUrl and self.externalUrls.cancelExternalUrl)
+
 
 class CinemaProviderPivot(PcObject, Base, Model):
     """Stores whether a Venue has requested to be synced with a Provider"""

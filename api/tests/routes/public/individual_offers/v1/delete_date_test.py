@@ -28,7 +28,7 @@ class DeleteDateTest:
         assert stock_to_delete.isSoftDeleted is True
 
     def test_delete_unbooked_date_with_ticket(self, client):
-        venue, api_key = utils.create_offerer_provider_linked_to_venue(with_charlie=True)
+        venue, api_key = utils.create_offerer_provider_linked_to_venue(with_ticketing_service_at_provider_level=True)
         event_offer = offers_factories.EventOfferFactory(
             venue=venue,
             lastProvider=api_key.provider,
@@ -45,7 +45,7 @@ class DeleteDateTest:
         assert stock_to_delete.isSoftDeleted is True
 
     def test_400_if_event_stock_beginning_date_was_more_than_two_days_ago(self, client):
-        venue, api_key = utils.create_offerer_provider_linked_to_venue(with_charlie=True)
+        venue, api_key = utils.create_offerer_provider_linked_to_venue(with_ticketing_service_at_provider_level=True)
         event_offer = offers_factories.EventOfferFactory(
             venue=venue,
             lastProvider=api_key.provider,

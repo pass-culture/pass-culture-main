@@ -31,17 +31,13 @@ def _deserialize_has_ticket(
     has_ticket: bool,
     subcategory_id: str,
 ) -> offers_models.WithdrawalTypeEnum | None:
-    if not has_ticket:
-        if subcategories.ALL_SUBCATEGORIES_DICT[subcategory_id].can_be_withdrawable:
-            return offers_models.WithdrawalTypeEnum.NO_TICKET
-        return None
+    if has_ticket:
+        return offers_models.WithdrawalTypeEnum.IN_APP
 
-    if not current_api_key.provider.hasProviderEnableCharlie:
-        raise api_errors.ApiErrors(
-            {"global": "You must support the pass culture ticketting interface to use the in_app value."},
-            status_code=400,
-        )
-    return offers_models.WithdrawalTypeEnum.IN_APP
+    if subcategories.ALL_SUBCATEGORIES_DICT[subcategory_id].can_be_withdrawable:
+        return offers_models.WithdrawalTypeEnum.NO_TICKET
+
+    return None
 
 
 @blueprints.public_api.route("/public/offers/v1/events", methods=["POST"])
@@ -65,7 +61,16 @@ def post_event_offer(body: serialization.EventOfferCreation) -> serialization.Ev
     """
     Create event offer
     """
-    venue = utils.retrieve_venue_from_location(body.location)
+    venue_provider = authorization.get_venue_provider_or_raise_404(body.location.venue_id)
+    venue = utils.get_venue_with_offerer_address(body.location.venue_id)
+
+    if body.has_ticket and not (venue_provider.provider.hasProviderEnableCharlie or venue_provider.hasTicketingService):
+        raise api_errors.ApiErrors(
+            {
+                "global": "You cannot create an event with `has_ticket=true` because you dont have a ticketing service enabled (neither at provider level nor at venue level)."
+            }
+        )
+
     withdrawal_type = _deserialize_has_ticket(body.has_ticket, body.category_related_fields.subcategory_id)
     try:
         with repository.transaction():
@@ -89,6 +94,7 @@ def post_event_offer(body: serialization.EventOfferCreation) -> serialization.Ev
                 withdrawal_details=body.withdrawal_details,
                 withdrawal_type=withdrawal_type,
                 id_at_provider=body.id_at_provider,
+                venue_provider=venue_provider,
             )
             # To create the priceCategories, the offer needs to have an id
             db.session.flush()
@@ -168,9 +174,9 @@ def get_events(query: serialization.GetOffersQueryParams) -> serialization.Event
     Return all the events linked to given venue.
     Results are paginated (by default there are `50` events per page).
     """
+    venue_provider = authorization.get_venue_provider_or_raise_404(query.venue_id)
     authorization.check_is_allowed_to_perform_action(
-        current_api_key.provider.id,
-        query.venue_id,
+        venue_provider,
         resource=providers_models.ApiResourceEnum.events,
         permission=providers_models.PermissionEnum.READ,
     )

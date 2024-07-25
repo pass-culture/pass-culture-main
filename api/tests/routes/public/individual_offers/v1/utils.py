@@ -10,9 +10,9 @@ ACCESSIBILITY_FIELDS = {
 }
 
 
-def create_offerer_provider(with_charlie=False):
-    booking_url = "http://example.com/booking" if with_charlie else None
-    cancellation_url = "http://example.com/cancellation" if with_charlie else None
+def create_offerer_provider(with_ticketing_service=False):
+    booking_url = "http://example.com/booking" if with_ticketing_service else None
+    cancellation_url = "http://example.com/cancellation" if with_ticketing_service else None
     offerer = offerers_factories.OffererFactory(name="Technical provider")
     provider = providers_factories.ProviderFactory(
         name="Technical provider",
@@ -36,20 +36,25 @@ def create_offerer_provider(with_charlie=False):
 def create_offerer_provider_linked_to_venue(
     venue_params=None,
     is_virtual=False,
-    with_charlie=False,
+    with_ticketing_service_at_provider_level=False,
+    with_ticketing_service_at_venue_level=False,
     is_venue_provider_active=True,
     venue_provider_permissions=None,
 ):
     venue_params = venue_params if venue_params else {}
     venue_provider_permissions = venue_provider_permissions or []
-    provider, api_key = create_offerer_provider(with_charlie)
+    provider, api_key = create_offerer_provider(with_ticketing_service_at_provider_level)
     if is_virtual:
         venue = offerers_factories.VirtualVenueFactory(**venue_params)
     else:
         venue = offerers_factories.VenueFactory(**venue_params)
+
     venue_provider = providers_factories.VenueProviderFactory(
         venue=venue, provider=provider, venueIdAtOfferProvider="Test", isActive=is_venue_provider_active
     )
+    if with_ticketing_service_at_venue_level:
+        providers_factories.VenueProviderExternalUrlsFactory(venueProvider=venue_provider)
+
     for permission_tuple in venue_provider_permissions:
         permission, resource = permission_tuple
         providers_factories.VenueProviderPermissionFactory(

@@ -117,7 +117,7 @@ class PatchEventTest:
         }
 
     def test_patch_all_fields(self, client):
-        venue, api_key = utils.create_offerer_provider_linked_to_venue(with_charlie=True)
+        venue, api_key = utils.create_offerer_provider_linked_to_venue(with_ticketing_service_at_provider_level=True)
         event_offer = offers_factories.EventOfferFactory(
             venue=venue,
             bookingContact="contact@example.com",

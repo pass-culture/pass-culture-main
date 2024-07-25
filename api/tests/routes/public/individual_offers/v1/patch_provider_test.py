@@ -43,6 +43,7 @@ class PatchProviderTest(PublicAPIEndpointBaseHelper):
 
     def test_should_update_booking_url(self, client):
         plain_api_key, provider = self.setup_provider()
+
         previous_cancel_url = provider.cancelExternalUrl
         previous_notification_url = provider.notificationExternalUrl
 
@@ -66,6 +67,7 @@ class PatchProviderTest(PublicAPIEndpointBaseHelper):
 
     def test_should_update_cancel_url(self, client):
         plain_api_key, provider = self.setup_provider()
+
         previous_booking_url = provider.bookingExternalUrl
         previous_notification_url = provider.notificationExternalUrl
 
@@ -139,6 +141,7 @@ class PatchProviderTest(PublicAPIEndpointBaseHelper):
 
     def test_should_return_400_because_of_incoherent_ticketing_urls(self, client):
         plain_api_key, provider = self.setup_provider()
+
         previous_booking_url = provider.bookingExternalUrl
         previous_cancel_url = provider.cancelExternalUrl
         previous_notification_url = provider.notificationExternalUrl

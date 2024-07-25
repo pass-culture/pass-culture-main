@@ -17,6 +17,14 @@ from . import constants
 from . import serialization
 
 
+def get_venue_with_offerer_address(venue_id: int) -> offerers_models.Venue:
+    return (
+        offerers_models.Venue.query.filter(offerers_models.Venue.id == venue_id)
+        .options(sqla.orm.joinedload(offerers_models.Venue.offererAddress))
+        .one()
+    )
+
+
 def retrieve_venue_from_location(
     location: serialization.DigitalLocation | serialization.PhysicalLocation,
 ) -> offerers_models.Venue:
