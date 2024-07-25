@@ -1,4 +1,5 @@
 @use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/variables/_size.scss" as size;
 
 .discovery-banner {
@@ -9,10 +10,11 @@
   position: relative;
 
   &-title {
+    @include fonts.extra-bold;
+
     margin: 0;
     color: var(--color-white);
     font-size: rem.torem(24px);
-    font-weight: 800;
     text-align: center;
     line-height: normal;
     position: relative;
