@@ -21,6 +21,9 @@ def send_cancel_booking_notification(bookings_ids: list[int]) -> None:
         send_transactional_notification(notification_data)
 
 
+OFFER_IDS_TO_NOT_NOTIFY = [232581516]
+
+
 @job(worker.default_queue)
 def send_today_stock_notification(stock_id: int) -> None:
     """
@@ -32,6 +35,8 @@ def send_today_stock_notification(stock_id: int) -> None:
     bookings = bookings_api.get_individual_bookings_from_stock(stock_id)
 
     for booking in bookings:
+        if offer.id in OFFER_IDS_TO_NOT_NOTIFY:
+            continue
         notification_data = get_today_stock_booking_notification_data(booking, offer)
         if notification_data:
             send_transactional_notification(notification_data)
