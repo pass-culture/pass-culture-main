@@ -27,14 +27,10 @@ describe('OfferNameCell', () => {
     const eventOffer = collectiveOfferFactory({
       isShowcase: false,
       name: 'Offre nom',
-      stocks: [
-        {
-          startDatetime: '2024-08-04T13:00:00Z',
-          endDatetime: '2024-08-04T13:00:00Z',
-          hasBookingLimitDatetimePassed: false,
-          remainingQuantity: 1,
-        },
-      ],
+      dates: {
+        start: '2024-08-04T13:00:00Z',
+        end: '2024-08-04T13:00:00Z',
+      },
     })
 
     renderOfferNameCell({
@@ -42,21 +38,17 @@ describe('OfferNameCell', () => {
     })
 
     expect(screen.getByText('04/08/2024')).toBeInTheDocument()
-    expect(screen.getByText('à partir de 13h00')).toBeInTheDocument()
+    expect(screen.getByText('13h00')).toBeInTheDocument()
   })
 
   it('should display both date and time when dates are not the same', () => {
     const eventOffer = collectiveOfferFactory({
       isShowcase: false,
       name: 'Offre nom',
-      stocks: [
-        {
-          startDatetime: '2024-08-04T13:00:00Z',
-          endDatetime: '2024-09-04T13:00:00Z',
-          hasBookingLimitDatetimePassed: false,
-          remainingQuantity: 1,
-        },
-      ],
+      dates: {
+        start: '2024-08-04T13:00:00Z',
+        end: '2024-09-04T13:00:00Z',
+      },
     })
 
     renderOfferNameCell({
@@ -65,21 +57,14 @@ describe('OfferNameCell', () => {
 
     expect(screen.getByText('du 04/08/2024')).toBeInTheDocument()
     expect(screen.getByText('au 04/09/2024')).toBeInTheDocument()
-    expect(screen.getByText('à partir de 13h00')).toBeInTheDocument()
+    expect(screen.getByText('13h00')).toBeInTheDocument()
   })
 
   it('must display "Toute l’année scolaire" if dates are not defined', () => {
     const eventOffer = collectiveOfferFactory({
       isShowcase: true,
       name: 'Offre nom',
-      stocks: [
-        {
-          startDatetime: null,
-          endDatetime: null,
-          hasBookingLimitDatetimePassed: false,
-          remainingQuantity: 1,
-        },
-      ],
+      dates: null,
     })
 
     renderOfferNameCell({
