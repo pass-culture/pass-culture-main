@@ -26,7 +26,6 @@ import { useOfferWizardMode } from 'hooks/useOfferWizardMode'
 
 import { ActionBar } from '../ActionBar/ActionBar'
 import { useIndividualOfferImageUpload } from '../hooks/useIndividualOfferImageUpload'
-import { serializeDurationMinutes } from '../InformationsScreen/serializePatchOffer'
 import {
   getOfferSubtypeFromParam,
   getCategoryStatusFromOfferSubtype,
@@ -37,7 +36,7 @@ import {
 import { DetailsForm } from './DetailsForm'
 import { DetailsFormValues } from './types'
 import {
-  serializeExtraData,
+  serializeDetailsData,
   setDefaultInitialValues,
   setDefaultInitialValuesFromOffer,
   setFormReadOnlyFields,
@@ -85,25 +84,10 @@ export const DetailsScreen = ({ venues }: DetailsScreenProps): JSX.Element => {
   const onSubmit = async (formValues: DetailsFormValues): Promise<void> => {
     // Submit
     try {
-      const postOffer = {
-        description: formValues.description,
-        durationMinutes: serializeDurationMinutes(
-          formValues.durationMinutes ?? ''
-        ),
-        extraData: serializeExtraData(formValues),
-        name: formValues.name,
-        subcategoryId: formValues.subcategoryId,
-        venueId: Number(formValues.venueId),
-        // FIXME: remove these keys when the API is updated
-        audioDisabilityCompliant: false,
-        visualDisabilityCompliant: false,
-        mentalDisabilityCompliant: false,
-        motorDisabilityCompliant: false,
-      }
-
+      const payload = serializeDetailsData(formValues)
       const response = !offer
-        ? await api.postOffer(postOffer)
-        : await api.patchOffer(offer.id, postOffer)
+        ? await api.postDraftOffer(payload)
+        : await api.patchDraftOffer(offer.id, payload)
 
       const receivedOfferId = response.id
       await handleImageOnSubmit(receivedOfferId)

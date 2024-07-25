@@ -240,7 +240,7 @@ describe('deSerializeDurationMinutes', () => {
 
 describe('serializeDurationMinutes', () => {
   it('should correctly serialize duration minutes', () => {
-    expect(serializeDurationMinutes('')).toStrictEqual(null)
+    expect(serializeDurationMinutes('')).toStrictEqual(undefined)
     expect(serializeDurationMinutes('0:00')).toStrictEqual(0)
     expect(serializeDurationMinutes('0:21')).toStrictEqual(21)
     expect(serializeDurationMinutes('3:03')).toStrictEqual(183)

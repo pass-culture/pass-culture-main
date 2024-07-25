@@ -256,10 +256,10 @@ export function deSerializeDurationMinutes(durationMinute: number): string {
 
 export const serializeDurationMinutes = (
   durationHour: string
-): number | null => {
+): number | undefined => {
   /* istanbul ignore next: DEBT, TO FIX */
   if (durationHour.trim().length === 0) {
-    return null
+    return undefined
   }
 
   /* istanbul ignore next: DEBT, TO FIX */
@@ -321,4 +321,35 @@ export const serializeExtraData = (
   }
 
   return extraData
+}
+
+type Payload = {
+  description?: string
+  durationMinutes?: number
+  extraData?: Record<string, unknown>
+  name: string
+  subcategoryId: string
+  venueId: number
+}
+
+export function serializeDetailsData(formValues: DetailsFormValues): Payload {
+  const payload: Payload = {
+    name: formValues.name,
+    subcategoryId: formValues.subcategoryId,
+    venueId: Number(formValues.venueId),
+  }
+  if (formValues.description) {
+    payload.description = formValues.description
+  }
+  if (formValues.durationMinutes) {
+    payload.durationMinutes = serializeDurationMinutes(
+      formValues.durationMinutes
+    )
+  }
+  const serializedExtraData = serializeExtraData(formValues)
+  if (Object.keys(serializedExtraData).length > 0) {
+    payload.extraData = serializedExtraData
+  }
+
+  return payload
 }
