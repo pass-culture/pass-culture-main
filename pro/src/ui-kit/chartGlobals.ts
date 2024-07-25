@@ -11,7 +11,7 @@ export const chartColors = {
 // We have only one chart for now so I put here all the options that I think
 // should be defaults but we can adapt these defaults when we add more charts
 Chart.defaults.locale = 'fr-FR'
-Chart.defaults.font.family = 'Montserrat'
+Chart.defaults.font.family = 'Montserrat-Regular'
 Chart.defaults.maintainAspectRatio = false
 
 Chart.defaults.scales.time.time.displayFormats = {
