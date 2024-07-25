@@ -18,7 +18,7 @@ import { FORMAT_DD_MM_YYYY_HH_mm } from 'utils/date'
 import { pluralize } from 'utils/pluralize'
 import { formatLocalTimeDateString } from 'utils/timezone'
 
-import styles from '../../OfferRow.module.scss'
+import styles from '../Cells.module.scss'
 
 import { getDate, getRemainingTime, shouldDisplayWarning } from './utils'
 

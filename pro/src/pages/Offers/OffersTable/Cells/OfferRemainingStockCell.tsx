@@ -3,7 +3,7 @@ import {
   ListOffersStockResponseModel,
 } from 'apiClient/v1'
 
-import styles from '../OfferRow.module.scss'
+import styles from './Cells.module.scss'
 
 const computeRemainingStockValue = (
   stocks: (CollectiveOffersStockResponseModel | ListOffersStockResponseModel)[]

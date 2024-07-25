@@ -1,0 +1,36 @@
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/variables/_size.scss" as size;
+
+.collective-row {
+  display: grid;
+  grid-template-columns: rem.torem(22px) repeat(3, 1fr);
+  grid-template-areas:
+    "check thumb   head    head"
+    ".     thumb   desc    desc"
+    ".     desc2   desc3   desc3"
+    ".     desc4   desc4   desc4"
+    ".     actions actions status";
+  border-bottom: rem.torem(1px) solid var(--color-grey-medium);
+
+  &.inactive {
+    .offer-thumb {
+      opacity: 0.5;
+    }
+  }
+}
+
+.reference-row-head {
+  padding: 0;
+}
+
+@media (min-width: size.$mobile) {
+  .collective-row {
+    grid-template-columns: rem.torem(22px) rem.torem(112px) 1fr rem.torem(105px);
+  }
+}
+
+@media (min-width: size.$tablet) {
+  .collective-row {
+    display: table-row;
+  }
+}

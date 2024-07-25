@@ -20,7 +20,7 @@ import { computeDeletionErrorMessage } from 'pages/Offers/utils/computeDeletionE
 import { computeDeletionSuccessMessage } from 'pages/Offers/utils/computeDeletionSuccessMessage'
 import { ListIconButton } from 'ui-kit/ListIconButton/ListIconButton'
 
-import styles from '../OfferRow.module.scss'
+import styles from './Cells.module.scss'
 
 interface DeleteDraftOffersProps {
   offer: ListOffersOfferResponseModel

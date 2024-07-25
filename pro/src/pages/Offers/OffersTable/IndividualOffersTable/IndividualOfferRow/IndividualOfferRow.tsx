@@ -8,8 +8,8 @@ import {
   useOfferEditionURL,
   useOfferStockEditionURL,
 } from 'hooks/useOfferEditionURL'
-import { computeAddressDisplayName } from 'repository/venuesService'
 
+import { AddressCell } from '../../Cells/AddressCell'
 import { CheckboxCell } from '../../Cells/CheckboxCell'
 import { IndividualActionsCells } from '../../Cells/IndividualActionsCell'
 import { OfferNameCell } from '../../Cells/OfferNameCell/OfferNameCell'
@@ -17,7 +17,8 @@ import { OfferRemainingStockCell } from '../../Cells/OfferRemainingStockCell'
 import { OfferStatusCell } from '../../Cells/OfferStatusCell'
 import { OfferVenueCell } from '../../Cells/OfferVenueCell'
 import { ThumbCell } from '../../Cells/ThumbCell'
-import styles from '../../OfferRow.module.scss'
+
+import styles from './IndividualOfferRow.module.scss'
 
 export type IndividualOfferRowProps = {
   isSelected: boolean
@@ -51,7 +52,7 @@ export const IndividualOfferRow = ({
 
   return (
     <tr
-      className={classNames(styles['offer-item'], {
+      className={classNames(styles['individual-row'], {
         [styles['inactive']]: isOfferInactiveOrExpiredOrDisabled,
       })}
       data-testid="offer-item-row"
@@ -68,9 +69,7 @@ export const IndividualOfferRow = ({
       <OfferNameCell offer={offer} editionOfferLink={editionOfferLink} />
 
       {offerAddressEnabled && offer.address ? (
-        <td className={styles['venue-column']}>
-          {computeAddressDisplayName(offer.address)}
-        </td>
+        <AddressCell address={offer.address} />
       ) : (
         <OfferVenueCell venue={offer.venue} />
       )}

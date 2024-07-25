@@ -8,107 +8,90 @@
   @include a11y.visually-hidden;
 }
 
-.offer-item {
-  display: grid;
-  grid-template-columns: rem.torem(22px) repeat(3, 1fr);
-  grid-template-areas:
-    "check thumb   head    head"
-    ".     thumb   desc    desc"
-    ".     desc2   desc3   desc3"
-    ".     desc4   desc4   desc4"
-    ".     actions actions status";
+td:first-of-type {
+  grid-area: check;
+  padding-top: rem.torem(8px);
 
-  &.inactive {
-    .offer-thumb {
-      opacity: 0.5;
-    }
+  input[type="checkbox"] {
+    margin-right: 0;
   }
 
-  td:first-of-type {
-    grid-area: check;
-    padding-top: rem.torem(8px);
-
-    input[type="checkbox"] {
-      margin-right: 0;
-    }
-
-    label {
-      display: inline-flex;
-    }
+  label {
+    display: inline-flex;
   }
+}
 
-  .thumb-column {
-    grid-area: thumb;
-    padding: rem.torem(8px);
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
+.thumb-column {
+  grid-area: thumb;
+  padding: rem.torem(8px);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
 
-    &-link {
-      display: block;
-      overflow-wrap: break-word;
-
-      &:hover,
-      &:focus {
-        text-decoration: underline;
-      }
-    }
-  }
-
-  .title-column {
-    @include fonts.body-exergue;
-
-    grid-column: head;
-    grid-row: head / desc;
-    align-self: center;
-    padding-top: rem.torem(4px);
-
-    .offer-template-tag {
-      margin-bottom: rem.torem(4px);
-    }
-
-    a {
-      display: block;
-    }
-  }
-
-  .status-column {
-    grid-area: status;
-    padding-top: 0.25rem;
-    padding-bottom: 0.25rem;
-    justify-self: flex-end;
-  }
-
-  .venue-column,
-  .institution-column,
-  .title-column {
+  &-link {
     display: block;
-    overflow-wrap: anywhere;
-  }
+    overflow-wrap: break-word;
 
-  .venue-column {
-    grid-column: desc2 / desc3;
-    padding-top: 0.25rem;
-    padding-bottom: 0.25rem;
-  }
-
-  .institution-column,
-  .stock-column {
-    grid-area: desc4;
-    padding-top: 0.25rem;
-    padding-bottom: 0.25rem;
-  }
-
-  .actions-column {
-    grid-area: actions;
-    padding: 0;
-    justify-self: end;
-
-    &-container {
-      display: flex;
-      align-items: center;
-      gap: rem.torem(4px);
+    &:hover,
+    &:focus {
+      text-decoration: underline;
     }
+  }
+}
+
+.title-column {
+  @include fonts.body-exergue;
+
+  grid-column: head;
+  grid-row: head / desc;
+  align-self: center;
+  padding-top: rem.torem(4px);
+
+  .offer-template-tag {
+    margin-bottom: rem.torem(4px);
+  }
+
+  a {
+    display: block;
+  }
+}
+
+.status-column {
+  grid-area: status;
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+  justify-self: flex-end;
+}
+
+.venue-column,
+.institution-column,
+.title-column {
+  display: block;
+  overflow-wrap: anywhere;
+}
+
+.venue-column {
+  grid-column: desc2 / desc3;
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+}
+
+.institution-column,
+.stock-column {
+  grid-area: desc4;
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+}
+
+.actions-column {
+  grid-area: actions;
+  padding: 0;
+  justify-self: end;
+
+  &-container {
+    display: flex;
+    align-items: center;
+    gap: rem.torem(4px);
   }
 }
 
@@ -161,10 +144,6 @@
 }
 
 @media (min-width: size.$mobile) {
-  .offer-item {
-    grid-template-columns: rem.torem(22px) rem.torem(112px) 1fr rem.torem(105px);
-  }
-
   .thumb-column {
     padding: rem.torem(8px) rem.torem(16px);
   }
@@ -184,50 +163,46 @@
 }
 
 @media (min-width: size.$tablet) {
-  .offer-item {
-    display: table-row;
+  .checkbox-column {
+    width: rem.torem(32px);
+  }
 
-    .checkbox-column {
-      width: rem.torem(32px);
+  .venue-column,
+  .institution-column,
+  .title-column {
+    display: table-cell;
+  }
+
+  .venue-column {
+    padding-top: unset;
+    padding-bottom: unset;
+  }
+
+  .thumb-column {
+    padding: rem.torem(8px);
+    max-width: rem.torem(80px);
+
+    a {
+      height: unset;
     }
+  }
 
-    .venue-column,
-    .institution-column,
-    .title-column {
-      display: table-cell;
-    }
+  .institution-column,
+  .stock-column {
+    padding-top: unset;
+    padding-bottom: unset;
+  }
 
-    .venue-column {
-      padding-top: unset;
-      padding-bottom: unset;
-    }
+  .status-column {
+    padding-top: unset;
+    padding-bottom: unset;
+  }
 
-    .thumb-column {
-      padding: rem.torem(8px);
-      max-width: rem.torem(80px);
+  .actions-column {
+    padding: 0 0 0 rem.torem(10px);
 
-      a {
-        height: unset;
-      }
-    }
-
-    .institution-column,
-    .stock-column {
-      padding-top: unset;
-      padding-bottom: unset;
-    }
-
-    .status-column {
-      padding-top: unset;
-      padding-bottom: unset;
-    }
-
-    .actions-column {
-      padding: 0 0 0 rem.torem(10px);
-
-      & > div {
-        justify-content: flex-end;
-      }
+    & > div {
+      justify-content: flex-end;
     }
   }
 
@@ -329,7 +304,6 @@
   }
 }
 
-.reference-row-head,
 .expiration-date-cell {
   padding: 0;
 }

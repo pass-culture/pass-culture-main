@@ -1,6 +1,6 @@
 import { EducationalInstitutionResponseModel } from 'apiClient/v1'
 
-import styles from '../OfferRow.module.scss'
+import styles from './Cells.module.scss'
 
 interface OfferInstitutionCellProps {
   educationalInstitution?: EducationalInstitutionResponseModel | null
