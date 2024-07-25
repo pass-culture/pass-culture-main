@@ -508,6 +508,10 @@ def delete_venue(venue_id: int) -> None:
     if venue_used_as_reimbursement_point:
         raise exceptions.CannotDeleteVenueUsedAsReimbursementPointException()
 
+    educational_models.CollectivePlaylist.query.filter(
+        educational_models.CollectivePlaylist.venueId == venue_id
+    ).delete(synchronize_session=False)
+
     offer_ids_to_delete = _delete_objects_linked_to_venue(venue_id)
 
     # Warning: we should only delete rows where the "venueId" is the
