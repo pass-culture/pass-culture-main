@@ -249,7 +249,7 @@ def _book_offer(
             offers_validation.check_offer_is_from_current_cinema_provider(stock.offer)
             _book_cinema_external_ticket(booking, stock, beneficiary)
 
-        if providers_repository.is_event_external_ticket_applicable(stock.offer):
+        if stock.offer.isEventLinkedToTicketingService:
             remaining_quantity = _book_event_external_ticket(booking, stock, beneficiary)
             if remaining_quantity is None:
                 stock.quantity = None
@@ -543,7 +543,9 @@ def _cancel_external_booking(booking: Booking, stock: Stock) -> None:
     if not booking.isExternal:
         return None
 
-    if offer.lastProvider and offer.lastProvider.hasProviderEnableCharlie:
+    if offer.lastProvider and (
+        offer.isEventLinkedToTicketingService or offer.lastProvider.hasProviderEnableCharlie
+    ):  # FIXME: `offer.lastProvider.hasProviderEnableCharlie` is legacy to support old public API
         sentry_sdk.set_tag("external-provider", offer.lastProvider.name)
         barcodes = [external_booking.barcode for external_booking in booking.externalBookings]
         venue_provider = providers_repository.get_venue_provider_by_venue_and_provider_ids(

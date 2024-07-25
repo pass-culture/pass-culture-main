@@ -30,6 +30,7 @@ from pcapi.utils.queue import add_to_queue
 
 from . import exceptions
 from . import serialize
+from . import validation
 
 
 logger = logging.getLogger(__name__)
@@ -109,6 +110,8 @@ def book_event_ticket(
     provider: providers_models.Provider,
     venue_provider: providers_models.VenueProvider | None,
 ) -> tuple[list[external_bookings_models.Ticket], int | None]:
+    validation.check_ticketing_service_is_correctly_set(provider=provider, venue_provider=venue_provider)
+
     payload = serialize.ExternalEventBookingRequest.build_external_booking(stock, booking, beneficiary)
     json_payload = payload.json()
     hmac_signature = generate_hmac_signature(provider.hmacKey, json_payload)
@@ -197,6 +200,8 @@ def cancel_event_ticket(
     is_booking_saved: bool,
     venue_provider: providers_models.VenueProvider | None,
 ) -> None:
+    validation.check_ticketing_service_is_correctly_set(provider=provider, venue_provider=venue_provider)
+
     payload = serialize.ExternalEventCancelBookingRequest.build_external_cancel_booking(barcodes)
     json_payload = payload.json()
     hmac_signature = generate_hmac_signature(provider.hmacKey, json_payload)
