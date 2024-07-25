@@ -29,7 +29,7 @@ export const OfferEventDateCell = ({ offer }: OfferEventDateCellProps) => {
   }
 
   const getFormattedDatesForOffer = (offer: CollectiveOfferResponseModel) => {
-    const offerStock = offer.stocks[0]
+    const offerDates = offer.dates
 
     const options: Intl.DateTimeFormatOptions = {
       day: '2-digit',
@@ -37,14 +37,14 @@ export const OfferEventDateCell = ({ offer }: OfferEventDateCellProps) => {
       year: 'numeric',
     }
 
-    if (!offerStock.startDatetime || !offerStock.endDatetime) {
+    if (!offerDates?.start || !offerDates.end) {
       return ['Toute l’année scolaire']
     }
-    if (offerStock.startDatetime === offerStock.endDatetime) {
+    if (offerDates.start === offerDates.end) {
       return [
         `${getDateTimeToFrenchText(
           getLocalDepartementDateTimeFromUtc(
-            offerStock.startDatetime,
+            offerDates.start,
             offer.venue.departementCode
           ),
           options
@@ -53,8 +53,8 @@ export const OfferEventDateCell = ({ offer }: OfferEventDateCellProps) => {
     }
 
     return [
-      `du ${getDateTimeToFrenchText(new Date(offerStock.startDatetime), options)}`,
-      `au ${getDateTimeToFrenchText(new Date(offerStock.endDatetime), options)}`,
+      `du ${getDateTimeToFrenchText(new Date(offerDates.start), options)}`,
+      `au ${getDateTimeToFrenchText(new Date(offerDates.end), options)}`,
     ]
   }
 
@@ -65,7 +65,7 @@ export const OfferEventDateCell = ({ offer }: OfferEventDateCellProps) => {
           <span key={date}>{date}</span>
         ))}
         <span className={styles['offer-event-hours']}>
-          à partir de {formattedTime(offer.stocks[0].startDatetime)}
+          {formattedTime(offer.dates?.start)}
         </span>
       </div>
     </td>
