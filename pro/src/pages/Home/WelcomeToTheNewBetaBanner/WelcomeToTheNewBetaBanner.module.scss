@@ -7,8 +7,8 @@
 
   &-title {
     @include fonts.title3;
+    @include fonts.extra-bold;
 
-    font-weight: 800;
     margin-top: rem.torem(62px);
   }
 
@@ -25,7 +25,12 @@
     width: calc(100% + rem.torem((16px * 2)));
     margin: rem.torem(-16px);
     padding: rem.torem(16px);
-    background: linear-gradient(258deg, var(--color-secondary-light) 11.7%, #280078 113.36%), var(--color-white);
+    background: linear-gradient(
+        258deg,
+        var(--color-secondary-light) 11.7%,
+        #280078 113.36%
+      ),
+      var(--color-white);
 
     img {
       max-width: 100%;

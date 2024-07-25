@@ -19,9 +19,10 @@
   }
 
   &-sub-heading {
+    @include fonts.medium;
+
     max-width: rem.torem(588px);
     display: block;
-    font-weight: 500;
   }
 
   &-navigation {
