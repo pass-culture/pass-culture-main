@@ -400,11 +400,12 @@ def create_collective_offer_by_status(
             kwargs["isActive"] = False
             return CollectiveOfferFactory(**kwargs)
         case CollectiveOfferDisplayedStatus.EXPIRED.value:
+            kwargs["validation"] = OfferValidationStatus.APPROVED
             offer = CollectiveOfferFactory(**kwargs)
             yesterday = datetime.datetime.utcnow() - datetime.timedelta(days=1)
 
             stock = CollectiveStockFactory(beginningDatetime=yesterday, collectiveOffer=offer)
-            _book = CancelledCollectiveBookingFactory(collectiveStock=stock)
+            PendingCollectiveBookingFactory(collectiveStock=stock)
             return offer
 
         case CollectiveOfferDisplayedStatus.PREBOOKED.value:
