@@ -2,7 +2,6 @@ import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import { OfferStatus } from 'apiClient/v1'
-import { Audience } from 'core/shared/types'
 import { collectiveOfferFactory } from 'utils/collectiveApiFactories'
 import {
   listOffersOfferFactory,
