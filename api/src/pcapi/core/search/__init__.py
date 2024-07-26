@@ -445,6 +445,7 @@ def get_base_query_for_offer_indexation() -> BaseQuery:
         )
         .options(sa.orm.contains_eager(offers_models.Offer.stocks))
         .options(sa.orm.joinedload(offers_models.Offer.venue).joinedload(offerers_models.Venue.managingOfferer))
+        .options(sa.orm.joinedload(offers_models.Offer.venue).joinedload(offerers_models.Venue.googlePlacesInfo))
         .options(sa.orm.joinedload(offers_models.Offer.criteria))
         .options(sa.orm.joinedload(offers_models.Offer.mediations))
         .options(sa.orm.joinedload(offers_models.Offer.product))
