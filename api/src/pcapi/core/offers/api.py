@@ -1,3 +1,4 @@
+import dataclasses
 import datetime
 import decimal
 import enum
@@ -71,7 +72,7 @@ from pcapi.workers import push_notification_job
 from . import exceptions
 from . import models
 from . import repository as offers_repository
-from . import serialize as offers_serialize
+from . import schemas
 from . import validation
 
 
@@ -94,6 +95,14 @@ class T_UNCHANGED(enum.Enum):
 
 
 UNCHANGED = T_UNCHANGED.TOKEN
+
+
+@dataclasses.dataclass
+class StocksStats:
+    oldest_stock: datetime.datetime | None
+    newest_stock: datetime.datetime | None
+    stock_count: int | None
+    remaining_quantity: int | None
 
 
 def build_new_offer_from_product(
@@ -148,7 +157,7 @@ def _format_extra_data(subcategory_id: str, extra_data: dict[str, typing.Any] | 
     return formatted_extra_data
 
 
-def create_draft_offer(body: offers_serialize.PostDraftOfferBodyModel, venue: offerers_models.Venue) -> models.Offer:
+def create_draft_offer(body: schemas.PostDraftOfferBodyModel, venue: offerers_models.Venue) -> models.Offer:
     validation.check_offer_subcategory_is_valid(body.subcategory_id)
 
     fields = {key: value for key, value in body.dict(by_alias=True).items() if key != "venueId"}
@@ -172,7 +181,7 @@ def _get_field(obj: typing.Any, aliases: set, updates: dict, field: str) -> typi
     return updates.get(field, getattr(obj, field))
 
 
-def update_draft_offer(offer: models.Offer, body: offers_serialize.PatchDraftOfferBodyModel) -> models.Offer:
+def update_draft_offer(offer: models.Offer, body: schemas.PatchDraftOfferBodyModel) -> models.Offer:
     fields = body.dict(by_alias=True, exclude_unset=True)
     updates = {key: value for key, value in fields.items() if getattr(offer, key) != value}
     if not updates:
@@ -187,7 +196,7 @@ def update_draft_offer(offer: models.Offer, body: offers_serialize.PatchDraftOff
 
 def update_draft_offer_useful_informations(
     offer: models.Offer,
-    body: offers_serialize.PatchDraftOfferUsefulInformationsBodyModel,
+    body: schemas.PatchDraftOfferUsefulInformationsBodyModel,
     is_from_private_api: bool = False,
 ) -> models.Offer:
     aliases = set(body.dict(by_alias=True))
@@ -215,17 +224,33 @@ def update_draft_offer_useful_informations(
     validation.check_accessibility_compliance(
         audio_disability_compliant, mental_disability_compliant, motor_disability_compliant, visual_disability_compliant
     )
-    validation.check_offer_extra_data(offer.subcategoryId, extra_data, offer.venue, is_from_private_api, offer=offer)
-    validation.check_is_duo_compliance(is_duo, offer.subcategory)
-    validation.check_offer_withdrawal(
-        withdrawal_type, withdrawal_delay, offer.subcategoryId, booking_contact, offer.lastProvider
+    validation.check_offer_extra_data(
+        offer.subcategoryId,
+        extra_data,
+        offer.venue,
+        is_from_private_api,
+        offer,
     )
+    validation.check_is_duo_compliance(
+        is_duo,
+        offer.subcategory,
+    )
+    validation.check_offer_withdrawal(
+        withdrawal_type,
+        withdrawal_delay,
+        offer.subcategoryId,
+        booking_contact,
+        offer.lastProvider,
+    )
+    validation.check_digital_offer_fields(offer)
+
     if offer.is_soft_deleted():
         raise pc_object.DeletedRecordException()
 
     for key, value in updates.items():
         setattr(offer, key, value)
-    repository.add_to_session(offer)
+
+    db.session.add(offer)
 
     withdrawal_fields = ("withdrawalType", "withdrawalDelay", "bookingContact", "withdrawalDetails")
     withdrawal_updated = set(updates).intersection(withdrawal_fields)
@@ -1638,7 +1663,7 @@ def approves_provider_product_and_rejected_offers(ean: str) -> None:
         raise exceptions.NotUpdateProductOrOffers(exception)
 
 
-def get_stocks_stats(offer_id: int) -> offers_serialize.StocksStats:
+def get_stocks_stats(offer_id: int) -> StocksStats:
     data = (
         models.Stock.query.with_entities(
             sa.func.min(models.Stock.beginningDatetime),
@@ -1661,7 +1686,7 @@ def get_stocks_stats(offer_id: int) -> offers_serialize.StocksStats:
         .one_or_none()
     )
     try:
-        return offers_serialize.StocksStats(*data)
+        return StocksStats(*data)
     except TypeError:
         raise ApiErrors(
             errors={

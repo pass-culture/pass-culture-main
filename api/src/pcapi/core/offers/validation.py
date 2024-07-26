@@ -16,6 +16,7 @@ from pcapi.core.educational import models as educational_models
 import pcapi.core.educational.api.national_program as np_api
 from pcapi.core.finance import repository as finance_repository
 from pcapi.core.offerers import models as offerers_models
+from pcapi.core.offerers.repository import find_venue_by_id
 from pcapi.core.offers import exceptions
 from pcapi.core.offers import models
 from pcapi.core.offers import repository
@@ -352,6 +353,35 @@ def check_offer_is_digital(offer: models.Offer) -> None:
             "Impossible de créer des codes d'activation sur une offre non-numérique",
         )
         raise errors
+
+
+def check_digital_offer_fields(offer: models.Offer) -> None:
+    venue = offer.venue if offer.venue else find_venue_by_id(offer.venueId)
+    assert venue is not None  # helps mypy below
+    errors = api_errors.ApiErrors()
+
+    if offer.isDigital:
+        if not venue.isVirtual:
+            errors.add_error(
+                "venue", 'Une offre numérique doit obligatoirement être associée au lieu "Offre numérique"'
+            )
+            raise errors
+
+        if offer.subcategory.is_offline_only:
+            errors.add_error(
+                "url", f"Une offre de sous-catégorie {offer.subcategory.pro_label} ne peut pas être numérique"
+            )
+            raise errors
+    else:
+        if venue.isVirtual:
+            errors.add_error("venue", 'Une offre physique ne peut être associée au lieu "Offre numérique"')
+            raise errors
+
+        if offer.subcategory.is_online_only:
+            errors.add_error(
+                "subcategory", f'Une offre de catégorie {offer.subcategory.id} doit contenir un champ "url"'
+            )
+            raise errors
 
 
 def check_activation_codes_expiration_datetime(

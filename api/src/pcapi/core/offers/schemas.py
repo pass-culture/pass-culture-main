@@ -1,6 +1,3 @@
-import dataclasses
-from datetime import datetime
-import enum
 from typing import Any
 
 from pydantic.v1 import EmailStr
@@ -13,30 +10,13 @@ from pcapi.serialization.utils import to_camel
 from pcapi.validation.routes.offers import check_offer_name_length_is_valid
 
 
-def serialize_offer_type_educational_or_individual(offer_is_educational: bool) -> str:
-    return "offre collective" if offer_is_educational else "offre grand public"
-
-
-class CollectiveOfferType(enum.Enum):
-    offer = "offer"
-    template = "template"
-
-
-@dataclasses.dataclass
-class StocksStats:
-    oldest_stock: datetime | None
-    newest_stock: datetime | None
-    stock_count: int | None
-    remaining_quantity: int | None
-
-
 class PostDraftOfferBodyModel(BaseModel):
     name: str
     subcategory_id: str
     venue_id: int
-    description: str | None
-    duration_minutes: int | None
-    extra_data: Any
+    description: str | None = None
+    extra_data: offers_models.OfferExtraData | None = None
+    duration_minutes: int | None = None
 
     @validator("name", pre=True)
     def validate_name(cls, name: str, values: dict) -> str:
@@ -49,12 +29,12 @@ class PostDraftOfferBodyModel(BaseModel):
 
 
 class PatchDraftOfferBodyModel(BaseModel):
-    name: str | None
-    subcategory_id: str | None
-    venue_id: int | None
-    description: str | None
-    duration_minutes: int | None
-    extra_data: Any
+    name: str | None = None
+    subcategory_id: str | None = None
+    venue_id: int | None = None
+    description: str | None = None
+    extra_data: offers_models.OfferExtraData | None = None
+    duration_minutes: int | None = None
 
     @validator("name", pre=True)
     def validate_name(cls, name: str, values: dict) -> str:
@@ -67,25 +47,25 @@ class PatchDraftOfferBodyModel(BaseModel):
 
 
 class PatchDraftOfferUsefulInformationsBodyModel(BaseModel):
-    audio_disability_compliant: bool | None
-    mental_disability_compliant: bool | None
-    motor_disability_compliant: bool | None
-    visual_disability_compliant: bool | None
-    booking_contact: EmailStr | None
-    booking_email: EmailStr | None
-    duration_minutes: int | None
-    external_ticket_office_url: HttpUrl | None
-    extra_data: Any
-    is_duo: bool | None
-    withdrawal_delay: int | None
-    withdrawal_details: str | None
-    withdrawal_type: offers_models.WithdrawalTypeEnum | None
+    audio_disability_compliant: bool | None = None
+    mental_disability_compliant: bool | None = None
+    motor_disability_compliant: bool | None = None
+    visual_disability_compliant: bool | None = None
+    booking_contact: EmailStr | None = None
+    booking_email: EmailStr | None = None
+    duration_minutes: int | None = None
+    external_ticket_office_url: HttpUrl | None = None
+    extra_data: Any = None
+    is_duo: bool | None = None
+    withdrawal_delay: int | None = None
+    withdrawal_details: str | None = None
+    withdrawal_type: offers_models.WithdrawalTypeEnum | None = None
 
     # is_national must be placed after url so that the validator
     # can access the url field in the dict of values
     # (which contains only previously validated fields)
-    is_national: bool | None
-    should_send_mail: bool | None
+    is_national: bool | None = None
+    should_send_mail: bool | None = None
 
     @validator("is_duo")
     def validate_is_duo(cls, is_duo: bool | None) -> bool:

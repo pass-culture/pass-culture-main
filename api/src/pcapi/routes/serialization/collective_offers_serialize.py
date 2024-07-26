@@ -23,7 +23,6 @@ from pcapi.core.educational.models import OfferContactFormEnum
 from pcapi.core.educational.models import StudentLevels
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers import validation as offers_validation
-from pcapi.core.offers.serialize import CollectiveOfferType
 from pcapi.models.offer_mixin import CollectiveOfferStatus
 from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
 from pcapi.routes.serialization import BaseModel
@@ -66,6 +65,11 @@ class EmptyAsNullString(str):
 
 
 EmptyStringToNone = EmptyAsNullString | None
+
+
+class CollectiveOfferType(enum.Enum):
+    offer = "offer"
+    template = "template"
 
 
 class ListCollectiveOffersQueryModel(BaseModel):

@@ -16,7 +16,7 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.offers import exceptions
 from pcapi.core.offers import models
-from pcapi.core.offers import serialize as offers_serialization
+from pcapi.core.offers import schemas as offers_schemas
 import pcapi.core.offers.api as offers_api
 import pcapi.core.offers.repository as offers_repository
 from pcapi.core.offers.validation import check_for_duplicated_price_categories
@@ -238,9 +238,8 @@ def delete_draft_offers(body: offers_serialize.DeleteOfferRequestBody) -> None:
     api=blueprint.pro_private_schema,
 )
 def post_draft_offer(
-    body: offers_serialization.PostDraftOfferBodyModel,
+    body: offers_schemas.PostDraftOfferBodyModel,
 ) -> offers_serialize.GetIndividualOfferResponseModel:
-
     venue: offerers_models.Venue = (
         offerers_models.Venue.query.filter(offerers_models.Venue.id == body.venue_id)
         .options(sqla.orm.joinedload(offerers_models.Venue.offererAddress))
@@ -264,7 +263,7 @@ def post_draft_offer(
     api=blueprint.pro_private_schema,
 )
 def patch_draft_offer(
-    offer_id: int, body: offers_serialization.PatchDraftOfferBodyModel
+    offer_id: int, body: offers_schemas.PatchDraftOfferBodyModel
 ) -> offers_serialize.GetIndividualOfferResponseModel:
     offer = models.Offer.query.options(
         sqla.orm.joinedload(models.Offer.stocks).joinedload(models.Stock.bookings),
@@ -291,7 +290,7 @@ def patch_draft_offer(
     api=blueprint.pro_private_schema,
 )
 def patch_draft_offer_useful_informations(
-    offer_id: int, body: offers_serialization.PatchDraftOfferUsefulInformationsBodyModel
+    offer_id: int, body: offers_schemas.PatchDraftOfferUsefulInformationsBodyModel
 ) -> offers_serialize.GetIndividualOfferResponseModel:
     offer = models.Offer.query.options(
         sqla.orm.joinedload(models.Offer.stocks).joinedload(models.Stock.bookings),
