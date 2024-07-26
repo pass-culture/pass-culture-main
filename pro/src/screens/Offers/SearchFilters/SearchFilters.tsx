@@ -210,7 +210,7 @@ export const SearchFilters = ({
           className={styles['status-filter']}
         >
           <SelectInput
-            value={selectedFilters.status}
+            value={selectedFilters.status as OfferStatus}
             name="status"
             onChange={storeOfferStatus}
             disabled={disableAllFilters || isRestrictedAsAdmin}

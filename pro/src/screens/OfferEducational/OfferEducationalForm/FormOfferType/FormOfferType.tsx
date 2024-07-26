@@ -43,7 +43,6 @@ export const FormOfferType = ({
   const nationalProgramsForDomains = nationalPrograms.filter((program) =>
     getNationalProgramsForDomains(values.domains).includes(program.value)
   )
-
   return (
     <FormLayout.Section
       description="Le type de l’offre permet de la caractériser et de la valoriser au mieux pour les enseignants et chefs d’établissement."

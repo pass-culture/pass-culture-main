@@ -283,7 +283,6 @@ export const Offers = ({
               label: 'Offres collectives',
               url: computeCollectiveOffersUrl({
                 ...initialSearchFilters,
-                status: DEFAULT_SEARCH_FILTERS.status,
                 page: currentPageNumber,
               }),
               key: 'collective',

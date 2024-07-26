@@ -408,7 +408,7 @@ describe('screen Offers', () => {
     expect(screen.queryByLabelText(offers[2].name)).toBeEnabled()
   })
 
-  it('should not have "Tout Sélectionner" checked when there is no offer to be checked', () => {
+  it('should not have "Tout Sélectionner" checked when there is no offer to be checked', async () => {
     const offers = [
       collectiveOfferFactory({
         isActive: false,
@@ -422,7 +422,7 @@ describe('screen Offers', () => {
       collectiveOffers: offers,
     })
 
-    expect(screen.getByLabelText('Tout sélectionner')).not.toBeChecked()
+    expect(await screen.findByLabelText('Tout sélectionner')).not.toBeChecked()
   })
 
   it('should display the button to create an offer when user is not an admin', async () => {
@@ -584,13 +584,13 @@ describe('screen Offers', () => {
     })
   })
 
-  it('should display the collective offers format', () => {
+  it('should display the collective offers format', async () => {
     renderOffers({
       ...props,
       collectiveOffers: [collectiveOfferFactory()],
       audience: Audience.COLLECTIVE,
     })
-    expect(screen.getByRole('combobox', { name: 'Format' }))
+    expect(await screen.findByRole('combobox', { name: 'Format' }))
   })
 
   it('should filter on the format', async () => {
@@ -642,7 +642,7 @@ describe('screen Offers', () => {
     expect(screen.queryByText(/Créer une offre/)).not.toBeInTheDocument()
   })
 
-  it('should display onboarding banner for archivage only in collective offer list', () => {
+  it('should display onboarding banner for archivage only in collective offer list', async () => {
     renderOffers({
       ...props,
       audience: Audience.COLLECTIVE,
@@ -650,7 +650,7 @@ describe('screen Offers', () => {
     })
 
     expect(
-      screen.getByText(
+      await screen.findByText(
         'C’est nouveau ! Vous pouvez désormais archiver vos offres collectives.'
       )
     ).toBeInTheDocument()
@@ -683,7 +683,7 @@ describe('screen Offers', () => {
     )
   })
 
-  it('should delete aniway even with active status', async () => {
+  it('should delete anyway even with active status', async () => {
     vi.spyOn(api, 'deleteDraftOffers').mockResolvedValueOnce()
 
     renderOffers({
@@ -708,7 +708,7 @@ describe('screen Offers', () => {
     )
   })
 
-  it('should display a new column "Date de l’évènement" if FF is enabled', () => {
+  it('should display a new column "Date de l’évènement" if FF is enabled', async () => {
     const featureOverrides = {
       features: ['ENABLE_COLLECTIVE_OFFERS_EXPIRATION'],
     }
@@ -722,6 +722,6 @@ describe('screen Offers', () => {
       featureOverrides
     )
 
-    expect(screen.getByText('Date de l’évènement'))
+    expect(await screen.findByText('Date de l’évènement'))
   })
 })
