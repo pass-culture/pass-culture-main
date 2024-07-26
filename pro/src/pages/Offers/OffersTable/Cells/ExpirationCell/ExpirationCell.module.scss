@@ -52,3 +52,10 @@
     gap: rem.torem(16px);
   }
 }
+
+
+@media (max-width: size.$laptop) {
+  .expiration-cell {
+    display: block;
+  }
+}

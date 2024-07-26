@@ -5,6 +5,8 @@ import {
 import { MAX_OFFERS_TO_DISPLAY } from 'core/Offers/constants'
 import { SearchFiltersParams } from 'core/Offers/types'
 import { hasSearchFilters } from 'core/Offers/utils/hasSearchFilters'
+import { SortingMode, useColumnSorting } from 'hooks/useColumnSorting'
+import { usePagination } from 'hooks/usePagination'
 import { getOffersCountToDisplay } from 'pages/Offers/domain/getOffersCountToDisplay'
 import { NoResults } from 'screens/Offers/NoResults/NoResults'
 import { Banner } from 'ui-kit/Banners/Banner/Banner'
@@ -22,7 +24,6 @@ type CollectiveOffersTableProps = {
     isRefreshing: boolean
   ) => void
   areAllOffersSelected: boolean
-  currentPageNumber: number
   hasOffers: boolean
   isLoading: boolean
   offersCount: number
@@ -35,14 +36,62 @@ type CollectiveOffersTableProps = {
   urlSearchFilters: SearchFiltersParams
   isAtLeastOneOfferChecked: boolean
   isRestrictedAsAdmin?: boolean
-  currentPageOffersSubset: CollectiveOfferResponseModel[]
   selectedOffers: CollectiveOfferResponseModel[]
+  offers: CollectiveOfferResponseModel[] | undefined
 }
+
+export enum CollectiveOffersSortingColumn {
+  EVENT_DATE = 'EVENT_DATE',
+}
+
+const sortByEventDate = (
+  offerA: CollectiveOfferResponseModel,
+  offerB: CollectiveOfferResponseModel
+) => {
+  const bookingDateOne = offerA.dates
+    ? new Date(offerA.dates.start)
+    : new Date()
+  const bookingDateTwo = offerB.dates
+    ? new Date(offerB.dates.start)
+    : new Date()
+  if (bookingDateOne > bookingDateTwo) {
+    return 1
+  } else if (bookingDateOne < bookingDateTwo) {
+    return -1
+  }
+  return 0
+}
+
+const sortOffers = (
+  offers: CollectiveOfferResponseModel[] | undefined,
+  currentSortingColumn: CollectiveOffersSortingColumn | null,
+  sortingMode: SortingMode
+) => {
+  if (!offers) {
+    return []
+  }
+
+  if (sortingMode === SortingMode.NONE) {
+    return offers
+  }
+
+  const sortedOffers = offers.slice()
+
+  switch (currentSortingColumn) {
+    case CollectiveOffersSortingColumn.EVENT_DATE:
+      return sortedOffers.sort(
+        (a, b) =>
+          sortByEventDate(a, b) * (sortingMode === SortingMode.ASC ? 1 : -1)
+      )
+    default:
+      return sortedOffers
+  }
+}
+
+const OFFERS_PER_PAGE = 10
 
 export const CollectiveOffersTable = ({
   areAllOffersSelected,
-  currentPageNumber,
-  currentPageOffersSubset,
   hasOffers,
   isLoading,
   offersCount,
@@ -55,18 +104,22 @@ export const CollectiveOffersTable = ({
   urlSearchFilters,
   isAtLeastOneOfferChecked,
   isRestrictedAsAdmin = false,
+  offers,
 }: CollectiveOffersTableProps) => {
-  const onPreviousPageClick = () =>
-    applyUrlFiltersAndRedirect(
-      { ...urlSearchFilters, page: currentPageNumber - 1 },
-      false
-    )
+  const { currentSortingColumn, currentSortingMode, onColumnHeaderClick } =
+    useColumnSorting<CollectiveOffersSortingColumn>()
 
-  const onNextPageClick = () =>
-    applyUrlFiltersAndRedirect(
-      { ...urlSearchFilters, page: currentPageNumber + 1 },
-      false
-    )
+  const sortedOffers = sortOffers(
+    offers,
+    currentSortingColumn,
+    currentSortingMode
+  )
+
+  const { page, previousPage, nextPage, currentPageItems } = usePagination(
+    sortedOffers,
+    OFFERS_PER_PAGE,
+    urlSearchFilters.page
+  )
 
   return (
     <div aria-busy={isLoading} aria-live="polite" className="section">
@@ -105,9 +158,14 @@ export const CollectiveOffersTable = ({
                 />
               </div>
               <table className={styles['collective-table']}>
-                <CollectiveOffersTableHead />
+                <CollectiveOffersTableHead
+                  onColumnHeaderClick={onColumnHeaderClick}
+                  currentSortingColumn={currentSortingColumn}
+                  currentSortingMode={currentSortingMode}
+                />
+
                 <CollectiveOffersTableBody
-                  offers={currentPageOffersSubset}
+                  offers={currentPageItems}
                   selectOffer={setSelectedOffer}
                   selectedOffers={selectedOffers}
                   urlSearchFilters={urlSearchFilters}
@@ -118,10 +176,22 @@ export const CollectiveOffersTable = ({
           {hasOffers && (
             <div className={styles['offers-pagination']}>
               <Pagination
-                currentPage={currentPageNumber}
+                currentPage={page}
                 pageCount={pageCount}
-                onPreviousPageClick={onPreviousPageClick}
-                onNextPageClick={onNextPageClick}
+                onPreviousPageClick={() => {
+                  previousPage()
+                  applyUrlFiltersAndRedirect(
+                    { ...urlSearchFilters, page: page - 1 },
+                    false
+                  )
+                }}
+                onNextPageClick={() => {
+                  nextPage()
+                  applyUrlFiltersAndRedirect(
+                    { ...urlSearchFilters, page: page + 1 },
+                    false
+                  )
+                }}
               />
             </div>
           )}

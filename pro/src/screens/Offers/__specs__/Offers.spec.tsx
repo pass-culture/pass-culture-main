@@ -727,4 +727,48 @@ describe('screen Offers', () => {
 
     expect(screen.getByText('Date de l’évènement'))
   })
+
+  it('should filter new column "Date de l’évènement"', async () => {
+    const featureOverrides = {
+      features: ['ENABLE_COLLECTIVE_OFFERS_EXPIRATION'],
+    }
+
+    renderOffers(
+      {
+        ...props,
+        collectiveOffers: [
+          collectiveOfferFactory({
+            dates: {
+              start: '2024-07-31T09:11:00Z',
+              end: '2024-07-31T09:11:00Z',
+            },
+          }),
+          collectiveOfferFactory({
+            dates: {
+              start: '2024-06-30T09:11:00Z',
+              end: '2024-06-30T09:11:00Z',
+            },
+          }),
+        ],
+        audience: Audience.COLLECTIVE,
+      },
+      featureOverrides
+    )
+
+    const firstOfferEventDate =
+      screen.getAllByTestId('offer-event-date')[0].textContent
+
+    expect(firstOfferEventDate).toEqual('31/07/2024')
+
+    await userEvent.click(
+      screen.getByRole('button', {
+        name: 'Trier par ordre croissant',
+      })
+    )
+
+    const newFirstOfferEventDate =
+      screen.getAllByTestId('offer-event-date')[0].textContent
+
+    expect(newFirstOfferEventDate).toEqual('30/06/2024')
+  })
 })

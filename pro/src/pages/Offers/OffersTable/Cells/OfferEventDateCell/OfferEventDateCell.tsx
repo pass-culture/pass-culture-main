@@ -66,7 +66,9 @@ export const OfferEventDateCell = ({
     <td headers={headers} className={styles['offers-table-cell']}>
       <div className={styles['offer-event']}>
         {getFormattedDatesForOffer(offer).map((date) => (
-          <span key={date}>{date}</span>
+          <span key={date} data-testid="offer-event-date">
+            {date}
+          </span>
         ))}
         <span className={styles['offer-event-hours']}>
           {formattedTime(offer.dates?.start)}
