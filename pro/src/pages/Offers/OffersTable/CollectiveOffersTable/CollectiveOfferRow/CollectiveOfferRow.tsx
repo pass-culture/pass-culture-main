@@ -56,10 +56,13 @@ export const CollectiveOfferRow = ({
 
   const rowId = `collective-offer-${offer.isShowcase ? 'T-' : ''}${offer.id}`
 
+  const bookingLimitDate = offer.stocks[0]?.bookingLimitDatetime
+
   const hasExpirationRow =
     isCollectiveOffersExpirationEnabled &&
     !offer.isShowcase &&
-    isCollectiveOfferActiveOrPreBooked(offer)
+    isCollectiveOfferActiveOrPreBooked(offer) &&
+    bookingLimitDate
 
   return (
     <>
@@ -136,6 +139,7 @@ export const CollectiveOfferRow = ({
           <td colSpan={1} />
           <ExpirationCell
             offer={offer}
+            bookingLimitDate={bookingLimitDate}
             headers={`${rowId} collective-offer-head-expiration`}
           />
         </tr>

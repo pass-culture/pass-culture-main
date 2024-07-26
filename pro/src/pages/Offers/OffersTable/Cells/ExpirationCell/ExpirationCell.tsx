@@ -1,5 +1,5 @@
 import classNames from 'classnames'
-import { differenceInCalendarDays } from 'date-fns'
+import { differenceInCalendarDays, format } from 'date-fns'
 
 import {
   CollectiveOfferResponseModel,
@@ -8,24 +8,26 @@ import {
 import fullInfoIcon from 'icons/full-info.svg'
 import fullWaitIcon from 'icons/full-wait.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+import { FORMAT_DD_MM_YYYY, toDateStrippedOfTimezone } from 'utils/date'
 import { pluralize } from 'utils/pluralize'
-
-import { getDate } from '../OfferNameCell/utils'
 
 import styles from './ExpirationCell.module.scss'
 
-export type ExpirationCellProps = {
+type ExpirationCellProps = {
   offer: CollectiveOfferResponseModel
   headers?: string
+  bookingLimitDate: string
 }
 
-export function ExpirationCell({ offer, headers }: ExpirationCellProps) {
-  const daysCountBeforeExpiration = offer.stocks[0].bookingLimitDatetime
-    ? differenceInCalendarDays(
-        new Date(offer.stocks[0].bookingLimitDatetime),
-        new Date()
-      )
-    : 0
+export function ExpirationCell({
+  offer,
+  headers,
+  bookingLimitDate,
+}: ExpirationCellProps) {
+  const daysCountBeforeExpiration = differenceInCalendarDays(
+    new Date(bookingLimitDate),
+    new Date()
+  )
 
   return (
     <td colSpan={8} headers={headers} className={styles['expiration-cell']}>
@@ -50,12 +52,16 @@ export function ExpirationCell({ offer, headers }: ExpirationCellProps) {
             <SvgIcon alt="" src={fullWaitIcon} width="16" /> En attente de{' '}
             {offer.status === CollectiveOfferStatus.ACTIVE
               ? 'préréservation'
-              : 'résevation'}{' '}
+              : 'réservation'}{' '}
             par l’enseignant
           </div>
         </div>
         <div className={styles['banner-booking-date']}>
-          date limite de réservation : {getDate(offer.stocks[0])}
+          date limite de réservation :{' '}
+          {format(
+            toDateStrippedOfTimezone(bookingLimitDate.toString()),
+            FORMAT_DD_MM_YYYY
+          )}
         </div>
       </div>
     </td>
