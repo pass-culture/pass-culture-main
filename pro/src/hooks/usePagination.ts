@@ -1,8 +1,12 @@
 import { useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 
-export const usePagination = <T>(items: T[], itemsPerPage: number) => {
-  const [page, setPage] = useState(1)
+export const usePagination = <T>(
+  items: T[],
+  itemsPerPage: number,
+  pageFromFilter?: number
+) => {
+  const [page, setPage] = useState(pageFromFilter ?? 1)
 
   const previousPage = () => setPage((page) => page - 1)
   const nextPage = () => setPage((page) => page + 1)

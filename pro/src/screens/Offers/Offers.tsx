@@ -337,8 +337,6 @@ export const Offers = ({
           <CollectiveOffersTable
             applyUrlFiltersAndRedirect={applyUrlFiltersAndRedirect}
             areAllOffersSelected={areAllCollectiveOffersSelected}
-            currentPageNumber={currentPageNumber}
-            currentPageOffersSubset={currentPageCollectiveOffersSubset}
             hasOffers={hasOffers}
             isLoading={isLoading}
             offersCount={offers.length}
@@ -350,6 +348,7 @@ export const Offers = ({
             urlSearchFilters={urlSearchFilters}
             isAtLeastOneOfferChecked={selectedCollectiveOffers.length > 1}
             isRestrictedAsAdmin={isRestrictedAsAdmin}
+            offers={collectiveOffers}
           />
           {selectedCollectiveOffers.length > 0 && (
             <CollectiveOffersActionsBar
