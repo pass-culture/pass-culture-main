@@ -120,6 +120,9 @@
   &-quaternary,
   &-ternary-pink,
   &-quaternary-pink {
+    @include fonts.body-important;
+    text-transform: unset;
+
     color: var(--color-black);
     align-items: flex-start;
     background-color: transparent;

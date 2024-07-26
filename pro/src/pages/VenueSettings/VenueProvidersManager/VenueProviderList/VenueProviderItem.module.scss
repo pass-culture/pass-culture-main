@@ -18,8 +18,6 @@
 }
 
 .provider-name-container {
-  @include fonts.caption;
-
   display: flex;
   flex-direction: column;
   gap: rem.torem(16px);

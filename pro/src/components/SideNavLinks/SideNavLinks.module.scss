@@ -4,7 +4,7 @@
 
 .nav-section {
   &-button {
-    @include fonts.button;
+    @include fonts.body-semibold;
 
     padding: rem.torem(12px) rem.torem(16px);
     display: flex;
@@ -81,7 +81,7 @@
   }
 
   &-item {
-    @include fonts.button;
+    @include fonts.body-semibold;
 
     padding: rem.torem(12px) rem.torem(16px);
     display: flex;
