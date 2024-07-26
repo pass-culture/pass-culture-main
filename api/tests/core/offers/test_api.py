@@ -33,7 +33,7 @@ from pcapi.core.offers import exceptions
 from pcapi.core.offers import factories
 from pcapi.core.offers import models
 from pcapi.core.offers import repository as offers_repository
-from pcapi.core.offers import serialize
+from pcapi.core.offers import schemas
 from pcapi.core.offers.exceptions import NotUpdateProductOrOffers
 from pcapi.core.offers.exceptions import ProductNotFound
 from pcapi.core.providers.allocine import get_allocine_products_provider
@@ -1058,7 +1058,7 @@ class CreateMediationV2Test:
 class CreateDraftOfferTest:
     def test_create_draft_offer_from_scratch(self):
         venue = offerers_factories.VenueFactory()
-        body = serialize.PostDraftOfferBodyModel(
+        body = schemas.PostDraftOfferBodyModel(
             name="A pretty good offer",
             subcategoryId=subcategories.SEANCE_CINE.id,
             venueId=venue.id,
@@ -1076,7 +1076,7 @@ class CreateDraftOfferTest:
 
     def test_cannot_create_activation_offer(self):
         venue = offerers_factories.VenueFactory()
-        body = serialize.PostDraftOfferBodyModel(
+        body = schemas.PostDraftOfferBodyModel(
             name="An offer he can't refuse",
             subcategoryId=subcategories.ACTIVATION_EVENT.id,
             venueId=venue.id,
@@ -1089,7 +1089,7 @@ class CreateDraftOfferTest:
 
     def test_cannot_create_offer_when_invalid_subcategory(self):
         venue = offerers_factories.VenueFactory()
-        body = serialize.PostDraftOfferBodyModel(
+        body = schemas.PostDraftOfferBodyModel(
             name="An offer he can't refuse",
             subcategoryId="TOTO",
             venueId=venue.id,
@@ -1108,7 +1108,7 @@ class UpdateDraftOfferTest:
             subcategoryId=subcategories.ESCAPE_GAME.id,
             description="description",
         )
-        body = serialize.PatchDraftOfferBodyModel(
+        body = schemas.PatchDraftOfferBodyModel(
             name="New name",
             description="New description",
         )
@@ -1132,7 +1132,7 @@ class UpdateDraftOfferDetailsTest:
             motorDisabilityCompliant=None,
             visualDisabilityCompliant=None,
         )
-        body = serialize.PatchDraftOfferUsefulInformationsBodyModel(
+        body = schemas.PatchDraftOfferUsefulInformationsBodyModel(
             audioDisabilityCompliant=True,
             mentalDisabilityCompliant=False,
             motorDisabilityCompliant=True,
@@ -1166,7 +1166,7 @@ class UpdateDraftOfferDetailsTest:
 
     def test_update_extra_data_should_raise_error_when_mandatory_field_not_provided(self):
         offer = factories.OfferFactory(subcategoryId=subcategories.SPECTACLE_REPRESENTATION.id)
-        body = serialize.PatchDraftOfferUsefulInformationsBodyModel(extraData={"author": "Asimov"})
+        body = schemas.PatchDraftOfferUsefulInformationsBodyModel(extraData={"author": "Asimov"})
         with pytest.raises(api_errors.ApiErrors) as error:
             api.update_draft_offer_useful_informations(offer, body)
         assert error.value.errors == {
@@ -1178,7 +1178,7 @@ class UpdateDraftOfferDetailsTest:
         offer = factories.OfferFactory(
             subcategoryId=subcategories.SPECTACLE_REPRESENTATION.id, extraData={"showType": 200}
         )
-        body = serialize.PatchDraftOfferUsefulInformationsBodyModel(extraData=None)
+        body = schemas.PatchDraftOfferUsefulInformationsBodyModel(extraData=None)
         with pytest.raises(api_errors.ApiErrors) as error:
             api.update_draft_offer_useful_informations(offer, body)
         assert error.value.errors == {

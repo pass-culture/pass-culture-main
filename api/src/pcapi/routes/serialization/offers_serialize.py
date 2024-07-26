@@ -17,12 +17,12 @@ from pcapi.core.educational.models import CollectiveOfferDisplayedStatus
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.offers import repository as offers_repository
-from pcapi.core.offers.serialize import CollectiveOfferType
 from pcapi.models.offer_mixin import OfferStatus
 from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import ConfiguredBaseModel
 from pcapi.routes.serialization import base as base_serializers
+from pcapi.routes.serialization import collective_offers_serialize
 from pcapi.routes.serialization.address_serialize import AddressResponseIsEditableModel
 from pcapi.routes.serialization.address_serialize import retrieve_address_info_from_oa
 from pcapi.routes.serialization.offerers_serialize import GetOffererAddressWithIsEditableResponseModel
@@ -307,7 +307,7 @@ class ListOffersQueryModel(BaseModel):
     creation_mode: str | None
     period_beginning_date: datetime.date | None
     period_ending_date: datetime.date | None
-    collective_offer_type: CollectiveOfferType | None
+    collective_offer_type: collective_offers_serialize.CollectiveOfferType | None
     offerer_address_id: int | None
 
     class Config:
