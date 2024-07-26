@@ -55,7 +55,7 @@
     "dompurify": "^3.1.6",
     "downshift": "^9.0.6",
     "formik": "^2.4.6",
-    "libphonenumber-js": "^1.11.4",
+    "libphonenumber-js": "^1.11.5",
     "lodash.invert": "^4.3.0",
     "lodash.isequal": "^4.5.0",
     "lodash.memoize": "^4.1.2",
