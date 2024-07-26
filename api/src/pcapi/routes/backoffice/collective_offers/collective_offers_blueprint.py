@@ -336,7 +336,7 @@ def _batch_validate_or_reject_collective_offers(
             collective_offer, old_validation_status, new_validation_status, recipients
         )
 
-        if collective_offer.institutionId is not None:
+        if validation is offer_mixin.OfferValidationStatus.APPROVED and collective_offer.institutionId is not None:
             adage_client.notify_institution_association(serialize_collective_offer(collective_offer))
 
     if len(collective_offer_update_succeed_ids) == 1:
