@@ -532,6 +532,7 @@ class AlgoliaBackend(base.SearchBackend):
                 "isEducational": False,
                 "isEvent": offer.isEvent,
                 "isForbiddenToUnderage": offer.is_forbidden_to_underage,
+                "isPermanent": offer.isPermanent,
                 "isThing": offer.isThing,
                 "last30DaysBookings": last_30_days_bookings,
                 "last30DaysBookingsRange": get_last_30_days_bookings_range(last_30_days_bookings),
@@ -559,6 +560,7 @@ class AlgoliaBackend(base.SearchBackend):
             },
             "venue": {
                 "address": venue.street,
+                "banner_url": venue.bannerUrl,
                 "city": venue.city,
                 "departmentCode": venue.departementCode,
                 "id": venue.id,
@@ -569,6 +571,7 @@ class AlgoliaBackend(base.SearchBackend):
                 "name": venue.name,
                 "postalCode": venue.postalCode,
                 "publicName": venue.publicName,
+                "venue_type": venue.venueTypeCode.name,
             },
             "_geoloc": position(venue),
         }
