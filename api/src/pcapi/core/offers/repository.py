@@ -494,7 +494,7 @@ def _filter_collective_offers_by_statuses(query: BaseQuery, statuses: list[str] 
         # if statuses is empty we return no orders
         return query
 
-    offer_id_query, query_with_booking = add_last_booking_status_to_collective_offer_query(query)
+    offer_id_with_booking_status_query, query_with_booking = add_last_booking_status_to_collective_offer_query(query)
     if DisplayedStatus.BOOKED.value in statuses or DisplayedStatus.PREBOOKED.value in statuses:
 
         allowed_booking_status = set()
@@ -507,8 +507,9 @@ def _filter_collective_offers_by_statuses(query: BaseQuery, statuses: list[str] 
 
         on_booking_status_filter.append(
             and_(
-                offer_id_query.c.status.in_(allowed_booking_status),
+                offer_id_with_booking_status_query.c.status.in_(allowed_booking_status),
                 educational_models.CollectiveOffer.status != offer_mixin.CollectiveOfferStatus.EXPIRED.name,
+                educational_models.CollectiveOffer.isArchived == False,
             )
         )
     if DisplayedStatus.ENDED.value in statuses:
@@ -516,13 +517,14 @@ def _filter_collective_offers_by_statuses(query: BaseQuery, statuses: list[str] 
 
         on_booking_status_filter.append(
             and_(
-                offer_id_query.c.status.in_(
+                offer_id_with_booking_status_query.c.status.in_(
                     [
                         educational_models.CollectiveBookingStatus.USED.value,
                         educational_models.CollectiveBookingStatus.REIMBURSED.value,
                     ]
                 ),
                 educational_models.CollectiveOffer.status == offer_mixin.CollectiveOfferStatus.EXPIRED.name,
+                educational_models.CollectiveOffer.isArchived == False,
             )
         )
     if DisplayedStatus.EXPIRED.value in statuses:
@@ -530,7 +532,7 @@ def _filter_collective_offers_by_statuses(query: BaseQuery, statuses: list[str] 
 
         on_booking_status_filter.append(
             and_(
-                offer_id_query.c.status.in_(
+                offer_id_with_booking_status_query.c.status.in_(
                     [
                         None,
                         educational_models.CollectiveBookingStatus.PENDING.value,
@@ -538,24 +540,42 @@ def _filter_collective_offers_by_statuses(query: BaseQuery, statuses: list[str] 
                     ]
                 ),
                 educational_models.CollectiveOffer.status == offer_mixin.CollectiveOfferStatus.EXPIRED.name,
+                educational_models.CollectiveOffer.isArchived == False,
             )
         )
-    if DisplayedStatus.ARCHIVED.value in statuses:
-        on_collective_offer_filters.append(educational_models.CollectiveOffer.dateArchived != None)
     if DisplayedStatus.ACTIVE.value in statuses:
-        on_collective_offer_filters.append(
+        on_booking_status_filter.append(
             and_(
+                offer_id_with_booking_status_query.c.status == None,
                 educational_models.CollectiveOffer.isActive == True,
                 educational_models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.APPROVED,
+                educational_models.CollectiveOffer.isArchived == False,
             )
         )
+    if DisplayedStatus.INACTIVE.value in statuses:
+        on_booking_status_filter.append(
+            and_(
+                educational_models.CollectiveOffer.isActive == False,
+                educational_models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.APPROVED,
+                educational_models.CollectiveOffer.isArchived == False,
+            )
+        )
+
+    if DisplayedStatus.ARCHIVED.value in statuses:
+        on_collective_offer_filters.append(educational_models.CollectiveOffer.isArchived == True)
     if DisplayedStatus.REJECTED.value in statuses:
         on_collective_offer_filters.append(
-            educational_models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.REJECTED
+            and_(
+                educational_models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.REJECTED,
+                educational_models.CollectiveOffer.isArchived == False,
+            )
         )
     if DisplayedStatus.PENDING.value in statuses:
         on_collective_offer_filters.append(
-            educational_models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.PENDING
+            and_(
+                educational_models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.PENDING,
+                educational_models.CollectiveOffer.isArchived == False,
+            )
         )
 
     # Add filters on `CollectiveBooking.Status`
@@ -581,6 +601,9 @@ def add_last_booking_status_to_collective_offer_query(
         .group_by(educational_models.CollectiveBooking.collectiveStockId)
         .subquery()
     )
+    # je vais construire un sous-tableau sql du format suivant:
+    # ceci pour le dernier booking de l'offre
+    # offer_id , booking_status
     collective_stock_with_last_booking_status_query = (
         educational_models.CollectiveStock.query.with_entities(
             educational_models.CollectiveStock.collectiveOfferId,
@@ -589,7 +612,7 @@ def add_last_booking_status_to_collective_offer_query(
         .outerjoin(
             educational_models.CollectiveBooking,
         )
-        .join(
+        .outerjoin(
             last_booking_query,
             sa.and_(
                 educational_models.CollectiveBooking.collectiveStockId == last_booking_query.c.collectiveStockId,
@@ -598,13 +621,25 @@ def add_last_booking_status_to_collective_offer_query(
         )
         .subquery()
     )
-    query_with_booking = query.join(
+    query_with_booking = query.outerjoin(
         collective_stock_with_last_booking_status_query,
-        and_(
-            collective_stock_with_last_booking_status_query.c.collectiveOfferId
-            == educational_models.CollectiveOffer.id,
-        ),
+        collective_stock_with_last_booking_status_query.c.collectiveOfferId == educational_models.CollectiveOffer.id,
     )
+
+    # id, order_id
+
+    # order_id, status
+
+    # outerjoin
+    # id, order_id, status
+    # 1, 10, None
+    # 2, 11, Pending
+
+    # join
+    # id, order_id, status
+    # 1, 10, None
+    # 2, 11, Pending
+
     return collective_stock_with_last_booking_status_query, query_with_booking
 
 
