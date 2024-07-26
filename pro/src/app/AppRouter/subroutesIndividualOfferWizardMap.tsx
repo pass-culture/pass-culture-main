@@ -44,7 +44,9 @@ export const routesIndividualOfferWizard: RouteConfig[] = [
   // Useful information pages
   {
     lazy: () =>
-      import('pages/IndividualOfferWizard/UsefulInformation/UsefulInformation'),
+      import(
+        'pages/IndividualOfferWizard/UsefulInformationsSummary/UsefulInformationsSummary'
+      ),
     path: '/offre/individuelle/:offerId/pratiques',
     title: 'Informations pratiques - Consulter une offre individuelle',
   },

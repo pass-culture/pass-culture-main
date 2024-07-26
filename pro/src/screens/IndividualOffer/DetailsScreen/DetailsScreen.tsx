@@ -115,7 +115,7 @@ export const DetailsScreen = ({ venues }: DetailsScreenProps): JSX.Element => {
       const nextStep =
         mode === OFFER_WIZARD_MODE.EDITION
           ? OFFER_WIZARD_STEP_IDS.SUMMARY
-          : OFFER_WIZARD_STEP_IDS.ABOUT
+          : OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS
 
       navigate(
         getIndividualOfferUrl({

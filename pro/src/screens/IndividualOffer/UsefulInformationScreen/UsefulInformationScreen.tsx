@@ -114,7 +114,7 @@ export const UsefulInformationScreen = ({
             : OFFER_WIZARD_STEP_IDS.STOCKS
 
       logEvent(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-        from: OFFER_WIZARD_STEP_IDS.ABOUT,
+        from: OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS,
         to: nextStep,
         used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
         isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
@@ -181,13 +181,21 @@ export const UsefulInformationScreen = ({
 
   const handlePreviousStepOrBackToReadOnly = () => {
     /* istanbul ignore next: DEBT, TO FIX */
-    navigate(
-      getIndividualOfferUrl({
-        offerId: offer?.id,
-        step: OFFER_WIZARD_STEP_IDS.DETAILS,
-        mode: OFFER_WIZARD_MODE.CREATION,
-      })
-    )
+    mode === OFFER_WIZARD_MODE.CREATION
+      ? navigate(
+          getIndividualOfferUrl({
+            offerId: offer?.id,
+            step: OFFER_WIZARD_STEP_IDS.DETAILS,
+            mode: OFFER_WIZARD_MODE.CREATION,
+          })
+        )
+      : navigate(
+          getIndividualOfferUrl({
+            offerId: offer?.id,
+            step: OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS,
+            mode: OFFER_WIZARD_MODE.READ_ONLY,
+          })
+        )
   }
 
   return (
@@ -199,7 +207,7 @@ export const UsefulInformationScreen = ({
         </FormLayout>
         <ActionBar
           onClickPrevious={handlePreviousStepOrBackToReadOnly}
-          step={OFFER_WIZARD_STEP_IDS.ABOUT}
+          step={OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS}
           isDisabled={
             formik.isSubmitting ||
             Boolean(offer && isOfferDisabled(offer.status))

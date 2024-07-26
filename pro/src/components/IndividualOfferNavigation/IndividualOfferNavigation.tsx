@@ -72,10 +72,10 @@ export const IndividualOfferNavigation = () => {
         isActive: true,
       },
       {
-        id: OFFER_WIZARD_STEP_IDS.ABOUT,
+        id: OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS,
         label: 'Informations pratiques',
         path: getIndividualOfferPath({
-          step: OFFER_WIZARD_STEP_IDS.ABOUT,
+          step: OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS,
           mode,
         }),
         isActive: true,

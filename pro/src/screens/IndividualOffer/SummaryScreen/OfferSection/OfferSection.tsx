@@ -254,7 +254,7 @@ export const OfferSection = ({
           title="Informations pratiques"
           editLink={getIndividualOfferUrl({
             offerId: offer.id,
-            step: OFFER_WIZARD_STEP_IDS.ABOUT,
+            step: OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS,
             mode:
               mode === OFFER_WIZARD_MODE.READ_ONLY
                 ? OFFER_WIZARD_MODE.EDITION
