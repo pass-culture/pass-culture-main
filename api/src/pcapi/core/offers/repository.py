@@ -494,7 +494,7 @@ def _filter_collective_offers_by_statuses(query: BaseQuery, statuses: list[str] 
         # if statuses is empty we return no orders
         return query
 
-    offer_id_query, query_with_booking = add_last_booking_status_to_collective_offer_query(query)
+    offer_id_with_booking_status_subquery, query_with_booking = add_last_booking_status_to_collective_offer_query(query)
     if DisplayedStatus.BOOKED.value in statuses or DisplayedStatus.PREBOOKED.value in statuses:
 
         allowed_booking_status = set()
@@ -507,8 +507,9 @@ def _filter_collective_offers_by_statuses(query: BaseQuery, statuses: list[str] 
 
         on_booking_status_filter.append(
             and_(
-                offer_id_query.c.status.in_(allowed_booking_status),
+                offer_id_with_booking_status_subquery.c.status.in_(allowed_booking_status),
                 educational_models.CollectiveOffer.status != offer_mixin.CollectiveOfferStatus.EXPIRED.name,
+                educational_models.CollectiveOffer.isArchived == False,
             )
         )
     if DisplayedStatus.ENDED.value in statuses:
@@ -516,13 +517,14 @@ def _filter_collective_offers_by_statuses(query: BaseQuery, statuses: list[str] 
 
         on_booking_status_filter.append(
             and_(
-                offer_id_query.c.status.in_(
+                offer_id_with_booking_status_subquery.c.status.in_(
                     [
                         educational_models.CollectiveBookingStatus.USED.value,
                         educational_models.CollectiveBookingStatus.REIMBURSED.value,
                     ]
                 ),
                 educational_models.CollectiveOffer.status == offer_mixin.CollectiveOfferStatus.EXPIRED.name,
+                educational_models.CollectiveOffer.isArchived == False,
             )
         )
     if DisplayedStatus.EXPIRED.value in statuses:
@@ -530,7 +532,7 @@ def _filter_collective_offers_by_statuses(query: BaseQuery, statuses: list[str] 
 
         on_booking_status_filter.append(
             and_(
-                offer_id_query.c.status.in_(
+                offer_id_with_booking_status_subquery.c.status.in_(
                     [
                         None,
                         educational_models.CollectiveBookingStatus.PENDING.value,
@@ -538,24 +540,42 @@ def _filter_collective_offers_by_statuses(query: BaseQuery, statuses: list[str] 
                     ]
                 ),
                 educational_models.CollectiveOffer.status == offer_mixin.CollectiveOfferStatus.EXPIRED.name,
+                educational_models.CollectiveOffer.isArchived == False,
             )
         )
-    if DisplayedStatus.ARCHIVED.value in statuses:
-        on_collective_offer_filters.append(educational_models.CollectiveOffer.dateArchived != None)
     if DisplayedStatus.ACTIVE.value in statuses:
-        on_collective_offer_filters.append(
+        on_booking_status_filter.append(
             and_(
+                offer_id_with_booking_status_subquery.c.status == None,
                 educational_models.CollectiveOffer.isActive == True,
                 educational_models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.APPROVED,
+                educational_models.CollectiveOffer.isArchived == False,
             )
         )
+    if DisplayedStatus.INACTIVE.value in statuses:
+        on_booking_status_filter.append(
+            and_(
+                educational_models.CollectiveOffer.isActive == False,
+                educational_models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.APPROVED,
+                educational_models.CollectiveOffer.isArchived == False,
+            )
+        )
+
+    if DisplayedStatus.ARCHIVED.value in statuses:
+        on_collective_offer_filters.append(educational_models.CollectiveOffer.isArchived == True)
     if DisplayedStatus.REJECTED.value in statuses:
         on_collective_offer_filters.append(
-            educational_models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.REJECTED
+            and_(
+                educational_models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.REJECTED,
+                educational_models.CollectiveOffer.isArchived == False,
+            )
         )
     if DisplayedStatus.PENDING.value in statuses:
         on_collective_offer_filters.append(
-            educational_models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.PENDING
+            and_(
+                educational_models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.PENDING,
+                educational_models.CollectiveOffer.isArchived == False,
+            )
         )
 
     # Add filters on `CollectiveBooking.Status`
@@ -586,7 +606,7 @@ def add_last_booking_status_to_collective_offer_query(
             educational_models.CollectiveStock.collectiveOfferId,
             educational_models.CollectiveBooking.status,
         )
-        .outerjoin(
+        .join(
             educational_models.CollectiveBooking,
         )
         .join(
@@ -596,16 +616,19 @@ def add_last_booking_status_to_collective_offer_query(
                 educational_models.CollectiveBooking.dateCreated == last_booking_query.c.maxdate,
             ),
         )
-        .subquery()
     )
-    query_with_booking = query.join(
-        collective_stock_with_last_booking_status_query,
+
+    subquery = collective_stock_with_last_booking_status_query.subquery()
+
+    query_with_booking = query.outerjoin(
+        subquery,
         and_(
-            collective_stock_with_last_booking_status_query.c.collectiveOfferId
-            == educational_models.CollectiveOffer.id,
+            subquery.c.collectiveOfferId == educational_models.CollectiveOffer.id,
+            subquery.c.status.notin_([educational_models.CollectiveBookingStatus.CANCELLED.value]),
         ),
     )
-    return collective_stock_with_last_booking_status_query, query_with_booking
+
+    return subquery, query_with_booking
 
 
 def get_products_map_by_provider_reference(id_at_providers: list[str]) -> dict[str, models.Product]:

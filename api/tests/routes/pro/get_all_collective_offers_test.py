@@ -137,6 +137,7 @@ class Returns200Test:
             beginningDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=5),
             bookingLimitDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=5),
             collectiveOffer__venue=venue,
+            collectiveOffer__isActive=False,
         )
 
         # When
