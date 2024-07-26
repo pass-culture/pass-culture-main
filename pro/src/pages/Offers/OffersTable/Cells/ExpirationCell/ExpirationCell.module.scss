@@ -1,5 +1,6 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/variables/_size.scss" as size;
 
 .expiration-cell {
   padding-top: 0;
@@ -12,6 +13,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
 
   &.banner-expires-soon {
     background-color: var(--color-background-alert);
@@ -20,7 +22,7 @@
   &-expiration {
     display: flex;
     align-items: center;
-    gap: rem.torem(16px);
+    gap: rem.torem(4px);
     flex-wrap: wrap;
 
     &-waiting {
@@ -41,5 +43,11 @@
       padding: rem.torem(4px) rem.torem(8px);
       border-radius: rem.torem(4px);
     }
+  }
+}
+
+@media (min-width: size.$tablet) {
+  .banner-expiration {
+    gap: rem.torem(16px);
   }
 }
