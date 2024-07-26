@@ -1,15 +1,14 @@
-import { Dispatch, FormEvent, SetStateAction } from 'react'
+import { FormikProvider, useFormik } from 'formik'
+import { Dispatch, FormEvent, SetStateAction, useEffect } from 'react'
 
 import {
   CollectiveOfferDisplayedStatus,
   EacFormat,
   GetOffererResponseModel,
-  OfferStatus,
 } from 'apiClient/v1'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import {
   ALL_FORMATS_OPTION,
-  ALL_STATUS,
   ALL_VENUES_OPTION,
   COLLECTIVE_OFFER_TYPES_OPTIONS,
   DEFAULT_SEARCH_FILTERS,
@@ -24,6 +23,7 @@ import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { PeriodSelector } from 'ui-kit/form/PeriodSelector/PeriodSelector'
 import { SelectInput } from 'ui-kit/form/Select/SelectInput'
+import { SelectAutocomplete } from 'ui-kit/form/SelectAutoComplete/SelectAutocomplete'
 import { BaseInput } from 'ui-kit/form/shared/BaseInput/BaseInput'
 import { FieldLayout } from 'ui-kit/form/shared/FieldLayout/FieldLayout'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
@@ -45,7 +45,6 @@ interface CollectiveSearchFiltersProps {
 }
 
 const collectiveFilterStatus = [
-  { label: 'Tous', value: ALL_STATUS },
   {
     label: 'Validation en attente',
     value: CollectiveOfferDisplayedStatus.PENDING,
@@ -69,6 +68,11 @@ const collectiveFilterStatus = [
   { label: 'Archivée', value: CollectiveOfferDisplayedStatus.ARCHIVED },
 ]
 
+export type StatusFormValues = {
+  status: CollectiveOfferDisplayedStatus[]
+  'search-status': string
+}
+
 export const CollectiveSearchFilters = ({
   applyFilters,
   selectedFilters,
@@ -85,6 +89,29 @@ export const CollectiveSearchFilters = ({
     value: format,
     label: format,
   }))
+
+  const formik = useFormik<StatusFormValues>({
+    initialValues: {
+      status: [],
+      'search-status': '',
+    },
+    onSubmit: () => {},
+  })
+
+  useEffect(() => {
+    const selectedStatus = selectedFilters.status
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    formik.setFieldValue(
+      'status',
+      Array.isArray(selectedStatus) ? selectedStatus : [selectedStatus]
+    )
+  }, [])
+
+  // TODO(anoukhello - 24/07/24) we should not use useEffect for this but an event handler on SelectAutocomplete
+  useEffect(() => {
+    updateSearchFilters({ status: formik.values.status })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formik.values.status])
 
   const updateSearchFilters = (
     newSearchFilters: Partial<SearchFiltersParams>
@@ -111,10 +138,6 @@ export const CollectiveSearchFilters = ({
 
   const storeCollectiveOfferType = (event: FormEvent<HTMLSelectElement>) => {
     updateSearchFilters({ collectiveOfferType: event.currentTarget.value })
-  }
-
-  const storeOfferStatus = (event: FormEvent<HTMLSelectElement>) => {
-    updateSearchFilters({ status: event.currentTarget.value as OfferStatus })
   }
 
   const onBeginningDateChange = (periodBeginningDate: string) => {
@@ -219,24 +242,22 @@ export const CollectiveSearchFilters = ({
           </fieldset>
         </FormLayout.Row>
 
-        <FieldLayout
-          label={
-            <span className={styles['status-filter-label']}>
-              Statut<Tag variant={TagVariant.BLUE}>Nouveau</Tag>
-            </span>
-          }
-          name="status"
-          isOptional
-          className={styles['status-filter']}
-        >
-          <SelectInput
-            value={selectedFilters.status as OfferStatus}
+        <FormikProvider value={formik}>
+          <SelectAutocomplete
+            multi
             name="status"
-            onChange={storeOfferStatus}
-            disabled={disableAllFilters || isRestrictedAsAdmin}
+            label={
+              <span className={styles['status-filter-label']}>
+                Statut<Tag variant={TagVariant.BLUE}>Nouveau</Tag>
+              </span>
+            }
             options={collectiveFilterStatus}
+            placeholder="Statuts"
+            isOptional
+            className={styles['status-filter']}
+            disabled={disableAllFilters || isRestrictedAsAdmin}
           />
-        </FieldLayout>
+        </FormikProvider>
 
         <div className={styles['reset-filters']}>
           <Button
