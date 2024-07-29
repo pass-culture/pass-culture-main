@@ -261,9 +261,6 @@ export const OfferSection = ({
                 : mode,
           })}
           aria-label="Modifier les informations pratiques de l’offre"
-          className={cn({
-            [styles['cancel-title-margin']]: isEventPublicationFormShown,
-          })}
         >
           <SummarySubSection title="Retrait de l’offre">
             <SummaryDescriptionList descriptions={practicalInfoDescriptions} />
