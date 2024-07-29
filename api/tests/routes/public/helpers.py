@@ -18,6 +18,10 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 class PublicAPIEndpointBaseHelper(abc.ABC):
+    """
+    For Public API endpoints that require authentication
+    """
+
     @property
     @abc.abstractmethod
     def endpoint_url(self):
@@ -51,6 +55,10 @@ class PublicAPIEndpointBaseHelper(abc.ABC):
 
 
 class PublicAPIVenueEndpointHelper(PublicAPIEndpointBaseHelper):
+    """
+    For Public API endpoints that require an active `VenueProvider`
+    """
+
     @abc.abstractmethod
     def test_should_raise_404_because_has_no_access_to_venue(self, client: TestClient):
         raise NotImplementedError()
@@ -75,6 +83,10 @@ class PublicAPIVenueEndpointHelper(PublicAPIEndpointBaseHelper):
 
 
 class PublicAPIVenueWithPermissionEndpointHelper(PublicAPIVenueEndpointHelper):
+    """
+    For Public API endpoints that require permission
+    """
+
     @property
     @abc.abstractmethod
     def needed_permission(self) -> tuple[providers_models.ApiResourceEnum, providers_models.PermissionEnum]:
