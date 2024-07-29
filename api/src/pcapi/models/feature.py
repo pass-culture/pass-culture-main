@@ -121,6 +121,7 @@ class FeatureToggle(enum.Enum):
     USE_END_DATE_FOR_COLLECTIVE_PRICING = "Utiliser la date de fin du stock collectif comme date de valorisation."
     WIP_ENABLE_OFFER_ADDRESS = "Activer l'association des offres à des adresses."
     WIP_SPLIT_OFFER = "Activer le nouveau parcours de création/édition d'offre individuelle"
+    WIP_SUGGESTED_SUBCATEGORIES = "Activer les sous-catégories suggérées par IA lors de la création d'offre"
     ENABLE_COLLECTIVE_OFFERS_EXPIRATION = "Activer la mise en avant des offres collectives sur le point d'expirer"
 
     def is_active(self) -> bool:
@@ -184,6 +185,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_ENABLE_REMINDER_MARKETING_MAIL_METADATA_DISPLAY,
     FeatureToggle.WIP_ENABLE_TITELIVE_API_FOR_BOOKS,
     FeatureToggle.WIP_SPLIT_OFFER,
+    FeatureToggle.WIP_SUGGESTED_SUBCATEGORIES,
     # Please keep alphabetic order
 )
 
