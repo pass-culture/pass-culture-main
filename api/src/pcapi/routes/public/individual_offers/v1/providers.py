@@ -38,6 +38,7 @@ def get_provider() -> providers_serialization.ProviderResponse:
 
 
 @blueprints.public_api.route("/public/providers/v1/provider", methods=["PATCH"])
+@api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.PROVIDERS],
@@ -51,7 +52,6 @@ def get_provider() -> providers_serialization.ProviderResponse:
         )
     ),
 )
-@api_key_required
 def update_provider(body: providers_serialization.ProviderUpdate) -> providers_serialization.ProviderResponse:
     """
     Update my provider
