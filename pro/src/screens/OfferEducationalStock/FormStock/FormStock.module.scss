@@ -1,9 +1,21 @@
 @use "styles/mixins/_rem.scss" as rem;
 
 .input-date svg {
-    width: rem.torem(20px);
+  width: rem.torem(20px);
 }
 
 .input-custom-width {
-    width: rem.torem(110px);
+  width: rem.torem(110px);
+}
+
+.input-date {
+  min-width: rem.torem(192px);
+}
+
+.custom-field-layout {
+  width: unset;
+}
+
+.layout-row {
+  flex-wrap: wrap;
 }
