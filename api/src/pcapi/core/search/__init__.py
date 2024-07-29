@@ -334,6 +334,11 @@ def _reindex_venue_ids(
 
     to_add_ids = [venue.id for venue in to_add]
 
+    logger.info(
+        "Finished sorting venues: starting to index",
+        extra={"count_to_add": len(to_add), "count_to_delete": len(to_delete_ids)},
+    )
+
     try:
         backend.index_venues(to_add)
     except Exception as exc:  # pylint: disable=broad-except
