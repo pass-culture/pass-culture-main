@@ -85,13 +85,6 @@ export const DetailsForm = ({
 
   const venueOptions = buildVenueOptions(filteredVenues)
 
-  // this condition exists in the original code
-  // but it is not clear why it is needed
-  const hasMusicType =
-    categoryId !== 'LIVRE'
-      ? subcategoryConditionalFields.includes('gtl_id')
-      : subcategoryConditionalFields.includes('musicType')
-
   const artisticInformationsFields = [
     'speaker',
     'author',
@@ -100,6 +93,8 @@ export const DetailsForm = ({
     'performer',
     'ean',
     'durationMinutes',
+    'showType',
+    'gtl_id',
   ]
 
   const displayArtisticInformations = artisticInformationsFields.some((field) =>
@@ -130,7 +125,7 @@ export const DetailsForm = ({
         </FormLayout.Row>
         <FormLayout.Row>
           <Select
-            label="Lieu"
+            label="Qui propose l’offre ?"
             name="venueId"
             options={venueOptions}
             disabled={readOnlyFields.includes('venueId')}
@@ -200,48 +195,6 @@ export const DetailsForm = ({
             />
           </FormLayout.Row>
         )}
-        {hasMusicType && (
-          <FormLayout.Row>
-            <Select
-              label="Genre musical"
-              name="gtl_id"
-              options={musicTypesOptions}
-              defaultOption={{
-                label: 'Choisir un genre musical',
-                value: DEFAULT_DETAILS_FORM_VALUES.gtl_id,
-              }}
-              disabled={readOnlyFields.includes('gtl_id')}
-            />
-          </FormLayout.Row>
-        )}
-        {subcategoryConditionalFields.includes('showType') && (
-          <>
-            <FormLayout.Row>
-              <Select
-                label="Type de spectacle"
-                name="showType"
-                options={showTypesOptions}
-                defaultOption={{
-                  label: 'Choisir un type de spectacle',
-                  value: DEFAULT_DETAILS_FORM_VALUES.showType,
-                }}
-                disabled={readOnlyFields.includes('showType')}
-              />
-            </FormLayout.Row>
-            <FormLayout.Row>
-              <Select
-                label="Sous-type"
-                name="showSubType"
-                options={showSubTypeOptions}
-                defaultOption={{
-                  label: 'Choisir un sous-type',
-                  value: DEFAULT_DETAILS_FORM_VALUES.showSubType,
-                }}
-                disabled={readOnlyFields.includes('showSubType')}
-              />
-            </FormLayout.Row>
-          </>
-        )}
       </FormLayout.Section>
       {subcategoryId !== DEFAULT_DETAILS_FORM_VALUES.subcategoryId && (
         <>
@@ -253,6 +206,48 @@ export const DetailsForm = ({
 
           {displayArtisticInformations && (
             <FormLayout.Section title="Informations artistiques">
+              {subcategoryConditionalFields.includes('gtl_id') && (
+                <FormLayout.Row>
+                  <Select
+                    label="Genre musical"
+                    name="gtl_id"
+                    options={musicTypesOptions}
+                    defaultOption={{
+                      label: 'Choisir un genre musical',
+                      value: DEFAULT_DETAILS_FORM_VALUES.gtl_id,
+                    }}
+                    disabled={readOnlyFields.includes('gtl_id')}
+                  />
+                </FormLayout.Row>
+              )}
+              {subcategoryConditionalFields.includes('showType') && (
+                <>
+                  <FormLayout.Row>
+                    <Select
+                      label="Type de spectacle"
+                      name="showType"
+                      options={showTypesOptions}
+                      defaultOption={{
+                        label: 'Choisir un type de spectacle',
+                        value: DEFAULT_DETAILS_FORM_VALUES.showType,
+                      }}
+                      disabled={readOnlyFields.includes('showType')}
+                    />
+                  </FormLayout.Row>
+                  <FormLayout.Row>
+                    <Select
+                      label="Sous-type"
+                      name="showSubType"
+                      options={showSubTypeOptions}
+                      defaultOption={{
+                        label: 'Choisir un sous-type',
+                        value: DEFAULT_DETAILS_FORM_VALUES.showSubType,
+                      }}
+                      disabled={readOnlyFields.includes('showSubType')}
+                    />
+                  </FormLayout.Row>
+                </>
+              )}
               {subcategoryConditionalFields.includes('speaker') && (
                 <FormLayout.Row>
                   <TextInput

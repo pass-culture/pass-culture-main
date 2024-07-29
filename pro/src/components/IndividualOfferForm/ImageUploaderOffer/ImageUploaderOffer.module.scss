@@ -7,6 +7,6 @@
 
 @media (min-width: size.$tablet) {
   .image-uploader {
-    margin-bottom: 0;
+    margin-bottom: rem.torem(24px);
   }
 }

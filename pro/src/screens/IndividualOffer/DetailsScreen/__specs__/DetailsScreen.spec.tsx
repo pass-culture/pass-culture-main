@@ -189,7 +189,10 @@ describe('screens:IndividualOffer::Informations', () => {
       'My super description'
     )
 
-    await userEvent.selectOptions(await screen.findByLabelText(/Lieu/), '189')
+    await userEvent.selectOptions(
+      await screen.findByLabelText(/Qui propose l’offre/),
+      '189'
+    )
 
     await userEvent.selectOptions(
       await screen.findByLabelText('Catégorie *'),
