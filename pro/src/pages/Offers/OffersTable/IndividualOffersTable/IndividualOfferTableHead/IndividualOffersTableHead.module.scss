@@ -1,31 +1,25 @@
 @use "styles/mixins/_a11y.scss" as a11y;
-@use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/variables/_size.scss" as size;
 @use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_fonts.scss" as fonts;
 
-.collective-offers-thead {
+.individual-offers-thead {
   display: none;
 }
 
-.expiration-date-th,
-.offer-reference-th {
-  padding: 0;
-}
-
-.collective-th {
+.individual-th {
   @include fonts.caption;
 
   padding: 0 rem.torem(8px) rem.torem(10px);
   text-align: left;
 }
 
-.collective-th-actions {
+.individual-th-actions {
   text-align: right;
-  padding-right: 0;
 }
 
 @media (min-width: size.$tablet) {
-  .collective-offers-thead {
+  .individual-offers-thead {
     display: table-header-group;
   }
 }

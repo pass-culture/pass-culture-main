@@ -1,3 +1,5 @@
+import classNames from 'classnames'
+
 import { ListOffersOfferResponseModel } from 'apiClient/v1'
 import { OFFER_STATUS_DRAFT } from 'core/Offers/constants'
 
@@ -18,7 +20,12 @@ export const IndividualActionsCells = ({
   editionStockLink,
 }: IndividualActionsCellsProps) => {
   return (
-    <td className={styles['actions-column']}>
+    <td
+      className={classNames(
+        styles['offers-table-cell'],
+        styles['actions-column']
+      )}
+    >
       <div className={styles['actions-column-container']}>
         {offer.status === OFFER_STATUS_DRAFT ? (
           <DeleteDraftCell offer={offer} />

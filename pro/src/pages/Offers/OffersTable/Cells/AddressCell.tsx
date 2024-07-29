@@ -1,3 +1,5 @@
+import classNames from 'classnames'
+
 import { AddressResponseIsEditableModel } from 'apiClient/v1'
 import { computeAddressDisplayName } from 'repository/venuesService'
 
@@ -9,7 +11,12 @@ export function AddressCell({
   address: AddressResponseIsEditableModel
 }) {
   return (
-    <td className={styles['venue-column']}>
+    <td
+      className={classNames(
+        styles['offers-table-cell'],
+        styles['venue-column']
+      )}
+    >
       {computeAddressDisplayName(address)}
     </td>
   )

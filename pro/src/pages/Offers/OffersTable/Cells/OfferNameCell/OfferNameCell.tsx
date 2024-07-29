@@ -1,3 +1,4 @@
+import classNames from 'classnames'
 import { Link } from 'react-router-dom'
 
 import {
@@ -75,7 +76,13 @@ export const OfferNameCell = ({
     !isCollectiveOffersExpirationEnabled
 
   return (
-    <td className={styles['title-column']} headers={headers}>
+    <td
+      className={classNames(
+        styles['offers-table-cell'],
+        styles['title-column']
+      )}
+      headers={headers}
+    >
       {offer.isShowcase && (
         <Tag
           variant={TagVariant.SMALL_OUTLINE}

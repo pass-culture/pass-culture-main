@@ -12,9 +12,8 @@ import { BaseCheckbox } from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
 import { Pagination } from 'ui-kit/Pagination/Pagination'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
-import styles from '../OffersTable.module.scss'
-
-import { CollectiveOffersTableBody } from './CollectiveOffersTableBody'
+import styles from './CollectiveOffersTable.module.scss'
+import { CollectiveOffersTableBody } from './CollectiveOffersTableBody/CollectiveOffersTableBody'
 import { CollectiveOffersTableHead } from './CollectiveOffersTableHead/CollectiveOffersTableHead'
 
 type CollectiveOffersTableProps = {
@@ -72,7 +71,7 @@ export const CollectiveOffersTable = ({
   return (
     <div aria-busy={isLoading} aria-live="polite" className="section">
       {isLoading ? (
-        <Spinner />
+        <Spinner className={styles['loading-spinner']} />
       ) : (
         <>
           {offersCount > MAX_OFFERS_TO_DISPLAY && (
@@ -105,7 +104,7 @@ export const CollectiveOffersTable = ({
                   }
                 />
               </div>
-              <table>
+              <table className={styles['collective-table']}>
                 <CollectiveOffersTableHead />
                 <CollectiveOffersTableBody
                   offers={currentPageOffersSubset}

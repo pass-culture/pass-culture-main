@@ -1,0 +1,11 @@
+@use "styles/variables/_size.scss" as size;
+
+.collective-tbody {
+  display: block;
+}
+
+@media (min-width: size.$tablet) {
+  .collective-tbody {
+    display: table-row-group;
+  }
+}

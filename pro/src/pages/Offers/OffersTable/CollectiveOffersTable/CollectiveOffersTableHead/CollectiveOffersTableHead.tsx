@@ -9,10 +9,13 @@ export const CollectiveOffersTableHead = (): JSX.Element => {
     'ENABLE_COLLECTIVE_OFFERS_EXPIRATION'
   )
   return (
-    <thead>
+    <thead className={styles['collective-offers-thead']}>
       <tr>
         <th className={styles['offer-reference-th']} />
-        <th id="collective-offer-head-checkbox">
+        <th
+          id="collective-offer-head-checkbox"
+          className={styles['collective-th']}
+        >
           <span className="visually-hidden">Case à cocher</span>
         </th>
         {isCollectiveOffersExpirationEnabled && (
@@ -33,13 +36,36 @@ export const CollectiveOffersTableHead = (): JSX.Element => {
         </th>
 
         {isCollectiveOffersExpirationEnabled && (
-          <th id="collective-offer-head-event-date">Date de l’évènement</th>
+          <th
+            id="collective-offer-head-event-date"
+            className={styles['collective-th']}
+          >
+            Date de l’évènement
+          </th>
         )}
-        <th id="collective-offer-head-venue">Lieu</th>
-        <th id="collective-offer-head-institution">Établissement</th>
-        <th id="collective-offer-head-status">Statut</th>
         <th
-          className={classNames('th-actions', 'th-actions-eac')}
+          id="collective-offer-head-venue"
+          className={styles['collective-th']}
+        >
+          Lieu
+        </th>
+        <th
+          id="collective-offer-head-institution"
+          className={styles['collective-th']}
+        >
+          Établissement
+        </th>
+        <th
+          id="collective-offer-head-status"
+          className={styles['collective-th']}
+        >
+          Statut
+        </th>
+        <th
+          className={classNames(
+            styles['collective-th'],
+            styles['collective-th-actions']
+          )}
           id="collective-offer-head-actions"
         >
           Actions

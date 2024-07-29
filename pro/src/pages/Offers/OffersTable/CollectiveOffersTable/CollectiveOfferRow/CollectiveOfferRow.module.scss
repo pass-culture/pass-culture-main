@@ -15,6 +15,12 @@
       ".     actions actions status";
     border-bottom: none;
   }
+
+  &.is-first-row {
+    td {
+      padding-top: 0;
+    }
+  }
 }
 
 .reference-row-head {

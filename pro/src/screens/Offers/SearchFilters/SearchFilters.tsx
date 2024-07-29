@@ -179,7 +179,7 @@ export const SearchFilters = ({
   return (
     <>
       {!isNewInterfaceActive && offerer && (
-        <span className="offerer-filter">
+        <span className={styles['offerer-filter']}>
           {offerer.name}
           <button
             onClick={removeOfferer}
@@ -195,7 +195,10 @@ export const SearchFilters = ({
         </span>
       )}
 
-      <form onSubmit={requestFilteredOffers}>
+      <form
+        onSubmit={requestFilteredOffers}
+        className={styles['search-filters-form']}
+      >
         <FieldLayout label={searchByOfferNameLabel} name="offre" isOptional>
           <BaseInput
             type="text"

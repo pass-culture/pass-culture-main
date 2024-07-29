@@ -24,12 +24,14 @@ export type IndividualOfferRowProps = {
   isSelected: boolean
   offer: ListOffersOfferResponseModel
   selectOffer: (offer: ListOffersOfferResponseModel) => void
+  isFirstRow: boolean
 }
 
 export const IndividualOfferRow = ({
   offer,
   isSelected,
   selectOffer,
+  isFirstRow,
 }: IndividualOfferRowProps) => {
   const isSplitOfferEnabled = useActiveFeature('WIP_SPLIT_OFFER')
   const offerAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
@@ -49,10 +51,10 @@ export const IndividualOfferRow = ({
       : !offer.isActive ||
         offer.hasBookingLimitDatetimesPassed ||
         isOfferDisabled(offer.status)
-
   return (
     <tr
       className={classNames(styles['individual-row'], {
+        [styles['is-first-row']]: isFirstRow,
         [styles['inactive']]: isOfferInactiveOrExpiredOrDisabled,
       })}
       data-testid="offer-item-row"

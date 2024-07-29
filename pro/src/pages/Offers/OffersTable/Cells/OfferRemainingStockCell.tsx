@@ -1,3 +1,5 @@
+import classNames from 'classnames'
+
 import {
   CollectiveOffersStockResponseModel,
   ListOffersStockResponseModel,
@@ -27,7 +29,12 @@ export const OfferRemainingStockCell = ({
   stocks,
 }: OfferRemainingStockCellProps) => {
   return (
-    <td className={styles['stock-column']}>
+    <td
+      className={classNames(
+        styles['offers-table-cell'],
+        styles['stock-column']
+      )}
+    >
       {computeRemainingStockValue(stocks)}
     </td>
   )

@@ -1,3 +1,5 @@
+import classNames from 'classnames'
+
 import { ListOffersVenueResponseModel } from 'apiClient/v1'
 import { computeVenueDisplayName } from 'repository/venuesService'
 
@@ -10,7 +12,13 @@ interface OfferVenueCellProps {
 
 export const OfferVenueCell = ({ venue, headers }: OfferVenueCellProps) => {
   return (
-    <td className={styles['venue-column']} headers={headers}>
+    <td
+      className={classNames(
+        styles['offers-table-cell'],
+        styles['venue-column']
+      )}
+      headers={headers}
+    >
       {computeVenueDisplayName(venue)}
     </td>
   )

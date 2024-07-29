@@ -1,3 +1,5 @@
+import classNames from 'classnames'
+
 import { OfferStatus } from 'apiClient/v1'
 import { StatusLabel } from 'components/StatusLabel/StatusLabel'
 
@@ -8,7 +10,9 @@ interface OfferStatusCellProps {
 }
 
 export const OfferStatusCell = ({ status }: OfferStatusCellProps) => (
-  <td className={styles['status-column']}>
+  <td
+    className={classNames(styles['offers-table-cell'], styles['status-column'])}
+  >
     <StatusLabel status={status} />
   </td>
 )

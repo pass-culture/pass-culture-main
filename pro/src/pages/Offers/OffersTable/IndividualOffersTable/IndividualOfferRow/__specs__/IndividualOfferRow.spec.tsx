@@ -66,6 +66,7 @@ describe('IndividualOfferRow', () => {
       offer,
       selectOffer: vi.fn(),
       isSelected: false,
+      isFirstRow: true,
     }
   })
 

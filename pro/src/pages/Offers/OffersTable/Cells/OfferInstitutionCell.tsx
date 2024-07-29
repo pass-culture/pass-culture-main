@@ -1,3 +1,5 @@
+import classNames from 'classnames'
+
 import { EducationalInstitutionResponseModel } from 'apiClient/v1'
 
 import styles from './Cells.module.scss'
@@ -22,7 +24,13 @@ export const OfferInstitutionCell = ({
   }
 
   return (
-    <td className={styles['institution-column']} headers={headers}>
+    <td
+      className={classNames(
+        styles['offers-table-cell'],
+        styles['institution-column']
+      )}
+      headers={headers}
+    >
       {showEducationalInstitution}
     </td>
   )

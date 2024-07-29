@@ -4,7 +4,9 @@ import {
 } from 'apiClient/v1'
 import { isSameOffer } from 'pages/Offers/utils/isSameOffer'
 
-import { IndividualOfferRow } from './IndividualOfferRow/IndividualOfferRow'
+import { IndividualOfferRow } from '../IndividualOfferRow/IndividualOfferRow'
+
+import styles from './IndividualOffersTableBody.module.scss'
 
 type IndividualOffersTableBodyProps = {
   offers: ListOffersOfferResponseModel[]
@@ -20,8 +22,8 @@ export const IndividualOffersTableBody = ({
   selectedOffers,
 }: IndividualOffersTableBodyProps) => {
   return (
-    <tbody className="offers-list">
-      {offers.map((offer) => {
+    <tbody className={styles['individual-tbody']}>
+      {offers.map((offer, index) => {
         const isSelected = selectedOffers.some((selectedOffer) =>
           isSameOffer(selectedOffer, offer)
         )
@@ -32,6 +34,7 @@ export const IndividualOffersTableBody = ({
             key={offer.id}
             offer={offer}
             selectOffer={selectOffer}
+            isFirstRow={index === 0}
           />
         )
       })}

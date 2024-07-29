@@ -17,7 +17,20 @@
   }
 }
 
+.individual-table {
+  width: 100%;
+  display: block;
+}
+
+.loading-spinner {
+  margin-top: rem.torem(70px);
+}
+
 @media (min-width: size.$tablet) {
+  .individual-table {
+    display: table;
+  }
+
   .select-all-container {
     top: 20px;
     margin-bottom: unset;

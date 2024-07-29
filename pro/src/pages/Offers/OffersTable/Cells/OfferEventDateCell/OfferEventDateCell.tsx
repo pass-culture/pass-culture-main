@@ -63,7 +63,7 @@ export const OfferEventDateCell = ({
   }
 
   return (
-    <td headers={headers}>
+    <td headers={headers} className={styles['offers-table-cell']}>
       <div className={styles['offer-event']}>
         {getFormattedDatesForOffer(offer).map((date) => (
           <span key={date}>{date}</span>
