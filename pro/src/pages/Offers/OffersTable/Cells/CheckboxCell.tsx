@@ -1,3 +1,5 @@
+import classNames from 'classnames'
+
 import { BaseCheckbox } from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
 
 import styles from './Cells.module.scss'
@@ -18,7 +20,13 @@ export const CheckboxCell = ({
   headers,
 }: CheckboxCellProps) => {
   return (
-    <td className={styles['checkbox-column']} headers={headers}>
+    <td
+      className={classNames(
+        styles['offers-table-cell'],
+        styles['checkbox-column']
+      )}
+      headers={headers}
+    >
       <BaseCheckbox
         checked={isSelected}
         className="select-offer-checkbox"

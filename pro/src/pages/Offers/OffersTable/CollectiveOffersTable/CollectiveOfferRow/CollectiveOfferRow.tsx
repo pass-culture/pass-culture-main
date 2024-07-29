@@ -26,6 +26,7 @@ export type CollectiveOfferRowProps = {
   offer: CollectiveOfferResponseModel
   selectOffer: (offer: CollectiveOfferResponseModel) => void
   urlSearchFilters: SearchFiltersParams
+  isFirstRow: boolean
 }
 
 function isCollectiveOfferActiveOrPreBooked(
@@ -43,6 +44,7 @@ export const CollectiveOfferRow = ({
   isSelected,
   selectOffer,
   urlSearchFilters,
+  isFirstRow,
 }: CollectiveOfferRowProps) => {
   const isCollectiveOffersExpirationEnabled = useActiveFeature(
     'ENABLE_COLLECTIVE_OFFERS_EXPIRATION'
@@ -69,6 +71,7 @@ export const CollectiveOfferRow = ({
       <tr
         className={classNames(styles['collective-row'], {
           [styles['collective-row-with-expiration']]: hasExpirationRow,
+          [styles['is-first-row']]: isFirstRow,
         })}
         data-testid="offer-item-row"
       >

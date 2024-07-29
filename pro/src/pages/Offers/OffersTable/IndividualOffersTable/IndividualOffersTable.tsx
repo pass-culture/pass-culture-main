@@ -12,10 +12,9 @@ import { BaseCheckbox } from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
 import { Pagination } from 'ui-kit/Pagination/Pagination'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
-import styles from '../OffersTable.module.scss'
-
-import { IndividualOffersTableBody } from './IndividualOffersTableBody'
-import { IndividualOffersTableHead } from './IndividualOffersTableHead'
+import styles from './IndividualOffersTable.module.scss'
+import { IndividualOffersTableBody } from './IndividualOffersTableBody/IndividualOffersTableBody'
+import { IndividualOffersTableHead } from './IndividualOfferTableHead/IndividualOffersTableHead'
 
 type IndividualOffersTableProps = {
   applyUrlFiltersAndRedirect: (
@@ -72,7 +71,7 @@ export const IndividualOffersTable = ({
   return (
     <div aria-busy={isLoading} aria-live="polite" className="section">
       {isLoading ? (
-        <Spinner />
+        <Spinner className={styles['loading-spinner']} />
       ) : (
         <>
           {offersCount > MAX_OFFERS_TO_DISPLAY && (
@@ -105,7 +104,7 @@ export const IndividualOffersTable = ({
                   }
                 />
               </div>
-              <table>
+              <table className={styles['individual-table']}>
                 <IndividualOffersTableHead />
                 <IndividualOffersTableBody
                   offers={currentPageOffersSubset}

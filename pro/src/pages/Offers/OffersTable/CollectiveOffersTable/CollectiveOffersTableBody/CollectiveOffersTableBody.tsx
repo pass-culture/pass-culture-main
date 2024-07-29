@@ -2,7 +2,9 @@ import { CollectiveOfferResponseModel } from 'apiClient/v1'
 import { SearchFiltersParams } from 'core/Offers/types'
 import { isSameOffer } from 'pages/Offers/utils/isSameOffer'
 
-import { CollectiveOfferRow } from './CollectiveOfferRow/CollectiveOfferRow'
+import { CollectiveOfferRow } from '../CollectiveOfferRow/CollectiveOfferRow'
+
+import styles from './CollectiveOffersTableBody.module.scss'
 
 type CollectiveOffersTableBodyProps = {
   offers: CollectiveOfferResponseModel[]
@@ -18,8 +20,8 @@ export const CollectiveOffersTableBody = ({
   urlSearchFilters,
 }: CollectiveOffersTableBodyProps) => {
   return (
-    <tbody className="offers-list">
-      {offers.map((offer) => {
+    <tbody className={styles['collective-tbody']}>
+      {offers.map((offer, index) => {
         const isSelected = selectedOffers.some((selectedOffer) =>
           isSameOffer(selectedOffer, offer)
         )
@@ -31,6 +33,7 @@ export const CollectiveOffersTableBody = ({
             offer={offer}
             selectOffer={selectOffer}
             urlSearchFilters={urlSearchFilters}
+            isFirstRow={index === 0}
           />
         )
       })}

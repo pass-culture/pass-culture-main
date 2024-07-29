@@ -4,16 +4,23 @@
 @use "styles/variables/_z-index.scss" as zIndex;
 @use "styles/mixins/_a11y.scss" as a11y;
 
-td:first-of-type {
-  grid-area: check;
-  padding-top: rem.torem(8px);
-
-  input[type="checkbox"] {
-    margin-right: 0;
+.offers-table-cell {
+  &:last-of-type {
+    padding-right: 0;
   }
 
-  label {
-    display: inline-flex;
+  &:first-of-type {
+    grid-area: check;
+    padding-top: rem.torem(8px);
+    padding-left: 0;
+
+    input[type="checkbox"] {
+      margin-right: 0;
+    }
+
+    label {
+      display: inline-flex;
+    }
   }
 }
 
@@ -206,7 +213,7 @@ td:first-of-type {
     }
   }
 
-  td {
+  .offers-table-cell {
     padding: rem.torem(8px);
   }
 }

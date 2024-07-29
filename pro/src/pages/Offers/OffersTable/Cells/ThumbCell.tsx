@@ -22,7 +22,13 @@ export const ThumbCell = ({
   inactive?: boolean
 }) => {
   return (
-    <td className={styles['thumb-column']} headers={headers}>
+    <td
+      className={classNames(
+        styles['offers-table-cell'],
+        styles['thumb-column']
+      )}
+      headers={headers}
+    >
       <Link
         className={styles['thumb-column-link']}
         title={`${offer.name} - éditer l’offre`}

@@ -79,6 +79,7 @@ describe('ollectiveOfferRow', () => {
       selectOffer: vi.fn(),
       isSelected: false,
       urlSearchFilters: DEFAULT_SEARCH_FILTERS,
+      isFirstRow: true,
     }
   })
 

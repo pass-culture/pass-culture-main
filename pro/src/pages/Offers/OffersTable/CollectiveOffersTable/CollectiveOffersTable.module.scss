@@ -1,0 +1,38 @@
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/variables/_size.scss" as size;
+
+.offers-pagination {
+  margin-top: rem.torem(32px);
+}
+
+.select-all-container {
+  display: flex;
+  align-items: center;
+  position: relative;
+  margin-bottom: rem.torem(20px);
+
+  label {
+    @include fonts.caption;
+  }
+}
+
+.collective-table {
+  width: 100%;
+  display: block;
+}
+
+.loading-spinner {
+  margin-top: rem.torem(70px);
+}
+
+@media (min-width: size.$tablet) {
+  .individual-table {
+    display: table;
+  }
+
+  .select-all-container {
+    top: 20px;
+    margin-bottom: unset;
+  }
+}

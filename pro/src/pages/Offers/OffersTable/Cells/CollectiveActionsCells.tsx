@@ -205,7 +205,10 @@ export const CollectiveActionsCells = ({
   }
 
   return (
-    <td className={styles['actions-column']} headers={headers}>
+    <td
+      className={cn(styles['offers-table-cell'], styles['actions-column'])}
+      headers={headers}
+    >
       <div className={styles['actions-container']}>
         {(offer.status === CollectiveOfferStatus.SOLD_OUT ||
           offer.status === CollectiveOfferStatus.EXPIRED) &&

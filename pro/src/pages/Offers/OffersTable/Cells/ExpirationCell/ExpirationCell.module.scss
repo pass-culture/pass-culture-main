@@ -14,6 +14,7 @@
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
+  margin-bottom: rem.torem(8px);
 
   &.banner-expires-soon {
     background-color: var(--color-background-alert);

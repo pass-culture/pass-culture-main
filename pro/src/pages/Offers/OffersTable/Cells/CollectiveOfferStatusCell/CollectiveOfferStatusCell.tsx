@@ -167,7 +167,10 @@ export const CollectiveOfferStatusCell = ({
   offer,
   headers,
 }: CollectiveOfferStatusCellProps) => (
-  <td className={styles['status-column']} headers={headers}>
+  <td
+    className={cn(styles['offers-table-cell'], styles['status-column'])}
+    headers={headers}
+  >
     {getCollectiveStatusLabel(offer.status, offer.booking?.booking_status)}
   </td>
 )
