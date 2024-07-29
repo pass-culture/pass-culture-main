@@ -75,6 +75,7 @@ wtforms = "3.1.2"
 wtforms-sqlalchemy = "0.4.1"
 xlsxwriter = "^3.2.0"
 zeep = "4.2.1"
+pysonar-scanner = "^0.1.0.340"
 
 [tool.poetry.group.dev]
 optional = true
@@ -261,3 +262,6 @@ markers = [
     "backoffice"
 ]
 requests_mock_case_sensitive = true
+
+[tool.sonar]
+projectKey = "pass-culture"
