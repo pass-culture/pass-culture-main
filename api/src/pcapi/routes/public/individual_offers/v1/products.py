@@ -323,6 +323,7 @@ def post_product_offer(body: serialization.ProductOfferCreation) -> serializatio
 
 
 @blueprints.public_api.route("/public/offers/v1/products/ean", methods=["POST"])
+@api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.PRODUCT_EAN_OFFERS],
@@ -337,7 +338,6 @@ def post_product_offer(body: serialization.ProductOfferCreation) -> serializatio
         )
     ),
 )
-@api_key_required
 def post_product_offer_by_ean(body: serialization.ProductsOfferByEanCreation) -> None:
     """
     Batch create offers
@@ -555,6 +555,7 @@ def _create_offer_from_product(
 
 
 @blueprints.public_api.route("/public/offers/v1/products/<int:product_id>", methods=["GET"])
+@api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.PRODUCT_OFFERS],
@@ -568,7 +569,6 @@ def _create_offer_from_product(
         )
     ),
 )
-@api_key_required
 def get_product(product_id: int) -> serialization.ProductOfferResponse:
     """
     Get product offer
@@ -587,6 +587,7 @@ def get_product(product_id: int) -> serialization.ProductOfferResponse:
 
 
 @blueprints.public_api.route("/public/offers/v1/products/ean", methods=["GET"])
+@api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.PRODUCT_EAN_OFFERS],
@@ -599,7 +600,6 @@ def get_product(product_id: int) -> serialization.ProductOfferResponse:
         )
     ),
 )
-@api_key_required
 def get_product_by_ean(
     query: serialization.GetProductsListByEansQuery,
 ) -> serialization.ProductOffersByEanResponse:
@@ -685,6 +685,7 @@ def _check_offer_can_be_edited(offer: offers_models.Offer) -> None:
 
 
 @blueprints.public_api.route("/public/offers/v1/products", methods=["PATCH"])
+@api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.PRODUCT_OFFERS],
@@ -699,7 +700,6 @@ def _check_offer_can_be_edited(offer: offers_models.Offer) -> None:
         )
     ),
 )
-@api_key_required
 def edit_product(body: serialization.ProductOfferEdition) -> serialization.ProductOfferResponse:
     """
     Update product offer
@@ -791,6 +791,7 @@ def _upsert_product_stock(
 
 
 @blueprints.public_api.route("/public/offers/v1/products/categories", methods=["GET"])
+@api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.PRODUCT_OFFERS],
@@ -803,7 +804,6 @@ def _upsert_product_stock(
         )
     ),
 )
-@api_key_required
 def get_product_categories() -> serialization.GetProductCategoriesResponse:
     """
     Get product categories
@@ -820,6 +820,7 @@ def get_product_categories() -> serialization.GetProductCategoriesResponse:
 
 
 @blueprints.public_api.route("/public/offers/v1/<int:offer_id>/image", methods=["POST"])
+@api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.IMAGE],
@@ -828,7 +829,6 @@ def get_product_categories() -> serialization.GetProductCategoriesResponse:
         **({"HTTP_204": (None, "Image updated successfully")} | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS),
     ),
 )
-@api_key_required
 def upload_image(offer_id: int, form: serialization.ImageUploadFile) -> None:
     """
     Upload an image

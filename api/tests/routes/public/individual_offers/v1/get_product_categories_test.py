@@ -1,45 +1,48 @@
 import pytest
 
-from pcapi.core.offerers import factories as offerers_factories
 from pcapi.routes.public.individual_offers.v1.serialization import ALLOWED_PRODUCT_SUBCATEGORIES
 
-from . import utils
+from tests.routes.public.helpers import PublicAPIEndpointBaseHelper
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-def test_returns_all_selectable_categories(client):
-    utils.create_offerer_provider_linked_to_venue()
+class GetProductCategoriesTest(PublicAPIEndpointBaseHelper):
+    endpoint_url = "/public/offers/v1/products/categories"
 
-    response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-        "/public/offers/v1/products/categories"
-    )
+    def test_should_raise_401_because_not_authenticated(self, client):
+        response = client.get(self.endpoint_url)
+        assert response.status_code == 401
 
-    assert response.status_code == 200
-    assert set(subcategory["id"] for subcategory in response.json) == set(
-        subcategory.id for subcategory in ALLOWED_PRODUCT_SUBCATEGORIES
-    )
+    def test_returns_all_selectable_categories(self, client):
+        plain_api_key, _ = self.setup_provider()
 
+        response = client.with_explicit_token(plain_api_key).get(self.endpoint_url)
 
-def test_category_serialization(client):
-    utils.create_offerer_provider_linked_to_venue()
+        assert response.status_code == 200
+        assert set(subcategory["id"] for subcategory in response.json) == set(
+            subcategory.id for subcategory in ALLOWED_PRODUCT_SUBCATEGORIES
+        )
 
-    response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-        "/public/offers/v1/products/categories"
-    )
+    def test_category_serialization(self, client):
+        plain_api_key, _ = self.setup_provider()
 
-    assert response.status_code == 200
-    assert all(
-        {"id", "conditionalFields", "locationType"} == set(category_response.keys())
-        for category_response in response.json
-    )
+        response = client.with_explicit_token(plain_api_key).get(self.endpoint_url)
 
-    concert_response = next(subcategory for subcategory in response.json if subcategory["id"] == "SPECTACLE_ENREGISTRE")
-    assert concert_response["conditionalFields"] == {
-        "author": False,
-        "showType": True,
-        "stageDirector": False,
-        "performer": False,
-    }
-    assert concert_response["locationType"] == "DIGITAL"
+        assert response.status_code == 200
+        assert all(
+            {"id", "conditionalFields", "locationType"} == set(category_response.keys())
+            for category_response in response.json
+        )
+
+        concert_response = next(
+            subcategory for subcategory in response.json if subcategory["id"] == "SPECTACLE_ENREGISTRE"
+        )
+        assert concert_response["conditionalFields"] == {
+            "author": False,
+            "showType": True,
+            "stageDirector": False,
+            "performer": False,
+        }
+        assert concert_response["locationType"] == "DIGITAL"

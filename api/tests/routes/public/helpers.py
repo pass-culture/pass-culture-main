@@ -3,10 +3,15 @@ import uuid
 
 import pytest
 
+from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
+from pcapi.core.offers import factories as offers_factories
+from pcapi.core.offers import models as offers_models
 from pcapi.core.providers import factories as providers_factories
 from pcapi.core.providers import models as providers_models
+
+from tests.conftest import TestClient
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -19,7 +24,7 @@ class PublicAPIEndpointBaseHelper(abc.ABC):
         raise NotImplementedError()
 
     @abc.abstractmethod
-    def test_should_raise_401_because_not_authenticated(self, client):
+    def test_should_raise_401_because_not_authenticated(self, client: TestClient):
         raise NotImplementedError()
 
     def setup_provider(self) -> tuple[str, providers_models.Provider]:
@@ -47,11 +52,11 @@ class PublicAPIEndpointBaseHelper(abc.ABC):
 
 class PublicAPIVenueEndpointHelper(PublicAPIEndpointBaseHelper):
     @abc.abstractmethod
-    def test_should_raise_404_because_has_no_access_to_venue(self, client):
+    def test_should_raise_404_because_has_no_access_to_venue(self, client: TestClient):
         raise NotImplementedError()
 
     @abc.abstractmethod
-    def test_should_raise_404_because_venue_provider_is_inactive(self, client):
+    def test_should_raise_404_because_venue_provider_is_inactive(self, client: TestClient):
         raise NotImplementedError()
 
     def setup_inactive_venue_provider(self) -> tuple[str, providers_models.VenueProvider]:
@@ -76,7 +81,7 @@ class PublicAPIVenueWithPermissionEndpointHelper(PublicAPIVenueEndpointHelper):
         raise NotImplementedError()
 
     @abc.abstractmethod
-    def test_should_raise_403_because_missing_permission(self, client):
+    def test_should_raise_403_because_missing_permission(self, client: TestClient):
         raise NotImplementedError()
 
     def setup_active_venue_provider_with_permissions(self) -> tuple[str, providers_models.VenueProvider]:
@@ -87,3 +92,18 @@ class PublicAPIVenueWithPermissionEndpointHelper(PublicAPIVenueEndpointHelper):
         )
 
         return plain_api_key, venue_provider
+
+
+class ProductEndpointHelper:
+    @staticmethod
+    def create_base_product(
+        venue: offerers_models.Venue, provider: providers_models.Provider | None = None
+    ) -> offers_models.Offer:
+        return offers_factories.ThingOfferFactory(
+            venue=venue,
+            lastProviderId=provider and provider.id,
+            subcategoryId=subcategories.LIVRE_PAPIER.id,
+            description="Un livre de contrepèterie",
+            name="Vieux motard que jamais",
+            extraData={"ean": "1234567890123"},
+        )
