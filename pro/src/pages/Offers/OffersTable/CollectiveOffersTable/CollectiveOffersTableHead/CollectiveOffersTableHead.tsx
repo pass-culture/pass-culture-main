@@ -13,23 +13,23 @@ export const CollectiveOffersTableHead = (): JSX.Element => {
       <tr>
         <th className={styles['offer-reference-th']} />
         <th id="collective-offer-head-checkbox">
-          <span className={styles['visually-hidden']}>Case à cocher</span>
+          <span className="visually-hidden">Case à cocher</span>
         </th>
         {isCollectiveOffersExpirationEnabled && (
           <th
             id="collective-offer-head-expiration"
             className={styles['expiration-date-th']}
           >
-            <span className={styles['visually-hidden']}>
+            <span className="visually-hidden">
               Information sur l’expiration
             </span>
           </th>
         )}
         <th id="collective-offer-head-image">
-          <span className={styles['visually-hidden']}>Image</span>
+          <span className="visually-hidden">Image</span>
         </th>
         <th id="collective-offer-head-name">
-          <span className={styles['visually-hidden']}>Nom</span>
+          <span className="visually-hidden">Nom</span>
         </th>
 
         {isCollectiveOffersExpirationEnabled && (

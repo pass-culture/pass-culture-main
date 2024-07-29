@@ -61,7 +61,7 @@ describe('ExpirationCell', () => {
     expect(screen.getByText('expire aujourd’hui')).toBeInTheDocument()
   })
 
-  it('should display a bannersaying that the offer needs to be booked if it is already pre-booked', () => {
+  it('should display a banner saying that the offer needs to be booked if it is already pre-booked', () => {
     const offerExpiring = {
       ...offer,
       status: CollectiveOfferStatus.SOLD_OUT,
