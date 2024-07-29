@@ -21,7 +21,7 @@ describe('test updateIndividualOffer::serializers', () => {
     const formValues: IndividualOfferFormValues = {
       author: 'author value',
       ean: 'ean value',
-      gtl_id: '',
+      gtlId: '',
       performer: 'performer value',
       showType: 'showType value',
       showSubType: 'showSubType value',
@@ -36,7 +36,7 @@ describe('test updateIndividualOffer::serializers', () => {
     const extraData: PostOfferBodyModel['extraData'] = {
       author: 'author value',
       ean: 'ean value',
-      gtl_id: '',
+      gtlId: '',
       performer: 'performer value',
       showType: 'showType value',
       showSubType: 'showSubType value',

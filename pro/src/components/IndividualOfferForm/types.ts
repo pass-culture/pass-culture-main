@@ -18,7 +18,7 @@ export interface IndividualOfferFormValues {
   withdrawalDetails: string
   musicType?: string
   musicSubType?: string
-  gtl_id?: string
+  gtlId?: string
   withdrawalDelay?: number | null
   withdrawalType?: WithdrawalTypeEnum | null
   accessibility: AccessibilityFormValues

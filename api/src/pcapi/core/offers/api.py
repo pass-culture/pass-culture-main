@@ -1,6 +1,6 @@
+import dataclasses
 import datetime
 import decimal
-import enum
 import logging
 import typing
 
@@ -8,6 +8,7 @@ from flask_sqlalchemy import BaseQuery
 from psycopg2.errorcodes import CHECK_VIOLATION
 from psycopg2.errorcodes import UNIQUE_VIOLATION
 from psycopg2.extras import DateTimeRange
+from pydantic import EmailStr
 import sentry_sdk
 import sqlalchemy as sa
 import sqlalchemy.exc as sqla_exc
@@ -44,6 +45,8 @@ from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import repository as offerers_repository
 import pcapi.core.offerers.models as offerers_models
 from pcapi.core.offers import models as offers_models
+from pcapi.core.offers.constants import T_UNCHANGED
+from pcapi.core.offers.constants import UNCHANGED
 from pcapi.core.providers.allocine import get_allocine_products_provider
 from pcapi.core.providers.constants import GTL_IDS_BY_MUSIC_GENRE_CODE
 from pcapi.core.providers.constants import MUSIC_SLUG_BY_GTL_ID
@@ -71,7 +74,6 @@ from pcapi.workers import push_notification_job
 from . import exceptions
 from . import models
 from . import repository as offers_repository
-from . import serialize as offers_serialize
 from . import validation
 
 
@@ -89,11 +91,12 @@ OFFER_LIKE_MODELS = {
 }
 
 
-class T_UNCHANGED(enum.Enum):
-    TOKEN = 0
-
-
-UNCHANGED = T_UNCHANGED.TOKEN
+@dataclasses.dataclass
+class StocksStats:
+    oldest_stock: datetime.datetime | None
+    newest_stock: datetime.datetime | None
+    stock_count: int | None
+    remaining_quantity: int | None
 
 
 def build_new_offer_from_product(
@@ -133,7 +136,7 @@ def deserialize_extra_data(initial_extra_data: typing.Any) -> typing.Any:
     return extra_data
 
 
-def _format_extra_data(subcategory_id: str, extra_data: dict[str, typing.Any] | None) -> models.OfferExtraData | None:
+def _format_extra_data(subcategory_id: str, extra_data: dict[str, str] | None) -> models.OfferExtraData | None:
     """Keep only the fields that are defined in the subcategory conditional fields"""
     if extra_data is None:
         return None
@@ -148,12 +151,22 @@ def _format_extra_data(subcategory_id: str, extra_data: dict[str, typing.Any] | 
     return formatted_extra_data
 
 
-def create_draft_offer(body: offers_serialize.PostDraftOfferBodyModel, venue: offerers_models.Venue) -> models.Offer:
-    validation.check_offer_subcategory_is_valid(body.subcategory_id)
+def create_draft_offer(
+    name: str,
+    subcategory_id: str,
+    venue: offerers_models.Venue,
+    extra_data: models.OfferExtraData | None = None,
+    description: str | None = None,
+    duration_minutes: int | None = None,
+) -> models.Offer:
+    validation.check_offer_subcategory_is_valid(subcategory_id)
 
-    fields = {key: value for key, value in body.dict(by_alias=True).items() if key != "venueId"}
     offer = models.Offer(
-        **fields,
+        name=name,
+        subcategoryId=subcategory_id,
+        extraData=extra_data,
+        description=description,
+        durationMinutes=duration_minutes,
         venue=venue,
         offererAddress=venue.offererAddress,
         isActive=False,
@@ -166,19 +179,32 @@ def create_draft_offer(body: offers_serialize.PostDraftOfferBodyModel, venue: of
     return offer
 
 
-def _get_field(obj: typing.Any, aliases: set, updates: dict, field: str) -> typing.Any:
-    if field not in aliases:
-        raise ValueError(f"Unknown schema field: {field}")
-    return updates.get(field, getattr(obj, field))
-
-
-def update_draft_offer(offer: models.Offer, body: offers_serialize.PatchDraftOfferBodyModel) -> models.Offer:
-    fields = body.dict(by_alias=True, exclude_unset=True)
-    updates = {key: value for key, value in fields.items() if getattr(offer, key) != value}
-    if not updates:
+def update_draft_offer(
+    offer: models.Offer,
+    extraData: dict[str, str] | None | T_UNCHANGED = UNCHANGED,
+    name: str | None | T_UNCHANGED = UNCHANGED,
+    subcategoryId: str | None | T_UNCHANGED = UNCHANGED,
+    venueId: int | None | T_UNCHANGED = UNCHANGED,
+    description: str | None | T_UNCHANGED = UNCHANGED,
+    durationMinutes: int | None | T_UNCHANGED = UNCHANGED,
+    is_from_private_api: bool = False,
+) -> models.Offer:
+    modifications = {
+        field: new_value
+        for field, new_value in locals().items()
+        if field not in ("offer", "is_from_private_api")
+        and new_value is not UNCHANGED  # has the user provided a value for this field
+        and getattr(offer, field) != new_value  # is the value different from what we have on database?
+    }
+    if not modifications:
         return offer
 
-    for key, value in updates.items():
+    if extraData is not UNCHANGED:
+        formatted_extra_data = _format_extra_data(offer.subcategoryId, extraData)
+        validation.check_offer_extra_data(
+            offer.subcategoryId, formatted_extra_data, offer.venue, is_from_private_api, offer
+        )
+    for key, value in modifications.items():
         setattr(offer, key, value)
     db.session.add(offer)
 
@@ -187,57 +213,79 @@ def update_draft_offer(offer: models.Offer, body: offers_serialize.PatchDraftOff
 
 def update_draft_offer_useful_informations(
     offer: models.Offer,
-    body: offers_serialize.PatchDraftOfferUsefulInformationsBodyModel,
+    audioDisabilityCompliant: bool | None | T_UNCHANGED = UNCHANGED,
+    mentalDisabilityCompliant: bool | None | T_UNCHANGED = UNCHANGED,
+    motorDisabilityCompliant: bool | None | T_UNCHANGED = UNCHANGED,
+    visualDisabilityCompliant: bool | None | T_UNCHANGED = UNCHANGED,
+    bookingContact: EmailStr | None | T_UNCHANGED = UNCHANGED,
+    bookingEmail: EmailStr | None | T_UNCHANGED = UNCHANGED,
+    durationMinutes: int | None | T_UNCHANGED = UNCHANGED,
+    externalTicketOfficeUrl: str | None | T_UNCHANGED = UNCHANGED,
+    extraData: dict[str, str] | None | T_UNCHANGED = UNCHANGED,
+    isDuo: bool | None = None,
+    withdrawalDelay: int | None | T_UNCHANGED = UNCHANGED,
+    withdrawalDetails: str | None | T_UNCHANGED = UNCHANGED,
+    withdrawalType: offers_models.WithdrawalTypeEnum | None | T_UNCHANGED = UNCHANGED,
+    isNational: bool | None | T_UNCHANGED = UNCHANGED,
+    shouldSendMail: bool | None | T_UNCHANGED = UNCHANGED,
     is_from_private_api: bool = False,
 ) -> models.Offer:
-    aliases = set(body.dict(by_alias=True))
-    fields = body.dict(by_alias=True, exclude_unset=True)
 
-    _extra_data = deserialize_extra_data(fields.get("extraData", offer.extraData))
-    fields["extraData"] = _format_extra_data(offer.subcategoryId, _extra_data) or {}
-
-    should_send_mail = fields.pop("shouldSendMail", False)
-    updates = {key: value for key, value in fields.items() if getattr(offer, key) != value}
-    if not updates:
+    modifications = {
+        field: new_value
+        for field, new_value in locals().items()
+        if field not in ("offer", "is_from_private_api", "shouldSendMail")
+        and new_value is not UNCHANGED  # has the user provided a value for this field
+        and getattr(offer, field) != new_value  # is the value different from what we have on database?
+    }
+    if not modifications:
         return offer
 
-    audio_disability_compliant = _get_field(offer, aliases, updates, "audioDisabilityCompliant")
-    mental_disability_compliant = _get_field(offer, aliases, updates, "mentalDisabilityCompliant")
-    motor_disability_compliant = _get_field(offer, aliases, updates, "motorDisabilityCompliant")
-    visual_disability_compliant = _get_field(offer, aliases, updates, "visualDisabilityCompliant")
-    booking_contact = _get_field(offer, aliases, updates, "bookingContact")
-    extra_data = _get_field(offer, aliases, updates, "extraData")
-    is_duo = _get_field(offer, aliases, updates, "isDuo")
-    withdrawal_delay = _get_field(offer, aliases, updates, "withdrawalDelay")
-    withdrawal_type = _get_field(offer, aliases, updates, "withdrawalType")
+    if extraData is not UNCHANGED:
+        formatted_extra_data = _format_extra_data(offer.subcategoryId, extraData)
+        validation.check_offer_extra_data(
+            offer.subcategoryId, formatted_extra_data, offer.venue, is_from_private_api, offer
+        )
 
     validation.check_validation_status(offer)
     validation.check_accessibility_compliance(
-        audio_disability_compliant, mental_disability_compliant, motor_disability_compliant, visual_disability_compliant
+        audioDisabilityCompliant, mentalDisabilityCompliant, motorDisabilityCompliant, visualDisabilityCompliant
     )
-    validation.check_offer_extra_data(offer.subcategoryId, extra_data, offer.venue, is_from_private_api, offer=offer)
-    validation.check_is_duo_compliance(is_duo, offer.subcategory)
-    validation.check_offer_withdrawal(
-        withdrawal_type, withdrawal_delay, offer.subcategoryId, booking_contact, offer.lastProvider
+    validation.check_is_duo_compliance(isDuo, offer.subcategory)
+    withdrawal_updated = not (
+        withdrawalType is UNCHANGED
+        and withdrawalDelay is UNCHANGED
+        and withdrawalDetails is UNCHANGED
+        and bookingContact is UNCHANGED
     )
+    if withdrawal_updated:
+        changed_withdrawalType = offer.withdrawalType if withdrawalType is UNCHANGED else withdrawalType
+        changed_withdrawalDelay = offer.withdrawalDelay if withdrawalDelay is UNCHANGED else withdrawalDelay
+        changed_bookingContact = offer.bookingContact if bookingContact is UNCHANGED else bookingContact
+
+        if not (withdrawalType is UNCHANGED and withdrawalDelay is UNCHANGED and changed_bookingContact is UNCHANGED):
+            validation.check_offer_withdrawal(
+                changed_withdrawalType,
+                changed_withdrawalDelay,
+                offer.subcategoryId,
+                changed_bookingContact,
+                offer.lastProvider,
+            )
     if offer.is_soft_deleted():
         raise pc_object.DeletedRecordException()
 
-    for key, value in updates.items():
+    if shouldSendMail and withdrawal_updated:
+        transactional_mails.send_email_for_each_ongoing_booking(offer)
+
+    for key, value in modifications.items():
         setattr(offer, key, value)
     repository.add_to_session(offer)
-
-    withdrawal_fields = ("withdrawalType", "withdrawalDelay", "bookingContact", "withdrawalDetails")
-    withdrawal_updated = set(updates).intersection(withdrawal_fields)
-    if should_send_mail and withdrawal_updated:
-        transactional_mails.send_email_for_each_ongoing_booking(offer)
 
     search.async_index_offer_ids(
         [offer.id],
         reason=search.IndexationReason.OFFER_UPDATE,
-        log_extra={"changes": set(updates)},
+        log_extra={"changes": set(modifications)},
     )
-
     return offer
 
 
@@ -254,7 +302,7 @@ def create_offer(
     description: str | None = None,
     duration_minutes: int | None = None,
     external_ticket_office_url: str | None = None,
-    extra_data: dict | None = None,
+    extra_data: dict[str, str] | None = None,
     is_duo: bool | None = None,
     is_national: bool | None = None,
     offerer_address: offerers_models.OffererAddress | None = None,
@@ -325,7 +373,7 @@ def update_offer(
     description: str | None | T_UNCHANGED = UNCHANGED,
     durationMinutes: int | None | T_UNCHANGED = UNCHANGED,
     externalTicketOfficeUrl: str | None | T_UNCHANGED = UNCHANGED,
-    extraData: dict | None | T_UNCHANGED = UNCHANGED,
+    extraData: dict[str, str] | None | T_UNCHANGED = UNCHANGED,
     isActive: bool | T_UNCHANGED = UNCHANGED,
     isDuo: bool | T_UNCHANGED = UNCHANGED,
     isNational: bool | T_UNCHANGED = UNCHANGED,
@@ -1638,7 +1686,7 @@ def approves_provider_product_and_rejected_offers(ean: str) -> None:
         raise exceptions.NotUpdateProductOrOffers(exception)
 
 
-def get_stocks_stats(offer_id: int) -> offers_serialize.StocksStats:
+def get_stocks_stats(offer_id: int) -> StocksStats:
     data = (
         models.Stock.query.with_entities(
             sa.func.min(models.Stock.beginningDatetime),
@@ -1661,7 +1709,7 @@ def get_stocks_stats(offer_id: int) -> offers_serialize.StocksStats:
         .one_or_none()
     )
     try:
-        return offers_serialize.StocksStats(*data)
+        return StocksStats(*data)
     except TypeError:
         raise ApiErrors(
             errors={

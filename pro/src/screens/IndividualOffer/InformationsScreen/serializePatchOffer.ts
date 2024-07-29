@@ -17,7 +17,7 @@ export const serializeExtraData = (
 
   const extraData: PostOfferBodyModel['extraData'] = {}
   extraData.author = formValues.author
-  extraData.gtl_id = formValues.gtl_id
+  extraData.gtlId = formValues.gtlId
   extraData.musicType = formValues.musicType
   extraData.musicSubType = formValues.musicSubType
   extraData.performer = formValues.performer

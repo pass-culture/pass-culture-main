@@ -19,6 +19,7 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import exceptions
 from pcapi.core.offers import models
 from pcapi.core.offers import repository
+from pcapi.core.offers.constants import T_UNCHANGED
 from pcapi.core.providers import models as providers_models
 from pcapi.domain import music_types
 from pcapi.domain import show_types
@@ -560,10 +561,10 @@ def check_is_duo_compliance(is_duo: bool | None, subcategory: subcategories.Subc
 
 
 def check_accessibility_compliance(
-    audio_disability_compliant: bool | None,
-    mental_disability_compliant: bool | None,
-    motor_disability_compliant: bool | None,
-    visual_disability_compliant: bool | None,
+    audio_disability_compliant: bool | T_UNCHANGED | None,
+    mental_disability_compliant: bool | T_UNCHANGED | None,
+    motor_disability_compliant: bool | T_UNCHANGED | None,
+    visual_disability_compliant: bool | T_UNCHANGED | None,
 ) -> None:
     fields = (
         audio_disability_compliant,

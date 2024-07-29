@@ -296,7 +296,7 @@ export const serializeExtraData = (
     extraData.author = formValues.author
   }
   if (formValues.gtl_id) {
-    extraData.gtl_id = formValues.gtl_id
+    extraData.gtlId = formValues.gtl_id
   }
   if (formValues.performer) {
     extraData.performer = formValues.performer

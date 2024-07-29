@@ -48,7 +48,7 @@ export const setInitialFormValues = (
     subcategoryId: offer.subcategoryId,
     showType: offer.extraData?.showType || '',
     showSubType: offer.extraData?.showSubType || '',
-    gtl_id: offer.extraData?.gtl_id
+    gtlId: offer.extraData?.gtl_id
       ? offer.extraData?.gtl_id.substring(0, 2) + '000000'
       : '',
     musicType: offer.extraData?.musicType || '',

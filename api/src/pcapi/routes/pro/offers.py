@@ -16,7 +16,6 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.offers import exceptions
 from pcapi.core.offers import models
-from pcapi.core.offers import serialize as offers_serialization
 import pcapi.core.offers.api as offers_api
 import pcapi.core.offers.repository as offers_repository
 from pcapi.core.offers.validation import check_for_duplicated_price_categories
@@ -238,7 +237,7 @@ def delete_draft_offers(body: offers_serialize.DeleteOfferRequestBody) -> None:
     api=blueprint.pro_private_schema,
 )
 def post_draft_offer(
-    body: offers_serialization.PostDraftOfferBodyModel,
+    body: offers_serialize.PostDraftOfferBodyModel,
 ) -> offers_serialize.GetIndividualOfferResponseModel:
 
     venue: offerers_models.Venue = (
@@ -250,7 +249,14 @@ def post_draft_offer(
 
     try:
         with repository.transaction():
-            offer = offers_api.create_draft_offer(body, venue)
+            offer = offers_api.create_draft_offer(
+                name=body.name,
+                subcategory_id=body.subcategory_id,
+                extra_data=body.extra_data,
+                description=body.description,
+                duration_minutes=body.duration_minutes,
+                venue=venue,
+            )
     except exceptions.OfferCreationBaseException as error:
         raise api_errors.ApiErrors(error.errors, status_code=400)
 
@@ -264,7 +270,7 @@ def post_draft_offer(
     api=blueprint.pro_private_schema,
 )
 def patch_draft_offer(
-    offer_id: int, body: offers_serialization.PatchDraftOfferBodyModel
+    offer_id: int, body: offers_serialize.PatchDraftOfferBodyModel
 ) -> offers_serialize.GetIndividualOfferResponseModel:
     offer = models.Offer.query.options(
         sqla.orm.joinedload(models.Offer.stocks).joinedload(models.Stock.bookings),
@@ -275,9 +281,23 @@ def patch_draft_offer(
         raise api_errors.ResourceNotFoundError
 
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
+    update_body = body.dict(exclude_unset=True)
     try:
         with repository.transaction():
-            offer = offers_api.update_draft_offer(offer, body)
+            offer = offers_api.update_draft_offer(
+                offer,
+                name=update_body.get("name", offers_api.UNCHANGED),
+                subcategoryId=update_body.get("subcategoryId", offers_api.UNCHANGED),
+                extraData=(
+                    offers_api.deserialize_extra_data(update_body["extraData"])
+                    if update_body.get("extraData")
+                    else offers_api.UNCHANGED
+                ),
+                description=update_body.get("description", offers_api.UNCHANGED),
+                durationMinutes=update_body.get("durationMinutes", offers_api.UNCHANGED),
+                venueId=update_body.get("venueId", offers_api.UNCHANGED),
+                is_from_private_api=True,
+            )
     except (exceptions.OfferCreationBaseException, exceptions.OfferEditionBaseException) as error:
         raise api_errors.ApiErrors(error.errors, status_code=400)
 
@@ -291,7 +311,7 @@ def patch_draft_offer(
     api=blueprint.pro_private_schema,
 )
 def patch_draft_offer_useful_informations(
-    offer_id: int, body: offers_serialization.PatchDraftOfferUsefulInformationsBodyModel
+    offer_id: int, body: offers_serialize.PatchDraftOfferUsefulInformationsBodyModel
 ) -> offers_serialize.GetIndividualOfferResponseModel:
     offer = models.Offer.query.options(
         sqla.orm.joinedload(models.Offer.stocks).joinedload(models.Stock.bookings),
@@ -304,7 +324,24 @@ def patch_draft_offer_useful_informations(
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
     try:
         with repository.transaction():
-            offer = offers_api.update_draft_offer_useful_informations(offer, body)
+            offer = offers_api.update_draft_offer_useful_informations(
+                offer,
+                audioDisabilityCompliant=body.audio_disability_compliant,
+                mentalDisabilityCompliant=body.mental_disability_compliant,
+                motorDisabilityCompliant=body.motor_disability_compliant,
+                visualDisabilityCompliant=body.visual_disability_compliant,
+                bookingContact=body.booking_contact,
+                bookingEmail=body.booking_email,
+                externalTicketOfficeUrl=body.external_ticket_office_url,
+                extraData=body.extra_data,
+                isDuo=body.is_duo,
+                withdrawalDelay=body.withdrawal_delay,
+                withdrawalDetails=body.withdrawal_details,
+                withdrawalType=body.withdrawal_type,
+                isNational=body.is_national,
+                shouldSendMail=body.should_send_mail,
+                is_from_private_api=True,
+            )
     except (exceptions.OfferCreationBaseException, exceptions.OfferEditionBaseException) as error:
         raise api_errors.ApiErrors(error.errors, status_code=400)
 

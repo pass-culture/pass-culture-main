@@ -17,8 +17,8 @@ const serializeExtraData = (
   if (formValues.musicSubType) {
     extraData.musicSubType = formValues.musicSubType
   }
-  if (formValues.gtl_id) {
-    extraData.gtl_id = formValues.gtl_id
+  if (formValues.gtlId) {
+    extraData.gtlId = formValues.gtlId
   }
   if (formValues.performer) {
     extraData.performer = formValues.performer

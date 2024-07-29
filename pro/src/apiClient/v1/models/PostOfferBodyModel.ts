@@ -2,6 +2,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { OfferExtraData } from './OfferExtraData';
 import type { PostOfferOffererAddressBodyModel } from './PostOfferOffererAddressBodyModel';
 import type { WithdrawalTypeEnum } from './WithdrawalTypeEnum';
 export type PostOfferBodyModel = {
@@ -12,7 +13,7 @@ export type PostOfferBodyModel = {
   description?: string | null;
   durationMinutes?: number | null;
   externalTicketOfficeUrl?: string | null;
-  extraData?: any;
+  extraData?: OfferExtraData | null;
   isDuo?: boolean | null;
   isNational?: boolean | null;
   mentalDisabilityCompliant: boolean;
