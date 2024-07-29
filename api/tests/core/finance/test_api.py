@@ -3949,6 +3949,18 @@ class UserRecreditTest:
         with time_machine.travel("2020-05-02"):
             assert api._can_be_recredited(user) is False
 
+    def test_can_be_recredited_legacy_educonnect_fraud_check(self):
+        user = users_factories.BeneficiaryFactory(age=15)
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            dateCreated=datetime.datetime(2020, 5, 2),
+            user=user,
+            type=fraud_models.FraudCheckType.EDUCONNECT,
+            status=fraud_models.FraudCheckStatus.OK,
+            resultContent=None,
+            eligibilityType=users_models.EligibilityType.UNDERAGE,
+        )
+        assert api._has_been_recredited(user)
+
     @mock.patch("pcapi.core.finance.api._has_been_recredited")
     def should_not_check_recredits_on_age_18(self, mock_has_been_recredited):
         user = users_factories.BeneficiaryFactory(age=18)

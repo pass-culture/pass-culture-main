@@ -2691,9 +2691,8 @@ def _get_known_age_at_deposit(user: users_models.User) -> int | None:
     identity_provider_birthday_checks = [
         fraud_check
         for fraud_check in user.beneficiaryFraudChecks
-        if fraud_check.type in fraud_models.IDENTITY_CHECK_TYPES
-        and fraud_check.status == fraud_models.FraudCheckStatus.OK
-        and fraud_check.source_data().get_birth_date() is not None
+        if fraud_check.status == fraud_models.FraudCheckStatus.OK
+        and fraud_check.get_identity_check_birth_date() is not None
         and fraud_check.dateCreated < deposit_date
     ]
     last_identity_provider_birthday_check = max(
@@ -2717,7 +2716,7 @@ def _get_known_age_at_deposit(user: users_models.User) -> int | None:
 
         case check, None:
             assert check is not None
-            known_birthday_at_deposit = check.source_data().get_birth_date()
+            known_birthday_at_deposit = check.get_identity_check_birth_date()
 
         case None, action:
             assert action is not None
@@ -2733,7 +2732,7 @@ def _get_known_age_at_deposit(user: users_models.User) -> int | None:
                     action.extraData["modified_info"]["validatedBirthDate"]["new_info"], "%Y-%m-%d"
                 ).date()
             else:
-                known_birthday_at_deposit = check.source_data().get_birth_date()
+                known_birthday_at_deposit = check.get_identity_check_birth_date()
 
         case _:
             raise ValueError(
