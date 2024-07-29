@@ -120,6 +120,22 @@ export function DetailsSummaryScreen({ offer }: DetailsSummaryScreenProps) {
     })
   }
 
+  const artisticInformationsFields = [
+    'speaker',
+    'author',
+    'visa',
+    'stageDirector',
+    'performer',
+    'ean',
+    'durationMinutes',
+    'showType',
+    'gtl_id',
+  ]
+
+  const displayArtisticInformations = artisticInformationsFields.some((field) =>
+    conditionalFields.includes(field)
+  )
+
   return (
     <SummaryLayout>
       <SummaryContent>
@@ -138,9 +154,11 @@ export function DetailsSummaryScreen({ offer }: DetailsSummaryScreenProps) {
           <SummarySubSection title="Type d’offre">
             <SummaryDescriptionList descriptions={typeDescriptions} />
           </SummarySubSection>
-          <SummarySubSection title="Informations artistiques">
-            <SummaryDescriptionList descriptions={artisticInfoDescriptions} />
-          </SummarySubSection>
+          {displayArtisticInformations && (
+            <SummarySubSection title="Informations artistiques">
+              <SummaryDescriptionList descriptions={artisticInfoDescriptions} />
+            </SummarySubSection>
+          )}
         </SummarySection>
       </SummaryContent>
       <SummaryAside>
