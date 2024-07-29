@@ -123,6 +123,7 @@ class FeatureToggle(enum.Enum):
     WIP_SPLIT_OFFER = "Activer le nouveau parcours de création/édition d'offre individuelle"
     WIP_SUGGESTED_SUBCATEGORIES = "Activer les sous-catégories suggérées par IA lors de la création d'offre"
     ENABLE_COLLECTIVE_OFFERS_EXPIRATION = "Activer la mise en avant des offres collectives sur le point d'expirer"
+    ENABLE_COLLECTIVE_NEW_STATUSES = "Activer les nouveaux statuts des offres collectives"
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -165,6 +166,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.ENABLE_EMS_INTEGRATION,
     FeatureToggle.ENABLE_IOS_OFFERS_LINK_WITH_REDIRECTION,
     FeatureToggle.WIP_ENABLE_NEW_HASHING_ALGORITHM,
+    FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES,
     FeatureToggle.ENABLE_COLLECTIVE_OFFERS_EXPIRATION,
     FeatureToggle.ENABLE_PRO_BOOKINGS_V2,
     FeatureToggle.ENABLE_PRO_NEW_NAV_MODIFICATION,
