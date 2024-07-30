@@ -1260,6 +1260,7 @@ def test_public_api(client):
                         "last30DaysBookings": {"nullable": True, "title": "Last30Daysbookings", "type": "integer"},
                         "metadata": {"title": "Metadata", "type": "object"},
                         "name": {"title": "Name", "type": "string"},
+                        "reactionsCount": {"$ref": "#/components/schemas/ReactionCount"},
                         "stocks": {
                             "items": {"$ref": "#/components/schemas/OfferStockResponse"},
                             "title": "Stocks",
@@ -1283,6 +1284,7 @@ def test_public_api(client):
                         "isEducational",
                         "metadata",
                         "name",
+                        "reactionsCount",
                         "stocks",
                         "subcategoryId",
                         "venue",
@@ -1323,6 +1325,7 @@ def test_public_api(client):
                         "last30DaysBookings": {"nullable": True, "title": "Last30Daysbookings", "type": "integer"},
                         "metadata": {"title": "Metadata", "type": "object"},
                         "name": {"title": "Name", "type": "string"},
+                        "reactionsCount": {"$ref": "#/components/schemas/ReactionCount"},
                         "stocks": {
                             "items": {"$ref": "#/components/schemas/OfferStockResponse"},
                             "title": "Stocks",
@@ -1346,6 +1349,7 @@ def test_public_api(client):
                         "isEducational",
                         "metadata",
                         "name",
+                        "reactionsCount",
                         "stocks",
                         "subcategoryId",
                         "venue",
@@ -1585,6 +1589,12 @@ def test_public_api(client):
                     },
                     "required": ["activityId", "address", "city", "firstName", "lastName", "postalCode"],
                     "title": "ProfileUpdateRequest",
+                    "type": "object",
+                },
+                "ReactionCount": {
+                    "properties": {"likes": {"title": "Likes", "type": "integer"}},
+                    "required": ["likes"],
+                    "title": "ReactionCount",
                     "type": "object",
                 },
                 "ReactionTypeEnum": {

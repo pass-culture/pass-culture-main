@@ -206,6 +206,7 @@ def get_offers_details(offer_ids: list[int]) -> BaseQuery:
         )
         .options(sa_orm.joinedload(models.Offer.venue).joinedload(offerers_models.Venue.googlePlacesInfo))
         .options(sa_orm.joinedload(models.Offer.mediations))
+        .options(sa_orm.joinedload(models.Offer.reactions))
         .options(
             sa_orm.joinedload(models.Offer.product)
             .load_only(models.Product.id, models.Product.last_30_days_booking, models.Product.thumbCount)

@@ -16,6 +16,8 @@ from pcapi.core.offers.models import OfferReport
 from pcapi.core.offers.models import TiteliveImageType
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.providers.repository import get_provider_by_local_class
+from pcapi.core.reactions.factories import ReactionFactory
+from pcapi.core.reactions.models import ReactionTypeEnum
 from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_features
@@ -1485,6 +1487,31 @@ class OffersV2Test:
                 "credit": "street credit",
             }
         }
+
+    def test_get_event_offer_with_reactions(self, client):
+        offer = offers_factories.EventOfferFactory(subcategoryId=subcategories.SEANCE_CINE.id)
+        offers_factories.EventStockFactory(offer=offer, price=12.34)
+        ReactionFactory(offer=offer, reactionType=ReactionTypeEnum.LIKE)
+        ReactionFactory(offer=offer, reactionType=ReactionTypeEnum.LIKE)
+        ReactionFactory(offer=offer, reactionType=ReactionTypeEnum.DISLIKE)
+
+        offer_id = offer.id
+        with assert_num_queries(1):
+            response = client.get(f"/native/v2/offer/{offer_id}")
+
+        assert response.status_code == 200
+        assert response.json["reactionsCount"] == {"likes": 2}
+
+    def test_get_event_offer_with_no_reactions(self, client):
+        offer = offers_factories.EventOfferFactory(subcategoryId=subcategories.SEANCE_CINE.id)
+        offers_factories.EventStockFactory(offer=offer, price=12.34)
+
+        offer_id = offer.id
+        with assert_num_queries(1):
+            response = client.get(f"/native/v2/offer/{offer_id}")
+
+        assert response.status_code == 200
+        assert response.json["reactionsCount"] == {"likes": 0}
 
 
 class OffersStocksTest:
