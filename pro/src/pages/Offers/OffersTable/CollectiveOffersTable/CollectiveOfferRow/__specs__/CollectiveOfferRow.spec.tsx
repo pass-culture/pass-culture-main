@@ -476,7 +476,7 @@ describe('ollectiveOfferRow', () => {
     })
 
     expect(
-      screen.getByText('En attente de réservation par l’enseignant')
+      screen.getByText('En attente de réservation par le chef d’établissement')
     ).toBeInTheDocument()
   })
 
