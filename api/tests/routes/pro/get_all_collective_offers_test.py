@@ -542,6 +542,94 @@ class Returns200Test:
         assert len(response_json) == 1
         assert response_json[0]["subcategoryId"] is None
 
+    def test_offers_sorting(self, client):
+        # Given
+        user = users_factories.UserFactory()
+        offerer = offerer_factories.OffererFactory()
+        offerer_factories.UserOffererFactory(user=user, offerer=offerer)
+
+        venue = offerer_factories.VenueFactory(managingOfferer=offerer)
+
+        # Fresher
+        offer_created_10_days_ago = educational_factories.CollectiveOfferFactory(
+            venue=venue, dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=10)
+        )
+
+        # Oldest
+        offer_created_30_days_ago = educational_factories.CollectiveOfferFactory(
+            venue=venue, dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=30)
+        )
+
+        # Older
+        offer_created_20_days_ago = educational_factories.CollectiveOfferFactory(
+            venue=venue, dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=20)
+        )
+
+        # Archived offer
+        archived_offer = educational_factories.CollectiveOfferFactory(
+            dateArchived=datetime.datetime.utcnow(),
+            venue=venue,
+            dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=15),
+        )
+
+        # # average temlate
+        template_created_14_days_ago = educational_factories.CollectiveOfferTemplateFactory(
+            venue=venue, dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=14)
+        )
+
+        # Offer that needs confirmation
+        offer_requiring_attention = educational_factories.CollectiveOfferFactory(
+            venue=venue, dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=35)
+        )
+        futur = datetime.datetime.utcnow() + datetime.timedelta(days=5)
+        stock = educational_factories.CollectiveStockFactory(
+            bookingLimitDatetime=futur, collectiveOffer=offer_requiring_attention
+        )
+        _booking = educational_factories.PendingCollectiveBookingFactory(collectiveStock=stock)
+
+        # Offer that needs urgent confirmation
+        offer_requiring_urgent_attention = educational_factories.CollectiveOfferFactory(
+            venue=venue, dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=35)
+        )
+        tomorrow = datetime.datetime.utcnow() + datetime.timedelta(days=1)
+        stock = educational_factories.CollectiveStockFactory(
+            bookingLimitDatetime=tomorrow, collectiveOffer=offer_requiring_urgent_attention
+        )
+        _booking = educational_factories.PendingCollectiveBookingFactory(collectiveStock=stock)
+
+        # Offer that needs confirmation that can be waited
+        offer_requiring_not_urgent_confirmation = educational_factories.CollectiveOfferFactory(
+            venue=venue, dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=35)
+        )
+        # 10 days > 7 days
+        futur_far = datetime.datetime.utcnow() + datetime.timedelta(days=10)
+        stock = educational_factories.CollectiveStockFactory(
+            bookingLimitDatetime=futur_far, collectiveOffer=offer_requiring_not_urgent_confirmation
+        )
+        _booking = educational_factories.PendingCollectiveBookingFactory(collectiveStock=stock)
+
+        # When
+        response = client.with_session_auth(user.email).get("/collective/offers")
+
+        # Then
+        response_json = response.json
+        assert response.status_code == 200
+        assert isinstance(response_json, list)
+
+        ids = [o["id"] for o in response_json]
+
+        # in first the most fresh
+        assert ids == [
+            offer_requiring_urgent_attention.id,
+            offer_requiring_attention.id,
+            offer_created_10_days_ago.id,
+            template_created_14_days_ago.id,
+            offer_created_20_days_ago.id,
+            offer_created_30_days_ago.id,
+            offer_requiring_not_urgent_confirmation.id,
+            archived_offer.id,
+        ]
+
 
 @pytest.mark.usefixtures("db_session")
 class Return400Test:

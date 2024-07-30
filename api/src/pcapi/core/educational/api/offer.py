@@ -105,6 +105,7 @@ def list_collective_offers_for_pro_user(
     offer_type: collective_offers_serialize.CollectiveOfferType | None = None,
     formats: list[subcategories.EacFormat] | None = None,
 ) -> list[educational_models.CollectiveOffer | educational_models.CollectiveOfferTemplate]:
+    offers = []
     if offer_type != collective_offers_serialize.CollectiveOfferType.template:
         offers = educational_repository.get_collective_offers_for_filters(
             user_id=user_id,
@@ -121,6 +122,7 @@ def list_collective_offers_for_pro_user(
         )
         if offer_type is not None:
             return offers
+    templates = []
     if offer_type != collective_offers_serialize.CollectiveOfferType.offer:
         templates = educational_repository.get_collective_offers_template_for_filters(
             user_id=user_id,
@@ -137,37 +139,12 @@ def list_collective_offers_for_pro_user(
         )
         if offer_type is not None:
             return templates
-    offer_index = 0
-    template_index = 0
-    merged_offers = []
 
-    # merge two ordered lists to one shorter than OFFERS_RECAP_LIMIT items
-    for _ in range(min(OFFERS_RECAP_LIMIT, (len(offers) + len(templates)))):
-        if offer_index >= len(offers) and template_index >= len(templates):
-            # this should never happen. Only there as defensive measure.
-            break
+    merged_offers = offers + templates
 
-        if offer_index >= len(offers):
-            merged_offers.append(templates[template_index])
-            template_index += 1
-            continue
+    merged_offers.sort(key=lambda offer: offer.sort_criterion, reverse=True)
 
-        if template_index >= len(templates):
-            merged_offers.append(offers[offer_index])
-            offer_index += 1
-            continue
-
-        offer_date = offers[offer_index].dateCreated
-        template_date = templates[template_index].dateCreated
-
-        if offer_date > template_date:
-            merged_offers.append(offers[offer_index])
-            offer_index += 1
-        else:
-            merged_offers.append(templates[template_index])
-            template_index += 1
-
-    return merged_offers
+    return merged_offers[0:OFFERS_RECAP_LIMIT]
 
 
 def list_public_collective_offers(

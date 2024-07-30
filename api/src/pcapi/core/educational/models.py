@@ -46,6 +46,9 @@ from pcapi.utils.image_conversion import standardize_image
 from pcapi.utils.phone_number import ParsedPhoneNumber
 
 
+BIG_NUMBER_FOR_SORTING_ORDERS = 9999
+
+
 if typing.TYPE_CHECKING:
     from pcapi.core.offerers.models import Offerer
     from pcapi.core.offerers.models import OffererAddress
@@ -588,6 +591,38 @@ class CollectiveOffer(
             .where(aliased_collective_stock.hasBeginningDatetimePassed.is_(True))
         )
 
+    @property
+    def days_until_booking_limit(self) -> int | None:
+        if not self.collectiveStock:
+            return None
+
+        delta = self.collectiveStock.bookingLimitDatetime - datetime.utcnow()
+        return delta.days
+
+    @property
+    def requires_attention(self) -> bool:
+        if self.days_until_booking_limit is not None and self.status == offer_mixin.CollectiveOfferStatus.SOLD_OUT:
+            return self.days_until_booking_limit < 7
+
+        return False
+
+    @property
+    def sort_criterion(self) -> typing.Tuple[bool, int, datetime]:
+        """
+        This is used to sort orders with the following criterium.
+
+        1. Archived order are not relevant
+        2. Orders with a booking limit in a near future (ie < 7 days) are relevant
+        3. DateCreated is to be used as a default rule. Older -> less relevant that younger
+        """
+        if self.requires_attention and self.days_until_booking_limit is not None:
+            date_limit_score = self.days_until_booking_limit
+        else:
+            date_limit_score = BIG_NUMBER_FOR_SORTING_ORDERS
+
+        # pylint: disable=invalid-unary-operand-type
+        return not self.isArchived, -date_limit_score, self.dateCreated
+
     def get_formats(self) -> typing.Sequence[subcategories.EacFormat] | None:
         if self.formats:
             return self.formats
@@ -902,6 +937,16 @@ class CollectiveOfferTemplate(
     @property
     def is_eligible_for_search(self) -> bool:
         return bool(self.isReleased and not self.venue.isVirtual)
+
+    @property
+    def sort_criterion(self) -> typing.Tuple[bool, int, datetime]:
+        """
+        This is is used to compoare orders.
+
+        For template orders there is no booking_limit criterium. Thats is why we define the second value of the tuple
+        to the constant.
+        """
+        return (not self.isArchived, -BIG_NUMBER_FOR_SORTING_ORDERS, self.dateCreated)
 
     def get_formats(self) -> typing.Sequence[subcategories.EacFormat] | None:
         if self.formats:
