@@ -51,9 +51,8 @@ export function ExpirationCell({
           <div className={styles['banner-expiration-waiting']}>
             <SvgIcon alt="" src={fullWaitIcon} width="16" /> En attente de{' '}
             {offer.status === CollectiveOfferStatus.ACTIVE
-              ? 'préréservation'
-              : 'réservation'}{' '}
-            par l’enseignant
+              ? 'préréservation par l’enseignant'
+              : 'réservation par le chef d’établissement'}
           </div>
         </div>
         <div className={styles['banner-booking-date']}>
