@@ -97,7 +97,6 @@ class SaleRequest(BaseModel):
     idsBeforeSale: str | None
 
 
-# FIXME(fseguin, 2022-11-08: waiting for the specs)
 class Seat(BaseModel):
     id: int | None
     code: str
