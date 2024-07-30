@@ -130,85 +130,89 @@ export const PriceCategoriesForm = ({
                 />
               )}
               {values.priceCategories.map((priceCategory, index) => (
-                <FormLayout.Row
-                  key={index}
-                  inline
-                  smSpaceAfter
-                  className={styles['form-layout-row-price-category']}
-                >
-                  <TextInput
-                    smallLabel
-                    name={`priceCategories[${index}].label`}
-                    label="Intitulé du tarif"
-                    placeholder="Ex : catégorie 2, moins de 18 ans, pass 3 jours..."
-                    maxLength={PRICE_CATEGORY_LABEL_MAX_LENGTH}
-                    countCharacters
-                    className={styles['label-input']}
-                    disabled={values.priceCategories.length <= 1 || isDisabled}
-                  />
+                <fieldset key={index}>
+                  <legend className="visually-hidden">Tarif {index + 1}</legend>
+                  <FormLayout.Row
+                    inline
+                    smSpaceAfter
+                    className={styles['form-layout-row-price-category']}
+                  >
+                    <TextInput
+                      smallLabel
+                      name={`priceCategories[${index}].label`}
+                      label="Intitulé du tarif"
+                      placeholder="Ex : catégorie 2, moins de 18 ans, pass 3 jours..."
+                      maxLength={PRICE_CATEGORY_LABEL_MAX_LENGTH}
+                      countCharacters
+                      className={styles['label-input']}
+                      disabled={
+                        values.priceCategories.length <= 1 || isDisabled
+                      }
+                    />
 
-                  <TextInput
-                    smallLabel
-                    name={`priceCategories[${index}].price`}
-                    label="Prix par personne"
-                    type="number"
-                    step="0.01"
-                    max={PRICE_CATEGORY_PRICE_MAX}
-                    rightIcon={strokeEuroIcon}
-                    className={styles['price-input']}
-                    disabled={isDisabled}
-                  />
-
-                  <div className={cn(styles['form-row-actions'])}>
-                    <BaseCheckbox
-                      className={styles['free-checkbox']}
-                      label="Gratuit"
-                      checked={isFreeCheckboxSelectedArray[index]}
-                      name={`priceCategories[${index}].free`}
-                      onChange={async (e) => {
-                        if (e.target.checked) {
-                          await setFieldValue(
-                            `priceCategories[${index}].price`,
-                            0
-                          )
-                        } else {
-                          await setFieldValue(
-                            `priceCategories[${index}].price`,
-                            ''
-                          )
-                        }
-                      }}
+                    <TextInput
+                      smallLabel
+                      name={`priceCategories[${index}].price`}
+                      label="Prix par personne"
+                      type="number"
+                      step="0.01"
+                      max={PRICE_CATEGORY_PRICE_MAX}
+                      rightIcon={strokeEuroIcon}
+                      className={styles['price-input']}
                       disabled={isDisabled}
                     />
-                    {mode === OFFER_WIZARD_MODE.CREATION && (
-                      <Button
-                        className={styles['delete-icon']}
-                        data-testid={'delete-button'}
-                        variant={ButtonVariant.TERNARY}
-                        icon={fullTrashIcon}
-                        iconPosition={IconPositionEnum.CENTER}
-                        disabled={
-                          values.priceCategories.length <= 1 || isDisabled
-                        }
-                        onClick={() =>
-                          onDeletePriceCategory(
-                            index,
-                            arrayHelpers,
-                            values.priceCategories,
-                            values.priceCategories[index].id
-                          )
-                        }
-                        hasTooltip={
-                          values.priceCategories.length > 1 && !isDisabled
-                        }
-                      >
-                        {values.priceCategories.length > 1 &&
-                          !isDisabled &&
-                          'Supprimer le tarif'}
-                      </Button>
-                    )}
-                  </div>
-                </FormLayout.Row>
+
+                    <div className={cn(styles['form-row-actions'])}>
+                      <BaseCheckbox
+                        className={styles['free-checkbox']}
+                        label="Gratuit"
+                        checked={isFreeCheckboxSelectedArray[index]}
+                        name={`priceCategories[${index}].free`}
+                        onChange={async (e) => {
+                          if (e.target.checked) {
+                            await setFieldValue(
+                              `priceCategories[${index}].price`,
+                              0
+                            )
+                          } else {
+                            await setFieldValue(
+                              `priceCategories[${index}].price`,
+                              ''
+                            )
+                          }
+                        }}
+                        disabled={isDisabled}
+                      />
+                      {mode === OFFER_WIZARD_MODE.CREATION && (
+                        <Button
+                          className={styles['delete-icon']}
+                          data-testid={'delete-button'}
+                          variant={ButtonVariant.TERNARY}
+                          icon={fullTrashIcon}
+                          iconPosition={IconPositionEnum.CENTER}
+                          disabled={
+                            values.priceCategories.length <= 1 || isDisabled
+                          }
+                          onClick={() =>
+                            onDeletePriceCategory(
+                              index,
+                              arrayHelpers,
+                              values.priceCategories,
+                              values.priceCategories[index].id
+                            )
+                          }
+                          hasTooltip={
+                            values.priceCategories.length > 1 && !isDisabled
+                          }
+                        >
+                          {values.priceCategories.length > 1 &&
+                            !isDisabled &&
+                            'Supprimer le tarif'}
+                        </Button>
+                      )}
+                    </div>
+                  </FormLayout.Row>
+                </fieldset>
               ))}
 
               <Button
