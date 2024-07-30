@@ -147,7 +147,7 @@ export const OfferSection = ({
       text: offerData.offererName,
     })
     practicalInfoDescriptions.push({
-      title: isOfferAddressEnabled ? 'Lieu' : 'Qui propose l’offre ?',
+      title: isOfferAddressEnabled ? 'Qui propose l’offre ?' : 'Lieu',
       text:
         /* istanbul ignore next: DEBT, TO FIX */
         offerData.venuePublicName || offerData.venueName,
