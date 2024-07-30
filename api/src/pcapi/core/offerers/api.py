@@ -869,9 +869,6 @@ def auto_tag_new_offerer(
         if not siren_info.diffusible:
             tag_names_to_apply.add("non-diffusible")
 
-        if siren_info.siren in settings.EPN_SIREN:
-            tag_names_to_apply.add("ecosysteme-epn")
-
     if user.email.split("@")[-1] in set(settings.NATIONAL_PARTNERS_EMAIL_DOMAINS.split(",")):
         tag_names_to_apply.add("partenaire-national")
 

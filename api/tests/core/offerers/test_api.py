@@ -888,37 +888,6 @@ class CreateOffererTest:
         assert national_partner_tag not in created_offerer_not_partner.tags
         assert national_partner_tag in created_offerer_partner.tags
 
-    @override_settings(EPN_SIREN="222222223,222222227")
-    def test_create_offerer_epn_autotagging(self):
-        # Given
-        epn_tag = offerers_factories.OffererTagFactory(name="ecosysteme-epn", label="Ecosystème EPN")
-        user = users_factories.UserFactory()
-        not_an_epn_offerer_informations = offerers_serialize.CreateOffererQueryModel(
-            name="Test Offerer Not EPN",
-            siren="222222225",
-            address="123 rue de Paris",
-            postalCode="93100",
-            city="Montreuil",
-        )
-        epn_offerer_informations = offerers_serialize.CreateOffererQueryModel(
-            name="Test Offerer EPN",
-            siren="222222223",
-            address="123 rue de Paname",
-            postalCode="93100",
-            city="Montreuil",
-        )
-
-        # When
-        created_user_offerer_not_epn = offerers_api.create_offerer(user, not_an_epn_offerer_informations)
-        created_user_offerer_epn = offerers_api.create_offerer(user, epn_offerer_informations)
-
-        # Then
-        created_offerer_not_epn = created_user_offerer_not_epn.offerer
-        created_offerer_epn = created_user_offerer_epn.offerer
-
-        assert epn_tag not in created_offerer_not_epn.tags
-        assert epn_tag in created_offerer_epn.tags
-
 
 class UpdateOffererTest:
     def test_update_offerer(self):
