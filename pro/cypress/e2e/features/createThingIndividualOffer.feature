@@ -8,6 +8,8 @@ Feature: Create an individual offer (thing)
     And I want to create "Un bien physique" offer
     And I fill in details for physical offer
     And I validate offer details step
+    And I fill in useful informations for physical offer
+    And I validate offer useful informations step
     And I fill in stocks
     And I validate stocks step
     And I publish my offer
