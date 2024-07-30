@@ -90,7 +90,7 @@ jobs:
           do
             kubectl logs -n ${{ inputs.environment }} -f jobs/pre-upgrade-${DATE} && break
           done
-          kubectl wait --for=condition=complete jobs/pre-upgrade-${DATE} || kubectl wait --for=condition=failed jobs/pre-upgrade-${DATE} # Sanity check that the job is over
+          kubectl wait -n ${{ inputs.environment }} --for=condition=complete jobs/pre-upgrade-${DATE} || kubectl wait -n ${{ inputs.environment }} --for=condition=failed jobs/pre-upgrade-${DATE} # Sanity check that the job is over
           failure=$(kubectl get -n ${{ inputs.environment }} jobs/pre-upgrade-${DATE} -o=jsonpath='{.status.conditions[?(@.type=="Failed")].status}') # Did the job fail or not so we can give correct return code
           if [[ "$failure" == "True" ]]
           then
@@ -166,9 +166,9 @@ jobs:
           # Next lines assume that job's backoffLimit is 0
           while true;
           do
-            kubectl logs -n ${{ inputs.environment }} -f jobs/pre-upgrade-${DATE} && break
+            kubectl logs -n ${{ inputs.environment }} -f jobs/post-upgrade-${DATE} && break
           done
-          kubectl wait --for=condition=complete jobs/post-upgrade-${DATE} || kubectl wait --for=condition=failed jobs/post-upgrade-${DATE} # Sanity check that the job is over
+          kubectl wait -n ${{ inputs.environment }} --for=condition=complete jobs/post-upgrade-${DATE} || kubectl wait -n ${{ inputs.environment }} --for=condition=failed jobs/post-upgrade-${DATE} # Sanity check that the job is over
           failure=$(kubectl get -n ${{ inputs.environment }} jobs/post-upgrade-${DATE} -o=jsonpath='{.status.conditions[?(@.type=="Failed")].status}') # Did the job fail or not so we can give correct return code
           if [[ "$failure" == "True" ]]
           then
