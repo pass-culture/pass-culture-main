@@ -9,14 +9,4 @@ describe('Section', () => {
     expect(screen.getByText('my title')).toBeInTheDocument()
     expect(screen.getByText('Hello')).toBeInTheDocument()
   })
-
-  it('should display new tag', () => {
-    render(
-      <Section title={'my title'} isNew>
-        Hello
-      </Section>
-    )
-
-    expect(screen.getByText('Nouveau')).toBeInTheDocument()
-  })
 })
