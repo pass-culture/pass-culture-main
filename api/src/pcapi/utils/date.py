@@ -83,7 +83,7 @@ class FrenchParserInfo(parserinfo):
 
 
 def format_datetime(date_time: datetime) -> str:
-    return babel_format_datetime(date_time, format="long", locale="fr")[:-9]
+    return babel_format_datetime(date_time, format="d MMMM y, HH:mm", locale="fr")
 
 
 def get_postal_code_timezone(postal_code: str) -> str:
