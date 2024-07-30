@@ -1257,6 +1257,7 @@ class UpdateVenueTest(PostEndpointHelper):
         assert address.longitude == Decimal("55.45101")
         assert address.isManualEdition is True
 
+    @override_features(ENABLE_ADDRESS_WRITING_WHILE_CREATING_UPDATING_VENUE=False)
     def test_update_venue_without_double_model_writing(self, authenticated_client, offerer):
         contact_email = "contact.venue@example.com"
         website = "update.venue@example.com"
