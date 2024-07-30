@@ -1,11 +1,13 @@
 from datetime import date
 from datetime import datetime
 import logging
+from typing import Any
 from typing import Callable
 from typing import TypeVar
 
 from pydantic.v1.class_validators import validator
 from pydantic.v1.fields import Field
+from pydantic.v1.utils import GetterDict
 
 from pcapi.core.bookings.api import compute_booking_cancellation_limit_date
 from pcapi.core.categories import subcategories_v2 as subcategories
@@ -19,6 +21,7 @@ from pcapi.core.offers.models import ReasonMeta
 from pcapi.core.offers.models import Stock
 from pcapi.core.providers import constants as provider_constants
 from pcapi.core.providers.titelive_gtl import GTLS
+from pcapi.core.reactions.models import ReactionTypeEnum
 from pcapi.core.users.models import ExpenseDomain
 from pcapi.domain.movie_types import get_movie_label
 from pcapi.domain.music_types import MUSIC_SUB_TYPES_LABEL_BY_CODE
@@ -27,6 +30,7 @@ from pcapi.domain.show_types import SHOW_SUB_TYPES_LABEL_BY_CODE
 from pcapi.domain.show_types import SHOW_TYPES_LABEL_BY_CODE
 from pcapi.routes.native.v1.serialization.common_models import Coordinates
 from pcapi.routes.serialization import BaseModel
+from pcapi.routes.serialization import ConfiguredBaseModel
 from pcapi.routes.shared.price import convert_to_cent
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
@@ -226,7 +230,20 @@ def get_gtl_labels(gtl_id: str) -> GtlLabels | None:
 BaseOfferResponseType = TypeVar("BaseOfferResponseType", bound="BaseOfferResponse")
 
 
-class BaseOfferResponse(BaseModel):
+class ReactionCount(BaseModel):
+    likes: int
+
+
+class BaseOfferResponseGetterDict(GetterDict):
+    def get(self, key: str, default: Any = None) -> Any:
+        offer = self._obj
+        if key == "reactions_count":
+            likes = sum(1 for reaction in offer.reactions if reaction.reactionType == ReactionTypeEnum.LIKE)
+            return ReactionCount(likes=likes)
+        return super().get(key, default)
+
+
+class BaseOfferResponse(ConfiguredBaseModel):
     @classmethod
     def from_orm(cls: type[BaseOfferResponseType], offer: Offer) -> BaseOfferResponseType:
         offer.accessibility = {
@@ -280,16 +297,14 @@ class BaseOfferResponse(BaseModel):
     last30DaysBookings: int | None
     metadata: offer_metadata.Metadata
     name: str
+    reactions_count: ReactionCount
     stocks: list[OfferStockResponse]
     subcategoryId: subcategories.SubcategoryIdEnum
     venue: OfferVenueResponse
     withdrawalDetails: str | None
 
     class Config:
-        orm_mode = True
-        alias_generator = to_camel
-        allow_population_by_field_name = True
-        json_encoders = {datetime: format_into_utc_date}
+        getter_dict = BaseOfferResponseGetterDict
 
 
 class OfferResponse(BaseOfferResponse):
