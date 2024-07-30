@@ -96,6 +96,24 @@ export const useFirebase = (consentedToFirebase: boolean) => {
   }, [selectedOffererId, isFirebaseInitialized])
 }
 
+export const useRemoteConfigParams = () => {
+  const [remoteConfigParams, setRemoteConfigParams] = useState<
+    Record<string, string>
+  >({})
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      if (firebaseRemoteConfig) {
+        clearInterval(intervalId)
+        setRemoteConfigParams(getRemoteConfigParams())
+      }
+    }, 1000)
+
+    return () => clearInterval(intervalId)
+  }, [])
+  return remoteConfigParams
+}
+
 export const useAnalytics = () => {
   const utmParameters = useUtmQueryParams()
 
