@@ -14,6 +14,8 @@ import { DEBOUNCE_TIME_BEFORE_REQUEST } from './constants'
 interface AddressProps {
   description?: string
   suggestionLimit?: number
+  disabled?: boolean
+  className?: string
 }
 
 export interface AutocompleteItemProps {
@@ -26,6 +28,8 @@ export interface AutocompleteItemProps {
 export const AddressSelect = ({
   description,
   suggestionLimit,
+  disabled = false,
+  className,
 }: AddressProps) => {
   const { setFieldValue } = useFormikContext()
   const [options, setOptions] = useState<SelectOption[]>([])
@@ -117,6 +121,8 @@ export const AddressSelect = ({
       description={description}
       searchInOptions={searchInOptions}
       onSearch={debouncedOnSearch}
+      disabled={disabled}
+      className={className}
     />
   )
 }
@@ -126,13 +132,13 @@ export const handleAddressSelect = (
   selectedItem?: AutocompleteItemProps,
   searchField?: FieldInputProps<string>
 ) => {
-  setFieldValue('street', selectedItem?.extraData?.address)
+  setFieldValue('street', selectedItem?.extraData?.address ?? '')
   if (searchField) {
     setFieldValue('addressAutocomplete', searchField.value)
   }
-  setFieldValue('postalCode', selectedItem?.extraData?.postalCode)
-  setFieldValue('city', selectedItem?.extraData?.city)
-  setFieldValue('latitude', selectedItem?.extraData?.latitude)
-  setFieldValue('longitude', selectedItem?.extraData?.longitude)
-  setFieldValue('banId', selectedItem?.value)
+  setFieldValue('postalCode', selectedItem?.extraData?.postalCode ?? '')
+  setFieldValue('city', selectedItem?.extraData?.city ?? '')
+  setFieldValue('latitude', selectedItem?.extraData?.latitude ?? '')
+  setFieldValue('longitude', selectedItem?.extraData?.longitude ?? '')
+  setFieldValue('banId', selectedItem?.value ?? '')
 }
