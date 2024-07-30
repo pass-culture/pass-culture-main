@@ -350,7 +350,20 @@ def batch_validate_individual_bookings() -> utils.BackofficeResponse:
         except bookings_exceptions.BookingIsAlreadyCancelled:
             bookings_api.mark_as_used_with_uncancelling(booking, bookings_models.BookingValidationAuthorType.BACKOFFICE)
 
-    return _batch_individual_bookings_action(form, _booking_callback, "Les réservations ont été validées")
+    try:
+        return _batch_individual_bookings_action(form, _booking_callback, "Les réservations ont été validées")
+    except sa.exc.InternalError as exc:
+        if exc.orig and "tooManyBookings" in str(exc.orig):
+            flash("Pas assez de stock disponible pour cette offre", "warning")
+        elif exc.orig and "insufficientFunds" in str(exc.orig):
+            flash(
+                "Le solde d'au moins un des comptes jeune est insuffisant pour valider ces réservations",
+                "warning",
+            )
+        else:
+            raise exc
+    repository.mark_transaction_as_invalid()
+    return _redirect_after_individual_booking_action()
 
 
 @individual_bookings_blueprint.route("/batch-cancel", methods=["GET"])

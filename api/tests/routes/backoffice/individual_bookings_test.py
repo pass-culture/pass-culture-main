@@ -937,6 +937,40 @@ class BatchMarkBookingAsUsedTest(PostEndpointHelper):
             in html_parser.extract_alert(redirected_response.data)
         )
 
+    def test_batch_mark_as_used_bookings_with_insuffisant_funds(self, legit_user, authenticated_client):
+        booking1 = bookings_factories.BookingFactory(
+            status=bookings_models.BookingStatus.CANCELLED,
+            deposit=users_factories.DepositGrantFactory(amount=1),
+        )
+        booking2 = bookings_factories.BookingFactory()
+        parameter_ids = str(booking1.id) + "," + str(booking2.id)
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={"object_ids": parameter_ids},
+            follow_redirects=True,
+        )
+        assert (
+            "Le solde d'au moins un des comptes jeune est insuffisant pour valider ces réservations"
+            in html_parser.extract_alert(response.data)
+        )
+
+    def test_batch_mark_as_used_bookings_insuffisant_stock(self, legit_user, authenticated_client):
+        booking1 = bookings_factories.BookingFactory(
+            status=bookings_models.BookingStatus.CANCELLED,
+            deposit=users_factories.DepositGrantFactory(),
+            stock__quantity=0,
+        )
+        booking2 = bookings_factories.BookingFactory()
+        parameter_ids = str(booking1.id) + "," + str(booking2.id)
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={"object_ids": parameter_ids},
+            follow_redirects=True,
+        )
+        assert "Pas assez de stock disponible pour cette offre" in html_parser.extract_alert(response.data)
+
 
 class GetBatchCancelIndividualBookingsFormTest(GetEndpointHelper):
     endpoint = "backoffice_web.individual_bookings.get_batch_cancel_individual_bookings_form"
