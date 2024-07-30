@@ -510,7 +510,7 @@ def get_collective_offers_for_filters(
         formats=formats,
     )
 
-    query = query.order_by(educational_models.CollectiveOffer.id.desc())
+    query = query.order_by(educational_models.CollectiveOffer.dateCreated.desc())
     offers = (
         query.options(
             sa.orm.joinedload(educational_models.CollectiveOffer.venue).joinedload(
@@ -558,7 +558,7 @@ def get_collective_offers_template_for_filters(
     if query is None:
         return []
 
-    query = query.order_by(educational_models.CollectiveOfferTemplate.id.desc())
+    query = query.order_by(educational_models.CollectiveOfferTemplate.dateCreated.desc())
 
     offers = (
         query.options(
