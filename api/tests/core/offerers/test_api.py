@@ -2120,6 +2120,7 @@ class CreateFromOnboardingDataTest:
         # Venue Registration
         self.assert_venue_registration_attrs(created_venue)
 
+    @override_features(ENABLE_ADDRESS_WRITING_WHILE_CREATING_UPDATING_VENUE=False)
     def test_new_siren_new_siret_without_double_model_writing(self, requests_mock):
         user = users_factories.UserFactory(email="pro@example.com")
         user.add_non_attached_pro_role()
