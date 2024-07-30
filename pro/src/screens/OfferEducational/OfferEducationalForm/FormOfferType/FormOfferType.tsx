@@ -5,7 +5,6 @@ import { FormLayout } from 'components/FormLayout/FormLayout'
 import { MAX_DETAILS_LENGTH } from 'core/OfferEducational/constants'
 import { OfferEducationalFormValues } from 'core/OfferEducational/types'
 import { SelectOption } from 'custom_types/form'
-import { useActiveFeature } from 'hooks/useActiveFeature'
 import { getNationalProgramsForDomains } from 'screens/OfferEducational/constants/getNationalProgramsForDomains'
 import { Select } from 'ui-kit/form/Select/Select'
 import { SelectAutocomplete } from 'ui-kit/form/SelectAutoComplete/SelectAutocomplete'
@@ -31,9 +30,6 @@ export const FormOfferType = ({
   disableForm,
 }: FormTypeProps): JSX.Element => {
   const { values } = useFormikContext<OfferEducationalFormValues>()
-  const isMarkdownDescriptionEnabled = useActiveFeature(
-    'WIP_ENABLE_OFFER_MARKDOWN_DESCRIPTION'
-  )
 
   const eacFormatOptions = Object.entries(EacFormat).map(([, value]) => ({
     value: value,
@@ -110,17 +106,15 @@ export const FormOfferType = ({
         </FormLayout.Row>
         <FormLayout.Row
           sideComponent={
-            isMarkdownDescriptionEnabled ? (
-              <InfoBox>
-                Vous pouvez modifier la mise en forme de votre texte.
-                <br />
-                Utilisez des doubles astérisques pour mettre en{' '}
-                <strong>gras</strong> : **exemple** et des tirets bas pour l’
-                <em>italique</em> : _exemple_
-                <br />
-                Vous pourrez vérifier l’affichage à l’étape "Aperçu".
-              </InfoBox>
-            ) : null
+            <InfoBox>
+              Vous pouvez modifier la mise en forme de votre texte.
+              <br />
+              Utilisez des doubles astérisques pour mettre en{' '}
+              <strong>gras</strong> : **exemple** et des tirets bas pour l’
+              <em>italique</em> : _exemple_
+              <br />
+              Vous pourrez vérifier l’affichage à l’étape "Aperçu".
+            </InfoBox>
           }
         >
           <TextArea
