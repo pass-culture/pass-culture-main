@@ -1,5 +1,5 @@
-import { Then, When } from '@badeball/cypress-cucumber-preprocessor'
-import { addDays, format } from 'date-fns'
+import { When, Then } from '@badeball/cypress-cucumber-preprocessor'
+import { format, addDays } from 'date-fns'
 
 When('I search with the text {string}', (title: string) => {
   cy.findByPlaceholderText('Rechercher par nom d’offre ou par EAN-13').type(
@@ -9,10 +9,11 @@ When('I search with the text {string}', (title: string) => {
 })
 
 When('I select offerer {string} in offer page', (offererName: string) => {
+  cy.intercept({ method: 'GET', url: '/venues?offererId=*' }).as('getOffererId')
   cy.findByTestId('offerer-select').click()
   cy.findByText(/Changer de structure/).click()
   cy.findByTestId('offerers-selection-menu').findByText(offererName).click()
-  cy.wait('@getVenuesForOfferer')
+  cy.wait('@getOffererId')
   cy.findByTestId('header-dropdown-menu-div').should('not.exist')
   cy.findAllByTestId('spinner').should('not.exist')
 })

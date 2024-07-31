@@ -1,5 +1,4 @@
-import { Given, Then, When } from '@badeball/cypress-cucumber-preprocessor'
-
+import { When, Then, Given } from '@badeball/cypress-cucumber-preprocessor'
 const mySiret = '44890182521127'
 const offererName = 'MINISTERE DE LA CULTURE'
 
@@ -50,7 +49,10 @@ When('I specify an offerer with a SIRET', () => {
     method: 'GET',
     url: `/venues/siret/${mySiret}`,
   }).as('venuesSiret')
-
+  cy.intercept(
+    'GET',
+    'https://api-adresse.data.gouv.fr/search/?limit=1&q=*'
+  ).as('search1Address')
   cy.findByText('Continuer').click()
   cy.wait(['@getSiret', '@venuesSiret', '@search1Address']).then(
     (interception) => {
@@ -89,12 +91,17 @@ When('I fill activity form without target audience', () => {
 })
 
 When('I validate the registration', () => {
+  cy.intercept({ method: 'POST', url: '/offerers/new' }).as('createOfferer')
   cy.wait(2000) // @todo: delete this when random failures fixed
   cy.findByText('Valider et créer ma structure').click()
 })
 
 When('I add a new offerer', () => {
   cy.url().should('contain', '/parcours-inscription/structure/rattachement')
+  cy.intercept(
+    'GET',
+    'https://api-adresse.data.gouv.fr/search/?limit=5&q=*'
+  ).as('search5Address')
   cy.findByText('Ajouter une nouvelle structure').click()
   cy.wait('@search5Address')
 })
@@ -106,11 +113,18 @@ When('I fill identification form with a new address', () => {
     'val',
     '89 Rue la Boétie 75008 Pari'
   ) // To avoid being spammed by address search on each chars typed
-
+  cy.intercept(
+    'GET',
+    'https://api-adresse.data.gouv.fr/search/?limit=5&q=*'
+  ).as('search5Address')
   cy.findByLabelText('Adresse postale *').type('s') // previous search was too fast, this one raises suggestions
   cy.wait('@search5Address')
   cy.findByRole('option', { name: '89 Rue la Boétie 75008 Paris' }).click()
 
+  cy.intercept({
+    method: 'GET',
+    url: '/venue-types',
+  }).as('venue-types')
   cy.findByText('Étape suivante').click()
   cy.wait('@venue-types').its('response.statusCode').should('eq', 200)
 })
@@ -118,7 +132,10 @@ When('I fill identification form with a new address', () => {
 When('I fill identification form with a public name', () => {
   cy.url().should('contain', '/parcours-inscription/identification')
   cy.findByLabelText('Nom public').type('First Offerer')
-
+  cy.intercept({
+    method: 'GET',
+    url: '/venue-types',
+  }).as('venue-types')
   cy.findByText('Étape suivante').click()
   cy.wait('@venue-types').its('response.statusCode').should('eq', 200)
 })

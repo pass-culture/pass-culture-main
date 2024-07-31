@@ -1,4 +1,4 @@
-import { Given, Then, When } from '@badeball/cypress-cucumber-preprocessor'
+import { When, Then, Given } from '@badeball/cypress-cucumber-preprocessor'
 
 let offerText: string
 let offerFromSecondPage: string
@@ -10,6 +10,14 @@ Given('I go to adage login page with valid token', () => {
 
 When('I open adage iframe', () => {
   const adageToken = Cypress.env('adageToken')
+  cy.intercept({
+    method: 'GET',
+    url: '/adage-iframe/playlists/local-offerers',
+  }).as('local_offerers')
+  cy.intercept({
+    method: 'GET',
+    url: '/features',
+  }).as('features')
   cy.visit(`/adage-iframe?token=${adageToken}`)
   cy.findAllByTestId('spinner').should('not.exist')
   cy.wait(['@local_offerers', '@features'], { requestTimeout: 30 * 1000 }).then(
@@ -37,6 +45,10 @@ When('I open adage iframe with search page', () => {
   cy.setFeatureFlags([
     { name: 'WIP_ENABLE_ADAGE_VISUALIZATION', isActive: true },
   ])
+  cy.intercept({
+    method: 'GET',
+    url: '/adage-iframe/collective/offers-template/**',
+  }).as('offers_template')
   cy.visit(`/adage-iframe/recherche?token=${adageToken}`)
   cy.wait('@offers_template').its('response.statusCode').should('eq', 200)
   cy.findAllByTestId('spinner').should('not.exist')
@@ -84,6 +96,10 @@ When('I add first offer to favorites', () => {
         .then((text: string) => {
           offerText = text
         })
+      cy.intercept({
+        method: 'POST',
+        url: '/adage-iframe/logs/fav-offer/',
+      }).as('fav-offer')
       cy.findAllByTestId('favorite-inactive').click()
       cy.wait('@fav-offer', { requestTimeout: 30 * 1000 })
         .its('response.statusCode')
@@ -113,6 +129,10 @@ Then('the first offer should be added to favorites', () => {
 When('the first favorite is unselected', () => {
   // à part de là c'est du afterScenario : on désélectionne le favori
   cy.findByRole('link', { name: 'Découvrir' }).click()
+  cy.intercept({
+    method: 'DELETE',
+    url: '/adage-iframe/collective/template/**/favorites',
+  }).as('delete_fav')
   cy.findAllByTestId('favorite-active').first().click()
   cy.wait('@delete_fav').its('response.statusCode').should('eq', 204)
   cy.findByTestId('global-notification-success').should(
