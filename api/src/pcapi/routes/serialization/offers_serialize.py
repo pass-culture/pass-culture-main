@@ -83,6 +83,9 @@ class PostOfferOffererAddressBodyModel(BaseModel):
     street: base_serializers.VenueAddress
 
 
+class PatchOfferOffererAddressBodyModel(PostOfferOffererAddressBodyModel): ...
+
+
 class PostOfferBodyModel(BaseModel):
     audio_disability_compliant: bool
     booking_contact: EmailStr | None
@@ -143,6 +146,7 @@ class PatchOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
     isDuo: bool | None
     durationMinutes: int | None
     shouldSendMail: bool | None
+    address: PatchOfferOffererAddressBodyModel | None
 
     @validator("name", pre=True, allow_reuse=True)
     def validate_name(cls, name: str) -> str:

@@ -1,7 +1,10 @@
 from datetime import datetime
+from decimal import Decimal
+from unittest.mock import patch
 
 import pytest
 
+from pcapi.connectors.api_adresse import AddressInfo
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.categories import subcategories_v2 as subcategories
 import pcapi.core.mails.testing as mails_testing
@@ -18,7 +21,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 class Returns200Test:
-    def test_patch_offer(self, app, client):
+    def test_patch_offer(self, client):
         # Given
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
         venue = offerers_factories.VirtualVenueFactory(managingOfferer=user_offerer.offerer)
@@ -49,6 +52,86 @@ class Returns200Test:
         assert updated_offer.mentalDisabilityCompliant
         assert updated_offer.subcategoryId == subcategories.ABO_PLATEFORME_VIDEO.id
         assert not updated_offer.product
+
+    @pytest.mark.parametrize(
+        "label, offer_has_oa, address_update_exist",
+        [
+            ["label", True, True],
+            ["label", False, True],
+            ["label", False, False],
+            ["label", True, False],
+            [None, True, True],
+            [None, False, True],
+            [None, False, False],
+            [None, True, False],
+        ],
+    )
+    @patch("pcapi.connectors.api_adresse.get_address")
+    def test_patch_offer_with_address(self, get_address_mock, label, offer_has_oa, address_update_exist, client):
+        # Given
+        user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
+        venue = offerers_factories.VirtualVenueFactory(managingOfferer=user_offerer.offerer)
+        oa = None
+        if offer_has_oa:
+            oa = offerers_factories.OffererAddressFactory(offerer=user_offerer.offerer)
+        offer = offers_factories.OfferFactory(
+            subcategoryId=subcategories.ABO_PLATEFORME_VIDEO.id,
+            venue=venue,
+            name="New name",
+            url="test@test.com",
+            description="description",
+            offererAddress=oa,
+        )
+        if address_update_exist:
+            existant_oa = offerers_factories.OffererAddressFactory(
+                offerer=user_offerer.offerer,
+                label=label,
+                address__street="1 rue de la paix",
+                address__city="Paris",
+                address__banId="75102_7560_00001",
+                address__postalCode="75102",
+                address__latitude=48.8566,
+                address__longitude=2.3522,
+            )
+
+        # When
+        data = {
+            "name": "New name",
+            "externalTicketOfficeUrl": "http://example.net",
+            "mentalDisabilityCompliant": True,
+            "address": {
+                "street": "1 rue de la paix",
+                "city": "Paris",
+                "postalCode": "75102",
+                "latitude": 48.8566,
+                "longitude": 2.3522,
+                "label": label,
+            },
+        }
+        get_address_mock.return_value = AddressInfo(
+            street="1 rue de la paix",
+            city="Paris",
+            citycode="75102",
+            postcode="75102",
+            latitude=48.8566,
+            longitude=2.3522,
+            score=0.9,
+            id="75102_7560_00001",
+            label=label if label else "",
+        )
+        response = client.with_session_auth("user@example.com").patch(f"/offers/{offer.id}", json=data)
+        assert response.status_code == 200
+        assert response.json["id"] == offer.id
+        updated_offer = Offer.query.get(offer.id)
+        address = updated_offer.offererAddress.address
+        if address_update_exist:
+            assert updated_offer.offererAddress == existant_oa
+        assert updated_offer.offererAddress.label == label
+        assert address.street == "1 rue de la paix"
+        assert address.city == "Paris"
+        assert address.postalCode == "75102"
+        assert address.latitude == Decimal("48.85660")
+        assert address.longitude == Decimal("2.3522")
 
     def test_withdrawal_can_be_updated(self, client):
         offer = offers_factories.OfferFactory(

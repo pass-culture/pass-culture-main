@@ -21,6 +21,7 @@ from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
+from pcapi.core.geography import factories as geography_factories
 from pcapi.core.geography import models as geography_models
 from pcapi.core.history import models as history_models
 import pcapi.core.mails.testing as mails_testing
@@ -2803,3 +2804,55 @@ class GetOffererConfidenceLevelTest:
 
         assert caplog.records[0].message == "Incompatible offerer rule detected"
         assert caplog.records[0].extra == {"offerer_id": venue.managingOffererId, "venue_id": venue.id}
+
+
+class GetOffererAddressTest:
+    @pytest.mark.parametrize("same_label,same_address", [[True, False], [False, True], [True, True], [False, False]])
+    def test_get_or_create_offerer_address(self, same_label, same_address):
+        offerer = offerers_factories.OffererFactory()
+        oa_1 = offerers_factories.OffererAddressFactory(offerer=offerer)
+        other_addresss = geography_factories.AddressFactory(
+            street="1 rue de la paix",
+        )
+
+        oa_return = offerers_api.get_or_create_offerer_address(
+            offerer_id=offerer.id,
+            address_id=oa_1.address.id if same_address else other_addresss.id,
+            label=oa_1.label if same_label else "somethingdifferent",
+        )
+        if same_label and same_address:
+            assert oa_return == oa_1
+        else:
+            assert oa_return.offerer == offerer
+            assert oa_return != oa_1
+
+    @pytest.mark.parametrize("existant_address", [True, False])
+    def test_get_or_create_address(self, existant_address):
+        if existant_address:
+            old_address = geography_factories.AddressFactory(
+                street="1 rue de la paix",
+                city="Paris",
+                postalCode="75103",
+                latitude=40.8566,
+                longitude=1.3522,
+                banId="75103_7560_00001",
+            )
+        location_data = offerers_api.LocationData(
+            street="1 rue de la paix",
+            city="Paris",
+            postal_code="75103",
+            latitude=40.8566,
+            longitude=1.3522,
+            insee_code="75103",
+            ban_id="75103_7560_00001",
+        )
+        address = offerers_api.get_or_create_address(location_data=location_data, is_manual_edition=False)
+        assert len(geography_models.Address.query.all()) == 1
+        if existant_address:
+            assert address == old_address
+        else:
+            assert address.street == "1 rue de la paix"
+            assert address.city == "Paris"
+            assert address.postalCode == "75103"
+            assert address.latitude == 40.8566
+            assert address.longitude == 1.3522

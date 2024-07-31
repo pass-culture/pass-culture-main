@@ -194,6 +194,7 @@ export type { PatchDraftOfferUsefulInformationsBodyModel } from './models/PatchD
 export type { PatchOfferActiveStatusBodyModel } from './models/PatchOfferActiveStatusBodyModel';
 export type { PatchOfferBodyModel } from './models/PatchOfferBodyModel';
 export type { PatchOffererAddressRequest } from './models/PatchOffererAddressRequest';
+export type { PatchOfferOffererAddressBodyModel } from './models/PatchOfferOffererAddressBodyModel';
 export type { PatchOfferPublishBodyModel } from './models/PatchOfferPublishBodyModel';
 export { PhoneValidationStatusType } from './models/PhoneValidationStatusType';
 export type { PostCollectiveOfferBodyModel } from './models/PostCollectiveOfferBodyModel';
