@@ -59,9 +59,7 @@ Cypress.Commands.add('login', ({ email, password, redirectUrl }) => {
 })
 
 Cypress.Commands.add('refuseCookies', () => {
-  cy.get('button', { timeout: 15 * 1000 })
-    .contains('Tout refuser')
-    .click()
+  cy.findByText('Tout refuser', { timeout: 30000 }).click()
 })
 
 Cypress.Commands.add('setFeatureFlags', (features: Feature[]) => {

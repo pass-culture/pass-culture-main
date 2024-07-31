@@ -1,4 +1,4 @@
-import { When, Then, Given } from '@badeball/cypress-cucumber-preprocessor'
+import { Given, Then, When } from '@badeball/cypress-cucumber-preprocessor'
 
 let offerText: string
 let offerFromSecondPage: string
@@ -20,16 +20,16 @@ When('I open adage iframe', () => {
   }).as('features')
   cy.visit(`/adage-iframe?token=${adageToken}`)
   cy.findAllByTestId('spinner').should('not.exist')
-  cy.wait(['@local_offerers', '@features'], { requestTimeout: 30 * 1000 }).then(
-    (interception) => {
-      if (interception[0].response) {
-        expect(interception[0].response.statusCode).to.equal(200)
-      }
-      if (interception[1].response) {
-        expect(interception[1].response.statusCode).to.equal(200)
-      }
+  cy.wait(['@local_offerers', '@features'], {
+    responseTimeout: 30 * 1000,
+  }).then((interception) => {
+    if (interception[0].response) {
+      expect(interception[0].response.statusCode).to.equal(200)
     }
-  )
+    if (interception[1].response) {
+      expect(interception[1].response.statusCode).to.equal(200)
+    }
+  })
   cy.findAllByTestId('spinner').should('not.exist')
   cy.wait(500) // la liste des offres se réordonne, d'où cette attente
 })
@@ -101,7 +101,7 @@ When('I add first offer to favorites', () => {
         url: '/adage-iframe/logs/fav-offer/',
       }).as('fav-offer')
       cy.findAllByTestId('favorite-inactive').click()
-      cy.wait('@fav-offer', { requestTimeout: 30 * 1000 })
+      cy.wait('@fav-offer', { responseTimeout: 30 * 1000 })
         .its('response.statusCode')
         .should('eq', 204)
     })
