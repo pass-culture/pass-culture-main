@@ -407,13 +407,19 @@ def create_collective_offer_by_status(
             stock = CollectiveStockFactory(beginningDatetime=yesterday, collectiveOffer=offer)
             PendingCollectiveBookingFactory(collectiveStock=stock)
             return offer
-
         case CollectiveOfferDisplayedStatus.PREBOOKED.value:
             offer = CollectiveOfferFactory(**kwargs)
 
             tomorrow = datetime.datetime.utcnow() + datetime.timedelta(days=1)
             stock = CollectiveStockFactory(beginningDatetime=tomorrow, collectiveOffer=offer)
             _booking = PendingCollectiveBookingFactory(collectiveStock=stock)
+            return offer
+        case CollectiveOfferDisplayedStatus.CANCELLED.value:
+            offer = CollectiveOfferFactory(**kwargs)
+
+            tomorrow = datetime.datetime.utcnow() + datetime.timedelta(days=1)
+            stock = CollectiveStockFactory(beginningDatetime=tomorrow, collectiveOffer=offer)
+            _booking = CancelledCollectiveBookingFactory(collectiveStock=stock)
             return offer
         case CollectiveOfferDisplayedStatus.BOOKED.value:
             offer = CollectiveOfferFactory(**kwargs)

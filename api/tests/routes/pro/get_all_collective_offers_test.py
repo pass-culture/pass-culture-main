@@ -56,6 +56,7 @@ class Returns200Test:
         assert response_json[0]["educationalInstitution"]["name"] == institution.name
         assert response_json[0]["imageCredit"] is None
         assert response_json[0]["imageUrl"] is None
+        assert response_json[0]["displayedStatus"] == "ACTIVE"
         assert response_json[0]["nationalProgram"] == {"id": national_program.id, "name": national_program.name}
 
     @time_machine.travel("2024-06-1")

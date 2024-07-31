@@ -2,6 +2,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { CollectiveOfferDisplayedStatus } from './CollectiveOfferDisplayedStatus';
 import type { CollectiveOfferOfferVenueResponseModel } from './CollectiveOfferOfferVenueResponseModel';
 import type { CollectiveOfferStatus } from './CollectiveOfferStatus';
 import type { EacFormat } from './EacFormat';
@@ -22,6 +23,7 @@ export type GetCollectiveOfferTemplateResponseModel = {
   dateCreated: string;
   dates?: TemplateDatesModel | null;
   description: string;
+  displayedStatus: CollectiveOfferDisplayedStatus;
   domains: Array<OfferDomain>;
   durationMinutes?: number | null;
   educationalPriceDetail?: string | null;

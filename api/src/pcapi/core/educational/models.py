@@ -296,7 +296,7 @@ class CollectiveStatusMixin:
         return sa.case(
             (
                 cls.isArchived.is_(True),
-                offer_mixin.CollectiveOfferStatus.ARCHIVED,
+                offer_mixin.CollectiveOfferStatus.ARCHIVED.name,
             ),
             (
                 cls.validation == offer_mixin.OfferValidationStatus.REJECTED.name,
@@ -641,6 +641,54 @@ class CollectiveOffer(
         return None
 
     @property
+    def displayedStatus(self) -> CollectiveOfferDisplayedStatus:
+        if self.isArchived:
+            return CollectiveOfferDisplayedStatus.ARCHIVED
+
+        if self.validation == offer_mixin.OfferValidationStatus.REJECTED:
+            return CollectiveOfferDisplayedStatus.REJECTED
+
+        if self.validation == offer_mixin.OfferValidationStatus.PENDING:
+            return CollectiveOfferDisplayedStatus.PENDING
+
+        if self.validation == offer_mixin.OfferValidationStatus.DRAFT:
+            return CollectiveOfferDisplayedStatus.DRAFT
+
+        if not self.isActive:
+            return CollectiveOfferDisplayedStatus.INACTIVE
+
+        if self.validation == offer_mixin.OfferValidationStatus.APPROVED:
+            collective_stock = self.collectiveStock
+
+            bookings = collective_stock.collectiveBookings if collective_stock else []
+
+            if not any(bookings):
+                # pylint: disable=using-constant-test
+                if self.is_expired:
+                    return CollectiveOfferDisplayedStatus.EXPIRED
+
+                return CollectiveOfferDisplayedStatus.ACTIVE
+
+            last_booking_status = bookings[-1].status
+
+            # pylint: disable=using-constant-test
+            if self.is_expired:
+                if last_booking_status == CollectiveBookingStatus.USED:
+                    return CollectiveOfferDisplayedStatus.ENDED
+                if last_booking_status == CollectiveBookingStatus.REIMBURSED:
+                    return CollectiveOfferDisplayedStatus.REIMBURSED
+                return CollectiveOfferDisplayedStatus.EXPIRED
+
+            if last_booking_status in {CollectiveBookingStatus.CONFIRMED, CollectiveBookingStatus.USED}:
+                return CollectiveOfferDisplayedStatus.BOOKED
+            if last_booking_status == CollectiveBookingStatus.PENDING:
+                return CollectiveOfferDisplayedStatus.PREBOOKED
+            if last_booking_status == CollectiveBookingStatus.CANCELLED:
+                return CollectiveOfferDisplayedStatus.CANCELLED
+
+        return CollectiveOfferDisplayedStatus.ACTIVE
+
+    @property
     def subcategory(self) -> subcategories.Subcategory | None:
         if self.subcategoryId not in subcategories.ALL_SUBCATEGORIES_DICT:
             return None
@@ -857,6 +905,25 @@ class CollectiveOfferTemplate(
         ]
 
         return tuple(parent_args)
+
+    @property
+    def displayedStatus(self) -> CollectiveOfferDisplayedStatus:
+        if self.isArchived:
+            return CollectiveOfferDisplayedStatus.ARCHIVED
+
+        if self.validation == offer_mixin.OfferValidationStatus.REJECTED:
+            return CollectiveOfferDisplayedStatus.REJECTED
+
+        if self.validation == offer_mixin.OfferValidationStatus.PENDING:
+            return CollectiveOfferDisplayedStatus.PENDING
+
+        if self.validation == offer_mixin.OfferValidationStatus.DRAFT:
+            return CollectiveOfferDisplayedStatus.DRAFT
+
+        if not self.isActive:
+            return CollectiveOfferDisplayedStatus.INACTIVE
+
+        return CollectiveOfferDisplayedStatus.ACTIVE
 
     @property
     def start(self) -> datetime | None:
