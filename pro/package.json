@@ -100,7 +100,7 @@
     "@types/react-instantsearch-dom": "^6.12.8",
     "@types/react-redux": "^7.1.33",
     "@types/react-router-dom": "^5.3.3",
-    "@typescript-eslint/eslint-plugin": "^7.17.0",
+    "@typescript-eslint/eslint-plugin": "^7.18.0",
     "@typescript-eslint/parser": "^7.18.0",
     "@vitejs/plugin-react": "^4.3.1",
     "@vitest/coverage-v8": "^2.0.4",
