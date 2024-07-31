@@ -391,6 +391,32 @@ def test_public_api(client):
                     ],
                     "title": "CategoryIdEnum",
                 },
+                "CategoryNode": {
+                    "properties": {
+                        "gtls": {"items": {"type": "string"}, "nullable": True, "title": "Gtls", "type": "array"},
+                        "id": {"title": "Id", "type": "string"},
+                        "label": {"title": "Label", "type": "string"},
+                        "parents": {"items": {"type": "string"}, "title": "Parents", "type": "array"},
+                        "position": {"nullable": True, "title": "Position", "type": "integer"},
+                        "searchFilter": {"nullable": True, "title": "Searchfilter", "type": "string"},
+                        "technicalName": {"title": "Technicalname", "type": "string"},
+                    },
+                    "required": ["id", "label", "parents", "technicalName"],
+                    "title": "CategoryNode",
+                    "type": "object",
+                },
+                "CategoryTree": {
+                    "properties": {
+                        "categoryNodes": {
+                            "items": {"$ref": "#/components/schemas/CategoryNode"},
+                            "title": "Categorynodes",
+                            "type": "array",
+                        }
+                    },
+                    "required": ["categoryNodes"],
+                    "title": "CategoryTree",
+                    "type": "object",
+                },
                 "ChangeBeneficiaryEmailBody": {
                     "properties": {
                         "deviceInfo": {
@@ -2904,6 +2930,28 @@ def test_public_api(client):
                     },
                     "security": [{"JWTAuth": []}],
                     "summary": "flag_booking_as_used <POST>",
+                    "tags": [],
+                }
+            },
+            "/native/v1/categories": {
+                "get": {
+                    "description": "",
+                    "operationId": "get__native_v1_categories",
+                    "parameters": [],
+                    "responses": {
+                        "200": {
+                            "content": {"application/json": {"schema": {"$ref": "#/components/schemas/CategoryTree"}}},
+                            "description": "OK",
+                        },
+                        "403": {"description": "Forbidden"},
+                        "422": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
+                            },
+                            "description": "Unprocessable Entity",
+                        },
+                    },
+                    "summary": "get_categories <GET>",
                     "tags": [],
                 }
             },
