@@ -3629,3 +3629,16 @@ class SubcategoriesTest:
                 ],
             },
         ]
+
+
+class CategoriesTest:
+    def test_returns_200(self, client):
+        response = client.get("/native/v1/categories")
+
+        assert response.status_code == 200
+
+    def test_ids_are_unique(self, client):
+        response = client.get("/native/v1/categories")
+        ids = [node["id"] for node in response.json["categories"]]
+
+        assert len(ids) == len(set(ids))
