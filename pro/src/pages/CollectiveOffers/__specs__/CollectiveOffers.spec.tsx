@@ -104,10 +104,11 @@ describe('route CollectiveOffers', () => {
           .mockResolvedValueOnce([])
         await renderOffers()
 
-        const statusSelect = screen.getByRole('combobox', {
-          name: 'Statut Nouveau',
-        })
-        await userEvent.selectOptions(statusSelect, 'Expirée')
+        await userEvent.click(
+          screen.getByText('Expirée', {
+            selector: 'span',
+          })
+        )
 
         await userEvent.click(
           screen.getByRole('button', { name: 'Rechercher' })

@@ -182,6 +182,7 @@ describe('ActionsBar', () => {
 
     const expectedBody = {
       isActive: true,
+      status: [], // FIXME : fix computeOffersUrlForGivenAudience
     }
 
     const activateButton = screen.getByText('Publier')
@@ -224,6 +225,7 @@ describe('ActionsBar', () => {
 
     const expectedBody = {
       isActive: false,
+      status: [], // FIXME : fix computeOffersUrlForGivenAudience
     }
 
     const deactivateButton = screen.getByText('Masquer')

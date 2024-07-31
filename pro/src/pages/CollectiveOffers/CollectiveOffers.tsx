@@ -11,11 +11,11 @@ import {
   GET_VENUES_QUERY_KEY,
 } from 'config/swrQueryKeys'
 import {
-  ALL_STATUS,
+  DEFAULT_COLLECTIVE_SEARCH_FILTERS,
   DEFAULT_PAGE,
   DEFAULT_SEARCH_FILTERS,
 } from 'core/Offers/constants'
-import { useQuerySearchFilters } from 'core/Offers/hooks/useQuerySearchFilters'
+import { useCollectiveQuerySearchFilters } from 'core/Offers/hooks/useCollectiveQuerySearchFilters'
 import { SearchFiltersParams } from 'core/Offers/types'
 import { computeCollectiveOffersUrl } from 'core/Offers/utils/computeOffersUrl'
 import { hasSearchFilters } from 'core/Offers/utils/hasSearchFilters'
@@ -29,7 +29,7 @@ import { selectCurrentOffererId } from 'store/user/selectors'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 export const CollectiveOffers = (): JSX.Element => {
-  const urlSearchFilters = useQuerySearchFilters()
+  const urlSearchFilters = useCollectiveQuerySearchFilters()
   const currentPageNumber = urlSearchFilters.page ?? DEFAULT_PAGE
   const navigate = useNavigate()
   const { currentUser } = useCurrentUser()
@@ -70,9 +70,9 @@ export const CollectiveOffers = (): JSX.Element => {
   const isRestrictedAsAdmin = currentUser.isAdmin && !isFilterByVenueOrOfferer
 
   const apiFilters: SearchFiltersParams = {
-    ...DEFAULT_SEARCH_FILTERS,
+    ...DEFAULT_COLLECTIVE_SEARCH_FILTERS,
     ...urlSearchFilters,
-    ...(isRestrictedAsAdmin ? { status: ALL_STATUS } : {}),
+    ...(isRestrictedAsAdmin ? { status: [] } : {}),
     ...(isNewInterfaceActive
       ? { offererId: selectedOffererId?.toString() ?? '' }
       : {}),
@@ -108,7 +108,7 @@ export const CollectiveOffers = (): JSX.Element => {
       return api.getCollectiveOffers(
         nameOrIsbn,
         offererId,
-        status as CollectiveOfferDisplayedStatus,
+        status as CollectiveOfferDisplayedStatus[],
         venueId,
         categoryId,
         creationMode,

@@ -13,7 +13,7 @@ import { canArchiveCollectiveOffer } from 'components/ArchiveConfirmationModal/u
 import { GET_COLLECTIVE_OFFERS_QUERY_KEY } from 'config/swrQueryKeys'
 import { NOTIFICATION_LONG_SHOW_DURATION } from 'core/Notification/constants'
 import { DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
-import { useQuerySearchFilters } from 'core/Offers/hooks/useQuerySearchFilters'
+import { useCollectiveQuerySearchFilters } from 'core/Offers/hooks/useCollectiveQuerySearchFilters'
 import { SearchFiltersParams } from 'core/Offers/types'
 import { serializeApiFilters } from 'core/Offers/utils/serializer'
 import { useNotification } from 'hooks/useNotification'
@@ -159,7 +159,7 @@ export function CollectiveOffersActionsBar({
   areAllOffersSelected,
   getUpdateOffersStatusMessage,
 }: CollectiveOffersActionsBarProps) {
-  const urlSearchFilters = useQuerySearchFilters()
+  const urlSearchFilters = useCollectiveQuerySearchFilters()
 
   const notify = useNotification()
   const [isDeactivationDialogOpen, setIsDeactivationDialogOpen] =
