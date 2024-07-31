@@ -6,6 +6,7 @@
  * An enumeration.
  */
 export enum CollectiveOfferDisplayedStatus {
+  DRAFT = 'DRAFT',
   ACTIVE = 'ACTIVE',
   PENDING = 'PENDING',
   REJECTED = 'REJECTED',

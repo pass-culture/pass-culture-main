@@ -148,6 +148,7 @@ class CollectiveOfferResponseModel(BaseModel):
     isShowcase: bool
     venue: base_serializers.ListOffersVenueResponseModel
     status: CollectiveOfferStatus
+    displayedStatus: CollectiveOfferDisplayedStatus
     educationalInstitution: EducationalInstitutionResponseModel | None
     interventionArea: list[str]
     templateId: str | None
@@ -201,6 +202,7 @@ def _serialize_offer_paginated(offer: CollectiveOffer | CollectiveOfferTemplate)
         subcategoryId=offer.subcategoryId,  # type: ignore[arg-type]
         venue=_serialize_venue(offer.venue),  # type: ignore[arg-type]
         status=offer.status.name,
+        displayedStatus=offer.displayedStatus,
         isShowcase=is_offer_template,
         educationalInstitution=EducationalInstitutionResponseModel.from_orm(institution) if institution else None,
         interventionArea=offer.interventionArea,

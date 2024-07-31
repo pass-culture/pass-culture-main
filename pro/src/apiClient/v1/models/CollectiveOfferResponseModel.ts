@@ -2,6 +2,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { CollectiveOfferDisplayedStatus } from './CollectiveOfferDisplayedStatus';
 import type { CollectiveOffersBookingResponseModel } from './CollectiveOffersBookingResponseModel';
 import type { CollectiveOffersStockResponseModel } from './CollectiveOffersStockResponseModel';
 import type { CollectiveOfferStatus } from './CollectiveOfferStatus';
@@ -14,6 +15,7 @@ import type { TemplateDatesModel } from './TemplateDatesModel';
 export type CollectiveOfferResponseModel = {
   booking?: CollectiveOffersBookingResponseModel | null;
   dates?: TemplateDatesModel | null;
+  displayedStatus: CollectiveOfferDisplayedStatus;
   educationalInstitution?: EducationalInstitutionResponseModel | null;
   formats?: Array<EacFormat> | null;
   hasBookingLimitDatetimesPassed: boolean;
