@@ -144,7 +144,7 @@ class UserProfileGetterDict(GetterDict):
         if key == "eligibilityStartDatetime":
             return users_api.get_eligibility_start_datetime(user.birth_date)
         if key == "firstDepositActivationDate":
-            return min((deposit.dateCreated for deposit in user.deposits), default=None)
+            return user.first_deposit_activation_date
         if key == "firstName":
             return user.firstName if user.firstName != users_models.VOID_FIRST_NAME else None
         if key == "hasPassword":
