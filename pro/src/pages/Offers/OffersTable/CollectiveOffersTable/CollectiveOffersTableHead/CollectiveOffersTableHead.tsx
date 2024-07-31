@@ -31,7 +31,10 @@ export const CollectiveOffersTableHead = (): JSX.Element => {
         <th id="collective-offer-head-image">
           <span className="visually-hidden">Image</span>
         </th>
-        <th id="collective-offer-head-name">
+        <th
+          id="collective-offer-head-name"
+          className={classNames(styles['collective-th-width'])}
+        >
           <span className="visually-hidden">Nom</span>
         </th>
 
@@ -45,7 +48,10 @@ export const CollectiveOffersTableHead = (): JSX.Element => {
         )}
         <th
           id="collective-offer-head-venue"
-          className={styles['collective-th']}
+          className={classNames(
+            styles['collective-th'],
+            styles['collective-th-width']
+          )}
         >
           Lieu
         </th>

@@ -1,10 +1,10 @@
 @use "styles/variables/_size.scss" as size;
 
 .collective-tbody {
-  display: block;
+  display: grid;
 }
 
-@media (min-width: size.$tablet) {
+@media (min-width: size.$laptop) {
   .collective-tbody {
     display: table-row-group;
   }
