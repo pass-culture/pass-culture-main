@@ -48,6 +48,8 @@ describe('useOfferEditionURL', () => {
       isSplitOfferEnabled: true,
     })
 
-    expect(urlResult).toStrictEqual(`/offre/individuelle/${offerId}/details`)
+    expect(urlResult).toStrictEqual(
+      `/offre/individuelle/${offerId}/recapitulatif/details`
+    )
   })
 })
