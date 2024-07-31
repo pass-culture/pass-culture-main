@@ -388,6 +388,18 @@ def test_public_api(client):
                     "title": "CallToActionMessage",
                     "type": "object",
                 },
+                "CategoriesResponseModel": {
+                    "properties": {
+                        "categories": {
+                            "items": {"$ref": "#/components/schemas/CategoryResponseModel"},
+                            "title": "Categories",
+                            "type": "array",
+                        }
+                    },
+                    "required": ["categories"],
+                    "title": "CategoriesResponseModel",
+                    "type": "object",
+                },
                 "CategoryIdEnum": {
                     "description": "An enumeration.",
                     "enum": [
@@ -408,6 +420,19 @@ def test_public_api(client):
                         "TECHNIQUE",
                     ],
                     "title": "CategoryIdEnum",
+                },
+                "CategoryResponseModel": {
+                    "properties": {
+                        "gtls": {"items": {"type": "string"}, "nullable": True, "title": "Gtls", "type": "array"},
+                        "id": {"title": "Id", "type": "string"},
+                        "label": {"title": "Label", "type": "string"},
+                        "parents": {"items": {"type": "string"}, "title": "Parents", "type": "array"},
+                        "position": {"nullable": True, "title": "Position", "type": "integer"},
+                        "searchFilter": {"nullable": True, "title": "Searchfilter", "type": "string"},
+                    },
+                    "required": ["id", "label", "parents"],
+                    "title": "CategoryResponseModel",
+                    "type": "object",
                 },
                 "ChangeBeneficiaryEmailBody": {
                     "properties": {
@@ -1042,7 +1067,6 @@ def test_public_api(client):
                         "AUTRES_MEDIAS",
                         "BIBLIOTHEQUE_MEDIATHEQUE",
                         "CARTES_CINEMA",
-                        "CARTES_JEUNES",
                         "CD",
                         "CONCERTS_EN_LIGNE",
                         "CONCERTS_EVENEMENTS",
@@ -2061,14 +2085,16 @@ def test_public_api(client):
                         "homepageLabelName": {"$ref": "#/components/schemas/_HomepageLabelNameEnumv2"},
                         "id": {"$ref": "#/components/schemas/SubcategoryIdEnumv2"},
                         "isEvent": {"title": "Isevent", "type": "boolean"},
-                        "nativeCategoryId": {"$ref": "#/components/schemas/NativeCategoryIdEnumv2"},
+                        "nativeCategoryId": {
+                            "anyOf": [{"$ref": "#/components/schemas/NativeCategoryIdEnumv2"}],
+                            "nullable": True,
+                        },
                         "onlineOfflinePlatform": {"$ref": "#/components/schemas/OnlineOfflinePlatformChoicesEnumv2"},
                         "searchGroupName": {"$ref": "#/components/schemas/SearchGroupNameEnumv2"},
                     },
                     "required": [
                         "id",
                         "categoryId",
-                        "nativeCategoryId",
                         "appLabel",
                         "searchGroupName",
                         "homepageLabelName",
@@ -2922,6 +2948,30 @@ def test_public_api(client):
                     },
                     "security": [{"JWTAuth": []}],
                     "summary": "flag_booking_as_used <POST>",
+                    "tags": [],
+                }
+            },
+            "/native/v1/categories": {
+                "get": {
+                    "description": "",
+                    "operationId": "get__native_v1_categories",
+                    "parameters": [],
+                    "responses": {
+                        "200": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/CategoriesResponseModel"}}
+                            },
+                            "description": "OK",
+                        },
+                        "403": {"description": "Forbidden"},
+                        "422": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
+                            },
+                            "description": "Unprocessable Entity",
+                        },
+                    },
+                    "summary": "get_categories <GET>",
                     "tags": [],
                 }
             },

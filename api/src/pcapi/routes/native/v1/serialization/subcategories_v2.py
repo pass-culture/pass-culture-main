@@ -5,6 +5,7 @@ from pcapi.domain.movie_types import MovieType
 from pcapi.domain.music_types import MusicType
 from pcapi.domain.show_types import ShowType
 from pcapi.routes.serialization import BaseModel
+from pcapi.routes.serialization import ConfiguredBaseModel
 from pcapi.serialization.utils import to_camel
 
 
@@ -81,3 +82,16 @@ class SubcategoriesResponseModelv2(BaseModel):
     homepageLabels: list[HomepageLabelResponseModelv2]
     nativeCategories: list[NativeCategoryResponseModelv2]
     genreTypes: list[GenreTypeModel]
+
+
+class CategoryResponseModel(ConfiguredBaseModel):
+    id: str
+    label: str
+    parents: list[str]
+    gtls: list[str] | None = None
+    position: int | None = None
+    search_filter: str | None = None
+
+
+class CategoriesResponseModel(ConfiguredBaseModel):
+    categories: list[CategoryResponseModel]
