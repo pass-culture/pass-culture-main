@@ -43,13 +43,20 @@ When('I fill in stocks', () => {
 })
 
 When('I validate stocks step', () => {
-  cy.intercept({ method: 'PATCH', url: '/offers/*' }).as('patchOffer')
+  cy.intercept({ method: 'PATCH', url: '/offers/*', times: 1 }).as('patchOffer')
   cy.intercept({ method: 'POST', url: '/stocks/bulk' }).as('postStocks')
   cy.intercept({ method: 'GET', url: '/offers/*' }).as('getOffer')
   cy.findByText('Enregistrer et continuer').click()
   cy.wait(['@patchOffer', '@postStocks', '@getOffer'], {
-    requestTimeout: 30 * 1000,
+    responseTimeout: 30 * 1000,
   })
+})
+
+When('I go to my offers list', () => {
+  cy.intercept({ method: 'GET', url: '/offers?*' }).as('getOffers')
+  cy.intercept({ method: 'GET', url: '/venues*' }).as('getVenue')
+  cy.findByText('Voir la liste des offres').click()
+  cy.wait(['@getOffers', '@getVenue'], { responseTimeout: 30 * 1000 * 2 })
 })
 
 Then('my new physical offer should be displayed', () => {

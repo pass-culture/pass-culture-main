@@ -54,7 +54,7 @@ When('I fill in prices', () => {
 })
 
 When('I validate prices step', () => {
-  cy.intercept({ method: 'PATCH', url: '/offers/*' }).as('patchOffer')
+  cy.intercept({ method: 'PATCH', url: '/offers/*', times: 1 }).as('patchOffer')
   cy.intercept({ method: 'GET', url: '/offers/*' }).as('getOffer')
   cy.intercept({ method: 'GET', url: '/offers/*/stocks/*' }).as('getStocks')
   cy.findByText('Enregistrer et continuer').click()
@@ -134,10 +134,25 @@ When('I publish my offer', () => {
 })
 
 When('I go to the offers list', () => {
-  cy.intercept({ method: 'GET', url: '/offers?*' }).as('getOffers')
-  cy.intercept({ method: 'GET', url: '/venues*' }).as('getVenue')
+  cy.intercept({ method: 'GET', url: '/offerers/names' }).as('getOfferersNames')
+  cy.intercept({ method: 'GET', url: '/offers/*' }).as('getOffer')
+  cy.intercept({ method: 'GET', url: '/offers/categories' }).as('getCategories')
+  cy.intercept({ method: 'GET', url: '/venues?offererId=*' }).as(
+    'getVenuesForOfferer'
+  )
   cy.findByText('Voir la liste des offres').click()
-  cy.wait(['@getOffers', '@getVenue'], { responseTimeout: 30 * 1000 * 2 })
+  cy.wait(
+    [
+      '@getOfferersNames',
+      '@getOffer',
+      '@getCategories',
+      '@getVenuesForOfferer',
+    ],
+    {
+      requestTimeout: 60 * 1000 * 5,
+      responseTimeout: 60 * 1000 * 5,
+    }
+  )
 })
 
 Then('my new offer should be displayed', () => {

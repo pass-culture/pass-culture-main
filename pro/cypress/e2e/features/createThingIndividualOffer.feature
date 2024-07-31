@@ -11,5 +11,5 @@ Feature: Create an individual offer (thing)
     And I fill in stocks
     And I validate stocks step
     And I publish my offer
-    And I go to the offers list
+    And I go to my offers list
     Then my new physical offer should be displayed
