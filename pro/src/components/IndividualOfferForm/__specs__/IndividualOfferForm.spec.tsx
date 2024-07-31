@@ -69,6 +69,12 @@ const renderIndividualOfferForm = ({
   )
 }
 
+vi.mock('utils/windowMatchMedia', () => ({
+  doesUserPreferReducedMotion: vi.fn(() => true),
+}))
+
+Element.prototype.scrollIntoView = vi.fn()
+
 describe('IndividualOfferForm', () => {
   let initialValues: IndividualOfferFormValues
   const onSubmit = vi.fn()
