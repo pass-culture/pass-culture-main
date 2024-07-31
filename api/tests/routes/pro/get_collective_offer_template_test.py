@@ -52,6 +52,7 @@ class Returns200Test:
             "end": format_into_utc_date(offer.end),
         }
         assert response.json["formats"] == offer.formats
+        assert response.json["displayedStatus"] == "ACTIVE"
 
     def test_performance(self, client):
         # Given
