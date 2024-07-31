@@ -338,6 +338,7 @@ def update_offer(
     shouldSendMail: bool = False,
     is_from_private_api: bool = False,
     idAtProvider: str | None | T_UNCHANGED = UNCHANGED,
+    offererAddress: offerers_models.OffererAddress | None | T_UNCHANGED = UNCHANGED,
 ) -> models.Offer:
     modifications = {
         field: new_value

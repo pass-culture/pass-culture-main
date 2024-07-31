@@ -6,7 +6,6 @@ from flask_login import login_required
 import sqlalchemy as sqla
 
 from pcapi import repository
-from pcapi.connectors import api_adresse
 from pcapi.core.categories import categories
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.categories.categories import TITELIVE_MUSIC_TYPES
@@ -325,39 +324,14 @@ def post_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.Ge
         .first_or_404()
     )
     offerer_address: offerers_models.OffererAddress | None = None
-    is_manual_edition: bool = False
     if body.address:
-        try:
-            address_info = api_adresse.get_address(body.address.street, body.address.postalCode, body.address.city)
-            location_data = offerers_api.LocationData(
-                city=address_info.city,
-                postal_code=address_info.postcode,
-                latitude=address_info.latitude,
-                longitude=address_info.longitude,
-                street=address_info.street,
-                insee_code=address_info.citycode,
-                ban_id=address_info.id,
-            )
-        except api_adresse.NoResultException:
-            insee_code = None
-            if body.address.city and body.address.postalCode:
-                try:
-                    insee_code = api_adresse.get_municipality_centroid(
-                        body.address.city, body.address.postalCode
-                    ).citycode
-                except api_adresse.AdresseException:
-                    pass
-            location_data = offerers_api.LocationData(
-                city=body.address.city,
-                postal_code=body.address.postalCode,
-                latitude=float(body.address.latitude),
-                longitude=float(body.address.longitude),
-                street=body.address.street,
-                insee_code=insee_code,
-                ban_id=None,
-            )
-            is_manual_edition = True
-        address = offerers_api.get_or_create_address(location_data, is_manual_edition=is_manual_edition)
+        address = offerers_api.create_offerer_address_from_address_api(
+            street=body.address.street,
+            postal_code=body.address.postalCode,
+            city=body.address.city,
+            latitude=float(body.address.latitude),
+            longitude=float(body.address.longitude),
+        )
         offerer_address = offerers_api.get_or_create_offerer_address(
             venue.managingOffererId, address.id, label=body.address.label
         )
@@ -488,7 +462,18 @@ def patch_offer(
     ).get(offer_id)
     if not offer:
         raise api_errors.ResourceNotFoundError
-
+    offerer_address = None
+    if body.address and body.address != offers_api.UNCHANGED:
+        address = offerers_api.create_offerer_address_from_address_api(
+            street=body.address.street,
+            postal_code=body.address.postalCode,
+            city=body.address.city,
+            latitude=float(body.address.latitude),
+            longitude=float(body.address.longitude),
+        )
+        offerer_address = offerers_api.get_or_create_offerer_address(
+            offer.venue.managingOffererId, address.id, label=body.address.label
+        )
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
     update_body = body.dict(exclude_unset=True)
     try:
@@ -519,6 +504,7 @@ def patch_offer(
                 withdrawalType=update_body.get("withdrawalType", offers_api.UNCHANGED),
                 shouldSendMail=update_body.get("shouldSendMail") or False,
                 is_from_private_api=True,
+                offererAddress=offerer_address if offerer_address else offers_api.UNCHANGED,
             )
     except (exceptions.OfferCreationBaseException, exceptions.OfferEditionBaseException) as error:
         raise api_errors.ApiErrors(error.errors, status_code=400)

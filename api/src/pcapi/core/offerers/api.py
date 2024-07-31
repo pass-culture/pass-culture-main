@@ -2679,6 +2679,45 @@ def get_or_create_offerer_address(offerer_id: int, address_id: int, label: str |
     return offerer_address
 
 
+def create_offerer_address_from_address_api(
+    street: str,
+    postal_code: str,
+    city: str,
+    latitude: float,
+    longitude: float,
+) -> geography_models.Address:
+    is_manual_edition: bool = False
+    try:
+        address_info = api_adresse.get_address(street, postal_code, city)
+        location_data = LocationData(
+            city=address_info.city,
+            postal_code=address_info.postcode,
+            latitude=address_info.latitude,
+            longitude=address_info.longitude,
+            street=address_info.street,
+            insee_code=address_info.citycode,
+            ban_id=address_info.id,
+        )
+    except api_adresse.NoResultException:
+        insee_code = None
+        if city and postal_code:
+            try:
+                insee_code = api_adresse.get_municipality_centroid(city, postal_code).citycode
+            except api_adresse.AdresseException:
+                pass
+        location_data = LocationData(
+            city=city,
+            postal_code=postal_code,
+            latitude=latitude,
+            longitude=longitude,
+            street=street,
+            insee_code=insee_code,
+            ban_id=None,
+        )
+        is_manual_edition = True
+    return get_or_create_address(location_data, is_manual_edition=is_manual_edition)
+
+
 def update_fraud_info(
     offerer: offerers_models.Offerer | None,
     venue: offerers_models.Venue | None,
