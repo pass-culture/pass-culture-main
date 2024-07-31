@@ -1553,6 +1553,14 @@ def test_public_api(client):
                     "enum": ["INFO", "ERROR", "WARNING", "CLOCK", "FILE", "MAGNIFYING_GLASS"],
                     "title": "PopOverIcon",
                 },
+                "PostFeedbackBody": {
+                    "properties": {
+                        "feedback": {"maxLength": 800, "minLength": 1, "title": "Feedback", "type": "string"}
+                    },
+                    "required": ["feedback"],
+                    "title": "PostFeedbackBody",
+                    "type": "object",
+                },
                 "PostReactionRequest": {
                     "properties": {
                         "offerId": {"title": "Offerid", "type": "integer"},
@@ -3026,6 +3034,29 @@ def test_public_api(client):
                         },
                     },
                     "summary": "email_validation_remaining_resends <GET>",
+                    "tags": [],
+                }
+            },
+            "/native/v1/feedback": {
+                "post": {
+                    "description": "",
+                    "operationId": "post__native_v1_feedback",
+                    "parameters": [],
+                    "requestBody": {
+                        "content": {"application/json": {"schema": {"$ref": "#/components/schemas/PostFeedbackBody"}}}
+                    },
+                    "responses": {
+                        "204": {"description": "No Content"},
+                        "403": {"description": "Forbidden"},
+                        "422": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
+                            },
+                            "description": "Unprocessable Entity",
+                        },
+                    },
+                    "security": [{"JWTAuth": []}],
+                    "summary": "post_feedback <POST>",
                     "tags": [],
                 }
             },

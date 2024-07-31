@@ -366,6 +366,10 @@ class User(PcObject, Base, Model, DeactivableMixin):
         return self.deposit.type if self.deposit else None
 
     @property
+    def first_deposit_activation_date(self) -> datetime | None:
+        return min((deposit.dateCreated for deposit in self.deposits), default=None)
+
+    @property
     def received_pass_15_17(self) -> bool:
         return DepositType.GRANT_15_17 in [deposit.type for deposit in self.deposits]
 
