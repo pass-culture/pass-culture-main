@@ -68,6 +68,7 @@ jobs:
   version:
     name: "Version"
     needs: check-worflow-ref
+    # `deploy` is an artificial environment with protection rules, which allows a single required review instead of many
     environment:  ${{ fromJSON('["deploy", "testing"]')[github.event.inputs.target_environment == 'testing'] }}
     runs-on: ubuntu-latest
     outputs:
