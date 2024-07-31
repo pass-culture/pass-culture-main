@@ -143,8 +143,8 @@ def get_subcategories_v2() -> subcategories_v2_serializers.SubcategoriesResponse
             for subcategory in subcategories_v2.ALL_SUBCATEGORIES
         ],
         searchGroups=[
-            subcategories_v2_serializers.SearchGroupResponseModelv2.from_orm(search_group_name)
-            for search_group_name in subcategories_v2.SearchGroups
+            subcategories_v2_serializers.SearchGroupResponseModelv2.from_orm(search_group)
+            for search_group in subcategories_v2.SEARCH_GROUPS
         ],
         homepageLabels=[
             subcategories_v2_serializers.HomepageLabelResponseModelv2.from_orm(homepage_label_name)
@@ -152,10 +152,20 @@ def get_subcategories_v2() -> subcategories_v2_serializers.SubcategoriesResponse
         ],
         nativeCategories=[
             subcategories_v2_serializers.NativeCategoryResponseModelv2.from_orm(native_category)
-            for native_category in subcategories_v2.NativeCategory
+            for native_category in subcategories_v2.NATIVE_CATEGORIES
         ],
         genreTypes=[
             subcategories_v2_serializers.GenreTypeModel.from_orm(genre_type)
             for genre_type in subcategories_v2.GenreType
         ],
+    )
+
+
+@blueprint.native_route("/categories", methods=["GET"])
+@spectree_serialize(api=blueprint.api, response_model=subcategories_v2_serializers.CategoriesResponseModel)
+def get_categories() -> subcategories_v2_serializers.CategoriesResponseModel:
+    return subcategories_v2_serializers.CategoriesResponseModel(
+        categories=[
+            subcategories_v2_serializers.CategoryResponseModel.from_orm(node) for node in subcategories_v2.SEARCH_NODES
+        ]
     )
