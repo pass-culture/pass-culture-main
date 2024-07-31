@@ -24,7 +24,11 @@
   padding-right: 0;
 }
 
-@media (min-width: size.$tablet) {
+.collective-th-width {
+  min-width: rem.torem(120px);
+}
+
+@media (min-width: size.$laptop) {
   .collective-offers-thead {
     display: table-header-group;
   }
