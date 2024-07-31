@@ -122,6 +122,7 @@ class Returns200Test:
                 "publicName": venue.publicName,
             },
             "status": "DRAFT",
+            "displayedStatus": "DRAFT",
             "domains": [],
             "interventionArea": ["93", "94", "95"],
             "isCancellable": False,

@@ -3,6 +3,7 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { CollectiveBookingStatus } from './CollectiveBookingStatus';
+import type { CollectiveOfferDisplayedStatus } from './CollectiveOfferDisplayedStatus';
 import type { CollectiveOfferOfferVenueResponseModel } from './CollectiveOfferOfferVenueResponseModel';
 import type { CollectiveOfferStatus } from './CollectiveOfferStatus';
 import type { EacFormat } from './EacFormat';
@@ -25,6 +26,7 @@ export type GetCollectiveOfferResponseModel = {
   dateCreated: string;
   dates?: TemplateDatesModel | null;
   description: string;
+  displayedStatus: CollectiveOfferDisplayedStatus;
   domains: Array<OfferDomain>;
   durationMinutes?: number | null;
   formats?: Array<EacFormat> | null;

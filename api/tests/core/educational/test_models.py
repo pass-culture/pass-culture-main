@@ -7,8 +7,10 @@ from sqlalchemy import exc as sa_exc
 
 from pcapi.core.educational import exceptions
 from pcapi.core.educational import factories
+from pcapi.core.educational.factories import create_collective_offer_by_status
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveOffer
+from pcapi.core.educational.models import CollectiveOfferDisplayedStatus
 from pcapi.core.educational.models import CollectiveStock
 from pcapi.core.educational.models import EducationalDeposit
 from pcapi.core.educational.models import HasImageMixin
@@ -600,3 +602,11 @@ class EducationalInstitutionProgramTest:
         with pytest.raises(sa_exc.IntegrityError):
             institution.programs = [program1, program2]
             db.session.commit()
+
+
+class CollectiveOfferDisplayedStatusTest:
+    @pytest.mark.parametrize("status", set(CollectiveOfferDisplayedStatus))
+    def test_get_offer_displayed_status(self, status):
+        offer = create_collective_offer_by_status(status)
+
+        assert offer.displayedStatus == status
