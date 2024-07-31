@@ -97,18 +97,9 @@ export const UsefulInformationScreen = ({
       const receivedOfferId = response.id
       await mutate([GET_OFFER_QUERY_KEY, receivedOfferId])
 
-      // replace url to fix back button
-      navigate(
-        getIndividualOfferUrl({
-          step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-          offerId: receivedOfferId,
-          mode,
-        }),
-        { replace: true }
-      )
       const nextStep =
         mode === OFFER_WIZARD_MODE.EDITION
-          ? OFFER_WIZARD_STEP_IDS.SUMMARY
+          ? OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS
           : isEvent
             ? OFFER_WIZARD_STEP_IDS.TARIFS
             : OFFER_WIZARD_STEP_IDS.STOCKS
@@ -180,7 +171,6 @@ export const UsefulInformationScreen = ({
   })
 
   const handlePreviousStepOrBackToReadOnly = () => {
-    /* istanbul ignore next: DEBT, TO FIX */
     mode === OFFER_WIZARD_MODE.CREATION
       ? navigate(
           getIndividualOfferUrl({
