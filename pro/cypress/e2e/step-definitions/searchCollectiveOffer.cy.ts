@@ -5,6 +5,9 @@ Given('I go to {string} view', (tab: string) => {
 })
 
 Given('I go to Offres collectives view', () => {
+  cy.intercept({ method: 'GET', url: '/collective/offers*' }).as(
+    'collectiveOffers'
+  )
   cy.visit('/offres/collectives')
   cy.wait('@collectiveOffers')
 })

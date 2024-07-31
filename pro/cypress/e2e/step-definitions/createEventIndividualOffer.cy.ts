@@ -14,6 +14,8 @@ When('I fill in offer details', () => {
 })
 
 When('I validate offer details step', () => {
+  cy.intercept({ method: 'GET', url: '/offers/*' }).as('getOffer')
+  cy.intercept({ method: 'POST', url: '/offers' }).as('postOffer')
   cy.findByText('Enregistrer et continuer').click()
   cy.wait(['@getOffer', '@postOffer'])
 })
@@ -52,6 +54,9 @@ When('I fill in prices', () => {
 })
 
 When('I validate prices step', () => {
+  cy.intercept({ method: 'PATCH', url: '/offers/*' }).as('patchOffer')
+  cy.intercept({ method: 'GET', url: '/offers/*' }).as('getOffer')
+  cy.intercept({ method: 'GET', url: '/offers/*/stocks/*' }).as('getStocks')
   cy.findByText('Enregistrer et continuer').click()
   cy.wait(['@patchOffer', '@getOffer', '@getStocks'], {
     responseTimeout: 60 * 1000 * 3,
@@ -111,6 +116,7 @@ When('I fill in recurrence', () => {
 })
 
 When('I validate recurrence step', () => {
+  cy.intercept({ method: 'POST', url: '/stocks/bulk' }).as('postStocks')
   cy.findByText('Valider').click()
   cy.wait(['@postStocks'])
 
@@ -119,10 +125,19 @@ When('I validate recurrence step', () => {
 })
 
 When('I publish my offer', () => {
+  cy.intercept({ method: 'PATCH', url: '/offers/publish' }).as('publishOffer')
+  cy.intercept({ method: 'GET', url: '/offers/*' }).as('getOffer')
   cy.findByText('Publier l’offre').click()
-  cy.wait(['@patchOffer', '@getOffer'], {
+  cy.wait(['@publishOffer', '@getOffer'], {
     responseTimeout: 60 * 1000 * 2,
   })
+})
+
+When('I go to the offers list', () => {
+  cy.intercept({ method: 'GET', url: '/offers?*' }).as('getOffers')
+  cy.intercept({ method: 'GET', url: '/venues*' }).as('getVenue')
+  cy.findByText('Voir la liste des offres').click()
+  cy.wait(['@getOffers', '@getVenue'], { responseTimeout: 30 * 1000 * 2 })
 })
 
 Then('my new offer should be displayed', () => {
