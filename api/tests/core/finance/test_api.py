@@ -1757,7 +1757,7 @@ class GenerateCashflowsTest:
 
 
 @clean_temporary_files
-@time_machine.travel(datetime.datetime(2023, 2, 1, 12, 34, 56))
+@time_machine.travel(datetime.datetime(2023, 2, 1, 12, 34, 26))
 @mock.patch("pcapi.connectors.googledrive.TestingBackend.create_file")
 def test_generate_payment_files(mocked_gdrive_create_file):
     # The contents of generated files is unit-tested in other test
@@ -1782,8 +1782,8 @@ def test_generate_payment_files(mocked_gdrive_create_file):
     assert cashflow.logs[0].statusAfter == models.CashflowStatus.UNDER_REVIEW
     gdrive_file_names = {call.args[1] for call in mocked_gdrive_create_file.call_args_list}
     assert gdrive_file_names == {
-        "bank_accounts_20230201_133456.csv",
-        f"down_payment_{cashflow.batch.label}_20230201_133456.csv",
+        "bank_accounts_20230201_1334.csv",
+        f"down_payment_{cashflow.batch.label}_20230201_1334.csv",
     }
 
 
@@ -2311,10 +2311,10 @@ def test_generate_invoice_file():
     )
 
     # Freeze time so that we can guess the timestamp of the CSV file.
-    with time_machine.travel(datetime.datetime(2023, 2, 1, 12, 34, 56)):
+    with time_machine.travel(datetime.datetime(2023, 2, 1, 12, 34, 26)):
         path = api.generate_invoice_file(cashflow1.batch)
     with zipfile.ZipFile(path) as zfile:
-        with zfile.open(f"invoices_{cashflow1.batch.label}_20230201_133456.csv") as csv_bytefile:
+        with zfile.open(f"invoices_{cashflow1.batch.label}_20230201_1334.csv") as csv_bytefile:
             csv_textfile = io.TextIOWrapper(csv_bytefile)
             reader = csv.DictReader(csv_textfile, quoting=csv.QUOTE_NONNUMERIC)
             rows = list(reader)

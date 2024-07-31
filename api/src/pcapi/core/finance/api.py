@@ -1242,7 +1242,7 @@ def _write_csv(
     compress: bool = False,
 ) -> pathlib.Path:
     local_now = pytz.utc.localize(datetime.datetime.utcnow()).astimezone(utils.ACCOUNTING_TIMEZONE)
-    filename = filename_base + local_now.strftime("_%Y%m%d_%H%M%S") + ".csv"
+    filename = filename_base + local_now.strftime("_%Y%m%d_%H%M") + ".csv"
     # Store file in a dedicated directory within "/tmp". It's easier
     # to clean files in tests that way.
     path = pathlib.Path(tempfile.mkdtemp()) / filename
