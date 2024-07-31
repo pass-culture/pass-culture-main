@@ -18,6 +18,7 @@ import { useIndividualOfferContext } from 'context/IndividualOfferContext/Indivi
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
 import { isOfferDisabled } from 'core/Offers/utils/isOfferDisabled'
+import { useActiveFeature } from 'hooks/useActiveFeature'
 import { useNotification } from 'hooks/useNotification'
 import { useOfferWizardMode } from 'hooks/useOfferWizardMode'
 import fullCodeIcon from 'icons/full-code.svg'
@@ -52,6 +53,7 @@ export interface StocksThingProps {
 
 export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
   const mode = useOfferWizardMode()
+  const isSplitOfferEnabled = useActiveFeature('WIP_SPLIT_OFFER')
   const navigate = useNavigate()
   const notify = useNotification()
   const { subCategories } = useIndividualOfferContext()
@@ -154,7 +156,9 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
       : navigate(
           getIndividualOfferUrl({
             offerId: offer.id,
-            step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+            step: isSplitOfferEnabled
+              ? OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS
+              : OFFER_WIZARD_STEP_IDS.INFORMATIONS,
             mode,
           })
         )

@@ -228,9 +228,9 @@ export function setDefaultInitialValuesFromOffer({
     venueId: String(offer.venue.id),
     categoryId: subcategory.categoryId,
     subcategoryId: offer.subcategoryId,
-    showType: offer.extraData.showType ?? DEFAULT_DETAILS_FORM_VALUES.showType,
+    showType: offer.extraData?.showType ?? DEFAULT_DETAILS_FORM_VALUES.showType,
     showSubType:
-      offer.extraData.showSubType ?? DEFAULT_DETAILS_FORM_VALUES.showSubType,
+      offer.extraData?.showSubType ?? DEFAULT_DETAILS_FORM_VALUES.showSubType,
     subcategoryConditionalFields: subcategoryConditionalFields,
     durationMinutes: offer.durationMinutes
       ? deSerializeDurationMinutes(offer.durationMinutes)

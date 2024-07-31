@@ -104,7 +104,7 @@ export const DetailsScreen = ({ venues }: DetailsScreenProps): JSX.Element => {
       )
       const nextStep =
         mode === OFFER_WIZARD_MODE.EDITION
-          ? OFFER_WIZARD_STEP_IDS.SUMMARY
+          ? OFFER_WIZARD_STEP_IDS.DETAILS
           : OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS
 
       navigate(
@@ -148,26 +148,15 @@ export const DetailsScreen = ({ venues }: DetailsScreenProps): JSX.Element => {
   })
 
   const handlePreviousStepOrBackToReadOnly = () => {
-    const queryParams = new URLSearchParams(location.search)
-    const queryOffererId = queryParams.get('structure')
-    const queryVenueId = queryParams.get('lieu')
-    /* istanbul ignore next: DEBT, TO FIX */
     mode === OFFER_WIZARD_MODE.CREATION
-      ? navigate({
-          pathname: '/offre/creation',
-          search:
-            queryOffererId && queryVenueId
-              ? `lieu=${queryVenueId}&structure=${queryOffererId}`
-              : queryOffererId && !queryVenueId
-                ? `structure=${queryOffererId}`
-                : '',
-        })
-      : navigate({
-          pathname: getIndividualOfferUrl({
+      ? navigate('/offre/creation')
+      : navigate(
+          getIndividualOfferUrl({
+            offerId: offer?.id,
             step: OFFER_WIZARD_STEP_IDS.DETAILS,
             mode: OFFER_WIZARD_MODE.READ_ONLY,
-          }),
-        })
+          })
+        )
   }
 
   const readOnlyFields = setFormReadOnlyFields(offer)
