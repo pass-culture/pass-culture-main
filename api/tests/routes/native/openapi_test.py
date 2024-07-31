@@ -2225,12 +2225,14 @@ def test_public_api(client):
                 },
                 "UserProfileResponse": {
                     "properties": {
+                        "activityId": {"anyOf": [{"$ref": "#/components/schemas/ActivityIdEnum"}], "nullable": True},
                         "birthDate": {"format": "date", "nullable": True, "title": "Birthdate", "type": "string"},
                         "bookedOffers": {
                             "additionalProperties": {"type": "integer"},
                             "title": "Bookedoffers",
                             "type": "object",
                         },
+                        "city": {"nullable": True, "title": "City", "type": "string"},
                         "depositActivationDate": {
                             "format": "date-time",
                             "nullable": True,
@@ -2280,6 +2282,7 @@ def test_public_api(client):
                         "lastName": {"nullable": True, "title": "Lastname", "type": "string"},
                         "needsToFillCulturalSurvey": {"title": "Needstofillculturalsurvey", "type": "boolean"},
                         "phoneNumber": {"nullable": True, "title": "Phonenumber", "type": "string"},
+                        "postalCode": {"nullable": True, "title": "Postalcode", "type": "string"},
                         "recreditAmountToShow": {"nullable": True, "title": "Recreditamounttoshow", "type": "integer"},
                         "requiresIdCheck": {"title": "Requiresidcheck", "type": "boolean"},
                         "roles": {"items": {"$ref": "#/components/schemas/UserRole"}, "type": "array"},
