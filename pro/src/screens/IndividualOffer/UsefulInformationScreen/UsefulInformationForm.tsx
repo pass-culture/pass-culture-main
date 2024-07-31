@@ -86,8 +86,8 @@ export const UsefulInformationForm = ({
 
   const displayBookingContact = offerSubCategory?.canBeWithdrawable
 
-  const getFirstWithdrawalTypeEnumValue = () => {
-    switch (withdrawalType) {
+  const getFirstWithdrawalTypeEnumValue = (value: string) => {
+    switch (value) {
       case WithdrawalTypeEnum.BY_EMAIL:
         return ticketSentDateOptions[0].value
 
@@ -138,7 +138,7 @@ export const UsefulInformationForm = ({
                 onChange={async (e) => {
                   await setFieldValue(
                     'withdrawalDelay',
-                    getFirstWithdrawalTypeEnumValue()
+                    getFirstWithdrawalTypeEnumValue(e.target.value)
                   )
                   handleChange(e)
                 }}
