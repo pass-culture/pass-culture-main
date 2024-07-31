@@ -171,13 +171,19 @@ class UserProfileGetterDict(GetterDict):
         if key == "subscriptionMessage":
             user_subscription_state = subscription_api.get_user_subscription_state(user)
             return user_subscription_state.subscription_message
+        if key == "activityId":
+            if user.activity is None:
+                return None
+            return profile_options.ActivityIdEnum(users_models.ActivityEnum(user.activity).name)
 
         return super().get(key, default)
 
 
 class UserProfileResponse(ConfiguredBaseModel):
+    activity_id: profile_options.ActivityIdEnum | None
     birth_date: datetime.date | None
     booked_offers: dict[str, int]
+    city: str | None
     deposit_activation_date: datetime.datetime | None
     deposit_expiration_date: datetime.datetime | None
     deposit_type: finance_models.DepositType | None
@@ -195,6 +201,7 @@ class UserProfileResponse(ConfiguredBaseModel):
     last_name: str | None
     needs_to_fill_cultural_survey: bool
     phone_number: str | None
+    postal_code: str | None
     recredit_amount_to_show: int | None
     requires_id_check: bool
     roles: list[users_models.UserRole]

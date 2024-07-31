@@ -96,6 +96,8 @@ class AccountTest:
             "firstName": "john",
             "lastName": "doe",
             "phoneNumber": "+33102030405",
+            "city": "Annecy",
+            "postalCode": "74000",
             "needsToFillCulturalSurvey": True,
         }
         user = users_factories.BeneficiaryGrant18Factory(
@@ -107,6 +109,7 @@ class AccountTest:
             deposit__expirationDate=datetime(2040, 1, 1),
             notificationSubscriptions={"marketing_push": True},
             validatedBirthDate=datetime(2000, 1, 11),
+            activity=users_models.ActivityEnum.STUDENT.value,
             **USER_DATA,
         )
         users_factories.DepositGrantFactory(
@@ -153,6 +156,7 @@ class AccountTest:
                 "statusType": young_status.YoungStatusType.BENEFICIARY.value,
                 "subscriptionStatus": None,
             },
+            "activityId": users_models.ActivityEnum.STUDENT.name,
         }
         EXPECTED_DATA.update(USER_DATA)
 
