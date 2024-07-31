@@ -31,7 +31,7 @@ export const getIndividualOfferPath = ({
     [OFFER_WIZARD_STEP_IDS.DETAILS]: {
       [OFFER_WIZARD_MODE.CREATION]: `/offre/individuelle/:offerId/creation/details`,
       [OFFER_WIZARD_MODE.EDITION]: `/offre/individuelle/:offerId/edition/details`,
-      [OFFER_WIZARD_MODE.READ_ONLY]: `/offre/individuelle/:offerId/details`,
+      [OFFER_WIZARD_MODE.READ_ONLY]: `/offre/individuelle/:offerId/recapitulatif/details`,
     },
     [OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS]: {
       [OFFER_WIZARD_MODE.CREATION]: `/offre/individuelle/:offerId/creation/pratiques`,
