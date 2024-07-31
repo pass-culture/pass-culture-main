@@ -4,7 +4,10 @@ import {
 } from 'apiClient/v1'
 import { AccessibilityEnum } from 'core/shared/types'
 
-import { FORM_DEFAULT_VALUES } from '../constants'
+import {
+  FORM_DEFAULT_VALUES,
+  FORM_DEFAULT_VALUES_NO_OFFER_LOCATION,
+} from '../constants'
 import { IndividualOfferFormValues } from '../types'
 
 import { buildSubcategoryFields } from './buildSubCategoryFields'
@@ -54,9 +57,14 @@ export const setDefaultInitialFormValues = (
   offererId: string | null,
   venueId: string | null,
   venueList: VenueListItemResponseModel[],
-  isBookingContactEnabled: boolean
+  isBookingContactEnabled: boolean,
+  isOfferAddressEnabled: boolean = false
 ): IndividualOfferFormValues => {
-  let initialOffererId = FORM_DEFAULT_VALUES.offererId
+  const DEFAULT_VALUES = isOfferAddressEnabled
+    ? FORM_DEFAULT_VALUES
+    : FORM_DEFAULT_VALUES_NO_OFFER_LOCATION
+
+  let initialOffererId = DEFAULT_VALUES.offererId
 
   if (offererNames.length === 1) {
     initialOffererId = offererNames[0].id.toString()
@@ -67,8 +75,8 @@ export const setDefaultInitialFormValues = (
     initialOffererId = offererId
   }
 
-  let initialWithdrawalDetails = FORM_DEFAULT_VALUES.withdrawalDetails
-  let initialAccessibility = FORM_DEFAULT_VALUES.accessibility
+  let initialWithdrawalDetails = DEFAULT_VALUES.withdrawalDetails
+  let initialAccessibility = DEFAULT_VALUES.accessibility
   const initialIsVenueVirtual = venueList.every((v) => v.isVirtual)
 
   const venue =
@@ -87,13 +95,13 @@ export const setDefaultInitialFormValues = (
   const { subcategoryFields } = buildSubcategoryFields(isBookingContactEnabled)
 
   return {
-    ...FORM_DEFAULT_VALUES,
-    isDuo: FORM_DEFAULT_VALUES.isDuo,
-    categoryId: FORM_DEFAULT_VALUES.categoryId,
-    subcategoryId: FORM_DEFAULT_VALUES.subcategoryId,
+    ...DEFAULT_VALUES,
+    isDuo: DEFAULT_VALUES.isDuo,
+    categoryId: DEFAULT_VALUES.categoryId,
+    subcategoryId: DEFAULT_VALUES.subcategoryId,
     subCategoryFields: subcategoryFields,
     offererId: initialOffererId,
-    venueId: venue?.id ? String(venue.id) : FORM_DEFAULT_VALUES.venueId,
+    venueId: venue?.id ? String(venue.id) : DEFAULT_VALUES.venueId,
     withdrawalDetails: initialWithdrawalDetails,
     accessibility: initialAccessibility,
     isVenueVirtual: initialIsVenueVirtual,

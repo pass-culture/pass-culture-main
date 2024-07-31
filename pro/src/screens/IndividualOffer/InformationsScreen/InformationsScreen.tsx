@@ -32,6 +32,7 @@ import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
 import { isOfferDisabled } from 'core/Offers/utils/isOfferDisabled'
 import { PATCH_SUCCESS_MESSAGE } from 'core/shared/constants'
+import { useActiveFeature } from 'hooks/useActiveFeature'
 import { useCurrentUser } from 'hooks/useCurrentUser'
 import { useNotification } from 'hooks/useNotification'
 import { useOfferWizardMode } from 'hooks/useOfferWizardMode'
@@ -92,6 +93,8 @@ export const InformationsScreen = ({
     categoryStatus
   ).filter((venue) => venue.managingOffererId === Number(offererId))
 
+  const offerAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
+
   // offer is null when we are creating a new offer
   const initialValues: IndividualOfferFormValues =
     offer === null
@@ -100,7 +103,8 @@ export const InformationsScreen = ({
           offererId,
           venueId,
           filteredVenueList,
-          true
+          true,
+          offerAddressEnabled
         )
       : setInitialFormValues(offer, subCategories, true)
 
@@ -206,7 +210,11 @@ export const InformationsScreen = ({
   }
 
   const readOnlyFields = setFormReadOnlyFields(offer, currentUser.isAdmin)
-  const validationSchema = getValidationSchema(offer?.lastProvider?.name)
+  const DONT_USE_OFFER_LOCATION_SCHEMA = !offerAddressEnabled
+  const validationSchema = getValidationSchema(
+    offer?.lastProvider?.name,
+    DONT_USE_OFFER_LOCATION_SCHEMA
+  )
   const formik = useFormik({
     initialValues,
     onSubmit,
