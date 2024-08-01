@@ -1486,6 +1486,21 @@ class GetFilteredCollectiveOffersTest:
         )
         assert offers.one() == collective_offer_archived
 
+    def test_get_collective_offers_draft(self):
+        user_offerer = offerers_factories.UserOffererFactory()
+
+        collective_offer_draft = educational_factories.CollectiveOfferFactory(
+            validation=offer_mixin.OfferValidationStatus.DRAFT.value, venue__managingOfferer=user_offerer.offerer
+        )
+
+        offers = repository.get_collective_offers_by_filters(
+            user_offerer.userId,
+            user_is_admin=False,
+        )
+
+        with assert_num_queries(1):
+            assert offers.one() == collective_offer_draft
+
 
 @pytest.mark.usefixtures("db_session")
 class ExcludeOffersFromInactiveVenueProviderTest:
