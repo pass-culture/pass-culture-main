@@ -135,7 +135,7 @@ class SendinblueBackend(BaseBackend):
 
     def get_raw_contact_data(self, contact_email: str) -> dict:
         try:
-            return self.contacts_api.get_contact_info(contact_email)
+            return self.contacts_api.get_contact_info(contact_email).to_dict()
 
         except SendinblueApiException as exception:
             if exception.status == 404:
