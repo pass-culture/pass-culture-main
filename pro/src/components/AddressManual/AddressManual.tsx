@@ -45,14 +45,15 @@ export const AddressManual = (): JSX.Element => {
       <FormLayout.Row>
         <TextInput label="Adresse postale" name="street" />
       </FormLayout.Row>
-      <div className={styles['inline-fields']}>
-        <FormLayout.Row inline className={styles['field-cp']}>
-          <TextInput label="Code postal" name="postalCode" maxLength={5} />
-        </FormLayout.Row>
-        <FormLayout.Row inline className={styles['field-city']}>
-          <TextInput label="Ville" name="city" />
-        </FormLayout.Row>
-      </div>
+      <FormLayout.Row inline className={styles['inline-fields']}>
+        <TextInput
+          label="Code postal"
+          name="postalCode"
+          maxLength={5}
+          className={styles['field-cp']}
+        />
+        <TextInput label="Ville" name="city" className={styles['field-city']} />
+      </FormLayout.Row>
       <FormLayout.Row>
         <TextInput
           label="Coordonnées GPS"
