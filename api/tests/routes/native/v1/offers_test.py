@@ -332,7 +332,8 @@ class OffersTest:
             # 13. select feature
             # 14. select offerer
             # 15. select google_places_info
-            with assert_num_queries(15):
+            # 16. reaction
+            with assert_num_queries(16):
                 with assert_no_duplicated_queries():
                     response = client.get(f"/native/v1/offer/{offer_id}")
                     assert response.status_code == 200
@@ -455,7 +456,8 @@ class OffersTest:
         # 14. select price_category
         # 15. select price_category_label
         # 16. select google_places_info
-        with assert_num_queries(16):
+        # 17. reaction
+        with assert_num_queries(17):
             response = client.get(f"/native/v1/offer/{offer_id}")
             assert response.status_code == 200
 
@@ -501,7 +503,6 @@ class OffersTest:
         )
 
         offer_id = offer.id
-        # TODO: (lixxday, 1/08/2024) This is too much queries
         # select offer
         # select EXISTS venue_provider
         # select EXISTS provider
@@ -585,7 +586,8 @@ class OffersTest:
         # 17. select price_category_label
         # 18. select price_category
         # 19. select google_places_info
-        with assert_num_queries(19):
+        # 20. reaction
+        with assert_num_queries(20):
             response = client.get(f"/native/v1/offer/{offer_id}")
             assert response.status_code == 200
 
@@ -625,7 +627,8 @@ class OffersTest:
         # 12. select price_category
         # 13. select price_category_label
         # 14. select google_places_info
-        with assert_num_queries(14):
+        # 15. reaction
+        with assert_num_queries(15):
             response = client.get(f"/native/v1/offer/{offer_id}")
             assert response.status_code == 200
 
