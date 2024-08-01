@@ -501,26 +501,28 @@ class OffersTest:
         )
 
         offer_id = offer.id
-        # 1. select offer
-        # 2. check cinema venue_provider exists
-        # 3. select active cinema provider
-        # 4. select cinema_provider_pivot
-        # 5. select feature
-        # 6. select cinema_provider_pivot
-        # 7. select boost_cinema_details
-        # 8. update stock
-        # 9. select stock
-        # 10. select offer
-        # 11. select stock
-        # 12. select mediation
-        # 13. select venue
-        # 14. select provider
-        # 15. select offerer
-        # 16. select price_category
-        # 17. select price_category_label
-        # 18. select price_category
-        # 19. select google_places_info
-        with assert_num_queries(19):
+        # TODO: (lixxday, 1/08/2024) This is too much queries
+        # select offer
+        # select EXISTS venue_provider
+        # select EXISTS provider
+        # select cinema_provider_pivot
+        # select feature
+        # select EXISTS provider
+        # select boost_cinema_details
+        # update stock
+        # select stock
+        # select offer
+        # select stock
+        # select provider
+        # select venue
+        # select offerer
+        # select mediation
+        # select reaction
+        # select price_category
+        # select price_category_label
+        # select price_category
+        # select google_places_info
+        with assert_num_queries(20):
             response = client.get(f"/native/v1/offer/{offer_id}")
             assert response.status_code == 200
         assert first_show_stock.remainingQuantity == 96
@@ -1029,22 +1031,26 @@ class OffersV2Test:
 
         offer_id = offer.id
         with override_features(**{ff_name: ff_value}):
-            # 1. select offer
-            # 2. check cinema venue_provider exists
-            # 3. select active cinema provider
-            # 4. check offer is from current cinema provider
-            # 5. update offer (deactivate)
+            # TODO: (lixxday, 1/08/2024) This is too much queries
+            # 1. select offer (joined with a lot of stuff)
+            # 2. select EXISTS venue_provider
+            # 3. select EXISTS provider
+            # 4. select cinema_provider_pivot
+            # 5. update offer
+            # -- At this point, we are losing control. The following should be one select --
             # 6. select offer
-            # 7. select stock
-            # 8. select mediation
-            # 9. select product
-            # 10. select product_mediation
+            # 7. select product
+            # 8. select stock
+            # 9. select provider
+            # 10. select feature
             # 11. select venue
-            # 12. select provider
-            # 13. select feature
-            # 14. select offerer
-            # 15. select google_places_info
-            with assert_num_queries(15):
+            # 12. select offerer
+            # 13. select mediation
+            # 14. select product_mediation
+            # 15. select reaction
+            # 16. select google_places_info
+
+            with assert_num_queries(16):
                 response = client.get(f"/native/v2/offer/{offer_id}")
 
         assert response.status_code == 200
@@ -1148,23 +1154,25 @@ class OffersV2Test:
         )
 
         offer_id = offer.id
+        # TODO: (lixxday, 1/08/2024) This is too much queries
         # 1. select offer
-        # 2. check cinema venue_provider exists
-        # 3. select active cinema provider
+        # 2. select EXISTS venue_provider
+        # 3. select EXISTS provider
         # 4. select cinema_provider_pivot
         # 5. select feature
         # 6. update stock
         # 7. select stock
         # 8. select offer
         # 9. select stock
-        # 10. select mediation
+        # 10. select provider
         # 11. select venue
-        # 12. select provider
-        # 13. select offerer
-        # 14. select price_category
-        # 15. select price_category_label
-        # 16. select google_places_info
-        with assert_num_queries(16):
+        # 12. select offerer
+        # 13. select mediation
+        # 14. select reaction
+        # 15. select price_category
+        # 16. select price_category_label
+        # 17. select google_places_info
+        with assert_num_queries(17):
             response = client.get(f"/native/v2/offer/{offer_id}")
 
         assert stock.remainingQuantity == 0
@@ -1208,27 +1216,29 @@ class OffersV2Test:
             offer=offer, idAtProviders=f"{offer_id_at_provider}#{will_be_sold_out_show}", quantity=96
         )
 
+        # TODO: (lixxday, 1/08/2024) This is too much queries
         # 1. select offer
-        # 2. check cinema venue_provider exists
-        # 3. select active cinema provider
+        # 2. select EXISTS provider
+        # 3. select EXISTS venue_provider
         # 4. select cinema_provider_pivot
         # 5. select feature
-        # 6. select cinema_provider_pivot
+        # 6. select EXISTS provider
         # 7. select boost_cinema_details
         # 8. update stock
         # 9. select stock
         # 10. select offer
         # 11. select stock
-        # 12. select mediation
+        # 12. select provider
         # 13. select venue
-        # 14. select provider
-        # 15. select offerer
-        # 16. select price_category
-        # 17. select price_category_label
-        # 18. select price_category
-        # 19. select google_places_info
+        # 14. select offerer
+        # 15. select mediation
+        # 16. select reaction
+        # 17. select price_category
+        # 18. select price_category_label
+        # 19. select price_category
+        # 20. select google_places_info
         offer_id = offer.id
-        with assert_num_queries(19):
+        with assert_num_queries(20):
             response = client.get(f"/native/v2/offer/{offer_id}")
         assert response.status_code == 200
         assert first_show_stock.remainingQuantity == 96
@@ -1271,27 +1281,29 @@ class OffersV2Test:
             offer=offer, idAtProviders=f"{offer_id_at_provider}#{descheduled_show}", quantity=95
         )
 
-        # 1. select offer
-        # 2. check cinema venue_provider exists
-        # 3. select active cinema provider
-        # 4. select cinema_provider_pivot
-        # 5. select feature
-        # 6. check cinema venue_provider exists
-        # 7. select cgr_cinema_details
-        # 8. update stock
-        # 9. select stock
+        offer_id = offer.id
+        # TODO: (lixxday, 1/08/2024) This is too much queries
+        # 1.  select offer
+        # 2.  select EXISTS provider
+        # 3.  select EXISTS venue_provider
+        # 4.  select cinema_provider_pivot
+        # 5.  select feature
+        # 6.  select EXISTS provider
+        # 7.  select cgr_cinema_details
+        # 8.  update stock
+        # 9.  select stock
         # 10. select offer
         # 11. select stock
-        # 12. select mediation
+        # 12. select provider
         # 13. select venue
-        # 14. select provider
-        # 15. select offerer
-        # 16. select price_category
-        # 17. select price_category_label
-        # 18. select price_category
-        # 19. select google_places_info
-        offer_id = offer.id
-        with assert_num_queries(19):
+        # 14. select offerer
+        # 15. select mediation
+        # 16. select reaction
+        # 17. select price_category
+        # 18. select price_category_label
+        # 19. select price_category
+        # 20. select google_places_info
+        with assert_num_queries(20):
             response = client.get(f"/native/v2/offer/{offer_id}")
 
         assert response.status_code == 200
@@ -1326,7 +1338,14 @@ class OffersV2Test:
         offers_factories.EventStockFactory(offer=offer, quantity=1)
 
         offer_id = offer.id
-        with assert_num_queries(1):
+
+        # 1. select offer
+        # 2. select EXISTS venue_provider
+        # 3. select EXISTS provider
+        # 4. select cinema_provider_pivot
+        # 5. select feature
+        # 6. select EXISTS provider
+        with assert_num_queries(6):
             response = client.get(f"/native/v2/offer/{offer_id}")
 
         assert response.status_code == 200
@@ -1360,7 +1379,15 @@ class OffersV2Test:
         offers_factories.EventStockFactory(offer=offer, quantity=1)
 
         offer_id = offer.id
-        with assert_num_queries(1):
+
+        # 1. select offer
+        # 2. select EXISTS provider
+        # 3. select EXISTS venue_provider
+        # 4. select cinema_provider_pivot
+        # 5. select feature
+        # 6. select EXISTS provider
+        # 7. select cgr_cinema_details
+        with assert_num_queries(7):
             response = client.get(f"/native/v2/offer/{offer_id}")
 
         assert response.status_code == 200
@@ -1388,7 +1415,23 @@ class OffersV2Test:
         offers_factories.EventStockFactory(offer=offer, idAtProviders="toto", quantity=1)
 
         offer_id = offer.id
-        with assert_num_queries(1):
+
+        # 1. select offer
+        # 2. select EXISTS venue_provider
+        # 3. select EXISTS provider
+        # 4. update offer
+        # 5. select offer
+        # 6. select stock
+        # 7. select provider
+        # 8. select feature
+        # 9. select venue
+        # 10. select offerer
+        # 11. select mediation
+        # 12. select reaction
+        # 13. select price_category
+        # 14. select price_category_label
+        # 15. select google_places_info
+        with assert_num_queries(15):
             response = client.get(f"/native/v2/offer/{offer_id}")
 
         assert response.status_code == 200
@@ -1424,7 +1467,15 @@ class OffersV2Test:
         )
 
         offer_id = offer.id
-        with assert_num_queries(1):
+
+        # 1. select offer
+        # 2. select EXISTS venue_provider
+        # 3. select EXISTS provider
+        # 4. select cinema_provider_pivot
+        # 5. select feature
+        # 6. select EXISTS provider
+        # 7. select boost_cinema_details
+        with assert_num_queries(7):
             response = client.get(f"/native/v2/offer/{offer_id}")
 
         assert response.status_code == 200
@@ -1449,21 +1500,22 @@ class OffersV2Test:
         offers_factories.EventStockFactory(offer=offer, idAtProviders="toto")
 
         # 1. select offer
-        # 2. check cinema venue_provider exists
-        # 3. select active cinema provider
+        # 2. select EXISTS venue_provider
+        # 3. select EXISTS provider
         # 4. update offer
         # 5. select offer
         # 6. select stock
-        # 7. select mediation
-        # 8. select venue
-        # 9. select provider
-        # 10. select feature
-        # 11. select offerer
-        # 12. select price_category
-        # 13. select price_category_label
-        # 14. select google_places_info
+        # 7. select provider
+        # 8. select feature
+        # 9. select venue
+        # 10. select offerer
+        # 11. select mediation
+        # 12. select reaction
+        # 13. select price_category
+        # 14. select price_category_label
+        # 15. select google_places_info
         offer_id = offer.id
-        with assert_num_queries(14):
+        with assert_num_queries(15):
             response = client.get(f"/native/v2/offer/{offer_id}")
 
         assert response.json["isReleased"] is False
