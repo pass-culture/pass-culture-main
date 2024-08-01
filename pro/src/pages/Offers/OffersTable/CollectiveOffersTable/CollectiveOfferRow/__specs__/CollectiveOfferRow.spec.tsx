@@ -90,7 +90,7 @@ describe('ollectiveOfferRow', () => {
       expect(
         within(
           screen.getAllByRole('link', { name: /éditer l’offre/ })[0]
-        ).getByRole('img')
+        ).getByRole('presentation')
       ).toHaveAttribute('src', '/my-fake-thumb')
     })
 
@@ -216,7 +216,7 @@ describe('ollectiveOfferRow', () => {
       props.offer.status = status
       renderOfferItem(props)
 
-      expect(screen.getByRole('img')).toHaveClass('thumb-inactive')
+      expect(screen.getByRole('presentation')).toHaveClass('thumb-inactive')
     }
   )
 
@@ -230,7 +230,7 @@ describe('ollectiveOfferRow', () => {
       props.offer.status = status
       renderOfferItem(props)
 
-      expect(screen.getByRole('img')).not.toHaveClass('thumb-inactive')
+      expect(screen.getByRole('presentation')).not.toHaveClass('thumb-inactive')
     }
   )
 
