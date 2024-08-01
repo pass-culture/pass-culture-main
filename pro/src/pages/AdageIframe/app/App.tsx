@@ -1,5 +1,5 @@
 import { setUser as setSentryUser } from '@sentry/browser'
-import { useEffect, useId, useState } from 'react'
+import { useEffect, useState } from 'react'
 import useSWRMutation from 'swr/mutation'
 
 import {
@@ -12,8 +12,6 @@ import { LOG_CATALOG_VIEW_QUERY_KEY } from 'config/swrQueryKeys'
 import { useNotification } from 'hooks/useNotification'
 import { LOGS_DATA } from 'utils/config'
 
-import { initAlgoliaAnalytics } from '../libs/initAlgoliaAnalytics'
-
 import { AppLayout } from './components/AppLayout/AppLayout'
 import { LoaderPage } from './components/LoaderPage/LoaderPage'
 import { UnauthenticatedError } from './components/UnauthenticatedError/UnauthenticatedError'
@@ -24,7 +22,6 @@ export const App = (): JSX.Element => {
   const [isLoading, setIsLoading] = useState<boolean>(true)
 
   const notification = useNotification()
-  const uniqueId = useId()
 
   const params = new URLSearchParams(window.location.search)
   const siret = params.get('siret')
@@ -65,11 +62,6 @@ export const App = (): JSX.Element => {
       })
     }
   }, [notification, siret, venueId])
-
-  useEffect(() => {
-    // User token can not contains special characters
-    initAlgoliaAnalytics(uniqueId.replace(/[\W_]/g, '_'))
-  }, [uniqueId])
 
   if (isLoading) {
     return <LoaderPage />
