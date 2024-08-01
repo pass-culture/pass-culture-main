@@ -501,7 +501,6 @@ def _filter_collective_offers_by_statuses(query: BaseQuery, statuses: list[str] 
         if DisplayedStatus.BOOKED.value in statuses:
             allowed_booking_status.add(educational_models.CollectiveBookingStatus.CONFIRMED.value)
             allowed_booking_status.add(educational_models.CollectiveBookingStatus.USED.value)
-            allowed_booking_status.add(educational_models.CollectiveBookingStatus.REIMBURSED.value)
         if DisplayedStatus.PREBOOKED.value in statuses:
             allowed_booking_status.add(educational_models.CollectiveBookingStatus.PENDING.value)
 

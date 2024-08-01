@@ -105,7 +105,8 @@ class CollectiveBookingStatus(enum.Enum):
     REIMBURSED = "REIMBURSED"
 
 
-class CollectiveOfferDisplayedStatus(enum.Enum):
+class CollectiveOfferDisplayedStatus(str, enum.Enum):
+    DRAFT = "DRAFT"
     ACTIVE = "ACTIVE"
     PENDING = "PENDING"
     REJECTED = "REJECTED"
@@ -588,6 +589,42 @@ class CollectiveOffer(
             .where(aliased_collective_stock.hasBeginningDatetimePassed.is_(True))
         )
 
+    @property
+    def displayedStatus(self) -> CollectiveOfferDisplayedStatus:
+        if self.isArchived:
+            return CollectiveOfferDisplayedStatus.ARCHIVED
+
+        if self.validation == offer_mixin.OfferValidationStatus.REJECTED:
+            return CollectiveOfferDisplayedStatus.REJECTED
+
+        if self.validation == offer_mixin.OfferValidationStatus.PENDING:
+            return CollectiveOfferDisplayedStatus.PENDING
+
+        if self.validation == offer_mixin.OfferValidationStatus.DRAFT:
+            return CollectiveOfferDisplayedStatus.DRAFT
+
+        if not self.isActive:
+            return CollectiveOfferDisplayedStatus.INACTIVE
+
+        if self.validation == offer_mixin.OfferValidationStatus.APPROVED:
+            last_booking_status = self.lastBookingStatus
+
+            # pylint: disable=using-constant-test
+            if self.is_expired:
+                if last_booking_status in {CollectiveBookingStatus.USED, CollectiveBookingStatus.REIMBURSED}:
+                    return CollectiveOfferDisplayedStatus.ENDED
+
+                return CollectiveOfferDisplayedStatus.EXPIRED
+
+            if last_booking_status in {CollectiveBookingStatus.CONFIRMED, CollectiveBookingStatus.USED}:
+                return CollectiveOfferDisplayedStatus.BOOKED
+            if last_booking_status in {CollectiveBookingStatus.PENDING}:
+                return CollectiveOfferDisplayedStatus.PREBOOKED
+            if last_booking_status in {CollectiveBookingStatus.CANCELLED}:
+                return CollectiveOfferDisplayedStatus.CANCELLED
+
+        return CollectiveOfferDisplayedStatus.ACTIVE
+
     def get_formats(self) -> typing.Sequence[subcategories.EacFormat] | None:
         if self.formats:
             return self.formats
@@ -812,6 +849,25 @@ class CollectiveOfferTemplate(
         ]
 
         return tuple(parent_args)
+
+    @property
+    def displayedStatus(self) -> CollectiveOfferDisplayedStatus:
+        if self.isArchived:
+            return CollectiveOfferDisplayedStatus.ARCHIVED
+
+        if self.validation == offer_mixin.OfferValidationStatus.REJECTED:
+            return CollectiveOfferDisplayedStatus.REJECTED
+
+        if self.validation == offer_mixin.OfferValidationStatus.PENDING:
+            return CollectiveOfferDisplayedStatus.PENDING
+
+        if self.validation == offer_mixin.OfferValidationStatus.DRAFT:
+            return CollectiveOfferDisplayedStatus.DRAFT
+
+        if not self.isActive:
+            return CollectiveOfferDisplayedStatus.INACTIVE
+
+        return CollectiveOfferDisplayedStatus.ACTIVE
 
     @property
     def start(self) -> datetime | None:
