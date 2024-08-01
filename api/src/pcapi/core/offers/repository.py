@@ -496,12 +496,16 @@ def _filter_collective_offers_by_statuses(query: BaseQuery, statuses: list[str] 
 
     offer_id_with_booking_status_subquery, query_with_booking = add_last_booking_status_to_collective_offer_query(query)
     if DisplayedStatus.BOOKED.value in statuses or DisplayedStatus.PREBOOKED.value in statuses:
+        # all displayedStatus with an offer that has NOT expired
 
         allowed_booking_status = set()
         if DisplayedStatus.BOOKED.value in statuses:
-            allowed_booking_status.add(educational_models.CollectiveBookingStatus.CONFIRMED.value)
-            allowed_booking_status.add(educational_models.CollectiveBookingStatus.USED.value)
-            allowed_booking_status.add(educational_models.CollectiveBookingStatus.REIMBURSED.value)
+            allowed_booking_status.update(
+                {
+                    educational_models.CollectiveBookingStatus.CONFIRMED.value,
+                    educational_models.CollectiveBookingStatus.USED.value,
+                }
+            )
         if DisplayedStatus.PREBOOKED.value in statuses:
             allowed_booking_status.add(educational_models.CollectiveBookingStatus.PENDING.value)
 
@@ -512,33 +516,29 @@ def _filter_collective_offers_by_statuses(query: BaseQuery, statuses: list[str] 
                 educational_models.CollectiveOffer.isArchived == False,
             )
         )
-    if DisplayedStatus.ENDED.value in statuses:
-        # Status ENDED == event is passed with a reservation not cancelled
-
-        on_booking_status_filter.append(
-            and_(
-                offer_id_with_booking_status_subquery.c.status.in_(
-                    [
-                        educational_models.CollectiveBookingStatus.USED.value,
-                        educational_models.CollectiveBookingStatus.REIMBURSED.value,
-                    ]
-                ),
-                educational_models.CollectiveOffer.status == offer_mixin.CollectiveOfferStatus.EXPIRED.name,
-                educational_models.CollectiveOffer.isArchived == False,
+    if (
+        DisplayedStatus.ENDED.value in statuses
+        or DisplayedStatus.EXPIRED.value in statuses
+        or DisplayedStatus.REIMBURSED.value in statuses
+    ):
+        # all displayedStatus with an offer that has expired
+        allowed_expired_booking_status: set[educational_models.CollectiveBookingStatus | None] = set()
+        if DisplayedStatus.ENDED.value in statuses:
+            allowed_expired_booking_status.add(educational_models.CollectiveBookingStatus.USED)
+        if DisplayedStatus.REIMBURSED.value in statuses:
+            allowed_expired_booking_status.add(educational_models.CollectiveBookingStatus.REIMBURSED)
+        if DisplayedStatus.EXPIRED.value in statuses:
+            allowed_expired_booking_status.update(
+                {
+                    None,
+                    educational_models.CollectiveBookingStatus.PENDING,
+                    educational_models.CollectiveBookingStatus.CANCELLED,
+                }
             )
-        )
-    if DisplayedStatus.EXPIRED.value in statuses:
-        # Status EXPIRED == event is passed without any reservation or cancelled ones
 
         on_booking_status_filter.append(
             and_(
-                offer_id_with_booking_status_subquery.c.status.in_(
-                    [
-                        None,
-                        educational_models.CollectiveBookingStatus.PENDING.value,
-                        educational_models.CollectiveBookingStatus.CANCELLED.value,
-                    ]
-                ),
+                offer_id_with_booking_status_subquery.c.status.in_(allowed_expired_booking_status),
                 educational_models.CollectiveOffer.status == offer_mixin.CollectiveOfferStatus.EXPIRED.name,
                 educational_models.CollectiveOffer.isArchived == False,
             )

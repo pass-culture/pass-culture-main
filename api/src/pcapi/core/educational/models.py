@@ -118,6 +118,7 @@ class CollectiveOfferDisplayedStatus(enum.Enum):
     EXPIRED = "EXPIRED"
     ENDED = "ENDED"
     CANCELLED = "CANCELLED"
+    REIMBURSED = "REIMBURSED"
     ARCHIVED = "ARCHIVED"
 
 
