@@ -110,11 +110,10 @@ export const OfferLocation = ({ venue }: OfferLocationProps): JSX.Element => {
               icon={manuallySetAddress.value ? fullBackIcon : fullNextIcon}
               onClick={() => setManuallySetAddress(!manuallySetAddress.value)}
             >
-              {!manuallySetAddress.value && (
-                <>Vous ne trouvez pas votre adresse ?</>
-              )}
-              {manuallySetAddress.value && (
+              {manuallySetAddress.value ? (
                 <>Revenir à la sélection automatique</>
+              ) : (
+                <>Vous ne trouvez pas votre adresse ?</>
               )}
             </Button>
           </FormLayout.Row>
