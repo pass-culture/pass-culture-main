@@ -1502,6 +1502,21 @@ class OffersV2Test:
         assert response.status_code == 200
         assert response.json["reactionsCount"] == {"likes": 2}
 
+    def test_get_offer_attached_to_product_with_user_reaction(self, client):
+        product = offers_factories.ProductFactory(subcategoryId=subcategories.SEANCE_CINE.id)
+        offer = offers_factories.EventOfferFactory(product=product)
+        offers_factories.EventStockFactory(offer=offer, price=12.34)
+        ReactionFactory(product=product, reactionType=ReactionTypeEnum.LIKE)
+        ReactionFactory(product=product, reactionType=ReactionTypeEnum.LIKE)
+        ReactionFactory(product=product, reactionType=ReactionTypeEnum.DISLIKE)
+
+        offer_id = offer.id
+        with assert_num_queries(1):
+            response = client.get(f"/native/v2/offer/{offer_id}")
+
+        assert response.status_code == 200
+        assert response.json["reactionsCount"] == {"likes": 2}
+
     def test_get_event_offer_with_no_reactions(self, client):
         offer = offers_factories.EventOfferFactory(subcategoryId=subcategories.SEANCE_CINE.id)
         offers_factories.EventStockFactory(offer=offer, price=12.34)

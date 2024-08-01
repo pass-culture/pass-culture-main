@@ -231,8 +231,12 @@ class ReactionCount(BaseModel):
 class BaseOfferResponseGetterDict(GetterDict):
     def get(self, key: str, default: Any = None) -> Any:
         offer = self._obj
+        product = offer.product
         if key == "reactions_count":
-            likes = sum(1 for reaction in offer.reactions if reaction.reactionType == ReactionTypeEnum.LIKE)
+            if product:
+                likes = sum(1 for reaction in product.reactions if reaction.reactionType == ReactionTypeEnum.LIKE)
+            else:
+                likes = sum(1 for reaction in offer.reactions if reaction.reactionType == ReactionTypeEnum.LIKE)
             return ReactionCount(likes=likes)
 
         if key == "accessibility":

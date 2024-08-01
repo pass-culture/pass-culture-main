@@ -212,6 +212,7 @@ def get_offers_details(offer_ids: list[int]) -> BaseQuery:
             .load_only(models.Product.id, models.Product.last_30_days_booking, models.Product.thumbCount)
             .joinedload(models.Product.productMediations)
         )
+        .options(sa_orm.joinedload(models.Offer.product).joinedload(models.Product.reactions))
         .outerjoin(models.Offer.lastProvider)
         .options(sa_orm.contains_eager(models.Offer.lastProvider).load_only(providers_models.Provider.localClass))
         .filter(models.Offer.id.in_(offer_ids), models.Offer.validation == models.OfferValidationStatus.APPROVED)
