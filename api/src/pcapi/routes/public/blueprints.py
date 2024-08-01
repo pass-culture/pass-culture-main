@@ -13,6 +13,9 @@ from .booking_token import blueprint as booking_token_blueprint
 from .books_stocks import blueprint as booking_stocks_blueprint
 
 
+DEPRECATED_PUBLIC_API_URL_PREFIX = "/v2"
+
+
 def _check_api_is_enabled_and_json_valid() -> None:
     # We test the json validity because pydantic will not raise an error if the json is not valid.
     # Pydantic will then try to apply the validation schema and throws unintelligible errors.
@@ -27,7 +30,9 @@ public_api.before_request(_check_api_is_enabled_and_json_valid)
 
 
 # [OLD] Old tokens and stocks apis
-deprecated_v2_prefixed_public_api = Blueprint("deprecated_public_api", __name__, url_prefix="/v2")
+deprecated_v2_prefixed_public_api = Blueprint(
+    "deprecated_public_api", __name__, url_prefix=DEPRECATED_PUBLIC_API_URL_PREFIX
+)
 deprecated_v2_prefixed_public_api.register_blueprint(booking_token_blueprint.deprecated_booking_token_blueprint)
 deprecated_v2_prefixed_public_api.register_blueprint(booking_stocks_blueprint.deprecated_books_stocks_blueprint)
 
