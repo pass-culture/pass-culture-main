@@ -101,6 +101,12 @@ export const DetailsForm = ({
     subcategoryConditionalFields.includes(field)
   )
 
+  // Books have a gtl_id field, other categories have a musicType field
+  const hasMusicType =
+    categoryId !== 'LIVRE'
+      ? subcategoryConditionalFields.includes('gtl_id')
+      : subcategoryConditionalFields.includes('musicType')
+
   return (
     <>
       <FormLayout.Section title="A propos de votre offre">
@@ -206,7 +212,7 @@ export const DetailsForm = ({
 
           {displayArtisticInformations && (
             <FormLayout.Section title="Informations artistiques">
-              {subcategoryConditionalFields.includes('gtl_id') && (
+              {hasMusicType && (
                 <FormLayout.Row>
                   <Select
                     label="Genre musical"
