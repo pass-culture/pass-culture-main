@@ -12,7 +12,11 @@
 }
 
 .tw-strong {
-  @include fonts.title4-light;
+  @include fonts.title4;
+}
+
+.tw-description {
+  margin-top: rem.torem(32px);
 }
 
 .tw-steps {

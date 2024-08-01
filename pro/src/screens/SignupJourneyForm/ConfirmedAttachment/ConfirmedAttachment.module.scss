@@ -14,10 +14,6 @@ $confirmed-attachment-gap: rem.torem(32px);
   @include fonts.title1;
 }
 
-.informations {
-  @include fonts.title4-light;
-}
-
 .home-button {
   width: fit-content;
 }

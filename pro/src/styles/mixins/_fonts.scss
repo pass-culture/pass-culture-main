@@ -40,13 +40,6 @@ $caption-line-height: rem.torem(16px);
   line-height: rem.torem(22px);
 }
 
-@mixin title4-light() {
-  font-size: rem.torem(18px);
-  font-style: normal;
-  font-weight: 500;
-  line-height: rem.torem(22px);
-}
-
 @mixin button() {
   font-size: rem.torem(15px);
   font-weight: 700;
