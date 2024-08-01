@@ -124,6 +124,7 @@ class FeatureToggle(enum.Enum):
     ENABLE_COLLECTIVE_OFFERS_EXPIRATION = "Activer la mise en avant des offres collectives sur le point d'expirer"
     ENABLE_COLLECTIVE_NEW_STATUSES = "Activer les nouveaux statuts des offres collectives"
     WIP_ENABLE_COLLECTIVE_DRAFT_OFFERS = "Activer les brouillons pour les offres collectives"
+    WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE = "Utiliser les OffererAddress comme source de données"
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -186,6 +187,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_ENABLE_PUBLIC_API_PERMISSION_SYSTEM,
     FeatureToggle.WIP_ENABLE_REMINDER_MARKETING_MAIL_METADATA_DISPLAY,
     FeatureToggle.WIP_ENABLE_TITELIVE_API_FOR_BOOKS,
+    FeatureToggle.WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE,
     FeatureToggle.WIP_SPLIT_OFFER,
     FeatureToggle.WIP_SUGGESTED_SUBCATEGORIES,
     # Please keep alphabetic order
