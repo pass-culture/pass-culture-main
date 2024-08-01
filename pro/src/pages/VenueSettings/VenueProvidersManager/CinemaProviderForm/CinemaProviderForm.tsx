@@ -80,7 +80,7 @@ export const CinemaProviderForm = ({
                 Lancer la synchronisation
               </Button>
             ) : (
-              <div>
+              <div className={styles['cinema-provider-form-buttons']}>
                 <Button
                   variant={ButtonVariant.SECONDARY}
                   onClick={onCancel}
