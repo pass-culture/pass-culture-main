@@ -1,7 +1,7 @@
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
-import { GetIndividualOfferResponseModel } from 'apiClient/v1'
+import { GetIndividualOfferWithAddressResponseModel } from 'apiClient/v1'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { OfferAppPreview } from 'components/OfferAppPreview/OfferAppPreview'
 import { SummaryAside } from 'components/SummaryLayout/SummaryAside'
@@ -17,8 +17,10 @@ import { GET_MUSIC_TYPES_QUERY_KEY } from 'config/swrQueryKeys'
 import { useIndividualOfferContext } from 'context/IndividualOfferContext/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
+import { useActiveFeature } from 'hooks/useActiveFeature'
 import { useOfferWizardMode } from 'hooks/useOfferWizardMode'
 import phoneStrokeIcon from 'icons/stroke-phone.svg'
+import { computeAddressDisplayName } from 'repository/venuesService'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
@@ -28,12 +30,14 @@ import { serializeOfferSectionData } from '../SummaryScreen/OfferSection/seriali
 import styles from './DetailsSummary.module.scss'
 
 type DetailsSummaryScreenProps = {
-  offer: GetIndividualOfferResponseModel
+  offer: GetIndividualOfferWithAddressResponseModel
 }
 
 export function DetailsSummaryScreen({ offer }: DetailsSummaryScreenProps) {
   const mode = useOfferWizardMode()
   const { categories, subCategories } = useIndividualOfferContext()
+  const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
+
   const musicTypesQuery = useSWR(
     GET_MUSIC_TYPES_QUERY_KEY,
     () => api.getMusicTypes(),
@@ -54,8 +58,19 @@ export function DetailsSummaryScreen({ offer }: DetailsSummaryScreenProps) {
   const aboutDescriptions: Description[] = [
     { title: 'Title de l’offre', text: offerData.name },
     { title: 'Description', text: offerData.description },
-    { title: 'Lieu', text: offerData.venuePublicName ?? offerData.venueName },
   ]
+  const venueName = offerData.venuePublicName || offerData.venueName
+  if (isOfferAddressEnabled) {
+    aboutDescriptions.unshift({
+      title: 'Qui propose l’offre',
+      text: venueName,
+    })
+  } else {
+    aboutDescriptions.push({
+      title: 'Lieu',
+      text: venueName,
+    })
+  }
 
   const typeDescriptions: Description[] = [
     { title: 'Catégorie', text: offerData.categoryName },
@@ -160,6 +175,18 @@ export function DetailsSummaryScreen({ offer }: DetailsSummaryScreenProps) {
             </SummarySubSection>
           )}
         </SummarySection>
+        {isOfferAddressEnabled && (
+          <SummarySubSection title="Localisation de l’offre">
+            <SummaryDescriptionList
+              descriptions={[
+                {
+                  title: 'Adresse',
+                  text: computeAddressDisplayName(offerData.address!),
+                },
+              ]}
+            />
+          </SummarySubSection>
+        )}
       </SummaryContent>
       <SummaryAside>
         <div className={styles['title-container']}>

@@ -15,8 +15,12 @@ export const computeVenueDisplayName = (
   }
 }
 
+type MinimalAddressResponseModelToDisplay = Pick<
+  AddressResponseIsEditableModel,
+  'label' | 'city' | 'street' | 'postalCode'
+>
 export const computeAddressDisplayName = (
-  address: AddressResponseIsEditableModel
+  address: MinimalAddressResponseModelToDisplay
 ): string => {
   return (
     (address.label ? `${address.label} - ` : '') +
