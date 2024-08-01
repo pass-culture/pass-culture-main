@@ -1,15 +1,13 @@
-import { parseDms } from 'dms-conversion'
 import { useField, useFormikContext } from 'formik'
 import { useEffect } from 'react'
 
 import { Callout } from 'components/Callout/Callout'
 import { CalloutVariant } from 'components/Callout/types'
 import { FormLayout } from 'components/FormLayout/FormLayout'
-import fullLinkIcon from 'icons/full-link.svg'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
-import { getCoordsType } from 'utils/coords'
+import { getCoordsType, parseDms } from 'utils/coords'
 
 import styles from './AddressManual.module.scss'
 
@@ -68,16 +66,13 @@ export const AddressManual = (): JSX.Element => {
       {coords.value && !coordsMeta.error && (
         <>
           <Callout variant={CalloutVariant.INFO} className={styles['callout']}>
-            <p>Vérifiez la localisation en cliquant sur le lien suivant :</p>
             <ButtonLink
               to={`https://google.com/maps/place/${decodeURIComponent(coords.value)}`}
-              title="Vérifier dans Google Maps"
               variant={ButtonVariant.TERNARY}
-              icon={fullLinkIcon}
               isExternal
               opensInNewTab
             >
-              https://google.com/maps/place/{decodeURIComponent(coords.value)}
+              Vérifiez la localisation en cliquant ici
             </ButtonLink>
           </Callout>
         </>

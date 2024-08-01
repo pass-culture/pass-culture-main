@@ -1,4 +1,4 @@
-import { checkCoords, getCoordsType } from 'utils/coords'
+import { checkCoords, getCoordsType, parseDms, dmsRe } from 'utils/coords'
 
 describe('checkCoords', () => {
   it('should validate the latitude, longitude format', () => {
@@ -30,5 +30,33 @@ describe('getCoordsType', () => {
     expect(getCoordsType('48.853320, 2.348979')).toBe('DD') // Decimal degrees
     expect(getCoordsType(`48°51'12.0"N 2°20'56.3"E`)).toBe('DMS') // Degrees, minutes, seconds
     expect(getCoordsType('foobar')).toBe('unknown')
+  })
+})
+
+describe('parseDms', () => {
+  const long = -122.902336120571
+  const lat = 46.9845854731319
+
+  it('should be able to correctly parse DMS into decimal degrees', () => {
+    const v = ['46°59′5″ N', '122°54′8″ W']
+    // Get RegExp matches for each string in v and test to see if the match was successful.
+    v.forEach((s) => expect(s.match(dmsRe)).toBeTruthy())
+    // Parse the strings in v into decimal degrees.
+    const [y, x] = v.map(parseDms)
+    expect(typeof x).toEqual('number')
+    expect(typeof y).toEqual('number')
+    expect(x).toBeCloseTo(long)
+    expect(y).toBeCloseTo(lat)
+  })
+
+  it('should be able to parse Greenwich Meridian coordinates correctly', () => {
+    const dmsStringsWest = ['0°0′0″ N', '0°59′59″ W']
+    const dmsCoordsWest = dmsStringsWest.map(parseDms)
+    const dmsStringsEast = ['0°0′0″ N', '0°59′59″ E']
+    const dmsCoordsEast = dmsStringsEast.map(parseDms)
+    // console.log(dmsCoordsWest, dmsCoordsEast);
+
+    expect(dmsCoordsEast[0]).toEqual(dmsCoordsWest[0])
+    expect(dmsCoordsWest[1]).toBeLessThan(0)
   })
 })
