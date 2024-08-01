@@ -1,6 +1,7 @@
 import {
   CategoryResponseModel,
   GetIndividualOfferResponseModel,
+  type GetIndividualOfferWithAddressResponseModel,
   GetMusicTypesResponse,
   SubcategoryResponseModel,
 } from 'apiClient/v1'
@@ -16,9 +17,12 @@ const getMusicData = (
   gtl_id?: string
 } => {
   return {
-    musicTypeName: musicTypes?.find(
-      (item) => item.gtl_id.substring(0, 2) === gtl_id?.substring(0, 2) // Gtl_id is a string of 8 characters, only first 2 are relevant to music genre
-    )?.label,
+    musicTypeName:
+      (musicTypes ?? []).length === 0
+        ? undefined
+        : musicTypes?.find(
+            (item) => item.gtl_id.substring(0, 2) === gtl_id?.substring(0, 2) // Gtl_id is a string of 8 characters, only first 2 are relevant to music genre
+          )?.label,
     gtl_id: offer.extraData?.gtl_id,
   }
 }
@@ -91,7 +95,7 @@ const serializerOfferSubCategoryFields = (
 }
 
 export const serializeOfferSectionData = (
-  offer: GetIndividualOfferResponseModel,
+  offer: GetIndividualOfferWithAddressResponseModel,
   categories: CategoryResponseModel[],
   subCategories: SubcategoryResponseModel[],
   musicTypes?: GetMusicTypesResponse
@@ -130,8 +134,24 @@ export const serializeOfferSectionData = (
     offerSubCategory,
     musicTypes
   )
+
+  let offerAddressData
+
+  // Could be simpler with lodash.pick
+  if (offer.address) {
+    offerAddressData = {
+      address: {
+        label: offer.address.label,
+        city: offer.address.city,
+        street: offer.address.street,
+        postalCode: offer.address.postalCode,
+      },
+    }
+  }
+
   return {
     ...baseOffer,
     ...subCategoryData,
+    ...offerAddressData,
   }
 }

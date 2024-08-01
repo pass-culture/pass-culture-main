@@ -2,6 +2,7 @@ import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { addDays, format } from 'date-fns'
 import { generatePath, Route, Routes } from 'react-router-dom'
+import { expect } from 'vitest'
 
 import { api } from 'apiClient/api'
 import {
@@ -23,20 +24,21 @@ import {
 } from 'context/IndividualOfferContext/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
+import { addressResponseIsEditableModelFactory } from 'utils/commonOffersApiFactories'
 import { FORMAT_ISO_DATE_ONLY } from 'utils/date'
 import {
+  categoryFactory,
   defaultGetOffererResponseModel,
   getIndividualOfferFactory,
-  getOfferVenueFactory,
   getOfferManagingOffererFactory,
-  categoryFactory,
+  getOfferVenueFactory,
   individualOfferContextValuesFactory,
   subcategoryFactory,
   venueListItemFactory,
 } from 'utils/individualApiFactories'
 import {
-  RenderWithProvidersOptions,
   renderWithProviders,
+  RenderWithProvidersOptions,
 } from 'utils/renderWithProviders'
 
 import { SummaryScreen } from '../SummaryScreen'
@@ -616,6 +618,44 @@ describe('Summary', () => {
       expect(
         screen.queryByText('Félicitations, vous avez créé votre offre !')
       ).not.toBeInTheDocument()
+    })
+
+    it('should render component with new sections and right address data', async () => {
+      vi.spyOn(api, 'getOfferer').mockResolvedValue(
+        defaultGetOffererResponseModel
+      )
+      customContext.offer = getIndividualOfferFactory({
+        isEvent: true,
+        address: {
+          ...addressResponseIsEditableModelFactory({
+            label: 'mon adresse',
+            city: 'ma ville',
+            street: 'ma street',
+            postalCode: '1',
+          }),
+        },
+      })
+
+      renderSummary(
+        customContext,
+        generatePath(
+          getIndividualOfferPath({
+            step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+            mode: OFFER_WIZARD_MODE.CREATION,
+          }),
+          { offerId: 'AA' }
+        ),
+        { features: ['WIP_SPLIT_OFFER', 'WIP_ENABLE_OFFER_ADDRESS'] }
+      )
+
+      expect(await screen.findByText(/Qui propose l’offre/)).toBeInTheDocument()
+      expect(
+        await screen.findByText('Localisation de l’offre')
+      ).toBeInTheDocument()
+
+      expect(
+        await screen.findByText('mon adresse - ma street 1 ma ville')
+      ).toBeInTheDocument()
     })
   })
 

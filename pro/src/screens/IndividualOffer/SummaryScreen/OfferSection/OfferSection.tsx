@@ -2,7 +2,7 @@ import cn from 'classnames'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
-import { GetIndividualOfferResponseModel } from 'apiClient/v1'
+import { GetIndividualOfferWithAddressResponseModel } from 'apiClient/v1'
 import { AccessibilitySummarySection } from 'components/AccessibilitySummarySection/AccessibilitySummarySection'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import {
@@ -20,6 +20,7 @@ import {
 import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
 import { useActiveFeature } from 'hooks/useActiveFeature'
 import { useOfferWizardMode } from 'hooks/useOfferWizardMode'
+import { computeAddressDisplayName } from 'repository/venuesService'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 import styles from './OfferSection.module.scss'
@@ -27,7 +28,7 @@ import { serializeOfferSectionData } from './serializer'
 import { humanizeDelay } from './utils'
 
 interface OfferSummaryProps {
-  offer: GetIndividualOfferResponseModel
+  offer: GetIndividualOfferWithAddressResponseModel
   conditionalFields: string[]
   isEventPublicationFormShown: boolean
 }
@@ -88,8 +89,19 @@ export const OfferSection = ({
   const aboutDescriptions: Description[] = [
     { title: 'Titre de l’offre', text: offerData.name },
     { title: 'Description', text: offerData.description || '-' },
-    { title: 'Lieu', text: offerData.venuePublicName || offerData.venueName },
   ]
+  const venueName = offerData.venuePublicName || offerData.venueName
+  if (isOfferAddressEnabled) {
+    aboutDescriptions.unshift({
+      title: 'Qui propose l’offre',
+      text: venueName,
+    })
+  } else {
+    aboutDescriptions.push({
+      title: 'Lieu',
+      text: venueName,
+    })
+  }
   const artisticInfoDescriptions: Description[] = []
   if (!isSplitOfferEnabled) {
     artisticInfoDescriptions.push({
@@ -167,7 +179,7 @@ export const OfferSection = ({
       text: offerData.offererName,
     })
     practicalInfoDescriptions.push({
-      title: isOfferAddressEnabled ? 'Qui propose l’offre ?' : 'Lieu',
+      title: 'Lieu',
       text:
         /* istanbul ignore next: DEBT, TO FIX */
         offerData.venuePublicName || offerData.venueName,
@@ -282,6 +294,19 @@ export const OfferSection = ({
           })}
           aria-label="Modifier les informations pratiques de l’offre"
         >
+          {isOfferAddressEnabled && (
+            <SummarySubSection title="Localisation de l’offre">
+              <SummaryDescriptionList
+                descriptions={[
+                  {
+                    title: 'Adresse',
+                    text: computeAddressDisplayName(offerData.address!),
+                  },
+                ]}
+              />
+            </SummarySubSection>
+          )}
+
           <SummarySubSection title="Retrait de l’offre">
             <SummaryDescriptionList descriptions={practicalInfoDescriptions} />
           </SummarySubSection>
