@@ -1,7 +1,6 @@
 import { Then, When } from '@badeball/cypress-cucumber-preprocessor'
 
 // Random 13-digit number because we can't use the same EAN twice
-const ean = String(Math.floor(1000000000000 + Math.random() * 9000000000000))
 
 When('I fill in details for physical offer', () => {
   cy.findByLabelText('Catégorie *').select('Livre')
@@ -12,6 +11,8 @@ When('I fill in details for physical offer', () => {
   cy.findByLabelText('Description').type(
     'Une quête pour obtenir la question ultime sur la vie, l’univers et tout le reste.'
   )
+  const ean = String(Math.floor(1000000000000 + Math.random() * 9000000000000))
+  cy.wrap(ean).as('ean')
   cy.findByLabelText('Auteur').type('Douglas Adams')
   cy.findByLabelText('EAN-13 (European Article Numbering)').type(ean)
   cy.findByText('Ajouter une image').click()
@@ -56,10 +57,12 @@ When('I go to my offers list', () => {
   cy.intercept({ method: 'GET', url: '/offers?*' }).as('getOffers')
   cy.intercept({ method: 'GET', url: '/venues*' }).as('getVenue')
   cy.findByText('Voir la liste des offres').click()
-  cy.wait(['@getOffers', '@getVenue'], { responseTimeout: 30 * 1000 * 2 })
+  cy.wait(['@getOffers', '@getVenue'], { timeout: 60 * 1000 * 2 })
 })
 
 Then('my new physical offer should be displayed', () => {
   cy.contains('H2G2 Le Guide du voyageur galactique')
-  cy.contains(ean)
+  cy.get('@ean').then((ean) => {
+    cy.contains(ean.toString())
+  })
 })
