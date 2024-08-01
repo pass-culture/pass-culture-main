@@ -545,7 +545,7 @@ def patch_collective_offer_publication(offer_id: int) -> collective_offers_seria
         with db.session.no_autoflush:
             offer = educational_repository.get_collective_offer_and_extra_data(offer_id)
             if offer is None:
-                raise ApiErrors({"offerer": ["Acune offre trouvée pour cet id"]}, status_code=404)
+                raise ApiErrors({"offerer": ["Aucune offre trouvée pour cet id"]}, status_code=404)
 
             check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
@@ -571,7 +571,7 @@ def patch_collective_offer_template_publication(
     try:
         offer = educational_api_offer.get_collective_offer_template_by_id(offer_id)
     except educational_exceptions.CollectiveOfferNotFound:
-        raise ApiErrors({"offerer": ["Acune offre trouvée pour cet id"]}, status_code=404)
+        raise ApiErrors({"offerer": ["Aucune offre trouvée pour cet id"]}, status_code=404)
 
     check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
