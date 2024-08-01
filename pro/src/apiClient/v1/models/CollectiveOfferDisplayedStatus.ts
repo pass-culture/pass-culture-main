@@ -15,5 +15,6 @@ export enum CollectiveOfferDisplayedStatus {
   EXPIRED = 'EXPIRED',
   ENDED = 'ENDED',
   CANCELLED = 'CANCELLED',
+  REIMBURSED = 'REIMBURSED',
   ARCHIVED = 'ARCHIVED',
 }

@@ -450,6 +450,7 @@ class FilterCollectiveOfferByStatusesTest:
         CollectiveOfferDisplayedStatus.ENDED,
         CollectiveOfferDisplayedStatus.ARCHIVED,
         CollectiveOfferDisplayedStatus.ACTIVE,
+        CollectiveOfferDisplayedStatus.REIMBURSED,
     }
 
     def test_filter_by_booked_status(self, app):
@@ -549,7 +550,7 @@ class FilterCollectiveOfferByStatusesTest:
         filtered_query_ids = {offer.id for offer in filtered_query}
         assert filtered_query_ids == {offer.id for offer in all_offers_by_status.values()}
 
-        assert filtered_query.count() == 9
+        assert filtered_query.count() == len(self.ALL_STATUS)
 
     @pytest.mark.parametrize("status", ALL_STATUS)
     def test_filter_statuses_but_one(self, app, status):
@@ -564,14 +565,14 @@ class FilterCollectiveOfferByStatusesTest:
         filtered_query = _filter_collective_offers_by_statuses(base_query, filtered_status)
 
         # Then
-        assert base_query.count() == 9
+        assert base_query.count() == len(self.ALL_STATUS)
 
         filtered_query_status = {all_offers_status_by_id[offer.id] for offer in filtered_query}
 
         assert filtered_query_status == {
             offer_status for offer_status in all_offers_status_by_id.values() if status.value != offer_status
         }
-        assert filtered_query.count() == 8
+        assert filtered_query.count() == len(self.ALL_STATUS) - 1
 
     def test_filter_with_no_statuses(self, app):
         # Given
