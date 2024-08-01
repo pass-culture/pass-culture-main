@@ -9,6 +9,7 @@ import { VenueCreationFormValues } from 'pages/VenueCreation/types'
 import { Button } from 'ui-kit/Button/Button'
 
 import { AddressSelect } from '../Address'
+import { validationSchema as addressValidationSchema } from '../validationSchema'
 
 const mockAdressData = [
   {
@@ -47,11 +48,7 @@ const renderAddress = ({
   initialValues: Partial<VenueCreationFormValues>
   onSubmit: () => void
 }) => {
-  const validationSchema = yup.object().shape({
-    addressAutocomplete: yup
-      .string()
-      .required('Veuillez sélectionner une adresse parmi les suggestions'),
-  })
+  const validationSchema = yup.object().shape(addressValidationSchema)
   const rtlReturns = render(
     <Formik
       initialValues={initialValues}
