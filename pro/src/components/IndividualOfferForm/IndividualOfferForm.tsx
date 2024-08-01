@@ -128,7 +128,7 @@ export const IndividualOfferForm = ({
           />
 
           {offerAddressEnabled && !isVenueVirtual && (
-            <OfferLocation venueList={filteredVenueList} />
+            <OfferLocation venue={venue} />
           )}
 
           <Accessibility readOnlyFields={readOnlyFields} />

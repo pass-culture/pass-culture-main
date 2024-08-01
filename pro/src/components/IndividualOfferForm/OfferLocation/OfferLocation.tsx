@@ -18,18 +18,15 @@ import { OFFER_LOCATION } from './constants'
 import styles from './OfferLocation.module.scss'
 
 export interface OfferLocationProps {
-  venueList: VenueListItemResponseModel[]
+  venue: VenueListItemResponseModel | undefined
 }
 
-export const OfferLocation = ({
-  venueList,
-}: OfferLocationProps): JSX.Element => {
+export const OfferLocation = ({ venue }: OfferLocationProps): JSX.Element => {
   const formik = useFormikContext<IndividualOfferFormValues>()
 
   const [showOtherAddress, setShowOtherAddress] = useState(false)
   const [manuallySetAddress, , { setValue: setManuallySetAddress }] =
     useField('manuallySetAddress')
-  const [venue, setVenue] = useState<VenueListItemResponseModel>()
 
   useEffect(() => {
     const offerlocation = formik.values.offerlocation
@@ -41,17 +38,6 @@ export const OfferLocation = ({
     // Display "other address" fields only if user checks "À une autre adresse"
     setShowOtherAddress(offerlocation === OFFER_LOCATION.OTHER_ADDRESS)
   }, [formik.values.offerlocation])
-
-  // When "Qui propose l'offre" changes, we need to update the 1st field with the venue address
-  useEffect(() => {
-    const selectedVenue = venueList.find(
-      ({ id }) => id === Number(formik.values.venueId)
-    )
-
-    if (selectedVenue) {
-      setVenue(selectedVenue)
-    }
-  }, [venueList, formik.values.venueId])
 
   // This will reset all address fields if user clicked on "Vous ne trouvez pas votre adresse ?"
   useEffect(() => {
