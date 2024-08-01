@@ -45,11 +45,13 @@ def get_offer(offer_id: str) -> serializers.OfferResponse:
         )
         .options(joinedload(Offer.venue).joinedload(Venue.googlePlacesInfo))
         .options(joinedload(Offer.mediations))
+        .options(joinedload(Offer.reactions))
         .options(
             joinedload(Offer.product)
             .load_only(Product.id, Product.last_30_days_booking, Product.thumbCount)
             .joinedload(Product.productMediations)
         )
+        .options(joinedload(Offer.product).joinedload(Product.reactions))
         .outerjoin(Offer.lastProvider)
         .options(sa.orm.contains_eager(Offer.lastProvider).load_only(Provider.localClass))
         .filter(Offer.id == offer_id, Offer.validation == OfferValidationStatus.APPROVED)
