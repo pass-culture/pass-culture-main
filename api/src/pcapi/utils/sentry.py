@@ -33,7 +33,7 @@ def init_sentry_sdk() -> None:
         integrations=[FlaskIntegration(), RedisIntegration(), RqIntegration(), SqlalchemyIntegration()],
         release=read_version_from_file(),
         environment=settings.ENV,
-        traces_sample_rate=settings.SENTRY_TRACES_SAMPLE_RATE,
+        traces_sample_rate=settings.SENTRY_DEFAULT_TRACES_SAMPLE_RATE,
         before_send=before_send,
         max_value_length=8192,
     )
