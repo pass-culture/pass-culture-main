@@ -1,6 +1,5 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import React from 'react'
 
 import { apiAdage } from 'apiClient/api'
 import { Notification } from 'components/Notification/Notification'
@@ -9,8 +8,6 @@ import { defaultAdageUser } from 'utils/adageFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { PrebookingButton, PrebookingButtonProps } from '../PrebookingButton'
-
-vi.mock('pages/AdageIframe/libs/initAlgoliaAnalytics')
 
 vi.mock('apiClient/api', () => ({
   apiAdage: {

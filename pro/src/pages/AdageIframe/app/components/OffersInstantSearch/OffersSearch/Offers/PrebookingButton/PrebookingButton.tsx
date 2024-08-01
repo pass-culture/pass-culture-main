@@ -6,7 +6,6 @@ import { apiAdage } from 'apiClient/api'
 import { useNotification } from 'hooks/useNotification'
 import fullStockIcon from 'icons/full-stock.svg'
 import strokeHourglass from 'icons/stroke-hourglass.svg'
-import { logOfferConversion } from 'pages/AdageIframe/libs/initAlgoliaAnalytics'
 import { Button } from 'ui-kit/Button/Button'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { LOGS_DATA } from 'utils/config'
@@ -67,9 +66,6 @@ export const PrebookingButton = ({
   }
 
   const preBookCurrentStock = useCallback(async () => {
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    logOfferConversion(offerId.toString(), queryId)
-
     try {
       await apiAdage.bookCollectiveOffer({ stockId: stock.id })
     } catch (error) {

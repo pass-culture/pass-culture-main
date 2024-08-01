@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 
 import { AdageFrontRoles } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
-import { logClickOnOffer } from 'pages/AdageIframe/libs/initAlgoliaAnalytics'
 import { Button } from 'ui-kit/Button/Button'
 
 import { RequestFormDialog } from './RequestFormDialog/RequestFormDialog'
@@ -14,7 +13,6 @@ export interface ContactButtonProps {
   contactForm?: string | null
   contactUrl?: string | null
   offerId: number
-  position: number
   queryId: string
   userEmail?: string | null
   userRole?: AdageFrontRoles
@@ -30,7 +28,6 @@ export const ContactButton = ({
   contactForm,
   contactUrl,
   offerId,
-  position,
   queryId,
   userEmail,
   userRole,
@@ -51,8 +48,6 @@ export const ContactButton = ({
         queryId: queryId,
         isFromNoResult: isInSuggestions,
       })
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      logClickOnOffer(offerId.toString(), position, queryId)
     }
   }
 
