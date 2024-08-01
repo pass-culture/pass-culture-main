@@ -9,6 +9,7 @@ import {
 } from 'apiClient/v1'
 import { AddressSelect } from 'components/Address/Address'
 import { FormLayout } from 'components/FormLayout/FormLayout'
+import { RouteLeavingGuardIndividualOffer } from 'components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
 import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import { SelectOption } from 'custom_types/form'
 import { ReimbursementFields } from 'pages/Offerers/Offerer/VenueV1/fields/ReimbursementFields/ReimbursementFields'
@@ -41,7 +42,8 @@ export const VenueSettingsForm = ({
   venueProviders,
   venue,
 }: VenueFormProps) => {
-  const { initialValues } = useFormikContext<VenueSettingsFormValues>()
+  const { initialValues, dirty, isSubmitting } =
+    useFormikContext<VenueSettingsFormValues>()
   const location = useLocation()
   const venueTypesOptions = buildVenueTypesOptions(venueTypes)
 
@@ -166,6 +168,7 @@ export const VenueSettingsForm = ({
       </FormLayout>
 
       <VenueFormActionBar venue={venue} />
+      <RouteLeavingGuardIndividualOffer when={dirty && !isSubmitting} />
     </>
   )
 }
