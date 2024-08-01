@@ -1,9 +1,10 @@
 import { useField, useFormikContext } from 'formik'
-import { useEffect } from 'react'
+import React from 'react'
 
 import { Callout } from 'components/Callout/Callout'
 import { CalloutVariant } from 'components/Callout/types'
 import { FormLayout } from 'components/FormLayout/FormLayout'
+import { type IndividualOfferFormValues } from 'components/IndividualOfferForm/types'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
@@ -12,34 +13,32 @@ import { getCoordsType, parseDms } from 'utils/coords'
 import styles from './AddressManual.module.scss'
 
 export const AddressManual = (): JSX.Element => {
-  const [coords, coordsMeta] = useField('coords')
+  const [coords, coordsMeta] = useField<string>('coords')
 
-  const { setFieldValue } = useFormikContext()
+  const formik = useFormikContext<IndividualOfferFormValues>()
 
-  useEffect(() => {
-    if (coords.value && !coordsMeta.error) {
-      const coordsType = getCoordsType(coords.value)
+  const onCoordsBlur = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    formik.handleChange(event)
+
+    const newCoords = event.target.value
+    let latitude = '',
+      longitude = ''
+
+    if (!coordsMeta.error) {
+      const coordsType = getCoordsType(newCoords)
 
       if (coordsType === 'DD') {
-        const [latitude, longitude] = coords.value.split(', ')
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        setFieldValue('latitude', latitude)
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        setFieldValue('longitude', longitude)
+        ;[latitude, longitude] = newCoords.split(', ')
       } else if (coordsType === 'DMS') {
-        const [latitude, longitude] = coords.value.split(' ')
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        setFieldValue('latitude', parseDms(latitude))
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        setFieldValue('longitude', parseDms(longitude))
-      } else {
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        setFieldValue('latitude', '')
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        setFieldValue('longitude', '')
+        ;[latitude, longitude] = newCoords
+          .split(' ')
+          .map((c) => String(parseDms(c)))
       }
     }
-  }, [coords.value, coordsMeta.error, setFieldValue])
+
+    await formik.setFieldValue('latitude', latitude)
+    await formik.setFieldValue('longitude', longitude)
+  }
 
   return (
     <div className={styles['address-manual-wrapper']}>
@@ -58,6 +57,7 @@ export const AddressManual = (): JSX.Element => {
         <TextInput
           label="Coordonnées GPS"
           name="coords"
+          onBlur={onCoordsBlur}
           type="text"
           description={`Exemple : 48.853320, 2.348979 ou 48°51'12.0"N 2°20'56.3"E`}
         />
