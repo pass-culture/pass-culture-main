@@ -77,7 +77,7 @@ describe('IndividualOfferRow', () => {
       expect(
         within(
           screen.getAllByRole('link', { name: /éditer l’offre/ })[0]
-        ).getByRole('img')
+        ).getByRole('presentation')
       ).toHaveAttribute('src', '/my-fake-thumb')
     })
 

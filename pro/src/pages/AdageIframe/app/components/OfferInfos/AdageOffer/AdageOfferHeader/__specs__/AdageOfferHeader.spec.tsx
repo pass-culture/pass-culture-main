@@ -54,7 +54,7 @@ describe('AdageOfferHeader', () => {
       adageUser: defaultAdageUser,
     })
 
-    expect(screen.getByRole('img')).toHaveAttribute('src', 'test_url')
+    expect(screen.getByRole('presentation')).toHaveAttribute('src', 'test_url')
   })
 
   it('should not show an image if the offer has no image', () => {
