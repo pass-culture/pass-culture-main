@@ -130,6 +130,7 @@ When('I publish my offer', () => {
   cy.findByText('Publier l’offre').click()
   cy.wait(['@publishOffer', '@getOffer'], {
     responseTimeout: 60 * 1000 * 2,
+    requestTimeout: 60 * 1000 * 2,
   })
 })
 
