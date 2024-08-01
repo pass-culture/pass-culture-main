@@ -5,15 +5,9 @@ import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
 import { CollectiveOfferDisplayedStatus } from 'apiClient/v1'
-import { useAnalytics } from 'app/App/analytics/firebase'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { GET_OFFERER_QUERY_KEY } from 'config/swrQueryKeys'
-import {
-  Events,
-  OFFER_FORM_HOMEPAGE,
-  OFFER_FORM_NAVIGATION_MEDIUM,
-} from 'core/FirebaseEvents/constants'
 import {
   COLLECTIVE_OFFER_SUBTYPE,
   COLLECTIVE_OFFER_SUBTYPE_DUPLICATE,
@@ -51,7 +45,6 @@ export const OfferTypeScreen = (): JSX.Element => {
   const queryVenueId = queryParams.get('lieu')
 
   const notify = useNotification()
-  const { logEvent } = useAnalytics()
   const initialValues: OfferTypeFormValues = {
     offerType: OFFER_TYPES.INDIVIDUAL_OR_DUO,
     collectiveOfferSubtype: COLLECTIVE_OFFER_SUBTYPE.COLLECTIVE,
@@ -80,14 +73,6 @@ export const OfferTypeScreen = (): JSX.Element => {
 
   const onSubmit = async (values: OfferTypeFormValues) => {
     if (values.offerType === OFFER_TYPES.INDIVIDUAL_OR_DUO) {
-      logEvent(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-        offerType: values.individualOfferSubtype,
-        to: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-        from: OFFER_FORM_HOMEPAGE,
-        used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
-        offererId: selectedOffererId?.toString(),
-      })
-
       const params = new URLSearchParams(location.search)
       if (values.individualOfferSubtype) {
         params.append('offer-type', values.individualOfferSubtype)

@@ -228,24 +228,20 @@ describe('OfferType', () => {
   const individualChoices = [
     {
       buttonClicked: 'Un bien physique',
-      expectedSearch: 'PHYSICAL_GOOD',
     },
     {
       buttonClicked: 'Un bien numérique',
-      expectedSearch: 'VIRTUAL_GOOD',
     },
     {
       buttonClicked: 'Un évènement physique daté',
-      expectedSearch: 'PHYSICAL_EVENT',
     },
     {
       buttonClicked: 'Un évènement numérique daté',
-      expectedSearch: 'VIRTUAL_EVENT',
     },
   ]
   it.each(individualChoices)(
     'should select and redirect fine case : %s',
-    async ({ buttonClicked, expectedSearch }) => {
+    async ({ buttonClicked }) => {
       renderOfferTypes()
 
       await userEvent.click(await screen.findByText(buttonClicked))
@@ -255,17 +251,6 @@ describe('OfferType', () => {
       )
 
       expect(screen.getByText('Création individuel')).toBeInTheDocument()
-      expect(mockLogEvent).toHaveBeenNthCalledWith(
-        1,
-        Events.CLICKED_OFFER_FORM_NAVIGATION,
-        {
-          from: 'OfferFormHomepage',
-          offerType: expectedSearch,
-          to: 'informations',
-          used: 'StickyButtons',
-          offererId: '1',
-        }
-      )
     }
   )
 

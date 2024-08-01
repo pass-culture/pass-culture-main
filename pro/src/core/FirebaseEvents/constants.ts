@@ -19,7 +19,6 @@ export enum Events {
   CLICKED_HOME = 'hasClickedHome',
   CLICKED_LOGOUT = 'hasClickedLogout',
   CLICKED_OFFER = 'hasClickedOffer',
-  CLICKED_OFFER_FORM_NAVIGATION = 'hasClickedOfferFormNavigation',
   CLICKED_ONBOARDING_FORM_NAVIGATION = 'HasClickedOnboardingFormNavigation',
   CLICKED_CANCEL_OFFER_CREATION = 'hasClickedCancelOfferCreation',
   CLICKED_PARTNER_BLOCK_PREVIEW_VENUE_LINK = 'hasClickedPartnerBlockPreviewVenueLink',
@@ -76,9 +75,6 @@ export enum CollectiveBookingsEvents {
 }
 
 export enum OFFER_FORM_NAVIGATION_MEDIUM {
-  STICKY_BUTTONS = 'StickyButtons',
-  SUMMARY_PREVIEW = 'SummaryPreview',
-  CONFIRMATION_PREVIEW = 'ConfirmationPreview',
   OFFERS_TRASH_ICON = 'OffersTrashicon',
 }
 
@@ -92,8 +88,6 @@ export enum OFFER_FROM_TEMPLATE_ENTRIES {
   OFFERS = 'OffersList',
   OFFER_TEMPLATE_RECAP = 'OfferTemplateRecap',
 }
-
-export const OFFER_FORM_HOMEPAGE = 'OfferFormHomepage'
 
 export enum SynchronizationEvents {
   CLICKED_SYNCHRONIZE_OFFER = 'hasClickedSynchronizeOffer',
@@ -115,8 +109,4 @@ export enum BankAccountEvents {
   CLICKED_CONTINUE_TO_DS = 'HasClickedContinueToDS',
   CLICKED_BANK_DETAILS_RECORD_FOLLOW_UP = 'HasClickedBankDetailsRecordFollowUp',
   CLICKED_SAVE_VENUE_TO_BANK_ACCOUNT = 'HasClickedSaveVenueToBankAccount',
-}
-
-export enum OFFER_FORM_NAVIGATION_OUT {
-  PREVIEW = 'AppPreview',
 }

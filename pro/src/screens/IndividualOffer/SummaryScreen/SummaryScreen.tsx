@@ -1,12 +1,10 @@
 import { Form, FormikProvider, useFormik } from 'formik'
-import React, { useState } from 'react'
-import { useSelector } from 'react-redux'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
 import { getHumanReadableApiError } from 'apiClient/helpers'
-import { useAnalytics } from 'app/App/analytics/firebase'
 import { Callout } from 'components/Callout/Callout'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { OfferAppPreview } from 'components/OfferAppPreview/OfferAppPreview'
@@ -15,18 +13,12 @@ import { SummaryContent } from 'components/SummaryLayout/SummaryContent'
 import { SummaryLayout } from 'components/SummaryLayout/SummaryLayout'
 import { GET_OFFER_QUERY_KEY } from 'config/swrQueryKeys'
 import { useIndividualOfferContext } from 'context/IndividualOfferContext/IndividualOfferContext'
-import {
-  Events,
-  OFFER_FORM_NAVIGATION_MEDIUM,
-  OFFER_FORM_NAVIGATION_OUT,
-} from 'core/FirebaseEvents/constants'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
 import { useNotification } from 'hooks/useNotification'
 import { useOfferWizardMode } from 'hooks/useOfferWizardMode'
 import phoneStrokeIcon from 'icons/stroke-phone.svg'
 import { RedirectToBankAccountDialog } from 'screens/Offers/RedirectToBankAccountDialog'
-import { selectCurrentOffererId } from 'store/user/selectors'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { getOfferConditionalFields } from 'utils/getOfferConditionalFields'
@@ -50,8 +42,6 @@ export const SummaryScreen = () => {
   const { mutate } = useSWRConfig()
   const navigate = useNavigate()
   const { offer, subCategories } = useIndividualOfferContext()
-  const { logEvent } = useAnalytics()
-  const selectedOffererId = useSelector(selectCurrentOffererId)
   const showEventPublicationForm = Boolean(offer?.isEvent)
 
   const onPublish = async (values: EventPublicationFormValues) => {
@@ -212,18 +202,6 @@ export const SummaryScreen = () => {
               <DisplayOfferInAppLink
                 id={offer.id}
                 variant={ButtonVariant.SECONDARY}
-                onClick={() =>
-                  logEvent(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-                    from: OFFER_WIZARD_STEP_IDS.SUMMARY,
-                    to: OFFER_FORM_NAVIGATION_OUT.PREVIEW,
-                    used: OFFER_FORM_NAVIGATION_MEDIUM.SUMMARY_PREVIEW,
-                    isEdition: true,
-                    isDraft: false,
-                    offerId: offer.id,
-                    offerType: 'individual',
-                    offererId: selectedOffererId?.toString(),
-                  })
-                }
               >
                 Visualiser dans l’app
               </DisplayOfferInAppLink>
