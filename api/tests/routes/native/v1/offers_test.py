@@ -971,8 +971,9 @@ class OffersV2Test:
         offer = offers_factories.OfferFactory(product=product, venue__isPermanent=True)
         offers_factories.ThingStockFactory(offer=offer, price=12.34, quantity=None)
 
+        offer_id = offer.id
         with assert_num_queries(1):
-            response = client.get(f"/native/v2/offer/{offer.id}")
+            response = client.get(f"/native/v2/offer/{offer_id}")
 
         assert response.status_code == 200
         assert response.json["stocks"][0]["remainingQuantity"] is None
@@ -1113,8 +1114,9 @@ class OffersV2Test:
     def test_get_non_approved_offer(self, client, validation):
         offer = offers_factories.OfferFactory(validation=validation)
 
+        offer_id = offer.id
         with assert_num_queries(1):
-            response = client.get(f"/native/v2/offer/{offer.id}")
+            response = client.get(f"/native/v2/offer/{offer_id}")
             assert response.status_code == 404
 
     @override_features(ENABLE_CDS_IMPLEMENTATION=True)
@@ -1225,8 +1227,9 @@ class OffersV2Test:
         # 17. select price_category_label
         # 18. select price_category
         # 19. select google_places_info
+        offer_id = offer.id
         with assert_num_queries(19):
-            response = client.get(f"/native/v2/offer/{offer.id}")
+            response = client.get(f"/native/v2/offer/{offer_id}")
         assert response.status_code == 200
         assert first_show_stock.remainingQuantity == 96
         assert will_be_sold_out_show_stock.remainingQuantity == 0
@@ -1287,8 +1290,9 @@ class OffersV2Test:
         # 17. select price_category_label
         # 18. select price_category
         # 19. select google_places_info
+        offer_id = offer.id
         with assert_num_queries(19):
-            response = client.get(f"/native/v2/offer/{offer.id}")
+            response = client.get(f"/native/v2/offer/{offer_id}")
 
         assert response.status_code == 200
         assert still_scheduled_show_stock.remainingQuantity == 95
@@ -1321,8 +1325,9 @@ class OffersV2Test:
         )
         offers_factories.EventStockFactory(offer=offer, quantity=1)
 
+        offer_id = offer.id
         with assert_num_queries(1):
-            response = client.get(f"/native/v2/offer/{offer.id}")
+            response = client.get(f"/native/v2/offer/{offer_id}")
 
         assert response.status_code == 200
         assert offer.stocks[0].remainingQuantity == 1
@@ -1354,8 +1359,9 @@ class OffersV2Test:
         )
         offers_factories.EventStockFactory(offer=offer, quantity=1)
 
+        offer_id = offer.id
         with assert_num_queries(1):
-            response = client.get(f"/native/v2/offer/{offer.id}")
+            response = client.get(f"/native/v2/offer/{offer_id}")
 
         assert response.status_code == 200
         assert offer.stocks[0].remainingQuantity == 1
@@ -1381,8 +1387,9 @@ class OffersV2Test:
         )
         offers_factories.EventStockFactory(offer=offer, idAtProviders="toto", quantity=1)
 
+        offer_id = offer.id
         with assert_num_queries(1):
-            response = client.get(f"/native/v2/offer/{offer.id}")
+            response = client.get(f"/native/v2/offer/{offer_id}")
 
         assert response.status_code == 200
         assert offer.stocks[0].remainingQuantity == 1
@@ -1416,8 +1423,9 @@ class OffersV2Test:
             offer=offer, idAtProviders=f"{offer_id_at_provider}#{first_show_id}", quantity=1
         )
 
+        offer_id = offer.id
         with assert_num_queries(1):
-            response = client.get(f"/native/v2/offer/{offer.id}")
+            response = client.get(f"/native/v2/offer/{offer_id}")
 
         assert response.status_code == 200
         assert offer.stocks[0].remainingQuantity == 1
@@ -1454,8 +1462,9 @@ class OffersV2Test:
         # 12. select price_category
         # 13. select price_category_label
         # 14. select google_places_info
+        offer_id = offer.id
         with assert_num_queries(14):
-            response = client.get(f"/native/v2/offer/{offer.id}")
+            response = client.get(f"/native/v2/offer/{offer_id}")
 
         assert response.json["isReleased"] is False
         assert offer.isActive is False
@@ -1463,8 +1472,9 @@ class OffersV2Test:
     def should_have_metadata_describing_the_offer(self, client):
         offer = offers_factories.ThingOfferFactory()
 
+        offer_id = offer.id
         with assert_num_queries(1):
-            response = client.get(f"/native/v2/offer/{offer.id}")
+            response = client.get(f"/native/v2/offer/{offer_id}")
 
         assert isinstance(response.json["metadata"], dict)
         assert response.json["metadata"]["@type"] == "Product"
@@ -1474,8 +1484,9 @@ class OffersV2Test:
         offers_factories.StockFactory(offer=offer, quantity=1, isSoftDeleted=True)
         non_deleted_stock = offers_factories.StockFactory(offer=offer, quantity=1)
 
+        offer_id = offer.id
         with assert_num_queries(1):
-            response = client.get(f"/native/v2/offer/{offer.id}")
+            response = client.get(f"/native/v2/offer/{offer_id}")
 
         assert response.status_code == 200
         assert len(response.json["stocks"]) == 1
@@ -1486,8 +1497,9 @@ class OffersV2Test:
         offers_factories.StockFactory(offer=offer, quantity=1, isSoftDeleted=True)
         offers_factories.StockFactory(offer=offer, quantity=1)
 
+        offer_id = offer.id
         with assert_num_queries(1):
-            response = client.get(f"/native/v2/offer/{offer.id}")
+            response = client.get(f"/native/v2/offer/{offer_id}")
 
         assert response.status_code == 200
         assert len(response.json["stocks"]) == 1
