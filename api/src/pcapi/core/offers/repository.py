@@ -305,9 +305,7 @@ def get_collective_offers_by_filters(
     period_ending_date: datetime.date | None = None,
     formats: list[subcategories.EacFormat] | None = None,
 ) -> BaseQuery:
-    query = educational_models.CollectiveOffer.query.filter(
-        educational_models.CollectiveOffer.validation != models.OfferValidationStatus.DRAFT
-    )
+    query = educational_models.CollectiveOffer.query
 
     if not user_is_admin:
         query = (
