@@ -2,9 +2,11 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { AddressResponseIsEditableModel } from './AddressResponseIsEditableModel';
 import type { ExternalAccessibilityDataModel } from './ExternalAccessibilityDataModel';
 import type { VenueTypeCode } from './VenueTypeCode';
 export type VenueListItemResponseModel = {
+  address?: AddressResponseIsEditableModel | null;
   audioDisabilityCompliant?: boolean | null;
   bookingEmail?: string | null;
   collectiveSubCategoryId?: string | null;

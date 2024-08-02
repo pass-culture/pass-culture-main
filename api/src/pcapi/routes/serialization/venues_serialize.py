@@ -9,6 +9,7 @@ from PIL import Image
 import pydantic.v1 as pydantic_v1
 from pydantic.v1 import root_validator
 from pydantic.v1 import validator
+from pydantic.v1.utils import GetterDict
 
 from pcapi.connectors.serialization import acceslibre_serializers
 from pcapi.core.categories import subcategories_v2
@@ -20,6 +21,7 @@ from pcapi.core.offers.validation import ACCEPTED_THUMBNAIL_FORMATS
 from pcapi.domain.demarches_simplifiees import DMS_TOKEN_PRO_PREFIX
 from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
 from pcapi.routes.serialization import BaseModel
+from pcapi.routes.serialization import address_serialize
 from pcapi.routes.serialization import base
 from pcapi.routes.serialization.finance_serialize import BankAccountResponseModel
 from pcapi.routes.shared.collective.serialization import offers as shared_offers
@@ -363,6 +365,28 @@ class EditVenueCollectiveDataBodyModel(BaseModel):
         return subcategory_id
 
 
+class VenueListItemResponseGetterDict(GetterDict):
+    def get(self, key: str, default: typing.Any | None = None) -> typing.Any:
+        if key == "address":
+            offerer_address = self._obj.offererAddress
+            if not offerer_address:
+                return None
+            data = {
+                "id": offerer_address.id,
+                "banId": offerer_address.address.banId,
+                "inseeCode": offerer_address.address.inseeCode,
+                "longitude": offerer_address.address.longitude,
+                "latitude": offerer_address.address.latitude,
+                "postalCode": offerer_address.address.postalCode,
+                "street": offerer_address.address.street,
+                "city": offerer_address.address.city,
+                "label": self._obj.common_name,
+                "isEditable": False,
+            }
+            return address_serialize.AddressResponseIsEditableModel(**data)
+        return super().get(key, default)
+
+
 class VenueListItemResponseModel(BaseModel, AccessibilityComplianceMixin):
     id: int
     managingOffererId: int
@@ -377,6 +401,7 @@ class VenueListItemResponseModel(BaseModel, AccessibilityComplianceMixin):
     collectiveSubCategoryId: str | None
     venueTypeCode: offerers_models.VenueTypeCode
     externalAccessibilityData: acceslibre_serializers.ExternalAccessibilityDataModel | None
+    address: address_serialize.AddressResponseIsEditableModel | None
 
     @classmethod
     def from_orm(
@@ -394,6 +419,7 @@ class VenueListItemResponseModel(BaseModel, AccessibilityComplianceMixin):
 
     class Config:
         orm_mode = True
+        getter_dict = VenueListItemResponseGetterDict
 
 
 class GetVenueListResponseModel(BaseModel):

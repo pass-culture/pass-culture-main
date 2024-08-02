@@ -6,6 +6,7 @@ from pcapi.core.educational.factories import CollectiveOfferTemplateFactory
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers.factories import OfferFactory
 from pcapi.core.testing import assert_no_duplicated_queries
+from pcapi.core.testing import assert_num_queries
 import pcapi.core.users.factories as users_factories
 
 
@@ -47,6 +48,18 @@ def test_response_serialization(client):
             "venueTypeCode": venue.venueTypeCode.name,
             "hasCreatedOffer": False,
             "externalAccessibilityData": None,
+            "address": {
+                "banId": "75102_7560_00001",
+                "city": "Paris",
+                "id": venue.offererAddressId,
+                "inseeCode": "75102",
+                "isEditable": False,
+                "label": venue.common_name,
+                "latitude": 48.87004,
+                "longitude": 2.3785,
+                "postalCode": "75000",
+                "street": "1 boulevard Poissonnière",
+            },
         },
         {
             "id": venue_with_accessibility_provider.id,
@@ -87,6 +100,18 @@ def test_response_serialization(client):
                     "audioDescription": [acceslibre_enum.UNKNOWN.value],
                 },
                 "mentalDisability": {"trainedPersonnel": acceslibre_enum.PERSONNEL_UNTRAINED.value},
+            },
+            "address": {
+                "banId": "75102_7560_00001",
+                "city": "Paris",
+                "id": venue_with_accessibility_provider.offererAddressId,
+                "inseeCode": "75102",
+                "isEditable": False,
+                "label": venue_with_accessibility_provider.common_name,
+                "latitude": 48.87004,
+                "longitude": 2.3785,
+                "postalCode": "75000",
+                "street": "1 boulevard Poissonnière",
             },
         },
     ]
@@ -153,7 +178,11 @@ def test_admin_call_with_offerer_id(client):
     # when
     params = {"offererId": str(user_offerers[1].offerer.id)}
     client = client.with_session_auth(admin_user.email)
-    with assert_no_duplicated_queries():
+    # 1 - SELECT user_session
+    # 1 - SELECT user
+    # 1 - SELECT venue + joined tables
+    # 1 - SELECT venue with offers
+    with assert_num_queries(4):
         response = client.get("/venues", params)
 
     # then
