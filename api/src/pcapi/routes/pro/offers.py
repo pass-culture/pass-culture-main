@@ -10,6 +10,7 @@ from pcapi.connectors import api_adresse
 from pcapi.core.categories import categories
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.categories.categories import TITELIVE_MUSIC_TYPES
+from pcapi.core.external import subcategory_suggestion
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import models as offerers_models
@@ -589,6 +590,21 @@ def get_categories() -> offers_serialize.CategoriesResponseModel:
             for subcategory in subcategories.ALL_SUBCATEGORIES
         ],
     )
+
+
+@private_api.route("/offers/suggested-subcategories", methods=["GET"])
+@login_required
+@spectree_serialize(
+    response_model=offers_serialize.SuggestedSubcategoriesResponseModel,
+    api=blueprint.pro_private_schema,
+)
+def get_suggested_subcategories(
+    query: offers_serialize.SuggestedSubcategoriesQueryModel,
+) -> offers_serialize.SuggestedSubcategoriesResponseModel:
+    subcategory_ids = subcategory_suggestion.get_most_probable_subcategory_ids(
+        offer_name=query.offer_name, offer_description=query.offer_description, venue_id=query.venue_id
+    )
+    return offers_serialize.SuggestedSubcategoriesResponseModel(subcategory_ids=subcategory_ids)
 
 
 @private_api.route("/offers/music-types", methods=["GET"])
