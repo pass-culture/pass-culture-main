@@ -441,11 +441,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
     def bannerUrl(self) -> str | None:
         if self._bannerUrl:
             return self._bannerUrl
-        if (
-            self.googlePlacesInfo
-            and self.googlePlacesInfo.bannerUrl
-            and FeatureToggle.WIP_GOOGLE_MAPS_VENUE_IMAGES.is_active()
-        ):
+        if self.googlePlacesInfo and self.googlePlacesInfo.bannerUrl:
             return self.googlePlacesInfo.bannerUrl
         return self._get_type_banner_url()
 
@@ -461,11 +457,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
     def bannerMeta(self) -> str | None:
         if self._bannerMeta is not None:
             return self._bannerMeta
-        if (
-            self.googlePlacesInfo
-            and self.googlePlacesInfo.bannerMeta
-            and FeatureToggle.WIP_GOOGLE_MAPS_VENUE_IMAGES.is_active()
-        ):
+        if self.googlePlacesInfo and self.googlePlacesInfo.bannerMeta:
             # Google Places API returns a list of HTML attributions, formatted like this:
             # <a href="https://url-of-contributor">John D.</a>
             # Regex to extract URL and text

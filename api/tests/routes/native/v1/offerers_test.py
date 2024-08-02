@@ -119,7 +119,7 @@ class VenuesTest:
         )
 
         venue_id = venue.id
-        with assert_num_queries(self.expected_num_queries + 1):  # expected + feature
+        with assert_num_queries(self.expected_num_queries):
             response = client.get(f"/native/v1/venue/{venue_id}")
             assert response.status_code == 200
 
@@ -143,7 +143,7 @@ class VenuesTest:
         )
 
         venue_id = venue.id
-        with assert_num_queries(self.expected_num_queries + 1):  # expected + feature
+        with assert_num_queries(self.expected_num_queries):
             response = client.get(f"/native/v1/venue/{venue_id}")
             assert response.status_code == 200
 
