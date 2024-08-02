@@ -94,7 +94,11 @@ export const InformationsScreen = ({
   ).filter((venue) => venue.managingOffererId === Number(offererId))
 
   const offerAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
-  const isPhysicalEvent = categoryStatus === CATEGORY_STATUS.OFFLINE
+  // TODO : Find a cleaner way to achieve this :
+  // The only way to infer event type (physical or numeric) and make it works for both creation AND edition, is to check CATEGORY_STATUS or if an offer has a "url" (meaning that it's not physical)
+  // (This is because CATEGORY_STATUS is always ONLINE_OR_OFFLINE for edition)
+  const isPhysicalEvent =
+    categoryStatus === CATEGORY_STATUS.OFFLINE || offer?.url === null
 
   // offer is null when we are creating a new offer
   const initialValues: IndividualOfferFormValues =
@@ -108,7 +112,13 @@ export const InformationsScreen = ({
           offerAddressEnabled,
           isPhysicalEvent
         )
-      : setInitialFormValues(offer, subCategories, true)
+      : setInitialFormValues(
+          offer,
+          subCategories,
+          true,
+          offerAddressEnabled,
+          isPhysicalEvent
+        )
 
   const [isWithdrawalMailDialogOpen, setIsWithdrawalMailDialogOpen] =
     useState<boolean>(false)
