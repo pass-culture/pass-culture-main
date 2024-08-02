@@ -1995,10 +1995,10 @@
     "@firebase/util" "1.9.7"
     tslib "^2.1.0"
 
-"@firebase/app@^0.10.7":
-  version "0.10.7"
-  resolved "https://registry.yarnpkg.com/@firebase/app/-/app-0.10.7.tgz#31cba1486c21b5a0cadc0036bfc0cec68ff53c8e"
-  integrity sha512-7OCd53B+wnk/onbMLn/vM10pDjw97zzWUD8m3swtLYKJIrL+gDZ7HZ4xcbBLw7OB8ikzu8k1ORNjRe2itgAy4g==
+"@firebase/app@^0.10.8":
+  version "0.10.8"
+  resolved "https://registry.yarnpkg.com/@firebase/app/-/app-0.10.8.tgz#153caf05ded90c80f1ee1810e43ab0b72782595a"
+  integrity sha512-xSLmW0/RShcnUEXH7l+wC0AFWaUtty4tUFF2loIgbtXTRmra0UH/SqYDf/IcfreUninRrCsusNmvoTidGkXJPw==
   dependencies:
     "@firebase/component" "0.6.8"
     "@firebase/logger" "0.4.2"
