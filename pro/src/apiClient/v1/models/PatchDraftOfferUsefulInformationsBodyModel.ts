@@ -9,7 +9,7 @@ export type PatchDraftOfferUsefulInformationsBodyModel = {
   bookingEmail?: string | null;
   durationMinutes?: number | null;
   externalTicketOfficeUrl?: string | null;
-  extraData?: any;
+  extraData?: Record<string, any> | null;
   isDuo?: boolean | null;
   isNational?: boolean | null;
   mentalDisabilityCompliant?: boolean | null;

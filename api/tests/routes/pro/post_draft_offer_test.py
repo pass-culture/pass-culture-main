@@ -7,7 +7,7 @@ import pcapi.core.users.factories as users_factories
 
 
 @pytest.mark.usefixtures("db_session")
-class Returns200Test:
+class Returns201Test:
     def test_created_offer_should_be_inactive(self, client):
         # Given
         venue = offerers_factories.VenueFactory()
@@ -19,17 +19,20 @@ class Returns200Test:
             "name": "Celeste",
             "subcategoryId": subcategories.LIVRE_PAPIER.id,
             "venueId": venue.id,
-            "extraData": {"ean": "9782123456803"},
+            "extraData": {"ean": "9782123456803", "gtl_id": "07000000"},
         }
         response = client.with_session_auth("user@example.com").post("/offers/draft", json=data)
-        offer_id = response.json["id"]
-        offer = Offer.query.get(offer_id)
+
+        assert response.status_code == 201
+
         response_dict = response.json
+        offer_id = response_dict["id"]
+        offer = Offer.query.get(offer_id)
         assert offer.isActive is False
         assert response_dict["venue"]["id"] == offer.venue.id
         assert response_dict["name"] == "Celeste"
         assert response_dict["id"] == offer.id
-        assert response_dict["extraData"] == {"ean": "9782123456803"}
+        assert response_dict["extraData"] == {"ean": "9782123456803", "gtl_id": "07000000"}
         assert not offer.product
 
 
