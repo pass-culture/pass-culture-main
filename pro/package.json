@@ -91,7 +91,7 @@
     "@types/dompurify": "^3.0.5",
     "@types/lodash.isequal": "^4.5.8",
     "@types/lodash.memoize": "^4.1.9",
-    "@types/node": "^20.14.13",
+    "@types/node": "^20.14.14",
     "@types/papaparse": "^5.3.14",
     "@types/query-string": "^6.3.0",
     "@types/react-avatar-editor": "^13.0.2",
