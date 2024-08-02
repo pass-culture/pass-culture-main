@@ -28,17 +28,16 @@ import {
 } from './constants'
 import { UsefulInformationFormValues } from './types'
 import styles from './UsefulInformationForm.module.scss'
+import { setFormReadOnlyFields } from './utils'
 
 interface UsefulInformationFormProps {
   conditionalFields: string[]
   offer: GetIndividualOfferResponseModel
-  readOnlyFields?: string[]
 }
 
 export const UsefulInformationForm = ({
   conditionalFields,
   offer,
-  readOnlyFields = [],
 }: UsefulInformationFormProps): JSX.Element => {
   const {
     values: { withdrawalType, receiveNotificationEmails, bookingEmail },
@@ -53,6 +52,7 @@ export const UsefulInformationForm = ({
   )
 
   const venue = offer.venue
+  const readOnlyFields = setFormReadOnlyFields(offer)
 
   // we use venue is virtual here because we cannot infer it from the offerSubCategory
   // because of CATEGORY_STATUS.ONLINE_OR_OFFLINE who can be both virtual or not

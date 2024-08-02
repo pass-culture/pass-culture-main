@@ -1,4 +1,8 @@
-import { SubcategoryResponseModel, WithdrawalTypeEnum } from 'apiClient/v1'
+import {
+  OfferStatus,
+  SubcategoryResponseModel,
+  WithdrawalTypeEnum,
+} from 'apiClient/v1'
 import { CATEGORY_STATUS } from 'core/Offers/constants'
 import { AccessibilityEnum } from 'core/shared/types'
 import {
@@ -11,6 +15,7 @@ import { DEFAULT_USEFULL_INFORMATION_INTITIAL_VALUES } from '../constants'
 import {
   getFilteredVenueListBySubcategory,
   setDefaultInitialValuesFromOffer,
+  setFormReadOnlyFields,
 } from '../utils'
 
 const virtualVenueId = 1
@@ -101,6 +106,7 @@ describe('setDefaultInitialValuesFromOffer', () => {
     const expectedValues = {
       isEvent: true,
       isNational: false,
+      isVenueVirtual: false,
       withdrawalDetails: 'Detailed info',
       withdrawalDelay: 3,
       withdrawalType: WithdrawalTypeEnum.BY_EMAIL,
@@ -136,6 +142,7 @@ describe('setDefaultInitialValuesFromOffer', () => {
     const expectedValues = {
       isEvent: false,
       isNational: true,
+      isVenueVirtual: false,
       withdrawalDetails:
         DEFAULT_USEFULL_INFORMATION_INTITIAL_VALUES['withdrawalDetails'],
       withdrawalDelay: undefined,
@@ -178,5 +185,41 @@ describe('setDefaultInitialValuesFromOffer', () => {
     )
 
     expect(result).toEqual(expectedValues)
+  })
+})
+
+describe('setFormReadOnlyFields', () => {
+  it('should return all fields as read only when offer is rejected', () => {
+    const offer = getIndividualOfferFactory({
+      status: OfferStatus.REJECTED,
+    })
+
+    const result = setFormReadOnlyFields(offer)
+
+    expect(result).toEqual(
+      Object.keys(DEFAULT_USEFULL_INFORMATION_INTITIAL_VALUES)
+    )
+  })
+
+  it('should return all fields as read only when offer is pending', () => {
+    const offer = getIndividualOfferFactory({
+      status: OfferStatus.PENDING,
+    })
+
+    const result = setFormReadOnlyFields(offer)
+
+    expect(result).toEqual(
+      Object.keys(DEFAULT_USEFULL_INFORMATION_INTITIAL_VALUES)
+    )
+  })
+
+  it('should return some fields as not read only when offer is synchronized', () => {
+    const offer = getIndividualOfferFactory({
+      lastProvider: { name: 'Allocine' },
+    })
+
+    const result = setFormReadOnlyFields(offer)
+
+    expect(result).not.toContain(['accessibility', 'externalTicketOfficeUrl'])
   })
 })

@@ -3,7 +3,13 @@ import {
   SubcategoryResponseModel,
   VenueListItemResponseModel,
 } from 'apiClient/v1'
-import { CATEGORY_STATUS } from 'core/Offers/constants'
+import { FORM_DEFAULT_VALUES } from 'components/IndividualOfferForm/constants'
+import {
+  CATEGORY_STATUS,
+  OFFER_STATUS_PENDING,
+  OFFER_STATUS_REJECTED,
+} from 'core/Offers/constants'
+import { isOfferSynchronized } from 'core/Offers/utils/synchronization'
 import { AccessibilityEnum } from 'core/shared/types'
 
 import { DEFAULT_USEFULL_INFORMATION_INTITIAL_VALUES } from './constants'
@@ -58,5 +64,28 @@ export function setDefaultInitialValuesFromOffer(
     externalTicketOfficeUrl:
       offer.externalTicketOfficeUrl ||
       DEFAULT_USEFULL_INFORMATION_INTITIAL_VALUES['externalTicketOfficeUrl'],
+    isVenueVirtual: offer.venue.isVirtual || false,
   }
+}
+
+export function setFormReadOnlyFields(
+  offer: GetIndividualOfferResponseModel
+): string[] {
+  const readOnlyField: string[] = []
+  if ([OFFER_STATUS_REJECTED, OFFER_STATUS_PENDING].includes(offer.status)) {
+    return Object.keys(DEFAULT_USEFULL_INFORMATION_INTITIAL_VALUES)
+  }
+
+  if (isOfferSynchronized(offer)) {
+    const editableFields: string[] = [
+      'accessibility',
+      'externalTicketOfficeUrl',
+    ]
+
+    return Object.keys(FORM_DEFAULT_VALUES).filter(
+      (field: string) => !editableFields.includes(field)
+    )
+  }
+
+  return readOnlyField
 }

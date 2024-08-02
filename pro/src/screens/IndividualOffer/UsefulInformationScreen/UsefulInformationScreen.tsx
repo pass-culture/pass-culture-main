@@ -11,6 +11,7 @@ import { ConfirmDialog } from 'components/Dialog/ConfirmDialog/ConfirmDialog'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { RouteLeavingGuardIndividualOffer } from 'components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
+import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import { GET_OFFER_QUERY_KEY } from 'config/swrQueryKeys'
 import { useIndividualOfferContext } from 'context/IndividualOfferContext/IndividualOfferContext'
 import {
@@ -179,6 +180,7 @@ export const UsefulInformationScreen = ({
     <FormikProvider value={formik}>
       <Form>
         <FormLayout fullWidthActions>
+          <ScrollToFirstErrorAfterSubmit />
           <FormLayout.MandatoryInfo />
           <UsefulInformationForm
             offer={offer}
