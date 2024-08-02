@@ -6,6 +6,7 @@ import { AccessibilityEnum } from 'core/shared/types'
 import { deSerializeDurationMinutes } from 'screens/IndividualOffer/DetailsScreen/utils'
 
 import { FORM_DEFAULT_VALUES } from '../constants'
+import { OFFER_LOCATION } from '../OfferLocation/constants'
 import { IndividualOfferFormValues } from '../types'
 
 import { buildSubcategoryFields } from './buildSubCategoryFields'
@@ -13,7 +14,9 @@ import { buildSubcategoryFields } from './buildSubCategoryFields'
 export const setInitialFormValues = (
   offer: GetIndividualOfferResponseModel,
   subCategoryList: SubcategoryResponseModel[],
-  isBookingContactEnabled: boolean
+  isBookingContactEnabled: boolean,
+  isOfferAddressEnabled?: boolean,
+  isPhysicalEvent?: boolean
 ): IndividualOfferFormValues => {
   const subcategory = subCategoryList.find(
     (s: SubcategoryResponseModel) => s.id === offer.subcategoryId
@@ -80,5 +83,22 @@ export const setInitialFormValues = (
     externalTicketOfficeUrl:
       offer.externalTicketOfficeUrl ||
       FORM_DEFAULT_VALUES['externalTicketOfficeUrl'],
+    // TODO: Fill that with offer data when available in API
+    ...(isOfferAddressEnabled && isPhysicalEvent
+      ? {
+          offerlocation: OFFER_LOCATION.OTHER_ADDRESS,
+          locationLabel: '',
+          manuallySetAddress: true,
+          street: '',
+          'search-addressAutocomplete': '',
+          addressAutocomplete: '',
+          postalCode: '',
+          city: '',
+          coords: '',
+          latitude: '',
+          longitude: '',
+          banId: '',
+        }
+      : {}),
   }
 }
