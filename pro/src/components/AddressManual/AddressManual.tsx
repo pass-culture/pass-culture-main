@@ -19,6 +19,7 @@ export const AddressManual = (): JSX.Element => {
 
   const onCoordsBlur = async (event: React.ChangeEvent<HTMLInputElement>) => {
     formik.handleChange(event)
+    await formik.setFieldTouched('coords', true, true)
 
     const newCoords = event.target.value
     let latitude = '',
