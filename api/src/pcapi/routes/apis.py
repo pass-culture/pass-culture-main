@@ -6,10 +6,13 @@ from pcapi.serialization.spec_tree import ExtendedSpecTree
 from pcapi.serialization.utils import before_handler
 
 
-public_api = Blueprint("Public API", __name__)
+PUBLIC_API_BLUEPRINT_NAME = "Public API"
+PRIVATE_API_BLUEPRINT_NAME = "Private API"
+
+public_api = Blueprint(PUBLIC_API_BLUEPRINT_NAME, __name__)
 CORS(public_api, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
 
-private_api = Blueprint("Private API", __name__)
+private_api = Blueprint(PRIVATE_API_BLUEPRINT_NAME, __name__)
 CORS(
     private_api,
     origins=settings.CORS_ALLOWED_ORIGINS,
