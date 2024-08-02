@@ -5,7 +5,7 @@ import { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
 import { isErrorAPIError, serializeApiErrors } from 'apiClient/helpers'
-import { VenueListItemResponseModel } from 'apiClient/v1'
+import { GetIndividualOfferResponseModel } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { ConfirmDialog } from 'components/Dialog/ConfirmDialog/ConfirmDialog'
 import { FormLayout } from 'components/FormLayout/FormLayout'
@@ -29,25 +29,24 @@ import { getOfferConditionalFields } from 'utils/getOfferConditionalFields'
 import { ActionBar } from '../ActionBar/ActionBar'
 import { serializePatchOffer } from '../InformationsScreen/serializePatchOffer'
 
-import { DEFAULT_USEFULL_INFORMATION_INTITIAL_VALUES } from './constants'
 import { UsefulInformationFormValues } from './types'
 import { UsefulInformationForm } from './UsefulInformationForm'
 import { setDefaultInitialValuesFromOffer } from './utils'
 import { getValidationSchema } from './validationSchema'
 
 export type UsefulInformationScreenProps = {
-  venues: VenueListItemResponseModel[]
+  offer: GetIndividualOfferResponseModel
 }
 
 export const UsefulInformationScreen = ({
-  venues,
+  offer,
 }: UsefulInformationScreenProps): JSX.Element => {
   const navigate = useNavigate()
   const notify = useNotification()
   const { logEvent } = useAnalytics()
   const mode = useOfferWizardMode()
   const { mutate } = useSWRConfig()
-  const { offer, subCategories } = useIndividualOfferContext()
+  const { subCategories } = useIndividualOfferContext()
 
   const [isWithdrawalMailDialogOpen, setIsWithdrawalMailDialogOpen] =
     useState<boolean>(false)
@@ -55,15 +54,12 @@ export const UsefulInformationScreen = ({
   const [sendWithdrawalMail, setSendWithdrawalMail] = useState<boolean>(false)
 
   const isEvent = subCategories.find(
-    (subcategory) => subcategory.id === offer?.subcategoryId
+    (subcategory) => subcategory.id === offer.subcategoryId
   )?.isEvent
 
   const onSubmit = async (
     formValues: UsefulInformationFormValues
   ): Promise<void> => {
-    if (!offer) {
-      return
-    }
     if (mode === OFFER_WIZARD_MODE.EDITION) {
       const hasWithdrawalInformationsChanged = [
         'withdrawalDetails',
@@ -144,28 +140,19 @@ export const UsefulInformationScreen = ({
   }
 
   const offerSubCategory = subCategories.find(
-    (s) => s.id === offer?.subcategoryId
+    (s) => s.id === offer.subcategoryId
   )
 
-  const offerConditionalFields = getOfferConditionalFields({
+  const conditionalFields = getOfferConditionalFields({
     offerSubCategory,
     isUserAdmin: false,
     receiveNotificationEmails: true,
-    isVenueVirtual: offer?.venue.isVirtual,
+    isVenueVirtual: offer.venue.isVirtual,
   })
-  const subCategoryConditionalFields = offerSubCategory
-    ? offerSubCategory.conditionalFields
-    : []
-  const conditionalFields = [
-    ...subCategoryConditionalFields,
-    ...offerConditionalFields,
-  ]
 
   const validationSchema = getValidationSchema(conditionalFields)
   const formik = useFormik({
-    initialValues: offer
-      ? setDefaultInitialValuesFromOffer(offer)
-      : DEFAULT_USEFULL_INFORMATION_INTITIAL_VALUES,
+    initialValues: setDefaultInitialValuesFromOffer(offer),
     onSubmit,
     validationSchema,
   })
@@ -174,14 +161,14 @@ export const UsefulInformationScreen = ({
     mode === OFFER_WIZARD_MODE.CREATION
       ? navigate(
           getIndividualOfferUrl({
-            offerId: offer?.id,
+            offerId: offer.id,
             step: OFFER_WIZARD_STEP_IDS.DETAILS,
             mode: OFFER_WIZARD_MODE.CREATION,
           })
         )
       : navigate(
           getIndividualOfferUrl({
-            offerId: offer?.id,
+            offerId: offer.id,
             step: OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS,
             mode: OFFER_WIZARD_MODE.READ_ONLY,
           })
@@ -193,15 +180,15 @@ export const UsefulInformationScreen = ({
       <Form>
         <FormLayout fullWidthActions>
           <FormLayout.MandatoryInfo />
-          <UsefulInformationForm venues={venues} />
+          <UsefulInformationForm
+            offer={offer}
+            conditionalFields={conditionalFields}
+          />
         </FormLayout>
         <ActionBar
           onClickPrevious={handlePreviousStepOrBackToReadOnly}
           step={OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS}
-          isDisabled={
-            formik.isSubmitting ||
-            Boolean(offer && isOfferDisabled(offer.status))
-          }
+          isDisabled={formik.isSubmitting || isOfferDisabled(offer.status)}
           dirtyForm={formik.dirty}
         />
       </Form>

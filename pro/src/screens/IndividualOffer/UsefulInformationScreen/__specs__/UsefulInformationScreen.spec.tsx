@@ -70,15 +70,14 @@ describe('screens:IndividualOffer::UsefulInformation', () => {
     ]
 
     props = {
-      venues: [],
+      offer: getIndividualOfferFactory({
+        id: 3,
+      }),
     }
 
     contextValue = individualOfferContextValuesFactory({
       categories,
       subCategories,
-      offer: getIndividualOfferFactory({
-        id: 3,
-      }),
     })
   })
 
