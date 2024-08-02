@@ -109,6 +109,7 @@ import type { StocksResponseModel } from '../models/StocksResponseModel';
 import type { StockStatsResponseModel } from '../models/StockStatsResponseModel';
 import type { StocksUpsertBodyModel } from '../models/StocksUpsertBodyModel';
 import type { SubmitReviewRequestModel } from '../models/SubmitReviewRequestModel';
+import type { SuggestedSubcategoriesResponseModel } from '../models/SuggestedSubcategoriesResponseModel';
 import type { UserEmailValidationResponseModel } from '../models/UserEmailValidationResponseModel';
 import type { UserHasBookingResponse } from '../models/UserHasBookingResponse';
 import type { UserIdentityBodyModel } from '../models/UserIdentityBodyModel';
@@ -1862,6 +1863,33 @@ export class DefaultService {
       errors: {
         403: `Forbidden`,
         404: `Not Found`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+  /**
+   * get_suggested_subcategories <GET>
+   * @param offerName
+   * @param offerDescription
+   * @param venueId
+   * @returns SuggestedSubcategoriesResponseModel OK
+   * @throws ApiError
+   */
+  public getSuggestedSubcategories(
+    offerName: string,
+    offerDescription?: string | null,
+    venueId?: number | null,
+  ): CancelablePromise<SuggestedSubcategoriesResponseModel> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/offers/suggested-subcategories',
+      query: {
+        'offer_name': offerName,
+        'offer_description': offerDescription,
+        'venue_id': venueId,
+      },
+      errors: {
+        403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
     });
