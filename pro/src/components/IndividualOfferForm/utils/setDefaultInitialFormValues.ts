@@ -58,11 +58,13 @@ export const setDefaultInitialFormValues = (
   venueId: string | null,
   venueList: VenueListItemResponseModel[],
   isBookingContactEnabled: boolean,
-  isOfferAddressEnabled: boolean = false
+  isOfferAddressEnabled: boolean = false,
+  isPhysicalEvent?: boolean
 ): IndividualOfferFormValues => {
-  const DEFAULT_VALUES = isOfferAddressEnabled
-    ? FORM_DEFAULT_VALUES
-    : FORM_DEFAULT_VALUES_NO_OFFER_LOCATION
+  const DEFAULT_VALUES =
+    isOfferAddressEnabled && isPhysicalEvent
+      ? FORM_DEFAULT_VALUES
+      : FORM_DEFAULT_VALUES_NO_OFFER_LOCATION
 
   let initialOffererId = DEFAULT_VALUES.offererId
 

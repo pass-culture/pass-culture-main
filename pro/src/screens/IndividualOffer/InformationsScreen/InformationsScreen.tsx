@@ -28,7 +28,7 @@ import {
   Events,
   OFFER_FORM_NAVIGATION_MEDIUM,
 } from 'core/FirebaseEvents/constants'
-import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
+import { CATEGORY_STATUS, OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
 import { isOfferDisabled } from 'core/Offers/utils/isOfferDisabled'
 import { PATCH_SUCCESS_MESSAGE } from 'core/shared/constants'
@@ -94,6 +94,7 @@ export const InformationsScreen = ({
   ).filter((venue) => venue.managingOffererId === Number(offererId))
 
   const offerAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
+  const isPhysicalEvent = categoryStatus === CATEGORY_STATUS.OFFLINE
 
   // offer is null when we are creating a new offer
   const initialValues: IndividualOfferFormValues =
@@ -104,7 +105,8 @@ export const InformationsScreen = ({
           venueId,
           filteredVenueList,
           true,
-          offerAddressEnabled
+          offerAddressEnabled,
+          isPhysicalEvent
         )
       : setInitialFormValues(offer, subCategories, true)
 
@@ -210,10 +212,10 @@ export const InformationsScreen = ({
   }
 
   const readOnlyFields = setFormReadOnlyFields(offer, currentUser.isAdmin)
-  const DONT_USE_OFFER_LOCATION_SCHEMA = !offerAddressEnabled
+  const ENABLE_OFFER_LOCATION_SCHEMA = offerAddressEnabled && isPhysicalEvent
   const validationSchema = getValidationSchema(
     offer?.lastProvider?.name,
-    DONT_USE_OFFER_LOCATION_SCHEMA
+    ENABLE_OFFER_LOCATION_SCHEMA
   )
   const formik = useFormik({
     initialValues,

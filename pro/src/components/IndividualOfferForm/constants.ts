@@ -17,7 +17,6 @@ export const FORM_DEFAULT_VALUES = {
   isDuo: false,
 }
 
-// TODO : Supprimer cet export lorsque le tag "WIP_ENABLE_OFFER_ADDRESS" sera retiré
 export const FORM_DEFAULT_VALUES_NO_OFFER_LOCATION = {
   ...INFORMATIONS_DEFAULT_VALUES,
   ...CATEGORIES_DEFAULT_VALUES,
