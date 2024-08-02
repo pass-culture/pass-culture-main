@@ -5,32 +5,19 @@ import { checkCoords } from 'utils/coords'
 export const validationSchema = {
   locationLabel: yup.string(),
 
-  addressAutocomplete: yup
-    .string()
-    .when(['isVenueVirtual', 'manuallySetAddress'], {
-      is: false,
-      then: (schema) =>
-        schema.required(
-          'Veuillez sélectionner une adresse parmi les suggestions'
-        ),
-    }),
-
-  street: yup.string().when('isVenueVirtual', {
+  addressAutocomplete: yup.string().when('manuallySetAddress', {
     is: false,
     then: (schema) =>
-      schema.required('Veuillez renseigner une adresse postale'),
+      schema.required(
+        'Veuillez sélectionner une adresse parmi les suggestions'
+      ),
   }),
-  postalCode: yup.string().when('isVenueVirtual', {
-    is: false,
-    then: (schema) => schema.required('Veuillez renseigner un code postal'),
-  }),
-  city: yup.string().when('isVenueVirtual', {
-    is: false,
-    then: (schema) => schema.required('Veuillez renseigner une ville'),
-  }),
-  coords: yup.string().when(['isVenueVirtual', 'manuallySetAddress'], {
-    is: (isVenueVirtual: boolean, manuallySetAddress: boolean) =>
-      !isVenueVirtual && manuallySetAddress,
+
+  street: yup.string().required('Veuillez renseigner une adresse postale'),
+  postalCode: yup.string().required('Veuillez renseigner un code postal'),
+  city: yup.string().required('Veuillez renseigner une ville'),
+  coords: yup.string().when('manuallySetAddress', {
+    is: true,
     then: (schema) =>
       schema
         .required('Veuillez renseigner les coordonnées GPS')

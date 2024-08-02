@@ -11,14 +11,14 @@ import { validationSchema as usefulInformationsSchema } from './UsefulInformatio
 // TODO : Supprimer "ignoreOfferLocation" lorsque le tag "WIP_ENABLE_OFFER_ADDRESS" disparaîtra
 export const getValidationSchema = (
   lastProvider?: string | null,
-  ignoreOfferLocation = true
+  enableOfferLocationSchema = false
 ) =>
   yup.object().shape({
     ...categoriesSchema,
     ...informationsSchema(lastProvider),
     ...usefulInformationsSchema,
     ...accessibilitySchema,
-    ...(ignoreOfferLocation ? {} : offerLocationSchema),
+    ...(enableOfferLocationSchema ? offerLocationSchema : {}),
     ...notificationsSchema,
     ...externalLinkSchema,
   })
