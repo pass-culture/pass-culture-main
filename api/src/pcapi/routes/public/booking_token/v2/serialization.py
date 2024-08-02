@@ -9,7 +9,6 @@ from pcapi.core.categories import subcategories_v2
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
-from pcapi.utils.date import isoformat
 from pcapi.utils.human_ids import humanize
 
 
@@ -66,7 +65,7 @@ def get_booking_response(booking: Booking) -> GetBookingResponse:
 
     extra_data = booking.stock.offer.extraData or {}
 
-    birth_date = isoformat(booking.user.birth_date) if booking.user.birth_date else None
+    birth_date = booking.user.birth_date.isoformat() if booking.user.birth_date else None
     return GetBookingResponse(
         bookingId=humanize(booking.id),  # type: ignore[arg-type]
         dateOfBirth=birth_date,
