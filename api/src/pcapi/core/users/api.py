@@ -2143,6 +2143,7 @@ def extract_beneficiary_data_command() -> bool:
         return False
 
     if counter.is_full():
+        _release_extract_beneficiary_data_lock()
         return False
 
     candidates = (

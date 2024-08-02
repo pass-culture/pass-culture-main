@@ -2944,7 +2944,7 @@ class ExtractBeneficiaryDataCommandTest(StorageFolderManager):
 
         db.session.refresh(extract)
         assert result == False
-        assert redis.exists(users_constants.GDPR_EXTRACT_DATA_LOCK)
+        assert not redis.exists(users_constants.GDPR_EXTRACT_DATA_LOCK)
         assert redis.get(users_constants.GDPR_EXTRACT_DATA_COUNTER) == str(settings.GDPR_MAX_EXTRACT_PER_DAY)
         assert not (self.storage_folder / f"{extract.id}.zip").exists()
         assert extract.dateProcessed is None
