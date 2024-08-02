@@ -8,7 +8,10 @@ from pcapi.serialization.utils import before_handler
 from pcapi.validation.routes import users_authentifications
 
 
-pro_private_api = Blueprint("pro_private_api", __name__)
+PRO_PRIVATE_API_BLUEPRINT_NAME = "pro_private_api"
+
+
+pro_private_api = Blueprint(PRO_PRIVATE_API_BLUEPRINT_NAME, __name__)
 CORS(
     pro_private_api,
     origins=settings.CORS_ALLOWED_ORIGINS,
