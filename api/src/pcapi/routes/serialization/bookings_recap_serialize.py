@@ -15,7 +15,6 @@ from pcapi.domain.booking_recap.utils import get_booking_token
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import to_camel
-from pcapi.utils.date import isoformat
 
 
 class BookingRecapResponseBeneficiaryModel(BaseModel):
@@ -84,7 +83,7 @@ class ListBookingsResponseModel(BaseModel):
 def _serialize_booking_status_info(
     booking_status: BookingRecapStatus, booking_status_date: datetime
 ) -> BookingRecapResponseBookingStatusHistoryModel:
-    serialized_booking_status_date = isoformat(booking_status_date) if booking_status_date else None
+    serialized_booking_status_date = booking_status_date.isoformat() if booking_status_date else None
 
     return BookingRecapResponseBookingStatusHistoryModel(
         status=booking_status,
@@ -132,12 +131,13 @@ def serialize_booking_status_history(
 
 def serialize_bookings(booking: Booking) -> BookingRecapResponseModel:
     stock_beginning_datetime = _apply_departement_timezone(booking.stockBeginningDatetime, booking.venueDepartmentCode)
+    booking_date = convert_booking_dates_utc_to_venue_timezone(booking.bookedAt, booking)
     serialized_booking_recap = BookingRecapResponseModel(  # type: ignore[call-arg]
         stock={  # type: ignore[arg-type]
             "stockIdentifier": booking.stockId,
             "offerName": booking.offerName,
             "offerId": booking.offerId,
-            "eventBeginningDatetime": isoformat(stock_beginning_datetime) if stock_beginning_datetime else None,
+            "eventBeginningDatetime": stock_beginning_datetime.isoformat() if stock_beginning_datetime else None,
             "offerIsbn": booking.offerEan,
             "offerIsEducational": False,
         },
@@ -153,9 +153,7 @@ def serialize_bookings(booking: Booking) -> BookingRecapResponseModel:
             bool(booking.isExternal),
             _apply_departement_timezone(booking.stockBeginningDatetime, booking.venueDepartmentCode),
         ),
-        bookingDate=isoformat(
-            typing.cast(datetime, convert_booking_dates_utc_to_venue_timezone(booking.bookedAt, booking))
-        ),
+        bookingDate=booking_date.isoformat() if booking_date else None,
         bookingStatus=build_booking_status(booking),
         bookingIsDuo=booking.quantity == 2,
         bookingAmount=booking.bookingAmount,

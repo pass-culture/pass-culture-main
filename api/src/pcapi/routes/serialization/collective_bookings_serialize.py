@@ -21,7 +21,6 @@ from pcapi.routes.serialization.collective_offers_serialize import CollectiveOff
 from pcapi.routes.serialization.educational_institutions import EducationalInstitutionResponseModel
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
-from pcapi.utils.date import isoformat
 
 
 class CollectiveBookingRecapStatus(Enum):
@@ -202,7 +201,7 @@ def _serialize_collective_booking_status_info(
     collective_booking_status: CollectiveBookingRecapStatus, collective_booking_status_date: datetime | None
 ) -> BookingStatusHistoryResponseModel:
     serialized_collective_booking_status_date = (
-        isoformat(collective_booking_status_date) if collective_booking_status_date else None
+        collective_booking_status_date.isoformat() if collective_booking_status_date else None
     )
 
     return BookingStatusHistoryResponseModel(

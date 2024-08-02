@@ -15,7 +15,6 @@ import pcapi.core.offers.factories as offers_factories
 from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.core.testing import assert_num_queries
 import pcapi.core.users.factories as users_factories
-from pcapi.utils.date import isoformat
 from pcapi.utils.date import utc_datetime_to_department_timezone
 
 
@@ -186,9 +185,7 @@ class Returns200Test:
                     "lastname": "Granger",
                     "phonenumber": "+33100000000",
                 },
-                "bookingDate": isoformat(
-                    used_booking.dateCreated.astimezone(tz.gettz("Europe/Paris")),
-                ),
+                "bookingDate": used_booking.dateCreated.astimezone(tz.gettz("Europe/Paris")).isoformat(),
                 "bookingAmount": 10.1,
                 "bookingPriceCategoryLabel": None,
                 "bookingToken": "ABCDEF",
@@ -197,15 +194,11 @@ class Returns200Test:
                 "bookingStatusHistory": [
                     {
                         "status": "booked",
-                        "date": isoformat(
-                            used_booking.dateCreated.astimezone(tz.gettz("Europe/Paris")),
-                        ),
+                        "date": used_booking.dateCreated.astimezone(tz.gettz("Europe/Paris")).isoformat(),
                     },
                     {
                         "status": "validated",
-                        "date": isoformat(
-                            used_booking.dateUsed.astimezone(tz.gettz("Europe/Paris")),
-                        ),
+                        "date": used_booking.dateUsed.astimezone(tz.gettz("Europe/Paris")).isoformat(),
                     },
                 ],
             },
@@ -224,9 +217,7 @@ class Returns200Test:
                     "lastname": "Weasley",
                     "phonenumber": "+33200000000",
                 },
-                "bookingDate": isoformat(
-                    confirmed_book_booking.dateCreated.astimezone(tz.gettz("Europe/Paris")),
-                ),
+                "bookingDate": confirmed_book_booking.dateCreated.astimezone(tz.gettz("Europe/Paris")).isoformat(),
                 "bookingAmount": 10.1,
                 "bookingPriceCategoryLabel": None,
                 "bookingToken": None,
@@ -235,9 +226,7 @@ class Returns200Test:
                 "bookingStatusHistory": [
                     {
                         "status": "booked",
-                        "date": isoformat(
-                            confirmed_book_booking.dateCreated.astimezone(tz.gettz("Europe/Paris")),
-                        ),
+                        "date": confirmed_book_booking.dateCreated.astimezone(tz.gettz("Europe/Paris")).isoformat(),
                     },
                 ],
             },
