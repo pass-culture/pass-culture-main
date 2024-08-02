@@ -65,25 +65,26 @@ export const OfferSection = ({
     { title: 'Catégorie', text: offerData.categoryName },
     { title: 'Sous-catégorie', text: offerData.subCategoryName },
   ]
-  if (conditionalFields.includes('musicType')) {
-    offerTypeDescriptions.push({
-      title: 'Genre musical',
-      text: offerData.musicTypeName || '-',
-    })
+  if (!isSplitOfferEnabled) {
+    if (conditionalFields.includes('musicType')) {
+      offerTypeDescriptions.push({
+        title: 'Genre musical',
+        text: offerData.musicTypeName || '-',
+      })
+    }
+    if (conditionalFields.includes('showType')) {
+      offerTypeDescriptions.push({
+        title: 'Type de spectacle',
+        text: offerData.showTypeName || '-',
+      })
+    }
+    if (offerData.showSubTypeName) {
+      offerTypeDescriptions.push({
+        title: 'Sous-type',
+        text: offerData.showSubTypeName,
+      })
+    }
   }
-  if (conditionalFields.includes('showType')) {
-    offerTypeDescriptions.push({
-      title: 'Type de spectacle',
-      text: offerData.showTypeName || '-',
-    })
-  }
-  if (offerData.showSubTypeName) {
-    offerTypeDescriptions.push({
-      title: 'Sous-type',
-      text: offerData.showSubTypeName,
-    })
-  }
-
   const aboutDescriptions: Description[] = [
     { title: 'Titre de l’offre', text: offerData.name },
     { title: 'Description', text: offerData.description || '-' },
@@ -99,6 +100,25 @@ export const OfferSection = ({
       title: 'Description',
       text: offerData.description || '-',
     })
+  } else {
+    if (conditionalFields.includes('musicType')) {
+      artisticInfoDescriptions.push({
+        title: 'Genre musical',
+        text: offerData.musicTypeName || '-',
+      })
+    }
+    if (conditionalFields.includes('showType')) {
+      artisticInfoDescriptions.push({
+        title: 'Type de spectacle',
+        text: offerData.showTypeName || '-',
+      })
+    }
+    if (offerData.showSubTypeName) {
+      artisticInfoDescriptions.push({
+        title: 'Sous-type',
+        text: offerData.showSubTypeName,
+      })
+    }
   }
 
   if (conditionalFields.includes('speaker')) {

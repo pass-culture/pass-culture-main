@@ -61,26 +61,26 @@ export function DetailsSummaryScreen({ offer }: DetailsSummaryScreenProps) {
     { title: 'Catégorie', text: offerData.categoryName },
     { title: 'Sous-catégorie', text: offerData.subCategoryName },
   ]
+
+  const artisticInfoDescriptions: Description[] = []
   if (conditionalFields.includes('musicType')) {
-    typeDescriptions.push({
+    artisticInfoDescriptions.push({
       title: 'Genre musical',
       text: offerData.musicTypeName || '-',
     })
   }
   if (conditionalFields.includes('showType')) {
-    typeDescriptions.push({
+    artisticInfoDescriptions.push({
       title: 'Type de spectacle',
       text: offerData.showTypeName || '-',
     })
   }
   if (offerData.showSubTypeName) {
-    typeDescriptions.push({
+    artisticInfoDescriptions.push({
       title: 'Sous-type',
       text: offerData.showSubTypeName,
     })
   }
-
-  const artisticInfoDescriptions: Description[] = []
   if (conditionalFields.includes('speaker')) {
     artisticInfoDescriptions.push({
       title: 'Intervenant',
@@ -111,7 +111,7 @@ export function DetailsSummaryScreen({ offer }: DetailsSummaryScreenProps) {
       text: offerData.performer,
     })
   }
-  if (conditionalFields.includes('durationMinutes')) {
+  if (subcategory?.isEvent) {
     artisticInfoDescriptions.push({
       title: 'Durée',
       text: offerData.durationMinutes
@@ -132,8 +132,8 @@ export function DetailsSummaryScreen({ offer }: DetailsSummaryScreenProps) {
     'gtl_id',
   ]
 
-  const displayArtisticInformations = artisticInformationsFields.some((field) =>
-    conditionalFields.includes(field)
+  const displayArtisticInformations = artisticInformationsFields.some(
+    (field) => conditionalFields.includes(field) || subcategory?.isEvent
   )
 
   return (
