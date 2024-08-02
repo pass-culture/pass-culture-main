@@ -31,6 +31,7 @@ from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import validation as educational_validation
 from pcapi.core.educational.api import offer as educational_api_offer
 import pcapi.core.educational.api.national_program as national_program_api
+from pcapi.core.educational.exceptions import CollectiveOfferNotCancellable
 from pcapi.core.external import compliance
 from pcapi.core.external.attributes.api import update_external_pro
 import pcapi.core.external_bookings.api as external_bookings_api
@@ -585,6 +586,16 @@ def batch_update_offers(query: BaseQuery, update_fields: dict, send_email_notifi
 
 
 def batch_update_collective_offers(query: BaseQuery, update_fields: dict) -> None:
+    non_cancellable_collective_orders = query.filter(educational_models.CollectiveOffer.is_cancellable == False)
+
+    if non_cancellable_collective_orders.count() > 0:
+        non_cancellable_collective_orders_ids = non_cancellable_collective_orders.with_entities(
+            educational_models.CollectiveOffer.id
+        )
+        raise CollectiveOfferNotCancellable(
+            f"All orders must be cancellables. Order(s) non cancellable: {[order_id for order_id, in non_cancellable_collective_orders_ids]}"
+        )
+
     collective_offer_ids_tuples = query.filter(
         educational_models.CollectiveOffer.validation == models.OfferValidationStatus.APPROVED
     ).with_entities(educational_models.CollectiveOffer.id)

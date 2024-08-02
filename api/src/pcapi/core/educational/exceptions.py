@@ -131,6 +131,14 @@ class CollectiveOfferNotEditable(Exception):
     pass
 
 
+class CollectiveOfferNotCancellable(Exception):
+    pass
+
+
+class CollectiveOfferStatusFilterNotCancellable(Exception):
+    pass
+
+
 class CollectiveStockNotBookableByUser(Exception):
     pass
 
