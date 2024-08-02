@@ -134,7 +134,9 @@ export const DetailsForm = ({
             label="Qui propose l’offre ?"
             name="venueId"
             options={venueOptions}
-            disabled={readOnlyFields.includes('venueId')}
+            disabled={
+              readOnlyFields.includes('venueId') || venueOptions.length === 1
+            }
           />
         </FormLayout.Row>
       </FormLayout.Section>
@@ -197,7 +199,10 @@ export const DetailsForm = ({
                 })
                 handleChange(event)
               }}
-              disabled={readOnlyFields.includes('subcategoryId')}
+              disabled={
+                readOnlyFields.includes('subcategoryId') ||
+                subcategoryOptions.length === 1
+              }
             />
           </FormLayout.Row>
         )}
