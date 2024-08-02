@@ -93,7 +93,7 @@ class PostOfferBodyModel(BaseModel):
     description: str | None
     duration_minutes: int | None
     external_ticket_office_url: HttpUrl | None
-    extra_data: Any
+    extra_data: dict[str, typing.Any] | None
     is_duo: bool | None
     is_national: bool | None
     mental_disability_compliant: bool

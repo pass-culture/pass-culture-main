@@ -1,4 +1,4 @@
-from typing import Any
+import typing
 
 from pydantic.v1 import EmailStr
 from pydantic.v1 import HttpUrl
@@ -15,7 +15,7 @@ class PostDraftOfferBodyModel(BaseModel):
     subcategory_id: str
     venue_id: int
     description: str | None = None
-    extra_data: offers_models.OfferExtraData | None = None
+    extra_data: dict[str, typing.Any] | None = None
     duration_minutes: int | None = None
 
     @validator("name", pre=True)
@@ -33,7 +33,7 @@ class PatchDraftOfferBodyModel(BaseModel):
     subcategory_id: str | None = None
     venue_id: int | None = None
     description: str | None = None
-    extra_data: offers_models.OfferExtraData | None = None
+    extra_data: dict[str, typing.Any] | None = None
     duration_minutes: int | None = None
 
     @validator("name", pre=True)
@@ -55,7 +55,7 @@ class PatchDraftOfferUsefulInformationsBodyModel(BaseModel):
     booking_email: EmailStr | None = None
     duration_minutes: int | None = None
     external_ticket_office_url: HttpUrl | None = None
-    extra_data: Any = None
+    extra_data: dict[str, typing.Any] | None = None
     is_duo: bool | None = None
     withdrawal_delay: int | None = None
     withdrawal_details: str | None = None

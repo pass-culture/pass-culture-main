@@ -2,11 +2,10 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { OfferExtraData } from './OfferExtraData';
 export type PatchDraftOfferBodyModel = {
   description?: string | null;
   durationMinutes?: number | null;
-  extraData?: OfferExtraData | null;
+  extraData?: Record<string, any> | null;
   name?: string | null;
   subcategoryId?: string | null;
   venueId?: number | null;

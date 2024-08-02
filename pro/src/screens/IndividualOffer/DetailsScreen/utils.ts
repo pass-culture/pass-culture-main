@@ -347,8 +347,9 @@ export function serializeDetailsData(formValues: DetailsFormValues): Payload {
     )
   }
   const serializedExtraData = serializeExtraData(formValues)
-  if (Object.keys(serializedExtraData).length > 0) {
-    payload.extraData = serializedExtraData
+
+  if (serializedExtraData && Object.keys(serializedExtraData).length > 0) {
+    payload.extraData = serializedExtraData as Record<string, unknown>
   }
 
   return payload

@@ -2,11 +2,10 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { OfferExtraData } from './OfferExtraData';
 export type PostDraftOfferBodyModel = {
   description?: string | null;
   durationMinutes?: number | null;
-  extraData?: OfferExtraData | null;
+  extraData?: Record<string, any> | null;
   name: string;
   subcategoryId: string;
   venueId: number;
