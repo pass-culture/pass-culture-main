@@ -1,7 +1,9 @@
 import { useFormikContext } from 'formik'
-import React from 'react'
 
-import { VenueListItemResponseModel, WithdrawalTypeEnum } from 'apiClient/v1'
+import {
+  GetIndividualOfferResponseModel,
+  WithdrawalTypeEnum,
+} from 'apiClient/v1'
 import { OfferRefundWarning } from 'components/Banner/OfferRefundWarning'
 import { WithdrawalReminder } from 'components/Banner/WithdrawalReminder'
 import { FormLayout } from 'components/FormLayout/FormLayout'
@@ -16,7 +18,6 @@ import { Select } from 'ui-kit/form/Select/Select'
 import { TextArea } from 'ui-kit/form/TextArea/TextArea'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
-import { getOfferConditionalFields } from 'utils/getOfferConditionalFields'
 
 import {
   DEFAULT_USEFULL_INFORMATION_INTITIAL_VALUES,
@@ -27,15 +28,16 @@ import {
 } from './constants'
 import { UsefulInformationFormValues } from './types'
 import styles from './UsefulInformationForm.module.scss'
-import { getFilteredVenueListBySubcategory } from './utils'
 
 interface UsefulInformationFormProps {
-  venues: VenueListItemResponseModel[]
+  conditionalFields: string[]
+  offer: GetIndividualOfferResponseModel
   readOnlyFields?: string[]
 }
 
 export const UsefulInformationForm = ({
-  venues,
+  conditionalFields,
+  offer,
   readOnlyFields = [],
 }: UsefulInformationFormProps): JSX.Element => {
   const {
@@ -44,35 +46,17 @@ export const UsefulInformationForm = ({
     handleChange,
   } = useFormikContext<UsefulInformationFormValues>()
 
-  const { offer, subCategories } = useIndividualOfferContext()
+  const { subCategories } = useIndividualOfferContext()
 
   const offerSubCategory = subCategories.find(
-    (s) => s.id === offer?.subcategoryId
-  )
-  const filteredVenueList = getFilteredVenueListBySubcategory(
-    venues,
-    offerSubCategory
+    (s) => s.id === offer.subcategoryId
   )
 
-  const offerConditionalFields = getOfferConditionalFields({
-    offerSubCategory,
-    isUserAdmin: false,
-    receiveNotificationEmails: true,
-    isVenueVirtual: offer?.venue.isVirtual,
-  })
-  const subCategoryConditionalFields = offerSubCategory
-    ? offerSubCategory.conditionalFields
-    : []
-  const conditionalFields = [
-    ...subCategoryConditionalFields,
-    ...offerConditionalFields,
-  ]
-
-  const venue = filteredVenueList.find((v) => v.id === offer?.venue.id)
+  const venue = offer.venue
 
   // we use venue is virtual here because we cannot infer it from the offerSubCategory
   // because of CATEGORY_STATUS.ONLINE_OR_OFFLINE who can be both virtual or not
-  const isVenueVirtual = venue?.isVirtual || false
+  const isVenueVirtual = venue.isVirtual || false
 
   const {
     currentUser: { isAdmin, email },
@@ -274,10 +258,7 @@ export const UsefulInformationForm = ({
                 bookingEmail ===
                   DEFAULT_USEFULL_INFORMATION_INTITIAL_VALUES.bookingEmail
               ) {
-                await setFieldValue(
-                  'bookingEmail',
-                  venue?.bookingEmail ?? email
-                )
+                await setFieldValue('bookingEmail', venue.bookingEmail ?? email)
               }
               handleChange(e)
             }}
