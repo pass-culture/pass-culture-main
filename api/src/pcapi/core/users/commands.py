@@ -72,11 +72,11 @@ def anonymize_inactive_users(category: str, force: bool) -> None:
 @cron_decorators.log_cron_with_transaction
 def execute_gdpr_extract() -> None:
     user_api.extract_beneficiary_data_command()
+    db.session.commit()
 
 
 @blueprint.cli.command("clean_gdpr_extracts")
 @cron_decorators.log_cron_with_transaction
 def clean_gdpr_extracts() -> None:
     user_api.clean_gdpr_extracts()
-    # deletion do not mark the session as dirty therefor the decorator rolls back the session
     db.session.commit()
