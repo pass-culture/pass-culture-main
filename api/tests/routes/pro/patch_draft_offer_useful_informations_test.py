@@ -77,7 +77,7 @@ class Returns400Test:
             "idAtProviders": 1,
             "lastProviderId": 1,
             "thumbCount": 2,
-            "subcategoryId": subcategories.LIVRE_PAPIER,
+            "subcategoryId": subcategories.LIVRE_PAPIER.id,
         }
         response = client.with_session_auth("user@example.com").patch(
             f"offers/draft/{offer.id}/useful-informations", json=data

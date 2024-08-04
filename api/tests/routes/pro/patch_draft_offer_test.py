@@ -69,7 +69,6 @@ class Returns400Test:
             "idAtProviders": 1,
             "lastProviderId": 1,
             "thumbCount": 2,
-            "subcategoryId": subcategories.LIVRE_PAPIER,
         }
         response = client.with_session_auth("user@example.com").patch(f"offers/draft/{offer.id}", json=data)
 
@@ -83,7 +82,6 @@ class Returns400Test:
             "idAtProviders",
             "lastProviderId",
             "thumbCount",
-            "subcategoryId",
         }
         for key in forbidden_keys:
             assert key in response.json
