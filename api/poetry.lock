@@ -3176,13 +3176,13 @@ tests = ["pytest"]
 
 [[package]]
 name = "py7zr"
-version = "0.21.0"
+version = "0.21.1"
 description = "Pure python 7-zip library"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "py7zr-0.21.0-py3-none-any.whl", hash = "sha256:ea6ded2e5c6d8539e3406cb3b0317192b32af59cff13eaf87702acc36a274da6"},
-    {file = "py7zr-0.21.0.tar.gz", hash = "sha256:213a9cc46940fb8f63b4163643a8f5b36bbc798134746c3992d3bc6b14edab87"},
+    {file = "py7zr-0.21.1-py3-none-any.whl", hash = "sha256:57e5be6fafaa417fe93fa9c81f7f01bb579d3cfe1631f535a3e641200ac87dc2"},
+    {file = "py7zr-0.21.1.tar.gz", hash = "sha256:dede8ed8b7b32b3586ac476da3a482b69dd433229420bf0f62c495404b72c799"},
 ]
 
 [package.dependencies]
@@ -5652,4 +5652,4 @@ test = ["pytest"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "017c55182f0cfc727393331459e3112f02c0758b66796ab5beb21fce15ca37a6"
+content-hash = "b2a622c5effab4a9f1d893d8dcc4a829e324f4fd3cd6d7db7bc4f54deaceb5f2"
