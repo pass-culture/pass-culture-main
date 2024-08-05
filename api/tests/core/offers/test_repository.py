@@ -1335,9 +1335,8 @@ class GetCollectiveOffersTemplateByFiltersTest:
         assert result.id == template.id
 
 
-@pytest.mark.usefixtures("db_session")
 class UpdateStockQuantityToDnBookedQuantityTest:
-    def test_update_stock_quantity_to_dn_booked_quantity(self):
+    def test_update_stock_quantity_to_dn_booked_quantity(self, db_session):
         # given
         offer = factories.OfferFactory()
         stock = factories.StockFactory(offer=offer, quantity=10, dnBookedQuantity=5)
@@ -1353,6 +1352,7 @@ class UpdateStockQuantityToDnBookedQuantityTest:
         # when
         repository.update_stock_quantity_to_dn_booked_quantity(stock.id)
         # then
+        db_session.refresh(stock)
         assert stock.quantity == 6
 
 
