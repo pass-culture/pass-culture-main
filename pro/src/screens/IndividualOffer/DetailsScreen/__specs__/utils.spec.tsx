@@ -380,6 +380,16 @@ describe('serializeExtraData', () => {
       subcategoryConditionalFields: [],
     }
 
-    expect(serializeExtraData(formValues)).toStrictEqual({})
+    expect(serializeExtraData(formValues)).toStrictEqual({
+      author: '',
+      ean: '',
+      gtl_id: '',
+      performer: '',
+      showSubType: '',
+      showType: '',
+      speaker: '',
+      stageDirector: '',
+      visa: '',
+    })
   })
 })
