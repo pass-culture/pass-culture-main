@@ -46,7 +46,7 @@ Each time a beneficiary books a product (or an event not linked to a ticketing s
     "venue_address": "1 boulevard Poissonniere",
     "venue_department_code": "75",
     "venue_id": 12345,
-    "venue_name": "Your bookshop",
+    "venue_name": "Your bookshop"
 }
 ```
 

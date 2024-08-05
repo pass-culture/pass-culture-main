@@ -61,7 +61,7 @@ We will be calling your booking URL with the following payload :
     "venue_address": "1 boulevard Poissonniere",
     "venue_department_code": "75",
     "venue_id": 12345,
-    "venue_name": "Mon lieu trop cool",
+    "venue_name": "Mon lieu trop cool"
 }
 ```
 
