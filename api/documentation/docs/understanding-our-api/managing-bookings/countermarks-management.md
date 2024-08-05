@@ -31,11 +31,13 @@ Each time a beneficiary books a product (or an event not linked to a ticketing s
     "booking_quantity": 1,
     "offer_ean": "9787547722909",
     "offer_id": 1234,
+    "offer_id_at_provider": "your_offer_id",
     "offer_name": "Le petit Prince",
     "offer_price": 1000,
     "price_category_id": 1234,
     "price_category_label": null,
     "stock_id": 1234,
+    "stock_id_at_provider": "your_stock_id",
     "user_birth_date": "2007-01-01",
     "user_email": "john.doe@test.com",
     "user_first_name": "john",
@@ -58,6 +60,7 @@ Each time a beneficiary books a product (or an event not linked to a ticketing s
 | **booking_quantity** | Integer | **`false`** | The number of items booked |
 | **offer_ean** | String | `true` | Offer EAN code |
 | **offer_id** | Integer | **`false`** | Offer id |
+| **offer_id_at_provider** | String | `true` | Your own offer id that you gave us using the [**creation**](/rest-api#tag/Product-offers/operation/PostProductOffer) or [**update**](/rest-api#tag/Product-offers/operation/EditProduct) endpoints |
 | **offer_name** | String | **`false`** | Offer name |
 | **offer_price** | Integer | **`false`** | Offer price in euro and in cents (*for instance 1000 = 10 €*) |
 | **price_category_id** | Integer | `true` | Not relevant for products (used for events) |
