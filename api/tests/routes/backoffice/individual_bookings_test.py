@@ -563,39 +563,6 @@ class ListIndividualBookingsTest(GetEndpointHelper):
         # booked J not used, booked J-2 not used, event J+12, event J+11, used J
         assert [row["Contremarque"] for row in rows] == ["ADFTH9", "ELBEIT", "REIMB3", "CNCL02", "WTRL00"]
 
-    @pytest.mark.parametrize(
-        "cancellation_reason, expected_text",
-        [
-            (bookings_models.BookingCancellationReasons.BACKOFFICE, "Annulée sur le backoffice par"),
-            (bookings_models.BookingCancellationReasons.FRAUD, "Fraude"),
-        ],
-    )
-    def test_list_cancelled_booking_information(
-        self, authenticated_client, legit_user, cancellation_reason, expected_text
-    ):
-        bookings_factories.CancelledBookingFactory(
-            cancellationReason=cancellation_reason,
-            cancellationAuthorId=legit_user.id,
-        )
-
-        response = authenticated_client.get(
-            url_for(self.endpoint, cancellation_reason=["OFFERER", "FRAUD", "BACKOFFICE"])
-        )
-        assert response.status_code == 200
-
-        extra_data = html_parser.extract(response.data, tag="tr", class_="collapse accordion-collapse")[0]
-
-        assert "Catégorie" in extra_data
-        assert "Sous-catégorie" in extra_data
-        assert "Date d'annulation" in extra_data
-        assert "Raison de l'annulation" in extra_data
-        if expected_text == "Fraude":
-            assert expected_text in extra_data
-        else:
-            assert f"{expected_text} {legit_user.full_name}" in extra_data
-            link = '<a href="/admin/bo-users/' + str(legit_user.id) + '">' + legit_user.full_name + "</a>"
-            assert link in str(html_parser.get_soup(response.data))
-
 
 class MarkBookingAsUsedTest(PostEndpointHelper):
     endpoint = "backoffice_web.individual_bookings.mark_booking_as_used"

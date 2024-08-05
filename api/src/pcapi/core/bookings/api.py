@@ -440,25 +440,13 @@ def _cancel_booking(
     cancel_even_if_used: bool = False,
     raise_if_error: bool = False,
     one_side_cancellation: bool = False,
-    author_id: int | None = None,
 ) -> bool:
     """Cancel booking and update a user's credit information on Batch"""
     try:
-        if not _execute_cancel_booking(
-            booking=booking,
-            reason=reason,
-            cancel_even_if_used=cancel_even_if_used,
-            raise_if_error=raise_if_error,
-            one_side_cancellation=one_side_cancellation,
-            author_id=author_id,
-        ):
+        if not _execute_cancel_booking(booking, reason, cancel_even_if_used, raise_if_error, one_side_cancellation):
             return False
     except external_bookings_exceptions.ExternalBookingAlreadyCancelledError as error:
-        booking.cancel_booking(
-            reason=reason,
-            cancel_even_if_used=cancel_even_if_used,
-            author_id=author_id,
-        )
+        booking.cancel_booking(reason, cancel_even_if_used)
         if error.remainingQuantity is None:
             booking.stock.quantity = None
         else:
@@ -498,7 +486,6 @@ def _execute_cancel_booking(
     cancel_even_if_used: bool = False,
     raise_if_error: bool = False,
     one_side_cancellation: bool = False,
-    author_id: int | None = None,
 ) -> bool:
     with transaction():
         with db.session.no_autoflush:
@@ -514,11 +501,7 @@ def _execute_cancel_booking(
             )
             try:
                 cancelled_event = finance_api.cancel_latest_event(booking)
-                booking.cancel_booking(
-                    reason=reason,
-                    cancel_even_if_used=cancel_even_if_used,
-                    author_id=author_id,
-                )
+                booking.cancel_booking(reason, cancel_even_if_used)
                 if cancelled_event:
                     finance_api.add_event(
                         finance_models.FinanceEventMotive.BOOKING_CANCELLED_AFTER_USE,
@@ -731,10 +714,7 @@ def mark_as_used_with_uncancelling(booking: Booking, validation_author_type: Boo
 
 
 def mark_as_cancelled(
-    booking: Booking,
-    reason: BookingCancellationReasons,
-    one_side_cancellation: bool = False,
-    author_id: int | None = None,
+    booking: Booking, reason: BookingCancellationReasons, one_side_cancellation: bool = False
 ) -> None:
     """
     A booking can be cancelled only if it has not been cancelled before and if
@@ -768,12 +748,7 @@ def mark_as_cancelled(
             raise exceptions.OneSideCancellationForbidden()
 
     _cancel_booking(
-        booking=booking,
-        reason=reason,
-        cancel_even_if_used=True,
-        raise_if_error=True,
-        one_side_cancellation=one_side_cancellation,
-        author_id=author_id,
+        booking, reason, cancel_even_if_used=True, raise_if_error=True, one_side_cancellation=one_side_cancellation
     )
 
     if one_side_cancellation:

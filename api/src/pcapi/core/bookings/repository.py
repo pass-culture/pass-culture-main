@@ -232,7 +232,7 @@ def find_user_ids_with_expired_individual_bookings(expired_on: date | None = Non
         user_id
         for user_id, in (
             db.session.query(User.id)
-            .join(Booking, User.userBookings)
+            .join(Booking)
             .filter(
                 Booking.status == BookingStatus.CANCELLED,
                 Booking.cancellationDate >= expired_on,

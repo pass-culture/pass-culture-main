@@ -2,12 +2,6 @@
 add cancellationAuthor for booking
 """
 
-from alembic import op
-import sqlalchemy as sa
-
-from pcapi import settings
-
-
 # pre/post deployment: pre
 # revision identifiers, used by Alembic.
 revision = "5f46232cb72f"
@@ -17,10 +11,8 @@ depends_on: list[str] | None = None
 
 
 def upgrade() -> None:
-    if not settings.IS_PROD:
-        op.add_column("booking", sa.Column("cancellationAuthorId", sa.BigInteger(), nullable=True))
+    pass
 
 
 def downgrade() -> None:
-    if not settings.IS_PROD:
-        op.drop_column("booking", "cancellationAuthorId")
+    pass

@@ -2,11 +2,6 @@
 add cancellationAuthor to booking foreignkey
 """
 
-from alembic import op
-
-from pcapi import settings
-
-
 # pre/post deployment: post
 # revision identifiers, used by Alembic.
 revision = "ebbed0db4e99"
@@ -16,17 +11,8 @@ depends_on: list[str] | None = None
 
 
 def upgrade() -> None:
-    if not settings.IS_PROD:
-        op.create_foreign_key(
-            "booking_cancellation_author_fk",
-            "booking",
-            "user",
-            ["cancellationAuthorId"],
-            ["id"],
-            postgresql_not_valid=True,
-        )
+    pass
 
 
 def downgrade() -> None:
-    if not settings.IS_PROD:
-        op.drop_constraint("booking_cancellation_author_fk", "booking", type_="foreignkey")
+    pass
