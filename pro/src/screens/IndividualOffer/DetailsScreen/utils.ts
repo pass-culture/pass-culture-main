@@ -4,7 +4,6 @@ import {
   CategoryResponseModel,
   GetIndividualOfferResponseModel,
   OfferStatus,
-  PostOfferBodyModel,
   SubcategoryResponseModel,
   VenueListItemResponseModel,
 } from 'apiClient/v1'
@@ -288,40 +287,17 @@ export function setFormReadOnlyFields(
   return ['categoryId', 'subcategoryId', 'venueId']
 }
 
-export const serializeExtraData = (
-  formValues: DetailsFormValues
-): PostOfferBodyModel['extraData'] => {
-  const extraData: PostOfferBodyModel['extraData'] = {}
-  if (formValues.author) {
-    extraData.author = formValues.author
-  }
-  if (formValues.gtl_id) {
-    extraData.gtl_id = formValues.gtl_id
-  }
-  if (formValues.performer) {
-    extraData.performer = formValues.performer
-  }
-  if (formValues.ean) {
-    extraData.ean = formValues.ean
-  }
-  if (formValues.showType) {
-    extraData.showType = formValues.showType
-  }
-  if (formValues.showSubType) {
-    extraData.showSubType = formValues.showSubType
-  }
-  if (formValues.speaker) {
-    extraData.speaker = formValues.speaker
-  }
-  if (formValues.stageDirector) {
-    extraData.stageDirector = formValues.stageDirector
-  }
-  if (formValues.visa) {
-    extraData.visa = formValues.visa
-  }
-
-  return extraData
-}
+export const serializeExtraData = (formValues: DetailsFormValues) => ({
+  author: formValues.author,
+  gtl_id: formValues.gtl_id,
+  performer: formValues.performer,
+  ean: formValues.ean,
+  showType: formValues.showType,
+  showSubType: formValues.showSubType,
+  speaker: formValues.speaker,
+  stageDirector: formValues.stageDirector,
+  visa: formValues.visa,
+})
 
 type Payload = {
   description?: string
@@ -337,19 +313,9 @@ export function serializeDetailsData(formValues: DetailsFormValues): Payload {
     name: formValues.name,
     subcategoryId: formValues.subcategoryId,
     venueId: Number(formValues.venueId),
-  }
-  if (formValues.description) {
-    payload.description = formValues.description
-  }
-  if (formValues.durationMinutes) {
-    payload.durationMinutes = serializeDurationMinutes(
-      formValues.durationMinutes
-    )
-  }
-  const serializedExtraData = serializeExtraData(formValues)
-
-  if (serializedExtraData && Object.keys(serializedExtraData).length > 0) {
-    payload.extraData = serializedExtraData as Record<string, unknown>
+    description: formValues.description,
+    durationMinutes: serializeDurationMinutes(formValues.durationMinutes ?? ''),
+    extraData: serializeExtraData(formValues),
   }
 
   return payload
