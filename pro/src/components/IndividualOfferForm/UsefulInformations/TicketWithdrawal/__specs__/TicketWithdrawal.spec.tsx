@@ -1,13 +1,16 @@
 import { render, screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Form, Formik } from 'formik'
-import React from 'react'
 import * as yup from 'yup'
 
 import { WithdrawalTypeEnum } from 'apiClient/v1'
 import { IndividualOfferFormValues } from 'components/IndividualOfferForm/types'
 import { Button } from 'ui-kit/Button/Button'
 
+import {
+  ticketSentDateOptions,
+  ticketWithdrawalHourOptions,
+} from '../constants'
 import { TicketWithdrawalProps, TicketWithdrawal } from '../TicketWithdrawal'
 import { validationSchema } from '../validationSchema'
 
@@ -59,11 +62,23 @@ describe('IndividualOffer section: TicketWithdrawal', () => {
     )
     expect(await screen.findByText('Date d’envoi *')).toBeInTheDocument()
 
+    for (const options of ticketSentDateOptions) {
+      const optionEl = screen.getByText(options.label)
+      expect(optionEl).toBeInTheDocument()
+      expect(optionEl).toHaveValue(options.value)
+    }
+
     // should contain withdrawal hour information when tickets are to withdraw on place
     await userEvent.click(
       await screen.findByText('Retrait sur place (guichet, comptoir...)')
     )
     expect(await screen.findByText('Heure de retrait *')).toBeInTheDocument()
+
+    for (const options of ticketWithdrawalHourOptions) {
+      const optionEl = screen.getByText(options.label)
+      expect(optionEl).toBeInTheDocument()
+      expect(optionEl).toHaveValue(options.value)
+    }
 
     await userEvent.click(
       await screen.findByText('Aucun billet n’est nécessaire')
