@@ -43,9 +43,9 @@ from flask import current_app as app
 from flask import render_template
 from flask_sqlalchemy import BaseQuery
 import pytz
-import sqlalchemy as sqla
-import sqlalchemy.orm as sqla_orm
-import sqlalchemy.sql.functions as sqla_func
+import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
+import sqlalchemy.sql.functions as sa_func
 
 from pcapi import settings
 from pcapi.connectors import googledrive
@@ -277,10 +277,10 @@ def price_events(
         # them in the next loop), but keeps events that cannot be
         # priced (so the query WILL return them in the next loop).
         if last_event:
-            clause = sqla.func.ROW(
+            clause = sa.func.ROW(
                 models.FinanceEvent.pricingOrderingDate,
                 models.FinanceEvent.id,
-            ) > sqla.func.ROW(last_event.pricingOrderingDate, last_event.id)
+            ) > sa.func.ROW(last_event.pricingOrderingDate, last_event.id)
             query = query.filter(clause)
         return query.limit(batch_size)
 
@@ -364,8 +364,8 @@ def _get_events_to_price(window: tuple[datetime.datetime, datetime.datetime]) ->
         )
         .order_by(models.FinanceEvent.pricingOrderingDate, models.FinanceEvent.id)
         .options(
-            sqla.orm.joinedload(models.FinanceEvent.booking),
-            sqla.orm.joinedload(models.FinanceEvent.collectiveBooking),
+            sa.orm.joinedload(models.FinanceEvent.booking),
+            sa.orm.joinedload(models.FinanceEvent.collectiveBooking),
         )
     )
 
@@ -406,13 +406,13 @@ def price_event(event: models.FinanceEvent) -> models.Pricing | None:
             event = (
                 models.FinanceEvent.query.filter_by(id=event.id)
                 .options(
-                    sqla_orm.joinedload(models.FinanceEvent.booking, innerjoin=True)
+                    sa_orm.joinedload(models.FinanceEvent.booking, innerjoin=True)
                     .joinedload(bookings_models.Booking.stock, innerjoin=True)
                     .joinedload(
                         offers_models.Stock.offer,
                         innerjoin=True,
                     ),
-                    sqla_orm.joinedload(models.FinanceEvent.booking, innerjoin=True)
+                    sa_orm.joinedload(models.FinanceEvent.booking, innerjoin=True)
                     .joinedload(bookings_models.Booking.venue, innerjoin=True)
                     .joinedload(offerers_models.Venue.pricing_point_links, innerjoin=True)
                     .joinedload(offerers_models.VenuePricingPointLink.venue, innerjoin=True),
@@ -423,10 +423,10 @@ def price_event(event: models.FinanceEvent) -> models.Pricing | None:
             event = (
                 models.FinanceEvent.query.filter_by(id=event.id)
                 .options(
-                    sqla_orm.joinedload(models.FinanceEvent.collectiveBooking, innerjoin=True)
+                    sa_orm.joinedload(models.FinanceEvent.collectiveBooking, innerjoin=True)
                     .joinedload(educational_models.CollectiveBooking.collectiveStock, innerjoin=True)
                     .joinedload(educational_models.CollectiveStock.collectiveOffer, innerjoin=True),
-                    sqla_orm.joinedload(models.FinanceEvent.collectiveBooking, innerjoin=True)
+                    sa_orm.joinedload(models.FinanceEvent.collectiveBooking, innerjoin=True)
                     .joinedload(educational_models.CollectiveBooking.venue, innerjoin=True)
                     .joinedload(offerers_models.Venue.pricing_point_links, innerjoin=True)
                     .joinedload(offerers_models.VenuePricingPointLink.venue, innerjoin=True),
@@ -437,7 +437,7 @@ def price_event(event: models.FinanceEvent) -> models.Pricing | None:
             event = (
                 models.FinanceEvent.query.filter_by(id=event.id)
                 .options(
-                    sqla_orm.joinedload(models.FinanceEvent.bookingFinanceIncident, innerjoin=True),
+                    sa_orm.joinedload(models.FinanceEvent.bookingFinanceIncident, innerjoin=True),
                 )
                 .one()
             )
@@ -512,7 +512,7 @@ def _get_current_revenue(event: models.FinanceEvent) -> int:
                 )
             ),
         )
-        .with_entities(sqla.func.sum(bookings_models.Booking.amount * bookings_models.Booking.quantity))
+        .with_entities(sa.func.sum(bookings_models.Booking.amount * bookings_models.Booking.quantity))
         .scalar()
     )
     return utils.to_eurocents(current_revenue or 0)
@@ -728,8 +728,8 @@ def _delete_dependent_pricings(
         .join(models.Pricing.event)
         .filter(
             models.Pricing.valueDate.between(revenue_period_start, revenue_period_end),
-            sqla.func.ROW(models.FinanceEvent.pricingOrderingDate, models.FinanceEvent.id)
-            > sqla.func.ROW(event.pricingOrderingDate, event.id),
+            sa.func.ROW(models.FinanceEvent.pricingOrderingDate, models.FinanceEvent.id)
+            > sa.func.ROW(event.pricingOrderingDate, event.id),
         )
     )
 
@@ -808,7 +808,7 @@ def update_finance_event_pricing_date(stock: offers_models.Stock) -> None:
     """
     pricing_point_id = stock.offer.venue.current_pricing_point_id
     finance_events_from_pricing_point = models.FinanceEvent.query.options(
-        sqla.orm.joinedload(models.FinanceEvent.pricings)
+        sa.orm.joinedload(models.FinanceEvent.pricings)
     ).filter(models.FinanceEvent.pricingPointId == pricing_point_id)
     bookings_of_this_stock = bookings_models.Booking.query.with_entities(bookings_models.Booking.id).filter(
         bookings_models.Booking.stockId == stock.id
@@ -896,15 +896,15 @@ def _generate_cashflows(batch: models.CashflowBatch) -> None:
         models.BankAccount.status == models.BankAccountApplicationStatus.ACCEPTED,
         # Even if a booking is marked as used prematurely, we should
         # wait for the event to happen.
-        sqla.or_(
-            sqla.and_(
+        sa.or_(
+            sa.and_(
                 models.Pricing.bookingId.is_not(None),
-                sqla.or_(
+                sa.or_(
                     offers_models.Stock.beginningDatetime.is_(None),
                     offers_models.Stock.beginningDatetime < batch.cutoff,
                 ),
             ),
-            sqla.and_(
+            sa.and_(
                 models.Pricing.collectiveBookingId.is_not(None),
                 collective_cutoff_time < batch.cutoff,
             ),
@@ -914,7 +914,7 @@ def _generate_cashflows(batch: models.CashflowBatch) -> None:
 
     def _mark_as_processed(pricing_ids: typing.Iterable[int]) -> None:
         db.session.execute(
-            sqla.text(
+            sa.text(
                 """
                 WITH updated AS (
                   UPDATE pricing
@@ -952,7 +952,7 @@ def _generate_cashflows(batch: models.CashflowBatch) -> None:
         .outerjoin(models.CashflowPricing)
         .with_entities(
             models.BankAccount.id,
-            sqla_func.array_agg(models.Pricing.venueId.distinct()),
+            sa_func.array_agg(models.Pricing.venueId.distinct()),
         )
         .group_by(
             models.BankAccount.id,
@@ -993,7 +993,7 @@ def _generate_cashflows(batch: models.CashflowBatch) -> None:
                         models.PricingLine.category == models.PricingLineCategory.OFFERER_REVENUE,
                         models.PricingLine.amount
                         != -100
-                        * sqla.case(
+                        * sa.case(
                             (
                                 bookings_models.Booking.id.is_not(None),
                                 bookings_models.Booking.amount * bookings_models.Booking.quantity,
@@ -1013,7 +1013,7 @@ def _generate_cashflows(batch: models.CashflowBatch) -> None:
                         },
                     )
                     continue
-                total = pricings.with_entities(sqla.func.sum(models.Pricing.amount)).scalar() or 0
+                total = pricings.with_entities(sa.func.sum(models.Pricing.amount)).scalar() or 0
 
                 # The total is positive if the pro owes us more than we do.
                 if total > 0:
@@ -1102,9 +1102,7 @@ def _generate_cashflows(batch: models.CashflowBatch) -> None:
                     {pricing_id for pricing_id, in cashflowed_pricings.with_entities(models.CashflowPricing.pricingId)}
                 )
                 total_from_pricings = (
-                    cashflowed_pricings.join(models.Pricing)
-                    .with_entities(sqla.func.sum(models.Pricing.amount))
-                    .scalar()
+                    cashflowed_pricings.join(models.Pricing).with_entities(sa.func.sum(models.Pricing.amount)).scalar()
                     or 0
                 )
                 if cashflow.amount != total_from_pricings:
@@ -1165,7 +1163,7 @@ def generate_payment_files(batch: models.CashflowBatch) -> None:
 
     logger.info("Updating cashflow status")
     db.session.execute(
-        sqla.text(
+        sa.text(
             """
         WITH updated AS (
           UPDATE cashflow
@@ -1294,7 +1292,7 @@ def _generate_bank_accounts_file(cutoff: datetime.datetime) -> pathlib.Path:
         .order_by(models.BankAccount.id)
     ).with_entities(
         models.BankAccount.id,
-        sqla_func.array_agg(offerers_models.VenueBankAccountLink.venueId.distinct()).label("venue_ids"),
+        sa_func.array_agg(offerers_models.VenueBankAccountLink.venueId.distinct()).label("venue_ids"),
         offerers_models.Offerer.name.label("offerer_name"),
         offerers_models.Offerer.siren.label("offerer_siren"),
         models.BankAccount.label.label("label"),
@@ -1353,7 +1351,7 @@ def _generate_payments_file(batch: models.CashflowBatch) -> pathlib.Path:
                 offerers_models.Offerer.name.label("offerer_name"),
                 offerers_models.Offerer.siren.label("offerer_siren"),
                 models.Deposit.type.label("deposit_type"),
-                sqla_func.sum(models.Pricing.amount).label("pricing_amount"),
+                sa_func.sum(models.Pricing.amount).label("pricing_amount"),
             )
         )
 
@@ -1369,7 +1367,7 @@ def _generate_payments_file(batch: models.CashflowBatch) -> pathlib.Path:
             .join(educational_models.CollectiveBooking.educationalInstitution)
             .join(
                 educational_models.EducationalDeposit,
-                sqla.and_(
+                sa.and_(
                     educational_models.EducationalDeposit.educationalYearId
                     == educational_models.CollectiveBooking.educationalYearId,
                     educational_models.EducationalDeposit.educationalInstitutionId
@@ -1390,12 +1388,12 @@ def _generate_payments_file(batch: models.CashflowBatch) -> pathlib.Path:
                 models.BankAccount.label.label("bank_account_label"),
                 offerers_models.Offerer.name.label("offerer_name"),
                 offerers_models.Offerer.siren.label("offerer_siren"),
-                sqla.func.coalesce(
+                sa.func.coalesce(
                     educational_models.EducationalInstitutionProgram.label,
                     educational_models.EducationalInstitutionProgram.name,
-                    educational_models.EducationalDeposit.ministry.cast(sqla.String),
+                    educational_models.EducationalDeposit.ministry.cast(sa.String),
                 ).label("ministry"),
-                sqla_func.sum(models.Pricing.amount).label("pricing_amount"),
+                sa_func.sum(models.Pricing.amount).label("pricing_amount"),
             )
         )
 
@@ -1413,19 +1411,19 @@ def _generate_payments_file(batch: models.CashflowBatch) -> pathlib.Path:
     indiv_data = (
         indiv_query.union_all(indiv_incident_query)
         .group_by(
-            sqla.column("bank_account_id"),
-            sqla.column("bank_account_label"),
-            sqla.column("offerer_name"),
-            sqla.column("offerer_siren"),
-            sqla.column("deposit_type"),
+            sa.column("bank_account_id"),
+            sa.column("bank_account_label"),
+            sa.column("offerer_name"),
+            sa.column("offerer_siren"),
+            sa.column("deposit_type"),
         )
         .with_entities(
-            sqla.column("bank_account_id"),
-            sqla.column("bank_account_label"),
-            sqla.column("offerer_name"),
-            sqla.column("offerer_siren"),
-            sqla.column("deposit_type"),
-            sqla_func.sum(sqla.column("pricing_amount")).label("pricing_amount"),
+            sa.column("bank_account_id"),
+            sa.column("bank_account_label"),
+            sa.column("offerer_name"),
+            sa.column("offerer_siren"),
+            sa.column("deposit_type"),
+            sa_func.sum(sa.column("pricing_amount")).label("pricing_amount"),
         )
         .all()
     )
@@ -1444,19 +1442,19 @@ def _generate_payments_file(batch: models.CashflowBatch) -> pathlib.Path:
     collective_data = (
         collective_query.union_all(collective_incident_query)
         .group_by(
-            sqla.column("bank_account_id"),
-            sqla.column("bank_account_label"),
-            sqla.column("offerer_name"),
-            sqla.column("offerer_siren"),
-            sqla.column("ministry"),
+            sa.column("bank_account_id"),
+            sa.column("bank_account_label"),
+            sa.column("offerer_name"),
+            sa.column("offerer_siren"),
+            sa.column("ministry"),
         )
         .with_entities(
-            sqla.column("bank_account_id"),
-            sqla.column("bank_account_label"),
-            sqla.column("offerer_name"),
-            sqla.column("offerer_siren"),
-            sqla.column("ministry"),
-            sqla_func.sum(sqla.column("pricing_amount")).label("pricing_amount"),
+            sa.column("bank_account_id"),
+            sa.column("bank_account_label"),
+            sa.column("offerer_name"),
+            sa.column("offerer_siren"),
+            sa.column("ministry"),
+            sa_func.sum(sa.column("pricing_amount")).label("pricing_amount"),
         )
         .all()
     )
@@ -1582,7 +1580,7 @@ def _get_cashflows_by_bank_accounts(batch: models.CashflowBatch, only_debit_note
     query = _filter_invoiceable_cashflows(
         db.session.query(
             models.Cashflow.bankAccountId.label("bank_account_id"),
-            sqla_func.array_agg(models.Cashflow.id).label("cashflow_ids"),
+            sa_func.array_agg(models.Cashflow.id).label("cashflow_ids"),
         )
     ).filter(models.Cashflow.batchId == batch.id)
 
@@ -1672,7 +1670,7 @@ def generate_invoice_file(batch: models.CashflowBatch) -> pathlib.Path:
                 models.Invoice.bankAccountId.label("bank_account_id"),
                 models.PricingLine.category.label("pricing_line_category"),
                 models.Deposit.type.label("deposit_type"),
-                sqla_func.sum(models.PricingLine.amount).label("pricing_line_amount"),
+                sa_func.sum(models.PricingLine.amount).label("pricing_line_amount"),
             )
         )
 
@@ -1682,7 +1680,7 @@ def generate_invoice_file(batch: models.CashflowBatch) -> pathlib.Path:
             .join(educational_models.CollectiveBooking.educationalInstitution)
             .join(
                 educational_models.EducationalDeposit,
-                sqla.and_(
+                sa.and_(
                     educational_models.EducationalDeposit.educationalYearId
                     == educational_models.CollectiveBooking.educationalYearId,
                     educational_models.EducationalDeposit.educationalInstitutionId
@@ -1707,12 +1705,12 @@ def generate_invoice_file(batch: models.CashflowBatch) -> pathlib.Path:
                 models.Invoice.reference.label("invoice_reference"),
                 models.Invoice.bankAccountId.label("bank_account_id"),
                 models.PricingLine.category.label("pricing_line_category"),
-                sqla.func.coalesce(
+                sa.func.coalesce(
                     educational_models.EducationalInstitutionProgram.label,
                     educational_models.EducationalInstitutionProgram.name,
-                    educational_models.EducationalDeposit.ministry.cast(sqla.String),
+                    educational_models.EducationalDeposit.ministry.cast(sa.String),
                 ).label("ministry"),
-                sqla_func.sum(models.PricingLine.amount).label("pricing_line_amount"),
+                sa_func.sum(models.PricingLine.amount).label("pricing_line_amount"),
             )
         )
 
@@ -1730,23 +1728,21 @@ def generate_invoice_file(batch: models.CashflowBatch) -> pathlib.Path:
     indiv_data = (
         indiv_query.union(indiv_incident_query)
         .group_by(
-            sqla.column("invoice_date"),
-            sqla.column("invoice_reference"),
-            sqla.column("bank_account_id"),
-            sqla.column("pricing_line_category"),
-            sqla.column("deposit_type"),
+            sa.column("invoice_date"),
+            sa.column("invoice_reference"),
+            sa.column("bank_account_id"),
+            sa.column("pricing_line_category"),
+            sa.column("deposit_type"),
         )
         .with_entities(
-            sqla.column("invoice_date"),
-            sqla.column("invoice_reference"),
-            sqla.column("bank_account_id"),
-            sqla.column("pricing_line_category"),
-            sqla.column("deposit_type"),
-            sqla_func.sum(sqla.column("pricing_line_amount")).label("pricing_line_amount"),
+            sa.column("invoice_date"),
+            sa.column("invoice_reference"),
+            sa.column("bank_account_id"),
+            sa.column("pricing_line_category"),
+            sa.column("deposit_type"),
+            sa_func.sum(sa.column("pricing_line_amount")).label("pricing_line_amount"),
         )
-        .order_by(
-            sqla.column("invoice_reference"), sqla.column("deposit_type"), sqla.column("pricing_line_category").desc()
-        )
+        .order_by(sa.column("invoice_reference"), sa.column("deposit_type"), sa.column("pricing_line_category").desc())
         .all()
     )
 
@@ -1767,23 +1763,21 @@ def generate_invoice_file(batch: models.CashflowBatch) -> pathlib.Path:
     collective_data = (
         collective_query.union(collective_incident_query)
         .group_by(
-            sqla.column("invoice_date"),
-            sqla.column("invoice_reference"),
-            sqla.column("bank_account_id"),
-            sqla.column("pricing_line_category"),
-            sqla.column("ministry"),
+            sa.column("invoice_date"),
+            sa.column("invoice_reference"),
+            sa.column("bank_account_id"),
+            sa.column("pricing_line_category"),
+            sa.column("ministry"),
         )
         .with_entities(
-            sqla.column("invoice_date"),
-            sqla.column("invoice_reference"),
-            sqla.column("bank_account_id"),
-            sqla.column("pricing_line_category"),
-            sqla.column("ministry"),
-            sqla_func.sum(sqla.column("pricing_line_amount")).label("pricing_line_amount"),
+            sa.column("invoice_date"),
+            sa.column("invoice_reference"),
+            sa.column("bank_account_id"),
+            sa.column("pricing_line_category"),
+            sa.column("ministry"),
+            sa_func.sum(sa.column("pricing_line_amount")).label("pricing_line_amount"),
         )
-        .order_by(
-            sqla.column("invoice_reference"), sqla.column("ministry"), sqla.column("pricing_line_category").desc()
-        )
+        .order_by(sa.column("invoice_reference"), sa.column("ministry"), sa.column("pricing_line_category").desc())
         .all()
     )
 
@@ -1864,11 +1858,11 @@ def _generate_invoice(
     total_reimbursed_amount = 0
     cashflows = _filter_invoiceable_cashflows(
         models.Cashflow.query.filter(models.Cashflow.id.in_(cashflow_ids)).options(
-            sqla_orm.joinedload(models.Cashflow.pricings)
-            .options(sqla_orm.joinedload(models.Pricing.lines))
-            .options(sqla_orm.joinedload(models.Pricing.customRule))
+            sa_orm.joinedload(models.Cashflow.pricings)
+            .options(sa_orm.joinedload(models.Pricing.lines))
+            .options(sa_orm.joinedload(models.Pricing.customRule))
             .options(
-                sqla_orm.joinedload(models.Pricing.event, innerjoin=True).joinedload(
+                sa_orm.joinedload(models.Pricing.event, innerjoin=True).joinedload(
                     models.FinanceEvent.bookingFinanceIncident
                 )
             )
@@ -1958,7 +1952,7 @@ def _generate_invoice(
     # Cashflow.status: UNDER_REVIEW -> ACCEPTED
     with log_elapsed(logger, "Updating status of cashflows"):
         db.session.execute(
-            sqla.text(
+            sa.text(
                 """
                 WITH updated AS (
                   UPDATE cashflow
@@ -1982,7 +1976,7 @@ def _generate_invoice(
     # SQLAlchemy ORM cannot call `update()` if a query has been JOINed.
     with log_elapsed(logger, "Updating status of pricings"):
         db.session.execute(
-            sqla.text(
+            sa.text(
                 """
                 WITH updated AS (
                   UPDATE pricing
@@ -2009,7 +2003,7 @@ def _generate_invoice(
     # Booking.status: USED -> REIMBURSED (but keep CANCELLED as is)
     with log_elapsed(logger, "Updating status of individual bookings"):
         db.session.execute(
-            sqla.text(
+            sa.text(
                 """
             UPDATE booking
             SET
@@ -2037,7 +2031,7 @@ def _generate_invoice(
     # CollectiveBooking.status: USED -> REIMBURSED (but keep CANCELLED as is)
     with log_elapsed(logger, "Updating status of collective bookings"):
         db.session.execute(
-            sqla.text(
+            sa.text(
                 """
             UPDATE collective_booking
             SET
@@ -2169,7 +2163,7 @@ def get_reimbursements_by_venue(
     incident_query = (
         pricing_query.with_entities(
             *common_columns,
-            sqla_func.sum(models.Pricing.amount).label("pricing_amount"),
+            sa_func.sum(models.Pricing.amount).label("pricing_amount"),
             models.BookingFinanceIncident.newTotalAmount.label("incident_new_total_amount"),
             bookings_models.Booking.quantity.label("booking_quantity"),
             bookings_models.Booking.amount.label("booking_unit_amount"),
@@ -2189,8 +2183,8 @@ def get_reimbursements_by_venue(
     collective_query = (
         pricing_query.with_entities(
             *common_columns,
-            sqla_func.sum(models.Pricing.amount).label("reimbursed_amount"),
-            sqla_func.sum(educational_models.CollectiveStock.price).label("booking_amount"),
+            sa_func.sum(models.Pricing.amount).label("reimbursed_amount"),
+            sa_func.sum(educational_models.CollectiveStock.price).label("booking_amount"),
         )
         .join(models.Pricing.collectiveBooking)
         .join(educational_models.CollectiveBooking.venue)
@@ -2201,7 +2195,7 @@ def get_reimbursements_by_venue(
     collective_incident_query = (
         pricing_query.with_entities(
             *common_columns,
-            sqla_func.sum(models.Pricing.amount).label("pricing_amount"),
+            sa_func.sum(models.Pricing.amount).label("pricing_amount"),
             models.BookingFinanceIncident.newTotalAmount.label("incident_new_total_amount"),
             educational_models.CollectiveStock.price.label("booking_amount"),
         )
@@ -2348,7 +2342,7 @@ def merge_cashflow_batches(
             models.Cashflow.query.filter(
                 models.Cashflow.batchId.in_([b.id for b in batches_to_remove + [target_batch]]),
             )
-            .with_entities(sqla_func.sum(models.Cashflow.amount))
+            .with_entities(sa_func.sum(models.Cashflow.amount))
             .scalar()
         )
         for bank_account_id in bank_account_ids:
@@ -2379,7 +2373,7 @@ def merge_cashflow_batches(
             cashflow_ids_to_remove = [cf.id for cf in cashflows if cf != cashflow_to_keep]
             sum_to_add = (
                 models.Cashflow.query.filter(models.Cashflow.id.in_(cashflow_ids_to_remove))
-                .with_entities(sqla_func.sum(models.Cashflow.amount))
+                .with_entities(sa_func.sum(models.Cashflow.amount))
                 .scalar()
             )
             models.CashflowPricing.query.filter(models.CashflowPricing.cashflowId.in_(cashflow_ids_to_remove)).update(
@@ -2406,7 +2400,7 @@ def merge_cashflow_batches(
             models.Cashflow.query.filter(
                 models.Cashflow.batchId.in_(batch_ids_to_remove + [target_batch.id]),
             )
-            .with_entities(sqla_func.sum(models.Cashflow.amount))
+            .with_entities(sa_func.sum(models.Cashflow.amount))
             .scalar()
         )
         assert final_sum == initial_sum
@@ -2768,7 +2762,7 @@ def recredit_underage_users() -> None:
             users_models.User.query.filter(
                 users_models.User.id.in_(user_ids[start_index : start_index + RECREDIT_UNDERAGE_USERS_BATCH_SIZE])
             )
-            .options(sqla_orm.joinedload(users_models.User.deposits).joinedload(models.Deposit.recredits))
+            .options(sa_orm.joinedload(users_models.User.deposits).joinedload(models.Deposit.recredits))
             .all()
         )
 
@@ -3305,20 +3299,20 @@ def mark_bank_account_without_continuation(ds_application_id: int) -> None:
         models.BankAccount.query.filter_by(dsApplicationId=ds_application_id)
         .outerjoin(
             offerers_models.VenueBankAccountLink,
-            sqla.and_(
+            sa.and_(
                 models.BankAccount.id == offerers_models.VenueBankAccountLink.bankAccountId,
                 offerers_models.VenueBankAccountLink.timespan.contains(now),
             ),
         )
         .outerjoin(
             models.BankAccountStatusHistory,
-            sqla.and_(
+            sa.and_(
                 models.BankAccount.id == models.BankAccountStatusHistory.bankAccountId,
                 models.BankAccountStatusHistory.timespan.contains(now),
             ),
         )
-        .options(sqla_orm.contains_eager(models.BankAccount.venueLinks))
-        .options(sqla_orm.contains_eager(models.BankAccount.statusHistory))
+        .options(sa_orm.contains_eager(models.BankAccount.venueLinks))
+        .options(sa_orm.contains_eager(models.BankAccount.statusHistory))
         .one_or_none()
     )
     if not bank_account:

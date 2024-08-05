@@ -1,4 +1,4 @@
-import sqlalchemy as sqla
+import sqlalchemy as sa
 
 from pcapi.core import mails
 import pcapi.core.bookings.models as bookings_models
@@ -22,16 +22,16 @@ def send_email_for_each_ongoing_booking(offer: Offer) -> None:
         .filter(
             Offer.id == offer.id,
             Stock.isSoftDeleted.is_(False),
-            Stock.beginningDatetime.is_(None) | (Stock.beginningDatetime > sqla.func.now()),
+            Stock.beginningDatetime.is_(None) | (Stock.beginningDatetime > sa.func.now()),
             bookings_models.Booking.status == bookings_models.BookingStatus.CONFIRMED,
         )
         .options(
-            sqla.orm.joinedload(bookings_models.Booking.user).load_only(User.firstName, User.email),
-            sqla.orm.joinedload(bookings_models.Booking.stock)
+            sa.orm.joinedload(bookings_models.Booking.user).load_only(User.firstName, User.email),
+            sa.orm.joinedload(bookings_models.Booking.stock)
             .joinedload(Stock.offer)
             .joinedload(Offer.venue)
             .load_only(Venue.street),
-            sqla.orm.joinedload(bookings_models.Booking.activationCode).load_only(ActivationCode.code),
+            sa.orm.joinedload(bookings_models.Booking.activationCode).load_only(ActivationCode.code),
         )
     )
 

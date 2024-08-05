@@ -8,7 +8,7 @@ from PIL import Image
 from PIL import UnidentifiedImageError
 from dateutil.relativedelta import relativedelta
 import flask
-import sqlalchemy as sqla
+import sqlalchemy as sa
 
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.categories.subcategories_v2 import ExtraDataFieldEnum
@@ -669,7 +669,7 @@ def check_for_duplicated_price_categories(
     existing_price_category = (
         models.PriceCategory.query.filter_by(offerId=offer_id)
         .join(models.PriceCategoryLabel)
-        .filter(sqla.func.ROW(models.PriceCategoryLabel.label, models.PriceCategory.price).in_(new_labels_and_prices))
+        .filter(sa.func.ROW(models.PriceCategoryLabel.label, models.PriceCategory.price).in_(new_labels_and_prices))
         .first()
     )
 

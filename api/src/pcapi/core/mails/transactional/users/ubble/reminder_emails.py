@@ -2,7 +2,7 @@ import datetime
 import logging
 
 from dateutil.relativedelta import relativedelta
-import sqlalchemy as sqla
+import sqlalchemy as sa
 
 from pcapi import settings
 import pcapi.core.fraud.models as fraud_models
@@ -45,7 +45,7 @@ def _find_users_to_remind(
     users: list[users_models.User] = (
         users_models.User.query.join(users_models.User.beneficiaryFraudChecks)
         .filter(
-            sqla.not_(users_models.User.is_beneficiary),
+            sa.not_(users_models.User.is_beneficiary),
             fraud_models.BeneficiaryFraudCheck.type == fraud_models.FraudCheckType.UBBLE,
             fraud_models.BeneficiaryFraudCheck.status.in_(
                 [fraud_models.FraudCheckStatus.KO, fraud_models.FraudCheckStatus.SUSPICIOUS]

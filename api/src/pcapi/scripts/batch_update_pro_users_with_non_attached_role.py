@@ -5,7 +5,7 @@ Fetch users without the PRO role and with a not validated `UserOfferer` on Batch
 from itertools import islice
 from typing import Generator
 
-import sqlalchemy as sqla
+import sqlalchemy as sa
 
 from pcapi.core.offerers.models import UserOfferer
 from pcapi.core.users.models import User
@@ -20,8 +20,8 @@ def get_users(batch_size: int) -> Generator[User, None, None]:
         yield from (
             User.query.join(UserOfferer)
             .filter(
-                sqla.not_(User.roles.any(UserRole.PRO)),
-                sqla.not_(User.roles.any(UserRole.NON_ATTACHED_PRO)),
+                sa.not_(User.roles.any(UserRole.PRO)),
+                sa.not_(User.roles.any(UserRole.NON_ATTACHED_PRO)),
                 UserOfferer.validationStatus != ValidationStatus.VALIDATED,
             )
             .yield_per(batch_size)

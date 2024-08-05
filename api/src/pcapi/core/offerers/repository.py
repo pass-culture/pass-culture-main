@@ -6,8 +6,8 @@ from typing import Collection
 from typing import Iterable
 
 from flask_sqlalchemy import BaseQuery
-import sqlalchemy as sqla
-import sqlalchemy.orm as sqla_orm
+import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
 
 from pcapi.core.bookings import models as bookings_models
 import pcapi.core.bookings.repository as bookings_repository
@@ -43,7 +43,7 @@ def get_all_offerers_for_user(
     user: users_models.User,
     validated: bool | None = None,
     include_non_validated_user_offerers: bool = False,
-) -> sqla_orm.Query:
+) -> sa_orm.Query:
     """Return a query of matching, accessible offerers.
 
     **WARNING:** this function may return more than one row per
@@ -62,7 +62,7 @@ def get_all_offerers_for_user(
     if not user.has_admin_role:
         user_offerer_filters = [
             models.UserOfferer.userId == user.id,
-            sqla.not_(models.UserOfferer.isRejected) & sqla.not_(models.UserOfferer.isDeleted),
+            sa.not_(models.UserOfferer.isRejected) & sa.not_(models.UserOfferer.isDeleted),
         ]
         if not include_non_validated_user_offerers:
             user_offerer_filters.append(models.UserOfferer.isValidated)
@@ -74,7 +74,7 @@ def get_all_offerers_for_user(
         else:
             query = query.filter(models.Offerer.isWaitingForValidation)
     else:
-        query = query.filter(sqla.not_(models.Offerer.isRejected))
+        query = query.filter(sa.not_(models.Offerer.isRejected))
 
     return query
 
@@ -87,27 +87,27 @@ def get_ids_of_venues_with_offers(offererIds: list[int]) -> Iterable[int]:
     venues = (
         db.session.query(models.Venue).filter(
             models.Venue.managingOffererId.in_(offererIds),
-            sqla.or_(
+            sa.or_(
                 # Does the venue has Offers
-                sqla.select(1)
+                sa.select(1)
                 .select_from(Offer)
-                .where(sqla.and_(Offer.venueId == models.Venue.id, Offer.validation != OfferValidationStatus.DRAFT))
+                .where(sa.and_(Offer.venueId == models.Venue.id, Offer.validation != OfferValidationStatus.DRAFT))
                 .exists(),
                 # Does the venue has CollectiveOffers
-                sqla.select(1)
+                sa.select(1)
                 .select_from(CollectiveOffer)
                 .where(
-                    sqla.and_(
+                    sa.and_(
                         CollectiveOffer.venueId == models.Venue.id,
                         CollectiveOffer.validation != OfferValidationStatus.DRAFT,
                     )
                 )
                 .exists(),
                 # Does the venue has CollectiveOfferTemplates
-                sqla.select(1)
+                sa.select(1)
                 .select_from(CollectiveOfferTemplate)
                 .where(
-                    sqla.and_(
+                    sa.and_(
                         CollectiveOfferTemplate.venueId == models.Venue.id,
                         CollectiveOfferTemplate.validation != OfferValidationStatus.DRAFT,
                     )
@@ -129,11 +129,11 @@ def get_filtered_venues(
     query = (
         models.Venue.query.join(models.Offerer, models.Offerer.id == models.Venue.managingOffererId)
         .join(models.UserOfferer, models.UserOfferer.offererId == models.Offerer.id)
-        .options(sqla_orm.joinedload(models.Venue.managingOfferer))
-        .options(sqla_orm.joinedload(models.Venue.collectiveDomains))
-        .options(sqla_orm.joinedload(models.Venue.reimbursement_point_links))
-        .options(sqla_orm.joinedload(models.Venue.bankInformation))
-        .options(sqla_orm.joinedload(models.Venue.accessibilityProvider))
+        .options(sa_orm.joinedload(models.Venue.managingOfferer))
+        .options(sa_orm.joinedload(models.Venue.collectiveDomains))
+        .options(sa_orm.joinedload(models.Venue.reimbursement_point_links))
+        .options(sa_orm.joinedload(models.Venue.bankInformation))
+        .options(sa_orm.joinedload(models.Venue.accessibilityProvider))
     )
     if not user_is_admin:
         query = query.filter(
@@ -147,7 +147,7 @@ def get_filtered_venues(
         else:
             query = query.filter(models.Offerer.isWaitingForValidation)
     else:
-        query = query.filter(sqla.not_(models.Offerer.isRejected))
+        query = query.filter(sa.not_(models.Offerer.isRejected))
 
     if active_offerers_only:
         query = query.filter(models.Offerer.isActive.is_(True))
@@ -189,8 +189,8 @@ def find_offerer_by_id(offerer_id: int) -> models.Offerer | None:
 def find_venue_by_id(venue_id: int) -> models.Venue | None:
     return (
         models.Venue.query.filter_by(id=venue_id)
-        .options(sqla.orm.joinedload(models.Venue.venueLabel))
-        .options(sqla.orm.joinedload(models.Venue.managingOfferer))
+        .options(sa.orm.joinedload(models.Venue.venueLabel))
+        .options(sa.orm.joinedload(models.Venue.managingOfferer))
         .one_or_none()
     )
 
@@ -198,31 +198,31 @@ def find_venue_by_id(venue_id: int) -> models.Venue | None:
 def find_venue_and_provider_by_id(venue_id: int) -> models.Venue | None:
     return (
         models.Venue.query.filter_by(id=venue_id)
-        .options(sqla.orm.joinedload(models.Venue.venueLabel))
-        .options(sqla.orm.joinedload(models.Venue.managingOfferer))
-        .options(sqla.orm.joinedload(models.Venue.venueProviders))
+        .options(sa.orm.joinedload(models.Venue.venueLabel))
+        .options(sa.orm.joinedload(models.Venue.managingOfferer))
+        .options(sa.orm.joinedload(models.Venue.venueProviders))
         .one_or_none()
     )
 
 
 def find_relative_venue_by_id(venue_id: int, permanent_only: bool = False) -> list[models.Venue]:
-    aliased_venue = sqla.orm.aliased(models.Venue)
+    aliased_venue = sa.orm.aliased(models.Venue)
 
     query = db.session.query(models.Venue)
     query = query.join(models.Offerer, models.Venue.managingOfferer)
     query = query.join(aliased_venue, models.Offerer.managedVenues)
     query = query.filter(
         # constraint on retrieved venues
-        sqla.not_(models.Venue.isVirtual),
+        sa.not_(models.Venue.isVirtual),
         # constraint on searched venue
-        sqla.not_(aliased_venue.isVirtual),
+        sa.not_(aliased_venue.isVirtual),
         aliased_venue.id == venue_id,
     )
     if permanent_only:
         query = query.filter(models.Venue.isPermanent, aliased_venue.isPermanent)
-    query = query.options(sqla.orm.joinedload(models.Venue.contact))
-    query = query.options(sqla.orm.joinedload(models.Venue.venueLabel))
-    query = query.options(sqla.orm.joinedload(models.Venue.managingOfferer))
+    query = query.options(sa.orm.joinedload(models.Venue.contact))
+    query = query.options(sa.orm.joinedload(models.Venue.venueLabel))
+    query = query.options(sa.orm.joinedload(models.Venue.managingOfferer))
     # group venues by offerer
     query = query.order_by(models.Venue.managingOffererId, models.Venue.name)
     return query.all()
@@ -240,24 +240,24 @@ def find_venues_of_offerers_with_no_offer_and_at_least_one_physical_venue_and_va
     days: int,
 ) -> BaseQuery:
     validated_x_days_ago_with_physical_venue_offerers_ids_subquery = (
-        sqla.select(models.Offerer.id)
+        sa.select(models.Offerer.id)
         .join(models.Venue, models.Offerer.id == models.Venue.managingOffererId)
         .filter(models.Offerer.isValidated)
-        .filter(sqla.cast(models.Offerer.dateValidated, sqla.Date) == (date.today() - timedelta(days=days)))
-        .filter(sqla.not_(models.Venue.isVirtual))
+        .filter(sa.cast(models.Offerer.dateValidated, sa.Date) == (date.today() - timedelta(days=days)))
+        .filter(sa.not_(models.Venue.isVirtual))
         .distinct()
     )
 
     offerers_ids_with_no_offers_subquery = (
-        sqla.select(models.Venue.managingOffererId)
+        sa.select(models.Venue.managingOffererId)
         .filter(models.Venue.managingOffererId.in_(validated_x_days_ago_with_physical_venue_offerers_ids_subquery))
         .outerjoin(Offer, models.Venue.id == Offer.venueId)
         .outerjoin(CollectiveOffer, models.Venue.id == CollectiveOffer.venueId)
         .outerjoin(CollectiveOfferTemplate, models.Venue.id == CollectiveOfferTemplate.venueId)
         .group_by(models.Venue.managingOffererId)
-        .having(sqla.func.count(Offer.id) == 0)
-        .having(sqla.func.count(CollectiveOffer.id) == 0)
-        .having(sqla.func.count(CollectiveOfferTemplate.id) == 0)
+        .having(sa.func.count(Offer.id) == 0)
+        .having(sa.func.count(CollectiveOffer.id) == 0)
+        .having(sa.func.count(CollectiveOfferTemplate.id) == 0)
     )
 
     return models.Venue.query.with_entities(models.Venue.id, models.Venue.bookingEmail).filter(
@@ -377,19 +377,17 @@ def get_venue_by_id(venue_id: int) -> models.Venue:
 
 
 def get_venues_by_ids(ids: Collection[int]) -> Collection[models.Venue]:
-    return models.Venue.query.filter(models.Venue.id.in_(ids)).options(
-        sqla.orm.joinedload(models.Venue.googlePlacesInfo)
-    )
+    return models.Venue.query.filter(models.Venue.id.in_(ids)).options(sa.orm.joinedload(models.Venue.googlePlacesInfo))
 
 
 def find_offerers_validated_3_days_ago_with_no_venues() -> list[models.Offerer]:
     offerer_ids_recently_validated_subquery = models.Offerer.query.filter(
         models.Offerer.isActive,
-        sqla.cast(models.Offerer.dateValidated, sqla.Date) == (date.today() - timedelta(days=3)),
+        sa.cast(models.Offerer.dateValidated, sa.Date) == (date.today() - timedelta(days=3)),
     ).with_entities(models.Offerer.id)
 
     has_venues_with_offers_subquery = (
-        sqla.select(1)
+        sa.select(1)
         .select_from(models.Venue)
         .join(offers_models.Offer)
         .where(models.Venue.managingOffererId == models.Offerer.id)
@@ -398,9 +396,9 @@ def find_offerers_validated_3_days_ago_with_no_venues() -> list[models.Offerer]:
     )
 
     has_physical_venues_subquery = (
-        sqla.select(1)
+        sa.select(1)
         .select_from(models.Venue)
-        .where(models.Venue.managingOffererId == models.Offerer.id, sqla.not_(models.Venue.isVirtual))
+        .where(models.Venue.managingOffererId == models.Offerer.id, sa.not_(models.Venue.isVirtual))
         .correlate(models.Offerer)
         .exists()
     )
@@ -482,12 +480,12 @@ def get_offerer_and_extradata(offerer_id: int) -> models.Offerer | None:
         - hasBankAccountWithPendingCorrections
     """
     has_non_free_offers_subquery = (
-        sqla.select(1)
+        sa.select(1)
         .select_from(offers_models.Stock)
         .join(models.Venue, models.Venue.managingOffererId == models.Offerer.id)
         .join(
             offers_models.Offer,
-            sqla.and_(
+            sa.and_(
                 offers_models.Stock.offerId == Offer.id,
                 offers_models.Stock.price > 0,
                 offers_models.Stock.isSoftDeleted.is_(False),
@@ -500,12 +498,12 @@ def get_offerer_and_extradata(offerer_id: int) -> models.Offerer | None:
     )
 
     has_non_free_collective_offers_subquery = (
-        sqla.select(1)
+        sa.select(1)
         .select_from(CollectiveStock)
         .join(models.Venue, models.Venue.managingOffererId == models.Offerer.id)
         .join(
             CollectiveOffer,
-            sqla.and_(
+            sa.and_(
                 CollectiveStock.collectiveOfferId == CollectiveOffer.id,
                 CollectiveStock.price > 0,
                 CollectiveOffer.isActive.is_(True),
@@ -517,10 +515,10 @@ def get_offerer_and_extradata(offerer_id: int) -> models.Offerer | None:
     )
 
     has_valid_bank_account_subquery = (
-        sqla.select(1)
+        sa.select(1)
         .select_from(finance_models.BankAccount)
         .where(
-            sqla.and_(
+            sa.and_(
                 finance_models.BankAccount.offererId == models.Offerer.id,
                 finance_models.BankAccount.isActive.is_(True),
                 finance_models.BankAccount.status == finance_models.BankAccountApplicationStatus.ACCEPTED,
@@ -531,12 +529,12 @@ def get_offerer_and_extradata(offerer_id: int) -> models.Offerer | None:
     )
 
     has_active_offers_subquery = (
-        sqla.select(1)
+        sa.select(1)
         .select_from(offers_models.Stock)
         .join(models.Venue, models.Venue.managingOffererId == models.Offerer.id)
         .join(
             offers_models.Offer,
-            sqla.and_(
+            sa.and_(
                 offers_models.Stock.offerId == Offer.id,
                 offers_models.Stock.isSoftDeleted.is_(False),
                 offers_models.Offer.isActive.is_(True),
@@ -548,10 +546,10 @@ def get_offerer_and_extradata(offerer_id: int) -> models.Offerer | None:
     )
 
     has_pending_bank_account_subquery = (
-        sqla.select(1)
+        sa.select(1)
         .select_from(finance_models.BankAccount)
         .where(
-            sqla.and_(
+            sa.and_(
                 finance_models.BankAccount.offererId == models.Offerer.id,
                 finance_models.BankAccount.isActive.is_(True),
                 finance_models.BankAccount.status.in_(
@@ -566,10 +564,10 @@ def get_offerer_and_extradata(offerer_id: int) -> models.Offerer | None:
         .exists()
     )
     has_bank_account_with_pending_corrections_subquery = (
-        sqla.select(1)
+        sa.select(1)
         .select_from(finance_models.BankAccount)
         .where(
-            sqla.and_(
+            sa.and_(
                 finance_models.BankAccount.offererId == models.Offerer.id,
                 finance_models.BankAccount.isActive.is_(True),
                 finance_models.BankAccount.status
@@ -582,7 +580,7 @@ def get_offerer_and_extradata(offerer_id: int) -> models.Offerer | None:
     return (
         db.session.query(
             models.Offerer,
-            sqla.or_(has_non_free_offers_subquery, has_non_free_collective_offers_subquery).label("hasNonFreeOffer"),
+            sa.or_(has_non_free_offers_subquery, has_non_free_collective_offers_subquery).label("hasNonFreeOffer"),
             has_valid_bank_account_subquery.label("hasValidBankAccount"),
             has_pending_bank_account_subquery.label("hasPendingBankAccount"),
             has_active_offers_subquery.label("hasActiveOffer"),
@@ -591,11 +589,11 @@ def get_offerer_and_extradata(offerer_id: int) -> models.Offerer | None:
         .filter(models.Offerer.id == offerer_id)
         .outerjoin(models.Venue, models.Venue.managingOffererId == models.Offerer.id)
         .options(
-            sqla_orm.contains_eager(models.Offerer.managedVenues).load_only(
+            sa_orm.contains_eager(models.Offerer.managedVenues).load_only(
                 models.Venue.id, models.Venue.siret, models.Venue.publicName, models.Venue.name
             )
         )
-        .options(sqla_orm.load_only(models.Offerer.id, models.Offerer.name))
+        .options(sa_orm.load_only(models.Offerer.id, models.Offerer.name))
         .one_or_none()
     )
 
@@ -609,7 +607,7 @@ def get_offerer_bank_accounts(offerer_id: int) -> models.Offerer | None:
     - Managed venues by the offerer (possibly none)
     """
     venue_has_offers_subquery = db.session.query(
-        sqla.select(1)
+        sa.select(1)
         .select_from(offers_models.Offer)
         .where(
             offers_models.Offer.venueId == models.Venue.id,
@@ -623,7 +621,7 @@ def get_offerer_bank_accounts(offerer_id: int) -> models.Offerer | None:
         models.Offerer.query.filter_by(id=offerer_id)
         .outerjoin(
             finance_models.BankAccount,
-            sqla.and_(
+            sa.and_(
                 finance_models.BankAccount.offererId == models.Offerer.id,
                 finance_models.BankAccount.isActive.is_(True),
                 finance_models.BankAccount.status.not_in(
@@ -636,11 +634,11 @@ def get_offerer_bank_accounts(offerer_id: int) -> models.Offerer | None:
         )
         .outerjoin(
             models.Venue,
-            sqla.and_(
+            sa.and_(
                 models.Offerer.id == models.Venue.managingOffererId,
-                sqla.or_(
+                sa.or_(
                     models.Venue.isVirtual.is_(False),
-                    sqla.and_(
+                    sa.and_(
                         models.Venue.isVirtual.is_(True),
                         venue_has_offers_subquery,
                     ),
@@ -649,33 +647,33 @@ def get_offerer_bank_accounts(offerer_id: int) -> models.Offerer | None:
         )
         .outerjoin(
             models.VenuePricingPointLink,
-            sqla.and_(
+            sa.and_(
                 models.VenuePricingPointLink.venueId == models.Venue.id,
                 models.VenuePricingPointLink.timespan.contains(datetime.utcnow()),
             ),
         )
         .outerjoin(
             models.VenueBankAccountLink,
-            sqla.and_(
+            sa.and_(
                 finance_models.BankAccount.id == models.VenueBankAccountLink.bankAccountId,
                 models.Venue.id == models.VenueBankAccountLink.venueId,
                 models.VenueBankAccountLink.timespan.contains(datetime.utcnow()),
             ),
         )
         .options(
-            sqla_orm.contains_eager(models.Offerer.bankAccounts).contains_eager(finance_models.BankAccount.venueLinks)
+            sa_orm.contains_eager(models.Offerer.bankAccounts).contains_eager(finance_models.BankAccount.venueLinks)
         )
         .options(
-            sqla_orm.contains_eager(models.Offerer.managedVenues)
+            sa_orm.contains_eager(models.Offerer.managedVenues)
             .load_only(models.Venue.id, models.Venue.siret, models.Venue.publicName, models.Venue.name)
             .contains_eager(models.Venue.bankAccountLinks)
         )
         .options(
-            sqla_orm.contains_eager(models.Offerer.managedVenues)
+            sa_orm.contains_eager(models.Offerer.managedVenues)
             .contains_eager(models.Venue.pricing_point_links)
             .load_only(models.VenuePricingPointLink.id)
         )
-        .options(sqla_orm.load_only(models.Offerer.id, models.Offerer.name))
+        .options(sa_orm.load_only(models.Offerer.id, models.Offerer.name))
         .order_by(finance_models.BankAccount.dateCreated.desc())
         .populate_existing()
         .one_or_none()
@@ -693,10 +691,10 @@ def get_venues_with_non_free_offers_without_bank_accounts(offerer_id: int) -> li
             models.VenueBankAccountLink.timespan
             == None,  # Because as we LEFT OUTER JOIN on VenueBankAccountLink, timespan column can be NULL
             # i.e. only Venue without any VenueBankAccountLink or only deprecated ones.
-            sqla.or_(
+            sa.or_(
                 offers_models.Stock.query.join(
                     offers_models.Offer,
-                    sqla.and_(
+                    sa.and_(
                         offers_models.Stock.offerId == offers_models.Offer.id,
                         offers_models.Offer.venueId == models.Venue.id,
                         offers_models.Stock.price > 0,
@@ -706,7 +704,7 @@ def get_venues_with_non_free_offers_without_bank_accounts(offerer_id: int) -> li
                 ).exists(),
                 CollectiveStock.query.join(
                     CollectiveOffer,
-                    sqla.and_(
+                    sa.and_(
                         CollectiveStock.collectiveOfferId == CollectiveOffer.id,
                         CollectiveOffer.venueId == models.Venue.id,
                         CollectiveStock.price > 0,
@@ -718,7 +716,7 @@ def get_venues_with_non_free_offers_without_bank_accounts(offerer_id: int) -> li
         .join(models.Offerer)
         .outerjoin(
             models.VenueBankAccountLink,
-            sqla.and_(
+            sa.and_(
                 models.VenueBankAccountLink.venueId == models.Venue.id,
                 models.VenueBankAccountLink.timespan.contains(datetime.utcnow()),
             ),
@@ -801,15 +799,13 @@ def get_number_of_pending_collective_offers_for_offerer(offerer_id: int) -> int:
 def get_revenues_per_year(
     **query_params: int,
 ) -> dict[str, dict[str, float]]:
-    individual_totals_query = sqla.select(
-        sqla.func.jsonb_object_agg(sqla.text("year"), sqla.text("sum_amount"))
-    ).select_from(
-        sqla.select(
-            sqla.func.coalesce(
-                sqla.extract("year", bookings_models.Booking.dateUsed),
+    individual_totals_query = sa.select(sa.func.jsonb_object_agg(sa.text("year"), sa.text("sum_amount"))).select_from(
+        sa.select(
+            sa.func.coalesce(
+                sa.extract("year", bookings_models.Booking.dateUsed),
                 0,
             ).label("year"),
-            sqla.func.sum(bookings_models.Booking.total_amount).label("sum_amount"),
+            sa.func.sum(bookings_models.Booking.total_amount).label("sum_amount"),
         )
         .filter(
             bookings_models.Booking.status != bookings_models.BookingStatus.CANCELLED.value,
@@ -824,15 +820,13 @@ def get_revenues_per_year(
     for field_name, value in query_params.items():
         collective_booking_queries.append(getattr(educational_models.CollectiveBooking, field_name) == value)
 
-    collective_totals_query = sqla.select(
-        sqla.func.jsonb_object_agg(sqla.text("year"), sqla.text("sum_amount"))
-    ).select_from(
-        sqla.select(
-            sqla.func.coalesce(
-                sqla.extract("year", educational_models.CollectiveBooking.dateUsed),
+    collective_totals_query = sa.select(sa.func.jsonb_object_agg(sa.text("year"), sa.text("sum_amount"))).select_from(
+        sa.select(
+            sa.func.coalesce(
+                sa.extract("year", educational_models.CollectiveBooking.dateUsed),
                 0,
             ).label("year"),
-            sqla.func.sum(educational_models.CollectiveStock.price).label("sum_amount"),
+            sa.func.sum(educational_models.CollectiveStock.price).label("sum_amount"),
         )
         .select_from(
             educational_models.CollectiveBooking,
@@ -863,10 +857,10 @@ def get_revenues_per_year(
 
 def get_offerer_addresses(offerer_id: int, only_with_offers: bool = False) -> BaseQuery:
     query = models.OffererAddress.query.filter(models.OffererAddress.offererId == offerer_id).options(
-        sqla_orm.joinedload(models.OffererAddress.address).load_only(
+        sa_orm.joinedload(models.OffererAddress.address).load_only(
             geography_models.Address.street, geography_models.Address.postalCode, geography_models.Address.city
         ),
-        sqla_orm.with_expression(models.OffererAddress._isEditable, models.OffererAddress.isEditable.expression),  # type: ignore[attr-defined]
+        sa_orm.with_expression(models.OffererAddress._isEditable, models.OffererAddress.isEditable.expression),  # type: ignore[attr-defined]
     )
 
     if only_with_offers:
@@ -882,7 +876,7 @@ def get_offerer_address_of_offerer(offerer_id: int, offerer_address_id: int) -> 
             models.OffererAddress.offererId == offerer_id, models.OffererAddress.id == offerer_address_id
         )
         .options(
-            sqla_orm.with_expression(models.OffererAddress._isEditable, models.OffererAddress.isEditable.expression)  # type: ignore[attr-defined]
+            sa_orm.with_expression(models.OffererAddress._isEditable, models.OffererAddress.isEditable.expression)  # type: ignore[attr-defined]
         )
         .one_or_none()
     )
