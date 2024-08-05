@@ -452,6 +452,7 @@ describe('reimbursementsWithFilters', () => {
       })
     )
   })
+
   it('should display the bank account section even without context', () => {
     vi.spyOn(router, 'useOutletContext').mockReturnValue(undefined)
 
@@ -462,5 +463,78 @@ describe('reimbursementsWithFilters', () => {
         'Vous n’avez pas encore de justificatifs de remboursement disponibles'
       )
     ).toBeInTheDocument()
+  })
+
+  it('should not display Bank account when only one linked', async () => {
+    vi.spyOn(
+      api,
+      'getOffererBankAccountsAndAttachedVenues'
+    ).mockResolvedValueOnce({
+      id: 1,
+      bankAccounts: [defaultBankAccount],
+      managedVenues: [],
+    })
+    renderReimbursementsInvoices()
+
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+    expect(screen.queryByLabelText('Compte bancaire')).not.toBeInTheDocument()
+  })
+
+  it('should display Bank account filter when several ', async () => {
+    vi.spyOn(
+      api,
+      'getOffererBankAccountsAndAttachedVenues'
+    ).mockResolvedValueOnce({
+      id: 1,
+      bankAccounts: BASE_BANK_ACCOUNTS,
+      managedVenues: [],
+    })
+    renderReimbursementsInvoices()
+
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+    expect(screen.getByLabelText('Compte bancaire')).toBeInTheDocument()
+  })
+
+  it('should call api with requested filters', async () => {
+    renderReimbursementsInvoices()
+
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+    await userEvent.selectOptions(
+      screen.getByLabelText('Compte bancaire'),
+      BASE_BANK_ACCOUNTS[0].id.toString()
+    )
+
+    const beginPeriod = screen.getByLabelText('Début de la période')
+    await userEvent.clear(beginPeriod)
+    await userEvent.type(beginPeriod, '2020-11-17')
+
+    const endPeriod = screen.getByLabelText('Fin de la période')
+    await userEvent.clear(endPeriod)
+    await userEvent.type(endPeriod, '2020-11-19')
+
+    await userEvent.click(screen.getByText('Lancer la recherche'))
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+    // TODO: this call should not occured as many times
+    expect(api.getInvoicesV2).toHaveBeenCalledTimes(2 /* au render */ + 1)
+
+    expect(api.getInvoicesV2).toHaveBeenLastCalledWith(
+      // 3,
+      '2020-11-17',
+      '2020-11-19',
+      BASE_BANK_ACCOUNTS[0].id,
+      1
+    )
+
+    await userEvent.click(screen.getByText('Réinitialiser les filtres'))
+
+    expect(screen.getByLabelText('Compte bancaire')).toHaveValue('all')
+    expect(screen.getByLabelText('Début de la période')).toHaveValue(
+      '2020-11-15'
+    )
+    expect(screen.getByLabelText('Fin de la période')).toHaveValue('2020-12-15')
   })
 })
