@@ -199,7 +199,7 @@ describe('IndividualOffer section: UsefulInformations', () => {
     expect(screen.getByLabelText('Rayonnement national')).toBeInTheDocument()
   })
 
-  it('should contain withdrawal ticket informations when subcategory is from specific subCategory', () => {
+  it('should contain withdrawal ticket informations when subcategory is from specific subCategory', async () => {
     initialValues.subcategoryId = 'CONCERT'
     initialValues.subCategoryFields = ['withdrawalType']
     renderUsefulInformations({
@@ -211,6 +211,11 @@ describe('IndividualOffer section: UsefulInformations', () => {
     expect(
       screen.getByText('Précisez la façon dont vous distribuerez les billets :')
     ).toBeInTheDocument()
+
+    await userEvent.click(
+      screen.getByText('Les billets seront envoyés par email')
+    )
+    screen.queryByLabelText('Date d’envoi *')
   })
 
   it('should contain withdrawal ticket informations when offer contain withrawalType informations', () => {
