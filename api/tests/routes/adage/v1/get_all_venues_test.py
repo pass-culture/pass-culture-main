@@ -1,10 +1,10 @@
-from pcapi.core.offerers import factories as offerer_factories
+from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.testing import assert_no_duplicated_queries
 
 
 class Returns200Test:
     def test_get_all_venues_serialization(self, client, db_session) -> None:
-        venue1 = offerer_factories.CollectiveVenueFactory(
+        venue1 = offerers_factories.CollectiveVenueFactory(
             name="a beautiful name",
             siret=None,
             comment="no siret",
@@ -61,9 +61,9 @@ class Returns200Test:
         }
 
     def test_get_all_venues_pagination(self, client, db_session) -> None:
-        first_venues = offerer_factories.VenueFactory.create_batch(2, isPermanent=True)
-        offerer_factories.VirtualVenueFactory(isPermanent=True)
-        last_venues = offerer_factories.VenueFactory.create_batch(8, isPermanent=True)
+        first_venues = offerers_factories.VenueFactory.create_batch(2, isPermanent=True)
+        offerers_factories.VirtualVenueFactory(isPermanent=True)
+        last_venues = offerers_factories.VenueFactory.create_batch(8, isPermanent=True)
 
         client.with_eac_token()
         with assert_no_duplicated_queries():

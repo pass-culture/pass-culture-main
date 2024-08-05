@@ -8,7 +8,7 @@ import time_machine
 import pcapi.core.educational.factories as educational_factories
 import pcapi.core.educational.models as educational_models
 from pcapi.core.educational.models import CollectiveOfferDisplayedStatus
-import pcapi.core.offerers.factories as offerer_factories
+import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.testing import assert_num_queries
 import pcapi.core.users.factories as users_factories
@@ -29,9 +29,9 @@ class Returns200Test:
     def test_one_simple_collective_offer(self, client):
         # Given
         user = users_factories.UserFactory()
-        offerer = offerer_factories.OffererFactory()
-        offerer_factories.UserOffererFactory(user=user, offerer=offerer)
-        venue = offerer_factories.VenueFactory(managingOfferer=offerer)
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=user, offerer=offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         institution = educational_factories.EducationalInstitutionFactory()
         national_program = educational_factories.NationalProgramFactory()
         offer = educational_factories.CollectiveOfferFactory(
@@ -62,9 +62,9 @@ class Returns200Test:
     def test_one_simple_collective_offer_dates(self, client):
         # Given
         user = users_factories.UserFactory()
-        offerer = offerer_factories.OffererFactory()
-        offerer_factories.UserOffererFactory(user=user, offerer=offerer)
-        venue = offerer_factories.VenueFactory(managingOfferer=offerer)
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=user, offerer=offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         institution = educational_factories.EducationalInstitutionFactory()
         national_program = educational_factories.NationalProgramFactory()
         offer = educational_factories.CollectiveOfferFactory(
@@ -122,7 +122,7 @@ class Returns200Test:
             teacher=educational_factories.EducationalRedactorFactory(),
             isActive=True,
         )
-        offerer_factories.UserOffererFactory(user=user, offerer=offer.venue.managingOfferer)
+        offerers_factories.UserOffererFactory(user=user, offerer=offer.venue.managingOfferer)
 
         # When
         client = client.with_session_auth(email=user.email)
@@ -140,9 +140,9 @@ class Returns200Test:
     def test_get_passed_booking_limit_datetime_not_beginning_datetime(self, client):
         # Given
         user = users_factories.UserFactory()
-        offerer = offerer_factories.OffererFactory()
-        offerer_factories.UserOffererFactory(user=user, offerer=offerer)
-        venue = offerer_factories.VenueFactory(managingOfferer=offerer)
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=user, offerer=offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         stock = educational_factories.CollectiveStockFactory(
             beginningDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=5),
             bookingLimitDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=5),
@@ -166,9 +166,9 @@ class Returns200Test:
         # Given
         provider = providers_factories.ProviderFactory()
         user = users_factories.UserFactory()
-        offerer = offerer_factories.OffererFactory()
-        offerer_factories.UserOffererFactory(user=user, offerer=offerer)
-        venue = offerer_factories.VenueFactory(managingOfferer=offerer)
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=user, offerer=offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         institution = educational_factories.EducationalInstitutionFactory()
         educational_factories.CollectiveOfferFactory(venue=venue, offerId=1, institution=institution, provider=provider)
 
@@ -181,9 +181,9 @@ class Returns200Test:
     def test_one_simple_collective_offer_template(self, client):
         # Given
         user = users_factories.UserFactory()
-        offerer = offerer_factories.OffererFactory()
-        offerer_factories.UserOffererFactory(user=user, offerer=offerer)
-        venue = offerer_factories.VenueFactory(managingOfferer=offerer)
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=user, offerer=offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         offer = educational_factories.CollectiveOfferTemplateFactory(venue=venue, offerId=1)
 
         # When
@@ -206,9 +206,9 @@ class Returns200Test:
     def test_mix_collective_offer_and_template(self, client):
         # Given
         user = users_factories.UserFactory()
-        offerer = offerer_factories.OffererFactory()
-        offerer_factories.UserOffererFactory(user=user, offerer=offerer)
-        venue = offerer_factories.VenueFactory(managingOfferer=offerer)
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=user, offerer=offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         offer = educational_factories.CollectiveOfferFactory(
             venue=venue,
             dateCreated=datetime.datetime.utcnow(),
@@ -256,9 +256,9 @@ class Returns200Test:
     def test_one_collective_offer_with_template_id(self, client):
         # Given
         user = users_factories.UserFactory()
-        offerer = offerer_factories.OffererFactory()
-        offerer_factories.UserOffererFactory(user=user, offerer=offerer)
-        venue = offerer_factories.VenueFactory(managingOfferer=offerer)
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=user, offerer=offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         template = educational_factories.CollectiveOfferTemplateFactory()
         educational_factories.CollectiveOfferFactory(venue=venue, template=template)
 
@@ -279,9 +279,9 @@ class Returns200Test:
         # Given
         offers = []
         user = users_factories.UserFactory()
-        offerer = offerer_factories.OffererFactory()
-        offerer_factories.UserOffererFactory(user=user, offerer=offerer)
-        venue = offerer_factories.VenueFactory(managingOfferer=offerer)
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=user, offerer=offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
 
         for i in range(510):
             if random.randrange(10) % 2:
@@ -313,8 +313,8 @@ class Returns200Test:
     def test_mix_collective_offer_and_template_no_user(self, client):
         # Given
         user = users_factories.UserFactory()
-        offerer = offerer_factories.OffererFactory()
-        venue = offerer_factories.VenueFactory(managingOfferer=offerer)
+        offerer = offerers_factories.OffererFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         offer = educational_factories.CollectiveOfferFactory(
             venue=venue, dateCreated=datetime.datetime.utcnow(), offerId=1
         )
@@ -337,9 +337,9 @@ class Returns200Test:
     def test_with_date_filters(self, client):
         # Given
         user = users_factories.UserFactory()
-        offerer = offerer_factories.OffererFactory()
-        offerer_factories.UserOffererFactory(user=user, offerer=offerer)
-        venue = offerer_factories.VenueFactory(managingOfferer=offerer)
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=user, offerer=offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         offer = educational_factories.CollectiveOfferFactory(
             venue=venue, dateCreated=datetime.datetime.utcnow(), offerId=1
         )
@@ -377,9 +377,9 @@ class Returns200Test:
     def test_with_status_filters(self, client):
         # Given
         user = users_factories.UserFactory()
-        offerer = offerer_factories.OffererFactory()
-        offerer_factories.UserOffererFactory(user=user, offerer=offerer)
-        venue = offerer_factories.VenueFactory(managingOfferer=offerer)
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=user, offerer=offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
 
         offer_booked = educational_factories.CollectiveOfferFactory(venue=venue, dateCreated=datetime.datetime.utcnow())
         stock_booked = educational_factories.CollectiveStockFactory(
@@ -438,9 +438,9 @@ class Returns200Test:
     def test_with_multiple_status_filters(self, client):
         # Given
         user = users_factories.UserFactory()
-        offerer = offerer_factories.OffererFactory()
-        offerer_factories.UserOffererFactory(user=user, offerer=offerer)
-        venue = offerer_factories.VenueFactory(managingOfferer=offerer)
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=user, offerer=offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
 
         offer_not_booked = educational_factories.CollectiveOfferFactory(
             venue=venue, dateCreated=datetime.datetime.utcnow()
@@ -497,9 +497,9 @@ class Returns200Test:
     def test_select_only_collective_offer(self, client):
         # Given
         user = users_factories.UserFactory()
-        offerer = offerer_factories.OffererFactory()
-        offerer_factories.UserOffererFactory(user=user, offerer=offerer)
-        venue = offerer_factories.VenueFactory(managingOfferer=offerer)
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=user, offerer=offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         offer = educational_factories.CollectiveOfferFactory(venue=venue, offerId=1)
         educational_factories.CollectiveStockFactory(collectiveOffer=offer, stockId=1)
         educational_factories.CollectiveOfferTemplateFactory(venue=venue, offerId=1)
@@ -522,9 +522,9 @@ class Returns200Test:
     def test_select_only_collective_offer_template(self, client):
         # Given
         user = users_factories.UserFactory()
-        offerer = offerer_factories.OffererFactory()
-        offerer_factories.UserOffererFactory(user=user, offerer=offerer)
-        venue = offerer_factories.VenueFactory(managingOfferer=offerer)
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=user, offerer=offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         offer = educational_factories.CollectiveOfferFactory(
             venue=venue, dateCreated=datetime.datetime.utcnow(), offerId=1
         )
@@ -553,10 +553,10 @@ class Returns200Test:
         but unexpected subcategory (empty string instead if none).
         """
         user = users_factories.UserFactory()
-        offerer = offerer_factories.OffererFactory()
-        offerer_factories.UserOffererFactory(user=user, offerer=offerer)
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=user, offerer=offerer)
 
-        venue = offerer_factories.VenueFactory(managingOfferer=offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         offer = educational_factories.CollectiveOfferFactory(venue=venue, subcategoryId="")
         educational_factories.CollectiveStockFactory(collectiveOffer=offer)
 
@@ -573,10 +573,10 @@ class Returns200Test:
     def test_offers_sorting(self, client):
         # Given
         user = users_factories.UserFactory()
-        offerer = offerer_factories.OffererFactory()
-        offerer_factories.UserOffererFactory(user=user, offerer=offerer)
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=user, offerer=offerer)
 
-        venue = offerer_factories.VenueFactory(managingOfferer=offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
 
         # Fresher
         offer_created_10_days_ago = educational_factories.CollectiveOfferFactory(
@@ -664,8 +664,8 @@ class Return400Test:
     def test_return_error_when_status_is_wrong(self, client):
         # Given
         user = users_factories.UserFactory()
-        offerer = offerer_factories.OffererFactory()
-        offerer_factories.UserOffererFactory(user=user, offerer=offerer)
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=user, offerer=offerer)
 
         # When
         client = client.with_session_auth(user.email)
