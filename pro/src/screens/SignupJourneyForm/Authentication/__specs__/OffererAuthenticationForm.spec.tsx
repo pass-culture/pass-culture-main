@@ -133,6 +133,7 @@ describe('OffererAuthenticationForm', () => {
 
     const siretField = screen.getByLabelText('Numéro de SIRET *')
     const nameField = screen.getByLabelText('Raison sociale *')
+    const addressField = screen.getByLabelText('Adresse postale *')
 
     await waitFor(() => {
       expect(siretField).toBeDisabled()
@@ -142,6 +143,10 @@ describe('OffererAuthenticationForm', () => {
       expect(nameField).toHaveValue('Test name')
 
       expect(screen.getByText('Nom public')).toBeInTheDocument()
+
+      expect(addressField).toBeInTheDocument()
+
+      expect(addressField).not.toBeDisabled()
 
       expect(
         screen.getByText(
