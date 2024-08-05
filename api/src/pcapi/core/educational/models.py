@@ -1308,6 +1308,12 @@ class CollectiveBooking(PcObject, Base, Model):
 
     offerer: sa_orm.Mapped["Offerer"] = relationship("Offerer", foreign_keys=[offererId], backref="collectiveBookings")
 
+    cancellationAuthorId: int | None = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=True)
+
+    cancellationAuthor: sa_orm.Mapped["User | None"] = relationship(
+        "User", foreign_keys=[cancellationAuthorId], backref="cancelledCollectiveBookings"
+    )
+
     cancellationDate = sa.Column(sa.DateTime, nullable=True)
 
     cancellationLimitDate: datetime = sa.Column(sa.DateTime, nullable=False)
@@ -1361,6 +1367,7 @@ class CollectiveBooking(PcObject, Base, Model):
         reason: CollectiveBookingCancellationReasons,
         cancel_even_if_used: bool = False,
         cancel_even_if_reimbursed: bool = False,
+        author_id: int | None = None,
     ) -> None:
         from pcapi.core.educational import exceptions
 
@@ -1374,12 +1381,14 @@ class CollectiveBooking(PcObject, Base, Model):
         self.cancellationDate = datetime.utcnow()
         self.cancellationReason = reason
         self.dateUsed = None
+        self.cancellationAuthorId = author_id
 
     def uncancel_booking(self) -> None:
         if not (self.status is CollectiveBookingStatus.CANCELLED):
             raise booking_exceptions.BookingIsNotCancelledCannotBeUncancelled()
         self.cancellationDate = None
         self.cancellationReason = None
+        self.cancellationAuthorId = None
         if self.confirmationDate:
             if self.collectiveStock.beginningDatetime < datetime.utcnow():
                 self.status = CollectiveBookingStatus.USED

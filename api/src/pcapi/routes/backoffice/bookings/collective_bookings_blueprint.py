@@ -238,6 +238,7 @@ def mark_booking_as_cancelled(collective_booking_id: int) -> utils.BackofficeRes
             collective_booking,
             educational_models.CollectiveBookingCancellationReasons(form.reason.data),
             _from="support",
+            author_id=current_user.id,
         )
     except educational_exceptions.CollectiveBookingAlreadyCancelled:
         repository.mark_transaction_as_invalid()
