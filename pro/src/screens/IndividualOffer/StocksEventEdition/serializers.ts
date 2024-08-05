@@ -37,12 +37,11 @@ const serializeBookingLimitDatetime = (
 }
 
 export const buildDateTime = (date: string, time: string) => {
-  const [hours, minutes] = time.split(':')
-  // False positive, eslint disable can be removed when noUncheckedIndexedAccess is enabled in TS config
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-  if (!isDateValid(date) || hours === undefined || minutes === undefined) {
+  const hoursAndMinutes = time.split(':')
+  if (!isDateValid(date) || hoursAndMinutes.length < 2) {
     throw Error('La date ou l’heure est invalide')
   }
+  const [hours, minutes] = hoursAndMinutes
   const [year, month, day] = date.split('-')
 
   // new Date(year, month, day, hours, minutes)

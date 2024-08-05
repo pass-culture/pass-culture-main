@@ -110,12 +110,9 @@ export const Homepage = (): JSX.Element => {
   const headerOffererId = useSelector(selectCurrentOffererId)
   const selectedOffererId = hasNewSideBarNavigation
     ? headerOffererId?.toString() ?? ''
-    : // TODO remove this when noUncheckedIndexedAccess is enabled in TS config
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-      searchParams.get('structure') ??
+    : searchParams.get('structure') ??
       getSavedOffererId(offererOptions) ??
-      offererOptions[0]?.value ??
-      ''
+      (offererOptions.length > 0 ? offererOptions[0]?.value : '')
 
   const selectedOffererQuery = useSWR(
     offererNames && Boolean(selectedOffererId)
