@@ -46,11 +46,13 @@ We will be calling your booking URL with the following payload :
     "booking_quantity": 1,
     "offer_ean": "1234567890123",
     "offer_id": 1234,
+    "offer_id_at_provider": "your_offer_id",
     "offer_name": "Mon offre",
     "offer_price": 1000,
     "price_category_id": 1234,
     "price_category_label": "Ma cat de prix",
     "stock_id": 1234,
+    "stock_id_at_provider": "your_stock_id",
     "user_birth_date": "2007-01-01",
     "user_email": "test@test.com",
     "user_first_name": "john",
@@ -72,11 +74,13 @@ We will be calling your booking URL with the following payload :
 | **booking_quantity** | Integer | **`false`** | The number of tickets, either 1 or 2 (if you set **`enableDoubleBookings`** to `true` [**when creating the event**](/rest-api#tag/Event-offer/operation/PostEventOffer)) |
 | **offer_ean** | String | `true` | Offer EAN code (relevant for product) |
 | **offer_id** | Integer | **`false`** | Offer id |
+| **offer_id_at_provider** | String | `true` | You own offer id that you gave us using the [**creation**](/rest-api#tag/Event-offers/operation/PostEventOffer) or [**update**](/rest-api#tag/Event-offers/operation/EditEvent) endpoints |
 | **offer_name** | String | **`false`** | Offer name |
 | **offer_price** | Integer | **`false`** | Offer price in euro and in cents (*for instance 1000 = 10 €*) |
 | **price_category_id** | Integer | `true` | The price category id (cannot be null in the case of an event) |
 | **price_category_label** | String | `true` | The price category label (*for instance, "Catégorie Or"*) |
 | **stock_id** | Integer | **`false`** | The stock id on our side |
+| **stock_id_at_provider** | String | `true` | You own stock id that you gave us using the [**creation**](/rest-api#tag/Event-offer-stocks/operation/PostEventStocks) or [**update**](/rest-api#tag/Event-offer-stocks/operation/PatchEventStock) endpoints |
 | **user_birth_date** | Stringified date (format **`YYYY-MM-DD`**) | **`false`** | Beneficiary birth date |
 | **user_first_name** | String | **`false`** | Beneficiary first name |
 | **user_last_name** | String | **`false`** | Beneficiary last name |
