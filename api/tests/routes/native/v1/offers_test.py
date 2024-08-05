@@ -322,18 +322,7 @@ class OffersTest:
             # 3. select active cinema provider
             # 4. check offer is from current cinema provider
             # 5. update offer (deactivate)
-            # 6. select offer
-            # 7. select stock
-            # 8. select mediation
-            # 9. select product
-            # 10. select product_mediation
-            # 11. select venue
-            # 12. select provider
-            # 13. select feature
-            # 14. select offerer
-            # 15. select google_places_info
-            # 16. reaction
-            with assert_num_queries(16):
+            with assert_num_queries(6):
                 with assert_no_duplicated_queries():
                     response = client.get(f"/native/v1/offer/{offer_id}")
                     assert response.status_code == 200
@@ -393,7 +382,8 @@ class OffersTest:
 
     def test_get_offer_not_found(self, client):
         # select offer
-        with assert_num_queries(1):
+        # rollback
+        with assert_num_queries(2):
             response = client.get("/native/v1/offer/1")
 
         assert response.status_code == 404
@@ -406,10 +396,10 @@ class OffersTest:
 
         offer_id = offer.id
         # select offer
-        with assert_num_queries(1):
-            with assert_no_duplicated_queries():
-                response = client.get(f"/native/v1/offer/{offer_id}")
-                assert response.status_code == 404
+        # rollback
+        with assert_num_queries(2):
+            response = client.get(f"/native/v1/offer/{offer_id}")
+            assert response.status_code == 404
 
     @override_features(ENABLE_CDS_IMPLEMENTATION=True)
     @patch("pcapi.core.offers.api.external_bookings_api.get_shows_stock")
@@ -446,18 +436,7 @@ class OffersTest:
         # 4. select cinema_provider_pivot
         # 5. select feature
         # 6. update stock
-        # 7. select stock
-        # 8. select offer
-        # 9. select stock
-        # 10. select mediation
-        # 11. select venue
-        # 12. select provider
-        # 13. select offerer
-        # 14. select price_category
-        # 15. select price_category_label
-        # 16. select google_places_info
-        # 17. reaction
-        with assert_num_queries(17):
+        with assert_num_queries(6):
             response = client.get(f"/native/v1/offer/{offer_id}")
             assert response.status_code == 200
 
@@ -503,11 +482,17 @@ class OffersTest:
         )
 
         offer_id = offer.id
-        # TODO: (lixxday, 5/08/2024) Too much queries are made to the database
-        # Also, there seems to be some sort of N+1 issue, on the stocks
-        # Jira ticket: https://passculture.atlassian.net/browse/PC-31181
-        response = client.get(f"/native/v1/offer/{offer_id}")
-        assert response.status_code == 200
+        # 1. select offer
+        # 2. select EXISTS venue_provider
+        # 3. select EXISTS provider
+        # 4. select cinema_provider_pivot
+        # 5. select feature
+        # 6. select EXISTS provider
+        # 7. select boost_cinema_details
+        # 8. update stock
+        with assert_num_queries(8):
+            response = client.get(f"/native/v1/offer/{offer_id}")
+            assert response.status_code == 200
         assert first_show_stock.remainingQuantity == 96
         assert will_be_sold_out_show_stock.remainingQuantity == 0
 
@@ -549,11 +534,17 @@ class OffersTest:
         )
 
         offer_id = offer.id
-        # TODO: (lixxday, 5/08/2024) Too much queries are made to the database
-        # Also, there seems to be some sort of N+1 issue, on the stocks
-        # Jira ticket: https://passculture.atlassian.net/browse/PC-31181
-        response = client.get(f"/native/v1/offer/{offer_id}")
-        assert response.status_code == 200
+        # 1. select offer
+        # 2. check cinema venue_provider exists
+        # 3. select active cinema provider
+        # 4. select cinema_provider_pivot
+        # 5. select feature
+        # 6. check cinema venue_provider exists
+        # 7. select cgr_cinema_details
+        # 8. update stock
+        with assert_num_queries(8):
+            response = client.get(f"/native/v1/offer/{offer_id}")
+            assert response.status_code == 200
 
         assert still_scheduled_show_stock.remainingQuantity == 95
         assert descheduled_show_stock.remainingQuantity == 0
@@ -581,18 +572,8 @@ class OffersTest:
         # 2. check cinema venue_provider exists
         # 3. select active cinema provider
         # 4. update offer
-        # 5. select offer
-        # 6. select stock
-        # 7. select mediation
-        # 8. select venue
-        # 9. select provider
-        # 10. select feature
-        # 11. select offerer
-        # 12. select price_category
-        # 13. select price_category_label
-        # 14. select google_places_info
-        # 15. reaction
-        with assert_num_queries(15):
+        # 5. select feature
+        with assert_num_queries(5):
             response = client.get(f"/native/v1/offer/{offer_id}")
             assert response.status_code == 200
 
@@ -998,26 +979,13 @@ class OffersV2Test:
 
         offer_id = offer.id
         with override_features(**{ff_name: ff_value}):
-            # TODO: (lixxday, 1/08/2024) This is too much queries
             # 1. select offer (joined with a lot of stuff)
             # 2. select EXISTS venue_provider
             # 3. select EXISTS provider
             # 4. select cinema_provider_pivot
             # 5. update offer
-            # -- At this point, we are losing control. The following should be one select --
-            # 6. select offer
-            # 7. select product
-            # 8. select stock
-            # 9. select provider
-            # 10. select feature
-            # 11. select venue
-            # 12. select offerer
-            # 13. select mediation
-            # 14. select product_mediation
-            # 15. select reaction
-            # 16. select google_places_info
-
-            with assert_num_queries(16):
+            # 6. select feature
+            with assert_num_queries(6):
                 response = client.get(f"/native/v2/offer/{offer_id}")
 
         assert response.status_code == 200
@@ -1076,7 +1044,9 @@ class OffersV2Test:
         assert response.json["isExpired"]
 
     def test_get_offer_not_found(self, client):
-        with assert_num_queries(1):
+        # 1. select offer
+        # 2. rollback
+        with assert_num_queries(2):
             response = client.get("/native/v2/offer/1")
 
         assert response.status_code == 404
@@ -1088,7 +1058,9 @@ class OffersV2Test:
         offer = offers_factories.OfferFactory(validation=validation)
 
         offer_id = offer.id
-        with assert_num_queries(1):
+        # 1. select offer
+        # 2. rollback
+        with assert_num_queries(2):
             response = client.get(f"/native/v2/offer/{offer_id}")
             assert response.status_code == 404
 
@@ -1121,25 +1093,13 @@ class OffersV2Test:
         )
 
         offer_id = offer.id
-        # TODO: (lixxday, 1/08/2024) This is too much queries
         # 1. select offer
         # 2. select EXISTS venue_provider
-        # 3. select EXISTS provider
+        # 3. select EXISTS venue_provider
         # 4. select cinema_provider_pivot
         # 5. select feature
         # 6. update stock
-        # 7. select stock
-        # 8. select offer
-        # 9. select stock
-        # 10. select provider
-        # 11. select venue
-        # 12. select offerer
-        # 13. select mediation
-        # 14. select reaction
-        # 15. select price_category
-        # 16. select price_category_label
-        # 17. select google_places_info
-        with assert_num_queries(17):
+        with assert_num_queries(6):
             response = client.get(f"/native/v2/offer/{offer_id}")
 
         assert stock.remainingQuantity == 0
@@ -1184,10 +1144,16 @@ class OffersV2Test:
         )
 
         offer_id = offer.id
-        # TODO: (lixxday, 5/08/2024) Too much queries are made to the database
-        # Also, there seems to be some sort of N+1 issue, on the stocks
-        # Jira ticket: https://passculture.atlassian.net/browse/PC-31181
-        response = client.get(f"/native/v2/offer/{offer_id}")
+        # 1. select offer
+        # 2. select EXISTS venue_provider
+        # 3. select EXISTS venue_provider
+        # 4. select cinema_provider_pivot
+        # 5. select feature
+        # 6. select EXISTS venue_provider
+        # 7. select boost_cinema_details
+        # 8. update stock
+        with assert_num_queries(8):
+            response = client.get(f"/native/v2/offer/{offer_id}")
         assert response.status_code == 200
         assert first_show_stock.remainingQuantity == 96
         assert will_be_sold_out_show_stock.remainingQuantity == 0
@@ -1230,11 +1196,16 @@ class OffersV2Test:
         )
 
         offer_id = offer.id
-
-        # TODO: (lixxday, 5/08/2024) Too much queries are made to the database
-        # Also, there seems to be some sort of N+1 issue, on the stocks
-        # Jira ticket: https://passculture.atlassian.net/browse/PC-31181
-        response = client.get(f"/native/v2/offer/{offer_id}")
+        # 1.  select offer
+        # 2.  select EXISTS venue_provider
+        # 3.  select EXISTS venue_provider
+        # 4.  select cinema_provider_pivot
+        # 5.  select feature
+        # 6.  select EXISTS venue_providers
+        # 7.  select cgr_cinema_details
+        # 8.  update stock
+        with assert_num_queries(8):
+            response = client.get(f"/native/v2/offer/{offer_id}")
 
         assert response.status_code == 200
         assert still_scheduled_show_stock.remainingQuantity == 95
@@ -1271,10 +1242,10 @@ class OffersV2Test:
 
         # 1. select offer
         # 2. select EXISTS venue_provider
-        # 3. select EXISTS provider
+        # 3. select EXISTS venue_provider
         # 4. select cinema_provider_pivot
         # 5. select feature
-        # 6. select EXISTS provider
+        # 6. select EXISTS venue_provider
         with assert_num_queries(6):
             response = client.get(f"/native/v2/offer/{offer_id}")
 
@@ -1311,11 +1282,11 @@ class OffersV2Test:
         offer_id = offer.id
 
         # 1. select offer
-        # 2. select EXISTS provider
+        # 2. select EXISTS venue_provider
         # 3. select EXISTS venue_provider
         # 4. select cinema_provider_pivot
         # 5. select feature
-        # 6. select EXISTS provider
+        # 6. select EXISTS venue_provider
         # 7. select cgr_cinema_details
         with assert_num_queries(7):
             response = client.get(f"/native/v2/offer/{offer_id}")
@@ -1348,20 +1319,10 @@ class OffersV2Test:
 
         # 1. select offer
         # 2. select EXISTS venue_provider
-        # 3. select EXISTS provider
+        # 3. select EXISTS venue_provider
         # 4. update offer
-        # 5. select offer
-        # 6. select stock
-        # 7. select provider
-        # 8. select feature
-        # 9. select venue
-        # 10. select offerer
-        # 11. select mediation
-        # 12. select reaction
-        # 13. select price_category
-        # 14. select price_category_label
-        # 15. select google_places_info
-        with assert_num_queries(15):
+        # 5. select feature
+        with assert_num_queries(5):
             response = client.get(f"/native/v2/offer/{offer_id}")
 
         assert response.status_code == 200
@@ -1429,23 +1390,13 @@ class OffersV2Test:
         )
         offers_factories.EventStockFactory(offer=offer, idAtProviders="toto")
 
+        offer_id = offer.id
         # 1. select offer
         # 2. select EXISTS venue_provider
         # 3. select EXISTS provider
         # 4. update offer
-        # 5. select offer
-        # 6. select stock
-        # 7. select provider
-        # 8. select feature
-        # 9. select venue
-        # 10. select offerer
-        # 11. select mediation
-        # 12. select reaction
-        # 13. select price_category
-        # 14. select price_category_label
-        # 15. select google_places_info
-        offer_id = offer.id
-        with assert_num_queries(15):
+        # 5. select feature
+        with assert_num_queries(5):
             response = client.get(f"/native/v2/offer/{offer_id}")
 
         assert response.json["isReleased"] is False

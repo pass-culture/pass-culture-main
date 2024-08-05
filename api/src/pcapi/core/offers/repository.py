@@ -1096,7 +1096,7 @@ def update_stock_quantity_to_dn_booked_quantity(stock_id: int | None) -> None:
     if not stock_id:
         return
     models.Stock.query.filter(models.Stock.id == stock_id).update({"quantity": models.Stock.dnBookedQuantity})
-    db.session.commit()
+    db.session.flush()
 
 
 def get_paginated_active_offer_ids(batch_size: int, page: int = 1) -> list[int]:
