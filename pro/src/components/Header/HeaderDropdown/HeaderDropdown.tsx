@@ -63,13 +63,10 @@ export const HeaderDropdown = () => {
     IN_STRUCTURE_CREATION_FUNNEL && offererOptions.length === 0
 
   const selectedOffererId =
-    // TODO remove this when noUncheckedIndexedAccess is enabled in TS config
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     searchParams.get('structure') ??
     currentOffererId ??
     getSavedOffererId(offererOptions) ??
-    offererOptions[0]?.value ??
-    ''
+    (offererOptions.length > 0 ? offererOptions[0]?.value : '')
 
   const selectedOffererName = offererNames?.find(
     (offererOption) => offererOption.id === Number(selectedOffererId)
