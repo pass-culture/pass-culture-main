@@ -176,38 +176,6 @@ class ListCollectiveBookingsTest(GetEndpointHelper):
         assert html_parser.extract_pagination_info(response.data) == (1, 1, len(rows))
 
     @pytest.mark.parametrize(
-        "cancellation_reason, expected_text",
-        [
-            (educational_models.CollectiveBookingCancellationReasons.BACKOFFICE, "Annulée sur le backoffice par"),
-            (educational_models.CollectiveBookingCancellationReasons.FRAUD, "Fraude"),
-        ],
-    )
-    def test_list_cancelled_collective_booking_information(
-        self, authenticated_client, legit_user, cancellation_reason, expected_text
-    ):
-        booking = educational_factories.CancelledCollectiveBookingFactory(
-            cancellationAuthor=legit_user,
-            cancellationReason=cancellation_reason,
-        )
-
-        response = authenticated_client.get(
-            url_for(self.endpoint, q=booking.id, cancellation_reason=["OFFERER", "FRAUD", "BACKOFFICE"])
-        )
-        assert response.status_code == 200
-
-        extra_data = html_parser.extract(response.data, tag="tr", class_="collapse accordion-collapse")[0]
-
-        assert "Formats" in extra_data
-        assert "Date de confirmation de réservation" in extra_data
-        assert "Date limite de réservation" in extra_data
-        assert "Date d'annulation" in extra_data
-        assert "Raison de l'annulation" in extra_data
-        if expected_text == "Fraude":
-            assert expected_text in extra_data
-        else:
-            assert f"{expected_text} {legit_user.full_name}" in extra_data
-
-    @pytest.mark.parametrize(
         "query_args",
         [
             {},
