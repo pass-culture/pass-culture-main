@@ -168,7 +168,7 @@ class GetIndividualBookingListForm(BaseBookingListForm):
     cancellation_reason = fields.PCSelectMultipleField(
         "Raison d'annulation",
         choices=utils.choices_from_enum(
-            bookings_models.BookingCancellationReasons, formatter=filters.format_booking_cancellation
+            bookings_models.BookingCancellationReasons, formatter=filters.format_booking_cancellation_reason
         ),
     )
     deposit = fields.PCSelectField(
@@ -215,7 +215,7 @@ class CancelCollectiveBookingForm(FlaskForm):
         "Raison",
         choices=utils.choices_from_enum(
             educational_models.CollectiveBookingCancellationReasons,
-            formatter=filters.format_booking_cancellation,
+            formatter=filters.format_booking_cancellation_reason,
         ),
     )
 
@@ -224,7 +224,7 @@ class CancelIndividualBookingForm(FlaskForm):
     reason = fields.PCSelectWithPlaceholderValueField(
         "Raison",
         choices=utils.choices_from_enum(
-            bookings_models.BookingCancellationReasons, formatter=filters.format_booking_cancellation
+            bookings_models.BookingCancellationReasons, formatter=filters.format_booking_cancellation_reason
         ),
     )
 
