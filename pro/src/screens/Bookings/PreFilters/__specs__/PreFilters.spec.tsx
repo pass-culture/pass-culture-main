@@ -1,13 +1,13 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import React from 'react'
 
 import { DEFAULT_PRE_FILTERS } from 'core/Bookings/constants'
 import { Audience } from 'core/shared/types'
-import { getOfferVenueFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import { PreFilters, PreFiltersProps } from '../../PreFilters'
+import { PreFilters, PreFiltersProps } from '../PreFilters'
+
+const mockUpdateUrl = vi.fn()
 
 vi.mock('utils/date', async () => {
   return {
@@ -32,16 +32,19 @@ describe('filter bookings by bookings period', () => {
       appliedPreFilters: { ...DEFAULT_PRE_FILTERS },
       applyPreFilters: vi.fn(),
       audience: Audience.INDIVIDUAL,
-      venues: [getOfferVenueFactory()].map(({ id, name }) => ({
-        id: id.toString(),
-        displayName: name,
-      })),
+      venues: [
+        {
+          id: '12',
+          displayName: 'Mon nom de lieu',
+        },
+      ],
       hasResult: true,
       resetPreFilters: vi.fn(),
       isFiltersDisabled: false,
       isTableLoading: false,
       wereBookingsRequested: true,
       isLocalLoading: false,
+      updateUrl: mockUpdateUrl,
     }
   })
 
@@ -59,14 +62,6 @@ describe('filter bookings by bookings period', () => {
     expect(screen.getByLabelText('Fin de la période')).toHaveValue('2020-12-15')
   })
 
-  it('should select booked status as booking status filter by default', () => {
-    renderPreFilters(props)
-
-    expect(
-      screen.queryByDisplayValue('Période de réservation')
-    ).toBeInTheDocument()
-  })
-
   it('should allow to select booking status filter', async () => {
     renderPreFilters(props)
     const bookingStatusFilterInput = screen.getByDisplayValue(
@@ -77,5 +72,40 @@ describe('filter bookings by bookings period', () => {
     await userEvent.click(screen.getByText('Période de validation'))
 
     expect(screen.queryByText('Période de validation')).toBeInTheDocument()
+  })
+
+  it('should filter with a combination of filters', async () => {
+    renderPreFilters(props)
+
+    const offerEventDateInput = screen.getByLabelText('Date de l’évènement')
+    await userEvent.clear(offerEventDateInput)
+    await userEvent.type(offerEventDateInput, '2020-12-13')
+
+    const offerVenuIdInput = screen.getByLabelText('Lieu')
+    await userEvent.selectOptions(offerVenuIdInput, '12')
+
+    const periodBeginningDateInput = screen.getByLabelText(
+      'Début de la période'
+    )
+    const periodEndingDateInput = screen.getByLabelText('Fin de la période')
+
+    await userEvent.clear(periodBeginningDateInput)
+    await userEvent.type(periodBeginningDateInput, '2020-12-01')
+
+    await userEvent.clear(periodEndingDateInput)
+    await userEvent.type(periodEndingDateInput, '2020-12-02')
+
+    const select = screen.getByLabelText('Type de période')
+    await userEvent.selectOptions(select, 'reimbursed')
+
+    await userEvent.click(screen.getByText('Afficher'))
+    expect(mockUpdateUrl).toHaveBeenCalledWith({
+      bookingBeginningDate: '2020-12-01',
+      bookingEndingDate: '2020-12-02',
+      bookingStatusFilter: 'reimbursed',
+      offerEventDate: '2020-12-13',
+      offerId: undefined,
+      offerVenueId: '12',
+    })
   })
 })

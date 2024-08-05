@@ -37,7 +37,7 @@ export interface PreFiltersProps {
   isLocalLoading: boolean
   resetPreFilters: () => void
   urlParams?: PreFiltersParams
-  updateUrl?: (selectedPreFilters: PreFiltersParams) => void
+  updateUrl: (selectedPreFilters: PreFiltersParams) => void
   venues: { id: string; displayName: string }[]
 }
 
@@ -117,9 +117,7 @@ export const PreFilters = ({
   const requestFilteredBookings = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     applyPreFilters(selectedPreFilters)
-    if (updateUrl) {
-      updateUrl(selectedPreFilters)
-    }
+    updateUrl(selectedPreFilters)
   }
 
   const isRefreshRequired =
@@ -224,7 +222,7 @@ export const PreFilters = ({
               disabled={isTableLoading || isLocalLoading || isFiltersDisabled}
               variant={ButtonVariant.SECONDARY}
               onClick={() => {
-                updateUrl && updateUrl(selectedPreFilters)
+                updateUrl(selectedPreFilters)
                 logEvent(Events.CLICKED_SHOW_BOOKINGS, {
                   from: location.pathname,
                 })
