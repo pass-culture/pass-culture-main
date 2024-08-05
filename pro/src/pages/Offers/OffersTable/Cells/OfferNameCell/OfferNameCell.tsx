@@ -156,7 +156,9 @@ export const OfferNameCell = ({
       )}
 
       {!isOfferEducational(offer) && offer.productIsbn && (
-        <div className={styles['isbn']}>{offer.productIsbn}</div>
+        <div className={styles['isbn']} data-testid="offer-isbn">
+          {offer.productIsbn}
+        </div>
       )}
     </td>
   )

@@ -141,8 +141,11 @@ describe('screen Offers', () => {
   it('should display column titles when offers are returned', () => {
     renderOffers(props)
 
-    expect(screen.getByText('Lieu', { selector: 'th' })).toBeInTheDocument()
-    expect(screen.getByText('Stocks', { selector: 'th' })).toBeInTheDocument()
+    const headers = screen.getAllByRole('columnheader')
+    expect(headers[1].textContent).toEqual('Lieu')
+    expect(headers[2].textContent).toEqual('Stocks')
+    expect(headers[3].textContent).toEqual('Statut')
+    expect(headers[4].textContent).toEqual('Actions')
   })
 
   it('should render as much offers as returned by the api', () => {
