@@ -83,9 +83,9 @@ class ReimbursementDetails:
         "N° de virement",
         "Intitulé du compte bancaire",
         "IBAN",
-        "Raison sociale du lieu",  # 6
+        "Raison sociale du lieu",
         "Adresse du lieu",
-        "SIRET du lieu",  # 8
+        "SIRET du lieu",
         "Nom de l'offre",
         "N° de réservation (offre collective)",
         "Nom (offre collective)",
@@ -224,7 +224,13 @@ class ReimbursementDetails:
             self.reimbursed_amount,
             self.offer_type,
         ]
-
+        if FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
+            rows[6:11] = [
+                self.venue_siret,
+                self.venue_name,
+                self.offer_name,
+                self.address,
+            ]
         return rows
 
     @classmethod
@@ -233,11 +239,12 @@ class ReimbursementDetails:
             return (
                 cls.CSV_HEADER[0:6]
                 + [
-                    "Raison sociale du partenaire culturel",
-                    "Adresse de l'offre",
                     "SIRET du partenaire culturel",
+                    "Raison sociale du partenaire culturel",
+                    "Nom de l'offre",
+                    "Adresse de l'offre",
                 ]
-                + cls.CSV_HEADER[9:]
+                + cls.CSV_HEADER[10:]
             )
         return cls.CSV_HEADER
 
