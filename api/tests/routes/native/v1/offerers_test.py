@@ -1,7 +1,7 @@
 import pytest
 
 from pcapi.connectors.acceslibre import ExpectedFieldsEnum as acceslibre_enum
-import pcapi.core.offerers.factories as offerer_factories
+import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.models import VenueTypeCode
 from pcapi.core.testing import assert_num_queries
 
@@ -13,7 +13,7 @@ class VenuesTest:
     expected_num_queries = 5  # venue + google_places_info + venue_contact + accessibility_provider + opening_hours
 
     def test_get_venue(self, client):
-        venue = offerer_factories.VenueFactory(
+        venue = offerers_factories.VenueFactory(
             isPermanent=True,
             bannerMeta={
                 "author_id": 1,
@@ -22,7 +22,7 @@ class VenuesTest:
                 "image_credit": "Wikimedia Commons CC By",
             },
         )
-        offerer_factories.AccessibilityProviderFactory(
+        offerers_factories.AccessibilityProviderFactory(
             venue=venue,
             externalAccessibilityId="ma-venue",
             externalAccessibilityUrl="https://ra.te",
@@ -112,8 +112,8 @@ class VenuesTest:
         }
 
     def test_get_venue_google_banner_meta(self, client):
-        venue = offerer_factories.VenueFactory(isPermanent=True)
-        offerer_factories.GooglePlacesInfoFactory(
+        venue = offerers_factories.VenueFactory(isPermanent=True)
+        offerers_factories.GooglePlacesInfoFactory(
             venue=venue,
             bannerMeta={"html_attributions": ['<a href="http://python.org">Henri</a>']},
         )
@@ -131,8 +131,8 @@ class VenuesTest:
         }
 
     def test_get_venue_google_banner_meta_multiple_attributions(self, client):
-        venue = offerer_factories.VenueFactory(isPermanent=True)
-        offerer_factories.GooglePlacesInfoFactory(
+        venue = offerers_factories.VenueFactory(isPermanent=True)
+        offerers_factories.GooglePlacesInfoFactory(
             venue=venue,
             bannerMeta={
                 "html_attributions": [
@@ -155,7 +155,7 @@ class VenuesTest:
         }
 
     def test_get_venue_google_banner_meta_not_from_google(self, client):
-        venue = offerer_factories.VenueFactory(isPermanent=True, _bannerMeta={"image_credit": "Henri"})
+        venue = offerers_factories.VenueFactory(isPermanent=True, _bannerMeta={"image_credit": "Henri"})
         response = client.get(f"/native/v1/venue/{venue.id}")
 
         assert response.status_code == 200
@@ -163,7 +163,7 @@ class VenuesTest:
         assert response.json["bannerMeta"] == {"image_credit": "Henri"}
 
     def test_get_non_permanent_venue(self, client):
-        venue = offerer_factories.VenueFactory(isPermanent=False)
+        venue = offerers_factories.VenueFactory(isPermanent=False)
         response = client.get(f"/native/v1/venue/{venue.id}")
         assert response.status_code == 404
 
@@ -173,7 +173,7 @@ class VenuesTest:
             assert response.status_code == 404
 
     def test_get_venue_always_has_banner_url(self, client):
-        venue = offerer_factories.VenueFactory(venueTypeCode=VenueTypeCode.BOOKSTORE)
+        venue = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.BOOKSTORE)
         venue_id = venue.id
         with assert_num_queries(self.expected_num_queries):
             response = client.get(f"/native/v1/venue/{venue_id}")
@@ -183,7 +183,7 @@ class VenuesTest:
 
     def test_venue_supports_phone_numbers(self, client):
         invalid_phone_number = "+33594282769"  # invalid phone number from real data
-        venue = offerer_factories.VenueFactory(
+        venue = offerers_factories.VenueFactory(
             venueTypeCode=VenueTypeCode.BOOKSTORE, contact__phone_number=invalid_phone_number
         )
         response = client.get(f"/native/v1/venue/{venue.id}")

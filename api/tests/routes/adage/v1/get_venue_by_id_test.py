@@ -2,7 +2,7 @@ from typing import Any
 
 import pytest
 
-from pcapi.core.offerers import factories as offerer_factories
+from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers.models import VenueTypeCode
 
 
@@ -11,7 +11,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 class Returns200Test:
     def test_get_venue_by_id(self, client: Any) -> None:
-        venue = offerer_factories.CollectiveVenueFactory(
+        venue = offerers_factories.CollectiveVenueFactory(
             bannerUrl="http://example.com/image_cropped.png",
             bannerMeta={
                 "image_credit": "test",
@@ -61,8 +61,8 @@ class Returns200Test:
         }
 
     def test_get_relative_venues_by_id(self, client: Any) -> None:
-        offerer = offerer_factories.OffererFactory()
-        venue1 = offerer_factories.CollectiveVenueFactory(
+        offerer = offerers_factories.OffererFactory()
+        venue1 = offerers_factories.CollectiveVenueFactory(
             isPermanent=True,
             managingOfferer=offerer,
             name="azerty",
@@ -73,13 +73,13 @@ class Returns200Test:
                 "should": "be_ignored",
             },
         )
-        venue2 = offerer_factories.CollectiveVenueFactory(
+        venue2 = offerers_factories.CollectiveVenueFactory(
             isPermanent=False,
             managingOfferer=offerer,
             name="zertyu",
             venueTypeCode=VenueTypeCode.ADMINISTRATIVE,
         )
-        offerer_factories.CollectiveVenueFactory(
+        offerers_factories.CollectiveVenueFactory(
             isPermanent=True,
         )
 

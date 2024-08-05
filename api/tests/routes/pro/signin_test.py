@@ -4,7 +4,7 @@ import logging
 import pytest
 
 from pcapi.core.educational import factories as educational_factories
-from pcapi.core.offerers import factories as offerer_factories
+from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
@@ -146,7 +146,7 @@ class Returns200Test:
     @pytest.mark.usefixtures("db_session")
     def test_whith_user_offerer_and_nav_state(self, client):
         # Given
-        user_offerer = offerer_factories.UserOffererFactory(
+        user_offerer = offerers_factories.UserOffererFactory(
             user__lastConnectionDate=datetime.datetime.utcnow(),
         )
         navState = users_factories.UserProNewNavStateFactory(user=user_offerer.user)

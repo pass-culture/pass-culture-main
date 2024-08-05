@@ -1,23 +1,23 @@
 import pcapi.core.educational.factories as educational_factories
-from pcapi.core.offerers import factories as offerer_factories
+from pcapi.core.offerers import factories as offerers_factories
 
 
 class Returns200Test:
     def test_get_venues_from_name(self, client, db_session) -> None:
-        venue1 = offerer_factories.VenueWithoutSiretFactory(
+        venue1 = offerers_factories.VenueWithoutSiretFactory(
             name="a beautiful name",
             publicName=None,
             isPermanent=True,
         )
-        venue2 = offerer_factories.VenueFactory(
+        venue2 = offerers_factories.VenueFactory(
             publicName="a beautiful name",
             isPermanent=True,
         )
-        offerer_factories.VenueFactory(
+        offerers_factories.VenueFactory(
             name="not the same",
             isPermanent=True,
         )
-        offerer_factories.VirtualVenueFactory(
+        offerers_factories.VirtualVenueFactory(
             name="a beautiful name",
             isPermanent=True,
         )
@@ -31,16 +31,16 @@ class Returns200Test:
         assert {venue["id"] for venue in response_venues} == {venue1.id, venue2.id}
 
     def test_get_venues_from_name_case_incensitive(self, client, db_session) -> None:
-        venue = offerer_factories.VenueWithoutSiretFactory(
+        venue = offerers_factories.VenueWithoutSiretFactory(
             name="a beautifUl name",
             publicName=None,
             isPermanent=True,
         )
-        offerer_factories.VenueFactory(
+        offerers_factories.VenueFactory(
             name="not the same",
             isPermanent=True,
         )
-        offerer_factories.VirtualVenueFactory(
+        offerers_factories.VirtualVenueFactory(
             name="a beautiful name",
             isPermanent=True,
         )
@@ -56,7 +56,7 @@ class Returns200Test:
     def test_get_venues_from_name_serialization(self, client, db_session) -> None:
         domain1 = educational_factories.EducationalDomainFactory()
         domain2 = educational_factories.EducationalDomainFactory()
-        venue1 = offerer_factories.VenueWithoutSiretFactory(
+        venue1 = offerers_factories.VenueWithoutSiretFactory(
             name="a beautiful name",
             collectiveDomains=[domain1, domain2],
             collectiveInterventionArea=["mainland"],
@@ -115,16 +115,16 @@ class Returns200Test:
         }
 
     def test_get_venues_from_name_with_diacritic_in_name_in_db(self, client, db_session) -> None:
-        venue = offerer_factories.VenueWithoutSiretFactory(
+        venue = offerers_factories.VenueWithoutSiretFactory(
             name="à ñÅmé wïth ç",
             publicName=None,
             isPermanent=True,
         )
-        offerer_factories.VenueFactory(
+        offerers_factories.VenueFactory(
             name="not the same",
             isPermanent=True,
         )
-        offerer_factories.VirtualVenueFactory(
+        offerers_factories.VirtualVenueFactory(
             name="somting completely diffetrent",
             isPermanent=True,
         )
@@ -138,16 +138,16 @@ class Returns200Test:
         assert response_venues[0]["id"] == venue.id
 
     def test_get_venues_from_name_with_diacritic_in_public_name_in_db(self, client, db_session) -> None:
-        venue = offerer_factories.VenueWithoutSiretFactory(
+        venue = offerers_factories.VenueWithoutSiretFactory(
             name="pouet",
             publicName="à ñÅmé wïth ç",
             isPermanent=True,
         )
-        offerer_factories.VenueFactory(
+        offerers_factories.VenueFactory(
             name="not the same",
             isPermanent=True,
         )
-        offerer_factories.VirtualVenueFactory(
+        offerers_factories.VirtualVenueFactory(
             name="somting completely diffetrent",
             isPermanent=True,
         )
@@ -161,16 +161,16 @@ class Returns200Test:
         assert response_venues[0]["id"] == venue.id
 
     def test_get_venues_from_name_with_diacritic_in_name_in_request(self, client, db_session) -> None:
-        venue = offerer_factories.VenueWithoutSiretFactory(
+        venue = offerers_factories.VenueWithoutSiretFactory(
             name="a name with c",
             publicName=None,
             isPermanent=True,
         )
-        offerer_factories.VenueFactory(
+        offerers_factories.VenueFactory(
             name="not the same",
             isPermanent=True,
         )
-        offerer_factories.VirtualVenueFactory(
+        offerers_factories.VirtualVenueFactory(
             name="somting completely diffetrent",
             isPermanent=True,
         )
@@ -184,16 +184,16 @@ class Returns200Test:
         assert response_venues[0]["id"] == venue.id
 
     def test_get_venues_from_name_with_diacritic_in_name_in_request_and_db(self, client, db_session) -> None:
-        venue = offerer_factories.VenueWithoutSiretFactory(
+        venue = offerers_factories.VenueWithoutSiretFactory(
             name="à ñÅmé wïth ç",
             publicName=None,
             isPermanent=True,
         )
-        offerer_factories.VenueFactory(
+        offerers_factories.VenueFactory(
             name="not the same",
             isPermanent=True,
         )
-        offerer_factories.VirtualVenueFactory(
+        offerers_factories.VirtualVenueFactory(
             name="somting completely diffetrent",
             isPermanent=True,
         )
@@ -207,16 +207,16 @@ class Returns200Test:
         assert response_venues[0]["id"] == venue.id
 
     def test_get_venues_ignore_union_request(self, client, db_session) -> None:
-        venue = offerer_factories.VenueWithoutSiretFactory(
+        venue = offerers_factories.VenueWithoutSiretFactory(
             name="a-composed-name",
             publicName=None,
             isPermanent=True,
         )
-        offerer_factories.VenueFactory(
+        offerers_factories.VenueFactory(
             name="not the same",
             isPermanent=True,
         )
-        offerer_factories.VirtualVenueFactory(
+        offerers_factories.VirtualVenueFactory(
             name="somting completely diffetrent",
             isPermanent=True,
         )
@@ -230,16 +230,16 @@ class Returns200Test:
         assert response_venues[0]["id"] == venue.id
 
     def test_get_venues_ignore_union_db(self, client, db_session) -> None:
-        venue = offerer_factories.VenueWithoutSiretFactory(
+        venue = offerers_factories.VenueWithoutSiretFactory(
             name="a-composed-name",
             publicName=None,
             isPermanent=True,
         )
-        offerer_factories.VenueFactory(
+        offerers_factories.VenueFactory(
             name="not the same",
             isPermanent=True,
         )
-        offerer_factories.VirtualVenueFactory(
+        offerers_factories.VirtualVenueFactory(
             name="somting completely diffetrent",
             isPermanent=True,
         )
@@ -253,10 +253,10 @@ class Returns200Test:
         assert response_venues[0]["id"] == venue.id
 
     def test_get_relative_venues_from_name(self, client, db_session) -> None:
-        offerer = offerer_factories.OffererFactory()
-        venue1 = offerer_factories.VenueFactory(managingOfferer=offerer, name="azerty", isPermanent=True)
-        venue2 = offerer_factories.VenueFactory(managingOfferer=offerer, name="z123", isPermanent=False)
-        offerer_factories.VenueFactory(isPermanent=True)
+        offerer = offerers_factories.OffererFactory()
+        venue1 = offerers_factories.VenueFactory(managingOfferer=offerer, name="azerty", isPermanent=True)
+        venue2 = offerers_factories.VenueFactory(managingOfferer=offerer, name="z123", isPermanent=False)
+        offerers_factories.VenueFactory(isPermanent=True)
 
         client.with_eac_token()
         response = client.get("/adage/v1/venues/name/azerty?getRelative=true")
@@ -332,7 +332,7 @@ class Returns200Test:
 
 class Returns404Test:
     def test_when_no_venue_is_found(self, client, db_session) -> None:
-        offerer_factories.VenueFactory(name="not the same")
+        offerers_factories.VenueFactory(name="not the same")
 
         client.with_eac_token()
         response = client.get("/adage/v1/venues/name/utiful")
