@@ -6,7 +6,7 @@ This the documentation of the Pass Culture public REST API.
 - Since January 2023, rate limiting has been implemented on the Pass Culture API.
   You are limited to **200 requests/minute** per API key.
   Once this limit reached, you will received a `429 Too Many Requests` error message. You will then need to back down.
-- Event offers dates are stored in the **UTC format**. This is necessary because dates are displayed according to the beneficiary timezone in our application.
+- Event offers dates are stored in the **UTC format**. This is necessary because dates are displayed according to the beneficiary timezone in our application. Eg., if an event is set to the 1st of september 2024 at 10AM in Paris, the date should be 2024-09-01T08:00:00Z, and if should happen at the same time but in Fort-de-France, the date should then be 2024-09-01T14:00:00Z. Please note that local timezones are accepted, for now, but UTC will soon be the only valid date format allowed.
 - Any non-blank field sent using a `PATCH` method will be considered as changed, even if the new value is equal to old value.
   _For example, if you update the stock of an event, you **should not resend the `beginningDate`** if it has not changed because, otherwise it is going to trigger the reschedule process on our side._
 
