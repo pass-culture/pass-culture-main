@@ -262,12 +262,12 @@ def cancel_booking_validation_by_token(token: str) -> None:
 @api_key_required
 def cancel_booking_by_token(token: str) -> None:
     """
-    Cancel a booking
+    Delete a booking
 
-    Cancel a booking that has not been used or refunded.
+    Delete a booking that has not been used or refunded. For events, a booking can only be deleted if it is in a pending state.
 
-    For events, a booking can only be cancelled if it is pending.
-    Once it is confirmed, you cannot cancel it (for booking confirmation see [this page](/docs/understanding-our-api/resources/individual-offers#general-description-2)).
+    **⚠️ Warning:**
+    This operation is irreversible. Once a booking is deleted, the beneficiary cannot retrieve it and will need to create a new booking. **Use this endpoint only if you are certain that the order cannot be fulfilled.**
     """
     booking = _get_booking_by_token(token)
     if booking is None:
