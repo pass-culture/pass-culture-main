@@ -52,3 +52,13 @@ Then('All filters are empty', () => {
 When('I reset all filters', () => {
   cy.findByText('Réinitialiser les filtres').click()
 })
+
+When('I validate my filters', () => {
+  cy.intercept({
+    method: 'GET',
+    url: '/offers?*',
+    times: 1,
+  }).as('searchOffers')
+  cy.findByText('Rechercher').click()
+  cy.wait('@searchOffers')
+})

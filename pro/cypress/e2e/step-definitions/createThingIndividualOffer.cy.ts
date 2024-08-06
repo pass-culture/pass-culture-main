@@ -80,3 +80,16 @@ Then('my new physical offer should be displayed', () => {
     cy.contains(ean.toString())
   })
 })
+
+When('I validate offer details step', () => {
+  cy.intercept({ method: 'GET', url: '/offers/*' }).as('getOffer')
+  cy.intercept({ method: 'POST', url: '/offers' }).as('postOffer')
+  cy.intercept({
+    method: 'GET',
+    url: '/offers/*/stocks/?order_by_desc=*',
+  }).as('getStocks')
+
+  cy.findByText('Enregistrer et continuer').click()
+  cy.wait(['@getOffer', '@postOffer'])
+  cy.wait(['@getStocks'])
+})
