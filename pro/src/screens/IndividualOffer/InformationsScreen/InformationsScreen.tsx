@@ -1,6 +1,5 @@
 import { FormikProvider, useFormik } from 'formik'
 import { useState } from 'react'
-import { useSelector } from 'react-redux'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useSWRConfig } from 'swr'
 
@@ -10,7 +9,6 @@ import {
   GetOffererNameResponseModel,
   VenueListItemResponseModel,
 } from 'apiClient/v1'
-import { useAnalytics } from 'app/App/analytics/firebase'
 import { ConfirmDialog } from 'components/Dialog/ConfirmDialog/ConfirmDialog'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { IndividualOfferForm } from 'components/IndividualOfferForm/IndividualOfferForm'
@@ -24,10 +22,6 @@ import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/cons
 import { RouteLeavingGuardIndividualOffer } from 'components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
 import { GET_OFFER_QUERY_KEY } from 'config/swrQueryKeys'
 import { useIndividualOfferContext } from 'context/IndividualOfferContext/IndividualOfferContext'
-import {
-  Events,
-  OFFER_FORM_NAVIGATION_MEDIUM,
-} from 'core/FirebaseEvents/constants'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
 import { isOfferDisabled } from 'core/Offers/utils/isOfferDisabled'
@@ -36,7 +30,6 @@ import { useCurrentUser } from 'hooks/useCurrentUser'
 import { useNotification } from 'hooks/useNotification'
 import { useOfferWizardMode } from 'hooks/useOfferWizardMode'
 import strokeMailIcon from 'icons/stroke-mail.svg'
-import { selectCurrentOffererId } from 'store/user/selectors'
 
 import { ActionBar } from '../ActionBar/ActionBar'
 import { useIndividualOfferImageUpload } from '../hooks/useIndividualOfferImageUpload'
@@ -64,7 +57,6 @@ export const InformationsScreen = ({
   venueList,
 }: InformationsScreenProps): JSX.Element => {
   const notify = useNotification()
-  const { logEvent } = useAnalytics()
   const location = useLocation()
   const { currentUser } = useCurrentUser()
   const navigate = useNavigate()
@@ -73,7 +65,6 @@ export const InformationsScreen = ({
   const { offer, categories, subCategories } = useIndividualOfferContext()
   const { imageOffer, onImageDelete, onImageUpload, handleImageOnSubmit } =
     useIndividualOfferImageUpload()
-  const selectedOffererId = useSelector(selectCurrentOffererId)
 
   const queryParams = new URLSearchParams(location.search)
   const queryOfferType = queryParams.get('offer-type')
@@ -164,18 +155,6 @@ export const InformationsScreen = ({
           : isEvent
             ? OFFER_WIZARD_STEP_IDS.TARIFS
             : OFFER_WIZARD_STEP_IDS.STOCKS
-
-      logEvent(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-        from: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-        to: nextStep,
-        used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
-        isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
-        isDraft: mode === OFFER_WIZARD_MODE.CREATION,
-        offerId: receivedOfferId,
-        offerType: 'individual',
-        subcategoryId: formik.values.subcategoryId,
-        offererId: selectedOffererId?.toString(),
-      })
 
       navigate(
         getIndividualOfferUrl({
