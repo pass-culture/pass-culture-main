@@ -16,6 +16,7 @@ from pcapi.core.categories import subcategories_v2
 from pcapi.core.educational import models as educational_models
 from pcapi.core.offerers import exceptions
 from pcapi.core.offerers import models as offerers_models
+from pcapi.core.offerers import schemas as offerers_schemas
 from pcapi.core.offerers.validation import VENUE_BANNER_MAX_SIZE
 from pcapi.core.offers.validation import ACCEPTED_THUMBNAIL_FORMATS
 from pcapi.domain.demarches_simplifiees import DMS_TOKEN_PRO_PREFIX
@@ -71,23 +72,23 @@ class DMSApplicationForEAC(BaseModel):
 
 
 class PostVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
-    street: base.VenueAddress
-    banId: base.VenueBanId | None
-    bookingEmail: base.VenueBookingEmail
-    city: base.VenueCity
-    comment: base.VenueComment | None
+    street: offerers_schemas.VenueAddress
+    banId: offerers_schemas.VenueBanId | None
+    bookingEmail: offerers_schemas.VenueBookingEmail
+    city: offerers_schemas.VenueCity
+    comment: offerers_schemas.VenueComment | None
     latitude: float
     longitude: float
     managingOffererId: int
-    name: base.VenueName
-    publicName: base.VenuePublicName | None
-    postalCode: base.VenuePostalCode
-    siret: base.VenueSiret | None
+    name: offerers_schemas.VenueName
+    publicName: offerers_schemas.VenuePublicName | None
+    postalCode: offerers_schemas.VenuePostalCode
+    siret: offerers_schemas.VenueSiret | None
     venueLabelId: int | None
     venueTypeCode: str
-    withdrawalDetails: base.VenueWithdrawalDetails | None
-    description: base.VenueDescription | None
-    contact: base.VenueContactModel | None
+    withdrawalDetails: offerers_schemas.VenueWithdrawalDetails | None
+    description: offerers_schemas.VenueDescription | None
+    contact: offerers_schemas.VenueContactModel | None
 
     class Config:
         extra = "forbid"
@@ -152,7 +153,7 @@ class GetVenueManagingOffererResponseModel(BaseModel):
 
 
 class BannerMetaModel(BaseModel):
-    image_credit: base.VenueImageCredit | None = None
+    image_credit: offerers_schemas.VenueImageCredit | None = None
     original_image_url: str | None = None
     crop_params: CropParams = CropParams()
 
@@ -311,25 +312,25 @@ class GetCollectiveVenueResponseModel(BaseModel):
 
 
 class EditVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
-    name: base.VenueName | None
-    street: base.VenueAddress | None
-    banId: base.VenueBanId | None
-    siret: base.VenueSiret | None
+    name: offerers_schemas.VenueName | None
+    street: offerers_schemas.VenueAddress | None
+    banId: offerers_schemas.VenueBanId | None
+    siret: offerers_schemas.VenueSiret | None
     latitude: float | str | None
     longitude: float | str | None
-    bookingEmail: base.VenueBookingEmail | None
-    postalCode: base.VenuePostalCode | None
-    city: base.VenueCity | None
-    publicName: base.VenuePublicName | None
-    comment: base.VenueComment | None
+    bookingEmail: offerers_schemas.VenueBookingEmail | None
+    postalCode: offerers_schemas.VenuePostalCode | None
+    city: offerers_schemas.VenueCity | None
+    publicName: offerers_schemas.VenuePublicName | None
+    comment: offerers_schemas.VenueComment | None
     venueTypeCode: offerers_models.VenueTypeCode | None
     venueLabelId: int | None
-    withdrawalDetails: base.VenueWithdrawalDetails | None
+    withdrawalDetails: offerers_schemas.VenueWithdrawalDetails | None
     isAccessibilityAppliedOnAllOffers: bool | None
     isWithdrawalAppliedOnAllOffers: bool | None
     isEmailAppliedOnAllOffers: bool | None
-    description: base.VenueDescription | None
-    contact: base.VenueContactModel | None
+    description: offerers_schemas.VenueDescription | None
+    contact: offerers_schemas.VenueContactModel | None
     shouldSendMail: bool | None
     openingHours: list[base.OpeningHoursModel] | None
 
@@ -450,7 +451,7 @@ class VenueBannerContentModel(BaseModel):
         content: bytes
     else:
         content: pydantic_v1.conbytes(min_length=2, max_length=VENUE_BANNER_MAX_SIZE)
-    image_credit: base.VenueImageCredit | None
+    image_credit: offerers_schemas.VenueImageCredit | None
 
     # cropping parameters must be a % (between 0 and 1) of the original
     # bottom right corner and the original height
