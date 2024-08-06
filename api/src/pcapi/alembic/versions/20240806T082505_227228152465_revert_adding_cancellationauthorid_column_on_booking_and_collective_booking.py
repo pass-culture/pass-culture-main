@@ -16,8 +16,8 @@ depends_on: list[str] | None = None
 def upgrade() -> None:
     op.execute("ALTER TABLE booking DROP CONSTRAINT IF EXISTS booking_cancellation_author_fk")
     op.execute("ALTER TABLE collective_booking DROP CONSTRAINT IF EXISTS collective_booking_cancellation_author_fk")
-    op.execute("ALTER TABLE booking DROP COLUMN IF EXISTS cancellationAuthorId")
-    op.execute("ALTER TABLE collective_booking DROP COLUMN IF EXISTS cancellationAuthorId")
+    op.execute('ALTER TABLE booking DROP COLUMN IF EXISTS "cancellationAuthorId" ')
+    op.execute('ALTER TABLE collective_booking DROP COLUMN IF EXISTS "cancellationAuthorId" ')
 
 
 def downgrade() -> None:
