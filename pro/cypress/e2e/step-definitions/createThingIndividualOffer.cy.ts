@@ -83,13 +83,15 @@ Then('my new physical offer should be displayed', () => {
 
 When('I validate offer details step', () => {
   cy.intercept({ method: 'GET', url: '/offers/*' }).as('getOffer')
-  cy.intercept({ method: 'POST', url: '/offers' }).as('postOffer')
-  cy.intercept({
-    method: 'GET',
-    url: '/offers/*/stocks/?order_by_desc=*',
-  }).as('getStocks')
+  cy.intercept({ method: 'POST', url: '/offers/draft' }).as('postDraftOffer')
 
   cy.findByText('Enregistrer et continuer').click()
-  cy.wait(['@getOffer', '@postOffer'])
-  cy.wait(['@getStocks'])
+  cy.wait(['@getOffer', '@postDraftOffer'])
+})
+
+When('I validate offer useful informations step', () => {
+  cy.intercept({ method: 'GET', url: '/offers/*' }).as('getOffer')
+  cy.intercept({ method: 'PATCH', url: '/offers/*', times: 1 }).as('patchOffer')
+  cy.findByText('Enregistrer et continuer').click()
+  cy.wait(['@getOffer', '@patchOffer'])
 })

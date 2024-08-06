@@ -7,8 +7,10 @@ Feature: Create an individual offer (event)
     And I select offerer "Club Dorothy"
     When I go to the "Créer une offre" page
     And I want to create "Un évènement physique daté" offer
-    And I fill in offer details
+    And I fill in event details
     And I validate event details step
+    And I fill in event useful informations
+    And I validate event useful informations step
     And I fill in prices
     And I validate prices step
     And I fill in recurrence
