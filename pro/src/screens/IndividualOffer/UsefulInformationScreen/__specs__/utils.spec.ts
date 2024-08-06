@@ -162,6 +162,45 @@ describe('setDefaultInitialValuesFromOffer', () => {
     expect(result).toEqual(expectedValues)
   })
 
+  it('should not set Accessibilty.None true if others are undefined', () => {
+    const mockOfferWithMissingProperties = getIndividualOfferFactory({
+      isEvent: false,
+      isNational: true,
+      visualDisabilityCompliant: undefined,
+      mentalDisabilityCompliant: undefined,
+      audioDisabilityCompliant: undefined,
+      motorDisabilityCompliant: undefined,
+    })
+
+    const expectedValues = {
+      isEvent: false,
+      isNational: true,
+      withdrawalDetails:
+        DEFAULT_USEFULL_INFORMATION_INTITIAL_VALUES['withdrawalDetails'],
+      withdrawalDelay: undefined,
+      withdrawalType: undefined,
+      accessibility: {
+        [AccessibilityEnum.VISUAL]: false,
+        [AccessibilityEnum.MENTAL]: false,
+        [AccessibilityEnum.AUDIO]: false,
+        [AccessibilityEnum.MOTOR]: false,
+        [AccessibilityEnum.NONE]: false,
+      },
+      bookingEmail: '',
+      bookingContact: undefined,
+      receiveNotificationEmails: false,
+      url: DEFAULT_USEFULL_INFORMATION_INTITIAL_VALUES['url'],
+      externalTicketOfficeUrl:
+        DEFAULT_USEFULL_INFORMATION_INTITIAL_VALUES['externalTicketOfficeUrl'],
+    }
+
+    const result = setDefaultInitialValuesFromOffer(
+      mockOfferWithMissingProperties
+    )
+
+    expect(result).toEqual(expectedValues)
+  })
+
   it('should handle null withdrawalDelay correctly', () => {
     const mockOfferWithNullWithdrawalDelay = getIndividualOfferFactory({
       ...mockOffer,

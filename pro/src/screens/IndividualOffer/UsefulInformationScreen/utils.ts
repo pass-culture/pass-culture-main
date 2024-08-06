@@ -31,12 +31,6 @@ export const getFilteredVenueListBySubcategory = (
 export function setDefaultInitialValuesFromOffer(
   offer: GetIndividualOfferResponseModel
 ): UsefulInformationFormValues {
-  const baseAccessibility = {
-    [AccessibilityEnum.VISUAL]: offer.visualDisabilityCompliant || false,
-    [AccessibilityEnum.MENTAL]: offer.mentalDisabilityCompliant || false,
-    [AccessibilityEnum.AUDIO]: offer.audioDisabilityCompliant || false,
-    [AccessibilityEnum.MOTOR]: offer.motorDisabilityCompliant || false,
-  }
   return {
     isEvent: offer.isEvent,
     isNational: offer.isNational,
@@ -47,9 +41,16 @@ export function setDefaultInitialValuesFromOffer(
       offer.withdrawalDelay === null ? undefined : offer.withdrawalDelay,
     withdrawalType: offer.withdrawalType || undefined,
     accessibility: {
-      ...baseAccessibility,
-      [AccessibilityEnum.NONE]:
-        !Object.values(baseAccessibility).includes(true),
+      [AccessibilityEnum.VISUAL]: offer.visualDisabilityCompliant || false,
+      [AccessibilityEnum.MENTAL]: offer.mentalDisabilityCompliant || false,
+      [AccessibilityEnum.AUDIO]: offer.audioDisabilityCompliant || false,
+      [AccessibilityEnum.MOTOR]: offer.motorDisabilityCompliant || false,
+      [AccessibilityEnum.NONE]: [
+        offer.visualDisabilityCompliant,
+        offer.mentalDisabilityCompliant,
+        offer.audioDisabilityCompliant,
+        offer.motorDisabilityCompliant,
+      ].every((accessibility) => accessibility === false),
     },
     bookingEmail: offer.bookingEmail || '',
     bookingContact: offer.bookingContact || undefined,
