@@ -10,7 +10,6 @@ from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import models as offers_models
 from pcapi.core.offers.validation import check_for_duplicated_price_categories
-from pcapi.core.providers import models as providers_models
 from pcapi.models import api_errors
 from pcapi.models import db
 from pcapi.routes.public import blueprints
@@ -174,12 +173,7 @@ def get_events(query: serialization.GetOffersQueryParams) -> serialization.Event
     Return all the events linked to given venue.
     Results are paginated (by default there are `50` events per page).
     """
-    venue_provider = authorization.get_venue_provider_or_raise_404(query.venue_id)
-    authorization.check_is_allowed_to_perform_action(
-        venue_provider,
-        resource=providers_models.ApiResourceEnum.events,
-        permission=providers_models.PermissionEnum.READ,
-    )
+    authorization.get_venue_provider_or_raise_404(query.venue_id)
 
     total_offers_query = utils.retrieve_offers(
         is_event=True,

@@ -82,30 +82,6 @@ class PublicAPIVenueEndpointHelper(PublicAPIEndpointBaseHelper):
         return plain_api_key, venue_provider
 
 
-class PublicAPIVenueWithPermissionEndpointHelper(PublicAPIVenueEndpointHelper):
-    """
-    For Public API endpoints that require permission
-    """
-
-    @property
-    @abc.abstractmethod
-    def needed_permission(self) -> tuple[providers_models.ApiResourceEnum, providers_models.PermissionEnum]:
-        raise NotImplementedError()
-
-    @abc.abstractmethod
-    def test_should_raise_403_because_missing_permission(self, client: TestClient):
-        raise NotImplementedError()
-
-    def setup_active_venue_provider_with_permissions(self) -> tuple[str, providers_models.VenueProvider]:
-        plain_api_key, venue_provider = self.setup_active_venue_provider()
-        resource, permission = self.needed_permission
-        providers_factories.VenueProviderPermissionFactory(
-            venueProvider=venue_provider, resource=resource, permission=permission
-        )
-
-        return plain_api_key, venue_provider
-
-
 class ProductEndpointHelper:
     @staticmethod
     def create_base_product(

@@ -2,7 +2,6 @@ import pytest
 
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.providers import api as providers_api
-from pcapi.core.providers import repository as providers_repository
 import pcapi.core.providers.factories as providers_factories
 
 
@@ -15,7 +14,6 @@ def test_delete_venue_provider(client):
     venue_provider = providers_factories.VenueProviderFactory(venue=venue, provider=provider)
 
     # VenueProvider sub tables
-    providers_repository.add_all_permissions_for_venue_provider(venue_provider=venue_provider)
     providers_api.update_venue_provider_external_urls(venue_provider, notification_external_url="https://notify.com")
 
     # When

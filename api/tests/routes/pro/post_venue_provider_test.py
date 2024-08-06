@@ -12,8 +12,6 @@ from pcapi.core.history import models as history_models
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.providers.factories import CinemaProviderPivotFactory
-from pcapi.core.providers.models import ApiResourceEnum
-from pcapi.core.providers.models import PermissionEnum
 from pcapi.core.providers.models import Provider
 from pcapi.core.providers.models import VenueProvider
 import pcapi.core.providers.repository as providers_repository
@@ -62,17 +60,6 @@ class Returns201Test:
 
         venue_provider_id = response.json["id"]
         mock_synchronize_venue_provider.assert_called_once_with(venue_provider_id)
-        # assert permissions have been created
-        for resource in ApiResourceEnum:
-            for permission in PermissionEnum:
-                assert (
-                    providers_repository.get_venue_provider_permission_or_none(
-                        venue_provider_id=venue_provider.id,
-                        resource=resource,
-                        permission=permission,
-                    )
-                    is not None
-                )
 
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.workers.venue_provider_job.synchronize_venue_provider")
@@ -215,17 +202,6 @@ class Returns201Test:
         assert "id" in response.json
         venue_provider_id = response.json["id"]
         mock_synchronize_venue_provider.assert_called_once_with(venue_provider_id)
-        # assert permissions have been created
-        for resource in ApiResourceEnum:
-            for permission in PermissionEnum:
-                assert (
-                    providers_repository.get_venue_provider_permission_or_none(
-                        venue_provider_id=venue_provider.id,
-                        resource=resource,
-                        permission=permission,
-                    )
-                    is not None
-                )
 
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.core.providers.api._siret_can_be_synchronized", lambda *args: True)
