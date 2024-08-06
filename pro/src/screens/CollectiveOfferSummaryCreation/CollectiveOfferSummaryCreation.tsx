@@ -6,6 +6,7 @@ import {
 } from 'apiClient/v1'
 import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
 import { CollectiveOfferSummary } from 'components/CollectiveOfferSummary/CollectiveOfferSummary'
+import { Mode } from 'core/OfferEducational/types'
 import { useActiveFeature } from 'hooks/useActiveFeature'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -58,7 +59,7 @@ export const CollectiveOfferSummaryCreationScreen = ({
           )}
         </ActionsBarSticky.Left>
         {isCollectiveOfferDraftEnabled && (
-          <ActionsBarSticky.Right dirtyForm={false}>
+          <ActionsBarSticky.Right dirtyForm={false} mode={Mode.CREATION}>
             <ButtonLink variant={ButtonVariant.PRIMARY} to={nextRedirectionUrl}>
               Enregistrer et continuer
             </ButtonLink>

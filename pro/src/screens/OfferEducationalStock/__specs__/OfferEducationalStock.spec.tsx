@@ -215,3 +215,18 @@ it('should disable booking limit datetime when form access is read only', () => 
 
   expect(bookingLimitDatetimeInput).toBeDisabled()
 })
+
+it('should display saved information in the action bar', () => {
+  const testProps: OfferEducationalStockProps = {
+    ...defaultProps,
+    mode: Mode.CREATION,
+  }
+
+  renderWithProviders(<OfferEducationalStock {...testProps} />, {
+    features: ['WIP_ENABLE_COLLECTIVE_DRAFT_OFFERS'],
+  })
+
+  expect(screen.getByText('Brouillon enregistré')).toBeInTheDocument()
+
+  expect(screen.getByText('Enregistrer et continuer')).toBeInTheDocument()
+})

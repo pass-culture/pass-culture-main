@@ -12,7 +12,10 @@ import { Mode } from 'core/OfferEducational/types'
 import { SENT_DATA_ERROR_MESSAGE } from 'core/shared/constants'
 import * as useNotification from 'hooks/useNotification'
 import { getCollectiveOfferFactory } from 'utils/collectiveApiFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
+import {
+  renderWithProviders,
+  RenderWithProvidersOptions,
+} from 'utils/renderWithProviders'
 
 import {
   CollectiveOfferVisibilityScreen,
@@ -64,8 +67,13 @@ const institutions: EducationalInstitutionResponseModel[] = [
   },
 ]
 
-const renderVisibilityStep = (props: CollectiveOfferVisibilityProps) => {
-  return renderWithProviders(<CollectiveOfferVisibilityScreen {...props} />)
+const renderVisibilityStep = (
+  props: CollectiveOfferVisibilityProps,
+  options?: RenderWithProvidersOptions
+) => {
+  return renderWithProviders(<CollectiveOfferVisibilityScreen {...props} />, {
+    ...options,
+  })
 }
 
 describe('CollectiveOfferVisibility', () => {
@@ -427,5 +435,50 @@ describe('CollectiveOfferVisibility', () => {
     expect(
       screen.queryByRole('button', { name: 'Annuler et quitter' })
     ).not.toBeInTheDocument()
+  })
+
+  it('should display saving information in action bar', async () => {
+    renderVisibilityStep(
+      { ...props, mode: Mode.CREATION },
+      { features: ['WIP_ENABLE_COLLECTIVE_DRAFT_OFFERS'] }
+    )
+
+    expect(screen.getByText('Brouillon enregistré')).toBeInTheDocument()
+
+    expect(
+      await screen.findByRole('button', { name: 'Enregistrer et continuer' })
+    ).toBeInTheDocument()
+  })
+
+  it('should change saving information in action bar when form value change', async () => {
+    renderVisibilityStep(
+      { ...props, mode: Mode.CREATION },
+      { features: ['WIP_ENABLE_COLLECTIVE_DRAFT_OFFERS'] }
+    )
+
+    vi.spyOn(
+      api,
+      'getAutocompleteEducationalRedactorsForUai'
+    ).mockResolvedValueOnce([
+      {
+        email: 'compte.test@education.gouv.fr',
+        gender: 'Mr.',
+        name: 'REDA',
+        surname: 'KHTEUR',
+      },
+    ])
+
+    expect(screen.getByText('Brouillon enregistré')).toBeInTheDocument()
+
+    const institutionSelect = screen.getAllByTestId('select')[0]
+    await userEvent.selectOptions(institutionSelect, '12')
+    const teacherInput = screen.getByLabelText(/Prénom et nom de l’enseignant/)
+    await userEvent.type(teacherInput, 'Red')
+
+    expect(screen.getByText('Brouillon non enregistré')).toBeInTheDocument()
+
+    expect(
+      await screen.findByRole('button', { name: 'Enregistrer et continuer' })
+    ).toBeInTheDocument()
   })
 })
