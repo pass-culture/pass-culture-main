@@ -1,24 +1,34 @@
 import { Then, When } from '@badeball/cypress-cucumber-preprocessor'
 
-When('I fill in offer details', () => {
-  cy.findByLabelText('Catégorie *').select('Spectacle vivant')
-  cy.findByLabelText('Sous-catégorie *').select('Spectacle, représentation')
-  cy.findByLabelText('Type de spectacle *').select('Théâtre')
-  cy.findByLabelText('Sous-type *').select('Comédie')
+When('I fill in event details', () => {
+  cy.setFeatureFlags([{ name: 'WIP_SPLIT_OFFER', isActive: true }])
   cy.findByLabelText('Titre de l’offre *').type('Le Diner de Devs')
   cy.findByLabelText('Description').type(
     'Une PO invite des développeurs à dîner...'
   )
-  cy.findByText('Retrait sur place (guichet, comptoir...)').click()
-  cy.findByLabelText('Email de contact *').type('passculture@example.com')
+  cy.findByLabelText('Catégorie *').select('Spectacle vivant')
+  cy.findByLabelText('Sous-catégorie *').select('Spectacle, représentation')
+  cy.findByLabelText('Type de spectacle *').select('Théâtre')
+  cy.findByLabelText('Sous-type *').select('Comédie')
 })
 
 When('I validate event details step', () => {
   cy.intercept({ method: 'GET', url: '/offers/*' }).as('getOffer')
-  cy.intercept({ method: 'POST', url: '/offers' }).as('postOffer')
-
+  cy.intercept({ method: 'POST', url: '/offers/draft' }).as('postDraftOffer')
   cy.findByText('Enregistrer et continuer').click()
-  cy.wait(['@getOffer', '@postOffer'])
+  cy.wait(['@getOffer', '@postDraftOffer'])
+})
+
+When('I validate event useful informations step', () => {
+  cy.intercept({ method: 'GET', url: '/offers/*' }).as('getOffer')
+  cy.intercept({ method: 'PATCH', url: '/offers/*', times: 1 }).as('patchOffer')
+  cy.findByText('Enregistrer et continuer').click()
+  cy.wait(['@getOffer', '@patchOffer'])
+})
+
+When('I fill in event useful informations', () => {
+  cy.findByText('Retrait sur place (guichet, comptoir...)').click()
+  cy.findByLabelText('Email de contact *').type('passculture@example.com')
 })
 
 When('I fill in prices', () => {
@@ -51,7 +61,7 @@ When('I fill in prices', () => {
   // manque un data-testid ou un accessibility label
   cy.get('[name="priceCategories[2].free"]').click()
 
-  cy.findByText('Accepter les réservations “Duo“').should('exist')
+  cy.findByText('Accepter les réservations “Duo“').should('exist').click()
 })
 
 When('I validate prices step', () => {
