@@ -1,5 +1,5 @@
 import { useField, useFormikContext } from 'formik'
-import { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 
 import { VenueListItemResponseModel } from 'apiClient/v1'
 import { AddressSelect } from 'components/Address/Address'
@@ -24,37 +24,42 @@ export interface OfferLocationProps {
 export const OfferLocation = ({ venue }: OfferLocationProps): JSX.Element => {
   const formik = useFormikContext<IndividualOfferFormValues>()
 
-  const [showOtherAddress, setShowOtherAddress] = useState(false)
+  const [showOtherAddress, setShowOtherAddress] = useState(
+    formik.values.offerlocation === OFFER_LOCATION.OTHER_ADDRESS
+  )
   const [manuallySetAddress, , { setValue: setManuallySetAddress }] =
     useField('manuallySetAddress')
 
-  useEffect(() => {
-    const offerlocation = formik.values.offerlocation
+  const onManuallySetAddress = async () => {
+    const newValue = !manuallySetAddress.value
+    await setManuallySetAddress(newValue)
+    if (newValue) {
+      const fieldsToUpdate = [
+        'street',
+        'postalCode',
+        'city',
+        'latitude',
+        'longitude',
+        'coords',
+        'banId',
+        'search-addressAutocomplete',
+        'addressAutocomplete',
+      ]
 
-    if (!offerlocation) {
-      return
+      // Empty all fields value
+      await Promise.all(
+        fieldsToUpdate.map((fieldName) => formik.setFieldValue(fieldName, ''))
+      )
+
+      // Make all fields untouched
+      // (This will prevent validation errors to be shown if user previously touched those fields, then switched that trigger OFF, then ON again)
+      await Promise.all(
+        fieldsToUpdate.map((fieldName) =>
+          formik.setFieldTouched(fieldName, false)
+        )
+      )
     }
-
-    // Display "other address" fields only if user checks "À une autre adresse"
-    setShowOtherAddress(offerlocation === OFFER_LOCATION.OTHER_ADDRESS)
-  }, [formik.values.offerlocation])
-
-  // This will reset all address fields if user clicked on "Vous ne trouvez pas votre adresse ?"
-  useEffect(() => {
-    if (manuallySetAddress.value) {
-      ;(async () => {
-        await formik.setFieldValue('street', '')
-        await formik.setFieldValue('postalCode', '')
-        await formik.setFieldValue('city', '')
-        await formik.setFieldValue('latitude', '')
-        await formik.setFieldValue('longitude', '')
-        await formik.setFieldValue('coords', '')
-        await formik.setFieldValue('banId', '')
-        await formik.setFieldValue('search-addressAutocomplete', '')
-        await formik.setFieldValue('addressAutocomplete', '')
-      })().catch(() => {})
-    }
-  }, [manuallySetAddress.value])
+  }
 
   const venueLabel = `${
     venue?.publicName ? `${venue.publicName} – ` : ''
@@ -75,6 +80,7 @@ export const OfferLocation = ({ venue }: OfferLocationProps): JSX.Element => {
           name="offerlocation"
           value={"« Adresse de l'OA »"}
           required
+          onChange={() => setShowOtherAddress(false)}
         />
       </FormLayout.Row>
       <FormLayout.Row className={styles['location-row']}>
@@ -84,6 +90,7 @@ export const OfferLocation = ({ venue }: OfferLocationProps): JSX.Element => {
           name="offerlocation"
           value={OFFER_LOCATION.OTHER_ADDRESS}
           required
+          onChange={() => setShowOtherAddress(true)}
         />
       </FormLayout.Row>
       {showOtherAddress && (
@@ -108,7 +115,7 @@ export const OfferLocation = ({ venue }: OfferLocationProps): JSX.Element => {
               variant={ButtonVariant.QUATERNARY}
               title="Renseignez l’adresse manuellement"
               icon={manuallySetAddress.value ? fullBackIcon : fullNextIcon}
-              onClick={() => setManuallySetAddress(!manuallySetAddress.value)}
+              onClick={onManuallySetAddress}
             >
               {manuallySetAddress.value ? (
                 <>Revenir à la sélection automatique</>
