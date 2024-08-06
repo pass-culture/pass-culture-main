@@ -56,10 +56,22 @@ When('I validate stocks step', () => {
 })
 
 When('I go to my offers list', () => {
-  cy.intercept({ method: 'GET', url: '/offers?*' }).as('getOffers')
+  // There is an issue with the api being slow here. Wait for everything for now.
+  cy.intercept({ method: 'GET', url: '/offers?*' }).as('getOffersForOfferer')
+  cy.intercept({ method: 'GET', url: '/offerers/names' }).as('getOffererNames')
+  cy.intercept({ method: 'GET', url: '/offerers/*' }).as('getOfferer')
   cy.intercept({ method: 'GET', url: '/venues*' }).as('getVenue')
   cy.findByText('Voir la liste des offres').click()
-  cy.wait(['@getOffers', '@getVenue'], { timeout: 60 * 1000 * 2 })
+  cy.wait('@getVenue', {
+    timeout: 60 * 1000,
+  })
+  cy.wait('@getOffersForOfferer', {
+    timeout: 60 * 1000,
+  })
+  cy.wait(['@getCategories', '@getOfferer', '@getOffererNames'], {
+    requestTimeout: 60 * 1000 * 3,
+    responseTimeout: 60 * 1000 * 3,
+  })
 })
 
 Then('my new physical offer should be displayed', () => {
