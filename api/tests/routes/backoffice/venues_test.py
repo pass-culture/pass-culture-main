@@ -2535,6 +2535,134 @@ class GetRemovePricingPointFormTest(GetEndpointHelper):
         assert html_parser.extract_alert(response.data) == "Ce lieu a un chiffre d'affaires de l'année élevé : 10800.00"
 
 
+class GetSetPricingPointFormTest(GetEndpointHelper):
+    endpoint = "backoffice_web.venue.get_set_pricing_point_form"
+    endpoint_kwargs = {"venue_id": 1}
+    needed_permission = perm_models.Permissions.ADVANCED_PRO_SUPPORT
+    # +1 session
+    # +1 user
+    # +1 venue and venues from the same offerer
+    expected_num_queries = 3
+
+    def get_set_pricing_point_form(self, authenticated_client):
+        venue = offerers_factories.VirtualVenueFactory()
+
+        url = url_for(self.endpoint, venue_id=venue.id)
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+
+class SetPricingPointTest(PostEndpointHelper):
+    endpoint = "backoffice_web.venue.set_pricing_point"
+    endpoint_kwargs = {"venue_id": 1}
+    needed_permission = perm_models.Permissions.ADVANCED_PRO_SUPPORT
+    # +1 session
+    # +1 user
+    # +1 venue and venues from the same offerer
+    # +1 FF USE_END_DATE_FOR_COLLECTIVE_PRICING
+    # +1 pricing point validation
+    # +1 check if the venue already has a link
+    # +3 set pricing point
+    # +1 reload venue
+    expected_num_queries = 10
+
+    def test_set_pricing_point(self, authenticated_client):
+        venue_with_no_siret = offerers_factories.VirtualVenueFactory()
+        venue_with_siret = offerers_factories.VenueFactory(
+            managingOfferer=venue_with_no_siret.managingOfferer,
+        )
+        response = self.post_to_endpoint(
+            authenticated_client,
+            venue_id=venue_with_no_siret.id,
+            form={
+                "new_pricing_point": venue_with_siret.id,
+            },
+            expected_num_queries=self.expected_num_queries,
+        )
+        assert response.status_code == 303
+        assert venue_with_no_siret.current_pricing_point is venue_with_siret
+        redirected_response = authenticated_client.get(response.headers["location"])
+        assert html_parser.extract_alert(redirected_response.data) == "Ce lieu a été lié à un point de valorisation"
+
+    def test_venue_not_found(self, authenticated_client):
+        venue_with_siret = offerers_factories.VenueFactory()
+        response = self.post_to_endpoint(
+            authenticated_client,
+            venue_id="0",
+            form={
+                "new_pricing_point": venue_with_siret.id,
+            },
+        )
+        assert response.status_code == 404
+
+    def test_pricing_point_not_found(self, authenticated_client):
+        venue_with_no_siret = offerers_factories.VirtualVenueFactory()
+        response = self.post_to_endpoint(
+            authenticated_client,
+            venue_id=venue_with_no_siret.id,
+            form={
+                "new_pricing_point": "0",
+            },
+        )
+        assert response.status_code == 303
+        assert venue_with_no_siret.current_pricing_point is None
+        redirected_response = authenticated_client.get(response.headers["location"])
+        assert "Les données envoyées comportent des erreurs." in html_parser.extract_alert(redirected_response.data)
+
+    def test_pricing_point_in_other_offerer(self, authenticated_client):
+        venue_with_no_siret = offerers_factories.VirtualVenueFactory()
+        venue_with_siret = offerers_factories.VenueFactory()
+        response = self.post_to_endpoint(
+            authenticated_client,
+            venue_id=venue_with_no_siret.id,
+            form={
+                "new_pricing_point": venue_with_siret.id,
+            },
+        )
+        assert response.status_code == 303
+        assert venue_with_no_siret.current_pricing_point is None
+        redirected_response = authenticated_client.get(response.headers["location"])
+        assert "Les données envoyées comportent des erreurs." in html_parser.extract_alert(redirected_response.data)
+
+    def test_venue_already_has_a_pricing_point(self, authenticated_client, venue_with_no_siret):
+        previous_pricing_point = venue_with_no_siret.current_pricing_point
+        venue_with_siret = offerers_factories.VenueFactory(
+            managingOfferer=venue_with_no_siret.managingOfferer,
+        )
+        response = self.post_to_endpoint(
+            authenticated_client,
+            venue_id=venue_with_no_siret.id,
+            form={
+                "new_pricing_point": venue_with_siret.id,
+            },
+        )
+        assert response.status_code == 303
+        assert venue_with_no_siret.current_pricing_point is previous_pricing_point
+        redirected_response = authenticated_client.get(response.headers["location"])
+        assert html_parser.extract_alert(redirected_response.data) == "Ce lieu est déja lié à un point de valorisation"
+
+    def test_venue_has_siret(self, authenticated_client):
+        venue_with_no_siret = offerers_factories.VenueFactory()
+        venue_with_siret = offerers_factories.VenueFactory(
+            managingOfferer=venue_with_no_siret.managingOfferer,
+        )
+        response = self.post_to_endpoint(
+            authenticated_client,
+            venue_id=venue_with_no_siret.id,
+            form={
+                "new_pricing_point": venue_with_siret.id,
+            },
+        )
+        assert response.status_code == 303
+        assert venue_with_no_siret.current_pricing_point is None
+        redirected_response = authenticated_client.get(response.headers["location"])
+        assert (
+            html_parser.extract_alert(redirected_response.data)
+            == "Ce lieu a un SIRET, vous ne pouvez donc pas choisir un autre lieu pour le calcul du barème de remboursement."
+        )
+
+
 class RemovePricingPointTest(PostEndpointHelper):
     endpoint = "backoffice_web.venue.remove_pricing_point"
     endpoint_kwargs = {"venue_id": 1}

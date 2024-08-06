@@ -957,6 +957,93 @@ def remove_pricing_point(venue_id: int) -> utils.BackofficeResponse:
     return redirect(url_for("backoffice_web.venue.get", venue_id=venue_id), code=303)
 
 
+@venue_blueprint.route("/<int:venue_id>/set-pricing-point", methods=["GET"])
+@utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
+def get_set_pricing_point_form(venue_id: int) -> utils.BackofficeResponse:
+    aliased_venue = sa.orm.aliased(offerers_models.Venue)
+    venue = (
+        offerers_models.Venue.query.filter(offerers_models.Venue.id == venue_id)
+        .join(offerers_models.Venue.managingOfferer)
+        .outerjoin(
+            aliased_venue,
+            sa.and_(
+                aliased_venue.managingOffererId == offerers_models.Offerer.id,
+                aliased_venue.siret.is_not(None),
+            ),
+        )
+        .options(
+            sa.orm.contains_eager(offerers_models.Venue.managingOfferer)
+            .contains_eager(offerers_models.Offerer.managedVenues.of_type(aliased_venue))
+            .load_only(
+                aliased_venue.id,
+                aliased_venue.siret,
+                aliased_venue.name,
+            )
+        )
+        .one_or_none()
+    )
+
+    if not venue:
+        raise NotFound()
+
+    form = forms.PricingPointForm(venue=venue)
+
+    return render_template(
+        "components/turbo/modal_form.html",
+        div_id="set-venue-pricing-point",  # must be consistent with parameter passed to build_lazy_modal
+        title="Attribuer un point de valorisation",
+        form=form,
+        dst=url_for("backoffice_web.venue.set_pricing_point", venue_id=venue.id),
+        button_text="Confirmer",
+    )
+
+
+@venue_blueprint.route("/<int:venue_id>/set-pricing-point", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
+def set_pricing_point(venue_id: int) -> utils.BackofficeResponse:
+    aliased_venue = sa.orm.aliased(offerers_models.Venue)
+    venue = (
+        offerers_models.Venue.query.filter(offerers_models.Venue.id == venue_id)
+        .join(offerers_models.Venue.managingOfferer)
+        .outerjoin(
+            aliased_venue,
+            sa.and_(
+                aliased_venue.managingOffererId == offerers_models.Offerer.id,
+                aliased_venue.siret.is_not(None),
+            ),
+        )
+        .options(
+            sa.orm.contains_eager(offerers_models.Venue.managingOfferer)
+            .contains_eager(offerers_models.Offerer.managedVenues.of_type(aliased_venue))
+            .load_only(
+                aliased_venue.id,
+                aliased_venue.siret,
+                aliased_venue.name,
+            )
+        )
+        .one_or_none()
+    )
+
+    if not venue:
+        raise NotFound()
+
+    form = forms.PricingPointForm(venue=venue)
+    if not form.validate():
+        flash(utils.build_form_error_msg(form), "warning")
+        return redirect(url_for("backoffice_web.venue.get", venue_id=venue_id), code=303)
+    try:
+        offerers_api.link_venue_to_pricing_point(venue, form.new_pricing_point.data)
+        flash("Ce lieu a été lié à un point de valorisation", "info")
+    except ApiErrors as exc:
+        if not exc.errors or "pricingPointId" not in exc.errors:
+            flash(str(exc.errors) if exc.errors else "Erreur inconue", "warning")
+        else:
+            flash(exc.errors["pricingPointId"][0], "warning")
+    except offerers_exceptions.CannotLinkVenueToPricingPoint:
+        flash("Ce lieu est déja lié à un point de valorisation", "warning")
+    return redirect(url_for("backoffice_web.venue.get", venue_id=venue_id), code=303)
+
+
 REMOVE_SIRET_TITLE = "Supprimer le SIRET d'un lieu"
 
 
