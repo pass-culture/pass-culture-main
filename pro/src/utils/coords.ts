@@ -1,6 +1,8 @@
+// https://regexr.com/84d86
 const latLonPattern =
   /^(-?(?:[1-8]?\d(?:\.\d+)?|90(?:\.0+)?|-90(?:\.0+)?))\s*,\s*(-?(?:1[0-7]\d|\d{1,2})(?:\.\d+)?|180(?:\.0+)?|-180(?:\.0+)?)$/
 
+// https://regexr.com/84d8i
 const DMSPattern =
   /^(?:90|(?:[0-8]{0,1}[0-9]))[°\s](?:[0-5]{0,1}[0-9])['\s](?:[0-5]{0,1}[0-9](?:[.,]\d{1,5})?)["\s]{0,1}[NS]\s(?:180|(?:1[0-7]{1}[0-9]{1})|(?:0?[0-9]{1}[0-9]{1})|(?:[0-9]{1}))[°\s](?:[0-5]{0,1}[0-9])['\s](?:[0-5]{0,1}[0-9](?:[.,]\d{1,5})?)["\s]{0,1}[EW]$/
 
@@ -33,6 +35,10 @@ export const checkCoords = (coords: string): boolean => {
  * // => 'unknown'
  */
 export const getCoordsType = (coords: string): 'DMS' | 'DD' | 'unknown' => {
+  if (!coords) {
+    return 'unknown'
+  }
+
   if (latLonPattern.test(coords)) {
     return 'DD'
   }
@@ -44,6 +50,7 @@ export const getCoordsType = (coords: string): 'DMS' | 'DD' | 'unknown' => {
   return 'unknown'
 }
 
+// Source : `dms-conversion` (https://github.com/WSDOT-GIS/dms-js/blob/master/dms.ts)
 // Matches DMS DmsCoordinates
 export const dmsRe =
   /^(-?\d+(?:\.\d+)?)[°:d]?\s?(?:(\d+(?:\.\d+)?)['′ʹ:]?\s?(?:(\d+(?:\.\d+)?)["″ʺ]?)?)?\s?([NSEW])?/i

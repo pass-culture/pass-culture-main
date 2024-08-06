@@ -30,10 +30,10 @@ export const OfferLocation = ({ venue }: OfferLocationProps): JSX.Element => {
   const [manuallySetAddress, , { setValue: setManuallySetAddress }] =
     useField('manuallySetAddress')
 
-  const onManuallySetAddress = async () => {
-    const newValue = !manuallySetAddress.value
-    await setManuallySetAddress(newValue)
-    if (newValue) {
+  const toggleManuallySetAddress = async () => {
+    const isAddressManual = !manuallySetAddress.value
+    await setManuallySetAddress(isAddressManual)
+    if (isAddressManual) {
       const fieldsToUpdate = [
         'street',
         'postalCode',
@@ -115,7 +115,7 @@ export const OfferLocation = ({ venue }: OfferLocationProps): JSX.Element => {
               variant={ButtonVariant.QUATERNARY}
               title="Renseignez l’adresse manuellement"
               icon={manuallySetAddress.value ? fullBackIcon : fullNextIcon}
-              onClick={onManuallySetAddress}
+              onClick={toggleManuallySetAddress}
             >
               {manuallySetAddress.value ? (
                 <>Revenir à la sélection automatique</>
