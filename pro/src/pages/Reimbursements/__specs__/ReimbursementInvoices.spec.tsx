@@ -1,4 +1,8 @@
-import { screen, waitForElementToBeRemoved } from '@testing-library/react'
+import {
+  screen,
+  waitFor,
+  waitForElementToBeRemoved,
+} from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import * as router from 'react-router-dom'
 import { expect } from 'vitest'
@@ -516,10 +520,11 @@ describe('reimbursementsWithFilters', () => {
     await userEvent.type(endPeriod, '2020-11-19')
 
     await userEvent.click(screen.getByText('Lancer la recherche'))
-    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
     // TODO: this call should not occured as many times
-    expect(api.getInvoicesV2).toHaveBeenCalledTimes(2 /* au render */ + 1)
+    await waitFor(() => {
+      expect(api.getInvoicesV2).toHaveBeenCalledTimes(2 /* au render */ + 1)
+    })
 
     expect(api.getInvoicesV2).toHaveBeenLastCalledWith(
       // 3,
