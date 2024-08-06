@@ -112,4 +112,16 @@ describe('OfferEducationalForm', () => {
     const saveButton = screen.getByText('Enregistrer les modifications')
     expect(saveButton).toBeDisabled()
   })
+
+  it('should display unsaved information in the action bar when the value is not the default value', async () => {
+    renderOfferEducationalForm(defaultProps, {
+      features: ['WIP_ENABLE_COLLECTIVE_DRAFT_OFFERS'],
+    })
+
+    expect(screen.getByText('Brouillon non enregistré')).toBeInTheDocument()
+
+    expect(
+      await screen.findByRole('button', { name: 'Enregistrer et continuer' })
+    ).toBeInTheDocument()
+  })
 })

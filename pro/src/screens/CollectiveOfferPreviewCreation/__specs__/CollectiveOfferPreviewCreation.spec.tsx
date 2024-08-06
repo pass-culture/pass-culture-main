@@ -39,6 +39,7 @@ const defaultProps = {
 
 describe('CollectiveOfferConfirmation', () => {
   const mockNotifyError = vi.fn()
+  const mockNotifySuccess = vi.fn()
 
   beforeEach(async () => {
     const notifsImport = (await vi.importActual(
@@ -47,6 +48,7 @@ describe('CollectiveOfferConfirmation', () => {
     vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
       ...notifsImport,
       error: mockNotifyError,
+      success: mockNotifySuccess,
     }))
 
     vi.spyOn(api, 'getVenue').mockResolvedValue(defaultGetVenue)
@@ -104,6 +106,24 @@ describe('CollectiveOfferConfirmation', () => {
 
     expect(previewStep.getAttribute('href')).toBe(
       `/offre/${defaultProps.offer.id}/collectif/vitrine/creation/recapitulatif`
+    )
+  })
+
+  it('should redirect to list offer with success notification', async () => {
+    renderCollectiveOfferPreviewCreation(defaultProps, {
+      features: ['WIP_ENABLE_COLLECTIVE_DRAFT_OFFERS'],
+    })
+
+    const saveAndQuitButton = screen.getByText(
+      'Sauvegarder le brouillon et quitter'
+    )
+
+    expect(saveAndQuitButton.getAttribute('href')).toBe('/offres/collectives')
+
+    await userEvent.click(saveAndQuitButton)
+
+    expect(mockNotifySuccess).toHaveBeenCalledWith(
+      'Brouillon sauvegardé dans la liste des offres'
     )
   })
 })
