@@ -29,6 +29,7 @@ from pcapi.core.mails.transactional.sendinblue_template_ids import Transactional
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
+from pcapi.core.offerers import schemas as offerers_schemas
 import pcapi.core.offerers.exceptions as offerers_exceptions
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offerers.repository import get_emails_by_venue
@@ -44,7 +45,6 @@ from pcapi.core.users import models as users_models
 from pcapi.models import api_errors
 from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
-from pcapi.routes.serialization import base as serialize_base
 from pcapi.routes.serialization import offerers_serialize
 from pcapi.routes.serialization import venues_serialize
 from pcapi.utils.date import timespan_str_to_numrange
@@ -482,7 +482,7 @@ class EditVenueContactTest:
             user__email="user.pro@test.com",
         )
         venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
-        contact_data = serialize_base.VenueContactModel(
+        contact_data = offerers_schemas.VenueContactModel(
             email="contact@venue.com",
             phone_number="+33766778899",
             social_medias={"instagram": "https://instagram.com/@venue"},
@@ -501,7 +501,7 @@ class EditVenueContactTest:
         )
         venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
 
-        contact_data = serialize_base.VenueContactModel(
+        contact_data = offerers_schemas.VenueContactModel(
             email="other.contact@venue.com", socialMedias={"instagram": "https://instagram.com/@venue"}
         )
 

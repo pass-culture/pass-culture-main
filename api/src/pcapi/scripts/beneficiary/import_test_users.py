@@ -18,6 +18,7 @@ from pcapi.core.history import api as history_api
 from pcapi.core.history import models as history_models
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import models as offerers_models
+from pcapi.core.offerers import schemas as offerers_schemas
 from pcapi.core.providers import models as providers_models
 from pcapi.core.users import api as users_api
 from pcapi.core.users.models import EligibilityType
@@ -28,7 +29,6 @@ from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.notifications.internal.transactional import import_test_user_failure
 from pcapi.repository import repository
-from pcapi.routes.serialization import base as base_serialize
 from pcapi.routes.serialization import offerers_serialize
 from pcapi.routes.serialization import venues_serialize
 from pcapi.routes.serialization.users import ProUserCreationBodyV2Model
@@ -132,18 +132,18 @@ def _create_pro_user(row: dict) -> User:
     )
 
     venue_creation_info = venues_serialize.PostVenueBodyModel(
-        street=base_serialize.VenueAddress(offerer_creation_info.street),
+        street=offerers_schemas.VenueAddress(offerer_creation_info.street),
         banId=None,
-        bookingEmail=base_serialize.VenueBookingEmail(user.email),
-        city=base_serialize.VenueCity(offerer_creation_info.city),
+        bookingEmail=offerers_schemas.VenueBookingEmail(user.email),
+        city=offerers_schemas.VenueCity(offerer_creation_info.city),
         comment=None,
         latitude=46.126,
         longitude=-3.033,
         managingOffererId=offerer.id,
-        name=base_serialize.VenueName(f'Lieu {row["Nom"]}'),
+        name=offerers_schemas.VenueName(f'Lieu {row["Nom"]}'),
         publicName=None,
         postalCode=row["Code postal"],
-        siret=base_serialize.VenueSiret(siret),
+        siret=offerers_schemas.VenueSiret(siret),
         venueLabelId=None,
         venueTypeCode=offerers_models.VenueTypeCode.ADMINISTRATIVE.name,
         withdrawalDetails=None,
