@@ -276,8 +276,7 @@ class RemovePricingPointForm(utils.PCForm):
     )
 
 
-class RemoveSiretForm(RemovePricingPointForm):
-    comment = fields.PCCommentField("Commentaire qui apparaîtra sur le lieu")
+class PricingPointForm(utils.PCForm):
     new_pricing_point = fields.PCSelectWithPlaceholderValueField(
         "Nouveau point de valorisation", choices=[], coerce=int
     )
@@ -289,3 +288,7 @@ class RemoveSiretForm(RemovePricingPointForm):
             for offerer_venue in venue.managingOfferer.managedVenues
             if offerer_venue.siret and offerer_venue.id != venue.id
         ]
+
+
+class RemoveSiretForm(RemovePricingPointForm, PricingPointForm):
+    comment = fields.PCCommentField("Commentaire qui apparaîtra sur le lieu")
