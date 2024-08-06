@@ -22,18 +22,18 @@ To manage those offers you will be mainly using the **[product offers endpoints]
 
 There are **two methods to create a product offer** using the pass Culture API :
 
-- **if your product is a book, a CD or a Vinyl**, you must create your product offer by indicating an **[European Article Numbering code (EAN)](https://en.wikipedia.org/wiki/International_Article_Number)**, a price and a quantity. We will fill the other offer fields using external databases (provided by our partner Titelive). The dedicated endpoint to create product using EANs is **[this one](/rest-api/#tag/Product-offer-bulk-operations/operation/PostProductOfferByEan)**.
+- **if your product is a book, a CD or a Vinyl**, you must create your product offer by indicating an **[European Article Numbering code (EAN)](https://en.wikipedia.org/wiki/International_Article_Number)**, a price and a quantity. We will fill the other offer fields using external databases (provided by our partner Titelive). The dedicated endpoint to upsert (create or update) product using EANs is **[this one](/rest-api/#tag/Product-offer-bulk-operations/operation/PostProductOfferByEan)**.
 - **for others products**, you create your product offer by providing all the data. The dedicated endpoint for this kind of creation is **[this one](/rest-api/#tag/Product-offers/operation/PostProductOffer)**.
 
 :::info
 To be able to create a product offer using an EAN code, **this EAN code must exists in the pass Culture database**.
 
-**It should not be an issue in production**, since we are using a professional service to get EAN codes. In the test in the integration test environment however, we have only a small set of EAN codes available. **[You can find the here](/docs/test-data)**.
+**It should not be an issue in production**, since we are using a professional service to get EAN codes. In the test in the integration test environment however, we have only a small set of EAN codes available. **[You can find the EAN codes here](/docs/test-data)**.
 :::
 
 ### Update rule
 
-Regardless of the method used to create your product offer, you can update a product offer using **[this endpoint](/rest-api/#tag/Product-offers/operation/EditProduct)**.
+Regardless of how your product offer was created, you can update it using **[this endpoint](/rest-api/#tag/Product-offers/operation/EditProduct)**. However, if you only need to update the product offer stock for a book, CD, or vinyl, you should use the **[batch upsert endpoint](/rest-api/#tag/Product-offer-bulk-operations/operation/PostProductOfferByEan)**.
 
 ### Concurrent access rules: Pro interface users vs. API users
 

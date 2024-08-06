@@ -340,9 +340,15 @@ def post_product_offer(body: serialization.ProductOfferCreation) -> serializatio
 )
 def post_product_offer_by_ean(body: serialization.ProductsOfferByEanCreation) -> None:
     """
-    Batch create offers
+    Batch Upsert Product Offers by EAN
 
-    Batch create offers using products EAN. EAN is the European Article Number identifiying each product sold in the european market (EAN-13).
+    This endpoint allows for the batch upsert (update or insert) of product offers and their corresponding stock levels using the **European Article Number (EAN-13)**. It performs the following operations:
+
+    1. **Create Offers:** If a venue does not have an existing offer for a product identified by its EAN, the endpoint creates a new offer.
+
+    2. **Update Offer Stocks:** It updates the stock levels for the product offers. If the stock quantity is set to `0`, the product offer stock is deleted.
+
+    The upsert process is **asynchronous**, meaning the operation may take some time to complete. The success response from this endpoint indicates only that the upsert job has been successfully added to the queue.
     """
     venue = utils.retrieve_venue_from_location(body.location)
     if venue.isVirtual:
