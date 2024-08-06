@@ -15,6 +15,7 @@ from pydantic.v1.utils import GetterDict
 from pcapi.core.categories.subcategories_v2 import SubcategoryIdEnum
 from pcapi.core.educational.models import CollectiveOfferDisplayedStatus
 from pcapi.core.offerers import models as offerers_models
+from pcapi.core.offerers import schemas as offerers_schemas
 from pcapi.core.offers import models as offers_models
 from pcapi.core.offers import repository as offers_repository
 from pcapi.models.offer_mixin import OfferStatus
@@ -75,18 +76,19 @@ class CategoryResponseModel(BaseModel):
 
 
 class PostOfferOffererAddressBodyModel(BaseModel):
-    city: base_serializers.VenueCity
+    city: offerers_schemas.VenueCity
     label: str | None
     latitude: float | str
     longitude: float | str
-    postalCode: base_serializers.VenuePostalCode
-    street: base_serializers.VenueAddress
+    postalCode: offerers_schemas.VenuePostalCode
+    street: offerers_schemas.VenueAddress
 
 
 class PatchOfferOffererAddressBodyModel(PostOfferOffererAddressBodyModel): ...
 
 
 class PostOfferBodyModel(BaseModel):
+    address: PostOfferOffererAddressBodyModel | None
     audio_disability_compliant: bool
     booking_contact: EmailStr | None
     booking_email: EmailStr | None
@@ -106,7 +108,6 @@ class PostOfferBodyModel(BaseModel):
     withdrawal_delay: int | None
     withdrawal_details: str | None
     withdrawal_type: offers_models.WithdrawalTypeEnum | None
-    address: PostOfferOffererAddressBodyModel | None
 
     @validator("name", pre=True)
     def validate_name(cls, name: str, values: dict) -> str:

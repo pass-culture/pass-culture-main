@@ -1,5 +1,5 @@
+from pcapi.core.offerers.schemas import RequiredStrippedString
 from pcapi.routes.serialization import ConfiguredBaseModel
-from pcapi.routes.serialization.base import RequiredStrippedString
 
 
 class Feedback(RequiredStrippedString):

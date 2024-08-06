@@ -4,6 +4,7 @@ import typing
 
 import pydantic.v1 as pydantic_v1
 
+from pcapi.core.offerers import schemas as offerers_schemas
 from pcapi.core.subscription.phone_validation import exceptions as phone_validation_exceptions
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import base
@@ -60,7 +61,7 @@ VenueTypeCodeKey = enum.Enum(  # type: ignore[misc]
 
 
 class BannerMetaModel(typing.TypedDict, total=False):
-    image_credit: base.VenueImageCredit | None
+    image_credit: offerers_schemas.VenueImageCredit | None
     image_credit_url: str | None
     is_from_google: bool
 
@@ -90,7 +91,7 @@ class VenueResponseGetterDict(base.VenueResponseGetterDict):
         return super().get(key, default)
 
 
-class VenueContactModel(base.VenueContactModel):
+class VenueContactModel(offerers_schemas.VenueContactModel):
     phone_number: str | None
 
     @pydantic_v1.validator("phone_number")

@@ -28,6 +28,7 @@ from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import repository as offerers_repository
+from pcapi.core.offerers import schemas as offerers_schemas
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.providers import api as providers_api
 from pcapi.core.providers import models as providers_models
@@ -41,7 +42,6 @@ from pcapi.routes.backoffice import search_utils
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.pro import forms as pro_forms
-from pcapi.routes.serialization import base as serialize_base
 from pcapi.utils import regions as regions_utils
 from pcapi.utils.clean_accents import clean_accents
 from pcapi.utils.siren import is_valid_siret
@@ -667,7 +667,7 @@ def update_venue(venue_id: int) -> utils.BackofficeResponse:
         update_siret = True
 
     if form.phone_number.data or venue.contact:
-        contact_data = serialize_base.VenueContactModel(
+        contact_data = offerers_schemas.VenueContactModel(
             phone_number=form.phone_number.data,
             # Use existing values, if any, to ensure that no data (website
             # for example) will be erased by mistake
