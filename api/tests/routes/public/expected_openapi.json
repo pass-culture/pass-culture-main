@@ -8955,7 +8955,7 @@
         },
         "/public/bookings/v1/keep/token/{token}": {
             "patch": {
-                "description": "Mark a booking as `unused`.",
+                "description": "This operation reverses the status of a booking from `USED` back to `CONFIRMED`. As a result, the pass Culture application will treat the booking as if the beneficiary has not retrieved it, and the cultural partner will not receive a refund.\n\n**\u26a0\ufe0f Warning:** Before using this endpoint, **ensure that the cultural partner has manually confirmed their desire to revert the booking validation**. Failure to do so may result in the cultural partner expecting a refund that will not be issued, due to the booking validation being reverted without their knowledge.",
                 "operationId": "CancelBookingValidationByToken",
                 "parameters": [
                     {
@@ -9003,7 +9003,7 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "summary": "Cancel a booking validation",
+                "summary": "Revert booking validation",
                 "tags": [
                     "Bookings"
                 ]
@@ -9122,7 +9122,7 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "summary": "Validate a booking",
+                "summary": "Validate booking",
                 "tags": [
                     "Bookings"
                 ]
