@@ -146,4 +146,14 @@ describe('CollectiveOfferSummary', () => {
 
     expect(screen.getByText('http://www.form.com')).toBeInTheDocument()
   })
+
+  it('should not display the edition button when there is no edition link', async () => {
+    renderCollectiveOfferSummary({ ...props, offerEditLink: undefined })
+
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+    expect(
+      screen.queryByRole('link', { name: 'Modifier' })
+    ).not.toBeInTheDocument()
+  })
 })

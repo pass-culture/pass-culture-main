@@ -8,6 +8,7 @@ import { api } from 'apiClient/api'
 import {
   ApiError,
   CollectiveOfferResponseIdModel,
+  CollectiveOfferStatus,
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
 } from 'apiClient/v1'
@@ -20,6 +21,7 @@ import { SENT_DATA_ERROR_MESSAGE } from 'core/shared/constants'
 import * as useNotification from 'hooks/useNotification'
 import {
   defaultGetVenue,
+  getCollectiveOfferFactory,
   getCollectiveOfferTemplateFactory,
 } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
@@ -436,5 +438,35 @@ describe('CollectiveOfferNavigation', () => {
         duration: 8000,
       }
     )
+  })
+
+  it('should not display the edition button for archived collective offers', () => {
+    renderCollectiveOfferNavigation({
+      ...props,
+      offerId: 1,
+      isCreatingOffer: false,
+      isTemplate: false,
+      offer: getCollectiveOfferFactory({
+        status: CollectiveOfferStatus.ARCHIVED,
+      }),
+    })
+
+    expect(
+      screen.queryByRole('link', { name: 'Modifier l’offre' })
+    ).not.toBeInTheDocument()
+  })
+
+  it('should not display the navigation for archived collective offers', () => {
+    renderCollectiveOfferNavigation({
+      ...props,
+      offerId: 1,
+      isCreatingOffer: false,
+      isTemplate: false,
+      offer: getCollectiveOfferFactory({
+        status: CollectiveOfferStatus.ARCHIVED,
+      }),
+    })
+
+    expect(screen.queryByTestId('stepper')).not.toBeInTheDocument()
   })
 })

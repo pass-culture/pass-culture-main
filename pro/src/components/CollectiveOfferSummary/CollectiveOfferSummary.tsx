@@ -1,6 +1,7 @@
 import React from 'react'
 
 import {
+  CollectiveOfferStatus,
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
 } from 'apiClient/v1'
@@ -44,6 +45,8 @@ export const CollectiveOfferSummary = ({
   const offerManuallyCreated = isCollectiveOffer(offer) && !offer.isPublicApi
 
   const isOfferTemplate = isCollectiveOfferTemplate(offer)
+
+  const canEditOffer = offer.status !== CollectiveOfferStatus.ARCHIVED
   return (
     <>
       <SummaryLayout>
@@ -56,7 +59,9 @@ export const CollectiveOfferSummary = ({
           <SummarySection
             title="Détails de l’offre"
             editLink={
-              offerManuallyCreated || offer.isTemplate ? offerEditLink : null
+              canEditOffer && (offerManuallyCreated || offer.isTemplate)
+                ? offerEditLink
+                : null
             }
           >
             <CollectiveOfferVenueSection venue={offer.venue} />
@@ -82,7 +87,9 @@ export const CollectiveOfferSummary = ({
             <SummarySection
               title="Dates & Prix"
               editLink={
-                offerManuallyCreated || offer.isTemplate ? stockEditLink : null
+                canEditOffer && (offerManuallyCreated || offer.isTemplate)
+                  ? stockEditLink
+                  : null
               }
             >
               <CollectiveOfferStockSection
@@ -96,7 +103,7 @@ export const CollectiveOfferSummary = ({
             <SummarySection
               title={'Établissement et enseignant'}
               editLink={
-                offerManuallyCreated || offer.isTemplate
+                canEditOffer && (offerManuallyCreated || offer.isTemplate)
                   ? visibilityEditLink
                   : null
               }

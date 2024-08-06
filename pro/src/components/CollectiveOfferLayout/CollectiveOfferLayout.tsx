@@ -2,6 +2,10 @@ import cn from 'classnames'
 import React from 'react'
 import { useLocation, useParams } from 'react-router-dom'
 
+import {
+  GetCollectiveOfferResponseModel,
+  GetCollectiveOfferTemplateResponseModel,
+} from 'apiClient/v1'
 import { CollectiveOfferNavigation } from 'components/CollectiveOfferNavigation/CollectiveOfferNavigation'
 import { HelpLink } from 'components/HelpLink/HelpLink'
 import { getActiveStep } from 'pages/CollectiveOfferRoutes/utils/getActiveStep'
@@ -17,6 +21,9 @@ export interface CollectiveOfferLayoutProps {
   isFromTemplate?: boolean
   requestId?: string | null
   isArchivable?: boolean | null
+  offer?:
+    | GetCollectiveOfferResponseModel
+    | GetCollectiveOfferTemplateResponseModel
 }
 
 export const CollectiveOfferLayout = ({
@@ -27,6 +34,7 @@ export const CollectiveOfferLayout = ({
   isTemplate = false,
   requestId = null,
   isArchivable,
+  offer,
 }: CollectiveOfferLayoutProps): JSX.Element => {
   const location = useLocation()
   const isSummaryPage = location.pathname.includes('recapitulatif')
@@ -85,6 +93,7 @@ export const CollectiveOfferLayout = ({
         isTemplate={isTemplate}
         requestId={requestId}
         isArchivable={isArchivable}
+        offer={offer}
       />
 
       {children}
