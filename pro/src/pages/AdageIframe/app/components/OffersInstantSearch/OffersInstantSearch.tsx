@@ -19,7 +19,6 @@ import { isNumber } from 'utils/types'
 
 import { MARSEILLE_EN_GRAND } from '../../constants'
 import { useAdageUser } from '../../hooks/useAdageUser'
-import { AnalyticsContextProvider } from '../../providers/AnalyticsContextProvider'
 
 import { OffersSearch } from './OffersSearch/OffersSearch'
 import {
@@ -171,13 +170,11 @@ export const OffersInstantSearch = (): JSX.Element | null => {
           distinct={false}
         />
 
-        <AnalyticsContextProvider>
-          <OffersSearch
-            setFilters={setFilters}
-            initialFilters={filters}
-            setGeoRadius={setGeoRadius}
-          />
-        </AnalyticsContextProvider>
+        <OffersSearch
+          setFilters={setFilters}
+          initialFilters={filters}
+          setGeoRadius={setGeoRadius}
+        />
       </Index>
     </InstantSearch>
   )
