@@ -8,12 +8,10 @@ export const RouteLeavingGuardCollectiveOfferCreation = (): JSX.Element => {
   return (
     <RouteLeavingGuard
       shouldBlockNavigation={shouldBlockNavigation}
-      dialogTitle="Voulez-vous quitter la création d’offre ?"
-    >
-      <p>
-        Votre offre ne sera pas sauvegardée et toutes les informations seront
-        perdues.
-      </p>
-    </RouteLeavingGuard>
+      dialogTitle="Les informations non enregistrées seront perdues"
+      leftButton="Quitter la page"
+      rightButton="Rester sur la page"
+      closeModalOnRightButton
+    />
   )
 }

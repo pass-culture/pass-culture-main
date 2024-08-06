@@ -17,6 +17,7 @@ import {
 } from 'core/OfferEducational/types'
 import { computeCollectiveOffersUrl } from 'core/Offers/utils/computeOffersUrl'
 import { SelectOption } from 'custom_types/form'
+import { useActiveFeature } from 'hooks/useActiveFeature'
 import { useNotification } from 'hooks/useNotification'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
@@ -73,13 +74,16 @@ export const OfferEducationalForm = ({
   offer,
 }: OfferEducationalFormProps): JSX.Element => {
   const notify = useNotification()
+  const isCollectiveOfferDraftEnabled = useActiveFeature(
+    'WIP_ENABLE_COLLECTIVE_DRAFT_OFFERS'
+  )
 
   const [venuesOptions, setVenuesOptions] = useState<SelectOption[]>([])
   const [currentOfferer, setCurrentOfferer] =
     useState<GetEducationalOffererResponseModel | null>(null)
   const [isEligible, setIsEligible] = useState<boolean>()
 
-  const { values, setFieldValue, initialValues } =
+  const { values, setFieldValue, initialValues, dirty } =
     useFormikContext<OfferEducationalFormValues>()
 
   const onOffererChange = useCallback(
@@ -201,15 +205,27 @@ export const OfferEducationalForm = ({
           >
             Annuler et quitter
           </ButtonLink>
-          <Button
-            type="submit"
-            disabled={!isEligible || mode === Mode.READ_ONLY}
-          >
-            {mode === Mode.CREATION
-              ? 'Étape suivante'
-              : 'Enregistrer les modifications'}
-          </Button>
+          {!isCollectiveOfferDraftEnabled && (
+            <Button
+              type="submit"
+              disabled={!isEligible || mode === Mode.READ_ONLY}
+            >
+              {mode === Mode.CREATION
+                ? 'Étape suivante'
+                : 'Enregistrer les modifications'}
+            </Button>
+          )}
         </ActionsBarSticky.Left>
+        {isCollectiveOfferDraftEnabled && (
+          <ActionsBarSticky.Right dirtyForm={dirty} mode={mode}>
+            <Button
+              type="submit"
+              disabled={!isEligible || mode === Mode.READ_ONLY}
+            >
+              Enregistrer et continuer
+            </Button>
+          </ActionsBarSticky.Right>
+        )}
       </ActionsBarSticky>
     </>
   )

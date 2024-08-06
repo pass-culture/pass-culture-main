@@ -98,7 +98,7 @@ describe('CollectiveOfferConfirmation', () => {
   it('should redirect to preview step on click', async () => {
     renderCollectiveOfferPreviewCreation(defaultProps)
 
-    const previewStep = screen.getByText('Étape précédente')
+    const previewStep = screen.getByText('Retour')
 
     await userEvent.click(previewStep)
 

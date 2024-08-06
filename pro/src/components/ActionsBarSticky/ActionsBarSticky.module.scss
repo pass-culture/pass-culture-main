@@ -118,3 +118,27 @@
     }
   }
 }
+
+.draft-saved-icon {
+  color: var(--color-valid);
+  vertical-align: middle;
+  margin-right: rem.torem(4px);
+}
+
+$not-saved-size: rem.torem(16px);
+
+.draft-not-saved-icon {
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: rem.torem(4px);
+  width: $not-saved-size;
+  height: $not-saved-size;
+  border-radius: 50%;
+  background-color: var(--color-alert-dark);
+}
+
+@media (min-width: size.$tablet) {
+  .draft-indicator {
+    margin-right: rem.torem(32px);
+  }
+}
