@@ -1,3 +1,4 @@
+\timing
 -- Run from /usr/src/app:
 -- psql $DATABASE_URL < src/pcapi/scripts/rebuild_staging/anonymize.sql
 
