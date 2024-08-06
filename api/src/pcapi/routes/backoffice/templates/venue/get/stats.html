@@ -123,6 +123,14 @@
               {% else %}
                 {{ pricing_point.common_name | empty_string_if_null }}
               {% endif %}
+            {% elif has_permission("ADVANCED_PRO_SUPPORT") %}
+              <button class="btn btn-link lead fw-bold mx-0 my-0 py-0"
+                      data-bs-toggle="modal"
+                      data-bs-target="#set-venue-pricing-point"
+                      type="button">
+                <i class="bi-pencil"></i>
+              </button>
+              {{ build_lazy_modal(url_for("backoffice_web.venue.get_set_pricing_point_form", venue_id=venue.id) , "set-venue-pricing-point") }}
             {% endif %}
           </li>
           <li>
