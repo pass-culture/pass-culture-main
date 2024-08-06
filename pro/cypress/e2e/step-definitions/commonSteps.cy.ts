@@ -91,7 +91,13 @@ Then(
 )
 
 When('I validate my filters', () => {
+  cy.intercept({
+    method: 'GET',
+    url: '/offers?*',
+    times: 1,
+  }).as('searchOffers')
   cy.findByText('Rechercher').click()
+  cy.wait('@searchOffers')
 })
 
 When('I select {string} in {string}', (option: string, filter: string) => {

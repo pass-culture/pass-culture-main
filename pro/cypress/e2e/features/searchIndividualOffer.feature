@@ -8,6 +8,7 @@ Feature: Search individual offers
   Scenario: A search with a name should display expected results
     When I select offerer "Cinéma du coin" in offer page
     And I search with the text "Mon offre brouillon avec stock"
+    And I validate my filters
     Then These 1 results should be displayed
       |  |  | Titre               | Lieu             | Stocks | Status    |
       |  |  | Mon offre brouillon | Espace des Gnoux |      0 | brouillon |
@@ -15,6 +16,7 @@ Feature: Search individual offers
   Scenario: A search with a EAN should display expected results
     When I select offerer "Réseau de librairies" in offer page
     And I search with the text "9780000000004"
+    And I validate my filters
     Then These 10 results should be displayed
       |  |  | Titre            | Lieu         | Stocks | Status     |
       |  |  | Livre 4 avec EAN | Librairie 10 |     10 | publiée    |
@@ -57,6 +59,7 @@ Feature: Search individual offers
 
   Scenario: A search combining several filters should display expected results
     When I search with the text "Offer"
+    And I validate my filters
     And I select "Films, vidéos" in "Catégories"
     And I select "Terrain vague" in "Lieu"
     And I select "Publiée" in offer status
