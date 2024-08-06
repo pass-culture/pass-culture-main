@@ -38,11 +38,16 @@ export function setDefaultInitialValuesFromOffer(
   offer: GetIndividualOfferResponseModel
 ): UsefulInformationFormValues {
   const baseAccessibility = {
-    [AccessibilityEnum.VISUAL]: offer.visualDisabilityCompliant || false,
-    [AccessibilityEnum.MENTAL]: offer.mentalDisabilityCompliant || false,
-    [AccessibilityEnum.AUDIO]: offer.audioDisabilityCompliant || false,
-    [AccessibilityEnum.MOTOR]: offer.motorDisabilityCompliant || false,
+    [AccessibilityEnum.VISUAL]: offer.visualDisabilityCompliant,
+    [AccessibilityEnum.MENTAL]: offer.mentalDisabilityCompliant,
+    [AccessibilityEnum.AUDIO]: offer.audioDisabilityCompliant,
+    [AccessibilityEnum.MOTOR]: offer.motorDisabilityCompliant,
   }
+
+  const notAccessible = Object.values(baseAccessibility).every(
+    (value) => value === false
+  )
+
   return {
     isEvent: offer.isEvent,
     isNational: offer.isNational,
@@ -53,9 +58,11 @@ export function setDefaultInitialValuesFromOffer(
       offer.withdrawalDelay === null ? undefined : offer.withdrawalDelay,
     withdrawalType: offer.withdrawalType || undefined,
     accessibility: {
-      ...baseAccessibility,
-      [AccessibilityEnum.NONE]:
-        !Object.values(baseAccessibility).includes(true),
+      [AccessibilityEnum.VISUAL]: offer.visualDisabilityCompliant || false,
+      [AccessibilityEnum.MENTAL]: offer.mentalDisabilityCompliant || false,
+      [AccessibilityEnum.AUDIO]: offer.audioDisabilityCompliant || false,
+      [AccessibilityEnum.MOTOR]: offer.motorDisabilityCompliant || false,
+      [AccessibilityEnum.NONE]: notAccessible,
     },
     bookingEmail: offer.bookingEmail || '',
     bookingContact: offer.bookingContact || undefined,
