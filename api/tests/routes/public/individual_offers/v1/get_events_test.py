@@ -8,13 +8,12 @@ from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.providers import models as providers_models
 from pcapi.core.testing import assert_no_duplicated_queries
-from pcapi.core.testing import override_features
 
-from tests.routes.public.helpers import PublicAPIVenueWithPermissionEndpointHelper
+from tests.routes.public.helpers import PublicAPIVenueEndpointHelper
 
 
 @pytest.mark.usefixtures("db_session")
-class GetEventsTest(PublicAPIVenueWithPermissionEndpointHelper):
+class GetEventsTest(PublicAPIVenueEndpointHelper):
     needed_permission = (providers_models.ApiResourceEnum.events, providers_models.PermissionEnum.READ)
     endpoint_url = "/public/offers/v1/events"
 
@@ -35,16 +34,8 @@ class GetEventsTest(PublicAPIVenueWithPermissionEndpointHelper):
         )
         assert response.status_code == 404
 
-    @override_features(WIP_ENABLE_PUBLIC_API_PERMISSION_SYSTEM=True)
-    def test_should_raise_403_because_missing_permission(self, client):
-        plain_api_key, venue_provider = self.setup_active_venue_provider()
-        response = client.with_explicit_token(plain_api_key).get(
-            "%s?venueId=%s" % (self.endpoint_url, venue_provider.venueId)
-        )
-        assert response.status_code == 403
-
     def test_get_first_page_old_behavior_when_permission_system_not_enforced(self, client):
-        plain_api_key, venue_provider = self.setup_active_venue_provider_with_permissions()
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
         offers = offers_factories.EventOfferFactory.create_batch(6, venue=venue_provider.venue)
         offers_factories.ThingOfferFactory.create_batch(3, venue=venue_provider.venue)  # not returned
 
@@ -56,9 +47,8 @@ class GetEventsTest(PublicAPIVenueWithPermissionEndpointHelper):
         assert response.status_code == 200
         assert [event["id"] for event in response.json["events"]] == [offer.id for offer in offers[0:5]]
 
-    @override_features(WIP_ENABLE_PUBLIC_API_PERMISSION_SYSTEM=True)
     def test_get_first_page(self, client):
-        plain_api_key, venue_provider = self.setup_active_venue_provider_with_permissions()
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
         offers = offers_factories.EventOfferFactory.create_batch(6, venue=venue_provider.venue)
         offers_factories.ThingOfferFactory.create_batch(3, venue=venue_provider.venue)  # not returned
 
@@ -71,9 +61,8 @@ class GetEventsTest(PublicAPIVenueWithPermissionEndpointHelper):
         assert [event["id"] for event in response.json["events"]] == [offer.id for offer in offers[0:5]]
 
     # This test should be removed when our database has consistant data
-    @override_features(WIP_ENABLE_PUBLIC_API_PERMISSION_SYSTEM=True)
     def test_get_offers_with_missing_fields(self, client):
-        plain_api_key, venue_provider = self.setup_active_venue_provider_with_permissions()
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
         offer = offers_factories.EventOfferFactory(
             venue=venue_provider.venue,
             subcategoryId=subcategories.CONCERT.id,
@@ -97,9 +86,8 @@ class GetEventsTest(PublicAPIVenueWithPermissionEndpointHelper):
         assert response.status_code == 200
         assert len(response.json["events"]) == 2
 
-    @override_features(WIP_ENABLE_PUBLIC_API_PERMISSION_SYSTEM=True)
     def test_get_events_without_sub_types(self, client):
-        plain_api_key, venue_provider = self.setup_active_venue_provider_with_permissions()
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
         offers_factories.EventOfferFactory(
             subcategoryId=subcategories.CONCERT.id,
             venue=venue_provider.venue,
@@ -116,13 +104,12 @@ class GetEventsTest(PublicAPIVenueWithPermissionEndpointHelper):
         assert response.status_code == 200
         assert len(response.json["events"]) == 2
 
-    @override_features(WIP_ENABLE_PUBLIC_API_PERMISSION_SYSTEM=True)
     def test_get_events_using_ids_at_provider(self, client):
         id_at_provider_1 = "unBelId"
         id_at_provider_2 = "unMagnifiqueId"
         id_at_provider_3 = "unIdCheumDeOuf"
 
-        plain_api_key, venue_provider = self.setup_active_venue_provider_with_permissions()
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
         event_1 = offers_factories.EventOfferFactory(
             venue=venue_provider.venue,
             idAtProvider=id_at_provider_1,
