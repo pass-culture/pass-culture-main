@@ -340,30 +340,12 @@ def post_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.Ge
     rest.check_user_has_access_to_offerer(current_user, venue.managingOffererId)
     try:
         with repository.transaction():
-            offer = offers_api.create_offer(
-                audio_disability_compliant=body.audio_disability_compliant,
-                booking_contact=body.booking_contact,
-                booking_email=body.booking_email,
-                description=body.description,
-                duration_minutes=body.duration_minutes,
-                external_ticket_office_url=body.external_ticket_office_url,
-                extra_data=offers_api.deserialize_extra_data(body.extra_data),
-                is_duo=body.is_duo,
-                is_national=body.is_national,
-                mental_disability_compliant=body.mental_disability_compliant,
-                motor_disability_compliant=body.motor_disability_compliant,
-                name=body.name,
-                offerer_address=offerer_address,
-                subcategory_id=body.subcategory_id,
-                url=body.url,
-                venue=venue,
-                visual_disability_compliant=body.visual_disability_compliant,
-                withdrawal_delay=body.withdrawal_delay,
-                withdrawal_details=body.withdrawal_details,
-                withdrawal_type=body.withdrawal_type,
-                is_from_private_api=True,
-            )
-
+            fields = body.dict(by_alias=True)
+            fields.pop("venueId")
+            fields.pop("address")
+            fields["extraData"] = offers_api.deserialize_extra_data(fields["extraData"])
+            offer_body = offers_schemas.CreateOffer(**fields)
+            offer = offers_api.create_offer(offer_body, venue, offerer_address, is_from_private_api=True)
     except exceptions.OfferCreationBaseException as error:
         raise api_errors.ApiErrors(error.errors, status_code=400)
 
@@ -475,37 +457,13 @@ def patch_offer(
             offer.venue.managingOffererId, address.id, label=body.address.label
         )
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
-    update_body = body.dict(exclude_unset=True)
     try:
         with repository.transaction():
-            offer = offers_api.update_offer(
-                offer,
-                audioDisabilityCompliant=update_body.get("audioDisabilityCompliant", offers_api.UNCHANGED),
-                bookingContact=update_body.get("bookingContact", offers_api.UNCHANGED),
-                bookingEmail=update_body.get("bookingEmail", offers_api.UNCHANGED),
-                description=update_body.get("description", offers_api.UNCHANGED),
-                durationMinutes=update_body.get("durationMinutes", offers_api.UNCHANGED),
-                externalTicketOfficeUrl=update_body.get("externalTicketOfficeUrl", offers_api.UNCHANGED),
-                extraData=(
-                    offers_api.deserialize_extra_data(update_body["extraData"])
-                    if update_body.get("extraData")
-                    else offers_api.UNCHANGED
-                ),
-                isActive=update_body.get("isActive", offers_api.UNCHANGED),
-                isDuo=update_body.get("isDuo", offers_api.UNCHANGED),
-                isNational=update_body.get("isNational", offers_api.UNCHANGED),
-                mentalDisabilityCompliant=update_body.get("mentalDisabilityCompliant", offers_api.UNCHANGED),
-                motorDisabilityCompliant=update_body.get("motorDisabilityCompliant", offers_api.UNCHANGED),
-                name=update_body.get("name", offers_api.UNCHANGED),
-                url=update_body.get("url", offers_api.UNCHANGED),
-                visualDisabilityCompliant=update_body.get("visualDisabilityCompliant", offers_api.UNCHANGED),
-                withdrawalDelay=update_body.get("withdrawalDelay", offers_api.UNCHANGED),
-                withdrawalDetails=update_body.get("withdrawalDetails", offers_api.UNCHANGED),
-                withdrawalType=update_body.get("withdrawalType", offers_api.UNCHANGED),
-                shouldSendMail=update_body.get("shouldSendMail") or False,
-                is_from_private_api=True,
-                offererAddress=offerer_address if offerer_address else offers_api.UNCHANGED,
-            )
+            updates = body.dict(by_alias=True, exclude_unset=True)
+            updates["extraData"] = offers_api.deserialize_extra_data(updates.get("extraData", offer.extraData))
+            updates["offerer_address"] = offerer_address
+            offer_body = offers_schemas.UpdateOffer(**updates)
+            offer = offers_api.update_offer(offer, offer_body, is_from_private_api=True)
     except (exceptions.OfferCreationBaseException, exceptions.OfferEditionBaseException) as error:
         raise api_errors.ApiErrors(error.errors, status_code=400)
 
