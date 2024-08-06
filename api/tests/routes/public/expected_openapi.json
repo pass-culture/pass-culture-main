@@ -8896,7 +8896,7 @@
         },
         "/public/bookings/v1/cancel/token/{token}": {
             "patch": {
-                "description": "Cancel a booking that has not been used or refunded.\n\nFor events, a booking can only be cancelled if it is pending. Once it is confirmed, you cannot cancel it (for booking confirmation see [this page](/docs/understanding-our-api/resources/individual-offers#general-description-2)).",
+                "description": "Delete a booking that has not been used or refunded. For events, a booking can only be deleted if it is in a pending state.\n\n**\u26a0\ufe0f Warning:** This operation is irreversible. Once a booking is deleted, the beneficiary cannot retrieve it and will need to create a new booking. **Use this endpoint only if you are certain that the order cannot be fulfilled.**",
                 "operationId": "CancelBookingByToken",
                 "parameters": [
                     {
@@ -8947,7 +8947,7 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "summary": "Cancel a booking",
+                "summary": "Delete a booking",
                 "tags": [
                     "Bookings"
                 ]
