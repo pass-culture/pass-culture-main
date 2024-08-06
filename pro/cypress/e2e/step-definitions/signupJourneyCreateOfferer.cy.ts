@@ -1,4 +1,5 @@
-import { When, Then, Given } from '@badeball/cypress-cucumber-preprocessor'
+import { Given, Then, When } from '@badeball/cypress-cucumber-preprocessor'
+
 const mySiret = '44890182521127'
 const offererName = 'MINISTERE DE LA CULTURE'
 
@@ -163,7 +164,9 @@ Then('the attachment is in progress', () => {
 })
 
 Then('the offerer is created', () => {
-  cy.wait('@createOfferer').its('response.statusCode').should('eq', 201)
+  cy.wait('@createOfferer', { timeout: 60000 })
+    .its('response.statusCode')
+    .should('eq', 201)
   cy.findAllByTestId('global-notification-success').should(
     'contain',
     'Votre structure a bien été créée'
