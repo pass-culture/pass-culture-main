@@ -8,7 +8,6 @@ import { validationSchema as notificationsSchema } from './Notifications/validat
 import { validationSchema as offerLocationSchema } from './OfferLocation/validationSchema'
 import { validationSchema as usefulInformationsSchema } from './UsefulInformations/validationSchema'
 
-// TODO : Supprimer "ignoreOfferLocation" lorsque le tag "WIP_ENABLE_OFFER_ADDRESS" disparaîtra
 export const getValidationSchema = (
   lastProvider?: string | null,
   enableOfferLocationSchema = false
