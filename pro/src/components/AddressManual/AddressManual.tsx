@@ -25,16 +25,14 @@ export const AddressManual = (): JSX.Element => {
     let latitude = '',
       longitude = ''
 
-    if (!coordsMeta.error) {
-      const coordsType = getCoordsType(newCoords)
+    const coordsType = getCoordsType(newCoords)
 
-      if (coordsType === 'DD') {
-        ;[latitude, longitude] = newCoords.split(', ')
-      } else if (coordsType === 'DMS') {
-        ;[latitude, longitude] = newCoords
-          .split(' ')
-          .map((c) => String(parseDms(c)))
-      }
+    if (coordsType === 'DD') {
+      ;[latitude, longitude] = newCoords.split(', ')
+    } else if (coordsType === 'DMS') {
+      ;[latitude, longitude] = newCoords
+        .split(' ')
+        .map((c) => String(parseDms(c)))
     }
 
     await formik.setFieldValue('latitude', latitude)
