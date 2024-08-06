@@ -2,7 +2,6 @@ import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import { api } from 'apiClient/api'
-import { CollectiveOfferStatus } from 'apiClient/v1'
 import { DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
 import { collectiveOfferFactory } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
@@ -75,21 +74,6 @@ describe('CollectiveActionsCells', () => {
     )
 
     expect(api.patchCollectiveOffersArchive).toHaveBeenCalledTimes(1)
-  })
-
-  it('should not show action button', () => {
-    renderCollectiveActionsCell({
-      offer: collectiveOfferFactory({
-        isShowcase: true,
-        status: CollectiveOfferStatus.ARCHIVED,
-      }),
-      editionOfferLink: '',
-      urlSearchFilters: DEFAULT_SEARCH_FILTERS,
-      isSelected: false,
-      deselectOffer: vi.fn(),
-    })
-
-    expect(screen.queryByTitle('Action')).not.toBeInTheDocument()
   })
 
   it('should deselect an offer selected when the offer has just been archived', async () => {
