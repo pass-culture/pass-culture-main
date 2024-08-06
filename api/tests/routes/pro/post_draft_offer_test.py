@@ -35,6 +35,58 @@ class Returns201Test:
         assert response_dict["extraData"] == {"ean": "9782123456803", "gtl_id": "07000000"}
         assert not offer.product
 
+    def test_create_offer_on_venue_with_accessibility_informations(self, client):
+        # Given
+        venue = offerers_factories.VenueFactory(
+            audioDisabilityCompliant=True,
+            mentalDisabilityCompliant=False,
+            motorDisabilityCompliant=False,
+            visualDisabilityCompliant=True,
+        )
+        offerer = venue.managingOfferer
+        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
+
+        # When
+        data = {
+            "name": "Ernestine",
+            "subcategoryId": subcategories.LIVRE_PAPIER.id,
+            "venueId": venue.id,
+        }
+        response = client.with_session_auth("user@example.com").post("/offers/draft", json=data)
+        assert response.status_code == 201
+
+        offer = Offer.query.get(response.json["id"])
+        assert offer.audioDisabilityCompliant is True
+        assert offer.mentalDisabilityCompliant is False
+        assert offer.motorDisabilityCompliant is False
+        assert offer.visualDisabilityCompliant is True
+
+    def test_create_offer_on_venue_with_no_accessibility_informations(self, client):
+        # Given
+        venue = offerers_factories.VenueFactory(
+            audioDisabilityCompliant=None,
+            mentalDisabilityCompliant=None,
+            motorDisabilityCompliant=None,
+            visualDisabilityCompliant=None,
+        )
+        offerer = venue.managingOfferer
+        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
+
+        # When
+        data = {
+            "name": "Ernestine",
+            "subcategoryId": subcategories.LIVRE_PAPIER.id,
+            "venueId": venue.id,
+        }
+        response = client.with_session_auth("user@example.com").post("/offers/draft", json=data)
+        assert response.status_code == 201
+
+        offer = Offer.query.get(response.json["id"])
+        assert offer.audioDisabilityCompliant is None
+        assert offer.mentalDisabilityCompliant is None
+        assert offer.motorDisabilityCompliant is None
+        assert offer.visualDisabilityCompliant is None
+
 
 @pytest.mark.usefixtures("db_session")
 class Returns400Test:

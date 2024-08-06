@@ -164,6 +164,10 @@ def create_draft_offer(body: schemas.PostDraftOfferBodyModel, venue: offerers_mo
     offer = models.Offer(
         **fields,
         venue=venue,
+        audioDisabilityCompliant=venue.audioDisabilityCompliant,
+        mentalDisabilityCompliant=venue.mentalDisabilityCompliant,
+        motorDisabilityCompliant=venue.motorDisabilityCompliant,
+        visualDisabilityCompliant=venue.audioDisabilityCompliant,
         offererAddress=venue.offererAddress,
         isActive=False,
         validation=models.OfferValidationStatus.DRAFT,
