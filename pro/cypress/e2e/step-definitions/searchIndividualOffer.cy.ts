@@ -1,11 +1,10 @@
-import { When, Then } from '@badeball/cypress-cucumber-preprocessor'
-import { format, addDays } from 'date-fns'
+import { Then, When } from '@badeball/cypress-cucumber-preprocessor'
+import { addDays, format } from 'date-fns'
 
 When('I search with the text {string}', (title: string) => {
   cy.findByPlaceholderText('Rechercher par nom d’offre ou par EAN-13').type(
     title
   )
-  cy.findByText('Rechercher').click()
 })
 
 When('I select offerer {string} in offer page', (offererName: string) => {
