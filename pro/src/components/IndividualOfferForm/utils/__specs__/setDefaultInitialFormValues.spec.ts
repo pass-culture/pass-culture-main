@@ -18,6 +18,8 @@ describe('setDefaultInitialFormValues', () => {
   let venueId: string | null
   let venueList: VenueListItemResponseModel[]
   const isBookingContactEnabled = true
+  const isOfferAddressEnabled = true
+  const isPhysicalEvent = true
 
   beforeEach(() => {
     expectedInitialValues = {
@@ -63,7 +65,9 @@ describe('setDefaultInitialFormValues', () => {
       offererId,
       venueId,
       venueList,
-      isBookingContactEnabled
+      isBookingContactEnabled,
+      isOfferAddressEnabled,
+      isPhysicalEvent
     )
 
     expect(initialValues).toStrictEqual(expectedInitialValues)
@@ -78,7 +82,9 @@ describe('setDefaultInitialFormValues', () => {
       offererId,
       venueId,
       venueList,
-      isBookingContactEnabled
+      isBookingContactEnabled,
+      isOfferAddressEnabled,
+      isPhysicalEvent
     )
 
     expectedInitialValues.offererId = '2'
@@ -94,7 +100,9 @@ describe('setDefaultInitialFormValues', () => {
       offererId,
       venueId,
       venueList,
-      isBookingContactEnabled
+      isBookingContactEnabled,
+      isOfferAddressEnabled,
+      isPhysicalEvent
     )
 
     expectedInitialValues.isVenueVirtual = true
@@ -109,7 +117,9 @@ describe('setDefaultInitialFormValues', () => {
       offererId,
       venueId,
       venueList,
-      isBookingContactEnabled
+      isBookingContactEnabled,
+      isOfferAddressEnabled,
+      isPhysicalEvent
     )
 
     expectedInitialValues.venueId = FORM_DEFAULT_VALUES.venueId
