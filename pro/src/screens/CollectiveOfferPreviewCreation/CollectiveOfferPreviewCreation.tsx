@@ -13,6 +13,7 @@ import {
   GET_COLLECTIVE_OFFER_QUERY_KEY,
   GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY,
 } from 'config/swrQueryKeys'
+import { useActiveFeature } from 'hooks/useActiveFeature'
 import { useNotification } from 'hooks/useNotification'
 import { AdagePreviewLayout } from 'pages/AdageIframe/app/components/OfferInfos/AdagePreviewLayout/AdagePreviewLayout'
 import { RedirectToBankAccountDialog } from 'screens/Offers/RedirectToBankAccountDialog'
@@ -35,6 +36,10 @@ export const CollectiveOfferPreviewCreationScreen = ({
   const navigate = useNavigate()
   const { mutate } = useSWRConfig()
   const [displayRedirectDialog, setDisplayRedirectDialog] = useState(false)
+
+  const isCollectiveOfferDraftEnabled = useActiveFeature(
+    'WIP_ENABLE_COLLECTIVE_DRAFT_OFFERS'
+  )
 
   const backRedirectionUrl = offer.isTemplate
     ? `/offre/${offer.id}/collectif/vitrine/creation/recapitulatif`
@@ -99,10 +104,21 @@ export const CollectiveOfferPreviewCreationScreen = ({
       <ActionsBarSticky>
         <ActionsBarSticky.Left>
           <ButtonLink variant={ButtonVariant.SECONDARY} to={backRedirectionUrl}>
-            Étape précédente
+            Retour
           </ButtonLink>
         </ActionsBarSticky.Left>
-        <ActionsBarSticky.Right>
+        <ActionsBarSticky.Right dirtyForm={false}>
+          {isCollectiveOfferDraftEnabled && (
+            <ButtonLink
+              to="/offres/collectives"
+              variant={ButtonVariant.PRIMARY}
+              onClick={() => {
+                notify.success('Brouillon sauvegardé dans la liste des offres')
+              }}
+            >
+              Sauvegarder le brouillon et quitter
+            </ButtonLink>
+          )}
           <Button onClick={publishOffer}>Publier l’offre</Button>
         </ActionsBarSticky.Right>
       </ActionsBarSticky>

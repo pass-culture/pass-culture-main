@@ -63,10 +63,12 @@ export const shouldBlockNavigation: BlockerFunction = ({
   ) {
     return false
   }
-  // going from confirmation to stock
-  if (from === STEP_CONFIRMATION) {
+
+  //  no leaving guard for confirmation or preview
+  if (from === STEP_CONFIRMATION || from === STEP_PREVIEW) {
     return false
   }
+
   if (
     // going to stocks
     to === STEP_STOCKS ||

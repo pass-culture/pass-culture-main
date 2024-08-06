@@ -6,6 +6,7 @@ import {
 } from 'apiClient/v1'
 import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
 import { CollectiveOfferSummary } from 'components/CollectiveOfferSummary/CollectiveOfferSummary'
+import { useActiveFeature } from 'hooks/useActiveFeature'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
@@ -21,6 +22,9 @@ export const CollectiveOfferSummaryCreationScreen = ({
   offer,
 }: CollectiveOfferSummaryCreationProps) => {
   const { requete: requestId } = useParams()
+  const isCollectiveOfferDraftEnabled = useActiveFeature(
+    'WIP_ENABLE_COLLECTIVE_DRAFT_OFFERS'
+  )
 
   const nextRedirectionUrl = offer.isTemplate
     ? `/offre/${offer.id}/collectif/vitrine/creation/apercu`
@@ -45,12 +49,21 @@ export const CollectiveOfferSummaryCreationScreen = ({
       <ActionsBarSticky>
         <ActionsBarSticky.Left>
           <ButtonLink variant={ButtonVariant.SECONDARY} to={backRedirectionUrl}>
-            Étape précédente
+            {isCollectiveOfferDraftEnabled ? 'Retour' : 'Étape précédente'}
           </ButtonLink>
-          <ButtonLink variant={ButtonVariant.PRIMARY} to={nextRedirectionUrl}>
-            Étape suivante
-          </ButtonLink>
+          {!isCollectiveOfferDraftEnabled && (
+            <ButtonLink variant={ButtonVariant.PRIMARY} to={nextRedirectionUrl}>
+              Étape suivante
+            </ButtonLink>
+          )}
         </ActionsBarSticky.Left>
+        {isCollectiveOfferDraftEnabled && (
+          <ActionsBarSticky.Right dirtyForm={false}>
+            <ButtonLink variant={ButtonVariant.PRIMARY} to={nextRedirectionUrl}>
+              Enregistrer et continuer
+            </ButtonLink>
+          </ActionsBarSticky.Right>
+        )}
       </ActionsBarSticky>
     </div>
   )
