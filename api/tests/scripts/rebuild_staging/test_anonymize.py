@@ -15,6 +15,11 @@ class AnonymizeTest:
         with ANONYMIZE_SQL_PATH.open() as fp:
             for line in fp.readlines():
                 line = line.strip()
+
+                # Remove psql \timing command
+                if line == "\\timing":
+                    continue
+
                 # Look for lines like "\i .../rebuild_staging/dependency.sql`
                 # that load external SQL files with functions. Fragile but
                 # should work (or visibly fail).
