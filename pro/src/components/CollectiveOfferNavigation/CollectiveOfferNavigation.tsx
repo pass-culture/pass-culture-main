@@ -5,6 +5,11 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
+import {
+  CollectiveOfferStatus,
+  GetCollectiveOfferResponseModel,
+  GetCollectiveOfferTemplateResponseModel,
+} from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { ArchiveConfirmationModal } from 'components/ArchiveConfirmationModal/ArchiveConfirmationModal'
 import { Step, Stepper } from 'components/Stepper/Stepper'
@@ -50,6 +55,9 @@ export interface CollectiveOfferNavigationProps {
   isTemplate: boolean
   requestId?: string | null
   isArchivable?: boolean | null
+  offer?:
+    | GetCollectiveOfferResponseModel
+    | GetCollectiveOfferTemplateResponseModel
 }
 
 export const CollectiveOfferNavigation = ({
@@ -61,6 +69,7 @@ export const CollectiveOfferNavigation = ({
   className,
   requestId = null,
   isArchivable,
+  offer,
 }: CollectiveOfferNavigationProps): JSX.Element => {
   const { logEvent } = useAnalytics()
   const notify = useNotification()
@@ -87,10 +96,14 @@ export const CollectiveOfferNavigation = ({
 
   const stepList: { [key in CollectiveOfferStep]?: Step } = {}
 
+  const canEditOffer =
+    offer?.status !== CollectiveOfferStatus.ARCHIVED &&
+    !location.pathname.includes('edition')
+
   const requestIdUrl = requestId ? `?requete=${requestId}` : ''
 
   if (isEditingExistingOffer) {
-    if (!isTemplate) {
+    if (!isTemplate && canEditOffer) {
       stepList[CollectiveOfferStep.DETAILS] = {
         id: CollectiveOfferStep.DETAILS,
         label: 'Détails de l’offre',
@@ -214,7 +227,7 @@ export const CollectiveOfferNavigation = ({
   return isEditingExistingOffer ? (
     <>
       <div className={styles['duplicate-offer']}>
-        {!location.pathname.includes('edition') && (
+        {canEditOffer && (
           <ButtonLink to={offerEditLink} icon={fullEditIcon}>
             Modifier l’offre
           </ButtonLink>

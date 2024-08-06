@@ -21,6 +21,7 @@ export const CollectiveOfferSummaryCreation = ({
         isFromTemplate={isCollectiveOffer(offer) && Boolean(offer.templateId)}
         isTemplate={isTemplate}
         isCreation={true}
+        offer={offer}
       >
         <CollectiveOfferSummaryCreationScreen offer={offer} />
         <RouteLeavingGuardCollectiveOfferCreation />

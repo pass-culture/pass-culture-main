@@ -27,7 +27,11 @@ const CollectiveOfferEdition = ({
       {!isReady ? (
         <Spinner />
       ) : (
-        <CollectiveOfferLayout subTitle={offer.name} isTemplate={isTemplate}>
+        <CollectiveOfferLayout
+          subTitle={offer.name}
+          isTemplate={isTemplate}
+          offer={offer}
+        >
           <OfferEducational
             userOfferers={offerEducationalFormData.offerers}
             domainsOptions={offerEducationalFormData.domains}

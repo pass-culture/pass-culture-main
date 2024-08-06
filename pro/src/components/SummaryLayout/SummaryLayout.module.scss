@@ -90,5 +90,8 @@
   @include fonts.title3;
 
   padding-right: rem.torem(16px);
-  border-right: rem.torem(1px) solid var(--color-grey-medium);
+
+  &.section-title-editable {
+    border-right: rem.torem(1px) solid var(--color-grey-medium);
+  }
 }

@@ -17,6 +17,7 @@ const CollectiveOfferSummaryEdition = ({
       <CollectiveOfferLayout
         subTitle={offer.name}
         isTemplate={isTemplate}
+        offer={offer}
         isArchivable={canArchiveCollectiveOfferFromSummary(offer)}
       >
         <CollectiveOfferSummaryEditionScreen
