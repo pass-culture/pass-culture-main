@@ -9,6 +9,7 @@ from urllib.parse import urlparse
 from urllib.parse import urlunparse
 
 from flask import Flask
+from flask import url_for
 from markupsafe import Markup
 import psycopg2.extras
 import pytz
@@ -212,8 +213,9 @@ def format_offerer_rejection_reason(rejection_reason: offerers_models.OffererRej
             return rejection_reason
 
 
-def format_booking_cancellation_reason(
+def format_booking_cancellation(
     reason: bookings_models.BookingCancellationReasons | educational_models.CollectiveBookingCancellationReasons | None,
+    author: users_models.User | None = None,
 ) -> str:
     match reason:
         case (
@@ -245,6 +247,11 @@ def format_booking_cancellation_reason(
             educational_models.CollectiveBookingCancellationReasons.BACKOFFICE
             | bookings_models.BookingCancellationReasons.BACKOFFICE
         ):
+            if author:
+                return Markup('Annulée sur le backoffice par <a href="{url}">{full_name}</a>').format(
+                    url=url_for("backoffice_web.bo_users.get_bo_user", user_id=author.id),
+                    full_name=author.full_name,
+                )
             return "Annulée sur le backoffice"
         case (
             bookings_models.BookingCancellationReasons.REFUSED_BY_INSTITUTE
@@ -1214,7 +1221,7 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.lstrip_blocks = True
     app.jinja_env.filters["empty_string_if_null"] = empty_string_if_null
     app.jinja_env.filters["format_amount"] = format_amount
-    app.jinja_env.filters["format_booking_cancellation_reason"] = format_booking_cancellation_reason
+    app.jinja_env.filters["format_booking_cancellation"] = format_booking_cancellation
     app.jinja_env.filters["format_booking_status"] = format_booking_status
     app.jinja_env.filters["format_booking_status_long"] = format_booking_status_long
     app.jinja_env.filters["format_booking_validation_author_type"] = format_booking_validation_author_type

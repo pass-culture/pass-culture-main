@@ -150,6 +150,10 @@ class Booking(PcObject, Base, Model):
         postgresql_where=cancellationReason.is_not(None),
     )
 
+    cancellationUserId: int | None = Column(BigInteger, ForeignKey("user.id"), nullable=True)
+
+    cancellationUser: Mapped["users_models.User | None"] = relationship("User", foreign_keys=[cancellationUserId])
+
     status: BookingStatus = Column(Enum(BookingStatus), nullable=False, default=BookingStatus.CONFIRMED)
     Index("ix_booking_status", status)
 
@@ -181,6 +185,7 @@ class Booking(PcObject, Base, Model):
         reason: BookingCancellationReasons,
         cancel_even_if_used: bool = False,
         cancel_even_if_reimbursed: bool = False,
+        author_id: int | None = None,
     ) -> None:
         if self.status is BookingStatus.CANCELLED:
             raise exceptions.BookingIsAlreadyCancelled()
@@ -191,6 +196,7 @@ class Booking(PcObject, Base, Model):
         self.status = BookingStatus.CANCELLED
         self.cancellationDate = datetime.utcnow()
         self.cancellationReason = reason
+        self.cancellationUserId = author_id
         self.dateUsed = None
 
     def uncancel_booking_set_used(self) -> None:
@@ -198,6 +204,7 @@ class Booking(PcObject, Base, Model):
             raise exceptions.BookingIsNotCancelledCannotBeUncancelled()
         self.cancellationDate = None
         self.cancellationReason = None
+        self.cancellationUserId = None
         self.status = BookingStatus.USED
         self.dateUsed = datetime.utcnow()
 

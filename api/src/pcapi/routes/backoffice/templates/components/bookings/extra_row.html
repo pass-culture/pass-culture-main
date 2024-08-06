@@ -49,7 +49,7 @@
                 </li>
                 <li>
                   Raison de l'annulation :
-                  {{ booking.cancellationReason | format_booking_cancellation_reason }}
+                  {{ booking.cancellationReason | format_booking_cancellation(booking.cancellationUser) }}
                 </li>
               {% endif %}
             </ul>
