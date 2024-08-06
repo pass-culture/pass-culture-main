@@ -392,6 +392,7 @@ def cancel_collective_booking(
     collective_booking: educational_models.CollectiveBooking,
     reason: educational_models.CollectiveBookingCancellationReasons,
     _from: str | None = None,
+    author_id: int | None = None,
 ) -> None:
     with transaction():
         educational_repository.get_and_lock_collective_stock(stock_id=collective_booking.collectiveStock.id)
@@ -399,7 +400,7 @@ def cancel_collective_booking(
         if finance_repository.has_reimbursement(collective_booking):
             raise exceptions.BookingIsAlreadyRefunded()
         cancelled_event = finance_api.cancel_latest_event(collective_booking)
-        collective_booking.cancel_booking(reason=reason, cancel_even_if_used=True)
+        collective_booking.cancel_booking(reason=reason, cancel_even_if_used=True, author_id=author_id)
         if cancelled_event:
             finance_api.add_event(
                 finance_models.FinanceEventMotive.BOOKING_CANCELLED_AFTER_USE,
