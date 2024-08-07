@@ -1,6 +1,6 @@
 import pytest
-import sqlalchemy as sqla
-import sqlalchemy.sql as sqla_sql
+import sqlalchemy as sa
+import sqlalchemy.sql as sa_sql
 
 from pcapi.core.reference import exceptions
 from pcapi.core.reference import factories
@@ -54,10 +54,10 @@ class ReferenceSchemeTest:
         db.session.flush()
 
         # Simulate another transaction locking the reference.
-        engine = sqla.create_engine(app.config["SQLALCHEMY_DATABASE_URI"])
+        engine = sa.create_engine(app.config["SQLALCHEMY_DATABASE_URI"])
         with engine.connect() as connection:
             res = connection.execute(
-                sqla_sql.text("""SELECT * FROM reference_scheme WHERE id = :scheme_id FOR UPDATE"""),
+                sa_sql.text("""SELECT * FROM reference_scheme WHERE id = :scheme_id FOR UPDATE"""),
                 {"scheme_id": scheme.id},
             )
             assert len(res.fetchall()) == 1

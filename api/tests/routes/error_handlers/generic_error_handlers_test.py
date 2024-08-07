@@ -4,7 +4,7 @@ import logging
 import pathlib
 
 import pytest
-import sqlalchemy as sqla
+import sqlalchemy as sa
 
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.testing import override_settings
@@ -19,7 +19,7 @@ class FormatQueryParamsTest:
     def test_format_params(self, app):
         with app.app_context():
             from pcapi.routes.error_handlers.utils import format_sql_statement_params
-        sqla_params = {
+        sa_params = {
             "token_1": "E3PGVS",
             "lower_1": "pctest.jeune93.has-booked-some.v1@example.com",
             "id_1": 270,
@@ -27,7 +27,7 @@ class FormatQueryParamsTest:
             "list_1": [datetime(2021, 1, 1), 270, "E3PGVS"],
         }
 
-        formatted_pararms = format_sql_statement_params(sqla_params)
+        formatted_pararms = format_sql_statement_params(sa_params)
 
         assert formatted_pararms == {
             "token_1": "'E3PGVS'",
@@ -73,7 +73,7 @@ class DatabaseErrorHandlerTest:
         # module-scope.
         from pcapi.routes.error_handlers import generic_error_handlers
 
-        error = sqla.exc.DatabaseError(
+        error = sa.exc.DatabaseError(
             statement="SELECT 1 from unknown_table",
             params={},
             orig="whatever",

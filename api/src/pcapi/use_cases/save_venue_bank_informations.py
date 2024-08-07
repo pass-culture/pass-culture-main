@@ -4,8 +4,8 @@ from textwrap import shorten
 import typing
 
 import schwifty
-import sqlalchemy as sqla
-from sqlalchemy import orm as sqla_orm
+import sqlalchemy as sa
+from sqlalchemy import orm as sa_orm
 
 from pcapi import settings
 from pcapi.connectors.dms.serializer import ApplicationDetail
@@ -95,25 +95,25 @@ class ImportBankAccountMixin:
         created = False
         bank_account = (
             finance_models.BankAccount.query.filter_by(dsApplicationId=self.application_details.application_id)
-            .options(sqla_orm.load_only(finance_models.BankAccount.id))
+            .options(sa_orm.load_only(finance_models.BankAccount.id))
             .outerjoin(
                 finance_models.BankAccountStatusHistory,
-                sqla.and_(
+                sa.and_(
                     finance_models.BankAccountStatusHistory.bankAccountId == finance_models.BankAccount.id,
                     finance_models.BankAccountStatusHistory.timespan.contains(datetime.utcnow()),
                 ),
             )
             .outerjoin(
                 offerers_models.VenueBankAccountLink,
-                sqla.and_(
+                sa.and_(
                     offerers_models.VenueBankAccountLink.bankAccountId == finance_models.BankAccount.id,
                     offerers_models.VenueBankAccountLink.timespan.contains(datetime.utcnow()),
                 ),
             )
             .outerjoin(offerers_models.Venue, offerers_models.Venue.id == offerers_models.VenueBankAccountLink.venueId)
-            .options(sqla_orm.contains_eager(finance_models.BankAccount.statusHistory))
+            .options(sa_orm.contains_eager(finance_models.BankAccount.statusHistory))
             .options(
-                sqla_orm.contains_eager(finance_models.BankAccount.venueLinks)
+                sa_orm.contains_eager(finance_models.BankAccount.venueLinks)
                 .contains_eager(offerers_models.VenueBankAccountLink.venue)
                 .load_only(offerers_models.Venue.id)
             )
@@ -227,11 +227,11 @@ class ImportBankAccountMixin:
         venue_id = new_linked_venue.id if new_linked_venue else None
 
         has_non_free_offers_subquery = (
-            sqla.select(1)
+            sa.select(1)
             .select_from(offers_models.Stock)
             .join(
                 offers_models.Offer,
-                sqla.and_(
+                sa.and_(
                     offers_models.Stock.offerId == offers_models.Offer.id,
                     offers_models.Stock.price > 0,
                     offers_models.Stock.isSoftDeleted.is_(False),
@@ -244,11 +244,11 @@ class ImportBankAccountMixin:
         )
 
         has_non_free_collective_offers_subquery = (
-            sqla.select(1)
+            sa.select(1)
             .select_from(educational_models.CollectiveStock)
             .join(
                 educational_models.CollectiveOffer,
-                sqla.and_(
+                sa.and_(
                     educational_models.CollectiveStock.collectiveOfferId == educational_models.CollectiveOffer.id,
                     educational_models.CollectiveStock.price > 0,
                     educational_models.CollectiveOffer.isActive.is_(True),
@@ -263,19 +263,19 @@ class ImportBankAccountMixin:
             offerers_models.Venue.query.filter(
                 offerers_models.Venue.managingOffererId == offerer_id,
                 offerers_models.Venue.id != venue_id,
-                sqla.or_(has_non_free_offers_subquery, has_non_free_collective_offers_subquery),
+                sa.or_(has_non_free_offers_subquery, has_non_free_collective_offers_subquery),
             )
             .join(offerers_models.Offerer)
             .outerjoin(
                 offerers_models.VenueBankAccountLink,
-                sqla.and_(
+                sa.and_(
                     offerers_models.VenueBankAccountLink.venueId == offerers_models.Venue.id,
                     offerers_models.VenueBankAccountLink.timespan.contains(datetime.utcnow()),
                 ),
                 isouter=True,
             )
             .options(
-                sqla_orm.contains_eager(offerers_models.Venue.bankAccountLinks)
+                sa_orm.contains_eager(offerers_models.Venue.bankAccountLinks)
                 .load_only(offerers_models.VenueBankAccountLink.id)
                 .load_only(offerers_models.VenueBankAccountLink.timespan)
             )
@@ -339,22 +339,18 @@ class ImportBankAccountV4(AbstractImportBankAccount, ImportBankAccountMixin):
         venue = (
             offerers_models.Venue.query.filter(offerers_models.Venue.dmsToken == self.application_details.dms_token)
             .options(
-                sqla_orm.load_only(
-                    offerers_models.Venue.id, offerers_models.Venue.publicName, offerers_models.Venue.name
-                )
+                sa_orm.load_only(offerers_models.Venue.id, offerers_models.Venue.publicName, offerers_models.Venue.name)
             )
             .join(offerers_models.Offerer)
             .outerjoin(
                 offerers_models.VenueBankAccountLink,
-                sqla.and_(
+                sa.and_(
                     offerers_models.VenueBankAccountLink.venueId == offerers_models.Venue.id,
                     offerers_models.VenueBankAccountLink.timespan.contains(datetime.utcnow()),
                 ),
             )
-            .options(
-                sqla_orm.contains_eager(offerers_models.Venue.managingOfferer).load_only(offerers_models.Offerer.id)
-            )
-            .options(sqla_orm.contains_eager(offerers_models.Venue.bankAccountLinks))
+            .options(sa_orm.contains_eager(offerers_models.Venue.managingOfferer).load_only(offerers_models.Offerer.id))
+            .options(sa_orm.contains_eager(offerers_models.Venue.bankAccountLinks))
             .one_or_none()
         )
         if venue is None:
@@ -408,22 +404,18 @@ class ImportBankAccountV5(AbstractImportBankAccount, ImportBankAccountMixin):
                 offerers_models.Venue.isVirtual == False,
             )
             .options(
-                sqla_orm.load_only(
-                    offerers_models.Venue.id, offerers_models.Venue.publicName, offerers_models.Venue.name
-                )
+                sa_orm.load_only(offerers_models.Venue.id, offerers_models.Venue.publicName, offerers_models.Venue.name)
             )
             .join(offerers_models.Offerer)
             .outerjoin(
                 offerers_models.VenueBankAccountLink,
-                sqla.and_(
+                sa.and_(
                     offerers_models.VenueBankAccountLink.venueId == offerers_models.Venue.id,
                     offerers_models.VenueBankAccountLink.timespan.contains(datetime.utcnow()),
                 ),
             )
-            .options(
-                sqla_orm.contains_eager(offerers_models.Venue.managingOfferer).load_only(offerers_models.Offerer.id)
-            )
-            .options(sqla_orm.contains_eager(offerers_models.Venue.bankAccountLinks))
+            .options(sa_orm.contains_eager(offerers_models.Venue.managingOfferer).load_only(offerers_models.Offerer.id))
+            .options(sa_orm.contains_eager(offerers_models.Venue.bankAccountLinks))
             .all()
         )
         if not venues or len(venues) > 1:
@@ -442,7 +434,7 @@ class ImportBankAccountV5(AbstractImportBankAccount, ImportBankAccountMixin):
         assert self.application_details.siren  # helps mypy
         offerer = (
             offerers_models.Offerer.query.filter_by(siren=self.application_details.siren)
-            .options(sqla_orm.load_only(offerers_models.Offerer.id))
+            .options(sa_orm.load_only(offerers_models.Offerer.id))
             .one_or_none()
         )
         if not offerer:

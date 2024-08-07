@@ -5,8 +5,8 @@ from pathlib import Path
 from typing import Callable
 from typing import TYPE_CHECKING
 
-import sqlalchemy as sqla
-import sqlalchemy.orm as sqla_orm
+import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
 from urllib3 import exceptions as urllib3_exceptions
 
 from pcapi import settings
@@ -191,20 +191,20 @@ def collect_elligible_venues_and_activate_ems_sync() -> None:
             available_sites_by_allocine_id[site.allocine_id] = site
             available_sites_by_cinema_id[site.id] = site
 
-        allocine_venue_provider_aliased = sqla_orm.aliased(provider_models.AllocineVenueProvider, flat=True)
+        allocine_venue_provider_aliased = sa_orm.aliased(provider_models.AllocineVenueProvider, flat=True)
 
         venues_to_activate = (
             Venue.query.join(Venue.venueProviders)
             .join(
                 allocine_venue_provider_aliased,
-                sqla.and_(
+                sa.and_(
                     allocine_venue_provider_aliased.id == provider_models.VenueProvider.id,
                     allocine_venue_provider_aliased.internalId.in_(available_sites_by_allocine_id),
                 ),
             )
             .outerjoin(Venue.allocinePivot)
-            .options(sqla_orm.joinedload(Venue.venueProviders.of_type(provider_models.AllocineVenueProvider)))
-            .options(sqla_orm.joinedload(Venue.allocinePivot))
+            .options(sa_orm.joinedload(Venue.venueProviders.of_type(provider_models.AllocineVenueProvider)))
+            .options(sa_orm.joinedload(Venue.allocinePivot))
             .all()
         )
 

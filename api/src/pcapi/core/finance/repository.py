@@ -3,10 +3,10 @@ import logging
 
 from flask_sqlalchemy import BaseQuery
 import pytz
-import sqlalchemy as sqla
-import sqlalchemy.orm as sqla_orm
-import sqlalchemy.sql.functions as sqla_func
-import sqlalchemy.sql.sqltypes as sqla_sqltypes
+import sqlalchemy as sa
+import sqlalchemy.orm as sa_orm
+import sqlalchemy.sql.functions as sa_func
+import sqlalchemy.sql.sqltypes as sa_sqltypes
 
 import pcapi.core.bookings.models as bookings_models
 import pcapi.core.educational.models as educational_models
@@ -114,10 +114,10 @@ def find_all_invoices_finance_details(invoice_ids: list[int]) -> list[tuple]:
 
 
 def _truncate_milliseconds(
-    column: sqla_orm.InstrumentedAttribute,
-) -> sqla_func.Function[sqla_sqltypes.NullType]:
+    column: sa_orm.InstrumentedAttribute,
+) -> sa_func.Function[sa_sqltypes.NullType]:
     """Remove milliseconds from the value of a timestamp column."""
-    return sqla.func.date_trunc("second", column)
+    return sa.func.date_trunc("second", column)
 
 
 def _get_sent_pricings_for_collective_bookings(
@@ -136,7 +136,7 @@ def _get_sent_pricings_for_collective_bookings(
         .join(models.Cashflow.bankAccount)
     )
 
-    columns: tuple[sqla.sql.elements.Label, ...] = (
+    columns: tuple[sa.sql.elements.Label, ...] = (
         educational_models.EducationalRedactor.firstName.label("redactor_firstname"),
         educational_models.EducationalRedactor.lastName.label("redactor_lastname"),
         educational_models.EducationalInstitution.name.label("institution_name"),
@@ -144,18 +144,18 @@ def _get_sent_pricings_for_collective_bookings(
         educational_models.CollectiveStock.price.label("booking_amount"),
         educational_models.CollectiveStock.beginningDatetime.label("event_date"),
         educational_models.CollectiveOffer.name.label("offer_name"),
-        sqla.true().label("offer_is_educational"),
+        sa.true().label("offer_is_educational"),
         offerers_models.Venue.name.label("venue_name"),
         offerers_models.Venue.common_name.label("venue_common_name"),  # type: ignore[attr-defined]
-        sqla_func.coalesce(
+        sa_func.coalesce(
             offerers_models.Venue.street,
             offerers_models.Offerer.street,
         ).label("venue_address"),
-        sqla_func.coalesce(
+        sa_func.coalesce(
             offerers_models.Venue.postalCode,
             offerers_models.Offerer.postalCode,
         ).label("venue_postal_code"),
-        sqla_func.coalesce(
+        sa_func.coalesce(
             offerers_models.Venue.city,
             offerers_models.Offerer.city,
         ).label("venue_city"),
@@ -166,7 +166,7 @@ def _get_sent_pricings_for_collective_bookings(
         models.Pricing.standardRule.label("rule_name"),
         models.Pricing.customRuleId.label("rule_id"),
         models.Pricing.collectiveBookingId.label("collective_booking_id"),
-        sqla.cast(models.Invoice.date, sqla.Date).label("invoice_date"),
+        sa.cast(models.Invoice.date, sa.Date).label("invoice_date"),
         models.Invoice.reference.label("invoice_reference"),
         models.CashflowBatch.cutoff.label("cashflow_batch_cutoff"),
         models.CashflowBatch.label.label("cashflow_batch_label"),
@@ -182,17 +182,17 @@ def _get_sent_pricings_for_collective_bookings(
             models.Pricing.status == models.PricingStatus.INVOICED,
             (
                 (
-                    sqla.cast(models.Cashflow.creationDate, sqla.Date).between(
+                    sa.cast(models.Cashflow.creationDate, sa.Date).between(
                         *reimbursement_period,
                         symmetric=True,
                     )
                 )
                 if reimbursement_period
-                else sqla.true()
+                else sa.true()
             ),
-            (educational_models.CollectiveBooking.offererId == offerer_id) if offerer_id else sqla.true(),
-            (models.Cashflow.bankAccountId == bank_account_id) if bank_account_id else sqla.true(),
-            (models.Invoice.reference.in_(invoices_references)) if invoices_references else sqla.true(),
+            (educational_models.CollectiveBooking.offererId == offerer_id) if offerer_id else sa.true(),
+            (models.Cashflow.bankAccountId == bank_account_id) if bank_account_id else sa.true(),
+            (models.Invoice.reference.in_(invoices_references)) if invoices_references else sa.true(),
             # Complementary invoices (that end with ".2") are linked
             # to the same bookings as the original invoices they
             # complement. We don't want these bookings to be listed
@@ -229,7 +229,7 @@ def _get_sent_pricings_for_individual_bookings(
         .join(models.Cashflow.bankAccount)
     )
 
-    columns: list[sqla.sql.elements.Label] = [
+    columns: list[sa.sql.elements.Label] = [
         bookings_models.Booking.token.label("booking_token"),
         _truncate_milliseconds(bookings_models.Booking.dateUsed).label("booking_used_date"),
         bookings_models.Booking.quantity.label("booking_quantity"),
@@ -238,15 +238,15 @@ def _get_sent_pricings_for_individual_bookings(
         offers_models.Offer.name.label("offer_name"),
         offerers_models.Venue.name.label("venue_name"),
         offerers_models.Venue.common_name.label("venue_common_name"),  # type: ignore[attr-defined]
-        sqla_func.coalesce(
+        sa_func.coalesce(
             offerers_models.Venue.street,
             offerers_models.Offerer.street,
         ).label("venue_address"),
-        sqla_func.coalesce(
+        sa_func.coalesce(
             offerers_models.Venue.postalCode,
             offerers_models.Offerer.postalCode,
         ).label("venue_postal_code"),
-        sqla_func.coalesce(
+        sa_func.coalesce(
             offerers_models.Venue.city,
             offerers_models.Offerer.city,
         ).label("venue_city"),
@@ -256,7 +256,7 @@ def _get_sent_pricings_for_individual_bookings(
         models.Pricing.standardRule.label("rule_name"),
         models.Pricing.customRuleId.label("rule_id"),
         models.Pricing.collectiveBookingId.label("collective_booking_id"),
-        sqla.cast(models.Invoice.date, sqla.Date).label("invoice_date"),
+        sa.cast(models.Invoice.date, sa.Date).label("invoice_date"),
         models.Invoice.reference.label("invoice_reference"),
         models.CashflowBatch.cutoff.label("cashflow_batch_cutoff"),
         models.CashflowBatch.label.label("cashflow_batch_label"),
@@ -270,17 +270,17 @@ def _get_sent_pricings_for_individual_bookings(
             models.Pricing.status == models.PricingStatus.INVOICED,
             (
                 (
-                    sqla.cast(models.Cashflow.creationDate, sqla.Date).between(
+                    sa.cast(models.Cashflow.creationDate, sa.Date).between(
                         *reimbursement_period,
                         symmetric=True,
                     )
                 )
                 if reimbursement_period
-                else sqla.true()
+                else sa.true()
             ),
-            (bookings_models.Booking.offererId == offerer_id) if offerer_id else sqla.true(),
-            (models.Cashflow.bankAccountId == bank_account_id) if bank_account_id else sqla.true(),
-            (models.Invoice.reference.in_(invoices_references)) if invoices_references else sqla.true(),
+            (bookings_models.Booking.offererId == offerer_id) if offerer_id else sa.true(),
+            (models.Cashflow.bankAccountId == bank_account_id) if bank_account_id else sa.true(),
+            (models.Invoice.reference.in_(invoices_references)) if invoices_references else sa.true(),
             # Complementary invoices (that end with ".2") are linked
             # to the same bookings as the original invoices they
             # complement. We don't want these bookings to be listed
@@ -294,7 +294,7 @@ def _get_sent_pricings_for_individual_bookings(
     )
 
     if FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
-        sub = sqla.select(
+        sub = sa.select(
             offerers_models.OffererAddress.id,
             geography_models.Address.street,
             geography_models.Address.postalCode,
@@ -308,9 +308,9 @@ def _get_sent_pricings_for_individual_bookings(
         sub_offer = sub.subquery("addresses_offer")
         columns.extend(
             [
-                sqla_func.coalesce(sub_offer.c.street, sub_venue.c.street).label("address_street"),
-                sqla_func.coalesce(sub_offer.c.postalCode, sub_venue.c.postalCode).label("address_postal_code"),
-                sqla_func.coalesce(sub_offer.c.city, sub_venue.c.city).label("address_city"),
+                sa_func.coalesce(sub_offer.c.street, sub_venue.c.street).label("address_street"),
+                sa_func.coalesce(sub_offer.c.postalCode, sub_venue.c.postalCode).label("address_postal_code"),
+                sa_func.coalesce(sub_offer.c.city, sub_venue.c.city).label("address_city"),
             ]
         )
         query = query.join(sub_venue, sub_venue.c.id == offerers_models.Venue.offererAddressId, isouter=True).join(
@@ -339,7 +339,7 @@ def _get_reimbursement_details_from_invoices_base_query(invoice_ids: list[int]) 
         .join(models.CashflowPricing, models.CashflowPricing.cashflowId == models.Cashflow.id)
         .join(
             models.Pricing,
-            sqla.and_(
+            sa.and_(
                 models.Pricing.id == models.CashflowPricing.pricingId,
                 models.Pricing.status == models.PricingStatus.INVOICED,
             ),
@@ -382,15 +382,15 @@ def _get_collective_booking_reimbursement_data(query: BaseQuery) -> list[tuple]:
             # Sometimes, a venue has a postal code and a city, but no address, and the offerer's address
             # is in another city. Now, we only check the postal code to keep either the venue's full address
             # or the offerer's one
-            sqla.case(
+            sa.case(
                 (offerers_models.Venue.postalCode.is_not(None), offerers_models.Venue.street),
                 else_=offerers_models.Offerer.street,
             ).label("venue_address"),
-            sqla.case(
+            sa.case(
                 (offerers_models.Venue.postalCode.is_not(None), offerers_models.Venue.postalCode),
                 else_=offerers_models.Offerer.postalCode,
             ).label("venue_postal_code"),
-            sqla.case(
+            sa.case(
                 (offerers_models.Venue.postalCode.is_not(None), offerers_models.Venue.city),
                 else_=offerers_models.Offerer.city,
             ).label("venue_city"),
@@ -401,13 +401,13 @@ def _get_collective_booking_reimbursement_data(query: BaseQuery) -> list[tuple]:
             models.Pricing.standardRule.label("rule_name"),
             models.Pricing.customRuleId.label("rule_id"),
             models.Pricing.collectiveBookingId.label("collective_booking_id"),
-            sqla.cast(models.Invoice.date, sqla.Date).label("invoice_date"),
+            sa.cast(models.Invoice.date, sa.Date).label("invoice_date"),
             models.Invoice.reference.label("invoice_reference"),
             models.CashflowBatch.cutoff.label("cashflow_batch_cutoff"),
             models.CashflowBatch.label.label("cashflow_batch_label"),
             models.BankAccount.label.label("bank_account_label"),
             models.BankAccount.iban.label("iban"),
-            sqla.case((models.FinanceEvent.bookingFinanceIncidentId.is_(None), False), else_=True).label("is_incident"),
+            sa.case((models.FinanceEvent.bookingFinanceIncidentId.is_(None), False), else_=True).label("is_incident"),
         )
     ).all()
 
@@ -450,15 +450,15 @@ def _get_individual_booking_reimbursement_data(query: BaseQuery) -> list[tuple]:
             # Sometimes, a venue has a postal code and a city, but no address, and the offerer's address
             # is in another city. Now, we only check the postal code to keep either the venue's full address
             # or the offerer's one
-            sqla.case(
+            sa.case(
                 (offerers_models.Venue.postalCode.is_not(None), offerers_models.Venue.street),
                 else_=offerers_models.Offerer.street,
             ).label("venue_address"),
-            sqla.case(
+            sa.case(
                 (offerers_models.Venue.postalCode.is_not(None), offerers_models.Venue.postalCode),
                 else_=offerers_models.Offerer.postalCode,
             ).label("venue_postal_code"),
-            sqla.case(
+            sa.case(
                 (offerers_models.Venue.postalCode.is_not(None), offerers_models.Venue.city),
                 else_=offerers_models.Offerer.city,
             ).label("venue_city"),
@@ -468,13 +468,13 @@ def _get_individual_booking_reimbursement_data(query: BaseQuery) -> list[tuple]:
             models.Pricing.standardRule.label("rule_name"),
             models.Pricing.customRuleId.label("rule_id"),
             models.Pricing.collectiveBookingId.label("collective_booking_id"),
-            sqla.cast(models.Invoice.date, sqla.Date).label("invoice_date"),
+            sa.cast(models.Invoice.date, sa.Date).label("invoice_date"),
             models.Invoice.reference.label("invoice_reference"),
             models.CashflowBatch.cutoff.label("cashflow_batch_cutoff"),
             models.CashflowBatch.label.label("cashflow_batch_label"),
             models.BankAccount.iban.label("iban"),
             models.BankAccount.label.label("bank_account_label"),
-            sqla.case((models.FinanceEvent.bookingFinanceIncidentId.is_(None), False), else_=True).label("is_incident"),
+            sa.case((models.FinanceEvent.bookingFinanceIncidentId.is_(None), False), else_=True).label("is_incident"),
         )
     ).all()
 
@@ -507,20 +507,20 @@ def get_bank_account_with_current_venues_links(offerer_id: int, bank_account_id:
         .outerjoin(offerers_models.Venue, offerers_models.Venue.managingOffererId == offerers_models.Offerer.id)
         .outerjoin(
             offerers_models.VenuePricingPointLink,
-            sqla.and_(
+            sa.and_(
                 offerers_models.VenuePricingPointLink.venueId == offerers_models.Venue.id,
                 offerers_models.VenuePricingPointLink.timespan.contains(datetime.datetime.utcnow()),
             ),
         )
         .outerjoin(
             offerers_models.VenueBankAccountLink,
-            sqla.and_(
+            sa.and_(
                 offerers_models.VenueBankAccountLink.venueId == offerers_models.Venue.id,
                 offerers_models.VenueBankAccountLink.timespan.contains(datetime.datetime.utcnow()),
             ),
         )
         .options(
-            sqla_orm.contains_eager(models.BankAccount.offerer)
+            sa_orm.contains_eager(models.BankAccount.offerer)
             .contains_eager(offerers_models.Offerer.managedVenues)
             .load_only(
                 offerers_models.Venue.id,
@@ -532,7 +532,7 @@ def get_bank_account_with_current_venues_links(offerer_id: int, bank_account_id:
             .load_only(offerers_models.VenuePricingPointLink.timespan)
         )
         .options(
-            sqla_orm.contains_eager(models.BankAccount.offerer)
+            sa_orm.contains_eager(models.BankAccount.offerer)
             .contains_eager(offerers_models.Offerer.managedVenues)
             .contains_eager(offerers_models.Venue.bankAccountLinks)
         )
@@ -540,7 +540,7 @@ def get_bank_account_with_current_venues_links(offerer_id: int, bank_account_id:
     )
 
 
-def get_bank_accounts_query(user: users_models.User) -> sqla_orm.Query:
+def get_bank_accounts_query(user: users_models.User) -> sa_orm.Query:
     query = models.BankAccount.query.filter(models.BankAccount.status == models.BankAccountApplicationStatus.ACCEPTED)
 
     if not user.has_admin_role:
@@ -557,7 +557,7 @@ def get_invoices_query(
     offerer_id: int | None = None,
     date_from: datetime.date | None = None,
     date_until: datetime.date | None = None,
-) -> sqla_orm.Query:
+) -> sa_orm.Query:
     """Return invoices for the requested offerer.
 
     If given, ``date_from`` is **inclusive**, ``date_until`` is
