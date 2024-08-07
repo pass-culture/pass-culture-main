@@ -2,13 +2,17 @@ import pytest
 
 from pcapi.core import testing
 from pcapi.core.offers import factories as offers_factories
+from pcapi.core.providers.models import ApiResourceEnum
+from pcapi.core.providers.models import PermissionEnum
+from pcapi.core.testing import override_features
 
-from tests.routes.public.helpers import PublicAPIVenueEndpointHelper
+from tests.routes.public.helpers import PublicAPIVenueWithPermissionEndpointHelper
 
 
 @pytest.mark.usefixtures("db_session")
-class GetProductsTest(PublicAPIVenueEndpointHelper):
+class GetProductsTest(PublicAPIVenueWithPermissionEndpointHelper):
     endpoint_url = "/public/offers/v1/products"
+    needed_permission = (ApiResourceEnum.products, PermissionEnum.READ)
 
     def test_should_raise_401_because_not_authenticated(self, client):
         response = client.get(self.endpoint_url)
@@ -27,8 +31,16 @@ class GetProductsTest(PublicAPIVenueEndpointHelper):
         )
         assert response.status_code == 404
 
-    def test_get_first_page(self, client):
+    @override_features(WIP_ENABLE_PUBLIC_API_PERMISSION_SYSTEM=True)
+    def test_should_raise_403_because_missing_permission(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
+        response = client.with_explicit_token(plain_api_key).get(
+            self.endpoint_url, params={"venueId": venue_provider.venueId}
+        )
+        assert response.status_code == 403
+
+    def test_get_first_page(self, client):
+        plain_api_key, venue_provider = self.setup_active_venue_provider_with_permissions()
         offers = offers_factories.ThingOfferFactory.create_batch(12, venue=venue_provider.venue)
 
         with testing.assert_no_duplicated_queries():
@@ -40,7 +52,7 @@ class GetProductsTest(PublicAPIVenueEndpointHelper):
         assert [product["id"] for product in response.json["products"]] == [offer.id for offer in offers[0:5]]
 
     def test_get_last_page(self, client):
-        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        plain_api_key, venue_provider = self.setup_active_venue_provider_with_permissions()
         offers = offers_factories.ThingOfferFactory.create_batch(12, venue=venue_provider.venue)
 
         with testing.assert_no_duplicated_queries():
@@ -52,7 +64,7 @@ class GetProductsTest(PublicAPIVenueEndpointHelper):
         assert [product["id"] for product in response.json["products"]] == [offer.id for offer in offers[10:12]]
 
     def test_get_product_using_ids_at_provider(self, client):
-        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        plain_api_key, venue_provider = self.setup_active_venue_provider_with_permissions()
         id_at_provider_1 = "une"
         id_at_provider_2 = "belle"
         id_at_provider_3 = "têteDeVainqueur"
@@ -70,7 +82,7 @@ class GetProductsTest(PublicAPIVenueEndpointHelper):
         assert [product["id"] for product in response.json["products"]] == [offer_1.id, offer_2.id]
 
     def test_should_return_a_200_event_if_the_offer_name_is_longer_than_90_signs_long(self, client):
-        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        plain_api_key, venue_provider = self.setup_active_venue_provider_with_permissions()
         name_more_than_90_signs_long = (
             "Bébé, apprends-moi à devenir ton parent : naissance, sommeil, attachement, pleurs, développement"
         )
@@ -85,7 +97,7 @@ class GetProductsTest(PublicAPIVenueEndpointHelper):
         assert response.json["products"][0]["name"] == name_more_than_90_signs_long
 
     def test_404_when_the_page_is_too_high(self, client):
-        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        plain_api_key, venue_provider = self.setup_active_venue_provider_with_permissions()
 
         with testing.assert_no_duplicated_queries():
             response = client.with_explicit_token(plain_api_key).get(
@@ -95,7 +107,7 @@ class GetProductsTest(PublicAPIVenueEndpointHelper):
         assert response.json == {"products": []}
 
     def test_200_for_first_page_if_no_items(self, client):
-        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        plain_api_key, venue_provider = self.setup_active_venue_provider_with_permissions()
 
         with testing.assert_no_duplicated_queries():
             response = client.with_explicit_token(plain_api_key).get(
@@ -108,7 +120,7 @@ class GetProductsTest(PublicAPIVenueEndpointHelper):
         }
 
     def test_400_when_limit_is_too_high(self, client):
-        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        plain_api_key, venue_provider = self.setup_active_venue_provider_with_permissions()
 
         with testing.assert_no_duplicated_queries():
             response = client.with_explicit_token(plain_api_key).get(
@@ -119,7 +131,7 @@ class GetProductsTest(PublicAPIVenueEndpointHelper):
         assert response.json == {"limit": ["ensure this value is less than or equal to 50"]}
 
     def test_get_filtered_venue_offer(self, client):
-        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        plain_api_key, venue_provider = self.setup_active_venue_provider_with_permissions()
         offer = offers_factories.ThingOfferFactory(venue=venue_provider.venue)
         offers_factories.ThingOfferFactory(
             venue__managingOfferer=venue_provider.venue.managingOfferer
@@ -134,7 +146,7 @@ class GetProductsTest(PublicAPIVenueEndpointHelper):
         assert [product["id"] for product in response.json["products"]] == [offer.id]
 
     def test_get_offer_with_more_than_1000_description(self, client):
-        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        plain_api_key, venue_provider = self.setup_active_venue_provider_with_permissions()
         offers_factories.ThingOfferFactory(venue=venue_provider.venue, description="a" * 1001)
         response = client.with_explicit_token(plain_api_key).get(
             f"/public/offers/v1/products?venueId={venue_provider.venueId}"

@@ -30,6 +30,7 @@ from pcapi.routes.public import spectree_schemas
 from pcapi.routes.public.documentation_constants import http_responses
 from pcapi.routes.public.documentation_constants import tags
 from pcapi.routes.public.serialization import venues as venues_serialization
+from pcapi.routes.public.services import authorization
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
 from pcapi.utils import image_conversion
@@ -645,6 +646,7 @@ def _retrieve_offer_by_eans_query(eans: list[str], venueId: int) -> sqla.orm.Que
             {"HTTP_200": (serialization.ProductOffersResponse, "The product offers")}
             # errors
             | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
+            | http_responses.HTTP_403_UNTHAUTHORIZED
             | http_responses.HTTP_404_VENUE_NOT_FOUND
         )
     ),
@@ -657,6 +659,13 @@ def get_products(
 
     Return all products linked to a venue. Results are paginated (by default `50` products by page).
     """
+    authorization.check_is_allowed_to_perform_action(
+        current_api_key.provider.id,
+        query.venue_id,
+        resource=providers_models.ApiResourceEnum.products,
+        permission=providers_models.PermissionEnum.READ,
+    )
+
     utils.check_venue_id_is_tied_to_api_key(query.venue_id)
     total_offers_query = utils.retrieve_offers(
         is_event=False,
