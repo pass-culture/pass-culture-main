@@ -153,6 +153,23 @@ export const getCollectiveStatusLabel = (
           label="archivée"
         />
       )
+    case CollectiveOfferStatus.DRAFT:
+      return (
+        <CollectiveStatusLabel
+          className={style['status-draft']}
+          icon={
+            <SvgIcon
+              alt=""
+              src={strokeThing}
+              className={cn(
+                style['status-label-icon'],
+                style['status-draft-icon']
+              )}
+            />
+          }
+          label="brouillon"
+        />
+      )
     default:
       throw Error('Le statut de l’offre n’est pas valide')
   }
