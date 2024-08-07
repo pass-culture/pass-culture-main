@@ -17,7 +17,7 @@ import { IndividualOfferFormValues } from '../types'
 import { OFFER_LOCATION } from './constants'
 import styles from './OfferLocation.module.scss'
 
-export interface OfferLocationProps {
+interface OfferLocationProps {
   venue: VenueListItemResponseModel | undefined
 }
 
