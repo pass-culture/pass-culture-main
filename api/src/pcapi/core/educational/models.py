@@ -46,7 +46,7 @@ from pcapi.utils.image_conversion import standardize_image
 from pcapi.utils.phone_number import ParsedPhoneNumber
 
 
-BIG_NUMBER_FOR_SORTING_ORDERS = 9999
+BIG_NUMBER_FOR_SORTING_OFFERS = 9999
 
 
 if typing.TYPE_CHECKING:
@@ -610,16 +610,16 @@ class CollectiveOffer(
     @property
     def sort_criterion(self) -> typing.Tuple[bool, int, datetime]:
         """
-        This is used to sort orders with the following criterium.
+        This is used to sort offers with the following criterium.
 
-        1. Archived order are not relevant
-        2. Orders with a booking limit in a near future (ie < 7 days) are relevant
+        1. Archived offers are not relevant
+        2. Offers with a booking limit in a near future (ie < 7 days) are relevant
         3. DateCreated is to be used as a default rule. Older -> less relevant that younger
         """
         if self.requires_attention and self.days_until_booking_limit is not None:
             date_limit_score = self.days_until_booking_limit
         else:
-            date_limit_score = BIG_NUMBER_FOR_SORTING_ORDERS
+            date_limit_score = BIG_NUMBER_FOR_SORTING_OFFERS
 
         # pylint: disable=invalid-unary-operand-type
         return not self.isArchived, -date_limit_score, self.dateCreated
@@ -942,12 +942,12 @@ class CollectiveOfferTemplate(
     @property
     def sort_criterion(self) -> typing.Tuple[bool, int, datetime]:
         """
-        This is is used to compoare orders.
+        This is is used to compare offers.
 
-        For template orders there is no booking_limit criterium. Thats is why we define the second value of the tuple
+        For template offers there is no booking_limit criterium. Thats is why we define the second value of the tuple
         to the constant.
         """
-        return (not self.isArchived, -BIG_NUMBER_FOR_SORTING_ORDERS, self.dateCreated)
+        return (not self.isArchived, -BIG_NUMBER_FOR_SORTING_OFFERS, self.dateCreated)
 
     def get_formats(self) -> typing.Sequence[subcategories.EacFormat] | None:
         if self.formats:
