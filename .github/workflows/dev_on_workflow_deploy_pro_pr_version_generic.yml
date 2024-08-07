@@ -40,7 +40,7 @@ jobs:
       - uses: actions/checkout@v4.1.7
         with:
           ref: ${{ inputs.REF }}
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version-file: 'pro/.nvmrc'
       - name: "OpenID Connect Authentication"
