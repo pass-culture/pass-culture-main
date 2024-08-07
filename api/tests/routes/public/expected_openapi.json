@@ -1580,7 +1580,7 @@
                         "type": "string"
                     },
                     "id": {
-                        "description": "Educational institution id in the pass Culture application. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-educational-data/operation/ListEducationalInstitutions)**",
+                        "description": "Educational institution id in the pass Culture application. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-offer-attributes/operation/ListEducationalInstitutions)**",
                         "example": 1234,
                         "title": "Id",
                         "type": "integer"
@@ -1604,7 +1604,7 @@
                         "type": "string"
                     },
                     "uai": {
-                        "description": "Educational institution UAI (\"Unit\u00e9 Administrative Immatricul\u00e9e\") code. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-educational-data/operation/ListEducationalInstitutions)**",
+                        "description": "Educational institution UAI (\"Unit\u00e9 Administrative Immatricul\u00e9e\") code. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-offer-attributes/operation/ListEducationalInstitutions)**",
                         "example": "0010008D",
                         "title": "Uai",
                         "type": "string"
@@ -1710,7 +1710,7 @@
                         "type": "string"
                     },
                     "venueId": {
-                        "description": "Venue Id. The venues list is available on [**this endpoint (`Get offerer venues`)**](#tag/Offerer-and-Venues/operation/GetOffererVenues)",
+                        "description": "Venue Id. The venues list is available on [**this endpoint (`Get offerer venues`)**](#tag/Venues/operation/GetOffererVenues)",
                         "example": 1234,
                         "title": "Venueid",
                         "type": "integer"
@@ -3626,7 +3626,7 @@
                 "properties": {
                     "firstIndex": {
                         "default": 1,
-                        "description": "The page of results will be fetched starting from `firstIndex` (which is a resource id). **To learn more about cursor-based pagination [see this page](/understanding-our-api/resources/cursor-pagination)**.",
+                        "description": "The page of results will be fetched starting from `firstIndex` (which is a resource id).**To learn more about cursor-based pagination [see this page](/docs/understanding-our-api/resources/cursor-pagination)**.",
                         "minimum": 1,
                         "title": "Firstindex",
                         "type": "integer"
@@ -3678,7 +3678,7 @@
                     },
                     "firstIndex": {
                         "default": 1,
-                        "description": "The page of results will be fetched starting from `firstIndex` (which is a resource id). **To learn more about cursor-based pagination [see this page](/understanding-our-api/resources/cursor-pagination)**.",
+                        "description": "The page of results will be fetched starting from `firstIndex` (which is a resource id).**To learn more about cursor-based pagination [see this page](/docs/understanding-our-api/resources/cursor-pagination)**.",
                         "minimum": 1,
                         "title": "Firstindex",
                         "type": "integer"
@@ -3755,7 +3755,7 @@
                         "type": "string"
                     },
                     "id": {
-                        "description": "Educational institution id in the pass Culture application. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-educational-data/operation/ListEducationalInstitutions)**",
+                        "description": "Educational institution id in the pass Culture application. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-offer-attributes/operation/ListEducationalInstitutions)**",
                         "example": 1234,
                         "nullable": true,
                         "title": "Id",
@@ -3790,7 +3790,7 @@
                         "type": "string"
                     },
                     "uai": {
-                        "description": "Educational institution UAI (\"Unit\u00e9 Administrative Immatricul\u00e9e\") code. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-educational-data/operation/ListEducationalInstitutions)**",
+                        "description": "Educational institution UAI (\"Unit\u00e9 Administrative Immatricul\u00e9e\") code. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-offer-attributes/operation/ListEducationalInstitutions)**",
                         "example": "0010008D",
                         "nullable": true,
                         "title": "Uai",
@@ -3864,7 +3864,7 @@
                 "properties": {
                     "firstIndex": {
                         "default": 1,
-                        "description": "The page of results will be fetched starting from `firstIndex` (which is a resource id). **To learn more about cursor-based pagination [see this page](/understanding-our-api/resources/cursor-pagination)**.",
+                        "description": "The page of results will be fetched starting from `firstIndex` (which is a resource id).**To learn more about cursor-based pagination [see this page](/docs/understanding-our-api/resources/cursor-pagination)**.",
                         "minimum": 1,
                         "title": "Firstindex",
                         "type": "integer"
@@ -3885,7 +3885,7 @@
                         "type": "integer"
                     },
                     "venueId": {
-                        "description": "Venue Id. The venues list is available on [**this endpoint (`Get offerer venues`)**](#tag/Offerer-and-Venues/operation/GetOffererVenues)",
+                        "description": "Venue Id. The venues list is available on [**this endpoint (`Get offerer venues`)**](#tag/Venues/operation/GetOffererVenues)",
                         "example": 1234,
                         "title": "Venueid",
                         "type": "integer"
@@ -3913,7 +3913,7 @@
                         "type": "string"
                     },
                     "venueId": {
-                        "description": "Venue Id. The venues list is available on [**this endpoint (`Get offerer venues`)**](#tag/Offerer-and-Venues/operation/GetOffererVenues)",
+                        "description": "Venue Id. The venues list is available on [**this endpoint (`Get offerer venues`)**](#tag/Venues/operation/GetOffererVenues)",
                         "example": 1234,
                         "title": "Venueid",
                         "type": "integer"
@@ -3993,7 +3993,7 @@
                         "type": "string"
                     },
                     "domains": {
-                        "description": "Educational domains ids linked to the offer. Those domains are available on **[this endpoint (`Get the eductional domains`)](#tag/Collective-educational-data/operation/ListEducationalDomains)**",
+                        "description": "Educational domains ids linked to the offer. Those domains are available on **[this endpoint (`Get the eductional domains`)](#tag/Collective-offer-attributes/operation/ListEducationalDomains)**",
                         "example": [
                             1,
                             2
@@ -4012,14 +4012,14 @@
                         "type": "integer"
                     },
                     "educationalInstitution": {
-                        "description": "Educational institution UAI (\"Unit\u00e9 Administrative Immatricul\u00e9e\") code. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-educational-data/operation/ListEducationalInstitutions)**",
+                        "description": "Educational institution UAI (\"Unit\u00e9 Administrative Immatricul\u00e9e\") code. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-offer-attributes/operation/ListEducationalInstitutions)**",
                         "example": "0010008D",
                         "nullable": true,
                         "title": "Educationalinstitution",
                         "type": "string"
                     },
                     "educationalInstitutionId": {
-                        "description": "Educational institution id in the pass Culture application. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-educational-data/operation/ListEducationalInstitutions)**",
+                        "description": "Educational institution id in the pass Culture application. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-offer-attributes/operation/ListEducationalInstitutions)**",
                         "example": 1234,
                         "nullable": true,
                         "title": "Educationalinstitutionid",
@@ -4164,7 +4164,7 @@
                         "type": "number"
                     },
                     "venueId": {
-                        "description": "Venue Id. The venues list is available on [**this endpoint (`Get offerer venues`)**](#tag/Offerer-and-Venues/operation/GetOffererVenues)",
+                        "description": "Venue Id. The venues list is available on [**this endpoint (`Get offerer venues`)**](#tag/Venues/operation/GetOffererVenues)",
                         "example": 1234,
                         "title": "Venueid",
                         "type": "integer"
@@ -4836,7 +4836,7 @@
                         "nullable": true
                     },
                     "venueId": {
-                        "description": "Venue Id. The venues list is available on [**this endpoint (`Get offerer venues`)**](#tag/Offerer-and-Venues/operation/GetOffererVenues)",
+                        "description": "Venue Id. The venues list is available on [**this endpoint (`Get offerer venues`)**](#tag/Venues/operation/GetOffererVenues)",
                         "example": 1234,
                         "nullable": true,
                         "title": "Venueid",
@@ -5198,7 +5198,7 @@
                         "type": "string"
                     },
                     "venueId": {
-                        "description": "Venue Id. The venues list is available on [**this endpoint (`Get offerer venues`)**](#tag/Offerer-and-Venues/operation/GetOffererVenues)",
+                        "description": "Venue Id. The venues list is available on [**this endpoint (`Get offerer venues`)**](#tag/Venues/operation/GetOffererVenues)",
                         "example": 1234,
                         "nullable": true,
                         "title": "Venueid",
@@ -5559,7 +5559,7 @@
                         "type": "string"
                     },
                     "domains": {
-                        "description": "Educational domains ids linked to the offer. Those domains are available on **[this endpoint (`Get the eductional domains`)](#tag/Collective-educational-data/operation/ListEducationalDomains)**",
+                        "description": "Educational domains ids linked to the offer. Those domains are available on **[this endpoint (`Get the eductional domains`)](#tag/Collective-offer-attributes/operation/ListEducationalDomains)**",
                         "example": [
                             1,
                             2
@@ -5579,14 +5579,14 @@
                         "type": "integer"
                     },
                     "educationalInstitution": {
-                        "description": "Educational institution UAI (\"Unit\u00e9 Administrative Immatricul\u00e9e\") code. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-educational-data/operation/ListEducationalInstitutions)**",
+                        "description": "Educational institution UAI (\"Unit\u00e9 Administrative Immatricul\u00e9e\") code. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-offer-attributes/operation/ListEducationalInstitutions)**",
                         "example": "0010008D",
                         "nullable": true,
                         "title": "Educationalinstitution",
                         "type": "string"
                     },
                     "educationalInstitutionId": {
-                        "description": "Educational institution id in the pass Culture application. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-educational-data/operation/ListEducationalInstitutions)**",
+                        "description": "Educational institution id in the pass Culture application. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-offer-attributes/operation/ListEducationalInstitutions)**",
                         "example": 1234,
                         "nullable": true,
                         "title": "Educationalinstitutionid",
@@ -5669,7 +5669,7 @@
                         "type": "string"
                     },
                     "nationalProgramId": {
-                        "description": "Id of the national program linked to your offer. The national programs list can be found on **[this endpoint (`Get all known national programs`)](#tag/Collective-educational-data/operation/GetNationalPrograms)**",
+                        "description": "Id of the national program linked to your offer. The national programs list can be found on **[this endpoint (`Get all known national programs`)](#tag/Collective-offer-attributes/operation/GetNationalPrograms)**",
                         "example": 123456,
                         "nullable": true,
                         "title": "Nationalprogramid",
@@ -5700,7 +5700,7 @@
                         "type": "string"
                     },
                     "students": {
-                        "description": "Student levels that can take pat to the collective offer. The student levels are available on [**this endpoint (`Get student levels eligible for collective offers`)**](#tag/Collective-educational-data/operation/ListStudentsLevels)",
+                        "description": "Student levels that can take pat to the collective offer. The student levels are available on [**this endpoint (`Get student levels eligible for collective offers`)**](#tag/Collective-offer-attributes/operation/ListStudentsLevels)",
                         "example": [
                             "GENERAL2",
                             "GENERAL1",
@@ -5728,7 +5728,7 @@
                         "type": "number"
                     },
                     "venueId": {
-                        "description": "Venue Id. The venues list is available on [**this endpoint (`Get offerer venues`)**](#tag/Offerer-and-Venues/operation/GetOffererVenues)",
+                        "description": "Venue Id. The venues list is available on [**this endpoint (`Get offerer venues`)**](#tag/Venues/operation/GetOffererVenues)",
                         "example": 1234,
                         "nullable": true,
                         "title": "Venueid",
@@ -5823,7 +5823,7 @@
                         "type": "string"
                     },
                     "domains": {
-                        "description": "Educational domains ids linked to the offer. Those domains are available on **[this endpoint (`Get the eductional domains`)](#tag/Collective-educational-data/operation/ListEducationalDomains)**",
+                        "description": "Educational domains ids linked to the offer. Those domains are available on **[this endpoint (`Get the eductional domains`)](#tag/Collective-offer-attributes/operation/ListEducationalDomains)**",
                         "example": [
                             1,
                             2
@@ -5842,14 +5842,14 @@
                         "type": "integer"
                     },
                     "educationalInstitution": {
-                        "description": "Educational institution UAI (\"Unit\u00e9 Administrative Immatricul\u00e9e\") code. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-educational-data/operation/ListEducationalInstitutions)**",
+                        "description": "Educational institution UAI (\"Unit\u00e9 Administrative Immatricul\u00e9e\") code. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-offer-attributes/operation/ListEducationalInstitutions)**",
                         "example": "0010008D",
                         "nullable": true,
                         "title": "Educationalinstitution",
                         "type": "string"
                     },
                     "educationalInstitutionId": {
-                        "description": "Educational institution id in the pass Culture application. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-educational-data/operation/ListEducationalInstitutions)**",
+                        "description": "Educational institution id in the pass Culture application. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-offer-attributes/operation/ListEducationalInstitutions)**",
                         "example": 1234,
                         "nullable": true,
                         "title": "Educationalinstitutionid",
@@ -5922,7 +5922,7 @@
                         "type": "string"
                     },
                     "nationalProgramId": {
-                        "description": "Id of the national program linked to your offer. The national programs list can be found on **[this endpoint (`Get all known national programs`)](#tag/Collective-educational-data/operation/GetNationalPrograms)**",
+                        "description": "Id of the national program linked to your offer. The national programs list can be found on **[this endpoint (`Get all known national programs`)](#tag/Collective-offer-attributes/operation/GetNationalPrograms)**",
                         "example": 123456,
                         "nullable": true,
                         "title": "Nationalprogramid",
@@ -5946,7 +5946,7 @@
                         "type": "string"
                     },
                     "students": {
-                        "description": "Student levels that can take pat to the collective offer. The student levels are available on [**this endpoint (`Get student levels eligible for collective offers`)**](#tag/Collective-educational-data/operation/ListStudentsLevels)",
+                        "description": "Student levels that can take pat to the collective offer. The student levels are available on [**this endpoint (`Get student levels eligible for collective offers`)**](#tag/Collective-offer-attributes/operation/ListStudentsLevels)",
                         "example": [
                             "GENERAL2",
                             "GENERAL1",
@@ -5972,7 +5972,7 @@
                         "type": "number"
                     },
                     "venueId": {
-                        "description": "Venue Id. The venues list is available on [**this endpoint (`Get offerer venues`)**](#tag/Offerer-and-Venues/operation/GetOffererVenues)",
+                        "description": "Venue Id. The venues list is available on [**this endpoint (`Get offerer venues`)**](#tag/Venues/operation/GetOffererVenues)",
                         "example": 1234,
                         "title": "Venueid",
                         "type": "integer"
@@ -8638,7 +8638,7 @@
                         "type": "string"
                     },
                     "id": {
-                        "description": "Venue Id. The venues list is available on [**this endpoint (`Get offerer venues`)**](#tag/Offerer-and-Venues/operation/GetOffererVenues)",
+                        "description": "Venue Id. The venues list is available on [**this endpoint (`Get offerer venues`)**](#tag/Venues/operation/GetOffererVenues)",
                         "example": 1234,
                         "title": "Id",
                         "type": "integer"
@@ -8771,13 +8771,13 @@
                         }
                     },
                     {
-                        "description": "The page of results will be fetched starting from `firstIndex` (which is a resource id). **To learn more about cursor-based pagination [see this page](/understanding-our-api/resources/cursor-pagination)**.",
+                        "description": "The page of results will be fetched starting from `firstIndex` (which is a resource id).**To learn more about cursor-based pagination [see this page](/docs/understanding-our-api/resources/cursor-pagination)**.",
                         "in": "query",
                         "name": "firstIndex",
                         "required": false,
                         "schema": {
                             "default": 1,
-                            "description": "The page of results will be fetched starting from `firstIndex` (which is a resource id). **To learn more about cursor-based pagination [see this page](/understanding-our-api/resources/cursor-pagination)**.",
+                            "description": "The page of results will be fetched starting from `firstIndex` (which is a resource id).**To learn more about cursor-based pagination [see this page](/docs/understanding-our-api/resources/cursor-pagination)**.",
                             "minimum": 1,
                             "title": "Firstindex",
                             "type": "integer"
@@ -9148,25 +9148,25 @@
                         }
                     },
                     {
-                        "description": "The page of results will be fetched starting from `firstIndex` (which is a resource id). **To learn more about cursor-based pagination [see this page](/understanding-our-api/resources/cursor-pagination)**.",
+                        "description": "The page of results will be fetched starting from `firstIndex` (which is a resource id).**To learn more about cursor-based pagination [see this page](/docs/understanding-our-api/resources/cursor-pagination)**.",
                         "in": "query",
                         "name": "firstIndex",
                         "required": false,
                         "schema": {
                             "default": 1,
-                            "description": "The page of results will be fetched starting from `firstIndex` (which is a resource id). **To learn more about cursor-based pagination [see this page](/understanding-our-api/resources/cursor-pagination)**.",
+                            "description": "The page of results will be fetched starting from `firstIndex` (which is a resource id).**To learn more about cursor-based pagination [see this page](/docs/understanding-our-api/resources/cursor-pagination)**.",
                             "minimum": 1,
                             "title": "Firstindex",
                             "type": "integer"
                         }
                     },
                     {
-                        "description": "Venue Id. The venues list is available on [**this endpoint (`Get offerer venues`)**](#tag/Offerer-and-Venues/operation/GetOffererVenues)",
+                        "description": "Venue Id. The venues list is available on [**this endpoint (`Get offerer venues`)**](#tag/Venues/operation/GetOffererVenues)",
                         "in": "query",
                         "name": "venueId",
                         "required": true,
                         "schema": {
-                            "description": "Venue Id. The venues list is available on [**this endpoint (`Get offerer venues`)**](#tag/Offerer-and-Venues/operation/GetOffererVenues)",
+                            "description": "Venue Id. The venues list is available on [**this endpoint (`Get offerer venues`)**](#tag/Venues/operation/GetOffererVenues)",
                             "example": 1234,
                             "title": "Venueid",
                             "type": "integer"
@@ -9488,13 +9488,13 @@
                         }
                     },
                     {
-                        "description": "The page of results will be fetched starting from `firstIndex` (which is a resource id). **To learn more about cursor-based pagination [see this page](/understanding-our-api/resources/cursor-pagination)**.",
+                        "description": "The page of results will be fetched starting from `firstIndex` (which is a resource id).**To learn more about cursor-based pagination [see this page](/docs/understanding-our-api/resources/cursor-pagination)**.",
                         "in": "query",
                         "name": "firstIndex",
                         "required": false,
                         "schema": {
                             "default": 1,
-                            "description": "The page of results will be fetched starting from `firstIndex` (which is a resource id). **To learn more about cursor-based pagination [see this page](/understanding-our-api/resources/cursor-pagination)**.",
+                            "description": "The page of results will be fetched starting from `firstIndex` (which is a resource id).**To learn more about cursor-based pagination [see this page](/docs/understanding-our-api/resources/cursor-pagination)**.",
                             "minimum": 1,
                             "title": "Firstindex",
                             "type": "integer"
@@ -10117,25 +10117,25 @@
                         }
                     },
                     {
-                        "description": "The page of results will be fetched starting from `firstIndex` (which is a resource id). **To learn more about cursor-based pagination [see this page](/understanding-our-api/resources/cursor-pagination)**.",
+                        "description": "The page of results will be fetched starting from `firstIndex` (which is a resource id).**To learn more about cursor-based pagination [see this page](/docs/understanding-our-api/resources/cursor-pagination)**.",
                         "in": "query",
                         "name": "firstIndex",
                         "required": false,
                         "schema": {
                             "default": 1,
-                            "description": "The page of results will be fetched starting from `firstIndex` (which is a resource id). **To learn more about cursor-based pagination [see this page](/understanding-our-api/resources/cursor-pagination)**.",
+                            "description": "The page of results will be fetched starting from `firstIndex` (which is a resource id).**To learn more about cursor-based pagination [see this page](/docs/understanding-our-api/resources/cursor-pagination)**.",
                             "minimum": 1,
                             "title": "Firstindex",
                             "type": "integer"
                         }
                     },
                     {
-                        "description": "Venue Id. The venues list is available on [**this endpoint (`Get offerer venues`)**](#tag/Offerer-and-Venues/operation/GetOffererVenues)",
+                        "description": "Venue Id. The venues list is available on [**this endpoint (`Get offerer venues`)**](#tag/Venues/operation/GetOffererVenues)",
                         "in": "query",
                         "name": "venueId",
                         "required": true,
                         "schema": {
-                            "description": "Venue Id. The venues list is available on [**this endpoint (`Get offerer venues`)**](#tag/Offerer-and-Venues/operation/GetOffererVenues)",
+                            "description": "Venue Id. The venues list is available on [**this endpoint (`Get offerer venues`)**](#tag/Venues/operation/GetOffererVenues)",
                             "example": 1234,
                             "title": "Venueid",
                             "type": "integer"
@@ -10373,12 +10373,12 @@
                         }
                     },
                     {
-                        "description": "Venue Id. The venues list is available on [**this endpoint (`Get offerer venues`)**](#tag/Offerer-and-Venues/operation/GetOffererVenues)",
+                        "description": "Venue Id. The venues list is available on [**this endpoint (`Get offerer venues`)**](#tag/Venues/operation/GetOffererVenues)",
                         "in": "query",
                         "name": "venueId",
                         "required": true,
                         "schema": {
-                            "description": "Venue Id. The venues list is available on [**this endpoint (`Get offerer venues`)**](#tag/Offerer-and-Venues/operation/GetOffererVenues)",
+                            "description": "Venue Id. The venues list is available on [**this endpoint (`Get offerer venues`)**](#tag/Venues/operation/GetOffererVenues)",
                             "example": 1234,
                             "title": "Venueid",
                             "type": "integer"
@@ -10940,12 +10940,12 @@
                 "operationId": "ListEducationalInstitutions",
                 "parameters": [
                     {
-                        "description": "Educational institution id in the pass Culture application. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-educational-data/operation/ListEducationalInstitutions)**",
+                        "description": "Educational institution id in the pass Culture application. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-offer-attributes/operation/ListEducationalInstitutions)**",
                         "in": "query",
                         "name": "id",
                         "required": false,
                         "schema": {
-                            "description": "Educational institution id in the pass Culture application. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-educational-data/operation/ListEducationalInstitutions)**",
+                            "description": "Educational institution id in the pass Culture application. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-offer-attributes/operation/ListEducationalInstitutions)**",
                             "example": 1234,
                             "nullable": true,
                             "title": "Id",
@@ -11005,12 +11005,12 @@
                         }
                     },
                     {
-                        "description": "Educational institution UAI (\"Unit\u00e9 Administrative Immatricul\u00e9e\") code. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-educational-data/operation/ListEducationalInstitutions)**",
+                        "description": "Educational institution UAI (\"Unit\u00e9 Administrative Immatricul\u00e9e\") code. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-offer-attributes/operation/ListEducationalInstitutions)**",
                         "in": "query",
                         "name": "uai",
                         "required": false,
                         "schema": {
-                            "description": "Educational institution UAI (\"Unit\u00e9 Administrative Immatricul\u00e9e\") code. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-educational-data/operation/ListEducationalInstitutions)**",
+                            "description": "Educational institution UAI (\"Unit\u00e9 Administrative Immatricul\u00e9e\") code. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-offer-attributes/operation/ListEducationalInstitutions)**",
                             "example": "0010008D",
                             "nullable": true,
                             "title": "Uai",
@@ -11198,12 +11198,12 @@
                         }
                     },
                     {
-                        "description": "Venue Id. The venues list is available on [**this endpoint (`Get offerer venues`)**](#tag/Offerer-and-Venues/operation/GetOffererVenues)",
+                        "description": "Venue Id. The venues list is available on [**this endpoint (`Get offerer venues`)**](#tag/Venues/operation/GetOffererVenues)",
                         "in": "query",
                         "name": "venueId",
                         "required": false,
                         "schema": {
-                            "description": "Venue Id. The venues list is available on [**this endpoint (`Get offerer venues`)**](#tag/Offerer-and-Venues/operation/GetOffererVenues)",
+                            "description": "Venue Id. The venues list is available on [**this endpoint (`Get offerer venues`)**](#tag/Venues/operation/GetOffererVenues)",
                             "example": 1234,
                             "nullable": true,
                             "title": "Venueid",
