@@ -621,7 +621,6 @@ class CollectiveOffer(
         else:
             date_limit_score = BIG_NUMBER_FOR_SORTING_ORDERS
 
-        # pylint: disable=invalid-unary-operand-type
         return not self.isArchived, -date_limit_score, self.dateCreated
 
     def get_formats(self) -> typing.Sequence[subcategories.EacFormat] | None:
