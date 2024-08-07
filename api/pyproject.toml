@@ -247,7 +247,12 @@ filterwarnings = [
     # FIXME (francois-seguin, 2023-10-17): zeep uses cgi, which is deprecated. When this commit (https://github.com/mvantellingen/python-zeep/commit/d0d737adbcd68213b940a5cc4f1da6cd43dfca81)
     # is in a release, we'll be able to bump zeep and remove this filter.
     "ignore:'cgi' is deprecated and slated for removal in Python 3.13:DeprecationWarning",
-    "ignore:.*object is being merged into a Session along the backref cascade path for relationship.*"
+    "ignore:.*object is being merged into a Session along the backref cascade path for relationship.*",
+    # FIXME (francois-seguin, 2024-08-07): weasyprint uses pydpdf, which has deprecated functions.
+    #  When this commit (https://github.com/Kozea/WeasyPrint/commit/dd7cee28a04b7c1afca16bc679eb20526d30aaa4)
+    #  is in a release, we'll be able to bump weasyprint and remove these 2 filters.
+    "ignore:transform is deprecated, use set_matrix instead.:DeprecationWarning",
+    "ignore:text_matrix is deprecated, use set_text_matrix instead.:DeprecationWarning",
 ]
 testpaths = ["tests"]
 norecursedirs = [".git", "venv", ".pytest_cache"]
