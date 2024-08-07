@@ -32,7 +32,6 @@ export interface IndividualOfferFormValues {
   receiveNotificationEmails: boolean
   bookingEmail: string
   isDuo: boolean
-  externalTicketOfficeUrl: string
   url: string
   isVenueVirtual?: boolean
   bookingContact?: string

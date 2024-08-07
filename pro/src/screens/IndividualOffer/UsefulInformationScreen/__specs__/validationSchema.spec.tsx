@@ -142,20 +142,4 @@ describe('getValidationSchema', () => {
       'Veuillez renseigner un email valide, exemple : mail@exemple.com'
     )
   })
-
-  it('should validate externalTicketOfficeUrl correctly', async () => {
-    const schema = getValidationSchema([])
-    await expect(
-      schema.validate({
-        externalTicketOfficeUrl: 'https://example.com',
-        ...defaultAccessibility,
-      })
-    ).resolves.toBeTruthy()
-
-    await expect(
-      schema.validate({ externalTicketOfficeUrl: 'invalid-url' })
-    ).rejects.toThrow(
-      'Veuillez renseigner une URL valide. Ex : https://exemple.com'
-    )
-  })
 })

@@ -103,20 +103,6 @@ describe('screens:IndividualOffer::UsefulInformation', () => {
     expect(
       await screen.findByRole('heading', { name: 'Notifications' })
     ).toBeInTheDocument()
-
-    expect(
-      await screen.findByRole('heading', { name: 'Lien pour le grand public' })
-    ).toBeInTheDocument()
-
-    const externalTicketOfficeUrl = await screen.findByTestId(
-      'wrapper-externalTicketOfficeUrl'
-    )
-    expect(externalTicketOfficeUrl).toBeInTheDocument()
-    expect(
-      within(externalTicketOfficeUrl).getByText(
-        'URL de votre site ou billetterie'
-      )
-    ).toBeInTheDocument
   })
 
   it('should submit the form with correct payload', async () => {
@@ -145,7 +131,6 @@ describe('screens:IndividualOffer::UsefulInformation', () => {
       bookingEmail: null,
       description: undefined,
       durationMinutes: undefined,
-      externalTicketOfficeUrl: undefined,
       extraData: undefined,
       isDuo: undefined,
       isNational: true,

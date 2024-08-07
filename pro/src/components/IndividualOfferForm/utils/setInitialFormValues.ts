@@ -80,9 +80,6 @@ export const setInitialFormValues = (
         ? undefined
         : deSerializeDurationMinutes(offer.durationMinutes),
     url: offer.url || FORM_DEFAULT_VALUES['url'],
-    externalTicketOfficeUrl:
-      offer.externalTicketOfficeUrl ||
-      FORM_DEFAULT_VALUES['externalTicketOfficeUrl'],
     // TODO: Fill that with offer data when available in API
     ...(isOfferAddressEnabled && isPhysicalEvent
       ? {

@@ -20,7 +20,6 @@ import { useCurrentUser } from 'hooks/useCurrentUser'
 
 import { Accessibility } from './Accessibility/Accessibility'
 import { Categories } from './Categories/Categories'
-import { ExternalLink } from './ExternalLink/ExternalLink'
 import { ImageUploaderOffer } from './ImageUploaderOffer/ImageUploaderOffer'
 import { Informations } from './Informations/Informations'
 import { Notifications } from './Notifications/Notifications'
@@ -132,8 +131,6 @@ export const IndividualOfferForm = ({
           )}
 
           <Accessibility readOnlyFields={readOnlyFields} />
-
-          <ExternalLink readOnlyFields={readOnlyFields} />
 
           <Notifications
             venueBookingEmail={venue?.bookingEmail}

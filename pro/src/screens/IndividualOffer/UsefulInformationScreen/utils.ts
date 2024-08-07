@@ -68,9 +68,6 @@ export function setDefaultInitialValuesFromOffer(
     bookingContact: offer.bookingContact || undefined,
     receiveNotificationEmails: !!offer.bookingEmail,
     url: offer.url || DEFAULT_USEFULL_INFORMATION_INTITIAL_VALUES['url'],
-    externalTicketOfficeUrl:
-      offer.externalTicketOfficeUrl ||
-      DEFAULT_USEFULL_INFORMATION_INTITIAL_VALUES['externalTicketOfficeUrl'],
     isVenueVirtual: offer.venue.isVirtual || false,
   }
 }
@@ -84,10 +81,7 @@ export function setFormReadOnlyFields(
   }
 
   if (isOfferSynchronized(offer)) {
-    const editableFields: string[] = [
-      'accessibility',
-      'externalTicketOfficeUrl',
-    ]
+    const editableFields: string[] = ['accessibility']
 
     return Object.keys(FORM_DEFAULT_VALUES).filter(
       (field: string) => !editableFields.includes(field)
