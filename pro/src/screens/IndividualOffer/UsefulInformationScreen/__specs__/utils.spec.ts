@@ -182,6 +182,7 @@ describe('setDefaultInitialValuesFromOffer', () => {
     const expectedValues = {
       isEvent: false,
       isNational: true,
+      isVenueVirtual: false,
       withdrawalDetails:
         DEFAULT_USEFULL_INFORMATION_INTITIAL_VALUES['withdrawalDetails'],
       withdrawalDelay: undefined,
