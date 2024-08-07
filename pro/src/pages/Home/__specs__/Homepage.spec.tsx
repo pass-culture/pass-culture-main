@@ -172,7 +172,7 @@ describe('Homepage', () => {
       renderHomePage()
 
       expect(
-        await screen.findByText('Présence sur le pass Culture')
+        await screen.findByText('Présence sur l’application pass Culture')
       ).toBeInTheDocument()
     })
 
@@ -189,7 +189,7 @@ describe('Homepage', () => {
       await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
       expect(
-        screen.queryByText('Présence sur le pass Culture')
+        screen.queryByText('Présence sur l’application pass Culture')
       ).not.toBeInTheDocument()
     })
 
@@ -206,7 +206,7 @@ describe('Homepage', () => {
       await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
       expect(
-        screen.queryByText('Présence sur le pass Culture')
+        screen.queryByText('Présence sur l’application pass Culture')
       ).not.toBeInTheDocument()
     })
   })

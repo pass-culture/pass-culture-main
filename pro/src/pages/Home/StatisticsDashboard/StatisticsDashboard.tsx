@@ -54,7 +54,9 @@ export const StatisticsDashboard = ({ offerer }: StatisticsDashboardProps) => {
   return (
     <>
       <div className={styles['header']}>
-        <h2 className={styles['title']}>Présence sur le pass Culture</h2>
+        <h2 className={styles['title']}>
+          Présence sur l’application pass Culture
+        </h2>
 
         {displayCreateOfferButton && (
           <ButtonLink

@@ -65,7 +65,9 @@ describe('StatisticsDashboard', () => {
 
     renderStatisticsDashboard(false)
 
-    expect(screen.getByText('Présence sur le pass Culture')).toBeInTheDocument()
+    expect(
+      screen.getByText('Présence sur l’application pass Culture')
+    ).toBeInTheDocument()
     expect(
       await screen.findByText(
         'Créez vos premières offres grand public pour être visible par les bénéficiaires'
@@ -79,7 +81,9 @@ describe('StatisticsDashboard', () => {
   it('should render statistics dashboard with statistics coming soon message', async () => {
     renderStatisticsDashboard()
 
-    expect(screen.getByText('Présence sur le pass Culture')).toBeInTheDocument()
+    expect(
+      screen.getByText('Présence sur l’application pass Culture')
+    ).toBeInTheDocument()
     expect(
       await screen.findByText(
         'Les statistiques de consultation de vos offres seront bientôt disponibles.'
@@ -103,7 +107,9 @@ describe('StatisticsDashboard', () => {
 
     renderStatisticsDashboard()
 
-    expect(screen.getByText('Présence sur le pass Culture')).toBeInTheDocument()
+    expect(
+      screen.getByText('Présence sur l’application pass Culture')
+    ).toBeInTheDocument()
     expect(
       await screen.findByText('Évolution des consultations de vos offres')
     ).toBeInTheDocument()
