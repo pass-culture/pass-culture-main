@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { useSelector } from 'react-redux'
 import { useSearchParams } from 'react-router-dom'
 import useSWR from 'swr'
@@ -18,6 +19,12 @@ const Details = (): JSX.Element | null => {
   const { currentUser } = useCurrentUser()
   const { offer } = useIndividualOfferContext()
   const [searchParams] = useSearchParams()
+
+  // Required for the step above the frame to return to the top of the page
+  // TODO: Change to useFocus when we find a solution for the scroll
+  useEffect(() => {
+    document.getElementById('content-wrapper')?.scrollTo(0, 0)
+  }, [])
 
   const offererIdFromQueryParam = searchParams.get('structure')
     ? Number(searchParams.get('structure'))
