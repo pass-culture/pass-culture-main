@@ -44,7 +44,7 @@ openpyxl = "^3.1.5"
 pgcli = "^4.1.0"
 phonenumberslite = "==8.13.*"
 pillow = ">=8.1.1"
-prometheus-flask-exporter = "^0.23.0"
+prometheus-flask-exporter = "^0.23.1"
 psycopg2 = "^2.9.9"
 py7zr = "^0.21.1"
 pydantic = { version = "==2.*", extras = ["email"] }
