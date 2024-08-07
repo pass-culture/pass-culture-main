@@ -602,8 +602,16 @@ class CollectiveOffer(
 
     @property
     def requires_attention(self) -> bool:
-        if self.days_until_booking_limit is not None and self.status == offer_mixin.CollectiveOfferStatus.SOLD_OUT:
-            return self.days_until_booking_limit < 7
+        is_prebooked = (
+            False
+            if not self.collectiveStock
+            else any(
+                booking.status == CollectiveBookingStatus.PENDING for booking in self.collectiveStock.collectiveBookings
+            )
+        )
+        is_published = self.status == offer_mixin.CollectiveOfferStatus.ACTIVE
+        if self.days_until_booking_limit is not None:
+            return self.days_until_booking_limit < 7 and (is_prebooked or is_published)
 
         return False
 
@@ -613,7 +621,7 @@ class CollectiveOffer(
         This is used to sort offers with the following criterium.
 
         1. Archived offers are not relevant
-        2. Offers with a booking limit in a near future (ie < 7 days) are relevant
+        2. Published or prebooked offers with a booking limit in a near future (ie < 7 days) are relevant
         3. DateCreated is to be used as a default rule. Older -> less relevant that younger
         """
         if self.requires_attention and self.days_until_booking_limit is not None:
