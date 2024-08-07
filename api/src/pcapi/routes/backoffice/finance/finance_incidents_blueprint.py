@@ -1090,6 +1090,28 @@ def _get_incident(finance_incident_id: int, **args: typing.Any) -> finance_model
                 finance_models.Pricing.status,
                 finance_models.Pricing.creationDate,
             ),
+            # cashflow batch label
+            sa.orm.joinedload(
+                finance_models.BookingFinanceIncident, finance_models.FinanceIncident.booking_finance_incidents
+            )
+            .joinedload(finance_models.BookingFinanceIncident.finance_events)
+            .joinedload(finance_models.FinanceEvent.pricings)
+            .joinedload(finance_models.Pricing.cashflows)
+            .joinedload(finance_models.Cashflow.batch)
+            .load_only(finance_models.CashflowBatch.label),
+            # invoice url
+            sa.orm.joinedload(
+                finance_models.BookingFinanceIncident, finance_models.FinanceIncident.booking_finance_incidents
+            )
+            .joinedload(finance_models.BookingFinanceIncident.finance_events)
+            .joinedload(finance_models.FinanceEvent.pricings)
+            .joinedload(finance_models.Pricing.cashflows)
+            .joinedload(finance_models.Cashflow.invoices)
+            .load_only(
+                finance_models.Invoice.token,
+                finance_models.Invoice.date,
+                finance_models.Invoice.reference,
+            ),
             # booking stock info
             sa.orm.joinedload(
                 finance_models.BookingFinanceIncident, finance_models.FinanceIncident.booking_finance_incidents
