@@ -50,10 +50,9 @@ describe('setFormReadOnlyFields', () => {
     }
   )
 
-  it('should allow edition of "isDuo" "accessibility" and "externalTicketOfficeUrl" for allocine sychronised offers', () => {
+  it('should allow edition of "isDuo" "accessibility" for allocine sychronised offers', () => {
     const expectedReadOnlyFields = Object.keys(FORM_DEFAULT_VALUES).filter(
-      (field: string) =>
-        !['accessibility', 'externalTicketOfficeUrl', 'isDuo'].includes(field)
+      (field: string) => !['accessibility', 'isDuo'].includes(field)
     )
     const offer = getIndividualOfferFactory({
       lastProvider: { name: 'AlLocINé' },
@@ -62,10 +61,9 @@ describe('setFormReadOnlyFields', () => {
     expect(readOnlyFields.sort()).toStrictEqual(expectedReadOnlyFields.sort())
   })
 
-  it('should allow edition of "accessibility" and "externalTicketOfficeUrl" for other sychronised offers', () => {
+  it('should allow edition of "accessibility" for other sychronised offers', () => {
     const expectedReadOnlyFields = Object.keys(FORM_DEFAULT_VALUES).filter(
-      (field: string) =>
-        !['accessibility', 'externalTicketOfficeUrl'].includes(field)
+      (field: string) => !['accessibility'].includes(field)
     )
     const offer = getIndividualOfferFactory({
       lastProvider: {

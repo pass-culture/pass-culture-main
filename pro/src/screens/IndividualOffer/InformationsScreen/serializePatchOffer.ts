@@ -108,7 +108,6 @@ export const serializePatchOffer = ({
         : !sentValues.receiveNotificationEmails
           ? null
           : sentValues.bookingEmail,
-    externalTicketOfficeUrl: sentValues.externalTicketOfficeUrl || undefined,
     url: sentValues.url || undefined,
     shouldSendMail: shouldSendMail,
     bookingContact: sentValues.bookingContact || undefined,

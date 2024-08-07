@@ -157,7 +157,6 @@ describe('screens:IndividualOffer::Informations:edition', () => {
       name: 'Offer name',
       subcategoryId: SubcategoryIdEnum.CONCERT,
       url: 'https://offer.example.com',
-      externalTicketOfficeUrl: 'https://external.example.com',
       withdrawalDetails: 'Offer withdrawalDetails',
       withdrawalDelay: 140,
       withdrawalType: WithdrawalTypeEnum.ON_SITE,
@@ -211,7 +210,6 @@ describe('screens:IndividualOffer::Informations:edition', () => {
       bookingEmail: 'booking@email.com',
       description: 'Offer description',
       durationMinutes: 140,
-      externalTicketOfficeUrl: 'https://external.example.com',
       extraData: {
         author: 'Offer author',
         gtl_id: '07000000',
@@ -269,7 +267,6 @@ describe('screens:IndividualOffer::Informations:edition', () => {
       bookingEmail: 'booking@email.com',
       description: 'Offer description',
       durationMinutes: 140,
-      externalTicketOfficeUrl: 'https://external.example.com',
       extraData: {
         author: 'Offer author',
         gtl_id: '07000000',
@@ -377,7 +374,6 @@ describe('screens:IndividualOffer::Informations:edition', () => {
         bookingEmail: 'booking@email.com',
         description: 'Offer description',
         durationMinutes: 140,
-        externalTicketOfficeUrl: 'https://external.example.com',
         extraData: {
           author: 'Offer author',
           gtl_id: '07000000',

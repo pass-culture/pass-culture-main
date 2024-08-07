@@ -88,6 +88,5 @@ export const serializePostOffer = (
     withdrawalType: formValues.withdrawalType || null,
     durationMinutes: serializeDurationMinutes(formValues.durationMinutes || ''),
     url: formValues.url || null,
-    externalTicketOfficeUrl: formValues.externalTicketOfficeUrl || null,
   }
 }

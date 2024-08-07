@@ -83,8 +83,5 @@ export const getValidationSchema = (subcategories: string[]) => {
             'Veuillez renseigner un email valide, exemple : mail@exemple.com'
           ),
     }),
-    externalTicketOfficeUrl: yup
-      .string()
-      .url('Veuillez renseigner une URL valide. Ex : https://exemple.com'),
   })
 }

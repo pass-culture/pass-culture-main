@@ -98,7 +98,6 @@ const mockOffer = getIndividualOfferFactory({
   bookingEmail: 'test@example.com',
   bookingContact: 'Contact Info',
   url: 'http://example.com',
-  externalTicketOfficeUrl: 'http://external.com',
 })
 
 describe('setDefaultInitialValuesFromOffer', () => {
@@ -121,7 +120,6 @@ describe('setDefaultInitialValuesFromOffer', () => {
       bookingContact: 'Contact Info',
       receiveNotificationEmails: true,
       url: 'http://example.com',
-      externalTicketOfficeUrl: 'http://external.com',
     }
 
     const result = setDefaultInitialValuesFromOffer(mockOffer)
@@ -158,8 +156,6 @@ describe('setDefaultInitialValuesFromOffer', () => {
       bookingContact: undefined,
       receiveNotificationEmails: false,
       url: DEFAULT_USEFULL_INFORMATION_INTITIAL_VALUES['url'],
-      externalTicketOfficeUrl:
-        DEFAULT_USEFULL_INFORMATION_INTITIAL_VALUES['externalTicketOfficeUrl'],
     }
 
     const result = setDefaultInitialValuesFromOffer(
@@ -198,8 +194,6 @@ describe('setDefaultInitialValuesFromOffer', () => {
       bookingContact: undefined,
       receiveNotificationEmails: false,
       url: DEFAULT_USEFULL_INFORMATION_INTITIAL_VALUES['url'],
-      externalTicketOfficeUrl:
-        DEFAULT_USEFULL_INFORMATION_INTITIAL_VALUES['externalTicketOfficeUrl'],
     }
 
     const result = setDefaultInitialValuesFromOffer(
@@ -260,6 +254,6 @@ describe('setFormReadOnlyFields', () => {
 
     const result = setFormReadOnlyFields(offer)
 
-    expect(result).not.toContain(['accessibility', 'externalTicketOfficeUrl'])
+    expect(result).not.toContain(['accessibility'])
   })
 })

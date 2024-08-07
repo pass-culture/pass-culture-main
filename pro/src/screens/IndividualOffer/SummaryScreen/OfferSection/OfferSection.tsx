@@ -291,18 +291,6 @@ export const OfferSection = ({
             accessibleWording="Votre offre est accessible aux publics en situation de handicap :"
           />
 
-          <SummarySubSection title="Lien pour le grand public">
-            <SummaryDescriptionList
-              descriptions={[
-                {
-                  title: 'URL de votre site ou billetterie',
-                  /* istanbul ignore next: DEBT, TO FIX */
-                  text: offerData.externalTicketOfficeUrl || ' - ',
-                },
-              ]}
-            />
-          </SummarySubSection>
-
           <SummarySubSection title="Notifications des réservations">
             <SummaryDescriptionList
               descriptions={[
@@ -325,19 +313,6 @@ export const OfferSection = ({
             accessibleItem={offer}
             accessibleWording="Votre offre est accessible aux publics en situation de handicap :"
           />
-
-          <SummarySubSection title="Lien pour le grand public">
-            <SummaryDescriptionList
-              descriptions={[
-                {
-                  title: 'URL de votre site ou billetterie',
-                  /* istanbul ignore next: DEBT, TO FIX */
-                  text: offerData.externalTicketOfficeUrl || ' - ',
-                },
-              ]}
-            />
-          </SummarySubSection>
-
           <SummarySubSection title="Notifications des réservations">
             <SummaryDescriptionList
               descriptions={[

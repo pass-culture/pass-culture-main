@@ -84,10 +84,9 @@ describe('test updateIndividualOffer::serializers', () => {
         receiveNotificationEmails: true,
         bookingEmail: 'booking@email.org',
         isDuo: false,
-        externalTicketOfficeUrl: 'https://external.url',
         url: 'https://my.url',
         isVenueVirtual: false,
-      } as IndividualOfferFormValues
+      }
       patchBody = {
         audioDisabilityCompliant: true,
         description: 'test description',
@@ -104,7 +103,6 @@ describe('test updateIndividualOffer::serializers', () => {
         withdrawalType: undefined,
         durationMinutes: 120,
         bookingEmail: 'booking@email.org',
-        externalTicketOfficeUrl: 'https://external.url',
         shouldSendMail: false,
       }
     })
@@ -123,14 +121,12 @@ describe('test updateIndividualOffer::serializers', () => {
         ...formValues,
         receiveNotificationEmails: false,
         durationMinutes: undefined,
-        externalTicketOfficeUrl: '',
         url: '',
       }
       patchBody = {
         ...patchBody,
         bookingEmail: null,
         durationMinutes: undefined,
-        externalTicketOfficeUrl: undefined,
         url: undefined,
       }
       expect(
