@@ -246,21 +246,6 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
     bookingEmail = Column(String(120), nullable=True)
     sa.Index("idx_venue_bookingEmail", bookingEmail)
 
-    _address = Column("address", String(200), nullable=True)
-
-    _street = Column("street", Text(), nullable=True)
-
-    postalCode = Column(String(6), nullable=True)
-
-    city = Column(String(50), nullable=True)
-
-    # banId is a unique interoperability key for French addresses registered in the
-    # Base Adresse Nationale. See "cle_interop" here:
-    # https://doc.adresse.data.gouv.fr/mettre-a-jour-sa-base-adresse-locale/le-format-base-adresse-locale
-    banId = Column(Text(), nullable=True)
-
-    timezone = Column(String(50), nullable=False, default=METROPOLE_TIMEZONE, server_default=METROPOLE_TIMEZONE)
-
     publicName = Column(String(255), nullable=True)
     sa.Index("ix_venue_trgm_unaccent_public_name", sa.func.immutable_unaccent("name"), postgresql_using="gin")
 
@@ -410,24 +395,6 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
 
     offererAddressId: int = Column(BigInteger, ForeignKey("offerer_address.id"), nullable=True, index=True)
     offererAddress: Mapped["OffererAddress | None"] = relationship("OffererAddress", foreign_keys=[offererAddressId])
-
-    def __init__(self, street: str | None = None, **kwargs: typing.Any) -> None:
-        if street:
-            self.street = street  # type: ignore[method-assign]
-        super().__init__(**kwargs)
-
-    @hybrid_property
-    def street(self) -> str | None:
-        return self._address
-
-    @street.setter  # type: ignore[no-redef]
-    def street(self, value: str | None) -> None:
-        self._address = value
-        self._street = value
-
-    @street.expression  # type: ignore[no-redef]
-    def street(cls):  # pylint: disable=no-self-argument
-        return cls._address
 
     def _get_type_banner_url(self) -> str | None:
         elligible_banners: tuple[str, ...] = VENUE_TYPE_DEFAULT_BANNERS.get(self.venueTypeCode, tuple())
