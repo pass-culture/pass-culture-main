@@ -12,7 +12,6 @@ export const DEFAULT_USEFULL_INFORMATION_INTITIAL_VALUES: UsefulInformationFormV
     withdrawalDelay: SUBCATEGORIES_FIELDS_DEFAULT_VALUES['withdrawalDelay'],
     receiveNotificationEmails: false,
     bookingEmail: '',
-    externalTicketOfficeUrl: '',
     url: '',
     accessibility: {
       [AccessibilityEnum.VISUAL]: false,

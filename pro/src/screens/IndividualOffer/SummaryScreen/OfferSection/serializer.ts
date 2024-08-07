@@ -127,7 +127,6 @@ export const serializeOfferSectionData = (
 
     isDuo: offer.isDuo,
     url: offer.url,
-    externalTicketOfficeUrl: offer.externalTicketOfficeUrl,
   }
   const subCategoryData = serializerOfferSubCategoryFields(
     offer,

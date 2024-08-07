@@ -112,7 +112,6 @@ export const SYNCHRONIZED_OFFER_EDITABLE_FIELDS = {
     'mentalDisabilityCompliant',
     'motorDisabilityCompliant',
     'visualDisabilityCompliant',
-    'externalTicketOfficeUrl',
     'accessibility',
   ],
   ALLOCINE: ['isDuo'],

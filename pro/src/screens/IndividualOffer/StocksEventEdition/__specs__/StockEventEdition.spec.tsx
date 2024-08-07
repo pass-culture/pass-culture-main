@@ -165,7 +165,6 @@ describe('screens:StocksEventEdition', () => {
         { id: Number(otherPriceCategoryId), label: 'Cat 2', price: 12.2 },
       ],
       subcategoryId: SubcategoryIdEnum.SEANCE_CINE,
-      externalTicketOfficeUrl: '',
       url: '',
       venue: {
         street: '1 boulevard Poissonnière',

@@ -34,7 +34,6 @@ When('I fill in useful informations for physical offer', () => {
   cy.findByText('Psychique ou cognitif').click()
   cy.findByText('Moteur').click()
   cy.findByText('Auditif').click()
-  cy.get('#externalTicketOfficeUrl').type('https://passculture.app/')
 
   cy.findByText('Être notifié par email des réservations').click()
 })

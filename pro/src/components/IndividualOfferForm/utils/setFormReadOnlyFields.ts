@@ -11,7 +11,7 @@ import { FORM_DEFAULT_VALUES } from '../constants'
 const setFormReadOnlyFieldsForSynchronizedOffer = (
   offer: GetIndividualOfferResponseModel
 ): string[] => {
-  const editableFields: string[] = ['accessibility', 'externalTicketOfficeUrl']
+  const editableFields: string[] = ['accessibility']
   if (isAllocineProvider(offer.lastProvider)) {
     editableFields.push('isDuo')
   }

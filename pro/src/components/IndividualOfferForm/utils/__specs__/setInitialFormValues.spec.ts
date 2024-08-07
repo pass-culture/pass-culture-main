@@ -142,7 +142,6 @@ describe('setFormReadOnlyFields', () => {
       name: 'Offer name',
       subcategoryId: SubcategoryIdEnum.CONCERT,
       url: 'https://offer.example.com',
-      externalTicketOfficeUrl: 'https://external.example.com',
       withdrawalDetails: 'Offer withdrawalDetails',
       withdrawalDelay: 140,
       withdrawalType: WithdrawalTypeEnum.ON_SITE,
@@ -207,7 +206,6 @@ describe('setFormReadOnlyFields', () => {
       visa: '',
       durationMinutes: '2:20',
       url: 'https://offer.example.com',
-      externalTicketOfficeUrl: 'https://external.example.com',
     }
 
     const initialFormValues = setInitialFormValues(offer, subCategoryList, true)
