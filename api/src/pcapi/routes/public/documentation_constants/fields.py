@@ -10,6 +10,15 @@ _example_datetime_with_tz = "2034-07-24T14:00:00+02:00"
 
 LIMIT_DESCRIPTION = "Number of items per page"
 
+# Paths to docusaurus pages
+CURSOR_PAGINATION_PAGE = "/docs/understanding-our-api/resources/cursor-pagination"
+# Anchors
+GET_OFFERER_VENUES_ANCHOR = "#tag/Venues/operation/GetOffererVenues"
+LIST_EDUCATIONAL_DOMAINS_ANCHOR = "#tag/Collective-offer-attributes/operation/ListEducationalDomains"
+LIST_STUDENTS_LEVELS_ANCHOR = "#tag/Collective-offer-attributes/operation/ListStudentsLevels"
+GET_NATIONAL_PROGRAMS_ANCHOR = "#tag/Collective-offer-attributes/operation/GetNationalPrograms"
+LIST_EDUCATIONAL_INSTITUTIONS_ANCHOR = "#tag/Collective-offer-attributes/operation/ListEducationalInstitutions"
+
 
 class _FIELDS:
 
@@ -40,7 +49,7 @@ class _FIELDS:
 
     VENUE_ID = Field(
         example=1234,
-        description="Venue Id. The venues list is available on [**this endpoint (`Get offerer venues`)**](#tag/Offerer-and-Venues/operation/GetOffererVenues)",
+        description=f"Venue Id. The venues list is available on [**this endpoint (`Get offerer venues`)**]({GET_OFFERER_VENUES_ANCHOR})",
     )
     DURATION_MINUTES = Field(
         description="Event duration in minutes",
@@ -72,7 +81,7 @@ class _FIELDS:
     PAGINATION_FIRST_INDEX_WITH_DEFAULT = Field(
         default=1,
         ge=1,
-        description="The page of results will be fetched starting from `firstIndex` (which is a resource id). **To learn more about cursor-based pagination [see this page](/understanding-our-api/resources/cursor-pagination)**.",
+        description=f"The page of results will be fetched starting from `firstIndex` (which is a resource id).**To learn more about cursor-based pagination [see this page]({CURSOR_PAGINATION_PAGE})**.",
     )
 
     # Image Fields
@@ -206,16 +215,16 @@ class _FIELDS:
     )
     COLLECTIVE_OFFER_EDUCATIONAL_DOMAINS = Field(
         example=[1, 2],
-        description="Educational domains ids linked to the offer. Those domains are available on **[this endpoint (`Get the eductional domains`)](#tag/Collective-educational-data/operation/ListEducationalDomains)**",
+        description=f"Educational domains ids linked to the offer. Those domains are available on **[this endpoint (`Get the eductional domains`)]({LIST_EDUCATIONAL_DOMAINS_ANCHOR})**",
     )
     COLLECTIVE_OFFER_STUDENT_LEVELS = Field(
-        description="Student levels that can take pat to the collective offer. The student levels are available on [**this endpoint (`Get student levels eligible for collective offers`)**](#tag/Collective-educational-data/operation/ListStudentsLevels)",
+        description=f"Student levels that can take pat to the collective offer. The student levels are available on [**this endpoint (`Get student levels eligible for collective offers`)**]({LIST_STUDENTS_LEVELS_ANCHOR})",
         example=["GENERAL2", "GENERAL1", "GENERAL0"],
     )
     COLLECTIVE_OFFER_IS_ACTIVE = Field(description="Is your offer active", example=True)
     COLLECTIVE_OFFER_IS_SOLD_OUT = Field(description="Is your offer sold out", example=False)
     COLLECTIVE_OFFER_NATIONAL_PROGRAM_ID = Field(
-        description="Id of the national program linked to your offer. The national programs list can be found on **[this endpoint (`Get all known national programs`)](#tag/Collective-educational-data/operation/GetNationalPrograms)**",
+        description=f"Id of the national program linked to your offer. The national programs list can be found on **[this endpoint (`Get all known national programs`)]({GET_NATIONAL_PROGRAMS_ANCHOR})**",
         example=123456,
     )
     COLLECTIVE_OFFER_DATE_CREATED = Field(description="Collective offer creation date")
@@ -250,11 +259,11 @@ class _FIELDS:
     COLLECTIVE_BOOKING_CANCELLATION_LIMIT_DATE = Field(description="Deadline to cancel the booking")
     # Educational institution fields
     EDUCATIONAL_INSTITUTION_ID = Field(
-        description="Educational institution id in the pass Culture application. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-educational-data/operation/ListEducationalInstitutions)**",
+        description=f"Educational institution id in the pass Culture application. Institutions can be found on **[this endpoint (`Get all educational institutions`)]({LIST_EDUCATIONAL_INSTITUTIONS_ANCHOR})**",
         example=1234,
     )
     EDUCATIONAL_INSTITUTION_UAI = Field(
-        description='Educational institution UAI ("Unité Administrative Immatriculée") code. Institutions can be found on **[this endpoint (`Get all educational institutions`)](#tag/Collective-educational-data/operation/ListEducationalInstitutions)**',
+        description=f'Educational institution UAI ("Unité Administrative Immatriculée") code. Institutions can be found on **[this endpoint (`Get all educational institutions`)]({LIST_EDUCATIONAL_INSTITUTIONS_ANCHOR})**',
         example="0010008D",
     )
     EDUCATIONAL_INSTITUTION_NAME = Field(
