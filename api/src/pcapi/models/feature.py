@@ -123,7 +123,6 @@ class FeatureToggle(enum.Enum):
     ENABLE_COLLECTIVE_NEW_STATUSES = "Activer les nouveaux statuts des offres collectives"
     WIP_ENABLE_COLLECTIVE_DRAFT_OFFERS = "Activer les brouillons pour les offres collectives"
     WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE = "Utiliser les OffererAddress comme source de données"
-    ENABLE_SENTRY_FINE_SAMPLING = "Activer l'échantillonnage Sentry affiné"
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -168,7 +167,6 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.ENABLE_IOS_OFFERS_LINK_WITH_REDIRECTION,
     FeatureToggle.ENABLE_PRO_BOOKINGS_V2,
     FeatureToggle.ENABLE_PRO_NEW_NAV_MODIFICATION,
-    FeatureToggle.ENABLE_SENTRY_FINE_SAMPLING,
     FeatureToggle.ENABLE_SWITCH_ALLOCINE_SYNC_TO_EMS_SYNC,
     FeatureToggle.ENABLE_TITELIVE_MUSIC_TYPES_IN_API_OUTPUT,
     FeatureToggle.ENABLE_UBBLE_SUBSCRIPTION_LIMITATION,
