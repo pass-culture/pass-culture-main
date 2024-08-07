@@ -1055,6 +1055,30 @@ class FinanceIncident(PcObject, Base, Model):
             .where(Cashflow.status == CashflowStatus.ACCEPTED)
         )
 
+    @property
+    def cashflow_batch_label(self) -> str | None:
+        for booking_finance_incident in self.booking_finance_incidents:
+            for finance_event in booking_finance_incident.finance_events:
+                for pricing in finance_event.pricings:
+                    if pricing.status in (PricingStatus.PROCESSED, PricingStatus.INVOICED):
+                        for cashflow in pricing.cashflows:
+                            return cashflow.batch.label
+        return None
+
+    @property
+    def invoice_url(self) -> str | None:
+        # flatten finance events to avoid pylint's too many nested blocks warning
+        finance_events: list = sum(
+            [booking_finance_incident.finance_events for booking_finance_incident in self.booking_finance_incidents], []
+        )
+        for finance_event in finance_events:
+            for pricing in finance_event.pricings:
+                if pricing.status in (PricingStatus.PROCESSED, PricingStatus.INVOICED):
+                    for cashflow in pricing.cashflows:
+                        for invoice in cashflow.invoices:
+                            return invoice.url
+        return None
+
 
 class BookingFinanceIncident(PcObject, Base, Model):
 

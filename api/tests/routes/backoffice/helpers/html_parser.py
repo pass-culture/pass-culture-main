@@ -1,4 +1,5 @@
 import re
+import typing
 
 from bs4 import BeautifulSoup
 
@@ -139,18 +140,18 @@ def extract_alert(html_content: str) -> str:
     return _filter_whitespaces(alert.text)
 
 
-def get_tag(html_content: str, class_: str, tag: str = "div") -> list[str]:
+def get_tag(html_content: str, class_: str, tag: str = "div", **attrs: typing.Any) -> str:
     """
     Find a tag given its class
     """
     soup = get_soup(html_content)
-    tag = soup.find(tag, class_=class_)
-    assert tag is not None
+    found_tag = soup.find(tag, class_=class_, **attrs)
+    assert found_tag is not None
 
-    return tag.encode("utf-8")
+    return found_tag.encode("utf-8")
 
 
-def extract_alerts(html_content: str) -> str:
+def extract_alerts(html_content: str) -> list[str]:
     """
     Extract all flash messages
     """
@@ -162,7 +163,7 @@ def extract_alerts(html_content: str) -> str:
     return [_filter_whitespaces(alert.text) for alert in alerts]
 
 
-def assert_no_alert(html_content: str) -> str:
+def assert_no_alert(html_content: str) -> None:
     soup = get_soup(html_content)
 
     alert = soup.find("div", class_="alert")
