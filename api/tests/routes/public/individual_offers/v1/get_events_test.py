@@ -6,7 +6,6 @@ from pcapi.core import testing
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
-from pcapi.core.providers import models as providers_models
 from pcapi.core.testing import assert_no_duplicated_queries
 
 from tests.routes.public.helpers import PublicAPIVenueEndpointHelper
@@ -14,7 +13,6 @@ from tests.routes.public.helpers import PublicAPIVenueEndpointHelper
 
 @pytest.mark.usefixtures("db_session")
 class GetEventsTest(PublicAPIVenueEndpointHelper):
-    needed_permission = (providers_models.ApiResourceEnum.events, providers_models.PermissionEnum.READ)
     endpoint_url = "/public/offers/v1/events"
 
     def test_should_raise_401_because_not_authenticated(self, client):

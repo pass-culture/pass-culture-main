@@ -16,19 +16,6 @@ from . import constants
 from . import models
 
 
-def get_venue_provider_permission_or_none(
-    venue_provider_id: int,
-    resource: models.ApiResourceEnum,
-    permission: models.PermissionEnum,
-) -> models.VenueProviderPermission | None:
-    return (
-        models.VenueProviderPermission.query.filter(models.VenueProviderPermission.venueProviderId == venue_provider_id)
-        .filter(models.VenueProviderPermission.resource == resource)
-        .filter(models.VenueProviderPermission.permission == permission)
-        .one_or_none()
-    )
-
-
 def get_venue_provider_by_id(venue_provider_id: int) -> models.VenueProvider:
     return models.VenueProvider.query.filter_by(id=venue_provider_id).one()
 

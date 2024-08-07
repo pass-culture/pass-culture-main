@@ -92,7 +92,6 @@ class Returns201Test:
         assert response.json["quantity"] == 50
         venue_provider = VenueProvider.query.one()
         mock_synchronize_venue_provider.assert_called_once_with(venue_provider)
-        assert len(venue_provider.permissions) == 0
 
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.workers.venue_provider_job.synchronize_venue_provider")
@@ -123,7 +122,6 @@ class Returns201Test:
         assert response.json["quantity"] == 50
         venue_provider = VenueProvider.query.one()
         mock_synchronize_venue_provider.assert_called_once_with(venue_provider)
-        assert len(venue_provider.permissions) == 0
 
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.workers.venue_provider_job.venue_provider_job.delay")
@@ -315,8 +313,6 @@ class Returns201Test:
         assert response.json["provider"]["id"] == provider.id
         assert response.json["venueId"] == venue.id
         assert response.json["venueIdAtOfferProvider"] == cds_pivot.idAtProvider
-        venue_provider = VenueProvider.query.one()
-        assert len(venue_provider.permissions) == 0
 
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.workers.venue_provider_job.synchronize_ems_venue_provider")
@@ -339,7 +335,6 @@ class Returns201Test:
         venue_provider = VenueProvider.query.one()
         mocked_synchronize_ems_venue_provider.assert_called_once_with(venue_provider)
         venue_provider = VenueProvider.query.one()
-        assert len(venue_provider.permissions) == 0
 
 
 class Returns400Test:
