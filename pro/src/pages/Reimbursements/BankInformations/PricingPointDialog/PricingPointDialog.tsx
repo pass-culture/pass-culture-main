@@ -60,12 +60,12 @@ export const PricingPointDialog = ({
 
   return (
     <DialogBox
-      labelledBy="Sélectionner un SIRET"
+      labelledBy="choose-a-siret"
       extraClassNames={styles.dialog}
       hasCloseButton
       onDismiss={closeDialog}
     >
-      <h1 className={styles['callout-title']}>
+      <h1 id="choose-a-siret" className={styles['callout-title']}>
         Sélectionnez un SIRET pour le lieu “{selectedVenue.commonName}”{' '}
       </h1>
       <Callout

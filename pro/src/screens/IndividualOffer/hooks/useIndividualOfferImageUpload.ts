@@ -71,20 +71,19 @@ export const useIndividualOfferImageUpload = () => {
     }
     if (offer === null) {
       setImageOfferCreationArgs(creationArgs)
-      imageFileToDataUrl(imageFile, (imageUrl) => {
-        setImageOffer({
-          originalUrl: imageUrl,
-          url: imageCroppedDataUrl || imageUrl,
-          credit,
-          cropParams: cropParams
-            ? {
-                xCropPercent: cropParams.x,
-                yCropPercent: cropParams.y,
-                heightCropPercent: cropParams.height,
-                widthCropPercent: cropParams.width,
-              }
-            : undefined,
-        })
+      const imageUrl = await imageFileToDataUrl(imageFile)
+      setImageOffer({
+        originalUrl: imageUrl,
+        url: imageCroppedDataUrl || imageUrl,
+        credit,
+        cropParams: cropParams
+          ? {
+              xCropPercent: cropParams.x,
+              yCropPercent: cropParams.y,
+              heightCropPercent: cropParams.height,
+              widthCropPercent: cropParams.width,
+            }
+          : undefined,
       })
     } else {
       try {

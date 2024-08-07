@@ -6,8 +6,11 @@ declare namespace Cypress {
       redirectUrl?: string
       acceptCookies?: boolean
     }): Chainable
+
     setFeatureFlags(features: Feature[]): Chainable
-    acceptCookies(): Chainable
+
+    refuseCookies(): Chainable
+
     getFakeAdageToken(): Chainable
   }
 }

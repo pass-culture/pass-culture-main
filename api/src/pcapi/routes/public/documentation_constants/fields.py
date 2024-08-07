@@ -137,6 +137,11 @@ class _FIELDS:
         example=True,
         default=False,
     )
+    OFFER_ENABLE_DOUBLE_BOOKINGS_ENABLED = Field(
+        description="If set to true, users may book the offer for two persons. Second item will be delivered at the same price as the first one. Category must be compatible with this feature.",
+        example=True,
+        default=True,
+    )
 
     # Products fields
     EANS_FILTER = Field(description="EANs list (max 100)", example="3700551782888,9782895761792")

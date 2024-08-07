@@ -49,7 +49,7 @@
   margin-top: rem.torem(45px);
 
   &-title {
-    @include fonts.button;
+    @include fonts.bold;
 
     margin-bottom: rem.torem(4px);
     line-height: normal;

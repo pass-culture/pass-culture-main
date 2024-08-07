@@ -15,6 +15,7 @@ import {
   getCollectiveOfferTemplateFactory,
 } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import {
   OfferEducationalActions,
@@ -38,7 +39,14 @@ vi.mock('swr', async () => ({
 }))
 
 const renderOfferEducationalActions = (props: OfferEducationalActionsProps) => {
-  return renderWithProviders(<OfferEducationalActions {...props} />)
+  return renderWithProviders(<OfferEducationalActions {...props} />, {
+    storeOverrides: {
+      user: {
+        currentUser: sharedCurrentUserFactory(),
+        selectedOffererId: 1,
+      },
+    },
+  })
 }
 
 describe('OfferEducationalActions', () => {
@@ -190,6 +198,7 @@ describe('OfferEducationalActions', () => {
         from: '/offre/collectif/recapitulatif',
         offerId: 7,
         offerType: 'collective',
+        offererId: '1',
       }
     )
   })

@@ -569,6 +569,11 @@ class BeneficiaryFraudCheck(PcObject, Base, Model):
             return min(self.dateCreated, registration_datetime)
         return self.dateCreated
 
+    def get_identity_check_birth_date(self) -> datetime.date | None:
+        if self.type not in IDENTITY_CHECK_TYPES or not self.resultContent:
+            return None
+        return self.source_data().get_birth_date()
+
     def source_data(self) -> FraudCheckContent:  # type: ignore[type-var]
         cls = FRAUD_CHECK_CONTENT_MAPPING[self.type]
         if not cls:

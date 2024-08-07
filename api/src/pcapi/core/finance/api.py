@@ -1242,7 +1242,7 @@ def _write_csv(
     compress: bool = False,
 ) -> pathlib.Path:
     local_now = pytz.utc.localize(datetime.datetime.utcnow()).astimezone(utils.ACCOUNTING_TIMEZONE)
-    filename = filename_base + local_now.strftime("_%Y%m%d_%H%M%S") + ".csv"
+    filename = filename_base + local_now.strftime("_%Y%m%d_%H%M") + ".csv"
     # Store file in a dedicated directory within "/tmp". It's easier
     # to clean files in tests that way.
     path = pathlib.Path(tempfile.mkdtemp()) / filename
@@ -2252,11 +2252,11 @@ def get_reimbursements_by_venue(
         venue_common_name = venue_pricing_info.common_name
         reimbursed_amount = venue_pricing_info.reimbursed_amount
         booking_amount = -utils.to_eurocents(venue_pricing_info.booking_amount)
-        if venue_pricing_info.venue_id in reimbursements_by_venue:
-            reimbursements_by_venue[venue_pricing_info.venue_id]["reimbursed_amount"] += reimbursed_amount
-            reimbursements_by_venue[venue_pricing_info.venue_id]["validated_booking_amount"] += booking_amount
+        if venue_id in reimbursements_by_venue:
+            reimbursements_by_venue[venue_id]["reimbursed_amount"] += reimbursed_amount
+            reimbursements_by_venue[venue_id]["validated_booking_amount"] += booking_amount
         else:
-            reimbursements_by_venue[venue_pricing_info.venue_id] = {
+            reimbursements_by_venue[venue_id] = {
                 "venue_name": venue_common_name,
                 "reimbursed_amount": reimbursed_amount,
                 "validated_booking_amount": booking_amount,
@@ -2605,6 +2605,7 @@ def create_deposit(
         expirationDate=granted_deposit.expiration_date,
     )
     db.session.add(deposit)
+    db.session.flush()
 
     # Edge-cases: Validation of the registration occurred over a birthday
     # Then we need to add recredit to compensate
@@ -2690,9 +2691,8 @@ def _get_known_age_at_deposit(user: users_models.User) -> int | None:
     identity_provider_birthday_checks = [
         fraud_check
         for fraud_check in user.beneficiaryFraudChecks
-        if fraud_check.type in fraud_models.IDENTITY_CHECK_TYPES
-        and fraud_check.status == fraud_models.FraudCheckStatus.OK
-        and fraud_check.source_data().get_birth_date() is not None
+        if fraud_check.status == fraud_models.FraudCheckStatus.OK
+        and fraud_check.get_identity_check_birth_date() is not None
         and fraud_check.dateCreated < deposit_date
     ]
     last_identity_provider_birthday_check = max(
@@ -2716,7 +2716,7 @@ def _get_known_age_at_deposit(user: users_models.User) -> int | None:
 
         case check, None:
             assert check is not None
-            known_birthday_at_deposit = check.source_data().get_birth_date()
+            known_birthday_at_deposit = check.get_identity_check_birth_date()
 
         case None, action:
             assert action is not None
@@ -2732,7 +2732,7 @@ def _get_known_age_at_deposit(user: users_models.User) -> int | None:
                     action.extraData["modified_info"]["validatedBirthDate"]["new_info"], "%Y-%m-%d"
                 ).date()
             else:
-                known_birthday_at_deposit = check.source_data().get_birth_date()
+                known_birthday_at_deposit = check.get_identity_check_birth_date()
 
         case _:
             raise ValueError(

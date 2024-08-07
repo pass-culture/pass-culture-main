@@ -127,7 +127,10 @@ describe('Offerer', () => {
 
     expect(
       screen.getByRole('link', { name: /En savoir plus/ })
-    ).toBeInTheDocument()
+    ).toHaveAttribute(
+      'href',
+      'https://aide.passculture.app/hc/fr/articles/4633420022300--Acteurs-Culturels-Collectivit%C3%A9-Lieu-rattach%C3%A9-%C3%A0-une-collectivit%C3%A9-S-inscrire-et-param%C3%A9trer-son-compte-pass-Culture-'
+    )
   })
 
   it('should display authentication signup journey if offerer is set', () => {

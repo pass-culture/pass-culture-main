@@ -1,4 +1,5 @@
 import datetime
+import functools
 import json
 import logging
 
@@ -22,11 +23,15 @@ import pcapi.core.providers.repository as providers_repository
 import pcapi.core.users.models as users_models
 from pcapi.models import db
 from pcapi.models import feature
+import pcapi.tasks.external_api_booking_notification_tasks as external_api_booking_notification
+from pcapi.tasks.serialization.external_api_booking_notification_tasks import BookingAction
+from pcapi.tasks.serialization.external_api_booking_notification_tasks import ExternalApiBookingNotificationRequest
 from pcapi.utils import requests
 from pcapi.utils.queue import add_to_queue
 
 from . import exceptions
 from . import serialize
+from . import validation
 
 
 logger = logging.getLogger(__name__)
@@ -88,6 +93,7 @@ def _get_external_bookings_client_api(venue_id: int) -> external_bookings_models
             raise ValueError(f"Unknown Provider: {cinema_venue_provider.provider.localClass}")
 
 
+@functools.cache
 def get_active_cinema_venue_provider(venue_id: int) -> providers_models.VenueProvider:
     cinema_venue_provider = (
         providers_repository.get_cinema_venue_provider_query(venue_id)
@@ -106,6 +112,8 @@ def book_event_ticket(
     provider: providers_models.Provider,
     venue_provider: providers_models.VenueProvider | None,
 ) -> tuple[list[external_bookings_models.Ticket], int | None]:
+    validation.check_ticketing_service_is_correctly_set(provider=provider, venue_provider=venue_provider)
+
     payload = serialize.ExternalEventBookingRequest.build_external_booking(stock, booking, beneficiary)
     json_payload = payload.json()
     hmac_signature = generate_hmac_signature(provider.hmacKey, json_payload)
@@ -194,6 +202,8 @@ def cancel_event_ticket(
     is_booking_saved: bool,
     venue_provider: providers_models.VenueProvider | None,
 ) -> None:
+    validation.check_ticketing_service_is_correctly_set(provider=provider, venue_provider=venue_provider)
+
     payload = serialize.ExternalEventCancelBookingRequest.build_external_cancel_booking(barcodes)
     json_payload = payload.json()
     hmac_signature = generate_hmac_signature(provider.hmacKey, json_payload)
@@ -222,6 +232,64 @@ def cancel_event_ticket(
             "Could not parse external booking cancel response",
             extra={"status_code": response.status_code, "response": response.text},
         )
+
+
+def send_booking_notification_to_external_service(booking: bookings_models.Booking, action: BookingAction) -> None:
+    """
+    Send booking notification (cancel or booking) to provider external service.
+
+    Do not send notification when:
+        - notification params are not properly set (missing `hmacKey` or/and `notificationExternalUrl`)
+        - booking is linked to an external ticketing system
+    """
+    hmacKey, notification_url = _get_notification_params(booking)
+    notification_system_not_set = not hmacKey or not notification_url
+
+    booking_is_linked_to_ticketing_system = (
+        booking.stock.offer.withdrawalType == offers_models.WithdrawalTypeEnum.IN_APP
+    )
+
+    if booking_is_linked_to_ticketing_system or notification_system_not_set:
+        return
+
+    try:
+        external_api_notification_request = ExternalApiBookingNotificationRequest.build(booking, action)
+        signature = generate_hmac_signature(hmacKey, external_api_notification_request.json())  # type: ignore[arg-type]
+        payload = external_api_booking_notification.ExternalApiBookingNotificationTaskPayload(
+            data=external_api_notification_request,
+            notificationUrl=notification_url,  # type: ignore[arg-type]
+            signature=signature,
+        )
+        external_api_booking_notification.external_api_booking_notification_task.delay(payload)
+    except Exception as err:  # pylint: disable=broad-except
+        logger.exception(
+            "Error: %s. Could not send external booking notification for: booking: %s, action %s",
+            err,
+            action.value,
+            booking.id,
+        )
+
+
+def _get_notification_params(booking: bookings_models.Booking) -> tuple[str | None, str | None]:
+    """
+    Return (`hmacKey`, `notificationExternalUrl`) necessary to notify provider
+    """
+    provider = providers_repository.get_provider_enabled_for_pro_by_id(booking.stock.offer.lastProviderId)
+
+    if not provider:  # provider not enabled
+        return None, None
+
+    notification_url = provider.notificationExternalUrl
+    venue_provider = providers_repository.get_venue_provider_by_venue_and_provider_ids(
+        booking.stock.offer.venueId,
+        provider.id,
+    )
+
+    # `notificationExternalUrl` defined at venue level has priority over `notificationExternalUrl` defined at provider level
+    if venue_provider and venue_provider.externalUrls and venue_provider.externalUrls.notificationExternalUrl:
+        notification_url = venue_provider.externalUrls.notificationExternalUrl
+
+    return provider.hmacKey, notification_url
 
 
 def _check_external_booking_response_is_ok(response: requests.Response) -> None:

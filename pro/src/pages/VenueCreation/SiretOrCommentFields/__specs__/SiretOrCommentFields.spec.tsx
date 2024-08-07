@@ -10,7 +10,7 @@ import { Button } from 'ui-kit/Button/Button'
 
 import {
   SiretOrCommentFields,
-  SiretOrCommentInterface,
+  SiretOrCommentFieldsProps,
 } from '../SiretOrCommentFields'
 import { generateSiretValidationSchema } from '../validationSchema'
 
@@ -31,7 +31,7 @@ const renderSiretOrComment = async ({
 }: {
   initialValues: Partial<VenueEditionFormValues>
   onSubmit: () => void
-  props: SiretOrCommentInterface
+  props: SiretOrCommentFieldsProps
   validationSchema: any
 }) => {
   const rtlReturns = render(
@@ -62,7 +62,7 @@ const renderSiretOrComment = async ({
 }
 
 describe('components | SiretOrCommentFields', () => {
-  let props: SiretOrCommentInterface
+  let props: SiretOrCommentFieldsProps
   let initialValues: Partial<VenueCreationFormValues>
   let validationSchema: any
   const onSubmit = vi.fn()
@@ -70,14 +70,12 @@ describe('components | SiretOrCommentFields', () => {
   beforeEach(() => {
     const setIsFieldNameFrozen = vi.fn()
     const updateIsSiretValued = vi.fn()
-    const setIsSiretValued = vi.fn()
     validationSchema = generateSiretValidationSchema(false, true, '012345678')
     initialValues = { comment: '', siret: '' }
     props = {
       isCreatedEntity: true,
       setIsFieldNameFrozen: setIsFieldNameFrozen,
       updateIsSiretValued: updateIsSiretValued,
-      setIsSiretValued: setIsSiretValued,
       siren: '123456789',
     }
   })

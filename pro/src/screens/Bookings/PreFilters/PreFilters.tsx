@@ -37,7 +37,7 @@ export interface PreFiltersProps {
   isLocalLoading: boolean
   resetPreFilters: () => void
   urlParams?: PreFiltersParams
-  updateUrl?: (selectedPreFilters: PreFiltersParams) => void
+  updateUrl: (selectedPreFilters: PreFiltersParams) => void
   venues: { id: string; displayName: string }[]
 }
 
@@ -117,9 +117,7 @@ export const PreFilters = ({
   const requestFilteredBookings = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     applyPreFilters(selectedPreFilters)
-    if (updateUrl) {
-      updateUrl(selectedPreFilters)
-    }
+    updateUrl(selectedPreFilters)
   }
 
   const isRefreshRequired =
@@ -167,7 +165,7 @@ export const PreFilters = ({
         })}
         onSubmit={requestFilteredBookings}
       >
-        <div>
+        <div className={styles['pre-filters-form-filters']}>
           <FormLayout.Row inline>
             <FilterByVenue
               isDisabled={isFiltersDisabled}
@@ -193,17 +191,19 @@ export const PreFilters = ({
               selectedBookingFilter={selectedPreFilters.bookingStatusFilter}
               updateFilters={updateSelectedFilters}
             />
+
+            <div className={styles['reset-filters-wrapper']}>
+              <Button
+                icon={fullRefreshIcon}
+                disabled={!hasPreFilters}
+                onClick={resetPreFilters}
+                variant={ButtonVariant.TERNARY}
+                className={styles['reset-filters']}
+              >
+                Réinitialiser les filtres
+              </Button>
+            </div>
           </FormLayout.Row>
-        </div>
-        <div className={styles['reset-filters']}>
-          <Button
-            icon={fullRefreshIcon}
-            disabled={!hasPreFilters}
-            onClick={resetPreFilters}
-            variant={ButtonVariant.TERNARY}
-          >
-            Réinitialiser les filtres
-          </Button>
         </div>
         <div className="button-group">
           <div className="button-group-buttons">
@@ -222,7 +222,7 @@ export const PreFilters = ({
               disabled={isTableLoading || isLocalLoading || isFiltersDisabled}
               variant={ButtonVariant.SECONDARY}
               onClick={() => {
-                updateUrl && updateUrl(selectedPreFilters)
+                updateUrl(selectedPreFilters)
                 logEvent(Events.CLICKED_SHOW_BOOKINGS, {
                   from: location.pathname,
                 })

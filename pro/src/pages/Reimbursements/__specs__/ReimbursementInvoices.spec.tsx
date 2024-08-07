@@ -1,4 +1,8 @@
-import { screen, waitForElementToBeRemoved } from '@testing-library/react'
+import {
+  screen,
+  waitFor,
+  waitForElementToBeRemoved,
+} from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import * as router from 'react-router-dom'
 import { expect } from 'vitest'
@@ -119,37 +123,30 @@ describe('reimbursementsWithFilters', () => {
     expect((await screen.findAllByRole('row')).length).toEqual(4)
     expect(screen.queryAllByRole('columnheader').length).toEqual(6)
 
-    const firstLine = [
-      '<label class="base-checkbox"><span class="base-checkbox-label-row"><input type="checkbox" class="base-checkbox-input"><span class="base-checkbox-label visually-hidden">Sélection du remboursement du 02/11/2022</span></span></label>',
-      '02/11/2022',
-      '<span class="document-type-content"><svg class="more-icon" viewBox="0 0 48 48" aria-hidden="true" width="16"><use xlink:href="/icons/stroke-more.svg#icon"></use></svg>Remboursement</span>',
-      'First bank account',
-      'VIR7',
-      '+100,00&nbsp;€',
-    ]
-    const secondLine = [
-      '<label class="base-checkbox"><span class="base-checkbox-label-row"><input type="checkbox" class="base-checkbox-input"><span class="base-checkbox-label visually-hidden">Sélection du trop perçu du 03/11/2022</span></span></label>',
-      '03/11/2022',
-      '<span class="document-type-content"><svg class="less-icon" viewBox="0 0 48 48" aria-hidden="true" width="16"><use xlink:href="/icons/stroke-less.svg#icon"></use></svg>Trop&nbsp;perçu</span>',
-      'Second bank account',
-      'N/A',
-      '-50,00&nbsp;€',
-    ]
-    const thirdLine = [
-      '<label class="base-checkbox"><span class="base-checkbox-label-row"><input type="checkbox" class="base-checkbox-input"><span class="base-checkbox-label visually-hidden">Sélection du remboursement du 02/10/2023</span></span></label>',
-      '02/10/2023',
-      '<span class="document-type-content"><svg class="more-icon" viewBox="0 0 48 48" aria-hidden="true" width="16"><use xlink:href="/icons/stroke-more.svg#icon"></use></svg>Remboursement</span>',
-      'First bank account',
-      'VIR9, VIR12',
-      '+75,00&nbsp;€',
-    ]
+    // first line
+    expect(
+      screen.getByText('Sélection du remboursement du 02/11/2022')
+    ).toBeInTheDocument()
+    expect(screen.getByText('02/11/2022')).toBeInTheDocument()
+    expect(screen.getAllByText('First bank account')).toHaveLength(2)
+    expect(screen.getByText('VIR7')).toBeInTheDocument()
+    expect(screen.getByText(/100,00/)).toBeInTheDocument()
 
-    const reimbursementCells = screen
-      .getAllByRole('cell')
-      .map((cell) => cell.innerHTML)
-    expect(reimbursementCells.slice(0, 6)).toEqual(firstLine)
-    expect(reimbursementCells.slice(7, 13)).toEqual(secondLine)
-    expect(reimbursementCells.slice(14, 20)).toEqual(thirdLine)
+    // second line
+    expect(
+      screen.getByText('Sélection du trop perçu du 03/11/2022')
+    ).toBeInTheDocument()
+    expect(screen.getByText('03/11/2022')).toBeInTheDocument()
+    expect(screen.getByText('N/A')).toBeInTheDocument()
+    expect(screen.getByText(/50,00/)).toBeInTheDocument()
+
+    // third line
+    expect(
+      screen.getByText('Sélection du remboursement du 02/10/2023')
+    ).toBeInTheDocument()
+    expect(screen.getByText('02/10/2023')).toBeInTheDocument()
+    expect(screen.getByText('VIR9, VIR12')).toBeInTheDocument()
+    expect(screen.getByText(/75,00/)).toBeInTheDocument()
   })
 
   it('should display new invoice table if FF WIP_ENABLE_FINANCE_INCIDENT is enable', async () => {
@@ -459,6 +456,7 @@ describe('reimbursementsWithFilters', () => {
       })
     )
   })
+
   it('should display the bank account section even without context', () => {
     vi.spyOn(router, 'useOutletContext').mockReturnValue(undefined)
 
@@ -469,5 +467,79 @@ describe('reimbursementsWithFilters', () => {
         'Vous n’avez pas encore de justificatifs de remboursement disponibles'
       )
     ).toBeInTheDocument()
+  })
+
+  it('should not display Bank account when only one linked', async () => {
+    vi.spyOn(
+      api,
+      'getOffererBankAccountsAndAttachedVenues'
+    ).mockResolvedValueOnce({
+      id: 1,
+      bankAccounts: [defaultBankAccount],
+      managedVenues: [],
+    })
+    renderReimbursementsInvoices()
+
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+    expect(screen.queryByLabelText('Compte bancaire')).not.toBeInTheDocument()
+  })
+
+  it('should display Bank account filter when several ', async () => {
+    vi.spyOn(
+      api,
+      'getOffererBankAccountsAndAttachedVenues'
+    ).mockResolvedValueOnce({
+      id: 1,
+      bankAccounts: BASE_BANK_ACCOUNTS,
+      managedVenues: [],
+    })
+    renderReimbursementsInvoices()
+
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+    expect(screen.getByLabelText('Compte bancaire')).toBeInTheDocument()
+  })
+
+  it('should call api with requested filters', async () => {
+    renderReimbursementsInvoices()
+
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+    await userEvent.selectOptions(
+      screen.getByLabelText('Compte bancaire'),
+      BASE_BANK_ACCOUNTS[0].id.toString()
+    )
+
+    const beginPeriod = screen.getByLabelText('Début de la période')
+    await userEvent.clear(beginPeriod)
+    await userEvent.type(beginPeriod, '2020-11-17')
+
+    const endPeriod = screen.getByLabelText('Fin de la période')
+    await userEvent.clear(endPeriod)
+    await userEvent.type(endPeriod, '2020-11-19')
+
+    await userEvent.click(screen.getByText('Lancer la recherche'))
+
+    // TODO: this call should not occured as many times
+    await waitFor(() => {
+      expect(api.getInvoicesV2).toHaveBeenCalledTimes(2 /* au render */ + 1)
+    })
+
+    expect(api.getInvoicesV2).toHaveBeenLastCalledWith(
+      // 3,
+      '2020-11-17',
+      '2020-11-19',
+      BASE_BANK_ACCOUNTS[0].id,
+      1
+    )
+
+    await userEvent.click(screen.getByText('Réinitialiser les filtres'))
+
+    expect(screen.getByLabelText('Compte bancaire')).toHaveValue('all')
+    expect(screen.getByLabelText('Début de la période')).toHaveValue(
+      '2020-11-15'
+    )
+    expect(screen.getByLabelText('Fin de la période')).toHaveValue('2020-12-15')
   })
 })

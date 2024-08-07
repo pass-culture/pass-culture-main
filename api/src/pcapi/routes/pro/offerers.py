@@ -309,7 +309,7 @@ def get_offerer_addresses(
     offerer_addresses = repository.get_offerer_addresses(offerer_id, only_with_offers=query.onlyWithOffers)
     return offerers_serialize.GetOffererAddressesResponseModel(
         __root__=[
-            offerers_serialize.GetOffererAddressResponseModel.from_orm(offerer_address)
+            offerers_serialize.GetOffererAddressWithIsEditableResponseModel.from_orm(offerer_address)
             for offerer_address in offerer_addresses
         ]
     )

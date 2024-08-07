@@ -19,7 +19,9 @@ export const FilterByStatus = ({
   selectedStatusId,
 }: FilterByStatusProps): JSX.Element => (
   <>
-    <label className="visually-hidden">Type de période</label>
+    <label htmlFor="status-filter" className="visually-hidden">
+      Type de période
+    </label>
     <SelectInput
       onChange={(event) =>
         updateFilters({
@@ -31,6 +33,7 @@ export const FilterByStatus = ({
       className={styles['status-filter']}
       options={BOOKING_STATUS_FILTER_OPTIONS}
       value={selectedStatusId}
+      id={'status-filter'}
     />
   </>
 )

@@ -22,12 +22,14 @@ export const AppPreviewOffer = ({
         alt=""
         className={homeStyle['image-preview-shell']}
         src={homeShell}
+        role="presentation"
       />
       <img
         data-testid="app-preview-offer-img-home"
         alt=""
         className={homeStyle['image-preview-home-preview']}
         src={imageUrl}
+        role="presentation"
       />
     </ImagePreview>
     <ImagePreview title="Détails de l’offre">
@@ -35,17 +37,20 @@ export const AppPreviewOffer = ({
         alt=""
         className={offerStyle['image-preview-blur-offer-preview']}
         src={imageUrl}
+        role="presentation"
       />
       <img
         alt=""
         className={offerStyle['image-preview-shell']}
         src={offerShell}
+        role="presentation"
       />
       <img
         data-testid="app-preview-offer-img"
         alt=""
         className={offerStyle['image-preview-offer-preview']}
         src={imageUrl}
+        role="presentation"
       />
     </ImagePreview>
   </ImagePreviewsWrapper>

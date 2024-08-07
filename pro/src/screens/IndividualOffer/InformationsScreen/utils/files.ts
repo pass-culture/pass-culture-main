@@ -1,17 +1,18 @@
-// FIXME: find a way to test FileReader
-/* istanbul ignore next: DEBT, TO FIX */
-export const imageFileToDataUrl = (
-  image: File,
-  onLoad: (imageUrl: string) => void
-) => {
-  const reader = new FileReader()
-  reader.addEventListener(
-    'load',
-    () => {
-      onLoad(reader.result as string)
-      return Promise.resolve()
-    },
-    false
-  )
-  reader.readAsDataURL(image)
+export const imageFileToDataUrl = (image: File): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.addEventListener(
+      'load',
+      () => {
+        resolve(reader.result as string)
+      },
+      false
+    )
+    reader.addEventListener(
+      'error',
+      () => reject(new Error('Unable to read file', { cause: reader.error })),
+      false
+    )
+    reader.readAsDataURL(image)
+  })
 }

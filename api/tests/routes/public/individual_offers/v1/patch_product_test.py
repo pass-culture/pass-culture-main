@@ -15,12 +15,48 @@ from pcapi.models import db
 from pcapi.utils import human_ids
 
 from tests.routes import image_data
+from tests.routes.public.helpers import ProductEndpointHelper
+from tests.routes.public.helpers import PublicAPIVenueEndpointHelper
 
 from . import utils
 
 
 @pytest.mark.usefixtures("db_session")
-class PatchProductTest:
+class PatchProductTest(PublicAPIVenueEndpointHelper, ProductEndpointHelper):
+    endpoint_url = "/public/offers/v1/products"
+
+    def test_should_raise_401_because_not_authenticated(self, client):
+        response = client.patch(self.endpoint_url)
+        assert response.status_code == 401
+
+    def test_should_raise_404_because_has_no_access_to_venue(self, client):
+        plain_api_key, _ = self.setup_provider()
+        venue = self.setup_venue()
+        product = self.create_base_product(venue)
+
+        response = client.with_explicit_token(plain_api_key).patch(
+            self.endpoint_url,
+            json={
+                "offerId": product.id,
+                "isActive": False,
+            },
+        )
+        assert response.status_code == 404
+
+    def test_should_raise_404_because_venue_provider_is_inactive(self, client):
+        plain_api_key, venue_provider = self.setup_inactive_venue_provider()
+        venue = venue_provider.venue
+        product = self.create_base_product(venue)
+
+        response = client.with_explicit_token(plain_api_key).patch(
+            self.endpoint_url,
+            json={
+                "offerId": product.id,
+                "isActive": False,
+            },
+        )
+        assert response.status_code == 404
+
     def test_deactivate_offer(self, client):
         venue, api_key = utils.create_offerer_provider_linked_to_venue()
         product_offer = offers_factories.ThingOfferFactory(
@@ -31,7 +67,7 @@ class PatchProductTest:
         )
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
-            "/public/offers/v1/products",
+            self.endpoint_url,
             json={
                 "offerId": product_offer.id,
                 "isActive": False,
@@ -53,7 +89,7 @@ class PatchProductTest:
         )
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
-            "/public/offers/v1/products",
+            self.endpoint_url,
             json={"offerId": product_offer.id, "itemCollectionDetails": None},
         )
 
@@ -69,7 +105,7 @@ class PatchProductTest:
         )
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
-            "/public/offers/v1/products",
+            self.endpoint_url,
             json={"offerId": product_offer.id, "image": {"file": image_data.GOOD_IMAGE}},
         )
 
@@ -90,7 +126,7 @@ class PatchProductTest:
         )
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
-            "/public/offers/v1/products",
+            self.endpoint_url,
             json={"offerId": product_offer.id, "bookingEmail": "spam@example.com"},
         )
 
@@ -110,7 +146,7 @@ class PatchProductTest:
         )
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
-            "/public/offers/v1/products",
+            self.endpoint_url,
             json={"offerId": product_offer.id, "accessibility": {"audioDisabilityCompliant": False}},
         )
 
@@ -135,7 +171,7 @@ class PatchProductTest:
         )
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
-            "/public/offers/v1/products",
+            self.endpoint_url,
             json={"offerId": product_offer.id, "stock": {"price": 1000, "quantity": 1}},
         )
 
@@ -159,7 +195,7 @@ class PatchProductTest:
         stock = offers_factories.StockFactory(offer=product_offer, quantity=30, price=10)
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
-            "/public/offers/v1/products",
+            self.endpoint_url,
             json={"offerId": product_offer.id, "stock": {"quantity": "unlimited"}},
         )
         assert response.status_code == 200
@@ -176,7 +212,7 @@ class PatchProductTest:
     def test_error_if_no_offer_is_found(self, client):
         utils.create_offerer_provider_linked_to_venue()
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
-            "/public/offers/v1/products",
+            self.endpoint_url,
             json={
                 "offerId": "33",
                 "stock": {"bookingLimitDatetime": None},
@@ -193,7 +229,7 @@ class PatchProductTest:
         )
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
-            "/public/offers/v1/products", json={"offerId": product_offer.id, "isActive": False}
+            self.endpoint_url, json={"offerId": product_offer.id, "isActive": False}
         )
 
         assert response.status_code == 404
@@ -208,7 +244,7 @@ class PatchProductTest:
         stock = offers_factories.StockFactory(offer=product_offer, bookingLimitDatetime="2021-01-15T00:00:00Z")
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
-            "/public/offers/v1/products",
+            self.endpoint_url,
             json={
                 "offerId": product_offer.id,
                 "stock": {"bookingLimitDatetime": None},
@@ -231,7 +267,7 @@ class PatchProductTest:
         stock = offers_factories.StockFactory(offer=product_offer, bookingLimitDatetime=None)
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
-            "/public/offers/v1/products",
+            self.endpoint_url,
             json={"offerId": product_offer.id, "stock": {"bookingLimitDatetime": "2021-01-15T00:00:00Z"}},
         )
         assert response.status_code == 200
@@ -255,7 +291,7 @@ class PatchProductTest:
         used_booking = bookings_factories.BookingFactory(stock=stock, status=bookings_models.BookingStatus.USED)
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
-            "/public/offers/v1/products",
+            self.endpoint_url,
             json={
                 "offerId": product_offer.id,
                 "stock": None,
@@ -277,7 +313,7 @@ class PatchProductTest:
         )
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
-            "/public/offers/v1/products",
+            self.endpoint_url,
             json={
                 "offerId": product_offer.id,
                 "categoryRelatedFields": {
@@ -302,7 +338,7 @@ class PatchProductTest:
         )
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
-            "/public/offers/v1/products",
+            self.endpoint_url,
             json={
                 "offerId": product_offer.id,
                 "bookingEmail": "spam@example.com",

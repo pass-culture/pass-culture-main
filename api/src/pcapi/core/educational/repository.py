@@ -489,7 +489,7 @@ def get_collective_offers_for_filters(
     user_is_admin: bool,
     offers_limit: int,
     offerer_id: int | None = None,
-    status: str | None = None,
+    statuses: list[str] | None = None,
     venue_id: int | None = None,
     category_id: str | None = None,
     name_keywords: str | None = None,
@@ -501,7 +501,7 @@ def get_collective_offers_for_filters(
         user_id=user_id,
         user_is_admin=user_is_admin,
         offerer_id=offerer_id,
-        status=status,
+        statuses=statuses,
         venue_id=venue_id,
         category_id=category_id,
         name_keywords=name_keywords,
@@ -510,7 +510,7 @@ def get_collective_offers_for_filters(
         formats=formats,
     )
 
-    query = query.order_by(educational_models.CollectiveOffer.id.desc())
+    query = query.order_by(educational_models.CollectiveOffer.dateCreated.desc())
     offers = (
         query.options(
             sa.orm.joinedload(educational_models.CollectiveOffer.venue).joinedload(
@@ -534,7 +534,7 @@ def get_collective_offers_template_for_filters(
     user_is_admin: bool,
     offers_limit: int,
     offerer_id: int | None = None,
-    status: str | None = None,
+    statuses: list[str] | None = None,
     venue_id: int | None = None,
     category_id: str | None = None,
     name_keywords: str | None = None,
@@ -546,7 +546,7 @@ def get_collective_offers_template_for_filters(
         user_id=user_id,
         user_is_admin=user_is_admin,
         offerer_id=offerer_id,
-        status=status,
+        statuses=statuses,
         venue_id=venue_id,
         category_id=category_id,
         name_keywords=name_keywords,
@@ -558,7 +558,7 @@ def get_collective_offers_template_for_filters(
     if query is None:
         return []
 
-    query = query.order_by(educational_models.CollectiveOfferTemplate.id.desc())
+    query = query.order_by(educational_models.CollectiveOfferTemplate.dateCreated.desc())
 
     offers = (
         query.options(
@@ -1040,6 +1040,11 @@ def get_collective_offer_template_by_id_for_adage(offer_id: int) -> educational_
 
 def get_collective_offer_templates_by_ids_for_adage(offer_ids: typing.Collection[int]) -> BaseQuery:
     query = _get_collective_offer_template_by_id_for_adage_base_query()
+    # Filter out the archived offers
+    query = query.filter(educational_models.CollectiveOfferTemplate.isArchived == False)
+    # Filter out the offers not displayed on adage
+    query = query.filter(educational_models.CollectiveOfferTemplate.isActive == True)
+
     return query.filter(educational_models.CollectiveOfferTemplate.id.in_(offer_ids))
 
 

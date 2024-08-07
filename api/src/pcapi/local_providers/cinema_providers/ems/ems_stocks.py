@@ -10,7 +10,6 @@ from pcapi.core.finance import api as finance_api
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import models as offers_models
-from pcapi.core.offers import repository as offers_repository
 from pcapi.core.providers import models as providers_models
 from pcapi.local_providers.cinema_providers.constants import ShowtimeFeatures
 from pcapi.models import db
@@ -53,15 +52,7 @@ class EMSStocks:
         for event in self.site.events:
             self.poster_urls_map.update({event.id: event.bill_url})
 
-            product = self.get_movie_product(event)
-            if not product:
-                logger.info(
-                    "Product not found for allocine Id %s",
-                    event.allocine_id,
-                    extra={"allocineId": event.allocine_id, "venueId": self.venue.id},
-                    technical_message_id="allocineId.not_found",
-                )
-
+            product = self.get_or_create_movie_product(event)
             offer = self.get_or_create_offer(event, self.provider.id, self.venue)
             offer.product = product
             offer = self.fill_offer_attributes(offer, event)
@@ -129,11 +120,12 @@ class EMSStocks:
             self.errored_objects,
         )
 
-    def get_movie_product(self, event: ems_serializers.Event) -> offers_models.Product | None:
-        if not event.allocine_id:
-            return None
+    def get_or_create_movie_product(self, movie: ems_serializers.Event) -> offers_models.Product | None:
+        generic_movie = movie.to_generic_movie()
+        id_at_providers = _build_movie_uuid_for_offer(movie.id, self.venue)
+        product = offers_api.upsert_movie_product_from_provider(generic_movie, self.provider, id_at_providers)
 
-        return offers_repository.get_movie_product_by_allocine_id(str(event.allocine_id))
+        return product
 
     def get_or_create_offer(
         self, event: ems_serializers.Event, provider_id: int, venue: offerers_models.Venue

@@ -220,7 +220,10 @@ class CheckOffererTest:
         assert offerer_action.authorUserId is None
         assert offerer_action.userId == user_offerer.user.id
         assert offerer_action.offererId == offerer.id
-        assert offerer_action.extraData == {"modified_info": {"tags": {"new_info": siren_caduc_tag.label}}}
+        assert offerer_action.extraData == {
+            "modified_info": {"tags": {"new_info": siren_caduc_tag.label}},
+            "rejection_reason": "OUT_OF_TIME",
+        }
 
         user_offerer_action = history_models.ActionHistory.query.filter_by(
             actionType=history_models.ActionType.USER_OFFERER_REJECTED
@@ -233,6 +236,7 @@ class CheckOffererTest:
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0]["To"] == user_offerer.user.email
         assert mails_testing.outbox[0]["template"] == asdict(TransactionalEmail.NEW_OFFERER_REJECTION.value)
+        assert mails_testing.outbox[0]["params"] == {"OFFERER_NAME": offerer.name, "REJECTION_REASON": "OUT_OF_TIME"}
 
         # Offerers report should only list validated offerers, not rejected
         mock_search_file.assert_not_called()

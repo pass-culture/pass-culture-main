@@ -112,3 +112,32 @@ A **`booking`** is a reservation made by a beneficiary of a product or of an eve
 ### `Booking` for `events` 
 
 **For an `event`**, the **`booking`** is a **📅 reservation** for the event. **It can be linked to a ticket** if you plugged your [ticketing solution to the pass Culture application](/docs/understanding-our-api/managing-bookings/connection-with-ticketing-system)].
+
+### Booking status
+
+* `CONFIRMED` The bookings is confirmed. → the beneficiary has booked an offer but he didn’t pick it up
+    * 📍 For a physical offer, until his token’s approval, beneficiary can cancel his booking.
+        * he has 10 days to get his booking back if it’s a book → otherwise, automatic cancelation
+        * He has 30 days to get it back for other physicals products → otherwise, automatic cancelation
+    * 📍 For an event, pass Culture’s beneficiary has 48h to cancel an event booking, unless the `beginningDatetime` is in less than 48h. If the event is in less than 48 hours, then it cannot be cancelled
+* `USED` The bookings has been used. → The booking has been validated by the venue and will be reimbursed in the next payment
+* `CANCELLED` The bookings has been cancelled. → The booking has been cancelled by the beneficiary or by the provider
+* `REIMBURSED` The bookings has been reimbursed. → The booking has been reimbursed by pass Culture to the venue
+
+
+### Cancel a booking
+
+#### For an event :
+pass Culture’s beneficiary has 48h to cancel an event booking, unless the event `beginningDatetime` is in less than 48h. If the event is in less than 48 hours, then it cannot be cancelled
+
+:::warning
+Only bookings that have not been reimbursed can be modified.
+:::
+
+If you want to delete a booking :
+
+* For an event :
+    * You can delete the offer stock.
+    * You can’t cancel an individual booking, but you can invalidate it (the booking). When the token is invalidated: the reservation reverts to the previous status. e.g.: if a booking is `USED`. You invalidate it, the booking will be `CONFIRMED`.
+* For a product :
+    * When the token is invalidated the reservation reverts to the previous status.

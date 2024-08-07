@@ -59,9 +59,7 @@ describe('CollectiveOfferConfirmation', () => {
       pending: vi.fn(),
       close: vi.fn(),
     }))
-    vi.spyOn(api, 'getCollectiveOffers')
-      // @ts-expect-error FIX ME : will be fix PC-19976
-      .mockReturnValue(offers)
+    vi.spyOn(api, 'getCollectiveOffers').mockResolvedValue(offers)
   })
 
   it('should render selection duplication page', async () => {
@@ -154,9 +152,7 @@ describe('CollectiveOfferConfirmation', () => {
   })
 
   it('should display message when no offer', async () => {
-    vi.spyOn(api, 'getCollectiveOffers')
-      // @ts-expect-error FIX ME : will be fix PC-19976
-      .mockReturnValue([])
+    vi.spyOn(api, 'getCollectiveOffers').mockResolvedValue([])
     renderCollectiveOfferSelectionDuplication({ initialValues, onSubmit })
 
     await waitFor(() =>

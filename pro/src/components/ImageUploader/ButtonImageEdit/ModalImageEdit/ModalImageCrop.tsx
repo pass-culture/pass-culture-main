@@ -34,6 +34,7 @@ interface ModalImageCropProps {
   onEditedImageSave: (dataUrl: string, croppedRect: CroppedRect) => void
   mode: UploaderModeEnum
   submitButtonText: string
+  idLabelledBy: string
 }
 
 export interface ImageEditorFormValues {
@@ -53,6 +54,7 @@ export const ModalImageCrop = ({
   initialScale,
   mode,
   submitButtonText,
+  idLabelledBy,
 }: ModalImageCropProps): JSX.Element => {
   const { width, height } = useGetImageBitmap(image)
   const editorRef = useRef<AvatarEditor>(null)
@@ -139,7 +141,10 @@ export const ModalImageCrop = ({
         <Form onSubmit={formik.handleSubmit}>
           <div className={style['modal-image-crop-form']}>
             <header>
-              <h1 className={style['modal-image-crop-header']}>
+              <h1
+                id={idLabelledBy}
+                className={style['modal-image-crop-header']}
+              >
                 Modifier une image
               </h1>
             </header>

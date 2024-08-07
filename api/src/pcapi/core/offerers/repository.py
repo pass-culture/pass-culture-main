@@ -862,23 +862,17 @@ def get_revenues_per_year(
 
 
 def get_offerer_addresses(offerer_id: int, only_with_offers: bool = False) -> BaseQuery:
-    query = (
-        models.OffererAddress.query.filter(models.OffererAddress.offererId == offerer_id)
-        .options(
-            sqla_orm.joinedload(models.OffererAddress.address).load_only(
-                geography_models.Address.street, geography_models.Address.postalCode, geography_models.Address.city
-            )
-        )
-        .order_by(models.OffererAddress.label)
+    query = models.OffererAddress.query.filter(models.OffererAddress.offererId == offerer_id).options(
+        sqla_orm.joinedload(models.OffererAddress.address).load_only(
+            geography_models.Address.street, geography_models.Address.postalCode, geography_models.Address.city
+        ),
+        sqla_orm.with_expression(models.OffererAddress._isEditable, models.OffererAddress.isEditable.expression),  # type: ignore[attr-defined]
     )
+
     if only_with_offers:
-        offerer_address_ids_from_offers = (
-            offers_models.Offer.query.join(models.Venue)
-            .filter(models.Venue.managingOffererId == offerer_id)
-            .with_entities(offers_models.Offer.offererAddressId)
-            .distinct()
-        )
-        query = query.filter(models.OffererAddress.id.in_(offerer_address_ids_from_offers))
+        query = query.join(offers_models.Offer, offers_models.Offer.offererAddressId == models.OffererAddress.id)
+    query = query.order_by(models.OffererAddress.label)
+
     return query
 
 

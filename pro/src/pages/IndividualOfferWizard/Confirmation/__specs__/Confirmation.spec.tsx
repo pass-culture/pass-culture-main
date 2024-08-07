@@ -3,7 +3,10 @@ import React from 'react'
 import { Route, Routes } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
-import { GetIndividualOfferResponseModel, OfferStatus } from 'apiClient/v1'
+import {
+  GetIndividualOfferWithAddressResponseModel,
+  OfferStatus,
+} from 'apiClient/v1'
 import { Notification } from 'components/Notification/Notification'
 import {
   IndividualOfferContextValues,
@@ -56,7 +59,7 @@ const renderOffer = (
 
 describe('Confirmation', () => {
   let contextOverride: Partial<IndividualOfferContextValues>
-  let offer: GetIndividualOfferResponseModel
+  let offer: GetIndividualOfferWithAddressResponseModel
   const venueId = 45
   const offererId = 51
 
@@ -76,7 +79,7 @@ describe('Confirmation', () => {
       offer: offer,
     }
     vi.spyOn(api, 'getOffer').mockResolvedValue(
-      {} as GetIndividualOfferResponseModel
+      {} as GetIndividualOfferWithAddressResponseModel
     )
   })
 

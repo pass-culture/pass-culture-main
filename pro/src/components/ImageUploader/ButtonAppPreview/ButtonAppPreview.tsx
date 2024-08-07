@@ -28,7 +28,6 @@ export const ButtonAppPreview = ({
       >
         Prévisualiser
       </Button>
-
       {isModalOpen && imageUrl && (
         <ModalAppPreview
           mode={mode}

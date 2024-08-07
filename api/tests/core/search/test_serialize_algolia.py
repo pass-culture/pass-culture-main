@@ -14,6 +14,7 @@ import pcapi.core.offers.models as offers_models
 from pcapi.core.search.backends import algolia
 from pcapi.core.testing import override_settings
 from pcapi.routes.adage_iframe.serialization.offers import OfferAddressType
+from pcapi.routes.native.v1.serialization.offerers import VenueTypeCode
 from pcapi.utils.human_ids import humanize
 
 
@@ -51,6 +52,7 @@ def test_serialize_offer():
         venue__postalCode="86140",
         venue__name="La Moyenne Librairie SA",
         venue__publicName="La Moyenne Librairie",
+        venue__venueTypeCode=VenueTypeCode.LIBRARY,
         venue__managingOfferer__name="Les Librairies Associées",
     )
     offers_factories.StockFactory(offer=offer, price=10)
@@ -70,6 +72,7 @@ def test_serialize_offer():
             "isEducational": False,
             "isEvent": False,
             "isForbiddenToUnderage": offer.is_forbidden_to_underage,
+            "isPermanent": offer.isPermanent,
             "isThing": True,
             "last30DaysBookings": 0,
             "last30DaysBookingsRange": algolia.Last30DaysBookingsRange.VERY_LOW.value,
@@ -89,6 +92,7 @@ def test_serialize_offer():
         },
         "venue": {
             "address": offer.venue.street,
+            "banner_url": offer.venue.bannerUrl,
             "city": offer.venue.city,
             "departmentCode": "86",
             "id": offer.venueId,
@@ -99,6 +103,7 @@ def test_serialize_offer():
             "name": "La Moyenne Librairie SA",
             "postalCode": offer.venue.postalCode,
             "publicName": "La Moyenne Librairie",
+            "venue_type": VenueTypeCode.LIBRARY.name,
         },
         "_geoloc": {"lat": 48.87004, "lng": 2.3785},
     }

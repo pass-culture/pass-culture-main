@@ -1,5 +1,4 @@
 import cn from 'classnames'
-import React from 'react'
 
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { CollectiveBookingsEvents } from 'core/FirebaseEvents/constants'

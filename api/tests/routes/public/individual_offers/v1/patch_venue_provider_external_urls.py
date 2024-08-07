@@ -15,7 +15,7 @@ class PatchProviderTest:
     VENUE_PROVIDER_URL = "/public/providers/v1/venues"
 
     def test_should_update_notification_url(self, client):
-        provider, _ = utils.create_offerer_provider(with_charlie=False)
+        provider, _ = utils.create_offerer_provider(with_ticketing_service=False)
         venue = offerers_factories.VenueFactory()
         venue_provider = providers_factories.VenueProviderFactory(provider=provider, venue=venue)
         venue_provider_external_urls = providers_factories.VenueProviderExternalUrlsFactory(
@@ -36,7 +36,7 @@ class PatchProviderTest:
         assert venue_provider_external_urls.cancelExternalUrl == previous_cancel_url
 
     def test_should_update_booking_url(self, client):
-        provider, _ = utils.create_offerer_provider(with_charlie=False)
+        provider, _ = utils.create_offerer_provider(with_ticketing_service=False)
         venue = offerers_factories.VenueFactory()
         venue_provider = providers_factories.VenueProviderFactory(provider=provider, venue=venue)
         venue_provider_external_urls = providers_factories.VenueProviderExternalUrlsFactory(
@@ -57,7 +57,7 @@ class PatchProviderTest:
         assert venue_provider_external_urls.cancelExternalUrl == previous_cancel_url
 
     def test_should_update_cancel_url(self, client):
-        provider, _ = utils.create_offerer_provider(with_charlie=False)
+        provider, _ = utils.create_offerer_provider(with_ticketing_service=False)
         venue = offerers_factories.VenueFactory()
         venue_provider = providers_factories.VenueProviderFactory(provider=provider, venue=venue)
         venue_provider_external_urls = providers_factories.VenueProviderExternalUrlsFactory(
@@ -78,7 +78,7 @@ class PatchProviderTest:
         assert venue_provider_external_urls.cancelExternalUrl == "https://cancelmoi.baby"
 
     def test_should_delete_venue_provider_external_urls(self, client):
-        provider, _ = utils.create_offerer_provider(with_charlie=False)
+        provider, _ = utils.create_offerer_provider(with_ticketing_service=False)
         venue = offerers_factories.VenueFactory()
         venue_provider = providers_factories.VenueProviderFactory(provider=provider, venue=venue)
         venue_provider_external_urls = providers_factories.VenueProviderExternalUrlsFactory(
@@ -95,7 +95,7 @@ class PatchProviderTest:
         assert venue_provider.externalUrls == None
 
     def test_should_create_venue_provider_external_urls(self, client):
-        provider, _ = utils.create_offerer_provider(with_charlie=False)
+        provider, _ = utils.create_offerer_provider(with_ticketing_service=False)
         venue = offerers_factories.VenueFactory()
         venue_provider = providers_factories.VenueProviderFactory(provider=provider, venue=venue)
 
@@ -129,7 +129,7 @@ class PatchProviderTest:
         assert response.status_code == 401
 
     def test_should_raise_404_because_venue_does_not_exists(self, client):
-        utils.create_offerer_provider(with_charlie=False)
+        utils.create_offerer_provider(with_ticketing_service=False)
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
             f"{self.VENUE_PROVIDER_URL}/123456789",
@@ -139,7 +139,7 @@ class PatchProviderTest:
         assert response.status_code == 404
 
     def test_should_raise_404_because_venue_not_linked_to_provider(self, client):
-        utils.create_offerer_provider(with_charlie=False)
+        utils.create_offerer_provider(with_ticketing_service=False)
         venue = offerers_factories.VenueFactory()
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
@@ -150,7 +150,7 @@ class PatchProviderTest:
         assert response.status_code == 404
 
     def test_should_raise_400_because_ticketing_urls_cannot_be_unset(self, client):
-        provider_without_ticketing_urls, _ = utils.create_offerer_provider(with_charlie=False)
+        provider_without_ticketing_urls, _ = utils.create_offerer_provider(with_ticketing_service=False)
         venue = offerers_factories.VenueFactory()
         venue_provider = providers_factories.VenueProviderFactory(provider=provider_without_ticketing_urls, venue=venue)
         venue_provider_external_urls = providers_factories.VenueProviderExternalUrlsFactory(
@@ -182,7 +182,7 @@ class PatchProviderTest:
         assert venue_provider_external_urls.cancelExternalUrl == previous_cancel_url
 
     def test_should_raise_400_because_try_to_set_booking_url_only(self, client):
-        provider_without_ticketing_urls, _ = utils.create_offerer_provider(with_charlie=False)
+        provider_without_ticketing_urls, _ = utils.create_offerer_provider(with_ticketing_service=False)
         venue = offerers_factories.VenueFactory()
         venue_provider = providers_factories.VenueProviderFactory(provider=provider_without_ticketing_urls, venue=venue)
 
@@ -201,7 +201,7 @@ class PatchProviderTest:
         assert venue_provider.externalUrls == None
 
     def test_should_raise_400_because_try_to_unset_only_cancel_url(self, client):
-        provider_without_ticketing_urls, _ = utils.create_offerer_provider(with_charlie=False)
+        provider_without_ticketing_urls, _ = utils.create_offerer_provider(with_ticketing_service=False)
         venue = offerers_factories.VenueFactory()
         venue_provider = providers_factories.VenueProviderFactory(provider=provider_without_ticketing_urls, venue=venue)
         venue_provider_external_urls = providers_factories.VenueProviderExternalUrlsFactory(

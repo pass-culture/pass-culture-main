@@ -198,7 +198,9 @@ class Returns201Test:
         assert venue.adageInscriptionDate
         assert venue.managingOfferer.allowedOnAdage
 
-    @testing.override_features(ENABLE_ZENDESK_SELL_CREATION=True)
+    @testing.override_features(
+        ENABLE_ZENDESK_SELL_CREATION=True, ENABLE_ADDRESS_WRITING_WHILE_CREATING_UPDATING_VENUE=False
+    )
     def test_register_new_venue_without_double_model_writing(self, client, requests_mock):
         user = ProFactory(
             lastConnectionDate=datetime.utcnow(),

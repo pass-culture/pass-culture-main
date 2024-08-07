@@ -330,6 +330,42 @@ class GetCollectiveOfferTemplatesTest:
             expected_serialized_offer(offers[1], redactor),
         ]
 
+    def test_one_template_id_with_one_archived_template(self, eac_client, redactor):
+        offer = educational_factories.CollectiveOfferTemplateFactory()
+        archived_offer = educational_factories.CollectiveOfferTemplateFactory(dateArchived=datetime.datetime.utcnow())
+
+        url = url_for(self.endpoint, ids=[offer.id, archived_offer.id])
+
+        # 1. fetch redactor
+        # 2. fetch collective offer and related data
+        # 3. fetch the venue
+        # 4. fetch the venue's images
+        with assert_num_queries(4):
+            response = eac_client.get(url)
+
+            assert response.status_code == 200
+            assert len(response.json["collectiveOffers"]) == 1
+
+            assert response.json["collectiveOffers"][0]["id"] != archived_offer.id
+
+    def test_one_template_id_with_one_inactive_template(self, eac_client, redactor):
+        offer = educational_factories.CollectiveOfferTemplateFactory()
+        inactive_offer = educational_factories.CollectiveOfferTemplateFactory(isActive=False)
+
+        url = url_for(self.endpoint, ids=[offer.id, inactive_offer.id])
+
+        # 1. fetch redactor
+        # 2. fetch collective offer and related data
+        # 3. fetch the venue
+        # 4. fetch the venue's images
+        with assert_num_queries(4):
+            response = eac_client.get(url)
+
+            assert response.status_code == 200
+            assert len(response.json["collectiveOffers"]) == 1
+
+            assert response.json["collectiveOffers"][0]["id"] != inactive_offer.id
+
     def test_get_one_template(self, eac_client, redactor):
         venue = offerers_factories.VenueFactory()
 

@@ -1,23 +1,34 @@
-import { When, Then } from '@badeball/cypress-cucumber-preprocessor'
+import { Then, When } from '@badeball/cypress-cucumber-preprocessor'
 
 When('I fill in offer details', () => {
-  cy.findByLabelText('Catégorie *').select('Spectacle vivant')
-  cy.findByLabelText('Sous-catégorie *').select('Spectacle, représentation')
-  cy.findByLabelText('Type de spectacle *').select('Théâtre')
-  cy.findByLabelText('Sous-type *').select('Comédie')
+  cy.setFeatureFlags([{ name: 'WIP_SPLIT_OFFER', isActive: true }])
   cy.findByLabelText('Titre de l’offre *').type('Le Diner de Devs')
   cy.findByLabelText('Description').type(
     'Une PO invite des développeurs à dîner...'
   )
-  cy.findByText('Retrait sur place (guichet, comptoir...)').click()
-  cy.findByLabelText('Email de contact *').type('passculture@example.com')
+  cy.findByLabelText('Catégorie *').select('Spectacle vivant')
+  cy.findByLabelText('Sous-catégorie *').select('Spectacle, représentation')
+  cy.findByLabelText('Type de spectacle *').select('Théâtre')
+  cy.findByLabelText('Sous-type *').select('Comédie')
 })
 
 When('I validate offer details step', () => {
   cy.intercept({ method: 'GET', url: '/offers/*' }).as('getOffer')
-  cy.intercept({ method: 'POST', url: '/offers' }).as('postOffer')
+  cy.intercept({ method: 'POST', url: '/offers/draft' }).as('postDraftOffer')
   cy.findByText('Enregistrer et continuer').click()
-  cy.wait(['@getOffer', '@postOffer'])
+  cy.wait(['@getOffer', '@postDraftOffer'])
+})
+
+When('I fill in offer useful informations', () => {
+  cy.findByText('Retrait sur place (guichet, comptoir...)').click()
+  cy.findByLabelText('Email de contact *').type('passculture@example.com')
+})
+
+When('I validate offer useful informations step', () => {
+  cy.intercept({ method: 'GET', url: '/offers/*' }).as('getOffer')
+  cy.intercept({ method: 'PATCH', url: '/offers/*' }).as('patchOffer')
+  cy.findByText('Enregistrer et continuer').click()
+  cy.wait(['@getOffer', '@patchOffer'])
 })
 
 When('I fill in prices', () => {
@@ -50,16 +61,17 @@ When('I fill in prices', () => {
   // manque un data-testid ou un accessibility label
   cy.get('[name="priceCategories[2].free"]').click()
 
-  cy.findByText('Accepter les réservations “Duo“').should('exist')
+  cy.findByText('Accepter les réservations “Duo“').should('exist').click()
 })
 
 When('I validate prices step', () => {
-  cy.intercept({ method: 'PATCH', url: '/offers/*' }).as('patchOffer')
+  cy.intercept({ method: 'PATCH', url: '/offers/*', times: 1 }).as('patchOffer')
   cy.intercept({ method: 'GET', url: '/offers/*' }).as('getOffer')
   cy.intercept({ method: 'GET', url: '/offers/*/stocks/*' }).as('getStocks')
   cy.findByText('Enregistrer et continuer').click()
-  // pourquoi on attend tellement ici?
-  cy.wait(['@patchOffer', '@getOffer', '@getStocks'])
+  cy.wait(['@patchOffer', '@getOffer', '@getStocks'], {
+    responseTimeout: 60 * 1000 * 3,
+  })
 })
 
 When('I fill in recurrence', () => {
@@ -127,13 +139,32 @@ When('I publish my offer', () => {
   cy.intercept({ method: 'PATCH', url: '/offers/publish' }).as('publishOffer')
   cy.intercept({ method: 'GET', url: '/offers/*' }).as('getOffer')
   cy.findByText('Publier l’offre').click()
-  cy.wait(['@publishOffer', '@getOffer'])
+  cy.wait(['@publishOffer', '@getOffer'], {
+    responseTimeout: 60 * 1000 * 2,
+    requestTimeout: 60 * 1000 * 2,
+  })
 })
 
 When('I go to the offers list', () => {
-  cy.intercept({ method: 'GET', url: '/offers?*' }).as('getOffers')
+  cy.intercept({ method: 'GET', url: '/offerers/names' }).as('getOfferersNames')
+  cy.intercept({ method: 'GET', url: '/offers/*' }).as('getOffer')
+  cy.intercept({ method: 'GET', url: '/offers/categories' }).as('getCategories')
+  cy.intercept({ method: 'GET', url: '/venues?offererId=*' }).as(
+    'getVenuesForOfferer'
+  )
   cy.findByText('Voir la liste des offres').click()
-  cy.wait('@getOffers')
+  cy.wait(
+    [
+      '@getOfferersNames',
+      '@getOffer',
+      '@getCategories',
+      '@getVenuesForOfferer',
+    ],
+    {
+      requestTimeout: 60 * 1000 * 5,
+      responseTimeout: 60 * 1000 * 5,
+    }
+  )
 })
 
 Then('my new offer should be displayed', () => {

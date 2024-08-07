@@ -125,7 +125,6 @@ class UpdateObjectsTest:
         assert created_offer.durationMinutes == 21
         assert created_offer.extraData == {
             "cast": ["Sacha Guitry", "Sarah Bernhardt", "Anatole France"],
-            "eidr": None,
             "type": "FEATURE_FILM",
             "visa": "108245",
             "title": "Ceux de chez nous",

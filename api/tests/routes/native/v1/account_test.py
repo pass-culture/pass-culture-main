@@ -96,6 +96,8 @@ class AccountTest:
             "firstName": "john",
             "lastName": "doe",
             "phoneNumber": "+33102030405",
+            "city": "Annecy",
+            "postalCode": "74000",
             "needsToFillCulturalSurvey": True,
         }
         user = users_factories.BeneficiaryGrant18Factory(
@@ -107,6 +109,7 @@ class AccountTest:
             deposit__expirationDate=datetime(2040, 1, 1),
             notificationSubscriptions={"marketing_push": True},
             validatedBirthDate=datetime(2000, 1, 11),
+            activity=users_models.ActivityEnum.STUDENT.value,
             **USER_DATA,
         )
         users_factories.DepositGrantFactory(
@@ -153,6 +156,7 @@ class AccountTest:
                 "statusType": young_status.YoungStatusType.BENEFICIARY.value,
                 "subscriptionStatus": None,
             },
+            "activityId": users_models.ActivityEnum.STUDENT.name,
         }
         EXPECTED_DATA.update(USER_DATA)
 
@@ -872,7 +876,7 @@ class UserProfileUpdateTest:
         user = users_factories.UserFactory(email=self.identifier, password=password)
 
         client.with_token(user.email)
-        response = client.post(
+        response = client.patch(
             "/native/v1/profile",
             json={
                 "subscriptions": {"marketingPush": True, "marketingEmail": False, "subscribedThemes": ["cinema"]},
@@ -892,7 +896,7 @@ class UserProfileUpdateTest:
         user = users_factories.UserFactory(email=self.identifier)
 
         client.with_token(email=self.identifier)
-        response = client.post(
+        response = client.patch(
             "/native/v1/profile",
             json={"subscriptions": {"marketingPush": False, "marketingEmail": False, "subscribedThemes": []}},
         )
@@ -928,7 +932,7 @@ class UserProfileUpdateTest:
             }
         }
 
-    def test_log_data(self, client, caplog):
+    def test_subscription_logging_to_data(self, client, caplog):
         users_factories.UserFactory(
             email=self.identifier,
             notificationSubscriptions={
@@ -940,7 +944,7 @@ class UserProfileUpdateTest:
 
         with caplog.at_level(logging.INFO):
             client.with_token(email=self.identifier)
-            response = client.post(
+            response = client.patch(
                 "/native/v1/profile",
                 json={
                     "subscriptions": {
@@ -966,6 +970,53 @@ class UserProfileUpdateTest:
         }
         assert caplog.records[0].technical_message_id == "subscription_update"
 
+    def test_postal_code_update(self, client):
+        user = users_factories.UserFactory(email=self.identifier)
+
+        client.with_token(email=self.identifier)
+        response = client.patch("/native/v1/profile", json={"postalCode": "38000", "city": "Grenoble"})
+
+        assert response.status_code == 200
+        assert user.postalCode == "38000"
+        assert user.city == "Grenoble"
+
+    def test_activity_update(self, client):
+        user = users_factories.UserFactory(email=self.identifier)
+
+        client.with_token(email=self.identifier)
+        response = client.patch("/native/v1/profile", json={"activity_id": users_models.ActivityEnum.UNEMPLOYED.name})
+
+        assert response.status_code == 200
+        assert user.activity == users_models.ActivityEnum.UNEMPLOYED.value
+
+    def test_empty_patch(self, client):
+        user = users_factories.UserFactory(
+            email=self.identifier,
+            activity=users_models.ActivityEnum.UNEMPLOYED.value,
+            city="Grenoble",
+            postalCode="38000",
+            notificationSubscriptions={
+                "marketing_push": True,
+                "marketing_email": True,
+                "subscribed_themes": ["musique", "visites"],
+            },
+        )
+
+        client.with_token(email=self.identifier)
+        response = client.patch("/native/v1/profile", json={})
+
+        assert response.status_code == 200
+        assert user.activity == users_models.ActivityEnum.UNEMPLOYED.value
+        assert user.city == "Grenoble"
+        assert user.postalCode == "38000"
+        assert user.notificationSubscriptions == {
+            "marketing_push": True,
+            "marketing_email": True,
+            "subscribed_themes": ["musique", "visites"],
+        }
+
+
+class ResetRecreditAmountToShow:
     def test_update_user_profile_reset_recredit_amount_to_show(self, client, app):
         user = users_factories.UnderageBeneficiaryFactory(email=self.identifier, recreditAmountToShow=30)
 

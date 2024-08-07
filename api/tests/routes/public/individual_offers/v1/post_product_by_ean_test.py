@@ -14,11 +14,68 @@ from pcapi.core.offers import models as offers_models
 from pcapi.core.providers import factories as providers_factories
 from pcapi.utils import date as date_utils
 
+from tests.routes.public.helpers import PublicAPIVenueEndpointHelper
+
 from . import utils
 
 
 @pytest.mark.usefixtures("db_session")
-class PostProductByEanTest:
+class PostProductByEanTest(PublicAPIVenueEndpointHelper):
+    endpoint_url = "/public/offers/v1/products/ean"
+
+    def test_should_raise_401_because_not_authenticated(self, client):
+        response = client.post(self.endpoint_url, json={})
+        assert response.status_code == 401
+
+    def test_should_raise_404_because_has_no_access_to_venue(self, client):
+        plain_api_key, _ = self.setup_provider()
+        venue = self.setup_venue()
+        in_ten_minutes = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(minutes=10)
+        in_ten_minutes_in_non_utc_tz = date_utils.utc_datetime_to_department_timezone(in_ten_minutes, "973")
+
+        response = client.with_explicit_token(plain_api_key).post(
+            self.endpoint_url,
+            json={
+                "location": {"type": "physical", "venueId": venue.id},
+                "products": [
+                    {
+                        "ean": "1234567890123",
+                        "stock": {
+                            "bookingLimitDatetime": in_ten_minutes_in_non_utc_tz.isoformat(),
+                            "price": 1234,
+                            "quantity": 3,
+                        },
+                    }
+                ],
+            },
+        )
+        assert response.status_code == 404
+
+    def test_should_raise_404_because_venue_provider_is_inactive(self, client):
+        plain_api_key, venue_provider = self.setup_inactive_venue_provider()
+        venue = venue_provider.venue
+
+        in_ten_minutes = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(minutes=10)
+        in_ten_minutes_in_non_utc_tz = date_utils.utc_datetime_to_department_timezone(in_ten_minutes, "973")
+
+        response = client.with_explicit_token(plain_api_key).post(
+            self.endpoint_url,
+            json={
+                "location": {"type": "physical", "venueId": venue.id},
+                "products": [
+                    {
+                        "ean": "1234567890123",
+                        "stock": {
+                            "bookingLimitDatetime": in_ten_minutes_in_non_utc_tz.isoformat(),
+                            "price": 1234,
+                            "quantity": 3,
+                        },
+                    }
+                ],
+            },
+        )
+        assert response.status_code == 404
+
     def test_valid_ean_with_stock(self, client):
         venue_data = {
             "audioDisabilityCompliant": True,
@@ -565,27 +622,6 @@ class PostProductByEanTest:
         assert created_offer.extraData["ean"] == ean_to_create
         assert created_offer.activeStocks[0].price == decimal.Decimal("98.76")
         assert created_offer.activeStocks[0].quantity == 22
-
-    def test_returns_404_for_inactive_venue_provider(self, client):
-        venue, _ = utils.create_offerer_provider_linked_to_venue(is_venue_provider_active=False)
-
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
-            "/public/offers/v1/products/ean",
-            json={
-                "location": {"type": "physical", "venueId": venue.id},
-                "products": [
-                    {
-                        "ean": "1234567890123",
-                        "stock": {
-                            "price": 1234,
-                            "quantity": 3,
-                        },
-                    }
-                ],
-            },
-        )
-
-        assert response.status_code == 404
 
 
 @pytest.mark.usefixtures("db_session")

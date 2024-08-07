@@ -10,24 +10,6 @@ def _get_expected_json():
     return data
 
 
-def test_redirect_to_new_swagger(client, app):
-    response_collective = client.get("/v2/swagger")
-    assert response_collective.status_code == 301
-    assert response_collective.location == "http://localhost/swagger"
-
-    response_product = client.get("/public/offers/v1/swagger")
-    assert response_product.status_code == 301
-    assert response_product.location == "http://localhost/swagger"
-
-    response_event = client.get("/public/offers/v1/event/swagger")
-    assert response_event.status_code == 301
-    assert response_event.location == "http://localhost/swagger"
-
-    response_booking = client.get("/public/bookings/v1/swagger")
-    assert response_booking.status_code == 301
-    assert response_booking.location == "http://localhost/swagger"
-
-
 def test_public_api_openapi_json(client):
     response = client.get("/openapi.json")
     assert response.status_code == 200

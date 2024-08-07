@@ -63,7 +63,8 @@ class ActionType(enum.Enum):
     VENUE_CREATED = "Lieu créé"
     LINK_VENUE_BANK_ACCOUNT_DEPRECATED = "Lieu dissocié d'un compte bancaire"
     LINK_VENUE_BANK_ACCOUNT_CREATED = "Lieu associé à un compte bancaire"
-    LINK_VENUE_PROVIDER_DELETED = "Suppression du lien avec le provider"
+    LINK_VENUE_PROVIDER_DELETED = "Suppression du lien avec le partenaire technique"
+    SYNC_VENUE_TO_PROVIDER = "synchronisation du lieu avec un partenaire technique"
 
     # Permissions role changes:
     ROLE_PERMISSIONS_CHANGED = "Modification des permissions du rôle"
@@ -75,6 +76,7 @@ class ActionType(enum.Enum):
     RULE_MODIFIED = "Modification d'une règle de conformité"
     # Pivot changes
     PIVOT_DELETED = "Suppression d'un pivot"
+    PIVOT_CREATED = "Création d'un pivot"
 
 
 ACTION_HISTORY_ORDER_BY = "ActionHistory.actionDate.asc().nulls_first()"

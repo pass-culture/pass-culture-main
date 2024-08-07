@@ -15,6 +15,7 @@ from pcapi.core.bookings import models as bookings_models
 import pcapi.core.finance.models as finance_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.subscription import api as subscription_api
+from pcapi.core.subscription import profile_options
 from pcapi.core.users import api as users_api
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import young_status
@@ -143,7 +144,7 @@ class UserProfileGetterDict(GetterDict):
         if key == "eligibilityStartDatetime":
             return users_api.get_eligibility_start_datetime(user.birth_date)
         if key == "firstDepositActivationDate":
-            return min((deposit.dateCreated for deposit in user.deposits), default=None)
+            return user.first_deposit_activation_date
         if key == "firstName":
             return user.firstName if user.firstName != users_models.VOID_FIRST_NAME else None
         if key == "hasPassword":
@@ -170,13 +171,19 @@ class UserProfileGetterDict(GetterDict):
         if key == "subscriptionMessage":
             user_subscription_state = subscription_api.get_user_subscription_state(user)
             return user_subscription_state.subscription_message
+        if key == "activityId":
+            if user.activity is None:
+                return None
+            return profile_options.ActivityIdEnum(users_models.ActivityEnum(user.activity).name)
 
         return super().get(key, default)
 
 
 class UserProfileResponse(ConfiguredBaseModel):
+    activity_id: profile_options.ActivityIdEnum | None
     birth_date: datetime.date | None
     booked_offers: dict[str, int]
+    city: str | None
     deposit_activation_date: datetime.datetime | None
     deposit_expiration_date: datetime.datetime | None
     deposit_type: finance_models.DepositType | None
@@ -194,6 +201,7 @@ class UserProfileResponse(ConfiguredBaseModel):
     last_name: str | None
     needs_to_fill_cultural_survey: bool
     phone_number: str | None
+    postal_code: str | None
     recredit_amount_to_show: int | None
     requires_id_check: bool
     roles: list[users_models.UserRole]
@@ -214,7 +222,10 @@ def _is_cultural_survey_active() -> bool:
     return FeatureToggle.ENABLE_NATIVE_CULTURAL_SURVEY.is_active() or FeatureToggle.ENABLE_CULTURAL_SURVEY.is_active()
 
 
-class UserProfileUpdateRequest(ConfiguredBaseModel):
+class UserProfilePatchRequest(ConfiguredBaseModel):
+    activity_id: profile_options.ActivityIdEnum | None
+    city: str | None
+    postal_code: str | None
     subscriptions: NotificationSubscriptions | None
     origin: str | None
 

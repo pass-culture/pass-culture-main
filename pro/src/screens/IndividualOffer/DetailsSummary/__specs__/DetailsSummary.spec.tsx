@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react'
 
 import {
-  GetIndividualOfferResponseModel,
+  GetIndividualOfferWithAddressResponseModel,
   SubcategoryIdEnum,
 } from 'apiClient/v1'
 import { IndividualOfferContext } from 'context/IndividualOfferContext/IndividualOfferContext'
@@ -16,7 +16,9 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { DetailsSummaryScreen } from '../DetailsSummary'
 
-const renderDetailsSummaryScreen = (offer: GetIndividualOfferResponseModel) => {
+const renderDetailsSummaryScreen = (
+  offer: GetIndividualOfferWithAddressResponseModel
+) => {
   const categories = [
     categoryFactory({
       id: 'A',

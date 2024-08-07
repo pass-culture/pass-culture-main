@@ -2,6 +2,7 @@ from decimal import Decimal
 
 from pydantic.v1 import validator
 
+import pcapi.core.offers.models as offers_models
 from pcapi.routes.serialization import BaseModel
 
 
@@ -27,6 +28,17 @@ class Event(BaseModel):
         if value == "":
             return None
         return value
+
+    def to_generic_movie(self) -> offers_models.Movie:
+        return offers_models.Movie(
+            allocine_id=str(self.allocine_id) if self.allocine_id else None,
+            duration=self.duration,
+            description=self.synopsis,
+            extra_data=None,
+            poster_url=None,
+            title=self.title,
+            visa=None,
+        )
 
 
 class Site(BaseModel):

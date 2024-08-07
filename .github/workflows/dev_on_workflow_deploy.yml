@@ -85,11 +85,19 @@ jobs:
           export IMAGE="${IMAGE}:${VERSION}"
           export DATE=$(date +"%Y-%m-%d--%H-%M-%S")
           envsubst < .github/workflows/templates/pre-upgrade-job.yaml | kubectl -n ${{ inputs.environment }} apply -f -
+          # Next lines assume that job's backoffLimit is 0
           while true;
           do
-          kubectl logs -n ${{ inputs.environment }} -f jobs/pre-upgrade-${DATE} && break
+            kubectl logs -n ${{ inputs.environment }} -f jobs/pre-upgrade-${DATE} && break
           done
-          kubectl wait --for=condition=complete --timeout=10900s -n ${{ inputs.environment }} jobs/pre-upgrade-${DATE}
+          kubectl wait -n ${{ inputs.environment }} --for=condition=complete jobs/pre-upgrade-${DATE} || kubectl wait -n ${{ inputs.environment }} --for=condition=failed jobs/pre-upgrade-${DATE} # Sanity check that the job is over
+          failure=$(kubectl get -n ${{ inputs.environment }} jobs/pre-upgrade-${DATE} -o=jsonpath='{.status.conditions[?(@.type=="Failed")].status}') # Did the job fail or not so we can give correct return code
+          if [[ "$failure" == "True" ]]
+          then
+            exit 1
+          else
+            exit 0
+          fi
 
       # Get pcapi secrets from source code, to be passed later as a helmfile parameter.
       - name: "Generate pcapi secrets list"
@@ -155,11 +163,19 @@ jobs:
           export IMAGE="${IMAGE}:${VERSION}"
           export DATE=$(date +"%Y-%m-%d--%H-%M-%S")
           envsubst < .github/workflows/templates/post-upgrade-job.yaml | kubectl -n ${{ inputs.environment }} apply -f -
+          # Next lines assume that job's backoffLimit is 0
           while true;
           do
-          kubectl logs -n ${{ inputs.environment }} -f jobs/post-upgrade-${DATE} && break
+            kubectl logs -n ${{ inputs.environment }} -f jobs/post-upgrade-${DATE} && break
           done
-          kubectl wait --for=condition=complete --timeout=10900s -n ${{ inputs.environment }} jobs/post-upgrade-${DATE}
+          kubectl wait -n ${{ inputs.environment }} --for=condition=complete jobs/post-upgrade-${DATE} || kubectl wait -n ${{ inputs.environment }} --for=condition=failed jobs/post-upgrade-${DATE} # Sanity check that the job is over
+          failure=$(kubectl get -n ${{ inputs.environment }} jobs/post-upgrade-${DATE} -o=jsonpath='{.status.conditions[?(@.type=="Failed")].status}') # Did the job fail or not so we can give correct return code
+          if [[ "$failure" == "True" ]]
+          then
+            exit 1
+          else
+            exit 0
+          fi
 
   deploy-api-doc-on-firebase:
     name: "Deploy api doc on firebase"
@@ -279,7 +295,7 @@ jobs:
           timeout_minutes: 30
           max_attempts: 3
           command: |
-            export POD_NAME=$(kubectl -n ${{ inputs.environment }} get po -l role=api --field-selector=status.phase==Running -o json |jq -r '.items[] | select(.spec.containers[0].image | contains("${{ inputs.app_version }}")) | "\(.metadata.name)"'|head -n 1)
+            export POD_NAME=$(kubectl -n ${{ inputs.environment }} get po -l role=api --field-selector=status.phase==Running -o json |jq -r '.items[] | "\(.metadata.name)"'|head -n 1)
             echo "flask commands runs on ${POD_NAME}"
             kubectl exec -it -n ${{ inputs.environment }} ${POD_NAME} -- flask set_algolia_settings offers --dry-run=false
             kubectl exec -it -n ${{ inputs.environment }} ${POD_NAME} -- flask set_algolia_settings collective_offers --dry-run=false

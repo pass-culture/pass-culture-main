@@ -1,5 +1,6 @@
 import cn from 'classnames'
 import { useEffect, useState } from 'react'
+import { useSelector } from 'react-redux'
 import { useSearchParams } from 'react-router-dom'
 import { useSWRConfig } from 'swr'
 
@@ -21,6 +22,7 @@ import fullTrashIcon from 'icons/full-trash.svg'
 import { serializeStockEvents } from 'pages/IndividualOfferWizard/Stocks/serializeStockEvents'
 import { AddRecurrencesButton } from 'screens/IndividualOffer/StocksEventCreation/AddRecurrencesButton'
 import { getPriceCategoryOptions } from 'screens/IndividualOffer/StocksEventEdition/getPriceCategoryOptions'
+import { selectCurrentOffererId } from 'store/user/selectors'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { BaseDatePicker } from 'ui-kit/form/DatePicker/BaseDatePicker'
@@ -86,7 +88,7 @@ export const StocksEventList = ({
   const notify = useNotification()
   const [searchParams, setSearchParams] = useSearchParams()
   const { mutate } = useSWRConfig()
-
+  const selectedOffererId = useSelector(selectCurrentOffererId)
   // states
   const [allStocksChecked, setAllStocksChecked] = useState<PartialCheck>(
     PartialCheck.UNCHECKED
@@ -237,6 +239,7 @@ export const StocksEventList = ({
   const onDeleteStock = async (selectIndex: number, stockId: number) => {
     await api.deleteStock(stockId)
     logEvent(Events.CLICKED_DELETE_STOCK, {
+      offererId: selectedOffererId?.toString(),
       offerId: offer.id,
       offerType: 'individual',
       stockId: stockId,
@@ -313,6 +316,7 @@ export const StocksEventList = ({
     setAllStocksChecked(PartialCheck.UNCHECKED)
     setIsDeleteAllLoading(false)
     logEvent(Events.CLICKED_BULK_DELETE_STOCK, {
+      offererId: selectedOffererId?.toString(),
       offerId: offer.id,
       offerType: 'individual',
       deletionCount: deletionCount,

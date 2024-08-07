@@ -1,4 +1,8 @@
-import { screen, waitForElementToBeRemoved } from '@testing-library/react'
+import {
+  screen,
+  waitFor,
+  waitForElementToBeRemoved,
+} from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
@@ -137,6 +141,21 @@ describe('Homepage', () => {
     ).toBeInTheDocument()
     expect(screen.getByText('Profil')).toBeInTheDocument()
     expect(screen.getByText('Aide et support')).toBeInTheDocument()
+  })
+
+  it('should send user-pro-flag data', async () => {
+    vi.spyOn(useAnalytics, 'useRemoteConfigParams').mockReturnValue({
+      DATA: 'TEST',
+    })
+    vi.spyOn(api, 'postProFlags').mockResolvedValue()
+    renderHomePage()
+    await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
+
+    await waitFor(() => {
+      expect(api.postProFlags).toHaveBeenCalledWith({
+        firebase: { DATA: 'TEST' },
+      })
+    })
   })
 
   describe('render statistics dashboard', () => {

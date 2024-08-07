@@ -1,48 +1,58 @@
 {% extends "layouts/base.html" %}
 {% block content %}
-<div class="container pc-login-container">
-    <div class="row">
-        <div class="col-md-8 col-lg-6 offset-lg-2">
-            <div class="card p-5">
-                <div class="d-flex justify-content-between align-items-start">
-                    <img src="{{ url_for('static', filename='backoffice/icons/government.svg') }}"
-                        class="government-logo" alt="Logo du Gouvernement Français" />
-                    <img src="{{ url_for('static', filename='backoffice/icons/passculture.svg') }}"
-                        class="pass-culture-logo" alt="Logo du pass Culture" />
-                </div>
-                <hr class="my-5" />
-                <h1>Associer un compte Discord au pass Culture</h1>
-                <div>
-                    <div class="text-warning ">
-                        {{ form.error_message}}
+    <div class="container pc-login-container">
+        <div class="row">
+            <div class="col-md-8 col-lg-6 offset-lg-2">
+                <div class="card p-5">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <img src="{{ url_for('static', filename='backoffice/icons/passculture.svg') }}"
+                             class="pass-culture-logo"
+                             alt="Logo du pass Culture" />
                     </div>
-                    <form action="{{ url_for('.discord_signin_post') }}" name="{{ url_for('.discord_signin_post') }}" method="post" data-turbo="false">
-                        {{ form.redirect_url }}
-                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-
-                        <div class=" col-10 gap-2 w-2  items-center">
-                            <div>
-                                {{ form.redirect_url }}
+                    <hr class="my-5" />
+                    <h1>Associe ton compte Discord au pass Culture</h1>
+                    <h3 class="text-muted">Pour accéder au serveur Discord du pass Culture</h3>
+                    <div>
+                        <div class="text-warning ">{{ form.error_message }}</div>
+                        <form action="{{ url_for('.discord_signin_post') }}"
+                              name="{{ url_for('.discord_signin_post') }}"
+                              method="post"
+                              data-turbo="false">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                            <div class=" col-10 gap-2 w-2  items-center">
+                                <div>{{ form.redirect_url }}</div>
+                                <div>{{ form.discord_id }}</div>
+                                <div class="mt-2">{{ form.email }}</div>
+                                <div class="mt-2">{{ form.password }}</div>
+                                <div class="mt-2 flex-row  justify-center">
+                                    <button type="submit" class="btn btn-primary">Se connecter</button>
+                                </div>
                             </div>
-                            <div class="mt-2" >
-                                {{ form.discord_id }}
-                            </div>
-                            <div class="mt-2">
-                                {{ form.email }}
-                            </div>
-                            <div class="mt-2">
-                                {{ form.password }}
-                            </div>
-                            <div class="mt-2 flex-row  justify-center">
-                                <button type="submit" class="btn btn-primary">Se connecter</button>
-                            </div>
-                        </div>
-                    </form>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {# spacer #}
+        <div class="row">
+            <div class="col-12">
+                <div class="mt-5"></div>
+            </div>
+        </div>
+        {# terms of service #}
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <div class="text-center">
+                        En liant ton compte Discord et accédant au serveur Discord du pass Culture, nos services sont susceptibles d'utiliser tes données personnelles notamment à des fins de modération. Pour plus d'informations, tu peux te rendre sur notre
+                        <a href="https://pass.culture.fr/donnees-personnelles/"
+                           class="text-muted">"charte des données personnelles"</a>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-<img src="{{ url_for('static', filename='backoffice/login/background.svg') }}" class="pc-login-background"
-    alt="fond d'écran pass Culture" />
+    <img src="{{ url_for('static', filename='backoffice/login/background.svg') }}"
+         class="pc-login-background"
+         alt="fond d'écran pass Culture" />
 {% endblock content %}

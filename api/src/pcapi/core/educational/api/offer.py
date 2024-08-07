@@ -37,8 +37,6 @@ from pcapi.routes.adage.v1.serialization import prebooking
 from pcapi.routes.adage_iframe.serialization.offers import PostCollectiveRequestBodyModel
 from pcapi.routes.public.collective.serialization import offers as public_api_collective_offers_serialize
 from pcapi.routes.serialization import collective_offers_serialize
-from pcapi.routes.serialization.collective_offers_serialize import PostCollectiveOfferBodyModel
-from pcapi.routes.serialization.collective_offers_serialize import PostCollectiveOfferTemplateBodyModel
 from pcapi.utils import image_conversion
 from pcapi.utils import rest
 
@@ -99,19 +97,20 @@ def list_collective_offers_for_pro_user(
     offerer_id: int | None,
     venue_id: int | None = None,
     name_keywords: str | None = None,
-    status: str | None = None,
+    statuses: list[str] | None = None,
     period_beginning_date: datetime.date | None = None,
     period_ending_date: datetime.date | None = None,
     offer_type: collective_offers_serialize.CollectiveOfferType | None = None,
     formats: list[subcategories.EacFormat] | None = None,
 ) -> list[educational_models.CollectiveOffer | educational_models.CollectiveOfferTemplate]:
+    offers = []
     if offer_type != collective_offers_serialize.CollectiveOfferType.template:
         offers = educational_repository.get_collective_offers_for_filters(
             user_id=user_id,
             user_is_admin=user_is_admin,
             offers_limit=OFFERS_RECAP_LIMIT,
             offerer_id=offerer_id,
-            status=status,
+            statuses=statuses,
             venue_id=venue_id,
             category_id=category_id,
             name_keywords=name_keywords,
@@ -121,13 +120,14 @@ def list_collective_offers_for_pro_user(
         )
         if offer_type is not None:
             return offers
+    templates = []
     if offer_type != collective_offers_serialize.CollectiveOfferType.offer:
         templates = educational_repository.get_collective_offers_template_for_filters(
             user_id=user_id,
             user_is_admin=user_is_admin,
             offers_limit=OFFERS_RECAP_LIMIT,
             offerer_id=offerer_id,
-            status=status,
+            statuses=statuses,
             venue_id=venue_id,
             category_id=category_id,
             name_keywords=name_keywords,
@@ -137,37 +137,12 @@ def list_collective_offers_for_pro_user(
         )
         if offer_type is not None:
             return templates
-    offer_index = 0
-    template_index = 0
-    merged_offers = []
 
-    # merge two ordered lists to one shorter than OFFERS_RECAP_LIMIT items
-    for _ in range(min(OFFERS_RECAP_LIMIT, (len(offers) + len(templates)))):
-        if offer_index >= len(offers) and template_index >= len(templates):
-            # this should never happen. Only there as defensive measure.
-            break
+    merged_offers = offers + templates
 
-        if offer_index >= len(offers):
-            merged_offers.append(templates[template_index])
-            template_index += 1
-            continue
+    merged_offers.sort(key=lambda offer: offer.sort_criterion, reverse=True)
 
-        if template_index >= len(templates):
-            merged_offers.append(offers[offer_index])
-            offer_index += 1
-            continue
-
-        offer_date = offers[offer_index].dateCreated
-        template_date = templates[template_index].dateCreated
-
-        if offer_date > template_date:
-            merged_offers.append(offers[offer_index])
-            offer_index += 1
-        else:
-            merged_offers.append(templates[template_index])
-            template_index += 1
-
-    return merged_offers
+    return merged_offers[0:OFFERS_RECAP_LIMIT]
 
 
 def list_public_collective_offers(
@@ -204,7 +179,7 @@ def get_educational_domains_from_ids(
 
 
 def create_collective_offer_template(
-    offer_data: PostCollectiveOfferTemplateBodyModel,
+    offer_data: collective_offers_serialize.PostCollectiveOfferTemplateBodyModel,
     user: User,
     offer_id: int | None = None,
 ) -> educational_models.CollectiveOfferTemplate:
@@ -263,7 +238,7 @@ def create_collective_offer_template(
 
 
 def create_collective_offer(
-    offer_data: PostCollectiveOfferBodyModel,
+    offer_data: collective_offers_serialize.PostCollectiveOfferBodyModel,
     user: User,
     offer_id: int | None = None,
 ) -> educational_models.CollectiveOffer:
@@ -309,7 +284,7 @@ def create_collective_offer(
 
 
 def get_venue_and_check_access_for_offer_creation(
-    offer_data: PostCollectiveOfferBodyModel,
+    offer_data: collective_offers_serialize.PostCollectiveOfferBodyModel,
     user: User,
 ) -> offerers_models.Venue:
     if offer_data.template_id is not None:

@@ -1,5 +1,5 @@
 import {
-  GetIndividualOfferResponseModel,
+  GetIndividualOfferWithAddressResponseModel,
   SubcategoryIdEnum,
   SubcategoryResponseModel,
   WithdrawalTypeEnum,
@@ -109,7 +109,7 @@ describe('buildAccessibilityFormValues', () => {
 })
 
 describe('setFormReadOnlyFields', () => {
-  let offer: GetIndividualOfferResponseModel
+  let offer: GetIndividualOfferWithAddressResponseModel
   let subCategoryList: SubcategoryResponseModel[]
   const venueId = 13
   const offererId = 12

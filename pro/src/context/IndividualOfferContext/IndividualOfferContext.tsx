@@ -5,7 +5,7 @@ import useSWR from 'swr'
 import { api } from 'apiClient/api'
 import {
   CategoryResponseModel,
-  GetIndividualOfferResponseModel,
+  GetIndividualOfferWithAddressResponseModel,
   SubcategoryResponseModel,
 } from 'apiClient/v1'
 import {
@@ -15,7 +15,7 @@ import {
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 export interface IndividualOfferContextValues {
-  offer: GetIndividualOfferResponseModel | null
+  offer: GetIndividualOfferWithAddressResponseModel | null
   categories: CategoryResponseModel[]
   subCategories: SubcategoryResponseModel[]
 }

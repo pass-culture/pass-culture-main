@@ -323,7 +323,7 @@ class CreatePivotTest(PostEndpointHelper):
     endpoint_kwargs = {"name": "allocine"}
     needed_permission = perm_models.Permissions.MANAGE_TECH_PARTNERS
 
-    def test_create_pivot_allocine(self, authenticated_client):
+    def test_create_pivot_allocine(self, authenticated_client, legit_user):
         venue = offerers_factories.VenueFactory()
         form = {"venue_id": venue.id, "theater_id": "ABCDEFGHIJKLMNOPQR==", "internal_id": "P12345"}
 
@@ -334,10 +334,23 @@ class CreatePivotTest(PostEndpointHelper):
         assert created.venueId == venue.id
         assert created.theaterId == form["theater_id"]
         assert created.internalId == form["internal_id"]
+        action = history_models.ActionHistory.query.one()
+        assert action.actionType == history_models.ActionType.PIVOT_CREATED
+        assert action.authorUser == legit_user
+        assert action.venueId == venue.id
+        assert action.extraData["cinema_id"] == "ABCDEFGHIJKLMNOPQR=="
+        assert action.extraData["pivot_name"] == "allocine"
 
-    def test_create_pivot_boost(self, requests_mock, authenticated_client):
+    def test_create_pivot_boost(self, requests_mock, authenticated_client, legit_user):
         requests_mock.get("http://example.com/boost1/")
-        requests_mock.post("http://example.com/boost1/")
+        requests_mock.post(
+            "http://example.com/boost1/api/vendors/login",
+            json={
+                "code": 1,
+                "message": "",
+                "token": "toto",
+            },
+        )
         venue_id = offerers_factories.VenueFactory().id
         form = {
             "venue_id": venue_id,
@@ -345,14 +358,21 @@ class CreatePivotTest(PostEndpointHelper):
             "cinema_url": "http://example.com/boost1/",
         }
 
-        self.post_to_endpoint(authenticated_client, name="boost", form=form)
+        response = self.post_to_endpoint(authenticated_client, name="boost", form=form, follow_redirects=True)
+        assert response.status_code == 200
 
         created = providers_models.BoostCinemaDetails.query.one()
         assert created.cinemaProviderPivot.venueId == venue_id
         assert created.cinemaProviderPivot.idAtProvider == form["cinema_id"]
         assert created.cinemaUrl == form["cinema_url"]
+        action = history_models.ActionHistory.query.one()
+        assert action.actionType == history_models.ActionType.PIVOT_CREATED
+        assert action.authorUser == legit_user
+        assert action.venueId == venue_id
+        assert action.extraData["cinema_id"] == "boost cinema 1"
+        assert action.extraData["pivot_name"] == "boost"
 
-    def test_create_pivot_cgr(self, requests_mock, authenticated_client):
+    def test_create_pivot_cgr(self, requests_mock, authenticated_client, legit_user):
         requests_mock.get("http://example.com/another_web_service", text=soap_definitions.WEB_SERVICE_DEFINITION)
         requests_mock.post(
             "http://example.com/another_web_service", text=fixtures.cgr_response_template([fixtures.FILM_138473])
@@ -372,8 +392,14 @@ class CreatePivotTest(PostEndpointHelper):
         assert created.cinemaProviderPivot.idAtProvider == form["cinema_id"]
         assert created.cinemaUrl == form["cinema_url"]
         assert decrypt(created.password) == form["password"]
+        action = history_models.ActionHistory.query.one()
+        assert action.actionType == history_models.ActionType.PIVOT_CREATED
+        assert action.authorUser == legit_user
+        assert action.venueId == venue_id
+        assert action.extraData["cinema_id"] == "idProvider1111"
+        assert action.extraData["pivot_name"] == "cgr"
 
-    def test_create_pivot_cineoffice(self, authenticated_client):
+    def test_create_pivot_cineoffice(self, authenticated_client, legit_user):
         venue_id = offerers_factories.VenueFactory().id
         form = {
             "venue_id": venue_id,
@@ -389,9 +415,15 @@ class CreatePivotTest(PostEndpointHelper):
         assert created.cinemaProviderPivot.idAtProvider == form["cinema_id"]
         assert created.accountId == form["account_id"]
         assert created.cinemaApiToken == form["api_token"]
+        action = history_models.ActionHistory.query.one()
+        assert action.actionType == history_models.ActionType.PIVOT_CREATED
+        assert action.authorUser == legit_user
+        assert action.venueId == venue_id
+        assert action.extraData["cinema_id"] == "cineoffice cinema 1"
+        assert action.extraData["pivot_name"] == "cineoffice"
 
     @patch("pcapi.routes.backoffice.pivots.contexts.ems.EMSContext.check_if_api_call_is_ok")
-    def test_create_pivot_ems(self, mocked_healthcheck, authenticated_client):
+    def test_create_pivot_ems(self, mocked_healthcheck, authenticated_client, legit_user):
         mocked_healthcheck.return_value = None
         venue_id = offerers_factories.VenueFactory().id
         form = {
@@ -405,6 +437,12 @@ class CreatePivotTest(PostEndpointHelper):
         assert created.cinemaProviderPivot.venueId == venue_id
         assert created.cinemaProviderPivot.idAtProvider == form["cinema_id"]
         assert created.lastVersion == 0
+        action = history_models.ActionHistory.query.one()
+        assert action.actionType == history_models.ActionType.PIVOT_CREATED
+        assert action.authorUser == legit_user
+        assert action.venueId == venue_id
+        assert action.extraData["cinema_id"] == "idAtProvider1"
+        assert action.extraData["pivot_name"] == "ems"
 
     def test_create_pivot_cineoffice_with_forbidden_characters(self, authenticated_client):
         venue_id = offerers_factories.VenueFactory().id

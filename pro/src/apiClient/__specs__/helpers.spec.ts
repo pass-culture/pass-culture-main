@@ -21,14 +21,14 @@ describe('test apiClient:helpers', () => {
         status: 501,
         statusText: 'UNAUTHORIZED',
         body: {
-          error: "Vous n'etes pas authorisé à voir cette page.",
+          error: "Vous n'etes pas autorisé à voir cette page.",
           code: 'UNAUTHORIZED_ACCESS',
         },
       }
       const error = new ApiError(
         request,
         response,
-        "Vous n'etes pas authorisé à voir cette page."
+        "Vous n'etes pas autorisé à voir cette page."
       )
 
       const errorCode = getErrorCode(error)
@@ -86,7 +86,7 @@ const apiErrorFactory = (customBody: any = {}): ApiError => {
   return new ApiError(
     request,
     response,
-    "Vous n'etes pas authorisé à voir cette page."
+    "Vous n'etes pas autorisé à voir cette page."
   )
 }
 

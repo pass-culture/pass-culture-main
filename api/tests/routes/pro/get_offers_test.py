@@ -635,7 +635,6 @@ class Returns200Test:
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
         offerer_address1 = offerers_factories.OffererAddressFactory(
-            label="Accor Arena 1",
             offerer=offerer,
             address__street="4 Boulevard de Bercy",
             address__banId="75112_0877_00001",
@@ -643,7 +642,9 @@ class Returns200Test:
             address__longitude=1.34765,
             address__latitude=4.34765,
         )
-        venue = offerers_factories.VenueFactory(managingOfferer=offerer, offererAddress=offerer_address1)
+        venue = offerers_factories.VenueFactory(
+            managingOfferer=offerer, offererAddress=offerer_address1, name="Best Place to be"
+        )
 
         event_offer1 = offers_factories.EventOfferFactory(
             name="The Weeknd", subcategoryId=subcategories.CONCERT.id, venue=venue, offererAddress=None
@@ -681,7 +682,7 @@ class Returns200Test:
                         "id": offerer_address1.address.id,
                         "banId": "75112_0877_00001",
                         "inseeCode": "75112",
-                        "label": "Accor Arena 1",
+                        "label": "Best Place to be",
                         "street": "4 Boulevard de Bercy",
                         "postalCode": "75001",
                         "city": "Paris",

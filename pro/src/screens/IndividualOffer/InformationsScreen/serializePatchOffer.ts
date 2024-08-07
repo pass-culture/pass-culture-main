@@ -1,21 +1,21 @@
 import {
   GetIndividualOfferResponseModel,
   PatchOfferBodyModel,
+  PostOfferBodyModel,
   WithdrawalTypeEnum,
 } from 'apiClient/v1'
 import { IndividualOfferFormValues } from 'components/IndividualOfferForm/types'
 import { SYNCHRONIZED_OFFER_EDITABLE_FIELDS } from 'core/Offers/constants'
-import { OfferExtraData } from 'core/Offers/types'
 import { isAllocineOffer } from 'core/Providers/utils/localProvider'
 import { AccessibilityEnum } from 'core/shared/types'
 
 export const serializeExtraData = (
   formValues: Partial<IndividualOfferFormValues>
-): OfferExtraData | undefined => {
+): PostOfferBodyModel['extraData'] | undefined => {
   // TODO: change api create and update offer in order not to save
   // extra data fields that's aren't link to offer subCategory
 
-  const extraData: OfferExtraData = {}
+  const extraData: PostOfferBodyModel['extraData'] = {}
   extraData.author = formValues.author
   extraData.gtl_id = formValues.gtl_id
   extraData.musicType = formValues.musicType

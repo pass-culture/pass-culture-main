@@ -373,7 +373,6 @@ class ApiAdresseBackend(BaseBackend):
             "queried_address": address,
             "score": result.score,
         }
-        # TODO(fseguin, 2023-03-15): monitor the results, and maybe use municipality centroid if results are too wrong
         if result.score < RELIABLE_SCORE_THRESHOLD:
             logger.info("Result from API Adresse has a low score", extra=extra)
         else:

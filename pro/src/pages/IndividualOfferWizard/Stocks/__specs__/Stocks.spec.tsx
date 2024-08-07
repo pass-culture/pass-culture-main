@@ -2,7 +2,10 @@ import { screen, waitFor } from '@testing-library/react'
 import React from 'react'
 
 import { api } from 'apiClient/api'
-import { GetIndividualOfferResponseModel, OfferStatus } from 'apiClient/v1'
+import {
+  GetIndividualOfferWithAddressResponseModel,
+  OfferStatus,
+} from 'apiClient/v1'
 import {
   IndividualOfferContextValues,
   IndividualOfferContext,
@@ -35,7 +38,7 @@ const renderStocksScreen = (
 describe('screens:Stocks', () => {
   let storeOverrides: Partial<RootState>
   let contextOverride: IndividualOfferContextValues
-  let offer: GetIndividualOfferResponseModel
+  let offer: GetIndividualOfferWithAddressResponseModel
   const offerId = 12
 
   beforeEach(() => {

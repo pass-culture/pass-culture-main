@@ -2,5 +2,5 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { GetOffererAddressResponseModel } from './GetOffererAddressResponseModel';
-export type GetOffererAddressesResponseModel = Array<GetOffererAddressResponseModel>;
+import type { GetOffererAddressWithIsEditableResponseModel } from './GetOffererAddressWithIsEditableResponseModel';
+export type GetOffererAddressesResponseModel = Array<GetOffererAddressWithIsEditableResponseModel>;

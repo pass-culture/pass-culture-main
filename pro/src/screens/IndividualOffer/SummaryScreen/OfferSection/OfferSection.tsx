@@ -46,9 +46,6 @@ export const OfferSection = ({
   )
   const musicTypes = musicTypesQuery.data
 
-  const isBookingContactEnabled = useActiveFeature(
-    'WIP_MANDATORY_BOOKING_CONTACT'
-  )
   const isSplitOfferEnabled = useActiveFeature('WIP_SPLIT_OFFER')
 
   const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
@@ -68,25 +65,26 @@ export const OfferSection = ({
     { title: 'Catégorie', text: offerData.categoryName },
     { title: 'Sous-catégorie', text: offerData.subCategoryName },
   ]
-  if (conditionalFields.includes('musicType')) {
-    offerTypeDescriptions.push({
-      title: 'Genre musical',
-      text: offerData.musicTypeName || '-',
-    })
+  if (!isSplitOfferEnabled) {
+    if (conditionalFields.includes('musicType')) {
+      offerTypeDescriptions.push({
+        title: 'Genre musical',
+        text: offerData.musicTypeName || '-',
+      })
+    }
+    if (conditionalFields.includes('showType')) {
+      offerTypeDescriptions.push({
+        title: 'Type de spectacle',
+        text: offerData.showTypeName || '-',
+      })
+    }
+    if (offerData.showSubTypeName) {
+      offerTypeDescriptions.push({
+        title: 'Sous-type',
+        text: offerData.showSubTypeName,
+      })
+    }
   }
-  if (conditionalFields.includes('showType')) {
-    offerTypeDescriptions.push({
-      title: 'Type de spectacle',
-      text: offerData.showTypeName || '-',
-    })
-  }
-  if (offerData.showSubTypeName) {
-    offerTypeDescriptions.push({
-      title: 'Sous-type',
-      text: offerData.showSubTypeName,
-    })
-  }
-
   const aboutDescriptions: Description[] = [
     { title: 'Titre de l’offre', text: offerData.name },
     { title: 'Description', text: offerData.description || '-' },
@@ -102,6 +100,25 @@ export const OfferSection = ({
       title: 'Description',
       text: offerData.description || '-',
     })
+  } else {
+    if (conditionalFields.includes('musicType')) {
+      artisticInfoDescriptions.push({
+        title: 'Genre musical',
+        text: offerData.musicTypeName || '-',
+      })
+    }
+    if (conditionalFields.includes('showType')) {
+      artisticInfoDescriptions.push({
+        title: 'Type de spectacle',
+        text: offerData.showTypeName || '-',
+      })
+    }
+    if (offerData.showSubTypeName) {
+      artisticInfoDescriptions.push({
+        title: 'Sous-type',
+        text: offerData.showSubTypeName,
+      })
+    }
   }
 
   if (conditionalFields.includes('speaker')) {
@@ -150,7 +167,7 @@ export const OfferSection = ({
       text: offerData.offererName,
     })
     practicalInfoDescriptions.push({
-      title: isOfferAddressEnabled ? 'Lieu' : 'Qui propose l’offre ?',
+      title: isOfferAddressEnabled ? 'Qui propose l’offre ?' : 'Lieu',
       text:
         /* istanbul ignore next: DEBT, TO FIX */
         offerData.venuePublicName || offerData.venueName,
@@ -175,7 +192,7 @@ export const OfferSection = ({
       text: `${humanizeDelay(offerData.withdrawalDelay)} avant le début de l’évènement`,
     })
   }
-  if (isBookingContactEnabled && offerData.bookingContact) {
+  if (offerData.bookingContact) {
     practicalInfoDescriptions.push({
       title: 'Email de contact',
       text:
@@ -257,16 +274,13 @@ export const OfferSection = ({
           title="Informations pratiques"
           editLink={getIndividualOfferUrl({
             offerId: offer.id,
-            step: OFFER_WIZARD_STEP_IDS.ABOUT,
+            step: OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS,
             mode:
               mode === OFFER_WIZARD_MODE.READ_ONLY
                 ? OFFER_WIZARD_MODE.EDITION
                 : mode,
           })}
           aria-label="Modifier les informations pratiques de l’offre"
-          className={cn({
-            [styles['cancel-title-margin']]: isEventPublicationFormShown,
-          })}
         >
           <SummarySubSection title="Retrait de l’offre">
             <SummaryDescriptionList descriptions={practicalInfoDescriptions} />

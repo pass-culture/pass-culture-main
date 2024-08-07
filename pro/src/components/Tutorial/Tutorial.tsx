@@ -92,9 +92,12 @@ export const Tutorial = ({ onFinish }: TutorialProps): JSX.Element => {
                 key={step.position}
                 onClick={goToStep(step.position)}
                 type="button"
-                aria-current={isActiveStep ? 'page' : false}
-                aria-label={`Étape du tutoriel ${step.position} sur ${stepsToShow.length}`}
-              />
+              >
+                <span className={styles['visually-hidden']}>
+                  Étape du tutoriel {step.position} sur {stepsToShow.length}{' '}
+                  {isActiveStep && '(en cours)'}
+                </span>
+              </button>
             )
           })}
         </div>

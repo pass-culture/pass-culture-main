@@ -6,10 +6,11 @@ import * as useAnalytics from 'app/App/analytics/firebase'
 import { UploaderModeEnum } from 'components/ImageUploader/types'
 import { Events } from 'core/FirebaseEvents/constants'
 import {
-  defaultGetOffererVenueResponseModel,
   defaultGetOffererResponseModel,
+  defaultGetOffererVenueResponseModel,
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import { PartnerPage, PartnerPageProps } from '../PartnerPage'
 
@@ -22,7 +23,12 @@ const renderPartnerPages = (props: Partial<PartnerPageProps>) => {
       venue={{ ...defaultGetOffererVenueResponseModel }}
       venueTypes={[{ id: VenueTypeCode.FESTIVAL, label: 'Festival' }]}
       {...props}
-    />
+    />,
+    {
+      storeOverrides: {
+        user: { currentUser: sharedCurrentUserFactory(), selectedOffererId: 1 },
+      },
+    }
   )
 }
 
@@ -43,6 +49,7 @@ describe('PartnerPages', () => {
     await userEvent.click(screen.getByText(/Ajouter une image/))
 
     expect(mockLogEvent).toHaveBeenCalledWith(Events.CLICKED_ADD_IMAGE, {
+      offererId: '1',
       venueId: defaultGetOffererVenueResponseModel.id,
       imageType: UploaderModeEnum.VENUE,
       isEdition: true,

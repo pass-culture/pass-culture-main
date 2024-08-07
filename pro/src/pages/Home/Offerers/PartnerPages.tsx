@@ -55,7 +55,8 @@ export const PartnerPages = ({
     value: venue.id.toString(),
   }))
   const selectedVenue =
-    venues.find((venue) => venue.id.toString() === selectedVenueId) ?? venues[0]
+    venues.find((venue) => venue.id.toString() === selectedVenueId) ??
+    (venues.length > 0 ? venues[0] : undefined)
 
   return (
     <section className={styles['section']}>
@@ -87,8 +88,6 @@ export const PartnerPages = ({
         </>
       )}
 
-      {/* TODO remove this when noUncheckedIndexedAccess is enabled in TS config */}
-      {/* eslint-disable-next-line @typescript-eslint/no-unnecessary-condition */}
       {selectedVenue && (
         <PartnerPage
           offerer={offerer}

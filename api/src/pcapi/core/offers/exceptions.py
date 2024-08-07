@@ -263,6 +263,11 @@ class RejectedOrPendingOfferNotEditable(OfferEditionBaseException):
         super().__init__("global", "Les offres refusées ou en attente de validation ne sont pas modifiables")
 
 
+class OfferMustHaveAccessibility(OfferEditionBaseException):
+    def __init__(self) -> None:
+        super().__init__("global", "L’accessibilité de l’offre doit être définie")
+
+
 class MoveOfferBaseException(Exception):
     pass
 

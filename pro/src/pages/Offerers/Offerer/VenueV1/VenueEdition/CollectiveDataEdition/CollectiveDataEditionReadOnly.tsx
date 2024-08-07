@@ -30,7 +30,7 @@ export const CollectiveDataEditionReadOnly = ({
             },
             {
               title: 'Public cible',
-              text: venue.collectiveStudents?.join(', ') ?? 'Non renseignée', // TODO formatting
+              text: venue.collectiveStudents?.join(', ') ?? 'Non renseignée',
             },
             {
               title: 'URL de votre site web',

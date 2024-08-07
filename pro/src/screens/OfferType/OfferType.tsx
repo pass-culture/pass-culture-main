@@ -23,6 +23,7 @@ import {
 } from 'core/Offers/constants'
 import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
 import { serializeApiFilters } from 'core/Offers/utils/serializer'
+import { useActiveFeature } from 'hooks/useActiveFeature'
 import { useIsNewInterfaceActive } from 'hooks/useIsNewInterfaceActive'
 import { useNotification } from 'hooks/useNotification'
 import phoneStrokeIcon from 'icons/stroke-phone.svg'
@@ -39,12 +40,13 @@ import { OfferTypeFormValues } from './types'
 
 export const OfferTypeScreen = (): JSX.Element => {
   const isNewInterfaceActive = useIsNewInterfaceActive()
+  const isSplitOfferEnabled = useActiveFeature('WIP_SPLIT_OFFER')
   const navigate = useNavigate()
   const location = useLocation()
   const queryParams = new URLSearchParams(location.search)
-  const selectedOfferId = useSelector(selectCurrentOffererId)
+  const selectedOffererId = useSelector(selectCurrentOffererId)
   const queryOffererId = isNewInterfaceActive
-    ? selectedOfferId?.toString()
+    ? selectedOffererId?.toString()
     : queryParams.get('structure')
   const queryVenueId = queryParams.get('lieu')
 
@@ -83,6 +85,7 @@ export const OfferTypeScreen = (): JSX.Element => {
         to: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
         from: OFFER_FORM_HOMEPAGE,
         used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
+        offererId: selectedOffererId?.toString(),
       })
 
       const params = new URLSearchParams(location.search)
@@ -90,13 +93,22 @@ export const OfferTypeScreen = (): JSX.Element => {
         params.append('offer-type', values.individualOfferSubtype)
       }
 
-      return navigate({
-        pathname: getIndividualOfferUrl({
-          step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-          mode: OFFER_WIZARD_MODE.CREATION,
-        }),
-        search: params.toString(),
-      })
+      return isSplitOfferEnabled
+        ? navigate({
+            pathname: getIndividualOfferUrl({
+              step: OFFER_WIZARD_STEP_IDS.DETAILS,
+              mode: OFFER_WIZARD_MODE.CREATION,
+              isSplitOfferEnabled,
+            }),
+            search: params.toString(),
+          })
+        : navigate({
+            pathname: getIndividualOfferUrl({
+              step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+              mode: OFFER_WIZARD_MODE.CREATION,
+            }),
+            search: params.toString(),
+          })
     }
 
     // Offer type is EDUCATIONAL

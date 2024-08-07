@@ -192,6 +192,7 @@ class Returns200Test:
             "extraData": None,
             "externalTicketOfficeUrl": "http://example.net",
             "hasBookingLimitDatetimesPassed": False,
+            "hasPendingBookings": False,
             "hasStocks": True,
             "isActive": True,
             "isActivable": True,
@@ -320,7 +321,6 @@ class Returns200Test:
         offer_id = offer.id
         with testing.assert_num_queries(self.num_queries):
             response = auth_client.get(f"/offers/{offer_id}")
-
         # Then
         assert response.status_code == 200
         assert response.json["bookingsCount"] == 2
@@ -455,5 +455,23 @@ class Returns200Test:
 
         # Then
         assert response.status_code == 200
-
         assert response.json["publicationDate"] == publication_date.strftime("%Y-%m-%dT%H:%M:%SZ")
+
+    @pytest.mark.parametrize("has_pending_bookings", [True, False])
+    def test_pending_booking(self, client, has_pending_bookings):
+        # Given
+        user_offerer = offerers_factories.UserOffererFactory()
+        offer = offers_factories.EventOfferFactory(venue__managingOfferer=user_offerer.offerer)
+        stock = offers_factories.EventStockFactory(offer=offer)
+        if has_pending_bookings:
+            bookings_factories.BookingFactory(stock=stock)
+
+        # When
+        auth_client = client.with_session_auth(email=user_offerer.user.email)
+        offer_id = offer.id
+        with testing.assert_num_queries(self.num_queries):
+            response = auth_client.get(f"/offers/{offer_id}")
+
+            # Then
+            assert response.status_code == 200
+            assert response.json["hasPendingBookings"] == has_pending_bookings

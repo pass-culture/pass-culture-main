@@ -1,7 +1,6 @@
 /* istanbul ignore file: DEBT, TO FIX */
-import { PatchOfferBodyModel } from 'apiClient/v1'
+import { PatchOfferBodyModel, PostOfferBodyModel } from 'apiClient/v1'
 import { IndividualOfferFormValues } from 'components/IndividualOfferForm/types'
-import { OfferExtraData } from 'core/Offers/types'
 import { AccessibilityEnum } from 'core/shared/types'
 import { getIndividualOfferFactory } from 'utils/individualApiFactories'
 
@@ -34,7 +33,7 @@ describe('test updateIndividualOffer::serializers', () => {
       description: 'Test description',
     } as IndividualOfferFormValues
 
-    const extraData: OfferExtraData = {
+    const extraData: PostOfferBodyModel['extraData'] = {
       author: 'author value',
       ean: 'ean value',
       gtl_id: '',

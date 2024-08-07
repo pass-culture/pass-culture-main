@@ -37,6 +37,7 @@ pro-packed-staging/
 # misc
 .dccache
 .graphqlconfig
+.yarn-integrity
 
 # storybook build
 docs-build/

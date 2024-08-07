@@ -17,6 +17,7 @@ export const ImagePreview: FunctionComponent<ImagePreviewScreenProps> = ({
       src={mobileShell}
       alt=""
       className={styles['image-preview-previews-shell']}
+      role="presentation"
     />
     <div className={styles['image-preview-screen']}>{children}</div>
     <figcaption>{title}</figcaption>

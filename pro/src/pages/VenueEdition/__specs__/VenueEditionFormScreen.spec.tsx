@@ -139,14 +139,33 @@ const baseVenue: GetVenueResponseModel = {
 
 describe('VenueFormScreen', () => {
   it('should display readonly info', async () => {
-    renderForm(baseVenue, { initialRouterEntries: ['/'] })
+    renderForm(
+      {
+        ...baseVenue,
+        description: 'TOTOTO',
+        contact: {
+          phoneNumber: '123',
+          email: 'e@mail.fr',
+          website: 'site.web',
+        },
+      },
+      { initialRouterEntries: ['/'] }
+    )
 
     expect(
       await screen.findByText('Vos informations pour le grand public')
     ).toBeInTheDocument()
     expect(screen.getByText('À propos de votre activité')).toBeInTheDocument()
+    expect(screen.getByText(/Description/)).toBeInTheDocument()
+    expect(screen.getByText(/TOTOTO/)).toBeInTheDocument()
     expect(screen.getByText('Modalités d’accessibilité')).toBeInTheDocument()
     expect(screen.getByText('Informations de contact')).toBeInTheDocument()
+    expect(screen.getByText(/Adresse e-mail/)).toBeInTheDocument()
+    expect(screen.getByText('e@mail.fr')).toBeInTheDocument()
+    expect(screen.getByText(/Téléphone/)).toBeInTheDocument()
+    expect(screen.getByText('123')).toBeInTheDocument()
+    expect(screen.getByText(/URL de votre site web/)).toBeInTheDocument()
+    expect(screen.getByText('site.web')).toBeInTheDocument()
   })
 
   it('should display the partner info', async () => {

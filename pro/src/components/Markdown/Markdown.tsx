@@ -1,7 +1,5 @@
 import DOMPurify from 'dompurify'
 
-import { useActiveFeature } from 'hooks/useActiveFeature'
-
 const BOLD_REGEXP = /\*\*(.*?)\*\*/gim
 const ITALIC_REGEXP = /_(.*?)_/gim
 const URL_REGEXP = /((https?:\/\/)|(www\.))[^\s/$.?#].[^\s]*/gim
@@ -21,14 +19,6 @@ function markdownToHtml(markdown: string) {
 }
 
 export const Markdown = ({ markdownText }: { markdownText: string }) => {
-  const isMarkdownDescriptionEnabled = useActiveFeature(
-    'WIP_ENABLE_OFFER_MARKDOWN_DESCRIPTION'
-  )
-
-  if (!isMarkdownDescriptionEnabled) {
-    return markdownText
-  }
-
   const html = DOMPurify.sanitize(markdownToHtml(markdownText), {
     ALLOWED_TAGS: ['strong', 'em', 'a'],
     ALLOWED_ATTR: ['href', 'target', 'rel'],

@@ -1,4 +1,4 @@
-from urllib.parse import urlparse
+import unittest
 
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
@@ -10,7 +10,6 @@ from pcapi import settings
 from pcapi.core.history import factories as history_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_settings
-from pcapi.core.token import AsymetricToken
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import factories as users_factories
 
@@ -61,104 +60,106 @@ class DiscordSigninTest:
         return client.post(url, form=form, headers=headers, follow_redirects=follow_redirects)
 
     @override_settings(DISCORD_JWT_PUBLIC_KEY=public_key_pem, DISCORD_JWT_PRIVATE_KEY=private_key_pem)
-    def test_successfull_discord_signing(self, client):
-        redirect_url_scheme = "https"
-        redirect_url_netloc = "test.com"
+    def test_successful_discord_signing(self, client, db_session):
+        redirect_url = "https://test.com"
         form_data = {
             "email": "user@test.com",
             "password": settings.TEST_DEFAULT_PASSWORD,
             "discord_id": "1234",
-            "redirect_url": f"{redirect_url_scheme}://{redirect_url_netloc}",
+            "redirect_url": redirect_url,
         }
         user = users_factories.UserFactory(email=form_data["email"], password=form_data["password"], isActive=True)
-        users_factories.DiscordUserFactory(user=user, discordId=None, hasAccess=True, isBanned=False)
-        response = self.post_to_endpoint(client, form=form_data)
-        assert response.status_code == 303
+        discord_user = users_factories.DiscordUserFactory(user=user, discordId=None, hasAccess=True, isBanned=False)
 
-        url = urlparse(response.location)
-        assert url.scheme == redirect_url_scheme
-        assert url.netloc == redirect_url_netloc
-        encoded_token = url.query.split("=")[1]
-        token = AsymetricToken.load_without_checking(encoded_token, settings.DISCORD_JWT_PUBLIC_KEY)
-        assert token.data["discord_id"] == form_data["discord_id"]
-        assert token.data["status"] == "AUTHORIZED"
+        response = self.post_to_endpoint(client, form=form_data)
+
+        assert response.status_code == 302
+        assert response.location == redirect_url
+
+        db_session.refresh(discord_user)
+        assert discord_user.discordId == form_data["discord_id"]
+
+    @unittest.mock.patch(
+        "pcapi.routes.auth.discord.discord_connector.retrieve_access_token", return_value="discord_access_token"
+    )
+    @unittest.mock.patch("pcapi.routes.auth.discord.discord_connector.add_to_server")
+    def test_discord_webhook(self, mock_add_to_server, mock_retrieve_access_token, client):
+        client.get(url_for("auth.discord_call_back", code="discord_code"))
+
+        assert mock_retrieve_access_token.call_count == 1
+        assert mock_retrieve_access_token.call_args[0][0] == "discord_code"
+
+        assert mock_add_to_server.call_count == 1
+        assert mock_add_to_server.call_args[0][0] == "discord_access_token"
 
     @override_settings(DISCORD_JWT_PUBLIC_KEY=public_key_pem, DISCORD_JWT_PRIVATE_KEY=private_key_pem)
-    def test_has_acess_is_false(self, client):
-        redirect_url_scheme = "https"
-        redirect_url_netloc = "test.com"
+    def test_has_access_is_false(self, client, db_session):
+        redirect_url = "https://test.com"
         form_data = {
             "email": "user@test.com",
             "password": settings.TEST_DEFAULT_PASSWORD,
             "discord_id": "1234",
-            "redirect_url": f"{redirect_url_scheme}://{redirect_url_netloc}",
+            "redirect_url": redirect_url,
         }
-        user = users_factories.UserFactory(email=form_data["email"], password=form_data["password"], isActive=True)
-        users_factories.DiscordUserFactory(user=user, discordId=None, hasAccess=False, isBanned=False)
-        response = self.post_to_endpoint(client, form=form_data)
-        assert response.status_code == 303
 
-        url = urlparse(response.location)
-        assert url.scheme == redirect_url_scheme
-        assert url.netloc == redirect_url_netloc
-        encoded_token = url.query.split("=")[1]
-        token = AsymetricToken.load_without_checking(encoded_token, settings.DISCORD_JWT_PUBLIC_KEY)
-        assert token.data["discord_id"] == form_data["discord_id"]
-        assert token.data["status"] == "UNAUTHORIZED"
+        user = users_factories.UserFactory(email=form_data["email"], password=form_data["password"], isActive=True)
+        discord_user = users_factories.DiscordUserFactory(user=user, discordId=None, hasAccess=False, isBanned=False)
+
+        response = self.post_to_endpoint(client, form=form_data)
+
+        assert response.status_code == 200
+        assert response.location is None
+
+        response_data = response.data.decode("utf-8")
+        assert "Accès refusé au serveur Discord. Contacte le support pour plus d&#39;informations" in response_data
+
+        db_session.refresh(discord_user)
+        assert discord_user.discordId is None
 
     @override_settings(DISCORD_JWT_PUBLIC_KEY=public_key_pem, DISCORD_JWT_PRIVATE_KEY=private_key_pem)
     def test_discord_user_is_none(self, client):
-        redirect_url_scheme = "https"
-        redirect_url_netloc = "test.com"
+        redirect_url = "https://test.com"
         form_data = {
             "email": "user@test.com",
             "password": settings.TEST_DEFAULT_PASSWORD,
             "discord_id": "1234",
-            "redirect_url": f"{redirect_url_scheme}://{redirect_url_netloc}",
+            "redirect_url": redirect_url,
         }
         users_factories.UserFactory(email=form_data["email"], password=form_data["password"], isActive=True)
-        response = self.post_to_endpoint(client, form=form_data)
-        assert response.status_code == 303
 
-        url = urlparse(response.location)
-        assert url.scheme == redirect_url_scheme
-        assert url.netloc == redirect_url_netloc
-        encoded_token = url.query.split("=")[1]
-        token = AsymetricToken.load_without_checking(encoded_token, settings.DISCORD_JWT_PUBLIC_KEY)
-        assert token.data["discord_id"] == form_data["discord_id"]
-        assert token.data["status"] == "UNAUTHORIZED"
+        response = self.post_to_endpoint(client, form=form_data)
+
+        assert response.status_code == 200
+
+        assert response.status_code == 200
+        assert response.location is None
+
+        response_data = response.data.decode("utf-8")
+        assert "Accès refusé au serveur Discord. Contacte le support pour plus d&#39;informations" in response_data
 
     @override_settings(DISCORD_JWT_PUBLIC_KEY=public_key_pem, DISCORD_JWT_PRIVATE_KEY=private_key_pem)
     def test_discord_user_is_active(self, client):
-        redirect_url_scheme = "https"
-        redirect_url_netloc = "test.com"
+        redirect_url = "https://test.com"
         form_data = {
             "email": "user@test.com",
             "password": settings.TEST_DEFAULT_PASSWORD,
             "discord_id": "1234",
-            "redirect_url": f"{redirect_url_scheme}://{redirect_url_netloc}",
+            "redirect_url": redirect_url,
         }
         user = users_factories.UserFactory(email=form_data["email"], password=form_data["password"], isActive=True)
         users_factories.DiscordUserFactory(user=user, hasAccess=True, isBanned=False)
-        response = self.post_to_endpoint(client, form=form_data)
-        assert response.status_code == 303
 
-        url = urlparse(response.location)
-        assert url.scheme == redirect_url_scheme
-        assert url.netloc == redirect_url_netloc
-        encoded_token = url.query.split("=")[1]
-        token = AsymetricToken.load_without_checking(encoded_token, settings.DISCORD_JWT_PUBLIC_KEY)
-        assert token.data["discord_id"] == form_data["discord_id"]
-        assert token.data["status"] == "ALREADY_ACTIVE"
+        response = self.post_to_endpoint(client, form=form_data)
+
+        assert response.status_code == 302
+        assert response.location == redirect_url
 
     def test_account_anonymized_user_request_account_state(self, client):
-        redirect_url_scheme = "https"
-        redirect_url_netloc = "test.com"
         form_data = {
             "email": "user@test.com",
             "password": settings.TEST_DEFAULT_PASSWORD,
             "discord_id": "1234",
-            "redirect_url": f"{redirect_url_scheme}://{redirect_url_netloc}",
+            "redirect_url": "https://test.com",
         }
         users_factories.AnonymizedUserFactory(
             email=form_data["email"],
@@ -167,14 +168,15 @@ class DiscordSigninTest:
         response = self.post_to_endpoint(client, form=form_data)
         assert response.status_code == 200
 
+        response_data = response.data.decode("utf-8")
+        assert "Le compte a été anonymisé" in response_data
+
     def test_wrong_password(self, client):
-        redirect_url_scheme = "https"
-        redirect_url_netloc = "test.com"
         form_data = {
             "email": "user@test.com",
             "password": "wrong_password",
             "discord_id": "1234",
-            "redirect_url": f"{redirect_url_scheme}://{redirect_url_netloc}",
+            "redirect_url": "https://test.com",
         }
         users_factories.AnonymizedUserFactory(
             email=form_data["email"],
@@ -183,14 +185,15 @@ class DiscordSigninTest:
         response = self.post_to_endpoint(client, form=form_data)
         assert response.status_code == 200
 
+        response_data = response.data.decode("utf-8")
+        assert "Identifiant ou Mot de passe incorrect" in response_data
+
     def test_account_deleted_account_state(self, client):
-        redirect_url_scheme = "https"
-        redirect_url_netloc = "test.com"
         form_data = {
             "email": "user@test.com",
             "password": settings.TEST_DEFAULT_PASSWORD,
             "discord_id": "1234",
-            "redirect_url": f"{redirect_url_scheme}://{redirect_url_netloc}",
+            "redirect_url": "https://test.com",
         }
         user = users_factories.UserFactory(email=form_data["email"], password=form_data["password"], isActive=False)
         history_factories.SuspendedUserActionHistoryFactory(user=user, reason=users_constants.SuspensionReason.DELETED)
@@ -198,51 +201,57 @@ class DiscordSigninTest:
         response = self.post_to_endpoint(client, form=form_data)
         assert response.status_code == 200
 
-    def test_allow_inactive_user_sign(self, client):
-        redirect_url_scheme = "https"
-        redirect_url_netloc = "test.com"
+        response_data = response.data.decode("utf-8")
+        assert "Le compte a été supprimé" in response_data
+
+    def test_inactive_user_signin(self, client):
         form_data = {
             "email": "user@test.com",
             "password": settings.TEST_DEFAULT_PASSWORD,
             "discord_id": "1234",
-            "redirect_url": f"{redirect_url_scheme}://{redirect_url_netloc}",
+            "redirect_url": "https://test.com",
         }
-        users_factories.AnonymizedUserFactory(email=form_data["email"], password=form_data["password"], isActive=False)
+        users_factories.BaseUserFactory(email=form_data["email"], password=form_data["password"])
         response = self.post_to_endpoint(client, form=form_data)
         assert response.status_code == 200
 
-    def test_unknown_user_logs_in(self, client, caplog):
-        redirect_url_scheme = "https"
-        redirect_url_netloc = "test.com"
+        response_data = response.data.decode("utf-8")
+        assert (
+            "L&#39;email n&#39;a pas été validé. Valide ton compte sur le pass Culture pour continuer" in response_data
+        )
+
+    def test_unknown_user_logs_in(self, client):
         form_data = {
             "email": "user@test.com",
             "password": settings.TEST_DEFAULT_PASSWORD,
             "discord_id": "1234",
-            "redirect_url": f"{redirect_url_scheme}://{redirect_url_netloc}",
+            "redirect_url": "https://test.com",
         }
         response = self.post_to_endpoint(client, form=form_data)
         assert response.status_code == 200
 
-    def test_user_without_password_logs_in(self, client, caplog):
+        response_data = response.data.decode("utf-8")
+        assert "Identifiant ou Mot de passe incorrect" in response_data
+
+    def test_user_without_password_logs_in(self, client):
         user = users_factories.UserFactory(password=None, isActive=True)
-        redirect_url_scheme = "https"
-        redirect_url_netloc = "test.com"
         form_data = {
             "email": user.email,
             "password": settings.TEST_DEFAULT_PASSWORD,
             "discord_id": "1234",
-            "redirect_url": f"{redirect_url_scheme}://{redirect_url_netloc}",
+            "redirect_url": "https://test.com",
         }
         response = self.post_to_endpoint(client, form=form_data)
         assert response.status_code == 200
 
+        response_data = response.data.decode("utf-8")
+        assert "Identifiant ou Mot de passe incorrect" in response_data
+
     def test_user_logs_in_with_missing_fields(self, client):
-        redirect_url_scheme = "https"
-        redirect_url_netloc = "test.com"
         form_data = {
             "email": "user@test.com",
             "discord_id": "1234",
-            "redirect_url": f"{redirect_url_scheme}://{redirect_url_netloc}",
+            "redirect_url": "https://test.com",
         }
         response = self.post_to_endpoint(client, form=form_data)
         assert response.status_code == 200

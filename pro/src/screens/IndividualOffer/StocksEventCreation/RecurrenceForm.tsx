@@ -42,6 +42,7 @@ interface Props {
   setIsOpen: (p: boolean) => void
   priceCategories: PriceCategoryResponseModel[]
   handleSubmit: (values: RecurrenceFormValues) => Promise<void>
+  idLabelledBy: string
 }
 
 const mapNumberToFrenchOrdinals = (n: number): string => {
@@ -103,6 +104,7 @@ export const RecurrenceForm = ({
   setIsOpen,
   priceCategories,
   handleSubmit,
+  idLabelledBy,
 }: Props): JSX.Element => {
   const priceCategoryOptions = getPriceCategoryOptions(priceCategories)
 
@@ -125,7 +127,9 @@ export const RecurrenceForm = ({
   return (
     <FormikProvider value={formik}>
       <form onSubmit={formik.handleSubmit}>
-        <h1 className={styles['title']}>Ajouter une ou plusieurs dates</h1>
+        <h1 id={idLabelledBy} className={styles['title']}>
+          Ajouter une ou plusieurs dates
+        </h1>
 
         <div className={styles['mandatory']}>
           Tous les champs suivis d’un * sont obligatoires.
@@ -133,14 +137,14 @@ export const RecurrenceForm = ({
 
         <fieldset>
           <div className={styles['section']}>
-            <div className={styles['legend']}>
+            <h2 className={styles['legend']}>
               <SvgIcon
                 alt=""
                 src={strokeDateIcon}
                 className={styles['legend-icon']}
               />{' '}
               Cet évènement aura lieu
-            </div>
+            </h2>
 
             <div className={styles['radio-group']}>
               <RadioButton
@@ -286,14 +290,14 @@ export const RecurrenceForm = ({
 
         <fieldset>
           <div className={styles['section']}>
-            <div className={styles['legend']}>
+            <h2 className={styles['legend']}>
               <SvgIcon
                 alt=""
                 src={strokeClockIcon}
                 className={styles['legend-icon']}
               />{' '}
               Horaires pour l’ensemble de ces dates
-            </div>
+            </h2>
 
             <FormLayout.Row>
               <FieldArray
@@ -342,14 +346,14 @@ export const RecurrenceForm = ({
 
         <fieldset>
           <div className={styles['section']}>
-            <div className={styles['legend']}>
+            <h2 className={styles['legend']}>
               <SvgIcon
                 src={strokeEventsIcon}
                 alt=""
                 className={styles['legend-icon']}
               />
               Places et tarifs par horaire
-            </div>
+            </h2>
 
             <FieldArray
               name="quantityPerPriceCategories"
@@ -422,14 +426,14 @@ export const RecurrenceForm = ({
 
         <fieldset>
           <div className={styles['section']}>
-            <div className={styles['legend']}>
+            <h2 className={styles['legend']}>
               <SvgIcon
                 alt=""
                 src={strokeBookedIcon}
                 className={styles['legend-icon']}
               />{' '}
               Date limite de réservation
-            </div>
+            </h2>
 
             <div className={styles['booking-date-limit-container']}>
               <TextInput

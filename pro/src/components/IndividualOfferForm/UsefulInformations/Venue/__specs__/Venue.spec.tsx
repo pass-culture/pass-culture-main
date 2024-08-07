@@ -302,7 +302,7 @@ describe('IndividualOffer section: venue', () => {
     })
   })
 
-  it('should disable read only fields', () => {
+  it('should disable read only fields', async () => {
     props.readOnlyFields = ['venueId', 'offererId']
 
     renderVenue({
@@ -312,7 +312,9 @@ describe('IndividualOffer section: venue', () => {
       options: { features: ['WIP_ENABLE_OFFER_ADDRESS'] },
     })
 
-    expect(screen.getByLabelText('Structure *')).toBeDisabled()
-    expect(screen.getByLabelText('Qui propose l’offre ? *')).toBeDisabled()
+    await waitFor(() => {
+      expect(screen.getByLabelText('Structure *')).toBeDisabled()
+      expect(screen.getByLabelText('Qui propose l’offre ? *')).toBeDisabled()
+    })
   })
 })

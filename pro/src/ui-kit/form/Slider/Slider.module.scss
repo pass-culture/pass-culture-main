@@ -7,7 +7,7 @@
 }
 
 .slider-value {
-  @include fonts.button;
+  @include fonts.bold;
 }
 
 .slider-header {
@@ -18,7 +18,7 @@
   margin-bottom: rem.torem(12px);
 
   .input-value {
-    @include fonts.button;
+    @include fonts.bold;
   }
 }
 

@@ -2522,7 +2522,7 @@
                         "type": "string"
                     },
                     "enableDoubleBookings": {
-                        "default": false,
+                        "default": true,
                         "description": "If set to true, users may book the offer for two persons. Second item will be delivered at the same price as the first one. Category must be compatible with this feature.",
                         "example": true,
                         "nullable": true,
@@ -8896,7 +8896,7 @@
         },
         "/public/bookings/v1/cancel/token/{token}": {
             "patch": {
-                "description": "Cancel a booking that has not been used or refunded.\n\nFor events, a booking can only be cancelled if it is pending. Once it is confirmed, you cannot cancel it (for booking confirmation see [this page](/docs/understanding-our-api/resources/individual-offers#general-description-2)).",
+                "description": "Delete a booking that has not been used or refunded. For events, a booking can only be deleted if it is in a pending state.\n\n**\u26a0\ufe0f Warning:** This operation is irreversible. Once a booking is deleted, the beneficiary cannot retrieve it and will need to create a new booking. **Use this endpoint only if you are certain that the order cannot be fulfilled.**",
                 "operationId": "CancelBookingByToken",
                 "parameters": [
                     {
@@ -8947,7 +8947,7 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "summary": "Cancel a booking",
+                "summary": "Delete a booking",
                 "tags": [
                     "Bookings"
                 ]
@@ -8955,7 +8955,7 @@
         },
         "/public/bookings/v1/keep/token/{token}": {
             "patch": {
-                "description": "Mark a booking as `unused`.",
+                "description": "This operation reverses the status of a booking from `USED` back to `CONFIRMED`. As a result, the pass Culture application will treat the booking as if the beneficiary has not retrieved it, and the cultural partner will not receive a refund.\n\n**\u26a0\ufe0f Warning:** Before using this endpoint, **ensure that the cultural partner has manually confirmed their desire to revert the booking validation**. Failure to do so may result in the cultural partner expecting a refund that will not be issued, due to the booking validation being reverted without their knowledge.",
                 "operationId": "CancelBookingValidationByToken",
                 "parameters": [
                     {
@@ -9003,7 +9003,7 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "summary": "Cancel a booking validation",
+                "summary": "Revert booking validation",
                 "tags": [
                     "Bookings"
                 ]
@@ -9122,7 +9122,7 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "summary": "Validate a booking",
+                "summary": "Validate booking",
                 "tags": [
                     "Bookings"
                 ]
@@ -9199,6 +9199,9 @@
                     },
                     "401": {
                         "description": "Authentication is necessary to use this API."
+                    },
+                    "403": {
+                        "description": "You do not have the necessary rights to use this API."
                     },
                     "404": {
                         "description": "The venue could not found for your API key."

@@ -6,6 +6,7 @@ import pytest
 
 from pcapi.core.educational import factories as educational_factories
 import pcapi.core.offerers.factories as offerers_factories
+from pcapi.core.testing import assert_num_queries
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -32,11 +33,13 @@ class Returns200Test:
             educationalInstitution=educational_factories.EducationalInstitutionFactory(),
         )
 
-        response = client.with_session_auth(user_offerer.user.email).get(
-            "/collective/bookings/csv?bookingPeriodBeginningDate=2000-01-01&bookingPeriodEndingDate=2030-01-01"
-        )
+        client = client.with_session_auth(user_offerer.user.email)
+        with assert_num_queries(3):  #  session + user + SELECT DISTINCT collective_booking
+            response = client.get(
+                "/collective/bookings/csv?bookingPeriodBeginningDate=2000-01-01&bookingPeriodEndingDate=2030-01-01"
+            )
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         reader = reader_from_response(response)
         assert len(reader) == 1
         assert reader[0]["Lieu"] == booking.venue.name
@@ -68,11 +71,13 @@ class Returns200Test:
             educationalRedactor__lastName="Cox",
         )
 
-        response = client.with_session_auth(user_offerer.user.email).get(
-            "/collective/bookings/csv?bookingPeriodBeginningDate=2000-01-01&bookingPeriodEndingDate=2030-01-01"
-        )
+        client = client.with_session_auth(user_offerer.user.email)
+        with assert_num_queries(3):  # user + session + SELECT DISTINCT collective_booking
+            response = client.get(
+                "/collective/bookings/csv?bookingPeriodBeginningDate=2000-01-01&bookingPeriodEndingDate=2030-01-01"
+            )
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         reader = reader_from_response(response)
         assert len(reader) == 1
         assert reader[0]["Lieu"] == booking.venue.name
@@ -104,11 +109,13 @@ class Returns200Test:
             educationalRedactor__lastName="Dorian",
         )
 
-        response = client.with_session_auth(user_offerer.user.email).get(
-            "/collective/bookings/csv?bookingPeriodBeginningDate=2000-01-01&bookingPeriodEndingDate=2030-01-01"
-        )
+        client = client.with_session_auth(user_offerer.user.email)
+        with assert_num_queries(3):  #  session + user + SELECT DISTINCT collective_booking
+            response = client.get(
+                "/collective/bookings/csv?bookingPeriodBeginningDate=2000-01-01&bookingPeriodEndingDate=2030-01-01"
+            )
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         reader = reader_from_response(response)
         assert len(reader) == 1
         assert reader[0]["Lieu"] == booking.venue.name
@@ -141,11 +148,13 @@ class Returns200Test:
             educationalRedactor__lastName="Reid",
         )
 
-        response = client.with_session_auth(user_offerer.user.email).get(
-            "/collective/bookings/csv?bookingPeriodBeginningDate=2015-01-01&bookingPeriodEndingDate=2030-01-01"
-        )
+        client = client.with_session_auth(user_offerer.user.email)
+        with assert_num_queries(3):  #  session + user + SELECT DISTINCT collective_booking
+            response = client.get(
+                "/collective/bookings/csv?bookingPeriodBeginningDate=2015-01-01&bookingPeriodEndingDate=2030-01-01"
+            )
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         reader = reader_from_response(response)
         assert len(reader) == 1
         assert reader[0]["Lieu"] == booking.venue.name
@@ -194,11 +203,13 @@ class Returns200Test:
             ),
         ]
 
-        response = client.with_session_auth(user_offerer.user.email).get(
-            "/collective/bookings/csv?bookingPeriodBeginningDate=2000-01-01&bookingPeriodEndingDate=2030-01-01"
-        )
+        client = client.with_session_auth(user_offerer.user.email)
+        with assert_num_queries(3):  #  session + user + SELECT DISTINCT collective_booking
+            response = client.get(
+                "/collective/bookings/csv?bookingPeriodBeginningDate=2000-01-01&bookingPeriodEndingDate=2030-01-01"
+            )
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         reader = reader_from_response(response)
         assert len(reader) == 3
         for i in range(3):

@@ -31,9 +31,14 @@ export const FieldSetLayout = ({
       className={cn(styles['fieldset-layout'], className)}
       data-testid={dataTestId}
       aria-required={!isOptional}
+      role="group"
+      aria-labelledby="checkboxes-error-legend"
     >
       {legend && (
-        <legend className={styles['fieldset-layout-legend']}>
+        <legend
+          className={styles['fieldset-layout-legend']}
+          id="checkboxes-error-legend"
+        >
           {legend}
           {!isOptional && ' *'}
         </legend>
@@ -42,8 +47,10 @@ export const FieldSetLayout = ({
       <div> {children} </div>
 
       {!hideFooter && (
-        <div className={styles['fieldset-layout-error']}>
-          {!!error && <FieldError name={name}>{error}</FieldError>}
+        <div aria-live="assertive">
+          <div className={styles['fieldset-layout-error']}>
+            {!!error && <FieldError name={name}>{error}</FieldError>}
+          </div>
         </div>
       )}
     </fieldset>

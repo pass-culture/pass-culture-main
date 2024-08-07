@@ -26,6 +26,7 @@ from pcapi.core.users.repository import find_user_by_email
 from pcapi.domain import password
 from pcapi.models import api_errors
 from pcapi.models.feature import FeatureToggle
+from pcapi.repository import atomic
 from pcapi.repository import transaction
 from pcapi.routes.native.security import authenticated_and_active_user_required
 from pcapi.routes.native.security import authenticated_maybe_inactive_user_required
@@ -51,18 +52,30 @@ def get_user_profile(user: users_models.User) -> serializers.UserProfileResponse
     return serializers.UserProfileResponse.from_orm(user)
 
 
-@blueprint.native_route("/profile", methods=["POST"])
+@blueprint.native_route("/profile", methods=["POST", "PATCH"])
 @spectree_serialize(
     response_model=serializers.UserProfileResponse,
     on_success_status=200,
     api=blueprint.api,
 )
 @authenticated_and_active_user_required
-def update_user_profile(
-    user: users_models.User, body: serializers.UserProfileUpdateRequest
+@atomic()
+def patch_user_profile(
+    user: users_models.User, body: serializers.UserProfilePatchRequest
 ) -> serializers.UserProfileResponse:
-    api.update_notification_subscription(user, body.subscriptions, body.origin)
-    external_attributes_api.update_external_user(user)
+    profile_update_dict = body.dict(exclude_unset=True)
+
+    if "subscriptions" in profile_update_dict:
+        api.update_notification_subscription(user, body.subscriptions, body.origin)
+        profile_update_dict.pop("subscriptions", None)
+        profile_update_dict.pop("origin", None)
+
+    if "activity_id" in profile_update_dict:
+        activity_id = profile_update_dict.pop("activity_id", None)
+        profile_update_dict["activity"] = users_models.ActivityEnum[activity_id.value] if activity_id else None
+
+    api.update_user_info(user, author=user, **profile_update_dict)
+
     return serializers.UserProfileResponse.from_orm(user)
 
 

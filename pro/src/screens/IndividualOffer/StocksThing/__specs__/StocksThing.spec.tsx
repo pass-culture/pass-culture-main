@@ -7,6 +7,7 @@ import { api } from 'apiClient/api'
 import {
   ApiError,
   GetIndividualOfferResponseModel,
+  GetIndividualOfferWithAddressResponseModel,
   GetOfferStockResponseModel,
   SubcategoryIdEnum,
 } from 'apiClient/v1'
@@ -103,7 +104,7 @@ const renderStockThingScreen = async (
 describe('screens:StocksThing', () => {
   let props: StocksThingProps
   let contextValue: IndividualOfferContextValues
-  let offer: GetIndividualOfferResponseModel
+  let offer: GetIndividualOfferWithAddressResponseModel
   const offerId = 1
 
   beforeEach(() => {
@@ -127,7 +128,7 @@ describe('screens:StocksThing', () => {
       ],
     })
     vi.spyOn(api, 'getOffer').mockResolvedValue(
-      {} as GetIndividualOfferResponseModel
+      {} as GetIndividualOfferWithAddressResponseModel
     )
     vi.spyOn(api, 'patchOffer').mockResolvedValue(
       {} as GetIndividualOfferResponseModel

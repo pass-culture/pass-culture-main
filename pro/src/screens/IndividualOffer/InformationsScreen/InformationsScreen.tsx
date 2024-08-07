@@ -1,5 +1,6 @@
 import { FormikProvider, useFormik } from 'formik'
 import { useState } from 'react'
+import { useSelector } from 'react-redux'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useSWRConfig } from 'swr'
 
@@ -31,11 +32,11 @@ import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
 import { isOfferDisabled } from 'core/Offers/utils/isOfferDisabled'
 import { PATCH_SUCCESS_MESSAGE } from 'core/shared/constants'
-import { useActiveFeature } from 'hooks/useActiveFeature'
 import { useCurrentUser } from 'hooks/useCurrentUser'
 import { useNotification } from 'hooks/useNotification'
 import { useOfferWizardMode } from 'hooks/useOfferWizardMode'
 import strokeMailIcon from 'icons/stroke-mail.svg'
+import { selectCurrentOffererId } from 'store/user/selectors'
 
 import { ActionBar } from '../ActionBar/ActionBar'
 import { useIndividualOfferImageUpload } from '../hooks/useIndividualOfferImageUpload'
@@ -72,10 +73,7 @@ export const InformationsScreen = ({
   const { offer, categories, subCategories } = useIndividualOfferContext()
   const { imageOffer, onImageDelete, onImageUpload, handleImageOnSubmit } =
     useIndividualOfferImageUpload()
-
-  const isBookingContactEnabled = useActiveFeature(
-    'WIP_MANDATORY_BOOKING_CONTACT'
-  )
+  const selectedOffererId = useSelector(selectCurrentOffererId)
 
   const queryParams = new URLSearchParams(location.search)
   const queryOfferType = queryParams.get('offer-type')
@@ -102,9 +100,9 @@ export const InformationsScreen = ({
           offererId,
           venueId,
           filteredVenueList,
-          isBookingContactEnabled
+          true
         )
-      : setInitialFormValues(offer, subCategories, isBookingContactEnabled)
+      : setInitialFormValues(offer, subCategories, true)
 
   const [isWithdrawalMailDialogOpen, setIsWithdrawalMailDialogOpen] =
     useState<boolean>(false)
@@ -176,6 +174,7 @@ export const InformationsScreen = ({
         offerId: receivedOfferId,
         offerType: 'individual',
         subcategoryId: formik.values.subcategoryId,
+        offererId: selectedOffererId?.toString(),
       })
 
       navigate(

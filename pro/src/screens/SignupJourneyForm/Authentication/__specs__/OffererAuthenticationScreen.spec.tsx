@@ -130,6 +130,11 @@ describe('screens:SignupJourney::OffererAuthentication', () => {
     ).toBeInTheDocument()
 
     expect(
+      screen.queryByRole('button', { name: 'Étape suivante' })
+    ).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Retour' })).toBeInTheDocument()
+
+    expect(
       screen.getByRole('heading', { level: 1, name: 'Identification' })
     ).toBeInTheDocument()
 

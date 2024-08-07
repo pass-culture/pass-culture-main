@@ -6,7 +6,7 @@ import sampleImagePortrait from './sample-image-portrait.jpg'
 import { UploaderModeEnum } from './types'
 
 export default {
-  title: 'components/ImageUploader',
+  title: 'components/ImageUploader/ImageUploader',
   component: ImageUploader,
 }
 

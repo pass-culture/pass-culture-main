@@ -138,7 +138,10 @@ def is_beneficiary_anonymizable(user: users_models.User) -> bool:
 def anonymize_public_account(user_id: int) -> utils.BackofficeResponse:
     user = (
         users_models.User.query.filter_by(id=user_id)
-        .options(sa.orm.joinedload(users_models.User.deposits))
+        .options(
+            sa.orm.joinedload(users_models.User.deposits),
+            sa.orm.joinedload(users_models.User.gdprUserDataExtract),
+        )
         .one_or_none()
     )
 
@@ -153,15 +156,18 @@ def anonymize_public_account(user_id: int) -> utils.BackofficeResponse:
         flash(utils.build_form_error_msg(form), "warning")
         return redirect(url_for("backoffice_web.public_accounts.get_public_account", user_id=user_id), code=303)
 
+    if users_api.has_unprocessed_extract(user):
+        flash("L'utilisateur possède une extraction qui est toujours en cours de traitement.", "warning")
+        return redirect(url_for(".get_public_account", user_id=user_id))
+
     user_anonymized = users_api.anonymize_user(user, author=current_user, force=True)
     if not user_anonymized:
         flash("Une erreur est survenue lors de l'anonymisation de l'utilisateur", "warning")
         return redirect(url_for(".get_public_account", user_id=user_id))
 
-    db.session.commit()
+    db.session.flush()
 
     flash("Les informations de l'utilisateur ont été anonymisées", "success")
-
     return redirect(url_for(".get_public_account", user_id=user_id))
 
 

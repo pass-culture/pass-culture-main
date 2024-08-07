@@ -21,6 +21,7 @@ from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
+from pcapi.core.geography import factories as geography_factories
 from pcapi.core.geography import models as geography_models
 from pcapi.core.history import models as history_models
 import pcapi.core.mails.testing as mails_testing
@@ -462,6 +463,18 @@ class DeleteVenueTest:
         assert offerers_models.Venue.query.count() == 0
         assert educational_models.AdageVenueAddress.query.count() == 0
 
+    def test_delete_cascade_venue_should_remove_playlist(self):
+        venue = offerers_factories.CollectiveVenueFactory()
+        template = educational_factories.CollectiveOfferTemplateFactory(venue=venue)
+
+        playlist = educational_factories.PlaylistFactory(venue=venue, collective_offer_template=template)
+        assert playlist.venue == venue
+
+        offerers_api.delete_venue(venue.id)
+
+        assert offerers_models.Venue.query.count() == 0
+        assert educational_models.CollectivePlaylist.query.count() == 0
+
 
 class EditVenueContactTest:
     def test_create_venue_contact(self, app):
@@ -875,37 +888,6 @@ class CreateOffererTest:
 
         assert national_partner_tag not in created_offerer_not_partner.tags
         assert national_partner_tag in created_offerer_partner.tags
-
-    @override_settings(EPN_SIREN="222222223,222222227")
-    def test_create_offerer_epn_autotagging(self):
-        # Given
-        epn_tag = offerers_factories.OffererTagFactory(name="ecosysteme-epn", label="Ecosystème EPN")
-        user = users_factories.UserFactory()
-        not_an_epn_offerer_informations = offerers_serialize.CreateOffererQueryModel(
-            name="Test Offerer Not EPN",
-            siren="222222225",
-            address="123 rue de Paris",
-            postalCode="93100",
-            city="Montreuil",
-        )
-        epn_offerer_informations = offerers_serialize.CreateOffererQueryModel(
-            name="Test Offerer EPN",
-            siren="222222223",
-            address="123 rue de Paname",
-            postalCode="93100",
-            city="Montreuil",
-        )
-
-        # When
-        created_user_offerer_not_epn = offerers_api.create_offerer(user, not_an_epn_offerer_informations)
-        created_user_offerer_epn = offerers_api.create_offerer(user, epn_offerer_informations)
-
-        # Then
-        created_offerer_not_epn = created_user_offerer_not_epn.offerer
-        created_offerer_epn = created_user_offerer_epn.offerer
-
-        assert epn_tag not in created_offerer_not_epn.tags
-        assert epn_tag in created_offerer_epn.tags
 
 
 class UpdateOffererTest:
@@ -1508,7 +1490,7 @@ class RejectOffererTest:
         offerers_factories.UserOffererFactory(offerer=offerer)  # removed in reject_offerer()
 
         # When
-        offerers_api.reject_offerer(offerer, admin)
+        offerers_api.reject_offerer(offerer, admin, rejection_reason=offerers_models.OffererRejectionReason.OTHER)
 
         # Then
         assert not offerer.isValidated
@@ -1522,7 +1504,9 @@ class RejectOffererTest:
         user_offerer = offerers_factories.UserNotValidatedOffererFactory(user=user)
 
         # When
-        offerers_api.reject_offerer(user_offerer.offerer, admin)
+        offerers_api.reject_offerer(
+            user_offerer.offerer, admin, rejection_reason=offerers_models.OffererRejectionReason.OTHER
+        )
 
         # Then
         assert not user.has_pro_role
@@ -1535,7 +1519,9 @@ class RejectOffererTest:
         user_offerer = offerers_factories.UserNotValidatedOffererFactory(user=validated_user_offerer.user)
 
         # When
-        offerers_api.reject_offerer(user_offerer.offerer, admin)
+        offerers_api.reject_offerer(
+            user_offerer.offerer, admin, rejection_reason=offerers_models.OffererRejectionReason.OTHER
+        )
 
         # Then
         assert validated_user_offerer.user.has_pro_role
@@ -1547,7 +1533,9 @@ class RejectOffererTest:
         user_offerer = offerers_factories.UserNotValidatedOffererFactory()
 
         # When
-        offerers_api.reject_offerer(user_offerer.offerer, admin)
+        offerers_api.reject_offerer(
+            user_offerer.offerer, admin, rejection_reason=offerers_models.OffererRejectionReason.OTHER
+        )
 
         # Then
         user_offerer_query = offerers_models.UserOfferer.query
@@ -1561,7 +1549,9 @@ class RejectOffererTest:
         offerers_factories.ApiKeyFactory(offerer=user_offerer.offerer)
 
         # When
-        offerers_api.reject_offerer(user_offerer.offerer, admin)
+        offerers_api.reject_offerer(
+            user_offerer.offerer, admin, rejection_reason=offerers_models.OffererRejectionReason.OTHER
+        )
 
         # Then
         user_offerer_query = offerers_models.UserOfferer.query
@@ -1580,7 +1570,7 @@ class RejectOffererTest:
         offerers_factories.UserOffererFactory(offerer=offerer)  # removed in reject_offerer()
 
         # When
-        offerers_api.reject_offerer(offerer, admin)
+        offerers_api.reject_offerer(offerer, admin, rejection_reason=offerers_models.OffererRejectionReason.OTHER)
 
         # Then
         send_new_offerer_rejection_email_to_pro.assert_called_once_with(offerer)
@@ -1597,7 +1587,7 @@ class RejectOffererTest:
         )  # another applicant
 
         # When
-        offerers_api.reject_offerer(offerer, admin)
+        offerers_api.reject_offerer(offerer, admin, rejection_reason=offerers_models.OffererRejectionReason.OTHER)
 
         # Then
         action = history_models.ActionHistory.query.filter_by(
@@ -2131,6 +2121,7 @@ class CreateFromOnboardingDataTest:
         # Venue Registration
         self.assert_venue_registration_attrs(created_venue)
 
+    @override_features(ENABLE_ADDRESS_WRITING_WHILE_CREATING_UPDATING_VENUE=False)
     def test_new_siren_new_siret_without_double_model_writing(self, requests_mock):
         user = users_factories.UserFactory(email="pro@example.com")
         user.add_non_attached_pro_role()
@@ -2813,3 +2804,55 @@ class GetOffererConfidenceLevelTest:
 
         assert caplog.records[0].message == "Incompatible offerer rule detected"
         assert caplog.records[0].extra == {"offerer_id": venue.managingOffererId, "venue_id": venue.id}
+
+
+class GetOffererAddressTest:
+    @pytest.mark.parametrize("same_label,same_address", [[True, False], [False, True], [True, True], [False, False]])
+    def test_get_or_create_offerer_address(self, same_label, same_address):
+        offerer = offerers_factories.OffererFactory()
+        oa_1 = offerers_factories.OffererAddressFactory(offerer=offerer)
+        other_addresss = geography_factories.AddressFactory(
+            street="1 rue de la paix",
+        )
+
+        oa_return = offerers_api.get_or_create_offerer_address(
+            offerer_id=offerer.id,
+            address_id=oa_1.address.id if same_address else other_addresss.id,
+            label=oa_1.label if same_label else "somethingdifferent",
+        )
+        if same_label and same_address:
+            assert oa_return == oa_1
+        else:
+            assert oa_return.offerer == offerer
+            assert oa_return != oa_1
+
+    @pytest.mark.parametrize("existant_address", [True, False])
+    def test_get_or_create_address(self, existant_address):
+        if existant_address:
+            old_address = geography_factories.AddressFactory(
+                street="1 rue de la paix",
+                city="Paris",
+                postalCode="75103",
+                latitude=40.8566,
+                longitude=1.3522,
+                banId="75103_7560_00001",
+            )
+        location_data = offerers_api.LocationData(
+            street="1 rue de la paix",
+            city="Paris",
+            postal_code="75103",
+            latitude=40.8566,
+            longitude=1.3522,
+            insee_code="75103",
+            ban_id="75103_7560_00001",
+        )
+        address = offerers_api.get_or_create_address(location_data=location_data, is_manual_edition=False)
+        assert len(geography_models.Address.query.all()) == 1
+        if existant_address:
+            assert address == old_address
+        else:
+            assert address.street == "1 rue de la paix"
+            assert address.city == "Paris"
+            assert address.postalCode == "75103"
+            assert address.latitude == 40.8566
+            assert address.longitude == 1.3522

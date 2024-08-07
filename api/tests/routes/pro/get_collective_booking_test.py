@@ -127,9 +127,9 @@ class Returns404Test:
         user = users_factories.ProFactory()
 
         client = client.with_session_auth(user.email)
-        response = client.get("collective/bookings/0")
-
-        assert response.status_code == 404
+        with assert_num_queries(3):  #  session + user + collective_booking
+            response = client.get("collective/bookings/0")
+            assert response.status_code == 404
 
 
 @pytest.mark.usefixtures("db_session")
@@ -139,6 +139,8 @@ class Returns403Test:
         booking = educational_factories.CollectiveBookingFactory()
 
         client = client.with_session_auth(user_offerer.user.email)
-        response = client.get(f"collective/bookings/{booking.id}")
-
-        assert response.status_code == 403
+        with assert_num_queries(
+            5
+        ):  #  collective_booking + session + user + collective_booking + SELECT EXISTS user_offerer
+            response = client.get(f"collective/bookings/{booking.id}")
+            assert response.status_code == 403

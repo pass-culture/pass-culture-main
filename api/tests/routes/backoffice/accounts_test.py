@@ -1,4 +1,5 @@
 import datetime
+import os
 import re
 from unittest import mock
 
@@ -7,6 +8,7 @@ from flask import url_for
 import pytest
 import pytz
 
+from pcapi import settings
 from pcapi.core import token as token_utils
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.categories import subcategories_v2 as subcategories
@@ -53,6 +55,8 @@ from pcapi.routes.backoffice.accounts.blueprint import _set_steps_with_active_an
 from pcapi.routes.backoffice.accounts.blueprint import get_eligibility_history
 from pcapi.routes.backoffice.accounts.blueprint import get_public_account_history
 from pcapi.utils import email as email_utils
+
+from tests.test_utils import StorageFolderManager
 
 from .helpers import button as button_helpers
 from .helpers import html_parser
@@ -2452,10 +2456,11 @@ class RegistrationStepTest:
         assert tunnel_end["progress"] == 100
 
 
-class AnonymizePublicAccountTest(PostEndpointHelper):
+class AnonymizePublicAccountTest(PostEndpointHelper, StorageFolderManager):
     endpoint = "backoffice_web.public_accounts.anonymize_public_account"
     endpoint_kwargs = {"user_id": 1}
     needed_permission = perm_models.Permissions.ANONYMIZE_PUBLIC_ACCOUNT
+    storage_folder = settings.LOCAL_STORAGE_DIR / settings.GCP_GDPR_EXTRACT_BUCKET / settings.GCP_GDPR_EXTRACT_FOLDER
 
     def test_anonymize_public_account(
         self,
@@ -2477,6 +2482,60 @@ class AnonymizePublicAccountTest(PostEndpointHelper):
         assert history.actionType == history_models.ActionType.USER_ANONYMIZED
         assert history.authorUser == legit_user
         assert history.user == user
+
+        response = authenticated_client.get(response.location)
+        assert "Les informations de l'utilisateur ont été anonymisées" in html_parser.extract_alert(response.data)
+
+    def test_anonymize_public_account_with_gdpr_extract(
+        self,
+        legit_user,
+        authenticated_client,
+    ):
+        user = users_factories.UserFactory(
+            gdprUserDataExtract=[
+                users_factories.GdprUserDataExtractBeneficiaryFactory(dateProcessed=datetime.datetime.today())
+            ]
+        )
+
+        with open(self.storage_folder / f"{user.gdprUserDataExtract[0].id}.zip", "wb"):
+            pass
+
+        response = self.post_to_endpoint(authenticated_client, user_id=user.id)
+        assert response.status_code == 302
+
+        expected_url = url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id, _external=True)
+        assert response.location == expected_url
+
+        assert user.roles == [users_models.UserRole.ANONYMIZED]
+
+        assert users_models.GdprUserDataExtract.query.count() == 0
+        assert len(os.listdir(self.storage_folder)) == 0
+
+        response = authenticated_client.get(response.location)
+        assert "Les informations de l'utilisateur ont été anonymisées" in html_parser.extract_alert(response.data)
+
+    def test_anonymize_public_account_with_unprocessed_gdpr_extract(
+        self,
+        legit_user,
+        authenticated_client,
+    ):
+        user = users_factories.UserFactory(
+            gdprUserDataExtract=[users_factories.GdprUserDataExtractBeneficiaryFactory()]
+        )
+
+        response = self.post_to_endpoint(authenticated_client, user_id=user.id)
+        assert response.status_code == 302
+
+        expected_url = url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id, _external=True)
+        assert response.location == expected_url
+
+        assert user.roles != [users_models.UserRole.ANONYMIZED]
+
+        response = authenticated_client.get(response.location)
+        assert (
+            "L'utilisateur possède une extraction qui est toujours en cours de traitement."
+            in html_parser.extract_alert(response.data)
+        )
 
     @pytest.mark.parametrize(
         "role",

@@ -21,7 +21,7 @@ import { DetailsScreen, DetailsScreenProps } from '../DetailsScreen'
 vi.mock('apiClient/api', () => ({
   api: {
     getMusicTypes: vi.fn(),
-    postOffer: vi.fn(),
+    postDraftOffer: vi.fn(),
   },
 }))
 
@@ -161,7 +161,7 @@ describe('screens:IndividualOffer::Informations', () => {
   })
 
   it('should submit the form with correct payload', async () => {
-    vi.spyOn(api, 'postOffer').mockResolvedValue(
+    vi.spyOn(api, 'postDraftOffer').mockResolvedValue(
       getIndividualOfferFactory({
         id: 12,
       })
@@ -182,7 +182,10 @@ describe('screens:IndividualOffer::Informations', () => {
       'My super description'
     )
 
-    await userEvent.selectOptions(await screen.findByLabelText(/Lieu/), '189')
+    await userEvent.selectOptions(
+      await screen.findByLabelText(/Qui propose l’offre/),
+      '189'
+    )
 
     await userEvent.selectOptions(
       await screen.findByLabelText('Catégorie *'),
@@ -204,33 +207,29 @@ describe('screens:IndividualOffer::Informations', () => {
       'Clown'
     )
     await userEvent.selectOptions(
-      await screen.findByLabelText(/Sous-type/),
-      'Clown'
-    )
-    await userEvent.selectOptions(
       await screen.findByLabelText(/Genre musical/),
       'Pop'
     )
 
     await userEvent.click(screen.getByText('Enregistrer les modifications'))
 
-    expect(api.postOffer).toHaveBeenCalledOnce()
-    expect(api.postOffer).toHaveBeenCalledWith({
-      audioDisabilityCompliant: false,
+    expect(api.postDraftOffer).toHaveBeenCalledOnce()
+    expect(api.postDraftOffer).toHaveBeenCalledWith({
       description: 'My super description',
-      durationMinutes: undefined,
       extraData: {
+        author: '',
         ean: '1234567891234',
         gtl_id: 'pop',
         showSubType: '205',
         showType: '200',
+        performer: '',
+        speaker: '',
+        stageDirector: '',
+        visa: '',
       },
-      mentalDisabilityCompliant: false,
-      motorDisabilityCompliant: false,
       name: 'My super offer',
       subcategoryId: 'physical',
       venueId: 189,
-      visualDisabilityCompliant: false,
     })
   })
 })

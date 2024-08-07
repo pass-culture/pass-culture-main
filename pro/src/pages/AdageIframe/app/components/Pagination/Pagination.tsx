@@ -1,8 +1,12 @@
+import { useEffect } from 'react'
 import { usePagination } from 'react-instantsearch'
+import { useDispatch, useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
 
 import { PaginationType } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
+import { setAdagePageSaved } from 'store/adageFilter/reducer'
+import { adagePageSavedSelector } from 'store/adageFilter/selectors'
 import { Pagination } from 'ui-kit/Pagination/Pagination'
 
 interface CustomPaginationProps {
@@ -10,6 +14,9 @@ interface CustomPaginationProps {
 }
 
 export const CustomPagination = ({ queryId }: CustomPaginationProps) => {
+  const dispatch = useDispatch()
+  const adagePageSavedFromSelector = useSelector(adagePageSavedSelector)
+
   const { currentRefinement, nbPages, refine } = usePagination()
   const { siret, venueId } = useParams<{
     siret: string
@@ -25,16 +32,22 @@ export const CustomPagination = ({ queryId }: CustomPaginationProps) => {
     })
   }
 
+  useEffect(() => {
+    if (currentRefinement !== adagePageSavedFromSelector) {
+      refine(adagePageSavedFromSelector)
+    }
+  }, [refine, currentRefinement, adagePageSavedFromSelector])
+
   return (
     <Pagination
       currentPage={currentRefinement + 1}
       onNextPageClick={() => {
-        refine(currentRefinement + 1)
+        dispatch(setAdagePageSaved(currentRefinement + 1))
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
         logPagination(PaginationType.NEXT)
       }}
       onPreviousPageClick={() => {
-        refine(currentRefinement - 1)
+        dispatch(setAdagePageSaved(currentRefinement - 1))
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
         logPagination(PaginationType.PREVIOUS)
       }}

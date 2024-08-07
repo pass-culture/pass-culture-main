@@ -23,7 +23,7 @@ import { useCurrentUser } from 'hooks/useCurrentUser'
 import { useNotification } from 'hooks/useNotification'
 import fullDownIcon from 'icons/full-down.svg'
 import fullUpIcon from 'icons/full-up.svg'
-import tempStrokeAddUserIcon from 'icons/temp-stroke-add-user.svg'
+import strokeCollaboratorIcon from 'icons/stroke-collaborator.svg'
 import { updateUser } from 'store/user/reducer'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -206,8 +206,7 @@ export const Offerers = (): JSX.Element => {
       />
       {showLinkDialog && (
         <ConfirmDialog
-          // TODO: add definitive icon add user
-          icon={tempStrokeAddUserIcon}
+          icon={strokeCollaboratorIcon}
           onCancel={cancelLinkUserToOfferer}
           title="Êtes-vous sûr de vouloir rejoindre cet espace ?"
           onConfirm={doLinkAccount}

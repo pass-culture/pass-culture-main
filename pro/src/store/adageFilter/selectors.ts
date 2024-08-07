@@ -8,3 +8,6 @@ export const adageQuerySelector = (state: RootState) =>
 
 export const adageSearchViewSelector = (state: RootState) =>
   state.adageFilter.searchView
+
+export const adagePageSavedSelector = (state: RootState) =>
+  state.adageFilter.adagePageSaved

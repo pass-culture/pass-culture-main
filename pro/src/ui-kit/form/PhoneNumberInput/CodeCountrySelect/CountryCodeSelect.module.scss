@@ -50,7 +50,7 @@ $text-padding-left: calc(
 
 .select-input {
   @include formsM.input-theme;
-  @include fonts.button;
+  @include fonts.bold;
 
   padding-left: $text-padding-left;
   padding-right: rem.torem(8px);

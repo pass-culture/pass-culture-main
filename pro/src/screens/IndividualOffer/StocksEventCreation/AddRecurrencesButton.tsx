@@ -56,6 +56,7 @@ export const AddRecurrencesButton = ({
             priceCategories={offer.priceCategories ?? []}
             setIsOpen={setIsRecurrenceModalOpen}
             handleSubmit={handleSubmit}
+            idLabelledBy="add-recurrence"
           />
         </DialogBox>
       )}

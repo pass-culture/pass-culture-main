@@ -6,6 +6,7 @@ import { Route, Routes } from 'react-router-dom'
 import { api } from 'apiClient/api'
 import {
   GetIndividualOfferResponseModel,
+  GetIndividualOfferWithAddressResponseModel,
   OfferStatus,
   PatchOfferBodyModel,
   SubcategoryIdEnum,
@@ -104,7 +105,7 @@ const scrollIntoViewMock = vi.fn()
 describe('screens:IndividualOffer::Informations:edition', () => {
   let props: InformationsScreenProps
   let contextOverride: IndividualOfferContextValues
-  let offer: GetIndividualOfferResponseModel
+  let offer: GetIndividualOfferWithAddressResponseModel
   let subCategories: SubcategoryResponseModel[]
   const offererId = 1
   const physicalVenueId = 1
@@ -189,7 +190,7 @@ describe('screens:IndividualOffer::Informations:edition', () => {
       id: offerId,
     } as GetIndividualOfferResponseModel)
     vi.spyOn(api, 'getOffer').mockResolvedValue(
-      {} as GetIndividualOfferResponseModel
+      {} as GetIndividualOfferWithAddressResponseModel
     )
     vi.spyOn(api, 'deleteThumbnail').mockResolvedValue()
   })

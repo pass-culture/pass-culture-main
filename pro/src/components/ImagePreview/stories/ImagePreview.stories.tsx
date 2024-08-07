@@ -10,7 +10,7 @@ import offerPreview from './offer-preview.jpg'
 import offerShell from './offer-shell.png'
 
 export default {
-  title: 'components/ImagePreview',
+  title: 'components/ImageUploader/ImagePreview',
   component: ImagePreview,
 }
 

@@ -81,12 +81,15 @@ import type { PatchCollectiveOfferArchiveBodyModel } from '../models/PatchCollec
 import type { PatchCollectiveOfferBodyModel } from '../models/PatchCollectiveOfferBodyModel';
 import type { PatchCollectiveOfferEducationalInstitution } from '../models/PatchCollectiveOfferEducationalInstitution';
 import type { PatchCollectiveOfferTemplateBodyModel } from '../models/PatchCollectiveOfferTemplateBodyModel';
+import type { PatchDraftOfferBodyModel } from '../models/PatchDraftOfferBodyModel';
+import type { PatchDraftOfferUsefulInformationsBodyModel } from '../models/PatchDraftOfferUsefulInformationsBodyModel';
 import type { PatchOfferActiveStatusBodyModel } from '../models/PatchOfferActiveStatusBodyModel';
 import type { PatchOfferBodyModel } from '../models/PatchOfferBodyModel';
 import type { PatchOffererAddressRequest } from '../models/PatchOffererAddressRequest';
 import type { PatchOfferPublishBodyModel } from '../models/PatchOfferPublishBodyModel';
 import type { PostCollectiveOfferBodyModel } from '../models/PostCollectiveOfferBodyModel';
 import type { PostCollectiveOfferTemplateBodyModel } from '../models/PostCollectiveOfferTemplateBodyModel';
+import type { PostDraftOfferBodyModel } from '../models/PostDraftOfferBodyModel';
 import type { PostOfferBodyModel } from '../models/PostOfferBodyModel';
 import type { PostOffererResponseModel } from '../models/PostOffererResponseModel';
 import type { PostVenueBodyModel } from '../models/PostVenueBodyModel';
@@ -106,6 +109,7 @@ import type { StocksResponseModel } from '../models/StocksResponseModel';
 import type { StockStatsResponseModel } from '../models/StockStatsResponseModel';
 import type { StocksUpsertBodyModel } from '../models/StocksUpsertBodyModel';
 import type { SubmitReviewRequestModel } from '../models/SubmitReviewRequestModel';
+import type { SuggestedSubcategoriesResponseModel } from '../models/SuggestedSubcategoriesResponseModel';
 import type { UserEmailValidationResponseModel } from '../models/UserEmailValidationResponseModel';
 import type { UserHasBookingResponse } from '../models/UserHasBookingResponse';
 import type { UserIdentityBodyModel } from '../models/UserIdentityBodyModel';
@@ -1758,6 +1762,76 @@ export class DefaultService {
     });
   }
   /**
+   * post_draft_offer <POST>
+   * @param requestBody
+   * @returns GetIndividualOfferResponseModel Created
+   * @throws ApiError
+   */
+  public postDraftOffer(
+    requestBody?: PostDraftOfferBodyModel,
+  ): CancelablePromise<GetIndividualOfferResponseModel> {
+    return this.httpRequest.request({
+      method: 'POST',
+      url: '/offers/draft',
+      body: requestBody,
+      mediaType: 'application/json',
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+  /**
+   * patch_draft_offer <PATCH>
+   * @param offerId
+   * @param requestBody
+   * @returns GetIndividualOfferResponseModel OK
+   * @throws ApiError
+   */
+  public patchDraftOffer(
+    offerId: number,
+    requestBody?: PatchDraftOfferBodyModel,
+  ): CancelablePromise<GetIndividualOfferResponseModel> {
+    return this.httpRequest.request({
+      method: 'PATCH',
+      url: '/offers/draft/{offer_id}',
+      path: {
+        'offer_id': offerId,
+      },
+      body: requestBody,
+      mediaType: 'application/json',
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+  /**
+   * patch_draft_offer_useful_informations <PATCH>
+   * @param offerId
+   * @param requestBody
+   * @returns GetIndividualOfferResponseModel OK
+   * @throws ApiError
+   */
+  public patchDraftOfferUsefulInformations(
+    offerId: number,
+    requestBody?: PatchDraftOfferUsefulInformationsBodyModel,
+  ): CancelablePromise<GetIndividualOfferResponseModel> {
+    return this.httpRequest.request({
+      method: 'PATCH',
+      url: '/offers/draft/{offer_id}/useful-informations',
+      path: {
+        'offer_id': offerId,
+      },
+      body: requestBody,
+      mediaType: 'application/json',
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+  /**
    * get_music_types <GET>
    * @returns GetMusicTypesResponse OK
    * @throws ApiError
@@ -1789,6 +1863,33 @@ export class DefaultService {
       errors: {
         403: `Forbidden`,
         404: `Not Found`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+  /**
+   * get_suggested_subcategories <GET>
+   * @param offerName
+   * @param offerDescription
+   * @param venueId
+   * @returns SuggestedSubcategoriesResponseModel OK
+   * @throws ApiError
+   */
+  public getSuggestedSubcategories(
+    offerName: string,
+    offerDescription?: string | null,
+    venueId?: number | null,
+  ): CancelablePromise<SuggestedSubcategoriesResponseModel> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/offers/suggested-subcategories',
+      query: {
+        'offer_name': offerName,
+        'offer_description': offerDescription,
+        'venue_id': venueId,
+      },
+      errors: {
+        403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
     });

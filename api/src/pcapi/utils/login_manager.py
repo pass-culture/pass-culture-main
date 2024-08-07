@@ -1,14 +1,26 @@
+from datetime import datetime
+from datetime import timedelta
 import uuid
 
 import flask
 from flask import current_app as app
+from flask_login import logout_user
 import werkzeug.datastructures
 
 import pcapi.core.users.backoffice.api as backoffice_api
 import pcapi.core.users.models as users_models
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
+from pcapi.routes.apis import private_api
 from pcapi.routes.backoffice.blueprint import backoffice_web
+from pcapi.routes.pro.blueprint import pro_private_api
+
+
+PRO_APIS = {pro_private_api.name, private_api.name}
+PRO_SESSION_GRACE_TIME = timedelta(hours=1)
+PRO_SESSION_BASE_TIMEOUT = timedelta(days=45)
+PRO_SESSION_LOGIN_TIMEOUT = timedelta(days=90)
+PRO_SESSION_FORCE_TIMEOUT = timedelta(days=91)
 
 
 def get_request_authorization() -> werkzeug.datastructures.Authorization | None:
@@ -42,7 +54,7 @@ def get_user_with_id(user_id: str) -> users_models.User | None:
     if user and internal_admin_id:
         if admin := users_models.User.query.filter(users_models.User.id == internal_admin_id).one_or_none():
             user.impersonator = admin
-    return user
+    return manage_pro_session(user)
 
 
 @app.login_manager.unauthorized_handler  # type: ignore[attr-defined]
@@ -69,3 +81,48 @@ def discard_session() -> None:
         uuid=session_uuid,
     ).delete(synchronize_session=False)
     db.session.commit()
+
+
+def manage_pro_session(user: users_models.User | None) -> users_models.User | None:
+    if not user:
+        return None
+    if not (user.has_pro_role or user.has_non_attached_pro_role):
+        return user
+
+    if getattr(flask.request, "blueprint", "") not in PRO_APIS:
+        return user
+
+    current_timestamp = datetime.utcnow().timestamp()
+    last_login = datetime.fromtimestamp(flask.session.get("last_login", current_timestamp))
+    last_api_call = datetime.fromtimestamp(flask.session.get("last_api_call", current_timestamp))
+
+    valid_session = compute_pro_session_validity(last_login, last_api_call)
+
+    if "last_login" not in flask.session:
+        flask.session["last_login"] = current_timestamp
+    flask.session["last_api_call"] = current_timestamp
+
+    if valid_session:
+        return user
+
+    discard_session()
+    logout_user()
+    return None
+
+
+def compute_pro_session_validity(last_login: datetime, last_api_call: datetime) -> bool:
+    now = datetime.utcnow()
+
+    if last_api_call + PRO_SESSION_BASE_TIMEOUT < now:
+        return False
+
+    if last_login + PRO_SESSION_LOGIN_TIMEOUT > now:
+        return True
+
+    if last_api_call + PRO_SESSION_GRACE_TIME < now:
+        return False
+
+    if last_login + PRO_SESSION_FORCE_TIMEOUT > now:
+        return True
+
+    return False

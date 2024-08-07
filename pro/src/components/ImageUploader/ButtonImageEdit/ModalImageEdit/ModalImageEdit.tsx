@@ -150,15 +150,12 @@ export const ModalImageEdit = ({
   }
 
   return (
-    <DialogBox
-      hasCloseButton
-      labelledBy="Modifier une image"
-      onDismiss={onDismiss}
-    >
+    <DialogBox hasCloseButton labelledBy="add-new-image" onDismiss={onDismiss}>
       {!image ? (
         <ModalImageUploadBrowser
           onImageClientUpload={onImageClientUpload}
           mode={mode}
+          idLabelledBy="add-new-image"
         />
       ) : !croppingRect || !editedImageDataUrl ? (
         <ModalImageCrop
@@ -176,6 +173,7 @@ export const ModalImageEdit = ({
           onSetCredit={setCredit}
           saveInitialPosition={setEditorInitialPosition}
           mode={mode}
+          idLabelledBy="add-new-image"
           submitButtonText={showPreviewInModal ? 'Suivant' : 'Enregistrer'}
         />
       ) : (
@@ -187,6 +185,7 @@ export const ModalImageEdit = ({
           }
           imageUrl={editedImageDataUrl}
           mode={mode}
+          idLabelledBy="add-new-image"
         />
       )}
     </DialogBox>

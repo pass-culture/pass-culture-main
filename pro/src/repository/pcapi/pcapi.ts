@@ -8,6 +8,14 @@ import { stringify } from 'utils/query-string'
 // venues
 //
 
+type VenueImage = {
+  x_crop_percent?: number
+  y_crop_percent?: number
+  height_crop_percent?: number
+  width_crop_percent?: number
+  image_credit?: string
+}
+
 export const postImageToVenue = async (
   venueId: number,
   banner: File,
@@ -20,7 +28,7 @@ export const postImageToVenue = async (
   const body = new FormData()
   body.append('banner', banner)
 
-  const venueImage = {
+  const venueImage: VenueImage = {
     x_crop_percent: xCropPercent,
     y_crop_percent: yCropPercent,
     height_crop_percent: heightCropPercent,
@@ -28,7 +36,6 @@ export const postImageToVenue = async (
   }
 
   if (imageCredit) {
-    // @ts-expect-error ts-migrate(2339) FIXME: Property 'image_credit' does not exist on type '{ ... Remove this comment to see the full error message
     venueImage.image_credit = imageCredit
   }
 

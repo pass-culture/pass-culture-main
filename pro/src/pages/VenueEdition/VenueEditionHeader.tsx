@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useSelector } from 'react-redux'
 
 import { api } from 'apiClient/api'
 import {
@@ -19,6 +20,7 @@ import { useNotification } from 'hooks/useNotification'
 import fullPlusIcon from 'icons/full-more.svg'
 import fullParametersIcon from 'icons/full-parameters.svg'
 import { postImageToVenue } from 'repository/pcapi/pcapi'
+import { selectCurrentOffererId } from 'store/user/selectors'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
@@ -60,6 +62,7 @@ export const VenueEditionHeader = ({
   const { logEvent } = useAnalytics()
   const notify = useNotification()
   const isNewSideBarNavigation = useIsNewInterfaceActive()
+  const selectedOffererId = useSelector(selectCurrentOffererId)
 
   const venueType = venueTypes.find(
     (venueType) => venueType.id === venue.venueTypeCode
@@ -105,6 +108,7 @@ export const VenueEditionHeader = ({
 
   const logButtonAddClick = () => {
     logEvent(Events.CLICKED_ADD_IMAGE, {
+      offererId: selectedOffererId?.toString(),
       venueId: venue.id,
       imageType: UploaderModeEnum.VENUE,
       isEdition: true,

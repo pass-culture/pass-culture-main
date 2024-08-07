@@ -159,6 +159,10 @@ class Returns200Test:
             "provider": None,
             "formats": [fmt.value for fmt in subcategories.SEANCE_CINE.formats],
             "isTemplate": False,
+            "dates": {
+                "end": format_into_utc_date(offer.collectiveStock.endDatetime),
+                "start": format_into_utc_date(offer.collectiveStock.startDatetime),
+            },
         }
 
     def test_duplicate_collective_offer_without_subcategoryId(self, client):

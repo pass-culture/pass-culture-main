@@ -70,12 +70,14 @@ export const NewNavReviewDialog = ({
       onDismiss={() => setIsReviewDialogOpen(false)}
       hasCloseButton
       extraClassNames={styles.dialog}
-      labelledBy="Votre avis compte"
+      labelledBy="your-opinion-matters"
     >
       {!displayConfirmation ? (
         <FormikProvider value={formik}>
           <Form>
-            <h1 className={styles['dialog-title']}>Votre avis compte !</h1>
+            <h1 className={styles['dialog-title']} id="your-opinion-matters">
+              Votre avis compte !
+            </h1>
             <fieldset>
               <legend className={styles['radio-legend']}>
                 Selon vous, cette nouvelle interface est… ?

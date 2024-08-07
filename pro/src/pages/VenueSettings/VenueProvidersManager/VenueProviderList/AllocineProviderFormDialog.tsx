@@ -34,7 +34,7 @@ export const AllocineProviderFormDialog = ({
       labelledBy="allocine-provider-form-dialog"
       onDismiss={onCancel}
     >
-      <h1 className={styles['title']}>
+      <h1 id="allocine-provider-form-dialog" className={styles['title']}>
         <strong>Modifier les paramètres de mes offres</strong>
       </h1>
       <div className={styles['explanation']}>

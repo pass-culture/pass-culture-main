@@ -47,18 +47,11 @@ class BoostStocks(LocalProvider):
         )
 
         self.price_category_lists_by_offer: dict[offers_models.Offer, list[offers_models.PriceCategory]] = {}
+        self.provider = venue_provider.provider
 
     def __next__(self) -> list[ProvidableInfo]:
         showtime = next(self.showtimes)
-        self.product = self.get_movie_product(showtime.film)
-        if not self.product:
-            logger.info(
-                "Product not found for allocine Id %s",
-                showtime.film.idFilmAllocine,
-                extra={"allocineId": showtime.film.idFilmAllocine, "venueId": self.venue.id},
-                technical_message_id="allocineId.not_found",
-            )
-
+        self.product = self.get_or_create_movie_product(showtime.film)
         self.showtime_details = showtime
         self.pcu_pricing: boost_serializers.ShowtimePricing | None = get_pcu_pricing_if_exists(
             self.showtime_details.showtimePricing
@@ -108,14 +101,14 @@ class BoostStocks(LocalProvider):
         if movie_information.numVisa != 0:
             offer.extraData["visa"] = offer.extraData.get("visa") or str(movie_information.numVisa)
 
+        offer.product = self.product
+
     def fill_offer_attributes(self, offer: offers_models.Offer) -> None:
         offer.venueId = self.venue.id
         offer.offererAddress = self.venue.offererAddress
         offer.bookingEmail = self.venue.bookingEmail
         offer.withdrawalDetails = self.venue.withdrawalDetails
-        offer.product = self.product
         offer.subcategoryId = subcategories.SEANCE_CINE.id
-
         self.update_from_movie_information(offer, self.showtime_details.film)
 
         is_new_offer_to_insert = offer.id is None
@@ -183,13 +176,10 @@ class BoostStocks(LocalProvider):
             price_category = self.get_or_create_price_category(price, price_label)
             stock.priceCategory = price_category
 
-    def get_movie_product(self, film: boost_serializers.Film2) -> offers_models.Product | None:
-        product = None
-        if film.idFilmAllocine:
-            product = offers_repository.get_movie_product_by_allocine_id(str(film.idFilmAllocine))
-
-        if not product and film.numVisa:
-            product = offers_repository.get_movie_product_by_visa(str(film.numVisa))
+    def get_or_create_movie_product(self, movie: boost_serializers.Film2) -> offers_models.Product | None:
+        generic_movie = movie.to_generic_movie()
+        id_at_providers = _build_movie_uuid(movie.id, self.venue)
+        product = offers_api.upsert_movie_product_from_provider(generic_movie, self.provider, id_at_providers)
 
         return product
 

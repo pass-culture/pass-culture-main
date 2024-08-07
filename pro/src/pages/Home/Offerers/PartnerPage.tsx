@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useSelector } from 'react-redux'
 import { useSWRConfig } from 'swr'
 
 import {
@@ -16,6 +17,7 @@ import { Events } from 'core/FirebaseEvents/constants'
 import { useNotification } from 'hooks/useNotification'
 import { buildInitialValues } from 'pages/VenueEdition/VenueEditionHeader'
 import { postImageToVenue } from 'repository/pcapi/pcapi'
+import { selectCurrentOffererId } from 'store/user/selectors'
 
 import { Card } from '../Card'
 import { VenueOfferSteps } from '../VenueOfferSteps/VenueOfferSteps'
@@ -42,6 +44,7 @@ export const PartnerPage = ({
     (venueType) => venueType.id === venue.venueTypeCode
   )
   const initialValues = buildInitialValues(venue.bannerUrl, venue.bannerMeta)
+  const selectedOffererId = useSelector(selectCurrentOffererId)
   const [imageValues, setImageValues] =
     useState<UploadImageValues>(initialValues)
 
@@ -76,6 +79,7 @@ export const PartnerPage = ({
 
   const logButtonAddClick = () => {
     logEvent(Events.CLICKED_ADD_IMAGE, {
+      offererId: selectedOffererId?.toString(),
       venueId: venue.id,
       imageType: UploaderModeEnum.VENUE,
       isEdition: true,

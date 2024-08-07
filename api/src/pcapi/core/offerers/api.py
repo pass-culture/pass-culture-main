@@ -508,6 +508,10 @@ def delete_venue(venue_id: int) -> None:
     if venue_used_as_reimbursement_point:
         raise exceptions.CannotDeleteVenueUsedAsReimbursementPointException()
 
+    educational_models.CollectivePlaylist.query.filter(
+        educational_models.CollectivePlaylist.venueId == venue_id
+    ).delete(synchronize_session=False)
+
     offer_ids_to_delete = _delete_objects_linked_to_venue(venue_id)
 
     # Warning: we should only delete rows where the "venueId" is the
@@ -865,9 +869,6 @@ def auto_tag_new_offerer(
         if not siren_info.diffusible:
             tag_names_to_apply.add("non-diffusible")
 
-        if siren_info.siren in settings.EPN_SIREN:
-            tag_names_to_apply.add("ecosysteme-epn")
-
     if user.email.split("@")[-1] in set(settings.NATIONAL_PARTNERS_EMAIL_DOMAINS.split(",")):
         tag_names_to_apply.add("partenaire-national")
 
@@ -1208,6 +1209,7 @@ def reject_offerer(
     applicants = users_repository.get_users_with_validated_attachment(offerer)
     first_user_to_register_offerer = applicants[0] if applicants else None
 
+    offerer.rejectionReason = action_args["rejection_reason"]
     was_validated = offerer.isValidated
     offerer.validationStatus = ValidationStatus.REJECTED
     offerer.dateValidated = None
@@ -2673,6 +2675,45 @@ def get_or_create_offerer_address(offerer_id: int, address_id: int, label: str |
     )
 
     return offerer_address
+
+
+def create_offerer_address_from_address_api(
+    street: str,
+    postal_code: str,
+    city: str,
+    latitude: float,
+    longitude: float,
+) -> geography_models.Address:
+    is_manual_edition: bool = False
+    try:
+        address_info = api_adresse.get_address(street, postal_code, city)
+        location_data = LocationData(
+            city=address_info.city,
+            postal_code=address_info.postcode,
+            latitude=address_info.latitude,
+            longitude=address_info.longitude,
+            street=address_info.street,
+            insee_code=address_info.citycode,
+            ban_id=address_info.id,
+        )
+    except api_adresse.NoResultException:
+        insee_code = None
+        if city and postal_code:
+            try:
+                insee_code = api_adresse.get_municipality_centroid(city, postal_code).citycode
+            except api_adresse.AdresseException:
+                pass
+        location_data = LocationData(
+            city=city,
+            postal_code=postal_code,
+            latitude=latitude,
+            longitude=longitude,
+            street=street,
+            insee_code=insee_code,
+            ban_id=None,
+        )
+        is_manual_edition = True
+    return get_or_create_address(location_data, is_manual_edition=is_manual_edition)
 
 
 def update_fraud_info(

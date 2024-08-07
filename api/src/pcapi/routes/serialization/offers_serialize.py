@@ -17,15 +17,12 @@ from pcapi.core.educational.models import CollectiveOfferDisplayedStatus
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.offers import repository as offers_repository
-from pcapi.core.offers.serialize import CollectiveOfferType
-from pcapi.core.providers.constants import GTL_IDS_BY_MUSIC_GENRE_CODE
-from pcapi.core.providers.constants import MUSIC_SLUG_BY_GTL_ID
-from pcapi.domain import music_types
 from pcapi.models.offer_mixin import OfferStatus
 from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import ConfiguredBaseModel
 from pcapi.routes.serialization import base as base_serializers
+from pcapi.routes.serialization import collective_offers_serialize
 from pcapi.routes.serialization.address_serialize import AddressResponseIsEditableModel
 from pcapi.routes.serialization.address_serialize import retrieve_address_info_from_oa
 from pcapi.routes.serialization.offerers_serialize import GetOffererAddressWithIsEditableResponseModel
@@ -77,6 +74,18 @@ class CategoryResponseModel(BaseModel):
         orm_mode = True
 
 
+class PostOfferOffererAddressBodyModel(BaseModel):
+    city: base_serializers.VenueCity
+    label: str | None
+    latitude: float | str
+    longitude: float | str
+    postalCode: base_serializers.VenuePostalCode
+    street: base_serializers.VenueAddress
+
+
+class PatchOfferOffererAddressBodyModel(PostOfferOffererAddressBodyModel): ...
+
+
 class PostOfferBodyModel(BaseModel):
     audio_disability_compliant: bool
     booking_contact: EmailStr | None
@@ -84,7 +93,7 @@ class PostOfferBodyModel(BaseModel):
     description: str | None
     duration_minutes: int | None
     external_ticket_office_url: HttpUrl | None
-    extra_data: Any
+    extra_data: dict[str, typing.Any] | None
     is_duo: bool | None
     is_national: bool | None
     mental_disability_compliant: bool
@@ -97,6 +106,7 @@ class PostOfferBodyModel(BaseModel):
     withdrawal_delay: int | None
     withdrawal_details: str | None
     withdrawal_type: offers_models.WithdrawalTypeEnum | None
+    address: PostOfferOffererAddressBodyModel | None
 
     @validator("name", pre=True)
     def validate_name(cls, name: str, values: dict) -> str:
@@ -112,22 +122,6 @@ class PostOfferBodyModel(BaseModel):
     class Config:
         alias_generator = to_camel
         extra = "forbid"
-
-
-def deserialize_extra_data(initial_extra_data: Any) -> Any:
-    extra_data: dict = initial_extra_data
-    if not extra_data:
-        return None
-    # FIXME (ghaliela, 2024-02-16): If gtl id is sent in the extra data, musicType and musicSubType are not sent
-    if extra_data.get("gtl_id"):
-        extra_data["musicType"] = str(music_types.MUSIC_TYPES_BY_SLUG[MUSIC_SLUG_BY_GTL_ID[extra_data["gtl_id"]]].code)
-        extra_data["musicSubType"] = str(
-            music_types.MUSIC_SUB_TYPES_BY_SLUG[MUSIC_SLUG_BY_GTL_ID[extra_data["gtl_id"]]].code
-        )
-    # FIXME (ghaliela, 2024-02-16): If musicType is sent in the extra data, gtl id is not sent
-    elif extra_data.get("musicType"):
-        extra_data["gtl_id"] = GTL_IDS_BY_MUSIC_GENRE_CODE[int(extra_data["musicType"])]
-    return extra_data
 
 
 class OfferAddressType(enum.Enum):
@@ -152,6 +146,7 @@ class PatchOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
     isDuo: bool | None
     durationMinutes: int | None
     shouldSendMail: bool | None
+    address: PatchOfferOffererAddressBodyModel | None
 
     @validator("name", pre=True, allow_reuse=True)
     def validate_name(cls, name: str) -> str:
@@ -236,7 +231,7 @@ class ListOffersOfferResponseModelsGetterDict(GetterDict):
             ):  # The only offers without oa neither in themselves nor in venues are the numerics ones.
                 return None
             offererAddress = GetOffererAddressWithIsEditableResponseModel.from_orm(offerer_address)
-            offererAddress.label = offererAddress.label or self._obj.venue.common_name
+            offererAddress.label = offererAddress.label if offererAddress.isEditable else self._obj.venue.common_name
             return AddressResponseIsEditableModel(
                 **retrieve_address_info_from_oa(offerer_address),
                 **offererAddress.dict(exclude={"id"}),
@@ -316,7 +311,7 @@ class ListOffersQueryModel(BaseModel):
     creation_mode: str | None
     period_beginning_date: datetime.date | None
     period_ending_date: datetime.date | None
-    collective_offer_type: CollectiveOfferType | None
+    collective_offer_type: collective_offers_serialize.CollectiveOfferType | None
     offerer_address_id: int | None
 
     class Config:
@@ -474,6 +469,7 @@ class GetIndividualOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
 
 class GetIndividualOfferWithAddressResponseModel(GetIndividualOfferResponseModel):
     address: AddressResponseIsEditableModel | None
+    hasPendingBookings: bool
 
     class Config:
         orm_mode = True
@@ -531,6 +527,16 @@ class ImageBodyModel(BaseModel):
 class CategoriesResponseModel(BaseModel):
     categories: list[CategoryResponseModel]
     subcategories: list[SubcategoryResponseModel]
+
+
+class SuggestedSubcategoriesQueryModel(BaseModel):
+    offer_name: str
+    offer_description: str | None
+    venue_id: int | None
+
+
+class SuggestedSubcategoriesResponseModel(ConfiguredBaseModel):
+    subcategory_ids: list[str]
 
 
 class DeleteOfferRequestBody(BaseModel):

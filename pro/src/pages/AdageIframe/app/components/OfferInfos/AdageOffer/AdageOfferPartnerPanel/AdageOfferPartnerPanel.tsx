@@ -111,7 +111,6 @@ export function AdageOfferPartnerPanel({
           contactForm={offer.contactForm}
           contactUrl={offer.contactUrl}
           offerId={offer.id}
-          position={0}
           queryId={''}
           userEmail={adageUser?.email}
           userRole={adageUser?.role}

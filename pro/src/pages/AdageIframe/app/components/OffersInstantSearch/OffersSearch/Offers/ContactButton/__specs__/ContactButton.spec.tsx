@@ -24,12 +24,9 @@ vi.mock('apiClient/api', () => ({
   },
 }))
 
-vi.mock('pages/AdageIframe/libs/initAlgoliaAnalytics')
-
 describe('ContactButton', () => {
   const defaultProps = {
     offerId: 1,
-    position: 1,
     queryId: 'test',
     userRole: AdageFrontRoles.REDACTOR,
     contactForm: 'form',

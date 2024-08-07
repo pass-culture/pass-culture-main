@@ -102,13 +102,11 @@ class FeatureToggle(enum.Enum):
     WIP_ENABLE_REMINDER_MARKETING_MAIL_METADATA_DISPLAY = "Changer le template d'email de confirmation de réservation"
     WIP_ENABLE_TRUSTED_DEVICE = "Active la fonctionnalité d'appareil de confiance"
     WIP_ENABLE_SUSPICIOUS_EMAIL_SEND = "Active l'envoie d'email lors de la détection d'une connexion suspicieuse"
-    WIP_MANDATORY_BOOKING_CONTACT = "Rend obligatoire offer.bookingContact pour les offres retirables"
     WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY = "Activer le nouveau parcours de dépôt de coordonnées bancaires"
     WIP_ENABLE_MOCK_UBBLE = "Utiliser le mock Ubble à la place du vrai Ubble"
     WIP_ENABLE_GOOGLE_SSO = "Activer la connexion SSO pour les jeunes"
     WIP_ENABLE_FINANCE_INCIDENT = "Active les incidents de finance"
     WIP_ENABLE_MARSEILLE = "Activer Marseille en grand"
-    WIP_GOOGLE_MAPS_VENUE_IMAGES = "Activer l'affichage des images des lieux importées depuis Google Maps"
     WIP_CONNECT_AS = "Permettre à un admin de se connecter en tant qu'un compte pro sur PC Pro"
     WIP_ENABLE_NATIONAL_PROGRAM_NEW_RULES_PUBLIC_API = (
         "Activer les nouvelles règles de création et d'édition d'offres collecrives pour l'API publique (collective)"
@@ -117,11 +115,15 @@ class FeatureToggle(enum.Enum):
     ENABLE_PRO_NEW_NAV_MODIFICATION = "Activer la modification du statut de la navigation du portail pro"
     WIP_ENABLE_NEW_HASHING_ALGORITHM = "Activer le nouveau système de hachage des clés publiques d'API"
     WIP_BENEFICIARY_EXTRACT_TOOL = "Activer l'extraction de données personnelles (RGPD)"
-    WIP_ENABLE_OFFER_MARKDOWN_DESCRIPTION = "Activer la description des offres collectives en markdown."
     USE_END_DATE_FOR_COLLECTIVE_PRICING = "Utiliser la date de fin du stock collectif comme date de valorisation."
     WIP_ENABLE_OFFER_ADDRESS = "Activer l'association des offres à des adresses."
     WIP_SPLIT_OFFER = "Activer le nouveau parcours de création/édition d'offre individuelle"
+    WIP_SUGGESTED_SUBCATEGORIES = "Activer les sous-catégories suggérées par IA lors de la création d'offre"
     ENABLE_COLLECTIVE_OFFERS_EXPIRATION = "Activer la mise en avant des offres collectives sur le point d'expirer"
+    ENABLE_COLLECTIVE_NEW_STATUSES = "Activer les nouveaux statuts des offres collectives"
+    WIP_ENABLE_COLLECTIVE_DRAFT_OFFERS = "Activer les brouillons pour les offres collectives"
+    WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE = "Utiliser les OffererAddress comme source de données"
+    ENABLE_SENTRY_FINE_SAMPLING = "Activer l'échantillonnage Sentry affiné"
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -152,10 +154,11 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.DISABLE_ENTERPRISE_API,
     FeatureToggle.DISPLAY_DMS_REDIRECTION,
     FeatureToggle.EMS_CANCEL_PENDING_EXTERNAL_BOOKING,
-    FeatureToggle.ENABLE_ADDRESS_WRITING_WHILE_CREATING_UPDATING_VENUE,
     FeatureToggle.ENABLE_AUTO_VALIDATION_FOR_EXTERNAL_BOOKING,
     FeatureToggle.ENABLE_BEAMER,
     FeatureToggle.ENABLE_CODIR_OFFERERS_REPORT,  # only for production
+    FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES,
+    FeatureToggle.ENABLE_COLLECTIVE_OFFERS_EXPIRATION,
     FeatureToggle.ENABLE_CRON_TO_UPDATE_OFFERER_STATS,  # only for production
     FeatureToggle.ENABLE_CULTURAL_SURVEY,
     FeatureToggle.ENABLE_DMS_LINK_ON_MAINTENANCE_PAGE_FOR_AGE_18,
@@ -163,10 +166,9 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.ENABLE_EAC_FINANCIAL_PROTECTION,
     FeatureToggle.ENABLE_EMS_INTEGRATION,
     FeatureToggle.ENABLE_IOS_OFFERS_LINK_WITH_REDIRECTION,
-    FeatureToggle.WIP_ENABLE_NEW_HASHING_ALGORITHM,
-    FeatureToggle.ENABLE_COLLECTIVE_OFFERS_EXPIRATION,
     FeatureToggle.ENABLE_PRO_BOOKINGS_V2,
     FeatureToggle.ENABLE_PRO_NEW_NAV_MODIFICATION,
+    FeatureToggle.ENABLE_SENTRY_FINE_SAMPLING,
     FeatureToggle.ENABLE_SWITCH_ALLOCINE_SYNC_TO_EMS_SYNC,
     FeatureToggle.ENABLE_TITELIVE_MUSIC_TYPES_IN_API_OUTPUT,
     FeatureToggle.ENABLE_UBBLE_SUBSCRIPTION_LIMITATION,
@@ -178,11 +180,15 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.USE_END_DATE_FOR_COLLECTIVE_PRICING,
     FeatureToggle.WIP_BENEFICIARY_EXTRACT_TOOL,
     FeatureToggle.WIP_CONNECT_AS,
+    FeatureToggle.WIP_ENABLE_COLLECTIVE_DRAFT_OFFERS,
     FeatureToggle.WIP_ENABLE_MOCK_UBBLE,
+    FeatureToggle.WIP_ENABLE_NEW_HASHING_ALGORITHM,
     FeatureToggle.WIP_ENABLE_OFFER_ADDRESS,
     FeatureToggle.WIP_ENABLE_REMINDER_MARKETING_MAIL_METADATA_DISPLAY,
     FeatureToggle.WIP_ENABLE_TITELIVE_API_FOR_BOOKS,
+    FeatureToggle.WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE,
     FeatureToggle.WIP_SPLIT_OFFER,
+    FeatureToggle.WIP_SUGGESTED_SUBCATEGORIES,
     # Please keep alphabetic order
 )
 

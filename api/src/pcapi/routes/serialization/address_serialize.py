@@ -26,7 +26,7 @@ class AddressResponseModel(BaseModel):
 
 
 class AddressResponseIsEditableModel(AddressResponseModel):
-    label: str
+    label: str | None = None
     isEditable: bool
 
 

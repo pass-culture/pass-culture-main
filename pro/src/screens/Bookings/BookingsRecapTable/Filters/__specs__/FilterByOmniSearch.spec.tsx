@@ -64,6 +64,97 @@ describe('components | FilterByOmniSearch', () => {
     ).toBeInTheDocument()
   })
 
+  it('should apply offerName filter when typing keywords for offer name', async () => {
+    props.selectedOmniSearchCriteria = 'offre'
+    renderWithProviders(<FilterByOmniSearch {...props} />)
+    screen.getByPlaceholderText('Rechercher par nom d’offre').focus()
+
+    await userEvent.paste('Mon nom d’offre')
+
+    expect(props.updateFilters).toHaveBeenCalledWith(
+      {
+        bookingBeneficiary: '',
+        bookingToken: '',
+        offerISBN: '',
+        offerName: 'Mon nom d’offre',
+        bookingInstitution: '',
+        bookingId: '',
+      },
+      { keywords: 'Mon nom d’offre', selectedOmniSearchCriteria: 'offre' }
+    )
+  })
+
+  it('should apply bookingInstitution filter when typing keywords for institution name', async () => {
+    props.audience = Audience.COLLECTIVE
+    props.selectedOmniSearchCriteria = 'établissement'
+    renderWithProviders(<FilterByOmniSearch {...props} />)
+    screen.getByPlaceholderText('Rechercher par nom d’établissement').focus()
+
+    await userEvent.paste('Mon nom d’établissement')
+
+    expect(props.updateFilters).toHaveBeenCalledWith(
+      {
+        bookingBeneficiary: '',
+        bookingToken: '',
+        offerISBN: '',
+        offerName: '',
+        bookingInstitution: 'Mon nom d’établissement',
+        bookingId: '',
+      },
+      {
+        keywords: 'Mon nom d’établissement',
+        selectedOmniSearchCriteria: 'établissement',
+      }
+    )
+  })
+
+  it('should apply bookingId filter when typing keywords for booking id', async () => {
+    props.audience = Audience.COLLECTIVE
+    props.selectedOmniSearchCriteria = 'booking_id'
+    renderWithProviders(<FilterByOmniSearch {...props} />)
+    screen.getByPlaceholderText('Rechercher par numéro de réservation').focus()
+
+    await userEvent.paste('123456789')
+
+    expect(props.updateFilters).toHaveBeenCalledWith(
+      {
+        bookingBeneficiary: '',
+        bookingToken: '',
+        offerISBN: '',
+        offerName: '',
+        bookingInstitution: '',
+        bookingId: '123456789',
+      },
+      {
+        keywords: '123456789',
+        selectedOmniSearchCriteria: 'booking_id',
+      }
+    )
+  })
+
+  it('should apply bookingToken filter when typing keywords for contremarque', async () => {
+    props.selectedOmniSearchCriteria = 'contremarque'
+    renderWithProviders(<FilterByOmniSearch {...props} />)
+    screen.getByPlaceholderText('Rechercher par contremarque').focus()
+
+    await userEvent.paste('AZE123')
+
+    expect(props.updateFilters).toHaveBeenCalledWith(
+      {
+        bookingBeneficiary: '',
+        bookingToken: 'AZE123',
+        offerISBN: '',
+        offerName: '',
+        bookingInstitution: '',
+        bookingId: '',
+      },
+      {
+        keywords: 'AZE123',
+        selectedOmniSearchCriteria: 'contremarque',
+      }
+    )
+  })
+
   it('should apply bookingBeneficiary filter when typing keywords for beneficiary name or email', async () => {
     props.selectedOmniSearchCriteria = 'bénéficiaire'
     renderWithProviders(<FilterByOmniSearch {...props} />)

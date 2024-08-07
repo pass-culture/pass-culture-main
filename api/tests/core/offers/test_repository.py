@@ -1313,7 +1313,7 @@ class GetCollectiveOffersTemplateByFiltersTest:
         result = repository.get_collective_offers_template_by_filters(
             user_id=user.id,
             user_is_admin=True,
-            status=offer_mixin.OfferStatus.ACTIVE.name,
+            statuses=[offer_mixin.OfferStatus.ACTIVE.name],
         ).all()
         # then
         assert len(result) == 1
@@ -1335,9 +1335,8 @@ class GetCollectiveOffersTemplateByFiltersTest:
         assert result.id == template.id
 
 
-@pytest.mark.usefixtures("db_session")
 class UpdateStockQuantityToDnBookedQuantityTest:
-    def test_update_stock_quantity_to_dn_booked_quantity(self):
+    def test_update_stock_quantity_to_dn_booked_quantity(self, db_session):
         # given
         offer = factories.OfferFactory()
         stock = factories.StockFactory(offer=offer, quantity=10, dnBookedQuantity=5)
@@ -1353,6 +1352,7 @@ class UpdateStockQuantityToDnBookedQuantityTest:
         # when
         repository.update_stock_quantity_to_dn_booked_quantity(stock.id)
         # then
+        db_session.refresh(stock)
         assert stock.quantity == 6
 
 
@@ -1430,7 +1430,7 @@ class GetFilteredCollectiveOffersTest:
         offers = repository.get_collective_offers_by_filters(
             user_offerer.userId,
             user_is_admin=False,
-            status=educational_models.CollectiveOfferDisplayedStatus.PREBOOKED.value,
+            statuses=[educational_models.CollectiveOfferDisplayedStatus.PREBOOKED.value],
         )
         assert offers.all() == [collective_offer_prebooked]
 
@@ -1449,7 +1449,7 @@ class GetFilteredCollectiveOffersTest:
         offers = repository.get_collective_offers_by_filters(
             user_offerer.userId,
             user_is_admin=False,
-            status=educational_models.CollectiveOfferDisplayedStatus.ENDED.value,
+            statuses=[educational_models.CollectiveOfferDisplayedStatus.ENDED.value],
         )
         assert offers.all() == [collective_offer_ended]
 
@@ -1482,7 +1482,7 @@ class GetFilteredCollectiveOffersTest:
         offers = repository.get_collective_offers_by_filters(
             user_offerer.userId,
             user_is_admin=False,
-            status=educational_models.CollectiveOfferDisplayedStatus.ARCHIVED.value,
+            statuses=[educational_models.CollectiveOfferDisplayedStatus.ARCHIVED.value],
         )
         assert offers.one() == collective_offer_archived
 

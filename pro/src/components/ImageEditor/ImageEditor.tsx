@@ -143,6 +143,7 @@ export const ImageEditor = forwardRef<AvatarEditor, ImageEditorProps>(
           ref={ref}
           scale={Number(formik.values.scale)}
           width={responsiveCanvasWidth}
+          aria-label="Editeur d'image"
         />
         <label className={style['image-editor-label']} htmlFor="scale">
           Zoom

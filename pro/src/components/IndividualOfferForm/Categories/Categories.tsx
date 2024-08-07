@@ -11,7 +11,6 @@ import { Callout } from 'components/Callout/Callout'
 import { CalloutVariant } from 'components/Callout/types'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { INDIVIDUAL_OFFER_SUBTYPE } from 'core/Offers/constants'
-import { useActiveFeature } from 'hooks/useActiveFeature'
 import fullMoreIcon from 'icons/full-more.svg'
 import {
   buildCategoryOptions,
@@ -56,9 +55,6 @@ export const Categories = ({
     setFieldValue,
     handleChange,
   } = useFormikContext<IndividualOfferFormValues>()
-  const isBookingContactEnabled = useActiveFeature(
-    'WIP_MANDATORY_BOOKING_CONTACT'
-  )
   const categoryOptions = buildCategoryOptions(categories)
   const subcategoryOptions = buildSubcategoryOptions(subCategories, categoryId)
 
@@ -68,7 +64,7 @@ export const Categories = ({
     )
 
     const { subcategoryFields: newSubcategoryFields } = buildSubcategoryFields(
-      isBookingContactEnabled,
+      true,
       newSubcategory
     )
     await setFieldValue('subCategoryFields', newSubcategoryFields)

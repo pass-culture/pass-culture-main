@@ -1,6 +1,7 @@
 @P0
 Feature: Create an individual offer (event)
 
+  # Plante si l'offerer a plusieurs venues
   Scenario: It should create an individual offer (event)
     Given I am logged in
     And I select offerer "Club Dorothy"
@@ -8,6 +9,8 @@ Feature: Create an individual offer (event)
     And I want to create "Un évènement physique daté" offer
     And I fill in offer details
     And I validate offer details step
+    And I fill in offer useful informations
+    And I validate offer useful informations step
     And I fill in prices
     And I validate prices step
     And I fill in recurrence

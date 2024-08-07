@@ -51,4 +51,23 @@ describe('Offerers', () => {
 
     expect(screen.getByText('Vos adresses')).toBeInTheDocument()
   })
+
+  it('should display venue creation link', () => {
+    renderOfferers(
+      {
+        selectedOfferer: {
+          ...defaultGetOffererResponseModel,
+          id: 200,
+          managedVenues: [defaultGetOffererVenueResponseModel],
+          isActive: true,
+        },
+      },
+      { features: ['API_SIRENE_AVAILABLE'] }
+    )
+
+    expect(screen.getByText('Ajouter un lieu')).toHaveAttribute(
+      'href',
+      '/structures/200/lieux/creation'
+    )
+  })
 })

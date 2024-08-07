@@ -34,7 +34,11 @@ export const CollectiveActionButtons = ({
   const notify = useNotification()
 
   const offerId = bookingRecap.stock.offerId
-  const offerEditionUrl = useOfferEditionURL(true, offerId, false)
+  const offerEditionUrl = useOfferEditionURL({
+    isOfferEducational: true,
+    offerId,
+    isShowcase: false,
+  })
 
   const cancelBooking = async () => {
     setIsModalOpen(false)

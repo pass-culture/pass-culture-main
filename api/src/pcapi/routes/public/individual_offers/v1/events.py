@@ -16,6 +16,7 @@ from pcapi.routes.public import blueprints
 from pcapi.routes.public import spectree_schemas
 from pcapi.routes.public.documentation_constants import http_responses
 from pcapi.routes.public.documentation_constants import tags
+from pcapi.routes.public.services import authorization
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
 from pcapi.validation.routes.users_authentifications import api_key_required
@@ -29,17 +30,13 @@ def _deserialize_has_ticket(
     has_ticket: bool,
     subcategory_id: str,
 ) -> offers_models.WithdrawalTypeEnum | None:
-    if not has_ticket:
-        if subcategories.ALL_SUBCATEGORIES_DICT[subcategory_id].can_be_withdrawable:
-            return offers_models.WithdrawalTypeEnum.NO_TICKET
-        return None
+    if has_ticket:
+        return offers_models.WithdrawalTypeEnum.IN_APP
 
-    if not current_api_key.provider.hasProviderEnableCharlie:
-        raise api_errors.ApiErrors(
-            {"global": "You must support the pass culture ticketting interface to use the in_app value."},
-            status_code=400,
-        )
-    return offers_models.WithdrawalTypeEnum.IN_APP
+    if subcategories.ALL_SUBCATEGORIES_DICT[subcategory_id].can_be_withdrawable:
+        return offers_models.WithdrawalTypeEnum.NO_TICKET
+
+    return None
 
 
 @blueprints.public_api.route("/public/offers/v1/events", methods=["POST"])
@@ -63,7 +60,16 @@ def post_event_offer(body: serialization.EventOfferCreation) -> serialization.Ev
     """
     Create event offer
     """
-    venue = utils.retrieve_venue_from_location(body.location)
+    venue_provider = authorization.get_venue_provider_or_raise_404(body.location.venue_id)
+    venue = utils.get_venue_with_offerer_address(body.location.venue_id)
+
+    if body.has_ticket and not (venue_provider.provider.hasProviderEnableCharlie or venue_provider.hasTicketingService):
+        raise api_errors.ApiErrors(
+            {
+                "global": "You cannot create an event with `has_ticket=true` because you dont have a ticketing service enabled (neither at provider level nor at venue level)."
+            }
+        )
+
     withdrawal_type = _deserialize_has_ticket(body.has_ticket, body.category_related_fields.subcategory_id)
     try:
         with repository.transaction():
@@ -87,6 +93,7 @@ def post_event_offer(body: serialization.EventOfferCreation) -> serialization.Ev
                 withdrawal_details=body.withdrawal_details,
                 withdrawal_type=withdrawal_type,
                 id_at_provider=body.id_at_provider,
+                venue_provider=venue_provider,
             )
             # To create the priceCategories, the offer needs to have an id
             db.session.flush()
@@ -144,6 +151,7 @@ def get_event(event_id: int) -> serialization.EventOfferResponse:
 
 
 @blueprints.public_api.route("/public/offers/v1/events", methods=["GET"])
+@api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.EVENT_OFFERS],
@@ -153,11 +161,11 @@ def get_event(event_id: int) -> serialization.EventOfferResponse:
             {"HTTP_200": (serialization.EventOffersResponse, "The event offers have been returned")}
             # errors
             | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
+            | http_responses.HTTP_403_UNTHAUTHORIZED
             | http_responses.HTTP_404_VENUE_NOT_FOUND
         )
     ),
 )
-@api_key_required
 def get_events(query: serialization.GetOffersQueryParams) -> serialization.EventOffersResponse:
     """
     Get events
@@ -165,7 +173,8 @@ def get_events(query: serialization.GetOffersQueryParams) -> serialization.Event
     Return all the events linked to given venue.
     Results are paginated (by default there are `50` events per page).
     """
-    utils.check_venue_id_is_tied_to_api_key(query.venue_id)
+    authorization.get_venue_provider_or_raise_404(query.venue_id)
+
     total_offers_query = utils.retrieve_offers(
         is_event=True,
         firstIndex=query.firstIndex,

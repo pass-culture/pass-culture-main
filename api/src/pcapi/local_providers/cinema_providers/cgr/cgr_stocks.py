@@ -43,18 +43,11 @@ class CGRStocks(LocalProvider):
             offers_models.PriceCategoryLabel.query.filter(offers_models.PriceCategoryLabel.venue == self.venue).all()
         )
         self.price_category_lists_by_offer: dict[offers_models.Offer, list[offers_models.PriceCategory]] = {}
+        self.provider = venue_provider.provider
 
     def __next__(self) -> list[ProvidableInfo]:
         self.film_infos = next(self.films)
-        self.product = self.get_movie_product(self.film_infos)
-        if not self.product:
-            logger.info(
-                "Product not found for allocine Id %s",
-                self.film_infos.IDFilmAlloCine,
-                extra={"allocineId": self.film_infos.IDFilmAlloCine, "venueId": self.venue.id},
-                technical_message_id="allocineId.not_found",
-            )
-
+        self.product = self.get_or_create_movie_product(self.film_infos)
         providable_information_list = []
         provider_offer_unique_id = _build_movie_uuid_for_offer(self.film_infos.IDFilmAlloCine, self.venue)
 
@@ -102,12 +95,13 @@ class CGRStocks(LocalProvider):
         if self.film_infos.NumVisa:
             offer.extraData["visa"] = offer.extraData.get("visa") or str(self.film_infos.NumVisa)
 
+        offer.product = self.product
+
     def fill_offer_attributes(self, offer: offers_models.Offer) -> None:
         offer.venueId = self.venue.id
         offer.offererAddress = self.venue.offererAddress
         offer.bookingEmail = self.venue.bookingEmail
         offer.withdrawalDetails = self.venue.withdrawalDetails
-        offer.product = self.product
         offer.subcategoryId = subcategories.SEANCE_CINE.id
 
         self.update_from_movie_information(offer)
@@ -229,13 +223,10 @@ class CGRStocks(LocalProvider):
 
         return price_category_label
 
-    def get_movie_product(self, film: cgr_serializers.Film) -> offers_models.Product | None:
-        product = None
-        if film.IDFilmAlloCine:
-            product = offers_repository.get_movie_product_by_allocine_id(str(film.IDFilmAlloCine))
-
-        if not product and film.NumVisa:
-            product = offers_repository.get_movie_product_by_visa(str(film.NumVisa))
+    def get_or_create_movie_product(self, movie: cgr_serializers.Film) -> offers_models.Product | None:
+        generic_movie = movie.to_generic_movie()
+        id_at_providers = _build_movie_uuid_for_offer(movie.IDFilmAlloCine, self.venue)
+        product = offers_api.upsert_movie_product_from_provider(generic_movie, self.provider, id_at_providers)
 
         return product
 

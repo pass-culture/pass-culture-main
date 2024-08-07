@@ -14,7 +14,7 @@ export const WelcomeToTheNewBetaBanner = ({
 }: WelcomeToTheNewBetaBannerProps): JSX.Element => {
   return (
     <DialogBox
-      labelledBy=""
+      labelledBy="welcome-on-new-interface"
       hasCloseButton={true}
       onDismiss={onDismiss}
       extraClassNames={styles['banner']}
@@ -23,7 +23,7 @@ export const WelcomeToTheNewBetaBanner = ({
       <div className={styles['banner-image']}>
         <img src={topImage} alt="Nouvelle interface" />
       </div>
-      <h2 className={styles['banner-title']}>
+      <h2 id="welcome-on-new-interface" className={styles['banner-title']}>
         Bienvenue sur la nouvelle interface ! <span aria-hidden={true}>🎉</span>
       </h2>
 

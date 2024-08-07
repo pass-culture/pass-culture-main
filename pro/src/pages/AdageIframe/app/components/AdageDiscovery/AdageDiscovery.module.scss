@@ -11,33 +11,6 @@
     gap: rem.torem(40px);
     margin: rem.torem(32px) 0;
   }
-
-  &-suggestion {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    background-color: var(--color-background-secondary);
-    width: auto;
-    height: rem.torem(158px);
-    padding-left: rem.torem(24px);
-
-    h1.section-title {
-      margin-bottom: rem.torem(8px);
-    }
-
-    &-link {
-      @include fonts.button;
-
-      align-items: center;
-      width: max-content;
-      margin: 0;
-
-      svg {
-        max-width: rem.torem(16px);
-        margin-right: rem.torem(4px) !important;
-      }
-    }
-  }
 }
 
 .playlist-carousel-title {

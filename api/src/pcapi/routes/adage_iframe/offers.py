@@ -129,6 +129,7 @@ def get_collective_offer_templates(
         return serializers.ListCollectiveOfferTemplateResponseModel(collectiveOffers=[])
 
     try:
+        # TODO: filtrer les offres archivées et masquées
         offers = educational_repository.get_collective_offer_templates_by_ids_for_adage(query.ids).all()
     except sa_exc.SQLAlchemyError:
         raise ApiErrors({"code": "COLLECTIVE_OFFER_TEMPLATES_NOT_FOUND"}, status_code=400)

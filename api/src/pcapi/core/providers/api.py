@@ -44,6 +44,7 @@ UNCHANGED = T_UNCHANGED.TOKEN
 def create_venue_provider(
     provider_id: int,
     venue_id: int,
+    current_user: users_models.User,
     payload: providers_models.VenueProviderCreationPayload = providers_models.VenueProviderCreationPayload(),
 ) -> providers_models.VenueProvider:
     provider = providers_repository.get_provider_enabled_for_pro_by_id(provider_id)
@@ -78,6 +79,14 @@ def create_venue_provider(
             [venue.id],
             reason=search.IndexationReason.VENUE_PROVIDER_CREATION,
         )
+
+    history_api.add_action(
+        history_models.ActionType.SYNC_VENUE_TO_PROVIDER,
+        author=current_user,
+        venue=venue,
+        provider_name=provider.name,
+    )
+    db.session.commit()
 
     logger.info(
         "La synchronisation d'offre a été activée",
@@ -190,6 +199,7 @@ def connect_venue_to_provider(
     venue_provider.venueIdAtOfferProvider = id_at_provider
 
     repository.save(venue_provider)
+
     return venue_provider
 
 
@@ -294,11 +304,15 @@ def update_venue_provider_external_urls(
     ticketing_urls_are_updated = booking_external_url != UNCHANGED or cancel_external_url != UNCHANGED
 
     venue_provider_external_urls = venue_provider.externalUrls
-    existing_cancel_external_urls = (
+    # Existing URLs
+    existing_cancel_external_url = (
         venue_provider_external_urls.cancelExternalUrl if venue_provider_external_urls else None
     )
-    existing_booking_external_urls = (
+    existing_booking_external_url = (
         venue_provider_external_urls.bookingExternalUrl if venue_provider_external_urls else None
+    )
+    existing_notification_external_url = (
+        venue_provider_external_urls.notificationExternalUrl if venue_provider_external_urls else None
     )
 
     # Validation
@@ -306,15 +320,21 @@ def update_venue_provider_external_urls(
         validation.check_venue_ticketing_urls_can_be_unset(venue_provider)
     elif ticketing_urls_are_updated:
         validation.check_ticketing_urls_are_coherently_set(
-            existing_booking_external_urls if booking_external_url == UNCHANGED else booking_external_url,
-            existing_cancel_external_urls if cancel_external_url == UNCHANGED else cancel_external_url,
+            existing_booking_external_url if booking_external_url == UNCHANGED else booking_external_url,
+            existing_cancel_external_url if cancel_external_url == UNCHANGED else cancel_external_url,
         )
 
     # Type of operation
     is_creation = not venue_provider_external_urls and (
         notification_external_url not in (None, UNCHANGED) or booking_external_url not in (None, UNCHANGED)
     )
-    is_deletion = venue_provider_external_urls and notification_external_url is None and booking_external_url is None
+    is_deletion = venue_provider_external_urls and (
+        # expected final notification url
+        (existing_notification_external_url if notification_external_url is UNCHANGED else notification_external_url)
+        is None
+        # expected final booking url
+        and (existing_booking_external_url if booking_external_url is UNCHANGED else booking_external_url) is None
+    )
 
     if is_deletion:
         repository.delete(venue_provider_external_urls)

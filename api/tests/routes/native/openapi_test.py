@@ -1260,6 +1260,7 @@ def test_public_api(client):
                         "last30DaysBookings": {"nullable": True, "title": "Last30Daysbookings", "type": "integer"},
                         "metadata": {"title": "Metadata", "type": "object"},
                         "name": {"title": "Name", "type": "string"},
+                        "reactionsCount": {"$ref": "#/components/schemas/ReactionCount"},
                         "stocks": {
                             "items": {"$ref": "#/components/schemas/OfferStockResponse"},
                             "title": "Stocks",
@@ -1283,6 +1284,7 @@ def test_public_api(client):
                         "isEducational",
                         "metadata",
                         "name",
+                        "reactionsCount",
                         "stocks",
                         "subcategoryId",
                         "venue",
@@ -1323,6 +1325,7 @@ def test_public_api(client):
                         "last30DaysBookings": {"nullable": True, "title": "Last30Daysbookings", "type": "integer"},
                         "metadata": {"title": "Metadata", "type": "object"},
                         "name": {"title": "Name", "type": "string"},
+                        "reactionsCount": {"$ref": "#/components/schemas/ReactionCount"},
                         "stocks": {
                             "items": {"$ref": "#/components/schemas/OfferStockResponse"},
                             "title": "Stocks",
@@ -1346,6 +1349,7 @@ def test_public_api(client):
                         "isEducational",
                         "metadata",
                         "name",
+                        "reactionsCount",
                         "stocks",
                         "subcategoryId",
                         "venue",
@@ -1553,6 +1557,14 @@ def test_public_api(client):
                     "enum": ["INFO", "ERROR", "WARNING", "CLOCK", "FILE", "MAGNIFYING_GLASS"],
                     "title": "PopOverIcon",
                 },
+                "PostFeedbackBody": {
+                    "properties": {
+                        "feedback": {"maxLength": 800, "minLength": 1, "title": "Feedback", "type": "string"}
+                    },
+                    "required": ["feedback"],
+                    "title": "PostFeedbackBody",
+                    "type": "object",
+                },
                 "PostReactionRequest": {
                     "properties": {
                         "offerId": {"title": "Offerid", "type": "integer"},
@@ -1577,6 +1589,12 @@ def test_public_api(client):
                     },
                     "required": ["activityId", "address", "city", "firstName", "lastName", "postalCode"],
                     "title": "ProfileUpdateRequest",
+                    "type": "object",
+                },
+                "ReactionCount": {
+                    "properties": {"likes": {"title": "Likes", "type": "integer"}},
+                    "required": ["likes"],
+                    "title": "ReactionCount",
                     "type": "object",
                 },
                 "ReactionTypeEnum": {
@@ -2208,14 +2226,31 @@ def test_public_api(client):
                     "title": "UserProfileEmailUpdate",
                     "type": "object",
                 },
+                "UserProfilePatchRequest": {
+                    "properties": {
+                        "activityId": {"anyOf": [{"$ref": "#/components/schemas/ActivityIdEnum"}], "nullable": True},
+                        "city": {"nullable": True, "title": "City", "type": "string"},
+                        "origin": {"nullable": True, "title": "Origin", "type": "string"},
+                        "postalCode": {"nullable": True, "title": "Postalcode", "type": "string"},
+                        "subscriptions": {
+                            "anyOf": [{"$ref": "#/components/schemas/NotificationSubscriptions"}],
+                            "nullable": True,
+                            "title": "NotificationSubscriptions",
+                        },
+                    },
+                    "title": "UserProfilePatchRequest",
+                    "type": "object",
+                },
                 "UserProfileResponse": {
                     "properties": {
+                        "activityId": {"anyOf": [{"$ref": "#/components/schemas/ActivityIdEnum"}], "nullable": True},
                         "birthDate": {"format": "date", "nullable": True, "title": "Birthdate", "type": "string"},
                         "bookedOffers": {
                             "additionalProperties": {"type": "integer"},
                             "title": "Bookedoffers",
                             "type": "object",
                         },
+                        "city": {"nullable": True, "title": "City", "type": "string"},
                         "depositActivationDate": {
                             "format": "date-time",
                             "nullable": True,
@@ -2265,6 +2300,7 @@ def test_public_api(client):
                         "lastName": {"nullable": True, "title": "Lastname", "type": "string"},
                         "needsToFillCulturalSurvey": {"title": "Needstofillculturalsurvey", "type": "boolean"},
                         "phoneNumber": {"nullable": True, "title": "Phonenumber", "type": "string"},
+                        "postalCode": {"nullable": True, "title": "Postalcode", "type": "string"},
                         "recreditAmountToShow": {"nullable": True, "title": "Recreditamounttoshow", "type": "integer"},
                         "requiresIdCheck": {"title": "Requiresidcheck", "type": "boolean"},
                         "roles": {"items": {"$ref": "#/components/schemas/UserRole"}, "type": "array"},
@@ -2292,18 +2328,6 @@ def test_public_api(client):
                         "subscriptions",
                     ],
                     "title": "UserProfileResponse",
-                    "type": "object",
-                },
-                "UserProfileUpdateRequest": {
-                    "properties": {
-                        "origin": {"nullable": True, "title": "Origin", "type": "string"},
-                        "subscriptions": {
-                            "anyOf": [{"$ref": "#/components/schemas/NotificationSubscriptions"}],
-                            "nullable": True,
-                            "title": "NotificationSubscriptions",
-                        },
-                    },
-                    "title": "UserProfileUpdateRequest",
                     "type": "object",
                 },
                 "UserReportedOffersResponse": {
@@ -3023,6 +3047,29 @@ def test_public_api(client):
                     "tags": [],
                 }
             },
+            "/native/v1/feedback": {
+                "post": {
+                    "description": "",
+                    "operationId": "post__native_v1_feedback",
+                    "parameters": [],
+                    "requestBody": {
+                        "content": {"application/json": {"schema": {"$ref": "#/components/schemas/PostFeedbackBody"}}}
+                    },
+                    "responses": {
+                        "204": {"description": "No Content"},
+                        "403": {"description": "Forbidden"},
+                        "422": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
+                            },
+                            "description": "Unprocessable Entity",
+                        },
+                    },
+                    "security": [{"JWTAuth": []}],
+                    "summary": "post_feedback <POST>",
+                    "tags": [],
+                }
+            },
             "/native/v1/me": {
                 "get": {
                     "description": "",
@@ -3413,13 +3460,13 @@ def test_public_api(client):
                 }
             },
             "/native/v1/profile": {
-                "post": {
+                "patch": {
                     "description": "",
-                    "operationId": "post__native_v1_profile",
+                    "operationId": "patch__native_v1_profile",
                     "parameters": [],
                     "requestBody": {
                         "content": {
-                            "application/json": {"schema": {"$ref": "#/components/schemas/UserProfileUpdateRequest"}}
+                            "application/json": {"schema": {"$ref": "#/components/schemas/UserProfilePatchRequest"}}
                         }
                     },
                     "responses": {
@@ -3438,9 +3485,37 @@ def test_public_api(client):
                         },
                     },
                     "security": [{"JWTAuth": []}],
-                    "summary": "update_user_profile <POST>",
+                    "summary": "patch_user_profile <PATCH>",
                     "tags": [],
-                }
+                },
+                "post": {
+                    "description": "",
+                    "operationId": "post__native_v1_profile",
+                    "parameters": [],
+                    "requestBody": {
+                        "content": {
+                            "application/json": {"schema": {"$ref": "#/components/schemas/UserProfilePatchRequest"}}
+                        }
+                    },
+                    "responses": {
+                        "200": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/UserProfileResponse"}}
+                            },
+                            "description": "OK",
+                        },
+                        "403": {"description": "Forbidden"},
+                        "422": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
+                            },
+                            "description": "Unprocessable Entity",
+                        },
+                    },
+                    "security": [{"JWTAuth": []}],
+                    "summary": "patch_user_profile <POST>",
+                    "tags": [],
+                },
             },
             "/native/v1/profile/email_update/cancel": {
                 "post": {

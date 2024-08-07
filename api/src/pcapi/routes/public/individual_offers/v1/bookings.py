@@ -179,7 +179,7 @@ def get_booking_by_token(token: str) -> serialization.GetBookingResponse:
 @api_key_required
 def validate_booking_by_token(token: str) -> None:
     """
-    Validate a booking
+    Validate booking
 
     Confirm that the booking has been used by the beneficiary.
     """
@@ -220,9 +220,15 @@ def validate_booking_by_token(token: str) -> None:
 @api_key_required
 def cancel_booking_validation_by_token(token: str) -> None:
     """
-    Cancel a booking validation
+    Revert booking validation
 
-    Mark a booking as `unused`.
+    This operation reverses the status of a booking from `USED` back to `CONFIRMED`.
+    As a result, the pass Culture application will treat the booking as if the beneficiary has not retrieved it,
+    and the cultural partner will not receive a refund.
+
+    **⚠️ Warning:**
+    Before using this endpoint, **ensure that the cultural partner has manually confirmed their desire to revert the booking validation**.
+    Failure to do so may result in the cultural partner expecting a refund that will not be issued, due to the booking validation being reverted without their knowledge.
     """
     booking = _get_booking_by_token(token)
     if booking is None:
@@ -262,12 +268,12 @@ def cancel_booking_validation_by_token(token: str) -> None:
 @api_key_required
 def cancel_booking_by_token(token: str) -> None:
     """
-    Cancel a booking
+    Delete a booking
 
-    Cancel a booking that has not been used or refunded.
+    Delete a booking that has not been used or refunded. For events, a booking can only be deleted if it is in a pending state.
 
-    For events, a booking can only be cancelled if it is pending.
-    Once it is confirmed, you cannot cancel it (for booking confirmation see [this page](/docs/understanding-our-api/resources/individual-offers#general-description-2)).
+    **⚠️ Warning:**
+    This operation is irreversible. Once a booking is deleted, the beneficiary cannot retrieve it and will need to create a new booking. **Use this endpoint only if you are certain that the order cannot be fulfilled.**
     """
     booking = _get_booking_by_token(token)
     if booking is None:

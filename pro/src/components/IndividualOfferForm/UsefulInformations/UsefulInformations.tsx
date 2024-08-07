@@ -10,7 +10,6 @@ import { OfferRefundWarning } from 'components/Banner/OfferRefundWarning'
 import { WithdrawalReminder } from 'components/Banner/WithdrawalReminder'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { REIMBURSEMENT_RULES } from 'core/Finances/constants'
-import { useActiveFeature } from 'hooks/useActiveFeature'
 import { Checkbox } from 'ui-kit/form/Checkbox/Checkbox'
 import { TextArea } from 'ui-kit/form/TextArea/TextArea'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
@@ -42,9 +41,6 @@ export const UsefulInformations = ({
   const {
     values: { subCategoryFields, withdrawalType },
   } = useFormikContext<IndividualOfferFormValues>()
-  const isBookingContactEnabled = useActiveFeature(
-    'WIP_MANDATORY_BOOKING_CONTACT'
-  )
 
   const displayNoRefundWarning =
     offerSubCategory?.reimbursementRule === REIMBURSEMENT_RULES.NOT_REIMBURSED
@@ -52,8 +48,7 @@ export const UsefulInformations = ({
   const displayWithdrawalReminder =
     !offerSubCategory?.isEvent && !isVenueVirtual
 
-  const displayBookingContact =
-    isBookingContactEnabled && offerSubCategory?.canBeWithdrawable
+  const displayBookingContact = offerSubCategory?.canBeWithdrawable
 
   return (
     <FormLayout.Section title="Informations pratiques">

@@ -179,7 +179,7 @@ export const SearchFilters = ({
   return (
     <>
       {!isNewInterfaceActive && offerer && (
-        <span className="offerer-filter">
+        <span className={styles['offerer-filter']}>
           {offerer.name}
           <button
             onClick={removeOfferer}
@@ -195,7 +195,10 @@ export const SearchFilters = ({
         </span>
       )}
 
-      <form onSubmit={requestFilteredOffers}>
+      <form
+        onSubmit={requestFilteredOffers}
+        className={styles['search-filters-form']}
+      >
         <FieldLayout label={searchByOfferNameLabel} name="offre" isOptional>
           <BaseInput
             type="text"
@@ -287,39 +290,39 @@ export const SearchFilters = ({
             />
           </fieldset>
         </FormLayout.Row>
-        <FieldLayout
-          label={
-            <span className={styles['status-filter-label']}>
-              Statut<Tag variant={TagVariant.BLUE}>Nouveau</Tag>
-            </span>
-          }
-          name="status"
-          isOptional
-          className={styles['status-filter']}
-        >
-          <SelectInput
-            value={selectedFilters.status}
-            name="status"
-            onChange={storeOfferStatus}
-            disabled={disableAllFilters || isRestrictedAsAdmin}
-            options={
-              audience === Audience.COLLECTIVE
-                ? collectiveFilterStatus
-                : individualFilterStatus
+        <FormLayout.Row inline className={styles['reset-filters-row']}>
+          <FieldLayout
+            label={
+              <span className={styles['status-filter-label']}>
+                Statut<Tag variant={TagVariant.BLUE}>Nouveau</Tag>
+              </span>
             }
-          />
-        </FieldLayout>
-
-        <div className={styles['reset-filters']}>
+            name="status"
+            isOptional
+            className={styles['status-filter']}
+          >
+            <SelectInput
+              value={selectedFilters.status}
+              name="status"
+              onChange={storeOfferStatus}
+              disabled={disableAllFilters || isRestrictedAsAdmin}
+              options={
+                audience === Audience.COLLECTIVE
+                  ? collectiveFilterStatus
+                  : individualFilterStatus
+              }
+            />
+          </FieldLayout>
           <Button
             icon={fullRefreshIcon}
             disabled={!hasSearchFilters(selectedFilters)}
             onClick={resetFilters}
             variant={ButtonVariant.TERNARY}
+            className={styles['reset-filters']}
           >
             Réinitialiser les filtres
           </Button>
-        </div>
+        </FormLayout.Row>
         <div className={styles['search-separator']}>
           <div className={styles['separator']} />
           <Button type="submit" disabled={disableAllFilters}>

@@ -11,7 +11,7 @@ describe('isAllocineOffer', () => {
             name: 'Allociné',
           },
         })
-      ) // TODO should use factory pattern
+      )
     ).toBe(true)
   })
 

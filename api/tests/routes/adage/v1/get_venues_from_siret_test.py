@@ -2,13 +2,13 @@ import pytest
 
 import pcapi.core.educational.factories as educational_factories
 from pcapi.core.educational.models import StudentLevels
-from pcapi.core.offerers import factories as offerer_factories
+from pcapi.core.offerers import factories as offerers_factories
 
 
 @pytest.mark.usefixtures("db_session")
 class Returns200Test:
     def test_get_venues_from_siret(self, client) -> None:
-        venue = offerer_factories.VenueFactory(
+        venue = offerers_factories.VenueFactory(
             siret="12345678912345",
             audioDisabilityCompliant=None,
             mentalDisabilityCompliant=None,
@@ -73,7 +73,7 @@ class Returns200Test:
         }
 
     def test_get_venues_from_siret_with_label(self, client) -> None:
-        venue = offerer_factories.VenueFactory(
+        venue = offerers_factories.VenueFactory(
             siret="12345678912345",
             audioDisabilityCompliant=None,
             mentalDisabilityCompliant=None,
@@ -83,7 +83,7 @@ class Returns200Test:
             collectiveDomains=[],
             collectiveInterventionArea=None,
             collectiveNetwork=None,
-            venueLabel=offerer_factories.VenueLabelFactory(),
+            venueLabel=offerers_factories.VenueLabelFactory(),
             isPermanent=True,
             managingOfferer__siren="12345",
             bannerUrl="http://example.com/image_cropped.png",
@@ -144,7 +144,7 @@ class Returns200Test:
     def test_get_venues_from_siret_with_collective_data(self, client) -> None:
         domain1 = educational_factories.EducationalDomainFactory()
         domain2 = educational_factories.EducationalDomainFactory()
-        venue = offerer_factories.VenueFactory(
+        venue = offerers_factories.VenueFactory(
             siret="12345678912345",
             audioDisabilityCompliant=None,
             mentalDisabilityCompliant=None,
@@ -213,8 +213,8 @@ class Returns200Test:
         }
 
     def test_get_relative_venues_from_siret(self, client) -> None:
-        offerer = offerer_factories.OffererFactory()
-        venue1 = offerer_factories.VenueFactory(
+        offerer = offerers_factories.OffererFactory()
+        venue1 = offerers_factories.VenueFactory(
             siret="12345678912345",
             name="name1",
             audioDisabilityCompliant=None,
@@ -234,7 +234,7 @@ class Returns200Test:
                 "should": "be_ignored",
             },
         )
-        venue2 = offerer_factories.VenueFactory(
+        venue2 = offerers_factories.VenueFactory(
             siret="9874563211235",
             name="name2",
             audioDisabilityCompliant=None,
@@ -248,7 +248,7 @@ class Returns200Test:
             managingOfferer=offerer,
             isPermanent=True,
         )
-        offerer_factories.VenueFactory(
+        offerers_factories.VenueFactory(
             siret="7896541238521",
             audioDisabilityCompliant=None,
             mentalDisabilityCompliant=None,

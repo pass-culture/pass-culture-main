@@ -4,6 +4,7 @@ import logging
 
 from pydantic.v1 import validator
 
+from pcapi.core.offers import models as offers_models
 from pcapi.routes.serialization import BaseModel
 
 
@@ -48,6 +49,17 @@ class Film(BaseModel):
                 continue
             sanitized_showtimes.append(seance)
         return sanitized_showtimes
+
+    def to_generic_movie(self) -> offers_models.Movie:
+        return offers_models.Movie(
+            allocine_id=str(self.IDFilmAlloCine),
+            duration=self.Duree,
+            description=self.Synopsis,
+            extra_data=None,
+            poster_url=self.Affiche,
+            title=self.Titre,
+            visa=str(self.NumVisa),
+        )
 
 
 class GetSancesPassCultureResponseBody(BaseModel):

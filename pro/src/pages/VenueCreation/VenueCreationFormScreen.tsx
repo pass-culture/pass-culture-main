@@ -114,6 +114,7 @@ export const VenueCreationFormScreen = ({
         <form onSubmit={formik.handleSubmit}>
           <VenueCreationForm
             updateIsSiretValued={setIsSiretValued}
+            isSiretValued={isSiretValued}
             venueTypes={venueTypes}
             offerer={offerer}
           />

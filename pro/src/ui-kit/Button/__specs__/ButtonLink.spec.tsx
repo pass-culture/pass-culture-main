@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 import { Route, Routes } from 'react-router-dom'
@@ -85,5 +85,23 @@ describe('ButtonLink', () => {
 
     expect(onClick).not.toHaveBeenCalled()
     expect(screen.getByText('Action non disponible')).toBeInTheDocument()
+  })
+
+  it('should have right attributes for open in new tab', () => {
+    render(
+      <ButtonLink {...props} opensInNewTab>
+        test
+      </ButtonLink>
+    )
+
+    const button = screen.getByRole('link', { name: /test/ })
+
+    expect(button).toHaveAttribute('rel', 'noopener noreferrer')
+    expect(button).toHaveAttribute('target', '_blank')
+
+    expect(within(button).getByRole('img')).toHaveAttribute(
+      'aria-label',
+      'Nouvelle fenêtre'
+    )
   })
 })

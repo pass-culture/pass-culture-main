@@ -23,7 +23,6 @@ from pcapi.core.educational.models import OfferContactFormEnum
 from pcapi.core.educational.models import StudentLevels
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers import validation as offers_validation
-from pcapi.core.offers.serialize import CollectiveOfferType
 from pcapi.models.offer_mixin import CollectiveOfferStatus
 from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
 from pcapi.routes.serialization import BaseModel
@@ -66,6 +65,11 @@ class EmptyAsNullString(str):
 
 
 EmptyStringToNone = EmptyAsNullString | None
+
+
+class CollectiveOfferType(enum.Enum):
+    offer = "offer"
+    template = "template"
 
 
 class ListCollectiveOffersQueryModel(BaseModel):
@@ -121,6 +125,14 @@ class EducationalRedactorResponseModel(BaseModel):
         orm_mode = True
 
 
+class TemplateDatesModel(BaseModel):
+    start: datetime
+    end: datetime
+
+    class Config:
+        json_encoders = {datetime: format_into_utc_date}
+
+
 class CollectiveOffersBookingResponseModel(BaseModel):
     id: int
     booking_status: str
@@ -148,6 +160,7 @@ class CollectiveOfferResponseModel(BaseModel):
     isPublicApi: bool
     nationalProgram: NationalProgramModel | None
     formats: typing.Sequence[subcategories.EacFormat] | None
+    dates: TemplateDatesModel | None
 
     class Config:
         alias_generator = to_camel
@@ -201,6 +214,7 @@ def _serialize_offer_paginated(offer: CollectiveOffer | CollectiveOfferTemplate)
         isPublicApi=offer.isPublicApi if not is_offer_template else False,
         nationalProgram=offer.nationalProgram,
         formats=offer.get_formats(),
+        dates=offer.dates,  # type: ignore[arg-type]
     )
 
 
@@ -218,10 +232,10 @@ def _serialize_stock(stock: CollectiveStock | None = None) -> dict:
     return {
         "hasBookingLimitDatetimePassed": False,
         "remainingQuantity": 1,
-        "beginningDatetime": datetime(year=2030, month=1, day=1),
-        "startDatetime": datetime(year=2030, month=1, day=1),
-        "endDatetime": datetime(year=2030, month=1, day=1),
-        "bookingLimitDatetime": datetime(year=2030, month=1, day=1),
+        "beginningDatetime": None,
+        "startDatetime": None,
+        "endDatetime": None,
+        "bookingLimitDatetime": None,
     }
 
 
@@ -353,14 +367,6 @@ class GetCollectiveOfferBaseResponseModel(BaseModel, AccessibilityComplianceMixi
         use_enum_values = True
 
 
-class TemplateDatesModel(BaseModel):
-    start: datetime
-    end: datetime
-
-    class Config:
-        json_encoders = {datetime: format_into_utc_date}
-
-
 class GetCollectiveOfferTemplateResponseModel(GetCollectiveOfferBaseResponseModel):
     priceDetail: PriceDetail | None = Field(alias="educationalPriceDetail")
     dates: TemplateDatesModel | None
@@ -423,6 +429,7 @@ class GetCollectiveOfferResponseModel(GetCollectiveOfferBaseResponseModel):
     provider: GetCollectiveOfferProviderResponseModel | None
     formats: typing.Sequence[subcategories.EacFormat] | None
     isTemplate: bool = False
+    dates: TemplateDatesModel | None
 
     @classmethod
     def from_orm(cls, offer: CollectiveOffer) -> "GetCollectiveOfferResponseModel":

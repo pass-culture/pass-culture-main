@@ -1,3 +1,4 @@
+import classNames from 'classnames'
 import { useFormikContext } from 'formik'
 import React from 'react'
 
@@ -61,26 +62,33 @@ export const FormStock = ({
   }
 
   return (
-    <FormLayout.Row inline>
+    <FormLayout.Row inline className={styles['layout-row']}>
       <DatePicker
         disabled={mode === Mode.READ_ONLY}
         label={START_DATE_LABEL}
         minDate={new Date()}
         name="startDatetime"
         onChange={handleStartDatetimeChange}
-        className={styles['input-date']}
+        className={classNames(
+          styles['input-date'],
+          styles['custom-field-layout']
+        )}
       />
       <DatePicker
         disabled={mode === Mode.READ_ONLY}
         label={END_DATE_LABEL}
         minDate={minEndDatetime}
         name="endDatetime"
-        className={styles['input-date']}
+        className={classNames(
+          styles['input-date'],
+          styles['custom-field-layout']
+        )}
       />
       <TimePicker
         disabled={mode === Mode.READ_ONLY}
         label={EVENT_TIME_LABEL}
         name="eventTime"
+        className={styles['custom-field-layout']}
       />
       <TextInput
         disabled={disablePriceAndParticipantInputs}
@@ -90,6 +98,7 @@ export const FormStock = ({
         type="number"
         hasLabelLineBreak={false}
         rightIcon={strokeCollaborator}
+        className={styles['custom-field-layout']}
         classNameInput={styles['input-custom-width']}
       />
       <TextInput
@@ -99,6 +108,7 @@ export const FormStock = ({
         step={0.01} // allow user to enter a price with cents
         type="number"
         rightIcon={strokeEuroIcon}
+        className={styles['custom-field-layout']}
         classNameInput={styles['input-custom-width']}
       />
     </FormLayout.Row>

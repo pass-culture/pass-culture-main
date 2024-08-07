@@ -16,6 +16,7 @@ from pcapi.core.educational import models as educational_models
 import pcapi.core.educational.api.national_program as np_api
 from pcapi.core.finance import repository as finance_repository
 from pcapi.core.offerers import models as offerers_models
+from pcapi.core.offerers.repository import find_venue_by_id
 from pcapi.core.offers import exceptions
 from pcapi.core.offers import models
 from pcapi.core.offers import repository
@@ -23,7 +24,6 @@ from pcapi.core.providers import models as providers_models
 from pcapi.domain import music_types
 from pcapi.domain import show_types
 from pcapi.models import api_errors
-from pcapi.models.feature import FeatureToggle
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.routes.public.books_stocks import serialization
 from pcapi.utils import date
@@ -355,6 +355,35 @@ def check_offer_is_digital(offer: models.Offer) -> None:
         raise errors
 
 
+def check_digital_offer_fields(offer: models.Offer) -> None:
+    venue = offer.venue if offer.venue else find_venue_by_id(offer.venueId)
+    assert venue is not None  # helps mypy below
+    errors = api_errors.ApiErrors()
+
+    if offer.isDigital:
+        if not venue.isVirtual:
+            errors.add_error(
+                "venue", 'Une offre numérique doit obligatoirement être associée au lieu "Offre numérique"'
+            )
+            raise errors
+
+        if offer.subcategory.is_offline_only:
+            errors.add_error(
+                "url", f"Une offre de sous-catégorie {offer.subcategory.pro_label} ne peut pas être numérique"
+            )
+            raise errors
+    else:
+        if venue.isVirtual:
+            errors.add_error("venue", 'Une offre physique ne peut être associée au lieu "Offre numérique"')
+            raise errors
+
+        if offer.subcategory.is_online_only:
+            errors.add_error(
+                "subcategory", f'Une offre de catégorie {offer.subcategory.id} doit contenir un champ "url"'
+            )
+            raise errors
+
+
 def check_activation_codes_expiration_datetime(
     activation_codes_expiration_datetime: datetime.datetime | None,
     booking_limit_datetime: datetime.datetime | None,
@@ -414,12 +443,13 @@ def check_offer_withdrawal(
     subcategory_id: str,
     booking_contact: str | None,
     provider: providers_models.Provider | None,
+    venue_provider: providers_models.VenueProvider | None = None,
 ) -> None:
     is_offer_withdrawable = subcategory_id in subcategories.WITHDRAWABLE_SUBCATEGORIES
     if is_offer_withdrawable and withdrawal_type is None:
         raise exceptions.WithdrawableEventOfferMustHaveWithdrawal()
 
-    if FeatureToggle.WIP_MANDATORY_BOOKING_CONTACT.is_active() and is_offer_withdrawable and not booking_contact:
+    if is_offer_withdrawable and not booking_contact:
         raise exceptions.WithdrawableEventOfferMustHaveBookingContact()
 
     if withdrawal_type == models.WithdrawalTypeEnum.NO_TICKET and withdrawal_delay is not None:
@@ -431,9 +461,12 @@ def check_offer_withdrawal(
     ):
         raise exceptions.EventWithTicketMustHaveDelay()
 
-    # Only providers that activated the charlie api can create offer with IN_APP withdrawal type
+    # Only providers that have set a ticketing system at provider level or at venue level
+    # can create offers with in app Withdrawal
     if withdrawal_type == models.WithdrawalTypeEnum.IN_APP:
-        if not provider or not provider.hasProviderEnableCharlie:
+        has_ticketing_system_at_provider_level = provider and provider.hasProviderEnableCharlie
+        has_ticketing_system_at_venue_level = venue_provider and venue_provider.hasTicketingService
+        if not (has_ticketing_system_at_provider_level or has_ticketing_system_at_venue_level):
             raise exceptions.NonLinkedProviderCannotHaveInAppTicket()
 
 
@@ -558,6 +591,22 @@ def check_offer_is_from_current_cinema_provider(offer: models.Offer) -> None:
 def check_is_duo_compliance(is_duo: bool | None, subcategory: subcategories.Subcategory) -> None:
     if is_duo and not subcategory.can_be_duo:
         raise exceptions.OfferCannotBeDuo()
+
+
+def check_accessibility_compliance(
+    audio_disability_compliant: bool | None,
+    mental_disability_compliant: bool | None,
+    motor_disability_compliant: bool | None,
+    visual_disability_compliant: bool | None,
+) -> None:
+    fields = (
+        audio_disability_compliant,
+        mental_disability_compliant,
+        motor_disability_compliant,
+        visual_disability_compliant,
+    )
+    if None in fields:
+        raise exceptions.OfferMustHaveAccessibility()
 
 
 def check_publication_date(offer: models.Offer, publication_date: datetime.datetime | None) -> None:

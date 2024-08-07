@@ -275,7 +275,7 @@ export const routes: RouteConfig[] = [
   },
   {
     lazy: () => import('pages/IndividualOfferWizard/IndividualOfferWizard'),
-    path: '/offre/individuelle/:offerId',
+    path: '/offre/individuelle',
     title: 'Offre étape par étape',
     children: routesIndividualOfferWizard,
   },

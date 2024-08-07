@@ -276,4 +276,18 @@ describe('IndividualOffer section: Categories', () => {
     ).not.toBeInTheDocument()
     expect(screen.queryByLabelText('Sous-type *')).not.toBeInTheDocument()
   })
+
+  it('should display add venue banner if only virtual venues', () => {
+    renderCategories({
+      initialValues,
+      onSubmit,
+      props: { ...props, showAddVenueBanner: true },
+    })
+
+    expect(
+      screen.getByText(
+        'Pour créer une offre dans cette catégorie, ajoutez d’abord un lieu à votre structure.'
+      )
+    ).toBeInTheDocument()
+  })
 })

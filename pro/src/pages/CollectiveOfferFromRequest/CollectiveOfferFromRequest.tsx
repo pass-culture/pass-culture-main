@@ -1,3 +1,4 @@
+import { useSelector } from 'react-redux'
 import { useNavigate, useParams } from 'react-router-dom'
 import useSWR from 'swr'
 
@@ -15,6 +16,7 @@ import { Events } from 'core/FirebaseEvents/constants'
 import { createOfferFromTemplate } from 'core/OfferEducational/utils/createOfferFromTemplate'
 import { useActiveFeature } from 'hooks/useActiveFeature'
 import { useNotification } from 'hooks/useNotification'
+import { selectCurrentOffererId } from 'store/user/selectors'
 import { Button } from 'ui-kit/Button/Button'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 import { getDateToFrenchText } from 'utils/date'
@@ -25,6 +27,7 @@ export const CollectiveOfferFromRequest = (): JSX.Element => {
   const navigate = useNavigate()
   const notify = useNotification()
   const { logEvent } = useAnalytics()
+  const selectedOffererId = useSelector(selectCurrentOffererId)
 
   const isMarseilleActive = useActiveFeature('WIP_ENABLE_MARSEILLE')
 
@@ -52,6 +55,7 @@ export const CollectiveOfferFromRequest = (): JSX.Element => {
       requestId,
       offerType: 'collective',
       templateOfferId: offerId,
+      offererId: selectedOffererId?.toString(),
     })
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     createOfferFromTemplate(

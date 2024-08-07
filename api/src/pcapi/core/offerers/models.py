@@ -192,6 +192,14 @@ VENUE_TYPE_DEFAULT_BANNERS: dict[VenueTypeCode, tuple[str, ...]] = {
 }
 
 
+class OffererRejectionReason(enum.Enum):
+    ELIGIBILITY = "ELIGIBILITY"
+    ERROR = "ERROR"
+    ADAGE_DECLINED = "ADAGE_DECLINED"
+    OUT_OF_TIME = "OUT_OF_TIME"
+    OTHER = "OTHER"
+
+
 class Target(enum.Enum):
     EDUCATIONAL = "EDUCATIONAL"
     INDIVIDUAL_AND_EDUCATIONAL = "INDIVIDUAL_AND_EDUCATIONAL"
@@ -433,11 +441,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
     def bannerUrl(self) -> str | None:
         if self._bannerUrl:
             return self._bannerUrl
-        if (
-            self.googlePlacesInfo
-            and self.googlePlacesInfo.bannerUrl
-            and FeatureToggle.WIP_GOOGLE_MAPS_VENUE_IMAGES.is_active()
-        ):
+        if self.googlePlacesInfo and self.googlePlacesInfo.bannerUrl:
             return self.googlePlacesInfo.bannerUrl
         return self._get_type_banner_url()
 
@@ -453,11 +457,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
     def bannerMeta(self) -> str | None:
         if self._bannerMeta is not None:
             return self._bannerMeta
-        if (
-            self.googlePlacesInfo
-            and self.googlePlacesInfo.bannerMeta
-            and FeatureToggle.WIP_GOOGLE_MAPS_VENUE_IMAGES.is_active()
-        ):
+        if self.googlePlacesInfo and self.googlePlacesInfo.bannerMeta:
             # Google Places API returns a list of HTML attributions, formatted like this:
             # <a href="https://url-of-contributor">John D.</a>
             # Regex to extract URL and text
@@ -985,6 +985,8 @@ class Offerer(
 
     hasNewNavUsers: sa_orm.Mapped["bool | None"] = sa.orm.query_expression()
     hasOldNavUsers: sa_orm.Mapped["bool | None"] = sa.orm.query_expression()
+
+    rejectionReason: OffererRejectionReason = Column(db_utils.MagicEnum(OffererRejectionReason), nullable=True)
 
     def __init__(self, street: str | None = None, **kwargs: typing.Any) -> None:
         if street:

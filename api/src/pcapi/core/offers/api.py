@@ -1,3 +1,4 @@
+import dataclasses
 import datetime
 import decimal
 import enum
@@ -44,9 +45,14 @@ from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import repository as offerers_repository
 import pcapi.core.offerers.models as offerers_models
 from pcapi.core.offers import models as offers_models
+from pcapi.core.providers.allocine import get_allocine_products_provider
+from pcapi.core.providers.constants import GTL_IDS_BY_MUSIC_GENRE_CODE
+from pcapi.core.providers.constants import MUSIC_SLUG_BY_GTL_ID
 import pcapi.core.providers.exceptions as providers_exceptions
 import pcapi.core.providers.models as providers_models
+from pcapi.core.providers.repository import get_provider_by_local_class
 import pcapi.core.users.models as users_models
+from pcapi.domain import music_types
 from pcapi.models import db
 from pcapi.models import feature
 from pcapi.models import offer_mixin
@@ -66,7 +72,7 @@ from pcapi.workers import push_notification_job
 from . import exceptions
 from . import models
 from . import repository as offers_repository
-from . import serialize as offers_serialize
+from . import schemas
 from . import validation
 
 
@@ -75,7 +81,6 @@ logger = logging.getLogger(__name__)
 AnyOffer = educational_api_offer.AnyCollectiveOffer | models.Offer
 
 OFFERS_RECAP_LIMIT = 501
-STOCK_LIMIT_TO_DELETE = 50
 
 
 OFFER_LIKE_MODELS = {
@@ -90,6 +95,14 @@ class T_UNCHANGED(enum.Enum):
 
 
 UNCHANGED = T_UNCHANGED.TOKEN
+
+
+@dataclasses.dataclass
+class StocksStats:
+    oldest_stock: datetime.datetime | None
+    newest_stock: datetime.datetime | None
+    stock_count: int | None
+    remaining_quantity: int | None
 
 
 def build_new_offer_from_product(
@@ -113,6 +126,22 @@ def build_new_offer_from_product(
     )
 
 
+def deserialize_extra_data(initial_extra_data: typing.Any) -> typing.Any:
+    extra_data: dict = initial_extra_data
+    if not extra_data:
+        return None
+    # FIXME (ghaliela, 2024-02-16): If gtl id is sent in the extra data, musicType and musicSubType are not sent
+    if extra_data.get("gtl_id"):
+        extra_data["musicType"] = str(music_types.MUSIC_TYPES_BY_SLUG[MUSIC_SLUG_BY_GTL_ID[extra_data["gtl_id"]]].code)
+        extra_data["musicSubType"] = str(
+            music_types.MUSIC_SUB_TYPES_BY_SLUG[MUSIC_SLUG_BY_GTL_ID[extra_data["gtl_id"]]].code
+        )
+    # FIXME (ghaliela, 2024-02-16): If musicType is sent in the extra data, gtl id is not sent
+    elif extra_data.get("musicType"):
+        extra_data["gtl_id"] = GTL_IDS_BY_MUSIC_GENRE_CODE[int(extra_data["musicType"])]
+    return extra_data
+
+
 def _format_extra_data(subcategory_id: str, extra_data: dict[str, typing.Any] | None) -> models.OfferExtraData | None:
     """Keep only the fields that are defined in the subcategory conditional fields"""
     if extra_data is None:
@@ -126,6 +155,115 @@ def _format_extra_data(subcategory_id: str, extra_data: dict[str, typing.Any] | 
             formatted_extra_data[field_name] = extra_data.get(field_name)  # type: ignore[literal-required]
 
     return formatted_extra_data
+
+
+def create_draft_offer(body: schemas.PostDraftOfferBodyModel, venue: offerers_models.Venue) -> models.Offer:
+    validation.check_offer_subcategory_is_valid(body.subcategory_id)
+
+    fields = {key: value for key, value in body.dict(by_alias=True).items() if key != "venueId"}
+    offer = models.Offer(
+        **fields,
+        venue=venue,
+        offererAddress=venue.offererAddress,
+        isActive=False,
+        validation=models.OfferValidationStatus.DRAFT,
+    )
+    db.session.add(offer)
+
+    update_external_pro(venue.bookingEmail)
+
+    return offer
+
+
+def _get_field(obj: typing.Any, aliases: set, updates: dict, field: str) -> typing.Any:
+    if field not in aliases:
+        raise ValueError(f"Unknown schema field: {field}")
+    return updates.get(field, getattr(obj, field))
+
+
+def update_draft_offer(offer: models.Offer, body: schemas.PatchDraftOfferBodyModel) -> models.Offer:
+    fields = body.dict(by_alias=True, exclude_unset=True)
+    updates = {key: value for key, value in fields.items() if getattr(offer, key) != value}
+    if not updates:
+        return offer
+
+    for key, value in updates.items():
+        setattr(offer, key, value)
+    db.session.add(offer)
+
+    return offer
+
+
+def update_draft_offer_useful_informations(
+    offer: models.Offer,
+    body: schemas.PatchDraftOfferUsefulInformationsBodyModel,
+    is_from_private_api: bool = False,
+) -> models.Offer:
+    aliases = set(body.dict(by_alias=True))
+    fields = body.dict(by_alias=True, exclude_unset=True)
+
+    _extra_data = deserialize_extra_data(fields.get("extraData", offer.extraData))
+    fields["extraData"] = _format_extra_data(offer.subcategoryId, _extra_data) or {}
+
+    should_send_mail = fields.pop("shouldSendMail", False)
+    updates = {key: value for key, value in fields.items() if getattr(offer, key) != value}
+    if not updates:
+        return offer
+
+    audio_disability_compliant = _get_field(offer, aliases, updates, "audioDisabilityCompliant")
+    mental_disability_compliant = _get_field(offer, aliases, updates, "mentalDisabilityCompliant")
+    motor_disability_compliant = _get_field(offer, aliases, updates, "motorDisabilityCompliant")
+    visual_disability_compliant = _get_field(offer, aliases, updates, "visualDisabilityCompliant")
+    booking_contact = _get_field(offer, aliases, updates, "bookingContact")
+    extra_data = _get_field(offer, aliases, updates, "extraData")
+    is_duo = _get_field(offer, aliases, updates, "isDuo")
+    withdrawal_delay = _get_field(offer, aliases, updates, "withdrawalDelay")
+    withdrawal_type = _get_field(offer, aliases, updates, "withdrawalType")
+
+    validation.check_validation_status(offer)
+    validation.check_accessibility_compliance(
+        audio_disability_compliant, mental_disability_compliant, motor_disability_compliant, visual_disability_compliant
+    )
+    validation.check_offer_extra_data(
+        offer.subcategoryId,
+        extra_data,
+        offer.venue,
+        is_from_private_api,
+        offer,
+    )
+    validation.check_is_duo_compliance(
+        is_duo,
+        offer.subcategory,
+    )
+    validation.check_offer_withdrawal(
+        withdrawal_type,
+        withdrawal_delay,
+        offer.subcategoryId,
+        booking_contact,
+        offer.lastProvider,
+    )
+    validation.check_digital_offer_fields(offer)
+
+    if offer.is_soft_deleted():
+        raise pc_object.DeletedRecordException()
+
+    for key, value in updates.items():
+        setattr(offer, key, value)
+
+    db.session.add(offer)
+
+    withdrawal_fields = ("withdrawalType", "withdrawalDelay", "bookingContact", "withdrawalDetails")
+    withdrawal_updated = set(updates).intersection(withdrawal_fields)
+    if should_send_mail and withdrawal_updated:
+        transactional_mails.send_email_for_each_ongoing_booking(offer)
+
+    search.async_index_offer_ids(
+        [offer.id],
+        reason=search.IndexationReason.OFFER_UPDATE,
+        log_extra={"changes": set(updates)},
+    )
+
+    return offer
 
 
 def create_offer(
@@ -144,6 +282,7 @@ def create_offer(
     extra_data: dict | None = None,
     is_duo: bool | None = None,
     is_national: bool | None = None,
+    offerer_address: offerers_models.OffererAddress | None = None,
     provider: providers_models.Provider | None = None,
     url: str | None = None,
     withdrawal_delay: int | None = None,
@@ -151,8 +290,11 @@ def create_offer(
     withdrawal_type: models.WithdrawalTypeEnum | None = None,
     is_from_private_api: bool = False,
     id_at_provider: str | None = None,
+    venue_provider: providers_models.VenueProvider | None = None,
 ) -> models.Offer:
-    validation.check_offer_withdrawal(withdrawal_type, withdrawal_delay, subcategory_id, booking_contact, provider)
+    validation.check_offer_withdrawal(
+        withdrawal_type, withdrawal_delay, subcategory_id, booking_contact, provider, venue_provider
+    )
     validation.check_offer_subcategory_is_valid(subcategory_id)
     formatted_extra_data = _format_extra_data(subcategory_id, extra_data)
     validation.check_offer_extra_data(subcategory_id, formatted_extra_data, venue, is_from_private_api)
@@ -185,7 +327,8 @@ def create_offer(
         withdrawalDelay=withdrawal_delay,
         withdrawalDetails=withdrawal_details,
         withdrawalType=withdrawal_type,
-        offererAddress=venue.offererAddress,
+        # WARNING: quid des offres numériques ici ?
+        offererAddress=offerer_address or venue.offererAddress,
         idAtProvider=id_at_provider,
     )
     repository.add_to_session(offer)
@@ -225,6 +368,7 @@ def update_offer(
     shouldSendMail: bool = False,
     is_from_private_api: bool = False,
     idAtProvider: str | None | T_UNCHANGED = UNCHANGED,
+    offererAddress: offerers_models.OffererAddress | None | T_UNCHANGED = UNCHANGED,
 ) -> models.Offer:
     modifications = {
         field: new_value
@@ -1255,13 +1399,29 @@ def get_shows_remaining_places_from_provider(provider_class: str | None, offer: 
     raise ValueError(f"Unknown Provider: {provider_class}")
 
 
+def _should_try_to_update_offer_stock_quantity(offer: models.Offer) -> bool:
+    # The offer is to update only if it is a cinema offer, and if the venue has a cinema provider
+    if not offer.subcategory.id == subcategories.SEANCE_CINE.id:
+        return False
+
+    offer_venue_providers = offer.venue.venueProviders
+    for venue_provider in offer_venue_providers:
+        if venue_provider.isFromCinemaProvider:
+            return True
+
+    return False
+
+
 def update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer: models.Offer) -> None:
+    if not _should_try_to_update_offer_stock_quantity(offer):
+        return
     try:
         venue_provider = external_bookings_api.get_active_cinema_venue_provider(offer.venueId)
         validation.check_offer_is_from_current_cinema_provider(offer)
     except (exceptions.UnexpectedCinemaProvider, providers_exceptions.InactiveProvider):
         offer.isActive = False
-        repository.save(offer)
+        db.session.add(offer)
+        db.session.flush()
         search.async_index_offer_ids(
             [offer.id],
             reason=search.IndexationReason.CINEMA_STOCK_QUANTITY_UPDATE,
@@ -1282,7 +1442,7 @@ def update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer:
         # If we can't retrieve the stocks from the provider, we stop here to avoid breaking the code following this function
         # This is not ideal, I believe this function should be called on its own, or asynchronously
         # However this means frontend code (probably) so this temporarily fixes crashes for end users
-        # TODO: (lixxday, 29/05/2024): remove this try/catch when th function is no longer called directly in GET /offer route
+        # TODO: (lixxday, 29/05/2024): remove this try/catch when the function is no longer called directly in GET /offer route
         logger.exception(
             "Failed to get shows remaining places from provider",
             extra={"offer": offer.id, "provider": venue_provider.provider.localClass, "error": e},
@@ -1332,7 +1492,8 @@ def update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer:
         # to prevent a duo booking to fail
         if remaining_places == 1:
             stock.quantity = stock.dnBookedQuantity + 1
-            repository.save(stock)
+            db.session.add(stock)
+            db.session.flush()
 
         logger.info(
             "Successfully updated stock quantity",
@@ -1349,6 +1510,8 @@ def update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer:
             reason=search.IndexationReason.CINEMA_STOCK_QUANTITY_UPDATE,
             log_extra={"sold_out": True},
         )
+
+    return
 
 
 def whitelist_product(idAtProviders: str) -> models.Product | None:
@@ -1523,7 +1686,7 @@ def approves_provider_product_and_rejected_offers(ean: str) -> None:
         raise exceptions.NotUpdateProductOrOffers(exception)
 
 
-def get_stocks_stats(offer_id: int) -> offers_serialize.StocksStats:
+def get_stocks_stats(offer_id: int) -> StocksStats:
     data = (
         models.Stock.query.with_entities(
             sa.func.min(models.Stock.beginningDatetime),
@@ -1546,7 +1709,7 @@ def get_stocks_stats(offer_id: int) -> offers_serialize.StocksStats:
         .one_or_none()
     )
     try:
-        return offers_serialize.StocksStats(*data)
+        return StocksStats(*data)
     except TypeError:
         raise ApiErrors(
             errors={
@@ -1824,3 +1987,64 @@ def update_used_stock_price(stock: models.Stock, new_price: float) -> None:
             event=first_finance_event,
             reason=finance_models.PricingLogReason.CHANGE_AMOUNT,
         )
+
+
+def upsert_movie_product_from_provider(
+    movie: offers_models.Movie, provider: providers_models.Provider, id_at_providers: str
+) -> offers_models.Product | None:
+    if not movie.allocine_id and not movie.visa:
+        logger.warning("Cannot create a movie product without allocineId nor visa")
+        return None
+
+    existing_product = None
+    if movie.allocine_id:
+        existing_product = offers_repository.get_movie_product_by_allocine_id(movie.allocine_id)
+    if not existing_product and movie.visa:
+        existing_product = offers_repository.get_movie_product_by_visa(movie.visa)
+
+    with transaction():
+        if existing_product:
+            if _is_allocine(provider.id) or provider.id == existing_product.lastProviderId:
+                _update_movie_product(existing_product, movie, provider.id, id_at_providers)
+            return existing_product
+
+        product = offers_models.Product(
+            description=movie.description,
+            durationMinutes=movie.duration,
+            extraData=None,
+            idAtProviders=id_at_providers,
+            lastProviderId=provider.id,
+            name=movie.title,
+            subcategoryId=subcategories.SEANCE_CINE.id,
+        )
+        _update_product_extra_data(product, movie)
+        db.session.add(product)
+    return product
+
+
+def _is_allocine(provider_id: int) -> bool:
+    allocine_products_provider_id = get_allocine_products_provider().id
+    allocine_stocks_provider_id = get_provider_by_local_class("AllocineStocks").id
+    return provider_id in (allocine_products_provider_id, allocine_stocks_provider_id)
+
+
+def _update_movie_product(
+    product: offers_models.Product, movie: offers_models.Movie, provider_id: int, id_at_providers: str
+) -> None:
+    product.description = movie.description
+    product.durationMinutes = movie.duration
+    product.idAtProviders = id_at_providers
+    product.lastProviderId = provider_id
+    product.name = movie.title
+    _update_product_extra_data(product, movie)
+
+
+def _update_product_extra_data(product: offers_models.Product, movie: offers_models.Movie) -> None:
+    product.extraData = product.extraData or offers_models.OfferExtraData()
+    extra_data = movie.extra_data or offers_models.OfferExtraData()
+    if movie.allocine_id:
+        extra_data["allocineId"] = int(movie.allocine_id)
+    if movie.visa:
+        extra_data["visa"] = movie.visa
+
+    product.extraData.update((key, value) for key, value in extra_data.items() if value is not None)  # type: ignore[typeddict-item]

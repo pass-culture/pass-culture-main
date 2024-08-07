@@ -19,6 +19,7 @@ export const Thumb = ({ url = '', className }: ThumbProps) => {
           className={cn(styles['offer-thumb'], className)}
           loading="lazy"
           src={url}
+          alt=""
         />
       ) : (
         <SvgIcon

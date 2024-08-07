@@ -196,6 +196,22 @@ def format_reason_label(reason: str | None) -> str:
     return ""
 
 
+def format_offerer_rejection_reason(rejection_reason: offerers_models.OffererRejectionReason | str) -> str:
+    match rejection_reason:
+        case offerers_models.OffererRejectionReason.ELIGIBILITY | "ELIGIBILITY":
+            return "Le compte pro n'est pas éligible"
+        case offerers_models.OffererRejectionReason.ERROR | "ERROR":
+            return "Activité non éligible, ce compte ne semble pas être un compte pro"
+        case offerers_models.OffererRejectionReason.ADAGE_DECLINED | "ADAGE_DECLINED":
+            return "Refus Adage"
+        case offerers_models.OffererRejectionReason.OUT_OF_TIME | "OUT_OF_TIME":
+            return "Inscription hors délai de réponse de 60 jours"
+        case offerers_models.OffererRejectionReason.OTHER | "OTHER":
+            return "Autre"
+        case _:
+            return rejection_reason
+
+
 def format_booking_cancellation_reason(
     reason: bookings_models.BookingCancellationReasons | educational_models.CollectiveBookingCancellationReasons | None,
 ) -> str:
@@ -616,6 +632,22 @@ def _format_modified_info_value(value: typing.Any, name: str | None = None) -> s
     if isinstance(value, bool):
         return format_bool(value)
     return str(value)
+
+
+def format_pivot_name(pivot_name: str) -> str:
+    match pivot_name:
+        case "allocine":
+            return "Allociné"
+        case "boost":
+            return "Boost"
+        case "cgr":
+            return "CGR"
+        case "cineoffice":
+            return "CineOffice"
+        case "ems":
+            return "EMS"
+        case _:
+            return pivot_name
 
 
 def format_modified_info_values(modified_info: typing.Any, name: str | None = None) -> str:
@@ -1205,6 +1237,7 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_offer_status"] = format_offer_status
     app.jinja_env.filters["format_offer_category"] = format_offer_category
     app.jinja_env.filters["format_offer_subcategory"] = format_offer_subcategory
+    app.jinja_env.filters["format_offerer_rejection_reason"] = format_offerer_rejection_reason
     app.jinja_env.filters["format_collective_offer_formats"] = format_collective_offer_formats
     app.jinja_env.filters["format_subcategories"] = format_subcategories
     app.jinja_env.filters["format_as_badges"] = format_as_badges
@@ -1242,6 +1275,7 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_offer_types"] = format_offer_types
     app.jinja_env.filters["format_website"] = format_website
     app.jinja_env.filters["format_venue_target"] = format_venue_target
+    app.jinja_env.filters["format_pivot_name"] = format_pivot_name
     app.jinja_env.filters["format_titelive_id_lectorat"] = format_titelive_id_lectorat
     app.jinja_env.filters["format_date_range"] = format_date_range
     app.jinja_env.filters["parse_referrer"] = parse_referrer

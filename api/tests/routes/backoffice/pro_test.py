@@ -839,6 +839,7 @@ class CreateOffererTest(PostEndpointHelper):
 
         assert response.location == url_for("backoffice_web.offerer.get", offerer_id=new_offerer.id, _external=True)
 
+    @override_features(ENABLE_ADDRESS_WRITING_WHILE_CREATING_UPDATING_VENUE=False)
     def test_create_offerer_without_double_model_writing(self, legit_user, authenticated_client, non_diffusible_tag):
         user = users_factories.NonAttachedProFactory()
 

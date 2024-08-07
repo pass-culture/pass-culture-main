@@ -488,6 +488,7 @@ class EventOfferCreation(OfferCreationBase):
     has_ticket: bool = fields.EVENT_HAS_TICKET
     price_categories: list[PriceCategoryCreation] | None = fields.PRICE_CATEGORIES
     publication_date: datetime.datetime | None = fields.OFFER_PUBLICATION_DATE
+    enable_double_bookings: bool | None = fields.OFFER_ENABLE_DOUBLE_BOOKINGS_ENABLED
 
     @pydantic_v1.validator("price_categories")
     def get_unique_price_categories(

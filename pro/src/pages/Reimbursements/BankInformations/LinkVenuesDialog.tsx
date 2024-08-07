@@ -120,14 +120,14 @@ export const LinkVenuesDialog = ({
   return (
     <>
       <DialogBox
-        labelledBy="link-venues-dialog"
+        labelledBy="bank-account"
         extraClassNames={cn(styles['dialog'], {
           [styles['dialog-with-banner']]: hasVenuesWithoutPricingPoint,
         })}
         hasCloseButton={true}
         onDismiss={onCancel}
       >
-        <h1 className={styles['dialog-title']}>
+        <h1 id="bank-account" className={styles['dialog-title']}>
           Compte bancaire : {selectedBankAccount.label}
         </h1>
         {hasVenuesWithoutPricingPoint && (

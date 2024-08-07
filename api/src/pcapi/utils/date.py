@@ -83,7 +83,7 @@ class FrenchParserInfo(parserinfo):
 
 
 def format_datetime(date_time: datetime) -> str:
-    return babel_format_datetime(date_time, format="long", locale="fr")[:-9]
+    return babel_format_datetime(date_time, format="d MMMM y, HH:mm", locale="fr")
 
 
 def get_postal_code_timezone(postal_code: str) -> str:
@@ -105,10 +105,6 @@ def utc_datetime_to_department_timezone(date_time: datetime, departement_code: s
 
 def format_into_utc_date(date_to_format: datetime) -> str:
     return date_to_format.isoformat() + "Z"
-
-
-def isoformat(date_to_format: datetime | date) -> str:
-    return date_to_format.isoformat()
 
 
 def get_date_formatted_for_email(date_time: datetime) -> str:
@@ -224,5 +220,5 @@ def numranges_to_readble_str(numranges: list[NumericRange] | None) -> str:
 
 def days_ago_timestamp(days: int) -> int:
     """Get a timestamp from a date `days` ago"""
-    days_ago = datetime.now(tz.utc) - timedelta(days=2)  # pylint: disable=datetime-now
+    days_ago = datetime.now(tz.utc) - timedelta(days=days)  # pylint: disable=datetime-now
     return int(days_ago.timestamp())

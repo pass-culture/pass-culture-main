@@ -1,11 +1,13 @@
 from datetime import date
 from datetime import datetime
 import logging
+from typing import Any
 from typing import Callable
 from typing import TypeVar
 
 from pydantic.v1.class_validators import validator
 from pydantic.v1.fields import Field
+from pydantic.v1.utils import GetterDict
 
 from pcapi.core.bookings.api import compute_booking_cancellation_limit_date
 from pcapi.core.categories import subcategories_v2 as subcategories
@@ -16,9 +18,9 @@ from pcapi.core.offers.api import get_expense_domains
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Reason
 from pcapi.core.offers.models import ReasonMeta
-from pcapi.core.offers.models import Stock
 from pcapi.core.providers import constants as provider_constants
 from pcapi.core.providers.titelive_gtl import GTLS
+from pcapi.core.reactions.models import ReactionTypeEnum
 from pcapi.core.users.models import ExpenseDomain
 from pcapi.domain.movie_types import get_movie_label
 from pcapi.domain.music_types import MUSIC_SUB_TYPES_LABEL_BY_CODE
@@ -27,6 +29,7 @@ from pcapi.domain.show_types import SHOW_SUB_TYPES_LABEL_BY_CODE
 from pcapi.domain.show_types import SHOW_TYPES_LABEL_BY_CODE
 from pcapi.routes.native.v1.serialization.common_models import Coordinates
 from pcapi.routes.serialization import BaseModel
+from pcapi.routes.serialization import ConfiguredBaseModel
 from pcapi.routes.shared.price import convert_to_cent
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
@@ -46,7 +49,31 @@ class OfferStockActivationCodeResponse(BaseModel):
     expirationDate: datetime | None
 
 
-class OfferStockResponse(BaseModel):
+class OfferStockResponseGetterDict(GetterDict):
+    def get(self, key: str, default: Any = None) -> Any:
+        stock = self._obj
+        if key == "cancellation_limit_datetime":
+            return compute_booking_cancellation_limit_date(stock.beginningDatetime, datetime.utcnow())
+
+        if key == "activationCode":
+            if not stock.canHaveActivationCodes:
+                return None
+            # here we have N+1 requests (for each stock we query an activation code)
+            # but it should be more efficient than loading all activationCodes of all stocks
+            activation_code = offers_repository.get_available_activation_code(stock)
+            if not activation_code:
+                return None
+            return {"expirationDate": activation_code.expirationDate}
+
+        if key == "priceCategoryLabel":
+            if price_category := stock.priceCategory:
+                return price_category.priceCategoryLabel.label
+            return None
+
+        return super().get(key, default)
+
+
+class OfferStockResponse(ConfiguredBaseModel):
     id: int
     beginningDatetime: datetime | None
     bookingLimitDatetime: datetime | None
@@ -69,36 +96,7 @@ class OfferStockResponse(BaseModel):
     )(lambda quantity: quantity if quantity != "unlimited" else None)
 
     class Config:
-        orm_mode = True
-        alias_generator = to_camel
-        allow_population_by_field_name = True
-
-    @staticmethod
-    def _get_cancellation_limit_datetime(stock: Stock) -> datetime | None:
-        # compute date as if it were booked now
-        return compute_booking_cancellation_limit_date(stock.beginningDatetime, datetime.utcnow())
-
-    @staticmethod
-    def _get_non_scrappable_activation_code(stock: Stock) -> dict | None:
-        if not stock.canHaveActivationCodes:
-            return None
-        # here we have N+1 requests (for each stock we query an activation code)
-        # but it should be more efficient than loading all activationCodes of all stocks
-        activation_code = offers_repository.get_available_activation_code(stock)
-        if not activation_code:
-            return None
-        return {"expirationDate": activation_code.expirationDate}
-
-    @classmethod
-    def from_orm(cls, stock: Stock) -> "OfferStockResponse":
-        stock.cancellation_limit_datetime = cls._get_cancellation_limit_datetime(stock)
-        stock.activationCode = cls._get_non_scrappable_activation_code(stock)
-        stock_response = super().from_orm(stock)
-
-        price_category = getattr(stock, "priceCategory", None)
-        stock_response.priceCategoryLabel = price_category.priceCategoryLabel.label if price_category else None
-
-        return stock_response
+        getter_dict = OfferStockResponseGetterDict
 
 
 class OfferVenueResponse(BaseModel):
@@ -226,43 +224,70 @@ def get_gtl_labels(gtl_id: str) -> GtlLabels | None:
 BaseOfferResponseType = TypeVar("BaseOfferResponseType", bound="BaseOfferResponse")
 
 
-class BaseOfferResponse(BaseModel):
-    @classmethod
-    def from_orm(cls: type[BaseOfferResponseType], offer: Offer) -> BaseOfferResponseType:
-        offer.accessibility = {
-            "audioDisability": offer.audioDisabilityCompliant,
-            "mentalDisability": offer.mentalDisabilityCompliant,
-            "motorDisability": offer.motorDisabilityCompliant,
-            "visualDisability": offer.visualDisabilityCompliant,
-        }
-        offer.expense_domains = get_expense_domains(offer)
-        offer.isExpired = offer.hasBookingLimitDatetimesPassed
-        offer.metadata = offer_metadata.get_metadata_from_offer(offer)
-        offer.isExternalBookingsDisabled = False
-        if offer.lastProvider and offer.lastProvider.localClass in provider_constants.PROVIDER_LOCAL_CLASS_TO_FF:
-            offer.isExternalBookingsDisabled = provider_constants.PROVIDER_LOCAL_CLASS_TO_FF[
-                offer.lastProvider.localClass
-            ].is_active()
+class ReactionCount(BaseModel):
+    likes: int
 
-        result = super().from_orm(offer)
 
-        if result.extraData:
-            result.extraData.durationMinutes = offer.durationMinutes
+class BaseOfferResponseGetterDict(GetterDict):
+    def get(self, key: str, default: Any = None) -> Any:
+        offer = self._obj
+        product = offer.product
+        if key == "reactions_count":
+            if product:
+                likes = sum(1 for reaction in product.reactions if reaction.reactionType == ReactionTypeEnum.LIKE)
+            else:
+                likes = sum(1 for reaction in offer.reactions if reaction.reactionType == ReactionTypeEnum.LIKE)
+            return ReactionCount(likes=likes)
 
-            if offer.extraData:
-                gtl_id = offer.extraData.get("gtl_id")
-                if gtl_id is not None:
-                    result.extraData.gtlLabels = get_gtl_labels(gtl_id)
-        else:
-            result.extraData = OfferExtraData(durationMinutes=offer.durationMinutes)  # type: ignore[call-arg]
+        if key == "accessibility":
+            return {
+                "audioDisability": offer.audioDisabilityCompliant,
+                "mentalDisability": offer.mentalDisabilityCompliant,
+                "motorDisability": offer.motorDisabilityCompliant,
+                "visualDisability": offer.visualDisabilityCompliant,
+            }
 
-        if offer.product:
-            result.last30DaysBookings = offer.product.last_30_days_booking
+        if key == "expense_domains":
+            return get_expense_domains(offer)
 
-        result.stocks = [OfferStockResponse.from_orm(stock) for stock in offer.activeStocks]
+        if key == "isExpired":
+            return offer.hasBookingLimitDatetimesPassed
 
-        return result
+        if key == "metadata":
+            return offer_metadata.get_metadata_from_offer(offer)
 
+        if key == "isExternalBookingsDisabled":
+            if offer.lastProvider and offer.lastProvider.localClass in provider_constants.PROVIDER_LOCAL_CLASS_TO_FF:
+                return provider_constants.PROVIDER_LOCAL_CLASS_TO_FF[offer.lastProvider.localClass].is_active()
+
+            return False
+
+        if key == "last30DaysBookings":
+            return offer.product.last_30_days_booking if offer.product else None
+
+        if key == "stocks":
+            return [OfferStockResponse.from_orm(stock) for stock in offer.activeStocks]
+
+        if key == "extraData":
+            if not offer.extraData:
+                extraData = OfferExtraData()  # type: ignore[call-arg]
+            else:
+                extraData = OfferExtraData.parse_obj(offer.extraData)
+
+            # insert the durationMinutes in the extraData
+            extraData.durationMinutes = offer.durationMinutes
+
+            # insert the GLT labels in the extraData
+            gtl_id = offer.extraData.get("gtl_id") if offer.extraData else None
+            if gtl_id is not None:
+                extraData.gtlLabels = get_gtl_labels(gtl_id)
+
+            return extraData
+
+        return super().get(key, default)
+
+
+class BaseOfferResponse(ConfiguredBaseModel):
     id: int
     accessibility: OfferAccessibilityResponse
     description: str | None
@@ -280,16 +305,14 @@ class BaseOfferResponse(BaseModel):
     last30DaysBookings: int | None
     metadata: offer_metadata.Metadata
     name: str
+    reactions_count: ReactionCount
     stocks: list[OfferStockResponse]
     subcategoryId: subcategories.SubcategoryIdEnum
     venue: OfferVenueResponse
     withdrawalDetails: str | None
 
     class Config:
-        orm_mode = True
-        alias_generator = to_camel
-        allow_population_by_field_name = True
-        json_encoders = {datetime: format_into_utc_date}
+        getter_dict = BaseOfferResponseGetterDict
 
 
 class OfferResponse(BaseOfferResponse):

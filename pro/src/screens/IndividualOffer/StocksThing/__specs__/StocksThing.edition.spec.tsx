@@ -7,6 +7,7 @@ import { api } from 'apiClient/api'
 import {
   ApiError,
   GetIndividualOfferResponseModel,
+  GetIndividualOfferWithAddressResponseModel,
   OfferStatus,
   SubcategoryIdEnum,
 } from 'apiClient/v1'
@@ -83,7 +84,7 @@ const renderStockThingScreen = () =>
   )
 
 describe('screens:StocksThing', () => {
-  let apiOffer: GetIndividualOfferResponseModel
+  let apiOffer: GetIndividualOfferWithAddressResponseModel
   const stockToDelete = getOfferStockFactory({
     beginningDatetime: '2022-05-23T08:25:31.009799Z',
     bookingLimitDatetime: '2022-05-23T07:25:31.009799Z',
@@ -105,6 +106,7 @@ describe('screens:StocksThing', () => {
       durationMinutes: null,
       extraData: null,
       hasBookingLimitDatetimesPassed: true,
+      hasPendingBookings: false,
       hasStocks: true,
       isActive: true,
       isActivable: true,

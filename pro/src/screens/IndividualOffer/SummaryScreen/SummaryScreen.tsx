@@ -1,5 +1,6 @@
 import { Form, FormikProvider, useFormik } from 'formik'
 import React, { useState } from 'react'
+import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { useSWRConfig } from 'swr'
 
@@ -25,6 +26,7 @@ import { useNotification } from 'hooks/useNotification'
 import { useOfferWizardMode } from 'hooks/useOfferWizardMode'
 import phoneStrokeIcon from 'icons/stroke-phone.svg'
 import { RedirectToBankAccountDialog } from 'screens/Offers/RedirectToBankAccountDialog'
+import { selectCurrentOffererId } from 'store/user/selectors'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { getOfferConditionalFields } from 'utils/getOfferConditionalFields'
@@ -49,7 +51,7 @@ export const SummaryScreen = () => {
   const navigate = useNavigate()
   const { offer, subCategories } = useIndividualOfferContext()
   const { logEvent } = useAnalytics()
-
+  const selectedOffererId = useSelector(selectCurrentOffererId)
   const showEventPublicationForm = Boolean(offer?.isEvent)
 
   const onPublish = async (values: EventPublicationFormValues) => {
@@ -219,6 +221,7 @@ export const SummaryScreen = () => {
                     isDraft: false,
                     offerId: offer.id,
                     offerType: 'individual',
+                    offererId: selectedOffererId?.toString(),
                   })
                 }
               >

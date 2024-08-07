@@ -12,8 +12,8 @@ import {
   defaultDMSApplicationForEAC,
 } from 'utils/collectiveApiFactories'
 import {
-  defaultGetOffererVenueResponseModel,
   defaultGetOffererResponseModel,
+  defaultGetOffererVenueResponseModel,
   getOffererNameFactory,
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
@@ -60,6 +60,9 @@ const renderOfferTypes = (structureId?: string, venueId?: string) => {
       />
     </Routes>,
     {
+      storeOverrides: {
+        user: { currentUser: sharedCurrentUserFactory(), selectedOffererId: 1 },
+      },
       user: sharedCurrentUserFactory(),
       initialRouterEntries: [
         `/creation${
@@ -260,6 +263,7 @@ describe('OfferType', () => {
           offerType: expectedSearch,
           to: 'informations',
           used: 'StickyButtons',
+          offererId: '1',
         }
       )
     }

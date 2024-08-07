@@ -8,13 +8,25 @@ from sqlalchemy import or_
 import sqlalchemy.orm as sqla_orm
 
 from pcapi.core.categories import subcategories_v2 as subcategories
-from pcapi.core.external_bookings import exceptions as external_bookings_exceptions
 from pcapi.core.offerers.models import Venue
 import pcapi.core.offers.models as offers_models
 from pcapi.models import db
 
 from . import constants
 from . import models
+
+
+def get_venue_provider_permission_or_none(
+    venue_provider_id: int,
+    resource: models.ApiResourceEnum,
+    permission: models.PermissionEnum,
+) -> models.VenueProviderPermission | None:
+    return (
+        models.VenueProviderPermission.query.filter(models.VenueProviderPermission.venueProviderId == venue_provider_id)
+        .filter(models.VenueProviderPermission.resource == resource)
+        .filter(models.VenueProviderPermission.permission == permission)
+        .one_or_none()
+    )
 
 
 def get_venue_provider_by_id(venue_provider_id: int) -> models.VenueProvider:
@@ -192,20 +204,6 @@ def is_cinema_external_ticket_applicable(offer: offers_models.Offer) -> bool:
         and offer.lastProviderId
         and db.session.query(get_cinema_venue_provider_query(offer.venueId).exists()).scalar()
     )
-
-
-def is_event_external_ticket_applicable(offer: offers_models.Offer) -> bool:
-    if offer.isEvent and offer.withdrawalType == offers_models.WithdrawalTypeEnum.IN_APP:
-        if not (
-            offer.lastProvider is not None
-            and offer.lastProvider.isActive
-            and offer.lastProvider.hasProviderEnableCharlie
-        ):
-            raise external_bookings_exceptions.ExternalBookingException(
-                "Offer provider is inactive or not charlie enabled"
-            )
-        return True
-    return False
 
 
 def get_providers_venues(provider_id: int) -> BaseQuery:

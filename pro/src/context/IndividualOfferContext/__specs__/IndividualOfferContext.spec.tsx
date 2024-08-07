@@ -1,13 +1,14 @@
 import { waitFor } from '@testing-library/react'
 
 import { api } from 'apiClient/api'
-import { GetIndividualOfferResponseModel } from 'apiClient/v1'
+import { GetIndividualOfferWithAddressResponseModel } from 'apiClient/v1'
 import { getIndividualOfferFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { IndividualOfferContextProvider } from '../IndividualOfferContext'
 
-const apiOffer: GetIndividualOfferResponseModel = getIndividualOfferFactory()
+const apiOffer: GetIndividualOfferWithAddressResponseModel =
+  getIndividualOfferFactory()
 
 const renderIndividualOfferContextProvider = () =>
   renderWithProviders(

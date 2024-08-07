@@ -8,7 +8,6 @@ import {
   VenueListItemResponseModel,
 } from 'apiClient/v1'
 import { showOptionsTree } from 'core/Offers/categoriesSubTypes'
-import { OfferExtraData } from 'core/Offers/types'
 import { isOfferSynchronized } from 'core/Offers/utils/synchronization'
 import { SelectOption } from 'custom_types/form'
 import { computeVenueDisplayName } from 'repository/venuesService'
@@ -228,9 +227,9 @@ export function setDefaultInitialValuesFromOffer({
     venueId: String(offer.venue.id),
     categoryId: subcategory.categoryId,
     subcategoryId: offer.subcategoryId,
-    showType: offer.extraData.showType ?? DEFAULT_DETAILS_FORM_VALUES.showType,
+    showType: offer.extraData?.showType ?? DEFAULT_DETAILS_FORM_VALUES.showType,
     showSubType:
-      offer.extraData.showSubType ?? DEFAULT_DETAILS_FORM_VALUES.showSubType,
+      offer.extraData?.showSubType ?? DEFAULT_DETAILS_FORM_VALUES.showSubType,
     subcategoryConditionalFields: subcategoryConditionalFields,
     durationMinutes: offer.durationMinutes
       ? deSerializeDurationMinutes(offer.durationMinutes)
@@ -256,10 +255,10 @@ export function deSerializeDurationMinutes(durationMinute: number): string {
 
 export const serializeDurationMinutes = (
   durationHour: string
-): number | null => {
+): number | undefined => {
   /* istanbul ignore next: DEBT, TO FIX */
   if (durationHour.trim().length === 0) {
-    return null
+    return undefined
   }
 
   /* istanbul ignore next: DEBT, TO FIX */
@@ -288,37 +287,36 @@ export function setFormReadOnlyFields(
   return ['categoryId', 'subcategoryId', 'venueId']
 }
 
-export const serializeExtraData = (
-  formValues: DetailsFormValues
-): OfferExtraData => {
-  const extraData: OfferExtraData = {}
-  if (formValues.author) {
-    extraData.author = formValues.author
-  }
-  if (formValues.gtl_id) {
-    extraData.gtl_id = formValues.gtl_id
-  }
-  if (formValues.performer) {
-    extraData.performer = formValues.performer
-  }
-  if (formValues.ean) {
-    extraData.ean = formValues.ean
-  }
-  if (formValues.showType) {
-    extraData.showType = formValues.showType
-  }
-  if (formValues.showSubType) {
-    extraData.showSubType = formValues.showSubType
-  }
-  if (formValues.speaker) {
-    extraData.speaker = formValues.speaker
-  }
-  if (formValues.stageDirector) {
-    extraData.stageDirector = formValues.stageDirector
-  }
-  if (formValues.visa) {
-    extraData.visa = formValues.visa
+export const serializeExtraData = (formValues: DetailsFormValues) => ({
+  author: formValues.author,
+  gtl_id: formValues.gtl_id,
+  performer: formValues.performer,
+  ean: formValues.ean,
+  showType: formValues.showType,
+  showSubType: formValues.showSubType,
+  speaker: formValues.speaker,
+  stageDirector: formValues.stageDirector,
+  visa: formValues.visa,
+})
+
+type Payload = {
+  description?: string
+  durationMinutes?: number
+  extraData?: Record<string, unknown>
+  name: string
+  subcategoryId: string
+  venueId: number
+}
+
+export function serializeDetailsData(formValues: DetailsFormValues): Payload {
+  const payload: Payload = {
+    name: formValues.name,
+    subcategoryId: formValues.subcategoryId,
+    venueId: Number(formValues.venueId),
+    description: formValues.description,
+    durationMinutes: serializeDurationMinutes(formValues.durationMinutes ?? ''),
+    extraData: serializeExtraData(formValues),
   }
 
-  return extraData
+  return payload
 }

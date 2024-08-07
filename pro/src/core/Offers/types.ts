@@ -31,21 +31,6 @@ export interface CategorySubtypeItem {
   }[]
 }
 
-// TODO: this should be generated in openapi schema
-export interface OfferExtraData {
-  author?: string
-  gtl_id?: string
-  musicType?: string
-  musicSubType?: string
-  performer?: string
-  ean?: string
-  showType?: string
-  showSubType?: string
-  speaker?: string
-  stageDirector?: string
-  visa?: string
-}
-
 export interface OfferCollectiveImage {
   url?: string | null
   credit?: string | null

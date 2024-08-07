@@ -43,12 +43,12 @@ export const PeriodSelector = ({
             styles['period-filter-input'],
             styles['field-date-begin']
           )}
-          aria-label="Début de la période"
           disabled={isDisabled}
           maxDate={new Date(periodEndingDate)}
           minDate={minDateBeginning}
           onChange={(event) => onBeginningDateChange(event.target.value)}
           value={periodBeginningDate}
+          id="field-date-begin"
         />
       </div>
 
@@ -63,12 +63,12 @@ export const PeriodSelector = ({
             styles['period-filter-input'],
             styles['field-date-end']
           )}
-          aria-label="Fin de la période"
           disabled={isDisabled}
           maxDate={maxDateEnding}
           minDate={new Date(periodBeginningDate)}
           onChange={(event) => onEndingDateChange(event.target.value)}
           value={periodEndingDate}
+          id="field-date-end"
         />
       </div>
     </div>

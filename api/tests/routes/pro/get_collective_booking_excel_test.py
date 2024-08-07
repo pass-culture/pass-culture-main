@@ -7,6 +7,7 @@ import pytest
 
 from pcapi.core.educational import factories as educational_factories
 import pcapi.core.offerers.factories as offerers_factories
+from pcapi.core.testing import assert_num_queries
 from pcapi.routes.serialization.collective_bookings_serialize import COLLECTIVE_BOOKING_EXPORT_HEADER
 
 
@@ -34,11 +35,13 @@ class Returns200Test:
             educationalInstitution=educational_factories.EducationalInstitutionFactory(),
         )
 
-        response = client.with_session_auth(user_offerer.user.email).get(
-            "/collective/bookings/excel?bookingPeriodBeginningDate=2000-01-01&bookingPeriodEndingDate=2030-01-01"
-        )
+        client = client.with_session_auth(user_offerer.user.email)
+        with assert_num_queries(3):  #  session + user + SELECT DISTINCT collective_booking
+            response = client.get(
+                "/collective/bookings/excel?bookingPeriodBeginningDate=2000-01-01&bookingPeriodEndingDate=2030-01-01"
+            )
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         sheet = reader_from_response(response)
         # Headers
         for i in range(1, len(COLLECTIVE_BOOKING_EXPORT_HEADER)):
@@ -75,11 +78,13 @@ class Returns200Test:
             educationalRedactor__lastName="Cox",
         )
 
-        response = client.with_session_auth(user_offerer.user.email).get(
-            "/collective/bookings/excel?bookingPeriodBeginningDate=2000-01-01&bookingPeriodEndingDate=2030-01-01"
-        )
+        client = client.with_session_auth(user_offerer.user.email)
+        with assert_num_queries(3):  # session + user + SELECT DISTINCT collective_booking
+            response = client.get(
+                "/collective/bookings/excel?bookingPeriodBeginningDate=2000-01-01&bookingPeriodEndingDate=2030-01-01"
+            )
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         sheet = reader_from_response(response)
         # Headers
         for i in range(1, len(COLLECTIVE_BOOKING_EXPORT_HEADER)):
@@ -116,11 +121,13 @@ class Returns200Test:
             educationalRedactor__lastName="Dorian",
         )
 
-        response = client.with_session_auth(user_offerer.user.email).get(
-            "/collective/bookings/excel?bookingPeriodBeginningDate=2000-01-01&bookingPeriodEndingDate=2030-01-01"
-        )
+        client = client.with_session_auth(user_offerer.user.email)
+        with assert_num_queries(3):  #  session + user +  SELECT DISTINCT collective_booking
+            response = client.get(
+                "/collective/bookings/excel?bookingPeriodBeginningDate=2000-01-01&bookingPeriodEndingDate=2030-01-01"
+            )
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         sheet = reader_from_response(response)
         # Headers
         for i in range(1, len(COLLECTIVE_BOOKING_EXPORT_HEADER)):
@@ -161,11 +168,13 @@ class Returns200Test:
             educationalRedactor__lastName="Reid",
         )
 
-        response = client.with_session_auth(user_offerer.user.email).get(
-            "/collective/bookings/excel?bookingPeriodBeginningDate=2015-01-01&bookingPeriodEndingDate=2030-01-01"
-        )
+        client = client.with_session_auth(user_offerer.user.email)
+        with assert_num_queries(3):  #  session + user + SELECT DISTINCT collective_booking
+            response = client.get(
+                "/collective/bookings/excel?bookingPeriodBeginningDate=2015-01-01&bookingPeriodEndingDate=2030-01-01"
+            )
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         sheet = reader_from_response(response)
         # Headers
         for i in range(1, len(COLLECTIVE_BOOKING_EXPORT_HEADER)):
@@ -221,11 +230,13 @@ class Returns200Test:
             ),
         ]
 
-        response = client.with_session_auth(user_offerer.user.email).get(
-            "/collective/bookings/excel?bookingPeriodBeginningDate=2000-01-01&bookingPeriodEndingDate=2030-01-01"
-        )
+        client = client.with_session_auth(user_offerer.user.email)
+        with assert_num_queries(3):  #  session + user + SELECT DISTINCT collective_booking
+            response = client.get(
+                "/collective/bookings/excel?bookingPeriodBeginningDate=2000-01-01&bookingPeriodEndingDate=2030-01-01"
+            )
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         sheet = reader_from_response(response)
         for i in range(2, 5):
             assert sheet.cell(row=i, column=1).value == bookings[i - 2].venue.name
@@ -250,10 +261,13 @@ class Returns200Test:
             offerer=user_offerer.offerer,
         )
 
-        response = client.with_session_auth(user_offerer.user.email).get(
-            "/collective/bookings/excel?bookingPeriodBeginningDate=2000-01-01&bookingPeriodEndingDate=2030-01-01"
-        )
-        assert response.status_code == 200
+        client = client.with_session_auth(user_offerer.user.email)
+        with assert_num_queries(3):  #  session + user + SELECT DISTINCT collective_booking
+            response = client.get(
+                "/collective/bookings/excel?bookingPeriodBeginningDate=2000-01-01&bookingPeriodEndingDate=2030-01-01"
+            )
+            assert response.status_code == 200
+
         sheet = reader_from_response(response)
         assert sheet.cell(row=2, column=10).value == "validé"
 
@@ -268,10 +282,13 @@ class Returns200Test:
             offerer=user_offerer.offerer,
         )
 
-        response = client.with_session_auth(user_offerer.user.email).get(
-            "/collective/bookings/excel?bookingPeriodBeginningDate=2000-01-01&bookingPeriodEndingDate=2030-01-01"
-        )
-        assert response.status_code == 200
+        client = client.with_session_auth(user_offerer.user.email)
+        with assert_num_queries(3):  #  session + user + SELECT DISTINCT collective_booking
+            response = client.get(
+                "/collective/bookings/excel?bookingPeriodBeginningDate=2000-01-01&bookingPeriodEndingDate=2030-01-01"
+            )
+            assert response.status_code == 200
+
         sheet = reader_from_response(response)
         assert sheet.cell(row=2, column=10).value == "remboursé"
 
@@ -284,10 +301,13 @@ class Returns200Test:
             offerer=user_offerer.offerer,
         )
 
-        response = client.with_session_auth(user_offerer.user.email).get(
-            "/collective/bookings/excel?bookingPeriodBeginningDate=2000-01-01&bookingPeriodEndingDate=2030-01-01"
-        )
-        assert response.status_code == 200
+        client = client.with_session_auth(user_offerer.user.email)
+        with assert_num_queries(3):  #  session + user + SELECT DISTINCT collective_booking
+            response = client.get(
+                "/collective/bookings/excel?bookingPeriodBeginningDate=2000-01-01&bookingPeriodEndingDate=2030-01-01"
+            )
+            assert response.status_code == 200
+
         sheet = reader_from_response(response)
         assert sheet.cell(row=2, column=10).value == "annulé"
 
@@ -300,10 +320,13 @@ class Returns200Test:
             offerer=user_offerer.offerer,
         )
 
-        response = client.with_session_auth(user_offerer.user.email).get(
-            "/collective/bookings/excel?bookingPeriodBeginningDate=2000-01-01&bookingPeriodEndingDate=2030-01-01"
-        )
-        assert response.status_code == 200
+        client = client.with_session_auth(user_offerer.user.email)
+        with assert_num_queries(3):  #  session + user + SELECT DISTINCT collective_booking
+            response = client.get(
+                "/collective/bookings/excel?bookingPeriodBeginningDate=2000-01-01&bookingPeriodEndingDate=2030-01-01"
+            )
+            assert response.status_code == 200
+
         sheet = reader_from_response(response)
         assert sheet.cell(row=2, column=10).value == "préréservé"
 
@@ -316,9 +339,12 @@ class Returns200Test:
             offerer=user_offerer.offerer,
         )
 
-        response = client.with_session_auth(user_offerer.user.email).get(
-            "/collective/bookings/excel?bookingPeriodBeginningDate=2000-01-01&bookingPeriodEndingDate=2030-01-01"
-        )
-        assert response.status_code == 200
+        client = client.with_session_auth(user_offerer.user.email)
+        with assert_num_queries(3):  #  session + user + SELECT DISTINCT collective_booking
+            response = client.get(
+                "/collective/bookings/excel?bookingPeriodBeginningDate=2000-01-01&bookingPeriodEndingDate=2030-01-01"
+            )
+            assert response.status_code == 200
+
         sheet = reader_from_response(response)
         assert sheet.cell(row=2, column=10).value == "confirmé"

@@ -36,10 +36,11 @@ class CreateVenueProviderTest:
         # Given
         providerId = 1
         venueId = 2
+        author = users_factories.UserFactory()
 
         # When
         with pytest.raises(exceptions.ProviderNotFound):
-            api.create_venue_provider(providerId, venueId)
+            api.create_venue_provider(providerId, venueId, current_user=author)
 
         # Then
         assert not providers_models.VenueProvider.query.first()
@@ -72,9 +73,10 @@ class CreateVenueProviderTest:
             apiUrl="https://example.com/api",
             localClass=None,
         )
+        author = users_factories.UserFactory()
 
         # When
-        api.create_venue_provider(provider.id, venue.id)
+        api.create_venue_provider(provider.id, venue.id, current_user=author)
 
         # Then
         assert venue.isPermanent == is_permanent
@@ -828,6 +830,48 @@ class UpdateVenueProviderExternalUrlsTest:
 
         api.update_venue_provider_external_urls(
             venue_provider, booking_external_url=None, cancel_external_url=None, notification_external_url=None
+        )
+
+        # Should have deleted `venue_provider_external_urls`
+        assert venue_provider.externalUrls == None
+
+    def test_should_delete_venue_provider_external_urls_even_if_it_is_a_partial_unset_of_ticket_urls(self):
+        provider = providers_factories.ProviderFactory()
+        # Venue
+        venue = offerers_factories.VenueFactory()
+        venue_provider = providers_factories.VenueProviderFactory(provider=provider, venue=venue)
+        venue_provider_external_urls = providers_factories.VenueProviderExternalUrlsFactory(
+            venueProvider=venue_provider,
+            notificationExternalUrl=None,
+        )
+
+        assert venue_provider.externalUrls == venue_provider_external_urls
+
+        api.update_venue_provider_external_urls(
+            venue_provider,
+            booking_external_url=None,
+            cancel_external_url=None,
+        )
+
+        # Should have deleted `venue_provider_external_urls`
+        assert venue_provider.externalUrls == None
+
+    def test_should_delete_venue_provider_external_urls_even_if_it_is_a_partial_unset_of_notif_url(self):
+        provider = providers_factories.ProviderFactory()
+        # Venue
+        venue = offerers_factories.VenueFactory()
+        venue_provider = providers_factories.VenueProviderFactory(provider=provider, venue=venue)
+        venue_provider_external_urls = providers_factories.VenueProviderExternalUrlsFactory(
+            venueProvider=venue_provider,
+            bookingExternalUrl=None,
+            cancelExternalUrl=None,
+        )
+
+        assert venue_provider.externalUrls == venue_provider_external_urls
+
+        api.update_venue_provider_external_urls(
+            venue_provider,
+            notification_external_url=None,
         )
 
         # Should have deleted `venue_provider_external_urls`

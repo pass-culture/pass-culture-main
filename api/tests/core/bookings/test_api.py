@@ -39,7 +39,7 @@ import pcapi.core.finance.factories as finance_factories
 import pcapi.core.finance.models as finance_models
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
-from pcapi.core.offerers import factories as offerer_factories
+from pcapi.core.offerers import factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
 import pcapi.core.providers.factories as providers_factories
@@ -156,7 +156,35 @@ class BookOfferTest:
         # There is a different email for the first venue booking
         bookings_factories.BookingFactory(stock=stock)
 
-        booking = api.book_offer(beneficiary=beneficiary, stock_id=stock.id, quantity=1)
+        # 2 - SELECT the stock (twice ??)
+        # 1 - SELECT the offer
+        # 1 - SELECT the booking
+        # 2 - SELECT the user + SELECT FOR UPDATE
+        # 1 - SELECT COUNT reservations
+        # 1 - SELECT the venue
+        # 1 - SELECT offerer address
+        # 1 - SELECT user's deposit
+        # 1 - SELECT the bookings not cancelled
+        # 1 - SELECT EXISTS on the booking's token
+        # 1 - UPDATE dnBookedQuantity
+        # 1 - INSERT the new booking
+        # 1 - SELECT the user
+        # 8 - SELECT the stock, booking, external_booking, offer, stock, venue, offerer, provider
+        # 1 - SELECT venue with bank activation & bank account
+        # 1 - SELECT activation code
+        # 1 - SELECT criterion
+        # 1 - SELECT user's bookings with stock, offer, venue
+        # 1 - SELECT user's favorites
+        # 2 - SELECT user's deposit + wallet
+        # 1 - SELECT user's action history
+        # 1 - SELECT pro user by its email
+        # 1 - SELECT venue, offerer, bank info by the email
+        # 1 - SELECT from offer that I don't get
+        # 1 - SELECT bookings for the venue ???
+        # 1 - SELECT feature
+        # 1 - one query I missed somewhere
+        with assert_num_queries(37):
+            booking = api.book_offer(beneficiary=beneficiary, stock_id=stock.id, quantity=1)
 
         # One request should have been sent to Batch to trigger the event
         # HAS_BOOKED_OFFER, and another one with the user's
@@ -1304,7 +1332,7 @@ class CancelByBeneficiaryTest:
             idAtProviders="",
         )
         booking = bookings_factories.BookingFactory(stock=stock)
-        offerer_factories.ApiKeyFactory(offerer=booking.offerer)
+        offerers_factories.ApiKeyFactory(offerer=booking.offerer)
         external_bookings_factories.ExternalBookingFactory(booking=booking, barcode="1234567890123")
         requests_mock.post(
             external_url + "/cancel",
@@ -1333,7 +1361,7 @@ class CancelByBeneficiaryTest:
             idAtProviders="",
         )
         booking = bookings_factories.BookingFactory(stock=stock)
-        offerer_factories.ApiKeyFactory(offerer=booking.offerer)
+        offerers_factories.ApiKeyFactory(offerer=booking.offerer)
         external_bookings_factories.ExternalBookingFactory(booking=booking, barcode="1234567890123")
         requests_mock.post(
             external_url + "/cancel",
@@ -1427,7 +1455,7 @@ class CancelByBeneficiaryTest:
             dnBookedQuantity=4,
         )
         booking = bookings_factories.BookingFactory(stock=stock)
-        offerer_factories.ApiKeyFactory(offerer=booking.offerer)
+        offerers_factories.ApiKeyFactory(offerer=booking.offerer)
         external_bookings_factories.ExternalBookingFactory(booking=booking, barcode="1234567890123")
         mocked_cancel_booking.return_value = None
 
@@ -2057,7 +2085,7 @@ class ArchiveOldBookingsTest:
         old = now - timedelta(days=30, hours=1)
         offer = offers_factories.ThingOfferFactory(subcategoryId=subcategoryId)
         stock_free = offers_factories.StockFactory(offer=offer, price=0)
-        offerer_factories.UserOffererFactory(
+        offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
         )

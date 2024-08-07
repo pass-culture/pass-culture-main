@@ -33,10 +33,13 @@ from pcapi.core.offers import exceptions
 from pcapi.core.offers import factories
 from pcapi.core.offers import models
 from pcapi.core.offers import repository as offers_repository
+from pcapi.core.offers import schemas
 from pcapi.core.offers.exceptions import NotUpdateProductOrOffers
 from pcapi.core.offers.exceptions import ProductNotFound
+from pcapi.core.providers.allocine import get_allocine_products_provider
 import pcapi.core.providers.factories as providers_factories
 import pcapi.core.providers.repository as providers_repository
+from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
@@ -1052,6 +1055,139 @@ class CreateMediationV2Test:
 
 
 @pytest.mark.usefixtures("db_session")
+class CreateDraftOfferTest:
+    def test_create_draft_offer_from_scratch(self):
+        venue = offerers_factories.VenueFactory()
+        body = schemas.PostDraftOfferBodyModel(
+            name="A pretty good offer",
+            subcategoryId=subcategories.SEANCE_CINE.id,
+            venueId=venue.id,
+        )
+        offer = api.create_draft_offer(body, venue=venue)
+
+        assert offer.name == "A pretty good offer"
+        assert offer.subcategoryId == subcategories.SEANCE_CINE.id
+        assert offer.venue == venue
+        assert not offer.description
+        assert not offer.isActive
+        assert offer.validation == models.OfferValidationStatus.DRAFT
+        assert not offer.product
+        assert models.Offer.query.count() == 1
+
+    def test_cannot_create_activation_offer(self):
+        venue = offerers_factories.VenueFactory()
+        body = schemas.PostDraftOfferBodyModel(
+            name="An offer he can't refuse",
+            subcategoryId=subcategories.ACTIVATION_EVENT.id,
+            venueId=venue.id,
+        )
+        with pytest.raises(exceptions.SubCategoryIsInactive) as error:
+            api.create_draft_offer(body, venue=venue)
+
+        msg = "Une offre ne peut être créée ou éditée en utilisant cette sous-catégorie"
+        assert error.value.errors["subcategory"] == [msg]
+
+    def test_cannot_create_offer_when_invalid_subcategory(self):
+        venue = offerers_factories.VenueFactory()
+        body = schemas.PostDraftOfferBodyModel(
+            name="An offer he can't refuse",
+            subcategoryId="TOTO",
+            venueId=venue.id,
+        )
+        with pytest.raises(exceptions.UnknownOfferSubCategory) as error:
+            api.create_draft_offer(body, venue=venue)
+
+        assert error.value.errors["subcategory"] == ["La sous-catégorie de cette offre est inconnue"]
+
+
+@pytest.mark.usefixtures("db_session")
+class UpdateDraftOfferTest:
+    def test_basics(self):
+        offer = factories.OfferFactory(
+            name="Name",
+            subcategoryId=subcategories.ESCAPE_GAME.id,
+            description="description",
+        )
+        body = schemas.PatchDraftOfferBodyModel(
+            name="New name",
+            description="New description",
+        )
+        offer = api.update_draft_offer(offer, body)
+        db.session.flush()
+
+        assert offer.name == "New name"
+        assert offer.description == "New description"
+
+
+@pytest.mark.usefixtures("db_session")
+class UpdateDraftOfferDetailsTest:
+    @mock.patch("pcapi.core.search.async_index_offer_ids")
+    def test_basics(self, mocked_async_index_offer_ids):
+        offer = factories.OfferFactory(
+            subcategoryId=subcategories.ESCAPE_GAME.id,
+            bookingEmail="old@example.com",
+            isDuo=False,
+            audioDisabilityCompliant=None,
+            mentalDisabilityCompliant=None,
+            motorDisabilityCompliant=None,
+            visualDisabilityCompliant=None,
+        )
+        body = schemas.PatchDraftOfferUsefulInformationsBodyModel(
+            audioDisabilityCompliant=True,
+            mentalDisabilityCompliant=False,
+            motorDisabilityCompliant=True,
+            visualDisabilityCompliant=False,
+            bookingEmail="new@example.com",
+            isDuo=True,
+        )
+        offer = api.update_draft_offer_useful_informations(offer, body)
+        db.session.flush()
+
+        assert offer.audioDisabilityCompliant is True
+        assert offer.mentalDisabilityCompliant is False
+        assert offer.motorDisabilityCompliant is True
+        assert offer.visualDisabilityCompliant is False
+        assert offer.isDuo
+        assert offer.bookingEmail == "new@example.com"
+        mocked_async_index_offer_ids.assert_called_once_with(
+            [offer.id],
+            reason=search.IndexationReason.OFFER_UPDATE,
+            log_extra={
+                "changes": {
+                    "audioDisabilityCompliant",
+                    "mentalDisabilityCompliant",
+                    "motorDisabilityCompliant",
+                    "visualDisabilityCompliant",
+                    "bookingEmail",
+                    "isDuo",
+                },
+            },
+        )
+
+    def test_update_extra_data_should_raise_error_when_mandatory_field_not_provided(self):
+        offer = factories.OfferFactory(subcategoryId=subcategories.SPECTACLE_REPRESENTATION.id)
+        body = schemas.PatchDraftOfferUsefulInformationsBodyModel(extraData={"author": "Asimov"})
+        with pytest.raises(api_errors.ApiErrors) as error:
+            api.update_draft_offer_useful_informations(offer, body)
+        assert error.value.errors == {
+            "showType": ["Ce champ est obligatoire"],
+            "showSubType": ["Ce champ est obligatoire"],
+        }
+
+    def test_error_when_missing_mandatory_extra_data(self):
+        offer = factories.OfferFactory(
+            subcategoryId=subcategories.SPECTACLE_REPRESENTATION.id, extraData={"showType": 200}
+        )
+        body = schemas.PatchDraftOfferUsefulInformationsBodyModel(extraData=None)
+        with pytest.raises(api_errors.ApiErrors) as error:
+            api.update_draft_offer_useful_informations(offer, body)
+        assert error.value.errors == {
+            "showType": ["Ce champ est obligatoire"],
+            "showSubType": ["Ce champ est obligatoire"],
+        }
+
+
+@pytest.mark.usefixtures("db_session")
 class CreateOfferTest:
     def test_create_offer_from_scratch(self):
         venue = offerers_factories.VenueFactory()
@@ -1080,6 +1216,39 @@ class CreateOfferTest:
         assert offer.extraData == {}
         assert not offer.bookingEmail
         assert models.Offer.query.count() == 1
+        assert offer.offererAddress == venue.offererAddress
+
+    def test_create_offer_from_scratch_with_offerer_address(self):
+        venue = offerers_factories.VenueFactory()
+        offerer_address = offerers_factories.OffererAddressFactory(offerer=venue.managingOfferer)
+
+        offer = api.create_offer(
+            venue=venue,
+            name="A pretty good offer",
+            subcategory_id=subcategories.SEANCE_CINE.id,
+            external_ticket_office_url="http://example.net",
+            audio_disability_compliant=True,
+            mental_disability_compliant=True,
+            motor_disability_compliant=True,
+            visual_disability_compliant=True,
+            offerer_address=offerer_address,
+        )
+
+        assert offer.name == "A pretty good offer"
+        assert offer.venue == venue
+        assert offer.subcategoryId == subcategories.SEANCE_CINE.id
+        assert not offer.product
+        assert offer.externalTicketOfficeUrl == "http://example.net"
+        assert offer.audioDisabilityCompliant
+        assert offer.mentalDisabilityCompliant
+        assert offer.motorDisabilityCompliant
+        assert offer.visualDisabilityCompliant
+        assert offer.validation == models.OfferValidationStatus.DRAFT
+        assert offer.extraData == {}
+        assert not offer.bookingEmail
+        assert models.Offer.query.count() == 1
+        assert offer.offererAddress == offerer_address
+        assert offer.offererAddress != venue.offererAddress
 
     def test_create_offer_with_id_at_provider(self):
         venue = offerers_factories.VenueFactory()
@@ -3749,3 +3918,180 @@ class UpdateUsedStockPriceTest:
 
         assert stock_to_edit.price == decimal.Decimal("50.1")
         assert booking_to_edit.amount == decimal.Decimal("50.1")
+
+
+@pytest.mark.usefixtures("db_session")
+class CreateMovieProductFromProviderTest:
+    @classmethod
+    def setup_class(cls):
+        cls.allocine_provider = get_allocine_products_provider()
+        cls.allocine_stocks_provider = providers_repository.get_provider_by_local_class("AllocineStocks")
+        cls.boost_provider = providers_repository.get_provider_by_local_class("BoostStocks")
+
+    def setup_method(self):
+        models.Product.query.delete()
+
+    def teardown_method(self):
+        models.Product.query.delete()
+
+    def _get_movie(self, allocine_id: str | None = None, visa: str | None = None):
+        return models.Movie(
+            title="Mon film",
+            duration=90,
+            description="description de Mon film",
+            poster_url=None,
+            allocine_id=allocine_id,
+            visa=visa,
+            extra_data={"allocineId": int(allocine_id) if allocine_id else None, "visa": visa},
+        )
+
+    def test_creates_allocine_product_without_visa_if_does_not_exist(self):
+        # Given
+        movie = self._get_movie(allocine_id="12345")
+
+        # When
+        product = api.upsert_movie_product_from_provider(movie, self.allocine_provider, "idAllocine")
+
+        # Then
+        assert product.extraData["allocineId"] == 12345
+        assert product.extraData.get("visa") is None
+
+    def test_do_nothing_if_no_allocine_id_and_no_visa(self):
+        # Given
+        movie = self._get_movie(allocine_id=None, visa=None)
+
+        # When
+        with assert_num_queries(0):
+            product = api.upsert_movie_product_from_provider(movie, self.allocine_provider, "idAllocine")
+
+        # Then
+        assert product is None
+
+    def test_does_not_create_product_if_exists(self):
+        # Given
+        product = factories.ProductFactory(extraData={"allocineId": 12345})
+        movie = self._get_movie(allocine_id="12345")
+
+        # When
+        new_product = api.upsert_movie_product_from_provider(movie, self.allocine_provider, "idAllocine")
+
+        # Then
+        assert product.id == new_product.id
+
+    def test_updates_product_if_exists(self):
+        # Given
+        product = factories.ProductFactory(extraData={"allocineId": 12345})
+        movie = self._get_movie(allocine_id="12345")
+
+        # When
+        api.upsert_movie_product_from_provider(movie, self.allocine_provider, "idAllocine")
+
+        # Then
+        assert product.lastProvider.id == self.allocine_provider.id
+
+    def test_does_not_update_allocine_product_from_non_allocine_synchro(self):
+        # Given
+        product = factories.ProductFactory(
+            idAtProviders="idAllocine", lastProviderId=self.allocine_provider.id, extraData={"allocineId": 12345}
+        )
+        movie = self._get_movie(allocine_id="12345")
+
+        # When
+        api.upsert_movie_product_from_provider(movie, self.boost_provider, "idBoost")
+
+        # Then
+        assert product.idAtProviders == "idAllocine"
+        assert product.lastProvider.id == self.allocine_provider.id
+
+    def test_updates_allocine_product_from_allocine_stocks_synchro(self):
+        # Given
+        product = factories.ProductFactory(
+            idAtProviders="idAllocine", lastProviderId=self.allocine_provider.id, extraData={"allocineId": 12345}
+        )
+        movie = self._get_movie(allocine_id="12345")
+
+        # When
+        api.upsert_movie_product_from_provider(movie, self.allocine_stocks_provider, "idAllocineStocks")
+
+        # Then
+        assert product.idAtProviders == "idAllocineStocks"
+        assert product.lastProvider.id == self.allocine_stocks_provider.id
+
+    def test_updates_product_from_same_synchro(self):
+        # Given
+        product = factories.ProductFactory(
+            idAtProviders="idBoost1", lastProviderId=self.boost_provider.id, extraData={"allocineId": 12345}
+        )
+        movie = self._get_movie(allocine_id="12345")
+
+        # When
+        api.upsert_movie_product_from_provider(movie, self.boost_provider, "idBoost2")
+
+        # Then
+        assert product.idAtProviders == "idBoost2"
+        assert product.lastProvider.id == self.boost_provider.id
+
+    def test_updates_allocine_id_when_updates_product_by_visa(self):
+        # Given
+        product = factories.ProductFactory(
+            idAtProviders="idBoost", lastProviderId=self.boost_provider.id, extraData={"visa": "54321"}
+        )
+        movie = self._get_movie(allocine_id="12345", visa="54321")
+
+        # When
+        api.upsert_movie_product_from_provider(movie, self.allocine_stocks_provider, "idAllocine")
+
+        # Then
+        assert product.idAtProviders == "idAllocine"
+        assert product.extraData["allocineId"] == 12345
+
+    def test_updates_visa_when_updating_with_visa_provided(self):
+        # Given
+        product = factories.ProductFactory(
+            idAtProviders="idBoost",
+            lastProviderId=self.boost_provider.id,
+            extraData={"allocineId": 12345, "visa": "54321"},
+        )
+        movie = self._get_movie(allocine_id="12345", visa="54322")
+
+        # When
+        api.upsert_movie_product_from_provider(movie, self.allocine_stocks_provider, "idAllocine")
+
+        # Then
+        assert product.idAtProviders == "idAllocine"
+        assert product.extraData["allocineId"] == 12345
+        assert product.extraData["visa"] == "54322"
+
+    def test_keep_visa_when_updating_with_no_visa_provided(self):
+        # Given
+        product = factories.ProductFactory(
+            idAtProviders="idBoost",
+            lastProviderId=self.boost_provider.id,
+            extraData={"allocineId": 12345, "visa": "54321"},
+        )
+        movie = self._get_movie(allocine_id="12345", visa=None)
+
+        # When
+        api.upsert_movie_product_from_provider(movie, self.allocine_stocks_provider, "idAllocine")
+
+        # Then
+        assert product.idAtProviders == "idAllocine"
+        assert product.extraData["allocineId"] == 12345
+        assert product.extraData["visa"] == "54321"
+
+    def test_does_not_update_data_when_provided_data_is_none(self):
+        # Given
+        product = factories.ProductFactory(
+            idAtProviders="idBoost",
+            lastProviderId=self.boost_provider.id,
+            extraData={"allocineId": 12345, "title": "Mon vieux film"},
+        )
+        movie = self._get_movie(allocine_id="12345", visa=None)
+        movie.extra_data = None
+
+        # When
+        api.upsert_movie_product_from_provider(movie, self.allocine_stocks_provider, "idAllocine")
+
+        # Then
+        assert product.idAtProviders == "idAllocine"
+        assert product.extraData == {"allocineId": 12345, "title": "Mon vieux film"}

@@ -12,13 +12,11 @@
   @include fonts.title3;
 
   margin-bottom: rem.torem(16px);
-  line-height: rem.torem(16px);
 }
 
 .subtitle {
   color: var(--color-grey-dark);
   margin-bottom: rem.torem(24px);
-  line-height: rem.torem(16px);
 }
 
 .actions {

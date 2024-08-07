@@ -8,6 +8,7 @@ from pcapi.connectors.serialization.cine_digital_service_serializers import Show
 from pcapi.connectors.serialization.cine_digital_service_serializers import ShowTariffCDS
 from pcapi.connectors.serialization.cine_digital_service_serializers import ShowsMediaoptionsCDS
 from pcapi.core.external_bookings.models import Movie
+from pcapi.core.history import models as history_models
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.providers.factories import CinemaProviderPivotFactory
@@ -52,6 +53,10 @@ class Returns201Test:
         assert venue_provider.providerId == provider.id
         assert venue_provider.venueIdAtOfferProvider == "12345678912345"
         assert "id" in response.json
+        action = history_models.ActionHistory.query.one()
+        assert action.actionType == history_models.ActionType.SYNC_VENUE_TO_PROVIDER
+        assert action.authorUser == user
+        assert action.extraData["provider_name"] == venue_provider.provider.name
 
         venue_provider_id = response.json["id"]
         mock_synchronize_venue_provider.assert_called_once_with(venue_provider_id)
@@ -87,6 +92,7 @@ class Returns201Test:
         assert response.json["quantity"] == 50
         venue_provider = VenueProvider.query.one()
         mock_synchronize_venue_provider.assert_called_once_with(venue_provider)
+        assert len(venue_provider.permissions) == 0
 
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.workers.venue_provider_job.synchronize_venue_provider")
@@ -117,6 +123,7 @@ class Returns201Test:
         assert response.json["quantity"] == 50
         venue_provider = VenueProvider.query.one()
         mock_synchronize_venue_provider.assert_called_once_with(venue_provider)
+        assert len(venue_provider.permissions) == 0
 
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.workers.venue_provider_job.venue_provider_job.delay")
@@ -246,7 +253,7 @@ class Returns201Test:
                 duration=120,
                 description="Ca tourne mal",
                 visa="123456",
-                posterpath="fakeUrl/coupez.png",
+                poster_url="fakeUrl/coupez.png",
             ),
             Movie(
                 id="51",
@@ -254,7 +261,7 @@ class Returns201Test:
                 duration=150,
                 description="Film sur les avions",
                 visa="333333",
-                posterpath="fakeUrl/topgun.png",
+                poster_url="fakeUrl/topgun.png",
             ),
         ]
         mock_get_venue_movies.return_value = mocked_movies
@@ -308,6 +315,8 @@ class Returns201Test:
         assert response.json["provider"]["id"] == provider.id
         assert response.json["venueId"] == venue.id
         assert response.json["venueIdAtOfferProvider"] == cds_pivot.idAtProvider
+        venue_provider = VenueProvider.query.one()
+        assert len(venue_provider.permissions) == 0
 
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.workers.venue_provider_job.synchronize_ems_venue_provider")
@@ -329,6 +338,8 @@ class Returns201Test:
         assert response.json["venueIdAtOfferProvider"] == pivot.idAtProvider
         venue_provider = VenueProvider.query.one()
         mocked_synchronize_ems_venue_provider.assert_called_once_with(venue_provider)
+        venue_provider = VenueProvider.query.one()
+        assert len(venue_provider.permissions) == 0
 
 
 class Returns400Test:

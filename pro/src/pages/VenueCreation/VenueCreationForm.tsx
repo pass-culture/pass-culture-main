@@ -30,6 +30,7 @@ type VenueFormProps = {
   offerer: GetOffererResponseModel
   updateIsSiretValued: (isSiretValued: boolean) => void
   venueTypes: VenueTypeResponseModel[]
+  isSiretValued: boolean
 }
 
 type ShouldBlockVenueNavigationProps = {
@@ -57,13 +58,13 @@ export const VenueCreationForm = ({
   offerer,
   updateIsSiretValued,
   venueTypes,
+  isSiretValued,
 }: VenueFormProps) => {
   const { initialValues, isSubmitting } =
     useFormikContext<VenueCreationFormValues>()
   const selectedOffererId = useSelector(selectCurrentOffererId)
 
   const [isFieldNameFrozen, setIsFieldNameFrozen] = useState(false)
-  const [isSiretValued, setIsSiretValued] = useState(true)
   const canOffererCreateCollectiveOffer = offerer.allowedOnAdage
   const venueTypesOptions = buildVenueTypesOptions(venueTypes)
 
@@ -81,7 +82,6 @@ export const VenueCreationForm = ({
               isToggleDisabled={false}
               isCreatedEntity
               setIsFieldNameFrozen={setIsFieldNameFrozen}
-              setIsSiretValued={setIsSiretValued}
               updateIsSiretValued={updateIsSiretValued}
               siren={offerer.siren}
             />
@@ -163,8 +163,9 @@ export const VenueCreationForm = ({
             <p className={styles['eac-description-info']}>
               Il s’agit d’un formulaire vous permettant de renseigner vos
               informations EAC. Les informations renseignées seront visibles par
-              les enseignants et chefs d’établissement sur ADAGE (Application
-              dédiée à la généralisation....)
+              les enseignants et chefs d’établissement sur ADAGE (L’Application
+              Dédiée À la Généralisation de l’Éducation artistique et
+              culturelle)
             </p>
 
             <Banner type="notification-info">

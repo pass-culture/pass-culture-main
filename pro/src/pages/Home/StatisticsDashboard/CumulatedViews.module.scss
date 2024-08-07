@@ -8,7 +8,7 @@
 }
 
 .block-title {
-  @include fonts.button;
+  @include fonts.bold;
 }
 
 .no-data {

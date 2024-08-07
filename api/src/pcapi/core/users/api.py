@@ -652,6 +652,7 @@ def update_user_info(
     marketing_email_subscription: bool | T_UNCHANGED = UNCHANGED,
     new_nav_pro_date: datetime.datetime | None | T_UNCHANGED = UNCHANGED,
     new_nav_pro_eligibility_date: datetime.datetime | None | T_UNCHANGED = UNCHANGED,
+    activity: users_models.ActivityEnum | T_UNCHANGED = UNCHANGED,
     commit: bool = True,
 ) -> history_api.ObjectUpdateSnapshot:
     old_email = None
@@ -725,6 +726,10 @@ def update_user_info(
             )
             pro_new_nav_state.eligibilityDate = new_nav_pro_eligibility_date
         db.session.add(pro_new_nav_state)
+    if activity is not UNCHANGED:
+        if user.activity != activity.value:
+            snapshot.set("activity", old=user.activity, new=activity.value)
+        user.activity = activity.value
 
     # keep using repository as long as user is validated in pcapi.validation.models.user
     if commit:
@@ -1003,6 +1008,7 @@ def update_notification_subscription(
         "marketing_email": subscriptions.marketing_email,
         "subscribed_themes": subscriptions.subscribed_themes,
     }
+    db.session.flush()
 
     logger.info(
         "Notification subscription update",
@@ -1023,8 +1029,6 @@ def update_notification_subscription(
         },
         technical_message_id="subscription_update",
     )
-
-    repository.save(user)
 
 
 def reset_recredit_amount_to_show(user: models.User) -> None:
@@ -1516,11 +1520,22 @@ def notify_users_before_deletion_of_suspended_account() -> None:
         transactional_mails.send_email_before_deletion_of_suspended_account(account)
 
 
+def has_unprocessed_extract(user: users_models.User) -> bool:
+    for extract in user.gdprUserDataExtract:
+        if not extract.is_expired and not extract.dateProcessed:
+            return True
+    return False
+
+
 def anonymize_user(user: users_models.User, *, author: users_models.User | None = None, force: bool = False) -> bool:
     """
     Anonymize the given User. If force is True, the function will anonymize the user even if they have an address and
     we cannot find an iris for it.
     """
+
+    if has_unprocessed_extract(user):
+        return False
+
     iris = None
     if user.address:
         try:
@@ -1555,7 +1570,10 @@ def anonymize_user(user: users_models.User, *, author: users_models.User | None 
     for deposit in user.deposits:
         deposit.source = "Anonymized"
 
-    user.password = b"Anonymized"
+    for extract in user.gdprUserDataExtract:
+        delete_gdpr_extract(extract.id)
+
+    user.password = b"Anonymized"  # ggignore
     user.firstName = f"Anonymous_{user.id}"
     user.lastName = f"Anonymous_{user.id}"
     user.married_name = None
@@ -2125,6 +2143,7 @@ def extract_beneficiary_data_command() -> bool:
         return False
 
     if counter.is_full():
+        _release_extract_beneficiary_data_lock()
         return False
 
     candidates = (

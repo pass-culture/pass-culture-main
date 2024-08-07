@@ -1,6 +1,7 @@
-import { When, Then, Given } from '@badeball/cypress-cucumber-preprocessor'
+import { Given, Then, When } from '@badeball/cypress-cucumber-preprocessor'
 
 let offerText: string
+let offerFromSecondPage: string
 
 Given('I go to adage login page with valid token', () => {
   cy.visit('/connexion')
@@ -19,16 +20,16 @@ When('I open adage iframe', () => {
   }).as('features')
   cy.visit(`/adage-iframe?token=${adageToken}`)
   cy.findAllByTestId('spinner').should('not.exist')
-  cy.wait(['@local_offerers', '@features'], { requestTimeout: 30 * 1000 }).then(
-    (interception) => {
-      if (interception[0].response) {
-        expect(interception[0].response.statusCode).to.equal(200)
-      }
-      if (interception[1].response) {
-        expect(interception[1].response.statusCode).to.equal(200)
-      }
+  cy.wait(['@local_offerers', '@features'], {
+    responseTimeout: 30 * 1000,
+  }).then((interception) => {
+    if (interception[0].response) {
+      expect(interception[0].response.statusCode).to.equal(200)
     }
-  )
+    if (interception[1].response) {
+      expect(interception[1].response.statusCode).to.equal(200)
+    }
+  })
   cy.findAllByTestId('spinner').should('not.exist')
   cy.wait(500) // la liste des offres se réordonne, d'où cette attente
 })
@@ -100,7 +101,7 @@ When('I add first offer to favorites', () => {
         url: '/adage-iframe/logs/fav-offer/',
       }).as('fav-offer')
       cy.findAllByTestId('favorite-inactive').click()
-      cy.wait('@fav-offer', { requestTimeout: 30 * 1000 })
+      cy.wait('@fav-offer', { responseTimeout: 30 * 1000 })
         .its('response.statusCode')
         .should('eq', 204)
     })
@@ -195,4 +196,22 @@ Then('offer descriptions are displayed', () => {
 
 When('I go to {string} menu', (menu: string) => {
   cy.contains(menu).click()
+})
+
+When('I go the the next page of searched offers', () => {
+  cy.findByTestId('next-page-button').click()
+  cy.findAllByTestId('card-offer-link')
+    .first()
+    .parent()
+    .within(() => {
+      cy.findAllByTestId('card-offer')
+        .invoke('text')
+        .then((text: string) => {
+          offerFromSecondPage = text
+        })
+    })
+})
+
+Then('the first offer of the second page is displayed', () => {
+  cy.contains(offerFromSecondPage)
 })

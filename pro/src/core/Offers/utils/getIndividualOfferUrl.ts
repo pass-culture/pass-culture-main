@@ -7,15 +7,19 @@ interface GetIndividualOfferPathArgs {
   isCreation?: boolean
   mode: OFFER_WIZARD_MODE
   step: OFFER_WIZARD_STEP_IDS
+  isSplitOfferEnabled?: boolean
 }
 
 export const getIndividualOfferPath = ({
   isCreation = false,
+  isSplitOfferEnabled = false,
   mode,
   step,
 }: GetIndividualOfferPathArgs): string => {
   if (isCreation) {
-    return `/offre/individuelle/creation/informations`
+    return isSplitOfferEnabled
+      ? `/offre/individuelle/creation/details`
+      : `/offre/individuelle/creation/informations`
   }
 
   return {
@@ -27,9 +31,9 @@ export const getIndividualOfferPath = ({
     [OFFER_WIZARD_STEP_IDS.DETAILS]: {
       [OFFER_WIZARD_MODE.CREATION]: `/offre/individuelle/:offerId/creation/details`,
       [OFFER_WIZARD_MODE.EDITION]: `/offre/individuelle/:offerId/edition/details`,
-      [OFFER_WIZARD_MODE.READ_ONLY]: `/offre/individuelle/:offerId/details`,
+      [OFFER_WIZARD_MODE.READ_ONLY]: `/offre/individuelle/:offerId/recapitulatif/details`,
     },
-    [OFFER_WIZARD_STEP_IDS.ABOUT]: {
+    [OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS]: {
       [OFFER_WIZARD_MODE.CREATION]: `/offre/individuelle/:offerId/creation/pratiques`,
       [OFFER_WIZARD_MODE.EDITION]: `/offre/individuelle/:offerId/edition/pratiques`,
       [OFFER_WIZARD_MODE.READ_ONLY]: `/offre/individuelle/:offerId/pratiques`,
@@ -67,18 +71,21 @@ interface GetIndividualOfferUrlArgs {
   offerId?: number
   mode: OFFER_WIZARD_MODE
   step: OFFER_WIZARD_STEP_IDS
+  isSplitOfferEnabled?: boolean
 }
 
 export const getIndividualOfferUrl = ({
   offerId,
   mode,
   step,
+  isSplitOfferEnabled = false,
 }: GetIndividualOfferUrlArgs) =>
   generatePath(
     getIndividualOfferPath({
       isCreation: offerId === undefined,
       mode,
       step,
+      isSplitOfferEnabled,
     }),
     { offerId }
   )

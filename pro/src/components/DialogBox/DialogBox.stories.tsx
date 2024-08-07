@@ -4,7 +4,7 @@ import React from 'react'
 import { DialogBox } from './DialogBox'
 
 export default {
-  title: 'components/DialogBox',
+  title: 'components/Dialog/DialogBox',
   component: DialogBox,
 }
 

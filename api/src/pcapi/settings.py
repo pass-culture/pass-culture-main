@@ -107,8 +107,9 @@ REDIS_VENUE_IDS_CHUNK_SIZE = int(os.environ.get("REDIS_VENUE_IDS_CHUNK_SIZE", 10
 # SENTRY
 ENABLE_SENTRY = bool(int(os.environ.get("ENABLE_SENTRY", 0)))
 SENTRY_DSN = secrets_utils.get("SENTRY_DSN", "")
-SENTRY_TRACES_SAMPLE_RATE = float(os.environ.get("SENTRY_TRACES_SAMPLE_RATE", 0))
+SENTRY_DEFAULT_TRACES_SAMPLE_RATE = float(os.environ.get("SENTRY_DEFAULT_TRACES_SAMPLE_RATE", 0))
 SENTRY_CSP_REPORT_ONLY_URI = os.environ.get("SENTRY_CSP_REPORT_ONLY_URI", "")
+ENABLE_SENTRY_FINE_SAMPLING = bool(int(os.environ.get("ENABLE_SENTRY_FINE_SAMPLING", 0)))
 
 
 # USERS
@@ -530,8 +531,6 @@ METABASE_DASHBOARD_ID = int(os.environ.get("METABASE_DASHBOARD_ID", 438))
 # NATIONAL PARTNERS
 NATIONAL_PARTNERS_EMAIL_DOMAINS = secrets_utils.get("NATIONAL_PARTNERS_EMAIL_DOMAINS", "impossible_email_domain.fr")
 
-# EPN
-EPN_SIREN = utils.parse_str_to_list(secrets_utils.get("EPN_SIREN", ""))
 
 # NAME CHECKING
 ENABLE_PERMISSIVE_NAME_VALIDATION = bool(int(os.environ.get("ENABLE_PERMISSIVE_NAME_VALIDATION", 0)))
@@ -565,6 +564,10 @@ RECOMMENDATION_API_URL = os.environ.get("RECOMMENDATION_API_URL", "")
 
 # SUBCATEGORY SUGGESTION API
 SUBCATEGORY_SUGGESTION_API_URL = "https://compliance.passculture.team/latest/model/categorisation"
+SUBCATEGORY_SUGGESTION_BACKEND = os.environ.get(
+    "SUBCATEGORY_SUGGESTION_BACKEND",
+    "pcapi.core.external.subcategory_suggestion_backends.subcategory_suggestion.SubcategorySuggestionBackend",
+)
 
 
 # PRO TESTS
@@ -580,3 +583,7 @@ PG_STAT_FOLDER_ID = secrets_utils.get("PG_STAT_FOLDER_ID", "")
 # GDPR configuration
 GDPR_MAX_EXTRACT_PER_DAY = int(os.environ.get("GDPR_MAX_EXTRACT_PER_DAY", "10"))
 GDPR_LOCK_TIMEOUT = int(os.environ.get("GDPR_LOCK_TIMEOUT", "900"))
+
+# DISCORD pass culture bot
+DISCORD_CLIENT_SECRET = secrets_utils.get("DISCORD_CLIENT_SECRET")
+DISCORD_BOT_TOKEN = secrets_utils.get("DISCORD_BOT_TOKEN")

@@ -1,7 +1,6 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { addDays, format } from 'date-fns'
-import React from 'react'
 import { axe } from 'vitest-axe'
 
 import { FORMAT_ISO_DATE_ONLY } from 'utils/date'
@@ -16,6 +15,7 @@ const defaultProps = {
   setIsOpen: vi.fn(),
   handleSubmit: mockSubmit,
   priceCategories: [priceCategoryFactory()],
+  idLabelledBy: 'some id',
 }
 
 describe('RecurrenceForm', () => {

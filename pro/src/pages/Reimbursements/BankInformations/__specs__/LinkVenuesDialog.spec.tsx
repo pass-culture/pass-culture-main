@@ -45,6 +45,7 @@ describe('LinkVenueDialog', () => {
     await userEvent.click(
       screen.getByRole('checkbox', { name: 'Tout sélectionner' })
     )
+
     expect(screen.getByRole('checkbox', { name: 'Lieu 1' })).toBeChecked()
     expect(screen.getByRole('checkbox', { name: 'Lieu 2' })).toBeChecked()
   })
@@ -182,6 +183,7 @@ describe('LinkVenueDialog', () => {
         id: 1,
         hasPricingPoint: false,
         commonName: 'Lieu sans SIRET',
+        siret: undefined,
       },
     ]
 
@@ -215,5 +217,44 @@ describe('LinkVenueDialog', () => {
     ).toBeEnabled()
 
     expect(screen.queryByText('Sélectionner un SIRET')).not.toBeInTheDocument()
+  })
+
+  it('should not be able to link a venue already attached to another bank account', () => {
+    const venueName = 'Mon super lieu'
+    const venues = [
+      {
+        ...defaultManagedVenues,
+        name: venueName,
+        id: 1,
+        hasPricingPoint: true,
+        bankAccountId: 2,
+      },
+    ]
+
+    renderLinkVenuesDialog(1, defaultBankAccount, venues)
+
+    expect(screen.getByRole('checkbox', { name: venueName })).toBeDisabled()
+  })
+
+  it('should be able to unlink a venue already attached to the same bank account', async () => {
+    const venueName = 'Mon super lieu'
+    const venues = [
+      {
+        ...defaultManagedVenues,
+        id: 1,
+        name: venueName,
+        hasPricingPoint: true,
+        bankAccountId: 2,
+      },
+    ]
+
+    const bankAccount = { ...defaultBankAccount, id: 2 }
+
+    renderLinkVenuesDialog(1, bankAccount, venues)
+
+    const checkbox = screen.getByRole('checkbox', { name: venueName })
+    expect(checkbox).toBeChecked()
+    await userEvent.click(checkbox)
+    expect(checkbox).not.toBeChecked()
   })
 })

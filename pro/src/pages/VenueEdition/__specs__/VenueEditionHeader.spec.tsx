@@ -8,8 +8,8 @@ import { Events } from 'core/FirebaseEvents/constants'
 import { defaultGetVenue } from 'utils/collectiveApiFactories'
 import { defaultGetOffererResponseModel } from 'utils/individualApiFactories'
 import {
-  RenderWithProvidersOptions,
   renderWithProviders,
+  RenderWithProvidersOptions,
 } from 'utils/renderWithProviders'
 import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
@@ -31,7 +31,12 @@ const renderPartnerPages = (
       venueTypes={[{ id: VenueTypeCode.FESTIVAL, label: 'Festival' }]}
       {...props}
     />,
-    { ...options }
+    {
+      storeOverrides: {
+        user: { currentUser: sharedCurrentUserFactory(), selectedOffererId: 1 },
+      },
+      ...options,
+    }
   )
 }
 
@@ -52,6 +57,7 @@ describe('PartnerPages', () => {
     await userEvent.click(screen.getByText(/Ajouter une image/))
 
     expect(mockLogEvent).toHaveBeenCalledWith(Events.CLICKED_ADD_IMAGE, {
+      offererId: '1',
       venueId: defaultGetVenue.id,
       imageType: UploaderModeEnum.VENUE,
       isEdition: true,
@@ -95,6 +101,14 @@ describe('PartnerPages', () => {
         user: sharedCurrentUserFactory({
           navState: { newNavDate: '2002-07-29T12:18:43.087097Z' },
         }),
+        storeOverrides: {
+          user: {
+            currentUser: sharedCurrentUserFactory({
+              navState: { newNavDate: '2002-07-29T12:18:43.087097Z' },
+            }),
+            selectedOffererId: 1,
+          },
+        },
       }
     )
 

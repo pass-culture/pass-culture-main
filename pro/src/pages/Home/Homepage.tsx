@@ -1,9 +1,10 @@
-import { useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useSearchParams } from 'react-router-dom'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
+import { useRemoteConfigParams } from 'app/App/analytics/firebase'
 import { AppLayout } from 'app/AppLayout'
 import { AddBankAccountCallout } from 'components/Callout/AddBankAccountCallout'
 import { BankAccountHasPendingCorrectionCallout } from 'components/Callout/BankAccountHasPendingCorrectionCallout'
@@ -57,6 +58,14 @@ export const Homepage = (): JSX.Element => {
   const notify = useNotification()
   const profileRef = useRef<HTMLElement>(null)
   const offerersRef = useRef<HTMLElement>(null)
+  const remoteConfigData = useRemoteConfigParams()
+
+  useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    api.postProFlags({
+      firebase: remoteConfigData,
+    })
+  }, [remoteConfigData])
 
   const userClosedBetaTestBanner = localStorageAvailable()
     ? !localStorage.getItem(HAS_CLOSED_BETA_TEST_BANNER)
@@ -101,12 +110,9 @@ export const Homepage = (): JSX.Element => {
   const headerOffererId = useSelector(selectCurrentOffererId)
   const selectedOffererId = hasNewSideBarNavigation
     ? headerOffererId?.toString() ?? ''
-    : // TODO remove this when noUncheckedIndexedAccess is enabled in TS config
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-      searchParams.get('structure') ??
+    : searchParams.get('structure') ??
       getSavedOffererId(offererOptions) ??
-      offererOptions[0]?.value ??
-      ''
+      (offererOptions.length > 0 ? offererOptions[0]?.value : '')
 
   const selectedOffererQuery = useSWR(
     offererNames && Boolean(selectedOffererId)

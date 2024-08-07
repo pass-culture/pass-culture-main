@@ -41,7 +41,6 @@ from pcapi.core.offerers.models import UserOfferer
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
-from pcapi.core.offers.serialize import serialize_offer_type_educational_or_individual
 from pcapi.core.providers.models import VenueProvider
 from pcapi.core.users.models import User
 from pcapi.domain.booking_recap import utils as booking_recap_utils
@@ -440,6 +439,10 @@ def get_export(
 # FIXME (Gautier, 03-25-2022): also used in collective_booking. SHould we move it to core or some other place?
 def field_to_venue_timezone(field: InstrumentedAttribute) -> cast:
     return cast(func.timezone(Venue.timezone, func.timezone("UTC", field)), Date)
+
+
+def serialize_offer_type_educational_or_individual(offer_is_educational: bool) -> str:
+    return "offre collective" if offer_is_educational else "offre grand public"
 
 
 def _get_filtered_bookings_query(

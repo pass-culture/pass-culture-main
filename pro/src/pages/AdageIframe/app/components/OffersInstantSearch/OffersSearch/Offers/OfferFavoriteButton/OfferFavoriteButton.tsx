@@ -23,8 +23,6 @@ export interface OfferFavoriteButtonProps {
   viewType?: 'grid' | 'list'
 }
 
-// TODO(anoukhello - 11/07/2024) remove the code relating to favorites bookable offers, since
-// it is only allowed to add template offers to favorites
 export const OfferFavoriteButton = ({
   offer,
   queryId,
@@ -42,9 +40,7 @@ export const OfferFavoriteButton = ({
   const removeFromFavorites = async () => {
     setIsFavorite(false)
     try {
-      await (offer.isTemplate
-        ? apiAdage.deleteFavoriteForCollectiveOfferTemplate(offer.id)
-        : apiAdage.deleteFavoriteForCollectiveOffer(offer.id))
+      await apiAdage.deleteFavoriteForCollectiveOfferTemplate(offer.id)
       //  Decrease adage user favorite count for header
       setFavoriteCount?.((count) => count - 1)
 
@@ -70,9 +66,7 @@ export const OfferFavoriteButton = ({
   const addToFavorites = async () => {
     setIsFavorite(true)
     try {
-      await (offer.isTemplate
-        ? apiAdage.postCollectiveTemplateFavorites(offer.id)
-        : apiAdage.postCollectiveOfferFavorites(offer.id))
+      await apiAdage.postCollectiveTemplateFavorites(offer.id)
 
       //  Increase adage user favorite count for header
       setFavoriteCount?.((count) => count + 1)

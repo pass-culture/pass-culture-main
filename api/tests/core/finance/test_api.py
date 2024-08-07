@@ -1757,7 +1757,7 @@ class GenerateCashflowsTest:
 
 
 @clean_temporary_files
-@time_machine.travel(datetime.datetime(2023, 2, 1, 12, 34, 56))
+@time_machine.travel(datetime.datetime(2023, 2, 1, 12, 34, 26))
 @mock.patch("pcapi.connectors.googledrive.TestingBackend.create_file")
 def test_generate_payment_files(mocked_gdrive_create_file):
     # The contents of generated files is unit-tested in other test
@@ -1782,8 +1782,8 @@ def test_generate_payment_files(mocked_gdrive_create_file):
     assert cashflow.logs[0].statusAfter == models.CashflowStatus.UNDER_REVIEW
     gdrive_file_names = {call.args[1] for call in mocked_gdrive_create_file.call_args_list}
     assert gdrive_file_names == {
-        "bank_accounts_20230201_133456.csv",
-        f"down_payment_{cashflow.batch.label}_20230201_133456.csv",
+        "bank_accounts_20230201_1334.csv",
+        f"down_payment_{cashflow.batch.label}_20230201_1334.csv",
     }
 
 
@@ -2311,10 +2311,10 @@ def test_generate_invoice_file():
     )
 
     # Freeze time so that we can guess the timestamp of the CSV file.
-    with time_machine.travel(datetime.datetime(2023, 2, 1, 12, 34, 56)):
+    with time_machine.travel(datetime.datetime(2023, 2, 1, 12, 34, 26)):
         path = api.generate_invoice_file(cashflow1.batch)
     with zipfile.ZipFile(path) as zfile:
-        with zfile.open(f"invoices_{cashflow1.batch.label}_20230201_133456.csv") as csv_bytefile:
+        with zfile.open(f"invoices_{cashflow1.batch.label}_20230201_1334.csv") as csv_bytefile:
             csv_textfile = io.TextIOWrapper(csv_bytefile)
             reader = csv.DictReader(csv_textfile, quoting=csv.QUOTE_NONNUMERIC)
             rows = list(reader)
@@ -3621,6 +3621,27 @@ class CreateDepositTest:
         assert deposit.amount == expected_amount
         assert deposit.user.id == beneficiary.id
 
+    def test_create_underage_deposit_with_birthday_since_registration(self):
+        sixteen_years_ago = datetime.datetime.utcnow() - relativedelta(years=16)
+        beneficiary = users_factories.UserFactory(validatedBirthDate=sixteen_years_ago.date())
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=beneficiary,
+            status=fraud_models.FraudCheckStatus.OK,
+            type=fraud_models.FraudCheckType.EDUCONNECT,
+            eligibilityType=users_models.EligibilityType.UNDERAGE,
+            resultContent=fraud_factories.EduconnectContentFactory(
+                registration_datetime=datetime.datetime.utcnow() - relativedelta(days=1)
+            ),
+        )
+
+        with db.session.no_autoflush:
+            deposit = api.create_deposit(
+                beneficiary, "created by test", beneficiary.eligibility, age_at_registration=15
+            )
+
+        assert deposit.type == models.DepositType.GRANT_15_17
+        assert deposit.amount == Decimal(20 + 30)
+
     @time_machine.travel("2022-09-05 09:00:00")
     def test_create_18_years_old_deposit(self):
         beneficiary = users_factories.UserFactory()
@@ -3927,6 +3948,18 @@ class UserRecreditTest:
         user = users_factories.UserFactory(dateOfBirth=datetime.date(2005, 5, 1))
         with time_machine.travel("2020-05-02"):
             assert api._can_be_recredited(user) is False
+
+    def test_can_be_recredited_legacy_educonnect_fraud_check(self):
+        user = users_factories.BeneficiaryFactory(age=15)
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            dateCreated=datetime.datetime(2020, 5, 2),
+            user=user,
+            type=fraud_models.FraudCheckType.EDUCONNECT,
+            status=fraud_models.FraudCheckStatus.OK,
+            resultContent=None,
+            eligibilityType=users_models.EligibilityType.UNDERAGE,
+        )
+        assert api._has_been_recredited(user)
 
     @mock.patch("pcapi.core.finance.api._has_been_recredited")
     def should_not_check_recredits_on_age_18(self, mock_has_been_recredited):

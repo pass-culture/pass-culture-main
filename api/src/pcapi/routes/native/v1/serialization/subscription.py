@@ -105,13 +105,13 @@ class SubscriptionStepperResponseV2(BaseModel):
 
 
 class ProfileContent(BaseModel):
-    activity: profile_options.ACTIVITY_VALUE_ENUM
+    activity: profile_options.ActivityValueEnum
     address: str | None  # Address is nullable for backward compatibility
     city: str
     first_name: str
     last_name: str
     postal_code: str
-    school_type: profile_options.SCHOOL_TYPE_VALUE_ENUM | None
+    school_type: profile_options.SchoolTypeValueEnum | None
 
     class Config:
         alias_generator = to_camel
@@ -124,13 +124,13 @@ class ProfileResponse(BaseModel):
 
 
 class ProfileUpdateRequest(BaseModel):
-    activity_id: profile_options.ACTIVITY_ID_ENUM
+    activity_id: profile_options.ActivityIdEnum
     address: str
     city: str
     first_name: str
     last_name: str
     postal_code: str
-    school_type_id: profile_options.SCHOOL_TYPE_ID_ENUM | None
+    school_type_id: profile_options.SchoolTypeIdEnum | None
 
     class Config:
         alias_generator = to_camel
@@ -159,7 +159,7 @@ class ProfileUpdateRequest(BaseModel):
 
 
 class ActivityResponseModel(BaseModel):
-    id: profile_options.ACTIVITY_ID_ENUM
+    id: profile_options.ActivityIdEnum
     label: str
     description: str | None
 

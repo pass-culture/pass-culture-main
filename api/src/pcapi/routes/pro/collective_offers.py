@@ -10,7 +10,6 @@ from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import repository as educational_repository
 from pcapi.core.educational.api import adage as educational_api_adage
 from pcapi.core.educational.api import offer as educational_api_offer
-from pcapi.core.educational.models import CollectiveOfferDisplayedStatus
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offers import api as offers_api
@@ -42,17 +41,12 @@ logger = logging.getLogger(__name__)
 def get_collective_offers(
     query: collective_offers_serialize.ListCollectiveOffersQueryModel,
 ) -> collective_offers_serialize.ListCollectiveOffersResponseModel:
-    status = None
+    statuses = None
 
     if query.status:
         assert isinstance(query.status, list)
-        # Only 1 status is permitted for the moment
-        # TODO: implement multi status passing
-        if len(query.status) != 1:
-            raise ApiErrors({"status": ["Only 1 status must be provided in query args"]}, status_code=400)
 
-        status_enum: CollectiveOfferDisplayedStatus = query.status[0]
-        status = status_enum.value
+        statuses = [status.value for status in query.status]
 
     capped_offers = educational_api_offer.list_collective_offers_for_pro_user(
         user_id=current_user.id,
@@ -61,7 +55,7 @@ def get_collective_offers(
         offerer_id=query.offerer_id,
         venue_id=query.venue_id,
         name_keywords=query.nameOrIsbn,
-        status=status,
+        statuses=statuses,
         period_beginning_date=query.period_beginning_date,
         period_ending_date=query.period_ending_date,
         offer_type=query.collective_offer_type,
@@ -551,7 +545,7 @@ def patch_collective_offer_publication(offer_id: int) -> collective_offers_seria
         with db.session.no_autoflush:
             offer = educational_repository.get_collective_offer_and_extra_data(offer_id)
             if offer is None:
-                raise ApiErrors({"offerer": ["Acune offre trouvée pour cet id"]}, status_code=404)
+                raise ApiErrors({"offerer": ["Aucune offre trouvée pour cet id"]}, status_code=404)
 
             check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
@@ -577,7 +571,7 @@ def patch_collective_offer_template_publication(
     try:
         offer = educational_api_offer.get_collective_offer_template_by_id(offer_id)
     except educational_exceptions.CollectiveOfferNotFound:
-        raise ApiErrors({"offerer": ["Acune offre trouvée pour cet id"]}, status_code=404)
+        raise ApiErrors({"offerer": ["Aucune offre trouvée pour cet id"]}, status_code=404)
 
     check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 

@@ -8,7 +8,6 @@ import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
-import { AnalyticsContextProvider } from '../../providers/AnalyticsContextProvider'
 import { AdageOfferListCard } from '../OffersInstantSearch/OffersSearch/Offers/AdageOfferListCard/AdageOfferListCard'
 import { AdageSkeleton } from '../Skeleton/AdageSkeleton'
 
@@ -35,7 +34,7 @@ export const OffersForMyInstitution = () => {
   }
 
   return (
-    <AnalyticsContextProvider>
+    <>
       <h1 className={styles['title']}>Pour mon établissement</h1>
       <Callout
         className={styles['my-institution-callout']}
@@ -97,6 +96,6 @@ export const OffersForMyInstitution = () => {
           })}
         </ul>
       )}
-    </AnalyticsContextProvider>
+    </>
   )
 }

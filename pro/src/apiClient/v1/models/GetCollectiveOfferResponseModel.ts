@@ -15,6 +15,7 @@ import type { NationalProgramModel } from './NationalProgramModel';
 import type { OfferDomain } from './OfferDomain';
 import type { StudentLevels } from './StudentLevels';
 import type { SubcategoryIdEnum } from './SubcategoryIdEnum';
+import type { TemplateDatesModel } from './TemplateDatesModel';
 export type GetCollectiveOfferResponseModel = {
   audioDisabilityCompliant?: boolean | null;
   bookingEmails: Array<string>;
@@ -22,6 +23,7 @@ export type GetCollectiveOfferResponseModel = {
   contactEmail?: string | null;
   contactPhone?: string | null;
   dateCreated: string;
+  dates?: TemplateDatesModel | null;
   description: string;
   domains: Array<OfferDomain>;
   durationMinutes?: number | null;
