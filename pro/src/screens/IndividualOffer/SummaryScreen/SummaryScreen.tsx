@@ -168,12 +168,6 @@ export const SummaryScreen = () => {
 
               {showEventPublicationForm && <EventPublicationForm />}
             </div>
-
-            <ActionBar
-              onClickPrevious={handlePreviousStep}
-              step={OFFER_WIZARD_STEP_IDS.SUMMARY}
-              isDisabled={formik.isSubmitting}
-            />
           </Form>
         </FormikProvider>
       )}
@@ -231,14 +225,17 @@ export const SummaryScreen = () => {
           )}
         </SummaryAside>
       </SummaryLayout>
-      {mode !== OFFER_WIZARD_MODE.CREATION && (
-        <ActionBar
-          onClickPrevious={handlePreviousStep}
-          step={OFFER_WIZARD_STEP_IDS.SUMMARY}
-          isDisabled={false}
-        />
-      )}
-
+      <FormikProvider value={formik}>
+        <Form>
+          <ActionBar
+            onClickPrevious={handlePreviousStep}
+            step={OFFER_WIZARD_STEP_IDS.SUMMARY}
+            isDisabled={
+              mode !== OFFER_WIZARD_MODE.CREATION ? false : formik.isSubmitting
+            }
+          />
+        </Form>
+      </FormikProvider>
       {displayRedirectDialog && (
         <RedirectToBankAccountDialog
           cancelRedirectUrl={offerConfirmationStepUrl}
