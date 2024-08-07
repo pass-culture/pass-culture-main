@@ -52,6 +52,7 @@ describe('CollectiveStatusLabel', () => {
     },
     { offerStatus: CollectiveOfferStatus.EXPIRED, expectedLabel: 'expirée' },
     { offerStatus: CollectiveOfferStatus.ARCHIVED, expectedLabel: 'archivée' },
+    { offerStatus: CollectiveOfferStatus.DRAFT, expectedLabel: 'brouillon' },
   ]
 
   it.each(testCases)(
