@@ -5,6 +5,7 @@ import { validationSchema as categoriesSchema } from './Categories/validationSch
 import { validationSchema as externalLinkSchema } from './ExternalLink/validationSchema'
 import { getValidationSchema as informationsSchema } from './Informations/validationSchema'
 import { validationSchema as notificationsSchema } from './Notifications/validationSchema'
+import { validationSchema as offerLocationSchema } from './OfferLocation/validationSchema'
 import { validationSchema as usefulInformationsSchema } from './UsefulInformations/validationSchema'
 
 export const getValidationSchema = (lastProvider?: string | null) =>
@@ -13,6 +14,7 @@ export const getValidationSchema = (lastProvider?: string | null) =>
     ...informationsSchema(lastProvider),
     ...usefulInformationsSchema,
     ...accessibilitySchema,
+    ...offerLocationSchema,
     ...notificationsSchema,
     ...externalLinkSchema,
   })

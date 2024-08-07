@@ -36,6 +36,18 @@ export interface IndividualOfferFormValues {
   url: string
   isVenueVirtual?: boolean
   bookingContact?: string
+  offerlocation?: string
+  locationLabel?: string
+  manuallySetAddress?: boolean
+  'search-addressAutocomplete'?: string
+  addressAutocomplete?: string
+  street?: string
+  postalCode?: string
+  city?: string
+  coords?: string
+  latitude?: string
+  longitude?: string
+  banId?: string
 }
 
 export type IndividualOfferForm = FormikProps<IndividualOfferFormValues>
