@@ -195,7 +195,7 @@ def _resize_image(image: PIL.Image.Image, ratio: ImageRatio) -> PIL.Image.Image:
 
     height_to_width_ratio = 1 / ratio.value
     new_height = int(MAX_THUMB_WIDTH * height_to_width_ratio)
-    return image.resize([MAX_THUMB_WIDTH, new_height])
+    return image.resize((MAX_THUMB_WIDTH, new_height))
 
 
 def _shrink_image(image: PIL.Image.Image) -> PIL.Image.Image:
@@ -207,7 +207,7 @@ def _shrink_image(image: PIL.Image.Image) -> PIL.Image.Image:
 
     reduce_factor = MAX_THUMB_WIDTH / image.width
     height = int(image.height * reduce_factor)
-    return image.resize([MAX_THUMB_WIDTH, height])
+    return image.resize((MAX_THUMB_WIDTH, height))
 
 
 def _convert_to_jpeg(image: PIL.Image.Image) -> bytes:
