@@ -1,6 +1,6 @@
 # PASS-CULTURE-API
 
-Tests PR
+tTests PR
 Voici le backend de l'application pass Culture; il est lancé via `docker-compose` en utilisant le fichier
 `docker-compose-backend.yml` du répertoire parent de `api`: `pass-culture-main`.
 
