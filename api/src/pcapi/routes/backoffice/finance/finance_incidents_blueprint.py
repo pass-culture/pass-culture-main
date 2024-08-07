@@ -177,7 +177,9 @@ def get_finance_incident_cancellation_form(finance_incident_id: int) -> utils.Ba
 @atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
 def cancel_finance_incident(finance_incident_id: int) -> utils.BackofficeResponse:
-    incident: finance_models.FinanceIncident = _get_incident(finance_incident_id)
+    incident = finance_models.FinanceIncident.query.filter_by(id=finance_incident_id).one_or_none()
+    if not incident:
+        raise NotFound()
 
     form = offerer_forms.CommentForm()
     if not form.validate():
@@ -241,7 +243,6 @@ def get_incident_overpayment(finance_incident_id: int) -> utils.BackofficeRespon
 
     return render_template(
         "finance/incidents/get_overpayment.html",
-        booking_finance_incidents=incident.booking_finance_incidents,
         incident=incident,
         active_tab=request.args.get("active_tab", "bookings"),
         bookings_total_amount=bookings_total_amount,
@@ -865,7 +866,12 @@ def get_finance_incident_validation_form(finance_incident_id: int) -> utils.Back
 @atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
 def validate_finance_overpayment_incident(finance_incident_id: int) -> utils.BackofficeResponse:
-    finance_incident = _get_incident(finance_incident_id, kind=finance_models.IncidentType.OVERPAYMENT)
+    finance_incident = finance_models.FinanceIncident.query.filter_by(
+        id=finance_incident_id,
+        kind=finance_models.IncidentType.OVERPAYMENT,
+    ).one_or_none()
+    if not finance_incident:
+        raise NotFound()
     form = forms.IncidentValidationForm()
 
     if not form.validate():
@@ -889,7 +895,12 @@ def validate_finance_overpayment_incident(finance_incident_id: int) -> utils.Bac
 @atomic()
 @utils.permission_required(perm_models.Permissions.VALIDATE_COMMERCIAL_GESTURE)
 def validate_finance_commercial_gesture(finance_incident_id: int) -> utils.BackofficeResponse:
-    finance_incident = _get_incident(finance_incident_id, kind=finance_models.IncidentType.COMMERCIAL_GESTURE)
+    finance_incident = finance_models.FinanceIncident.query.filter_by(
+        id=finance_incident_id,
+        kind=finance_models.IncidentType.COMMERCIAL_GESTURE,
+    ).one_or_none()
+    if not finance_incident:
+        raise NotFound()
 
     if finance_incident.status != finance_models.IncidentStatus.CREATED:
         mark_transaction_as_invalid()
@@ -930,7 +941,10 @@ def get_finance_incident_force_debit_note_form(finance_incident_id: int) -> util
 @atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
 def force_debit_note(finance_incident_id: int) -> utils.BackofficeResponse:
-    finance_incident = _get_incident(finance_incident_id)
+    finance_incident = finance_models.FinanceIncident.query.filter_by(id=finance_incident_id).one_or_none()
+
+    if not finance_incident:
+        raise NotFound()
 
     if finance_incident.status != finance_models.IncidentStatus.VALIDATED or finance_incident.isClosed:
         flash("Cette action ne peut être effectuée que sur un incident validé non terminé.", "warning")
@@ -983,7 +997,10 @@ def get_finance_incident_cancel_debit_note_form(finance_incident_id: int) -> uti
 @atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
 def cancel_debit_note(finance_incident_id: int) -> utils.BackofficeResponse:
-    finance_incident = _get_incident(finance_incident_id)
+    finance_incident = finance_models.FinanceIncident.query.filter_by(id=finance_incident_id).one_or_none()
+
+    if not finance_incident:
+        raise NotFound()
 
     if finance_incident.status != finance_models.IncidentStatus.VALIDATED or finance_incident.isClosed:
         flash("Cette action ne peut être effectuée que sur un incident validé non terminé.", "warning")
@@ -1060,7 +1077,7 @@ def _get_incident(finance_incident_id: int, **args: typing.Any) -> finance_model
             )
             # Booking venue info
             .joinedload(bookings_models.Booking.venue).load_only(offerer_models.Venue.bookingEmail),
-            # booking user info
+            # Booking user info
             sa.orm.joinedload(
                 finance_models.BookingFinanceIncident, finance_models.FinanceIncident.booking_finance_incidents
             )
@@ -1072,14 +1089,14 @@ def _get_incident(finance_incident_id: int, **args: typing.Any) -> finance_model
                 users_models.User.lastName,
                 users_models.User.email,
             ),
-            # booking deposit info
+            # Booking deposit info
             sa.orm.joinedload(
                 finance_models.BookingFinanceIncident, finance_models.FinanceIncident.booking_finance_incidents
             )
             .joinedload(finance_models.BookingFinanceIncident.booking)
             .joinedload(bookings_models.Booking.deposit)
             .load_only(finance_models.Deposit.type),
-            # booking pricing info
+            # Booking pricing info
             sa.orm.joinedload(
                 finance_models.BookingFinanceIncident, finance_models.FinanceIncident.booking_finance_incidents
             )
@@ -1089,6 +1106,26 @@ def _get_incident(finance_incident_id: int, **args: typing.Any) -> finance_model
                 finance_models.Pricing.amount,
                 finance_models.Pricing.status,
                 finance_models.Pricing.creationDate,
+            ),
+            # Batch infos
+            sa.orm.joinedload(
+                finance_models.BookingFinanceIncident, finance_models.FinanceIncident.booking_finance_incidents
+            )
+            .joinedload(finance_models.BookingFinanceIncident.finance_events)
+            .load_only(finance_models.FinanceEvent.id)
+            .joinedload(finance_models.FinanceEvent.pricings)
+            .load_only(finance_models.Pricing.id, finance_models.Pricing.amount, finance_models.Pricing.status)
+            .joinedload(finance_models.Pricing.cashflows)
+            .load_only(finance_models.Cashflow.id)
+            .options(
+                # Cashflow batch label
+                sa.orm.joinedload(finance_models.Cashflow.batch).load_only(finance_models.CashflowBatch.label),
+                # Invoice url
+                sa.orm.joinedload(finance_models.Cashflow.invoices).load_only(
+                    finance_models.Invoice.token,
+                    finance_models.Invoice.date,
+                    finance_models.Invoice.reference,
+                ),
             ),
             # booking stock info
             sa.orm.joinedload(

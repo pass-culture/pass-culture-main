@@ -1045,15 +1045,16 @@ class GetOverpaymentIncidentTest(GetEndpointHelper):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
-        header = html_parser.get_tag(response.data, "incident-header")
+        header = html_parser.get_tag(response.data, class_="incident-header")
         badges = html_parser.extract(header, tag="span", class_="badge")
         assert badges == ["Créé", "Total"]
 
         content = html_parser.content_as_text(response.data)
         assert f"ID : {finance_incident.id}" in content
         assert f"Lieu porteur de l'offre : {finance_incident.venue.name}" in content
-
         assert f"Compte bancaire : {bank_account.label}" in content
+        assert "Batch :" not in content
+        assert "Justificatif de remboursement :" not in content
 
     def test_get_collective_booking_incident(self, authenticated_client):
         finance_incident = finance_factories.FinanceIncidentFactory(
@@ -1071,6 +1072,57 @@ class GetOverpaymentIncidentTest(GetEndpointHelper):
         assert f"ID : {finance_incident.id}" in content
         assert f"Lieu porteur de l'offre : {finance_incident.venue.name}" in content
         assert f"Incident créé par : {finance_incident.details['author']}" in content
+        assert "Batch :" not in content
+        assert "Justificatif de remboursement :" not in content
+
+    def test_get_incident_batch_info(self, authenticated_client):
+        bank_account = finance_factories.BankAccountFactory()
+        venue = offerers_factories.VenueFactory(
+            managingOfferer=offerers_factories.UserOffererFactory().offerer, bank_account=bank_account
+        )
+        invoice = finance_factories.InvoiceFactory()
+        cashflow = finance_factories.CashflowFactory(
+            status=finance_models.CashflowStatus.ACCEPTED,
+            bankAccount=bank_account,
+            batch__label="VIR1",
+            invoices=[invoice],
+        )
+        pricing = finance_factories.PricingFactory(
+            status=finance_models.PricingStatus.INVOICED,
+            cashflows=[cashflow],
+        )
+        finance_incident = finance_factories.FinanceIncidentFactory()
+        booking_finance_incident = finance_factories.IndividualBookingFinanceIncidentFactory(
+            incident=finance_incident,
+        )
+        finance_factories.FinanceEventFactory(
+            venue=venue,
+            bookingFinanceIncident=booking_finance_incident,
+            booking=None,
+            valueDate=datetime.datetime.utcnow(),
+            status=finance_models.FinanceEventStatus.PRICED,
+            pricings=[pricing],
+            pricingPoint=venue,
+            pricingOrderingDate=datetime.datetime.utcnow(),
+        )
+
+        url = url_for(self.endpoint, finance_incident_id=finance_incident.id)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        content = html_parser.content_as_text(response.data)
+
+        assert f"ID : {finance_incident.id}" in content
+        assert f"Lieu porteur de l'offre : {finance_incident.venue.name}" in content
+        assert f"Incident créé par : {finance_incident.details['author']}" in content
+        assert "Batch : VIR1" in content
+        assert "Justificatif de remboursement : PDF" in content
+        assert (
+            invoice.url
+            in html_parser.get_tag(html_content=response.data, class_="link-primary", tag="a", download=True).decode()
+        )
 
 
 class GetCommercialGestureTest(GetEndpointHelper):
@@ -1099,6 +1151,8 @@ class GetCommercialGestureTest(GetEndpointHelper):
         assert f"ID : {finance_incident.id}" in content
         assert f"Lieu porteur de l'offre : {finance_incident.venue.name}" in content
         assert f"Compte bancaire : {bank_account.label}" in content
+        assert "Batch :" not in content
+        assert "Justificatif de remboursement :" not in content
 
     def test_get_collective_booking_incident(self, authenticated_client):
         finance_incident = finance_factories.FinanceIncidentFactory(
@@ -1116,7 +1170,58 @@ class GetCommercialGestureTest(GetEndpointHelper):
 
         assert f"ID : {finance_incident.id}" in content
         assert f"Lieu porteur de l'offre : {finance_incident.venue.name}" in content
-        assert f"Incident créé par : {finance_incident.details['author']}" in content
+        assert f"Geste commercial créé par : {finance_incident.details['author']}" in content
+        assert "Batch :" not in content
+        assert "Justificatif de remboursement :" not in content
+
+    def test_get_batch_info(self, authenticated_client):
+        bank_account = finance_factories.BankAccountFactory()
+        venue = offerers_factories.VenueFactory(
+            managingOfferer=offerers_factories.UserOffererFactory().offerer, bank_account=bank_account
+        )
+        invoice = finance_factories.InvoiceFactory()
+        cashflow = finance_factories.CashflowFactory(
+            status=finance_models.CashflowStatus.ACCEPTED,
+            bankAccount=bank_account,
+            batch__label="VIR1",
+            invoices=[invoice],
+        )
+        pricing = finance_factories.PricingFactory(
+            status=finance_models.PricingStatus.INVOICED,
+            cashflows=[cashflow],
+        )
+        finance_incident = finance_factories.FinanceIncidentFactory(kind=finance_models.IncidentType.COMMERCIAL_GESTURE)
+        booking_finance_incident = finance_factories.IndividualBookingFinanceIncidentFactory(
+            incident=finance_incident,
+        )
+        finance_factories.FinanceEventFactory(
+            venue=venue,
+            bookingFinanceIncident=booking_finance_incident,
+            booking=None,
+            valueDate=datetime.datetime.utcnow(),
+            status=finance_models.FinanceEventStatus.PRICED,
+            pricings=[pricing],
+            pricingPoint=venue,
+            pricingOrderingDate=datetime.datetime.utcnow(),
+        )
+
+        url = url_for(self.endpoint, finance_incident_id=finance_incident.id)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        content = html_parser.content_as_text(response.data)
+
+        assert f"ID : {finance_incident.id}" in content
+        assert f"Lieu porteur de l'offre : {finance_incident.venue.name}" in content
+        assert f"Geste commercial créé par : {finance_incident.details['author']}" in content
+        assert "Batch : VIR1" in content
+        assert "Justificatif de remboursement : PDF" in content
+        assert (
+            invoice.url
+            in html_parser.get_tag(html_content=response.data, class_="link-primary", tag="a", download=True).decode()
+        )
 
 
 class GetOverpaymentCreationFormTest(PostEndpointHelper):
