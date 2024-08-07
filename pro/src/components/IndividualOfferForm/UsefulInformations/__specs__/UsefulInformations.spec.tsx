@@ -465,7 +465,7 @@ describe('IndividualOffer section: UsefulInformations', () => {
         })
 
         const infoBox = screen.getByText(
-          'Indiquez ici tout ce qui peut être utile au bénéficiaire pour le retrait de l’offre. En renseignant ces informations depuis votre page lieu, elles s’appliqueront par défaut à toutes vos offres.'
+          'Indiquez ici tout ce qui peut être utile au bénéficiaire pour le retrait de l’offre. En renseignant ces informations depuis les paramètres généraux de votre page partenaire, elles s’appliqueront par défaut à toutes vos offres.'
         )
         const infoLink = screen.getByText(
           'Quelles modalités de retrait choisir ?'

@@ -166,7 +166,7 @@ export const UsefulInformationForm = ({
             >
               {isVenueVirtual
                 ? 'Indiquez ici tout ce qui peut être utile au bénéficiaire pour le retrait de l’offre.'
-                : 'Indiquez ici tout ce qui peut être utile au bénéficiaire pour le retrait de l’offre. En renseignant ces informations depuis votre page lieu, elles s’appliqueront par défaut à toutes vos offres.'}
+                : 'Indiquez ici tout ce qui peut être utile au bénéficiaire pour le retrait de l’offre. En renseignant ces informations depuis les paramètres généraux de votre page partenaire, elles s’appliqueront par défaut à toutes vos offres.'}
             </InfoBox>
           }
         >
