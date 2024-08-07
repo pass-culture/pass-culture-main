@@ -87,7 +87,7 @@ export const Layout = ({ children, layout = 'basic' }: LayoutProps) => {
               navPanel={navPanel}
             />
           )}
-          <div className={styles['content-wrapper']}>
+          <div id="content-wrapper" className={styles['content-wrapper']}>
             {shouldDisplayNewNavReview && <NewNavReview />}
             <div
               className={cn(styles['content-container'], {
