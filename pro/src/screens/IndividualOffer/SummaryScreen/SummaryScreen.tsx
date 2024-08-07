@@ -147,105 +147,94 @@ export const SummaryScreen = () => {
   ]
 
   return (
-    <>
-      {mode === OFFER_WIZARD_MODE.CREATION && (
-        <FormikProvider value={formik}>
-          <Form>
-            <div className={styles['offer-preview-banners']}>
-              <Callout>
-                <strong>Vous y êtes presque !</strong>
-                <br />
-                Vérifiez les informations ci-dessous avant de publier votre
-                offre.
-                {
-                  <>
-                    <br />
-                    Si vous souhaitez la publier plus tard, vous pouvez
-                    retrouver votre brouillon dans la liste de vos offres.
-                  </>
-                }
-              </Callout>
+    <FormikProvider value={formik}>
+      <Form>
+        {mode === OFFER_WIZARD_MODE.CREATION && (
+          <div className={styles['offer-preview-banners']}>
+            <Callout>
+              <strong>Vous y êtes presque !</strong>
+              <br />
+              Vérifiez les informations ci-dessous avant de publier votre offre.
+              {
+                <>
+                  <br />
+                  Si vous souhaitez la publier plus tard, vous pouvez retrouver
+                  votre brouillon dans la liste de vos offres.
+                </>
+              }
+            </Callout>
 
-              {showEventPublicationForm && <EventPublicationForm />}
-            </div>
-
-            <ActionBar
-              onClickPrevious={handlePreviousStep}
-              step={OFFER_WIZARD_STEP_IDS.SUMMARY}
-              isDisabled={formik.isSubmitting}
-            />
-          </Form>
-        </FormikProvider>
-      )}
-
-      <SummaryLayout>
-        <SummaryContent>
-          <OfferSection
-            conditionalFields={conditionalFields}
-            offer={offer}
-            isEventPublicationFormShown={showEventPublicationForm}
-          />
-
-          {mode === OFFER_WIZARD_MODE.CREATION && offer.isEvent && (
-            <PriceCategoriesSection offer={offer} canBeDuo={canBeDuo} />
-          )}
-
-          {mode === OFFER_WIZARD_MODE.CREATION && (
-            <StockSection offer={offer} canBeDuo={canBeDuo} />
-          )}
-        </SummaryContent>
-
-        <SummaryAside>
-          <div className={styles['offer-creation-preview-title']}>
-            <SvgIcon
-              src={phoneStrokeIcon}
-              alt=""
-              className={styles['icon-info-phone']}
-            />
-            <h2 className={styles['title']}>Aperçu dans l’app</h2>
+            {showEventPublicationForm && <EventPublicationForm />}
           </div>
+        )}
+        <SummaryLayout>
+          <SummaryContent>
+            <OfferSection
+              conditionalFields={conditionalFields}
+              offer={offer}
+              isEventPublicationFormShown={showEventPublicationForm}
+            />
 
-          <OfferAppPreview offer={offer} />
+            {mode === OFFER_WIZARD_MODE.CREATION && offer.isEvent && (
+              <PriceCategoriesSection offer={offer} canBeDuo={canBeDuo} />
+            )}
 
-          {mode === OFFER_WIZARD_MODE.READ_ONLY && (
-            <div className={styles['offer-preview-app-link']}>
-              <DisplayOfferInAppLink
-                id={offer.id}
-                variant={ButtonVariant.SECONDARY}
-                onClick={() =>
-                  logEvent(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-                    from: OFFER_WIZARD_STEP_IDS.SUMMARY,
-                    to: OFFER_FORM_NAVIGATION_OUT.PREVIEW,
-                    used: OFFER_FORM_NAVIGATION_MEDIUM.SUMMARY_PREVIEW,
-                    isEdition: true,
-                    isDraft: false,
-                    offerId: offer.id,
-                    offerType: 'individual',
-                    offererId: selectedOffererId?.toString(),
-                  })
-                }
-              >
-                Visualiser dans l’app
-              </DisplayOfferInAppLink>
+            {mode === OFFER_WIZARD_MODE.CREATION && (
+              <StockSection offer={offer} canBeDuo={canBeDuo} />
+            )}
+          </SummaryContent>
+
+          <SummaryAside>
+            <div className={styles['offer-creation-preview-title']}>
+              <SvgIcon
+                src={phoneStrokeIcon}
+                alt=""
+                className={styles['icon-info-phone']}
+              />
+              <h2 className={styles['title']}>Aperçu dans l’app</h2>
             </div>
-          )}
-        </SummaryAside>
-      </SummaryLayout>
-      {mode !== OFFER_WIZARD_MODE.CREATION && (
+
+            <OfferAppPreview offer={offer} />
+
+            {mode === OFFER_WIZARD_MODE.READ_ONLY && (
+              <div className={styles['offer-preview-app-link']}>
+                <DisplayOfferInAppLink
+                  id={offer.id}
+                  variant={ButtonVariant.SECONDARY}
+                  onClick={() =>
+                    logEvent(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+                      from: OFFER_WIZARD_STEP_IDS.SUMMARY,
+                      to: OFFER_FORM_NAVIGATION_OUT.PREVIEW,
+                      used: OFFER_FORM_NAVIGATION_MEDIUM.SUMMARY_PREVIEW,
+                      isEdition: true,
+                      isDraft: false,
+                      offerId: offer.id,
+                      offerType: 'individual',
+                      offererId: selectedOffererId?.toString(),
+                    })
+                  }
+                >
+                  Visualiser dans l’app
+                </DisplayOfferInAppLink>
+              </div>
+            )}
+          </SummaryAside>
+        </SummaryLayout>
         <ActionBar
           onClickPrevious={handlePreviousStep}
           step={OFFER_WIZARD_STEP_IDS.SUMMARY}
-          isDisabled={false}
+          isDisabled={
+            mode !== OFFER_WIZARD_MODE.CREATION ? false : formik.isSubmitting
+          }
         />
-      )}
-
-      {displayRedirectDialog && (
-        <RedirectToBankAccountDialog
-          cancelRedirectUrl={offerConfirmationStepUrl}
-          offerId={offer.venue.managingOfferer.id}
-          venueId={offer.venue.id}
-        />
-      )}
-    </>
+        {displayRedirectDialog && (
+          <RedirectToBankAccountDialog
+            cancelRedirectUrl={offerConfirmationStepUrl}
+            offerId={offer.venue.managingOfferer.id}
+            venueId={offer.venue.id}
+          />
+        )}
+      </Form>
+    </FormikProvider>
   )
 }
