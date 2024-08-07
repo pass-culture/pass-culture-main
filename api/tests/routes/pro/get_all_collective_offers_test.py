@@ -238,20 +238,21 @@ class Returns200Test:
         assert isinstance(response_json, list)
         assert len(response_json) == 2
         assert response_json[0]["venue"]["id"] == venue.id
-        assert response_json[0]["id"] == template.id
+        assert response_json[0]["id"] == offer.id
         assert len(response_json[0]["stocks"]) == 1
-        assert response_json[0]["isShowcase"] is True
-        assert response_json[0]["imageCredit"] == "template"
+        assert response_json[0]["isShowcase"] is False
+        assert response_json[0]["imageCredit"] == "offer"
+        assert response_json[0]["imageUrl"] == f"http://localhost/storage/thumbs/collectiveoffer/{offer.imageId}.jpg"
+
+        assert response_json[1]["venue"]["id"] == venue.id
+        assert response_json[1]["id"] == template.id
+        assert len(response_json[1]["stocks"]) == 1
+        assert response_json[1]["isShowcase"] is True
+        assert response_json[1]["imageCredit"] == "template"
         assert (
-            response_json[0]["imageUrl"]
+            response_json[1]["imageUrl"]
             == f"http://localhost/storage/thumbs/collectiveoffertemplate/{template.imageId}.jpg"
         )
-        assert response_json[1]["venue"]["id"] == venue.id
-        assert response_json[1]["id"] == offer.id
-        assert len(response_json[1]["stocks"]) == 1
-        assert response_json[1]["isShowcase"] is False
-        assert response_json[1]["imageCredit"] == "offer"
-        assert response_json[1]["imageUrl"] == f"http://localhost/storage/thumbs/collectiveoffer/{offer.imageId}.jpg"
 
     def test_one_collective_offer_with_template_id(self, client):
         # Given
@@ -600,7 +601,7 @@ class Returns200Test:
             dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=15),
         )
 
-        # # average temlate
+        # average template
         template_created_14_days_ago = educational_factories.CollectiveOfferTemplateFactory(
             venue=venue, dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=14)
         )
@@ -615,6 +616,15 @@ class Returns200Test:
         )
         _booking = educational_factories.PendingCollectiveBookingFactory(collectiveStock=stock)
 
+        # Published offer that needs urgent confirmation
+        published_offer_requiring_urgent_attention = educational_factories.CollectiveOfferFactory(
+            venue=venue, dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=35)
+        )
+        tomorrow = datetime.datetime.utcnow() + datetime.timedelta(days=1)
+        stock = educational_factories.CollectiveStockFactory(
+            bookingLimitDatetime=tomorrow, collectiveOffer=published_offer_requiring_urgent_attention
+        )
+
         # Offer that needs urgent confirmation
         offer_requiring_urgent_attention = educational_factories.CollectiveOfferFactory(
             venue=venue, dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=35)
@@ -624,6 +634,16 @@ class Returns200Test:
             bookingLimitDatetime=tomorrow, collectiveOffer=offer_requiring_urgent_attention
         )
         _booking = educational_factories.PendingCollectiveBookingFactory(collectiveStock=stock)
+
+        # Offer already booked
+        offer_booked = educational_factories.CollectiveOfferFactory(
+            venue=venue, dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=34)
+        )
+        tomorrow = datetime.datetime.utcnow() + datetime.timedelta(days=1)
+        stock = educational_factories.CollectiveStockFactory(
+            bookingLimitDatetime=tomorrow, collectiveOffer=offer_booked
+        )
+        _booking = educational_factories.ConfirmedCollectiveBookingFactory(collectiveStock=stock)
 
         # Offer that needs confirmation that can be waited
         offer_requiring_not_urgent_confirmation = educational_factories.CollectiveOfferFactory(
@@ -649,11 +669,13 @@ class Returns200Test:
         # in first the most fresh
         assert ids == [
             offer_requiring_urgent_attention.id,
+            published_offer_requiring_urgent_attention.id,
             offer_requiring_attention.id,
             offer_created_10_days_ago.id,
             template_created_14_days_ago.id,
             offer_created_20_days_ago.id,
             offer_created_30_days_ago.id,
+            offer_booked.id,
             offer_requiring_not_urgent_confirmation.id,
             archived_offer.id,
         ]
