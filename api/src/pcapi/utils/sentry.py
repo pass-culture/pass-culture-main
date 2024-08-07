@@ -39,7 +39,7 @@ def before_send(event: "Event", _hint: dict[str, typing.Any]) -> "Event | None":
     return event
 
 
-def traces_sampler(sampling_context: dict) -> float:
+def custom_traces_sampler(sampling_context: dict) -> float:
     """
     This sampler defines a fraction of the DEFAULT_SAMPLE_RATE according to the requested path
     The sentry SDK will then apply that rate to decide if the transaction should be sampled
@@ -137,11 +137,11 @@ def init_sentry_sdk() -> None:
         integrations=[FlaskIntegration(), RedisIntegration(), RqIntegration(), SqlalchemyIntegration()],
         release=read_version_from_file(),
         environment=settings.ENV,
-        traces_sample_rate=None if settings.ENABLE_SENTRY_FINE_SAMPLING else settings.SENTRY_DEFAULT_TRACES_SAMPLE_RATE,
+        traces_sample_rate=None if settings.SENTRY_FINE_SAMPLING else settings.SENTRY_DEFAULT_TRACES_SAMPLE_RATE,
         before_send=before_send,
         max_value_length=8192,
-        traces_sampler=traces_sampler if settings.ENABLE_SENTRY_FINE_SAMPLING else None,
-        before_send_transaction=filter_transactions if settings.ENABLE_SENTRY_FINE_SAMPLING else None,
+        traces_sampler=custom_traces_sampler if settings.SENTRY_FINE_SAMPLING else None,
+        before_send_transaction=filter_transactions if settings.SENTRY_FINE_SAMPLING else None,
     )
 
 
