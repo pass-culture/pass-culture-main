@@ -15,6 +15,7 @@ import {
   INDIVIDUAL_OFFER_SUBTYPE,
 } from 'core/Offers/constants'
 import { IndividualOfferImage } from 'core/Offers/types'
+import { useActiveFeature } from 'hooks/useActiveFeature'
 import { useCurrentUser } from 'hooks/useCurrentUser'
 
 import { Accessibility } from './Accessibility/Accessibility'
@@ -23,6 +24,7 @@ import { ExternalLink } from './ExternalLink/ExternalLink'
 import { ImageUploaderOffer } from './ImageUploaderOffer/ImageUploaderOffer'
 import { Informations } from './Informations/Informations'
 import { Notifications } from './Notifications/Notifications'
+import { OfferLocation } from './OfferLocation/OfferLocation'
 import { IndividualOfferFormValues } from './types'
 import { UsefulInformations } from './UsefulInformations/UsefulInformations'
 import { getFilteredVenueListBySubcategory } from './utils/getFilteredVenueList'
@@ -88,6 +90,8 @@ export const IndividualOfferForm = ({
     areAllVenuesVirtual &&
     offererId
 
+  const offerAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
+
   return (
     <>
       <ScrollToFirstErrorAfterSubmit />
@@ -122,6 +126,10 @@ export const IndividualOfferForm = ({
             isVenueVirtual={isVenueVirtual}
             readOnlyFields={readOnlyFields}
           />
+
+          {offerAddressEnabled && !isVenueVirtual && (
+            <OfferLocation venueList={filteredVenueList} />
+          )}
 
           <Accessibility readOnlyFields={readOnlyFields} />
 
