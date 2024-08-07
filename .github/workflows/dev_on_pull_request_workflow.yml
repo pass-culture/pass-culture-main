@@ -282,7 +282,7 @@ jobs:
     uses: ./.github/workflows/dev_on_workflow_deploy_pullrequests.yml
     with:
       environment: pullrequests
-      app_version: ${{ steps.pcapi-tags.outputs.checksum-tag }}
+      app_version: ${{ needs.pcapi-init-job.outputs.checksum-tag }}
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
