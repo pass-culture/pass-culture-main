@@ -700,6 +700,21 @@ def get_stocks_by_id_at_providers(id_at_providers: list[str]) -> dict:
     }
 
 
+def is_id_at_provider_taken_by_another_venue_offer(venue_id: int, id_at_provider: str, offer_id: int | None) -> bool:
+    """
+    Return `True` if `id_at_provider` is already used to identify another venue offer.
+    """
+    base_query = models.Offer.query.filter(
+        models.Offer.venueId == venue_id,
+        models.Offer.idAtProvider == id_at_provider,
+    )
+
+    if offer_id:
+        base_query = base_query.filter(models.Offer.id != offer_id)
+
+    return db.session.query(base_query.exists()).scalar()
+
+
 def get_active_offers_count_for_venue(venue_id: int) -> int:
     active_offers_query = models.Offer.query.filter(models.Offer.venueId == venue_id)
     active_offers_query = _filter_by_status(active_offers_query, offer_mixin.OfferStatus.ACTIVE.name)
