@@ -31,9 +31,9 @@
               Lieu : {{ links.build_venue_name_to_details_link(action.venue) }}
             {% elif action.actionType.name == "OFFERER_ATTESTATION_CHECKED" %}
               L'état positif ou négatif de l'attestation {{ action.extraData['provider'] }} a été visualisé
-            {% elif action.actionType.name in ["SYNC_VENUE_TO_PROVIDER"] %}
+            {% elif action.actionType.name == "SYNC_VENUE_TO_PROVIDER" %}
               Partenaire technique : {{ action.extraData["provider_name"] }}
-            {% elif action.actionType.name in ["PIVOT_CREATED"] %}
+            {% elif action.actionType.name == "PIVOT_CREATED" %}
               Création d'un pivot {{ action.extraData["pivot_name"] | format_pivot_name }},
               <br />
               Identifiant du cinéma : {{ action.extraData["cinema_id"] }}

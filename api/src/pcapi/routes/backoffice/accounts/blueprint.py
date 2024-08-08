@@ -157,7 +157,7 @@ def anonymize_public_account(user_id: int) -> utils.BackofficeResponse:
         return redirect(url_for("backoffice_web.public_accounts.get_public_account", user_id=user_id), code=303)
 
     if users_api.has_unprocessed_extract(user):
-        flash("L'utilisateur possède une extraction qui est toujours en cours de traitement.", "warning")
+        flash("Une extraction de données est en cours pour cet utilisateur.", "warning")
         return redirect(url_for(".get_public_account", user_id=user_id))
 
     user_anonymized = users_api.anonymize_user(user, author=current_user, force=True)
