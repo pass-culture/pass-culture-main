@@ -190,9 +190,6 @@ describe('screens:IndividualOffer::Informations', () => {
         screen.getByRole('heading', { name: 'Accessibilité' })
       ).toBeInTheDocument()
       expect(
-        screen.getByRole('heading', { name: 'Lien pour le grand public' })
-      ).toBeInTheDocument()
-      expect(
         screen.getByRole('heading', { name: 'Notifications' })
       ).toBeInTheDocument()
     })

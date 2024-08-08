@@ -126,7 +126,6 @@ describe('screens:StocksThing', () => {
       priceCategories: [{ price: 12.2, label: 'Mon premier tariff', id: 1 }],
       subcategoryId: SubcategoryIdEnum.SEANCE_CINE,
       thumbUrl: null,
-      externalTicketOfficeUrl: null,
       url: null,
       venue: {
         bookingEmail: 'venue29@example.net',

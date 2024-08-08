@@ -134,7 +134,6 @@ describe('Summary', () => {
         subcategoryId: SubcategoryIdEnum.CONCERT,
         url: 'https://offer-url.example.com',
         withdrawalDetails: 'détails de retrait',
-        externalTicketOfficeUrl: 'https://grand-public-url.example.com',
         bookingEmail: 'booking@example.com',
         venue: getOfferVenueFactory({
           name: 'ma venue',
@@ -170,7 +169,6 @@ describe('Summary', () => {
     expect(
       screen.getByText('URL d’accès à l’offre', { exact: false })
     ).toBeInTheDocument()
-    expect(screen.getByText('Lien pour le grand public')).toBeInTheDocument()
     expect(screen.getByText('Aperçu dans l’app')).toBeInTheDocument()
 
     expect(screen.getByText(categories[0].proLabel)).toBeInTheDocument()
@@ -180,9 +178,6 @@ describe('Summary', () => {
     expect(screen.getByText('détails de retrait')).toBeInTheDocument()
     expect(
       screen.getByText('https://offer-url.example.com')
-    ).toBeInTheDocument()
-    expect(
-      screen.getByText('https://grand-public-url.example.com')
     ).toBeInTheDocument()
     expect(screen.getByText('Non accessible')).toBeInTheDocument()
     expect(screen.getByText('booking@example.com')).toBeInTheDocument()
