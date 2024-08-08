@@ -441,6 +441,33 @@ class BoostStocksTest:
 
         assert get_cinema_attr_adapter.call_count == 1
 
+    def should_create_offer_even_if_incorrect_thumb(self, requests_mock):
+        venue_provider = self._create_cinema_and_pivot()
+        get_cinema_attr_adapter = requests_mock.get(
+            "https://cinema-0.example.com/api/cinemas/attributs", json=fixtures.CinemasAttributsEndPointResponse.DATA
+        )
+        requests_mock.get(
+            f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?page=1&per_page=30",
+            json=fixtures.ShowtimesEndpointResponse.ONE_FILM_PAGE_1_JSON_DATA,
+        )
+        # Image that should raise a `pcapi.core.offers.exceptions.UnidentifiedImage`
+        file_path = Path(tests.__path__[0]) / "files" / "mouette_fake_jpg.jpg"
+        with open(file_path, "rb") as thumb_file:
+            seagull_poster = thumb_file.read()
+        requests_mock.get(
+            "http://example.com/images/158026.jpg",
+            content=seagull_poster,
+        )
+
+        boost_stocks = BoostStocks(venue_provider=venue_provider)
+        boost_stocks.updateObjects()
+
+        created_offer = Offer.query.one()
+
+        assert created_offer.activeMediation is None
+        assert boost_stocks.erroredThumbs == 1
+        assert get_cinema_attr_adapter.call_count == 1
+
     def should_not_update_thumbnail_more_then_once_a_day(self, requests_mock):
         venue_provider = self._create_cinema_and_pivot()
         get_cinema_attr_adapter = requests_mock.get(

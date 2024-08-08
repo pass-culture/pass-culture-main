@@ -443,6 +443,35 @@ class CGRStocksTest:
         )
         assert created_offer.activeMediation.thumbCount == 1
 
+    def should_create_product_even_if_thumb_is_incorrect(self, requests_mock):
+        requests_mock.get("https://cgr-cinema-0.example.com/web_service", text=soap_definitions.WEB_SERVICE_DEFINITION)
+
+        cgr_provider = get_provider_by_local_class("CGRStocks")
+        venue_provider = providers_factories.VenueProviderFactory(provider=cgr_provider, isDuoOffers=True)
+        cinema_provider_pivot = providers_factories.CGRCinemaProviderPivotFactory(
+            venue=venue_provider.venue, idAtProvider=venue_provider.venueIdAtOfferProvider
+        )
+        providers_factories.CGRCinemaDetailsFactory(
+            cinemaProviderPivot=cinema_provider_pivot, cinemaUrl="https://cgr-cinema-0.example.com/web_service"
+        )
+
+        requests_mock.post(
+            "https://cgr-cinema-0.example.com/web_service", text=fixtures.cgr_response_template([fixtures.FILM_138473])
+        )
+
+        # Image that should raise a `pcapi.core.offers.exceptions.UnidentifiedImage`
+        file_path = Path(tests.__path__[0]) / "files" / "mouette_fake_jpg.jpg"
+        with open(file_path, "rb") as thumb_file:
+            seagull_poster = thumb_file.read()
+        requests_mock.get("https://example.com/149341.jpg", content=seagull_poster)
+
+        cgr_stocks = CGRStocks(venue_provider=venue_provider)
+        cgr_stocks.updateObjects()
+
+        created_offer = offers_models.Offer.query.one()
+        assert created_offer.activeMediation == None
+        assert cgr_stocks.erroredThumbs == 1
+
     def should_not_update_thumbnail_more_then_once_a_day(self, requests_mock):
         requests_mock.get("https://cgr-cinema-0.example.com/web_service", text=soap_definitions.WEB_SERVICE_DEFINITION)
 
