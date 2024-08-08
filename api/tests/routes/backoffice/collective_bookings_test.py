@@ -13,6 +13,7 @@ from pcapi.core.finance import models as finance_models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.testing import assert_num_queries
+from pcapi.core.testing import override_settings
 from pcapi.models import db
 
 from .helpers import html_parser
@@ -633,3 +634,146 @@ class GetCollectiveBookingXLSXDownloadTest(GetEndpointHelper):
         assert sheet.cell(row=1, column=1).value == "Lieu"
         assert sheet.cell(row=2, column=1).value == collective_bookings[0].venue.name
         assert sheet.cell(row=3, column=1).value == None
+
+
+class UpdateCollectiveBookingStatusTest(PostEndpointHelper):
+    endpoint = "backoffice_web.collective_bookings.update_collective_booking_status"
+    endpoint_kwargs = {"collective_booking_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_BOOKINGS
+
+    @override_settings(IS_INTEGRATION=True)
+    @pytest.mark.parametrize(
+        "to_status",
+        [
+            educational_models.CollectiveBookingStatus.PENDING,
+            educational_models.CollectiveBookingStatus.CONFIRMED,
+            educational_models.CollectiveBookingStatus.USED,
+            educational_models.CollectiveBookingStatus.CANCELLED,
+            educational_models.CollectiveBookingStatus.REIMBURSED,
+        ],
+    )
+    def test_set_status_from_pending(self, authenticated_client, to_status):
+        booking = educational_factories.PendingCollectiveBookingFactory()
+        self.send_request(authenticated_client, booking, to_status)
+
+    @override_settings(IS_INTEGRATION=True)
+    @pytest.mark.parametrize(
+        "to_status",
+        [
+            educational_models.CollectiveBookingStatus.PENDING,
+            educational_models.CollectiveBookingStatus.CONFIRMED,
+            educational_models.CollectiveBookingStatus.USED,
+            educational_models.CollectiveBookingStatus.CANCELLED,
+            educational_models.CollectiveBookingStatus.REIMBURSED,
+        ],
+    )
+    def test_set_status_from_confirmed(self, authenticated_client, to_status):
+        booking = educational_factories.ConfirmedCollectiveBookingFactory()
+        self.send_request(authenticated_client, booking, to_status)
+
+    @override_settings(IS_INTEGRATION=True)
+    @pytest.mark.parametrize(
+        "to_status, error",
+        [
+            (educational_models.CollectiveBookingStatus.PENDING, False),
+            (educational_models.CollectiveBookingStatus.CONFIRMED, True),
+            (educational_models.CollectiveBookingStatus.USED, False),
+            (educational_models.CollectiveBookingStatus.CANCELLED, True),
+            (educational_models.CollectiveBookingStatus.REIMBURSED, False),
+        ],
+    )
+    def test_set_status_from_used(self, authenticated_client, to_status, error):
+        booking = educational_factories.UsedCollectiveBookingFactory()
+        self.send_request(authenticated_client, booking, to_status, error)
+
+    @override_settings(IS_INTEGRATION=True)
+    @pytest.mark.parametrize(
+        "to_status, error",
+        [
+            (educational_models.CollectiveBookingStatus.PENDING, False),
+            (educational_models.CollectiveBookingStatus.CONFIRMED, True),
+            (educational_models.CollectiveBookingStatus.USED, False),
+            (educational_models.CollectiveBookingStatus.CANCELLED, True),
+            (educational_models.CollectiveBookingStatus.REIMBURSED, False),
+        ],
+    )
+    def test_set_status_from_cancelled(self, authenticated_client, to_status, error):
+        booking = educational_factories.CancelledCollectiveBookingFactory()
+        self.send_request(authenticated_client, booking, to_status, error)
+
+    @override_settings(IS_INTEGRATION=True)
+    @pytest.mark.parametrize(
+        "to_status, error",
+        [
+            (educational_models.CollectiveBookingStatus.PENDING, False),
+            (educational_models.CollectiveBookingStatus.CONFIRMED, True),
+            (educational_models.CollectiveBookingStatus.USED, False),
+            (educational_models.CollectiveBookingStatus.CANCELLED, True),
+            (educational_models.CollectiveBookingStatus.REIMBURSED, False),
+        ],
+    )
+    def test_set_status_from_reimbursed(self, authenticated_client, to_status, error):
+        booking = educational_factories.ReimbursedCollectiveBookingFactory()
+        self.send_request(authenticated_client, booking, to_status, error)
+
+    @override_settings(IS_INTEGRATION=False, IS_DEV=False)
+    def test_cant_set_status_if_not_integration_nor_dev_env(self, authenticated_client):
+        booking = educational_factories.PendingCollectiveBookingFactory()
+
+        response = self.post_to_endpoint(
+            client=authenticated_client,
+            form={"status": educational_models.CollectiveBookingStatus.USED.value},
+            follow_redirects=True,
+            collective_booking_id=booking.id,
+        )
+
+        assert response.status_code == 200
+        assert html_parser.extract_alert(response.data) == "Cette action n'est autorisée qu'en intégration"
+
+    @override_settings(IS_INTEGRATION=True)
+    def test_unknown_booking(self, authenticated_client):
+        response = self.post_to_endpoint(
+            client=authenticated_client,
+            form={"status": educational_models.CollectiveBookingStatus.CONFIRMED.value},
+            follow_redirects=True,
+            collective_booking_id=-1,
+        )
+
+        assert response.status_code == 404
+
+    @override_settings(IS_INTEGRATION=True)
+    def test_invalid_form(self, authenticated_client):
+        booking = educational_factories.ReimbursedCollectiveBookingFactory()
+
+        response = self.post_to_endpoint(
+            client=authenticated_client,
+            form={"invalid": "input"},
+            follow_redirects=True,
+            collective_booking_id=booking.id,
+        )
+
+        assert response.status_code == 200
+
+        msg = html_parser.extract_alert(response.data)
+        assert "Les données envoyées comportent des erreurs" in msg
+
+    def send_request(self, authenticated_client, booking, to_status, error=False):
+        response = self.post_to_endpoint(
+            client=authenticated_client,
+            form={"status": to_status.value},
+            follow_redirects=True,
+            collective_booking_id=booking.id,
+        )
+        assert response.status_code == 200
+
+        old_status = booking.status
+        db.session.refresh(booking)
+
+        msg = html_parser.extract_alert(response.data)
+
+        if error:
+            assert "mis à jour" not in msg
+            assert booking.status == old_status
+        else:
+            assert str(booking.id) in msg and "mis à jour" in msg
+            assert booking.status == to_status

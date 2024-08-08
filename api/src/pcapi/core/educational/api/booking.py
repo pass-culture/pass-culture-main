@@ -507,3 +507,7 @@ def notify_redactor_that_booking_has_been_cancelled(booking: educational_models.
 
 def notify_pro_that_booking_has_been_cancelled(booking: educational_models.CollectiveBooking) -> None:
     transactional_mails.send_collective_booking_cancellation_confirmation_by_pro_email(booking)
+
+
+def update_collective_booking_status(booking: educational_models.CollectiveBooking) -> None:
+    pass
