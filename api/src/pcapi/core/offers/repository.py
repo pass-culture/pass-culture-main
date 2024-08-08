@@ -752,7 +752,13 @@ def get_and_lock_stock(stock_id: int) -> models.Stock:
     # This is required to prevent bugs due to concurrent access
     # Also call `populate_existing()` to make sure we don't use something
     # older from the SQLAlchemy's session.
-    stock = models.Stock.query.filter_by(id=stock_id).populate_existing().with_for_update().one_or_none()
+    stock = (
+        models.Stock.query.filter_by(id=stock_id)
+        .populate_existing()
+        .with_for_update()
+        .options(sa.orm.joinedload(models.Stock.offer, innerjoin=True))
+        .one_or_none()
+    )
     if not stock:
         raise exceptions.StockDoesNotExist()
     return stock
