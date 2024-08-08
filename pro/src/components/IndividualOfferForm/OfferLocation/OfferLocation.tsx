@@ -14,6 +14,7 @@ import { RadioButton } from 'ui-kit/form/RadioButton/RadioButton'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 
 import { IndividualOfferFormValues } from '../types'
+import { resetAddressFields } from '../utils/resetAddressFields'
 
 import { OFFER_LOCATION } from './constants'
 import styles from './OfferLocation.module.scss'
@@ -31,34 +32,43 @@ export const OfferLocation = ({ venue }: OfferLocationProps): JSX.Element => {
   const [manuallySetAddress, , { setValue: setManuallySetAddress }] =
     useField('manuallySetAddress')
 
+  const onChangeOfferLocation = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const isVenueAddress = event.target.value !== OFFER_LOCATION.OTHER_ADDRESS
+    setShowOtherAddress(!isVenueAddress)
+    if (isVenueAddress) {
+      // If here, the user chose to use the venue address
+      // Manually set the form fields with venue address values
+
+      // Avoid crashes if the venue doesn't have an OA, but this shouldn't technically happens
+      if (!venue?.address) {
+        return
+      }
+
+      await Promise.all([
+        formik.setFieldValue('banId', venue.address.banId),
+        formik.setFieldValue('city', venue.address.city),
+        formik.setFieldValue('locationLabel', venue.address.label),
+        formik.setFieldValue('latitude', venue.address.latitude),
+        formik.setFieldValue('longitude', venue.address.longitude),
+        formik.setFieldValue(
+          'coords',
+          `${venue.address.latitude}, ${venue.address.longitude}`
+        ),
+        formik.setFieldValue('postalCode', venue.address.postalCode),
+        formik.setFieldValue('street', venue.address.street),
+      ])
+    } else {
+      await resetAddressFields({ formik })
+    }
+  }
+
   const toggleManuallySetAddress = async () => {
     const isAddressManual = !manuallySetAddress.value
     await setManuallySetAddress(isAddressManual)
     if (isAddressManual) {
-      const fieldsToUpdate = [
-        'street',
-        'postalCode',
-        'city',
-        'latitude',
-        'longitude',
-        'coords',
-        'banId',
-        'search-addressAutocomplete',
-        'addressAutocomplete',
-      ]
-
-      // Empty all fields value
-      await Promise.all(
-        fieldsToUpdate.map((fieldName) => formik.setFieldValue(fieldName, ''))
-      )
-
-      // Make all fields untouched
-      // (This will prevent validation errors to be shown if user previously touched those fields, then switched that trigger OFF, then ON again)
-      await Promise.all(
-        fieldsToUpdate.map((fieldName) =>
-          formik.setFieldTouched(fieldName, false)
-        )
-      )
+      await resetAddressFields({ formik })
     }
   }
 
@@ -83,7 +93,7 @@ export const OfferLocation = ({ venue }: OfferLocationProps): JSX.Element => {
           name="offerlocation"
           value={venueFullText}
           required
-          onChange={() => setShowOtherAddress(false)}
+          onChange={onChangeOfferLocation}
         />
       </FormLayout.Row>
       <FormLayout.Row className={styles['location-row']}>
@@ -93,7 +103,7 @@ export const OfferLocation = ({ venue }: OfferLocationProps): JSX.Element => {
           name="offerlocation"
           value={OFFER_LOCATION.OTHER_ADDRESS}
           required
-          onChange={() => setShowOtherAddress(true)}
+          onChange={onChangeOfferLocation}
         />
       </FormLayout.Row>
       {showOtherAddress && (

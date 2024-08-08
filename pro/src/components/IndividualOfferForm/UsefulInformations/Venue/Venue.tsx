@@ -6,10 +6,12 @@ import {
   VenueListItemResponseModel,
 } from 'apiClient/v1'
 import { FormLayout } from 'components/FormLayout/FormLayout'
+import { OFFER_LOCATION } from 'components/IndividualOfferForm/OfferLocation/constants'
 import {
   IndividualOfferForm,
   IndividualOfferFormValues,
 } from 'components/IndividualOfferForm/types'
+import { resetAddressFields } from 'components/IndividualOfferForm/utils/resetAddressFields'
 import { buildAccessibilityFormValues } from 'components/IndividualOfferForm/utils/setDefaultInitialFormValues'
 import { useActiveFeature } from 'hooks/useActiveFeature'
 import { Select } from 'ui-kit/form/Select/Select'
@@ -44,8 +46,8 @@ export const Venue = ({
   hideOfferer = false,
   readOnlyFields = [],
 }: VenueProps): JSX.Element => {
-  const { values, setFieldValue } =
-    useFormikContext<IndividualOfferFormValues>()
+  const formik = useFormikContext<IndividualOfferFormValues>()
+  const { values, setFieldValue } = formik
   const { isDisabled: isOffererDisabled, offererOptions } =
     buildOffererOptions(offererNames)
 
@@ -76,6 +78,21 @@ export const Venue = ({
     }
   }
 
+  const onSelectVenueChange = async (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    if (
+      isOfferAddressEnabled &&
+      values.offerlocation !== OFFER_LOCATION.OTHER_ADDRESS
+    ) {
+      await Promise.all([
+        resetAddressFields({ formik }),
+        setFieldValue('offerlocation', ''),
+      ])
+    }
+    await onVenueChange(setFieldValue, venueList, event.target.value)
+  }
+
   return (
     <>
       {!hideOfferer && (
@@ -95,9 +112,7 @@ export const Venue = ({
           label={isOfferAddressEnabled ? `Qui propose l’offre ?` : 'Lieu'}
           name="venueId"
           options={venueOptions}
-          onChange={(event) =>
-            onVenueChange(setFieldValue, venueList, event.target.value)
-          }
+          onChange={onSelectVenueChange}
         />
       </FormLayout.Row>
     </>
