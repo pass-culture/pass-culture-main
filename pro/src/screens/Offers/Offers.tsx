@@ -164,7 +164,7 @@ export const Offers = ({
       )
     } else {
       setSelectedIndividualOffers(
-        areAllIndividualOffersSelected ? [] : individualOffers ?? []
+        areAllIndividualOffersSelected ? [] : (individualOffers ?? [])
       )
     }
   }

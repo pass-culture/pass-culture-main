@@ -40,7 +40,7 @@ export const LinkNode = ({
       {...forwardLink}
       //  If the link is external, the link automatically opens in a new tab
       opensInNewTab={isExternal}
-      icon={isExternal ? fullLinkIcon : icon?.src ?? fullNextIcon}
+      icon={isExternal ? fullLinkIcon : (icon?.src ?? fullNextIcon)}
       className={styles['bi-link']}
       onClick={onClick}
     >

@@ -54,7 +54,7 @@ export const orejimeConfig = {
           }),
       },
       deviceId: localStorageAvailable()
-        ? localStorage.getItem(LOCAL_STORAGE_DEVICE_ID_KEY) ?? 'NODEVICEID'
+        ? (localStorage.getItem(LOCAL_STORAGE_DEVICE_ID_KEY) ?? 'NODEVICEID')
         : 'NODEVICEID',
     }
 

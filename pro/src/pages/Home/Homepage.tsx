@@ -109,10 +109,10 @@ export const Homepage = (): JSX.Element => {
 
   const headerOffererId = useSelector(selectCurrentOffererId)
   const selectedOffererId = hasNewSideBarNavigation
-    ? headerOffererId?.toString() ?? ''
-    : searchParams.get('structure') ??
+    ? (headerOffererId?.toString() ?? '')
+    : (searchParams.get('structure') ??
       getSavedOffererId(offererOptions) ??
-      (offererOptions.length > 0 ? offererOptions[0]?.value : '')
+      (offererOptions.length > 0 ? offererOptions[0]?.value : ''))
 
   const selectedOffererQuery = useSWR(
     offererNames && Boolean(selectedOffererId)

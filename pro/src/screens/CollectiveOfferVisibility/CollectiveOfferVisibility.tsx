@@ -173,9 +173,9 @@ export const CollectiveOfferVisibilityScreen = ({
 
   const selectedTeacher: TeacherOption | null = requestId
     ? teachersOptions[0]
-    : teachersOptions.find(
+    : (teachersOptions.find(
         (teacher) => teacher.value === formik.values.teacher
-      ) ?? null
+      ) ?? null)
 
   const selectedInstitution: InstitutionOption | null = requestId
     ? institutionsOptions.filter(({ label }) =>
@@ -183,9 +183,9 @@ export const CollectiveOfferVisibilityScreen = ({
           .toLowerCase()
           .includes(formik.values['search-institution'].trim().toLowerCase())
       )[0]
-    : institutionsOptions.find(
+    : (institutionsOptions.find(
         (institution) => institution.value === formik.values.institution
-      ) ?? null
+      ) ?? null)
 
   const onChangeTeacher = async () => {
     const searchTeacherValue = formik.values['search-teacher']?.trim()
