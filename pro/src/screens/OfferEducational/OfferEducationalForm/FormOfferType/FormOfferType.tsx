@@ -88,7 +88,6 @@ export const FormOfferType = ({
             ]}
             label="Dispositif national"
             name="nationalProgramId"
-            placeholder="Séléctionner un dispositif national"
             isOptional
             disabled={disableForm}
           />

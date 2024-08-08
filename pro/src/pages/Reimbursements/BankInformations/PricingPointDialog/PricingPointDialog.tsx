@@ -93,7 +93,6 @@ export const PricingPointDialog = ({
             label={
               'Lieu avec SIRET utilisé pour le calcul de votre barème de remboursement'
             }
-            placeholder="Sélectionnez le SIRET dans la liste"
             options={venuesOptions}
             className={styles['venues-select']}
           />
