@@ -94,7 +94,6 @@ export const FormStock = ({
         disabled={disablePriceAndParticipantInputs}
         label={NUMBER_OF_PLACES_LABEL}
         name="numberOfPlaces"
-        placeholder="Ex : 30"
         type="number"
         hasLabelLineBreak={false}
         rightIcon={strokeCollaborator}

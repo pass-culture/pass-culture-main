@@ -52,7 +52,7 @@ export const Notifications = ({
             label="Email auquel envoyer les notifications"
             maxLength={90}
             name="bookingEmail"
-            placeholder="email@exemple.com"
+            description="Format : email@exemple.com"
             disabled={readOnlyFields?.includes('bookingEmail')}
           />
         </FormLayout.Row>

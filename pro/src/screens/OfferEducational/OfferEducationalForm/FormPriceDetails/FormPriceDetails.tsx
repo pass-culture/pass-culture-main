@@ -23,7 +23,7 @@ export const FormPriceDetails = ({ disableForm }: FormPriceDetailsProps) => {
           label={PRICE_INFORMATION}
           maxLength={MAX_DETAILS_LENGTH}
           name="priceDetail"
-          placeholder="Par exemple : tarif par élève ou par groupe scolaire, politique tarifaire REP/REP+ et accompagnateurs... "
+          description="Par exemple : tarif par élève ou par groupe scolaire, politique tarifaire REP/REP+ et accompagnateurs... "
         />
       </FormLayout.Row>
     </FormLayout.Section>

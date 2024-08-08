@@ -62,7 +62,7 @@ export const ActivityForm = ({
                 <TextInput
                   name={`socialUrls[${index}]`}
                   label="Site internet, réseau social"
-                  placeholder="https://www.siteinternet.com"
+                  description="Format : https://www.siteinternet.com"
                   data-testid="activity-form-social-url"
                   type="url"
                   className={styles['url-input']}

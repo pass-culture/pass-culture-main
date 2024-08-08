@@ -150,7 +150,7 @@ export const VenueCreationForm = ({
               name="bookingEmail"
               label="Adresse email"
               type="email"
-              placeholder="email@exemple.com"
+              description="Format : email@exemple.com"
             />
           </FormLayout.Row>
         </FormLayout.Section>

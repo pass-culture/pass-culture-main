@@ -109,6 +109,9 @@ export const TextInput = ({
           rightIcon={rightIcon}
           leftIcon={leftIcon}
           aria-required={!isOptional}
+          {...(description
+            ? { 'aria-describedby': `description-${name}` }
+            : {})}
           onKeyDown={(event) => {
             if (type === 'number') {
               if (regexIsNavigationKey.test(event.key)) {

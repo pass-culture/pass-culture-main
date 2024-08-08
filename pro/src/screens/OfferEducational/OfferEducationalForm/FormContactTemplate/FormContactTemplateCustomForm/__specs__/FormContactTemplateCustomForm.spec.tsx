@@ -49,8 +49,8 @@ describe('FormContactTemplateCustomForm', () => {
       })
     ).toBeChecked()
 
-    expect(screen.getByPlaceholderText('https://exemple.com')).toHaveValue(
-      'http://www.test-url.com'
-    )
+    expect(
+      screen.getByRole('textbox', { name: 'URL de mon formulaire de contact' })
+    ).toHaveValue('http://www.test-url.com')
   })
 })

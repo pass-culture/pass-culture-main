@@ -49,7 +49,7 @@ export const FormContactTemplateCustomForm = ({
           isOptional
           name="contactUrl"
           disabled={disableForm}
-          placeholder="https://exemple.com"
+          description="Format : https://exemple.com"
           className={styles['custom-form-radio-input-control']}
         />
       </div>

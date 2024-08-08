@@ -29,7 +29,7 @@ export const FormContact = ({ disableForm }: FormContactProps): JSX.Element => {
           label={EMAIL_LABEL}
           name="email"
           disabled={disableForm}
-          placeholder="email@exemple.com"
+          description="Format : email@exemple.com"
         />
       </FormLayout.Row>
     </FormLayout.Section>

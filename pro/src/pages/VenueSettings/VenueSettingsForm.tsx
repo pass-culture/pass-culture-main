@@ -150,7 +150,7 @@ export const VenueSettingsForm = ({
               name="bookingEmail"
               label="Adresse email"
               type="email"
-              placeholder="email@exemple.com"
+              description="Format : email@exemple.com"
               isOptional={venue.isVirtual}
               disabled={venue.isVirtual}
             />

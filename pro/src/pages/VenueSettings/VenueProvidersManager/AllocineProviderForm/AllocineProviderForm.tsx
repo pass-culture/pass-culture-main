@@ -90,7 +90,7 @@ export const AllocineProviderForm = ({
               type="number"
               label="Prix de vente/place"
               min="0"
-              placeholder="Ex : 12€"
+              description="Le prix doit être indiqué en euros."
               step={0.01}
               className={styles['price-input']}
               required

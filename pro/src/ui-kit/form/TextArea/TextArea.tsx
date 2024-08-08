@@ -21,6 +21,7 @@ export const TextArea = ({
   name,
   className,
   disabled,
+  description,
   placeholder,
   label,
   maxLength = 1000,
@@ -42,9 +43,11 @@ export const TextArea = ({
       name={name}
       showError={meta.touched && !!meta.error}
       smallLabel={smallLabel}
+      description={description}
     >
       <Textarea
         aria-invalid={meta.touched && !!meta.error}
+        {...(description ? { 'aria-describedby': `description-${name}` } : {})}
         className={cn(styles['text-area'], {
           [styles['has-error']]: meta.touched && !!meta.error,
         })}

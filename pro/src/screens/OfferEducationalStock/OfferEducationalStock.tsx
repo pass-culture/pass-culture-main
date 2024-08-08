@@ -179,7 +179,7 @@ export const OfferEducationalStock = <
                   label={DETAILS_PRICE_LABEL}
                   maxLength={MAX_DETAILS_LENGTH}
                   name="priceDetail"
-                  placeholder={PRICE_DETAIL_PLACEHOLDER}
+                  description={PRICE_DETAIL_PLACEHOLDER}
                 />
               </FormLayout.Row>
             </FormLayout.Section>

@@ -25,7 +25,7 @@ export const ChangePasswordRequestForm = (): JSX.Element => {
           <FormLayout.Row>
             <EmailSpellCheckInput
               name="email"
-              placeholder="email@exemple.com"
+              description="Format : email@exemple.com"
               label="Adresse email"
             />
           </FormLayout.Row>

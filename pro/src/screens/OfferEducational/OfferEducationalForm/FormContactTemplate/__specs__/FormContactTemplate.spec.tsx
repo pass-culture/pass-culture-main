@@ -34,13 +34,19 @@ describe('FormContactTemplate', () => {
   it('should show the email form when the contact email checkbox is checked', async () => {
     renderFormContact({ isTemplate: true })
     expect(
-      screen.queryByPlaceholderText('email@exemple.com')
+      screen.queryByRole('textbox', {
+        name: 'Email de contact',
+      })
     ).not.toBeInTheDocument()
 
     const emailCheckbox = screen.getByRole('checkbox', { name: 'Par email' })
     await userEvent.click(emailCheckbox)
 
-    expect(screen.getByPlaceholderText('email@exemple.com')).toBeInTheDocument()
+    expect(
+      screen.getByRole('textbox', {
+        name: 'Email de contact',
+      })
+    ).toBeInTheDocument()
   })
 
   it('should show the phone form when the contact phone checkbox is checked', async () => {

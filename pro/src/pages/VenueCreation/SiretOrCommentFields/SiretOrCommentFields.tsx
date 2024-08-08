@@ -126,7 +126,7 @@ export const SiretOrCommentFields = ({
         <TextArea
           label="Commentaire du lieu sans SIRET"
           name="comment"
-          placeholder="Par exemple : le lieu est un équipement culturel qui n’appartient pas à ma structure."
+          description="Par exemple : le lieu est un équipement culturel qui n’appartient pas à ma structure."
           isOptional={isSiretSelected}
           maxLength={500}
           countCharacters

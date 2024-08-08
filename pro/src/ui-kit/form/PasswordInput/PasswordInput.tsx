@@ -15,6 +15,7 @@ import { ValidationMessageList } from './ValidationMessageList/ValidationMessage
 interface PasswordInputProps {
   label: string
   name: string
+  description?: string
   placeholder?: string
   withErrorPreview?: boolean
   autoComplete?: string
@@ -23,6 +24,7 @@ interface PasswordInputProps {
 export const PasswordInput = ({
   label,
   name,
+  description,
   placeholder,
   withErrorPreview = false,
   autoComplete,
@@ -49,6 +51,7 @@ export const PasswordInput = ({
         label={label}
         name={name}
         placeholder={placeholder}
+        description={description}
         type={isPasswordHidden ? 'password' : 'text'}
         autoComplete={autoComplete}
         rightButton={() => (

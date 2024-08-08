@@ -123,7 +123,7 @@ export const CollectiveDataForm = ({
                   <TextArea
                     name="collectiveDescription"
                     label="Démarche d’éducation artistique et culturelle"
-                    placeholder="Présenter la démarche d’éducation artistique et culturelle : présentation du lieu, actions menées auprès du public scolaire..."
+                    description="Présenter la démarche d’éducation artistique et culturelle : présentation du lieu, actions menées auprès du public scolaire..."
                     maxLength={500}
                     countCharacters
                     isOptional
@@ -146,7 +146,7 @@ export const CollectiveDataForm = ({
                   <TextInput
                     name="collectiveWebsite"
                     label="URL de votre site web"
-                    placeholder="https://exemple.com"
+                    description="Format : https://exemple.com"
                     isOptional
                   />
                 </FormLayout.Row>
@@ -217,7 +217,7 @@ export const CollectiveDataForm = ({
                   <TextInput
                     name="collectiveEmail"
                     label="Email"
-                    placeholder="email@exemple.com"
+                    description="Format : email@exemple.com"
                     isOptional
                   />
                 </FormLayout.Row>

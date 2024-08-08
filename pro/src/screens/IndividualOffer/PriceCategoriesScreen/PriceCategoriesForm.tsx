@@ -141,7 +141,7 @@ export const PriceCategoriesForm = ({
                       smallLabel
                       name={`priceCategories[${index}].label`}
                       label="Intitulé du tarif"
-                      placeholder="Ex : catégorie 2, moins de 18 ans, pass 3 jours..."
+                      description="Par exemple : catégorie 2, moins de 18 ans, pass 3 jours..."
                       maxLength={PRICE_CATEGORY_LABEL_MAX_LENGTH}
                       countCharacters
                       className={styles['label-input']}

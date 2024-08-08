@@ -19,7 +19,7 @@ export const Default = {
   args: {
     name: 'email',
     label: 'Adresse email',
-    placeholder: 'email@exemple.com',
+    description: 'Format: email@exemple.com',
     overrideInitialTip: 'marie.dupont@gmail.com',
   },
 }

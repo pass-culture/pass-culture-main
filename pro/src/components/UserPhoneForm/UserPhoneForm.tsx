@@ -71,11 +71,7 @@ export const UserPhoneForm = ({
         <Form onSubmit={formik.handleSubmit}>
           <FormLayout>
             <FormLayout.Row>
-              <TextInput
-                label="Téléphone"
-                name="phoneNumber"
-                placeholder="Votre téléphone"
-              />
+              <TextInput label="Téléphone" name="phoneNumber" />
             </FormLayout.Row>
           </FormLayout>
 

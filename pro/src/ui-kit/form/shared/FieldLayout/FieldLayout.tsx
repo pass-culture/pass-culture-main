@@ -98,7 +98,11 @@ export const FieldLayout = ({
           {label} {!isOptional && '*'}
         </label>
         {description && (
-          <span className={styles['field-layout-input-description']}>
+          <span
+            id={`description-${name}`}
+            data-testid={`description-${name}`}
+            className={styles['field-layout-input-description']}
+          >
             {description}
           </span>
         )}

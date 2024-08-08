@@ -122,7 +122,7 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
                 <TextArea
                   name="description"
                   label="Description"
-                  placeholder="Par exemple : mon établissement propose des spectacles, de l’improvisation..."
+                  description="Par exemple : mon établissement propose des spectacles, de l’improvisation..."
                   maxLength={1000}
                   countCharacters
                   isOptional
@@ -152,7 +152,7 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
                 <TextInput
                   name="email"
                   label="Adresse email"
-                  placeholder="email@exemple.com"
+                  description="Format : email@exemple.com"
                   isOptional
                 />
               </FormLayout.Row>
@@ -161,7 +161,7 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
                 <TextInput
                   name="webSite"
                   label="URL de votre site web"
-                  placeholder="https://exemple.com"
+                  description="Format : https://exemple.com"
                   isOptional
                 />
               </FormLayout.Row>

@@ -69,18 +69,10 @@ export const UserIdentityForm = ({
           <Form onSubmit={formik.handleSubmit}>
             <FormLayout>
               <FormLayout.Row>
-                <TextInput
-                  label="Prénom"
-                  name="firstName"
-                  placeholder="Votre prénom"
-                />
+                <TextInput label="Prénom" name="firstName" />
               </FormLayout.Row>
               <FormLayout.Row>
-                <TextInput
-                  label="Nom"
-                  name="lastName"
-                  placeholder="Votre nom"
-                />
+                <TextInput label="Nom" name="lastName" />
               </FormLayout.Row>
             </FormLayout>
 
