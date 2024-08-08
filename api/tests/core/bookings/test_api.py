@@ -152,24 +152,26 @@ class BookOfferTest:
     def test_create_booking(self, mocked_async_index_offer_ids, app):
         beneficiary = users_factories.BeneficiaryGrant18Factory()
         stock = offers_factories.StockFactory(price=10, dnBookedQuantity=5, offer__bookingEmail="offerer@example.com")
+        stock_id = stock.id
 
         # There is a different email for the first venue booking
         bookings_factories.BookingFactory(stock=stock)
 
-        # 2 - SELECT the stock (twice ??)
+        # 1 - SELECT the stock
         # 1 - SELECT the offer
         # 1 - SELECT the booking
+        # 1 - SELECT the stock FOR UPDATE (joined with offer)
         # 2 - SELECT the user + SELECT FOR UPDATE
         # 1 - SELECT COUNT reservations
         # 1 - SELECT the venue
-        # 1 - SELECT offerer address
+        # 1 - SELECT offerer
         # 1 - SELECT user's deposit
         # 1 - SELECT the bookings not cancelled
         # 1 - SELECT EXISTS on the booking's token
         # 1 - UPDATE dnBookedQuantity
         # 1 - INSERT the new booking
         # 1 - SELECT the user
-        # 8 - SELECT the stock, booking, external_booking, offer, stock, venue, offerer, provider
+        # 7 - SELECT the stock, booking, external_booking, stock, venue, offerer, provider
         # 1 - SELECT venue with bank activation & bank account
         # 1 - SELECT activation code
         # 1 - SELECT criterion
@@ -182,9 +184,8 @@ class BookOfferTest:
         # 1 - SELECT from offer that I don't get
         # 1 - SELECT bookings for the venue ???
         # 1 - SELECT feature
-        # 1 - one query I missed somewhere
-        with assert_num_queries(37):
-            booking = api.book_offer(beneficiary=beneficiary, stock_id=stock.id, quantity=1)
+        with assert_num_queries(35):
+            booking = api.book_offer(beneficiary=beneficiary, stock_id=stock_id, quantity=1)
 
         # One request should have been sent to Batch to trigger the event
         # HAS_BOOKED_OFFER, and another one with the user's
