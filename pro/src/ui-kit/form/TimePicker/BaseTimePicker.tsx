@@ -7,6 +7,7 @@ import styles from './BaseTimePicker.module.scss'
 
 type Props = Omit<BaseInputProps, 'value'> & {
   value: string
+  showIntervalList?: boolean
 }
 
 const TIME_OPTIONS = Array.from({ length: 24 * 4 }, (_, i) => {
@@ -17,27 +18,32 @@ const TIME_OPTIONS = Array.from({ length: 24 * 4 }, (_, i) => {
     .padStart(2, '0')}`
 })
 
-export const BaseTimePicker = ({ className, ...props }: Props): JSX.Element => {
+export const BaseTimePicker = ({
+  className,
+  showIntervalList = true,
+  ...props
+}: Props): JSX.Element => {
   const optionsListId = useId()
 
   return (
     <>
       <BaseInput
         type="time"
-        list={optionsListId}
+        {...(showIntervalList ? { list: optionsListId } : {})}
         placeholder="HH:MM"
         autoComplete="off"
         {...props}
         className={cn(className, styles['timepicker'])}
       />
-
-      <datalist id={optionsListId}>
-        {TIME_OPTIONS.map((time) => (
-          <option key={time} value={time}>
-            {time}
-          </option>
-        ))}
-      </datalist>
+      {showIntervalList && (
+        <datalist id={optionsListId}>
+          {TIME_OPTIONS.map((time) => (
+            <option key={time} value={time}>
+              {time}
+            </option>
+          ))}
+        </datalist>
+      )}
     </>
   )
 }
