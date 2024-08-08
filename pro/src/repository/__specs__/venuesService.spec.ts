@@ -120,4 +120,13 @@ describe('computeAddressDisplayName', () => {
       'Mon Label - ma super rue 75008 city'
     )
   })
+
+  it('should format the address without the the label if `showAddress` is false', () => {
+    const computedAddressDisplayName = computeAddressDisplayName(
+      addressResponseIsEditableModelFactory({ label: 'Mon Label' }),
+      false
+    )
+
+    expect(computedAddressDisplayName).toBe('ma super rue 75008 city')
+  })
 })

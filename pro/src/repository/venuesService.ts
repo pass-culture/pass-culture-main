@@ -20,10 +20,11 @@ type MinimalAddressResponseModelToDisplay = Pick<
   'label' | 'city' | 'street' | 'postalCode'
 >
 export const computeAddressDisplayName = (
-  address: MinimalAddressResponseModelToDisplay
+  address: MinimalAddressResponseModelToDisplay,
+  showLabel = true
 ): string => {
   return (
-    (address.label ? `${address.label} - ` : '') +
+    (showLabel && address.label ? `${address.label} - ` : '') +
     `${address.street} ${address.postalCode} ${address.city}`
   )
 }

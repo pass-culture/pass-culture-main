@@ -7,6 +7,7 @@ import { AddressManual } from 'components/AddressManual/AddressManual'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import fullBackIcon from 'icons/full-back.svg'
 import fullNextIcon from 'icons/full-next.svg'
+import { computeAddressDisplayName } from 'repository/venuesService'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { RadioButton } from 'ui-kit/form/RadioButton/RadioButton'
@@ -61,9 +62,11 @@ export const OfferLocation = ({ venue }: OfferLocationProps): JSX.Element => {
     }
   }
 
-  const venueLabel = `${
-    venue?.publicName ? `${venue.publicName} – ` : ''
-  }« Adresse de l'OA »`
+  const venueAddress = venue?.address
+    ? computeAddressDisplayName(venue.address, false)
+    : ''
+
+  const venueFullText = `${venue?.publicName ?? venue?.name} – ${venueAddress}`
 
   return (
     <FormLayout.Section
@@ -76,9 +79,9 @@ export const OfferLocation = ({ venue }: OfferLocationProps): JSX.Element => {
       <FormLayout.Row className={styles['location-row']}>
         <RadioButton
           withBorder
-          label={venueLabel}
+          label={venueFullText}
           name="offerlocation"
-          value={"« Adresse de l'OA »"}
+          value={venueFullText}
           required
           onChange={() => setShowOtherAddress(false)}
         />
