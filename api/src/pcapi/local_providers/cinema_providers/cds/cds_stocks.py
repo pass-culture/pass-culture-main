@@ -10,6 +10,7 @@ from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.external_bookings.cds.client import CineDigitalServiceAPI
 from pcapi.core.offerers.models import Venue
 import pcapi.core.offers.api as offers_api
+import pcapi.core.offers.exceptions as offers_exceptions
 import pcapi.core.offers.models as offers_models
 import pcapi.core.offers.repository as offers_repository
 from pcapi.core.providers.models import VenueProvider
@@ -156,15 +157,20 @@ class CDSStocks(LocalProvider):
                 image_url = self.movie_information.posterpath
                 image = self.client_cds.get_movie_poster(image_url)
                 if image:
-                    offers_api.create_mediation(
-                        user=None,
-                        offer=offer,
-                        credit=None,
-                        image_as_bytes=image,
-                        keep_ratio=True,
-                        check_image_validity=False,
-                    )
-                    self.createdThumbs += 1
+                    try:
+                        offers_api.create_mediation(
+                            user=None,
+                            offer=offer,
+                            credit=None,
+                            image_as_bytes=image,
+                            keep_ratio=True,
+                            min_height=None,
+                            min_width=None,
+                        )
+                        self.createdThumbs += 1
+                    except offers_exceptions.ImageValidationError as e:
+                        self.erroredThumbs += 1
+                        logger.warning("Error: Offer image could not be created. Reason: %s", e)
 
         self.last_offer = offer
 

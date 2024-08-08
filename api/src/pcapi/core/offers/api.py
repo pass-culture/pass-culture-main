@@ -962,18 +962,15 @@ def create_mediation(
     image_as_bytes: bytes,
     crop_params: image_conversion.CropParams | None = None,
     keep_ratio: bool = False,
-    min_width: int = validation.MIN_THUMBNAIL_WIDTH,
-    min_height: int = validation.MIN_THUMBNAIL_HEIGHT,
+    min_width: int | None = validation.MIN_THUMBNAIL_WIDTH,
+    min_height: int | None = validation.MIN_THUMBNAIL_HEIGHT,
     max_width: int | None = None,
     max_height: int | None = None,
     aspect_ratio: image_conversion.ImageRatio = image_conversion.ImageRatio.PORTRAIT,
-    check_image_validity: bool = True,
 ) -> models.Mediation:
-    # checks image type, min dimensions
-    if check_image_validity:
-        validation.check_image(
-            image_as_bytes, min_width=min_width, min_height=min_height, max_width=max_width, max_height=max_height
-        )
+    validation.check_image(
+        image_as_bytes, min_width=min_width, min_height=min_height, max_width=max_width, max_height=max_height
+    )
 
     mediation = models.Mediation(author=user, offer=offer, credit=credit)
 

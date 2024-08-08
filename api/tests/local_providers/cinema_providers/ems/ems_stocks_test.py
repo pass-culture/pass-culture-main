@@ -196,6 +196,28 @@ class EMSStocksTest:
         )
         assert len(created_offer.mediations) == 1
 
+    def should_create_offer_even_if_thumb_is_incorrect(self, requests_mock):
+        connector = EMSScheduleConnector()
+        requests_mock.get("https://fake_url.com?version=0", json=fixtures.DATA_VERSION_0)
+
+        ems_provider = get_provider_by_local_class("EMSStocks")
+        venue_provider = providers_factories.VenueProviderFactory(provider=ems_provider, venueIdAtOfferProvider="0063")
+        # Image that should raise a `pcapi.core.offers.exceptions.UnidentifiedImage`
+        file_path = Path(tests.__path__[0]) / "files" / "mouette_fake_jpg.jpg"
+        with open(file_path, "rb") as thumb_file:
+            poster = thumb_file.read()
+        requests_mock.get("https://example.com/FR/poster/982D31BE/600/CDFG5.jpg", content=poster)
+
+        ems_stocks = EMSStocks(
+            connector=connector,
+            venue_provider=venue_provider,
+            site=connector.get_schedules().sites[1],
+        )
+        ems_stocks.synchronize()
+
+        created_offer = offers_models.Offer.query.one()
+        assert len(created_offer.mediations) == 0
+
     def test_handle_error_on_movie_poster(self, requests_mock):
         connector = EMSScheduleConnector()
         requests_mock.get("https://fake_url.com?version=0", json=fixtures.DATA_VERSION_0)

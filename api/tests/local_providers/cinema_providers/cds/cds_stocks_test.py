@@ -625,6 +625,50 @@ class CDSStocksTest:
         assert cds_stocks.erroredThumbs == 0
 
     @patch("pcapi.local_providers.cinema_providers.cds.cds_stocks.CDSStocks._get_cds_shows")
+    @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_movie_poster")
+    @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_venue_movies")
+    @patch("pcapi.settings.CDS_API_URL", "fakeUrl/")
+    def should_create_offer_even_if_incorrect_thumb(
+        self, mock_get_venue_movies, mocked_get_movie_poster, mock_get_shows, requests_mock
+    ):
+        # Given
+        _, venue_provider = setup_cinema()
+        requests_mock.get(
+            "https://account_id.fakeurl/cinemas?api_token=token",
+            json=[fixtures.CINEMA_WITH_INTERNET_SALE_GAUGE_ACTIVE_TRUE],
+        )
+        requests_mock.get("https://account_id.fakeurl/mediaoptions?api_token=token", json=fixtures.MEDIA_OPTIONS)
+        mocked_movies = [fixtures.MOVIE_1, fixtures.MOVIE_2]
+        mock_get_venue_movies.return_value = mocked_movies
+
+        mocked_shows = [
+            {"show_information": fixtures.MOVIE_1_SHOW_1, "price": 5, "price_label": "pass Culture"},
+            {"show_information": fixtures.MOVIE_2_SHOW_1, "price": 6, "price_label": "pass Culture"},
+        ]
+        mock_get_shows.return_value = mocked_shows
+
+        # Image that should raise a `pcapi.core.offers.exceptions.UnidentifiedImage`
+        file_path = Path(tests.__path__[0]) / "files" / "mouette_fake_jpg.jpg"
+        with open(file_path, "rb") as thumb_file:
+            mocked_get_movie_poster.return_value = thumb_file.read()
+
+        cds_stocks = CDSStocks(venue_provider=venue_provider)
+
+        # When
+        cds_stocks.updateObjects()
+
+        # Then
+        created_offers = Offer.query.order_by(Offer.id).all()
+        created_meditations = Mediation.query.order_by(Mediation.id).all()
+
+        assert len(created_offers) == 2
+        assert len(created_meditations) == 0
+
+        assert cds_stocks.createdThumbs == 0
+        assert cds_stocks.erroredObjects == 0
+        assert cds_stocks.erroredThumbs == 2
+
+    @patch("pcapi.local_providers.cinema_providers.cds.cds_stocks.CDSStocks._get_cds_shows")
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_venue_movies")
     @patch("pcapi.settings.CDS_API_URL", "fakeUrl/")
     def test_handle_error_on_movie_poster(self, mock_get_venue_movies, mock_get_shows, requests_mock):

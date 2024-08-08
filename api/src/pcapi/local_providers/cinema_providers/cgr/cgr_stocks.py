@@ -10,6 +10,7 @@ from pcapi.core.external_bookings.cgr.client import CGRClientAPI
 from pcapi.core.external_bookings.cgr.exceptions import CGRAPIException
 import pcapi.core.offerers.models as offerers_models
 from pcapi.core.offers import api as offers_api
+import pcapi.core.offers.exceptions as offers_exceptions
 import pcapi.core.offers.models as offers_models
 import pcapi.core.offers.repository as offers_repository
 import pcapi.core.providers.models as providers_models
@@ -127,15 +128,20 @@ class CGRStocks(LocalProvider):
                         },
                     )
                 if image:
-                    offers_api.create_mediation(
-                        user=None,
-                        offer=offer,
-                        credit=None,
-                        image_as_bytes=image,
-                        keep_ratio=True,
-                        check_image_validity=False,
-                    )
-                    self.createdThumbs += 1
+                    try:
+                        offers_api.create_mediation(
+                            user=None,
+                            offer=offer,
+                            credit=None,
+                            image_as_bytes=image,
+                            keep_ratio=True,
+                            min_height=None,
+                            min_width=None,
+                        )
+                        self.createdThumbs += 1
+                    except offers_exceptions.ImageValidationError as e:
+                        self.erroredThumbs += 1
+                        logger.warning("Error: Offer image could not be created. Reason: %s", e)
 
         self.last_offer = offer
 
