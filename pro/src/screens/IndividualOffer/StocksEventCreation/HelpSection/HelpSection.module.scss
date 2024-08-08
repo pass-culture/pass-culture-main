@@ -45,7 +45,8 @@
 }
 
 .step-number {
-  font-weight: 500;
+  @include fonts.medium;
+
   font-size: rem.torem(38px);
   color: var(--color-secondary-light);
   margin-right: rem.torem(24px);

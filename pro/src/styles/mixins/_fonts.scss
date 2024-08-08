@@ -7,7 +7,7 @@ $body-font-size: rem.torem(15px);
 $caption-line-height: rem.torem(16px);
 
 @mixin title1() {
-  font-family: Montserrat-ExtraBold;
+  font-family: Montserrat-ExtraBold, system-ui, sans-serif;
   font-weight: 800;
   font-style: normal;
   font-size: rem.torem(26px);
@@ -15,7 +15,7 @@ $caption-line-height: rem.torem(16px);
 }
 
 @mixin title2() {
-  font-family: Montserrat-Medium;
+  font-family: Montserrat-Medium, system-ui, sans-serif;
   font-weight: 500;
   font-style: normal;
   font-size: rem.torem(22px);
@@ -23,7 +23,7 @@ $caption-line-height: rem.torem(16px);
 }
 
 @mixin title3() {
-  font-family: Montserrat-Bold;
+  font-family: Montserrat-Bold, system-ui, sans-serif;
   font-weight: 700;
   font-style: normal;
   font-size: rem.torem(20px);
@@ -31,7 +31,7 @@ $caption-line-height: rem.torem(16px);
 }
 
 @mixin title4() {
-  font-family: Montserrat-SemiBold;
+  font-family: Montserrat-SemiBold, system-ui, sans-serif;
   font-weight: 600;
   font-style: normal;
   font-size: rem.torem(18px);
@@ -39,14 +39,14 @@ $caption-line-height: rem.torem(16px);
 }
 
 @mixin button() {
-  font-family: Montserrat-Bold;
+  font-family: Montserrat-Bold, system-ui, sans-serif;
   font-weight: 700;
   font-style: normal;
   font-size: rem.torem(15px);
 }
 
 @mixin body() {
-  font-family: Montserrat-Regular;
+  font-family: Montserrat-Regular, system-ui, sans-serif;
   font-weight: 400;
   font-style: normal;
   font-size: $body-font-size;
@@ -54,21 +54,21 @@ $caption-line-height: rem.torem(16px);
 }
 
 @mixin body-important() {
-  font-family: Montserrat-Medium;
+  font-family: Montserrat-Medium, system-ui, sans-serif;
   font-weight: 500;
   font-style: normal;
   font-size: $body-font-size;
 }
 
 @mixin body-exergue() {
-  font-family: Montserrat-SemiBold;
+  font-family: Montserrat-SemiBold, system-ui, sans-serif;
   font-weight: 600;
   font-style: normal;
   font-size: $body-font-size;
 }
 
 @mixin caption() {
-  font-family: Montserrat-SemiBold;
+  font-family: Montserrat-SemiBold, system-ui, sans-serif;
   font-weight: 600;
   font-style: normal;
   font-size: rem.torem(12px);
@@ -76,7 +76,7 @@ $caption-line-height: rem.torem(16px);
 }
 
 @mixin preview-text() {
-  font-family: Montserrat-Regular;
+  font-family: Montserrat-Regular, system-ui, sans-serif;
   font-weight: 400;
   font-style: normal;
   font-size: rem.torem(12px);
@@ -84,21 +84,21 @@ $caption-line-height: rem.torem(16px);
 }
 
 @mixin highlight() {
-  font-family: Montserrat-SemiBold;
+  font-family: Montserrat-SemiBold, system-ui, sans-serif;
   font-weight: 600;
   font-style: normal;
   font-size: rem.torem(12px);
 }
 
 @mixin mini-highlight() {
-  font-family: Montserrat-SemiBold;
+  font-family: Montserrat-SemiBold, system-ui, sans-serif;
   font-weight: 600;
   font-style: normal;
   font-size: rem.torem(10px);
 }
 
 @mixin placeholder() {
-  font-family: Montserrat-RegularItalic;
+  font-family: Montserrat-RegularItalic, system-ui, sans-serif;
   font-weight: 400;
   font-style: italic;
   font-size: rem.torem(15px);
