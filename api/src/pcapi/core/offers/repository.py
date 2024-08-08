@@ -553,7 +553,7 @@ def _filter_collective_offers_by_statuses(query: BaseQuery, statuses: list[str] 
         on_booking_status_filter.append(
             and_(
                 offer_id_with_booking_status_subquery.c.status == None,
-                educational_models.CollectiveOffer.isActive == True,
+                educational_models.CollectiveOffer.status == offer_mixin.CollectiveOfferStatus.ACTIVE.name,
                 educational_models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.APPROVED,
                 educational_models.CollectiveOffer.isArchived == False,
             )
@@ -561,7 +561,7 @@ def _filter_collective_offers_by_statuses(query: BaseQuery, statuses: list[str] 
     if DisplayedStatus.INACTIVE.value in statuses:
         on_booking_status_filter.append(
             and_(
-                educational_models.CollectiveOffer.isActive == False,
+                educational_models.CollectiveOffer.status == offer_mixin.CollectiveOfferStatus.INACTIVE.name,
                 educational_models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.APPROVED,
                 educational_models.CollectiveOffer.isArchived == False,
             )
