@@ -66,6 +66,53 @@ class CheckCanInputIdAtProviderTest:
 
 
 @pytest.mark.usefixtures("db_session")
+class CheckCanInputIdAtProviderForThisVenueTest:
+    def test_without_id_at_provider(self):
+        venue = offerers_factories.VenueFactory()
+        validation.check_can_input_id_at_provider_for_this_venue(venue.id, None)
+
+    def test_with_id_at_provider(self):
+        venue = offerers_factories.VenueFactory()
+        validation.check_can_input_id_at_provider_for_this_venue(venue.id, "an id at provider")
+
+    def test_should_not_raise_when_id_at_provider_is_taken_by_offer(self):
+        provider = providers_factories.PublicApiProviderFactory()
+        offerer = offerers_factories.OffererFactory()
+        providers_factories.OffererProviderFactory(offerer=offerer, provider=provider)
+        venue = offerers_factories.VenueFactory()
+        id_at_provider = "tout_roule"
+
+        offer = offers_factories.OfferFactory(
+            lastProvider=provider,
+            name="Offer linked to a provider",
+            venue=venue,
+            idAtProvider=id_at_provider,
+        )
+
+        validation.check_can_input_id_at_provider_for_this_venue(venue.id, id_at_provider, offer_id=offer.id)
+
+    def test_raise_when_id_at_provider_already_taken_by_other_offer(self):
+        provider = providers_factories.PublicApiProviderFactory()
+        offerer = offerers_factories.OffererFactory()
+        providers_factories.OffererProviderFactory(offerer=offerer, provider=provider)
+        venue = offerers_factories.VenueFactory()
+        id_at_provider = "rolalala"
+
+        # existing offer with `id_at_provider`
+        offers_factories.OfferFactory(
+            lastProvider=provider,
+            name="Offer linked to a provider",
+            venue=venue,
+            idAtProvider=id_at_provider,
+        )
+
+        with pytest.raises(exceptions.IdAtProviderAlreadyTaken) as error:
+            validation.check_can_input_id_at_provider_for_this_venue(venue.id, id_at_provider)
+
+        assert error.value.errors["idAtProvider"] == ["`rolalala` is already taken by another venue offer"]
+
+
+@pytest.mark.usefixtures("db_session")
 class CheckPricesForStockTest:
     def test_event_prices(self):
         offer = offers_factories.EventOfferFactory()

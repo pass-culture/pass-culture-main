@@ -280,6 +280,27 @@ def check_can_input_id_at_provider(provider: providers_models.Provider | None, i
         raise exceptions.CannotSetIdAtProviderWithoutAProvider()
 
 
+def check_can_input_id_at_provider_for_this_venue(
+    venue_id: int,
+    id_at_provider: str | None,
+    offer_id: int | None = None,
+) -> None:
+    """
+    Raise a validation error if `id_at_provider` is already used to identify another venue offer.
+    """
+    if not id_at_provider:
+        return
+
+    id_at_provider_is_taken = repository.is_id_at_provider_taken_by_another_venue_offer(
+        venue_id=venue_id,
+        id_at_provider=id_at_provider,
+        offer_id=offer_id,
+    )
+
+    if id_at_provider_is_taken:
+        raise exceptions.IdAtProviderAlreadyTaken(id_at_provider)
+
+
 def check_update_only_allowed_stock_fields_for_allocine_offer(updated_fields: set) -> None:
     if not updated_fields.issubset(EDITABLE_FIELDS_FOR_ALLOCINE_STOCK):
         errors = api_errors.ApiErrors()

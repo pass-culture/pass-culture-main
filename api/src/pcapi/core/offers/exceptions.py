@@ -141,6 +141,14 @@ class CannotSetIdAtProviderWithoutAProvider(OfferCreationBaseException):
         )
 
 
+class IdAtProviderAlreadyTaken(OfferCreationBaseException):
+    def __init__(self, id_at_provider: str) -> None:
+        super().__init__(
+            "idAtProvider",
+            f"`{id_at_provider}` is already taken by another venue offer",
+        )
+
+
 class NoDelayWhenEventWithdrawalTypeHasNoTicket(OfferCreationBaseException):
     def __init__(self) -> None:
         super().__init__(

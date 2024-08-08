@@ -305,6 +305,7 @@ def create_offer(
     subcategory = subcategories.ALL_SUBCATEGORIES_DICT[subcategory_id]
     validation.check_is_duo_compliance(is_duo, subcategory)
     validation.check_can_input_id_at_provider(provider, id_at_provider)
+    validation.check_can_input_id_at_provider_for_this_venue(venue.id, id_at_provider)
 
     is_national = True if url else bool(is_national)
 
@@ -395,6 +396,7 @@ def update_offer(
 
     if idAtProvider is not UNCHANGED:
         validation.check_can_input_id_at_provider(offer.lastProvider, idAtProvider)
+        validation.check_can_input_id_at_provider_for_this_venue(offer.venueId, idAtProvider, offer.id)
 
     withdrawal_updated = not (
         withdrawalType is UNCHANGED
