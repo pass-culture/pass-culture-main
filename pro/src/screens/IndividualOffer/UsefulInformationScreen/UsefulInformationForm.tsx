@@ -177,7 +177,7 @@ export const UsefulInformationForm = ({
             name="withdrawalDetails"
             maxLength={500}
             disabled={readOnlyFields.includes('withdrawalDetails')}
-            placeholder={
+            description={
               isVenueVirtual
                 ? 'Exemples : une création de compte, un code d’accès spécifique, une communication par email...'
                 : 'Exemples : une autre adresse, un horaire d’accès, un délai de retrait, un guichet spécifique, un code d’accès, une communication par email...'
@@ -199,7 +199,7 @@ export const UsefulInformationForm = ({
               label="Email de contact"
               maxLength={90}
               name="bookingContact"
-              placeholder="email@exemple.com"
+              description="Format : email@exemple.com"
               disabled={readOnlyFields.includes('bookingContact')}
             />
           </FormLayout.Row>
@@ -218,7 +218,7 @@ export const UsefulInformationForm = ({
               label="URL d’accès à l’offre"
               name="url"
               type="text"
-              placeholder="https://exemple.com"
+              description="Format : https://exemple.com"
               disabled={readOnlyFields.includes('url')}
             />
           </FormLayout.Row>
@@ -272,7 +272,7 @@ export const UsefulInformationForm = ({
               label="Email auquel envoyer les notifications"
               maxLength={90}
               name="bookingEmail"
-              placeholder="email@exemple.com"
+              description="Format : email@exemple.com"
               disabled={readOnlyFields.includes('bookingEmail')}
             />
           </FormLayout.Row>
@@ -292,7 +292,7 @@ export const UsefulInformationForm = ({
             name="externalTicketOfficeUrl"
             isOptional
             type="text"
-            placeholder="https://exemple.com"
+            description="Format : https://exemple.com"
             disabled={readOnlyFields.includes('externalTicketOfficeUrl')}
           />
         </FormLayout.Row>

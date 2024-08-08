@@ -147,7 +147,9 @@ describe('screens:SignupJourney::ActivityForm', () => {
 
     expect(await screen.findByText('Activité')).toBeInTheDocument()
     await userEvent.type(
-      screen.getByPlaceholderText('https://www.siteinternet.com'),
+      screen.getByRole('textbox', {
+        name: 'Site internet, réseau social',
+      }),
       'qsdsqd'
     )
     await userEvent.click(screen.getByText('Submit'))

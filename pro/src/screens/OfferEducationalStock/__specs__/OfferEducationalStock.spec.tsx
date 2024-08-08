@@ -13,7 +13,7 @@ import {
 import { FORMAT_HH_mm, FORMAT_ISO_DATE_ONLY } from 'utils/date'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import { PRICE_DETAIL_PLACEHOLDER } from '../constants/labels'
+import { DETAILS_PRICE_LABEL } from '../constants/labels'
 import {
   OfferEducationalStock,
   OfferEducationalStockProps,
@@ -104,9 +104,9 @@ describe('OfferEducationalStock', () => {
       }
       renderWithProviders(<OfferEducationalStock {...testProps} />)
 
-      const descriptionInput = screen.getByPlaceholderText(
-        PRICE_DETAIL_PLACEHOLDER
-      )
+      const descriptionInput = screen.getByRole('textbox', {
+        name: `${DETAILS_PRICE_LABEL} *`,
+      })
       const priceInput = screen.getByLabelText('Prix total TTC *')
       const placeInput = screen.getByLabelText('Nombre de participants *')
 
@@ -136,9 +136,9 @@ describe('OfferEducationalStock', () => {
       }
       renderWithProviders(<OfferEducationalStock {...testProps} />)
 
-      const descriptionInput = screen.getByPlaceholderText(
-        PRICE_DETAIL_PLACEHOLDER
-      )
+      const descriptionInput = screen.getByRole('textbox', {
+        name: `${DETAILS_PRICE_LABEL} *`,
+      })
       const priceInput = screen.getByLabelText('Prix total TTC *')
       const placeInput = screen.getByLabelText('Nombre de participants *')
       const saveButton = screen.getByText('Enregistrer les modifications')

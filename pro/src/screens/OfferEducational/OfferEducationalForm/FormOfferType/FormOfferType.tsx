@@ -122,7 +122,7 @@ export const FormOfferType = ({
             label={DESCRIPTION_LABEL}
             maxLength={MAX_DETAILS_LENGTH}
             name="description"
-            placeholder="Détaillez ici votre projet et son interêt pédagogique."
+            description="Détaillez ici votre projet et son interêt pédagogique."
             disabled={disableForm}
           />
         </FormLayout.Row>
@@ -131,7 +131,7 @@ export const FormOfferType = ({
             isOptional
             label={DURATION_LABEL}
             name="duration"
-            placeholder="HH:MM"
+            description="Format : HH:MM"
             disabled={disableForm}
           />
         </FormLayout.Row>

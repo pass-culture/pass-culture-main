@@ -50,7 +50,7 @@ export const FormContactTemplate = ({
                 isOptional
                 name="email"
                 disabled={disableForm}
-                placeholder="email@exemple.com"
+                description="Format : email@exemple.com"
               />
             </div>
           )}

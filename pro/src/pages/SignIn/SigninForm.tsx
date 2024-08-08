@@ -37,7 +37,7 @@ export const SigninForm = (): JSX.Element => {
           <TextInput
             label="Adresse email"
             name="email"
-            placeholder="email@exemple.com"
+            description="Format : email@exemple.com"
           />
         </FormLayout.Row>
         <FormLayout.Row>

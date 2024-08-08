@@ -23,7 +23,7 @@ const renderEmailSpellCheckInput = () => {
       <EmailSpellCheckInput
         name="email"
         label="Email"
-        placeholder="mail@exemple.com"
+        description="Format : mail@exemple.com"
       />
     </Formik>
   )

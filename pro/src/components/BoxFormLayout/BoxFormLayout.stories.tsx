@@ -42,7 +42,7 @@ const DefaultBoxFormLayout = (args: BoxFormLayoutProps) => {
                       <TextInput
                         label="Nouvelle adresse email"
                         name="email"
-                        placeholder="email@exemple.com"
+                        description="Format : email@exemple.com"
                       />
                     </FormLayout.Row>
                     <FormLayout.Row>

@@ -14,7 +14,8 @@ import styles from './EmailSpellCheckInput.module.scss'
 type EmailSpellCheckInputProps<FormType> = FieldLayoutBaseProps & {
   // `Extract` needed so the key is a string. See https://stackoverflow.com/a/51808262
   name: Extract<keyof FormType, string>
-  placeholder: string
+  placeholder?: string
+  description: string
   label: string
   overrideInitialTip?: string | null
   maxLength?: number
@@ -23,6 +24,7 @@ type EmailSpellCheckInputProps<FormType> = FieldLayoutBaseProps & {
 export const EmailSpellCheckInput = <FormType,>({
   name,
   placeholder,
+  description,
   label,
   className,
   overrideInitialTip = null,
@@ -61,6 +63,7 @@ export const EmailSpellCheckInput = <FormType,>({
         label={label}
         name={name}
         placeholder={placeholder}
+        description={description}
         onBlur={handleEmailValidation}
         onFocus={resetEmailValidation}
         hideFooter={emailValidationTip !== null} // This is needed to hide the footer div that takes some space

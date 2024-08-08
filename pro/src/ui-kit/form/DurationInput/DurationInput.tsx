@@ -50,7 +50,7 @@ export const DurationInput = ({
       onBlur={onDurationBlur}
       className={className}
       isOptional={isOptional}
-      placeholder="HH:MM"
+      description="Format : HH:MM"
       disabled={disabled}
       {...props}
     />

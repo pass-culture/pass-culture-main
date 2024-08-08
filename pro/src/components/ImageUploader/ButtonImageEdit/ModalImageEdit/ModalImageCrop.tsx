@@ -188,7 +188,6 @@ export const ModalImageCrop = ({
               label="Crédit de l’image"
               maxLength={255}
               name="credit"
-              placeholder="Photographe..."
               required={false}
               type="text"
               isOptional

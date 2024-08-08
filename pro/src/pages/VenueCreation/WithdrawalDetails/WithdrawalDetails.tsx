@@ -28,7 +28,7 @@ export const WithdrawalDetails = () => {
           name="withdrawalDetails"
           label="Informations de retrait"
           maxLength={500}
-          placeholder="Par exemple : une autre adresse, un horaire d’accès, un délai de retrait, un guichet spécifique, un code d’accès, une communication par email..."
+          description="Par exemple : une autre adresse, un horaire d’accès, un délai de retrait, un guichet spécifique, un code d’accès, une communication par email..."
           countCharacters
           isOptional
         />

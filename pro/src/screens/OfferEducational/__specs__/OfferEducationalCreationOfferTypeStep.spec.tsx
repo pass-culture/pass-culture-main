@@ -34,7 +34,10 @@ describe('screens | OfferEducational : creation offer type step', () => {
     const descriptionTextArea = await screen.findByLabelText(/Description */)
     expect(descriptionTextArea).toBeEnabled()
     expect(descriptionTextArea).toHaveValue('')
-    expect(descriptionTextArea.getAttribute('placeholder')).toBe(
+    const descriptionTextAreaDesc = screen.getByTestId(
+      'description-description'
+    )
+    expect(descriptionTextAreaDesc).toHaveTextContent(
       'Détaillez ici votre projet et son interêt pédagogique.'
     )
     expect(await screen.findByTestId('counter-description')).toHaveTextContent(
@@ -45,7 +48,8 @@ describe('screens | OfferEducational : creation offer type step', () => {
     expect(durationInput).toBeInTheDocument()
     expect(durationInput).toBeEnabled()
     expect(durationInput).toHaveValue('')
-    expect(durationInput.getAttribute('placeholder')).toBe('HH:MM')
+    const durationInputDesc = screen.getByTestId('description-duration')
+    expect(durationInputDesc).toHaveTextContent('Format : HH:MM')
   })
 
   describe('domains', () => {

@@ -187,7 +187,7 @@ export const Collaborators = (): JSX.Element | null => {
                   >
                     <EmailSpellCheckInput
                       name="email"
-                      placeholder="email@exemple.com"
+                      description="Format : email@exemple.com"
                       label="Adresse email"
                       className={styles['invitation-email-field']}
                     />

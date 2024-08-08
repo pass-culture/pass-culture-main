@@ -24,7 +24,7 @@ export const ExternalLink = ({
           name="externalTicketOfficeUrl"
           isOptional
           type="text"
-          placeholder="https://exemple.com"
+          description="Format : https://exemple.com"
           disabled={readOnlyFields?.includes('externalTicketOfficeUrl')}
         />
       </FormLayout.Row>

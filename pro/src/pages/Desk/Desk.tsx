@@ -153,7 +153,7 @@ export const Desk = (): JSX.Element => {
             label="Contremarque"
             name="token"
             onChange={handleOnChangeToken}
-            placeholder="ex : AZE123"
+            description="Format : 6 caractères alphanumériques en majuscules. Par exemple : AZE123"
             value={token}
             classNameLabel={styles['desk-form-label']}
             className={styles['desk-form-input']}
