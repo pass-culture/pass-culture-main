@@ -20,7 +20,9 @@ def create_industrial_individual_offerers() -> None:
     adage_tag = offerers_models.OffererTag.query.filter_by(name="adage").one()
 
     instructor = users_factories.AdminFactory(firstName="Instructeur", lastName="d'Autoentrepreneur")
+    users_factories.UserProNewNavStateFactory(user=instructor)
     other_instructor = users_factories.AdminFactory(firstName="Instructeur", lastName="Bis")
+    users_factories.UserProNewNavStateFactory(user=other_instructor)
 
     # offerer with tag but subscription row not yet created
     offerer = offerers_factories.NotValidatedOffererFactory(name="JOE AUTOENTREPRENEUR", tags=[ae_tag])

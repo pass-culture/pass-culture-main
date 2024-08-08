@@ -49,6 +49,7 @@ def _create_gdpr_user(
 
     data.update(kwargs)
     user = factory(**data)
+    users_factories.UserProNewNavStateFactory(user=user)
 
     history_factories.ActionHistoryFactory(
         authorUser=None,
