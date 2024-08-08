@@ -47,7 +47,9 @@ export const PartnerPages = ({
   venueTypes,
 }: PartnerPagesProps) => {
   const [selectedVenueId, setSelectedVenueId] = useState<string>(
-    venues.length > 0 ? getSavedVenueId(venues) ?? venues[0].id.toString() : ''
+    venues.length > 0
+      ? (getSavedVenueId(venues) ?? venues[0].id.toString())
+      : ''
   )
 
   const venuesOptions: SelectOption[] = venues.map((venue) => ({

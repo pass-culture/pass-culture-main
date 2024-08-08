@@ -224,9 +224,9 @@ export const SelectAutocomplete = ({
   }
 
   const placeholderDisplay = Array.isArray(field.value)
-    ? placeholder ??
-      (field.value.length > 1 && pluralLabel ? pluralLabel : label)
-    : placeholder ?? optionsLabelById[field.value]
+    ? (placeholder ??
+      (field.value.length > 1 && pluralLabel ? pluralLabel : label))
+    : (placeholder ?? optionsLabelById[field.value])
 
   return (
     <FieldLayout
