@@ -208,3 +208,43 @@ class PatchEventReturns400Test:
 
         assert response.status_code == 400
         assert response.json == {"desciption": ["extra fields not permitted"]}
+
+    def test_patch_id_at_provider_should_fail_because_already_taken(self, client):
+        venue, api_key = utils.create_offerer_provider_linked_to_venue(with_ticketing_service_at_provider_level=True)
+        id_at_provider = "rolala"
+        # existing offer with id_at_provider
+        offers_factories.EventOfferFactory(
+            venue=venue,
+            bookingContact="contact@example.com",
+            bookingEmail="notify@passq.com",
+            subcategoryId="CONCERT",
+            durationMinutes=20,
+            isDuo=False,
+            lastProvider=api_key.provider,
+            withdrawalType=offers_models.WithdrawalTypeEnum.IN_APP,
+            withdrawalDelay=86400,
+            withdrawalDetails="Around there",
+            description="A description",
+            idAtProvider=id_at_provider,
+        )
+        event_offer = offers_factories.EventOfferFactory(
+            venue=venue,
+            bookingContact="contact@example.com",
+            bookingEmail="notify@passq.com",
+            subcategoryId="CONCERT",
+            durationMinutes=20,
+            isDuo=False,
+            lastProvider=api_key.provider,
+            withdrawalType=offers_models.WithdrawalTypeEnum.IN_APP,
+            withdrawalDelay=86400,
+            withdrawalDetails="Around there",
+            description="A description",
+        )
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
+            f"/public/offers/v1/events/{event_offer.id}",
+            json={"idAtProvider": id_at_provider},
+        )
+
+        assert response.status_code == 400
+        assert response.json == {"idAtProvider": ["`rolala` is already taken by another venue offer"]}

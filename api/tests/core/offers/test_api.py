@@ -1324,6 +1324,37 @@ class CreateOfferTest:
 
         assert error.value.errors["musicType"] == ["Ce champ est obligatoire"]
 
+    def test_raise_error_on_creating_because_this_id_at_provider_is_already_taken(self):
+        provider = providers_factories.PublicApiProviderFactory()
+        offerer = offerers_factories.OffererFactory()
+        providers_factories.OffererProviderFactory(offerer=offerer, provider=provider)
+        venue = offerers_factories.VenueFactory()
+        id_at_provider = "rolalala"
+
+        # existing offer with `id_at_provider`
+        factories.OfferFactory(
+            lastProvider=provider,
+            name="Offer linked to a provider",
+            venue=venue,
+            idAtProvider=id_at_provider,
+        )
+
+        with pytest.raises(exceptions.IdAtProviderAlreadyTaken) as error:
+            api.create_offer(
+                venue=venue,
+                name="A pretty good offer",
+                subcategory_id=subcategories.SEANCE_CINE.id,
+                external_ticket_office_url="http://example.net",
+                audio_disability_compliant=True,
+                mental_disability_compliant=True,
+                motor_disability_compliant=True,
+                visual_disability_compliant=True,
+                id_at_provider=id_at_provider,
+                provider=provider,
+            )
+
+        assert error.value.errors["idAtProvider"] == ["`rolalala` is already taken by another venue offer"]
+
 
 @pytest.mark.usefixtures("db_session")
 class UpdateOfferTest:
@@ -1544,6 +1575,34 @@ class UpdateOfferTest:
         assert error.value.errors["idAtProvider"] == [
             "Une offre ne peut être créée ou éditée avec un idAtProvider si elle n'a pas de provider"
         ]
+
+    def test_raise_error_on_updating_id_at_provider_because_this_id_is_already_taken(self):
+        provider = providers_factories.PublicApiProviderFactory()
+        offerer = offerers_factories.OffererFactory()
+        providers_factories.OffererProviderFactory(offerer=offerer, provider=provider)
+        venue = offerers_factories.VenueFactory()
+        id_at_provider = "rolalala"
+
+        # existing offer with `id_at_provider`
+        factories.OfferFactory(
+            lastProvider=provider,
+            name="Offer linked to a provider",
+            venue=venue,
+            idAtProvider=id_at_provider,
+        )
+        offer = factories.OfferFactory(
+            lastProvider=provider,
+            name="Offer linked to a provider",
+            venue=venue,
+        )
+
+        with pytest.raises(exceptions.IdAtProviderAlreadyTaken) as error:
+            api.update_offer(
+                offer,
+                idAtProvider=id_at_provider,
+            )
+
+        assert error.value.errors["idAtProvider"] == ["`rolalala` is already taken by another venue offer"]
 
 
 @pytest.mark.usefixtures("db_session")

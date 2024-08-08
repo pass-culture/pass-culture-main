@@ -6,6 +6,7 @@ import pytest
 
 from pcapi import settings
 from pcapi.core.offerers import factories as offerers_factories
+from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.testing import override_features
 from pcapi.models import offer_mixin
@@ -76,6 +77,63 @@ class PostEventTest:
             publication_date, "Europe/Paris"
         ).replace(microsecond=0, tzinfo=None)
         assert created_offer.futureOffer.isWaitingForPublication
+
+    def test_event_creation_should_return_400_because_id_at_provider_is_taken(self, client):
+        venue, api_key = utils.create_offerer_provider_linked_to_venue(with_ticketing_service_at_provider_level=True)
+        id_at_provider = "rolala"
+        # existing offer with id_at_provider
+        offers_factories.EventOfferFactory(
+            venue=venue,
+            bookingContact="contact@example.com",
+            bookingEmail="notify@passq.com",
+            subcategoryId="CONCERT",
+            durationMinutes=20,
+            isDuo=False,
+            lastProvider=api_key.provider,
+            withdrawalType=offers_models.WithdrawalTypeEnum.IN_APP,
+            withdrawalDelay=86400,
+            withdrawalDetails="Around there",
+            description="A description",
+            idAtProvider=id_at_provider,
+        )
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
+            "/public/offers/v1/events",
+            json={
+                "enableDoubleBookings": True,
+                "bookingContact": "contact@example.com",
+                "bookingEmail": "nicoj@example.com",
+                "categoryRelatedFields": {
+                    "author": "Ray Charles",
+                    "category": "CONCERT",
+                    "musicType": "ELECTRO-HOUSE",
+                    "performer": "Nicolas Jaar",
+                    "stageDirector": "Alfred",  # field not applicable
+                },
+                "description": "Space is only noise if you can see",
+                "eventDuration": 120,
+                "accessibility": {
+                    "audioDisabilityCompliant": False,
+                    "mentalDisabilityCompliant": True,
+                    "motorDisabilityCompliant": True,
+                    "visualDisabilityCompliant": True,
+                },
+                "externalTicketOfficeUrl": "https://maposaic.com",
+                "image": {
+                    "credit": "Jean-Crédit Photo",
+                    "file": image_data.GOOD_IMAGE,
+                },
+                "itemCollectionDetails": "A retirer au 6ème sous-sol du parking de la gare entre minuit et 2",
+                "location": {"type": "physical", "venueId": venue.id},
+                "name": "Nicolas Jaar dans ton salon",
+                "priceCategories": [{"price": 30000, "label": "triangle or"}],
+                "hasTicket": True,
+                "idAtProvider": id_at_provider,
+            },
+        )
+
+        assert response.status_code == 400
+        assert response.json == {"idAtProvider": ["`rolala` is already taken by another venue offer"]}
 
     def test_event_creation_with_full_body(self, client, clear_tests_assets_bucket):
         venue, _ = utils.create_offerer_provider_linked_to_venue(with_ticketing_service_at_provider_level=True)
