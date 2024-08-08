@@ -1,31 +1,31 @@
 //  Legacy fonts to cover the typos weights and styles that do not fit in the new design system
 //  These should be progresively replaced with DS fonts
 @mixin extra-bold {
-  font-family: Montserrat-ExtraBold;
+  font-family: Montserrat-ExtraBold, system-ui, sans-serif;
   font-weight: 800;
   font-style: normal;
 }
 
 @mixin bold() {
-  font-family: Montserrat-Bold;
+  font-family: Montserrat-Bold, system-ui, sans-serif;
   font-weight: 700;
   font-style: normal;
 }
 
 @mixin semi-bold() {
-  font-family: Montserrat-SemiBold;
+  font-family: Montserrat-SemiBold, system-ui, sans-serif;
   font-weight: 600;
   font-style: normal;
 }
 
 @mixin medium() {
-  font-family: Montserrat-Medium;
+  font-family: Montserrat-Medium, system-ui, sans-serif;
   font-weight: 500;
   font-style: normal;
 }
 
 @mixin regular() {
-  font-family: Montserrat-Regular;
+  font-family: Montserrat-Regular, system-ui, sans-serif;
   font-weight: 400;
   font-style: normal;
 }
