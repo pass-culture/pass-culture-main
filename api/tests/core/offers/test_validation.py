@@ -356,19 +356,51 @@ class CheckImageTest:
             min_height=400,
         )
 
-    def test_image_too_small(self):
+    def test_image_too_small_with_width_and_height_constraint(self):
         image_as_bytes = (IMAGES_DIR / "mouette_portrait.jpg").read_bytes()
-        with pytest.raises(exceptions.ImageTooSmall):
+        with pytest.raises(exceptions.ImageTooSmall) as error:
             validation.check_image(
                 image_as_bytes,
                 accepted_types=("jpeg", "jpg"),
                 min_width=400,
                 min_height=400,
             )
+        assert str(error.value) == "Utilisez une image plus grande (supérieure à 400px par 400px)"
+
+    def test_image_too_small_with_width_constraint(self):
+        image_as_bytes = (IMAGES_DIR / "mouette_portrait.jpg").read_bytes()
+        with pytest.raises(exceptions.ImageTooSmall) as error:
+            validation.check_image(
+                image_as_bytes,
+                accepted_types=("jpeg", "jpg"),
+                min_width=400,
+                min_height=None,
+            )
+        assert str(error.value) == "Utilisez une image plus grande (supérieure à 400px de large)"
+
+    def test_image_too_small_with_height_constraint(self):
+        image_as_bytes = (IMAGES_DIR / "mouette_portrait.jpg").read_bytes()
+        with pytest.raises(exceptions.ImageTooSmall) as error:
+            validation.check_image(
+                image_as_bytes,
+                accepted_types=("jpeg", "jpg"),
+                min_width=None,
+                min_height=1000,
+            )
+        assert str(error.value) == "Utilisez une image plus grande (supérieure à 1000px de haut)"
+
+    def test_image_too_small_with_no_min_constraint_should_not_raise(self):
+        image_as_bytes = (IMAGES_DIR / "mouette_portrait.jpg").read_bytes()
+        validation.check_image(
+            image_as_bytes,
+            accepted_types=("jpeg", "jpg"),
+            min_width=None,
+            min_height=None,
+        )
 
     def test_fake_jpeg(self):
         image_as_bytes = (IMAGES_DIR / "mouette_fake_jpg.jpg").read_bytes()
-        with pytest.raises(exceptions.ImageValidationError):
+        with pytest.raises(exceptions.UnidentifiedImage):
             validation.check_image(
                 image_as_bytes,
                 accepted_types=("jpeg", "jpg"),

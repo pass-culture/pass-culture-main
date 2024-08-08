@@ -296,8 +296,8 @@ def check_image_size(image_as_bytes: bytes, max_size: int = MAX_THUMBNAIL_SIZE) 
 def check_image(
     image_as_bytes: bytes,
     accepted_types: tuple = ACCEPTED_THUMBNAIL_FORMATS,
-    min_width: int = MIN_THUMBNAIL_WIDTH,
-    min_height: int = MIN_THUMBNAIL_HEIGHT,
+    min_width: int | None = MIN_THUMBNAIL_WIDTH,
+    min_height: int | None = MIN_THUMBNAIL_HEIGHT,
     max_width: int | None = None,
     max_height: int | None = None,
     max_size: int = MAX_THUMBNAIL_SIZE,
@@ -314,7 +314,7 @@ def check_image(
     if image.format.lower() not in accepted_types:
         raise exceptions.UnacceptedFileType(accepted_types, image.format)
 
-    if image.width < min_width or image.height < min_height:
+    if min_width is not None and image.width < min_width or min_height is not None and image.height < min_height:
         raise exceptions.ImageTooSmall(min_width, min_height)
 
     if max_width is not None and image.width > max_width or max_height is not None and image.height > max_height:

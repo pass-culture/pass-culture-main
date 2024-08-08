@@ -69,16 +69,21 @@ class FileSizeExceeded(ImageValidationError):
 
 
 class ImageTooSmall(ImageValidationError):
-    def __init__(self, min_width: int, min_height: int) -> None:
-        super().__init__(f"Utilisez une image plus grande (supérieure à {min_width}px par {min_height}px)")
+    def __init__(self, min_width: int | None, min_height: int | None) -> None:
+        if min_width and min_height:
+            super().__init__(f"Utilisez une image plus grande (supérieure à {min_width}px par {min_height}px)")
+        elif min_width:
+            super().__init__(f"Utilisez une image plus grande (supérieure à {min_width}px de large)")
+        elif min_height:
+            super().__init__(f"Utilisez une image plus grande (supérieure à {min_height}px de haut)")
 
 
 class ImageTooLarge(ImageValidationError):
     def __init__(self, max_width: int | None, max_height: int | None):
         if max_width and not max_height:
-            super().__init__(f"Utilisez une image plus petite (inférieure à {max_width} px de large)")
+            super().__init__(f"Utilisez une image plus petite (inférieure à {max_width}px de large)")
         elif max_height and not max_width:
-            super().__init__(f"Utilisez une image plus petite (inférieure à  {max_height}px de haut)")
+            super().__init__(f"Utilisez une image plus petite (inférieure à {max_height}px de haut)")
         else:
             super().__init__(f"Utilisez une image plus petite (inférieure à {max_width}px par {max_height}px)")
 
@@ -239,7 +244,8 @@ class CollectiveOfferNotFound(Exception):
     pass
 
 
-class UnapplicableModel(Exception): ...
+class UnapplicableModel(Exception):
+    pass
 
 
 class UnexpectedCinemaProvider(Exception):
