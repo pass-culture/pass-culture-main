@@ -2,9 +2,9 @@ import { useFormikContext } from 'formik'
 import React from 'react'
 
 import { FormLayout } from 'components/FormLayout/FormLayout'
-import { DurationInput } from 'ui-kit/form/DurationInput/DurationInput'
 import { TextArea } from 'ui-kit/form/TextArea/TextArea'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
+import { TimePicker } from 'ui-kit/form/TimePicker/TimePicker'
 
 import styles from '../IndividualOfferForm.module.scss'
 import { IndividualOfferFormValues } from '../types'
@@ -116,15 +116,15 @@ export const Informations = ({
           />
         </FormLayout.Row>
       )}
-
       {hasDurationMinutes && (
         <FormLayout.Row>
-          <DurationInput
+          <TimePicker
             isOptional
             label={'Durée'}
             name="durationMinutes"
             className={styles['input-duration-minutes']}
             disabled={readOnlyFields.includes('durationMinutes')}
+            showIntervalList={false}
           />
         </FormLayout.Row>
       )}

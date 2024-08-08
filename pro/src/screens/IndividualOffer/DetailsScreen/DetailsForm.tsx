@@ -16,10 +16,10 @@ import { GET_MUSIC_TYPES_QUERY_KEY } from 'config/swrQueryKeys'
 import { showOptionsTree } from 'core/Offers/categoriesSubTypes'
 import { IndividualOfferImage } from 'core/Offers/types'
 import { useActiveFeature } from 'hooks/useActiveFeature'
-import { DurationInput } from 'ui-kit/form/DurationInput/DurationInput'
 import { Select } from 'ui-kit/form/Select/Select'
 import { TextArea } from 'ui-kit/form/TextArea/TextArea'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
+import { TimePicker } from 'ui-kit/form/TimePicker/TimePicker'
 
 import { DEFAULT_DETAILS_FORM_VALUES } from './constants'
 import { Subcategories } from './Subcategories/Subcategories'
@@ -330,11 +330,12 @@ export const DetailsForm = ({
 
               {subcategoryConditionalFields.includes('durationMinutes') && (
                 <FormLayout.Row>
-                  <DurationInput
+                  <TimePicker
                     isOptional
                     label={'Durée'}
                     name="durationMinutes"
                     disabled={readOnlyFields.includes('durationMinutes')}
+                    showIntervalList={false}
                   />
                 </FormLayout.Row>
               )}
