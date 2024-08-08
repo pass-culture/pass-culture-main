@@ -2532,9 +2532,8 @@ class AnonymizePublicAccountTest(PostEndpointHelper, StorageFolderManager):
         assert user.roles != [users_models.UserRole.ANONYMIZED]
 
         response = authenticated_client.get(response.location)
-        assert (
-            "L'utilisateur possède une extraction qui est toujours en cours de traitement."
-            in html_parser.extract_alert(response.data)
+        assert "Une extraction de données est en cours pour cet utilisateur." in html_parser.extract_alert(
+            response.data
         )
 
     @pytest.mark.parametrize(

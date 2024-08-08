@@ -643,7 +643,7 @@ def format_pivot_name(pivot_name: str) -> str:
         case "cgr":
             return "CGR"
         case "cineoffice":
-            return "CineOffice"
+            return "Ciné Office"
         case "ems":
             return "EMS"
         case _:
