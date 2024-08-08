@@ -12,6 +12,7 @@ import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
 import { BannerPublicApi } from 'components/Banner/BannerPublicApi'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OfferEducationalActions } from 'components/OfferEducationalActions/OfferEducationalActions'
+import { RouteLeavingGuardCollectiveOfferCreation } from 'components/RouteLeavingGuardCollectiveOfferCreation/RouteLeavingGuardCollectiveOfferCreation'
 import { GET_COLLECTIVE_REQUEST_INFORMATIONS_QUERY_KEY } from 'config/swrQueryKeys'
 import {
   VisibilityFormValues,
@@ -354,6 +355,9 @@ export const CollectiveOfferVisibilityScreen = ({
           </FormLayout>
         </form>
       </FormikProvider>
+      <RouteLeavingGuardCollectiveOfferCreation
+        when={formik.dirty && !formik.isSubmitting}
+      />
     </>
   )
 }

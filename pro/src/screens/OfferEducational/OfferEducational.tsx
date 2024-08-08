@@ -11,6 +11,7 @@ import {
   GetEducationalOffererResponseModel,
 } from 'apiClient/v1'
 import { OfferEducationalActions } from 'components/OfferEducationalActions/OfferEducationalActions'
+import { RouteLeavingGuardCollectiveOfferCreation } from 'components/RouteLeavingGuardCollectiveOfferCreation/RouteLeavingGuardCollectiveOfferCreation'
 import {
   GET_COLLECTIVE_OFFER_QUERY_KEY,
   GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY,
@@ -203,7 +204,12 @@ export const OfferEducational = ({
           mode={mode}
         />
       )}
-      <FormikProvider value={{ ...formik, resetForm }}>
+      <FormikProvider
+        value={{
+          ...formik,
+          resetForm,
+        }}
+      >
         <form onSubmit={formik.handleSubmit}>
           <OfferEducationalForm
             mode={mode}
@@ -219,6 +225,9 @@ export const OfferEducational = ({
           />
         </form>
       </FormikProvider>
+      <RouteLeavingGuardCollectiveOfferCreation
+        when={formik.dirty && !formik.isSubmitting}
+      />
     </>
   )
 }

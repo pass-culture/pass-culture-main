@@ -34,7 +34,7 @@ const CollectiveOfferConfirmation = ({
         offererId={offer.venue.managingOfferer.id}
         institutionDisplayName={getInstitutionDisplayName()}
       />
-      <RouteLeavingGuardCollectiveOfferCreation />
+      <RouteLeavingGuardCollectiveOfferCreation when={false} />
     </AppLayout>
   )
 }

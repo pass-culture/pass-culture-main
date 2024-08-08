@@ -217,7 +217,7 @@ export const OfferEducationalForm = ({
           )}
         </ActionsBarSticky.Left>
         {isCollectiveOfferDraftEnabled && (
-          <ActionsBarSticky.Right dirtyForm={dirty} mode={mode}>
+          <ActionsBarSticky.Right dirtyForm={dirty || !offer} mode={mode}>
             <Button
               type="submit"
               disabled={!isEligible || mode === Mode.READ_ONLY}

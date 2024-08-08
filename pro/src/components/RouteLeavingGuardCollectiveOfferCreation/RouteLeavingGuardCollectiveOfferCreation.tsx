@@ -1,10 +1,20 @@
-import React from 'react'
+import {
+  BlockerFunction,
+  RouteLeavingGuard,
+} from 'components/RouteLeavingGuard/RouteLeavingGuard'
 
-import { RouteLeavingGuard } from 'components/RouteLeavingGuard/RouteLeavingGuard'
+interface RouteLeavingGuardCollectiveOffer {
+  when: boolean
+}
 
-import { shouldBlockNavigation } from './utils'
+export const RouteLeavingGuardCollectiveOfferCreation = ({
+  when,
+}: RouteLeavingGuardCollectiveOffer): JSX.Element => {
+  const shouldBlockNavigation: BlockerFunction = ({
+    currentLocation,
+    nextLocation,
+  }) => when && currentLocation.pathname !== nextLocation.pathname
 
-export const RouteLeavingGuardCollectiveOfferCreation = (): JSX.Element => {
   return (
     <RouteLeavingGuard
       shouldBlockNavigation={shouldBlockNavigation}

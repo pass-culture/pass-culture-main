@@ -22,7 +22,7 @@ export const CollectiveOfferPreviewCreation = ({
         isCreation
       >
         <CollectiveOfferPreviewCreationScreen offer={offer} offerer={offerer} />
-        <RouteLeavingGuardCollectiveOfferCreation />
+        <RouteLeavingGuardCollectiveOfferCreation when={false} />
       </CollectiveOfferLayout>
     </AppLayout>
   )

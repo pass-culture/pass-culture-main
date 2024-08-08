@@ -3,7 +3,6 @@ import { useLocation } from 'react-router-dom'
 
 import { AppLayout } from 'app/AppLayout'
 import { CollectiveOfferLayout } from 'components/CollectiveOfferLayout/CollectiveOfferLayout'
-import { RouteLeavingGuardCollectiveOfferCreation } from 'components/RouteLeavingGuardCollectiveOfferCreation/RouteLeavingGuardCollectiveOfferCreation'
 import { isCollectiveOffer, Mode } from 'core/OfferEducational/types'
 import { useIsNewInterfaceActive } from 'hooks/useIsNewInterfaceActive'
 import { queryParamsFromOfferer } from 'pages/Offers/utils/queryParamsFromOfferer'
@@ -52,7 +51,6 @@ export const CollectiveOfferCreation = ({
             mode={Mode.CREATION}
             isTemplate={isTemplate}
           />
-          <RouteLeavingGuardCollectiveOfferCreation />
         </CollectiveOfferLayout>
       )}
     </AppLayout>

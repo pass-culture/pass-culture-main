@@ -24,7 +24,7 @@ export const CollectiveOfferSummaryCreation = ({
         offer={offer}
       >
         <CollectiveOfferSummaryCreationScreen offer={offer} />
-        <RouteLeavingGuardCollectiveOfferCreation />
+        <RouteLeavingGuardCollectiveOfferCreation when={false} />
       </CollectiveOfferLayout>
     </AppLayout>
   )
