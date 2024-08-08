@@ -254,6 +254,38 @@ class UpdateObjectsTest:
         )
         assert existing_offer.activeMediation.thumbCount == 1
 
+    @patch("pcapi.connectors.api_allocine.get_movies_showtimes_from_allocine")
+    @patch("pcapi.local_providers.allocine.allocine_stocks.AllocineStocks.get_object_thumb")
+    @patch("pcapi.settings.ALLOCINE_API_KEY", "token")
+    @pytest.mark.usefixtures("db_session")
+    def test_should_create_offer_even_if_incorrect_thumb(self, mock_get_object_thumb, mock_call_allocine_api):
+        # Given
+        mock_call_allocine_api.return_value = allocine_serializers.AllocineMovieShowtimeListResponse.model_validate(
+            fixtures.ALLOCINE_MOVIE_SHOWTIME_LIST
+        )
+        # Image that should raise a `pcapi.core.offers.exceptions.UnidentifiedImage`
+        file_path = Path(tests.__path__[0]) / "files" / "mouette_fake_jpg.jpg"
+        with open(file_path, "rb") as thumb_file:
+            mock_get_object_thumb.return_value = thumb_file.read()
+
+        venue = offerers_factories.VenueFactory(
+            managingOfferer__siren="775671464",
+            name="Cinema Allocine",
+            siret="77567146400110",
+            bookingEmail="toto@example.com",
+        )
+
+        allocine_venue_provider = providers_factories.AllocineVenueProviderFactory(venue=venue)
+        allocine_stocks_provider = AllocineStocks(allocine_venue_provider)
+
+        # When
+        allocine_stocks_provider.updateObjects()
+
+        # Then
+        existing_offer = offers_models.Offer.query.one()
+        assert existing_offer.activeMediation is None
+        assert allocine_stocks_provider.erroredThumbs == 1
+
     @patch("pcapi.local_providers.allocine.allocine_stocks.get_movie_poster")
     @patch("pcapi.connectors.api_allocine.get_movies_showtimes_from_allocine")
     @patch("pcapi.local_providers.allocine.allocine_stocks.AllocineStocks.get_object_thumb")

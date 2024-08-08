@@ -9,6 +9,7 @@ from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.finance import api as finance_api
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import api as offers_api
+from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import models as offers_models
 from pcapi.core.providers import models as providers_models
 from pcapi.local_providers.cinema_providers.constants import ShowtimeFeatures
@@ -101,9 +102,18 @@ class EMSStocks:
                 thumb = None
             if not thumb:
                 continue
-            offers_api.create_mediation(
-                user=None, offer=offer, credit=None, image_as_bytes=thumb, keep_ratio=True, check_image_validity=False
-            )
+            try:
+                offers_api.create_mediation(
+                    user=None,
+                    offer=offer,
+                    credit=None,
+                    image_as_bytes=thumb,
+                    keep_ratio=True,
+                    min_height=None,
+                    min_width=None,
+                )
+            except offers_exceptions.ImageValidationError as e:
+                logger.warning("Error: Offer image could not be created. Reason: %s", e)
 
         offer_ids = {offer.id for offer in self.created_offers}
         search.async_index_offer_ids(

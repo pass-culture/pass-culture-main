@@ -6,6 +6,7 @@ from pcapi.connectors.serialization import allocine_serializers
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers import api as offers_api
+from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import models as offers_models
 from pcapi.core.providers.allocine import build_movie_id_at_providers
 from pcapi.core.providers.allocine import create_generic_movie
@@ -114,15 +115,24 @@ class AllocineStocks(LocalProvider):
         last_update_for_current_provider = get_last_update_for_provider(self.provider.id, offer)
         if not last_update_for_current_provider or last_update_for_current_provider.date() != datetime.today().date():
             if image := self.get_object_thumb():
-                offers_api.create_mediation(
-                    user=None,
-                    offer=offer,
-                    credit=None,
-                    image_as_bytes=image,
-                    keep_ratio=True,
-                    check_image_validity=False,
-                )
-                self.createdThumbs += 1
+                try:
+                    offers_api.create_mediation(
+                        user=None,
+                        offer=offer,
+                        credit=None,
+                        image_as_bytes=image,
+                        keep_ratio=True,
+                        min_height=None,
+                        min_width=None,
+                    )
+                    self.createdThumbs += 1
+                except offers_exceptions.ImageValidationError as e:
+                    self.erroredThumbs += 1
+                    logger.warning(
+                        "Error: Offer image could not be created. Reason: %s",
+                        e,
+                        extra={"allocineId": self.movie.internalId, "theaterId": self.theater_id},
+                    )
 
         self.last_offer = offer
 

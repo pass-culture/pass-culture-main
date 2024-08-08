@@ -9,6 +9,7 @@ from pcapi.core.external_bookings.boost.client import BoostClientAPI
 from pcapi.core.external_bookings.boost.client import get_pcu_pricing_if_exists
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers import api as offers_api
+from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import models as offers_models
 from pcapi.core.offers import repository as offers_repository
 from pcapi.core.providers.models import VenueProvider
@@ -121,15 +122,20 @@ class BoostStocks(LocalProvider):
         if not last_update_for_current_provider or last_update_for_current_provider.date() != datetime.today().date():
             if self.showtime_details.film.posterUrl:
                 if image := self._get_boost_movie_poster(self.showtime_details.film.posterUrl):
-                    offers_api.create_mediation(
-                        user=None,
-                        offer=offer,
-                        credit=None,
-                        image_as_bytes=image,
-                        keep_ratio=True,
-                        check_image_validity=False,
-                    )
-                    self.createdThumbs += 1
+                    try:
+                        offers_api.create_mediation(
+                            user=None,
+                            offer=offer,
+                            credit=None,
+                            image_as_bytes=image,
+                            keep_ratio=True,
+                            min_height=None,
+                            min_width=None,
+                        )
+                        self.createdThumbs += 1
+                    except offers_exceptions.ImageValidationError as e:
+                        self.erroredThumbs += 1
+                        logger.warning("Error: Offer image could not be created. Reason: %s", e)
         self.last_offer = offer
 
     def fill_stock_attributes(self, stock: offers_models.Stock) -> None:
