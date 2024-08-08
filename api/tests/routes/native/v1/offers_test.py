@@ -3582,3 +3582,23 @@ class SubcategoriesTest:
                 ],
             },
         ]
+
+
+class CategoriesTest:
+    def test_returns_200(self, client):
+        response = client.get("/native/v1/categories")
+
+        assert response.status_code == 200
+
+    def test_ids_are_unique(self, client):
+        response = client.get("/native/v1/categories")
+        content = response.json
+        ids = [node["id"] for node in content["categoryNodes"]]
+
+        assert len(ids) == len(set(ids))
+
+    def test_name_is_never_none(self, client):
+        response = client.get("/native/v1/categories")
+        content = response.json
+        for node in content["categoryNodes"]:
+            assert node["technicalName"], f"{node = }, {node['technicalName'] = }"
