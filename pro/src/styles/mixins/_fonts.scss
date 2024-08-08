@@ -5,13 +5,6 @@ $body-line-height: 1.25em;
 $body-font-size: rem.torem(15px);
 $caption-line-height: rem.torem(16px);
 
-/* stylelint-disable pass-culture/no-font-properties */
-@mixin hero() {
-  font-size: rem.torem(38px);
-  font-style: normal;
-  font-weight: 500;
-}
-
 @mixin title1() {
   font-size: rem.torem(26px);
   font-style: normal;
