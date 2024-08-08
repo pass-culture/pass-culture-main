@@ -39,9 +39,9 @@ class Returns201Test:
         # Given
         venue = offerers_factories.VenueFactory(
             audioDisabilityCompliant=True,
-            mentalDisabilityCompliant=False,
+            mentalDisabilityCompliant=True,
             motorDisabilityCompliant=False,
-            visualDisabilityCompliant=True,
+            visualDisabilityCompliant=False,
         )
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
@@ -57,9 +57,9 @@ class Returns201Test:
 
         offer = Offer.query.get(response.json["id"])
         assert offer.audioDisabilityCompliant is True
-        assert offer.mentalDisabilityCompliant is False
+        assert offer.mentalDisabilityCompliant is True
         assert offer.motorDisabilityCompliant is False
-        assert offer.visualDisabilityCompliant is True
+        assert offer.visualDisabilityCompliant is False
 
     def test_create_offer_on_venue_with_no_accessibility_informations(self, client):
         # Given
