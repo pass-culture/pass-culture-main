@@ -72,6 +72,16 @@
                 <span class="fw-bold">Incident créé par :</span> {{ incident.author_full_name }}
               </p>
             {% endif %}
+            {% if incident.cashflow_batch_label %}
+              <p class="mb-1">
+                <span class="fw-bold">Batch :</span> {{ incident.cashflow_batch_label }}
+              </p>
+            {% endif %}
+            {% if incident.invoice_url %}
+              <p class="mb-1">
+                <span class="fw-bold">Justificatif de remboursement :</span> <a href="{{ incident.invoice_url }}">PDF</a>
+              </p>
+            {% endif %}
           </div>
         </div>
       </div>
