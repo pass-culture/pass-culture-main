@@ -525,7 +525,10 @@ def _filter_collective_offers_by_statuses(query: BaseQuery, statuses: list[str] 
         # all displayedStatus with an offer that has expired
         allowed_expired_booking_status: set[educational_models.CollectiveBookingStatus | None] = set()
         if DisplayedStatus.ENDED.value in statuses:
-            allowed_expired_booking_status.add(educational_models.CollectiveBookingStatus.USED)
+            # TODO(anoukhello - 08/08/24) remove REIMBURSED status once it is handled in frontend filters
+            allowed_expired_booking_status.update(
+                {educational_models.CollectiveBookingStatus.USED, educational_models.CollectiveBookingStatus.REIMBURSED}
+            )
         if DisplayedStatus.REIMBURSED.value in statuses:
             allowed_expired_booking_status.add(educational_models.CollectiveBookingStatus.REIMBURSED)
         if DisplayedStatus.EXPIRED.value in statuses:
