@@ -185,7 +185,6 @@ export const CollectiveDataForm = ({
                     ]}
                     name="collectiveLegalStatus"
                     label="Statut"
-                    placeholder="Association, établissement public..."
                     isOptional
                   />
                 </FormLayout.Row>

@@ -93,7 +93,6 @@ export const AddVenueProviderButton = ({
           name="provider"
           options={providersOptions}
           value={String(selectedProviderId)}
-          placeholder="Choix du logiciel"
         />
       </FieldLayout>
 

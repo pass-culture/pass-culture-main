@@ -1,6 +1,10 @@
 import cn from 'classnames'
-import { useField } from 'formik'
-import React from 'react'
+import {
+  FieldHelperProps,
+  FieldInputProps,
+  FieldMetaProps,
+  useField,
+} from 'formik'
 import Textarea from 'react-autosize-textarea'
 
 import {
@@ -30,7 +34,16 @@ export const TextArea = ({
   smallLabel,
   rows = 7,
 }: TextAreaProps): JSX.Element => {
-  const [field, meta] = useField({ name })
+  //  Temporary type fix while react-autosoze-textarea types are not in sync with the latest React types
+  //  see https://github.com/DefinitelyTyped/DefinitelyTyped/pull/68984
+  const [field, meta] = useField({ name }) as [
+    FieldInputProps<string | undefined> & {
+      onPointerEnterCapture: any
+      onPointerLeaveCapture: any
+    },
+    FieldMetaProps<string>,
+    FieldHelperProps<string>,
+  ]
 
   return (
     <FieldLayout
