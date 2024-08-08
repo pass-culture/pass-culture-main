@@ -14,7 +14,7 @@
   height: 100vh;
 
   .title {
-    @include fonts.hero;
+    @include fonts.title1;
 
     color: var(--color-white);
     margin: rem.torem(32px) 0 rem.torem(16px);
