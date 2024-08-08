@@ -49,7 +49,7 @@ class TiteliveBookSearch(TiteliveSearch[TiteLiveBookWork]):
     def upsert_titelive_result_in_dict(
         self, titelive_search_result: TiteLiveBookWork, products_by_ean: dict[str, offers_models.Product]
     ) -> dict[str, offers_models.Product]:
-        title = titelive_search_result.titre
+        title = self.truncate_string(titelive_search_result.titre)
         authors = titelive_search_result.auteurs_multi
         for article in titelive_search_result.article:
             ean = article.gencod
