@@ -284,6 +284,12 @@ class TiteliveSearch(abc.ABC, typing.Generic[TiteliveWorkType]):
         for product_mediation in product_mediations:
             db.session.delete(product_mediation)
 
+    def truncate_string(self, s: str) -> str:
+        max_length = 140
+        if len(s) > max_length:
+            return s[: max_length - 1] + "…"
+        return s
+
 
 def filter_recent_products(
     titelive_product_page: list[TiteliveWorkType],

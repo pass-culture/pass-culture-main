@@ -415,18 +415,7 @@ class TiteliveBookSearchTest:
         assert product.extraData.get("rayon") == closest_csr.get("label")
         assert product.extraData.get("code_clil") == "3774"
 
-    def test_handle_bad_product_by_ignoring_it(self, requests_mock):
-        self.setup_api_response_fixture(
-            requests_mock, fixtures.build_titelive_one_book_response(title="Long title with more than 140 chars" * 10)
-        )
-
-        # When
-        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1), 1)
-
-        # Then
-        assert offers_models.Product.query.count() == 0
-
-    def test_handle_bad_product_by_skipping_it(self, requests_mock):
+    def test_handle_bad_product_by_truncating_it(self, requests_mock):
         TWO_BOOKS_RESPONSE_FIXTURE_WITH_LONG_TITLE = copy.deepcopy(fixtures.TWO_BOOKS_RESPONSE_FIXTURE)
         TWO_BOOKS_RESPONSE_FIXTURE_WITH_LONG_TITLE["result"][0][
             "titre"
@@ -438,8 +427,13 @@ class TiteliveBookSearchTest:
         TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1), 1)
 
         # Then
-        product = offers_models.Product.query.one()
-        assert product.name == "Mortelle Adèle Tome 1 : tout ça finira mal"
+        product = offers_models.Product.query.order_by(offers_models.Product.name).all()
+        assert len(product) == 2
+        assert (
+            product[0].name
+            == "L'Arabe du futur Tome 2 : une jeunesse au Moyen-Orient (1984-1985) - Edition spéciale avec un titre très long pour tester la longueur de la…"
+        )
+        assert product[1].name == "Mortelle Adèle Tome 1 : tout ça finira mal"
 
     def test_create_1_thing_when_gtl_not_has_lpad_zero(self, requests_mock):
         self.setup_api_response_fixture(
