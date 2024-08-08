@@ -9,7 +9,6 @@ import {
 } from 'apiClient/v1'
 import { AppLayout } from 'app/AppLayout'
 import { CollectiveOfferLayout } from 'components/CollectiveOfferLayout/CollectiveOfferLayout'
-import { RouteLeavingGuardCollectiveOfferCreation } from 'components/RouteLeavingGuardCollectiveOfferCreation/RouteLeavingGuardCollectiveOfferCreation'
 import {
   GET_COLLECTIVE_OFFER_QUERY_KEY,
   GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY,
@@ -184,7 +183,6 @@ export const CollectiveOfferStockCreation = ({
           onSubmit={handleSubmitStock}
           requestId={requestId}
         />
-        <RouteLeavingGuardCollectiveOfferCreation />
       </CollectiveOfferLayout>
     </AppLayout>
   )

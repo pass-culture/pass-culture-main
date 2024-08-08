@@ -15,6 +15,7 @@ import { Callout } from 'components/Callout/Callout'
 import { CalloutVariant } from 'components/Callout/types'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OfferEducationalActions } from 'components/OfferEducationalActions/OfferEducationalActions'
+import { RouteLeavingGuardCollectiveOfferCreation } from 'components/RouteLeavingGuardCollectiveOfferCreation/RouteLeavingGuardCollectiveOfferCreation'
 import { MAX_DETAILS_LENGTH } from 'core/OfferEducational/constants'
 import {
   OfferEducationalStockFormValues,
@@ -258,6 +259,9 @@ export const OfferEducationalStock = <
           </FormLayout>
         </form>
       </FormikProvider>
+      <RouteLeavingGuardCollectiveOfferCreation
+        when={dirty && !formik.isSubmitting}
+      />
     </>
   )
 }

@@ -1,11 +1,9 @@
-import React from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import useSWR, { useSWRConfig } from 'swr'
 
 import { GetCollectiveOfferResponseModel } from 'apiClient/v1'
 import { AppLayout } from 'app/AppLayout'
 import { CollectiveOfferLayout } from 'components/CollectiveOfferLayout/CollectiveOfferLayout'
-import { RouteLeavingGuardCollectiveOfferCreation } from 'components/RouteLeavingGuardCollectiveOfferCreation/RouteLeavingGuardCollectiveOfferCreation'
 import {
   GET_COLLECTIVE_OFFER_QUERY_KEY,
   GET_EDUCATIONAL_INSTITUTIONS_QUERY_KEY,
@@ -81,7 +79,6 @@ export const CollectiveOfferVisibility = ({
           offer={offer}
           requestId={requestId}
         />
-        <RouteLeavingGuardCollectiveOfferCreation />
       </CollectiveOfferLayout>
     </AppLayout>
   )

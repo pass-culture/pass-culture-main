@@ -13,6 +13,7 @@ import {
   GET_COLLECTIVE_OFFER_QUERY_KEY,
   GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY,
 } from 'config/swrQueryKeys'
+import { Mode } from 'core/OfferEducational/types'
 import { useActiveFeature } from 'hooks/useActiveFeature'
 import { useNotification } from 'hooks/useNotification'
 import { AdagePreviewLayout } from 'pages/AdageIframe/app/components/OfferInfos/AdagePreviewLayout/AdagePreviewLayout'
@@ -107,11 +108,11 @@ export const CollectiveOfferPreviewCreationScreen = ({
             Retour
           </ButtonLink>
         </ActionsBarSticky.Left>
-        <ActionsBarSticky.Right dirtyForm={false}>
+        <ActionsBarSticky.Right dirtyForm={false} mode={Mode.CREATION}>
           {isCollectiveOfferDraftEnabled && (
             <ButtonLink
               to="/offres/collectives"
-              variant={ButtonVariant.PRIMARY}
+              variant={ButtonVariant.SECONDARY}
               onClick={() => {
                 notify.success('Brouillon sauvegardé dans la liste des offres')
               }}
