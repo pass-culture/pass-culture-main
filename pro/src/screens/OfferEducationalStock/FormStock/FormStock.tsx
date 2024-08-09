@@ -51,13 +51,6 @@ export const FormStock = ({
       ) {
         await setFieldValue('endDatetime', event.target.value)
       }
-
-      if (
-        !isDateValid(values.bookingLimitDatetime) ||
-        values.bookingLimitDatetime > event.target.value
-      ) {
-        await setFieldValue('bookingLimitDatetime', event.target.value)
-      }
     }
   }
 

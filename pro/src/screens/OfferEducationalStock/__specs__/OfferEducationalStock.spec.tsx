@@ -1,4 +1,4 @@
-import { screen, waitFor } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { addDays, addMinutes, format, subDays } from 'date-fns'
 import * as router from 'react-router-dom'
@@ -180,25 +180,6 @@ describe('OfferEducationalStock', () => {
       screen.queryByRole('button', { name: 'Annuler et quitter' })
     ).not.toBeInTheDocument()
   })
-})
-
-it('should automatically update bookingLimitDatetime when the user edits the start date', async () => {
-  const testProps: OfferEducationalStockProps = {
-    ...defaultProps,
-    mode: Mode.CREATION,
-  }
-
-  renderWithProviders(<OfferEducationalStock {...testProps} />)
-
-  const userDateInput = format(addDays(new Date(), 1), FORMAT_ISO_DATE_ONLY)
-  const dateInput = screen.getByLabelText('Date de début *')
-  await userEvent.click(dateInput)
-  await userEvent.clear(dateInput)
-  await waitFor(() => userEvent.type(dateInput, userDateInput))
-  const bookingLimitDatetimeInput = screen.getByLabelText(
-    'Date limite de réservation *'
-  )
-  expect(bookingLimitDatetimeInput).toHaveValue(userDateInput)
 })
 
 it('should disable booking limit datetime when form access is read only', () => {
