@@ -137,3 +137,26 @@ class CreateOffererForm(FlaskForm):
             self._siret_info = siret_info
 
         return siret
+
+
+class ConnectAsForm(FlaskForm):
+    object_id = fields.PCStringField()
+    object_type = fields.PCSelectField(
+        choices=(
+            ("offer", "offer"),
+            ("offerer", "offerer"),
+            ("user", "user"),
+            ("venue", "venue"),
+        ),
+    )
+    redirect = fields.PCStringField(
+        validators=[
+            wtforms.validators.DataRequired("Information obligatoire"),
+            wtforms.validators.Length(min=1, max=512, message="doit contenir entre %(min)d et %(max)d caractères"),
+        ],
+    )
+
+    def validate_redirect(self, redirect: fields.PCOptStringField) -> fields.PCSiretField:
+        if not redirect.data.startswith("/"):
+            raise wtforms.validators.ValidationError("doit être un chemin commençant par /")
+        return redirect
