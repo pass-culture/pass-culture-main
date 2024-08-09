@@ -282,7 +282,11 @@ def mark_booking_as_cancelled(booking_id: int) -> utils.BackofficeResponse:
         return _redirect_after_individual_booking_action()
 
     try:
-        bookings_api.mark_as_cancelled(booking, bookings_models.BookingCancellationReasons(form.reason.data))
+        bookings_api.mark_as_cancelled(
+            booking=booking,
+            reason=bookings_models.BookingCancellationReasons(form.reason.data),
+            author_id=current_user.id,
+        )
     except bookings_exceptions.BookingIsAlreadyCancelled:
         repository.mark_transaction_as_invalid()
         flash("Impossible d'annuler une réservation déjà annulée", "warning")
@@ -304,7 +308,10 @@ def mark_booking_as_cancelled(booking_id: int) -> utils.BackofficeResponse:
         )
         try:
             bookings_api.mark_as_cancelled(
-                booking, bookings_models.BookingCancellationReasons(form.reason.data), one_side_cancellation=True
+                booking=booking,
+                reason=bookings_models.BookingCancellationReasons(form.reason.data),
+                one_side_cancellation=True,
+                author_id=current_user.id,
             )
         except Exception as exception:  # pylint: disable=broad-except
             repository.mark_transaction_as_invalid()
@@ -391,7 +398,9 @@ def batch_cancel_individual_bookings() -> utils.BackofficeResponse:
     return _batch_individual_bookings_action(
         form,
         lambda booking: bookings_api.mark_as_cancelled(
-            booking, bookings_models.BookingCancellationReasons(form.reason.data)
+            booking=booking,
+            reason=bookings_models.BookingCancellationReasons(form.reason.data),
+            author_id=current_user.id,
         ),
         "Les réservations ont été annulées",
     )
