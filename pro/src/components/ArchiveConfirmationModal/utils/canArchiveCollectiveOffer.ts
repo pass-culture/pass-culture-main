@@ -17,6 +17,7 @@ export function canArchiveCollectiveOffer(offer: CollectiveOfferResponseModel) {
     offer.status === CollectiveOfferStatus.ACTIVE ||
     offer.status === CollectiveOfferStatus.REJECTED ||
     offer.status === CollectiveOfferStatus.INACTIVE ||
+    offer.status === CollectiveOfferStatus.DRAFT ||
     (offer.status === CollectiveOfferStatus.EXPIRED &&
       (!offer.booking?.booking_status ||
         offer.booking.booking_status === CollectiveBookingStatus.CANCELLED)) ||
@@ -39,7 +40,8 @@ export function canArchiveCollectiveOfferFromSummary(
     const canArchiveThisOffer =
       offer.status === CollectiveOfferStatus.ACTIVE ||
       offer.status === CollectiveOfferStatus.REJECTED ||
-      offer.status === CollectiveOfferStatus.INACTIVE
+      offer.status === CollectiveOfferStatus.INACTIVE ||
+      offer.status === CollectiveOfferStatus.DRAFT
 
     return canArchiveThisOffer
   } else {
@@ -49,6 +51,7 @@ export function canArchiveCollectiveOfferFromSummary(
       offer.status === CollectiveOfferStatus.ACTIVE ||
       offer.status === CollectiveOfferStatus.REJECTED ||
       offer.status === CollectiveOfferStatus.INACTIVE ||
+      offer.status === CollectiveOfferStatus.DRAFT ||
       (offer.status === CollectiveOfferStatus.EXPIRED &&
         (!offer.lastBookingStatus ||
           offer.lastBookingStatus === CollectiveBookingStatus.CANCELLED)) ||

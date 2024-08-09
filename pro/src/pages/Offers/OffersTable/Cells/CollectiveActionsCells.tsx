@@ -274,16 +274,20 @@ export const CollectiveActionsCells = ({
                       />
                     </>
                   )}
-                {!offer.isShowcase && (
-                  <DropdownMenu.Item
-                    className={styles['menu-item']}
-                    onSelect={handleCreateOfferClick}
-                  >
-                    <Button icon={fullCopyIcon} variant={ButtonVariant.TERNARY}>
-                      Dupliquer
-                    </Button>
-                  </DropdownMenu.Item>
-                )}
+                {!offer.isShowcase ||
+                  (offer.status !== CollectiveOfferStatus.DRAFT && (
+                    <DropdownMenu.Item
+                      className={styles['menu-item']}
+                      onSelect={handleCreateOfferClick}
+                    >
+                      <Button
+                        icon={fullCopyIcon}
+                        variant={ButtonVariant.TERNARY}
+                      >
+                        Dupliquer
+                      </Button>
+                    </DropdownMenu.Item>
+                  ))}
                 {offer.isShowcase &&
                   offer.status !== CollectiveOfferStatus.ARCHIVED && (
                     <DropdownMenu.Item
