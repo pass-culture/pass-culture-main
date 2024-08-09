@@ -985,6 +985,32 @@ def _generate_cashflows(batch: models.CashflowBatch) -> None:
                     )
                 )
 
+                # Don't generate cashflows if ever all of the priced bookings are free → avoid creating empty invoices
+                pricings_with_lines_amount = (
+                    pricings.join(models.Pricing.lines)
+                    .with_entities(
+                        models.Pricing.id,
+                        sqla_func.count(models.PricingLine.id).label("lines_count"),
+                        sqla_func.sum(sqla.case((models.PricingLine.amount == 0, 1), else_=0)).label(
+                            "free_lines_count"
+                        ),
+                    )
+                    .group_by(models.Pricing.id)
+                    .all()
+                )
+                pricing_ids = {e.id for e in pricings_with_lines_amount}
+                free_pricing_ids = {e.id for e in pricings_with_lines_amount if e.lines_count == e.free_lines_count}
+                if pricing_ids and (len(pricing_ids) == len(free_pricing_ids)):
+                    logger.info(
+                        "Found only free pricings, skip cashflow creation but mark pricings as processed",
+                        extra={
+                            "pricing_ids": pricing_ids,
+                            "bank_account": bank_account_id,
+                        },
+                    )
+                    _mark_as_processed(pricing_ids)
+                    continue
+
                 # Check integrity by looking for bookings whose amount
                 # has been changed after they have been priced.
                 diff = (
@@ -1550,10 +1576,145 @@ def _filter_invoiceable_cashflows(query: BaseQuery) -> BaseQuery:
     )
 
 
+def _mark_free_pricings_as_invoiced(batch: models.CashflowBatch) -> None:
+    if feature.FeatureToggle.USE_END_DATE_FOR_COLLECTIVE_PRICING.is_active():
+        collective_cutoff_time = educational_models.CollectiveStock.endDatetime
+    else:
+        collective_cutoff_time = educational_models.CollectiveStock.beginningDatetime
+    # Don't generate cashflows if ever all of the priced bookings are free → avoid creating empty invoices
+    free_pricings = (
+        models.Pricing.query.outerjoin(models.Pricing.booking)
+        .outerjoin(bookings_models.Booking.stock)
+        .outerjoin(models.Pricing.collectiveBooking)
+        .outerjoin(educational_models.CollectiveBooking.collectiveStock)
+        .outerjoin(models.Pricing.event)
+        .outerjoin(models.Pricing.pricingPoint)
+        .outerjoin(
+            offerers_models.VenueBankAccountLink,
+            offerers_models.VenueBankAccountLink.venueId == models.Pricing.pricingPointId,
+        )
+        .outerjoin(offerers_models.VenueBankAccountLink.bankAccount)
+        .filter(
+            models.FinanceEvent.pricingPointId == offerers_models.VenueBankAccountLink.venueId,
+            models.Pricing.status == models.PricingStatus.PROCESSED,
+            models.Pricing.valueDate < batch.cutoff,
+            # Bookings can now be priced even if BankAccount is not ACCEPTED,
+            # but to generate cashflows we definitely need it.
+            models.BankAccount.status == models.BankAccountApplicationStatus.ACCEPTED,
+            # Even if a booking is marked as used prematurely, we should
+            # wait for the event to happen.
+            sqla.or_(
+                sqla.and_(
+                    models.Pricing.bookingId.is_not(None),
+                    sqla.or_(
+                        offers_models.Stock.beginningDatetime.is_(None),
+                        offers_models.Stock.beginningDatetime < batch.cutoff,
+                    ),
+                ),
+                sqla.and_(
+                    models.Pricing.collectiveBookingId.is_not(None),
+                    collective_cutoff_time < batch.cutoff,
+                ),
+                models.FinanceEvent.bookingFinanceIncidentId.is_not(None),
+            ),
+        )
+        .join(models.Pricing.lines)
+        .group_by(models.Pricing.id)
+        .having(
+            sqla_func.count(models.PricingLine.id)
+            == sqla_func.sum(sqla.case((models.PricingLine.amount == 0, 1)), else_=0)
+        )
+        .with_entities(models.Pricing.id)
+        .all()
+    )
+    if not free_pricings:
+        return
+
+    pricing_ids = {e[0] for e in free_pricings}
+    with log_elapsed(logger, "Updating status of free pricings"):
+        db.session.execute(
+            sqla.text(
+                """
+                WITH updated AS (
+                  UPDATE pricing
+                  SET status = :invoiced
+                  WHERE
+                    pricing.id IN :pricing_ids
+                  RETURNING id AS pricing_id
+                )
+                INSERT INTO pricing_log
+                ("pricingId", "statusBefore", "statusAfter", reason)
+                SELECT updated.pricing_id, :processed, :invoiced, :log_reason from updated
+            """
+            ),
+            {
+                "processed": models.PricingStatus.PROCESSED.value,
+                "invoiced": models.PricingStatus.INVOICED.value,
+                "log_reason": models.PricingLogReason.GENERATE_INVOICE.value,
+                "pricing_ids": tuple(pricing_ids),
+            },
+        )
+
+    # Booking.status: USED -> REIMBURSED (but keep CANCELLED as is)
+    with log_elapsed(logger, "Updating status of individual bookings"):
+        db.session.execute(
+            sqla.text(
+                """
+            UPDATE booking
+            SET
+              status =
+                CASE WHEN booking.status = CAST(:cancelled AS booking_status)
+                THEN CAST(:cancelled AS booking_status)
+                ELSE CAST(:reimbursed AS booking_status)
+                END,
+              "reimbursementDate" = now()
+            FROM pricing
+            WHERE
+              booking.id = pricing."bookingId"
+              AND pricing.id IN :pricing_ids
+            """
+            ),
+            {
+                "cancelled": bookings_models.BookingStatus.CANCELLED.value,
+                "reimbursed": bookings_models.BookingStatus.REIMBURSED.value,
+                "pricing_ids": tuple(pricing_ids),
+                "reimbursement_date": datetime.datetime.utcnow(),
+            },
+        )
+
+    # CollectiveBooking.status: USED -> REIMBURSED (but keep CANCELLED as is)
+    with log_elapsed(logger, "Updating status of collective bookings"):
+        db.session.execute(
+            sqla.text(
+                """
+            UPDATE collective_booking
+            SET
+            status =
+                CASE WHEN collective_booking.status = CAST(:cancelled AS bookingstatus)
+                THEN CAST(:cancelled AS bookingstatus)
+                ELSE CAST(:reimbursed AS bookingstatus)
+                END,
+            "reimbursementDate" = now()
+            FROM pricing
+            WHERE
+                collective_booking.id = pricing."collectiveBookingId"
+            AND pricing.id IN :pricing_ids
+            """
+            ),
+            {
+                "cancelled": bookings_models.BookingStatus.CANCELLED.value,
+                "reimbursed": bookings_models.BookingStatus.REIMBURSED.value,
+                "pricing_ids": tuple(pricing_ids),
+                "reimbursement_date": datetime.datetime.utcnow(),
+            },
+        )
+
+
 def generate_debit_notes(batch: models.CashflowBatch) -> None:
     """Generate (and store) all invoices."""
 
     debit_note_rows = _get_cashflows_by_bank_accounts(batch, only_debit_notes=True)
+    _mark_free_pricings_as_invoiced(batch)
 
     for row in debit_note_rows:
         try:
@@ -1599,6 +1760,7 @@ def _get_cashflows_by_bank_accounts(batch: models.CashflowBatch, only_debit_note
 def generate_invoices(batch: models.CashflowBatch) -> None:
     """Generate (and store) all invoices."""
     rows = _get_cashflows_by_bank_accounts(batch)
+    _mark_free_pricings_as_invoiced(batch)
 
     for row in rows:
         try:
