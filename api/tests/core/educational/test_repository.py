@@ -569,10 +569,14 @@ class FilterCollectiveOfferByStatusesTest:
 
         filtered_query_status = {all_offers_status_by_id[offer.id] for offer in filtered_query}
 
-        assert filtered_query_status == {
-            offer_status for offer_status in all_offers_status_by_id.values() if status.value != offer_status
-        }
-        assert filtered_query.count() == len(self.ALL_STATUS) - 1
+        if status == CollectiveOfferDisplayedStatus.REIMBURSED:
+            assert filtered_query_status == {status.value for status in self.ALL_STATUS}
+            assert filtered_query.count() == len(self.ALL_STATUS)
+        else:
+            assert filtered_query_status == {
+                offer_status for offer_status in all_offers_status_by_id.values() if status.value != offer_status
+            }
+            assert filtered_query.count() == len(self.ALL_STATUS) - 1
 
     def test_filter_with_no_statuses(self, app):
         # Given
