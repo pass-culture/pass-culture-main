@@ -13,6 +13,7 @@ import { ImageUploaderOffer } from 'components/IndividualOfferForm/ImageUploader
 import { GET_MUSIC_TYPES_QUERY_KEY } from 'config/swrQueryKeys'
 import { showOptionsTree } from 'core/Offers/categoriesSubTypes'
 import { IndividualOfferImage } from 'core/Offers/types'
+import { useActiveFeature } from 'hooks/useActiveFeature'
 import { DurationInput } from 'ui-kit/form/DurationInput/DurationInput'
 import { Select } from 'ui-kit/form/Select/Select'
 import { TextArea } from 'ui-kit/form/TextArea/TextArea'
@@ -101,6 +102,9 @@ export const DetailsForm = ({
     subcategoryConditionalFields.includes(field)
   )
 
+  const splitFormEnabled = useActiveFeature('WIP_SPLIT_OFFER')
+  const offerAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
+
   // Books have a gtl_id field, other categories have a musicType field
   const hasMusicType =
     categoryId !== 'LIVRE'
@@ -110,6 +114,18 @@ export const DetailsForm = ({
   return (
     <>
       <FormLayout.Section title="A propos de votre offre">
+        {splitFormEnabled && (
+          <FormLayout.Row>
+            <Select
+              label={offerAddressEnabled ? 'Qui propose l’offre ?' : 'Lieu'}
+              name="venueId"
+              options={venueOptions}
+              disabled={
+                readOnlyFields.includes('venueId') || venueOptions.length === 1
+              }
+            />
+          </FormLayout.Row>
+        )}
         <FormLayout.Row>
           <TextInput
             countCharacters
@@ -129,16 +145,18 @@ export const DetailsForm = ({
             disabled={readOnlyFields.includes('description')}
           />
         </FormLayout.Row>
-        <FormLayout.Row>
-          <Select
-            label="Qui propose l’offre ?"
-            name="venueId"
-            options={venueOptions}
-            disabled={
-              readOnlyFields.includes('venueId') || venueOptions.length === 1
-            }
-          />
-        </FormLayout.Row>
+        {!splitFormEnabled && (
+          <FormLayout.Row>
+            <Select
+              label={offerAddressEnabled ? 'Qui propose l’offre ?' : 'Lieu'}
+              name="venueId"
+              options={venueOptions}
+              disabled={
+                readOnlyFields.includes('venueId') || venueOptions.length === 1
+              }
+            />
+          </FormLayout.Row>
+        )}
       </FormLayout.Section>
 
       <FormLayout.Section title="Type d’offre">
