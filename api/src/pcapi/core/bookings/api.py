@@ -455,6 +455,18 @@ def _cancel_booking(
         if raise_if_error:
             raise error
 
+    # After UPDATE query, objet is refreshed when accessed.
+    # Force refresh with joinedload to avoid N+1 queries below.
+    booking = (
+        Booking.query.filter_by(id=booking.id)
+        .options(
+            sa.orm.joinedload(Booking.externalBookings),
+            sa.orm.joinedload(Booking.stock, innerjoin=True).joinedload(Stock.offer, innerjoin=True),
+            sa.orm.joinedload(Booking.user, innerjoin=True).joinedload(User.deposits),
+        )
+        .one()
+    )
+
     logger.info(
         "Booking has been cancelled",
         extra={
