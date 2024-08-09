@@ -82,7 +82,7 @@
     "@storybook/addon-a11y": "^8.2.7",
     "@storybook/addon-controls": "^8.2.7",
     "@storybook/preset-scss": "^1.0.3",
-    "@storybook/react": "^8.2.7",
+    "@storybook/react": "^8.2.8",
     "@storybook/react-vite": "^8.2.7",
     "@testing-library/cypress": "^10.0.1",
     "@testing-library/jest-dom": "^6.4.8",
