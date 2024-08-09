@@ -1,3 +1,4 @@
+import { CollectiveOfferStatus } from 'apiClient/v1'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
 import { OFFER_STATUS_DRAFT, OFFER_WIZARD_MODE } from 'core/Offers/constants'
@@ -20,6 +21,9 @@ export const useOfferEditionURL = ({
 }: UseOfferEditionURL): string => {
   if (isOfferEducational) {
     const id = computeURLCollectiveOfferId(offerId, Boolean(isShowcase))
+    if (status && status === CollectiveOfferStatus.DRAFT) {
+      return `/offre/collectif/${id}/creation`
+    }
     return `/offre/${id}/collectif/recapitulatif`
   }
   if (status && status === OFFER_STATUS_DRAFT) {

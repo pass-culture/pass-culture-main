@@ -53,6 +53,7 @@ export const CollectiveOfferRow = ({
   const editionOfferLink = useOfferEditionURL({
     isOfferEducational: true,
     offerId: offer.id,
+    status: offer.status,
     isShowcase: Boolean(offer.isShowcase),
   })
 
