@@ -1486,6 +1486,41 @@ class GetFilteredCollectiveOffersTest:
         )
         assert offers.one() == collective_offer_archived
 
+    def test_get_collective_offers_expired(self):
+        user_offerer = offerers_factories.UserOffererFactory()
+
+        # expired offer without booking
+        collective_offer_expired = educational_factories.CollectiveOfferFactory(
+            validation=offer_mixin.OfferValidationStatus.APPROVED.value, venue__managingOfferer=user_offerer.offerer
+        )
+
+        educational_factories.CollectiveStockFactory(
+            collectiveOffer=collective_offer_expired, beginningDatetime=datetime.datetime(year=2000, month=1, day=1)
+        )
+
+        # expired offer with pending booking
+        collective_offer_prebooked_expired = educational_factories.CollectiveOfferFactory(
+            validation=offer_mixin.OfferValidationStatus.APPROVED.value, venue__managingOfferer=user_offerer.offerer
+        )
+
+        collective_stock_prebooked_expired = educational_factories.CollectiveStockFactory(
+            collectiveOffer=collective_offer_prebooked_expired,
+            beginningDatetime=datetime.datetime(year=2000, month=1, day=1),
+        )
+
+        educational_factories.CollectiveBookingFactory(
+            collectiveStock=collective_stock_prebooked_expired,
+            confirmationLimitDate=datetime.datetime(year=2000, month=1, day=1),
+            status=educational_models.CollectiveBookingStatus.PENDING.value,
+        )
+
+        offers = repository.get_collective_offers_by_filters(
+            user_offerer.userId,
+            user_is_admin=False,
+            statuses=[educational_models.CollectiveOfferDisplayedStatus.EXPIRED.value],
+        )
+        assert offers.all() == [collective_offer_expired, collective_offer_prebooked_expired]
+
 
 @pytest.mark.usefixtures("db_session")
 class ExcludeOffersFromInactiveVenueProviderTest:
