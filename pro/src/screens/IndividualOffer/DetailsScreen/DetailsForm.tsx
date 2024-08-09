@@ -102,6 +102,7 @@ export const DetailsForm = ({
     subcategoryConditionalFields.includes(field)
   )
 
+  const splitFormEnabled = useActiveFeature('WIP_SPLIT_OFFER')
   const offerAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
 
   // Books have a gtl_id field, other categories have a musicType field
@@ -113,6 +114,18 @@ export const DetailsForm = ({
   return (
     <>
       <FormLayout.Section title="A propos de votre offre">
+        {splitFormEnabled && (
+          <FormLayout.Row>
+            <Select
+              label={offerAddressEnabled ? 'Qui propose l’offre ?' : 'Lieu'}
+              name="venueId"
+              options={venueOptions}
+              disabled={
+                readOnlyFields.includes('venueId') || venueOptions.length === 1
+              }
+            />
+          </FormLayout.Row>
+        )}
         <FormLayout.Row>
           <TextInput
             countCharacters
@@ -132,16 +145,18 @@ export const DetailsForm = ({
             disabled={readOnlyFields.includes('description')}
           />
         </FormLayout.Row>
-        <FormLayout.Row>
-          <Select
-            label={offerAddressEnabled ? 'Qui propose l’offre ?' : 'Lieu'}
-            name="venueId"
-            options={venueOptions}
-            disabled={
-              readOnlyFields.includes('venueId') || venueOptions.length === 1
-            }
-          />
-        </FormLayout.Row>
+        {!splitFormEnabled && (
+          <FormLayout.Row>
+            <Select
+              label={offerAddressEnabled ? 'Qui propose l’offre ?' : 'Lieu'}
+              name="venueId"
+              options={venueOptions}
+              disabled={
+                readOnlyFields.includes('venueId') || venueOptions.length === 1
+              }
+            />
+          </FormLayout.Row>
+        )}
       </FormLayout.Section>
 
       <FormLayout.Section title="Type d’offre">
