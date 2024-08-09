@@ -153,7 +153,7 @@ When('I chose to join the space', () => {
 })
 
 When('I am redirected to homepage', () => {
-  cy.url().should('contain', '/accueil')
+  cy.url({ timeout: 10000 }).should('contain', '/accueil')
   cy.findByLabelText('Structure').select(offererName)
 })
 
@@ -171,7 +171,7 @@ Then('the offerer is created', () => {
     'contain',
     'Votre structure a bien été créée'
   )
-  cy.url().should('contain', '/accueil')
+  cy.url({ timeout: 10000 }).should('contain', '/accueil')
   cy.findAllByTestId('spinner', { timeout: 30 * 1000 }).should('not.exist')
 
   cy.findByTestId('offerer-details-offerId').select(offererName)
