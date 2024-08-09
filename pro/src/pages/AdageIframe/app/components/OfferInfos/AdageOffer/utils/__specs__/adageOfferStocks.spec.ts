@@ -15,7 +15,7 @@ describe('adageOfferStocks', () => {
         },
       })
 
-      expect(stockText).toEqual('1\xa0€ pour 20 élèves')
+      expect(stockText).toEqual('1\xa0€ pour 20 participants')
     })
   })
 })
