@@ -596,7 +596,8 @@ def batch_update_offers(query: BaseQuery, update_fields: dict, send_email_notifi
 
 def batch_update_collective_offers(query: BaseQuery, update_fields: dict) -> None:
     collective_offer_ids_tuples = query.filter(
-        educational_models.CollectiveOffer.validation == models.OfferValidationStatus.APPROVED
+        educational_models.CollectiveOffer.validation
+        in (models.OfferValidationStatus.APPROVED, models.OfferValidationStatus.DRAFT)
     ).with_entities(educational_models.CollectiveOffer.id)
 
     collective_offer_ids = [offer_id for offer_id, in collective_offer_ids_tuples]
@@ -617,7 +618,8 @@ def batch_update_collective_offers(query: BaseQuery, update_fields: dict) -> Non
 
 def batch_update_collective_offers_template(query: BaseQuery, update_fields: dict) -> None:
     collective_offer_ids_tuples = query.filter(
-        educational_models.CollectiveOfferTemplate.validation == models.OfferValidationStatus.APPROVED
+        educational_models.CollectiveOfferTemplate.validation
+        in (models.OfferValidationStatus.APPROVED, models.OfferValidationStatus.DRAFT)
     ).with_entities(educational_models.CollectiveOfferTemplate.id)
 
     collective_offer_template_ids = [offer_id for offer_id, in collective_offer_ids_tuples]
