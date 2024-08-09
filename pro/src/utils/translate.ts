@@ -2,6 +2,7 @@ import invert from 'lodash/invert'
 
 import { CollectiveOfferDisplayedStatus, OfferStatus } from 'apiClient/v1'
 import { SearchFiltersParams } from 'core/Offers/types'
+import { Audience } from 'core/shared/types'
 
 const translateObjectKeysAndValues = (
   originalObject: Record<string, any>,
@@ -15,34 +16,39 @@ const translateObjectKeysAndValues = (
       ? translationsMap[originalValue]
       : originalValue
 
-    result[translatedKey] = translatedValue
+    result[translatedKey] = Array.isArray(translatedValue)
+      ? translatedValue.map((value) => translationsMap[value])
+      : translatedValue
   })
-
   return result
 }
 
-// This is a bit janky because for types used by both individual and collective offers,
-// we only declare one type here. It works but only because
-// the individual and collective types share the same values
-// (ie OfferStatus.ACTIVE === CollectiveOfferDisplayedStatus.ACTIVE)
-// TODO refactor to split individual and collective behavior
-const mapBrowserStatusToApi: Record<
-  string,
-  OfferStatus | CollectiveOfferDisplayedStatus
-> = {
+const mapBrowserStatusToApi: Record<string, OfferStatus> = {
   active: OfferStatus.ACTIVE,
   inactive: OfferStatus.INACTIVE,
   epuisee: OfferStatus.SOLD_OUT,
-  prereservee: CollectiveOfferDisplayedStatus.PREBOOKED,
-  reservee: CollectiveOfferDisplayedStatus.BOOKED,
   expiree: OfferStatus.EXPIRED,
-  terminee: CollectiveOfferDisplayedStatus.ENDED,
   'en-attente': OfferStatus.PENDING,
   refusee: OfferStatus.REJECTED,
   draft: OfferStatus.DRAFT,
 }
 
-const mapBrowserToApi = {
+const mapBrowserCollectiveStatusToApi: Record<
+  string,
+  CollectiveOfferDisplayedStatus
+> = {
+  active: CollectiveOfferDisplayedStatus.ACTIVE,
+  inactive: CollectiveOfferDisplayedStatus.INACTIVE,
+  prereservee: CollectiveOfferDisplayedStatus.PREBOOKED,
+  reservee: CollectiveOfferDisplayedStatus.BOOKED,
+  expiree: CollectiveOfferDisplayedStatus.EXPIRED,
+  terminee: CollectiveOfferDisplayedStatus.ENDED,
+  'en-attente': CollectiveOfferDisplayedStatus.PENDING,
+  refusee: CollectiveOfferDisplayedStatus.REJECTED,
+  archivee: CollectiveOfferDisplayedStatus.ARCHIVED,
+}
+
+const mapBrowserToApi = (audience: Audience) => ({
   categorie: 'categoryId',
   de: 'from',
   lieu: 'venueId',
@@ -62,15 +68,17 @@ const mapBrowserToApi = {
   page: 'page',
   individuel: 'individual',
   collectif: 'collective',
-  ...mapBrowserStatusToApi,
-}
-
-const mapApiToBrowser = invert(mapBrowserToApi)
+  ...(audience === Audience.INDIVIDUAL
+    ? mapBrowserStatusToApi
+    : mapBrowserCollectiveStatusToApi),
+})
 
 export const translateQueryParamsToApiParams = (
-  queryParams: Record<string, string>
-) => translateObjectKeysAndValues(queryParams, mapBrowserToApi)
+  queryParams: Record<string, string | string[]>,
+  audience: Audience
+) => translateObjectKeysAndValues(queryParams, mapBrowserToApi(audience))
 
 export const translateApiParamsToQueryParams = (
-  apiParams: Partial<SearchFiltersParams>
-) => translateObjectKeysAndValues(apiParams, mapApiToBrowser)
+  apiParams: Partial<SearchFiltersParams>,
+  audience: Audience
+) => translateObjectKeysAndValues(apiParams, invert(mapBrowserToApi(audience)))

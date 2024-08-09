@@ -16,6 +16,7 @@ import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from 'core/Offers/constants'
 import { useQuerySearchFilters } from 'core/Offers/hooks/useQuerySearchFilters'
 import { SearchFiltersParams } from 'core/Offers/types'
 import { serializeApiFilters } from 'core/Offers/utils/serializer'
+import { Audience } from 'core/shared/types'
 import { useNotification } from 'hooks/useNotification'
 import fullHideIcon from 'icons/full-hide.svg'
 import fullValidateIcon from 'icons/full-validate.svg'
@@ -159,7 +160,7 @@ export function CollectiveOffersActionsBar({
   areAllOffersSelected,
   getUpdateOffersStatusMessage,
 }: CollectiveOffersActionsBarProps) {
-  const urlSearchFilters = useQuerySearchFilters()
+  const urlSearchFilters = useQuerySearchFilters(Audience.COLLECTIVE)
 
   const notify = useNotification()
   const [isDeactivationDialogOpen, setIsDeactivationDialogOpen] =

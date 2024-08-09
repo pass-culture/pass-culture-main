@@ -14,9 +14,8 @@ import {
   GET_VENUES_QUERY_KEY,
 } from 'config/swrQueryKeys'
 import {
-  ALL_STATUS,
+  DEFAULT_COLLECTIVE_SEARCH_FILTERS,
   DEFAULT_PAGE,
-  DEFAULT_SEARCH_FILTERS,
 } from 'core/Offers/constants'
 import { useQuerySearchFilters } from 'core/Offers/hooks/useQuerySearchFilters'
 import { SearchFiltersParams } from 'core/Offers/types'
@@ -33,7 +32,7 @@ import { selectCurrentOffererId } from 'store/user/selectors'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 export const CollectiveOffers = (): JSX.Element => {
-  const urlSearchFilters = useQuerySearchFilters()
+  const urlSearchFilters = useQuerySearchFilters(Audience.COLLECTIVE)
   const currentPageNumber = urlSearchFilters.page ?? DEFAULT_PAGE
   const navigate = useNavigate()
   const { currentUser } = useCurrentUser()
