@@ -219,7 +219,7 @@ describe('AdageOfferHeader', () => {
       adageUser: defaultAdageUser,
     })
 
-    expect(screen.getByText('120 € pour 100 élèves')).toBeInTheDocument()
+    expect(screen.getByText('120 € pour 100 participants')).toBeInTheDocument()
     expect(screen.getByText(/My institution/)).toBeInTheDocument()
   })
 })

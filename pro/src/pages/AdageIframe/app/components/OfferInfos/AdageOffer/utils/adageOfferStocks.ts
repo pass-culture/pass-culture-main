@@ -9,5 +9,5 @@ export function getBookableOfferStockPrice(
     minimumFractionDigits: 0,
   }).format(
     offer.stock.price / 100
-  )} pour ${offer.stock.numberOfTickets} élèves`
+  )} pour ${offer.stock.numberOfTickets} participants`
 }

@@ -110,7 +110,7 @@ describe('AdageOfferInfoSection', () => {
 
     expect(screen.getByRole('heading', { name: 'Prix' })).toBeInTheDocument()
 
-    expect(screen.getByText('1 400 € pour 10 élèves')).toBeInTheDocument()
+    expect(screen.getByText('1 400 € pour 10 participants')).toBeInTheDocument()
   })
 
   it('should show the intervention areas', () => {
