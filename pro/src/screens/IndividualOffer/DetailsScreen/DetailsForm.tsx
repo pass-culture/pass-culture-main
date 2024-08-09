@@ -13,6 +13,7 @@ import { ImageUploaderOffer } from 'components/IndividualOfferForm/ImageUploader
 import { GET_MUSIC_TYPES_QUERY_KEY } from 'config/swrQueryKeys'
 import { showOptionsTree } from 'core/Offers/categoriesSubTypes'
 import { IndividualOfferImage } from 'core/Offers/types'
+import { useActiveFeature } from 'hooks/useActiveFeature'
 import { DurationInput } from 'ui-kit/form/DurationInput/DurationInput'
 import { Select } from 'ui-kit/form/Select/Select'
 import { TextArea } from 'ui-kit/form/TextArea/TextArea'
@@ -101,6 +102,8 @@ export const DetailsForm = ({
     subcategoryConditionalFields.includes(field)
   )
 
+  const offerAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
+
   // Books have a gtl_id field, other categories have a musicType field
   const hasMusicType =
     categoryId !== 'LIVRE'
@@ -131,7 +134,7 @@ export const DetailsForm = ({
         </FormLayout.Row>
         <FormLayout.Row>
           <Select
-            label="Qui propose l’offre ?"
+            label={offerAddressEnabled ? 'Qui propose l’offre ?' : 'Lieu'}
             name="venueId"
             options={venueOptions}
             disabled={
