@@ -11,7 +11,10 @@ import {
   CollectiveOffersStockResponseModel,
   OfferStatus,
 } from 'apiClient/v1'
-import { ALL_VENUES, DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
+import {
+  ALL_VENUES,
+  DEFAULT_COLLECTIVE_SEARCH_FILTERS,
+} from 'core/Offers/constants'
 import { SearchFiltersParams } from 'core/Offers/types'
 import { computeCollectiveOffersUrl } from 'core/Offers/utils/computeOffersUrl'
 import { collectiveOfferFactory } from 'utils/collectiveApiFactories'
@@ -40,7 +43,7 @@ const proVenues = [
 ]
 
 const renderOffers = async (
-  filters: Partial<SearchFiltersParams> = DEFAULT_SEARCH_FILTERS
+  filters: Partial<SearchFiltersParams> = DEFAULT_COLLECTIVE_SEARCH_FILTERS
 ) => {
   const route = computeCollectiveOffersUrl(filters)
 
@@ -87,7 +90,7 @@ describe('route CollectiveOffers when user is admin', () => {
       expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
         undefined,
         undefined,
-        undefined,
+        [],
         undefined,
         undefined,
         undefined,
@@ -153,7 +156,7 @@ describe('route CollectiveOffers when user is admin', () => {
       expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
         undefined,
         undefined,
-        undefined,
+        [],
         undefined,
         undefined,
         undefined,

@@ -13,7 +13,7 @@ import {
 } from 'apiClient/v1'
 import {
   ALL_VENUES_OPTION,
-  DEFAULT_SEARCH_FILTERS,
+  DEFAULT_COLLECTIVE_SEARCH_FILTERS,
 } from 'core/Offers/constants'
 import { SearchFiltersParams } from 'core/Offers/types'
 import { computeCollectiveOffersUrl } from 'core/Offers/utils/computeOffersUrl'
@@ -40,7 +40,7 @@ const proVenues = [
 ]
 
 const renderOffers = async (
-  filters: Partial<SearchFiltersParams> = DEFAULT_SEARCH_FILTERS,
+  filters: Partial<SearchFiltersParams> = DEFAULT_COLLECTIVE_SEARCH_FILTERS,
   features: string[] = []
 ) => {
   const route = computeCollectiveOffersUrl(filters)
@@ -497,7 +497,7 @@ describe('route CollectiveOffers', () => {
       collectiveOfferFactory({ status: CollectiveOfferStatus.ACTIVE }),
       collectiveOfferFactory({ status: CollectiveOfferStatus.DRAFT }),
     ])
-    await renderOffers(DEFAULT_SEARCH_FILTERS, [
+    await renderOffers(DEFAULT_COLLECTIVE_SEARCH_FILTERS, [
       'WIP_ENABLE_COLLECTIVE_DRAFT_OFFERS',
     ])
 
@@ -509,7 +509,7 @@ describe('route CollectiveOffers', () => {
       collectiveOfferFactory({ status: CollectiveOfferStatus.ACTIVE }),
       collectiveOfferFactory({ status: CollectiveOfferStatus.DRAFT }),
     ])
-    await renderOffers(DEFAULT_SEARCH_FILTERS)
+    await renderOffers(DEFAULT_COLLECTIVE_SEARCH_FILTERS)
 
     expect(screen.getByText('1 offre')).toBeInTheDocument()
   })

@@ -14,7 +14,7 @@ import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import * as useAnalytics from 'app/App/analytics/firebase'
 import { Notification } from 'components/Notification/Notification'
 import { CollectiveBookingsEvents } from 'core/FirebaseEvents/constants'
-import { DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
+import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from 'core/Offers/constants'
 import {
   collectiveOfferFactory,
   listOffersVenueFactory,
@@ -78,7 +78,7 @@ describe('ollectiveOfferRow', () => {
       offer,
       selectOffer: vi.fn(),
       isSelected: false,
-      urlSearchFilters: DEFAULT_SEARCH_FILTERS,
+      urlSearchFilters: DEFAULT_COLLECTIVE_SEARCH_FILTERS,
       isFirstRow: true,
     }
   })

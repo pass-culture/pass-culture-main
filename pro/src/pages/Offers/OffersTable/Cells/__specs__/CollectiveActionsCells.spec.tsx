@@ -2,7 +2,7 @@ import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import { api } from 'apiClient/api'
-import { DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
+import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from 'core/Offers/constants'
 import { collectiveOfferFactory } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -54,7 +54,7 @@ describe('CollectiveActionsCells', () => {
         ],
       }),
       editionOfferLink: '',
-      urlSearchFilters: DEFAULT_SEARCH_FILTERS,
+      urlSearchFilters: DEFAULT_COLLECTIVE_SEARCH_FILTERS,
       isSelected: false,
       deselectOffer: vi.fn(),
     })
@@ -89,7 +89,7 @@ describe('CollectiveActionsCells', () => {
         ],
       }),
       editionOfferLink: '',
-      urlSearchFilters: DEFAULT_SEARCH_FILTERS,
+      urlSearchFilters: DEFAULT_COLLECTIVE_SEARCH_FILTERS,
       isSelected: true,
       deselectOffer: mockDeselectOffer,
     })

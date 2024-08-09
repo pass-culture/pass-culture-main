@@ -1,6 +1,5 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import React from 'react'
 import * as router from 'react-router-dom'
 
 import { api } from 'apiClient/api'
@@ -9,7 +8,7 @@ import {
   CollectiveOffersStockResponseModel,
   OfferStatus,
 } from 'apiClient/v1'
-import { DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
+import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from 'core/Offers/constants'
 import { SearchFiltersParams } from 'core/Offers/types'
 import { computeCollectiveOffersUrl } from 'core/Offers/utils/computeOffersUrl'
 import { collectiveOfferFactory } from 'utils/collectiveApiFactories'
@@ -30,7 +29,7 @@ vi.mock('react-router-dom', async () => ({
 }))
 
 const renderOffers = async (
-  filters: Partial<SearchFiltersParams> = DEFAULT_SEARCH_FILTERS
+  filters: Partial<SearchFiltersParams> = DEFAULT_COLLECTIVE_SEARCH_FILTERS
 ) => {
   const route = computeCollectiveOffersUrl(filters)
   renderWithProviders(

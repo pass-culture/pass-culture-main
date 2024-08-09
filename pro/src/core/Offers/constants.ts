@@ -79,6 +79,11 @@ export const DEFAULT_SEARCH_FILTERS: SearchFiltersParams = {
   offererAddressId: 'all',
 }
 
+export const DEFAULT_COLLECTIVE_SEARCH_FILTERS: SearchFiltersParams = {
+  ...DEFAULT_SEARCH_FILTERS,
+  status: [],
+}
+
 export const ALL_VENUES_OPTION: SelectOption = {
   label: 'Tous les lieux',
   value: ALL_VENUES,

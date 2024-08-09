@@ -17,7 +17,7 @@ import {
 import {
   COLLECTIVE_OFFER_SUBTYPE,
   COLLECTIVE_OFFER_SUBTYPE_DUPLICATE,
-  DEFAULT_SEARCH_FILTERS,
+  DEFAULT_COLLECTIVE_SEARCH_FILTERS,
   OFFER_TYPES,
   OFFER_WIZARD_MODE,
 } from 'core/Offers/constants'
@@ -123,7 +123,7 @@ export const OfferTypeScreen = (): JSX.Element => {
       COLLECTIVE_OFFER_SUBTYPE_DUPLICATE.DUPLICATE
     ) {
       const apiFilters = {
-        ...DEFAULT_SEARCH_FILTERS,
+        ...DEFAULT_COLLECTIVE_SEARCH_FILTERS,
         collectiveOfferType: COLLECTIVE_OFFER_SUBTYPE.TEMPLATE.toLowerCase(),
         offererId: queryOffererId ? queryOffererId : 'all',
         venueId: queryVenueId ? queryVenueId : 'all',

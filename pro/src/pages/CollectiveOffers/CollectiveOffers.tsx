@@ -50,7 +50,7 @@ export const CollectiveOffers = (): JSX.Element => {
   const offererQuery = useSWR(
     [GET_OFFERER_QUERY_KEY, offererId],
     ([, offererIdParam]) =>
-      offererId === DEFAULT_SEARCH_FILTERS.offererId
+      offererId === DEFAULT_COLLECTIVE_SEARCH_FILTERS.offererId
         ? null
         : api.getOfferer(Number(offererIdParam)),
     { fallbackData: null }
@@ -78,9 +78,9 @@ export const CollectiveOffers = (): JSX.Element => {
   const isRestrictedAsAdmin = currentUser.isAdmin && !isFilterByVenueOrOfferer
 
   const apiFilters: SearchFiltersParams = {
-    ...DEFAULT_SEARCH_FILTERS,
+    ...DEFAULT_COLLECTIVE_SEARCH_FILTERS,
     ...urlSearchFilters,
-    ...(isRestrictedAsAdmin ? { status: ALL_STATUS } : {}),
+    ...(isRestrictedAsAdmin ? { status: [] } : {}),
     ...(isNewInterfaceActive
       ? { offererId: selectedOffererId?.toString() ?? '' }
       : {}),
@@ -116,7 +116,7 @@ export const CollectiveOffers = (): JSX.Element => {
       return api.getCollectiveOffers(
         nameOrIsbn,
         offererId,
-        status as CollectiveOfferDisplayedStatus,
+        status as CollectiveOfferDisplayedStatus[],
         venueId,
         categoryId,
         creationMode,

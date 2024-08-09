@@ -11,7 +11,7 @@ import {
   ALL_FORMATS_OPTION,
   ALL_VENUES_OPTION,
   COLLECTIVE_OFFER_TYPES_OPTIONS,
-  DEFAULT_SEARCH_FILTERS,
+  DEFAULT_COLLECTIVE_SEARCH_FILTERS,
 } from 'core/Offers/constants'
 import { SearchFiltersParams } from 'core/Offers/types'
 import { hasSearchFilters } from 'core/Offers/utils/hasSearchFilters'
@@ -145,7 +145,7 @@ export const CollectiveSearchFilters = ({
     const dateToFilter =
       periodBeginningDate !== ''
         ? periodBeginningDate
-        : DEFAULT_SEARCH_FILTERS.periodBeginningDate
+        : DEFAULT_COLLECTIVE_SEARCH_FILTERS.periodBeginningDate
     updateSearchFilters({ periodBeginningDate: dateToFilter })
   }
 
@@ -153,7 +153,7 @@ export const CollectiveSearchFilters = ({
     const dateToFilter =
       periodEndingDate !== ''
         ? periodEndingDate
-        : DEFAULT_SEARCH_FILTERS.periodEndingDate
+        : DEFAULT_COLLECTIVE_SEARCH_FILTERS.periodEndingDate
     updateSearchFilters({ periodEndingDate: dateToFilter })
   }
 

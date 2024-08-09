@@ -25,7 +25,7 @@ import {
 import { NOTIFICATION_LONG_SHOW_DURATION } from 'core/Notification/constants'
 import { createOfferFromBookableOffer } from 'core/OfferEducational/utils/createOfferFromBookableOffer'
 import { createOfferFromTemplate } from 'core/OfferEducational/utils/createOfferFromTemplate'
-import { DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
+import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from 'core/Offers/constants'
 import { SearchFiltersParams } from 'core/Offers/types'
 import { useActiveFeature } from 'hooks/useActiveFeature'
 import { useNotification } from 'hooks/useNotification'
@@ -140,7 +140,7 @@ export const CollectiveActionsCells = ({
   }
 
   const apiFilters = {
-    ...DEFAULT_SEARCH_FILTERS,
+    ...DEFAULT_COLLECTIVE_SEARCH_FILTERS,
     ...urlSearchFilters,
   }
   delete apiFilters.page
