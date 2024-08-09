@@ -1,3 +1,5 @@
+import { CollectiveOfferStatus } from 'apiClient/v1'
+
 import { useOfferEditionURL } from '../useOfferEditionURL'
 
 describe('useOfferEditionURL', () => {
@@ -51,5 +53,17 @@ describe('useOfferEditionURL', () => {
     expect(urlResult).toStrictEqual(
       `/offre/individuelle/${offerId}/recapitulatif/details`
     )
+  })
+
+  it('should return right url when offer is collective and status is draft', () => {
+    const offerId = 3
+
+    const urlResult = useOfferEditionURL({
+      isOfferEducational: true,
+      offerId,
+      status: CollectiveOfferStatus.DRAFT,
+    })
+
+    expect(urlResult).toStrictEqual(`/offre/collectif/${offerId}/creation`)
   })
 })

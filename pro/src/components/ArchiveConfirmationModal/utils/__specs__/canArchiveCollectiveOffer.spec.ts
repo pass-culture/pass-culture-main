@@ -26,6 +26,7 @@ describe('canArchiveCollectiveOffer', () => {
     CollectiveOfferStatus.ACTIVE,
     CollectiveOfferStatus.REJECTED,
     CollectiveOfferStatus.INACTIVE,
+    CollectiveOfferStatus.DRAFT,
   ]
 
   it.each(offerStatus)(
