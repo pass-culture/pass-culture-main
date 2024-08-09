@@ -7,6 +7,7 @@ import { DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
 import { useQuerySearchFilters } from 'core/Offers/hooks/useQuerySearchFilters'
 import { SearchFiltersParams } from 'core/Offers/types'
 import { serializeApiFilters } from 'core/Offers/utils/serializer'
+import { Audience } from 'core/shared/types'
 import { useNotification } from 'hooks/useNotification'
 import fullHideIcon from 'icons/full-hide.svg'
 import fullTrashIcon from 'icons/full-trash.svg'
@@ -111,7 +112,7 @@ export const IndividualOffersActionsBar = ({
   getUpdateOffersStatusMessage,
   canDeleteOffers,
 }: IndividualOffersActionsBarProps): JSX.Element => {
-  const urlSearchFilters = useQuerySearchFilters()
+  const urlSearchFilters = useQuerySearchFilters(Audience.INDIVIDUAL)
   const { mutate } = useSWRConfig()
 
   const notify = useNotification()

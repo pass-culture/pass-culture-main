@@ -13,28 +13,43 @@ const computeOffersUrlForGivenAudience = (
   offersSearchFilters: Partial<SearchFiltersParams>
 ): string => {
   const emptyNewFilters: Partial<SearchFiltersParams> = {}
-  const newFilters = Object.entries(offersSearchFilters).reduce(
-    (accumulator, [filter, filterValue]) => {
-      if (
-        filterValue !==
-        DEFAULT_SEARCH_FILTERS[filter as keyof SearchFiltersParams]
-      ) {
-        return {
-          ...accumulator,
-          [filter]: filterValue,
-        }
+  const newFilters: Partial<SearchFiltersParams> = Object.entries(
+    offersSearchFilters
+  ).reduce((accumulator, [filter, filterValue]) => {
+    if (
+      filterValue !==
+      DEFAULT_SEARCH_FILTERS[filter as keyof SearchFiltersParams]
+    ) {
+      return {
+        ...accumulator,
+        [filter]: filterValue,
       }
-      return accumulator
-    },
-    emptyNewFilters
-  )
+    }
+    return accumulator
+  }, emptyNewFilters)
 
-  const queryString = stringify(translateApiParamsToQueryParams(newFilters))
-  const baseUrl =
-    audience === Audience.INDIVIDUAL
-      ? INDIVIDUAL_OFFERS_URL
+  if (audience === Audience.COLLECTIVE) {
+    const queryString = Object.entries(
+      translateApiParamsToQueryParams(newFilters, audience)
+    )
+      .flatMap(([key, value]) =>
+        Array.isArray(value)
+          ? value.map((v) => `${key}=${encodeURIComponent(v)}`)
+          : `${key}=${encodeURIComponent(value as string)}`
+      )
+      .join('&')
+
+    return queryString
+      ? `${COLLECTIVE_OFFERS_URL}?${queryString}`
       : COLLECTIVE_OFFERS_URL
-  return queryString ? `${baseUrl}?${queryString}` : baseUrl
+  }
+
+  const queryString = stringify(
+    translateApiParamsToQueryParams(newFilters, audience)
+  )
+  return queryString
+    ? `${INDIVIDUAL_OFFERS_URL}?${queryString}`
+    : INDIVIDUAL_OFFERS_URL
 }
 
 export const computeOffersUrl = (

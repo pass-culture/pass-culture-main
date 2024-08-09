@@ -31,7 +31,7 @@ import { sortByLabel } from 'utils/strings'
 export const GET_OFFERS_QUERY_KEY = 'listOffers'
 
 export const OffersRoute = (): JSX.Element => {
-  const urlSearchFilters = useQuerySearchFilters()
+  const urlSearchFilters = useQuerySearchFilters(Audience.INDIVIDUAL)
   const currentPageNumber = urlSearchFilters.page ?? DEFAULT_PAGE
   const navigate = useNavigate()
   const { currentUser } = useCurrentUser()
