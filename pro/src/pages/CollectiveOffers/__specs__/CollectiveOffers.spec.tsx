@@ -8,6 +8,7 @@ import { userEvent } from '@testing-library/user-event'
 import { api } from 'apiClient/api'
 import {
   CollectiveOfferResponseModel,
+  CollectiveOfferStatus,
   CollectiveOffersStockResponseModel,
 } from 'apiClient/v1'
 import {
@@ -39,13 +40,15 @@ const proVenues = [
 ]
 
 const renderOffers = async (
-  filters: Partial<SearchFiltersParams> = DEFAULT_SEARCH_FILTERS
+  filters: Partial<SearchFiltersParams> = DEFAULT_SEARCH_FILTERS,
+  features: string[] = []
 ) => {
   const route = computeCollectiveOffersUrl(filters)
 
   renderWithProviders(<CollectiveOffers />, {
     user: sharedCurrentUserFactory(),
     initialRouterEntries: [route],
+    features: features,
   })
 
   await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
@@ -487,5 +490,27 @@ describe('route CollectiveOffers', () => {
         undefined
       )
     })
+  })
+
+  it('should show all offers if the WIP_ENABLE_COLLECTIVE_DRAFT_OFFERS FF is enabled', async () => {
+    vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce([
+      collectiveOfferFactory({ status: CollectiveOfferStatus.ACTIVE }),
+      collectiveOfferFactory({ status: CollectiveOfferStatus.DRAFT }),
+    ])
+    await renderOffers(DEFAULT_SEARCH_FILTERS, [
+      'WIP_ENABLE_COLLECTIVE_DRAFT_OFFERS',
+    ])
+
+    expect(screen.getByText('2 offres')).toBeInTheDocument()
+  })
+
+  it('should not show draft offers if the WIP_ENABLE_COLLECTIVE_DRAFT_OFFERS FF is disabled', async () => {
+    vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce([
+      collectiveOfferFactory({ status: CollectiveOfferStatus.ACTIVE }),
+      collectiveOfferFactory({ status: CollectiveOfferStatus.DRAFT }),
+    ])
+    await renderOffers(DEFAULT_SEARCH_FILTERS)
+
+    expect(screen.getByText('1 offre')).toBeInTheDocument()
   })
 })
