@@ -3,7 +3,10 @@ import { useNavigate } from 'react-router-dom'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
-import { CollectiveOfferDisplayedStatus } from 'apiClient/v1'
+import {
+  CollectiveOfferDisplayedStatus,
+  CollectiveOfferStatus,
+} from 'apiClient/v1'
 import { AppLayout } from 'app/AppLayout'
 import {
   GET_COLLECTIVE_OFFERS_QUERY_KEY,
@@ -21,6 +24,7 @@ import { computeCollectiveOffersUrl } from 'core/Offers/utils/computeOffersUrl'
 import { hasSearchFilters } from 'core/Offers/utils/hasSearchFilters'
 import { serializeApiFilters } from 'core/Offers/utils/serializer'
 import { Audience } from 'core/shared/types'
+import { useActiveFeature } from 'hooks/useActiveFeature'
 import { useCurrentUser } from 'hooks/useCurrentUser'
 import { useIsNewInterfaceActive } from 'hooks/useIsNewInterfaceActive'
 import { formatAndOrderVenues } from 'repository/venuesService'
@@ -38,6 +42,10 @@ export const CollectiveOffers = (): JSX.Element => {
   const offererId = isNewInterfaceActive
     ? selectedOffererId
     : urlSearchFilters.offererId
+
+  const isDraftCollectiveOffersEnabled = useActiveFeature(
+    'WIP_ENABLE_COLLECTIVE_DRAFT_OFFERS'
+  )
 
   const offererQuery = useSWR(
     [GET_OFFERER_QUERY_KEY, offererId],
@@ -121,6 +129,12 @@ export const CollectiveOffers = (): JSX.Element => {
     { fallbackData: [] }
   )
 
+  const displayedOffers = isDraftCollectiveOffersEnabled
+    ? offersQuery.data
+    : offersQuery.data.filter(
+        (offer) => offer.status !== CollectiveOfferStatus.DRAFT
+      )
+
   return (
     <AppLayout>
       {offersQuery.isLoading ? (
@@ -133,7 +147,7 @@ export const CollectiveOffers = (): JSX.Element => {
           initialSearchFilters={apiFilters}
           isLoading={offersQuery.isLoading}
           offerer={offerer}
-          collectiveOffers={offersQuery.data}
+          collectiveOffers={displayedOffers}
           redirectWithUrlFilters={redirectWithUrlFilters}
           urlSearchFilters={urlSearchFilters}
           venues={venues}
