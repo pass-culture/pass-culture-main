@@ -16,6 +16,7 @@ import { NoData } from 'components/NoData/NoData'
 import { GET_VALIDATED_OFFERERS_NAMES_QUERY_KEY } from 'config/swrQueryKeys'
 import { isOfferEducational } from 'core/OfferEducational/types'
 import {
+  DEFAULT_COLLECTIVE_SEARCH_FILTERS,
   DEFAULT_PAGE,
   DEFAULT_SEARCH_FILTERS,
   MAX_TOTAL_PAGES,
@@ -283,7 +284,7 @@ export const Offers = ({
               label: 'Offres collectives',
               url: computeCollectiveOffersUrl({
                 ...initialSearchFilters,
-                status: DEFAULT_SEARCH_FILTERS.status,
+                status: DEFAULT_COLLECTIVE_SEARCH_FILTERS.status,
                 page: currentPageNumber,
               }),
               key: 'collective',

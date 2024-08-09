@@ -12,7 +12,7 @@ import { ArchiveConfirmationModal } from 'components/ArchiveConfirmationModal/Ar
 import { canArchiveCollectiveOffer } from 'components/ArchiveConfirmationModal/utils/canArchiveCollectiveOffer'
 import { GET_COLLECTIVE_OFFERS_QUERY_KEY } from 'config/swrQueryKeys'
 import { NOTIFICATION_LONG_SHOW_DURATION } from 'core/Notification/constants'
-import { DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
+import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from 'core/Offers/constants'
 import { useQuerySearchFilters } from 'core/Offers/hooks/useQuerySearchFilters'
 import { SearchFiltersParams } from 'core/Offers/types'
 import { serializeApiFilters } from 'core/Offers/utils/serializer'
@@ -167,7 +167,7 @@ export function CollectiveOffersActionsBar({
   const [isArchiveDialogOpen, setIsArchiveDialogOpen] = useState(false)
 
   const apiFilters = {
-    ...DEFAULT_SEARCH_FILTERS,
+    ...DEFAULT_COLLECTIVE_SEARCH_FILTERS,
     ...urlSearchFilters,
   }
   delete apiFilters.page

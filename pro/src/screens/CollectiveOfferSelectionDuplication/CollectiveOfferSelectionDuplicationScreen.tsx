@@ -11,7 +11,7 @@ import {
 import { AppLayout } from 'app/AppLayout'
 import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
 import { createOfferFromTemplate } from 'core/OfferEducational/utils/createOfferFromTemplate'
-import { DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
+import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from 'core/Offers/constants'
 import { computeOffersUrl } from 'core/Offers/utils/computeOffersUrl'
 import { serializeApiFilters } from 'core/Offers/utils/serializer'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared/constants'
@@ -65,7 +65,7 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
         collectiveOfferType,
         format,
       } = serializeApiFilters({
-        ...DEFAULT_SEARCH_FILTERS,
+        ...DEFAULT_COLLECTIVE_SEARCH_FILTERS,
         nameOrIsbn: offerName,
         collectiveOfferType: 'template',
         offererId: queryOffererId ? queryOffererId : 'all',
