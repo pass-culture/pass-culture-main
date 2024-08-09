@@ -75,7 +75,6 @@ export const OfferLocation = ({ venue }: OfferLocationProps): JSX.Element => {
   const venueAddress = venue?.address
     ? computeAddressDisplayName(venue.address, false)
     : ''
-
   const venueFullText = `${venue?.publicName ?? venue?.name} – ${venueAddress}`
 
   return (
