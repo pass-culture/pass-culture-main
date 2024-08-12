@@ -1,5 +1,5 @@
 import { useFormikContext } from 'formik'
-import { useState } from 'react'
+import React, { useState } from 'react'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
@@ -12,29 +12,19 @@ import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
 import { ImageUploaderOffer } from 'components/IndividualOfferForm/ImageUploaderOffer/ImageUploaderOffer'
 import { GET_MUSIC_TYPES_QUERY_KEY } from 'config/swrQueryKeys'
-import { useIndividualOfferContext } from 'context/IndividualOfferContext/IndividualOfferContext'
 import { showOptionsTree } from 'core/Offers/categoriesSubTypes'
 import { IndividualOfferImage } from 'core/Offers/types'
 import { useActiveFeature } from 'hooks/useActiveFeature'
 import { DurationInput } from 'ui-kit/form/DurationInput/DurationInput'
-import { RadioButton } from 'ui-kit/form/RadioButton/RadioButton'
 import { Select } from 'ui-kit/form/Select/Select'
 import { TextArea } from 'ui-kit/form/TextArea/TextArea'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
-import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
 
 import { DEFAULT_DETAILS_FORM_VALUES } from './constants'
-import styles from './DetailsForm.module.scss'
+import { Subcategories } from './Subcategories/Subcategories'
+import { SuggestedSubcategories } from './SuggestedSubcategories/SuggestedSubcategories'
 import { DetailsFormValues } from './types'
-import {
-  buildCategoryOptions,
-  buildSubcategoryOptions,
-  buildVenueOptions,
-  buildShowSubTypeOptions,
-  onSubcategoryChange,
-  onCategoryChange,
-  onSuggestedSubcategoriesChange,
-} from './utils'
+import { buildShowSubTypeOptions, buildVenueOptions } from './utils'
 
 type DetailsFormProps = {
   filteredVenues: VenueListItemResponseModel[]
@@ -55,6 +45,9 @@ export const DetailsForm = ({
   onImageDelete,
   imageOffer,
 }: DetailsFormProps): JSX.Element => {
+  const areSuggestedCategoriesEnabled = useActiveFeature(
+    'WIP_SUGGESTED_SUBCATEGORIES'
+  )
   const [suggestedSubcategories, setSuggestedSubcategories] = useState<
     string[]
   >([])
@@ -67,12 +60,9 @@ export const DetailsForm = ({
       description,
       venueId,
       name,
-      suggestedSubcategory,
     },
     handleChange,
-    setFieldValue,
   } = useFormikContext<DetailsFormValues>()
-  const { subCategories } = useIndividualOfferContext()
 
   const musicTypesQuery = useSWR(
     GET_MUSIC_TYPES_QUERY_KEY,
@@ -80,11 +70,6 @@ export const DetailsForm = ({
     { fallbackData: [] }
   )
 
-  const categoryOptions = buildCategoryOptions(filteredCategories)
-  const subcategoryOptions = buildSubcategoryOptions(
-    filteredSubcategories,
-    categoryId
-  )
   const musicTypesOptions = musicTypesQuery.data.map((data) => ({
     value: data.gtl_id,
     label: data.label,
@@ -124,7 +109,15 @@ export const DetailsForm = ({
       ? subcategoryConditionalFields.includes('gtl_id')
       : subcategoryConditionalFields.includes('musicType')
 
-  async function onChangeGetSuggestedSubcategories() {
+  async function onChangeGetSuggestedSubcategories(
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) {
+    handleChange(e)
+    if (!areSuggestedCategoriesEnabled) {
+      return
+    }
     const response = await api.getSuggestedSubcategories(
       name,
       description,
@@ -132,6 +125,10 @@ export const DetailsForm = ({
     )
     setSuggestedSubcategories(response.subcategoryIds)
   }
+
+  const isSubCategorySelected =
+    subcategoryId !== DEFAULT_DETAILS_FORM_VALUES.subcategoryId
+
   return (
     <>
       <FormLayout.Section title="A propos de votre offre">
@@ -153,10 +150,7 @@ export const DetailsForm = ({
             label="Titre de l’offre"
             maxLength={90}
             name="name"
-            onChange={async (e) => {
-              handleChange(e)
-              await onChangeGetSuggestedSubcategories()
-            }}
+            onChange={onChangeGetSuggestedSubcategories}
             disabled={readOnlyFields.includes('name')}
           />
         </FormLayout.Row>
@@ -167,10 +161,7 @@ export const DetailsForm = ({
             label="Description"
             maxLength={1000}
             name="description"
-            onChange={async (e) => {
-              await onChangeGetSuggestedSubcategories()
-              handleChange(e)
-            }}
+            onChange={onChangeGetSuggestedSubcategories}
             disabled={readOnlyFields.includes('description')}
           />
         </FormLayout.Row>
@@ -180,10 +171,7 @@ export const DetailsForm = ({
               label={offerAddressEnabled ? 'Qui propose l’offre ?' : 'Lieu'}
               name="venueId"
               options={venueOptions}
-              onChange={async (e) => {
-                await onChangeGetSuggestedSubcategories()
-                handleChange(e)
-              }}
+              onChange={onChangeGetSuggestedSubcategories}
               disabled={
                 readOnlyFields.includes('venueId') || venueOptions.length === 1
               }
@@ -191,133 +179,23 @@ export const DetailsForm = ({
           </FormLayout.Row>
         )}
       </FormLayout.Section>
-      {suggestedSubcategories.length > 0 && (
-        <FormLayout.Section title="Type d’offre">
-          <FormLayout.Row>
-            <div className={styles['suggested-subcategories']}>
-              <p className={styles['description']}>
-                Catégories suggérées pour votre offre&nbsp;:
-              </p>
-              <div className={styles['items']}>
-                {suggestedSubcategories.map((suggestedSubcategoryId) => (
-                  <RadioButton
-                    label={
-                      subCategories.find(
-                        (subcategory) =>
-                          subcategory.id === suggestedSubcategoryId
-                      )?.proLabel ?? ''
-                    }
-                    className={styles['suggested-subcategory']}
-                    name="suggestedSubcategory"
-                    value={suggestedSubcategoryId}
-                    key={suggestedSubcategoryId}
-                    withBorder
-                    onChange={async (event) => {
-                      await onSuggestedSubcategoriesChange({
-                        event,
-                        setFieldValue,
-                        subcategoryConditionalFields,
-                        subcategories: subCategories,
-                        onSubcategoryChange,
-                      })
-                      handleChange(event)
-                    }}
-                  />
-                ))}
-                <RadioButton
-                  label="Autre"
-                  name="suggestedSubcategory"
-                  className={styles['suggested-subcategory']}
-                  value="OTHER"
-                  withBorder
-                  onChange={async (event) => {
-                    await onSuggestedSubcategoriesChange({
-                      event,
-                      setFieldValue,
-                      subcategoryConditionalFields,
-                      subcategories: subCategories,
-                      onSubcategoryChange,
-                    })
-                    handleChange(event)
-                  }}
-                />
-              </div>
-            </div>
-          </FormLayout.Row>
-          {suggestedSubcategory === 'OTHER' && (
-            <FormLayout.Row
-              sideComponent={
-                <InfoBox
-                  link={{
-                    isExternal: true,
-                    to: 'https://aide.passculture.app/hc/fr/articles/4411999013265--Acteurs-Culturels-Quelle-cat%C3%A9gorie-et-sous-cat%C3%A9gorie-choisir-lors-de-la-cr%C3%A9ation-d-offres-',
-                    text: 'Quelles catégories choisir ?',
-                    opensInNewTab: true,
-                  }}
-                >
-                  Une sélection précise de vos catégories permettra au grand
-                  public de facilement trouver votre offre. Une fois validées,
-                  vous ne pourrez pas les modifier.
-                </InfoBox>
-              }
-            >
-              <Select
-                label="Catégorie"
-                name="categoryId"
-                options={categoryOptions}
-                defaultOption={{
-                  label: 'Choisir une catégorie',
-                  value: DEFAULT_DETAILS_FORM_VALUES.categoryId,
-                }}
-                disabled={readOnlyFields.includes('categoryId')}
-                onChange={async (
-                  event: React.ChangeEvent<HTMLSelectElement>
-                ) => {
-                  await onCategoryChange({
-                    categoryId: event.target.value,
-                    readOnlyFields,
-                    subcategories: filteredSubcategories,
-                    setFieldValue,
-                    onSubcategoryChange,
-                    subcategoryConditionalFields,
-                  })
-                  handleChange(event)
-                }}
-              />
-            </FormLayout.Row>
-          )}
-          {categoryId !== DEFAULT_DETAILS_FORM_VALUES.categoryId &&
-            suggestedSubcategory === 'OTHER' && (
-              <FormLayout.Row>
-                <Select
-                  label="Sous-catégorie"
-                  name="subcategoryId"
-                  options={subcategoryOptions}
-                  defaultOption={{
-                    label: 'Choisir une sous-catégorie',
-                    value: DEFAULT_DETAILS_FORM_VALUES.subcategoryId,
-                  }}
-                  onChange={async (
-                    event: React.ChangeEvent<HTMLSelectElement>
-                  ) => {
-                    await onSubcategoryChange({
-                      newSubCategoryId: event.target.value,
-                      subcategories: filteredSubcategories,
-                      setFieldValue,
-                      subcategoryConditionalFields,
-                    })
-                    handleChange(event)
-                  }}
-                  disabled={
-                    readOnlyFields.includes('subcategoryId') ||
-                    subcategoryOptions.length === 1
-                  }
-                />
-              </FormLayout.Row>
-            )}
-        </FormLayout.Section>
+      {areSuggestedCategoriesEnabled ? (
+        suggestedSubcategories.length > 0 && (
+          <SuggestedSubcategories
+            suggestedSubcategories={suggestedSubcategories}
+            readOnlyFields={readOnlyFields}
+            filteredCategories={filteredCategories}
+            filteredSubcategories={filteredSubcategories}
+          />
+        )
+      ) : (
+        <Subcategories
+          readOnlyFields={readOnlyFields}
+          filteredCategories={filteredCategories}
+          filteredSubcategories={filteredSubcategories}
+        />
       )}
-      {subcategoryId !== DEFAULT_DETAILS_FORM_VALUES.subcategoryId && (
+      {isSubCategorySelected && (
         <>
           <ImageUploaderOffer
             onImageUpload={onImageUpload}
