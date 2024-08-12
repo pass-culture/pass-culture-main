@@ -16,6 +16,7 @@ import { CalloutVariant } from 'components/Callout/types'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OfferEducationalActions } from 'components/OfferEducationalActions/OfferEducationalActions'
 import { RouteLeavingGuardCollectiveOfferCreation } from 'components/RouteLeavingGuardCollectiveOfferCreation/RouteLeavingGuardCollectiveOfferCreation'
+import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import { MAX_DETAILS_LENGTH } from 'core/OfferEducational/constants'
 import {
   OfferEducationalStockFormValues,
@@ -133,6 +134,8 @@ export const OfferEducationalStock = <
       />
       <FormikProvider value={{ ...formik, resetForm, dirty }}>
         <form onSubmit={formik.handleSubmit} noValidate>
+          <ScrollToFirstErrorAfterSubmit />
+
           <FormLayout className={styles['offer-educational-stock-form-layout']}>
             {isCollectiveOffer(offer) && offer.isPublicApi && (
               <BannerPublicApi className={styles['banner-space']}>
