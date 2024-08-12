@@ -2,8 +2,9 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 
 .bookings-count {
-  @include fonts.mini-highlight;
+  @include fonts.caption;
 
+  line-height: unset;
   padding: 0 rem.torem(8px);
   background-color: var(--color-primary);
   color: var(--color-white);

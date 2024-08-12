@@ -27,7 +27,7 @@
     }
 
     .text {
-      @include fonts.mini-highlight;
+      @include fonts.caption;
 
       flex: 1;
       margin-bottom: rem.torem(-9px);
