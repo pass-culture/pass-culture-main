@@ -1054,6 +1054,21 @@ class UserProFlagsFactory(BaseFactory):
 class UserProNewNavStateFactory(BaseFactory):
     class Meta:
         model = models.UserProNewNavState
+        sqlalchemy_get_or_create = ["userId"]
+
+    @classmethod
+    def _create(
+        cls,
+        model_class: type[models.UserProNewNavState],
+        *args: typing.Any,
+        **kwargs: typing.Any,
+    ) -> models.UserProNewNavState:
+        try:
+            user = kwargs.pop("user")
+        except KeyError:
+            raise ValueError('UserProNewNavStateFactory requires a "user" argument.')
+        kwargs["userId"] = user.id
+        return super()._create(model_class, *args, **kwargs)
 
     user = factory.SubFactory(ProFactory)
     eligibilityDate = LazyAttribute(lambda _: datetime.utcnow())

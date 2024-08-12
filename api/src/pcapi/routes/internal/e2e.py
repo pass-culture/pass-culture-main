@@ -26,10 +26,10 @@ def get_sandbox(module_name, getter_name):  # type: ignore [no-untyped-def]
     try:
         obj = getter()
         return jsonify(obj)
-    except:
+    except Exception as e:
         errors = ApiErrors()
         errors.add_error(
             "query",
-            'Une erreur s\'est produite lors du calcul de "{} {}" pour la sandbox'.format(module_name, getter_name),
+            f"Une erreur s'est produite lors du calcul de {module_name} {getter_name} pour la sandbox: {e}",
         )
         raise errors
