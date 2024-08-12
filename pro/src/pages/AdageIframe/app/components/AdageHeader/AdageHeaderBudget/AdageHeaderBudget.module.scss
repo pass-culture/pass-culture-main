@@ -9,7 +9,7 @@
   width: 100%;
 
   &-link {
-    @include fonts.highlight;
+    @include fonts.caption;
 
     display: block;
     margin-bottom: rem.torem(4px);

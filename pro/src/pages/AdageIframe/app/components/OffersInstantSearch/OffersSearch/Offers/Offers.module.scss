@@ -55,20 +55,6 @@
   }
 }
 
-.offers-load-more {
-  text-align: center;
-  width: fit-content;
-  margin: 0 auto rem.torem(24px);
-  font-size: rem.torem(12px);
-  height: rem.torem(50px);
-
-  &-text {
-    @include fonts.highlight;
-
-    margin-bottom: rem.torem(10px);
-  }
-}
-
 .back-to-top-button {
   @include fonts.button;
 
