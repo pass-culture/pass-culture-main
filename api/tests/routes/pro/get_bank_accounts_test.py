@@ -46,8 +46,12 @@ def test_get_bank_accounts_by_pro(client):
     finances_models.BankAccount()
 
     client = client.with_session_auth(pro.email)
-    with testing.assert_no_duplicated_queries():
-        response = client.get("/finance/bank-accounts")
+    # fetch session
+    # fetch user
+    # fetch bank_account
+    with testing.assert_num_queries(3):
+        with testing.assert_no_duplicated_queries():
+            response = client.get("/finance/bank-accounts")
 
     assert response.status_code == 200
     bank_accounts = response.json

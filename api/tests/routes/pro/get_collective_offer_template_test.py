@@ -10,7 +10,8 @@ from pcapi.utils.date import format_into_utc_date
 
 @pytest.mark.usefixtures("db_session")
 class Returns200Test:
-    def test_access_by_beneficiary(self, client):
+
+    def test_get_collective_offer_template(self, client):
         # Given
         national_program = educational_factories.NationalProgramFactory()
         offer = educational_factories.CollectiveOfferTemplateFactory(nationalProgramId=national_program.id)
@@ -18,17 +19,17 @@ class Returns200Test:
 
         # When
         client = client.with_session_auth(email="user@example.com")
-        expected_num_queries = 8
-        # collective_offer_template
-        # session
-        # user
-        # offerer
-        # user_offerer
-        # collective_offer_template
-        # google_places_info
-        # national_program
+        offer_id = offer.id
+        expected_num_queries = 7
+        # get user_session
+        # get user
+        # get offerer
+        # check user_offerer exists
+        # get collective_offer_template
+        # get google_places_info
+        # get national_program
         with assert_num_queries(expected_num_queries):
-            response = client.get(f"/collective/offers-template/{offer.id}")
+            response = client.get(f"/collective/offers-template/{offer_id}")
             assert response.status_code == 200
 
         # Then
@@ -57,11 +58,18 @@ class Returns200Test:
         offer = educational_factories.CollectiveOfferTemplateFactory()
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
-        # When
-        client.with_session_auth(email="user@example.com")
-
-        with testing.assert_no_duplicated_queries():
-            client.get(f"/collective/offers-template/{offer.id}")
+        expected_num_queries = 6
+        # get user_session
+        # get user
+        # get offerer
+        # check user_offerer exists
+        # get collective_offer_template
+        # get google_places_info
+        client = client.with_session_auth(email="user@example.com")
+        offer_id = offer.id
+        with assert_num_queries(expected_num_queries):
+            with testing.assert_no_duplicated_queries():
+                client.get(f"/collective/offers-template/{offer_id}")
 
 
 @pytest.mark.usefixtures("db_session")
@@ -74,12 +82,12 @@ class Returns403Test:
 
         # When
         client = client.with_session_auth(email=pro_user.email)
-        expected_num_queries = 5
-        # collective_offer_template
-        # session
-        # user
-        # offerer
-        # user_offerer
+        offer_id = offer.id
+        expected_num_queries = 4
+        # get user_session
+        # get user
+        # get offerer
+        # check user_offerer exists
         with assert_num_queries(expected_num_queries):
-            response = client.get(f"/collective/offers-template/{offer.id}")
+            response = client.get(f"/collective/offers-template/{offer_id}")
             assert response.status_code == 403
