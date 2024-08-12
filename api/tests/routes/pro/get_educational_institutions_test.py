@@ -2,6 +2,7 @@ from typing import Any
 
 import pytest
 
+from pcapi.core import testing
 from pcapi.core.educational.factories import EducationalInstitutionFactory
 import pcapi.core.users.factories as users_factories
 
@@ -10,8 +11,13 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 class Return200Test:
+    expected_num_queries = 4
+
+    # get user_session
+    # get user
+    # count active educational_institution
+    # select educational_institution
     def test_get_educational_institutions(self, client: Any) -> None:
-        # Given
         institution1 = EducationalInstitutionFactory(
             name="aaaaaaaaaaaaaaaaa",
             institutionType="toto",
@@ -20,11 +26,11 @@ class Return200Test:
         EducationalInstitutionFactory(isActive=False)
         pro_user = users_factories.ProFactory()
 
-        client.with_session_auth(pro_user.email)
-        response = client.get("/educational_institutions")
+        client = client.with_session_auth(pro_user.email)
+        with testing.assert_num_queries(self.expected_num_queries):
+            response = client.get("/educational_institutions")
+            assert response.status_code == 200
 
-        # Then
-        assert response.status_code == 200
         assert response.json == {
             "educationalInstitutions": [
                 {
@@ -52,14 +58,13 @@ class Return200Test:
         }
 
     def test_get_educational_institutions_empty_result(self, client: Any) -> None:
-        # Given
         pro_user = users_factories.ProFactory()
 
-        client.with_session_auth(pro_user.email)
-        response = client.get("/educational_institutions")
+        client = client.with_session_auth(pro_user.email)
+        with testing.assert_num_queries(self.expected_num_queries):
+            response = client.get("/educational_institutions")
+            assert response.status_code == 200
 
-        # Then
-        assert response.status_code == 200
         assert response.json == {
             "educationalInstitutions": [],
             "page": 1,
@@ -68,16 +73,15 @@ class Return200Test:
         }
 
     def test_get_educational_institutions_limit(self, client: Any) -> None:
-        # Given
         institution1 = EducationalInstitutionFactory(name="Collège A")
         EducationalInstitutionFactory(name="Collège B")
         pro_user = users_factories.ProFactory()
 
-        client.with_session_auth(pro_user.email)
-        response = client.get("/educational_institutions?perPageLimit=1")
+        client = client.with_session_auth(pro_user.email)
+        with testing.assert_num_queries(self.expected_num_queries):
+            response = client.get("/educational_institutions?perPageLimit=1")
+            assert response.status_code == 200
 
-        # Then
-        assert response.status_code == 200
         assert response.json == {
             "educationalInstitutions": [
                 {
@@ -96,7 +100,6 @@ class Return200Test:
         }
 
     def test_get_educational_institutions_limit_page2(self, client: Any) -> None:
-        # Given
         EducationalInstitutionFactory()
         EducationalInstitutionFactory()
         institution3 = EducationalInstitutionFactory(
@@ -105,11 +108,11 @@ class Return200Test:
         )
         pro_user = users_factories.ProFactory()
 
-        client.with_session_auth(pro_user.email)
-        response = client.get("/educational_institutions?perPageLimit=2&page=2")
+        client = client.with_session_auth(pro_user.email)
+        with testing.assert_num_queries(self.expected_num_queries):
+            response = client.get("/educational_institutions?perPageLimit=2&page=2")
+            assert response.status_code == 200
 
-        # Then
-        assert response.status_code == 200
         assert response.json == {
             "educationalInstitutions": [
                 {
@@ -130,11 +133,9 @@ class Return200Test:
 
 class Return401Test:
     def test_get_educational_institutions_no_user_login(self, client: Any) -> None:
-        # Given
         EducationalInstitutionFactory()
         EducationalInstitutionFactory()
 
-        response = client.get("/educational_institutions")
-
-        # Then
-        assert response.status_code == 401
+        with testing.assert_num_queries(0):
+            response = client.get("/educational_institutions")
+            assert response.status_code == 401

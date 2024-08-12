@@ -18,6 +18,12 @@ from pcapi.utils.human_ids import humanize
 
 @pytest.mark.usefixtures("db_session")
 class Returns403Test:
+    # get user_session
+    # get user
+    # get offer
+    # check user_offerer exists
+    num_queries = 4
+
     def test_access_by_beneficiary(self, client):
         # Given
         beneficiary = users_factories.BeneficiaryGrant18Factory()
@@ -26,7 +32,10 @@ class Returns403Test:
         )
 
         # When
-        response = client.with_session_auth(email=beneficiary.email).get(f"/offers/{offer.id}")
+        auth_client = client.with_session_auth(email=beneficiary.email)
+        offer_id = offer.id
+        with testing.assert_num_queries(self.num_queries):
+            response = auth_client.get(f"/offers/{offer_id}")
 
         # Then
         assert response.status_code == 403
@@ -39,7 +48,10 @@ class Returns403Test:
         )
 
         # When
-        response = client.with_session_auth(email=pro_user.email).get(f"/offers/{offer.id}")
+        auth_client = client.with_session_auth(email=pro_user.email)
+        offer_id = offer.id
+        with testing.assert_num_queries(self.num_queries):
+            response = auth_client.get(f"/offers/{offer_id}")
 
         # Then
         assert response.status_code == 403
