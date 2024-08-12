@@ -117,7 +117,7 @@ export const OffersRoute = (): JSX.Element => {
       creationMode,
       periodBeginningDate,
       periodEndingDate,
-    } = serializeApiFilters(apiFilters)
+    } = serializeApiFilters(apiFilters, Audience.INDIVIDUAL)
 
     return api.listOffers(
       nameOrIsbn,

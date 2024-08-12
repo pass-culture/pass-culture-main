@@ -15,6 +15,7 @@ import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from 'core/Offers/constants'
 import { computeOffersUrl } from 'core/Offers/utils/computeOffersUrl'
 import { serializeApiFilters } from 'core/Offers/utils/serializer'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared/constants'
+import { Audience } from 'core/shared/types'
 import { useActiveFeature } from 'hooks/useActiveFeature'
 import { useNotification } from 'hooks/useNotification'
 import strokeSearchIcon from 'icons/stroke-search.svg'
@@ -64,13 +65,16 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
         periodEndingDate,
         collectiveOfferType,
         format,
-      } = serializeApiFilters({
-        ...DEFAULT_COLLECTIVE_SEARCH_FILTERS,
-        nameOrIsbn: offerName,
-        collectiveOfferType: 'template',
-        offererId: queryOffererId ? queryOffererId : 'all',
-        venueId: queryVenueId ? queryVenueId : 'all',
-      })
+      } = serializeApiFilters(
+        {
+          ...DEFAULT_COLLECTIVE_SEARCH_FILTERS,
+          nameOrIsbn: offerName,
+          collectiveOfferType: 'template',
+          offererId: queryOffererId ? queryOffererId : 'all',
+          venueId: queryVenueId ? queryVenueId : 'all',
+        },
+        Audience.COLLECTIVE
+      )
 
       try {
         const offers = await api.getCollectiveOffers(

@@ -110,7 +110,7 @@ export const CollectiveOffers = (): JSX.Element => {
         periodEndingDate,
         collectiveOfferType,
         format,
-      } = serializeApiFilters(apiFilters)
+      } = serializeApiFilters(apiFilters, Audience.COLLECTIVE)
 
       return api.getCollectiveOffers(
         nameOrIsbn,

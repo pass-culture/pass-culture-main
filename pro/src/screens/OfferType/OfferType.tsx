@@ -23,6 +23,7 @@ import {
 } from 'core/Offers/constants'
 import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
 import { serializeApiFilters } from 'core/Offers/utils/serializer'
+import { Audience } from 'core/shared/types'
 import { useActiveFeature } from 'hooks/useActiveFeature'
 import { useIsNewInterfaceActive } from 'hooks/useIsNewInterfaceActive'
 import { useNotification } from 'hooks/useNotification'
@@ -139,7 +140,7 @@ export const OfferTypeScreen = (): JSX.Element => {
         periodEndingDate,
         collectiveOfferType,
         format,
-      } = serializeApiFilters(apiFilters)
+      } = serializeApiFilters(apiFilters, Audience.COLLECTIVE)
 
       const templateOffersOnSelectedVenue = await api.getCollectiveOffers(
         nameOrIsbn,
