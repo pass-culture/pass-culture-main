@@ -575,6 +575,15 @@ class GetPublicAccountTest(GetEndpointHelper):
             user = users_factories.UserFactory()
             return url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id)
 
+    class InvalidatePasswordButtonTest(button_helpers.ButtonHelper):
+        needed_permission = perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT
+        button_label = "Invalider le mot de passe"
+
+        @property
+        def path(self):
+            user = users_factories.UserFactory()
+            return url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id)
+
     class SuspendButtonTest(button_helpers.ButtonHelper):
         needed_permission = perm_models.Permissions.SUSPEND_USER
         button_label = "Suspendre le compte"
@@ -2717,3 +2726,50 @@ class ExtractPublicAccountTest(PostEndpointHelper):
 
         response = self.post_to_endpoint(authenticated_client, user_id=42)
         assert response.status_code == 404
+
+
+class InvalidatePublicAccountPasswordTest(PostEndpointHelper):
+    endpoint = "backoffice_web.public_accounts.invalidate_public_account_password"
+    endpoint_kwargs = {"user_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT
+
+    # session
+    # user
+    # targeted user by id
+    # validate user
+    # UPDATE user
+    # INSERT actionhistory
+    expected_queries = 6
+
+    def test_invalidate_public_account_password(self, authenticated_client, legit_user):
+        user = users_factories.BeneficiaryFactory()
+        user_password_before_response = user.password
+
+        response = self.post_to_endpoint(
+            authenticated_client, user_id=user.id, expected_num_queries=self.expected_queries
+        )
+        assert response.status_code == 303
+
+        assert user_password_before_response != user.password
+
+        action_history = history_models.ActionHistory.query.one()
+        assert action_history.actionType == history_models.ActionType.USER_PASSWORD_INVALIDATED
+        assert action_history.authorUser == legit_user
+        assert action_history.user == user
+
+        response = authenticated_client.get(response.location)
+        assert "Le mot de passe du compte a bien été invalidé" in html_parser.extract_alert(response.data)
+
+    def test_invalidate_public_account_password_user_not_found(self, authenticated_client):
+        response = self.post_to_endpoint(authenticated_client, user_id=0)
+        assert response.status_code == 404
+
+    def test_invalidate_public_account_password_with_non_beneficiary_user(self, authenticated_client, legit_user):
+        user = users_factories.ProFactory()
+
+        response = self.post_to_endpoint(authenticated_client, user_id=user.id)
+        response = authenticated_client.get(response.location)
+        assert (
+            "Seul le mot de passe d'un compte bénéficiaire ou grand public peut être invalidé"
+            in html_parser.extract_alert(response.data)
+        )

@@ -45,6 +45,7 @@ class ActionType(enum.Enum):
     USER_EMAIL_VALIDATED = "Validation manuelle de l'email"
     USER_EXTRACT_DATA = "Génération d'un extrait des données du compte"
     CONNECT_AS_USER = "Connexion d'un admin"
+    USER_PASSWORD_INVALIDATED = "Invalidation du mot de passe de l'utilisateur"
     # Fraud and compliance actions:
     BLACKLIST_DOMAIN_NAME = "Blacklist d'un nom de domaine"
     REMOVE_BLACKLISTED_DOMAIN_NAME = "Suppression d'un nom de domaine banni"
