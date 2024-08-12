@@ -65,7 +65,7 @@ const updateCollectiveOffersStatus = async (
   notify: ReturnType<typeof useNotification>,
   apiFilters: SearchFiltersParams
 ) => {
-  const payload = serializeApiFilters(apiFilters)
+  const payload = serializeApiFilters(apiFilters, Audience.COLLECTIVE)
   if (areAllOffersSelected) {
     //  Bulk edit if all editable offers are selected
     try {
