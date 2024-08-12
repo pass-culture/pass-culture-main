@@ -31,7 +31,7 @@
 }
 
 .text {
-  @include fonts.preview-text;
+  @include fonts.body-xs;
 
   margin-bottom: rem.torem(16px);
   word-break: break-word;

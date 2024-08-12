@@ -41,7 +41,7 @@
   }
 
   &-details {
-    @include fonts.preview-text;
+    @include fonts.body-xs;
 
     flex-grow: 1;
   }
