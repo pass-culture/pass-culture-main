@@ -47,7 +47,7 @@
 .bookings-date-count {
   margin: rem.torem(16px) 0;
 
-  @include fonts.highlight;
+  @include fonts.caption;
 }
 
 .date-select-table {
@@ -58,7 +58,7 @@
   overflow: scroll;
 
   &-header {
-    @include fonts.highlight;
+    @include fonts.caption;
   }
 }
 

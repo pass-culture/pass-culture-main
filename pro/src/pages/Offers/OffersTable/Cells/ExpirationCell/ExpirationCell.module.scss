@@ -27,7 +27,7 @@
     flex-wrap: wrap;
 
     &-waiting {
-      @include fonts.highlight;
+      @include fonts.caption;
 
       display: flex;
       align-items: center;
@@ -35,7 +35,7 @@
     }
 
     &-days-badge {
-      @include fonts.highlight;
+      @include fonts.caption;
 
       background-color: var(--color-alert-dark);
       display: flex;
@@ -52,7 +52,6 @@
     gap: rem.torem(16px);
   }
 }
-
 
 @media (max-width: size.$laptop) {
   .expiration-cell {

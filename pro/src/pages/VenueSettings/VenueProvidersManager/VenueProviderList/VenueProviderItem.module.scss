@@ -72,7 +72,7 @@
 .last-synchronisation {
   color: var(--color-grey-dark);
 
-  @include fonts.highlight;
+  @include fonts.caption;
 
   &::before {
     background-color: var(--color-valid);
