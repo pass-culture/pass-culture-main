@@ -1,10 +1,13 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { sub } from 'date-fns'
 
 import { api } from 'apiClient/api'
 import * as useNotification from 'hooks/useNotification'
 import {
   defaultGetVenue,
+  getCollectiveOfferCollectiveStockFactory,
+  getCollectiveOfferFactory,
   getCollectiveOfferTemplateFactory,
 } from 'utils/collectiveApiFactories'
 import { defaultGetOffererResponseModel } from 'utils/individualApiFactories'
@@ -124,6 +127,44 @@ describe('CollectiveOfferConfirmation', () => {
 
     expect(mockNotifySuccess).toHaveBeenCalledWith(
       'Brouillon sauvegardé dans la liste des offres'
+    )
+  })
+
+  it('should notify of an error if the offer booking limit date is in the past', async () => {
+    const offer = getCollectiveOfferFactory()
+    const yesterday = sub(new Date(), { days: 1 }).toISOString()
+    offer.collectiveStock = getCollectiveOfferCollectiveStockFactory({
+      bookingLimitDatetime: yesterday,
+    })
+    renderCollectiveOfferPreviewCreation({
+      ...defaultProps,
+      offer: offer,
+    })
+
+    const nextStep = screen.getByText('Publier l’offre')
+    await userEvent.click(nextStep)
+
+    expect(mockNotifyError).toHaveBeenCalledWith(
+      'Les dates de limite de réservation ou d’évènement doivent être égales ou postérieures à la date actuelle.'
+    )
+  })
+
+  it('should notify of an error if the offer beginning date is in the past', async () => {
+    const offer = getCollectiveOfferFactory()
+    const yesterday = sub(new Date(), { days: 1 }).toISOString()
+    offer.collectiveStock = getCollectiveOfferCollectiveStockFactory({
+      startDatetime: yesterday,
+    })
+    renderCollectiveOfferPreviewCreation({
+      ...defaultProps,
+      offer: offer,
+    })
+
+    const nextStep = screen.getByText('Publier l’offre')
+    await userEvent.click(nextStep)
+
+    expect(mockNotifyError).toHaveBeenCalledWith(
+      'Les dates de limite de réservation ou d’évènement doivent être égales ou postérieures à la date actuelle.'
     )
   })
 })

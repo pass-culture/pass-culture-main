@@ -1,3 +1,4 @@
+import { isBefore } from 'date-fns'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useSWRConfig } from 'swr'
@@ -13,7 +14,7 @@ import {
   GET_COLLECTIVE_OFFER_QUERY_KEY,
   GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY,
 } from 'config/swrQueryKeys'
-import { Mode } from 'core/OfferEducational/types'
+import { Mode, isCollectiveOfferTemplate } from 'core/OfferEducational/types'
 import { useActiveFeature } from 'hooks/useActiveFeature'
 import { useNotification } from 'hooks/useNotification'
 import { AdagePreviewLayout } from 'pages/AdageIframe/app/components/OfferInfos/AdagePreviewLayout/AdagePreviewLayout'
@@ -52,7 +53,7 @@ export const CollectiveOfferPreviewCreationScreen = ({
 
   const publishOffer = async () => {
     try {
-      if (offer.isTemplate) {
+      if (isCollectiveOfferTemplate(offer)) {
         const newOffer = await api.patchCollectiveOfferTemplatePublication(
           offer.id
         )
@@ -64,6 +65,24 @@ export const CollectiveOfferPreviewCreationScreen = ({
         )
 
         navigate(confirmationUrl)
+        return
+      }
+
+      //  This is temporary, the api should return an error with a specific message type
+      //  Until then, we have to manually verify that the dates of the offer are not in the past,
+      //  Which can happen for a draft offer that is published after some time
+      const areOfferDatesInvalid =
+        (offer.collectiveStock?.bookingLimitDatetime &&
+          isBefore(
+            new Date(offer.collectiveStock.bookingLimitDatetime),
+            new Date()
+          )) ||
+        (offer.collectiveStock?.startDatetime &&
+          isBefore(new Date(offer.collectiveStock.startDatetime), new Date()))
+      if (areOfferDatesInvalid) {
+        notify.error(
+          'Les dates de limite de réservation ou d’évènement doivent être égales ou postérieures à la date actuelle.'
+        )
         return
       }
 

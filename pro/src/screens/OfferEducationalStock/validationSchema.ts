@@ -1,4 +1,4 @@
-import { isSameDay } from 'date-fns'
+import { isBefore, isSameDay } from 'date-fns'
 import * as yup from 'yup'
 
 import { MAX_DETAILS_LENGTH } from 'core/OfferEducational/constants'
@@ -27,6 +27,14 @@ const isBookingDateBeforeStartDate = (
   }
 
   return bookingLimitDatetime < context.parent.startDatetime
+}
+
+function isBookingDateAfterNow(bookingLimitDatetime: Date | null | undefined) {
+  if (!bookingLimitDatetime) {
+    return true
+  }
+
+  return !isBefore(new Date(bookingLimitDatetime), todayAtMidnight())
 }
 
 export const generateValidationSchema = (
@@ -111,12 +119,15 @@ export const generateValidationSchema = (
       .date()
       .required('La date limite de réservation est obligatoire')
       .test({
-        name: 'is-one-true',
         message:
           'La date limite de réservation doit être fixée au plus tard le jour de l’évènement',
         test: (value, context) => isBookingDateBeforeStartDate(value, context),
       })
-      .nullable(),
+      .test({
+        message:
+          'La date limite de réservation doit être égale ou postérieure à la date actuelle',
+        test: isBookingDateAfterNow,
+      }),
     priceDetail: yup
       .string()
       .required('L’information sur le prix est obligatoire')
