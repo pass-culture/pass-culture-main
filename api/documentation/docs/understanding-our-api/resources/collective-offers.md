@@ -57,10 +57,6 @@ The location must be specified under the `offerVenue` object which contains thre
 `offerVenue` defines where the event takes place, `venueId` defines the administrative/billing address.
 :::
 
-:::warning
-`offerVenue` defines where the event takes place, `venueId` defines the administrative/billing address.
-:::
-
 ## Creation rules
 
 ### Offer templates
