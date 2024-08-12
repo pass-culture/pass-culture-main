@@ -32,7 +32,7 @@ const initialValuesNotEmpty = {
   startDatetime: format(tomorrow, FORMAT_ISO_DATE_ONLY),
   endDatetime: format(tomorrow, FORMAT_ISO_DATE_ONLY),
   eventTime: format(addMinutes(tomorrow, 15), FORMAT_HH_mm),
-  bookingLimitDatetime: '2023-03-30',
+  bookingLimitDatetime: format(new Date(), FORMAT_ISO_DATE_ONLY),
   numberOfPlaces: 10,
   totalPrice: 100,
   priceDetail: 'Détail du prix',

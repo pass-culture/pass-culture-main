@@ -1,5 +1,5 @@
 /* istanbul ignore file: Those are test helpers, their coverage is not relevant */
-import { addDays } from 'date-fns'
+import { add, addDays } from 'date-fns'
 
 import { EacFormat } from 'apiClient/adage'
 import {
@@ -124,9 +124,9 @@ export const getCollectiveOfferCollectiveStockFactory = (
   return {
     id: currentStockId,
     price: 100,
-    startDatetime: new Date('2021-10-15T12:00:00Z').toISOString(),
-    endDatetime: new Date('2021-10-15T12:00:00Z').toISOString(),
-    bookingLimitDatetime: new Date('2021-09-15T12:00:00Z').toISOString(),
+    startDatetime: add(Date.now(), { days: 2 }).toISOString(),
+    endDatetime: add(Date.now(), { days: 3 }).toISOString(),
+    bookingLimitDatetime: add(Date.now(), { days: 1 }).toISOString(),
     isBooked: false,
     isCancellable: false,
     isEducationalStockEditable: true,
