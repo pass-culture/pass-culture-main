@@ -12,13 +12,13 @@ const scrollToFirstError = () => {
   // Without the setTimeout, the smooth behavior isn't working
   // cf https://github.com/iamdustan/smoothscroll/issues/28#issuecomment-630722825
   setTimeout(() => {
+    firstErrorElement?.focus()
     firstErrorElement?.scrollIntoView({
       behavior: scrollBehavior,
       block: 'center',
       inline: 'center',
     })
-    firstErrorElement?.focus()
-  }, 0)
+  })
 }
 
 export const ScrollToFirstErrorAfterSubmit = () => {
