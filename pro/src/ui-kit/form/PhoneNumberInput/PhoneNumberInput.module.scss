@@ -32,12 +32,6 @@ $input-phone-number-padding-left: calc(
       justify-content: space-between;
     }
 
-    &-optional {
-      @include fonts.highlight;
-
-      color: var(--color-grey-dark);
-    }
-
     &-footer {
       @include formsM.field-layout-footer;
     }

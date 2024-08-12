@@ -75,12 +75,11 @@ $caption-line-height: rem.torem(16px);
   line-height: $caption-line-height;
 }
 
-@mixin preview-text() {
-  font-family: Montserrat-Regular, system-ui, sans-serif;
-  font-weight: 400;
-  font-style: normal;
-  font-size: rem.torem(12px);
-  line-height: rem.torem(16px);
+@mixin body-xs() {
+  font-family: var(--typography-body-xs-font-family), system-ui, sans-serif;
+  font-weight: var(--typography-body-xs-font-weight);
+  font-size: var(--typography-body-xs-font-size);
+  line-height: var(--typography-body-xs-line-height);
 }
 
 @mixin highlight() {

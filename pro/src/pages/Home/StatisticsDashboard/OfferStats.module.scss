@@ -48,8 +48,6 @@
   padding: rem.torem(16px) rem.torem(8px);
   border-radius: rem.torem(8px);
 
-  @include fonts.preview-text;
-
   &-icon {
     width: rem.torem(48px);
     height: rem.torem(48px);
@@ -63,10 +61,6 @@
     font-size: rem.torem(24px);
     line-height: rem.torem(22px);
   }
-}
-
-.pending-description {
-  @include fonts.preview-text;
 }
 
 .pending-offers {
