@@ -40,6 +40,7 @@ from pcapi.core.users import models as users_models
 from pcapi.core.users import utils as users_utils
 from pcapi.core.users.email import update as email_update
 from pcapi.core.users.models import EligibilityType
+from pcapi.domain.password import random_password
 from pcapi.models import db
 from pcapi.models.beneficiary_import import BeneficiaryImport
 from pcapi.models.beneficiary_import_status import BeneficiaryImportStatus
@@ -388,6 +389,8 @@ def render_public_account_details(
             {
                 "edit_account_form": edit_account_form,
                 "edit_account_dst": url_for(".update_public_account", user_id=user.id),
+                "password_invalidation_dst": url_for(".invalidate_public_account_password", user_id=user.id),
+                "password_invalidation_form": empty_forms.EmptyForm(),
                 "manual_review_form": (
                     account_forms.ManualReviewForm()
                     if utils.has_current_user_permission(perm_models.Permissions.BENEFICIARY_FRAUD_ACTIONS)
@@ -1323,3 +1326,23 @@ def has_gdpr_extract(user: users_models.User) -> bool:
     if not user.gdprUserDataExtract:
         return False
     return any(not extract.is_expired for extract in user.gdprUserDataExtract)
+
+
+@public_accounts_blueprint.route("/<int:user_id>/invalidate-password", methods=["POST"])
+@atomic()
+@utils.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
+def invalidate_public_account_password(user_id: int) -> utils.BackofficeResponse:
+    user = users_models.User.query.filter(users_models.User.id == user_id).one_or_none()
+    if not user:
+        raise NotFound()
+    if not (user.is_beneficiary or user.roles == []):
+        flash("Seul le mot de passe d'un compte bénéficiaire ou grand public peut être invalidé", "warning")
+        return redirect(get_public_account_link(user_id, active_tab="history"), code=303)
+
+    users_api.update_user_password(user, random_password())
+
+    history_api.add_action(
+        action_type=history_models.ActionType.USER_PASSWORD_INVALIDATED, author=current_user, user=user
+    )
+    flash("Le mot de passe du compte a bien été invalidé", "success")
+    return redirect(get_public_account_link(user_id, active_tab="history"), code=303)

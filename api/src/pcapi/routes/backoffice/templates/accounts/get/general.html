@@ -146,6 +146,11 @@
                 {% endif %}
               {% endif %}
             </div>
+            {% if has_permission("MANAGE_PUBLIC_ACCOUNT") %}
+              <div>
+                {{ build_modal_form("invalidate-account-password", password_invalidation_dst, password_invalidation_form, "Invalider le mot de passe", "Invalider le mot de passe", "Confirmer l'invalidation") }}
+              </div>
+            {% endif %}
             {% if suspension_form %}
               {% if user.isActive %}
                 <div>
