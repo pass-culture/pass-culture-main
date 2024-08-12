@@ -39,6 +39,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.sql import expression
 from sqlalchemy.sql.elements import Case
 import sqlalchemy.sql.functions as sqla_func
+from sqlalchemy.sql.selectable import Exists
 from sqlalchemy.sql.sqltypes import LargeBinary
 
 from pcapi import settings
@@ -479,6 +480,16 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
     @bannerMeta.expression  # type: ignore[no-redef]
     def bannerMeta(cls):  # pylint: disable=no-self-argument
         return cls._bannerMeta
+
+    @hybrid_property
+    def hasOffers(self) -> bool:
+        return bool(self.offers)
+
+    @hasOffers.expression  # type: ignore[no-redef]
+    def hasOffers(cls) -> Exists:  # pylint: disable=no-self-argument
+        import pcapi.core.offers.models as offers_models
+
+        return sa.exists().where(offers_models.Offer.venuId == cls.id)
 
     @property
     def is_eligible_for_search(self) -> bool:
