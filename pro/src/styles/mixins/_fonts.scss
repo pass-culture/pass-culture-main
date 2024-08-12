@@ -90,13 +90,6 @@ $caption-line-height: rem.torem(16px);
   font-size: rem.torem(12px);
 }
 
-@mixin mini-highlight() {
-  font-family: Montserrat-SemiBold, system-ui, sans-serif;
-  font-weight: 600;
-  font-style: normal;
-  font-size: rem.torem(10px);
-}
-
 @mixin placeholder() {
   font-family: Montserrat-RegularItalic, system-ui, sans-serif;
   font-weight: 400;
