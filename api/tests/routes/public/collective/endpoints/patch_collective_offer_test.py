@@ -1,4 +1,5 @@
 from datetime import datetime
+from datetime import timedelta
 from decimal import Decimal
 from pathlib import Path
 from unittest.mock import patch
@@ -12,6 +13,7 @@ from pcapi.core.educational import models as educational_models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.providers import factories as provider_factories
 from pcapi.models.offer_mixin import OfferValidationStatus
+from pcapi.utils import date as date_utils
 
 import tests
 from tests.routes import image_data
@@ -281,6 +283,77 @@ class CollectiveOffersPublicPatchOfferTest:
         offer = educational_models.CollectiveOffer.query.filter_by(id=stock.collectiveOffer.id).one()
         assert offer.institutionId == educational_institution.id
         assert educational_institution.isActive is True
+
+    def test_should_update_endDatetime_and_startDatetime(self, client):
+        # Given
+        venue_provider = provider_factories.VenueProviderFactory()
+        venue = offerers_factories.VenueFactory(venueProviders=[venue_provider])
+
+        offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
+        offer = educational_factories.CollectiveOfferFactory(
+            imageCredit="pouet", imageId="123456789", venue=venue, provider=venue_provider.provider
+        )
+        stock = educational_factories.CollectiveStockFactory(
+            collectiveOffer=offer,
+        )
+
+        next_month = datetime.utcnow().replace(second=0, microsecond=0) + timedelta(days=30)
+        next_month_minus_one_day = next_month - timedelta(days=1)
+
+        stringified_next_month = date_utils.utc_datetime_to_department_timezone(next_month, None).isoformat()
+        stringified_next_month_minus_one_day = date_utils.utc_datetime_to_department_timezone(
+            next_month_minus_one_day, None
+        ).isoformat()
+
+        payload = {
+            "startDatetime": stringified_next_month_minus_one_day,
+            "endDatetime": stringified_next_month,
+        }
+
+        # When
+        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+            response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
+                f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
+            )
+
+        # Then
+        assert response.status_code == 200
+
+        offer = educational_models.CollectiveOffer.query.filter_by(id=stock.collectiveOffer.id).one()
+
+        assert offer.collectiveStock.startDatetime == next_month_minus_one_day
+        assert offer.collectiveStock.endDatetime == next_month
+
+    def test_should_raise_400_because_endDatetime_is_before_startDatetime(self, client):
+        # Given
+        venue_provider = provider_factories.VenueProviderFactory()
+        venue = offerers_factories.VenueFactory(venueProviders=[venue_provider])
+
+        offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
+        offer = educational_factories.CollectiveOfferFactory(
+            imageCredit="pouet", imageId="123456789", venue=venue, provider=venue_provider.provider
+        )
+        stock = educational_factories.CollectiveStockFactory(
+            collectiveOffer=offer,
+        )
+
+        next_month = datetime.utcnow().replace(second=0, microsecond=0) + timedelta(days=30)
+        next_month_minus_one_day = next_month - timedelta(days=1)
+
+        payload = {
+            "startDatetime": date_utils.utc_datetime_to_department_timezone(next_month, None).isoformat(),
+            "endDatetime": date_utils.utc_datetime_to_department_timezone(next_month_minus_one_day, None).isoformat(),
+        }
+
+        # When
+        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+            response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
+                f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
+            )
+
+        # Then
+        assert response.status_code == 400
+        assert response.json == {"endDatetime": ["La date de fin de l'évènement ne peut précéder la date de début."]}
 
     def test_patch_offer_uai_and_institution_id(self, client):
         # Given
