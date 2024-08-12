@@ -1960,14 +1960,24 @@ def move_event_offer(
         transactional_mails.send_email_for_each_ongoing_booking(offer)
 
 
-def update_used_stock_price(stock: models.Stock, new_price: float) -> None:
+def update_used_stock_price(
+    stock: models.Stock, new_price: float | None = None, price_percent: decimal.Decimal | None = None
+) -> None:
     if not stock.offer.isEvent:
         raise ValueError("Only stocks associated with an event offer can be edited with used bookings")
+    if (new_price is None) == (price_percent is None):
+        raise ValueError("One of [new_price, price_percent] is mandatory")
 
-    stock.price = new_price
-    bookings_models.Booking.query.filter(
-        bookings_models.Booking.stockId == stock.id,
-    ).update({bookings_models.Booking.amount: new_price})
+    if new_price:
+        stock.price = new_price
+        bookings_models.Booking.query.filter(
+            bookings_models.Booking.stockId == stock.id,
+        ).update({bookings_models.Booking.amount: new_price})
+    elif price_percent:
+        stock.price = round(stock.price * price_percent, 2)
+        bookings_models.Booking.query.filter(
+            bookings_models.Booking.stockId == stock.id,
+        ).update({bookings_models.Booking.amount: bookings_models.Booking.amount * price_percent})
 
     first_finance_event = (
         finance_models.FinanceEvent.query.join(bookings_models.Booking, finance_models.FinanceEvent.booking)

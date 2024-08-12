@@ -1,4 +1,6 @@
+from collections import namedtuple
 import datetime
+import decimal
 from io import BytesIO
 import logging
 import re
@@ -38,6 +40,8 @@ from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.repository import repository
 from pcapi.routes.backoffice import utils
+from pcapi.routes.backoffice.filters import format_amount
+from pcapi.routes.backoffice.filters import pluralize
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.utils import regions as regions_utils
 from pcapi.utils import string as string_utils
@@ -886,36 +890,98 @@ def edit_offer_stock(offer_id: int, stock_id: int) -> utils.BackofficeResponse:
         flash("Ce stock n'est pas éditable.", "warning")
         return redirect(url_for("backoffice_web.offer.get_offer_details", offer_id=offer_id), 303)
 
-    form = forms.EditStockForm()
+    form = forms.EditStockForm(old_price=stock.price)
     old_price = stock.price
 
     if not form.validate():
         flash(utils.build_form_error_msg(form), "warning")
         return redirect(url_for("backoffice_web.offer.get_offer_details", offer_id=offer_id), 303)
 
-    if stock.price < form.price.data:
-        flash("Le prix ne doit pas être supérieur au prix original du stock.", "warning")
-        return redirect(url_for("backoffice_web.offer.get_offer_details", offer_id=offer_id), 303)
+    if form.price.data:
+        offers_api.update_used_stock_price(stock=stock, new_price=form.price.data)
+        logger.info(
+            "A past stock price was updated by an administrator",
+            extra={
+                "user_id": current_user.id,
+                "stock_id": stock_id,
+                "old_price": float(old_price),
+                "new_price": float(form.price.data),
+            },
+        )
+    if form.percent.data:
+        price_percent = decimal.Decimal((100 - float(form.percent.data)) / 100)
+        offers_api.update_used_stock_price(stock=stock, price_percent=price_percent)
+        logger.info(
+            "A past stock price was updated by an administrator",
+            extra={
+                "user_id": current_user.id,
+                "stock_id": stock_id,
+                "old_price": float(old_price),
+                "new_price": float(round(old_price * price_percent, 2)),
+            },
+        )
 
-    offers_api.update_used_stock_price(stock=stock, new_price=form.price.data)
-
-    logger.info(
-        "Un administrateur a changé le prix d'un stock d'évènement passé",
-        extra={
-            "user_id": current_user.id,
-            "stock_id": stock_id,
-            "old_price": float(old_price),
-            "new_price": float(form.price.data),
-        },
-    )
     flash(f"Le stock {stock_id} a été mis à jour.", "success")
     db.session.commit()
     return redirect(url_for("backoffice_web.offer.get_offer_details", offer_id=offer_id), 303)
 
 
+@list_offers_blueprint.route("/<int:offer_id>/stock/<int:stock_id>/confirm", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.MANAGE_OFFERS)
+def confirm_offer_stock(offer_id: int, stock_id: int) -> utils.BackofficeResponse:
+    stock = offers_models.Stock.query.filter_by(id=stock_id).one()
+
+    if stock.offerId != offer_id:
+        alert = "L'offer_id et le stock_id ne sont pas cohérents."
+        return _generate_offer_stock_edit_form(offer_id, stock_id, alert=alert)
+    if finance_api.are_cashflows_being_generated():
+        alert = "Le script de génération des cashflows est en cours, veuillez réessayer plus tard."
+        return _generate_offer_stock_edit_form(offer_id, stock_id, alert=alert)
+
+    if not _is_stock_editable(offer_id, stock_id):
+        alert = "Ce stock n'est pas éditable."
+        return _generate_offer_stock_edit_form(offer_id, stock_id, alert=alert)
+
+    form = forms.EditStockForm(old_price=stock.price)
+
+    if not form.validate():
+        return _generate_offer_stock_edit_form(offer_id, stock_id, form)
+
+    Effect = namedtuple("Effect", ["quantity", "old_price", "new_price"])
+    price_effect = []
+    for quantity, amount in _get_count_booking_prices_for_stock(stock):
+        if form.price.data:
+            price_effect.append(Effect(quantity, amount, form.price.data))
+        elif form.percent.data:
+            price_effect.append(
+                Effect(
+                    quantity,
+                    amount,
+                    round((amount * (1 - form.percent.data / 100)), 2),
+                )
+            )
+
+    return render_template(
+        "offer/confirm_stock_price_change.html",
+        form=form,
+        dst=url_for("backoffice_web.offer.edit_offer_stock", offer_id=offer_id, stock_id=stock_id),
+        div_id=f"edit-offer-modal-{stock_id}",
+        title=f"Baisser le prix du stock {stock_id}",
+        button_text="Continuer",
+        information="Nombre de réservations actives par prix :",
+        data_turbo="true",
+        price_effect=price_effect,
+        stock=stock,
+    )
+
+
 @list_offers_blueprint.route("/<int:offer_id>/stock/<int:stock_id>/edit", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.MANAGE_OFFERS)
-def get_offer_stock_edit_form(offer_id: int, stock_id: int) -> utils.BackofficeResponse:
+def get_offer_stock_edit_form(
+    offer_id: int,
+    stock_id: int,
+    form: forms.EditStockForm | None = None,
+) -> utils.BackofficeResponse:
     if finance_api.are_cashflows_being_generated():
         return render_template(
             "components/turbo/modal_form.html",
@@ -931,17 +997,52 @@ def get_offer_stock_edit_form(offer_id: int, stock_id: int) -> utils.BackofficeR
             title=f"Baisser le prix du stock {stock_id}",
             alert="Ce stock n'est pas éditable.",
         )
+    return _generate_offer_stock_edit_form(offer_id, stock_id)
 
-    form = forms.EditStockForm()
 
+def _generate_offer_stock_edit_form(
+    offer_id: int,
+    stock_id: int,
+    form: forms.EditStockForm | None = None,
+    alert: str | None = None,
+) -> utils.BackofficeResponse:
+    stock = offers_models.Stock.query.filter_by(id=stock_id).one()
+
+    form = form or forms.EditStockForm(old_price=stock.price)
     return render_template(
         "components/turbo/modal_form.html",
         form=form,
-        dst=url_for("backoffice_web.offer.edit_offer_stock", offer_id=offer_id, stock_id=stock_id),
+        dst=url_for("backoffice_web.offer.confirm_offer_stock", offer_id=offer_id, stock_id=stock_id),
         div_id=f"edit-offer-modal-{stock_id}",
         title=f"Baisser le prix du stock {stock_id}",
-        button_text="Baisser le prix",
+        button_text="Continuer",
+        information="Nombre de réservations actives par prix :",
+        additional_data={
+            f"{q} réservation{pluralize(q)}": format_amount(a) for q, a in _get_count_booking_prices_for_stock(stock)
+        },
+        data_turbo="true",
+        alert=alert,
     )
+
+
+def _get_count_booking_prices_for_stock(stock: offers_models.Stock) -> list[tuple[int, decimal.Decimal]]:
+    bookings = (
+        bookings_models.Booking.query.with_entities(
+            bookings_models.Booking.amount,
+            sa.func.count(bookings_models.Booking.id).label("quantity"),
+        )
+        .filter(
+            bookings_models.Booking.stockId == stock.id,
+            bookings_models.Booking.status != bookings_models.BookingStatus.CANCELLED,
+        )
+        .group_by(
+            bookings_models.Booking.amount,
+        )
+        .order_by(
+            bookings_models.Booking.amount,
+        )
+    )
+    return [(booking.quantity, booking.amount) for booking in bookings]
 
 
 @list_offers_blueprint.route("/<int:offer_id>/reindex", methods=["POST"])

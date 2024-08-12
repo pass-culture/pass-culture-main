@@ -2225,8 +2225,8 @@ class GetOfferStockEditFormTest(GetEndpointHelper):
     endpoint_kwargs = {"offer_id": 1, "stock_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_OFFERS
 
-    # session + current user + tested_query
-    expected_num_queries = 3
+    # session + current user + check is_stock_editable + retrieve stock + get booking prices
+    expected_num_queries = 5
 
     def test_get_stock_edit_form(self, authenticated_client):
         booking = bookings_factories.UsedBookingFactory(stock__offer__subcategoryId=subcategories.CONFERENCE.id)
@@ -2241,7 +2241,7 @@ class GetOfferStockEditFormTest(GetEndpointHelper):
 
         form_url = url_for(self.endpoint, offer_id=stock.offer.id, stock_id=stock.id)
 
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(self.expected_num_queries - 2):  # -2 no form generated
             response = authenticated_client.get(form_url)
             assert response.status_code == 200
 
@@ -2278,6 +2278,135 @@ class GetOfferStockEditFormTest(GetEndpointHelper):
             "Le script de génération des cashflows est en cours, veuillez réessayer plus tard.".encode("utf-8")
             in response.data
         )
+
+
+class ConfirmOfferStockTest(PostEndpointHelper):
+    endpoint = "backoffice_web.offer.confirm_offer_stock"
+    endpoint_kwargs = {"offer_id": 1, "stock_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_OFFERS
+
+    def test_confirm_edit_bookings_by_value(self, authenticated_client):
+        offer = offers_factories.OfferFactory(subcategoryId=subcategories.CONFERENCE.id)
+        stock_to_edit = offers_factories.StockFactory(
+            offer=offer,
+            price=decimal.Decimal("10"),
+        )
+        bookings_factories.UsedBookingFactory(
+            stock=stock_to_edit,
+            amount=decimal.Decimal("123.45"),
+        )
+        bookings_factories.UsedBookingFactory(
+            stock=stock_to_edit,
+            amount=decimal.Decimal("10"),
+        )
+        bookings_factories.UsedBookingFactory(
+            stock=stock_to_edit,
+            amount=decimal.Decimal("10"),
+        )
+
+        response = self.post_to_endpoint(
+            authenticated_client, offer_id=offer.id, stock_id=stock_to_edit.id, form={"price": 2.1}
+        )
+
+        assert (
+            '<span class="fw-bold">2 réservations :</span><span class="text-nowrap">10,00 €</span> → <span class="text-nowrap">2,10 €</span>'.encode()
+            in response.data
+        )
+        assert (
+            '<span class="fw-bold">1 réservation :</span><span class="text-nowrap">123,45 €</span> → <span class="text-nowrap">2,10 €</span>'.encode()
+            in response.data
+        )
+
+    def test_confirm_edit_bookings_by_percent(self, authenticated_client):
+        offer = offers_factories.OfferFactory(subcategoryId=subcategories.CONFERENCE.id)
+        stock_to_edit = offers_factories.StockFactory(
+            offer=offer,
+            price=decimal.Decimal("10"),
+        )
+        bookings_factories.UsedBookingFactory(
+            stock=stock_to_edit,
+            amount=decimal.Decimal("123.45"),
+        )
+        bookings_factories.UsedBookingFactory(
+            stock=stock_to_edit,
+            amount=decimal.Decimal("10"),
+        )
+        bookings_factories.UsedBookingFactory(
+            stock=stock_to_edit,
+            amount=decimal.Decimal("10"),
+        )
+
+        response = self.post_to_endpoint(
+            authenticated_client, offer_id=offer.id, stock_id=stock_to_edit.id, form={"percent": 12}
+        )
+
+        assert (
+            '<span class="fw-bold">2 réservations :</span><span class="text-nowrap">10,00 €</span> → <span class="text-nowrap">8,80 €</span>'.encode()
+            in response.data
+        )
+        assert (
+            '<span class="fw-bold">1 réservation :</span><span class="text-nowrap">123,45 €</span> → <span class="text-nowrap">108,64 €</span>'.encode()
+            in response.data
+        )
+
+    def test_offer_stock_edit_cashfow_script_running(self, authenticated_client, app):
+        offer = offers_factories.OfferFactory(subcategoryId=subcategories.CONFERENCE.id)
+        venue = offer.venue
+        event = finance_factories.FinanceEventFactory(
+            booking__amount=decimal.Decimal("123.45"),
+            booking__stock__offer=offer,
+            booking__stock__price=decimal.Decimal("123.45"),
+            venue=venue,
+            pricingPoint=venue,
+        )
+        finance_factories.PricingFactory(
+            event=event,
+            pricingPoint=venue,
+        )
+        app.redis_client.set(finance_conf.REDIS_GENERATE_CASHFLOW_LOCK, "1", 600)
+
+        try:
+            response = self.post_to_endpoint(
+                authenticated_client,
+                offer_id=offer.id,
+                stock_id=event.booking.stock.id,
+                form={"price": 50.1},
+            )
+        finally:
+            app.redis_client.delete(finance_conf.REDIS_GENERATE_CASHFLOW_LOCK)
+
+        assert response.status_code == 200
+        assert (
+            html_parser.extract_alert(response.data)
+            == "Le script de génération des cashflows est en cours, veuillez réessayer plus tard."
+        )
+
+    def test_offer_stock_edit_offer_not_an_event(self, authenticated_client, app):
+        offer = offers_factories.OfferFactory(subcategoryId=subcategories.LIVRE_PAPIER.id)
+        venue = offer.venue
+        event = finance_factories.FinanceEventFactory(
+            booking__amount=decimal.Decimal("123.45"),
+            booking__stock__offer=offer,
+            booking__stock__price=decimal.Decimal("123.45"),
+            venue=venue,
+            pricingPoint=venue,
+        )
+        finance_factories.PricingFactory(
+            event=event,
+            pricingPoint=venue,
+        )
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            offer_id=offer.id,
+            stock_id=event.booking.stock.id,
+            form={"price": 50.1},
+        )
+
+        db.session.refresh(event.booking)
+
+        assert response.status_code == 200
+        assert html_parser.extract_alert(response.data) == "Ce stock n'est pas éditable."
 
 
 class EditOfferStockTest(PostEndpointHelper):
@@ -2396,6 +2525,29 @@ class EditOfferStockTest(PostEndpointHelper):
         assert stock_to_edit.price == decimal.Decimal("50.1")
         assert booking_to_edit.amount == decimal.Decimal("50.1")
 
+    def test_offer_stock_edit_confirmed_booking_percent(self, authenticated_client):
+        offer = offers_factories.OfferFactory(subcategoryId=subcategories.CONFERENCE.id)
+        stock_to_edit = offers_factories.StockFactory(
+            offer=offer,
+            price=decimal.Decimal("123.45"),
+        )
+        booking_to_edit = bookings_factories.BookingFactory(
+            status=BookingStatus.CONFIRMED,
+            stock=stock_to_edit,
+            amount=decimal.Decimal("123.45"),
+        )
+
+        response = self.post_to_endpoint(
+            authenticated_client, offer_id=offer.id, stock_id=stock_to_edit.id, form={"percent": "12.34"}
+        )
+
+        db.session.refresh(booking_to_edit)
+        db.session.refresh(stock_to_edit)
+
+        assert response.status_code == 303
+        assert stock_to_edit.price == decimal.Decimal("108.22")
+        assert booking_to_edit.amount == decimal.Decimal("108.22")
+
     def test_offer_stock_edit_cashfow_script_running(self, authenticated_client, app):
         offer = offers_factories.OfferFactory(subcategoryId=subcategories.CONFERENCE.id)
         venue = offer.venue
@@ -2438,6 +2590,31 @@ class EditOfferStockTest(PostEndpointHelper):
 
         assert event.booking.stock.price == decimal.Decimal("123.45")
 
+    def test_offer_stock_edit_no_used_or_confirmed_bookings(self, authenticated_client, app):
+        offer = offers_factories.OfferFactory(subcategoryId=subcategories.CONFERENCE.id)
+        stock = offers_factories.StockFactory(
+            offer=offer,
+            price=decimal.Decimal("123.45"),
+        )
+        bookings_factories.BookingFactory(
+            status=BookingStatus.CANCELLED,
+            stock=stock,
+        )
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            offer_id=offer.id,
+            stock_id=stock.id,
+            form={"price": 50.1},
+        )
+
+        expected_url = url_for("backoffice_web.offer.get_offer_details", offer_id=offer.id, _external=True)
+        assert response.location == expected_url
+
+        response = authenticated_client.get(url_for("backoffice_web.offer.get_offer_details", offer_id=offer.id))
+        assert response.status_code == 200
+        assert html_parser.extract_alert(response.data) == "Ce stock n'est pas éditable."
+
     def test_offer_stock_edit_offer_not_an_event(self, authenticated_client, app):
         offer = offers_factories.OfferFactory(subcategoryId=subcategories.LIVRE_PAPIER.id)
         venue = offer.venue
@@ -2473,36 +2650,6 @@ class EditOfferStockTest(PostEndpointHelper):
 
         assert event.booking.stock.price == decimal.Decimal("123.45")
 
-    def test_offer_stock_edit_no_used_or_confirmed_bookings(self, authenticated_client, app):
-        offer = offers_factories.OfferFactory(subcategoryId=subcategories.CONFERENCE.id)
-        stock = offers_factories.StockFactory(
-            offer=offer,
-            price=decimal.Decimal("123.45"),
-        )
-        bookings_factories.BookingFactory(
-            status=BookingStatus.CANCELLED,
-            stock=stock,
-        )
-
-        response = self.post_to_endpoint(
-            authenticated_client,
-            offer_id=offer.id,
-            stock_id=stock.id,
-            form={"price": 50.1},
-        )
-        db.session.refresh(stock)
-
-        assert response.status_code == 303
-
-        expected_url = url_for("backoffice_web.offer.get_offer_details", offer_id=offer.id, _external=True)
-        assert response.location == expected_url
-
-        response = authenticated_client.get(url_for("backoffice_web.offer.get_offer_details", offer_id=offer.id))
-        assert response.status_code == 200
-        assert html_parser.extract_alert(response.data) == "Ce stock n'est pas éditable."
-
-        assert stock.price == decimal.Decimal("123.45")
-
     def test_offer_stock_edit_raising_price(self, authenticated_client, app):
         offer = offers_factories.OfferFactory(subcategoryId=subcategories.CONFERENCE.id)
         venue = offer.venue
@@ -2535,7 +2682,87 @@ class EditOfferStockTest(PostEndpointHelper):
         response = authenticated_client.get(url_for("backoffice_web.offer.get_offer_details", offer_id=offer.id))
         assert response.status_code == 200
         assert (
-            html_parser.extract_alert(response.data) == "Le prix ne doit pas être supérieur au prix original du stock."
+            "Les données envoyées comportent des erreurs. Nouveau prix : Le prix doit être positif et inférieur à 123.45 €."
+            in html_parser.extract_alert(response.data)
+        )
+
+        assert event.booking.stock.price == decimal.Decimal("123.45")
+
+    def test_offer_stock_edit_raising_price_percent(self, authenticated_client, app):
+        offer = offers_factories.OfferFactory(subcategoryId=subcategories.CONFERENCE.id)
+        venue = offer.venue
+        event = finance_factories.FinanceEventFactory(
+            booking__amount=decimal.Decimal("123.45"),
+            booking__stock__offer=offer,
+            booking__stock__price=decimal.Decimal("123.45"),
+            venue=venue,
+            pricingPoint=venue,
+        )
+        finance_factories.PricingFactory(
+            event=event,
+            pricingPoint=venue,
+        )
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            offer_id=offer.id,
+            stock_id=event.booking.stock.id,
+            form={"percent": 200.0},
+        )
+
+        db.session.refresh(event.booking)
+
+        assert response.status_code == 303
+
+        expected_url = url_for("backoffice_web.offer.get_offer_details", offer_id=offer.id, _external=True)
+        assert response.location == expected_url
+
+        response = authenticated_client.get(url_for("backoffice_web.offer.get_offer_details", offer_id=offer.id))
+        assert response.status_code == 200
+        assert (
+            "Les données envoyées comportent des erreurs. Réduction en pourcent (%) : La réduction du prix doit être entre 0 % et 100 %."
+            in html_parser.extract_alert(response.data)
+        )
+
+        assert event.booking.stock.price == decimal.Decimal("123.45")
+
+    def test_offer_stock_edit_both_price_percent(self, authenticated_client):
+        offer = offers_factories.OfferFactory(subcategoryId=subcategories.CONFERENCE.id)
+        venue = offer.venue
+        event = finance_factories.FinanceEventFactory(
+            booking__amount=decimal.Decimal("123.45"),
+            booking__stock__offer=offer,
+            booking__stock__price=decimal.Decimal("123.45"),
+            venue=venue,
+            pricingPoint=venue,
+        )
+        finance_factories.PricingFactory(
+            event=event,
+            pricingPoint=venue,
+        )
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            offer_id=offer.id,
+            stock_id=event.booking.stock.id,
+            form={
+                "percent": 10.0,
+                "price": 100,
+            },
+        )
+
+        db.session.refresh(event.booking)
+
+        assert response.status_code == 303
+
+        expected_url = url_for("backoffice_web.offer.get_offer_details", offer_id=offer.id, _external=True)
+        assert response.location == expected_url
+
+        response = authenticated_client.get(url_for("backoffice_web.offer.get_offer_details", offer_id=offer.id))
+        assert response.status_code == 200
+        assert (
+            "Les données envoyées comportent des erreurs. Nouveau prix : Un seul des deux champs est utilisable à la fois ; Réduction en pourcent (%) : Un seul des deux champs est utilisable à la fois ;"
+            in html_parser.extract_alert(response.data)
         )
 
         assert event.booking.stock.price == decimal.Decimal("123.45")

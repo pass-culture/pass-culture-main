@@ -1,0 +1,40 @@
+<turbo-frame id="turbo-{{ div_id }}">
+<form action="{{ dst }}"
+      method="post"
+      target="_top"
+      data-turbo="false"
+      class="modal-content">
+  {{ csrf_token }}
+  <div class="modal-header">
+    <h5 class="modal-title">Baisser le prix du stock {{ stock.id }}</h5>
+    <button type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Fermer"></button>
+  </div>
+  <div class="modal-body row">
+    <div class="my-1">Effet de la baisse de prix demandée :</div>
+    <div class="my-1 card">
+      <div class="card-body d-flex flex-wrap">
+        {% for effect in price_effect %}
+          <div class="col-6 block">
+            <span class="fw-bold">{{ effect.quantity }} réservation{{ effect.quantity | pluralize }} :</span>{{ effect.old_price| format_amount }} → {{ effect.new_price | format_amount }}
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button"
+            class="btn btn-outline-primary"
+            data-bs-dismiss="modal">Annuler</button>
+    <button type="submit"
+            class="btn btn-primary">Baisser le prix</button>
+  </div>
+  {% for form_field in form if form_field.data %}
+    <input type="hidden"
+           name="{{ form_field.name }}"
+           value="{{ form_field.data }}" />
+  {% endfor %}
+</form>
+</turbo-frame>

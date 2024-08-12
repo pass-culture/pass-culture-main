@@ -425,10 +425,41 @@ class EditStockForm(FlaskForm):
     class Meta:
         locales = ["fr_FR", "fr"]
 
+    def __init__(self, old_price: int):
+        super().__init__()
+        self.price.validators = [
+            wtforms.validators.Optional(),
+            wtforms.validators.NumberRange(
+                min=0, max=old_price, message=f"Le prix doit être positif et inférieur à {old_price} €."
+            ),
+        ]
+
     price = fields.PCDecimalField(
-        "Prix",
+        "Nouveau prix",
         use_locale=True,
-        validators=[
-            wtforms.validators.NumberRange(min=0, max=300, message="Le prix doit être positif et inférieur à 300 €.")
-        ],
     )
+    percent = fields.PCDecimalField(
+        "Réduction en pourcent (%)",
+        validators=[
+            wtforms.validators.Optional(),
+            wtforms.validators.NumberRange(
+                min=0, max=100, message="La réduction du prix doit être entre 0 %% et 100 %%."
+            ),
+        ],
+        use_locale=True,
+    )
+
+    def validate(
+        self,
+    ) -> bool:
+        if self.price.data and self.percent.data:
+            error = ("Un seul des deux champs est utilisable à la fois",)
+            self.price.errors += error
+            self.percent.errors += error
+            return False
+        if not (self.price.data or self.percent.data):
+            error = ("Un des champs est obligatoire",)
+            self.price.errors += error
+            self.percent.errors += error
+            return False
+        return super().validate()
