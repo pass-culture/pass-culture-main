@@ -335,7 +335,10 @@ export const DetailsForm = ({
                     label={'Durée'}
                     name="durationMinutes"
                     disabled={readOnlyFields.includes('durationMinutes')}
-                    showIntervalList={false}
+                    suggestedTimeList={{
+                      min: '00:00',
+                      max: '04:00',
+                    }}
                   />
                 </FormLayout.Row>
               )}

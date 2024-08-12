@@ -124,7 +124,10 @@ export const Informations = ({
             name="durationMinutes"
             className={styles['input-duration-minutes']}
             disabled={readOnlyFields.includes('durationMinutes')}
-            showIntervalList={false}
+            suggestedTimeList={{
+              min: '00:00',
+              max: '04:00',
+            }}
           />
         </FormLayout.Row>
       )}

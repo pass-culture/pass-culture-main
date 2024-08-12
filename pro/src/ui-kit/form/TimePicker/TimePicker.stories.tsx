@@ -47,6 +47,6 @@ export const FilterVariant: StoryObj<typeof TimePicker> = {
 export const WithoutSuggestList: StoryObj<typeof TimePicker> = {
   args: {
     name: 'time',
-    showIntervalList: false,
+    suggestedTimeList: {},
   },
 }
