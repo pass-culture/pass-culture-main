@@ -3,6 +3,7 @@
 @import "orejime/dist/orejime";
 @import "global/index";
 @import "components/index";
+@import "design-system/build/css/variables.css";
 
 // Components scoped imports.
 @import "src/components/DialogBox/DialogBox.module";

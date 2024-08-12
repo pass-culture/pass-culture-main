@@ -7,35 +7,31 @@ $body-font-size: rem.torem(15px);
 $caption-line-height: rem.torem(16px);
 
 @mixin title1() {
-  font-family: Montserrat-ExtraBold, system-ui, sans-serif;
-  font-weight: 800;
+  font-family: var(--typography-title1-font-family), system-ui, sans-serif;
   font-style: normal;
-  font-size: rem.torem(26px);
-  line-height: rem.torem(34px);
+  font-size: var(--typography-title1-font-size);
+  line-height: var(--typography-title1-line-height);
 }
 
 @mixin title2() {
-  font-family: Montserrat-Medium, system-ui, sans-serif;
-  font-weight: 500;
+  font-family: var(--typography-title2-font-family), system-ui, sans-serif;
   font-style: normal;
-  font-size: rem.torem(22px);
-  line-height: rem.torem(26px);
+  font-size: var(--typography-title2-font-size);
+  line-height: var(--typography-title2-line-height);
 }
 
 @mixin title3() {
-  font-family: Montserrat-Bold, system-ui, sans-serif;
-  font-weight: 700;
+  font-family: var(--typography-title3-font-family), system-ui, sans-serif;
   font-style: normal;
-  font-size: rem.torem(20px);
-  line-height: rem.torem(24px);
+  font-size: var(--typography-title3-font-size);
+  line-height: var(--typography-title3-line-height);
 }
 
 @mixin title4() {
-  font-family: Montserrat-SemiBold, system-ui, sans-serif;
-  font-weight: 600;
+  font-family: var(--typography-title4-font-family), system-ui, sans-serif;
   font-style: normal;
-  font-size: rem.torem(18px);
-  line-height: rem.torem(22px);
+  font-size: var(--typography-title4-font-size);
+  line-height: var(--typography-title4-line-height);
 }
 
 @mixin button() {
