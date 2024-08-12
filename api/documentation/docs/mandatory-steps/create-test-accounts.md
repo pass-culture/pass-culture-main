@@ -21,8 +21,4 @@ In the **test environment**, the account you are going to create will enable to 
 
 3. Now you can create [venues](https://aide.passculture.app/hc/fr/articles/4411992075281--Acteurs-Culturels-Comment-cr%C3%A9er-un-lieu-) and [offers linked to those venues](https://aide.passculture.app/hc/fr/articles/4412007248145).
 
-:::info
-In the integration test environment, your account is automatically linked to the offerer.
-:::
-
 ![Create account step 3](./img/create_account_step_3.png)
