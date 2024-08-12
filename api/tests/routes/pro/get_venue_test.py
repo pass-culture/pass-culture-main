@@ -8,6 +8,7 @@ from pcapi.core.educational import factories as educational_factories
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.models import VenueTypeCode
 from pcapi.core.offerers.models import Weekday
+import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.models import db
 from pcapi.utils.date import format_into_utc_date
@@ -213,6 +214,7 @@ class Returns200Test:
                 "status": bank_account_link.bankAccount.status.value,
             },
             "isVisibleInApp": True,
+            "hasOffers": False,
         }
         db.session.expire_all()
 
@@ -563,6 +565,18 @@ class Returns200Test:
             },
             "mentalDisability": {"trainedPersonnel": acceslibre_enum.PERSONNEL_UNTRAINED.value},
         }
+
+    def should_return_hasOffers_if_offers(self, client):
+        user_offerer = offerers_factories.UserOffererFactory(user__email="user.pro@test.com")
+        venue = offerers_factories.VenueFactory(
+            name="Festival du pain au chocolat",
+            managingOfferer=user_offerer.offerer,
+            venueTypeCode=VenueTypeCode.FESTIVAL,
+        )
+        offers_factories.OfferFactory(venue=venue)
+        auth_request = client.with_session_auth(email=user_offerer.user.email)
+        response = auth_request.get("/venues/%s" % venue.id)
+        assert response.json["hasOffers"]
 
 
 class Returns403Test:

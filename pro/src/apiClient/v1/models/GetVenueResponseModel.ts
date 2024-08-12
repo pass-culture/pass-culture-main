@@ -45,6 +45,7 @@ export type GetVenueResponseModel = {
   externalAccessibilityId?: string | null;
   externalAccessibilityUrl?: string | null;
   hasAdageId: boolean;
+  hasOffers: boolean;
   id: number;
   isPermanent?: boolean | null;
   isVirtual: boolean;

@@ -237,6 +237,7 @@ class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin
     adageInscriptionDate: datetime | None
     bankAccount: BankAccountResponseModel | None
     isVisibleInApp: bool = True
+    hasOffers: bool
 
     class Config:
         orm_mode = True

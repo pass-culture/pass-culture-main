@@ -297,6 +297,7 @@ export const defaultGetVenue: GetVenueResponseModel = {
   dateCreated: new Date().toISOString(),
   dmsToken: 'fakeDmsToken',
   hasAdageId: true,
+  hasOffers: true,
   isVirtual: false,
   managingOfferer: {
     id: 1,
