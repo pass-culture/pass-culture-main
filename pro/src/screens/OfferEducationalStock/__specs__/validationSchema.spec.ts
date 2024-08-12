@@ -1,3 +1,5 @@
+import { sub } from 'date-fns'
+
 import { OfferEducationalStockFormValues } from 'core/OfferEducational/types'
 import { getYupValidationSchemaErrors } from 'utils/yupValidationTestHelpers'
 
@@ -98,6 +100,16 @@ describe('validationSchema', () => {
         totalPrice: 60001,
       },
       expectedErrors: ['Le prix ne doit pas dépasser 60 000€'],
+    },
+    {
+      description: 'booking limit date should not be in the past',
+      formValues: {
+        ...values,
+        bookingLimitDatetime: sub(new Date(), { days: 1 }).toISOString(),
+      },
+      expectedErrors: [
+        'La date limite de réservation doit être égale ou postérieure à la date actuelle',
+      ],
     },
   ]
 

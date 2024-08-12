@@ -1,8 +1,4 @@
-import {
-  screen,
-  waitFor,
-  waitForElementToBeRemoved,
-} from '@testing-library/react'
+import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import { api } from 'apiClient/api'
@@ -100,10 +96,6 @@ describe('CollectiveOfferPreviewCreation', () => {
 
     await userEvent.click(screen.getByText('Publier l’offre'))
 
-    await waitFor(() =>
-      expect(
-        screen.queryByText(/Félicitations, vous avez créé votre offre !/)
-      ).toBeInTheDocument()
-    )
+    screen.getByText(/Félicitations, vous avez créé votre offre !/)
   })
 })

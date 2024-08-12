@@ -121,37 +121,39 @@ describe('OfferEducationalActions', () => {
   })
 
   it('should display booking link for booked offer', () => {
+    const offer = getCollectiveOfferFactory({
+      status: CollectiveOfferStatus.SOLD_OUT,
+      lastBookingId: 1,
+      lastBookingStatus: CollectiveBookingStatus.CONFIRMED,
+    })
     renderOfferEducationalActions({
       ...defaultValues,
-      offer: getCollectiveOfferFactory({
-        status: CollectiveOfferStatus.SOLD_OUT,
-        lastBookingId: 1,
-        lastBookingStatus: CollectiveBookingStatus.CONFIRMED,
-      }),
+      offer: offer,
     })
     expect(
       screen.getByRole('link', { name: 'Voir la réservation' })
     ).toHaveAttribute(
       'href',
-      '/reservations/collectives?page=1&offerEventDate=2021-10-15&bookingStatusFilter=booked&offerType=all&offerVenueId=all&bookingId=1'
+      `/reservations/collectives?page=1&offerEventDate=${offer.collectiveStock?.startDatetime?.split('T')[0]}&bookingStatusFilter=booked&offerType=all&offerVenueId=all&bookingId=1`
     )
     expect(screen.getByText('réservée')).toBeInTheDocument()
   })
 
   it('should display booking link for used booking', () => {
+    const offer = getCollectiveOfferFactory({
+      status: CollectiveOfferStatus.EXPIRED,
+      lastBookingId: 1,
+      lastBookingStatus: CollectiveBookingStatus.USED,
+    })
     renderOfferEducationalActions({
       ...defaultValues,
-      offer: getCollectiveOfferFactory({
-        status: CollectiveOfferStatus.EXPIRED,
-        lastBookingId: 1,
-        lastBookingStatus: CollectiveBookingStatus.USED,
-      }),
+      offer: offer,
     })
     expect(
       screen.getByRole('link', { name: 'Voir la réservation' })
     ).toHaveAttribute(
       'href',
-      '/reservations/collectives?page=1&offerEventDate=2021-10-15&bookingStatusFilter=booked&offerType=all&offerVenueId=all&bookingId=1'
+      `/reservations/collectives?page=1&offerEventDate=${offer.collectiveStock?.startDatetime?.split('T')[0]}&bookingStatusFilter=booked&offerType=all&offerVenueId=all&bookingId=1`
     )
     expect(screen.getByText('terminée')).toBeInTheDocument()
   })
