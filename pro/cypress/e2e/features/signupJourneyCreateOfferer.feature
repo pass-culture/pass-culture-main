@@ -1,4 +1,4 @@
-@P0
+@P4
 Feature: Signup journey
 
   Scenario: With a new account, create a new offerer with an unknown SIRET
