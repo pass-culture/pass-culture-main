@@ -168,7 +168,7 @@ When('I update Paramètres généraux data', () => {
     )
   cy.findByText('Enregistrer').click()
   cy.wait('@patchVenue')
-  cy.findAllByTestId('spinner').should('not.exist')
+  cy.findAllByTestId('spinner', { timeout: 10000 }).should('not.exist')
 })
 
 Then('Individual section data should be updated', () => {

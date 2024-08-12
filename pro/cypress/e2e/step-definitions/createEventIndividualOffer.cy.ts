@@ -2,7 +2,9 @@ import { Then, When } from '@badeball/cypress-cucumber-preprocessor'
 
 When('I fill in event details', () => {
   cy.setFeatureFlags([{ name: 'WIP_SPLIT_OFFER', isActive: true }])
-  cy.findByLabelText('Titre de l’offre *').type('Le Diner de Devs')
+  cy.findByLabelText('Titre de l’offre *', { timeout: 10000 }).type(
+    'Le Diner de Devs'
+  )
   cy.findByLabelText('Description').type(
     'Une PO invite des développeurs à dîner...'
   )

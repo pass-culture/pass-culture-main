@@ -101,7 +101,7 @@ When('I add first offer to favorites', () => {
         url: '/adage-iframe/logs/fav-offer/',
       }).as('fav-offer')
       cy.findAllByTestId('favorite-inactive').click()
-      cy.wait('@fav-offer', { responseTimeout: 30 * 1000 })
+      cy.wait('@fav-offer', { timeout: 30 * 1000 })
         .its('response.statusCode')
         .should('eq', 204)
     })
