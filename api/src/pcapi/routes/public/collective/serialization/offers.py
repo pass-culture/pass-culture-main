@@ -573,7 +573,7 @@ class PatchCollectiveOfferBodyModel(BaseModel):
             raise ValueError("La date de début de l'évènement ne peut pas être vide.")
         return startDatetime
 
-    @validator("endDatetime", pre=True)
+    @validator("endDatetime", pre=False)
     def validate_end_limit_datetime(cls, endDatetime: datetime | None, values: dict[str, Any]) -> datetime | None:
         start_datetime = values.get("startDatetime")
         if not endDatetime:
