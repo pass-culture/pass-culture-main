@@ -6,6 +6,7 @@ import {
   Constraint,
   imageConstraints,
 } from 'components/ConstraintCheck/imageConstraints'
+import { ImagePreferredOrientation } from 'components/ImagePreferredOrientation/ImagePreferredOrientation'
 import { UploaderModeEnum } from 'components/ImageUploader/types'
 import { BaseFileInput } from 'ui-kit/form/shared/BaseFileInput/BaseFileInput'
 
@@ -25,6 +26,18 @@ export const ImageUploadBrowserForm = ({
 }: ImageUploadBrowserFormProps): JSX.Element => {
   const [errors, setErrors] = useState<string[]>([])
   const validationConstraints = modeValidationConstraints[mode]
+  const preferredOrientationCaptionId = 'preferred-orientation-caption'
+  const constraintCheckId = 'constraint-check'
+
+  const orientationsForMode: {
+    [key in UploaderModeEnum]: 'portrait' | 'landscape'
+  } = {
+    [UploaderModeEnum.OFFER]: 'portrait',
+    [UploaderModeEnum.OFFER_COLLECTIVE]: 'portrait',
+    [UploaderModeEnum.VENUE]: 'landscape',
+  }
+
+  const orientation = orientationsForMode[mode]
 
   const constraints: Constraint[] = [
     imageConstraints.formats(validationConstraints.types),
@@ -62,13 +75,22 @@ export const ImageUploadBrowserForm = ({
   /* istanbul ignore next: DEBT, TO FIX */
   return (
     <form onSubmit={(e) => e.preventDefault()}>
+      <ImagePreferredOrientation
+        id={preferredOrientationCaptionId}
+        orientation={orientation}
+      />
       <BaseFileInput
         label="Importer une image depuis l’ordinateur"
         fileTypes={['image/png', 'image/jpeg']}
         isValid={errors.length === 0}
         onChange={onChange}
+        ariaDescribedBy={`${preferredOrientationCaptionId} ${constraintCheckId}`}
       />
-      <ConstraintCheck constraints={constraints} failingConstraints={errors} />
+      <ConstraintCheck
+        id={constraintCheckId}
+        constraints={constraints}
+        failingConstraints={errors}
+      />
     </form>
   )
 }
