@@ -391,12 +391,18 @@ def check_digital_offer_fields(offer: models.Offer) -> None:
             errors.add_error(
                 "url", f"Une offre de sous-catégorie {offer.subcategory.pro_label} ne peut pas être numérique"
             )
+            raise errors
+        if offer.offererAddress is not None:
+            errors.add_error("offererAddress", "Une offre numérique ne peut pas avoir d'adresse")
+            raise errors
     else:
         if venue.isVirtual:
             errors.add_error("venue", 'Une offre physique ne peut être associée au lieu "Offre numérique"')
 
         if offer.subcategory.is_online_only:
             errors.add_error("url", f'Une offre de catégorie {offer.subcategory.id} doit contenir un champ "url"')
+        if offer.offererAddress is None:
+            errors.add_error("offererAddress", "Une offre physique doit avoir une adresse")
 
     if errors.errors:
         raise errors

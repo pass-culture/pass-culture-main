@@ -70,15 +70,14 @@ class Returns200Test:
     def test_patch_offer_with_address(self, get_address_mock, label, offer_has_oa, address_update_exist, client):
         # Given
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
-        venue = offerers_factories.VirtualVenueFactory(managingOfferer=user_offerer.offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
         oa = None
         if offer_has_oa:
             oa = offerers_factories.OffererAddressFactory(offerer=user_offerer.offerer)
         offer = offers_factories.OfferFactory(
-            subcategoryId=subcategories.ABO_PLATEFORME_VIDEO.id,
+            subcategoryId=subcategories.ABO_MEDIATHEQUE.id,
             venue=venue,
             name="New name",
-            url="test@test.com",
             description="description",
             offererAddress=oa,
         )
@@ -120,6 +119,7 @@ class Returns200Test:
             label=label if label else "",
         )
         response = client.with_session_auth("user@example.com").patch(f"/offers/{offer.id}", json=data)
+
         assert response.status_code == 200
         assert response.json["id"] == offer.id
         updated_offer = Offer.query.get(offer.id)
