@@ -48,7 +48,7 @@ import { Titles } from 'ui-kit/Titles/Titles'
 
 import styles from './Offers.module.scss'
 import { CollectiveSearchFilters } from './SearchFilters/CollectiveSearchFilters'
-import { SearchFilters } from './SearchFilters/SearchFilters'
+import { IndividualSearchFilters } from './SearchFilters/IndividualSearchFilters'
 
 export type OffersProps = {
   currentPageNumber: number
@@ -295,7 +295,7 @@ export const Offers = ({
       )}
 
       {audience === Audience.INDIVIDUAL ? (
-        <SearchFilters
+        <IndividualSearchFilters
           applyFilters={applyFilters}
           categories={categories}
           disableAllFilters={userHasNoOffers}

@@ -26,7 +26,7 @@ import { Tag, TagVariant } from 'ui-kit/Tag/Tag'
 
 import styles from './SearchFilters.module.scss'
 
-interface SearchFiltersProps {
+interface IndividualSearchFiltersProps {
   applyFilters: (filters: SearchFiltersParams) => void
   offerer: GetOffererResponseModel | null
   removeOfferer: () => void
@@ -50,7 +50,7 @@ const individualFilterStatus = [
   { label: 'Refusée', value: OfferStatus.REJECTED },
 ]
 
-export const SearchFilters = ({
+export const IndividualSearchFilters = ({
   applyFilters,
   selectedFilters,
   setSelectedFilters,
@@ -61,7 +61,7 @@ export const SearchFilters = ({
   venues,
   categories,
   isRestrictedAsAdmin = false,
-}: SearchFiltersProps): JSX.Element => {
+}: IndividualSearchFiltersProps): JSX.Element => {
   const isNewInterfaceActive = useIsNewInterfaceActive()
 
   const updateSearchFilters = (
