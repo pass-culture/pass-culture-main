@@ -5,7 +5,7 @@ import { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
 import { isErrorAPIError, serializeApiErrors } from 'apiClient/helpers'
-import { GetIndividualOfferResponseModel } from 'apiClient/v1'
+import { type GetIndividualOfferWithAddressResponseModel } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { ConfirmDialog } from 'components/Dialog/ConfirmDialog/ConfirmDialog'
 import { FormLayout } from 'components/FormLayout/FormLayout'
@@ -22,6 +22,7 @@ import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
 import { isOfferDisabled } from 'core/Offers/utils/isOfferDisabled'
 import { PATCH_SUCCESS_MESSAGE } from 'core/shared/constants'
+import { useActiveFeature } from 'hooks/useActiveFeature'
 import { useNotification } from 'hooks/useNotification'
 import { useOfferWizardMode } from 'hooks/useOfferWizardMode'
 import strokeMailIcon from 'icons/stroke-mail.svg'
@@ -36,7 +37,7 @@ import { setDefaultInitialValuesFromOffer } from './utils'
 import { getValidationSchema } from './validationSchema'
 
 export type UsefulInformationScreenProps = {
-  offer: GetIndividualOfferResponseModel
+  offer: GetIndividualOfferWithAddressResponseModel
 }
 
 export const UsefulInformationScreen = ({
@@ -48,6 +49,7 @@ export const UsefulInformationScreen = ({
   const mode = useOfferWizardMode()
   const { mutate } = useSWRConfig()
   const { subCategories } = useIndividualOfferContext()
+  const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
 
   const [isWithdrawalMailDialogOpen, setIsWithdrawalMailDialogOpen] =
     useState<boolean>(false)
@@ -151,7 +153,10 @@ export const UsefulInformationScreen = ({
     isVenueVirtual: offer.venue.isVirtual,
   })
 
-  const validationSchema = getValidationSchema(conditionalFields)
+  const validationSchema = getValidationSchema({
+    subcategories: conditionalFields,
+    isOfferAddressEnabled,
+  })
   const formik = useFormik({
     initialValues: setDefaultInitialValuesFromOffer(offer),
     onSubmit,
