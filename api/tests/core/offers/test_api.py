@@ -1254,6 +1254,28 @@ class CreateOfferTest:
         assert models.Offer.query.count() == 1
         assert offer.offererAddress == venue.offererAddress
 
+    def test_create_digital_offer_from_scratch_with_offerer_address(
+        self,
+    ):
+
+        venue = offerers_factories.VenueFactory(isVirtual=True, offererAddress=None, siret=None)
+        offerer_address = offerers_factories.OffererAddressFactory(offerer=venue.managingOfferer)
+
+        with pytest.raises(api_errors.ApiErrors) as error:
+            api.create_offer(
+                venue=venue,
+                name="A pretty good offer",
+                external_ticket_office_url="http://example.net",
+                audio_disability_compliant=True,
+                mental_disability_compliant=True,
+                motor_disability_compliant=True,
+                visual_disability_compliant=True,
+                offerer_address=offerer_address,
+                url="http://example.com",
+                subcategory_id=subcategories.VOD.id,
+            )
+        assert error.value.errors["offererAddress"] == ["Une offre numérique ne peut pas avoir d'adresse"]
+
     def test_create_offer_from_scratch_with_offerer_address(self):
         venue = offerers_factories.VenueFactory()
         offerer_address = offerers_factories.OffererAddressFactory(offerer=venue.managingOfferer)
@@ -1639,6 +1661,30 @@ class UpdateOfferTest:
             )
 
         assert error.value.errors["idAtProvider"] == ["`rolalala` is already taken by another venue offer"]
+
+    @pytest.mark.parametrize("isDigital", [True, False])
+    def test_offer_update_accordingly_of_its_digitalness(self, isDigital):
+        kwargs = {}
+        if isDigital:
+            kwargs["isVirtual"] = True
+            kwargs["offererAddress"] = None
+            kwargs["siret"] = None
+        venue = offerers_factories.VenueFactory(**kwargs)
+        offerer_address = offerers_factories.OffererAddressFactory(offerer=venue.managingOfferer)
+        offer = factories.OfferFactory(
+            offererAddress=None,
+            venue=venue,
+            url="http://example.com" if isDigital else None,
+            subcategoryId=subcategories.VOD.id if isDigital else subcategories.SPECTACLE_REPRESENTATION.id,
+        )
+        if isDigital:
+            with pytest.raises(api_errors.ApiErrors) as error:
+                api.update_offer(offer, name="New name", offererAddress=offerer_address)
+                assert error.value.errors["offerUrl"] == ["Une offre numérique ne peut pas avoir d'adresse"]
+        else:
+            api.update_offer(offer, name="New name", offererAddress=offerer_address)
+            offer = models.Offer.query.one()
+            assert offer.offererAddress == offerer_address
 
 
 @pytest.mark.usefixtures("db_session")
