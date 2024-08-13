@@ -14,7 +14,10 @@ import {
   subcategoryFactory,
   venueListItemFactory,
 } from 'utils/individualApiFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
+import {
+  renderWithProviders,
+  RenderWithProvidersOptions,
+} from 'utils/renderWithProviders'
 
 import { DetailsScreen, DetailsScreenProps } from '../DetailsScreen'
 
@@ -22,6 +25,7 @@ vi.mock('apiClient/api', () => ({
   api: {
     getMusicTypes: vi.fn(),
     postDraftOffer: vi.fn(),
+    getSuggestedSubcategories: vi.fn(),
   },
 }))
 
@@ -33,12 +37,14 @@ const scrollIntoViewMock = vi.fn()
 
 const renderDetailsScreen = (
   props: DetailsScreenProps,
-  contextValue: IndividualOfferContextValues
+  contextValue: IndividualOfferContextValues,
+  options: RenderWithProvidersOptions = {}
 ) => {
   return renderWithProviders(
     <IndividualOfferContext.Provider value={contextValue}>
       <DetailsScreen {...props} />
-    </IndividualOfferContext.Provider>
+    </IndividualOfferContext.Provider>,
+    options
   )
 }
 
@@ -61,6 +67,7 @@ describe('screens:IndividualOffer::Informations', () => {
         categoryId: 'A',
         proLabel: 'Sous catégorie online de A',
         isEvent: false,
+        conditionalFields: ['author'],
         canBeDuo: false,
         onlineOfflinePlatform: CATEGORY_STATUS.ONLINE,
       }),
@@ -228,5 +235,47 @@ describe('screens:IndividualOffer::Informations', () => {
       subcategoryId: 'physical',
       venueId: 189,
     })
+  })
+
+  it('should render suggested subcategories', async () => {
+    vi.spyOn(api, 'getSuggestedSubcategories').mockResolvedValue({
+      subcategoryIds: ['virtual', 'physical'],
+    })
+
+    renderDetailsScreen(props, contextValue, {
+      features: ['WIP_SUGGESTED_SUBCATEGORIES'],
+    })
+
+    // at first there is no suggested subcategories
+    expect(
+      screen.queryByText(/Catégories suggérées pour votre offre/)
+    ).not.toBeInTheDocument()
+
+    await userEvent.type(
+      screen.getByLabelText(/Titre de l’offre/),
+      'My super offer'
+    )
+
+    // They appear after the first fields are filled
+    expect(
+      screen.getByText(/Catégories suggérées pour votre offre/)
+    ).toBeInTheDocument()
+    expect(screen.getByText('Sous catégorie online de A')).toBeInTheDocument()
+    expect(screen.getByText('Sous catégorie offline de A')).toBeInTheDocument()
+    expect(screen.getByText('Autre')).toBeInTheDocument()
+
+    // When clicking on a suggested subcategory, the conditional fields are displayed
+    await userEvent.click(screen.getByText('Sous catégorie online de A'))
+    expect(screen.getByText('Auteur')).toBeInTheDocument()
+
+    await userEvent.click(screen.getByText('Sous catégorie offline de A'))
+    expect(screen.queryByText('Auteur')).not.toBeInTheDocument()
+    expect(screen.getByText(/EAN/)).toBeInTheDocument()
+
+    // When clicking on "Autre", we can choose subcategory and the conditional fields are hidden
+    await userEvent.click(screen.getByText('Autre'))
+    expect(screen.queryByText('Auteur')).not.toBeInTheDocument()
+    expect(screen.queryByText(/EAN/)).not.toBeInTheDocument()
+    expect(screen.getByLabelText(/Catégorie/)).toBeInTheDocument()
   })
 })
