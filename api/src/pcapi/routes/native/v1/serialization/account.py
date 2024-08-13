@@ -172,9 +172,11 @@ class UserProfileGetterDict(GetterDict):
             user_subscription_state = subscription_api.get_user_subscription_state(user)
             return user_subscription_state.subscription_message
         if key == "activityId":
-            if user.activity is None:
+            try:
+                activity = users_models.ActivityEnum(user.activity)
+                return profile_options.ActivityIdEnum(activity.name)
+            except ValueError:
                 return None
-            return profile_options.ActivityIdEnum(users_models.ActivityEnum(user.activity).name)
 
         return super().get(key, default)
 

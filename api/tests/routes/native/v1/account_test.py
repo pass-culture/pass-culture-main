@@ -206,6 +206,16 @@ class AccountTest:
         assert not response.json["isBeneficiary"]
         assert response.json["roles"] == []
 
+    def test_get_user_profile_legacy_activity(self, client):
+        users_factories.UserFactory(email=self.identifier, activity="activity not in enum")
+
+        expected_num_queries = 4  # user + beneficiary_fraud_review + deposit + booking
+        with assert_num_queries(expected_num_queries):
+            response = client.with_token(email=self.identifier).get("/native/v1/me")
+
+        assert response.status_code == 200
+        assert "activity" not in response.json
+
     def test_get_user_profile_recredit_amount_to_show(self, client, app):
         with time_machine.travel("2020-01-01"):
             users_factories.UnderageBeneficiaryFactory(email=self.identifier)
