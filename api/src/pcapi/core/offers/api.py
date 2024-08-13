@@ -1400,22 +1400,7 @@ def get_shows_remaining_places_from_provider(provider_class: str | None, offer: 
     raise ValueError(f"Unknown Provider: {provider_class}")
 
 
-def _should_try_to_update_offer_stock_quantity(offer: models.Offer) -> bool:
-    # The offer is to update only if it is a cinema offer, and if the venue has a cinema provider
-    if not offer.subcategory.id == subcategories.SEANCE_CINE.id:
-        return False
-
-    offer_venue_providers = offer.venue.venueProviders
-    for venue_provider in offer_venue_providers:
-        if venue_provider.isFromCinemaProvider:
-            return True
-
-    return False
-
-
-def update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer: models.Offer) -> None:
-    if not _should_try_to_update_offer_stock_quantity(offer):
-        return
+def update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer: models.Offer) -> models.Offer:
     try:
         venue_provider = external_bookings_api.get_active_cinema_venue_provider(offer.venueId)
         validation.check_offer_is_from_current_cinema_provider(offer)
@@ -1443,7 +1428,7 @@ def update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer:
         # If we can't retrieve the stocks from the provider, we stop here to avoid breaking the code following this function
         # This is not ideal, I believe this function should be called on its own, or asynchronously
         # However this means frontend code (probably) so this temporarily fixes crashes for end users
-        # TODO: (lixxday, 29/05/2024): remove this try/catch when the function is no longer called directly in GET /offer route
+        # TODO: (lixxday, 29/05/2024): remove this try/catch when th function is no longer called directly in GET /offer route
         logger.exception(
             "Failed to get shows remaining places from provider",
             extra={"offer": offer.id, "provider": venue_provider.provider.localClass, "error": e},

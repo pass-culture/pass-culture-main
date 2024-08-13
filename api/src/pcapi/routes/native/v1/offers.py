@@ -1,15 +1,20 @@
+import sqlalchemy as sa
 from sqlalchemy.orm import joinedload
 
 from pcapi.core.categories import subcategories_v2
 import pcapi.core.mails.transactional as transactional_mails
+from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers import api
 from pcapi.core.offers import repository
 from pcapi.core.offers.exceptions import OfferReportError
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import PriceCategory
+from pcapi.core.offers.models import Product
 from pcapi.core.offers.models import Reason
 from pcapi.core.offers.models import Stock
+from pcapi.core.providers.models import Provider
+import pcapi.core.providers.repository as providers_repository
 from pcapi.core.users.models import User
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import ResourceNotFoundError
@@ -31,10 +36,31 @@ from .serialization import subcategories_v2 as subcategories_v2_serializers
 )
 @atomic()
 def get_offer(offer_id: str) -> serializers.OfferResponse:
-    query = repository.get_offers_details([int(offer_id)])
-    offer = query.first_or_404()
+    offer: Offer = (
+        Offer.query.options(
+            joinedload(Offer.stocks).joinedload(Stock.priceCategory).joinedload(PriceCategory.priceCategoryLabel)
+        )
+        .options(
+            joinedload(Offer.venue)
+            .joinedload(Venue.managingOfferer)
+            .load_only(Offerer.name, Offerer.validationStatus, Offerer.isActive)
+        )
+        .options(joinedload(Offer.venue).joinedload(Venue.googlePlacesInfo))
+        .options(joinedload(Offer.mediations))
+        .options(joinedload(Offer.reactions))
+        .options(
+            joinedload(Offer.product)
+            .load_only(Product.id, Product.last_30_days_booking, Product.thumbCount)
+            .joinedload(Product.productMediations)
+        )
+        .options(joinedload(Offer.product).joinedload(Product.reactions))
+        .outerjoin(Offer.lastProvider)
+        .options(sa.orm.contains_eager(Offer.lastProvider).load_only(Provider.localClass))
+        .filter(Offer.id == offer_id, Offer.validation == OfferValidationStatus.APPROVED)
+        .first_or_404()
+    )
 
-    if offer.isActive:
+    if offer.isActive and providers_repository.is_cinema_external_ticket_applicable(offer):
         api.update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer)
 
     return serializers.OfferResponse.from_orm(offer)
@@ -47,7 +73,7 @@ def get_offer_v2(offer_id: int) -> serializers.OfferResponseV2:
     query = repository.get_offers_details([int(offer_id)])
     offer = query.first_or_404()
 
-    if offer.isActive:
+    if offer.isActive and providers_repository.is_cinema_external_ticket_applicable(offer):
         api.update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer)
 
     return serializers.OfferResponseV2.from_orm(offer)
