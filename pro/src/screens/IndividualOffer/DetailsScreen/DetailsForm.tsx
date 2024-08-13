@@ -1,6 +1,7 @@
 import { useFormikContext } from 'formik'
 import React, { useState } from 'react'
 import useSWR from 'swr'
+import { useDebouncedCallback } from 'use-debounce'
 
 import { api } from 'apiClient/api'
 import {
@@ -25,6 +26,8 @@ import { Subcategories } from './Subcategories/Subcategories'
 import { SuggestedSubcategories } from './SuggestedSubcategories/SuggestedSubcategories'
 import { DetailsFormValues } from './types'
 import { buildShowSubTypeOptions, buildVenueOptions } from './utils'
+
+const DEBOUNCE_TIME_BEFORE_REQUEST = 400
 
 type DetailsFormProps = {
   filteredVenues: VenueListItemResponseModel[]
@@ -109,12 +112,7 @@ export const DetailsForm = ({
       ? subcategoryConditionalFields.includes('gtl_id')
       : subcategoryConditionalFields.includes('musicType')
 
-  async function onChangeGetSuggestedSubcategories(
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
-  ) {
-    handleChange(e)
+  async function getSuggestedSubcategories() {
     if (!areSuggestedCategoriesEnabled) {
       return
     }
@@ -124,6 +122,20 @@ export const DetailsForm = ({
       Number(venueId)
     )
     setSuggestedSubcategories(response.subcategoryIds)
+  }
+
+  const debouncedOnChangeGetSuggestedSubcategories = useDebouncedCallback(
+    getSuggestedSubcategories,
+    DEBOUNCE_TIME_BEFORE_REQUEST
+  )
+
+  async function onChangeGetSuggestedSubcategories(
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) {
+    handleChange(e)
+    await debouncedOnChangeGetSuggestedSubcategories()
   }
 
   const isSubCategorySelected =
@@ -138,6 +150,7 @@ export const DetailsForm = ({
               label={offerAddressEnabled ? 'Qui propose l’offre ?' : 'Lieu'}
               name="venueId"
               options={venueOptions}
+              onChange={onChangeGetSuggestedSubcategories}
               disabled={
                 readOnlyFields.includes('venueId') || venueOptions.length === 1
               }
