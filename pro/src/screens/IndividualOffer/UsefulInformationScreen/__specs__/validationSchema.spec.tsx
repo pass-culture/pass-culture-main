@@ -14,7 +14,7 @@ const defaultAccessibility = {
 
 describe('getValidationSchema', () => {
   it('should validate withdrawalType correctly', async () => {
-    const schema = getValidationSchema(['withdrawalType'])
+    const schema = getValidationSchema({ subcategories: ['withdrawalType'] })
     await expect(
       schema.validate({
         ...defaultAccessibility,
@@ -28,7 +28,7 @@ describe('getValidationSchema', () => {
   })
 
   it('should validate withdrawalDelay correctly', async () => {
-    const schema = getValidationSchema(['withdrawalDelay'])
+    const schema = getValidationSchema({ subcategories: ['withdrawalDelay'] })
     await expect(
       schema.validate({
         ...defaultAccessibility,
@@ -47,7 +47,7 @@ describe('getValidationSchema', () => {
   })
 
   it('should validate url correctly when isVenueVirtual is true', async () => {
-    const schema = getValidationSchema([])
+    const schema = getValidationSchema({ subcategories: [] })
     await expect(
       schema.validate({
         ...defaultAccessibility,
@@ -68,7 +68,7 @@ describe('getValidationSchema', () => {
   })
 
   it('should validate bookingContact correctly', async () => {
-    const schema = getValidationSchema(['bookingContact'])
+    const schema = getValidationSchema({ subcategories: ['bookingContact'] })
     await expect(
       schema.validate({
         ...defaultAccessibility,
@@ -94,7 +94,7 @@ describe('getValidationSchema', () => {
   })
 
   it('should validate accessibility correctly', async () => {
-    const schema = getValidationSchema([])
+    const schema = getValidationSchema({ subcategories: [] })
     await expect(
       schema.validate({
         accessibility: {
@@ -123,7 +123,7 @@ describe('getValidationSchema', () => {
   })
 
   it('should validate bookingEmail correctly when receiveNotificationEmails is true', async () => {
-    const schema = getValidationSchema([])
+    const schema = getValidationSchema({ subcategories: [] })
     await expect(
       schema.validate({
         ...defaultAccessibility,
@@ -140,6 +140,22 @@ describe('getValidationSchema', () => {
       })
     ).rejects.toThrow(
       'Veuillez renseigner un email valide, exemple : mail@exemple.com'
+    )
+  })
+
+  it('should validate externalTicketOfficeUrl correctly', async () => {
+    const schema = getValidationSchema({ subcategories: [] })
+    await expect(
+      schema.validate({
+        externalTicketOfficeUrl: 'https://example.com',
+        ...defaultAccessibility,
+      })
+    ).resolves.toBeTruthy()
+
+    await expect(
+      schema.validate({ externalTicketOfficeUrl: 'invalid-url' })
+    ).rejects.toThrow(
+      'Veuillez renseigner une URL valide. Ex : https://exemple.com'
     )
   })
 })

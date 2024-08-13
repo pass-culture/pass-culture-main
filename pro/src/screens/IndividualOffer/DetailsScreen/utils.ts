@@ -181,7 +181,7 @@ export const buildVenueOptions = (venues: VenueListItemResponseModel[]) => {
     .sort((a, b) => a.label.localeCompare(b.label, 'fr'))
   if (venueOptions.length > 1) {
     venueOptions = [
-      { value: '', label: 'Sélectionner un lieu' },
+      { value: '', label: 'Sélectionner le partenaire' },
       ...venueOptions,
     ]
   }

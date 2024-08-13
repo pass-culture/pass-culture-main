@@ -90,7 +90,7 @@ export const OfferLocation = ({ venue }: OfferLocationProps): JSX.Element => {
           withBorder
           label={venueFullText}
           name="offerlocation"
-          value={venueFullText}
+          value={venue?.address?.id.toString() ?? ''}
           required
           onChange={onChangeOfferLocation}
         />

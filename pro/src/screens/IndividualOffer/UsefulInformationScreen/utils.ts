@@ -1,5 +1,6 @@
 import {
   GetIndividualOfferResponseModel,
+  type GetIndividualOfferWithAddressResponseModel,
   SubcategoryResponseModel,
   VenueListItemResponseModel,
 } from 'apiClient/v1'
@@ -35,7 +36,7 @@ export const getFilteredVenueListBySubcategory = (
 }
 
 export function setDefaultInitialValuesFromOffer(
-  offer: GetIndividualOfferResponseModel
+  offer: GetIndividualOfferWithAddressResponseModel
 ): UsefulInformationFormValues {
   const baseAccessibility = {
     [AccessibilityEnum.VISUAL]: offer.visualDisabilityCompliant,
@@ -69,6 +70,7 @@ export function setDefaultInitialValuesFromOffer(
     receiveNotificationEmails: !!offer.bookingEmail,
     url: offer.url || DEFAULT_USEFULL_INFORMATION_INTITIAL_VALUES['url'],
     isVenueVirtual: offer.venue.isVirtual || false,
+    offerlocation: offer.address?.id,
   }
 }
 
