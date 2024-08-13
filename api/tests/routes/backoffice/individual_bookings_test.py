@@ -613,7 +613,9 @@ class MarkBookingAsUsedTest(PostEndpointHelper):
         assert booking.status == bookings_models.BookingStatus.CANCELLED
 
         redirected_response = authenticated_client.get(response.headers["location"])
-        assert "The user does not have enough credit to book" in html_parser.extract_alert(redirected_response.data)
+        assert "Impossible de valider une réservation dont le crédit du jeune est épuisé" == html_parser.extract_alert(
+            redirected_response.data
+        )
 
     def test_uncancel_booking_no_stock(self, authenticated_client, bookings):
         beneficiary = users_factories.BeneficiaryGrant18Factory()
@@ -627,7 +629,7 @@ class MarkBookingAsUsedTest(PostEndpointHelper):
         assert booking.status == bookings_models.BookingStatus.CANCELLED
 
         redirected_response = authenticated_client.get(response.headers["location"])
-        assert 'Number of bookings cannot exceed "stock.quantity"' in html_parser.extract_alert(
+        assert "Impossible de valider une réservation dont le stock est épuisé" == html_parser.extract_alert(
             redirected_response.data
         )
 

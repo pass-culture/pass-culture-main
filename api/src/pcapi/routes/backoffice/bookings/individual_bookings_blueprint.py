@@ -256,9 +256,25 @@ def mark_booking_as_used(booking_id: int) -> utils.BackofficeResponse:
     except bookings_exceptions.BookingDepositCreditExpired:
         repository.mark_transaction_as_invalid()
         flash(
-            f"La réservation <b>{booking.token}</b> ne peut être validée, car le crédit associé est expiré.",
+            Markup("La réservation <b>{token}</b> ne peut être validée, car le crédit associé est expiré.").format(
+                token=booking.token
+            ),
             "warning",
         )
+    except sa.exc.InternalError as exc:
+        repository.mark_transaction_as_invalid()
+        if exc.orig and "tooManyBookings" in str(exc.orig):
+            flash(
+                "Impossible de valider une réservation dont le stock est épuisé",
+                "warning",
+            )
+        elif exc.orig and "insufficientFunds" in str(exc.orig):
+            flash(
+                "Impossible de valider une réservation dont le crédit du jeune est épuisé",
+                "warning",
+            )
+        else:
+            flash(Markup("Une erreur s'est produite : {message}").format(message=str(exc)), "warning")
     except Exception as exc:  # pylint: disable=broad-except
         repository.mark_transaction_as_invalid()
         flash(Markup("Une erreur s'est produite : {message}").format(message=str(exc)), "warning")
