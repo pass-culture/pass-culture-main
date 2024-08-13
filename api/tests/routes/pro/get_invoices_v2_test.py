@@ -2,9 +2,9 @@ import datetime
 
 import pytest
 
+from pcapi.core import testing
 import pcapi.core.finance.factories as finance_factories
 import pcapi.core.offerers.factories as offerers_factories
-from pcapi.core.testing import assert_num_queries
 import pcapi.core.users.factories as users_factories
 
 
@@ -31,9 +31,13 @@ class GetInvoicesTest:
         _other_invoice = finance_factories.InvoiceFactory(bankAccount=_other_bank_account)
 
         client = client.with_session_auth(pro.email)
-        response = client.get("/v2/finance/invoices")
+        queries = testing.AUTHENTICATION_QUERIES
+        queries += 1  # select invoice
+        queries += 1  # select bank account
+        with testing.assert_num_queries(queries):
+            response = client.get("/v2/finance/invoices")
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         invoices = response.json
         assert len(invoices) == 2
         assert invoices[0] == {
@@ -67,9 +71,13 @@ class GetInvoicesTest:
         offerers_factories.NotValidatedUserOffererFactory(user=pro, offerer=offerer2)
 
         client = client.with_session_auth(pro.email)
-        response = client.get("/v2/finance/invoices")
+        queries = testing.AUTHENTICATION_QUERIES
+        queries += 1  # select invoice
+        queries += 1  # select bank account
+        with testing.assert_num_queries(queries):
+            response = client.get("/v2/finance/invoices")
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         invoices = response.json
         assert len(invoices) == 2
         assert invoices[0] == {
@@ -101,9 +109,12 @@ class GetInvoicesTest:
 
         client = client.with_session_auth(pro.email)
         params = {"bankAccountId": bank_account1.id}
-        response = client.get("/v2/finance/invoices", params=params)
+        queries = testing.AUTHENTICATION_QUERIES
+        queries += 1  # select invoice
+        with testing.assert_num_queries(queries):
+            response = client.get("/v2/finance/invoices", params=params)
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         invoices = response.json
         assert len(invoices) == 1
         assert invoices[0]["reference"] == invoice1.reference
@@ -127,10 +138,14 @@ class GetInvoicesTest:
         )
 
         client = client.with_session_auth(pro.email)
+        queries = testing.AUTHENTICATION_QUERIES
+        queries += 1  # select invoice
+        queries += 1  # select bank account
         params = {"periodBeginningDate": "2021-07-01", "periodEndingDate": "2021-07-31"}
-        response = client.get("/v2/finance/invoices", params=params)
+        with testing.assert_num_queries(queries):
+            response = client.get("/v2/finance/invoices", params=params)
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         invoices = response.json
         assert len(invoices) == 1
         assert invoices[0]["reference"] == invoice_within.reference
@@ -142,10 +157,13 @@ class GetInvoicesTest:
         other_bank_account = finance_factories.BankAccountFactory()
 
         client = client.with_session_auth(pro.email)
+        queries = testing.AUTHENTICATION_QUERIES
+        queries += 1  # select invoice
         params = {"bankAccountId": other_bank_account.id}
-        response = client.get("/v2/finance/invoices", params=params)
+        with testing.assert_num_queries(queries):
+            response = client.get("/v2/finance/invoices", params=params)
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         invoices = response.json
         assert invoices == []
 
@@ -161,9 +179,14 @@ class GetInvoicesTest:
 
         client = client.with_session_auth(pro.email)
         params = {"offererId": offerer.id}
-        response = client.get("/v2/finance/invoices", params=params)
+        queries = testing.AUTHENTICATION_QUERIES
+        queries += 1  # select invoice
+        queries += 1  # select bank account
+        queries += 1  # select bank account (duplicated query, only for admins, should be deleted soon)
+        with testing.assert_num_queries(queries):
+            response = client.get("/v2/finance/invoices", params=params)
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         invoices = response.json
         assert len(invoices) == 2
 
@@ -179,9 +202,12 @@ class GetInvoicesTest:
 
         client = client.with_session_auth(pro.email)
         params = {"offererId": offerer.id, "bankAccountId": bank_account1.id}
-        response = client.get("/v2/finance/invoices", params=params)
+        queries = testing.AUTHENTICATION_QUERIES
+        queries += 1  # select invoice
+        with testing.assert_num_queries(queries):
+            response = client.get("/v2/finance/invoices", params=params)
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         invoices = response.json
         assert len(invoices) == 1
         assert invoices[0]["reference"] == invoice1.reference
@@ -197,9 +223,12 @@ class GetInvoicesTest:
         finance_factories.InvoiceFactory(bankAccount=bank_account2, amount=-1500)
 
         client = client.with_session_auth(pro.email)
-        response = client.get("/v2/finance/invoices")
+        queries = testing.AUTHENTICATION_QUERIES
+        queries += 1  # select invoice
+        with testing.assert_num_queries(queries):
+            response = client.get("/v2/finance/invoices")
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         invoices = response.json
         assert len(invoices) == 0
 
@@ -210,11 +239,10 @@ class GetInvoicesTest:
         finance_factories.InvoiceFactory(bankAccount=bank_account)
 
         client = client.with_session_auth(user_offerer.user.email)
-        # 1 - Fetch user session
-        # 2 - Fetch user
-        # 3 - Check user permission
-        # 4 - Check if offerer has invoice
-        with assert_num_queries(4):
+        queries = testing.AUTHENTICATION_QUERIES
+        queries += 1  # check user_offerer exists
+        queries += 1  # check offerer has invoice
+        with testing.assert_num_queries(queries):
             response = client.get("/v2/finance/has-invoice", params={"offererId": offerer_id})
             assert response.status_code == 200
 
@@ -225,9 +253,14 @@ class GetInvoicesTest:
         finance_factories.BankAccountFactory(offerer=user_offerer.offerer)
 
         client = client.with_session_auth(user_offerer.user.email)
-        response = client.get("/v2/finance/has-invoice", params={"offererId": user_offerer.offerer.id})
+        params = {"offererId": user_offerer.offerer.id}
+        queries = testing.AUTHENTICATION_QUERIES
+        queries += 1  # check user_offerer exists
+        queries += 1  # check offerer has invoice
+        with testing.assert_num_queries(queries):
+            response = client.get("/v2/finance/has-invoice", params=params)
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         assert response.json == {"hasInvoice": False}
 
     def test_has_invoices_when_user_has_no_access_to_offerer(self, client):
@@ -236,9 +269,13 @@ class GetInvoicesTest:
         finance_factories.BankAccountFactory(offerer=user_offerer.offerer)
 
         client = client.with_session_auth(user_offerer.user.email)
-        response = client.get("/v2/finance/has-invoice", params={"offererId": user_offerer_2.offerer.id})
+        params = {"offererId": user_offerer_2.offerer.id}
+        queries = testing.AUTHENTICATION_QUERIES
+        queries += 1  # check user_offerer exists
+        with testing.assert_num_queries(queries):
+            response = client.get("/v2/finance/has-invoice", params=params)
+            assert response.status_code == 403
 
-        assert response.status_code == 403
         assert response.json == {
             "global": ["Vous n'avez pas les droits d'accès suffisants pour accéder à cette information."]
         }
