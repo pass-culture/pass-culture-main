@@ -62,9 +62,14 @@
   }
 
   &-right-button {
-    @include forms.input-icon-wrapper(rem.torem(32px));
-
-    pointer-events: initial;
+    position: absolute;
+    right: 0;
+    top: 0;
+    height: 100%;
+    width: rem.torem(48px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
     button {
       background: none;
