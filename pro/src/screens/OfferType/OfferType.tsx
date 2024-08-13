@@ -4,7 +4,6 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
-import { CollectiveOfferDisplayedStatus } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
@@ -145,7 +144,7 @@ export const OfferTypeScreen = (): JSX.Element => {
       const templateOffersOnSelectedVenue = await api.getCollectiveOffers(
         nameOrIsbn,
         offererId,
-        status as CollectiveOfferDisplayedStatus,
+        status,
         venueId,
         categoryId,
         creationMode,

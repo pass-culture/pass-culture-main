@@ -3,10 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
-import {
-  CollectiveOfferDisplayedStatus,
-  CollectiveOfferStatus,
-} from 'apiClient/v1'
+import { CollectiveOfferStatus } from 'apiClient/v1'
 import { AppLayout } from 'app/AppLayout'
 import {
   GET_COLLECTIVE_OFFERS_QUERY_KEY,
@@ -115,7 +112,7 @@ export const CollectiveOffers = (): JSX.Element => {
       return api.getCollectiveOffers(
         nameOrIsbn,
         offererId,
-        status as CollectiveOfferDisplayedStatus[],
+        status,
         venueId,
         categoryId,
         creationMode,

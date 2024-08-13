@@ -4,10 +4,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
-import {
-  CollectiveOfferDisplayedStatus,
-  CollectiveOfferResponseModel,
-} from 'apiClient/v1'
+import { CollectiveOfferResponseModel } from 'apiClient/v1'
 import { AppLayout } from 'app/AppLayout'
 import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
 import { createOfferFromTemplate } from 'core/OfferEducational/utils/createOfferFromTemplate'
@@ -80,7 +77,7 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
         const offers = await api.getCollectiveOffers(
           nameOrIsbn,
           offererId,
-          status as CollectiveOfferDisplayedStatus,
+          status,
           venueId,
           categoryId,
           creationMode,
