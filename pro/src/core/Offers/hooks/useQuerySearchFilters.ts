@@ -6,6 +6,7 @@ import {
   DEFAULT_SEARCH_FILTERS,
 } from 'core/Offers/constants'
 import { Audience } from 'core/shared/types'
+import { parseUrlParams } from 'utils/parseUrlParams'
 import { translateQueryParamsToApiParams } from 'utils/translate'
 
 import { SearchFiltersParams } from '../types'
@@ -17,17 +18,7 @@ export const useQuerySearchFilters = (
 
   const urlSearchFilters: SearchFiltersParams = useMemo(() => {
     const urlParams = new URLSearchParams(search)
-    const queryParams: Record<string, string | string[]> = {}
-    urlParams.forEach((value, key) => {
-      if (queryParams[key]) {
-        if (!Array.isArray(queryParams[key])) {
-          queryParams[key] = [queryParams[key]]
-        }
-        queryParams[key].push(value)
-      } else {
-        queryParams[key] = value
-      }
-    })
+    const queryParams = parseUrlParams(urlParams)
 
     const translatedQuery = translateQueryParamsToApiParams(
       {
