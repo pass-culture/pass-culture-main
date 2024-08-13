@@ -180,6 +180,7 @@ describe('setDefaultInitialValues', () => {
       speaker: '',
       stageDirector: '',
       subcategoryConditionalFields: [],
+      suggestedSubcategory: '',
       subcategoryId: '',
       venueId: '',
       visa: '',
@@ -222,6 +223,7 @@ describe('setDefaultInitialValuesFromOffer', () => {
       speaker: "Chuck Norris n'a pas besoin de doubleur",
       stageDirector: 'JCVD',
       subcategoryConditionalFields: [],
+      suggestedSubcategory: '',
       subcategoryId: 'SEANCE_CINE',
       venueId: '6',
       visa: 'USA',
@@ -278,6 +280,7 @@ describe('setFormReadOnlyFields', () => {
       'ean',
       'durationMinutes',
       'subcategoryConditionalFields',
+      'suggestedSubcategory',
     ]
 
     expect(
@@ -314,6 +317,7 @@ describe('setFormReadOnlyFields', () => {
       'ean',
       'durationMinutes',
       'subcategoryConditionalFields',
+      'suggestedSubcategory',
     ]
 
     expect(
@@ -345,6 +349,7 @@ describe('serializeExtraData', () => {
       visa: '123456789',
       durationMinutes: '',
       subcategoryConditionalFields: [],
+      suggestedSubcategory: '',
     }
 
     expect(serializeExtraData(formValues)).toStrictEqual({
@@ -378,6 +383,7 @@ describe('serializeExtraData', () => {
       visa: '',
       durationMinutes: '',
       subcategoryConditionalFields: [],
+      suggestedSubcategory: '',
     }
 
     expect(serializeExtraData(formValues)).toStrictEqual({

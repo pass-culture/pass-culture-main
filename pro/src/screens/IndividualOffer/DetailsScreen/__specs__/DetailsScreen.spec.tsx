@@ -258,7 +258,7 @@ describe('screens:IndividualOffer::Informations', () => {
 
     // They appear after the first fields are filled
     expect(
-      screen.getByText(/Catégories suggérées pour votre offre/)
+      await screen.findByText(/Catégories suggérées pour votre offre/)
     ).toBeInTheDocument()
     expect(screen.getByText('Sous catégorie online de A')).toBeInTheDocument()
     expect(screen.getByText('Sous catégorie offline de A')).toBeInTheDocument()
