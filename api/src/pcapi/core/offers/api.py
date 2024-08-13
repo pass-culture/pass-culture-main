@@ -335,7 +335,6 @@ def create_offer(
     validation.check_is_duo_compliance(is_duo, subcategory)
     validation.check_can_input_id_at_provider(provider, id_at_provider)
     validation.check_can_input_id_at_provider_for_this_venue(venue.id, id_at_provider)
-
     is_national = True if url else bool(is_national)
 
     offer = models.Offer(
@@ -365,6 +364,7 @@ def create_offer(
         offererAddress=offerer_address or venue.offererAddress,
         idAtProvider=id_at_provider,
     )
+    validation.check_digital_offer_fields(offer)
     repository.add_to_session(offer)
     db.session.flush()
 
@@ -452,9 +452,10 @@ def update_offer(
 
     if offer.is_soft_deleted():
         raise pc_object.DeletedRecordException()
-
     for key, value in modifications.items():
         setattr(offer, key, value)
+    with db.session.no_autoflush:
+        validation.check_digital_offer_fields(offer)
     if offer.isFromAllocine:
         offer.fieldsUpdated = list(set(offer.fieldsUpdated) | set(modifications))
 

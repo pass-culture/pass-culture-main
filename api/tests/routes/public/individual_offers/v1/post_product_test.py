@@ -402,7 +402,10 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
         )
 
         assert response.status_code == 400
-        assert response.json == {"venue": ['Une offre physique ne peut être associée au lieu "Offre numérique"']}
+        assert response.json == {
+            "venue": ['Une offre physique ne peut être associée au lieu "Offre numérique"'],
+            "offererAddress": ["Une offre physique doit avoir une adresse"],
+        }
         assert offers_models.Offer.query.first() is None
 
     @pytest.mark.usefixtures("db_session")
