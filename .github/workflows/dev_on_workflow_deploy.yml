@@ -163,7 +163,7 @@ jobs:
           export IMAGE="${IMAGE}:${VERSION}"
           export DATE=$(date +"%Y-%m-%d--%H-%M-%S")
           JOB_NAME=post-upgrade-${DATE}
-          envsubst < .github/workflows/templates/pre-upgrade-job.yaml | kubectl -n ${{ inputs.environment }} apply -f -
+          envsubst < .github/workflows/templates/post-upgrade-job.yaml | kubectl -n ${{ inputs.environment }} apply -f -
           # kubectl logs returns 0 if pod is pending because of lack of resource so we use a more elaborate condition
           kubectl wait -n ${{ inputs.environment }} --for=jsonpath='{.status.ready}'=1 jobs/${JOB_NAME} --timeout=180s
           # Next lines assume that job's backoffLimit is 0
