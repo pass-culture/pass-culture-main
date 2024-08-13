@@ -67,7 +67,7 @@ describe('screens:IndividualOffer::Informations', () => {
         categoryId: 'A',
         proLabel: 'Sous catégorie online de A',
         isEvent: false,
-        conditionalFields: ['author'],
+        conditionalFields: ['author', 'durationMinutes'],
         canBeDuo: false,
         onlineOfflinePlatform: CATEGORY_STATUS.ONLINE,
       }),
@@ -267,6 +267,7 @@ describe('screens:IndividualOffer::Informations', () => {
     // When clicking on a suggested subcategory, the conditional fields are displayed
     await userEvent.click(screen.getByText('Sous catégorie online de A'))
     expect(screen.getByText('Auteur')).toBeInTheDocument()
+    expect(screen.getByText('Durée')).toBeInTheDocument()
 
     await userEvent.click(screen.getByText('Sous catégorie offline de A'))
     expect(screen.queryByText('Auteur')).not.toBeInTheDocument()
