@@ -2,6 +2,7 @@ from typing import Any
 
 import pytest
 
+from pcapi.core import testing
 import pcapi.core.users.factories as users_factories
 
 
@@ -10,14 +11,14 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 class Return200Test:
     def test_get_educational_partners(self, client: Any) -> None:
-        # Given
         pro_user = users_factories.ProFactory()
 
-        client.with_session_auth(pro_user.email)
-        response = client.get("/cultural-partners")
+        client = client.with_session_auth(pro_user.email)
+        queries = testing.AUTHENTICATION_QUERIES
+        with testing.assert_num_queries(queries):
+            response = client.get("/cultural-partners")
+            assert response.status_code == 200
 
-        # Then
-        assert response.status_code == 200
         assert response.json == {
             "partners": [
                 {
@@ -38,9 +39,6 @@ class Return200Test:
 
 class Return401Test:
     def test_get_educational_partners_no_user_login(self, client: Any) -> None:
-        # Given
-
-        response = client.get("/cultural-partners")
-
-        # Then
-        assert response.status_code == 401
+        with testing.assert_num_queries(0):
+            response = client.get("/cultural-partners")
+            assert response.status_code == 401

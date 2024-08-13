@@ -1,5 +1,6 @@
 import pytest
 
+from pcapi.core import testing
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.users.factories as users_factories
@@ -23,10 +24,17 @@ class Returns200Test:
         offerers_factories.OffererInvitationFactory(
             email="member.pro@example.com", user=pro, offerer=offerer, status=offerers_models.InvitationStatus.ACCEPTED
         )
+        client = client.with_session_auth(email=pro.email)
+        offerer_id = offerer.id
+        queries = testing.AUTHENTICATION_QUERIES
+        queries += 1  # check user_offerer exists
+        queries += 1  # select offerer
+        queries += 1  # select user_offerer
+        queries += 1  # select offerer_invitation
+        with testing.assert_num_queries(queries):
+            response = client.get(f"/offerers/{offerer_id}/members")
+            assert response.status_code == 200
 
-        response = client.with_session_auth(email=pro.email).get(f"/offerers/{offerer.id}/members")
-
-        assert response.status_code == 200
         assert response.json["members"] == [
             {"email": "invited.pro@example.com", "status": "pending"},
             {"email": "pending.pro@example.com", "status": "pending"},
@@ -38,9 +46,13 @@ class Returns200Test:
 @pytest.mark.usefixtures("db_session")
 class Returns400Test:
     def test_access_by_unauthorized_pro_user(self, client):
-        pro_user = users_factories.ProFactory()
+        pro = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()
 
-        response = client.with_session_auth(email=pro_user.email).get(f"/offerers/{offerer.id}/members")
-
-        assert response.status_code == 403
+        client = client.with_session_auth(email=pro.email)
+        offerer_id = offerer.id
+        queries = testing.AUTHENTICATION_QUERIES
+        queries += 1  # check user_offerer exists
+        with testing.assert_num_queries(queries):
+            response = client.get(f"/offerers/{offerer_id}/members")
+            assert response.status_code == 403

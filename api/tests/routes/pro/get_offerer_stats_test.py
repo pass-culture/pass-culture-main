@@ -3,6 +3,7 @@ import time_machine
 
 from pcapi.connectors.big_query.queries.offerer_stats import DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE
 from pcapi.connectors.big_query.queries.offerer_stats import TOP_3_MOST_CONSULTED_OFFERS_LAST_30_DAYS_TABLE
+from pcapi.core import testing
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
@@ -62,10 +63,21 @@ class OffererStatsTest:
                 ],
             },
         )
+        offerer_id = offerer.id
+        client = client.with_session_auth(pro_user.email)
+        queries = testing.AUTHENTICATION_QUERIES
+        queries += 1  # check user_offerer exists
+        queries += 1  # select offerer_stats
+        queries += 1  # select 1st offer
+        queries += 1  # select 1st mediation
+        queries += 1  # select 2nd offer
+        queries += 1  # select 2nd mediation
+        queries += 1  # select 3th offer
+        queries += 1  # select 3th mediation
+        with testing.assert_num_queries(queries):
+            response = client.get(f"/offerers/{offerer_id}/stats")
+            assert response.status_code == 200
 
-        response = client.with_session_auth(pro_user.email).get(f"/offerers/{offerer.id}/stats")
-
-        assert response.status_code == 200
         assert response.json == {
             "jsonData": {
                 "dailyViews": [
@@ -111,7 +123,13 @@ class OffererStatsTest:
             },
         )
 
-        response = client.with_session_auth(pro_user.email).get(f"/offerers/{offerer.id}/stats")
+        offerer_id = offerer.id
+        client = client.with_session_auth(pro_user.email)
+        queries = testing.AUTHENTICATION_QUERIES
+        queries += 1  # check user_offerer exists
+        queries += 1  # select offerer_stats
+        with testing.assert_num_queries(queries):
+            response = client.get(f"/offerers/{offerer_id}/stats")
 
         assert response.status_code == 200
         assert response.json == {

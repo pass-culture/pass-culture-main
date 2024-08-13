@@ -2,6 +2,7 @@ from datetime import datetime
 
 import pytest
 
+from pcapi.core import testing
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.bookings.models as bookings_models
 import pcapi.core.offerers.factories as offerers_factories
@@ -75,9 +76,15 @@ def test_return_price_categories_and_schedule_count_by_date(client):
         )
 
     client = client.with_session_auth(user_offerer.user.email)
-    response = client.get(f"/bookings/dates/{offer.id}")
+    offer_id = offer.id
+    queries = testing.AUTHENTICATION_QUERIES
+    queries += 1  # select venue
+    queries += 1  # check user_offerer exists
+    queries += 1  # select stock
+    with testing.assert_num_queries(queries):
+        response = client.get(f"/bookings/dates/{offer_id}")
+        assert response.status_code == 200
 
-    assert response.status_code == 200
     assert response.json == [
         {"eventDate": "2024-02-02", "scheduleCount": 1, "priceCategoriesCount": 1},
         {"eventDate": "2024-09-09", "scheduleCount": 1, "priceCategoriesCount": 1},
@@ -94,9 +101,15 @@ def test_return_empty_list_when_no_stock(client):
     offer = offers_factories.OfferFactory(venue__managingOfferer=user_offerer.offerer)
 
     client = client.with_session_auth(user_offerer.user.email)
-    response = client.get(f"/bookings/dates/{offer.id}")
+    offer_id = offer.id
+    queries = testing.AUTHENTICATION_QUERIES
+    queries += 1  # select venue
+    queries += 1  # check user_offerer exists
+    queries += 1  # select stock
+    with testing.assert_num_queries(queries):
+        response = client.get(f"/bookings/dates/{offer_id}")
+        assert response.status_code == 200
 
-    assert response.status_code == 200
     assert response.json == []
 
 
@@ -107,6 +120,10 @@ def test_user_is_forbidden(client):
     offer = offers_factories.OfferFactory()
 
     client = client.with_session_auth(user_offerer.user.email)
-    response = client.get(f"/bookings/dates/{offer.id}")
-
-    assert response.status_code == 403
+    offer_id = offer.id
+    queries = testing.AUTHENTICATION_QUERIES
+    queries += 1  # select venue
+    queries += 1  # check user_offerer exists
+    with testing.assert_num_queries(queries):
+        response = client.get(f"/bookings/dates/{offer_id}")
+        assert response.status_code == 403
