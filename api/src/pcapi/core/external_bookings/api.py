@@ -1,5 +1,4 @@
 import datetime
-import functools
 import json
 import logging
 
@@ -93,7 +92,6 @@ def _get_external_bookings_client_api(venue_id: int) -> external_bookings_models
             raise ValueError(f"Unknown Provider: {cinema_venue_provider.provider.localClass}")
 
 
-@functools.cache
 def get_active_cinema_venue_provider(venue_id: int) -> providers_models.VenueProvider:
     cinema_venue_provider = (
         providers_repository.get_cinema_venue_provider_query(venue_id)
