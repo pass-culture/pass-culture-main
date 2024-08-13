@@ -60,7 +60,7 @@ export const BaseTimePicker = ({
         className={cn(className, styles['timepicker'])}
       />
       {hasTimeOptions && (
-        <datalist id={optionsListId}>
+        <datalist id={optionsListId} data-testid="timepicker-datalist">
           {timeOptions.map((time) => (
             <option key={time} value={time}>
               {time}

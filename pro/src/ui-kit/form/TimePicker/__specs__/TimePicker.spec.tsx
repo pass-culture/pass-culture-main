@@ -3,11 +3,19 @@ import { Formik } from 'formik'
 import React from 'react'
 
 import { TimePicker } from '../TimePicker'
+import { SuggestedTimeList } from '../types'
 
-const renderTimePicker = (initialValue: string | Date | null | undefined) => {
+const renderTimePicker = (
+  initialValue: string | Date | null | undefined,
+  suggestedTimeList?: SuggestedTimeList
+) => {
   render(
     <Formik initialValues={{ time: initialValue }} onSubmit={vi.fn()}>
-      <TimePicker name="time" label="Horaire" />
+      <TimePicker
+        name="time"
+        label="Horaire"
+        suggestedTimeList={suggestedTimeList}
+      />
     </Formik>
   )
 }
