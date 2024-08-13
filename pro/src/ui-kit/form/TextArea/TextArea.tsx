@@ -1,11 +1,6 @@
 import cn from 'classnames'
-import {
-  FieldHelperProps,
-  FieldInputProps,
-  FieldMetaProps,
-  useField,
-} from 'formik'
-import Textarea from 'react-autosize-textarea'
+import { useField } from 'formik'
+import { useEffect, useRef } from 'react'
 
 import {
   FieldLayout,
@@ -35,16 +30,24 @@ export const TextArea = ({
   rows = 7,
   ...props
 }: TextAreaProps): JSX.Element => {
-  //  Temporary type fix while react-autosoze-textarea types are not in sync with the latest React types
-  //  see https://github.com/DefinitelyTyped/DefinitelyTyped/pull/68984
-  const [field, meta] = useField({ name }) as [
-    FieldInputProps<string | undefined> & {
-      onPointerEnterCapture: any
-      onPointerLeaveCapture: any
-    },
-    FieldMetaProps<string>,
-    FieldHelperProps<string>,
-  ]
+  const [field, meta] = useField({ name })
+  const textAreaRef = useRef<HTMLTextAreaElement>(null)
+
+  function updateTextAreaHeight() {
+    if (textAreaRef.current) {
+      //  Reset the textArea height to its initial value based on the 'rows' props before reading the scrollHeight
+      //  so that the input is able to shrink back to its smallest height
+      textAreaRef.current.style.height = `unset`
+
+      const scrollHeight = textAreaRef.current.scrollHeight
+      textAreaRef.current.style.height = `${scrollHeight}px`
+    }
+  }
+
+  useEffect(() => {
+    //  After the first render, set the textarea height to avoid having to scroll within the input with the current field value
+    updateTextAreaHeight()
+  }, [])
 
   return (
     <FieldLayout
@@ -59,7 +62,7 @@ export const TextArea = ({
       smallLabel={smallLabel}
       description={description}
     >
-      <Textarea
+      <textarea
         aria-invalid={meta.touched && !!meta.error}
         {...(description ? { 'aria-describedby': `description-${name}` } : {})}
         className={cn(styles['text-area'], {
@@ -71,8 +74,13 @@ export const TextArea = ({
         maxLength={maxLength}
         placeholder={placeholder}
         aria-required={!isOptional}
+        ref={textAreaRef}
         {...field}
-        {...(props.onChange ? { onChange: props.onChange } : {})}
+        onChange={(event) => {
+          updateTextAreaHeight()
+          field.onChange(event)
+          props.onChange?.(event)
+        }}
       />
     </FieldLayout>
   )
