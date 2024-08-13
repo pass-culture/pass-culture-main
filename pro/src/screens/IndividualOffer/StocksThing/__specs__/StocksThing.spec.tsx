@@ -287,6 +287,27 @@ describe('screens:StocksThing', () => {
     ).toBeInTheDocument()
   })
 
+  it('should display error for virtual offer without url', async () => {
+    vi.spyOn(api, 'upsertStocks').mockRejectedValue({
+      message: 'oups',
+      name: 'ApiError',
+      body: { url: 'broken virtual offer !' },
+    })
+
+    await renderStockThingScreen([], props, contextValue)
+
+    await userEvent.type(screen.getByLabelText('Prix *'), '20')
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Enregistrer et continuer' })
+    )
+
+    expect(
+      screen.getByText(
+        'Vous n’avez pas renseigné l’URL d’accès à l’offre dans la page Informations pratiques.'
+      )
+    ).toBeInTheDocument()
+  })
+
   describe('activation codes', () => {
     it('should submit activation codes and freeze quantity when a csv is provided', async () => {
       vi.spyOn(api, 'upsertStocks').mockResolvedValue({

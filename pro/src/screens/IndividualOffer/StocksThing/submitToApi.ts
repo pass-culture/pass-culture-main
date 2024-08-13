@@ -37,6 +37,11 @@ export const submitToApi = async (
       if (serializedApiErrors.priceLimitationRule) {
         setErrors({ price: 'Non valide' })
       }
+      if (serializedApiErrors.url) {
+        throw new Error(
+          'Vous n’avez pas renseigné l’URL d’accès à l’offre dans la page Informations pratiques.'
+        )
+      }
     }
     throw new Error(getHumanReadableApiError(error))
   }

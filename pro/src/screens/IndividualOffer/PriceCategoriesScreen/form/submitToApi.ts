@@ -1,4 +1,5 @@
 import { api } from 'apiClient/api'
+import { isErrorAPIError, serializeApiErrors } from 'apiClient/helpers'
 import { GetIndividualOfferResponseModel } from 'apiClient/v1'
 
 import { computeInitialValues } from './computeInitialValues'
@@ -20,7 +21,16 @@ export const submitToApi = async (
 
   try {
     await api.postPriceCategories(offer.id, serializePriceCategories(values))
-  } catch {
+  } catch (error) {
+    if (isErrorAPIError(error)) {
+      const serializedApiErrors = serializeApiErrors(error.body)
+
+      if (serializedApiErrors.url) {
+        throw new Error(
+          'Vous n’avez pas renseigné l’URL d’accès à l’offre dans la page Informations pratiques.'
+        )
+      }
+    }
     throw new Error(
       'Une erreur est survenue lors de la mise à jour de votre tarif'
     )
