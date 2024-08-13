@@ -12,7 +12,6 @@ import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import WithdrawalTypeEnum
 import pcapi.core.users.factories as users_factories
-from pcapi.repository import repository
 from pcapi.utils.human_ids import humanize
 
 
@@ -25,36 +24,28 @@ class Returns403Test:
     num_queries = 4
 
     def test_access_by_beneficiary(self, client):
-        # Given
         beneficiary = users_factories.BeneficiaryGrant18Factory()
         offer = offers_factories.ThingOfferFactory(
             venue__latitude=None, venue__longitude=None, venue__offererAddress=None
         )
 
-        # When
         auth_client = client.with_session_auth(email=beneficiary.email)
         offer_id = offer.id
         with testing.assert_num_queries(self.num_queries):
             response = auth_client.get(f"/offers/{offer_id}")
-
-        # Then
-        assert response.status_code == 403
+            assert response.status_code == 403
 
     def test_access_by_unauthorized_pro_user(self, client):
-        # Given
         pro_user = users_factories.ProFactory()
         offer = offers_factories.ThingOfferFactory(
             venue__latitude=None, venue__longitude=None, venue__offererAddress=None
         )
 
-        # When
         auth_client = client.with_session_auth(email=pro_user.email)
         offer_id = offer.id
         with testing.assert_num_queries(self.num_queries):
             response = auth_client.get(f"/offers/{offer_id}")
-
-        # Then
-        assert response.status_code == 403
+            assert response.status_code == 403
 
 
 @pytest.mark.usefixtures("db_session")
@@ -67,7 +58,6 @@ class Returns200Test:
     num_queries = 5
 
     def test_access_by_pro_user(self, client):
-        # Given
         user_offerer = offerers_factories.UserOffererFactory()
         offerer_address = offerers_factories.OffererAddressFactory(offerer=user_offerer.offerer)
         offer = offers_factories.ThingOfferFactory(
@@ -77,14 +67,13 @@ class Returns200Test:
             venue__managingOfferer=user_offerer.offerer,
         )
 
-        # When
         auth_client = client.with_session_auth(email=user_offerer.user.email)
         offer_id = offer.id
         with testing.assert_num_queries(self.num_queries):
             response = auth_client.get(f"/offers/{offer_id}")
-        # Then
+            assert response.status_code == 200
+
         response_json = response.json
-        assert response.status_code == 200
         assert "iban" not in response_json["venue"]
         assert "bic" not in response_json["venue"]
         assert "iban" not in response_json["venue"]["managingOfferer"]
@@ -94,12 +83,10 @@ class Returns200Test:
         assert response_json["id"] == offer.id
 
     def test_performance(self, client):
-        # Given
         user_offerer = offerers_factories.UserOffererFactory()
         offer = offers_factories.ThingOfferFactory(venue__managingOfferer=user_offerer.offerer)
         offers_factories.EventStockFactory.create_batch(5, offer=offer)
 
-        # When
         client.with_session_auth(email=user_offerer.user.email)
 
         offer_id = offer.id
@@ -108,42 +95,34 @@ class Returns200Test:
                 client.get(f"/offers/{offer_id}")
 
     def test_access_even_if_offerer_has_no_siren(self, client):
-        # Given
         user_offerer = offerers_factories.UserOffererFactory()
         offer = offers_factories.ThingOfferFactory(
             venue__managingOfferer=user_offerer.offerer,
             venue__managingOfferer__siren=None,
         )
 
-        # When
         auth_client = client.with_session_auth(email=user_offerer.user.email)
         offer_id = offer.id
         with testing.assert_num_queries(self.num_queries):
             response = auth_client.get(f"/offers/{offer_id}")
-
-        # Then
-        assert response.status_code == 200
+            assert response.status_code == 200
 
     def test_returns_an_active_mediation(self, client):
-        # Given
         user_offerer = offerers_factories.UserOffererFactory()
         offer = offers_factories.ThingOfferFactory(venue__managingOfferer=user_offerer.offerer)
 
         mediation = offers_factories.MediationFactory(offer=offer)
 
-        # When
         auth_client = client.with_session_auth(email=user_offerer.user.email)
         offer_id = offer.id
         with testing.assert_num_queries(self.num_queries):
             response = auth_client.get(f"/offers/{offer_id}")
+            assert response.status_code == 200
 
-        # Then
-        assert response.status_code == 200
         assert f"/thumbs/mediations/{humanize(mediation.id)}" in response.json["activeMediation"]["thumbUrl"]
 
     @time_machine.travel("2020-10-15 00:00:00")
     def test_returns_an_event_stock(self, client):
-        # Given
         now = datetime.utcnow()
         user_offerer = offerers_factories.UserOffererFactory(
             offerer__dateCreated=now,
@@ -184,14 +163,12 @@ class Returns200Test:
         offerer = venue.managingOfferer
         finance_factories.BankInformationFactory(venue=venue)
 
-        # When
         auth_client = client.with_session_auth(email=user_offerer.user.email)
         offer_id = offer.id
         with testing.assert_num_queries(self.num_queries):
             response = auth_client.get(f"/offers/{offer_id}")
+            assert response.status_code == 200
 
-        # Then
-        assert response.status_code == 200
         assert response.json == {
             "activeMediation": None,
             "bookingContact": None,
@@ -266,24 +243,22 @@ class Returns200Test:
 
     @time_machine.travel("2019-10-15 00:00:00")
     def test_returns_a_thing_stock(self, client):
-        # Given
         user_offerer = offerers_factories.UserOffererFactory()
-        stock = offers_factories.ThingStockFactory(offer__venue__managingOfferer=user_offerer.offerer)
-        offer = stock.offer
-        offer.subcategoryId = subcategories.LIVRE_PAPIER.id
-        repository.save(offer)
+        stock = offers_factories.ThingStockFactory(
+            offer__venue__managingOfferer=user_offerer.offerer, offer__subcategoryId=subcategories.LIVRE_PAPIER.id
+        )
+        offer_id = stock.offer.id
 
-        # When
-        response = client.with_session_auth(email=user_offerer.user.email).get(f"/offers/{offer.id}")
+        client = client.with_session_auth(email=user_offerer.user.email)
+        with testing.assert_num_queries(self.num_queries):
+            response = client.get(f"/offers/{offer_id}")
+            assert response.status_code == 200
 
-        # Then
-        assert response.status_code == 200
         data = response.json
         assert data["subcategoryId"] == "LIVRE_PAPIER"
 
     @time_machine.travel("2019-10-15 00:00:00")
     def test_returns_a_thing_with_activation_code_stock(self, client):
-        # Given
         user_offerer = offerers_factories.UserOffererFactory()
         offer = offers_factories.OfferFactory(
             stocks=[offers_factories.StockWithActivationCodesFactory()],
@@ -292,55 +267,47 @@ class Returns200Test:
             venue__managingOfferer=user_offerer.offerer,
         )
 
-        # When
         auth_client = client.with_session_auth(email=user_offerer.user.email)
         offer_id = offer.id
         with testing.assert_num_queries(self.num_queries):
             response = auth_client.get(f"/offers/{offer_id}")
+            assert response.status_code == 200
 
-        # Then
-        assert response.status_code == 200
         data = response.json
         assert data["subcategoryId"] == "ABO_PLATEFORME_MUSIQUE"
         assert data["hasStocks"] == True
 
     @time_machine.travel("2020-10-15 00:00:00")
     def test_should_not_return_soft_deleted_stock(self, client):
-        # Given
         user_offerer = offerers_factories.UserOffererFactory()
         offer = offers_factories.EventOfferFactory(venue__managingOfferer=user_offerer.offerer)
         deleted_stock = offers_factories.EventStockFactory(offer=offer, isSoftDeleted=True)
 
-        # When
         auth_client = client.with_session_auth(email=user_offerer.user.email)
         offer_id = deleted_stock.offer.id
         with testing.assert_num_queries(self.num_queries):
             response = auth_client.get(f"/offers/{offer_id}")
+            assert response.status_code == 200
 
-        # Then
-        assert response.status_code == 200
         assert response.json["hasStocks"] == False
 
     def test_returns_positive_booking_count(self, client):
-        # Given
         user_offerer = offerers_factories.UserOffererFactory()
         offer = offers_factories.EventOfferFactory(venue__managingOfferer=user_offerer.offerer)
         stock = offers_factories.EventStockFactory(offer=offer)
         bookings_factories.BookingFactory.create_batch(2, stock=stock)
 
-        # When
         auth_client = client.with_session_auth(email=user_offerer.user.email)
         offer_id = offer.id
         with testing.assert_num_queries(self.num_queries):
             response = auth_client.get(f"/offers/{offer_id}")
-        # Then
-        assert response.status_code == 200
+            assert response.status_code == 200
+
         assert response.json["bookingsCount"] == 2
         assert response.json["hasStocks"] == True
 
     def test_return_offer_offerer_address(self, client):
         """If offer has an offererAddress, it should be used"""
-        # Given
         user_offerer = offerers_factories.UserOffererFactory()
         venue_offerer_address = offerers_factories.OffererAddressFactory(offerer=user_offerer.offerer)
         offer_offerer_address = offerers_factories.OffererAddressFactory(offerer=user_offerer.offerer)
@@ -351,14 +318,12 @@ class Returns200Test:
         )
         assert offer.venue.offererAddress != offer.offererAddress
 
-        # When
         auth_client = client.with_session_auth(email=user_offerer.user.email)
         offer_id = offer.id
         with testing.assert_num_queries(self.num_queries):
             response = auth_client.get(f"/offers/{offer_id}")
+            assert response.status_code == 200
 
-        # Then
-        assert response.status_code == 200
         assert response.json["address"] == {
             "label": offer_offerer_address.label,
             "id": offer_offerer_address.address.id,
@@ -374,7 +339,6 @@ class Returns200Test:
 
     def test_do_not_fail_if_no_address_at_all(self, client):
         """If offer has no offererAddress nor its venue, it should be not fail"""
-        # Given
         user_offerer = offerers_factories.UserOffererFactory()
         offer = offers_factories.ThingOfferFactory(
             venue__managingOfferer=user_offerer.offerer,
@@ -382,18 +346,15 @@ class Returns200Test:
             offererAddress=None,
         )
 
-        # When
         auth_client = client.with_session_auth(email=user_offerer.user.email)
         offer_id = offer.id
         with testing.assert_num_queries(self.num_queries):
             response = auth_client.get(f"/offers/{offer_id}")
+            assert response.status_code == 200
 
-        # Then
-        assert response.status_code == 200
         assert not response.json["address"]
 
     def test_return_venue_offerer_address(self, client):
-        # Given
         user_offerer = offerers_factories.UserOffererFactory()
         offerer_address = offerers_factories.OffererAddressFactory(offerer=user_offerer.offerer)
         offer = offers_factories.ThingOfferFactory(
@@ -403,14 +364,12 @@ class Returns200Test:
         )
         assert offer.offererAddress is None
 
-        # When
         auth_client = client.with_session_auth(email=user_offerer.user.email)
         offer_id = offer.id
         with testing.assert_num_queries(self.num_queries):
             response = auth_client.get(f"/offers/{offer_id}")
+            assert response.status_code == 200
 
-        # Then
-        assert response.status_code == 200
         assert response.json["address"] == {
             "label": offerer_address.label,
             "id": offerer_address.address.id,
@@ -426,7 +385,6 @@ class Returns200Test:
 
     @time_machine.travel("2020-10-15 00:00:00")
     def test_future_offer(self, client):
-        # Given
         now = datetime.utcnow()
         user_offerer = offerers_factories.UserOffererFactory(
             offerer__dateCreated=now,
@@ -460,30 +418,25 @@ class Returns200Test:
             publicationDate=publication_date,
         )
 
-        # When
         auth_client = client.with_session_auth(email=user_offerer.user.email)
         with testing.assert_num_queries(self.num_queries):
             response = auth_client.get(f"/offers/{offer_id}")
+            assert response.status_code == 200
 
-        # Then
-        assert response.status_code == 200
         assert response.json["publicationDate"] == publication_date.strftime("%Y-%m-%dT%H:%M:%SZ")
 
     @pytest.mark.parametrize("has_pending_bookings", [True, False])
     def test_pending_booking(self, client, has_pending_bookings):
-        # Given
         user_offerer = offerers_factories.UserOffererFactory()
         offer = offers_factories.EventOfferFactory(venue__managingOfferer=user_offerer.offerer)
         stock = offers_factories.EventStockFactory(offer=offer)
         if has_pending_bookings:
             bookings_factories.BookingFactory(stock=stock)
 
-        # When
         auth_client = client.with_session_auth(email=user_offerer.user.email)
         offer_id = offer.id
         with testing.assert_num_queries(self.num_queries):
             response = auth_client.get(f"/offers/{offer_id}")
-
-            # Then
             assert response.status_code == 200
-            assert response.json["hasPendingBookings"] == has_pending_bookings
+
+        assert response.json["hasPendingBookings"] == has_pending_bookings

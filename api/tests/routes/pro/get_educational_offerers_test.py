@@ -1,5 +1,6 @@
 import pytest
 
+from pcapi.core import testing
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.users.factories as users_factories
 
@@ -25,10 +26,13 @@ class GetEducationalOfferersTest:
         offerers_factories.UserOffererFactory(user=pro_user, offerer=not_validated_offerer)
 
         # when
-        response = client.with_session_auth(pro_user.email).get("/offerers/educational")
+        queries = testing.AUTHENTICATION_QUERIES
+        queries += 1  # select offerers
+        client = client.with_session_auth(pro_user.email)
+        with testing.assert_num_queries(queries):
+            response = client.get("/offerers/educational")
+            assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         assert response.json == {
             "educationalOfferers": [
                 {
@@ -84,7 +88,6 @@ class GetEducationalOfferersTest:
 
     @pytest.mark.usefixtures("db_session")
     def test_error_when_missing_offerer_id_query_param_for_admin_user(self, client):
-        # given
         admin_user = users_factories.AdminFactory()
         offerer_1 = offerers_factories.OffererFactory()
         offerer_2 = offerers_factories.OffererFactory()
@@ -92,11 +95,11 @@ class GetEducationalOfferersTest:
         offerers_factories.VenueFactory(managingOfferer=offerer_1)
         offerers_factories.VenueFactory(managingOfferer=offerer_2)
 
-        # when
-        response = client.with_session_auth(admin_user.email).get("/offerers/educational")
-
-        # then
-        assert response.status_code == 400
+        queries = testing.AUTHENTICATION_QUERIES
+        client = client.with_session_auth(admin_user.email)
+        with testing.assert_num_queries(queries):
+            response = client.get("/offerers/educational")
+            assert response.status_code == 400
 
     @pytest.mark.usefixtures("db_session")
     def test_response_serializer_for_admin(self, client):
@@ -109,7 +112,12 @@ class GetEducationalOfferersTest:
 
         # when
         api_url = f"/offerers/educational?offerer_id={offerer_2.id}"
-        response = client.with_session_auth(admin_user.email).get(api_url)
+
+        queries = testing.AUTHENTICATION_QUERIES
+        queries += 1  # select offerers
+        client = client.with_session_auth(admin_user.email)
+        with testing.assert_num_queries(queries):
+            response = client.get(api_url)
 
         # then
         assert response.status_code == 200
