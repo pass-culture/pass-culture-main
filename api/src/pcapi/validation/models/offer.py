@@ -22,8 +22,6 @@ def validate(offer: Offer, api_errors: ApiErrors) -> ApiErrors:
             api_errors.add_error("venue", 'Une offre physique ne peut être associée au lieu "Offre numérique"')
 
         if offer.subcategory.is_online_only:
-            api_errors.add_error(
-                "subcategory", f'Une offre de catégorie {offer.subcategory.id} doit contenir un champ "url"'
-            )
+            api_errors.add_error("url", f'Une offre de catégorie {offer.subcategory.id} doit contenir un champ "url"')
 
     return api_errors

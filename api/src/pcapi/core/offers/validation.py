@@ -386,23 +386,20 @@ def check_digital_offer_fields(offer: models.Offer) -> None:
             errors.add_error(
                 "venue", 'Une offre numérique doit obligatoirement être associée au lieu "Offre numérique"'
             )
-            raise errors
 
         if offer.subcategory.is_offline_only:
             errors.add_error(
                 "url", f"Une offre de sous-catégorie {offer.subcategory.pro_label} ne peut pas être numérique"
             )
-            raise errors
     else:
         if venue.isVirtual:
             errors.add_error("venue", 'Une offre physique ne peut être associée au lieu "Offre numérique"')
-            raise errors
 
         if offer.subcategory.is_online_only:
-            errors.add_error(
-                "subcategory", f'Une offre de catégorie {offer.subcategory.id} doit contenir un champ "url"'
-            )
-            raise errors
+            errors.add_error("url", f'Une offre de catégorie {offer.subcategory.id} doit contenir un champ "url"')
+
+    if errors.errors:
+        raise errors
 
 
 def check_activation_codes_expiration_datetime(
