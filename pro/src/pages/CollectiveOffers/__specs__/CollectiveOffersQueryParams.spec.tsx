@@ -1,4 +1,8 @@
-import { screen, waitForElementToBeRemoved } from '@testing-library/react'
+import {
+  screen,
+  waitForElementToBeRemoved,
+  within,
+} from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import * as router from 'react-router-dom'
 
@@ -6,7 +10,6 @@ import { api } from 'apiClient/api'
 import {
   CollectiveOfferResponseModel,
   CollectiveOffersStockResponseModel,
-  OfferStatus,
 } from 'apiClient/v1'
 import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from 'core/Offers/constants'
 import { SearchFiltersParams } from 'core/Offers/types'
@@ -179,24 +182,16 @@ describe('route CollectiveOffers', () => {
     })
 
     it('should have the status in the url value when user filters by status', async () => {
-      vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce([
-        collectiveOfferFactory(
-          {
-            id: 'KE',
-            availabilityMessage: 'Pas de stock',
-            status: OfferStatus.ACTIVE,
-            stocks,
-          },
-          // @ts-expect-error collectiveOfferFactory is not typed and null throws an error but is accepted by the function
-          null
-        ),
-      ])
+      vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce(offersRecap)
       await renderOffers()
 
-      const statusSelect = screen.getByRole('combobox', {
-        name: 'Statut Nouveau',
-      })
-      await userEvent.selectOptions(statusSelect, 'Réservée')
+      await userEvent.click(
+        screen.getByText('Statut', {
+          selector: 'span',
+        })
+      )
+      const list = screen.getByTestId('list')
+      await userEvent.click(within(list).getByText('Réservée'))
 
       await userEvent.click(screen.getByRole('button', { name: 'Rechercher' }))
 
@@ -208,31 +203,28 @@ describe('route CollectiveOffers', () => {
       )
     })
 
-    it('should have status value be removed when user ask for all status', async () => {
-      vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce([
-        collectiveOfferFactory(
-          {
-            id: 'KE',
-            availabilityMessage: 'Pas de stock',
-            status: OfferStatus.ACTIVE,
-            stocks,
-          },
-          // @ts-expect-error collectiveOfferFactory is not typed and null throws an error but is accepted by the function
-          null
-        ),
-      ])
+    it('should have the status in the url value when user filters by multiple statuses', async () => {
+      vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce(offersRecap)
       await renderOffers()
 
-      const statusSelect = screen.getByRole('combobox', {
-        name: 'Statut Nouveau',
-      })
-      await userEvent.selectOptions(statusSelect, 'Tous')
+      await userEvent.click(
+        screen.getByText('Statut', {
+          selector: 'span',
+        })
+      )
+      const list = screen.getByTestId('list')
+      await userEvent.click(within(list).getByText('Réservée'))
+      await userEvent.click(within(list).getByText('Validation en attente'))
+      await userEvent.click(within(list).getByText('Archivée'))
 
       await userEvent.click(screen.getByRole('button', { name: 'Rechercher' }))
 
-      expect(mockNavigate).toHaveBeenCalledWith('/offres/collectives', {
-        replace: true,
-      })
+      expect(mockNavigate).toHaveBeenCalledWith(
+        '/offres/collectives?statut=reservee&statut=en-attente&statut=archivee',
+        {
+          replace: true,
+        }
+      )
     })
 
     it('should have offerer filter when user filters by offerer', async () => {

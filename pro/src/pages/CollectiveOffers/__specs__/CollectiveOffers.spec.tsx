@@ -2,6 +2,7 @@ import {
   screen,
   waitFor,
   waitForElementToBeRemoved,
+  within,
 } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
@@ -74,12 +75,16 @@ describe('route CollectiveOffers', () => {
   describe('filters', () => {
     describe('status filters', () => {
       it('should filter offers given status filter when clicking on "Appliquer"', async () => {
+        vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce(offersRecap)
         await renderOffers()
 
-        const statusSelect = screen.getByRole('combobox', {
-          name: 'Statut Nouveau',
-        })
-        await userEvent.selectOptions(statusSelect, 'Expirée')
+        await userEvent.click(
+          screen.getByText('Statut', {
+            selector: 'span',
+          })
+        )
+        const list = screen.getByTestId('list')
+        await userEvent.click(within(list).getByText('Expirée'))
 
         await userEvent.click(
           screen.getByRole('button', { name: 'Rechercher' })
@@ -101,16 +106,53 @@ describe('route CollectiveOffers', () => {
         })
       })
 
+      it('should filter offers given multiple status filter when clicking on "Appliquer"', async () => {
+        vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce(offersRecap)
+        await renderOffers()
+
+        await userEvent.click(
+          screen.getByText('Statut', {
+            selector: 'span',
+          })
+        )
+        const list = screen.getByTestId('list')
+        await userEvent.click(within(list).getByText('Expirée'))
+        await userEvent.click(within(list).getByText('Préréservée'))
+        await userEvent.click(within(list).getByText('Réservée'))
+
+        await userEvent.click(
+          screen.getByRole('button', { name: 'Rechercher' })
+        )
+
+        await waitFor(() => {
+          expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
+            undefined,
+            undefined,
+            ['EXPIRED', 'PREBOOKED', 'BOOKED'],
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined
+          )
+        })
+      })
+
       it('should indicate that no offers match selected filters', async () => {
         vi.spyOn(api, 'getCollectiveOffers')
           .mockResolvedValueOnce(offersRecap)
           .mockResolvedValueOnce([])
         await renderOffers()
 
-        const statusSelect = screen.getByRole('combobox', {
-          name: 'Statut Nouveau',
-        })
-        await userEvent.selectOptions(statusSelect, 'Expirée')
+        await userEvent.click(
+          screen.getByText('Statut', {
+            selector: 'span',
+          })
+        )
+        const list = screen.getByTestId('list')
+        await userEvent.click(within(list).getByText('Expirée'))
 
         await userEvent.click(
           screen.getByRole('button', { name: 'Rechercher' })
