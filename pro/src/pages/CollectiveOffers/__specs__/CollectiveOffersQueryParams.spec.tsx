@@ -104,7 +104,9 @@ describe('route CollectiveOffers', () => {
 
       await userEvent.click(nextPageIcon)
 
-      expect(mockNavigate).toHaveBeenCalledWith('/offres/collectives?page=2')
+      expect(mockNavigate).toHaveBeenCalledWith('/offres/collectives?page=2', {
+        replace: true,
+      })
     })
 
     it('should have offer name value when name search value is not an empty string', async () => {
@@ -117,7 +119,10 @@ describe('route CollectiveOffers', () => {
       await userEvent.click(screen.getByText('Rechercher'))
 
       expect(mockNavigate).toHaveBeenCalledWith(
-        '/offres/collectives?nom-ou-isbn=AnyWord'
+        '/offres/collectives?nom-ou-isbn=AnyWord',
+        {
+          replace: true,
+        }
       )
     })
 
@@ -129,7 +134,9 @@ describe('route CollectiveOffers', () => {
       )
       await userEvent.click(screen.getByText('Rechercher'))
 
-      expect(mockNavigate).toHaveBeenCalledWith('/offres/collectives')
+      expect(mockNavigate).toHaveBeenCalledWith('/offres/collectives', {
+        replace: true,
+      })
     })
 
     it('should have venue value when user filters by venue', async () => {
@@ -143,7 +150,10 @@ describe('route CollectiveOffers', () => {
       await userEvent.click(screen.getByText('Rechercher'))
 
       expect(mockNavigate).toHaveBeenCalledWith(
-        `/offres/collectives?lieu=${proVenues[0].id}`
+        `/offres/collectives?lieu=${proVenues[0].id}`,
+        {
+          replace: true,
+        }
       )
     })
 
@@ -162,7 +172,10 @@ describe('route CollectiveOffers', () => {
       await userEvent.click(screen.getByText('Rechercher'))
 
       expect(mockNavigate).toHaveBeenCalledWith(
-        '/offres/collectives?format=Concert'
+        '/offres/collectives?format=Concert',
+        {
+          replace: true,
+        }
       )
     })
 
@@ -189,7 +202,10 @@ describe('route CollectiveOffers', () => {
       await userEvent.click(screen.getByRole('button', { name: 'Rechercher' }))
 
       expect(mockNavigate).toHaveBeenCalledWith(
-        '/offres/collectives?statut=reservee'
+        '/offres/collectives?statut=reservee',
+        {
+          replace: true,
+        }
       )
     })
 
@@ -215,7 +231,9 @@ describe('route CollectiveOffers', () => {
 
       await userEvent.click(screen.getByRole('button', { name: 'Rechercher' }))
 
-      expect(mockNavigate).toHaveBeenCalledWith('/offres/collectives')
+      expect(mockNavigate).toHaveBeenCalledWith('/offres/collectives', {
+        replace: true,
+      })
     })
 
     it('should have offerer filter when user filters by offerer', async () => {
@@ -241,7 +259,9 @@ describe('route CollectiveOffers', () => {
 
       await userEvent.click(screen.getByTestId('remove-offerer-filter'))
 
-      expect(mockNavigate).toHaveBeenCalledWith('/offres/collectives')
+      expect(mockNavigate).toHaveBeenCalledWith('/offres/collectives', {
+        replace: true,
+      })
     })
   })
 

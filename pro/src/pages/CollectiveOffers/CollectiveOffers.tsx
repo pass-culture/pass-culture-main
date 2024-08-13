@@ -67,7 +67,7 @@ export const CollectiveOffers = (): JSX.Element => {
   const redirectWithUrlFilters = (
     filters: SearchFiltersParams & { audience?: Audience }
   ) => {
-    navigate(computeCollectiveOffersUrl(filters))
+    navigate(computeCollectiveOffersUrl(filters), { replace: true })
   }
 
   const isFilterByVenueOrOfferer = hasSearchFilters(urlSearchFilters, [

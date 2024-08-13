@@ -43,7 +43,7 @@ export const ReimbursementsInvoices = (): JSX.Element => {
     searchParams.set('reimbursementPoint', reimbursementPoint)
     searchParams.set('periodStart', periodStart)
     searchParams.set('periodEnd', periodEnd)
-    setSearchParams(searchParams)
+    setSearchParams(searchParams, { replace: true })
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams, setSearchParams])

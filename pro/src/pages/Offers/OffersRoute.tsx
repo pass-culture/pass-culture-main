@@ -71,7 +71,7 @@ export const OffersRoute = (): JSX.Element => {
   const redirectWithUrlFilters = (
     filters: SearchFiltersParams & { audience?: Audience }
   ) => {
-    navigate(computeOffersUrl(filters))
+    navigate(computeOffersUrl(filters), { replace: true })
   }
 
   const { data } = useSWR(
