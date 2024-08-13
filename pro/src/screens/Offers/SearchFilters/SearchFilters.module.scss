@@ -63,11 +63,11 @@ $status-filter-margin-top: rem.torem(24px);
 
 .status-filter {
   width: fit-content;
-  margin-top: $status-filter-margin-top;
   margin-bottom: 0;
 }
 
 .status-filter-label {
+  margin-top: $status-filter-margin-top;
   display: flex;
   align-items: center;
   gap: rem.torem(8px);
