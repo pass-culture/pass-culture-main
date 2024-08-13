@@ -2821,15 +2821,15 @@
     magic-string "^0.30.0"
     ts-dedent "^2.0.0"
 
-"@storybook/codemod@8.2.8":
-  version "8.2.8"
-  resolved "https://registry.yarnpkg.com/@storybook/codemod/-/codemod-8.2.8.tgz#e1328f5478007496d411595135509d653d72893d"
-  integrity sha512-dqD4j6JTsS8BM2y1yHBIe5fHvsGM08qpJQXkE77aXJIm5UfUeuWC7rY0xAheX3fU5G98l3BJk0ySUGspQL5pNg==
+"@storybook/codemod@8.2.9":
+  version "8.2.9"
+  resolved "https://registry.yarnpkg.com/@storybook/codemod/-/codemod-8.2.9.tgz#f6c7f43a5aa326b64544ad6f10038edc32293827"
+  integrity sha512-3yRx1lFMm1FXWVv+CKDiYM4gOQPEfpcZAQrjfcumxSDUrB091pnU1PeI92Prj3vCdi4+0oPNuN4yDGNUYTMP/A==
   dependencies:
     "@babel/core" "^7.24.4"
     "@babel/preset-env" "^7.24.4"
     "@babel/types" "^7.24.0"
-    "@storybook/core" "8.2.8"
+    "@storybook/core" "8.2.9"
     "@storybook/csf" "0.1.11"
     "@types/cross-spawn" "^6.0.2"
     cross-spawn "^7.0.3"
@@ -2845,10 +2845,10 @@
   resolved "https://registry.yarnpkg.com/@storybook/components/-/components-8.2.8.tgz#f839edc0bc1b8ed81f22ee57f3cf283a2554e5af"
   integrity sha512-d4fI7Clogx4rgLAM7vZVr9L2EFtAkGXvpkZFuB0H0eyYaxZSbuZYvDCzRglQGQGsqD8IA8URTgPVSXC3L3k6Bg==
 
-"@storybook/core@8.2.8":
-  version "8.2.8"
-  resolved "https://registry.yarnpkg.com/@storybook/core/-/core-8.2.8.tgz#9672a82d6998eb5a3c20262427bf0f974acae675"
-  integrity sha512-Wwm/Txh87hbxqU9OaxXwdGAmdRBjDn7rlZEPjNBx0tt43SQ11fKambY7nVWrWuw46YsJpdF9V/PQr4noNEXXEA==
+"@storybook/core@8.2.9":
+  version "8.2.9"
+  resolved "https://registry.yarnpkg.com/@storybook/core/-/core-8.2.9.tgz#68f8659014e06f4f65f6dbdf1dd10850f31d23b3"
+  integrity sha512-wSER8FpA6Il/jPyDfKm3yohxDtuhisNPTonMVzd3ulNWR4zERLddyO3HrHJJwdqYHLNk4SBFzwMGpQZVws1y0w==
   dependencies:
     "@storybook/csf" "0.1.11"
     "@types/express" "^4.17.21"
@@ -9359,15 +9359,15 @@ storybook-addon-react-router-v6@^2.0.15:
     compare-versions "^6.0.0"
     react-inspector "6.0.2"
 
-storybook@^8.2.8:
-  version "8.2.8"
-  resolved "https://registry.yarnpkg.com/storybook/-/storybook-8.2.8.tgz#174dc371ba6c3ee2caa4b57c1f6ebeade47f6c6b"
-  integrity sha512-sh4CNCXkieVgJ5GXrCOESS0BjRbQ9wG7BVnurQPl6izNnB9zR8rag+aUmjPZWBwbj55V1BFA5A/vEsCov21qjg==
+storybook@^8.2.9:
+  version "8.2.9"
+  resolved "https://registry.yarnpkg.com/storybook/-/storybook-8.2.9.tgz#35a670cb72367709b6ad3627dfb77c5e25a339f0"
+  integrity sha512-S7Q/Yt4A+nu1O23rg39lQvBqL2Vg+PKXbserDWUR4LFJtfmoZ2xGO8oFIhJmvvhjUBvolw1q7QDeswPq2i0sGw==
   dependencies:
     "@babel/core" "^7.24.4"
     "@babel/types" "^7.24.0"
-    "@storybook/codemod" "8.2.8"
-    "@storybook/core" "8.2.8"
+    "@storybook/codemod" "8.2.9"
+    "@storybook/core" "8.2.9"
     "@types/semver" "^7.3.4"
     "@yarnpkg/fslib" "2.10.3"
     "@yarnpkg/libzip" "2.3.0"
