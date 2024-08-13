@@ -19,7 +19,6 @@ from pcapi.core.users.models import User
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import ResourceNotFoundError
 from pcapi.models.offer_mixin import OfferValidationStatus
-from pcapi.repository import atomic
 from pcapi.routes.native.security import authenticated_and_active_user_required
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.workers import push_notification_job
@@ -34,7 +33,6 @@ from .serialization import subcategories_v2 as subcategories_v2_serializers
 @spectree_serialize(
     response_model=serializers.OfferResponse, api=blueprint.api, on_error_statuses=[404], deprecated=True
 )
-@atomic()
 def get_offer(offer_id: str) -> serializers.OfferResponse:
     offer: Offer = (
         Offer.query.options(
@@ -68,7 +66,6 @@ def get_offer(offer_id: str) -> serializers.OfferResponse:
 
 @blueprint.native_route("/offer/<int:offer_id>", version="v2", methods=["GET"])
 @spectree_serialize(response_model=serializers.OfferResponseV2, api=blueprint.api, on_error_statuses=[404])
-@atomic()
 def get_offer_v2(offer_id: int) -> serializers.OfferResponseV2:
     query = repository.get_offers_details([int(offer_id)])
     offer = query.first_or_404()

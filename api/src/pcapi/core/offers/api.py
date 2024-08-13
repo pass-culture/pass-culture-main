@@ -1400,14 +1400,13 @@ def get_shows_remaining_places_from_provider(provider_class: str | None, offer: 
     raise ValueError(f"Unknown Provider: {provider_class}")
 
 
-def update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer: models.Offer) -> models.Offer:
+def update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer: models.Offer) -> None:
     try:
         venue_provider = external_bookings_api.get_active_cinema_venue_provider(offer.venueId)
         validation.check_offer_is_from_current_cinema_provider(offer)
     except (exceptions.UnexpectedCinemaProvider, providers_exceptions.InactiveProvider):
         offer.isActive = False
-        db.session.add(offer)
-        db.session.flush()
+        repository.save(offer)
         search.async_index_offer_ids(
             [offer.id],
             reason=search.IndexationReason.CINEMA_STOCK_QUANTITY_UPDATE,
@@ -1478,8 +1477,7 @@ def update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer:
         # to prevent a duo booking to fail
         if remaining_places == 1:
             stock.quantity = stock.dnBookedQuantity + 1
-            db.session.add(stock)
-            db.session.flush()
+            repository.save(stock)
 
         logger.info(
             "Successfully updated stock quantity",
@@ -1496,8 +1494,6 @@ def update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer:
             reason=search.IndexationReason.CINEMA_STOCK_QUANTITY_UPDATE,
             log_extra={"sold_out": True},
         )
-
-    return
 
 
 def whitelist_product(idAtProviders: str) -> models.Product | None:
