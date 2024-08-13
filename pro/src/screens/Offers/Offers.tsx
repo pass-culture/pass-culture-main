@@ -172,9 +172,13 @@ export const Offers = ({
   }
 
   const resetFilters = () => {
-    setSelectedFilters(DEFAULT_SEARCH_FILTERS)
+    const defaultFilters = isCollective
+      ? DEFAULT_COLLECTIVE_SEARCH_FILTERS
+      : DEFAULT_SEARCH_FILTERS
+
+    setSelectedFilters(defaultFilters)
     applyUrlFiltersAndRedirect({
-      ...DEFAULT_SEARCH_FILTERS,
+      ...defaultFilters,
     })
   }
 

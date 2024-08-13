@@ -162,6 +162,14 @@ export const CollectiveSearchFilters = ({
     applyFilters(selectedFilters)
   }
 
+  const resetCollectiveFilters = async () => {
+    await formik.setFieldValue(
+      'status',
+      DEFAULT_COLLECTIVE_SEARCH_FILTERS.status
+    )
+    resetFilters()
+  }
+
   const searchByOfferNameLabel = 'Nom de l’offre'
   const searchByOfferNamePlaceholder = 'Rechercher par nom d’offre'
 
@@ -267,7 +275,7 @@ export const CollectiveSearchFilters = ({
           <Button
             icon={fullRefreshIcon}
             disabled={!hasSearchFilters(selectedFilters)}
-            onClick={resetFilters}
+            onClick={resetCollectiveFilters}
             variant={ButtonVariant.TERNARY}
           >
             Réinitialiser les filtres
