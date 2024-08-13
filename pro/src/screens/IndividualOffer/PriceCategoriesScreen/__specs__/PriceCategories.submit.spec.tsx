@@ -1,6 +1,5 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import React from 'react'
 import { generatePath, Route, Routes } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
@@ -189,6 +188,38 @@ describe('PriceCategories', () => {
     expect(
       await screen.findByText(
         'Une erreur est survenue lors de la mise à jour de votre tarif'
+      )
+    ).toBeInTheDocument()
+  })
+
+  it('should notify an error when submit fail because offer was virtual without url', async () => {
+    vi.spyOn(api, 'postPriceCategories').mockRejectedValue({
+      message: 'oups',
+      name: 'ApiError',
+      body: { url: 'broken virtual offer !' },
+    })
+
+    renderPriceCategories(
+      { offer: getIndividualOfferFactory({ hasStocks: false }) },
+      generatePath(
+        getIndividualOfferPath({
+          step: OFFER_WIZARD_STEP_IDS.TARIFS,
+          mode: OFFER_WIZARD_MODE.EDITION,
+        }),
+        { offerId: 'AA' }
+      )
+    )
+    await userEvent.type(
+      screen.getByLabelText('Intitulé du tarif *'),
+      'Mon tarif'
+    )
+    await userEvent.type(screen.getByLabelText('Prix par personne *'), '20')
+
+    await userEvent.click(screen.getByText('Enregistrer les modifications'))
+
+    expect(
+      await screen.findByText(
+        'Vous n’avez pas renseigné l’URL d’accès à l’offre dans la page Informations pratiques.'
       )
     ).toBeInTheDocument()
   })
