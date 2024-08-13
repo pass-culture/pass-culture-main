@@ -12,6 +12,7 @@ interface BaseFileInputProps {
   isDisabled?: boolean
   onChange: React.ChangeEventHandler<HTMLInputElement>
   children?: never
+  ariaDescribedBy?: string
 }
 
 export const BaseFileInput = ({
@@ -20,6 +21,7 @@ export const BaseFileInput = ({
   fileTypes,
   onChange,
   isDisabled = false,
+  ariaDescribedBy,
 }: BaseFileInputProps): JSX.Element => (
   <label
     className={cn(
@@ -32,6 +34,7 @@ export const BaseFileInput = ({
     <input
       accept={fileTypes.join()}
       aria-invalid={!isValid}
+      {...(ariaDescribedBy ? { 'aria-describedby': ariaDescribedBy } : {})}
       className={style['file-input']}
       onChange={onChange}
       type="file"

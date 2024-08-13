@@ -3,7 +3,6 @@ import React from 'react'
 import { ImageUploadBrowserForm } from 'components/ImageUploadBrowserForm/ImageUploadBrowserForm'
 import { ImageUploadBrowserFormValues } from 'components/ImageUploadBrowserForm/types'
 import { UploaderModeEnum } from 'components/ImageUploader/types'
-import { PreferredOrientation } from 'components/PreferredOrientation/PreferredOrientation'
 
 import style from './ModalImageUploadBrowser.module.scss'
 
@@ -18,12 +17,6 @@ export const ModalImageUploadBrowser = ({
   mode,
   idLabelledBy,
 }: ModalImageUploadBrowserProps) => {
-  const orientation = {
-    [UploaderModeEnum.OFFER]: 'portrait',
-    [UploaderModeEnum.OFFER_COLLECTIVE]: 'portrait',
-    [UploaderModeEnum.VENUE]: 'landscape',
-  }[mode]
-
   return (
     <section className={style['modal-upload-browser']}>
       <header>
@@ -31,11 +24,6 @@ export const ModalImageUploadBrowser = ({
           Ajouter une image
         </h1>
       </header>
-
-      <PreferredOrientation
-        orientation={orientation as 'portrait' | 'landscape'}
-      />
-
       <ImageUploadBrowserForm onSubmit={onImageClientUpload} mode={mode} />
     </section>
   )

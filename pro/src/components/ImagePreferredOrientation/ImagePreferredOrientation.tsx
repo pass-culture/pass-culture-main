@@ -1,24 +1,26 @@
 import React from 'react'
 
+import style from './ImagePreferredOrientation.module.scss'
 import landscapePreferredOrientation from './landscape-preferred-orientation.svg'
 import portraitPreferredOrientation from './portrait-preferred-orientation.svg'
-import style from './PreferredOrientation.module.scss'
 
-type PreferredOrientationProps = {
+type ImagePreferredOrientationProps = {
   orientation: 'portrait' | 'landscape'
   children?: never
+  id: string
 }
 
-export const PreferredOrientation = ({
+export const ImagePreferredOrientation = ({
   orientation,
-}: PreferredOrientationProps): JSX.Element => {
+  id,
+}: ImagePreferredOrientationProps): JSX.Element => {
   const imageSrc =
     orientation === 'portrait'
       ? portraitPreferredOrientation
       : landscapePreferredOrientation
 
   return (
-    <figure className={style['preferred-orientation']}>
+    <figure id={id} className={style['preferred-orientation']}>
       <div className={style['preferred-orientation-image-container']}>
         <img src={imageSrc} alt="" />
       </div>
