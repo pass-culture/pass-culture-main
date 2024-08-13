@@ -1,6 +1,7 @@
 import * as yup from 'yup'
 
 import { WithdrawalTypeEnum } from 'apiClient/v1'
+import { validationSchema as offerLocationSchema } from 'components/IndividualOfferForm/OfferLocation/validationSchema'
 
 // FIX ME: this regex is subject to backtracking which can lead to "catastrophic backtracking", high memory usage and slow performance
 // we cannot use the yup url validation because we need to allow {} in the url to interpolate some data
@@ -13,8 +14,15 @@ const offerFormUrlRegex = new RegExp(
 const isAnyTrue = (values: Record<string, boolean>): boolean =>
   Object.values(values).includes(true)
 
-export const getValidationSchema = (subcategories: string[]) => {
-  return yup.object().shape({
+type ValidationSchemaProps = {
+  subcategories: string[]
+  isOfferAddressEnabled?: boolean
+}
+export const getValidationSchema = ({
+  subcategories,
+  isOfferAddressEnabled = false,
+}: ValidationSchemaProps) => {
+  const validationSchema = {
     withdrawalType: yup.string().when([], {
       is: () => subcategories.includes('withdrawalType'),
       then: (schema) =>
@@ -83,5 +91,13 @@ export const getValidationSchema = (subcategories: string[]) => {
             'Veuillez renseigner un email valide, exemple : mail@exemple.com'
           ),
     }),
+    externalTicketOfficeUrl: yup
+      .string()
+      .url('Veuillez renseigner une URL valide. Ex : https://exemple.com'),
+  }
+
+  return yup.object().shape({
+    ...validationSchema,
+    ...(isOfferAddressEnabled ? offerLocationSchema : {}),
   })
 }

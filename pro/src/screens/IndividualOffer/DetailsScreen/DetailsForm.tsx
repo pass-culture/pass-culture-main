@@ -150,7 +150,7 @@ export const DetailsForm = ({
   return (
     <>
       <FormLayout.Section title="A propos de votre offre">
-        {splitFormEnabled && (
+        {splitFormEnabled && venueOptions.length > 1 && (
           <FormLayout.Row>
             <Select
               label={offerAddressEnabled ? 'Qui propose l’offre ?' : 'Lieu'}
@@ -198,7 +198,7 @@ export const DetailsForm = ({
             disabled={readOnlyFields.includes('description')}
           />
         </FormLayout.Row>
-        {!splitFormEnabled && (
+        {!splitFormEnabled && venueOptions.length > 1 && (
           <FormLayout.Row>
             <Select
               label={offerAddressEnabled ? 'Qui propose l’offre ?' : 'Lieu'}

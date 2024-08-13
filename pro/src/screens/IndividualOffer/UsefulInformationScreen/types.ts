@@ -13,4 +13,5 @@ export type UsefulInformationFormValues = {
   url: string
   isVenueVirtual?: boolean
   bookingContact?: string
+  offerlocation?: number | undefined
 }

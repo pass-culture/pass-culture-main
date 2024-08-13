@@ -1,5 +1,7 @@
 import { useFormikContext } from 'formik'
+import useSWR from 'swr'
 
+import { api } from 'apiClient/api'
 import {
   GetIndividualOfferResponseModel,
   WithdrawalTypeEnum,
@@ -7,9 +9,12 @@ import {
 import { OfferRefundWarning } from 'components/Banner/OfferRefundWarning'
 import { WithdrawalReminder } from 'components/Banner/WithdrawalReminder'
 import { FormLayout } from 'components/FormLayout/FormLayout'
+import { OfferLocation } from 'components/IndividualOfferForm/OfferLocation/OfferLocation'
+import { GET_VENUES_QUERY_KEY } from 'config/swrQueryKeys'
 import { useIndividualOfferContext } from 'context/IndividualOfferContext/IndividualOfferContext'
 import { REIMBURSEMENT_RULES } from 'core/Finances/constants'
 import { useAccessibilityOptions } from 'hooks/useAccessibilityOptions'
+import { useActiveFeature } from 'hooks/useActiveFeature'
 import { useCurrentUser } from 'hooks/useCurrentUser'
 import { Checkbox } from 'ui-kit/form/Checkbox/Checkbox'
 import { CheckboxGroup } from 'ui-kit/form/CheckboxGroup/CheckboxGroup'
@@ -18,6 +23,7 @@ import { Select } from 'ui-kit/form/Select/Select'
 import { TextArea } from 'ui-kit/form/TextArea/TextArea'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
+import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 import {
   DEFAULT_USEFULL_INFORMATION_INTITIAL_VALUES,
@@ -44,8 +50,17 @@ export const UsefulInformationForm = ({
     setFieldValue,
     handleChange,
   } = useFormikContext<UsefulInformationFormValues>()
+  const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
+  const accessibilityOptionsGroups = useAccessibilityOptions(setFieldValue)
 
   const { subCategories } = useIndividualOfferContext()
+
+  // For now, we make an other api call. But `offer.venue` will have all the data
+  const venuesQuery = useSWR(
+    [GET_VENUES_QUERY_KEY, offer.venue.managingOfferer.id],
+    ([, offererIdParam]) => api.getVenues(null, true, offererIdParam),
+    { fallbackData: { venues: [] } }
+  )
 
   const offerSubCategory = subCategories.find(
     (s) => s.id === offer.subcategoryId
@@ -83,8 +98,18 @@ export const UsefulInformationForm = ({
     }
   }
 
+  if (venuesQuery.isLoading) {
+    return <Spinner />
+  }
+  const selectedVenue = venuesQuery.data.venues.find(
+    (v) => v.id.toString() === offer.venue.id.toString()
+  )
+
   return (
     <>
+      {isOfferAddressEnabled && !isVenueVirtual && (
+        <OfferLocation venue={selectedVenue} />
+      )}
       <FormLayout.Section title="Retrait de l’offre">
         {displayNoRefundWarning && (
           <FormLayout.Row className={styles['info-banners']}>
@@ -239,7 +264,7 @@ export const UsefulInformationForm = ({
         <FormLayout.Row>
           <CheckboxGroup
             className={styles['accessibility-checkbox-group']}
-            group={useAccessibilityOptions(setFieldValue)}
+            group={accessibilityOptionsGroups}
             groupName="accessibility"
             disabled={readOnlyFields.includes('accessibility')}
             legend="Cette offre est accessible au public en situation de handicap :"
