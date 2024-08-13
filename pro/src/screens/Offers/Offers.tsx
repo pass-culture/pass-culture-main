@@ -227,7 +227,7 @@ export const Offers = ({
 
   const isNewInterfaceActive = useIsNewInterfaceActive()
   const title = isNewInterfaceActive
-    ? audience === Audience.COLLECTIVE
+    ? isCollective
       ? 'Offres collectives'
       : 'Offres individuelles'
     : 'Offres'
@@ -294,8 +294,8 @@ export const Offers = ({
         />
       )}
 
-      {audience === Audience.INDIVIDUAL ? (
-        <IndividualSearchFilters
+      {isCollective ? (
+        <CollectiveSearchFilters
           applyFilters={applyFilters}
           categories={categories}
           disableAllFilters={userHasNoOffers}
@@ -308,7 +308,7 @@ export const Offers = ({
           isRestrictedAsAdmin={isRestrictedAsAdmin}
         />
       ) : (
-        <CollectiveSearchFilters
+        <IndividualSearchFilters
           applyFilters={applyFilters}
           categories={categories}
           disableAllFilters={userHasNoOffers}
@@ -322,7 +322,7 @@ export const Offers = ({
         />
       )}
 
-      {Audience.COLLECTIVE === audience && (
+      {isCollective && (
         <Callout
           className={styles['banner']}
           variant={CalloutVariant.INFO}
