@@ -465,6 +465,7 @@ def get_event_stocks(event_id: int, query: serialization.GetDatesQueryParams) ->
 
 
 @blueprints.public_api.route("/public/offers/v1/events/<int:event_id>/dates/<int:stock_id>", methods=["DELETE"])
+@api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.EVENT_OFFER_STOCKS],
@@ -479,7 +480,6 @@ def get_event_stocks(event_id: int, query: serialization.GetDatesQueryParams) ->
         )
     ),
 )
-@api_key_required
 def delete_event_stock(event_id: int, stock_id: int) -> None:
     """
     Delete event stock
