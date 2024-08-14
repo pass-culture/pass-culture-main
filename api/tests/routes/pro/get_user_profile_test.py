@@ -4,6 +4,7 @@ from dateutil.relativedelta import relativedelta
 import flask
 import pytest
 
+from pcapi.core import testing
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.utils.date import format_into_utc_date
@@ -13,6 +14,9 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 class Returns200Test:
+    num_queries = testing.AUTHENTICATION_QUERIES
+    num_queries += 1
+
     def test_is_impersonated(self, client):
         user = users_factories.BaseUserFactory(
             isEmailValidated=True,
@@ -26,9 +30,10 @@ class Returns200Test:
         with client.client.session_transaction() as session:
             session["internal_admin_email"] = user.email
 
-        response = client.get(url)
+        with testing.assert_num_queries(self.num_queries):
+            response = client.get(url)
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         assert response.json["isImpersonated"]
 
     def when_user_is_logged_in_and_has_no_deposit(self, client):
@@ -45,11 +50,11 @@ class Returns200Test:
             isEmailValidated=True,
         )
 
-        # When
-        response = client.with_session_auth(email="toto@example.com").get("/users/current")
+        client = client.with_session_auth(email="toto@example.com")
+        with testing.assert_num_queries(self.num_queries):
+            response = client.get("/users/current")
+            assert response.status_code == 200
 
-        # Then
-        assert response.status_code == 200
         assert not any("password" in field.lower() for field in response.json)
         assert response.json == {
             "activity": None,
@@ -85,8 +90,6 @@ class Returns200Test:
 
 class Returns401Test:
     def when_user_is_not_logged_in(self, client):
-        # When
-        response = client.get("/users/current")
-
-        # Then
-        assert response.status_code == 401
+        with testing.assert_num_queries(0):
+            response = client.get("/users/current")
+            assert response.status_code == 401

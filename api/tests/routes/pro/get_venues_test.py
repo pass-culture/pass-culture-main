@@ -1,12 +1,11 @@
 import pytest
 
 from pcapi.connectors.acceslibre import ExpectedFieldsEnum as acceslibre_enum
+from pcapi.core import testing
 from pcapi.core.educational.factories import CollectiveOfferFactory
 from pcapi.core.educational.factories import CollectiveOfferTemplateFactory
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers.factories import OfferFactory
-from pcapi.core.testing import assert_no_duplicated_queries
-from pcapi.core.testing import assert_num_queries
 import pcapi.core.users.factories as users_factories
 
 
@@ -19,12 +18,14 @@ def test_response_serialization(client):
     venue_with_accessibility_provider = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
     offerers_factories.AccessibilityProviderFactory(venue=venue_with_accessibility_provider)
 
-    # when
     client = client.with_session_auth(user_offerer.user.email)
-    response = client.get("/venues")
 
-    # then
-    assert response.status_code == 200
+    num_queries = testing.AUTHENTICATION_QUERIES
+    num_queries += 1  # select venues
+    num_queries += 1  # select venue_ids with validated offers
+    with testing.assert_num_queries(num_queries):
+        response = client.get("/venues")
+        assert response.status_code == 200
 
     assert "venues" in response.json
     assert len(response.json["venues"]) == 2
@@ -131,12 +132,13 @@ def test_response_created_offer_serialization(client):
 
     offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
 
-    # when
     client = client.with_session_auth(user_offerer.user.email)
-    response = client.get("/venues")
-
-    # then
-    assert response.status_code == 200
+    num_queries = testing.AUTHENTICATION_QUERIES
+    num_queries += 1  # select venues
+    num_queries += 1  # select venue_ids with validated offers
+    with testing.assert_num_queries(num_queries):
+        response = client.get("/venues")
+        assert response.status_code == 200
 
     assert "venues" in response.json
     assert len(response.json["venues"]) == 4
@@ -156,13 +158,11 @@ def test_admin_call(client):
     offerers_factories.VenueFactory(managingOfferer=user_offerers[1].offerer)
     offerers_factories.VenueFactory(managingOfferer=user_offerers[2].offerer)
 
-    # when
     client = client.with_session_auth(admin_user.email)
-    with assert_no_duplicated_queries():
+    with testing.assert_num_queries(testing.AUTHENTICATION_QUERIES):
         response = client.get("/venues")
+        assert response.status_code == 200
 
-    # then
-    assert response.status_code == 200
     assert len(response.json["venues"]) == 0
 
 
@@ -175,17 +175,15 @@ def test_admin_call_with_offerer_id(client):
     offerers_factories.VenueFactory(managingOfferer=user_offerers[1].offerer)
     offerers_factories.VenueFactory(managingOfferer=user_offerers[2].offerer)
 
-    # when
     params = {"offererId": str(user_offerers[1].offerer.id)}
     client = client.with_session_auth(admin_user.email)
-    # 1 - SELECT user_session
-    # 1 - SELECT user
-    # 1 - SELECT venue + joined tables
-    # 1 - SELECT venue with offers
-    with assert_num_queries(4):
+
+    num_queries = testing.AUTHENTICATION_QUERIES
+    num_queries += 1  # select venues
+    num_queries += 1  # select venue_ids with validated offers
+    with testing.assert_num_queries(num_queries):
         response = client.get("/venues", params)
 
-    # then
     assert response.status_code == 200
     assert len(response.json["venues"]) == 1
     assert response.json["venues"][0]["id"] == user_offerers[1].offerer.managedVenues[0].id
@@ -199,12 +197,12 @@ def test_invalid_offerer_id(client):
 
     params = {"offererId": f"{offerer.id + 1}"}
 
-    # when
     client = client.with_session_auth(pro_user.email)
-    response = client.get("/venues", params)
-
-    # then
-    assert response.status_code == 200
+    num_queries = testing.AUTHENTICATION_QUERIES
+    num_queries += 1  # select venues
+    with testing.assert_num_queries(num_queries):
+        response = client.get("/venues", params)
+        assert response.status_code == 200
 
     assert "venues" in response.json
     assert len(response.json["venues"]) == 0
@@ -221,12 +219,12 @@ def test_full_valid_call(client):
         "activeOfferersOnly": "true",
     }
 
-    # when
     client = client.with_session_auth(pro_user.email)
-    response = client.get("/venues", params)
-
-    # then
-    assert response.status_code == 200
+    num_queries = testing.AUTHENTICATION_QUERIES
+    num_queries += 1  # select venues
+    with testing.assert_num_queries(num_queries):
+        response = client.get("/venues", params)
+        assert response.status_code == 200
 
 
 def test_full_valid_call_with_false(client):
@@ -240,12 +238,12 @@ def test_full_valid_call_with_false(client):
         "activeOfferersOnly": "false",
     }
 
-    # when
     client = client.with_session_auth(pro_user.email)
-    response = client.get("/venues", params)
-
-    # then
-    assert response.status_code == 200
+    num_queries = testing.AUTHENTICATION_QUERIES
+    num_queries += 1  # select venues
+    with testing.assert_num_queries(num_queries):
+        response = client.get("/venues", params)
+        assert response.status_code == 200
 
 
 def test_invalid_validated(client):
@@ -253,12 +251,10 @@ def test_invalid_validated(client):
 
     params = {"validated": "invalid"}
 
-    # when
     client = client.with_session_auth(pro_user.email)
-    response = client.get("/venues", params)
-
-    # then
-    assert response.status_code == 400
+    with testing.assert_num_queries(testing.AUTHENTICATION_QUERIES):
+        response = client.get("/venues", params)
+        assert response.status_code == 400
 
 
 def test_invalid_active_offerer_only(client):
@@ -266,9 +262,7 @@ def test_invalid_active_offerer_only(client):
 
     params = {"activeOfferersOnly": "invalid"}
 
-    # when
     client = client.with_session_auth(pro_user.email)
-    response = client.get("/venues", params)
-
-    # then
-    assert response.status_code == 400
+    with testing.assert_num_queries(testing.AUTHENTICATION_QUERIES):
+        response = client.get("/venues", params)
+        assert response.status_code == 400

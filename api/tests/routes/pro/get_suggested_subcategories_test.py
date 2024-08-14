@@ -12,9 +12,9 @@ import pcapi.core.users.factories as users_factories
 @pytest.mark.usefixtures("db_session")
 class Returns401Test:
     def test_access_by_no_one(self, client):
-        response = client.get("/offers/suggested-subcategories?offer_name=foo")
-
-        assert response.status_code == 401
+        with testing.assert_num_queries(0):
+            response = client.get("/offers/suggested-subcategories?offer_name=foo")
+            assert response.status_code == 401
 
 
 @pytest.mark.usefixtures("db_session")
