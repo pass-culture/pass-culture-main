@@ -18,11 +18,50 @@ from pcapi.utils import human_ids
 import tests
 from tests import conftest
 from tests.routes import image_data
+from tests.routes.public.helpers import PublicAPIVenueEndpointHelper
 
 from . import utils
 
 
-class PostProductTest:
+class PostProductTest(PublicAPIVenueEndpointHelper):
+    endpoint_url = "/public/offers/v1/products"
+
+    @staticmethod
+    def _get_base_payload(venue_id: int) -> dict:
+        return {
+            "location": {"type": "physical", "venueId": venue_id},
+            "categoryRelatedFields": {
+                "category": "SUPPORT_PHYSIQUE_FILM",
+                "ean": "1234567891234",
+            },
+            "accessibility": utils.ACCESSIBILITY_FIELDS,
+            "name": "Le champ des possibles",
+        }
+
+    @pytest.mark.usefixtures("db_session")
+    def test_should_raise_401_because_not_authenticated(self, client: conftest.TestClient):
+        response = client.post(self.endpoint_url, json={})
+        assert response.status_code == 401
+
+    @pytest.mark.usefixtures("db_session")
+    def test_should_raise_404_because_has_no_access_to_venue(self, client: conftest.TestClient):
+        plain_api_key, _ = self.setup_provider()
+        venue = self.setup_venue()
+        response = client.with_explicit_token(plain_api_key).post(
+            self.endpoint_url,
+            json=self._get_base_payload(venue.id),
+        )
+        assert response.status_code == 404
+
+    @pytest.mark.usefixtures("db_session")
+    def test_should_raise_404_because_venue_provider_is_inactive(self, client: conftest.TestClient):
+        plain_api_key, venue_provider = self.setup_inactive_venue_provider()
+        response = client.with_explicit_token(plain_api_key).post(
+            self.endpoint_url,
+            json=self._get_base_payload(venue_provider.venue.id),
+        )
+        assert response.status_code == 404
+
     @pytest.mark.usefixtures("db_session")
     @mock.patch("pcapi.tasks.sendinblue_tasks.update_sib_pro_attributes_task")
     def test_physical_product_minimal_body(self, update_sib_pro_task_mock, client):

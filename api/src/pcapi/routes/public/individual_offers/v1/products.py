@@ -277,6 +277,7 @@ def _create_stock(product: offers_models.Offer, body: serialization.ProductOffer
 
 
 @blueprints.public_api.route("/public/offers/v1/products", methods=["POST"])
+@api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.PRODUCT_OFFERS],
@@ -291,7 +292,6 @@ def _create_stock(product: offers_models.Offer, body: serialization.ProductOffer
         )
     ),
 )
-@api_key_required
 def post_product_offer(body: serialization.ProductOfferCreation) -> serialization.ProductOfferResponse:
     """
     Create product
