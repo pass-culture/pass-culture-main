@@ -113,6 +113,14 @@ def _fill_current_api_key() -> None:
         app_authorization_credentials = authorization_header.replace(mandatory_authorization_type, "")
         g.current_api_key = find_api_key(app_authorization_credentials)
 
+        if g.current_api_key is not None:
+            g.log_request_details_extra = {
+                "public_api": {
+                    "api_key": g.current_api_key.id,
+                    "provider_id": g.current_api_key.providerId,
+                }
+            }
+
 
 def _get_current_api_key() -> ApiKey | None:
     assert "current_api_key" in g, "Can only be used in a route wrapped with api_key_required"
