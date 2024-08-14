@@ -13,6 +13,7 @@ import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
 import { ImageUploaderOffer } from 'components/IndividualOfferForm/ImageUploaderOffer/ImageUploaderOffer'
 import { GET_MUSIC_TYPES_QUERY_KEY } from 'config/swrQueryKeys'
+import { useIndividualOfferContext } from 'context/IndividualOfferContext/IndividualOfferContext'
 import { showOptionsTree } from 'core/Offers/categoriesSubTypes'
 import { IndividualOfferImage } from 'core/Offers/types'
 import { useActiveFeature } from 'hooks/useActiveFeature'
@@ -66,6 +67,7 @@ export const DetailsForm = ({
     },
     handleChange,
   } = useFormikContext<DetailsFormValues>()
+  const { offer } = useIndividualOfferContext()
 
   const musicTypesQuery = useSWR(
     GET_MUSIC_TYPES_QUERY_KEY,
@@ -113,7 +115,7 @@ export const DetailsForm = ({
       : subcategoryConditionalFields.includes('musicType')
 
   async function getSuggestedSubcategories() {
-    if (!areSuggestedCategoriesEnabled) {
+    if (!areSuggestedCategoriesEnabled && !offer) {
       return
     }
     const response = await api.getSuggestedSubcategories(
@@ -192,7 +194,7 @@ export const DetailsForm = ({
           </FormLayout.Row>
         )}
       </FormLayout.Section>
-      {areSuggestedCategoriesEnabled ? (
+      {areSuggestedCategoriesEnabled && !offer ? (
         suggestedSubcategories.length > 0 && (
           <SuggestedSubcategories
             suggestedSubcategories={suggestedSubcategories}

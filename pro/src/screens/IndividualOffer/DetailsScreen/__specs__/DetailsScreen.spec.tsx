@@ -3,6 +3,11 @@ import { userEvent } from '@testing-library/user-event'
 
 import { api } from 'apiClient/api'
 import {
+  CategoryResponseModel,
+  SubcategoryIdEnum,
+  SubcategoryResponseModel,
+} from 'apiClient/v1'
+import {
   IndividualOfferContext,
   IndividualOfferContextValues,
 } from 'context/IndividualOfferContext/IndividualOfferContext'
@@ -51,17 +56,19 @@ const renderDetailsScreen = (
 describe('screens:IndividualOffer::Informations', () => {
   let props: DetailsScreenProps
   let contextValue: IndividualOfferContextValues
+  let categories: CategoryResponseModel[]
+  let subCategories: SubcategoryResponseModel[]
 
   beforeEach(() => {
     Element.prototype.scrollIntoView = scrollIntoViewMock
-    const categories = [
+    categories = [
       categoryFactory({
         id: 'A',
         proLabel: 'Catégorie A',
         isSelectable: true,
       }),
     ]
-    const subCategories = [
+    subCategories = [
       subcategoryFactory({
         id: 'virtual',
         categoryId: 'A',
@@ -277,5 +284,25 @@ describe('screens:IndividualOffer::Informations', () => {
     expect(screen.queryByText('Auteur')).not.toBeInTheDocument()
     expect(screen.queryByText(/EAN/)).not.toBeInTheDocument()
     expect(screen.getByLabelText(/Catégorie/)).toBeInTheDocument()
+  })
+
+  it('should not render suggested subcategories in edition', () => {
+    const context = individualOfferContextValuesFactory({
+      categories,
+      subCategories,
+      offer: getIndividualOfferFactory({
+        subcategoryId: 'physical' as SubcategoryIdEnum,
+      }),
+    })
+
+    renderDetailsScreen(props, context, {
+      features: ['WIP_SUGGESTED_SUBCATEGORIES'],
+    })
+
+    expect(
+      screen.queryByText(/Catégories suggérées pour votre offre/)
+    ).not.toBeInTheDocument()
+    expect(screen.getByText('Type d’offre')).toBeInTheDocument()
+    expect(screen.getByText('Sous catégorie offline de A')).toBeInTheDocument()
   })
 })
