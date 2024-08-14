@@ -10,8 +10,9 @@ import pcapi.core.users.factories as users_factories
 class Returns401Test:
     @pytest.mark.usefixtures("db_session")
     def test_when_user_not_logged_in(self, client: typing.Any):
-        response = client.get("/venues-educational-statuses")
-        assert response.status_code == 401
+        with testing.assert_num_queries(0):
+            response = client.get("/venues-educational-statuses")
+            assert response.status_code == 401
 
 
 class Returns200Test:
@@ -28,8 +29,11 @@ class Returns200Test:
         offerers_factories.VenueEducationalStatusFactory(id=5, name="micro-entreprise, auto-entrepreneur")
 
         auth_client = client.with_session_auth(pro.email)
-        with testing.assert_no_duplicated_queries():
+        num_queries = testing.AUTHENTICATION_QUERIES
+        num_queries += 1  # select venue_educational_status
+        with testing.assert_num_queries(num_queries):
             response = auth_client.get("/venues-educational-statuses")
+            assert response.status_code == 200
 
         expected_serialized_offerer = {
             "statuses": [
@@ -39,8 +43,6 @@ class Returns200Test:
                 {"id": 5, "name": "micro-entreprise, auto-entrepreneur"},
             ]
         }
-
-        assert response.status_code == 200
 
         found_offerer = response.json
         found_offerer["statuses"] = sorted(found_offerer["statuses"], key=lambda o: o["id"])

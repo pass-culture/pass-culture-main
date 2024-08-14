@@ -5,6 +5,7 @@ import urllib.parse
 
 import pytest
 
+from pcapi.core import testing
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.educational import models as educational_models
 import pcapi.core.finance.factories as finance_factories
@@ -12,9 +13,6 @@ import pcapi.core.finance.models as finance_models
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
 from pcapi.core.offers import models as offers_models
-from pcapi.core.testing import AUTHENTICATION_QUERIES
-from pcapi.core.testing import assert_num_queries
-from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 from pcapi.routes.serialization.reimbursement_csv_serialize import ReimbursementDetails
 from pcapi.utils.date import utc_datetime_to_department_timezone
@@ -25,11 +23,14 @@ def test_without_reimbursement_period(client):
     user_offerer = offerers_factories.UserOffererFactory()
     pro = user_offerer.user
 
-    # When
-    response = client.with_session_auth(pro.email).get(f"/reimbursements/csv?offererId={user_offerer.offerer.id}")
+    offerer_id = user_offerer.offerer.id
+    client = client.with_session_auth(pro.email)
+    num_queries = testing.AUTHENTICATION_QUERIES
+    num_queries += 1  # check user_offerer exists
+    with testing.assert_num_queries(num_queries):
+        response = client.get(f"/reimbursements/csv?offererId={offerer_id}")
+        assert response.status_code == 400
 
-    # Then
-    assert response.status_code == 400
     assert response.json["reimbursementPeriodBeginningDate"] == [
         "Vous devez renseigner une date au format ISO (ex. 2021-12-24)"
     ]
@@ -43,37 +44,34 @@ def test_without_offerer_id(client):
     user_offerer = offerers_factories.UserOffererFactory()
     pro = user_offerer.user
 
-    # When
-    response = client.with_session_auth(pro.email).get(
-        "/reimbursements/csv?reimbursementPeriodBeginningDate=2021-01-01&reimbursementPeriodEndingDate=2021-01-15"
-    )
+    client = client.with_session_auth(pro.email)
+    with testing.assert_num_queries(testing.AUTHENTICATION_QUERIES):
+        response = client.get(
+            "/reimbursements/csv?reimbursementPeriodBeginningDate=2021-01-01&reimbursementPeriodEndingDate=2021-01-15"
+        )
+        assert response.status_code == 400
 
-    # Then
-    assert response.status_code == 400
     assert response.json["offererId"] == ["Ce champ est obligatoire"]
 
 
 @pytest.mark.usefixtures("db_session")
 def test_admin_cannot_access_reimbursements_data_without_bank_account_filter(client):
-    # Given
     period = datetime.date(2021, 1, 1), datetime.date(2021, 1, 15)
     admin = users_factories.AdminFactory()
 
-    # When
     client = client.with_session_auth(admin.email)
-    response = client.get(
-        "/reimbursements/csv?"
-        + urllib.parse.urlencode(
-            {
-                "reimbursementPeriodBeginningDate": period[0].isoformat(),
-                "reimbursementPeriodEndingDate": period[1].isoformat(),
-                "offererId": 1,
-            }
+    with testing.assert_num_queries(testing.AUTHENTICATION_QUERIES):
+        response = client.get(
+            "/reimbursements/csv?"
+            + urllib.parse.urlencode(
+                {
+                    "reimbursementPeriodBeginningDate": period[0].isoformat(),
+                    "reimbursementPeriodEndingDate": period[1].isoformat(),
+                    "offererId": 1,
+                }
+            )
         )
-    )
-
-    # Then
-    assert response.status_code == 400
+        assert response.status_code == 400
 
 
 @pytest.mark.usefixtures("db_session")
@@ -110,21 +108,19 @@ def test_with_venue_filter_with_pricings(client, cutoff, fortnight):
     pro = users_factories.ProFactory()
     offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
-    # When
     client = client.with_session_auth(pro.email)
     bank_account_id = bank_account_1.id  # avoid extra SQL query below
-    queries = AUTHENTICATION_QUERIES
+    queries = testing.AUTHENTICATION_QUERIES
     queries += 1  # check user has access to offerer
     queries += 1  # select booking and related items
     queries += 1  # select educational redactor
     queries += 1  # FF retrieving
-    with assert_num_queries(queries):
+    with testing.assert_num_queries(queries):
         response = client.get(
             f"/reimbursements/csv?reimbursementPeriodBeginningDate={beginning_date_iso_format}&reimbursementPeriodEndingDate={ending_date_iso_format}&bankAccountId={bank_account_id}&offererId={offerer.id}"
         )
         assert response.status_code == 200
 
-    # Then
     assert response.headers["Content-type"] == "text/csv; charset=utf-8;"
     assert response.headers["Content-Disposition"] == "attachment; filename=remboursements_pass_culture.csv"
     reader = csv.DictReader(StringIO(response.data.decode("utf-8-sig")), delimiter=";")
@@ -220,21 +216,19 @@ def test_with_reimbursement_period_filter_with_pricings(client, cutoff, fortnigh
         cashflows=[cashflow_2],
     )
 
-    # When
     client = client.with_session_auth(pro.email)
     bank_account_id = bank_account.id  # avoid extra SQL query below
-    queries = AUTHENTICATION_QUERIES
+    queries = testing.AUTHENTICATION_QUERIES
     queries += 1  # check user has access to offerer
     queries += 1  # select booking and related items
     queries += 1  # select educational redactor
     queries += 1  # FF retrieving
-    with assert_num_queries(queries):
+    with testing.assert_num_queries(queries):
         response = client.get(
             f"/reimbursements/csv?reimbursementPeriodBeginningDate={beginning_date_iso_format}&reimbursementPeriodEndingDate={ending_date_iso_format}&bankAccountId={bank_account_id}&offererId={offerer.id}"
         )
         assert response.status_code == 200
 
-    # Then
     assert response.headers["Content-type"] == "text/csv; charset=utf-8;"
     assert response.headers["Content-Disposition"] == "attachment; filename=remboursements_pass_culture.csv"
     reader = csv.DictReader(StringIO(response.data.decode("utf-8-sig")), delimiter=";")
@@ -315,21 +309,19 @@ def test_with_bank_account_filter_with_pricings_collective_use_case(client, cuto
     pro = users_factories.ProFactory()
     offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
-    # When
     client = client.with_session_auth(pro.email)
     bank_account_id = bank_account_1.id  # avoid extra SQL query below
-    queries = AUTHENTICATION_QUERIES
+    queries = testing.AUTHENTICATION_QUERIES
     queries += 1  # check user has access to offerer
     queries += 1  # select booking and related items
     queries += 1  # select educational redactor
     queries += 1  # FF retrieving
-    with assert_num_queries(queries):
+    with testing.assert_num_queries(queries):
         response = client.get(
             f"/reimbursements/csv?reimbursementPeriodBeginningDate={beginning_date_iso_format}&reimbursementPeriodEndingDate={ending_date_iso_format}&bankAccountId={bank_account_id}&offererId={offerer.id}"
         )
         assert response.status_code == 200
 
-    # Then
     assert response.headers["Content-type"] == "text/csv; charset=utf-8;"
     assert response.headers["Content-Disposition"] == "attachment; filename=remboursements_pass_culture.csv"
     reader = csv.DictReader(StringIO(response.data.decode("utf-8-sig")), delimiter=";")
@@ -435,15 +427,14 @@ def test_with_reimbursement_period_filter_with_pricings_collective_use_case(clie
         cashflows=[cashflow_2],
     )
 
-    # When
     client = client.with_session_auth(pro.email)
     bank_account_id = bank_account.id  # avoid extra SQL query below
-    queries = AUTHENTICATION_QUERIES
+    queries = testing.AUTHENTICATION_QUERIES
     queries += 1  # check user has access to offerer
     queries += 1  # select booking and related items
     queries += 1  # select educational redactor
     queries += 1  # FF retrieving
-    with assert_num_queries(queries):
+    with testing.assert_num_queries(queries):
         response = client.get(
             f"/reimbursements/csv?reimbursementPeriodBeginningDate={beginning_date_iso_format}&reimbursementPeriodEndingDate={ending_date_iso_format}&bankAccountId={bank_account_id}&offererId={offerer.id}"
         )
@@ -500,7 +491,7 @@ def test_with_reimbursement_period_filter_with_pricings_collective_use_case(clie
         assert row["Montant remboursé"] == "{:.2f}".format(-pricing.amount / 100).replace(".", ",")
 
 
-@override_features(WIP_ENABLE_OFFER_ADDRESS=True)
+@testing.override_features(WIP_ENABLE_OFFER_ADDRESS=True)
 @pytest.mark.usefixtures("db_session")
 @pytest.mark.parametrize(
     "offer_has_oa, venue_has_oa, len_addresses, expected_address",
@@ -553,15 +544,15 @@ def test_with_offer_address_and_venue_address(client, offer_has_oa, venue_has_oa
         )
     pro = users_factories.ProFactory()
     offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
-    # When
+
     client = client.with_session_auth(pro.email)
     bank_account_id = bank_account.id  # avoid extra SQL query below
-    queries = AUTHENTICATION_QUERIES
+    queries = testing.AUTHENTICATION_QUERIES
     queries += 1  # select offerer
     queries += 1  # check user has access to offerer
     queries += 1  # select booking and related items
     queries += 1  # select educational redactor
-    with assert_num_queries(queries):
+    with testing.assert_num_queries(queries):
         response = client.get(
             f"/reimbursements/csv?reimbursementPeriodBeginningDate={beginning_date_iso_format}&reimbursementPeriodEndingDate={ending_date_iso_format}&bankAccountId={bank_account_id}&offererId={offerer.id}"
         )

@@ -29,11 +29,13 @@ class Returns200Test:
         )
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
-
-        with assert_num_queries(testing.AUTHENTICATION_QUERIES + 1 + 1):  # retrieve Offerer  # retrieve Venues
+        num_queries = testing.AUTHENTICATION_QUERIES
+        num_queries += 1  # select offerer
+        num_queries += 1  # select venues
+        with assert_num_queries(num_queries):
             response = auth_request.get("/venues/siret/%s" % "12312312312332")
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         assert len(response.json["venues"]) == 2
         assert response.json["venues"][0]["name"] == first_venue.name
         assert response.json["venues"][0]["isPermanent"] == first_venue.isPermanent
@@ -64,11 +66,13 @@ class Returns200Test:
         )
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
-
-        with assert_num_queries(testing.AUTHENTICATION_QUERIES + 1 + 1):  # retrieve Offerer  # retrieve Venues
+        num_queries = testing.AUTHENTICATION_QUERIES
+        num_queries += 1  # select offerer
+        num_queries += 1  # select venues
+        with assert_num_queries(num_queries):
             response = auth_request.get("/venues/siret/%s" % "12312312312332")
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         assert len(response.json["venues"]) == 2
         assert response.json["venues"][0]["name"] == matching_venue.name
         assert response.json["venues"][1]["name"] == first_venue.name
@@ -79,11 +83,13 @@ class Returns200Test:
         user_offerer = offerers_factories.UserOffererFactory(user__email="user.pro@test.com", offerer=offerer)
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
-
-        with assert_num_queries(4):
+        num_queries = testing.AUTHENTICATION_QUERIES
+        num_queries += 1  # select offerer
+        num_queries += 1  # select venues
+        with assert_num_queries(num_queries):
             response = auth_request.get("/venues/siret/%s" % "12312312312332")
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         assert len(response.json["venues"]) == 0
         assert response.json["offererName"] == offerer.name
         assert response.json["offererSiren"] == offerer.siren
@@ -93,10 +99,12 @@ class Returns200Test:
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
 
-        with assert_num_queries(3):
+        num_queries = testing.AUTHENTICATION_QUERIES
+        num_queries += 1  # select offerer
+        with assert_num_queries(num_queries):
             response = auth_request.get("/venues/siret/%s" % "12312312312332")
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         assert len(response.json["venues"]) == 0
         assert response.json["offererName"] is None
         assert response.json["offererSiren"] is None
@@ -105,8 +113,8 @@ class Returns200Test:
 class Returns401Test:
     @pytest.mark.usefixtures("db_session")
     def test_user_not_logged(self, client):
-        response = client.get("/venues/siret/%s" % "12312312312312")
+        with testing.assert_num_queries(0):
+            response = client.get("/venues/siret/%s" % "12312312312312")
+            assert response.status_code == 401
 
-        # then
-        assert response.status_code == 401
         assert response.json["global"] == ["Authentification nécessaire"]

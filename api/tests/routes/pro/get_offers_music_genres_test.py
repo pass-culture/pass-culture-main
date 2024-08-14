@@ -1,15 +1,18 @@
 import pytest
 
+from pcapi.core import testing
 import pcapi.core.users.factories as users_factories
 
 
 @pytest.mark.usefixtures("db_session")
 def test_get_all_music_types(client):
-    # Given
+
     user = users_factories.UserFactory()
-    # When
-    response = client.with_session_auth(email=user.email).get("/offers/music-types")
-    assert response.status_code == 200
+    client = client.with_session_auth(email=user.email)
+    with testing.assert_num_queries(testing.AUTHENTICATION_QUERIES):
+        response = client.get("/offers/music-types")
+        assert response.status_code == 200
+
     assert response.json == [
         {"gtl_id": "01000000", "label": "Musique Classique", "canBeEvent": True},
         {"gtl_id": "02000000", "label": "Jazz / Blues", "canBeEvent": True},
@@ -35,6 +38,7 @@ def test_get_all_music_types(client):
 
 @pytest.mark.usefixtures("db_session")
 def test_get_all_music_types_unauthentified_user(client):
-    response = client.get("/offers/music-types")
-    assert response.status_code == 401
+    with testing.assert_num_queries(0):
+        response = client.get("/offers/music-types")
+        assert response.status_code == 401
     assert response.json == {"global": ["Authentification nécessaire"]}

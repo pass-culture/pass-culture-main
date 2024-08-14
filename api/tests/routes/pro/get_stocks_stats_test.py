@@ -4,6 +4,7 @@ from datetime import timedelta
 import pytest
 import time_machine
 
+from pcapi.core import testing
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
@@ -11,50 +12,57 @@ import pcapi.core.users.factories as users_factories
 
 @pytest.mark.usefixtures("db_session")
 class Returns403Test:
+    num_queries = testing.AUTHENTICATION_QUERIES
+    num_queries += 1  # select offer
+    num_queries += 1  # select venue
+    num_queries += 1  # check user has rights on venue
+
     def test_access_by_beneficiary(self, client):
-        # Given
         beneficiary = users_factories.BeneficiaryGrant18Factory()
         offer = offers_factories.ThingOfferFactory(
             venue__latitude=None, venue__longitude=None, venue__offererAddress=None
         )
 
-        # When
-        response = client.with_session_auth(email=beneficiary.email).get(f"/offers/{offer.id}/stocks-stats")
-
-        # Then
-        assert response.status_code == 403
+        client = client.with_session_auth(email=beneficiary.email)
+        offer_id = offer.id
+        with testing.assert_num_queries(self.num_queries):
+            response = client.get(f"/offers/{offer_id}/stocks-stats")
+            assert response.status_code == 403
 
     def test_access_by_unauthorized_pro_user(self, client):
-        # Given
         pro_user = users_factories.ProFactory()
         offer = offers_factories.ThingOfferFactory(
             venue__latitude=None, venue__longitude=None, venue__offererAddress=None
         )
 
-        # When
-        response = client.with_session_auth(email=pro_user.email).get(f"/offers/{offer.id}/stocks-stats")
-
-        # Then
-        assert response.status_code == 403
+        client = client.with_session_auth(email=pro_user.email)
+        offer_id = offer.id
+        with testing.assert_num_queries(self.num_queries):
+            response = client.get(f"/offers/{offer_id}/stocks-stats")
+            assert response.status_code == 403
 
 
 @pytest.mark.usefixtures("db_session")
 class Returns200Test:
+    num_queries = testing.AUTHENTICATION_QUERIES
+    num_queries += 1  # select offer
+    num_queries += 1  # select venue
+    num_queries += 1  # check user has rights on venue
+    num_queries += 1  # select stock stats (min and max begininngDatetime + count stocks)
+
     def test_basic(self, client):
-        # Given
         user_offerer = offerers_factories.UserOffererFactory()
         offer = offers_factories.ThingOfferFactory(venue__managingOfferer=user_offerer.offerer)
         offers_factories.StockFactory(offer=offer)
 
-        # When
-        response = client.with_session_auth(email=user_offerer.user.email).get(f"/offers/{offer.id}/stocks-stats")
-
-        # Then
-        assert response.status_code == 200
+        client = client.with_session_auth(email=user_offerer.user.email)
+        offer_id = offer.id
+        with testing.assert_num_queries(self.num_queries):
+            response = client.get(f"/offers/{offer_id}/stocks-stats")
+            assert response.status_code == 200
 
     @time_machine.travel("2020-10-15 00:00:00")
     def test_returns_stats(self, client):
-        # Given
         now = datetime.utcnow()
         user_offerer = offerers_factories.UserOffererFactory()
         offer = offers_factories.OfferFactory(venue__managingOfferer=user_offerer.offerer)
@@ -71,11 +79,12 @@ class Returns200Test:
             offer=offer,
         )
 
-        # When
-        response = client.with_session_auth(email=user_offerer.user.email).get(f"/offers/{offer.id}/stocks-stats")
+        client = client.with_session_auth(email=user_offerer.user.email)
+        offer_id = offer.id
+        with testing.assert_num_queries(self.num_queries):
+            response = client.get(f"/offers/{offer_id}/stocks-stats")
+            assert response.status_code == 200
 
-        # Then
-        assert response.status_code == 200
         assert response.json == {
             "stockCount": 2,
             "oldestStock": "2020-10-15T01:00:00Z",

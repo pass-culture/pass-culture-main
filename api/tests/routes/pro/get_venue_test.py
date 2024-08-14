@@ -219,10 +219,21 @@ class Returns200Test:
         db.session.expire_all()
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
-        with testing.assert_no_duplicated_queries():
+        num_queries = testing.AUTHENTICATION_QUERIES
+        num_queries += 1  # select venue and offerer
+        num_queries += 1  # select venue_reimbursement_link
+        num_queries += 1  # select venue_pricing_point_link
+        num_queries += 1  # check user has rignts on venue
+        num_queries += 1  # select google_places_info
+        num_queries += 1  # select accessibility_provider
+        num_queries += 1  # select opening_hours
+        num_queries += 1  # select venue
+        num_queries += 1  # select venue_bank_account_link
+        num_queries += 1  # select offer
+        with testing.assert_num_queries(num_queries):
             response = auth_request.get("/venues/%s" % venue_id)
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         assert response.json == expected_serialized_venue
 
     def when_user_has_rights_on_managing_offerer_with_no_adage_id(self, client):
@@ -238,10 +249,19 @@ class Returns200Test:
         db.session.expire_all()
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
-        with testing.assert_no_duplicated_queries():
+        num_queries = testing.AUTHENTICATION_QUERIES
+        num_queries += 1  # select venue and offerer
+        num_queries += 1  # select venue_reimbursement_link
+        num_queries += 1  # select venue_pricing_point_link
+        num_queries += 1  # check user has rignts on venue
+        num_queries += 1  # select google_places_info
+        num_queries += 1  # select accessibility_provider
+        num_queries += 1  # select opening_hours
+        num_queries += 1  # select offer
+        with testing.assert_num_queries(num_queries):
             response = auth_request.get("/venues/%s" % venue_id)
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         assert response.json["adageInscriptionDate"] is None
         assert response.json["hasAdageId"] is False
 
@@ -265,7 +285,18 @@ class Returns200Test:
         )
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
-        response = auth_request.get("/venues/%s" % venue.id)
+        venue_id = venue.id
+        num_queries = testing.AUTHENTICATION_QUERIES
+        num_queries += 1  # select venue and offerer
+        num_queries += 1  # select venue_reimbursement_link
+        num_queries += 1  # select venue_pricing_point_link
+        num_queries += 1  # check user has rignts on venue
+        num_queries += 1  # select accessibility_provider
+        num_queries += 1  # select opening_hours
+        num_queries += 1  # select offer
+        with testing.assert_num_queries(num_queries):
+            response = auth_request.get("/venues/%s" % venue_id)
+            assert response.status_code == 200
 
         assert response.json["bannerMeta"] == {
             "crop_params": {
@@ -286,7 +317,19 @@ class Returns200Test:
         )
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
-        response = auth_request.get("/venues/%s" % venue.id)
+        venue_id = venue.id
+        num_queries = testing.AUTHENTICATION_QUERIES
+        num_queries += 1  # select venue and offerer
+        num_queries += 1  # select venue_reimbursement_link
+        num_queries += 1  # select venue_pricing_point_link
+        num_queries += 1  # check user has rignts on venue
+        num_queries += 1  # select google_places_info
+        num_queries += 1  # select accessibility_provider
+        num_queries += 1  # select opening_hours
+        num_queries += 1  # select offer
+        with testing.assert_num_queries(num_queries):
+            response = auth_request.get("/venues/%s" % venue_id)
+            assert response.status_code == 200
 
         assert response.json["bannerMeta"] is None
 
@@ -300,7 +343,19 @@ class Returns200Test:
         )
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
-        response = auth_request.get("/venues/%s" % venue.id)
+        venue_id = venue.id
+        num_queries = testing.AUTHENTICATION_QUERIES
+        num_queries += 1  # select venue and offerer
+        num_queries += 1  # select venue_reimbursement_link
+        num_queries += 1  # select venue_pricing_point_link
+        num_queries += 1  # check user has rignts on venue
+        num_queries += 1  # select google_places_info
+        num_queries += 1  # select accessibility_provider
+        num_queries += 1  # select opening_hours
+        num_queries += 1  # select offer
+        with testing.assert_num_queries(num_queries):
+            response = auth_request.get("/venues/%s" % venue_id)
+            assert response.status_code == 200
 
         assert response.json["bannerMeta"]["crop_params"] == {
             "x_crop_percent": DO_NOT_CROP.x_crop_percent,
@@ -319,7 +374,18 @@ class Returns200Test:
         )
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
-        response = auth_request.get("/venues/%s" % venue.id)
+        num_queries = testing.AUTHENTICATION_QUERIES
+        num_queries += 1  # select venue and offerer
+        num_queries += 1  # select venue_reimbursement_link
+        num_queries += 1  # select venue_pricing_point_link
+        num_queries += 1  # check user has rignts on venue
+        num_queries += 1  # select accessibility_provider
+        num_queries += 1  # select opening_hours
+        num_queries += 1  # select offer
+        venue_id = venue.id
+        with testing.assert_num_queries(num_queries):
+            response = auth_request.get("/venues/%s" % venue_id)
+            assert response.status_code == 200
 
         assert response.json["bannerMeta"] == {
             "crop_params": {
@@ -351,7 +417,18 @@ class Returns200Test:
         )
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
-        response = auth_request.get("/venues/%s" % venue.id)
+        num_queries = testing.AUTHENTICATION_QUERIES
+        num_queries += 1  # select venue and offerer
+        num_queries += 1  # select venue_reimbursement_link
+        num_queries += 1  # select venue_pricing_point_link
+        num_queries += 1  # check user has rignts on venue
+        num_queries += 1  # select accessibility_provider
+        num_queries += 1  # select opening_hours
+        num_queries += 1  # select offer
+        venue_id = venue.id
+        with testing.assert_num_queries(num_queries):
+            response = auth_request.get("/venues/%s" % venue_id)
+            assert response.status_code == 200
 
         assert response.json["bannerMeta"] == {
             "crop_params": {
@@ -374,7 +451,18 @@ class Returns200Test:
         )
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
-        response = auth_request.get("/venues/%s" % venue.id)
+        num_queries = testing.AUTHENTICATION_QUERIES
+        num_queries += 1  # select venue and offerer
+        num_queries += 1  # select venue_reimbursement_link
+        num_queries += 1  # select venue_pricing_point_link
+        num_queries += 1  # check user has rignts on venue
+        num_queries += 1  # select accessibility_provider
+        num_queries += 1  # select opening_hours
+        num_queries += 1  # select offer
+        venue_id = venue.id
+        with testing.assert_num_queries(num_queries):
+            response = auth_request.get("/venues/%s" % venue_id)
+            assert response.status_code == 200
 
         assert response.json["bannerMeta"]["crop_params"] == {
             "x_crop_percent": 0.29,
@@ -401,7 +489,18 @@ class Returns200Test:
         )
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
-        response = auth_request.get("/venues/%s" % venue.id)
+        num_queries = testing.AUTHENTICATION_QUERIES
+        num_queries += 1  # select venue and offerer
+        num_queries += 1  # select venue_reimbursement_link
+        num_queries += 1  # select venue_pricing_point_link
+        num_queries += 1  # check user has rignts on venue
+        num_queries += 1  # select accessibility_provider
+        num_queries += 1  # select opening_hours
+        num_queries += 1  # select offer
+        venue_id = venue.id
+        with testing.assert_num_queries(num_queries):
+            response = auth_request.get("/venues/%s" % venue_id)
+            assert response.status_code == 200
 
         assert response.json["bannerMeta"]["crop_params"] == {
             "x_crop_percent": 0.29,
@@ -420,7 +519,18 @@ class Returns200Test:
         )
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
-        response = auth_request.get("/venues/%s" % venue.id)
+        num_queries = testing.AUTHENTICATION_QUERIES
+        num_queries += 1  # select venue and offerer
+        num_queries += 1  # select venue_reimbursement_link
+        num_queries += 1  # select venue_pricing_point_link
+        num_queries += 1  # check user has rignts on venue
+        num_queries += 1  # select accessibility_provider
+        num_queries += 1  # select opening_hours
+        num_queries += 1  # select offer
+        venue_id = venue.id
+        with testing.assert_num_queries(num_queries):
+            response = auth_request.get("/venues/%s" % venue_id)
+            assert response.status_code == 200
 
         assert response.json["bannerMeta"] == {
             "crop_params": {
@@ -438,8 +548,22 @@ class Returns200Test:
         venue = offerers_factories.VenueFactory(
             name="L'encre et la plume", managingOfferer=user_offerer.offerer, venueTypeCode=VenueTypeCode.LIBRARY
         )
+
         auth_request = client.with_session_auth(email=user_offerer.user.email)
-        response = auth_request.get("/venues/%s" % venue.id)
+        num_queries = testing.AUTHENTICATION_QUERIES
+        num_queries += 1  # select venue and offerer
+        num_queries += 1  # select venue_reimbursement_link
+        num_queries += 1  # select venue_pricing_point_link
+        num_queries += 1  # check user has rignts on venue
+        num_queries += 1  # select google_places_info
+        num_queries += 1  # select accessibility_provider
+        num_queries += 1  # select opening_hours
+        num_queries += 1  # select offer
+        venue_id = venue.id
+        with testing.assert_num_queries(num_queries):
+            response = auth_request.get("/venues/%s" % venue_id)
+            assert response.status_code == 200
+
         assert response.json["openingHours"]["THURSDAY"] == [
             {"open": "10:00", "close": "13:00"},
             {"open": "14:00", "close": "19:30"},
@@ -455,8 +579,22 @@ class Returns200Test:
             weekday=Weekday.SATURDAY,
             timespan=timespan_str_to_numrange([("14:00", "19:00"), ("10:00", "13:00")]),
         )
+
         auth_request = client.with_session_auth(email=user_offerer.user.email)
-        response = auth_request.get("/venues/%s" % venue.id)
+        num_queries = testing.AUTHENTICATION_QUERIES
+        num_queries += 1  # select venue and offerer
+        num_queries += 1  # select venue_reimbursement_link
+        num_queries += 1  # select venue_pricing_point_link
+        num_queries += 1  # check user has rignts on venue
+        num_queries += 1  # select google_places_info
+        num_queries += 1  # select accessibility_provider
+        num_queries += 1  # select opening_hours
+        num_queries += 1  # select offer
+        venue_id = venue.id
+        with testing.assert_num_queries(num_queries):
+            response = auth_request.get("/venues/%s" % venue_id)
+            assert response.status_code == 200
+
         assert response.json["openingHours"]["SATURDAY"] == [
             {"open": "10:00", "close": "13:00"},
             {"open": "14:00", "close": "19:00"},
@@ -469,8 +607,22 @@ class Returns200Test:
             managingOfferer=user_offerer.offerer,
             venueTypeCode=VenueTypeCode.FESTIVAL,
         )
+
         auth_request = client.with_session_auth(email=user_offerer.user.email)
-        response = auth_request.get("/venues/%s" % venue.id)
+        num_queries = testing.AUTHENTICATION_QUERIES
+        num_queries += 1  # select venue and offerer
+        num_queries += 1  # select venue_reimbursement_link
+        num_queries += 1  # select venue_pricing_point_link
+        num_queries += 1  # check user has rignts on venue
+        num_queries += 1  # select google_places_info
+        num_queries += 1  # select accessibility_provider
+        num_queries += 1  # select opening_hours
+        num_queries += 1  # select offer
+        venue_id = venue.id
+        with testing.assert_num_queries(num_queries):
+            response = auth_request.get("/venues/%s" % venue_id)
+            assert response.status_code == 200
+
         assert venue.accessibilityProvider == None
         assert response.json["externalAccessibilityData"] == None
 
@@ -484,8 +636,22 @@ class Returns200Test:
             externalAccessibilityId="lencre-et-la-plume",
             externalAccessibilityUrl="https://site-d-accessibilite.com/erps/lencre-et-la-plume",
         )
+
         auth_request = client.with_session_auth(email=user_offerer.user.email)
-        response = auth_request.get("/venues/%s" % venue.id)
+        num_queries = testing.AUTHENTICATION_QUERIES
+        num_queries += 1  # select venue and offerer
+        num_queries += 1  # select venue_reimbursement_link
+        num_queries += 1  # select venue_pricing_point_link
+        num_queries += 1  # check user has rignts on venue
+        num_queries += 1  # select google_places_info
+        num_queries += 1  # select accessibility_provider
+        num_queries += 1  # select opening_hours
+        num_queries += 1  # select offer
+        venue_id = venue.id
+        with testing.assert_num_queries(num_queries):
+            response = auth_request.get("/venues/%s" % venue_id)
+            assert response.status_code == 200
+
         assert response.json["externalAccessibilityId"] == "lencre-et-la-plume"
         assert response.json["externalAccessibilityUrl"] == "https://site-d-accessibilite.com/erps/lencre-et-la-plume"
 
@@ -497,8 +663,22 @@ class Returns200Test:
         accessibility_provider = offerers_factories.AccessibilityProviderFactory(
             venue=venue, externalAccessibilityData=None
         )
+
         auth_request = client.with_session_auth(email=user_offerer.user.email)
-        response = auth_request.get("/venues/%s" % venue.id)
+        num_queries = testing.AUTHENTICATION_QUERIES
+        num_queries += 1  # select venue and offerer
+        num_queries += 1  # select venue_reimbursement_link
+        num_queries += 1  # select venue_pricing_point_link
+        num_queries += 1  # check user has rignts on venue
+        num_queries += 1  # select google_places_info
+        num_queries += 1  # select accessibility_provider
+        num_queries += 1  # select opening_hours
+        num_queries += 1  # select offer
+        venue_id = venue.id
+        with testing.assert_num_queries(num_queries):
+            response = auth_request.get("/venues/%s" % venue_id)
+            assert response.status_code == 200
+
         assert venue.accessibilityProvider == accessibility_provider
         assert response.json["externalAccessibilityData"] == {
             "isAccessibleMotorDisability": False,
@@ -539,8 +719,22 @@ class Returns200Test:
             "transport_modality": [acceslibre_enum.PARKING_UNAVAILABLE],
         }
         offerers_factories.AccessibilityProviderFactory(venue=venue, externalAccessibilityData=venue_accessibility_data)
+
         auth_request = client.with_session_auth(email=user_offerer.user.email)
-        response = auth_request.get("/venues/%s" % venue.id)
+        num_queries = testing.AUTHENTICATION_QUERIES
+        num_queries += 1  # select venue and offerer
+        num_queries += 1  # select venue_reimbursement_link
+        num_queries += 1  # select venue_pricing_point_link
+        num_queries += 1  # check user has rignts on venue
+        num_queries += 1  # select google_places_info
+        num_queries += 1  # select accessibility_provider
+        num_queries += 1  # select opening_hours
+        num_queries += 1  # select offer
+        venue_id = venue.id
+        with testing.assert_num_queries(num_queries):
+            response = auth_request.get("/venues/%s" % venue_id)
+            assert response.status_code == 200
+
         assert venue.accessibilityProvider is not None
         assert response.json["externalAccessibilityData"] == {
             "isAccessibleMotorDisability": True,
@@ -574,24 +768,42 @@ class Returns200Test:
             venueTypeCode=VenueTypeCode.FESTIVAL,
         )
         offers_factories.OfferFactory(venue=venue)
+
         auth_request = client.with_session_auth(email=user_offerer.user.email)
-        response = auth_request.get("/venues/%s" % venue.id)
+        num_queries = testing.AUTHENTICATION_QUERIES
+        num_queries += 1  # select venue and offerer
+        num_queries += 1  # select venue_reimbursement_link
+        num_queries += 1  # select venue_pricing_point_link
+        num_queries += 1  # check user has rignts on venue
+        num_queries += 1  # select google_places_info
+        num_queries += 1  # select accessibility_provider
+        num_queries += 1  # select opening_hours
+        num_queries += 1  # select offer
+        venue_id = venue.id
+        with testing.assert_num_queries(num_queries):
+            response = auth_request.get("/venues/%s" % venue_id)
+            assert response.status_code == 200
+
         assert response.json["hasOffers"]
 
 
 class Returns403Test:
     @pytest.mark.usefixtures("db_session")
     def when_current_user_doesnt_have_rights(self, client):
-        # given
         pro = users_factories.ProFactory(email="user.pro@example.com")
         venue = offerers_factories.VenueFactory(name="L'encre et la plume")
 
-        # when
         auth_request = client.with_session_auth(email=pro.email)
-        response = auth_request.get("/venues/%s" % venue.id)
+        num_queries = testing.AUTHENTICATION_QUERIES
+        num_queries += 1  # select venue and offerer
+        num_queries += 1  # select venue_reimbursement_link
+        num_queries += 1  # select venue_pricing_point_link
+        num_queries += 1  # check user has rignts on venue
+        venue_id = venue.id
+        with testing.assert_num_queries(num_queries):
+            response = auth_request.get("/venues/%s" % venue_id)
+            assert response.status_code == 403
 
-        # then
-        assert response.status_code == 403
         assert response.json["global"] == [
             "Vous n'avez pas les droits d'accès suffisants pour accéder à cette information."
         ]

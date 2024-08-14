@@ -4,14 +4,13 @@ from io import StringIO
 
 import pytest
 
+from pcapi.core import testing
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.educational import models as educational_models
 import pcapi.core.finance.factories as finance_factories
 import pcapi.core.finance.models as finance_models
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers import models as offers_models
-from pcapi.core.testing import AUTHENTICATION_QUERIES
-from pcapi.core.testing import assert_num_queries
 import pcapi.core.users.factories as users_factories
 from pcapi.routes.serialization.reimbursement_csv_serialize import ReimbursementDetails
 from pcapi.utils.date import utc_datetime_to_department_timezone
@@ -24,11 +23,11 @@ def test_without_invoices_references(client):
     user_offerer = offerers_factories.UserOffererFactory()
     pro = user_offerer.user
 
-    # When
-    response = client.with_session_auth(pro.email).get("/v2/reimbursements/csv")
+    client = client.with_session_auth(pro.email)
+    with testing.assert_num_queries(testing.AUTHENTICATION_QUERIES):
+        response = client.get("/v2/reimbursements/csv")
+        assert response.status_code == 400
 
-    # Then
-    assert response.status_code == 400
     assert response.json["invoicesReferences"] == ["Ce champ est obligatoire"]
 
 
@@ -62,19 +61,17 @@ def test_with_pricings(client):
     pro = users_factories.ProFactory()
     offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
-    # When
     client = client.with_session_auth(pro.email)
-    queries = AUTHENTICATION_QUERIES
+    queries = testing.AUTHENTICATION_QUERIES
     queries += 1  # get offerers from invoices references
     queries += 1  # check user has acces to offerers
     queries += 1  # select booking and related items
     queries += 1  # select educational redactor
     queries += 1  # feature flag
-    with assert_num_queries(queries):
+    with testing.assert_num_queries(queries):
         response = client.get(f"/v2/reimbursements/csv?{invoices_references_str}")
         assert response.status_code == 200
 
-    # Then
     assert response.headers["Content-type"] == "text/csv; charset=utf-8;"
     assert response.headers["Content-Disposition"] == "attachment; filename=remboursements_pass_culture.csv"
     reader = csv.DictReader(StringIO(response.data.decode("utf-8-sig")), delimiter=";")
@@ -144,19 +141,17 @@ def test_with_pricings_collective_use_case(client):
     pro = users_factories.ProFactory()
     offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
-    # When
     client = client.with_session_auth(pro.email)
-    queries = AUTHENTICATION_QUERIES
+    queries = testing.AUTHENTICATION_QUERIES
     queries += 1  # get offerers from invoices references
     queries += 1  # check user has access to offerers
     queries += 1  # select booking and related items
     queries += 1  # select educational redactor
     queries += 1  # feature flag
-    with assert_num_queries(queries):
+    with testing.assert_num_queries(queries):
         response = client.get(f"/v2/reimbursements/csv?{invoices_references_str}")
         assert response.status_code == 200
 
-    # Then
     assert response.headers["Content-type"] == "text/csv; charset=utf-8;"
     assert response.headers["Content-Disposition"] == "attachment; filename=remboursements_pass_culture.csv"
     reader = csv.DictReader(StringIO(response.data.decode("utf-8-sig")), delimiter=";")
@@ -233,19 +228,17 @@ def test_return_only_searched_invoice(client):
     pro = users_factories.ProFactory()
     offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
-    # When
     client = client.with_session_auth(pro.email)
-    queries = AUTHENTICATION_QUERIES
+    queries = testing.AUTHENTICATION_QUERIES
     queries += 1  # get offerers from invoices references
     queries += 1  # check user has access to offerers
     queries += 1  # select booking and related items
     queries += 1  # select educational redactor
     queries += 1  # feature flag
-    with assert_num_queries(queries):
+    with testing.assert_num_queries(queries):
         response = client.get(f"/v2/reimbursements/csv?invoicesReferences={invoice_reference}")
         assert response.status_code == 200
 
-    # Then
     assert response.headers["Content-type"] == "text/csv; charset=utf-8;"
     assert response.headers["Content-Disposition"] == "attachment; filename=remboursements_pass_culture.csv"
     reader = csv.DictReader(StringIO(response.data.decode("utf-8-sig")), delimiter=";")

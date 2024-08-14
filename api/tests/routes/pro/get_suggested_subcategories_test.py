@@ -12,9 +12,9 @@ import pcapi.core.users.factories as users_factories
 @pytest.mark.usefixtures("db_session")
 class Returns401Test:
     def test_access_by_no_one(self, client):
-        response = client.get("/offers/suggested-subcategories?offer_name=foo")
-
-        assert response.status_code == 401
+        with testing.assert_num_queries(0):
+            response = client.get("/offers/suggested-subcategories?offer_name=foo")
+            assert response.status_code == 401
 
 
 @pytest.mark.usefixtures("db_session")
@@ -26,7 +26,6 @@ class Returns200Test:
     num_queries += 1  # offerer
 
     def test_suggest_subcategories(self, mock_get_id_token_from_google, requests_mock, client):
-        # Given
         pro = users_factories.ProFactory()
         venue = offerers_factories.VenueFactory()
         requests_mock.post(
@@ -34,14 +33,12 @@ class Returns200Test:
             json=fixtures.SUBCATEGORY_SUGGESTION_MUSEE_RESULT,
         )
 
-        # When
         client = client.with_session_auth(email=pro.email)
         venue_id = venue.id
         with testing.assert_num_queries(self.num_queries):
             response = client.get(
                 f"/offers/suggested-subcategories?offer_name=foo&offer_description=bar&venue_id={venue_id}"
             )
+            assert response.status_code == 200
 
-        # Then
-        assert response.status_code == 200
         assert response.json == {"subcategoryIds": ["VISITE_GUIDEE", "VISITE", "EVENEMENT_PATRIMOINE"]}
