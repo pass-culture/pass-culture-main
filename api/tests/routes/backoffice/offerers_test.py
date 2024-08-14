@@ -1126,6 +1126,33 @@ class GetOffererHistoryTest(GetEndpointHelper):
         assert rows[3]["Commentaire"] == ""
         assert rows[3]["Auteur"] == user_offerer.user.full_name
 
+    def test_get_offerer_rejected_action(self, authenticated_client, legit_user):
+        bo_user = users_factories.AdminFactory()
+        offerer = offerers_factories.RejectedOffererFactory(
+            rejectionReason=offerers_models.OffererRejectionReason.OUT_OF_TIME
+        )
+        history_factories.ActionHistoryFactory(
+            actionType=history_models.ActionType.OFFERER_REJECTED,
+            authorUser=bo_user,
+            offerer=offerer,
+            comment="Relancé 3 fois",
+            extraData={"rejection_reason": offerers_models.OffererRejectionReason.OUT_OF_TIME.name},
+        )
+
+        url = url_for(self.endpoint, offerer_id=offerer.id)
+
+        db.session.expire(offerer)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["Type"] == "Structure rejetée"
+        assert rows[0]["Commentaire"] == "Raison : Non réponse aux questionnaires Relancé 3 fois"
+        assert rows[0]["Auteur"] == bo_user.full_name
+
 
 class GetOffererUsersTest(GetEndpointHelper):
     endpoint = "backoffice_web.offerer.get_pro_users"

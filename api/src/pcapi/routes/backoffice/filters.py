@@ -199,15 +199,22 @@ def format_reason_label(reason: str | None) -> str:
 
 def format_offerer_rejection_reason(rejection_reason: offerers_models.OffererRejectionReason | str) -> str:
     match rejection_reason:
-        case offerers_models.OffererRejectionReason.ELIGIBILITY | "ELIGIBILITY":
-            return "Le compte pro n'est pas éligible"
-        case offerers_models.OffererRejectionReason.ERROR | "ERROR":
-            return "Activité non éligible, ce compte ne semble pas être un compte pro"
-        case offerers_models.OffererRejectionReason.ADAGE_DECLINED | "ADAGE_DECLINED":
-            return "Refus Adage"
-        case offerers_models.OffererRejectionReason.OUT_OF_TIME | "OUT_OF_TIME":
-            return "Inscription hors délai de réponse de 60 jours"
-        case offerers_models.OffererRejectionReason.OTHER | "OTHER":
+        case (
+            offerers_models.OffererRejectionReason.ELIGIBILITY | offerers_models.OffererRejectionReason.ELIGIBILITY.name
+        ):
+            return "Non éligible"
+        case offerers_models.OffererRejectionReason.ERROR | offerers_models.OffererRejectionReason.ERROR.name:
+            return "Erreur jeune ou établissement scolaire"
+        case (
+            offerers_models.OffererRejectionReason.ADAGE_DECLINED
+            | offerers_models.OffererRejectionReason.ADAGE_DECLINED.name
+        ):
+            return "Refus ADAGE"
+        case (
+            offerers_models.OffererRejectionReason.OUT_OF_TIME | offerers_models.OffererRejectionReason.OUT_OF_TIME.name
+        ):
+            return "Non réponse aux questionnaires"
+        case offerers_models.OffererRejectionReason.OTHER | offerers_models.OffererRejectionReason.OTHER.name:
             return "Autre"
         case _:
             return rejection_reason
