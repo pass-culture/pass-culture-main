@@ -735,7 +735,8 @@ class StepperTest:
         )
 
         client.with_token(user.email)
-        response = client.get("/native/v2/subscription/stepper")
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get("/native/v2/subscription/stepper")
 
         assert response.json["subscriptionStepsToDisplay"] == [
             self.get_step("phone_validation_step", SubscriptionStepCompletionState.COMPLETED.value),
@@ -753,7 +754,9 @@ class StepperTest:
         user = users_factories.EligibleUnderageFactory()
 
         client.with_token(user.email)
-        response = client.get("/native/v2/subscription/stepper")
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get("/native/v2/subscription/stepper")
+
         assert "educonnect" in response.json["allowedIdentityCheckMethods"]
 
     def should_have_subtitle_for_profile_when_autocompleted(self, client):
@@ -769,7 +772,8 @@ class StepperTest:
         user.phoneValidationStatus = users_models.PhoneValidationStatusType.VALIDATED
 
         client.with_token(user.email)
-        response = client.get("/native/v2/subscription/stepper")
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get("/native/v2/subscription/stepper")
 
         assert response.json["subscriptionStepsToDisplay"] == [
             self.get_step("phone_validation_step", SubscriptionStepCompletionState.COMPLETED.value),
@@ -796,7 +800,8 @@ class StepperTest:
         fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
 
         client.with_token(user.email)
-        response = client.get("/native/v2/subscription/stepper")
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get("/native/v2/subscription/stepper")
 
         assert response.json["subscriptionStepsToDisplay"] == [
             self.get_step("phone_validation_step", SubscriptionStepCompletionState.COMPLETED.value),
@@ -1627,7 +1632,9 @@ class ActivityTypesTest:
     def test_get_activity_types(self, client, age):
         user = users_factories.BaseUserFactory(age=age)
         client.with_token(user.email)
-        response = client.get("/native/v1/subscription/activity_types")
+        with assert_num_queries(1):  # user
+            response = client.get("/native/v1/subscription/activity_types")
+            assert response.status_code == 200
 
         expected_response = {
             "activities": [
@@ -1666,7 +1673,6 @@ class ActivityTypesTest:
                     "description": None,
                 },
             )
-        assert response.status_code == 200
         assert response.json == expected_response
 
 
