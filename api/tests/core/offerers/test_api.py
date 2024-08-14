@@ -814,6 +814,33 @@ class CreateOffererTest:
         assert actions_list[1].user == user
         assert actions_list[1].offerer == created_offerer
 
+    def test_create_new_offerer_twice(self):
+        # Given
+        user = users_factories.NonAttachedProFactory()
+        offerer_informations = offerers_serialize.CreateOffererQueryModel(
+            name="Test Offerer", siren="418166096", address="123 rue de Paris", postalCode="93100", city="Montreuil"
+        )
+
+        # When
+        offerers_api.create_offerer(user, offerer_informations)
+        user_offerer = offerers_api.create_offerer(user, offerer_informations)
+
+        # Then
+        created_offerer = user_offerer.offerer
+        assert created_offerer.validationStatus == ValidationStatus.NEW
+        assert user_offerer.validationStatus == ValidationStatus.VALIDATED
+        assert user_offerer.dateCreated is not None
+
+        assert not user.has_pro_role
+        assert user.has_non_attached_pro_role
+
+        actions_list = user.action_history
+        assert len(actions_list) == 1
+        assert actions_list[0].actionType == history_models.ActionType.OFFERER_NEW
+        assert actions_list[0].authorUser == user
+        assert actions_list[0].user == user
+        assert actions_list[0].offerer == created_offerer
+
     def test_create_new_offerer_on_known_offerer_by_user_deleted(self):
         # Given
         user = users_factories.UserFactory()
