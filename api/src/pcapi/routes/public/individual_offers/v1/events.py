@@ -353,6 +353,7 @@ def patch_event_price_categories(
 
 
 @blueprints.public_api.route("/public/offers/v1/events/<int:event_id>/dates", methods=["POST"])
+@api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.EVENT_OFFER_STOCKS],
@@ -367,7 +368,6 @@ def patch_event_price_categories(
         )
     ),
 )
-@api_key_required
 def post_event_stocks(event_id: int, body: serialization.DatesCreation) -> serialization.PostDatesResponse:
     """
     Add stocks to an event
