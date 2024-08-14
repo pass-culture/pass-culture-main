@@ -156,16 +156,20 @@ class VenuesTest:
 
     def test_get_venue_google_banner_meta_not_from_google(self, client):
         venue = offerers_factories.VenueFactory(isPermanent=True, _bannerMeta={"image_credit": "Henri"})
-        response = client.get(f"/native/v1/venue/{venue.id}")
+        venue_id = venue.id
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get(f"/native/v1/venue/{venue_id}")
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         assert response.json["bannerUrl"] == venue.bannerUrl
         assert response.json["bannerMeta"] == {"image_credit": "Henri"}
 
     def test_get_non_permanent_venue(self, client):
         venue = offerers_factories.VenueFactory(isPermanent=False)
-        response = client.get(f"/native/v1/venue/{venue.id}")
-        assert response.status_code == 404
+        venue_id = venue.id
+        with assert_num_queries(1):  # venue
+            response = client.get(f"/native/v1/venue/{venue_id}")
+            assert response.status_code == 404
 
     def test_get_non_existing_venue(self, client):
         with assert_num_queries(1):  # venue
@@ -186,5 +190,7 @@ class VenuesTest:
         venue = offerers_factories.VenueFactory(
             venueTypeCode=VenueTypeCode.BOOKSTORE, contact__phone_number=invalid_phone_number
         )
-        response = client.get(f"/native/v1/venue/{venue.id}")
-        assert response.status_code == 200
+        venue_id = venue.id
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get(f"/native/v1/venue/{venue_id}")
+            assert response.status_code == 200
