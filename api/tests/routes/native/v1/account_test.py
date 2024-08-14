@@ -17,7 +17,6 @@ import time_machine
 
 from pcapi import settings
 from pcapi.connectors.google_oauth import GoogleUser
-from pcapi.core import testing
 from pcapi.core import token as token_utils
 from pcapi.core.bookings import factories as booking_factories
 from pcapi.core.bookings.factories import BookingFactory
@@ -64,9 +63,9 @@ class AccountTest:
     def test_get_user_profile_without_authentication(self, client, app):
         users_factories.UserFactory(email=self.identifier)
 
-        response = client.get("/native/v1/me")
-
-        assert response.status_code == 401
+        with assert_num_queries(0):  # User is not fetched if no token is provided
+            response = client.get("/native/v1/me")
+            assert response.status_code == 401
 
     def test_get_user_profile_not_found(self, client, app):
         users_factories.UserFactory(email=self.identifier)
@@ -223,9 +222,16 @@ class AccountTest:
         with time_machine.travel("2021-01-02"):
             finance_api.recredit_underage_users()
 
+        expected_num_queries = 1  # user
+        expected_num_queries += 1  # booking(from _get_booked_offers)
+        expected_num_queries += 1  # booking (from get_domains_credit)
+        expected_num_queries += 1  # feature
+        expected_num_queries += 1  # beneficiary fraud checks
+
         client.with_token(email=self.identifier)
-        me_response = client.get("/native/v1/me")
-        assert me_response.json["recreditAmountToShow"] == 3000
+        with assert_num_queries(expected_num_queries):
+            me_response = client.get("/native/v1/me")
+            assert me_response.json["recreditAmountToShow"] == 3000
 
     @override_features(ENABLE_UBBLE=False)
     def test_maintenance_message(self, client):
@@ -337,9 +343,13 @@ class AccountTest:
     def test_user_should_need_to_fill_cultural_survey(self, client, feature_flags, roles, needsToFillCulturalSurvey):
         user = users_factories.UserFactory(roles=roles)
 
+        expected_num_queries = 3  # user + bookings + deposit
+        expected_num_queries += 1  # beneficiary fraud review if is beneficiary else feature
+
         client.with_token(user.email)
         with override_features(**feature_flags):
-            response = client.get("/native/v1/me")
+            with assert_num_queries(expected_num_queries):
+                response = client.get("/native/v1/me")
 
         assert response.json["needsToFillCulturalSurvey"] == needsToFillCulturalSurvey
 
@@ -367,7 +377,7 @@ class AccountTest:
         n_queries += 1  # get all feature flages
         n_queries += 1  # get bookings
 
-        with testing.assert_num_queries(n_queries):
+        with assert_num_queries(n_queries):
             response = client.get("/native/v1/me")
 
     def test_num_queries_beneficiary(self, client):
@@ -375,12 +385,14 @@ class AccountTest:
 
         client.with_token(user.email)
 
-        response = client.get("/native/v1/me")
-        assert response.status_code == 200
-        client.with_token(user.email)
-
-        with testing.assert_no_duplicated_queries():
+        n_queries = 1  # user
+        n_queries += 1  # user bookings
+        n_queries += 1  # deposit
+        n_queries += 1  # deposit bookings
+        n_queries += 1  # feature
+        with assert_num_queries(n_queries):
             response = client.get("/native/v1/me")
+            assert response.status_code == 200
 
     def should_hide_cultural_survey_if_not_beneficiary(self, client):
         user = users_factories.UserFactory(
@@ -448,8 +460,18 @@ class AccountCreationTest:
             "firebasePseudoId": "firebase_pseudo_id",
         }
 
-        response = client.post("/native/v1/account", json=data)
-        assert response.status_code == 204, response.json
+        expected_num_queries = 1  # feature
+        expected_num_queries += 1  # user
+        expected_num_queries += 1  # user
+        expected_num_queries += 1  # user (insert)
+        expected_num_queries += 1  # user
+        expected_num_queries += 1  # bookings
+        expected_num_queries += 1  # favorites
+        expected_num_queries += 1  # deposit
+        expected_num_queries += 1  # action history
+        with assert_num_queries(expected_num_queries):
+            response = client.post("/native/v1/account", json=data)
+            assert response.status_code == 204, response.json
 
         user = users_models.User.query.first()
         assert user is not None
