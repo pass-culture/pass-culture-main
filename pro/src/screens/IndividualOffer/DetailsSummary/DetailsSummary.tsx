@@ -36,6 +36,7 @@ type DetailsSummaryScreenProps = {
 export function DetailsSummaryScreen({ offer }: DetailsSummaryScreenProps) {
   const mode = useOfferWizardMode()
   const { categories, subCategories } = useIndividualOfferContext()
+  const isSplitOfferEnabled = useActiveFeature('WIP_SPLIT_OFFER')
   const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
 
   const musicTypesQuery = useSWR(
@@ -63,6 +64,11 @@ export function DetailsSummaryScreen({ offer }: DetailsSummaryScreenProps) {
   if (isOfferAddressEnabled) {
     aboutDescriptions.unshift({
       title: 'Qui propose l’offre',
+      text: venueName,
+    })
+  } else if (isSplitOfferEnabled) {
+    aboutDescriptions.unshift({
+      title: 'Lieu',
       text: venueName,
     })
   } else {
