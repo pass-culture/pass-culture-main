@@ -6,6 +6,7 @@ import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.bookings.models as bookings_models
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
+from pcapi.core.testing import assert_num_queries
 
 
 @pytest.mark.usefixtures("db_session")
@@ -75,9 +76,16 @@ def test_return_price_categories_and_schedule_count_by_date(client):
         )
 
     client = client.with_session_auth(user_offerer.user.email)
-    response = client.get(f"/bookings/dates/{offer.id}")
+    offer_id = offer.id
+    # 1. user_session
+    # 2. user
+    # 3. venue
+    # 4. user_offerer
+    # 5. stock
+    with assert_num_queries(5):
+        response = client.get(f"/bookings/dates/{offer_id}")
+        assert response.status_code == 200
 
-    assert response.status_code == 200
     assert response.json == [
         {"eventDate": "2024-02-02", "scheduleCount": 1, "priceCategoriesCount": 1},
         {"eventDate": "2024-09-09", "scheduleCount": 1, "priceCategoriesCount": 1},
@@ -92,11 +100,19 @@ def test_return_empty_list_when_no_stock(client):
     user_offerer = offerers_factories.UserOffererFactory()
 
     offer = offers_factories.OfferFactory(venue__managingOfferer=user_offerer.offerer)
+    offer_id = offer.id
 
     client = client.with_session_auth(user_offerer.user.email)
-    response = client.get(f"/bookings/dates/{offer.id}")
+    # 1. user_session
+    # 2. user
+    # 3. offer
+    # 4. venue
+    # 5. user_offerer
+    # 6. stock
+    with assert_num_queries(6):
+        response = client.get(f"/bookings/dates/{offer_id}")
+        assert response.status_code == 200
 
-    assert response.status_code == 200
     assert response.json == []
 
 
@@ -105,8 +121,14 @@ def test_user_is_forbidden(client):
     user_offerer = offerers_factories.UserOffererFactory()
 
     offer = offers_factories.OfferFactory()
+    offer_id = offer.id
 
     client = client.with_session_auth(user_offerer.user.email)
-    response = client.get(f"/bookings/dates/{offer.id}")
-
-    assert response.status_code == 403
+    # 1. user_session
+    # 2. user
+    # 3. offer
+    # 4. venue
+    # 5. user_offerer
+    with assert_num_queries(5):
+        response = client.get(f"/bookings/dates/{offer_id}")
+        assert response.status_code == 403

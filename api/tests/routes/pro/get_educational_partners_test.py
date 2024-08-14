@@ -2,6 +2,7 @@ from typing import Any
 
 import pytest
 
+from pcapi.core.testing import assert_num_queries
 import pcapi.core.users.factories as users_factories
 
 
@@ -14,10 +15,11 @@ class Return200Test:
         pro_user = users_factories.ProFactory()
 
         client.with_session_auth(pro_user.email)
-        response = client.get("/cultural-partners")
+        with assert_num_queries(2):  # user + session
+            response = client.get("/cultural-partners")
+            assert response.status_code == 200
 
         # Then
-        assert response.status_code == 200
         assert response.json == {
             "partners": [
                 {
@@ -40,7 +42,6 @@ class Return401Test:
     def test_get_educational_partners_no_user_login(self, client: Any) -> None:
         # Given
 
-        response = client.get("/cultural-partners")
-
-        # Then
-        assert response.status_code == 401
+        with assert_num_queries(0):
+            response = client.get("/cultural-partners")
+            assert response.status_code == 401

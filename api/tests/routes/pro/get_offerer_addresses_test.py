@@ -49,10 +49,16 @@ class Return200Test:
             address__city="Amiens",
             address__banId="80000_7560_00001",
         )
+        offerer_id = offerer.id
+        client = client.with_session_auth(email=pro.email)
+        # 1. user_session
+        # 2. user
+        # 3. SELECT EXISTS user_offerer
+        # 4. venue
+        with assert_num_queries(4):
+            response = client.get(f"/offerers/{offerer_id}/addresses")
+            assert response.status_code == 200
 
-        response = client.with_session_auth(email=pro.email).get(f"/offerers/{offerer.id}/addresses")
-
-        assert response.status_code == 200
         assert response.json == [
             {
                 "city": "Paris",

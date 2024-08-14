@@ -1,10 +1,31 @@
 import pytest
 
 import pcapi.core.offerers.factories as offerers_factories
+from pcapi.core.testing import assert_num_queries
 import pcapi.core.users.factories as users_factories
 
 
 class GetEducationalOfferersTest:
+    # 1. user
+    # 2. session
+    # 3. DELETE from user_session
+    # 4. user
+    # 5. INSERT into user_session
+    # 6. user
+    # 7. UPDATE user
+    # 8. user
+    # 9. user !TODO check why there is so many select of user and queries in general
+    # 10. user
+    # 11. SELECT EXISTS collective offer
+    # 12. offerer
+    # 13. feature
+    # 14.  user_pro_new_nav_state
+    # 15. SELECT EXISTS user_offerer
+    # 16. user_session
+    # 17. user
+    # 18. offerer
+    expected_num_queries = 18
+
     @pytest.mark.usefixtures("db_session")
     def test_response_serializer_for_multiple_educational_offerers(self, client):
         # given
@@ -25,10 +46,12 @@ class GetEducationalOfferersTest:
         offerers_factories.UserOffererFactory(user=pro_user, offerer=not_validated_offerer)
 
         # when
-        response = client.with_session_auth(pro_user.email).get("/offerers/educational")
+        with assert_num_queries(self.expected_num_queries):
+            response = client.with_session_auth(pro_user.email).get("/offerers/educational")
+            assert response.status_code == 200
 
         # then
-        assert response.status_code == 200
+
         assert response.json == {
             "educationalOfferers": [
                 {
@@ -93,10 +116,13 @@ class GetEducationalOfferersTest:
         offerers_factories.VenueFactory(managingOfferer=offerer_2)
 
         # when
-        response = client.with_session_auth(admin_user.email).get("/offerers/educational")
+        with assert_num_queries(
+            self.expected_num_queries + 1
+        ):  # !TODO still too many queries, need to check number queries
+            response = client.with_session_auth(admin_user.email).get("/offerers/educational")
+            assert response.status_code == 400
 
         # then
-        assert response.status_code == 400
 
     @pytest.mark.usefixtures("db_session")
     def test_response_serializer_for_admin(self, client):
@@ -109,10 +135,11 @@ class GetEducationalOfferersTest:
 
         # when
         api_url = f"/offerers/educational?offerer_id={offerer_2.id}"
-        response = client.with_session_auth(admin_user.email).get(api_url)
+        with assert_num_queries(20):  # !TODO still too many queries, need investigation
+            response = client.with_session_auth(admin_user.email).get(api_url)
+            assert response.status_code == 200
 
         # then
-        assert response.status_code == 200
         assert response.json == {
             "educationalOfferers": [
                 {

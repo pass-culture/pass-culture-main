@@ -274,10 +274,34 @@ class Returns200Test:
         repository.save(offer)
 
         # When
-        response = client.with_session_auth(email=user_offerer.user.email).get(f"/offers/{offer.id}")
+        # !TODO need investigation number queries
+        # 1. user_offerer
+        # 2. user
+        # 3. user
+        # 4. user_session
+        # 5. user
+        # 6. INSERT INTO user_session
+        # 7. user
+        # 8. user
+        # 9. UPDATE "user"
+        # 10. user
+        # 11. user
+        # 12. SELECT EXISTS collective_offer
+        # 13. offerer
+        # 14. feature
+        # 15. user_pro_new_nav_state
+        # 16. user_offerer
+        # 17. offer
+        # 18. user_session
+        # 19. user
+        # 20. offer
+        # 21. user_offerer
+        # 22. stock
+        with testing.assert_num_queries(22):
+            response = client.with_session_auth(email=user_offerer.user.email).get(f"/offers/{offer.id}")
+            assert response.status_code == 200
 
         # Then
-        assert response.status_code == 200
         data = response.json
         assert data["subcategoryId"] == "LIVRE_PAPIER"
 

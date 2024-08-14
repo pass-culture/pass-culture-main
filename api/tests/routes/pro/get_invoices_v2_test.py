@@ -12,6 +12,12 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 class GetInvoicesTest:
+    # 1. user
+    # 2. session
+    # 3. invoice
+    # 4. bank_account
+    expected_num_queries = 4
+
     def test_get_invoices(self, client):
         offerer = offerers_factories.OffererFactory()
         pro = users_factories.ProFactory()
@@ -31,9 +37,10 @@ class GetInvoicesTest:
         _other_invoice = finance_factories.InvoiceFactory(bankAccount=_other_bank_account)
 
         client = client.with_session_auth(pro.email)
-        response = client.get("/v2/finance/invoices")
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get("/v2/finance/invoices")
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         invoices = response.json
         assert len(invoices) == 2
         assert invoices[0] == {
@@ -67,9 +74,10 @@ class GetInvoicesTest:
         offerers_factories.NotValidatedUserOffererFactory(user=pro, offerer=offerer2)
 
         client = client.with_session_auth(pro.email)
-        response = client.get("/v2/finance/invoices")
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get("/v2/finance/invoices")
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         invoices = response.json
         assert len(invoices) == 2
         assert invoices[0] == {
@@ -101,9 +109,10 @@ class GetInvoicesTest:
 
         client = client.with_session_auth(pro.email)
         params = {"bankAccountId": bank_account1.id}
-        response = client.get("/v2/finance/invoices", params=params)
+        with assert_num_queries(self.expected_num_queries - 1):  # - bank_account
+            response = client.get("/v2/finance/invoices", params=params)
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         invoices = response.json
         assert len(invoices) == 1
         assert invoices[0]["reference"] == invoice1.reference
@@ -128,9 +137,10 @@ class GetInvoicesTest:
 
         client = client.with_session_auth(pro.email)
         params = {"periodBeginningDate": "2021-07-01", "periodEndingDate": "2021-07-31"}
-        response = client.get("/v2/finance/invoices", params=params)
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get("/v2/finance/invoices", params=params)
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         invoices = response.json
         assert len(invoices) == 1
         assert invoices[0]["reference"] == invoice_within.reference
@@ -143,9 +153,10 @@ class GetInvoicesTest:
 
         client = client.with_session_auth(pro.email)
         params = {"bankAccountId": other_bank_account.id}
-        response = client.get("/v2/finance/invoices", params=params)
+        with assert_num_queries(self.expected_num_queries - 1):  # - bank_account
+            response = client.get("/v2/finance/invoices", params=params)
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         invoices = response.json
         assert invoices == []
 
@@ -161,9 +172,10 @@ class GetInvoicesTest:
 
         client = client.with_session_auth(pro.email)
         params = {"offererId": offerer.id}
-        response = client.get("/v2/finance/invoices", params=params)
+        with assert_num_queries(self.expected_num_queries + 1):  # + bank_account !TODO 2eme bank account
+            response = client.get("/v2/finance/invoices", params=params)
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         invoices = response.json
         assert len(invoices) == 2
 
@@ -179,9 +191,10 @@ class GetInvoicesTest:
 
         client = client.with_session_auth(pro.email)
         params = {"offererId": offerer.id, "bankAccountId": bank_account1.id}
-        response = client.get("/v2/finance/invoices", params=params)
+        with assert_num_queries(self.expected_num_queries - 1):  # - bank_account
+            response = client.get("/v2/finance/invoices", params=params)
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         invoices = response.json
         assert len(invoices) == 1
         assert invoices[0]["reference"] == invoice1.reference
@@ -197,9 +210,10 @@ class GetInvoicesTest:
         finance_factories.InvoiceFactory(bankAccount=bank_account2, amount=-1500)
 
         client = client.with_session_auth(pro.email)
-        response = client.get("/v2/finance/invoices")
+        with assert_num_queries(self.expected_num_queries - 1):  # - bank account
+            response = client.get("/v2/finance/invoices")
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         invoices = response.json
         assert len(invoices) == 0
 
@@ -236,9 +250,15 @@ class GetInvoicesTest:
         finance_factories.BankAccountFactory(offerer=user_offerer.offerer)
 
         client = client.with_session_auth(user_offerer.user.email)
-        response = client.get("/v2/finance/has-invoice", params={"offererId": user_offerer_2.offerer.id})
+        # 1. user_offerer
+        # 2. offerer
+        # 3. user_session
+        # 4. user
+        # 5. SELECT EXISTS user_offerer
+        with assert_num_queries(5):
+            response = client.get("/v2/finance/has-invoice", params={"offererId": user_offerer_2.offerer.id})
+            assert response.status_code == 403
 
-        assert response.status_code == 403
         assert response.json == {
             "global": ["Vous n'avez pas les droits d'accès suffisants pour accéder à cette information."]
         }
