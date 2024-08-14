@@ -15,6 +15,7 @@ from pcapi.validation.routes.users_authentifications import current_api_key
 
 
 @blueprints.public_api.route("/public/providers/v1/provider", methods=["GET"])
+@api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.PROVIDERS],
@@ -27,7 +28,6 @@ from pcapi.validation.routes.users_authentifications import current_api_key
         )
     ),
 )
-@api_key_required
 def get_provider() -> providers_serialization.ProviderResponse:
     """
     Get my provider
