@@ -10733,7 +10733,7 @@
         },
         "/public/providers/v1/venues/{venue_id}": {
             "patch": {
-                "description": "Endpoint to set the urls used by our notification system to notify/request your solution.",
+                "description": "Endpoint to set the urls used by our messaging system to notify/request your solution.",
                 "operationId": "UpdateVenueExternalUrls",
                 "parameters": [
                     {

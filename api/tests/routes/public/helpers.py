@@ -31,8 +31,11 @@ class PublicAPIEndpointBaseHelper(abc.ABC):
     def test_should_raise_401_because_not_authenticated(self, client: TestClient):
         raise NotImplementedError()
 
-    def setup_provider(self) -> tuple[str, providers_models.Provider]:
-        provider = providers_factories.PublicApiProviderFactory()
+    def setup_provider(self, has_ticketing_urls=True) -> tuple[str, providers_models.Provider]:
+        if has_ticketing_urls:
+            provider = providers_factories.PublicApiProviderFactory()
+        else:
+            provider = providers_factories.ProviderFactory()
         offerer = offerers_factories.OffererFactory(name="Technical provider")
         providers_factories.OffererProviderFactory(
             offerer=offerer,
@@ -67,15 +70,19 @@ class PublicAPIVenueEndpointHelper(PublicAPIEndpointBaseHelper):
     def test_should_raise_404_because_venue_provider_is_inactive(self, client: TestClient):
         raise NotImplementedError()
 
-    def setup_inactive_venue_provider(self) -> tuple[str, providers_models.VenueProvider]:
-        plain_api_key, provider = self.setup_provider()
+    def setup_inactive_venue_provider(
+        self, provider_has_ticketing_urls=True
+    ) -> tuple[str, providers_models.VenueProvider]:
+        plain_api_key, provider = self.setup_provider(provider_has_ticketing_urls)
         venue = self.setup_venue()
         venue_provider = providers_factories.VenueProviderFactory(venue=venue, provider=provider, isActive=False)
 
         return plain_api_key, venue_provider
 
-    def setup_active_venue_provider(self) -> tuple[str, providers_models.VenueProvider]:
-        plain_api_key, provider = self.setup_provider()
+    def setup_active_venue_provider(
+        self, provider_has_ticketing_urls=True
+    ) -> tuple[str, providers_models.VenueProvider]:
+        plain_api_key, provider = self.setup_provider(provider_has_ticketing_urls)
         venue = self.setup_venue()
         venue_provider = providers_factories.VenueProviderFactory(venue=venue, provider=provider)
 
