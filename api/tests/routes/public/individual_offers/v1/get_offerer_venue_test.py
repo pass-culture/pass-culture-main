@@ -6,13 +6,20 @@ from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.providers import factories as providers_factories
 
-from . import utils
+from tests.conftest import TestClient
+from tests.routes.public.helpers import PublicAPIEndpointBaseHelper
 
 
 @pytest.mark.usefixtures("db_session")
-class GetOffererVenuesTest:
+class GetOffererVenuesTest(PublicAPIEndpointBaseHelper):
+    endpoint_url = "/public/offers/v1/offerer_venues"
+
+    def test_should_raise_401_because_not_authenticated(self, client: TestClient):
+        response = client.get(self.endpoint_url)
+        assert response.status_code == 401
+
     def create_multiple_venue_providers(self):
-        provider, _ = utils.create_offerer_provider()
+        plain_api_key, provider = self.setup_provider()
         offerer_with_two_venues = offerers_factories.OffererFactory(
             name="Offreur de fleurs", dateCreated=datetime.datetime(2022, 2, 22, 22, 22, 22), siren="123456789"
         )
@@ -54,10 +61,18 @@ class GetOffererVenuesTest:
             cancelExternalUrl="https://mysolution.com/cancel",
             notificationExternalUrl="https://mysolution.com/notif",
         )
-        return offerer_with_two_venues, digital_venue, physical_venue, offerer_with_one_venue, other_physical_venue
+        return (
+            plain_api_key,
+            offerer_with_two_venues,
+            digital_venue,
+            physical_venue,
+            offerer_with_one_venue,
+            other_physical_venue,
+        )
 
     def test_get_offerer_venues(self, client):
         (
+            plain_api_key,
             offerer_with_two_venues,
             digital_venue,
             physical_venue,
@@ -65,9 +80,7 @@ class GetOffererVenuesTest:
             other_physical_venue,
         ) = self.create_multiple_venue_providers()
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-            "/public/offers/v1/offerer_venues",
-        )
+        response = client.with_explicit_token(plain_api_key).get(self.endpoint_url)
         assert response.status_code == 200
         assert len(response.json) == 2
         assert response.json[0] == {
@@ -159,16 +172,17 @@ class GetOffererVenuesTest:
         }
 
     def test_does_not_return_inactive_venue_providers(self, client):
-        utils.create_offerer_provider_linked_to_venue(is_venue_provider_active=False)
+        plain_api_key, provider = self.setup_provider()
+        venue = self.setup_venue()
+        providers_factories.VenueProviderFactory(venue=venue, provider=provider, isActive=False)
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-            "/public/offers/v1/offerer_venues",
-        )
+        response = client.with_explicit_token(plain_api_key).get(self.endpoint_url)
         assert response == 200
         assert response.json == []
 
     def test_get_filtered_offerer_venues(self, client):
         (
+            plain_api_key,
             offerer_with_two_venues,
             _,
             _,
@@ -176,8 +190,9 @@ class GetOffererVenuesTest:
             _,
         ) = self.create_multiple_venue_providers()
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-            f"/public/offers/v1/offerer_venues?siren={offerer_with_two_venues.siren}",
+        response = client.with_explicit_token(plain_api_key).get(
+            self.endpoint_url,
+            params={"siren": offerer_with_two_venues.siren},
         )
         assert response == 200
         json_dict = response.json
@@ -185,25 +200,21 @@ class GetOffererVenuesTest:
         assert json_dict[0]["offerer"]["siren"] == offerer_with_two_venues.siren
         assert len(json_dict[0]["venues"]) == 2
 
-    def test_get_filtered_offerer_venues_with_siren_more_than_9_characters(self, client):
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-            "/public/offers/v1/offerer_venues?siren=1234567890",
-        )
+    def test_get_filtered_offerer_venues_with_siren_more_than_9_characters(self, client: TestClient):
+        plain_api_key, _ = self.setup_provider()
+        response = client.with_explicit_token(plain_api_key).get(self.endpoint_url, params={"siren": "1234567890"})
         assert response == 400
         assert response.json == {"siren": ['string does not match regex "^\\d{9}$"']}
 
-    def test_get_filtered_offerer_venues_with_siren_less_than_9_characters(self, client):
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-            "/public/offers/v1/offerer_venues?siren=1234890",
-        )
+    def test_get_filtered_offerer_venues_with_siren_less_than_9_characters(self, client: TestClient):
+        plain_api_key, _ = self.setup_provider()
+        response = client.with_explicit_token(plain_api_key).get(self.endpoint_url, params={"siren": "1234890"})
         assert response == 400
         assert response.json == {"siren": ['string does not match regex "^\\d{9}$"']}
 
     def test_when_no_venues(self, client):
-        utils.create_offerer_provider()
+        plain_api_key, _ = self.setup_provider()
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-            "/public/offers/v1/offerer_venues",
-        )
+        response = client.with_explicit_token(plain_api_key).get(self.endpoint_url)
         assert response == 200
         assert response.json == []

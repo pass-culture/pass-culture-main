@@ -157,12 +157,6 @@ class GetOfferersVenuesTest:
         assert len(response.json[0]["venues"]) == 1
         assert response.json[0]["venues"][0]["id"] == venue.id
 
-    def test_filter_offerers_venues_by_siren_error(self, client):
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-            url_for("public_api.get_offerer_venues", siren="not a siren")
-        )
-        assert response.status_code == 400
-
     def test_unauthenticated_client(self, client):
         response = client.get(url_for("public_api.get_offerer_venues", siren="123456789"))
         assert response.status_code == 401

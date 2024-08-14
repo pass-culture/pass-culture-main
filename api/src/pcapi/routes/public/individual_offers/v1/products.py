@@ -47,6 +47,7 @@ logger = logging.getLogger(__name__)
 
 
 @blueprints.public_api.route("/public/offers/v1/offerer_venues", methods=["GET"])
+@api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.VENUES],
@@ -59,7 +60,6 @@ logger = logging.getLogger(__name__)
         )
     ),
 )
-@api_key_required
 def get_offerer_venues(
     query: venues_serialization.GetOfferersVenuesQuery,
 ) -> venues_serialization.GetOfferersVenuesResponse:
