@@ -2536,15 +2536,28 @@ class RejectOffererTest(PostEndpointHelper):
         assert response.status_code == 404
 
     def test_cannot_reject_offerer_already_rejected(self, authenticated_client):
-        offerer = offerers_factories.RejectedOffererFactory()
+        offerer = offerers_factories.RejectedOffererFactory(name="Test")
         form = {"rejection_reason": "ELIGIBILITY"}
 
         response = self.post_to_endpoint(authenticated_client, offerer_id=offerer.id, form=form)
 
         assert response.status_code == 303
+        assert (
+            html_parser.extract_alert(authenticated_client.get(response.location).data)
+            == "La structure Test est déjà rejetée"
+        )
 
-        redirected_response = authenticated_client.get(response.headers["location"])
-        assert "est déjà rejetée" in redirected_response.data.decode("utf8")
+    def test_cannot_reject_offerer_without_reason(self, authenticated_client):
+        offerer = offerers_factories.NotValidatedOffererFactory()
+        form = {"rejection_reason": ""}
+
+        response = self.post_to_endpoint(authenticated_client, offerer_id=offerer.id, form=form)
+
+        assert response.status_code == 303
+        assert (
+            html_parser.extract_alert(authenticated_client.get(response.location).data)
+            == "Les données envoyées comportent des erreurs. Raison du rejet : Information obligatoire ;"
+        )
 
     def test_no_script_injection_in_offerer_name(self, legit_user, authenticated_client):
         offerer = offerers_factories.NotValidatedOffererFactory(name="<script>alert('coucou')</script>")
