@@ -631,7 +631,10 @@ class OffersTest:
         offers_factories.StockFactory(offer=offer, quantity=1, isSoftDeleted=True)
         offers_factories.StockFactory(offer=offer, quantity=1)
 
-        response = client.get(f"/native/v1/offer/{offer.id}")
+        offer_id = offer.id
+        # select offer
+        with assert_num_queries(1):
+            response = client.get(f"/native/v1/offer/{offer_id}")
 
         assert response.status_code == 200
         assert len(response.json["stocks"]) == 1
@@ -648,7 +651,8 @@ class OffersTest:
         offers_factories.ThingStockFactory(offer=offer, price=12.34)
 
         offer_id = offer.id
-        with assert_no_duplicated_queries():
+        # select offer
+        with assert_num_queries(1):
             response = client.get(f"/native/v1/offer/{offer_id}")
 
         assert response.status_code == 200
@@ -671,7 +675,8 @@ class OffersTest:
         offers_factories.ThingStockFactory(offer=offer, price=12.34)
 
         offer_id = offer.id
-        with assert_no_duplicated_queries():
+        # select offer
+        with assert_num_queries(1):
             response = client.get(f"/native/v1/offer/{offer_id}")
 
         assert response.status_code == 200
@@ -688,7 +693,8 @@ class OffersTest:
         offers_factories.ThingStockFactory(offer=offer, price=12.34)
 
         offer_id = offer.id
-        with assert_no_duplicated_queries():
+        # select offer
+        with assert_num_queries(1):
             response = client.get(f"/native/v1/offer/{offer_id}")
 
         assert response.status_code == 200
@@ -709,7 +715,8 @@ class OffersTest:
         offers_factories.MediationFactory(id=111, offer=offer, thumbCount=2, credit="street credit")
 
         offer_id = offer.id
-        with assert_no_duplicated_queries():
+        # select offer
+        with assert_num_queries(1):
             response = client.get(f"/native/v1/offer/{offer_id}")
 
         assert response.status_code == 200
@@ -1804,15 +1811,17 @@ class OffersStocksTest:
 
 class OffersStocksV2Test:
     def test_return_empty_on_empty_request(self, client):
-        response = client.post("/native/v2/offers/stocks", json={"offer_ids": []})
+        with assert_num_queries(1):
+            response = client.post("/native/v2/offers/stocks", json={"offer_ids": []})
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         assert response.json == {"offers": []}
 
     def test_return_empty_on_not_found(self, client):
-        response = client.post("/native/v2/offers/stocks", json={"offer_ids": [123456789]})
+        with assert_num_queries(1):
+            response = client.post("/native/v2/offers/stocks", json={"offer_ids": [123456789]})
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         assert response.json == {"offers": []}
 
     @time_machine.travel("2020-01-01", tick=False)
@@ -2314,9 +2323,9 @@ class ReportedOffersTest:
         offers_factories.OfferReportFactory(user=another_user, offer=offers[2])
 
         client.with_token(user.email)
-        response = client.get("/native/v1/offers/reports")
-
-        assert response.status_code == 200
+        with assert_num_queries(2):  # user + offer reports
+            response = client.get("/native/v1/offers/reports")
+            assert response.status_code == 200
 
         response_reports = sorted(response.json["reportedOffers"], key=lambda x: x["offerId"])
         assert response_reports == [
@@ -2337,9 +2346,10 @@ class ReportedOffersTest:
         offers_factories.OfferFactory()
 
         client.with_token(user.email)
-        response = client.get("/native/v1/offers/reports")
+        with assert_num_queries(2):  # user + offer reports
+            response = client.get("/native/v1/offers/reports")
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         assert not response.json["reportedOffers"]
 
 
@@ -2379,7 +2389,9 @@ class SubcategoriesTest:
         assert found_genre_types == expected_genre_types
 
     def test_genre_types(self, client):
-        response = client.get("/native/v1/subcategories/v2")
+        with assert_num_queries(0):
+            response = client.get("/native/v1/subcategories/v2")
+
         genreTypes = response.json["genreTypes"]
         assert genreTypes == [
             {
