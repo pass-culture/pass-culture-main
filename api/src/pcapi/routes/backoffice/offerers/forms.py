@@ -241,11 +241,6 @@ class OffererRejectionForm(OptionalCommentForm):
         ),
     )
 
-    def validate_rejection(self, rejection_reason: fields.PCSelectField) -> fields.PCSelectField:
-        if not rejection_reason.data:
-            raise wtforms.validators.ValidationError("Aucune raison de rejet n'a été donnée")
-        return rejection_reason
-
 
 class BatchOffererRejectionForm(empty_forms.BatchForm, OffererRejectionForm):
     pass
