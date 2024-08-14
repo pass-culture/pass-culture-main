@@ -505,6 +505,7 @@ def delete_event_stock(event_id: int, stock_id: int) -> None:
 
 
 @blueprints.public_api.route("/public/offers/v1/events/<int:event_id>/dates/<int:stock_id>", methods=["PATCH"])
+@api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.EVENT_OFFER_STOCKS],
@@ -519,7 +520,6 @@ def delete_event_stock(event_id: int, stock_id: int) -> None:
         )
     ),
 )
-@api_key_required
 def patch_event_stock(
     event_id: int,
     stock_id: int,

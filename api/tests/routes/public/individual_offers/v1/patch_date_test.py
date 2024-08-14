@@ -1,5 +1,6 @@
 import dataclasses
 import datetime
+import decimal
 from unittest import mock
 
 import pytest
@@ -9,39 +10,92 @@ import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional import sendinblue_template_ids
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
+from pcapi.core.offers import models as offers_models
 from pcapi.utils import date as date_utils
+
+from tests.conftest import TestClient
+from tests.routes.public.helpers import PublicAPIVenueEndpointHelper
 
 from . import utils
 
 
 @pytest.mark.usefixtures("db_session")
-class PatchDateTest:
-    @mock.patch("pcapi.core.search.async_index_offer_ids")
-    def test_update_all_fields_on_date_with_price(self, mocked_async_index_offer_ids, client):
-        venue, api_key = utils.create_offerer_provider_linked_to_venue()
-        event_offer = offers_factories.EventOfferFactory(
-            venue=venue,
-            lastProvider=api_key.provider,
+class PatchEventStockTest(PublicAPIVenueEndpointHelper):
+    endpoint_url = "/public/offers/v1/events/{event_id}/dates/{stock_id}"
+
+    @staticmethod
+    def _get_base_payload(price_category_id) -> dict:
+        next_month = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(days=30)
+        two_weeks_from_now = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(weeks=2)
+        return {
+            "beginningDatetime": date_utils.utc_datetime_to_department_timezone(next_month, None).isoformat(),
+            "bookingLimitDatetime": date_utils.utc_datetime_to_department_timezone(
+                two_weeks_from_now, departement_code=None
+            ).isoformat(),
+            "priceCategoryId": price_category_id,
+            "quantity": 20,
+            "id_at_provider": "some_id",
+        }
+
+    def setup_base_resource(self, venue=None, provider=None) -> tuple[offers_models.Offer, offers_models.Stock]:
+        event = offers_factories.EventOfferFactory(venue=venue or self.setup_venue(), lastProvider=provider)
+        category_label = offers_factories.PriceCategoryLabelFactory(label="carre or", venue=event.venue)
+        price_category = offers_factories.PriceCategoryFactory(
+            offer=event, price=decimal.Decimal("88.99"), priceCategoryLabel=category_label
         )
         next_year = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(days=365)
-        event_stock = offers_factories.EventStockFactory(
-            offer=event_offer,
+        stock = offers_factories.EventStockFactory(
+            offer=event,
             quantity=10,
             price=12,
-            priceCategory=None,
+            priceCategory=price_category,
             bookingLimitDatetime=next_year,
             beginningDatetime=next_year,
         )
-        price_category = offers_factories.PriceCategoryFactory(offer=event_offer)
 
-        two_weeks_from_now = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(weeks=2)
-        next_month = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(days=30)
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
-            f"/public/offers/v1/events/{event_stock.offer.id}/dates/{event_stock.id}",
+        return event, stock
+
+    def test_should_raise_401_because_not_authenticated(self, client: TestClient):
+        event, stock = self.setup_base_resource()
+        response = client.patch(self.endpoint_url.format(event_id=event.id, stock_id=stock.id))
+        assert response.status_code == 401
+
+    def test_should_raise_404_because_has_no_access_to_venue(self, client: TestClient):
+        plain_api_key, _ = self.setup_provider()
+        event, stock = self.setup_base_resource()
+        response = client.with_explicit_token(plain_api_key).patch(
+            self.endpoint_url.format(event_id=event.id, stock_id=stock.id),
+            json=self._get_base_payload(price_category_id=stock.priceCategoryId),
+        )
+        assert response.status_code == 404
+
+    def test_should_raise_404_because_venue_provider_is_inactive(self, client: TestClient):
+        plain_api_key, venue_provider = self.setup_inactive_venue_provider()
+        event, stock = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
+        response = client.with_explicit_token(plain_api_key).patch(
+            self.endpoint_url.format(event_id=event.id, stock_id=stock.id),
+            json=self._get_base_payload(price_category_id=stock.priceCategoryId),
+        )
+        assert response.status_code == 404
+
+    @mock.patch("pcapi.core.search.async_index_offer_ids")
+    def test_update_all_fields_on_date_with_price(self, mocked_async_index_offer_ids, client):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        event, stock = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
+        price_category = offers_factories.PriceCategoryFactory(offer=event)
+
+        one_week_from_now = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(weeks=1)
+        twenty_four_day_from_now = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(
+            days=24
+        )
+        response = client.with_explicit_token(plain_api_key).patch(
+            self.endpoint_url.format(event_id=event.id, stock_id=stock.id),
             json={
-                "beginningDatetime": date_utils.utc_datetime_to_department_timezone(next_month, None).isoformat(),
+                "beginningDatetime": date_utils.utc_datetime_to_department_timezone(
+                    twenty_four_day_from_now, None
+                ).isoformat(),
                 "bookingLimitDatetime": date_utils.utc_datetime_to_department_timezone(
-                    two_weeks_from_now, departement_code=None
+                    one_week_from_now, departement_code=None
                 ).isoformat(),
                 "priceCategoryId": price_category.id,
                 "quantity": 24,
@@ -50,37 +104,26 @@ class PatchDateTest:
         )
 
         assert response.status_code == 200, response.json
-        assert event_stock.bookingLimitDatetime == two_weeks_from_now
-        assert event_stock.beginningDatetime == next_month
-        assert event_stock.price == price_category.price
-        assert event_stock.priceCategory == price_category
-        assert event_stock.quantity == 24
-        assert event_stock.idAtProviders == "hey you !"
+        assert stock.bookingLimitDatetime == one_week_from_now
+        assert stock.beginningDatetime == twenty_four_day_from_now
+        assert stock.price == price_category.price
+        assert stock.priceCategory == price_category
+        assert stock.quantity == 24
+        assert stock.idAtProviders == "hey you !"
         mocked_async_index_offer_ids.assert_called_once()
 
     def test_sends_email_if_beginning_date_changes_on_edition(self, client):
-        venue, api_key = utils.create_offerer_provider_linked_to_venue(venue_params={"bookingEmail": "venue@email.com"})
-        event_offer = offers_factories.EventOfferFactory(
-            venue=venue,
-            lastProvider=api_key.provider,
-        )
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        event, stock = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
         now = datetime.datetime.utcnow()
-        tomorrow = now + datetime.timedelta(days=1)
         two_days_after = now + datetime.timedelta(days=2)
         three_days_after = now + datetime.timedelta(days=3)
-        event_stock = offers_factories.EventStockFactory(
-            offer=event_offer,
-            quantity=10,
-            price=12,
-            priceCategory=None,
-            bookingLimitDatetime=tomorrow,
-            beginningDatetime=two_days_after,
-        )
-        price_category = offers_factories.PriceCategoryFactory(offer=event_offer)
-        bookings_factories.BookingFactory(stock=event_stock, user__email="benefeciary@email.com")
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
-            f"/public/offers/v1/events/{event_stock.offer.id}/dates/{event_stock.id}",
+        price_category = offers_factories.PriceCategoryFactory(offer=event)
+        bookings_factories.BookingFactory(stock=stock, user__email="benefeciary@email.com")
+
+        response = client.with_explicit_token(plain_api_key).patch(
+            self.endpoint_url.format(event_id=event.id, stock_id=stock.id),
             json={
                 "bookingLimitDatetime": date_utils.format_into_utc_date(two_days_after),
                 "beginningDatetime": date_utils.format_into_utc_date(three_days_after),
@@ -90,15 +133,15 @@ class PatchDateTest:
         )
 
         assert response.status_code == 200
-        assert event_stock.bookingLimitDatetime == two_days_after
-        assert event_stock.beginningDatetime == three_days_after
-        assert event_stock.price == price_category.price
-        assert event_stock.priceCategory == price_category
-        assert event_stock.quantity == 25
+        assert stock.bookingLimitDatetime == two_days_after
+        assert stock.beginningDatetime == three_days_after
+        assert stock.price == price_category.price
+        assert stock.priceCategory == price_category
+        assert stock.quantity == 25
         assert mails_testing.outbox[0]["template"] == dataclasses.asdict(
             sendinblue_template_ids.TransactionalEmail.EVENT_OFFER_POSTPONED_CONFIRMATION_TO_PRO.value
         )
-        assert mails_testing.outbox[0]["To"] == "venue@email.com"
+        assert mails_testing.outbox[0]["To"] == event.venue.bookingEmail
         assert mails_testing.outbox[1]["template"] == dataclasses.asdict(
             sendinblue_template_ids.TransactionalEmail.BOOKING_POSTPONED_BY_PRO_TO_BENEFICIARY.value
         )
