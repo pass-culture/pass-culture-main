@@ -32,7 +32,7 @@ geoalchemy2 = "^0.15.2"
 google-api-python-client = "2.134.0"
 google-auth = "2.33.0"
 google-cloud-bigquery = "3.25.0"
-google-cloud-storage = "2.17.0"
+google-cloud-storage = "2.18.2"
 google-cloud-tasks = "2.16.5"
 googlemaps = "^4.10.0"
 gql = { extras = ["requests"], version = "^3.5.0" }
