@@ -2928,7 +2928,28 @@ def _has_been_recredited(user: users_models.User) -> bool:
 
 
 def _get_known_age_at_deposit(user: users_models.User) -> int | None:
-    assert user.deposit, f"no deposit was found for {user =}"
+    import pcapi.core.subscription.api as subscription_api
+
+    if user.deposit is None:
+        return None
+
+    known_birthday_at_deposit = _get_known_birthday_at_deposit(user)
+    if known_birthday_at_deposit is None:
+        return None
+
+    first_registration_date = subscription_api.get_first_registration_date(
+        user, known_birthday_at_deposit, users_models.EligibilityType.UNDERAGE
+    )
+    if first_registration_date is not None:
+        return users_utils.get_age_at_date(known_birthday_at_deposit, first_registration_date)
+
+    return users_utils.get_age_at_date(known_birthday_at_deposit, user.deposit.dateCreated)
+
+
+def _get_known_birthday_at_deposit(user: users_models.User) -> datetime.date | None:
+    if user.deposit is None:
+        return None
+
     deposit_date = user.deposit.dateCreated
 
     identity_provider_birthday_checks = [
@@ -2982,7 +3003,7 @@ def _get_known_age_at_deposit(user: users_models.User) -> int | None:
                 f"unexpected {last_identity_provider_birthday_check = }, {last_birthday_action = } combination for {user =}"
             )
 
-    return users_utils.get_age_at_date(known_birthday_at_deposit, deposit_date)
+    return known_birthday_at_deposit
 
 
 def recredit_underage_users() -> None:
