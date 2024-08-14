@@ -32,4 +32,5 @@ spec:
           - |
             set -e
             alembic upgrade post@head
+            flask clean_data
       restartPolicy: Never
