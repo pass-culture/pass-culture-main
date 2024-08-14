@@ -918,7 +918,8 @@ def create_offerer(
         # in this case it is passed to NEW if the structure is not rejected
         user_offerer = offerers_models.UserOfferer.query.filter_by(userId=user.id, offererId=offerer.id).one_or_none()
         if not user_offerer:
-            user_offerer = grant_user_offerer_access(offerer, user)
+            user_offerer = models.UserOfferer(offerer=offerer, user=user, validationStatus=ValidationStatus.NEW)
+            db.session.add(user_offerer)
 
         if offerer.isRejected:
             # When offerer was rejected, it is considered as a new offerer in validation process;
@@ -927,7 +928,7 @@ def create_offerer(
             _fill_in_offerer(offerer, offerer_informations)
             comment = (comment + "\n" if comment else "") + "Nouvelle demande sur un SIREN précédemment rejeté"
             user_offerer.validationStatus = ValidationStatus.VALIDATED
-        else:
+        elif not user_offerer.isValidated:
             user_offerer.validationStatus = ValidationStatus.NEW
             user_offerer.dateCreated = datetime.utcnow()
             extra_data: dict[str, typing.Any] = {}
