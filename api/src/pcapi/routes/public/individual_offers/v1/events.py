@@ -119,6 +119,7 @@ def post_event_offer(body: serialization.EventOfferCreation) -> serialization.Ev
 
 
 @blueprints.public_api.route("/public/offers/v1/events/<int:event_id>", methods=["GET"])
+@api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.EVENT_OFFERS],
@@ -132,7 +133,6 @@ def post_event_offer(body: serialization.EventOfferCreation) -> serialization.Ev
         )
     ),
 )
-@api_key_required
 def get_event(event_id: int) -> serialization.EventOfferResponse:
     """
     Get event offer
