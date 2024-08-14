@@ -24,12 +24,7 @@ type DetailsSummaryScreenProps = {
 export function UsefulInformationsSummaryScreen({
   offer,
 }: DetailsSummaryScreenProps) {
-  const practicalInfoDescriptions: Description[] = [
-    {
-      title: 'Informations de retrait',
-      text: offer.withdrawalDetails || ' - ',
-    },
-  ]
+  const practicalInfoDescriptions: Description[] = []
 
   if (offer.withdrawalType) {
     practicalInfoDescriptions.push({
@@ -37,6 +32,10 @@ export function UsefulInformationsSummaryScreen({
       text: OFFER_WITHDRAWAL_TYPE_LABELS[offer.withdrawalType],
     })
   }
+  practicalInfoDescriptions.push({
+    title: 'Informations de retrait',
+    text: offer.withdrawalDetails || ' - ',
+  })
   if (offer.withdrawalDelay) {
     practicalInfoDescriptions.push({
       title: 'Heure de retrait',

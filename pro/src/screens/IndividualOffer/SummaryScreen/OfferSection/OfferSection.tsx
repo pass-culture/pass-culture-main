@@ -185,6 +185,12 @@ export const OfferSection = ({
         offerData.venuePublicName || offerData.venueName,
     })
   }
+  if (offerData.withdrawalType) {
+    practicalInfoDescriptions.push({
+      title: 'Précisez la façon dont vous distribuerez les billets',
+      text: OFFER_WITHDRAWAL_TYPE_LABELS[offerData.withdrawalType],
+    })
+  }
   practicalInfoDescriptions.push({
     title: 'Informations de retrait',
     text:
@@ -192,12 +198,6 @@ export const OfferSection = ({
       offerData.withdrawalDetails || ' - ',
   })
 
-  if (offerData.withdrawalType) {
-    practicalInfoDescriptions.push({
-      title: 'Précisez la façon dont vous distribuerez les billets',
-      text: OFFER_WITHDRAWAL_TYPE_LABELS[offerData.withdrawalType],
-    })
-  }
   if (offerData.withdrawalDelay) {
     practicalInfoDescriptions.push({
       title: 'Heure de retrait',
