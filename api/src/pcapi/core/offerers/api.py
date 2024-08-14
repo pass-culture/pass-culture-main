@@ -949,14 +949,14 @@ def create_offerer(
         user_offerer = grant_user_offerer_access(offerer, user)
         db.session.add_all([offerer, digital_venue, user_offerer])
 
-    assert offerer.siren  # helps mypy until Offerer.siren is set as NOT NULL
-    try:
-        siren_info = sirene.get_siren(offerer.siren, raise_if_non_public=False)
-    except sirene_exceptions.SireneException as exc:
-        logger.info("Could not fetch info from Sirene API", extra={"exc": exc})
-        siren_info = None
-
     if is_new:
+        assert offerer.siren  # helps mypy until Offerer.siren is set as NOT NULL
+        try:
+            siren_info = sirene.get_siren(offerer.siren, raise_if_non_public=False)
+        except sirene_exceptions.SireneException as exc:
+            logger.info("Could not fetch info from Sirene API", extra={"exc": exc})
+            siren_info = None
+
         auto_tag_new_offerer(offerer, siren_info, user)
 
         extra_data = {}
