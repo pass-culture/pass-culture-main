@@ -188,6 +188,7 @@ def get_events(query: serialization.GetOffersQueryParams) -> serialization.Event
 
 
 @blueprints.public_api.route("/public/offers/v1/events/<int:event_id>", methods=["PATCH"])
+@api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.EVENT_OFFERS],
@@ -202,7 +203,6 @@ def get_events(query: serialization.GetOffersQueryParams) -> serialization.Event
         )
     ),
 )
-@api_key_required
 def edit_event(event_id: int, body: serialization.EventOfferEdition) -> serialization.EventOfferResponse:
     """
     Update event offer
