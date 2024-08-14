@@ -33,6 +33,7 @@ export const TextArea = ({
   isOptional,
   smallLabel,
   rows = 7,
+  ...props
 }: TextAreaProps): JSX.Element => {
   //  Temporary type fix while react-autosoze-textarea types are not in sync with the latest React types
   //  see https://github.com/DefinitelyTyped/DefinitelyTyped/pull/68984
@@ -71,6 +72,7 @@ export const TextArea = ({
         placeholder={placeholder}
         aria-required={!isOptional}
         {...field}
+        {...(props.onChange ? { onChange: props.onChange } : {})}
       />
     </FieldLayout>
   )
