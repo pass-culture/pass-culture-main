@@ -27,10 +27,10 @@ def delegate_credentials(
 
     credentials.refresh(request)
 
-    signer = iam.Signer(request, credentials, credentials.service_account_email)
+    signer = iam.Signer(request, credentials, credentials.service_account_email)  # type: ignore[attr-defined]
 
     updated_credentials = service_account.Credentials(
-        signer, credentials.service_account_email, TOKEN_URI, scopes=scopes, subject=subject
+        signer, credentials.service_account_email, TOKEN_URI, scopes=scopes, subject=subject  # type: ignore[attr-defined]
     )
 
     return updated_credentials
