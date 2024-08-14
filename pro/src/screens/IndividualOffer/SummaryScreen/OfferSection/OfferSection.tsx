@@ -96,6 +96,11 @@ export const OfferSection = ({
       title: 'Qui propose l’offre',
       text: venueName,
     })
+  } else if (isSplitOfferEnabled) {
+    aboutDescriptions.unshift({
+      title: 'Lieu',
+      text: venueName,
+    })
   } else {
     aboutDescriptions.push({
       title: 'Lieu',
