@@ -3619,15 +3619,18 @@ class CreateDepositTest:
         # Deposit is created right after the validation of the registration
         deposit = api.create_deposit(beneficiary, "created by test", beneficiary.eligibility, age_at_registration=age)
 
-        if age < 16:
+        if age < 17:
             assert deposit.type == models.DepositType.GRANT_15_17
             assert deposit.version == 1
+        else:
+            assert deposit.type == models.DepositType.GRANT_18
+            assert deposit.version == 2
         assert deposit.amount == expected_amount
         assert deposit.user.id == beneficiary.id
 
     @time_machine.travel("2021-02-05 09:00:00")
-    @pytest.mark.parametrize("age, expected_amount", [(15, Decimal(80))])
-    def test_create_underage_deposit_and_recredit_sum_of_15_17(self, age, expected_amount):
+    def test_create_underage_deposit_with_two_birthdays_since_registration(self):
+        age = 15
         with time_machine.travel(
             datetime.datetime.combine(datetime.datetime.utcnow(), datetime.time(0, 0))
             - relativedelta(years=age + 2, months=1)  # 17 years and 1 month ago, user was born
@@ -3646,7 +3649,7 @@ class CreateDepositTest:
                 ),
             )
 
-        # Registration is completed 2 months later, when user is 16 (or 17) years and 1 months old
+        # Registration is completed 2 months later, when user is 17 years and 1 month old
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=beneficiary,
             status=fraud_models.FraudCheckStatus.OK,
@@ -3658,15 +3661,16 @@ class CreateDepositTest:
         # Deposit is created right after the validation of the registration
         deposit = api.create_deposit(beneficiary, "created by test", beneficiary.eligibility, age_at_registration=age)
 
-        if age < 16:
-            assert deposit.type == models.DepositType.GRANT_15_17
-            assert deposit.version == 1
-        assert deposit.amount == expected_amount
+        assert deposit.type == models.DepositType.GRANT_15_17
+        assert deposit.version == 1
+        assert deposit.amount == Decimal(20 + 30 + 30)
         assert deposit.user.id == beneficiary.id
 
     def test_create_underage_deposit_with_birthday_since_registration(self):
         sixteen_years_ago = datetime.datetime.utcnow() - relativedelta(years=16)
-        beneficiary = users_factories.UserFactory(validatedBirthDate=sixteen_years_ago.date())
+        beneficiary = users_factories.UserFactory(
+            dateOfBirth=sixteen_years_ago.date(), validatedBirthDate=sixteen_years_ago.date()
+        )
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=beneficiary,
             status=fraud_models.FraudCheckStatus.OK,
