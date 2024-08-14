@@ -31,10 +31,15 @@ class GetTest:
             user = users_factories.UserFactory()
 
             # When
-            response = client.with_token(user.email).get(FAVORITES_URL)
+            expected_num_queries = 1  # user
+            expected_num_queries += 1  # favorites
+
+            client = client.with_token(user.email)
+            with assert_num_queries(expected_num_queries):
+                response = client.get(FAVORITES_URL)
+                assert response.status_code == 200
 
             # Then
-            assert response.status_code == 200
             assert response.json == {"page": 1, "nbFavorites": 0, "favorites": []}
 
         def when_user_is_logged_in_and_has_favorite_offers(self, client):
