@@ -21,6 +21,7 @@ from pcapi.core.history import factories as history_factories
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.subscription import api as subscription_api
+from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
 from pcapi.core.users import constants as users_constants
@@ -492,9 +493,9 @@ class SSOSigninTest:
         assert not token_utils.UUIDToken.token_exists(token_utils.TokenType.OAUTH_STATE, oauth_state_token.key_suffix)
 
     def test_oauth_state_token_creation(self, client):
-        response = client.get("/native/v1/oauth/state")
-
-        assert response.status_code == 200, response.json
+        with assert_num_queries(1):  # feature
+            response = client.get("/native/v1/oauth/state")
+            assert response.status_code == 200, response.json
 
         oauth_state_token = token_utils.UUIDToken.load_without_checking(response.json["oauthStateToken"])
         assert uuid.UUID(oauth_state_token.key_suffix)
