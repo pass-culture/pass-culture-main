@@ -18,6 +18,7 @@ from pcapi.core.offerers import api
 from pcapi.core.offerers import repository
 import pcapi.core.offerers.exceptions as offerers_exceptions
 import pcapi.core.offerers.models as offerers_models
+import pcapi.core.offers.repository as offers_repository
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import ResourceNotFoundError
@@ -260,6 +261,7 @@ def get_offerer_stats(offerer_id: int) -> offerers_serialize.GetOffererStatsResp
     top_offers = next((el for el in stats if el.table == TOP_3_MOST_CONSULTED_OFFERS_LAST_30_DAYS_TABLE), None)
     if top_offers:
         top_offers_data = top_offers.jsonData["top_offers"]
+        top_offers_data = offers_repository.get_offers_data_from_top_offers(top_offers_data)
         total_views_last_30_days = top_offers.jsonData.get("total_views_last_30_days", 0)
     else:
         top_offers_data = []

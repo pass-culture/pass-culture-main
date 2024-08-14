@@ -7,6 +7,7 @@ from pcapi.core import testing
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
+from pcapi.utils.human_ids import humanize
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -18,8 +19,12 @@ class OffererStatsTest:
         offerer = offerers_factories.OffererFactory()
         pro_user = users_factories.ProFactory()
         offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
-        offer_1 = offers_factories.OfferFactory(venue__managingOffererId=offerer.id)
+        product = offers_factories.ProductFactory()
+        product_mediation_url = "/product/image/my_id"
+        offers_factories.ProductMediationFactory(product=product, url=product_mediation_url)
+        offer_1 = offers_factories.OfferFactory(venue__managingOffererId=offerer.id, product=product)
         offer_2 = offers_factories.OfferFactory(venue__managingOffererId=offerer.id)
+        mediation = offers_factories.MediationFactory(offer=offer_2)
         offer_3 = offers_factories.OfferFactory(venue__managingOffererId=offerer.id)
 
         offerers_factories.OffererStatsFactory(
@@ -50,15 +55,15 @@ class OffererStatsTest:
                 "top_offers": [
                     {
                         "offerId": offer_1.id,
-                        "numberOfViews": 1,
+                        "numberOfViews": 3,
                     },
                     {
                         "offerId": offer_2.id,
-                        "numberOfViews": 2,
+                        "numberOfViews": 1,
                     },
                     {
                         "offerId": offer_3.id,
-                        "numberOfViews": 3,
+                        "numberOfViews": 2,
                     },
                 ],
             },
@@ -68,12 +73,7 @@ class OffererStatsTest:
         queries = testing.AUTHENTICATION_QUERIES
         queries += 1  # check user_offerer exists
         queries += 1  # select offerer_stats
-        queries += 1  # select 1st offer
-        queries += 1  # select 1st mediation
-        queries += 1  # select 2nd offer
-        queries += 1  # select 2nd mediation
-        queries += 1  # select 3th offer
-        queries += 1  # select 3th mediation
+        queries += 1  # select offers with images
         with testing.assert_num_queries(queries):
             response = client.get(f"/offerers/{offerer_id}/stats")
             assert response.status_code == 200
@@ -86,9 +86,25 @@ class OffererStatsTest:
                     {"eventDate": "2021-01-03", "numberOfViews": 3},
                 ],
                 "topOffers": [
-                    {"image": None, "numberOfViews": 1, "offerId": offer_1.id, "offerName": offer_1.name},
-                    {"image": None, "numberOfViews": 2, "offerId": offer_2.id, "offerName": offer_2.name},
-                    {"image": None, "numberOfViews": 3, "offerId": offer_3.id, "offerName": offer_3.name},
+                    {
+                        "image": {
+                            "credit": None,
+                            "url": product_mediation_url,
+                        },
+                        "numberOfViews": 3,
+                        "offerId": offer_1.id,
+                        "offerName": offer_1.name,
+                    },
+                    {"image": None, "numberOfViews": 2, "offerId": offer_3.id, "offerName": offer_3.name},
+                    {
+                        "image": {
+                            "credit": None,
+                            "url": f"http://localhost/storage/thumbs/mediations/{humanize(mediation.id)}",
+                        },
+                        "numberOfViews": 1,
+                        "offerId": offer_2.id,
+                        "offerName": offer_2.name,
+                    },
                 ],
                 "totalViewsLast30Days": 6,
             },
