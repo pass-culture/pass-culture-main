@@ -86,6 +86,7 @@ def update_provider(body: providers_serialization.ProviderUpdate) -> providers_s
 
 
 @blueprints.public_api.route("/public/providers/v1/venues/<int:venue_id>", methods=["PATCH"])
+@api_key_required
 @spectree_serialize(
     on_success_status=204,
     api=spectree_schemas.public_api_schema,
@@ -101,7 +102,6 @@ def update_provider(body: providers_serialization.ProviderUpdate) -> providers_s
         )
     ),
 )
-@api_key_required
 def update_venue_external_urls(
     venue_id: int,
     body: providers_serialization.VenueProviderExternalUrlsUpdate,
@@ -109,14 +109,14 @@ def update_venue_external_urls(
     """
     Update external urls for specific venues
 
-    Endpoint to set the urls used by our notification system to notify/request your solution.
+    Endpoint to set the urls used by our messaging system to notify/request your solution.
     """
 
     venue_provider = providers_repository.get_venue_provider_by_venue_and_provider_ids(
         venue_id=venue_id, provider_id=current_api_key.provider.id
     )
 
-    if not venue_provider:
+    if not venue_provider or not venue_provider.isActive:
         raise api_errors.ResourceNotFoundError({"global": "This venue cannot be found"})
 
     update_body = body.dict(exclude_unset=True)
