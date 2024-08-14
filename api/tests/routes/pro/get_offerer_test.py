@@ -14,8 +14,10 @@ from pcapi.models import db
 from pcapi.utils.date import format_into_utc_date
 
 
+pytestmark = pytest.mark.usefixtures("db_session")
+
+
 class GetOffererTest:
-    @pytest.mark.usefixtures("db_session")
     def test_basics(self, client):
         pro = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()
@@ -49,9 +51,21 @@ class GetOffererTest:
 
         offerer_id = offerer.id
         client = client.with_session_auth(pro.email)
-
-        with testing.assert_no_duplicated_queries():
-            response = client.get(f"/offerers/{offerer_id}")
+        num_queries = testing.AUTHENTICATION_QUERIES
+        num_queries += 1  # check user_offerer exists
+        num_queries += 1  # select offerer
+        num_queries += 1  # select api_key
+        num_queries += 1  # select venue
+        num_queries += 1  # check offerer has non free offers
+        num_queries += 1  # select venue_id
+        num_queries += 1  # select offerer_address
+        num_queries += 1  # select bank_information
+        num_queries += 1  # select venue
+        num_queries += 1  # select venues_id with active offers
+        with testing.assert_num_queries(num_queries):
+            with testing.assert_no_duplicated_queries():
+                response = client.get(f"/offerers/{offerer_id}")
+                assert response.status_code == 200
 
         expected_serialized_offerer = {
             "apiKey": {"maxAllowed": 5, "prefixes": ["testenv_prefix", "testenv_prefix2"]},
@@ -126,32 +140,31 @@ class GetOffererTest:
             "street": offerer.street,
             "allowedOnAdage": offerer.allowedOnAdage,
         }
-        assert response.status_code == 200
         assert response.json == expected_serialized_offerer
 
         db.session.refresh(offerer)
         assert len(offerer.managedVenues) == 3
 
-    @pytest.mark.usefixtures("db_session")
     def test_unknown_offerer(self, client):
         pro = users_factories.ProFactory()
 
         client = client.with_session_auth(pro.email)
-        response = client.get("/offerers/ABC1234")
+        with testing.assert_num_queries(testing.AUTHENTICATION_QUERIES):
+            response = client.get("/offerers/ABC1234")
+            assert response.status_code == 404
 
-        assert response.status_code == 404
-
-    @pytest.mark.usefixtures("db_session")
     def test_unauthorized_offerer(self, client):
         pro = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()
 
         client = client.with_session_auth(pro.email)
-        response = client.get(f"/offerers/{offerer.id}")
+        offerer_id = offerer.id
+        num_queries = testing.AUTHENTICATION_QUERIES
+        num_queries += 1  # check user_offerer exists
+        with testing.assert_num_queries(num_queries):
+            response = client.get(f"/offerers/{offerer_id}")
+            assert response.status_code == 403
 
-        assert response.status_code == 403
-
-    @pytest.mark.usefixtures("db_session")
     def test_serialize_venue_offer_created_flag(self, client):
         pro = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()
@@ -170,9 +183,19 @@ class GetOffererTest:
 
         offerer_id = offerer.id
         client = client.with_session_auth(pro.email)
-
-        response = client.get(f"/offerers/{offerer_id}")
-        assert response.status_code == 200
+        num_queries = testing.AUTHENTICATION_QUERIES
+        num_queries += 1  # check user_offerer exists
+        num_queries += 1  # select offerer
+        num_queries += 1  # select api_key
+        num_queries += 1  # select venue
+        num_queries += 1  # check offerer has non free offers
+        num_queries += 1  # select venue_id
+        num_queries += 1  # select offerer_address
+        num_queries += 1  # select bank_information
+        num_queries += 1  # select venues_id with active offers
+        with testing.assert_num_queries(num_queries):
+            response = client.get(f"/offerers/{offerer_id}")
+            assert response.status_code == 200
         assert response.json["managedVenues"][0]["hasCreatedOffer"] is True
         assert response.json["managedVenues"][1]["hasCreatedOffer"] is True
         assert response.json["managedVenues"][2]["hasCreatedOffer"] is True
@@ -182,7 +205,6 @@ class GetOffererTest:
         assert response.json["venuesWithNonFreeOffersWithoutBankAccounts"] == []
         assert response.json["hasNonFreeOffer"] is False
 
-    @pytest.mark.usefixtures("db_session")
     def test_offerer_has_non_free_offer(self, client):
         pro = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()
@@ -193,16 +215,25 @@ class GetOffererTest:
 
         offerer_id = offerer.id
         client = client.with_session_auth(pro.email)
-
-        response = client.get(f"/offerers/{offerer_id}")
-        assert response.status_code == 200
+        num_queries = testing.AUTHENTICATION_QUERIES
+        num_queries += 1  # check user_offerer exists
+        num_queries += 1  # select offerer
+        num_queries += 1  # select api_key
+        num_queries += 1  # select venue
+        num_queries += 1  # check offerer has non free offers
+        num_queries += 1  # select venue_id
+        num_queries += 1  # select offerer_address
+        num_queries += 1  # select bank_information
+        num_queries += 1  # select venues_id with active offers
+        with testing.assert_num_queries(num_queries):
+            response = client.get(f"/offerers/{offerer_id}")
+            assert response.status_code == 200
         assert response.json["managedVenues"][0]["hasCreatedOffer"] is True
         assert response.json["hasValidBankAccount"] is False
         assert response.json["hasPendingBankAccount"] is False
         assert response.json["venuesWithNonFreeOffersWithoutBankAccounts"] == [venue_with_offer.id]
         assert response.json["hasNonFreeOffer"] is True
 
-    @pytest.mark.usefixtures("db_session")
     def test_offerer_has_inactive_non_free_offer(self, client):
         pro = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()
@@ -213,16 +244,25 @@ class GetOffererTest:
 
         offerer_id = offerer.id
         client = client.with_session_auth(pro.email)
-
-        response = client.get(f"/offerers/{offerer_id}")
-        assert response.status_code == 200
+        num_queries = testing.AUTHENTICATION_QUERIES
+        num_queries += 1  # check user_offerer exists
+        num_queries += 1  # select offerer
+        num_queries += 1  # select api_key
+        num_queries += 1  # select venue
+        num_queries += 1  # check offerer has non free offers
+        num_queries += 1  # select venue_id
+        num_queries += 1  # select offerer_address
+        num_queries += 1  # select bank_information
+        num_queries += 1  # select venues_id with active offers
+        with testing.assert_num_queries(num_queries):
+            response = client.get(f"/offerers/{offerer_id}")
+            assert response.status_code == 200
         assert response.json["managedVenues"][0]["hasCreatedOffer"] is True
         assert response.json["hasValidBankAccount"] is False
         assert response.json["hasPendingBankAccount"] is False
         assert response.json["venuesWithNonFreeOffersWithoutBankAccounts"] == []
         assert response.json["hasNonFreeOffer"] is False
 
-    @pytest.mark.usefixtures("db_session")
     def test_offerer_has_inactive_non_free_collective_offer(self, client):
         pro = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()
@@ -235,9 +275,19 @@ class GetOffererTest:
 
         offerer_id = offerer.id
         client = client.with_session_auth(pro.email)
-
-        response = client.get(f"/offerers/{offerer_id}")
-        assert response.status_code == 200
+        num_queries = testing.AUTHENTICATION_QUERIES
+        num_queries += 1  # check user_offerer exists
+        num_queries += 1  # select offerer
+        num_queries += 1  # select api_key
+        num_queries += 1  # select venue
+        num_queries += 1  # check offerer has non free offers
+        num_queries += 1  # select venue_id
+        num_queries += 1  # select offerer_address
+        num_queries += 1  # select bank_information
+        num_queries += 1  # select venues_id with active offers
+        with testing.assert_num_queries(num_queries):
+            response = client.get(f"/offerers/{offerer_id}")
+            assert response.status_code == 200
         assert response.json["managedVenues"][0]["hasCreatedOffer"] is True
         assert response.json["hasValidBankAccount"] is False
         assert response.json["hasPendingBankAccount"] is False
@@ -245,7 +295,6 @@ class GetOffererTest:
         assert response.json["hasNonFreeOffer"] is False
         assert response.json["hasBankAccountWithPendingCorrections"] is False
 
-    @pytest.mark.usefixtures("db_session")
     def test_offerer_has_non_free_collective_offer(self, client):
         pro = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()
@@ -258,9 +307,19 @@ class GetOffererTest:
 
         offerer_id = offerer.id
         client = client.with_session_auth(pro.email)
-
-        response = client.get(f"/offerers/{offerer_id}")
-        assert response.status_code == 200
+        num_queries = testing.AUTHENTICATION_QUERIES
+        num_queries += 1  # check user_offerer exists
+        num_queries += 1  # select offerer
+        num_queries += 1  # select api_key
+        num_queries += 1  # select venue
+        num_queries += 1  # check offerer has non free offers
+        num_queries += 1  # select venue_id
+        num_queries += 1  # select offerer_address
+        num_queries += 1  # select bank_information
+        num_queries += 1  # select venues_id with active offers
+        with testing.assert_num_queries(num_queries):
+            response = client.get(f"/offerers/{offerer_id}")
+            assert response.status_code == 200
         assert response.json["managedVenues"][0]["hasCreatedOffer"] is True
         assert response.json["hasValidBankAccount"] is False
         assert response.json["hasPendingBankAccount"] is False
@@ -268,7 +327,6 @@ class GetOffererTest:
         assert response.json["hasNonFreeOffer"] is True
         assert response.json["hasBankAccountWithPendingCorrections"] is False
 
-    @pytest.mark.usefixtures("db_session")
     def test_offerer_has_free_offer(self, client):
         pro = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()
@@ -279,9 +337,19 @@ class GetOffererTest:
 
         offerer_id = offerer.id
         client = client.with_session_auth(pro.email)
-
-        response = client.get(f"/offerers/{offerer_id}")
-        assert response.status_code == 200
+        num_queries = testing.AUTHENTICATION_QUERIES
+        num_queries += 1  # check user_offerer exists
+        num_queries += 1  # select offerer
+        num_queries += 1  # select api_key
+        num_queries += 1  # select venue
+        num_queries += 1  # check offerer has non free offers
+        num_queries += 1  # select venue_id
+        num_queries += 1  # select offerer_address
+        num_queries += 1  # select bank_information
+        num_queries += 1  # select venues_id with active offers
+        with testing.assert_num_queries(num_queries):
+            response = client.get(f"/offerers/{offerer_id}")
+            assert response.status_code == 200
         assert response.json["managedVenues"][0]["hasCreatedOffer"] is True
         assert response.json["hasValidBankAccount"] is False
         assert response.json["hasPendingBankAccount"] is False
@@ -289,7 +357,6 @@ class GetOffererTest:
         assert response.json["hasNonFreeOffer"] is False
         assert response.json["hasBankAccountWithPendingCorrections"] is False
 
-    @pytest.mark.usefixtures("db_session")
     def test_offerer_has_free_collective_offer(self, client):
         pro = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()
@@ -302,9 +369,19 @@ class GetOffererTest:
 
         offerer_id = offerer.id
         client = client.with_session_auth(pro.email)
-
-        response = client.get(f"/offerers/{offerer_id}")
-        assert response.status_code == 200
+        num_queries = testing.AUTHENTICATION_QUERIES
+        num_queries += 1  # check user_offerer exists
+        num_queries += 1  # select offerer
+        num_queries += 1  # select api_key
+        num_queries += 1  # select venue
+        num_queries += 1  # check offerer has non free offers
+        num_queries += 1  # select venue_id
+        num_queries += 1  # select offerer_address
+        num_queries += 1  # select bank_information
+        num_queries += 1  # select venues_id with active offers
+        with testing.assert_num_queries(num_queries):
+            response = client.get(f"/offerers/{offerer_id}")
+            assert response.status_code == 200
         assert response.json["managedVenues"][0]["hasCreatedOffer"] is True
         assert response.json["hasValidBankAccount"] is False
         assert response.json["hasPendingBankAccount"] is False
@@ -312,30 +389,33 @@ class GetOffererTest:
         assert response.json["hasNonFreeOffer"] is False
         assert response.json["hasBankAccountWithPendingCorrections"] is False
 
-    @pytest.mark.usefixtures("db_session")
     def test_we_dont_display_anything_if_offerer_dont_have_any_bank_accounts_nor_venues(self, client):
-        # Given
         pro_user = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
 
-        # When
         http_client = client.with_session_auth(pro_user.email)
+        num_queries = testing.AUTHENTICATION_QUERIES
+        num_queries += 1  # check user_offerer exists
+        num_queries += 1  # select offerer
+        num_queries += 1  # select api_key
+        num_queries += 1  # select venue
+        num_queries += 1  # check offerer has non free offers
+        num_queries += 1  # select venue_id
+        num_queries += 1  # select offerer_address
+        num_queries += 1  # select bank_information
+        num_queries += 1  # select venues_id with active offers
+        with testing.assert_num_queries(num_queries):
+            response = http_client.get(f"/offerers/{offerer.id}")
+            assert response.status_code == 200
 
-        response = http_client.get(f"/offerers/{offerer.id}")
-
-        # Then
-        assert response.status_code == 200
         offerer = response.json
-
         assert offerer["hasValidBankAccount"] is False
         assert offerer["hasPendingBankAccount"] is False
         assert offerer["venuesWithNonFreeOffersWithoutBankAccounts"] == []
         assert offerer["hasNonFreeOffer"] is False
 
-    @pytest.mark.usefixtures("db_session")
     def test_client_can_now_if_the_offerer_have_any_valid_bank_account(self, client):
-        # Given
         _another_pro_user = users_factories.ProFactory()
         another_offerer = offerers_factories.OffererFactory()
         another_bank_account = finance_factories.BankAccountFactory(offerer=another_offerer)
@@ -351,24 +431,30 @@ class GetOffererTest:
         offerers_factories.VenueWithoutSiretFactory(managingOfferer=offerer)
         finance_factories.BankAccountFactory(offerer=offerer)
 
-        # When
         http_client = client.with_session_auth(pro_user.email)
+        offerer_id = offerer.id
+        num_queries = testing.AUTHENTICATION_QUERIES
+        num_queries += 1  # check user_offerer exists
+        num_queries += 1  # select offerer
+        num_queries += 1  # select api_key
+        num_queries += 1  # select venue
+        num_queries += 1  # check offerer has non free offers
+        num_queries += 1  # select venue_id
+        num_queries += 1  # select offerer_address
+        num_queries += 1  # select bank_information
+        num_queries += 1  # select venues_id with active offers
+        with testing.assert_num_queries(num_queries):
+            response = http_client.get(f"/offerers/{offerer_id}")
+            assert response.status_code == 200
 
-        response = http_client.get(f"/offerers/{offerer.id}")
-
-        # Then
-        assert response.status_code == 200
         offerer = response.json
-
         assert offerer["hasValidBankAccount"] is True
         assert offerer["hasPendingBankAccount"] is False
         assert offerer["venuesWithNonFreeOffersWithoutBankAccounts"] == []
         assert offerer["hasNonFreeOffer"] is False
         assert response.json["hasBankAccountWithPendingCorrections"] is False
 
-    @pytest.mark.usefixtures("db_session")
     def test_client_can_know_which_venues_have_non_free_offers_without_bank_accounts(self, client):
-        # Given
         pro_user = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
@@ -405,14 +491,23 @@ class GetOffererTest:
             ),
         )
 
-        # When
         http_client = client.with_session_auth(pro_user.email)
-        response = http_client.get(f"/offerers/{offerer.id}")
+        offerer_id = offerer.id
+        num_queries = testing.AUTHENTICATION_QUERIES
+        num_queries += 1  # check user_offerer exists
+        num_queries += 1  # select offerer
+        num_queries += 1  # select api_key
+        num_queries += 1  # select venue
+        num_queries += 1  # check offerer has non free offers
+        num_queries += 1  # select venue_id
+        num_queries += 1  # select offerer_address
+        num_queries += 1  # select bank_information
+        num_queries += 1  # select venues_id with active offers
+        with testing.assert_num_queries(num_queries):
+            response = http_client.get(f"/offerers/{offerer_id}")
+            assert response.status_code == 200
 
-        # Then
-        assert response.status_code == 200
         offerer = response.json
-
         assert offerer["hasValidBankAccount"] is True
         assert offerer["hasPendingBankAccount"] is False
         assert sorted(offerer["venuesWithNonFreeOffersWithoutBankAccounts"]) == [
@@ -421,46 +516,63 @@ class GetOffererTest:
         ]
         assert offerer["hasNonFreeOffer"] is True
 
-    @pytest.mark.usefixtures("db_session")
     def test_client_can_know_if_offerer_have_any_pending_bank_accounts(self, client):
-        # Given
         pro_user = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
         finance_factories.BankAccountFactory(
             offerer=offerer, status=finance_models.BankAccountApplicationStatus.ON_GOING
         )
-        # When
+
         http_client = client.with_session_auth(pro_user.email)
+        offerer_id = offerer.id
 
-        response = http_client.get(f"/offerers/{offerer.id}")
+        num_queries = testing.AUTHENTICATION_QUERIES
+        num_queries += 1  # check user_offerer exists
+        num_queries += 1  # select offerer
+        num_queries += 1  # select api_key
+        num_queries += 1  # select venue
+        num_queries += 1  # check offerer has non free offers
+        num_queries += 1  # select venue_id
+        num_queries += 1  # select offerer_address
+        num_queries += 1  # select bank_information
+        num_queries += 1  # select venues_id with active offers
+        with testing.assert_num_queries(num_queries):
+            response = http_client.get(f"/offerers/{offerer_id}")
+            assert response.status_code == 200
 
-        # Then
-        assert response.status_code == 200
         offerer = response.json
-
         assert offerer["hasValidBankAccount"] is False
         assert offerer["hasPendingBankAccount"] is True
         assert offerer["venuesWithNonFreeOffersWithoutBankAccounts"] == []
         assert offerer["hasNonFreeOffer"] is False
         assert offerer["hasBankAccountWithPendingCorrections"] is False
 
-    @pytest.mark.usefixtures("db_session")
     def test_client_can_know_if_offerer_has_any_pending_bank_account(self, client):
-        # Given
+
         pro_user = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
         finance_factories.BankAccountFactory(
             offerer=offerer, status=finance_models.BankAccountApplicationStatus.WITH_PENDING_CORRECTIONS
         )
-        # When
+
         http_client = client.with_session_auth(pro_user.email)
+        offerer_id = offerer.id
+        num_queries = testing.AUTHENTICATION_QUERIES
+        num_queries += 1  # check user_offerer exists
+        num_queries += 1  # select offerer
+        num_queries += 1  # select api_key
+        num_queries += 1  # select venue
+        num_queries += 1  # check offerer has non free offers
+        num_queries += 1  # select venue_id
+        num_queries += 1  # select offerer_address
+        num_queries += 1  # select bank_information
+        num_queries += 1  # select venues_id with active offers
+        with testing.assert_num_queries(num_queries):
+            response = http_client.get(f"/offerers/{offerer_id}")
+            assert response.status_code == 200
 
-        response = http_client.get(f"/offerers/{offerer.id}")
-
-        # Then
-        assert response.status_code == 200
         offerer = response.json
 
         assert offerer["hasValidBankAccount"] is False
@@ -469,33 +581,38 @@ class GetOffererTest:
         assert offerer["hasNonFreeOffer"] is False
         assert offerer["hasBankAccountWithPendingCorrections"] is True
 
-    @pytest.mark.usefixtures("db_session")
     def test_client_can_know_if_have_any_pending_bank_accounts_draft_included(self, client):
-        # Given
         pro_user = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
         finance_factories.BankAccountFactory(offerer=offerer, status=finance_models.BankAccountApplicationStatus.DRAFT)
-        # When
+
         http_client = client.with_session_auth(pro_user.email)
+        offerer_id = offerer.id
+        num_queries = testing.AUTHENTICATION_QUERIES
+        num_queries += 1  # check user_offerer exists
+        num_queries += 1  # select offerer
+        num_queries += 1  # select api_key
+        num_queries += 1  # select venue
+        num_queries += 1  # check offerer has non free offers
+        num_queries += 1  # select venue_id
+        num_queries += 1  # select offerer_address
+        num_queries += 1  # select bank_information
+        num_queries += 1  # select venues_id with active offers
+        with testing.assert_num_queries(num_queries):
+            response = http_client.get(f"/offerers/{offerer_id}")
+            assert response.status_code == 200
 
-        response = http_client.get(f"/offerers/{offerer.id}")
-
-        # Then
-        assert response.status_code == 200
         offerer = response.json
-
         assert offerer["hasValidBankAccount"] is False
         assert offerer["hasPendingBankAccount"] is True
         assert offerer["venuesWithNonFreeOffersWithoutBankAccounts"] == []
         assert offerer["hasNonFreeOffer"] is False
         assert offerer["hasBankAccountWithPendingCorrections"] is False
 
-    @pytest.mark.usefixtures("db_session")
     def test_client_can_know_which_venues_have_non_free_offers_without_bank_accounts_taking_collective_offer_into_account(
         self, client
     ):
-        # Given
         pro_user = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
@@ -516,15 +633,23 @@ class GetOffererTest:
             venue=expected_venue, bankAccount=expected_bank_account, timespan=(datetime.datetime.utcnow(),)
         )
 
-        # When
         http_client = client.with_session_auth(pro_user.email)
+        offerer_id = offerer.id
+        num_queries = testing.AUTHENTICATION_QUERIES
+        num_queries += 1  # check user_offerer exists
+        num_queries += 1  # select offerer
+        num_queries += 1  # select api_key
+        num_queries += 1  # select venue
+        num_queries += 1  # check offerer has non free offers
+        num_queries += 1  # select venue_id
+        num_queries += 1  # select offerer_address
+        num_queries += 1  # select bank_information
+        num_queries += 1  # select venues_id with active offers
+        with testing.assert_num_queries(num_queries):
+            response = http_client.get(f"/offerers/{offerer_id}")
+            assert response.status_code == 200
 
-        response = http_client.get(f"/offerers/{offerer.id}")
-
-        # Then
-        assert response.status_code == 200
         offerer = response.json
-
         assert offerer["hasValidBankAccount"] is True
         assert offerer["hasPendingBankAccount"] is False
         assert sorted(offerer["venuesWithNonFreeOffersWithoutBankAccounts"]) == [
@@ -533,7 +658,6 @@ class GetOffererTest:
         assert offerer["hasNonFreeOffer"]
         assert offerer["hasBankAccountWithPendingCorrections"] is False
 
-    @pytest.mark.usefixtures("db_session")
     def test_user_can_know_if_each_managed_venues_has_venue_provider(self, client):
         pro = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()
@@ -545,9 +669,19 @@ class GetOffererTest:
 
         offerer_id = offerer.id
         client = client.with_session_auth(pro.email)
-
-        response = client.get(f"/offerers/{offerer_id}")
-        assert response.status_code == 200
+        num_queries = testing.AUTHENTICATION_QUERIES
+        num_queries += 1  # check user_offerer exists
+        num_queries += 1  # select offerer
+        num_queries += 1  # select api_key
+        num_queries += 1  # select venue
+        num_queries += 1  # check offerer has non free offers
+        num_queries += 1  # select venue_id
+        num_queries += 1  # select offerer_address
+        num_queries += 1  # select bank_information
+        num_queries += 1  # select venues_id with active offers
+        with testing.assert_num_queries(num_queries):
+            response = client.get(f"/offerers/{offerer_id}")
+            assert response.status_code == 200
         sorted_managed_venues = sorted(response.json["managedVenues"], key=lambda x: x["name"])
         assert sorted_managed_venues[0]["hasVenueProviders"] is True
         assert sorted_managed_venues[1]["hasVenueProviders"] is False
@@ -557,7 +691,6 @@ class GetOffererTest:
         assert response.json["hasNonFreeOffer"] is False
         assert response.json["hasBankAccountWithPendingCorrections"] is False
 
-    @pytest.mark.usefixtures("db_session")
     def test_offerer_properties_rely_only_on_the_offerer_data(self, client):
         foreign_pro_user = users_factories.ProFactory()
         foreign_offerer = offerers_factories.OffererFactory()
@@ -577,18 +710,27 @@ class GetOffererTest:
 
         offerer_id = offerer.id
         client = client.with_session_auth(pro_user.email)
+        num_queries = testing.AUTHENTICATION_QUERIES
+        num_queries += 1  # check user_offerer exists
+        num_queries += 1  # select offerer
+        num_queries += 1  # select api_key
+        num_queries += 1  # select venue
+        num_queries += 1  # check offerer has non free offers
+        num_queries += 1  # select venue_id
+        num_queries += 1  # select offerer_address
+        num_queries += 1  # select bank_information
+        num_queries += 1  # select venues_id with active offers
+        with testing.assert_num_queries(num_queries):
+            response = client.get(f"/offerers/{offerer_id}")
+            assert response.status_code == 200
 
-        response = client.get(f"/offerers/{offerer_id}")
-        assert response.status_code == 200
         assert response.json["hasValidBankAccount"] is False
         assert response.json["hasPendingBankAccount"] is False
         assert response.json["venuesWithNonFreeOffersWithoutBankAccounts"] == []
         assert response.json["hasNonFreeOffer"] is False
         assert response.json["hasBankAccountWithPendingCorrections"] is False
 
-    @pytest.mark.usefixtures("db_session")
     def test_user_can_correctly_see_if_there_is_venues_without_bank_account_left(self, client):
-        # Given
         pro_user = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()
         offerer_id = offerer.id
@@ -605,7 +747,6 @@ class GetOffererTest:
         third_venue = offerers_factories.VenueFactory(pricing_point="self", managingOfferer=offerer)
         offers_factories.StockFactory(offer__venue=third_venue)
 
-        # When
         http_client = client.with_session_auth(pro_user.email)
 
         # Link all offerer venues to this bank_account
@@ -632,8 +773,19 @@ class GetOffererTest:
 
         # We now have plenty of VenueBankAccountLink
         # But the user should still receive distinct `venuesWithNonFreeOffersWithoutBankAccounts`, not a cartesian product between Venues and VenueBankAccountLink
-        response = http_client.get(f"/offerers/{offerer_id}")
-        assert response.status_code == 200
+        num_queries = testing.AUTHENTICATION_QUERIES
+        num_queries += 1  # check user_offerer exists
+        num_queries += 1  # select offerer
+        num_queries += 1  # select api_key
+        num_queries += 1  # select venue
+        num_queries += 1  # check offerer has non free offers
+        num_queries += 1  # select venue_id
+        num_queries += 1  # select offerer_address
+        num_queries += 1  # select bank_information
+        num_queries += 1  # select venues_id with active offers
+        with testing.assert_num_queries(num_queries):
+            response = http_client.get(f"/offerers/{offerer_id}")
+            assert response.status_code == 200
 
         assert set(response.json["venuesWithNonFreeOffersWithoutBankAccounts"]) == {
             first_venue.id,
