@@ -1,6 +1,13 @@
-import { fr } from 'date-fns/locale'
 import React from 'react'
-import { Line } from 'react-chartjs-2'
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from 'recharts'
 
 import { OffererViewsModel } from 'apiClient/v1'
 import fullLinkIcon from 'icons/full-link.svg'
@@ -21,33 +28,10 @@ export const CumulatedViews = ({ dailyViews }: CumulatedViewsProps) => {
     dailyViews.length < 2 ||
     dailyViews.every((view) => view.numberOfViews === 0)
 
-  const data = {
-    datasets: [
-      {
-        data: dailyViews.map((dailyView) => ({
-          x: dailyView.eventDate,
-          y: dailyView.numberOfViews,
-        })),
-        pointStyle: false as const,
-        backgroundColor: chartColors.primary,
-        borderColor: chartColors.primary,
-        tension: 0.3,
-      },
-    ],
-  }
-
-  const options = {
-    scales: {
-      x: {
-        title: { display: true, text: 'Date' },
-        type: 'time',
-        adapters: { date: { locale: fr } },
-      },
-      y: {
-        title: { display: true, text: 'Nombre de vues cumulées' },
-      },
-    },
-  } as const
+  const formattedData = dailyViews.map((dailyView) => ({
+    date: new Date(dailyView.eventDate).getTime() || 0,
+    views: dailyView.numberOfViews || 0,
+  }))
 
   return (
     <div className={styles['cumulated-views']}>
@@ -90,13 +74,56 @@ export const CumulatedViews = ({ dailyViews }: CumulatedViewsProps) => {
         </div>
       ) : (
         <div className={styles['chart']}>
-          <Line
-            data={data}
-            options={options}
-            role="img"
-            aria-labelledby="chart-title"
-            aria-details="chart-description"
-          />
+          <ResponsiveContainer width="100%" height={400}>
+            <LineChart
+              data={formattedData}
+              margin={{ top: 0, right: 0, left: 0, bottom: 16 }}
+            >
+              <CartesianGrid />
+              <XAxis
+                label={{
+                  value: 'Date',
+                  position: 'bottom',
+                }}
+                dataKey="date"
+                type="number"
+                scale="time"
+                domain={['auto', 'auto']}
+                tickFormatter={(tick) =>
+                  new Date(tick).toLocaleDateString('fr-FR', {
+                    year: 'numeric',
+                    month: 'numeric',
+                    day: 'numeric',
+                  })
+                }
+              />
+              <YAxis
+                label={{
+                  value: 'Nombre de vues cumulées',
+                  angle: -90,
+                  dx: -20,
+                }}
+                offset={10000}
+                // dx={-20}
+                // scaleToFit
+              />
+              <Tooltip
+                labelFormatter={(label) =>
+                  new Date(label).toLocaleDateString('fr-FR', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric',
+                  })
+                }
+              />
+              <Line
+                type="monotone"
+                dataKey="views"
+                stroke={chartColors.primary}
+                strokeWidth={3}
+              />
+            </LineChart>
+          </ResponsiveContainer>
 
           {/* Wrap in visually hidden div, this class doesn't work on Chrome on <table> element */}
           <div className="visually-hidden">
