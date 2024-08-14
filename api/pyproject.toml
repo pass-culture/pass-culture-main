@@ -49,7 +49,7 @@ psycopg2 = "^2.9.9"
 py7zr = "^0.22.0"
 pydantic = { version = "==2.*", extras = ["email"] }
 pyjwt = { version = "2.9.0", extras = ["crypto"] }
-pypdf = "^4.2.0"
+pypdf = "^4.3.1"
 pyproj = "^3.6.1"
 pysaml2 = "^7.5.0"
 python-dateutil = "2.9.0.post0"
