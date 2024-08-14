@@ -2,7 +2,6 @@ import { useFormikContext } from 'formik'
 
 import { CategoryResponseModel, SubcategoryResponseModel } from 'apiClient/v1'
 import { FormLayout } from 'components/FormLayout/FormLayout'
-import { useIndividualOfferContext } from 'context/IndividualOfferContext/IndividualOfferContext'
 import { Select } from 'ui-kit/form/Select/Select'
 import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
 
@@ -26,7 +25,6 @@ export function Subcategories({
   filteredCategories,
   filteredSubcategories,
 }: SuggestedSubcategoriesProps) {
-  const { subCategories } = useIndividualOfferContext()
   const {
     values: { categoryId, subcategoryConditionalFields },
     handleChange,
@@ -34,7 +32,10 @@ export function Subcategories({
   } = useFormikContext<DetailsFormValues>()
 
   const categoryOptions = buildCategoryOptions(filteredCategories)
-  const subcategoryOptions = buildSubcategoryOptions(subCategories, categoryId)
+  const subcategoryOptions = buildSubcategoryOptions(
+    filteredSubcategories,
+    categoryId
+  )
 
   return (
     <FormLayout.Section title={'Type d’offre'}>
