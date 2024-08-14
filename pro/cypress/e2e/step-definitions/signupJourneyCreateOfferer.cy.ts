@@ -7,13 +7,13 @@ Given('I log in with a {string} new account', (nth: string) => {
   let emailAccount: string // @todo: comptes provisoires avant d'avoir une stratégie de comptes à voir avec Olivier Geber
   switch (nth) {
     case 'first':
-      emailAccount = 'pctest.grandpublic.age-more-than-18yo@example.com'
+      emailAccount = 'signupJourney.age-more-than-18yo@example.com'
       break
     case 'second':
-      emailAccount = 'pctest.autre93.has-signed-up@example.com'
+      emailAccount = 'signupJourney93.has-signed-up@example.com'
       break
     default:
-      emailAccount = 'pctest.autre97.has-signed-up@example.com'
+      emailAccount = 'signupJourney97.has-signed-up@example.com'
   }
   cy.login({
     email: emailAccount,
