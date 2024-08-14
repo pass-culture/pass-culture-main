@@ -1,5 +1,6 @@
 import pytest
 
+from pcapi.core import testing
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.providers.factories as providers_factories
 import pcapi.core.users.factories as users_factories
@@ -7,7 +8,6 @@ import pcapi.core.users.factories as users_factories
 
 @pytest.mark.usefixtures("db_session")
 def test_venue_has_known_allocine_id(client):
-    # Given
     user = users_factories.UserFactory()
     venue = offerers_factories.VenueFactory()
     providers_factories.AllocineTheaterFactory(siret=venue.siret)
@@ -15,11 +15,18 @@ def test_venue_has_known_allocine_id(client):
     allocine_provider = providers_factories.AllocineProviderFactory()
     other_provider = providers_factories.ProviderFactory(localClass="B provider")
 
-    # When
-    response = client.with_session_auth(email=user.email).get(f"/venueProviders/{venue.id}")
+    client = client.with_session_auth(email=user.email)
+    venue_id = venue.id
+    num_queries = testing.AUTHENTICATION_QUERIES
+    num_queries += 1  # select venue
+    num_queries += 1  # select cinema_provider_pivot
+    num_queries += 1  # select allocine_pivot
+    num_queries += 1  # select allocine_theater
+    num_queries += 1  # select provider
+    with testing.assert_num_queries(num_queries):
+        response = client.get(f"/venueProviders/{venue_id}")
+        assert response.status_code == 200
 
-    # Then
-    assert response.status_code == 200
     assert len(response.json) == 5
     assert {
         "enabledForPro": True,
@@ -39,18 +46,24 @@ def test_venue_has_known_allocine_id(client):
 
 @pytest.mark.usefixtures("db_session")
 def test_venue_has_no_allocine_id(client):
-    # Given
     user = users_factories.UserFactory(email="user@example.com")
     venue = offerers_factories.VenueFactory()
 
     allocine_provider = providers_factories.AllocineProviderFactory()
     other_provider = providers_factories.ProviderFactory(localClass="B provider")
 
-    # When
-    response = client.with_session_auth(email=user.email).get(f"/venueProviders/{venue.id}")
+    client = client.with_session_auth(email=user.email)
+    venue_id = venue.id
+    num_queries = testing.AUTHENTICATION_QUERIES
+    num_queries += 1  # select venue
+    num_queries += 1  # select cinema_provider_pivot
+    num_queries += 1  # select allocine_pivot
+    num_queries += 1  # select allocine_theater
+    num_queries += 1  # select provider
+    with testing.assert_num_queries(num_queries):
+        response = client.get(f"/venueProviders/{venue_id}")
+        assert response.status_code == 200
 
-    # Then
-    assert response.status_code == 200
     assert len(response.json) == 4
     assert {
         "enabledForPro": True,
@@ -64,7 +77,6 @@ def test_venue_has_no_allocine_id(client):
 
 @pytest.mark.usefixtures("db_session")
 def test_venue_has_offerer_provider(client):
-    # Given
     name = "MangoMusic"
     user = users_factories.UserFactory(email="user@example.com")
     venue = offerers_factories.VenueFactory()
@@ -79,10 +91,18 @@ def test_venue_has_offerer_provider(client):
 
     providers_factories.VenueProviderFactory(venue=venue, provider=provider)
 
-    # When
-    response = client.with_session_auth(email=user.email).get(f"/venueProviders/{venue.id}")
+    client = client.with_session_auth(email=user.email)
+    venue_id = venue.id
+    num_queries = testing.AUTHENTICATION_QUERIES
+    num_queries += 1  # select venue
+    num_queries += 1  # select cinema_provider_pivot
+    num_queries += 1  # select allocine_pivot
+    num_queries += 1  # select allocine_theater
+    num_queries += 1  # select provider
+    with testing.assert_num_queries(num_queries):
+        response = client.get(f"/venueProviders/{venue_id}")
+        assert response.status_code == 200
 
-    # Then
     assert response.status_code == 200
     assert len(response.json) == 4
     mango_provider = list(filter(lambda x: x["name"] == name, response.json))
@@ -101,13 +121,16 @@ def test_venue_has_offerer_provider(client):
 def test_venue_does_not_exist(client):
     user = users_factories.UserFactory()
 
-    response = client.with_session_auth(email=user.email).get("/venueProviders/1234")
-
-    assert response.status_code == 404
+    client = client.with_session_auth(email=user.email)
+    num_queries = testing.AUTHENTICATION_QUERIES
+    num_queries += 1  # select venue
+    with testing.assert_num_queries(num_queries):
+        response = client.get("/venueProviders/1234")
+        assert response.status_code == 404
 
 
 @pytest.mark.usefixtures("db_session")
 def test_user_is_not_logged_in(client):
-    response = client.get("/venueProviders/1234")
-
-    assert response.status_code == 401
+    with testing.assert_num_queries(0):
+        response = client.get("/venueProviders/1234")
+        assert response.status_code == 401
