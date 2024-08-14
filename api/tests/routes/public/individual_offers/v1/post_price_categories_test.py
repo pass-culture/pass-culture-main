@@ -2,30 +2,81 @@ import decimal
 
 import pytest
 
-from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 
-from . import utils
+from tests.conftest import TestClient
+from tests.routes.public.helpers import PublicAPIVenueEndpointHelper
 
 
 @pytest.mark.usefixtures("db_session")
-class PostPriceCategoriesTest:
-    def test_create_price_categories(self, client):
-        venue, api_key = utils.create_offerer_provider_linked_to_venue()
-        event_offer = offers_factories.EventOfferFactory(
-            venue=venue,
-            lastProvider=api_key.provider,
+class PostPriceCategoriesTest(PublicAPIVenueEndpointHelper):
+    endpoint_url = "/public/offers/v1/events/{event_id}/price_categories"
+
+    def setup_base_resource(self, venue=None, provider=None) -> offers_models.Offer:
+        return offers_factories.EventOfferFactory(
+            venue=venue or self.setup_venue(),
+            lastProvider=provider,
         )
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
-            f"/public/offers/v1/events/{event_offer.id}/price_categories",
-            json={
-                "priceCategories": [
-                    {"price": 2500, "label": "carre or"},
-                    {"price": 1500, "label": "triangle argent"},
-                ],
-            },
+    @staticmethod
+    def _get_base_payload() -> dict:
+        return {
+            "priceCategories": [
+                {"price": 2500, "label": "carre or"},
+                {"price": 1500, "label": "triangle argent"},
+            ],
+        }
+
+    def test_should_raise_401_because_not_authenticated(self, client: TestClient):
+        event = self.setup_base_resource()
+        response = client.post(self.endpoint_url.format(event_id=event.id), json={})
+        assert response.status_code == 401
+
+    def test_should_raise_404_because_has_no_access_to_venue(self, client: TestClient):
+        plain_api_key, _ = self.setup_provider()
+        event = self.setup_base_resource()
+        response = client.with_explicit_token(plain_api_key).post(
+            self.endpoint_url.format(event_id=event.id), json=self._get_base_payload()
+        )
+        assert response.status_code == 404
+
+    def test_should_raise_404_because_venue_provider_is_inactive(self, client: TestClient):
+        plain_api_key, venue_provider = self.setup_inactive_venue_provider()
+        event = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
+        response = client.with_explicit_token(plain_api_key).post(
+            self.endpoint_url.format(event_id=event.id), json=self._get_base_payload()
+        )
+        assert response.status_code == 404
+
+    def test_should_raise_404_because_event_does_not_exist(self, client: TestClient):
+        plain_api_key, _ = self.setup_active_venue_provider()
+        response = client.with_explicit_token(plain_api_key).post(
+            self.endpoint_url.format(event_id="inexistent_event_id"),
+            json=self._get_base_payload(),
+        )
+        assert response.status_code == 404
+
+    def test_should_raise_404_for_product_offer(self, client):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        product_offer = offers_factories.ThingOfferFactory(
+            venue=venue_provider.venue, lastProvider=venue_provider.provider
+        )
+
+        response = client.with_explicit_token(plain_api_key).post(
+            self.endpoint_url.format(event_id=product_offer.id),
+            json=self._get_base_payload(),
+        )
+        assert response.status_code == 404
+        assert response.json == {"event_id": ["The event could not be found"]}
+
+    def test_create_price_categories(self, client):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        event = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
+
+        response = client.with_explicit_token(plain_api_key).post(
+            self.endpoint_url.format(event_id=event.id),
+            json=self._get_base_payload(),
         )
         assert response.status_code == 200
 
@@ -45,115 +96,39 @@ class PostPriceCategoriesTest:
             ],
         }
 
-    def test_invalid_offer_id(self, client):
-        utils.create_offerer_provider_linked_to_venue()
-
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
-            "/public/offers/v1/events/inexistent_event_id/price_categories",
-            json={
-                "priceCategories": [
-                    {"price": 2500, "label": "carre or"},
-                ],
-            },
-        )
-
-        assert response.status_code == 404
-
-    def test_404_for_other_offerer_offer(self, client):
-        utils.create_offerer_provider_linked_to_venue()
-        event_offer = offers_factories.EventOfferFactory()
-
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
-            f"/public/offers/v1/events/{event_offer.id}/price_categories",
-            json={
-                "priceCategories": [
-                    {"price": 2500, "label": "carre or"},
-                ],
-            },
-        )
-        assert response.status_code == 404
-        assert response.json == {"event_id": ["The event could not be found"]}
-
-    def test_404_for_product_offer(self, client):
-        venue, _ = utils.create_offerer_provider_linked_to_venue()
-        product_offer = offers_factories.ThingOfferFactory(venue=venue)
-
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
-            f"/public/offers/v1/events/{product_offer.id}/price_categories",
-            json={
-                "priceCategories": [
-                    {"price": 2500, "label": "carre or"},
-                ],
-            },
-        )
-        assert response.status_code == 404
-        assert response.json == {"event_id": ["The event could not be found"]}
-
     def test_create_duplicate_price_categories(self, client):
-        venue, api_key = utils.create_offerer_provider_linked_to_venue()
-        event_offer = offers_factories.EventOfferFactory(
-            venue=venue,
-            lastProvider=api_key.provider,
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        event = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
+
+        payload = self._get_base_payload()
+        # duplicate price category
+        payload["priceCategories"].append(payload["priceCategories"][0])
+        response = client.with_explicit_token(plain_api_key).post(
+            self.endpoint_url.format(event_id=event.id), json=payload
         )
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
-            f"/public/offers/v1/events/{event_offer.id}/price_categories",
-            json={
-                "priceCategories": [
-                    {"price": 2500, "label": "carre or"},
-                    {"price": 1500, "label": "triangle argent"},
-                    {"price": 2500, "label": "carre or"},
-                ],
-            },
-        )
         assert response.status_code == 400
-
         assert response.json == {
             "priceCategories": ["Price categories must be unique"],
         }
 
     def test_create_existing_price_categories(self, client):
-        venue, api_key = utils.create_offerer_provider_linked_to_venue()
-        event_offer = offers_factories.EventOfferFactory(
-            venue=venue,
-            lastProvider=api_key.provider,
-        )
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        event = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
+        payload = self._get_base_payload()
 
         offers_factories.PriceCategoryFactory(
-            offer=event_offer,
+            offer=event,
             price=decimal.Decimal("25"),
             priceCategoryLabel=offers_factories.PriceCategoryLabelFactory(label="carre or"),
         )
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
-            f"/public/offers/v1/events/{event_offer.id}/price_categories",
-            json={
-                "priceCategories": [
-                    {"price": 1500, "label": "triangle argent"},
-                    {"price": 2500, "label": "carre or"},
-                ],
-            },
+        response = client.with_explicit_token(plain_api_key).post(
+            self.endpoint_url.format(event_id=event.id),
+            json=payload,
         )
-        assert response.status_code == 400
 
+        assert response.status_code == 400
         assert response.json == {
             "priceCategories": ["The price category carre or already exists"],
         }
-
-    def test_returns_404_with_inactive_venue_provider(self, client):
-        venue, api_key = utils.create_offerer_provider_linked_to_venue(is_venue_provider_active=False)
-        event_offer = offers_factories.EventOfferFactory(
-            venue=venue,
-            lastProvider=api_key.provider,
-        )
-
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
-            f"/public/offers/v1/events/{event_offer.id}/price_categories",
-            json={
-                "priceCategories": [
-                    {"price": 2500, "label": "carre or"},
-                    {"price": 1500, "label": "triangle argent"},
-                ],
-            },
-        )
-        assert response.status_code == 404

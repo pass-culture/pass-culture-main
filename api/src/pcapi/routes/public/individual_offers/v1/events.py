@@ -249,6 +249,7 @@ def edit_event(event_id: int, body: serialization.EventOfferEdition) -> serializ
 
 
 @blueprints.public_api.route("/public/offers/v1/events/<int:event_id>/price_categories", methods=["POST"])
+@api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.EVENT_OFFER_PRICES],
@@ -263,7 +264,6 @@ def edit_event(event_id: int, body: serialization.EventOfferEdition) -> serializ
         )
     ),
 )
-@api_key_required
 def post_event_price_categories(
     event_id: int, body: serialization.PriceCategoriesCreation
 ) -> serialization.PriceCategoriesResponse:
