@@ -1,27 +1,22 @@
-import collections
 import contextlib
 import datetime
 import decimal
 
-from flask import url_for
 import pytest
 
-from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
+from pcapi.core.offers import models as offers_models
 from pcapi.models import db
-from pcapi.routes.shared.price import convert_to_cent
 
-from . import utils
+from tests.conftest import TestClient
+from tests.routes.public.helpers import PublicAPIVenueEndpointHelper
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-EmptyGenerator = collections.abc.Generator[None, None, None]
-
-
 @contextlib.contextmanager
-def assert_event_and_price_category_did_not_change(event, price_category) -> EmptyGenerator:
+def assert_event_and_price_category_did_not_change(event, price_category):
     old_price = price_category.price
     old_label = price_category.priceCategoryLabel
     old_event_prices = {stock.id: (stock.price, stock.priceCategoryId) for stock in event.stocks}
@@ -45,67 +40,105 @@ def event_with_stock_fixture(stock):
     return stock.offer
 
 
-class PatchPriceCategoryErrorsTest:
-    endpoint = "public_api.patch_event_price_categories"
+class PatchPriceCategoryTest(PublicAPIVenueEndpointHelper):
+    endpoint_url = "/public/offers/v1/events/{event_id}/price_categories/{price_category_id}"
 
-    def test_cannot_access_resource_from_other_api_key(self, other_auth_client, event_with_stock, price_category):
-        kwargs = {"event_id": event_with_stock.id, "price_category_id": price_category.id}
-        json_data = {"price": convert_to_cent(price_category.price * 3)}
+    @staticmethod
+    def _get_base_payload() -> dict:
+        return {"price": 303}
 
-        with assert_event_and_price_category_did_not_change(event_with_stock, price_category):
-            assert other_auth_client.patch(url_for(self.endpoint, **kwargs), json=json_data).status_code == 404
+    def _get_base_resource_url(self, event_id: int, price_category_id: int) -> str:
+        return self.endpoint_url.format(event_id=event_id, price_category_id=price_category_id)
 
-    def test_unauthenticated(self, client, event_with_stock, price_category):
-        kwargs = {"event_id": event_with_stock.id, "price_category_id": price_category.id}
-        json_data = {"price": convert_to_cent(price_category.price * 3)}
+    def setup_base_resource(self, venue=None, provider=None) -> tuple[offers_models.Offer, offers_models.PriceCategory]:
+        event = offers_factories.EventOfferFactory(venue=venue or self.setup_venue(), lastProvider=provider)
+        price_category = offers_factories.PriceCategoryFactory(offer=event)
+        return event, price_category
 
-        with assert_event_and_price_category_did_not_change(event_with_stock, price_category):
-            assert client.patch(url_for(self.endpoint, **kwargs), json=json_data).status_code == 401
+    def test_should_raise_401_because_not_authenticated(self, client: TestClient):
+        event, price_category = self.setup_base_resource()
+        response = client.patch(self._get_base_resource_url(event.id, price_category.id), json={})
+        assert response.status_code == 401
 
-    def test_unknown_event(self, auth_client, event_with_stock, price_category):
-        kwargs = {"event_id": event_with_stock.id * 16, "price_category_id": price_category.id}
-        json_data = {"price": convert_to_cent(price_category.price * 3)}
+    def test_should_raise_404_because_has_no_access_to_venue(self, client: TestClient):
+        plain_api_key, _ = self.setup_provider()
+        event, price_category = self.setup_base_resource()
+        response = client.with_explicit_token(plain_api_key).patch(
+            self._get_base_resource_url(event.id, price_category.id), json=self._get_base_payload()
+        )
+        assert response.status_code == 404
 
-        with assert_event_and_price_category_did_not_change(event_with_stock, price_category):
-            assert auth_client.patch(url_for(self.endpoint, **kwargs), json=json_data).status_code == 404
+    def test_should_raise_404_because_venue_provider_is_inactive(self, client: TestClient):
+        plain_api_key, venue_provider = self.setup_inactive_venue_provider()
+        event, price_category = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
+        response = client.with_explicit_token(plain_api_key).patch(
+            self._get_base_resource_url(event.id, price_category.id), json=self._get_base_payload()
+        )
+        assert response.status_code == 404
 
-    def test_unknown_price_category(self, auth_client, event_with_stock, price_category):
-        kwargs = {"event_id": event_with_stock.id, "price_category_id": price_category.id * 16}
-        json_data = {"price": convert_to_cent(price_category.price * 3)}
+    def test_should_raise_404_because_of_not_existing_resources(self, client):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        event, price_category = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
 
-        with assert_event_and_price_category_did_not_change(event_with_stock, price_category):
-            assert auth_client.patch(url_for(self.endpoint, **kwargs), json=json_data).status_code == 404
+        # unknown event
+        with assert_event_and_price_category_did_not_change(event, price_category):
+            response = client.with_explicit_token(plain_api_key).patch(
+                self._get_base_resource_url(123455, price_category.id), json=self._get_base_payload()
+            )
+            assert response.status_code == 404
 
-    def test_both_event_and_price_category_unknown(self, auth_client, event_with_stock, price_category):
-        kwargs = {"event_id": event_with_stock.id * 16, "price_category_id": price_category.id * 16}
-        json_data = {"price": convert_to_cent(price_category.price * 3)}
+        # unknown price category
+        with assert_event_and_price_category_did_not_change(event, price_category):
+            response = client.with_explicit_token(plain_api_key).patch(
+                self._get_base_resource_url(event.id, 12344556), json=self._get_base_payload()
+            )
+            assert response.status_code == 404
 
-        with assert_event_and_price_category_did_not_change(event_with_stock, price_category):
-            assert auth_client.patch(url_for(self.endpoint, **kwargs), json=json_data).status_code == 404
+        # unknown price category & event
+        with assert_event_and_price_category_did_not_change(event, price_category):
+            response = client.with_explicit_token(plain_api_key).patch(
+                self._get_base_resource_url(12345, 12344556), json=self._get_base_payload()
+            )
+            assert response.status_code == 404
 
-    def test_negative_price(self, auth_client, event_with_stock, price_category):
-        kwargs = {"event_id": event_with_stock.id, "price_category_id": price_category.id}
-        json_data = {"price": -1}
+    def test_should_raise_400_because_of_negative_price(self, client: TestClient):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        event, price_category = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
 
-        with assert_event_and_price_category_did_not_change(event_with_stock, price_category):
-            assert auth_client.patch(url_for(self.endpoint, **kwargs), json=json_data).status_code == 400
+        with assert_event_and_price_category_did_not_change(event, price_category):
+            response = client.with_explicit_token(plain_api_key).patch(
+                self._get_base_resource_url(event.id, price_category.id), json={"price": -1}
+            )
+            assert response == 400
 
-    def test_price_too_high(self, auth_client, event_with_stock, price_category):
-        kwargs = {"event_id": event_with_stock.id, "price_category_id": price_category.id}
-        json_data = {"price": convert_to_cent(301)}
+    def test_should_raise_400_because_of_price_too_high(self, client: TestClient):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        event, price_category = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
 
-        with assert_event_and_price_category_did_not_change(event_with_stock, price_category):
-            assert auth_client.patch(url_for(self.endpoint, **kwargs), json=json_data).status_code == 400
+        with assert_event_and_price_category_did_not_change(event, price_category):
+            response = client.with_explicit_token(plain_api_key).patch(
+                self._get_base_resource_url(event.id, price_category.id), json={"price": 300000}
+            )
+            assert response == 400
 
+    def test_should_raise_400_because_does_not_accept_extra_fields(self, client):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        event, price_category = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
 
-class PatchPriceCategoryTest:
+        response = client.with_explicit_token(plain_api_key).patch(
+            self._get_base_resource_url(event.id, price_category.id),
+            json={"price": 2500, "label": "carre or", "unrecognized_key": True},
+        )
+
+        assert response.status_code == 400
+        assert response.json == {"unrecognized_key": ["extra fields not permitted"]}
+
     def test_update_price_category(self, client):
-        venue, api_key = utils.create_offerer_provider_linked_to_venue()
-        event_offer = offers_factories.EventOfferFactory(venue=venue, lastProvider=api_key.provider)
-        price_category = offers_factories.PriceCategoryFactory(offer=event_offer)
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        event, price_category = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
-            f"/public/offers/v1/events/{event_offer.id}/price_categories/{price_category.id}",
+        response = client.with_explicit_token(plain_api_key).patch(
+            self._get_base_resource_url(event.id, price_category.id),
             json={"price": 2500, "label": "carre or"},
         )
         assert response.status_code == 200
@@ -114,82 +147,33 @@ class PatchPriceCategoryTest:
         assert price_category.label == "carre or"
 
     def test_update_only_one_field(self, client):
-        venue, api_key = utils.create_offerer_provider_linked_to_venue()
-        event_offer = offers_factories.EventOfferFactory(venue=venue, lastProvider=api_key.provider)
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        event, price_category = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
 
-        price_category = offers_factories.PriceCategoryFactory(offer=event_offer)
-
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
-            f"/public/offers/v1/events/{event_offer.id}/price_categories/{price_category.id}",
+        response = client.with_explicit_token(plain_api_key).patch(
+            self._get_base_resource_url(event.id, price_category.id),
             json={"price": 2500},
         )
-        assert response.status_code == 200
 
+        assert response.status_code == 200
         assert price_category.price == decimal.Decimal("25")
 
-    def test_update_with_error(self, client):
-        venue, api_key = utils.create_offerer_provider_linked_to_venue()
-        event_offer = offers_factories.EventOfferFactory(venue=venue, lastProvider=api_key.provider)
-        price_category = offers_factories.PriceCategoryFactory(offer=event_offer)
-
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
-            f"/public/offers/v1/events/{event_offer.id}/price_categories/{price_category.id}",
-            json={"price": -1},
-        )
-        assert response.status_code == 400
-
-    def test_does_not_accept_extra_fields(self, client):
-        venue, api_key = utils.create_offerer_provider_linked_to_venue()
-        event_offer = offers_factories.EventOfferFactory(venue=venue, lastProvider=api_key.provider)
-        price_category = offers_factories.PriceCategoryFactory(offer=event_offer)
-
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
-            f"/public/offers/v1/events/{event_offer.id}/price_categories/{price_category.id}",
-            json={"price": 2500, "label": "carre or", "unrecognized_key": True},
-        )
-        assert response.status_code == 400
-        assert response.json == {"unrecognized_key": ["extra fields not permitted"]}
-
     def test_stock_price_update(self, client):
-        venue, api_key = utils.create_offerer_provider_linked_to_venue()
-        offer = offers_factories.EventOfferFactory(venue=venue, lastProvider=api_key.provider)
-        price_category = offers_factories.PriceCategoryFactory(
-            offer=offer,
-            priceCategoryLabel=offers_factories.PriceCategoryLabelFactory(label="Already exists", venue=offer.venue),
-        )
-        offers_factories.EventStockFactory(offer=offer, priceCategory=price_category)
-        offers_factories.EventStockFactory(offer=offer, priceCategory=price_category)
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        event, price_category = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
+        offers_factories.EventStockFactory(offer=event, priceCategory=price_category)
+        offers_factories.EventStockFactory(offer=event, priceCategory=price_category)
         expired_stock = offers_factories.EventStockFactory(
-            offer=offer,
+            offer=event,
             priceCategory=price_category,
             beginningDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=-2),
         )
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
-            f"/public/offers/v1/events/{offer.id}/price_categories/{price_category.id}",
+        response = client.with_explicit_token(plain_api_key).patch(
+            self._get_base_resource_url(event.id, price_category.id),
             json={"price": 25},
         )
 
         assert response.status_code == 200
-        assert all((stock.price == decimal.Decimal("0.25") for stock in offer.stocks if not stock.isEventExpired))
+        assert all((stock.price == decimal.Decimal("0.25") for stock in event.stocks if not stock.isEventExpired))
         assert expired_stock.price != decimal.Decimal("0.25")
-
-    def test_find_no_offer_returns_404(self, client):
-        utils.create_offerer_provider_linked_to_venue()
-
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
-            "/public/offers/v1/events/inexistent_event_id/price_categories/inexistent_price_category_id",
-            json={"price": 2500, "label": "carre or"},
-        )
-        assert response.status_code == 404
-
-    def test_inactive_provider_returns_404(self, client):
-        venue, api_key = utils.create_offerer_provider_linked_to_venue(is_venue_provider_active=False)
-        event_offer = offers_factories.EventOfferFactory(venue=venue, lastProvider=api_key.provider)
-        price_category = offers_factories.PriceCategoryFactory(offer=event_offer)
-
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
-            f"/public/offers/v1/events/{event_offer.id}/price_categories/{price_category.id}",
-            json={"price": 2500, "label": "carre or"},
-        )
-        assert response.status_code == 404

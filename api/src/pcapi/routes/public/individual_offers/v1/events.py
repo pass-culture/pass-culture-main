@@ -297,6 +297,7 @@ def post_event_price_categories(
 @blueprints.public_api.route(
     "/public/offers/v1/events/<int:event_id>/price_categories/<int:price_category_id>", methods=["PATCH"]
 )
+@api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.EVENT_OFFER_PRICES],
@@ -311,7 +312,6 @@ def post_event_price_categories(
         )
     ),
 )
-@api_key_required
 def patch_event_price_categories(
     event_id: int,
     price_category_id: int,
