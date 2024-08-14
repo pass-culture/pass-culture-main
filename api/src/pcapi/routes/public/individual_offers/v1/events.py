@@ -40,6 +40,7 @@ def _deserialize_has_ticket(
 
 
 @blueprints.public_api.route("/public/offers/v1/events", methods=["POST"])
+@api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.EVENT_OFFERS],
@@ -55,7 +56,6 @@ def _deserialize_has_ticket(
         )
     ),
 )
-@api_key_required
 def post_event_offer(body: serialization.EventOfferCreation) -> serialization.EventOfferResponse:
     """
     Create event offer

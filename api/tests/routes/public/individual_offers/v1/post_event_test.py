@@ -5,7 +5,6 @@ import decimal
 import pytest
 
 from pcapi import settings
-from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.testing import override_features
@@ -13,34 +12,61 @@ from pcapi.models import offer_mixin
 from pcapi.utils import human_ids
 from pcapi.utils.date import local_datetime_to_default_timezone
 
+from tests.conftest import TestClient
 from tests.routes import image_data
+from tests.routes.public.helpers import PublicAPIVenueEndpointHelper
 
 from . import utils
 
 
 @pytest.mark.usefixtures("db_session")
-class PostEventTest:
-    def test_event_minimal_body(self, client):
-        venue, _ = utils.create_offerer_provider_linked_to_venue()
+class PostEventTest(PublicAPIVenueEndpointHelper):
+    endpoint_url = "/public/offers/v1/events"
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
-            "/public/offers/v1/events",
-            json={
-                "categoryRelatedFields": {"category": "RENCONTRE"},
-                "accessibility": utils.ACCESSIBILITY_FIELDS,
-                "location": {"type": "physical", "venueId": venue.id},
-                "name": "Le champ des possibles",
-                "hasTicket": False,
-            },
+    @staticmethod
+    def _get_base_payload(venue_id) -> dict:
+        return {
+            "categoryRelatedFields": {"category": "RENCONTRE"},
+            "accessibility": utils.ACCESSIBILITY_FIELDS,
+            "location": {"type": "physical", "venueId": venue_id},
+            "name": "Le champ des possibles",
+            "hasTicket": False,
+        }
+
+    def test_should_raise_401_because_not_authenticated(self, client: TestClient):
+        response = client.post(self.endpoint_url, json={})
+        assert response.status_code == 401
+
+    def test_should_raise_404_because_has_no_access_to_venue(self, client: TestClient):
+        plain_api_key, _ = self.setup_provider()
+        venue = self.setup_venue()
+        response = client.with_explicit_token(plain_api_key).post(
+            self.endpoint_url, json=self._get_base_payload(venue_id=venue.id)
+        )
+        assert response.status_code == 404
+
+    def test_should_raise_404_because_venue_provider_is_inactive(self, client: TestClient):
+        plain_api_key, venue_provider = self.setup_inactive_venue_provider()
+        response = client.with_explicit_token(plain_api_key).post(
+            self.endpoint_url, json=self._get_base_payload(venue_id=venue_provider.venue.id)
+        )
+        assert response.status_code == 404
+
+    def test_event_minimal_body(self, client):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+
+        response = client.with_explicit_token(plain_api_key).post(
+            self.endpoint_url,
+            json=self._get_base_payload(venue_provider.venueId),
         )
 
         assert response.status_code == 200
         created_offer = offers_models.Offer.query.one()
         assert created_offer.name == "Le champ des possibles"
-        assert created_offer.venue == venue
+        assert created_offer.venue == venue_provider.venue
         assert created_offer.subcategoryId == "RENCONTRE"
         assert created_offer.audioDisabilityCompliant is True
-        assert created_offer.lastProvider.name == "Technical provider"
+        assert created_offer.lastProvider.name == venue_provider.provider.name
         assert created_offer.mentalDisabilityCompliant is True
         assert created_offer.motorDisabilityCompliant is True
         assert created_offer.visualDisabilityCompliant is True
@@ -56,20 +82,12 @@ class PostEventTest:
         assert not created_offer.futureOffer
 
     def test_future_event(self, client):
-        venue, _ = utils.create_offerer_provider_linked_to_venue()
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
 
+        payload = self._get_base_payload(venue_provider.venueId)
         publication_date = datetime.utcnow().replace(minute=0, second=0) + timedelta(days=30)
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
-            "/public/offers/v1/events",
-            json={
-                "categoryRelatedFields": {"category": "RENCONTRE"},
-                "accessibility": utils.ACCESSIBILITY_FIELDS,
-                "location": {"type": "physical", "venueId": venue.id},
-                "name": "Le champ des possibles",
-                "hasTicket": False,
-                "publicationDate": publication_date.isoformat(),
-            },
-        )
+        payload["publicationDate"] = publication_date.isoformat()
+        response = client.with_explicit_token(plain_api_key).post(self.endpoint_url, json=payload)
 
         assert response.status_code == 200
         created_offer = offers_models.Offer.query.one()
@@ -79,17 +97,18 @@ class PostEventTest:
         assert created_offer.futureOffer.isWaitingForPublication
 
     def test_event_creation_should_return_400_because_id_at_provider_is_taken(self, client):
-        venue, api_key = utils.create_offerer_provider_linked_to_venue(with_ticketing_service_at_provider_level=True)
+        plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=True)
+
         id_at_provider = "rolala"
         # existing offer with id_at_provider
         offers_factories.EventOfferFactory(
-            venue=venue,
+            venue=venue_provider.venue,
             bookingContact="contact@example.com",
             bookingEmail="notify@passq.com",
             subcategoryId="CONCERT",
             durationMinutes=20,
             isDuo=False,
-            lastProvider=api_key.provider,
+            lastProvider=venue_provider.provider,
             withdrawalType=offers_models.WithdrawalTypeEnum.IN_APP,
             withdrawalDelay=86400,
             withdrawalDetails="Around there",
@@ -97,49 +116,22 @@ class PostEventTest:
             idAtProvider=id_at_provider,
         )
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
-            "/public/offers/v1/events",
-            json={
-                "enableDoubleBookings": True,
-                "bookingContact": "contact@example.com",
-                "bookingEmail": "nicoj@example.com",
-                "categoryRelatedFields": {
-                    "author": "Ray Charles",
-                    "category": "CONCERT",
-                    "musicType": "ELECTRO-HOUSE",
-                    "performer": "Nicolas Jaar",
-                    "stageDirector": "Alfred",  # field not applicable
-                },
-                "description": "Space is only noise if you can see",
-                "eventDuration": 120,
-                "accessibility": {
-                    "audioDisabilityCompliant": False,
-                    "mentalDisabilityCompliant": True,
-                    "motorDisabilityCompliant": True,
-                    "visualDisabilityCompliant": True,
-                },
-                "externalTicketOfficeUrl": "https://maposaic.com",
-                "image": {
-                    "credit": "Jean-Crédit Photo",
-                    "file": image_data.GOOD_IMAGE,
-                },
-                "itemCollectionDetails": "A retirer au 6ème sous-sol du parking de la gare entre minuit et 2",
-                "location": {"type": "physical", "venueId": venue.id},
-                "name": "Nicolas Jaar dans ton salon",
-                "priceCategories": [{"price": 30000, "label": "triangle or"}],
-                "hasTicket": True,
-                "idAtProvider": id_at_provider,
-            },
+        payload = self._get_base_payload(venue_provider.venueId)
+        payload["idAtProvider"] = id_at_provider
+
+        response = client.with_explicit_token(plain_api_key).post(
+            self.endpoint_url,
+            json=payload,
         )
 
         assert response.status_code == 400
         assert response.json == {"idAtProvider": ["`rolala` is already taken by another venue offer"]}
 
     def test_event_creation_with_full_body(self, client, clear_tests_assets_bucket):
-        venue, _ = utils.create_offerer_provider_linked_to_venue(with_ticketing_service_at_provider_level=True)
+        plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=True)
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
-            "/public/offers/v1/events",
+        response = client.with_explicit_token(plain_api_key).post(
+            self.endpoint_url,
             json={
                 "enableDoubleBookings": True,
                 "bookingContact": "contact@example.com",
@@ -165,7 +157,7 @@ class PostEventTest:
                     "file": image_data.GOOD_IMAGE,
                 },
                 "itemCollectionDetails": "A retirer au 6ème sous-sol du parking de la gare entre minuit et 2",
-                "location": {"type": "physical", "venueId": venue.id},
+                "location": {"type": "physical", "venueId": venue_provider.venueId},
                 "name": "Nicolas Jaar dans ton salon",
                 "priceCategories": [{"price": 30000, "label": "triangle or"}],
                 "hasTicket": True,
@@ -175,9 +167,9 @@ class PostEventTest:
 
         assert response.status_code == 200
         created_offer = offers_models.Offer.query.one()
-        assert created_offer.lastProvider.name == "Technical provider"
+        assert created_offer.lastProvider.name == venue_provider.provider.name
         assert created_offer.name == "Nicolas Jaar dans ton salon"
-        assert created_offer.venue == venue
+        assert created_offer.venue == venue_provider.venue
         assert created_offer.subcategoryId == "CONCERT"
         assert created_offer.audioDisabilityCompliant is False
         assert created_offer.mentalDisabilityCompliant is True
@@ -240,7 +232,7 @@ class PostEventTest:
                 "url": f"http://localhost/storage/thumbs/mediations/{human_ids.humanize(created_mediation.id)}",
             },
             "itemCollectionDetails": "A retirer au 6ème sous-sol du parking de la gare entre minuit et 2",
-            "location": {"type": "physical", "venueId": venue.id},
+            "location": {"type": "physical", "venueId": venue_provider.venueId},
             "name": "Nicolas Jaar dans ton salon",
             "status": "SOLD_OUT",
             "priceCategories": [{"id": created_price_category.id, "price": 30000, "label": "triangle or"}],
@@ -248,9 +240,9 @@ class PostEventTest:
         }
 
     def test_event_creation_with_titelive_type(self, client, clear_tests_assets_bucket):
-        venue, _ = utils.create_offerer_provider_linked_to_venue(with_ticketing_service_at_provider_level=True)
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
-            "/public/offers/v1/events",
+        plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=True)
+        response = client.with_explicit_token(plain_api_key).post(
+            self.endpoint_url,
             json={
                 "bookingContact": "contact@example.com",
                 "categoryRelatedFields": {
@@ -265,7 +257,7 @@ class PostEventTest:
                     "motorDisabilityCompliant": True,
                     "visualDisabilityCompliant": True,
                 },
-                "location": {"type": "physical", "venueId": venue.id},
+                "location": {"type": "physical", "venueId": venue_provider.venueId},
                 "name": "Nicolas Jaar dans ton salon",
                 "priceCategories": [{"price": 0, "label": "triangle or"}],
                 "hasTicket": False,
@@ -290,10 +282,10 @@ class PostEventTest:
 
     @override_features(ENABLE_TITELIVE_MUSIC_TYPES_IN_API_OUTPUT=True)
     def test_event_creation_with_titelive_type_with_active_serialization(self, client, clear_tests_assets_bucket):
-        venue, _ = utils.create_offerer_provider_linked_to_venue(with_ticketing_service_at_provider_level=True)
+        plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=True)
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
-            "/public/offers/v1/events",
+        response = client.with_explicit_token(plain_api_key).post(
+            self.endpoint_url,
             json={
                 "bookingContact": "contact@example.com",
                 "bookingEmail": "nicoj@example.com",
@@ -313,7 +305,7 @@ class PostEventTest:
                 },
                 "externalTicketOfficeUrl": "https://maposaic.com",
                 "itemCollectionDetails": "A retirer au 6ème sous-sol du parking de la gare entre minuit et 2",
-                "location": {"type": "physical", "venueId": venue.id},
+                "location": {"type": "physical", "venueId": venue_provider.venueId},
                 "name": "Nicolas Jaar dans ton salon",
                 "priceCategories": [{"price": 30000, "label": "triangle or"}],
                 "hasTicket": True,
@@ -343,14 +335,14 @@ class PostEventTest:
 
     @pytest.mark.usefixtures("db_session")
     def test_other_music_type_serialization(self, client):
-        venue, _ = utils.create_offerer_provider_linked_to_venue()
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
-            "/public/offers/v1/events",
+        response = client.with_explicit_token(plain_api_key).post(
+            self.endpoint_url,
             json={
                 "categoryRelatedFields": {"category": "CONCERT", "musicType": "OTHER"},
                 "accessibility": utils.ACCESSIBILITY_FIELDS,
-                "location": {"type": "physical", "venueId": venue.id},
+                "location": {"type": "physical", "venueId": venue_provider.venueId},
                 "name": "Le champ des possibles",
                 "hasTicket": False,
                 "bookingContact": "booking@conta.ct",
@@ -369,14 +361,14 @@ class PostEventTest:
         }
 
     def test_event_without_ticket(self, client):
-        venue, _ = utils.create_offerer_provider_linked_to_venue()
+        plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=False)
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
-            "/public/offers/v1/events",
+        response = client.with_explicit_token(plain_api_key).post(
+            self.endpoint_url,
             json={
                 "categoryRelatedFields": {"category": "FESTIVAL_ART_VISUEL"},
                 "accessibility": utils.ACCESSIBILITY_FIELDS,
-                "location": {"type": "physical", "venueId": venue.id},
+                "location": {"type": "physical", "venueId": venue_provider.venueId},
                 "name": "Le champ des possibles",
                 "hasTicket": False,
                 "bookingContact": "booking@conta.ct",
@@ -388,14 +380,14 @@ class PostEventTest:
         assert created_offer.withdrawalType == offers_models.WithdrawalTypeEnum.NO_TICKET
 
     def test_event_with_has_ticket_to_true_and_ticketing_service_at_provider_level(self, client):
-        venue, _ = utils.create_offerer_provider_linked_to_venue(with_ticketing_service_at_provider_level=True)
+        plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=True)
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
-            "/public/offers/v1/events",
+        response = client.with_explicit_token(plain_api_key).post(
+            self.endpoint_url,
             json={
                 "categoryRelatedFields": {"category": "FESTIVAL_ART_VISUEL"},
                 "accessibility": utils.ACCESSIBILITY_FIELDS,
-                "location": {"type": "physical", "venueId": venue.id},
+                "location": {"type": "physical", "venueId": venue_provider.venueId},
                 "name": "Le champ des possibles",
                 "hasTicket": True,
                 "bookingContact": "booking@conta.ct",
@@ -406,14 +398,14 @@ class PostEventTest:
         assert created_offer.withdrawalType == offers_models.WithdrawalTypeEnum.IN_APP
 
     def test_event_with_has_ticket_to_true_and_ticketing_service_at_venue_level(self, client):
-        venue, _ = utils.create_offerer_provider_linked_to_venue(with_ticketing_service_at_venue_level=True)
+        plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=True)
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
-            "/public/offers/v1/events",
+        response = client.with_explicit_token(plain_api_key).post(
+            self.endpoint_url,
             json={
                 "categoryRelatedFields": {"category": "FESTIVAL_ART_VISUEL"},
                 "accessibility": utils.ACCESSIBILITY_FIELDS,
-                "location": {"type": "physical", "venueId": venue.id},
+                "location": {"type": "physical", "venueId": venue_provider.venueId},
                 "name": "Le champ des possibles",
                 "hasTicket": True,
                 "bookingContact": "booking@conta.ct",
@@ -424,14 +416,14 @@ class PostEventTest:
         assert created_offer.withdrawalType == offers_models.WithdrawalTypeEnum.IN_APP
 
     def test_error_when_event_with_has_ticket_to_true_and_no_ticketing_service_set(self, client):
-        venue, _ = utils.create_offerer_provider_linked_to_venue()
+        plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=False)
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
-            "/public/offers/v1/events",
+        response = client.with_explicit_token(plain_api_key).post(
+            self.endpoint_url,
             json={
                 "categoryRelatedFields": {"category": "FESTIVAL_ART_VISUEL"},
                 "accessibility": utils.ACCESSIBILITY_FIELDS,
-                "location": {"type": "physical", "venueId": venue.id},
+                "location": {"type": "physical", "venueId": venue_provider.venueId},
                 "name": "Le champ des possibles",
                 "hasTicket": True,
                 "bookingContact": "booking@conta.ct",
@@ -443,14 +435,14 @@ class PostEventTest:
         }
 
     def test_error_when_withdrawable_event_but_no_booking_contact(self, client):
-        venue, _ = utils.create_offerer_provider_linked_to_venue(with_ticketing_service_at_provider_level=True)
+        plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=True)
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
-            "/public/offers/v1/events",
+        response = client.with_explicit_token(plain_api_key).post(
+            self.endpoint_url,
             json={
                 "categoryRelatedFields": {"category": "FESTIVAL_ART_VISUEL"},
                 "accessibility": utils.ACCESSIBILITY_FIELDS,
-                "location": {"type": "physical", "venueId": venue.id},
+                "location": {"type": "physical", "venueId": venue_provider.venueId},
                 "name": "Le champ des possibles",
                 "hasTicket": True,
             },
@@ -463,16 +455,16 @@ class PostEventTest:
         }
 
     def test_error_when_duplicate_price_categories(self, client):
-        venue, _ = utils.create_offerer_provider_linked_to_venue()
+        plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=True)
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
-            "/public/offers/v1/events",
+        response = client.with_explicit_token(plain_api_key).post(
+            self.endpoint_url,
             json={
                 "enableDoubleBookings": True,
                 "bookingContact": "contact@example.com",
                 "bookingEmail": "nicoj@example.com",
                 "accessibility": utils.ACCESSIBILITY_FIELDS,
-                "location": {"type": "physical", "venueId": venue.id},
+                "location": {"type": "physical", "venueId": venue_provider.venueId},
                 "name": "Le champ des possibles",
                 "categoryRelatedFields": {
                     "author": "Ray Charles",
@@ -495,32 +487,16 @@ class PostEventTest:
         assert response.status_code == 400
         assert response.json == {"priceCategories": ["Price categories must be unique"]}
 
-    def test_returns_404_for_inactive_venue_provider(self, client):
-        venue, _ = utils.create_offerer_provider_linked_to_venue(is_venue_provider_active=False)
-
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
-            "/public/offers/v1/events",
-            json={
-                "categoryRelatedFields": {"category": "FESTIVAL_ART_VISUEL"},
-                "accessibility": utils.ACCESSIBILITY_FIELDS,
-                "location": {"type": "physical", "venueId": venue.id},
-                "name": "Le champ des possibles",
-                "hasTicket": False,
-            },
-        )
-
-        assert response.status_code == 404
-
     def test_future_event_400(self, client):
-        venue, _ = utils.create_offerer_provider_linked_to_venue()
+        plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=True)
 
         publication_date = datetime.utcnow().replace(minute=0, second=0) - timedelta(days=30)
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
-            "/public/offers/v1/events",
+        response = client.with_explicit_token(plain_api_key).post(
+            self.endpoint_url,
             json={
                 "categoryRelatedFields": {"category": "RENCONTRE"},
                 "accessibility": utils.ACCESSIBILITY_FIELDS,
-                "location": {"type": "physical", "venueId": venue.id},
+                "location": {"type": "physical", "venueId": venue_provider.venueId},
                 "name": "Le champ des possibles",
                 "hasTicket": False,
                 "publicationDate": publication_date.isoformat(),
