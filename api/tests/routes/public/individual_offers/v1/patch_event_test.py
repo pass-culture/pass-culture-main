@@ -1,24 +1,55 @@
 import pytest
 
 from pcapi import settings
-from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.utils import human_ids
 
+from tests.conftest import TestClient
 from tests.routes import image_data
-
-from . import utils
+from tests.routes.public.helpers import PublicAPIVenueEndpointHelper
 
 
 @pytest.mark.usefixtures("db_session")
-class PatchEventTest:
-    def test_deactivate_offer(self, client):
-        venue, api_key = utils.create_offerer_provider_linked_to_venue()
-        event_offer = offers_factories.EventOfferFactory(venue=venue, isActive=True, lastProvider=api_key.provider)
+class PatchEventTest(PublicAPIVenueEndpointHelper):
+    endpoint_url = "/public/offers/v1/events/{event_id}"
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
-            f"/public/offers/v1/events/{event_offer.id}",
+    def setup_base_resource(self, venue=None, provider=None) -> offers_models.Offer:
+        venue = venue or self.setup_venue()
+        return offers_factories.EventOfferFactory(
+            subcategoryId="CONCERT",
+            venue=venue,
+            withdrawalDetails="Des conditions de retrait sur la sellette",
+            withdrawalType=offers_models.WithdrawalTypeEnum.BY_EMAIL,
+            withdrawalDelay=86400,
+            bookingContact="contact@example.com",
+            bookingEmail="notify@example.com",
+            lastProvider=provider,
+        )
+
+    def test_should_raise_401_because_not_authenticated(self, client: TestClient):
+        event_offer = self.setup_base_resource()
+        response = client.patch(self.endpoint_url.format(event_id=event_offer.id))
+        assert response.status_code == 401
+
+    def test_should_raise_404_because_has_no_access_to_venue(self, client: TestClient):
+        plain_api_key, _ = self.setup_provider()
+        event_offer = self.setup_base_resource()
+        response = client.with_explicit_token(plain_api_key).patch(self.endpoint_url.format(event_id=event_offer.id))
+        assert response.status_code == 404
+
+    def test_should_raise_404_because_venue_provider_is_inactive(self, client: TestClient):
+        plain_api_key, venue_provider = self.setup_inactive_venue_provider()
+        event_offer = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
+        response = client.with_explicit_token(plain_api_key).patch(self.endpoint_url.format(event_id=event_offer.id))
+        assert response.status_code == 404
+
+    def test_deactivate_offer(self, client):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        event_offer = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
+
+        response = client.with_explicit_token(plain_api_key).patch(
+            self.endpoint_url.format(event_id=event_offer.id),
             json={"isActive": False},
         )
 
@@ -27,20 +58,20 @@ class PatchEventTest:
         assert event_offer.isActive is False
 
     def test_sets_field_to_none_and_leaves_other_unchanged(self, client):
-        venue, api_key = utils.create_offerer_provider_linked_to_venue()
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
         event_offer = offers_factories.EventOfferFactory(
             subcategoryId="CONCERT",
-            venue=venue,
+            venue=venue_provider.venue,
             withdrawalDetails="Des conditions de retrait sur la sellette",
             withdrawalType=offers_models.WithdrawalTypeEnum.BY_EMAIL,
             withdrawalDelay=86400,
             bookingContact="contact@example.com",
             bookingEmail="notify@example.com",
-            lastProvider=api_key.provider,
+            lastProvider=venue_provider.provider,
         )
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
-            f"/public/offers/v1/events/{event_offer.id}",
+        response = client.with_explicit_token(plain_api_key).patch(
+            self.endpoint_url.format(event_id=event_offer.id),
             json={"itemCollectionDetails": None},
         )
 
@@ -52,18 +83,18 @@ class PatchEventTest:
         assert event_offer.withdrawalDelay == 86400
 
     def test_sets_accessibility_partially(self, client):
-        venue, api_key = utils.create_offerer_provider_linked_to_venue()
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
         event_offer = offers_factories.EventOfferFactory(
-            venue=venue,
+            venue=venue_provider.venue,
             audioDisabilityCompliant=True,
             mentalDisabilityCompliant=True,
             motorDisabilityCompliant=True,
             visualDisabilityCompliant=True,
-            lastProvider=api_key.provider,
+            lastProvider=venue_provider.provider,
         )
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
-            f"/public/offers/v1/events/{event_offer.id}",
+        response = client.with_explicit_token(plain_api_key).patch(
+            self.endpoint_url.format(event_id=event_offer.id),
             json={"accessibility": {"audioDisabilityCompliant": False}},
         )
 
@@ -80,20 +111,20 @@ class PatchEventTest:
         assert event_offer.visualDisabilityCompliant is True
 
     def test_update_extra_data_partially(self, client):
-        venue, api_key = utils.create_offerer_provider_linked_to_venue()
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
         event_offer = offers_factories.EventOfferFactory(
-            venue=venue,
+            venue=venue_provider.venue,
             subcategoryId="FESTIVAL_ART_VISUEL",
             extraData={
                 "author": "Maurice",
                 "stageDirector": "Robert",
                 "performer": "Pink Pâtisserie",
             },
-            lastProvider=api_key.provider,
+            lastProvider=venue_provider.provider,
         )
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
-            f"/public/offers/v1/events/{event_offer.id}",
+        response = client.with_explicit_token(plain_api_key).patch(
+            self.endpoint_url.format(event_id=event_offer.id),
             json={
                 "categoryRelatedFields": {
                     "category": "FESTIVAL_ART_VISUEL",
@@ -117,23 +148,23 @@ class PatchEventTest:
         }
 
     def test_patch_all_fields(self, client):
-        venue, api_key = utils.create_offerer_provider_linked_to_venue(with_ticketing_service_at_provider_level=True)
+        plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=True)
         event_offer = offers_factories.EventOfferFactory(
-            venue=venue,
+            venue=venue_provider.venue,
             bookingContact="contact@example.com",
             bookingEmail="notify@passq.com",
             subcategoryId="CONCERT",
             durationMinutes=20,
             isDuo=False,
-            lastProvider=api_key.provider,
+            lastProvider=venue_provider.provider,
             withdrawalType=offers_models.WithdrawalTypeEnum.IN_APP,
             withdrawalDelay=86400,
             withdrawalDetails="Around there",
             description="A description",
         )
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
-            f"/public/offers/v1/events/{event_offer.id}",
+        response = client.with_explicit_token(plain_api_key).patch(
+            self.endpoint_url.format(event_id=event_offer.id),
             json={
                 "bookingContact": "test@myemail.com",
                 "bookingEmail": "test@myemail.com",
@@ -162,88 +193,39 @@ class PatchEventTest:
             == f"{settings.OBJECT_STORAGE_URL}/thumbs/mediations/{human_ids.humanize(event_offer.activeMediation.id)}"
         )
 
+    def test_should_return_400_because_of_invalid_fields_name(self, client):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        event_offer = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
 
-@pytest.mark.usefixtures("db_session")
-class PatchEventReturns404Test:
-    def test_edit_product_offer(self, client):
-        _, api_key = utils.create_offerer_provider_linked_to_venue()
-        thing_offer = offers_factories.ThingOfferFactory(
-            venue__managingOfferer=api_key.offerer, isActive=True, lastProvider=api_key.provider
-        )
-
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
-            f"/public/offers/v1/events/{thing_offer.id}",
-            json={"isActive": False},
-        )
-
-        assert response.status_code == 404
-        assert thing_offer.isActive is True
-
-    def test_edit_inactive_venue_provider(self, client):
-        _, api_key = utils.create_offerer_provider_linked_to_venue(is_venue_provider_active=False)
-        event_offer = offers_factories.EventOfferFactory(
-            venue__managingOfferer=api_key.offerer, lastProvider=api_key.provider
-        )
-
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
-            f"/public/offers/v1/events/{event_offer.id}",
-            json={"isActive": True},
-        )
-
-        assert response.status_code == 404
-
-
-@pytest.mark.usefixtures("db_session")
-class PatchEventReturns400Test:
-    def test_edit_product_offer_with_long_description(self, client):
-        _, api_key = utils.create_offerer_provider_linked_to_venue()
-        thing_offer = offers_factories.ThingOfferFactory(
-            venue__managingOfferer=api_key.offerer, isActive=True, lastProvider=api_key.provider
-        )
-
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
-            f"/public/offers/v1/events/{thing_offer.id}",
-            json={"desciption": "A" * 1001},
+        response = client.with_explicit_token(plain_api_key).patch(
+            self.endpoint_url.format(event_id=event_offer.id), json={"desciption": "A"}
         )
 
         assert response.status_code == 400
         assert response.json == {"desciption": ["extra fields not permitted"]}
 
-    def test_patch_id_at_provider_should_fail_because_already_taken(self, client):
-        venue, api_key = utils.create_offerer_provider_linked_to_venue(with_ticketing_service_at_provider_level=True)
+    def test_should_return_400_because_id_at_provider_already_taken(self, client):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        event_offer = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
         id_at_provider = "rolala"
         # existing offer with id_at_provider
         offers_factories.EventOfferFactory(
-            venue=venue,
+            venue=venue_provider.venue,
             bookingContact="contact@example.com",
             bookingEmail="notify@passq.com",
             subcategoryId="CONCERT",
             durationMinutes=20,
             isDuo=False,
-            lastProvider=api_key.provider,
+            lastProvider=venue_provider.provider,
             withdrawalType=offers_models.WithdrawalTypeEnum.IN_APP,
             withdrawalDelay=86400,
             withdrawalDetails="Around there",
             description="A description",
             idAtProvider=id_at_provider,
         )
-        event_offer = offers_factories.EventOfferFactory(
-            venue=venue,
-            bookingContact="contact@example.com",
-            bookingEmail="notify@passq.com",
-            subcategoryId="CONCERT",
-            durationMinutes=20,
-            isDuo=False,
-            lastProvider=api_key.provider,
-            withdrawalType=offers_models.WithdrawalTypeEnum.IN_APP,
-            withdrawalDelay=86400,
-            withdrawalDetails="Around there",
-            description="A description",
-        )
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
-            f"/public/offers/v1/events/{event_offer.id}",
-            json={"idAtProvider": id_at_provider},
+        response = client.with_explicit_token(plain_api_key).patch(
+            self.endpoint_url.format(event_id=event_offer.id), json={"idAtProvider": id_at_provider}
         )
 
         assert response.status_code == 400
