@@ -416,6 +416,7 @@ def post_event_stocks(event_id: int, body: serialization.DatesCreation) -> seria
 
 
 @blueprints.public_api.route("/public/offers/v1/events/<int:event_id>/dates", methods=["GET"])
+@api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.EVENT_OFFER_STOCKS],
@@ -430,7 +431,6 @@ def post_event_stocks(event_id: int, body: serialization.DatesCreation) -> seria
         )
     ),
 )
-@api_key_required
 def get_event_stocks(event_id: int, query: serialization.GetDatesQueryParams) -> serialization.GetDatesResponse:
     """
     Get event stocks
