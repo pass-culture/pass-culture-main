@@ -302,14 +302,6 @@ class TopOffersResponseData(offerers_models.TopOffersData):
     offerName: str
     image: offers_models.OfferImage | None
 
-    @classmethod
-    def build(cls, offer_id: int, number_of_views: int) -> "TopOffersResponseData":
-        # This adds a call to the db for every offer, but it's not a big deal since we only get the top 3 offers
-        offer = offers_models.Offer.query.get(offer_id)
-        if not offer:
-            raise ValueError(f"Offer with id {offer_id} does not exist")
-        return cls(offerId=offer_id, offerName=offer.name, image=offer.image, numberOfViews=number_of_views)
-
 
 class OffererStatsDataModel(BaseModel):
     totalViewsLast30Days: int
@@ -334,7 +326,13 @@ class GetOffererStatsResponseModel(BaseModel):
         top_offers_response = []
         if topOffers:
             top_offers_response = [
-                TopOffersResponseData.build(topOffer["offerId"], topOffer["numberOfViews"]) for topOffer in topOffers
+                TopOffersResponseData(
+                    offerName=topOffer["offerName"],
+                    offerId=topOffer["offerId"],
+                    image=topOffer["image"],
+                    numberOfViews=topOffer["numberOfViews"],
+                )
+                for topOffer in topOffers
             ]
 
         return cls(
