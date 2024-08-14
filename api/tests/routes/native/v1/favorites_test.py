@@ -208,7 +208,13 @@ class GetTest:
             offer = offers_factories.DigitalOfferFactory(venue=venue)
             users_factories.FavoriteFactory(offer=offer, user=user)
 
-            response = client.with_token(user.email).get(FAVORITES_URL)
+            client = client.with_token(user.email)
+
+            expected_num_queries = 1  # user
+            expected_num_queries += 1  # favorites
+            with assert_num_queries(expected_num_queries):
+                response = client.get(FAVORITES_URL)
+
             favorites = response.json["favorites"]
 
             assert favorites[0]["offer"]["venueName"] == "Pathé Gaumont"
@@ -330,7 +336,8 @@ class GetTest:
     class Returns401Test:
         def when_user_is_not_logged_in(self, client):
             # When
-            response = client.get(FAVORITES_URL)
+            with assert_num_queries(0):
+                response = client.get(FAVORITES_URL)
 
             # Then
             assert response.status_code == 401
@@ -479,8 +486,14 @@ class GetCountTest:
             # Given
             user = users_factories.UserFactory()
 
+            client = client.with_token(user.email)
+
             # When
-            response = client.with_token(user.email).get(FAVORITES_COUNT_URL)
+            # QUERY_COUNT:
+            # 1: Fetch the user for auth
+            # 1: Fetch the favorites count
+            with assert_num_queries(2):
+                response = client.get(FAVORITES_COUNT_URL)
 
             # Then
             assert response.status_code == 200
