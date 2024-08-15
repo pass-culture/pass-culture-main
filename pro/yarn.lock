@@ -7282,10 +7282,10 @@ levn@^0.4.1:
     prelude-ls "^1.2.1"
     type-check "~0.4.0"
 
-libphonenumber-js@^1.11.5:
-  version "1.11.5"
-  resolved "https://registry.yarnpkg.com/libphonenumber-js/-/libphonenumber-js-1.11.5.tgz#50a441da5ff9ed9a322d796a14f1e9cbc0fdabdf"
-  integrity sha512-TwHR5BZxGRODtAfz03szucAkjT5OArXr+94SMtAM2pYXIlQNVMrxvb6uSCbnaJJV6QXEyICk7+l6QPgn72WHhg==
+libphonenumber-js@^1.11.6:
+  version "1.11.6"
+  resolved "https://registry.yarnpkg.com/libphonenumber-js/-/libphonenumber-js-1.11.6.tgz#a8c098c7557be552eab2873cc5875bfc82bdb8ca"
+  integrity sha512-ZYvCHdsk9W/xopj++mVj7sVoIM5na6iozW3qjv+6IGFSK0bKiaqyhQHptZ08393ginZItlxqi4hJ0eIo7wnnsw==
 
 line-height@^0.3.1:
   version "0.3.1"
