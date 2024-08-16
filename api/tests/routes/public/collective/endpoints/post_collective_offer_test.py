@@ -261,6 +261,18 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
         assert response.status_code == 400
         assert "imageFile" in response.json
 
+    def test_should_raise_400_because_startDatetime_is_after_endDatetime(self, public_client, payload):
+        start_datetime = datetime.now(timezone.utc) + timedelta(days=10)  # pylint: disable=datetime-now
+        end_datetime = start_datetime - timedelta(days=1)
+        payload["startDatetime"] = start_datetime.isoformat(timespec="seconds")
+        payload["endDatetime"] = end_datetime.isoformat(timespec="seconds")
+
+        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+            response = public_client.post("/v2/collective/offers/", json=payload)
+
+        assert response.status_code == 400
+        assert response.json == {"endDatetime": ["La date de fin de l'évènement ne peut précéder la date de début."]}
+
     def test_post_offers_institution_not_active(self, public_client, payload):
         institution = educational_factories.EducationalInstitutionFactory(isActive=False)
         payload["educationalInstitutionId"] = institution.id
