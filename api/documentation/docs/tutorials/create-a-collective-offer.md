@@ -61,7 +61,7 @@ Your JSON payload should look something like :
   "bookingLimitDatetime": "2024-07-25T14:00:00+02:00",
   "totalPrice": 100,
   "numberOfTickets": 10,
-  "educationalInstitution": "0010008D",
+  "educationalInstitution": null,
   "nationalProgramId": 2,
   "durationMinutes": 60,
   "imageFile": "",
