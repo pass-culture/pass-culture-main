@@ -13,7 +13,10 @@ import {
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { ArchiveConfirmationModal } from 'components/ArchiveConfirmationModal/ArchiveConfirmationModal'
 import { Step, Stepper } from 'components/Stepper/Stepper'
-import { GET_COLLECTIVE_OFFER_QUERY_KEY } from 'config/swrQueryKeys'
+import {
+  GET_COLLECTIVE_OFFER_QUERY_KEY,
+  GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY,
+} from 'config/swrQueryKeys'
 import {
   Events,
   OFFER_FROM_TEMPLATE_ENTRIES,
@@ -212,7 +215,11 @@ export const CollectiveOfferNavigation = ({
         await api.patchCollectiveOffersArchive({ ids: [offerId] })
       }
 
-      await mutate([GET_COLLECTIVE_OFFER_QUERY_KEY, offerId])
+      if (isTemplate) {
+        await mutate([GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY, offerId])
+      } else {
+        await mutate([GET_COLLECTIVE_OFFER_QUERY_KEY, offerId])
+      }
       setIsArchiveModalOpen(false)
       notify.success('Une offre a bien été archivée', {
         duration: NOTIFICATION_LONG_SHOW_DURATION,
