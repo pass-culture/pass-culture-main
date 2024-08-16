@@ -48,7 +48,7 @@ class _FIELDS:
         return copy.deepcopy(super().__getattribute__(name))
 
     VENUE_ID = Field(
-        example=1234,
+        example=535,
         description=f"Venue Id. The venues list is available on [**this endpoint (`Get offerer venues`)**]({GET_OFFERER_VENUES_ANCHOR})",
     )
     DURATION_MINUTES = Field(
@@ -87,8 +87,7 @@ class _FIELDS:
     # Image Fields
     IMAGE_CREDIT = Field(description="Image owner or author", example="Jane Doe")
     IMAGE_FILE = Field(
-        description="Image file encoded in base64 string. Image format must be PNG or JPEG. Size must be between 400x600 and 800x1200 pixels. Aspect ratio must be 2:3 (portrait format).",
-        example="iVBORw0KGgoAAAANSUhEUgAAAhUAAAMgCAAAAACxT88IAAABImlDQ1BJQ0MgcHJvZmlsZQAAKJGdkLFKw1AUhr+0oiKKg6IgDhlcO5pFB6tCKCjEWMHqlCYpFpMYkpTiG/gm+jAdBMFXcFdw9r/RwcEs3nD4Pw7n/P+9gZadhGk5dwBpVhWu3x1cDq7shTfa+lbZZC8Iy7zreSc0ns9XLKMvHePVPPfnmY/iMpTOVFmYFxVY+2JnWuWGVazf9v0j8YPYjtIsEj+Jd6I0Mmx2/TSZhD+e5jbLcXZxbvqqbVx6nOJhM2TCmISKjjRT5xiHXalLQcA9JaE0IVZvqpmKG1EpJ5dDUV+k2zTkbdV5nlKG8hjLyyTckcrT5GH+7/fax1m9aW3M8qAI6lZb1RqN4P0RVgaw9gxL1w1Zi7/f1jDj1DP/fOMXG7hQfuNVil0AAAAJcEhZcwAALiMAAC4jAXilP3YAAAAHdElNRQfnAwMPGDrdy1JyAAABtElEQVR42u3BAQ0AAADCoPdPbQ8HFAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8GaFGgABH6N7kwAAAABJRU5ErkJggg==",
+        description="Image file encoded in base64 string. Image format must be PNG or JPEG. Size must be between 400x600 and 800x1200 pixels. Aspect ratio must be 2:3 (portrait format)."
     )
     IMAGE_URL = Field(description="Image URL publicly accessible", example="https://example.com/image.png")
 
@@ -259,8 +258,8 @@ class _FIELDS:
     COLLECTIVE_BOOKING_CANCELLATION_LIMIT_DATE = Field(description="Deadline to cancel the booking")
     # Educational institution fields
     EDUCATIONAL_INSTITUTION_ID = Field(
-        description=f"Educational institution id in the pass Culture application. Institutions can be found on **[this endpoint (`Get all educational institutions`)]({LIST_EDUCATIONAL_INSTITUTIONS_ANCHOR})**",
-        example=1234,
+        description=f"Educational institution id in the pass Culture application, should be `null` if an educational institution UAI is set. Institutions can be found on **[this endpoint (`Get all educational institutions`)]({LIST_EDUCATIONAL_INSTITUTIONS_ANCHOR})**",
+        example=None,
     )
     EDUCATIONAL_INSTITUTION_UAI = Field(
         description=f'Educational institution UAI ("Unité Administrative Immatriculée") code. Institutions can be found on **[this endpoint (`Get all educational institutions`)]({LIST_EDUCATIONAL_INSTITUTIONS_ANCHOR})**',
