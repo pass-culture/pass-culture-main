@@ -77,27 +77,11 @@ jobs:
           kubernetes-cluster: ${{ inputs.teleport_kubernetes_cluster }}
 
       - name: "Play pre-migrations"
-        run: |
-          set -e
-          VERSION="${{ inputs.app_version }}"
-          export ENVIRONMENT="${{ inputs.environment }}"
-          IMAGE="europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry/pcapi"
-          export IMAGE="${IMAGE}:${VERSION}"
-          export DATE=$(date +"%Y-%m-%d--%H-%M-%S")
-          JOB_NAME=pre-upgrade-${DATE}
-          envsubst < .github/workflows/templates/pre-upgrade-job.yaml | kubectl -n ${{ inputs.environment }} apply -f -
-          # kubectl logs returns 0 if pod is pending because of lack of resource so we use a more elaborate condition
-          kubectl wait -n ${{ inputs.environment }} --for=jsonpath='{.status.ready}'=1 jobs/${JOB_NAME} --timeout=180s
-          # Next lines assume that job's backoffLimit is 0
-          kubectl logs -n ${{ inputs.environment }} -f jobs/${JOB_NAME}
-          kubectl wait -n ${{ inputs.environment }} --for=condition=complete jobs/${JOB_NAME} || kubectl wait -n ${{ inputs.environment }} --for=condition=failed jobs/${JOB_NAME} # Sanity check that the job is over
-          failure=$(kubectl get -n ${{ inputs.environment }} jobs/${JOB_NAME} -o=jsonpath='{.status.conditions[?(@.type=="Failed")].status}') # Did the job fail or not so we can give correct return code
-          if [[ "$failure" == "True" ]]
-          then
-            exit 1
-          else
-            exit 0
-          fi
+        uses: pass-culture/common-workflows/actions/pcapi-migration@PC-31321-pcapi-migration-action
+        with:
+          environment: ${{ inputs.environment }}
+          app_version: ${{ inputs.app_version }}
+          migration_type: pre
 
       # Get pcapi secrets from source code, to be passed later as a helmfile parameter.
       - name: "Generate pcapi secrets list"
@@ -155,27 +139,11 @@ jobs:
           argocd app sync pcapi-${{ inputs.environment }} --core --async --prune
           argocd app wait pcapi-${{ inputs.environment }} --core --timeout 600
       - name: "Play post-migrations"
-        run: |
-          set -e
-          VERSION="${{ inputs.app_version }}"
-          export ENVIRONMENT="${{ inputs.environment }}"
-          IMAGE="europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry/pcapi"
-          export IMAGE="${IMAGE}:${VERSION}"
-          export DATE=$(date +"%Y-%m-%d--%H-%M-%S")
-          JOB_NAME=post-upgrade-${DATE}
-          envsubst < .github/workflows/templates/post-upgrade-job.yaml | kubectl -n ${{ inputs.environment }} apply -f -
-          # kubectl logs returns 0 if pod is pending because of lack of resource so we use a more elaborate condition
-          kubectl wait -n ${{ inputs.environment }} --for=jsonpath='{.status.ready}'=1 jobs/${JOB_NAME} --timeout=180s
-          # Next lines assume that job's backoffLimit is 0
-          kubectl logs -n ${{ inputs.environment }} -f jobs/${JOB_NAME}
-          kubectl wait -n ${{ inputs.environment }} --for=condition=complete jobs/${JOB_NAME} || kubectl wait -n ${{ inputs.environment }} --for=condition=failed jobs/${JOB_NAME} # Sanity check that the job is over
-          failure=$(kubectl get -n ${{ inputs.environment }} jobs/${JOB_NAME} -o=jsonpath='{.status.conditions[?(@.type=="Failed")].status}') # Did the job fail or not so we can give correct return code
-          if [[ "$failure" == "True" ]]
-          then
-            exit 1
-          else
-            exit 0
-          fi
+        uses: pass-culture/common-workflows/actions/pcapi-migration@PC-31321-pcapi-migration-action
+        with:
+          environment: ${{ inputs.environment }}
+          app_version: ${{ inputs.app_version }}
+          migration_type: post
 
   deploy-api-doc-on-firebase:
     name: "Deploy api doc on firebase"
