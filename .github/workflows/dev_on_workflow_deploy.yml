@@ -8,9 +8,6 @@ on:
       app_version:
         type: string
         required: true
-      teleport_version:
-        type: string
-        required: true
       teleport_proxy:
         type: string
         required: true
@@ -63,18 +60,12 @@ jobs:
         with:
           secrets: |-
             API_TOKEN_GITHUB:passculture-metier-ehp/passculture-main-sa-access-token
-      - name: "Install Teleport"
-        uses: teleport-actions/setup@v1
+
+      - name: "Connect to cluster"
+        uses: pass-culture/common-workflows/actions/teleport-connect@PC-31321-teleport-action
         with:
-          version: ${{ inputs.teleport_version }}
-      - name: "Teleport Authentication"
-        uses: teleport-actions/auth-k8s@v1
-        id: "teleport-auth"
-        with:
-          proxy: ${{ inputs.teleport_proxy }}
-          token: github-token
-          certificate-ttl: 1h
-          kubernetes-cluster: ${{ inputs.teleport_kubernetes_cluster }}
+          teleport_proxy: ${{ inputs.teleport_proxy }}
+          teleport_kubernetes_cluster: ${{ inputs.teleport_kubernetes_cluster }}
 
       - name: "Play pre-migrations"
         uses: pass-culture/common-workflows/actions/pcapi-migration@PC-31321-pcapi-migration-action
@@ -126,18 +117,10 @@ jobs:
           api_token_github_secret_name: passculture-metier-ehp/passculture-main-sa-access-token
           chart_values_repository: ""
           helmfile_path: "./pass-culture-deployment/helm/pcapi"
-      - name: "Install argocd cli"
-        id: install_argocd_cli
-        run: |
-          curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
-          sudo install -m 555 argocd-linux-amd64 /usr/local/bin/argocd
-          rm argocd-linux-amd64
-      - name: "Check argocd application status"
-        id: check_status
-        run: |
-          kubectl config set-context --current --namespace=argocd
-          argocd app sync pcapi-${{ inputs.environment }} --core --async --prune
-          argocd app wait pcapi-${{ inputs.environment }} --core --timeout 600
+      - name: "Sync ArgoCD application"
+        uses: pass-culture/common-workflows/actions/argocd-sync@PC-31321-update-argocd-action
+        with:
+          app_name: pcapi-${{ inputs.environment }}
       - name: "Play post-migrations"
         uses: pass-culture/common-workflows/actions/pcapi-migration@PC-31321-pcapi-migration-action
         with:
@@ -244,18 +227,11 @@ jobs:
       contents: read
     runs-on: ubuntu-latest
     steps:
-      - name: "Install Teleport"
-        uses: teleport-actions/setup@v1
+      - name: "Connect to cluster"
+        uses: pass-culture/common-workflows/actions/teleport-connect@PC-31321-teleport-action
         with:
-          version: ${{ inputs.teleport_version }}
-      - name: "Teleport Authentication"
-        id: "teleport-auth"
-        uses: teleport-actions/auth-k8s@v1
-        with:
-          proxy: ${{ inputs.teleport_proxy }}
-          token: github-token
-          certificate-ttl: 1h
-          kubernetes-cluster: ${{ inputs.teleport_kubernetes_cluster }}
+          teleport_proxy: ${{ inputs.teleport_proxy }}
+          teleport_kubernetes_cluster: ${{ inputs.teleport_kubernetes_cluster }}
       - name: "Configure algolia"
         id: "set_algolia_settings"
         uses: nick-fields/retry@v3
