@@ -1,0 +1,79 @@
+name: "3 [on_workflow/API] Tests"
+
+on:
+  workflow_call:
+    inputs:
+      doc-api-entrypoint:
+        type: string
+        required: false
+        default: 'api/documentation'
+    secrets:
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER:
+        required: true
+      GCP_EHP_SERVICE_ACCOUNT:
+        required: true
+
+env:
+  registry: europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry
+
+defaults:
+  run:
+    working-directory: api
+
+jobs:
+  api-documentation-build-checks:
+    name: "Check API documentation can be built"
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4.1.7
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: '${{ inputs.doc-api-entrypoint }}/.nvmrc'
+      - name: "Build documentation"
+        run: |
+            set -e
+            npm install
+            npm run build
+        env:
+          ENV: ci-tests
+        working-directory: '${{ inputs.doc-api-entrypoint }}'
+      - name: "Authentification to Google"
+        uses: "google-github-actions/auth@v2"
+        with:
+          workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      - name: "Get Secret"
+        id: secrets
+        uses: "google-github-actions/get-secretmanager-secrets@v2"
+        with:
+          secrets: |-
+            SLACK_BOT_TOKEN:passculture-metier-ehp/passculture-ci-slack-bot-token
+      - name: "Slack Notification"
+        if: ${{ failure() && github.ref == 'refs/heads/master'  }}
+        uses: slackapi/slack-github-action@v1.26.0
+        with:
+          # channel #dev
+          channel-id: "CPZ7U1CNP"
+          payload: |
+            {
+            "attachments": [
+              {
+                "mrkdwn_in": ["text"],
+                "color": "#A30002",
+                "author_name": "${{github.actor}}",
+                "author_link": "https://github.com/${{github.actor}}",
+                "author_icon": "https://github.com/${{github.actor}}.png",
+                "title": "Api tests",
+                "title_link": "https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}",
+                "text": "Les tests api-documentation-build-checks échouent sur `master` :boom:"
+              }
+            ],
+            "unfurl_links": false,
+            "unfurl_media": false
+            }
+        env:
+          SLACK_BOT_TOKEN: ${{ steps.secrets.outputs.SLACK_BOT_TOKEN }}
