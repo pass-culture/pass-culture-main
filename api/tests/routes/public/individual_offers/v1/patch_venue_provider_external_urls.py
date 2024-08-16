@@ -11,13 +11,20 @@ from tests.routes.public.helpers import PublicAPIVenueEndpointHelper
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-class PatchProviderTest(PublicAPIVenueEndpointHelper):
+class PatchVenueProviderExternalUrlsTest(PublicAPIVenueEndpointHelper):
     endpoint_url = "/public/providers/v1/venues/{venue_id}"
 
     def test_should_raise_401_because_not_authenticated(self, client: TestClient):
         venue = self.setup_venue()
         response = client.patch(self.endpoint_url.format(venue_id=venue.id))
         assert response.status_code == 401
+
+    def test_should_raise_401_because_api_key_is_not_linked_to_provider(self, client: TestClient):
+        old_api_key = self.setup_old_api_key()
+        venue = self.setup_venue()
+        response = client.with_explicit_token(old_api_key).patch(self.endpoint_url.format(venue_id=venue.id))
+        assert response.status_code == 401
+        assert response.json == {"auth": "Deprecated API key. Please contact provider support to get a new API key"}
 
     def test_should_raise_404_because_venue_provider_is_inactive(self, client: TestClient):
         plain_api_key, venue_provider = self.setup_inactive_venue_provider()
