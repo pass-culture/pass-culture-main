@@ -1,4 +1,5 @@
 from unittest.mock import patch
+import uuid
 
 import flask
 import pytest
@@ -13,6 +14,96 @@ from pcapi.utils.crypto import hash_password
 from pcapi.validation.routes import users_authentifications
 
 from tests.conftest import TestClient
+
+
+@pytest.mark.usefixtures("db_session")
+class ProviderApiKeyRequiredTest:
+    def _get_app_test_client(self) -> TestClient:
+        app = flask.Flask(__name__)
+
+        @app.route("/test", methods=["GET"])
+        @users_authentifications.provider_api_key_required
+        def index():
+            return flask.jsonify({"result": "you are authenticated"})
+
+        # Simulate `routes.error_handlers.generic_error_handlers.restize_api_errors`...
+        # without importing the function, which fails because it
+        # expects to have a proper Flask app with a context.
+        @app.errorhandler(api_errors.ApiErrors)
+        def handle_api_errors(error):
+            return flask.jsonify(error.errors), error.status_code
+
+        return TestClient(app.test_client())
+
+    def _setup_api_key(self, provider=None, offerer=None) -> str:
+        offerer = offerer or offerers_factories.OffererFactory(name="Technical provider")
+
+        if provider and offerer:
+            providers_factories.OffererProviderFactory(offerer=offerer, provider=provider)
+
+        secret = str(uuid.uuid4())
+        env = "test"
+        prefix_id = str(uuid.uuid1())
+
+        offerers_factories.ApiKeyFactory(
+            offerer=offerer, provider=provider, secret=secret, prefix="%s_%s" % (env, prefix_id)
+        )
+        plain_api_key = "%s_%s_%s" % (env, prefix_id, secret)
+
+        return plain_api_key
+
+    def test_should_raise_401_because_no_api_key_given(self):
+        client = self._get_app_test_client()
+        response = client.get("/test")
+
+        assert response.status_code == 401
+        assert response.json == {"auth": "API key required"}
+
+    def test_should_raise_401_because_invalid_api_key_given(self):
+        client = self._get_app_test_client()
+        response = client.with_explicit_token("invalid API key").get("/test")
+
+        assert response.status_code == 401
+        assert response.json == {"auth": "API key required"}
+
+    def test_should_raise_401_because_deprecated_api_key_given(self):
+        # deprecated = not linked to a provider
+        plain_api_key = self._setup_api_key(provider=None)
+        client = self._get_app_test_client()
+        response = client.with_explicit_token(plain_api_key).get("/test")
+
+        assert response.status_code == 401
+        assert response.json == {"auth": "Deprecated API key. Please contact provider support to get a new API key"}
+
+    def test_should_raise_403_because_inactive_offerer(self):
+        provider = providers_factories.PublicApiProviderFactory()
+        offerer = offerers_factories.OffererFactory(isActive=False)
+        plain_api_key = self._setup_api_key(provider=provider, offerer=offerer)
+        client = self._get_app_test_client()
+        response = client.with_explicit_token(plain_api_key).get("/test")
+
+        assert response.status_code == 403
+        assert response.json == {"auth": ["Inactive offerer"]}
+
+    def test_should_raise_403_because_inactive_provider(self):
+        provider = providers_factories.PublicApiProviderFactory(isActive=False)
+        offerer = offerers_factories.OffererFactory()
+        plain_api_key = self._setup_api_key(provider=provider, offerer=offerer)
+        client = self._get_app_test_client()
+        response = client.with_explicit_token(plain_api_key).get("/test")
+
+        assert response.status_code == 403
+        assert response.json == {"auth": ["Inactive provider"]}
+
+    def test_should_be_successful(self):
+        provider = providers_factories.PublicApiProviderFactory()
+        offerer = offerers_factories.OffererFactory()
+        plain_api_key = self._setup_api_key(provider=provider, offerer=offerer)
+        client = self._get_app_test_client()
+        response = client.with_explicit_token(plain_api_key).get("/test")
+
+        assert response.status_code == 200
+        assert response.json == {"result": "you are authenticated"}
 
 
 @pytest.mark.usefixtures("db_session")

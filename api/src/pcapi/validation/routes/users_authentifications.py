@@ -66,6 +66,34 @@ def api_key_required(route_function: typing.Callable) -> typing.Callable:
     return wrapper
 
 
+def provider_api_key_required(route_function: typing.Callable) -> typing.Callable:
+    """
+    Require the user to be authenticated as a provider using an API key.
+
+    Prevent old API key (that authenticates an offerer) bearer to access routes requiring an
+    authenticated provider.
+    """
+    add_security_scheme(route_function, API_KEY_AUTH_NAME)
+
+    @wraps(route_function)
+    def wrapper(*args: typing.Any, **kwds: typing.Any) -> flask.Response:
+        _fill_current_api_key()
+
+        if not g.current_api_key:
+            raise api_errors.UnauthorizedError(errors={"auth": "API key required"})
+
+        if not g.current_api_key.provider:
+            raise api_errors.UnauthorizedError(
+                errors={"auth": "Deprecated API key. Please contact provider support to get a new API key"}
+            )
+
+        _check_active_offerer(g.current_api_key)
+        _check_active_provider(g.current_api_key)
+        return route_function(*args, **kwds)
+
+    return wrapper
+
+
 def _check_active_offerer(api_key: ApiKey) -> None:
     if not api_key.offerer.isActive:
         raise api_errors.ForbiddenError(errors={"auth": ["Inactive offerer"]})
