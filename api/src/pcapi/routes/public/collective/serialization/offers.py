@@ -466,6 +466,16 @@ class PostCollectiveOfferBodyModel(BaseModel):
 
         return values
 
+    @validator("end_datetime", pre=False)
+    def validate_end_datetime_vs_start_datetime(
+        cls, end_datetime: datetime | None, values: dict[str, Any]
+    ) -> datetime | None:
+        start_datetime = values.get("start_datetime")
+
+        if start_datetime and end_datetime < start_datetime:
+            raise ValueError("La date de fin de l'évènement ne peut précéder la date de début.")
+        return end_datetime
+
     class Config:
         alias_generator = to_camel
         extra = "forbid"
