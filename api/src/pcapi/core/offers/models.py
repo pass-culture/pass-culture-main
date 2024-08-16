@@ -275,6 +275,7 @@ class Stock(PcObject, Base, Model, SoftDeletableMixin):
     # First step : Create a unique index on offerId/idAtProviders
     # Next step : Create a unicity constraint based on this index and to drop the unicity constraint on idAtProviders
     sa.Index("unique_ix_offer_id_id_at_providers", offerId, idAtProviders, unique=True)
+    sa.Index("ix_stock_idAtProviders", idAtProviders)
 
     __table_args__ = (
         sa.Index(
