@@ -10,12 +10,12 @@ from pcapi.routes.public.serialization import providers as providers_serializati
 from pcapi.routes.public.serialization import venues as venues_serialization
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
-from pcapi.validation.routes.users_authentifications import api_key_required
 from pcapi.validation.routes.users_authentifications import current_api_key
+from pcapi.validation.routes.users_authentifications import provider_api_key_required
 
 
 @blueprints.public_api.route("/public/providers/v1/provider", methods=["GET"])
-@api_key_required
+@provider_api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.PROVIDERS],
@@ -38,7 +38,7 @@ def get_provider() -> providers_serialization.ProviderResponse:
 
 
 @blueprints.public_api.route("/public/providers/v1/provider", methods=["PATCH"])
-@api_key_required
+@provider_api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.PROVIDERS],
@@ -86,7 +86,7 @@ def update_provider(body: providers_serialization.ProviderUpdate) -> providers_s
 
 
 @blueprints.public_api.route("/public/providers/v1/venues/<int:venue_id>", methods=["PATCH"])
-@api_key_required
+@provider_api_key_required
 @spectree_serialize(
     on_success_status=204,
     api=spectree_schemas.public_api_schema,

@@ -5,6 +5,7 @@ from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.providers import factories as providers_factories
 
+from tests.conftest import TestClient
 from tests.routes.public.helpers import PublicAPIEndpointBaseHelper
 
 
@@ -17,6 +18,12 @@ class PatchProviderTest(PublicAPIEndpointBaseHelper):
     def test_should_raise_401_because_not_authenticated(self, client):
         response = client.patch(self.endpoint_url, json={})
         assert response.status_code == 401
+
+    def test_should_raise_401_because_api_key_is_not_linked_to_provider(self, client: TestClient):
+        old_api_key = self.setup_old_api_key()
+        response = client.with_explicit_token(old_api_key).patch(self.endpoint_url)
+        assert response.status_code == 401
+        assert response.json == {"auth": "Deprecated API key. Please contact provider support to get a new API key"}
 
     def test_should_update_notification_url(self, client):
         plain_api_key, provider = self.setup_provider()
