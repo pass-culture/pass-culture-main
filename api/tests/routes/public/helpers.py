@@ -31,6 +31,25 @@ class PublicAPIEndpointBaseHelper(abc.ABC):
     def test_should_raise_401_because_not_authenticated(self, client: TestClient):
         raise NotImplementedError()
 
+    def _setup_api_key(self, offerer, provider=None) -> str:
+        secret = str(uuid.uuid4())
+        env = "test"
+        prefix_id = str(uuid.uuid1())
+
+        offerers_factories.ApiKeyFactory(
+            offerer=offerer, provider=provider, secret=secret, prefix="%s_%s" % (env, prefix_id)
+        )
+        plain_api_key = "%s_%s_%s" % (env, prefix_id, secret)
+
+        return plain_api_key
+
+    def setup_old_api_key(self) -> str:
+        """
+        Setup old api key not linked to a provider
+        """
+        offerer = offerers_factories.OffererFactory(name="Technical provider")
+        return self._setup_api_key(offerer=offerer)
+
     def setup_provider(self, has_ticketing_urls=True) -> tuple[str, providers_models.Provider]:
         if has_ticketing_urls:
             provider = providers_factories.PublicApiProviderFactory()
@@ -42,14 +61,7 @@ class PublicAPIEndpointBaseHelper(abc.ABC):
             provider=provider,
         )
 
-        secret = str(uuid.uuid4())
-        env = "test"
-        prefix_id = str(uuid.uuid1())
-
-        offerers_factories.ApiKeyFactory(
-            offerer=offerer, provider=provider, secret=secret, prefix="%s_%s" % (env, prefix_id)
-        )
-        plain_api_key = "%s_%s_%s" % (env, prefix_id, secret)
+        plain_api_key = self._setup_api_key(offerer=offerer, provider=provider)
 
         return plain_api_key, provider
 
