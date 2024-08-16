@@ -14,6 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       api-changed: ${{ steps.check-api-changes.outputs.any_modified }}
+      api-documentation-changed: ${{ steps.check-api-documentation-changes.outputs.any_modified }}
       pro-changed: ${{ steps.check-pro-changes.outputs.any_modified }}
       dependencies-changed: ${{ steps.check-dependencies-changes.outputs.any_modified }}
       push-tags: ${{ steps.pcapi-tags.outputs.push-tags }}
@@ -31,8 +32,14 @@ jobs:
         with:
           files: |
             api/**
+            !api/documentation/**
             !api/src/pcapi/scripts/**/main.py
             !api/src/pcapi/scripts/**/main.sql
+      - name: "Check api documentation folder changes"
+        id: check-api-documentation-changes
+        uses: tj-actions/changed-files@v44
+        with:
+          files: api/documentation/**
       - name: "Check pro folder changes"
         id: check-pro-changes
         uses: tj-actions/changed-files@v44
@@ -193,6 +200,15 @@ jobs:
     uses: ./.github/workflows/dev_on_workflow_tests_api.yml
     with:
       tag: ${{ needs.build-pcapi-tests.result == 'skipped' && 'latest' || needs.pcapi-init-job.outputs.checksum-tag }}
+    secrets:
+      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+
+  test-api-documentation:
+    name: "Tests API documentation"
+    needs: [pcapi-init-job]
+    if: needs.pcapi-init-job.outputs.api-documentation-changed == 'true'
+    uses: ./.github/workflows/dev_on_workflow_tests_api_documentation.yml
     secrets:
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
