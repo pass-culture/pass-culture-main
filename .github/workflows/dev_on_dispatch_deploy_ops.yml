@@ -14,7 +14,6 @@ jobs:
     with:
       environment: ops
       app_version: ${{ inputs.pcapi_image_tag }}
-      teleport_version: 15.2.5
       teleport_proxy: teleport.ops.passculture.team:443
       teleport_kubernetes_cluster: passculture-metier-ops
       deploy_api: true
