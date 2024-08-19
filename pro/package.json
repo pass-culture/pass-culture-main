@@ -73,7 +73,7 @@
     "react-router-dom": "^6.26.1",
     "reselect": "^5.1.1",
     "swr": "^2.2.5",
-    "use-debounce": "^10.0.2",
+    "use-debounce": "^10.0.3",
     "uuidv4": "^6.2.13",
     "yup": "^1.4.0"
   },
