@@ -35,7 +35,7 @@ Sur linux + chrome / chromium l’application peut se charger indéfiniment un w
 
   - Prérequis aux lancement des tests E2E Cypress
     - Lancement du backend `pc start-backend`
-    - Injection des données de test `pc sandbox -n industrial`
+    - Injection des données de test `pc sandbox -n e2e`
   - Lancement des tests depuis la ligne de commande `yarn test:e2e`
 
 Note, si vous lancez les tests e2e hors Docker et sous OSX, Cypress tentera de contacter le backoffice sur
