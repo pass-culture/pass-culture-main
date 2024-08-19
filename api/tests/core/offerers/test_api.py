@@ -1600,7 +1600,9 @@ class RejectOffererTest:
         offerers_api.reject_offerer(offerer, admin, rejection_reason=offerers_models.OffererRejectionReason.OTHER)
 
         # Then
-        send_new_offerer_rejection_email_to_pro.assert_called_once_with(offerer)
+        send_new_offerer_rejection_email_to_pro.assert_called_once_with(
+            offerer, offerers_models.OffererRejectionReason.OTHER
+        )
         send_offerer_attachment_rejection_email_to_pro.assert_not_called()  # one email is enough
 
     def test_action_is_logged(self):
