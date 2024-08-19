@@ -400,18 +400,20 @@ export const Offers = ({
             isAtLeastOneOfferChecked={selectedIndividualOffers.length > 1}
             isRestrictedAsAdmin={isRestrictedAsAdmin}
           />
-          {selectedIndividualOffers.length > 0 && (
-            <IndividualOffersActionsBar
-              areAllOffersSelected={areAllIndividualOffersSelected}
-              clearSelectedOfferIds={clearSelectedOfferIds}
-              selectedOfferIds={selectedIndividualOffers.map(
-                (offer) => offer.id
-              )}
-              toggleSelectAllCheckboxes={toggleSelectAllCheckboxes}
-              getUpdateOffersStatusMessage={getUpdateOffersStatusMessage}
-              canDeleteOffers={canDeleteOffers}
-            />
-          )}
+          <div role="status">
+            {selectedIndividualOffers.length > 0 && (
+              <IndividualOffersActionsBar
+                areAllOffersSelected={areAllIndividualOffersSelected}
+                clearSelectedOfferIds={clearSelectedOfferIds}
+                selectedOfferIds={selectedIndividualOffers.map(
+                  (offer) => offer.id
+                )}
+                toggleSelectAllCheckboxes={toggleSelectAllCheckboxes}
+                getUpdateOffersStatusMessage={getUpdateOffersStatusMessage}
+                canDeleteOffers={canDeleteOffers}
+              />
+            )}
+          </div>
         </>
       )}
     </div>
