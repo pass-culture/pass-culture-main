@@ -28,13 +28,12 @@ class SendNewOffererValidationEmailTest:
 class SendNewOffererRejectionEmailTest:
     def test_send_mail(self):
         # Given
-        offerer = UserOffererFactory(
-            user__email="test@example.com",
-            offerer__rejectionReason=offerer_models.OffererRejectionReason.ADAGE_DECLINED,
-        ).offerer
+        offerer = UserOffererFactory(user__email="test@example.com").offerer
 
         # When
-        new_offerer_validation.send_new_offerer_rejection_email_to_pro(offerer)
+        new_offerer_validation.send_new_offerer_rejection_email_to_pro(
+            offerer, offerer_models.OffererRejectionReason.ADAGE_DECLINED
+        )
 
         # Then
         assert mails_testing.outbox[0]["To"] == "test@example.com"

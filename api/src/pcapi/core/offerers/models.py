@@ -997,8 +997,6 @@ class Offerer(
     hasNewNavUsers: sa_orm.Mapped["bool | None"] = sa.orm.query_expression()
     hasOldNavUsers: sa_orm.Mapped["bool | None"] = sa.orm.query_expression()
 
-    rejectionReason: OffererRejectionReason = Column(db_utils.MagicEnum(OffererRejectionReason), nullable=True)
-
     def __init__(self, street: str | None = None, **kwargs: typing.Any) -> None:
         if street:
             self.street = street  # type: ignore[method-assign]
