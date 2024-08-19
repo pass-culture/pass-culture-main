@@ -121,7 +121,7 @@ class VenueResponseGetterDict(pydantic_v1.utils.GetterDict):
             if not self._obj.accessibilityProvider:
                 return None
             accessibility_infos = self._obj.accessibilityProvider.externalAccessibilityData
-            return acceslibre_serializers.ExternalAccessibilityDataModel.from_orm(accessibility_infos)
+            return acceslibre_serializers.ExternalAccessibilityDataModel.from_accessibility_infos(accessibility_infos)
         if key == "externalAccessibilityUrl":
             if not self._obj.accessibilityProvider:
                 return None

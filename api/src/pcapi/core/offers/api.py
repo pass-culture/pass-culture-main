@@ -17,6 +17,7 @@ from werkzeug.exceptions import BadRequest
 
 from pcapi import settings
 from pcapi.connectors.ems import EMSAPIException
+from pcapi.connectors.serialization import acceslibre_serializers
 from pcapi.connectors.thumb_storage import create_thumb
 from pcapi.connectors.thumb_storage import remove_thumb
 from pcapi.connectors.titelive import get_new_product_from_ean13
@@ -161,17 +162,41 @@ def _format_extra_data(subcategory_id: str, extra_data: dict[str, typing.Any] | 
     return formatted_extra_data
 
 
+def _get_accessibility_compliance_fields(venue: offerers_models.Venue) -> dict:
+    if venue.external_accessibility_id:
+        return _get_external_accessibility_compliance(venue)
+    return _get_internal_accessibility_compliance(venue)
+
+
+def _get_external_accessibility_compliance(venue: offerers_models.Venue) -> dict:
+    accessibility_data = acceslibre_serializers.ExternalAccessibilityDataModel.from_accessibility_infos(
+        venue.accessibilityProvider.externalAccessibilityData
+    )
+    return {
+        "audioDisabilityCompliant": accessibility_data.isAccessibleAudioDisability,
+        "mentalDisabilityCompliant": accessibility_data.isAccessibleMentalDisability,
+        "motorDisabilityCompliant": accessibility_data.isAccessibleMotorDisability,
+        "visualDisabilityCompliant": accessibility_data.isAccessibleVisualDisability,
+    }
+
+
+def _get_internal_accessibility_compliance(venue: offerers_models.Venue) -> dict:
+    return {
+        "audioDisabilityCompliant": venue.audioDisabilityCompliant,
+        "mentalDisabilityCompliant": venue.mentalDisabilityCompliant,
+        "motorDisabilityCompliant": venue.motorDisabilityCompliant,
+        "visualDisabilityCompliant": venue.visualDisabilityCompliant,
+    }
+
+
 def create_draft_offer(body: schemas.PostDraftOfferBodyModel, venue: offerers_models.Venue) -> models.Offer:
     validation.check_offer_subcategory_is_valid(body.subcategory_id)
 
     fields = {key: value for key, value in body.dict(by_alias=True).items() if key != "venueId"}
+    fields.update(_get_accessibility_compliance_fields(venue))
     offer = models.Offer(
         **fields,
         venue=venue,
-        audioDisabilityCompliant=venue.audioDisabilityCompliant,
-        mentalDisabilityCompliant=venue.mentalDisabilityCompliant,
-        motorDisabilityCompliant=venue.motorDisabilityCompliant,
-        visualDisabilityCompliant=venue.visualDisabilityCompliant,
         offererAddress=venue.offererAddress,
         isActive=False,
         validation=models.OfferValidationStatus.DRAFT,
