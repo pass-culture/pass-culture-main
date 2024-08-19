@@ -1,5 +1,5 @@
 """
-add cancellationUser to collective booking foreignkey
+add cancellationUser to booking foreignkey
 """
 
 from alembic import op
