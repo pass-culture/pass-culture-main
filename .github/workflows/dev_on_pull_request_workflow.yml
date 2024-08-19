@@ -227,7 +227,7 @@ jobs:
 
   push-pcapi:
     name: "Push pcapi docker image to registry"
-    needs: [pcapi-init-job, test-api, test-pro-e2e]
+    needs: [pcapi-init-job]
     uses: ./.github/workflows/dev_on_workflow_push_docker_image.yml
     with:
       image: pcapi
