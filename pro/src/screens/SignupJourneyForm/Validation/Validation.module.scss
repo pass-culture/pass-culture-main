@@ -9,11 +9,6 @@
 
 .subtitle {
   @include fonts.title4;
-
-  margin-top: rem.torem(32px);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
 }
 
 .data-displaying {
@@ -38,5 +33,12 @@
 
   section:nth-child(even) {
     margin-bottom: rem.torem(52px);
+  }
+
+  &-subtitle {
+    margin-top: rem.torem(32px);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
   }
 }

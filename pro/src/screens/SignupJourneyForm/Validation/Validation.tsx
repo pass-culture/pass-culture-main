@@ -123,8 +123,8 @@ export const Validation = (): JSX.Element => {
     <div className={styles['validation-screen']}>
       <section>
         <h1 className={styles['title']}>Validation</h1>
-        <h2 className={styles['subtitle']}>
-          Identification
+        <div className={styles['validation-screen-subtitle']}>
+          <h2 className={styles['subtitle']}>Identification</h2>
           <ButtonLink
             to="/parcours-inscription/identification"
             onClick={() => {
@@ -141,7 +141,7 @@ export const Validation = (): JSX.Element => {
           >
             Modifier
           </ButtonLink>
-        </h2>
+        </div>
         <Banner type={'light'} className={styles['data-displaying']}>
           <div className={styles['data-line']}>
             {offerer.publicName || offerer.name}
@@ -153,8 +153,8 @@ export const Validation = (): JSX.Element => {
         </Banner>
       </section>
       <section className={styles['validation-screen']}>
-        <h2 className={styles['subtitle']}>
-          Activité
+        <div className={styles['validation-screen-subtitle']}>
+          <h2 className={styles['subtitle']}>Activité</h2>
           <ButtonLink
             to="/parcours-inscription/activite"
             onClick={() => {
@@ -171,7 +171,7 @@ export const Validation = (): JSX.Element => {
           >
             Modifier
           </ButtonLink>
-        </h2>
+        </div>
         <Banner type={'light'} className={styles['data-displaying']}>
           <div className={styles['data-line']}>
             {
