@@ -3500,6 +3500,7 @@ class BatchOffererRejectTest(PostEndpointHelper):
             "ERROR",
             "ADAGE_DECLINED",
             "OUT_OF_TIME",
+            "CLOSED_BUSINESS",
             "OTHER",
         ),
     )
