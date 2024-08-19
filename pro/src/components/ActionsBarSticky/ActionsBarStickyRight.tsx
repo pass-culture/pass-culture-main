@@ -25,24 +25,26 @@ export const Right = ({
         [style['right-inverse']]: inverseWhenSmallerThanTablet,
       })}
     >
-      {dirtyForm !== undefined && mode === Mode.CREATION ? (
-        !dirtyForm ? (
-          <span className={style['draft-indicator']}>
-            <SvgIcon
-              src={fullValidateIcon}
-              alt=""
-              width="16"
-              className={style['draft-saved-icon']}
-            />
-            Brouillon enregistré
-          </span>
-        ) : (
-          <span className={style['draft-indicator']}>
-            <div className={style['draft-not-saved-icon']} />
-            Brouillon non enregistré
-          </span>
-        )
-      ) : null}
+      <div role="status">
+        {dirtyForm !== undefined && mode === Mode.CREATION ? (
+          !dirtyForm ? (
+            <span className={style['draft-indicator']}>
+              <SvgIcon
+                src={fullValidateIcon}
+                alt=""
+                width="16"
+                className={style['draft-saved-icon']}
+              />
+              Brouillon enregistré
+            </span>
+          ) : (
+            <span className={style['draft-indicator']}>
+              <div className={style['draft-not-saved-icon']} />
+              Brouillon non enregistré
+            </span>
+          )
+        ) : null}
+      </div>
       {children}
     </div>
   ) : null
