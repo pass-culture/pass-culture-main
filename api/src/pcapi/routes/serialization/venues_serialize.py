@@ -413,8 +413,10 @@ class VenueListItemResponseModel(BaseModel, AccessibilityComplianceMixin):
         venue.offererName = venue.managingOfferer.name
         venue.hasCreatedOffer = venue.id in ids_of_venues_with_offers
         if venue.accessibilityProvider:
-            venue.externalAccessibilityData = acceslibre_serializers.ExternalAccessibilityDataModel.from_orm(
-                venue.accessibilityProvider.externalAccessibilityData
+            venue.externalAccessibilityData = (
+                acceslibre_serializers.ExternalAccessibilityDataModel.from_accessibility_infos(
+                    venue.accessibilityProvider.externalAccessibilityData
+                )
             )
         return super().from_orm(venue)
 

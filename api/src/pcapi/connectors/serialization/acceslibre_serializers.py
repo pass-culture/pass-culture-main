@@ -51,14 +51,11 @@ class ExternalAccessibilityDataModel(pydantic_v1.BaseModel):
     visualDisability: VisualDisabilityModel = VisualDisabilityModel()
     mentalDisability: MentalDisabilityModel = MentalDisabilityModel()
 
-    class Config:
-        orm_mode = True
-
     @classmethod
-    def from_orm(cls, accessibility_infos: AccessibilityInfo) -> "ExternalAccessibilityDataModel":
+    def from_accessibility_infos(cls, accessibility_infos: AccessibilityInfo) -> "ExternalAccessibilityDataModel":
         if not accessibility_infos:
             return ExternalAccessibilityDataModel()
-        accessibility_data = super().from_orm(accessibility_infos)
+        accessibility_data = cls.parse_obj(accessibility_infos)
         for key, value in accessibility_infos.items():  # type: ignore[attr-defined]
             match key:
                 case "access_modality":

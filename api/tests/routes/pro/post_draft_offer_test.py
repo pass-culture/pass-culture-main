@@ -9,12 +9,10 @@ import pcapi.core.users.factories as users_factories
 @pytest.mark.usefixtures("db_session")
 class Returns201Test:
     def test_created_offer_should_be_inactive(self, client):
-        # Given
         venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
 
-        # When
         data = {
             "name": "Celeste",
             "subcategoryId": subcategories.LIVRE_PAPIER.id,
@@ -36,7 +34,6 @@ class Returns201Test:
         assert not offer.product
 
     def test_create_offer_on_venue_with_accessibility_informations(self, client):
-        # Given
         venue = offerers_factories.VenueFactory(
             audioDisabilityCompliant=True,
             mentalDisabilityCompliant=True,
@@ -46,13 +43,13 @@ class Returns201Test:
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
 
-        # When
         data = {
             "name": "Ernestine",
             "subcategoryId": subcategories.LIVRE_PAPIER.id,
             "venueId": venue.id,
         }
         response = client.with_session_auth("user@example.com").post("/offers/draft", json=data)
+
         assert response.status_code == 201
 
         offer = Offer.query.get(response.json["id"])
@@ -62,7 +59,6 @@ class Returns201Test:
         assert offer.visualDisabilityCompliant is False
 
     def test_create_offer_on_venue_with_no_accessibility_informations(self, client):
-        # Given
         venue = offerers_factories.VenueFactory(
             audioDisabilityCompliant=None,
             mentalDisabilityCompliant=None,
@@ -72,13 +68,13 @@ class Returns201Test:
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
 
-        # When
         data = {
             "name": "Ernestine",
             "subcategoryId": subcategories.LIVRE_PAPIER.id,
             "venueId": venue.id,
         }
         response = client.with_session_auth("user@example.com").post("/offers/draft", json=data)
+
         assert response.status_code == 201
 
         offer = Offer.query.get(response.json["id"])
@@ -87,14 +83,38 @@ class Returns201Test:
         assert offer.motorDisabilityCompliant is None
         assert offer.visualDisabilityCompliant is None
 
+    def test_create_offer_on_venue_with_external_accessibility_provider_informations(self, client):
+        venue = offerers_factories.VenueFactory(
+            audioDisabilityCompliant=None,
+            mentalDisabilityCompliant=None,
+            motorDisabilityCompliant=None,
+            visualDisabilityCompliant=None,
+        )
+        offerers_factories.AccessibilityProviderFactory(venue=venue)
+        offerer = venue.managingOfferer
+        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
+
+        data = {
+            "name": "Ernestine",
+            "subcategoryId": subcategories.LIVRE_PAPIER.id,
+            "venueId": venue.id,
+        }
+        response = client.with_session_auth("user@example.com").post("/offers/draft", json=data)
+
+        assert response.status_code == 201
+
+        offer = Offer.query.get(response.json["id"])
+        assert offer.audioDisabilityCompliant == True
+        assert offer.mentalDisabilityCompliant == False
+        assert offer.motorDisabilityCompliant == True
+        assert offer.visualDisabilityCompliant == True
+
 
 @pytest.mark.usefixtures("db_session")
 class Returns400Test:
     def test_fail_if_venue_is_not_found(self, client):
-        # Given
         offerers_factories.UserOffererFactory(user__email="user@example.com")
 
-        # When
         data = {
             "name": "Celeste",
             "subcategoryId": subcategories.LIVRE_PAPIER.id,
@@ -102,16 +122,13 @@ class Returns400Test:
         }
         response = client.with_session_auth("user@example.com").post("/offers/draft", json=data)
 
-        # Then
         assert response.status_code == 404
 
     def test_fail_if_name_too_long(self, client):
-        # Given
         venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
 
-        # When
         data = {
             "name": "too long" * 30,
             "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
@@ -119,17 +136,14 @@ class Returns400Test:
         }
         response = client.with_session_auth("user@example.com").post("/offers/draft", json=data)
 
-        # Then
         assert response.status_code == 400
         assert response.json["name"] == ["Le titre de l’offre doit faire au maximum 90 caractères."]
 
     def test_fail_if_unknown_subcategory(self, client):
-        # Given
         venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
 
-        # When
         data = {
             "name": "Name",
             "subcategoryId": "TOTO",
@@ -137,18 +151,15 @@ class Returns400Test:
         }
         response = client.with_session_auth("user@example.com").post("/offers/draft", json=data)
 
-        # Then
         assert response.status_code == 400
         assert response.json["subcategory"] == ["La sous-catégorie de cette offre est inconnue"]
 
     @pytest.mark.parametrize("subcategory_id", ["OEUVRE_ART", "BON_ACHAT_INSTRUMENT"])
     def test_fail_if_inactive_subcategory(self, client, subcategory_id):
-        # Given
         venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
 
-        # When
         data = {
             "name": "A cool offer name",
             "subcategoryId": subcategory_id,
@@ -156,7 +167,6 @@ class Returns400Test:
         }
         response = client.with_session_auth("user@example.com").post("/offers/draft", json=data)
 
-        # Then
         assert response.status_code == 400
         msg = "Une offre ne peut être créée ou éditée en utilisant cette sous-catégorie"
         assert response.json["subcategory"] == [msg]
@@ -165,11 +175,9 @@ class Returns400Test:
 @pytest.mark.usefixtures("db_session")
 class Returns403Test:
     def test_when_user_is_not_attached_to_offerer(self, client):
-        # Given
         users_factories.ProFactory(email="user@example.com")
         venue = offerers_factories.VirtualVenueFactory()
 
-        # When
         data = {
             "name": "Les orphelins",
             "subcategoryId": subcategories.JEU_EN_LIGNE.id,
@@ -177,7 +185,6 @@ class Returns403Test:
         }
         response = client.with_session_auth("user@example.com").post("/offers/draft", json=data)
 
-        # Then
         assert response.status_code == 403
         msg = "Vous n'avez pas les droits d'accès suffisants pour accéder à cette information."
         assert response.json["global"] == [msg]

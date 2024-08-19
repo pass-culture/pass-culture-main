@@ -14,6 +14,7 @@ import pytest
 import time_machine
 
 from pcapi import settings
+from pcapi.connectors.acceslibre import ExpectedFieldsEnum as acceslibre_enum
 from pcapi.core import search
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.bookings.models as bookings_models
@@ -1073,6 +1074,41 @@ class CreateDraftOfferTest:
         assert offer.validation == models.OfferValidationStatus.DRAFT
         assert not offer.product
         assert models.Offer.query.count() == 1
+
+    def test_create_draft_offer_with_accessibility_provider(self):
+        # when venue is synchronized with acceslibre, create draft offer should
+        # have acceslibre accessibility informations
+        venue = offerers_factories.VenueFactory(
+            audioDisabilityCompliant=False,
+            mentalDisabilityCompliant=True,
+            motorDisabilityCompliant=False,
+            visualDisabilityCompliant=True,
+        )
+        offerers_factories.AccessibilityProviderFactory(
+            externalAccessibilityData={
+                "access_modality": [acceslibre_enum.EXTERIOR_ACCESS_ELEVATOR],  # motorDisabilityCompliant is True
+                "audio_description": [],  # visualDisabilityCompliant is False
+                "deaf_and_hard_of_hearing_amenities": [
+                    acceslibre_enum.DEAF_AND_HARD_OF_HEARING_PORTABLE_INDUCTION_LOOP,  # audioDisabilityCompliant is True
+                ],
+                "facilities": [],
+                "sound_beacon": [],
+                "trained_personnel": [acceslibre_enum.PERSONNEL_UNTRAINED],  # mentalDisabilityCompliant is False
+                "transport_modality": [],
+            },
+            venue=venue,
+        )
+
+        body = schemas.PostDraftOfferBodyModel(
+            name="A pretty good offer",
+            subcategoryId=subcategories.SEANCE_CINE.id,
+            venueId=venue.id,
+        )
+        offer = api.create_draft_offer(body, venue=venue)
+        assert offer.audioDisabilityCompliant == True
+        assert offer.mentalDisabilityCompliant == False
+        assert offer.motorDisabilityCompliant == True
+        assert offer.visualDisabilityCompliant == False
 
     def test_cannot_create_activation_offer(self):
         venue = offerers_factories.VenueFactory()
