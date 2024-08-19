@@ -1212,7 +1212,6 @@ def reject_offerer(
     applicants = users_repository.get_users_with_validated_attachment(offerer)
     first_user_to_register_offerer = applicants[0] if applicants else None
 
-    offerer.rejectionReason = action_args["rejection_reason"]
     was_validated = offerer.isValidated
     offerer.validationStatus = ValidationStatus.REJECTED
     offerer.dateValidated = None
@@ -1227,7 +1226,7 @@ def reject_offerer(
     )
 
     if applicants:
-        transactional_mails.send_new_offerer_rejection_email_to_pro(offerer)
+        transactional_mails.send_new_offerer_rejection_email_to_pro(offerer, action_args.get("rejection_reason"))
 
     users_offerer = offerers_models.UserOfferer.query.filter_by(offererId=offerer.id).all()
     for user_offerer in users_offerer:

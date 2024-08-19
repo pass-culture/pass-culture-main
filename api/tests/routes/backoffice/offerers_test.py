@@ -1128,9 +1128,7 @@ class GetOffererHistoryTest(GetEndpointHelper):
 
     def test_get_offerer_rejected_action(self, authenticated_client, legit_user):
         bo_user = users_factories.AdminFactory()
-        offerer = offerers_factories.RejectedOffererFactory(
-            rejectionReason=offerers_models.OffererRejectionReason.OUT_OF_TIME
-        )
+        offerer = offerers_factories.RejectedOffererFactory()
         history_factories.ActionHistoryFactory(
             actionType=history_models.ActionType.OFFERER_REJECTED,
             authorUser=bo_user,
@@ -2515,7 +2513,6 @@ class RejectOffererTest(PostEndpointHelper):
         assert not offerer.isValidated
         assert not offerer.isActive
         assert offerer.isRejected
-        assert offerer.rejectionReason == offerers_models.OffererRejectionReason.ELIGIBILITY
         assert not user.has_pro_role
         assert user.has_non_attached_pro_role
         assert user_offerer.validationStatus == ValidationStatus.REJECTED
@@ -2528,7 +2525,7 @@ class RejectOffererTest(PostEndpointHelper):
         assert action.userId == user.id
         assert action.offererId == offerer.id
         assert action.venueId is None
-        assert action.extraData == {"rejection_reason": "ELIGIBILITY"}
+        assert action.extraData == {"rejection_reason": offerers_models.OffererRejectionReason.ELIGIBILITY.name}
 
         action = history_models.ActionHistory.query.filter_by(
             actionType=history_models.ActionType.USER_OFFERER_REJECTED
@@ -2554,7 +2551,6 @@ class RejectOffererTest(PostEndpointHelper):
         db.session.refresh(offerer)
         assert offerer.isRejected
         assert user.has_pro_role
-        assert offerer.rejectionReason == offerers_models.OffererRejectionReason.ELIGIBILITY
         assert not user.has_non_attached_pro_role
 
     def test_reject_offerer_returns_404_if_offerer_is_not_found(self, authenticated_client):
