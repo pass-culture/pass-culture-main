@@ -214,6 +214,11 @@ def format_offerer_rejection_reason(rejection_reason: offerers_models.OffererRej
             offerers_models.OffererRejectionReason.OUT_OF_TIME | offerers_models.OffererRejectionReason.OUT_OF_TIME.name
         ):
             return "Non réponse aux questionnaires"
+        case (
+            offerers_models.OffererRejectionReason.CLOSED_BUSINESS
+            | offerers_models.OffererRejectionReason.CLOSED_BUSINESS.name
+        ):
+            return "SIREN caduc"
         case offerers_models.OffererRejectionReason.OTHER | offerers_models.OffererRejectionReason.OTHER.name:
             return "Autre"
         case _:
