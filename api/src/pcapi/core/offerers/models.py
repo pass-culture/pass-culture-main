@@ -198,6 +198,7 @@ class OffererRejectionReason(enum.Enum):
     ERROR = "ERROR"
     ADAGE_DECLINED = "ADAGE_DECLINED"
     OUT_OF_TIME = "OUT_OF_TIME"
+    CLOSED_BUSINESS = "CLOSED_BUSINESS"
     OTHER = "OTHER"
 
 

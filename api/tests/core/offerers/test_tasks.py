@@ -9,6 +9,7 @@ from pcapi.core.history import models as history_models
 from pcapi.core.mails import testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offerers import factories as offerers_factories
+from pcapi.core.offerers import models as offerers_models
 from pcapi.core.testing import override_features
 from pcapi.tasks.cloud_task import AUTHORIZATION_HEADER_KEY
 from pcapi.tasks.cloud_task import AUTHORIZATION_HEADER_VALUE
@@ -222,7 +223,7 @@ class CheckOffererTest:
         assert offerer_action.offererId == offerer.id
         assert offerer_action.extraData == {
             "modified_info": {"tags": {"new_info": siren_caduc_tag.label}},
-            "rejection_reason": "OUT_OF_TIME",
+            "rejection_reason": offerers_models.OffererRejectionReason.CLOSED_BUSINESS.name,
         }
 
         user_offerer_action = history_models.ActionHistory.query.filter_by(
@@ -236,7 +237,10 @@ class CheckOffererTest:
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0]["To"] == user_offerer.user.email
         assert mails_testing.outbox[0]["template"] == asdict(TransactionalEmail.NEW_OFFERER_REJECTION.value)
-        assert mails_testing.outbox[0]["params"] == {"OFFERER_NAME": offerer.name, "REJECTION_REASON": "OUT_OF_TIME"}
+        assert mails_testing.outbox[0]["params"] == {
+            "OFFERER_NAME": offerer.name,
+            "REJECTION_REASON": offerers_models.OffererRejectionReason.CLOSED_BUSINESS.name,
+        }
 
         # Offerers report should only list validated offerers, not rejected
         mock_search_file.assert_not_called()
