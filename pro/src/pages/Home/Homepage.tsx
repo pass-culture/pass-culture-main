@@ -10,7 +10,6 @@ import { AddBankAccountCallout } from 'components/Callout/AddBankAccountCallout'
 import { BankAccountHasPendingCorrectionCallout } from 'components/Callout/BankAccountHasPendingCorrectionCallout'
 import { LinkVenueCallout } from 'components/Callout/LinkVenueCallout'
 import { Newsletter } from 'components/Newsletter/Newsletter'
-import { TutorialDialog } from 'components/TutorialDialog/TutorialDialog'
 import {
   GET_OFFERER_NAMES_QUERY_KEY,
   GET_OFFERER_QUERY_KEY,
@@ -279,7 +278,6 @@ export const Homepage = (): JSX.Element => {
         </div>
       </section>
 
-      <TutorialDialog />
       {isNewNavEnabled && hasNewSideBarNavigation && (
         <WelcomeToTheNewBetaBanner
           onDismiss={hideWelcomeNPPModal}

@@ -34,8 +34,8 @@
   align-content: center;
 
   & svg {
-    width: 24px;
-    height: 24px;
+    width: rem.torem(24px);
+    height: rem.torem(24px);
   }
 }
 
