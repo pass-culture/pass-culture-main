@@ -92,6 +92,13 @@ export const ActivityForm = ({
               icon={fullMoreIcon}
               onClick={() => {
                 arrayHelpers.push('')
+                // Focus on the newly added input after it has been rendered
+                setTimeout(() => {
+                  const lastInput = document.querySelector(
+                    `input[name="socialUrls[${values.socialUrls.length}]"]`
+                  ) as HTMLInputElement
+                  lastInput.focus()
+                }, 0)
               }}
             >
               Ajouter un lien
