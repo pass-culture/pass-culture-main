@@ -1,3 +1,4 @@
+import * as Dialog from '@radix-ui/react-dialog'
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { addDays, format } from 'date-fns'
@@ -7,27 +8,33 @@ import { FORMAT_ISO_DATE_ONLY } from 'utils/date'
 import { priceCategoryFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import { RecurrenceForm } from '../RecurrenceForm'
+import { RecurrenceForm, RecurrenceFormProps } from '../RecurrenceForm'
 
 const mockSubmit = vi.fn()
 
-const defaultProps = {
-  setIsOpen: vi.fn(),
+const defaultProps: RecurrenceFormProps = {
   handleSubmit: mockSubmit,
   priceCategories: [priceCategoryFactory()],
-  idLabelledBy: 'some id',
+}
+
+function renderRecurrenceForm(props: RecurrenceFormProps = defaultProps) {
+  return renderWithProviders(
+    <Dialog.Root defaultOpen>
+      <Dialog.Content aria-describedby={undefined}>
+        <RecurrenceForm {...props} />
+      </Dialog.Content>
+    </Dialog.Root>
+  )
 }
 
 describe('RecurrenceForm', () => {
   it('should pass axe accessibility tests', async () => {
-    const { container } = renderWithProviders(
-      <RecurrenceForm {...defaultProps} />
-    )
+    const { container } = renderRecurrenceForm()
     expect(await axe(container)).toHaveNoViolations()
   })
 
   it('should submit', async () => {
-    renderWithProviders(<RecurrenceForm {...defaultProps} />)
+    renderRecurrenceForm()
 
     await userEvent.type(
       screen.getByLabelText('Date de l’évènement *'),
@@ -46,7 +53,7 @@ describe('RecurrenceForm', () => {
   })
 
   it('should add and remove a beginning time', async () => {
-    renderWithProviders(<RecurrenceForm {...defaultProps} />)
+    renderRecurrenceForm()
 
     expect(
       screen.getByRole('button', { name: 'Supprimer le créneau' })
@@ -72,9 +79,7 @@ describe('RecurrenceForm', () => {
       priceCategoryFactory(),
       priceCategoryFactory(),
     ]
-    renderWithProviders(
-      <RecurrenceForm {...defaultProps} priceCategories={priceCategories} />
-    )
+    renderRecurrenceForm({ ...defaultProps, priceCategories: priceCategories })
 
     await userEvent.click(screen.getByText('Ajouter d’autres places et tarifs'))
     const deleteButton = screen.getAllByRole('button', {
@@ -95,13 +100,13 @@ describe('RecurrenceForm', () => {
   })
 
   it('should render for daily recurrence', async () => {
-    renderWithProviders(<RecurrenceForm {...defaultProps} />)
+    renderRecurrenceForm()
 
     await userEvent.click(screen.getByLabelText('Tous les jours'))
   })
 
   it('should render for weekly recurrence', async () => {
-    renderWithProviders(<RecurrenceForm {...defaultProps} />)
+    renderRecurrenceForm()
 
     await userEvent.click(screen.getByLabelText('Toutes les semaines'))
 
