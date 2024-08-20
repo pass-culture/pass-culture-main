@@ -19,6 +19,7 @@ import { DEFAULT_OMNISEARCH_CRITERIA } from 'screens/Bookings/BookingsRecapTable
 import { filterBookingsRecap } from 'screens/Bookings/BookingsRecapTable/utils/filterBookingsRecap'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { FORMAT_ISO_DATE_ONLY } from 'utils/date'
@@ -40,13 +41,14 @@ export const BookingsSummaryScreen = ({
     []
   )
 
+  const [isDownloadBookingModalOpen, setIsDownloadBookingModalOpen] =
+    useState(false)
+
   const stockSchedulesAndPricesByDateQuery = useSWR(
     [GET_EVENT_PRICE_CATEGORIES_AND_SCHEDULES_BY_DATE_QUERY_KEY],
     () => api.getOfferPriceCategoriesAndSchedulesByDates(offer.id),
     { fallbackData: [] }
   )
-
-  const [isModalOpen, setIsModalOpen] = useState(false)
 
   useEffect(() => {
     const loadBookings = async () => {
@@ -96,28 +98,29 @@ export const BookingsSummaryScreen = ({
 
   return (
     <>
-      {isModalOpen && (
-        <DownloadBookingsModal
-          offerId={offer.id}
-          priceCategoryAndScheduleCountByDate={
-            stockSchedulesAndPricesByDateQuery.data
-          }
-          onDimiss={() => setIsModalOpen(false)}
-        />
-      )}
-
       <div className={styles['header']}>
         <h2 className={styles['header-title']}>Réservations</h2>
         {!stockSchedulesAndPricesByDateQuery.isLoading &&
           offer.isEvent &&
           bookings !== null &&
           bookings.length && (
-            <Button
-              variant={ButtonVariant.PRIMARY}
-              onClick={() => setIsModalOpen(true)}
+            <DialogBuilder
+              onOpenChange={setIsDownloadBookingModalOpen}
+              open={isDownloadBookingModalOpen}
+              trigger={
+                <Button variant={ButtonVariant.PRIMARY}>
+                  Télécharger les réservations
+                </Button>
+              }
             >
-              Télécharger les réservations
-            </Button>
+              <DownloadBookingsModal
+                offerId={offer.id}
+                priceCategoryAndScheduleCountByDate={
+                  stockSchedulesAndPricesByDateQuery.data
+                }
+                onCloseDialog={() => setIsDownloadBookingModalOpen(false)}
+              />
+            </DialogBuilder>
           )}
       </div>
       {bookings !== null ? (
