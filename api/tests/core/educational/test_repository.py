@@ -451,6 +451,7 @@ class FilterCollectiveOfferByStatusesTest:
         CollectiveOfferDisplayedStatus.ARCHIVED,
         CollectiveOfferDisplayedStatus.ACTIVE,
         CollectiveOfferDisplayedStatus.REIMBURSED,
+        CollectiveOfferDisplayedStatus.DRAFT,
     }
 
     def test_filter_by_booked_status(self, app):

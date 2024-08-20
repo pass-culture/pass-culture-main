@@ -591,6 +591,14 @@ def _filter_collective_offers_by_statuses(query: BaseQuery, statuses: list[str] 
             )
         )
 
+    if DisplayedStatus.DRAFT.value in statuses:
+        on_collective_offer_filters.append(
+            and_(
+                educational_models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.DRAFT,
+                educational_models.CollectiveOffer.isArchived == False,
+            )
+        )
+
     # Add filters on `CollectiveBooking.Status`
     if on_booking_status_filter:
         substmt = query_with_booking.filter(or_(*on_booking_status_filter)).subquery()
