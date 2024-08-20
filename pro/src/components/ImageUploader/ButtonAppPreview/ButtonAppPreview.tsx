@@ -1,8 +1,7 @@
-import React, { useState } from 'react'
-
 import fullShowIcon from 'icons/full-show.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
 
 import { UploaderModeEnum } from '../types'
 
@@ -17,24 +16,17 @@ export const ButtonAppPreview = ({
   imageUrl,
   mode,
 }: ButtonAppPreviewProps): JSX.Element => {
-  const [isModalOpen, setIsModalOpen] = useState(false)
-
   return (
     <>
-      <Button
-        onClick={() => setIsModalOpen(true)}
-        variant={ButtonVariant.TERNARY}
-        icon={fullShowIcon}
+      <DialogBuilder
+        trigger={
+          <Button variant={ButtonVariant.TERNARY} icon={fullShowIcon}>
+            Prévisualiser
+          </Button>
+        }
       >
-        Prévisualiser
-      </Button>
-      {isModalOpen && imageUrl && (
-        <ModalAppPreview
-          mode={mode}
-          imageUrl={imageUrl}
-          hideModal={() => setIsModalOpen(false)}
-        />
-      )}
+        {imageUrl && <ModalAppPreview mode={mode} imageUrl={imageUrl} />}
+      </DialogBuilder>
     </>
   )
 }
