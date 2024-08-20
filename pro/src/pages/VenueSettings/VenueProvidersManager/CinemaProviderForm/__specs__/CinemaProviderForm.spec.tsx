@@ -1,6 +1,6 @@
+import * as Dialog from '@radix-ui/react-dialog'
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import React from 'react'
 
 import * as useAnalytics from 'app/App/analytics/firebase'
 import { SynchronizationEvents } from 'core/FirebaseEvents/constants'
@@ -15,7 +15,13 @@ import { CinemaProviderFormValues } from '../types'
 const mockLogEvent = vi.fn()
 
 const renderCinemaProviderForm = async (props: CinemaProviderFormProps) => {
-  renderWithProviders(<CinemaProviderForm {...props} />)
+  renderWithProviders(
+    <Dialog.Root defaultOpen>
+      <Dialog.Content aria-describedby={undefined}>
+        <CinemaProviderForm {...props} />
+      </Dialog.Content>
+    </Dialog.Root>
+  )
 
   await waitFor(() => screen.getByText('Accepter les réservations duo'))
 }

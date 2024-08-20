@@ -1,7 +1,7 @@
+import * as Dialog from '@radix-ui/react-dialog'
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Form, Formik } from 'formik'
-import React from 'react'
 
 import * as useAnalytics from 'app/App/analytics/firebase'
 import { SynchronizationEvents } from 'core/FirebaseEvents/constants'
@@ -16,11 +16,15 @@ const mockLogEvent = vi.fn()
 
 const renderAllocineProviderForm = async (props: AllocineProviderFormProps) => {
   renderWithProviders(
-    <Formik initialValues={{}} onSubmit={vi.fn()}>
-      <Form>
-        <AllocineProviderForm {...props} />
-      </Form>
-    </Formik>
+    <Dialog.Root defaultOpen>
+      <Dialog.Content aria-describedby={undefined}>
+        <Formik initialValues={{}} onSubmit={vi.fn()}>
+          <Form>
+            <AllocineProviderForm {...props} />
+          </Form>
+        </Formik>
+      </Dialog.Content>
+    </Dialog.Root>
   )
   await waitFor(() => {
     screen.getByText('Prix de vente/place *')
@@ -40,7 +44,6 @@ describe('AllocineProviderForm', () => {
       saveVenueProvider: vi.fn().mockReturnValue(true),
       providerId: providerId,
       offererId: offererId,
-      onCancel: vi.fn(),
       initialValues: {
         isDuo: true,
         quantity: '',

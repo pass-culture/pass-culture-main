@@ -1,5 +1,6 @@
+import * as Dialog from '@radix-ui/react-dialog'
 import { Form, FormikProvider, useFormik } from 'formik'
-import React, { useState } from 'react'
+import { useState } from 'react'
 
 import { PostVenueProviderBody } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
@@ -81,13 +82,15 @@ export const CinemaProviderForm = ({
               </Button>
             ) : (
               <div className={styles['cinema-provider-form-buttons']}>
-                <Button
-                  variant={ButtonVariant.SECONDARY}
-                  onClick={onCancel}
-                  type="button"
-                >
-                  Annuler
-                </Button>
+                <Dialog.Close asChild>
+                  <Button
+                    variant={ButtonVariant.SECONDARY}
+                    onClick={onCancel}
+                    type="button"
+                  >
+                    Annuler
+                  </Button>
+                </Dialog.Close>
                 <Button
                   type="submit"
                   variant={ButtonVariant.PRIMARY}
