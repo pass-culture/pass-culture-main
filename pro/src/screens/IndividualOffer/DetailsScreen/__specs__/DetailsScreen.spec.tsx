@@ -136,7 +136,20 @@ describe('screens:IndividualOffer::Informations', () => {
     ).toBeInTheDocument()
   })
 
+  it('should not display the venues list when venues is <= 1', () => {
+    props.venues = [venueListItemFactory({ id: 189 })]
+
+    renderDetailsScreen(props, contextValue)
+
+    expect(screen.queryByText(/Qui propose l’offre ?/)).not.toBeInTheDocument()
+  })
+
   it('should show errors in the form when not all field has been filled', async () => {
+    props.venues = [
+      venueListItemFactory({ id: 189 }),
+      venueListItemFactory({ id: 190 }),
+    ]
+
     renderDetailsScreen(props, contextValue)
 
     await userEvent.click(screen.getByText('Enregistrer les modifications'))
@@ -183,7 +196,10 @@ describe('screens:IndividualOffer::Informations', () => {
     vi.spyOn(api, 'getMusicTypes').mockResolvedValue([
       { canBeEvent: true, label: 'Pop', gtl_id: 'pop' },
     ])
-    props.venues = [venueListItemFactory({ id: 189 })]
+    props.venues = [
+      venueListItemFactory({ id: 189 }),
+      venueListItemFactory({ id: 190 }),
+    ]
 
     renderDetailsScreen(props, contextValue)
 
