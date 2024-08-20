@@ -145,7 +145,7 @@ describe('buildVenueOptions', () => {
       buildVenueOptions([venueListItemFactory({}), venueListItemFactory({})])
     ).toStrictEqual([
       {
-        label: 'Sélectionner un lieu',
+        label: 'Sélectionner le partenaire',
         value: '',
       },
       {
