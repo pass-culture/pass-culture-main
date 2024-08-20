@@ -28,6 +28,7 @@ import { updateSelectedOffererId, updateUser } from 'store/user/reducer'
 import { selectCurrentOffererId } from 'store/user/selectors'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { formatBrowserTimezonedDateAsUTC, isDateValid } from 'utils/date'
@@ -185,10 +186,9 @@ export const Homepage = (): JSX.Element => {
     setSeesNewNavAvailableBanner(false)
   }
 
-  function hideWelcomeNPPModal() {
-    localStorageAvailable() &&
-      localStorage.setItem(HAS_CLOSED_WELCOME_BETA_BANNER, 'true')
-    setIsNewNavEnabled(false)
+  function onWelcomeDialogOpenChange(open: boolean) {
+    localStorageAvailable() && !open
+    localStorage.setItem(HAS_CLOSED_WELCOME_BETA_BANNER, 'true')
   }
 
   return (
@@ -279,10 +279,13 @@ export const Homepage = (): JSX.Element => {
       </section>
 
       {isNewNavEnabled && hasNewSideBarNavigation && (
-        <WelcomeToTheNewBetaBanner
-          onDismiss={hideWelcomeNPPModal}
-          onContinue={hideWelcomeNPPModal}
-        />
+        <DialogBuilder
+          defaultOpen
+          onOpenChange={onWelcomeDialogOpenChange}
+          closeButtonClassName={styles['banner-close']}
+        >
+          <WelcomeToTheNewBetaBanner />
+        </DialogBuilder>
       )}
     </AppLayout>
   )
