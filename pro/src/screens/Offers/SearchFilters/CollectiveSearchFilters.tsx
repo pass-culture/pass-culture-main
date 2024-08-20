@@ -16,6 +16,7 @@ import {
 import { SearchFiltersParams } from 'core/Offers/types'
 import { hasSearchFilters } from 'core/Offers/utils/hasSearchFilters'
 import { SelectOption } from 'custom_types/form'
+import { useActiveFeature } from 'hooks/useActiveFeature'
 import { useIsNewInterfaceActive } from 'hooks/useIsNewInterfaceActive'
 import fullRefreshIcon from 'icons/full-refresh.svg'
 import strokeCloseIcon from 'icons/stroke-close.svg'
@@ -98,6 +99,10 @@ export const CollectiveSearchFilters = ({
     onSubmit: () => {},
   })
 
+  const isCollectiveOfferDraftEnabled = useActiveFeature(
+    'WIP_ENABLE_COLLECTIVE_DRAFT_OFFERS'
+  )
+
   // TODO(anoukhello - 24/07/24) we should not use useEffect for this but set value directly on SelectAutocomplete
   useEffect(() => {
     const selectedStatus = selectedFilters.status
@@ -172,6 +177,13 @@ export const CollectiveSearchFilters = ({
 
   const searchByOfferNameLabel = 'Nom de l’offre'
   const searchByOfferNamePlaceholder = 'Rechercher par nom d’offre'
+
+  const statusOptions = isCollectiveOfferDraftEnabled
+    ? collectiveFilterStatus.concat({
+        label: 'Brouillon',
+        value: CollectiveOfferDisplayedStatus.DRAFT,
+      })
+    : collectiveFilterStatus
 
   return (
     <>
@@ -263,7 +275,7 @@ export const CollectiveSearchFilters = ({
                 Statut<Tag variant={TagVariant.BLUE}>Nouveau</Tag>
               </span>
             }
-            options={collectiveFilterStatus}
+            options={statusOptions}
             placeholder="Statuts"
             isOptional
             className={styles['status-filter']}
