@@ -1,10 +1,10 @@
+import * as Dialog from '@radix-ui/react-dialog'
 import { Form, FormikProvider, useFormik } from 'formik'
 import { useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useLocation } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
-import { DialogBox } from 'components/DialogBox/DialogBox'
 import { useNotification } from 'hooks/useNotification'
 import strokeValidIcon from 'icons/stroke-valid.svg'
 import { selectCurrentOffererId } from 'store/user/selectors'
@@ -18,19 +18,13 @@ import { sendSentryCustomError } from 'utils/sendSentryCustomError'
 import styles from './NewNavReviewDialog.module.scss'
 import { validationSchema } from './validationSchema'
 
-interface NewNavReviewDialogProps {
-  setIsReviewDialogOpen: (value: boolean) => void
-}
-
 interface NewNavReviewDialogFormValues {
   isConvenient: string
   isPleasant: string
   comment: string
 }
 
-export const NewNavReviewDialog = ({
-  setIsReviewDialogOpen,
-}: NewNavReviewDialogProps) => {
+export const NewNavReviewDialog = () => {
   const notify = useNotification()
   const [displayConfirmation, setDisplayConfirmation] = useState<boolean>(false)
   const onSubmitReview = async (formValues: NewNavReviewDialogFormValues) => {
@@ -46,7 +40,6 @@ export const NewNavReviewDialog = ({
     } catch (e) {
       sendSentryCustomError(e)
       notify.error('Une erreur est survenue. Merci de réessayer plus tard')
-      setIsReviewDialogOpen(false)
     }
   }
 
@@ -66,18 +59,13 @@ export const NewNavReviewDialog = ({
   const location = useLocation()
 
   return (
-    <DialogBox
-      onDismiss={() => setIsReviewDialogOpen(false)}
-      hasCloseButton
-      extraClassNames={styles.dialog}
-      labelledBy="your-opinion-matters"
-    >
+    <div className={styles.dialog}>
       {!displayConfirmation ? (
         <FormikProvider value={formik}>
           <Form>
-            <h1 className={styles['dialog-title']} id="your-opinion-matters">
-              Votre avis compte !
-            </h1>
+            <Dialog.Title asChild>
+              <h1 className={styles['dialog-title']}>Votre avis compte !</h1>
+            </Dialog.Title>
             <fieldset>
               <legend className={styles['radio-legend']}>
                 Selon vous, cette nouvelle interface est… ?
@@ -151,12 +139,9 @@ export const NewNavReviewDialog = ({
             />
 
             <div className={styles['dialog-buttons']}>
-              <Button
-                variant={ButtonVariant.SECONDARY}
-                onClick={() => setIsReviewDialogOpen(false)}
-              >
-                Annuler
-              </Button>
+              <Dialog.Close asChild>
+                <Button variant={ButtonVariant.SECONDARY}>Annuler</Button>
+              </Dialog.Close>
               <Button
                 type="submit"
                 disabled={
@@ -179,9 +164,11 @@ export const NewNavReviewDialog = ({
           <div className={styles['confirmation-dialog-title']}>
             Merci beaucoup de votre participation !
           </div>
-          <Button onClick={() => setIsReviewDialogOpen(false)}>Fermer</Button>
+          <Dialog.Close asChild>
+            <Button>Fermer</Button>
+          </Dialog.Close>
         </div>
       )}
-    </DialogBox>
+    </div>
   )
 }
