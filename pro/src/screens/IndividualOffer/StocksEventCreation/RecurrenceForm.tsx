@@ -1,5 +1,5 @@
+import * as Dialog from '@radix-ui/react-dialog'
 import { FieldArray, FormikProvider, useFormik } from 'formik'
-import React from 'react'
 
 import { PriceCategoryResponseModel } from 'apiClient/v1'
 import { FormLayout } from 'components/FormLayout/FormLayout'
@@ -38,11 +38,9 @@ import {
 import { getValidationSchema } from './form/validationSchema'
 import styles from './RecurrenceForm.module.scss'
 
-interface Props {
-  setIsOpen: (p: boolean) => void
+export interface RecurrenceFormProps {
   priceCategories: PriceCategoryResponseModel[]
   handleSubmit: (values: RecurrenceFormValues) => Promise<void>
-  idLabelledBy: string
 }
 
 const mapNumberToFrenchOrdinals = (n: number): string => {
@@ -101,11 +99,9 @@ const getMonthlyOptions = (values: RecurrenceFormValues) => {
 }
 
 export const RecurrenceForm = ({
-  setIsOpen,
   priceCategories,
   handleSubmit,
-  idLabelledBy,
-}: Props): JSX.Element => {
+}: RecurrenceFormProps): JSX.Element => {
   const priceCategoryOptions = getPriceCategoryOptions(priceCategories)
 
   const formik = useFormik({
@@ -127,9 +123,9 @@ export const RecurrenceForm = ({
   return (
     <FormikProvider value={formik}>
       <form onSubmit={formik.handleSubmit}>
-        <h1 id={idLabelledBy} className={styles['title']}>
-          Ajouter une ou plusieurs dates
-        </h1>
+        <Dialog.Title asChild>
+          <h1 className={styles['title']}>Ajouter une ou plusieurs dates</h1>
+        </Dialog.Title>
 
         <div className={styles['mandatory']}>
           Tous les champs suivis d’un * sont obligatoires.
@@ -453,12 +449,9 @@ export const RecurrenceForm = ({
         </fieldset>
 
         <div className={styles['action-buttons']}>
-          <Button
-            variant={ButtonVariant.SECONDARY}
-            onClick={() => setIsOpen(false)}
-          >
-            Annuler
-          </Button>
+          <Dialog.Close asChild>
+            <Button variant={ButtonVariant.SECONDARY}>Annuler</Button>
+          </Dialog.Close>
 
           <Button
             type="submit"

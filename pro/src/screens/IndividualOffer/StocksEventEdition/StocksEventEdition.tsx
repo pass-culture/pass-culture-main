@@ -13,7 +13,6 @@ import {
   OfferStatus,
 } from 'apiClient/v1'
 import { ConfirmDialog } from 'components/Dialog/ConfirmDialog/ConfirmDialog'
-import { DialogBox } from 'components/DialogBox/DialogBox'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { RouteLeavingGuardIndividualOffer } from 'components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
@@ -35,6 +34,7 @@ import fullTrashIcon from 'icons/full-trash.svg'
 import { onSubmit as onRecurrenceSubmit } from 'screens/IndividualOffer/StocksEventCreation/form/onSubmit'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
 import { BaseDatePicker } from 'ui-kit/form/DatePicker/BaseDatePicker'
 import { DatePicker } from 'ui-kit/form/DatePicker/DatePicker'
 import { Select } from 'ui-kit/form/Select/Select'
@@ -272,8 +272,6 @@ export const StocksEventEdition = ({
     offer.venue.departementCode,
   ])
 
-  const onCancel = () => setIsRecurrenceModalOpen(false)
-
   const onSubmit = async (values: StocksEventFormValues) => {
     const nextStepUrl = getIndividualOfferUrl({
       offerId: offer.id,
@@ -444,33 +442,26 @@ export const StocksEventEdition = ({
         <div aria-current="page">
           <form onSubmit={formik.handleSubmit} data-testid="stock-event-form">
             <EventCancellationBanner offer={offer} />
-
             <div className={styles['add-dates-button']}>
-              <Button
-                variant={ButtonVariant.PRIMARY}
-                icon={fullMoreIcon}
-                onClick={() => setIsRecurrenceModalOpen(true)}
-                disabled={isSynchronized || isDisabled}
-              >
-                Ajouter une ou plusieurs dates
-              </Button>
-            </div>
-
-            {isRecurrenceModalOpen && (
-              <DialogBox
-                onDismiss={onCancel}
-                hasCloseButton
-                labelledBy="add-recurrence"
-                fullContentWidth
+              <DialogBuilder
+                onOpenChange={setIsRecurrenceModalOpen}
+                open={isRecurrenceModalOpen}
+                trigger={
+                  <Button
+                    variant={ButtonVariant.PRIMARY}
+                    icon={fullMoreIcon}
+                    disabled={isSynchronized || isDisabled}
+                  >
+                    Ajouter une ou plusieurs dates
+                  </Button>
+                }
               >
                 <RecurrenceForm
                   priceCategories={offer.priceCategories ?? []}
-                  setIsOpen={setIsRecurrenceModalOpen}
                   handleSubmit={handleRecurrenceSubmit}
-                  idLabelledBy="add-recurrence"
                 />
-              </DialogBox>
-            )}
+              </DialogBuilder>
+            </div>
 
             <FieldArray
               name="stocks"
