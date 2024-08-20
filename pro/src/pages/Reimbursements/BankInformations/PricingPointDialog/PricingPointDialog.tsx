@@ -1,9 +1,9 @@
+import * as Dialog from '@radix-ui/react-dialog'
 import { FormikProvider, useFormik } from 'formik'
 
 import { api } from 'apiClient/api'
 import { ManagedVenues } from 'apiClient/v1'
 import { Callout } from 'components/Callout/Callout'
-import { DialogBox } from 'components/DialogBox/DialogBox'
 import { useNotification } from 'hooks/useNotification'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -17,7 +17,7 @@ type PricingPointFormValues = {
 }
 
 type PricingPointDialogProps = {
-  selectedVenue: ManagedVenues
+  selectedVenue: ManagedVenues | null
   venues: ManagedVenues[]
   closeDialog: () => void
   updateVenuePricingPoint: (venueId: number) => void
@@ -35,6 +35,9 @@ export const PricingPointDialog = ({
       pricingPointId: undefined,
     },
     onSubmit: async ({ pricingPointId }) => {
+      if (!selectedVenue) {
+        return
+      }
       try {
         await api.linkVenueToPricingPoint(selectedVenue.id, {
           pricingPointId: Number(pricingPointId),
@@ -50,6 +53,10 @@ export const PricingPointDialog = ({
     validationSchema: validationSchema,
   })
 
+  if (!selectedVenue) {
+    return
+  }
+
   const venuesOptions = [
     { label: 'Sélectionner un lieu dans la liste', value: '' },
     ...venues.map((venue) => ({
@@ -59,15 +66,12 @@ export const PricingPointDialog = ({
   ]
 
   return (
-    <DialogBox
-      labelledBy="choose-a-siret"
-      extraClassNames={styles.dialog}
-      hasCloseButton
-      onDismiss={closeDialog}
-    >
-      <h1 id="choose-a-siret" className={styles['callout-title']}>
-        Sélectionnez un SIRET pour le lieu “{selectedVenue.commonName}”{' '}
-      </h1>
+    <div className={styles.dialog}>
+      <Dialog.Title asChild>
+        <h1 className={styles['callout-title']}>
+          Sélectionnez un SIRET pour le lieu “{selectedVenue.commonName}”{' '}
+        </h1>
+      </Dialog.Title>
       <Callout
         className={styles['callout']}
         links={[
@@ -97,13 +101,13 @@ export const PricingPointDialog = ({
             className={styles['venues-select']}
           />
           <div className={styles['dialog-actions']}>
-            <Button variant={ButtonVariant.SECONDARY} onClick={closeDialog}>
-              Annuler
-            </Button>
+            <Dialog.Close asChild>
+              <Button variant={ButtonVariant.SECONDARY}>Annuler</Button>
+            </Dialog.Close>
             <Button type="submit">Valider la sélection</Button>
           </div>
         </form>
       </FormikProvider>
-    </DialogBox>
+    </div>
   )
 }
