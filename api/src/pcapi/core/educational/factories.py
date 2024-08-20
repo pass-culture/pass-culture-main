@@ -428,12 +428,14 @@ def create_collective_offer_by_status(
             stock = CollectiveStockFactory(collectiveOffer=offer, beginningDatetime=yesterday)
             _booking = UsedCollectiveBookingFactory(collectiveStock=stock)
             return offer
-
         case CollectiveOfferDisplayedStatus.REIMBURSED.value:
             offer = CollectiveOfferFactory(**kwargs)
             yesterday = datetime.datetime.utcnow() - datetime.timedelta(days=1)
             stock = CollectiveStockFactory(collectiveOffer=offer, beginningDatetime=yesterday)
             _booking = ReimbursedCollectiveBookingFactory(collectiveStock=stock)
             return offer
+        case CollectiveOfferDisplayedStatus.DRAFT.value:
+            kwargs["validation"] = OfferValidationStatus.DRAFT
+            return CollectiveOfferFactory(**kwargs)
 
     raise NotImplementedStatus(f"Factory for {status}")
