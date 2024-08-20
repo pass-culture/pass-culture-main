@@ -1,3 +1,4 @@
+import * as Dialog from '@radix-ui/react-dialog'
 import { Form, FormikProvider, useFormik } from 'formik'
 import React, { useRef } from 'react'
 import AvatarEditor, { CroppedRect, Position } from 'react-avatar-editor'
@@ -21,7 +22,7 @@ import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 import style from './ModalImageCrop.module.scss'
 import { getCropMaxDimension } from './utils/getCropMaxDimension'
 
-interface ModalImageCropProps {
+export interface ModalImageCropProps {
   image: File
   credit: string
   onSetCredit: (credit: string) => void
@@ -33,8 +34,7 @@ interface ModalImageCropProps {
   saveInitialPosition: (position: Position) => void
   onEditedImageSave: (dataUrl: string, croppedRect: CroppedRect) => void
   mode: UploaderModeEnum
-  submitButtonText: string
-  idLabelledBy: string
+  showPreviewInModal: boolean
 }
 
 export interface ImageEditorFormValues {
@@ -53,8 +53,7 @@ export const ModalImageCrop = ({
   initialPosition,
   initialScale,
   mode,
-  submitButtonText,
-  idLabelledBy,
+  showPreviewInModal,
 }: ModalImageCropProps): JSX.Element => {
   const { width, height } = useGetImageBitmap(image)
   const editorRef = useRef<AvatarEditor>(null)
@@ -140,14 +139,11 @@ export const ModalImageCrop = ({
       <FormikProvider value={formik}>
         <Form onSubmit={formik.handleSubmit}>
           <div className={style['modal-image-crop-form']}>
-            <header>
-              <h1
-                id={idLabelledBy}
-                className={style['modal-image-crop-header']}
-              >
+            <Dialog.Title asChild>
+              <h1 className={style['modal-image-crop-header']}>
                 Modifier une image
               </h1>
-            </header>
+            </Dialog.Title>
 
             <p className={style['modal-image-crop-right']}>
               En utilisant ce contenu, je certifie que je suis propriétaire ou
@@ -172,13 +168,15 @@ export const ModalImageCrop = ({
                   Remplacer l’image
                 </Button>
 
-                <Button
-                  icon={fullTrashIcon}
-                  onClick={onImageDelete}
-                  variant={ButtonVariant.TERNARY}
-                >
-                  Supprimer l’image
-                </Button>
+                <Dialog.Close asChild>
+                  <Button
+                    icon={fullTrashIcon}
+                    onClick={onImageDelete}
+                    variant={ButtonVariant.TERNARY}
+                  >
+                    Supprimer l’image
+                  </Button>
+                </Dialog.Close>
               </div>
             </div>
 
@@ -196,9 +194,11 @@ export const ModalImageCrop = ({
 
           <Divider />
 
-          <footer className={style['modal-image-crop-footer']}>
-            <Button type="submit">{submitButtonText}</Button>
-          </footer>
+          <div className={style['modal-image-crop-footer']}>
+            <Button type="submit">
+              {showPreviewInModal ? 'Suivant' : 'Enregistrer'}
+            </Button>
+          </div>
         </Form>
       </FormikProvider>
     </section>

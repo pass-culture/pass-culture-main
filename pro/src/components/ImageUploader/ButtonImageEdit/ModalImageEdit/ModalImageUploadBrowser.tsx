@@ -1,4 +1,4 @@
-import React from 'react'
+import * as Dialog from '@radix-ui/react-dialog'
 
 import { ImageUploadBrowserForm } from 'components/ImageUploadBrowserForm/ImageUploadBrowserForm'
 import { ImageUploadBrowserFormValues } from 'components/ImageUploadBrowserForm/types'
@@ -9,21 +9,17 @@ import style from './ModalImageUploadBrowser.module.scss'
 interface ModalImageUploadBrowserProps {
   onImageClientUpload: (values: ImageUploadBrowserFormValues) => void
   mode: UploaderModeEnum
-  idLabelledBy: string
 }
 
 export const ModalImageUploadBrowser = ({
   onImageClientUpload,
   mode,
-  idLabelledBy,
 }: ModalImageUploadBrowserProps) => {
   return (
     <section className={style['modal-upload-browser']}>
-      <header>
-        <h1 id={idLabelledBy} className={style['header']}>
-          Ajouter une image
-        </h1>
-      </header>
+      <Dialog.Title asChild>
+        <h1 className={style['header']}>Ajouter une image</h1>
+      </Dialog.Title>
       <ImageUploadBrowserForm onSubmit={onImageClientUpload} mode={mode} />
     </section>
   )
