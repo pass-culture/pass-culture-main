@@ -9,6 +9,7 @@ type DialogBuilderProps = {
   defaultOpen?: boolean
   onOpenChange?: (open: boolean) => void
   open?: boolean
+  closeButtonClassName?: string
 }
 
 export function DialogBuilder({
@@ -17,6 +18,7 @@ export function DialogBuilder({
   defaultOpen = false,
   onOpenChange,
   open,
+  closeButtonClassName,
 }: DialogBuilderProps) {
   return (
     <Dialog.Root
@@ -31,7 +33,9 @@ export function DialogBuilder({
             className={styles['dialog-builder-content']}
             aria-describedby={undefined}
           >
-            <DialogBuilderCloseButton />
+            <DialogBuilderCloseButton
+              closeButtonClassName={closeButtonClassName}
+            />
             <section>{children}</section>
           </Dialog.Content>
         </Dialog.Overlay>

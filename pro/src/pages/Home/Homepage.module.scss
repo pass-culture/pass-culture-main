@@ -102,3 +102,11 @@
     }
   }
 }
+
+.banner-close {
+  color: var(--color-white);
+
+  &:focus-visible {
+    outline-color: var(--color-white);
+  }
+}
