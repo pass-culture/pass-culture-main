@@ -1,15 +1,13 @@
-import React, { useState } from 'react'
-
 import strokeShoutIcon from 'icons/stroke-shout.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './NewNavReview.module.scss'
 import { NewNavReviewDialog } from './NewNavReviewDialog/NewNavReviewDialog'
 
 export const NewNavReview = () => {
-  const [isReviewDialogOpen, setIsReviewDialogOpen] = useState(false)
   return (
     <>
       <div className={styles['new-nav-review-container']}>
@@ -25,16 +23,14 @@ export const NewNavReview = () => {
           </span>{' '}
           Dites-nous ce que vous en pensez pour nous aider à l’améliorer.
         </div>
-        <Button
-          variant={ButtonVariant.SECONDARY}
-          onClick={() => setIsReviewDialogOpen(true)}
+        <DialogBuilder
+          trigger={
+            <Button variant={ButtonVariant.SECONDARY}>Je donne mon avis</Button>
+          }
         >
-          Je donne mon avis
-        </Button>
+          <NewNavReviewDialog />
+        </DialogBuilder>
       </div>
-      {isReviewDialogOpen && (
-        <NewNavReviewDialog setIsReviewDialogOpen={setIsReviewDialogOpen} />
-      )}
     </>
   )
 }

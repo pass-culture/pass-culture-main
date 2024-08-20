@@ -1,3 +1,4 @@
+import * as Dialog from '@radix-ui/react-dialog'
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
@@ -8,7 +9,6 @@ import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import { NewNavReviewDialog } from '../NewNavReviewDialog'
 
-const mockSetIsReviewDialogOpen = vi.fn()
 const notifyError = vi.fn()
 
 const renderNewNavReviewDialog = () => {
@@ -19,7 +19,11 @@ const renderNewNavReviewDialog = () => {
     },
   }
   return renderWithProviders(
-    <NewNavReviewDialog setIsReviewDialogOpen={mockSetIsReviewDialogOpen} />,
+    <Dialog.Root defaultOpen>
+      <Dialog.Content aria-describedby={undefined}>
+        <NewNavReviewDialog />
+      </Dialog.Content>
+    </Dialog.Root>,
     { storeOverrides }
   )
 }
@@ -31,7 +35,9 @@ describe('NewNavReviewDialog', () => {
     const cancelButton = screen.getByRole('button', { name: 'Annuler' })
     await userEvent.click(cancelButton)
 
-    expect(mockSetIsReviewDialogOpen).toHaveBeenCalledWith(false)
+    expect(
+      screen.queryByRole('heading', { name: 'Votre avis compte !' })
+    ).not.toBeInTheDocument()
   })
 
   it('should disable submit button when no options selected', () => {
@@ -111,7 +117,9 @@ describe('NewNavReviewDialog', () => {
     const submitButton = screen.getByRole('button', { name: 'Envoyer' })
     await userEvent.click(submitButton)
     await userEvent.click(screen.getByRole('button', { name: 'Fermer' }))
-    expect(mockSetIsReviewDialogOpen).toHaveBeenCalledWith(false)
+    expect(
+      screen.queryByRole('heading', { name: 'Votre avis compte !' })
+    ).not.toBeInTheDocument()
   })
   it('should show error message and close dialog on error'),
     async () => {
@@ -138,7 +146,9 @@ describe('NewNavReviewDialog', () => {
 
       const submitButton = screen.getByRole('button', { name: 'Envoyer' })
       await userEvent.click(submitButton)
-      expect(mockSetIsReviewDialogOpen).toHaveBeenCalledWith(false)
+      expect(
+        screen.queryByRole('heading', { name: 'Votre avis compte !' })
+      ).not.toBeInTheDocument()
       expect(notifyError).toHaveBeenCalledWith(
         'Une erreur est survenue. Merci de réessayer plus tard.'
       )
