@@ -56,6 +56,27 @@ class OnCommitCallback:
 
 
 class atomic:
+    """
+    This class provides a contextmanager and a decorator to manage the sqlalchemy's session lifecycle.
+    It starts by beginning a new session (and a new transaction) and ends with either a commit ( if
+    everything is ok) or a rollback (if an exception was not caught or the transaction was marked as
+    invalid).
+
+    This class also deactivates autoflush, be sure to flush close to the modification to make debug
+    easier.
+
+    While in managed code you should NEVER commit, rollback or begin a session. Instead you can:
+
+    - begin: enter a new atomic managed context. It will create nested session and savepoint in the
+        sql session
+    - commit: just flush the session, it will commit when exiting the managed code.
+    - rollback: use the mark_transaction_as_invalid() function. The session will be rolledback
+        instead of being committed
+
+    If you need to do something after the managed code an only if the commit is a success you can
+    use on_commit
+    """
+
     def __enter__(self) -> "atomic":
         # In that context g is local to the thread
         # use a list to make the context manager/decorator reentrant
