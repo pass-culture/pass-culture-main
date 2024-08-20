@@ -1,7 +1,8 @@
+import * as Dialog from '@radix-ui/react-dialog'
 import cn from 'classnames'
 import { FormikProvider, useFormik } from 'formik'
 import isEqual from 'lodash.isequal'
-import React, { useState } from 'react'
+import { useState } from 'react'
 
 import { api } from 'apiClient/api'
 import { BankAccountResponseModel, ManagedVenues } from 'apiClient/v1'
@@ -9,13 +10,13 @@ import { useAnalytics } from 'app/App/analytics/firebase'
 import { Callout } from 'components/Callout/Callout'
 import { CalloutVariant } from 'components/Callout/types'
 import { ConfirmDialog } from 'components/Dialog/ConfirmDialog/ConfirmDialog'
-import { DialogBox } from 'components/DialogBox/DialogBox'
 import { BankAccountEvents } from 'core/FirebaseEvents/constants'
 import { useNotification } from 'hooks/useNotification'
 import fullEditIcon from 'icons/full-edit.svg'
 import strokeWarningIcon from 'icons/stroke-warning.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
+import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
 import { BaseCheckbox } from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
 import { pluralize, pluralizeString } from 'utils/pluralize'
 
@@ -42,6 +43,8 @@ export const LinkVenuesDialog = ({
   const [showUnlinkVenuesDialog, setShowUnlinkVenuesDialog] =
     useState<boolean>(false)
   const [selectedVenue, setSelectedVenue] = useState<ManagedVenues | null>(null)
+  const [isPricingPointDialogOpen, setIsPricingPointDialogOpen] =
+    useState<boolean>(false)
 
   const availableManagedVenuesIds = managedVenues
     .filter((venue) => !venue.bankAccountId && venue.hasPricingPoint)
@@ -119,108 +122,134 @@ export const LinkVenuesDialog = ({
   )
   return (
     <>
-      <DialogBox
-        labelledBy="bank-account"
-        extraClassNames={cn(styles['dialog'], {
-          [styles['dialog-with-banner']]: hasVenuesWithoutPricingPoint,
-        })}
-        hasCloseButton={true}
-        onDismiss={onCancel}
+      <DialogBuilder
+        defaultOpen
+        onOpenChange={(open) => {
+          !open && closeDialog()
+        }}
       >
-        <h1 id="bank-account" className={styles['dialog-title']}>
-          Compte bancaire : {selectedBankAccount.label}
-        </h1>
-        {hasVenuesWithoutPricingPoint && (
-          <Callout
-            title="Certains de vos lieux n’ont pas de SIRET"
-            variant={CalloutVariant.ERROR}
-            className={styles['dialog-callout']}
-          >
-            Sélectionnez un SIRET pour chacun de ces lieux avant de pouvoir les
-            rattacher à ce compte bancaire.
-          </Callout>
-        )}
-        <div className={styles['dialog-subtitle']}>
-          Sélectionnez les lieux dont les offres seront remboursées sur ce
-          compte bancaire.
-        </div>
-        <FormikProvider value={formik}>
-          <form onSubmit={formik.handleSubmit}>
-            <div className={styles['dialog-checkboxes']}>
-              <div className={styles['dialog-select-all']}>
-                <BaseCheckbox
-                  checked={allVenuesSelected || selectedVenuesIds.length >= 1}
-                  partialCheck={
-                    selectedVenuesIds.length >= 1 && !allVenuesSelected
-                  }
-                  onChange={() => {
-                    if (allVenuesSelected) {
-                      setSelectedVenuesIds([])
-                    } else {
-                      setSelectedVenuesIds([
-                        ...availableManagedVenuesIds,
-                        ...initialVenuesIds,
-                      ])
+        <div
+          className={cn(styles['dialog'], {
+            [styles['dialog-with-banner']]: hasVenuesWithoutPricingPoint,
+          })}
+        >
+          <Dialog.Title asChild>
+            <h1 id="bank-account" className={styles['dialog-title']}>
+              Compte bancaire : {selectedBankAccount.label}
+            </h1>
+          </Dialog.Title>
+          {hasVenuesWithoutPricingPoint && (
+            <Callout
+              title="Certains de vos lieux n’ont pas de SIRET"
+              variant={CalloutVariant.ERROR}
+              className={styles['dialog-callout']}
+            >
+              Sélectionnez un SIRET pour chacun de ces lieux avant de pouvoir
+              les rattacher à ce compte bancaire.
+            </Callout>
+          )}
+          <div className={styles['dialog-subtitle']}>
+            Sélectionnez les lieux dont les offres seront remboursées sur ce
+            compte bancaire.
+          </div>
+          <FormikProvider value={formik}>
+            <form onSubmit={formik.handleSubmit}>
+              <div className={styles['dialog-checkboxes']}>
+                <div className={styles['dialog-select-all']}>
+                  <BaseCheckbox
+                    checked={allVenuesSelected || selectedVenuesIds.length >= 1}
+                    partialCheck={
+                      selectedVenuesIds.length >= 1 && !allVenuesSelected
                     }
-                  }}
-                  label={
-                    allVenuesSelected
-                      ? 'Tout désélectionner'
-                      : 'Tout sélectionner'
-                  }
-                />
-                <span className={styles['dialog-select-all-count']}>
-                  {`${pluralize(selectedVenuesIds.length, 'lieu', 'x')} `}
-                  {pluralizeString('sélectionné', selectedVenuesIds.length)}
-                </span>
-              </div>
-
-              {managedVenues.map((venue) => {
-                return (
-                  <div
-                    key={venue.id}
-                    className={styles['dialog-checkbox-container']}
-                  >
-                    <BaseCheckbox
-                      disabled={
-                        (Boolean(venue.bankAccountId) &&
-                          venue.bankAccountId !== selectedBankAccount.id) ||
-                        !venue.hasPricingPoint
+                    onChange={() => {
+                      if (allVenuesSelected) {
+                        setSelectedVenuesIds([])
+                      } else {
+                        setSelectedVenuesIds([
+                          ...availableManagedVenuesIds,
+                          ...initialVenuesIds,
+                        ])
                       }
-                      label={venue.commonName}
-                      name={venue.id.toString()}
-                      value={venue.id}
-                      checked={selectedVenuesIds.indexOf(venue.id) >= 0}
-                      onChange={handleVenueChange}
-                    />
-                    {!venue.hasPricingPoint && (
-                      <Button
-                        variant={ButtonVariant.QUATERNARY}
-                        icon={fullEditIcon}
-                        iconPosition={IconPositionEnum.LEFT}
-                        onClick={() => {
-                          setSelectedVenue(venue)
-                        }}
-                        className={styles['dialog-checkbox-button']}
-                      >
-                        Sélectionner un SIRET
-                      </Button>
-                    )}
-                  </div>
-                )
-              })}
-            </div>
-            <div className={styles['dialog-actions']}>
-              <Button variant={ButtonVariant.SECONDARY} onClick={onCancel}>
-                Annuler
-              </Button>
-              <Button type="submit" isLoading={formik.isSubmitting}>
-                Enregistrer
-              </Button>
-            </div>
-          </form>
-        </FormikProvider>
-      </DialogBox>
+                    }}
+                    label={
+                      allVenuesSelected
+                        ? 'Tout désélectionner'
+                        : 'Tout sélectionner'
+                    }
+                  />
+                  <span className={styles['dialog-select-all-count']}>
+                    {`${pluralize(selectedVenuesIds.length, 'lieu', 'x')} `}
+                    {pluralizeString('sélectionné', selectedVenuesIds.length)}
+                  </span>
+                </div>
+
+                {managedVenues.map((venue) => {
+                  return (
+                    <div
+                      key={venue.id}
+                      className={styles['dialog-checkbox-container']}
+                    >
+                      <BaseCheckbox
+                        disabled={
+                          (Boolean(venue.bankAccountId) &&
+                            venue.bankAccountId !== selectedBankAccount.id) ||
+                          !venue.hasPricingPoint
+                        }
+                        label={venue.commonName}
+                        name={venue.id.toString()}
+                        value={venue.id}
+                        checked={selectedVenuesIds.indexOf(venue.id) >= 0}
+                        onChange={handleVenueChange}
+                      />
+                      {!venue.hasPricingPoint && (
+                        <DialogBuilder
+                          open={isPricingPointDialogOpen}
+                          onOpenChange={setIsPricingPointDialogOpen}
+                          trigger={
+                            <Button
+                              variant={ButtonVariant.QUATERNARY}
+                              icon={fullEditIcon}
+                              iconPosition={IconPositionEnum.LEFT}
+                              onClick={() => {
+                                setSelectedVenue(venue)
+                              }}
+                              className={styles['dialog-checkbox-button']}
+                            >
+                              Sélectionner un SIRET
+                            </Button>
+                          }
+                        >
+                          <PricingPointDialog
+                            selectedVenue={selectedVenue}
+                            venues={venuesForPricingPoint}
+                            closeDialog={() => {
+                              setSelectedVenue(null)
+                              setIsPricingPointDialogOpen(false)
+                            }}
+                            updateVenuePricingPoint={
+                              updateBankAccountVenuePricingPoint
+                            }
+                          />
+                        </DialogBuilder>
+                      )}
+                    </div>
+                  )
+                })}
+              </div>
+              <div className={styles['dialog-actions']}>
+                <Button variant={ButtonVariant.SECONDARY} onClick={onCancel}>
+                  Annuler
+                </Button>
+
+                <Button type="submit" isLoading={formik.isSubmitting}>
+                  Enregistrer
+                </Button>
+              </div>
+            </form>
+          </FormikProvider>
+        </div>
+      </DialogBuilder>
+
       {showDiscardChangesDialog && (
         <ConfirmDialog
           extraClassNames={cn(styles['discard-dialog'], {
@@ -254,14 +283,6 @@ export const LinkVenuesDialog = ({
           }}
           confirmText="Confirmer"
           cancelText="Retour"
-        />
-      )}
-      {selectedVenue && (
-        <PricingPointDialog
-          selectedVenue={selectedVenue}
-          venues={venuesForPricingPoint}
-          closeDialog={() => setSelectedVenue(null)}
-          updateVenuePricingPoint={updateBankAccountVenuePricingPoint}
         />
       )}
     </>
