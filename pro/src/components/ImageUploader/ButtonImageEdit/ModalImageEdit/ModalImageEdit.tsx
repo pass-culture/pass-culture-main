@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { CroppedRect } from 'react-avatar-editor'
 
 import { getFileFromURL } from 'apiClient/helpers'
-import { DialogBox } from 'components/DialogBox/DialogBox'
 import {
   coordonateToPosition,
   heightCropPercentToScale,
@@ -26,7 +25,6 @@ export interface OnImageUploadArgs {
 
 interface ModalImageEditProps {
   mode: UploaderModeEnum
-  onDismiss: () => void
   onImageUpload: (values: OnImageUploadArgs) => void
   onImageDelete: () => void
   initialValues?: UploadImageValues
@@ -36,7 +34,6 @@ interface ModalImageEditProps {
 /* istanbul ignore next: DEBT, TO FIX */
 export const ModalImageEdit = ({
   mode,
-  onDismiss,
   onImageUpload,
   onImageDelete,
   initialValues = {},
@@ -130,7 +127,6 @@ export const ModalImageEdit = ({
       cropParams: croppedRect,
       credit,
     })
-    onDismiss()
     setIsUploading(false)
   }
 
@@ -149,45 +145,38 @@ export const ModalImageEdit = ({
     return null
   }
 
-  return (
-    <DialogBox hasCloseButton labelledBy="add-new-image" onDismiss={onDismiss}>
-      {!image ? (
-        <ModalImageUploadBrowser
-          onImageClientUpload={onImageClientUpload}
-          mode={mode}
-          idLabelledBy="add-new-image"
-        />
-      ) : !croppingRect || !editedImageDataUrl ? (
-        <ModalImageCrop
-          credit={credit}
-          image={image}
-          initialPosition={editorInitialPosition}
-          initialScale={
-            initalHeightCropPercent
-              ? heightCropPercentToScale(initalHeightCropPercent)
-              : 1
-          }
-          onEditedImageSave={onEditedImageSave}
-          onReplaceImage={onReplaceImage}
-          onImageDelete={handleImageDelete}
-          onSetCredit={setCredit}
-          saveInitialPosition={setEditorInitialPosition}
-          mode={mode}
-          idLabelledBy="add-new-image"
-          submitButtonText={showPreviewInModal ? 'Suivant' : 'Enregistrer'}
-        />
-      ) : (
-        <ModalImageUploadConfirm
-          isUploading={isUploading}
-          onGoBack={navigateFromPreviewToEdit}
-          onUploadImage={() =>
-            handleOnUpload(croppingRect, image, editedImageDataUrl)
-          }
-          imageUrl={editedImageDataUrl}
-          mode={mode}
-          idLabelledBy="add-new-image"
-        />
-      )}
-    </DialogBox>
+  return !image ? (
+    <ModalImageUploadBrowser
+      onImageClientUpload={onImageClientUpload}
+      mode={mode}
+    />
+  ) : !croppingRect || !editedImageDataUrl ? (
+    <ModalImageCrop
+      credit={credit}
+      image={image}
+      initialPosition={editorInitialPosition}
+      initialScale={
+        initalHeightCropPercent
+          ? heightCropPercentToScale(initalHeightCropPercent)
+          : 1
+      }
+      onEditedImageSave={onEditedImageSave}
+      onReplaceImage={onReplaceImage}
+      onImageDelete={handleImageDelete}
+      onSetCredit={setCredit}
+      saveInitialPosition={setEditorInitialPosition}
+      mode={mode}
+      showPreviewInModal={showPreviewInModal}
+    />
+  ) : (
+    <ModalImageUploadConfirm
+      isUploading={isUploading}
+      onGoBack={navigateFromPreviewToEdit}
+      onUploadImage={() =>
+        handleOnUpload(croppingRect, image, editedImageDataUrl)
+      }
+      imageUrl={editedImageDataUrl}
+      mode={mode}
+    />
   )
 }
