@@ -120,6 +120,7 @@ class CollectiveOfferDisplayedStatus(enum.Enum):
     CANCELLED = "CANCELLED"
     REIMBURSED = "REIMBURSED"
     ARCHIVED = "ARCHIVED"
+    DRAFT = "DRAFT"
 
 
 class EducationalBookingStatus(enum.Enum):
