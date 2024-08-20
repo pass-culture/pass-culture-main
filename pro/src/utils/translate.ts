@@ -46,6 +46,7 @@ const mapBrowserCollectiveStatusToApi: Record<
   'en-attente': CollectiveOfferDisplayedStatus.PENDING,
   refusee: CollectiveOfferDisplayedStatus.REJECTED,
   archivee: CollectiveOfferDisplayedStatus.ARCHIVED,
+  brouillon: CollectiveOfferDisplayedStatus.DRAFT,
 }
 
 const mapBrowserToApi = (audience: Audience) => ({

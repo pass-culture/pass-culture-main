@@ -17,4 +17,5 @@ export enum CollectiveOfferDisplayedStatus {
   CANCELLED = 'CANCELLED',
   REIMBURSED = 'REIMBURSED',
   ARCHIVED = 'ARCHIVED',
+  DRAFT = 'DRAFT',
 }
