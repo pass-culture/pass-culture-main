@@ -12,6 +12,7 @@ import { GET_VENUE_PROVIDERS_QUERY_KEY } from 'config/swrQueryKeys'
 import { useNotification } from 'hooks/useNotification'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
 
 import { FormValuesProps } from '../AllocineProviderForm/AllocineProviderForm'
 
@@ -49,14 +50,6 @@ export const AllocineProviderParameters = ({
     }
   }
 
-  const openFormDialog = () => {
-    setIsOpenedFormDialog(true)
-  }
-
-  const closeFormDialog = () => {
-    setIsOpenedFormDialog(false)
-  }
-
   const onConfirmDialog = async (
     payload: PostVenueProviderBody
   ): Promise<boolean> => {
@@ -65,7 +58,7 @@ export const AllocineProviderParameters = ({
       isActive: venueProvider.isActive,
     })
 
-    closeFormDialog()
+    setIsOpenedFormDialog(false)
     return isSuccess
   }
 
@@ -105,23 +98,26 @@ export const AllocineProviderParameters = ({
           <span>{`${venueProvider.isDuo ? 'Oui' : 'Non'} `}</span>
         </div>
       </div>
-      <Button
-        className={style['edit-parameters-btn']}
-        variant={ButtonVariant.SECONDARY}
-        onClick={openFormDialog}
+      <DialogBuilder
+        open={isOpenedFormDialog}
+        onOpenChange={setIsOpenedFormDialog}
+        trigger={
+          <Button
+            className={style['edit-parameters-btn']}
+            variant={ButtonVariant.SECONDARY}
+          >
+            Modifier les paramètres
+          </Button>
+        }
       >
-        Modifier les paramètres
-      </Button>
-      {isOpenedFormDialog && (
         <AllocineProviderFormDialog
           initialValues={initialValues}
-          onCancel={closeFormDialog}
           onConfirm={onConfirmDialog}
           providerId={venueProvider.provider.id}
           venueId={venueProvider.venueId}
           offererId={offererId}
         />
-      )}
+      </DialogBuilder>
     </div>
   )
 }

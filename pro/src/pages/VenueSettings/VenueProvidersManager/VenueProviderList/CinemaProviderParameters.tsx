@@ -7,6 +7,7 @@ import { GET_VENUE_PROVIDERS_QUERY_KEY } from 'config/swrQueryKeys'
 import { useNotification } from 'hooks/useNotification'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
 
 import { CinemaProviderFormDialog } from './CinemaProviderFormDialog'
 import style from './CinemaProviderParameters.module.scss'
@@ -44,14 +45,6 @@ export const CinemaProviderParameters = ({
     }
   }
 
-  const openFormDialog = () => {
-    setIsOpenedFormDialog(true)
-  }
-
-  const closeFormDialog = () => {
-    setIsOpenedFormDialog(false)
-  }
-
   const onConfirmDialog = async (
     payload: CinemaProviderParametersValues
   ): Promise<boolean> => {
@@ -60,7 +53,7 @@ export const CinemaProviderParameters = ({
       isActive: venueProvider.isActive,
     })
 
-    closeFormDialog()
+    setIsOpenedFormDialog(false)
     return isSuccess
   }
 
@@ -70,6 +63,7 @@ export const CinemaProviderParameters = ({
 
   return (
     <div className={style['cinema-provider-parameters']}>
+      cc
       <h4 className={style['title']}>Paramètres des offres synchronisées</h4>
       <div className={style['cinema-provider-parameters-list']}>
         <div>
@@ -77,24 +71,26 @@ export const CinemaProviderParameters = ({
           <span>{`${venueProvider.isDuo ? 'Oui' : 'Non'} `}</span>
         </div>
       </div>
-
-      <Button
-        className={style['edit-parameters-btn']}
-        variant={ButtonVariant.SECONDARY}
-        onClick={openFormDialog}
+      <DialogBuilder
+        open={isOpenedFormDialog}
+        onOpenChange={setIsOpenedFormDialog}
+        trigger={
+          <Button
+            className={style['edit-parameters-btn']}
+            variant={ButtonVariant.SECONDARY}
+          >
+            Modifier les paramètres
+          </Button>
+        }
       >
-        Modifier les paramètres
-      </Button>
-      {isOpenedFormDialog && (
         <CinemaProviderFormDialog
           initialValues={initialValues}
-          onCancel={closeFormDialog}
           onConfirm={onConfirmDialog}
           providerId={venueProvider.provider.id}
           venueId={venueProvider.venueId}
           offererId={offererId}
         />
-      )}
+      </DialogBuilder>
     </div>
   )
 }

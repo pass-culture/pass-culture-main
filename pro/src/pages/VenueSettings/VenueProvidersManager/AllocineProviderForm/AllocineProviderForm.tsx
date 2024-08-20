@@ -1,5 +1,6 @@
+import * as Dialog from '@radix-ui/react-dialog'
 import { FormikProvider, useFormik } from 'formik'
-import React, { useState } from 'react'
+import { useState } from 'react'
 
 import { PostVenueProviderBody } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
@@ -28,7 +29,6 @@ export interface AllocineProviderFormProps {
   offererId: number
   venueId: number
   isCreatedEntity?: boolean
-  onCancel?: () => void
   initialValues?: FormValuesProps
 }
 
@@ -37,7 +37,6 @@ export const AllocineProviderForm = ({
   providerId,
   offererId,
   venueId,
-  onCancel,
   initialValues = {
     isDuo: false,
     quantity: '',
@@ -122,13 +121,11 @@ export const AllocineProviderForm = ({
             className={styles['allocine-provider-form-actions']}
           >
             {!isCreatedEntity ? (
-              <Button
-                variant={ButtonVariant.SECONDARY}
-                onClick={onCancel}
-                type="button"
-              >
-                Annuler
-              </Button>
+              <Dialog.Close asChild>
+                <Button variant={ButtonVariant.SECONDARY} type="button">
+                  Annuler
+                </Button>
+              </Dialog.Close>
             ) : (
               <></>
             )}
