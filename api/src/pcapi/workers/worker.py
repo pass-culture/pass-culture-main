@@ -84,7 +84,7 @@ def run_worker(queues: Iterable = ()) -> None:
                 db.engine.dispose()
             with Connection(conn):
                 worker = Worker(list(map(Queue, queues)), exception_handlers=[log_worker_error])
-                worker.work(logging_level="DEBUG")
+                worker.work()
 
         except redis.ConnectionError:
             logger.warning("Worker connection error. Restarting in 5 seconds")
