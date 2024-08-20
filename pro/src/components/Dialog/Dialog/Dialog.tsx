@@ -1,7 +1,8 @@
+import * as RadixDialog from '@radix-ui/react-dialog'
 import React, { useId } from 'react'
 
-import { DialogBox } from 'components/DialogBox/DialogBox'
 import strokeErrorIcon from 'icons/stroke-error.svg'
+import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './Dialog.module.scss'
@@ -30,27 +31,26 @@ export const Dialog = ({
   const titleId = useId()
 
   return (
-    <DialogBox
-      extraClassNames={`${styles['dialog']} ${extraClassNames}`}
-      hasCloseButton
-      labelledBy={titleId}
-      onDismiss={onCancel}
-    >
-      {!hideIcon && (
-        <SvgIcon
-          src={icon ?? strokeErrorIcon}
-          alt=""
-          className={styles['dialog-icon']}
-        />
-      )}
-      <h1 className={styles['dialog-title']} id={titleId}>
-        {title}
-        <span>{secondTitle}</span>
-      </h1>
-      {explanation && (
-        <div className={styles['dialog-explanation']}>{explanation}</div>
-      )}
-      {children}
-    </DialogBox>
+    <DialogBuilder defaultOpen onOpenChange={(open) => !open && onCancel()}>
+      <div className={`${styles['dialog']} ${extraClassNames}`}>
+        {!hideIcon && (
+          <SvgIcon
+            src={icon ?? strokeErrorIcon}
+            alt=""
+            className={styles['dialog-icon']}
+          />
+        )}
+        <RadixDialog.Title asChild>
+          <h1 className={styles['dialog-title']} id={titleId}>
+            {title}
+            <span>{secondTitle}</span>
+          </h1>
+        </RadixDialog.Title>
+        {explanation && (
+          <div className={styles['dialog-explanation']}>{explanation}</div>
+        )}
+        {children}
+      </div>
+    </DialogBuilder>
   )
 }
