@@ -1,6 +1,6 @@
+import * as Dialog from '@radix-ui/react-dialog'
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import React from 'react'
 
 import { api } from 'apiClient/api'
 import { EventDatesInfos } from 'apiClient/v1'
@@ -14,11 +14,17 @@ const mockLogEvent = vi.fn()
 
 const render = (priceCategoryAndScheduleCountByDate: EventDatesInfos) => {
   renderWithProviders(
-    <DownloadBookingsModal
-      offerId={MOCK_OFFER_ID}
-      priceCategoryAndScheduleCountByDate={priceCategoryAndScheduleCountByDate}
-      onDimiss={() => {}}
-    />
+    <Dialog.Root defaultOpen>
+      <Dialog.Content aria-describedby={undefined}>
+        <DownloadBookingsModal
+          offerId={MOCK_OFFER_ID}
+          priceCategoryAndScheduleCountByDate={
+            priceCategoryAndScheduleCountByDate
+          }
+          onCloseDialog={() => {}}
+        />
+      </Dialog.Content>
+    </Dialog.Root>
   )
 }
 
