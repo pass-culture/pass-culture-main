@@ -34,6 +34,10 @@ Given('I am logged in with the new interface', () => {
   cy.findAllByTestId('spinner').should('not.exist')
 })
 
+Given('I go to {string} view', (tab: string) => {
+  cy.findByText(tab).click()
+})
+
 // créer un seul scénario createOffers avec son step-def
 When('I want to create {string} offer', (offerType: string) => {
   cy.findByText('Au grand public').click()
