@@ -29,11 +29,13 @@ logger = logging.getLogger(__name__)
 
 
 def log_worker_error(job: Job, exception_type: type, exception_value: Exception, traceback: Any | None = None) -> None:
-    # This handler is called by `rq.Worker.handle_exception()` from an
-    # `except` clause, so we can (and should) use `logger.exception`.
+    """This handler is called by `rq.Worker.handle_exception()` from an `except` clause,
+    so we can (and should) use `logger.exception`."""
+    # we don't need the whole path for pcapi.workers.function_xxx
+    shortened_function_name = job.func_name.split(".")[-1]
     logger.exception(
-        "Failed job %s",
-        job.func_name,
+        "[RQ](%s) Failed job !",
+        shortened_function_name,
         extra={
             **job_extra_description(job),
             "status": "failed",
@@ -98,6 +100,7 @@ def run_worker(queues: Iterable = ()) -> None:
                 db.session.remove()
                 db.session.close()
                 db.engine.dispose()
+            # TODO: rewrite without this deprecated context manager
             with Connection(conn):
                 worker = Worker(
                     list(map(Queue, queues)),
