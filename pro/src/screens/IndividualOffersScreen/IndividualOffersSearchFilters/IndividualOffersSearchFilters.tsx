@@ -24,9 +24,9 @@ import { FieldLayout } from 'ui-kit/form/shared/FieldLayout/FieldLayout'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { Tag, TagVariant } from 'ui-kit/Tag/Tag'
 
-import styles from './SearchFilters.module.scss'
+import styles from './IndividualOffersSearchFilters.module.scss'
 
-interface IndividualSearchFiltersProps {
+interface IndividualOffersSearchFiltersProps {
   applyFilters: (filters: SearchFiltersParams) => void
   offerer: GetOffererResponseModel | null
   removeOfferer: () => void
@@ -50,7 +50,7 @@ const individualFilterStatus = [
   { label: 'Refusée', value: OfferStatus.REJECTED },
 ]
 
-export const IndividualSearchFilters = ({
+export const IndividualOffersSearchFilters = ({
   applyFilters,
   selectedFilters,
   setSelectedFilters,
@@ -61,7 +61,7 @@ export const IndividualSearchFilters = ({
   venues,
   categories,
   isRestrictedAsAdmin = false,
-}: IndividualSearchFiltersProps): JSX.Element => {
+}: IndividualOffersSearchFiltersProps): JSX.Element => {
   const isNewInterfaceActive = useIsNewInterfaceActive()
 
   const updateSearchFilters = (

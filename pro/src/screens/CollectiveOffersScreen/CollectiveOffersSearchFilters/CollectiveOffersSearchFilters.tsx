@@ -9,6 +9,7 @@ import {
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import {
   ALL_FORMATS_OPTION,
+  ALL_STATUS,
   ALL_VENUES_OPTION,
   COLLECTIVE_OFFER_TYPES_OPTIONS,
   DEFAULT_COLLECTIVE_SEARCH_FILTERS,
@@ -30,9 +31,9 @@ import { FieldLayout } from 'ui-kit/form/shared/FieldLayout/FieldLayout'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { Tag, TagVariant } from 'ui-kit/Tag/Tag'
 
-import styles from './SearchFilters.module.scss'
+import styles from './CollectiveOffersSearchFilters.module.scss'
 
-interface CollectiveSearchFiltersProps {
+interface CollectiveOffersSearchFiltersProps {
   applyFilters: (filters: SearchFiltersParams) => void
   offerer: GetOffererResponseModel | null
   removeOfferer: () => void
@@ -70,11 +71,11 @@ const collectiveFilterStatus = [
 ]
 
 type StatusFormValues = {
-  status: CollectiveOfferDisplayedStatus[]
+  status: CollectiveOfferDisplayedStatus[] | typeof ALL_STATUS
   'search-status': string
 }
 
-export const CollectiveSearchFilters = ({
+export const CollectiveOffersSearchFilters = ({
   applyFilters,
   selectedFilters,
   setSelectedFilters,
@@ -84,7 +85,7 @@ export const CollectiveSearchFilters = ({
   disableAllFilters,
   venues,
   isRestrictedAsAdmin = false,
-}: CollectiveSearchFiltersProps): JSX.Element => {
+}: CollectiveOffersSearchFiltersProps): JSX.Element => {
   const isNewInterfaceActive = useIsNewInterfaceActive()
   const formats: SelectOption[] = Object.values(EacFormat).map((format) => ({
     value: format,
@@ -93,7 +94,9 @@ export const CollectiveSearchFilters = ({
 
   const formik = useFormik<StatusFormValues>({
     initialValues: {
-      status: [],
+      status: (Array.isArray(selectedFilters.status)
+        ? selectedFilters.status
+        : [selectedFilters.status]) as CollectiveOfferDisplayedStatus[],
       'search-status': '',
     },
     onSubmit: () => {},
@@ -102,16 +105,6 @@ export const CollectiveSearchFilters = ({
   const isCollectiveOfferDraftEnabled = useActiveFeature(
     'WIP_ENABLE_COLLECTIVE_DRAFT_OFFERS'
   )
-
-  // TODO(anoukhello - 24/07/24) we should not use useEffect for this but set value directly on SelectAutocomplete
-  useEffect(() => {
-    const selectedStatus = selectedFilters.status
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    formik.setFieldValue(
-      'status',
-      Array.isArray(selectedStatus) ? selectedStatus : [selectedStatus]
-    )
-  }, [])
 
   // TODO(anoukhello - 24/07/24) we should not use useEffect for this but an event handler on SelectAutocomplete
   useEffect(() => {

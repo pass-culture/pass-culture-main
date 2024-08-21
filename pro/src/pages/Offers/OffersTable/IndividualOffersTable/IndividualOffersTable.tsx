@@ -1,12 +1,9 @@
-import {
-  CollectiveOfferResponseModel,
-  ListOffersOfferResponseModel,
-} from 'apiClient/v1'
+import { ListOffersOfferResponseModel } from 'apiClient/v1'
 import { MAX_OFFERS_TO_DISPLAY } from 'core/Offers/constants'
 import { SearchFiltersParams } from 'core/Offers/types'
 import { hasSearchFilters } from 'core/Offers/utils/hasSearchFilters'
 import { getOffersCountToDisplay } from 'pages/Offers/domain/getOffersCountToDisplay'
-import { NoResults } from 'screens/Offers/NoResults/NoResults'
+import { NoResults } from 'screens/IndividualOffersScreen/NoResults/NoResults'
 import { Banner } from 'ui-kit/Banners/Banner/Banner'
 import { BaseCheckbox } from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
 import { Pagination } from 'ui-kit/Pagination/Pagination'
@@ -28,9 +25,7 @@ type IndividualOffersTableProps = {
   offersCount: number
   pageCount: number
   resetFilters: () => void
-  setSelectedOffer: (
-    offer: ListOffersOfferResponseModel | CollectiveOfferResponseModel
-  ) => void
+  setSelectedOffer: (offer: ListOffersOfferResponseModel) => void
   toggleSelectAllCheckboxes: () => void
   urlSearchFilters: SearchFiltersParams
   isAtLeastOneOfferChecked: boolean

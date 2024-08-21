@@ -1,7 +1,4 @@
-import {
-  CollectiveOfferResponseModel,
-  ListOffersOfferResponseModel,
-} from 'apiClient/v1'
+import { ListOffersOfferResponseModel } from 'apiClient/v1'
 import { isSameOffer } from 'pages/Offers/utils/isSameOffer'
 
 import { IndividualOfferRow } from '../IndividualOfferRow/IndividualOfferRow'
@@ -10,9 +7,7 @@ import styles from './IndividualOffersTableBody.module.scss'
 
 type IndividualOffersTableBodyProps = {
   offers: ListOffersOfferResponseModel[]
-  selectOffer: (
-    offer: CollectiveOfferResponseModel | ListOffersOfferResponseModel
-  ) => void
+  selectOffer: (offer: ListOffersOfferResponseModel) => void
   selectedOffers: ListOffersOfferResponseModel[]
 }
 
