@@ -32,7 +32,7 @@ const renderIndividualOfferNavigation = (
 
   renderWithProviders(
     <IndividualOfferContext.Provider value={contextValues}>
-      <IndividualOfferNavigation />
+      <IndividualOfferNavigation isUsefulInformationSubmitted />
       <Routes>
         {[OFFER_WIZARD_MODE.CREATION, OFFER_WIZARD_MODE.EDITION].map((mode) => (
           <React.Fragment key={mode}>
