@@ -5,7 +5,7 @@ from pcapi.sandboxes.scripts.utils.helpers import get_pro_user_and_venue_helper
 
 def create_user_with_venue() -> dict:
     pro_user = users_factories.ProFactory()
-    users_factories.UserProNewNavStateFactory(user=pro_user)
+    users_factories.UserProNewNavStateFactory(userId=pro_user.id)
     venue = offerers_factories.VenueFactory()
     offerers_factories.UserOffererFactory(
         user=pro_user,
