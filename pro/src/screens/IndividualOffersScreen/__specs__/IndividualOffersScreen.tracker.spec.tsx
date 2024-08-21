@@ -13,10 +13,13 @@ import {
 import { renderWithProviders } from 'utils/renderWithProviders'
 import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
-import { Offers, OffersProps } from '../Offers'
+import {
+  IndividualOffersScreen,
+  IndividualOffersScreenProps,
+} from '../IndividualOffersScreen'
 
-const renderOffers = (props: OffersProps) =>
-  renderWithProviders(<Offers {...props} />, {
+const renderOffers = (props: IndividualOffersScreenProps) =>
+  renderWithProviders(<IndividualOffersScreen {...props} />, {
     storeOverrides: {
       user: {
         selectedOffererId: defaultGetOffererResponseModel.id,
@@ -31,7 +34,7 @@ vi.mock('apiClient/api', () => ({
   },
 }))
 
-describe('tracker screen Offers', () => {
+describe('tracker IndividualOffersScreen', () => {
   it('should track when clciking on offer link', async () => {
     // Given
     const props = {

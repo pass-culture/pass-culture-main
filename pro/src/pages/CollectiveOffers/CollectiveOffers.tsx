@@ -24,7 +24,7 @@ import { useActiveFeature } from 'hooks/useActiveFeature'
 import { useCurrentUser } from 'hooks/useCurrentUser'
 import { useIsNewInterfaceActive } from 'hooks/useIsNewInterfaceActive'
 import { formatAndOrderVenues } from 'repository/venuesService'
-import { Offers } from 'screens/Offers/Offers'
+import { CollectiveOffersScreen } from 'screens/CollectiveOffersScreen/CollectiveOffersScreen'
 import { selectCurrentOffererId } from 'store/user/selectors'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
@@ -136,14 +136,13 @@ export const CollectiveOffers = (): JSX.Element => {
       {offersQuery.isLoading ? (
         <Spinner />
       ) : (
-        <Offers
-          audience={Audience.COLLECTIVE}
+        <CollectiveOffersScreen
           currentPageNumber={currentPageNumber}
           currentUser={currentUser}
           initialSearchFilters={apiFilters}
           isLoading={offersQuery.isLoading}
           offerer={offerer}
-          collectiveOffers={displayedOffers}
+          offers={displayedOffers}
           redirectWithUrlFilters={redirectWithUrlFilters}
           urlSearchFilters={urlSearchFilters}
           venues={venues}

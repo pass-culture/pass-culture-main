@@ -23,7 +23,7 @@ import { Audience } from 'core/shared/types'
 import { useCurrentUser } from 'hooks/useCurrentUser'
 import { useIsNewInterfaceActive } from 'hooks/useIsNewInterfaceActive'
 import { formatAndOrderVenues } from 'repository/venuesService'
-import { Offers } from 'screens/Offers/Offers'
+import { IndividualOffersScreen } from 'screens/IndividualOffersScreen/IndividualOffersScreen'
 import { selectCurrentOffererId } from 'store/user/selectors'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 import { sortByLabel } from 'utils/strings'
@@ -138,15 +138,14 @@ export const OffersRoute = (): JSX.Element => {
       {offersQuery.isLoading || offererQuery.isLoading ? (
         <Spinner />
       ) : (
-        <Offers
-          audience={Audience.INDIVIDUAL}
+        <IndividualOffersScreen
           categories={categoriesOptions}
           currentPageNumber={currentPageNumber}
           currentUser={currentUser}
           initialSearchFilters={apiFilters}
           isLoading={offersQuery.isLoading}
           offerer={offerer}
-          individualOffers={offers}
+          offers={offers}
           redirectWithUrlFilters={redirectWithUrlFilters}
           urlSearchFilters={urlSearchFilters}
           venues={venues}
