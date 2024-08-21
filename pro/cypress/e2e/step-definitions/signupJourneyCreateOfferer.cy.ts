@@ -1,33 +1,35 @@
 import { When, Then, Given } from '@badeball/cypress-cucumber-preprocessor'
-let userEmail: string
-let mySiret: string
-let offererName: string
 
-Given('I log in with a new user account', () => {
+Given('I log in with a new user account', function () {
   cy.visit('/')
   cy.url({ timeout: 30 * 1000 }).should('contain', '/connexion')
   cy.request(
-    'http://localhost:5001/sanboxes/pro_01_common/create_user_new_nav'
+    'http://localhost:5001/sanboxes/pro_01_common/create_pro_user'
   ).then((response) => {
     expect(response.status).to.eq(200)
-    userEmail = response.body.user.email
+    const responseEmail = response.body.user.email
+    cy.log('Email used: ' + responseEmail)
+    cy.wrap(responseEmail).as('userEmail')
     cy.login({
-      email: userEmail,
+      email: responseEmail,
       password: 'user@AZERTY123',
       redirectUrl: '/parcours-inscription',
     })
   })
 })
 
-Given('I have a user with an existing offerer', () => {
+Given('I have a user with an existing offerer', function () {
   cy.visit('/')
   cy.request(
-    'http://localhost:5001/sanboxes/pro_02_signup_journey/create_user_with_venue'
+    'http://localhost:5001/sanboxes/pro_02_signup_journey/create_pro_user_with_venue'
   ).then((response) => {
     expect(response.status).to.eq(200)
-    userEmail = response.body.email
-    mySiret = response.body.siret
-    offererName = response.body.offerer
+    const responseEmail = response.body.email
+    cy.wrap(responseEmail).as('userEmail')
+    const responseSiret = response.body.siret
+    cy.wrap(responseSiret).as('mySiret')
+    const responseOffererName = response.body.offerer
+    cy.wrap(responseOffererName).as('offererName')
   })
 })
 
@@ -35,55 +37,70 @@ When('I start offerer creation', () => {
   cy.findByText('Commencer').click()
 })
 
-When('I specify an offerer with a {string} SIRET', (whichSiret: string) => {
-  switch (whichSiret) {
-    case 'not used':
-      mySiret = '44890182521127'
-      offererName = 'MINISTERE DE LA CULTURE'
-      break
-  }
-  cy.url().should('contain', '/parcours-inscription/structure')
-  cy.findByLabelText('Numéro de SIRET à 14 chiffres *').type(mySiret)
-  cy.intercept('GET', `/sirene/siret/${mySiret}`, (req) =>
-    req.reply({
-      statusCode: 200,
-      body: {
-        siret: mySiret,
-        name: offererName,
-        active: true,
-        address: {
-          street: '3 RUE DE VALOIS',
-          postalCode: '75001',
-          city: 'Paris',
-        },
-        ape_code: '90.03A',
-        legal_category_code: '1000',
-      },
-    })
-  ).as('getSiret')
-  cy.intercept({
-    method: 'GET',
-    url: `/venues/siret/${mySiret}`,
-  }).as('venuesSiret')
-  cy.intercept(
-    'GET',
-    'https://api-adresse.data.gouv.fr/search/?limit=1&q=*'
-  ).as('search1Address')
-  cy.findByText('Continuer').click()
-  cy.wait(['@getSiret', '@venuesSiret', '@search1Address']).then(
-    (interception) => {
-      if (interception[0].response) {
-        expect(interception[0].response.statusCode).to.equal(200)
-      }
-      if (interception[1].response) {
-        expect(interception[1].response.statusCode).to.equal(200)
-      }
-      if (interception[2].response) {
-        expect(interception[2].response.statusCode).to.equal(200)
-      }
+When(
+  'I specify an offerer with a {string} SIRET',
+  function (whichSiret: string) {
+    let thisSiret = ''
+    let thisOffererName = ''
+    switch (whichSiret) {
+      case 'not used':
+        thisSiret =
+          '448901825211' + (Math.floor(Math.random() * 100) + 10).toString()
+        // cy.wrap(mySiret).as('testSiret')
+        cy.wrap('MINISTERE DE LA CULTURE').as('testOffererName')
+        thisOffererName = 'MINISTERE DE LA CULTURE'
+        break
+      case 'known':
+        // cy.wrap(this.mySiret).as('testSiret')
+        thisSiret = this.mySiret
+        cy.wrap('MINISTERE DE LA MARINE').as('testOffererName')
+        cy.wrap(this.offererName).as('testOffererName')
+        thisOffererName = this.offererName
+        break
     }
-  )
-})
+    cy.url().should('contain', '/parcours-inscription/structure')
+    cy.findByLabelText('Numéro de SIRET à 14 chiffres *').type(thisSiret)
+    cy.intercept('GET', `/sirene/siret/${thisSiret}`, (req) =>
+      req.reply({
+        statusCode: 200,
+        body: {
+          siret: thisSiret,
+          name: thisOffererName,
+          active: true,
+          address: {
+            street: '3 RUE DE VALOIS',
+            postalCode: '75001',
+            city: 'Paris',
+          },
+          ape_code: '90.03A',
+          legal_category_code: '1000',
+        },
+      })
+    ).as('getSiret')
+    cy.intercept({
+      method: 'GET',
+      url: `/venues/siret/${thisSiret}`,
+    }).as('venuesSiret')
+    cy.intercept(
+      'GET',
+      'https://api-adresse.data.gouv.fr/search/?limit=1&q=*'
+    ).as('search1Address')
+    cy.findByText('Continuer').click()
+    cy.wait(['@getSiret', '@venuesSiret', '@search1Address']).then(
+      (interception) => {
+        if (interception[0].response) {
+          expect(interception[0].response.statusCode).to.equal(200)
+        }
+        if (interception[1].response) {
+          expect(interception[1].response.statusCode).to.equal(200)
+        }
+        if (interception[2].response) {
+          expect(interception[2].response.statusCode).to.equal(200)
+        }
+      }
+    )
+  }
+)
 
 When('I fill activity form without main activity', () => {
   cy.url().should('contain', '/parcours-inscription/activite')
@@ -167,9 +184,9 @@ When('I chose to join the space', () => {
   cy.contains('Accéder à votre espace').click()
 })
 
-When('I am redirected to homepage', () => {
+When('I am redirected to homepage', function () {
   cy.url({ timeout: 10000 }).should('contain', '/accueil')
-  cy.findByLabelText('Structure').select(offererName)
+  cy.findByLabelText('Structure').select(this.testOffererNameffererName)
 })
 
 Then('the attachment is in progress', () => {
@@ -179,6 +196,7 @@ Then('the attachment is in progress', () => {
 })
 
 Then('the offerer validation is in progress', () => {
+  cy.reload()
   cy.contains(
     'Votre structure est en cours de traitement par les équipes du pass Culture'
   ).should('be.visible')
