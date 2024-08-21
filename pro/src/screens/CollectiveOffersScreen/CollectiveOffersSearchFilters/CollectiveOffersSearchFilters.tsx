@@ -9,13 +9,15 @@ import {
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import {
   ALL_FORMATS_OPTION,
-  ALL_STATUS,
   ALL_VENUES_OPTION,
   COLLECTIVE_OFFER_TYPES_OPTIONS,
   DEFAULT_COLLECTIVE_SEARCH_FILTERS,
 } from 'core/Offers/constants'
-import { SearchFiltersParams } from 'core/Offers/types'
-import { hasSearchFilters } from 'core/Offers/utils/hasSearchFilters'
+import {
+  CollectiveOfferTypeEnum,
+  CollectiveSearchFiltersParams,
+} from 'core/Offers/types'
+import { hasCollectiveSearchFilters } from 'core/Offers/utils/hasSearchFilters'
 import { SelectOption } from 'custom_types/form'
 import { useActiveFeature } from 'hooks/useActiveFeature'
 import { useIsNewInterfaceActive } from 'hooks/useIsNewInterfaceActive'
@@ -34,11 +36,11 @@ import { Tag, TagVariant } from 'ui-kit/Tag/Tag'
 import styles from './CollectiveOffersSearchFilters.module.scss'
 
 interface CollectiveOffersSearchFiltersProps {
-  applyFilters: (filters: SearchFiltersParams) => void
+  applyFilters: (filters: CollectiveSearchFiltersParams) => void
   offerer: GetOffererResponseModel | null
   removeOfferer: () => void
-  selectedFilters: SearchFiltersParams
-  setSelectedFilters: Dispatch<SetStateAction<SearchFiltersParams>>
+  selectedFilters: CollectiveSearchFiltersParams
+  setSelectedFilters: Dispatch<SetStateAction<CollectiveSearchFiltersParams>>
   disableAllFilters: boolean
   resetFilters: () => void
   venues: SelectOption[]
@@ -71,7 +73,7 @@ const collectiveFilterStatus = [
 ]
 
 type StatusFormValues = {
-  status: CollectiveOfferDisplayedStatus[] | typeof ALL_STATUS
+  status: CollectiveOfferDisplayedStatus[]
   'search-status': string
 }
 
@@ -94,9 +96,9 @@ export const CollectiveOffersSearchFilters = ({
 
   const formik = useFormik<StatusFormValues>({
     initialValues: {
-      status: (Array.isArray(selectedFilters.status)
+      status: Array.isArray(selectedFilters.status)
         ? selectedFilters.status
-        : [selectedFilters.status]) as CollectiveOfferDisplayedStatus[],
+        : [selectedFilters.status],
       'search-status': '',
     },
     onSubmit: () => {},
@@ -113,7 +115,7 @@ export const CollectiveOffersSearchFilters = ({
   }, [formik.values.status])
 
   const updateSearchFilters = (
-    newSearchFilters: Partial<SearchFiltersParams>
+    newSearchFilters: Partial<CollectiveSearchFiltersParams>
   ) => {
     setSelectedFilters((currentSearchFilters) => ({
       ...currentSearchFilters,
@@ -136,7 +138,9 @@ export const CollectiveOffersSearchFilters = ({
   }
 
   const storeCollectiveOfferType = (event: FormEvent<HTMLSelectElement>) => {
-    updateSearchFilters({ collectiveOfferType: event.currentTarget.value })
+    updateSearchFilters({
+      collectiveOfferType: event.currentTarget.value as CollectiveOfferTypeEnum,
+    })
   }
 
   const onBeginningDateChange = (periodBeginningDate: string) => {
@@ -279,7 +283,7 @@ export const CollectiveOffersSearchFilters = ({
         <div className={styles['reset-filters']}>
           <Button
             icon={fullRefreshIcon}
-            disabled={!hasSearchFilters(selectedFilters)}
+            disabled={!hasCollectiveSearchFilters(selectedFilters)}
             onClick={resetCollectiveFilters}
             variant={ButtonVariant.TERNARY}
           >

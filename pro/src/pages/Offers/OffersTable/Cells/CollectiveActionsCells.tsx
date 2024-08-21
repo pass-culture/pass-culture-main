@@ -26,7 +26,7 @@ import { NOTIFICATION_LONG_SHOW_DURATION } from 'core/Notification/constants'
 import { createOfferFromBookableOffer } from 'core/OfferEducational/utils/createOfferFromBookableOffer'
 import { createOfferFromTemplate } from 'core/OfferEducational/utils/createOfferFromTemplate'
 import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from 'core/Offers/constants'
-import { SearchFiltersParams } from 'core/Offers/types'
+import { CollectiveSearchFiltersParams } from 'core/Offers/types'
 import { useActiveFeature } from 'hooks/useActiveFeature'
 import { useNotification } from 'hooks/useNotification'
 import fullClearIcon from 'icons/full-clear.svg'
@@ -56,7 +56,7 @@ import { DuplicateOfferDialog } from './DuplicateOfferCell/DuplicateOfferDialog/
 export interface CollectiveActionsCellsProps {
   offer: CollectiveOfferResponseModel
   editionOfferLink: string
-  urlSearchFilters: SearchFiltersParams
+  urlSearchFilters: CollectiveSearchFiltersParams
   deselectOffer: (offer: CollectiveOfferResponseModel) => void
   isSelected: boolean
   headers?: string

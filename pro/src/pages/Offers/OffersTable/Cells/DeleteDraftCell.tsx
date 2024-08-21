@@ -12,7 +12,6 @@ import {
 } from 'core/FirebaseEvents/constants'
 import { DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
 import { useQuerySearchFilters } from 'core/Offers/hooks/useQuerySearchFilters'
-import { Audience } from 'core/shared/types'
 import { useNotification } from 'hooks/useNotification'
 import fullTrashIcon from 'icons/full-trash.svg'
 import strokeTrashIcon from 'icons/stroke-trash.svg'
@@ -28,7 +27,7 @@ interface DeleteDraftOffersProps {
 }
 
 export const DeleteDraftCell = ({ offer }: DeleteDraftOffersProps) => {
-  const urlSearchFilters = useQuerySearchFilters(Audience.INDIVIDUAL)
+  const urlSearchFilters = useQuerySearchFilters()
   const { mutate } = useSWRConfig()
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false)
   const { logEvent } = useAnalytics()

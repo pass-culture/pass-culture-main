@@ -1,5 +1,5 @@
 import { CollectiveOfferResponseModel } from 'apiClient/v1'
-import { SearchFiltersParams } from 'core/Offers/types'
+import { CollectiveSearchFiltersParams } from 'core/Offers/types'
 import { isSameOffer } from 'pages/Offers/utils/isSameOffer'
 
 import { CollectiveOfferRow } from '../CollectiveOfferRow/CollectiveOfferRow'
@@ -10,7 +10,7 @@ type CollectiveOffersTableBodyProps = {
   offers: CollectiveOfferResponseModel[]
   selectOffer: (offer: CollectiveOfferResponseModel) => void
   selectedOffers: CollectiveOfferResponseModel[]
-  urlSearchFilters: SearchFiltersParams
+  urlSearchFilters: CollectiveSearchFiltersParams
 }
 
 export const CollectiveOffersTableBody = ({

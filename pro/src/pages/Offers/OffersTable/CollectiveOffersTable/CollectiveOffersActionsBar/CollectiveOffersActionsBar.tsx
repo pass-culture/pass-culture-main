@@ -13,10 +13,8 @@ import { canArchiveCollectiveOffer } from 'components/ArchiveConfirmationModal/u
 import { GET_COLLECTIVE_OFFERS_QUERY_KEY } from 'config/swrQueryKeys'
 import { NOTIFICATION_LONG_SHOW_DURATION } from 'core/Notification/constants'
 import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from 'core/Offers/constants'
-import { useQuerySearchFilters } from 'core/Offers/hooks/useQuerySearchFilters'
-import { SearchFiltersParams } from 'core/Offers/types'
-import { serializeApiFilters } from 'core/Offers/utils/serializer'
-import { Audience } from 'core/shared/types'
+import { useQueryCollectiveSearchFilters } from 'core/Offers/hooks/useQuerySearchFilters'
+import { CollectiveSearchFiltersParams } from 'core/Offers/types'
 import { useNotification } from 'hooks/useNotification'
 import fullHideIcon from 'icons/full-hide.svg'
 import fullValidateIcon from 'icons/full-validate.svg'
@@ -37,19 +35,6 @@ export type CollectiveOffersActionsBarProps = {
   getUpdateOffersStatusMessage: (selectedOfferIds: number[]) => string
 }
 
-const computeAllActivationSuccessMessage = (nbSelectedOffers: number) => {
-  const activationSucessWording =
-    'en cours de publication, veuillez rafraichir dans quelques instants'
-  return nbSelectedOffers > 1
-    ? `Les offres sont ${activationSucessWording}`
-    : `Une offre est ${activationSucessWording}`
-}
-
-const computeAllDeactivationSuccessMessage = (nbSelectedOffers: number) =>
-  nbSelectedOffers > 1
-    ? 'Les offres seront masquées dans quelques instants'
-    : "L'offre sera masquée dans quelques instants"
-
 const computeDeactivationSuccessMessage = (nbSelectedOffers: number) => {
   const successMessage =
     nbSelectedOffers > 1
@@ -60,73 +45,53 @@ const computeDeactivationSuccessMessage = (nbSelectedOffers: number) => {
 
 const updateCollectiveOffersStatus = async (
   isActive: boolean,
-  areAllOffersSelected: boolean,
   selectedOffers: CollectiveOfferResponseModel[],
   notify: ReturnType<typeof useNotification>,
-  apiFilters: SearchFiltersParams
+  apiFilters: CollectiveSearchFiltersParams
 ) => {
-  const payload = serializeApiFilters(apiFilters, Audience.COLLECTIVE)
-  if (areAllOffersSelected) {
-    //  Bulk edit if all editable offers are selected
-    try {
-      await api.patchAllCollectiveOffersActiveStatus({
-        ...payload,
+  try {
+    //  Differenciate template and bookable selected offers so that there can be two separarate api status update calls
+    const collectiveOfferIds = []
+    const collectiveOfferTemplateIds = []
+
+    if (!canPublishCollectiveOffersArchived(selectedOffers)) {
+      notify.error(
+        `Une erreur est survenue lors de ${
+          isActive ? 'l’activation' : 'la désactivation'
+        } des offres sélectionnées`
+      )
+      return
+    }
+
+    for (const offer of selectedOffers) {
+      if (offer.isShowcase) {
+        collectiveOfferTemplateIds.push(offer.id)
+      } else {
+        collectiveOfferIds.push(offer.id)
+      }
+    }
+
+    if (collectiveOfferIds.length > 0) {
+      await api.patchCollectiveOffersActiveStatus({
+        ids: collectiveOfferIds.map((id) => Number(id)),
         isActive,
       })
-
-      notify.pending(
-        isActive
-          ? computeAllActivationSuccessMessage(selectedOffers.length)
-          : computeAllDeactivationSuccessMessage(selectedOffers.length)
-      )
-    } catch {
-      notify.error('Une erreur est survenue')
     }
-  } else {
-    try {
-      //  Differenciate template and bookable selected offers so that there can be two separarate api status update calls
-      const collectiveOfferIds = []
-      const collectiveOfferTemplateIds = []
 
-      if (!canPublishCollectiveOffersArchived(selectedOffers)) {
-        notify.error(
-          `Une erreur est survenue lors de ${
-            isActive ? 'l’activation' : 'la désactivation'
-          } des offres sélectionnées`
-        )
-        return
-      }
-
-      for (const offer of selectedOffers) {
-        if (offer.isShowcase) {
-          collectiveOfferTemplateIds.push(offer.id)
-        } else {
-          collectiveOfferIds.push(offer.id)
-        }
-      }
-
-      if (collectiveOfferIds.length > 0) {
-        await api.patchCollectiveOffersActiveStatus({
-          ids: collectiveOfferIds.map((id) => Number(id)),
-          isActive,
-        })
-      }
-
-      if (collectiveOfferTemplateIds.length > 0) {
-        await api.patchCollectiveOffersTemplateActiveStatus({
-          ids: collectiveOfferTemplateIds.map((ids) => Number(ids)),
-          isActive,
-        })
-      }
-
-      notify.information(
-        isActive
-          ? computeActivationSuccessMessage(selectedOffers.length)
-          : computeDeactivationSuccessMessage(selectedOffers.length)
-      )
-    } catch {
-      notify.error('Une erreur est survenue')
+    if (collectiveOfferTemplateIds.length > 0) {
+      await api.patchCollectiveOffersTemplateActiveStatus({
+        ids: collectiveOfferTemplateIds.map((ids) => Number(ids)),
+        isActive,
+      })
     }
+
+    notify.information(
+      isActive
+        ? computeActivationSuccessMessage(selectedOffers.length)
+        : computeDeactivationSuccessMessage(selectedOffers.length)
+    )
+  } catch {
+    notify.error('Une erreur est survenue')
   }
 
   await mutate([GET_COLLECTIVE_OFFERS_QUERY_KEY, apiFilters])
@@ -160,7 +125,7 @@ export function CollectiveOffersActionsBar({
   areAllOffersSelected,
   getUpdateOffersStatusMessage,
 }: CollectiveOffersActionsBarProps) {
-  const urlSearchFilters = useQuerySearchFilters(Audience.COLLECTIVE)
+  const urlSearchFilters = useQueryCollectiveSearchFilters()
 
   const notify = useNotification()
   const [isDeactivationDialogOpen, setIsDeactivationDialogOpen] =
@@ -191,7 +156,6 @@ export function CollectiveOffersActionsBar({
   const handleUpdateOffersStatus = async (isActivating: boolean) => {
     await updateCollectiveOffersStatus(
       isActivating,
-      areAllOffersSelected,
       selectedOffers,
       notify,
       apiFilters

@@ -12,13 +12,11 @@ import { NoData } from 'components/NoData/NoData'
 import {
   DEFAULT_COLLECTIVE_SEARCH_FILTERS,
   DEFAULT_PAGE,
-  DEFAULT_SEARCH_FILTERS,
   MAX_TOTAL_PAGES,
   NUMBER_OF_OFFERS_PER_PAGE,
 } from 'core/Offers/constants'
-import { SearchFiltersParams } from 'core/Offers/types'
-import { hasSearchFilters } from 'core/Offers/utils/hasSearchFilters'
-import { Audience } from 'core/shared/types'
+import { CollectiveSearchFiltersParams } from 'core/Offers/types'
+import { hasCollectiveSearchFilters } from 'core/Offers/utils/hasSearchFilters'
 import { SelectOption } from 'custom_types/form'
 import { CollectiveOffersActionsBar } from 'pages/Offers/OffersTable/CollectiveOffersTable/CollectiveOffersActionsBar/CollectiveOffersActionsBar'
 import { CollectiveOffersTable } from 'pages/Offers/OffersTable/CollectiveOffersTable/CollectiveOffersTable'
@@ -36,14 +34,13 @@ export type CollectiveOffersScreenProps = {
   }
   isLoading: boolean
   offerer: GetOffererResponseModel | null
-  initialSearchFilters: SearchFiltersParams
+  initialSearchFilters: CollectiveSearchFiltersParams
   redirectWithUrlFilters: (
-    filters: SearchFiltersParams & {
+    filters: CollectiveSearchFiltersParams & {
       page?: number
-      audience?: Audience
     }
   ) => void
-  urlSearchFilters: SearchFiltersParams
+  urlSearchFilters: CollectiveSearchFiltersParams
   venues: SelectOption[]
   categories?: SelectOption[]
   isRestrictedAsAdmin?: boolean
@@ -75,7 +72,7 @@ export const CollectiveOffersScreen = ({
   const hasOffers = currentPageOffersSubset.length > 0
 
   const userHasNoOffers =
-    !isLoading && !hasOffers && !hasSearchFilters(urlSearchFilters)
+    !isLoading && !hasOffers && !hasCollectiveSearchFilters(urlSearchFilters)
 
   const areAllOffersSelected =
     selectedOffers.length > 0 &&
@@ -102,25 +99,26 @@ export const CollectiveOffersScreen = ({
   const pageCount = Math.min(numberOfPages, MAX_TOTAL_PAGES)
 
   const applyUrlFiltersAndRedirect = (
-    filters: SearchFiltersParams & { audience?: Audience }
+    filters: CollectiveSearchFiltersParams
   ) => {
     redirectWithUrlFilters(filters)
   }
 
-  const applyFilters = (filters: SearchFiltersParams) => {
+  const applyFilters = (filters: CollectiveSearchFiltersParams) => {
     applyUrlFiltersAndRedirect({ ...filters, page: DEFAULT_PAGE })
   }
 
   const removeOfferer = () => {
     const updatedFilters = {
       ...initialSearchFilters,
-      offererId: DEFAULT_SEARCH_FILTERS.offererId,
+      offererId: DEFAULT_COLLECTIVE_SEARCH_FILTERS.offererId,
     }
     if (
-      initialSearchFilters.venueId === DEFAULT_SEARCH_FILTERS.venueId &&
-      initialSearchFilters.status !== DEFAULT_SEARCH_FILTERS.status
+      initialSearchFilters.venueId ===
+        DEFAULT_COLLECTIVE_SEARCH_FILTERS.venueId &&
+      initialSearchFilters.status !== DEFAULT_COLLECTIVE_SEARCH_FILTERS.status
     ) {
-      updatedFilters.status = DEFAULT_SEARCH_FILTERS.status
+      updatedFilters.status = DEFAULT_COLLECTIVE_SEARCH_FILTERS.status
     }
     applyUrlFiltersAndRedirect(updatedFilters)
   }

@@ -4,7 +4,7 @@ import {
   CollectiveOfferResponseModel,
   CollectiveOfferStatus,
 } from 'apiClient/v1'
-import { SearchFiltersParams } from 'core/Offers/types'
+import { CollectiveSearchFiltersParams } from 'core/Offers/types'
 import { isOfferDisabled } from 'core/Offers/utils/isOfferDisabled'
 import { useActiveFeature } from 'hooks/useActiveFeature'
 import { useOfferEditionURL } from 'hooks/useOfferEditionURL'
@@ -25,7 +25,7 @@ export type CollectiveOfferRowProps = {
   isSelected: boolean
   offer: CollectiveOfferResponseModel
   selectOffer: (offer: CollectiveOfferResponseModel) => void
-  urlSearchFilters: SearchFiltersParams
+  urlSearchFilters: CollectiveSearchFiltersParams
   isFirstRow: boolean
 }
 
