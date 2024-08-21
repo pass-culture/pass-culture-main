@@ -14,12 +14,11 @@ import {
   DEFAULT_COLLECTIVE_SEARCH_FILTERS,
   DEFAULT_PAGE,
 } from 'core/Offers/constants'
-import { useQuerySearchFilters } from 'core/Offers/hooks/useQuerySearchFilters'
-import { SearchFiltersParams } from 'core/Offers/types'
+import { useQueryCollectiveSearchFilters } from 'core/Offers/hooks/useQuerySearchFilters'
+import { CollectiveSearchFiltersParams } from 'core/Offers/types'
 import { computeCollectiveOffersUrl } from 'core/Offers/utils/computeOffersUrl'
-import { hasSearchFilters } from 'core/Offers/utils/hasSearchFilters'
-import { serializeApiFilters } from 'core/Offers/utils/serializer'
-import { Audience } from 'core/shared/types'
+import { hasCollectiveSearchFilters } from 'core/Offers/utils/hasSearchFilters'
+import { serializeApiCollectiveFilters } from 'core/Offers/utils/serializer'
 import { useActiveFeature } from 'hooks/useActiveFeature'
 import { useCurrentUser } from 'hooks/useCurrentUser'
 import { useIsNewInterfaceActive } from 'hooks/useIsNewInterfaceActive'
@@ -29,7 +28,7 @@ import { selectCurrentOffererId } from 'store/user/selectors'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 export const CollectiveOffers = (): JSX.Element => {
-  const urlSearchFilters = useQuerySearchFilters(Audience.COLLECTIVE)
+  const urlSearchFilters = useQueryCollectiveSearchFilters()
   const currentPageNumber = urlSearchFilters.page ?? DEFAULT_PAGE
   const navigate = useNavigate()
   const { currentUser } = useCurrentUser()
@@ -60,20 +59,18 @@ export const CollectiveOffers = (): JSX.Element => {
   )
   const venues = formatAndOrderVenues(data.venues)
 
-  const redirectWithUrlFilters = (
-    filters: SearchFiltersParams & { audience?: Audience }
-  ) => {
+  const redirectWithUrlFilters = (filters: CollectiveSearchFiltersParams) => {
     navigate(computeCollectiveOffersUrl(filters), { replace: true })
   }
 
-  const isFilterByVenueOrOfferer = hasSearchFilters(urlSearchFilters, [
-    'venueId',
-    'offererId',
-  ])
+  const isFilterByVenueOrOfferer = hasCollectiveSearchFilters(
+    urlSearchFilters,
+    ['venueId', 'offererId']
+  )
   //  Admin users are not allowed to check all offers at once or to use the status filter for performance reasons. Unless there is a venue or offerer filter active.
   const isRestrictedAsAdmin = currentUser.isAdmin && !isFilterByVenueOrOfferer
 
-  const apiFilters: SearchFiltersParams = {
+  const apiFilters: CollectiveSearchFiltersParams = {
     ...DEFAULT_COLLECTIVE_SEARCH_FILTERS,
     ...urlSearchFilters,
     ...(isRestrictedAsAdmin ? { status: [] } : {}),
@@ -107,7 +104,7 @@ export const CollectiveOffers = (): JSX.Element => {
         periodEndingDate,
         collectiveOfferType,
         format,
-      } = serializeApiFilters(apiFilters, Audience.COLLECTIVE)
+      } = serializeApiCollectiveFilters(apiFilters)
 
       return api.getCollectiveOffers(
         nameOrIsbn,

@@ -22,6 +22,24 @@ export type SearchFiltersParams = {
   page?: number
 }
 
+export type CollectiveSearchFiltersParams = {
+  nameOrIsbn: string
+  offererId: string
+  venueId: string
+  format: EacFormat | typeof ALL_FORMATS
+  status: CollectiveOfferDisplayedStatus[]
+  collectiveOfferType: CollectiveOfferTypeEnum
+  periodBeginningDate: string
+  periodEndingDate: string
+  page?: number
+}
+
+export enum CollectiveOfferTypeEnum {
+  ALL = 'all',
+  OFFER = 'offer',
+  TEMPLATE = 'template',
+}
+
 export interface CategorySubtypeItem {
   code: number
   label: string

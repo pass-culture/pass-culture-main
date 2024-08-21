@@ -1,7 +1,7 @@
 import { CollectiveOfferResponseModel } from 'apiClient/v1'
 import { MAX_OFFERS_TO_DISPLAY } from 'core/Offers/constants'
-import { SearchFiltersParams } from 'core/Offers/types'
-import { hasSearchFilters } from 'core/Offers/utils/hasSearchFilters'
+import { CollectiveSearchFiltersParams } from 'core/Offers/types'
+import { hasCollectiveSearchFilters } from 'core/Offers/utils/hasSearchFilters'
 import { SortingMode, useColumnSorting } from 'hooks/useColumnSorting'
 import { usePagination } from 'hooks/usePagination'
 import { getOffersCountToDisplay } from 'pages/Offers/domain/getOffersCountToDisplay'
@@ -17,7 +17,7 @@ import { CollectiveOffersTableHead } from './CollectiveOffersTableHead/Collectiv
 
 type CollectiveOffersTableProps = {
   applyUrlFiltersAndRedirect: (
-    filters: SearchFiltersParams,
+    filters: CollectiveSearchFiltersParams,
     isRefreshing: boolean
   ) => void
   areAllOffersSelected: boolean
@@ -28,7 +28,7 @@ type CollectiveOffersTableProps = {
   resetFilters: () => void
   setSelectedOffer: (offer: CollectiveOfferResponseModel) => void
   toggleSelectAllCheckboxes: () => void
-  urlSearchFilters: SearchFiltersParams
+  urlSearchFilters: CollectiveSearchFiltersParams
   isAtLeastOneOfferChecked: boolean
   isRestrictedAsAdmin?: boolean
   selectedOffers: CollectiveOfferResponseModel[]
@@ -190,7 +190,7 @@ export const CollectiveOffersTable = ({
               />
             </div>
           )}
-          {!hasOffers && hasSearchFilters(urlSearchFilters) && (
+          {!hasOffers && hasCollectiveSearchFilters(urlSearchFilters) && (
             <NoResults resetFilters={resetFilters} />
           )}
         </>

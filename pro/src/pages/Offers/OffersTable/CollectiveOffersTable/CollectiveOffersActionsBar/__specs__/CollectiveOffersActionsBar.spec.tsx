@@ -32,7 +32,6 @@ vi.mock('apiClient/api', () => ({
   api: {
     patchCollectiveOffersActiveStatus: vi.fn(),
     patchCollectiveOffersTemplateActiveStatus: vi.fn(),
-    patchAllCollectiveOffersActiveStatus: vi.fn(),
     patchCollectiveOffersTemplateArchive: vi.fn(),
     patchCollectiveOffersArchive: vi.fn(),
   },
@@ -176,36 +175,6 @@ describe('ActionsBar', () => {
     expect(props.clearSelectedOfferIds).toHaveBeenCalledTimes(1)
   })
 
-  it('should activate all offers on click on "Publier" button when all offers are selected', async () => {
-    props.areAllOffersSelected = true
-    renderActionsBar(props)
-
-    const expectedBody = {
-      isActive: true,
-    }
-
-    const activateButton = screen.getByText('Publier')
-    await userEvent.click(activateButton)
-
-    expect(api.patchAllCollectiveOffersActiveStatus).toHaveBeenLastCalledWith(
-      expectedBody
-    )
-    expect(props.clearSelectedOfferIds).toHaveBeenCalledTimes(1)
-  })
-
-  it('should show an error message when an error occurs after clicking on "Publier" button when all offers are selected', async () => {
-    props.areAllOffersSelected = true
-    vi.spyOn(api, 'patchAllCollectiveOffersActiveStatus').mockRejectedValueOnce(
-      null
-    )
-    renderActionsBar(props)
-
-    const activateButton = screen.getByText('Publier')
-    await userEvent.click(activateButton)
-
-    expect(screen.getByText('Une erreur est survenue'))
-  })
-
   it('should show an error message when an error occurs after clicking on "Publier" button when some offers are selected', async () => {
     vi.spyOn(api, 'patchCollectiveOffersActiveStatus').mockRejectedValueOnce(
       null
@@ -216,34 +185,6 @@ describe('ActionsBar', () => {
     await userEvent.click(activateButton)
 
     expect(screen.getByText('Une erreur est survenue'))
-  })
-
-  it('should deactivate all offers on click on "Masquer" button when all offers are selected', async () => {
-    props.areAllOffersSelected = true
-    renderActionsBar(props)
-
-    const expectedBody = {
-      isActive: false,
-    }
-
-    const deactivateButton = screen.getByText('Masquer')
-    await userEvent.click(deactivateButton)
-    const confirmDeactivateButton = screen.getAllByText('Masquer')[1]
-    await userEvent.click(confirmDeactivateButton)
-
-    expect(mockLogEvent).toHaveBeenCalledTimes(1)
-    expect(mockLogEvent).toHaveBeenNthCalledWith(
-      1,
-      Events.CLICKED_DISABLED_SELECTED_OFFERS,
-      {
-        from: '/offres/collectives',
-        has_selected_all_offers: true,
-      }
-    )
-    expect(api.patchAllCollectiveOffersActiveStatus).toHaveBeenLastCalledWith(
-      expectedBody
-    )
-    expect(props.clearSelectedOfferIds).toHaveBeenCalledTimes(1)
   })
 
   it('should not deactivate offers on click on "Masquer" when at least one offer is not published or expired', async () => {

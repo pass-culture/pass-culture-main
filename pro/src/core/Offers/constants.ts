@@ -1,7 +1,11 @@
 import { OfferStatus, WithdrawalTypeEnum } from 'apiClient/v1'
 import { SelectOption } from 'custom_types/form'
 
-import { SearchFiltersParams } from './types'
+import {
+  CollectiveOfferTypeEnum,
+  CollectiveSearchFiltersParams,
+  SearchFiltersParams,
+} from './types'
 
 export enum OFFER_TYPES {
   INDIVIDUAL_OR_DUO = 'INDIVIDUAL_OR_DUO',
@@ -79,10 +83,18 @@ export const DEFAULT_SEARCH_FILTERS: SearchFiltersParams = {
   offererAddressId: 'all',
 }
 
-export const DEFAULT_COLLECTIVE_SEARCH_FILTERS: SearchFiltersParams = {
-  ...DEFAULT_SEARCH_FILTERS,
-  status: [],
-}
+export const DEFAULT_COLLECTIVE_SEARCH_FILTERS: CollectiveSearchFiltersParams =
+  {
+    nameOrIsbn: ALL_OFFERS,
+    offererId: 'all',
+    venueId: ALL_VENUES,
+    format: ALL_FORMATS,
+    collectiveOfferType: CollectiveOfferTypeEnum.ALL,
+    periodBeginningDate: ALL_EVENT_PERIODS,
+    periodEndingDate: ALL_EVENT_PERIODS,
+    page: DEFAULT_PAGE,
+    status: [],
+  }
 
 export const ALL_VENUES_OPTION: SelectOption = {
   label: 'Tous les lieux',

@@ -31,7 +31,7 @@ import { sortByLabel } from 'utils/strings'
 export const GET_OFFERS_QUERY_KEY = 'listOffers'
 
 export const OffersRoute = (): JSX.Element => {
-  const urlSearchFilters = useQuerySearchFilters(Audience.INDIVIDUAL)
+  const urlSearchFilters = useQuerySearchFilters()
   const currentPageNumber = urlSearchFilters.page ?? DEFAULT_PAGE
   const navigate = useNavigate()
   const { currentUser } = useCurrentUser()
@@ -117,7 +117,7 @@ export const OffersRoute = (): JSX.Element => {
       creationMode,
       periodBeginningDate,
       periodEndingDate,
-    } = serializeApiFilters(apiFilters, Audience.INDIVIDUAL)
+    } = serializeApiFilters(apiFilters)
 
     return api.listOffers(
       nameOrIsbn,
