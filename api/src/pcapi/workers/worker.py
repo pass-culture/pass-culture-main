@@ -1,6 +1,5 @@
 import logging
 from resource import struct_rusage
-import time
 from typing import Any
 from typing import Iterable
 
@@ -90,25 +89,20 @@ def run_worker(queues: Iterable = ()) -> None:
     with app.app_context():
         log_database_connection_status()
 
-    while True:
-        try:
-            with app.app_context():
-                # This sessions removals are meant to prevent open db connection
-                # to spread through forked children and cause bugs in the jobs
-                # https://python-rq.org/docs/workers/#the-worker-lifecycle
-                # https://docs.sqlalchemy.org/en/13/core/connections.html?highlight=dispose#engine-disposal
-                db.session.remove()
-                db.session.close()
-                db.engine.dispose()
-            # TODO: rewrite without this deprecated context manager
-            with Connection(conn):
-                worker = Worker(
-                    list(map(Queue, queues)),
-                    exception_handlers=[log_worker_error],
-                    work_horse_killed_handler=work_horse_killed_handler,
-                )
-                worker.work()
+    with app.app_context():
+        # This sessions removals are meant to prevent open db connection
+        # to spread through forked children and cause bugs in the jobs
+        # https://python-rq.org/docs/workers/#the-worker-lifecycle
+        # https://docs.sqlalchemy.org/en/13/core/connections.html?highlight=dispose#engine-disposal
+        db.session.remove()
+        db.session.close()
+        db.engine.dispose()
 
-        except redis.ConnectionError:
-            logger.warning("Worker connection error. Restarting in 5 seconds")
-            time.sleep(5)
+    # TODO: rewrite without this deprecated context manager
+    with Connection(conn):
+        worker = Worker(
+            list(map(Queue, queues)),
+            exception_handlers=[log_worker_error],
+            work_horse_killed_handler=work_horse_killed_handler,
+        )
+        worker.work()
