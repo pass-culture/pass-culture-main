@@ -10,11 +10,10 @@
   position: relative;
 
   &-title {
-    @include fonts.extra-bold;
+    @include fonts.title1;
 
     margin: 0;
     color: var(--color-white);
-    font-size: rem.torem(24px);
     text-align: center;
     line-height: normal;
     position: relative;
@@ -57,8 +56,6 @@
 @media (min-width: size.$tablet) {
   .discovery-banner {
     &-title {
-      font-size: rem.torem(32px);
-
       &-highlight {
         padding: rem.torem(4px);
       }

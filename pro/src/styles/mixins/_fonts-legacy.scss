@@ -1,10 +1,5 @@
 //  Legacy fonts to cover the typos weights and styles that do not fit in the new design system
 //  These should be progresively replaced with DS fonts
-@mixin extra-bold {
-  font-family: Montserrat-ExtraBold, system-ui, sans-serif;
-  font-weight: 800;
-  font-style: normal;
-}
 
 @mixin bold() {
   font-family: Montserrat-Bold, system-ui, sans-serif;
