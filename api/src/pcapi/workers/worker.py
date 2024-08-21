@@ -1,4 +1,5 @@
 import logging
+from resource import struct_rusage
 import time
 from typing import Any
 from typing import Iterable
@@ -37,6 +38,21 @@ def log_worker_error(job: Job, exception_type: type, exception_value: Exception,
             **job_extra_description(job),
             "status": "failed",
             "error": f"{exception_type.__name__}: {exception_value}",
+        },
+    )
+
+
+def work_horse_killed_handler(job: Job, retpid: int, ret_val: int, rusage: struct_rusage) -> None:
+    # we don't need the whole path for pcapi.workers.function_xxx
+    shortened_function_name = job.func_name.split(".")[-1]
+    logger.exception(
+        "[RQ](%s) Work horse killed !",
+        shortened_function_name,
+        extra={
+            **job_extra_description(job),
+            "retpid": retpid,
+            "ret_val": ret_val,
+            "rusage": rusage,
         },
     )
 
@@ -83,7 +99,11 @@ def run_worker(queues: Iterable = ()) -> None:
                 db.session.close()
                 db.engine.dispose()
             with Connection(conn):
-                worker = Worker(list(map(Queue, queues)), exception_handlers=[log_worker_error])
+                worker = Worker(
+                    list(map(Queue, queues)),
+                    exception_handlers=[log_worker_error],
+                    work_horse_killed_handler=work_horse_killed_handler,
+                )
                 worker.work()
 
         except redis.ConnectionError:
