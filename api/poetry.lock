@@ -4558,13 +4558,13 @@ crt = ["botocore[crt] (>=1.33.2,<2.0a.0)"]
 
 [[package]]
 name = "schwifty"
-version = "2024.6.1"
+version = "2024.8.1"
 description = ""
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "schwifty-2024.6.1-py3-none-any.whl", hash = "sha256:d1fa1cd142e4b4c74c1578f098f4f41561e8513625a2a5a8486897441006d4ac"},
-    {file = "schwifty-2024.6.1.tar.gz", hash = "sha256:df6f98a4321772095dc2dc54e6cf55e9ca2783bd048b21207fd402358744be9d"},
+    {file = "schwifty-2024.8.1-py3-none-any.whl", hash = "sha256:e5073ae773353a9d02cfab632e764d4a8eebf3c77eafe49fcc3a0ec9766214bc"},
+    {file = "schwifty-2024.8.1.tar.gz", hash = "sha256:5d6741d321982b1cf63c954d6d7a4d9ec1bf49a177cac667f098eb0e7feb67bc"},
 ]
 
 [package.dependencies]
@@ -5650,4 +5650,4 @@ test = ["pytest"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "d47e6b49e0a05fa71396493faf3912a1788b6d59f92572922936e3813b4f53b5"
+content-hash = "80bc28b56c6971041619a42686782fd839bb576ff836f8fe528d0979e9a4fdcb"
