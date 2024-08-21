@@ -16,7 +16,7 @@ const getTimeOptions = (suggestedTimeList?: SuggestedTimeList) => {
     return []
   }
 
-  const { interval = 1, min = '00:00', max = '23:59' } = suggestedTimeList
+  const { interval = 15, min = '00:00', max = '23:59' } = suggestedTimeList
   const [minHours, minMinutes] = min.split(':').map(Number)
   const [maxHours, maxMinutes] = max.split(':').map(Number)
 
