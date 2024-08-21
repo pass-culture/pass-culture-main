@@ -22,6 +22,7 @@ type TextInputProps = React.InputHTMLAttributes<HTMLInputElement> &
     refForInput?: ForwardedRef<HTMLInputElement>
     ErrorDetails?: React.ReactNode
     maxLength?: number
+    showMandatoryAsterisk?: boolean
   }
 
 export const TextInput = ({
@@ -52,6 +53,7 @@ export const TextInput = ({
   clearButtonProps,
   hasLabelLineBreak = true,
   ErrorDetails,
+  showMandatoryAsterisk,
   ...props
 }: TextInputProps): JSX.Element => {
   const [field, meta] = useField({
@@ -74,6 +76,7 @@ export const TextInput = ({
       count={countCharacters ? field.value.length : undefined}
       error={meta.error}
       isOptional={isOptional}
+      showMandatoryAsterisk={showMandatoryAsterisk}
       label={label}
       isLabelHidden={isLabelHidden}
       maxLength={maxLength}

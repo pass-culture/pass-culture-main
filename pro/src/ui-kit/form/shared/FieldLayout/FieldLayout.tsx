@@ -18,6 +18,7 @@ export type FieldLayoutBaseProps = {
   isLabelHidden?: boolean
   hasLabelLineBreak?: boolean
   isOptional?: boolean
+  showMandatoryAsterisk?: boolean
   className?: string
   classNameLabel?: string
   classNameFooter?: string
@@ -53,6 +54,7 @@ export const FieldLayout = ({
   count = undefined,
   maxLength = undefined,
   isOptional = false,
+  showMandatoryAsterisk = true, //  Can be false only when it's the only field in a form and it's mandatory
   smallLabel,
   hideFooter = false,
   inline = false,
@@ -95,7 +97,7 @@ export const FieldLayout = ({
           )}
           htmlFor={name}
         >
-          {label} {!isOptional && '*'}
+          {label} {!isOptional && showMandatoryAsterisk && '*'}
         </label>
         {description && (
           <span
