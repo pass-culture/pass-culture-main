@@ -658,12 +658,8 @@ def link_venue_to_pricing_point(
     Creates a VenuePricingPointLink if the venue had not been previously linked to a pricing point.
     If it had, then it will raise an error, unless the force_link parameter is True, in exceptional circumstances.
     """
-    if feature.FeatureToggle.USE_END_DATE_FOR_COLLECTIVE_PRICING.is_active():
-        collective_stock_datetime = "endDatetime"
-    else:
-        collective_stock_datetime = "beginningDatetime"
-
     validation.check_venue_can_be_linked_to_pricing_point(venue, pricing_point_id)
+    collective_stock_datetime = educational_models.CollectiveStock.pricingDatetimeField().name
     if not timestamp:
         timestamp = datetime.utcnow()
     current_link = models.VenuePricingPointLink.query.filter(
