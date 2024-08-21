@@ -6,9 +6,11 @@ import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import fullWaitIcon from 'icons/full-wait.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { formatDateTimeParts, isDateValid } from 'utils/date'
+import { localStorageAvailable } from 'utils/localStorageAvailable'
 
 import { Status } from '../Status/Status'
 import { SynchronizedProviderInformation } from '../SynchronisedProviderInfos/SynchronizedProviderInformation'
+import { LOCAL_STORAGE_USEFUL_INFORMATION_SUBMITTED } from '../UsefulInformationScreen/UsefulInformationScreen'
 
 import styles from './IndivualOfferLayout.module.scss'
 import { OfferStatusBanner } from './OfferStatusBanner/OfferStatusBanner'
@@ -33,6 +35,12 @@ export const IndivualOfferLayout = ({
   )
   const shouldDisplayActionOnStatus =
     mode !== OFFER_WIZARD_MODE.CREATION && offer && withStepper
+
+  const isUsefulInformationSubmitted =
+    localStorageAvailable() &&
+    !!localStorage.getItem(
+      `${LOCAL_STORAGE_USEFUL_INFORMATION_SUBMITTED}_${offer?.id}`
+    )
 
   return (
     <>
@@ -74,7 +82,11 @@ export const IndivualOfferLayout = ({
         />
       )}
 
-      {withStepper && <IndividualOfferNavigation />}
+      {withStepper && (
+        <IndividualOfferNavigation
+          isUsefulInformationSubmitted={isUsefulInformationSubmitted}
+        />
+      )}
 
       <div className={styles['content']}>{children}</div>
     </>
