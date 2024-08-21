@@ -255,19 +255,4 @@ describe('route CollectiveOffers', () => {
       })
     })
   })
-
-  describe('page navigation', () => {
-    it('should redirect to individual offers when user clicks on individual offers link', async () => {
-      vi.spyOn(api, 'getCollectiveOffers').mockResolvedValue(offersRecap)
-      await renderOffers()
-      screen.getByText('Rechercher')
-      const individualAudienceLink = screen.getByText('Offres individuelles', {
-        selector: 'span',
-      })
-
-      await userEvent.click(individualAudienceLink)
-
-      expect(screen.getByRole('heading', { name: 'Offres individuelles' }))
-    })
-  })
 })

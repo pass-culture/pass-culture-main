@@ -1,7 +1,6 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { api } from 'apiClient/api'
 import {
   CollectiveOfferResponseModel,
   CollectiveOfferStatus,
@@ -10,7 +9,7 @@ import {
 } from 'apiClient/v1'
 import {
   ALL_VENUES_OPTION,
-  DEFAULT_SEARCH_FILTERS,
+  DEFAULT_COLLECTIVE_SEARCH_FILTERS,
 } from 'core/Offers/constants'
 import * as useNotification from 'hooks/useNotification'
 import { collectiveOfferFactory } from 'utils/collectiveApiFactories'
@@ -87,7 +86,6 @@ vi.mock('utils/date', async () => {
 vi.mock('apiClient/api', () => ({
   api: {
     listOfferersNames: vi.fn().mockReturnValue({}),
-    patchAllCollectiveOffersActiveStatus: vi.fn(),
     deleteDraftOffers: vi.fn(),
   },
 }))
@@ -113,8 +111,8 @@ describe('CollectiveOffersScreen', () => {
       isLoading: false,
       offerer: { ...defaultGetOffererResponseModel },
       offers: offersRecap,
-      urlSearchFilters: DEFAULT_SEARCH_FILTERS,
-      initialSearchFilters: DEFAULT_SEARCH_FILTERS,
+      urlSearchFilters: DEFAULT_COLLECTIVE_SEARCH_FILTERS,
+      initialSearchFilters: DEFAULT_COLLECTIVE_SEARCH_FILTERS,
       redirectWithUrlFilters: vi.fn(),
       venues: proVenuesOptions,
       categories: categoriesAndSubcategories.categories.map(
@@ -226,7 +224,10 @@ describe('CollectiveOffersScreen', () => {
     const expectedSelectOptions = [
       { id: [proVenues[0].id], value: proVenues[0].name },
     ]
-    const filters = { ...DEFAULT_SEARCH_FILTERS, venueId: proVenues[0].id }
+    const filters = {
+      ...DEFAULT_COLLECTIVE_SEARCH_FILTERS,
+      venueId: proVenues[0].id,
+    }
 
     renderOffers({ ...props, initialSearchFilters: filters })
 
@@ -346,26 +347,6 @@ describe('CollectiveOffersScreen', () => {
       expect(mockNotifyError).toHaveBeenCalledWith(
         'Vous ne pouvez pas publier des offres collectives dont la date de réservation est passée'
       )
-    })
-
-    it('should display success message activate inactive collective offer', async () => {
-      const offers = [
-        collectiveOfferFactory({
-          isActive: false,
-          hasBookingLimitDatetimesPassed: false,
-        }),
-      ]
-
-      renderOffers({
-        ...props,
-
-        offers: offers,
-      })
-
-      await userEvent.click(screen.getByLabelText('Tout sélectionner'))
-      await userEvent.click(screen.getByText('Publier'))
-
-      expect(api.patchAllCollectiveOffersActiveStatus).toHaveBeenCalledTimes(1)
     })
 
     it('should check all validated offers checkboxes', async () => {

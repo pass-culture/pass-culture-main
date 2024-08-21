@@ -20,9 +20,9 @@ import {
   OFFER_TYPES,
   OFFER_WIZARD_MODE,
 } from 'core/Offers/constants'
+import { CollectiveOfferTypeEnum } from 'core/Offers/types'
 import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
-import { serializeApiFilters } from 'core/Offers/utils/serializer'
-import { Audience } from 'core/shared/types'
+import { serializeApiCollectiveFilters } from 'core/Offers/utils/serializer'
 import { useActiveFeature } from 'hooks/useActiveFeature'
 import { useIsNewInterfaceActive } from 'hooks/useIsNewInterfaceActive'
 import { useNotification } from 'hooks/useNotification'
@@ -124,7 +124,7 @@ export const OfferTypeScreen = (): JSX.Element => {
     ) {
       const apiFilters = {
         ...DEFAULT_COLLECTIVE_SEARCH_FILTERS,
-        collectiveOfferType: COLLECTIVE_OFFER_SUBTYPE.TEMPLATE.toLowerCase(),
+        collectiveOfferType: CollectiveOfferTypeEnum.TEMPLATE,
         offererId: queryOffererId ? queryOffererId : 'all',
         venueId: queryVenueId ? queryVenueId : 'all',
       }
@@ -139,7 +139,7 @@ export const OfferTypeScreen = (): JSX.Element => {
         periodEndingDate,
         collectiveOfferType,
         format,
-      } = serializeApiFilters(apiFilters, Audience.COLLECTIVE)
+      } = serializeApiCollectiveFilters(apiFilters)
 
       const templateOffersOnSelectedVenue = await api.getCollectiveOffers(
         nameOrIsbn,
