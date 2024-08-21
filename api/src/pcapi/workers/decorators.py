@@ -14,6 +14,8 @@ from pcapi.workers.logger import job_extra_description
 
 logger = logging.getLogger(__name__)
 
+FAILED_JOB_TTL = 60 * 60 * 24 * 7  # 1 week
+
 
 def job(queue: Queue) -> typing.Callable:
     def decorator(func: typing.Callable) -> typing.Callable:
@@ -55,7 +57,7 @@ def job(queue: Queue) -> typing.Callable:
 
         @wraps(job_func)
         def delay(*args: typing.Any, **kwargs: typing.Any) -> typing.Any:
-            current_job = queue.enqueue(job_func, *args, **kwargs)
+            current_job = queue.enqueue(job_func, failure_ttl=FAILED_JOB_TTL, *args, **kwargs)
             logger.info(
                 "Enqueue job %s",
                 func.__name__,
