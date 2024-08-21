@@ -7,7 +7,6 @@
 
   &-title {
     @include fonts.title3;
-    @include fonts.extra-bold;
 
     margin-top: rem.torem(62px);
   }
