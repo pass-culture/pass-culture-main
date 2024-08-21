@@ -79,6 +79,8 @@ const contextValue: IndividualOfferContextValues = {
   categories: [],
   subCategories: SUB_CATEGORIES,
   offer: null,
+  isEvent: null,
+  setIsEvent: vi.fn(),
 }
 const SuggestedSubWrappedWithFormik = (
   props: SuggestedSubcategoriesProps

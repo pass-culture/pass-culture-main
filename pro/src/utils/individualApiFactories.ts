@@ -181,6 +181,8 @@ export const individualOfferContextValuesFactory = (
     offer,
     categories: [],
     subCategories: [],
+    isEvent: null,
+    setIsEvent: () => {},
     ...customIndividualOfferContextValues,
   }
 }
