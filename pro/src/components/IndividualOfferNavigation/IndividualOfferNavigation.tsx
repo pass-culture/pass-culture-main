@@ -20,7 +20,7 @@ import { LabelBooking } from './LabelBooking/LabelBooking'
 
 export const IndividualOfferNavigation = () => {
   const isSplitOfferEnabled = useActiveFeature('WIP_SPLIT_OFFER')
-  const { offer } = useIndividualOfferContext()
+  const { offer, isEvent: isEventOfferContext } = useIndividualOfferContext()
   const activeStep = useActiveStep(Object.values(OFFER_WIZARD_STEP_IDS))
   const mode = useOfferWizardMode()
   const hasOffer = offer !== null
@@ -32,7 +32,8 @@ export const IndividualOfferNavigation = () => {
   const queryOfferType = queryParams.get('offer-type')
 
   const offerSubtype = getOfferSubtypeFromParam(queryOfferType)
-  const isEvent = offer?.isEvent || isOfferSubtypeEvent(offerSubtype)
+  const isEvent =
+    isEventOfferContext || offer?.isEvent || isOfferSubtypeEvent(offerSubtype)
 
   const steps: StepPattern[] = []
 
