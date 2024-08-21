@@ -210,12 +210,31 @@ class GetIndividualBookingListForm(BaseBookingListForm):
         )
 
 
+class MarkCancelCollectiveBookingForm(FlaskForm):
+    reason = fields.PCSelectWithPlaceholderValueField(
+        "Raison",
+        choices=utils.choices_from_enum(
+            educational_models.MarkCollectiveBookingCancellationReasons,
+            formatter=filters.format_booking_cancellation,
+        ),
+    )
+
+
 class CancelCollectiveBookingForm(FlaskForm):
     reason = fields.PCSelectWithPlaceholderValueField(
         "Raison",
         choices=utils.choices_from_enum(
             educational_models.CollectiveBookingCancellationReasons,
             formatter=filters.format_booking_cancellation,
+        ),
+    )
+
+
+class MarkCancelIndividualBookingForm(FlaskForm):
+    reason = fields.PCSelectWithPlaceholderValueField(
+        "Raison",
+        choices=utils.choices_from_enum(
+            bookings_models.MarkBookingCancellationReasons, formatter=filters.format_booking_cancellation
         ),
     )
 

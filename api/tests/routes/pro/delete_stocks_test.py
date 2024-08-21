@@ -1,8 +1,12 @@
 import pytest
 
+from pcapi.core.bookings import factories as booking_factory
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offer_models
+from pcapi.core.testing import override_features
+from pcapi.core.token import SecureToken
+from pcapi.core.token.serialization import ConnectAsInternalModel
 import pcapi.core.users.factories as users_factories
 
 
@@ -15,6 +19,8 @@ class Returns204Test:
         offerers_factories.UserOffererFactory(user=user, offerer=offer.venue.managingOfferer)
 
         batch_stocks = offers_factories.StockFactory.create_batch(3, offer=offer)
+        booking_1 = booking_factory.BookingFactory(stock=batch_stocks[0])
+        booking_2 = booking_factory.BookingFactory(stock=batch_stocks[1])
         data = {"ids_to_delete": [stock.id for stock in batch_stocks]}
 
         # When
@@ -22,8 +28,42 @@ class Returns204Test:
 
         # Then
         assert response.status_code == 204
-
         assert all(stock.isSoftDeleted for stock in offer_models.Stock.query.all())
+        assert booking_1.cancellationUser == user
+        assert booking_2.cancellationUser == user
+
+    @override_features(WIP_CONNECT_AS=True)
+    def test_delete_multiple_stocks_by_offer_id_with_connect_as(self, client):
+        # Given
+        offer = offers_factories.OfferFactory()
+        user = users_factories.ProFactory()
+        user_offerer = offerers_factories.UserOffererFactory(user=user, offerer=offer.venue.managingOfferer)
+
+        batch_stocks = offers_factories.StockFactory.create_batch(3, offer=offer)
+        booking_1 = booking_factory.BookingFactory(stock=batch_stocks[0])
+        booking_2 = booking_factory.BookingFactory(stock=batch_stocks[1])
+        data = {"ids_to_delete": [stock.id for stock in batch_stocks]}
+        admin = users_factories.AdminFactory(email="admin@example.com")
+        secure_token = SecureToken(
+            data=ConnectAsInternalModel(
+                redirect_link="https://example.com",
+                user_id=user_offerer.user.id,
+                internal_admin_email=admin.email,
+                internal_admin_id=admin.id,
+            ).dict(),
+        )
+        client = client.with_session_auth(admin.email)
+        response_token = client.get(f"/users/connect-as/{secure_token.token}")
+        assert response_token.status_code == 302
+
+        # When
+        response = client.with_session_auth(user.email).post(f"/offers/{offer.id}/stocks/delete", json=data)
+
+        # Then
+        assert response.status_code == 204
+        assert all(stock.isSoftDeleted for stock in offer_models.Stock.query.all())
+        assert booking_1.cancellationUser == admin
+        assert booking_2.cancellationUser == admin
 
     def test_delete_unaccessible_stocks(self, client):
         # Given

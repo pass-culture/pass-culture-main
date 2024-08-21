@@ -178,8 +178,36 @@ class ListCollectiveBookingsTest(GetEndpointHelper):
     @pytest.mark.parametrize(
         "cancellation_reason, expected_text",
         [
-            (educational_models.CollectiveBookingCancellationReasons.BACKOFFICE, "Annulée sur le backoffice par"),
+            (educational_models.CollectiveBookingCancellationReasons.OFFERER, "Annulée par l'acteur culturel"),
+            (
+                educational_models.CollectiveBookingCancellationReasons.OFFERER_CONNECT_AS,
+                "Annulée pour l'acteur culturel par Hercule Poirot via Connect As",
+            ),
+            (educational_models.CollectiveBookingCancellationReasons.BENEFICIARY, "Annulée par le bénéficiaire"),
+            (educational_models.CollectiveBookingCancellationReasons.EXPIRED, "Expirée"),
             (educational_models.CollectiveBookingCancellationReasons.FRAUD, "Fraude"),
+            (educational_models.CollectiveBookingCancellationReasons.REFUSED_BY_INSTITUTE, "Refusée par l'institution"),
+            (educational_models.CollectiveBookingCancellationReasons.FINANCE_INCIDENT, "Incident finance"),
+            (
+                educational_models.CollectiveBookingCancellationReasons.BACKOFFICE_EVENT_CANCELLED,
+                "Annulée sur le backoffice par Hercule Poirot pour annulation d’évènement",
+            ),
+            (
+                educational_models.CollectiveBookingCancellationReasons.BACKOFFICE_BENEFICIARY_REQUEST,
+                "Annulée sur le backoffice par Hercule Poirot sur demande du bénéficiaire",
+            ),
+            (
+                educational_models.CollectiveBookingCancellationReasons.BACKOFFICE_SURBOOKING,
+                "Annulée sur le backoffice par Hercule Poirot pour surbooking",
+            ),
+            (
+                educational_models.CollectiveBookingCancellationReasons.BACKOFFICE_OFFER_MODIFIED,
+                "Annulée sur le backoffice par Hercule Poirot pour modification d’offre",
+            ),
+            (
+                educational_models.CollectiveBookingCancellationReasons.BACKOFFICE_OFFER_ERROR,
+                "Annulée sur le backoffice par Hercule Poirot pour erreur offre",
+            ),
         ],
     )
     def test_list_cancelled_collective_booking_information(
@@ -192,9 +220,7 @@ class ListCollectiveBookingsTest(GetEndpointHelper):
         booking_id = booking.id
 
         with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(
-                url_for(self.endpoint, q=booking_id, cancellation_reason=["OFFERER", "FRAUD", "BACKOFFICE"])
-            )
+            response = authenticated_client.get(url_for(self.endpoint, q=booking_id))
             assert response.status_code == 200
 
         extra_data = html_parser.extract(response.data, tag="tr", class_="collapse accordion-collapse")[0]
@@ -204,10 +230,7 @@ class ListCollectiveBookingsTest(GetEndpointHelper):
         assert "Date limite de réservation" in extra_data
         assert "Date d'annulation" in extra_data
         assert "Raison de l'annulation" in extra_data
-        if expected_text == "Fraude":
-            assert expected_text in extra_data
-        else:
-            assert f"{expected_text} {legit_user.full_name}" in extra_data
+        assert expected_text in extra_data
 
     @pytest.mark.parametrize(
         "query_args",

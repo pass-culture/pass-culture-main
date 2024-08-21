@@ -91,7 +91,6 @@ vi.mock('utils/date', async () => {
 vi.mock('apiClient/api', () => ({
   api: {
     listOfferersNames: vi.fn().mockReturnValue({}),
-    patchAllCollectiveOffersActiveStatus: vi.fn(),
     deleteDraftOffers: vi.fn(),
   },
 }))

@@ -146,7 +146,7 @@ def list_collective_bookings() -> utils.BackofficeResponse:
         rows=bookings,
         form=form,
         mark_as_used_booking_form=empty_forms.EmptyForm(),
-        cancel_booking_form=booking_forms.CancelCollectiveBookingForm(),
+        cancel_booking_form=booking_forms.MarkCancelCollectiveBookingForm(),
         pro_visualisation_link=pro_visualisation_link,
     )
 

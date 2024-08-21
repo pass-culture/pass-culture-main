@@ -188,7 +188,7 @@ def list_individual_bookings() -> utils.BackofficeResponse:
         rows=bookings,
         form=form,
         mark_as_used_booking_form=empty_forms.EmptyForm(),
-        cancel_booking_form=booking_forms.CancelIndividualBookingForm(),
+        cancel_booking_form=booking_forms.MarkCancelIndividualBookingForm(),
         pro_visualisation_link=pro_visualisation_link,
     )
 

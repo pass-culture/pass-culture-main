@@ -226,59 +226,6 @@ def format_offerer_rejection_reason(rejection_reason: offerers_models.OffererRej
             return rejection_reason
 
 
-def format_booking_cancellation(
-    reason: bookings_models.BookingCancellationReasons | educational_models.CollectiveBookingCancellationReasons | None,
-    author: users_models.User | None = None,
-) -> str:
-    match reason:
-        case (
-            bookings_models.BookingCancellationReasons.OFFERER
-            | educational_models.CollectiveBookingCancellationReasons.OFFERER
-        ):
-            return "Annulée par l'acteur culturel"
-        case (
-            bookings_models.BookingCancellationReasons.BENEFICIARY
-            | educational_models.CollectiveBookingCancellationReasons.BENEFICIARY
-        ):
-            return "Annulée par le bénéficiaire"
-        case (
-            bookings_models.BookingCancellationReasons.EXPIRED
-            | educational_models.CollectiveBookingCancellationReasons.EXPIRED
-        ):
-            return "Expirée"
-        case (
-            bookings_models.BookingCancellationReasons.FRAUD
-            | educational_models.CollectiveBookingCancellationReasons.FRAUD
-        ):
-            return "Fraude"
-        case (
-            educational_models.CollectiveBookingCancellationReasons.FINANCE_INCIDENT
-            | bookings_models.BookingCancellationReasons.FINANCE_INCIDENT
-        ):
-            return "Incident finance"
-        case (
-            educational_models.CollectiveBookingCancellationReasons.BACKOFFICE
-            | bookings_models.BookingCancellationReasons.BACKOFFICE
-        ):
-            if author:
-                return Markup('Annulée sur le backoffice par <a href="{url}">{full_name}</a>').format(
-                    url=url_for("backoffice_web.bo_users.get_bo_user", user_id=author.id),
-                    full_name=author.full_name,
-                )
-            return "Annulée sur le backoffice"
-        case (
-            bookings_models.BookingCancellationReasons.REFUSED_BY_INSTITUTE
-            | educational_models.CollectiveBookingCancellationReasons.REFUSED_BY_INSTITUTE
-        ):
-            return "Refusée par l'institution"
-        case educational_models.CollectiveBookingCancellationReasons.REFUSED_BY_HEADMASTER:
-            return "Refusée par le chef d'établissement"
-        case None:
-            return ""
-        case _:
-            return reason.value
-
-
 def format_booking_status_long(booking: bookings_models.Booking | educational_models.CollectiveBooking) -> str:
     if booking.status in (
         bookings_models.BookingStatus.REIMBURSED,
@@ -343,6 +290,155 @@ def format_booking_status(
     if booking.status == educational_models.CollectiveBookingStatus.PENDING:
         return '<span class="text-nowrap">Pré-réservée</span>' if with_badge else "Pré-réservée"
     return "Réservée"
+
+
+def format_booking_cancellation(
+    reason: bookings_models.BookingCancellationReasons | educational_models.CollectiveBookingCancellationReasons | None,
+    author: users_models.User | None = None,
+) -> str:
+    match reason:
+        case (
+            bookings_models.BookingCancellationReasons.OFFERER
+            | educational_models.CollectiveBookingCancellationReasons.OFFERER
+        ):
+            if author:
+                return Markup('Annulée par l\'acteur culturel (<a href="{url}">{email}</a>)').format(
+                    url=url_for("backoffice_web.bo_users.get_bo_user", user_id=author.id),
+                    email=author.email,
+                )
+            return "Annulée par l'acteur culturel"
+        case (
+            bookings_models.BookingCancellationReasons.OFFERER_CONNECT_AS
+            | educational_models.CollectiveBookingCancellationReasons.OFFERER_CONNECT_AS
+        ):
+            if author:
+                return Markup(
+                    'Annulée pour l\'acteur culturel par <a href="{url}">{full_name}</a> via Connect As'
+                ).format(
+                    url=url_for("backoffice_web.bo_users.get_bo_user", user_id=author.id),
+                    full_name=author.full_name,
+                )
+            return "Annulée pour l'acteur culturel via Connect_As"
+        case (
+            bookings_models.BookingCancellationReasons.BENEFICIARY
+            | bookings_models.MarkBookingCancellationReasons.BENEFICIARY
+            | educational_models.CollectiveBookingCancellationReasons.BENEFICIARY
+            | educational_models.MarkCollectiveBookingCancellationReasons.BENEFICIARY
+        ):
+            return "Annulée par le bénéficiaire"
+        case (
+            bookings_models.BookingCancellationReasons.EXPIRED
+            | bookings_models.MarkBookingCancellationReasons.EXPIRED
+            | educational_models.CollectiveBookingCancellationReasons.EXPIRED
+            | educational_models.MarkCollectiveBookingCancellationReasons.EXPIRED
+        ):
+            return "Expirée"
+        case (
+            bookings_models.BookingCancellationReasons.FRAUD
+            | bookings_models.MarkBookingCancellationReasons.FRAUD
+            | educational_models.CollectiveBookingCancellationReasons.FRAUD
+            | educational_models.MarkCollectiveBookingCancellationReasons.FRAUD
+        ):
+            return "Fraude"
+        case (
+            educational_models.CollectiveBookingCancellationReasons.FINANCE_INCIDENT
+            | educational_models.MarkCollectiveBookingCancellationReasons.FINANCE_INCIDENT
+            | bookings_models.MarkBookingCancellationReasons.FINANCE_INCIDENT
+            | bookings_models.BookingCancellationReasons.FINANCE_INCIDENT
+        ):
+            return "Incident finance"
+        case (
+            educational_models.CollectiveBookingCancellationReasons.BACKOFFICE
+            | educational_models.MarkCollectiveBookingCancellationReasons.BACKOFFICE
+            | bookings_models.MarkBookingCancellationReasons.BACKOFFICE
+            | bookings_models.BookingCancellationReasons.BACKOFFICE
+        ):
+            if author:
+                return Markup('Annulée sur le backoffice par <a href="{url}">{full_name}</a>').format(
+                    url=url_for("backoffice_web.bo_users.get_bo_user", user_id=author.id),
+                    full_name=author.full_name,
+                )
+            return "Annulée sur le backoffice"
+        case (
+            educational_models.CollectiveBookingCancellationReasons.BACKOFFICE_EVENT_CANCELLED
+            | educational_models.MarkCollectiveBookingCancellationReasons.BACKOFFICE_EVENT_CANCELLED
+            | bookings_models.MarkBookingCancellationReasons.BACKOFFICE_EVENT_CANCELLED
+            | bookings_models.BookingCancellationReasons.BACKOFFICE_EVENT_CANCELLED
+        ):
+            if author:
+                return Markup(
+                    'Annulée sur le backoffice par <a href="{url}">{full_name}</a> pour annulation d’évènement'
+                ).format(
+                    url=url_for("backoffice_web.bo_users.get_bo_user", user_id=author.id),
+                    full_name=author.full_name,
+                )
+            return "Annulée sur le backoffice pour annulation d’évènement"
+        case (
+            educational_models.CollectiveBookingCancellationReasons.BACKOFFICE_SURBOOKING
+            | educational_models.MarkCollectiveBookingCancellationReasons.BACKOFFICE_SURBOOKING
+            | bookings_models.MarkBookingCancellationReasons.BACKOFFICE_SURBOOKING
+            | bookings_models.BookingCancellationReasons.BACKOFFICE_SURBOOKING
+        ):
+            if author:
+                return Markup('Annulée sur le backoffice par <a href="{url}">{full_name}</a> pour surbooking').format(
+                    url=url_for("backoffice_web.bo_users.get_bo_user", user_id=author.id),
+                    full_name=author.full_name,
+                )
+            return "Annulée sur le backoffice pour surbooking"
+        case (
+            educational_models.CollectiveBookingCancellationReasons.BACKOFFICE_BENEFICIARY_REQUEST
+            | educational_models.MarkCollectiveBookingCancellationReasons.BACKOFFICE_BENEFICIARY_REQUEST
+            | bookings_models.MarkBookingCancellationReasons.BACKOFFICE_BENEFICIARY_REQUEST
+            | bookings_models.BookingCancellationReasons.BACKOFFICE_BENEFICIARY_REQUEST
+        ):
+            if author:
+                return Markup(
+                    'Annulée sur le backoffice par <a href="{url}">{full_name}</a> sur demande du bénéficiaire'
+                ).format(
+                    url=url_for("backoffice_web.bo_users.get_bo_user", user_id=author.id),
+                    full_name=author.full_name,
+                )
+            return "Annulée sur le backoffice sur demande du bénéficiaire"
+        case (
+            educational_models.CollectiveBookingCancellationReasons.BACKOFFICE_OFFER_MODIFIED
+            | educational_models.MarkCollectiveBookingCancellationReasons.BACKOFFICE_OFFER_MODIFIED
+            | bookings_models.MarkBookingCancellationReasons.BACKOFFICE_OFFER_MODIFIED
+            | bookings_models.BookingCancellationReasons.BACKOFFICE_OFFER_MODIFIED
+        ):
+            if author:
+                return Markup(
+                    'Annulée sur le backoffice par <a href="{url}">{full_name}</a> pour modification d’offre'
+                ).format(
+                    url=url_for("backoffice_web.bo_users.get_bo_user", user_id=author.id),
+                    full_name=author.full_name,
+                )
+            return "Annulée sur le backoffice pour modification d’offre"
+        case (
+            educational_models.CollectiveBookingCancellationReasons.BACKOFFICE_OFFER_ERROR
+            | educational_models.MarkCollectiveBookingCancellationReasons.BACKOFFICE_OFFER_ERROR
+            | bookings_models.MarkBookingCancellationReasons.BACKOFFICE_OFFER_ERROR
+            | bookings_models.BookingCancellationReasons.BACKOFFICE_OFFER_ERROR
+        ):
+            if author:
+                return Markup('Annulée sur le backoffice par <a href="{url}">{full_name}</a> pour erreur offre').format(
+                    url=url_for("backoffice_web.bo_users.get_bo_user", user_id=author.id),
+                    full_name=author.full_name,
+                )
+            return "Annulée sur le backoffice pour erreur offre"
+
+        case (
+            bookings_models.BookingCancellationReasons.REFUSED_BY_INSTITUTE
+            | bookings_models.MarkBookingCancellationReasons.REFUSED_BY_INSTITUTE
+            | educational_models.CollectiveBookingCancellationReasons.REFUSED_BY_INSTITUTE
+            | educational_models.MarkCollectiveBookingCancellationReasons.REFUSED_BY_INSTITUTE
+        ):
+            return "Refusée par l'institution"
+        case educational_models.CollectiveBookingCancellationReasons.REFUSED_BY_HEADMASTER:
+            return "Refusée par le chef d'établissement"
+        case None:
+            return ""
+        case _:
+            return reason.value
 
 
 def format_validation_status(status: validation_status_mixin.ValidationStatus) -> str:

@@ -613,7 +613,10 @@ def _cancel_external_booking(booking: Booking, stock: Stock) -> None:
 
 
 def _cancel_bookings_from_stock(
-    stock: offers_models.Stock, reason: BookingCancellationReasons, one_side_cancellation: bool = False
+    stock: offers_models.Stock,
+    reason: BookingCancellationReasons,
+    one_side_cancellation: bool = False,
+    author_id: int or None = None,
 ) -> list[Booking]:
     """
     Cancel multiple bookings and update the users' credit information on Batch.
@@ -626,6 +629,7 @@ def _cancel_bookings_from_stock(
             reason,
             cancel_even_if_used=typing.cast(bool, stock.offer.isEvent),
             one_side_cancellation=one_side_cancellation,
+            author_id=author_id,
         ):
             deleted_bookings.append(booking)
 
@@ -647,8 +651,14 @@ def cancel_booking_by_offerer(booking: Booking) -> None:
     user_emails_job.send_booking_cancellation_emails_to_user_and_offerer_job.delay(booking.id)
 
 
-def cancel_bookings_from_stock_by_offerer(stock: offers_models.Stock) -> list[Booking]:
-    return _cancel_bookings_from_stock(stock, BookingCancellationReasons.OFFERER, one_side_cancellation=True)
+def cancel_bookings_from_stock_by_offerer(
+    stock: offers_models.Stock, author_id: int or None = None, user_connect_as: bool or None = None
+) -> list[Booking]:
+    if user_connect_as:
+        cancellation_reason = BookingCancellationReasons.OFFERER_CONNECT_AS
+    else:
+        cancellation_reason = BookingCancellationReasons.OFFERER
+    return _cancel_bookings_from_stock(stock, cancellation_reason, one_side_cancellation=True, author_id=author_id)
 
 
 def cancel_bookings_from_rejected_offer(offer: offers_models.Offer) -> list[Booking]:

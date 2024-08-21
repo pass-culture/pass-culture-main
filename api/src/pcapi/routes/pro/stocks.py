@@ -221,8 +221,9 @@ def delete_stock(stock_id: int) -> serialization.StockIdResponseModel:
 
     offerer_id = stock.offer.venue.managingOffererId
     check_user_has_access_to_offerer(current_user, offerer_id)
+    actual_user_id, user_connect_as = offers_api.find_real_user_depending_on_if_connect_as(current_user)
     try:
-        offers_api.delete_stock(stock)
+        offers_api.delete_stock(stock, actual_user_id, user_connect_as)
     except offers_exceptions.OfferEditionBaseException as error:
         raise ApiErrors(error.errors, status_code=400)
     return serialization.StockIdResponseModel.from_orm(stock)

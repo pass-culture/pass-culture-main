@@ -2,6 +2,9 @@ from pcapi.core.bookings.factories import BookingFactory
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import OfferValidationStatus
+from pcapi.core.testing import override_features
+from pcapi.core.token import SecureToken
+from pcapi.core.token.serialization import ConnectAsInternalModel
 import pcapi.core.users.factories as users_factories
 from pcapi.notifications.push import testing as push_testing
 
@@ -10,7 +13,7 @@ class Returns200Test:
     def when_current_user_has_rights_on_offer(self, client, db_session):
         # given
         offer = offers_factories.OfferFactory()
-        offerers_factories.UserOffererFactory(
+        user_offerer = offerers_factories.UserOffererFactory(
             user__email="pro@example.com",
             offerer=offer.venue.managingOfferer,
         )
@@ -24,6 +27,7 @@ class Returns200Test:
         assert response.status_code == 200
         assert response.json == {"id": stock.id}
         assert stock.isSoftDeleted
+        assert stock.bookings[0].cancellationUser == user_offerer.user
         assert push_testing.requests[-1] == {
             "group_id": "Cancel_booking",
             "message": {
@@ -33,6 +37,38 @@ class Returns200Test:
             "user_ids": [booking.userId],
             "can_be_asynchronously_retried": False,
         }
+
+    @override_features(WIP_CONNECT_AS=True)
+    def when_current_user_is_connect_as(self, client, db_session):
+        # given
+        offer = offers_factories.OfferFactory()
+        user_offerer = offerers_factories.UserOffererFactory(
+            user__email="pro@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+        stock = offers_factories.StockFactory(offer=offer)
+        expected_redirect_link = "https://example.com"
+        admin = users_factories.AdminFactory(email="admin@example.com")
+        secure_token = SecureToken(
+            data=ConnectAsInternalModel(
+                redirect_link=expected_redirect_link,
+                user_id=user_offerer.user.id,
+                internal_admin_email=admin.email,
+                internal_admin_id=admin.id,
+            ).dict(),
+        )
+        client = client.with_session_auth(admin.email)
+        response_token = client.get(f"/users/connect-as/{secure_token.token}")
+        assert response_token.status_code == 302
+
+        # when
+        response = client.delete(f"/stocks/{stock.id}")
+
+        # then
+        assert response.status_code == 200
+        assert response.json == {"id": stock.id}
+        assert stock.isSoftDeleted
+        assert stock.bookings[0].cancellationUser == admin
 
 
 class Returns400Test:

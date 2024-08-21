@@ -968,12 +968,12 @@ def _invalidate_bookings(bookings: list[bookings_models.Booking]) -> list[bookin
     return bookings
 
 
-def _delete_stock(stock: models.Stock) -> None:
+def _delete_stock(stock: models.Stock, author_id: int or None = None, user_connect_as: bool or None = None) -> None:
     stock.isSoftDeleted = True
     repository.save(stock)
 
     # the algolia sync for the stock will happen within this function
-    cancelled_bookings = bookings_api.cancel_bookings_from_stock_by_offerer(stock)
+    cancelled_bookings = bookings_api.cancel_bookings_from_stock_by_offerer(stock, author_id, user_connect_as)
 
     logger.info(
         "Deleted stock and cancelled its bookings",
@@ -991,9 +991,9 @@ def _delete_stock(stock: models.Stock) -> None:
     )
 
 
-def delete_stock(stock: models.Stock) -> None:
+def delete_stock(stock: models.Stock, author_id: int or None = None, user_connect_as: bool or None = None) -> None:
     validation.check_stock_is_deletable(stock)
-    _delete_stock(stock)
+    _delete_stock(stock, author_id, user_connect_as)
 
 
 def create_mediation(
@@ -1625,13 +1625,15 @@ def batch_delete_draft_offers(query: BaseQuery) -> None:
     db.session.commit()
 
 
-def batch_delete_stocks(stocks_to_delete: list[models.Stock]) -> None:
+def batch_delete_stocks(
+    stocks_to_delete: list[models.Stock], author_id: int or None = None, user_connect_as: bool or None = None
+) -> None:
     # We want to check that all stocks can be deleted first
     for stock in stocks_to_delete:
         validation.check_stock_is_deletable(stock)
 
     for stock in stocks_to_delete:
-        _delete_stock(stock)
+        _delete_stock(stock, author_id, user_connect_as)
 
 
 def get_or_create_label(label: str, venue: offerers_models.Venue) -> models.PriceCategoryLabel:
@@ -2117,3 +2119,11 @@ def _update_product_extra_data(product: offers_models.Product, movie: offers_mod
         extra_data["visa"] = movie.visa
 
     product.extraData.update((key, value) for key, value in extra_data.items() if value is not None)  # type: ignore[typeddict-item]
+
+
+def find_real_user_depending_on_if_connect_as(user: users_models.User):
+    if FeatureToggle.WIP_CONNECT_AS.is_active() and user.real_user.id != user.id:
+        user_connect_as = True
+        return user.real_user.id, user_connect_as
+    user_connect_as = False
+    return user.id, user_connect_as
