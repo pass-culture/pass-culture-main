@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { FC } from 'react'
 import { generatePath, useLocation } from 'react-router-dom'
 
 import { Step, StepPattern, Stepper } from 'components/Stepper/Stepper'
@@ -18,7 +18,13 @@ import { OFFER_WIZARD_STEP_IDS } from './constants'
 import styles from './IndividualOfferNavigation.module.scss'
 import { LabelBooking } from './LabelBooking/LabelBooking'
 
-export const IndividualOfferNavigation = () => {
+interface IndividualOfferNavigationProps {
+  isUsefulInformationSubmitted: boolean
+}
+
+export const IndividualOfferNavigation: FC<IndividualOfferNavigationProps> = ({
+  isUsefulInformationSubmitted,
+}) => {
   const isSplitOfferEnabled = useActiveFeature('WIP_SPLIT_OFFER')
   const { offer } = useIndividualOfferContext()
   const activeStep = useActiveStep(Object.values(OFFER_WIZARD_STEP_IDS))
@@ -93,7 +99,8 @@ export const IndividualOfferNavigation = () => {
           step: OFFER_WIZARD_STEP_IDS.TARIFS,
           mode,
         }),
-        isActive: hasOffer,
+        isActive:
+          (hasOffer && isUsefulInformationSubmitted) || hasPriceCategories,
       },
       {
         id: OFFER_WIZARD_STEP_IDS.STOCKS,
@@ -113,7 +120,8 @@ export const IndividualOfferNavigation = () => {
         step: OFFER_WIZARD_STEP_IDS.STOCKS,
         mode,
       }),
-      isActive: hasOffer,
+      isActive:
+        (hasOffer && isUsefulInformationSubmitted) || Boolean(offer?.hasStocks),
     })
   }
 

@@ -26,6 +26,7 @@ import { useNotification } from 'hooks/useNotification'
 import { useOfferWizardMode } from 'hooks/useOfferWizardMode'
 import strokeMailIcon from 'icons/stroke-mail.svg'
 import { getOfferConditionalFields } from 'utils/getOfferConditionalFields'
+import { localStorageAvailable } from 'utils/localStorageAvailable'
 
 import { ActionBar } from '../ActionBar/ActionBar'
 import { serializePatchOffer } from '../InformationsScreen/serializePatchOffer'
@@ -34,6 +35,9 @@ import { UsefulInformationFormValues } from './types'
 import { UsefulInformationForm } from './UsefulInformationForm'
 import { setDefaultInitialValuesFromOffer } from './utils'
 import { getValidationSchema } from './validationSchema'
+
+export const LOCAL_STORAGE_USEFUL_INFORMATION_SUBMITTED =
+  'USEFUL_INFORMATION_SUBMITTED'
 
 export type UsefulInformationScreenProps = {
   offer: GetIndividualOfferResponseModel
@@ -57,6 +61,13 @@ export const UsefulInformationScreen = ({
   const isEvent = subCategories.find(
     (subcategory) => subcategory.id === offer.subcategoryId
   )?.isEvent
+
+  const addToLocalStorage = () => {
+    const keyName = `${LOCAL_STORAGE_USEFUL_INFORMATION_SUBMITTED}_${offer.id}`
+    if (localStorageAvailable() && localStorage.getItem(keyName) === null) {
+      localStorage.setItem(keyName, true.toString())
+    }
+  }
 
   const onSubmit = async (
     formValues: UsefulInformationFormValues
@@ -111,6 +122,8 @@ export const UsefulInformationScreen = ({
         offerType: 'individual',
         subcategoryId: offer.subcategoryId,
       })
+
+      addToLocalStorage()
 
       navigate(
         getIndividualOfferUrl({
