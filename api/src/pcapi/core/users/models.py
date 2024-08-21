@@ -13,6 +13,7 @@ import typing
 from uuid import UUID
 
 import sqlalchemy as sa
+from sqlalchemy import func
 from sqlalchemy import orm
 from sqlalchemy.dialects import postgresql
 from sqlalchemy.ext.hybrid import hybrid_property
@@ -1021,3 +1022,11 @@ class GdprUserDataExtract(PcObject, Base, Model):
     @property
     def is_expired(self) -> bool:
         return datetime.utcnow() > self.expirationDate
+
+
+class GdprUserAnonymization(PcObject, Base, Model):
+    __tablename__ = "gdpr_user_anonymization"
+
+    dateCreated: datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow, server_default=func.now())
+    userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=False)
+    user: orm.Mapped[User] = orm.relationship(User, foreign_keys=[userId])
