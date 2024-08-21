@@ -48,6 +48,10 @@ def custom_traces_sampler(sampling_context: dict) -> float:
     """
     path = sampling_context.get("wsgi_environ", {}).get("PATH_INFO")
 
+    # for instance : worker requests
+    if not path or not isinstance(path, str):
+        return LOWEST_SAMPLE_RATE
+
     match path:
         # monitoring endpoints
         case "/health/api":
