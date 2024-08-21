@@ -34,7 +34,7 @@ export function SuggestedSubcategories({
 }: SuggestedSubcategoriesProps) {
   const [prevSelectedSubCategory, setPrevSelectedFromPrevSuggestions] =
     useState<string | null>(null)
-  const { subCategories } = useIndividualOfferContext()
+  const { subCategories, setIsEvent } = useIndividualOfferContext()
   const {
     values: {
       categoryId,
@@ -91,6 +91,7 @@ export function SuggestedSubcategories({
         subcategories: subCategories,
         setFieldValue,
         subcategoryConditionalFields,
+        setIsEvent,
       })
     } else {
       const { categoryId, subcategoryId } = DEFAULT_DETAILS_FORM_VALUES
@@ -173,6 +174,7 @@ export function SuggestedSubcategories({
                   setFieldValue,
                   onSubcategoryChange,
                   subcategoryConditionalFields,
+                  setIsEvent,
                 })
                 handleChange(event)
               }}
@@ -196,6 +198,7 @@ export function SuggestedSubcategories({
                     subcategories: filteredSubcategories,
                     setFieldValue,
                     subcategoryConditionalFields,
+                    setIsEvent,
                   })
                   handleChange(event)
                 }}

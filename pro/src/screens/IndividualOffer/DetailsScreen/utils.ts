@@ -86,6 +86,7 @@ type OnCategoryChangeProps = {
   ) => Promise<void | FormikErrors<DetailsFormValues>>
   onSubcategoryChange: (p: OnSubcategoryChangeProps) => Promise<void>
   subcategoryConditionalFields: string[]
+  setIsEvent?: (isEvent: boolean | null) => void
 }
 
 export const onCategoryChange = async ({
@@ -95,6 +96,7 @@ export const onCategoryChange = async ({
   setFieldValue,
   onSubcategoryChange,
   subcategoryConditionalFields,
+  setIsEvent,
 }: OnCategoryChangeProps) => {
   if (readOnlyFields.includes('subcategoryId')) {
     return
@@ -113,6 +115,7 @@ export const onCategoryChange = async ({
     subcategories,
     setFieldValue,
     subcategoryConditionalFields,
+    setIsEvent,
   })
 }
 
@@ -125,6 +128,7 @@ type OnSubcategoryChangeProps = {
     shouldValidate?: boolean | undefined
   ) => Promise<void | FormikErrors<DetailsFormValues>>
   subcategoryConditionalFields: string[]
+  setIsEvent?: (isEvent: boolean | null) => void
 }
 
 export const onSubcategoryChange = async ({
@@ -132,10 +136,15 @@ export const onSubcategoryChange = async ({
   subcategories,
   setFieldValue,
   subcategoryConditionalFields,
+  setIsEvent,
 }: OnSubcategoryChangeProps) => {
   const newSubcategory = subcategories.find(
     (subcategory) => subcategory.id === newSubCategoryId
   )
+
+  if (setIsEvent) {
+    setIsEvent(newSubcategory?.isEvent ?? null)
+  }
 
   const { subcategoryConditionalFields: newSubcategoryConditionalFields } =
     buildSubcategoryConditonalFields(newSubcategory)

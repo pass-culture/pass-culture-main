@@ -1,4 +1,4 @@
-import React, { createContext, useContext } from 'react'
+import React, { createContext, useContext, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import useSWR from 'swr'
 
@@ -18,6 +18,8 @@ export interface IndividualOfferContextValues {
   offer: GetIndividualOfferWithAddressResponseModel | null
   categories: CategoryResponseModel[]
   subCategories: SubcategoryResponseModel[]
+  isEvent: boolean | null
+  setIsEvent: (isEvent: boolean | null) => void
 }
 
 export const IndividualOfferContext =
@@ -25,6 +27,8 @@ export const IndividualOfferContext =
     offer: null,
     categories: [],
     subCategories: [],
+    isEvent: null,
+    setIsEvent: () => {},
   })
 
 export const useIndividualOfferContext = () => {
@@ -38,6 +42,7 @@ interface IndividualOfferContextProviderProps {
 export const IndividualOfferContextProvider = ({
   children,
 }: IndividualOfferContextProviderProps) => {
+  const [isEvent, setIsEvent] = useState<boolean | null>(null)
   const { offerId } = useParams<{
     offerId: string
   }>()
@@ -64,8 +69,10 @@ export const IndividualOfferContextProvider = ({
     <IndividualOfferContext.Provider
       value={{
         offer: offer ?? null,
+        isEvent,
         categories: categoriesQuery.data.categories,
         subCategories: categoriesQuery.data.subcategories,
+        setIsEvent,
       }}
     >
       {children}
