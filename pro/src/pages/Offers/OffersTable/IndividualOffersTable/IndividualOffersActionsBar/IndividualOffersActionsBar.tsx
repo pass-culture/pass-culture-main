@@ -201,9 +201,7 @@ export const IndividualOffersActionsBar = ({
 
       <ActionsBarSticky>
         <ActionsBarSticky.Left>
-          <span role="status">
-            {computeSelectedOffersLabel(selectedOfferIds.length)}
-          </span>
+          {computeSelectedOffersLabel(selectedOfferIds.length)}
         </ActionsBarSticky.Left>
         <ActionsBarSticky.Right>
           <Button onClick={handleClose} variant={ButtonVariant.SECONDARY}>

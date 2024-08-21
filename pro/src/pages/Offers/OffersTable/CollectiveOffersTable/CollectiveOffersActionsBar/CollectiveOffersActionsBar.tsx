@@ -291,9 +291,7 @@ export function CollectiveOffersActionsBar({
 
       <ActionsBarSticky>
         <ActionsBarSticky.Left>
-          <span role="status">
-            {computeSelectedOffersLabel(selectedOffers.length)}
-          </span>
+          {computeSelectedOffersLabel(selectedOffers.length)}
         </ActionsBarSticky.Left>
         <ActionsBarSticky.Right>
           <Button onClick={handleClose} variant={ButtonVariant.SECONDARY}>

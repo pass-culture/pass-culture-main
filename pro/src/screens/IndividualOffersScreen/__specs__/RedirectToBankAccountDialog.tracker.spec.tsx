@@ -1,13 +1,13 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import React from 'react'
 
 import * as useAnalytics from 'app/App/analytics/firebase'
+import { renderWithProviders } from 'utils/renderWithProviders'
+
 import {
   RedirectToBankAccountDialog,
   RedirectToBankAccountDialogProps,
-} from 'screens/Offers/RedirectToBankAccountDialog'
-import { renderWithProviders } from 'utils/renderWithProviders'
+} from '../RedirectToBankAccountDialog'
 
 const mockLogEvent = vi.fn()
 const renderDialog = (props: RedirectToBankAccountDialogProps) => {
