@@ -565,6 +565,7 @@ def unsuspend_account(
     suspension_reason = user.suspension_reason
     user.isActive = True
     db.session.add(user)
+    users_models.GdprUserAnonymization.query.filter(users_models.GdprUserAnonymization.userId == user.id).delete()
 
     history_api.add_action(history_models.ActionType.USER_UNSUSPENDED, author=actor, user=user, comment=comment)
 
