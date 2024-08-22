@@ -121,7 +121,6 @@ class NativeCategory(Enum):
     AUTRES_MEDIAS = "Autres médias"
     BIBLIOTHEQUE_MEDIATHEQUE = "Abonnements aux médiathèques et bibliothèques"
     CARTES_CINEMA = "Cartes cinéma"
-    CARTES_JEUNES = "Cartes jeunes"
     CD = "CD"
     CONCERTS_EN_LIGNE = "Concerts en ligne"
     CONCERTS_EVENEMENTS = "Concerts, évènements"
@@ -902,7 +901,7 @@ FESTIVAL_LIVRE = Subcategory(
 CARTE_JEUNES = Subcategory(
     id="CARTE_JEUNES",
     category=categories.CARTE_JEUNES,
-    native_category=NativeCategory.CARTES_JEUNES,
+    native_category=None,
     pro_label="Carte jeunes",
     app_label="Carte jeunes",
     search_group_name=SearchGroups.CARTES_JEUNES.name,
