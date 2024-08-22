@@ -180,6 +180,15 @@ export const DetailsScreen = ({ venues }: DetailsScreenProps): JSX.Element => {
         </FormLayout>
         <ActionBar
           onClickPrevious={handlePreviousStepOrBackToReadOnly}
+          onClickNext={async () => {
+            if (
+              areSuggestedCategoriesEnabled &&
+              formik.values.venueId !== '' &&
+              formik.values.suggestedSubcategory === ''
+            ) {
+              await formik.setFieldValue('suggestedSubcategory', 'OTHER')
+            }
+          }}
           step={OFFER_WIZARD_STEP_IDS.DETAILS}
           isDisabled={
             formik.isSubmitting ||
