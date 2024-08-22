@@ -184,8 +184,13 @@ export const OfferTypeScreen = (): JSX.Element => {
 
   const hasNotChosenOfferType = values.individualOfferSubtype === ''
 
+  const areSuggestedCategoriesEnabled = useActiveFeature(
+    'WIP_SUGGESTED_SUBCATEGORIES'
+  )
   const isDisableForIndividual =
-    values.offerType === OFFER_TYPES.INDIVIDUAL_OR_DUO && hasNotChosenOfferType
+    values.offerType === OFFER_TYPES.INDIVIDUAL_OR_DUO &&
+    hasNotChosenOfferType &&
+    !areSuggestedCategoriesEnabled
 
   return (
     <div className={styles['offer-type-container']}>
@@ -216,9 +221,10 @@ export const OfferTypeScreen = (): JSX.Element => {
               </FormLayout.Row>
             </FormLayout.Section>
 
-            {values.offerType === OFFER_TYPES.INDIVIDUAL_OR_DUO && (
-              <IndividualOfferType />
-            )}
+            {!areSuggestedCategoriesEnabled &&
+              values.offerType === OFFER_TYPES.INDIVIDUAL_OR_DUO && (
+                <IndividualOfferType />
+              )}
 
             {values.offerType === OFFER_TYPES.EDUCATIONAL &&
               (offererQuery.isLoading ? (
