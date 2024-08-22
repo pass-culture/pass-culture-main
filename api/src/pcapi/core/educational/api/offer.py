@@ -762,7 +762,14 @@ def get_offer_coordinates(offer: AnyCollectiveOffer) -> tuple[float | Decimal, f
 
     # we should return a coherent value: either latitude AND
     # longitude or empty coordinates.
-    latitude, longitude = venue.latitude, venue.longitude
+    if feature.FeatureToggle.WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE.is_active():
+        if venue.offererAddress is not None:
+            latitude = venue.offererAddress.address.latitude
+            longitude = venue.offererAddress.address.longitude
+        else:
+            latitude, longitude = None, None
+    else:
+        latitude, longitude = venue.latitude, venue.longitude
     if not latitude or not longitude:
         return (None, None)
 
