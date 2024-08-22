@@ -26,6 +26,7 @@ from pcapi.core.providers import titelive_gtl
 from pcapi.core.search.backends import base
 from pcapi.domain.music_types import MUSIC_TYPES_LABEL_BY_CODE
 from pcapi.domain.show_types import SHOW_TYPES_LABEL_BY_CODE
+from pcapi.models.feature import FeatureToggle
 from pcapi.utils import requests
 import pcapi.utils.date as date_utils
 from pcapi.utils.regions import get_department_code_from_city_code
@@ -507,6 +508,22 @@ class AlgoliaBackend(base.SearchBackend):
             gtl_code_3 = gtl_id[:6] + "00" * 1
             gtl_code_4 = gtl_id
 
+        address = None
+        city = None
+        department_code = None
+        postal_code = None
+        if FeatureToggle.WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE.is_active():
+            if venue.offererAddress is not None:
+                address = venue.offererAddress.address.street
+                city = venue.offererAddress.address.city
+                department_code = venue.offererAddress.address.departmentCode
+                postal_code = venue.offererAddress.address.postalCode
+        else:
+            address = venue.street
+            city = venue.city
+            department_code = venue.departementCode
+            postal_code = venue.postalCode
+
         # If you update this dictionary, please check whether you need to
         # also update `core.offerers.api.VENUE_ALGOLIA_INDEXED_FIELDS`.
         object_to_index: dict[str, typing.Any] = {
@@ -556,17 +573,17 @@ class AlgoliaBackend(base.SearchBackend):
                 "name": offerer.name,
             },
             "venue": {
-                "address": venue.street,
                 "banner_url": venue.bannerUrl,
-                "city": venue.city,
-                "departmentCode": venue.departementCode,
+                "address": address,
+                "city": city,
+                "departmentCode": department_code,
+                "postalCode": postal_code,
                 "id": venue.id,
                 "isAudioDisabilityCompliant": venue.audioDisabilityCompliant,
                 "isMentalDisabilityCompliant": venue.mentalDisabilityCompliant,
                 "isMotorDisabilityCompliant": venue.motorDisabilityCompliant,
                 "isVisualDisabilityCompliant": venue.visualDisabilityCompliant,
                 "name": venue.name,
-                "postalCode": venue.postalCode,
                 "publicName": venue.publicName,
                 "venue_type": venue.venueTypeCode.name,
             },
@@ -597,9 +614,22 @@ class AlgoliaBackend(base.SearchBackend):
         social_medias = getattr(venue.contact, "social_medias", {})
         has_at_least_one_bookable_offer = offerers_api.has_venue_at_least_one_bookable_offer(venue)
 
+        address = None
+        city = None
+        postalCode = None
+        if FeatureToggle.WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE.is_active():
+            if venue.offererAddress is not None:
+                address = venue.offererAddress.address.street
+                city = venue.offererAddress.address.city
+                postalCode = venue.offererAddress.address.postalCode
+        else:
+            address = venue.street
+            city = venue.city
+            postalCode = venue.postalCode
+
         return {
             "objectID": venue.id,
-            "city": venue.city,
+            "city": city,
             "name": venue.publicName or venue.name,
             "offerer_name": venue.managingOfferer.name,
             "venue_type": venue.venueTypeCode.name,
@@ -620,8 +650,8 @@ class AlgoliaBackend(base.SearchBackend):
             "_geoloc": position(venue),
             "has_at_least_one_bookable_offer": has_at_least_one_bookable_offer,
             "date_created": venue.dateCreated.timestamp(),
-            "postalCode": venue.postalCode,
-            "adress": venue.street,
+            "postalCode": postalCode,
+            "adress": address,
         }
 
     @classmethod
@@ -631,8 +661,14 @@ class AlgoliaBackend(base.SearchBackend):
         venue = collective_offer_template.venue
         offerer = venue.managingOfferer
         date_created = collective_offer_template.dateCreated.timestamp()
-        assert venue.postalCode  # helps mypy, it would crash below if None
-        department_code = get_department_code_from_city_code(venue.postalCode)
+
+        if FeatureToggle.WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE.is_active():
+            postalCode = venue.offererAddress.address.postalCode if venue.offererAddress else None
+        else:
+            postalCode = venue.postalCode
+        assert postalCode  # helps mypy, it would crash below if None
+        # TODO(activation): why don't we just use venue.offererAddress.address.departmentCode ?
+        department_code = get_department_code_from_city_code(postalCode)
         latitude, longitude = educational_api_offer.get_offer_coordinates(collective_offer_template)
 
         raw_formats = collective_offer_template.get_formats()
@@ -718,7 +754,16 @@ class AlgoliaBackend(base.SearchBackend):
 
 
 def position(venue: offerers_models.Venue) -> dict[str, float]:
-    return format_coordinates(venue.latitude, venue.longitude)
+    latitude = None
+    longitude = None
+    if FeatureToggle.WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE.is_active():
+        if venue.offererAddress is not None:
+            latitude = venue.offererAddress.address.latitude
+            longitude = venue.offererAddress.address.longitude
+    else:
+        latitude = venue.latitude
+        longitude = venue.longitude
+    return format_coordinates(latitude, longitude)
 
 
 def format_coordinates(latitude: Numeric | None, longitude: Numeric | None) -> dict[str, float]:

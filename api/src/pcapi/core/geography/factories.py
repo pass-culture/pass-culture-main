@@ -7,6 +7,11 @@ from pcapi.utils.regions import get_department_code_from_city_code
 from . import models
 
 
+DEFAULT_LATITUDE = 48.87055
+DEFAULT_LONGITUDE = 2.3476515
+DEFAULT_TRUNCATED_LONGITUDE = 2.34765
+
+
 class IrisFranceFactory(factory.Factory):
     class Meta:
         model = models.IrisFrance
@@ -22,8 +27,8 @@ class AddressFactory(BaseFactory):
     street = factory.Sequence("1{} boulevard Poissonnière".format)  # sequence avoids UniqueViolation (street+inseeCode)
     postalCode = "75002"
     city = "Paris"
-    latitude: float | None = 48.87055
-    longitude: float | None = 2.3476515
+    latitude: float | None = DEFAULT_LATITUDE
+    longitude: float | None = DEFAULT_LONGITUDE
     departmentCode = factory.LazyAttribute(
         lambda address: (
             get_department_code_from_city_code(address.inseeCode or address.postalCode)
