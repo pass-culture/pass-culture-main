@@ -364,6 +364,19 @@ class UnsuspendUserTest(PostEndpointHelper):
         assert user.action_history[0].venueId is None
         assert user.action_history[0].comment is None
 
+    def test_unsuspend_beneficiary_to_anonymize(self, authenticated_client, legit_user):
+        user = users_factories.BeneficiaryGrant18Factory(isActive=False)
+        users_factories.GdprUserAnonymizationFactory(user=user)
+
+        response = self.post_to_endpoint(
+            authenticated_client, user_id=user.id, form={"comment": ""}, follow_redirects=True
+        )
+
+        assert response.status_code == 200
+        assert user.isActive
+        assert len(user.action_history) == 1
+        assert users_models.GdprUserAnonymization.query.count() == 0
+
     def test_unsuspend_pro_user(self, authenticated_client, legit_user):
         user = users_factories.ProFactory(isActive=False)
         offerers_factories.UserOffererFactory(user=user)
