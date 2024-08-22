@@ -30,8 +30,7 @@ class Return200Test:
         offer = offers_factories.OfferFactory(
             venue__managingOfferer=user_offerer.offerer, validation=OfferValidationStatus.APPROVED
         )
-        for _ in range(3):
-            offers_factories.StockFactory(offer=offer)
+        offers_factories.StockFactory.create_batch(3, offer=offer)
 
         collective_offer = educational_factories.CollectiveOfferFactory(
             venue__managingOfferer=user_offerer.offerer, validation=OfferValidationStatus.APPROVED
@@ -58,14 +57,12 @@ class Return200Test:
             collectiveStock=collective_stock3, status=CollectiveBookingStatus.REIMBURSED
         )
 
-        for _ in range(3):
-            offers_factories.OfferFactory(
-                venue__managingOfferer=user_offerer.offerer, validation=OfferValidationStatus.PENDING
-            )
-        for _ in range(2):
-            educational_factories.CollectiveOfferFactory(
-                venue__managingOfferer=user_offerer.offerer, validation=OfferValidationStatus.PENDING
-            )
+        offers_factories.OfferFactory.create_batch(
+            3, venue__managingOfferer=user_offerer.offerer, validation=OfferValidationStatus.PENDING
+        )
+        educational_factories.CollectiveOfferFactory.create_batch(
+            2, venue__managingOfferer=user_offerer.offerer, validation=OfferValidationStatus.PENDING
+        )
         educational_factories.CollectiveOfferTemplateFactory(
             venue__managingOfferer=user_offerer.offerer, validation=OfferValidationStatus.APPROVED
         )
@@ -92,14 +89,12 @@ class Return200Test:
 
     def test_get_offerer_stats_with_no_public_offers(self, client):
         user_offerer = offerers_factories.UserOffererFactory()
-        for _ in range(2):
-            educational_factories.CollectiveOfferFactory(
-                venue__managingOfferer=user_offerer.offerer, validation=OfferValidationStatus.APPROVED
-            )
-        for _ in range(2):
-            educational_factories.CollectiveOfferFactory(
-                venue__managingOfferer=user_offerer.offerer, validation=OfferValidationStatus.PENDING
-            )
+        educational_factories.CollectiveOfferFactory.create_batch(
+            2, venue__managingOfferer=user_offerer.offerer, validation=OfferValidationStatus.APPROVED
+        )
+        educational_factories.CollectiveOfferFactory.create_batch(
+            2, venue__managingOfferer=user_offerer.offerer, validation=OfferValidationStatus.PENDING
+        )
 
         client = client.with_session_auth(user_offerer.user.email)
         offerer_id = user_offerer.offerer.id
@@ -122,10 +117,9 @@ class Return200Test:
                 venue__managingOfferer=user_offerer.offerer, validation=OfferValidationStatus.APPROVED
             )
             offers_factories.StockFactory(offer=offer)
-        for _ in range(3):
-            offers_factories.OfferFactory(
-                venue__managingOfferer=user_offerer.offerer, validation=OfferValidationStatus.PENDING
-            )
+        offers_factories.OfferFactory.create_batch(
+            3, venue__managingOfferer=user_offerer.offerer, validation=OfferValidationStatus.PENDING
+        )
 
         client = client.with_session_auth(user_offerer.user.email)
         offerer_id = user_offerer.offerer.id

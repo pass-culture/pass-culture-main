@@ -191,8 +191,7 @@ def get_offers_by_ids(user: users_models.User, offer_ids: list[int]) -> BaseQuer
 
 
 def get_offers_data_from_top_offers(top_offers: list[dict]) -> list[dict]:
-    offer_ids = [topOffer["offerId"] for topOffer in top_offers]
-    offer_data_by_id = {item.get("offerId"): item for item in top_offers}
+    offer_data_by_id = {item["offerId"]: item for item in top_offers}
     offers = (
         models.Offer.query.options(
             sa_orm.joinedload(models.Offer.mediations).load_only(
@@ -211,7 +210,7 @@ def get_offers_data_from_top_offers(top_offers: list[dict]) -> list[dict]:
             )
             .joinedload(models.Product.productMediations)
         )
-        .filter(models.Offer.id.in_(offer_ids))
+        .filter(models.Offer.id.in_(offer_data_by_id.keys()))
         .order_by(models.Offer.id)
     )
     merged_data_list = []
