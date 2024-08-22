@@ -2,7 +2,7 @@
 Feature: Search individual offers
 
   Background:
-    Given I am logged in
+    Given I am logged in with account 1
     And I go to the "Offres" page
 
   Scenario: A search with a name should display expected results
