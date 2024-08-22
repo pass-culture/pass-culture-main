@@ -472,6 +472,7 @@ def suspend_account(
 _USER_REQUESTED_REASONS = {
     constants.SuspensionReason.UPON_USER_REQUEST,
     constants.SuspensionReason.SUSPICIOUS_LOGIN_REPORTED_BY_USER,
+    constants.SuspensionReason.WAITING_FOR_ANONYMIZATION,
 }
 
 _AUTO_REQUESTED_REASONS = {
@@ -490,6 +491,7 @@ _BACKOFFICE_REASONS_WHICH_CANCEL_NON_EVENTS = {
     constants.SuspensionReason.FRAUD_HACK,
     constants.SuspensionReason.SUSPICIOUS_LOGIN_REPORTED_BY_USER,
     constants.SuspensionReason.UPON_USER_REQUEST,
+    constants.SuspensionReason.WAITING_FOR_ANONYMIZATION,
 }
 
 

@@ -558,9 +558,13 @@ class GetPublicAccountTest(GetEndpointHelper):
     endpoint = "backoffice_web.public_accounts.get_public_account"
     endpoint_kwargs = {"user_id": 1}
     needed_permission = perm_models.Permissions.READ_PUBLIC_ACCOUNT
-
-    # session + current user + user data + bookings + Featureflag
-    expected_num_queries = 5
+    # session
+    # current user
+    # user data
+    # check if user is waiting to be anonymized
+    # bookings
+    # Featureflag
+    expected_num_queries = 6
 
     class ReviewButtonTest(button_helpers.ButtonHelper):
         needed_permission = perm_models.Permissions.BENEFICIARY_FRAUD_ACTIONS
@@ -1746,9 +1750,10 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
     # - session
     # - current user
     # - displayed user
+    # - check if user is waiting to be anonymized
     # - user bookings separately
     # - feature flag ENABLE_PHONE_VALIDATION
-    expected_num_queries = 5
+    expected_num_queries = 6
 
     @pytest.mark.parametrize(
         "age,id_check_type,expected_items_status_18,expected_id_check_status_18",
@@ -2579,8 +2584,29 @@ class AnonymizePublicAccountTest(PostEndpointHelper, StorageFolderManager):
             validatedBirthDate=datetime.datetime.today() - datetime.timedelta(days=365 * 21), roles=roles
         )
 
-        response = self.post_to_endpoint(authenticated_client, user_id=user.id)
-        assert response.status_code == 400
+        response = self.post_to_endpoint(authenticated_client, user_id=user.id, follow_redirects=True)
+        assert response.status_code == 200
+
+        db.session.refresh(user)
+        assert not user.isActive
+        assert users_models.GdprUserAnonymization.query.filter_by(userId=user.id).count() == 1
+        assert "L'utilisateur a été suspendu et sera anonymisé le jour de ses 21 ans" in html_parser.extract_alert(
+            response.data
+        )
+
+    def test_anonymize_public_account_when_user_is_too_young_and_already_pending(self, authenticated_client):
+        user = users_factories.BeneficiaryFactory(
+            isActive=False, validatedBirthDate=datetime.datetime.today() - datetime.timedelta(days=365 * 21)
+        )
+        users_factories.GdprUserAnonymizationFactory(user=user)
+
+        response = self.post_to_endpoint(authenticated_client, user_id=user.id, follow_redirects=True)
+        assert response.status_code == 200
+
+        assert (
+            "L'utilisateur est déjà en attente pour être anonymisé le jour de ses 21 ans"
+            in html_parser.extract_alert(response.data)
+        )
 
     def test_anonymize_public_account_when_user_has_no_deposit(self, authenticated_client):
         user = users_factories.UserFactory()
