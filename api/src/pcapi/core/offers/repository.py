@@ -396,9 +396,7 @@ def get_collective_offers_template_by_filters(
     period_ending_date: datetime.date | None = None,
     formats: list[subcategories.EacFormat] | None = None,
 ) -> BaseQuery:
-    query = educational_models.CollectiveOfferTemplate.query.filter(
-        educational_models.CollectiveOfferTemplate.validation != models.OfferValidationStatus.DRAFT
-    )
+    query = educational_models.CollectiveOfferTemplate.query
 
     if period_beginning_date is not None or period_ending_date is not None:
         query = query.filter(sa.false())
