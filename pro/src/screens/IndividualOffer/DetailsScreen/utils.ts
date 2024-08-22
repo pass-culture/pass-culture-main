@@ -1,5 +1,4 @@
 import { FormikErrors } from 'formik'
-import { ChangeEvent } from 'react'
 
 import {
   CategoryResponseModel,
@@ -162,50 +161,6 @@ export const onSubcategoryChange = async ({
       )
     }
   })
-}
-
-type OnSuggestedSubcategoriesChange = {
-  event: ChangeEvent<HTMLInputElement>
-  setFieldValue: (
-    field: string,
-    value: any,
-    shouldValidate?: boolean | undefined
-  ) => Promise<void | FormikErrors<DetailsFormValues>>
-  subcategories: SubcategoryResponseModel[]
-  subcategoryConditionalFields: string[]
-  onSubcategoryChange: (p: OnSubcategoryChangeProps) => Promise<void>
-}
-
-export async function onSuggestedSubcategoriesChange({
-  event,
-  setFieldValue,
-  subcategories,
-  subcategoryConditionalFields,
-  onSubcategoryChange,
-}: OnSuggestedSubcategoriesChange) {
-  const suggestedSubcategory = event.target.value
-  if (suggestedSubcategory === 'OTHER') {
-    await setFieldValue('categoryId', DEFAULT_DETAILS_FORM_VALUES.categoryId)
-    await setFieldValue(
-      'subcategoryId',
-      DEFAULT_DETAILS_FORM_VALUES.subcategoryId
-    )
-  } else {
-    const subcategory = subcategories.find(
-      (subcategory) => subcategory.id === suggestedSubcategory
-    )
-    if (subcategory) {
-      await setFieldValue('categoryId', subcategory.categoryId)
-      await setFieldValue('subcategoryId', suggestedSubcategory)
-
-      await onSubcategoryChange({
-        newSubCategoryId: suggestedSubcategory,
-        subcategories,
-        setFieldValue,
-        subcategoryConditionalFields,
-      })
-    }
-  }
 }
 
 export const buildVenueOptions = (venues: VenueListItemResponseModel[]) => {
