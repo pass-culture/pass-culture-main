@@ -6,12 +6,14 @@ import {
   CategoryResponseModel,
   SubcategoryIdEnum,
   SubcategoryResponseModel,
+  VenueTypeCode,
 } from 'apiClient/v1'
 import {
   IndividualOfferContext,
   IndividualOfferContextValues,
 } from 'context/IndividualOfferContext/IndividualOfferContext'
 import { CATEGORY_STATUS } from 'core/Offers/constants'
+import { addressResponseIsEditableModelFactory } from 'utils/commonOffersApiFactories'
 import {
   categoryFactory,
   getIndividualOfferFactory,
@@ -249,14 +251,41 @@ describe('screens:IndividualOffer::Informations', () => {
       subcategoryIds: ['virtual', 'physical'],
     })
 
-    renderDetailsScreen(props, contextValue, {
-      features: ['WIP_SUGGESTED_SUBCATEGORIES'],
-    })
+    renderDetailsScreen(
+      {
+        ...props,
+        venues: [
+          {
+            id: 1,
+            name: 'Venue 1',
+            address: {
+              ...addressResponseIsEditableModelFactory({
+                label: 'mon adresse',
+                city: 'ma ville',
+                street: 'ma street',
+                postalCode: '1',
+              }),
+            },
+            isVirtual: false,
+            hasCreatedOffer: false,
+            managingOffererId: 1,
+            offererName: 'Offerer 1',
+            venueTypeCode: VenueTypeCode.FESTIVAL,
+          },
+        ],
+      },
+      contextValue,
+      {
+        features: ['WIP_SUGGESTED_SUBCATEGORIES'],
+      }
+    )
 
     // at first there is no suggested subcategories
     expect(
       screen.queryByText(/Catégories suggérées pour votre offre/)
     ).not.toBeInTheDocument()
+
+    await userEvent.selectOptions(await screen.findByLabelText(/Lieu/), '1')
 
     await userEvent.type(
       screen.getByLabelText(/Titre de l’offre/),

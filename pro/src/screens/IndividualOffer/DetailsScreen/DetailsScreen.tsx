@@ -1,4 +1,5 @@
 import { Form, FormikProvider, useFormik } from 'formik'
+import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useSWRConfig } from 'swr'
 
@@ -16,6 +17,7 @@ import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
 import { isOfferDisabled } from 'core/Offers/utils/isOfferDisabled'
 import { PATCH_SUCCESS_MESSAGE } from 'core/shared/constants'
+import { useActiveFeature } from 'hooks/useActiveFeature'
 import { useNotification } from 'hooks/useNotification'
 import { useOfferWizardMode } from 'hooks/useOfferWizardMode'
 
@@ -53,9 +55,19 @@ export const DetailsScreen = ({ venues }: DetailsScreenProps): JSX.Element => {
   const queryParams = new URLSearchParams(search)
   const queryOfferType = queryParams.get('offer-type')
 
+  const areSuggestedCategoriesEnabled = useActiveFeature(
+    'WIP_SUGGESTED_SUBCATEGORIES'
+  )
+
+  const [isVirtual, setIsVirtual] = useState<boolean | undefined>()
+
   const { categories, subCategories, offer } = useIndividualOfferContext()
   const offerSubtype = getOfferSubtypeFromParam(queryOfferType)
-  const categoryStatus = getCategoryStatusFromOfferSubtype(offerSubtype)
+  const categoryStatus = getCategoryStatusFromOfferSubtype(
+    offerSubtype,
+    isVirtual
+  )
+
   const [filteredCategories, filteredSubcategories] = filterCategories(
     categories,
     subCategories,
@@ -63,10 +75,10 @@ export const DetailsScreen = ({ venues }: DetailsScreenProps): JSX.Element => {
     isOfferSubtypeEvent(offerSubtype)
   )
 
-  const filteredVenues = getFilteredVenueListByCategoryStatus(
-    venues,
-    categoryStatus
-  )
+  const filteredVenues = !areSuggestedCategoriesEnabled
+    ? getFilteredVenueListByCategoryStatus(venues, categoryStatus)
+    : venues
+
   const initialValues =
     offer === null
       ? setDefaultInitialValues({ filteredVenues })
@@ -129,6 +141,12 @@ export const DetailsScreen = ({ venues }: DetailsScreenProps): JSX.Element => {
     validationSchema,
     onSubmit,
   })
+
+  useEffect(() => {
+    setIsVirtual(
+      venues.filter((v) => v.id === Number(formik.values.venueId))[0]?.isVirtual
+    )
+  }, [formik.values.venueId, venues])
 
   const handlePreviousStepOrBackToReadOnly = () => {
     mode === OFFER_WIZARD_MODE.CREATION
