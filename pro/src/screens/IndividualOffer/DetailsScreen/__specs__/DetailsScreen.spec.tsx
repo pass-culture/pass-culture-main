@@ -316,6 +316,63 @@ describe('screens:IndividualOffer::Informations', () => {
     expect(screen.getByLabelText(/Catégorie/)).toBeInTheDocument()
   })
 
+  it('should render error on category when no suggested categories has been selected', async () => {
+    vi.spyOn(api, 'getSuggestedSubcategories').mockResolvedValue({
+      subcategoryIds: ['virtual', 'physical'],
+    })
+
+    renderDetailsScreen(
+      {
+        ...props,
+        venues: [
+          {
+            id: 1,
+            name: 'Venue 1',
+            address: {
+              ...addressResponseIsEditableModelFactory({
+                label: 'mon adresse',
+                city: 'ma ville',
+                street: 'ma street',
+                postalCode: '1',
+              }),
+            },
+            isVirtual: false,
+            hasCreatedOffer: false,
+            managingOffererId: 1,
+            offererName: 'Offerer 1',
+            venueTypeCode: VenueTypeCode.FESTIVAL,
+          },
+        ],
+      },
+      contextValue,
+      {
+        features: ['WIP_SUGGESTED_SUBCATEGORIES'],
+      }
+    )
+
+    // at first there is no suggested subcategories
+    expect(
+      screen.queryByText(/Catégories suggérées pour votre offre/)
+    ).not.toBeInTheDocument()
+
+    await userEvent.selectOptions(await screen.findByLabelText(/Lieu/), '1')
+
+    await userEvent.type(
+      screen.getByLabelText(/Titre de l’offre/),
+      'My super offer'
+    )
+
+    expect(
+      await screen.findByText(/Catégories suggérées pour votre offre/)
+    ).toBeInTheDocument()
+
+    await userEvent.click(screen.getByText('Enregistrer les modifications'))
+
+    expect(
+      screen.getByText('Veuillez sélectionner une catégorie')
+    ).toBeInTheDocument()
+  })
+
   it('should not render suggested subcategories in edition', () => {
     const context = individualOfferContextValuesFactory({
       categories,
