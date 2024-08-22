@@ -65,6 +65,16 @@ describe('getCategoryStatusFromOfferSubtype', () => {
       )
     }
   )
+
+  it('should return appropriate category when subtype is not defined but isVirtual is', () => {
+    expect(getCategoryStatusFromOfferSubtype(null, true)).toBe(
+      CATEGORY_STATUS.ONLINE
+    )
+    expect(getCategoryStatusFromOfferSubtype(null, false)).toBe(
+      CATEGORY_STATUS.OFFLINE
+    )
+  })
+
   it('should return both category when subtype is not defined', () => {
     expect(getCategoryStatusFromOfferSubtype(null)).toBe(
       CATEGORY_STATUS.ONLINE_OR_OFFLINE

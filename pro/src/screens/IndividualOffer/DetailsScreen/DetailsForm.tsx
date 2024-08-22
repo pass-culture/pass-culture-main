@@ -49,9 +49,6 @@ export const DetailsForm = ({
   onImageDelete,
   imageOffer,
 }: DetailsFormProps): JSX.Element => {
-  const areSuggestedCategoriesEnabled = useActiveFeature(
-    'WIP_SUGGESTED_SUBCATEGORIES'
-  )
   const [suggestedSubcategories, setSuggestedSubcategories] = useState<
     string[]
   >([])
@@ -66,6 +63,7 @@ export const DetailsForm = ({
       name,
     },
     handleChange,
+    setFieldValue,
   } = useFormikContext<DetailsFormValues>()
   const { offer } = useIndividualOfferContext()
 
@@ -107,6 +105,9 @@ export const DetailsForm = ({
 
   const splitFormEnabled = useActiveFeature('WIP_SPLIT_OFFER')
   const offerAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
+  const areSuggestedCategoriesEnabled = useActiveFeature(
+    'WIP_SUGGESTED_SUBCATEGORIES'
+  )
 
   // Books have a gtl_id field, other categories have a musicType field
   const hasMusicType =
@@ -134,10 +135,13 @@ export const DetailsForm = ({
   async function onChangeGetSuggestedSubcategories(
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
+    >,
+    isVenueSet: boolean
   ) {
     handleChange(e)
-    await debouncedOnChangeGetSuggestedSubcategories()
+    if (areSuggestedCategoriesEnabled && isVenueSet) {
+      await debouncedOnChangeGetSuggestedSubcategories()
+    }
   }
 
   const isSubCategorySelected =
@@ -152,7 +156,17 @@ export const DetailsForm = ({
               label={offerAddressEnabled ? 'Qui propose l’offre ?' : 'Lieu'}
               name="venueId"
               options={venueOptions}
-              onChange={onChangeGetSuggestedSubcategories}
+              onChange={async (e) => {
+                if (areSuggestedCategoriesEnabled) {
+                  await setFieldValue('categoryId', '')
+                  await setFieldValue('subcategoryId', '')
+                  await setFieldValue('suggestedSubcategory', '')
+                }
+                await onChangeGetSuggestedSubcategories(
+                  e,
+                  e.target.value !== ''
+                )
+              }}
               disabled={
                 readOnlyFields.includes('venueId') || venueOptions.length === 1
               }
@@ -165,7 +179,9 @@ export const DetailsForm = ({
             label="Titre de l’offre"
             maxLength={90}
             name="name"
-            onChange={onChangeGetSuggestedSubcategories}
+            onChange={(e) =>
+              onChangeGetSuggestedSubcategories(e, venueId !== '')
+            }
             disabled={readOnlyFields.includes('name')}
           />
         </FormLayout.Row>
@@ -176,7 +192,9 @@ export const DetailsForm = ({
             label="Description"
             maxLength={1000}
             name="description"
-            onChange={onChangeGetSuggestedSubcategories}
+            onChange={(e) =>
+              onChangeGetSuggestedSubcategories(e, venueId !== '')
+            }
             disabled={readOnlyFields.includes('description')}
           />
         </FormLayout.Row>
@@ -186,7 +204,9 @@ export const DetailsForm = ({
               label={offerAddressEnabled ? 'Qui propose l’offre ?' : 'Lieu'}
               name="venueId"
               options={venueOptions}
-              onChange={onChangeGetSuggestedSubcategories}
+              onChange={(e) =>
+                onChangeGetSuggestedSubcategories(e, venueId !== '')
+              }
               disabled={
                 readOnlyFields.includes('venueId') || venueOptions.length === 1
               }
@@ -195,7 +215,8 @@ export const DetailsForm = ({
         )}
       </FormLayout.Section>
       {areSuggestedCategoriesEnabled && !offer ? (
-        suggestedSubcategories.length > 0 && (
+        suggestedSubcategories.length > 0 &&
+        venueId !== '' && (
           <SuggestedSubcategories
             suggestedSubcategories={suggestedSubcategories}
             readOnlyFields={readOnlyFields}

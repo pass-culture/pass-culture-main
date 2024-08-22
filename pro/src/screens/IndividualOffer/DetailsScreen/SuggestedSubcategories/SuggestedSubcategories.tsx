@@ -40,7 +40,10 @@ export function SuggestedSubcategories({
   } = useFormikContext<DetailsFormValues>()
 
   const categoryOptions = buildCategoryOptions(filteredCategories)
-  const subcategoryOptions = buildSubcategoryOptions(subCategories, categoryId)
+  const subcategoryOptions = buildSubcategoryOptions(
+    filteredSubcategories,
+    categoryId
+  )
 
   return (
     <FormLayout.Section title={'Type d’offre'}>
