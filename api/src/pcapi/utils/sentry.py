@@ -1,3 +1,4 @@
+import enum
 import random
 import sys
 import typing
@@ -28,6 +29,10 @@ LOW_SAMPLE_RATE = DEFAULT_SAMPLE_RATE / 10
 LOWER_SAMPLE_RATE = DEFAULT_SAMPLE_RATE / 100
 LOWEST_SAMPLE_RATE = DEFAULT_SAMPLE_RATE / 1000
 NO_SAMPLE_RATE = 0.0
+
+
+class SpecificPath(enum.Enum):
+    BACKOFFICE_HOME = f"{backoffice_blueprint}.home"
 
 
 def before_send(event: "Event", _hint: dict[str, typing.Any]) -> "Event | None":
@@ -114,6 +119,10 @@ def filter_transactions(event: "Event", _hint: dict[str, typing.Any]) -> "Event 
         return None
 
     match transaction:
+        # BO home
+        case SpecificPath.BACKOFFICE_HOME:
+            sample_rate = NO_SAMPLE_RATE
+
         # backoffice
         case _ if transaction.startswith(backoffice_blueprint.BACKOFFICE_WEB_BLUEPRINT_NAME):
             sample_rate = DEFAULT_SAMPLE_RATE
