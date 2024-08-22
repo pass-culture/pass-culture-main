@@ -12,6 +12,7 @@ import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
 from pcapi.core.search.backends import algolia
+from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
 from pcapi.routes.adage_iframe.serialization.offers import OfferAddressType
 from pcapi.routes.native.v1.serialization.offerers import VenueTypeCode
@@ -22,7 +23,105 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 @override_settings(ALGOLIA_LAST_30_DAYS_BOOKINGS_RANGE_THRESHOLDS=[1, 2, 3, 4])
+@override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
 def test_serialize_offer():
+    rayon = "Policier / Thriller format poche"  # fetched from provider
+
+    # known values (inserted using a migration)
+    # note: some might contain trailing whitespaces. Also sections are
+    # usually lowercase whilst sections from providers might be
+    # capitalized.
+    book_macro_section = offers_models.BookMacroSection.query.filter_by(
+        section="policier / thriller format poche"
+    ).one()
+    macro_section = book_macro_section.macroSection.strip()
+
+    offerer_address = offerers_factories.OffererAddressFactory(
+        address__departmentCode="86",
+        address__postalCode="86140",
+    )
+
+    offer = offers_factories.OfferFactory(
+        dateCreated=datetime.datetime(2022, 1, 1, 10, 0, 0),
+        name="Titre formidable",
+        description="Un LIVRE qu'il est bien pour le lire",
+        extraData={
+            "author": "Author",
+            "ean": "2221001648",
+            "performer": "Performer",
+            "speaker": "Speaker",
+            "stageDirector": "Stage Director",
+            "rayon": rayon,
+        },
+        rankingWeight=2,
+        subcategoryId=subcategories.LIVRE_PAPIER.id,
+        venue__id=127,
+        venue__offererAddress=offerer_address,
+        venue__name="La Moyenne Librairie SA",
+        venue__publicName="La Moyenne Librairie",
+        venue__venueTypeCode=VenueTypeCode.LIBRARY,
+        venue__managingOfferer__name="Les Librairies Associées",
+    )
+    offers_factories.StockFactory(offer=offer, price=10)
+    serialized = algolia.AlgoliaBackend().serialize_offer(offer, 0)
+    assert serialized == {
+        "distinct": "2221001648",
+        "objectID": offer.id,
+        "offer": {
+            "artist": "Author Performer Speaker Stage Director",
+            "bookMacroSection": macro_section,
+            "dateCreated": offer.dateCreated.timestamp(),
+            "dates": [],
+            "description": "livre bien lire",
+            "ean": "2221001648",
+            "isDigital": False,
+            "isDuo": False,
+            "isEducational": False,
+            "isEvent": False,
+            "isForbiddenToUnderage": offer.is_forbidden_to_underage,
+            "isPermanent": offer.isPermanent,
+            "isThing": True,
+            "last30DaysBookings": 0,
+            "last30DaysBookingsRange": algolia.Last30DaysBookingsRange.VERY_LOW.value,
+            "name": "Titre formidable",
+            "nativeCategoryId": offer.subcategory.native_category_id,
+            "prices": [decimal.Decimal("10.00")],
+            "rankingWeight": 2,
+            "searchGroupName": "LIVRES",
+            "searchGroupNamev2": "LIVRES",
+            "students": [],
+            "subcategoryId": offer.subcategory.id,
+            "tags": [],
+            "times": [],
+        },
+        "offerer": {
+            "name": "Les Librairies Associées",
+        },
+        "venue": {
+            "banner_url": offer.venue.bannerUrl,
+            "address": offer.venue.offererAddress.address.street,
+            "city": offer.venue.offererAddress.address.city,
+            "departmentCode": "86",
+            "postalCode": offer.venue.offererAddress.address.postalCode,
+            "id": offer.venueId,
+            "isAudioDisabilityCompliant": False,
+            "isMentalDisabilityCompliant": False,
+            "isMotorDisabilityCompliant": False,
+            "isVisualDisabilityCompliant": False,
+            "name": "La Moyenne Librairie SA",
+            "publicName": "La Moyenne Librairie",
+            "venue_type": VenueTypeCode.LIBRARY.name,
+        },
+        "_geoloc": {
+            "lat": geography_factories.DEFAULT_LATITUDE,
+            "lng": geography_factories.DEFAULT_TRUNCATED_LONGITUDE,
+        },
+    }
+
+
+@override_settings(ALGOLIA_LAST_30_DAYS_BOOKINGS_RANGE_THRESHOLDS=[1, 2, 3, 4])
+@override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
+def test_serialize_offer_legacy():
     rayon = "Policier / Thriller format poche"  # fetched from provider
 
     # known values (inserted using a migration)
@@ -302,7 +401,75 @@ def test_serialize_venue_with_one_bookable_offer():
     assert serialized["has_at_least_one_bookable_offer"]
 
 
+@override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
 def test_serialize_collective_offer_template():
+    domain1 = educational_factories.EducationalDomainFactory(name="Danse")
+    domain2 = educational_factories.EducationalDomainFactory(name="Architecture")
+    offer_venue_offerer_address = offerers_factories.OffererAddressFactory(
+        address__latitude=algolia.DEFAULT_LATITUDE,
+        address__longitude=algolia.DEFAULT_LONGITUDE,
+    )
+    offer_venue = offerers_factories.VenueFactory(offererAddress=offer_venue_offerer_address)
+    venue_offerer_address = offerers_factories.OffererAddressFactory(
+        address__postalCode="86140",
+        address__departmentCode="86",
+    )
+
+    collective_offer_template = educational_factories.CollectiveOfferTemplateFactory(
+        dateCreated=datetime.datetime(2022, 1, 1, 10, 0, 0),
+        name="Titre formidable",
+        description="description formidable",
+        students=[StudentLevels.CAP1, StudentLevels.CAP2],
+        subcategoryId=subcategories.CONCERT.id,
+        venue__offererAddress=venue_offerer_address,
+        venue__name="La Moyenne Librairie SA",
+        venue__publicName="La Moyenne Librairie",
+        venue__managingOfferer__name="Les Librairies Associées",
+        venue__adageId="123456",
+        educational_domains=[domain1, domain2],
+        interventionArea=None,
+        offerVenue={"addressType": OfferAddressType.OFFERER_VENUE, "venueId": offer_venue.id, "otherAddress": ""},
+    )
+
+    serialized = algolia.AlgoliaBackend().serialize_collective_offer_template(collective_offer_template)
+    assert serialized == {
+        "objectID": f"T-{collective_offer_template.id}",
+        "offer": {
+            "dateCreated": 1641031200.0,
+            "name": "Titre formidable",
+            "students": ["CAP - 1re année", "CAP - 2e année"],
+            "subcategoryId": subcategories.CONCERT.id,
+            "domains": [domain1.id, domain2.id],
+            "educationalInstitutionUAICode": "all",
+            "interventionArea": [],
+            "schoolInterventionArea": None,
+            "eventAddressType": OfferAddressType.OFFERER_VENUE.value,
+            "beginningDatetime": 1641031200.0,
+            "description": collective_offer_template.description,
+        },
+        "offerer": {
+            "name": "Les Librairies Associées",
+        },
+        "venue": {
+            "academy": "Poitiers",
+            "departmentCode": "86",
+            "id": collective_offer_template.venue.id,
+            "name": "La Moyenne Librairie SA",
+            "publicName": "La Moyenne Librairie",
+            "adageId": collective_offer_template.venue.adageId,
+        },
+        "_geoloc": {
+            "lat": 47.15846,
+            "lng": 2.40929,
+        },
+        "isTemplate": True,
+        "formats": [fmt.value for fmt in subcategories.CONCERT.formats],
+    }
+
+
+@override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
+def test_serialize_collective_offer_template_legacy():
+    # Same as test_serialize_collective_offer_template
     domain1 = educational_factories.EducationalDomainFactory(name="Danse")
     domain2 = educational_factories.EducationalDomainFactory(name="Architecture")
     venue = offerers_factories.VenueFactory(latitude=algolia.DEFAULT_LATITUDE, longitude=algolia.DEFAULT_LONGITUDE)

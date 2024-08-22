@@ -7,6 +7,11 @@ from pcapi.utils.regions import get_department_code_from_city_code
 from . import models
 
 
+DEFAULT_LATITUDE = 48.87055
+DEFAULT_LONGITUDE = 2.3476515
+DEFAULT_TRUNCATED_LONGITUDE = 2.34765
+
+
 class IrisFranceFactory(factory.Factory):
     class Meta:
         model = models.IrisFrance
