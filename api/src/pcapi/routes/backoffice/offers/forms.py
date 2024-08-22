@@ -37,6 +37,7 @@ class IndividualOffersSearchAttributes(enum.Enum):
     EAN = "EAN-13"
     VALIDATION = "État"
     ID = "ID de l'offre"
+    MEDIATION = "Image"
     VENUE = "Lieu"
     ADDRESS = "Adresse de l'offre"
     NAME = "Nom de l'offre"
@@ -64,6 +65,7 @@ form_field_configuration = {
     "EVENT_DATE": {"field": "date", "operator": ["DATE_FROM", "DATE_TO", "DATE_EQUALS"]},
     "BOOKING_LIMIT_DATE": {"field": "date", "operator": ["DATE_FROM", "DATE_TO", "DATE_EQUALS"]},
     "ID": {"field": "string", "operator": ["IN", "NOT_IN"]},
+    "MEDIATION": {"field": "boolean", "operator": ["NULLABLE"]},
     "NAME": {"field": "string", "operator": ["CONTAINS", "NO_CONTAINS", "NAME_EQUALS", "NAME_NOT_EQUALS"]},
     "OFFERER": {"field": "offerer", "operator": ["IN", "NOT_IN"]},
     "STATUS": {"field": "status", "operator": ["IN", "NOT_IN"]},
@@ -172,6 +174,7 @@ class OfferAdvancedSearchSubForm(forms_utils.PCForm):
         ],
     )
     boolean = fields.PCSelectField(
+        "Booléen",
         choices=(("true", "Oui"), ("false", "Non")),
         default="true",
         validators=[

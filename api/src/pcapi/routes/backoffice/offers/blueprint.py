@@ -195,6 +195,22 @@ SEARCH_FIELD_TO_PYTHON = {
             offers_models.Offer._released,
         ),
     },
+    "MEDIATION": {
+        "field": "boolean",
+        "special": lambda x: x == "true",
+        "custom_filters": {
+            "NULLABLE": lambda value: (
+                sa.exists()
+                .where(
+                    sa.and_(
+                        offers_models.Mediation.offerId == offers_models.Offer.id,
+                        offers_models.Mediation.isActive.is_(True),
+                    )
+                )
+                .is_(value)
+            )
+        },
+    },
 }
 
 JOIN_DICT: dict[str, list[dict[str, typing.Any]]] = {
