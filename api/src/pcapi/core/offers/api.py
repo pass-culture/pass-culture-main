@@ -624,8 +624,12 @@ def batch_update_offers(query: BaseQuery, update_fields: dict, send_email_notifi
 
 
 def batch_update_collective_offers(query: BaseQuery, update_fields: dict) -> None:
+    allowed_validation_status = [models.OfferValidationStatus.APPROVED]
+    if "dateArchived" in update_fields:
+        allowed_validation_status = [models.OfferValidationStatus.APPROVED, models.OfferValidationStatus.DRAFT]
+
     collective_offer_ids_tuples = query.filter(
-        educational_models.CollectiveOffer.validation == models.OfferValidationStatus.APPROVED
+        educational_models.CollectiveOffer.validation.in_(allowed_validation_status)  # type: ignore[attr-defined]
     ).with_entities(educational_models.CollectiveOffer.id)
 
     collective_offer_ids = [offer_id for offer_id, in collective_offer_ids_tuples]
@@ -645,8 +649,12 @@ def batch_update_collective_offers(query: BaseQuery, update_fields: dict) -> Non
 
 
 def batch_update_collective_offers_template(query: BaseQuery, update_fields: dict) -> None:
+    allowed_validation_status = [models.OfferValidationStatus.APPROVED]
+    if "dateArchived" in update_fields:
+        allowed_validation_status.append(models.OfferValidationStatus.DRAFT)
+
     collective_offer_ids_tuples = query.filter(
-        educational_models.CollectiveOfferTemplate.validation == models.OfferValidationStatus.APPROVED
+        educational_models.CollectiveOfferTemplate.validation.in_(allowed_validation_status)  # type: ignore[attr-defined]
     ).with_entities(educational_models.CollectiveOfferTemplate.id)
 
     collective_offer_template_ids = [offer_id for offer_id, in collective_offer_ids_tuples]
