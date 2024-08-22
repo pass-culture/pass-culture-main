@@ -61,6 +61,7 @@ class SuspensionReason(enum.Enum):
     SUSPICIOUS_LOGIN_REPORTED_BY_USER = "suspicious login reported by user"
     SUSPENSION_FOR_INVESTIGATION_TEMP = "temporary suspension for investigation"
     UPON_USER_REQUEST = "upon user request"
+    WAITING_FOR_ANONYMIZATION = "waiting for anonymization"
 
 
 PRO_SUSPENSION_REASON_CHOICES = {
@@ -87,6 +88,7 @@ PUBLIC_SUSPENSION_REASON_CHOICES = {
     SuspensionReason.FRAUD_USURPATION: "Fraude usurpation",
     SuspensionReason.SUSPICIOUS_LOGIN_REPORTED_BY_USER: "Connexion suspicieuse signalée par l'utilisateur",
     SuspensionReason.UPON_USER_REQUEST: "Demande de l'utilisateur",
+    SuspensionReason.WAITING_FOR_ANONYMIZATION: "En attente d'anonymisation",
 }
 
 SUSPENSION_REASON_CHOICES = PRO_SUSPENSION_REASON_CHOICES | PUBLIC_SUSPENSION_REASON_CHOICES
