@@ -45,6 +45,7 @@ from pcapi.models.beneficiary_import import BeneficiaryImport
 from pcapi.models.beneficiary_import_status import BeneficiaryImportStatus
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import atomic
+from pcapi.repository import mark_transaction_as_invalid
 from pcapi.routes.backoffice import search_utils
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.forms import empty as empty_forms
@@ -111,12 +112,7 @@ def _apply_search_filters(query: BaseQuery, search_filters: list[str]) -> BaseQu
 
 
 def is_beneficiary_anonymizable(user: users_models.User) -> bool:
-    # Check if the user is admin, pro or anonymised
-    beneficiary_roles = {
-        users_models.UserRole.BENEFICIARY,
-        users_models.UserRole.UNDERAGE_BENEFICIARY,
-    }
-    if not beneficiary_roles.issuperset(user.roles):
+    if not _is_only_beneficiary(user):
         return False
 
     # Check if the user never had credits.
@@ -130,6 +126,15 @@ def is_beneficiary_anonymizable(user: users_models.User) -> bool:
     ):
         return True
     return False
+
+
+def _is_only_beneficiary(user: users_models.User) -> bool:
+    # Check if the user is admin, pro or anonymised
+    beneficiary_roles = {
+        users_models.UserRole.BENEFICIARY,
+        users_models.UserRole.UNDERAGE_BENEFICIARY,
+    }
+    return beneficiary_roles.issuperset(user.roles)
 
 
 @public_accounts_blueprint.route("<int:user_id>/anonymize", methods=["POST"])
@@ -148,9 +153,6 @@ def anonymize_public_account(user_id: int) -> utils.BackofficeResponse:
     if not user:
         raise NotFound()
 
-    if not is_beneficiary_anonymizable(user):
-        raise BadRequest()
-
     form = empty_forms.EmptyForm()
     if not form.validate():
         flash(utils.build_form_error_msg(form), "warning")
@@ -160,15 +162,47 @@ def anonymize_public_account(user_id: int) -> utils.BackofficeResponse:
         flash("Une extraction de données est en cours pour cet utilisateur.", "warning")
         return redirect(url_for(".get_public_account", user_id=user_id))
 
-    user_anonymized = users_api.anonymize_user(user, author=current_user, force=True)
-    if not user_anonymized:
-        flash("Une erreur est survenue lors de l'anonymisation de l'utilisateur", "warning")
-        return redirect(url_for(".get_public_account", user_id=user_id))
+    if is_beneficiary_anonymizable(user):
+        _anonymyze_user(user, current_user)
+    elif _is_only_beneficiary(user):
+        _pre_anonymize_user(user, current_user)
+    else:
+        raise BadRequest()
 
-    db.session.flush()
-
-    flash("Les informations de l'utilisateur ont été anonymisées", "success")
     return redirect(url_for(".get_public_account", user_id=user_id))
+
+
+def _anonymyze_user(user: users_models.User, author: users_models.User) -> None:
+    user_anonymized = users_api.anonymize_user(user, author=current_user, force=True)
+    if user_anonymized:
+        db.session.flush()
+        flash("Les informations de l'utilisateur ont été anonymisées", "success")
+    else:
+        mark_transaction_as_invalid()
+        flash("Une erreur est survenue lors de l'anonymisation de l'utilisateur", "warning")
+
+
+def _pre_anonymize_user(user: users_models.User, author: users_models.User) -> None:
+    if _has_user_pending_anonymization(user.id):
+        mark_transaction_as_invalid()
+        flash("L'utilisateur est déjà en attente pour être anonymisé le jour de ses 21 ans", "warning")
+    else:
+        users_api.suspend_account(
+            user=user,
+            reason=users_constants.SuspensionReason.WAITING_FOR_ANONYMIZATION,
+            actor=author,
+            comment="L'utilisateur sera anonymisé le jour de ses 21 ans",
+            is_backoffice_action=True,
+        )
+        db.session.add(users_models.GdprUserAnonymization(user=user))
+        db.session.flush()
+        flash("L'utilisateur a été suspendu et sera anonymisé le jour de ses 21 ans", "success")
+
+
+def _has_user_pending_anonymization(user_id: int) -> bool:
+    return db.session.query(
+        users_models.GdprUserAnonymization.query.filter(users_models.GdprUserAnonymization.userId == user_id).exists()
+    ).scalar()
 
 
 @public_accounts_blueprint.route("/search", methods=["GET"])
@@ -364,18 +398,17 @@ def render_public_account_details(
                     if utils.has_current_user_permission(perm_models.Permissions.EXTRACT_PUBLIC_ACCOUNT)
                     else None
                 ),
-                "anonymize_form": (
-                    empty_forms.EmptyForm()
-                    if is_beneficiary_anonymizable(user)
-                    and utils.has_current_user_permission(perm_models.Permissions.ANONYMIZE_PUBLIC_ACCOUNT)
-                    else None
-                ),
-                "anonymize_public_accounts_dst": url_for(".anonymize_public_account", user_id=user.id),
             }
         )
 
         if not user.isEmailValidated:
             kwargs["resend_email_validation_form"] = empty_forms.EmptyForm()
+
+    if utils.has_current_user_permission(
+        perm_models.Permissions.ANONYMIZE_PUBLIC_ACCOUNT
+    ) and not _has_user_pending_anonymization(user_id):
+        kwargs["anonymize_form"] = empty_forms.EmptyForm()
+        kwargs["anonymize_public_accounts_dst"] = url_for(".anonymize_public_account", user_id=user.id)
 
     fraud_reviews_desc = _get_fraud_reviews_desc(user.beneficiaryFraudReviews)
     id_check_histories_desc = _get_id_check_histories_desc(eligibility_history)
