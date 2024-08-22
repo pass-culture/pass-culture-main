@@ -217,7 +217,7 @@ class EacFormat(Enum):
 class Subcategory:
     id: str
     category: categories.Category
-    native_category: NativeCategory
+    native_category: NativeCategory | None
     pro_label: str
     app_label: str
     search_group_name: str
@@ -255,8 +255,8 @@ class Subcategory:
         return self.category.id
 
     @property
-    def native_category_id(self) -> str:
-        return self.native_category.name
+    def native_category_id(self) -> str | None:
+        return self.native_category.id if self.native_category else None
 
     @property
     def is_offline_only(self) -> bool:
