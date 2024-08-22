@@ -2,7 +2,7 @@
 Feature: Desk (Guichet) feature
 
   Background:
-    Given I am logged in with the new interface
+    Given I am logged in with account 2
     And I go to the "Guichet" page
 
   Scenario: It should display identity check message

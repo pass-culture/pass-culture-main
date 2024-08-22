@@ -2,7 +2,7 @@
 Feature: Search for collective bookings
 
   Background:
-    Given I am logged in
+    Given I am logged in with account 1
     And I select offerer "eac_2_lieu [BON EAC]"
     And I open the "reservations/collectives" page
 

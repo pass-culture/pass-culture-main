@@ -3,7 +3,7 @@ Feature: Create an individual offer (event)
 
   # Plante si l'offerer a plusieurs venues
   Scenario: It should create an individual offer (event)
-    Given I am logged in
+    Given I am logged in with account 1
     And I select offerer "Club Dorothy"
     When I go to the "Créer une offre" page
     And I want to create "Un évènement physique daté" offer

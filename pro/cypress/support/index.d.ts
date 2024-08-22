@@ -4,7 +4,7 @@ declare namespace Cypress {
       email: string
       password: string
       redirectUrl?: string
-      acceptCookies?: boolean
+      refusePopupCookies?: boolean
     }): Chainable
 
     setFeatureFlags(features: Feature[]): Chainable

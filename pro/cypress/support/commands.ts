@@ -43,20 +43,25 @@ Cypress.on('uncaught:exception', () => {
   return false
 })
 
-Cypress.Commands.add('login', ({ email, password, redirectUrl }) => {
-  cy.intercept({ method: 'POST', url: '/users/signin' }).as('signinUser')
+Cypress.Commands.add(
+  'login',
+  ({ email, password, redirectUrl, refusePopupCookies = true }) => {
+    cy.intercept({ method: 'POST', url: '/users/signin' }).as('signinUser')
 
-  cy.visit('/connexion')
-  cy.refuseCookies()
+    cy.visit('/connexion')
+    if (refusePopupCookies) {
+      cy.refuseCookies()
+    }
 
-  cy.get('#email').type(email)
-  cy.get('#password').type(password)
-  cy.get('button[type=submit]').click()
-  cy.wait('@signinUser')
+    cy.get('#email').type(email)
+    cy.get('#password').type(password)
+    cy.get('button[type=submit]').click()
+    cy.wait('@signinUser')
 
-  cy.url().should('contain', redirectUrl ?? '/accueil')
-  cy.findAllByTestId('spinner').should('not.exist')
-})
+    cy.url().should('contain', redirectUrl ?? '/accueil')
+    cy.findAllByTestId('spinner').should('not.exist')
+  }
+)
 
 Cypress.Commands.add('refuseCookies', () => {
   cy.findByText('Tout refuser', { timeout: 30000 }).click()

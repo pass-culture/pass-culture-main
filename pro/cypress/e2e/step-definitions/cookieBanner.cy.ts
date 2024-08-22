@@ -58,3 +58,16 @@ When('I clear all cookies in Browser', () => {
 When('I click on the {string} link', (link: string) => {
   cy.findByText(link).click()
 })
+
+When('I disconnect of my account', () => {
+  cy.findByTestId('offerer-select').click()
+  cy.findByTestId('header-dropdown-menu-div').should('exist')
+  cy.contains('Se déconnecter').click()
+  cy.url().should('contain', '/connexion')
+})
+
+When('I clear all cookies and storage', () => {
+  cy.clearAllCookies()
+  cy.clearAllLocalStorage()
+  cy.clearAllSessionStorage()
+})

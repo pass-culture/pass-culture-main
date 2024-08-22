@@ -2,7 +2,7 @@
 Feature: Financial Management - messages, links to external help page, reimbursement details
 
   Scenario: Check messages, reimbursement details and offerer selection change
-    Given I am logged in with the new interface
+    Given I am logged in with account 2
     When I go to the "Gestion financière" page
     Then I can see information message about reimbursement
     And I can see a link to the next reimbursement help page
