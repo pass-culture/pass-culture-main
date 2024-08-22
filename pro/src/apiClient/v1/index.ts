@@ -127,6 +127,7 @@ export type { GetOfferManagingOffererResponseModel } from './models/GetOfferMana
 export type { GetOfferMediationResponseModel } from './models/GetOfferMediationResponseModel';
 export type { GetOfferStockResponseModel } from './models/GetOfferStockResponseModel';
 export type { GetOfferVenueResponseModel } from './models/GetOfferVenueResponseModel';
+export type { GetProductInformations } from './models/GetProductInformations';
 export type { GetStocksResponseModel } from './models/GetStocksResponseModel';
 export type { GetVenueDomainResponseModel } from './models/GetVenueDomainResponseModel';
 export type { GetVenueListResponseModel } from './models/GetVenueListResponseModel';
