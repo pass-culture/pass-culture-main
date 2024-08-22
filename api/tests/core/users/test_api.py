@@ -2239,6 +2239,31 @@ class AnonymizeBeneficiaryUsersTest(StorageFolderManager):
         assert len(sendinblue_testing.sendinblue_requests) == 0
         assert user_to_anonymize.firstName == "user_to_anonymize"
 
+    def test_anonymize_user_tagged_when_he_is_21(self) -> None:
+        user_to_anonymize = users_factories.BeneficiaryFactory(
+            validatedBirthDate=datetime.datetime.utcnow() - relativedelta(years=21, days=1),
+        )
+        users_factories.GdprUserAnonymizationFactory(user=user_to_anonymize)
+
+        users_api.anonymize_beneficiary_users(force=True)
+        db.session.refresh(user_to_anonymize)
+
+        assert user_to_anonymize.firstName == f"Anonymous_{user_to_anonymize.id}"
+        assert users_models.GdprUserAnonymization.query.count() == 0
+
+    def test_do_not_anonymize_user_tagged_when_he_is_less_than_21(self) -> None:
+        user_to_anonymize = users_factories.BeneficiaryFactory(
+            lastConnectionDate=datetime.datetime.utcnow(),
+            validatedBirthDate=datetime.datetime.utcnow() - relativedelta(years=20, days=360),
+        )
+        users_factories.GdprUserAnonymizationFactory(user=user_to_anonymize)
+
+        users_api.anonymize_beneficiary_users(force=True)
+        db.session.refresh(user_to_anonymize)
+
+        assert user_to_anonymize.firstName != f"Anonymous_{user_to_anonymize.id}"
+        assert users_models.GdprUserAnonymization.query.count() == 1
+
 
 class AnonymizeUserDepositsTest:
     def test_anonymize_user_deposits(self) -> None:

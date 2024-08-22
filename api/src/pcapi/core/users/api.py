@@ -3,6 +3,7 @@ import datetime
 from decimal import Decimal
 import enum
 from io import BytesIO
+import itertools
 import logging
 from pathlib import Path
 import random
@@ -1572,6 +1573,8 @@ def anonymize_user(user: users_models.User, *, author: users_models.User | None 
     for extract in user.gdprUserDataExtract:
         delete_gdpr_extract(extract.id)
 
+    users_models.GdprUserAnonymization.query.filter(users_models.GdprUserAnonymization.userId == user.id).delete()
+
     user.password = b"Anonymized"  # ggignore
     user.firstName = f"Anonymous_{user.id}"
     user.lastName = f"Anonymous_{user.id}"
@@ -1665,19 +1668,19 @@ def anonymize_beneficiary_users(*, force: bool = False) -> None:
     Anonymize user accounts that have been beneficiaries which have not connected for at least 3 years, and
     whose deposit has been expired for at least 5 years.
     """
-    users = (
-        users_models.User.query.outerjoin(
-            finance_models.Deposit,
-            users_models.User.deposits,
-        )
-        .filter(
-            users_models.User.is_beneficiary,
-            users_models.User.lastConnectionDate < datetime.datetime.utcnow() - relativedelta(years=3),
-            finance_models.Deposit.expirationDate < datetime.datetime.utcnow() - relativedelta(years=5),
-        )
-        .all()
+    beneficiaries = users_models.User.query.outerjoin(
+        finance_models.Deposit,
+        users_models.User.deposits,
+    ).filter(
+        users_models.User.is_beneficiary,
+        users_models.User.lastConnectionDate < datetime.datetime.utcnow() - relativedelta(years=3),
+        finance_models.Deposit.expirationDate < datetime.datetime.utcnow() - relativedelta(years=5),
     )
-    for user in users:
+
+    beneficiaries_tagged_to_anonymize = users_models.User.query.join(users_models.GdprUserAnonymization).filter(
+        users_models.User.validatedBirthDate < datetime.datetime.utcnow() - relativedelta(years=21)
+    )
+    for user in itertools.chain(beneficiaries, beneficiaries_tagged_to_anonymize):
         anonymize_user(user, force=force)
     db.session.commit()
 
