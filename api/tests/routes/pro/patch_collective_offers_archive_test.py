@@ -3,7 +3,9 @@ from datetime import datetime
 import pytest
 
 from pcapi.core.educational.factories import CollectiveOfferFactory
+from pcapi.core.educational.factories import create_collective_offer_by_status
 from pcapi.core.educational.models import CollectiveOffer
+from pcapi.core.educational.models import CollectiveOfferDisplayedStatus
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.testing import assert_num_queries
 
@@ -29,9 +31,9 @@ class Returns204Test:
         # query += 1 update dateArchive on collective_offer
         with assert_num_queries(5):
             response = client.patch("/collective/offers/archive", json=data)
+            assert response.status_code == 204
 
         # Then
-        assert response.status_code == 204
         assert CollectiveOffer.query.get(offer1.id).isArchived
         assert CollectiveOffer.query.get(offer2.id).isArchived
 
@@ -60,6 +62,31 @@ class Returns204Test:
         assert response.status_code == 204
         assert CollectiveOffer.query.get(offer.id).isArchived
         assert not CollectiveOffer.query.get(other_offer.id).isArchived
+
+    def when_archiving_draft_offers(self, client):
+        # Given
+        draft_offer = create_collective_offer_by_status(CollectiveOfferDisplayedStatus.DRAFT)
+        venue = draft_offer.venue
+        other_offer = CollectiveOfferFactory(venue=venue)
+        offerer = venue.managingOfferer
+        offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offerer)
+        client = client.with_session_auth("pro@example.com")
+
+        # When
+        data = {"ids": [draft_offer.id, other_offer.id]}
+
+        # query += 1 authentication
+        # query += 1 load current_user
+        # query += 1 ensure there is no existing archived offer
+        # query += 1 retrieve all collective_order.ids to batch them in pool for update
+        # query += 1 update dateArchive on collective_offer
+        with assert_num_queries(5):
+            response = client.patch("/collective/offers/archive", json=data)
+            assert response.status_code == 204
+
+        # Then
+        assert CollectiveOffer.query.get(draft_offer.id).isArchived
+        assert CollectiveOffer.query.get(other_offer.id).isArchived
 
 
 @pytest.mark.usefixtures("db_session")
