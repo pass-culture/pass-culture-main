@@ -563,6 +563,36 @@ class ListOffersTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert {int(row["ID"]) for row in rows} == {offers[1].id, offers[2].id}
 
+    def test_list_offers_with_mediations(self, authenticated_client):
+        mediation = offers_factories.MediationFactory()
+        offers_factories.OfferFactory()
+        query_args = {
+            "search-0-search_field": "MEDIATION",
+            "search-0-operator": "NULLABLE",
+            "search-0-boolean": "true",
+        }
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert {int(row["ID"]) for row in rows} == {mediation.offerId}
+
+    def test_list_offers_without_mediations(self, authenticated_client):
+        offers_factories.MediationFactory()
+        offer = offers_factories.OfferFactory()
+        query_args = {
+            "search-0-search_field": "MEDIATION",
+            "search-0-operator": "NULLABLE",
+            "search-0-boolean": "false",
+        }
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert {int(row["ID"]) for row in rows} == {offer.id}
+
     def test_list_offers_advanced_search_by_music_type_with_titelive_genres(self, authenticated_client, offers):
         query_args = {
             "search-3-search_field": "MUSIC_TYPE_GTL",
