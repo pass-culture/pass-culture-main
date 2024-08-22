@@ -9,7 +9,7 @@ export const Welcome = (): JSX.Element => {
   return (
     <div className={styles['welcome-layout']}>
       <h1 className={styles['title']}>Finalisez votre inscription</h1>
-      <div className={styles['informations']}>
+      <div>
         Avant de commencer, munissez-vous du numéro de SIRET de votre structure.{' '}
       </div>
       <ButtonLink
