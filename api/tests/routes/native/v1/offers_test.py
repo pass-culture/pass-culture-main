@@ -2347,7 +2347,7 @@ class SubcategoriesTest:
         assert found_home_labels == expected_home_labels
 
         found_native_categories = {x["name"] for x in response.json["nativeCategories"]}
-        expected_native_categories = {x.native_category.name for x in subcategories.ALL_SUBCATEGORIES}
+        expected_native_categories = {x.name for x in subcategories.NATIVE_CATEGORIES}
         assert found_native_categories == expected_native_categories
 
         found_genre_types = {x["name"] for x in response.json["genreTypes"]}
