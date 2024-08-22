@@ -17,8 +17,7 @@ When('I go to the {string} page', (page: string) => {
   cy.findAllByTestId('spinner').should('not.exist')
 })
 
-// this account is also in the new interface now
-Given('I am logged in', () => {
+Given('I am logged in with account 1', () => {
   cy.login({
     email: 'retention_structures@example.com',
     password: 'user@AZERTY123',
@@ -26,10 +25,19 @@ Given('I am logged in', () => {
   cy.findAllByTestId('spinner').should('not.exist')
 })
 
-Given('I am logged in with the new interface', () => {
+Given('I am logged in with account 2', () => {
   cy.login({
     email: 'activation_new_nav@example.com',
     password: 'user@AZERTY123',
+  })
+  cy.findAllByTestId('spinner').should('not.exist')
+})
+
+Given('I am logged in with account 2 and no cookie selection', () => {
+  cy.login({
+    email: 'activation_new_nav@example.com',
+    password: 'user@AZERTY123',
+    refusePopupCookies: false,
   })
   cy.findAllByTestId('spinner').should('not.exist')
 })

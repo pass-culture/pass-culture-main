@@ -2,7 +2,7 @@
 Feature: Search collective offers
 
   Scenario: A search with several filters should display expected results
-    Given I am logged in
+    Given I am logged in with account 1
     And I select offerer "eac_2_lieu [BON EAC]"
     When I go to Offres collectives view
     And I select "real_venue 1 eac_2_lieu [BON EAC]" in "Lieu"
