@@ -692,3 +692,34 @@ def delete_price_category(offer_id: int, price_category_id: int) -> None:
 
     price_category = models.PriceCategory.query.get_or_404(price_category_id)
     offers_api.delete_price_category(offer, price_category)
+
+
+@private_api.route("/get_product_by_ean/<string:ean>", methods=["GET"])
+@login_required
+@spectree_serialize(
+    response_model=offers_serialize.GetProductInformations,
+    api=blueprint.pro_private_schema,
+)
+def get_product_by_ean(ean: str) -> offers_serialize.GetProductInformations:
+    import sqlalchemy.orm as sa_orm
+
+    product = (
+        models.Product.query.filter(models.Product.extraData["ean"].astext == ean)
+        .options(sa_orm.joinedload(models.Product.productMediations))
+        .one_or_none()
+    )
+    if product is None:
+        raise api_errors.ApiErrors(
+            errors={
+                "global": ["Aucun produit ne correspond à ce code EAN dans notre base de données"],
+            },
+            status_code=404,
+        )
+    if not product.isGcuCompatible:
+        raise api_errors.ApiErrors(
+            errors={
+                "global": ["Ce product n'est pas compatible avec les CGU"],
+            },
+            status_code=200,
+        )
+    return offers_serialize.GetProductInformations.from_orm(product=product)

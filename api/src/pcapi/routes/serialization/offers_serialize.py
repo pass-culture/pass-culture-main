@@ -593,3 +593,26 @@ class MusicTypeResponse(BaseModel):
 
 class GetMusicTypesResponse(BaseModel):
     __root__: list[MusicTypeResponse]
+
+
+class GetProductInformations(BaseModel):
+    id: int
+    name: str
+    description: str
+    subcategoryId: str
+    gtl_id: str
+    author: str
+    performer: str
+    images: dict
+
+    @classmethod
+    def from_orm(cls, product: offers_models.Product) -> "GetProductInformations":
+        product.gtl_id = product.extraData.get("gtl_id", "") if product.extraData else ""
+        product.author = product.extraData.get("author", "") if product.extraData else ""
+        product.performer = product.extraData.get("performer", "") if product.extraData else ""
+        return super().from_orm(product)
+
+    class Config:
+        alias_generator = to_camel
+        allow_population_by_field_name = True
+        orm_mode = True

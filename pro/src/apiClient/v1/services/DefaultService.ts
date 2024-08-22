@@ -51,6 +51,7 @@ import type { GetOffererResponseModel } from '../models/GetOffererResponseModel'
 import type { GetOfferersNamesResponseModel } from '../models/GetOfferersNamesResponseModel';
 import type { GetOffererStatsResponseModel } from '../models/GetOffererStatsResponseModel';
 import type { GetOffererV2StatsResponseModel } from '../models/GetOffererV2StatsResponseModel';
+import type { GetProductInformations } from '../models/GetProductInformations';
 import type { GetStocksResponseModel } from '../models/GetStocksResponseModel';
 import type { GetVenueListResponseModel } from '../models/GetVenueListResponseModel';
 import type { GetVenueResponseModel } from '../models/GetVenueResponseModel';
@@ -1208,6 +1209,27 @@ export class DefaultService {
       url: '/finance/combined-invoices',
       query: {
         'invoiceReferences': invoiceReferences,
+      },
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+  /**
+   * get_product_by_ean <GET>
+   * @param ean
+   * @returns GetProductInformations OK
+   * @throws ApiError
+   */
+  public getProductByEan(
+    ean: string,
+  ): CancelablePromise<GetProductInformations> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/get_product_by_ean/{ean}',
+      path: {
+        'ean': ean,
       },
       errors: {
         403: `Forbidden`,
