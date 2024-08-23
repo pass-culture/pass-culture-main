@@ -2379,6 +2379,30 @@ class ConfirmOfferStockTest(PostEndpointHelper):
             in response.data
         )
 
+    def test_confirm_edit_bookings_with_value_higher_than_bookings(self, authenticated_client):
+        offer = offers_factories.OfferFactory(subcategoryId=subcategories.CONFERENCE.id)
+        stock_to_edit = offers_factories.StockFactory(
+            offer=offer,
+            price=decimal.Decimal("10"),
+        )
+        bookings_factories.UsedBookingFactory(
+            stock=stock_to_edit,
+            amount=decimal.Decimal("5"),
+        )
+
+        response = self.post_to_endpoint(
+            authenticated_client, offer_id=offer.id, stock_id=stock_to_edit.id, form={"price": 7.5}
+        )
+
+        assert (
+            "Cette modification amènerait à augmenter le prix de certaines réservations. Celles-ci ne seront pas changées".encode()
+            in response.data
+        )
+        assert (
+            '<span class="fw-bold">1 réservation :</span><span class="text-nowrap">5,00 €</span> → <span class="text-nowrap">5,00 €</span>'.encode()
+            in response.data
+        )
+
     def test_offer_stock_edit_cashfow_script_running(self, authenticated_client, app):
         offer = offers_factories.OfferFactory(subcategoryId=subcategories.CONFERENCE.id)
         venue = offer.venue
@@ -2796,6 +2820,41 @@ class EditOfferStockTest(PostEndpointHelper):
         )
 
         assert event.booking.stock.price == decimal.Decimal("123.45")
+
+    def test_edit_stock_withprice_higher_than_booking(self, authenticated_client):
+        offer = offers_factories.OfferFactory(subcategoryId=subcategories.CONFERENCE.id)
+        venue = offer.venue
+        event = finance_factories.FinanceEventFactory(
+            booking__amount=decimal.Decimal("5.00"),
+            booking__stock__offer=offer,
+            booking__stock__price=decimal.Decimal("123.45"),
+            venue=venue,
+            pricingPoint=venue,
+        )
+        finance_factories.PricingFactory(
+            event=event,
+            pricingPoint=venue,
+        )
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            offer_id=offer.id,
+            stock_id=event.booking.stock.id,
+            form={"price": 10.0},
+        )
+
+        db.session.refresh(event.booking)
+
+        assert response.status_code == 303
+
+        expected_url = url_for("backoffice_web.offer.get_offer_details", offer_id=offer.id, _external=True)
+        assert response.location == expected_url
+
+        response = authenticated_client.get(url_for("backoffice_web.offer.get_offer_details", offer_id=offer.id))
+        assert response.status_code == 200
+
+        assert event.booking.stock.price == decimal.Decimal("10.00")
+        assert event.booking.amount == decimal.Decimal("5.00")
 
 
 class DownloadBookingsCSVTest(GetEndpointHelper):

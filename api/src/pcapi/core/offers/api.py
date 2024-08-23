@@ -12,6 +12,7 @@ from psycopg2.errorcodes import UNIQUE_VIOLATION
 from psycopg2.extras import DateTimeRange
 import sentry_sdk
 import sqlalchemy as sa
+from sqlalchemy import func
 import sqlalchemy.exc as sqla_exc
 from werkzeug.exceptions import BadRequest
 
@@ -2028,7 +2029,7 @@ def update_used_stock_price(
         stock.price = new_price
         bookings_models.Booking.query.filter(
             bookings_models.Booking.stockId == stock.id,
-        ).update({bookings_models.Booking.amount: new_price})
+        ).update({bookings_models.Booking.amount: func.least(new_price, bookings_models.Booking.amount)})
     elif price_percent:
         stock.price = round(stock.price * price_percent, 2)
         bookings_models.Booking.query.filter(

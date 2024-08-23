@@ -12,6 +12,7 @@
             data-bs-dismiss="modal"
             aria-label="Fermer"></button>
   </div>
+  {% if alert %}<div class="alert alert-warning alert-dismissible fade show mb-0 px-5 rounded-0">{{ alert }}</div>{% endif %}
   <div class="modal-body row">
     <div class="my-1">Effet de la baisse de prix demandée :</div>
     <div class="my-1 card">
