@@ -20,6 +20,7 @@ export const useOfferWizardMode = (): OFFER_WIZARD_MODE => {
       mode: OFFER_WIZARD_MODE.EDITION,
     },
   ]
+
   const wizardModeDetails = modePathMap.find((data) =>
     location.pathname.includes(data.pathPart)
   )
