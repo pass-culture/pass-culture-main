@@ -83,7 +83,6 @@ import type { PatchCollectiveOfferBodyModel } from '../models/PatchCollectiveOff
 import type { PatchCollectiveOfferEducationalInstitution } from '../models/PatchCollectiveOfferEducationalInstitution';
 import type { PatchCollectiveOfferTemplateBodyModel } from '../models/PatchCollectiveOfferTemplateBodyModel';
 import type { PatchDraftOfferBodyModel } from '../models/PatchDraftOfferBodyModel';
-import type { PatchDraftOfferUsefulInformationsBodyModel } from '../models/PatchDraftOfferUsefulInformationsBodyModel';
 import type { PatchOfferActiveStatusBodyModel } from '../models/PatchOfferActiveStatusBodyModel';
 import type { PatchOfferBodyModel } from '../models/PatchOfferBodyModel';
 import type { PatchOffererAddressRequest } from '../models/PatchOffererAddressRequest';
@@ -1816,31 +1815,6 @@ export class DefaultService {
     return this.httpRequest.request({
       method: 'PATCH',
       url: '/offers/draft/{offer_id}',
-      path: {
-        'offer_id': offerId,
-      },
-      body: requestBody,
-      mediaType: 'application/json',
-      errors: {
-        403: `Forbidden`,
-        422: `Unprocessable Entity`,
-      },
-    });
-  }
-  /**
-   * patch_draft_offer_useful_informations <PATCH>
-   * @param offerId
-   * @param requestBody
-   * @returns GetIndividualOfferResponseModel OK
-   * @throws ApiError
-   */
-  public patchDraftOfferUsefulInformations(
-    offerId: number,
-    requestBody?: PatchDraftOfferUsefulInformationsBodyModel,
-  ): CancelablePromise<GetIndividualOfferResponseModel> {
-    return this.httpRequest.request({
-      method: 'PATCH',
-      url: '/offers/draft/{offer_id}/useful-informations',
       path: {
         'offer_id': offerId,
       },

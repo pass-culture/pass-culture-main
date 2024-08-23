@@ -282,33 +282,6 @@ def patch_draft_offer(
     return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)
 
 
-@private_api.route("/offers/draft/<int:offer_id>/useful-informations", methods=["PATCH"])
-@login_required
-@spectree_serialize(
-    response_model=offers_serialize.GetIndividualOfferResponseModel,
-    api=blueprint.pro_private_schema,
-)
-def patch_draft_offer_useful_informations(
-    offer_id: int, body: offers_schemas.PatchDraftOfferUsefulInformationsBodyModel
-) -> offers_serialize.GetIndividualOfferResponseModel:
-    offer = models.Offer.query.options(
-        sqla.orm.joinedload(models.Offer.stocks).joinedload(models.Stock.bookings),
-        sqla.orm.joinedload(models.Offer.venue).joinedload(offerers_models.Venue.managingOfferer),
-        sqla.orm.joinedload(models.Offer.product),
-    ).get(offer_id)
-    if not offer:
-        raise api_errors.ResourceNotFoundError
-
-    rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
-    try:
-        with repository.transaction():
-            offer = offers_api.update_draft_offer_useful_informations(offer, body)
-    except (exceptions.OfferCreationBaseException, exceptions.OfferEditionBaseException) as error:
-        raise api_errors.ApiErrors(error.errors, status_code=400)
-
-    return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)
-
-
 @private_api.route("/offers", methods=["POST"])
 @login_required
 @spectree_serialize(
