@@ -7,6 +7,7 @@ from pcapi.core.categories import subcategories_v2 as subcategories
 import pcapi.core.criteria.factories as criteria_factories
 import pcapi.core.educational.factories as educational_factories
 from pcapi.core.educational.models import StudentLevels
+import pcapi.core.geography.factories as geography_factories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.factories as offers_factories
@@ -275,7 +276,7 @@ def test_serialize_venue():
     serialized = algolia.AlgoliaBackend().serialize_venue(venue)
     assert serialized == {
         "objectID": venue.id,
-        "city": venue.city,
+        "city": venue.offererAddress.address.city,
         "name": venue.name,
         "offerer_name": venue.managingOfferer.name,
         "venue_type": venue.venueTypeCode.name,
@@ -293,11 +294,14 @@ def test_serialize_venue():
         "twitter": "https://twitter.com/my.venue",
         "tags": [],
         "banner_url": venue.bannerUrl,
-        "_geoloc": {"lng": float(venue.longitude), "lat": float(venue.latitude)},
+        "_geoloc": {
+            "lng": float(venue.offererAddress.address.longitude),
+            "lat": float(venue.offererAddress.address.latitude),
+        },
         "has_at_least_one_bookable_offer": False,
         "date_created": venue.dateCreated.timestamp(),
-        "postalCode": venue.postalCode,
-        "adress": venue.street,
+        "postalCode": venue.offererAddress.address.postalCode,
+        "adress": venue.offererAddress.address.street,
     }
 
 

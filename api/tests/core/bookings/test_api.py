@@ -171,8 +171,9 @@ class BookOfferTest:
         # 1 - UPDATE dnBookedQuantity
         # 1 - INSERT the new booking
         # 1 - SELECT the user
-        # 7 - SELECT the stock, booking, external_booking, stock, venue, offerer, provider
+        # 8 - SELECT the stock, booking, external_booking, stock, venue, offerer, offererAddress, provider
         # 1 - SELECT venue with bank activation & bank account
+        # 1 - SELECT OA (probably should be with the venue)
         # 1 - SELECT activation code
         # 1 - SELECT criterion
         # 1 - SELECT user's bookings with stock, offer, venue
@@ -184,7 +185,7 @@ class BookOfferTest:
         # 1 - SELECT from offer that I don't get
         # 1 - SELECT bookings for the venue ???
         # 1 - SELECT feature
-        with assert_num_queries(35):
+        with assert_num_queries(37):
             booking = api.book_offer(beneficiary=beneficiary, stock_id=stock_id, quantity=1)
 
         # One request should have been sent to Batch to trigger the event
@@ -1176,7 +1177,7 @@ class CancelByBeneficiaryTest:
         providers_factories.OffererProviderFactory(provider=provider)
         stock = offers_factories.StockFactory(
             offer__lastProvider=provider,
-            offer__venue__street="1 boulevard Poissonniere",
+            offer__venue__offererAddress__address__street="1 boulevard Poissonniere",
             offer__extraData={"ean": "1234567890123"},
             dnBookedQuantity=1,
             idAtProviders="",
@@ -1219,7 +1220,7 @@ class CancelByBeneficiaryTest:
         providers_factories.OffererProviderFactory(provider=provider)
         stock = offers_factories.EventStockFactory(
             offer__lastProvider=provider,
-            offer__venue__street="1 boulevard Poissonniere",
+            offer__venue__offererAddress__address__street="1 boulevard Poissonniere",
             offer__extraData={"ean": "1234567890123"},
             offer__withdrawalType=offers_models.WithdrawalTypeEnum.NO_TICKET,
             dnBookedQuantity=1,

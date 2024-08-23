@@ -36,6 +36,8 @@ from pcapi.core.bookings.models import ExternalBooking
 from pcapi.core.bookings.utils import convert_booking_dates_utc_to_venue_timezone
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.educational import models as educational_models
+import pcapi.core.geography.models as geography_models
+import pcapi.core.offerers.models as offerers_models
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import UserOfferer
 from pcapi.core.offerers.models import Venue
@@ -354,12 +356,14 @@ def _create_export_query(offer_id: int, event_beginning_date: date) -> BaseQuery
         .join(Booking.venue)
         .join(Booking.stock)
         .join(Stock.offer)
+        .join(offerers_models.Venue.offererAddress, isouter=True)
+        .join(offerers_models.OffererAddress.address, isouter=True)
         .filter(Stock.offerId == offer_id, field_to_venue_timezone(Stock.beginningDatetime) == event_beginning_date)
         .order_by(Booking.id)
         .with_entities(
             Booking.id.label("id"),
             Venue.common_name.label("venueName"),  # type: ignore[attr-defined]
-            Venue.departementCode.label("venueDepartmentCode"),
+            geography_models.Address.departmentCode.label("venueDepartmentCode"),
             Offerer.postalCode.label("offererPostalCode"),
             Offer.name.label("offerName"),
             Stock.beginningDatetime.label("stockBeginningDatetime"),
@@ -438,7 +442,7 @@ def get_export(
 
 # FIXME (Gautier, 03-25-2022): also used in collective_booking. SHould we move it to core or some other place?
 def field_to_venue_timezone(field: InstrumentedAttribute) -> cast:
-    return cast(func.timezone(Venue.timezone, func.timezone("UTC", field)), Date)
+    return cast(func.timezone(geography_models.Address.timezone, func.timezone("UTC", field)), Date)
 
 
 def serialize_offer_type_educational_or_individual(offer_is_educational: bool) -> str:
@@ -464,6 +468,8 @@ def _get_filtered_bookings_query(
         .join(Stock.offer)
         .join(Booking.externalBookings, isouter=True)
         .join(Booking.venue, isouter=True)
+        .join(offerers_models.Venue.offererAddress, isouter=True)
+        .join(offerers_models.OffererAddress.address, isouter=True)
     )
     for join_key in extra_joins:
         bookings_query = bookings_query.join(join_key, isouter=True)
@@ -540,7 +546,7 @@ def _get_filtered_booking_report(
         )
         .with_entities(
             Venue.common_name.label("venueName"),  # type: ignore[attr-defined]
-            Venue.departementCode.label("venueDepartmentCode"),
+            geography_models.Address.departmentCode.label("venueDepartmentCode"),
             Offerer.postalCode.label("offererPostalCode"),
             Offer.name.label("offerName"),
             Stock.beginningDatetime.label("stockBeginningDatetime"),
@@ -619,7 +625,7 @@ def _get_filtered_booking_pro(
             User.phoneNumber.label("beneficiaryPhoneNumber"),  # type: ignore[attr-defined]
             Stock.beginningDatetime.label("stockBeginningDatetime"),
             Booking.stockId,
-            Venue.departementCode.label("venueDepartmentCode"),
+            geography_models.Address.departmentCode.label("venueDepartmentCode"),
             Offerer.postalCode.label("offererPostalCode"),
         )
         .distinct(Booking.id)

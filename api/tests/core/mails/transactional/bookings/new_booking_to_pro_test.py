@@ -28,11 +28,11 @@ def make_booking(**kwargs):
         stock__offer__name="Super évènement",
         stock__offer__subcategoryId=subcategories.SPECTACLE_REPRESENTATION.id,
         stock__offer__venue__name="Lieu de l'offreur",
-        stock__offer__venue__street="25 avenue du lieu",
-        stock__offer__venue__postalCode="75010",
-        stock__offer__venue__city="Paris",
+        stock__offer__venue__offererAddress__address__street="25 avenue du lieu",
+        stock__offer__venue__offererAddress__address__postalCode="75010",
+        stock__offer__venue__offererAddress__address__city="Paris",
+        stock__offer__venue__offererAddress__address__departmentCode="75",
         stock__offer__venue__managingOfferer__name="Théâtre du coin",
-        stock__offer__venue__departementCode="75",
     )
     attributes.update(kwargs)
     return bookings_factories.BookingFactory(**attributes)
@@ -109,20 +109,16 @@ class OffererBookingRecapTest:
             stock__offer__name="Le récit de voyage",
             stock__offer__extraData={"ean": "123456789"},
             stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
-            stock__offer__venue__street=None,
-            stock__offer__venue__city=None,
-            stock__offer__venue__departementCode=None,
             stock__offer__venue__isVirtual=True,
-            stock__offer__venue__postalCode=None,
             stock__offer__venue__siret=None,
-            stock__offer__venue__offererAddress=None,
+            stock__offer__venue__offererAddress__address__departmentCode="33",
         )
 
         email_data = get_new_booking_to_pro_email_data(booking)
 
         expected = get_expected_base_email_data(
             booking,
-            DEPARTMENT_CODE=None,
+            DEPARTMENT_CODE="33",
             EVENT_DATE="",
             EVENT_HOUR="",
             IS_EVENT=False,
@@ -139,20 +135,16 @@ class OffererBookingRecapTest:
             stock__offer__name="Le récit de voyage",
             stock__offer__extraData={},  # no EAN
             stock__offer__subcategoryId=subcategories.LIVRE_PAPIER.id,
-            stock__offer__venue__street=None,
-            stock__offer__venue__city=None,
-            stock__offer__venue__departementCode=None,
             stock__offer__venue__isVirtual=True,
-            stock__offer__venue__postalCode=None,
             stock__offer__venue__siret=None,
-            stock__offer__venue__offererAddress=None,
+            stock__offer__venue__offererAddress__address__departmentCode="33",
         )
 
         email_data = get_new_booking_to_pro_email_data(booking)
 
         expected = get_expected_base_email_data(
             booking,
-            DEPARTMENT_CODE=None,
+            DEPARTMENT_CODE="33",
             EVENT_DATE="",
             EVENT_HOUR="",
             IS_EVENT=False,

@@ -511,10 +511,13 @@ def check_booking_limit_datetime(
         else:
             offer = stock.offer
 
-        if offer.venue.departementCode is not None:  # update to timezone
-            beginning = date.utc_datetime_to_department_timezone(beginning, offer.venue.departementCode)
+        # TODO(OA): Which OA is it venue or offer ?
+        if offer.venue.offererAddress and offer.venue.offererAddress.address.departmentCode:  # update to timezone
+            beginning = date.utc_datetime_to_department_timezone(
+                beginning, offer.venue.offererAddress.address.departmentCode
+            )
             booking_limit_datetime = date.utc_datetime_to_department_timezone(
-                booking_limit_datetime, offer.venue.departementCode
+                booking_limit_datetime, offer.venue.offererAddress.address.departmentCode
             )
 
     if booking_limit_datetime > beginning:

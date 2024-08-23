@@ -569,7 +569,6 @@ class AlgoliaBackend(base.SearchBackend):
                 "name": offerer.name,
             },
             "venue": {
-                "address": venue.street,
                 "banner_url": venue.bannerUrl,
                 "address": address,
                 "city": city,
@@ -581,7 +580,6 @@ class AlgoliaBackend(base.SearchBackend):
                 "isMotorDisabilityCompliant": venue.motorDisabilityCompliant,
                 "isVisualDisabilityCompliant": venue.visualDisabilityCompliant,
                 "name": venue.name,
-                "postalCode": venue.postalCode,
                 "publicName": venue.publicName,
                 "venue_type": venue.venueTypeCode.name,
             },

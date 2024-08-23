@@ -1150,7 +1150,10 @@ class IncomingEventStocksTest:
         self.stock_today = factories.EventStockFactory(beginningDatetime=today)
         bookings_factories.BookingFactory.create_batch(2, stock=self.stock_today)
 
-        offer = factories.OfferFactory(venue__departementCode="97", venue__postalCode="97180")
+        offer = factories.OfferFactory(
+            venue__offererAddress__address__departmentCode="97",
+            venue__offererAddress__address__postalCode="97180",
+        )
         self.stock_today_overseas = factories.EventStockFactory(beginningDatetime=today, offer=offer)
         bookings_factories.BookingFactory(stock=self.stock_today_overseas)
 
@@ -1689,7 +1692,11 @@ class GetStocksListFiltersTest:
         beginning_datetime_2 = datetime.datetime(2021, 3, 28, 1, 0, 0)
         beginning_datetime_3 = datetime.datetime(2021, 3, 29, 1, 0, 0)
 
-        venue = offerers_factories.VenueFactory(timezone="Europe/Paris", departementCode="78", postalCode="78220")
+        venue = offerers_factories.VenueFactory(
+            offererAddress__address__timezone="Europe/Paris",
+            offererAddress__address__departmentCode="78",
+            offererAddress__address__postalCode="78220",
+        )
 
         offer = factories.OfferFactory(venue=venue)
         factories.EventStockFactory(offer=offer, beginningDatetime=beginning_datetime_1)
@@ -1719,7 +1726,11 @@ class GetStocksListFiltersTest:
         beginning_datetime_2 = datetime.datetime(2021, 3, 14, 10, 0, 0)
         beginning_datetime_3 = datetime.datetime(2021, 3, 15, 10, 0, 0)
 
-        venue = offerers_factories.VenueFactory(timezone="America/Miquelon", departementCode="97", postalCode="97500")
+        venue = offerers_factories.VenueFactory(
+            offererAddress__address__timezone="America/Miquelon",
+            offererAddress__address__departmentCode="97",
+            offererAddress__address__postalCode="97500",
+        )
 
         offer = factories.OfferFactory(venue=venue)
         factories.EventStockFactory(offer=offer, beginningDatetime=beginning_datetime_1)

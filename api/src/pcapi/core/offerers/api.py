@@ -2282,12 +2282,12 @@ def set_accessibility_provider_id(
     if not (id_at_provider and url_at_provider):
         if id_and_url_at_provider := accessibility_provider.get_id_at_accessibility_provider(
             name=venue.name,
-            public_name=venue.publicName,
             siret=venue.siret,
-            ban_id=venue.banId,
-            city=venue.city,
-            postal_code=venue.postalCode,
-            address=venue.street,
+            public_name=venue.publicName,
+            ban_id=venue.offererAddress.address.banId,
+            city=venue.offererAddress.address.city,
+            postal_code=venue.offererAddress.address.postalCode,
+            address=venue.offererAddress.address.street,
         ):
             id_at_provider = id_and_url_at_provider["slug"]
             url_at_provider = id_and_url_at_provider["url"]
@@ -2353,10 +2353,14 @@ def get_permanent_venues_without_accessibility_provider() -> list[models.Venue]:
             sa.orm.load_only(
                 offerers_models.Venue.name,
                 offerers_models.Venue.publicName,
-                offerers_models.Venue.street,
-                offerers_models.Venue.banId,
                 offerers_models.Venue.siret,
-            )
+            ),
+            sa_orm.joinedload(offerers_models.Venue.offererAddress)
+            .joinedload(offerers_models.OffererAddress.address)
+            .load_only(
+                geography_models.Address.street,
+                geography_models.Address.banId,
+            ),
         )
         .order_by(offerers_models.Venue.id.asc())
         .all()
@@ -2395,10 +2399,10 @@ def synchronize_accessibility_provider(venue: models.Venue, force_sync: bool = F
                 name=venue.name,
                 public_name=venue.publicName,
                 siret=venue.siret,
-                ban_id=venue.banId,
-                city=venue.city,
-                postal_code=venue.postalCode,
-                address=venue.street,
+                ban_id=venue.offererAddress.address.banId,
+                city=venue.offererAddress.address.city,
+                postal_code=venue.offererAddress.address.postalCode,
+                address=venue.offererAddress.address.street,
             )
         except accessibility_provider.AccesLibreApiException as e:
             logger.exception("An error occurred while requesting Acceslibre for venue: %s, Error: %s", venue, e)
@@ -2515,10 +2519,10 @@ def match_venue_with_new_entries(
             acceslibre_results=results,
             venue_name=venue.name,
             venue_public_name=venue.publicName,
-            venue_address=venue.street,
-            venue_city=venue.city,
-            venue_postal_code=venue.postalCode,
-            venue_ban_id=venue.banId,
+            venue_address=venue.offererAddress.address.street,
+            venue_city=venue.offererAddress.address.city,
+            venue_postal_code=venue.offererAddress.address.postalCode,
+            venue_ban_id=venue.offererAddress.address.banId,
             venue_siret=venue.siret,
         ):
             venue.accessibilityProvider = offerers_models.AccessibilityProvider(

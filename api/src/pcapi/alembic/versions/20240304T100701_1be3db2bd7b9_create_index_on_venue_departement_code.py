@@ -13,15 +13,7 @@ depends_on = None
 
 
 def upgrade() -> None:
-    with op.get_context().autocommit_block():
-        op.create_index(
-            op.f("ix_venue_departementCode"),
-            "venue",
-            ["departementCode"],
-            unique=False,
-            if_not_exists=True,
-            postgresql_concurrently=True,
-        )
+    pass
 
 
 def downgrade() -> None:

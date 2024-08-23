@@ -683,7 +683,8 @@ class FindByProUserTest:
         event_datetime = datetime(2020, 4, 21, 20, 00)
 
         offer_in_cayenne = offers_factories.OfferFactory(
-            venue__postalCode="97300", venue__managingOfferer=user_offerer.offerer
+            venue__offererAddress__address__postalCode="97300",
+            venue__managingOfferer=user_offerer.offerer,
         )
         cayenne_event_datetime = datetime(2020, 4, 22, 2, 0)
         stock_in_cayenne = offers_factories.EventStockFactory(
@@ -692,7 +693,7 @@ class FindByProUserTest:
         cayenne_booking = bookings_factories.BookingFactory(stock=stock_in_cayenne)
 
         offer_in_mayotte = offers_factories.OfferFactory(
-            venue__postalCode="97600", venue__managingOfferer=user_offerer.offerer
+            venue__offererAddress__address__postalCode="97600", venue__managingOfferer=user_offerer.offerer
         )
         mayotte_event_datetime = datetime(2020, 4, 20, 22, 0)
         stock_in_mayotte = offers_factories.EventStockFactory(
@@ -752,7 +753,7 @@ class FindByProUserTest:
         requested_booking_period_ending = datetime(2020, 4, 22, 20, 00).date()
 
         offer_in_cayenne = offers_factories.OfferFactory(
-            venue__postalCode="97300", venue__managingOfferer=user_offerer.offerer
+            venue__offererAddress__address__postalCode="97300", venue__managingOfferer=user_offerer.offerer
         )
         cayenne_booking_datetime = datetime(2020, 4, 22, 2, 0)
         stock_in_cayenne = offers_factories.EventStockFactory(
@@ -763,7 +764,7 @@ class FindByProUserTest:
         )
 
         offer_in_mayotte = offers_factories.OfferFactory(
-            venue__postalCode="97600", venue__managingOfferer=user_offerer.offerer
+            venue__offererAddress__address__postalCode="97600", venue__managingOfferer=user_offerer.offerer
         )
         mayotte_booking_datetime = datetime(2020, 4, 20, 23, 0)
         stock_in_mayotte = offers_factories.EventStockFactory(
@@ -817,7 +818,7 @@ class GetOfferBookingsByStatusCSVTest:
     ):
         assert data_dict["Partenaire culturel"] == venue.name
         assert data_dict["Nom de l’offre"] == offer.name
-        booking.venueDepartmentCode = booking.venue.departementCode
+        booking.venueDepartmentCode = booking.venue.offererAddress.address.departmentCode
         assert data_dict["Date de l'évènement"] == str(
             convert_booking_dates_utc_to_venue_timezone(booking.stock.beginningDatetime, booking)
         )
@@ -1138,7 +1139,7 @@ class LegacyGetOfferBookingsByStatusCSVTest:
     ):
         assert data_dict["Lieu"] == venue.name
         assert data_dict["Nom de l’offre"] == offer.name
-        booking.venueDepartmentCode = booking.venue.departementCode
+        booking.venueDepartmentCode = booking.venue.offererAddress.address.departmentCode
         assert data_dict["Date de l'évènement"] == str(
             convert_booking_dates_utc_to_venue_timezone(booking.stock.beginningDatetime, booking)
         )
@@ -1478,7 +1479,7 @@ class GetOfferBookingsByStatusExcelTest:
         # Nom de l’offre
         assert sheet.cell(row=row, column=2).value == offer.name
         # Date de l'évènement
-        booking.venueDepartmentCode = booking.venue.departementCode
+        booking.venueDepartmentCode = booking.venue.offererAddress.address.departmentCode
         assert sheet.cell(row=row, column=3).value == str(
             convert_booking_dates_utc_to_venue_timezone(booking.stock.beginningDatetime, booking)
         )
@@ -1838,7 +1839,7 @@ class LegacyGetOfferBookingsByStatusExcelTest:
         # Nom de l’offre
         assert sheet.cell(row=row, column=2).value == offer.name
         # Date de l'évènement
-        booking.venueDepartmentCode = booking.venue.departementCode
+        booking.venueDepartmentCode = booking.venue.offererAddress.address.departmentCode
         assert sheet.cell(row=row, column=3).value == str(
             convert_booking_dates_utc_to_venue_timezone(booking.stock.beginningDatetime, booking)
         )
@@ -2853,7 +2854,7 @@ class GetCsvReportTest:
         event_datetime = datetime(2020, 4, 21, 20, 00)
 
         offer_in_cayenne = offers_factories.OfferFactory(
-            venue__postalCode="97300", venue__managingOfferer=user_offerer.offerer
+            venue__offererAddress__address__postalCode="97300", venue__managingOfferer=user_offerer.offerer
         )
         cayenne_event_datetime = datetime(2020, 4, 22, 2, 0)
         stock_in_cayenne = offers_factories.EventStockFactory(
@@ -2862,7 +2863,7 @@ class GetCsvReportTest:
         cayenne_booking = bookings_factories.BookingFactory(stock=stock_in_cayenne)
 
         offer_in_mayotte = offers_factories.OfferFactory(
-            venue__postalCode="97600", venue__managingOfferer=user_offerer.offerer
+            venue__offererAddress__address__postalCode="97600", venue__managingOfferer=user_offerer.offerer
         )
         mayotte_event_datetime = datetime(2020, 4, 20, 22, 0)
         stock_in_mayotte = offers_factories.EventStockFactory(
@@ -2923,7 +2924,7 @@ class GetCsvReportTest:
         requested_booking_period_ending = datetime(2020, 4, 22, 20, 00).date()
 
         offer_in_cayenne = offers_factories.OfferFactory(
-            venue__postalCode="97300", venue__managingOfferer=user_offerer.offerer
+            venue__offererAddress__address__postalCode="97300", venue__managingOfferer=user_offerer.offerer
         )
         cayenne_booking_datetime = datetime(2020, 4, 22, 2, 0)
         stock_in_cayenne = offers_factories.EventStockFactory(
@@ -2934,7 +2935,7 @@ class GetCsvReportTest:
         )
 
         offer_in_mayotte = offers_factories.OfferFactory(
-            venue__postalCode="97600", venue__managingOfferer=user_offerer.offerer
+            venue__offererAddress__address__postalCode="97600", venue__managingOfferer=user_offerer.offerer
         )
         mayotte_booking_datetime = datetime(2020, 4, 20, 23, 0)
         stock_in_mayotte = offers_factories.EventStockFactory(

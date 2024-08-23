@@ -108,12 +108,12 @@ class CreateVenueTest:
         offerers_api.create_venue(data, user_offerer.user)
 
         venue = offerers_models.Venue.query.one()
-        assert venue.street == "rue du test"
         assert venue.banId == "75113_1834_00007"
-        assert venue.city == "Paris"
-        assert venue.postalCode == "75000"
-        assert venue.latitude == 1
-        assert venue.longitude == 1
+        assert venue.offererAddress.address.street == "rue du test"
+        assert venue.offererAddress.address.city == "Paris"
+        assert venue.offererAddress.address.postalCode == "75000"
+        assert venue.offererAddress.address.latitude == 1
+        assert venue.offererAddress.address.longitude == 1
         assert venue.managingOfferer == user_offerer.offerer
         assert venue.name == "La Venue"
         assert venue.bookingEmail == "venue@example.com"
@@ -1996,15 +1996,15 @@ class UpdateOffererTagTest:
 
 class CreateFromOnboardingDataTest:
     def assert_common_venue_attrs(self, venue: offerers_models.Venue) -> None:
-        assert venue.street == "3 RUE DE VALOIS"
-        assert venue.banId == "75101_9575_00003"
+        assert venue.offererAddress.address.street == "3 Rue de Valois"
+        assert venue.offererAddress.address.banId == "75101_9575_00003"
+        assert venue.offererAddress.address.city == "Paris"
+        assert venue.offererAddress.address.latitude == decimal.Decimal("2.30829")
+        assert venue.offererAddress.address.longitude == decimal.Decimal("48.87171")
+        assert venue.offererAddress.address.postalCode == "75001"
         assert venue.bookingEmail == "pro@example.com"
-        assert venue.city == "Paris"
         assert venue.dmsToken
-        assert venue.latitude == decimal.Decimal("2.30829")
-        assert venue.longitude == decimal.Decimal("48.87171")
         assert venue.name == "MINISTERE DE LA CULTURE"
-        assert venue.postalCode == "75001"
         assert venue.publicName == "Nom public de mon lieu"
         assert venue.venueTypeCode == offerers_models.VenueTypeCode.MOVIE
         assert venue.audioDisabilityCompliant is None
@@ -2328,11 +2328,11 @@ class CreateFromOnboardingDataTest:
         # 1 virtual Venue + 1 Venue with siret have been created
         assert len(created_user_offerer.offerer.managedVenues) == 2
         created_venue, _ = sorted(created_user_offerer.offerer.managedVenues, key=lambda v: v.isVirtual)
-        assert created_venue.street == "n/d"
-        assert created_venue.city == "Paris"
-        assert created_venue.latitude == decimal.Decimal("2.30829")
-        assert created_venue.longitude == decimal.Decimal("48.87171")
-        assert created_venue.postalCode == "75001"
+        assert created_venue.offererAddress.address.street == "n/d"
+        assert created_venue.offererAddress.address.city == "Paris"
+        assert created_venue.offererAddress.address.latitude == decimal.Decimal("2.30829")
+        assert created_venue.offererAddress.address.longitude == decimal.Decimal("48.87171")
+        assert created_venue.offererAddress.address.postalCode == "75001"
 
     def test_missing_ban_id(self):
         user = users_factories.UserFactory(email="pro@example.com")
@@ -2352,12 +2352,12 @@ class CreateFromOnboardingDataTest:
         # 1 virtual Venue + 1 Venue with siret have been created
         assert len(created_user_offerer.offerer.managedVenues) == 2
         created_venue, _ = sorted(created_user_offerer.offerer.managedVenues, key=lambda v: v.isVirtual)
-        assert created_venue.street == "3 RUE DE VALOIS"
-        assert created_venue.banId is None
-        assert created_venue.city == "Paris"
-        assert created_venue.latitude == decimal.Decimal("2.30829")
-        assert created_venue.longitude == decimal.Decimal("48.87171")
-        assert created_venue.postalCode == "75001"
+        assert created_venue.offererAddress.address.street == "3 Rue de Valois"
+        assert created_venue.offererAddress.address.banId is None
+        assert created_venue.offererAddress.address.city == "Paris"
+        assert created_venue.offererAddress.address.latitude == decimal.Decimal("2.30829")
+        assert created_venue.offererAddress.address.longitude == decimal.Decimal("48.87171")
+        assert created_venue.offererAddress.address.postalCode == "75001"
 
     @patch("pcapi.connectors.virustotal.request_url_scan")
     def test_web_presence_url_scanned(self, mock_request_url_scan):
@@ -2571,8 +2571,8 @@ class AccessibilityProviderTest:
     def test_set_accessibility_provider_id(self):
         venue = offerers_factories.VenueFactory(
             name="Une librairie de test",
-            postalCode="75001",
-            city="Paris",
+            offererAddress__address__postalCode="75001",
+            offererAddress__address__city="Paris",
         )
         venue_accessibility = offerers_factories.AccessibilityProviderFactory(venue=venue)
         offerers_api.set_accessibility_provider_id(venue)
@@ -2581,8 +2581,8 @@ class AccessibilityProviderTest:
     def test_set_accessibility_last_update_at_provider_id(self):
         venue = offerers_factories.VenueFactory(
             name="Une librairie de test",
-            postalCode="75001",
-            city="Paris",
+            offererAddress__address__postalCode="75001",
+            offererAddress__address__city="Paris",
         )
         offerers_factories.AccessibilityProviderFactory(venue=venue)
         offerers_api.set_accessibility_infos_from_provider_id(venue)
@@ -2591,8 +2591,8 @@ class AccessibilityProviderTest:
     def test_set_accessibility_infos_from_provider_id(self):
         venue = offerers_factories.VenueFactory(
             name="Une librairie de test",
-            postalCode="75001",
-            city="Paris",
+            offererAddress__address__postalCode="75001",
+            offererAddress__address__city="Paris",
         )
         offerers_factories.AccessibilityProviderFactory(venue=venue)
         offerers_api.set_accessibility_infos_from_provider_id(venue)
@@ -2604,8 +2604,8 @@ class AccessibilityProviderTest:
     def test_synchronize_accessibility_provider_no_data(self):
         venue = offerers_factories.VenueFactory(
             name="Une librairie de test",
-            postalCode="75001",
-            city="Paris",
+            offererAddress__address__postalCode="75001",
+            offererAddress__address__city="Paris",
         )
         accessibility_provider = offerers_factories.AccessibilityProviderFactory(
             venue=venue, externalAccessibilityData=None
@@ -2616,8 +2616,8 @@ class AccessibilityProviderTest:
     def test_synchronize_accessibility_provider_with_new_update(self):
         venue = offerers_factories.VenueFactory(
             name="Une librairie de test",
-            postalCode="75001",
-            city="Paris",
+            offererAddress__address__postalCode="75001",
+            offererAddress__address__city="Paris",
         )
         accessibility_provider = offerers_factories.AccessibilityProviderFactory(
             venue=venue, lastUpdateAtProvider=datetime.datetime(2023, 2, 1)
@@ -2640,8 +2640,8 @@ class AccessibilityProviderTest:
     ):
         venue = offerers_factories.VenueFactory(
             name="Une librairie de test",
-            postalCode="75001",
-            city="Paris",
+            offererAddress__address__postalCode="75001",
+            offererAddress__address__city="Paris",
         )
         mock_get_id_at_accessibility_provider.side_effect = [
             acceslibre_connector.AcceslibreInfos(slug="nouveau-slug", url="https://nouvelle.adresse/nouveau-slug")
@@ -2726,9 +2726,9 @@ class AccessibilityProviderTest:
             isPermanent=True,
             isVirtual=False,
             name="Un lieu",
-            postalCode="75001",
-            city="Paris",
-            street="3 Rue de Valois",
+            offererAddress__address__postalCode="75001",
+            offererAddress__address__city="Paris",
+            offererAddress__address__street="3 Rue de Valois",
         )
         venues_list.append(venue)
 
@@ -2742,9 +2742,9 @@ class AccessibilityProviderTest:
             isPermanent=True,
             isVirtual=False,
             name="Un lieu",
-            postalCode="75001",
-            city="Paris",
-            street="3 Rue de Valois",
+            offererAddress__address__postalCode="75001",
+            offererAddress__address__city="Paris",
+            offererAddress__address__street="3 Rue de Valois",
         )
         venues_list.append(venue)
 

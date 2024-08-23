@@ -16,6 +16,7 @@ from pcapi.core.bookings import models as bookings_models
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.models import CollectiveOfferDisplayedStatus as DisplayedStatus
+import pcapi.core.geography.models as geography_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.providers import constants as providers_constants
 from pcapi.core.providers import models as providers_models
@@ -886,8 +887,8 @@ def find_today_event_stock_ids_metropolitan_france(
     today_min: datetime.datetime, today_max: datetime.datetime
 ) -> set[int]:
     not_overseas_france = sa.and_(
-        sa.not_(offerers_models.Venue.departementCode.startswith("97")),
-        sa.not_(offerers_models.Venue.departementCode.startswith("98")),
+        sa.not_(geography_models.Address.departmentCode.startswith("97")),
+        sa.not_(geography_models.Address.departmentCode.startswith("98")),
     )
 
     return _find_today_event_stock_ids_filter_by_departments(today_min, today_max, not_overseas_france)
@@ -898,7 +899,7 @@ def find_today_event_stock_ids_from_departments(
     today_max: datetime.datetime,
     postal_codes_prefixes: typing.Any,
 ) -> set[int]:
-    departments = sa.and_(*[offerers_models.Venue.departementCode.startswith(code) for code in postal_codes_prefixes])
+    departments = sa.and_(*[geography_models.Address.departmentCode.startswith(code) for code in postal_codes_prefixes])
     return _find_today_event_stock_ids_filter_by_departments(today_min, today_max, departments)
 
 
@@ -914,7 +915,14 @@ def _find_today_event_stock_ids_filter_by_departments(
         * matches the `departments_filter`.
     """
     base_query = find_event_stocks_day(today_min, today_max)
-    query = base_query.join(offerers_models.Venue).filter(departments_filter).with_entities(models.Stock.id)
+    # TODO: this should use the offer's offerer address right ?
+    query = (
+        base_query.join(offerers_models.Venue)
+        .join(offerers_models.OffererAddress)
+        .join(geography_models.Address)
+        .filter(departments_filter)
+        .with_entities(models.Stock.id)
+    )
 
     return {stock.id for stock in query}
 
@@ -1101,6 +1109,8 @@ def get_filtered_stocks(
     query = (
         models.Stock.query.join(models.Offer)
         .join(offerers_models.Venue)
+        .join(offerers_models.OffererAddress)
+        .join(geography_models.Address)
         .filter(
             models.Stock.offerId == offer_id,
             models.Stock.isSoftDeleted == False,
@@ -1113,20 +1123,21 @@ def get_filtered_stocks(
     if time is not None:
         # Transform user time input into the venue timezone
         dt = datetime.datetime.combine(datetime.datetime.today(), time)
-        venue_timezone = pytz.timezone(venue.timezone)  # type: ignore[arg-type]
+        # TODO(OA): should we use venue or offer OA ?
+        venue_timezone = pytz.timezone(venue.offererAddress.address.timezone)  # type: ignore[arg-type]
         venue_time = dt.replace(tzinfo=pytz.utc).astimezone(venue_timezone).time()
 
         query = query.filter(
             sa.cast(
                 sa.func.timezone(
-                    offerers_models.Venue.timezone, sa.func.timezone("UTC", models.Stock.beginningDatetime)
+                    geography_models.Address.timezone, sa.func.timezone("UTC", models.Stock.beginningDatetime)
                 ),
                 sa.Time,
             )
             >= venue_time.replace(second=0),
             sa.cast(
                 sa.func.timezone(
-                    offerers_models.Venue.timezone, sa.func.timezone("UTC", models.Stock.beginningDatetime)
+                    geography_models.Address.timezone, sa.func.timezone("UTC", models.Stock.beginningDatetime)
                 ),
                 sa.Time,
             )

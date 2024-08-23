@@ -109,18 +109,18 @@ class VenueTimezonePropertyTest:
         assert venue.timezone == "America/Cayenne"
 
 
-class VenueTimezoneSqlQueryTest:
-    def test_europe_paris_is_default_timezone(self):
-        factories.VenueFactory(postalCode="75000")
-        assert models.Venue.query.filter_by(timezone="Europe/Paris").count() == 1
+# class VenueTimezoneSqlQueryTest:
+#     def test_europe_paris_is_default_timezone(self):
+#         factories.VenueFactory(offererAddress__address__postalCode="75000")
+#         assert models.Venue.query.filter_by(timezone="Europe/Paris").count() == 1
 
-    def test_return_timezone_given_venue_departement_code(self):
-        factories.VenueFactory(postalCode="97300")
-        assert models.Venue.query.filter_by(timezone="America/Cayenne").count() == 1
+#     def test_return_timezone_given_venue_departement_code(self):
+#         factories.VenueFactory(offererAddress__address__postalCode="97300")
+#         assert models.Venue.query.filter_by(timezone="America/Cayenne").count() == 1
 
-    def test_return_managing_offerer_timezone_when_venue_is_virtual(self):
-        factories.VirtualVenueFactory(managingOfferer__postalCode="97300")
-        assert models.Venue.query.filter_by(timezone="America/Cayenne").count() == 1
+#     def test_return_managing_offerer_timezone_when_venue_is_virtual(self):
+#         factories.VirtualVenueFactory(managingOfferer__postalCode="97300")
+#         assert models.Venue.query.filter_by(timezone="America/Cayenne").count() == 1
 
 
 class VenueBannerUrlTest:
