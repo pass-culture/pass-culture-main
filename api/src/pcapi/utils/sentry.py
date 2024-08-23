@@ -32,7 +32,7 @@ NO_SAMPLE_RATE = 0.0
 
 
 class SpecificPath(enum.Enum):
-    BACKOFFICE_HOME = f"{backoffice_blueprint}.home"
+    BACKOFFICE_HOME = f"{backoffice_blueprint.BACKOFFICE_WEB_BLUEPRINT_NAME}.home"
 
 
 def before_send(event: "Event", _hint: dict[str, typing.Any]) -> "Event | None":
