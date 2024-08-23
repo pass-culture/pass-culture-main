@@ -119,7 +119,7 @@ export const DetailsScreen = ({ venues }: DetailsScreenProps): JSX.Element => {
       formik.setStatus('apiError')
     }
 
-    if (offer) {
+    if (offer && formik.dirty) {
       notify.success(PATCH_SUCCESS_MESSAGE)
     }
   }

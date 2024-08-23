@@ -43,6 +43,9 @@ export type UsefulInformationScreenProps = {
   offer: GetIndividualOfferResponseModel
 }
 
+const getLocalStorageKeyName = (offer: GetIndividualOfferResponseModel) =>
+  `${LOCAL_STORAGE_USEFUL_INFORMATION_SUBMITTED}_${offer.id}`
+
 export const UsefulInformationScreen = ({
   offer,
 }: UsefulInformationScreenProps): JSX.Element => {
@@ -63,7 +66,7 @@ export const UsefulInformationScreen = ({
   )?.isEvent
 
   const addToLocalStorage = () => {
-    const keyName = `${LOCAL_STORAGE_USEFUL_INFORMATION_SUBMITTED}_${offer.id}`
+    const keyName = getLocalStorageKeyName(offer)
     if (localStorageAvailable() && localStorage.getItem(keyName) === null) {
       localStorage.setItem(keyName, true.toString())
     }
@@ -148,7 +151,11 @@ export const UsefulInformationScreen = ({
       formik.setStatus('apiError')
     }
 
-    if (mode === OFFER_WIZARD_MODE.EDITION) {
+    if (
+      localStorageAvailable() &&
+      localStorage.getItem(getLocalStorageKeyName(offer)) !== null &&
+      formik.dirty
+    ) {
       notify.success(PATCH_SUCCESS_MESSAGE)
     }
   }
