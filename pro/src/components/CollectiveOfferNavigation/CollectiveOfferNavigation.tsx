@@ -28,7 +28,6 @@ import { useActiveFeature } from 'hooks/useActiveFeature'
 import { useNotification } from 'hooks/useNotification'
 import { useOfferStockEditionURL } from 'hooks/useOfferEditionURL'
 import fullArchiveIcon from 'icons/full-archive.svg'
-import fullEditIcon from 'icons/full-edit.svg'
 import fullMoreIcon from 'icons/full-more.svg'
 import fullShowIcon from 'icons/full-show.svg'
 import { selectCurrentOffererId } from 'store/user/selectors'
@@ -81,10 +80,6 @@ export const CollectiveOfferNavigation = ({
   const isMarseilleActive = useActiveFeature('WIP_ENABLE_MARSEILLE')
   const selectedOffererId = useSelector(selectCurrentOffererId)
 
-  const offerEditLink = `/offre/${computeURLCollectiveOfferId(
-    offerId,
-    isTemplate
-  )}/collectif/edition`
   const { mutate } = useSWRConfig()
 
   const [isArchiveModalOpen, setIsArchiveModalOpen] = useState(false)
@@ -234,11 +229,6 @@ export const CollectiveOfferNavigation = ({
   return isEditingExistingOffer ? (
     <>
       <div className={styles['duplicate-offer']}>
-        {canEditOffer && (
-          <ButtonLink to={offerEditLink} icon={fullEditIcon}>
-            Modifier l’offre
-          </ButtonLink>
-        )}
         <ButtonLink to={previewLink} icon={fullShowIcon}>
           Aperçu dans ADAGE
         </ButtonLink>
