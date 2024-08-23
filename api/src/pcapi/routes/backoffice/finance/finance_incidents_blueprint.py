@@ -359,7 +359,7 @@ def get_individual_bookings_overpayment_creation_form() -> utils.BackofficeRespo
         div_id="overpayment-creation-modal",
         title="Création d'un incident",
         button_text="Créer l'incident",
-        additional_data=additional_data,
+        additional_data=additional_data.items(),
         alert=alert,
     )
 
@@ -417,7 +417,7 @@ def get_individual_bookings_commercial_gesture_creation_form() -> utils.Backoffi
         div_id="commercial-gesture-creation-modal",
         title="Création d'un geste commercial",
         button_text="Créer le geste commercial",
-        additional_data=additional_data,
+        additional_data=additional_data.items(),
     )
 
 
@@ -470,7 +470,7 @@ def get_collective_booking_overpayment_creation_form(collective_booking_id: int)
         div_id=f"overpayment-creation-modal-{collective_booking_id}",
         title="Création d'un incident",
         button_text="Créer l'incident",
-        additional_data=additional_data,
+        additional_data=additional_data.items(),
     )
 
 
@@ -524,7 +524,7 @@ def get_collective_booking_commercial_gesture_creation_form(collective_booking_i
         div_id=f"commercial-gesture-creation-modal-{collective_booking_id}",
         title="Création d'un geste commercial",
         button_text="Créer le geste commercial",
-        additional_data=additional_data,
+        additional_data=additional_data.items(),
     )
 
 

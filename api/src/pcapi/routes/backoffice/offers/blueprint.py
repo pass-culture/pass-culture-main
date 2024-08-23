@@ -1039,9 +1039,9 @@ def _generate_offer_stock_edit_form(
         title=f"Baisser le prix du stock {stock_id}",
         button_text="Continuer",
         information="Nombre de réservations actives par prix :",
-        additional_data={
-            f"{q} réservation{pluralize(q)}": format_amount(a) for q, a in _get_count_booking_prices_for_stock(stock)
-        },
+        additional_data=(
+            (f"{q} réservation{pluralize(q)}", format_amount(a)) for q, a in _get_count_booking_prices_for_stock(stock)
+        ),
         data_turbo="true",
         alert=alert,
     )
