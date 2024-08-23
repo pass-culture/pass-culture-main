@@ -156,7 +156,7 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
             response = authenticated_client.get(url)
             assert response.status_code == 400
 
-    @pytest.mark.parametrize("query", ["", " ", "   "])
+    @pytest.mark.parametrize("query", ["", " ", "   ", " , ,,;"])
     def test_empty_query(self, authenticated_client, query):
         with assert_num_queries(self.expected_num_queries_when_no_query):
             response = authenticated_client.get(url_for(self.endpoint, q=query))
@@ -270,6 +270,17 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
             search_rank=1,
             total_items=1,
         )
+
+    def test_can_search_public_account_by_multiple_emails(self, authenticated_client):
+        searched_user1, _, _, searched_user2, _ = create_bunch_of_accounts()
+        search_query = f" {searched_user1.email},   {searched_user2.email},"
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, q=search_query))
+            assert response.status_code == 200
+
+        cards_titles = html_parser.extract_cards_titles(response.data)
+        assert set(cards_titles) == {searched_user1.full_name, searched_user2.full_name}
 
     def test_can_search_public_account_by_email_domain(self, authenticated_client):
         underage, grant_18, _, random, _ = create_bunch_of_accounts()
