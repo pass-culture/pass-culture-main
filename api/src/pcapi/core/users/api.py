@@ -1114,19 +1114,18 @@ def _filter_user_accounts(accounts: BaseQuery, search_term: str) -> BaseQuery:
     else:
         term_filters.append(models.User.phoneNumber == term_as_phone_number)  # type: ignore[arg-type]
 
+    split_terms = [email_utils.sanitize_email(term) for term in re.split(r"[,;\s]+", search_term) if term]
+
     # numeric (single id or multiple ids)
-    split_terms = re.split(r"[,;\s]+", search_term)
     if all(term.isnumeric() for term in split_terms):
         term_filters.append(models.User.id.in_([int(term) for term in split_terms]))
 
     # email
-    sanitized_term = email_utils.sanitize_email(search_term)
-
-    if email_utils.is_valid_email(sanitized_term):
-        term_filters.append(models.User.email == sanitized_term)
-    elif email_utils.is_valid_email_domain(sanitized_term):
+    if all(email_utils.is_valid_email(term) for term in split_terms):
+        term_filters.append(models.User.email.in_(split_terms))
+    elif len(split_terms) == 1 and email_utils.is_valid_email_domain(split_terms[0]):
         # search for all emails @domain.ext
-        term_filters.append(models.User.email.like(f"%{sanitized_term}"))
+        term_filters.append(models.User.email.like(f"%{split_terms[0]}"))
 
     if not term_filters:
         name_term = search_term
