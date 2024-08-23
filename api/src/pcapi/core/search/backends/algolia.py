@@ -524,6 +524,12 @@ class AlgoliaBackend(base.SearchBackend):
             department_code = venue.departementCode
             postal_code = venue.postalCode
 
+        search_groups = (
+            offer.subcategory.native_category.parents
+            if offer.subcategory.native_category
+            else [offer.subcategory.search_group_name]
+        )
+
         # If you update this dictionary, please check whether you need to
         # also update `core.offerers.api.VENUE_ALGOLIA_INDEXED_FIELDS`.
         object_to_index: dict[str, typing.Any] = {
@@ -559,8 +565,8 @@ class AlgoliaBackend(base.SearchBackend):
                 # remove searchGroupName once the search group name &
                 # home page label migration is over.
                 "rankingWeight": offer.rankingWeight,
-                "searchGroupName": offer.subcategory.search_group_name,
-                "searchGroupNamev2": offer.subcategory.search_group_name,
+                "searchGroupName": search_groups,
+                "searchGroupNamev2": search_groups,
                 "showType": show_type_label,
                 "students": extra_data.get("students") or [],
                 "subcategoryId": offer.subcategory.id,
