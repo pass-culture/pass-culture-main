@@ -145,7 +145,7 @@ export const DetailsForm = ({
 
   return (
     <>
-      <FormLayout.Section title="A propos de votre offre">
+      <FormLayout.Section title="À propos de votre offre">
         {splitFormEnabled && venueOptions.length > 1 && (
           <FormLayout.Row>
             <Select
