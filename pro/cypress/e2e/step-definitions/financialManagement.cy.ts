@@ -14,6 +14,40 @@ When('I download reimbursement details', () => {
 //   })
 // })
 
+When('I remove {string} venue from my bank account', (venue: string) => {
+  cy.get('[class^=_linked-venues-section_]').within(() => {
+    cy.contains("Lieu(x) rattaché(s) à ce compte bancaire")
+    cy.contains("Certains de vos lieux ne sont pas rattachés.")
+    cy.contains(venue)
+
+    cy.findByText("Modifier").click()
+  })
+
+  cy.findByRole("dialog").within(() => {
+    cy.findByLabelText(venue).should('be.checked')
+    cy.findByLabelText(venue).uncheck()
+
+    cy.findByText("Enregistrer").click()
+    cy.findByText("Confirmer").click()  
+  })
+})
+
+When('I add {string} venue to my bank account', (venue: string) => {
+  cy.get('[class^=_linked-venues-section_]').within(() => {
+    cy.contains("Aucun lieu n’est rattaché à ce compte bancaire.")
+
+    cy.findByText("Rattacher un lieu").click()
+  })
+
+  cy.findByRole("dialog").within(() => {
+    cy.findByLabelText(venue).should('not.be.checked')
+    cy.findByLabelText(venue).check()
+
+    cy.findByText("Enregistrer").click()
+    //cy.findByText("Confirmer").click()  
+  })
+})
+
 Then('I can see the reimbursement details', () => {
   const filename = `${Cypress.config('downloadsFolder')}/remboursements_pass_culture.csv`
 
@@ -108,4 +142,19 @@ Then('No receipt results should be displayed', () => {
   cy.contains(
     'Vous n’avez pas encore de justificatifs de remboursement disponibles'
   )
+})
+
+Then('no venue should be linked to my account', () => {
+  cy.findAllByTestId('global-notification-success').should(
+    'contain',
+    'Vos modifications ont bien été prises en compte.'
+  )  
+})
+
+Then('{string} venue should be linked to my account', (venue: string) => {
+  cy.get('[class^=_linked-venues-section_]').within(() => {
+    cy.contains("Lieu(x) rattaché(s) à ce compte bancaire")
+    cy.contains("Certains de vos lieux ne sont pas rattachés.")
+    cy.contains(venue)
+  })
 })

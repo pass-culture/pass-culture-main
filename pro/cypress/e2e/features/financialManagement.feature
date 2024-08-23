@@ -1,5 +1,5 @@
 @P0
-Feature: Financial Management - messages, links to external help page, reimbursement details
+Feature: Financial Management
 
   Scenario: Check messages, reimbursement details and offerer selection change
     Given I am logged in with the new interface
@@ -15,5 +15,15 @@ Feature: Financial Management - messages, links to external help page, reimburse
       |                      |                  | Remboursement   | Libellé des coordonnées bancaires n°0 | VIR1              |         |
     When I download reimbursement details
     Then I can see the reimbursement details
+
   # Scenario: I can download accounting receipt as pdf
   #   Then I can download accounting receipt as pdf
+
+  Scenario: Automatic link venue with bank account
+    Given I am logged in
+    And I go to the "Gestion financière" page
+    And I go to "Informations bancaires" view
+    When I remove "Terrain vague" venue from my bank account
+    Then no venue should be linked to my account
+    When I add "Terrain vague" venue to my bank account
+    Then "Terrain vague" venue should be linked to my account
