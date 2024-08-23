@@ -216,12 +216,6 @@ def create_draft_offer(
     return offer
 
 
-def _get_field(obj: typing.Any, aliases: set, updates: dict, field: str) -> typing.Any:
-    if field not in aliases:
-        raise ValueError(f"Unknown schema field: {field}")
-    return updates.get(field, getattr(obj, field))
-
-
 def update_draft_offer(offer: models.Offer, body: offers_schemas.PatchDraftOfferBodyModel) -> models.Offer:
     fields = body.dict(by_alias=True, exclude_unset=True)
     updates = {key: value for key, value in fields.items() if getattr(offer, key) != value}
@@ -231,78 +225,6 @@ def update_draft_offer(offer: models.Offer, body: offers_schemas.PatchDraftOffer
     for key, value in updates.items():
         setattr(offer, key, value)
     db.session.add(offer)
-
-    return offer
-
-
-def update_draft_offer_useful_informations(
-    offer: models.Offer,
-    body: offers_schemas.PatchDraftOfferUsefulInformationsBodyModel,
-    is_from_private_api: bool = False,
-) -> models.Offer:
-    aliases = set(body.dict(by_alias=True))
-    fields = body.dict(by_alias=True, exclude_unset=True)
-
-    _extra_data = deserialize_extra_data(fields.get("extraData", offer.extraData))
-    fields["extraData"] = _format_extra_data(offer.subcategoryId, _extra_data) or {}
-
-    should_send_mail = fields.pop("shouldSendMail", False)
-    updates = {key: value for key, value in fields.items() if getattr(offer, key) != value}
-    if not updates:
-        return offer
-
-    audio_disability_compliant = _get_field(offer, aliases, updates, "audioDisabilityCompliant")
-    mental_disability_compliant = _get_field(offer, aliases, updates, "mentalDisabilityCompliant")
-    motor_disability_compliant = _get_field(offer, aliases, updates, "motorDisabilityCompliant")
-    visual_disability_compliant = _get_field(offer, aliases, updates, "visualDisabilityCompliant")
-    booking_contact = _get_field(offer, aliases, updates, "bookingContact")
-    extra_data = _get_field(offer, aliases, updates, "extraData")
-    is_duo = _get_field(offer, aliases, updates, "isDuo")
-    withdrawal_delay = _get_field(offer, aliases, updates, "withdrawalDelay")
-    withdrawal_type = _get_field(offer, aliases, updates, "withdrawalType")
-
-    validation.check_validation_status(offer)
-    validation.check_accessibility_compliance(
-        audio_disability_compliant, mental_disability_compliant, motor_disability_compliant, visual_disability_compliant
-    )
-    validation.check_offer_extra_data(
-        offer.subcategoryId,
-        extra_data,
-        offer.venue,
-        is_from_private_api,
-        offer,
-    )
-    validation.check_is_duo_compliance(
-        is_duo,
-        offer.subcategory,
-    )
-    validation.check_offer_withdrawal(
-        withdrawal_type,
-        withdrawal_delay,
-        offer.subcategoryId,
-        booking_contact,
-        offer.lastProvider,
-    )
-    validation.check_digital_offer_fields(offer)
-
-    if offer.is_soft_deleted():
-        raise pc_object.DeletedRecordException()
-
-    for key, value in updates.items():
-        setattr(offer, key, value)
-
-    db.session.add(offer)
-
-    withdrawal_fields = ("withdrawalType", "withdrawalDelay", "bookingContact", "withdrawalDetails")
-    withdrawal_updated = set(updates).intersection(withdrawal_fields)
-    if should_send_mail and withdrawal_updated:
-        transactional_mails.send_email_for_each_ongoing_booking(offer)
-
-    search.async_index_offer_ids(
-        [offer.id],
-        reason=search.IndexationReason.OFFER_UPDATE,
-        log_extra={"changes": set(updates)},
-    )
 
     return offer
 
