@@ -544,6 +544,8 @@ class GetVenueStatsDataTest:
         offerer_inactive_individual_offers,
         offerer_active_collective_offers,
         offerer_inactive_collective_offers,
+        offerer_expired_offers,
+        offerer_expired_collective_offers,
     ):
         venue_id = venue_with_accepted_bank_account.id
 
@@ -552,8 +554,8 @@ class GetVenueStatsDataTest:
 
         assert stats["active"]["individual"] == 2
         assert stats["active"]["collective"] == 4
-        assert stats["inactive"]["individual"] == 5
-        assert stats["inactive"]["collective"] == 7
+        assert stats["inactive"]["individual"] == 9
+        assert stats["inactive"]["collective"] == 11
 
     def test_no_offers(self, venue):
         venue_id = venue.id
