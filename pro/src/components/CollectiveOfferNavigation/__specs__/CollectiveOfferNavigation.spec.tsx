@@ -1,6 +1,7 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import React from 'react'
+import * as router from 'react-router-dom'
 
 import { ApiRequestOptions } from 'apiClient/adage/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/adage/core/ApiResult'
@@ -45,6 +46,11 @@ const renderCollectiveOfferNavigation = (
     },
   })
 
+vi.mock('react-router-dom', async () => ({
+  ...(await vi.importActual('react-router-dom')),
+  useLocation: vi.fn(),
+}))
+
 describe('CollectiveOfferNavigation', () => {
   let offer:
     | GetCollectiveOfferTemplateResponseModel
@@ -54,6 +60,13 @@ describe('CollectiveOfferNavigation', () => {
   const mockLogEvent = vi.fn()
   const notifyError = vi.fn()
   const notifySuccess = vi.fn()
+  const defaultUseLocationValue = {
+    state: {},
+    hash: '',
+    key: '',
+    pathname: '',
+    search: '',
+  }
 
   beforeEach(async () => {
     offer = getCollectiveOfferTemplateFactory({ isTemplate: true })
@@ -86,6 +99,8 @@ describe('CollectiveOfferNavigation', () => {
       error: notifyError,
       success: notifySuccess,
     }))
+
+    vi.spyOn(router, 'useLocation').mockReturnValue(defaultUseLocationValue)
 
     props = {
       activeStep: CollectiveOfferStep.DETAILS,
@@ -200,13 +215,13 @@ describe('CollectiveOfferNavigation', () => {
     expect(links).toHaveLength(3)
   })
 
-  it('should generate link with offerId when user is editing an offer', async () => {
+  it('should generate links with offerId when user is editing an offer', async () => {
+    vi.spyOn(router, 'useLocation').mockReturnValueOnce({
+      ...defaultUseLocationValue,
+      pathname: '/offre/${offerId}/collectif/edition',
+    })
     props.isCreatingOffer = false
     renderCollectiveOfferNavigation(props)
-
-    expect(
-      screen.getByRole('link', { name: 'Dates et prix' })
-    ).toBeInTheDocument()
 
     const linkItems = await screen.findAllByRole('link')
 
