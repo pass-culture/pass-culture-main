@@ -108,7 +108,7 @@ describe('screens:IndividualOffer::Informations', () => {
     renderDetailsScreen(props, contextValue)
 
     expect(
-      await screen.findByRole('heading', { name: 'A propos de votre offre' })
+      await screen.findByRole('heading', { name: 'À propos de votre offre' })
     ).toBeInTheDocument()
     expect(
       await screen.findByRole('heading', { name: 'Type d’offre' })

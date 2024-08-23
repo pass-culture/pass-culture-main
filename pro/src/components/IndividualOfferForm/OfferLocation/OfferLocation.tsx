@@ -11,6 +11,7 @@ import { computeAddressDisplayName } from 'repository/venuesService'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { RadioButton } from 'ui-kit/form/RadioButton/RadioButton'
+import { FieldError } from 'ui-kit/form/shared/FieldError/FieldError'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 
 import { IndividualOfferFormValues } from '../types'
@@ -75,11 +76,13 @@ export const OfferLocation = ({ venue }: OfferLocationProps): JSX.Element => {
   const venueAddress = venue?.address
     ? computeAddressDisplayName(venue.address, false)
     : ''
-  const venueFullText = `${venue?.publicName ?? venue?.name} – ${venueAddress}`
+  const venueFullText = `${venue?.publicName || venue?.name} – ${venueAddress}`
+
+  const [, offerlocationMeta] = useField<string>('offerlocation')
 
   return (
     <FormLayout.Section
-      title="Localisation de l'offre"
+      title="Localisation de l’offre"
       className={styles['offerlocation-wrapper']}
     >
       <p className={styles['infotext']}>
@@ -105,6 +108,10 @@ export const OfferLocation = ({ venue }: OfferLocationProps): JSX.Element => {
           onChange={onChangeOfferLocation}
         />
       </FormLayout.Row>
+      {offerlocationMeta.error && !offerlocationMeta.value && (
+        <FieldError name="offerlocation">{offerlocationMeta.error}</FieldError>
+      )}
+
       {showOtherAddress && (
         <div className={styles['other-address-wrapper']}>
           <FormLayout.Row className={styles['location-row']}>

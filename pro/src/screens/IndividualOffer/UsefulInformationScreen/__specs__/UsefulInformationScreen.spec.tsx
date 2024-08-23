@@ -1,4 +1,4 @@
-import { screen, within } from '@testing-library/react'
+import { screen, waitFor, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import { api } from 'apiClient/api'
@@ -12,8 +12,12 @@ import {
   getIndividualOfferFactory,
   individualOfferContextValuesFactory,
   subcategoryFactory,
+  venueListItemFactory,
 } from 'utils/individualApiFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
+import {
+  renderWithProviders,
+  RenderWithProvidersOptions,
+} from 'utils/renderWithProviders'
 import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import {
@@ -23,7 +27,8 @@ import {
 
 const renderUsefulInformationScreen = (
   props: UsefulInformationScreenProps,
-  contextValue: IndividualOfferContextValues
+  contextValue: IndividualOfferContextValues,
+  options: RenderWithProvidersOptions = {}
 ) => {
   return renderWithProviders(
     <IndividualOfferContext.Provider value={contextValue}>
@@ -31,9 +36,19 @@ const renderUsefulInformationScreen = (
     </IndividualOfferContext.Provider>,
     {
       user: sharedCurrentUserFactory(),
+      ...options,
     }
   )
 }
+
+vi.mock('apiClient/api', () => ({
+  api: {
+    getVenues: vi.fn().mockResolvedValue({
+      venues: [],
+    }),
+    patchOffer: vi.fn(),
+  },
+}))
 
 describe('screens:IndividualOffer::UsefulInformation', () => {
   let props: UsefulInformationScreenProps
@@ -105,6 +120,58 @@ describe('screens:IndividualOffer::UsefulInformation', () => {
     ).toBeInTheDocument()
   })
 
+  it('should display offer location if venue is physical and WIP_ENABLE_OFFER_ADDRESS is active', async () => {
+    vi.spyOn(api, 'getVenues').mockResolvedValue({
+      venues: [
+        {
+          ...venueListItemFactory({
+            id: 3,
+            publicName: 'Lieu Nom Public Pour Test',
+          }),
+          address: {
+            banId: '75101_9575_00003',
+            city: 'Paris',
+            id: 945,
+            inseeCode: '75056',
+            isEditable: false,
+            label: 'MINISTERE DE LA CULTURE',
+            latitude: 48.87171,
+            longitude: 2.30829,
+            postalCode: '75001',
+            street: '3 Rue de Valois',
+          },
+        },
+      ],
+    })
+
+    renderUsefulInformationScreen(props, contextValue, {
+      features: ['WIP_ENABLE_OFFER_ADDRESS'],
+    })
+
+    // Block should be visible at this point
+    expect(
+      await screen.findByRole('heading', { name: 'Localisation de l’offre' })
+    ).toBeInTheDocument()
+
+    // If user chooses the venue address (OA)...
+    await userEvent.click(
+      screen.getByRole('radio', { name: /Lieu Nom Public Pour Test/ })
+    )
+    // ...then he shouldn't see the other fields to provide a label and an address
+    expect(
+      screen.queryByLabelText(/Intitulé de la localisation/)
+    ).not.toBeInTheDocument()
+
+    // If user chooses to check another address...
+    await userEvent.click(
+      screen.getByRole('radio', { name: /À une autre adresse/ })
+    )
+    // ...then he should see the other fields to provide a label and an address
+    expect(
+      screen.queryByLabelText(/Intitulé de la localisation/)
+    ).toBeInTheDocument()
+  })
+
   it('should submit the form with correct payload', async () => {
     vi.spyOn(api, 'patchOffer').mockResolvedValue(
       getIndividualOfferFactory({
@@ -114,15 +181,16 @@ describe('screens:IndividualOffer::UsefulInformation', () => {
 
     renderUsefulInformationScreen(props, contextValue)
 
-    await userEvent.type(
-      screen.getByLabelText(/Informations de retrait/),
-      'My information'
-    )
+    await waitFor(async () => {
+      await userEvent.type(
+        screen.getByLabelText(/Informations de retrait/),
+        'My information'
+      )
+      await userEvent.click(screen.getByLabelText(/Visuel/))
+      await userEvent.click(screen.getByLabelText(/Psychique ou cognitif/))
 
-    await userEvent.click(screen.getByLabelText(/Visuel/))
-    await userEvent.click(screen.getByLabelText(/Psychique ou cognitif/))
-
-    await userEvent.click(screen.getByText('Enregistrer les modifications'))
+      await userEvent.click(screen.getByText('Enregistrer les modifications'))
+    })
 
     expect(api.patchOffer).toHaveBeenCalledOnce()
     expect(api.patchOffer).toHaveBeenCalledWith(3, {
