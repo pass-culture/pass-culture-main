@@ -4,6 +4,7 @@ import { OFFER_LOCATION } from 'components/IndividualOfferForm/OfferLocation/con
 import { checkCoords } from 'utils/coords'
 
 const locationSchema = {
+  offerlocation: yup.string().required('Veuillez sélectionner un choix'),
   addressAutocomplete: yup
     .string()
     .when(['offerlocation', 'manuallySetAddress'], {

@@ -35,7 +35,7 @@ export interface IndividualOfferFormValues {
   url: string
   isVenueVirtual?: boolean
   bookingContact?: string
-  offerlocation?: number
+  offerlocation?: string | undefined
   locationLabel?: string
   manuallySetAddress?: boolean
   'search-addressAutocomplete'?: string

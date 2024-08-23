@@ -70,7 +70,7 @@ export function setDefaultInitialValuesFromOffer(
     receiveNotificationEmails: !!offer.bookingEmail,
     url: offer.url || DEFAULT_USEFULL_INFORMATION_INTITIAL_VALUES['url'],
     isVenueVirtual: offer.venue.isVirtual || false,
-    offerlocation: offer.address?.id,
+    offerlocation: undefined,
   }
 }
 
