@@ -23,7 +23,8 @@ class AccountSearchForm(search.SearchForm):
 
     def validate_q(self, q: fields.PCSearchField) -> fields.PCSearchField:
         q = super().validate_q(q)
-        if len(q.data) < 3 and not str(q.data).isnumeric():
+        data = q.data.strip(" \t,;")
+        if len(data) < 3 and not str(data).isnumeric():
             raise wtforms.validators.ValidationError("Attention, la recherche doit contenir au moins 3 lettres.")
         return q
 
