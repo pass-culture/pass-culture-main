@@ -101,7 +101,7 @@ export const CollectiveOfferNavigation = ({
 
   const canEditOffer =
     offer?.status !== CollectiveOfferStatus.ARCHIVED &&
-    !location.pathname.includes('edition')
+    location.pathname.includes('edition')
 
   const requestIdUrl = requestId ? `?requete=${requestId}` : ''
 
