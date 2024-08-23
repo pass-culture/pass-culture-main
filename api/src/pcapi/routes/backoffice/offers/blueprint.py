@@ -963,17 +963,22 @@ def confirm_offer_stock(offer_id: int, stock_id: int) -> utils.BackofficeRespons
     if not form.validate():
         return _generate_offer_stock_edit_form(offer_id, stock_id, form)
 
-    Effect = namedtuple("Effect", ["quantity", "old_price", "new_price"])
+    alert = ""
+    Effect = namedtuple("Effect", ["quantity", "old_price", "new_price", "warning"])
     price_effect = []
     for quantity, amount in _get_count_booking_prices_for_stock(stock):
         if form.price.data:
-            price_effect.append(Effect(quantity, amount, form.price.data))
+            new_price = min(amount, form.price.data)
+            if new_price != form.price.data:
+                alert = "Cette modification amènerait à augmenter le prix de certaines réservations. Celles-ci ne seront pas changées"
+            price_effect.append(Effect(quantity, amount, new_price, new_price != form.price.data))
         elif form.percent.data:
             price_effect.append(
                 Effect(
                     quantity,
                     amount,
                     round((amount * (1 - form.percent.data / 100)), 2),
+                    False,
                 )
             )
 
@@ -988,6 +993,7 @@ def confirm_offer_stock(offer_id: int, stock_id: int) -> utils.BackofficeRespons
         data_turbo="true",
         price_effect=price_effect,
         stock=stock,
+        alert=alert,
     )
 
 
