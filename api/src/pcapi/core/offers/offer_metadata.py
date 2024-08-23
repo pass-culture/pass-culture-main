@@ -23,14 +23,14 @@ def _get_metadata_from_venue(venue: Venue) -> Metadata:
         "name": venue.name,
         "address": {
             "@type": "PostalAddress",
-            "streetAddress": venue.street,
-            "postalCode": venue.postalCode,
-            "addressLocality": venue.city,
+            "streetAddress": venue.offererAddress.address.street,
+            "postalCode": venue.offererAddress.address.postalCode,
+            "addressLocality": venue.offererAddress.address.city,
         },
         "geo": {
             "@type": "GeoCoordinates",
-            "latitude": str(venue.latitude),
-            "longitude": str(venue.longitude),
+            "latitude": str(venue.offererAddress.address.latitude),
+            "longitude": str(venue.offererAddress.address.longitude),
         },
     }
 

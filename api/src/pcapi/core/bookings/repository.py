@@ -35,6 +35,8 @@ from pcapi.core.bookings.utils import convert_booking_dates_utc_to_venue_timezon
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.finance.models import BookingFinanceIncident
 from pcapi.core.geography.models import Address
+import pcapi.core.geography.models as geography_models
+import pcapi.core.offerers.models as offerers_models
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import OffererAddress
 from pcapi.core.offerers.models import UserOfferer
@@ -319,14 +321,9 @@ def _create_export_query(offer_id: int, event_beginning_date: date) -> BaseQuery
         # `get_batch` function needs a field called exactly `id` to work,
         # the label prevents SA from using a bad (prefixed) label for this field
         Booking.userId,
+        Address.departmentCode.label("offerDepartmentCode"),
+        VenueAddress.departmentCode.label("venueDepartmentCode"),
     )
-    if FeatureToggle.WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE.is_active():
-        with_entities += (
-            Address.departmentCode.label("offerDepartmentCode"),
-            VenueAddress.departmentCode.label("venueDepartmentCode"),
-        )
-    else:
-        with_entities += (Venue.departementCode.label("venueDepartmentCode"),)
 
     query = (
         Booking.query.join(Booking.offerer)
@@ -404,7 +401,7 @@ def get_export(
 
 # FIXME (Gautier, 03-25-2022): also used in collective_booking. SHould we move it to core or some other place?
 def field_to_venue_timezone(field: InstrumentedAttribute) -> cast:
-    return cast(func.timezone(Venue.timezone, func.timezone("UTC", field)), Date)
+    return cast(func.timezone(geography_models.Address.timezone, func.timezone("UTC", field)), Date)
 
 
 def serialize_offer_type_educational_or_individual(offer_is_educational: bool) -> str:
@@ -429,6 +426,8 @@ def _get_filtered_bookings_query(
         .join(Stock.offer)
         .join(Booking.externalBookings, isouter=True)
         .join(Booking.venue, isouter=True)
+        .join(offerers_models.Venue.offererAddress, isouter=True)
+        .join(offerers_models.OffererAddress.address, isouter=True)
     )
     for join_key, *join_conditions in extra_joins:
         if join_conditions:
@@ -535,14 +534,9 @@ def _get_filtered_booking_report(
         # the label prevents SA from using a bad (prefixed) label for this field
         Booking.id.label("id"),
         Booking.userId,
+        Address.departmentCode.label("offerDepartmentCode"),
+        VenueAddress.departmentCode.label("venueDepartmentCode"),
     )
-    if FeatureToggle.WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE.is_active():
-        with_entities += (
-            Address.departmentCode.label("offerDepartmentCode"),
-            VenueAddress.departmentCode.label("venueDepartmentCode"),
-        )
-    else:
-        with_entities += (Venue.departementCode.label("venueDepartmentCode"),)
 
     bookings_query = (
         _get_filtered_bookings_query(
@@ -606,13 +600,10 @@ def _get_filtered_booking_pro(
         Offerer.postalCode.label("offererPostalCode"),
     )
 
-    if FeatureToggle.WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE.is_active():
-        with_entities += (
-            Address.departmentCode.label("offerDepartmentCode"),
-            VenueAddress.departmentCode.label("venueDepartmentCode"),
-        )
-    else:
-        with_entities += (Venue.departementCode.label("venueDepartmentCode"),)
+    with_entities += (
+        Address.departmentCode.label("offerDepartmentCode"),
+        VenueAddress.departmentCode.label("venueDepartmentCode"),
+    )
 
     bookings_query = (
         _get_filtered_bookings_query(

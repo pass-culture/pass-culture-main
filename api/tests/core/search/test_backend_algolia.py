@@ -251,12 +251,12 @@ def test_index_collective_offers_templates_legacy():
     backend = get_backend()
     collective_offer_template = educational_factories.CollectiveOfferTemplateFactory.build()
     collective_offer_template_north_corsica = educational_factories.CollectiveOfferTemplateFactory(
-        venue__departementCode=20,
-        venue__postalCode="20213",
+        venue__offererAddress__address__departmentCode=20,
+        venue__offererAddress__address__postalCode="20213",
     )
     collective_offer_template_south_corsica = educational_factories.CollectiveOfferTemplateFactory(
-        venue__departementCode=20,
-        venue__postalCode="20113",
+        venue__offererAddress__address__departmentCode=20,
+        venue__offererAddress__address__postalCode="20113",
     )
 
     with requests_mock.Mocker() as mock:
@@ -273,7 +273,7 @@ def test_index_collective_offers_templates_legacy():
         assert posted_json["requests"][0]["body"]["objectID"] == f"T-{collective_offer_template.id}"
         assert (
             posted_json["requests"][0]["body"]["venue"]["departmentCode"]
-            == collective_offer_template.venue.departementCode
+            == collective_offer_template.venue.offererAddress.address.departmentCode
         )
         assert posted_json["requests"][1]["body"]["venue"]["departmentCode"] == "2B"
         assert posted_json["requests"][2]["body"]["venue"]["departmentCode"] == "2A"
