@@ -120,7 +120,7 @@ def filter_transactions(event: "Event", _hint: dict[str, typing.Any]) -> "Event 
 
     match transaction:
         # BO home
-        case SpecificPath.BACKOFFICE_HOME:
+        case SpecificPath.BACKOFFICE_HOME.value:
             sample_rate = NO_SAMPLE_RATE
 
         # backoffice
