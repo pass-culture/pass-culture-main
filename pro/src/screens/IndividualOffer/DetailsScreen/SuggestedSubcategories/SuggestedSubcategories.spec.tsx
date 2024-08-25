@@ -113,6 +113,7 @@ const renderSuggestedSubcategories = (props: SuggestedSubcategoriesProps) => {
 describe('SuggestedSubcategories', () => {
   it('should render suggested subcategories as radio buttons', () => {
     renderSuggestedSubcategories({
+      hasApiBeenCalled: true,
       suggestedSubcategories,
       filteredCategories: [],
       filteredSubcategories: [],
@@ -128,6 +129,7 @@ describe('SuggestedSubcategories', () => {
 
   it('should always render an "Autre" radio button', () => {
     renderSuggestedSubcategories({
+      hasApiBeenCalled: true,
       suggestedSubcategories,
       filteredCategories: [],
       filteredSubcategories: [],
@@ -140,6 +142,7 @@ describe('SuggestedSubcategories', () => {
 
   it('should keep previously selected subcategory as radio button even if it is not in the suggested subcategories', async () => {
     const { rerender } = renderSuggestedSubcategories({
+      hasApiBeenCalled: true,
       suggestedSubcategories: firstSuggestedSubcategories,
       filteredCategories: [],
       filteredSubcategories: [],
@@ -156,6 +159,7 @@ describe('SuggestedSubcategories', () => {
     rerender(
       <IndividualOfferContext.Provider value={{ ...contextValue }}>
         <SuggestedSubWrappedWithFormik
+          hasApiBeenCalled={true}
           suggestedSubcategories={otherSuggestedSubcategories}
           filteredCategories={[]}
           filteredSubcategories={[]}
@@ -181,6 +185,7 @@ describe('SuggestedSubcategories', () => {
   describe('when the "Autre" radio button is selected', () => {
     it('should render a category select', async () => {
       renderSuggestedSubcategories({
+        hasApiBeenCalled: true,
         suggestedSubcategories,
         filteredCategories: [],
         filteredSubcategories: [],
@@ -198,6 +203,7 @@ describe('SuggestedSubcategories', () => {
 
     it('should render a subcategory select when a category is selected', async () => {
       renderSuggestedSubcategories({
+        hasApiBeenCalled: true,
         suggestedSubcategories,
         filteredCategories: CATEGORIES,
         filteredSubcategories: SUB_CATEGORIES,

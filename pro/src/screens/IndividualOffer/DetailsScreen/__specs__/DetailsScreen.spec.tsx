@@ -48,6 +48,11 @@ vi.mock('utils/windowMatchMedia', () => ({
   doesUserPreferReducedMotion: vi.fn(() => true),
 }))
 
+vi.mock('use-debounce', async () => ({
+  ...(await vi.importActual('use-debounce')),
+  useDebouncedCallback: vi.fn((fn) => fn),
+}))
+
 const scrollIntoViewMock = vi.fn()
 
 const DEFAULTS = {
@@ -451,22 +456,20 @@ describe('screens:IndividualOffer::Informations', () => {
       }
     )
 
-    // at first there is no suggested subcategories
     expect(
       screen.queryByText(/Catégories suggérées pour votre offre/)
-    ).not.toBeInTheDocument()
-
-    await userEvent.selectOptions(await screen.findByLabelText(/Lieu/), '1')
-
-    await userEvent.type(
-      screen.getByLabelText(/Titre de l’offre/),
-      'My super offer'
-    )
-
-    // They appear after the first fields are filled
-    expect(
-      await screen.findByText(/Catégories suggérées pour votre offre/)
     ).toBeInTheDocument()
+
+    // at first there is no suggested subcategories
+    const suggestedSubCatInitText = screen.queryByText(
+      /Veuillez renseigner un titre ou une description/
+    )
+    expect(suggestedSubCatInitText).toBeInTheDocument()
+
+    const venueSelector = await screen.findByLabelText(/Lieu/)
+    await userEvent.selectOptions(venueSelector, '1')
+
+    expect(suggestedSubCatInitText).not.toBeInTheDocument()
     expect(screen.getByText('Sous catégorie online de A')).toBeInTheDocument()
     expect(screen.getByText('Sous catégorie offline de A')).toBeInTheDocument()
     expect(screen.getByText('Autre')).toBeInTheDocument()
@@ -484,7 +487,7 @@ describe('screens:IndividualOffer::Informations', () => {
     await userEvent.click(screen.getByText('Autre'))
     expect(screen.queryByText('Auteur')).not.toBeInTheDocument()
     expect(screen.queryByText(/EAN/)).not.toBeInTheDocument()
-    expect(screen.getByLabelText(/Catégorie/)).toBeInTheDocument()
+    expect(screen.getByLabelText('Catégorie *')).toBeInTheDocument()
   })
 
   it('should render error on category when no suggested categories has been selected', async () => {
@@ -540,10 +543,15 @@ describe('screens:IndividualOffer::Informations', () => {
       }
     )
 
-    // at first there is no suggested subcategories
     expect(
       screen.queryByText(/Catégories suggérées pour votre offre/)
-    ).not.toBeInTheDocument()
+    ).toBeInTheDocument()
+
+    // at first there is no suggested subcategories
+    const suggestedSubCatInitText = screen.queryByText(
+      /Veuillez renseigner un titre ou une description/
+    )
+    expect(suggestedSubCatInitText).toBeInTheDocument()
 
     await userEvent.selectOptions(await screen.findByLabelText(/Lieu/), '1')
 
@@ -552,9 +560,7 @@ describe('screens:IndividualOffer::Informations', () => {
       'My super offer'
     )
 
-    expect(
-      await screen.findByText(/Catégories suggérées pour votre offre/)
-    ).toBeInTheDocument()
+    expect(suggestedSubCatInitText).not.toBeInTheDocument()
 
     await userEvent.click(screen.getByText(DEFAULTS.submitButtonLabel))
 
