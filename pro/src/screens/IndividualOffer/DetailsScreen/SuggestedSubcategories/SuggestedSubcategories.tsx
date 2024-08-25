@@ -20,6 +20,7 @@ import {
 import styles from './SuggestedSubcategories.module.scss'
 
 export type SuggestedSubcategoriesProps = {
+  hasApiBeenCalled: boolean
   suggestedSubcategories: string[]
   readOnlyFields: string[]
   filteredCategories: CategoryResponseModel[]
@@ -27,6 +28,7 @@ export type SuggestedSubcategoriesProps = {
 }
 
 export function SuggestedSubcategories({
+  hasApiBeenCalled,
   suggestedSubcategories,
   readOnlyFields,
   filteredCategories,
@@ -125,17 +127,32 @@ export function SuggestedSubcategories({
     <FormLayout.Section title={'Type d’offre'}>
       <FormLayout.Row>
         <div className={styles['suggested-subcategories']}>
-          <p className={styles['description']}>
-            Catégories suggérées pour votre offre&nbsp;:
+          <p
+            id="suggested-subcategories-title"
+            className={styles['description']}
+          >
+            Catégories suggérées pour votre offre :
           </p>
-          <div className={styles['items']}>
-            {suggestedSubcategories.map(renderRadioButton)}
-            {isSelectedFromPrevSuggestions &&
-              renderRadioButton(selectedSubCategory)}
-            {wasSelectedFromPrevSuggestions &&
-              prevSelectedSubCategory !== selectedSubCategory &&
-              renderRadioButton(prevSelectedSubCategory)}
-            {renderRadioButton('OTHER')}
+          <div
+            className={styles['items']}
+            id="suggested-subcategories"
+            aria-labelledby="suggested-subcategories-title"
+            aria-live="polite"
+            aria-atomic
+          >
+            {hasApiBeenCalled ? (
+              <>
+                {suggestedSubcategories.map(renderRadioButton)}
+                {isSelectedFromPrevSuggestions &&
+                  renderRadioButton(selectedSubCategory)}
+                {wasSelectedFromPrevSuggestions &&
+                  prevSelectedSubCategory !== selectedSubCategory &&
+                  renderRadioButton(prevSelectedSubCategory)}
+                {renderRadioButton('OTHER')}
+              </>
+            ) : (
+              <span>Veuillez renseigner un titre ou une description.</span>
+            )}
           </div>
         </div>
       </FormLayout.Row>

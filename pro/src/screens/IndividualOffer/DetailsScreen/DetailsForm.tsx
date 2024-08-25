@@ -56,21 +56,23 @@ export const DetailsForm = ({
   imageOffer,
 }: DetailsFormProps): JSX.Element => {
   const areSuggestedSubcategoriesUsed = useSuggestedSubcategoriesAbTest()
+  const [hasSuggestionsApiBeenCalled, setHasSuggestionsApiBeenCalled] =
+    useState(false)
   const [suggestedSubcategories, setSuggestedSubcategories] = useState<
     string[]
   >([])
+  const { values, setValues, handleChange } =
+    useFormikContext<DetailsFormValues>()
   const {
-    values: {
-      categoryId,
-      subcategoryId,
-      showType,
-      subcategoryConditionalFields,
-      description,
-      venueId,
-      name,
-    },
-    handleChange,
-  } = useFormikContext<DetailsFormValues>()
+    categoryId,
+    subcategoryId,
+    showType,
+    subcategoryConditionalFields,
+    description,
+    venueId,
+    name,
+    suggestedSubcategory,
+  } = values
   const { offer } = useIndividualOfferContext()
 
   const musicTypesQuery = useSWR(
@@ -124,12 +126,26 @@ export const DetailsForm = ({
     if (!areSuggestedSubcategoriesUsed && !offer) {
       return
     }
-    const response = await api.getSuggestedSubcategories(
-      name,
-      description,
-      Number(venueId)
-    )
-    setSuggestedSubcategories(response.subcategoryIds)
+
+    try {
+      const response = await api.getSuggestedSubcategories(
+        name,
+        description,
+        Number(venueId)
+      )
+      setSuggestedSubcategories(response.subcategoryIds)
+    } catch (err) {
+      if (!suggestedSubcategory) {
+        await setValues({
+          ...values,
+          suggestedSubcategory: 'OTHER',
+        })
+      }
+    }
+
+    if (!hasSuggestionsApiBeenCalled) {
+      setHasSuggestionsApiBeenCalled(true)
+    }
   }
 
   const debouncedOnChangeGetSuggestedSubcategories = useDebouncedCallback(
@@ -195,6 +211,7 @@ export const DetailsForm = ({
                     readOnlyFields.includes('venueId') ||
                     venueOptions.length === 1
                   }
+                  aria-controls="suggested-subcategories"
                 />
               </FormLayout.Row>
             )}
@@ -206,6 +223,7 @@ export const DetailsForm = ({
                 name="name"
                 onChange={onChangeGetSuggestedSubcategories}
                 disabled={readOnlyFields.includes('name')}
+                aria-controls="suggested-subcategories"
               />
             </FormLayout.Row>
             <FormLayout.Row>
@@ -216,27 +234,29 @@ export const DetailsForm = ({
                 name="description"
                 onChange={onChangeGetSuggestedSubcategories}
                 disabled={readOnlyFields.includes('description')}
+                aria-controls="suggested-subcategories"
               />
             </FormLayout.Row>
           </>
         )}
       </FormLayout.Section>
-      {areSuggestedSubcategoriesUsed && !offer
-        ? suggestedSubcategories.length > 0 && (
-            <SuggestedSubcategories
-              suggestedSubcategories={suggestedSubcategories}
-              readOnlyFields={readOnlyFields}
-              filteredCategories={filteredCategories}
-              filteredSubcategories={filteredSubcategories}
-            />
-          )
-        : !showAddVenueBanner && (
-            <Subcategories
-              readOnlyFields={readOnlyFields}
-              filteredCategories={filteredCategories}
-              filteredSubcategories={filteredSubcategories}
-            />
-          )}
+      {areSuggestedSubcategoriesUsed && !offer ? (
+        <SuggestedSubcategories
+          hasApiBeenCalled={hasSuggestionsApiBeenCalled}
+          suggestedSubcategories={suggestedSubcategories}
+          readOnlyFields={readOnlyFields}
+          filteredCategories={filteredCategories}
+          filteredSubcategories={filteredSubcategories}
+        />
+      ) : (
+        !showAddVenueBanner && (
+          <Subcategories
+            readOnlyFields={readOnlyFields}
+            filteredCategories={filteredCategories}
+            filteredSubcategories={filteredSubcategories}
+          />
+        )
+      )}
       {isSubCategorySelected && (
         <>
           <ImageUploaderOffer
