@@ -10,6 +10,7 @@ from pcapi.validation.routes.users_authentifications import api_key_required
 
 
 @blueprints.public_api.route("/v2/collective/educational-institutions/", methods=["GET"])
+@api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.COLLECTIVE_OFFER_ATTRIBUTES],
@@ -26,7 +27,6 @@ from pcapi.validation.routes.users_authentifications import api_key_required
         )
     ),
 )
-@api_key_required
 def list_educational_institutions(
     query: institutions_serialization.GetListEducationalInstitutionsQueryModel,
 ) -> institutions_serialization.CollectiveOffersListEducationalInstitutionResponseModel:

@@ -18,6 +18,7 @@ from pcapi.validation.routes.users_authentifications import current_api_key
 
 
 @blueprints.public_api.route("/v2/collective/bookings/<int:booking_id>", methods=["PATCH"])
+@api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.COLLECTIVE_BOOKINGS],
@@ -31,7 +32,6 @@ from pcapi.validation.routes.users_authentifications import current_api_key
         )
     ),
 )
-@api_key_required
 def cancel_collective_booking(booking_id: int) -> None:
     """
     Cancel collective booking

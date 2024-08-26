@@ -13,6 +13,7 @@ from pcapi.validation.routes.users_authentifications import current_api_key
 
 
 @blueprints.public_api.route("/v2/collective/venues", methods=["GET"])
+@api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.COLLECTIVE_VENUES],
@@ -29,7 +30,6 @@ from pcapi.validation.routes.users_authentifications import current_api_key
         )
     ),
 )
-@api_key_required
 def list_venues() -> serialization.CollectiveOffersListVenuesResponseModel:
     """
     Get all venues
@@ -44,6 +44,7 @@ def list_venues() -> serialization.CollectiveOffersListVenuesResponseModel:
 
 
 @blueprints.public_api.route("/v2/collective/offerer_venues", methods=["GET"])
+@api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.COLLECTIVE_VENUES],
@@ -60,7 +61,6 @@ def list_venues() -> serialization.CollectiveOffersListVenuesResponseModel:
         )
     ),
 )
-@api_key_required
 def deprecated_get_offerer_venues(
     query: venues_serialization.GetOfferersVenuesQuery,
 ) -> venues_serialization.GetOfferersVenuesResponse:

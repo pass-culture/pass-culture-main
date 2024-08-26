@@ -17,6 +17,7 @@ from pcapi.core.testing import assert_num_queries
 
 import tests
 from tests.routes import image_data
+from tests.routes.public.helpers import PublicAPIEndpointBaseHelper
 
 
 IMAGES_DIR = Path(tests.__path__[0]) / "files"
@@ -108,7 +109,10 @@ def public_client_fixture(client, api_key):
 
 
 @pytest.mark.usefixtures("db_session")
-class CollectiveOffersPublicPostOfferTest:
+class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
+    endpoint_url = "/v2/collective/offers/"
+    endpoint_method = "post"
+
     def teardown_method(self, *args):
         """clear images after each tests"""
         storage_folder = UPLOAD_FOLDER / educational_models.CollectiveOffer.__name__.lower()

@@ -10928,7 +10928,7 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "summary": "Get the eductional domains",
+                "summary": "Get the educational domains",
                 "tags": [
                     "Collective offer attributes"
                 ]
