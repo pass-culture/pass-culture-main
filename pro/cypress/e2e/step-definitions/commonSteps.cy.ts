@@ -17,7 +17,6 @@ When('I go to the {string} page', (page: string) => {
   cy.findAllByTestId('spinner').should('not.exist')
 })
 
-// this account is also in the new interface now
 Given('I am logged in', () => {
   cy.login({
     email: 'retention_structures@example.com',
@@ -34,7 +33,6 @@ Given('I am logged in with the new interface', () => {
   cy.findAllByTestId('spinner').should('not.exist')
 })
 
-// créer un seul scénario createOffers avec son step-def
 When('I want to create {string} offer', (offerType: string) => {
   cy.findByText('Au grand public').click()
   cy.findByText(offerType).click()

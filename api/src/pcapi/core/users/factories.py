@@ -1054,6 +1054,7 @@ class UserProFlagsFactory(BaseFactory):
 class UserProNewNavStateFactory(BaseFactory):
     class Meta:
         model = models.UserProNewNavState
+        sqlalchemy_get_or_create = ["userId"]
 
     user = factory.SubFactory(ProFactory)
     eligibilityDate = LazyAttribute(lambda _: datetime.utcnow())

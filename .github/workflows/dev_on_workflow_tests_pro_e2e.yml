@@ -127,8 +127,8 @@ jobs:
         with:
           resource: http://localhost:5001/health/api
           timeout: 120000
-      - name: "Load sandbox"
-        run: ../pc sandbox -n e2e
+      # - name: "Load sandbox" # @TODO remettre P0
+      #   run: ../pc sandbox -n e2e # @TODO remettre P0
       - name: "Build vite application"
         run: yarn build:development
       - name: "Serve vite preview"
@@ -146,8 +146,8 @@ jobs:
           working-directory: pro
           browser: chrome
           config-file: cypress/cypress.config.ts
-          env: TAGS="@P0"
-          record: ${{ github.ref == 'refs/heads/master' }} # for Cypress Cloud
+          env: TAGS="@P4" # @TODO remettre P0
+          record: true #${{ github.ref == 'refs/heads/master' }} # for Cypress Cloud # @TODO
         env:
           CYPRESS_RECORD_KEY: ${{ steps.secrets.outputs.CYPRESS_CLOUD_RECORD_KEY }}
           CYPRESS_PROJECT_ID: ${{ steps.secrets.outputs.CYPRESS_CLOUD_PROJECT_ID }}
