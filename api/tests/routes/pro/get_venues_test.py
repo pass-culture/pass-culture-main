@@ -1,6 +1,7 @@
 import pytest
 
 from pcapi.connectors.acceslibre import ExpectedFieldsEnum as acceslibre_enum
+from pcapi.core import testing
 from pcapi.core.educational.factories import CollectiveOfferFactory
 from pcapi.core.educational.factories import CollectiveOfferTemplateFactory
 import pcapi.core.offerers.factories as offerers_factories
@@ -21,7 +22,11 @@ def test_response_serialization(client):
 
     # when
     client = client.with_session_auth(user_offerer.user.email)
-    response = client.get("/venues")
+    # 2 - user + session
+    # 1 - SELECT venue + related
+    # 1 - SELECT on offers/collective offers (hasCreatedOffer)
+    with testing.assert_num_queries(4):
+        response = client.get("/venues")
 
     # then
     assert response.status_code == 200
@@ -51,9 +56,11 @@ def test_response_serialization(client):
             "address": {
                 "banId": "75102_7560_00001",
                 "city": "Paris",
-                "id": venue.offererAddressId,
+                "id": venue.offererAddress.addressId,
+                "id_oa": venue.offererAddressId,
                 "inseeCode": "75102",
                 "isEditable": False,
+                "isManualEdition": False,
                 "label": venue.common_name,
                 "latitude": 48.87004,
                 "longitude": 2.3785,
@@ -104,9 +111,11 @@ def test_response_serialization(client):
             "address": {
                 "banId": "75102_7560_00001",
                 "city": "Paris",
-                "id": venue_with_accessibility_provider.offererAddressId,
+                "id": venue_with_accessibility_provider.offererAddress.addressId,
+                "id_oa": venue_with_accessibility_provider.offererAddressId,
                 "inseeCode": "75102",
                 "isEditable": False,
+                "isManualEdition": False,
                 "label": venue_with_accessibility_provider.common_name,
                 "latitude": 48.87004,
                 "longitude": 2.3785,
