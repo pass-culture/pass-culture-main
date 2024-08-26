@@ -13,6 +13,7 @@ from pcapi.validation.routes.users_authentifications import api_key_required
 
 
 @blueprints.public_api.route("/v2/collective/categories", methods=["GET"])
+@api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     deprecated=True,
@@ -29,7 +30,6 @@ from pcapi.validation.routes.users_authentifications import api_key_required
         )
     ),
 )
-@api_key_required
 def list_categories() -> offers_serialization.CollectiveOffersListCategoriesResponseModel:
     """
     [LEGACY] Get collective offers categories
@@ -46,6 +46,7 @@ def list_categories() -> offers_serialization.CollectiveOffersListCategoriesResp
 
 
 @blueprints.public_api.route("/v2/collective/subcategories", methods=["GET"])
+@api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     deprecated=True,
@@ -62,7 +63,6 @@ def list_categories() -> offers_serialization.CollectiveOffersListCategoriesResp
         )
     ),
 )
-@api_key_required
 def list_subcategories() -> offers_serialization.CollectiveOffersListSubCategoriesResponseModel:
     """
     [LEGACY] Get collective offers subcatgories

@@ -6,9 +6,15 @@ from pcapi.core.educational import factories as educational_factories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.providers import factories as provider_factories
 
+from tests.routes.public.helpers import PublicAPIEndpointBaseHelper
+
 
 @pytest.mark.usefixtures("db_session")
-class CollectiveOffersPublicGetOfferTest:
+class CollectiveOffersPublicGetOfferTest(PublicAPIEndpointBaseHelper):
+    endpoint_url = "/v2/collective/offers/{offer_id}"
+    endpoint_method = "get"
+    default_path_params = {"offer_id": 1}
+
     def test_get_offer(self, client):
         # Given
         venue_provider = provider_factories.VenueProviderFactory()

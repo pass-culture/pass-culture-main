@@ -11,6 +11,7 @@ from pcapi.validation.routes.users_authentifications import api_key_required
 
 
 @blueprints.public_api.route("/v2/collective/educational-domains", methods=["GET"])
+@api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.COLLECTIVE_OFFER_ATTRIBUTES],
@@ -26,11 +27,10 @@ from pcapi.validation.routes.users_authentifications import api_key_required
         )
     ),
 )
-@api_key_required
 @cached_view(prefix="pro_public_api_v2")
 def list_educational_domains() -> domains_serialization.CollectiveOffersListDomainsResponseModel:
     """
-    Get the eductional domains
+    Get the educational domains
 
     Return the educational domains that can be linked to a collective offer.
     """

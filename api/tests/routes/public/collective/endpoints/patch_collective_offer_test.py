@@ -17,6 +17,7 @@ from pcapi.utils import date as date_utils
 
 import tests
 from tests.routes import image_data
+from tests.routes.public.helpers import PublicAPIEndpointBaseHelper
 
 
 IMAGES_DIR = Path(tests.__path__[0]) / "files"
@@ -24,7 +25,11 @@ UPLOAD_FOLDER = settings.LOCAL_STORAGE_DIR / educational_models.CollectiveOffer.
 
 
 @pytest.mark.usefixtures("db_session")
-class CollectiveOffersPublicPatchOfferTest:
+class CollectiveOffersPublicPatchOfferTest(PublicAPIEndpointBaseHelper):
+    endpoint_url = "/v2/collective/offers/{offer_id}"
+    endpoint_method = "patch"
+    default_path_params = {"offer_id": 1}
+
     def teardown_method(self, *args):
         """clear images after each tests"""
         storage_folder = UPLOAD_FOLDER / educational_models.CollectiveOffer.__name__.lower()
