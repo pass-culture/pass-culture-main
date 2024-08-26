@@ -61,6 +61,7 @@ import strokeAccessibilityEarIcon from 'icons/stroke-accessibility-ear.svg'
 import strokeAccessibilityEyeIcon from 'icons/stroke-accessibility-eye.svg'
 import strokeAccessibilityLegIcon from 'icons/stroke-accessibility-leg.svg'
 import strokeArticleIcon from 'icons/stroke-article.svg'
+import strokeBarcodeIcon from 'icons/stroke-barcode.svg'
 import strokeBookedIcon from 'icons/stroke-booked.svg'
 import strokeBookingHold from 'icons/stroke-booking-hold.svg'
 import strokeBuildingIcon from 'icons/stroke-building.svg'
@@ -268,6 +269,7 @@ export const strokeIcons: IconListItem[] = [
   { src: stroke404Icon },
   { src: strokeShoutIcon },
   { src: strokeCollaboratorIcon },
+  { src: strokeBarcodeIcon },
 ]
 
 export const shadowIcons: IconListItem[] = [
