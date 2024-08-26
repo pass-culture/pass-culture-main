@@ -255,7 +255,6 @@ export type { VenueProviderResponse } from './models/VenueProviderResponse';
 export type { VenueResponseModel } from './models/VenueResponseModel';
 export type { VenuesEducationalStatusesResponseModel } from './models/VenuesEducationalStatusesResponseModel';
 export type { VenuesEducationalStatusResponseModel } from './models/VenuesEducationalStatusResponseModel';
-export type { VenueStatsResponseModel } from './models/VenueStatsResponseModel';
 export { VenueTypeCode } from './models/VenueTypeCode';
 export type { VenueTypeListResponseModel } from './models/VenueTypeListResponseModel';
 export type { VenueTypeResponseModel } from './models/VenueTypeResponseModel';

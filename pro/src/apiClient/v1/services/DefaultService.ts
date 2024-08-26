@@ -122,7 +122,6 @@ import type { VenueLabelListResponseModel } from '../models/VenueLabelListRespon
 import type { VenueProviderResponse } from '../models/VenueProviderResponse';
 import type { VenueResponseModel } from '../models/VenueResponseModel';
 import type { VenuesEducationalStatusesResponseModel } from '../models/VenuesEducationalStatusesResponseModel';
-import type { VenueStatsResponseModel } from '../models/VenueStatsResponseModel';
 import type { VenueTypeListResponseModel } from '../models/VenueTypeListResponseModel';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import type { BaseHttpRequest } from '../core/BaseHttpRequest';
@@ -3101,27 +3100,6 @@ export class DefaultService {
       },
       body: requestBody,
       mediaType: 'application/json',
-      errors: {
-        403: `Forbidden`,
-        422: `Unprocessable Entity`,
-      },
-    });
-  }
-  /**
-   * get_venue_stats <GET>
-   * @param venueId
-   * @returns VenueStatsResponseModel OK
-   * @throws ApiError
-   */
-  public getVenueStats(
-    venueId: number,
-  ): CancelablePromise<VenueStatsResponseModel> {
-    return this.httpRequest.request({
-      method: 'GET',
-      url: '/venues/{venue_id}/stats',
-      path: {
-        'venue_id': venueId,
-      },
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
