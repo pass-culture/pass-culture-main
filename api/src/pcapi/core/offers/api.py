@@ -2065,13 +2065,22 @@ def upsert_movie_product_from_provider(
         logger.warning("Cannot create a movie product without allocineId nor visa")
         return None
 
-    existing_product = None
-    if movie.allocine_id:
-        existing_product = offers_repository.get_movie_product_by_allocine_id(movie.allocine_id)
-    if not existing_product and movie.visa:
-        existing_product = offers_repository.get_movie_product_by_visa(movie.visa)
+    existing_product_with_allocine_id = (
+        offers_repository.get_movie_product_by_allocine_id(movie.allocine_id) if movie.allocine_id else None
+    )
+    existing_product_with_visa = offers_repository.get_movie_product_by_visa(movie.visa) if movie.visa else None
 
     with transaction():
+        existing_product = existing_product_with_allocine_id or existing_product_with_visa
+        if (
+            existing_product_with_allocine_id
+            and existing_product_with_visa
+            and existing_product_with_allocine_id.id != existing_product_with_visa.id
+        ):
+            existing_product = offers_repository.merge_products(
+                existing_product_with_allocine_id, existing_product_with_visa
+            )
+
         if existing_product:
             if _is_allocine(provider.id) or provider.id == existing_product.lastProviderId:
                 _update_movie_product(existing_product, movie, provider.id, id_at_providers)
