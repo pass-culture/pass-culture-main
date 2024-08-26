@@ -591,7 +591,7 @@ def format_confidence_level(confidence_level: offerers_models.OffererConfidenceL
 
 
 def format_confidence_level_badge(
-    confidence_level: offerers_models.OffererConfidenceLevel, show_no_rule: bool = False, info: str = ""
+    confidence_level: offerers_models.OffererConfidenceLevel | None, show_no_rule: bool = False, info: str = ""
 ) -> str:
     match confidence_level:
         case offerers_models.OffererConfidenceLevel.MANUAL_REVIEW:

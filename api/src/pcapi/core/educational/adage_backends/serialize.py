@@ -65,7 +65,7 @@ def serialize_collective_offer(collective_offer: models.CollectiveOffer) -> Adag
         beginningDatetime=stock.beginningDatetime,
         startDatetime=stock.startDatetime,
         endDatetime=stock.endDatetime,
-        city=venue.city,
+        city=venue.city,  # type: ignore[arg-type]  # TODO: check that it cannot be None
         contact=AdageCollectiveOfferContact(phone=collective_offer.contactPhone, email=collective_offer.contactEmail),
         coordinates=Coordinates(latitude=venue.latitude, longitude=venue.longitude),
         description=collective_offer.description,
@@ -74,14 +74,14 @@ def serialize_collective_offer(collective_offer: models.CollectiveOffer) -> Adag
         name=collective_offer.name,
         numberOfTickets=stock.numberOfTickets,
         participants=collective_offer.students,
-        postalCode=venue.postalCode,
+        postalCode=venue.postalCode,  # type: ignore[arg-type]  # TODO: check that it cannot be None
         price=stock.price,
         priceDetail=stock.priceDetail,
         quantity=1,
         subcategoryLabel=collective_offer.subcategory.app_label if collective_offer.subcategory else "",
         totalAmount=stock.price,
         venueName=venue.name,
-        venueTimezone=venue.timezone,
+        venueTimezone=venue.timezone,  # type: ignore[arg-type]
         isDigital=False,
         withdrawalDetails=None,
         redactor=AdageRedactor(

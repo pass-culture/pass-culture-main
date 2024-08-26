@@ -27,7 +27,7 @@ class ExternalEventBookingRequest(pydantic_v1.BaseModel):
     user_last_name: str
     user_phone: str | None
     venue_address: str
-    venue_department_code: str
+    venue_department_code: str | None
     venue_id: pydantic_v1.StrictInt
     venue_name: str
 
@@ -48,7 +48,7 @@ class ExternalEventBookingRequest(pydantic_v1.BaseModel):
                 "price_category_id": stock.priceCategoryId,
                 "price_category_label": stock.priceCategory.label,
             }
-            if stock.priceCategoryId
+            if stock.priceCategory
             else {"offer_price": finance_utils.to_eurocents(stock.price)}
         )
         return cls(

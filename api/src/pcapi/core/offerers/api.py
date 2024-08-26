@@ -2364,6 +2364,7 @@ def get_permanent_venues_without_accessibility_provider() -> list[models.Venue]:
 
 
 def synchronize_accessibility_provider(venue: models.Venue, force_sync: bool = False) -> None:
+    assert venue.accessibilityProvider  # helps mypy, ensured by caller
     slug = venue.accessibilityProvider.externalAccessibilityId
     try:
         last_update, accessibility_data = accessibility_provider.get_accessibility_infos(slug=slug)

@@ -52,7 +52,9 @@ class ExternalAccessibilityDataModel(pydantic_v1.BaseModel):
     mentalDisability: MentalDisabilityModel = MentalDisabilityModel()
 
     @classmethod
-    def from_accessibility_infos(cls, accessibility_infos: AccessibilityInfo) -> "ExternalAccessibilityDataModel":
+    def from_accessibility_infos(
+        cls, accessibility_infos: AccessibilityInfo | None
+    ) -> "ExternalAccessibilityDataModel":
         if not accessibility_infos:
             return ExternalAccessibilityDataModel()
         accessibility_data = cls.parse_obj(accessibility_infos)

@@ -167,6 +167,7 @@ def _verify_and_return_tickets_with_same_quantity_as_booking(
     stock: offers_models.Stock,
     venue_provider: providers_models.VenueProvider | None,
 ) -> list[serialize.ExternalEventTicket]:
+    assert stock.offer.lastProvider  # helps mypy
     if len(tickets) == booking.quantity:
         return tickets
     if len(tickets) == 2 and booking.quantity == 1:

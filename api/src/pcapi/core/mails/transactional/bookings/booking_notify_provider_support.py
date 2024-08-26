@@ -21,6 +21,7 @@ def get_booking_cancelled_unilaterally_provider_support_email_data(
 
 def send_booking_cancelled_unilaterally_provider_support_email(booking: Booking) -> None:
     external_booking = booking.externalBookings[0]
+    assert booking.stock.offer.lastProvider  # helps mypy
     match booking.stock.offer.lastProvider.localClass:
         case "CDSStocks":
             recipient = settings.CDS_SUPPORT_EMAIL_ADDRESS

@@ -365,13 +365,13 @@ def update_collective_offer_educational_institution(
     offer.institutionId = educational_institution_id
     offer.teacher = None
 
-    if offer.institutionId is not None:
+    if offer.institution is not None:
         if not offer.institution.isActive:
             raise exceptions.EducationalInstitutionIsNotActive()
     elif teacher_email is not None:
         raise exceptions.EducationalRedcatorCannotBeLinked()
 
-    if offer.institutionId is not None and teacher_email:
+    if offer.institution is not None and teacher_email:
         possible_teachers = educational_api_adage.autocomplete_educational_redactor_for_uai(
             uai=offer.institution.institutionId,
             candidate=teacher_email,
@@ -662,7 +662,7 @@ def duplicate_offer_and_stock(
         offerVenue=original_offer.offerVenue,
         interventionArea=original_offer.interventionArea,
         domains=original_offer.domains,
-        template=original_offer.template,
+        template=original_offer.template,  # type: ignore[arg-type]
         lastValidationDate=original_offer.lastValidationDate,
         lastValidationType=original_offer.lastValidationType,
         validation=offer_mixin.OfferValidationStatus.DRAFT,

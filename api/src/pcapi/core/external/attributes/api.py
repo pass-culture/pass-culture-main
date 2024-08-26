@@ -325,7 +325,7 @@ def get_pro_attributes(email: str) -> models.ProAttributes:
         venues_ids={venue.id for venue in all_venues},
         venues_names={venue.publicName or venue.name for venue in all_venues},
         venues_types={venue.venueTypeCode.name for venue in all_venues},
-        venues_labels={venue.venueLabel.label for venue in all_venues if venue.venueLabelId},  # type: ignore[misc]
+        venues_labels={venue.venueLabel.label for venue in all_venues if venue.venueLabelId},
         departement_code={venue.departementCode for venue in all_venues if venue.departementCode},
         postal_code={venue.postalCode for venue in all_venues if venue.postalCode},
         has_collective_offers=has_collective_offers,
