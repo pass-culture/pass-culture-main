@@ -19,11 +19,12 @@ import {
   NUMBER_OF_OFFERS_PER_PAGE,
   OFFER_STATUS_DRAFT,
 } from 'core/Offers/constants'
-import { SearchFiltersParams } from 'core/Offers/types'
 import {
-  computeOffersUrl,
-  computeCollectiveOffersUrl,
-} from 'core/Offers/utils/computeOffersUrl'
+  CollectiveSearchFiltersParams,
+  SearchFiltersParams,
+} from 'core/Offers/types'
+import { computeCollectiveOffersUrl } from 'core/Offers/utils/computeCollectiveOffersUrl'
+import { computeIndividualOffersUrl } from 'core/Offers/utils/computeIndividualOffersUrl'
 import { hasSearchFilters } from 'core/Offers/utils/hasSearchFilters'
 import { Audience } from 'core/shared/types'
 import { SelectOption } from 'custom_types/form'
@@ -206,7 +207,7 @@ export const IndividualOffersScreen = ({
           tabs={[
             {
               label: 'Offres individuelles',
-              url: computeOffersUrl({
+              url: computeIndividualOffersUrl({
                 ...initialSearchFilters,
                 status: DEFAULT_SEARCH_FILTERS.status,
                 page: currentPageNumber,
@@ -220,7 +221,7 @@ export const IndividualOffersScreen = ({
                 ...initialSearchFilters,
                 status: DEFAULT_COLLECTIVE_SEARCH_FILTERS.status,
                 page: currentPageNumber,
-              }),
+              } as CollectiveSearchFiltersParams),
               key: 'collective',
               icon: strokeLibraryIcon,
             },

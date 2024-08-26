@@ -12,8 +12,8 @@ import {
   CollectiveOffersStockResponseModel,
 } from 'apiClient/v1'
 import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from 'core/Offers/constants'
-import { SearchFiltersParams } from 'core/Offers/types'
-import { computeCollectiveOffersUrl } from 'core/Offers/utils/computeOffersUrl'
+import { CollectiveSearchFiltersParams } from 'core/Offers/types'
+import { computeCollectiveOffersUrl } from 'core/Offers/utils/computeCollectiveOffersUrl'
 import { collectiveOfferFactory } from 'utils/collectiveApiFactories'
 import {
   defaultGetOffererResponseModel,
@@ -32,7 +32,7 @@ vi.mock('react-router-dom', async () => ({
 }))
 
 const renderOffers = async (
-  filters: Partial<SearchFiltersParams> = DEFAULT_COLLECTIVE_SEARCH_FILTERS
+  filters: Partial<CollectiveSearchFiltersParams> = DEFAULT_COLLECTIVE_SEARCH_FILTERS
 ) => {
   const route = computeCollectiveOffersUrl(filters)
   renderWithProviders(

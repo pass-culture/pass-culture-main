@@ -3,7 +3,7 @@ import React from 'react'
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
 import { Events } from 'core/FirebaseEvents/constants'
-import { computeOffersUrl } from 'core/Offers/utils/computeOffersUrl'
+import { computeIndividualOffersUrl } from 'core/Offers/utils/computeIndividualOffersUrl'
 import fullRightIcon from 'icons/full-right.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
@@ -22,7 +22,7 @@ export const ActionsBar = ({
     <ActionsBarSticky>
       <ActionsBarSticky.Left>
         <ButtonLink
-          to={computeOffersUrl({})}
+          to={computeIndividualOffersUrl({})}
           variant={ButtonVariant.SECONDARY}
           onClick={() => logEvent(Events.CLICKED_CANCEL_OFFER_CREATION)}
         >
