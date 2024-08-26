@@ -86,9 +86,8 @@ export const FieldLayout = ({
       data-testid={`wrapper-${name}`}
     >
       <div
-        className={cn(styles['field-layout-label-container'], {
+        className={cn(styles['field-layout-label-container'], classNameLabel, {
           ['visually-hidden']: isLabelHidden,
-          classNameLabel,
         })}
       >
         <label
