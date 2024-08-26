@@ -60,14 +60,6 @@
     }
   }
 
-  &-counter {
-    @include fonts.caption;
-
-    color: var(--color-grey-dark);
-    flex: initial;
-    justify-self: flex-end;
-  }
-
   &-input-description {
     @include fonts.caption;
 

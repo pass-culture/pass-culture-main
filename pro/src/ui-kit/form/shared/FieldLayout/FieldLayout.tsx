@@ -8,6 +8,7 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 import { FieldError } from '../FieldError/FieldError'
 
 import styles from './FieldLayout.module.scss'
+import { FieldLayoutCharacterCount } from './FieldLayoutCharacterCount/FieldLayoutCharacterCount'
 
 export type FieldLayoutBaseProps = {
   // These props are display options that are applicable to all fields using FieldLayout
@@ -145,13 +146,11 @@ export const FieldLayout = ({
               )}
             </div>
             {hasCounter && (
-              <span
-                className={styles['field-layout-counter']}
-                data-testid={`counter-${name}`}
-                role="status"
-              >
-                {count}/{maxLength}
-              </span>
+              <FieldLayoutCharacterCount
+                count={count}
+                maxLength={maxLength}
+                name={name}
+              />
             )}
           </div>
         )}
