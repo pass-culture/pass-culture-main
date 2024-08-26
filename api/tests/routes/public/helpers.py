@@ -27,9 +27,38 @@ class PublicAPIEndpointBaseHelper(abc.ABC):
     def endpoint_url(self):
         raise NotImplementedError()
 
+    @property
     @abc.abstractmethod
-    def test_should_raise_401_because_not_authenticated(self, client: TestClient):
+    def endpoint_method(self):
+        """
+        Http verb used to call the endpoint
+        Expected values: 'get', 'post', 'patch', 'delete'
+        """
         raise NotImplementedError()
+
+    @property
+    def default_path_params(self) -> dict:
+        """
+        Default path params that will be used by default test to build an actual url.
+        For instance, if `endpoint_url="/public/offers/v1/events/{event_id}"`, then
+        `default_path_params` should look something like `{"event_id": 1}`
+        """
+        return {}
+
+    def test_should_raise_401_because_not_authenticated(self, client: TestClient):
+        """
+        Default test ensuring the API call is authenticated before proceeding
+        """
+        client_method = getattr(client, self.endpoint_method)
+        url = self.endpoint_url
+
+        if self.default_path_params:
+            url = url.format(**self.default_path_params)
+
+        response = client_method(url)
+
+        assert response.status_code == 401
+        assert response.json == {"auth": "API key required"}
 
     def _setup_api_key(self, offerer, provider=None) -> str:
         secret = str(uuid.uuid4())

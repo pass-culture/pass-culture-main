@@ -22,10 +22,7 @@ from . import utils
 @pytest.mark.usefixtures("db_session")
 class PostProductByEanTest(PublicAPIVenueEndpointHelper):
     endpoint_url = "/public/offers/v1/products/ean"
-
-    def test_should_raise_401_because_not_authenticated(self, client):
-        response = client.post(self.endpoint_url, json={})
-        assert response.status_code == 401
+    endpoint_method = "post"
 
     def test_should_raise_404_because_has_no_access_to_venue(self, client):
         plain_api_key, _ = self.setup_provider()
