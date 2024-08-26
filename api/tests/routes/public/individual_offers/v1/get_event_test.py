@@ -16,6 +16,8 @@ from tests.routes.public.helpers import PublicAPIVenueEndpointHelper
 @pytest.mark.usefixtures("db_session")
 class GetEventTest(PublicAPIVenueEndpointHelper):
     endpoint_url = "/public/offers/v1/events/{event_id}"
+    endpoint_method = "get"
+    default_path_params = {"event_id": 1}
 
     def setup_base_resource(self, venue=None) -> offers_models.Offer:
         venue = venue or self.setup_venue()
@@ -29,11 +31,6 @@ class GetEventTest(PublicAPIVenueEndpointHelper):
             product=product,
             idAtProvider="Oh le bel id <3",
         )
-
-    def test_should_raise_401_because_not_authenticated(self, client: TestClient):
-        event_offer = self.setup_base_resource()
-        response = client.get(self.endpoint_url.format(event_id=event_offer.id))
-        assert response.status_code == 401
 
     def test_should_raise_404_because_has_no_access_to_venue(self, client: TestClient):
         plain_api_key, _ = self.setup_provider()

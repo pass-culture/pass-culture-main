@@ -15,6 +15,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 class GetBookingsByOfferTest(PublicAPIVenueEndpointHelper):
     endpoint_url = "/public/bookings/v1/bookings"
+    endpoint_method = "get"
 
     def setup_base_resource(self, venue=None):
         venue = venue or self.setup_venue()
@@ -24,10 +25,6 @@ class GetBookingsByOfferTest(PublicAPIVenueEndpointHelper):
             name="Vieux motard que jamais",
         )
         return offer
-
-    def test_should_raise_401_because_not_authenticated(self, client: TestClient):
-        response = client.get(self.endpoint_url)
-        assert response.status_code == 401
 
     def test_should_raise_404_because_has_no_access_to_venue(self, client: TestClient):
         plain_api_key, _ = self.setup_provider()

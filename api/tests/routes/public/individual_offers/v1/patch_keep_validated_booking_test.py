@@ -16,6 +16,8 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 class PatchKeepBookingByTokenTest(PublicAPIVenueEndpointHelper):
     endpoint_url = "/public/bookings/v1/keep/token/{token}"
+    endpoint_method = "patch"
+    default_path_params = {"token": "TOKEN"}
 
     def setup_base_resource(self, venue=None, status=None):
         venue = venue or self.setup_venue()
@@ -37,10 +39,6 @@ class PatchKeepBookingByTokenTest(PublicAPIVenueEndpointHelper):
             status=status or BookingStatus.USED,
         )
         return offer, booking
-
-    def test_should_raise_401_because_not_authenticated(self, client: TestClient):
-        response = client.patch(self.endpoint_url.format(token="token"))
-        assert response.status_code == 401
 
     def test_should_raise_404_because_has_no_access_to_venue(self, client: TestClient):
         plain_api_key, _ = self.setup_provider()

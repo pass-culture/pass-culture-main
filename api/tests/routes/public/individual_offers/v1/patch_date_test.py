@@ -22,6 +22,8 @@ from . import utils
 @pytest.mark.usefixtures("db_session")
 class PatchEventStockTest(PublicAPIVenueEndpointHelper):
     endpoint_url = "/public/offers/v1/events/{event_id}/dates/{stock_id}"
+    endpoint_method = "patch"
+    default_path_params = {"event_id": 1, "stock_id": 2}
 
     @staticmethod
     def _get_base_payload(price_category_id) -> dict:
@@ -54,11 +56,6 @@ class PatchEventStockTest(PublicAPIVenueEndpointHelper):
         )
 
         return event, stock
-
-    def test_should_raise_401_because_not_authenticated(self, client: TestClient):
-        event, stock = self.setup_base_resource()
-        response = client.patch(self.endpoint_url.format(event_id=event.id, stock_id=stock.id))
-        assert response.status_code == 401
 
     def test_should_raise_404_because_has_no_access_to_venue(self, client: TestClient):
         plain_api_key, _ = self.setup_provider()

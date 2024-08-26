@@ -13,10 +13,7 @@ from tests.routes.public.helpers import PublicAPIEndpointBaseHelper
 @pytest.mark.usefixtures("db_session")
 class GetOffererVenuesTest(PublicAPIEndpointBaseHelper):
     endpoint_url = "/public/offers/v1/offerer_venues"
-
-    def test_should_raise_401_because_not_authenticated(self, client: TestClient):
-        response = client.get(self.endpoint_url)
-        assert response.status_code == 401
+    endpoint_method = "get"
 
     def create_multiple_venue_providers(self):
         plain_api_key, provider = self.setup_provider()
