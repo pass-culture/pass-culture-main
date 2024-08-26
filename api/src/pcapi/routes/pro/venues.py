@@ -228,30 +228,6 @@ def delete_venue_banner(venue_id: int) -> None:
     offerers_api.delete_venue_banner(venue)
 
 
-@private_api.route("/venues/<int:venue_id>/stats", methods=["GET"])
-@login_required
-@spectree_serialize(
-    on_success_status=200, response_model=venues_serialize.VenueStatsResponseModel, api=blueprint.pro_private_schema
-)
-def get_venue_stats(venue_id: int) -> venues_serialize.VenueStatsResponseModel:
-    venue: Venue = Venue.query.get_or_404(venue_id)
-    check_user_has_access_to_offerer(current_user, venue.managingOffererId)
-
-    (
-        active_bookings_quantity,
-        validated_bookings_count,
-        active_offers_count,
-        sold_out_offers_count,
-    ) = offerers_repository.get_venue_stats(venue.id)
-
-    return venues_serialize.VenueStatsResponseModel(
-        activeBookingsQuantity=active_bookings_quantity,
-        validatedBookingsQuantity=validated_bookings_count,
-        activeOffersCount=active_offers_count,
-        soldOutOffersCount=sold_out_offers_count,
-    )
-
-
 @private_api.route("/venues-educational-statuses", methods=["GET"])
 @login_required
 @spectree_serialize(
