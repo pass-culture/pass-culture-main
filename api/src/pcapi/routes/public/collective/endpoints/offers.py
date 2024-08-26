@@ -27,6 +27,7 @@ from pcapi.validation.routes.users_authentifications import current_api_key
 
 
 @blueprints.public_api.route("/v2/collective/offers/", methods=["GET"])
+@api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.COLLECTIVE_OFFERS],
@@ -41,7 +42,6 @@ from pcapi.validation.routes.users_authentifications import current_api_key
         )
     ),
 )
-@api_key_required
 def get_collective_offers_public(
     query: offers_serialization.ListCollectiveOffersQueryModel,
 ) -> offers_serialization.CollectiveOffersListResponseModel:
@@ -66,6 +66,7 @@ def get_collective_offers_public(
 
 
 @blueprints.public_api.route("/v2/collective/offers/<int:offer_id>", methods=["GET"])
+@api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.COLLECTIVE_OFFERS],
@@ -80,7 +81,6 @@ def get_collective_offers_public(
         )
     ),
 )
-@api_key_required
 def get_collective_offer_public(
     offer_id: int,
 ) -> offers_serialization.GetPublicCollectiveOfferResponseModel:
@@ -116,6 +116,7 @@ def get_collective_offer_public(
 
 
 @blueprints.public_api.route("/v2/collective/offers/", methods=["POST"])
+@api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.COLLECTIVE_OFFERS],
@@ -135,7 +136,6 @@ def get_collective_offer_public(
         )
     ),
 )
-@api_key_required
 def post_collective_offer_public(
     body: offers_serialization.PostCollectiveOfferBodyModel,
 ) -> offers_serialization.GetPublicCollectiveOfferResponseModel:
@@ -250,6 +250,7 @@ def post_collective_offer_public(
 
 
 @blueprints.public_api.route("/v2/collective/offers/<int:offer_id>", methods=["PATCH"])
+@api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.COLLECTIVE_OFFERS],
@@ -269,7 +270,6 @@ def post_collective_offer_public(
         )
     ),
 )
-@api_key_required
 def patch_collective_offer_public(
     offer_id: int,
     body: offers_serialization.PatchCollectiveOfferBodyModel,
@@ -538,12 +538,12 @@ def patch_collective_offer_public(
 
 
 @blueprints.public_api.route("/v2/collective/offers/formats", methods=["GET"])
+@api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.COLLECTIVE_OFFERS],
     resp=SpectreeResponse(**(http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS)),
 )
-@api_key_required
 def get_offers_formats() -> offers_serialization.GetCollectiveFormatListModel:
     """
     Get collectice offer formats

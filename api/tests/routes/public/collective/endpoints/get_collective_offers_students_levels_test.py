@@ -1,21 +1,22 @@
-from flask import url_for
 import pytest
 
 import pcapi.core.educational.models as educational_models
 import pcapi.core.offerers.factories as offerers_factories
 
+from tests.routes.public.helpers import PublicAPIEndpointBaseHelper
+
 
 @pytest.mark.usefixtures("db_session")
-class CollectiveOffersGetStudentsLevelsTest:
+class CollectiveOffersGetStudentsLevelsTest(PublicAPIEndpointBaseHelper):
+    endpoint_url = "/v2/collective/student-levels"
+    endpoint_method = "get"
+
     def test_list_students_levels(self, client):
         # Given
-        offerer = offerers_factories.OffererFactory()
-        offerers_factories.ApiKeyFactory(offerer=offerer)
+        plain_api_key, _ = self.setup_provider()
 
         # When
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-            url_for("public_api.list_students_levels")
-        )
+        response = client.with_explicit_token(plain_api_key).get(self.endpoint_url)
 
         # Then
         assert response.status_code == 200
@@ -33,16 +34,7 @@ class CollectiveOffersGetStudentsLevelsTest:
         offerers_factories.ApiKeyFactory(offerer=user_offerer.offerer)
 
         # When
-        response = client.with_session_auth(user_offerer.user.email).get(url_for("public_api.list_students_levels"))
-
-        # Then
-        assert response.status_code == 401
-
-    def test_list_students_levels_anonymous_returns_401(self, client):
-        # Given
-
-        # When
-        response = client.get(url_for("public_api.list_students_levels"))
+        response = client.with_session_auth(user_offerer.user.email).get(self.endpoint_url)
 
         # Then
         assert response.status_code == 401
