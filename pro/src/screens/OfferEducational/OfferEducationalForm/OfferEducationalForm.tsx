@@ -15,7 +15,7 @@ import {
   Mode,
   OfferEducationalFormValues,
 } from 'core/OfferEducational/types'
-import { computeCollectiveOffersUrl } from 'core/Offers/utils/computeOffersUrl'
+import { computeCollectiveOffersUrl } from 'core/Offers/utils/computeCollectiveOffersUrl'
 import { SelectOption } from 'custom_types/form'
 import { useActiveFeature } from 'hooks/useActiveFeature'
 import { useNotification } from 'hooks/useNotification'

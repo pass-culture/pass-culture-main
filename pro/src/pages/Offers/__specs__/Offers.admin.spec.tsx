@@ -10,7 +10,7 @@ import { api } from 'apiClient/api'
 import { ListOffersOfferResponseModel, OfferStatus } from 'apiClient/v1'
 import { ALL_VENUES, DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
 import { SearchFiltersParams } from 'core/Offers/types'
-import { computeOffersUrl } from 'core/Offers/utils/computeOffersUrl'
+import { computeIndividualOffersUrl } from 'core/Offers/utils/computeIndividualOffersUrl'
 import { Audience } from 'core/shared/types'
 import {
   defaultGetOffererResponseModel,
@@ -53,7 +53,7 @@ const renderOffers = async (
     audience?: Audience
   } = DEFAULT_SEARCH_FILTERS
 ) => {
-  const route = computeOffersUrl(filters)
+  const route = computeIndividualOffersUrl(filters)
 
   renderWithProviders(
     <Routes>

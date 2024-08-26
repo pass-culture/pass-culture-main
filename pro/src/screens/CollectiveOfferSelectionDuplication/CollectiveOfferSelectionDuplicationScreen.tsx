@@ -10,7 +10,7 @@ import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
 import { createOfferFromTemplate } from 'core/OfferEducational/utils/createOfferFromTemplate'
 import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from 'core/Offers/constants'
 import { CollectiveOfferTypeEnum } from 'core/Offers/types'
-import { computeOffersUrl } from 'core/Offers/utils/computeOffersUrl'
+import { computeCollectiveOffersUrl } from 'core/Offers/utils/computeCollectiveOffersUrl'
 import { serializeApiCollectiveFilters } from 'core/Offers/utils/serializer'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared/constants'
 import { useActiveFeature } from 'hooks/useActiveFeature'
@@ -212,7 +212,7 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
                 <ActionsBarSticky.Left>
                   <ButtonLink
                     variant={ButtonVariant.SECONDARY}
-                    to={computeOffersUrl({})}
+                    to={computeCollectiveOffersUrl({})}
                   >
                     Annuler et quitter
                   </ButtonLink>

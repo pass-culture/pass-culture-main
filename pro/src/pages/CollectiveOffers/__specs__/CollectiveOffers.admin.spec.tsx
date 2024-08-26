@@ -7,16 +7,16 @@ import { userEvent } from '@testing-library/user-event'
 
 import { api } from 'apiClient/api'
 import {
+  CollectiveOfferDisplayedStatus,
   CollectiveOfferResponseModel,
   CollectiveOffersStockResponseModel,
-  OfferStatus,
 } from 'apiClient/v1'
 import {
   ALL_VENUES,
   DEFAULT_COLLECTIVE_SEARCH_FILTERS,
 } from 'core/Offers/constants'
-import { SearchFiltersParams } from 'core/Offers/types'
-import { computeCollectiveOffersUrl } from 'core/Offers/utils/computeOffersUrl'
+import { CollectiveSearchFiltersParams } from 'core/Offers/types'
+import { computeCollectiveOffersUrl } from 'core/Offers/utils/computeCollectiveOffersUrl'
 import { collectiveOfferFactory } from 'utils/collectiveApiFactories'
 import {
   defaultGetOffererResponseModel,
@@ -43,7 +43,7 @@ const proVenues = [
 ]
 
 const renderOffers = async (
-  filters: Partial<SearchFiltersParams> = DEFAULT_COLLECTIVE_SEARCH_FILTERS
+  filters: Partial<CollectiveSearchFiltersParams> = DEFAULT_COLLECTIVE_SEARCH_FILTERS
 ) => {
   const route = computeCollectiveOffersUrl(filters)
 
@@ -76,7 +76,7 @@ describe('route CollectiveOffers when user is admin', () => {
     const { id: venueId, name: venueName } = proVenues[0]
     const filters = {
       venueId: venueId.toString(),
-      status: OfferStatus.INACTIVE,
+      status: [CollectiveOfferDisplayedStatus.INACTIVE],
     }
     await renderOffers(filters)
     await userEvent.selectOptions(
@@ -106,7 +106,7 @@ describe('route CollectiveOffers when user is admin', () => {
     const { id: venueId, name: venueName } = proVenues[0]
     const filters = {
       venueId: venueId.toString(),
-      status: OfferStatus.INACTIVE,
+      status: [CollectiveOfferDisplayedStatus.INACTIVE],
       offererId: 'EF',
     }
     await renderOffers(filters)
@@ -146,7 +146,7 @@ describe('route CollectiveOffers when user is admin', () => {
     vi.spyOn(api, 'getOfferer').mockResolvedValue(offerer)
     const filters = {
       offererId: String(offerer.id),
-      status: OfferStatus.INACTIVE,
+      status: [CollectiveOfferDisplayedStatus.INACTIVE],
     }
     await renderOffers(filters)
 
@@ -182,7 +182,7 @@ describe('route CollectiveOffers when user is admin', () => {
     vi.spyOn(api, 'getOfferer').mockResolvedValue(offerer)
     const filters = {
       venueId: venueId.toString(),
-      status: OfferStatus.INACTIVE,
+      status: [CollectiveOfferDisplayedStatus.INACTIVE],
       offererId: String(offerer.id),
     }
     await renderOffers(filters)

@@ -1,7 +1,7 @@
 import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
-import { computeOffersUrl } from 'core/Offers/utils/computeOffersUrl'
+import { computeIndividualOffersUrl } from 'core/Offers/utils/computeIndividualOffersUrl'
 import { useNotification } from 'hooks/useNotification'
 import { useOfferWizardMode } from 'hooks/useOfferWizardMode'
 import fullLeftIcon from 'icons/full-left.svg'
@@ -30,7 +30,7 @@ export const ActionBar = ({
   dirtyForm,
 }: ActionBarProps) => {
   const mode = useOfferWizardMode()
-  const backOfferUrl = computeOffersUrl({})
+  const backOfferUrl = computeIndividualOffersUrl({})
   const notify = useNotification()
 
   const Left = (): JSX.Element => {

@@ -7,7 +7,7 @@ import { CollectiveOfferSummary } from 'components/CollectiveOfferSummary/Collec
 import { OfferEducationalActions } from 'components/OfferEducationalActions/OfferEducationalActions'
 import { Mode, isCollectiveOfferTemplate } from 'core/OfferEducational/types'
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
-import { computeCollectiveOffersUrl } from 'core/Offers/utils/computeOffersUrl'
+import { computeCollectiveOffersUrl } from 'core/Offers/utils/computeCollectiveOffersUrl'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
