@@ -41,7 +41,6 @@ export const Informations = ({
       </FormLayout.Row>
       <FormLayout.Row>
         <TextArea
-          countCharacters
           isOptional
           label="Description"
           maxLength={1000}

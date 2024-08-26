@@ -117,7 +117,6 @@ export const FormOfferType = ({
           }
         >
           <TextArea
-            countCharacters
             label={DESCRIPTION_LABEL}
             maxLength={MAX_DETAILS_LENGTH}
             name="description"

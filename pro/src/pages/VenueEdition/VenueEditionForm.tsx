@@ -124,7 +124,6 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
                   label="Description"
                   description="Par exemple : mon établissement propose des spectacles, de l’improvisation..."
                   maxLength={1000}
-                  countCharacters
                   isOptional
                 />
               </FormLayout.Row>

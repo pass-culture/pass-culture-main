@@ -125,7 +125,6 @@ export const CollectiveDataForm = ({
                     label="Démarche d’éducation artistique et culturelle"
                     description="Présenter la démarche d’éducation artistique et culturelle : présentation du lieu, actions menées auprès du public scolaire..."
                     maxLength={500}
-                    countCharacters
                     isOptional
                   />
                 </FormLayout.Row>

@@ -65,7 +65,6 @@ export const DefaultFormContact = ({
           </div>
           <FormLayout.Row>
             <TextArea
-              countCharacters
               label="Que souhaitez vous organiser ?"
               maxLength={1000}
               name="description"

@@ -67,6 +67,16 @@ export const TextInput = ({
   const regexIsNavigationKey = /Tab|Backspace|Enter/
   const showError = meta.touched && !!meta.error
 
+  const describedBy = []
+
+  if (description) {
+    describedBy.push(`description-${name}`)
+  }
+
+  if (countCharacters) {
+    describedBy.push(`field-characters-count-description-${name}`)
+  }
+
   return (
     <FieldLayout
       className={className}
@@ -112,9 +122,7 @@ export const TextInput = ({
           rightIcon={rightIcon}
           leftIcon={leftIcon}
           aria-required={!isOptional}
-          {...(description
-            ? { 'aria-describedby': `description-${name}` }
-            : {})}
+          aria-describedby={describedBy.join(' ') || undefined}
           onKeyDown={(event) => {
             if (type === 'number') {
               if (regexIsNavigationKey.test(event.key)) {

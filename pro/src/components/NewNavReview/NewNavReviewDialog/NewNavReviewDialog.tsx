@@ -134,7 +134,6 @@ export const NewNavReviewDialog = () => {
                 'Souhaitez-vous préciser ? Nous lisons tous les commentaires. 🙂'
               }
               maxLength={500}
-              countCharacters
               isOptional
             />
 
