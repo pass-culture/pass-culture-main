@@ -4,25 +4,64 @@ from dateutil.relativedelta import relativedelta
 import pytest
 
 from pcapi.core.bookings import factories as bookings_factories
-from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 
-from . import utils
+from tests.conftest import TestClient
+from tests.routes.public.helpers import PublicAPIVenueEndpointHelper
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-class GetBookingsByOfferReturns200Test:
-    def test_request_inexisting_page(self, client):
-        venue, _ = utils.create_offerer_provider_linked_to_venue()
-        product_offer = offers_factories.ThingOfferFactory(
+class GetBookingsByOfferTest(PublicAPIVenueEndpointHelper):
+    endpoint_url = "/public/bookings/v1/bookings"
+
+    def setup_base_resource(self, venue=None):
+        venue = venue or self.setup_venue()
+        offer = offers_factories.ThingOfferFactory(
             venue=venue,
             description="Un livre de contrepèterie",
             name="Vieux motard que jamais",
         )
+        return offer
+
+    def test_should_raise_401_because_not_authenticated(self, client: TestClient):
+        response = client.get(self.endpoint_url)
+        assert response.status_code == 401
+
+    def test_should_raise_404_because_has_no_access_to_venue(self, client: TestClient):
+        plain_api_key, _ = self.setup_provider()
+        offer = self.setup_base_resource()
+        response = client.with_explicit_token(plain_api_key).get(self.endpoint_url, params={"offer_id": offer.id})
+        assert response.status_code == 404
+
+    def test_should_raise_404_because_venue_provider_is_inactive(self, client: TestClient):
+        plain_api_key, venue_provider = self.setup_inactive_venue_provider()
+        offer = self.setup_base_resource(venue=venue_provider.venue)
+        response = client.with_explicit_token(plain_api_key).get(self.endpoint_url, params={"offer_id": offer.id})
+        assert response.status_code == 404
+
+    def test_should_raise_404_because_offer_not_found(self, client: TestClient):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        product_offer = offers_factories.ThingOfferFactory(
+            venue=venue_provider.venue,
+            description="Un livre de contrepèterie",
+            name="Vieux motard que jamais",
+            extraData={"ean": "1234567890123"},
+        )
+
+        response = client.with_explicit_token(plain_api_key).get(
+            self.endpoint_url, params={"offer_id": product_offer.id + 1}
+        )
+
+        assert response.status_code == 404
+        assert response.json == {"offer": "we could not find this offer id"}
+
+    def test_request_not_existing_page(self, client: TestClient):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        offer = self.setup_base_resource(venue=venue_provider.venue)
         past = datetime.datetime.utcnow() - datetime.timedelta(days=2)
-        product_stock = offers_factories.StockFactory(offer=product_offer, beginningDatetime=past)
+        product_stock = offers_factories.StockFactory(offer=offer, beginningDatetime=past)
         booking = bookings_factories.BookingFactory(
             dateCreated=past - datetime.timedelta(days=2),
             user__email="beneficiary@example.com",
@@ -31,16 +70,17 @@ class GetBookingsByOfferReturns200Test:
             stock=product_stock,
         )
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-            f"/public/bookings/v1/bookings?offer_id={product_offer.id}&firstIndex={booking.id + 1}",
+        response = client.with_explicit_token(plain_api_key).get(
+            self.endpoint_url,
+            params={"offer_id": offer.id, "firstIndex": booking.id + 1},
         )
         assert response.status_code == 200
         assert response.json == {"bookings": []}
 
-    def test_key_has_rights_and_regular_product_offer(self, client):
-        venue, _ = utils.create_offerer_provider_linked_to_venue()
+    def test_key_has_rights_and_regular_product_offer(self, client: TestClient):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
         product_offer = offers_factories.ThingOfferFactory(
-            venue=venue,
+            venue=venue_provider.venue,
             description="Un livre de contrepèterie",
             name="Vieux motard que jamais",
             extraData={"ean": "1234567890123"},
@@ -55,8 +95,8 @@ class GetBookingsByOfferReturns200Test:
             stock=product_stock,
         )
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-            f"/public/bookings/v1/bookings?offer_id={product_offer.id}",
+        response = client.with_explicit_token(plain_api_key).get(
+            self.endpoint_url, params={"offer_id": product_offer.id}
         )
         assert response.status_code == 200
         assert response.json == {
@@ -78,8 +118,8 @@ class GetBookingsByOfferReturns200Test:
                     "userEmail": "beneficiary@example.com",
                     "venueAddress": "1 boulevard Poissonnière",
                     "venueDepartementCode": "75",
-                    "venueId": venue.id,
-                    "venueName": venue.name,
+                    "venueId": venue_provider.venue.id,
+                    "venueName": venue_provider.venue.name,
                     "userFirstName": booking.user.firstName,
                     "userLastName": booking.user.lastName,
                     "userPhoneNumber": booking.user.phoneNumber,
@@ -88,10 +128,10 @@ class GetBookingsByOfferReturns200Test:
             ]
         }
 
-    def test_multiple_event_bookings(self, client):
-        venue, _ = utils.create_offerer_provider_linked_to_venue()
+    def test_multiple_event_bookings(self, client: TestClient):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
         event_offer = offers_factories.EventOfferFactory(
-            venue=venue,
+            venue=venue_provider.venue,
             description="Un livre de contrepèterie",
             name="Vieux motard que jamais",
         )
@@ -112,9 +152,7 @@ class GetBookingsByOfferReturns200Test:
             stock=event_stock,
         )
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-            f"/public/bookings/v1/bookings?offer_id={event_offer.id}",
-        )
+        response = client.with_explicit_token(plain_api_key).get(self.endpoint_url, params={"offer_id": event_offer.id})
 
         assert response.status_code == 200
         assert response.json == {
@@ -136,8 +174,8 @@ class GetBookingsByOfferReturns200Test:
                     "userEmail": "beneficiary@example.com",
                     "venueAddress": "1 boulevard Poissonnière",
                     "venueDepartementCode": "75",
-                    "venueId": venue.id,
-                    "venueName": venue.name,
+                    "venueId": venue_provider.venue.id,
+                    "venueName": venue_provider.venue.name,
                     "userFirstName": booking.user.firstName,
                     "userLastName": booking.user.lastName,
                     "userPhoneNumber": booking.user.phoneNumber,
@@ -160,8 +198,8 @@ class GetBookingsByOfferReturns200Test:
                     "userEmail": "beneficiary-2@example.com",
                     "venueAddress": "1 boulevard Poissonnière",
                     "venueDepartementCode": "75",
-                    "venueId": venue.id,
-                    "venueName": venue.name,
+                    "venueId": venue_provider.venue.id,
+                    "venueName": venue_provider.venue.name,
                     "userFirstName": booking_2.user.firstName,
                     "userLastName": booking_2.user.lastName,
                     "userPhoneNumber": booking_2.user.phoneNumber,
@@ -171,9 +209,9 @@ class GetBookingsByOfferReturns200Test:
         }
 
     def test_filter_price_category_event_bookings(self, client):
-        venue, _ = utils.create_offerer_provider_linked_to_venue()
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
         event_offer = offers_factories.EventOfferFactory(
-            venue=venue,
+            venue=venue_provider.venue,
             description="Un livre de contrepèterie",
             name="Vieux motard que jamais",
         )
@@ -198,8 +236,8 @@ class GetBookingsByOfferReturns200Test:
             stock=event_stock,
         )
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-            f"/public/bookings/v1/bookings?offer_id={event_offer.id}&price_category_id={price_category.id}",
+        response = client.with_explicit_token(plain_api_key).get(
+            self.endpoint_url, params={"offer_id": event_offer.id, "price_category_id": price_category.id}
         )
 
         assert response.status_code == 200
@@ -222,8 +260,8 @@ class GetBookingsByOfferReturns200Test:
                     "userEmail": "beneficiary@example.com",
                     "venueAddress": "1 boulevard Poissonnière",
                     "venueDepartementCode": "75",
-                    "venueId": venue.id,
-                    "venueName": venue.name,
+                    "venueId": venue_provider.venue.id,
+                    "venueName": venue_provider.venue.name,
                     "userFirstName": booking.user.firstName,
                     "userLastName": booking.user.lastName,
                     "userPhoneNumber": booking.user.phoneNumber,
@@ -246,8 +284,8 @@ class GetBookingsByOfferReturns200Test:
                     "userEmail": "beneficiary-2@example.com",
                     "venueAddress": "1 boulevard Poissonnière",
                     "venueDepartementCode": "75",
-                    "venueId": venue.id,
-                    "venueName": venue.name,
+                    "venueId": venue_provider.venue.id,
+                    "venueName": venue_provider.venue.name,
                     "userFirstName": booking_2.user.firstName,
                     "userLastName": booking_2.user.lastName,
                     "userPhoneNumber": booking_2.user.phoneNumber,
@@ -257,9 +295,9 @@ class GetBookingsByOfferReturns200Test:
         }
 
     def test_filter_stock_event_bookings(self, client):
-        venue, _ = utils.create_offerer_provider_linked_to_venue()
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
         event_offer = offers_factories.EventOfferFactory(
-            venue=venue,
+            venue=venue_provider.venue,
             description="Un livre de contrepèterie",
             name="Vieux motard que jamais",
         )
@@ -287,8 +325,8 @@ class GetBookingsByOfferReturns200Test:
             stock=event_stock_2,
         )
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-            f"/public/bookings/v1/bookings?offer_id={event_offer.id}&stock_id={event_stock.id}",
+        response = client.with_explicit_token(plain_api_key).get(
+            self.endpoint_url, params={"offer_id": event_offer.id, "stock_id": event_stock.id}
         )
 
         assert response.status_code == 200
@@ -311,8 +349,8 @@ class GetBookingsByOfferReturns200Test:
                     "userEmail": "beneficiary@example.com",
                     "venueAddress": "1 boulevard Poissonnière",
                     "venueDepartementCode": "75",
-                    "venueId": venue.id,
-                    "venueName": venue.name,
+                    "venueId": venue_provider.venue.id,
+                    "venueName": venue_provider.venue.name,
                     "userFirstName": booking.user.firstName,
                     "userLastName": booking.user.lastName,
                     "userPhoneNumber": booking.user.phoneNumber,
@@ -322,9 +360,9 @@ class GetBookingsByOfferReturns200Test:
         }
 
     def test_filter_stock_begining_datetime_bookings(self, client):
-        venue, _ = utils.create_offerer_provider_linked_to_venue()
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
         event_offer = offers_factories.EventOfferFactory(
-            venue=venue,
+            venue=venue_provider.venue,
             description="Un livre de contrepèterie",
             name="Vieux motard que jamais",
         )
@@ -352,8 +390,8 @@ class GetBookingsByOfferReturns200Test:
             stock=event_stock_2,
         )
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-            f"/public/bookings/v1/bookings?offer_id={event_offer.id}&beginning_datetime={past}",
+        response = client.with_explicit_token(plain_api_key).get(
+            self.endpoint_url, params={"offer_id": event_offer.id, "beginning_datetime": past}
         )
 
         assert response.status_code == 200
@@ -376,8 +414,8 @@ class GetBookingsByOfferReturns200Test:
                     "userEmail": "beneficiary@example.com",
                     "venueAddress": "1 boulevard Poissonnière",
                     "venueDepartementCode": "75",
-                    "venueId": venue.id,
-                    "venueName": venue.name,
+                    "venueId": venue_provider.venue.id,
+                    "venueName": venue_provider.venue.name,
                     "userFirstName": booking.user.firstName,
                     "userLastName": booking.user.lastName,
                     "userPhoneNumber": booking.user.phoneNumber,
@@ -387,9 +425,9 @@ class GetBookingsByOfferReturns200Test:
         }
 
     def test_filter_status_event_bookings(self, client):
-        venue, _ = utils.create_offerer_provider_linked_to_venue()
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
         event_offer = offers_factories.EventOfferFactory(
-            venue=venue,
+            venue=venue_provider.venue,
             description="Un livre de contrepèterie",
             name="Vieux motard que jamais",
         )
@@ -418,8 +456,8 @@ class GetBookingsByOfferReturns200Test:
             stock=event_stock_2,
         )
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-            f"/public/bookings/v1/bookings?offer_id={event_offer.id}&status=REIMBURSED",
+        response = client.with_explicit_token(plain_api_key).get(
+            self.endpoint_url, params={"offer_id": event_offer.id, "status": "REIMBURSED"}
         )
 
         assert response.status_code == 200
@@ -442,8 +480,8 @@ class GetBookingsByOfferReturns200Test:
                     "userEmail": "beneficiary@example.com",
                     "venueAddress": "1 boulevard Poissonnière",
                     "venueDepartementCode": "75",
-                    "venueId": venue.id,
-                    "venueName": venue.name,
+                    "venueId": venue_provider.venue.id,
+                    "venueName": venue_provider.venue.name,
                     "userFirstName": booking.user.firstName,
                     "userLastName": booking.user.lastName,
                     "userPhoneNumber": booking.user.phoneNumber,
@@ -453,9 +491,9 @@ class GetBookingsByOfferReturns200Test:
         }
 
     def test_multiple_filters_bookings(self, client):
-        venue, _ = utils.create_offerer_provider_linked_to_venue()
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
         event_offer = offers_factories.EventOfferFactory(
-            venue=venue,
+            venue=venue_provider.venue,
             description="Un livre de contrepèterie",
             name="Vieux motard que jamais",
         )
@@ -490,8 +528,13 @@ class GetBookingsByOfferReturns200Test:
             stock=event_stock_2,
         )
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-            f"/public/bookings/v1/bookings?offer_id={event_offer.id}&status=USED&beginning_datetime={past + datetime.timedelta(days=2)}",
+        response = client.with_explicit_token(plain_api_key).get(
+            self.endpoint_url,
+            params={
+                "offer_id": event_offer.id,
+                "status": "USED",
+                "beginning_datetime": past + datetime.timedelta(days=2),
+            },
         )
 
         assert response.status_code == 200
@@ -514,8 +557,8 @@ class GetBookingsByOfferReturns200Test:
                     "userEmail": "beneficiary-3@example.com",
                     "venueAddress": "1 boulevard Poissonnière",
                     "venueDepartementCode": "75",
-                    "venueId": venue.id,
-                    "venueName": venue.name,
+                    "venueId": venue_provider.venue.id,
+                    "venueName": venue_provider.venue.name,
                     "userFirstName": booking.user.firstName,
                     "userLastName": booking.user.lastName,
                     "userPhoneNumber": booking.user.phoneNumber,
@@ -525,9 +568,9 @@ class GetBookingsByOfferReturns200Test:
         }
 
     def test_multiple_pages(self, client):
-        venue, _ = utils.create_offerer_provider_linked_to_venue()
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
         event_offer = offers_factories.EventOfferFactory(
-            venue=venue,
+            venue=venue_provider.venue,
             description="Un livre de contrepèterie",
             name="Vieux motard que jamais",
         )
@@ -555,8 +598,8 @@ class GetBookingsByOfferReturns200Test:
             stock=event_stock,
         )
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-            f"/public/bookings/v1/bookings?offer_id={event_offer.id}&limit=2",
+        response = client.with_explicit_token(plain_api_key).get(
+            self.endpoint_url, params={"offer_id": event_offer.id, "limit": 2}
         )
 
         assert response.status_code == 200
@@ -579,8 +622,8 @@ class GetBookingsByOfferReturns200Test:
                     "userEmail": "beneficiary@example.com",
                     "venueAddress": "1 boulevard Poissonnière",
                     "venueDepartementCode": "75",
-                    "venueId": venue.id,
-                    "venueName": venue.name,
+                    "venueId": venue_provider.venue.id,
+                    "venueName": venue_provider.venue.name,
                     "userFirstName": booking.user.firstName,
                     "userLastName": booking.user.lastName,
                     "userPhoneNumber": booking.user.phoneNumber,
@@ -603,8 +646,8 @@ class GetBookingsByOfferReturns200Test:
                     "userEmail": "beneficiary-2@example.com",
                     "venueAddress": "1 boulevard Poissonnière",
                     "venueDepartementCode": "75",
-                    "venueId": venue.id,
-                    "venueName": venue.name,
+                    "venueId": venue_provider.venue.id,
+                    "venueName": venue_provider.venue.name,
                     "userFirstName": booking_2.user.firstName,
                     "userLastName": booking_2.user.lastName,
                     "userPhoneNumber": booking_2.user.phoneNumber,
@@ -614,9 +657,9 @@ class GetBookingsByOfferReturns200Test:
         }
 
     def test_second_page(self, client):
-        venue, _ = utils.create_offerer_provider_linked_to_venue()
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
         event_offer = offers_factories.EventOfferFactory(
-            venue=venue,
+            venue=venue_provider.venue,
             description="Un livre de contrepèterie",
             name="Vieux motard que jamais",
         )
@@ -644,8 +687,8 @@ class GetBookingsByOfferReturns200Test:
             stock=event_stock,
         )
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-            f"/public/bookings/v1/bookings?offer_id={event_offer.id}&limit=2&firstIndex={booking_2.id}",
+        response = client.with_explicit_token(plain_api_key).get(
+            self.endpoint_url, params={"offer_id": event_offer.id, "limit": 2, "firstIndex": booking_2.id}
         )
 
         assert response.status_code == 200
@@ -668,8 +711,8 @@ class GetBookingsByOfferReturns200Test:
                     "userEmail": "beneficiary-2@example.com",
                     "venueAddress": "1 boulevard Poissonnière",
                     "venueDepartementCode": "75",
-                    "venueId": venue.id,
-                    "venueName": venue.name,
+                    "venueId": venue_provider.venue.id,
+                    "venueName": venue_provider.venue.name,
                     "userFirstName": booking_2.user.firstName,
                     "userLastName": booking_2.user.lastName,
                     "userPhoneNumber": booking_2.user.phoneNumber,
@@ -692,8 +735,8 @@ class GetBookingsByOfferReturns200Test:
                     "userEmail": "beneficiary-3@example.com",
                     "venueAddress": "1 boulevard Poissonnière",
                     "venueDepartementCode": "75",
-                    "venueId": venue.id,
-                    "venueName": venue.name,
+                    "venueId": venue_provider.venue.id,
+                    "venueName": venue_provider.venue.name,
                     "userFirstName": booking_3.user.firstName,
                     "userLastName": booking_3.user.lastName,
                     "userPhoneNumber": booking_3.user.phoneNumber,
@@ -703,71 +746,27 @@ class GetBookingsByOfferReturns200Test:
         }
 
     def test_offer_has_no_bookings(self, client):
-        venue, _ = utils.create_offerer_provider_linked_to_venue()
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
         product_offer = offers_factories.ThingOfferFactory(
-            venue=venue,
+            venue=venue_provider.venue,
             description="Un livre de contrepèterie",
             name="Vieux motard que jamais",
             extraData={"ean": "1234567890123"},
         )
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-            f"/public/bookings/v1/bookings?offer_id={product_offer.id}",
+        response = client.with_explicit_token(plain_api_key).get(
+            self.endpoint_url, params={"offer_id": product_offer.id}
         )
         assert response.status_code == 200
         assert response.json == {"bookings": []}
 
-
-class GetBookingsByOfferReturns401Test:
-    def test_when_user_no_api_key(self, client):
-        response = client.get("/public/bookings/v1/bookings?offer_id=1")
-        assert response.status_code == 401
-
-    def test_when_user_wrong_api_key(self, client):
-        response = client.get(
-            "/public/bookings/v1/bookings?offer_id=1", headers={"Authorization": "Bearer WrongApiKey1234567"}
-        )
-        assert response.status_code == 401
-
-
-class GetBookingsByOfferReturns400Test:
-    def test_no_offer_id_provided(self, client):
-        venue, _ = utils.create_offerer_provider_linked_to_venue()
-        product_offer = offers_factories.ThingOfferFactory(venue=venue)
+    def test_should_raise_400_because_no_offer_id_provided(self, client):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        product_offer = offers_factories.ThingOfferFactory(venue=venue_provider.venue)
         product_stock = offers_factories.StockFactory(offer=product_offer)
         bookings_factories.UsedBookingFactory(stock=product_stock)
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-            "/public/bookings/v1/bookings",
-        )
+        response = client.with_explicit_token(plain_api_key).get(self.endpoint_url)
 
         assert response.status_code == 400
         assert response.json == {"offerId": ["field required"]}
-
-
-class GetBookingsByOfferReturns404Test:
-    def test_offer_not_found(self, client):
-        venue, _ = utils.create_offerer_provider_linked_to_venue()
-        product_offer = offers_factories.ThingOfferFactory(
-            venue=venue,
-            description="Un livre de contrepèterie",
-            name="Vieux motard que jamais",
-            extraData={"ean": "1234567890123"},
-        )
-
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-            f"/public/bookings/v1/bookings?offer_id={product_offer.id+1}",
-        )
-        assert response.status_code == 404
-        assert response.json == {"offer": "we could not find this offer id"}
-
-    def test_inactive_venue_provider(self, client):
-        venue, _ = utils.create_offerer_provider_linked_to_venue(is_venue_provider_active=False)
-        product_offer = offers_factories.ThingOfferFactory(venue=venue)
-        product_stock = offers_factories.StockFactory(offer=product_offer)
-        bookings_factories.BookingFactory(stock=product_stock)
-
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-            f"/public/bookings/v1/bookings?offer_id={product_offer.id}",
-        )
-        assert response.status_code == 404
