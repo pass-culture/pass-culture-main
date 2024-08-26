@@ -30,7 +30,9 @@ def get_available_reactions(user: users_models.User) -> serialization.GetAvailab
     return serialization.GetAvailableReactionsResponse(
         bookings=[
             serialization.AvailableReactionBooking(
-                name=booking.stock.offer.name, dateUsed=booking.dateUsed, image=booking.stock.offer.image
+                name=booking.stock.offer.name,
+                dateUsed=booking.dateUsed,
+                image=booking.stock.offer.image.url if booking.stock.offer.image else None,
             )
             for booking in booking_with_available_reactions
         ]
