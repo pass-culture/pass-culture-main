@@ -2,8 +2,9 @@ from collections import abc
 import logging
 import typing
 
-import algoliasearch.http.requester
-import algoliasearch.search_client
+import algoliasearch.search.client as search_client
+from algoliasearch.search.models.index_settings import IndexSettings
+from algoliasearch.search.models.search_response import SearchResponse
 
 from pcapi import settings
 import pcapi.core.educational.models as educational_models
@@ -14,7 +15,6 @@ from pcapi.core.search import redis_queues
 from pcapi.core.search import serialization
 from pcapi.core.search.backends import base
 from pcapi.utils import human_ids
-from pcapi.utils import requests
 
 
 logger = logging.getLogger(__name__)
@@ -22,57 +22,43 @@ logger = logging.getLogger(__name__)
 MAX_SEARCH_QUERY_COUNT = 1000
 
 
-def create_algolia_client() -> algoliasearch.search_client.SearchClient:
-    config = algoliasearch.search_client.SearchConfig(
-        app_id=settings.ALGOLIA_APPLICATION_ID,
-        api_key=settings.ALGOLIA_API_KEY,
-    )
-    requester = algoliasearch.http.requester.Requester()
-    requester._session = requests.Session()  # inject our own session handler that logs
-    transporter = algoliasearch.search_client.Transporter(requester, config)
-    return algoliasearch.search_client.SearchClient(transporter, config)
-
-
 class AlgoliaBackend(
     serialization.AlgoliaSerializationMixin, redis_queues.AlgoliaIndexingQueuesMixin, base.SearchBackend
 ):
-    def __init__(self) -> None:
-        super().__init__()
-        self.create_algolia_clients()
-
-    def create_algolia_clients(self) -> None:
-        client = create_algolia_client()
-        self.algolia_offers_client = client.init_index(settings.ALGOLIA_OFFERS_INDEX_NAME)
-        self.algolia_collective_offers_templates_client = client.init_index(
-            settings.ALGOLIA_COLLECTIVE_OFFER_TEMPLATES_INDEX_NAME
-        )
-        self.algolia_venues_client = client.init_index(settings.ALGOLIA_VENUES_INDEX_NAME)
-        self.index_mapping = {
-            settings.ALGOLIA_OFFERS_INDEX_NAME: self.algolia_offers_client,
-            settings.ALGOLIA_COLLECTIVE_OFFER_TEMPLATES_INDEX_NAME: self.algolia_collective_offers_templates_client,
-            settings.ALGOLIA_VENUES_INDEX_NAME: self.algolia_venues_client,
-        }
-
     def save_objects(self, index: str | None, serialized_object: list[dict]) -> None:
         assert index
-        return self.index_mapping[index].save_objects(serialized_object)
+        with search_client.SearchClientSync(settings.ALGOLIA_APPLICATION_ID, settings.ALGOLIA_API_KEY) as client:
+            client.save_objects(index, serialized_object)
 
     def delete_objects(self, index: str | None, object_ids: abc.Collection[typing.Union[str, int]]) -> None:
         assert index
-        return self.index_mapping[index].delete_objects(object_ids)
+        with search_client.SearchClientSync(settings.ALGOLIA_APPLICATION_ID, settings.ALGOLIA_API_KEY) as client:
+            client.delete_objects(index, [str(i) for i in object_ids])
 
     def clear_objects(self, index: str | None) -> None:
         assert index
-        return self.index_mapping[index].clear_objects()
+        with search_client.SearchClientSync(settings.ALGOLIA_APPLICATION_ID, settings.ALGOLIA_API_KEY) as client:
+            client.clear_objects(index)
 
     def search(
         self,
         index: str | None,
         query: str,
         params: dict[str, typing.Any],
-    ) -> dict:
+    ) -> SearchResponse:
         assert index
-        return self.index_mapping[index].search(query, params)
+        with search_client.SearchClientSync(settings.ALGOLIA_APPLICATION_ID, settings.ALGOLIA_API_KEY) as client:
+            return client.search_single_index(index, {"query": query}.update(**params))
+
+    def set_settings(self, index: str | None, algolia_settings: dict) -> None:
+        assert index
+        with search_client.SearchClientSync(settings.ALGOLIA_APPLICATION_ID, settings.ALGOLIA_API_KEY) as client:
+            client.set_settings(index, IndexSettings.from_dict(algolia_settings) or {})
+
+    def get_settings(self, index: str | None) -> dict:
+        assert index
+        with search_client.SearchClientSync(settings.ALGOLIA_APPLICATION_ID, settings.ALGOLIA_API_KEY) as client:
+            return client.get_settings(index).to_dict()
 
     def index_offers(self, offers: abc.Collection[offers_models.Offer], last_30_days_bookings: dict[int, int]) -> None:
         assert settings.ALGOLIA_OFFERS_INDEX_NAME
@@ -156,8 +142,8 @@ class AlgoliaBackend(
                 )
                 raise SearchError("Failed to search in algolia")
 
-            for result in results.get("hits", []):
-                object_id = result["objectID"]
+            for hit in results.hits:
+                object_id = hit.object_id
                 if object_id.isdigit():
                     ids.append(int(object_id))
                 else:
@@ -169,6 +155,6 @@ class AlgoliaBackend(
                     except human_ids.NonDehumanizableId:
                         pass
 
-            if len(results.get("hits", [])) < hits_per_page:
+            if len(results.hits) < hits_per_page:
                 break
         return ids
