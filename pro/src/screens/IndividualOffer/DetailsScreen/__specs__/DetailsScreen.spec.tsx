@@ -1,5 +1,6 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { Route, Routes } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import {
@@ -9,12 +10,14 @@ import {
   VenueTypeCode,
 } from 'apiClient/v1'
 import * as useAnalytics from 'app/App/analytics/firebase'
+import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import {
   IndividualOfferContext,
   IndividualOfferContextValues,
 } from 'context/IndividualOfferContext/IndividualOfferContext'
 import { Events } from 'core/FirebaseEvents/constants'
-import { CATEGORY_STATUS } from 'core/Offers/constants'
+import { CATEGORY_STATUS, OFFER_WIZARD_MODE } from 'core/Offers/constants'
+import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
 import { addressResponseIsEditableModelFactory } from 'utils/commonOffersApiFactories'
 import {
   categoryFactory,
@@ -27,6 +30,7 @@ import {
   renderWithProviders,
   RenderWithProvidersOptions,
 } from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import { DetailsScreen, DetailsScreenProps } from '../DetailsScreen'
 const mockLogEvent = vi.fn()
@@ -46,16 +50,45 @@ vi.mock('utils/windowMatchMedia', () => ({
 
 const scrollIntoViewMock = vi.fn()
 
+const DEFAULTS = {
+  mode: OFFER_WIZARD_MODE.CREATION,
+  submitButtonLabel: 'Enregistrer et continuer',
+}
+
 const renderDetailsScreen = (
   props: DetailsScreenProps,
   contextValue: IndividualOfferContextValues,
-  options: RenderWithProvidersOptions = {}
+  options: RenderWithProvidersOptions = {},
+  mode: OFFER_WIZARD_MODE = DEFAULTS.mode
 ) => {
-  return renderWithProviders(
+  const element = (
     <IndividualOfferContext.Provider value={contextValue}>
       <DetailsScreen {...props} />
-    </IndividualOfferContext.Provider>,
-    options
+    </IndividualOfferContext.Provider>
+  )
+
+  return renderWithProviders(
+    <>
+      <Routes>
+        <Route
+          path={getIndividualOfferPath({
+            step: OFFER_WIZARD_STEP_IDS.DETAILS,
+            mode,
+          })}
+          element={element}
+        />
+      </Routes>
+    </>,
+    {
+      user: sharedCurrentUserFactory(),
+      initialRouterEntries: [
+        getIndividualOfferPath({
+          step: OFFER_WIZARD_STEP_IDS.DETAILS,
+          mode,
+        }),
+      ],
+      ...options,
+    }
   )
 }
 
@@ -128,10 +161,7 @@ describe('screens:IndividualOffer::Informations', () => {
     expect(
       await screen.findByRole('heading', { name: 'Type d’offre' })
     ).toBeInTheDocument()
-    expect(screen.getByText('Annuler et quitter')).toBeInTheDocument()
-    expect(
-      screen.getByText('Enregistrer les modifications')
-    ).toBeInTheDocument()
+    expect(screen.getByText(DEFAULTS.submitButtonLabel)).toBeInTheDocument()
   })
 
   it('should display the full form when categories, and subcategories has been selected', async () => {
@@ -169,7 +199,7 @@ describe('screens:IndividualOffer::Informations', () => {
 
     renderDetailsScreen(props, contextValue)
 
-    await userEvent.click(screen.getByText('Enregistrer les modifications'))
+    await userEvent.click(screen.getByText(DEFAULTS.submitButtonLabel))
     expect(
       screen.getByText('Veuillez sélectionner une catégorie')
     ).toBeInTheDocument()
@@ -178,7 +208,7 @@ describe('screens:IndividualOffer::Informations', () => {
       await screen.findByLabelText('Catégorie *'),
       'A'
     )
-    await userEvent.click(screen.getByText('Enregistrer les modifications'))
+    await userEvent.click(screen.getByText(DEFAULTS.submitButtonLabel))
     expect(
       screen.getByText('Veuillez sélectionner une sous-catégorie')
     ).toBeInTheDocument()
@@ -188,7 +218,7 @@ describe('screens:IndividualOffer::Informations', () => {
       'physical'
     )
 
-    await userEvent.click(screen.getByText('Enregistrer les modifications'))
+    await userEvent.click(screen.getByText(DEFAULTS.submitButtonLabel))
     expect(screen.getByText('Veuillez renseigner un titre')).toBeInTheDocument()
     expect(
       screen.getByText('Veuillez sélectionner un lieu')
@@ -258,7 +288,7 @@ describe('screens:IndividualOffer::Informations', () => {
       'Pop'
     )
 
-    await userEvent.click(screen.getByText('Enregistrer les modifications'))
+    await userEvent.click(screen.getByText(DEFAULTS.submitButtonLabel))
 
     expect(api.postDraftOffer).toHaveBeenCalledOnce()
     expect(api.postDraftOffer).toHaveBeenCalledWith({
@@ -318,7 +348,7 @@ describe('screens:IndividualOffer::Informations', () => {
       'My super description'
     )
 
-    await userEvent.click(screen.getByText('Enregistrer les modifications'))
+    await userEvent.click(screen.getByText('Enregistrer et continuer'))
 
     expect(api.patchDraftOffer).toHaveBeenCalledOnce()
     expect(api.patchDraftOffer).toHaveBeenCalledWith(12, {
@@ -494,31 +524,113 @@ describe('screens:IndividualOffer::Informations', () => {
       await screen.findByText(/Catégories suggérées pour votre offre/)
     ).toBeInTheDocument()
 
-    await userEvent.click(screen.getByText('Enregistrer les modifications'))
+    await userEvent.click(screen.getByText(DEFAULTS.submitButtonLabel))
 
     expect(
       screen.getByText('Veuillez sélectionner une catégorie')
     ).toBeInTheDocument()
   })
 
-  it('should not render suggested subcategories in edition', () => {
-    const context = individualOfferContextValuesFactory({
-      categories,
-      subCategories,
-      offer: getIndividualOfferFactory({
-        subcategoryId: 'physical' as SubcategoryIdEnum,
-      }),
+  describe('on creation', () => {
+    it('should render EAN search for record stores as a venue', () => {
+      const context = individualOfferContextValuesFactory({
+        categories,
+        subCategories,
+        offer: null,
+      })
+
+      renderDetailsScreen(
+        {
+          ...props,
+          venues: [
+            venueListItemFactory({
+              venueTypeCode: 'RECORD_STORE' as VenueTypeCode,
+            }),
+          ],
+        },
+        context,
+        { features: ['WIP_EAN_CREATION'] }
+      )
+
+      expect(
+        screen.getByText(/Scanner ou rechercher un produit par EAN/)
+      ).toBeInTheDocument()
     })
 
-    renderDetailsScreen(props, context, {
-      features: ['WIP_SUGGESTED_SUBCATEGORIES'],
+    it('should not render EAN search for other venues', () => {
+      const context = individualOfferContextValuesFactory({
+        categories,
+        subCategories,
+        offer: null,
+      })
+
+      renderDetailsScreen(
+        {
+          ...props,
+          venues: [
+            venueListItemFactory({
+              venueTypeCode: VenueTypeCode.FESTIVAL,
+            }),
+          ],
+        },
+        context,
+        { features: ['WIP_EAN_CREATION'] }
+      )
+
+      expect(
+        screen.queryByText(/Scanner ou rechercher un produit par EAN/)
+      ).not.toBeInTheDocument()
+    })
+  })
+
+  describe('on edition', () => {
+    it('should not render EAN search', () => {
+      const context = individualOfferContextValuesFactory({
+        categories,
+        subCategories,
+        offer: getIndividualOfferFactory({
+          subcategoryId: 'physical' as SubcategoryIdEnum,
+        }),
+      })
+
+      renderDetailsScreen(
+        props,
+        context,
+        { features: ['WIP_EAN_CREATION'] },
+        OFFER_WIZARD_MODE.EDITION
+      )
+
+      expect(
+        screen.queryByText(/Scanner ou rechercher un produit par EAN/)
+      ).not.toBeInTheDocument()
     })
 
-    expect(
-      screen.queryByText(/Catégories suggérées pour votre offre/)
-    ).not.toBeInTheDocument()
-    expect(screen.getByText('Type d’offre')).toBeInTheDocument()
-    expect(screen.getByText('Sous catégorie offline de A')).toBeInTheDocument()
+    it('should not render suggested subcategories', () => {
+      const context = individualOfferContextValuesFactory({
+        categories,
+        subCategories,
+        offer: getIndividualOfferFactory({
+          subcategoryId: 'physical' as SubcategoryIdEnum,
+        }),
+      })
+
+      renderDetailsScreen(
+        props,
+        context,
+        {
+          features: ['WIP_SUGGESTED_SUBCATEGORIES'],
+        },
+        OFFER_WIZARD_MODE.EDITION
+      )
+
+      expect(
+        screen.queryByText(/Catégories suggérées pour votre offre/)
+      ).not.toBeInTheDocument()
+      expect(screen.getByText('Type d’offre')).toBeInTheDocument()
+      expect(
+        screen.getByText('Sous catégorie offline de A')
+      ).toBeInTheDocument()
+    })
   })
 
   it('should not render venue field when there is just one venue', () => {

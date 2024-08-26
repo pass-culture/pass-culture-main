@@ -4,7 +4,7 @@ import { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
 import { isErrorAPIError } from 'apiClient/helpers'
-import { VenueListItemResponseModel } from 'apiClient/v1'
+import { VenueListItemResponseModel, VenueTypeCode } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { getFilteredVenueListByCategoryStatus } from 'components/IndividualOfferForm/utils/getFilteredVenueList'
@@ -31,6 +31,7 @@ import {
   isOfferSubtypeEvent,
 } from '../InformationsScreen/utils/filterCategories/filterCategories'
 
+import { DetailsEanSearch } from './DetailsEanSearch'
 import { DetailsForm } from './DetailsForm'
 import { DetailsFormValues } from './types'
 import {
@@ -61,6 +62,7 @@ export const DetailsScreen = ({ venues }: DetailsScreenProps): JSX.Element => {
   const areSuggestedCategoriesEnabled = useActiveFeature(
     'WIP_SUGGESTED_SUBCATEGORIES'
   )
+  const isSearchByEanEnabled = useActiveFeature('WIP_EAN_CREATION')
 
   const { categories, subCategories, offer } = useIndividualOfferContext()
   const offerSubtype = getOfferSubtypeFromParam(queryOfferType)
@@ -76,6 +78,9 @@ export const DetailsScreen = ({ venues }: DetailsScreenProps): JSX.Element => {
   const filteredVenues = getFilteredVenueListByCategoryStatus(
     venues,
     categoryStatus
+  )
+  const isRecordStore = filteredVenues.some(
+    (venue) => venue.venueTypeCode === ('RECORD_STORE' as VenueTypeCode)
   )
 
   const initialValues =
@@ -171,6 +176,9 @@ export const DetailsScreen = ({ venues }: DetailsScreenProps): JSX.Element => {
         <FormLayout fullWidthActions>
           <ScrollToFirstErrorAfterSubmit />
           <FormLayout.MandatoryInfo />
+          {isSearchByEanEnabled &&
+            isRecordStore &&
+            mode === OFFER_WIZARD_MODE.CREATION && <DetailsEanSearch />}
           <DetailsForm
             filteredVenues={filteredVenues}
             filteredCategories={filteredCategories}
