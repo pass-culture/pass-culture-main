@@ -27,15 +27,19 @@ class AddressResponseModel(BaseModel):
 
 class AddressResponseIsEditableModel(AddressResponseModel):
     label: str | None = None
+    id_oa: int
     isEditable: bool
+    isManualEdition: bool
 
 
 def retrieve_address_info_from_oa(offerer_address: OffererAddress) -> dict:
     """Utility function that retrieves the location information from the offerer_address"""
     return dict(
         id=offerer_address.addressId,
+        id_oa=offerer_address.id,
         banId=offerer_address.address.banId,
         inseeCode=offerer_address.address.inseeCode,
         longitude=offerer_address.address.longitude,
         latitude=offerer_address.address.latitude,
+        isManualEdition=offerer_address.address.isManualEdition,
     )
