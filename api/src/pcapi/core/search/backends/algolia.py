@@ -547,10 +547,9 @@ class AlgoliaBackend(base.SearchBackend):
                 "name": offer.name,
                 "nativeCategoryId": offer.subcategory.native_category_id,
                 "prices": sorted(prices),
-                # TODO(jeremieb): keep searchGroupNamev2 and remove
-                # remove searchGroupName once the search group name &
-                # home page label migration is over.
                 "rankingWeight": offer.rankingWeight,
+                # TODO(thconte, 2024-08-23): keep searchGroupName and remove
+                # remove searchGroupNamev2 once app minimal version has been bumped
                 "searchGroupName": search_groups,
                 "searchGroupNamev2": search_groups,
                 "showType": show_type_label,

@@ -41,7 +41,7 @@ class SearchNode:
 
 
 class SearchGroup(SearchNode):
-    search_filter: str = "searchGroupNamev2"
+    search_filter: str = "searchGroupName"
 
     def __new__(cls, *args, **kwargs) -> "SearchGroup":  # type: ignore[no-untyped-def]
         obj = super().__new__(cls)
