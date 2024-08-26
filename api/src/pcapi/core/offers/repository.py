@@ -763,47 +763,6 @@ def is_id_at_provider_taken_by_another_venue_offer(venue_id: int, id_at_provider
     return db.session.query(base_query.exists()).scalar()
 
 
-def get_active_offers_count_for_venue(venue_id: int) -> int:
-    active_offers_query = models.Offer.query.filter(models.Offer.venueId == venue_id)
-    active_offers_query = _filter_by_status(active_offers_query, offer_mixin.OfferStatus.ACTIVE.name)
-
-    n_active_offers = active_offers_query.distinct(models.Offer.id).count()
-
-    n_active_collective_offer = (
-        educational_models.CollectiveOffer.query.filter(educational_models.CollectiveOffer.venueId == venue_id)
-        .filter(educational_models.CollectiveOffer.status == offer_mixin.CollectiveOfferStatus.ACTIVE.name)
-        .distinct(educational_models.CollectiveOffer.id)
-        .count()
-    )
-
-    n_active_collective_offer_template = (
-        educational_models.CollectiveOfferTemplate.query.filter(
-            educational_models.CollectiveOfferTemplate.venueId == venue_id
-        )
-        .filter(educational_models.CollectiveOfferTemplate.status == offer_mixin.CollectiveOfferStatus.ACTIVE.name)
-        .distinct(educational_models.CollectiveOfferTemplate.id)
-        .count()
-    )
-
-    return n_active_offers + n_active_collective_offer + n_active_collective_offer_template
-
-
-def get_sold_out_offers_count_for_venue(venue_id: int) -> int:
-    sold_out_offers_query = models.Offer.query.filter(models.Offer.venueId == venue_id)
-    sold_out_offers_query = _filter_by_status(sold_out_offers_query, offer_mixin.CollectiveOfferStatus.SOLD_OUT.name)
-
-    n_sold_out_offers = sold_out_offers_query.distinct(models.Offer.id).count()
-
-    n_sold_out_collective_offers = (
-        educational_models.CollectiveOffer.query.filter(educational_models.CollectiveOffer.venueId == venue_id)
-        .filter(educational_models.CollectiveOffer.status == offer_mixin.CollectiveOfferStatus.SOLD_OUT.name)
-        .distinct(educational_models.CollectiveOffer.id)
-        .count()
-    )
-
-    return n_sold_out_offers + n_sold_out_collective_offers
-
-
 def get_and_lock_stock(stock_id: int) -> models.Stock:
     """Returns `stock_id` stock with a FOR UPDATE lock
     Raises StockDoesNotExist if no stock is found.

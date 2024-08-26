@@ -133,13 +133,6 @@ class VenueResponseModel(BaseModel):
         arbitrary_types_allowed = True
 
 
-class VenueStatsResponseModel(BaseModel):
-    activeBookingsQuantity: int
-    validatedBookingsQuantity: int
-    activeOffersCount: int
-    soldOutOffersCount: int
-
-
 class GetVenueManagingOffererResponseModel(BaseModel):
     city: str
     dateCreated: datetime
