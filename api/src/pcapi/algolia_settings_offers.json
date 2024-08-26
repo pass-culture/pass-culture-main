@@ -61,7 +61,7 @@
         "offer.gtlCodeLevel4",
         "offer.nativeCategoryId",
         "filterOnly(offer.prices)",
-        "filterOnly(offer.searchGroupName)",
+        "offer.searchGroups",
         "offer.searchGroupNamev2",
         "offer.showType",
         "filterOnly(offer.students)",
@@ -117,6 +117,9 @@
     "enableReRanking": false,
     "reRankingApplyFilter": [
         [
+            "offer.searchGroups:SPECTACLES",
+            "offer.searchGroups:CONCERTS_FESTIVALS",
+            "offer.searchGroups:MUSEES_VISITES_CULTURELLES",
             "offer.searchGroupNamev2:SPECTACLES",
             "offer.searchGroupNamev2:CONCERTS_FESTIVALS",
             "offer.searchGroupNamev2:MUSEES_VISITES_CULTURELLES"
