@@ -119,6 +119,7 @@ def _get_booking_by_token(token: str) -> booking_models.Booking | None:
 
 
 @blueprints.public_api.route("/public/bookings/v1/token/<string:token>", methods=["GET"])
+@api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     response_model=serialization.GetBookingResponse,
@@ -134,7 +135,6 @@ def _get_booking_by_token(token: str) -> booking_models.Booking | None:
         )
     ),
 )
-@api_key_required
 def get_booking_by_token(token: str) -> serialization.GetBookingResponse:
     """
     Get a booking
