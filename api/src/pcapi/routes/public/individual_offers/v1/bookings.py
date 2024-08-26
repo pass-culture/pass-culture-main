@@ -202,6 +202,7 @@ def validate_booking_by_token(token: str) -> None:
 
 
 @blueprints.public_api.route("/public/bookings/v1/keep/token/<token>", methods=["PATCH"])
+@api_key_required
 @spectree_serialize(
     on_success_status=204,
     api=spectree_schemas.public_api_schema,
@@ -217,7 +218,6 @@ def validate_booking_by_token(token: str) -> None:
         )
     ),
 )
-@api_key_required
 def cancel_booking_validation_by_token(token: str) -> None:
     """
     Revert booking validation
