@@ -37,7 +37,6 @@ import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.subscription.ubble import api as ubble_subscription_api
 from pcapi.core.testing import assert_num_queries
-from pcapi.core.testing import clean_temporary_files
 from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
 import pcapi.core.users.api as users_api
@@ -58,23 +57,9 @@ from tests.test_utils import json_default
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-def create_booking_with_undeletable_dependent(date_used=None, **kwargs):
-    if not date_used:
-        date_used = datetime.datetime.utcnow()
-    booking = bookings_factories.UsedBookingFactory(dateUsed=date_used, **kwargs)
-    factories.PricingFactory(
-        booking__stock__offer__venue=booking.venue,
-        valueDate=booking.dateUsed + datetime.timedelta(seconds=1),
-        status=models.PricingStatus.PROCESSED,
-    )
-    return booking
-
-
-def datetime_iterator(first):
-    dt = first
-    while 1:
-        yield dt
-        dt += datetime.timedelta(days=15)
+@pytest.fixture(name="clean_temp_files")
+def clean_temp_files_fixture(tmp_path, monkeypatch):
+    monkeypatch.setattr(api.tempfile, "mkdtemp", lambda: tmp_path)
 
 
 class CleanStringTest:
@@ -1757,10 +1742,9 @@ class GenerateCashflowsTest:
         assert models.Cashflow.query.count() == 2
 
 
-@clean_temporary_files
 @time_machine.travel(datetime.datetime(2023, 2, 1, 12, 34, 26))
 @mock.patch("pcapi.connectors.googledrive.TestingBackend.create_file")
-def test_generate_payment_files(mocked_gdrive_create_file):
+def test_generate_payment_files(mocked_gdrive_create_file, clean_temp_files):
     # The contents of generated files is unit-tested in other test
     # functions below.
     venue = offerers_factories.VenueFactory(
@@ -1788,8 +1772,7 @@ def test_generate_payment_files(mocked_gdrive_create_file):
     }
 
 
-@clean_temporary_files
-def test_generate_bank_accounts_file():
+def test_generate_bank_accounts_file(clean_temp_files):
     now = datetime.datetime.utcnow()
     offerer = offerers_factories.OffererFactory(name="Nom de la structure")
     venue_1 = offerers_factories.VenueFactory(managingOfferer=offerer)
@@ -1862,8 +1845,7 @@ def test_generate_bank_accounts_file():
         }
 
 
-@clean_temporary_files
-def test_generate_payments_file():
+def test_generate_payments_file(clean_temp_files):
     actual_year = datetime.date.today().year
     used_date = datetime.datetime(actual_year, 2, 5)
     venue1 = offerers_factories.VenueFactory(
@@ -2159,8 +2141,7 @@ def test_generate_payments_file():
     } in rows
 
 
-@clean_temporary_files
-def test_generate_invoice_file():
+def test_generate_invoice_file(clean_temp_files):
     first_siret = "12345678900"
     venue = offerers_factories.VenueFactory(siret=first_siret, pricing_point="self")
     offerer1 = venue.managingOfferer
@@ -2375,8 +2356,8 @@ def test_generate_invoice_file():
 class GenerateDebitNotesTest:
     @mock.patch("pcapi.core.finance.api._generate_debit_note_html")
     @mock.patch("pcapi.core.finance.api._store_invoice_pdf")
-    @clean_temporary_files
     @override_features(WIP_ENABLE_FINANCE_INCIDENT=True)
+    @pytest.mark.usefixtures("clean_temp_files")
     def test_when_there_is_no_debit_not_to_generate(self, _mocked1, _mocked2):
         user = users_factories.RichBeneficiaryFactory()
         venue_kwargs = {
@@ -2465,7 +2446,7 @@ class GenerateInvoicesTest:
     # Mock slow functions that we are not interested in.
     @mock.patch("pcapi.core.finance.api._generate_invoice_html")
     @mock.patch("pcapi.core.finance.api._store_invoice_pdf")
-    @clean_temporary_files
+    @pytest.mark.usefixtures("clean_temp_files")
     def test_basics(self, _mocked1, _mocked2):
         finance_event1 = factories.UsedBookingFinanceEventFactory(booking__stock=individual_stock_factory())
         booking1 = finance_event1.booking
@@ -2515,7 +2496,7 @@ class GenerateInvoicesTest:
     @mock.patch("pcapi.core.finance.api._generate_invoice_html")
     @mock.patch("pcapi.core.finance.api._store_invoice_pdf")
     @mock.patch("pcapi.core.finance.api._get_cashflows_by_bank_accounts")
-    @clean_temporary_files
+    @pytest.mark.usefixtures("clean_temp_files")
     def test_free_invoice_not_generated(self, _generate_invoice_html, _store_invoice_pdf, _get_cashflows):
         _get_cashflows.return_value = []
         venue = offerers_factories.VenueFactory(pricing_point="self")

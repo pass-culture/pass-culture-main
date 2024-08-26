@@ -2,12 +2,8 @@ import collections.abc
 import contextlib
 import functools
 import math
-import pathlib
-import shutil
-import tempfile
 import types
 import typing
-from unittest import mock
 
 import flask
 import flask_sqlalchemy
@@ -273,51 +269,6 @@ class override_features(TestContextDecorator):
         if flask.has_request_context():
             if hasattr(flask.request, "_cached_features"):
                 del flask.request._cached_features
-
-
-def clean_temporary_files(test_function: typing.Callable) -> typing.Callable:
-    """A decorator to be used around tests that use `tempfile.mkdtemp()`
-    and `mkstemp()`. It deletes temporary directories and files upon test
-    completion.
-    """
-    paths = []
-
-    original_mkdtemp = tempfile.mkdtemp
-    original_mkstemp = tempfile.mkstemp
-
-    def patched_mkdtemp(*args: typing.Any, **kwargs: typing.Any) -> str:
-        path = original_mkdtemp(*args, **kwargs)
-        paths.append(pathlib.Path(path))
-        return path
-
-    def patched_mkstemp(*args: typing.Any, **kwargs: typing.Any) -> tuple[typing.Any, ...]:
-        res = original_mkstemp(*args, **kwargs)
-        paths.append(pathlib.Path(res[1]))
-        return res
-
-    def cleanup() -> None:
-        tempdir = pathlib.Path(tempfile.gettempdir())
-        for path in paths:
-            if not path.exists():
-                continue
-            if tempdir not in path.parents:
-                # I doubt it's intended, let's raise an error.
-                raise ValueError(f"Temporary file at '{path}' does not belong in {tempdir}")
-            if path == pathlib.Path("/"):
-                raise ValueError("I'm sorry, Dave. I'm afraid I can't do that")
-            if path.is_dir():
-                shutil.rmtree(path)
-            else:
-                path.unlink()
-
-    def wrapper(*args: typing.Any, **kwargs: typing.Any) -> None:
-        try:
-            with mock.patch.multiple(tempfile, mkdtemp=patched_mkdtemp, mkstemp=patched_mkstemp):
-                test_function(*args, **kwargs)
-        finally:
-            cleanup()
-
-    return wrapper
 
 
 @contextlib.contextmanager
