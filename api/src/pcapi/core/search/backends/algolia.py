@@ -15,6 +15,7 @@ import redis
 import sqlalchemy as sa
 
 from pcapi import settings
+from pcapi.core.categories import categories
 from pcapi.core.educational.academies import get_academy_from_department
 import pcapi.core.educational.api.offer as educational_api_offer
 import pcapi.core.educational.models as educational_models
@@ -519,10 +520,6 @@ class AlgoliaBackend(base.SearchBackend):
                 "dates": sorted(dates),
                 "description": remove_stopwords(offer.description or ""),
                 "ean": extra_data.get("ean"),
-                "gtl_level1": gtl.get("level_01_label") if gtl else None,
-                "gtl_level2": gtl.get("level_02_label") if gtl else None,
-                "gtl_level3": gtl.get("level_03_label") if gtl else None,
-                "gtl_level4": gtl.get("level_04_label") if gtl else None,
                 "gtlCodeLevel1": gtl_code_1,
                 "gtlCodeLevel2": gtl_code_2,
                 "gtlCodeLevel3": gtl_code_3,
@@ -575,6 +572,18 @@ class AlgoliaBackend(base.SearchBackend):
             },
             "_geoloc": position(venue),
         }
+
+        if offer.subcategory.category.id == categories.LIVRE.id and gtl:
+            object_to_index["offer"]["gtl_level1"] = gtl.get("level_01_label")
+            object_to_index["offer"]["gtl_level2"] = gtl.get("level_02_label")
+            object_to_index["offer"]["gtl_level3"] = gtl.get("level_03_label")
+            object_to_index["offer"]["gtl_level4"] = gtl.get("level_04_label")
+        elif offer.subcategory.category.id == categories.MUSIQUE_ENREGISTREE.id and gtl_id:
+            gtl_label = next(
+                (music_type.label for music_type in categories.TITELIVE_MUSIC_TYPES if music_type.gtl_id == gtl_id),
+                None,
+            )
+            object_to_index["offer"]["gtl_level1"] = gtl_label
 
         for section in ("offer", "offerer", "venue"):
             object_to_index[section] = {
