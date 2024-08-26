@@ -64,6 +64,7 @@ def _get_paginated_and_filtered_bookings(
 
 
 @blueprints.public_api.route("/public/bookings/v1/bookings", methods=["GET"])
+@api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     response_model=serialization.GetFilteredBookingsResponse,
@@ -77,7 +78,6 @@ def _get_paginated_and_filtered_bookings(
         ),
     ),
 )
-@api_key_required
 def get_bookings_by_offer(
     query: serialization.GetFilteredBookingsRequest,
 ) -> serialization.GetFilteredBookingsResponse:
