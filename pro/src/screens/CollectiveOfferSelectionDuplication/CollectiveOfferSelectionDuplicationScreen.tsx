@@ -140,6 +140,7 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
                 placeholder="Rechercher une offre vitrine"
                 className={styles['search-input']}
                 aria-labelledby="search-filter"
+                isOptional
               />
               <Button
                 type="submit"
@@ -160,6 +161,9 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
                     {showAll
                       ? 'Les dernières offres vitrines créées'
                       : `${pluralize(offers.length, 'offre')} vitrine`}
+                  </p>
+                  <p className="visually-hidden" role="status">
+                    {pluralize(offers.length, 'offre vitrine trouvée')}
                   </p>
                 </legend>
 
