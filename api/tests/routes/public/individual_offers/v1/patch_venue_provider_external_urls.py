@@ -13,11 +13,8 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 class PatchVenueProviderExternalUrlsTest(PublicAPIVenueEndpointHelper):
     endpoint_url = "/public/providers/v1/venues/{venue_id}"
-
-    def test_should_raise_401_because_not_authenticated(self, client: TestClient):
-        venue = self.setup_venue()
-        response = client.patch(self.endpoint_url.format(venue_id=venue.id))
-        assert response.status_code == 401
+    endpoint_method = "patch"
+    default_path_params = {"venue_id": 1}
 
     def test_should_raise_401_because_api_key_is_not_linked_to_provider(self, client: TestClient):
         old_api_key = self.setup_old_api_key()

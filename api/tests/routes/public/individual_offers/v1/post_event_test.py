@@ -22,6 +22,7 @@ from . import utils
 @pytest.mark.usefixtures("db_session")
 class PostEventTest(PublicAPIVenueEndpointHelper):
     endpoint_url = "/public/offers/v1/events"
+    endpoint_method = "post"
 
     @staticmethod
     def _get_base_payload(venue_id) -> dict:
@@ -32,10 +33,6 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
             "name": "Le champ des possibles",
             "hasTicket": False,
         }
-
-    def test_should_raise_401_because_not_authenticated(self, client: TestClient):
-        response = client.post(self.endpoint_url, json={})
-        assert response.status_code == 401
 
     def test_should_raise_404_because_has_no_access_to_venue(self, client: TestClient):
         plain_api_key, _ = self.setup_provider()

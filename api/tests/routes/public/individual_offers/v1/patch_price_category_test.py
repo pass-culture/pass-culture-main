@@ -42,6 +42,8 @@ def event_with_stock_fixture(stock):
 
 class PatchPriceCategoryTest(PublicAPIVenueEndpointHelper):
     endpoint_url = "/public/offers/v1/events/{event_id}/price_categories/{price_category_id}"
+    endpoint_method = "patch"
+    default_path_params = {"event_id": 1, "price_category_id": 2}
 
     @staticmethod
     def _get_base_payload() -> dict:

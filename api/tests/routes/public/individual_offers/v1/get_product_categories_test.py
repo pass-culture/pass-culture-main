@@ -10,10 +10,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 class GetProductCategoriesTest(PublicAPIEndpointBaseHelper):
     endpoint_url = "/public/offers/v1/products/categories"
-
-    def test_should_raise_401_because_not_authenticated(self, client):
-        response = client.get(self.endpoint_url)
-        assert response.status_code == 401
+    endpoint_method = "get"
 
     def test_returns_all_selectable_categories(self, client):
         plain_api_key, _ = self.setup_provider()

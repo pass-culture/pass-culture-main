@@ -15,6 +15,8 @@ from tests.routes.public.helpers import PublicAPIVenueEndpointHelper
 @pytest.mark.usefixtures("db_session")
 class DeleteEventStockTest(PublicAPIVenueEndpointHelper):
     endpoint_url = "/public/offers/v1/events/{event_id}/dates/{stock_id}"
+    endpoint_method = "delete"
+    default_path_params = {"event_id": 1, "stock_id": 2}
 
     def setup_base_resource(self, venue=None, provider=None) -> tuple[offers_models.Offer, offers_models.Stock]:
         event = offers_factories.EventOfferFactory(venue=venue or self.setup_venue(), lastProvider=provider)
@@ -33,11 +35,6 @@ class DeleteEventStockTest(PublicAPIVenueEndpointHelper):
         )
 
         return event, stock
-
-    def test_should_raise_401_because_not_authenticated(self, client: TestClient):
-        event, stock = self.setup_base_resource()
-        response = client.delete(self.endpoint_url.format(event_id=event.id, stock_id=stock.id))
-        assert response.status_code == 401
 
     def test_should_raise_404_because_has_no_access_to_venue(self, client: TestClient):
         plain_api_key, _ = self.setup_provider()
