@@ -3,6 +3,7 @@ from datetime import date
 from datetime import datetime
 from datetime import timedelta
 import decimal
+import functools
 import itertools
 import logging
 import math
@@ -56,6 +57,7 @@ from pcapi.models import feature
 from pcapi.models import pc_object
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.validation_status_mixin import ValidationStatus
+from pcapi.repository import on_commit
 from pcapi.repository import repository
 from pcapi.routes.serialization import offerers_serialize
 from pcapi.routes.serialization import venues_serialize
@@ -532,11 +534,26 @@ def delete_venue(venue_id: int) -> None:
 
     offerers_models.Venue.query.filter(offerers_models.Venue.id == venue_id).delete(synchronize_session=False)
 
-    db.session.commit()
+    db.session.flush()
 
-    search.unindex_offer_ids(offer_ids_to_delete["individual_offer_ids_to_delete"])
-    search.unindex_collective_offer_template_ids(offer_ids_to_delete["collective_offer_template_ids_to_delete"])
-    search.unindex_venue_ids([venue_id])
+    on_commit(
+        functools.partial(
+            search.unindex_offer_ids,
+            offer_ids_to_delete["individual_offer_ids_to_delete"],
+        ),
+    )
+    on_commit(
+        functools.partial(
+            search.unindex_collective_offer_template_ids,
+            offer_ids_to_delete["collective_offer_template_ids_to_delete"],
+        ),
+    )
+    on_commit(
+        functools.partial(
+            search.unindex_venue_ids,
+            [venue_id],
+        ),
+    )
 
 
 def _delete_objects_linked_to_venue(venue_id: int) -> dict:
@@ -1036,7 +1053,7 @@ def update_offerer(
     # keep commit with repository.save() as long as postal code is validated in pcapi.validation.models.offerer
     repository.save(offerer)
 
-    zendesk_sell.update_offerer(offerer)
+    on_commit(functools.partial(zendesk_sell.update_offerer, offerer))
 
 
 def remove_pro_role_and_add_non_attached_pro_role(users: list[users_models.User]) -> None:
@@ -1078,11 +1095,21 @@ def validate_offerer_attachment(
         comment=comment,
     )
 
-    db.session.commit()
+    db.session.flush()
 
-    external_attributes_api.update_external_pro(user_offerer.user.email)
+    on_commit(
+        functools.partial(
+            external_attributes_api.update_external_pro,
+            user_offerer.user.email,
+        ),
+    )
 
-    transactional_mails.send_offerer_attachment_validation_email_to_pro(user_offerer)
+    on_commit(
+        functools.partial(
+            transactional_mails.send_offerer_attachment_validation_email_to_pro,
+            user_offerer,
+        ),
+    )
 
     offerer_invitation = (
         models.OffererInvitation.query.filter_by(offererId=user_offerer.offererId)
@@ -1090,8 +1117,12 @@ def validate_offerer_attachment(
         .one_or_none()
     )
     if offerer_invitation:
-        transactional_mails.send_offerer_attachment_invitation_accepted(
-            user_offerer.user, offerer_invitation.user.email
+        on_commit(
+            functools.partial(
+                transactional_mails.send_offerer_attachment_invitation_accepted,
+                user_offerer.user,
+                offerer_invitation.user.email,
+            ),
         )
 
 
@@ -1108,7 +1139,7 @@ def set_offerer_attachment_pending(
         offerer=user_offerer.offerer,
         comment=comment,
     )
-    db.session.commit()
+    db.session.flush()
 
 
 def reject_offerer_attachment(
@@ -1116,7 +1147,6 @@ def reject_offerer_attachment(
     author_user: users_models.User | None,
     comment: str | None = None,
     send_email: bool = True,
-    commit: bool = True,
 ) -> None:
     user_offerer.validationStatus = ValidationStatus.REJECTED
     db.session.add(user_offerer)
@@ -1130,12 +1160,15 @@ def reject_offerer_attachment(
     )
 
     if send_email:
-        transactional_mails.send_offerer_attachment_rejection_email_to_pro(user_offerer)
+        on_commit(
+            functools.partial(
+                transactional_mails.send_offerer_attachment_rejection_email_to_pro,
+                user_offerer,
+            ),
+        )
 
     remove_pro_role_and_add_non_attached_pro_role([user_offerer.user])
-
-    if commit:
-        db.session.commit()
+    db.session.flush()
 
 
 def delete_offerer_attachment(
@@ -1155,7 +1188,7 @@ def delete_offerer_attachment(
     )
 
     remove_pro_role_and_add_non_attached_pro_role([user_offerer.user])
-    db.session.commit()
+    db.session.flush()
 
 
 def validate_offerer(offerer: models.Offerer, author_user: users_models.User) -> None:
@@ -1179,25 +1212,44 @@ def validate_offerer(offerer: models.Offerer, author_user: users_models.User) ->
         user=applicants[0] if applicants else None,  # before validation we should have only one applicant
     )
 
-    db.session.commit()
+    db.session.flush()
 
     managed_venues = offerer.managedVenues
-    search.async_index_offers_of_venue_ids(
-        [venue.id for venue in managed_venues],
-        reason=search.IndexationReason.OFFERER_VALIDATION,
+    on_commit(
+        functools.partial(
+            search.async_index_offers_of_venue_ids,
+            [venue.id for venue in managed_venues],
+            reason=search.IndexationReason.OFFERER_VALIDATION,
+        ),
     )
 
     for applicant in applicants:
-        external_attributes_api.update_external_pro(applicant.email)
+        on_commit(
+            functools.partial(
+                external_attributes_api.update_external_pro,
+                applicant.email,
+            ),
+        )
 
-    zendesk_sell.update_offerer(offerer)
+    on_commit(functools.partial(zendesk_sell.update_offerer, offerer))
 
     if applicants:
-        transactional_mails.send_new_offerer_validation_email_to_pro(offerer)
+        on_commit(
+            functools.partial(
+                transactional_mails.send_new_offerer_validation_email_to_pro,
+                offerer,
+            ),
+        )
     for managed_venue in managed_venues:
         if managed_venue.adageId:
             emails = offerers_repository.get_emails_by_venue(managed_venue)
-            transactional_mails.send_eac_offerer_activation_email(managed_venue, list(emails))
+            on_commit(
+                functools.partial(
+                    transactional_mails.send_eac_offerer_activation_email,
+                    managed_venue,
+                    list(emails),
+                ),
+            )
             break
 
 
@@ -1224,7 +1276,13 @@ def reject_offerer(
     )
 
     if applicants:
-        transactional_mails.send_new_offerer_rejection_email_to_pro(offerer, action_args.get("rejection_reason"))
+        on_commit(
+            functools.partial(
+                transactional_mails.send_new_offerer_rejection_email_to_pro,
+                offerer,
+                action_args.get("rejection_reason"),
+            ),
+        )
 
     users_offerer = offerers_models.UserOfferer.query.filter_by(offererId=offerer.id).all()
     for user_offerer in users_offerer:
@@ -1233,7 +1291,6 @@ def reject_offerer(
             author_user,
             "Compte pro rejeté suite au rejet de la structure",
             send_email=(user_offerer.user not in applicants),  # do not send a second email
-            commit=False,
         )
 
     remove_pro_role_and_add_non_attached_pro_role(applicants)
@@ -1241,11 +1298,16 @@ def reject_offerer(
     # Remove any API key which could have been created when user was waiting for validation
     models.ApiKey.query.filter(models.ApiKey.offererId == offerer.id).delete()
 
-    db.session.commit()
+    db.session.flush()
 
     if was_validated:
         for applicant in applicants:
-            external_attributes_api.update_external_pro(applicant.email)
+            on_commit(
+                functools.partial(
+                    external_attributes_api.update_external_pro,
+                    applicant.email,
+                ),
+            )
 
 
 def set_offerer_pending(
@@ -1286,12 +1348,12 @@ def set_offerer_pending(
         **extra_data,
     )
 
-    db.session.commit()
+    db.session.flush()
 
 
 def add_comment_to_offerer(offerer: offerers_models.Offerer, author_user: users_models.User, comment: str) -> None:
     history_api.add_action(history_models.ActionType.COMMENT, author_user, offerer=offerer, comment=comment)
-    db.session.commit()
+    db.session.flush()
 
 
 def add_comment_to_venue(venue: offerers_models.Venue, author_user: users_models.User, comment: str) -> None:
@@ -1869,7 +1931,7 @@ def update_offerer_tag(
             offerer_tag.categories = categories
 
     db.session.add(offerer_tag)
-    db.session.commit()
+    db.session.flush()
 
 
 def get_metabase_stats_iframe_url(
@@ -1985,9 +2047,9 @@ def suspend_offerer(offerer: models.Offerer, actor: users_models.User, comment: 
     offerer.isActive = False
     db.session.add(offerer)
     history_api.add_action(history_models.ActionType.OFFERER_SUSPENDED, author=actor, offerer=offerer, comment=comment)
-    db.session.commit()
+    db.session.flush()
 
-    _update_external_offerer(offerer)
+    on_commit(functools.partial(_update_external_offerer, offerer))
 
 
 def unsuspend_offerer(offerer: models.Offerer, actor: users_models.User, comment: str | None) -> None:
@@ -1999,9 +2061,8 @@ def unsuspend_offerer(offerer: models.Offerer, actor: users_models.User, comment
     history_api.add_action(
         history_models.ActionType.OFFERER_UNSUSPENDED, author=actor, offerer=offerer, comment=comment
     )
-    db.session.commit()
-
-    _update_external_offerer(offerer)
+    db.session.flush()
+    on_commit(functools.partial(_update_external_offerer, offerer))
 
 
 def _update_external_offerer(offerer: models.Offerer) -> None:
@@ -2070,11 +2131,26 @@ def delete_offerer(offerer_id: int) -> None:
 
     offerers_models.Offerer.query.filter(offerers_models.Offerer.id == offerer_id).delete(synchronize_session=False)
 
-    db.session.commit()
+    db.session.flush()
 
-    search.unindex_offer_ids(offer_ids_to_delete["individual_offer_ids_to_delete"])
-    search.unindex_collective_offer_template_ids(offer_ids_to_delete["collective_offer_template_ids_to_delete"])
-    search.unindex_venue_ids(venue_ids)
+    on_commit(
+        functools.partial(
+            search.unindex_offer_ids,
+            offer_ids_to_delete["individual_offer_ids_to_delete"],
+        ),
+    )
+    on_commit(
+        functools.partial(
+            search.unindex_collective_offer_template_ids,
+            offer_ids_to_delete["collective_offer_template_ids_to_delete"],
+        ),
+    )
+    on_commit(
+        functools.partial(
+            search.unindex_venue_ids,
+            venue_ids,
+        ),
+    )
 
 
 def invite_member(offerer: models.Offerer, email: str, current_user: users_models.User) -> None:
