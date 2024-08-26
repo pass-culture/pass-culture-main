@@ -119,6 +119,7 @@ class FeatureToggle(enum.Enum):
     WIP_ENABLE_OFFER_ADDRESS = "Activer l'association des offres à des adresses."
     WIP_SPLIT_OFFER = "Activer le nouveau parcours de création/édition d'offre individuelle"
     WIP_SUGGESTED_SUBCATEGORIES = "Activer les sous-catégories suggérées par IA lors de la création d'offre"
+    WIP_EAN_CREATION = "Activer la création d'offre par EAN"
     ENABLE_COLLECTIVE_OFFERS_EXPIRATION = "Activer la mise en avant des offres collectives sur le point d'expirer"
     ENABLE_COLLECTIVE_NEW_STATUSES = "Activer les nouveaux statuts des offres collectives"
     WIP_CONNECT_AS_EXTENDED = "Activer les redirections automatiques avec connect-as"
@@ -183,6 +184,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_BENEFICIARY_EXTRACT_TOOL,
     FeatureToggle.WIP_CONNECT_AS,
     FeatureToggle.WIP_CONNECT_AS_EXTENDED,
+    FeatureToggle.WIP_EAN_CREATION,
     FeatureToggle.WIP_ENABLE_COLLECTIVE_DRAFT_OFFERS,
     FeatureToggle.WIP_ENABLE_MOCK_UBBLE,
     FeatureToggle.WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE,
