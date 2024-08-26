@@ -622,6 +622,7 @@ class AlgoliaBackend(base.SearchBackend):
         venue = collective_offer_template.venue
         offerer = venue.managingOfferer
         date_created = collective_offer_template.dateCreated.timestamp()
+        assert venue.postalCode  # helps mypy, it would crash below if None
         department_code = get_department_code_from_city_code(venue.postalCode)
         latitude, longitude = educational_api_offer.get_offer_coordinates(collective_offer_template)
 

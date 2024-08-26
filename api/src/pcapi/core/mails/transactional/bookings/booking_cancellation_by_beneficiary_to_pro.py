@@ -18,6 +18,7 @@ def get_booking_cancellation_by_beneficiary_to_pro_email_data(
     provider_name = None  # need to be filled only in case of one side cancellation
     if one_side_cancellation:
         external_booking = booking.externalBookings[0]
+        assert booking.stock.offer.lastProvider  # helps mypy, should be the case with one_side_cancellation set to True
         provider_name = booking.stock.offer.lastProvider.name
         match booking.stock.offer.lastProvider.localClass:
             case "CDSStocks" | "CGRStocks":

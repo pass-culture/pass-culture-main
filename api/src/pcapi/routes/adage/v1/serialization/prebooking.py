@@ -141,7 +141,7 @@ def get_collective_bookings_per_year_response(
             confirmationLimitDate=booking.confirmationLimitDate,
             totalAmount=booking.collectiveStock.price,
             beginningDatetime=booking.collectiveStock.beginningDatetime,
-            venueTimezone=booking.collectiveStock.collectiveOffer.venue.timezone,
+            venueTimezone=booking.collectiveStock.collectiveOffer.venue.timezone,  # type: ignore[arg-type]
             name=booking.collectiveStock.collectiveOffer.name,
             redactorEmail=booking.educationalRedactor.email,
             domainIds=[domain.id for domain in booking.collectiveStock.collectiveOffer.domains],

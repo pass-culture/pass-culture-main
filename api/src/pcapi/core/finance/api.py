@@ -525,6 +525,7 @@ def _price_event(event: models.FinanceEvent) -> models.Pricing:
         event.bookingFinanceIncident.collectiveBooking if event.bookingFinanceIncident else event.collectiveBooking
     )
     booking = individual_booking or collective_booking
+    assert booking  # helps mypy
     rule = None
     amount: int
     pricing_booking_id = None
@@ -535,11 +536,12 @@ def _price_event(event: models.FinanceEvent) -> models.Pricing:
             models.FinanceEventMotive.BOOKING_USED,
             models.FinanceEventMotive.BOOKING_USED_AFTER_CANCELLATION,
         ):
-            new_revenue += utils.to_eurocents(individual_booking.total_amount)
+            new_revenue += utils.to_eurocents(booking.total_amount)
         elif event.motive in (
             models.FinanceEventMotive.INCIDENT_NEW_PRICE,
             models.FinanceEventMotive.INCIDENT_COMMERCIAL_GESTURE,
         ):
+            assert event.bookingFinanceIncident  # helps mypy
             new_revenue += event.bookingFinanceIncident.newTotalAmount
 
     if event.motive in (
@@ -564,6 +566,7 @@ def _price_event(event: models.FinanceEvent) -> models.Pricing:
         ]
     elif event.motive == models.FinanceEventMotive.INCIDENT_REVERSAL_OF_ORIGINAL_EVENT:
         original_pricing = booking.invoiced_pricing
+        assert original_pricing  # helps mypy
         rule = find_reimbursement_rule(original_pricing.customRuleId or original_pricing.standardRule)
         amount = -original_pricing.amount  # reverse the original pricing amount (positive)
         pricing_booking_id = None
@@ -573,7 +576,9 @@ def _price_event(event: models.FinanceEvent) -> models.Pricing:
             for original_line in original_pricing.lines
         ]
     elif event.motive == models.FinanceEventMotive.INCIDENT_NEW_PRICE:
+        assert event.bookingFinanceIncident and event.bookingFinanceIncident.newTotalAmount  # helps mypy
         original_pricing = booking.invoiced_pricing
+        assert original_pricing  # helps mypy
         rule = find_reimbursement_rule(original_pricing.customRuleId or original_pricing.standardRule)
         amount = -rule.apply(booking, event.bookingFinanceIncident.newTotalAmount)  # outgoing, thus negative
         offerer_revenue_amount = -event.bookingFinanceIncident.newTotalAmount
@@ -590,6 +595,7 @@ def _price_event(event: models.FinanceEvent) -> models.Pricing:
             ),
         ]
     elif event.motive == models.FinanceEventMotive.INCIDENT_COMMERCIAL_GESTURE:
+        assert event.bookingFinanceIncident and event.bookingFinanceIncident.commercial_gesture_amount  # helps mypy
         rule = reimbursement.CommercialGestureReimbursementRule()
         amount = -event.bookingFinanceIncident.commercial_gesture_amount  # outgoing, thus negative
         offerer_revenue_amount = -event.bookingFinanceIncident.commercial_gesture_amount
