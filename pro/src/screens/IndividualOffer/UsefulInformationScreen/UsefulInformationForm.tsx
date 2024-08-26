@@ -196,7 +196,6 @@ export const UsefulInformationForm = ({
           }
         >
           <TextArea
-            countCharacters
             isOptional
             label={'Informations de retrait'}
             name="withdrawalDetails"

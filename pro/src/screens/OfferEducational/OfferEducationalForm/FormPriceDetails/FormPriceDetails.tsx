@@ -17,7 +17,6 @@ export const FormPriceDetails = ({ disableForm }: FormPriceDetailsProps) => {
       <FormLayout.Row>
         <TextArea
           className={styles['price-details']}
-          countCharacters
           disabled={disableForm}
           isOptional
           label={PRICE_INFORMATION}
