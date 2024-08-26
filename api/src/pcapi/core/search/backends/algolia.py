@@ -1,3 +1,4 @@
+import asyncio
 from collections import abc
 import contextlib
 import datetime
@@ -8,8 +9,8 @@ import re
 import typing
 import urllib.parse
 
-import algoliasearch.http.requester
-import algoliasearch.search_client
+# import algoliasearch.http.requester
+import algoliasearch.search.client as search_client
 from flask import current_app
 import redis
 import sqlalchemy as sa
@@ -128,26 +129,32 @@ def remove_stopwords(s: str) -> str:
     return " ".join(words)
 
 
-def create_algolia_client() -> algoliasearch.search_client.SearchClient:
-    config = algoliasearch.search_client.SearchConfig(
-        app_id=settings.ALGOLIA_APPLICATION_ID,
-        api_key=settings.ALGOLIA_API_KEY,
-    )
-    requester = algoliasearch.http.requester.Requester()
-    requester._session = requests.Session()  # inject our own session handler that logs
-    transporter = algoliasearch.search_client.Transporter(requester, config)
-    return algoliasearch.search_client.SearchClient(transporter, config)
+# def create_algolia_client() -> search_client.SearchClient:
+#     # config = search_client.SearchConfig(
+#     #     app_id=settings.ALGOLIA_APPLICATION_ID,
+#     #     api_key=settings.ALGOLIA_API_KEY,
+#     # )
+#     # requester = algoliasearch.http.requester.Requester()
+#     # requester._session = requests.Session()  # inject our own session handler that logs
+#     # transporter = search_client.Transporter(config)
+#     # return search_client.SearchClient(config)
+#     pass
+
+
+def async_to_sync(awaitable):
+    loop = asyncio.get_event_loop()
+    return loop.run_until_complete(awaitable)
 
 
 class AlgoliaBackend(base.SearchBackend):
     def __init__(self) -> None:
         super().__init__()
-        client = create_algolia_client()
-        self.algolia_offers_client = client.init_index(settings.ALGOLIA_OFFERS_INDEX_NAME)
-        self.algolia_collective_offers_templates_client = client.init_index(
-            settings.ALGOLIA_COLLECTIVE_OFFER_TEMPLATES_INDEX_NAME
-        )
-        self.algolia_venues_client = client.init_index(settings.ALGOLIA_VENUES_INDEX_NAME)
+        # client = create_algolia_client()
+        # self.algolia_offers_client = client.init_index(settings.ALGOLIA_OFFERS_INDEX_NAME)
+        # self.algolia_collective_offers_templates_client = client.init_index(
+        #     settings.ALGOLIA_COLLECTIVE_OFFER_TEMPLATES_INDEX_NAME
+        # )
+        # self.algolia_venues_client = client.init_index(settings.ALGOLIA_VENUES_INDEX_NAME)
         self.redis_client = current_app.redis_client
 
     def _can_enqueue_offer_ids(self, offer_ids: abc.Collection[int]) -> bool:
@@ -352,11 +359,17 @@ class AlgoliaBackend(base.SearchBackend):
             # cache so that we do perform a request to Algolia.
             return True
 
+    async def async_index_offers(self, serialized_object: list[dict]) -> None:
+        async with search_client.SearchClient(settings.ALGOLIA_APPLICATION_ID, settings.ALGOLIA_API_KEY) as client:
+            print(f"serialized_object: {serialized_object}")
+            await client.save_objects(settings.ALGOLIA_OFFERS_INDEX_NAME, serialized_object)
+
     def index_offers(self, offers: abc.Collection[offers_models.Offer], last_30_days_bookings: dict[int, int]) -> None:
         if not offers:
             return
         objects = [self.serialize_offer(offer, last_30_days_bookings.get(offer.id) or 0) for offer in offers]
-        self.algolia_offers_client.save_objects(objects)
+
+        async_to_sync(self.async_index_offers(objects))
 
         try:
             # We used to store a summary of each offer, which is why
@@ -443,7 +456,7 @@ class AlgoliaBackend(base.SearchBackend):
     def serialize_offer(cls, offer: offers_models.Offer, last_30_days_bookings: int) -> dict:
         venue = offer.venue
         offerer = venue.managingOfferer
-        prices = {stock.price for stock in offer.bookableStocks}
+        prices = {float(stock.price) for stock in offer.bookableStocks}
         dates = set()
         times = set()
         if offer.isEvent:
