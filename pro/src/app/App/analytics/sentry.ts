@@ -35,7 +35,11 @@ export const initializeSentry = () => {
     tracesSampleRate: parseFloat(SENTRY_SAMPLE_RATE),
     beforeSend: (event, hint) => {
       // To ignore a google recaptcha issue
-      if (hint.originalException === 'Timeout') {
+      // and Google analytics issue
+      if (
+        hint.originalException === 'Timeout' ||
+        hint.originalException === 'Timeout (u)'
+      ) {
         return null
       }
       return event
