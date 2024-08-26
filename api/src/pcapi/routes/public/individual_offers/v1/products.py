@@ -73,6 +73,7 @@ def get_offerer_venues(
 
 
 @blueprints.public_api.route("/public/offers/v1/show_types", methods=["GET"])
+@api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.OFFER_ATTRIBUTES],
@@ -85,7 +86,6 @@ def get_offerer_venues(
         )
     ),
 )
-@api_key_required
 def get_show_types() -> serialization.GetShowTypesResponse:
     """
     Get show types
@@ -103,6 +103,7 @@ def get_show_types() -> serialization.GetShowTypesResponse:
 
 
 @blueprints.public_api.route("/public/offers/v1/music_types", methods=["GET"])
+@api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.OFFER_ATTRIBUTES],
@@ -116,7 +117,6 @@ def get_show_types() -> serialization.GetShowTypesResponse:
         )
     ),
 )
-@api_key_required
 def get_music_types() -> serialization.GetMusicTypesResponse:
     """
     [LEGACY] Get music types
@@ -135,6 +135,7 @@ def get_music_types() -> serialization.GetMusicTypesResponse:
 
 
 @blueprints.public_api.route("/public/offers/v1/music_types/all", methods=["GET"])
+@api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.OFFER_ATTRIBUTES],
@@ -147,7 +148,6 @@ def get_music_types() -> serialization.GetMusicTypesResponse:
         )
     ),
 )
-@api_key_required
 def get_all_titelive_music_types() -> serialization.GetMusicTypesResponse:
     """
     Get all music types
@@ -166,6 +166,7 @@ def get_all_titelive_music_types() -> serialization.GetMusicTypesResponse:
 
 
 @blueprints.public_api.route("/public/offers/v1/music_types/event", methods=["GET"])
+@api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.OFFER_ATTRIBUTES],
@@ -178,7 +179,6 @@ def get_all_titelive_music_types() -> serialization.GetMusicTypesResponse:
         )
     ),
 )
-@api_key_required
 def get_event_titelive_music_types() -> serialization.GetMusicTypesResponse:
     """
     Get events music types
