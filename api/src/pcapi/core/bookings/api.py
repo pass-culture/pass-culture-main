@@ -224,7 +224,7 @@ def _book_offer(
             venueId=stock.offer.venueId,
             offererId=stock.offer.venue.managingOffererId,
             priceCategoryLabel=(
-                stock.priceCategory.priceCategoryLabel.label if getattr(stock, "priceCategory") else None
+                stock.priceCategory.priceCategoryLabel.label if getattr(stock, "priceCategory") else None  # type: ignore[union-attr]
             ),
             status=BookingStatus.CONFIRMED,
             depositId=(
@@ -413,6 +413,7 @@ def _book_cinema_external_ticket(booking: Booking, stock: Stock, beneficiary: Us
 
 
 def _book_event_external_ticket(booking: Booking, stock: Stock, beneficiary: User) -> int | None:
+    assert stock.offer.lastProviderId  # helps mypy
     provider = providers_repository.get_provider_enabled_for_pro_by_id(stock.offer.lastProviderId)
     if not provider:
         raise providers_exceptions.InactiveProvider()
@@ -578,7 +579,7 @@ def _cancel_external_booking(booking: Booking, stock: Stock) -> None:
         sentry_sdk.set_tag("external-provider", offer.lastProvider.name)
         barcodes = [external_booking.barcode for external_booking in booking.externalBookings]
         venue_provider = providers_repository.get_venue_provider_by_venue_and_provider_ids(
-            offer.venueId, offer.lastProviderId
+            offer.venueId, offer.lastProvider.id
         )
         try:
             external_bookings_api.cancel_event_ticket(offer.lastProvider, stock, barcodes, True, venue_provider)

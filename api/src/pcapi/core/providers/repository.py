@@ -36,7 +36,7 @@ def get_venue_provider_by_venue_and_provider_ids(venue_id: int, provider_id: int
     return models.VenueProvider.query.filter_by(venueId=venue_id, providerId=provider_id).one_or_none()
 
 
-def get_provider_enabled_for_pro_by_id(provider_id: int) -> models.Provider | None:
+def get_provider_enabled_for_pro_by_id(provider_id: int | None) -> models.Provider | None:
     return models.Provider.query.filter_by(id=provider_id, isActive=True, enabledForPro=True).one_or_none()
 
 

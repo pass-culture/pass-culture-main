@@ -978,7 +978,7 @@ class FinanceIncident(PcObject, Base, Model):
     )
 
     venueId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("venue.id"), nullable=False)
-    venue: sqla_orm.Mapped["offerers_models.Venue | None"] = sqla_orm.relationship(
+    venue: sqla_orm.Mapped["offerers_models.Venue"] = sqla_orm.relationship(
         "Venue", foreign_keys=[venueId], backref="finance_incidents"
     )
 
@@ -1099,7 +1099,9 @@ class BookingFinanceIncident(PcObject, Base, Model):
         # We store in  `newTotalAmount` what should have been the booking amount.
         # `commercial_gesture_amount` is thus always a negative amount.
         if self.incident.kind == IncidentType.COMMERCIAL_GESTURE:
-            return utils.to_eurocents((self.booking or self.collectiveBooking).total_amount) - self.newTotalAmount
+            individual_or_collective_booking = self.booking or self.collectiveBooking
+            assert individual_or_collective_booking  # helps mypy, already ensured by database constraint
+            return utils.to_eurocents(individual_or_collective_booking.total_amount) - self.newTotalAmount
         return None
 
     @property

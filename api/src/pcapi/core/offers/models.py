@@ -581,7 +581,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
     withdrawalDetails = sa.Column(sa.Text, nullable=True)
     withdrawalType = sa.Column(sa.Enum(WithdrawalTypeEnum), nullable=True)
     offererAddressId: int = sa.Column(sa.BigInteger, sa.ForeignKey("offerer_address.id"), nullable=True)
-    offererAddress: sa_orm.Mapped["OffererAddress"] = sa_orm.relationship(
+    offererAddress: sa_orm.Mapped["OffererAddress | None"] = sa_orm.relationship(
         "OffererAddress", foreign_keys=[offererAddressId], uselist=False
     )
     futureOffer: sa_orm.Mapped["FutureOffer"] = sa_orm.relationship(

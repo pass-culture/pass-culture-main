@@ -1,4 +1,5 @@
 from pcapi.core.bookings.models import Booking
+from pcapi.core.offers import models as offers_models
 from pcapi.utils.date import format_time_in_second_to_human_readable
 
 
@@ -18,7 +19,7 @@ def get_offer_withdrawal_details(booking: Booking) -> str | None:
     return booking.stock.offer.withdrawalDetails or None
 
 
-def get_offer_withdrawal_type(booking: Booking) -> str:
+def get_offer_withdrawal_type(booking: Booking) -> offers_models.WithdrawalTypeEnum | None:
     return booking.stock.offer.withdrawalType
 
 

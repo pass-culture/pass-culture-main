@@ -169,6 +169,7 @@ def _get_accessibility_compliance_fields(venue: offerers_models.Venue) -> dict:
 
 
 def _get_external_accessibility_compliance(venue: offerers_models.Venue) -> dict:
+    assert venue.accessibilityProvider  # helps mypy, already checked in caller
     accessibility_data = acceslibre_serializers.ExternalAccessibilityDataModel.from_accessibility_infos(
         venue.accessibilityProvider.externalAccessibilityData
     )

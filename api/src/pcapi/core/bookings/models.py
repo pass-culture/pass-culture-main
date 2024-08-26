@@ -233,7 +233,9 @@ class Booking(PcObject, Base, Model):
 
         token = self.activationCode.code if self.activationCode else self.token
 
-        return url.replace("{token}", token).replace("{offerId}", humanize(offer.id)).replace("{email}", self.email)
+        humanized_offer_id = humanize(offer.id)
+        assert humanized_offer_id  # helps mypy
+        return url.replace("{token}", token).replace("{offerId}", humanized_offer_id).replace("{email}", self.email)
 
     @staticmethod
     def restize_internal_error(ie: sa_exc.InternalError) -> tuple[str, str]:

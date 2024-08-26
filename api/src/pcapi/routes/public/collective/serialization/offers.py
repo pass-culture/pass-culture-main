@@ -336,8 +336,8 @@ class GetPublicCollectiveOfferResponseModel(BaseModel):
             totalPrice=offer.collectiveStock.price,
             numberOfTickets=offer.collectiveStock.numberOfTickets,
             educationalPriceDetail=offer.collectiveStock.priceDetail,
-            educationalInstitution=offer.institution.institutionId if offer.institutionId else None,
-            educationalInstitutionId=offer.institution.id if offer.institutionId else None,
+            educationalInstitution=offer.institution.institutionId if offer.institution else None,
+            educationalInstitutionId=offer.institution.id if offer.institution else None,
             offerVenue={  # type: ignore[arg-type]
                 "venueId": offer.offerVenue.get("venueId"),
                 "addressType": offer.offerVenue["addressType"],

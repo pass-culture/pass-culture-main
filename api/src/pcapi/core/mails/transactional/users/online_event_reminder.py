@@ -19,10 +19,10 @@ logger = logging.getLogger(__name__)
 class OnlineEventReminderData:
     event_hour: datetime.datetime | None
     offer_name: str
-    offer_url: str
+    offer_url: str | None
     recipients: list[str]
     booking_id: int
-    withdrawal_details: str
+    withdrawal_details: str | None
 
     def __init__(self, booking: booking_models.Booking) -> None:
         event_hour_utc = booking.stock.beginningDatetime

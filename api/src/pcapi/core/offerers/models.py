@@ -233,9 +233,9 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
 
     departementCode = Column(String(3), nullable=True, index=True)
 
-    latitude = Column(Numeric(8, 5), nullable=True)
+    latitude: decimal.Decimal | None = Column(Numeric(8, 5), nullable=True)
 
-    longitude = Column(Numeric(8, 5), nullable=True)
+    longitude: decimal.Decimal | None = Column(Numeric(8, 5), nullable=True)
 
     venueProviders: list["providers_models.VenueProvider"] = relationship("VenueProvider", back_populates="venue")
 
@@ -406,7 +406,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
         "AdageVenueAddress", back_populates="venue"
     )
 
-    openingHours: Mapped[list["OpeningHours | None"]] = relationship(
+    openingHours: Mapped[list["OpeningHours"]] = relationship(
         "OpeningHours", back_populates="venue", passive_deletes=True
     )
 
@@ -754,14 +754,8 @@ class AccessibilityProvider(PcObject, Base, Model):
         BigInteger, ForeignKey("venue.id", ondelete="CASCADE"), index=True, nullable=False, unique=True
     )
     venue: sa_orm.Mapped[Venue] = relationship("Venue", foreign_keys=[venueId], back_populates="accessibilityProvider")
-    externalAccessibilityId: str | None = Column(
-        Text,
-        nullable=True,
-    )
-    externalAccessibilityUrl: str | None = Column(
-        Text,
-        nullable=True,
-    )
+    externalAccessibilityId: str = Column(Text, nullable=False)
+    externalAccessibilityUrl: str = Column(Text, nullable=False)
     externalAccessibilityData: AccessibilityInfo | None = sa.Column(MutableDict.as_mutable(JSONB), nullable=True)
     lastUpdateAtProvider: datetime = Column(DateTime, nullable=False, default=datetime.utcnow)
 

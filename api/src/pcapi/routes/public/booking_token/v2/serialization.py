@@ -84,7 +84,7 @@ def get_booking_response(booking: Booking) -> GetBookingResponse:
         price=booking.amount,
         priceCategoryLabel=booking.priceCategoryLabel,
         quantity=booking.quantity,
-        theater=extra_data.get("theater", ""),
+        theater=extra_data.get("theater", ""),  # type: ignore[arg-type]
         userName=booking.userName,
         firstName=booking.user.firstName,
         lastName=booking.user.lastName,
