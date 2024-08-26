@@ -15,7 +15,7 @@ import {
   DEFAULT_SEARCH_FILTERS,
 } from 'core/Offers/constants'
 import { SearchFiltersParams } from 'core/Offers/types'
-import { computeOffersUrl } from 'core/Offers/utils/computeOffersUrl'
+import { computeIndividualOffersUrl } from 'core/Offers/utils/computeIndividualOffersUrl'
 import { Audience } from 'core/shared/types'
 import {
   defaultGetOffererResponseModel,
@@ -59,7 +59,7 @@ const renderOffers = async (
   } = DEFAULT_SEARCH_FILTERS,
   features: string[] = []
 ) => {
-  const route = computeOffersUrl(filters)
+  const route = computeIndividualOffersUrl(filters)
 
   renderWithProviders(
     <Routes>

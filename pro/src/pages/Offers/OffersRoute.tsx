@@ -16,7 +16,7 @@ import {
 } from 'core/Offers/constants'
 import { useQuerySearchFilters } from 'core/Offers/hooks/useQuerySearchFilters'
 import { SearchFiltersParams } from 'core/Offers/types'
-import { computeOffersUrl } from 'core/Offers/utils/computeOffersUrl'
+import { computeIndividualOffersUrl } from 'core/Offers/utils/computeIndividualOffersUrl'
 import { hasSearchFilters } from 'core/Offers/utils/hasSearchFilters'
 import { serializeApiFilters } from 'core/Offers/utils/serializer'
 import { Audience } from 'core/shared/types'
@@ -71,7 +71,7 @@ export const OffersRoute = (): JSX.Element => {
   const redirectWithUrlFilters = (
     filters: SearchFiltersParams & { audience?: Audience }
   ) => {
-    navigate(computeOffersUrl(filters), { replace: true })
+    navigate(computeIndividualOffersUrl(filters), { replace: true })
   }
 
   const { data } = useSWR(

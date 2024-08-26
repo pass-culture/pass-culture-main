@@ -17,7 +17,7 @@ import {
 } from 'core/Offers/constants'
 import { useQueryCollectiveSearchFilters } from 'core/Offers/hooks/useQuerySearchFilters'
 import { CollectiveSearchFiltersParams } from 'core/Offers/types'
-import { computeCollectiveOffersUrl } from 'core/Offers/utils/computeOffersUrl'
+import { computeCollectiveOffersUrl } from 'core/Offers/utils/computeCollectiveOffersUrl'
 import { hasCollectiveSearchFilters } from 'core/Offers/utils/hasSearchFilters'
 import { serializeApiCollectiveFilters } from 'core/Offers/utils/serializer'
 import { useActiveFeature } from 'hooks/useActiveFeature'
