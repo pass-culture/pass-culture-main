@@ -36,6 +36,7 @@ class SubcategorySuggestionBackend(BaseBackend):
             "offer_description": offer_description if offer_description else "",
             "venue_type_label": venue.venueTypeCode.value if venue else "",
             "offerer_name": venue.managingOfferer.name if venue else "",
+            "is_virtual": venue.isVirtual if venue else "",
         }
         response = requests.post(url, headers=headers, json=data, timeout=SUBCATEGORY_SUGGESTION_TIMEOUT_SECONDS)
 
