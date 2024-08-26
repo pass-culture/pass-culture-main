@@ -194,6 +194,9 @@ class GetAvailableReactionTest:
             user=user, stock__offer=cine_offer_2, dateUsed=a_lot_more_than_24h_ago
         )
 
+        med_1 = offers_factories.MediationFactory(offer=cine_offer_1)
+        med_2 = offers_factories.MediationFactory(offer=cine_offer_2)
+
         client.with_token(user.email)
 
         with assert_num_queries(2):
@@ -204,12 +207,12 @@ class GetAvailableReactionTest:
         assert response.json == {
             "bookings": [
                 {
-                    "image": booking_yesterday.stock.offer.image,
+                    "image": med_1.thumbUrl,
                     "dateUsed": format_into_utc_date(booking_yesterday.dateUsed),
                     "name": booking_yesterday.stock.offer.name,
                 },
                 {
-                    "image": booking_longer_ago.stock.offer.image,
+                    "image": med_2.thumbUrl,
                     "dateUsed": format_into_utc_date(booking_longer_ago.dateUsed),
                     "name": booking_longer_ago.stock.offer.name,
                 },
@@ -242,7 +245,7 @@ class GetAvailableReactionTest:
             assert response.json == {
                 "bookings": [
                     {
-                        "image": booking.stock.offer.image,
+                        "image": None,
                         "dateUsed": format_into_utc_date(booking.dateUsed),
                         "name": booking.stock.offer.name,
                     }
