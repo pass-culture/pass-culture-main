@@ -5,9 +5,9 @@ When('I open the first offer in the list', () => {
   cy.findAllByTestId('offer-item-row')
     .first()
     .within(() => {
-      cy.get('[class^=_button-icon_]').eq(1).click()
+      cy.findByRole('link', { name: 'Modifier' }).click()
     })
-  cy.url().should('contain', '/recapitulatif/details')
+  cy.url().should('contain', '/recapitulatif')
 })
 
 When('I display Informations pratiques tab', () => {
