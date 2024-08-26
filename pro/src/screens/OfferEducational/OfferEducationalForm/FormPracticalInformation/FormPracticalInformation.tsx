@@ -200,7 +200,6 @@ export const FormPracticalInformation = ({
       {values.eventAddress.addressType === OfferAddressType.OTHER && (
         <FormLayout.Row>
           <TextArea
-            countCharacters
             label={EVENT_ADDRESS_OTHER_ADDRESS_LABEL}
             maxLength={200}
             name="eventAddress.otherAddress"

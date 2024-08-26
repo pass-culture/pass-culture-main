@@ -26,6 +26,6 @@ describe('TextArea', () => {
     expect(description).toHaveTextContent(descriptionContent)
 
     const input = screen.getByRole('textbox', { name: inputLabel })
-    expect(input.getAttribute('aria-describedby')).toBe(descriptionId)
+    expect(input.getAttribute('aria-describedby')).toContain(descriptionId)
   })
 })

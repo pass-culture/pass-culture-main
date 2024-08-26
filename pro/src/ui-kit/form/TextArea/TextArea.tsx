@@ -12,7 +12,6 @@ import styles from './TextArea.module.scss'
 type TextAreaProps = React.InputHTMLAttributes<HTMLTextAreaElement> &
   FieldLayoutBaseProps & {
     rows?: number
-    countCharacters?: boolean
     maxLength?: number
   }
 
@@ -24,7 +23,6 @@ export const TextArea = ({
   placeholder,
   label,
   maxLength = 1000,
-  countCharacters,
   isOptional,
   smallLabel,
   rows = 7,
@@ -49,10 +47,16 @@ export const TextArea = ({
     updateTextAreaHeight()
   }, [])
 
+  const describedBy = [`field-characters-count-description-${name}`]
+
+  if (description) {
+    describedBy.unshift(`description-${name}`)
+  }
+
   return (
     <FieldLayout
       className={className}
-      count={countCharacters ? field.value?.length : undefined}
+      count={field.value?.length}
       error={meta.error}
       isOptional={isOptional}
       label={label}
@@ -64,7 +68,7 @@ export const TextArea = ({
     >
       <textarea
         aria-invalid={meta.touched && !!meta.error}
-        {...(description ? { 'aria-describedby': `description-${name}` } : {})}
+        aria-describedby={describedBy.join(' ')}
         className={cn(styles['text-area'], {
           [styles['has-error']]: meta.touched && !!meta.error,
         })}

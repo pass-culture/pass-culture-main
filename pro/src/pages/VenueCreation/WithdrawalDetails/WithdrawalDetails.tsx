@@ -29,7 +29,6 @@ export const WithdrawalDetails = () => {
           label="Informations de retrait"
           maxLength={500}
           description="Par exemple : une autre adresse, un horaire d’accès, un délai de retrait, un guichet spécifique, un code d’accès, une communication par email..."
-          countCharacters
           isOptional
         />
       </FormLayout.Row>
