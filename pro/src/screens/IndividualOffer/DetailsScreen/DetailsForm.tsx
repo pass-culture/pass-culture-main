@@ -147,10 +147,13 @@ export const DetailsForm = ({
   const isSubCategorySelected =
     subcategoryId !== DEFAULT_DETAILS_FORM_VALUES.subcategoryId
 
+  const SHOW_VENUE_SELECTION_FIELD =
+    splitFormEnabled && (!offerAddressEnabled || venueOptions.length > 1)
+
   return (
     <>
       <FormLayout.Section title="À propos de votre offre">
-        {splitFormEnabled && venueOptions.length > 1 && (
+        {SHOW_VENUE_SELECTION_FIELD && (
           <FormLayout.Row>
             <Select
               label={offerAddressEnabled ? 'Qui propose l’offre ?' : 'Lieu'}
@@ -198,7 +201,7 @@ export const DetailsForm = ({
             disabled={readOnlyFields.includes('description')}
           />
         </FormLayout.Row>
-        {!splitFormEnabled && venueOptions.length > 1 && (
+        {!splitFormEnabled && (
           <FormLayout.Row>
             <Select
               label={offerAddressEnabled ? 'Qui propose l’offre ?' : 'Lieu'}
