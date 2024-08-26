@@ -1,0 +1,7 @@
+@use "styles/mixins/_fonts.scss" as fonts;
+
+.field-layout-character-count {
+  @include fonts.caption;
+
+  color: var(--color-grey-dark);
+}
