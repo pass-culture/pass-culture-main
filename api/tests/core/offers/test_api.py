@@ -40,6 +40,7 @@ from pcapi.core.offers.exceptions import ProductNotFound
 from pcapi.core.providers.allocine import get_allocine_products_provider
 import pcapi.core.providers.factories as providers_factories
 import pcapi.core.providers.repository as providers_repository
+import pcapi.core.reactions.factories as reactions_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
@@ -4236,3 +4237,32 @@ class CreateMovieProductFromProviderTest:
         # Then
         assert product.idAtProviders == "idAllocine"
         assert product.extraData == {"allocineId": 12345, "title": "Mon vieux film"}
+
+    def test_handles_coexisting_incomplete_movies(self):
+        # Given
+        boost_product = factories.ProductFactory(
+            idAtProviders="idBoost",
+            lastProviderId=self.boost_provider.id,
+            extraData={"visa": "54321", "title": "Mon vieux film Boost"},
+        )
+        boost_product_id = boost_product.id
+        allocine_product = factories.ProductFactory(
+            idAtProviders="idAllocineStocks",
+            lastProviderId=self.boost_provider.id,
+            extraData={"allocineId": 12345, "title": "Mon vieux film Allociné"},
+        )
+        offer = factories.OfferFactory(product=boost_product)
+        reaction = reactions_factories.ReactionFactory(product=boost_product)
+        factories.ProductMediationFactory(product=boost_product)
+        movie = self._get_movie(allocine_id="12345", visa="54321")
+
+        # When
+        api.upsert_movie_product_from_provider(movie, self.allocine_stocks_provider, "idAllocineProducts")
+
+        # Then
+        assert offer.product == allocine_product
+        assert reaction.product == allocine_product
+        assert models.ProductMediation.query.filter(models.ProductMediation.productId == boost_product_id).count() == 0
+        assert models.Product.query.filter(models.Product.id == boost_product_id).count() == 0
+        assert allocine_product.idAtProviders == "idAllocineProducts"
+        assert allocine_product.extraData == {"allocineId": 12345, "visa": "54321", "title": "Mon vieux film Allociné"}

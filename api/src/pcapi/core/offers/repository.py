@@ -19,6 +19,7 @@ from pcapi.core.educational.models import CollectiveOfferDisplayedStatus as Disp
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.providers import constants as providers_constants
 from pcapi.core.providers import models as providers_models
+from pcapi.core.reactions import models as reactions_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models import offer_mixin
@@ -1192,3 +1193,13 @@ def get_movie_product_by_allocine_id(allocine_id: str) -> models.Product | None:
 
 def get_movie_product_by_visa(visa: str) -> models.Product | None:
     return models.Product.query.filter(models.Product.extraData["visa"].astext == visa).one_or_none()
+
+
+def merge_products(to_keep: models.Product, to_delete: models.Product) -> models.Product:
+    models.Offer.query.filter(models.Offer.productId == to_delete.id).update({"productId": to_keep.id})
+    reactions_models.Reaction.query.filter(reactions_models.Reaction.productId == to_delete.id).update(
+        {"productId": to_keep.id}
+    )
+    db.session.delete(to_delete)
+
+    return to_keep
