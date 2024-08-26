@@ -15,6 +15,8 @@ jobs:
       TRIGGER_ONLY_ON_API_CHANGE: false
       TRIGGER_ONLY_ON_DEPENDENCY_CHANGE: false
       CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
+      api-changed: false
+      dependencies-changed: false
     secrets:
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
