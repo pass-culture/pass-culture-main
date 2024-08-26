@@ -207,6 +207,7 @@ class Returns200Test:
             "address": {
                 "label": venue.offererAddress.label or venue.common_name,
                 "id": venue.offererAddress.address.id,
+                "id_oa": venue.offererAddress.id,
                 "banId": venue.offererAddress.address.banId,
                 "inseeCode": venue.offererAddress.address.inseeCode,
                 "city": venue.offererAddress.address.city,
@@ -215,6 +216,7 @@ class Returns200Test:
                 "postalCode": venue.offererAddress.address.postalCode,
                 "street": venue.offererAddress.address.street,
                 "isEditable": venue.offererAddress.isEditable,
+                "isManualEdition": venue.offererAddress.address.isManualEdition,
             },
             "venue": {
                 "street": "1 boulevard Poissonnière",
@@ -327,6 +329,7 @@ class Returns200Test:
         assert response.json["address"] == {
             "label": offer_offerer_address.label,
             "id": offer_offerer_address.address.id,
+            "id_oa": offer_offerer_address.id,
             "banId": offer_offerer_address.address.banId,
             "inseeCode": offer_offerer_address.address.inseeCode,
             "city": offer_offerer_address.address.city,
@@ -335,6 +338,7 @@ class Returns200Test:
             "postalCode": offer_offerer_address.address.postalCode,
             "street": offer_offerer_address.address.street,
             "isEditable": offer_offerer_address.isEditable,
+            "isManualEdition": offer_offerer_address.address.isManualEdition,
         }
 
     def test_do_not_fail_if_no_address_at_all(self, client):
@@ -373,6 +377,7 @@ class Returns200Test:
         assert response.json["address"] == {
             "label": offerer_address.label,
             "id": offerer_address.address.id,
+            "id_oa": offerer_address.id,
             "banId": offerer_address.address.banId,
             "inseeCode": offerer_address.address.inseeCode,
             "city": offerer_address.address.city,
@@ -381,6 +386,7 @@ class Returns200Test:
             "postalCode": offerer_address.address.postalCode,
             "street": offerer_address.address.street,
             "isEditable": offerer_address.isEditable,
+            "isManualEdition": offerer_address.address.isManualEdition,
         }
 
     @time_machine.travel("2020-10-15 00:00:00")

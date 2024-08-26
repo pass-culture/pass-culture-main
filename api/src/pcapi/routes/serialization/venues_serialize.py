@@ -374,7 +374,8 @@ class VenueListItemResponseGetterDict(GetterDict):
             if not offerer_address:
                 return None
             data = {
-                "id": offerer_address.id,
+                "id": offerer_address.addressId,
+                "id_oa": offerer_address.id,
                 "banId": offerer_address.address.banId,
                 "inseeCode": offerer_address.address.inseeCode,
                 "longitude": offerer_address.address.longitude,
@@ -384,6 +385,7 @@ class VenueListItemResponseGetterDict(GetterDict):
                 "city": offerer_address.address.city,
                 "label": self._obj.common_name,
                 "isEditable": False,
+                "isManualEdition": offerer_address.address.isManualEdition,
             }
             return address_serialize.AddressResponseIsEditableModel(**data)
         return super().get(key, default)
