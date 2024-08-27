@@ -10,6 +10,7 @@ from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.providers import factories as providers_factories
 from pcapi.core.providers import models as providers_models
+from pcapi.core.testing import override_settings
 
 from tests.conftest import TestClient
 
@@ -128,6 +129,36 @@ class PublicAPIVenueEndpointHelper(PublicAPIEndpointBaseHelper):
         venue_provider = providers_factories.VenueProviderFactory(venue=venue, provider=provider)
 
         return plain_api_key, venue_provider
+
+
+class PublicAPIRestrictedEnvEndpointHelper(PublicAPIEndpointBaseHelper):
+    @override_settings(IS_PROD=True)
+    def test_should_not_be_usable_from_production_env(self, client):
+        plain_api_key, _ = self.setup_provider()
+        authenticated_client = client.with_explicit_token(plain_api_key)
+
+        url = self.endpoint_url
+
+        if self.default_path_params:
+            url = url.format(**self.default_path_params)
+
+        client_method = getattr(authenticated_client, self.endpoint_method)
+        response = client_method(url)
+
+        assert response.status_code == 403
+        assert "unauthorized action" in response.json["msg"]
+
+    def send_request(self, client, url_params=None, **kwargs):
+        client_func = getattr(client, self.endpoint_method)
+        url = self.endpoint_url
+
+        if self.default_path_params or url_params:
+            default = self.default_path_params if self.default_path_params else {}
+            extra = url_params if url_params else {}
+            params = {**default, **extra}
+            url = url.format(**params)
+
+        return client_func(url, **kwargs)
 
 
 class ProductEndpointHelper:
