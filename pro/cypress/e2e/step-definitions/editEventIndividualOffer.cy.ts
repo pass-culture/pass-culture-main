@@ -31,6 +31,8 @@ When('I update the url link', () => {
   )
   cy.findByText('Retour à la liste des offres').click()
   cy.url().should('contain', '/offres')
+  cy.findAllByTestId('spinner', { timeout: 30 * 1000 }).should('not.exist')
+  cy.contains('Offres individuelles')
 })
 
 Then('the url updated is retrieved in the details of the offer', function () {
