@@ -298,7 +298,7 @@ describe('route CollectiveOffers', () => {
         })
       })
 
-      it('should load offers with selected offer type', async () => {
+      it('should load offers with selected offer type if the WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE FF is not active', async () => {
         await renderOffers()
         const offerTypeSelect = screen.getByLabelText('Type de l’offre')
         await userEvent.selectOptions(offerTypeSelect, 'template')
@@ -554,5 +554,27 @@ describe('route CollectiveOffers', () => {
     await renderOffers(DEFAULT_COLLECTIVE_SEARCH_FILTERS)
 
     expect(screen.getByText('1 offre')).toBeInTheDocument()
+  })
+
+  it('should fetch only bookable offers when the WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE FF is active', async () => {
+    vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce(offersRecap)
+    await renderOffers({}, [
+      'WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE',
+    ])
+
+    await waitFor(() => {
+      expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        'offer',
+        undefined
+      )
+    })
   })
 })

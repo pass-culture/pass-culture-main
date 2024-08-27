@@ -494,4 +494,35 @@ describe('CollectiveOffersScreen', () => {
 
     expect(newFirstOfferEventDate).toEqual('30/06/2024')
   })
+
+  it('should not display the offer type filter if the WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE FF is active', () => {
+    renderOffers(
+      {
+        ...props,
+      },
+      { features: ['WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE'] }
+    )
+    expect(
+      screen.queryByRole('combobox', { name: 'Type de l’offre' })
+    ).not.toBeInTheDocument()
+  })
+
+  it('should not show the inactive status option if the WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE FF is active', async () => {
+    renderOffers(
+      {
+        ...props,
+      },
+      { features: ['WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE'] }
+    )
+
+    await userEvent.click(
+      screen.getByRole('combobox', {
+        name: 'Statut Nouveau',
+      })
+    )
+
+    expect(
+      screen.queryByRole('option', { name: 'Masquée sur ADAGE' })
+    ).not.toBeInTheDocument()
+  })
 })

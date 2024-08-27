@@ -3,9 +3,10 @@ import { useNavigate } from 'react-router-dom'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
-import { CollectiveOfferStatus } from 'apiClient/v1'
+import { CollectiveOfferStatus, CollectiveOfferType } from 'apiClient/v1'
 import { AppLayout } from 'app/AppLayout'
 import {
+  GET_COLLECTIVE_OFFERS_BOOKABLE_QUERY_KEY,
   GET_COLLECTIVE_OFFERS_QUERY_KEY,
   GET_OFFERER_QUERY_KEY,
   GET_VENUES_QUERY_KEY,
@@ -40,6 +41,10 @@ export const CollectiveOffers = (): JSX.Element => {
 
   const isDraftCollectiveOffersEnabled = useActiveFeature(
     'WIP_ENABLE_COLLECTIVE_DRAFT_OFFERS'
+  )
+
+  const isNewOffersAndBookingsActive = useActiveFeature(
+    'WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE'
   )
 
   const offererQuery = useSWR(
@@ -91,7 +96,12 @@ export const CollectiveOffers = (): JSX.Element => {
   }
 
   const offersQuery = useSWR(
-    [GET_COLLECTIVE_OFFERS_QUERY_KEY, apiFilters],
+    [
+      isNewOffersAndBookingsActive
+        ? GET_COLLECTIVE_OFFERS_BOOKABLE_QUERY_KEY
+        : GET_COLLECTIVE_OFFERS_QUERY_KEY,
+      apiFilters,
+    ],
     () => {
       const {
         nameOrIsbn,
@@ -115,7 +125,9 @@ export const CollectiveOffers = (): JSX.Element => {
         creationMode,
         periodBeginningDate,
         periodEndingDate,
-        collectiveOfferType,
+        isNewOffersAndBookingsActive
+          ? CollectiveOfferType.OFFER
+          : collectiveOfferType,
         format
       )
     },
