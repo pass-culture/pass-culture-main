@@ -5,7 +5,10 @@ import { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
 import { isErrorAPIError, serializeApiErrors } from 'apiClient/helpers'
-import { type GetIndividualOfferWithAddressResponseModel } from 'apiClient/v1'
+import {
+  GetIndividualOfferResponseModel,
+  type GetIndividualOfferWithAddressResponseModel,
+} from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { ConfirmDialog } from 'components/Dialog/ConfirmDialog/ConfirmDialog'
 import { FormLayout } from 'components/FormLayout/FormLayout'
