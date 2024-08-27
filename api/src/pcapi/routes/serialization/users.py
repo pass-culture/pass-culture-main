@@ -298,7 +298,7 @@ class GdprBookingSerializer(BaseModel):
 
 
 class GdprActionHistorySerializer(BaseModel):
-    actionDate: datetime
+    actionDate: datetime | None
     actionType: history_models.ActionType
 
     class Config:
