@@ -139,7 +139,7 @@
             <h3>Historique des blocages du compte « pass Culture »</h3>
             {% for action in container.internal.actionsHistory %}
                 <table class="borderless">
-                    <tr><td>Date</td><td>{{action.actionDate.strftime('%d/%m/%Y %H:%M:%S')}}</td></tr>
+                    {% if action.actionDate %}<tr><td>Date</td><td>{{action.actionDate.strftime('%d/%m/%Y %H:%M:%S')}}</td></tr>{% endif %}
                     <tr><td>Action</td><td>{{action.actionType.value}}</td></tr>
                 </table>
             {% endfor %}
