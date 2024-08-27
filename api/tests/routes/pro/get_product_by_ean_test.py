@@ -73,8 +73,8 @@ class Returns200Test:
             response = test_client.get(f"/get_product_by_ean/{product.extraData.get('ean')}")
 
             # Then
-            assert response.status_code == 200
-            assert response.json == {"global": ["Ce product n'est pas compatible avec les CGU"]}
+            assert response.status_code == 422
+            assert response.json == {"ean": ["EAN invalide. Ce produit n'est pas conforme à nos CGU."]}
 
 
 @pytest.mark.usefixtures("db_session")
@@ -92,3 +92,4 @@ class Returns404Test:
             response = test_client.get("/get_product_by_ean/UNKNOWN")
 
             assert response.status_code == 404
+            assert response.json == {"ean": ["EAN non reconnu. Assurez-vous qu'il n'y ait pas d'erreur de saisie."]}
