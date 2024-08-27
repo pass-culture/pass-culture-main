@@ -217,7 +217,16 @@ class AllocineMoviePoster(pydantic.BaseModel):
 
 
 class AllocineReleaseDate(pydantic.BaseModel):
-    date: datetime.date
+    date: datetime.date | None
+
+    @pydantic.field_validator("date", mode="before")
+    def make_date_none_if_not_iso(cls, date: str) -> str | None:
+        try:
+            datetime.date.fromisoformat(date)
+        except ValueError:
+            return None
+
+        return date
 
 
 class AllocineReleaseDataTech(pydantic.BaseModel):

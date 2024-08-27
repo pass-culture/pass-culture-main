@@ -1,3 +1,4 @@
+import copy
 import logging
 from unittest.mock import patch
 
@@ -101,6 +102,28 @@ class AllocineMovieListTest:
 
         # Then
         assert all(new_product.__dict__ == old_catalogue[idx].__dict__ for idx, new_product in enumerate(new_catalogue))
+
+    def test_handles_invalid_release_date(self, requests_mock):
+        def make_fixture_with_invalid_release_date(initial_fixture):
+            fixture = copy.deepcopy(initial_fixture)
+            fixture["movieList"]["pageInfo"]["hasNextPage"] = False
+            edge = fixture["movieList"]["edges"][0]
+            edge["node"]["releases"] = edge["node"]["releases"][:1]
+            edge["node"]["releases"][0]["releaseDate"]["date"] = "2024"
+            fixture["movieList"]["edges"] = [edge]
+            return fixture
+
+        # Given
+        fixture = make_fixture_with_invalid_release_date(fixtures.ALLOCINE_MOVIE_LIST_PAGE_1)
+        requests_mock.get(f"{ALLOCINE_API_URL}/movieList?after=", json=fixture)
+        assert Product.query.count() == 0
+
+        # When
+        synchronize_products()
+
+        # Then
+        product = Product.query.order_by(Product.id).first()
+        assert "releaseDate" not in product.extraData
 
 
 class GetMovieListFromAllocineTest:
