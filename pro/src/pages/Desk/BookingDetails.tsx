@@ -66,7 +66,7 @@ export const BookingDetails = ({ booking }: BookingDetailsProps) => {
         />
       )}
       {booking.ean13 && (
-        <BookingDetailsLine label="ISBN : " value={booking.ean13} />
+        <BookingDetailsLine label="EAN-13 : " value={booking.ean13} />
       )}
     </div>
   )
