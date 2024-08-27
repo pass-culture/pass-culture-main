@@ -16,7 +16,7 @@ import {
   ALL_VENUES_OPTION,
   DEFAULT_COLLECTIVE_SEARCH_FILTERS,
 } from 'core/Offers/constants'
-import { SearchFiltersParams } from 'core/Offers/types'
+import { CollectiveSearchFiltersParams } from 'core/Offers/types'
 import { computeCollectiveOffersUrl } from 'core/Offers/utils/computeCollectiveOffersUrl'
 import { collectiveOfferFactory } from 'utils/collectiveApiFactories'
 import { venueListItemFactory } from 'utils/individualApiFactories'
@@ -41,7 +41,7 @@ const proVenues = [
 ]
 
 const renderOffers = async (
-  filters: Partial<SearchFiltersParams> = DEFAULT_COLLECTIVE_SEARCH_FILTERS,
+  filters: Partial<CollectiveSearchFiltersParams> = DEFAULT_COLLECTIVE_SEARCH_FILTERS,
   features: string[] = []
 ) => {
   const route = computeCollectiveOffersUrl(filters)

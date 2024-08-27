@@ -5,9 +5,11 @@ import { Audience } from '../../shared/types'
 import { CollectiveSearchFiltersParams } from '../types'
 
 const COLLECTIVE_OFFERS_URL = '/offres/collectives'
+const TEMPLATE_COLLECTIVE_OFFERS_URL = '/offres/vitrines'
 
 export const computeCollectiveOffersUrl = (
-  offersSearchFilters: Partial<CollectiveSearchFiltersParams>
+  offersSearchFilters: Partial<CollectiveSearchFiltersParams>,
+  shouldComputeTemplateOfferUrl?: boolean
 ): string => {
   const emptyNewFilters: Partial<CollectiveSearchFiltersParams> = {}
   const newFilters: Partial<CollectiveSearchFiltersParams> = Object.entries({
@@ -36,7 +38,9 @@ export const computeCollectiveOffersUrl = (
     )
     .join('&')
 
-  return queryString
-    ? `${COLLECTIVE_OFFERS_URL}?${queryString}`
+  const url = shouldComputeTemplateOfferUrl
+    ? TEMPLATE_COLLECTIVE_OFFERS_URL
     : COLLECTIVE_OFFERS_URL
+
+  return queryString ? `${url}?${queryString}` : url
 }
