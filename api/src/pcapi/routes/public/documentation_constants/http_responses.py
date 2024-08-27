@@ -19,6 +19,10 @@ HTTP_204_COLLECTIVE_BOOKING_CANCELLATION_SUCCESS = {
     "HTTP_204": (None, "This collective booking has been successfully cancelled")
 }
 
+HTTP_204_COLLECTIVE_BOOKING_STATUS_UPDATE = {
+    "HTTP_204": (None, "This collective booking's status has been successfully updated")
+}
+
 # Client errors
 HTTP_400_BAD_REQUEST = {
     "HTTP_400": (None, "The request is invalid. The response body contains a list of errors."),
@@ -71,6 +75,10 @@ HTTP_403_COLLECTIVE_OFFER_INACTIVE_INSTITUTION = {
 }
 HTTP_403_COLLECTIVE_OFFER_INSUFFICIENT_RIGHTS = {
     "HTTP_403": (None, "You don't have enough rights to access or edit the collective offer"),
+}
+
+HTTP_403_COLLECTIVE_BOOKING_STATUS_UPDATE_REFUSED = {
+    "HTTP_403": (None, "Collective booking status updated has been refused"),
 }
 
 # Specific 410
