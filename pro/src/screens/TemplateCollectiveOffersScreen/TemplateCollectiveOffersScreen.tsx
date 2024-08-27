@@ -158,7 +158,7 @@ export const TemplateCollectiveOffersScreen = ({
 
   return (
     <div>
-      <Titles title="Offres collectives" />
+      <Titles title="Offres vitrines" />
       <TemplateOffersSearchFilters
         applyFilters={applyFilters}
         categories={categories}

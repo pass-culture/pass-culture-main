@@ -10,13 +10,9 @@ import { FormLayout } from 'components/FormLayout/FormLayout'
 import {
   ALL_FORMATS_OPTION,
   ALL_VENUES_OPTION,
-  COLLECTIVE_OFFER_TYPES_OPTIONS,
   DEFAULT_COLLECTIVE_SEARCH_FILTERS,
 } from 'core/Offers/constants'
-import {
-  CollectiveOfferTypeEnum,
-  CollectiveSearchFiltersParams,
-} from 'core/Offers/types'
+import { CollectiveSearchFiltersParams } from 'core/Offers/types'
 import { hasCollectiveSearchFilters } from 'core/Offers/utils/hasSearchFilters'
 import { SelectOption } from 'custom_types/form'
 import { useActiveFeature } from 'hooks/useActiveFeature'
@@ -62,13 +58,6 @@ const collectiveFilterStatus = [
     label: 'Masquée sur ADAGE',
     value: CollectiveOfferDisplayedStatus.INACTIVE,
   },
-  { label: 'Préréservée', value: CollectiveOfferDisplayedStatus.PREBOOKED },
-  {
-    label: 'Réservée',
-    value: CollectiveOfferDisplayedStatus.BOOKED,
-  },
-  { label: 'Expirée', value: CollectiveOfferDisplayedStatus.EXPIRED },
-  { label: 'Terminée', value: CollectiveOfferDisplayedStatus.ENDED },
   { label: 'Archivée', value: CollectiveOfferDisplayedStatus.ARCHIVED },
 ]
 
@@ -134,12 +123,6 @@ export const TemplateOffersSearchFilters = ({
   const storeSelectedFormat = (event: FormEvent<HTMLSelectElement>) => {
     updateSearchFilters({
       format: event.currentTarget.value as EacFormat | 'all',
-    })
-  }
-
-  const storeCollectiveOfferType = (event: FormEvent<HTMLSelectElement>) => {
-    updateSearchFilters({
-      collectiveOfferType: event.currentTarget.value as CollectiveOfferTypeEnum,
     })
   }
 
@@ -237,19 +220,6 @@ export const TemplateOffersSearchFilters = ({
             />
           </FieldLayout>
 
-          <FieldLayout
-            label="Type de l’offre"
-            name="collectiveOfferType"
-            isOptional
-          >
-            <SelectInput
-              onChange={storeCollectiveOfferType}
-              disabled={disableAllFilters}
-              name="collectiveOfferType"
-              options={COLLECTIVE_OFFER_TYPES_OPTIONS}
-              value={selectedFilters.collectiveOfferType}
-            />
-          </FieldLayout>
           <fieldset>
             <legend>Période de l’évènement</legend>
 

@@ -3,11 +3,11 @@ import { useNavigate } from 'react-router-dom'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
-import { CollectiveOfferStatus } from 'apiClient/v1'
+import { CollectiveOfferStatus, CollectiveOfferType } from 'apiClient/v1'
 import { AppLayout } from 'app/AppLayout'
 import {
-  GET_COLLECTIVE_OFFERS_QUERY_KEY,
   GET_OFFERER_QUERY_KEY,
+  GET_TEMPLATE_COLLECTIVE_OFFERS_QUERY_KEY,
   GET_VENUES_QUERY_KEY,
 } from 'config/swrQueryKeys'
 import {
@@ -91,7 +91,7 @@ export const TemplateCollectiveOffers = (): JSX.Element => {
   }
 
   const offersQuery = useSWR(
-    [GET_COLLECTIVE_OFFERS_QUERY_KEY, apiFilters],
+    [GET_TEMPLATE_COLLECTIVE_OFFERS_QUERY_KEY, apiFilters],
     () => {
       const {
         nameOrIsbn,
@@ -102,7 +102,6 @@ export const TemplateCollectiveOffers = (): JSX.Element => {
         creationMode,
         periodBeginningDate,
         periodEndingDate,
-        collectiveOfferType,
         format,
       } = serializeApiCollectiveFilters(apiFilters)
 
@@ -115,7 +114,7 @@ export const TemplateCollectiveOffers = (): JSX.Element => {
         creationMode,
         periodBeginningDate,
         periodEndingDate,
-        collectiveOfferType,
+        CollectiveOfferType.TEMPLATE,
         format
       )
     },

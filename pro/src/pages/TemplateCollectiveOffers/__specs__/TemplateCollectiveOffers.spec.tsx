@@ -8,8 +8,10 @@ import { userEvent } from '@testing-library/user-event'
 
 import { api } from 'apiClient/api'
 import {
+  CollectiveOfferDisplayedStatus,
   CollectiveOfferResponseModel,
   CollectiveOfferStatus,
+  CollectiveOfferType,
   CollectiveOffersStockResponseModel,
 } from 'apiClient/v1'
 import {
@@ -84,7 +86,7 @@ describe('route TemplateCollectiveOffers', () => {
           })
         )
         const list = screen.getByTestId('list')
-        await userEvent.click(within(list).getByText('Expirée'))
+        await userEvent.click(within(list).getByText('Refusée'))
 
         await userEvent.click(
           screen.getByRole('button', { name: 'Rechercher' })
@@ -94,13 +96,13 @@ describe('route TemplateCollectiveOffers', () => {
           expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
             undefined,
             undefined,
-            'EXPIRED',
+            CollectiveOfferDisplayedStatus.REJECTED,
             undefined,
             undefined,
             undefined,
             undefined,
             undefined,
-            undefined,
+            CollectiveOfferType.TEMPLATE,
             undefined
           )
         })
@@ -116,9 +118,8 @@ describe('route TemplateCollectiveOffers', () => {
           })
         )
         const list = screen.getByTestId('list')
-        await userEvent.click(within(list).getByText('Expirée'))
-        await userEvent.click(within(list).getByText('Préréservée'))
-        await userEvent.click(within(list).getByText('Réservée'))
+        await userEvent.click(within(list).getByText('Refusée'))
+        await userEvent.click(within(list).getByText('Archivée'))
 
         await userEvent.click(
           screen.getByRole('button', { name: 'Rechercher' })
@@ -128,13 +129,16 @@ describe('route TemplateCollectiveOffers', () => {
           expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
             undefined,
             undefined,
-            ['EXPIRED', 'PREBOOKED', 'BOOKED'],
+            [
+              CollectiveOfferDisplayedStatus.REJECTED,
+              CollectiveOfferDisplayedStatus.ARCHIVED,
+            ],
             undefined,
             undefined,
             undefined,
             undefined,
             undefined,
-            undefined,
+            CollectiveOfferType.TEMPLATE,
             undefined
           )
         })
@@ -152,7 +156,7 @@ describe('route TemplateCollectiveOffers', () => {
           })
         )
         const list = screen.getByTestId('list')
-        await userEvent.click(within(list).getByText('Expirée'))
+        await userEvent.click(within(list).getByText('Masquée sur ADAGE'))
 
         await userEvent.click(
           screen.getByRole('button', { name: 'Rechercher' })
@@ -194,31 +198,7 @@ describe('route TemplateCollectiveOffers', () => {
             undefined,
             undefined,
             undefined,
-            undefined,
-            undefined
-          )
-        })
-      })
-
-      it('should store search value', async () => {
-        await renderOffers()
-        const searchInput = screen.getByPlaceholderText(
-          'Rechercher par nom d’offre'
-        )
-
-        await userEvent.type(searchInput, 'search string')
-        await userEvent.click(screen.getByText('Rechercher'))
-        await waitFor(() => {
-          expect(api.getCollectiveOffers).toHaveBeenCalledWith(
-            'search string',
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
+            CollectiveOfferType.TEMPLATE,
             undefined
           )
         })
@@ -243,7 +223,7 @@ describe('route TemplateCollectiveOffers', () => {
             undefined,
             undefined,
             undefined,
-            undefined,
+            CollectiveOfferType.TEMPLATE,
             undefined
           )
         })
@@ -268,7 +248,7 @@ describe('route TemplateCollectiveOffers', () => {
             undefined,
             '2020-12-25',
             undefined,
-            undefined,
+            CollectiveOfferType.TEMPLATE,
             undefined
           )
         })
@@ -292,29 +272,7 @@ describe('route TemplateCollectiveOffers', () => {
             undefined,
             undefined,
             '2020-12-27',
-            undefined,
-            undefined
-          )
-        })
-      })
-
-      it('should load offers with selected offer type', async () => {
-        await renderOffers()
-        const offerTypeSelect = screen.getByLabelText('Type de l’offre')
-        await userEvent.selectOptions(offerTypeSelect, 'template')
-
-        await userEvent.click(screen.getByText('Rechercher'))
-        await waitFor(() => {
-          expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            'template',
+            CollectiveOfferType.TEMPLATE,
             undefined
           )
         })
@@ -419,7 +377,7 @@ describe('route TemplateCollectiveOffers', () => {
         undefined,
         undefined,
         undefined,
-        undefined,
+        CollectiveOfferType.TEMPLATE,
         undefined
       )
 
@@ -437,7 +395,7 @@ describe('route TemplateCollectiveOffers', () => {
         undefined,
         undefined,
         undefined,
-        undefined,
+        CollectiveOfferType.TEMPLATE,
         undefined
       )
 
@@ -457,7 +415,7 @@ describe('route TemplateCollectiveOffers', () => {
         undefined,
         undefined,
         undefined,
-        undefined,
+        CollectiveOfferType.TEMPLATE,
         undefined
       )
     })
@@ -492,7 +450,7 @@ describe('route TemplateCollectiveOffers', () => {
         undefined,
         undefined,
         undefined,
-        undefined,
+        CollectiveOfferType.TEMPLATE,
         undefined
       )
 
@@ -510,7 +468,7 @@ describe('route TemplateCollectiveOffers', () => {
         undefined,
         undefined,
         undefined,
-        undefined,
+        CollectiveOfferType.TEMPLATE,
         undefined
       )
 
@@ -528,7 +486,7 @@ describe('route TemplateCollectiveOffers', () => {
         undefined,
         undefined,
         undefined,
-        undefined,
+        CollectiveOfferType.TEMPLATE,
         undefined
       )
     })
