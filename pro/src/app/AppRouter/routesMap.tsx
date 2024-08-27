@@ -128,6 +128,12 @@ export const routes: RouteConfig[] = [
   },
   {
     lazy: () =>
+      import('pages/TemplateCollectiveOffers/TemplateCollectiveOffers'),
+    path: '/offres/vitrines',
+    title: 'Offres vitrines',
+  },
+  {
+    lazy: () =>
       import(
         'screens/CollectiveOfferSelectionDuplication/CollectiveOfferSelectionDuplicationScreen'
       ),
