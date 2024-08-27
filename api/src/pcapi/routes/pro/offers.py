@@ -711,15 +711,15 @@ def get_product_by_ean(ean: str) -> offers_serialize.GetProductInformations:
     if product is None:
         raise api_errors.ApiErrors(
             errors={
-                "global": ["Aucun produit ne correspond à ce code EAN dans notre base de données"],
+                "ean": ["EAN non reconnu. Assurez-vous qu'il n'y ait pas d'erreur de saisie."],
             },
             status_code=404,
         )
     if not product.isGcuCompatible:
         raise api_errors.ApiErrors(
             errors={
-                "global": ["Ce product n'est pas compatible avec les CGU"],
+                "ean": ["EAN invalide. Ce produit n'est pas conforme à nos CGU."],
             },
-            status_code=200,
+            status_code=422,
         )
     return offers_serialize.GetProductInformations.from_orm(product=product)
