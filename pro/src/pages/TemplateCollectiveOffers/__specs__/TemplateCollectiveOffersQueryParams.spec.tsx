@@ -12,7 +12,7 @@ import {
   CollectiveOffersStockResponseModel,
 } from 'apiClient/v1'
 import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from 'core/Offers/constants'
-import { SearchFiltersParams } from 'core/Offers/types'
+import { CollectiveSearchFiltersParams } from 'core/Offers/types'
 import { computeCollectiveOffersUrl } from 'core/Offers/utils/computeCollectiveOffersUrl'
 import { collectiveOfferFactory } from 'utils/collectiveApiFactories'
 import {
@@ -24,31 +24,24 @@ import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import { TemplateCollectiveOffers } from '../TemplateCollectiveOffers'
 
-//FIX ME : extract inital values and constant to reduce code duplication with CollectiveOffers.spec.tsx
-
 vi.mock('react-router-dom', async () => ({
   ...(await vi.importActual('react-router-dom')),
   useNavigate: vi.fn(),
 }))
 
 const renderOffers = async (
-  filters: Partial<SearchFiltersParams> = DEFAULT_COLLECTIVE_SEARCH_FILTERS
+  filters: Partial<CollectiveSearchFiltersParams> = DEFAULT_COLLECTIVE_SEARCH_FILTERS
 ) => {
-  const route = computeCollectiveOffersUrl(filters)
+  const shouldComputeTemplateOfferUrl = true
+  const route = computeCollectiveOffersUrl(
+    filters,
+    shouldComputeTemplateOfferUrl
+  )
   renderWithProviders(
     <router.Routes>
       <router.Route
-        path="/offres/collectives/vitrines"
+        path="/offres/vitrines"
         element={<TemplateCollectiveOffers />}
-      />
-
-      <router.Route
-        path="/offres"
-        element={
-          <>
-            <h1>Offres individuelles</h1>
-          </>
-        }
       />
     </router.Routes>,
     {
@@ -79,7 +72,7 @@ vi.mock('repository/venuesService', async () => ({
   ...(await vi.importActual('repository/venuesService')),
 }))
 
-describe('route CollectiveOffers', () => {
+describe('route TemplateCollectiveOffers', () => {
   let offersRecap: CollectiveOfferResponseModel[]
   const stocks: Array<CollectiveOffersStockResponseModel> = [
     {
@@ -91,7 +84,7 @@ describe('route CollectiveOffers', () => {
   const mockNavigate = vi.fn()
 
   beforeEach(() => {
-    offersRecap = [collectiveOfferFactory({ stocks })]
+    offersRecap = [collectiveOfferFactory({ stocks, isShowcase: true })]
     vi.spyOn(api, 'getCollectiveOffers').mockResolvedValue(offersRecap)
     vi.spyOn(router, 'useNavigate').mockReturnValue(mockNavigate)
     vi.spyOn(api, 'listOfferersNames').mockResolvedValue({ offerersNames: [] })
@@ -109,7 +102,7 @@ describe('route CollectiveOffers', () => {
 
       await userEvent.click(nextPageIcon)
 
-      expect(mockNavigate).toHaveBeenCalledWith('/offres/collectives?page=2', {
+      expect(mockNavigate).toHaveBeenCalledWith('/offres/vitrines?page=2', {
         replace: true,
       })
     })
@@ -124,7 +117,7 @@ describe('route CollectiveOffers', () => {
       await userEvent.click(screen.getByText('Rechercher'))
 
       expect(mockNavigate).toHaveBeenCalledWith(
-        '/offres/collectives?nom-ou-isbn=AnyWord',
+        '/offres/vitrines?nom-ou-isbn=AnyWord',
         {
           replace: true,
         }
@@ -139,7 +132,7 @@ describe('route CollectiveOffers', () => {
       )
       await userEvent.click(screen.getByText('Rechercher'))
 
-      expect(mockNavigate).toHaveBeenCalledWith('/offres/collectives', {
+      expect(mockNavigate).toHaveBeenCalledWith('/offres/vitrines', {
         replace: true,
       })
     })
@@ -155,7 +148,7 @@ describe('route CollectiveOffers', () => {
       await userEvent.click(screen.getByText('Rechercher'))
 
       expect(mockNavigate).toHaveBeenCalledWith(
-        `/offres/collectives?lieu=${proVenues[0].id}`,
+        `/offres/vitrines?lieu=${proVenues[0].id}`,
         {
           replace: true,
         }
@@ -177,7 +170,7 @@ describe('route CollectiveOffers', () => {
       await userEvent.click(screen.getByText('Rechercher'))
 
       expect(mockNavigate).toHaveBeenCalledWith(
-        '/offres/collectives?format=Concert',
+        '/offres/vitrines?format=Concert',
         {
           replace: true,
         }
@@ -194,12 +187,12 @@ describe('route CollectiveOffers', () => {
         })
       )
       const list = screen.getByTestId('list')
-      await userEvent.click(within(list).getByText('Réservée'))
+      await userEvent.click(within(list).getByText('Publiée sur ADAGE'))
 
       await userEvent.click(screen.getByRole('button', { name: 'Rechercher' }))
 
       expect(mockNavigate).toHaveBeenCalledWith(
-        '/offres/collectives?statut=reservee',
+        '/offres/vitrines?statut=active',
         {
           replace: true,
         }
@@ -216,14 +209,13 @@ describe('route CollectiveOffers', () => {
         })
       )
       const list = screen.getByTestId('list')
-      await userEvent.click(within(list).getByText('Réservée'))
       await userEvent.click(within(list).getByText('Validation en attente'))
       await userEvent.click(within(list).getByText('Archivée'))
 
       await userEvent.click(screen.getByRole('button', { name: 'Rechercher' }))
 
       expect(mockNavigate).toHaveBeenCalledWith(
-        '/offres/collectives?statut=reservee&statut=en-attente&statut=archivee',
+        '/offres/vitrines?statut=en-attente&statut=archivee',
         {
           replace: true,
         }
@@ -253,7 +245,7 @@ describe('route CollectiveOffers', () => {
 
       await userEvent.click(screen.getByTestId('remove-offerer-filter'))
 
-      expect(mockNavigate).toHaveBeenCalledWith('/offres/collectives', {
+      expect(mockNavigate).toHaveBeenCalledWith('/offres/vitrines', {
         replace: true,
       })
     })
