@@ -48,6 +48,8 @@ pillow = ">=8.1.1"
 prometheus-flask-exporter = "^0.23.1"
 psycopg2 = "^2.9.9"
 py7zr = "^0.22.0"
+# required by schwifty, upgraded manually because of setuptools
+pycountry = "24.6.1"
 pydantic = { version = "==2.*", extras = ["email"] }
 pyjwt = { version = "2.9.0", extras = ["crypto"] }
 pypdf = "^4.3.1"
