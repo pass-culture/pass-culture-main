@@ -1,6 +1,7 @@
 import { Form, FormikProvider, useFormik } from 'formik'
 import React, { useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
+import * as Yup from 'yup' // Importer Yup
 
 import { api } from 'apiClient/api'
 import { ProUserCreationBodyV2Model } from 'apiClient/v1'
@@ -20,6 +21,20 @@ import styles from './SignupContainer.module.scss'
 import { SignupForm } from './SignupForm'
 import { validationSchema } from './validationSchema'
 
+const ErrorResponseSchema = Yup.object().shape({
+  body: Yup.object()
+    .shape({
+      contactOk: Yup.boolean(),
+      email: Yup.string(),
+      firstName: Yup.string(),
+      lastName: Yup.string(),
+      password: Yup.string(),
+      phoneNumber: Yup.string(),
+      token: Yup.string(),
+    })
+    .nullable(),
+})
+
 export const SignupContainer = (): JSX.Element => {
   const navigate = useNavigate()
   const notification = useNotification()
@@ -37,9 +52,14 @@ export const SignupContainer = (): JSX.Element => {
       if (response === RECAPTCHA_ERROR) {
         notification.error(RECAPTCHA_ERROR_MESSAGE)
       } else {
-        // TODO type this
-        // @ts-expect-error
-        onHandleFail(response.body ? response.body : {})
+        if (ErrorResponseSchema.isValidSync(response)) {
+          const errorResponse = response as Yup.InferType<
+            typeof ErrorResponseSchema
+          >
+          onHandleFail(errorResponse.body ? errorResponse.body : {})
+        } else {
+          notification.error("Une erreur inattendue s'est produite.")
+        }
       }
     }
   }

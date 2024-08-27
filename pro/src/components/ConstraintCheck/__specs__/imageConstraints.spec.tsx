@@ -1,12 +1,6 @@
 import { createImageFile } from 'utils/testFileHelpers'
 
 import { getValidatorErrors, imageConstraints } from '../imageConstraints'
-const mockCreateImageBitmap = vi.fn()
-
-Object.defineProperty(global, 'createImageBitmap', {
-  writable: true,
-  value: mockCreateImageBitmap,
-})
 
 describe('image constraints', () => {
   describe('formats', () => {
@@ -31,6 +25,16 @@ describe('image constraints', () => {
     })
 
     describe('checks file binary', () => {
+      const originalCreateImageBitmap = global.createImageBitmap
+
+      beforeEach(() => {
+        global.createImageBitmap = vi.fn()
+      })
+
+      afterEach(() => {
+        global.createImageBitmap = originalCreateImageBitmap
+      })
+
       it('accepts bitmap image', async () => {
         const file = createImageFile()
         const constraint = imageConstraints.formats(['image/png'])
@@ -40,14 +44,13 @@ describe('image constraints', () => {
         expect(isValid).toBe(true)
       })
 
-      it('refuse non bitmap file', async () => {
-        // TODO: replace Object.defineProperty with something that doesn't impact other tests/suites
+      it('refuses non bitmap file', async () => {
         const file = createImageFile()
         const constraint = imageConstraints.formats(['image/png'])
-        Object.defineProperty(global, 'createImageBitmap', {
-          writable: true,
-          value: vi.fn().mockRejectedValueOnce(null),
-        })
+        const createImageBitmap = global.createImageBitmap as ReturnType<
+          typeof vi.fn
+        >
+        createImageBitmap.mockRejectedValueOnce(null)
 
         const isValid = await constraint.asyncValidator(file)
 
@@ -57,7 +60,7 @@ describe('image constraints', () => {
   })
 
   describe('size', () => {
-    it("accepts image when it's lighter that maximum", async () => {
+    it("accepts image when it's lighter than maximum", async () => {
       const file = createImageFile({ sizeInMB: 1 })
       const constraint = imageConstraints.size(1024 ** 2)
 
@@ -107,7 +110,7 @@ describe('image constraints', () => {
 })
 
 describe('width', () => {
-  it("accepts image when it's larger that minimum", async () => {
+  it("accepts image when it's larger than minimum", async () => {
     const file = createImageFile({ width: 300 })
     const constraint = imageConstraints.width(300)
 
