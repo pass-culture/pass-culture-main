@@ -34,6 +34,8 @@ def add_default_image_to_venue(image_venue_counter: int, offerer: Offerer, venue
 def create_data_venues(offerers_by_name: dict) -> dict[str, Venue]:
     logger.info("create_data_venues")
 
+    starting_ds_application_id = 500
+
     venue_by_name = {}
     mock_index = 0
 
@@ -82,7 +84,9 @@ def create_data_venues(offerers_by_name: dict) -> dict[str, Venue]:
             venueTypeCode=offerers_models.VenueTypeCode.MUSEUM,
             pricing_point="self" if siret else None,
         )
-        bank_account = finance_factories.BankAccountFactory(offerer=venue.managingOfferer)
+        bank_account = finance_factories.BankAccountFactory(
+            offerer=venue.managingOfferer, dsApplicationId=starting_ds_application_id + offerer_index
+        )
         offerers_factories.VenueBankAccountLinkFactory(bankAccount=bank_account, venue=venue)
 
         if image_venue_counter < DEFAULT_VENUE_IMAGES:
