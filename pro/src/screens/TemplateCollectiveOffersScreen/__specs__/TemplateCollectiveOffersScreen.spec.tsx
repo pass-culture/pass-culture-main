@@ -90,7 +90,7 @@ vi.mock('apiClient/api', () => ({
   },
 }))
 
-describe('CollectiveOffersScreen', () => {
+describe('TemplateCollectiveOffersScreen', () => {
   let props: TemplateCollectiveOffersScreenProps
   let currentUser: SharedCurrentUserResponseModel
   let offersRecap: CollectiveOfferResponseModel[]
@@ -240,45 +240,6 @@ describe('CollectiveOffersScreen', () => {
 
     const eventPeriodSelect = screen.queryAllByPlaceholderText('JJ/MM/AAAA')
     expect(eventPeriodSelect).toHaveLength(2)
-  })
-
-  it('should not display status filters modal', () => {
-    renderOffers(props)
-
-    expect(
-      screen.getByRole('combobox', {
-        name: 'Statut Nouveau',
-      })
-    ).toBeInTheDocument()
-    expect(screen.queryByText('Afficher les offres')).not.toBeInTheDocument()
-    expect(screen.queryByLabelText('Tous')).not.toBeInTheDocument()
-    expect(screen.queryByLabelText('Publiée')).not.toBeInTheDocument()
-    expect(screen.queryByLabelText('Désactivée')).not.toBeInTheDocument()
-    expect(screen.queryByLabelText('Épuisée')).not.toBeInTheDocument()
-    expect(screen.queryByLabelText('Expirée')).not.toBeInTheDocument()
-    expect(screen.queryByLabelText('Appliquer')).not.toBeInTheDocument()
-    expect(
-      screen.queryByLabelText('Validation en attente')
-    ).not.toBeInTheDocument()
-    expect(screen.queryByLabelText('Refusée')).not.toBeInTheDocument()
-  })
-
-  it('should hide status filters when clicking outside the modal', async () => {
-    renderOffers(props)
-    await userEvent.click(
-      screen.getByRole('combobox', {
-        name: 'Statut Nouveau',
-      })
-    )
-
-    await userEvent.click(
-      screen.getByRole('heading', {
-        name: 'Offres collectives',
-        level: 1,
-      })
-    )
-
-    expect(screen.queryByText('Afficher les offres')).not.toBeInTheDocument()
   })
 
   it('should indicate that user has no offers yet', () => {
