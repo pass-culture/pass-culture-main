@@ -47,6 +47,9 @@ const COLLECTIVE_LINKS = ['/offres/collectives']
 
 export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
   const isOffererStatsActive = useActiveFeature('ENABLE_OFFERER_STATS')
+  const isNewCollectiveOffersStructureEnabled = useActiveFeature(
+    'WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE'
+  )
   const isNewInterfaceActive = useIsNewInterfaceActive()
   const currentUser = useSelector(selectCurrentUser)
 
@@ -228,6 +231,20 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
           </button>
           {isCollectiveSectionOpen && (
             <>
+              {isNewCollectiveOffersStructureEnabled && (
+                <NavLink
+                  to="/offres/vitrines"
+                  className={({ isActive }) =>
+                    classnames(styles['nav-links-item'], {
+                      [styles['nav-links-item-active']]: isActive,
+                    })
+                  }
+                >
+                  <span className={styles['nav-links-item-without-icon']}>
+                    Offres vitrines
+                  </span>
+                </NavLink>
+              )}
               <NavLink
                 to="/offres/collectives"
                 className={({ isActive }) =>
