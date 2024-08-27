@@ -60,7 +60,7 @@ export const TemplateCollectiveOffers = (): JSX.Element => {
   const venues = formatAndOrderVenues(data.venues)
 
   const redirectWithUrlFilters = (filters: CollectiveSearchFiltersParams) => {
-    navigate(computeCollectiveOffersUrl(filters), { replace: true })
+    navigate(computeCollectiveOffersUrl(filters, true), { replace: true })
   }
 
   const isFilterByVenueOrOfferer = hasCollectiveSearchFilters(
