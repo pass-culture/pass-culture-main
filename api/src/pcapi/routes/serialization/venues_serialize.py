@@ -197,6 +197,38 @@ class LegalStatusResponseModel(BaseModel):
         orm_mode = True
 
 
+class GetVenueResponseGetterDict(base.VenueResponseGetterDict):
+    def get(self, key: str, default: typing.Any | None = None) -> typing.Any:
+        venue: offerers_models.Venue = self._obj
+        if key == "bankAccount":
+            if venue.current_bank_account_link:
+                return venue.current_bank_account_link.bankAccount
+            return None
+        if key == "collectiveLegalStatus":
+            return venue.venueEducationalStatus
+        if key == "dmsToken":
+            return DMS_TOKEN_PRO_PREFIX + venue.dmsToken
+        if key == "hasAdageId":
+            return bool(venue.adageId)
+        if key == "pricingPoint":
+            now = datetime.utcnow()
+            for pricing_link in venue.pricing_point_links:
+                if pricing_link.timespan.lower <= now and (
+                    not pricing_link.timespan.upper or pricing_link.timespan.upper > now
+                ):
+                    return pricing_link.pricingPoint
+            return None
+        if key == "reimbursementPointId":
+            now = datetime.utcnow()
+            for reimbursement_link in venue.reimbursement_point_links:
+                if reimbursement_link.timespan.lower <= now and (
+                    not reimbursement_link.timespan.upper or reimbursement_link.timespan.upper > now
+                ):
+                    return reimbursement_link.reimbursementPointId
+            return None
+        return super().get(key, default)
+
+
 class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin):
     dateCreated: datetime
     id: int
@@ -235,6 +267,7 @@ class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin
     class Config:
         orm_mode = True
         json_encoders = {datetime: format_into_utc_date}
+        getter_dict = GetVenueResponseGetterDict
 
     @validator("bannerMeta")
     @classmethod
@@ -251,31 +284,6 @@ class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin
             return BannerMetaModel()
 
         return meta
-
-    @classmethod
-    def from_orm(cls, venue: offerers_models.Venue) -> "GetVenueResponseModel":
-        # pydantic expects an enum key in order to build it, and therefore
-        # does not work when passing directly an enum instance.
-        now = datetime.utcnow()
-        venue.pricingPoint = None
-        for pricing_link in venue.pricing_point_links:
-            if pricing_link.timespan.lower > now:
-                continue
-            if not pricing_link.timespan.upper or pricing_link.timespan.upper > now:
-                venue.pricingPoint = pricing_link.pricingPoint
-
-        venue.reimbursementPointId = None
-        for reimbursement_link in venue.reimbursement_point_links:
-            if reimbursement_link.timespan.lower > now:
-                continue
-            if not reimbursement_link.timespan.upper or reimbursement_link.timespan.upper > now:
-                venue.reimbursementPointId = reimbursement_link.reimbursementPointId
-        venue.bankAccount = venue.current_bank_account_link.bankAccount if venue.current_bank_account_link else None
-        venue.collectiveLegalStatus = venue.venueEducationalStatus
-        venue.dmsToken = DMS_TOKEN_PRO_PREFIX + venue.dmsToken
-        venue.hasAdageId = bool(venue.adageId)
-
-        return super().from_orm(venue)
 
 
 class GetCollectiveVenueResponseModel(BaseModel):
