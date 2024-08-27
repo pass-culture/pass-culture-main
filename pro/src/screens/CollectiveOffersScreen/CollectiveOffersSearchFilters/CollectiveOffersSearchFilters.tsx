@@ -89,6 +89,9 @@ export const CollectiveOffersSearchFilters = ({
   isRestrictedAsAdmin = false,
 }: CollectiveOffersSearchFiltersProps): JSX.Element => {
   const isNewInterfaceActive = useIsNewInterfaceActive()
+  const isNewOffersAndBookingsActive = useActiveFeature(
+    'WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE'
+  )
   const formats: SelectOption[] = Object.values(EacFormat).map((format) => ({
     value: format,
     label: format,
@@ -182,6 +185,12 @@ export const CollectiveOffersSearchFilters = ({
       })
     : collectiveFilterStatus
 
+  const filteredStatusOptions = statusOptions.filter(
+    (status) =>
+      !isNewOffersAndBookingsActive ||
+      status.value !== CollectiveOfferDisplayedStatus.INACTIVE
+  )
+
   return (
     <>
       {!isNewInterfaceActive && offerer && (
@@ -237,19 +246,21 @@ export const CollectiveOffersSearchFilters = ({
             />
           </FieldLayout>
 
-          <FieldLayout
-            label="Type de l’offre"
-            name="collectiveOfferType"
-            isOptional
-          >
-            <SelectInput
-              onChange={storeCollectiveOfferType}
-              disabled={disableAllFilters}
+          {!isNewOffersAndBookingsActive && (
+            <FieldLayout
+              label="Type de l’offre"
               name="collectiveOfferType"
-              options={COLLECTIVE_OFFER_TYPES_OPTIONS}
-              value={selectedFilters.collectiveOfferType}
-            />
-          </FieldLayout>
+              isOptional
+            >
+              <SelectInput
+                onChange={storeCollectiveOfferType}
+                disabled={disableAllFilters}
+                name="collectiveOfferType"
+                options={COLLECTIVE_OFFER_TYPES_OPTIONS}
+                value={selectedFilters.collectiveOfferType}
+              />
+            </FieldLayout>
+          )}
           <fieldset>
             <legend>Période de l’évènement</legend>
 
@@ -272,7 +283,7 @@ export const CollectiveOffersSearchFilters = ({
                 Statut<Tag variant={TagVariant.BLUE}>Nouveau</Tag>
               </span>
             }
-            options={statusOptions}
+            options={filteredStatusOptions}
             placeholder="Statuts"
             isOptional
             className={styles['status-filter']}
