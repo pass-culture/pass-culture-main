@@ -131,7 +131,12 @@ def build_movie_id_at_providers(provider_id: int, allocine_id: int) -> str:
 
 def get_most_recent_release_date(releases: list[allocine_serializers.AllocineMovieRelease]) -> str | None:
     sorted_releases = sorted(
-        [release.releaseDate.date.isoformat() for release in releases if release.releaseDate], reverse=True
+        [
+            release.releaseDate.date.isoformat()
+            for release in releases
+            if release.releaseDate and release.releaseDate.date
+        ],
+        reverse=True,
     )
     return sorted_releases[0] if sorted_releases else None
 
