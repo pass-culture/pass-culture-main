@@ -37,6 +37,9 @@ COLLECTIVE_OFFERS = Tag(
 COLLECTIVE_BOOKINGS = Tag(name="Collective bookings")
 COLLECTIVE_OFFER_ATTRIBUTES = Tag(name="Collective offer attributes")
 
+# COLLECTIVE BOOKINGS ADAGE MOCK
+COLLECTIVE_ADAGE_MOCK = Tag(name="Collective bookings Adage mock")
+
 # COLLECTIVE OFFERS --- Deprecated
 COLLECTIVE_CATEGORIES = Tag(name="[DEPRECATED] Collective categories")
 COLLECTIVE_VENUES = Tag(name="[DEPRECATED] Collective venues")
