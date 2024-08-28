@@ -233,12 +233,12 @@ class ConfirmCollectiveBookingTest(PublicAPIRestrictedEnvEndpointHelper):
             self.confirm_booking(auth_client, pending_booking.id, status_code=404, json_error=error)
 
     def confirm_booking(self, client, booking_id, status_code, json_error=None):
-        response = self.send_request(client, url_params={"booking_id": booking_id})
-
-        assert response.status_code == status_code
-        if json_error:
-            for key, msg in json_error.items():
-                assert response.json.get(key) == msg
+        self.assert_request_has_expected_result(
+            client,
+            url_params={"booking_id": booking_id},
+            expected_status_code=status_code,
+            expected_error_json=json_error,
+        )
 
 
 class CancelCollectiveBookingTest(PublicAPIRestrictedEnvEndpointHelper):
@@ -373,9 +373,86 @@ class CancelCollectiveBookingTest(PublicAPIRestrictedEnvEndpointHelper):
                 self.cancel_booking(auth_client, booking_id, status_code=500, json_error=error)
 
     def cancel_booking(self, client, booking_id, status_code, json_error=None):
-        response = self.send_request(client, url_params={"booking_id": booking_id})
+        self.assert_request_has_expected_result(
+            client,
+            url_params={"booking_id": booking_id},
+            expected_status_code=status_code,
+            expected_error_json=json_error,
+        )
 
-        assert response.status_code == status_code
-        if json_error:
-            for key, msg in json_error.items():
-                assert response.json.get(key) == msg
+
+class UseCollectiveBookingTest(PublicAPIRestrictedEnvEndpointHelper):
+    endpoint_url = "/v2/collective/bookings/{booking_id}/use"
+    endpoint_method = "post"
+    default_path_params = {"booking_id": 1}
+
+    def test_use_confirmed_booking(self, client):
+        plain_api_key, provider = self.setup_provider()
+        confirmed_booking = build_confirmed_booking(provider)
+        auth_client = client.with_explicit_token(plain_api_key)
+
+        with assert_attribute_value_changes_to(confirmed_booking, "status", models.CollectiveBookingStatus.USED):
+            self.use_booking(auth_client, confirmed_booking.id, status_code=204)
+
+    def test_use_pending_booking(self, client):
+        plain_api_key, provider = self.setup_provider()
+        pending_booking = build_pending_booking(provider)
+        auth_client = client.with_explicit_token(plain_api_key)
+
+        error = {"code": "ONLY_CONFIRMED_BOOKING_CAN_BE_USED"}
+        with assert_attribute_does_not_change(pending_booking, "status"):
+            self.use_booking(auth_client, pending_booking.id, status_code=403, json_error=error)
+
+    def test_use_used_booking(self, client):
+        plain_api_key, provider = self.setup_provider()
+        used_booking = build_used_booking(provider)
+        auth_client = client.with_explicit_token(plain_api_key)
+
+        error = {"code": "ONLY_CONFIRMED_BOOKING_CAN_BE_USED"}
+        with assert_attribute_does_not_change(used_booking, "status"):
+            self.use_booking(auth_client, used_booking.id, status_code=403, json_error=error)
+
+    def test_use_cancelled_booking(self, client):
+        plain_api_key, provider = self.setup_provider()
+        cancelled_booking = build_cancelled_booking(provider)
+        auth_client = client.with_explicit_token(plain_api_key)
+
+        error = {"code": "ONLY_CONFIRMED_BOOKING_CAN_BE_USED"}
+        with assert_attribute_does_not_change(cancelled_booking, "status"):
+            self.use_booking(auth_client, cancelled_booking.id, status_code=403, json_error=error)
+
+    def test_use_reimbursed_booking(self, client):
+        plain_api_key, provider = self.setup_provider()
+        reimbursed_booking = build_reimbursed_booking(provider)
+        auth_client = client.with_explicit_token(plain_api_key)
+
+        error = {"code": "ONLY_CONFIRMED_BOOKING_CAN_BE_USED"}
+        with assert_attribute_does_not_change(reimbursed_booking, "status"):
+            self.use_booking(auth_client, reimbursed_booking.id, status_code=403, json_error=error)
+
+    def test_use_unknown_booking(self, client):
+        plain_api_key, _ = self.setup_provider()
+        auth_client = client.with_explicit_token(plain_api_key)
+
+        error = {"code": "BOOKING_NOT_FOUND"}
+        self.use_booking(auth_client, 0, status_code=404, json_error=error)
+
+    @patch("pcapi.routes.public.collective.endpoints.simulate_adage_steps.bookings.finance_api")
+    def test_booking_not_used_in_case_of_internal_error(self, api_mock, client):
+        plain_api_key, provider = self.setup_provider()
+        confirmed_booking = build_confirmed_booking(provider)
+        auth_client = client.with_explicit_token(plain_api_key)
+
+        api_mock.add_event.side_effect = [RuntimeError("test")]
+
+        with assert_attribute_does_not_change(confirmed_booking, "status"):
+            error = {"code": "FAILED_TO_USE_BOOKING_TRY_AGAIN_LATER"}
+            self.use_booking(auth_client, confirmed_booking.id, status_code=500, json_error=error)
+
+    def use_booking(self, client, booking_id, status_code, json_error=None):
+        self.assert_request_has_expected_result(
+            client,
+            url_params={"booking_id": booking_id},
+            expected_status_code=status_code,
+            expected_error_json=json_error,
+        )

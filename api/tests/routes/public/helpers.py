@@ -174,6 +174,33 @@ class PublicAPIRestrictedEnvEndpointHelper(PublicAPIEndpointBaseHelper):
 
         return client_func(url, **kwargs)
 
+    def setup_method(self):
+        self.plain_api_key, _ = self.setup_provider()
+
+    def get_authenticated_client(self, client):
+        if not hasattr(self, "_authenticated_client"):
+            self._authenticated_client = client.with_explicit_token(self.plain_api_key)
+        return self._authenticated_client
+
+    def assert_request_has_expected_result(
+        self, client, url_params: dict, expected_status_code: int, expected_error_json: dict | None = None
+    ):
+        # response = self.send_request(self.get_authenticated_client(client), url_params=url_params)
+        response = self.send_request(client, url_params=url_params)
+        assert response.status_code == expected_status_code, self._format_wrong_status_code(
+            response, expected_status_code
+        )
+        if expected_error_json:
+            for key, msg in expected_error_json.items():
+                assert response.json.get(key) == msg, f"[{key}] expected: {msg}, got: '{response.json.get(key)}'"
+                assert response.json.get(key) == msg, self._format_unexpected_json_error(response, key, msg)
+
+    def _format_wrong_status_code(self, response, expected_status):
+        return f"expected: {expected_status}, got: {response.status_code}, json: '{response.json}'"
+
+    def _format_unexpected_json_error(self, response, key, expected_value):
+        return f"expected: '{key}: {expected_value}', got: '{key}: {response.json.get(key)}'"
+
 
 class ProductEndpointHelper:
     @staticmethod
