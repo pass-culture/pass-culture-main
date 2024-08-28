@@ -1008,7 +1008,6 @@ class GetConnectAsProUserTest(PostEndpointHelper):
     # session + current user + pro user data + WIP_CONNECT_AS
     expected_num_queries = 4
 
-    @override_features(WIP_CONNECT_AS=True)
     @pytest.mark.parametrize("roles", [[users_models.UserRole.PRO], [users_models.UserRole.NON_ATTACHED_PRO]])
     def test_connect_as_user(self, authenticated_client, legit_user, roles):
         user = users_factories.ProFactory(roles=roles)
@@ -1024,7 +1023,7 @@ class GetConnectAsProUserTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             form=form_data,
-            expected_num_queries=self.expected_num_queries,
+            expected_num_queries=self.expected_num_queries - 1,  # -1 retrieve Feature flags
         )
 
         # check url form
@@ -1033,26 +1032,6 @@ class GetConnectAsProUserTest(PostEndpointHelper):
         assert base_url + "/" == urls.build_pc_pro_connect_as_link("")
         assert SecureToken(token=key_token).data == expected_token_data
 
-    @override_features(WIP_CONNECT_AS=False)
-    def test_connect_as_user_protected_by_feature_flag(self, authenticated_client):
-        user = users_factories.ProFactory()
-
-        form_data = {"object_type": "user", "object_id": user.id, "redirect": "/"}
-        response = self.post_to_endpoint(
-            authenticated_client,
-            form=form_data,
-            expected_num_queries=self.expected_num_queries,
-        )
-
-        assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.home", _external=True)
-        redirected_response = authenticated_client.get(response.location)
-        assert (
-            html_parser.extract_alert(redirected_response.data)
-            == "L'utilisation du « connect as » requiert l'activation de la feature : WIP_CONNECT_AS"
-        )
-
-    @override_features(WIP_CONNECT_AS=True)
     def test_connect_as_user_invalid_redirect(self, authenticated_client, legit_user):
         user = users_factories.ProFactory()
 
@@ -1075,7 +1054,6 @@ class GetConnectAsProUserTest(PostEndpointHelper):
             == "Échec de la validation de sécurité, veuillez réessayer"
         )
 
-    @override_features(WIP_CONNECT_AS=True)
     def test_connect_as_user_invalid_object_type(self, authenticated_client, legit_user):
         user = users_factories.ProFactory()
 
@@ -1098,17 +1076,17 @@ class GetConnectAsProUserTest(PostEndpointHelper):
             == "Échec de la validation de sécurité, veuillez réessayer"
         )
 
-    @override_features(WIP_CONNECT_AS=True)
     def test_connect_as_user_not_found(self, authenticated_client):
         form_data = {"object_type": "user", "object_id": 0, "redirect": "/"}
         response = self.post_to_endpoint(
             authenticated_client,
             form=form_data,
-            expected_num_queries=self.expected_num_queries + 1,  # +1 for rollback query
+            # +1 for rollback query
+            # -1 for Feature flags
+            expected_num_queries=self.expected_num_queries,
         )
         assert response.status_code == 404
 
-    @override_features(WIP_CONNECT_AS=True)
     def test_connect_as_inactive_user(self, authenticated_client):
         user = users_factories.ProFactory(isActive=False)
 
@@ -1116,7 +1094,9 @@ class GetConnectAsProUserTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             form=form_data,
-            expected_num_queries=self.expected_num_queries + 1,  # +1 for rollback query
+            # +1 for rollback query
+            # -1 for Feature flags
+            expected_num_queries=self.expected_num_queries,
         )
 
         assert response.status_code == 303
@@ -1127,7 +1107,6 @@ class GetConnectAsProUserTest(PostEndpointHelper):
             == "L'utilisation du « connect as » n'est pas disponible pour les comptes inactifs"
         )
 
-    @override_features(WIP_CONNECT_AS=True)
     @pytest.mark.parametrize(
         "roles,warning",
         [
@@ -1149,7 +1128,9 @@ class GetConnectAsProUserTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             form=form_data,
-            expected_num_queries=self.expected_num_queries + 1,  # +1 for rollback query
+            # +1 for rollback query
+            # -1 for Feature flags
+            expected_num_queries=self.expected_num_queries,
         )
 
         assert response.status_code == 303

@@ -23,7 +23,6 @@ from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.testing import assert_num_queries
-from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.models import db
@@ -1160,8 +1159,7 @@ class GetOffererUsersTest(GetEndpointHelper):
     # - session + authenticated user (2 queries)
     # - users with joined data (1 query)
     # - offerer_invitation data
-    # - retrieve Feature Flags
-    expected_num_queries = 5
+    expected_num_queries = 4
 
     def test_get_pro_users(self, authenticated_client, offerer):
         uo1 = offerers_factories.UserOffererFactory(
@@ -1190,30 +1188,25 @@ class GetOffererUsersTest(GetEndpointHelper):
         assert rows[0]["Prénom / Nom"] == uo1.user.full_name
         assert rows[0]["Email"] == uo1.user.email
         assert rows[0]["Invitation"] == ""
-        assert "Connect as" not in rows[0]
 
         assert rows[1]["ID"] == str(uo2.user.id)
         assert rows[1]["Statut"] == "Validé"
         assert rows[1]["Prénom / Nom"] == uo2.user.full_name
         assert rows[1]["Email"] == uo2.user.email
         assert rows[1]["Invitation"] == ""
-        assert "Connect as" not in rows[1]
 
         assert rows[2]["ID"] == str(uo3.user.id)
         assert rows[2]["Statut"] == "Nouveau"
         assert rows[2]["Prénom / Nom"] == uo3.user.full_name
         assert rows[2]["Email"] == uo3.user.email
         assert rows[2]["Invitation"] == ""
-        assert "Connect as" not in rows[2]
 
         assert rows[3]["ID"] == str(uo4.user.id)
         assert rows[3]["Statut"] == "Validé Suspendu"
         assert rows[3]["Prénom / Nom"] == uo4.user.full_name
         assert rows[3]["Email"] == uo4.user.email
         assert rows[3]["Invitation"] == ""
-        assert "Connect as" not in rows[3]
 
-    @override_features(WIP_CONNECT_AS=True)
     @pytest.mark.parametrize(
         "roles,active,result",
         [
