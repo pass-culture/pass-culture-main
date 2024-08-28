@@ -285,7 +285,7 @@ def get_collective_booking_by_id(booking_id: int) -> educational_models.Collecti
     return collective_booking
 
 
-def cancel_collective_offer_booking(offer_id: int) -> None:
+def cancel_collective_offer_booking(offer_id: int, author_id: int, user_connect_as: bool) -> None:
     collective_offer: educational_models.CollectiveOffer | None = (
         educational_models.CollectiveOffer.query.filter(educational_models.CollectiveOffer.id == offer_id)
         .options(
@@ -305,7 +305,7 @@ def cancel_collective_offer_booking(offer_id: int) -> None:
     collective_stock = collective_offer.collectiveStock
 
     # Offer is reindexed in the end of this function
-    cancelled_booking = _cancel_collective_booking_by_offerer(collective_stock)
+    cancelled_booking = _cancel_collective_booking_by_offerer(collective_stock, author_id, user_connect_as)
 
     logger.info(
         "Cancelled collective booking from offer",
@@ -337,6 +337,7 @@ def notify_pro_pending_booking_confirmation_limit_in_3_days() -> None:
 def _cancel_collective_booking(
     collective_booking: educational_models.CollectiveBooking,
     reason: educational_models.CollectiveBookingCancellationReasons,
+    author_id: int,
 ) -> None:
     with transaction():
         educational_repository.get_and_lock_collective_stock(stock_id=collective_booking.collectiveStock.id)
@@ -346,7 +347,7 @@ def _cancel_collective_booking(
             # The booking cannot be used nor reimbursed yet, otherwise
             # `cancel_booking` will fail. Thus, there is no finance
             # event to cancel here.
-            collective_booking.cancel_booking(reason)
+            collective_booking.cancel_booking(reason, author_id=author_id)
         except exceptions.CollectiveBookingAlreadyCancelled:
             return
 
@@ -363,6 +364,8 @@ def _cancel_collective_booking(
 
 def _cancel_collective_booking_by_offerer(
     collective_stock: educational_models.CollectiveStock,
+    author_id: int,
+    user_connect_as: bool,
 ) -> educational_models.CollectiveBooking:
     """
     Cancel booking.
@@ -380,9 +383,14 @@ def _cancel_collective_booking_by_offerer(
     if booking_to_cancel is None:
         raise exceptions.NoCollectiveBookingToCancel()
 
+    if user_connect_as:
+        cancellation_reason = educational_models.CollectiveBookingCancellationReasons.OFFERER_CONNECT_AS
+    else:
+        cancellation_reason = educational_models.CollectiveBookingCancellationReasons.OFFERER
     _cancel_collective_booking(
         booking_to_cancel,
-        educational_models.CollectiveBookingCancellationReasons.OFFERER,
+        cancellation_reason,
+        author_id,
     )
 
     return booking_to_cancel

@@ -2745,7 +2745,7 @@ class DeleteDraftOffersTest:
 class DeleteStocksTest:
     def test_delete_batch_stocks(self, client):
         stocks = factories.StockFactory.create_batch(3)
-        api.batch_delete_stocks(stocks)
+        api.batch_delete_stocks(stocks, author_id=None, user_connect_as=None)
         assert all(stock.isSoftDeleted for stock in stocks)
 
     @time_machine.travel("2020-10-15 00:00:00")
@@ -2761,8 +2761,8 @@ class DeleteStocksTest:
             offer_id=offer.id,
             date=beginning_datetime.date(),
             venue=offer.venue,
-        )
-        api.batch_delete_stocks(stocks)
+        ).all()
+        api.batch_delete_stocks(stocks, author_id=None, user_connect_as=None)
 
         # Then
         assert stock_1.isSoftDeleted
@@ -2781,8 +2781,8 @@ class DeleteStocksTest:
             offer_id=offer.id,
             time=beginning_datetime.time(),
             venue=offer.venue,
-        )
-        api.batch_delete_stocks(stocks)
+        ).all()
+        api.batch_delete_stocks(stocks, author_id=None, user_connect_as=None)
 
         # Then
         assert stock_1.isSoftDeleted
@@ -2803,8 +2803,8 @@ class DeleteStocksTest:
             offer_id=offer.id,
             price_category_id=stock_1.priceCategoryId,
             venue=offer.venue,
-        )
-        api.batch_delete_stocks(stocks)
+        ).all()
+        api.batch_delete_stocks(stocks, author_id=None, user_connect_as=None)
 
         # Then
         assert stock_1.isSoftDeleted

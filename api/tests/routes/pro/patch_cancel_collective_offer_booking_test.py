@@ -6,6 +6,8 @@ from pcapi.core.educational.models import CollectiveBookingStatus
 import pcapi.core.educational.testing as adage_api_testing
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.testing import override_settings
+from pcapi.core.token import SecureToken
+from pcapi.core.token.serialization import ConnectAsInternalModel
 from pcapi.core.users import factories as user_factories
 from pcapi.routes.adage.v1.serialization.prebooking import serialize_collective_booking
 
@@ -37,7 +39,7 @@ class Returns204Test:
         assert adage_api_testing.adage_requests[0]["url"] == "https://adage_base_url/v1/prereservation-annule"
 
     def test_cancel_confirmed_booking(self, client):
-        user = user_factories.UserFactory()
+        user = user_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=user, offerer=offerer)
         collective_booking = CollectiveBookingFactory(
@@ -50,11 +52,40 @@ class Returns204Test:
 
         assert response.status_code == 204
         assert collective_booking.status == CollectiveBookingStatus.CANCELLED
+        assert collective_booking.cancellationUser == user
 
         expected_payload = serialize_collective_booking(collective_booking)
         assert len(adage_api_testing.adage_requests) == 1
         assert adage_api_testing.adage_requests[0]["sent_data"] == expected_payload
         assert adage_api_testing.adage_requests[0]["url"] == "https://adage_base_url/v1/prereservation-annule"
+
+    def test_cancel_confirmed_booking_user_connect_as(self, client):
+        user = user_factories.ProFactory()
+        admin = user_factories.AdminFactory(email="admin@example.com")
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=user, offerer=offerer)
+        collective_booking = CollectiveBookingFactory(
+            status=CollectiveBookingStatus.CONFIRMED, collectiveStock__collectiveOffer__venue__managingOfferer=offerer
+        )
+        expected_redirect_link = "https://example.com"
+        secure_token = SecureToken(
+            data=ConnectAsInternalModel(
+                redirect_link=expected_redirect_link,
+                user_id=user.id,
+                internal_admin_email=admin.email,
+                internal_admin_id=admin.id,
+            ).dict(),
+        )
+        client = client.with_session_auth(admin.email)
+        response_token = client.get(f"/users/connect-as/{secure_token.token}")
+        assert response_token.status_code == 302
+
+        offer_id = collective_booking.collectiveStock.collectiveOffer.id
+        response = client.patch(f"/collective/offers/{offer_id}/cancel_booking")
+
+        assert response.status_code == 204
+        assert collective_booking.status == CollectiveBookingStatus.CANCELLED
+        assert collective_booking.cancellationUser == admin
 
 
 class Returns404Test:
