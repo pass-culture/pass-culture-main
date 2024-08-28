@@ -1,5 +1,4 @@
 from pcapi.core.testing import assert_num_queries
-from pcapi.core.testing import override_features
 from pcapi.core.token import SecureToken
 from pcapi.core.token.serialization import ConnectAsInternalModel
 from pcapi.core.users import factories as users_factories
@@ -7,7 +6,15 @@ from pcapi.core.users import models as users_models
 
 
 class Returns200Test:
-    @override_features(WIP_CONNECT_AS=True)
+    # session
+    # user
+    # user
+    # INSERT INTO action_history
+    # DELETE FROM user_session
+    # user
+    # INSERT INTO user_session
+    expected_num_queries = 7
+
     def test_current_user_has_rights_to_impersonate_a_pro(self, client, db_session):
         # given
         admin = users_factories.AdminFactory(email="admin@example.com")
@@ -24,16 +31,8 @@ class Returns200Test:
         )
         # when
         client = client.with_session_auth(admin.email)
-        expected_num_queries = 8
-        # session
-        # user
-        # feature
-        # user
-        # INSERT INTO action_history
-        # DELETE FROM user_session
-        # user
-        # INSERT INTO user_session
-        with assert_num_queries(expected_num_queries):
+
+        with assert_num_queries(self.expected_num_queries):
             response = client.get(f"/users/connect-as/{secure_token.token}")
             assert response.status_code == 302
 
@@ -46,7 +45,6 @@ class Returns200Test:
             assert session["internal_admin_email"] == admin.email
             assert session["internal_admin_id"] == admin.id
 
-    @override_features(WIP_CONNECT_AS=True)
     def test_current_user_has_rights_to_impersonate_a_non_attached_pro(self, client, db_session):
         # given
         admin = users_factories.AdminFactory(email="admin@example.com")
@@ -63,16 +61,8 @@ class Returns200Test:
         )
         # when
         client = client.with_session_auth(admin.email)
-        expected_num_queries = 8
-        # session
-        # user
-        # feature
-        # user
-        # INSERT INTO action_history
-        # DELETE FROM user_session
-        # user
-        # INSERT INTO user_session
-        with assert_num_queries(expected_num_queries):
+
+        with assert_num_queries(self.expected_num_queries):
             response = client.get(f"/users/connect-as/{secure_token.token}")
             assert response.status_code == 302
 
@@ -86,7 +76,6 @@ class Returns200Test:
             assert session["internal_admin_email"] == admin.email
             assert session["internal_admin_id"] == admin.id
 
-    @override_features(WIP_CONNECT_AS=True)
     def test_current_user_already_impersonnating_a_pro(self, client, db_session):
         # given
         admin = users_factories.AdminFactory(email="admin@example.com")
@@ -113,16 +102,8 @@ class Returns200Test:
 
         # use connect as to connect to a pro
         client = client.with_session_auth(admin.email)
-        expected_num_queries = 8
-        # session
-        # user
-        # feature
-        # user
-        # INSERT INTO action_history
-        # DELETE FROM user_session
-        # user
-        # INSERT INTO user_session
-        with assert_num_queries(expected_num_queries):
+
+        with assert_num_queries(self.expected_num_queries):
             response = client.get(f"/users/connect-as/{intermediary_secure_token.token}")
             assert response.status_code == 302
 
@@ -130,16 +111,8 @@ class Returns200Test:
 
         # when
         client = client.with_session_auth(admin.email)
-        expected_num_queries = 8
-        # session
-        # user
-        # feature
-        # user
-        # INSERT INTO action_history
-        # DELETE FROM user_session
-        # user
-        # INSERT INTO user_session
-        with assert_num_queries(expected_num_queries):
+
+        with assert_num_queries(self.expected_num_queries):
             response = client.get(f"/users/connect-as/{real_secure_token.token}")
             assert response.status_code == 302
 
@@ -157,7 +130,6 @@ class Returns200Test:
 
 
 class Returns401Test:
-    @override_features(WIP_CONNECT_AS=True)
     def test_user_not_connected(self, client, db_session):
         # given
         admin = users_factories.AdminFactory(email="admin@example.com")
@@ -186,7 +158,11 @@ class Returns401Test:
 
 
 class Returns403Test:
-    @override_features(WIP_CONNECT_AS=True)
+    # session
+    # user
+    # user to connect as
+    expected_num_queries = 3
+
     def test_user_is_not_admin(self, client, db_session):
         # given
         admin = users_factories.UserFactory(email="admin@example.com")
@@ -203,7 +179,7 @@ class Returns403Test:
         )
         # when
         client = client.with_session_auth(admin.email)
-        with assert_num_queries(3):  #  session + user + feature
+        with assert_num_queries(self.expected_num_queries - 1):  #  -1 user to connect as
             response = client.get(f"/users/connect-as/{secure_token.token}")
             assert response.status_code == 403
 
@@ -218,7 +194,6 @@ class Returns403Test:
             assert "internal_admin_email" not in session
             assert "internal_admin_id" not in session
 
-    @override_features(WIP_CONNECT_AS=True)
     def test_token_is_invalid(self, client, db_session):
         # given
         admin = users_factories.AdminFactory(email="admin@example.com")
@@ -226,7 +201,7 @@ class Returns403Test:
 
         # when
         client = client.with_session_auth(admin.email)
-        with assert_num_queries(3):  #  session + user + feature
+        with assert_num_queries(self.expected_num_queries - 1):  #  -1 user to connect as
             response = client.get(f"/users/connect-as/{token}")
             assert response.status_code == 403
 
@@ -239,7 +214,6 @@ class Returns403Test:
             assert "internal_admin_email" not in session
             assert "internal_admin_id" not in session
 
-    @override_features(WIP_CONNECT_AS=True)
     def test_token_is_for_other_admin(self, client, db_session):
         # given
         admin = users_factories.AdminFactory()
@@ -256,7 +230,7 @@ class Returns403Test:
         )
         # when
         client = client.with_session_auth(admin.email)
-        with assert_num_queries(3):  #  session + user + feature
+        with assert_num_queries(self.expected_num_queries - 1):  #  -1 user to connect as
             response = client.get(f"/users/connect-as/{secure_token.token}")
             assert response.status_code == 403
 
@@ -269,7 +243,6 @@ class Returns403Test:
             assert "internal_admin_email" not in session
             assert "internal_admin_id" not in session
 
-    @override_features(WIP_CONNECT_AS=True)
     def test_user_is_not_active(self, client, db_session):
         # given
         admin = users_factories.AdminFactory(email="admin@example.com")
@@ -286,7 +259,7 @@ class Returns403Test:
         )
         # when
         client = client.with_session_auth(admin.email)
-        with assert_num_queries(4):  #  session + user + feature + user
+        with assert_num_queries(self.expected_num_queries):
             response = client.get(f"/users/connect-as/{secure_token.token}")
             assert response.status_code == 403
 
@@ -299,7 +272,6 @@ class Returns403Test:
             assert "internal_admin_email" not in session
             assert "internal_admin_id" not in session
 
-    @override_features(WIP_CONNECT_AS=True)
     def test_user_is_admin(self, client, db_session):
         # given
         admin = users_factories.AdminFactory(email="admin@example.com")
@@ -316,7 +288,7 @@ class Returns403Test:
         )
         # when
         client = client.with_session_auth(admin.email)
-        with assert_num_queries(4):  #  session + user + feature + user
+        with assert_num_queries(self.expected_num_queries):
             response = client.get(f"/users/connect-as/{secure_token.token}")
             assert response.status_code == 403
 
@@ -329,7 +301,6 @@ class Returns403Test:
             assert "internal_admin_email" not in session
             assert "internal_admin_id" not in session
 
-    @override_features(WIP_CONNECT_AS=True)
     def test_user_is_anonymous(self, client, db_session):
         # given
         admin = users_factories.AdminFactory(email="admin@example.com")
@@ -346,7 +317,7 @@ class Returns403Test:
         )
         # when
         client = client.with_session_auth(admin.email)
-        with assert_num_queries(4):  #  session + user + feature + user
+        with assert_num_queries(self.expected_num_queries):
             response = client.get(f"/users/connect-as/{secure_token.token}")
             assert response.status_code == 403
 
@@ -359,7 +330,6 @@ class Returns403Test:
             assert "internal_admin_email" not in session
             assert "internal_admin_id" not in session
 
-    @override_features(WIP_CONNECT_AS=True)
     def test_user_is_not_pro(self, client, db_session):
         # given
         admin = users_factories.AdminFactory(email="admin@example.com")
@@ -376,7 +346,7 @@ class Returns403Test:
         )
         # when
         client = client.with_session_auth(admin.email)
-        with assert_num_queries(4):  #  session + user + feature + user
+        with assert_num_queries(self.expected_num_queries):
             response = client.get(f"/users/connect-as/{secure_token.token}")
             assert response.status_code == 403
 
@@ -391,7 +361,11 @@ class Returns403Test:
 
 
 class Returns404Test:
-    @override_features(WIP_CONNECT_AS=True)
+    # session
+    # user
+    # user to connect as
+    expected_num_queries = 3
+
     def test_user_not_found(self, client, db_session):
         # given
         admin = users_factories.AdminFactory(email="admin@example.com")
@@ -406,42 +380,12 @@ class Returns404Test:
         )
         # when
         client = client.with_session_auth(admin.email)
-        with assert_num_queries(4):  #  session + user + feature + user
+        with assert_num_queries(self.expected_num_queries):
             response = client.get(f"/users/connect-as/{secure_token.token}")
             assert response.status_code == 404
 
         # then
         assert response.json == {"user": "L'utilisateur demandé n'existe pas"}
-        # check user is not impersonated
-        with client.client.session_transaction() as session:
-            assert session["user_id"] == admin.id
-            assert session["_user_id"] == str(admin.id)
-            assert "internal_admin_email" not in session
-            assert "internal_admin_id" not in session
-
-    @override_features(WIP_CONNECT_AS=False)
-    def test_current_user_has_rights_to_impersonate_a_pro(self, client, db_session):
-        # given
-        admin = users_factories.AdminFactory(email="admin@example.com")
-        target = users_factories.ProFactory()
-
-        expected_redirect_link = "https://example.com"
-        secure_token = SecureToken(
-            data=ConnectAsInternalModel(
-                redirect_link=expected_redirect_link,
-                user_id=target.id,
-                internal_admin_email=admin.email,
-                internal_admin_id=admin.id,
-            ).dict(),
-        )
-        # when
-        client = client.with_session_auth(admin.email)
-        with assert_num_queries(3):  # session + user + feature
-            response = client.get(f"/users/connect-as/{secure_token.token}")
-            assert response.status_code == 404
-
-        # then
-        assert response.json == {"global": "La route n'est pas active"}
         # check user is not impersonated
         with client.client.session_transaction() as session:
             assert session["user_id"] == admin.id
