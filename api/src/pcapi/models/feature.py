@@ -107,7 +107,6 @@ class FeatureToggle(enum.Enum):
     WIP_ENABLE_GOOGLE_SSO = "Activer la connexion SSO pour les jeunes"
     WIP_ENABLE_FINANCE_INCIDENT = "Active les incidents de finance"
     WIP_ENABLE_MARSEILLE = "Activer Marseille en grand"
-    WIP_CONNECT_AS = "Permettre à un admin de se connecter en tant qu'un compte pro sur PC Pro"
     WIP_ENABLE_NATIONAL_PROGRAM_NEW_RULES_PUBLIC_API = (
         "Activer les nouvelles règles de création et d'édition d'offres collecrives pour l'API publique (collective)"
     )
@@ -182,7 +181,6 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.SYNCHRONIZE_TITELIVE_API_MUSIC_PRODUCTS,
     FeatureToggle.USE_END_DATE_FOR_COLLECTIVE_PRICING,
     FeatureToggle.WIP_BENEFICIARY_EXTRACT_TOOL,
-    FeatureToggle.WIP_CONNECT_AS,
     FeatureToggle.WIP_CONNECT_AS_EXTENDED,
     FeatureToggle.WIP_EAN_CREATION,
     FeatureToggle.WIP_ENABLE_COLLECTIVE_DRAFT_OFFERS,
