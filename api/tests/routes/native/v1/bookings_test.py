@@ -20,16 +20,10 @@ from pcapi.core.external_bookings.factories import ExternalBookingFactory
 from pcapi.core.finance import utils as finance_utils
 from pcapi.core.geography.factories import AddressFactory
 import pcapi.core.mails.testing as mails_testing
-from pcapi.core.offerers.factories import OffererAddressFactory
-from pcapi.core.offerers.factories import VenueFactory
+from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import models as offer_models
 from pcapi.core.offers.exceptions import UnexpectedCinemaProvider
 import pcapi.core.offers.factories as offers_factories
-from pcapi.core.offers.factories import EventStockFactory
-from pcapi.core.offers.factories import MediationFactory
-from pcapi.core.offers.factories import ProductFactory
-from pcapi.core.offers.factories import StockFactory
-from pcapi.core.offers.factories import StockWithActivationCodesFactory
 from pcapi.core.providers.exceptions import InactiveProvider
 import pcapi.core.providers.factories as providers_factories
 import pcapi.core.providers.repository as providers_api
@@ -52,7 +46,7 @@ class PostBookingTest:
     identifier = "pascal.ture@example.com"
 
     def test_post_bookings(self, client):
-        stock = StockFactory()
+        stock = offers_factories.StockFactory()
         user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
 
         client = client.with_token(self.identifier)
@@ -75,7 +69,7 @@ class PostBookingTest:
 
     def test_insufficient_credit(self, client):
         users_factories.BeneficiaryGrant18Factory(email=self.identifier)
-        stock = StockFactory(price=501)
+        stock = offers_factories.StockFactory(price=501)
 
         client = client.with_token(self.identifier)
         response = client.post("/native/v1/bookings", json={"stockId": stock.id, "quantity": 1})
@@ -94,7 +88,9 @@ class PostBookingTest:
         assert response.json["code"] == "ALREADY_BOOKED"
 
     def test_category_forbidden(self, client):
-        stock = StockFactory(offer__subcategoryId=subcategories.VISITE_VIRTUELLE.id, offer__url="affreuse-offer.com")
+        stock = offers_factories.StockFactory(
+            offer__subcategoryId=subcategories.VISITE_VIRTUELLE.id, offer__url="affreuse-offer.com"
+        )
         users_factories.UnderageBeneficiaryFactory(email=self.identifier)
 
         client.with_token(self.identifier)
@@ -133,7 +129,7 @@ class PostBookingTest:
         [(subcategoryId, 0) for subcategoryId in offer_models.Stock.AUTOMATICALLY_USED_SUBCATEGORIES],
     )
     def test_post_free_bookings_from_subcategories_with_archive(self, client, subcategoryId, price):
-        stock = StockFactory(price=price, offer__subcategoryId=subcategoryId)
+        stock = offers_factories.StockFactory(price=price, offer__subcategoryId=subcategoryId)
         user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
 
         client = client.with_token(self.identifier)
@@ -157,7 +153,7 @@ class PostBookingTest:
     def test_post_non_free_bookings_or_from_wrong_subcategories_without_archive(
         self, client, subcategory, price, status
     ):
-        stock = StockFactory(price=price, offer__subcategoryId=subcategory.id)
+        stock = offers_factories.StockFactory(price=price, offer__subcategoryId=subcategory.id)
         user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
 
         client = client.with_token(self.identifier)
@@ -185,7 +181,7 @@ class PostBookingTest:
             notificationExternalUrl=external_notification_url,
         )
         providers_factories.OffererProviderFactory(provider=provider)
-        stock = EventStockFactory(
+        stock = offers_factories.EventStockFactory(
             lastProvider=provider,
             priceCategory__price=2,
             offer__subcategoryId=subcategories.SEANCE_ESSAI_PRATIQUE_ART.id,
@@ -241,7 +237,7 @@ class PostBookingTest:
             cancelExternalUrl=external_booking_url,
         )
         providers_factories.OffererProviderFactory(provider=provider)
-        stock = EventStockFactory(
+        stock = offers_factories.EventStockFactory(
             lastProvider=provider,
             priceCategory__price=2,
             offer__subcategoryId=subcategories.SEANCE_ESSAI_PRATIQUE_ART.id,
@@ -314,7 +310,7 @@ class PostBookingTest:
             cancelExternalUrl=external_booking_url,
         )
         providers_factories.OffererProviderFactory(provider=provider)
-        stock = EventStockFactory(
+        stock = offers_factories.EventStockFactory(
             lastProvider=provider,
             priceCategory__price=2,
             offer__subcategoryId=subcategories.SEANCE_ESSAI_PRATIQUE_ART.id,
@@ -383,7 +379,7 @@ class PostBookingTest:
             cancelExternalUrl=external_booking_url,
         )
         providers_factories.OffererProviderFactory(provider=provider)
-        stock = EventStockFactory(
+        stock = offers_factories.EventStockFactory(
             lastProvider=provider,
             offer__subcategoryId=subcategories.SEANCE_ESSAI_PRATIQUE_ART.id,
             offer__lastProvider=provider,
@@ -418,7 +414,7 @@ class PostBookingTest:
             cancelExternalUrl=external_booking_url,
         )
         providers_factories.OffererProviderFactory(provider=provider)
-        stock = EventStockFactory(
+        stock = offers_factories.EventStockFactory(
             lastProvider=provider,
             offer__subcategoryId=subcategories.SEANCE_ESSAI_PRATIQUE_ART.id,
             offer__lastProvider=provider,
@@ -452,7 +448,7 @@ class PostBookingTest:
             cancelExternalUrl=external_booking_url,
         )
         providers_factories.OffererProviderFactory(provider=provider)
-        stock = EventStockFactory(
+        stock = offers_factories.EventStockFactory(
             lastProvider=provider,
             offer__lastProvider=provider,
             offer__withdrawalType=offer_models.WithdrawalTypeEnum.IN_APP,
@@ -520,7 +516,7 @@ class PostBookingTest:
             cancelExternalUrl=cancel_booking_url,
         )
         providers_factories.OffererProviderFactory(provider=provider)
-        stock = EventStockFactory(
+        stock = offers_factories.EventStockFactory(
             lastProvider=provider,
             offer__subcategoryId=subcategories.SEANCE_ESSAI_PRATIQUE_ART.id,
             offer__lastProvider=provider,
@@ -571,7 +567,7 @@ class PostBookingTest:
             cancelExternalUrl=cancel_booking_url,
         )
         providers_factories.OffererProviderFactory(provider=provider)
-        stock = EventStockFactory(
+        stock = offers_factories.EventStockFactory(
             lastProvider=provider,
             offer__lastProvider=provider,
             offer__withdrawalType=offer_models.WithdrawalTypeEnum.IN_APP,
@@ -610,7 +606,7 @@ class PostBookingTest:
             cancelExternalUrl=cancel_booking_url,
         )
         providers_factories.OffererProviderFactory(provider=provider)
-        stock = EventStockFactory(
+        stock = offers_factories.EventStockFactory(
             lastProvider=provider,
             offer__subcategoryId=subcategories.SEANCE_ESSAI_PRATIQUE_ART.id,
             offer__lastProvider=provider,
@@ -664,13 +660,13 @@ class GetBookingsTest:
 
         event_booking = booking_factories.BookingFactory(
             user=user,
-            stock=EventStockFactory(
+            stock=offers_factories.EventStockFactory(
                 beginningDatetime=datetime.utcnow() + timedelta(days=2),
                 offer__bookingContact="contact@example.net",
             ),
         )
 
-        digital_stock = StockWithActivationCodesFactory()
+        digital_stock = offers_factories.StockWithActivationCodesFactory()
         first_activation_code = digital_stock.activationCodes[0]
         second_activation_code = digital_stock.activationCodes[1]
         digital_booking = booking_factories.UsedBookingFactory(
@@ -690,7 +686,7 @@ class GetBookingsTest:
         used_but_in_future = booking_factories.UsedBookingFactory(
             user=user,
             dateUsed=datetime.utcnow() - timedelta(days=1),
-            stock=StockFactory(beginningDatetime=datetime.utcnow() + timedelta(days=3)),
+            stock=offers_factories.StockFactory(beginningDatetime=datetime.utcnow() + timedelta(days=3)),
         )
 
         cancelled_permanent_booking = booking_factories.CancelledBookingFactory(
@@ -710,7 +706,9 @@ class GetBookingsTest:
             cancellation_limit_date=datetime(2023, 3, 2),
         )
 
-        mediation = MediationFactory(id=111, offer=used2.stock.offer, thumbCount=1, credit="street credit")
+        mediation = offers_factories.MediationFactory(
+            id=111, offer=used2.stock.offer, thumbCount=1, credit="street credit"
+        )
 
         client = client.with_token(self.identifier)
         with assert_num_queries(2):
@@ -812,7 +810,7 @@ class GetBookingsTest:
 
     def test_get_bookings_returns_user_reaction(self, client):
         now = datetime.utcnow()
-        stock = EventStockFactory()
+        stock = offers_factories.EventStockFactory()
         ongoing_booking = booking_factories.BookingFactory(
             stock=stock, user__deposit__expirationDate=now + timedelta(days=180)
         )
@@ -827,7 +825,7 @@ class GetBookingsTest:
 
     def test_get_bookings_returns_user_reaction_when_one_exists(self, client):
         now = datetime.utcnow()
-        stock = EventStockFactory()
+        stock = offers_factories.EventStockFactory()
         ongoing_booking = booking_factories.BookingFactory(
             stock=stock, user__deposit__expirationDate=now + timedelta(days=180)
         )
@@ -843,8 +841,8 @@ class GetBookingsTest:
 
     def test_get_bookings_returns_user_reaction_when_reaction_is_on_the_product(self, client):
         now = datetime.utcnow()
-        product = ProductFactory()
-        stock = EventStockFactory(offer__product=product)
+        product = offers_factories.ProductFactory()
+        stock = offers_factories.EventStockFactory(offer__product=product)
         ongoing_booking = booking_factories.BookingFactory(
             stock=stock, user__deposit__expirationDate=now + timedelta(days=180)
         )
@@ -859,7 +857,7 @@ class GetBookingsTest:
 
     def test_get_bookings_returns_stock_price_and_price_category_label(self, client):
         now = datetime.utcnow()
-        stock = EventStockFactory()
+        stock = offers_factories.EventStockFactory()
         ongoing_booking = booking_factories.BookingFactory(
             stock=stock, user__deposit__expirationDate=now + timedelta(days=180)
         )
@@ -884,10 +882,10 @@ class GetBookingsTest:
     def test_get_free_bookings_in_subcategory(self, client):
         user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
         ongoing_booking = booking_factories.UsedBookingFactory(
-            user=user, stock=StockFactory(price=0, offer__subcategoryId=subcategories.CARTE_MUSEE.id)
+            user=user, stock=offers_factories.StockFactory(price=0, offer__subcategoryId=subcategories.CARTE_MUSEE.id)
         )
         ended_booking = booking_factories.UsedBookingFactory(
-            user=user, stock=StockFactory(price=10, offer__subcategoryId=subcategories.CARTE_MUSEE.id)
+            user=user, stock=offers_factories.StockFactory(price=10, offer__subcategoryId=subcategories.CARTE_MUSEE.id)
         )
 
         client = client.with_token(ongoing_booking.user.email)
@@ -966,7 +964,9 @@ class GetBookingsTest:
         user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
 
         address = AddressFactory()
-        venue = VenueFactory(offererAddress=OffererAddressFactory(address=address))
+        venue = offerers_factories.VenueFactory(
+            offererAddress=offerers_factories.OffererAddressFactory(address=address)
+        )
         offer = offers_factories.OfferFactory(venue=venue, offererAddress=None)
         booking_factories.BookingFactory(stock__offer=offer, user=user)
 
@@ -1152,7 +1152,7 @@ class ToggleBookingVisibilityTest:
     def test_integration_toggle_visibility(self, client):
         user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
 
-        stock = StockWithActivationCodesFactory()
+        stock = offers_factories.StockWithActivationCodesFactory()
         activation_code = stock.activationCodes[0]
         booking = booking_factories.UsedBookingFactory(
             user=user,
