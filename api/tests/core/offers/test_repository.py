@@ -1467,7 +1467,9 @@ class GetFilteredCollectiveOffersTest:
             user_is_admin=False,
             statuses=[educational_models.CollectiveOfferDisplayedStatus.EXPIRED.value],
         )
-        assert offers.all() == [collective_offer_expired, collective_offer_prebooked_expired]
+        offers_list = offers.all()
+        assert len(offers_list) == 2
+        assert set(offers_list) == {collective_offer_expired, collective_offer_prebooked_expired}
 
 
 @pytest.mark.usefixtures("db_session")
