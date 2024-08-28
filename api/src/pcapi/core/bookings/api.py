@@ -35,6 +35,7 @@ import pcapi.core.finance.exceptions as finance_exceptions
 import pcapi.core.finance.models as finance_models
 import pcapi.core.finance.repository as finance_repository
 import pcapi.core.mails.transactional as transactional_mails
+from pcapi.core.offerers.models import OffererAddress
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers import repository as offers_repository
 import pcapi.core.offers.api as offers_api
@@ -146,8 +147,19 @@ def get_individual_bookings(user: User) -> list[Booking]:
                 Venue.publicName,
                 Venue.timezone,
             )
+            .joinedload(Venue.offererAddress)
+            .joinedload(OffererAddress.address)
         )
         .options(joinedload(Booking.stock).joinedload(Stock.offer).joinedload(Offer.mediations))
+        .options(
+            joinedload(Booking.stock)
+            .load_only(Stock.offerId)
+            .joinedload(Stock.offer)
+            .load_only(Offer.offererAddressId)
+            .joinedload(Offer.offererAddress)
+            .load_only(OffererAddress.addressId, OffererAddress.label)
+            .joinedload(OffererAddress.address)
+        )
         .options(joinedload(Booking.activationCode))
         .options(joinedload(Booking.externalBookings))
         .options(joinedload(Booking.deposit).load_only(finance_models.Deposit.type))
