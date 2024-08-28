@@ -1,7 +1,6 @@
 import { Then, When } from '@badeball/cypress-cucumber-preprocessor'
 
 When('I open the first offer in the list', () => {
-  cy.setFeatureFlags([{ name: 'WIP_SPLIT_OFFER', isActive: true }])
   cy.findAllByTestId('offer-item-row')
     .first()
     .within(() => {

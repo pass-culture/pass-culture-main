@@ -42,9 +42,7 @@ When('I open adage iframe with venue', () => {
 
 When('I open adage iframe with search page', () => {
   const adageToken = Cypress.env('adageToken')
-  cy.setFeatureFlags([
-    { name: 'WIP_ENABLE_ADAGE_VISUALIZATION', isActive: true },
-  ])
+
   cy.intercept({
     method: 'GET',
     url: '/adage-iframe/collective/offers-template/**',
