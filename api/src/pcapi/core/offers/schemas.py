@@ -15,7 +15,7 @@ class PostDraftOfferBodyModel(BaseModel):
     subcategory_id: str
     venue_id: int
     description: str | None = None
-    extra_data: dict[str, typing.Any] | None = None
+    extra_data: offers_models.OfferExtraData | None = None
     duration_minutes: int | None = None
 
     @validator("name", pre=True)
@@ -33,7 +33,7 @@ class PatchDraftOfferBodyModel(BaseModel):
     subcategory_id: str | None = None
     venue_id: int | None = None
     description: str | None = None
-    extra_data: dict[str, typing.Any] | None = None
+    extra_data: offers_models.OfferExtraData | None = None
     duration_minutes: int | None = None
 
     @validator("name", pre=True)

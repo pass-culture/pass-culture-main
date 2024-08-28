@@ -17,10 +17,10 @@ class Returns201Test:
             "name": "Celeste",
             "subcategoryId": subcategories.LIVRE_PAPIER.id,
             "venueId": venue.id,
-            "extraData": {"ean": "9782123456803", "gtl_id": "07000000"},
+            "extraData": {"ean": "9782123456803", "gtlId": "07000000"},
         }
         response = client.with_session_auth("user@example.com").post("/offers/draft", json=data)
-
+        print(response.json)
         assert response.status_code == 201
 
         response_dict = response.json

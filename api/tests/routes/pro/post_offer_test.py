@@ -54,7 +54,7 @@ class Returns200Test:
             "name": "La pièce de théâtre",
             "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
             "withdrawalType": "no_ticket",
-            "extraData": {"toto": "text", "showType": 200, "showSubType": 201},
+            "extraData": {"showType": 200, "showSubType": 201},
             "externalTicketOfficeUrl": "http://example.net",
             "audioDisabilityCompliant": False,
             "mentalDisabilityCompliant": True,
@@ -62,7 +62,7 @@ class Returns200Test:
             "visualDisabilityCompliant": False,
         }
         response = client.with_session_auth("user@example.com").post("/offers", json=data)
-
+        print(response.json)
         # Then
         assert response.status_code == 201
         offer_id = response.json["id"]
@@ -71,7 +71,7 @@ class Returns200Test:
         assert offer.bookingEmail == "offer@example.com"
         assert offer.publicationDate is None
         assert offer.subcategoryId == subcategories.SPECTACLE_REPRESENTATION.id
-        assert offer.extraData == {"showType": 200, "showSubType": 201}
+        assert offer.extraData == {"showType": "200", "showSubType": "201"}
         assert offer.externalTicketOfficeUrl == "http://example.net"
         assert offer.venue == venue
         assert offer.motorDisabilityCompliant is False
@@ -114,7 +114,7 @@ class Returns200Test:
             "name": "La pièce de théâtre",
             "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
             "withdrawalType": "no_ticket",
-            "extraData": {"toto": "text", "showType": 200, "showSubType": 201},
+            "extraData": {"showType": 200, "showSubType": 201},
             "externalTicketOfficeUrl": "http://example.net",
             "audioDisabilityCompliant": False,
             "mentalDisabilityCompliant": True,
@@ -156,7 +156,7 @@ class Returns200Test:
             "name": "La pièce de théâtre",
             "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
             "withdrawalType": "no_ticket",
-            "extraData": {"toto": "text", "showType": 200, "showSubType": 201},
+            "extraData": {"showType": 200, "showSubType": 201},
             "externalTicketOfficeUrl": "http://example.net",
             "audioDisabilityCompliant": False,
             "mentalDisabilityCompliant": True,
@@ -197,7 +197,7 @@ class Returns200Test:
             "name": "La pièce de théâtre",
             "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
             "withdrawalType": "no_ticket",
-            "extraData": {"toto": "text", "showType": 200, "showSubType": 201},
+            "extraData": {"showType": 200, "showSubType": 201},
             "externalTicketOfficeUrl": "http://example.net",
             "audioDisabilityCompliant": False,
             "mentalDisabilityCompliant": True,
@@ -303,14 +303,14 @@ class Returns200Test:
             "bookingContact": "booking@conta.ct",
             "withdrawalDetails": "Veuillez récuperer vos billets à l'accueil :)",
             "withdrawalType": "no_ticket",
-            "extraData": {"gtl_id": "07000000"},
+            "extraData": {"gtlId": "07000000"},
             "mentalDisabilityCompliant": False,
             "audioDisabilityCompliant": False,
             "visualDisabilityCompliant": False,
             "motorDisabilityCompliant": False,
         }
         response = client.with_session_auth("user@example.com").post("/offers", json=data)
-
+        print(response.json)
         # Then
         offer_id = response.json["id"]
         offer = Offer.query.get(offer_id)
@@ -587,6 +587,24 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json == {"withdrawalType": ["Withdrawal type cannot be in_app for manually created offers"]}
+
+    def test_fails_on_unknown_extra_data(self, client):
+        venue = offerers_factories.VenueFactory()
+        offerers_factories.UserOffererFactory(offerer=venue.managingOfferer, user__email="user@example.com")
+        data = {
+            "venueId": venue.id,
+            "name": "Vernissage",
+            "subcategoryId": subcategories.CONCERT.id,
+            "mentalDisabilityCompliant": False,
+            "audioDisabilityCompliant": False,
+            "visualDisabilityCompliant": False,
+            "motorDisabilityCompliant": False,
+            "poudlardHouse": "Slitherin",
+        }
+        response = client.with_session_auth("user@example.com").post("/offers", json=data)
+
+        assert response.status_code == 400
+        assert response.json == {"poudlardHouse": ["Vous ne pouvez pas changer cette information"]}
 
 
 @pytest.mark.usefixtures("db_session")

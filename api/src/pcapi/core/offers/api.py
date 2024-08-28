@@ -131,19 +131,19 @@ def build_new_offer_from_product(
     )
 
 
-def deserialize_extra_data(initial_extra_data: typing.Any) -> typing.Any:
+def deserialize_extra_data(initial_extra_data: offers_models.OfferExtraData) -> typing.Any:
     extra_data: dict = initial_extra_data
     if not extra_data:
         return None
     # FIXME (ghaliela, 2024-02-16): If gtl id is sent in the extra data, musicType and musicSubType are not sent
-    if extra_data.get("gtl_id"):
-        extra_data["musicType"] = str(music_types.MUSIC_TYPES_BY_SLUG[MUSIC_SLUG_BY_GTL_ID[extra_data["gtl_id"]]].code)
+    if extra_data.get("gtlId"):
+        extra_data["musicType"] = str(music_types.MUSIC_TYPES_BY_SLUG[MUSIC_SLUG_BY_GTL_ID[extra_data["gtlId"]]].code)
         extra_data["musicSubType"] = str(
-            music_types.MUSIC_SUB_TYPES_BY_SLUG[MUSIC_SLUG_BY_GTL_ID[extra_data["gtl_id"]]].code
+            music_types.MUSIC_SUB_TYPES_BY_SLUG[MUSIC_SLUG_BY_GTL_ID[extra_data["gtlId"]]].code
         )
     # FIXME (ghaliela, 2024-02-16): If musicType is sent in the extra data, gtl id is not sent
     elif extra_data.get("musicType"):
-        extra_data["gtl_id"] = GTL_IDS_BY_MUSIC_GENRE_CODE[int(extra_data["musicType"])]
+        extra_data["gtlId"] = GTL_IDS_BY_MUSIC_GENRE_CODE[int(extra_data["musicType"])]
     return extra_data
 
 

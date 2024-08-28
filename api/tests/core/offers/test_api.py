@@ -1145,14 +1145,14 @@ class UpdateDraftOfferTest:
             description="description",
         )
         body = schemas.PatchDraftOfferBodyModel(
-            name="New name",
-            description="New description",
+            name="New name", description="New description", extraData={"gtlId": "01000000"}
         )
         offer = api.update_draft_offer(offer, body)
         db.session.flush()
 
         assert offer.name == "New name"
         assert offer.description == "New description"
+        assert offer.extraData["gtl_id"] == "01000000"
 
 
 @pytest.mark.usefixtures("db_session")

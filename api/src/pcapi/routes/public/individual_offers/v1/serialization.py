@@ -273,8 +273,8 @@ def deserialize_extra_data(
         if field_name == subcategories.ExtraDataFieldEnum.MUSIC_TYPE.value:
             # Convert musicType slug to musicType and musicSubType codes
             if field_value in TiteliveMusicTypeEnum.__members__:
-                extra_data["gtl_id"] = constants.GTL_ID_BY_TITELIVE_MUSIC_GENRE[field_value]
-                music_slug = constants.MUSIC_SLUG_BY_GTL_ID[extra_data["gtl_id"]]
+                extra_data["gtlId"] = constants.GTL_ID_BY_TITELIVE_MUSIC_GENRE[field_value]
+                music_slug = constants.MUSIC_SLUG_BY_GTL_ID[extra_data["gtlId"]]
                 extra_data["musicType"] = str(music_types.MUSIC_TYPES_BY_SLUG[music_slug].code)
                 extra_data["musicSubType"] = str(music_types.MUSIC_SUB_TYPES_BY_SLUG[music_slug].code)
             else:
