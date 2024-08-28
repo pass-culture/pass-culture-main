@@ -1,3 +1,5 @@
+from datetime import datetime
+from datetime import timezone
 import logging
 
 import sqlalchemy as sa
@@ -6,11 +8,14 @@ from pcapi.core.bookings import exceptions as bookings_exceptions
 from pcapi.core.educational import exceptions
 from pcapi.core.educational import models
 from pcapi.core.educational.api import booking as booking_api
+from pcapi.core.finance import api as finance_api
+from pcapi.core.finance import models as finance_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.providers import models as providers_models
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import ForbiddenError
 from pcapi.models.api_errors import ResourceNotFoundError
+from pcapi.repository import atomic
 from pcapi.routes.adage.v1.serialization import constants
 from pcapi.routes.public import blueprints
 from pcapi.routes.public import spectree_schemas
@@ -21,6 +26,9 @@ from pcapi.serialization.decorator import spectree_serialize
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
 from pcapi.validation.routes.users_authentifications import api_key_required
 from pcapi.validation.routes.users_authentifications import current_api_key
+
+
+logger = logging.getLogger(__name__)
 
 
 logger = logging.getLogger(__name__)
@@ -105,6 +113,52 @@ def adage_mock_cancel_collective_booking(booking_id: int) -> None:
         err_extras = {"booking": booking_id, "api_key": current_api_key.id, "err": str(err)}
         logger.error("Adage mock. Failed to cancel booking.", extra=err_extras)
         raise ApiErrors({"code": "FAILED_TO_CANCEL_BOOKING_TRY_AGAIN"}, status_code=500)
+
+
+@blueprints.public_api.route("/v2/collective/bookings/<int:booking_id>/use", methods=["POST"])
+@utils.exclude_prod_environment
+@api_key_required
+@spectree_serialize(
+    api=spectree_schemas.public_api_schema,
+    on_success_status=204,
+    tags=[tags.COLLECTIVE_ADAGE_MOCK],
+    resp=SpectreeResponse(
+        **(
+            http_responses.HTTP_204_COLLECTIVE_BOOKING_STATUS_UPDATE
+            | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
+            | http_responses.HTTP_403_COLLECTIVE_BOOKING_STATUS_UPDATE_REFUSED
+            | http_responses.HTTP_404_COLLECTIVE_OFFER_NOT_FOUND
+        )
+    ),
+)
+def use_collective_booking(booking_id: int) -> None:
+    """
+    Mock collective booking use
+
+    Mark collective booking as used to mock what would automatically
+    happen 48h after the event.
+
+    **WARNING:** this endpoint is not available from the production
+    environment as it is a mock meant to ease the test of your
+    integrations.
+    """
+    booking = _get_booking_or_raise_404(booking_id)
+
+    if booking.status != models.CollectiveBookingStatus.CONFIRMED:
+        raise ForbiddenError({"code": "ONLY_CONFIRMED_BOOKING_CAN_BE_USED"})
+
+    try:
+        with atomic():
+            booking.dateUsed = datetime.now(timezone.utc)  # pylint: disable=datetime-now
+            booking.status = models.CollectiveBookingStatus.USED
+
+            finance_api.add_event(
+                finance_models.FinanceEventMotive.BOOKING_USED,
+                booking=booking,
+            )
+    except Exception as err:
+        logger.error("[adage mock] failed to use booking", extra={"booking": booking.id, "error": str(err)})
+        raise ApiErrors({"code": "FAILED_TO_USE_BOOKING_TRY_AGAIN_LATER"}, status_code=500)
 
 
 def _get_booking_or_raise_404(booking_id: int) -> models.CollectiveBooking:

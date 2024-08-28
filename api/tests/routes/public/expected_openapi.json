@@ -11250,6 +11250,60 @@
                 ]
             }
         },
+        "/v2/collective/bookings/{booking_id}/use": {
+            "post": {
+                "description": "Mark collective booking as used to mock what would automatically happen 48h after the event.\n\n**WARNING:** this endpoint is not available from the production environment as it is a mock meant to ease the test of your integrations.",
+                "operationId": "UseCollectiveBooking",
+                "parameters": [
+                    {
+                        "description": "",
+                        "in": "path",
+                        "name": "booking_id",
+                        "required": true,
+                        "schema": {
+                            "format": "int32",
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "This collective booking's status has been successfully updated"
+                    },
+                    "401": {
+                        "description": "Authentication is necessary to use this API."
+                    },
+                    "403": {
+                        "description": "Collective booking status updated has been refused"
+                    },
+                    "404": {
+                        "description": "The collective offer could not be found."
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        },
+                        "description": "Unprocessable Entity"
+                    },
+                    "429": {
+                        "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "summary": "Mock collective booking use",
+                "tags": [
+                    "Collective bookings Adage mock"
+                ]
+            }
+        },
         "/v2/collective/categories": {
             "get": {
                 "deprecated": true,
