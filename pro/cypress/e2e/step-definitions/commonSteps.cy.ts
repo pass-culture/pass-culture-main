@@ -9,6 +9,10 @@ Given('I open the {string} page', (page: string) => {
   cy.visit('/' + page)
 })
 
+Given('I activate a feature flag {string}', (FF: string) => {
+  cy.setFeatureFlags([{ name: FF, isActive: true }])
+})
+
 When('I go to the {string} page', (page: string) => {
   cy.url().then((urlSource) => {
     cy.findAllByText(page).first().click()

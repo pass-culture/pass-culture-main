@@ -78,6 +78,8 @@ Cypress.Commands.add('setFeatureFlags', (features: Feature[]) => {
     body: JSON.stringify({
       features,
     }),
+  }).then((response) => {
+    expect(response.status).to.equal(204)
   })
 })
 
