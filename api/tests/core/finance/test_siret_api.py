@@ -9,11 +9,9 @@ import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.models import db
 
-from tests.conftest import clean_database
-
 
 class DeleteSiretTest:
-    @clean_database
+    @pytest.mark.usefixtures("clean_database")
     def test_basics(self):
         venue = offerers_factories.VenueFactory(pricing_point="self")
         dependent_venue = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer, pricing_point=venue)
@@ -44,7 +42,7 @@ class DeleteSiretTest:
             assert action.venueId in (venue.id, dependent_venue.id)
             assert action.extraData["modified_info"]["pricingPointSiret"] == {"old_info": old_siret, "new_info": None}
 
-    @clean_database
+    @pytest.mark.usefixtures("clean_database")
     def test_with_new_pricing_point(self):
         venue = offerers_factories.VenueFactory(pricing_point="self")
         dependent_venue = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer, pricing_point=venue)
@@ -92,7 +90,7 @@ class DeleteSiretTest:
         assert actions[1].venueId == dependent_venue.id
         assert actions[1].extraData["modified_info"]["pricingPointSiret"] == {"old_info": old_siret, "new_info": None}
 
-    @clean_database
+    @pytest.mark.usefixtures("clean_database")
     def test_dry_run(self):
         venue = offerers_factories.VenueFactory(pricing_point="self")
 
@@ -101,7 +99,7 @@ class DeleteSiretTest:
         assert venue.siret is not None
         assert venue.comment is None
 
-    @clean_database
+    @pytest.mark.usefixtures("clean_database")
     def test_revenue_check(self):
         venue = offerers_factories.VenueFactory(pricing_point="self")
         user = users_factories.RichBeneficiaryFactory()
@@ -124,7 +122,7 @@ class DeleteSiretTest:
         )
         assert venue.siret is None
 
-    @clean_database
+    @pytest.mark.usefixtures("clean_database")
     def test_refuse_if_pricing_point_has_pending_pricings(self):
         venue = offerers_factories.VenueFactory(pricing_point="self")
         factories.PricingFactory(booking__stock__offer__venue=venue, status=models.PricingStatus.PENDING)
@@ -133,7 +131,7 @@ class DeleteSiretTest:
             siret_api.remove_siret(venue, comment="xxx", apply_changes=True)
         assert str(err.value) == "Ce lieu a des valorisations en attente"
 
-    @clean_database
+    @pytest.mark.usefixtures("clean_database")
     def test_refuse_if_new_pricing_point_does_not_exist(self):
         venue = offerers_factories.VenueFactory(pricing_point="self")
 
@@ -141,7 +139,7 @@ class DeleteSiretTest:
             siret_api.remove_siret(venue, comment="xxx", new_pricing_point_id=venue.id + 1000, apply_changes=True)
         assert str(err.value) == "Le nouveau point de valorisation doit être un lieu avec SIRET sur la même structure"
 
-    @clean_database
+    @pytest.mark.usefixtures("clean_database")
     def test_refuse_if_new_pricing_point_has_no_siret(self):
         venue = offerers_factories.VenueFactory(pricing_point="self")
         new_pricing_point = offerers_factories.VenueWithoutSiretFactory(managingOffererId=venue.managingOffererId)
@@ -150,7 +148,7 @@ class DeleteSiretTest:
             siret_api.remove_siret(venue, comment="xxx", new_pricing_point_id=new_pricing_point.id, apply_changes=True)
         assert str(err.value) == "Le nouveau point de valorisation doit être un lieu avec SIRET sur la même structure"
 
-    @clean_database
+    @pytest.mark.usefixtures("clean_database")
     def test_refuse_if_new_pricing_point_is_managed_by_another_offerer(self):
         venue = offerers_factories.VenueFactory(pricing_point="self")
         new_pricing_point = offerers_factories.VenueFactory(pricing_point="self")

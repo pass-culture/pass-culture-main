@@ -4,11 +4,17 @@ Les tests automatisés sont écrits et exécutés avec pytest.
 
 ## Indépendance des tests
 
-Aujourd'hui, la plupart des tests ne sont pas réellement indépendants : ils dépendant des données générées par d'autres tests
+Aujourd'hui, la plupart des tests ne sont pas réellement indépendants : ils dépendent des données générées par d'autres tests
 exécutés plus tôt. Le souhait est de les rendre exécutable indépendamment des autres.
 
-* Pour ce faire, on peut décorer une fonction de test avec `@clean_database` qui va s'occuper de vider toutes les tables dans la base de donnée.
-Un test décoré de cette manière va donc devoir se préoccuper d'enregistrer les données dont il a besoin.
+* Pour ce faire, on peut utiliser la fixture `clean_database` qui va s'occuper de vider toutes les tables dans la base de donnée.
+Un test qui utilise cette fixture va donc devoir se préoccuper d'enregistrer les données dont il a besoin. exemple :
+
+```python
+@pytest.mark.usefixtures("clean_database")
+def test_regular():
+    …
+```
 
 ## Niveaux de tests
 
