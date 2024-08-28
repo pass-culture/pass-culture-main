@@ -1739,6 +1739,11 @@ def generate_debit_notes(batch: models.CashflowBatch) -> None:
                     "exc": str(exc),
                 },
             )
+    with log_elapsed(logger, "Generated CSV invoices file"):
+        path = generate_invoice_file(batch)
+    drive_folder_name = _get_drive_folder_name(batch)
+    with log_elapsed(logger, "Uploaded CSV invoices file to Google Drive"):
+        _upload_files_to_google_drive(drive_folder_name, [path])
 
 
 def _get_cashflows_by_bank_accounts(batch: models.CashflowBatch, only_debit_notes: bool = False) -> list:
@@ -1784,11 +1789,6 @@ def generate_invoices(batch: models.CashflowBatch) -> None:
                     "exc": str(exc),
                 },
             )
-    with log_elapsed(logger, "Generated CSV invoices file"):
-        path = generate_invoice_file(batch)
-    drive_folder_name = _get_drive_folder_name(batch)
-    with log_elapsed(logger, "Uploaded CSV invoices file to Google Drive"):
-        _upload_files_to_google_drive(drive_folder_name, [path])
 
 
 def async_generate_invoices(batch: models.CashflowBatch) -> None:
