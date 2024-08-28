@@ -566,8 +566,39 @@ class ListIndividualBookingsTest(GetEndpointHelper):
     @pytest.mark.parametrize(
         "cancellation_reason, expected_text",
         [
-            (bookings_models.BookingCancellationReasons.BACKOFFICE, "Annulée sur le backoffice par"),
+            (bookings_models.BookingCancellationReasons.OFFERER, "Annulée par l'acteur culturel"),
+            (
+                bookings_models.BookingCancellationReasons.OFFERER_CONNECT_AS,
+                "Annulée pour l'acteur culturel par Hercule Poirot via Connect As",
+            ),
+            (bookings_models.BookingCancellationReasons.BENEFICIARY, "Annulée par le bénéficiaire"),
+            (bookings_models.BookingCancellationReasons.EXPIRED, "Expirée"),
             (bookings_models.BookingCancellationReasons.FRAUD, "Fraude"),
+            (
+                bookings_models.BookingCancellationReasons.REFUSED_BY_INSTITUTE,
+                "Refusée par l'institution",
+            ),
+            (bookings_models.BookingCancellationReasons.FINANCE_INCIDENT, "Incident finance"),
+            (
+                bookings_models.BookingCancellationReasons.BACKOFFICE_EVENT_CANCELLED,
+                "Annulée depuis le backoffice par Hercule Poirot pour annulation d’évènement",
+            ),
+            (
+                bookings_models.BookingCancellationReasons.BACKOFFICE_BENEFICIARY_REQUEST,
+                "Annulée depuis le backoffice par Hercule Poirot sur demande du bénéficiaire",
+            ),
+            (
+                bookings_models.BookingCancellationReasons.BACKOFFICE_OVERBOOKING,
+                "Annulée depuis le backoffice par Hercule Poirot pour surbooking",
+            ),
+            (
+                bookings_models.BookingCancellationReasons.BACKOFFICE_OFFER_MODIFIED,
+                "Annulée depuis le backoffice par Hercule Poirot pour modification des informations de l'offre",
+            ),
+            (
+                bookings_models.BookingCancellationReasons.BACKOFFICE_OFFER_WITH_WRONG_INFORMATION,
+                "Annulée depuis le backoffice par Hercule Poirot pour erreur d'information dans l'offre",
+            ),
         ],
     )
     def test_list_cancelled_booking_information(
@@ -579,9 +610,7 @@ class ListIndividualBookingsTest(GetEndpointHelper):
         )
 
         with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(
-                url_for(self.endpoint, cancellation_reason=["OFFERER", "FRAUD", "BACKOFFICE"])
-            )
+            response = authenticated_client.get(url_for(self.endpoint, cancellation_reason=cancellation_reason.name))
             assert response.status_code == 200
 
         extra_data = html_parser.extract(response.data, tag="tr", class_="collapse accordion-collapse")[0]
@@ -590,12 +619,7 @@ class ListIndividualBookingsTest(GetEndpointHelper):
         assert "Sous-catégorie" in extra_data
         assert "Date d'annulation" in extra_data
         assert "Raison de l'annulation" in extra_data
-        if expected_text == "Fraude":
-            assert expected_text in extra_data
-        else:
-            assert f"{expected_text} {legit_user.full_name}" in extra_data
-            link = '<a href="/admin/bo-users/' + str(legit_user.id) + '">' + legit_user.full_name + "</a>"
-            assert link in str(html_parser.get_soup(response.data))
+        assert expected_text in extra_data
 
 
 class MarkBookingAsUsedTest(PostEndpointHelper):

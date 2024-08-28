@@ -712,6 +712,10 @@ class User(PcObject, Base, Model, DeactivableMixin):
         ).scalar()
         return has_partner_page
 
+    @property
+    def is_impersonated(self) -> bool:
+        return bool(self.impersonator)
+
 
 class DiscordUser(PcObject, Base, Model):
     __tablename__ = "discord_user"

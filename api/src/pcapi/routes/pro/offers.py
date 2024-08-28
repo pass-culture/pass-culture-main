@@ -155,7 +155,7 @@ def delete_stocks(offer_id: int, body: offers_serialize.DeleteStockListBody) -> 
 
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
     stocks_to_delete = [stock for stock in offer.stocks if stock.id in body.ids_to_delete]
-    offers_api.batch_delete_stocks(stocks_to_delete)
+    offers_api.batch_delete_stocks(stocks_to_delete, current_user.real_user.id, current_user.is_impersonated)
 
 
 @private_api.route("/offers/<int:offer_id>/stocks/all-delete", methods=["POST"])

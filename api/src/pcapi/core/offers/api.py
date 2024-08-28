@@ -885,12 +885,12 @@ def _invalidate_bookings(bookings: list[bookings_models.Booking]) -> list[bookin
     return bookings
 
 
-def _delete_stock(stock: models.Stock) -> None:
+def _delete_stock(stock: models.Stock, author_id: int | None = None, user_connect_as: bool | None = None) -> None:
     stock.isSoftDeleted = True
     repository.save(stock)
 
     # the algolia sync for the stock will happen within this function
-    cancelled_bookings = bookings_api.cancel_bookings_from_stock_by_offerer(stock)
+    cancelled_bookings = bookings_api.cancel_bookings_from_stock_by_offerer(stock, author_id, user_connect_as)
 
     logger.info(
         "Deleted stock and cancelled its bookings",
@@ -908,9 +908,9 @@ def _delete_stock(stock: models.Stock) -> None:
     )
 
 
-def delete_stock(stock: models.Stock) -> None:
+def delete_stock(stock: models.Stock, author_id: int | None = None, user_connect_as: bool | None = None) -> None:
     validation.check_stock_is_deletable(stock)
-    _delete_stock(stock)
+    _delete_stock(stock, author_id, user_connect_as)
 
 
 def create_mediation(
@@ -1542,13 +1542,15 @@ def batch_delete_draft_offers(query: BaseQuery) -> None:
     db.session.commit()
 
 
-def batch_delete_stocks(stocks_to_delete: list[models.Stock]) -> None:
+def batch_delete_stocks(
+    stocks_to_delete: list[models.Stock], author_id: int | None, user_connect_as: bool | None
+) -> None:
     # We want to check that all stocks can be deleted first
     for stock in stocks_to_delete:
         validation.check_stock_is_deletable(stock)
 
     for stock in stocks_to_delete:
-        _delete_stock(stock)
+        _delete_stock(stock, author_id, user_connect_as)
 
 
 def get_or_create_label(label: str, venue: offerers_models.Venue) -> models.PriceCategoryLabel:

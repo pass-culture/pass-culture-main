@@ -163,7 +163,9 @@ def cancel_collective_offer_booking(offer_id: int) -> None:
     check_user_has_access_to_offerer(current_user, offerer.id)
 
     try:
-        educational_api_booking.cancel_collective_offer_booking(offer_id)
+        educational_api_booking.cancel_collective_offer_booking(
+            offer_id, current_user.real_user.id, current_user.is_impersonated
+        )
     except collective_exceptions.CollectiveStockNotFound:
         raise ApiErrors(
             {"code": "NO_ACTIVE_STOCK_FOUND", "message": "No active stock has been found with this id"}, 404

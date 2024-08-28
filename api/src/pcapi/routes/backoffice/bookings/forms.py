@@ -216,6 +216,11 @@ class CancelCollectiveBookingForm(FlaskForm):
         choices=utils.choices_from_enum(
             educational_models.CollectiveBookingCancellationReasons,
             formatter=filters.format_booking_cancellation,
+            exclude_opts=(
+                educational_models.CollectiveBookingCancellationReasons.OFFERER,
+                educational_models.CollectiveBookingCancellationReasons.OFFERER_CONNECT_AS,
+                educational_models.CollectiveBookingCancellationReasons.PUBLIC_API,
+            ),
         ),
     )
 
@@ -224,7 +229,12 @@ class CancelIndividualBookingForm(FlaskForm):
     reason = fields.PCSelectWithPlaceholderValueField(
         "Raison",
         choices=utils.choices_from_enum(
-            bookings_models.BookingCancellationReasons, formatter=filters.format_booking_cancellation
+            bookings_models.BookingCancellationReasons,
+            formatter=filters.format_booking_cancellation,
+            exclude_opts=(
+                bookings_models.BookingCancellationReasons.OFFERER,
+                bookings_models.BookingCancellationReasons.OFFERER_CONNECT_AS,
+            ),
         ),
     )
 
