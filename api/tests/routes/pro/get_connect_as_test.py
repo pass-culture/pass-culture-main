@@ -1,4 +1,5 @@
 from pcapi.core.testing import assert_num_queries
+from pcapi.core.testing import override_features
 from pcapi.core.token import SecureToken
 from pcapi.core.token.serialization import ConnectAsInternalModel
 from pcapi.core.users import factories as users_factories
@@ -13,7 +14,8 @@ class Returns200Test:
     # DELETE FROM user_session
     # user
     # INSERT INTO user_session
-    expected_num_queries = 7
+    # get feature flags
+    expected_num_queries = 8
 
     def test_current_user_has_rights_to_impersonate_a_pro(self, client, db_session):
         # given
@@ -128,6 +130,36 @@ class Returns200Test:
             assert session["internal_admin_email"] == admin.email
             assert session["internal_admin_id"] == admin.id
 
+    @override_features(ENABLE_CONNECT_AS_CHECK_USER_ADMIN=False)
+    def test_user_is_not_admin(self, client, db_session):
+        # given
+        admin = users_factories.UserFactory(email="admin@example.com")
+        target = users_factories.ProFactory()
+
+        expected_redirect_link = "https://example.com"
+        secure_token = SecureToken(
+            data=ConnectAsInternalModel(
+                redirect_link=expected_redirect_link,
+                user_id=target.id,
+                internal_admin_email=admin.email,
+                internal_admin_id=admin.id,
+            ).dict(),
+        )
+        # when
+        client = client.with_session_auth(admin.email)
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get(f"/users/connect-as/{secure_token.token}")
+
+        # then
+        assert response.status_code == 302
+        assert response.location == expected_redirect_link
+        # check user is impersonated
+        with client.client.session_transaction() as session:
+            assert session["user_id"] == target.id
+            assert session["_user_id"] == str(target.id)
+            assert session["internal_admin_email"] == admin.email
+            assert session["internal_admin_id"] == admin.id
+
 
 class Returns401Test:
     def test_user_not_connected(self, client, db_session):
@@ -161,8 +193,10 @@ class Returns403Test:
     # session
     # user
     # user to connect as
-    expected_num_queries = 3
+    # get feature flags
+    expected_num_queries = 4
 
+    @override_features(ENABLE_CONNECT_AS_CHECK_USER_ADMIN=True)
     def test_user_is_not_admin(self, client, db_session):
         # given
         admin = users_factories.UserFactory(email="admin@example.com")
@@ -364,7 +398,8 @@ class Returns404Test:
     # session
     # user
     # user to connect as
-    expected_num_queries = 3
+    # get feature flags
+    expected_num_queries = 4
 
     def test_user_not_found(self, client, db_session):
         # given

@@ -27,6 +27,7 @@ from pcapi.core.users.email import repository as email_repository
 from pcapi.domain.password import check_password_validity
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import ForbiddenError
+from pcapi.models.feature import FeatureToggle
 from pcapi.routes.serialization import users as users_serializers
 from pcapi.routes.shared.cookies_consent import CookieConsentRequest
 from pcapi.serialization.decorator import spectree_serialize
@@ -256,8 +257,7 @@ def cookies_consent(body: CookieConsentRequest) -> None:
 def connect_as(token: str) -> Response:
     # This route is not used by PRO but it is used by the Backoffice
     admin = current_user.real_user
-
-    if not admin.has_admin_role:
+    if FeatureToggle.ENABLE_CONNECT_AS_CHECK_USER_ADMIN.is_active() and not admin.has_admin_role:
         raise ForbiddenError(
             errors={
                 "global": "L'utilisateur doit être connecté avec un compte admin pour pouvoir utiliser cet endpoint",

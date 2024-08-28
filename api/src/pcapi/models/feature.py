@@ -71,6 +71,9 @@ class FeatureToggle(enum.Enum):
     ENABLE_UBBLE = "Active la vérification d'identité par Ubble"
     ENABLE_UBBLE_SUBSCRIPTION_LIMITATION = "Active la limitation en fonction de l'âge lors de pic d'inscription"
     ENABLE_VIRUSTOTAL = "Active la vérification des liens externes par VirusTotal"
+    ENABLE_CONNECT_AS_CHECK_USER_ADMIN = (
+        "Active la vérification si l'utilisateur connecté sur pro est admin avant d'autoriser le connect as"
+    )
     GENERATE_CASHFLOWS_BY_CRON = (
         "Active la génération automatique (via cron) des flux monétaires et fichiers de remboursement"
     )
