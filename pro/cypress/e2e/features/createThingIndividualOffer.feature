@@ -7,7 +7,7 @@ Feature: Create an individual offer (thing)
     And I go to the "Créer une offre" page
     And I want to create "Un bien physique" offer
     And I fill in details for physical offer
-    Then the details of "Club Dorothy" offer should be correct
+    Then the details of offer should be correct
     When I validate offer details step
     And I fill in useful informations for physical offer
     And I validate offer useful informations step
