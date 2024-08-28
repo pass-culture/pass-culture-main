@@ -53,7 +53,6 @@ from pcapi.notifications.push import testing as push_testing
 from pcapi.utils.human_ids import humanize
 
 import tests
-from tests import conftest
 from tests.connectors.cgr import soap_definitions
 from tests.connectors.titelive import fixtures
 from tests.local_providers.cinema_providers.boost import fixtures as boost_fixtures
@@ -1037,7 +1036,7 @@ class CreateMediationV2Test:
 
     @mock.patch("pcapi.core.object_storage.store_public_object", side_effect=Exception)
     @override_settings(LOCAL_STORAGE_DIR=BASE_THUMBS_DIR)
-    @conftest.clean_database
+    @pytest.mark.usefixtures("clean_database")
     # this test needs "clean_database" instead of "db_session" fixture because with the latter, the mediation would still be present in databse
     def test_rollback_if_exception(self, mock_store_public_object, clear_tests_assets_bucket):
         user = users_factories.ProFactory()
