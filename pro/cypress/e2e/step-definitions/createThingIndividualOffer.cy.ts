@@ -28,8 +28,7 @@ When('I fill in details for physical offer', () => {
   cy.findByText('Enregistrer').click()
 })
 
-Then('the details of {string} offer should be correct', (venueName: string) => {
-  cy.findByLabelText('Lieu *').should('have.text', venueName)
+Then('the details of offer should be correct', () => {
   cy.findByLabelText('Titre de l’offre *').should('have.value', offerTitle)
   cy.findByLabelText('Description').should('have.text', offerDesc)
 

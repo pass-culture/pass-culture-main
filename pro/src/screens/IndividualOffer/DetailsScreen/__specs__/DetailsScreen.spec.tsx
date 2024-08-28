@@ -288,6 +288,23 @@ describe('screens:IndividualOffer::Informations', () => {
             offererName: 'Offerer 1',
             venueTypeCode: VenueTypeCode.FESTIVAL,
           },
+          {
+            id: 2,
+            name: 'Venue 2',
+            address: {
+              ...addressResponseIsEditableModelFactory({
+                label: 'mon adresse',
+                city: 'ma ville',
+                street: 'ma street',
+                postalCode: '1',
+              }),
+            },
+            isVirtual: false,
+            hasCreatedOffer: false,
+            managingOffererId: 1,
+            offererName: 'Offerer 1',
+            venueTypeCode: VenueTypeCode.FESTIVAL,
+          },
         ],
       },
       contextValue,
@@ -358,6 +375,23 @@ describe('screens:IndividualOffer::Informations', () => {
             offererName: 'Offerer 1',
             venueTypeCode: VenueTypeCode.FESTIVAL,
           },
+          {
+            id: 2,
+            name: 'Venue 2',
+            address: {
+              ...addressResponseIsEditableModelFactory({
+                label: 'mon adresse',
+                city: 'ma ville',
+                street: 'ma street',
+                postalCode: '1',
+              }),
+            },
+            isVirtual: false,
+            hasCreatedOffer: false,
+            managingOffererId: 1,
+            offererName: 'Offerer 1',
+            venueTypeCode: VenueTypeCode.FESTIVAL,
+          },
         ],
       },
       contextValue,
@@ -407,5 +441,13 @@ describe('screens:IndividualOffer::Informations', () => {
     ).not.toBeInTheDocument()
     expect(screen.getByText('Type d’offre')).toBeInTheDocument()
     expect(screen.getByText('Sous catégorie offline de A')).toBeInTheDocument()
+  })
+
+  it('should not render venue field when there is just one venue', () => {
+    props.venues = [venueListItemFactory({ id: 189 })]
+
+    renderDetailsScreen(props, contextValue)
+
+    expect(screen.queryByText(/Lieu/)).not.toBeInTheDocument()
   })
 })

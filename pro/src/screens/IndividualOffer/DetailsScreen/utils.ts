@@ -174,6 +174,7 @@ export const onSubcategoryChange = async ({
 
 export const buildVenueOptions = (venues: VenueListItemResponseModel[]) => {
   let venueOptions = venues
+    .filter((venue) => !venue.isVirtual)
     .map((venue) => ({
       value: venue.id.toString(),
       label: computeVenueDisplayName(venue),
