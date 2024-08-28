@@ -63,7 +63,6 @@ export const DetailsForm = ({
       name,
     },
     handleChange,
-    setFieldValue,
   } = useFormikContext<DetailsFormValues>()
   const { offer } = useIndividualOfferContext()
 
@@ -134,11 +133,10 @@ export const DetailsForm = ({
   async function onChangeGetSuggestedSubcategories(
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >,
-    isVenueSet: boolean
+    >
   ) {
     handleChange(e)
-    if (areSuggestedCategoriesEnabled && isVenueSet) {
+    if (areSuggestedCategoriesEnabled) {
       await debouncedOnChangeGetSuggestedSubcategories()
     }
   }
@@ -157,17 +155,7 @@ export const DetailsForm = ({
               label={offerAddressEnabled ? 'Qui propose l’offre ?' : 'Lieu'}
               name="venueId"
               options={venueOptions}
-              onChange={async (e) => {
-                if (areSuggestedCategoriesEnabled) {
-                  await setFieldValue('categoryId', '')
-                  await setFieldValue('subcategoryId', '')
-                  await setFieldValue('suggestedSubcategory', '')
-                }
-                await onChangeGetSuggestedSubcategories(
-                  e,
-                  e.target.value !== ''
-                )
-              }}
+              onChange={onChangeGetSuggestedSubcategories}
               disabled={
                 readOnlyFields.includes('venueId') || venueOptions.length === 1
               }
@@ -180,9 +168,7 @@ export const DetailsForm = ({
             label="Titre de l’offre"
             maxLength={90}
             name="name"
-            onChange={(e) =>
-              onChangeGetSuggestedSubcategories(e, venueId !== '')
-            }
+            onChange={onChangeGetSuggestedSubcategories}
             disabled={readOnlyFields.includes('name')}
           />
         </FormLayout.Row>
@@ -192,16 +178,13 @@ export const DetailsForm = ({
             label="Description"
             maxLength={1000}
             name="description"
-            onChange={(e) =>
-              onChangeGetSuggestedSubcategories(e, venueId !== '')
-            }
+            onChange={onChangeGetSuggestedSubcategories}
             disabled={readOnlyFields.includes('description')}
           />
         </FormLayout.Row>
       </FormLayout.Section>
       {areSuggestedCategoriesEnabled && !offer ? (
-        suggestedSubcategories.length > 0 &&
-        venueId !== '' && (
+        suggestedSubcategories.length > 0 && (
           <SuggestedSubcategories
             suggestedSubcategories={suggestedSubcategories}
             readOnlyFields={readOnlyFields}
