@@ -220,6 +220,11 @@ def test_public_api(client):
                 },
                 "BookingOfferResponse": {
                     "properties": {
+                        "address": {
+                            "anyOf": [{"$ref": "#/components/schemas/BookingOfferResponseAddress"}],
+                            "nullable": True,
+                            "title": "BookingOfferResponseAddress",
+                        },
                         "bookingContact": {"nullable": True, "title": "Bookingcontact", "type": "string"},
                         "extraData": {
                             "anyOf": [{"$ref": "#/components/schemas/BookingOfferExtraData"}],
@@ -247,6 +252,19 @@ def test_public_api(client):
                     },
                     "required": ["id", "name", "isDigital", "isPermanent", "subcategoryId", "venue"],
                     "title": "BookingOfferResponse",
+                    "type": "object",
+                },
+                "BookingOfferResponseAddress": {
+                    "properties": {
+                        "city": {"title": "City", "type": "string"},
+                        "coordinates": {"$ref": "#/components/schemas/Coordinates"},
+                        "label": {"nullable": True, "title": "Label", "type": "string"},
+                        "postalCode": {"title": "Postalcode", "type": "string"},
+                        "street": {"nullable": True, "title": "Street", "type": "string"},
+                        "timezone": {"title": "Timezone", "type": "string"},
+                    },
+                    "required": ["postalCode", "city", "coordinates", "timezone"],
+                    "title": "BookingOfferResponseAddress",
                     "type": "object",
                 },
                 "BookingReponse": {

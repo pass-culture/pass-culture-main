@@ -2,9 +2,12 @@ from datetime import datetime
 from typing import Any
 
 from pydantic.v1.class_validators import validator
+from pydantic.v1.utils import GetterDict
 
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.categories.subcategories_v2 import SubcategoryIdEnum
+from pcapi.core.geography.models import Address
+from pcapi.core.offerers.models import OffererAddress
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.models import Stock
 from pcapi.core.offers.models import WithdrawalTypeEnum
@@ -31,6 +34,7 @@ class BookOfferResponse(BaseModel):
 
 class BookingVenueResponse(BaseModel):
     id: int
+    # TODO: (lixxday, 28/08/2024) Remove the following fields when the frontend is ready
     address: str | None
     postalCode: str | None
     city: str | None
@@ -54,8 +58,48 @@ class BookingOfferExtraData(BaseModel):
     ean: str | None
 
 
+class BookingOfferResponseAddress(BaseModel):
+    street: str | None
+    postalCode: str
+    city: str
+    label: str | None
+    coordinates: Coordinates
+    timezone: str
+
+    class Config:
+        orm_mode = True
+
+
+class BookingOfferResponseGetterDict(GetterDict):
+    def get(self, key: str, default: Any | None = None) -> Any:
+        if key == "address":
+            offerer_address: OffererAddress | None
+            if self._obj.offererAddress:
+                offerer_address = self._obj.offererAddress
+            else:
+                offerer_address = self._obj.venue.offererAddress
+
+            if not offerer_address:
+                return None
+
+            address: Address = offerer_address.address
+            label = offerer_address.label
+
+            return BookingOfferResponseAddress(
+                street=address.street,
+                postalCode=address.postalCode,
+                city=address.city,
+                label=label,
+                coordinates=Coordinates(latitude=address.latitude, longitude=address.longitude),
+                timezone=address.timezone,
+            )
+
+        return super().get(key, default)
+
+
 class BookingOfferResponse(BaseModel):
     id: int
+    address: BookingOfferResponseAddress | None
     bookingContact: str | None
     name: str
     extraData: BookingOfferExtraData | None
@@ -71,6 +115,7 @@ class BookingOfferResponse(BaseModel):
 
     class Config:
         orm_mode = True
+        getter_dict = BookingOfferResponseGetterDict
 
 
 class BookingStockResponse(BaseModel):

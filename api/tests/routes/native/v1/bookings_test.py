@@ -764,6 +764,17 @@ class GetBookingsTest:
                 "price": used2.stock.price * 100,
                 "priceCategoryLabel": None,
                 "offer": {
+                    "address": {
+                        "city": "Paris",
+                        "coordinates": {
+                            "latitude": 48.87004,
+                            "longitude": 2.3785,
+                        },
+                        "label": None,
+                        "postalCode": "75000",
+                        "street": "1 boulevard Poissonnière",
+                        "timezone": "Europe/Paris",
+                    },
                     "bookingContact": None,
                     "subcategoryId": subcategories.SUPPORT_PHYSIQUE_FILM.id,
                     "extraData": None,
@@ -820,8 +831,8 @@ class GetBookingsTest:
         ReactionFactory(user=ongoing_booking.user, offer=stock.offer)
 
         client = client.with_token(ongoing_booking.user.email)
-        with assert_num_queries(3):
-            # select user, booking, stock
+        with assert_num_queries(2):
+            # select user, booking
             response = client.get("/native/v1/bookings")
 
         assert response.status_code == 200
