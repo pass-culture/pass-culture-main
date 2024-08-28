@@ -2604,9 +2604,8 @@ def get_or_create_address(location_data: LocationData, is_manual_edition: bool =
     ban_id = location_data.get("ban_id")
     city_code = insee_code or postal_code
 
-    if city_code:
-        department_code = utils_regions.get_department_code_from_city_code(city_code)
-        timezone = date_utils.get_department_timezone(department_code)
+    department_code = utils_regions.get_department_code_from_city_code(city_code)
+    timezone = date_utils.get_department_timezone(department_code)
 
     try:
         address = geography_models.Address(
