@@ -2924,7 +2924,24 @@ def _has_been_recredited(user: users_models.User) -> bool:
     if len(user.deposit.recredits) == 0:
         return False
 
-    return conf.RECREDIT_TYPE_AGE_MAPPING[user.age] in [recredit.recreditType for recredit in user.deposit.recredits]
+    has_been_recredited = conf.RECREDIT_TYPE_AGE_MAPPING[user.age] in [
+        recredit.recreditType for recredit in user.deposit.recredits
+    ]
+    if has_been_recredited:
+        return True
+
+    if user.age == 16:
+        # This condition handles the following edge case:
+        # - User started the activation workflow at 15 and finished it at 17.
+        #   This used to create a deposit holding the total amount from 15 to 17 years old without creating
+        #   the deposit for 16 years old in the database.
+        # - When trying to unlock their 18 years old deposit, we receive a new (correct) value for their age.
+        # - If this age is 16, no recredit happened (see 1st point) so we need a different check.
+        #
+        # This edge case is unlikely, but was introduced in e9b5f5e4.
+        return user.deposit.amount == sum(conf.RECREDIT_TYPE_AMOUNT_MAPPING.values())
+
+    return False
 
 
 def _get_known_age_at_deposit(user: users_models.User) -> int | None:
