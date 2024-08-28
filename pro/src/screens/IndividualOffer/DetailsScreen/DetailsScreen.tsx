@@ -5,6 +5,7 @@ import { useSWRConfig } from 'swr'
 import { api } from 'apiClient/api'
 import { isErrorAPIError } from 'apiClient/helpers'
 import { VenueListItemResponseModel } from 'apiClient/v1'
+import { useAnalytics } from 'app/App/analytics/firebase'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { getFilteredVenueListByCategoryStatus } from 'components/IndividualOfferForm/utils/getFilteredVenueList'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
@@ -12,6 +13,7 @@ import { RouteLeavingGuardIndividualOffer } from 'components/RouteLeavingGuardIn
 import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import { GET_OFFER_QUERY_KEY } from 'config/swrQueryKeys'
 import { useIndividualOfferContext } from 'context/IndividualOfferContext/IndividualOfferContext'
+import { Events } from 'core/FirebaseEvents/constants'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
 import { isOfferDisabled } from 'core/Offers/utils/isOfferDisabled'
@@ -45,6 +47,7 @@ export type DetailsScreenProps = {
 
 export const DetailsScreen = ({ venues }: DetailsScreenProps): JSX.Element => {
   const navigate = useNavigate()
+  const { logEvent } = useAnalytics()
   const notify = useNotification()
   const { mutate } = useSWRConfig()
   const { search } = useLocation()
@@ -108,6 +111,14 @@ export const DetailsScreen = ({ venues }: DetailsScreenProps): JSX.Element => {
           ? OFFER_WIZARD_STEP_IDS.DETAILS
           : OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS
 
+      logEvent(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+        from: OFFER_WIZARD_STEP_IDS.DETAILS,
+        offerId: receivedOfferId,
+        venueId: formik.values.venueId,
+        offerType: 'individual',
+        subcategoryId: formik.values.subcategoryId,
+        choosenSuggestedSubcategory: formik.values.suggestedSubcategory,
+      })
       navigate(
         getIndividualOfferUrl({
           offerId: receivedOfferId,
