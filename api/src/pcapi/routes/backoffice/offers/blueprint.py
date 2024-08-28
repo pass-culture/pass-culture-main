@@ -38,6 +38,8 @@ from pcapi.core.providers import models as providers_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationType
+from pcapi.repository import atomic
+from pcapi.repository import mark_transaction_as_invalid
 from pcapi.repository import repository
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.filters import format_amount
@@ -1160,3 +1162,128 @@ def download_bookings_xlsx(offer_id: int) -> utils.BackofficeResponse:
         download_name=f"reservations_offre_{offer_id}.xlsx",
         mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     )
+
+
+@list_offers_blueprint.route("/<int:offer_id>/activate", methods=["GET"])
+@atomic()
+@utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
+def get_activate_offer_form(offer_id: int) -> utils.BackofficeResponse:
+    offer = offers_models.Offer.query.filter_by(id=offer_id).one_or_none()
+
+    if not offer:
+        raise NotFound()
+
+    form = empty_forms.EmptyForm()
+
+    return render_template(
+        "components/turbo/modal_form.html",
+        form=form,
+        dst=url_for("backoffice_web.offer.activate_offer", offer_id=offer.id),
+        div_id=f"activate-offer-modal-{offer.id}",
+        title=f"Activation de l'offre {offer.name}",
+        button_text="Activer l'offre",
+    )
+
+
+@list_offers_blueprint.route("/<int:offer_id>/deactivate", methods=["GET"])
+@atomic()
+@utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
+def get_deactivate_offer_form(offer_id: int) -> utils.BackofficeResponse:
+    offer = offers_models.Offer.query.filter_by(id=offer_id).one_or_none()
+
+    if not offer:
+        raise NotFound()
+
+    form = empty_forms.EmptyForm()
+
+    return render_template(
+        "components/turbo/modal_form.html",
+        form=form,
+        dst=url_for("backoffice_web.offer.deactivate_offer", offer_id=offer.id),
+        div_id=f"deactivate-offer-modal-{offer.id}",
+        title=f"Désactivation de l'offre {offer.name}",
+        button_text="Désactiver l'offre",
+    )
+
+
+@list_offers_blueprint.route("/batch/activate", methods=["GET"])
+@atomic()
+@utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
+def get_batch_activate_offers_form() -> utils.BackofficeResponse:
+    form = empty_forms.BatchForm()
+    return render_template(
+        "components/turbo/modal_form.html",
+        form=form,
+        dst=url_for("backoffice_web.offer.batch_activate_offers"),
+        div_id="batch-activate-offer-modal",
+        title="Voulez-vous activer les offres sélectionnées ?",
+        button_text="Activer",
+    )
+
+
+@list_offers_blueprint.route("/batch/deactivate", methods=["GET"])
+@atomic()
+@utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
+def get_batch_deactivate_offers_form() -> utils.BackofficeResponse:
+    form = empty_forms.BatchForm()
+    return render_template(
+        "components/turbo/modal_form.html",
+        form=form,
+        dst=url_for("backoffice_web.offer.batch_deactivate_offers"),
+        div_id="batch-deactivate-offer-modal",
+        title="Voulez-vous désactiver les offres sélectionnées ?",
+        button_text="Désactiver",
+    )
+
+
+def _batch_update_activation_offers(offer_ids: list[int], *, is_active: bool) -> None:
+    query = offers_models.Offer.query.filter(offers_models.Offer.id.in_(offer_ids))
+    offers_api.batch_update_offers(query, {"isActive": is_active})
+
+
+@list_offers_blueprint.route("/<int:offer_id>/activate", methods=["POST"])
+@atomic()
+@utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
+def activate_offer(offer_id: int) -> utils.BackofficeResponse:
+    _batch_update_activation_offers([offer_id], is_active=True)
+    flash("L'offre a été activée", "success")
+    return redirect(request.referrer or url_for("backoffice_web.offer.list_offers"), 303)
+
+
+@list_offers_blueprint.route("/batch-activate", methods=["POST"])
+@atomic()
+@utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
+def batch_activate_offers() -> utils.BackofficeResponse:
+    form = empty_forms.BatchForm()
+    if not form.validate():
+        mark_transaction_as_invalid()
+        flash(utils.build_form_error_msg(form), "warning")
+        return redirect(request.referrer, 400)
+
+    _batch_update_activation_offers(form.object_ids_list, is_active=True)
+    flash("Les offres ont été activées", "success")
+    return redirect(request.referrer or url_for("backoffice_web.offer.list_offers"), 303)
+
+
+@list_offers_blueprint.route("/<int:offer_id>/deactivate", methods=["POST"])
+@atomic()
+@utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
+def deactivate_offer(offer_id: int) -> utils.BackofficeResponse:
+    _batch_update_activation_offers([offer_id], is_active=False)
+    flash("L'offre a été désactivée", "success")
+    return redirect(request.referrer or url_for("backoffice_web.offer.list_offers"), 303)
+
+
+@list_offers_blueprint.route("/batch-deactivate", methods=["POST"])
+@atomic()
+@utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
+def batch_deactivate_offers() -> utils.BackofficeResponse:
+    form = empty_forms.BatchForm()
+    if not form.validate():
+        mark_transaction_as_invalid()
+        flash(utils.build_form_error_msg(form), "warning")
+        return redirect(request.referrer, 400)
+
+    _batch_update_activation_offers(form.object_ids_list, is_active=False)
+    flash("Les offres ont été désactivées", "success")
+    return redirect(request.referrer or url_for("backoffice_web.offer.list_offers"), 303)

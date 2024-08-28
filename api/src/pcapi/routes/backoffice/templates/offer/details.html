@@ -60,6 +60,25 @@
                   {{ build_lazy_modal(url_for('backoffice_web.offer.get_reject_offer_form', offer_id=offer.id) , "reject-offer-modal-" + offer.id|string) }}
                 </div>
               {% endif %}
+              {% if has_permission("ADVANCED_PRO_SUPPORT") %}
+                <div class="d-flex row-reverse justify-content-start">
+                  {% if offer.isActive %}
+                    <a class=" px-3"
+                       data-bs-toggle="modal"
+                       data-bs-target="#deactivate-offer-modal-{{ offer.id }}">
+                      <button class="btn btn-outline-primary lead fw-bold mt-2">Désactiver l'offre</button>
+                    </a>
+                    {{ build_lazy_modal(url_for('backoffice_web.offer.get_deactivate_offer_form', offer_id=offer.id) , "deactivate-offer-modal-" + offer.id|string) }}
+                  {% else %}
+                    <a class=" px-3"
+                       data-bs-toggle="modal"
+                       data-bs-target="#activate-offer-modal-{{ offer.id }}">
+                      <button class="btn btn-outline-primary lead fw-bold mt-2">Activer l'offre</button>
+                    </a>
+                    {{ build_lazy_modal(url_for('backoffice_web.offer.get_activate_offer_form', offer_id=offer.id) , "activate-offer-modal-" + offer.id|string) }}
+                  {% endif %}
+                </div>
+              {% endif %}
               {% if edit_offer_venue_form %}
                 {% set edit_offer_venue_aria_described_by_id = random_hash() %}
                 {{ build_modal_form("edit-offer-venue", url_for("backoffice_web.offer.edit_offer_venue", offer_id=offer.id) , edit_offer_venue_form, "Modifier le lieu", "Modifier le lieu", "Enregistrer") }}

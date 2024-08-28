@@ -548,12 +548,18 @@ def batch_update_offers(query: BaseQuery, update_fields: dict, send_email_notifi
 
         query_to_update = models.Offer.query.filter(models.Offer.id.in_(offer_ids_batch))
         query_to_update.update(update_fields, synchronize_session=False)
-        db.session.commit()
+        if is_managed_transaction():
+            db.session.flush()
+        else:
+            db.session.commit()
 
-        search.async_index_offer_ids(
-            offer_ids_batch,
-            reason=search.IndexationReason.OFFER_BATCH_UPDATE,
-            log_extra={"changes": set(update_fields.keys())},
+        on_commit(
+            partial(
+                search.async_index_offer_ids,
+                offer_ids_batch,
+                reason=search.IndexationReason.OFFER_BATCH_UPDATE,
+                log_extra={"changes": set(update_fields.keys())},
+            ),
         )
 
         withdrawal_updated = {"withdrawalDetails", "withdrawalType", "withdrawalDelay"}.intersection(
@@ -561,7 +567,12 @@ def batch_update_offers(query: BaseQuery, update_fields: dict, send_email_notifi
         )
         if send_email_notification and withdrawal_updated:
             for offer in query_to_update.all():
-                transactional_mails.send_email_for_each_ongoing_booking(offer)
+                on_commit(
+                    partial(
+                        transactional_mails.send_email_for_each_ongoing_booking,
+                        offer,
+                    ),
+                )
 
 
 def batch_update_collective_offers(query: BaseQuery, update_fields: dict) -> None:
