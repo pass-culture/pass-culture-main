@@ -4,7 +4,6 @@ const offerDesc =
   'Une quête pour obtenir la question ultime sur la vie, l’univers et tout le reste.'
 
 When('I fill in details for physical offer', () => {
-  cy.setFeatureFlags([{ name: 'WIP_SPLIT_OFFER', isActive: true }])
   cy.findByLabelText('Titre de l’offre *').type(offerTitle)
   cy.findByLabelText('Description').type(offerDesc)
 
