@@ -26,7 +26,7 @@
       <th scope="col">Prénom / Nom</th>
       <th scope="col">Email</th>
       <th scope="col">Invitation</th>
-      {% if is_feature_active('WIP_CONNECT_AS') %}<th scope="col">Connect as</th>{% endif %}
+      <th scope="col">Connect as</th>
     </tr>
   </thead>
   <tbody>
@@ -103,13 +103,11 @@
             Invité le {{ offerer_invitation.dateCreated | format_date_time }} par {{ links.build_pro_user_name_to_details_link(offerer_invitation.user.id, offerer_invitation.user.full_name) }}
           {% endif %}
         </td>
-        {% if is_feature_active('WIP_CONNECT_AS') %}
-          <td class="fw-bolder">
-            {% if row.isActive and (admin_role not in row.roles) and (anonymized_role not in row.roles) %}
-              {{ links.build_connect_as_pseudo_link(row.id, "user", "/", "", "", True, has_permission("MANAGE_PRO_ENTITY") ) }}
-            {% endif %}
-          </td>
-        {% endif %}
+        <td class="fw-bolder">
+          {% if row.isActive and (admin_role not in row.roles) and (anonymized_role not in row.roles) %}
+            {{ links.build_connect_as_pseudo_link(row.id, "user", "/", "", "", True, has_permission("MANAGE_PRO_ENTITY") ) }}
+          {% endif %}
+        </td>
       </tr>
     {% endfor %}
   </tbody>

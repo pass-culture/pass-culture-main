@@ -283,8 +283,6 @@ def get_user_id_for_connect_as_base_query() -> BaseQuery:
 
 
 def _check_user_for_user_id(user_id: int) -> int:
-    if not FeatureToggle.WIP_CONNECT_AS.is_active():
-        raise ValueError("L'utilisation du « connect as » requiert l'activation de la feature : WIP_CONNECT_AS")
     user = users_models.User.query.filter(users_models.User.id == user_id).one_or_none()
     if not user:
         raise NotFound()

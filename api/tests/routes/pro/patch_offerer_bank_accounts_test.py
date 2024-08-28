@@ -3,7 +3,6 @@ import datetime
 
 import pytest
 
-from pcapi.core import testing
 from pcapi.core import token
 import pcapi.core.finance.factories as finance_factories
 import pcapi.core.finance.models as finance_models
@@ -74,7 +73,6 @@ class OffererPatchBankAccountsTest:
             assert action_logged.venueId == action_occurred.venueId
             assert action_logged.bankAccountId == action_occurred.bankAccountId
 
-    @testing.override_features(WIP_CONNECT_AS=True)
     def test_impersonated_user_can_link_venue_to_bank_account(self, db_session, client):
         offerer = offerers_factories.OffererFactory()
         impersonator = users_factories.AdminFactory()
