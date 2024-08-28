@@ -2912,3 +2912,145 @@ class DownloadBookingsXLSXTest(GetEndpointHelper):
         assert sheet.cell(row=2, column=1).value == booking1.venue.name
         assert sheet.cell(row=3, column=1).value == booking2.venue.name
         assert sheet.cell(row=4, column=1).value == None
+
+
+class ActivateOfferTest(PostEndpointHelper):
+    endpoint = "backoffice_web.offer.activate_offer"
+    endpoint_kwargs = {"offer_id": 1}
+    needed_permission = perm_models.Permissions.ADVANCED_PRO_SUPPORT
+    # session
+    # current user
+    # get offer
+    # update offers
+    expected_num_queries = 4
+
+    def test_activate_offer_with_stocks(self, legit_user, authenticated_client):
+        offer_to_activate = offers_factories.OfferFactory(isActive=False)
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            offer_id=offer_to_activate.id,
+            expected_num_queries=self.expected_num_queries,
+        )
+        assert response.status_code == 303
+
+        expected_url = url_for("backoffice_web.offer.list_offers", _external=True)
+        assert response.location == expected_url
+
+        db.session.refresh(offer_to_activate)
+        assert offer_to_activate.isActive is True
+
+
+class GetActivateOfferFormTest(GetEndpointHelper):
+    endpoint = "backoffice_web.offer.get_activate_offer_form"
+    endpoint_kwargs = {"offer_id": 1}
+    needed_permission = perm_models.Permissions.ADVANCED_PRO_SUPPORT
+    # session
+    # current user
+    # get offer
+    expected_num_queries = 3
+
+    def test_get_activate_form_test(self, legit_user, authenticated_client):
+        offer = offers_factories.OfferFactory()
+
+        form_url = url_for(self.endpoint, offer_id=offer.id)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(form_url)
+            assert response.status_code == 200
+
+
+class DeactivateOfferTest(PostEndpointHelper):
+    endpoint = "backoffice_web.offer.deactivate_offer"
+    endpoint_kwargs = {"offer_id": 1}
+    needed_permission = perm_models.Permissions.ADVANCED_PRO_SUPPORT
+    # session
+    # current user
+    # get offer
+    # update offers
+    expected_num_queries = 4
+
+    def test_deactivate_offer_with_stocks(self, legit_user, authenticated_client):
+        offer_to_deactivate = offers_factories.OfferFactory(isActive=True)
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            offer_id=offer_to_deactivate.id,
+            expected_num_queries=self.expected_num_queries,
+        )
+        assert response.status_code == 303
+
+        expected_url = url_for("backoffice_web.offer.list_offers", _external=True)
+        assert response.location == expected_url
+
+        db.session.refresh(offer_to_deactivate)
+        assert offer_to_deactivate.isActive is False
+
+
+class GetDeactivateOfferFormTest(GetEndpointHelper):
+    endpoint = "backoffice_web.offer.get_deactivate_offer_form"
+    endpoint_kwargs = {"offer_id": 1}
+    needed_permission = perm_models.Permissions.ADVANCED_PRO_SUPPORT
+    # session
+    # current user
+    # get offer
+    expected_num_queries = 3
+
+    def test_get_deactivate_form_test(self, legit_user, authenticated_client):
+        offer = offers_factories.OfferFactory()
+
+        form_url = url_for(self.endpoint, offer_id=offer.id)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(form_url)
+            assert response.status_code == 200
+
+
+class BatchOfferActivateTest(PostEndpointHelper):
+    endpoint = "backoffice_web.offer.batch_activate_offers"
+    needed_permission = perm_models.Permissions.ADVANCED_PRO_SUPPORT
+    # session
+    # current user
+    # get offers
+    # update offers
+    expected_num_queries = 4
+
+    def test_batch_activate_offers(self, legit_user, authenticated_client):
+        offers = offers_factories.OfferFactory.create_batch(3, isActive=False)
+        parameter_ids = ",".join(str(offer.id) for offer in offers)
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={"object_ids": parameter_ids},
+            expected_num_queries=self.expected_num_queries,
+        )
+
+        assert response.status_code == 303
+        for offer in offers:
+            db.session.refresh(offer)
+            assert offer.isActive is True
+
+
+class BatchOfferDeactivateTest(PostEndpointHelper):
+    endpoint = "backoffice_web.offer.batch_deactivate_offers"
+    needed_permission = perm_models.Permissions.ADVANCED_PRO_SUPPORT
+    # session
+    # current user
+    # get offers
+    # update offers
+    expected_num_queries = 4
+
+    def test_batch_deactivate_offers(self, legit_user, authenticated_client):
+        offers = offers_factories.OfferFactory.create_batch(3)
+        parameter_ids = ",".join(str(offer.id) for offer in offers)
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={"object_ids": parameter_ids},
+            expected_num_queries=self.expected_num_queries,
+        )
+
+        assert response.status_code == 303
+        for offer in offers:
+            db.session.refresh(offer)
+            assert offer.isActive is False
