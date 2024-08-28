@@ -9,7 +9,6 @@ import {
   GetIndividualOfferResponseModel,
   type GetIndividualOfferWithAddressResponseModel,
 } from 'apiClient/v1'
-import { useAnalytics } from 'app/App/analytics/firebase'
 import { ConfirmDialog } from 'components/Dialog/ConfirmDialog/ConfirmDialog'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
@@ -17,10 +16,6 @@ import { RouteLeavingGuardIndividualOffer } from 'components/RouteLeavingGuardIn
 import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import { GET_OFFER_QUERY_KEY } from 'config/swrQueryKeys'
 import { useIndividualOfferContext } from 'context/IndividualOfferContext/IndividualOfferContext'
-import {
-  Events,
-  OFFER_FORM_NAVIGATION_MEDIUM,
-} from 'core/FirebaseEvents/constants'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
 import { isOfferDisabled } from 'core/Offers/utils/isOfferDisabled'
@@ -55,7 +50,6 @@ export const UsefulInformationScreen = ({
 }: UsefulInformationScreenProps): JSX.Element => {
   const navigate = useNavigate()
   const notify = useNotification()
-  const { logEvent } = useAnalytics()
   const mode = useOfferWizardMode()
   const { mutate } = useSWRConfig()
   const { subCategories } = useIndividualOfferContext()
@@ -119,17 +113,6 @@ export const UsefulInformationScreen = ({
           : isEvent
             ? OFFER_WIZARD_STEP_IDS.TARIFS
             : OFFER_WIZARD_STEP_IDS.STOCKS
-
-      logEvent(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-        from: OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS,
-        to: nextStep,
-        used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
-        isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
-        isDraft: mode === OFFER_WIZARD_MODE.CREATION,
-        offerId: receivedOfferId,
-        offerType: 'individual',
-        subcategoryId: offer.subcategoryId,
-      })
 
       addToLocalStorage()
 

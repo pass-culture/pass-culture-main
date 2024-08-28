@@ -1,19 +1,9 @@
-import { useSelector } from 'react-redux'
-
 import { GetIndividualOfferResponseModel } from 'apiClient/v1'
-import { useAnalytics } from 'app/App/analytics/firebase'
-import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
-import {
-  Events,
-  OFFER_FORM_NAVIGATION_MEDIUM,
-  OFFER_FORM_NAVIGATION_OUT,
-} from 'core/FirebaseEvents/constants'
 import { OFFER_STATUS_PENDING } from 'core/Offers/constants'
 import fullLinkIcon from 'icons/full-link.svg'
 import fullValidateIcon from 'icons/full-validate.svg'
 import fullWaitIcon from 'icons/full-wait.svg'
 import { DisplayOfferInAppLink } from 'screens/IndividualOffer/SummaryScreen/DisplayOfferInAppLink/DisplayOfferInAppLink'
-import { selectCurrentOffererId } from 'store/user/selectors'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
@@ -28,11 +18,9 @@ interface IndividualOfferConfirmationScreenProps {
 export const IndividualOfferConfirmationScreen = ({
   offer,
 }: IndividualOfferConfirmationScreenProps): JSX.Element => {
-  const { logEvent } = useAnalytics()
   const isPublishedInTheFuture = isDateValid(offer.publicationDate)
   const isPendingOffer = offer.status === OFFER_STATUS_PENDING
   const queryString = `?structure=${offer.venue.managingOfferer.id}&lieu=${offer.venue.id}`
-  const selectedOffererId = useSelector(selectCurrentOffererId)
 
   const { date: publicationDate, time: publicationTime } = formatDateTimeParts(
     offer.publicationDate
@@ -98,21 +86,7 @@ export const IndividualOfferConfirmationScreen = ({
 
       {!isPublishedInTheFuture && (
         <div className={styles['display-in-app-link']}>
-          <DisplayOfferInAppLink
-            id={offer.id}
-            icon={fullLinkIcon}
-            onClick={() => {
-              logEvent(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-                from: OFFER_WIZARD_STEP_IDS.CONFIRMATION,
-                to: OFFER_FORM_NAVIGATION_OUT.PREVIEW,
-                used: OFFER_FORM_NAVIGATION_MEDIUM.CONFIRMATION_PREVIEW,
-                isEdition: false,
-                offerId: offer.id,
-                offerType: 'individual',
-                offererId: selectedOffererId?.toString(),
-              })
-            }}
-          >
+          <DisplayOfferInAppLink id={offer.id} icon={fullLinkIcon}>
             Visualiser l’offre dans l’application
           </DisplayOfferInAppLink>
         </div>

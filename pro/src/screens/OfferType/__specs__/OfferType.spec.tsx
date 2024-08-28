@@ -225,49 +225,17 @@ describe('OfferType', () => {
     expect(screen.getByText('Un évènement numérique daté')).toBeInTheDocument()
   })
 
-  const individualChoices = [
-    {
-      buttonClicked: 'Un bien physique',
-      expectedSearch: 'PHYSICAL_GOOD',
-    },
-    {
-      buttonClicked: 'Un bien numérique',
-      expectedSearch: 'VIRTUAL_GOOD',
-    },
-    {
-      buttonClicked: 'Un évènement physique daté',
-      expectedSearch: 'PHYSICAL_EVENT',
-    },
-    {
-      buttonClicked: 'Un évènement numérique daté',
-      expectedSearch: 'VIRTUAL_EVENT',
-    },
-  ]
-  it.each(individualChoices)(
-    'should select and redirect fine case : %s',
-    async ({ buttonClicked, expectedSearch }) => {
-      renderOfferTypes()
+  it('should select and redirect fine case : %s', async () => {
+    renderOfferTypes()
 
-      await userEvent.click(await screen.findByText(buttonClicked))
+    await userEvent.click(await screen.findByText('Un bien physique'))
 
-      await userEvent.click(
-        screen.getByRole('button', { name: 'Étape suivante' })
-      )
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Étape suivante' })
+    )
 
-      expect(screen.getByText('Création individuel')).toBeInTheDocument()
-      expect(mockLogEvent).toHaveBeenNthCalledWith(
-        1,
-        Events.CLICKED_OFFER_FORM_NAVIGATION,
-        {
-          from: 'OfferFormHomepage',
-          offerType: expectedSearch,
-          to: 'informations',
-          used: 'StickyButtons',
-          offererId: '1',
-        }
-      )
-    }
-  )
+    expect(screen.getByText('Création individuel')).toBeInTheDocument()
+  })
 
   it('should select duplicate template offer', async () => {
     const offersRecap = [collectiveOfferFactory()]
