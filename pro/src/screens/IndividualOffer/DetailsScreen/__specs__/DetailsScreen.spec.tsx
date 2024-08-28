@@ -8,10 +8,12 @@ import {
   SubcategoryResponseModel,
   VenueTypeCode,
 } from 'apiClient/v1'
+import * as useAnalytics from 'app/App/analytics/firebase'
 import {
   IndividualOfferContext,
   IndividualOfferContextValues,
 } from 'context/IndividualOfferContext/IndividualOfferContext'
+import { Events } from 'core/FirebaseEvents/constants'
 import { CATEGORY_STATUS } from 'core/Offers/constants'
 import { addressResponseIsEditableModelFactory } from 'utils/commonOffersApiFactories'
 import {
@@ -27,6 +29,7 @@ import {
 } from 'utils/renderWithProviders'
 
 import { DetailsScreen, DetailsScreenProps } from '../DetailsScreen'
+const mockLogEvent = vi.fn()
 
 vi.mock('apiClient/api', () => ({
   api: {
@@ -190,6 +193,9 @@ describe('screens:IndividualOffer::Informations', () => {
   })
 
   it('should submit the form with correct payload', async () => {
+    vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
+      logEvent: mockLogEvent,
+    }))
     vi.spyOn(api, 'postDraftOffer').mockResolvedValue(
       getIndividualOfferFactory({
         id: 12,
@@ -260,6 +266,17 @@ describe('screens:IndividualOffer::Informations', () => {
       subcategoryId: 'physical',
       venueId: 189,
     })
+    expect(mockLogEvent).toHaveBeenCalledWith(
+      Events.CLICKED_OFFER_FORM_NAVIGATION,
+      {
+        choosenSuggestedSubcategory: '',
+        from: 'details',
+        offerId: 12,
+        offerType: 'individual',
+        subcategoryId: 'physical',
+        venueId: '189',
+      }
+    )
   })
 
   it('should render suggested subcategories', async () => {
