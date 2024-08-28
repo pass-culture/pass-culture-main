@@ -55,11 +55,9 @@ from pcapi.tasks.serialization.external_api_booking_notification_tasks import Bo
 from pcapi.utils import queue
 from pcapi.utils.requests import exceptions as requests_exception
 
-from tests.conftest import clean_database
-
 
 class BookOfferConcurrencyTest:
-    @clean_database
+    @pytest.mark.usefixtures("clean_database")
     def test_create_booking(self, app):
         beneficiary = users_factories.BeneficiaryGrant18Factory()
         stock = offers_factories.StockFactory(price=10, dnBookedQuantity=5)
@@ -86,7 +84,7 @@ class BookOfferConcurrencyTest:
         assert models.Booking.query.count() == 0
         assert offers_models.Stock.query.filter_by(id=stock.id, dnBookedQuantity=5).count() == 1
 
-    @clean_database
+    @pytest.mark.usefixtures("clean_database")
     def test_cancel_booking(self, app):
         booking = bookings_factories.BookingFactory(stock__dnBookedQuantity=1)
 
@@ -124,7 +122,7 @@ class BookOfferConcurrencyTest:
         api._cancel_booking(booking, BookingCancellationReasons.BENEFICIARY)
         assert booking.stock.dnBookedQuantity == dnBookedQuantity
 
-    @clean_database
+    @pytest.mark.usefixtures("clean_database")
     def test_cancel_all_bookings_from_stock(self, app):
         stock = offers_factories.StockFactory(dnBookedQuantity=1)
         bookings_factories.BookingFactory(stock=stock)

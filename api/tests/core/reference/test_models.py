@@ -7,8 +7,6 @@ from pcapi.core.reference import factories
 from pcapi.core.reference import models
 from pcapi.models import db
 
-from tests.conftest import clean_database
-
 
 class ReferenceSchemeTest:
     @pytest.mark.usefixtures("db_session")
@@ -46,7 +44,7 @@ class ReferenceSchemeTest:
         db.session.refresh(scheme)
         assert scheme.nextNumber == 2
 
-    @clean_database
+    @pytest.mark.usefixtures("clean_database")
     def test_usage_without_proper_lock(self, app):
         scheme = factories.ReferenceSchemeFactory()
         scheme.nextNumber = 1

@@ -1,5 +1,4 @@
 import contextlib
-from functools import wraps
 import os
 from pathlib import Path
 from pprint import pprint
@@ -175,16 +174,10 @@ def clear_tests_invoices_bucket():
         object_storage_testing.reset_bucket()
 
 
-def clean_database(f: object) -> object:
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        try:
-            return_value = f(*args, **kwargs)
-        finally:
-            clean_all_database()
-        return return_value
-
-    return decorated_function
+@pytest.fixture(scope="function")
+def clean_database():
+    yield
+    clean_all_database()
 
 
 @pytest.fixture(scope="session")

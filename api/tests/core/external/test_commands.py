@@ -1,14 +1,15 @@
 from unittest.mock import patch
 
+import pytest
+
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import testing
 
-from tests.conftest import clean_database
 from tests.test_utils import run_command
 
 
-@clean_database
+@pytest.mark.usefixtures("clean_database")
 def test_update_sendinblue_batch_users(app):
     users_factories.BeneficiaryGrant18Factory.create_batch(2)
 
@@ -23,7 +24,7 @@ def test_update_sendinblue_batch_users(app):
     assert "Exception" not in result.stdout
 
 
-@clean_database
+@pytest.mark.usefixtures("clean_database")
 def test_update_sendinblue_pro(app):
     users_factories.UserFactory()  # excluded
     users_factories.AdminFactory()  # excluded

@@ -4,6 +4,7 @@ import logging
 import threading
 from unittest.mock import patch
 
+import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session
 from sqlalchemy.orm import sessionmaker
@@ -18,7 +19,6 @@ from pcapi.core.providers.models import Provider
 from pcapi.local_providers.cinema_providers.cds.cds_stocks import CDSStocks
 from pcapi.models import db
 
-from tests.conftest import clean_database
 import tests.local_providers.cinema_providers.cds.fixtures as cds_fixtures
 
 
@@ -118,7 +118,7 @@ class BookingRaceConditionTest:
             logger.warning("End of contextmanager, removing the session, session: %s", session)
             Session.remove()
 
-    @clean_database
+    @pytest.mark.usefixtures("clean_database")
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_venue_movies")
     @patch("pcapi.settings.CDS_API_URL", "fakeUrl/")
     def test_stock_race_condition_between_booking_and_synchronization(self, mock_get_venue_movies, requests_mock, app):
