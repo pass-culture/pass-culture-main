@@ -26,16 +26,9 @@ export const getOfferSubtypeFromParam = (
 }
 
 export const getCategoryStatusFromOfferSubtype = (
-  offerSubtype: INDIVIDUAL_OFFER_SUBTYPE | null,
-  isVirtualEvent?: boolean | null
+  offerSubtype: INDIVIDUAL_OFFER_SUBTYPE | null
 ): CATEGORY_STATUS => {
   if (offerSubtype === null) {
-    if (isVirtualEvent === true) {
-      return CATEGORY_STATUS.ONLINE
-    }
-    if (isVirtualEvent === false) {
-      return CATEGORY_STATUS.OFFLINE
-    }
     return CATEGORY_STATUS.ONLINE_OR_OFFLINE
   }
 

@@ -1,5 +1,4 @@
 import { Form, FormikProvider, useFormik } from 'formik'
-import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useSWRConfig } from 'swr'
 
@@ -59,14 +58,9 @@ export const DetailsScreen = ({ venues }: DetailsScreenProps): JSX.Element => {
     'WIP_SUGGESTED_SUBCATEGORIES'
   )
 
-  const [isVirtual, setIsVirtual] = useState<boolean | undefined>()
-
   const { categories, subCategories, offer } = useIndividualOfferContext()
   const offerSubtype = getOfferSubtypeFromParam(queryOfferType)
-  const categoryStatus = getCategoryStatusFromOfferSubtype(
-    offerSubtype,
-    isVirtual
-  )
+  const categoryStatus = getCategoryStatusFromOfferSubtype(offerSubtype)
 
   const [filteredCategories, filteredSubcategories] = filterCategories(
     categories,
@@ -75,9 +69,10 @@ export const DetailsScreen = ({ venues }: DetailsScreenProps): JSX.Element => {
     isOfferSubtypeEvent(offerSubtype)
   )
 
-  const filteredVenues = !areSuggestedCategoriesEnabled
-    ? getFilteredVenueListByCategoryStatus(venues, categoryStatus)
-    : venues
+  const filteredVenues = getFilteredVenueListByCategoryStatus(
+    venues,
+    categoryStatus
+  )
 
   const initialValues =
     offer === null
@@ -142,12 +137,6 @@ export const DetailsScreen = ({ venues }: DetailsScreenProps): JSX.Element => {
     onSubmit,
   })
 
-  useEffect(() => {
-    setIsVirtual(
-      venues.filter((v) => v.id === Number(formik.values.venueId))[0]?.isVirtual
-    )
-  }, [formik.values.venueId, venues])
-
   const handlePreviousStepOrBackToReadOnly = () => {
     mode === OFFER_WIZARD_MODE.CREATION
       ? navigate('/offre/creation')
@@ -183,7 +172,6 @@ export const DetailsScreen = ({ venues }: DetailsScreenProps): JSX.Element => {
           onClickNext={async () => {
             if (
               areSuggestedCategoriesEnabled &&
-              formik.values.venueId !== '' &&
               formik.values.suggestedSubcategory === ''
             ) {
               await formik.setFieldValue('suggestedSubcategory', 'OTHER')
