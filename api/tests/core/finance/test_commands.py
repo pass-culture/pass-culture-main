@@ -1,6 +1,8 @@
 import datetime
 from unittest.mock import patch
 
+import pytest
+
 import pcapi.core.categories.subcategories_v2 as subcategories
 import pcapi.core.finance.api as finance_api
 import pcapi.core.finance.factories as finance_factories
@@ -12,12 +14,11 @@ from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
 from pcapi.models import db
 
-from tests.conftest import clean_database
 from tests.test_utils import run_command
 
 
 class AddCustomOfferReimbursementRuleTest:
-    @clean_database
+    @pytest.mark.usefixtures("clean_database")
     def test_basics(self, app):
         stock = offers_factories.StockFactory(price=24.68)
         offer = stock.offer
@@ -40,7 +41,7 @@ class AddCustomOfferReimbursementRuleTest:
         assert rule.offer.id == offer_id
         assert rule.amount == 1234
 
-    @clean_database
+    @pytest.mark.usefixtures("clean_database")
     def test_warnings(self, app):
         stock = offers_factories.StockFactory(price=24.68)
         offer = stock.offer
@@ -61,7 +62,7 @@ class AddCustomOfferReimbursementRuleTest:
         assert "Mismatch on original amount" in result.output
         assert finance_models.CustomReimbursementRule.query.count() == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("clean_database")
     def test_force_with_warnings(self, app):
         stock = offers_factories.StockFactory(price=24.68)
         offer = stock.offer
@@ -87,7 +88,7 @@ class AddCustomOfferReimbursementRuleTest:
 
 
 @override_settings(SLACK_GENERATE_INVOICES_FINISHED_CHANNEL="channel")
-@clean_database
+@pytest.mark.usefixtures("clean_database")
 def test_generate_invoices_internal_notification(app, css_font_http_request_mock):
     venue = offerers_factories.VenueFactory()
     batch = finance_factories.CashflowBatchFactory()
@@ -121,7 +122,7 @@ def test_generate_invoices_internal_notification(app, css_font_http_request_mock
 
 
 @override_features(WIP_ENABLE_FINANCE_INCIDENT=True)
-@clean_database
+@pytest.mark.usefixtures("clean_database")
 def test_when_there_is_a_debit_note_to_generate_on_total_incident(app, css_font_http_request_mock):
     sixteen_days_ago = datetime.datetime.utcnow() - datetime.timedelta(days=16)
     fifteen_days_ago = datetime.datetime.utcnow() - datetime.timedelta(days=15)
@@ -211,7 +212,7 @@ def test_when_there_is_a_debit_note_to_generate_on_total_incident(app, css_font_
 
 
 @override_features(WIP_ENABLE_FINANCE_INCIDENT=True)
-@clean_database
+@pytest.mark.usefixtures("clean_database")
 def test_when_there_is_a_debit_note_to_generate_on_partial_incident(app, css_font_http_request_mock):
     sixteen_days_ago = datetime.datetime.utcnow() - datetime.timedelta(days=16)
     fifteen_days_ago = datetime.datetime.utcnow() - datetime.timedelta(days=15)

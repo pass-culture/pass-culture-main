@@ -16,7 +16,6 @@ from pcapi.utils import date as date_utils
 from pcapi.utils import human_ids
 
 import tests
-from tests import conftest
 from tests.routes import image_data
 from tests.routes.public.helpers import PublicAPIVenueEndpointHelper
 
@@ -39,12 +38,12 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
         }
 
     @pytest.mark.usefixtures("db_session")
-    def test_should_raise_401_because_not_authenticated(self, client: conftest.TestClient):
+    def test_should_raise_401_because_not_authenticated(self, client):
         response = client.post(self.endpoint_url, json={})
         assert response.status_code == 401
 
     @pytest.mark.usefixtures("db_session")
-    def test_should_raise_404_because_has_no_access_to_venue(self, client: conftest.TestClient):
+    def test_should_raise_404_because_has_no_access_to_venue(self, client):
         plain_api_key, _ = self.setup_provider()
         venue = self.setup_venue()
         response = client.with_explicit_token(plain_api_key).post(
@@ -54,7 +53,7 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
         assert response.status_code == 404
 
     @pytest.mark.usefixtures("db_session")
-    def test_should_raise_404_because_venue_provider_is_inactive(self, client: conftest.TestClient):
+    def test_should_raise_404_because_venue_provider_is_inactive(self, client):
         plain_api_key, venue_provider = self.setup_inactive_venue_provider()
         response = client.with_explicit_token(plain_api_key).post(
             self.endpoint_url,
@@ -448,7 +447,7 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
         assert response.json == {"venueId": ["There is no venue with this id associated to your API key"]}
         assert offers_models.Offer.query.first() is None
 
-    @conftest.clean_database
+    @pytest.mark.usefixtures("clean_database")
     @mock.patch("pcapi.core.offers.api.create_thumb", side_effect=Exception)
     # this test needs "clean_database" instead of "db_session" fixture because with the latter, the mediation would still be present in databse
     def test_no_objects_saved_on_image_error(self, create_thumb_mock, client):
@@ -475,7 +474,7 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
         assert offers_models.Offer.query.first() is None
         assert offers_models.Stock.query.first() is None
 
-    @conftest.clean_database
+    @pytest.mark.usefixtures("clean_database")
     def test_image_too_small(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue()
 
@@ -500,7 +499,7 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
         assert offers_models.Offer.query.first() is None
         assert offers_models.Stock.query.first() is None
 
-    @conftest.clean_database
+    @pytest.mark.usefixtures("clean_database")
     def test_bad_image_ratio(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue()
 

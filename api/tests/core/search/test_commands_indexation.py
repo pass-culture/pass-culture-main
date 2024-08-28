@@ -4,26 +4,20 @@ from unittest import mock
 import pytest
 
 from pcapi.core import search
-import pcapi.core.bookings.factories as bookings_factories
+from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.categories.subcategories_v2 import ALL_SUBCATEGORIES
-import pcapi.core.educational.factories as educational_factories
-import pcapi.core.offerers.factories as offerers_factories
+from pcapi.core.educational import factories as educational_factories
+from pcapi.core.offerers import factories as offerers_factories
+from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
-import pcapi.core.offers.factories as offers_factories
 from pcapi.core.providers.titelive_gtl import GTLS
-import pcapi.core.search.testing as search_testing
+from pcapi.core.search import testing as search_testing
 from pcapi.repository import repository
 
-from tests.conftest import clean_database
+from tests.test_utils import run_command
 
 
-def run_command(app, command_name, *args):
-    runner = app.test_cli_runner()
-    args = (command_name, *args)
-    return runner.invoke(args=args)
-
-
-@clean_database
+@pytest.mark.usefixtures("clean_database")
 def test_partially_index_offers(app):
     _inactive_offer = offers_factories.StockFactory(offer__isActive=False)
     _unbookable_offer = offers_factories.OfferFactory()
@@ -49,7 +43,7 @@ def test_partially_index_offers(app):
     assert set(search_testing.search_store["offers"].keys()) == expected_to_be_reindexed
 
 
-@clean_database
+@pytest.mark.usefixtures("clean_database")
 @mock.patch("pcapi.core.search.async_index_offer_ids")
 def test_update_products_booking_count_and_reindex_offers(mocked_async_index_offer_ids, app):
     ean = "1234567890123"
@@ -73,7 +67,7 @@ def test_update_products_booking_count_and_reindex_offers(mocked_async_index_off
     )
 
 
-@clean_database
+@pytest.mark.usefixtures("clean_database")
 @mock.patch("pcapi.core.search.async_index_offer_ids")
 def test_update_products_booking_count_and_reindex_offers_if_same_ean(mocked_async_index_offer_ids, app):
     ean_1 = "1234567890123"
@@ -106,7 +100,7 @@ def test_update_products_booking_count_and_reindex_offers_if_same_ean(mocked_asy
     assert kwargs == {"reason": search.IndexationReason.BOOKING_COUNT_CHANGE}
 
 
-@clean_database
+@pytest.mark.usefixtures("clean_database")
 def test_partially_index_collective_offer_templates(app):
     _not_indexable_template = educational_factories.CollectiveOfferTemplateFactory(isActive=False)
     indexable_template1 = educational_factories.CollectiveOfferTemplateFactory()
@@ -129,7 +123,7 @@ def test_partially_index_collective_offer_templates(app):
     assert set(search_testing.search_store["collective-offers-templates"].keys()) == expected_to_be_reindexed
 
 
-@clean_database
+@pytest.mark.usefixtures("clean_database")
 def test_partially_index_venues(app):
     _not_indexable_venue = offerers_factories.VenueFactory(isPermanent=False)
     indexable_venue1 = offerers_factories.VenueFactory(isPermanent=True)
@@ -155,7 +149,7 @@ def test_partially_index_venues(app):
     assert set(search_testing.search_store["venues"].keys()) == expected_to_be_reindexed
 
 
-@clean_database
+@pytest.mark.usefixtures("clean_database")
 def test_partially_index_venues_removes_non_eligible_venues(app):
     future_not_indexable_venue = offerers_factories.VenueFactory(isPermanent=True)
     indexable_venue1 = offerers_factories.VenueFactory(isPermanent=True)

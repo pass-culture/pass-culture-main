@@ -18,7 +18,6 @@ import pcapi.core.providers.repository as providers_repository
 from pcapi.core.users import factories as user_factories
 from pcapi.models.api_errors import ApiErrors
 
-from tests.conftest import clean_database
 from tests.local_providers.cinema_providers.cds import fixtures as cds_fixtures
 
 
@@ -353,7 +352,7 @@ class Returns400Test:
         assert response.json["venueId"] == ["Ce champ est obligatoire"]
         assert response.json["providerId"] == ["Ce champ est obligatoire"]
 
-    @clean_database
+    @pytest.mark.usefixtures("clean_database")
     def test_when_add_allocine_stocks_provider_with_wrong_format_price(self, client):
         # Given
         venue = offerers_factories.VenueFactory(managingOfferer__siren="775671464")

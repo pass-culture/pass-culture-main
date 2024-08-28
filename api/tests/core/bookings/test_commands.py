@@ -8,12 +8,11 @@ import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offer_models
 
-from tests.conftest import clean_database
 from tests.test_utils import run_command
 
 
 class ArchiveOldBookingsTest:
-    @clean_database
+    @pytest.mark.usefixtures("clean_database")
     def test_basics(self, app):
         # given
         now = datetime.datetime.utcnow()
@@ -37,7 +36,7 @@ class ArchiveOldBookingsTest:
         assert old_booking.displayAsEnded
         assert not recent_booking.displayAsEnded
 
-    @clean_database
+    @pytest.mark.usefixtures("clean_database")
     @pytest.mark.parametrize(
         "subcategoryId",
         offer_models.Stock.AUTOMATICALLY_USED_SUBCATEGORIES,
@@ -72,7 +71,7 @@ class ArchiveOldBookingsTest:
         assert not old_not_free_booking.displayAsEnded
         assert old_booking.displayAsEnded
 
-    @clean_database
+    @pytest.mark.usefixtures("clean_database")
     @pytest.mark.parametrize(
         "subcategoryId",
         offer_models.Stock.AUTOMATICALLY_USED_SUBCATEGORIES,

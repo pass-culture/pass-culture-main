@@ -27,8 +27,6 @@ from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.repository import repository
 from pcapi.repository import transaction
 
-from tests.conftest import clean_database
-
 
 @pytest.mark.usefixtures("db_session")
 class UserTest:
@@ -606,7 +604,7 @@ class UserLoginTest:
     # Since we are testing a deferred trigger on the User table,
     # we cannot have the db_session fixture tampering with the
     # transaction lifecycle.
-    @clean_database
+    @pytest.mark.usefixtures("clean_database")
     def test_empty_password_update(self):
         with pytest.raises(sa_exc.InternalError) as exc:
             with transaction():
@@ -617,7 +615,7 @@ class UserLoginTest:
         assert "missingLoginMethod" in str(exc.value)
         assert user.password is not None
 
-    @clean_database
+    @pytest.mark.usefixtures("clean_database")
     def test_empty_password_insert(self):
         with pytest.raises(sa_exc.InternalError) as exc:
             with transaction():
@@ -627,7 +625,7 @@ class UserLoginTest:
         assert "missingLoginMethod" in str(exc.value)
         assert user_models.User.query.count() == 0
 
-    @clean_database
+    @pytest.mark.usefixtures("clean_database")
     def test_empty_password_update_with_sso(self):
         user = users_factories.UserFactory()
         users_factories.SingleSignOnFactory(user=user)
@@ -638,7 +636,7 @@ class UserLoginTest:
 
         assert user.password is None
 
-    @clean_database
+    @pytest.mark.usefixtures("clean_database")
     def test_empty_password_insert_with_sso(self):
         new_user = user_models.User(email="test@example.com")
         single_sign_on = user_models.SingleSignOn(user=new_user, ssoProvider="google", ssoUserId="user_id")
