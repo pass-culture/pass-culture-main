@@ -103,7 +103,6 @@ export const DetailsForm = ({
     subcategoryConditionalFields.includes(field)
   )
 
-  const splitFormEnabled = useActiveFeature('WIP_SPLIT_OFFER')
   const offerAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
   const areSuggestedCategoriesEnabled = useActiveFeature(
     'WIP_SUGGESTED_SUBCATEGORIES'
@@ -147,8 +146,7 @@ export const DetailsForm = ({
   const isSubCategorySelected =
     subcategoryId !== DEFAULT_DETAILS_FORM_VALUES.subcategoryId
 
-  const SHOW_VENUE_SELECTION_FIELD =
-    splitFormEnabled && (!offerAddressEnabled || venueOptions.length > 1)
+  const SHOW_VENUE_SELECTION_FIELD = venueOptions.length > 1
 
   return (
     <>
@@ -200,21 +198,6 @@ export const DetailsForm = ({
             disabled={readOnlyFields.includes('description')}
           />
         </FormLayout.Row>
-        {!splitFormEnabled && (
-          <FormLayout.Row>
-            <Select
-              label={offerAddressEnabled ? 'Qui propose l’offre ?' : 'Lieu'}
-              name="venueId"
-              options={venueOptions}
-              onChange={(e) =>
-                onChangeGetSuggestedSubcategories(e, venueId !== '')
-              }
-              disabled={
-                readOnlyFields.includes('venueId') || venueOptions.length === 1
-              }
-            />
-          </FormLayout.Row>
-        )}
       </FormLayout.Section>
       {areSuggestedCategoriesEnabled && !offer ? (
         suggestedSubcategories.length > 0 &&
