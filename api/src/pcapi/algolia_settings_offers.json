@@ -31,7 +31,8 @@
         "fr"
     ],
     "replicas": [
-        "virtual(PRODUCTION Top offres)"
+        "virtual(PRODUCTION Top offres)",
+        "PRODUCTION B"
     ],
     "attributesForFaceting": [
         "filterOnly(offer.allocineId)",
