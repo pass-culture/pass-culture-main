@@ -128,6 +128,7 @@ COMPLIANCE_EMAIL_ADDRESS = os.environ.get("COMPLIANCE_EMAIL_ADDRESS", "")
 FRAUD_EMAIL_ADDRESS = os.environ.get("FRAUD_EMAIL_ADDRESS", "")
 DEV_EMAIL_ADDRESS = os.environ.get("DEV_EMAIL_ADDRESS", "")
 END_TO_END_TESTS_EMAIL_ADDRESS = os.environ.get("END_TO_END_TESTS_EMAIL_ADDRESS", "")
+HOMOLOGATION_EMAIL_ADDRESS = os.environ.get("HOMOLOGATION_EMAIL_ADDRESS", "")
 
 # When load testing, override `EMAIL_BACKEND` to avoid going over SendinBlue quota:
 # EMAIL_BACKEND="pcapi.core.mails.backends.logger.LoggerBackend"
