@@ -18,7 +18,10 @@ from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.external_bookings.factories import ExternalBookingFactory
 from pcapi.core.finance import utils as finance_utils
+from pcapi.core.geography.factories import AddressFactory
 import pcapi.core.mails.testing as mails_testing
+from pcapi.core.offerers.factories import OffererAddressFactory
+from pcapi.core.offerers.factories import VenueFactory
 from pcapi.core.offers import models as offer_models
 from pcapi.core.offers.exceptions import UnexpectedCinemaProvider
 import pcapi.core.offers.factories as offers_factories
@@ -958,6 +961,21 @@ class GetBookingsTest:
             {"barcode": "111111111", "seat": "A_1"},
             {"barcode": "111111112", "seat": "A_2"},
         ]
+
+    def test_get_bookings_with_address_on_venue(self, client):
+        user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
+
+        address = AddressFactory()
+        venue = VenueFactory(offererAddress=OffererAddressFactory(address=address))
+        offer = offers_factories.OfferFactory(venue=venue, offererAddress=None)
+        booking_factories.BookingFactory(stock__offer=offer, user=user)
+
+        with assert_num_queries(2):  # user + booking
+            response = client.with_token(self.identifier).get("/native/v1/bookings")
+
+        assert response.status_code == 200
+        assert response.json["ongoing_bookings"][0]["stock"]["offer"]["address"]["label"] == venue.offererAddress.label
+        assert response.json["ongoing_bookings"][0]["stock"]["offer"]["address"]["city"] == address.city
 
 
 class CancelBookingTest:
