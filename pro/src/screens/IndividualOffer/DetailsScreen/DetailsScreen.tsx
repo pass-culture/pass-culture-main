@@ -34,7 +34,8 @@ import {
 import { DetailsForm } from './DetailsForm'
 import { DetailsFormValues } from './types'
 import {
-  serializeDetailsData,
+  serializeDetailsPatchData,
+  serializeDetailsPostData,
   setDefaultInitialValues,
   setDefaultInitialValuesFromOffer,
   setFormReadOnlyFields,
@@ -88,10 +89,12 @@ export const DetailsScreen = ({ venues }: DetailsScreenProps): JSX.Element => {
   const onSubmit = async (formValues: DetailsFormValues): Promise<void> => {
     // Submit
     try {
-      const payload = serializeDetailsData(formValues)
       const response = !offer
-        ? await api.postDraftOffer(payload)
-        : await api.patchDraftOffer(offer.id, payload)
+        ? await api.postDraftOffer(serializeDetailsPostData(formValues))
+        : await api.patchDraftOffer(
+            offer.id,
+            serializeDetailsPatchData(formValues)
+          )
 
       const receivedOfferId = response.id
       await handleImageOnSubmit(receivedOfferId)
