@@ -8,6 +8,5 @@ export type PatchDraftOfferBodyModel = {
   extraData?: Record<string, any> | null;
   name?: string | null;
   subcategoryId?: string | null;
-  venueId?: number | null;
 };
 
