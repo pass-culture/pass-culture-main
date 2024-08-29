@@ -172,9 +172,12 @@ export const onSubcategoryChange = async ({
   })
 }
 
-export const buildVenueOptions = (venues: VenueListItemResponseModel[]) => {
+export const buildVenueOptions = (
+  venues: VenueListItemResponseModel[],
+  areSuggestedCategoriesEnabled: boolean
+) => {
   let venueOptions = venues
-    .filter((venue) => !venue.isVirtual)
+    .filter((venue) => !areSuggestedCategoriesEnabled || !venue.isVirtual)
     .map((venue) => ({
       value: venue.id.toString(),
       label: computeVenueDisplayName(venue),
@@ -192,15 +195,21 @@ export const buildVenueOptions = (venues: VenueListItemResponseModel[]) => {
 
 type SetDefaultInitialValuesProps = {
   filteredVenues: VenueListItemResponseModel[]
+  areSuggestedCategoriesEnabled: boolean
 }
 
 export function setDefaultInitialValues({
   filteredVenues,
+  areSuggestedCategoriesEnabled,
 }: SetDefaultInitialValuesProps): DetailsFormValues {
   let venueId = ''
 
-  if (filteredVenues.length === 1) {
-    venueId = String(filteredVenues[0].id)
+  const venues = areSuggestedCategoriesEnabled
+    ? filteredVenues.filter((v) => !v.isVirtual)
+    : filteredVenues
+
+  if (venues.length === 1) {
+    venueId = String(venues[0].id)
   }
 
   return {

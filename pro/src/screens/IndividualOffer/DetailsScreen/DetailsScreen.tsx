@@ -76,7 +76,10 @@ export const DetailsScreen = ({ venues }: DetailsScreenProps): JSX.Element => {
 
   const initialValues =
     offer === null
-      ? setDefaultInitialValues({ filteredVenues })
+      ? setDefaultInitialValues({
+          filteredVenues,
+          areSuggestedCategoriesEnabled,
+        })
       : setDefaultInitialValuesFromOffer({
           offer,
           subcategories: subCategories,

@@ -446,7 +446,9 @@ describe('screens:IndividualOffer::Informations', () => {
   it('should not render venue field when there is just one venue', () => {
     props.venues = [venueListItemFactory({ id: 189 })]
 
-    renderDetailsScreen(props, contextValue)
+    renderDetailsScreen(props, contextValue, {
+      features: ['WIP_SUGGESTED_SUBCATEGORIES'],
+    })
 
     expect(screen.queryByText(/Lieu/)).not.toBeInTheDocument()
   })

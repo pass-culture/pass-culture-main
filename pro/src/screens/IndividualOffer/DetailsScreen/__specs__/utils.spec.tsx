@@ -142,7 +142,10 @@ describe('buildSubcategoryFields', () => {
 describe('buildVenueOptions', () => {
   it('should build venues options', () => {
     expect(
-      buildVenueOptions([venueListItemFactory({}), venueListItemFactory({})])
+      buildVenueOptions(
+        [venueListItemFactory({}), venueListItemFactory({})],
+        false
+      )
     ).toStrictEqual([
       {
         label: 'Sélectionner le partenaire',
@@ -165,6 +168,7 @@ describe('setDefaultInitialValues', () => {
     expect(
       setDefaultInitialValues({
         filteredVenues: [venueListItemFactory({}), venueListItemFactory({})],
+        areSuggestedCategoriesEnabled: false,
       })
     ).toStrictEqual({
       author: '',
@@ -189,6 +193,7 @@ describe('setDefaultInitialValues', () => {
     expect(
       setDefaultInitialValues({
         filteredVenues: [venueListItemFactory({ id: 666 })],
+        areSuggestedCategoriesEnabled: false,
       })
     ).toStrictEqual(
       expect.objectContaining({
