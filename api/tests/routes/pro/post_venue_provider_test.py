@@ -148,6 +148,7 @@ class Returns201Test:
         # Then
         assert response.status_code == 201
         assert set(response.json.keys()) == {
+            "dateCreated",
             "id",
             "isActive",
             "isDuo",

@@ -419,6 +419,7 @@ export const defaultVenueProvider: VenueProviderResponse = {
   isFromAllocineProvider: false,
   lastSyncDate: undefined,
   venueId: 2,
+  dateCreated: '2021-08-15T00:00:00Z',
   venueIdAtOfferProvider: 'cdsdemorc1',
   provider: {
     name: 'Ciné Office',
