@@ -12,24 +12,24 @@ import {
   CollectiveActionsCellsProps,
 } from '../CollectiveActionsCells'
 
-const renderCollectiveActionsCell = ({
-  offer,
-  editionOfferLink,
-  urlSearchFilters,
-  isSelected,
-  deselectOffer,
-}: CollectiveActionsCellsProps) => {
+const mockDeselectOffer = vi.fn()
+const renderCollectiveActionsCell = (
+  props: Partial<CollectiveActionsCellsProps> = {}
+) => {
+  const defaultProps: CollectiveActionsCellsProps = {
+    offer: collectiveOfferFactory(),
+    editionOfferLink: '',
+    urlSearchFilters: DEFAULT_COLLECTIVE_SEARCH_FILTERS,
+    isSelected: false,
+    deselectOffer: mockDeselectOffer,
+    ...props,
+  }
+
   return renderWithProviders(
     <table>
       <tbody>
         <tr>
-          <CollectiveActionsCells
-            offer={offer}
-            editionOfferLink={editionOfferLink}
-            urlSearchFilters={urlSearchFilters}
-            isSelected={isSelected}
-            deselectOffer={deselectOffer}
-          />
+          <CollectiveActionsCells {...defaultProps} />
         </tr>
       </tbody>
     </table>
@@ -54,10 +54,6 @@ describe('CollectiveActionsCells', () => {
           },
         ],
       }),
-      editionOfferLink: '',
-      urlSearchFilters: DEFAULT_COLLECTIVE_SEARCH_FILTERS,
-      isSelected: false,
-      deselectOffer: vi.fn(),
     })
 
     await userEvent.click(screen.getByTitle('Action'))
@@ -78,7 +74,6 @@ describe('CollectiveActionsCells', () => {
   })
 
   it('should deselect an offer selected when the offer has just been archived', async () => {
-    const mockDeselectOffer = vi.fn()
     renderCollectiveActionsCell({
       offer: collectiveOfferFactory({
         stocks: [
@@ -89,10 +84,7 @@ describe('CollectiveActionsCells', () => {
           },
         ],
       }),
-      editionOfferLink: '',
-      urlSearchFilters: DEFAULT_COLLECTIVE_SEARCH_FILTERS,
       isSelected: true,
-      deselectOffer: mockDeselectOffer,
     })
 
     await userEvent.click(screen.getByTitle('Action'))
@@ -118,10 +110,6 @@ describe('CollectiveActionsCells', () => {
         isShowcase: true,
         status: CollectiveOfferStatus.DRAFT,
       }),
-      editionOfferLink: '',
-      urlSearchFilters: DEFAULT_COLLECTIVE_SEARCH_FILTERS,
-      isSelected: false,
-      deselectOffer: vi.fn(),
     })
 
     await userEvent.click(screen.getByTitle('Action'))
@@ -136,10 +124,6 @@ describe('CollectiveActionsCells', () => {
       offer: collectiveOfferFactory({
         status: CollectiveOfferStatus.DRAFT,
       }),
-      editionOfferLink: '',
-      urlSearchFilters: DEFAULT_COLLECTIVE_SEARCH_FILTERS,
-      isSelected: false,
-      deselectOffer: vi.fn(),
     })
 
     await userEvent.click(screen.getByTitle('Action'))
@@ -152,10 +136,6 @@ describe('CollectiveActionsCells', () => {
       offer: collectiveOfferFactory({
         isShowcase: true,
       }),
-      editionOfferLink: '',
-      urlSearchFilters: DEFAULT_COLLECTIVE_SEARCH_FILTERS,
-      isSelected: false,
-      deselectOffer: vi.fn(),
     })
 
     await userEvent.click(screen.getByTitle('Action'))
@@ -164,13 +144,7 @@ describe('CollectiveActionsCells', () => {
   })
 
   it('should display duplicate button for draft bookable offer', async () => {
-    renderCollectiveActionsCell({
-      offer: collectiveOfferFactory(),
-      editionOfferLink: '',
-      urlSearchFilters: DEFAULT_COLLECTIVE_SEARCH_FILTERS,
-      isSelected: false,
-      deselectOffer: vi.fn(),
-    })
+    renderCollectiveActionsCell()
 
     await userEvent.click(screen.getByTitle('Action'))
 
