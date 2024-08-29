@@ -47,7 +47,6 @@ const contextData: ReimbursementsContextProps = {
     name: 'toto',
     id: 1,
   },
-  setSelectedOfferer: function () {},
 }
 vi.mock('react-router-dom', async () => ({
   ...(await vi.importActual('react-router-dom')),
@@ -57,6 +56,12 @@ vi.mock('react-router-dom', async () => ({
 function renderBankInformations() {
   renderWithProviders(<BankInformations />, {
     user: sharedCurrentUserFactory(),
+    storeOverrides: {
+      user: {
+        currentUser: sharedCurrentUserFactory(),
+        selectedOffererId: 1,
+      },
+    },
   })
 }
 

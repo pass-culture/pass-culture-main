@@ -4,18 +4,13 @@ import {
   waitForElementToBeRemoved,
 } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import * as router from 'react-router-dom'
 import { expect } from 'vitest'
 
 import { api } from 'apiClient/api'
 import { BankAccountResponseModel } from 'apiClient/v1'
 import * as useAnalytics from 'app/App/analytics/firebase'
 import { Events } from 'core/FirebaseEvents/constants'
-import { ReimbursementsContextProps } from 'pages/Reimbursements/Reimbursements'
-import {
-  defaultBankAccount,
-  defaultGetOffererResponseModel,
-} from 'utils/individualApiFactories'
+import { defaultBankAccount } from 'utils/individualApiFactories'
 import {
   renderWithProviders,
   RenderWithProvidersOptions,
@@ -31,23 +26,18 @@ vi.mock('utils/date', async () => ({
   getToday: vi.fn(() => new Date('2020-12-15T12:00:00Z')),
 }))
 
-const contextData: ReimbursementsContextProps = {
-  selectedOfferer: {
-    ...defaultGetOffererResponseModel,
-    name: 'toto',
-    id: 1,
-  },
-  setSelectedOfferer: function () {},
-}
-vi.mock('react-router-dom', async () => ({
-  ...(await vi.importActual('react-router-dom')),
-  useOutletContext: () => contextData,
-}))
-
 const renderReimbursementsInvoices = (options?: RenderWithProvidersOptions) => {
+  const user = sharedCurrentUserFactory()
+
   renderWithProviders(<ReimbursementsInvoices />, {
-    user: sharedCurrentUserFactory(),
+    user,
     ...options,
+    storeOverrides: {
+      user: {
+        currentUser: user,
+        selectedOffererId: 1,
+      },
+    },
   })
 }
 
@@ -455,18 +445,6 @@ describe('reimbursementsWithFilters', () => {
         buttonType: 'multiple',
       })
     )
-  })
-
-  it('should display the bank account section even without context', () => {
-    vi.spyOn(router, 'useOutletContext').mockReturnValue(undefined)
-
-    renderReimbursementsInvoices()
-
-    expect(
-      screen.queryByText(
-        'Vous n’avez pas encore de justificatifs de remboursement disponibles'
-      )
-    ).toBeInTheDocument()
   })
 
   it('should not display Bank account when only one linked', async () => {

@@ -2,11 +2,13 @@ import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 import { Outlet, Route, Routes } from 'react-router-dom'
+import { expect } from 'vitest'
 
 import { api } from 'apiClient/api'
 import { GetOffererResponseModel } from 'apiClient/v1'
 import * as useAnalytics from 'app/App/analytics/firebase'
 import { Notification } from 'components/Notification/Notification'
+import { GET_OFFERER_QUERY_KEY } from 'config/swrQueryKeys'
 import { BankAccountEvents } from 'core/FirebaseEvents/constants'
 import { BankInformations } from 'pages/Reimbursements/BankInformations/BankInformations'
 import {
@@ -16,6 +18,15 @@ import {
   getOffererNameFactory,
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
+
+const mockMutate = vi.fn()
+vi.mock('swr', async () => ({
+  ...(await vi.importActual('swr')),
+  useSWRConfig: vi.fn(() => ({
+    mutate: mockMutate,
+  })),
+}))
 
 const renderBankInformations = (offerer: GetOffererResponseModel | null) => {
   renderWithProviders(
@@ -42,6 +53,12 @@ const renderBankInformations = (offerer: GetOffererResponseModel | null) => {
     </>,
     {
       initialRouterEntries: ['/remboursements/informations-bancaires'],
+      storeOverrides: {
+        user: {
+          currentUser: sharedCurrentUserFactory(),
+          selectedOffererId: 1,
+        },
+      },
     }
   )
 }
@@ -243,6 +260,6 @@ describe('BankInformations page', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Enregistrer' }))
     await userEvent.click(screen.getByRole('button', { name: 'Confirmer' }))
 
-    expect(api.getOfferer).toHaveBeenCalledWith(1)
+    expect(mockMutate).toHaveBeenNthCalledWith(1, [GET_OFFERER_QUERY_KEY, 1])
   })
 })
