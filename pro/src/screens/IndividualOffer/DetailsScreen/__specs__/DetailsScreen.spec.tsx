@@ -119,8 +119,26 @@ describe('screens:IndividualOffer::Informations', () => {
     })
   })
 
-  it('should render the component', async () => {
+  it('should render banner when no venue available', async () => {
     renderDetailsScreen(props, contextValue)
+
+    expect(
+      await screen.findByRole('heading', { name: 'À propos de votre offre' })
+    ).toBeInTheDocument()
+    expect(await screen.findByText(/Ajouter un lieu/)).toBeInTheDocument()
+  })
+
+  it('should render the component', async () => {
+    renderDetailsScreen(
+      {
+        ...props,
+        venues: [
+          venueListItemFactory({ id: 189 }),
+          venueListItemFactory({ id: 190 }),
+        ],
+      },
+      contextValue
+    )
 
     expect(
       await screen.findByRole('heading', { name: 'À propos de votre offre' })
@@ -135,7 +153,16 @@ describe('screens:IndividualOffer::Informations', () => {
   })
 
   it('should display the full form when categories, and subcategories has been selected', async () => {
-    renderDetailsScreen(props, contextValue)
+    renderDetailsScreen(
+      {
+        ...props,
+        venues: [
+          venueListItemFactory({ id: 189 }),
+          venueListItemFactory({ id: 190 }),
+        ],
+      },
+      contextValue
+    )
     await userEvent.selectOptions(
       await screen.findByLabelText('Catégorie *'),
       'A'
