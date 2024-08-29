@@ -11,8 +11,8 @@ import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
+import style from './ProviderActionButton.module.scss'
 import { ToggleVenueProviderStatusDialog } from './ToggleVenueProviderStatusDialog'
-import style from './VenueProviderItem.module.scss'
 
 interface ToggleVenueProviderStatusButtonProps {
   venueProvider: VenueProviderResponse

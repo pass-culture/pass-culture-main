@@ -20,12 +20,14 @@ import { sortByLabel } from 'utils/strings'
 import { DEFAULT_PROVIDER_OPTION } from './utils/_constants'
 import { VenueProviderForm } from './VenueProviderForm'
 
-interface AddVenueProviderButtonProps {
+export interface AddVenueProviderButtonProps {
   venue: GetVenueResponseModel
+  linkedProvidersIds: number[]
 }
 
 export const AddVenueProviderButton = ({
   venue,
+  linkedProvidersIds,
 }: AddVenueProviderButtonProps) => {
   const { mutate } = useSWRConfig()
 
@@ -50,10 +52,31 @@ export const AddVenueProviderButton = ({
   )
 
   const providersOptions = sortByLabel(
-    providers.map((item) => ({
-      value: item['id'].toString(),
-      label: item['name'],
-    }))
+    // 1. Filter out providers that are already linked to the venue
+    // 2. Format providers
+    providers.reduce(
+      (
+        filteredProvidersOptions: { value: string; label: string }[],
+        provider
+      ) => {
+        const isAlreadyLinkedToVenue = !!linkedProvidersIds.find(
+          (providerId) => provider.id === providerId
+        )
+
+        if (!isAlreadyLinkedToVenue) {
+          return [
+            ...filteredProvidersOptions,
+            {
+              value: provider['id'].toString(),
+              label: provider['name'],
+            },
+          ]
+        }
+
+        return filteredProvidersOptions
+      },
+      []
+    )
   )
 
   const setCreationMode = () => {

@@ -1,9 +1,13 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
+import { api } from 'apiClient/api'
 import { VenueTypeResponseModel } from 'apiClient/v1'
 import { defaultGetVenue } from 'utils/collectiveApiFactories'
-import { defaultGetOffererResponseModel } from 'utils/individualApiFactories'
+import {
+  defaultGetOffererResponseModel,
+  defaultVenueProvider,
+} from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
@@ -14,7 +18,7 @@ const venueTypes: VenueTypeResponseModel[] = [
   { id: 'SCIENTIFIC_CULTURE', label: 'Culture scientifique' },
 ]
 
-const renderForm = () => {
+const renderForm = async () => {
   renderWithProviders(
     <VenueSettingsFormScreen
       offerer={{
@@ -27,7 +31,27 @@ const renderForm = () => {
         { label: 'Lieu de spectacle', value: 'show' },
         { label: 'Lieu de pratique', value: 'practice' },
       ]}
-      venueProviders={[]}
+      venueProviders={[
+        defaultVenueProvider,
+        {
+          id: 2,
+          isActive: true,
+          isFromAllocineProvider: true,
+          lastSyncDate: undefined,
+          venueId: 2,
+          dateCreated: '2021-08-15T00:00:00Z',
+          venueIdAtOfferProvider: 'allocine_id_1',
+          provider: {
+            name: 'Allociné',
+            id: 13,
+            hasOffererProvider: false,
+            isActive: true,
+          },
+          quantity: 0,
+          isDuo: true,
+          price: 0,
+        },
+      ]}
       venue={defaultGetVenue}
       initialValues={{
         addressAutocomplete: '123 Rue Principale, Ville Exemple',
@@ -55,19 +79,58 @@ const renderForm = () => {
       user: sharedCurrentUserFactory(),
     }
   )
+
+  await waitFor(() => {
+    screen.getByText('Paramètres généraux')
+  })
 }
 
 describe('VenueSettingsFormScreen', () => {
+  beforeEach(() => {
+    vi.spyOn(api, 'getProvidersByVenue').mockResolvedValue([
+      {
+        name: 'Ciné Office',
+        id: 12,
+        hasOffererProvider: false,
+        isActive: true,
+      },
+      {
+        name: 'Allociné',
+        id: 13,
+        hasOffererProvider: false,
+        isActive: true,
+      },
+      {
+        name: 'Ticket Buster',
+        id: 14,
+        hasOffererProvider: true,
+        isActive: true,
+      },
+    ])
+  })
+
   it('should display the route leaving guard when leaving without saving', async () => {
-    renderForm()
+    await renderForm()
 
     await userEvent.type(screen.getByLabelText('Nom public'), 'test')
     await userEvent.click(screen.getByText('Annuler'))
 
-    await waitFor(() => {
-      expect(
-        screen.getByText('Les informations non enregistrées seront perdues')
-      ).toBeInTheDocument()
+    expect(
+      screen.getByText('Les informations non enregistrées seront perdues')
+    ).toBeInTheDocument()
+  })
+
+  it('should display the venue provider cards & add provider button', async () => {
+    await renderForm()
+
+    const cineOfficeCard = screen.getByText('Ciné Office')
+    const allocineCard = screen.getByText('Allociné')
+    const addProviderButton = screen.getByRole('button', {
+      name: 'Sélectionner un logiciel',
     })
+
+    expect(cineOfficeCard).toBeInTheDocument()
+    expect(allocineCard).toBeInTheDocument()
+    expect(addProviderButton).toBeInTheDocument()
   })
 })
