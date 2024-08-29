@@ -11,7 +11,7 @@ def retrieve_data_for_offer_approval_email(
     offer: Offer | educational_models.CollectiveOffer | educational_models.CollectiveOfferTemplate,
 ) -> models.TransactionalEmailData:
     if isinstance(offer, Offer) and offer.publicationDate:
-        publication_date = offer.publicationDate.strftime("%d/%m/%Y %H:%M:%S")
+        publication_date = offer.publicationDate.strftime("%d/%m/%Y")
     else:
         publication_date = None
     return models.TransactionalEmailData(
