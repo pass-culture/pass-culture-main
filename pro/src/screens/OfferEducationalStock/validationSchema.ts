@@ -39,7 +39,8 @@ function isBookingDateAfterNow(bookingLimitDatetime: Date | null | undefined) {
 
 export const generateValidationSchema = (
   preventPriceIncrease: boolean,
-  initialPrice: number | ''
+  initialPrice: number | '',
+  isReadOnly: boolean
 ) => {
   let totalPriceValidation = yup
     .number()
@@ -126,7 +127,7 @@ export const generateValidationSchema = (
       .test({
         message:
           'La date limite de réservation doit être égale ou postérieure à la date actuelle',
-        test: isBookingDateAfterNow,
+        test: (value) => isBookingDateAfterNow(value) || isReadOnly,
       }),
     priceDetail: yup
       .string()
