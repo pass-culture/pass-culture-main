@@ -1,0 +1,112 @@
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/variables/_size.scss" as size;
+
+.venue-provider-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  border-radius: rem.torem(10px);
+  border: 1px solid var(--color-grey-medium);
+  padding: rem.torem(16px) rem.torem(24px) rem.torem(8px);
+  margin-bottom: rem.torem(16px);
+  width: 100%;
+
+  @media (max-width: size.$tablet) {
+    gap: rem.torem(20px);
+  }
+
+  @media (min-width: size.$tablet) {
+    margin-bottom: rem.torem(24px);
+    margin-right: rem.torem(16px);
+    width: rem.torem(520px);
+    height: rem.torem(150px);
+  }
+}
+
+.provider-info-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+
+  @media (min-width: size.$tablet) {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
+.provider-logo {
+  height: rem.torem(40px);
+  margin-right: rem.torem(16px);
+}
+
+.provider-name {
+  @include fonts.title4;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.venue-provider-info-container {
+  @include fonts.caption;
+}
+
+.venue-provider-account-info {
+  margin-bottom: rem.torem(8px);
+}
+
+.provider-actions-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+
+  @media (max-width: size.$tablet) {
+    gap: rem.torem(12px);
+  }
+
+  @media (min-width: size.$tablet) {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+  }
+}
+
+.provider-actions-delete-and-inactivate {
+  gap: rem.torem(8px);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+
+  @media (max-width: size.$tablet) {
+    gap: rem.torem(12px);
+  }
+
+  @media (min-width: size.$tablet) {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
+.venue-id-at-offer-provider-container {
+  display: flex;
+  flex-direction: column;
+  color: var(--color-grey-dark);
+  margin-top: rem.torem(8px);
+  gap: rem.torem(8px);
+}
+
+.last-synchronisation {
+  &::before {
+    background-color: var(--color-valid);
+    border-radius: 50%;
+    content: "";
+    display: inline-block;
+    height: rem.torem(8px);
+    margin-right: rem.torem(8px);
+    width: rem.torem(8px);
+  }
+}

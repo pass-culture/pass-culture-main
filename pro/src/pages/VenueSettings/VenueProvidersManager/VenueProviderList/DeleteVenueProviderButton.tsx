@@ -11,7 +11,7 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import { DeleteVenueProviderDialog } from './DeleteVenueProviderDialog'
-import style from './VenueProviderItem.module.scss'
+import style from './ProviderActionButton.module.scss'
 
 interface DeleteVenueProviderButtonProps {
   venueProviderId: number
