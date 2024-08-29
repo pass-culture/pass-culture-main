@@ -30,7 +30,8 @@ const renderFormStock = ({
       onSubmit={onSubmit}
       validationSchema={generateValidationSchema(
         props.preventPriceIncrease,
-        initialValues.totalPrice
+        initialValues.totalPrice,
+        false
       )}
     >
       <Form>

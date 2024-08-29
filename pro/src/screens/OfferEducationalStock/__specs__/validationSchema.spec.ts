@@ -27,6 +27,7 @@ describe('validationSchema', () => {
     description: string
     formValues: Partial<OfferEducationalStockFormValues>
     expectedErrors: string[]
+    isReadOnly?: boolean
   }[] = [
     {
       description: 'start and end date should be on same school year',
@@ -109,15 +110,27 @@ describe('validationSchema', () => {
         'La date limite de réservation doit être égale ou postérieure à la date actuelle',
       ],
     },
+    {
+      description:
+        'booking limit date can be in the past if the form is read only',
+      formValues: {
+        ...values,
+        bookingLimitDatetime: sub(new Date(), { days: 1 }).toISOString(),
+      },
+      expectedErrors: [],
+      isReadOnly: true,
+    },
   ]
 
-  cases.forEach(({ description, formValues, expectedErrors }) => {
-    it(`should validate the form for case: ${description}`, async () => {
-      const errors = await getYupValidationSchemaErrors(
-        generateValidationSchema(false, 0),
-        formValues
-      )
-      expect(errors).toEqual(expectedErrors)
-    })
-  })
+  cases.forEach(
+    ({ description, formValues, expectedErrors, isReadOnly = false }) => {
+      it(`should validate the form for case: ${description}`, async () => {
+        const errors = await getYupValidationSchemaErrors(
+          generateValidationSchema(false, 0, isReadOnly),
+          formValues
+        )
+        expect(errors).toEqual(expectedErrors)
+      })
+    }
+  )
 })
