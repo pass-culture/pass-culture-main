@@ -82,8 +82,6 @@
                 {% if offer.extraData.gtl_id %}
                   <span class="fw-bold">Type de musique :</span>
                   {{ offer.extraData.gtl_id | format_music_gtl_id }}
-                {% else %}
-                  [Non renseigné]
                 {% endif %}
                 {% if offer.extraData.showType or offer.extraData.showSubType %}
                   <p class="mb-1">
