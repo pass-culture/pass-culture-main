@@ -12,15 +12,6 @@ from pcapi.serialization.utils import to_camel
 from pcapi.validation.routes.offers import check_offer_name_length_is_valid
 
 
-class AddressModel(BaseModel):
-    city: offerers_schemas.VenueCity
-    label: str | None
-    latitude: float | str
-    longitude: float | str
-    postalCode: offerers_schemas.VenuePostalCode
-    street: offerers_schemas.VenueAddress
-
-
 class PostDraftOfferBodyModel(BaseModel):
     name: str
     subcategory_id: str
@@ -104,7 +95,7 @@ class UpdateOffer(BaseModel):
     motor_disability_compliant: bool | None = None
     visual_disability_compliant: bool | None = None
 
-    address: AddressModel | None = None
+    address: offerers_schemas.AddressBodyModel | None = None
     booking_contact: EmailStr | None = None
     booking_email: EmailStr | None = None
     description: str | None = None

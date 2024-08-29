@@ -108,3 +108,12 @@ class VenueWithdrawalDetails(pydantic_v1.ConstrainedStr):
     strip_whitespace = True
     # optional, hence no `min_length`
     max_length = 500
+
+
+class AddressBodyModel(BaseModel):
+    city: VenueCity
+    label: str | None
+    latitude: float | str
+    longitude: float | str
+    postalCode: VenuePostalCode
+    street: VenueAddress
