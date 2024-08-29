@@ -4,6 +4,7 @@
 /* eslint-disable */
 import type { ProviderResponse } from './ProviderResponse';
 export type VenueProviderResponse = {
+  dateCreated: string;
   id: number;
   isActive: boolean;
   isDuo?: boolean | null;
