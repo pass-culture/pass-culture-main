@@ -24,8 +24,8 @@
     <div class="col">
       <h2 class="card-title text-primary">Noms de domaines</h2>
       <div class="my-4">
-        <form action="{{ url_for("backoffice_web.fraud.prepare_blacklist_domain_name") }}"
-              name="{{ url_for("backoffice_web.fraud.prepare_blacklist_domain_name") | action_to_name }}"
+        <form action="{{ url_for('backoffice_web.fraud.prepare_blacklist_domain_name') }}"
+              name="{{ url_for('backoffice_web.fraud.prepare_blacklist_domain_name') | action_to_name }}"
               method="get"
               data-turbo="false">
           <div class="col-8 row">

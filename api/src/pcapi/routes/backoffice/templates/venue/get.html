@@ -33,8 +33,8 @@
                      aria-hidden="true">
                   <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content">
-                      <form action="{{ url_for("backoffice_web.venue.fully_sync_venue", venue_id=venue.id) }}"
-                            name="{{ url_for("backoffice_web.venue.fully_sync_venue", venue_id=venue.id) | action_to_name }}"
+                      <form action="{{ url_for('backoffice_web.venue.fully_sync_venue', venue_id=venue.id) }}"
+                            name="{{ url_for('backoffice_web.venue.fully_sync_venue', venue_id=venue.id) | action_to_name }}"
                             method="post"
                             data-turbo="false">
                         <div class="modal-header"
@@ -276,18 +276,18 @@
                             } %}
               <p class="mb-1">
                 <span class="fw-bold">Offres BO :</span>
-                <a href="{{ url_for("backoffice_web.offer.list_offers", **search_params) }}"
+                <a href="{{ url_for('backoffice_web.offer.list_offers', **search_params) }}"
                    class="link-primary">individuelles</a> |
-                <a href="{{ url_for("backoffice_web.collective_offer.list_collective_offers", **search_params) }}"
+                <a href="{{ url_for('backoffice_web.collective_offer.list_collective_offers', **search_params) }}"
                    class="link-primary">collectives</a> |
-                <a href="{{ url_for("backoffice_web.collective_offer_template.list_collective_offer_templates", venue=venue.id) }}"
+                <a href="{{ url_for('backoffice_web.collective_offer_template.list_collective_offer_templates', venue=venue.id) }}"
                    class="link-primary">vitrine</a>
               </p>
               <p class="mb-1">
                 <span class="fw-bold">Réservations BO :</span>
-                <a href="{{ url_for("backoffice_web.individual_bookings.list_individual_bookings", venue=venue.id) }}"
+                <a href="{{ url_for('backoffice_web.individual_bookings.list_individual_bookings', venue=venue.id) }}"
                    class="link-primary">individuelles</a> |
-                <a href="{{ url_for("backoffice_web.collective_bookings.list_collective_bookings", venue=venue.id) }}"
+                <a href="{{ url_for('backoffice_web.collective_bookings.list_collective_bookings', venue=venue.id) }}"
                    class="link-primary">collectives</a>
               </p>
               <div>
@@ -342,7 +342,7 @@
         </div>
       </div>
       <div class="mt-4">
-        <turbo-frame data-turbo="false" id="venue_total_revenue_frame" src="{{ url_for("backoffice_web.venue.get_stats", venue_id=venue.id) }}">
+        <turbo-frame data-turbo="false" id="venue_total_revenue_frame" src="{{ url_for('backoffice_web.venue.get_stats', venue_id=venue.id) }}">
         {{ build_loading_spinner() }}
         </turbo-frame>
       </div>
@@ -356,20 +356,20 @@
         {% endcall %}
         {% call build_details_tabs_content_wrapper() %}
           {% call build_details_tab_content("history", active_tab == 'history') %}
-            <turbo-frame data-turbo="false" id="venue_history_frame" loading="lazy" src="{{ url_for("backoffice_web.venue.get_history", venue_id=venue.id) }}">
+            <turbo-frame data-turbo="false" id="venue_history_frame" loading="lazy" src="{{ url_for('backoffice_web.venue.get_history', venue_id=venue.id) }}">
             {{ build_loading_spinner() }}
             </turbo-frame>
           {% endcall %}
           {% if venue.siret and has_permission("READ_PRO_ENTREPRISE_INFO") %}
             {% call build_details_tab_content("entreprise", active_tab == 'entreprise') %}
-              <turbo-frame data-turbo="false" id="venue_entreprise_frame" loading="lazy" src="{{ url_for("backoffice_web.venue.get_entreprise_info", venue_id=venue.id) }}">
+              <turbo-frame data-turbo="false" id="venue_entreprise_frame" loading="lazy" src="{{ url_for('backoffice_web.venue.get_entreprise_info', venue_id=venue.id) }}">
               {{ build_loading_spinner() }}
               </turbo-frame>
             {% endcall %}
           {% endif %}
           {% if venue.siret %}
             {% call build_details_tab_content("dms-adage", active_tab == 'dms_adage') %}
-              <turbo-frame data-turbo="false" id="venue_collective_dms_applications_frame" loading="lazy" src="{{ url_for("backoffice_web.venue.get_collective_dms_applications", venue_id=venue.id) }}">
+              <turbo-frame data-turbo="false" id="venue_collective_dms_applications_frame" loading="lazy" src="{{ url_for('backoffice_web.venue.get_collective_dms_applications', venue_id=venue.id) }}">
               {{ build_loading_spinner() }}
               </turbo-frame>
             {% endcall %}

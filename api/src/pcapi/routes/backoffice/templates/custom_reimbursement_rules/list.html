@@ -23,7 +23,7 @@
     <div class="filters-container">{{ forms.build_filters_form(form, dst) }}</div>
     <div class="row">
       <div class="col-md-11 mb-4">
-        <turbo-frame id="reimbursement_stats" src="{{ url_for("backoffice_web.reimbursement_rules.get_stats") }}">
+        <turbo-frame id="reimbursement_stats" src="{{ url_for('backoffice_web.reimbursement_rules.get_stats') }}">
         {{ build_loading_spinner() }}
         </turbo-frame>
       </div>

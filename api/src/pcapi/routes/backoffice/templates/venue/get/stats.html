@@ -109,7 +109,7 @@
             <span class="fw-bold">Point de valorisation :</span>
             {% if pricing_point %}
               {% if pricing_point.id != venue.id %}
-                <a href="{{ url_for("backoffice_web.venue.get", venue_id=pricing_point.id) }}"
+                <a href="{{ url_for('backoffice_web.venue.get', venue_id=pricing_point.id) }}"
                    class="link-primary">{{ pricing_point.common_name }}</a>
                 {% if has_permission("ADVANCED_PRO_SUPPORT") %}
                   <button class="btn btn-link lead fw-bold mx-0 my-0 py-0"

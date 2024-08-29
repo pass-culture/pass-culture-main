@@ -76,7 +76,7 @@
     <div class="card-body my-2">
       <h5 class="card-title">Données RCS (Infogreffe)</h5>
       <div class="card-body">
-        <turbo-frame data-turbo="false" id="offerer_rcs_frame" loading="lazy" src="{{ url_for("backoffice_web.offerer.get_entreprise_rcs_info", offerer_id=offerer.id) }}">
+        <turbo-frame data-turbo="false" id="offerer_rcs_frame" loading="lazy" src="{{ url_for('backoffice_web.offerer.get_entreprise_rcs_info', offerer_id=offerer.id) }}">
         {{ build_loading_spinner() }}
         </turbo-frame>
       </div>
@@ -86,7 +86,7 @@
         <h5 class="card-title">Données URSSAF</h5>
         <div class="card-body">
           <turbo-frame data-turbo="true" id="offerer_urssaf_frame">
-          <a href="{{ url_for("backoffice_web.offerer.get_entreprise_urssaf_info", offerer_id=offerer.id) }}"
+          <a href="{{ url_for('backoffice_web.offerer.get_entreprise_urssaf_info', offerer_id=offerer.id) }}"
              class="btn btn-md btn-outline-primary fw-bold pc-hide-on-click"><i class="bi bi-arrow-clockwise"></i> Vérifier</a>
           <div class="d-none pc-show-on-click">{{ build_loading_spinner() }}</div>
           </turbo-frame>
@@ -97,7 +97,7 @@
           <h5 class="card-title">Données DGFIP</h5>
           <div class="card-body">
             <turbo-frame data-turbo="true" id="offerer_dgfip_frame">
-            <a href="{{ url_for("backoffice_web.offerer.get_entreprise_dgfip_info", offerer_id=offerer.id) }}"
+            <a href="{{ url_for('backoffice_web.offerer.get_entreprise_dgfip_info', offerer_id=offerer.id) }}"
                class="btn btn-md btn-outline-primary fw-bold pc-hide-on-click"><i class="bi bi-arrow-clockwise"></i> Vérifier</a>
             <div class="d-none pc-show-on-click">{{ build_loading_spinner() }}</div>
             </turbo-frame>
