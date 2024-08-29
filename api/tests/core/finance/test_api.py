@@ -3613,7 +3613,9 @@ class CreateDepositTest:
             status=fraud_models.FraudCheckStatus.OK,
             type=fraud_models.FraudCheckType.EDUCONNECT,
             eligibilityType=users_models.EligibilityType.UNDERAGE,
-            resultContent=fraud_factories.EduconnectContentFactory(registration_datetime=datetime.datetime.utcnow()),
+            resultContent=fraud_factories.EduconnectContentFactory(
+                registration_datetime=datetime.datetime.utcnow(), age=age
+            ),
         )
 
         # Deposit is created right after the validation of the registration
@@ -4319,6 +4321,47 @@ class UserRecreditTest:
             api.recredit_underage_users()
             assert user.deposit.amount == 30
             assert user.recreditAmountToShow is None
+
+    def test_recredit_with_two_birthdays_since_registration(self):
+        seventeen_years_ago = datetime.datetime.utcnow() - relativedelta(years=17)
+        beneficiary = users_factories.UserFactory(
+            validatedBirthDate=seventeen_years_ago, dateOfBirth=seventeen_years_ago.date()
+        )
+        beneficiary.add_underage_beneficiary_role()
+        thirteen_months_ago = datetime.datetime.utcnow() - relativedelta(years=1, months=1)
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=beneficiary,
+            status=fraud_models.FraudCheckStatus.STARTED,
+            type=fraud_models.FraudCheckType.EDUCONNECT,
+            eligibilityType=users_models.EligibilityType.UNDERAGE,
+            resultContent=fraud_factories.EduconnectContentFactory(
+                birth_date=seventeen_years_ago,
+                registration_datetime=thirteen_months_ago,  # beneficiary is 15 during registration
+            ),
+        )
+        granted_deposit = api.get_granted_deposit(
+            beneficiary,
+            users_models.EligibilityType.UNDERAGE,
+            age_at_registration=15,
+        )
+        deposit = models.Deposit(
+            version=granted_deposit.version,
+            type=granted_deposit.type,
+            amount=granted_deposit.amount,
+            source="test",
+            user=beneficiary,
+            expirationDate=granted_deposit.expiration_date,
+        )
+        db.session.add(deposit)
+        db.session.flush()
+
+        api.recredit_underage_users()
+
+        assert set(recredit.recreditType for recredit in deposit.recredits) == {
+            models.RecreditType.RECREDIT_16,
+            models.RecreditType.RECREDIT_17,
+        }
+        assert len(deposit.recredits) == 2
 
     def test_notify_user_on_recredit(self):
         with time_machine.travel("2020-05-01"):
