@@ -13,6 +13,7 @@ export enum Events {
   CLICKED_DOWNLOAD_BOOKINGS_CSV = 'hasClickedDownloadBookingCsv',
   CLICKED_DOWNLOAD_BOOKINGS_XLS = 'hasClickedDownloadBookingXls',
   CLICKED_EDIT_PROFILE = 'hasClickedEditProfile',
+  CLICKED_EDIT_COLLECTIVE_OFFER = 'hasClickedEditCollectiveOffer',
   CLICKED_HOME_STATS_PENDING_OFFERS_FAQ = 'hasClickedHomeStatsPendingOffersFaq',
   CLICKED_FORGOTTEN_PASSWORD = 'hasClickedForgottenPassword',
   CLICKED_HELP_CENTER = 'hasClickedHelpCenter',
