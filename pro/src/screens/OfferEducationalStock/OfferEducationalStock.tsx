@@ -109,7 +109,8 @@ export const OfferEducationalStock = <
         ? showcaseOfferValidationSchema
         : generateValidationSchema(
             preventPriceIncrease,
-            initialValues.totalPrice
+            initialValues.totalPrice,
+            mode === Mode.READ_ONLY
           )
     }),
   })
