@@ -1,30 +1,31 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
 import { GetVenueResponseModel, VenueProviderResponse } from 'apiClient/v1'
 import { GET_VENUE_PROVIDERS_QUERY_KEY } from 'config/swrQueryKeys'
 import { useNotification } from 'hooks/useNotification'
+import fullEditIcon from 'icons/full-edit.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import { CinemaProviderFormDialog } from './CinemaProviderFormDialog'
-import style from './CinemaProviderParameters.module.scss'
+import style from './ProviderActionButton.module.scss'
 import { CinemaProviderParametersValues } from './types'
 
-interface CinemaProviderParametersProps {
+export interface CinemaProviderEditProps {
   venueProvider: VenueProviderResponse
   venue: GetVenueResponseModel
   offererId: number
 }
 
-export const CinemaProviderParameters = ({
+export const CinemaProviderEdit = ({
   venueProvider,
   venue,
   offererId,
-}: CinemaProviderParametersProps): JSX.Element => {
-  const [isOpenedFormDialog, setIsOpenedFormDialog] = useState(false)
+}: CinemaProviderEditProps): JSX.Element => {
   const notification = useNotification()
   const { mutate } = useSWRConfig()
 
@@ -53,7 +54,6 @@ export const CinemaProviderParameters = ({
       isActive: venueProvider.isActive,
     })
 
-    setIsOpenedFormDialog(false)
     return isSuccess
   }
 
@@ -62,35 +62,25 @@ export const CinemaProviderParameters = ({
   }
 
   return (
-    <div className={style['cinema-provider-parameters']}>
-      cc
-      <h4 className={style['title']}>Paramètres des offres synchronisées</h4>
-      <div className={style['cinema-provider-parameters-list']}>
-        <div>
-          Accepter les offres DUO :{' '}
-          <span>{`${venueProvider.isDuo ? 'Oui' : 'Non'} `}</span>
-        </div>
-      </div>
-      <DialogBuilder
-        open={isOpenedFormDialog}
-        onOpenChange={setIsOpenedFormDialog}
-        trigger={
-          <Button
-            className={style['edit-parameters-btn']}
-            variant={ButtonVariant.SECONDARY}
-          >
-            Modifier les paramètres
-          </Button>
-        }
-      >
-        <CinemaProviderFormDialog
-          initialValues={initialValues}
-          onConfirm={onConfirmDialog}
-          providerId={venueProvider.provider.id}
-          venueId={venueProvider.venueId}
-          offererId={offererId}
-        />
-      </DialogBuilder>
-    </div>
+    <DialogBuilder
+      trigger={
+        <Button variant={ButtonVariant.TERNARY}>
+          <SvgIcon
+            src={fullEditIcon}
+            alt=""
+            className={style['provider-action-icon']}
+          />
+          Paramétrer
+        </Button>
+      }
+    >
+      <CinemaProviderFormDialog
+        initialValues={initialValues}
+        onConfirm={onConfirmDialog}
+        providerId={venueProvider.provider.id}
+        venueId={venueProvider.venueId}
+        offererId={offererId}
+      />
+    </DialogBuilder>
   )
 }

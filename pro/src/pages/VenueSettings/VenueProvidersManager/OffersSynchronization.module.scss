@@ -1,0 +1,13 @@
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/variables/_size.scss" as size;
+
+.venue-providers {
+  display: flex;
+  flex-flow: row wrap;
+  width: 100%;
+}
+
+.venue-providers-section {
+  max-width: 100%;
+}
