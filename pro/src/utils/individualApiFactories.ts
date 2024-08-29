@@ -116,7 +116,7 @@ export const getIndividualOfferFactory = (
     extraData: {
       author: 'Chuck Norris',
       performer: 'Le Poing de Chuck',
-      ean: 'Chuck n’est pas identifiable par un EAN',
+      ean: '1234567891234',
       showType: 'Cinéma',
       showSubType: 'PEGI 18',
       stageDirector: 'JCVD',

@@ -35,6 +35,7 @@ vi.mock('apiClient/api', () => ({
   api: {
     getMusicTypes: vi.fn(),
     postDraftOffer: vi.fn(),
+    patchDraftOffer: vi.fn(),
     getSuggestedSubcategories: vi.fn(),
   },
 }))
@@ -89,6 +90,17 @@ describe('screens:IndividualOffer::Informations', () => {
         proLabel: 'Sous catégorie offline de A',
         isEvent: false,
         conditionalFields: ['ean', 'showType', 'gtl_id'],
+        canBeDuo: true,
+        canBeEducational: false,
+        canBeWithdrawable: false,
+        onlineOfflinePlatform: CATEGORY_STATUS.OFFLINE,
+      }),
+      subcategoryFactory({
+        id: 'physicalBis',
+        categoryId: 'A',
+        proLabel: 'Autre sous catégorie offline de A',
+        isEvent: false,
+        conditionalFields: [],
         canBeDuo: true,
         canBeEducational: false,
         canBeWithdrawable: false,
@@ -277,6 +289,55 @@ describe('screens:IndividualOffer::Informations', () => {
         venueId: '189',
       }
     )
+  })
+
+  it('should submit the form with correct payload in edition', async () => {
+    vi.spyOn(api, 'patchDraftOffer').mockResolvedValue(
+      getIndividualOfferFactory({
+        id: 12,
+      })
+    )
+    vi.spyOn(api, 'getMusicTypes').mockResolvedValue([
+      { canBeEvent: true, label: 'Pop', gtl_id: 'pop' },
+    ])
+    props.venues = [venueListItemFactory({ id: 189 })]
+    contextValue.offer = getIndividualOfferFactory({
+      id: 12,
+      subcategoryId: 'physicalBis' as SubcategoryIdEnum,
+    })
+
+    renderDetailsScreen(props, contextValue)
+
+    await userEvent.clear(screen.getByLabelText(/Titre de l’offre/))
+    await userEvent.type(
+      screen.getByLabelText(/Titre de l’offre/),
+      'My super offer'
+    )
+    await userEvent.type(
+      screen.getByLabelText(/Description/),
+      'My super description'
+    )
+
+    await userEvent.click(screen.getByText('Enregistrer les modifications'))
+
+    expect(api.patchDraftOffer).toHaveBeenCalledOnce()
+    expect(api.patchDraftOffer).toHaveBeenCalledWith(12, {
+      description: 'My super description',
+      durationMinutes: undefined,
+      extraData: {
+        author: 'Chuck Norris',
+        ean: '1234567891234',
+        gtl_id: '',
+        performer: 'Le Poing de Chuck',
+        showSubType: 'PEGI 18',
+        showType: 'Cinéma',
+        speaker: "Chuck Norris n'a pas besoin de doubleur",
+        stageDirector: 'JCVD',
+        visa: 'USA',
+      },
+      name: 'My super offer',
+      subcategoryId: 'physicalBis',
+    })
   })
 
   it('should render suggested subcategories', async () => {
