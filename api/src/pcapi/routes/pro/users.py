@@ -251,19 +251,9 @@ def cookies_consent(body: CookieConsentRequest) -> None:
 
 
 @blueprint.pro_private_api.route("/users/connect-as/<token>", methods=["GET"])
-@login_required
 @spectree_serialize(api=blueprint.pro_private_schema, raw_response=True, json_format=False)
 def connect_as(token: str) -> Response:
     # This route is not used by PRO but it is used by the Backoffice
-    admin = current_user.real_user
-
-    if not admin.has_admin_role:
-        raise ForbiddenError(
-            errors={
-                "global": "L'utilisateur doit être connecté avec un compte admin pour pouvoir utiliser cet endpoint",
-            },
-        )
-
     try:
         secure_token = SecureToken(token=token)
     except users_exceptions.InvalidToken:
@@ -274,14 +264,6 @@ def connect_as(token: str) -> Response:
         )
 
     token_data = ConnectAsInternalModel(**secure_token.data)
-
-    if not token_data.internal_admin_id == admin.id:
-        raise ForbiddenError(
-            errors={
-                "global": "Le token a été généré pour un autre admin",
-            },
-        )
-
     user = users_models.User.query.filter(users_models.User.id == token_data.user_id).one_or_none()
 
     if not user:
