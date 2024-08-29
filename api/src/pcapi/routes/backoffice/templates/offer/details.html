@@ -265,8 +265,8 @@
           {% endcall %}
           {% call build_details_tab_content("info", active_tab == 'info') %}
             <div class="container">
-              <div class="row">
-                <div class="col">
+              <div class="d-flex justify-content-between">
+                <div class="p-2 flex-shrink-1">
                   {% if offer.idAtProvider or offer.extraData.ean %}
                     <h3>Informations techniques</h3>
                     <div class="fs-6">
@@ -329,7 +329,7 @@
                     </p>
                   </div>
                 </div>
-                <div class="col-sm-2">
+                <div class="p-2">
                   {% if offer.image %}
                     <img class="d-block pc-app-image-size"
                          src="{{ offer.image.url }}" />
