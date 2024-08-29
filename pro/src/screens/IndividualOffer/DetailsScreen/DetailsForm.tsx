@@ -1,5 +1,6 @@
 import { useFormikContext } from 'formik'
 import React, { useState } from 'react'
+import { useSelector } from 'react-redux'
 import useSWR from 'swr'
 import { useDebouncedCallback } from 'use-debounce'
 
@@ -9,6 +10,8 @@ import {
   SubcategoryResponseModel,
   VenueListItemResponseModel,
 } from 'apiClient/v1'
+import { Callout } from 'components/Callout/Callout'
+import { CalloutVariant } from 'components/Callout/types'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
 import { ImageUploaderOffer } from 'components/IndividualOfferForm/ImageUploaderOffer/ImageUploaderOffer'
@@ -17,6 +20,8 @@ import { useIndividualOfferContext } from 'context/IndividualOfferContext/Indivi
 import { showOptionsTree } from 'core/Offers/categoriesSubTypes'
 import { IndividualOfferImage } from 'core/Offers/types'
 import { useActiveFeature } from 'hooks/useActiveFeature'
+import fullMoreIcon from 'icons/full-more.svg'
+import { selectCurrentOffererId } from 'store/user/selectors'
 import { Select } from 'ui-kit/form/Select/Select'
 import { TextArea } from 'ui-kit/form/TextArea/TextArea'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
@@ -27,7 +32,6 @@ import { Subcategories } from './Subcategories/Subcategories'
 import { SuggestedSubcategories } from './SuggestedSubcategories/SuggestedSubcategories'
 import { DetailsFormValues } from './types'
 import { buildShowSubTypeOptions, buildVenueOptions } from './utils'
-
 const DEBOUNCE_TIME_BEFORE_REQUEST = 400
 
 type DetailsFormProps = {
@@ -151,59 +155,89 @@ export const DetailsForm = ({
   const SHOW_VENUE_SELECTION_FIELD =
     !areSuggestedCategoriesEnabled || venueOptions.length > 1
 
+  const selectedOffererId = useSelector(selectCurrentOffererId)
+
+  const showAddVenueBanner =
+    !areSuggestedCategoriesEnabled && venueOptions.length === 0
+
   return (
     <>
       <FormLayout.Section title="À propos de votre offre">
-        {SHOW_VENUE_SELECTION_FIELD && (
+        {showAddVenueBanner && (
           <FormLayout.Row>
-            <Select
-              label={offerAddressEnabled ? 'Qui propose l’offre ?' : 'Lieu'}
-              name="venueId"
-              options={venueOptions}
-              onChange={onChangeGetSuggestedSubcategories}
-              disabled={
-                readOnlyFields.includes('venueId') || venueOptions.length === 1
-              }
-            />
+            <Callout
+              links={[
+                {
+                  href: `/structures/${selectedOffererId}/lieux/creation`,
+                  icon: {
+                    src: fullMoreIcon,
+                    alt: 'Nouvelle fenêtre, par lieu',
+                  },
+                  label: 'Ajouter un lieu',
+                },
+              ]}
+              variant={CalloutVariant.ERROR}
+            >
+              Pour créer une offre dans cette catégorie, ajoutez d’abord un lieu
+              à votre structure.
+            </Callout>
           </FormLayout.Row>
         )}
-        <FormLayout.Row>
-          <TextInput
-            countCharacters
-            label="Titre de l’offre"
-            maxLength={90}
-            name="name"
-            onChange={onChangeGetSuggestedSubcategories}
-            disabled={readOnlyFields.includes('name')}
-          />
-        </FormLayout.Row>
-        <FormLayout.Row>
-          <TextArea
-            isOptional
-            label="Description"
-            maxLength={1000}
-            name="description"
-            onChange={onChangeGetSuggestedSubcategories}
-            disabled={readOnlyFields.includes('description')}
-          />
-        </FormLayout.Row>
+        {!showAddVenueBanner && (
+          <>
+            {SHOW_VENUE_SELECTION_FIELD && (
+              <FormLayout.Row>
+                <Select
+                  label={offerAddressEnabled ? 'Qui propose l’offre ?' : 'Lieu'}
+                  name="venueId"
+                  options={venueOptions}
+                  onChange={onChangeGetSuggestedSubcategories}
+                  disabled={
+                    readOnlyFields.includes('venueId') ||
+                    venueOptions.length === 1
+                  }
+                />
+              </FormLayout.Row>
+            )}
+            <FormLayout.Row>
+              <TextInput
+                countCharacters
+                label="Titre de l’offre"
+                maxLength={90}
+                name="name"
+                onChange={onChangeGetSuggestedSubcategories}
+                disabled={readOnlyFields.includes('name')}
+              />
+            </FormLayout.Row>
+            <FormLayout.Row>
+              <TextArea
+                isOptional
+                label="Description"
+                maxLength={1000}
+                name="description"
+                onChange={onChangeGetSuggestedSubcategories}
+                disabled={readOnlyFields.includes('description')}
+              />
+            </FormLayout.Row>
+          </>
+        )}
       </FormLayout.Section>
-      {areSuggestedCategoriesEnabled && !offer ? (
-        suggestedSubcategories.length > 0 && (
-          <SuggestedSubcategories
-            suggestedSubcategories={suggestedSubcategories}
-            readOnlyFields={readOnlyFields}
-            filteredCategories={filteredCategories}
-            filteredSubcategories={filteredSubcategories}
-          />
-        )
-      ) : (
-        <Subcategories
-          readOnlyFields={readOnlyFields}
-          filteredCategories={filteredCategories}
-          filteredSubcategories={filteredSubcategories}
-        />
-      )}
+      {areSuggestedCategoriesEnabled && !offer
+        ? suggestedSubcategories.length > 0 && (
+            <SuggestedSubcategories
+              suggestedSubcategories={suggestedSubcategories}
+              readOnlyFields={readOnlyFields}
+              filteredCategories={filteredCategories}
+              filteredSubcategories={filteredSubcategories}
+            />
+          )
+        : !showAddVenueBanner && (
+            <Subcategories
+              readOnlyFields={readOnlyFields}
+              filteredCategories={filteredCategories}
+              filteredSubcategories={filteredSubcategories}
+            />
+          )}
       {isSubCategorySelected && (
         <>
           <ImageUploaderOffer
