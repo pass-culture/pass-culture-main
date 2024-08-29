@@ -45,8 +45,8 @@
               <ul class="dropdown-menu">
                 {% if has_permission("VALIDATE_OFFERER") %}
                   <li class="dropdown-item p-0">
-                    <form action="{{ url_for("backoffice_web.validation.validate_user_offerer",user_offerer_id=user_offerer.id) }}"
-                          name="{{ url_for("backoffice_web.validation.validate_user_offerer",user_offerer_id=user_offerer.id) | action_to_name }}"
+                    <form action="{{ url_for('backoffice_web.validation.validate_user_offerer',user_offerer_id=user_offerer.id) }}"
+                          name="{{ url_for('backoffice_web.validation.validate_user_offerer',user_offerer_id=user_offerer.id) | action_to_name }}"
                           method="post">
                       {{ csrf_token }}
                       <button type="submit"

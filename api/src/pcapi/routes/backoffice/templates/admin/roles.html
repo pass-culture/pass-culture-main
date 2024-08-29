@@ -19,9 +19,9 @@
                    role="button">{{ form.name }}</div>
               <div class="collapse card-collapse p-3 shadow pc-collapse-{{ form.name }}">
                 <form class=".{{ form.name }}"
-                      action="{{ url_for(".update_role", role_id=form.id) }}"
+                      action="{{ url_for('.update_role', role_id=form.id) }}"
                       method="post"
-                      name="{{ url_for(".update_role", role_id=form.id) | action_to_name }}">
+                      name="{{ url_for('.update_role', role_id=form.id) | action_to_name }}">
                   <div class="card-body">
                     <div class="row">
                       {% for form_field in forms[form] %}{{ form_field }}{% endfor %}
@@ -40,7 +40,7 @@
         {% endcall %}
         {% call tabs.build_details_tab_content("history") %}
           <div class="mt-4">
-            <turbo-frame data-turbo="false" id="admin_roles_history_frame" src="{{ url_for("backoffice_web.get_roles_history") }}">
+            <turbo-frame data-turbo="false" id="admin_roles_history_frame" src="{{ url_for('backoffice_web.get_roles_history') }}">
             {{ build_loading_spinner() }}
             </turbo-frame>
           </div>

@@ -33,7 +33,7 @@
             aria-controls="{{ pc_collapse_menu_id }}">
       <i class="bi bi-list text-white h4"></i>
     </button>
-    <a href="{{ url_for("backoffice_web.home") }}"
+    <a href="{{ url_for('backoffice_web.home') }}"
        class="card-link">
       <p class="my-0 ms-5 navbar-brand text-white btn">
         <svg width="105.532"
@@ -44,8 +44,8 @@
         Back Office
       </p>
     </a>
-    <form action="{{ url_for("backoffice_web.logout") }}"
-          name="{{ url_for("backoffice_web.logout") | action_to_name }}"
+    <form action="{{ url_for('backoffice_web.logout') }}"
+          name="{{ url_for('backoffice_web.logout') | action_to_name }}"
           method="post">
       {{ csrf_token }}
       <button type="submit"

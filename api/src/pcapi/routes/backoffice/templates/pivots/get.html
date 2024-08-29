@@ -17,27 +17,27 @@
       {% endcall %}
       {% call build_details_tabs_content_wrapper() %}
         {% call build_details_tab_content("allocine", active_tab == 'allocine') %}
-          <turbo-frame data-turbo="true" id="allocine_frame" loading="lazy" src="{{ url_for("backoffice_web.pivots.list_pivots", name="allocine") }}">
+          <turbo-frame data-turbo="true" id="allocine_frame" loading="lazy" src="{{ url_for('backoffice_web.pivots.list_pivots', name='allocine') }}">
           {{ build_loading_spinner() }}
           </turbo-frame>
         {% endcall %}
         {% call build_details_tab_content("boost", active_tab == 'boost') %}
-          <turbo-frame data-turbo="true" id="boost_frame" loading="lazy" src="{{ url_for("backoffice_web.pivots.list_pivots", name="boost") }}">
+          <turbo-frame data-turbo="true" id="boost_frame" loading="lazy" src="{{ url_for('backoffice_web.pivots.list_pivots', name='boost') }}">
           {{ build_loading_spinner() }}
           </turbo-frame>
         {% endcall %}
         {% call build_details_tab_content("cgr", active_tab == 'cgr') %}
-          <turbo-frame data-turbo="true" id="cgr_frame" loading="lazy" src="{{ url_for("backoffice_web.pivots.list_pivots", name="cgr") }}">
+          <turbo-frame data-turbo="true" id="cgr_frame" loading="lazy" src="{{ url_for('backoffice_web.pivots.list_pivots', name='cgr') }}">
           {{ build_loading_spinner() }}
           </turbo-frame>
         {% endcall %}
         {% call build_details_tab_content("cineoffice", active_tab == 'cineoffice') %}
-          <turbo-frame data-turbo="true" id="cineoffice_frame" loading="lazy" src="{{ url_for("backoffice_web.pivots.list_pivots", name="cineoffice") }}">
+          <turbo-frame data-turbo="true" id="cineoffice_frame" loading="lazy" src="{{ url_for('backoffice_web.pivots.list_pivots', name='cineoffice') }}">
           {{ build_loading_spinner() }}
           </turbo-frame>
         {% endcall %}
         {% call build_details_tab_content("ems", active_tab == 'ems') %}
-          <turbo-frame data-turbo="true" id="ems_frame" loading="lazy" src="{{ url_for("backoffice_web.pivots.list_pivots", name="ems") }}">
+          <turbo-frame data-turbo="true" id="ems_frame" loading="lazy" src="{{ url_for('backoffice_web.pivots.list_pivots', name='ems') }}">
           {{ build_loading_spinner() }}
           </turbo-frame>
         {% endcall %}
