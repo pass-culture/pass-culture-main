@@ -84,7 +84,14 @@ export const DetailsForm = ({
     .sort((a, b) => a.label.localeCompare(b.label, 'fr'))
   const showSubTypeOptions = buildShowSubTypeOptions(showType)
 
-  const venueOptions = buildVenueOptions(filteredVenues)
+  const areSuggestedCategoriesEnabled = useActiveFeature(
+    'WIP_SUGGESTED_SUBCATEGORIES'
+  )
+
+  const venueOptions = buildVenueOptions(
+    filteredVenues,
+    areSuggestedCategoriesEnabled
+  )
 
   const artisticInformationsFields = [
     'speaker',
@@ -103,9 +110,6 @@ export const DetailsForm = ({
   )
 
   const offerAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
-  const areSuggestedCategoriesEnabled = useActiveFeature(
-    'WIP_SUGGESTED_SUBCATEGORIES'
-  )
 
   // Books have a gtl_id field, other categories have a musicType field
   const hasMusicType =
@@ -144,7 +148,8 @@ export const DetailsForm = ({
   const isSubCategorySelected =
     subcategoryId !== DEFAULT_DETAILS_FORM_VALUES.subcategoryId
 
-  const SHOW_VENUE_SELECTION_FIELD = venueOptions.length > 1
+  const SHOW_VENUE_SELECTION_FIELD =
+    !areSuggestedCategoriesEnabled || venueOptions.length > 1
 
   return (
     <>
