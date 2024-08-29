@@ -74,7 +74,7 @@
           </div>
         {% endcall %}
         {% call tabs.build_details_tab_content("history", active_tab == 'history') %}
-          <turbo-frame data-turbo="false" id="rules_history_frame" loading="lazy" src="{{ url_for("backoffice_web.offer_validation_rules.get_rules_history") }}">
+          <turbo-frame data-turbo="false" id="rules_history_frame" loading="lazy" src="{{ url_for('backoffice_web.offer_validation_rules.get_rules_history') }}">
           {{ build_loading_spinner() }}
           </turbo-frame>
         {% endcall %}

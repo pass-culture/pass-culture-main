@@ -65,8 +65,8 @@
                                  aria-hidden="true">
                               <div class="modal-dialog modal-dialog-centered">
                                 <div class="modal-content">
-                                  <form action="{{ url_for("backoffice_web.offerer_tag.update_offerer_tag", offerer_tag_id=offerer_tag.id) }}"
-                                        name="{{ url_for("backoffice_web.offerer_tag.update_offerer_tag", offerer_tag_id=offerer_tag.id) | action_to_name }}"
+                                  <form action="{{ url_for('backoffice_web.offerer_tag.update_offerer_tag', offerer_tag_id=offerer_tag.id) }}"
+                                        name="{{ url_for('backoffice_web.offerer_tag.update_offerer_tag', offerer_tag_id=offerer_tag.id) | action_to_name }}"
                                         method="post"
                                         data-turbo="false">
                                     <div class="modal-header"
@@ -93,8 +93,8 @@
                                  aria-hidden="true">
                               <div class="modal-dialog modal-dialog-centered">
                                 <div class="modal-content">
-                                  <form action="{{ url_for("backoffice_web.offerer_tag.delete_offerer_tag", offerer_tag_id=offerer_tag.id) }}"
-                                        name="{{ url_for("backoffice_web.offerer_tag.delete_offerer_tag", offerer_tag_id=offerer_tag.id) | action_to_name }}"
+                                  <form action="{{ url_for('backoffice_web.offerer_tag.delete_offerer_tag', offerer_tag_id=offerer_tag.id) }}"
+                                        name="{{ url_for('backoffice_web.offerer_tag.delete_offerer_tag', offerer_tag_id=offerer_tag.id) | action_to_name }}"
                                         method="post"
                                         data-turbo="false">
                                     <div class="modal-header"

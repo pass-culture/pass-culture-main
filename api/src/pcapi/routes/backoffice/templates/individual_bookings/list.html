@@ -18,12 +18,12 @@
           {% if form.is_single_venue_with_optional_dates %}
             <span class="mx-2 fs-3">
               {% set from_to_date_formatted = (form.from_to_date.data[0].strftime("%d/%m/%Y") + ' - ' + form.from_to_date.data[1].strftime("%d/%m/%Y")) if form.from_to_date.data else None %}
-              <a href="{{ url_for("backoffice_web.individual_bookings.get_individual_booking_csv_download", venue=form.venue.data[0], from_to_date=from_to_date_formatted) }}"
+              <a href="{{ url_for('backoffice_web.individual_bookings.get_individual_booking_csv_download', venue=form.venue.data[0], from_to_date=from_to_date_formatted) }}"
                  class="mx-2"><i class="bi bi-filetype-csv"
    data-bs-toggle="tooltip"
    data-bs-placement="top"
    data-bs-title="Télécharger en CSV."></i></a>
-              <a href="{{ url_for("backoffice_web.individual_bookings.get_individual_booking_xlsx_download", venue=form.venue.data[0], from_to_date=from_to_date_formatted) }}"
+              <a href="{{ url_for('backoffice_web.individual_bookings.get_individual_booking_xlsx_download', venue=form.venue.data[0], from_to_date=from_to_date_formatted) }}"
                  class="mx-2"><i class="bi bi-filetype-xlsx"
    data-bs-toggle="tooltip"
    data-bs-placement="top"
@@ -62,14 +62,14 @@
                       class="btn btn-outline-primary"
                       data-modal-selector="#overpayment-creation-modal"
                       data-mode="fetch"
-                      data-fetch-url="{{ url_for("backoffice_web.finance_incidents.get_individual_bookings_overpayment_creation_form") }}"
+                      data-fetch-url="{{ url_for('backoffice_web.finance_incidents.get_individual_bookings_overpayment_creation_form') }}"
                       data-use-confirmation-modal="true">Créer un incident</button>
               <button disabled
                       type="button"
                       class="btn btn-outline-primary"
                       data-modal-selector="#commercial-gesture-creation-modal"
                       data-mode="fetch"
-                      data-fetch-url="{{ url_for("backoffice_web.finance_incidents.get_individual_bookings_commercial_gesture_creation_form") }}"
+                      data-fetch-url="{{ url_for('backoffice_web.finance_incidents.get_individual_bookings_commercial_gesture_creation_form') }}"
                       data-use-confirmation-modal="true">Créer un geste commercial</button>
             </div>
           {% endif %}
@@ -146,8 +146,8 @@
                                aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered">
                               <div class="modal-content">
-                                <form action="{{ url_for("backoffice_web.individual_bookings.mark_booking_as_used", booking_id=booking.id) }}"
-                                      name="{{ url_for("backoffice_web.individual_bookings.mark_booking_as_used", booking_id=booking.id) | action_to_name }}"
+                                <form action="{{ url_for('backoffice_web.individual_bookings.mark_booking_as_used', booking_id=booking.id) }}"
+                                      name="{{ url_for('backoffice_web.individual_bookings.mark_booking_as_used', booking_id=booking.id) | action_to_name }}"
                                       method="post"
                                       data-turbo="false">
                                   <div class="modal-header"
@@ -173,8 +173,8 @@
                                aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered">
                               <div class="modal-content">
-                                <form action="{{ url_for("backoffice_web.individual_bookings.mark_booking_as_cancelled", booking_id=booking.id) }}"
-                                      name="{{ url_for("backoffice_web.individual_bookings.mark_booking_as_cancelled", booking_id=booking.id) | action_to_name }}"
+                                <form action="{{ url_for('backoffice_web.individual_bookings.mark_booking_as_cancelled', booking_id=booking.id) }}"
+                                      name="{{ url_for('backoffice_web.individual_bookings.mark_booking_as_cancelled', booking_id=booking.id) | action_to_name }}"
                                       method="post"
                                       data-turbo="false">
                                   <div class="modal-header"

@@ -160,18 +160,18 @@
                             } %}
               <p class="mb-1">
                 <span class="fw-bold">Offres BO :</span>
-                <a href="{{ url_for("backoffice_web.offer.list_offers", **search_params) }}"
+                <a href="{{ url_for('backoffice_web.offer.list_offers', **search_params) }}"
                    class="link-primary">individuelles</a> |
-                <a href="{{ url_for("backoffice_web.collective_offer.list_collective_offers", **search_params) }}"
+                <a href="{{ url_for('backoffice_web.collective_offer.list_collective_offers', **search_params) }}"
                    class="link-primary">collectives</a> |
-                <a href="{{ url_for("backoffice_web.collective_offer_template.list_collective_offer_templates", offerer=offerer.id) }}"
+                <a href="{{ url_for('backoffice_web.collective_offer_template.list_collective_offer_templates', offerer=offerer.id) }}"
                    class="link-primary">vitrine</a>
               </p>
               <p class="mb-1">
                 <span class="fw-bold">Réservations BO :</span>
-                <a href="{{ url_for("backoffice_web.individual_bookings.list_individual_bookings", offerer=offerer.id) }}"
+                <a href="{{ url_for('backoffice_web.individual_bookings.list_individual_bookings', offerer=offerer.id) }}"
                    class="link-primary">individuelles</a> |
-                <a href="{{ url_for("backoffice_web.collective_bookings.list_collective_bookings", offerer=offerer.id) }}"
+                <a href="{{ url_for('backoffice_web.collective_bookings.list_collective_bookings', offerer=offerer.id) }}"
                    class="link-primary">collectives</a>
               </p>
               <div>
@@ -226,7 +226,7 @@
         </div>
       </div>
       <div class="mt-4">
-        <turbo-frame id="total_revenue_frame" src="{{ url_for("backoffice_web.offerer.get_stats", offerer_id=offerer.id) }}">
+        <turbo-frame id="total_revenue_frame" src="{{ url_for('backoffice_web.offerer.get_stats', offerer_id=offerer.id) }}">
         {{ build_loading_spinner() }}
         </turbo-frame>
       </div>
@@ -250,48 +250,48 @@
         {% endcall %}
         {% call build_details_tabs_content_wrapper() %}
           {% call build_details_tab_content("history", active_tab == 'history') %}
-            <turbo-frame data-turbo="false" id="offerer_history_frame" loading="lazy" src="{{ url_for("backoffice_web.offerer.get_history", offerer_id=offerer.id) }}">
+            <turbo-frame data-turbo="false" id="offerer_history_frame" loading="lazy" src="{{ url_for('backoffice_web.offerer.get_history', offerer_id=offerer.id) }}">
             {{ build_loading_spinner() }}
             </turbo-frame>
           {% endcall %}
           {% if show_subscription_tab %}
             {% call build_details_tab_content("subscription", active_tab == 'subscription') %}
-              <turbo-frame data-turbo="false" id="offerer_subscription_frame" loading="lazy" src="{{ url_for("backoffice_web.offerer.get_individual_subscription", offerer_id=offerer.id) }}">
+              <turbo-frame data-turbo="false" id="offerer_subscription_frame" loading="lazy" src="{{ url_for('backoffice_web.offerer.get_individual_subscription', offerer_id=offerer.id) }}">
               {{ build_loading_spinner() }}
               </turbo-frame>
             {% endcall %}
           {% endif %}
           {% if offerer.siren and has_permission("READ_PRO_ENTREPRISE_INFO") %}
             {% call build_details_tab_content("entreprise", active_tab == 'entreprise') %}
-              <turbo-frame data-turbo="false" id="offerer_entreprise_frame" loading="lazy" src="{{ url_for("backoffice_web.offerer.get_entreprise_info", offerer_id=offerer.id) }}">
+              <turbo-frame data-turbo="false" id="offerer_entreprise_frame" loading="lazy" src="{{ url_for('backoffice_web.offerer.get_entreprise_info', offerer_id=offerer.id) }}">
               {{ build_loading_spinner() }}
               </turbo-frame>
             {% endcall %}
           {% endif %}
           {% call build_details_tab_content("pro-users", active_tab == 'users') %}
-            <turbo-frame data-turbo="false" id="offerer_users_frame" loading="lazy" src="{{ url_for("backoffice_web.offerer.get_pro_users", offerer_id=offerer.id) }}">
+            <turbo-frame data-turbo="false" id="offerer_users_frame" loading="lazy" src="{{ url_for('backoffice_web.offerer.get_pro_users', offerer_id=offerer.id) }}">
             {{ build_loading_spinner() }}
             </turbo-frame>
           {% endcall %}
           {% call build_details_tab_content("managed-venues", active_tab == 'managed_venues') %}
-            <turbo-frame data-turbo="false" id="offerer_venues_frame" loading="lazy" src="{{ url_for("backoffice_web.offerer.get_managed_venues", offerer_id=offerer.id) }}">
+            <turbo-frame data-turbo="false" id="offerer_venues_frame" loading="lazy" src="{{ url_for('backoffice_web.offerer.get_managed_venues', offerer_id=offerer.id) }}">
             {{ build_loading_spinner() }}
             </turbo-frame>
           {% endcall %}
           {% if has_offerer_address %}
             {% call build_details_tab_content("addresses", active_tab == 'addresses') %}
-              <turbo-frame data-turbo="false" id="offerer_addresses_frame" loading="lazy" src="{{ url_for("backoffice_web.offerer.get_offerer_addresses", offerer_id=offerer.id) }}">
+              <turbo-frame data-turbo="false" id="offerer_addresses_frame" loading="lazy" src="{{ url_for('backoffice_web.offerer.get_offerer_addresses', offerer_id=offerer.id) }}">
               {{ build_loading_spinner() }}
               </turbo-frame>
             {% endcall %}
           {% endif %}
           {% call build_details_tab_content("dms-adage", active_tab == 'dms_adage') %}
-            <turbo-frame data-turbo="false" id="offerer_collective_dms_applications_frame" loading="lazy" src="{{ url_for("backoffice_web.offerer.get_collective_dms_applications", offerer_id=offerer.id) }}">
+            <turbo-frame data-turbo="false" id="offerer_collective_dms_applications_frame" loading="lazy" src="{{ url_for('backoffice_web.offerer.get_collective_dms_applications', offerer_id=offerer.id) }}">
             {{ build_loading_spinner() }}
             </turbo-frame>
           {% endcall %}
           {% call build_details_tab_content("bank-accounts", active_tab == 'bank_accounts') %}
-            <turbo-frame data-turbo="false" id="offerer_bank_accounts_frame" loading="lazy" src="{{ url_for("backoffice_web.offerer.get_bank_accounts", offerer_id=offerer.id) }}">
+            <turbo-frame data-turbo="false" id="offerer_bank_accounts_frame" loading="lazy" src="{{ url_for('backoffice_web.offerer.get_bank_accounts', offerer_id=offerer.id) }}">
             {{ build_loading_spinner() }}
             </turbo-frame>
           {% endcall %}
