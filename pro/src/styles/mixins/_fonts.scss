@@ -1,90 +1,84 @@
 @use "styles/mixins/_rem.scss" as rem;
 @import "./fonts-legacy";
 
-// need to use em for accessibility: when root size is 200% line-height should adjust
-$body-line-height: 1.25em;
-$body-font-size: rem.torem(15px);
-$caption-line-height: rem.torem(16px);
-
-@mixin title1() {
-  font-family: Montserrat-ExtraBold, system-ui, sans-serif;
-  font-weight: 800;
-  font-style: normal;
-  font-size: rem.torem(26px);
-  line-height: rem.torem(34px);
-}
-
-@mixin title2() {
-  font-family: Montserrat-Medium, system-ui, sans-serif;
-  font-weight: 500;
-  font-style: normal;
-  font-size: rem.torem(22px);
-  line-height: rem.torem(26px);
-}
-
-@mixin title3() {
-  font-family: Montserrat-Bold, system-ui, sans-serif;
-  font-weight: 700;
-  font-style: normal;
-  font-size: rem.torem(20px);
-  line-height: rem.torem(24px);
-}
-
-@mixin title4() {
-  font-family: Montserrat-SemiBold, system-ui, sans-serif;
-  font-weight: 600;
-  font-style: normal;
-  font-size: rem.torem(18px);
-  line-height: rem.torem(22px);
-}
-
-@mixin button() {
-  font-family: Montserrat-Bold, system-ui, sans-serif;
-  font-weight: 700;
-  font-style: normal;
-  font-size: rem.torem(15px);
-}
-
-@mixin body() {
-  font-family: Montserrat-Regular, system-ui, sans-serif;
-  font-weight: 400;
-  font-style: normal;
-  font-size: $body-font-size;
-  line-height: $body-line-height;
-}
-
-@mixin body-important() {
-  font-family: Montserrat-Medium, system-ui, sans-serif;
-  font-weight: 500;
-  font-style: normal;
-  font-size: $body-font-size;
-}
-
-@mixin body-exergue() {
-  font-family: Montserrat-SemiBold, system-ui, sans-serif;
-  font-weight: 600;
-  font-style: normal;
-  font-size: $body-font-size;
-}
-
-@mixin caption() {
-  font-family: Montserrat-SemiBold, system-ui, sans-serif;
-  font-weight: 600;
-  font-style: normal;
-  font-size: rem.torem(12px);
-  line-height: $caption-line-height;
-}
+$body-line-height: var(--typography-body-line-height);
+$body-font-size: var(--typography-body-font-size);
+$caption-line-height: var(--typography-body-semibold-xs-line-height);
 
 @mixin body-xs() {
   font-family: var(--typography-body-xs-font-family), system-ui, sans-serif;
-  font-weight: var(--typography-body-xs-font-weight);
   font-size: var(--typography-body-xs-font-size);
   line-height: var(--typography-body-xs-line-height);
 }
 
+@mixin body() {
+  font-family: var(--typography-body-font-family), system-ui, sans-serif;
+  font-size: var(--typography-body-font-size);
+  line-height: var(--typography-body-line-height);
+}
+
+@mixin body-italic() {
+  font-family: var(--typography-body-italic-font-family), system-ui, sans-serif;
+  font-size: var(--typography-body-italic-font-size);
+  line-height: var(--typography-body-italic-line-height);
+}
+
+@mixin body-semi-bold() {
+  font-family: var(--typography-body-italic-semibold-font-family), system-ui,
+    sans-serif;
+  font-size: var(--typography-body-italic-semibold-font-size);
+  line-height: var(--typography-body-italic-semibold-line-height);
+}
+
+@mixin body-semi-bold-xs() {
+  font-family: var(--typography-body-semibold-xs-font-family), system-ui,
+    sans-serif;
+  font-size: var(--typography-body-semibold-xs-font-size);
+  line-height: var(--typography-body-semibold-xs-line-height);
+}
+
+@mixin title1() {
+  font-family: var(--typography-title1-font-family), system-ui, sans-serif;
+  font-size: var(--typography-title1-font-size);
+  line-height: var(--typography-title1-line-height);
+}
+
+@mixin title2() {
+  font-family: var(--typography-title2-font-family), system-ui, sans-serif;
+  font-size: var(--typography-title2-font-size);
+  line-height: var(--typography-title2-line-height);
+}
+
+@mixin title3() {
+  font-family: var(--typography-title3-font-family), system-ui, sans-serif;
+  font-size: var(--typography-title3-font-size);
+  line-height: var(--typography-title3-line-height);
+}
+
+@mixin title4() {
+  font-family: var(--typography-title4-font-family), system-ui, sans-serif;
+  font-size: var(--typography-title4-font-size);
+  line-height: var(--typography-title4-line-height);
+}
+
+@mixin button() {
+  font-family: var(--typography-button-font-family), system-ui, sans-serif;
+  font-size: var(--typography-button-font-size);
+  line-height: var(--typography-button-line-height);
+}
+
+@mixin body-important() {
+  @include body-semi-bold;
+}
+
+@mixin body-exergue() {
+  @include body-semi-bold;
+}
+
+@mixin caption() {
+  @include body-semi-bold-xs;
+}
+
 @mixin placeholder() {
-  font-family: Montserrat-RegularItalic, system-ui, sans-serif;
-  font-weight: 400;
-  font-style: italic;
-  font-size: rem.torem(15px);
+  @include body-italic;
 }
