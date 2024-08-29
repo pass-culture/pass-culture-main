@@ -1,64 +1,42 @@
-import React, { Dispatch, SetStateAction, useEffect, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import { Outlet, useLocation } from 'react-router-dom'
+import { useSelector } from 'react-redux'
+import { Outlet } from 'react-router-dom'
+import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
 import { GetOffererResponseModel } from 'apiClient/v1'
 import { AppLayout } from 'app/AppLayout'
 import { ReimbursementsTabs } from 'components/ReimbursementsTabs/ReimbursementsTabs'
-import { SAVED_OFFERER_ID_KEY } from 'core/shared/constants'
-import { useIsNewInterfaceActive } from 'hooks/useIsNewInterfaceActive'
-import { queryParamsFromOfferer } from 'pages/Offers/utils/queryParamsFromOfferer'
-import { updateSelectedOffererId } from 'store/user/reducer'
+import {
+  GET_OFFERER_NAMES_QUERY_KEY,
+  GET_OFFERER_QUERY_KEY,
+} from 'config/swrQueryKeys'
 import { selectCurrentOffererId } from 'store/user/selectors'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 import styles from './Reimbursement.module.scss'
 
-export interface ReimbursementsContextProps {
+export type ReimbursementsContextProps = {
   selectedOfferer: GetOffererResponseModel | null
-  setSelectedOfferer: Dispatch<SetStateAction<GetOffererResponseModel | null>>
 }
 
 export const Reimbursements = (): JSX.Element => {
-  const isNewInterfaceActive = useIsNewInterfaceActive()
   const selectedOffererId = useSelector(selectCurrentOffererId)
 
-  const location = useLocation()
-  const { structure } = queryParamsFromOfferer(location)
-  const paramOffererId = isNewInterfaceActive ? selectedOffererId : structure
+  const offererNamesQuery = useSWR(
+    [GET_OFFERER_NAMES_QUERY_KEY],
+    () => api.listOfferersNames(),
+    { fallbackData: { offerersNames: [] } }
+  )
 
-  const [isOfferersLoading, setIsOfferersLoading] = useState<boolean>(false)
-  const [selectedOfferer, setSelectedOfferer] =
-    useState<GetOffererResponseModel | null>(null)
+  const offererQuery = useSWR(
+    [
+      GET_OFFERER_QUERY_KEY,
+      selectedOffererId || offererNamesQuery.data.offerersNames[0]?.id,
+    ],
+    ([, offererId]) => api.getOfferer(Number(offererId))
+  )
 
-  const dispatch = useDispatch()
-
-  useEffect(() => {
-    const fetchData = async () => {
-      setIsOfferersLoading(true)
-      try {
-        const { offerersNames } = await api.listOfferersNames()
-        if (offerersNames.length >= 1) {
-          const offerer = await api.getOfferer(
-            Number(paramOffererId) || selectedOffererId || offerersNames[0].id
-          )
-
-          setSelectedOfferer(offerer)
-
-          localStorage.setItem(SAVED_OFFERER_ID_KEY, offerer.id.toString())
-          dispatch(updateSelectedOffererId(offerer.id))
-        }
-        setIsOfferersLoading(false)
-      } catch (error) {
-        setIsOfferersLoading(false)
-      }
-    }
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    fetchData()
-  }, [paramOffererId])
-
-  if (isOfferersLoading) {
+  if (offererNamesQuery.isLoading || offererQuery.isLoading) {
     return (
       <AppLayout>
         <Spinner />
@@ -71,9 +49,9 @@ export const Reimbursements = (): JSX.Element => {
       <div className={styles['reimbursements-container']}>
         <h1 className={styles['title']}>Gestion financière</h1>
         <div>
-          <ReimbursementsTabs selectedOfferer={selectedOfferer} />
+          <ReimbursementsTabs selectedOfferer={offererQuery.data} />
 
-          <Outlet context={{ selectedOfferer, setSelectedOfferer }} />
+          <Outlet context={{ selectedOfferer: offererQuery.data }} />
         </div>
       </div>
     </AppLayout>

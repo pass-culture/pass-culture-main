@@ -18,7 +18,6 @@ import { Reimbursements, ReimbursementsContextProps } from '../Reimbursements'
 
 const contextData: ReimbursementsContextProps = {
   selectedOfferer: defaultGetOffererResponseModel,
-  setSelectedOfferer: function () {},
 }
 vi.mock('react-router-dom', async () => ({
   ...(await vi.importActual('react-router-dom')),
@@ -38,6 +37,12 @@ const renderReimbursements = () => {
     {
       initialRouterEntries: ['/remboursements'],
       user: sharedCurrentUserFactory(),
+      storeOverrides: {
+        user: {
+          currentUser: sharedCurrentUserFactory(),
+          selectedOffererId: 1,
+        },
+      },
     }
   )
 }

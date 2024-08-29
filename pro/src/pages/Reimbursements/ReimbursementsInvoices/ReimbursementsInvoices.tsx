@@ -1,6 +1,7 @@
 import { format, subMonths } from 'date-fns'
 import { useEffect, useMemo, useState } from 'react'
-import { useOutletContext, useSearchParams } from 'react-router-dom'
+import { useSelector } from 'react-redux'
+import { useSearchParams } from 'react-router-dom'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
@@ -10,7 +11,7 @@ import {
   GET_INVOICES_QUERY_KEY,
   GET_OFFERER_BANK_ACCOUNTS_AND_ATTACHED_VENUES_QUERY_KEY,
 } from 'config/swrQueryKeys'
-import { ReimbursementsContextProps } from 'pages/Reimbursements/Reimbursements'
+import { selectCurrentOffererId } from 'store/user/selectors'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 import { FORMAT_ISO_DATE_ONLY, getToday } from 'utils/date'
 import { sortByLabel } from 'utils/strings'
@@ -50,13 +51,11 @@ export const ReimbursementsInvoices = (): JSX.Element => {
 
   const [areFiltersDefault, setAreFiltersDefault] = useState(true)
   const [hasSearchedOnce, setHasSearchedOnce] = useState(false)
-  const { selectedOfferer = null }: ReimbursementsContextProps =
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-    useOutletContext() ?? {}
+  const selectedOffererId = useSelector(selectCurrentOffererId)
 
   const getInvoicesQuery = useSWR(
-    selectedOfferer
-      ? [GET_INVOICES_QUERY_KEY, selectedOfferer.id, searchParams.toString()]
+    selectedOffererId
+      ? [GET_INVOICES_QUERY_KEY, selectedOffererId, searchParams.toString()]
       : null,
     async () => {
       const reimbursmentPoint = filters.reimbursementPoint
@@ -69,7 +68,7 @@ export const ReimbursementsInvoices = (): JSX.Element => {
         reimbursmentPoint !== DEFAULT_INVOICES_FILTERS.reimbursementPointId
           ? parseInt(reimbursmentPoint)
           : undefined,
-        selectedOfferer?.id
+        selectedOffererId
       )
 
       return invoices
@@ -78,16 +77,16 @@ export const ReimbursementsInvoices = (): JSX.Element => {
   )
 
   const hasInvoiceQuery = useSWR(
-    selectedOfferer ? [GET_HAS_INVOICE_QUERY_KEY, selectedOfferer.id] : null,
+    selectedOffererId ? [GET_HAS_INVOICE_QUERY_KEY, selectedOffererId] : null,
     ([, selectedOffererId]) => api.hasInvoice(selectedOffererId),
     { fallbackData: { hasInvoice: false } }
   )
 
   const getOffererBankAccountsAndAttachedVenuesQuery = useSWR(
-    selectedOfferer
+    selectedOffererId
       ? [
           GET_OFFERER_BANK_ACCOUNTS_AND_ATTACHED_VENUES_QUERY_KEY,
-          selectedOfferer.id,
+          selectedOffererId,
         ]
       : null,
     ([, selectedOffererId]) =>

@@ -14,7 +14,7 @@ import {
 import styles from './ReimbursementsTabs.module.scss'
 
 type ReimbursementsTabsProps = {
-  selectedOfferer: GetOffererResponseModel | null
+  selectedOfferer?: GetOffererResponseModel
 }
 
 export const ReimbursementsTabs = ({

@@ -1,5 +1,7 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useSelector } from 'react-redux'
 import { useLocation, useOutletContext } from 'react-router-dom'
+import { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
 import {
@@ -9,14 +11,17 @@ import {
 } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { ReimbursementBankAccount } from 'components/ReimbursementBankAccount/ReimbursementBankAccount'
+import { GET_OFFERER_QUERY_KEY } from 'config/swrQueryKeys'
 import { BankAccountEvents } from 'core/FirebaseEvents/constants'
 import { useNotification } from 'hooks/useNotification'
 import fullMoreIcon from 'icons/full-more.svg'
 import { LinkVenuesDialog } from 'pages/Reimbursements/BankInformations/LinkVenuesDialog'
-import { ReimbursementsContextProps } from 'pages/Reimbursements/Reimbursements'
+import { selectCurrentOffererId } from 'store/user/selectors'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
+
+import { ReimbursementsContextProps } from '../Reimbursements'
 
 import { AddBankInformationsDialog } from './AddBankInformationsDialog'
 import styles from './BankInformations.module.scss'
@@ -25,12 +30,13 @@ export const BankInformations = (): JSX.Element => {
   const notify = useNotification()
   const { logEvent } = useAnalytics()
   const location = useLocation()
+  const selectedOffererId = useSelector(selectCurrentOffererId)
+  const { mutate } = useSWRConfig()
 
   const [showAddBankInformationsDialog, setShowAddBankInformationsDialog] =
     useState(false)
   const {
     selectedOfferer = null,
-    setSelectedOfferer = () => {},
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   }: ReimbursementsContextProps = useOutletContext() ?? {}
 
@@ -64,27 +70,26 @@ export const BankInformations = (): JSX.Element => {
       }
     }
 
-    selectedOfferer && void getSelectedOffererBankAccounts(selectedOfferer.id)
+    selectedOffererId && void getSelectedOffererBankAccounts(selectedOffererId)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedOfferer])
+  }, [selectedOffererId])
 
   if (isOffererBankAccountsLoading) {
     return <Spinner />
   }
 
-  const updateOfferer = async (newOffererId: string) => {
-    if (newOffererId !== '') {
+  const updateOfferer = async (newOffererId: number) => {
+    if (newOffererId) {
       setIsOffererBankAccountsLoading(true)
-      const offerer = await api.getOfferer(Number(newOffererId))
-      setSelectedOfferer(offerer)
+      await mutate([GET_OFFERER_QUERY_KEY, Number(newOffererId)])
       setIsOffererBankAccountsLoading(false)
     }
   }
 
   async function closeDialog(update?: boolean) {
-    if (selectedOfferer !== null) {
+    if (selectedOffererId) {
       if (update) {
-        await updateOfferer(selectedOfferer.id.toString())
+        await updateOfferer(selectedOffererId)
       }
       setSelectedBankAccount(null)
     }
