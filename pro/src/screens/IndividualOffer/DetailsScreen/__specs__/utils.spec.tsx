@@ -214,7 +214,7 @@ describe('setDefaultInitialValuesFromOffer', () => {
       categoryId: 'A',
       description: '',
       durationMinutes: '',
-      ean: 'Chuck n’est pas identifiable par un EAN',
+      ean: '1234567891234',
       gtl_id: '',
       name: 'Le nom de l’offre 1',
       performer: 'Le Poing de Chuck',

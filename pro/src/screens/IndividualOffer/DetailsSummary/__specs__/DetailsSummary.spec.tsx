@@ -78,9 +78,7 @@ describe('DetailsSummaryScreen', () => {
     expect(screen.getAllByText('Offre de test')).toHaveLength(2)
     expect(screen.getByText('Mon Lieu')).toBeInTheDocument()
     expect(screen.getByText('Catégorie A')).toBeInTheDocument()
-    expect(
-      screen.getByText('Chuck n’est pas identifiable par un EAN')
-    ).toBeInTheDocument()
+    expect(screen.getByText('1234567891234')).toBeInTheDocument()
   })
 
   it('should render summary with right field with OA FF', async () => {

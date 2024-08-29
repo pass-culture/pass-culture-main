@@ -309,7 +309,7 @@ export const serializeExtraData = (formValues: DetailsFormValues) => ({
   visa: formValues.visa,
 })
 
-type Payload = {
+type PostPayload = {
   description?: string
   durationMinutes?: number
   extraData?: Record<string, unknown>
@@ -318,8 +318,10 @@ type Payload = {
   venueId: number
 }
 
-export function serializeDetailsData(formValues: DetailsFormValues): Payload {
-  const payload: Payload = {
+export function serializeDetailsPostData(
+  formValues: DetailsFormValues
+): PostPayload {
+  return {
     name: formValues.name,
     subcategoryId: formValues.subcategoryId,
     venueId: Number(formValues.venueId),
@@ -327,6 +329,24 @@ export function serializeDetailsData(formValues: DetailsFormValues): Payload {
     durationMinutes: serializeDurationMinutes(formValues.durationMinutes ?? ''),
     extraData: serializeExtraData(formValues),
   }
+}
 
-  return payload
+type PatchPayload = {
+  description?: string
+  durationMinutes?: number
+  extraData?: Record<string, unknown>
+  name: string
+  subcategoryId: string
+}
+
+export function serializeDetailsPatchData(
+  formValues: DetailsFormValues
+): PatchPayload {
+  return {
+    name: formValues.name,
+    subcategoryId: formValues.subcategoryId,
+    description: formValues.description,
+    durationMinutes: serializeDurationMinutes(formValues.durationMinutes ?? ''),
+    extraData: serializeExtraData(formValues),
+  }
 }
