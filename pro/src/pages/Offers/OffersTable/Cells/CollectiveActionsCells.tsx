@@ -202,6 +202,8 @@ export const CollectiveActionsCells = ({
     }
   }
 
+  const canDuplicateOffer = offer.status !== CollectiveOfferStatus.DRAFT
+
   return (
     <td
       className={cn(styles['offers-table-cell'], styles['actions-column'])}
@@ -274,34 +276,23 @@ export const CollectiveActionsCells = ({
                       />
                     </>
                   )}
-                {!offer.isShowcase ||
-                  (offer.status !== CollectiveOfferStatus.DRAFT && (
-                    <DropdownMenu.Item
-                      className={styles['menu-item']}
-                      onSelect={handleCreateOfferClick}
+
+                {canDuplicateOffer && (
+                  <DropdownMenu.Item
+                    className={styles['menu-item']}
+                    onSelect={handleCreateOfferClick}
+                  >
+                    <Button
+                      icon={offer.isShowcase ? fullPlusIcon : fullCopyIcon}
+                      variant={ButtonVariant.TERNARY}
                     >
-                      <Button
-                        icon={fullCopyIcon}
-                        variant={ButtonVariant.TERNARY}
-                      >
-                        Dupliquer
-                      </Button>
-                    </DropdownMenu.Item>
-                  ))}
-                {offer.isShowcase &&
-                  offer.status !== CollectiveOfferStatus.ARCHIVED && (
-                    <DropdownMenu.Item
-                      className={styles['menu-item']}
-                      onSelect={handleCreateOfferClick}
-                    >
-                      <Button
-                        icon={fullPlusIcon}
-                        variant={ButtonVariant.TERNARY}
-                      >
-                        Créer une offre réservable
-                      </Button>
-                    </DropdownMenu.Item>
-                  )}
+                      {offer.isShowcase
+                        ? 'Créer une offre réservable'
+                        : 'Dupliquer'}
+                    </Button>
+                  </DropdownMenu.Item>
+                )}
+
                 {offer.isEditable &&
                   !offer.isPublicApi &&
                   offer.status !== CollectiveOfferStatus.ARCHIVED && (
@@ -343,7 +334,6 @@ export const CollectiveActionsCells = ({
                       </DropdownMenu.Item>
                     </>
                   )}
-
                 {offer.status !== CollectiveOfferStatus.ARCHIVED &&
                   canArchiveCollectiveOffer(offer) && (
                     <>

@@ -2,6 +2,7 @@ import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import { api } from 'apiClient/api'
+import { CollectiveOfferStatus } from 'apiClient/v1'
 import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from 'core/Offers/constants'
 import { collectiveOfferFactory } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
@@ -109,5 +110,70 @@ describe('CollectiveActionsCells', () => {
     )
 
     expect(mockDeselectOffer).toHaveBeenCalledTimes(1)
+  })
+
+  it('should not display duplicate button for draft template offer', async () => {
+    renderCollectiveActionsCell({
+      offer: collectiveOfferFactory({
+        isShowcase: true,
+        status: CollectiveOfferStatus.DRAFT,
+      }),
+      editionOfferLink: '',
+      urlSearchFilters: DEFAULT_COLLECTIVE_SEARCH_FILTERS,
+      isSelected: false,
+      deselectOffer: vi.fn(),
+    })
+
+    await userEvent.click(screen.getByTitle('Action'))
+
+    expect(
+      screen.queryByText('Créer une offre réservable')
+    ).not.toBeInTheDocument()
+  })
+
+  it('should not display duplicate button for draft bookable offer', async () => {
+    renderCollectiveActionsCell({
+      offer: collectiveOfferFactory({
+        status: CollectiveOfferStatus.DRAFT,
+      }),
+      editionOfferLink: '',
+      urlSearchFilters: DEFAULT_COLLECTIVE_SEARCH_FILTERS,
+      isSelected: false,
+      deselectOffer: vi.fn(),
+    })
+
+    await userEvent.click(screen.getByTitle('Action'))
+
+    expect(screen.queryByText('Dupliquer')).not.toBeInTheDocument()
+  })
+
+  it('should display duplicate button for template offer', async () => {
+    renderCollectiveActionsCell({
+      offer: collectiveOfferFactory({
+        isShowcase: true,
+      }),
+      editionOfferLink: '',
+      urlSearchFilters: DEFAULT_COLLECTIVE_SEARCH_FILTERS,
+      isSelected: false,
+      deselectOffer: vi.fn(),
+    })
+
+    await userEvent.click(screen.getByTitle('Action'))
+
+    expect(screen.getByText('Créer une offre réservable')).toBeInTheDocument()
+  })
+
+  it('should display duplicate button for draft bookable offer', async () => {
+    renderCollectiveActionsCell({
+      offer: collectiveOfferFactory(),
+      editionOfferLink: '',
+      urlSearchFilters: DEFAULT_COLLECTIVE_SEARCH_FILTERS,
+      isSelected: false,
+      deselectOffer: vi.fn(),
+    })
+
+    await userEvent.click(screen.getByTitle('Action'))
+
+    expect(screen.getByText('Dupliquer')).toBeInTheDocument()
   })
 })
