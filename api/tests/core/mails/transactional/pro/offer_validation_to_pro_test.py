@@ -38,7 +38,7 @@ class SendinblueSendOfferValidationTest:
     def test_get_validation_approval_correct_email_metadata_when_future_offer(self):
         # Given
         offer = offers_factories.OfferFactory(name="Ma petite offre", venue__name="Mon stade")
-        publication_date = datetime.utcnow().replace(minute=0, second=0, microsecond=0) + timedelta(days=30)
+        publication_date = datetime.utcnow() + timedelta(days=30)
         offers_factories.FutureOfferFactory(offerId=offer.id, publicationDate=publication_date)
 
         # When
@@ -48,7 +48,7 @@ class SendinblueSendOfferValidationTest:
         assert new_offer_validation_email.template == TransactionalEmail.OFFER_APPROVAL_TO_PRO.value
         assert new_offer_validation_email.params == {
             "OFFER_NAME": "Ma petite offre",
-            "PUBLICATION_DATE": publication_date.strftime("%d/%m/%Y %H:%M:%S"),
+            "PUBLICATION_DATE": publication_date.strftime("%d/%m/%Y"),
             "VENUE_NAME": "Mon stade",
             "PC_PRO_OFFER_LINK": f"{PRO_URL}/offre/individuelle/{offer.id}/recapitulatif",
         }
