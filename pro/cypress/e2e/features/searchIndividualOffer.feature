@@ -77,12 +77,12 @@ Feature: Search individual offers
       |  |  | Mon offre brouillon            | Terrain vague                  |      0 | brouillon  |
       |  |  | Offer                          | Terrain vague                  |     16 | expirée    |
       |  |  | Offer                          | Terrain vague                  |     20 | publiée    |
-      |  |  | Offer                          | Terrain vague                  |      0 | désactivée |
+      |  |  | Offer                          | Terrain vague                  |      0 | épuisée    |
       |  |  | Offer                          | Bar des amis - Offre numérique |     20 | publiée    |
       |  |  | Offer                          | Terrain vague                  |     16 | expirée    |
       |  |  | Offer                          | Terrain vague                  |     40 | publiée    |
       |  |  | Offer                          | Terrain vague                  |     40 | publiée    |
-      |  |  | Offer                          | Terrain vague                  |      0 | désactivée |
+      |  |  | Offer                          | Terrain vague                  |      0 | épuisée    |
   # comme tout est "Manuel" dans la sandbox, automatiser ce test en l'état n'aurait pas beaucoup de sens
   # Scenario: A search by creation mode should display expected results
   #   When I select "Manuel" in "Mode de création"

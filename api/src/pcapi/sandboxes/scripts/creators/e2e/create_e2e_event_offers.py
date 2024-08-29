@@ -8,8 +8,6 @@ from pcapi.repository import repository
 
 logger = logging.getLogger(__name__)
 
-
-DEACTIVATED_OFFERS_PICK_MODULO = 3
 EVENTS_PER_OFFERER_WITH_PHYSICAL_VENUE = 5
 
 
@@ -40,14 +38,8 @@ def create_e2e_event_offers(
             (event_name, event) = event_items[rest_event_index]
 
             name = "{} / {}".format(event_name, event_venue.name)
-            if offer_index % DEACTIVATED_OFFERS_PICK_MODULO == 0:
-                is_active = False
-            else:
-                is_active = True
-            if offer_index % DEACTIVATED_OFFERS_PICK_MODULO == 0:
-                is_duo = False
-            else:
-                is_duo = True
+            is_active = True
+            is_duo = True
             event_offers_by_name[name] = offers_factories.OfferFactory(
                 venue=event_venue,
                 product=event,

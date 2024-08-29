@@ -9,7 +9,6 @@ from pcapi.repository import repository
 logger = logging.getLogger(__name__)
 
 
-DEACTIVATED_OFFERS_PICK_MODULO = 3
 THINGS_PER_OFFERER = 5
 
 
@@ -47,10 +46,7 @@ def create_e2e_thing_offers(
                 thing_index += 1
 
             name = "{} / {}".format(thing_name, thing_venue.name)
-            if offer_index % DEACTIVATED_OFFERS_PICK_MODULO == 0:
-                is_active = False
-            else:
-                is_active = True
+            is_active = True
             thing_offers_by_name[name] = offers_factories.OfferFactory(
                 venue=thing_venue,
                 subcategoryId=thing_product.subcategoryId,
