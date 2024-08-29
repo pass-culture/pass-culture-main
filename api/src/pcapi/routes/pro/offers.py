@@ -623,7 +623,7 @@ def get_product_by_ean(ean: str) -> offers_serialize.GetProductInformations:
             errors={
                 "ean": ["EAN non reconnu. Assurez-vous qu'il n'y ait pas d'erreur de saisie."],
             },
-            status_code=404,
+            status_code=422,
         )
     if not product.isGcuCompatible:
         raise api_errors.ApiErrors(

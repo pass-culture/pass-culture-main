@@ -56,6 +56,14 @@ class Returns200Test:
                 "images": product.images,
             }
 
+
+@pytest.mark.usefixtures("db_session")
+class Returns422Test:
+    # Session
+    # User
+    # Product
+    number_of_queries = 3
+
     def test_get_product_by_ean_not_gcu_compatible(self, client):
         # Given
         user = users_factories.UserFactory()
@@ -69,20 +77,13 @@ class Returns200Test:
 
         # When
         test_client = client.with_session_auth(email=user.email)
-        with assert_num_queries(self.number_of_queries):
+        # One more query to get the product mediations as one product is found but not compatible
+        with assert_num_queries(self.number_of_queries + 1):
             response = test_client.get(f"/get_product_by_ean/{product.extraData.get('ean')}")
 
             # Then
             assert response.status_code == 422
             assert response.json == {"ean": ["EAN invalide. Ce produit n'est pas conforme à nos CGU."]}
-
-
-@pytest.mark.usefixtures("db_session")
-class Returns404Test:
-    # Session
-    # User
-    # Query
-    number_of_queries = 3
 
     def test_product_does_not_exist(self, client):
         user = users_factories.UserFactory()
@@ -91,5 +92,5 @@ class Returns404Test:
         with assert_num_queries(self.number_of_queries):
             response = test_client.get("/get_product_by_ean/UNKNOWN")
 
-            assert response.status_code == 404
+            assert response.status_code == 422
             assert response.json == {"ean": ["EAN non reconnu. Assurez-vous qu'il n'y ait pas d'erreur de saisie."]}
