@@ -40,7 +40,7 @@ def gdpr_user_extract_data_fixture() -> tuple:
 
 class ListGdprUserExtractDataTest(GetEndpointHelper):
     endpoint = "backoffice_web.gdpr_extract.list_gdpr_user_data_extract"
-    needed_permission = perm_models.Permissions.EXTRACT_PUBLIC_ACCOUNT
+    needed_permission = perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT
 
     # Use assert_num_queries() instead of assert_no_duplicated_queries() which does not detect one extra query caused
     # by a field added in the jinja template.
@@ -118,7 +118,7 @@ class ListGdprUserExtractDataTest(GetEndpointHelper):
 class DownloadPublicAccountExtractTest(PostEndpointHelper, StorageFolderManager):
     endpoint = "backoffice_web.gdpr_extract.download_gdpr_extract"
     endpoint_kwargs = {"extract_id": 1}
-    needed_permission = perm_models.Permissions.EXTRACT_PUBLIC_ACCOUNT
+    needed_permission = perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT
     storage_folder = settings.LOCAL_STORAGE_DIR / settings.GCP_GDPR_EXTRACT_BUCKET / settings.GCP_GDPR_EXTRACT_FOLDER
     # - session
     # - current user
@@ -193,7 +193,7 @@ class DownloadPublicAccountExtractTest(PostEndpointHelper, StorageFolderManager)
 class DeleteGdprUserExtractTest(PostEndpointHelper, StorageFolderManager):
     endpoint = "backoffice_web.gdpr_extract.delete_gdpr_user_data_extract"
     endpoint_kwargs = {"gdpr_id": 1}
-    needed_permission = perm_models.Permissions.EXTRACT_PUBLIC_ACCOUNT
+    needed_permission = perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT
     storage_folder = settings.LOCAL_STORAGE_DIR / settings.GCP_GDPR_EXTRACT_BUCKET / settings.GCP_GDPR_EXTRACT_FOLDER
 
     def test_delete_gdpr_user_extract(self, authenticated_client):

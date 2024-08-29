@@ -26,7 +26,7 @@ gdpr_extract_blueprint = utils.child_backoffice_blueprint(
     "gdpr_extract",
     __name__,
     url_prefix="/gdpr-extract",
-    permission=perm_models.Permissions.EXTRACT_PUBLIC_ACCOUNT,
+    permission=perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT,
 )
 
 
