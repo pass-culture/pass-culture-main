@@ -78,7 +78,7 @@ from pcapi.workers import push_notification_job
 from . import exceptions
 from . import models
 from . import repository as offers_repository
-from . import schemas
+from . import schemas as offers_schemas
 from . import validation
 
 
@@ -191,8 +191,13 @@ def _get_internal_accessibility_compliance(venue: offerers_models.Venue) -> dict
     }
 
 
-def create_draft_offer(body: schemas.PostDraftOfferBodyModel, venue: offerers_models.Venue) -> models.Offer:
+def create_draft_offer(
+    body: offers_schemas.PostDraftOfferBodyModel, venue: offerers_models.Venue, is_from_private_api: bool = True
+) -> models.Offer:
     validation.check_offer_subcategory_is_valid(body.subcategory_id)
+
+    body.extra_data = _format_extra_data(body.subcategory_id, body.extra_data) or {}
+    validation.check_offer_extra_data(body.subcategory_id, body.extra_data, venue, is_from_private_api)
 
     fields = {key: value for key, value in body.dict(by_alias=True).items() if key != "venueId"}
     fields.update(_get_accessibility_compliance_fields(venue))
@@ -216,7 +221,7 @@ def _get_field(obj: typing.Any, aliases: set, updates: dict, field: str) -> typi
     return updates.get(field, getattr(obj, field))
 
 
-def update_draft_offer(offer: models.Offer, body: schemas.PatchDraftOfferBodyModel) -> models.Offer:
+def update_draft_offer(offer: models.Offer, body: offers_schemas.PatchDraftOfferBodyModel) -> models.Offer:
     fields = body.dict(by_alias=True, exclude_unset=True)
     updates = {key: value for key, value in fields.items() if getattr(offer, key) != value}
     if not updates:
@@ -231,7 +236,7 @@ def update_draft_offer(offer: models.Offer, body: schemas.PatchDraftOfferBodyMod
 
 def update_draft_offer_useful_informations(
     offer: models.Offer,
-    body: schemas.PatchDraftOfferUsefulInformationsBodyModel,
+    body: offers_schemas.PatchDraftOfferUsefulInformationsBodyModel,
     is_from_private_api: bool = False,
 ) -> models.Offer:
     aliases = set(body.dict(by_alias=True))
@@ -302,69 +307,35 @@ def update_draft_offer_useful_informations(
 
 
 def create_offer(
-    audio_disability_compliant: bool,
-    mental_disability_compliant: bool,
-    motor_disability_compliant: bool,
-    name: str,
-    subcategory_id: str,
+    body: offers_schemas.CreateOffer,
     venue: offerers_models.Venue,
-    visual_disability_compliant: bool,
-    booking_contact: str | None = None,
-    booking_email: str | None = None,
-    description: str | None = None,
-    duration_minutes: int | None = None,
-    external_ticket_office_url: str | None = None,
-    extra_data: dict | None = None,
-    is_duo: bool | None = None,
-    is_national: bool | None = None,
     offerer_address: offerers_models.OffererAddress | None = None,
     provider: providers_models.Provider | None = None,
-    url: str | None = None,
-    withdrawal_delay: int | None = None,
-    withdrawal_details: str | None = None,
-    withdrawal_type: models.WithdrawalTypeEnum | None = None,
     is_from_private_api: bool = False,
-    id_at_provider: str | None = None,
     venue_provider: providers_models.VenueProvider | None = None,
 ) -> models.Offer:
+    body.extra_data = _format_extra_data(body.subcategory_id, body.extra_data) or {}
+
     validation.check_offer_withdrawal(
-        withdrawal_type, withdrawal_delay, subcategory_id, booking_contact, provider, venue_provider
+        body.withdrawal_type, body.withdrawal_delay, body.subcategory_id, body.booking_contact, provider, venue_provider
     )
-    validation.check_offer_subcategory_is_valid(subcategory_id)
-    formatted_extra_data = _format_extra_data(subcategory_id, extra_data)
-    validation.check_offer_extra_data(subcategory_id, formatted_extra_data, venue, is_from_private_api)
-    subcategory = subcategories.ALL_SUBCATEGORIES_DICT[subcategory_id]
-    validation.check_is_duo_compliance(is_duo, subcategory)
-    validation.check_can_input_id_at_provider(provider, id_at_provider)
-    validation.check_can_input_id_at_provider_for_this_venue(venue.id, id_at_provider)
-    is_national = True if url else bool(is_national)
+    validation.check_offer_subcategory_is_valid(body.subcategory_id)
+    validation.check_offer_extra_data(body.subcategory_id, body.extra_data, venue, is_from_private_api)
+    subcategory = subcategories.ALL_SUBCATEGORIES_DICT[body.subcategory_id]
+    validation.check_is_duo_compliance(body.is_duo, subcategory)
+    validation.check_can_input_id_at_provider(provider, body.id_at_provider)
+    validation.check_can_input_id_at_provider_for_this_venue(venue.id, body.id_at_provider)
+
+    fields = body.dict(by_alias=True)
 
     offer = models.Offer(
-        audioDisabilityCompliant=audio_disability_compliant,
-        bookingContact=booking_contact,
-        bookingEmail=booking_email,
-        description=description,
-        durationMinutes=duration_minutes,
-        externalTicketOfficeUrl=external_ticket_office_url,
-        extraData=formatted_extra_data or {},
-        isActive=False,
-        isDuo=bool(is_duo),
-        isNational=is_national,
-        mentalDisabilityCompliant=mental_disability_compliant,
-        motorDisabilityCompliant=motor_disability_compliant,
-        lastProvider=provider,
-        subcategoryId=subcategory_id,
-        name=name,
-        url=url,
-        validation=models.OfferValidationStatus.DRAFT,
+        **fields,
         venue=venue,
-        visualDisabilityCompliant=visual_disability_compliant,
-        withdrawalDelay=withdrawal_delay,
-        withdrawalDetails=withdrawal_details,
-        withdrawalType=withdrawal_type,
         # WARNING: quid des offres numériques ici ?
         offererAddress=offerer_address or venue.offererAddress,
-        idAtProvider=id_at_provider,
+        lastProvider=provider,
+        isActive=False,
+        validation=models.OfferValidationStatus.DRAFT,
     )
     validation.check_digital_offer_fields(offer)
     repository.add_to_session(offer)
