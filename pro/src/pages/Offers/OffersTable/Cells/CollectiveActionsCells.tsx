@@ -202,6 +202,12 @@ export const CollectiveActionsCells = ({
     }
   }
 
+  const handleEditOfferClick = () => {
+    logEvent(Events.CLICKED_EDIT_COLLECTIVE_OFFER, {
+      from: location.pathname,
+    })
+  }
+
   const canDuplicateOffer = offer.status !== CollectiveOfferStatus.DRAFT
 
   return (
@@ -301,6 +307,7 @@ export const CollectiveActionsCells = ({
                         to={editionOfferLink}
                         icon={fullPenIcon}
                         className={styles['button']}
+                        onClick={handleEditOfferClick}
                       >
                         Modifier
                       </ButtonLink>
