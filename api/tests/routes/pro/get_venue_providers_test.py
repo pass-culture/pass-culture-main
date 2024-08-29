@@ -24,6 +24,7 @@ class Returns200Test:
             venue__managingOfferer=user_offerer.offerer,
             provider=titelive_things_provider,
             lastSyncDate=datetime(2021, 8, 16),
+            dateCreated=datetime(2021, 8, 15),
         )
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
@@ -35,6 +36,7 @@ class Returns200Test:
         assert response.json["venue_providers"][0].get("id") == venue_provider.id
         assert response.json["venue_providers"][0].get("venueId") == venue_provider.venue.id
         assert response.json["venue_providers"][0].get("lastSyncDate") == "2021-08-16T00:00:00Z"
+        assert response.json["venue_providers"][0].get("dateCreated") == "2021-08-15T00:00:00Z"
 
     @pytest.mark.usefixtures("db_session")
     def test_get_list_that_include_allocine_with_valid_venue_id(self, client):

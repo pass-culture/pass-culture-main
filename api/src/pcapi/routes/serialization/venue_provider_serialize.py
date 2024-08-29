@@ -54,6 +54,7 @@ class VenueProviderResponse(BaseModel):
     isDuo: bool | None
     isFromAllocineProvider: bool
     lastSyncDate: datetime | None
+    dateCreated: datetime
     price: float | None
     provider: ProviderResponse
     quantity: int | None
