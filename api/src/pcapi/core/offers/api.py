@@ -47,6 +47,7 @@ import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import repository as offerers_repository
 import pcapi.core.offerers.models as offerers_models
+import pcapi.core.offerers.schemas as offerers_schemas
 from pcapi.core.offers import models as offers_models
 from pcapi.core.providers.allocine import get_allocine_products_provider
 from pcapi.core.providers.constants import GTL_IDS_BY_MUSIC_GENRE_CODE
@@ -276,7 +277,7 @@ def create_offer(
 
 
 def get_offerer_address_from_address(
-    venue: offerers_models.Venue, address: offers_schemas.AddressModel
+    venue: offerers_models.Venue, address: offerers_schemas.AddressBodyModel
 ) -> offerers_models.OffererAddress:
     address_from_api = offerers_api.create_offerer_address_from_address_api(
         street=address.street,

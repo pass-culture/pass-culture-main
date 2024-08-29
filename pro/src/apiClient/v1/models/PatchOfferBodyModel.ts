@@ -2,10 +2,10 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { AddressModel } from './AddressModel';
+import type { AddressBodyModel } from './AddressBodyModel';
 import type { WithdrawalTypeEnum } from './WithdrawalTypeEnum';
 export type PatchOfferBodyModel = {
-  address?: AddressModel | null;
+  address?: AddressBodyModel | null;
   audioDisabilityCompliant?: boolean | null;
   bookingContact?: string | null;
   bookingEmail?: string | null;
