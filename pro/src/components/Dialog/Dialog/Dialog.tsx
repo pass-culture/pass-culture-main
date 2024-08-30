@@ -40,11 +40,11 @@ export const Dialog = ({
             className={styles['dialog-icon']}
           />
         )}
-        <RadixDialog.Title asChild>
-          <h1 className={styles['dialog-title']} id={titleId}>
+        <RadixDialog.Title>
+          <div className={styles['dialog-title']} id={titleId}>
             {title}
             <span>{secondTitle}</span>
-          </h1>
+          </div>
         </RadixDialog.Title>
         {explanation && (
           <div className={styles['dialog-explanation']}>{explanation}</div>
