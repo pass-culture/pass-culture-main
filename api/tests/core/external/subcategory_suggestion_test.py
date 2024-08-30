@@ -11,7 +11,7 @@ from pcapi.core.offerers import factories as offerers_factories
 @pytest.mark.usefixtures("db_session")
 class GetMostProbableSubcategoryIdsTest:
     def test_get_most_probable_subcategory_ids(self):
-        category_ids = subcategory_suggestion.get_most_probable_subcategory_ids("Grosse teuf chez Solène")
+        category_ids = subcategory_suggestion.get_most_probable_subcategory_ids("Madame Bovary")
         assert category_ids[0] == "LIVRE_PAPIER"
         assert category_ids[1] == "SPECTACLE_REPRESENTATION"
         assert category_ids[2] == "ABO_PLATEFORME_VIDEO"
