@@ -74,6 +74,7 @@ export const AdageHeader = () => {
             isExternal
             download
             icon={fullDownloadIcon}
+            target="_top"
           >
             Télécharger l’aide
           </ButtonLink>
