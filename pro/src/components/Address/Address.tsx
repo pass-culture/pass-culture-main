@@ -36,7 +36,7 @@ export const AddressSelect = ({
   const [addressesMap, setAddressesMap] = useState<
     Record<string, AutocompleteItemProps>
   >({})
-  const [searchField] = useField('search-addressAutocomplete')
+  const [searchField, searchFieldMeta] = useField('search-addressAutocomplete')
   const [selectedField] = useField('addressAutocomplete')
   useEffect(() => {
     setOptions([{ label: selectedField.value, value: selectedField.value }])
@@ -60,7 +60,7 @@ export const AddressSelect = ({
           label: item.label,
         }))
       )
-    } else if (searchField.value.length === 0) {
+    } else if (searchField.value.length === 0 && searchFieldMeta.touched) {
       setOptions([])
       handleAddressSelect(setFieldValue, undefined, searchField)
     }
