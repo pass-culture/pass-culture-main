@@ -7,11 +7,13 @@ from flask import url_for
 import pytest
 
 from pcapi import settings
+from pcapi.connectors import discord as discord_connector
 from pcapi.core.history import factories as history_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_settings
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import factories as users_factories
+from pcapi.utils import requests
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -59,108 +61,94 @@ class DiscordSigninTest:
 
         return client.post(url, form=form, headers=headers, follow_redirects=follow_redirects)
 
+    def test_build_discord_redirection_uri(self):
+        assert (
+            discord_connector.build_discord_redirection_uri("1")
+            == f"https://discord.com/api/oauth2/authorize?client_id={discord_connector.DISCORD_CLIENT_ID}&redirect_uri={discord_connector.DISCORD_CALLBACK_URI}&response_type=code&scope=identify%20guilds.join&state=1"
+        )
+
     @override_settings(DISCORD_JWT_PUBLIC_KEY=public_key_pem, DISCORD_JWT_PRIVATE_KEY=private_key_pem)
-    def test_successful_discord_signing(self, client, db_session):
-        redirect_url = "https://test.com"
+    def test_redirect_to_discord_on_post(self, client):
         form_data = {
             "email": "user@test.com",
             "password": settings.TEST_DEFAULT_PASSWORD,
-            "discord_id": "1234",
-            "redirect_url": redirect_url,
         }
-        user = users_factories.UserFactory(email=form_data["email"], password=form_data["password"], isActive=True)
-        discord_user = users_factories.DiscordUserFactory(user=user, discordId=None, hasAccess=True, isBanned=False)
+        user = users_factories.BeneficiaryFactory(
+            email=form_data["email"], password=form_data["password"], isActive=True
+        )
 
         response = self.post_to_endpoint(client, form=form_data)
 
         assert response.status_code == 302
-        assert response.location == redirect_url
-
-        db_session.refresh(discord_user)
-        assert discord_user.discordId == form_data["discord_id"]
+        assert response.location == discord_connector.build_discord_redirection_uri(user.id)
 
     @unittest.mock.patch(
-        "pcapi.routes.auth.discord.discord_connector.retrieve_access_token", return_value="discord_access_token"
+        "pcapi.routes.auth.discord.discord_connector.retrieve_access_token", return_value="access_token"
     )
+    @unittest.mock.patch("pcapi.routes.auth.discord.discord_connector.get_user_id", return_value="discord_user_id")
     @unittest.mock.patch("pcapi.routes.auth.discord.discord_connector.add_to_server")
-    def test_discord_webhook(self, mock_add_to_server, mock_retrieve_access_token, client):
-        client.get(url_for("auth.discord_call_back", code="discord_code"))
+    def test_discord_webhook_success(
+        self, mock_add_to_server, mock_get_user_id, mock_retrieve_access_token, client, db_session
+    ):
+        user = users_factories.BeneficiaryFactory()
+        discord_user = users_factories.DiscordUserFactory(user=user, discordId=None, hasAccess=True, isBanned=False)
+
+        client.get(url_for("auth.discord_call_back", code="discord_code", state=str(user.id)))
 
         assert mock_retrieve_access_token.call_count == 1
         assert mock_retrieve_access_token.call_args[0][0] == "discord_code"
 
+        assert mock_get_user_id.call_count == 1
+        assert mock_get_user_id.call_args[0][0] == "access_token"
+
         assert mock_add_to_server.call_count == 1
-        assert mock_add_to_server.call_args[0][0] == "discord_access_token"
-
-    @override_settings(DISCORD_JWT_PUBLIC_KEY=public_key_pem, DISCORD_JWT_PRIVATE_KEY=private_key_pem)
-    def test_has_access_is_false(self, client, db_session):
-        redirect_url = "https://test.com"
-        form_data = {
-            "email": "user@test.com",
-            "password": settings.TEST_DEFAULT_PASSWORD,
-            "discord_id": "1234",
-            "redirect_url": redirect_url,
-        }
-
-        user = users_factories.UserFactory(email=form_data["email"], password=form_data["password"], isActive=True)
-        discord_user = users_factories.DiscordUserFactory(user=user, discordId=None, hasAccess=False, isBanned=False)
-
-        response = self.post_to_endpoint(client, form=form_data)
-
-        assert response.status_code == 200
-        assert response.location is None
-
-        response_data = response.data.decode("utf-8")
-        assert "Accès refusé au serveur Discord. Contacte le support pour plus d&#39;informations" in response_data
+        assert mock_add_to_server.call_args[0][0] == "access_token"
+        assert mock_add_to_server.call_args[0][1] == "discord_user_id"
 
         db_session.refresh(discord_user)
-        assert discord_user.discordId is None
+        assert discord_user.discordId == "discord_user_id"
 
-    @override_settings(DISCORD_JWT_PUBLIC_KEY=public_key_pem, DISCORD_JWT_PRIVATE_KEY=private_key_pem)
-    def test_discord_user_is_none(self, client):
-        redirect_url = "https://test.com"
-        form_data = {
-            "email": "user@test.com",
-            "password": settings.TEST_DEFAULT_PASSWORD,
-            "discord_id": "1234",
-            "redirect_url": redirect_url,
-        }
-        users_factories.UserFactory(email=form_data["email"], password=form_data["password"], isActive=True)
+    @unittest.mock.patch(
+        "pcapi.routes.auth.discord.discord_connector.retrieve_access_token", return_value="access_token"
+    )
+    @unittest.mock.patch("pcapi.routes.auth.discord.discord_connector.get_user_id", return_value="discord_user_id")
+    @unittest.mock.patch("pcapi.routes.auth.discord.discord_connector.add_to_server")
+    def test_has_access_is_false(self, _mock_add_to_server, _mock_get_user_id, _mock_retrieve_access_token, client):
+        user = users_factories.BeneficiaryFactory()
+        users_factories.DiscordUserFactory(user=user, discordId=None, hasAccess=False, isBanned=False)
 
-        response = self.post_to_endpoint(client, form=form_data)
+        response = client.get(url_for("auth.discord_call_back", code="discord_code", state=str(user.id)))
 
-        assert response.status_code == 200
+        expected_query_params = (
+            "Accès refusé au serveur Discord. Contacte le support pour plus d'informations".replace(" ", "%20")
+            .replace("è", "%C3%A8")
+            .replace("é", "%C3%A9")
+        )
 
-        assert response.status_code == 200
-        assert response.location is None
+        assert response.status_code == 303
+        assert f"/auth/discord/signin?error={expected_query_params}" in response.location
 
-        response_data = response.data.decode("utf-8")
-        assert "Accès refusé au serveur Discord. Contacte le support pour plus d&#39;informations" in response_data
+    @unittest.mock.patch(
+        "pcapi.routes.auth.discord.discord_connector.retrieve_access_token", return_value="access_token"
+    )
+    @unittest.mock.patch("pcapi.routes.auth.discord.discord_connector.get_user_id", return_value="discord_user_id")
+    @unittest.mock.patch("pcapi.routes.auth.discord.discord_connector.add_to_server")
+    def test_discord_user_is_none(self, _mock_add_to_server, _mock_get_user_id, _mock_retrieve_access_token, client):
+        user = users_factories.BeneficiaryFactory()
 
-    @override_settings(DISCORD_JWT_PUBLIC_KEY=public_key_pem, DISCORD_JWT_PRIVATE_KEY=private_key_pem)
-    def test_discord_user_is_active(self, client):
-        redirect_url = "https://test.com"
-        form_data = {
-            "email": "user@test.com",
-            "password": settings.TEST_DEFAULT_PASSWORD,
-            "discord_id": "1234",
-            "redirect_url": redirect_url,
-        }
-        user = users_factories.UserFactory(email=form_data["email"], password=form_data["password"], isActive=True)
-        users_factories.DiscordUserFactory(user=user, hasAccess=True, isBanned=False)
+        response = client.get(url_for("auth.discord_call_back", code="discord_code", state=str(user.id)))
 
-        response = self.post_to_endpoint(client, form=form_data)
+        expected_query_params = (
+            "Accès refusé au serveur Discord. Contacte le support pour plus d'informations".replace(" ", "%20")
+            .replace("è", "%C3%A8")
+            .replace("é", "%C3%A9")
+        )
 
-        assert response.status_code == 302
-        assert response.location == redirect_url
+        assert response.status_code == 303
+        assert f"/auth/discord/signin?error={expected_query_params}" in response.location
 
     def test_account_anonymized_user_request_account_state(self, client):
-        form_data = {
-            "email": "user@test.com",
-            "password": settings.TEST_DEFAULT_PASSWORD,
-            "discord_id": "1234",
-            "redirect_url": "https://test.com",
-        }
+        form_data = {"email": "user@test.com", "password": settings.TEST_DEFAULT_PASSWORD}
         users_factories.AnonymizedUserFactory(
             email=form_data["email"],
             password=form_data["password"],
@@ -172,12 +160,7 @@ class DiscordSigninTest:
         assert "Le compte a été anonymisé" in response_data
 
     def test_wrong_password(self, client):
-        form_data = {
-            "email": "user@test.com",
-            "password": "wrong_password",
-            "discord_id": "1234",
-            "redirect_url": "https://test.com",
-        }
+        form_data = {"email": "user@test.com", "password": "wrong_password"}
         users_factories.AnonymizedUserFactory(
             email=form_data["email"],
             password=settings.TEST_DEFAULT_PASSWORD,
@@ -189,12 +172,7 @@ class DiscordSigninTest:
         assert "Identifiant ou Mot de passe incorrect" in response_data
 
     def test_account_deleted_account_state(self, client):
-        form_data = {
-            "email": "user@test.com",
-            "password": settings.TEST_DEFAULT_PASSWORD,
-            "discord_id": "1234",
-            "redirect_url": "https://test.com",
-        }
+        form_data = {"email": "user@test.com", "password": settings.TEST_DEFAULT_PASSWORD}
         user = users_factories.UserFactory(email=form_data["email"], password=form_data["password"], isActive=False)
         history_factories.SuspendedUserActionHistoryFactory(user=user, reason=users_constants.SuspensionReason.DELETED)
 
@@ -205,12 +183,7 @@ class DiscordSigninTest:
         assert "Le compte a été supprimé" in response_data
 
     def test_inactive_user_signin(self, client):
-        form_data = {
-            "email": "user@test.com",
-            "password": settings.TEST_DEFAULT_PASSWORD,
-            "discord_id": "1234",
-            "redirect_url": "https://test.com",
-        }
+        form_data = {"email": "user@test.com", "password": settings.TEST_DEFAULT_PASSWORD}
         users_factories.BaseUserFactory(email=form_data["email"], password=form_data["password"])
         response = self.post_to_endpoint(client, form=form_data)
         assert response.status_code == 200
@@ -221,12 +194,7 @@ class DiscordSigninTest:
         )
 
     def test_unknown_user_logs_in(self, client):
-        form_data = {
-            "email": "user@test.com",
-            "password": settings.TEST_DEFAULT_PASSWORD,
-            "discord_id": "1234",
-            "redirect_url": "https://test.com",
-        }
+        form_data = {"email": "user@test.com", "password": settings.TEST_DEFAULT_PASSWORD}
         response = self.post_to_endpoint(client, form=form_data)
         assert response.status_code == 200
 
@@ -235,12 +203,7 @@ class DiscordSigninTest:
 
     def test_user_without_password_logs_in(self, client):
         user = users_factories.UserFactory(password=None, isActive=True)
-        form_data = {
-            "email": user.email,
-            "password": settings.TEST_DEFAULT_PASSWORD,
-            "discord_id": "1234",
-            "redirect_url": "https://test.com",
-        }
+        form_data = {"email": user.email, "password": settings.TEST_DEFAULT_PASSWORD}
         response = self.post_to_endpoint(client, form=form_data)
         assert response.status_code == 200
 
@@ -248,10 +211,30 @@ class DiscordSigninTest:
         assert "Identifiant ou Mot de passe incorrect" in response_data
 
     def test_user_logs_in_with_missing_fields(self, client):
-        form_data = {
-            "email": "user@test.com",
-            "discord_id": "1234",
-            "redirect_url": "https://test.com",
-        }
+        form_data = {"email": "user@test.com"}
         response = self.post_to_endpoint(client, form=form_data)
         assert response.status_code == 200
+
+        response_data = response.data.decode("utf-8")
+        assert "Mot de passe : Information obligatoire" in response_data
+
+    @unittest.mock.patch(
+        "pcapi.routes.auth.discord.discord_connector.retrieve_access_token", return_value="access_token"
+    )
+    @unittest.mock.patch("pcapi.routes.auth.discord.discord_connector.get_user_id", return_value="discord_user_id")
+    @unittest.mock.patch(
+        "pcapi.routes.auth.discord.discord_connector.add_to_server",
+        side_effect=requests.exceptions.HTTPError(),
+    )
+    def test_error_adding_user_to_server_rollbacks(
+        self, _mock_add_to_server, _mock_get_user_id, _mock_retrieve_access_token, client, db_session
+    ):
+        user = users_factories.BeneficiaryFactory()
+        discord_user = users_factories.DiscordUserFactory(user=user, discordId=None, hasAccess=True, isBanned=False)
+
+        response = client.get(url_for("auth.discord_call_back", code="discord_code", state=str(user.id)))
+
+        assert response.status_code == 303
+
+        db_session.refresh(discord_user)
+        assert discord_user.discordId is None
