@@ -111,5 +111,13 @@ export const serializePatchOffer = ({
     url: sentValues.url || undefined,
     shouldSendMail: shouldSendMail,
     bookingContact: sentValues.bookingContact || undefined,
+    address: {
+      city: sentValues.city ?? '',
+      latitude: sentValues.latitude ?? '',
+      longitude: sentValues.longitude ?? '',
+      postalCode: sentValues.postalCode ?? '',
+      street: sentValues.street ?? '',
+      label: sentValues.locationLabel ?? '',
+    },
   }
 }

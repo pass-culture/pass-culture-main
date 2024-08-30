@@ -1,16 +1,14 @@
 import { useFormikContext } from 'formik'
-import useSWR from 'swr'
 
-import { api } from 'apiClient/api'
 import {
-  GetIndividualOfferResponseModel,
+  GetIndividualOfferWithAddressResponseModel,
+  VenueListItemResponseModel,
   WithdrawalTypeEnum,
 } from 'apiClient/v1'
 import { OfferRefundWarning } from 'components/Banner/OfferRefundWarning'
 import { WithdrawalReminder } from 'components/Banner/WithdrawalReminder'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OfferLocation } from 'components/IndividualOfferForm/OfferLocation/OfferLocation'
-import { GET_VENUES_QUERY_KEY } from 'config/swrQueryKeys'
 import { useIndividualOfferContext } from 'context/IndividualOfferContext/IndividualOfferContext'
 import { REIMBURSEMENT_RULES } from 'core/Finances/constants'
 import { useAccessibilityOptions } from 'hooks/useAccessibilityOptions'
@@ -38,12 +36,14 @@ import { setFormReadOnlyFields } from './utils'
 
 interface UsefulInformationFormProps {
   conditionalFields: string[]
-  offer: GetIndividualOfferResponseModel
+  offer: GetIndividualOfferWithAddressResponseModel
+  selectedVenue: VenueListItemResponseModel | undefined // It is the selected venue at step 1 (Qui propose l'offre)
 }
 
 export const UsefulInformationForm = ({
   conditionalFields,
   offer,
+  selectedVenue,
 }: UsefulInformationFormProps): JSX.Element => {
   const {
     values: { withdrawalType, receiveNotificationEmails, bookingEmail },
@@ -54,13 +54,6 @@ export const UsefulInformationForm = ({
   const accessibilityOptionsGroups = useAccessibilityOptions(setFieldValue)
 
   const { subCategories } = useIndividualOfferContext()
-
-  // For now, we make an other api call. But `offer.venue` will have all the data
-  const venuesQuery = useSWR(
-    [GET_VENUES_QUERY_KEY, offer.venue.managingOfferer.id],
-    ([, offererIdParam]) => api.getVenues(null, true, offererIdParam),
-    { fallbackData: { venues: [] } }
-  )
 
   const offerSubCategory = subCategories.find(
     (s) => s.id === offer.subcategoryId
@@ -98,12 +91,9 @@ export const UsefulInformationForm = ({
     }
   }
 
-  if (venuesQuery.isLoading) {
+  if (!selectedVenue) {
     return <Spinner />
   }
-  const selectedVenue = venuesQuery.data.venues.find(
-    (v) => v.id.toString() === offer.venue.id.toString()
-  )
 
   return (
     <>

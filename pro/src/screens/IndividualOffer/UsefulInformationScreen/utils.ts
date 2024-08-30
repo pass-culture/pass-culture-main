@@ -5,6 +5,7 @@ import {
   VenueListItemResponseModel,
 } from 'apiClient/v1'
 import { FORM_DEFAULT_VALUES } from 'components/IndividualOfferForm/constants'
+import { OFFER_LOCATION } from 'components/IndividualOfferForm/OfferLocation/constants'
 import {
   CATEGORY_STATUS,
   OFFER_STATUS_PENDING,
@@ -35,8 +36,12 @@ export const getFilteredVenueListBySubcategory = (
   )
 }
 
+interface DefaultInitialValuesFromOfferOptions {
+  selectedVenue: VenueListItemResponseModel | undefined
+}
 export function setDefaultInitialValuesFromOffer(
-  offer: GetIndividualOfferWithAddressResponseModel
+  offer: GetIndividualOfferWithAddressResponseModel,
+  options: DefaultInitialValuesFromOfferOptions
 ): UsefulInformationFormValues {
   const baseAccessibility = {
     [AccessibilityEnum.VISUAL]: offer.visualDisabilityCompliant,
@@ -48,6 +53,37 @@ export function setDefaultInitialValuesFromOffer(
   const notAccessible = Object.values(baseAccessibility).every(
     (value) => value === false
   )
+
+  let addressFields = {}
+  if (offer.address) {
+    const { street, postalCode, city, latitude, longitude } = offer.address
+    const addressAutocomplete = `${street} ${postalCode} ${city}`
+    const coords = `${latitude}, ${longitude}`
+
+    // If the venue's OA selected at step 1 is the same than the one we have saved in offer draft,
+    //  then set this OA id in formik field (so it will be checked by default)
+    //  Else, we can assume it's an "other" address
+    const offerlocation =
+      options.selectedVenue?.address &&
+      options.selectedVenue.address.id_oa === offer.address.id_oa
+        ? offer.address.id_oa
+        : OFFER_LOCATION.OTHER_ADDRESS
+
+    addressFields = {
+      offerlocation: String(offerlocation),
+      manuallySetAddress: offer.address.isManualEdition,
+      'search-addressAutocomplete': addressAutocomplete,
+      addressAutocomplete,
+      coords,
+      banId: offer.address.banId,
+      locationLabel: offer.address.label,
+      street: offer.address.street,
+      postalCode: offer.address.postalCode,
+      city: offer.address.city,
+      latitude: String(offer.address.latitude),
+      longitude: String(offer.address.longitude),
+    }
+  }
 
   return {
     isEvent: offer.isEvent,
@@ -70,7 +106,7 @@ export function setDefaultInitialValuesFromOffer(
     receiveNotificationEmails: !!offer.bookingEmail,
     url: offer.url || DEFAULT_USEFULL_INFORMATION_INTITIAL_VALUES['url'],
     isVenueVirtual: offer.venue.isVirtual || false,
-    offerlocation: undefined,
+    ...addressFields,
   }
 }
 
