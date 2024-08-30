@@ -86,7 +86,7 @@ const updateIndividualOffersStatus = async (
         ids: selectedOfferIds.map((id) => Number(id)),
         isActive,
       })
-      notify.information(
+      notify.error(
         isActive
           ? computeActivationSuccessMessage(selectedOfferIds.length)
           : computeDeactivationSuccessMessage(selectedOfferIds.length)
