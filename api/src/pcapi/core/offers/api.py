@@ -193,10 +193,28 @@ def _get_internal_accessibility_compliance(venue: offerers_models.Venue) -> dict
     }
 
 
+def _get_coherent_venue_with_subcategory(
+    venue: offerers_models.Venue, offer_subcategory_id: str
+) -> offerers_models.Venue:
+    # FIXME: ogeber 30.08.2024 - This wont be useful when
+    # virtual venues will be removed
+    subcategory = subcategories.ALL_SUBCATEGORIES_DICT[offer_subcategory_id]
+    if venue.isVirtual:
+        raise exceptions.OfferVenueShouldNotBeVirtual()
+    if not subcategory.is_online_only and not venue.isVirtual:
+        return venue
+    virtual_venue = offerers_repository.find_virtual_venue_by_offerer_id(venue.managingOffererId)
+    if not virtual_venue:
+        raise exceptions.OffererVirtualVenueNotFound()
+    return virtual_venue
+
+
 def create_draft_offer(
     body: offers_schemas.PostDraftOfferBodyModel, venue: offerers_models.Venue, is_from_private_api: bool = True
 ) -> models.Offer:
     validation.check_offer_subcategory_is_valid(body.subcategory_id)
+    if feature.FeatureToggle.WIP_SUGGESTED_SUBCATEGORIES.is_active():
+        venue = _get_coherent_venue_with_subcategory(venue, body.subcategory_id)
 
     body.extra_data = _format_extra_data(body.subcategory_id, body.extra_data) or {}
     validation.check_offer_extra_data(body.subcategory_id, body.extra_data, venue, is_from_private_api)
