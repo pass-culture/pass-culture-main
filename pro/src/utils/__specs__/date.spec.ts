@@ -3,6 +3,7 @@ import {
   formatBrowserTimezonedDateAsUTC,
   formatShortDateForInput,
   formatTimeForInput,
+  getDateToFrenchText,
   getRangeToFrenchText,
   toDateStrippedOfTimezone,
   toISOStringWithoutMilliseconds,
@@ -117,5 +118,9 @@ describe('getRangeToFrenchText', () => {
     const date = new Date('2020-11-17T23:10:00Z')
 
     expect(formatTimeForInput(date)).toBe('23:10')
+  })
+
+  it('should not return a date when transforming an invalid date into French text', () => {
+    expect(getDateToFrenchText('0024-01-15T23:59:59+00:09:21')).toEqual(null)
   })
 })

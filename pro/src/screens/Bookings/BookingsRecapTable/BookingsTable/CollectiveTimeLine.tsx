@@ -227,14 +227,16 @@ export const CollectiveTimeLine = ({
         <div className={styles['timeline-step-title']}>
           Réservation en cours de confirmation
         </div>
-        <div>
-          À partir du {cancellationLimitDate.toString()}, la réservation ne sera
-          plus annulable par l’établissement scolaire. <br />
-          <br />
-          30 jours avant la date de l’évènement, l’établissement scolaire ne
-          peut plus annuler. De votre côté, vous pouvez annuler la réservation
-          jusqu’à 48 heures après la date de l’évènement.
-        </div>
+        {cancellationLimitDate && (
+          <div>
+            À partir du {cancellationLimitDate.toString()}, la réservation ne
+            sera plus annulable par l’établissement scolaire. <br />
+            <br />
+            30 jours avant la date de l’évènement, l’établissement scolaire ne
+            peut plus annuler. De votre côté, vous pouvez annuler la réservation
+            jusqu’à 48 heures après la date de l’évènement.
+          </div>
+        )}
       </>
     ),
   }

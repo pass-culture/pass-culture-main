@@ -53,6 +53,9 @@ export const toDateStrippedOfTimezone = (dateIsoString: string) => {
 }
 
 export const getDateToFrenchText = (dateIsoString: string) => {
+  if (!isValid(new Date(dateIsoString))) {
+    return null
+  }
   const noTimeZoneDate = toDateStrippedOfTimezone(dateIsoString)
   return format(noTimeZoneDate, FORMAT_DD_MMMM_YYYY, { locale: fr })
 }
