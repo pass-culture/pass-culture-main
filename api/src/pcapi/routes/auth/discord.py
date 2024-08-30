@@ -9,7 +9,6 @@ from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import models as user_models
 from pcapi.core.users import repository as users_repo
 from pcapi.models import db
-import pcapi.routes.auth.exceptions as auth_exceptions
 from pcapi.routes.auth.forms.forms import SigninForm
 from pcapi.utils import requests
 
@@ -17,86 +16,42 @@ from . import blueprint
 from . import utils
 
 
-ERROR_STRING_PREFIX = "Erreur d'authentification Discord: "
-
-
 @blueprint.auth_blueprint.route("/discord/signin", methods=["GET"])
 def discord_signin() -> str:
     form = SigninForm()
+    form.discord_id.data = request.args.get("discord_id")
+    form.redirect_url.data = discord_connector.DISCORD_FULL_REDIRECT_URI
     if error_message := request.args.get("error"):
         form.error_message = error_message
 
     return render_template("discord_signin.html", form=form)
 
 
-def redirect_with_error(error_message: str) -> Response:
-    return redirect(f"/auth/discord/signin?error={error_message}", code=303)
-
-
-def handle_http_error(error: requests.exceptions.HTTPError) -> Response:
-    error_message = error.response.json().get("message") or error.response.json().get("error")
-    return redirect_with_error(ERROR_STRING_PREFIX + error_message)
-
-
 @blueprint.auth_blueprint.route("/discord/callback", methods=["GET"])
 def discord_call_back() -> str | Response | None:
+    # Webhook called by the discord server once the discord authentication is successful
     code = request.args.get("code")
-    user_id = request.args.get("state")
-
+    ERROR_STRING_PREFIX = "Erreur d'authentification Discord: "
     if not code:
-        return redirect_with_error(f"{ERROR_STRING_PREFIX}code non récupéré")
-    if not user_id:
-        return redirect_with_error(f"{ERROR_STRING_PREFIX}user_id pass Culture non récupéré")
+        return redirect(f"/auth/discord/signin?error={ERROR_STRING_PREFIX}code non récupéré", code=303)
 
     try:
         access_token = discord_connector.retrieve_access_token(code)
     except requests.exceptions.HTTPError as e:
-        return handle_http_error(e)
+        return redirect(f"/auth/discord/signin?error={ERROR_STRING_PREFIX}{e.response.json().get('error')}", code=303)
 
     if not access_token:
-        return redirect_with_error(f"{ERROR_STRING_PREFIX}access token non récupéré")
-
-    try:
-        user_discord_id = discord_connector.get_user_id(access_token)
-    except requests.exceptions.HTTPError as e:
-        return handle_http_error(e)
-
-    if not user_discord_id:
-        return redirect_with_error(f"{ERROR_STRING_PREFIX}discord id non récupéré")
-
-    try:
-        update_discord_user(user_id, user_discord_id)
-    except auth_exceptions.DiscordUserAlreadyLinked:
-        return redirect_with_error("Ce compte Discord est déjà lié à un autre compte pass Culture.")
-    except auth_exceptions.UserNotAllowed:
-        return redirect_with_error("Accès refusé au serveur Discord. Contacte le support pour plus d'informations")
+        return redirect(f"/auth/discord/signin?error={ERROR_STRING_PREFIX}access token non récupéré", code=303)
 
     try:
         discord_connector.add_to_server(access_token)
     except requests.exceptions.HTTPError as e:
-        return handle_http_error(e)
+        return redirect(
+            f"/auth/discord/signin?error={ERROR_STRING_PREFIX}{e.response.json().get('message')}",
+            code=303,
+        )
 
     return redirect(discord_connector.DISCORD_HOME_URI, code=303)
-
-
-def update_discord_user(user_id: str, discord_id: str) -> Response | None:
-    already_linked_user = user_models.DiscordUser.query.filter_by(discordId=discord_id).first()
-    if already_linked_user:
-        raise auth_exceptions.DiscordUserAlreadyLinked()
-
-    user = user_models.User.query.get(user_id)
-    discord_user = user.discordUser
-
-    if discord_user is None:
-        discord_user = user_models.DiscordUser(userId=user.id, discordId=discord_id, hasAccess=False)
-        db.session.add(discord_user)
-    else:
-        discord_user.discordId = discord_id
-    db.session.commit()
-
-    if not discord_user.hasAccess:
-        raise auth_exceptions.UserNotAllowed()
-    return None
 
 
 @blueprint.auth_blueprint.route("/discord/signin", methods=["POST"])
@@ -110,6 +65,8 @@ def discord_signin_post() -> str | Response | None:
 
     email = form.email.data
     password = form.password.data
+    discord_id = form.discord_id.data
+    url_redirection = form.redirect_url.data
 
     try:
         user = users_repo.get_user_with_credentials(email, password, allow_inactive=True)
@@ -129,5 +86,17 @@ def discord_signin_post() -> str | Response | None:
         form.error_message = "Le compte a été anonymisé"
         return render_template("discord_signin.html", form=form)
 
-    url_redirection = discord_connector.build_discord_redirection_uri(user.id)
+    discord_user = user.discordUser
+    if discord_user is None or not discord_user.hasAccess:
+        if discord_user is None:
+            discord_user = user_models.DiscordUser(userId=user.id, discordId=discord_id, hasAccess=False)
+            db.session.add(discord_user)
+            db.session.commit()
+        form.error_message = "Accès refusé au serveur Discord. Contacte le support pour plus d'informations"
+        return render_template("discord_signin.html", form=form)
+    if discord_user.is_active:
+        return redirect(url_redirection)
+
+    discord_user.discordId = discord_id
+    db.session.commit()
     return redirect(url_redirection)
