@@ -1,7 +1,7 @@
 import { Form, FormikProvider, useFormik } from 'formik'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useSWRConfig } from 'swr'
+import useSWR, { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
 import { isErrorAPIError, serializeApiErrors } from 'apiClient/helpers'
@@ -14,7 +14,7 @@ import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { RouteLeavingGuardIndividualOffer } from 'components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
 import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
-import { GET_OFFER_QUERY_KEY } from 'config/swrQueryKeys'
+import { GET_OFFER_QUERY_KEY, GET_VENUES_QUERY_KEY } from 'config/swrQueryKeys'
 import { useIndividualOfferContext } from 'context/IndividualOfferContext/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
@@ -148,6 +148,17 @@ export const UsefulInformationScreen = ({
     }
   }
 
+  // Getting selected venue at step 1 (details) to infer address fields
+  const venuesQuery = useSWR(
+    [GET_VENUES_QUERY_KEY, offer.venue.managingOfferer.id],
+    ([, offererIdParam]) => api.getVenues(null, true, offererIdParam),
+    { fallbackData: { venues: [] } }
+  )
+
+  const selectedVenue = venuesQuery.data.venues.find(
+    (v) => v.id.toString() === offer.venue.id.toString()
+  )
+
   const offerSubCategory = subCategories.find(
     (s) => s.id === offer.subcategoryId
   )
@@ -164,7 +175,7 @@ export const UsefulInformationScreen = ({
     isOfferAddressEnabled,
   })
   const formik = useFormik({
-    initialValues: setDefaultInitialValuesFromOffer(offer),
+    initialValues: setDefaultInitialValuesFromOffer(offer, { selectedVenue }),
     onSubmit,
     validationSchema,
   })
@@ -195,6 +206,7 @@ export const UsefulInformationScreen = ({
           <FormLayout.MandatoryInfo />
           <UsefulInformationForm
             offer={offer}
+            selectedVenue={selectedVenue}
             conditionalFields={conditionalFields}
           />
         </FormLayout>

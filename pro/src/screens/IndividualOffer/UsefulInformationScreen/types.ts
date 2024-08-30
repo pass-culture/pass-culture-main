@@ -13,5 +13,17 @@ export type UsefulInformationFormValues = {
   url: string
   isVenueVirtual?: boolean
   bookingContact?: string
+
   offerlocation?: string | undefined
+  manuallySetAddress?: boolean
+  'search-addressAutocomplete'?: string
+  addressAutocomplete?: string
+  coords?: string
+  banId?: string | null
+  locationLabel?: string | null
+  street?: string | null
+  postalCode?: string
+  city?: string
+  latitude?: string
+  longitude?: string
 }

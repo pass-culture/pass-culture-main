@@ -40,13 +40,13 @@ export interface IndividualOfferFormValues {
   manuallySetAddress?: boolean
   'search-addressAutocomplete'?: string
   addressAutocomplete?: string
-  street?: string
+  banId?: string | null
+  street?: string | null
   postalCode?: string
   city?: string
   coords?: string
   latitude?: string
   longitude?: string
-  banId?: string
 }
 
 export type IndividualOfferForm = FormikProps<IndividualOfferFormValues>
