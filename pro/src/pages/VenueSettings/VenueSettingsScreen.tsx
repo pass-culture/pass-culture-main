@@ -20,6 +20,7 @@ import { SelectOption } from 'custom_types/form'
 import { useCurrentUser } from 'hooks/useCurrentUser'
 import { useNotification } from 'hooks/useNotification'
 import fullBackIcon from 'icons/full-back.svg'
+import strokeErrorIcon from 'icons/stroke-error.svg'
 import strokeMailIcon from 'icons/stroke-mail.svg'
 import { generateSiretValidationSchema } from 'pages/VenueCreation/SiretOrCommentFields/validationSchema'
 import { Button } from 'ui-kit/Button/Button'
@@ -57,10 +58,10 @@ export const VenueSettingsFormScreen = ({
 
   const { currentUser } = useCurrentUser()
 
-  const [shouldSendMail, setShouldSendMail] = useState<boolean>(false)
-
-  const [isWithdrawalDialogOpen, setIsWithdrawalDialogOpen] =
-    useState<boolean>(false)
+  const [shouldSendMail, setShouldSendMail] = useState(false)
+  const [isWithdrawalDialogOpen, setIsWithdrawalDialogOpen] = useState(false)
+  const [isAddressChangeDialogOpen, setIsAddressChangeDialogOpen] =
+    useState(false)
 
   const handleCancelWithdrawalDialog = () => {
     setShouldSendMail(false)
@@ -69,6 +70,15 @@ export const VenueSettingsFormScreen = ({
 
   const handleConfirmWithdrawalDialog = () => {
     setShouldSendMail(true)
+    formik.handleSubmit()
+  }
+
+  const handleCancelAddressChangeDialog = () => {
+    setIsAddressChangeDialogOpen(false)
+  }
+
+  const handleConfirmAddressChangeDialog = () => {
+    setIsAddressChangeDialogOpen(true)
     formik.handleSubmit()
   }
 
@@ -85,8 +95,34 @@ export const VenueSettingsFormScreen = ({
     return true
   }
 
+  const handleDialogAddressChange = () => {
+    const latitudeMeta = formik.getFieldMeta('latitude')
+    const longitudeMeta = formik.getFieldMeta('longitude')
+
+    // If any of the address fields changed, then latitude and longitude will change and we can suppose that any part of the address changed
+    // So we should display the dialog
+
+    if (
+      (latitudeMeta.touched &&
+        latitudeMeta.value !== latitudeMeta.initialValue) ||
+      (longitudeMeta.touched &&
+        longitudeMeta.value !== longitudeMeta.initialValue)
+    ) {
+      if (isAddressChangeDialogOpen) {
+        setIsAddressChangeDialogOpen(false)
+      } else {
+        setIsAddressChangeDialogOpen(true)
+        return false
+      }
+    }
+    return true
+  }
+
   const onSubmit = async (values: VenueSettingsFormValues) => {
-    if (values.isWithdrawalAppliedOnAllOffers && !handleWithdrawalDialog()) {
+    if (
+      (values.isWithdrawalAppliedOnAllOffers && !handleWithdrawalDialog()) ||
+      !handleDialogAddressChange()
+    ) {
       return
     }
 
@@ -198,6 +234,23 @@ export const VenueSettingsFormScreen = ({
             icon={strokeMailIcon}
             title="Souhaitez-vous prévenir les bénéficiaires de la modification des modalités de retrait ?"
           />
+        )}
+
+        {isAddressChangeDialogOpen && venue.hasOffers && (
+          <ConfirmDialog
+            cancelText="Annuler"
+            confirmText="Confirmer le changement d'adresse"
+            leftButtonAction={handleCancelAddressChangeDialog}
+            onCancel={() => setIsAddressChangeDialogOpen(false)}
+            onConfirm={handleConfirmAddressChangeDialog}
+            icon={strokeErrorIcon}
+            title="Ce changement d'adresse ne va pas s'impacter sur vos offres associées"
+          >
+            <p>
+              Rendez-vous sur vos offres pour rectifier l’adresse de vos offres
+              de votre choix.
+            </p>
+          </ConfirmDialog>
         )}
       </FormikProvider>
     </>
