@@ -1,5 +1,5 @@
 import { useFormikContext } from 'formik'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import {
   GetEducationalOffererResponseModel,
@@ -12,7 +12,6 @@ import { OfferEducationalFormValues } from 'core/OfferEducational/types'
 import { offerInterventionOptions } from 'core/shared/interventionOptions'
 import { handleAllFranceDepartmentOptions } from 'core/shared/utils/handleAllFranceDepartmentOptions'
 import { SelectOption } from 'custom_types/form'
-import { Banner } from 'ui-kit/Banners/Banner/Banner'
 import { RadioGroup } from 'ui-kit/form/RadioGroup/RadioGroup'
 import { Select } from 'ui-kit/form/Select/Select'
 import { SelectAutocomplete } from 'ui-kit/form/SelectAutoComplete/SelectAutocomplete'
@@ -162,19 +161,15 @@ export const FormPracticalInformation = ({
             options={venuesOptions}
           />
           {currentVenue && (
-            <Banner
-              className={styles['educational-form-adress-banner']}
-              type="light"
-            >
+            <div className={styles['educational-form-adress-banner']}>
               {currentVenue.name}
               <br />
               {currentVenue.street}, {currentVenue.postalCode}{' '}
               {currentVenue.city}
-            </Banner>
+            </div>
           )}
         </FormLayout.Row>
       )}
-
       {values.eventAddress.addressType !== OfferAddressType.OFFERER_VENUE && (
         <FormLayout.Row
           sideComponent={
@@ -196,7 +191,6 @@ export const FormPracticalInformation = ({
           />
         </FormLayout.Row>
       )}
-
       {values.eventAddress.addressType === OfferAddressType.OTHER && (
         <FormLayout.Row>
           <TextArea

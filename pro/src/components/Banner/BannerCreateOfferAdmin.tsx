@@ -1,21 +1,18 @@
-import React from 'react'
-
-import strokeShowIcon from 'icons/stroke-show.svg'
-import { Banner } from 'ui-kit/Banners/Banner/Banner'
+import { Callout } from 'components/Callout/Callout'
+import { CalloutVariant } from 'components/Callout/types'
 
 export const BannerCreateOfferAdmin = (): JSX.Element => (
-  <Banner
-    type="attention"
+  <Callout
+    variant={CalloutVariant.INFO}
     links={[
       {
         href: '/accueil',
         label: 'Aller à l’accueil',
-        icon: { src: strokeShowIcon, alt: '' },
         isExternal: false,
       },
     ]}
   >
     Afin de créer une offre en tant qu’administrateur veuillez sélectionner une
     structure.
-  </Banner>
+  </Callout>
 )

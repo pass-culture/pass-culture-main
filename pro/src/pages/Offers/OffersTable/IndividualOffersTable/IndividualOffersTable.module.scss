@@ -26,6 +26,10 @@
   margin-top: rem.torem(70px);
 }
 
+.max-display-callout {
+  margin-bottom: rem.torem(16px);
+}
+
 @media (min-width: size.$tablet) {
   .individual-table {
     display: table;

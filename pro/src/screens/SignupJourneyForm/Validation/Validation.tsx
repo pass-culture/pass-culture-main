@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import useSWR from 'swr'
@@ -20,7 +20,6 @@ import { useNotification } from 'hooks/useNotification'
 import fullEditIcon from 'icons/full-edit.svg'
 import { DEFAULT_OFFERER_FORM_VALUES } from 'screens/SignupJourneyForm/Offerer/constants'
 import { updateSelectedOffererId, updateUser } from 'store/user/reducer'
-import { Banner } from 'ui-kit/Banners/Banner/Banner'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
@@ -142,7 +141,8 @@ export const Validation = (): JSX.Element => {
             Modifier
           </ButtonLink>
         </div>
-        <Banner type={'light'} className={styles['data-displaying']}>
+
+        <div className={styles['data-displaying']}>
           <div className={styles['data-line']}>
             {offerer.publicName || offerer.name}
           </div>
@@ -150,7 +150,7 @@ export const Validation = (): JSX.Element => {
           <div className={styles['data-line']}>
             {offerer.street}, {offerer.postalCode} {offerer.city}
           </div>
-        </Banner>
+        </div>
       </section>
       <section className={styles['validation-screen']}>
         <div className={styles['validation-screen-subtitle']}>
@@ -172,7 +172,7 @@ export const Validation = (): JSX.Element => {
             Modifier
           </ButtonLink>
         </div>
-        <Banner type={'light'} className={styles['data-displaying']}>
+        <div className={styles['data-displaying']}>
           <div className={styles['data-line']}>
             {
               venueTypes.find(
@@ -186,7 +186,7 @@ export const Validation = (): JSX.Element => {
             </div>
           ))}
           <div className={styles['data-line']}>{targetCustomerLabel}</div>
-        </Banner>
+        </div>
       </section>
       <Callout>
         Vous pourrez modifier certaines de ces informations dans la page dédiée

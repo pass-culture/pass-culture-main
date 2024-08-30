@@ -1,5 +1,4 @@
 import { useFormikContext } from 'formik'
-import React from 'react'
 
 import {
   CollectiveBookingStatus,
@@ -17,7 +16,6 @@ import {
 } from 'core/OfferEducational/types'
 import { applyVenueDefaultsToFormValues } from 'core/OfferEducational/utils/applyVenueDefaultsToFormValues'
 import { SelectOption } from 'custom_types/form'
-import { Banner } from 'ui-kit/Banners/Banner/Banner'
 import { Select } from 'ui-kit/form/Select/Select'
 
 import { OFFERER_LABEL, VENUE_LABEL } from '../../constants/labels'
@@ -112,10 +110,13 @@ export const FormVenue = ({
         </Callout>
       )}
       {offerersOptions.length === 0 && (
-        <Banner>
+        <Callout
+          variant={CalloutVariant.INFO}
+          className={styles['no-offerer-callout']}
+        >
           Vous ne pouvez pas créer d’offre collective tant que votre structure
           n’est pas validée.
-        </Banner>
+        </Callout>
       )}
       {isEligible && venuesOptions.length > 0 && (
         <FormLayout.Row>

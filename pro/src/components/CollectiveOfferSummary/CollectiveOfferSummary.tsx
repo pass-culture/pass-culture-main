@@ -1,5 +1,3 @@
-import React from 'react'
-
 import {
   CollectiveOfferStatus,
   GetCollectiveOfferResponseModel,
@@ -15,6 +13,7 @@ import {
 } from 'core/OfferEducational/types'
 import { SynchronizedProviderInformation } from 'screens/IndividualOffer/SynchronisedProviderInfos/SynchronizedProviderInformation'
 
+import styles from './CollectiveOfferSummary.module.scss'
 import { CollectiveOfferContactSection } from './components/CollectiveOfferContactSection'
 import { CollectiveOfferDateSection } from './components/CollectiveOfferDateSection'
 import { CollectiveOfferImagePreview } from './components/CollectiveOfferImagePreview'
@@ -52,9 +51,11 @@ export const CollectiveOfferSummary = ({
       <SummaryLayout>
         <SummaryContent fullWidth>
           {isCollectiveOffer(offer) && offer.provider?.name && (
-            <SynchronizedProviderInformation
-              providerName={offer.provider.name}
-            />
+            <div className={styles['banner-container']}>
+              <SynchronizedProviderInformation
+                providerName={offer.provider.name}
+              />
+            </div>
           )}
           <SummarySection
             title="Détails de l’offre"
@@ -82,7 +83,6 @@ export const CollectiveOfferSummary = ({
               />
             )}
           </SummarySection>
-
           {!isOfferTemplate && (
             <SummarySection
               title="Dates & Prix"
@@ -98,7 +98,6 @@ export const CollectiveOfferSummary = ({
               />
             </SummarySection>
           )}
-
           {!isOfferTemplate && (
             <SummarySection
               title={'Établissement et enseignant'}

@@ -5,6 +5,8 @@ import { useSelector } from 'react-redux'
 import { GetOffererResponseModel, VenueTypeResponseModel } from 'apiClient/v1'
 import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
 import { AddressSelect } from 'components/Address/Address'
+import { Callout } from 'components/Callout/Callout'
+import { CalloutVariant } from 'components/Callout/types'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import {
   BlockerFunction,
@@ -12,7 +14,6 @@ import {
 } from 'components/RouteLeavingGuard/RouteLeavingGuard'
 import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import { selectCurrentOffererId } from 'store/user/selectors'
-import { Banner } from 'ui-kit/Banners/Banner/Banner'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -74,7 +75,6 @@ export const VenueCreationForm = ({
 
       <FormLayout fullWidthActions>
         <FormLayout.MandatoryInfo />
-
         <FormLayout.Section title="Informations du lieu">
           <FormLayout.Row>
             <SiretOrCommentFields
@@ -106,7 +106,6 @@ export const VenueCreationForm = ({
             <TextInput name="publicName" label="Nom public" isOptional />
           </FormLayout.Row>
         </FormLayout.Section>
-
         <FormLayout.Section
           title="Adresse de l’activité"
           description="Cette adresse sera utilisée pour permettre aux jeunes de géolocaliser votre lieu."
@@ -115,7 +114,6 @@ export const VenueCreationForm = ({
             <AddressSelect />
           </FormLayout.Row>
         </FormLayout.Section>
-
         <FormLayout.Section
           title="Activité"
           description="Ces informations seront affichées dans votre page lieu sur l’application pass Culture (sauf pour les lieux administratifs). Elles permettront aux jeunes d’en savoir plus sur votre lieu."
@@ -134,9 +132,7 @@ export const VenueCreationForm = ({
             />
           </FormLayout.Row>
         </FormLayout.Section>
-
         <Accessibility isCreatingVenue />
-
         <FormLayout.Section title="Notifications de réservations">
           <FormLayout.Row
             sideComponent={
@@ -168,13 +164,12 @@ export const VenueCreationForm = ({
               culturelle)
             </p>
 
-            <Banner type="notification-info">
+            <Callout variant={CalloutVariant.INFO}>
               Une fois votre lieu créé, vous pourrez renseigner des informations
               pour les enseignants en revenant sur cette page.
-            </Banner>
+            </Callout>
           </FormLayout.Section>
         )}
-
         <RouteLeavingGuard
           shouldBlockNavigation={shouldBlockVenueNavigation({
             offererId: offerer.id,

@@ -145,7 +145,6 @@ export const OfferEducationalForm = ({
           </BannerPublicApi>
         )}
         <FormLayout.MandatoryInfo />
-
         <FormVenue
           isEligible={isEligible}
           mode={mode}

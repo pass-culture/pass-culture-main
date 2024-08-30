@@ -11,6 +11,13 @@
   margin: 0 0 rem.torem(24px) 0;
 }
 
+.educational-form-adress-banner {
+  padding: rem.torem(16px);
+  background: var(--color-grey-light);
+  color: var(--color-grey-dark);
+  border-radius: rem.torem(8px);
+}
+
 .price-details textarea {
   min-height: rem.torem(72px);
   height: rem.torem(72px);

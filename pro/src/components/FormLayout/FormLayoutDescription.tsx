@@ -1,9 +1,8 @@
 import cn from 'classnames'
-import React from 'react'
 
 import { Callout } from 'components/Callout/Callout'
 import { CalloutVariant } from 'components/Callout/types'
-import { Link } from 'ui-kit/Banners/LinkNodes/LinkNodes'
+import { Link } from 'ui-kit/LinkNodes/LinkNodes'
 
 import style from './FormLayout.module.scss'
 
