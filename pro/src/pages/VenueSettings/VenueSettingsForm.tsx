@@ -74,29 +74,24 @@ export const VenueSettingsForm = ({
           </FormLayout.Row>
 
           {!venue.isVirtual && (
-            <FormLayout.Row
-              sideComponent={
-                <InfoBox>
-                  À remplir si différent de la raison sociale. En le
-                  remplissant, c’est ce dernier qui sera visible du public.
-                </InfoBox>
-              }
-            >
-              <TextInput name="publicName" label="Nom public" isOptional />
-            </FormLayout.Row>
+            <>
+              <FormLayout.Row
+                sideComponent={
+                  <InfoBox>
+                    À remplir si différent de la raison sociale. En le
+                    remplissant, c’est ce dernier qui sera visible du public.
+                  </InfoBox>
+                }
+              >
+                <TextInput name="publicName" label="Nom public" isOptional />
+              </FormLayout.Row>
+
+              <FormLayout.Row>
+                <AddressSelect />
+              </FormLayout.Row>
+            </>
           )}
         </FormLayout.Section>
-
-        {!venue.isVirtual && (
-          <FormLayout.Section
-            title="Adresse de l’activité"
-            description="Cette adresse sera utilisée pour permettre aux jeunes de géolocaliser votre activité. Elle ne sera affichée que si vous accueillez du public à cette adresse."
-          >
-            <FormLayout.Row>
-              <AddressSelect />
-            </FormLayout.Row>
-          </FormLayout.Section>
-        )}
 
         <FormLayout.Section title="Activité principale">
           <FormLayout.Row>
