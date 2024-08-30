@@ -1075,6 +1075,39 @@ class CreateDraftOfferTest:
         assert not offer.product
         assert models.Offer.query.count() == 1
 
+    @override_features(WIP_SUGGESTED_SUBCATEGORIES=False)
+    def test_create_draft_offer_with_virtual_venue(self):
+        venue = offerers_factories.VirtualVenueFactory()
+        body = offers_schemas.PostDraftOfferBodyModel(
+            name="La Poudre",
+            subcategoryId=subcategories.PODCAST.id,
+            venueId=venue.id,
+        )
+        offer = api.create_draft_offer(body, venue=venue)
+        assert offer.name == "La Poudre"
+        assert offer.subcategoryId == subcategories.PODCAST.id
+        assert offer.venue == venue
+        assert not offer.description
+        assert not offer.isActive
+        assert offer.validation == models.OfferValidationStatus.DRAFT
+        assert not offer.product
+        assert models.Offer.query.count() == 1
+        assert offer.audioDisabilityCompliant == None
+        assert offer.mentalDisabilityCompliant == None
+        assert offer.motorDisabilityCompliant == None
+        assert offer.visualDisabilityCompliant == None
+
+    @override_features(WIP_SUGGESTED_SUBCATEGORIES=True)
+    def test_create_draft_offer_with_virtual_venue_with_subcategory_suggestion_must_fail(self):
+        venue = offerers_factories.VirtualVenueFactory()
+        body = offers_schemas.PostDraftOfferBodyModel(
+            name="La Poudre",
+            subcategoryId=subcategories.PODCAST.id,
+            venueId=venue.id,
+        )
+        with pytest.raises(exceptions.OfferVenueShouldNotBeVirtual):
+            api.create_draft_offer(body, venue=venue)
+
     def test_create_draft_offer_with_accessibility_provider(self):
         # when venue is synchronized with acceslibre, create draft offer should
         # have acceslibre accessibility informations
@@ -1134,6 +1167,45 @@ class CreateDraftOfferTest:
             api.create_draft_offer(body, venue=venue)
 
         assert error.value.errors["subcategory"] == ["La sous-catégorie de cette offre est inconnue"]
+
+    @override_features(WIP_SUGGESTED_SUBCATEGORIES=True)
+    def test_create_offer_with_online_subcategory_must_be_on_virtual_venue(self):
+        venue = offerers_factories.VenueFactory(isVirtual=False)
+        virtual_venue = offerers_factories.VirtualVenueFactory(
+            managingOfferer=venue.managingOfferer,
+        )
+        body = offers_schemas.PostDraftOfferBodyModel(
+            name="La Poudre",
+            subcategoryId="PODCAST",
+            venueId=venue.id,
+        )
+        offer = api.create_draft_offer(body, venue=venue)
+        assert offer.venue == virtual_venue
+
+    @override_features(WIP_SUGGESTED_SUBCATEGORIES=True)
+    def test_create_offer_with_offline_subcategory_must_be_on_physical_venue(self):
+        physical_venue = offerers_factories.VenueFactory(isVirtual=False)
+        virtual_venue = offerers_factories.VirtualVenueFactory(
+            managingOfferer=physical_venue.managingOfferer,
+        )
+        body = offers_schemas.PostDraftOfferBodyModel(
+            name="Le Maître et Marguerite",
+            subcategoryId="LIVRE_PAPIER",
+            venueId=virtual_venue.id,
+        )
+        offer = api.create_draft_offer(body, venue=physical_venue)
+        assert offer.venue == physical_venue
+
+    @override_features(WIP_SUGGESTED_SUBCATEGORIES=True)
+    def test_create_offer_with_online_subcategory_with_no_virtual_venue_must_fail(self):
+        venue = offerers_factories.VenueFactory(isVirtual=False)
+        body = offers_schemas.PostDraftOfferBodyModel(
+            name="Dua Lipa - Physical",
+            subcategoryId="TELECHARGEMENT_MUSIQUE",
+            venueId=venue.id,
+        )
+        with pytest.raises(exceptions.OffererVirtualVenueNotFound):
+            api.create_draft_offer(body, venue=venue)
 
 
 @pytest.mark.usefixtures("db_session")

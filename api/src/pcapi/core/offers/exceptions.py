@@ -315,6 +315,15 @@ class ForbiddenDestinationVenue(MoveOfferBaseException):
         super().__init__("Ce lieu n'est pas éligible au transfert de l'offre")
 
 
+class OffererVirtualVenueNotFound(Exception):
+    def __init__(self) -> None:
+        super().__init__("Votre structure ne possède aucun lieu numérique")
+
+
+class OfferVenueShouldNotBeVirtual(Exception):
+    pass
+
+
 class BookingsHaveOtherPricingPoint(MoveOfferBaseException):
     def __init__(self) -> None:
         super().__init__(
