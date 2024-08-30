@@ -4,6 +4,7 @@ import { mutate } from 'swr'
 import { api } from 'apiClient/api'
 import {
   CollectiveBookingStatus,
+  CollectiveOfferDisplayedStatus,
   CollectiveOfferResponseModel,
   CollectiveOfferStatus,
 } from 'apiClient/v1'
@@ -14,7 +15,6 @@ import { GET_COLLECTIVE_OFFERS_QUERY_KEY } from 'config/swrQueryKeys'
 import { NOTIFICATION_LONG_SHOW_DURATION } from 'core/Notification/constants'
 import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from 'core/Offers/constants'
 import { useQueryCollectiveSearchFilters } from 'core/Offers/hooks/useQuerySearchFilters'
-import { CollectiveSearchFiltersParams } from 'core/Offers/types'
 import { useNotification } from 'hooks/useNotification'
 import fullHideIcon from 'icons/full-hide.svg'
 import fullValidateIcon from 'icons/full-validate.svg'
@@ -32,7 +32,6 @@ export type CollectiveOffersActionsBarProps = {
   clearSelectedOfferIds: () => void
   selectedOffers: CollectiveOfferResponseModel[]
   toggleSelectAllCheckboxes: () => void
-  getUpdateOffersStatusMessage: (selectedOfferIds: number[]) => string
 }
 
 const computeDeactivationSuccessMessage = (nbSelectedOffers: number) => {
@@ -43,22 +42,37 @@ const computeDeactivationSuccessMessage = (nbSelectedOffers: number) => {
   return `${nbSelectedOffers} ${successMessage}`
 }
 
-const updateCollectiveOffersStatus = async (
-  isActive: boolean,
+function canDeactivateCollectiveOffers(offers: CollectiveOfferResponseModel[]) {
+  return offers.every((offer) => {
+    //  Check that all the offers are published or expired
+    return (
+      offer.status === CollectiveOfferStatus.ACTIVE ||
+      (offer.status === CollectiveOfferStatus.EXPIRED &&
+        (!offer.booking?.booking_status ||
+          offer.booking.booking_status === CollectiveBookingStatus.CANCELLED))
+    )
+  })
+}
+
+const toggleCollectiveOffersActiveInactiveStatus = async (
+  newStatus:
+    | CollectiveOfferDisplayedStatus.ACTIVE
+    | CollectiveOfferDisplayedStatus.INACTIVE,
   selectedOffers: CollectiveOfferResponseModel[],
-  notify: ReturnType<typeof useNotification>,
-  apiFilters: CollectiveSearchFiltersParams
+  notify: ReturnType<typeof useNotification>
 ) => {
   try {
     //  Differenciate template and bookable selected offers so that there can be two separarate api status update calls
     const collectiveOfferIds = []
     const collectiveOfferTemplateIds = []
 
-    if (!canPublishCollectiveOffersArchived(selectedOffers)) {
+    if (
+      selectedOffers.some(
+        (offer) => offer.status === CollectiveOfferStatus.ARCHIVED
+      )
+    ) {
       notify.error(
-        `Une erreur est survenue lors de ${
-          isActive ? 'l’activation' : 'la désactivation'
-        } des offres sélectionnées`
+        `Une erreur est survenue lors de ${newStatus === CollectiveOfferDisplayedStatus.ACTIVE ? 'la publication' : 'la désactivation'} des offres sélectionnées`
       )
       return
     }
@@ -74,56 +88,31 @@ const updateCollectiveOffersStatus = async (
     if (collectiveOfferIds.length > 0) {
       await api.patchCollectiveOffersActiveStatus({
         ids: collectiveOfferIds.map((id) => Number(id)),
-        isActive,
+        isActive: newStatus === CollectiveOfferDisplayedStatus.ACTIVE,
       })
     }
 
     if (collectiveOfferTemplateIds.length > 0) {
       await api.patchCollectiveOffersTemplateActiveStatus({
         ids: collectiveOfferTemplateIds.map((ids) => Number(ids)),
-        isActive,
+        isActive: newStatus === CollectiveOfferDisplayedStatus.ACTIVE,
       })
     }
 
-    notify.information(
-      isActive
+    notify.success(
+      newStatus === CollectiveOfferDisplayedStatus.ACTIVE
         ? computeActivationSuccessMessage(selectedOffers.length)
         : computeDeactivationSuccessMessage(selectedOffers.length)
     )
   } catch {
     notify.error('Une erreur est survenue')
   }
-
-  await mutate([GET_COLLECTIVE_OFFERS_QUERY_KEY, apiFilters])
-}
-
-function canDeactivateCollectiveOffers(offers: CollectiveOfferResponseModel[]) {
-  return offers.every((offer) => {
-    //  Check that all the offers are published or expired
-    return (
-      offer.status === CollectiveOfferStatus.ACTIVE ||
-      (offer.status === CollectiveOfferStatus.EXPIRED &&
-        (!offer.booking?.booking_status ||
-          offer.booking.booking_status === CollectiveBookingStatus.CANCELLED))
-    )
-  })
-}
-
-function canPublishCollectiveOffersArchived(
-  offers: CollectiveOfferResponseModel[]
-) {
-  return offers.every((offer) => {
-    //  Check that all the offers are published or expired
-    return offer.status !== CollectiveOfferStatus.ARCHIVED
-  })
 }
 
 export function CollectiveOffersActionsBar({
   selectedOffers,
   clearSelectedOfferIds,
-  toggleSelectAllCheckboxes,
   areAllOffersSelected,
-  getUpdateOffersStatusMessage,
 }: CollectiveOffersActionsBarProps) {
   const urlSearchFilters = useQueryCollectiveSearchFilters()
 
@@ -138,54 +127,54 @@ export function CollectiveOffersActionsBar({
   }
   delete apiFilters.page
 
-  const handleClose = () => {
+  async function onOffersStatusChanged(
+    newSatus:
+      | CollectiveOfferDisplayedStatus.ARCHIVED
+      | CollectiveOfferDisplayedStatus.INACTIVE
+      | CollectiveOfferDisplayedStatus.ACTIVE
+  ) {
+    switch (newSatus) {
+      case CollectiveOfferDisplayedStatus.ACTIVE: {
+        const updateOfferStatusMessage = getPublishOffersErrorMessage()
+        if (!updateOfferStatusMessage) {
+          await toggleCollectiveOffersActiveInactiveStatus(
+            CollectiveOfferDisplayedStatus.ACTIVE,
+            selectedOffers,
+            notify
+          )
+        } else {
+          notify.error(updateOfferStatusMessage)
+          return
+        }
+        break
+      }
+      case CollectiveOfferDisplayedStatus.INACTIVE: {
+        setIsDeactivationDialogOpen(false)
+        await toggleCollectiveOffersActiveInactiveStatus(
+          CollectiveOfferDisplayedStatus.INACTIVE,
+          selectedOffers,
+          notify
+        )
+        break
+      }
+      case CollectiveOfferDisplayedStatus.ARCHIVED: {
+        setIsArchiveDialogOpen(false)
+        await onArchiveOffers()
+        break
+      }
+    }
+
     clearSelectedOfferIds()
-    areAllOffersSelected && toggleSelectAllCheckboxes()
+    await mutate([GET_COLLECTIVE_OFFERS_QUERY_KEY, apiFilters])
   }
 
-  function onDeactivateOffersClicked() {
-    if (!canDeactivateCollectiveOffers(selectedOffers)) {
-      notify.error(
-        'Seules les offres au statut publié ou expiré peuvent être masquées.'
-      )
-      return
-    }
-    setIsDeactivationDialogOpen(true)
-  }
-
-  const handleUpdateOffersStatus = async (isActivating: boolean) => {
-    await updateCollectiveOffersStatus(
-      isActivating,
-      selectedOffers,
-      notify,
-      apiFilters
-    )
-
-    handleClose()
-  }
-
-  const handleActivate = async () => {
-    const updateOfferStatusMessage = getUpdateOffersStatusMessage(
-      selectedOffers.map((offer) => offer.id)
-    )
-    if (!updateOfferStatusMessage) {
-      await handleUpdateOffersStatus(true)
-    } else {
-      notify.error(updateOfferStatusMessage)
-    }
-  }
-
-  const handleDeactivateOffers = async () => {
-    await handleUpdateOffersStatus(false)
-    setIsDeactivationDialogOpen(false)
-  }
-
-  const onArchiveOffersClicked = () => {
+  function openArchiveOffersDialog() {
     const shouldOpenArchiveDialog = selectedOffers.every((offer) => {
       if (!canArchiveCollectiveOffer(offer)) {
         notify.error(
           'Les offres liées à des réservations en cours ne peuvent pas être archivées'
         )
+        clearSelectedOfferIds()
         return false
       }
       return true
@@ -193,7 +182,18 @@ export function CollectiveOffersActionsBar({
     setIsArchiveDialogOpen(shouldOpenArchiveDialog)
   }
 
-  const archiveOffer = async () => {
+  function openDeactivateOffersDialog() {
+    if (!canDeactivateCollectiveOffers(selectedOffers)) {
+      notify.error(
+        'Seules les offres au statut publié ou expiré peuvent être masquées.'
+      )
+      clearSelectedOfferIds()
+      return
+    }
+    setIsDeactivationDialogOpen(true)
+  }
+
+  const onArchiveOffers = async () => {
     try {
       const collectiveOfferIds = []
       const collectiveOfferTemplateIds = []
@@ -216,22 +216,43 @@ export function CollectiveOffersActionsBar({
         await api.patchCollectiveOffersArchive({ ids: [...collectiveOfferIds] })
       }
 
-      await mutate([GET_COLLECTIVE_OFFERS_QUERY_KEY, apiFilters])
-
       notify.success(
         selectedOffers.length > 1
-          ? `${selectedOffers.length} offres ont bien été archivée`
+          ? `${selectedOffers.length} offres ont bien été archivées`
           : 'Une offre a bien été archivée',
         {
           duration: NOTIFICATION_LONG_SHOW_DURATION,
         }
       )
-      setIsArchiveDialogOpen(false)
     } catch (error) {
       notify.error('Une erreur est survenue lors de l’archivage de l’offre', {
         duration: NOTIFICATION_LONG_SHOW_DURATION,
       })
     }
+  }
+
+  function getPublishOffersErrorMessage() {
+    if (
+      selectedOffers.some(
+        (offer) => offer.status === CollectiveOfferStatus.ARCHIVED
+      )
+    ) {
+      notify.error(
+        `Une erreur est survenue lors de la publication des offres sélectionnées`
+      )
+      return
+    }
+    if (
+      selectedOffers.some(
+        (offer) => offer.status === CollectiveOfferStatus.DRAFT
+      )
+    ) {
+      return 'Vous ne pouvez pas publier des brouillons depuis cette liste'
+    }
+    if (selectedOffers.some((offer) => offer.hasBookingLimitDatetimesPassed)) {
+      return 'Vous ne pouvez pas publier des offres collectives dont la date de réservation est passée'
+    }
+    return ''
   }
 
   return (
@@ -240,7 +261,9 @@ export function CollectiveOffersActionsBar({
         <CollectiveDeactivationConfirmDialog
           areAllOffersSelected={areAllOffersSelected}
           nbSelectedOffers={selectedOffers.length}
-          onConfirm={handleDeactivateOffers}
+          onConfirm={() =>
+            onOffersStatusChanged(CollectiveOfferDisplayedStatus.INACTIVE)
+          }
           onCancel={() => setIsDeactivationDialogOpen(false)}
         />
       )}
@@ -248,7 +271,9 @@ export function CollectiveOffersActionsBar({
       {isArchiveDialogOpen && (
         <ArchiveConfirmationModal
           onDismiss={() => setIsArchiveDialogOpen(false)}
-          onValidate={archiveOffer}
+          onValidate={() =>
+            onOffersStatusChanged(CollectiveOfferDisplayedStatus.ARCHIVED)
+          }
           hasMultipleOffers={selectedOffers.length > 1}
         />
       )}
@@ -258,25 +283,30 @@ export function CollectiveOffersActionsBar({
           {computeSelectedOffersLabel(selectedOffers.length)}
         </ActionsBarSticky.Left>
         <ActionsBarSticky.Right>
-          <Button onClick={handleClose} variant={ButtonVariant.SECONDARY}>
+          <Button
+            onClick={clearSelectedOfferIds}
+            variant={ButtonVariant.SECONDARY}
+          >
             Annuler
           </Button>
           <Button
-            onClick={onArchiveOffersClicked}
+            onClick={openArchiveOffersDialog}
             icon={strokeThingIcon}
             variant={ButtonVariant.SECONDARY}
           >
             Archiver
           </Button>
           <Button
-            onClick={onDeactivateOffersClicked}
+            onClick={openDeactivateOffersDialog}
             icon={fullHideIcon}
             variant={ButtonVariant.SECONDARY}
           >
             Masquer
           </Button>
           <Button
-            onClick={handleActivate}
+            onClick={() =>
+              onOffersStatusChanged(CollectiveOfferDisplayedStatus.ACTIVE)
+            }
             icon={fullValidateIcon}
             variant={ButtonVariant.SECONDARY}
           >
