@@ -3,7 +3,7 @@
 
 .offerlocation-wrapper {
   .infotext {
-    @include fonts.body-exergue;
+    @include fonts.body;
 
     margin-top: rem.torem(24px);
     margin-bottom: rem.torem(24px);
