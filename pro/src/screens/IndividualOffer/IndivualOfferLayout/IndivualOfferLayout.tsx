@@ -77,9 +77,11 @@ export const IndivualOfferLayout = ({
       {offer && withStepper && <OfferStatusBanner status={offer.status} />}
 
       {offer?.lastProvider?.name && (
-        <SynchronizedProviderInformation
-          providerName={offer.lastProvider.name}
-        />
+        <div className={styles['banner-container']}>
+          <SynchronizedProviderInformation
+            providerName={offer.lastProvider.name}
+          />
+        </div>
       )}
 
       {withStepper && (

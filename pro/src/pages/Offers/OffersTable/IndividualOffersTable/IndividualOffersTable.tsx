@@ -1,10 +1,11 @@
 import { ListOffersOfferResponseModel } from 'apiClient/v1'
+import { Callout } from 'components/Callout/Callout'
+import { CalloutVariant } from 'components/Callout/types'
 import { MAX_OFFERS_TO_DISPLAY } from 'core/Offers/constants'
 import { SearchFiltersParams } from 'core/Offers/types'
 import { hasSearchFilters } from 'core/Offers/utils/hasSearchFilters'
 import { getOffersCountToDisplay } from 'pages/Offers/domain/getOffersCountToDisplay'
 import { NoResults } from 'screens/IndividualOffersScreen/NoResults/NoResults'
-import { Banner } from 'ui-kit/Banners/Banner/Banner'
 import { BaseCheckbox } from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
 import { Pagination } from 'ui-kit/Pagination/Pagination'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
@@ -67,10 +68,13 @@ export const IndividualOffersTable = ({
     <div>
       <div role="status">
         {offersCount > MAX_OFFERS_TO_DISPLAY && (
-          <Banner type="notification-info">
+          <Callout
+            variant={CalloutVariant.INFO}
+            className={styles['max-display-callout']}
+          >
             L’affichage est limité à 500 offres. Modifiez les filtres pour
             affiner votre recherche.
-          </Banner>
+          </Callout>
         )}
         {hasOffers && (
           <div>

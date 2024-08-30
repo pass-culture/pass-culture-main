@@ -14,7 +14,6 @@ import strokeBookedIcon from 'icons/stroke-booked.svg'
 import duplicateOfferIcon from 'icons/stroke-duplicate-offer.svg'
 import strokeNewOfferIcon from 'icons/stroke-new-offer.svg'
 import strokeTemplateOfferIcon from 'icons/stroke-template-offer.svg'
-import { Banner } from 'ui-kit/Banners/Banner/Banner'
 import { RadioButtonWithImage } from 'ui-kit/RadioButtonWithImage/RadioButtonWithImage'
 import { getLastDmsApplicationForOfferer } from 'utils/getLastCollectiveDmsApplication'
 
@@ -113,17 +112,20 @@ export const CollectiveOfferType = ({ offerer }: CollectiveOfferTypeProps) => {
             </FormLayout.Row>
           </FormLayout.Section>
         )}
-
       {values.offerType === OFFER_TYPES.EDUCATIONAL &&
         !offerer?.isValidated && (
-          <Banner>
+          <Callout
+            variant={CalloutVariant.INFO}
+            className={styles['pending-offerer-callout']}
+          >
             Votre structure est en cours de validation par les équipes pass
             Culture.
-          </Banner>
+          </Callout>
         )}
       {!offerer?.allowedOnAdage &&
         (lastDmsApplication ? (
-          <Banner
+          <Callout
+            variant={CalloutVariant.INFO}
             links={[
               {
                 href: `/structures/${queryOffererId}/lieux/${lastDmsApplication.venueId}/collectif`,
@@ -132,7 +134,7 @@ export const CollectiveOfferType = ({ offerer }: CollectiveOfferTypeProps) => {
             ]}
           >
             Vous avez une demande de référencement en cours de traitement
-          </Banner>
+          </Callout>
         ) : (
           <Callout
             links={[

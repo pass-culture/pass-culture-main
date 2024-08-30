@@ -1,8 +1,8 @@
-import React, { useCallback } from 'react'
+import { useCallback } from 'react'
 
 import { GetOffererResponseModel, GetVenueResponseModel } from 'apiClient/v1'
+import { Callout } from 'components/Callout/Callout'
 import { FormLayout } from 'components/FormLayout/FormLayout'
-import { Banner } from 'ui-kit/Banners/Banner/Banner'
 
 import { PricingPoint } from '../PricingPoint/PricingPoint'
 
@@ -33,7 +33,7 @@ export const ReimbursementFields = ({
       <div ref={scrollToReimbursementSection} id="reimbursement-section">
         <FormLayout.Section title="Barème de remboursement">
           {!venueHaveSiret && !offererHaveVenueWithSiret ? (
-            <Banner
+            <Callout
               links={[
                 {
                   href: `/structures/${offerer.id}/lieux/creation`,
@@ -43,7 +43,7 @@ export const ReimbursementFields = ({
             >
               Afin de pouvoir ajouter de nouvelles coordonnées bancaires, vous
               devez avoir, au minimum, un lieu rattaché à un SIRET.
-            </Banner>
+            </Callout>
           ) : (
             <>
               {!venueHaveSiret && (

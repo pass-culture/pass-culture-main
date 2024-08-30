@@ -1,3 +1,9 @@
+@use "styles/mixins/_rem" as rem;
+
 .banner-place-adress-info {
-  margin-top: 16px;
+  margin-top: rem.torem(16px);
+}
+
+.no-offerer-callout {
+  margin: rem.torem(16px) 0;
 }
