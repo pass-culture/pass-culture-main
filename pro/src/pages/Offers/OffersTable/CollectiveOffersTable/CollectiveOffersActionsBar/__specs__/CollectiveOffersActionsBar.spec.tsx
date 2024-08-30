@@ -38,7 +38,6 @@ vi.mock('apiClient/api', () => ({
 }))
 
 const mockLogEvent = vi.fn()
-const mockGetUpdateOffersStatusMessage = vi.fn()
 
 describe('ActionsBar', () => {
   let props: CollectiveOffersActionsBarProps
@@ -54,9 +53,8 @@ describe('ActionsBar', () => {
       },
     ]
     props = {
-      getUpdateOffersStatusMessage: mockGetUpdateOffersStatusMessage,
       selectedOffers: offerIds.map((offerId) => ({
-        ...collectiveOfferFactory(),
+        ...collectiveOfferFactory({ hasBookingLimitDatetimesPassed: false }),
         id: offerId,
       })),
       clearSelectedOfferIds: vi.fn(),
@@ -122,15 +120,22 @@ describe('ActionsBar', () => {
   })
 
   it('should not activate offers when a draft is selected', async () => {
-    mockGetUpdateOffersStatusMessage.mockReturnValueOnce(
-      'Vous ne pouvez pas publier des brouillons depuis cette liste'
-    )
+    const patchSpy = vi.spyOn(api, 'patchCollectiveOffersActiveStatus')
 
-    renderActionsBar(props)
+    renderActionsBar({
+      ...props,
+      selectedOffers: [
+        collectiveOfferFactory({ isShowcase: false }),
+        collectiveOfferFactory({
+          status: CollectiveOfferStatus.DRAFT,
+          isShowcase: false,
+        }),
+      ],
+    })
 
     await userEvent.click(screen.getByText('Publier'))
 
-    expect(api.patchCollectiveOffersActiveStatus).not.toHaveBeenCalled()
+    expect(patchSpy).not.toHaveBeenCalled()
     expect(props.clearSelectedOfferIds).not.toHaveBeenCalled()
     expect(
       screen.getByText(
@@ -366,7 +371,7 @@ describe('ActionsBar', () => {
     })
 
     expect(
-      screen.getByText('2 offres ont bien été archivée')
+      screen.getByText('2 offres ont bien été archivées')
     ).toBeInTheDocument()
   })
 
