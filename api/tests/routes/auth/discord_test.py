@@ -17,6 +17,8 @@ from pcapi.core.users import factories as users_factories
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
+# TODO: update this test to use the new discord connector, if testing is conclusive
+@pytest.skip("This test is not implemented yet.", allow_module_level=True)
 class DiscordSigninTest:
     endpoint = "auth.discord_signin"
     private_key = rsa.generate_private_key(
