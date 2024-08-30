@@ -127,7 +127,7 @@ export function CollectiveOffersActionsBar({
   }
   delete apiFilters.page
 
-  async function onOffersStatusChanged(
+  async function updateOfferStatus(
     newSatus:
       | CollectiveOfferDisplayedStatus.ARCHIVED
       | CollectiveOfferDisplayedStatus.INACTIVE
@@ -262,7 +262,7 @@ export function CollectiveOffersActionsBar({
           areAllOffersSelected={areAllOffersSelected}
           nbSelectedOffers={selectedOffers.length}
           onConfirm={() =>
-            onOffersStatusChanged(CollectiveOfferDisplayedStatus.INACTIVE)
+            updateOfferStatus(CollectiveOfferDisplayedStatus.INACTIVE)
           }
           onCancel={() => setIsDeactivationDialogOpen(false)}
         />
@@ -272,7 +272,7 @@ export function CollectiveOffersActionsBar({
         <ArchiveConfirmationModal
           onDismiss={() => setIsArchiveDialogOpen(false)}
           onValidate={() =>
-            onOffersStatusChanged(CollectiveOfferDisplayedStatus.ARCHIVED)
+            updateOfferStatus(CollectiveOfferDisplayedStatus.ARCHIVED)
           }
           hasMultipleOffers={selectedOffers.length > 1}
         />
@@ -305,7 +305,7 @@ export function CollectiveOffersActionsBar({
           </Button>
           <Button
             onClick={() =>
-              onOffersStatusChanged(CollectiveOfferDisplayedStatus.ACTIVE)
+              updateOfferStatus(CollectiveOfferDisplayedStatus.ACTIVE)
             }
             icon={fullValidateIcon}
             variant={ButtonVariant.SECONDARY}

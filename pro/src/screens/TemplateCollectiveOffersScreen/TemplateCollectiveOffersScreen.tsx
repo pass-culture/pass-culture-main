@@ -2,7 +2,6 @@ import { useState } from 'react'
 
 import {
   CollectiveOfferResponseModel,
-  CollectiveOfferStatus,
   GetOffererResponseModel,
   UserRole,
 } from 'apiClient/v1'
@@ -122,23 +121,6 @@ export const TemplateCollectiveOffersScreen = ({
     applyUrlFiltersAndRedirect(updatedFilters)
   }
 
-  const getUpdateOffersStatusMessage = (tmpSelectedOfferIds: number[]) => {
-    const selectedOffers = offers.filter((offer) =>
-      tmpSelectedOfferIds.includes(offer.id)
-    )
-    if (
-      selectedOffers.some(
-        (offer) => offer.status === CollectiveOfferStatus.DRAFT
-      )
-    ) {
-      return 'Vous ne pouvez pas publier des brouillons depuis cette liste'
-    }
-    if (selectedOffers.some((offer) => offer.hasBookingLimitDatetimesPassed)) {
-      return 'Vous ne pouvez pas publier des offres collectives dont la date de réservation est passée'
-    }
-    return ''
-  }
-
   function onSetSelectedOffer(offer: CollectiveOfferResponseModel) {
     const matchingOffer = selectedOffers.find((selectedOffer) =>
       isSameOffer(offer, selectedOffer)
@@ -221,7 +203,6 @@ export const TemplateCollectiveOffersScreen = ({
                 clearSelectedOfferIds={clearSelectedOfferIds}
                 selectedOffers={selectedOffers}
                 toggleSelectAllCheckboxes={toggleSelectAllCheckboxes}
-                getUpdateOffersStatusMessage={getUpdateOffersStatusMessage}
               />
             )}
           </div>
