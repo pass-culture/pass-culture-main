@@ -219,6 +219,16 @@ SEARCH_GROUP_FILMS_SERIES_CINEMA = SearchGroup(
     label="Cinéma, films et séries",
     position=13,
 )
+SEARCH_GROUP_CINEMA = SearchGroup(
+    technical_name="CINEMA",
+    label="Cinéma",
+    position=14,
+)
+SEARCH_GROUP_FILMS_DOCUMENTAIRES_ET_SERIES = SearchGroup(
+    technical_name="FILMS_DOCUMENTAIRES_ET_SERIES",
+    label="Films, documentaires et séries",
+    position=15,
+)
 SEARCH_GROUP_INSTRUMENTS = SearchGroup(
     technical_name="INSTRUMENTS",
     label="Instruments de musique",
@@ -295,7 +305,7 @@ NATIVE_CATEGORY_BIBLIOTHEQUE_MEDIATHEQUE = NativeCategory(
 NATIVE_CATEGORY_CARTES_CINEMA = NativeCategory(
     technical_name="CARTES_CINEMA",
     label="Cartes cinéma",
-    parents=[SEARCH_GROUP_FILMS_SERIES_CINEMA.id],
+    parents=[SEARCH_GROUP_FILMS_SERIES_CINEMA.id, SEARCH_GROUP_CINEMA.id],
 )
 NATIVE_CATEGORY_CD = NativeCategory(
     technical_name="CD",
@@ -330,7 +340,7 @@ NATIVE_CATEGORY_DEPRECIEE = NativeCategory(
 NATIVE_CATEGORY_DVD_BLU_RAY = NativeCategory(
     technical_name="DVD_BLU_RAY",
     label="DVD, Blu-Ray",
-    parents=[SEARCH_GROUP_FILMS_SERIES_CINEMA.id],
+    parents=[SEARCH_GROUP_FILMS_SERIES_CINEMA.id, SEARCH_GROUP_FILMS_DOCUMENTAIRES_ET_SERIES.id],
 )
 NATIVE_CATEGORY_ESCAPE_GAMES = NativeCategory(
     technical_name="ESCAPE_GAMES",
@@ -340,7 +350,7 @@ NATIVE_CATEGORY_ESCAPE_GAMES = NativeCategory(
 NATIVE_CATEGORY_EVENEMENTS_CINEMA = NativeCategory(
     technical_name="EVENEMENTS_CINEMA",
     label="Evènements cinéma",
-    parents=[SEARCH_GROUP_FILMS_SERIES_CINEMA.id],
+    parents=[SEARCH_GROUP_FILMS_SERIES_CINEMA.id, SEARCH_GROUP_CINEMA.id],
 )
 NATIVE_CATEGORY_EVENEMENTS_PATRIMOINE = NativeCategory(
     technical_name="EVENEMENTS_PATRIMOINE",
@@ -360,7 +370,7 @@ NATIVE_CATEGORY_FESTIVAL_DU_LIVRE = NativeCategory(
 NATIVE_CATEGORY_FILMS_SERIES_EN_LIGNE = NativeCategory(
     technical_name="FILMS_SERIES_EN_LIGNE",
     label="Films, séries en ligne",
-    parents=[SEARCH_GROUP_FILMS_SERIES_CINEMA.id],
+    parents=[SEARCH_GROUP_FILMS_SERIES_CINEMA.id, SEARCH_GROUP_FILMS_DOCUMENTAIRES_ET_SERIES.id],
 )
 NATIVE_CATEGORY_JEUX_EN_LIGNE = NativeCategory(
     technical_name="JEUX_EN_LIGNE",
@@ -456,7 +466,7 @@ NATIVE_CATEGORY_SALONS_ET_METIERS = NativeCategory(
 NATIVE_CATEGORY_SEANCES_DE_CINEMA = NativeCategory(
     technical_name="SEANCES_DE_CINEMA",
     label="Séances de cinéma",
-    parents=[SEARCH_GROUP_FILMS_SERIES_CINEMA.id],
+    parents=[SEARCH_GROUP_FILMS_SERIES_CINEMA.id, SEARCH_GROUP_CINEMA.id],
 )
 NATIVE_CATEGORY_SPECTACLES_ENREGISTRES = NativeCategory(
     technical_name="SPECTACLES_ENREGISTRES",
