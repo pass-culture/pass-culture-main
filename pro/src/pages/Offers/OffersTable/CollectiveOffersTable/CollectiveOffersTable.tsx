@@ -117,7 +117,7 @@ export const CollectiveOffersTable = ({
   )
 
   return (
-    <div aria-busy={isLoading} aria-live="polite" className="section">
+    <div aria-busy={isLoading} aria-live="polite">
       {isLoading ? (
         <Spinner className={styles['loading-spinner']} />
       ) : (
