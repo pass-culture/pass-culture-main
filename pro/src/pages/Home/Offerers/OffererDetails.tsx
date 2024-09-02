@@ -72,19 +72,20 @@ export const OffererDetails = ({
         <div className={styles['venue-buttons']}>
           <div className={cn(styles['separator'])} />
 
-          <ButtonLink
-            variant={ButtonVariant.TERNARY}
-            to="/collaborateurs"
-            icon={fullAddUserIcon}
-            isDisabled={!isUserOffererValidated}
-            onClick={() => {
-              logEvent(OffererLinkEvents.CLICKED_INVITE_COLLABORATOR, {
-                offererId: selectedOffererId ?? undefined,
-              })
-            }}
-          >
-            Inviter
-          </ButtonLink>
+          {isUserOffererValidated && (
+            <ButtonLink
+              variant={ButtonVariant.TERNARY}
+              to="/collaborateurs"
+              icon={fullAddUserIcon}
+              onClick={() => {
+                logEvent(OffererLinkEvents.CLICKED_INVITE_COLLABORATOR, {
+                  offererId: selectedOffererId ?? undefined,
+                })
+              }}
+            >
+              Inviter
+            </ButtonLink>
+          )}
         </div>
       </div>
     </Card>
