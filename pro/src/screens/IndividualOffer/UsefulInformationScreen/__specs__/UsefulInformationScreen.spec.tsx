@@ -2,14 +2,17 @@ import { screen, waitFor, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import { api } from 'apiClient/api'
+import { SubcategoryIdEnum } from 'apiClient/v1'
 import {
   IndividualOfferContext,
   IndividualOfferContextValues,
 } from 'context/IndividualOfferContext/IndividualOfferContext'
+import { REIMBURSEMENT_RULES } from 'core/Finances/constants'
 import { CATEGORY_STATUS } from 'core/Offers/constants'
 import {
   categoryFactory,
   getIndividualOfferFactory,
+  getOfferVenueFactory,
   individualOfferContextValuesFactory,
   subcategoryFactory,
   venueListItemFactory,
@@ -87,6 +90,7 @@ describe('screens:IndividualOffer::UsefulInformation', () => {
     props = {
       offer: getIndividualOfferFactory({
         id: 3,
+        venue: getOfferVenueFactory({ id: 1 }),
       }),
     }
 
@@ -125,7 +129,8 @@ describe('screens:IndividualOffer::UsefulInformation', () => {
       venues: [
         {
           ...venueListItemFactory({
-            id: 3,
+            // id should be the same as in offer
+            id: 1,
             publicName: 'Lieu Nom Public Pour Test',
           }),
           address: {
@@ -214,5 +219,38 @@ describe('screens:IndividualOffer::UsefulInformation', () => {
       withdrawalDetails: 'My information',
       withdrawalType: undefined,
     })
+  })
+
+  it('should display not reimbursed banner when subcategory is not reimbursed', async () => {
+    renderUsefulInformationScreen(
+      props,
+      individualOfferContextValuesFactory({
+        categories: [
+          categoryFactory({
+            id: 'A',
+            isSelectable: true,
+          }),
+        ],
+        subCategories: [
+          subcategoryFactory({
+            categoryId: 'A',
+            // should be same as subcategoryId in offer
+            id: SubcategoryIdEnum.SEANCE_CINE,
+            reimbursementRule: REIMBURSEMENT_RULES.NOT_REIMBURSED,
+          }),
+        ],
+      })
+    )
+    expect(
+      await screen.findByText('Cette offre numérique ne sera pas remboursée.')
+    ).toBeInTheDocument()
+    expect(
+      screen.queryByText(
+        'Quelles sont les offres numériques éligibles au remboursement ?'
+      )
+    ).toHaveAttribute(
+      'href',
+      'https://aide.passculture.app/hc/fr/articles/6043184068252'
+    )
   })
 })
