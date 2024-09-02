@@ -558,6 +558,21 @@ describe('screens:IndividualOffer::Informations', () => {
     ).toBeInTheDocument()
   })
 
+  it('should display venue banner when venues are empty and suggested categories not enable', () => {
+    renderDetailsScreen(
+      {
+        ...props,
+        venues: [],
+      },
+      contextValue
+    )
+    expect(
+      screen.getByText(
+        'Pour créer une offre dans cette catégorie, ajoutez d’abord un lieu à votre structure.'
+      )
+    ).toBeInTheDocument()
+  })
+
   describe('on creation', () => {
     it('should render EAN search for record stores as a venue', () => {
       const context = individualOfferContextValuesFactory({
