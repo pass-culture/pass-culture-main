@@ -72,21 +72,6 @@ describe('ButtonLink', () => {
     expect(button).toHaveAttribute('href', '/offers')
   })
 
-  it('should not call callback action when button disabled', async () => {
-    const onClick = vi.fn()
-    render(
-      <ButtonLink {...props} onClick={onClick} isDisabled>
-        test
-      </ButtonLink>
-    )
-
-    const button = screen.getByRole('link', { name: /test/ })
-    await userEvent.click(button)
-
-    expect(onClick).not.toHaveBeenCalled()
-    expect(screen.getByText('Action non disponible')).toBeInTheDocument()
-  })
-
   it('should have right attributes for open in new tab', () => {
     render(
       <ButtonLink {...props} opensInNewTab>

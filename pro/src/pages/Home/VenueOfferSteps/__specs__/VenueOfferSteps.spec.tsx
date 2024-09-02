@@ -171,25 +171,6 @@ describe('VenueOfferSteps', () => {
     ).toBeInTheDocument()
   })
 
-  it('should display disabled link to eac informations if venue doesnt have adage id', () => {
-    vi.spyOn(
-      venueUtils,
-      'shouldDisplayEACInformationSectionForVenue'
-    ).mockReturnValue(true)
-    props.venue = { ...defaultGetOffererVenueResponseModel }
-    props.venue = {
-      ...defaultGetOffererVenueResponseModel,
-      hasAdageId: false,
-    }
-
-    renderVenueOfferSteps(props)
-    expect(
-      screen.getByRole('link', {
-        name: 'Renseigner mes informations à destination des enseignants Action non disponible',
-      })
-    ).toBeInTheDocument()
-  })
-
   it('should not display dms link if condition to display it is false', () => {
     props.hasVenue = false
 

@@ -9,7 +9,6 @@ import styles from './Button.module.scss'
 import { ButtonVariant, IconPositionEnum, SharedButtonProps } from './types'
 
 export type LinkProps = {
-  isDisabled?: boolean
   svgAlt?: string
   isExternal?: boolean
   to: string
@@ -29,7 +28,6 @@ export const ButtonLink = forwardRef(
       className,
       children,
       icon,
-      isDisabled = false,
       onClick,
       variant = ButtonVariant.TERNARY,
       iconPosition = IconPositionEnum.LEFT,
@@ -46,7 +44,6 @@ export const ButtonLink = forwardRef(
       styles['button'],
       styles[`button-${variant}`],
       styles[`button-${iconPosition}`],
-      { [styles[`button-disabled`]]: isDisabled },
       styles['button-link'],
       className
     )
@@ -85,14 +82,7 @@ export const ButtonLink = forwardRef(
     // for internal links so that developers can't make mistakes/forget to add the slash
     const absoluteUrl = isExternal || to.startsWith('/') ? to : `/${to}`
 
-    const callback: MouseEventHandler<HTMLAnchorElement> = (e) =>
-      isDisabled ? e.preventDefault() : onClick?.(e)
-
-    const disabled = isDisabled ? (
-      <span className="visually-hidden">Action non disponible</span>
-    ) : (
-      <></>
-    )
+    const callback: MouseEventHandler<HTMLAnchorElement> = (e) => onClick?.(e)
 
     body = isExternal ? (
       <a
@@ -106,7 +96,6 @@ export const ButtonLink = forwardRef(
         ref={forwadedRef}
       >
         {body}
-        {disabled}
       </a>
     ) : (
       <Link
@@ -120,7 +109,6 @@ export const ButtonLink = forwardRef(
         ref={forwadedRef}
       >
         {body}
-        {disabled}
       </Link>
     )
 
