@@ -1,5 +1,5 @@
 import isEqual from 'lodash.isequal'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useLocation, useNavigate } from 'react-router-dom'
 import useSWR from 'swr'
@@ -32,10 +32,10 @@ import { formatAndOrderVenues } from 'repository/venuesService'
 import { selectCurrentOffererId } from 'store/user/selectors'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 import { Tabs } from 'ui-kit/Tabs/Tabs'
-import { Titles } from 'ui-kit/Titles/Titles'
 
 import { stringify } from '../../utils/query-string'
 
+import styles from './Bookings.module.scss'
 import { BookingsRecapTable } from './BookingsRecapTable/BookingsRecapTable'
 import { PreFilters } from './PreFilters/PreFilters'
 
@@ -230,7 +230,7 @@ export const BookingsScreen = <
 
   return (
     <div className="bookings-page">
-      <Titles title={title} />
+      <h1 className={styles['title']}>{title}</h1>
       {!isNewInterfaceActive && (
         <Tabs
           nav="Réservations individuelles et collectives"

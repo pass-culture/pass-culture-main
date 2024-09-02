@@ -23,7 +23,6 @@ import { RadioButton } from 'ui-kit/form/RadioButton/RadioButton'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { Thumb } from 'ui-kit/Thumb/Thumb'
-import { Titles } from 'ui-kit/Titles/Titles'
 import { pluralize } from 'utils/pluralize'
 
 import styles from './CollectiveOfferSelectionDuplication.module.scss'
@@ -125,7 +124,7 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
   return (
     <AppLayout layout={'sticky-actions'}>
       <div className="container">
-        <Titles title="Créer une offre réservable" />
+        <h1 className={styles['title']}>Créer une offre réservable</h1>
         <h2 className={styles['sub-title']} id="search-filter">
           Rechercher l’offre vitrine à dupliquer
         </h2>
