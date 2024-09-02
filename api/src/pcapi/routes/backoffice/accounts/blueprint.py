@@ -406,9 +406,11 @@ def render_public_account_details(
         if not user.isEmailValidated:
             kwargs["resend_email_validation_form"] = empty_forms.EmptyForm()
 
-    if utils.has_current_user_permission(
-        perm_models.Permissions.ANONYMIZE_PUBLIC_ACCOUNT
-    ) and not _has_user_pending_anonymization(user_id):
+    if (
+        utils.has_current_user_permission(perm_models.Permissions.ANONYMIZE_PUBLIC_ACCOUNT)
+        and not _has_user_pending_anonymization(user_id)
+        and users_models.UserRole.ANONYMIZED not in user.roles
+    ):
         kwargs["anonymize_form"] = empty_forms.EmptyForm()
         kwargs["anonymize_public_accounts_dst"] = url_for(".anonymize_public_account", user_id=user.id)
 
