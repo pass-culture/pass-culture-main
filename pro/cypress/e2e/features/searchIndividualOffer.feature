@@ -39,15 +39,21 @@ Feature: Search individual offers
       |  |  | Offer | Terrain vague |     16 | expirée |
 
   Scenario: A search by offer status should display expected results
+    When I select offerer "Réseau de librairies" in offer page
     And I select "Publiée" in offer status
     And I validate my filters
-    Then These 5 results should be displayed
-      |  |  | Titre | Lieu                           | Stocks | Status  |
-      |  |  | Offer | Terrain vague                  |     20 | publiée |
-      |  |  | Offer | Bar des amis - Offre numérique |     20 | publiée |
-      |  |  | Offer | Terrain vague                  |     40 | publiée |
-      |  |  | Offer | Terrain vague                  |     40 | publiée |
-      |  |  | Offer | Terrain vague                  |     40 | publiée |
+    Then These 28 results should be displayed
+      |  |  | Titre            | Lieu         | Stocks | Status  |
+      |  |  | Livre 4 avec EAN | Librairie 10 |     10 | publiée |
+      |  |  | Livre 3 avec EAN | Librairie 10 |     10 | publiée |
+      |  |  | Livre 2 avec EAN | Librairie 10 |     10 | publiée |
+      |  |  | Livre 1 avec EAN | Librairie 10 |     10 | publiée |
+      |  |  | Livre 4 avec EAN | Librairie 8  |     10 | publiée |
+      |  |  | Livre 3 avec EAN | Librairie 8  |     10 | publiée |
+      |  |  | Livre 2 avec EAN | Librairie 8  |     10 | publiée |
+      |  |  | Livre 1 avec EAN | Librairie 8  |     10 | publiée |
+      |  |  | Livre 4 avec EAN | Librairie 7  |     10 | publiée |
+      |  |  | Livre 3 avec EAN | Librairie 7  |     10 | publiée |
 
   Scenario: A search by date should display expected results
     When I select offerer "Michel Léon" in offer page
@@ -58,31 +64,33 @@ Feature: Search individual offers
       |  |  | Un concert d'electro inoubliable | Michel et son accordéon |  1 000 | publiée |
 
   Scenario: A search combining several filters should display expected results
-    When I search with the text "Offer"
+    When I select offerer "Réseau de librairies" in offer page
+    And I search with the text "Livre"
     And I validate my filters
-    And I select "Films, vidéos" in "Catégories"
-    And I select "Terrain vague" in "Lieu"
+    And I select "Livre" in "Catégories"
+    And I select "Librairie 10" in "Lieu"
     And I select "Publiée" in offer status
     And I validate my filters
-    Then These 3 results should be displayed
-      |  |  | Titre | Lieu          | Stocks | Status  |
-      |  |  | Offer | Terrain vague |     40 | publiée |
-      |  |  | Offer | Terrain vague |     40 | publiée |
-      |  |  | Offer | Terrain vague |     40 | publiée |
+    Then These 4 results should be displayed
+      |  |  | Titre            | Lieu         | Stocks | Status  |
+      |  |  | Livre 4 avec EAN | Librairie 10 |     10 | publiée |
+      |  |  | Livre 3 avec EAN | Librairie 10 |     10 | publiée |
+      |  |  | Livre 2 avec EAN | Librairie 10 |     10 | publiée |
+      |  |  | Livre 1 avec EAN | Librairie 10 |     10 | publiée |
     When I reset all filters
     Then All filters are empty
-    And These 12 results should be displayed
-      |  |  | Titre                          | Lieu                           | Stocks | Status     |
-      |  |  | Mon offre brouillon avec stock | Terrain vague                  |  1 000 | brouillon  |
-      |  |  | Mon offre brouillon            | Terrain vague                  |      0 | brouillon  |
-      |  |  | Offer                          | Terrain vague                  |     16 | expirée    |
-      |  |  | Offer                          | Terrain vague                  |     20 | publiée    |
-      |  |  | Offer                          | Terrain vague                  |      0 | épuisée    |
-      |  |  | Offer                          | Bar des amis - Offre numérique |     20 | publiée    |
-      |  |  | Offer                          | Terrain vague                  |     16 | expirée    |
-      |  |  | Offer                          | Terrain vague                  |     40 | publiée    |
-      |  |  | Offer                          | Terrain vague                  |     40 | publiée    |
-      |  |  | Offer                          | Terrain vague                  |      0 | épuisée    |
+    And These 40 results should be displayed
+      |  |  | Titre            | Lieu         | Stocks | Status     |
+      |  |  | Livre 4 avec EAN | Librairie 10 |     10 | publiée    |
+      |  |  | Livre 3 avec EAN | Librairie 10 |     10 | publiée    |
+      |  |  | Livre 2 avec EAN | Librairie 10 |     10 | publiée    |
+      |  |  | Livre 1 avec EAN | Librairie 10 |     10 | publiée    |
+      |  |  | Livre 4 avec EAN | Librairie 9  |     10 | désactivée |
+      |  |  | Livre 3 avec EAN | Librairie 9  |     10 | désactivée |
+      |  |  | Livre 2 avec EAN | Librairie 9  |     10 | désactivée |
+      |  |  | Livre 1 avec EAN | Librairie 9  |     10 | désactivée |
+      |  |  | Livre 4 avec EAN | Librairie 8  |     10 | publiée    |
+      |  |  | Livre 3 avec EAN | Librairie 8  |     10 | publiée    |
   # comme tout est "Manuel" dans la sandbox, automatiser ce test en l'état n'aurait pas beaucoup de sens
   # Scenario: A search by creation mode should display expected results
   #   When I select "Manuel" in "Mode de création"
