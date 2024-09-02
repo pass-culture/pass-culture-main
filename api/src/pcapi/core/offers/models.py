@@ -263,7 +263,6 @@ class Stock(PcObject, Base, Model, SoftDeletableMixin):
             name="check_providable_with_provider_has_idatproviders",
         ),
         nullable=True,
-        unique=True,  # to be replaced by unique constraint on `offerId`/`idAtProviders`
     )
 
     dateModifiedAtLastProvider = sa.Column(sa.DateTime, nullable=True, default=datetime.datetime.utcnow)
