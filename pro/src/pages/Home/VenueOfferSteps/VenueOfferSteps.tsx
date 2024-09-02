@@ -131,7 +131,6 @@ export const VenueOfferSteps = ({
             {venue && !venue.hasCreatedOffer && (
               <ButtonLink
                 className={styles['step-button-width']}
-                isDisabled={!hasVenue}
                 variant={ButtonVariant.BOX}
                 icon={fullNextIcon}
                 to={`/offre/creation?lieu=${venue.id}&structure=${offerer.id}`}
@@ -143,7 +142,6 @@ export const VenueOfferSteps = ({
             {!offererHasBankAccount && displayButtonDependingVenue && (
               <ButtonLink
                 className={styles['step-button-width']}
-                isDisabled={!hasVenue}
                 variant={ButtonVariant.BOX}
                 icon={fullNextIcon}
                 to={`remboursements/informations-bancaires?structure=${offerer.id}`}
@@ -160,7 +158,6 @@ export const VenueOfferSteps = ({
             {venue && shouldDisplayEACInformationSection && (
               <ButtonLink
                 className={styles['step-button-width']}
-                isDisabled={!venue.hasAdageId}
                 variant={ButtonVariant.BOX}
                 icon={fullNextIcon}
                 to={`/structures/${offerer.id}/lieux/${venue.id}/collectif`}
