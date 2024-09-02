@@ -204,7 +204,7 @@ export const routes: RouteConfig[] = [
         'pages/CollectiveOfferSummaryCreation/CollectiveOfferSummaryCreation'
       ),
     path: '/offre/:offerId/collectif/vitrine/creation/recapitulatif',
-    title: 'Récapitulatif - Modifier une offre réservable',
+    title: 'Récapitulatif - Créer une offre vitrine',
   },
   {
     lazy: () =>
