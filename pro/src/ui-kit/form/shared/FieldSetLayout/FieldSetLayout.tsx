@@ -31,14 +31,9 @@ export const FieldSetLayout = ({
       className={cn(styles['fieldset-layout'], className)}
       data-testid={dataTestId}
       aria-required={!isOptional}
-      role="group"
-      aria-labelledby="checkboxes-error-legend"
     >
       {legend && (
-        <legend
-          className={styles['fieldset-layout-legend']}
-          id="checkboxes-error-legend"
-        >
+        <legend className={styles['fieldset-layout-legend']}>
           {legend}
           {!isOptional && ' *'}
         </legend>
