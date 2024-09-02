@@ -73,6 +73,10 @@ $status-filter-margin-top: rem.torem(24px);
   gap: rem.torem(8px);
 }
 
+.filter-creation-mode {
+  min-width: rem.torem(140px);
+}
+
 .reset-filters-row {
   flex-direction: column;
 }

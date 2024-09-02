@@ -180,7 +180,12 @@ export const IndividualOffersSearchFilters = ({
             </FieldLayout>
           )}
 
-          <FieldLayout label="Mode de création" name="creationMode" isOptional>
+          <FieldLayout
+            label="Mode de création"
+            name="creationMode"
+            isOptional
+            className={styles['filter-creation-mode']}
+          >
             <SelectInput
               onChange={storeCreationMode}
               disabled={disableAllFilters}
