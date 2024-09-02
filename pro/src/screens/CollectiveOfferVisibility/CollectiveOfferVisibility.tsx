@@ -1,5 +1,5 @@
 import { FormikProvider, useFormik } from 'formik'
-import React, { useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
