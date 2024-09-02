@@ -3,6 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 import { sub } from 'date-fns'
 
 import { api } from 'apiClient/api'
+import { OfferContactFormEnum } from 'apiClient/v1'
 import * as useNotification from 'hooks/useNotification'
 import {
   defaultGetVenue,
@@ -166,5 +167,33 @@ describe('CollectiveOfferConfirmation', () => {
     expect(mockNotifyError).toHaveBeenCalledWith(
       'Les dates de limite de réservation ou d’évènement doivent être égales ou postérieures à la date actuelle.'
     )
+  })
+
+  it('should disable "Préreserver" button on prebooking modal', async () => {
+    const bookableOffer = getCollectiveOfferFactory()
+
+    renderCollectiveOfferPreviewCreation({
+      ...defaultProps,
+      offer: bookableOffer,
+    })
+
+    const prebookingButton = await screen.findByText('Préréserver l’offre')
+    await userEvent.click(prebookingButton)
+
+    const modalPrebookingButton = await screen.findByText('Préréserver')
+    expect(modalPrebookingButton).toBeDisabled()
+  })
+
+  it('should disable email input and submit button on contact form', async () => {
+    renderCollectiveOfferPreviewCreation({
+      ...defaultProps,
+      offer: { ...defaultProps.offer, contactForm: OfferContactFormEnum.FORM },
+    })
+
+    const contactButton = await screen.findByText('Contacter le partenaire')
+    await userEvent.click(contactButton)
+
+    expect(screen.getByLabelText('Email *')).toBeDisabled()
+    expect(screen.getByText('Envoyer ma demande')).toBeDisabled()
   })
 })
