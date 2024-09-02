@@ -39,8 +39,8 @@ import { selectCurrentOffererId } from 'store/user/selectors'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { Tabs } from 'ui-kit/Tabs/Tabs'
-import { Titles } from 'ui-kit/Titles/Titles'
 
+import styles from './IndividualOffersScreen.module.scss'
 import { IndividualOffersSearchFilters } from './IndividualOffersSearchFilters/IndividualOffersSearchFilters'
 
 export type IndividualOffersScreenProps = {
@@ -108,16 +108,6 @@ export const IndividualOffersScreen = ({
     )
   const displayCreateOfferButton =
     !isNewSideBarNavigation && !isAdmin && isOffererValidated
-
-  const actionLink = displayCreateOfferButton ? (
-    <ButtonLink
-      variant={ButtonVariant.PRIMARY}
-      to={`/offre/creation${selectedOffererId ? `?structure=${selectedOffererId}` : ''}`}
-      icon={fullPlusIcon}
-    >
-      Créer une offre
-    </ButtonLink>
-  ) : undefined
 
   const areAllOffersSelected =
     selectedOffers.length > 0 && selectedOffers.length === offers.length
@@ -199,7 +189,18 @@ export const IndividualOffersScreen = ({
 
   return (
     <div>
-      <Titles action={actionLink} title={title} />
+      <div className={styles['title-container']}>
+        <h1 className={styles['title']}>{title}</h1>
+        {displayCreateOfferButton && (
+          <ButtonLink
+            variant={ButtonVariant.PRIMARY}
+            to={`/offre/creation${selectedOffererId ? `?structure=${selectedOffererId}` : ''}`}
+            icon={fullPlusIcon}
+          >
+            Créer une offre
+          </ButtonLink>
+        )}
+      </div>
       {!isNewSideBarNavigation && (
         <Tabs
           nav="Offres individuelles et collectives"
@@ -228,7 +229,6 @@ export const IndividualOffersScreen = ({
           ]}
         />
       )}
-
       <IndividualOffersSearchFilters
         applyFilters={applyFilters}
         categories={categories}
@@ -241,7 +241,6 @@ export const IndividualOffersScreen = ({
         venues={venues}
         isRestrictedAsAdmin={isRestrictedAsAdmin}
       />
-
       {userHasNoOffers ? (
         <NoData page="offers" />
       ) : (

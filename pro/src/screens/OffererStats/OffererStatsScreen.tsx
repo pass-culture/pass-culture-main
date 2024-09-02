@@ -8,7 +8,6 @@ import { useIsNewInterfaceActive } from 'hooks/useIsNewInterfaceActive'
 import { selectCurrentOffererId } from 'store/user/selectors'
 import { SelectInput } from 'ui-kit/form/Select/SelectInput'
 import { FieldLayout } from 'ui-kit/form/shared/FieldLayout/FieldLayout'
-import { Titles } from 'ui-kit/Titles/Titles'
 import { sortByLabel } from 'utils/strings'
 
 import styles from './OffererStatsScreen.module.scss'
@@ -102,7 +101,7 @@ export const OffererStatsScreen = ({
 
   return (
     <div className={styles['offerer-stats']}>
-      <Titles title="Statistiques" />
+      <h1 className={styles['title']}>Statistiques</h1>
       <p className={styles['offerer-stats-description']}>
         Vos statistiques sont calculées et mises à jour quotidiennement dans la
         nuit.
