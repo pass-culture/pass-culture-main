@@ -7,12 +7,10 @@ import { useAccessibilityOptions } from 'hooks/useAccessibilityOptions'
 import { CheckboxGroup } from 'ui-kit/form/CheckboxGroup/CheckboxGroup'
 
 interface FormAccessibilityProps {
-  legend?: string
   disableForm: boolean
 }
 
 export const FormAccessibility = ({
-  legend = 'Cette offre est accessible au public en situation de handicap :',
   disableForm,
 }: FormAccessibilityProps): JSX.Element => {
   const { setFieldValue } = useFormikContext<OfferEducationalFormValues>()
@@ -23,7 +21,7 @@ export const FormAccessibility = ({
         <CheckboxGroup
           group={useAccessibilityOptions(setFieldValue)}
           groupName="accessibility"
-          legend={legend}
+          legend="Cette offre est accessible au public en situation de handicap :"
           disabled={disableForm}
         />
       </FormLayout.Row>
