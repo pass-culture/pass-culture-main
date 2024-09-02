@@ -982,6 +982,21 @@ class GetPublicAccountTest(GetEndpointHelper):
         assert history_rows[5]["Commentaire"].startswith("Fraude suspicion")
         assert history_rows[5]["Auteur"] == legit_user.full_name
 
+    def test_get_public_account_anonymized_user(self, authenticated_client):
+        user = users_factories.UserFactory(roles=[users_models.UserRole.ANONYMIZED])
+
+        user_id = user.id
+        # expected_num_queries depends on the number of feature flags checked (2 + user + FF)
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
+            assert response.status_code == 200
+
+        content = html_parser.content_as_text(response.data)
+        assert f"User ID : {user.id} " in content
+
+        available_button = html_parser.extract(response.data, tag="button")
+        assert "Anonymiser" not in available_button
+
 
 class UpdatePublicAccountTest(PostEndpointHelper):
     endpoint = "backoffice_web.public_accounts.update_public_account"
