@@ -67,11 +67,11 @@ from pcapi.notifications import push as push_api
 from pcapi.repository import repository
 from pcapi.repository import transaction
 from pcapi.routes.serialization import users as users_serialization
+from pcapi.utils import phone_number as phone_number_utils
 from pcapi.utils.clean_accents import clean_accents
 import pcapi.utils.date as date_utils
 import pcapi.utils.email as email_utils
 from pcapi.utils.pdf import generate_pdf_from_html
-import pcapi.utils.phone_number as phone_number_utils
 import pcapi.utils.postal_code as postal_code_utils
 from pcapi.utils.requests import ExternalAPIException
 
@@ -647,7 +647,8 @@ def update_user_info(
     first_name: str | T_UNCHANGED = UNCHANGED,
     last_name: str | T_UNCHANGED = UNCHANGED,
     needs_to_fill_cultural_survey: bool | T_UNCHANGED = UNCHANGED,
-    phone_number: str | T_UNCHANGED = UNCHANGED,
+    phone_number: str | None | T_UNCHANGED = UNCHANGED,
+    phone_validation_status: users_models.PhoneValidationStatusType | None | T_UNCHANGED = UNCHANGED,
     address: str | T_UNCHANGED = UNCHANGED,
     postal_code: str | T_UNCHANGED = UNCHANGED,
     city: str | T_UNCHANGED = UNCHANGED,
@@ -682,6 +683,10 @@ def update_user_info(
         if user_phone_number != phone_number:
             snapshot.set("phoneNumber", old=user_phone_number, new=phone_number)
         user.phoneNumber = phone_number  # type: ignore[method-assign]
+    if phone_validation_status is not UNCHANGED:
+        if user.phoneValidationStatus != phone_validation_status:
+            snapshot.set("phoneValidationStatus", old=user.phoneValidationStatus, new=phone_validation_status)
+        user.phoneValidationStatus = phone_validation_status
     if address is not UNCHANGED:
         if address != user.address:
             snapshot.set("address", old=user.address, new=address)

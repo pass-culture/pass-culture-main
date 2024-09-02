@@ -11,7 +11,6 @@ from pcapi.core import token as token_utils
 from pcapi.core.fraud import api as fraud_api
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.fraud.phone_validation import sending_limit
-from pcapi.core.users import api as users_api
 from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import models as users_models
 from pcapi.notifications import sms as sms_notifications
@@ -39,7 +38,7 @@ def _check_phone_number_validation_is_authorized(user: users_models.User) -> Non
         raise exceptions.UserAlreadyBeneficiary
 
 
-def _check_phone_number_is_legit(user: users_models.User, phone_number: str, country_code: int | None) -> None:
+def check_phone_number_is_legit(user: users_models.User, phone_number: str, country_code: int | None) -> None:
     if phone_number in settings.BLACKLISTED_SMS_RECIPIENTS:
         fraud_api.handle_blacklisted_sms_recipient(user, phone_number)
         raise exceptions.InvalidPhoneNumber()
@@ -142,13 +141,15 @@ def send_phone_validation_code(
     phone_number: str | None,
     ignore_limit: bool = False,
 ) -> None:
+    from pcapi.core.users import api as users_api
+
     if not phone_number:
         raise ValueError("phone number is empty")
 
     phone_data = phone_number_utils.ParsedPhoneNumber(phone_number)
 
     _check_phone_number_validation_is_authorized(user)
-    _check_phone_number_is_legit(user, phone_data.phone_number, phone_data.country_code)
+    check_phone_number_is_legit(user, phone_data.phone_number, phone_data.country_code)
     if not ignore_limit:
         _check_sms_sending_is_allowed(user)
     _ensure_phone_number_unicity(user, phone_data.phone_number, change_owner=False)

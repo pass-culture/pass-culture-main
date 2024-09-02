@@ -903,7 +903,7 @@ class AccountCreationWithSSOTest:
 class UserProfileUpdateTest:
     identifier = "email@example.com"
 
-    def test_update_user_profile(self, app, client):
+    def test_update_user_push_notifications_subscription(self, client):
         password = "some_random_string"
         user = users_factories.UserFactory(email=self.identifier, password=password)
 
@@ -924,7 +924,7 @@ class UserProfileUpdateTest:
         assert user.get_notification_subscriptions().subscribed_themes == ["cinema"]
         assert len(push_testing.requests) == 2
 
-    def test_unsubscribe_push_notifications(self, client, app):
+    def test_unsubscribe_push_notifications(self, client):
         user = users_factories.UserFactory(email=self.identifier)
 
         client.with_token(email=self.identifier)
@@ -1021,6 +1021,49 @@ class UserProfileUpdateTest:
         assert response.status_code == 200
         assert user.activity == users_models.ActivityEnum.UNEMPLOYED.value
 
+    @pytest.mark.parametrize("requested_phone_number", ["0601020304", "+33601020304"])
+    def test_phone_number_unchanged(self, client, requested_phone_number):
+        user = users_factories.UserFactory(
+            email=self.identifier,
+            phoneNumber="+33601020304",
+            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
+        )
+
+        response = client.with_token(email=user.email).patch(
+            "/native/v1/profile", json={"phoneNumber": requested_phone_number}
+        )
+
+        assert response.status_code == 200
+        assert user.phoneNumber == "+33601020304"
+        assert user.phoneValidationStatus == users_models.PhoneValidationStatusType.VALIDATED
+
+    def test_phone_number_update(self, client):
+        user = users_factories.UserFactory(
+            email=self.identifier, phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED
+        )
+
+        response = client.with_token(email=user.email).patch("/native/v1/profile", json={"phoneNumber": "0601020304"})
+
+        assert response.status_code == 200
+        assert user.phoneNumber == "+33601020304"
+        assert user.phoneValidationStatus is None
+
+    def test_invalid_phone_number_update(self, client):
+        user = users_factories.UserFactory(email=self.identifier)
+
+        response = client.with_token(email=user.email).patch("/native/v1/profile", json={"phoneNumber": "060102030405"})
+
+        assert response.status_code == 400
+        assert response.json["code"] == "INVALID_PHONE_NUMBER"
+
+    def test_invalid_phone_number_country_code_update(self, client):
+        user = users_factories.UserFactory(email=self.identifier)
+
+        response = client.with_token(email=user.email).patch("/native/v1/profile", json={"phoneNumber": "+46766123456"})
+
+        assert response.status_code == 400
+        assert response.json["code"] == "INVALID_COUNTRY_CODE"
+
     def test_empty_patch(self, client):
         user = users_factories.UserFactory(
             email=self.identifier,
@@ -1032,6 +1075,8 @@ class UserProfileUpdateTest:
                 "marketing_email": True,
                 "subscribed_themes": ["musique", "visites"],
             },
+            _phoneNumber="+33601020304",
+            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
         )
 
         client.with_token(email=self.identifier)
@@ -1046,6 +1091,8 @@ class UserProfileUpdateTest:
             "marketing_email": True,
             "subscribed_themes": ["musique", "visites"],
         }
+        assert user.phoneNumber == "+33601020304"
+        assert user.phoneValidationStatus == users_models.PhoneValidationStatusType.VALIDATED
 
 
 class ResetRecreditAmountToShow:

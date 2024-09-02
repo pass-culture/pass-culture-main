@@ -32,6 +32,7 @@ from pcapi.routes.native.security import authenticated_and_active_user_required
 from pcapi.routes.native.security import authenticated_maybe_inactive_user_required
 from pcapi.routes.native.v1.api_errors import account as account_errors
 from pcapi.serialization.decorator import spectree_serialize
+from pcapi.utils import phone_number as phone_number_utils
 
 from .. import blueprint
 from .serialization import account as serializers
@@ -73,6 +74,28 @@ def patch_user_profile(
     if "activity_id" in profile_update_dict:
         activity_id = profile_update_dict.pop("activity_id", None)
         profile_update_dict["activity"] = users_models.ActivityEnum[activity_id.value] if activity_id else None
+
+    if "phone_number" in profile_update_dict:
+        phone_number = profile_update_dict["phone_number"]
+        if not phone_number:
+            phone_number = None
+        else:
+            try:
+                phone_data = phone_number_utils.ParsedPhoneNumber(phone_number)
+                phone_validation_api.check_phone_number_is_legit(user, phone_data.phone_number, phone_data.country_code)
+            except phone_validation_exceptions.InvalidCountryCode:
+                error = {"code": "INVALID_COUNTRY_CODE", "message": "L'indicatif téléphonique n'est pas accepté"}
+                logger.warning("Failed to update phone number", extra={"number": phone_number, "code": error["code"]})
+                raise api_errors.ApiErrors(error, status_code=400)
+            except phone_validation_exceptions.InvalidPhoneNumber:
+                error = {"code": "INVALID_PHONE_NUMBER", "message": "Le numéro de téléphone est invalide"}
+                logger.warning("Failed to update phone number", extra={"number": phone_number, "code": error["code"]})
+                raise api_errors.ApiErrors(error, status_code=400)
+
+            phone_number = phone_data.phone_number
+
+        if phone_number != user.phoneNumber:
+            profile_update_dict["phone_validation_status"] = None
 
     api.update_user_info(user, author=user, **profile_update_dict)
 
@@ -339,7 +362,7 @@ def email_validation_remaining_resends(email: str) -> serializers.EmailValidatio
     )
 
 
-def _log_failure_code(phone_number: str, code: str) -> None:
+def _log_phone_validation_code_failure(phone_number: str, code: str) -> None:
     logger.warning("Failed to send phone validation code", extra={"number": phone_number, "code": code})
 
 
@@ -352,22 +375,22 @@ def send_phone_validation_code(user: users_models.User, body: serializers.SendPh
 
     except phone_validation_exceptions.SMSSendingLimitReached:
         error = {"code": "TOO_MANY_SMS_SENT", "message": "Nombre de tentatives maximal dépassé"}
-        _log_failure_code(body.phoneNumber, error["code"])
+        _log_phone_validation_code_failure(body.phoneNumber, error["code"])
         raise api_errors.ApiErrors(error, status_code=400)
 
     except phone_validation_exceptions.UserPhoneNumberAlreadyValidated:
         error = {"code": "PHONE_NUMBER_ALREADY_VALIDATED", "message": "Le numéro de téléphone est déjà validé"}
-        _log_failure_code(body.phoneNumber, error["code"])
+        _log_phone_validation_code_failure(body.phoneNumber, error["code"])
         raise api_errors.ApiErrors(error, status_code=400)
 
     except phone_validation_exceptions.InvalidCountryCode:
         error = {"code": "INVALID_COUNTRY_CODE", "message": "L'indicatif téléphonique n'est pas accepté"}
-        _log_failure_code(body.phoneNumber, error["code"])
+        _log_phone_validation_code_failure(body.phoneNumber, error["code"])
         raise api_errors.ApiErrors(error, status_code=400)
 
     except phone_validation_exceptions.InvalidPhoneNumber:
         error = {"code": "INVALID_PHONE_NUMBER", "message": "Le numéro de téléphone est invalide"}
-        _log_failure_code(body.phoneNumber, error["code"])
+        _log_phone_validation_code_failure(body.phoneNumber, error["code"])
         raise api_errors.ApiErrors(error, status_code=400)
 
     except phone_validation_exceptions.PhoneAlreadyExists:
@@ -375,12 +398,12 @@ def send_phone_validation_code(user: users_models.User, body: serializers.SendPh
             "code": "PHONE_ALREADY_EXISTS",
             "message": "Un compte est déjà associé à ce numéro. Renseigne un autre numéro ou connecte-toi au compte existant.",
         }
-        _log_failure_code(body.phoneNumber, error["code"])
+        _log_phone_validation_code_failure(body.phoneNumber, error["code"])
         raise api_errors.ApiErrors(error, status_code=400)
 
     except phone_validation_exceptions.PhoneVerificationException:
         error = {"code": "CODE_SENDING_FAILURE", "message": "L'envoi du code a échoué"}
-        _log_failure_code(body.phoneNumber, error["code"])
+        _log_phone_validation_code_failure(body.phoneNumber, error["code"])
         raise api_errors.ApiErrors(
             {"message": "L'envoi du code a échoué", "code": "CODE_SENDING_FAILURE"}, status_code=400
         )
