@@ -11,7 +11,7 @@ import { useActiveFeature } from 'hooks/useActiveFeature'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
-import styles from './CollectiveOfferSummaryCreation.module.scss'
+import styles from './CollectiveOfferSummaryCreationScreen.module.scss'
 
 interface CollectiveOfferSummaryCreationProps {
   offer:
