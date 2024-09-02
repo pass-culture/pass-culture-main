@@ -39,6 +39,14 @@ const physicalVenueWithPublicName = {
   publicName: 'Le deuxième Sous-sol',
   isPermanent: false,
 }
+const physicalVenuePermanent = {
+  ...defaultGetOffererVenueResponseModel,
+  id: 3,
+  isVirtual: false,
+  name: 'Le troisième Sous-sol (Offre physique)',
+  publicName: null,
+  isPermanent: true,
+}
 
 describe('VenueList', () => {
   it('should display offerer venues informations', () => {
@@ -73,5 +81,17 @@ describe('VenueList', () => {
     renderVenueList({ offerer })
 
     expect(screen.queryByText('Offre numérique')).not.toBeInTheDocument()
+  })
+
+  it('should not display permanent venues', () => {
+    const offerer = {
+      ...defaultGetOffererResponseModel,
+      managedVenues: [physicalVenuePermanent],
+    }
+    renderVenueList({ offerer })
+
+    expect(
+      screen.queryByText(physicalVenuePermanent.name)
+    ).not.toBeInTheDocument()
   })
 })
