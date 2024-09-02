@@ -43,14 +43,10 @@ export const FieldSetLayout = ({
           {!isOptional && ' *'}
         </legend>
       )}
-
-      <div> {children} </div>
-
+      <div>{children}</div>
       {!hideFooter && (
-        <div aria-live="assertive">
-          <div className={styles['fieldset-layout-error']}>
-            {!!error && <FieldError name={name}>{error}</FieldError>}
-          </div>
+        <div className={styles['fieldset-layout-error']}>
+          {!!error && <FieldError name={name}>{error}</FieldError>}
         </div>
       )}
     </fieldset>

@@ -37,6 +37,7 @@ export const RadioGroup = ({
   onChange,
 }: RadioGroupProps): JSX.Element => {
   const [, meta] = useField({ name })
+  const hasError = meta.touched && !!meta.error
 
   return (
     <FieldSetLayout
@@ -46,7 +47,7 @@ export const RadioGroup = ({
         className
       )}
       dataTestId={`wrapper-${name}`}
-      error={meta.touched && !!meta.error ? meta.error : undefined}
+      error={hasError ? meta.error : undefined}
       hideFooter={hideFooter}
       legend={legend}
       name={`radio-group-${name}`}
@@ -60,9 +61,10 @@ export const RadioGroup = ({
             name={name}
             value={item.value}
             withBorder={withBorder}
-            hasError={meta.touched && !!meta.error}
+            hasError={hasError}
             fullWidth
             onChange={onChange}
+            {...(hasError ? { ariaDescribedBy: `error-${name}` } : {})}
           />
         </div>
       ))}

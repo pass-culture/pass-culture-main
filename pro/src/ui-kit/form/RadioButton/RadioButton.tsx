@@ -12,6 +12,7 @@ interface RadioButtonProps
   withBorder?: boolean
   hasError?: boolean
   fullWidth?: boolean
+  ariaDescribedBy?: string
 }
 
 export const RadioButton = ({
@@ -24,6 +25,7 @@ export const RadioButton = ({
   className,
   hasError,
   onChange,
+  ariaDescribedBy,
 }: RadioButtonProps): JSX.Element => {
   const [field] = useField({ name, value, type: 'radio' })
 
@@ -50,6 +52,7 @@ export const RadioButton = ({
       withBorder={withBorder}
       fullWidth={fullWidth}
       onChange={(e) => onCustomChange(e)}
+      ariaDescribedBy={ariaDescribedBy}
     />
   )
 }

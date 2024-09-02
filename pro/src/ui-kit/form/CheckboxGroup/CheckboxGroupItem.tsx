@@ -12,6 +12,7 @@ interface CheckboxGroupItemProps {
   hasError?: boolean
   disabled?: boolean
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void
+  ariaDescribedBy?: string
 }
 
 export const CheckboxGroupItem = ({
@@ -22,6 +23,7 @@ export const CheckboxGroupItem = ({
   icon,
   disabled,
   onChange,
+  ariaDescribedBy,
 }: CheckboxGroupItemProps): JSX.Element => {
   const [field] = useField({ name, type: 'checkbox' })
 
@@ -41,6 +43,7 @@ export const CheckboxGroupItem = ({
       label={label}
       onChange={onCustomChange}
       disabled={disabled}
+      ariaDescribedBy={ariaDescribedBy}
     />
   )
 }
