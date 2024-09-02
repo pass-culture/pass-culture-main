@@ -1004,7 +1004,9 @@ class UpdatePublicAccountTest(PostEndpointHelper):
     needed_permission = perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT
 
     def test_update_field(self, legit_user, authenticated_client):
-        user = users_factories.BeneficiaryGrant18Factory()
+        user = users_factories.BeneficiaryGrant18Factory(
+            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED
+        )
         old_email = user.email
 
         new_phone_number = "+33836656565"
@@ -1037,6 +1039,7 @@ class UpdatePublicAccountTest(PostEndpointHelper):
         user = users_models.User.query.filter_by(id=user.id).one()
         assert user.email == expected_new_email
         assert user.phoneNumber == new_phone_number
+        assert user.phoneValidationStatus == users_models.PhoneValidationStatusType.VALIDATED
         assert user.idPieceNumber == user.idPieceNumber
         assert user.postalCode == expected_new_postal_code
         assert user.city == expected_city

@@ -2281,6 +2281,7 @@ def test_public_api(client):
                         "activityId": {"anyOf": [{"$ref": "#/components/schemas/ActivityIdEnum"}], "nullable": True},
                         "city": {"nullable": True, "title": "City", "type": "string"},
                         "origin": {"nullable": True, "title": "Origin", "type": "string"},
+                        "phoneNumber": {"nullable": True, "title": "Phonenumber", "type": "string"},
                         "postalCode": {"nullable": True, "title": "Postalcode", "type": "string"},
                         "subscriptions": {
                             "anyOf": [{"$ref": "#/components/schemas/NotificationSubscriptions"}],

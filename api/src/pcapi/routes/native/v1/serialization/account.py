@@ -228,6 +228,7 @@ class UserProfilePatchRequest(ConfiguredBaseModel):
     activity_id: profile_options.ActivityIdEnum | None
     city: str | None
     postal_code: str | None
+    phone_number: str | None
     subscriptions: NotificationSubscriptions | None
     origin: str | None
 
