@@ -84,6 +84,26 @@
   }
 }
 
+.download-button {
+  flex: 1;
+
+  button {
+    width: 100%;
+  }
+}
+
 .show-button {
   z-index: 0;
+  width: 100%;
+}
+
+@media (min-width: size.$mobile) {
+  .download-button {
+    flex: initial;
+  }
+
+  .show-button {
+    margin: 0 rem.torem(8px);
+    width: rem.torem(148px);
+  }
 }
