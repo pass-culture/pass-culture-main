@@ -63,7 +63,7 @@ def build_pc_pro_venue_offers_link(venue: offerers_models.Venue) -> str:
 
 
 def build_pc_pro_bank_account_link(bank_account: finance_models.BankAccount) -> str:
-    return f"{settings.PRO_URL}/remboursements/informations-bancaires?structure={bank_account.offererId}"
+    return f"{settings.PRO_URL}/remboursements/informations-bancaires?structure={bank_account.offererId}&from-bo=true"
 
 
 def build_pc_pro_connect_as_link(token: str) -> str:
