@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import useSWR, { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
-import { GetVenueResponseModel } from 'apiClient/v1'
+import { GetVenueResponseModel, ProviderResponse } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
 import {
   GET_PROVIDERS_QUERY_KEY,
@@ -22,12 +22,12 @@ import { VenueProviderForm } from './VenueProviderForm'
 
 export interface AddVenueProviderButtonProps {
   venue: GetVenueResponseModel
-  linkedProvidersIds: number[]
+  linkedProviders: ProviderResponse[]
 }
 
 export const AddVenueProviderButton = ({
   venue,
-  linkedProvidersIds,
+  linkedProviders,
 }: AddVenueProviderButtonProps) => {
   const { mutate } = useSWRConfig()
 
@@ -51,19 +51,29 @@ export const AddVenueProviderButton = ({
     (provider) => provider.id.toString() === selectedProviderId
   )
 
+  const venueIsLinkedToIntegratedProvider = linkedProviders.find(
+    (provider) => !provider.hasOffererProvider
+  )
+
   const providersOptions = sortByLabel(
     // 1. Filter out providers that are already linked to the venue
+    //    And if the venue is already linked to an integrated provider,
+    //    filter out other integrated providers
     // 2. Format providers
     providers.reduce(
       (
         filteredProvidersOptions: { value: string; label: string }[],
         provider
       ) => {
-        const isAlreadyLinkedToVenue = !!linkedProvidersIds.find(
-          (providerId) => provider.id === providerId
+        const shouldBeFilteredOut = !!linkedProviders.find(
+          (linkedProvider) =>
+            // venue already linked to this provider
+            provider.id === linkedProvider.id ||
+            // venue already linked to an integrated provider
+            (venueIsLinkedToIntegratedProvider && !provider.hasOffererProvider)
         )
 
-        if (!isAlreadyLinkedToVenue) {
+        if (!shouldBeFilteredOut) {
           return [
             ...filteredProvidersOptions,
             {
