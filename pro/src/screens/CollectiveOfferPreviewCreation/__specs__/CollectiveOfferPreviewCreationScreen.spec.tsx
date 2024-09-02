@@ -83,7 +83,7 @@ describe('CollectiveOfferConfirmation', () => {
     expect(api.patchCollectiveOfferTemplatePublication).toHaveBeenCalled()
   })
 
-  it('should not redirect to next step on submit and show notification error', async () => {
+  it('should not redirect to next step on submit and show notification error when publication fails', async () => {
     vi.spyOn(
       api,
       'patchCollectiveOfferTemplatePublication'
@@ -100,7 +100,7 @@ describe('CollectiveOfferConfirmation', () => {
     )
   })
 
-  it('should redirect to preview step on click', async () => {
+  it('should redirect to preview step on press Retour', async () => {
     renderCollectiveOfferPreviewCreation(defaultProps)
 
     const previewStep = screen.getByText('Retour')
@@ -112,7 +112,7 @@ describe('CollectiveOfferConfirmation', () => {
     )
   })
 
-  it('should redirect to list offer with success notification', async () => {
+  it('should redirect to list offer with success notification on press "Sauvegarder le brouillon et quitter"', async () => {
     renderCollectiveOfferPreviewCreation(defaultProps, {
       features: ['WIP_ENABLE_COLLECTIVE_DRAFT_OFFERS'],
     })
@@ -130,7 +130,7 @@ describe('CollectiveOfferConfirmation', () => {
     )
   })
 
-  it('should notify of an error if the offer booking limit date is in the past', async () => {
+  it('should notify of an error if the offer booking limit date is in the past on press "Publier l’offre"', async () => {
     const offer = getCollectiveOfferFactory()
     const yesterday = sub(new Date(), { days: 1 }).toISOString()
     offer.collectiveStock = getCollectiveOfferCollectiveStockFactory({
@@ -138,7 +138,7 @@ describe('CollectiveOfferConfirmation', () => {
     })
     renderCollectiveOfferPreviewCreation({
       ...defaultProps,
-      offer: offer,
+      offer,
     })
 
     const nextStep = screen.getByText('Publier l’offre')
@@ -149,7 +149,7 @@ describe('CollectiveOfferConfirmation', () => {
     )
   })
 
-  it('should notify of an error if the offer beginning date is in the past', async () => {
+  it('should notify of an error if the offer beginning date is in the past on press "Publier l’offre"', async () => {
     const offer = getCollectiveOfferFactory()
     const yesterday = sub(new Date(), { days: 1 }).toISOString()
     offer.collectiveStock = getCollectiveOfferCollectiveStockFactory({
@@ -157,7 +157,7 @@ describe('CollectiveOfferConfirmation', () => {
     })
     renderCollectiveOfferPreviewCreation({
       ...defaultProps,
-      offer: offer,
+      offer,
     })
 
     const nextStep = screen.getByText('Publier l’offre')
