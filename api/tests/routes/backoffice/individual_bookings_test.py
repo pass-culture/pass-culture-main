@@ -639,24 +639,56 @@ class MarkBookingAsUsedTest(PostEndpointHelper):
         assert cancelled.validationAuthorType == bookings_models.BookingValidationAuthorType.BACKOFFICE
 
         redirected_response = authenticated_client.get(response.headers["location"])
-        assert html_parser.extract_alert(redirected_response.data) == f"La réservation {cancelled.token} a été validée"
+        assert html_parser.extract_alert(redirected_response.data) == "1 réservation a été validée"
 
-    def test_uncancel_non_cancelled_booking(self, authenticated_client, bookings):
-        non_cancelled = bookings[2]
-        old_status = non_cancelled.status
+    def test_uncancel_booking_is_already_used(self, authenticated_client, bookings):
+        booking = bookings_factories.UsedBookingFactory()
 
-        response = self.post_to_endpoint(authenticated_client, booking_id=non_cancelled.id)
+        response = self.post_to_endpoint(authenticated_client, booking_id=booking.id)
 
         assert response.status_code == 303
 
-        db.session.refresh(non_cancelled)
-        assert non_cancelled.status == old_status
+        booking = bookings_models.Booking.query.filter_by(id=booking.id).one()
+        assert booking.status == bookings_models.BookingStatus.USED
 
         redirected_response = authenticated_client.get(response.headers["location"])
-        assert (
-            html_parser.extract_alert(redirected_response.data)
-            == "Impossible de valider une réservation qui n'est pas annulée"
+        alert = html_parser.extract_alert(redirected_response.data)
+        assert "Impossible de valider ces réservations" in alert
+        assert f"- 1 réservation déjà validée ({booking.token})" in alert
+
+    def test_uncancel_booking_is_already_refunded(self, authenticated_client, bookings):
+        booking = bookings_factories.ReimbursedBookingFactory()
+        response = self.post_to_endpoint(authenticated_client, booking_id=booking.id)
+
+        assert response.status_code == 303
+
+        booking = bookings_models.Booking.query.filter_by(id=booking.id).one()
+        assert booking.status == bookings_models.BookingStatus.REIMBURSED
+
+        redirected_response = authenticated_client.get(response.headers["location"])
+        alert = html_parser.extract_alert(redirected_response.data)
+        assert "Impossible de valider ces réservations" in alert
+        assert f"- 1 réservation déjà remboursée ({booking.token})" in alert
+
+    def test_uncancel_booking_expired_deposit(self, authenticated_client, bookings):
+        booking = bookings_factories.BookingFactory(
+            status=bookings_models.BookingStatus.CANCELLED,
+            deposit=users_factories.DepositGrantFactory(
+                expirationDate=datetime.datetime.utcnow() - datetime.timedelta(days=1)
+            ),
         )
+
+        response = self.post_to_endpoint(authenticated_client, booking_id=booking.id)
+
+        assert response.status_code == 303
+
+        booking = bookings_models.Booking.query.filter_by(id=booking.id).one()
+        assert booking.status == bookings_models.BookingStatus.CANCELLED
+
+        redirected_response = authenticated_client.get(response.headers["location"])
+        alert = html_parser.extract_alert(redirected_response.data)
+        assert "Impossible de valider ces réservations" in alert
+        assert f"- 1 réservation dont le crédit associé est expiré ({booking.token})" in alert
 
     def test_uncancel_booking_insufficient_funds(self, authenticated_client, bookings):
         beneficiary = users_factories.BeneficiaryGrant18Factory()
@@ -671,9 +703,9 @@ class MarkBookingAsUsedTest(PostEndpointHelper):
         assert booking.status == bookings_models.BookingStatus.CANCELLED
 
         redirected_response = authenticated_client.get(response.headers["location"])
-        assert "Impossible de valider une réservation dont le crédit du jeune est épuisé" == html_parser.extract_alert(
-            redirected_response.data
-        )
+        alert = html_parser.extract_alert(redirected_response.data)
+        assert "Impossible de valider ces réservations" in alert
+        assert f"- 1 réservation dont le crédit associé est insuffisant ({booking.token})" in alert
 
     def test_uncancel_booking_no_stock(self, authenticated_client, bookings):
         beneficiary = users_factories.BeneficiaryGrant18Factory()
@@ -687,9 +719,9 @@ class MarkBookingAsUsedTest(PostEndpointHelper):
         assert booking.status == bookings_models.BookingStatus.CANCELLED
 
         redirected_response = authenticated_client.get(response.headers["location"])
-        assert "Impossible de valider une réservation dont le stock est épuisé" == html_parser.extract_alert(
-            redirected_response.data
-        )
+        alert = html_parser.extract_alert(redirected_response.data)
+        assert "Impossible de valider ces réservations" in alert
+        assert f"- 1 réservation dont l'offre n'a plus assez de stock disponible ({booking.token})" in alert
 
 
 class CancelBookingTest(PostEndpointHelper):
@@ -713,7 +745,7 @@ class CancelBookingTest(PostEndpointHelper):
         assert confirmed.cancellationReason == bookings_models.BookingCancellationReasons.BACKOFFICE
 
         redirected_response = authenticated_client.get(response.headers["location"])
-        assert html_parser.extract_alert(redirected_response.data) == f"La réservation {confirmed.token} a été annulée"
+        assert html_parser.extract_alert(redirected_response.data) == "1 réservation a été annulée"
 
     def test_cancel_booking_decreases_stock_quantity(self, authenticated_client, bookings):
         stock = offers_factories.StockFactory(quantity=3)
@@ -736,7 +768,7 @@ class CancelBookingTest(PostEndpointHelper):
         assert stock.quantity == 2
         assert stock.dnBookedQuantity == 1
 
-    def test_cant_cancel_booking_with_pricing_processed(self, authenticated_client, bookings):
+    def test_cant_cancel_booking_with_processed_pricing(self, authenticated_client, bookings):
         pricing = finance_factories.PricingFactory(status=finance_models.PricingStatus.PROCESSED)
 
         response = self.post_to_endpoint(
@@ -751,10 +783,9 @@ class CancelBookingTest(PostEndpointHelper):
         assert pricing.booking.status == bookings_models.BookingStatus.USED
 
         redirected_response = authenticated_client.get(response.headers["location"])
-        assert (
-            html_parser.extract_alert(redirected_response.data)
-            == "Cette réservation est en train d’être remboursée, il est impossible de l’invalider"
-        )
+        alert = html_parser.extract_alert(redirected_response.data)
+        assert "Impossible d'annuler ces réservations" in alert
+        assert f"- 1 réservation déjà remboursée ({pricing.booking.token})" in alert
 
     def test_cant_cancel_reimbursed_booking(self, authenticated_client, bookings):
         reimbursed = bookings[3]
@@ -772,10 +803,9 @@ class CancelBookingTest(PostEndpointHelper):
         assert reimbursed.status == old_status
 
         redirected_response = authenticated_client.get(response.headers["location"])
-        assert (
-            html_parser.extract_alert(redirected_response.data)
-            == "Cette réservation est en train d’être remboursée, il est impossible de l’invalider"
-        )
+        alert = html_parser.extract_alert(redirected_response.data)
+        assert "Impossible d'annuler ces réservations" in alert
+        assert f"- 1 réservation déjà remboursée ({reimbursed.token})" in alert
 
     def test_cant_cancel_cancelled_booking(self, authenticated_client, bookings):
         cancelled = bookings[1]
@@ -793,9 +823,9 @@ class CancelBookingTest(PostEndpointHelper):
         assert cancelled.status == old_status
 
         redirected_response = authenticated_client.get(response.headers["location"])
-        assert (
-            html_parser.extract_alert(redirected_response.data) == "Impossible d'annuler une réservation déjà annulée"
-        )
+        alert = html_parser.extract_alert(redirected_response.data)
+        assert "Impossible d'annuler ces réservations" in alert
+        assert f"- 1 réservation déjà annulée ({cancelled.token})" in alert
 
     def test_cant_cancel_booking_without_reason(self, authenticated_client, bookings):
         confirmed = bookings[2]
@@ -870,7 +900,7 @@ class CancelBookingTest(PostEndpointHelper):
 
         assert response.status_code == 303
         redirected_response = authenticated_client.get(response.headers["location"])
-        assert html_parser.extract_alert(redirected_response.data) == f"La réservation {booking.token} a été annulée"
+        assert html_parser.extract_alert(redirected_response.data) == "1 réservation a été annulée"
 
         db.session.refresh(booking)
         assert booking.status == bookings_models.BookingStatus.CANCELLED
@@ -935,10 +965,7 @@ class CancelBookingTest(PostEndpointHelper):
 
         redirected_response = authenticated_client.get(response.headers["location"])
 
-        assert (
-            html_parser.extract_alert(redirected_response.data)
-            == f"La réservation {booking_to_cancel.token} a été annulée"
-        )
+        assert html_parser.extract_alert(redirected_response.data) == "1 réservation a été annulée"
 
 
 class GetBatchMarkAsUsedIndividualBookingsFormTest(GetEndpointHelper):
@@ -979,57 +1006,119 @@ class BatchMarkBookingAsUsedTest(PostEndpointHelper):
             assert booking.status is bookings_models.BookingStatus.USED
             assert booking.validationAuthorType == bookings_models.BookingValidationAuthorType.BACKOFFICE
 
+    def test_batch_mark_as_used_with_already_used_bookings(self, legit_user, authenticated_client):
+        bookings = bookings_factories.BookingFactory.create_batch(3, status=bookings_models.BookingStatus.CANCELLED)
+        bookings[0].status = bookings_models.BookingStatus.USED
+        parameter_ids = ",".join(str(booking.id) for booking in bookings)
+        response = self.post_to_endpoint(authenticated_client, form={"object_ids": parameter_ids})
+        assert response.status_code == 303
+
+        redirected_response = authenticated_client.get(response.headers["location"])
+
+        alerts = html_parser.extract_alerts(redirected_response.data)
+        assert "2 réservations ont été validées" in alerts[0]
+        assert "Certaines réservations n'ont pas pu être validées et ont été ignorées :" in alerts[1]
+        assert f"- 1 réservation déjà validée ({bookings[0].token})" in alerts[1]
+
+        assert bookings[0].status is bookings_models.BookingStatus.USED
+        for booking in bookings[1:]:
+            db.session.refresh(booking)
+            assert booking.status is bookings_models.BookingStatus.USED
+            assert booking.validationAuthorType == bookings_models.BookingValidationAuthorType.BACKOFFICE
+
     def test_batch_mark_as_used_bookings_with_expired_deposit(self, legit_user, authenticated_client):
-        booking1 = bookings_factories.BookingFactory(
+        expired_booking = bookings_factories.BookingFactory(
             status=bookings_models.BookingStatus.CANCELLED,
             deposit=users_factories.DepositGrantFactory(
                 expirationDate=datetime.datetime.utcnow() - datetime.timedelta(days=1)
             ),
         )
-        booking2 = bookings_factories.BookingFactory()
-        parameter_ids = str(booking1.id) + "," + str(booking2.id)
+        other_booking = bookings_factories.BookingFactory(status=bookings_models.BookingStatus.CANCELLED)
+        parameter_ids = str(expired_booking.id) + "," + str(other_booking.id)
 
         response = self.post_to_endpoint(authenticated_client, form={"object_ids": parameter_ids})
 
         redirected_response = authenticated_client.get(response.headers["location"])
-        assert (
-            f"La réservation {booking1.token} ne peut être validée, car le crédit associé est expiré."
-            in html_parser.extract_alert(redirected_response.data)
-        )
 
-    def test_batch_mark_as_used_bookings_with_insuffisant_funds(self, legit_user, authenticated_client):
-        booking1 = bookings_factories.BookingFactory(
+        alerts = html_parser.extract_alerts(redirected_response.data)
+        assert "1 réservation a été validée" in alerts[0]
+        assert "Certaines réservations n'ont pas pu être validées et ont été ignorées :" in alerts[1]
+        assert f"- 1 réservation dont le crédit associé est expiré ({expired_booking.token})" in alerts[1]
+
+        db.session.refresh(expired_booking)
+        assert expired_booking.status is bookings_models.BookingStatus.CANCELLED
+        db.session.refresh(other_booking)
+        assert other_booking.status is bookings_models.BookingStatus.USED
+
+    def test_batch_mark_as_used_bookings_with_insufficient_funds(self, legit_user, authenticated_client):
+        insufficient_funds_booking = bookings_factories.BookingFactory(
             status=bookings_models.BookingStatus.CANCELLED,
             deposit=users_factories.DepositGrantFactory(amount=1),
         )
-        booking2 = bookings_factories.BookingFactory()
-        parameter_ids = str(booking1.id) + "," + str(booking2.id)
+        other_booking = bookings_factories.BookingFactory()
+        parameter_ids = str(insufficient_funds_booking.id) + "," + str(other_booking.id)
 
-        response = self.post_to_endpoint(
-            authenticated_client,
-            form={"object_ids": parameter_ids},
-            follow_redirects=True,
-        )
+        response = self.post_to_endpoint(authenticated_client, form={"object_ids": parameter_ids})
+        assert response.status_code == 303
+
+        redirected_response = authenticated_client.get(response.headers["location"])
+
+        alerts = html_parser.extract_alerts(redirected_response.data)
+        assert "1 réservation a été validée" in alerts[0]
+        assert "Certaines réservations n'ont pas pu être validées et ont été ignorées :" in alerts[1]
         assert (
-            "Le solde d'au moins un des comptes jeune est insuffisant pour valider ces réservations"
-            in html_parser.extract_alert(response.data)
+            f"- 1 réservation dont le crédit associé est insuffisant ({insufficient_funds_booking.token})" in alerts[1]
         )
 
-    def test_batch_mark_as_used_bookings_insuffisant_stock(self, legit_user, authenticated_client):
-        booking1 = bookings_factories.BookingFactory(
+    def test_batch_mark_as_used_bookings_insufficient_stock(self, legit_user, authenticated_client):
+        insufficient_stock_booking = bookings_factories.BookingFactory(
             status=bookings_models.BookingStatus.CANCELLED,
             deposit=users_factories.DepositGrantFactory(),
             stock__quantity=0,
         )
-        booking2 = bookings_factories.BookingFactory()
-        parameter_ids = str(booking1.id) + "," + str(booking2.id)
+        other_booking = bookings_factories.BookingFactory()
+        parameter_ids = str(insufficient_stock_booking.id) + "," + str(other_booking.id)
 
-        response = self.post_to_endpoint(
-            authenticated_client,
-            form={"object_ids": parameter_ids},
-            follow_redirects=True,
+        response = self.post_to_endpoint(authenticated_client, form={"object_ids": parameter_ids})
+        assert response.status_code == 303
+
+        redirected_response = authenticated_client.get(response.headers["location"])
+
+        alerts = html_parser.extract_alerts(redirected_response.data)
+        assert "1 réservation a été validée" in alerts[0]
+        assert "Certaines réservations n'ont pas pu être validées et ont été ignorées :" in alerts[1]
+        assert (
+            f"- 1 réservation dont l'offre n'a plus assez de stock disponible ({insufficient_stock_booking.token})"
+            in alerts[1]
         )
-        assert "Pas assez de stock disponible pour cette offre" in html_parser.extract_alert(response.data)
+
+    def test_batch_mark_as_used_bookings_with_multiple_errors(self, legit_user, authenticated_client):
+        cancelled_booking = bookings_factories.CancelledBookingFactory()
+        insufficient_stock_booking = bookings_factories.BookingFactory(
+            status=bookings_models.BookingStatus.CANCELLED,
+            deposit=users_factories.DepositGrantFactory(),
+            stock__quantity=0,
+        )
+        already_reimbursed_booking = bookings_factories.ReimbursedBookingFactory()
+        another_reimbursed_booking = bookings_factories.ReimbursedBookingFactory()
+        parameter_ids = f"{cancelled_booking.id},{insufficient_stock_booking.id},{already_reimbursed_booking.id},{another_reimbursed_booking.id}"
+
+        response = self.post_to_endpoint(authenticated_client, form={"object_ids": parameter_ids})
+        assert response.status_code == 303
+
+        redirected_response = authenticated_client.get(response.headers["location"])
+
+        alerts = html_parser.extract_alerts(redirected_response.data)
+        assert "1 réservation a été validée" in alerts[0]
+        assert "Certaines réservations n'ont pas pu être validées et ont été ignorées :" in alerts[1]
+        assert (
+            f"- 1 réservation dont l'offre n'a plus assez de stock disponible ({insufficient_stock_booking.token})"
+            in alerts[1]
+        )
+        assert (
+            f"- 2 réservations déjà remboursées ({already_reimbursed_booking.token}, {another_reimbursed_booking.token})"
+            in alerts[1]
+        )
 
 
 class GetBatchCancelIndividualBookingsFormTest(GetEndpointHelper):
@@ -1045,7 +1134,7 @@ class GetBatchCancelIndividualBookingsFormTest(GetEndpointHelper):
             assert response.status_code == 200
 
 
-class BatchOfferCancelTest(PostEndpointHelper):
+class BatchCancelIndividualBookingsTest(PostEndpointHelper):
     endpoint = "backoffice_web.individual_bookings.batch_cancel_individual_bookings"
     needed_permission = perm_models.Permissions.MANAGE_BOOKINGS
 
@@ -1062,6 +1151,29 @@ class BatchOfferCancelTest(PostEndpointHelper):
             db.session.refresh(booking)
             assert booking.status is bookings_models.BookingStatus.CANCELLED
             assert booking.cancellationReason == bookings_models.BookingCancellationReasons.BACKOFFICE
+
+        redirected_response = authenticated_client.get(response.headers["location"])
+
+        assert "3 réservations ont été annulées" in html_parser.extract_alert(redirected_response.data)
+
+    def test_batch_cancel_booking_with_multiple_errors(self, legit_user, authenticated_client):
+        booking_to_cancel = bookings_factories.UsedBookingFactory()
+        already_cancelled_booking = bookings_factories.CancelledBookingFactory()
+        already_reimbursed_booking = bookings_factories.ReimbursedBookingFactory()
+        parameter_ids = f"{booking_to_cancel.id},{already_cancelled_booking.id},{already_reimbursed_booking.id}"
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={"object_ids": parameter_ids, "reason": bookings_models.BookingCancellationReasons.BACKOFFICE.value},
+        )
+        assert response.status_code == 303
+
+        redirected_response = authenticated_client.get(response.headers["location"])
+
+        alerts = html_parser.extract_alerts(redirected_response.data)
+        assert "1 réservation a été annulée" in alerts[0]
+        assert "Certaines réservations n'ont pas pu être annulées et ont été ignorées :" in alerts[1]
+        assert f"- 1 réservation déjà remboursée ({already_reimbursed_booking.token})" in alerts[1]
+        assert f"- 1 réservation déjà annulée ({already_cancelled_booking.token})" in alerts[1]
 
 
 class GetIndividualBookingCSVDownloadTest(GetEndpointHelper):
