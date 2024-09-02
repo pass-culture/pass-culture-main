@@ -31,7 +31,7 @@ Given('I am logged in with account 1', () => {
 
 Given('I am logged in with account 2', () => {
   cy.login({
-    email: 'activation_new_nav@example.com',
+    email: 'activation@example.com',
     password: 'user@AZERTY123',
   })
   cy.findAllByTestId('spinner').should('not.exist')
@@ -39,7 +39,7 @@ Given('I am logged in with account 2', () => {
 
 Given('I am logged in with account 2 and no cookie selection', () => {
   cy.login({
-    email: 'activation_new_nav@example.com',
+    email: 'activation@example.com',
     password: 'user@AZERTY123',
     refusePopupCookies: false,
   })

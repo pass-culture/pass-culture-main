@@ -18,10 +18,6 @@ def create_users_offerers() -> list[offerers_models.Offerer]:
         offerer__siren="444608442",
         offerer__allowedOnAdage=True,
     )
-    offerers_factories.UserOffererFactory(
-        user__email="eac_2_lieu_new_nav@example.com",
-        offerer=user_offerer.offerer,
-    )
     offerers.append(user_offerer.offerer)
     user_offerer = offerers_factories.UserOffererFactory(
         user__email="retention_structures@example.com",
