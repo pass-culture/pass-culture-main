@@ -295,7 +295,7 @@ def _batch_validate_or_reject_collective_offer_templates(
     if len(collective_offer_template_update_failed_ids) > 0:
         flash(
             (
-                f"Une erreur est survenue lors du rejet des offres collectives vitrine : {', '.join(map(str, collective_offer_template_update_failed_ids))}"
+                f"Une erreur est survenue lors de la validation des offres collectives vitrine : {', '.join(map(str, collective_offer_template_update_failed_ids))}"
                 if validation is OfferValidationStatus.APPROVED
                 else f"Une erreur est survenue lors du rejet des offres collectives vitrine : {', '.join(map(str, collective_offer_template_update_failed_ids))}"
                 "warning"
