@@ -19,7 +19,7 @@ import {
 import {
   CollectiveOfferPreviewCreationScreen,
   CollectiveOfferSummaryCreationProps,
-} from '../CollectiveOfferPreviewCreation'
+} from '../CollectiveOfferPreviewCreationScreen'
 
 vi.mock('core/OfferEducational/utils/createOfferFromTemplate', () => ({
   createOfferFromTemplate: vi.fn(),
