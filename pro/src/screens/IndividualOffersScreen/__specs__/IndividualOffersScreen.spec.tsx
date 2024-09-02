@@ -1,4 +1,4 @@
-import { screen, waitFor } from '@testing-library/react'
+import { screen, waitFor, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import { api } from 'apiClient/api'
@@ -12,6 +12,7 @@ import {
   ALL_VENUES_OPTION,
   DEFAULT_SEARCH_FILTERS,
 } from 'core/Offers/constants'
+import { SearchFiltersParams } from 'core/Offers/types'
 import * as useNotification from 'hooks/useNotification'
 import {
   defaultGetOffererResponseModel,
@@ -205,6 +206,105 @@ describe('IndividualOffersScreen', () => {
 
     screen.getByLabelText(offersRecap[0].name)
     expect(await screen.findByText('500+ offres')).toBeInTheDocument()
+  })
+
+  it('should send correct information when filling filter fields', async () => {
+    const redirectWithUrlFiltersSpy = vi.spyOn(props, 'redirectWithUrlFilters')
+
+    renderOffers(props)
+
+    const searchAndChecked = async (params: Partial<SearchFiltersParams>) => {
+      await userEvent.click(screen.getByText('Rechercher'))
+      expect(redirectWithUrlFiltersSpy).toHaveBeenCalled()
+      expect(redirectWithUrlFiltersSpy).toHaveBeenCalledWith(
+        expect.objectContaining({
+          ...DEFAULT_SEARCH_FILTERS,
+          ...params,
+        })
+      )
+    }
+
+    await searchAndChecked({})
+
+    expect(
+      screen.getByPlaceholderText('Rechercher par nom d’offre ou par EAN-13')
+    ).toBeInTheDocument()
+
+    await userEvent.type(
+      screen.getByPlaceholderText('Rechercher par nom d’offre ou par EAN-13'),
+      'Test'
+    )
+
+    await searchAndChecked({ nameOrIsbn: 'Test' })
+
+    expect(screen.getByLabelText(/Lieu/)).toBeInTheDocument()
+    await userEvent.selectOptions(screen.getByLabelText(/Lieu/), 'JI')
+
+    await searchAndChecked({
+      nameOrIsbn: 'Test',
+      venueId: 'JI',
+    })
+
+    await userEvent.selectOptions(screen.getByLabelText(/Lieu/), 'JQ')
+
+    await userEvent.click(screen.getByText('Rechercher'))
+
+    await searchAndChecked({
+      nameOrIsbn: 'Test',
+      venueId: 'JQ',
+    })
+
+    expect(screen.getByLabelText(/Mode de création/)).toBeInTheDocument()
+
+    await userEvent.selectOptions(
+      screen.getByLabelText(/Mode de création/),
+      'imported'
+    )
+
+    await searchAndChecked({
+      nameOrIsbn: 'Test',
+      venueId: 'JQ',
+      creationMode: 'imported',
+    })
+
+    expect(screen.getByText(/Période de l’évènement/)).toBeInTheDocument()
+
+    const [beginningDate, endingDate] =
+      screen.getAllByPlaceholderText('JJ/MM/AAAA')
+    await userEvent.type(beginningDate, '2025-02-02')
+    await userEvent.type(endingDate, '2025-02-03')
+    expect(beginningDate).toHaveValue('2025-02-02')
+    expect(endingDate).toHaveValue('2025-02-03')
+
+    await searchAndChecked({
+      nameOrIsbn: 'Test',
+      venueId: 'JQ',
+      creationMode: 'imported',
+      periodBeginningDate: '2025-02-02',
+      periodEndingDate: '2025-02-03',
+    })
+
+    expect(screen.getByTestId('wrapper-status')).toBeInTheDocument()
+    await userEvent.selectOptions(
+      within(screen.getByTestId('wrapper-status')).getByRole('combobox'),
+      OfferStatus.ACTIVE
+    )
+
+    await searchAndChecked({
+      nameOrIsbn: 'Test',
+      venueId: 'JQ',
+      creationMode: 'imported',
+      periodBeginningDate: '2025-02-02',
+      periodEndingDate: '2025-02-03',
+      status: OfferStatus.ACTIVE,
+    })
+
+    expect(screen.getByText(/Réinitialiser les filtres/)).toBeInTheDocument()
+    await userEvent.click(screen.getByText(/Réinitialiser les filtres/))
+
+    await searchAndChecked({})
+
+    redirectWithUrlFiltersSpy.mockRestore()
   })
 
   it('should render venue filter with default option selected and given venues as options', () => {
