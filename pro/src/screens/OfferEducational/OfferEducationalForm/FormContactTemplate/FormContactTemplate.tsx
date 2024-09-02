@@ -19,19 +19,17 @@ export const FormContactTemplate = ({
   disableForm,
 }: FormContactTemplateProps): JSX.Element => {
   const { values } = useFormikContext<OfferEducationalFormValues>()
-
   const [, contactOptionsMeta] = useField({ name: 'contactOptions' })
+  const hasError =
+    contactOptionsMeta.touched && Boolean(contactOptionsMeta.error)
+  const ariaDescribedBy = 'error-contactOptions'
 
   return (
     <FormLayout.Section title="Contact">
       <FieldSetLayout
         legend="Choisissez le ou les moyens par lesquels vous souhaitez être contacté par les enseignants au sujet de cette offre :"
         name="contactOptions"
-        error={
-          contactOptionsMeta.touched && Boolean(contactOptionsMeta.error)
-            ? contactOptionsMeta.error
-            : undefined
-        }
+        {...(hasError ? { error: contactOptionsMeta.error } : {})}
       >
         <div className={styles['contact-checkbox']}>
           <Checkbox
@@ -41,6 +39,7 @@ export const FormContactTemplate = ({
             hideFooter
             disabled={disableForm}
             aria-expanded={Boolean(values.contactOptions?.email)}
+            {...(hasError ? { ariaDescribedBy } : {})}
           />
           {values.contactOptions?.email && (
             <div className={styles['contact-checkbox-inner-control']}>
@@ -68,6 +67,7 @@ export const FormContactTemplate = ({
             hideFooter
             disabled={disableForm}
             aria-expanded={Boolean(values.contactOptions?.phone)}
+            {...(hasError ? { ariaDescribedBy } : {})}
           />
           {values.contactOptions?.phone && (
             <div className={styles['contact-checkbox-inner-control']}>
@@ -93,6 +93,7 @@ export const FormContactTemplate = ({
             hideFooter
             disabled={disableForm}
             aria-expanded={Boolean(values.contactOptions?.form)}
+            {...(hasError ? { ariaDescribedBy } : {})}
           />
           {values.contactOptions?.form && (
             <div className={styles['contact-checkbox-inner-control']}>

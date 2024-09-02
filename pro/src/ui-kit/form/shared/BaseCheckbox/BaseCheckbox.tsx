@@ -22,6 +22,7 @@ interface BaseCheckboxProps
   partialCheck?: boolean
   exceptionnallyHideLabelDespiteA11y?: boolean
   description?: string
+  ariaDescribedBy?: string
 }
 
 export const BaseCheckbox = ({
@@ -33,6 +34,7 @@ export const BaseCheckbox = ({
   partialCheck,
   exceptionnallyHideLabelDespiteA11y,
   description,
+  ariaDescribedBy,
   ...props
 }: BaseCheckboxProps): JSX.Element => {
   const checkboxRef = useRef<HTMLInputElement>(null)
@@ -66,6 +68,7 @@ export const BaseCheckbox = ({
         <input
           ref={checkboxRef}
           aria-invalid={hasError}
+          {...(ariaDescribedBy ? { 'aria-describedby': ariaDescribedBy } : {})}
           type="checkbox"
           {...props}
           className={styles['base-checkbox-input']}

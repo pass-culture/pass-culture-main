@@ -31,11 +31,12 @@ export const CheckboxGroup = ({
   isOptional,
 }: CheckboxGroupProps): JSX.Element => {
   const [, meta, helpers] = useField({ name: groupName })
+  const hasError = meta.touched && !!meta.error
 
   return (
     <FieldSetLayout
       className={cn(styles['checkbox-group'], className)}
-      error={meta.touched && !!meta.error ? meta.error : undefined}
+      error={hasError ? meta.error : undefined}
       legend={legend}
       name={groupName}
       isOptional={isOptional}
@@ -44,7 +45,7 @@ export const CheckboxGroup = ({
         <div className={styles['checkbox-group-item']} key={item.name}>
           <CheckboxGroupItem
             icon={item.icon}
-            hasError={meta.touched && !!meta.error}
+            hasError={hasError}
             label={item.label}
             name={item.name}
             setGroupTouched={() =>
@@ -52,6 +53,7 @@ export const CheckboxGroup = ({
             }
             disabled={disabled}
             onChange={item.onChange}
+            {...(hasError ? { ariaDescribedBy: `error-${groupName}` } : {})}
           />
         </div>
       ))}
