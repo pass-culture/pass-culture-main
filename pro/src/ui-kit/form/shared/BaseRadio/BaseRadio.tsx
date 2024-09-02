@@ -10,6 +10,7 @@ interface BaseRadioProps
   className?: string
   withBorder?: boolean
   fullWidth?: boolean
+  ariaDescribedBy?: string
 }
 
 export const BaseRadio = ({
@@ -18,6 +19,7 @@ export const BaseRadio = ({
   className,
   withBorder = false,
   fullWidth = false,
+  ariaDescribedBy,
   ...props
 }: BaseRadioProps): JSX.Element => {
   const id = useId()
@@ -42,6 +44,7 @@ export const BaseRadio = ({
         className={cn(styles[`base-radio-input`], {
           [styles['has-error']]: hasError,
         })}
+        {...(ariaDescribedBy ? { 'aria-describedby': ariaDescribedBy } : {})}
         aria-invalid={hasError}
         id={id}
       />

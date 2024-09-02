@@ -19,6 +19,7 @@ interface CheckboxProps {
   disabled?: boolean
   withBorder?: boolean
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
+  ariaDescribedBy?: string
 }
 
 export const Checkbox = ({
@@ -30,6 +31,7 @@ export const Checkbox = ({
   hideFooter,
   disabled,
   withBorder,
+  ariaDescribedBy,
   ...props
 }: CheckboxProps): JSX.Element => {
   const [field, meta] = useField({ name, type: 'checkbox' })
@@ -43,6 +45,7 @@ export const Checkbox = ({
         value={value}
         disabled={disabled}
         withBorder={withBorder}
+        ariaDescribedBy={ariaDescribedBy}
         {...props}
       />
       {!hideFooter && (
