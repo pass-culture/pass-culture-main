@@ -48,11 +48,6 @@ def create_e2e_pro_users(offerers_by_name: dict) -> dict[str, User]:
     users_by_name["pro pro adage eligible"] = pro_adage_eligible
     pro_new_nav_state = users_factories.ProFactory(email="activation_new_nav@example.com")
     eac_new_nav_state = users_factories.ProFactory(email="eac_2_lieu_new_nav@example.com")
-    users_factories.UserProNewNavStateFactory(user=pro_retention)
-    users_factories.UserProNewNavStateFactory(user=pro_retention_structures)
-    users_factories.UserProNewNavStateFactory(user=pro_adage_eligible)
-    users_factories.UserProNewNavStateFactory(user=pro_new_nav_state)
-    users_factories.UserProNewNavStateFactory(user=eac_new_nav_state)
 
     repository.save(*users_by_name.values(), pro_new_nav_state, eac_new_nav_state)
 

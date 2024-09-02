@@ -111,7 +111,6 @@ def create_data_offerers_with_pro_users() -> tuple[dict[str, Offerer], dict[str,
             postalCode=f"{departement_code}100",
             phoneNumber="+33100000001",
         )
-        users_factories.UserProNewNavStateFactory(user=pro)
         users_by_name[user_name] = pro
         user_index += 1
 
@@ -138,7 +137,6 @@ def create_data_offerers_with_pro_users() -> tuple[dict[str, Offerer], dict[str,
                 postalCode=f"{departement_code}100",
                 phoneNumber="+33100000002",
             )
-            users_factories.UserProNewNavStateFactory(user=pro)
             users_by_name[user_name] = pro
             user_index += 1
 

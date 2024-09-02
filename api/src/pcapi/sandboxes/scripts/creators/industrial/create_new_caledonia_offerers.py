@@ -10,7 +10,6 @@ from pcapi.core.geography import factories as geography_factories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import factories as offers_factories
-from pcapi.core.users import factories as users_factories
 
 
 logger = logging.getLogger(__name__)
@@ -67,14 +66,13 @@ def _create_nc_active_offerer() -> None:
         adageId=None,
         offererAddress__address=address,
     )
-    pro_user = offerers_factories.UserOffererFactory(
+    offerers_factories.UserOffererFactory(
         offerer=offerer,
         user__firstName="Mâ",
         user__lastName="Néo-Calédonien",
         user__email="pro1.nc@example.com",
         user__phoneNumber="+687263443",
-    ).user
-    users_factories.UserProNewNavStateFactory(user=pro_user)
+    )
 
     bank_account = finance_factories.BankAccountFactory(
         label="Compte courant Banque de Nouvelle-Calédonie",
@@ -152,11 +150,10 @@ def _create_nc_minimal_offerer() -> None:
         adageId=None,
         offererAddress__address=address,
     )
-    pro_user = offerers_factories.UserOffererFactory(
+    offerers_factories.UserOffererFactory(
         offerer=offerer,
         user__firstName="Méréï",
         user__lastName="Néo-Calédonien",
         user__email="pro2.nc@example.com",
         user__phoneNumber="+687442504",
-    ).user
-    users_factories.UserProNewNavStateFactory(user=pro_user)
+    )

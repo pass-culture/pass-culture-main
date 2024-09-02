@@ -20,6 +20,7 @@ import pcapi.core.finance.models as finance_models
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.users import utils as users_utils
 import pcapi.core.users.constants as users_constants
+import pcapi.core.users.models as users_models
 from pcapi.models import db
 from pcapi.models.beneficiary_import import BeneficiaryImport
 from pcapi.models.beneficiary_import import BeneficiaryImportSources
@@ -886,6 +887,32 @@ class ProFactory(BaseFactory):
         instance = super()._build(model_class, *args, **kwargs)
         instance.clearTextPassword = settings.TEST_DEFAULT_PASSWORD
         return instance
+
+    @factory.post_generation
+    def new_pro_portal(
+        self,
+        create: bool,
+        extracted: typing.Any = None,
+        **kwargs: typing.Any,
+    ) -> None:
+        if not create:
+            return
+
+        # We check whether or not a UserProNewNavState because the "created" flag is always true
+        # if the user exists but FactoryBoy tried to create it through nested data such as:
+        #     offerers_factories.UserOffererFactory(offerer1, user__email="api@example.com"))
+        #     offerers_factories.UserOffererFactory(offerer2, user__email="api@example.com"))
+        # The second time, the get_or_create on email will fetch the user but still set create to True
+        # when calling this function
+        if (
+            not self.id
+            or not users_models.UserProNewNavState.query.filter(
+                users_models.UserProNewNavState.userId == self.id
+            ).one_or_none()
+        ):
+            db.session.add(self)
+            db.session.flush()
+            self.pro_new_nav_state = UserProNewNavStateFactory(user=self)
 
 
 class NonAttachedProFactory(ProFactory):
