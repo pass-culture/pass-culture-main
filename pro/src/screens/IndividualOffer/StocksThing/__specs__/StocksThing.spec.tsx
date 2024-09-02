@@ -47,6 +47,15 @@ vi.mock('utils/date', async () => {
   }
 })
 
+Object.defineProperty(window, 'matchMedia', {
+  writable: true,
+  value: () => ({
+    matches: false,
+    addListener: vi.fn(),
+    removeListener: vi.fn(),
+  }),
+})
+
 const renderStockThingScreen = async (
   stocks: GetOfferStockResponseModel[],
   props: StocksThingProps,
@@ -319,9 +328,10 @@ describe('screens:StocksThing', () => {
       }
       await renderStockThingScreen([], props, contextValue)
 
-      await userEvent.click(screen.getByTestId('dropdown-menu-trigger'))
-
-      await userEvent.click(screen.getByTitle("Ajouter des codes d'activation"))
+      const button = screen.getByRole('button', {
+        name: "Ajouter des codes d'activation",
+      })
+      await userEvent.click(button)
 
       const uploadButton = screen.getByText(
         'Importer un fichier .csv depuis l’ordinateur'
@@ -385,8 +395,10 @@ describe('screens:StocksThing', () => {
       }
       await renderStockThingScreen([], props, contextValue)
 
-      await userEvent.click(screen.getByTestId('dropdown-menu-trigger'))
-      await userEvent.click(screen.getByTitle("Ajouter des codes d'activation"))
+      const button = screen.getByRole('button', {
+        name: "Ajouter des codes d'activation",
+      })
+      await userEvent.click(button)
 
       const uploadButton = await screen.findByText(
         'Importer un fichier .csv depuis l’ordinateur'
