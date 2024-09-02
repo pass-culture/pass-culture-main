@@ -125,6 +125,14 @@ describe('validationSchema OfferEducational', () => {
         },
         expectedErrors: [],
       },
+      {
+        description: 'valid form without notification email',
+        formValues: {
+          ...defaultValues,
+          notificationEmails: [''],
+        },
+        expectedErrors: ['Veuillez renseigner une adresse email'],
+      },
     ]
 
     cases.forEach(({ description, formValues, expectedErrors }) => {

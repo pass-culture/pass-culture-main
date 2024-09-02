@@ -1,5 +1,6 @@
 import { screen, waitFor, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { it } from 'vitest'
 
 import { api } from 'apiClient/api'
 import {
@@ -172,31 +173,48 @@ describe('CollectiveOfferVisibility', () => {
     ).toBeInTheDocument()
   })
 
-  it('should save selected institution and call onSuccess props', async () => {
+  it('should submit the form with right data', async () => {
     const resultingOffer = getCollectiveOfferFactory()
     vi.spyOn(
       api,
       'patchCollectiveOffersEducationalInstitution'
     ).mockResolvedValueOnce(resultingOffer)
+    vi.spyOn(
+      api,
+      'getAutocompleteEducationalRedactorsForUai'
+    ).mockResolvedValueOnce([
+      {
+        email: 'compte.test@education.gouv.fr',
+        gender: 'Mr.',
+        name: 'REDA',
+        surname: 'KHTEUR',
+      },
+    ])
 
     renderVisibilityStep(props)
 
-    await userEvent.click(
-      await screen.findByLabelText(
-        /Nom de l’établissement scolaire ou code UAI/
-      )
+    const institutionSelect = screen.getAllByTestId('select')[0]
+    await userEvent.selectOptions(institutionSelect, '12')
+    const teacherInput = screen.getByLabelText(/Prénom et nom de l’enseignant/)
+    await userEvent.type(teacherInput, 'Red')
+
+    await userEvent.selectOptions(
+      screen.getAllByTestId('select')[1],
+      'compte.test@education.gouv.fr'
     )
 
-    const optionsList = await screen.findByTestId('list')
-    await userEvent.click(
-      within(optionsList).getByText(/Collège Institution 1/)
-    )
     await userEvent.click(
       screen.getByRole('button', { name: /Étape suivante/ })
     )
     expect(
       api.patchCollectiveOffersEducationalInstitution
     ).toHaveBeenCalledTimes(1)
+    expect(
+      api.patchCollectiveOffersEducationalInstitution
+    ).toHaveBeenCalledWith(1, {
+      educationalInstitutionId: 12,
+      teacherEmail: 'compte.test@education.gouv.fr',
+    })
     expect(props.onSuccess).toHaveBeenCalledWith({
       offerId: offerId.toString(),
       message:
