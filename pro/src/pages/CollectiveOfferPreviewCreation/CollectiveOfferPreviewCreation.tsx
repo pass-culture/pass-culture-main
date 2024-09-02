@@ -2,7 +2,7 @@ import { AppLayout } from 'app/AppLayout'
 import { CollectiveOfferLayout } from 'components/CollectiveOfferLayout/CollectiveOfferLayout'
 import { RouteLeavingGuardCollectiveOfferCreation } from 'components/RouteLeavingGuardCollectiveOfferCreation/RouteLeavingGuardCollectiveOfferCreation'
 import { isCollectiveOffer } from 'core/OfferEducational/types'
-import { CollectiveOfferPreviewCreationScreen } from 'screens/CollectiveOfferPreviewCreation/CollectiveOfferPreviewCreation'
+import { CollectiveOfferPreviewCreationScreen } from 'screens/CollectiveOfferPreviewCreation/CollectiveOfferPreviewCreationScreen'
 import {
   MandatoryCollectiveOfferFromParamsProps,
   withCollectiveOfferFromParams,
