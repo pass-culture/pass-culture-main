@@ -25,7 +25,7 @@ describe('AddVenueProviderButton', () => {
   beforeEach(() => {
     props = {
       venue: defaultGetVenue,
-      linkedProvidersIds: [],
+      linkedProviders: [],
     }
 
     vi.spyOn(api, 'getProvidersByVenue').mockResolvedValue([
@@ -47,6 +47,12 @@ describe('AddVenueProviderButton', () => {
         hasOffererProvider: true,
         isActive: true,
       },
+      {
+        name: 'Ticket Ultra Mega Buster',
+        id: 15,
+        hasOffererProvider: true,
+        isActive: true,
+      },
     ])
   })
 
@@ -64,7 +70,7 @@ describe('AddVenueProviderButton', () => {
     expect(addVenueProviderButton).toBeInTheDocument()
     await userEvent.click(addVenueProviderButton)
     const options = screen.getAllByRole('option')
-    expect(options.length).toBe(4)
+    expect(options.length).toBe(5)
 
     expect(screen.getByRole('option', { name: 'Allociné' })).toBeInTheDocument()
     expect(
@@ -73,20 +79,63 @@ describe('AddVenueProviderButton', () => {
     expect(
       screen.getByRole('option', { name: 'Ciné Office' })
     ).toBeInTheDocument()
+    expect(
+      screen.getByRole('option', { name: 'Ticket Ultra Mega Buster' })
+    ).toBeInTheDocument()
   })
 
   it('should hide linked providers', async () => {
     await renderAddVenueProviderButton({
       ...props,
-      linkedProvidersIds: [12, 14],
+      linkedProviders: [
+        {
+          name: 'Ticket Buster',
+          id: 14,
+          hasOffererProvider: true,
+          isActive: true,
+        },
+      ],
     })
 
     const addVenueProviderButton = screen.getByText('Sélectionner un logiciel')
     expect(addVenueProviderButton).toBeInTheDocument()
     await userEvent.click(addVenueProviderButton)
     const options = screen.getAllByRole('option')
-    expect(options.length).toBe(2)
+    expect(options.length).toBe(4)
 
     expect(screen.getByRole('option', { name: 'Allociné' })).toBeInTheDocument()
+    expect(
+      screen.getByRole('option', { name: 'Ciné Office' })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('option', { name: 'Ticket Ultra Mega Buster' })
+    ).toBeInTheDocument()
+  })
+
+  it('should hide other integrated providers if venue is already linked to an integrated provider', async () => {
+    await renderAddVenueProviderButton({
+      ...props,
+      linkedProviders: [
+        {
+          name: 'Allociné',
+          id: 13,
+          hasOffererProvider: false,
+          isActive: true,
+        },
+      ],
+    })
+
+    const addVenueProviderButton = screen.getByText('Sélectionner un logiciel')
+    expect(addVenueProviderButton).toBeInTheDocument()
+    await userEvent.click(addVenueProviderButton)
+    const options = screen.getAllByRole('option')
+    expect(options.length).toBe(3)
+
+    expect(
+      screen.getByRole('option', { name: 'Ticket Buster' })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('option', { name: 'Ticket Ultra Mega Buster' })
+    ).toBeInTheDocument()
   })
 })

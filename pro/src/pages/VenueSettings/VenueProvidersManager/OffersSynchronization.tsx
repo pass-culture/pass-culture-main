@@ -39,9 +39,7 @@ export const OffersSynchronization = ({
         <FormLayout.Row>
           <AddVenueProviderButton
             venue={venue}
-            linkedProvidersIds={venueProviders.map(
-              ({ provider }) => provider.id
-            )}
+            linkedProviders={venueProviders.map(({ provider }) => provider)}
           />
         </FormLayout.Row>
       </FormLayout.Section>
