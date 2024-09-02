@@ -21,6 +21,15 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { Stocks } from '../Stocks'
 
+Object.defineProperty(window, 'matchMedia', {
+  writable: true,
+  value: () => ({
+    matches: false,
+    addListener: vi.fn(),
+    removeListener: vi.fn(),
+  }),
+})
+
 const renderStocksScreen = (
   storeOverrides: Partial<RootState> = {},
   contextOverride: Partial<IndividualOfferContextValues>

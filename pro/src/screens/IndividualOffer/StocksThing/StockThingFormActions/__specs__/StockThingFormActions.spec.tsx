@@ -1,5 +1,4 @@
 import { render, screen } from '@testing-library/react'
-import { userEvent } from '@testing-library/user-event'
 
 import FullTrashIcon from 'icons/full-trash.svg'
 
@@ -8,6 +7,15 @@ import {
   StockThingFormActionsProps,
 } from '../StockThingFormActions'
 import { StockFormRowAction } from '../types'
+
+Object.defineProperty(window, 'matchMedia', {
+  writable: true,
+  value: () => ({
+    matches: false,
+    addListener: vi.fn(),
+    removeListener: vi.fn(),
+  }),
+})
 
 const renderStockFormActions = (props: StockThingFormActionsProps) => {
   return render(<StockThingFormActions {...props} />)
@@ -26,20 +34,12 @@ describe('StockFormActions', () => {
     ]
   })
 
-  it('render actions button open', () => {
+  it('render actions button', () => {
     renderStockFormActions({
       actions,
     })
 
-    expect(screen.getByTestId('dropdown-menu-trigger')).toBeInTheDocument()
-    expect(screen.getAllByText('Action label')).toHaveLength(1)
-  })
-
-  it('render actions list', async () => {
-    renderStockFormActions({
-      actions,
-    })
-    await userEvent.click(screen.getByTestId('dropdown-menu-trigger'))
-    expect(screen.getAllByText('Action label')).toHaveLength(2)
+    const button = screen.getByRole('button', { name: 'Action label' })
+    expect(button).toBeInTheDocument()
   })
 })

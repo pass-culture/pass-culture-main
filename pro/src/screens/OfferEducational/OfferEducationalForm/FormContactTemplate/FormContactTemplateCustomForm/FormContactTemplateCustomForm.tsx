@@ -16,7 +16,6 @@ export const FormContactTemplateCustomForm = ({
   return (
     <FieldSetLayout
       name="contactForm"
-      legend="Test"
       className={styles['custom-form']}
       hideFooter
     >
