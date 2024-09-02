@@ -413,14 +413,12 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
                   />
                 </>
               )}
-
               {actions.length > 0 && (
                 <StockThingFormActions actions={actions} />
               )}
             </div>
           </div>
         </FormLayout>
-
         {canBeDuo && (
           <FormLayout fullWidthActions>
             <FormLayout.Section

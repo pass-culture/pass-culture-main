@@ -46,6 +46,15 @@ vi.mock('utils/date', async () => {
   }
 })
 
+Object.defineProperty(window, 'matchMedia', {
+  writable: true,
+  value: () => ({
+    matches: false,
+    addListener: vi.fn(),
+    removeListener: vi.fn(),
+  }),
+})
+
 const renderStockThingScreen = () =>
   renderWithProviders(
     <>
@@ -198,8 +207,10 @@ describe('screens:StocksThing', () => {
     vi.spyOn(api, 'deleteStock').mockResolvedValue({ id: 1 })
     renderStockThingScreen()
     await screen.findByTestId('stock-thing-form')
-    await userEvent.click(screen.getByTestId('dropdown-menu-trigger'))
-    await userEvent.click(await screen.findByTitle('Supprimer le stock'))
+    const button = screen.getByRole('button', {
+      name: 'Supprimer le stock',
+    })
+    await userEvent.click(button)
     expect(
       screen.getByText('Voulez-vous supprimer ce stock ?')
     ).toBeInTheDocument()
@@ -232,9 +243,10 @@ describe('screens:StocksThing', () => {
     renderStockThingScreen()
     await screen.findByTestId('stock-thing-form')
 
-    await userEvent.click(screen.getAllByTestId('dropdown-menu-trigger')[1])
-    await userEvent.click(screen.getAllByTestId('dropdown-menu-trigger')[0])
-    await userEvent.click(await screen.findByTitle('Supprimer le stock'))
+    const button = screen.getByRole('button', {
+      name: 'Supprimer le stock',
+    })
+    await userEvent.click(button)
     expect(
       screen.getByText('Voulez-vous supprimer ce stock ?')
     ).toBeInTheDocument()
@@ -260,8 +272,10 @@ describe('screens:StocksThing', () => {
     renderStockThingScreen()
     await screen.findByTestId('stock-thing-form')
 
-    await userEvent.click(screen.getByTestId('dropdown-menu-trigger'))
-    await userEvent.click(await screen.findByTitle('Supprimer le stock'))
+    const button = screen.getByRole('button', {
+      name: 'Supprimer le stock',
+    })
+    await userEvent.click(button)
     await userEvent.click(
       await screen.findByText('Supprimer', { selector: 'button' })
     )
@@ -297,8 +311,10 @@ describe('screens:StocksThing', () => {
     })
     renderStockThingScreen()
     await screen.findByTestId('stock-thing-form')
-    await userEvent.click(screen.getByTestId('dropdown-menu-trigger'))
-    await userEvent.click(await screen.findByTitle('Supprimer le stock'))
+    const button = screen.getByRole('button', {
+      name: 'Supprimer le stock',
+    })
+    await userEvent.click(button)
     expect(
       screen.queryByText('Voulez-vous supprimer ce stock ?')
     ).not.toBeInTheDocument()
