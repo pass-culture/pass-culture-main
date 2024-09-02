@@ -1,4 +1,5 @@
 import abc
+import contextlib
 import uuid
 
 import pytest
@@ -11,6 +12,7 @@ from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.providers import factories as providers_factories
 from pcapi.core.providers import models as providers_models
+from pcapi.models import db
 
 from tests.conftest import TestClient
 
@@ -174,3 +176,24 @@ class ProductEndpointHelper:
             name="Vieux motard que jamais",
             extraData={"ean": "1234567890123"},
         )
+
+
+@contextlib.contextmanager
+def assert_attribute_value_changes_to(model, attribute_name, expected_value):
+    previous_value = getattr(model, attribute_name)
+
+    yield
+
+    db.session.refresh(model)
+    assert getattr(model, attribute_name) != previous_value
+    assert getattr(model, attribute_name) == expected_value
+
+
+@contextlib.contextmanager
+def assert_attribute_does_not_change(model, attribute_name):
+    previous_value = getattr(model, attribute_name)
+
+    yield
+
+    db.session.refresh(model)
+    assert getattr(model, attribute_name) == previous_value

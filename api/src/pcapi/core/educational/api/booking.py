@@ -402,6 +402,7 @@ def cancel_collective_booking(
     _from: str | None = None,
     author_id: int | None = None,
 ) -> None:
+    collective_booking_id = collective_booking.id
     with transaction():
         educational_repository.get_and_lock_collective_stock(stock_id=collective_booking.collectiveStock.id)
         db.session.refresh(collective_booking)
@@ -420,7 +421,7 @@ def cancel_collective_booking(
         reason.value.lower(),
         f"from {_from}" if _from else "",
         extra={
-            "collective_booking": collective_booking.id,
+            "collective_booking": collective_booking_id,
             "reason": str(educational_models.CollectiveBookingCancellationReasons.OFFERER),
         },
     )
