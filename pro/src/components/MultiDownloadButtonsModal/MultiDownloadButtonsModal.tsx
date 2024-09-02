@@ -1,3 +1,4 @@
+import cn from 'classnames'
 import React, { useRef, useState } from 'react'
 
 import { useAnalytics } from 'app/App/analytics/firebase'
@@ -19,6 +20,7 @@ interface MultiDownloadButtonsModalType {
   isFiltersDisabled: boolean
   downloadFunction: (filters: PreFiltersParams, type: string) => Promise<void>
   filters: PreFiltersParams
+  className?: string
 }
 
 export const MultiDownloadButtonsModal = ({
@@ -27,6 +29,7 @@ export const MultiDownloadButtonsModal = ({
   isFiltersDisabled,
   downloadFunction,
   filters,
+  className,
 }: MultiDownloadButtonsModalType): JSX.Element => {
   const { logEvent } = useAnalytics()
 
@@ -40,7 +43,10 @@ export const MultiDownloadButtonsModal = ({
   })
 
   return (
-    <div ref={containerRef} className={style['download-button-box']}>
+    <div
+      ref={containerRef}
+      className={cn(style['download-button-box'], className)}
+    >
       <div className={style['download-modal-button']}>
         <Button
           variant={ButtonVariant.PRIMARY}
