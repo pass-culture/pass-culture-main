@@ -1,5 +1,3 @@
-import { sub } from 'date-fns'
-
 import { OfferEducationalStockFormValues } from 'core/OfferEducational/types'
 import { getYupValidationSchemaErrors } from 'utils/yupValidationTestHelpers'
 
@@ -105,7 +103,7 @@ describe('validationSchema', () => {
       description: 'booking limit date should not be in the past',
       formValues: {
         ...values,
-        bookingLimitDatetime: sub(new Date(), { days: 1 }).toISOString(),
+        bookingLimitDatetime: '2024-08-31T13:00:00Z',
       },
       expectedErrors: [
         'La date limite de réservation doit être égale ou postérieure à la date actuelle',
