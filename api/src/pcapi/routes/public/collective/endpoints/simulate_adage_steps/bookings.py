@@ -1,6 +1,14 @@
+import logging
+
+import sqlalchemy as sa
+
 from pcapi.core.bookings import exceptions as bookings_exceptions
 from pcapi.core.educational import exceptions
+from pcapi.core.educational import models
 from pcapi.core.educational.api import booking as booking_api
+from pcapi.core.offerers import models as offerers_models
+from pcapi.core.providers import models as providers_models
+from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import ForbiddenError
 from pcapi.models.api_errors import ResourceNotFoundError
 from pcapi.routes.adage.v1.serialization import constants
@@ -12,6 +20,10 @@ from pcapi.routes.public.documentation_constants import tags
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
 from pcapi.validation.routes.users_authentifications import api_key_required
+from pcapi.validation.routes.users_authentifications import current_api_key
+
+
+logger = logging.getLogger(__name__)
 
 
 @blueprints.public_api.route("/v2/collective/adage_mock/bookings/<int:booking_id>/confirm", methods=["POST"])
@@ -54,3 +66,65 @@ def confirm_collective_booking(booking_id: int) -> None:
         raise ResourceNotFoundError({"code": constants.EDUCATIONAL_BOOKING_NOT_FOUND})
     except exceptions.EducationalDepositNotFound:
         raise ResourceNotFoundError({"code": "DEPOSIT_NOT_FOUND"})
+
+
+@blueprints.public_api.route("/v2/collective/adage_mock/bookings/<int:booking_id>/cancel", methods=["POST"])
+@utils.exclude_prod_environment
+@api_key_required
+@spectree_serialize(
+    api=spectree_schemas.public_api_schema,
+    on_success_status=204,
+    tags=[tags.COLLECTIVE_ADAGE_MOCK],
+    resp=SpectreeResponse(
+        **(
+            http_responses.HTTP_204_COLLECTIVE_BOOKING_STATUS_UPDATE
+            | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
+            | http_responses.HTTP_403_COLLECTIVE_BOOKING_STATUS_UPDATE_REFUSED
+            | http_responses.HTTP_404_COLLECTIVE_OFFER_NOT_FOUND
+        )
+    ),
+)
+def adage_mock_cancel_collective_booking(booking_id: int) -> None:
+    """
+    Mock collective booking cancellation
+
+    Like this could happen within the Adage platform.
+
+    Warning: not available for production nor integration environments
+    """
+    booking = _get_booking_or_raise_404(booking_id)
+
+    try:
+        reason = models.CollectiveBookingCancellationReasons.PUBLIC_API
+        booking_api.cancel_collective_booking(booking, reason=reason, _from="adage_mock_api")
+    except exceptions.CollectiveBookingAlreadyCancelled:
+        raise ForbiddenError({"code": "ALREADY_CANCELLED_BOOKING"})
+    except exceptions.BookingIsAlreadyRefunded:
+        raise ForbiddenError({"code": "BOOKING_IS_REIMBURSED"})
+    except Exception as err:
+        err_extras = {"booking": booking_id, "api_key": current_api_key.id, "err": str(err)}
+        logger.error("Adage mock. Failed to cancel booking.", extra=err_extras)
+        raise ApiErrors({"code": "FAILED_TO_CANCEL_BOOKING_TRY_AGAIN"}, status_code=500)
+
+
+def _get_booking_or_raise_404(booking_id: int) -> models.CollectiveBooking:
+    booking = (
+        models.CollectiveBooking.query.filter(models.CollectiveBooking.id == booking_id)
+        .join(models.CollectiveStock)
+        .join(models.CollectiveOffer)
+        .join(offerers_models.Venue)
+        .join(providers_models.VenueProvider)
+        .filter(providers_models.VenueProvider.providerId == current_api_key.providerId)
+        .filter(providers_models.VenueProvider.isActive == True)
+        .options(
+            sa.orm.joinedload(models.CollectiveBooking.collectiveStock)
+            .load_only(models.CollectiveStock.id)
+            .joinedload(models.CollectiveStock.collectiveOffer)
+            .load_only(models.CollectiveOffer.id),
+        )
+        .one_or_none()
+    )
+
+    if not booking:
+        raise ResourceNotFoundError({"code": "BOOKING_NOT_FOUND"})
+    return booking
