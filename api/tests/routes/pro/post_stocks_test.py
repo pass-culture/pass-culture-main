@@ -58,6 +58,39 @@ class Returns201Test:
         )
 
     @patch("pcapi.core.search.async_index_offer_ids")
+    def test_create_one_free_product_stock(self, mocked_async_index_offer_ids, client):
+        # Given
+        offer = offers_factories.ThingOfferFactory(isActive=False, validation=OfferValidationStatus.DRAFT)
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+
+        # When
+        stock_data = {
+            "offerId": offer.id,
+            "stocks": [{"price": 0}],
+        }
+
+        response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+        assert response.status_code == 201
+        assert response.json["stocks_count"] == 1
+        assert len(Stock.query.all()) == len(stock_data["stocks"])
+        created_stock = Stock.query.first()
+
+        assert offer.id == created_stock.offerId
+        assert created_stock.price == 0
+        assert offer.isActive is False
+        assert offers_models.PriceCategory.query.count() == 0
+        assert offers_models.PriceCategoryLabel.query.count() == 0
+        assert offer.validation == OfferValidationStatus.DRAFT
+        assert len(mails_testing.outbox) == 0  # Mail sent during fraud validation
+        mocked_async_index_offer_ids.assert_called_once_with(
+            [offer.id],
+            reason=search.IndexationReason.STOCK_CREATION,
+        )
+
+    @patch("pcapi.core.search.async_index_offer_ids")
     def test_create_event_stocks(self, mocked_async_index_offer_ids, client):
         # Given
         offer = offers_factories.EventOfferFactory(isActive=False, validation=OfferValidationStatus.DRAFT)
