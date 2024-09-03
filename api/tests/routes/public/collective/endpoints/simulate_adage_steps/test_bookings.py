@@ -9,7 +9,6 @@ import pcapi.core.offerers.models as offerers_models
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_features
-from pcapi.routes.adage.v1.serialization import constants
 
 from tests.routes.public.helpers import PublicAPIRestrictedEnvEndpointHelper
 from tests.routes.public.helpers import assert_attribute_does_not_change
@@ -406,7 +405,6 @@ class UseCollectiveBookingTest(PublicAPIRestrictedEnvEndpointHelper):
         plain_api_key, provider = self.setup_provider()
         used_booking = build_used_booking(provider)
         auth_client = client.with_explicit_token(plain_api_key)
-
         error = {"code": "ONLY_CONFIRMED_BOOKING_CAN_BE_USED"}
         with assert_attribute_does_not_change(used_booking, "status"):
             self.use_booking(auth_client, used_booking.id, status_code=403, json_error=error)
@@ -441,7 +439,6 @@ class UseCollectiveBookingTest(PublicAPIRestrictedEnvEndpointHelper):
         plain_api_key, provider = self.setup_provider()
         confirmed_booking = build_confirmed_booking(provider)
         auth_client = client.with_explicit_token(plain_api_key)
-
         api_mock.add_event.side_effect = [RuntimeError("test")]
 
         with assert_attribute_does_not_change(confirmed_booking, "status"):
@@ -538,3 +535,71 @@ class ResetCollectiveBookingTest(PublicAPIRestrictedEnvEndpointHelper):
             expected_status_code=status_code,
             expected_error_json=json_error,
         )
+
+
+class RepayCollectiveBookingTest(PublicAPIRestrictedEnvEndpointHelper):
+    endpoint_url = "/v2/collective/adage_mock/bookings/{booking_id}/repay"
+    endpoint_method = "post"
+    default_path_params = {"booking_id": 1}
+
+    def test_cannot_repay_booking_not_linked_to_key(self, client):
+        plain_api_key, _ = self.setup_provider()
+        auth_client = client.with_explicit_token(plain_api_key)
+
+        booking = factories.CollectiveBookingFactory()
+        with assert_attribute_does_not_change(booking, "status"):
+            self.repay_booking(auth_client, booking.id, status_code=404)
+
+    def test_can_repay_used_booking(self, client):
+        plain_api_key, provider = self.setup_provider()
+        used_booking = build_used_booking(provider)
+        auth_client = client.with_explicit_token(plain_api_key)
+        with assert_attribute_value_changes_to(used_booking, "status", models.CollectiveBookingStatus.REIMBURSED):
+            booking_id = used_booking.id
+
+            expected_num_queries = 1  # 1. get api key
+            expected_num_queries += 1  # 2. get FF
+            expected_num_queries += 1  # 3. get collective booking
+            expected_num_queries += 1  # 4. update booking
+            with assert_num_queries(expected_num_queries):
+                self.repay_booking(auth_client, booking_id, status_code=204)
+
+    def test_cannot_repay_pending_booking(self, client):
+        plain_api_key, provider = self.setup_provider()
+        pending_booking = build_pending_booking(provider)
+        auth_client = client.with_explicit_token(plain_api_key)
+
+        with assert_attribute_does_not_change(pending_booking, "status"):
+            self.repay_booking(auth_client, pending_booking.id, status_code=403)
+
+    def test_cannot_repay_cancelled_booking(self, client):
+        plain_api_key, provider = self.setup_provider()
+        cancelled_booking = build_cancelled_booking(provider)
+        auth_client = client.with_explicit_token(plain_api_key)
+
+        with assert_attribute_does_not_change(cancelled_booking, "status"):
+            self.repay_booking(auth_client, cancelled_booking.id, status_code=403)
+
+    def test_cannot_repay_confirmed_booking(self, client):
+        plain_api_key, provider = self.setup_provider()
+        confirmed_booking = build_confirmed_booking(provider)
+        auth_client = client.with_explicit_token(plain_api_key)
+
+        with assert_attribute_does_not_change(confirmed_booking, "status"):
+            self.repay_booking(auth_client, confirmed_booking.id, status_code=403)
+
+    def test_cannot_repay_reimbursed_booking(self, client):
+        plain_api_key, provider = self.setup_provider()
+        reimbursed_booking = build_reimbursed_booking(provider)
+        auth_client = client.with_explicit_token(plain_api_key)
+
+        with assert_attribute_does_not_change(reimbursed_booking, "status"):
+            self.repay_booking(auth_client, reimbursed_booking.id, status_code=403)
+
+    def repay_booking(self, client, booking_id, status_code, json_error=None):
+        response = self.send_request(client, url_params={"booking_id": booking_id})
+
+        assert response.status_code == status_code
+        if json_error:
+            for key, msg in json_error.items():
+                assert response.json.get(key) == msg
