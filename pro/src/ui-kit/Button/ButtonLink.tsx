@@ -92,7 +92,7 @@ export const ButtonLink = forwardRef(
         onBlur={(e) => onBlur?.(e)}
         rel="noopener noreferrer"
         {...props}
-        target={opensInNewTab ? '_blank' : '_self'}
+        target={props.target ?? (opensInNewTab ? '_blank' : '_self')}
         ref={forwadedRef}
       >
         {body}
@@ -104,7 +104,7 @@ export const ButtonLink = forwardRef(
         onBlur={(e) => onBlur?.(e)}
         to={absoluteUrl}
         aria-label={props['aria-label']}
-        target={opensInNewTab ? '_blank' : '_self'}
+        target={props.target ?? (opensInNewTab ? '_blank' : '_self')}
         {...props}
         ref={forwadedRef}
       >
