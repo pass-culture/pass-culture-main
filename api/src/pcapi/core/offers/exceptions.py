@@ -104,6 +104,10 @@ class OfferCreationBaseException(ClientError):
     pass
 
 
+class PriceCategoryCreationBaseException(ClientError):
+    pass
+
+
 class OfferCannotBeDuo(OfferCreationBaseException):
     def __init__(self) -> None:
         super().__init__("enableDoubleBookings", "the category chosen does not allow double bookings")
@@ -141,11 +145,19 @@ class CannotSetIdAtProviderWithoutAProvider(OfferCreationBaseException):
         )
 
 
-class IdAtProviderAlreadyTaken(OfferCreationBaseException):
+class IdAtProviderAlreadyTakenByAnotherVenueOffer(OfferCreationBaseException):
     def __init__(self, id_at_provider: str) -> None:
         super().__init__(
             "idAtProvider",
             f"`{id_at_provider}` is already taken by another venue offer",
+        )
+
+
+class IdAtProviderAlreadyTakenByAnotherOfferPriceCategory(PriceCategoryCreationBaseException):
+    def __init__(self, id_at_provider: str) -> None:
+        super().__init__(
+            "idAtProvider",
+            f"`{id_at_provider}` is already taken by another offer price category",
         )
 
 

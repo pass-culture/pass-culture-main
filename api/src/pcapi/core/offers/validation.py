@@ -302,7 +302,7 @@ def check_can_input_id_at_provider_for_this_venue(
     )
 
     if id_at_provider_is_taken:
-        raise exceptions.IdAtProviderAlreadyTaken(id_at_provider)
+        raise exceptions.IdAtProviderAlreadyTakenByAnotherVenueOffer(id_at_provider)
 
 
 def check_update_only_allowed_stock_fields_for_allocine_offer(updated_fields: set) -> None:
@@ -410,6 +410,21 @@ def check_digital_offer_fields(offer: models.Offer) -> None:
 
     if errors.errors:
         raise errors
+
+
+def check_can_input_id_at_provider_for_this_price_category(
+    offer_id: int,
+    id_at_provider: str,
+    price_category_id: int | None = None,
+) -> None:
+    id_at_provider_is_taken = repository.is_id_at_provider_taken_by_another_offer_price_category(
+        offer_id,
+        id_at_provider,
+        price_category_id,
+    )
+
+    if id_at_provider_is_taken:
+        raise exceptions.IdAtProviderAlreadyTakenByAnotherOfferPriceCategory(id_at_provider)
 
 
 def check_activation_codes_expiration_datetime(

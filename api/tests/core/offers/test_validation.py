@@ -106,7 +106,7 @@ class CheckCanInputIdAtProviderForThisVenueTest:
             idAtProvider=id_at_provider,
         )
 
-        with pytest.raises(exceptions.IdAtProviderAlreadyTaken) as error:
+        with pytest.raises(exceptions.IdAtProviderAlreadyTakenByAnotherVenueOffer) as error:
             validation.check_can_input_id_at_provider_for_this_venue(venue.id, id_at_provider)
 
         assert error.value.errors["idAtProvider"] == ["`rolalala` is already taken by another venue offer"]
