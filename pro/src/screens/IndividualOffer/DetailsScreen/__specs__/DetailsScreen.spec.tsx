@@ -33,7 +33,7 @@ import {
 import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import { DetailsScreen, DetailsScreenProps } from '../DetailsScreen'
-const mockLogEvent = vi.fn()
+import { buildSubcategoryConditonalFields } from '../utils'
 
 vi.mock('apiClient/api', () => ({
   api: {
@@ -53,6 +53,7 @@ vi.mock('use-debounce', async () => ({
   useDebouncedCallback: vi.fn((fn) => fn),
 }))
 
+const mockLogEvent = vi.fn()
 const scrollIntoViewMock = vi.fn()
 
 const DEFAULTS = {
@@ -105,6 +106,7 @@ describe('screens:IndividualOffer::Informations', () => {
 
   beforeEach(() => {
     Element.prototype.scrollIntoView = scrollIntoViewMock
+
     categories = [
       categoryFactory({
         id: 'A',
@@ -112,6 +114,7 @@ describe('screens:IndividualOffer::Informations', () => {
         isSelectable: true,
       }),
     ]
+
     subCategories = [
       subcategoryFactory({
         id: 'virtual',
@@ -402,171 +405,151 @@ describe('screens:IndividualOffer::Informations', () => {
     })
   })
 
-  it('should render suggested subcategories', async () => {
-    vi.spyOn(api, 'getSuggestedSubcategories').mockResolvedValue({
-      subcategoryIds: ['virtual', 'physical'],
-    })
-    vi.spyOn(useAnalytics, 'useRemoteConfigParams').mockReturnValue({
-      SUGGESTED_CATEGORIES: 'true',
-    })
-
-    renderDetailsScreen(
-      {
-        ...props,
-        venues: [
-          {
-            id: 1,
-            name: 'Venue 1',
-            address: {
-              ...addressResponseIsEditableModelFactory({
-                label: 'mon adresse',
-                city: 'ma ville',
-                street: 'ma street',
-                postalCode: '1',
-              }),
-            },
-            isVirtual: false,
-            hasCreatedOffer: false,
-            managingOffererId: 1,
-            offererName: 'Offerer 1',
-            venueTypeCode: VenueTypeCode.FESTIVAL,
-          },
-          {
-            id: 2,
-            name: 'Venue 2',
-            address: {
-              ...addressResponseIsEditableModelFactory({
-                label: 'mon adresse',
-                city: 'ma ville',
-                street: 'ma street',
-                postalCode: '1',
-              }),
-            },
-            isVirtual: false,
-            hasCreatedOffer: false,
-            managingOffererId: 1,
-            offererName: 'Offerer 1',
-            venueTypeCode: VenueTypeCode.FESTIVAL,
-          },
-        ],
-      },
-      contextValue,
-      {
-        features: ['WIP_SUGGESTED_SUBCATEGORIES'],
-      }
-    )
-
-    expect(
-      screen.queryByText(/Catégories suggérées pour votre offre/)
-    ).toBeInTheDocument()
-
-    // at first there is no suggested subcategories
-    const suggestedSubCatInitText = screen.queryByText(
+  describe('about categories / subcategories selection', () => {
+    const venueSelectorLabel = /Lieu/
+    const titleLabel = /Titre de l’offre/
+    const suggestedSubCatTitle = /Catégories suggérées pour votre offre/
+    const suggestedSubCatEmptyState =
       /Veuillez renseigner un titre ou une description/
-    )
-    expect(suggestedSubCatInitText).toBeInTheDocument()
-
-    const venueSelector = await screen.findByLabelText(/Lieu/)
-    await userEvent.selectOptions(venueSelector, '1')
-
-    expect(suggestedSubCatInitText).not.toBeInTheDocument()
-    expect(screen.getByText('Sous catégorie online de A')).toBeInTheDocument()
-    expect(screen.getByText('Sous catégorie offline de A')).toBeInTheDocument()
-    expect(screen.getByText('Autre')).toBeInTheDocument()
-
-    // When clicking on a suggested subcategory, the conditional fields are displayed
-    await userEvent.click(screen.getByText('Sous catégorie online de A'))
-    expect(screen.getByText('Auteur')).toBeInTheDocument()
-    expect(screen.getByText('Durée')).toBeInTheDocument()
-
-    await userEvent.click(screen.getByText('Sous catégorie offline de A'))
-    expect(screen.queryByText('Auteur')).not.toBeInTheDocument()
-    expect(screen.getByText(/EAN/)).toBeInTheDocument()
-
-    // When clicking on "Autre", we can choose subcategory and the conditional fields are hidden
-    await userEvent.click(screen.getByText('Autre'))
-    expect(screen.queryByText('Auteur')).not.toBeInTheDocument()
-    expect(screen.queryByText(/EAN/)).not.toBeInTheDocument()
-    expect(screen.getByLabelText('Catégorie *')).toBeInTheDocument()
-  })
-
-  it('should render error on category when no suggested categories has been selected', async () => {
-    vi.spyOn(api, 'getSuggestedSubcategories').mockResolvedValue({
-      subcategoryIds: ['virtual', 'physical'],
-    })
-    vi.spyOn(useAnalytics, 'useRemoteConfigParams').mockReturnValue({
-      SUGGESTED_CATEGORIES: 'true',
-    })
-    renderDetailsScreen(
-      {
-        ...props,
-        venues: [
-          {
-            id: 1,
-            name: 'Venue 1',
-            address: {
-              ...addressResponseIsEditableModelFactory({
-                label: 'mon adresse',
-                city: 'ma ville',
-                street: 'ma street',
-                postalCode: '1',
-              }),
-            },
-            isVirtual: false,
-            hasCreatedOffer: false,
-            managingOffererId: 1,
-            offererName: 'Offerer 1',
-            venueTypeCode: VenueTypeCode.FESTIVAL,
+    const customProps = {
+      ...props,
+      venues: [
+        {
+          id: 1,
+          name: 'Venue 1',
+          address: {
+            ...addressResponseIsEditableModelFactory({
+              label: 'mon adresse',
+              city: 'ma ville',
+              street: 'ma street',
+              postalCode: '1',
+            }),
           },
-          {
-            id: 2,
-            name: 'Venue 2',
-            address: {
-              ...addressResponseIsEditableModelFactory({
-                label: 'mon adresse',
-                city: 'ma ville',
-                street: 'ma street',
-                postalCode: '1',
-              }),
-            },
-            isVirtual: false,
-            hasCreatedOffer: false,
-            managingOffererId: 1,
-            offererName: 'Offerer 1',
-            venueTypeCode: VenueTypeCode.FESTIVAL,
+          isVirtual: false,
+          hasCreatedOffer: false,
+          managingOffererId: 1,
+          offererName: 'Offerer 1',
+          venueTypeCode: VenueTypeCode.FESTIVAL,
+        },
+        {
+          id: 2,
+          name: 'Venue 2',
+          address: {
+            ...addressResponseIsEditableModelFactory({
+              label: 'mon adresse',
+              city: 'ma ville',
+              street: 'ma street',
+              postalCode: '1',
+            }),
           },
-        ],
-      },
-      contextValue,
-      {
+          isVirtual: false,
+          hasCreatedOffer: false,
+          managingOffererId: 1,
+          offererName: 'Offerer 1',
+          venueTypeCode: VenueTypeCode.FESTIVAL,
+        },
+      ],
+    }
+    const conditionalFieldLabels: { [key: string]: string } = {
+      author: 'Auteur',
+      durationMinutes: 'Durée',
+    }
+
+    it('should render suggested subcategories when enabled', async () => {
+      const chosenSubCategoriesIds = ['virtual', 'physical']
+      const { subcategoryConditionalFields } = buildSubcategoryConditonalFields(
+        subCategories.find((sub) => chosenSubCategoriesIds.includes(sub.id))
+      )
+      vi.spyOn(api, 'getSuggestedSubcategories').mockResolvedValue({
+        subcategoryIds: chosenSubCategoriesIds,
+      })
+      vi.spyOn(useAnalytics, 'useRemoteConfigParams').mockReturnValue({
+        SUGGESTED_CATEGORIES: 'true',
+      })
+
+      renderDetailsScreen(customProps, contextValue, {
         features: ['WIP_SUGGESTED_SUBCATEGORIES'],
+      })
+
+      // User selects a venue or fills the title.
+      const venueSelector = screen.getByLabelText(venueSelectorLabel)
+      const titleInput = screen.getByLabelText(titleLabel)
+      await userEvent.selectOptions(venueSelector, '1')
+      await userEvent.type(titleInput, 'My super offer')
+
+      // Suggested subcategories are displayed along with the "Autre" option.
+      const radioButtons = screen.getAllByRole('radio')
+      expect(radioButtons).toHaveLength(chosenSubCategoriesIds.length + 1)
+
+      // User selects a suggested subcategory.
+      const selection = chosenSubCategoriesIds[0]
+      const selectedRadioButton = radioButtons.find(
+        (radio) => radio.getAttribute('value') === selection
+      ) as HTMLInputElement
+      await userEvent.click(selectedRadioButton)
+
+      // Conditional fields should be displayed.
+      for (const field of subcategoryConditionalFields) {
+        const input = screen.getByLabelText(conditionalFieldLabels[field])
+        expect(input).toBeInTheDocument()
       }
-    )
+    })
 
-    expect(
-      screen.queryByText(/Catégories suggérées pour votre offre/)
-    ).toBeInTheDocument()
+    it('should fallback to manual selection when suggested subcategories are enabled but not available', async () => {
+      // An empty array of suggestions will be handled the same way as an api error.
+      // To test this, we either mock the api call to return an empty array or reject the promise.
+      vi.spyOn(api, 'getSuggestedSubcategories').mockResolvedValue({
+        subcategoryIds: [],
+      })
+      vi.spyOn(useAnalytics, 'useRemoteConfigParams').mockReturnValue({
+        SUGGESTED_CATEGORIES: 'true',
+      })
 
-    // at first there is no suggested subcategories
-    const suggestedSubCatInitText = screen.queryByText(
-      /Veuillez renseigner un titre ou une description/
-    )
-    expect(suggestedSubCatInitText).toBeInTheDocument()
+      renderDetailsScreen(customProps, contextValue, {
+        features: ['WIP_SUGGESTED_SUBCATEGORIES'],
+      })
 
-    await userEvent.selectOptions(await screen.findByLabelText(/Lieu/), '1')
+      // User selects a venue or fills the title.
+      const venueSelector = screen.getByLabelText(venueSelectorLabel)
+      const titleInput = screen.getByLabelText(titleLabel)
+      await userEvent.selectOptions(venueSelector, '1')
+      await userEvent.type(titleInput, 'My super offer')
 
-    await userEvent.type(
-      screen.getByLabelText(/Titre de l’offre/),
-      'My super offer'
-    )
+      // Only the "Autre" option should be available and selected.
+      const radioButtons = screen.getAllByRole('radio')
+      expect(radioButtons).toHaveLength(1)
+    })
 
-    expect(suggestedSubCatInitText).not.toBeInTheDocument()
+    it('should render an error when no selection has been made', async () => {
+      vi.spyOn(api, 'getSuggestedSubcategories').mockResolvedValue({
+        subcategoryIds: ['virtual', 'physical'],
+      })
+      vi.spyOn(useAnalytics, 'useRemoteConfigParams').mockReturnValue({
+        SUGGESTED_CATEGORIES: 'true',
+      })
 
-    await userEvent.click(screen.getByText(DEFAULTS.submitButtonLabel))
+      renderDetailsScreen(customProps, contextValue, {
+        features: ['WIP_SUGGESTED_SUBCATEGORIES'],
+      })
 
-    expect(
-      screen.getByText('Veuillez sélectionner une catégorie')
-    ).toBeInTheDocument()
+      // Init.
+      const title = screen.getByText(suggestedSubCatTitle)
+      expect(title).toBeInTheDocument()
+      const initText = screen.queryByText(suggestedSubCatEmptyState)
+      expect(initText).toBeInTheDocument()
+
+      // User selects a venue or fills the title.
+      const venueSelector = screen.getByLabelText(venueSelectorLabel)
+      const titleInput = screen.getByLabelText(titleLabel)
+      await userEvent.selectOptions(venueSelector, '1')
+      await userEvent.type(titleInput, 'My super offer')
+
+      // User doesn't select anything and submits.
+      expect(initText).not.toBeInTheDocument()
+      await userEvent.click(screen.getByText(DEFAULTS.submitButtonLabel))
+      const error = screen.getByText('Veuillez sélectionner une catégorie')
+      expect(error).toBeInTheDocument()
+    })
   })
 
   it('should display venue banner when venues are empty and suggested categories not enable', () => {

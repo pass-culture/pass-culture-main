@@ -133,6 +133,11 @@ export const DetailsForm = ({
         description,
         Number(venueId)
       )
+
+      if (response.subcategoryIds.length === 0) {
+        throw new Error('No suggested subcategories')
+      }
+
       setSuggestedSubcategories(response.subcategoryIds)
     } catch (err) {
       if (!suggestedSubcategory) {
