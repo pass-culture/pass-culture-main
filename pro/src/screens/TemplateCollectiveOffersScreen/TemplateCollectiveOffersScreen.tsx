@@ -21,7 +21,6 @@ import { SelectOption } from 'custom_types/form'
 import { CollectiveOffersActionsBar } from 'pages/Offers/OffersTable/CollectiveOffersTable/CollectiveOffersActionsBar/CollectiveOffersActionsBar'
 import { CollectiveOffersTable } from 'pages/Offers/OffersTable/CollectiveOffersTable/CollectiveOffersTable'
 import { isSameOffer } from 'pages/Offers/utils/isSameOffer'
-import { Titles } from 'ui-kit/Titles/Titles'
 
 import styles from './TemplateCollectiveOffersScreen.module.scss'
 import { TemplateOffersSearchFilters } from './TemplateOffersSearchFilters/TemplateOffersSearchFilters'
@@ -158,7 +157,7 @@ export const TemplateCollectiveOffersScreen = ({
 
   return (
     <div>
-      <Titles title="Offres vitrines" />
+      <h1 className={styles['title']}>Offres vitrines</h1>
       <TemplateOffersSearchFilters
         applyFilters={applyFilters}
         categories={categories}
