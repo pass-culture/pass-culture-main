@@ -1,0 +1,12 @@
+@use "styles/mixins/_fonts.scss" as fonts;
+
+.desk-message {
+  @include fonts.caption;
+
+  white-space: pre-line;
+  color: var(--color-valid);
+
+  &.error {
+    color: var(--color-error-light);
+  }
+}

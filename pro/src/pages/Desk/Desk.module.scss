@@ -31,17 +31,6 @@
   margin-bottom: rem.torem(10px);
 }
 
-.desk-message {
-  @include fonts.caption;
-
-  white-space: pre-line;
-  color: var(--color-valid);
-
-  &.error {
-    color: var(--color-error-light);
-  }
-}
-
 .desk-callout {
   text-align: left;
   margin-top: rem.torem(16px);
