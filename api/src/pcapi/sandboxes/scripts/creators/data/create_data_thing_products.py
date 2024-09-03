@@ -5,7 +5,7 @@ from pcapi.core.categories import subcategories_v2 as subcategories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
 from pcapi.core.providers.titelive_gtl import GTLS
-from pcapi.domain.music_types import music_types
+from pcapi.domain.music_types import MUSIC_TYPES
 from pcapi.repository import repository
 from pcapi.sandboxes.scripts.mocks.thing_mocks import MOCK_AUTHOR_NAMES
 from pcapi.sandboxes.scripts.mocks.thing_mocks import MOCK_DESCRIPTIONS
@@ -62,8 +62,8 @@ def create_data_thing_products() -> dict[str, offers_models.Product]:
                     mock_name = "{} {}".format(mock_first_name, mock_last_name)
                     extraData[conditionalField] = mock_name
                 elif conditionalField == "musicType":
-                    music_type_index: int = conditional_index % len(music_types)
-                    music_type = music_types[music_type_index]
+                    music_type_index: int = conditional_index % len(MUSIC_TYPES)
+                    music_type = MUSIC_TYPES[music_type_index]
                     extraData[conditionalField] = str(music_type.code)
                     music_sub_type_index: int = conditional_index % len(music_type.children)
                     music_sub_type = music_type.children[music_sub_type_index]

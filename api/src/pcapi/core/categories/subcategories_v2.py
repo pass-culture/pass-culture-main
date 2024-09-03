@@ -6,16 +6,16 @@ import uuid
 
 from pcapi.core.categories import categories
 from pcapi.domain.book_types import BOOK_MACRO_SECTIONS
+from pcapi.domain.book_types import BOOK_TYPES
 from pcapi.domain.book_types import BookType
-from pcapi.domain.book_types import book_types
+from pcapi.domain.movie_types import MOVIE_TYPES
 from pcapi.domain.movie_types import MovieType
-from pcapi.domain.movie_types import movie_types
+from pcapi.domain.music_types import MUSIC_TYPES
 from pcapi.domain.music_types import MUSIC_TYPES_LABEL_BY_CODE
 from pcapi.domain.music_types import MusicType
-from pcapi.domain.music_types import music_types
+from pcapi.domain.show_types import SHOW_TYPES
 from pcapi.domain.show_types import SHOW_TYPES_LABEL_BY_CODE
 from pcapi.domain.show_types import ShowType
-from pcapi.domain.show_types import show_types
 
 
 class SearchNode:
@@ -117,7 +117,7 @@ class ShowGenre(SearchNode):
 
 def get_book_nodes() -> list[BookGenre]:
     nodes = []
-    for book_type in book_types:
+    for book_type in BOOK_TYPES:
         parent = BookGenre(
             label=book_type.label,
             technical_name=book_type.label,
@@ -145,13 +145,13 @@ def get_movie_nodes() -> list[MovieGenre]:
             technical_name=movie_type.name,
             parents=[NATIVE_CATEGORY_SEANCES_DE_CINEMA.id],
         )
-        for movie_type in movie_types
+        for movie_type in MOVIE_TYPES
     ]
 
 
 def get_music_nodes() -> list[MusicGenre]:
     nodes = []
-    for music_type in music_types:
+    for music_type in MUSIC_TYPES:
         parent = MusicGenre(
             label=music_type.label,
             parents=[
@@ -184,7 +184,7 @@ def get_show_nodes() -> list[ShowGenre]:
                 NATIVE_CATEGORY_SPECTACLES_REPRESENTATIONS.id,
             ],
         )
-        for show_type in show_types
+        for show_type in SHOW_TYPES
     ]
 
 
@@ -552,10 +552,10 @@ class GenreType(Enum):
     @property
     def trees(self) -> list[BookType] | list[MovieType] | list[MusicType] | list[ShowType]:
         return {
-            type(self).BOOK.name: book_types,
-            type(self).MUSIC.name: music_types,
-            type(self).SHOW.name: show_types,
-            type(self).MOVIE.name: movie_types,
+            type(self).BOOK.name: BOOK_TYPES,
+            type(self).MUSIC.name: MUSIC_TYPES,
+            type(self).SHOW.name: SHOW_TYPES,
+            type(self).MOVIE.name: MOVIE_TYPES,
         }[
             self.name
         ]  # type: ignore[return-value]
@@ -570,7 +570,7 @@ class GenreType(Enum):
         return [GenreTypeContent(name=value, value=value) for value in sorted(SHOW_TYPES_LABEL_BY_CODE.values())]
 
     def movie_values(self) -> list[GenreTypeContent]:
-        values = [GenreTypeContent(name=movie_type.name, value=movie_type.label) for movie_type in movie_types]
+        values = [GenreTypeContent(name=movie_type.name, value=movie_type.label) for movie_type in MOVIE_TYPES]
         return sorted(values, key=lambda x: x.value)
 
 

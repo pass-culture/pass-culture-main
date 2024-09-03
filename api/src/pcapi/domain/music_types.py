@@ -18,7 +18,7 @@ class MusicType:
 OTHER_SHOW_TYPE_SLUG = "OTHER"
 
 # WARNING: the list below MUST be kept in sync with the list at pro/src/core/Offers/categoriesSubTypes.ts
-music_types = [
+MUSIC_TYPES = [
     MusicType(
         code=501,
         label="Jazz",
@@ -315,18 +315,18 @@ music_types = [
     ),
 ]
 
-MUSIC_TYPES_BY_CODE = {music_type.code: music_type for music_type in music_types}
-MUSIC_TYPES_LABEL_BY_CODE = {music_type.code: music_type.label for music_type in music_types}
+MUSIC_TYPES_BY_CODE = {music_type.code: music_type for music_type in MUSIC_TYPES}
+MUSIC_TYPES_LABEL_BY_CODE = {music_type.code: music_type.label for music_type in MUSIC_TYPES}
 MUSIC_TYPES_BY_SLUG = {
-    music_sub_type.slug: music_type for music_type in music_types for music_sub_type in music_type.children
+    music_sub_type.slug: music_type for music_type in MUSIC_TYPES for music_sub_type in music_type.children
 }
 
 MUSIC_SUB_TYPES_LABEL_BY_CODE = {
-    music_sub_type.code: music_sub_type.label for music_type in music_types for music_sub_type in music_type.children
+    music_sub_type.code: music_sub_type.label for music_type in MUSIC_TYPES for music_sub_type in music_type.children
 }
 MUSIC_SUB_TYPES_BY_CODE = {
-    music_sub_type.code: music_sub_type for music_type in music_types for music_sub_type in music_type.children
+    music_sub_type.code: music_sub_type for music_type in MUSIC_TYPES for music_sub_type in music_type.children
 }  # WARNING: for code -1, the sub type is not unique, it returns the one with the slug CHANSON_VARIETE-OTHER
 MUSIC_SUB_TYPES_BY_SLUG = {
-    music_sub_type.slug: music_sub_type for music_type in music_types for music_sub_type in music_type.children
+    music_sub_type.slug: music_sub_type for music_type in MUSIC_TYPES for music_sub_type in music_type.children
 }

@@ -8,7 +8,7 @@ class MovieType:
 
 
 def get_movie_label(code: str) -> str | None:
-    for movie_type in movie_types:
+    for movie_type in MOVIE_TYPES:
         if movie_type.name == code:
             return movie_type.label
         # TODO: (lixxday, 26/01/2024) This is a workaround
@@ -19,7 +19,7 @@ def get_movie_label(code: str) -> str | None:
     return None
 
 
-movie_types = [
+MOVIE_TYPES = [
     MovieType(name="ACTION", label="Action"),
     MovieType(name="ADVENTURE", label="Aventure"),
     MovieType(name="ANIMATION", label="Animation"),
