@@ -12,6 +12,7 @@ from pcapi.core.finance import api as finance_api
 from pcapi.core.finance import models as finance_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.providers import models as providers_models
+from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import ForbiddenError
 from pcapi.models.api_errors import ResourceNotFoundError
@@ -159,6 +160,50 @@ def use_collective_booking(booking_id: int) -> None:
     except Exception as err:
         logger.error("[adage mock] failed to use booking", extra={"booking": booking.id, "error": str(err)})
         raise ApiErrors({"code": "FAILED_TO_USE_BOOKING_TRY_AGAIN_LATER"}, status_code=500)
+
+
+@blueprints.public_api.route("/v2/collective/adage_mock/bookings/<int:booking_id>/repay", methods=["POST"])
+@utils.exclude_prod_environment
+@provider_api_key_required
+@spectree_serialize(
+    api=spectree_schemas.public_api_schema,
+    on_success_status=204,
+    tags=[tags.COLLECTIVE_ADAGE_MOCK],
+    resp=SpectreeResponse(
+        **(
+            http_responses.HTTP_204_COLLECTIVE_BOOKING_STATUS_UPDATE
+            | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
+            | http_responses.HTTP_403_COLLECTIVE_BOOKING_STATUS_UPDATE_REFUSED
+            | http_responses.HTTP_404_COLLECTIVE_OFFER_NOT_FOUND
+        )
+    ),
+)
+def repay_collective_booking(booking_id: int) -> None:
+    """
+    Mock collective booking repayment.
+
+    Like this could happen within the Adage platform.
+
+    Warning: not available for production nor integration environments
+    """
+    booking = _get_booking_or_raise_404(booking_id)
+
+    if booking.status != models.CollectiveBookingStatus.USED:
+        raise ForbiddenError({"code": f"CANNOT_REIMBURSE_{booking.status.value}_BOOKING"})
+
+    try:
+        booking.status = models.CollectiveBookingStatus.REIMBURSED
+        booking.reimbursementDate = datetime.now(timezone.utc)  # pylint: disable=datetime-now
+
+        db.session.add(booking)
+        db.session.commit()
+    except Exception as err:
+        db.session.rollback()
+
+        err_extras = {"booking": booking.id, "api_key": current_api_key.id, "error": str(err)}
+        logger.error("Adage mock. Failed to repay booking.", extra=err_extras)
+
+        raise ApiErrors({"code": "REPAYMENT_FAILED_TRY_AGAIN_LATER"}, status_code=500)
 
 
 def _get_booking_or_raise_404(booking_id: int) -> models.CollectiveBooking:
