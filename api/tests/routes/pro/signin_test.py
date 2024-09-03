@@ -149,7 +149,6 @@ class Returns200Test:
         user_offerer = offerers_factories.UserOffererFactory(
             user__lastConnectionDate=datetime.datetime.utcnow(),
         )
-        navState = users_factories.UserProNewNavStateFactory(user=user_offerer.user)
         data = {
             "identifier": user_offerer.user.email,
             "password": user_offerer.user.clearTextPassword,
@@ -195,8 +194,8 @@ class Returns200Test:
             "postalCode": None,
             "roles": ["PRO"],
             "navState": {
-                "eligibilityDate": format_into_utc_date(navState.eligibilityDate),
-                "newNavDate": format_into_utc_date(navState.newNavDate),
+                "eligibilityDate": format_into_utc_date(user_offerer.user.pro_new_nav_state.eligibilityDate),
+                "newNavDate": format_into_utc_date(user_offerer.user.pro_new_nav_state.newNavDate),
             },
         }
 

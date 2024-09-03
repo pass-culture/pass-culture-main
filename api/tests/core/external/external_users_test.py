@@ -97,6 +97,7 @@ def test_email_should_not_be_blacklisted_in_sendinblue_by_default():
 
 def test_update_external_pro_user():
     user = ProFactory()
+    assert user.email  # preload the user to avoid duplicated queries
 
     with assert_no_duplicated_queries():
         update_external_user(user)

@@ -165,9 +165,15 @@ class GetProUserTest(GetEndpointHelper):
 
     @pytest.mark.parametrize("has_new_nav", [True, False])
     def test_get_pro_user_with_new_nav_badges(self, authenticated_client, has_new_nav):
-        user = offerers_factories.UserOffererFactory(user__phoneNumber="+33638656565", user__postalCode="29000").user
         if has_new_nav:
-            users_factories.UserProNewNavStateFactory(user=user, newNavDate=datetime.datetime.utcnow())
+            user_kwargs = {"user__new_pro_portal__newNavDate": datetime.datetime.utcnow()}
+        else:
+            user_kwargs = {"user__new_pro_portal__deactivate": True}
+        user = offerers_factories.UserOffererFactory(
+            user__phoneNumber="+33638656565",
+            user__postalCode="29000",
+            **user_kwargs,
+        ).user
         url = url_for(self.endpoint, user_id=user.id)
 
         with assert_num_queries(self.expected_num_queries):
@@ -188,10 +194,11 @@ class GetProUserTest(GetEndpointHelper):
     def test_form_should_fill_pro_new_nav_state_dates(self, authenticated_client, db_session):
         old_newNavDate = datetime.datetime(2024, 4, 25, 8, 13, 3, 114129)
         old_eligibilityDate = datetime.datetime(2029, 4, 25, 8, 18, 3, 114129)
-        user_to_edit = offerers_factories.UserOffererFactory(user__postalCode="74000").user
-        user_to_edit.pro_new_nav_state = users_models.UserProNewNavState(
-            userId=user_to_edit.id, newNavDate=old_newNavDate, eligibilityDate=old_eligibilityDate
-        )
+        user_to_edit = offerers_factories.UserOffererFactory(
+            user__postalCode="74000",
+            user__new_pro_portal__newNavDate=old_newNavDate,
+            user__new_pro_portal__eligibilityDate=old_eligibilityDate,
+        ).user
         db_session.flush()
         url = url_for("backoffice_web.pro_user.get", user_id=user_to_edit.id)
 
@@ -295,7 +302,10 @@ class UpdateProUserTest(PostEndpointHelper):
 
     @override_features(ENABLE_PRO_NEW_NAV_MODIFICATION=True)
     def test_set_new_nav_date(self, legit_user, authenticated_client):
-        user_to_edit = offerers_factories.UserOffererFactory(user__postalCode="74000").user
+        user_to_edit = offerers_factories.UserOffererFactory(
+            user__postalCode="74000",
+            user__new_pro_portal__deactivate=True,
+        ).user
 
         new_nav_date = datetime.datetime(2025, 6, 7, 8, 9, 10)  # CEST
         eligibility_date = datetime.datetime(2029, 7, 7, 8, 9, 10)  # CEST
@@ -339,10 +349,11 @@ class UpdateProUserTest(PostEndpointHelper):
         )
         old_newNavDate = datetime.datetime(2024, 4, 25, 8, 13)
         old_eligibilityDate = datetime.datetime(2029, 4, 29, 8, 18)
-        user_to_edit = offerers_factories.UserOffererFactory(user__postalCode="74000").user
-        user_to_edit.pro_new_nav_state = users_models.UserProNewNavState(
-            userId=user_to_edit.id, newNavDate=old_newNavDate, eligibilityDate=old_eligibilityDate
-        )
+        user_to_edit = offerers_factories.UserOffererFactory(
+            user__postalCode="74000",
+            user__new_pro_portal__newNavDate=old_newNavDate,
+            user__new_pro_portal__eligibilityDate=old_eligibilityDate,
+        ).user
         form_data = {
             "first_name": user_to_edit.firstName,
             "last_name": user_to_edit.lastName,
@@ -464,14 +475,14 @@ class GetProUserHistoryTest(GetEndpointHelper):
 
     @override_features(ENABLE_PRO_NEW_NAV_MODIFICATION=True)
     def test_new_nav_dates_in_history(self, authenticated_client):
-        user = offerers_factories.UserOffererFactory().user
         old_eligibility_date = datetime.datetime(2024, 4, 27, 8, 13, 3, 0)
         old_new_nav_date = datetime.datetime(2024, 4, 28, 8, 13, 3, 0)
         new_eligibility_date = datetime.datetime(2024, 4, 24, 8, 11, 0, 0)
         new_nav_date = datetime.datetime(2024, 4, 25, 8, 11, 0, 0)
-        user.pro_new_nav_state = users_factories.UserProNewNavStateFactory(
-            user=user, eligibilityDate=new_eligibility_date, newNavDate=new_nav_date
-        )
+        user = offerers_factories.UserOffererFactory(
+            user__new_pro_portal__eligibilityDate=new_eligibility_date,
+            user__new_pro_portal__newNavDate=new_nav_date,
+        ).user
         history_factories.ActionHistoryFactory(
             actionType=history_models.ActionType.INFO_MODIFIED,
             user=user,
