@@ -1,4 +1,4 @@
-import{B as i}from"./BaseRadio-CMCSiDdW.js";import"./jsx-runtime-Nms4Y4qS.js";import"./index-BwDkhjyp.js";import"./_commonjsHelpers-BosuxZz1.js";import"./index-BpvXyOxN.js";const h={title:"ui-kit/forms/shared/BaseRadio",component:i},e={args:{label:"radio label",hasError:!1,disabled:!1,checked:!1}},a={args:{label:"radio label",hasError:!1,disabled:!1,checked:!1,withBorder:!0}};var r,s,o;e.parameters={...e.parameters,docs:{...(r=e.parameters)==null?void 0:r.docs,source:{originalSource:`{
+import{B as i}from"./BaseRadio-qO7PWpSv.js";import"./jsx-runtime-Nms4Y4qS.js";import"./index-BwDkhjyp.js";import"./_commonjsHelpers-BosuxZz1.js";import"./index-BpvXyOxN.js";const h={title:"ui-kit/forms/shared/BaseRadio",component:i},e={args:{label:"radio label",hasError:!1,disabled:!1,checked:!1}},a={args:{label:"radio label",hasError:!1,disabled:!1,checked:!1,withBorder:!0}};var r,s,o;e.parameters={...e.parameters,docs:{...(r=e.parameters)==null?void 0:r.docs,source:{originalSource:`{
   args: {
     label: 'radio label',
     hasError: false,
