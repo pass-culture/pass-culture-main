@@ -24,6 +24,7 @@ from pcapi.core.providers import models as providers_models
 from pcapi.domain import music_types
 from pcapi.domain import show_types
 from pcapi.models import api_errors
+from pcapi.models.feature import FeatureToggle
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.routes.public.books_stocks import serialization
 from pcapi.utils import date
@@ -402,7 +403,7 @@ def check_digital_offer_fields(offer: models.Offer) -> None:
 
         if offer.subcategory.is_online_only:
             errors.add_error("url", f'Une offre de catégorie {offer.subcategory.id} doit contenir un champ "url"')
-        if offer.offererAddress is None:
+        if offer.offererAddress is None and FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
             errors.add_error("offererAddress", "Une offre physique doit avoir une adresse")
 
     if errors.errors:
