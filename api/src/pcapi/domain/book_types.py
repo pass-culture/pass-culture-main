@@ -62,7 +62,7 @@ class BookType:
     position: int
 
 
-book_types = [
+BOOK_TYPES = [
     BookType(
         position=1,
         label="Romans & littérature",

@@ -3,8 +3,8 @@ import logging
 from pcapi.core.categories import subcategories_v2 as subcategories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
-from pcapi.domain.music_types import music_types
-from pcapi.domain.show_types import show_types
+from pcapi.domain.music_types import MUSIC_TYPES
+from pcapi.domain.show_types import SHOW_TYPES
 from pcapi.repository import repository
 from pcapi.sandboxes.scripts.mocks.event_mocks import MOCK_DESCRIPTIONS
 from pcapi.sandboxes.scripts.mocks.event_mocks import MOCK_NAMES
@@ -50,15 +50,15 @@ def create_data_event_products() -> dict[str, offers_models.Product]:
                     mock_name = f"{mock_first_name} {mock_last_name}"
                     extra_data[conditional_field] = mock_name
                 elif conditional_field == "musicType":
-                    music_type_index: int = conditional_index % len(music_types)
-                    music_type = music_types[music_type_index]
+                    music_type_index: int = conditional_index % len(MUSIC_TYPES)
+                    music_type = MUSIC_TYPES[music_type_index]
                     extra_data[conditional_field] = str(music_type.code)
                     music_sub_type_index: int = conditional_index % len(music_type.children)
                     music_sub_type = music_type.children[music_sub_type_index]
                     extra_data["musicSubType"] = str(music_sub_type.code)
                 elif conditional_field == "showType":
-                    show_type_index: int = conditional_index % len(show_types)
-                    show_type = show_types[show_type_index]
+                    show_type_index: int = conditional_index % len(SHOW_TYPES)
+                    show_type = SHOW_TYPES[show_type_index]
                     extra_data[conditional_field] = str(show_type.code)
                     show_sub_type_index: int = conditional_index % len(show_type.children)
                     show_sub_type = show_type.children[show_sub_type_index]
