@@ -7,8 +7,8 @@ import pcapi.core.offers.models as offers_models
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.providers.titelive_gtl import GTLS
 from pcapi.domain.music_types import MUSIC_SUB_TYPES_BY_SLUG
+from pcapi.domain.music_types import MUSIC_TYPES
 from pcapi.domain.music_types import MUSIC_TYPES_BY_SLUG
-from pcapi.domain.music_types import music_types
 from pcapi.domain.titelive import parse_things_date_to_string
 from pcapi.repository import repository
 import pcapi.sandboxes.scripts.creators.industrial.utils as industrial_utils
@@ -73,8 +73,8 @@ def create_e2e_thing_products() -> dict[str, offers_models.Product]:
                     mock_name = "{} {}".format(mock_first_name, mock_last_name)
                     extraData[conditionalField_name] = mock_name
                 elif conditionalField_name == "musicType":
-                    music_type_index: int = conditional_index % len(music_types)
-                    music_type = music_types[music_type_index]
+                    music_type_index: int = conditional_index % len(MUSIC_TYPES)
+                    music_type = MUSIC_TYPES[music_type_index]
                     extraData[conditionalField_name] = str(music_type.code)
                     music_sub_type_index: int = conditional_index % len(music_type.children)
                     music_sub_type = music_type.children[music_sub_type_index]
