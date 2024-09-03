@@ -898,6 +898,12 @@ class ProFactory(BaseFactory):
         if not create:
             return
 
+        if extracted:
+            self.pro_new_nav_state = extracted
+
+        if kwargs.get("deactivate"):
+            return
+
         # We check whether or not a UserProNewNavState because the "created" flag is always true
         # if the user exists but FactoryBoy tried to create it through nested data such as:
         #     offerers_factories.UserOffererFactory(offerer1, user__email="api@example.com"))
@@ -910,9 +916,7 @@ class ProFactory(BaseFactory):
                 users_models.UserProNewNavState.userId == self.id
             ).one_or_none()
         ):
-            db.session.add(self)
-            db.session.flush()
-            self.pro_new_nav_state = UserProNewNavStateFactory(user=self)
+            self.pro_new_nav_state = UserProNewNavStateFactory(user=self, **kwargs)
 
 
 class NonAttachedProFactory(ProFactory):
@@ -1082,7 +1086,7 @@ class UserProNewNavStateFactory(BaseFactory):
     class Meta:
         model = models.UserProNewNavState
 
-    user = factory.SubFactory(ProFactory)
+    user = factory.SubFactory(ProFactory, new_pro_portal__deactivate=True)
     eligibilityDate = LazyAttribute(lambda _: datetime.utcnow())
     newNavDate = LazyAttribute(lambda _: datetime.utcnow())
 

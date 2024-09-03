@@ -13,34 +13,36 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 class PostUserNewProNavTest:
     def test_post_user_new_pro_nav(self, client: Any) -> None:
-        pro_new_nav_state = users_factories.UserProNewNavStateFactory(
-            eligibilityDate=datetime.datetime.utcnow() - datetime.timedelta(days=1), newNavDate=None
+        user = users_factories.ProFactory(
+            new_pro_portal__eligibilityDate=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+            new_pro_portal__newNavDate=None,
         )
-        user = pro_new_nav_state.user
 
         client = client.with_session_auth(user.email)
 
         response = client.post("/users/new-pro-nav")
 
         assert response.status_code == 204
-        assert pro_new_nav_state.newNavDate
+        assert user.pro_new_nav_state.newNavDate
 
     def test_post_user_new_pro_nav_not_eligible_user(self, client: Any) -> None:
-        pro_new_nav_state = users_factories.UserProNewNavStateFactory(eligibilityDate=None, newNavDate=None)
-        user = pro_new_nav_state.user
+        user = users_factories.ProFactory(
+            new_pro_portal__eligibilityDate=None,
+            new_pro_portal__newNavDate=None,
+        )
 
         client = client.with_session_auth(user.email)
 
         response = client.post("/users/new-pro-nav")
 
         assert response.status_code == 400
-        assert not pro_new_nav_state.newNavDate
+        assert not user.pro_new_nav_state.newNavDate
 
     def test_user_can_successfully_submit_side_nav_review(self, client, caplog):
-        pro_new_nav_state = users_factories.UserProNewNavStateFactory(
-            eligibilityDate=None, newNavDate=datetime.datetime.utcnow()
+        user = users_factories.ProFactory(
+            new_pro_portal__eligibilityDate=None,
+            new_pro_portal__newNavDate=datetime.datetime.utcnow(),
         )
-        user = pro_new_nav_state.user
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=user, offerer=offerer)
 
@@ -68,8 +70,7 @@ class PostUserNewProNavTest:
 
     def test_user_without_new_nav_activated_cant_submit_review(self, client, caplog):
         users_factories.UserProNewNavStateFactory(newNavDate=datetime.datetime.utcnow())
-        pro_new_nav_state = users_factories.UserProNewNavStateFactory(newNavDate=None)
-        user = pro_new_nav_state.user
+        user = users_factories.ProFactory(new_pro_portal__newNavDate=None)
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=user, offerer=offerer)
 
@@ -90,8 +91,7 @@ class PostUserNewProNavTest:
         assert "User with new nav activated submitting review" not in caplog.messages
 
     def test_user_cannot_submit_review_for_foreign_offerer(self, client, caplog):
-        pro_new_nav_state = users_factories.UserProNewNavStateFactory(newNavDate=None)
-        user = pro_new_nav_state.user
+        user = users_factories.ProFactory(new_pro_portal__newNavDate=None)
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=user, offerer=offerer)
         foreign_offerer = offerers_factories.OffererFactory()
