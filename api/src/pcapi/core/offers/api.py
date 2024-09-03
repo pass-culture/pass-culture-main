@@ -1572,11 +1572,21 @@ def get_or_create_label(label: str, venue: offerers_models.Venue) -> models.Pric
     return price_category_label
 
 
-def create_price_category(offer: models.Offer, label: str, price: decimal.Decimal) -> models.PriceCategory:
+def create_price_category(
+    offer: models.Offer,
+    label: str,
+    price: decimal.Decimal,
+    id_at_provider: str | None = None,
+) -> models.PriceCategory:
     validation.check_stock_price(price, offer)
     validation.check_digital_offer_fields(offer)
+    if id_at_provider is not None:
+        validation.check_can_input_id_at_provider_for_this_price_category(offer.id, id_at_provider)
+
     price_category_label = get_or_create_label(label, offer.venue)
-    created_price_category = models.PriceCategory(offer=offer, price=price, priceCategoryLabel=price_category_label)
+    created_price_category = models.PriceCategory(
+        offer=offer, price=price, priceCategoryLabel=price_category_label, idAtProvider=id_at_provider
+    )
     repository.add_to_session(created_price_category)
     return created_price_category
 

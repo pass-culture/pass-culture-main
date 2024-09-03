@@ -763,6 +763,25 @@ def is_id_at_provider_taken_by_another_venue_offer(venue_id: int, id_at_provider
     return db.session.query(base_query.exists()).scalar()
 
 
+def is_id_at_provider_taken_by_another_offer_price_category(
+    offer_id: int,
+    id_at_provider: str,
+    price_category_id: int | None,
+) -> bool:
+    """
+    Return `True` if `id_at_provider` is already used to identify another offer price category
+    """
+    base_query = models.PriceCategory.query.filter(
+        models.PriceCategory.offerId == offer_id,
+        models.PriceCategory.idAtProvider == id_at_provider,
+    )
+
+    if price_category_id:
+        base_query = base_query.filter(models.PriceCategory.id != price_category_id)
+
+    return db.session.query(base_query.exists()).scalar()
+
+
 def get_and_lock_stock(stock_id: int) -> models.Stock:
     """Returns `stock_id` stock with a FOR UPDATE lock
     Raises StockDoesNotExist if no stock is found.
