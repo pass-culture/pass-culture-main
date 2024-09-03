@@ -4287,7 +4287,6 @@ class CreateMovieProductFromProviderTest:
 
 @pytest.mark.usefixtures("db_session")
 class CreatePriceCategoryTest:
-
     def test_should_create_price_category(self):
         offer = factories.EventOfferFactory()
         # without idAtProvider
@@ -4306,9 +4305,52 @@ class CreatePriceCategoryTest:
 
     def test_should_raise_because_id_at_provider_already_exists_for_this_offer(self):
         offer = factories.EventOfferFactory()
-        factories.PriceCategoryFactory(offer=offer, idAtProvider="aHÇaVaBuggué")
+        factories.PriceCategoryFactory(offer=offer, idAtProvider="aHÇaVaBugguer")
 
         with pytest.raises(exceptions.IdAtProviderAlreadyTakenByAnotherOfferPriceCategory) as error:
-            api.create_price_category(offer, "Carré d'as", decimal.Decimal("70.5"), id_at_provider="aHÇaVaBuggué")
+            api.create_price_category(offer, "Carré d'as", decimal.Decimal("70.5"), id_at_provider="aHÇaVaBugguer")
 
-        assert error.value.errors["idAtProvider"] == ["`aHÇaVaBuggué` is already taken by another offer price category"]
+        assert error.value.errors["idAtProvider"] == [
+            "`aHÇaVaBugguer` is already taken by another offer price category"
+        ]
+
+
+@pytest.mark.usefixtures("db_session")
+class EditPriceCategoryTest:
+    def test_should_update_price_category(self):
+        price_category = factories.PriceCategoryFactory()
+        updated_price_category = api.edit_price_category(
+            price_category.offer,
+            price_category,
+            "Carré Diamant, à part en vendant un rein vous n'y accéderez jamais",
+            id_at_provider="price_category_ou_il_faut_khalass",
+        )
+        assert updated_price_category.label == "Carré Diamant, à part en vendant un rein vous n'y accéderez jamais"
+        assert updated_price_category.idAtProvider == "price_category_ou_il_faut_khalass"
+
+    def test_should_delete_id_at_provider(self):
+        factories.PriceCategoryFactory()
+        price_category = factories.PriceCategoryFactory(idAtProvider="id_qui_n_en_a_plus_pour_longtemps")
+        updated_price_category = api.edit_price_category(
+            price_category.offer,
+            price_category,
+            id_at_provider=None,
+        )
+        assert updated_price_category.idAtProvider == None
+
+    def test_should_raise_because_id_at_provider_already_taken(self):
+        offer = factories.EventOfferFactory()
+        failing_id = "aHÇaVaBugguer"
+        factories.PriceCategoryFactory(offer=offer, idAtProvider=failing_id)
+        price_category = factories.PriceCategoryFactory(offer=offer)
+
+        with pytest.raises(exceptions.IdAtProviderAlreadyTakenByAnotherOfferPriceCategory) as error:
+            api.edit_price_category(
+                price_category.offer,
+                price_category,
+                id_at_provider=failing_id,
+            )
+
+        assert error.value.errors["idAtProvider"] == [
+            "`aHÇaVaBugguer` is already taken by another offer price category"
+        ]
