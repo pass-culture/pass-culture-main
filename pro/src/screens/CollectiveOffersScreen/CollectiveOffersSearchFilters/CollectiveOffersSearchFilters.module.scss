@@ -67,10 +67,13 @@ $status-filter-margin-top: rem.torem(24px);
 }
 
 .status-filter-label {
-  margin-top: $status-filter-margin-top;
   display: flex;
   align-items: center;
   gap: rem.torem(8px);
+
+  .status-filter-tag {
+    line-height: 1rem;
+  }
 }
 
 .reset-filters-row {
@@ -88,6 +91,5 @@ $status-filter-margin-top: rem.torem(24px);
 
   .reset-filters {
     margin-top: $status-filter-margin-top;
-
   }
 }

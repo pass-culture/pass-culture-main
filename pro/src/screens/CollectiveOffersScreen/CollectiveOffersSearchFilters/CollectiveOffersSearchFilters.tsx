@@ -261,6 +261,8 @@ export const CollectiveOffersSearchFilters = ({
               />
             </FieldLayout>
           )}
+        </FormLayout.Row>
+        <FormLayout.Row inline>
           <fieldset>
             <legend>Période de l’évènement</legend>
 
@@ -272,24 +274,30 @@ export const CollectiveOffersSearchFilters = ({
               periodEndingDate={selectedFilters.periodEndingDate}
             />
           </fieldset>
-        </FormLayout.Row>
 
-        <FormikProvider value={formik}>
-          <SelectAutocomplete
-            multi
-            name="status"
-            label={
-              <span className={styles['status-filter-label']}>
-                Statut<Tag variant={TagVariant.BLUE}>Nouveau</Tag>
-              </span>
-            }
-            options={filteredStatusOptions}
-            placeholder="Statuts"
-            isOptional
-            className={styles['status-filter']}
-            disabled={disableAllFilters || isRestrictedAsAdmin}
-          />
-        </FormikProvider>
+          <FormikProvider value={formik}>
+            <SelectAutocomplete
+              multi
+              name="status"
+              label={
+                <span className={styles['status-filter-label']}>
+                  Statut
+                  <Tag
+                    variant={TagVariant.BLUE}
+                    className={styles['status-filter-tag']}
+                  >
+                    Nouveau
+                  </Tag>
+                </span>
+              }
+              options={filteredStatusOptions}
+              placeholder="Statuts"
+              isOptional
+              className={styles['status-filter']}
+              disabled={disableAllFilters || isRestrictedAsAdmin}
+            />
+          </FormikProvider>
+        </FormLayout.Row>
 
         <div className={styles['reset-filters']}>
           <Button
