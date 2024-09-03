@@ -1583,6 +1583,7 @@ def edit_price_category(
     label: str | T_UNCHANGED = UNCHANGED,
     price: decimal.Decimal | T_UNCHANGED = UNCHANGED,
     editing_provider: providers_models.Provider | None = None,
+    id_at_provider: str | None | T_UNCHANGED = UNCHANGED,
 ) -> models.PriceCategory:
     validation.check_price_category_is_updatable(price_category, editing_provider)
 
@@ -1593,6 +1594,13 @@ def edit_price_category(
     if label is not UNCHANGED and label != price_category.label:
         price_category_label = get_or_create_label(label, offer.venue)
         price_category.priceCategoryLabel = price_category_label
+
+    if id_at_provider is not UNCHANGED and id_at_provider != price_category.idAtProvider:
+        if id_at_provider is not None:
+            validation.check_can_input_id_at_provider_for_this_price_category(
+                offer.id, id_at_provider, price_category.id
+            )
+        price_category.idAtProvider = id_at_provider
 
     repository.add_to_session(price_category)
 
