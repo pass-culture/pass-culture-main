@@ -4,7 +4,6 @@ from unittest import mock
 from unittest.mock import patch
 
 import pytest
-from sqlalchemy.util import deprecations
 import time_machine
 
 from pcapi import settings
@@ -33,7 +32,6 @@ from tests.local_providers.cinema_providers.boost import fixtures as boost_fixtu
 from tests.local_providers.cinema_providers.cgr import fixtures as cgr_fixtures
 
 
-deprecations.SILENCE_UBER_WARNING = True
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
