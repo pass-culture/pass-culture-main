@@ -133,4 +133,20 @@ describe('VenueSettingsScreen', () => {
     expect(allocineCard).toBeInTheDocument()
     expect(addProviderButton).toBeInTheDocument()
   })
+
+  it('should display the withdrawal confirm dialog when submitting with the box checked', async () => {
+    await renderForm()
+
+    await userEvent.type(
+      screen.getByLabelText('Informations de retrait'),
+      'Nouvelle infos de retrait'
+    )
+    await userEvent.click(screen.getByText('Enregistrer'))
+
+    expect(
+      screen.getByText(
+        'Souhaitez-vous prévenir les bénéficiaires de la modification des modalités de retrait ?'
+      )
+    ).toBeInTheDocument()
+  })
 })
