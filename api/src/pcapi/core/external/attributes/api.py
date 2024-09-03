@@ -12,6 +12,7 @@ from pcapi.core.bookings import models as bookings_models
 from pcapi.core.bookings import repository as bookings_repository
 from pcapi.core.categories import categories
 from pcapi.core.educational import models as educational_models
+from pcapi.core.educational.repository import has_collective_offers_for_program_and_venue_ids
 from pcapi.core.external.attributes import models
 from pcapi.core.external.batch import update_user_attributes as update_batch_user
 from pcapi.core.external.sendinblue import update_contact_attributes as update_sendinblue_user
@@ -276,6 +277,7 @@ def get_pro_attributes(email: str) -> models.ProAttributes:
                 offerers_models.Venue.isVirtual,
                 offerers_models.Venue.isPermanent,
                 offerers_models.Venue._bannerUrl,
+                offerers_models.Venue.adageId,
             ),
             contains_eager(offerers_models.Venue.managingOfferer)
             .load_only(offerers_models.Offerer.name)
@@ -287,12 +289,23 @@ def get_pro_attributes(email: str) -> models.ProAttributes:
         .all()
     )
 
+    is_eac_meg = False
+
+    venue_with_collective_offer = any(venue.adageId for venue in venues)
+
+    if venue_with_collective_offer:
+        venue_ids = {venue.id for venue in venues}
+        is_eac_meg = has_collective_offers_for_program_and_venue_ids("marseille_en_grand", venue_ids)
+
     if venues:
+
         all_venues += venues
         for venue in venues:
             offerers_names.add(venue.managingOfferer.name)
             offerers_tags.update(tag.label for tag in venue.managingOfferer.tags)
+
         has_individual_offers = offerers_repository.venues_have_offers(*venues)
+
         attributes.update(
             {
                 "dms_application_submitted": any(venue.hasPendingBankInformationApplication for venue in venues),
@@ -329,6 +342,7 @@ def get_pro_attributes(email: str) -> models.ProAttributes:
         departement_code={venue.departementCode for venue in all_venues if venue.departementCode},
         postal_code={venue.postalCode for venue in all_venues if venue.postalCode},
         has_collective_offers=has_collective_offers,
+        is_eac_meg=is_eac_meg,
         **attributes,
     )
 

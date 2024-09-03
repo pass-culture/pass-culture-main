@@ -83,4 +83,5 @@ common_pro_attributes = attributes_models.ProAttributes(
     has_bookings=True,
     is_eac=False,
     has_banner_url=True,
+    is_eac_meg=False,
 )

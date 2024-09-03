@@ -89,6 +89,7 @@ class SendinblueAttributes(Enum):
     VENUE_NAME = "VENUE_NAME"
     VENUE_TYPE = "VENUE_TYPE"
     IS_EAC = "IS_EAC"
+    IS_EAC_MEG = "EAC_MEG"
 
     @classmethod
     def list(cls) -> list[str]:
@@ -244,6 +245,7 @@ def format_user_attributes(attributes: attributes_models.UserAttributes | attrib
         SendinblueAttributes.VENUE_NAME.value: _get_attr(attributes, "venues_names", format_list),
         SendinblueAttributes.VENUE_TYPE.value: _get_attr(attributes, "venues_types", format_list),
         SendinblueAttributes.IS_EAC.value: _get_attr(attributes, "is_eac"),
+        SendinblueAttributes.IS_EAC_MEG.value: _get_attr(attributes, "is_eac_meg"),
     }
 
 

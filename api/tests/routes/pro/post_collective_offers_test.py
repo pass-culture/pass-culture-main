@@ -9,6 +9,7 @@ import pcapi.core.educational.factories as educational_factories
 from pcapi.core.educational.models import CollectiveOffer
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.testing import override_features
+from pcapi.core.users import testing as sendinblue_testing
 import pcapi.core.users.factories as users_factories
 
 
@@ -106,6 +107,9 @@ class Returns200Test:
         offer = CollectiveOffer.query.get(offer_id)
 
         assert_offer_values(offer, data, user, offerer)
+
+        # 2 requests (for 2 bookingEmail) for sendinblue
+        assert len(sendinblue_testing.sendinblue_requests) == 3
 
     def test_create_collective_offer_college_6(self, client):
         # Given

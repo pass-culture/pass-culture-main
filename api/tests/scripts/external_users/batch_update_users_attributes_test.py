@@ -138,6 +138,7 @@ def test_format_sendinblue_user():
         "DMS_APPLICATION_APPROVED": None,
         "DMS_APPLICATION_SUBMITTED": None,
         "ELIGIBILITY": user.eligibility,
+        "EAC_MEG": None,
         "FIRSTNAME": "Jeanne",
         "HAS_BANNER_URL": None,
         "HAS_BOOKINGS": None,
