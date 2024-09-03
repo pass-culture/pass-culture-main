@@ -91,6 +91,7 @@ class ProAttributes:
     has_banner_url: bool | None = (
         None  # Set to False when at least one permanent venue doesn't have a banner URL, True otherwise
     )
+    is_eac_meg: bool | None = None  # At least one collective offer with 'Marseille en Grand'
 
 
 @dataclass

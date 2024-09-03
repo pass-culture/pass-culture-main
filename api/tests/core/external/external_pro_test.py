@@ -23,10 +23,11 @@ pytestmark = pytest.mark.usefixtures("db_session")
 # 1 query on user table with joinedload
 # 1 query on venue table with joinedload
 # 2 extra SQL queries: select exists on offer and booking tables
+# 1 extra query to check if the venue has any related collective offer with 'marseille en grand'
 EXPECTED_PRO_ATTR_NUM_QUERIES = 5
 
 
-def _build_params(subs, virt, perman, draft, accep, offer, book, attach, colloff, tploff):
+def _build_params(subs, virt, perman, draft, accep, offer, book, attach, colloff, tploff, megoff):
     return pytest.param(
         subs,
         virt,
@@ -38,25 +39,27 @@ def _build_params(subs, virt, perman, draft, accep, offer, book, attach, colloff
         attach,
         colloff,
         tploff,
+        megoff,
         id=(
             f"sub:{subs}, vir:{virt}, per:{perman}, dra:{draft}, "
             f"acc:{accep}, off:{offer}, boo:{book}, "
-            f"att:{attach}, colloff:{colloff}, tploff:{tploff}"
+            f"att:{attach}, colloff:{colloff}, tploff:{tploff}, megoff:{megoff}"
         ),
     )
 
 
 @pytest.mark.parametrize(
     "enable_subscription,create_virtual,create_permanent,create_dms_draft,create_dms_accepted,"
-    "create_individual_offer,create_booking,attached,create_collective_offer,create_template_offer",
+    "create_individual_offer,create_booking,attached,create_collective_offer,create_template_offer,create_collective_offer_meg",
     [
-        #             subs, virt, perman, draft, accep, offer, book, attach, colloff, tploff
-        _build_params(False, False, False, False, False, False, False, "none", False, False),
-        _build_params(True, False, True, True, False, True, False, "one", True, False),
-        _build_params(False, True, False, False, True, True, False, "all", False, True),
-        _build_params(True, True, True, True, True, True, True, "none", True, True),
-        _build_params(False, True, True, False, True, False, False, "one", True, False),
-        _build_params(True, True, True, True, True, True, True, "all", True, True),
+        #             subs, virt, perman, draft, accep, offer, book, attach, colloff, tploff, megoff
+        _build_params(False, False, False, False, False, False, False, "none", False, False, False),
+        _build_params(True, False, True, True, False, True, False, "one", True, False, False),
+        _build_params(False, True, False, False, True, True, False, "all", False, True, False),
+        _build_params(True, True, True, True, True, True, True, "none", True, True, False),
+        _build_params(False, True, True, False, True, False, False, "one", True, False, False),
+        _build_params(True, True, True, True, True, True, True, "all", True, True, False),
+        _build_params(False, False, False, False, False, False, False, "none", True, False, True),
     ],
 )
 def test_update_external_pro_user_attributes(
@@ -70,6 +73,7 @@ def test_update_external_pro_user_attributes(
     attached,
     create_collective_offer,
     create_template_offer,
+    create_collective_offer_meg,
 ):
     email = "juste.leblanc@example.net"
 
@@ -89,6 +93,19 @@ def test_update_external_pro_user_attributes(
     if attached in ("one", "all"):
         offerers_factories.UserOffererFactory(user=ProFactory(), offerer=offerer1)
     offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer1)
+
+    collective_offers = []
+    if create_collective_offer:
+        if create_collective_offer_meg:
+            program = educational_factories.EducationalInstitutionProgramFactory(name="marseille_en_grand")
+            institution = educational_factories.EducationalInstitutionFactory(programs=[program])
+
+            collective_offer = educational_factories.CollectiveOfferFactory(isActive=True, institution=institution)
+        else:
+            collective_offer = educational_factories.CollectiveOfferFactory(isActive=True)
+
+        collective_offers.append(collective_offer)
+
     venue1 = offerers_factories.VenueFactory(
         managingOfferer=offerer1,
         name="Cinéma de la plage",
@@ -100,9 +117,8 @@ def test_update_external_pro_user_attributes(
         isPermanent=create_permanent,
         venueTypeCode=VenueTypeCode.MOVIE,
         venueLabelId=venue_label_a.id,
-        collectiveOffers=(
-            [educational_factories.CollectiveOfferFactory(isActive=True)] if create_collective_offer else []
-        ),
+        adageId="12345" if create_collective_offer else None,
+        collectiveOffers=collective_offers,
         collectiveOfferTemplates=(
             [educational_factories.CollectiveOfferTemplateFactory(isActive=True)] if create_template_offer else []
         ),
@@ -222,7 +238,11 @@ def test_update_external_pro_user_attributes(
         venueTypeCode=VenueTypeCode.CONCERT_HALL,  # different from others
     )
 
-    with assert_num_queries(EXPECTED_PRO_ATTR_NUM_QUERIES):
+    num_queries = EXPECTED_PRO_ATTR_NUM_QUERIES
+    if create_collective_offer or create_collective_offer_meg:
+        num_queries += 1
+
+    with assert_num_queries(num_queries):
         attributes = get_pro_attributes(email)
 
     assert attributes.is_pro is True
@@ -272,6 +292,7 @@ def test_update_external_pro_user_attributes(
     assert attributes.has_bookings is create_booking
     assert attributes.has_collective_offers == (create_collective_offer or create_template_offer)
     assert attributes.has_offers == (create_individual_offer or create_collective_offer or create_template_offer)
+    assert attributes.is_eac_meg == create_collective_offer_meg
 
 
 def test_update_external_pro_user_attributes_no_offerer_no_venue():

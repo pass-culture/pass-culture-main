@@ -1346,3 +1346,20 @@ def fetch_venue_for_new_offer(venue_id: int, requested_provider_id: int) -> offe
     if not venue:
         raise offerers_exceptions.VenueNotFoundException()
     return typing.cast(offerers_models.Venue, venue)
+
+
+def has_collective_offers_for_program_and_venue_ids(program_name: str, venue_ids: typing.Iterable[str]) -> bool:
+    query = (
+        educational_models.CollectiveOffer.query.join(
+            educational_models.EducationalInstitution, educational_models.CollectiveOffer.institution
+        )
+        .join(educational_models.EducationalInstitutionProgram, educational_models.EducationalInstitution.programs)
+        .filter(
+            educational_models.CollectiveOffer.venueId.in_(venue_ids),
+            educational_models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.APPROVED,
+            educational_models.EducationalInstitutionProgram.name == program_name,
+        )
+        .exists()
+    )
+
+    return db.session.query(query).scalar()

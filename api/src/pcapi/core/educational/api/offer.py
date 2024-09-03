@@ -22,6 +22,7 @@ from pcapi.core.educational.exceptions import AdageException
 from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import HasImageMixin
 from pcapi.core.educational.utils import get_image_from_url
+from pcapi.core.external.attributes.api import update_external_pro
 from pcapi.core.mails import transactional as transactional_mails
 from pcapi.core.object_storage import store_public_object
 from pcapi.core.offerers import api as offerers_api
@@ -268,7 +269,13 @@ def create_collective_offer(
         formats=offer_data.formats,  # type: ignore[arg-type]
         author=user,
     )
-    collective_offer.bookingEmails = offer_data.booking_emails
+
+    emails = offer_data.booking_emails
+    collective_offer.bookingEmails = emails
+
+    # we update pro email data in sendinblue
+    for email in emails:
+        update_external_pro(email)
 
     db.session.add(collective_offer)
     db.session.commit()

@@ -12,6 +12,7 @@ from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import CollectiveOfferDisplayedStatus
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers.repository import _filter_collective_offers_by_statuses
+from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
 from pcapi.models import offer_mixin
 
@@ -621,3 +622,37 @@ class FilterCollectiveOfferByStatusesTest:
         # Then
         assert filtered_nostatus_query.count() == 2
         assert set(filtered_nostatus_query.all()) == {pending_offer, booked_offer}
+
+
+class HasCollectiveOffersForProgramAndVenueIdsTest:
+
+    def test_has_collective_offers_for_program_and_venueids_test(self, app):
+        program = educational_factories.EducationalInstitutionProgramFactory(name="program")
+        other_program = educational_factories.EducationalInstitutionProgramFactory(name="other_program")
+
+        venue = offerers_factories.VenueFactory()
+        other_venue = offerers_factories.VenueFactory()
+
+        institution = educational_factories.EducationalInstitutionFactory(programs=[program])
+        other_institution = educational_factories.EducationalInstitutionFactory(programs=[other_program])
+
+        _collective_offer_with_program = educational_factories.CollectiveOfferFactory(
+            venue=venue, institution=institution
+        )
+        _collective_offer_without_program = educational_factories.CollectiveOfferFactory(venue=venue)
+        _collective_offer_with_other_program = educational_factories.CollectiveOfferFactory(
+            venue=other_venue, institution=other_institution
+        )
+
+        venue_id = venue.id
+
+        with assert_num_queries(1):
+            assert educational_repository.has_collective_offers_for_program_and_venue_ids("program", [venue_id]) == True
+
+        assert (
+            educational_repository.has_collective_offers_for_program_and_venue_ids("other_program", [venue.id]) == False
+        )
+
+        assert (
+            educational_repository.has_collective_offers_for_program_and_venue_ids("program", [other_venue.id]) == False
+        )
