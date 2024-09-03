@@ -32,7 +32,7 @@ import { getValidationSchema } from './validationSchema'
 import { VenueSettingsForm } from './VenueSettingsForm'
 import styles from './VenueSettingsScreen.module.scss'
 
-interface VenueSettingsFormScreenProps {
+interface VenueSettingsScreenProps {
   initialValues: VenueSettingsFormValues
   offerer: GetOffererResponseModel
   venueLabels: SelectOption[]
@@ -41,14 +41,14 @@ interface VenueSettingsFormScreenProps {
   venue: GetVenueResponseModel
 }
 
-export const VenueSettingsFormScreen = ({
+export const VenueSettingsScreen = ({
   initialValues,
   offerer,
   venueLabels,
   venueTypes,
   venueProviders,
   venue,
-}: VenueSettingsFormScreenProps): JSX.Element => {
+}: VenueSettingsScreenProps): JSX.Element => {
   const navigate = useNavigate()
   const location = useLocation()
   const notify = useNotification()
