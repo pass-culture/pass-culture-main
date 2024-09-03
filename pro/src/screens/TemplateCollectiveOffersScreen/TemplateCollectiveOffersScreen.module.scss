@@ -14,3 +14,9 @@
     }
   }
 }
+
+.title {
+  @include fonts.title1;
+
+  margin-bottom: rem.torem(32px);
+}
