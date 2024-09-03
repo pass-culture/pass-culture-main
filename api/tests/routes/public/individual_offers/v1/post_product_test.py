@@ -11,6 +11,7 @@ from pcapi import settings
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
+from pcapi.core.testing import override_features
 from pcapi.models import offer_mixin
 from pcapi.utils import date as date_utils
 from pcapi.utils import human_ids
@@ -24,6 +25,7 @@ from . import utils
 
 class PostProductTest(PublicAPIVenueEndpointHelper):
     endpoint_url = "/public/offers/v1/products"
+    endpoint_method = "post"
 
     @staticmethod
     def _get_base_payload(venue_id: int) -> dict:
@@ -384,6 +386,7 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
         }
 
     @pytest.mark.usefixtures("db_session")
+    @override_features(WIP_ENABLE_OFFER_ADDRESS=True)
     def test_physical_product_attached_to_digital_venue(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue(is_virtual=True)
 
@@ -406,6 +409,26 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
             "offererAddress": ["Une offre physique doit avoir une adresse"],
         }
         assert offers_models.Offer.query.first() is None
+
+    @pytest.mark.usefixtures("db_session")
+    @override_features(WIP_ENABLE_OFFER_ADDRESS=False)
+    def test_physical_product_without_offerer_address_legacy(self, client):
+        venue, _ = utils.create_offerer_provider_linked_to_venue(is_virtual=False)
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
+            "/public/offers/v1/products",
+            json={
+                "location": {"type": "physical", "venueId": venue.id},
+                "categoryRelatedFields": {
+                    "category": "SUPPORT_PHYSIQUE_FILM",
+                    "ean": "1234567891234",
+                },
+                "accessibility": utils.ACCESSIBILITY_FIELDS,
+                "name": "Le champ des possibles",
+            },
+        )
+
+        assert response.status_code == 200
 
     @pytest.mark.usefixtures("db_session")
     def test_event_category_not_accepted(self, client):
