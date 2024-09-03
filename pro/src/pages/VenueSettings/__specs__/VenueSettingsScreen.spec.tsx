@@ -11,7 +11,7 @@ import {
 import { renderWithProviders } from 'utils/renderWithProviders'
 import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
-import { VenueSettingsFormScreen } from '../VenueSettingsScreen'
+import { VenueSettingsScreen } from '../VenueSettingsScreen'
 
 const venueTypes: VenueTypeResponseModel[] = [
   { id: 'ARTISTIC_COURSE', label: 'Cours et pratique artistiques' },
@@ -20,7 +20,7 @@ const venueTypes: VenueTypeResponseModel[] = [
 
 const renderForm = async () => {
   renderWithProviders(
-    <VenueSettingsFormScreen
+    <VenueSettingsScreen
       offerer={{
         ...defaultGetOffererResponseModel,
         id: 12,
@@ -85,7 +85,7 @@ const renderForm = async () => {
   })
 }
 
-describe('VenueSettingsFormScreen', () => {
+describe('VenueSettingsScreen', () => {
   beforeEach(() => {
     vi.spyOn(api, 'getProvidersByVenue').mockResolvedValue([
       {
