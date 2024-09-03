@@ -124,7 +124,9 @@ def check_stocks_price(
             price = price_categories[stock.price_category_id].price
         else:
             error_key = "price"
-            assert stock.price  # helps mypy, not sure but it would crash in check_stock_price if None - TODO: check
+            assert (
+                stock.price is not None
+            )  # helps mypy, not sure but it would crash in check_stock_price if None - TODO: check
             price = stock.price
         check_stock_price(price, offer, error_key=error_key)
 
