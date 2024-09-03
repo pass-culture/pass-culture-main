@@ -1,4 +1,3 @@
-import cn from 'classnames'
 import { FormikProvider, useFormik } from 'formik'
 import React, { useId, useState } from 'react'
 
@@ -13,6 +12,7 @@ import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 import { BookingDetails } from './BookingDetails'
 import { ButtonInvalidateToken } from './ButtonInvalidateToken'
 import styles from './Desk.module.scss'
+import { DeskInputMessage } from './DeskInputMessage/DeskInputMessage'
 import { getBookingFailure } from './getBookingFailure'
 import { ErrorMessage, MESSAGE_VARIANT } from './types'
 import { validateToken } from './validation'
@@ -142,17 +142,6 @@ export const Desk = (): JSX.Element => {
     }
   }
 
-  const messageTemplate = (
-    <div
-      className={cn(styles['desk-message'], {
-        [styles['error']]: message.variant === MESSAGE_VARIANT.ERROR,
-      })}
-      data-testid="desk-message"
-    >
-      {message.message}
-    </div>
-  )
-
   return (
     <AppLayout>
       <h1 className={styles['title']}>Guichet</h1>
@@ -192,13 +181,19 @@ export const Desk = (): JSX.Element => {
           </div>
 
           <div role="alert" id={errorId}>
-            {message.variant === MESSAGE_VARIANT.ERROR && messageTemplate}
+            {message.variant === MESSAGE_VARIANT.ERROR && (
+              <DeskInputMessage message={message.message} isError />
+            )}
           </div>
           <div role="status" id={successId}>
-            {message.variant === MESSAGE_VARIANT.SUCCESS && messageTemplate}
+            {message.variant === MESSAGE_VARIANT.SUCCESS && (
+              <DeskInputMessage message={message.message} />
+            )}
           </div>
 
-          {message.variant === MESSAGE_VARIANT.DEFAULT && messageTemplate}
+          {message.variant === MESSAGE_VARIANT.DEFAULT && (
+            <DeskInputMessage message={message.message} />
+          )}
 
           <Callout
             links={[
