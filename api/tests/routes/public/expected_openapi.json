@@ -11093,7 +11093,7 @@
         },
         "/v2/collective/adage_mock/bookings/{booking_id}/cancel": {
             "post": {
-                "description": "Like this could happen within the Adage platform.\n\nWarning: not available for production nor integration environments",
+                "description": "Like this could happen within the Adage platform.\n\n**WARNING:** this endpoint is not available from the production environment as it is a mock meant to ease the test of your integrations.",
                 "operationId": "AdageMockCancelCollectiveBooking",
                 "parameters": [
                     {
@@ -11147,7 +11147,7 @@
         },
         "/v2/collective/adage_mock/bookings/{booking_id}/confirm": {
             "post": {
-                "description": "Like this could happen within the Adage platform.\n\nWarning: not available for production nor integration environments",
+                "description": "Like this could happen within the Adage platform.\n\n**WARNING:** this endpoint is not available from the production environment as it is a mock meant to ease the test of your integrations.",
                 "operationId": "ConfirmCollectiveBooking",
                 "parameters": [
                     {
@@ -11201,7 +11201,7 @@
         },
         "/v2/collective/adage_mock/bookings/{booking_id}/pending": {
             "post": {
-                "description": "Like this could happen within the Adage platform.\n\nWarning: not available for production nor integration environments",
+                "description": "Like this could happen within the Adage platform.\n\n**WARNING:** this endpoint is not available from the production environment as it is a mock meant to ease the test of your integrations.",
                 "operationId": "ResetCollectiveBooking",
                 "parameters": [
                     {
@@ -11248,6 +11248,60 @@
                     }
                 ],
                 "summary": "Adage mock: reset collective booking back to pending state.",
+                "tags": [
+                    "Collective bookings Adage mock"
+                ]
+            }
+        },
+        "/v2/collective/adage_mock/bookings/{booking_id}/repay": {
+            "post": {
+                "description": "Like this could happen within the Adage platform.\n\n**WARNING:** this endpoint is not available from the production environment as it is a mock meant to ease the test of your integrations.",
+                "operationId": "RepayCollectiveBooking",
+                "parameters": [
+                    {
+                        "description": "",
+                        "in": "path",
+                        "name": "booking_id",
+                        "required": true,
+                        "schema": {
+                            "format": "int32",
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "This collective booking's status has been successfully updated"
+                    },
+                    "401": {
+                        "description": "Authentication is necessary to use this API."
+                    },
+                    "403": {
+                        "description": "Collective booking status updated has been refused"
+                    },
+                    "404": {
+                        "description": "The collective offer could not be found."
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        },
+                        "description": "Unprocessable Entity"
+                    },
+                    "429": {
+                        "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "summary": "Mock collective booking repayment.",
                 "tags": [
                     "Collective bookings Adage mock"
                 ]
