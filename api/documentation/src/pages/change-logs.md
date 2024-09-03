@@ -5,6 +5,10 @@ title: Pass Culture API change logs
 # Change logs
 
 :::warning
+  Offer field `externalTicketOfficeUrl` is now deprecated and is going to be removed in the coming months.
+:::
+
+:::warning
 💡 Important notice some old resources are going to be removed in the coming months.
 
 - If you were using `/v2/venue/<venue_id>/stocks` to manage stocks, you will have to migrate to this endpoint : [/public/offers/v1/products/ean](/rest-api#tag/Product-offer-bulk-operations/operation/PostProductOfferByEan). The endpoint `/v2/stock` will not be available anymore starting from September, the 31st 2024.

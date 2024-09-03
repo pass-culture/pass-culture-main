@@ -150,6 +150,10 @@ class _FIELDS:
         example=True,
         default=True,
     )
+    EXTERNAL_TICKET_OFFICE_URL_FIELD = Field(
+        description="**(deprecated)** Link displayed to users wishing to book the offer but who do not have credit.",
+        example="https://example.com",
+    )
 
     # Products fields
     EANS_FILTER = Field(description="EANs list (max 100)", example="3700551782888,9782895761792")

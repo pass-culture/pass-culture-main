@@ -2537,7 +2537,7 @@
                         "type": "integer"
                     },
                     "externalTicketOfficeUrl": {
-                        "description": "Link displayed to users wishing to book the offer but who do not have credit.",
+                        "description": "**(deprecated)** Link displayed to users wishing to book the offer but who do not have credit.",
                         "example": "https://example.com",
                         "format": "uri",
                         "maxLength": 2083,
@@ -2966,7 +2966,7 @@
                         "type": "integer"
                     },
                     "externalTicketOfficeUrl": {
-                        "description": "Link displayed to users wishing to book the offer but who do not have credit.",
+                        "description": "**(deprecated)** Link displayed to users wishing to book the offer but who do not have credit.",
                         "example": "https://example.com",
                         "nullable": true,
                         "title": "Externalticketofficeurl",
@@ -6308,7 +6308,7 @@
                         "type": "boolean"
                     },
                     "externalTicketOfficeUrl": {
-                        "description": "Link displayed to users wishing to book the offer but who do not have credit.",
+                        "description": "**(deprecated)** Link displayed to users wishing to book the offer but who do not have credit.",
                         "example": "https://example.com",
                         "format": "uri",
                         "maxLength": 2083,
@@ -6804,7 +6804,7 @@
                         "type": "boolean"
                     },
                     "externalTicketOfficeUrl": {
-                        "description": "Link displayed to users wishing to book the offer but who do not have credit.",
+                        "description": "**(deprecated)** Link displayed to users wishing to book the offer but who do not have credit.",
                         "example": "https://example.com",
                         "nullable": true,
                         "title": "Externalticketofficeurl",

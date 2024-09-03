@@ -144,11 +144,6 @@ CATEGORY_RELATED_FIELD_DESCRIPTION = (
     "Cultural category the offer belongs to. According to the category, some fields may or must be specified."
 )
 CATEGORY_RELATED_FIELD = pydantic_v1.Field(..., description=CATEGORY_RELATED_FIELD_DESCRIPTION)
-EXTERNAL_TICKET_OFFICE_URL_FIELD = pydantic_v1.Field(
-    None,
-    description="Link displayed to users wishing to book the offer but who do not have credit.",
-    example="https://example.com",
-)
 WITHDRAWAL_DETAILS_FIELD = pydantic_v1.Field(
     None,
     description="Further information that will be provided to attendees to ease the offer collection.",
@@ -182,7 +177,7 @@ class OfferCreationBase(serialization.ConfiguredBaseModel):
     booking_email: pydantic_v1.EmailStr | None = fields.OFFER_BOOKING_EMAIL
     category_related_fields: CategoryRelatedFields = CATEGORY_RELATED_FIELD
     description: str | None = fields.OFFER_DESCRIPTION_WITH_MAX_LENGTH
-    external_ticket_office_url: pydantic_v1.HttpUrl | None = EXTERNAL_TICKET_OFFICE_URL_FIELD
+    external_ticket_office_url: pydantic_v1.HttpUrl | None = fields.EXTERNAL_TICKET_OFFICE_URL_FIELD
     image: ImageBody | None
     enable_double_bookings: bool | None = fields.OFFER_ENABLE_DOUBLE_BOOKINGS_WITH_DEFAULT
     name: str = fields.OFFER_NAME_WITH_MAX_LENGTH
@@ -663,7 +658,7 @@ class OfferResponse(serialization.ConfiguredBaseModel):
     booking_contact: str | None = fields.OFFER_BOOKING_CONTACT
     booking_email: str | None = fields.OFFER_BOOKING_EMAIL
     description: str | None = fields.OFFER_DESCRIPTION
-    external_ticket_office_url: str | None = EXTERNAL_TICKET_OFFICE_URL_FIELD
+    external_ticket_office_url: str | None = fields.EXTERNAL_TICKET_OFFICE_URL_FIELD
     image: ImageResponse | None
     enable_double_bookings: bool | None = fields.OFFER_ENABLE_DOUBLE_BOOKINGS_WITH_DEFAULT
     location: PhysicalLocation | DigitalLocation = LOCATION_FIELD
