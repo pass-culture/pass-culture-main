@@ -1,6 +1,6 @@
 import cn from 'classnames'
 import { FormikProvider, useFormik } from 'formik'
-import React, { useState } from 'react'
+import React, { useId, useState } from 'react'
 
 import { apiContremarque } from 'apiClient/api'
 import { isErrorAPIError } from 'apiClient/helpers'
@@ -29,6 +29,9 @@ export const Desk = (): JSX.Element => {
     message: 'Saisissez une contremarque',
     variant: MESSAGE_VARIANT.DEFAULT,
   })
+
+  const errorId = useId()
+  const successId = useId()
 
   const resetMessage = () => {
     setMessage({
@@ -110,7 +113,7 @@ export const Desk = (): JSX.Element => {
   const onSubmitSuccess = (successMessage: string) => {
     setMessage({
       message: successMessage,
-      variant: MESSAGE_VARIANT.DEFAULT,
+      variant: MESSAGE_VARIANT.SUCCESS,
     })
     setIsTokenValidated(false)
     setToken('')
@@ -139,6 +142,17 @@ export const Desk = (): JSX.Element => {
     }
   }
 
+  const messageTemplate = (
+    <div
+      className={cn(styles['desk-message'], {
+        [styles['error']]: message.variant === MESSAGE_VARIANT.ERROR,
+      })}
+      data-testid="desk-message"
+    >
+      {message.message}
+    </div>
+  )
+
   return (
     <AppLayout>
       <h1 className={styles['title']}>Guichet</h1>
@@ -158,9 +172,12 @@ export const Desk = (): JSX.Element => {
             className={styles['desk-form-input']}
             hideFooter
             isOptional
+            aria-describedby={`${successId} ${errorId}`}
           />
 
-          {booking && <BookingDetails booking={booking} />}
+          <div role="status">
+            {booking && <BookingDetails booking={booking} />}
+          </div>
 
           <div className={styles['desk-button']}>
             {isTokenValidated ? (
@@ -174,16 +191,14 @@ export const Desk = (): JSX.Element => {
             )}
           </div>
 
-          <div
-            aria-live="assertive"
-            aria-relevant="all"
-            className={cn(styles['desk-message'], {
-              [styles['error']]: message.variant === MESSAGE_VARIANT.ERROR,
-            })}
-            data-testid="desk-message"
-          >
-            {message.message}
+          <div role="alert" id={errorId}>
+            {message.variant === MESSAGE_VARIANT.ERROR && messageTemplate}
           </div>
+          <div role="status" id={successId}>
+            {message.variant === MESSAGE_VARIANT.SUCCESS && messageTemplate}
+          </div>
+
+          {message.variant === MESSAGE_VARIANT.DEFAULT && messageTemplate}
 
           <Callout
             links={[

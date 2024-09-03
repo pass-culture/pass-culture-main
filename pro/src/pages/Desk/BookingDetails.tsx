@@ -36,11 +36,7 @@ const formattedBookingDate = (booking: GetBookingResponse): string => {
 
 export const BookingDetails = ({ booking }: BookingDetailsProps) => {
   return (
-    <div
-      aria-live="polite"
-      aria-relevant="all"
-      className={styles['booking-summary']}
-    >
+    <div className={styles['booking-summary']}>
       <BookingDetailsLine label="Utilisateur : " value={booking.userName} />
       <BookingDetailsLine label="Offre : " value={booking.offerName} />
       <BookingDetailsLine
