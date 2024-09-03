@@ -114,9 +114,9 @@ describe(' Desk', () => {
       const contremarque = screen.getByLabelText('Contremarque')
       await userEvent.type(contremarque, 'AAAAAA')
       await userEvent.click(screen.getByText('Valider la contremarque'))
-      expect(
-        await screen.findByText('Contremarque validée !')
-      ).toBeInTheDocument()
+      expect(screen.getByTestId('desk-message')).toContainHTML(
+        'Contremarque validée !'
+      )
       expect(contremarque).toHaveValue('')
     })
 
@@ -172,7 +172,9 @@ describe(' Desk', () => {
       await userEvent.click(confirmModalButton)
 
       await waitFor(() => {
-        expect(screen.getByText('Contremarque invalidée !')).toBeInTheDocument()
+        expect(screen.getByTestId('desk-message')).toContainHTML(
+          'Contremarque invalidée !'
+        )
       })
     })
 
