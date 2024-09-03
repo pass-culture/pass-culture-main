@@ -92,9 +92,12 @@ When('I fill activity form without target audience', () => {
 })
 
 When('I validate the registration', () => {
-  cy.intercept({ method: 'POST', url: '/offerers/new' }).as('createOfferer')
   cy.wait(2000) // @todo: delete this when random failures fixed
+  cy.intercept({ method: 'POST', url: '/offerers/new', times: 1 }).as(
+    'createOfferer'
+  )
   cy.findByText('Valider et créer ma structure').click()
+  cy.wait('@createOfferer').its('response.statusCode').should('eq', 201)
 })
 
 When('I add a new offerer', () => {
@@ -164,9 +167,6 @@ Then('the attachment is in progress', () => {
 })
 
 Then('the offerer is created', () => {
-  cy.wait('@createOfferer', { timeout: 60000 })
-    .its('response.statusCode')
-    .should('eq', 201)
   cy.findAllByTestId('global-notification-success').should(
     'contain',
     'Votre structure a bien été créée'
