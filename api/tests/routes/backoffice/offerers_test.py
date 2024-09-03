@@ -128,26 +128,25 @@ class GetOffererTest(GetEndpointHelper):
     def test_get_offerer_with_new_nav_badges(self, new_nav_users, old_nav_users, authenticated_client, offerer):
         if new_nav_users:
             user_with_new_nav = users_factories.ProFactory()
-            users_factories.UserProNewNavStateFactory(user=user_with_new_nav)
             offerers_factories.UserOffererFactory(user=user_with_new_nav, offerer=offerer)
         if old_nav_users:
-            _user_exclude_from_beta_test = users_factories.ProFactory()
+            _user_exclude_from_beta_test = users_factories.ProFactory(new_pro_portal__deactivate=True)
 
-            user_with_nav_date_in_the_future = users_factories.ProFactory()
-            users_factories.UserProNewNavStateFactory(
-                user=user_with_nav_date_in_the_future,
-                eligibilityDate=None,
-                newNavDate=datetime.datetime.utcnow() + datetime.timedelta(days=5),
+            user_with_nav_date_in_the_future = users_factories.ProFactory(
+                new_pro_portal__eligibilityDate=None,
+                new_pro_portal__newNavDate=datetime.datetime.utcnow() + datetime.timedelta(days=5),
             )
             offerers_factories.UserOffererFactory(user=user_with_nav_date_in_the_future, offerer=offerer)
 
-            user_with_old_nav = users_factories.ProFactory()
-            users_factories.UserProNewNavStateFactory(user=user_with_old_nav, eligibilityDate=None, newNavDate=None)
+            user_with_old_nav = users_factories.ProFactory(
+                new_pro_portal__eligibilityDate=None,
+                new_pro_portal__newNavDate=None,
+            )
             offerers_factories.UserOffererFactory(user=user_with_old_nav, offerer=offerer)
 
-            eligible_user_with_inactivated_new_nav = users_factories.ProFactory()
-            users_factories.UserProNewNavStateFactory(
-                user=eligible_user_with_inactivated_new_nav, eligibilityDate=datetime.datetime.utcnow(), newNavDate=None
+            eligible_user_with_inactivated_new_nav = users_factories.ProFactory(
+                new_pro_portal__eligibilityDate=datetime.datetime.utcnow(),
+                new_pro_portal__newNavDate=None,
             )
             offerers_factories.UserOffererFactory(user=eligible_user_with_inactivated_new_nav, offerer=offerer)
 
@@ -1361,16 +1360,17 @@ class GetOffererUsersTest(GetEndpointHelper):
 
     def test_user_offerer_details_tab_with_new_nav_tags(self, authenticated_client, offerer):
         user_with_new_nav = users_factories.ProFactory()
-        users_factories.UserProNewNavStateFactory(user=user_with_new_nav)
         offerers_factories.UserOffererFactory(user=user_with_new_nav, offerer=offerer)
 
-        user_with_old_nav = users_factories.ProFactory()
-        users_factories.UserProNewNavStateFactory(user=user_with_old_nav, eligibilityDate=None, newNavDate=None)
+        user_with_old_nav = users_factories.ProFactory(
+            new_pro_portal__eligibilityDate=None,
+            new_pro_portal__newNavDate=None,
+        )
         offerers_factories.UserOffererFactory(user=user_with_old_nav, offerer=offerer)
 
-        eligible_user_with_inactivated_new_nav = users_factories.ProFactory()
-        users_factories.UserProNewNavStateFactory(
-            user=eligible_user_with_inactivated_new_nav, eligibilityDate=datetime.datetime.utcnow(), newNavDate=None
+        eligible_user_with_inactivated_new_nav = users_factories.ProFactory(
+            new_pro_portal__eligibilityDate=datetime.datetime.utcnow(),
+            new_pro_portal__newNavDate=None,
         )
         offerers_factories.UserOffererFactory(user=eligible_user_with_inactivated_new_nav, offerer=offerer)
 

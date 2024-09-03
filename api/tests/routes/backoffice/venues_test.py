@@ -468,11 +468,10 @@ class GetVenueTest(GetEndpointHelper):
     )
     def test_get_venue_with_new_nav_badges(self, authenticated_client, venue, has_new_nav, has_old_nav):
         if has_new_nav:
-            user_with_new_nav = users_factories.ProFactory()
+            user_with_new_nav = users_factories.ProFactory(new_pro_portal__newNavDate=datetime.utcnow())
             offerers_factories.UserOffererFactory(user=user_with_new_nav, offerer=venue.managingOfferer)
-            users_factories.UserProNewNavStateFactory(user=user_with_new_nav, newNavDate=datetime.utcnow())
         if has_old_nav:
-            user_with_old_nav = users_factories.ProFactory()
+            user_with_old_nav = users_factories.ProFactory(new_pro_portal__deactivate=True)
             offerers_factories.UserOffererFactory(user=user_with_old_nav, offerer=venue.managingOfferer)
 
         venue.publicName = "Le grand Rantanplan 1"

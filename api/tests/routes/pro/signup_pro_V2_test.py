@@ -9,7 +9,6 @@ import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offerers.factories import OffererInvitationFactory
 from pcapi.core.users.factories import ProFactory
-from pcapi.core.users.factories import UserProNewNavStateFactory
 from pcapi.core.users.models import User
 
 
@@ -80,11 +79,11 @@ class Returns204Test:
         """Test the new navigation activation at creation. Only the newNavDate is set
         The eligibilityDate is used to distinguish between the beta test dans the A/B test so It should only be set manually
         """
-        inviter_with_new_nav = UserProNewNavStateFactory(newNavDate=datetime.utcnow()).user
+        inviter_with_new_nav = ProFactory(new_pro_portal__newNavDate=datetime.utcnow())
         invitation_with_new_nav = OffererInvitationFactory(user=inviter_with_new_nav)
-        inviter_with_old_nav = UserProNewNavStateFactory(newNavDate=None).user
+        inviter_with_old_nav = ProFactory(new_pro_portal__newNavDate=None)
         invitation_with_old_nav = OffererInvitationFactory(user=inviter_with_old_nav)
-        inviter_without_nav_state = ProFactory()
+        inviter_without_nav_state = ProFactory(new_pro_portal__deactivate=True)
         invitation_without_nav_state = OffererInvitationFactory(user=inviter_without_nav_state)
         data = BASE_DATA_PRO.copy()
         response = client.post("/v2/users/signup/pro", json=data | {"email": invitation_with_new_nav.email})
