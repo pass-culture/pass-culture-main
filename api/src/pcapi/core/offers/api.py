@@ -221,6 +221,8 @@ def create_draft_offer(
 
     fields = {key: value for key, value in body.dict(by_alias=True).items() if key != "venueId"}
     fields.update(_get_accessibility_compliance_fields(venue))
+    fields.update({"withdrawalDetails": venue.withdrawalDetails})
+
     offer = models.Offer(
         **fields,
         venue=venue,
