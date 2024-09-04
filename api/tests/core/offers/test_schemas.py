@@ -25,5 +25,5 @@ class PostDraftOfferBodyModelTest:
 class PatchDraftOfferBodyModelTest:
     def test_patch_draft_offer_body_model(self):
         _ = PatchDraftOfferBodyModel(
-            name="Name", description="description", extraData={"ean": "12345678910111"}, durationMinutes=12
+            name="Name", description="description", extraData={"artist": "An-2"}, durationMinutes=12
         )

@@ -244,11 +244,19 @@ def post_draft_offer(
         .options(sqla.orm.joinedload(offerers_models.Venue.offererAddress))
         .first_or_404()
     )
+
+    ean_code = body.extra_data.get("ean", None) if body.extra_data is not None else None
+    product = (
+        models.Product.query.filter(models.Product.extraData["ean"].astext == ean_code)
+        .filter(models.Product.id == body.product_id)
+        .one_or_none()
+    )
+
     rest.check_user_has_access_to_offerer(current_user, venue.managingOffererId)
 
     try:
         with repository.transaction():
-            offer = offers_api.create_draft_offer(body, venue)
+            offer = offers_api.create_draft_offer(body, venue, product)
     except exceptions.OfferCreationBaseException as error:
         raise api_errors.ApiErrors(error.errors, status_code=400)
 

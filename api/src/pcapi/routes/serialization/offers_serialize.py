@@ -440,6 +440,7 @@ class GetIndividualOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
     name: str
     priceCategories: list[PriceCategoryResponseModel] | None
     subcategoryId: SubcategoryIdEnum
+    productId: int | None
     thumbUrl: str | None
     externalTicketOfficeUrl: str | None
     url: str | None

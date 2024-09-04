@@ -175,6 +175,7 @@ class Returns200Test:
             "bookingsCount": 0,
             "bookingEmail": "offer.booking.email@example.com",
             "dateCreated": "2020-10-15T00:00:00Z",
+            "productId": None,
             "publicationDate": None,
             "description": "Tatort, but slower",
             "durationMinutes": 60,

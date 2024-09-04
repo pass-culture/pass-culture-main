@@ -7,6 +7,7 @@ import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import Offer
 import pcapi.core.users.factories as users_factories
+from pcapi.routes.native.v1.serialization.offerers import VenueTypeCode
 from pcapi.utils.date import format_into_utc_date
 
 
@@ -36,6 +37,7 @@ class Returns200Test:
         assert response.status_code == 200
         assert response.json["id"] == offer.id
         assert response.json["venue"]["id"] == offer.venue.id
+        assert response.json["productId"] == None
 
         updated_offer = Offer.query.get(offer.id)
         assert updated_offer.name == "New name"
@@ -85,6 +87,43 @@ class Returns400Test:
         }
         for key in forbidden_keys:
             assert key in response.json
+
+    def when_trying_to_patch_ean(self, client):
+        user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
+        venue = offerers_factories.VenueFactory(
+            managingOfferer=user_offerer.offerer, venueTypeCode=VenueTypeCode.RECORD_STORE
+        )
+        offer = offers_factories.OfferFactory(
+            name="Name",
+            subcategoryId=subcategories.LIVRE_PAPIER.id,
+            venue=venue,
+            description="description",
+        )
+
+        data = {"extraData": {"ean": "1234567891234"}}
+        response = client.with_session_auth("user@example.com").patch(f"offers/draft/{offer.id}", json=data)
+
+        assert response.status_code == 400
+        assert response.json["ean"] == ["Vous ne pouvez pas changer cette information"]
+
+    def when_trying_to_patch_product(self, client):
+        user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
+        venue = offerers_factories.VenueFactory(
+            managingOfferer=user_offerer.offerer, venueTypeCode=VenueTypeCode.RECORD_STORE
+        )
+        offer = offers_factories.OfferFactory(
+            name="Name",
+            subcategoryId=subcategories.LIVRE_PAPIER.id,
+            venue=venue,
+            description="description",
+        )
+        product = offers_factories.ProductFactory(subcategoryId=subcategories.LIVRE_PAPIER.id)
+
+        data = {"product_id": product.id}
+        response = client.with_session_auth("user@example.com").patch(f"offers/draft/{offer.id}", json=data)
+
+        assert response.status_code == 400
+        assert response.json["product_id"] == ["Vous ne pouvez pas changer cette information"]
 
 
 @pytest.mark.usefixtures("db_session")

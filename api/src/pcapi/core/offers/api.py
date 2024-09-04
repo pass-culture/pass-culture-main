@@ -210,7 +210,10 @@ def _get_coherent_venue_with_subcategory(
 
 
 def create_draft_offer(
-    body: offers_schemas.PostDraftOfferBodyModel, venue: offerers_models.Venue, is_from_private_api: bool = True
+    body: offers_schemas.PostDraftOfferBodyModel,
+    venue: offerers_models.Venue,
+    product: offers_models.Product | None = None,
+    is_from_private_api: bool = True,
 ) -> models.Offer:
     validation.check_offer_subcategory_is_valid(body.subcategory_id)
     if feature.FeatureToggle.WIP_SUGGESTED_SUBCATEGORIES.is_active():
@@ -218,6 +221,8 @@ def create_draft_offer(
 
     body.extra_data = _format_extra_data(body.subcategory_id, body.extra_data) or {}
     validation.check_offer_extra_data(body.subcategory_id, body.extra_data, venue, is_from_private_api)
+
+    validation.check_product_for_venue_and_subcategory(product, body.subcategory_id, venue.venueTypeCode)
 
     fields = {key: value for key, value in body.dict(by_alias=True).items() if key != "venueId"}
     fields.update(_get_accessibility_compliance_fields(venue))
@@ -227,6 +232,7 @@ def create_draft_offer(
         offererAddress=venue.offererAddress,
         isActive=False,
         validation=models.OfferValidationStatus.DRAFT,
+        product=product,
     )
     db.session.add(offer)
 

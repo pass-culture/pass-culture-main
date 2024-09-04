@@ -7,6 +7,7 @@ export type PostDraftOfferBodyModel = {
   durationMinutes?: number | null;
   extraData?: any;
   name: string;
+  productId?: number | null;
   subcategoryId: string;
   venueId: number;
 };
