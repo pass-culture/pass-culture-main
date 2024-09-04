@@ -59,6 +59,7 @@ export type OfferEducationalFormProps = Omit<
   offer?:
     | GetCollectiveOfferResponseModel
     | GetCollectiveOfferTemplateResponseModel
+  isSubmitting: boolean
 }
 
 export const OfferEducationalForm = ({
@@ -72,6 +73,7 @@ export const OfferEducationalForm = ({
   onImageDelete,
   isOfferCreated = false,
   offer,
+  isSubmitting,
 }: OfferEducationalFormProps): JSX.Element => {
   const notify = useNotification()
   const isCollectiveOfferDraftEnabled = useActiveFeature(
@@ -205,26 +207,25 @@ export const OfferEducationalForm = ({
           >
             Annuler et quitter
           </ButtonLink>
-          {!isCollectiveOfferDraftEnabled && (
-            <Button
-              type="submit"
-              disabled={!isEligible || mode === Mode.READ_ONLY}
-            >
-              {mode === Mode.CREATION
-                ? 'Étape suivante'
-                : 'Enregistrer les modifications'}
-            </Button>
-          )}
         </ActionsBarSticky.Left>
-        {isCollectiveOfferDraftEnabled && (
+        {isCollectiveOfferDraftEnabled ? (
           <ActionsBarSticky.Right dirtyForm={dirty || !offer} mode={mode}>
             <Button
               type="submit"
-              disabled={!isEligible || mode === Mode.READ_ONLY}
+              disabled={!isEligible || mode === Mode.READ_ONLY || isSubmitting}
             >
               Enregistrer et continuer
             </Button>
           </ActionsBarSticky.Right>
+        ) : (
+          <Button
+            type="submit"
+            disabled={!isEligible || mode === Mode.READ_ONLY}
+          >
+            {mode === Mode.CREATION
+              ? 'Étape suivante'
+              : 'Enregistrer les modifications'}
+          </Button>
         )}
       </ActionsBarSticky>
     </>

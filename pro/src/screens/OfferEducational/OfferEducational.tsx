@@ -123,7 +123,6 @@ export const OfferEducational = ({
             offerValues,
             initialValues
           )
-
           response = await api.editCollectiveOfferTemplate(offer.id, payload)
         }
       } else {
@@ -222,6 +221,7 @@ export const OfferEducational = ({
             onImageUpload={onImageUpload}
             isOfferCreated={isOfferCreated}
             offer={offer}
+            isSubmitting={formik.isSubmitting}
           />
         </form>
       </FormikProvider>
