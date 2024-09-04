@@ -69,11 +69,17 @@ class HttpBackend:
     def _request(self, method: str, path: str, params: dict, body: dict | None = None) -> bytes:
         params["token"] = settings.RECOMMENDATION_API_AUTHENTICATION_TOKEN
         url = "/".join((settings.RECOMMENDATION_API_URL.rstrip("/"), path.lstrip("/")))
+        # FIXME : once all env has been migrated to a private vpc (in a week or two),
+        # all calls to recommendation api will not be verified.
+        # The certificates are google-managed and seen as self-signed.
+        verify = False
+        if settings.IS_PROD:
+            verify = True
         try:
             if method == "get":
-                response = requests.get(url, params=params, disable_synchronous_retry=True)
+                response = requests.get(url, params=params, disable_synchronous_retry=True, verify=verify)
             elif method == "post":
-                response = requests.post(url, params=params, json=body, disable_synchronous_retry=True)
+                response = requests.post(url, params=params, json=body, disable_synchronous_retry=True, verify=verify)
             else:
                 raise ValueError(f"Unexpected method: {method}")
             response.raise_for_status()
