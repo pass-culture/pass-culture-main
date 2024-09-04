@@ -48,6 +48,7 @@ export const BaseTimePicker = ({
   const optionsListId = useId()
   const timeOptions = getTimeOptions(suggestedTimeList)
   const hasTimeOptions = timeOptions.length > 0
+  const formattedValue = props.value.padStart(5, '0')
 
   return (
     <>
@@ -57,6 +58,7 @@ export const BaseTimePicker = ({
         placeholder="HH:MM"
         autoComplete="off"
         {...props}
+        value={formattedValue}
         className={cn(className, styles['timepicker'])}
       />
       {hasTimeOptions && (
