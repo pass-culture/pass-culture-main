@@ -222,7 +222,8 @@ def create_draft_offer(
     body.extra_data = _format_extra_data(body.subcategory_id, body.extra_data) or {}
     validation.check_offer_extra_data(body.subcategory_id, body.extra_data, venue, is_from_private_api)
 
-    validation.check_product_for_venue_and_subcategory(product, body.subcategory_id, venue.venueTypeCode)
+    if feature.FeatureToggle.WIP_EAN_CREATION.is_active():
+        validation.check_product_for_venue_and_subcategory(product, body.subcategory_id, venue.venueTypeCode)
 
     fields = {key: value for key, value in body.dict(by_alias=True).items() if key != "venueId"}
     fields.update(_get_accessibility_compliance_fields(venue))

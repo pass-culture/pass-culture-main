@@ -4,6 +4,7 @@ from pcapi.core.categories import subcategories_v2 as subcategories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import Offer
+from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 from pcapi.routes.native.v1.serialization.offerers import VenueTypeCode
 
@@ -265,6 +266,7 @@ class Returns400Test:
         assert response.status_code == 400
         assert response.json["subcategory"] == ["La sous-catégorie de cette offre est inconnue"]
 
+    @override_features(WIP_EAN_CREATION=True)
     def test_fail_if_venue_is_record_store_offer_is_cd_or_vinyl_without_product(self, client):
         venue = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.RECORD_STORE)
         offerer = venue.managingOfferer
@@ -281,6 +283,7 @@ class Returns400Test:
         assert response.status_code == 400
         assert response.json["ean"] == ["EAN non reconnu. Assurez-vous qu'il n'y ait pas d'erreur de saisie."]
 
+    @override_features(WIP_EAN_CREATION=True)
     def test_fail_if_venue_is_record_store_offer_is_cd_or_vinyl_with_unknown_product(self, client):
         venue = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.RECORD_STORE)
         offerer = venue.managingOfferer
