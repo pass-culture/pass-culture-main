@@ -484,13 +484,21 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
 
     @hybrid_property
     def hasOffers(self) -> bool:
-        return bool(self.offers)
+        # Don't use Python properties as high offer count venues will timeout
+        import pcapi.core.offers.models as offers_models
+
+        return bool(
+            offers_models.Offer.query.filter(offers_models.Offer.venueId == self.id)
+            .limit(1)
+            .with_entities(offers_models.Offer.venueId)
+            .all()
+        )
 
     @hasOffers.expression  # type: ignore[no-redef]
     def hasOffers(cls) -> Exists:  # pylint: disable=no-self-argument
         import pcapi.core.offers.models as offers_models
 
-        return sa.exists().where(offers_models.Offer.venuId == cls.id)
+        return sa.exists().where(offers_models.Offer.venueId == cls.id)
 
     @property
     def is_eligible_for_search(self) -> bool:
