@@ -26,6 +26,7 @@ from pcapi.domain import show_types
 from pcapi.models import api_errors
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.offer_mixin import OfferValidationStatus
+from pcapi.routes.native.v1.serialization.offerers import VenueTypeCode
 from pcapi.routes.public.books_stocks import serialization
 from pcapi.utils import date
 
@@ -572,6 +573,26 @@ def check_offer_extra_data(
 
     if errors.errors:
         raise errors
+
+
+def check_product_for_venue_and_subcategory(
+    product: models.Product | None,
+    subcategory_id: str | None,
+    venue_type_code: VenueTypeCode,
+) -> None:
+    if venue_type_code != VenueTypeCode.RECORD_STORE:
+        return
+
+    if subcategory_id not in [
+        subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
+        subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id,
+    ]:
+        return
+    if product is not None:
+        return
+    raise exceptions.ProductNotFoundForOfferCreation(
+        ExtraDataFieldEnum.EAN.value, "EAN non reconnu. Assurez-vous qu'il n'y ait pas d'erreur de saisie."
+    )
 
 
 def check_ean_does_not_exist(ean: str | None, venue: offerers_models.Venue) -> None:

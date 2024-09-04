@@ -204,6 +204,10 @@ class EanFormatException(OfferCreationBaseException):
     pass
 
 
+class ProductNotFoundForOfferCreation(OfferCreationBaseException):
+    pass
+
+
 class FutureOfferException(OfferCreationBaseException):
     pass
 

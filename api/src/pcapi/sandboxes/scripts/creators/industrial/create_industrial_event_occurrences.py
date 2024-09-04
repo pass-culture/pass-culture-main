@@ -44,7 +44,7 @@ def create_industrial_event_occurrences(
         price_categories: dict[decimal.Decimal, offers_models.PriceCategory] = {}
         for index, beginning_datetime in enumerate(EVENT_OCCURRENCE_BEGINNING_DATETIMES, start=1):
             name = "{} / {} / {} ".format(
-                event_offer_with_occurrences.product.name,
+                event_offer_with_occurrences.product.name if event_offer_with_occurrences.product else "",
                 event_offer_with_occurrences.venue.name,
                 beginning_datetime.strftime(date_utils.DATE_ISO_FORMAT),
             )
@@ -55,7 +55,10 @@ def create_industrial_event_occurrences(
             if price_counter > 2:
                 price = price + price_counter
 
-            if event_offer_with_occurrences.product.subcategoryId in subcategories.ACTIVATION_SUBCATEGORIES:
+            if (
+                event_offer_with_occurrences.product
+                and event_offer_with_occurrences.product.subcategoryId in subcategories.ACTIVATION_SUBCATEGORIES
+            ):
                 price = decimal.Decimal(0)
 
             if price in price_categories:

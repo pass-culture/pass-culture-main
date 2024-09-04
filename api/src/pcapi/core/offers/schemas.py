@@ -10,6 +10,7 @@ from pcapi.core.offers import models as offers_models
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import to_camel
 from pcapi.validation.routes.offers import check_offer_name_length_is_valid
+from pcapi.validation.routes.offers import check_offer_product_update
 
 
 class PostDraftOfferBodyModel(BaseModel):
@@ -19,6 +20,7 @@ class PostDraftOfferBodyModel(BaseModel):
     description: str | None = None
     extra_data: typing.Any = None
     duration_minutes: int | None = None
+    product_id: int | None
 
     @validator("name", pre=True)
     def validate_name(cls, name: str, values: dict) -> str:
@@ -41,6 +43,11 @@ class PatchDraftOfferBodyModel(BaseModel):
     def validate_name(cls, name: str, values: dict) -> str:
         check_offer_name_length_is_valid(name)
         return name
+
+    @validator("extra_data", pre=True)
+    def validate_extra_data(cls, extra_data: dict[str, typing.Any]) -> dict[str, typing.Any]:
+        check_offer_product_update(extra_data)
+        return extra_data
 
     class Config:
         alias_generator = to_camel

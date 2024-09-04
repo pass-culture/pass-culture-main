@@ -2,8 +2,10 @@ import pytest
 
 from pcapi.core.categories import subcategories_v2 as subcategories
 import pcapi.core.offerers.factories as offerers_factories
+import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import Offer
 import pcapi.core.users.factories as users_factories
+from pcapi.routes.native.v1.serialization.offerers import VenueTypeCode
 
 
 @pytest.mark.usefixtures("db_session")
@@ -17,7 +19,7 @@ class Returns201Test:
             "name": "Celeste",
             "subcategoryId": subcategories.LIVRE_PAPIER.id,
             "venueId": venue.id,
-            "extraData": {"ean": "9782123456803", "gtl_id": "07000000"},
+            "extraData": {"gtl_id": "07000000"},
         }
         response = client.with_session_auth("user@example.com").post("/offers/draft", json=data)
 
@@ -30,8 +32,117 @@ class Returns201Test:
         assert response_dict["venue"]["id"] == offer.venue.id
         assert response_dict["name"] == "Celeste"
         assert response_dict["id"] == offer.id
-        assert response_dict["extraData"] == {"ean": "9782123456803", "gtl_id": "07000000"}
+        assert response_dict["productId"] == None
+        assert response_dict["extraData"] == {"gtl_id": "07000000"}
         assert not offer.product
+
+    def test_created_offer_from_product_should_return_product_id(self, client):
+        venue = offerers_factories.VenueFactory()
+        offerer = venue.managingOfferer
+        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
+        product = offers_factories.ProductFactory(
+            subcategoryId=subcategories.LIVRE_PAPIER.id, extraData=dict({"ean": "9782123456803"})
+        )
+
+        data = {
+            "name": "Celeste",
+            "subcategoryId": subcategories.LIVRE_PAPIER.id,
+            "venueId": venue.id,
+            "productId": product.id,
+            "extraData": {"ean": "9782123456803"},
+        }
+        response = client.with_session_auth("user@example.com").post("/offers/draft", json=data)
+
+        assert response.status_code == 201
+
+        response_dict = response.json
+        offer_id = response_dict["id"]
+        offer = Offer.query.get(offer_id)
+        assert offer.isActive is False
+        assert response_dict["venue"]["id"] == offer.venue.id
+        assert response_dict["name"] == "Celeste"
+        assert response_dict["id"] == offer.id
+        assert response_dict["productId"] == product.id
+        assert response_dict["extraData"] == {"ean": "9782123456803"}
+        assert offer.product == product
+
+    def test_create_offer_other_than_CD_or_vinyl_without_EAN_code_should_succeed_for_record_store(self, client):
+        venue = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.RECORD_STORE)
+        offerer = venue.managingOfferer
+        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
+
+        data = {
+            "name": "Celeste",
+            "subcategoryId": subcategories.LIVRE_PAPIER.id,
+            "venueId": venue.id,
+        }
+        response = client.with_session_auth("user@example.com").post("/offers/draft", json=data)
+
+        assert response.status_code == 201
+
+        response_dict = response.json
+        offer_id = response_dict["id"]
+        offer = Offer.query.get(offer_id)
+        assert offer.isActive is False
+        assert response_dict["venue"]["id"] == offer.venue.id
+        assert response_dict["name"] == "Celeste"
+        assert response_dict["id"] == offer.id
+        assert response_dict["productId"] is None
+        assert offer.product is None
+
+    def test_create_offer_cd_or_vinyl_without_EAN_code_shoud_succeed_if_venue_is_not_record_store(self, client):
+        venue = offerers_factories.VenueFactory()
+        offerer = venue.managingOfferer
+        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
+
+        data = {
+            "name": "Celeste",
+            "subcategoryId": subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id,
+            "venueId": venue.id,
+        }
+        response = client.with_session_auth("user@example.com").post("/offers/draft", json=data)
+
+        assert response.status_code == 201
+
+        response_dict = response.json
+        offer_id = response_dict["id"]
+        offer = Offer.query.get(offer_id)
+        assert offer.isActive is False
+        assert response_dict["venue"]["id"] == offer.venue.id
+        assert response_dict["name"] == "Celeste"
+        assert response_dict["id"] == offer.id
+        assert response_dict["productId"] is None
+        assert offer.product is None
+
+    def test_create_offer_record_store_cd_or_vinyl_with_valid_ean_code(self, client):
+        venue = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.RECORD_STORE)
+        offerer = venue.managingOfferer
+        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
+        product = offers_factories.ProductFactory(
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id, extraData=dict({"ean": "1234567891234"})
+        )
+
+        data = {
+            "name": "Celeste",
+            "subcategoryId": subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id,
+            "venueId": venue.id,
+            "extraData": {"gtl_id": "07000000", "ean": "1234567891234"},
+            "productId": product.id,
+        }
+        response = client.with_session_auth("user@example.com").post("/offers/draft", json=data)
+
+        assert response.status_code == 201
+
+        response_dict = response.json
+        offer_id = response_dict["id"]
+        offer = Offer.query.get(offer_id)
+        assert offer.isActive is False
+        assert response_dict["venue"]["id"] == offer.venue.id
+        assert response_dict["name"] == "Celeste"
+        assert response_dict["id"] == offer.id
+        assert response_dict["productId"] == offer.productId
+        assert response_dict["extraData"] == {"gtl_id": "07000000", "ean": "1234567891234"}
+        assert offer.product == product
 
     def test_create_offer_on_venue_with_accessibility_informations(self, client):
         venue = offerers_factories.VenueFactory(
@@ -153,6 +264,39 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json["subcategory"] == ["La sous-catégorie de cette offre est inconnue"]
+
+    def test_fail_if_venue_is_record_store_offer_is_cd_or_vinyl_without_product(self, client):
+        venue = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.RECORD_STORE)
+        offerer = venue.managingOfferer
+        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
+
+        data = {
+            "name": "Celeste",
+            "subcategoryId": subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
+            "venueId": venue.id,
+            "extraData": {"gtl_id": "07000000"},
+        }
+        response = client.with_session_auth("user@example.com").post("/offers/draft", json=data)
+
+        assert response.status_code == 400
+        assert response.json["ean"] == ["EAN non reconnu. Assurez-vous qu'il n'y ait pas d'erreur de saisie."]
+
+    def test_fail_if_venue_is_record_store_offer_is_cd_or_vinyl_with_unknown_product(self, client):
+        venue = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.RECORD_STORE)
+        offerer = venue.managingOfferer
+        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
+
+        data = {
+            "name": "Celeste",
+            "subcategoryId": subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
+            "venueId": venue.id,
+            "extraData": {"gtl_id": "07000000", "ean": "1234567891234"},
+            "productId": 0,
+        }
+        response = client.with_session_auth("user@example.com").post("/offers/draft", json=data)
+
+        assert response.status_code == 400
+        assert response.json["ean"] == ["EAN non reconnu. Assurez-vous qu'il n'y ait pas d'erreur de saisie."]
 
     @pytest.mark.parametrize("subcategory_id", ["OEUVRE_ART", "BON_ACHAT_INSTRUMENT"])
     def test_fail_if_inactive_subcategory(self, client, subcategory_id):
