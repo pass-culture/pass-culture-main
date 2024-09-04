@@ -128,6 +128,7 @@ class PostEventStocksTest(PublicAPIVenueEndpointHelper):
                     "priceCategory": {
                         "id": first_stock.priceCategoryId,
                         "label": first_stock.priceCategory.label,
+                        "idAtProvider": None,
                         "price": 8899,
                     },
                     "quantity": 10,
@@ -141,6 +142,7 @@ class PostEventStocksTest(PublicAPIVenueEndpointHelper):
                     "priceCategory": {
                         "id": second_stock.priceCategoryId,
                         "label": second_stock.priceCategory.label,
+                        "idAtProvider": None,
                         "price": 0,
                     },
                     "quantity": "unlimited",

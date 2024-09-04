@@ -460,6 +460,7 @@ class PriceCategoryCreation(serialization.ConfiguredBaseModel):
     else:
         label: pydantic_v1.constr(min_length=1, max_length=50) = fields.PRICE_CATEGORY_LABEL
     price: offer_price_model = fields.PRICE
+    id_at_provider: str | None = fields.ID_AT_PROVIDER_WITH_MAX_LENGTH
 
     class Config:
         getter_dict = DecimalPriceGetterDict
@@ -474,10 +475,21 @@ class PriceCategoriesCreation(serialization.ConfiguredBaseModel):
         price_categories: list[PriceCategoryCreation],
     ) -> list[PriceCategoryCreation]:
         unique_price_categories = []
+        unique_id_at_provider_list = set()
         for price_category in price_categories:
+            # unique (label, price)
             if (price_category.label, price_category.price) in unique_price_categories:
                 raise ValueError("Price categories must be unique")
             unique_price_categories.append((price_category.label, price_category.price))
+
+            # unique idAtProvider
+            if price_category.id_at_provider:
+                if price_category.id_at_provider in unique_id_at_provider_list:
+                    raise ValueError(
+                        f"Price category `idAtProvider` must be unique. Duplicated value : {price_category.id_at_provider}"
+                    )
+                unique_id_at_provider_list.add(price_category.id_at_provider)
+
         return price_categories
 
     class Config:
@@ -499,10 +511,21 @@ class EventOfferCreation(OfferCreationBase):
         price_categories: list[PriceCategoryCreation],
     ) -> list[PriceCategoryCreation]:
         unique_price_categories = []
+        unique_id_at_provider_list = set()
         for price_category in price_categories:
+            # unique (label, price)
             if (price_category.label, price_category.price) in unique_price_categories:
                 raise ValueError("Price categories must be unique")
             unique_price_categories.append((price_category.label, price_category.price))
+
+            # unique idAtProvider
+            if price_category.id_at_provider:
+                if price_category.id_at_provider in unique_id_at_provider_list:
+                    raise ValueError(
+                        f"Price category `idAtProvider` must be unique. Duplicated value : {price_category.id_at_provider}"
+                    )
+                unique_id_at_provider_list.add(price_category.id_at_provider)
+
         return price_categories
 
     class Config:
@@ -559,6 +582,7 @@ class PriceCategoryEdition(serialization.ConfiguredBaseModel):
     else:
         label: pydantic_v1.constr(min_length=1, max_length=50) | None = fields.PRICE_CATEGORY_LABEL
     price: offer_price_model | None = fields.PRICE
+    id_at_provider: str | None = fields.ID_AT_PROVIDER_WITH_MAX_LENGTH
 
     @pydantic_v1.validator("price")
     def price_must_be_positive(cls, value: int | None) -> int | None:
@@ -607,6 +631,7 @@ class PriceCategoryResponse(serialization.ConfiguredBaseModel):
     id: int
     label: str = fields.PRICE_CATEGORY_LABEL
     price: pydantic_v1.StrictInt = fields.PRICE
+    id_at_provider: str | None = fields.ID_AT_PROVIDER
 
     class Config:
         getter_dict = DecimalPriceGetterDict

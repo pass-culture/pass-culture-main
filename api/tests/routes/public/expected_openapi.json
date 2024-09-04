@@ -6055,6 +6055,14 @@
             },
             "PriceCategoryCreation": {
                 "properties": {
+                    "idAtProvider": {
+                        "description": "Id of the object (product, event...) on your side. It should not be more than 70 characters long.",
+                        "example": "Your own id",
+                        "maxLength": 70,
+                        "nullable": true,
+                        "title": "Idatprovider",
+                        "type": "string"
+                    },
                     "label": {
                         "description": "Price category label",
                         "example": "Carr\u00e9 or",
@@ -6082,6 +6090,14 @@
             "PriceCategoryEdition": {
                 "additionalProperties": false,
                 "properties": {
+                    "idAtProvider": {
+                        "description": "Id of the object (product, event...) on your side. It should not be more than 70 characters long.",
+                        "example": "Your own id",
+                        "maxLength": 70,
+                        "nullable": true,
+                        "title": "Idatprovider",
+                        "type": "string"
+                    },
                     "label": {
                         "description": "Price category label",
                         "example": "Carr\u00e9 or",
@@ -6109,6 +6125,13 @@
                     "id": {
                         "title": "Id",
                         "type": "integer"
+                    },
+                    "idAtProvider": {
+                        "description": "Id of the object (product, event...) on your side. It should not be more than 70 characters long.",
+                        "example": "Your own id",
+                        "nullable": true,
+                        "title": "Idatprovider",
+                        "type": "string"
                     },
                     "label": {
                         "description": "Price category label",
@@ -9826,7 +9849,7 @@
         "/public/offers/v1/events/{event_id}/price_categories/{price_category_id}": {
             "patch": {
                 "description": "Will update only the non-blank field. If you want one of the field to remain unchanged, leave it `undefined`.",
-                "operationId": "PatchEventPriceCategories",
+                "operationId": "PatchEventPriceCategory",
                 "parameters": [
                     {
                         "description": "",

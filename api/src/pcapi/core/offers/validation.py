@@ -743,8 +743,7 @@ def check_for_duplicated_price_categories(
 
     if existing_price_category:
         raise api_errors.ApiErrors(
-            {"priceCategories": [f"The price category {existing_price_category.label} already exists"]},
-            status_code=400,
+            {"priceCategories": [f"The price category {existing_price_category.label} already exists"]}
         )
 
 
