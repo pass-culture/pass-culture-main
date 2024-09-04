@@ -44,6 +44,7 @@ const defaultProps: OfferEducationalFormProps = {
   imageOffer: null,
   onImageUpload: vi.fn(),
   onImageDelete: vi.fn(),
+  isSubmitting: false,
 }
 
 describe('OfferEducationalForm', () => {
