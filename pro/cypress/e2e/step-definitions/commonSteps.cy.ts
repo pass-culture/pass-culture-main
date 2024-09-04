@@ -5,6 +5,13 @@ import {
   When,
 } from '@badeball/cypress-cucumber-preprocessor'
 
+function homePageLoaded(): void {
+  cy.findByText('Bienvenue dans l’espace acteurs culturels')
+  cy.findByText('Vos adresses')
+  cy.findByText('Ajouter un lieu')
+  cy.findAllByTestId('spinner').should('not.exist')
+}
+
 Given('I open the {string} page', (page: string) => {
   cy.visit('/' + page)
 })
@@ -18,7 +25,6 @@ When('I go to the {string} page', (page: string) => {
     cy.findAllByText(page).first().click()
     cy.url().should('not.equal', urlSource)
   })
-  cy.findAllByTestId('spinner').should('not.exist')
 })
 
 Given('I am logged in with account 1', () => {
@@ -26,7 +32,7 @@ Given('I am logged in with account 1', () => {
     email: 'retention_structures@example.com',
     password: 'user@AZERTY123',
   })
-  cy.findAllByTestId('spinner').should('not.exist')
+  homePageLoaded()
 })
 
 Given('I am logged in with account 2', () => {
@@ -34,7 +40,7 @@ Given('I am logged in with account 2', () => {
     email: 'activation@example.com',
     password: 'user@AZERTY123',
   })
-  cy.findAllByTestId('spinner').should('not.exist')
+  homePageLoaded()
 })
 
 Given('I am logged in with account 2 and no cookie selection', () => {
@@ -43,7 +49,6 @@ Given('I am logged in with account 2 and no cookie selection', () => {
     password: 'user@AZERTY123',
     refusePopupCookies: false,
   })
-  cy.findAllByTestId('spinner').should('not.exist')
 })
 
 // créer un seul scénario createOffers avec son step-def
