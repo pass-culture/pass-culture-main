@@ -12,6 +12,7 @@ from pcapi.core.finance import api as finance_api
 from pcapi.core.finance import models as finance_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.providers import models as providers_models
+from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import ForbiddenError
 from pcapi.models.api_errors import ResourceNotFoundError
@@ -161,6 +162,61 @@ def use_collective_booking(booking_id: int) -> None:
         raise ApiErrors({"code": "FAILED_TO_USE_BOOKING_TRY_AGAIN_LATER"}, status_code=500)
 
 
+@blueprints.public_api.route("/v2/collective/adage_mock/bookings/<int:booking_id>/pending", methods=["POST"])
+@utils.exclude_prod_environment
+@provider_api_key_required
+@spectree_serialize(
+    api=spectree_schemas.public_api_schema,
+    on_success_status=204,
+    tags=[tags.COLLECTIVE_ADAGE_MOCK],
+    resp=SpectreeResponse(
+        **(
+            http_responses.HTTP_204_COLLECTIVE_BOOKING_STATUS_UPDATE
+            | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
+            | http_responses.HTTP_403_COLLECTIVE_BOOKING_STATUS_UPDATE_REFUSED
+            | http_responses.HTTP_404_COLLECTIVE_OFFER_NOT_FOUND
+        )
+    ),
+)
+def reset_collective_booking(booking_id: int) -> None:
+    """
+    Adage mock: reset collective booking back to pending state.
+
+    Like this could happen within the Adage platform.
+
+    Warning: not available for production nor integration environments
+    """
+    booking = _get_booking_or_raise_404(booking_id)
+
+    if booking.status == models.CollectiveBookingStatus.USED:
+        raise ForbiddenError({"code": "CANNOT_SET_BACK_USED_BOOKING_TO_PENDING"})
+    if booking.status == models.CollectiveBookingStatus.REIMBURSED:
+        raise ForbiddenError({"code": "CANNOT_SET_BACK_REIMBURSED_BOOKING_TO_PENDING"})
+
+    try:
+        if booking.status == models.CollectiveBookingStatus.CANCELLED:
+            booking.uncancel_booking()
+    except Exception as err:
+        db.session.rollback()
+
+        err_extras = {"booking": booking.id, "api_key": current_api_key.id, "err": str(err)}
+        logger.error("Adage mock. Failed to set cancelled booking back to pending state", extra=err_extras)
+        raise ApiErrors({"code": "FAILED_TO_SET_BACK_CANCELLED_BOOKING_TO_PENDING"}, status_code=500)
+
+    try:
+        booking.status = models.CollectiveBookingStatus.PENDING
+        booking.confirmationDate = None
+
+        db.session.add(booking)
+        db.session.commit()
+    except Exception as err:
+        db.session.rollback()
+
+        err_extras = {"booking": booking.id, "api_key": current_api_key.id, "err": str(err)}
+        logger.error("Adage mock. Failed to set booking back to pending state", extra=err_extras)
+        raise ApiErrors({"code": "FAILED_TO_SET_BACK_BOOKING_TO_PENDING"}, status_code=500)
+
+
 def _get_booking_or_raise_404(booking_id: int) -> models.CollectiveBooking:
     booking = (
         models.CollectiveBooking.query.filter(models.CollectiveBooking.id == booking_id)
@@ -172,7 +228,7 @@ def _get_booking_or_raise_404(booking_id: int) -> models.CollectiveBooking:
         .filter(providers_models.VenueProvider.isActive == True)
         .options(
             sa.orm.joinedload(models.CollectiveBooking.collectiveStock)
-            .load_only(models.CollectiveStock.id)
+            .load_only(models.CollectiveStock.id, models.CollectiveStock.beginningDatetime)
             .joinedload(models.CollectiveStock.collectiveOffer)
             .load_only(models.CollectiveOffer.id),
         )
