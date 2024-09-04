@@ -8,6 +8,7 @@ import email_validator
 from flask import render_template
 from flask import url_for
 import wtforms
+from wtforms import ValidationError
 from wtforms import validators
 import wtforms_sqlalchemy.fields
 
@@ -277,6 +278,11 @@ class PCDateField(wtforms.DateField):
                 return "Date invalide"
             case _:
                 return string
+
+    def pre_validate(self, form: wtforms.Form) -> None:
+        if self.data and self.data < datetime.date(1900, 1, 1):
+            super().pre_validate(form)
+            raise ValidationError("La date doit être après le 01/01/1900.")
 
 
 class PCOptDateField(PCDateField):
