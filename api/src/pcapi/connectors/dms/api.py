@@ -19,6 +19,7 @@ from . import exceptions
 
 logger = logging.getLogger(__name__)
 GRAPHQL_DIRECTORY = pathlib.Path(os.path.dirname(__file__)) / "graphql"
+DEFAULT_RETRIES = 3
 
 ARCHIVE_APPLICATION_QUERY_NAME = "archive_application"
 GET_BANK_INFO_STATUS_QUERY_NAME = "pro/get_bank_info_status"
@@ -41,11 +42,11 @@ class DmsStats(BaseModel):
 
 
 class DMSGraphQLClient:
-    def __init__(self) -> None:
+    def __init__(self, retries: int = DEFAULT_RETRIES) -> None:
         transport = requests.CustomGqlTransport(
             url="https://www.demarches-simplifiees.fr/api/v2/graphql",
             headers={"Authorization": f"Bearer {settings.DMS_TOKEN}"},
-            retries=3,
+            retries=retries,
         )
         self.client = gql.Client(transport=transport)
 
@@ -286,7 +287,7 @@ def get_dms_stats(dms_application_id: int | None, api_v4: bool = False) -> DmsSt
         return None
 
     try:
-        dms_stats = DMSGraphQLClient().get_bank_info_status(dms_application_id)
+        dms_stats = DMSGraphQLClient(retries=1).get_bank_info_status(dms_application_id)
     except (
         gql_exceptions.TransportError,
         gql_exceptions.TransportQueryError,
