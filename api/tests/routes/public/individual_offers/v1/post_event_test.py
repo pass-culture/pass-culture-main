@@ -25,7 +25,7 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
     endpoint_method = "post"
 
     @staticmethod
-    def _get_base_payload(venue_id) -> dict:
+    def _get_base_payload(venue_id: int) -> dict:
         return {
             "categoryRelatedFields": {"category": "RENCONTRE"},
             "accessibility": utils.ACCESSIBILITY_FIELDS,
@@ -156,7 +156,7 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
                 "itemCollectionDetails": "A retirer au 6ème sous-sol du parking de la gare entre minuit et 2",
                 "location": {"type": "physical", "venueId": venue_provider.venueId},
                 "name": "Nicolas Jaar dans ton salon",
-                "priceCategories": [{"price": 30000, "label": "triangle or"}],
+                "priceCategories": [{"price": 30000, "label": "triangle or", "idAtProvider": "gold_triangle"}],
                 "hasTicket": True,
                 "idAtProvider": "T'as un bel id tu sais",
             },
@@ -201,6 +201,7 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
         created_price_category = offers_models.PriceCategory.query.one()
         assert created_price_category.price == decimal.Decimal("300")
         assert created_price_category.label == "triangle or"
+        assert created_price_category.idAtProvider == "gold_triangle"
 
         assert response.json == {
             "accessibility": {
@@ -232,7 +233,14 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
             "location": {"type": "physical", "venueId": venue_provider.venueId},
             "name": "Nicolas Jaar dans ton salon",
             "status": "SOLD_OUT",
-            "priceCategories": [{"id": created_price_category.id, "price": 30000, "label": "triangle or"}],
+            "priceCategories": [
+                {
+                    "id": created_price_category.id,
+                    "price": 30000,
+                    "label": "triangle or",
+                    "idAtProvider": "gold_triangle",
+                }
+            ],
             "hasTicket": True,
         }
 
@@ -502,3 +510,38 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
 
         assert response.status_code == 400
         assert response.json["publication_date"] == ["Impossible de sélectionner une date de publication dans le passé"]
+
+    def test_should_raise_400_because_of_duplicated_price_category_ids_at_provider(self, client):
+        plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=True)
+
+        payload = self._get_base_payload(venue_provider.venueId)
+        payload["priceCategories"] = [
+            {"price": 30000, "label": "triangle or", "idAtProvider": "comment_ça_ça_ne_marche_pas?"},
+            {"price": 15000, "label": "rond d'argent", "idAtProvider": "comment_ça_ça_ne_marche_pas?"},
+        ]
+
+        response = client.with_explicit_token(plain_api_key).post(
+            self.endpoint_url,
+            json=payload,
+        )
+        assert response.status_code == 400
+        assert response.json == {
+            "priceCategories": [
+                "Price category `idAtProvider` must be unique. Duplicated value : comment_ça_ça_ne_marche_pas?"
+            ]
+        }
+
+    def test_should_not_raise_if_id_at_provider_is_none(self, client):
+        plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=True)
+
+        payload = self._get_base_payload(venue_provider.venueId)
+        payload["priceCategories"] = [
+            {"price": 30000, "label": "triangle or", "idAtProvider": None},
+            {"price": 15000, "label": "rond d'argent", "idAtProvider": None},
+        ]
+
+        response = client.with_explicit_token(plain_api_key).post(
+            self.endpoint_url,
+            json=payload,
+        )
+        assert response.status_code == 200

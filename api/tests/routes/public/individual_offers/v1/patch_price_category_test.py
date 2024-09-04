@@ -135,18 +135,34 @@ class PatchPriceCategoryTest(PublicAPIVenueEndpointHelper):
         assert response.status_code == 400
         assert response.json == {"unrecognized_key": ["extra fields not permitted"]}
 
+    def test_should_raise_400_because_id_at_provider_already_taken(self, client):
+        duplicated_id_at_provider = "sur_un_malentendu_ça_peut_passer"
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        event, price_category = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
+        offers_factories.PriceCategoryFactory(offer=event, idAtProvider=duplicated_id_at_provider)
+
+        response = client.with_explicit_token(plain_api_key).patch(
+            self._get_base_resource_url(event.id, price_category.id),
+            json={"idAtProvider": duplicated_id_at_provider},
+        )
+        assert response.status_code == 400
+        assert response.json == {
+            "idAtProvider": ["`sur_un_malentendu_ça_peut_passer` is already taken by another offer price category"]
+        }
+
     def test_update_price_category(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         event, price_category = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
 
         response = client.with_explicit_token(plain_api_key).patch(
             self._get_base_resource_url(event.id, price_category.id),
-            json={"price": 2500, "label": "carre or"},
+            json={"price": 2500, "label": "carre or", "idAtProvider": "updated_id_at_provider"},
         )
         assert response.status_code == 200
 
         assert price_category.price == decimal.Decimal("25")
         assert price_category.label == "carre or"
+        assert price_category.idAtProvider == "updated_id_at_provider"
 
     def test_update_only_one_field(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()

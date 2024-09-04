@@ -103,7 +103,12 @@ def post_event_offer(body: serialization.EventOfferCreation) -> serialization.Ev
             price_categories = body.price_categories or []
             for price_category in price_categories:
                 euro_price = finance_utils.to_euros(price_category.price)
-                offers_api.create_price_category(created_offer, price_category.label, euro_price)
+                offers_api.create_price_category(
+                    created_offer,
+                    price_category.label,
+                    euro_price,
+                    id_at_provider=price_category.id_at_provider,
+                )
 
             if body.image:
                 utils.save_image(body.image, created_offer)
@@ -114,6 +119,7 @@ def post_event_offer(body: serialization.EventOfferCreation) -> serialization.Ev
         offers_exceptions.OfferCreationBaseException,
         offers_exceptions.OfferEditionBaseException,
         offers_exceptions.FutureOfferException,
+        offers_exceptions.PriceCategoryCreationBaseException,
     ) as error:
         raise api_errors.ApiErrors(error.errors, status_code=400)
 
@@ -282,7 +288,7 @@ def post_event_price_categories(
     if not offer:
         raise api_errors.ApiErrors({"event_id": ["The event could not be found"]}, status_code=404)
 
-    # We convert the price to euros beucause the price has different types in different apis
+    # We convert the price to euros because the price has different types in different apis
     new_labels_and_prices = {(p.label, finance_utils.to_euros(p.price)) for p in body.price_categories}
     check_for_duplicated_price_categories(new_labels_and_prices, offer.id)
 
@@ -290,12 +296,19 @@ def post_event_price_categories(
     try:
         with repository.transaction():
             for price_category in body.price_categories:
-                euro_price = finance_utils.to_euros(price_category.price)
                 created_price_categories.append(
-                    offers_api.create_price_category(offer, price_category.label, euro_price)
+                    offers_api.create_price_category(
+                        offer,
+                        label=price_category.label,
+                        price=finance_utils.to_euros(price_category.price),
+                        id_at_provider=price_category.id_at_provider,
+                    )
                 )
-    except offers_exceptions.OfferEditionBaseException as error:
-        raise api_errors.ApiErrors(error.errors, status_code=400)
+    except (
+        offers_exceptions.OfferEditionBaseException,
+        offers_exceptions.PriceCategoryCreationBaseException,
+    ) as error:
+        raise api_errors.ApiErrors(error.errors)
 
     return serialization.PriceCategoriesResponse.build_price_categories(created_price_categories)
 
@@ -318,7 +331,7 @@ def post_event_price_categories(
         )
     ),
 )
-def patch_event_price_categories(
+def patch_event_price_category(
     event_id: int,
     price_category_id: int,
     body: serialization.PriceCategoryEdition,
@@ -350,9 +363,10 @@ def patch_event_price_categories(
                     if eurocent_price != offers_api.UNCHANGED
                     else offers_api.UNCHANGED
                 ),
+                id_at_provider=update_body.get("id_at_provider", offers_api.UNCHANGED),
                 editing_provider=current_api_key.provider,
             )
-    except offers_exceptions.OfferEditionBaseException as error:
+    except (offers_exceptions.OfferEditionBaseException, offers_exceptions.PriceCategoryCreationBaseException) as error:
         raise api_errors.ApiErrors(error.errors, status_code=400)
 
     return serialization.PriceCategoryResponse.from_orm(price_category_to_edit)
