@@ -35,6 +35,27 @@ class Returns201Test:
         assert response_dict["id"] == offer.id
         assert response_dict["productId"] == None
         assert response_dict["extraData"] == {"gtl_id": "07000000"}
+        assert response_dict["isDuo"] == False
+        assert not offer.product
+
+    def test_created_offer_should_have_is_duo_set_to_true_if_subcategory_is_event_and_can_be_duo(self, client):
+        venue = offerers_factories.VenueFactory()
+        offerer = venue.managingOfferer
+        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
+
+        data = {
+            "name": "Celeste",
+            "subcategoryId": subcategories.CONFERENCE.id,
+            "venueId": venue.id,
+        }
+        response = client.with_session_auth("user@example.com").post("/offers/draft", json=data)
+
+        assert response.status_code == 201
+
+        response_dict = response.json
+        offer_id = response_dict["id"]
+        offer = Offer.query.get(offer_id)
+        assert response_dict["isDuo"] == True
         assert not offer.product
 
     def test_created_offer_from_product_should_return_product_id(self, client):

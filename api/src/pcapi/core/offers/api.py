@@ -229,6 +229,9 @@ def create_draft_offer(
     fields.update(_get_accessibility_compliance_fields(venue))
     fields.update({"withdrawalDetails": venue.withdrawalDetails})
 
+    subcategory = subcategories.ALL_SUBCATEGORIES_DICT.get(fields.get("subcategoryId", None))
+    fields.update({"isDuo": bool(subcategory and subcategory.is_event and subcategory.can_be_duo)})
+
     offer = models.Offer(
         **fields,
         venue=venue,
