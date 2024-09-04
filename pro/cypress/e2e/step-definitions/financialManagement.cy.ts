@@ -39,13 +39,18 @@ When('I add {string} venue to my bank account', (venue: string) => {
     cy.findByText("Rattacher un lieu").click()
   })
 
+  cy.intercept({ method: 'PATCH', url: '/offerers/879/bank-accounts/200208'})
+    .as('patchOfferer')
+
   cy.findByRole("dialog").within(() => {
     cy.findByLabelText(venue).should('not.be.checked')
     cy.findByLabelText(venue).check()
 
     cy.findByText("Enregistrer").click()
-    //cy.findByText("Confirmer").click()  
   })
+
+  cy.wait('@patchOfferer').its("response.statusCode").should("equal", 204);
+
 })
 
 Then('I can see the reimbursement details', () => {
