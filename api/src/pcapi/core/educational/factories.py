@@ -275,6 +275,7 @@ class CancelledCollectiveBookingFactory(CollectiveBookingFactory):
 class PendingCollectiveBookingFactory(CollectiveBookingFactory):
     cancellationLimitDate = factory.LazyFunction(lambda: datetime.datetime.utcnow() + datetime.timedelta(days=10))
     confirmationLimitDate = factory.LazyFunction(lambda: datetime.datetime.utcnow() + datetime.timedelta(days=10))
+    confirmationDate = None
     status = models.CollectiveBookingStatus.PENDING
 
 
