@@ -401,6 +401,9 @@ describe('screens:IndividualOffer::Informations', () => {
     vi.spyOn(api, 'getSuggestedSubcategories').mockResolvedValue({
       subcategoryIds: ['virtual', 'physical'],
     })
+    vi.spyOn(useAnalytics, 'useRemoteConfigParams').mockReturnValue({
+      SUGGESTED_CATEGORIES: 'true',
+    })
 
     renderDetailsScreen(
       {
@@ -488,7 +491,9 @@ describe('screens:IndividualOffer::Informations', () => {
     vi.spyOn(api, 'getSuggestedSubcategories').mockResolvedValue({
       subcategoryIds: ['virtual', 'physical'],
     })
-
+    vi.spyOn(useAnalytics, 'useRemoteConfigParams').mockReturnValue({
+      SUGGESTED_CATEGORIES: 'true',
+    })
     renderDetailsScreen(
       {
         ...props,
@@ -648,6 +653,9 @@ describe('screens:IndividualOffer::Informations', () => {
     })
 
     it('should not render suggested subcategories', () => {
+      vi.spyOn(useAnalytics, 'useRemoteConfigParams').mockReturnValue({
+        SUGGESTED_CATEGORIES: 'true',
+      })
       const context = individualOfferContextValuesFactory({
         categories,
         subCategories,
@@ -676,6 +684,9 @@ describe('screens:IndividualOffer::Informations', () => {
   })
 
   it('should not render venue field when there is just one venue', () => {
+    vi.spyOn(useAnalytics, 'useRemoteConfigParams').mockReturnValue({
+      SUGGESTED_CATEGORIES: 'true',
+    })
     props.venues = [venueListItemFactory({ id: 189 })]
 
     renderDetailsScreen(props, contextValue, {
