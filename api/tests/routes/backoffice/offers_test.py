@@ -31,6 +31,7 @@ from pcapi.core.permissions import factories as perm_factories
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.providers import factories as providers_factories
 from pcapi.core.testing import assert_num_queries
+from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationType
@@ -2862,10 +2863,11 @@ class DownloadBookingsCSVTest(GetEndpointHelper):
     endpoint_kwargs = {"offer_id": 1, "stock_id": 1}
     needed_permission = perm_models.Permissions.READ_OFFERS
 
-    # session + current user + bookings
-    expected_num_queries = 3
+    # session + current user + bookings + check if WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE is active
+    expected_num_queries = 4
 
-    def test_download_bookings_csv(self, legit_user, authenticated_client):
+    @pytest.mark.parametrize("is_oa_as_data_source_ff_active", (False, True))
+    def test_download_bookings_csv(self, legit_user, authenticated_client, is_oa_as_data_source_ff_active):
         offerer = offerers_factories.UserOffererFactory().offerer  # because of join on UserOfferers
         offer = offers_factories.ThingOfferFactory(venue__managingOfferer=offerer)
         bookings_factories.UsedBookingFactory(stock__offer=offer)
@@ -2875,7 +2877,10 @@ class DownloadBookingsCSVTest(GetEndpointHelper):
 
         url = url_for(self.endpoint, offer_id=offer.id)
 
-        with assert_num_queries(self.expected_num_queries):
+        with (
+            override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=is_oa_as_data_source_ff_active),
+            assert_num_queries(self.expected_num_queries),
+        ):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -2887,14 +2892,15 @@ class DownloadBookingsXLSXTest(GetEndpointHelper):
     endpoint_kwargs = {"offer_id": 1, "stock_id": 1}
     needed_permission = perm_models.Permissions.READ_OFFERS
 
-    # session + current user + bookings
-    expected_num_queries = 3
+    # session + current user + bookings + check if WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE is active
+    expected_num_queries = 4
 
     def reader_from_response(self, response):
         wb = openpyxl.load_workbook(BytesIO(response.data))
         return wb.active
 
-    def test_download_bookings_xlsx(self, authenticated_client):
+    @pytest.mark.parametrize("is_oa_as_data_source_ff_active", (False, True))
+    def test_download_bookings_xlsx(self, authenticated_client, is_oa_as_data_source_ff_active):
         offerer = offerers_factories.UserOffererFactory().offerer  # because of join on UserOfferers
         offer = offers_factories.EventOfferFactory(venue__managingOfferer=offerer)
         booking1 = bookings_factories.UsedBookingFactory(stock__offer=offer)
@@ -2903,7 +2909,10 @@ class DownloadBookingsXLSXTest(GetEndpointHelper):
 
         url = url_for(self.endpoint, offer_id=offer.id)
 
-        with assert_num_queries(self.expected_num_queries):
+        with (
+            override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=is_oa_as_data_source_ff_active),
+            assert_num_queries(self.expected_num_queries),
+        ):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 

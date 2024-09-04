@@ -8,6 +8,7 @@ import typing
 from flask_sqlalchemy import BaseQuery
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
+from sqlalchemy.orm import aliased
 from sqlalchemy.sql.expression import extract
 
 from pcapi.core.bookings.repository import field_to_venue_timezone
@@ -15,6 +16,7 @@ import pcapi.core.categories.subcategories_v2 as subcategories
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import models as educational_models
 from pcapi.core.finance import models as finance_models
+from pcapi.core.geography import models as geography_models
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import repository as offers_repository
@@ -22,6 +24,7 @@ from pcapi.core.providers import models as providers_models
 from pcapi.core.users.models import User
 from pcapi.models import db
 from pcapi.models import offer_mixin
+from pcapi.models.feature import FeatureToggle
 from pcapi.repository import repository
 from pcapi.routes.adage_iframe.serialization.adage_authentication import RedactorInformation
 from pcapi.utils.clean_accents import clean_accents
@@ -578,9 +581,8 @@ def _get_filtered_collective_bookings_query(
     status_filter: educational_models.CollectiveBookingStatusFilter | None = None,
     event_date: date | None = None,
     venue_id: int | None = None,
-    extra_joins: typing.Iterable[sa.Column] | None = None,
+    extra_joins: tuple[tuple[typing.Any, ...], ...] = (),
 ) -> sa.orm.Query:
-    extra_joins = extra_joins or tuple()
 
     collective_bookings_query = (
         educational_models.CollectiveBooking.query.join(educational_models.CollectiveBooking.offerer)
@@ -588,8 +590,11 @@ def _get_filtered_collective_bookings_query(
         .join(educational_models.CollectiveBooking.collectiveStock)
         .join(educational_models.CollectiveBooking.venue, isouter=True)
     )
-    for join_key in extra_joins:
-        collective_bookings_query = collective_bookings_query.join(join_key, isouter=True)
+    for join_key, *join_conditions in extra_joins:
+        if join_conditions:
+            collective_bookings_query = collective_bookings_query.join(join_key, *join_conditions, isouter=True)
+        else:
+            collective_bookings_query = collective_bookings_query.join(join_key, isouter=True)
 
     if not pro_user.has_admin_role:
         collective_bookings_query = collective_bookings_query.filter(offerers_models.UserOfferer.user == pro_user)
@@ -695,8 +700,8 @@ def _get_filtered_collective_bookings_pro(
             event_date,
             venue_id,
             extra_joins=(
-                educational_models.CollectiveStock.collectiveOffer,
-                educational_models.CollectiveBooking.educationalInstitution,
+                (educational_models.CollectiveStock.collectiveOffer,),
+                (educational_models.CollectiveBooking.educationalInstitution,),
             ),
         )
         .options(sa.orm.joinedload(educational_models.CollectiveBooking.collectiveStock))
@@ -760,21 +765,11 @@ def get_filtered_collective_booking_report(
     event_date: datetime | None = None,
     venue_id: int | None = None,
 ) -> BaseQuery:
-    bookings_query = _get_filtered_collective_bookings_query(
-        pro_user,
-        period,
-        status_filter,
-        event_date,
-        venue_id,
-        extra_joins=(
-            educational_models.CollectiveStock.collectiveOffer,
-            educational_models.CollectiveBooking.educationalRedactor,
-            educational_models.CollectiveBooking.educationalInstitution,
-        ),
-    )
-    bookings_query = bookings_query.with_entities(
+    VenueOffererAddress = aliased(offerers_models.OffererAddress)
+    VenueAddress = aliased(geography_models.Address)
+
+    with_entities: tuple[typing.Any, ...] = (
         offerers_models.Venue.common_name.label("venueName"),  # type: ignore[attr-defined]
-        offerers_models.Venue.departementCode.label("venueDepartmentCode"),
         offerers_models.Offerer.postalCode.label("offererPostalCode"),
         educational_models.CollectiveOffer.name.label("offerName"),
         educational_models.CollectiveStock.price,
@@ -797,6 +792,32 @@ def get_filtered_collective_booking_report(
         educational_models.CollectiveBooking.id.label("id"),
         educational_models.CollectiveBooking.educationalRedactorId,
     )
+
+    if FeatureToggle.WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE.is_active():
+        with_entities += (
+            geography_models.Address.departmentCode.label("offerDepartmentCode"),
+            VenueAddress.departmentCode.label("venueDepartmentCode"),
+        )
+    else:
+        with_entities += (offerers_models.Venue.departementCode.label("venueDepartmentCode"),)
+
+    bookings_query = _get_filtered_collective_bookings_query(
+        pro_user,
+        period,
+        status_filter,
+        event_date,
+        venue_id,
+        extra_joins=(
+            (educational_models.CollectiveStock.collectiveOffer,),
+            (educational_models.CollectiveBooking.educationalRedactor,),
+            (educational_models.CollectiveBooking.educationalInstitution,),
+            (educational_models.CollectiveOffer.offererAddress,),
+            (offerers_models.OffererAddress.address,),
+            (VenueOffererAddress, offerers_models.Venue.offererAddressId == VenueOffererAddress.id),
+            (VenueAddress, VenueOffererAddress.addressId == VenueAddress.id),
+        ),
+    )
+    bookings_query = bookings_query.with_entities(*with_entities)
     bookings_query = bookings_query.distinct(educational_models.CollectiveBooking.id)
 
     return bookings_query

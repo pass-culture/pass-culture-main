@@ -30,6 +30,7 @@ from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 from pcapi.core.users.models import User
 from pcapi.domain.booking_recap import utils as booking_recap_utils
+from pcapi.models.feature import FeatureToggle
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -85,32 +86,27 @@ BOOKINGS_CSV_HEADER = [
 
 
 def test_find_all_ongoing_bookings(app):
-    # Given
     user = users_factories.BeneficiaryGrant18Factory()
     stock = offers_factories.StockFactory(price=0, quantity=10)
     bookings_factories.CancelledBookingFactory(user=user, stock=stock)
     bookings_factories.UsedBookingFactory(user=user, stock=stock)
     ongoing_booking = bookings_factories.BookingFactory(user=user, stock=stock)
 
-    # When
     all_ongoing_bookings = booking_repository.find_ongoing_bookings_by_stock(stock.id)
 
-    # Then
     assert all_ongoing_bookings == [ongoing_booking]
 
 
 def test_find_not_cancelled_bookings_by_stock(app):
-    # Given
+
     user = users_factories.BeneficiaryGrant18Factory()
     stock = offers_factories.ThingStockFactory(price=0)
     bookings_factories.CancelledBookingFactory(user=user, stock=stock)
     used_booking = bookings_factories.UsedBookingFactory(user=user, stock=stock)
     not_cancelled_booking = bookings_factories.BookingFactory(user=user, stock=stock)
 
-    # When
     all_not_cancelled_bookings = booking_repository.find_not_cancelled_bookings_by_stock(stock)
 
-    # Then
     assert set(all_not_cancelled_bookings) == {used_booking, not_cancelled_booking}
 
 
@@ -121,7 +117,7 @@ one_year_after_booking = default_booking_date + timedelta(weeks=52)
 
 class FindByProUserTest:
     def test_should_return_only_expected_booking_attributes(self, app: fixture):
-        # Given
+
         beneficiary = users_factories.BeneficiaryGrant18Factory(
             email="beneficiary@example.com", firstName="Ron", lastName="Weasley"
         )
@@ -141,13 +137,12 @@ class FindByProUserTest:
             amount=12,
         )
 
-        # When
         bookings_query, total = booking_repository.find_by_pro_user(
             user=pro, booking_period=(booking_date - timedelta(days=365), booking_date + timedelta(days=365))
         )
 
         bookings = bookings_query.all()
-        # Then
+
         assert total == 1
         assert len(bookings) == 1
         expected_booking = bookings[0]
@@ -225,7 +220,7 @@ class FindByProUserTest:
         assert bookings[0].bookingToken == reimbursed_booking_1.token
 
     def test_should_return_booking_as_duo_when_quantity_is_two(self, app: fixture):
-        # Given
+
         beneficiary = users_factories.BeneficiaryGrant18Factory(
             email="beneficiary@example.com", firstName="Ron", lastName="Weasley"
         )
@@ -239,20 +234,18 @@ class FindByProUserTest:
         stock = offers_factories.ThingStockFactory(offer=offer, price=0)
         bookings_factories.BookingFactory(user=beneficiary, stock=stock, quantity=2)
 
-        # When
         bookings_query, _ = booking_repository.find_by_pro_user(
             user=pro, booking_period=(one_year_before_booking, one_year_after_booking)
         )
         bookings = bookings_query.all()
 
-        # Then
         assert len(bookings) == 2
         assert bookings[0].quantity == 2
 
     def test_should_not_duplicate_bookings_when_user_is_admin_and_bookings_offerer_has_multiple_user(
         self, app: fixture
     ):
-        # Given
+
         admin = users_factories.AdminFactory()
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(offerer=offerer)
@@ -261,18 +254,16 @@ class FindByProUserTest:
 
         bookings_factories.BookingFactory(stock__offer__venue__managingOfferer=offerer, quantity=2)
 
-        # When
         bookings_recap_paginated_query, _ = booking_repository.find_by_pro_user(
             user=admin, booking_period=(one_year_before_booking, one_year_after_booking)
         )
         bookings = bookings_recap_paginated_query.all()
 
-        # Then
         assert len(bookings) == 2
         assert bookings[0].quantity == 2
 
     def test_should_return_event_booking_when_booking_is_on_an_event(self, app: fixture):
-        # Given
+
         beneficiary = users_factories.BeneficiaryGrant18Factory(
             email="beneficiary@example.com", firstName="Ron", lastName="Weasley"
         )
@@ -294,13 +285,11 @@ class FindByProUserTest:
             token="ABCDEF",
         )
 
-        # When
         bookings_query, _ = booking_repository.find_by_pro_user(
             user=pro, booking_period=(one_year_before_booking, one_year_after_booking)
         )
         bookings = bookings_query.all()
 
-        # Then
         assert len(bookings) == 1
         expected_booking = bookings[0]
         assert expected_booking.offerId == stock.offer.id
@@ -319,7 +308,7 @@ class FindByProUserTest:
     def test_should_return_event_confirmed_booking_when_booking_is_on_an_event_in_confirmation_period(
         self, app: fixture
     ):
-        # Given
+
         beneficiary = users_factories.BeneficiaryGrant18Factory(
             email="beneficiary@example.com", firstName="Ron", lastName="Weasley"
         )
@@ -338,17 +327,15 @@ class FindByProUserTest:
             user=beneficiary, stock=stock, dateCreated=more_than_two_days_ago, token="ABCDEF"
         )
 
-        # When
         bookings_query, _ = booking_repository.find_by_pro_user(
             user=pro, booking_period=(one_year_before_booking, one_year_after_booking)
         )
         bookings = bookings_query.all()
 
-        # Then
         assert bookings[0].isConfirmed
 
     def test_should_return_cancellation_date_when_booking_has_been_cancelled(self, app: fixture):
-        # Given
+
         beneficiary = users_factories.BeneficiaryGrant18Factory(
             email="beneficiary@example.com", firstName="Ron", lastName="Weasley"
         )
@@ -369,20 +356,18 @@ class FindByProUserTest:
             amount=5,
         )
 
-        # When
         bookings_query, _ = booking_repository.find_by_pro_user(
             user=pro, booking_period=(one_year_before_booking, one_year_after_booking)
         )
         bookings = bookings_query.all()
 
-        # Then
         assert len(bookings) == 1
         assert bookings[0].cancelledAt
 
     def test_should_return_validation_date_when_booking_has_been_used_and_not_cancelled_not_reimbursed(
         self, app: fixture
     ):
-        # Given
+
         beneficiary = users_factories.BeneficiaryGrant18Factory()
         pro = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()
@@ -401,13 +386,11 @@ class FindByProUserTest:
             amount=5,
         )
 
-        # When
         bookings_query, _ = booking_repository.find_by_pro_user(
             user=pro, booking_period=(one_year_before_booking, one_year_after_booking)
         )
         bookings = bookings_query.all()
 
-        # Then
         assert len(bookings) == 1
         expected_booking = bookings[0]
         assert expected_booking.usedAt
@@ -415,7 +398,7 @@ class FindByProUserTest:
         assert not expected_booking.reimbursedAt
 
     def test_should_return_correct_number_of_matching_offerers_bookings_linked_to_user(self, app: fixture):
-        # Given
+
         beneficiary = users_factories.BeneficiaryGrant18Factory(
             email="beneficiary@example.com", firstName="Ron", lastName="Weasley"
         )
@@ -438,17 +421,15 @@ class FindByProUserTest:
         stock2 = offers_factories.ThingStockFactory(offer=offer2, price=0)
         bookings_factories.BookingFactory(user=beneficiary, stock=stock2, dateCreated=today, token="FGHI")
 
-        # When
         bookings_query, _ = booking_repository.find_by_pro_user(
             user=pro, booking_period=(one_year_before_booking, one_year_after_booking)
         )
         bookings = bookings_query.all()
 
-        # Then
         assert len(bookings) == 2
 
     def test_should_return_bookings_from_first_page(self, app: fixture):
-        # Given
+
         beneficiary = users_factories.BeneficiaryGrant18Factory(email="beneficiary@example.com")
         pro = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()
@@ -462,19 +443,17 @@ class FindByProUserTest:
         bookings_factories.BookingFactory(user=beneficiary, stock=stock, dateCreated=yesterday, token="ABCD")
         booking2 = bookings_factories.BookingFactory(user=beneficiary, stock=stock, dateCreated=today, token="FGHI")
 
-        # When
         bookings_query, total = booking_repository.find_by_pro_user(
             user=pro, booking_period=(one_year_before_booking, one_year_after_booking), page=1, per_page_limit=1
         )
         bookings = bookings_query.all()
 
-        # Then
         assert len(bookings) == 1
         assert bookings[0].bookingToken == booking2.token
         assert total == 2
 
     def test_should_not_return_bookings_when_offerer_link_is_not_validated(self, app: fixture):
-        # Given
+
         beneficiary = users_factories.BeneficiaryGrant18Factory()
         pro = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory(postalCode="97300")
@@ -486,17 +465,15 @@ class FindByProUserTest:
         stock = offers_factories.ThingStockFactory(offer=offer, price=0)
         bookings_factories.BookingFactory(user=beneficiary, stock=stock)
 
-        # When
         bookings_query, _ = booking_repository.find_by_pro_user(
             user=pro, booking_period=(one_year_before_booking, one_year_after_booking)
         )
         bookings = bookings_query.all()
 
-        # Then
         assert bookings == []
 
     def test_should_return_one_booking_recap_item_when_quantity_booked_is_one(self, app: fixture):
-        # Given
+
         beneficiary = users_factories.BeneficiaryGrant18Factory()
         pro = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory(postalCode="97300")
@@ -508,19 +485,17 @@ class FindByProUserTest:
         today = datetime.utcnow()
         booking = bookings_factories.BookingFactory(user=beneficiary, stock=stock, dateCreated=today, token="FGHI")
 
-        # When
         bookings_query, total = booking_repository.find_by_pro_user(
             user=pro, booking_period=(one_year_before_booking, one_year_after_booking), page=1, per_page_limit=4
         )
         bookings = bookings_query.all()
 
-        # Then
         assert len(bookings) == 1
         assert bookings[0].bookingToken == booking.token
         assert total == 1
 
     def test_should_return_two_booking_recap_items_when_quantity_booked_is_two(self, app: fixture):
-        # Given
+
         beneficiary = users_factories.BeneficiaryGrant18Factory()
         pro = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory(postalCode="97300")
@@ -534,20 +509,18 @@ class FindByProUserTest:
             user=beneficiary, stock=stock, dateCreated=today, token="FGHI", quantity=2
         )
 
-        # When
         bookings_query, total = booking_repository.find_by_pro_user(
             user=pro, booking_period=(one_year_before_booking, one_year_after_booking), page=1, per_page_limit=4
         )
         bookings = bookings_query.all()
 
-        # Then
         assert len(bookings) == 2
         assert bookings[0].bookingToken == booking.token
         assert bookings[1].bookingToken == booking.token
         assert total == 2
 
     def test_should_return_booking_date_with_offerer_timezone_when_venue_is_digital(self, app: fixture):
-        # Given
+
         beneficiary = users_factories.BeneficiaryGrant18Factory()
         pro = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory(postalCode="97300")
@@ -565,18 +538,16 @@ class FindByProUserTest:
             token="ABCDEF",
         )
 
-        # When
         bookings_query, _ = booking_repository.find_by_pro_user(
             user=pro, booking_period=(booking_date - timedelta(days=365), booking_date + timedelta(days=365))
         )
         bookings = bookings_query.all()
 
-        # Then
         assert len(bookings) == 1
         assert bookings[0].bookedAt == booking_date
 
     def test_should_return_booking_ean_when_information_is_available(self, app: fixture):
-        # Given
+
         beneficiary = users_factories.BeneficiaryGrant18Factory()
         pro = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory(postalCode="97300")
@@ -594,13 +565,11 @@ class FindByProUserTest:
             token="ABCDEF",
         )
 
-        # When
         bookings_query, _ = booking_repository.find_by_pro_user(
             user=pro, booking_period=(booking_date - timedelta(days=365), booking_date + timedelta(days=365))
         )
         bookings = bookings_query.all()
 
-        # Then
         assert bookings[0].offerEan == "9876543234"
 
     def test_should_return_only_bookings_for_requested_offerer_address(self):
@@ -627,14 +596,13 @@ class FindByProUserTest:
         assert bookings[0].offerId == booking_1.stock.offer.id
 
     def test_should_return_only_booking_for_requested_venue(self, app: fixture):
-        # Given
+
         pro_user = users_factories.ProFactory()
         user_offerer = offerers_factories.UserOffererFactory(user=pro_user)
 
         bookings_factories.BookingFactory(stock__offer__venue__managingOfferer=user_offerer.offerer)
         booking_two = bookings_factories.BookingFactory(stock__offer__venue__managingOfferer=user_offerer.offerer)
 
-        # When
         bookings_query, _ = booking_repository.find_by_pro_user(
             user=pro_user,
             booking_period=(one_year_before_booking, one_year_after_booking),
@@ -642,7 +610,6 @@ class FindByProUserTest:
         )
         bookings = bookings_query.all()
 
-        # Then
         assert len(bookings) == 1
         expected_booking = bookings[0]
         assert expected_booking.offerId == booking_two.stock.offer.id
@@ -650,7 +617,7 @@ class FindByProUserTest:
         assert expected_booking.bookingAmount == booking_two.amount
 
     def test_should_return_only_booking_for_requested_event_date(self, app: fixture):
-        # Given
+
         user_offerer = offerers_factories.UserOffererFactory()
         event_date = datetime(2020, 12, 24, 10, 30)
         expected_booking = bookings_factories.BookingFactory(
@@ -665,7 +632,6 @@ class FindByProUserTest:
             stock=offers_factories.ThingStockFactory(offer__venue__managingOfferer=user_offerer.offerer)
         )
 
-        # When
         bookings_query, _ = booking_repository.find_by_pro_user(
             user=user_offerer.user,
             booking_period=(one_year_before_booking, one_year_after_booking),
@@ -673,12 +639,11 @@ class FindByProUserTest:
         )
         bookings = bookings_query.all()
 
-        # Then
         assert len(bookings) == 1
         assert bookings[0].bookingToken == expected_booking.token
 
     def should_consider_venue_locale_datetime_when_filtering_by_event_date(self, app: fixture):
-        # Given
+
         user_offerer = offerers_factories.UserOffererFactory()
         event_datetime = datetime(2020, 4, 21, 20, 00)
 
@@ -700,7 +665,6 @@ class FindByProUserTest:
         )
         mayotte_booking = bookings_factories.BookingFactory(stock=stock_in_mayotte)
 
-        # When
         bookings_query, _ = booking_repository.find_by_pro_user(
             user=user_offerer.user,
             booking_period=(one_year_before_booking, one_year_after_booking),
@@ -708,14 +672,13 @@ class FindByProUserTest:
         )
         bookings = bookings_query.all()
 
-        # Then
         assert len(bookings) == 2
         bookings_tokens = [booking_recap.bookingToken for booking_recap in bookings]
         assert cayenne_booking.token in bookings_tokens
         assert mayotte_booking.token in bookings_tokens
 
     def test_should_return_only_bookings_for_requested_booking_period(self, app: fixture):
-        # Given
+
         user_offerer = offerers_factories.UserOffererFactory()
         booking_beginning_period = datetime(2020, 12, 24, 10, 30).date()
         booking_ending_period = datetime(2020, 12, 26, 15, 00).date()
@@ -733,7 +696,6 @@ class FindByProUserTest:
             stock=offers_factories.ThingStockFactory(offer__venue__managingOfferer=user_offerer.offerer),
         )
 
-        # When
         bookings_query, _ = booking_repository.find_by_pro_user(
             user=user_offerer.user,
             booking_period=(booking_beginning_period, booking_ending_period),
@@ -741,12 +703,11 @@ class FindByProUserTest:
         )
         bookings = bookings_query.all()
 
-        # Then
         assert len(bookings) == 1
         assert bookings[0].bookedAt == expected_booking.dateCreated
 
     def should_consider_venue_locale_datetime_when_filtering_by_booking_period(self, app: fixture):
-        # Given
+
         user_offerer = offerers_factories.UserOffererFactory()
         requested_booking_period_beginning = datetime(2020, 4, 21, 20, 00).date()
         requested_booking_period_ending = datetime(2020, 4, 22, 20, 00).date()
@@ -773,28 +734,25 @@ class FindByProUserTest:
             stock=stock_in_mayotte, dateCreated=mayotte_booking_datetime
         )
 
-        # When
         bookings_query, _ = booking_repository.find_by_pro_user(
             user=user_offerer.user,
             booking_period=(requested_booking_period_beginning, requested_booking_period_ending),
         )
         bookings = bookings_query.all()
 
-        # Then
         assert len(bookings) == 2
         bookings_tokens = [booking_recap.bookingToken for booking_recap in bookings]
         assert cayenne_booking.token in bookings_tokens
         assert mayotte_booking.token in bookings_tokens
 
     def test_should_return_only_bookings_for_requested_offer_type(self, app: fixture):
-        # Given
+
         user_offerer = offerers_factories.UserOffererFactory()
         bookings_factories.BookingFactory(
             dateCreated=default_booking_date,
             stock__offer__venue__managingOfferer=user_offerer.offerer,
         )
 
-        # When
         individual_bookings_recap_paginated_query, _ = booking_repository.find_by_pro_user(
             user=user_offerer.user,
             booking_period=(one_year_before_booking, one_year_after_booking),
@@ -806,7 +764,6 @@ class FindByProUserTest:
         )
         all_bookings_recap_paginated = all_bookings_recap_paginated_query.all()
 
-        # Then
         assert len(individual_bookings_recap_paginated) == 1
         assert len(all_bookings_recap_paginated) == 1
 
@@ -818,6 +775,8 @@ class GetOfferBookingsByStatusCSVTest:
         assert data_dict["Partenaire culturel"] == venue.name
         assert data_dict["Nom de l’offre"] == offer.name
         booking.venueDepartmentCode = booking.venue.departementCode
+        if FeatureToggle.WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE.is_active():
+            booking.offerDepartmentCode = booking.stock.offer.offererAddress.address.departementCode
         assert data_dict["Date de l'évènement"] == str(
             convert_booking_dates_utc_to_venue_timezone(booking.stock.beginningDatetime, booking)
         )
@@ -860,7 +819,7 @@ class GetOfferBookingsByStatusCSVTest:
 
     @override_features(WIP_ENABLE_OFFER_ADDRESS=True)
     def should_return_validated_bookings_for_offer(self):
-        # Given
+
         beneficiary = users_factories.BeneficiaryGrant18Factory(
             email="beneficiary@example.com", firstName="Ron", lastName="Weasley", postalCode="97300"
         )
@@ -890,7 +849,6 @@ class GetOfferBookingsByStatusCSVTest:
         bookings_factories.UsedBookingFactory(stock=stock_2, user=beneficiary_2)
         bookings_factories.BookingFactory(stock=stock_2)
 
-        # When
         queries = 0
         queries += 1  # Get feature
         queries += 1  # Get bookings
@@ -903,7 +861,6 @@ class GetOfferBookingsByStatusCSVTest:
                 export_type=BookingExportType.CSV,
             )
 
-        # Then
         headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
         assert headers == BOOKINGS_CSV_HEADER
         assert len(data) == 2
@@ -916,7 +873,7 @@ class GetOfferBookingsByStatusCSVTest:
 
     @override_features(WIP_ENABLE_OFFER_ADDRESS=True)
     def should_return_validated_bookings_for_offer_with_old_cancelled_booking(self):
-        # Given
+
         beneficiary = users_factories.BeneficiaryGrant18Factory(
             email="beneficiary@example.com", firstName="Ron", lastName="Weasley", postalCode="97300"
         )
@@ -949,7 +906,6 @@ class GetOfferBookingsByStatusCSVTest:
         bookings_factories.UsedBookingFactory(stock=stock_2, user=beneficiary_2)
         bookings_factories.BookingFactory(stock=stock_2)
 
-        # When
         queries = 0
         queries += 1  # Get feature
         queries += 1  # Get bookings
@@ -962,7 +918,6 @@ class GetOfferBookingsByStatusCSVTest:
                 export_type=BookingExportType.CSV,
             )
 
-        # Then
         headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
         assert headers == BOOKINGS_CSV_HEADER
         assert len(data) == 2
@@ -975,7 +930,7 @@ class GetOfferBookingsByStatusCSVTest:
 
     @override_features(WIP_ENABLE_OFFER_ADDRESS=True)
     def should_return_validated_bookings_for_offer_with_duo(self):
-        # Given
+
         beneficiary = users_factories.BeneficiaryGrant18Factory(
             email="beneficiary@example.com", firstName="Ron", lastName="Weasley", postalCode="97300"
         )
@@ -1002,14 +957,12 @@ class GetOfferBookingsByStatusCSVTest:
         bookings_factories.UsedBookingFactory(stock=stock_2, user=beneficiary_2)
         bookings_factories.BookingFactory(stock=stock_2)
 
-        # When
         bookings_csv = booking_repository.export_validated_bookings_by_offer_id(
             offer_id=offer.id,
             event_beginning_date=date.today() + timedelta(days=5),
             export_type=BookingExportType.CSV,
         )
 
-        # Then
         headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
         assert headers == BOOKINGS_CSV_HEADER
         assert len(data) == 3
@@ -1025,7 +978,7 @@ class GetOfferBookingsByStatusCSVTest:
 
     @override_features(WIP_ENABLE_OFFER_ADDRESS=True)
     def should_return_all_bookings_for_offer(self):
-        # Given
+
         beneficiary = users_factories.BeneficiaryGrant18Factory(
             email="beneficiary@example.com", firstName="Ron", lastName="Weasley", postalCode="97300"
         )
@@ -1055,14 +1008,12 @@ class GetOfferBookingsByStatusCSVTest:
         reimbursed_booking = bookings_factories.ReimbursedBookingFactory(user=beneficiary_3, stock=stock)
         new_booking = bookings_factories.BookingFactory(user=beneficiary_4, stock=stock)
 
-        # When
         bookings_csv = booking_repository.export_bookings_by_offer_id(
             offer_id=offer.id,
             event_beginning_date=date.today() + timedelta(days=10),
             export_type=BookingExportType.CSV,
         )
 
-        # Then
         headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
         assert headers == BOOKINGS_CSV_HEADER
         assert len(data) == 4
@@ -1079,7 +1030,7 @@ class GetOfferBookingsByStatusCSVTest:
 
     @override_features(WIP_ENABLE_OFFER_ADDRESS=True)
     def should_return_all_bookings_for_offer_with_duo(self):
-        # Given
+
         beneficiary = users_factories.BeneficiaryGrant18Factory(
             email="beneficiary@example.com", firstName="Ron", lastName="Weasley", postalCode="97300"
         )
@@ -1101,14 +1052,12 @@ class GetOfferBookingsByStatusCSVTest:
         reimbursed_booking = bookings_factories.ReimbursedBookingFactory(user=beneficiary, stock=stock)
         new_booking = bookings_factories.BookingFactory(user=beneficiary_2, stock=stock, quantity=2)
 
-        # When
         bookings_csv = booking_repository.export_bookings_by_offer_id(
             offer_id=offer.id,
             event_beginning_date=date.today() + timedelta(days=5),
             export_type=BookingExportType.CSV,
         )
 
-        # Then
         headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
         assert headers == BOOKINGS_CSV_HEADER
         assert len(data) == 6
@@ -1139,6 +1088,8 @@ class LegacyGetOfferBookingsByStatusCSVTest:
         assert data_dict["Lieu"] == venue.name
         assert data_dict["Nom de l’offre"] == offer.name
         booking.venueDepartmentCode = booking.venue.departementCode
+        if FeatureToggle.WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE.is_active():
+            booking.offerDepartmentCode = booking.stock.offer.offererAddress.address.departmentCode
         assert data_dict["Date de l'évènement"] == str(
             convert_booking_dates_utc_to_venue_timezone(booking.stock.beginningDatetime, booking)
         )
@@ -1180,8 +1131,9 @@ class LegacyGetOfferBookingsByStatusCSVTest:
         assert data_dict["Duo"] == duo
 
     @override_features(WIP_ENABLE_OFFER_ADDRESS=False)
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     def should_return_validated_bookings_for_offer(self):
-        # Given
+
         beneficiary = users_factories.BeneficiaryGrant18Factory(
             email="beneficiary@example.com", firstName="Ron", lastName="Weasley", postalCode="97300"
         )
@@ -1211,7 +1163,6 @@ class LegacyGetOfferBookingsByStatusCSVTest:
         bookings_factories.UsedBookingFactory(stock=stock_2, user=beneficiary_2)
         bookings_factories.BookingFactory(stock=stock_2)
 
-        # When
         queries = 0
         queries += 1  # Get feature
         queries += 1  # Get bookings
@@ -1224,7 +1175,6 @@ class LegacyGetOfferBookingsByStatusCSVTest:
                 export_type=BookingExportType.CSV,
             )
 
-        # Then
         headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
         assert headers == LEGACY_BOOKINGS_CSV_HEADER
         assert len(data) == 2
@@ -1236,8 +1186,64 @@ class LegacyGetOfferBookingsByStatusCSVTest:
         )
 
     @override_features(WIP_ENABLE_OFFER_ADDRESS=False)
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    def should_return_validated_bookings_for_offer_with_offerer_address_as_data_source(self):
+
+        beneficiary = users_factories.BeneficiaryGrant18Factory(
+            email="beneficiary@example.com", firstName="Ron", lastName="Weasley", postalCode="97300"
+        )
+        beneficiary_2 = users_factories.BeneficiaryGrant18Factory(
+            email="beneficiary2@example.com", firstName="Harry", lastName="Potter", postalCode="97300"
+        )
+        pro = users_factories.ProFactory()
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
+
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+
+        offer = offers_factories.OfferFactory(venue=venue)
+        stock = offers_factories.EventStockFactory(
+            offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=10)
+        )
+
+        validated_booking = bookings_factories.UsedBookingFactory(stock=stock, user=beneficiary)
+        validated_booking_2 = bookings_factories.BookingFactory(
+            stock=stock, cancellation_limit_date=datetime.utcnow() - timedelta(days=1), user=beneficiary_2
+        )
+        bookings_factories.BookingFactory(stock=stock)
+
+        stock_2 = offers_factories.EventStockFactory(
+            offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=40)
+        )
+        bookings_factories.UsedBookingFactory(stock=stock_2, user=beneficiary_2)
+        bookings_factories.BookingFactory(stock=stock_2)
+
+        queries = 0
+        queries += 1  # Get feature
+        queries += 1  # Get bookings
+
+        offer_id = offer.id
+        with assert_num_queries(queries):
+            bookings_csv = booking_repository.export_validated_bookings_by_offer_id(
+                offer_id=offer_id,
+                event_beginning_date=date.today() + timedelta(days=10),
+                export_type=BookingExportType.CSV,
+            )
+
+        headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
+        assert headers == LEGACY_BOOKINGS_CSV_HEADER
+        assert len(data) == 2
+        self._validate_csv_row(
+            dict(zip(headers, data[0])), beneficiary, offer, venue, validated_booking, "validé", "Non"
+        )
+        self._validate_csv_row(
+            dict(zip(headers, data[1])), beneficiary_2, offer, venue, validated_booking_2, "confirmé", "Non"
+        )
+
+    @override_features(WIP_ENABLE_OFFER_ADDRESS=False)
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     def should_return_validated_bookings_for_offer_with_old_cancelled_booking(self):
-        # Given
+
         beneficiary = users_factories.BeneficiaryGrant18Factory(
             email="beneficiary@example.com", firstName="Ron", lastName="Weasley", postalCode="97300"
         )
@@ -1270,7 +1276,6 @@ class LegacyGetOfferBookingsByStatusCSVTest:
         bookings_factories.UsedBookingFactory(stock=stock_2, user=beneficiary_2)
         bookings_factories.BookingFactory(stock=stock_2)
 
-        # When
         queries = 0
         queries += 1  # Get feature
         queries += 1  # Get bookings
@@ -1283,7 +1288,6 @@ class LegacyGetOfferBookingsByStatusCSVTest:
                 export_type=BookingExportType.CSV,
             )
 
-        # Then
         headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
         assert headers == LEGACY_BOOKINGS_CSV_HEADER
         assert len(data) == 2
@@ -1295,8 +1299,67 @@ class LegacyGetOfferBookingsByStatusCSVTest:
         )
 
     @override_features(WIP_ENABLE_OFFER_ADDRESS=False)
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    def should_return_validated_bookings_for_offer_with_old_cancelled_booking_with_offerer_address_as_data_source(self):
+
+        beneficiary = users_factories.BeneficiaryGrant18Factory(
+            email="beneficiary@example.com", firstName="Ron", lastName="Weasley", postalCode="97300"
+        )
+        beneficiary_2 = users_factories.BeneficiaryGrant18Factory(
+            email="beneficiary2@example.com", firstName="Harry", lastName="Potter", postalCode="97300"
+        )
+        pro = users_factories.ProFactory()
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
+
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+
+        offer = offers_factories.OfferFactory(venue=venue)
+        stock = offers_factories.EventStockFactory(
+            offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=10)
+        )
+
+        validated_booking = bookings_factories.UsedBookingFactory(stock=stock, user=beneficiary)
+        validated_booking_2 = bookings_factories.BookingFactory(
+            stock=stock, cancellation_limit_date=datetime.utcnow() - timedelta(days=1), user=beneficiary_2
+        )
+        bookings_factories.BookingFactory(stock=stock)
+        bookings_factories.CancelledBookingFactory(
+            stock=stock, user=beneficiary_2, cancellation_limit_date=datetime.utcnow() - timedelta(days=2)
+        )
+
+        stock_2 = offers_factories.EventStockFactory(
+            offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=40)
+        )
+        bookings_factories.UsedBookingFactory(stock=stock_2, user=beneficiary_2)
+        bookings_factories.BookingFactory(stock=stock_2)
+
+        queries = 0
+        queries += 1  # Get feature
+        queries += 1  # Get bookings
+
+        offer_id = offer.id
+        with assert_num_queries(queries):
+            bookings_csv = booking_repository.export_validated_bookings_by_offer_id(
+                offer_id=offer_id,
+                event_beginning_date=date.today() + timedelta(days=10),
+                export_type=BookingExportType.CSV,
+            )
+
+        headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
+        assert headers == LEGACY_BOOKINGS_CSV_HEADER
+        assert len(data) == 2
+        self._validate_csv_row(
+            dict(zip(headers, data[0])), beneficiary, offer, venue, validated_booking, "validé", "Non"
+        )
+        self._validate_csv_row(
+            dict(zip(headers, data[1])), beneficiary_2, offer, venue, validated_booking_2, "confirmé", "Non"
+        )
+
+    @override_features(WIP_ENABLE_OFFER_ADDRESS=False)
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     def should_return_validated_bookings_for_offer_with_duo(self):
-        # Given
+
         beneficiary = users_factories.BeneficiaryGrant18Factory(
             email="beneficiary@example.com", firstName="Ron", lastName="Weasley", postalCode="97300"
         )
@@ -1323,14 +1386,12 @@ class LegacyGetOfferBookingsByStatusCSVTest:
         bookings_factories.UsedBookingFactory(stock=stock_2, user=beneficiary_2)
         bookings_factories.BookingFactory(stock=stock_2)
 
-        # When
         bookings_csv = booking_repository.export_validated_bookings_by_offer_id(
             offer_id=offer.id,
             event_beginning_date=date.today() + timedelta(days=5),
             export_type=BookingExportType.CSV,
         )
 
-        # Then
         headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
         assert headers == LEGACY_BOOKINGS_CSV_HEADER
         assert len(data) == 3
@@ -1345,8 +1406,58 @@ class LegacyGetOfferBookingsByStatusCSVTest:
         )
 
     @override_features(WIP_ENABLE_OFFER_ADDRESS=False)
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    def should_return_validated_bookings_for_offer_with_duo_with_offerer_address_as_data_source(self):
+
+        beneficiary = users_factories.BeneficiaryGrant18Factory(
+            email="beneficiary@example.com", firstName="Ron", lastName="Weasley", postalCode="97300"
+        )
+        beneficiary_2 = users_factories.BeneficiaryGrant18Factory(
+            email="beneficiary2@example.com", firstName="Harry", lastName="Potter", postalCode="97300"
+        )
+        pro = users_factories.ProFactory()
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
+
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+
+        offer = offers_factories.OfferFactory(venue=venue)
+        stock = offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=5))
+        validated_booking = bookings_factories.UsedBookingFactory(stock=stock, user=beneficiary, quantity=2)
+        validated_booking_2 = bookings_factories.BookingFactory(
+            stock=stock, cancellation_limit_date=datetime.utcnow() - timedelta(days=1), user=beneficiary_2
+        )
+        bookings_factories.BookingFactory(stock=stock)
+
+        stock_2 = offers_factories.EventStockFactory(
+            offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=40)
+        )
+        bookings_factories.UsedBookingFactory(stock=stock_2, user=beneficiary_2)
+        bookings_factories.BookingFactory(stock=stock_2)
+
+        bookings_csv = booking_repository.export_validated_bookings_by_offer_id(
+            offer_id=offer.id,
+            event_beginning_date=date.today() + timedelta(days=5),
+            export_type=BookingExportType.CSV,
+        )
+
+        headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
+        assert headers == LEGACY_BOOKINGS_CSV_HEADER
+        assert len(data) == 3
+        self._validate_csv_row(
+            dict(zip(headers, data[0])), beneficiary, offer, venue, validated_booking, "validé", "DUO 1"
+        )
+        self._validate_csv_row(
+            dict(zip(headers, data[1])), beneficiary, offer, venue, validated_booking, "validé", "DUO 2"
+        )
+        self._validate_csv_row(
+            dict(zip(headers, data[2])), beneficiary_2, offer, venue, validated_booking_2, "confirmé", "Non"
+        )
+
+    @override_features(WIP_ENABLE_OFFER_ADDRESS=False)
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     def should_return_all_bookings_for_offer(self):
-        # Given
+
         beneficiary = users_factories.BeneficiaryGrant18Factory(
             email="beneficiary@example.com", firstName="Ron", lastName="Weasley", postalCode="97300"
         )
@@ -1376,14 +1487,12 @@ class LegacyGetOfferBookingsByStatusCSVTest:
         reimbursed_booking = bookings_factories.ReimbursedBookingFactory(user=beneficiary_3, stock=stock)
         new_booking = bookings_factories.BookingFactory(user=beneficiary_4, stock=stock)
 
-        # When
         bookings_csv = booking_repository.export_bookings_by_offer_id(
             offer_id=offer.id,
             event_beginning_date=date.today() + timedelta(days=10),
             export_type=BookingExportType.CSV,
         )
 
-        # Then
         headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
         assert headers == LEGACY_BOOKINGS_CSV_HEADER
         assert len(data) == 4
@@ -1399,8 +1508,62 @@ class LegacyGetOfferBookingsByStatusCSVTest:
         self._validate_csv_row(dict(zip(headers, data[3])), beneficiary_4, offer, venue, new_booking, "réservé", "Non")
 
     @override_features(WIP_ENABLE_OFFER_ADDRESS=False)
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    def should_return_all_bookings_for_offer_with_offerer_address_as_data_source(self):
+
+        beneficiary = users_factories.BeneficiaryGrant18Factory(
+            email="beneficiary@example.com", firstName="Ron", lastName="Weasley", postalCode="97300"
+        )
+        beneficiary_2 = users_factories.BeneficiaryGrant18Factory(
+            email="beneficiary2@example.com", firstName="Harry", lastName="Potter", postalCode="97300"
+        )
+        beneficiary_3 = users_factories.BeneficiaryGrant18Factory(
+            email="beneficiary3@example.com", firstName="Hermione", lastName="Granger", postalCode="97300"
+        )
+        beneficiary_4 = users_factories.BeneficiaryGrant18Factory(
+            email="beneficiary4@example.com", firstName="severus", lastName="Snape", postalCode="93000"
+        )
+        pro = users_factories.ProFactory()
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
+
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+
+        offer = offers_factories.OfferFactory(venue=venue)
+        stock = offers_factories.EventStockFactory(
+            offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=10)
+        )
+        validated_booking = bookings_factories.UsedBookingFactory(stock=stock, user=beneficiary)
+        validated_booking_2 = bookings_factories.BookingFactory(
+            stock=stock, cancellation_limit_date=datetime.utcnow() - timedelta(days=1), user=beneficiary_2
+        )
+        reimbursed_booking = bookings_factories.ReimbursedBookingFactory(user=beneficiary_3, stock=stock)
+        new_booking = bookings_factories.BookingFactory(user=beneficiary_4, stock=stock)
+
+        bookings_csv = booking_repository.export_bookings_by_offer_id(
+            offer_id=offer.id,
+            event_beginning_date=date.today() + timedelta(days=10),
+            export_type=BookingExportType.CSV,
+        )
+
+        headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
+        assert headers == LEGACY_BOOKINGS_CSV_HEADER
+        assert len(data) == 4
+        self._validate_csv_row(
+            dict(zip(headers, data[0])), beneficiary, offer, venue, validated_booking, "validé", "Non"
+        )
+        self._validate_csv_row(
+            dict(zip(headers, data[1])), beneficiary_2, offer, venue, validated_booking_2, "confirmé", "Non"
+        )
+        self._validate_csv_row(
+            dict(zip(headers, data[2])), beneficiary_3, offer, venue, reimbursed_booking, "remboursé", "Non"
+        )
+        self._validate_csv_row(dict(zip(headers, data[3])), beneficiary_4, offer, venue, new_booking, "réservé", "Non")
+
+    @override_features(WIP_ENABLE_OFFER_ADDRESS=False)
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     def should_return_all_bookings_for_offer_with_duo(self):
-        # Given
+
         beneficiary = users_factories.BeneficiaryGrant18Factory(
             email="beneficiary@example.com", firstName="Ron", lastName="Weasley", postalCode="97300"
         )
@@ -1422,14 +1585,65 @@ class LegacyGetOfferBookingsByStatusCSVTest:
         reimbursed_booking = bookings_factories.ReimbursedBookingFactory(user=beneficiary, stock=stock)
         new_booking = bookings_factories.BookingFactory(user=beneficiary_2, stock=stock, quantity=2)
 
-        # When
         bookings_csv = booking_repository.export_bookings_by_offer_id(
             offer_id=offer.id,
             event_beginning_date=date.today() + timedelta(days=5),
             export_type=BookingExportType.CSV,
         )
 
-        # Then
+        headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
+        assert headers == LEGACY_BOOKINGS_CSV_HEADER
+        assert len(data) == 6
+        self._validate_csv_row(
+            dict(zip(headers, data[0])), beneficiary, offer, venue, validated_booking, "validé", "DUO 1"
+        )
+        self._validate_csv_row(
+            dict(zip(headers, data[1])), beneficiary, offer, venue, validated_booking, "validé", "DUO 2"
+        )
+        self._validate_csv_row(
+            dict(zip(headers, data[2])), beneficiary_2, offer, venue, validated_booking_2, "confirmé", "Non"
+        )
+        self._validate_csv_row(
+            dict(zip(headers, data[3])), beneficiary, offer, venue, reimbursed_booking, "remboursé", "Non"
+        )
+        self._validate_csv_row(
+            dict(zip(headers, data[4])), beneficiary_2, offer, venue, new_booking, "réservé", "DUO 1"
+        )
+        self._validate_csv_row(
+            dict(zip(headers, data[5])), beneficiary_2, offer, venue, new_booking, "réservé", "DUO 2"
+        )
+
+    @override_features(WIP_ENABLE_OFFER_ADDRESS=False)
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    def should_return_all_bookings_for_offer_with_duo_with_offerer_address_as_data_source(self):
+
+        beneficiary = users_factories.BeneficiaryGrant18Factory(
+            email="beneficiary@example.com", firstName="Ron", lastName="Weasley", postalCode="97300"
+        )
+        beneficiary_2 = users_factories.BeneficiaryGrant18Factory(
+            email="beneficiary2@example.com", firstName="Harry", lastName="Potter", postalCode="97300"
+        )
+        pro = users_factories.ProFactory()
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
+
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+
+        offer = offers_factories.OfferFactory(venue=venue)
+        stock = offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=5))
+        validated_booking = bookings_factories.UsedBookingFactory(stock=stock, user=beneficiary, quantity=2)
+        validated_booking_2 = bookings_factories.BookingFactory(
+            stock=stock, cancellation_limit_date=datetime.utcnow() - timedelta(days=1), user=beneficiary_2
+        )
+        reimbursed_booking = bookings_factories.ReimbursedBookingFactory(user=beneficiary, stock=stock)
+        new_booking = bookings_factories.BookingFactory(user=beneficiary_2, stock=stock, quantity=2)
+
+        bookings_csv = booking_repository.export_bookings_by_offer_id(
+            offer_id=offer.id,
+            event_beginning_date=date.today() + timedelta(days=5),
+            export_type=BookingExportType.CSV,
+        )
+
         headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
         assert headers == LEGACY_BOOKINGS_CSV_HEADER
         assert len(data) == 6
@@ -1469,7 +1683,6 @@ class GetOfferBookingsByStatusExcelTest:
         wb = openpyxl.load_workbook(BytesIO(bookings_excel))
         sheet = wb.active
 
-        # Then
         # Headers
         for i in range(1, len(headers)):
             assert sheet.cell(row=1, column=i).value == headers[i - 1]
@@ -1479,6 +1692,8 @@ class GetOfferBookingsByStatusExcelTest:
         assert sheet.cell(row=row, column=2).value == offer.name
         # Date de l'évènement
         booking.venueDepartmentCode = booking.venue.departementCode
+        if FeatureToggle.WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE.is_active():
+            booking.offerDepartmentCode = booking.stock.offer.offererAddress.address.departmentCode
         assert sheet.cell(row=row, column=3).value == str(
             convert_booking_dates_utc_to_venue_timezone(booking.stock.beginningDatetime, booking)
         )
@@ -1530,8 +1745,9 @@ class GetOfferBookingsByStatusExcelTest:
         assert sheet.cell(row=row, column=18).value == duo
 
     @override_features(WIP_ENABLE_OFFER_ADDRESS=True)
-    def should_return_validated_bookings_for_offer(self):
-        # Given
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    def should_return_validated_bookings_for_offer_with_offerer_address_as_data_source(self):
+
         beneficiary = users_factories.BeneficiaryGrant18Factory(
             email="beneficiary@example.com", firstName="Ron", lastName="Weasley", postalCode="97300"
         )
@@ -1565,7 +1781,7 @@ class GetOfferBookingsByStatusExcelTest:
         queries += 1  # select offer
         queries += 1  # select feature
         queries += 1  # select booking
-        # When
+
         with assert_num_queries(queries):
             bookings_excel = booking_repository.export_validated_bookings_by_offer_id(
                 offer_id=offer.id,
@@ -1574,7 +1790,6 @@ class GetOfferBookingsByStatusExcelTest:
             )
         headers = BOOKINGS_CSV_HEADER
 
-        # Then
         self._validate_excel_row(
             bookings_excel, 2, headers, beneficiary, offer, venue, validated_booking, "validé", "Non"
         )
@@ -1583,8 +1798,9 @@ class GetOfferBookingsByStatusExcelTest:
         )
 
     @override_features(WIP_ENABLE_OFFER_ADDRESS=True)
-    def should_return_validated_bookings_for_offer_with_duo(self):
-        # Given
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    def should_return_validated_bookings_for_offer_with_duo_with_offerer_address_as_data_source(self):
+
         beneficiary = users_factories.BeneficiaryGrant18Factory(
             email="beneficiary@example.com", firstName="Ron", lastName="Weasley", postalCode="97300"
         )
@@ -1614,7 +1830,6 @@ class GetOfferBookingsByStatusExcelTest:
         )
         bookings_factories.BookingFactory(stock=stock_2)
 
-        # When
         bookings_excel = booking_repository.export_validated_bookings_by_offer_id(
             offer_id=offer.id,
             event_beginning_date=date.today() + timedelta(days=3),
@@ -1622,7 +1837,6 @@ class GetOfferBookingsByStatusExcelTest:
         )
         headers = BOOKINGS_CSV_HEADER
 
-        # Then
         self._validate_excel_row(
             bookings_excel, 2, headers, beneficiary, offer, venue, validated_booking, "validé", "DUO 1"
         )
@@ -1634,8 +1848,9 @@ class GetOfferBookingsByStatusExcelTest:
         )
 
     @override_features(WIP_ENABLE_OFFER_ADDRESS=True)
-    def should_return_all_bookings_for_offer(self):
-        # Given
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    def should_return_all_bookings_for_offer_with_offerer_address_as_data_source(self):
+
         beneficiary = users_factories.BeneficiaryGrant18Factory(
             email="beneficiary@example.com", firstName="Ron", lastName="Weasley", postalCode="97300"
         )
@@ -1674,7 +1889,6 @@ class GetOfferBookingsByStatusExcelTest:
         )
         bookings_factories.BookingFactory(stock=stock_2)
 
-        # When
         bookings_excel = booking_repository.export_bookings_by_offer_id(
             offer_id=offer.id,
             event_beginning_date=date.today() + timedelta(days=30),
@@ -1682,7 +1896,6 @@ class GetOfferBookingsByStatusExcelTest:
         )
         headers = BOOKINGS_CSV_HEADER
 
-        # Then
         self._validate_excel_row(
             bookings_excel, 2, headers, beneficiary, offer, venue, validated_booking, "validé", "Non"
         )
@@ -1695,8 +1908,11 @@ class GetOfferBookingsByStatusExcelTest:
         self._validate_excel_row(bookings_excel, 5, headers, beneficiary_4, offer, venue, new_booking, "réservé", "Non")
 
     @override_features(WIP_ENABLE_OFFER_ADDRESS=True)
-    def should_return_validated_bookings_for_offer_with_duo_offerer_with_mutiple_users(self):
-        # Given
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    def should_return_validated_bookings_for_offer_with_duo_offerer_with_mutiple_users_with_offerer_address_as_data_source(
+        self,
+    ):
+
         beneficiary = users_factories.BeneficiaryGrant18Factory(
             email="beneficiary@example.com", firstName="Ron", lastName="Weasley", postalCode="97300"
         )
@@ -1730,7 +1946,6 @@ class GetOfferBookingsByStatusExcelTest:
         )
         bookings_factories.BookingFactory(stock=stock_2)
 
-        # When
         bookings_excel = booking_repository.export_validated_bookings_by_offer_id(
             offer_id=offer.id,
             event_beginning_date=date.today() + timedelta(days=3),
@@ -1738,7 +1953,6 @@ class GetOfferBookingsByStatusExcelTest:
         )
         headers = BOOKINGS_CSV_HEADER
 
-        # Then
         self._validate_excel_row(
             bookings_excel, 2, headers, beneficiary, offer, venue, validated_booking, "validé", "DUO 1"
         )
@@ -1750,8 +1964,9 @@ class GetOfferBookingsByStatusExcelTest:
         )
 
     @override_features(WIP_ENABLE_OFFER_ADDRESS=True)
-    def should_return_all_bookings_for_offer_with_duo(self):
-        # Given
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    def should_return_all_bookings_for_offer_with_duo_with_offerer_address_as_data_source(self):
+
         beneficiary = users_factories.BeneficiaryGrant18Factory(
             email="beneficiary@example.com", firstName="Ron", lastName="Weasley", postalCode="97300"
         )
@@ -1784,7 +1999,6 @@ class GetOfferBookingsByStatusExcelTest:
         )
         bookings_factories.BookingFactory(stock=stock_2)
 
-        # When
         bookings_excel = booking_repository.export_bookings_by_offer_id(
             offer_id=offer.id,
             event_beginning_date=date.today() + timedelta(days=30),
@@ -1792,7 +2006,6 @@ class GetOfferBookingsByStatusExcelTest:
         )
         headers = BOOKINGS_CSV_HEADER
 
-        # Then
         self._validate_excel_row(
             bookings_excel, 2, headers, beneficiary, offer, venue, validated_booking, "validé", "DUO 1"
         )
@@ -1829,7 +2042,6 @@ class LegacyGetOfferBookingsByStatusExcelTest:
         wb = openpyxl.load_workbook(BytesIO(bookings_excel))
         sheet = wb.active
 
-        # Then
         # Headers
         for i in range(1, len(headers)):
             assert sheet.cell(row=1, column=i).value == headers[i - 1]
@@ -1839,6 +2051,8 @@ class LegacyGetOfferBookingsByStatusExcelTest:
         assert sheet.cell(row=row, column=2).value == offer.name
         # Date de l'évènement
         booking.venueDepartmentCode = booking.venue.departementCode
+        if FeatureToggle.WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE.is_active():
+            booking.offerDepartmentCode = booking.stock.offer.offererAddress.address.departmentCode
         assert sheet.cell(row=row, column=3).value == str(
             convert_booking_dates_utc_to_venue_timezone(booking.stock.beginningDatetime, booking)
         )
@@ -1890,8 +2104,9 @@ class LegacyGetOfferBookingsByStatusExcelTest:
         assert sheet.cell(row=row, column=18).value == duo
 
     @override_features(WIP_ENABLE_OFFER_ADDRESS=False)
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     def should_return_validated_bookings_for_offer(self):
-        # Given
+
         beneficiary = users_factories.BeneficiaryGrant18Factory(
             email="beneficiary@example.com", firstName="Ron", lastName="Weasley", postalCode="97300"
         )
@@ -1925,7 +2140,7 @@ class LegacyGetOfferBookingsByStatusExcelTest:
         queries += 1  # select offer
         queries += 1  # select feature
         queries += 1  # select booking
-        # When
+
         with assert_num_queries(queries):
             bookings_excel = booking_repository.export_validated_bookings_by_offer_id(
                 offer_id=offer.id,
@@ -1934,7 +2149,6 @@ class LegacyGetOfferBookingsByStatusExcelTest:
             )
         headers = LEGACY_BOOKINGS_CSV_HEADER
 
-        # Then
         self._validate_excel_row(
             bookings_excel, 2, headers, beneficiary, offer, venue, validated_booking, "validé", "Non"
         )
@@ -1943,8 +2157,62 @@ class LegacyGetOfferBookingsByStatusExcelTest:
         )
 
     @override_features(WIP_ENABLE_OFFER_ADDRESS=False)
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    def should_return_validated_bookings_for_offer_with_offerer_address_as_data_source(self):
+
+        beneficiary = users_factories.BeneficiaryGrant18Factory(
+            email="beneficiary@example.com", firstName="Ron", lastName="Weasley", postalCode="97300"
+        )
+        beneficiary_2 = users_factories.BeneficiaryGrant18Factory(
+            email="beneficiary2@example.com", firstName="Harry", lastName="Potter", postalCode="97300"
+        )
+        pro = users_factories.ProFactory()
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
+
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+
+        offer = offers_factories.OfferFactory(venue=venue)
+        stock = offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=3))
+        validated_booking = bookings_factories.UsedBookingFactory(stock=stock, user=beneficiary)
+        validated_booking_2 = bookings_factories.BookingFactory(
+            stock=stock, cancellation_limit_date=datetime.utcnow() - timedelta(days=1), user=beneficiary_2
+        )
+        bookings_factories.BookingFactory(stock=stock)
+
+        stock_2 = offers_factories.EventStockFactory(
+            offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=5)
+        )
+        bookings_factories.UsedBookingFactory(stock=stock_2, user=beneficiary)
+        bookings_factories.BookingFactory(
+            stock=stock_2, cancellation_limit_date=datetime.utcnow() - timedelta(days=1), user=beneficiary_2
+        )
+        bookings_factories.BookingFactory(stock=stock_2)
+
+        queries = 0
+        queries += 1  # select offer
+        queries += 1  # select feature
+        queries += 1  # select booking
+
+        with assert_num_queries(queries):
+            bookings_excel = booking_repository.export_validated_bookings_by_offer_id(
+                offer_id=offer.id,
+                event_beginning_date=date.today() + timedelta(days=3),
+                export_type=BookingExportType.EXCEL,
+            )
+        headers = LEGACY_BOOKINGS_CSV_HEADER
+
+        self._validate_excel_row(
+            bookings_excel, 2, headers, beneficiary, offer, venue, validated_booking, "validé", "Non"
+        )
+        self._validate_excel_row(
+            bookings_excel, 3, headers, beneficiary_2, offer, venue, validated_booking_2, "confirmé", "Non"
+        )
+
+    @override_features(WIP_ENABLE_OFFER_ADDRESS=False)
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     def should_return_validated_bookings_for_offer_with_duo(self):
-        # Given
+
         beneficiary = users_factories.BeneficiaryGrant18Factory(
             email="beneficiary@example.com", firstName="Ron", lastName="Weasley", postalCode="97300"
         )
@@ -1974,7 +2242,6 @@ class LegacyGetOfferBookingsByStatusExcelTest:
         )
         bookings_factories.BookingFactory(stock=stock_2)
 
-        # When
         bookings_excel = booking_repository.export_validated_bookings_by_offer_id(
             offer_id=offer.id,
             event_beginning_date=date.today() + timedelta(days=3),
@@ -1982,7 +2249,6 @@ class LegacyGetOfferBookingsByStatusExcelTest:
         )
         headers = LEGACY_BOOKINGS_CSV_HEADER
 
-        # Then
         self._validate_excel_row(
             bookings_excel, 2, headers, beneficiary, offer, venue, validated_booking, "validé", "DUO 1"
         )
@@ -1994,8 +2260,59 @@ class LegacyGetOfferBookingsByStatusExcelTest:
         )
 
     @override_features(WIP_ENABLE_OFFER_ADDRESS=False)
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    def should_return_validated_bookings_for_offer_with_duo_with_offerer_address_as_data_source(self):
+
+        beneficiary = users_factories.BeneficiaryGrant18Factory(
+            email="beneficiary@example.com", firstName="Ron", lastName="Weasley", postalCode="97300"
+        )
+        beneficiary_2 = users_factories.BeneficiaryGrant18Factory(
+            email="beneficiary2@example.com", firstName="Harry", lastName="Potter", postalCode="97300"
+        )
+        pro = users_factories.ProFactory()
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
+
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+
+        offer = offers_factories.OfferFactory(venue=venue)
+        stock = offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=3))
+        validated_booking = bookings_factories.UsedBookingFactory(stock=stock, user=beneficiary, quantity=2)
+        validated_booking_2 = bookings_factories.BookingFactory(
+            stock=stock, cancellation_limit_date=datetime.utcnow() - timedelta(days=1), user=beneficiary_2
+        )
+        bookings_factories.BookingFactory(stock=stock)
+
+        stock_2 = offers_factories.EventStockFactory(
+            offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=5)
+        )
+        bookings_factories.UsedBookingFactory(stock=stock_2, user=beneficiary)
+        bookings_factories.BookingFactory(
+            stock=stock_2, cancellation_limit_date=datetime.utcnow() - timedelta(days=1), user=beneficiary_2
+        )
+        bookings_factories.BookingFactory(stock=stock_2)
+
+        bookings_excel = booking_repository.export_validated_bookings_by_offer_id(
+            offer_id=offer.id,
+            event_beginning_date=date.today() + timedelta(days=3),
+            export_type=BookingExportType.EXCEL,
+        )
+        headers = LEGACY_BOOKINGS_CSV_HEADER
+
+        self._validate_excel_row(
+            bookings_excel, 2, headers, beneficiary, offer, venue, validated_booking, "validé", "DUO 1"
+        )
+        self._validate_excel_row(
+            bookings_excel, 3, headers, beneficiary, offer, venue, validated_booking, "validé", "DUO 2"
+        )
+        self._validate_excel_row(
+            bookings_excel, 4, headers, beneficiary_2, offer, venue, validated_booking_2, "confirmé", "Non"
+        )
+
+    @override_features(WIP_ENABLE_OFFER_ADDRESS=False)
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     def should_return_all_bookings_for_offer(self):
-        # Given
+
         beneficiary = users_factories.BeneficiaryGrant18Factory(
             email="beneficiary@example.com", firstName="Ron", lastName="Weasley", postalCode="97300"
         )
@@ -2034,7 +2351,6 @@ class LegacyGetOfferBookingsByStatusExcelTest:
         )
         bookings_factories.BookingFactory(stock=stock_2)
 
-        # When
         bookings_excel = booking_repository.export_bookings_by_offer_id(
             offer_id=offer.id,
             event_beginning_date=date.today() + timedelta(days=30),
@@ -2042,7 +2358,6 @@ class LegacyGetOfferBookingsByStatusExcelTest:
         )
         headers = LEGACY_BOOKINGS_CSV_HEADER
 
-        # Then
         self._validate_excel_row(
             bookings_excel, 2, headers, beneficiary, offer, venue, validated_booking, "validé", "Non"
         )
@@ -2055,8 +2370,69 @@ class LegacyGetOfferBookingsByStatusExcelTest:
         self._validate_excel_row(bookings_excel, 5, headers, beneficiary_4, offer, venue, new_booking, "réservé", "Non")
 
     @override_features(WIP_ENABLE_OFFER_ADDRESS=False)
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    def should_return_all_bookings_for_offer_with_offerer_address_as_data_source(self):
+
+        beneficiary = users_factories.BeneficiaryGrant18Factory(
+            email="beneficiary@example.com", firstName="Ron", lastName="Weasley", postalCode="97300"
+        )
+        beneficiary_2 = users_factories.BeneficiaryGrant18Factory(
+            email="beneficiary2@example.com", firstName="Harry", lastName="Potter", postalCode="97300"
+        )
+        beneficiary_3 = users_factories.BeneficiaryGrant18Factory(
+            email="beneficiary3@example.com", firstName="Hermione", lastName="Granger", postalCode="97300"
+        )
+        beneficiary_4 = users_factories.BeneficiaryGrant18Factory(
+            email="beneficiary4@example.com", firstName="severus", lastName="Snape", postalCode="93000"
+        )
+        pro = users_factories.ProFactory()
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
+
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+
+        offer = offers_factories.OfferFactory(venue=venue)
+        stock = offers_factories.EventStockFactory(
+            offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=30)
+        )
+        validated_booking = bookings_factories.UsedBookingFactory(stock=stock, user=beneficiary)
+        validated_booking_2 = bookings_factories.BookingFactory(
+            stock=stock, cancellation_limit_date=datetime.utcnow() - timedelta(days=1), user=beneficiary_2
+        )
+        reimbursed_booking = bookings_factories.ReimbursedBookingFactory(user=beneficiary_3, stock=stock)
+        new_booking = bookings_factories.BookingFactory(user=beneficiary_4, stock=stock)
+
+        stock_2 = offers_factories.EventStockFactory(
+            offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=5)
+        )
+        bookings_factories.UsedBookingFactory(stock=stock_2, user=beneficiary)
+        bookings_factories.BookingFactory(
+            stock=stock_2, cancellation_limit_date=datetime.utcnow() - timedelta(days=1), user=beneficiary_2
+        )
+        bookings_factories.BookingFactory(stock=stock_2)
+
+        bookings_excel = booking_repository.export_bookings_by_offer_id(
+            offer_id=offer.id,
+            event_beginning_date=date.today() + timedelta(days=30),
+            export_type=BookingExportType.EXCEL,
+        )
+        headers = LEGACY_BOOKINGS_CSV_HEADER
+
+        self._validate_excel_row(
+            bookings_excel, 2, headers, beneficiary, offer, venue, validated_booking, "validé", "Non"
+        )
+        self._validate_excel_row(
+            bookings_excel, 3, headers, beneficiary_2, offer, venue, validated_booking_2, "confirmé", "Non"
+        )
+        self._validate_excel_row(
+            bookings_excel, 4, headers, beneficiary_3, offer, venue, reimbursed_booking, "remboursé", "Non"
+        )
+        self._validate_excel_row(bookings_excel, 5, headers, beneficiary_4, offer, venue, new_booking, "réservé", "Non")
+
+    @override_features(WIP_ENABLE_OFFER_ADDRESS=False)
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     def should_return_validated_bookings_for_offer_with_duo_offerer_with_mutiple_users(self):
-        # Given
+
         beneficiary = users_factories.BeneficiaryGrant18Factory(
             email="beneficiary@example.com", firstName="Ron", lastName="Weasley", postalCode="97300"
         )
@@ -2090,7 +2466,6 @@ class LegacyGetOfferBookingsByStatusExcelTest:
         )
         bookings_factories.BookingFactory(stock=stock_2)
 
-        # When
         bookings_excel = booking_repository.export_validated_bookings_by_offer_id(
             offer_id=offer.id,
             event_beginning_date=date.today() + timedelta(days=3),
@@ -2098,7 +2473,6 @@ class LegacyGetOfferBookingsByStatusExcelTest:
         )
         headers = LEGACY_BOOKINGS_CSV_HEADER
 
-        # Then
         self._validate_excel_row(
             bookings_excel, 2, headers, beneficiary, offer, venue, validated_booking, "validé", "DUO 1"
         )
@@ -2110,8 +2484,65 @@ class LegacyGetOfferBookingsByStatusExcelTest:
         )
 
     @override_features(WIP_ENABLE_OFFER_ADDRESS=False)
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    def should_return_validated_bookings_for_offer_with_duo_offerer_with_mutiple_users_with_offerer_address_as_data_source(
+        self,
+    ):
+
+        beneficiary = users_factories.BeneficiaryGrant18Factory(
+            email="beneficiary@example.com", firstName="Ron", lastName="Weasley", postalCode="97300"
+        )
+        beneficiary_2 = users_factories.BeneficiaryGrant18Factory(
+            email="beneficiary2@example.com", firstName="Harry", lastName="Potter", postalCode="97300"
+        )
+        pro = users_factories.ProFactory()
+        pro_2 = users_factories.ProFactory()
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
+        offerers_factories.UserOffererFactory(user=pro_2, offerer=offerer)
+
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+        offerers_factories.VenueFactory(managingOfferer=offerer)
+
+        offer = offers_factories.OfferFactory(venue=venue)
+        offers_factories.OfferFactory(venue=venue)
+        stock = offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=3))
+        validated_booking = bookings_factories.UsedBookingFactory(stock=stock, user=beneficiary, quantity=2)
+        validated_booking_2 = bookings_factories.BookingFactory(
+            stock=stock, cancellation_limit_date=datetime.utcnow() - timedelta(days=1), user=beneficiary_2
+        )
+        bookings_factories.BookingFactory(stock=stock)
+
+        stock_2 = offers_factories.EventStockFactory(
+            offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=5)
+        )
+        bookings_factories.UsedBookingFactory(stock=stock_2, user=beneficiary)
+        bookings_factories.BookingFactory(
+            stock=stock_2, cancellation_limit_date=datetime.utcnow() - timedelta(days=1), user=beneficiary_2
+        )
+        bookings_factories.BookingFactory(stock=stock_2)
+
+        bookings_excel = booking_repository.export_validated_bookings_by_offer_id(
+            offer_id=offer.id,
+            event_beginning_date=date.today() + timedelta(days=3),
+            export_type=BookingExportType.EXCEL,
+        )
+        headers = LEGACY_BOOKINGS_CSV_HEADER
+
+        self._validate_excel_row(
+            bookings_excel, 2, headers, beneficiary, offer, venue, validated_booking, "validé", "DUO 1"
+        )
+        self._validate_excel_row(
+            bookings_excel, 3, headers, beneficiary, offer, venue, validated_booking, "validé", "DUO 2"
+        )
+        self._validate_excel_row(
+            bookings_excel, 4, headers, beneficiary_2, offer, venue, validated_booking_2, "confirmé", "Non"
+        )
+
+    @override_features(WIP_ENABLE_OFFER_ADDRESS=False)
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     def should_return_all_bookings_for_offer_with_duo(self):
-        # Given
+
         beneficiary = users_factories.BeneficiaryGrant18Factory(
             email="beneficiary@example.com", firstName="Ron", lastName="Weasley", postalCode="97300"
         )
@@ -2144,7 +2575,6 @@ class LegacyGetOfferBookingsByStatusExcelTest:
         )
         bookings_factories.BookingFactory(stock=stock_2)
 
-        # When
         bookings_excel = booking_repository.export_bookings_by_offer_id(
             offer_id=offer.id,
             event_beginning_date=date.today() + timedelta(days=30),
@@ -2152,7 +2582,68 @@ class LegacyGetOfferBookingsByStatusExcelTest:
         )
         headers = LEGACY_BOOKINGS_CSV_HEADER
 
-        # Then
+        self._validate_excel_row(
+            bookings_excel, 2, headers, beneficiary, offer, venue, validated_booking, "validé", "DUO 1"
+        )
+        self._validate_excel_row(
+            bookings_excel, 3, headers, beneficiary, offer, venue, validated_booking, "validé", "DUO 2"
+        )
+        self._validate_excel_row(
+            bookings_excel, 4, headers, beneficiary_2, offer, venue, validated_booking_2, "confirmé", "Non"
+        )
+        self._validate_excel_row(
+            bookings_excel, 5, headers, beneficiary, offer, venue, reimbursed_booking, "remboursé", "Non"
+        )
+        self._validate_excel_row(
+            bookings_excel, 6, headers, beneficiary_2, offer, venue, new_booking, "réservé", "DUO 1"
+        )
+        self._validate_excel_row(
+            bookings_excel, 7, headers, beneficiary_2, offer, venue, new_booking, "réservé", "DUO 2"
+        )
+
+    @override_features(WIP_ENABLE_OFFER_ADDRESS=False)
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    def should_return_all_bookings_for_offer_with_duo_with_offerer_address_as_data_source(self):
+
+        beneficiary = users_factories.BeneficiaryGrant18Factory(
+            email="beneficiary@example.com", firstName="Ron", lastName="Weasley", postalCode="97300"
+        )
+        beneficiary_2 = users_factories.BeneficiaryGrant18Factory(
+            email="beneficiary2@example.com", firstName="Harry", lastName="Potter", postalCode="97300"
+        )
+        pro = users_factories.ProFactory()
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
+
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+
+        offer = offers_factories.OfferFactory(venue=venue)
+        stock = offers_factories.EventStockFactory(
+            offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=30)
+        )
+        validated_booking = bookings_factories.UsedBookingFactory(stock=stock, user=beneficiary, quantity=2)
+        validated_booking_2 = bookings_factories.BookingFactory(
+            stock=stock, cancellation_limit_date=datetime.utcnow() - timedelta(days=1), user=beneficiary_2
+        )
+        reimbursed_booking = bookings_factories.ReimbursedBookingFactory(user=beneficiary, stock=stock)
+        new_booking = bookings_factories.BookingFactory(user=beneficiary_2, stock=stock, quantity=2)
+
+        stock_2 = offers_factories.EventStockFactory(
+            offer=offer, beginningDatetime=datetime.utcnow() + timedelta(days=5)
+        )
+        bookings_factories.UsedBookingFactory(stock=stock_2, user=beneficiary)
+        bookings_factories.BookingFactory(
+            stock=stock_2, cancellation_limit_date=datetime.utcnow() - timedelta(days=1), user=beneficiary_2
+        )
+        bookings_factories.BookingFactory(stock=stock_2)
+
+        bookings_excel = booking_repository.export_bookings_by_offer_id(
+            offer_id=offer.id,
+            event_beginning_date=date.today() + timedelta(days=30),
+            export_type=BookingExportType.EXCEL,
+        )
+        headers = LEGACY_BOOKINGS_CSV_HEADER
+
         self._validate_excel_row(
             bookings_excel, 2, headers, beneficiary, offer, venue, validated_booking, "validé", "DUO 1"
         )
@@ -2174,8 +2665,9 @@ class LegacyGetOfferBookingsByStatusExcelTest:
 
 
 class GetCsvReportTest:
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     def test_should_return_only_expected_booking_attributes(self, app: fixture):
-        # Given
+
         beneficiary = users_factories.BeneficiaryGrant18Factory(
             email="beneficiary@example.com", firstName="Ron", lastName="Weasley", postalCode="97300"
         )
@@ -2195,12 +2687,10 @@ class GetCsvReportTest:
             amount=12,
         )
 
-        # When
         bookings_csv = booking_repository.get_export(
             user=pro, booking_period=(booking_date - timedelta(days=365), booking_date + timedelta(days=365))
         )
 
-        # Then
         headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
         assert headers == LEGACY_BOOKINGS_CSV_HEADER
         assert len(data) == 1
@@ -2226,8 +2716,60 @@ class GetCsvReportTest:
         assert data_dict["Code postal du bénéficiaire"] == beneficiary.postalCode
         assert data_dict["Duo"] == "Non"
 
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    def test_should_return_only_expected_booking_attributes_with_offerer_address_as_data_source(self, app: fixture):
+
+        beneficiary = users_factories.BeneficiaryGrant18Factory(
+            email="beneficiary@example.com", firstName="Ron", lastName="Weasley", postalCode="97300"
+        )
+        pro = users_factories.ProFactory()
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
+
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+        offer = offers_factories.ThingOfferFactory(venue=venue)
+        stock = offers_factories.ThingStockFactory(offer=offer, price=0)
+        booking_date = datetime(2020, 1, 1, 10, 0, 0) - timedelta(days=1)
+        booking = bookings_factories.UsedBookingFactory(
+            user=beneficiary,
+            stock=stock,
+            dateCreated=booking_date,
+            token="ABCDEF",
+            amount=12,
+        )
+
+        bookings_csv = booking_repository.get_export(
+            user=pro, booking_period=(booking_date - timedelta(days=365), booking_date + timedelta(days=365))
+        )
+
+        headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
+        assert headers == LEGACY_BOOKINGS_CSV_HEADER
+        assert len(data) == 1
+        data_dict = dict(zip(headers, data[0]))
+        assert data_dict["Lieu"] == venue.name
+        assert data_dict["Nom de l’offre"] == offer.name
+        assert data_dict["Date de l'évènement"] == ""
+        assert data_dict["EAN"] == ((offer.extraData or {}).get("ean") or "")
+        assert data_dict["Prénom du bénéficiaire"] == beneficiary.firstName
+        assert data_dict["Nom du bénéficiaire"] == beneficiary.lastName
+        assert data_dict["Email du bénéficiaire"] == beneficiary.email
+        assert data_dict["Téléphone du bénéficiaire"] == (beneficiary.phoneNumber or "")
+        assert data_dict["Date et heure de réservation"] == str(
+            booking.dateCreated.astimezone(tz.gettz("Europe/Paris"))
+        )
+        assert data_dict["Date et heure de validation"] == str(booking.dateUsed.astimezone(tz.gettz("Europe/Paris")))
+        assert data_dict["Contremarque"] == booking.token
+        assert data_dict["Intitulé du tarif"] == ""
+        assert data_dict["Prix de la réservation"] == f"{booking.amount:.2f}"
+        assert data_dict["Statut de la contremarque"] == booking_repository.BOOKING_STATUS_LABELS[booking.status]
+        assert data_dict["Date et heure de remboursement"] == ""
+        assert data_dict["Type d'offre"] == "offre grand public"
+        assert data_dict["Code postal du bénéficiaire"] == beneficiary.postalCode
+        assert data_dict["Duo"] == "Non"
+
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     def test_should_not_return_token_for_non_used_goods(self, app: fixture):
-        # Given
+
         beneficiary = users_factories.BeneficiaryGrant18Factory(
             email="beneficiary@example.com", firstName="Ron", lastName="Weasley"
         )
@@ -2248,12 +2790,10 @@ class GetCsvReportTest:
             amount=12,
         )
 
-        # When
         bookings_csv = booking_repository.get_export(
             user=pro, booking_period=(booking_date - timedelta(days=365), booking_date + timedelta(days=365))
         )
 
-        # Then
         headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
         assert headers == LEGACY_BOOKINGS_CSV_HEADER
         assert len(data) == 1
@@ -2278,6 +2818,58 @@ class GetCsvReportTest:
         assert data_dict["Code postal du bénéficiaire"] == ""
         assert data_dict["Duo"] == "Non"
 
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    def test_should_not_return_token_for_non_used_goods_with_offerer_address_as_data_source(self, app: fixture):
+
+        beneficiary = users_factories.BeneficiaryGrant18Factory(
+            email="beneficiary@example.com", firstName="Ron", lastName="Weasley"
+        )
+        pro = users_factories.ProFactory()
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
+
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+
+        offer = offers_factories.ThingOfferFactory(venue=venue)
+        stock = offers_factories.ThingStockFactory(offer=offer, price=0)
+        booking_date = datetime(2020, 1, 1, 10, 0, 0) - timedelta(days=1)
+        booking = bookings_factories.BookingFactory(
+            user=beneficiary,
+            stock=stock,
+            dateCreated=booking_date,
+            token="ABCDEF",
+            amount=12,
+        )
+
+        bookings_csv = booking_repository.get_export(
+            user=pro, booking_period=(booking_date - timedelta(days=365), booking_date + timedelta(days=365))
+        )
+
+        headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
+        assert headers == LEGACY_BOOKINGS_CSV_HEADER
+        assert len(data) == 1
+        data_dict = dict(zip(headers, data[0]))
+        assert data_dict["Lieu"] == venue.name
+        assert data_dict["Nom de l’offre"] == offer.name
+        assert data_dict["Date de l'évènement"] == ""
+        assert data_dict["EAN"] == ((offer.extraData or {}).get("ean") or "")
+        assert data_dict["Prénom du bénéficiaire"] == beneficiary.firstName
+        assert data_dict["Nom du bénéficiaire"] == beneficiary.lastName
+        assert data_dict["Email du bénéficiaire"] == beneficiary.email
+        assert data_dict["Téléphone du bénéficiaire"] == (beneficiary.phoneNumber or "")
+        assert data_dict["Date et heure de réservation"] == str(
+            booking.dateCreated.astimezone(tz.gettz("Europe/Paris"))
+        )
+        assert data_dict["Date et heure de validation"] == ""
+        assert data_dict["Contremarque"] == ""
+        assert data_dict["Intitulé du tarif"] == ""
+        assert data_dict["Prix de la réservation"] == f"{booking.amount:.2f}"
+        assert data_dict["Statut de la contremarque"] == booking_repository.BOOKING_STATUS_LABELS[booking.status]
+        assert data_dict["Date et heure de remboursement"] == ""
+        assert data_dict["Code postal du bénéficiaire"] == ""
+        assert data_dict["Duo"] == "Non"
+
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     def test_should_return_only_validated_bookings_for_requested_period(self, app: fixture):
         pro = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()
@@ -2318,7 +2910,10 @@ class GetCsvReportTest:
         # Check bookings offer name
         assert data[0][1] == "Harry Potter Vol 2"
 
-    def test_should_return_only_reimbursed_bookings_for_requested_period(self, app: fixture):
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    def test_should_return_only_reimbursed_bookings_for_requested_period_with_offerer_address_as_data_source(
+        self, app: fixture
+    ):
         pro = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
@@ -2359,8 +2954,9 @@ class GetCsvReportTest:
         # Check bookings offer name
         assert data[0][1] == "Harry Potter Vol 2"
 
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     def test_should_return_booking_as_duo_when_quantity_is_two(self, app: fixture):
-        # Given
+
         beneficiary = users_factories.BeneficiaryGrant18Factory(
             email="beneficiary@example.com", firstName="Ron", lastName="Weasley"
         )
@@ -2374,21 +2970,45 @@ class GetCsvReportTest:
         stock = offers_factories.ThingStockFactory(offer=offer, price=0)
         bookings_factories.BookingFactory(user=beneficiary, stock=stock, quantity=2)
 
-        # When
         bookings_csv = booking_repository.get_export(
             user=pro, booking_period=(one_year_before_booking, one_year_after_booking)
         )
 
-        # Then
         _, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
         assert len(data) == 2
         assert data[0][17] == "Oui"
         assert data[1][17] == "Oui"
 
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    def test_should_return_booking_as_duo_when_quantity_is_two_with_offerer_address_as_data_source(self, app: fixture):
+
+        beneficiary = users_factories.BeneficiaryGrant18Factory(
+            email="beneficiary@example.com", firstName="Ron", lastName="Weasley"
+        )
+        pro = users_factories.ProFactory()
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
+
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+
+        offer = offers_factories.ThingOfferFactory(venue=venue)
+        stock = offers_factories.ThingStockFactory(offer=offer, price=0)
+        bookings_factories.BookingFactory(user=beneficiary, stock=stock, quantity=2)
+
+        bookings_csv = booking_repository.get_export(
+            user=pro, booking_period=(one_year_before_booking, one_year_after_booking)
+        )
+
+        _, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
+        assert len(data) == 2
+        assert data[0][17] == "Oui"
+        assert data[1][17] == "Oui"
+
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     def test_should_not_duplicate_bookings_when_user_is_admin_and_bookings_offerer_has_multiple_user(
         self, app: fixture
     ):
-        # Given
+
         admin = users_factories.AdminFactory()
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(offerer=offerer)
@@ -2397,17 +3017,36 @@ class GetCsvReportTest:
 
         bookings_factories.BookingFactory(stock__offer__venue__managingOfferer=offerer, quantity=2)
 
-        # When
         bookings_csv = booking_repository.get_export(
             user=admin, booking_period=(one_year_before_booking, one_year_after_booking)
         )
 
-        # Then
         _, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
         assert len(data) == 2
 
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    def test_should_not_duplicate_bookings_when_user_is_admin_and_bookings_offerer_has_multiple_user_with_offerer_address_as_data_source(
+        self, app: fixture
+    ):
+
+        admin = users_factories.AdminFactory()
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(offerer=offerer)
+        offerers_factories.UserOffererFactory(offerer=offerer)
+        offerers_factories.UserOffererFactory(offerer=offerer)
+
+        bookings_factories.BookingFactory(stock__offer__venue__managingOfferer=offerer, quantity=2)
+
+        bookings_csv = booking_repository.get_export(
+            user=admin, booking_period=(one_year_before_booking, one_year_after_booking)
+        )
+
+        _, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
+        assert len(data) == 2
+
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     def test_should_return_event_booking_when_booking_is_on_an_event(self, app: fixture):
-        # Given
+
         beneficiary = users_factories.BeneficiaryGrant18Factory(
             email="beneficiary@example.com", firstName="Ron", lastName="Weasley"
         )
@@ -2425,12 +3064,10 @@ class GetCsvReportTest:
             user=beneficiary, stock=stock, dateCreated=yesterday, token="ABCDEF"
         )
 
-        # When
         bookings_csv = booking_repository.get_export(
             user=pro, booking_period=(one_year_before_booking, one_year_after_booking)
         )
 
-        # Then
         headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
         assert headers == LEGACY_BOOKINGS_CSV_HEADER
         assert len(data) == 1
@@ -2455,10 +3092,61 @@ class GetCsvReportTest:
         assert data_dict["Code postal du bénéficiaire"] == ""
         assert data_dict["Duo"] == "Non"
 
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    def test_should_return_event_booking_when_booking_is_on_an_event_with_offerer_address_as_data_source(
+        self, app: fixture
+    ):
+
+        beneficiary = users_factories.BeneficiaryGrant18Factory(
+            email="beneficiary@example.com", firstName="Ron", lastName="Weasley"
+        )
+        pro = users_factories.ProFactory()
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
+
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+        offer = offers_factories.EventOfferFactory(venue=venue)
+        stock = offers_factories.EventStockFactory(
+            offer=offer, price=0, beginningDatetime=datetime.utcnow() + timedelta(hours=98)
+        )
+        yesterday = datetime.utcnow() - timedelta(days=1)
+        booking = bookings_factories.BookingFactory(
+            user=beneficiary, stock=stock, dateCreated=yesterday, token="ABCDEF"
+        )
+
+        bookings_csv = booking_repository.get_export(
+            user=pro, booking_period=(one_year_before_booking, one_year_after_booking)
+        )
+
+        headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
+        assert headers == LEGACY_BOOKINGS_CSV_HEADER
+        assert len(data) == 1
+        data_dict = dict(zip(headers, data[0]))
+        assert data_dict["Lieu"] == venue.name
+        assert data_dict["Nom de l’offre"] == offer.name
+        assert data_dict["Date de l'évènement"] == str(stock.beginningDatetime.astimezone(tz.gettz("Europe/Paris")))
+        assert data_dict["EAN"] == ((offer.extraData or {}).get("ean") or "")
+        assert data_dict["Prénom du bénéficiaire"] == beneficiary.firstName
+        assert data_dict["Nom du bénéficiaire"] == beneficiary.lastName
+        assert data_dict["Email du bénéficiaire"] == beneficiary.email
+        assert data_dict["Téléphone du bénéficiaire"] == (beneficiary.phoneNumber or "")
+        assert data_dict["Date et heure de réservation"] == str(
+            booking.dateCreated.astimezone(tz.gettz("Europe/Paris"))
+        )
+        assert data_dict["Date et heure de validation"] == ""
+        assert data_dict["Contremarque"] == booking.token
+        assert data_dict["Intitulé du tarif"] == "Tarif unique"
+        assert data_dict["Prix de la réservation"] == f"{booking.amount:.2f}"
+        assert data_dict["Statut de la contremarque"] == booking_repository.BOOKING_STATUS_LABELS[booking.status]
+        assert data_dict["Date et heure de remboursement"] == ""
+        assert data_dict["Code postal du bénéficiaire"] == ""
+        assert data_dict["Duo"] == "Non"
+
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     def test_should_return_event_confirmed_booking_when_booking_is_on_an_event_in_confirmation_period(
         self, app: fixture
     ):
-        # Given
+
         beneficiary = users_factories.BeneficiaryGrant18Factory(
             email="beneficiary@example.com", firstName="Ron", lastName="Weasley"
         )
@@ -2477,19 +3165,50 @@ class GetCsvReportTest:
             user=beneficiary, stock=stock, dateCreated=more_than_two_days_ago, token="ABCDEF"
         )
 
-        # When
         bookings_csv = booking_repository.get_export(
             user=pro, booking_period=(one_year_before_booking, one_year_after_booking)
         )
 
-        # Then
         headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
         assert len(data) == 1
         data_dict = dict(zip(headers, data[0]))
         assert data_dict["Statut de la contremarque"] == "confirmé"
 
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    def test_should_return_event_confirmed_booking_when_booking_is_on_an_event_in_confirmation_period_with_offerer_address_as_data_source(
+        self, app: fixture
+    ):
+
+        beneficiary = users_factories.BeneficiaryGrant18Factory(
+            email="beneficiary@example.com", firstName="Ron", lastName="Weasley"
+        )
+        pro = users_factories.ProFactory()
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
+
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+
+        offer = offers_factories.ThingOfferFactory(venue=venue)
+        stock = offers_factories.ThingStockFactory(
+            offer=offer, price=0, beginningDatetime=datetime.utcnow() + timedelta(hours=98)
+        )
+        more_than_two_days_ago = datetime.utcnow() - timedelta(days=3)
+        bookings_factories.BookingFactory(
+            user=beneficiary, stock=stock, dateCreated=more_than_two_days_ago, token="ABCDEF"
+        )
+
+        bookings_csv = booking_repository.get_export(
+            user=pro, booking_period=(one_year_before_booking, one_year_after_booking)
+        )
+
+        headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
+        assert len(data) == 1
+        data_dict = dict(zip(headers, data[0]))
+        assert data_dict["Statut de la contremarque"] == "confirmé"
+
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     def test_should_return_cancelled_status_when_booking_has_been_cancelled(self, app: fixture):
-        # Given
+
         beneficiary = users_factories.BeneficiaryGrant18Factory(
             email="beneficiary@example.com", firstName="Ron", lastName="Weasley"
         )
@@ -2510,12 +3229,10 @@ class GetCsvReportTest:
             amount=5,
         )
 
-        # When
         bookings_csv = booking_repository.get_export(
             user=pro, booking_period=(one_year_before_booking, one_year_after_booking)
         )
 
-        # Then
         headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
         assert len(data) == 1
         data_dict = dict(zip(headers, data[0]))
@@ -2523,10 +3240,47 @@ class GetCsvReportTest:
             data_dict["Statut de la contremarque"] == booking_repository.BOOKING_STATUS_LABELS[BookingStatus.CANCELLED]
         )
 
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    def test_should_return_cancelled_status_when_booking_has_been_cancelled_with_offerer_address_as_data_source(
+        self, app: fixture
+    ):
+
+        beneficiary = users_factories.BeneficiaryGrant18Factory(
+            email="beneficiary@example.com", firstName="Ron", lastName="Weasley"
+        )
+        pro = users_factories.ProFactory()
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
+
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+
+        offer = offers_factories.ThingOfferFactory(venue=venue)
+        stock = offers_factories.ThingStockFactory(offer=offer, price=5)
+        yesterday = datetime.utcnow() - timedelta(days=1)
+        bookings_factories.CancelledBookingFactory(
+            user=beneficiary,
+            stock=stock,
+            dateCreated=yesterday,
+            token="ABCDEF",
+            amount=5,
+        )
+
+        bookings_csv = booking_repository.get_export(
+            user=pro, booking_period=(one_year_before_booking, one_year_after_booking)
+        )
+
+        headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
+        assert len(data) == 1
+        data_dict = dict(zip(headers, data[0]))
+        assert (
+            data_dict["Statut de la contremarque"] == booking_repository.BOOKING_STATUS_LABELS[BookingStatus.CANCELLED]
+        )
+
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     def test_should_return_validation_date_when_booking_has_been_used_and_not_cancelled_not_reimbursed(
         self, app: fixture
     ):
-        # Given
+
         beneficiary = users_factories.BeneficiaryGrant18Factory()
         pro = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()
@@ -2545,20 +3299,52 @@ class GetCsvReportTest:
             amount=5,
         )
 
-        # When
         bookings_csv = booking_repository.get_export(
             user=pro, booking_period=(one_year_before_booking, one_year_after_booking)
         )
 
-        # Then
         headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
         assert len(data) == 1
         data_dict = dict(zip(headers, data[0]))
         assert data_dict["Statut de la contremarque"] == booking_repository.BOOKING_STATUS_LABELS[BookingStatus.USED]
         assert data_dict["Date et heure de validation"] == str(booking.dateUsed.astimezone(tz.gettz("Europe/Paris")))
 
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    def test_should_return_validation_date_when_booking_has_been_used_and_not_cancelled_not_reimbursed_with_offerer_address_as_data_source(
+        self, app: fixture
+    ):
+
+        beneficiary = users_factories.BeneficiaryGrant18Factory()
+        pro = users_factories.ProFactory()
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
+
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+        product = offers_factories.EventProductFactory()
+        offer = offers_factories.EventOfferFactory(venue=venue, product=product)
+        stock = offers_factories.EventStockFactory(offer=offer, price=5)
+        yesterday = datetime.utcnow() - timedelta(days=1)
+        booking = bookings_factories.UsedBookingFactory(
+            user=beneficiary,
+            stock=stock,
+            dateCreated=yesterday,
+            token="ABCDEF",
+            amount=5,
+        )
+
+        bookings_csv = booking_repository.get_export(
+            user=pro, booking_period=(one_year_before_booking, one_year_after_booking)
+        )
+
+        headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
+        assert len(data) == 1
+        data_dict = dict(zip(headers, data[0]))
+        assert data_dict["Statut de la contremarque"] == booking_repository.BOOKING_STATUS_LABELS[BookingStatus.USED]
+        assert data_dict["Date et heure de validation"] == str(booking.dateUsed.astimezone(tz.gettz("Europe/Paris")))
+
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     def test_should_return_correct_number_of_matching_offerers_bookings_linked_to_user(self, app: fixture):
-        # Given
+
         beneficiary = users_factories.BeneficiaryGrant18Factory(
             email="beneficiary@example.com", firstName="Ron", lastName="Weasley"
         )
@@ -2581,17 +3367,49 @@ class GetCsvReportTest:
         stock2 = offers_factories.ThingStockFactory(offer=offer2, price=0)
         bookings_factories.BookingFactory(user=beneficiary, stock=stock2, dateCreated=today, token="FGHI")
 
-        # When
         bookings_csv = booking_repository.get_export(
             user=pro, booking_period=(one_year_before_booking, one_year_after_booking)
         )
 
-        # Then
+        _, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
+        assert len(data) == 2
+
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    def test_should_return_correct_number_of_matching_offerers_bookings_linked_to_user_with_offerer_address_as_data_source(
+        self, app: fixture
+    ):
+
+        beneficiary = users_factories.BeneficiaryGrant18Factory(
+            email="beneficiary@example.com", firstName="Ron", lastName="Weasley"
+        )
+        pro = users_factories.ProFactory()
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
+
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+
+        offer = offers_factories.ThingOfferFactory(venue=venue)
+        stock = offers_factories.ThingStockFactory(offer=offer, price=0)
+        today = datetime.utcnow()
+        bookings_factories.BookingFactory(user=beneficiary, stock=stock, dateCreated=today, token="ABCD")
+
+        offerer2 = offerers_factories.OffererFactory(siren="8765432")
+        offerers_factories.UserOffererFactory(user=pro, offerer=offerer2)
+
+        venue2 = offerers_factories.VenueFactory(managingOfferer=offerer, siret="8765432098765")
+        offer2 = offers_factories.ThingOfferFactory(venue=venue2)
+        stock2 = offers_factories.ThingStockFactory(offer=offer2, price=0)
+        bookings_factories.BookingFactory(user=beneficiary, stock=stock2, dateCreated=today, token="FGHI")
+
+        bookings_csv = booking_repository.get_export(
+            user=pro, booking_period=(one_year_before_booking, one_year_after_booking)
+        )
+
         _, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
         assert len(data) == 2
 
     def test_should_not_return_bookings_when_offerer_link_is_not_validated(self, app: fixture):
-        # Given
+
         beneficiary = users_factories.BeneficiaryGrant18Factory()
         pro = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory(postalCode="97300")
@@ -2603,17 +3421,16 @@ class GetCsvReportTest:
         stock = offers_factories.ThingStockFactory(offer=offer, price=0)
         bookings_factories.BookingFactory(user=beneficiary, stock=stock)
 
-        # When
         bookings_csv = booking_repository.get_export(
             user=pro, booking_period=(one_year_before_booking, one_year_after_booking)
         )
 
-        # Then
         _, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
         assert len(data) == 0
 
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     def test_should_return_booking_date_with_offerer_timezone_when_venue_is_digital(self, app: fixture):
-        # Given
+
         beneficiary = users_factories.BeneficiaryGrant18Factory()
         pro = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory(postalCode="97300")
@@ -2631,19 +3448,49 @@ class GetCsvReportTest:
             token="ABCDEF",
         )
 
-        # When
         bookings_csv = booking_repository.get_export(
             user=pro, booking_period=(booking_date - timedelta(days=365), booking_date + timedelta(days=365))
         )
 
-        # Then
         headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
         assert len(data) == 1
         data_dict = dict(zip(headers, data[0]))
         assert data_dict["Date et heure de réservation"] == str(booking_date.astimezone(tz.gettz("America/Cayenne")))
 
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    def test_should_return_booking_date_with_offerer_timezone_when_venue_is_digital_with_offerer_address_as_data_source(
+        self, app: fixture
+    ):
+
+        beneficiary = users_factories.BeneficiaryGrant18Factory()
+        pro = users_factories.ProFactory()
+        offerer = offerers_factories.OffererFactory(postalCode="97300")
+        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
+
+        venue = offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
+
+        offer = offers_factories.ThingOfferFactory(venue=venue)
+        stock = offers_factories.ThingStockFactory(offer=offer, price=0)
+        booking_date = datetime(2020, 1, 1, 10, 0, 0) - timedelta(days=1)
+        bookings_factories.UsedBookingFactory(
+            user=beneficiary,
+            stock=stock,
+            dateCreated=booking_date,
+            token="ABCDEF",
+        )
+
+        bookings_csv = booking_repository.get_export(
+            user=pro, booking_period=(booking_date - timedelta(days=365), booking_date + timedelta(days=365))
+        )
+
+        headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
+        assert len(data) == 1
+        data_dict = dict(zip(headers, data[0]))
+        assert data_dict["Date et heure de réservation"] == str(booking_date.astimezone(tz.gettz("America/Cayenne")))
+
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     def test_should_return_booking_ean_when_information_is_available(self, app: fixture):
-        # Given
+
         beneficiary = users_factories.BeneficiaryGrant18Factory()
         pro = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory(postalCode="97300")
@@ -2661,19 +3508,49 @@ class GetCsvReportTest:
             token="ABCDEF",
         )
 
-        # When
         bookings_csv = booking_repository.get_export(
             user=pro, booking_period=(booking_date - timedelta(days=365), booking_date + timedelta(days=365))
         )
 
-        # Then
         headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
         assert len(data) == 1
         data_dict = dict(zip(headers, data[0]))
         assert data_dict["EAN"] == "9876543234"
 
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    def test_should_return_booking_ean_when_information_is_available_with_offerer_address_as_data_source(
+        self, app: fixture
+    ):
+
+        beneficiary = users_factories.BeneficiaryGrant18Factory()
+        pro = users_factories.ProFactory()
+        offerer = offerers_factories.OffererFactory(postalCode="97300")
+        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
+
+        venue = offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
+
+        offer = offers_factories.ThingOfferFactory(venue=venue, extraData=dict({"ean": "9876543234"}))
+        stock = offers_factories.ThingStockFactory(offer=offer, price=0)
+        booking_date = datetime(2020, 1, 1, 10, 0, 0) - timedelta(days=1)
+        bookings_factories.UsedBookingFactory(
+            user=beneficiary,
+            stock=stock,
+            dateCreated=booking_date,
+            token="ABCDEF",
+        )
+
+        bookings_csv = booking_repository.get_export(
+            user=pro, booking_period=(booking_date - timedelta(days=365), booking_date + timedelta(days=365))
+        )
+
+        headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
+        assert len(data) == 1
+        data_dict = dict(zip(headers, data[0]))
+        assert data_dict["EAN"] == "9876543234"
+
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     def test_should_return_booking_with_venue_name_when_public_name_is_not_provided(self, app):
-        # Given
+
         beneficiary = users_factories.BeneficiaryGrant18Factory()
         pro = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()
@@ -2720,12 +3597,10 @@ class GetCsvReportTest:
             token="ABCDEF",
         )
 
-        # When
         bookings_csv = booking_repository.get_export(
             user=pro, booking_period=(one_year_before_booking, one_year_after_booking)
         )
 
-        # Then
         headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
         assert len(data) == 3
         data_dicts = [dict(zip(headers, line)) for line in data]
@@ -2733,8 +3608,71 @@ class GetCsvReportTest:
         assert data_dicts[1]["Lieu"] == venue_for_book.name
         assert data_dicts[2]["Lieu"] == venue_for_thing.name
 
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    def test_should_return_booking_with_venue_name_when_public_name_is_not_provided_with_offerer_address_as_data_source(
+        self, app
+    ):
+
+        beneficiary = users_factories.BeneficiaryGrant18Factory()
+        pro = users_factories.ProFactory()
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
+
+        venue_for_event = offerers_factories.VenueFactory(
+            managingOfferer=offerer, name="Lieu pour un évènement", siret="11816909600069"
+        )
+        product = offers_factories.EventProductFactory(name="Shutter Island")
+        offer_for_event = offers_factories.EventOfferFactory(venue=venue_for_event, product=product)
+        stock_for_event = offers_factories.EventStockFactory(offer=offer_for_event, price=0)
+        bookings_factories.UsedBookingFactory(
+            user=beneficiary,
+            stock=stock_for_event,
+            dateCreated=(default_booking_date + timedelta(days=1)),
+            token="BBBBBB",
+        )
+
+        venue_for_book = offerers_factories.VenueFactory(
+            managingOfferer=offerer, name="Lieu pour un livre", siret="41816609600069"
+        )
+        product_book = offers_factories.ThingProductFactory(name="Harry Potter")
+        offer_for_book = offers_factories.ThingOfferFactory(
+            venue=venue_for_book, product=product_book, extraData=dict({"ean": "9876543234"})
+        )
+        stock_for_book = offers_factories.ThingStockFactory(offer=offer_for_book, price=0)
+        bookings_factories.UsedBookingFactory(
+            user=beneficiary,
+            stock=stock_for_book,
+            dateCreated=default_booking_date,
+            token="AAAAAA",
+        )
+
+        venue_for_thing = offerers_factories.VenueFactory(
+            managingOfferer=offerer, name="Lieu pour un bien qui n'est pas un livre", siret="83994784300018"
+        )
+        product_thing = offers_factories.ThingProductFactory(name="Harry Potter")
+        offer_for_thing = offers_factories.ThingOfferFactory(venue=venue_for_thing, product=product_thing)
+        stock_for_thing = offers_factories.ThingStockFactory(offer=offer_for_thing, price=0)
+        bookings_factories.UsedBookingFactory(
+            user=beneficiary,
+            stock=stock_for_thing,
+            dateCreated=(default_booking_date - timedelta(days=1)),
+            token="ABCDEF",
+        )
+
+        bookings_csv = booking_repository.get_export(
+            user=pro, booking_period=(one_year_before_booking, one_year_after_booking)
+        )
+
+        headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
+        assert len(data) == 3
+        data_dicts = [dict(zip(headers, line)) for line in data]
+        assert data_dicts[0]["Lieu"] == venue_for_event.name
+        assert data_dicts[1]["Lieu"] == venue_for_book.name
+        assert data_dicts[2]["Lieu"] == venue_for_thing.name
+
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     def test_should_return_booking_with_venue_public_name_when_public_name_is_provided(self, app):
-        # Given
+
         beneficiary = users_factories.BeneficiaryGrant18Factory()
         pro = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()
@@ -2784,12 +3722,10 @@ class GetCsvReportTest:
             token="ABCDEF",
         )
 
-        # When
         bookings_csv = booking_repository.get_export(
             user=pro, booking_period=(one_year_before_booking, one_year_after_booking)
         )
 
-        # Then
         headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
         assert len(data) == 3
         data_dicts = [dict(zip(headers, line)) for line in data]
@@ -2797,29 +3733,114 @@ class GetCsvReportTest:
         assert data_dicts[1]["Lieu"] == venue_for_book.publicName
         assert data_dicts[2]["Lieu"] == venue_for_thing.publicName
 
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    def test_should_return_booking_with_venue_public_name_when_public_name_is_provided_with_offerer_address_as_data_source(
+        self, app
+    ):
+
+        beneficiary = users_factories.BeneficiaryGrant18Factory()
+        pro = users_factories.ProFactory()
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
+
+        venue_for_event = offerers_factories.VenueFactory(
+            managingOfferer=offerer, name="Opéra paris", publicName="Super Opéra de Paris", siret="11816909600069"
+        )
+        product = offers_factories.EventProductFactory(name="Shutter Island")
+        offer_for_event = offers_factories.EventOfferFactory(venue=venue_for_event, product=product)
+        stock_for_event = offers_factories.EventStockFactory(offer=offer_for_event, price=0)
+        bookings_factories.UsedBookingFactory(
+            user=beneficiary,
+            stock=stock_for_event,
+            dateCreated=(default_booking_date + timedelta(days=1)),
+            token="BBBBBB",
+        )
+
+        venue_for_book = offerers_factories.VenueFactory(
+            managingOfferer=offerer, name="Lieu pour un livre", publicName="Librairie Châtelet", siret="41816609600069"
+        )
+        product_book = offers_factories.ThingProductFactory(name="Harry Potter")
+        offer_for_book = offers_factories.ThingOfferFactory(
+            venue=venue_for_book, product=product_book, extraData=dict({"ean": "9876543234"})
+        )
+        stock_for_book = offers_factories.ThingStockFactory(offer=offer_for_book, price=0)
+        bookings_factories.UsedBookingFactory(
+            user=beneficiary,
+            stock=stock_for_book,
+            dateCreated=default_booking_date,
+            token="AAAAAA",
+        )
+
+        venue_for_thing = offerers_factories.VenueFactory(
+            managingOfferer=offerer,
+            name="Lieu pour un bien qui n'est pas un livre",
+            publicName="Guitar Center",
+            siret="83994784300018",
+        )
+        product_thing = offers_factories.ThingProductFactory(name="Harry Potter")
+        offer_for_thing = offers_factories.ThingOfferFactory(venue=venue_for_thing, product=product_thing)
+        stock_for_thing = offers_factories.ThingStockFactory(offer=offer_for_thing, price=0)
+        bookings_factories.UsedBookingFactory(
+            user=beneficiary,
+            stock=stock_for_thing,
+            dateCreated=(default_booking_date - timedelta(days=1)),
+            token="ABCDEF",
+        )
+
+        bookings_csv = booking_repository.get_export(
+            user=pro, booking_period=(one_year_before_booking, one_year_after_booking)
+        )
+
+        headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
+        assert len(data) == 3
+        data_dicts = [dict(zip(headers, line)) for line in data]
+        assert data_dicts[0]["Lieu"] == venue_for_event.publicName
+        assert data_dicts[1]["Lieu"] == venue_for_book.publicName
+        assert data_dicts[2]["Lieu"] == venue_for_thing.publicName
+
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     def test_should_return_only_booking_for_requested_venue(self, app: fixture):
-        # Given
+
         pro_user = users_factories.ProFactory()
         user_offerer = offerers_factories.UserOffererFactory(user=pro_user)
 
         bookings_factories.BookingFactory(stock__offer__venue__managingOfferer=user_offerer.offerer)
         booking_two = bookings_factories.BookingFactory(stock__offer__venue__managingOfferer=user_offerer.offerer)
 
-        # When
         bookings_csv = booking_repository.get_export(
             user=pro_user,
             booking_period=(one_year_before_booking, one_year_after_booking),
             venue_id=booking_two.venue.id,
         )
 
-        # Then
         headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
         assert len(data) == 1
         data_dict = dict(zip(headers, data[0]))
         assert data_dict["Nom de l’offre"] == booking_two.stock.offer.name
 
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    def test_should_return_only_booking_for_requested_venue_with_offerer_address_as_data_source(self, app: fixture):
+
+        pro_user = users_factories.ProFactory()
+        user_offerer = offerers_factories.UserOffererFactory(user=pro_user)
+
+        bookings_factories.BookingFactory(stock__offer__venue__managingOfferer=user_offerer.offerer)
+        booking_two = bookings_factories.BookingFactory(stock__offer__venue__managingOfferer=user_offerer.offerer)
+
+        bookings_csv = booking_repository.get_export(
+            user=pro_user,
+            booking_period=(one_year_before_booking, one_year_after_booking),
+            venue_id=booking_two.venue.id,
+        )
+
+        headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
+        assert len(data) == 1
+        data_dict = dict(zip(headers, data[0]))
+        assert data_dict["Nom de l’offre"] == booking_two.stock.offer.name
+
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     def test_should_return_only_booking_for_requested_event_date(self, app: fixture):
-        # Given
+
         user_offerer = offerers_factories.UserOffererFactory()
         event_date = datetime(2020, 12, 24, 10, 30)
         expected_booking = bookings_factories.BookingFactory(
@@ -2834,21 +3855,50 @@ class GetCsvReportTest:
             stock=offers_factories.ThingStockFactory(offer__venue__managingOfferer=user_offerer.offerer)
         )
 
-        # When
         bookings_csv = booking_repository.get_export(
             user=user_offerer.user,
             booking_period=(one_year_before_booking, one_year_after_booking),
             event_date=event_date.date(),
         )
 
-        # Then
         headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
         assert len(data) == 1
         data_dict = dict(zip(headers, data[0]))
         assert data_dict["Contremarque"] == expected_booking.token
 
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    def test_should_return_only_booking_for_requested_event_date_with_offerer_address_as_data_source(
+        self, app: fixture
+    ):
+
+        user_offerer = offerers_factories.UserOffererFactory()
+        event_date = datetime(2020, 12, 24, 10, 30)
+        expected_booking = bookings_factories.BookingFactory(
+            stock=offers_factories.EventStockFactory(
+                beginningDatetime=event_date, offer__venue__managingOfferer=user_offerer.offerer
+            )
+        )
+        bookings_factories.BookingFactory(
+            stock=offers_factories.EventStockFactory(offer__venue__managingOfferer=user_offerer.offerer)
+        )
+        bookings_factories.BookingFactory(
+            stock=offers_factories.ThingStockFactory(offer__venue__managingOfferer=user_offerer.offerer)
+        )
+
+        bookings_csv = booking_repository.get_export(
+            user=user_offerer.user,
+            booking_period=(one_year_before_booking, one_year_after_booking),
+            event_date=event_date.date(),
+        )
+
+        headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
+        assert len(data) == 1
+        data_dict = dict(zip(headers, data[0]))
+        assert data_dict["Contremarque"] == expected_booking.token
+
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     def should_consider_venue_locale_datetime_when_filtering_by_event_date(self, app: fixture):
-        # Given
+
         user_offerer = offerers_factories.UserOffererFactory()
         event_datetime = datetime(2020, 4, 21, 20, 00)
 
@@ -2870,22 +3920,59 @@ class GetCsvReportTest:
         )
         mayotte_booking = bookings_factories.BookingFactory(stock=stock_in_mayotte)
 
-        # When
         bookings_csv = booking_repository.get_export(
             user=user_offerer.user,
             booking_period=(one_year_before_booking, one_year_after_booking),
             event_date=event_datetime.date(),
         )
 
-        # Then
         headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
         assert len(data) == 2
         data_dicts = [dict(zip(headers, line)) for line in data]
         tokens = [booking["Contremarque"] for booking in data_dicts]
         assert sorted(tokens) == sorted([cayenne_booking.token, mayotte_booking.token])
 
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    def should_consider_venue_locale_datetime_when_filtering_by_event_date_with_offerer_address_as_data_source(
+        self, app: fixture
+    ):
+
+        user_offerer = offerers_factories.UserOffererFactory()
+        event_datetime = datetime(2020, 4, 21, 20, 00)
+
+        offer_in_cayenne = offers_factories.OfferFactory(
+            venue__postalCode="97300", venue__managingOfferer=user_offerer.offerer
+        )
+        cayenne_event_datetime = datetime(2020, 4, 22, 2, 0)
+        stock_in_cayenne = offers_factories.EventStockFactory(
+            offer=offer_in_cayenne, beginningDatetime=cayenne_event_datetime
+        )
+        cayenne_booking = bookings_factories.BookingFactory(stock=stock_in_cayenne)
+
+        offer_in_mayotte = offers_factories.OfferFactory(
+            venue__postalCode="97600", venue__managingOfferer=user_offerer.offerer
+        )
+        mayotte_event_datetime = datetime(2020, 4, 20, 22, 0)
+        stock_in_mayotte = offers_factories.EventStockFactory(
+            offer=offer_in_mayotte, beginningDatetime=mayotte_event_datetime
+        )
+        mayotte_booking = bookings_factories.BookingFactory(stock=stock_in_mayotte)
+
+        bookings_csv = booking_repository.get_export(
+            user=user_offerer.user,
+            booking_period=(one_year_before_booking, one_year_after_booking),
+            event_date=event_datetime.date(),
+        )
+
+        headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
+        assert len(data) == 2
+        data_dicts = [dict(zip(headers, line)) for line in data]
+        tokens = [booking["Contremarque"] for booking in data_dicts]
+        assert sorted(tokens) == sorted([cayenne_booking.token, mayotte_booking.token])
+
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     def test_should_return_only_bookings_for_requested_booking_period(self, app: fixture):
-        # Given
+
         user_offerer = offerers_factories.UserOffererFactory()
         booking_beginning_period = datetime(2020, 12, 24, 10, 30).date()
         booking_ending_period = datetime(2020, 12, 26, 15, 00).date()
@@ -2902,13 +3989,11 @@ class GetCsvReportTest:
             stock=offers_factories.ThingStockFactory(offer__venue__managingOfferer=user_offerer.offerer),
         )
 
-        # When
         bookings_csv = booking_repository.get_export(
             user=user_offerer.user,
             booking_period=(booking_beginning_period, booking_ending_period),
         )
 
-        # Then
         headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
         assert len(data) == 1
         data_dict = dict(zip(headers, data[0]))
@@ -2916,8 +4001,42 @@ class GetCsvReportTest:
             expected_booking.dateCreated.astimezone(tz.gettz("Europe/Paris"))
         )
 
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    def test_should_return_only_bookings_for_requested_booking_period_with_offerer_address_as_data_source(
+        self, app: fixture
+    ):
+
+        user_offerer = offerers_factories.UserOffererFactory()
+        booking_beginning_period = datetime(2020, 12, 24, 10, 30).date()
+        booking_ending_period = datetime(2020, 12, 26, 15, 00).date()
+        expected_booking = bookings_factories.BookingFactory(
+            dateCreated=datetime(2020, 12, 26, 15, 30),
+            stock=offers_factories.ThingStockFactory(offer__venue__managingOfferer=user_offerer.offerer),
+        )
+        bookings_factories.BookingFactory(
+            dateCreated=datetime(2020, 12, 29, 15, 30),
+            stock=offers_factories.ThingStockFactory(offer__venue__managingOfferer=user_offerer.offerer),
+        )
+        bookings_factories.BookingFactory(
+            dateCreated=datetime(2020, 12, 22, 15, 30),
+            stock=offers_factories.ThingStockFactory(offer__venue__managingOfferer=user_offerer.offerer),
+        )
+
+        bookings_csv = booking_repository.get_export(
+            user=user_offerer.user,
+            booking_period=(booking_beginning_period, booking_ending_period),
+        )
+
+        headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
+        assert len(data) == 1
+        data_dict = dict(zip(headers, data[0]))
+        assert data_dict["Date et heure de réservation"] == str(
+            expected_booking.dateCreated.astimezone(tz.gettz("Europe/Paris"))
+        )
+
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     def test_should_consider_venue_locale_datetime_when_filtering_by_booking_period(self, app: fixture):
-        # Given
+
         user_offerer = offerers_factories.UserOffererFactory()
         requested_booking_period_beginning = datetime(2020, 4, 21, 20, 00).date()
         requested_booking_period_ending = datetime(2020, 4, 22, 20, 00).date()
@@ -2944,21 +4063,62 @@ class GetCsvReportTest:
             stock=stock_in_mayotte, dateCreated=mayotte_booking_datetime
         )
 
-        # When
         bookings_csv = booking_repository.get_export(
             user=user_offerer.user,
             booking_period=(requested_booking_period_beginning, requested_booking_period_ending),
         )
 
-        # Then
         headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
         assert len(data) == 2
         data_dicts = [dict(zip(headers, line)) for line in data]
         tokens = [booking["Contremarque"] for booking in data_dicts]
         assert sorted(tokens) == sorted([cayenne_booking.token, mayotte_booking.token])
 
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    def test_should_consider_venue_locale_datetime_when_filtering_by_booking_period_with_offerer_address_as_data_source(
+        self, app: fixture
+    ):
+
+        user_offerer = offerers_factories.UserOffererFactory()
+        requested_booking_period_beginning = datetime(2020, 4, 21, 20, 00).date()
+        requested_booking_period_ending = datetime(2020, 4, 22, 20, 00).date()
+
+        offer_in_cayenne = offers_factories.OfferFactory(
+            venue__postalCode="97300", venue__managingOfferer=user_offerer.offerer
+        )
+        cayenne_booking_datetime = datetime(2020, 4, 22, 2, 0)
+        stock_in_cayenne = offers_factories.EventStockFactory(
+            offer=offer_in_cayenne,
+        )
+        cayenne_booking = bookings_factories.BookingFactory(
+            stock=stock_in_cayenne, dateCreated=cayenne_booking_datetime
+        )
+
+        offer_in_mayotte = offers_factories.OfferFactory(
+            venue__postalCode="97600", venue__managingOfferer=user_offerer.offerer
+        )
+        mayotte_booking_datetime = datetime(2020, 4, 20, 23, 0)
+        stock_in_mayotte = offers_factories.EventStockFactory(
+            offer=offer_in_mayotte,
+        )
+        mayotte_booking = bookings_factories.BookingFactory(
+            stock=stock_in_mayotte, dateCreated=mayotte_booking_datetime
+        )
+
+        bookings_csv = booking_repository.get_export(
+            user=user_offerer.user,
+            booking_period=(requested_booking_period_beginning, requested_booking_period_ending),
+        )
+
+        headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
+        assert len(data) == 2
+        data_dicts = [dict(zip(headers, line)) for line in data]
+        tokens = [booking["Contremarque"] for booking in data_dicts]
+        assert sorted(tokens) == sorted([cayenne_booking.token, mayotte_booking.token])
+
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     def test_should_output_the_correct_offer_type_depending_wether_offer_educational_or_not(self, app: fixture):
-        # Given
+
         pro = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
@@ -2972,7 +4132,6 @@ class GetCsvReportTest:
             stock__offer__venue=venue,
         )
 
-        # When
         beginning_period = datetime.fromisoformat("2021-10-15")
         ending_period = datetime.fromisoformat("2032-02-15")
         bookings_csv = booking_repository.get_export(
@@ -2980,7 +4139,6 @@ class GetCsvReportTest:
             booking_period=(beginning_period, ending_period),
         )
 
-        # Then
         expected_type = {
             booking_1.stock.offer.name: "offre grand public",
             booking_2.stock.offer.name: "offre grand public",
@@ -2993,15 +4151,52 @@ class GetCsvReportTest:
             offer_name = data_dict["Nom de l’offre"]
             assert data_dict["Type d'offre"] == expected_type[offer_name]
 
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    def test_should_output_the_correct_offer_type_depending_wether_offer_educational_or_not_with_offerer_address_as_data_source(
+        self, app: fixture
+    ):
+
+        pro = users_factories.ProFactory()
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+
+        booking_1 = bookings_factories.BookingFactory(
+            stock__offer__venue=venue,
+        )
+
+        booking_2 = bookings_factories.UsedBookingFactory(
+            stock__offer__venue=venue,
+        )
+
+        beginning_period = datetime.fromisoformat("2021-10-15")
+        ending_period = datetime.fromisoformat("2032-02-15")
+        bookings_csv = booking_repository.get_export(
+            user=pro,
+            booking_period=(beginning_period, ending_period),
+        )
+
+        expected_type = {
+            booking_1.stock.offer.name: "offre grand public",
+            booking_2.stock.offer.name: "offre grand public",
+        }
+
+        headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
+        assert len(data) == 2
+        data_dicts = [dict(zip(headers, line)) for line in data]
+        for data_dict in data_dicts:
+            offer_name = data_dict["Nom de l’offre"]
+            assert data_dict["Type d'offre"] == expected_type[offer_name]
+
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     def test_should_return_only_bookings_for_requested_offer_type(self, app: fixture):
-        # Given
+
         user_offerer = offerers_factories.UserOffererFactory()
         bookings_factories.BookingFactory(
             dateCreated=default_booking_date,
             stock__offer__venue__managingOfferer=user_offerer.offerer,
         )
 
-        # When
         individual_bookings_csv = booking_repository.get_export(
             user=user_offerer.user,
             booking_period=(one_year_before_booking, one_year_after_booking),
@@ -3011,7 +4206,33 @@ class GetCsvReportTest:
             booking_period=(one_year_before_booking, one_year_after_booking),
         )
 
-        # Then
+        headers, *individual_bookings_data = csv.reader(StringIO(individual_bookings_csv), delimiter=";")
+        assert len(individual_bookings_data) == 1
+        individual_bookings_data_dict = dict(zip(headers, individual_bookings_data[0]))
+        assert individual_bookings_data_dict["Type d'offre"] == "offre grand public"
+        headers, *all_bookings_data = csv.reader(StringIO(all_bookings_csv), delimiter=";")
+        assert len(all_bookings_data) == 1
+
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    def test_should_return_only_bookings_for_requested_offer_type_with_offerer_address_as_data_source(
+        self, app: fixture
+    ):
+
+        user_offerer = offerers_factories.UserOffererFactory()
+        bookings_factories.BookingFactory(
+            dateCreated=default_booking_date,
+            stock__offer__venue__managingOfferer=user_offerer.offerer,
+        )
+
+        individual_bookings_csv = booking_repository.get_export(
+            user=user_offerer.user,
+            booking_period=(one_year_before_booking, one_year_after_booking),
+        )
+        all_bookings_csv = booking_repository.get_export(
+            user=user_offerer.user,
+            booking_period=(one_year_before_booking, one_year_after_booking),
+        )
+
         headers, *individual_bookings_data = csv.reader(StringIO(individual_bookings_csv), delimiter=";")
         assert len(individual_bookings_data) == 1
         individual_bookings_data_dict = dict(zip(headers, individual_bookings_data[0]))
@@ -3020,8 +4241,9 @@ class GetCsvReportTest:
         assert len(all_bookings_data) == 1
 
     class BookingStatusInCsvReportTest:
+        @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
         def test_should_output_the_correct_status_for_individual_bookings_before_cancellationLimitDate(self, app):
-            # Given
+
             date_created = datetime.utcnow() - timedelta(hours=6)
 
             pro = users_factories.ProFactory()
@@ -3038,7 +4260,6 @@ class GetCsvReportTest:
                 dateCreated=date_created,
             )
 
-            # When
             beginning_period = (datetime.utcnow().date() - timedelta(days=1)).isoformat()
             ending_period = (datetime.utcnow().date() + timedelta(days=360)).isoformat()
             bookings_csv = booking_repository.get_export(
@@ -3046,14 +4267,14 @@ class GetCsvReportTest:
                 booking_period=(beginning_period, ending_period),
             )
 
-            # Then
             headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
             assert len(data) == 2
             pos_cm = headers.index("Statut de la contremarque")
             assert sorted([line[pos_cm] for line in data]) == ["annulé", "réservé"]
 
+        @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
         def test_should_output_the_correct_status_for_individual_bookings_things_after_cancellationLimitDate(self, app):
-            # Given
+
             date_created = datetime.utcnow() - timedelta(days=10)
 
             pro = users_factories.ProFactory()
@@ -3079,7 +4300,6 @@ class GetCsvReportTest:
                 dateCreated=date_created,
             )
 
-            # When
             beginning_period = (datetime.utcnow().date() - timedelta(days=11)).isoformat()
             ending_period = (datetime.utcnow().date() + timedelta(days=360)).isoformat()
             bookings_csv = booking_repository.get_export(
@@ -3087,14 +4307,14 @@ class GetCsvReportTest:
                 booking_period=(beginning_period, ending_period),
             )
 
-            # Then
             headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
             assert len(data) == 4
             pos_cm = headers.index("Statut de la contremarque")
             assert sorted([line[pos_cm] for line in data]) == ["annulé", "remboursé", "réservé", "validé"]
 
+        @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
         def test_should_output_the_correct_status_for_individual_bookings_events_after_cancellationLimitDate(self, app):
-            # Given
+
             date_created = datetime.utcnow() - timedelta(days=10)
             event_date = datetime.utcnow() + timedelta(days=2)
 
@@ -3121,7 +4341,6 @@ class GetCsvReportTest:
                 dateCreated=date_created,
             )
 
-            # When
             beginning_period = (datetime.utcnow().date() - timedelta(days=11)).isoformat()
             ending_period = (datetime.utcnow().date() + timedelta(days=360)).isoformat()
             bookings_csv = booking_repository.get_export(
@@ -3129,7 +4348,124 @@ class GetCsvReportTest:
                 booking_period=(beginning_period, ending_period),
             )
 
-            # Then
+            headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
+            assert len(data) == 4
+            pos_cm = headers.index("Statut de la contremarque")
+            assert sorted([line[pos_cm] for line in data]) == ["annulé", "confirmé", "remboursé", "validé"]
+
+        @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+        def test_should_output_the_correct_status_for_individual_bookings_before_cancellationLimitDate_with_offerer_address_as_data_source(
+            self, app
+        ):
+
+            date_created = datetime.utcnow() - timedelta(hours=6)
+
+            pro = users_factories.ProFactory()
+            offerer = offerers_factories.OffererFactory()
+            offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
+            venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+
+            bookings_factories.CancelledBookingFactory(
+                stock__offer__venue=venue,
+                dateCreated=date_created,
+            )
+            bookings_factories.BookingFactory(
+                stock__offer__venue=venue,
+                dateCreated=date_created,
+            )
+
+            beginning_period = (datetime.utcnow().date() - timedelta(days=1)).isoformat()
+            ending_period = (datetime.utcnow().date() + timedelta(days=360)).isoformat()
+            bookings_csv = booking_repository.get_export(
+                user=pro,
+                booking_period=(beginning_period, ending_period),
+            )
+
+            headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
+            assert len(data) == 2
+            pos_cm = headers.index("Statut de la contremarque")
+            assert sorted([line[pos_cm] for line in data]) == ["annulé", "réservé"]
+
+        @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+        def test_should_output_the_correct_status_for_individual_bookings_things_after_cancellationLimitDate_with_offerer_address_as_data_source(
+            self, app
+        ):
+
+            date_created = datetime.utcnow() - timedelta(days=10)
+
+            pro = users_factories.ProFactory()
+            offerer = offerers_factories.OffererFactory()
+            offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
+            venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+
+            bookings_factories.CancelledBookingFactory(
+                stock__offer__venue=venue,
+                dateCreated=date_created,
+            )
+            bookings_factories.BookingFactory(
+                stock__offer__venue=venue,
+                dateCreated=date_created,
+            )
+            bookings_factories.UsedBookingFactory(
+                stock__offer__venue=venue,
+                dateCreated=date_created,
+            )
+            bookings_factories.UsedBookingFactory(
+                status=BookingStatus.REIMBURSED,
+                stock__offer__venue=venue,
+                dateCreated=date_created,
+            )
+
+            beginning_period = (datetime.utcnow().date() - timedelta(days=11)).isoformat()
+            ending_period = (datetime.utcnow().date() + timedelta(days=360)).isoformat()
+            bookings_csv = booking_repository.get_export(
+                user=pro,
+                booking_period=(beginning_period, ending_period),
+            )
+
+            headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
+            assert len(data) == 4
+            pos_cm = headers.index("Statut de la contremarque")
+            assert sorted([line[pos_cm] for line in data]) == ["annulé", "remboursé", "réservé", "validé"]
+
+        @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+        def test_should_output_the_correct_status_for_individual_bookings_events_after_cancellationLimitDate_with_offerer_address_as_data_source(
+            self, app
+        ):
+
+            date_created = datetime.utcnow() - timedelta(days=10)
+            event_date = datetime.utcnow() + timedelta(days=2)
+
+            pro = users_factories.ProFactory()
+            offerer = offerers_factories.OffererFactory()
+            offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
+            venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+            event_stock = offers_factories.EventStockFactory(beginningDatetime=event_date, offer__venue=venue)
+            bookings_factories.CancelledBookingFactory(
+                stock=event_stock,
+                dateCreated=date_created,
+            )
+            bookings_factories.BookingFactory(
+                stock=event_stock,
+                dateCreated=date_created,
+            )
+            bookings_factories.UsedBookingFactory(
+                stock=event_stock,
+                dateCreated=date_created,
+            )
+            bookings_factories.UsedBookingFactory(
+                status=BookingStatus.REIMBURSED,
+                stock=event_stock,
+                dateCreated=date_created,
+            )
+
+            beginning_period = (datetime.utcnow().date() - timedelta(days=11)).isoformat()
+            ending_period = (datetime.utcnow().date() + timedelta(days=360)).isoformat()
+            bookings_csv = booking_repository.get_export(
+                user=pro,
+                booking_period=(beginning_period, ending_period),
+            )
+
             headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
             assert len(data) == 4
             pos_cm = headers.index("Statut de la contremarque")
@@ -3137,8 +4473,9 @@ class GetCsvReportTest:
 
 
 class GetExcelReportTest:
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     def test_should_return_excel_export_according_to_booking_attributes(self):
-        # Given
+
         beneficiary = users_factories.BeneficiaryGrant18Factory(
             email="beneficiary@example.com", firstName="Ron", lastName="Weasley"
         )
@@ -3160,7 +4497,6 @@ class GetExcelReportTest:
         )
         headers = LEGACY_BOOKINGS_CSV_HEADER
 
-        # When
         bookings_excel = booking_repository.get_export(
             user=pro,
             booking_period=(booking_date - timedelta(days=365), booking_date + timedelta(days=365)),
@@ -3169,7 +4505,77 @@ class GetExcelReportTest:
         wb = openpyxl.load_workbook(BytesIO(bookings_excel))
         sheet = wb.active
 
-        # Then
+        # Headers
+        for i in range(1, len(headers)):
+            assert sheet.cell(row=1, column=i).value == headers[i - 1]
+        # Lieu
+        assert sheet.cell(row=2, column=1).value == venue.name
+        # Nom de l’offre
+        assert sheet.cell(row=2, column=2).value == offer.name
+        # Date de l'évènement
+        assert sheet.cell(row=2, column=3).value == "None"
+        # EAN
+        assert sheet.cell(row=2, column=4).value == ((offer.extraData or {}).get("ean") or None)
+        # Nom et prénom du bénéficiaire
+        assert sheet.cell(row=2, column=5).value == beneficiary.firstName
+        assert sheet.cell(row=2, column=6).value == beneficiary.lastName
+        # Email du bénéficiaire
+        assert sheet.cell(row=2, column=7).value == beneficiary.email
+        # Téléphone du bénéficiaire
+        assert sheet.cell(row=2, column=8).value == (beneficiary.phoneNumber or None)
+        # Date et heure de réservation
+        assert sheet.cell(row=2, column=9).value == str(booking.dateCreated.astimezone(tz.gettz("Europe/Paris")))
+        # Date et heure de validation
+        assert sheet.cell(row=2, column=10).value == str(booking.dateUsed.astimezone(tz.gettz("Europe/Paris")))
+        # Contremarque
+        assert sheet.cell(row=2, column=11).value == booking.token
+        # Intitulé du tarif
+        assert sheet.cell(row=2, column=12).value is None
+        # Prix de la réservation
+        assert sheet.cell(row=2, column=13).value == booking.amount
+        # Statut de la contremarque
+        assert sheet.cell(row=2, column=14).value == booking_repository.BOOKING_STATUS_LABELS[booking.status]
+        # Date et heure de remboursement
+        assert sheet.cell(row=2, column=15).value == "None"
+        # Type d'offre
+        assert sheet.cell(row=2, column=16).value == "offre grand public"
+        # Code postal du bénéficiaire
+        assert sheet.cell(row=2, column=17).value == beneficiary.postalCode
+        # Duo
+        assert sheet.cell(row=2, column=18).value == "Non"
+
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    def test_should_return_excel_export_according_to_booking_attributes_with_offerer_address_as_data_source(self):
+
+        beneficiary = users_factories.BeneficiaryGrant18Factory(
+            email="beneficiary@example.com", firstName="Ron", lastName="Weasley"
+        )
+        pro = users_factories.ProFactory()
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
+
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+
+        offer = offers_factories.ThingOfferFactory(venue=venue)
+        stock = offers_factories.ThingStockFactory(offer=offer, price=0)
+        booking_date = datetime(2020, 1, 1, 10, 0, 0) - timedelta(days=1)
+        booking = bookings_factories.UsedBookingFactory(
+            user=beneficiary,
+            stock=stock,
+            dateCreated=booking_date,
+            token="ABCDEF",
+            amount=12,
+        )
+        headers = LEGACY_BOOKINGS_CSV_HEADER
+
+        bookings_excel = booking_repository.get_export(
+            user=pro,
+            booking_period=(booking_date - timedelta(days=365), booking_date + timedelta(days=365)),
+            export_type=BookingExportType.EXCEL,
+        )
+        wb = openpyxl.load_workbook(BytesIO(bookings_excel))
+        sheet = wb.active
+
         # Headers
         for i in range(1, len(headers)):
             assert sheet.cell(row=1, column=i).value == headers[i - 1]
@@ -3212,7 +4618,7 @@ class GetExcelReportTest:
 
 class FindSoonToBeExpiredBookingsTest:
     def test_should_return_only_soon_to_be_expired_individual_bookings(self, app: fixture):
-        # Given
+
         expired_creation_date = date.today() - timedelta(days=23)
         expired_creation_date = datetime.combine(expired_creation_date, time(12, 34, 17))
         non_expired_creation_date = date.today() - timedelta(days=24)
@@ -3238,10 +4644,8 @@ class FindSoonToBeExpiredBookingsTest:
             stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
         )
 
-        # When
         expired_bookings = booking_repository.find_soon_to_be_expiring_individual_bookings_ordered_by_user().all()
 
-        # Then
         assert expired_bookings == [expected_booking]
 
     def test_should_return_only_soon_to_be_expired_bookings_books_case(self):

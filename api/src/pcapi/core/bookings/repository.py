@@ -7,16 +7,15 @@ from io import BytesIO
 from io import StringIO
 from operator import and_
 import typing
-from typing import Iterable
 
 from flask_sqlalchemy import BaseQuery
-from sqlalchemy import Column
 from sqlalchemy import Date
 from sqlalchemy import case
 from sqlalchemy import cast
 from sqlalchemy import func
 from sqlalchemy import or_
 from sqlalchemy import text
+from sqlalchemy.orm import aliased
 from sqlalchemy.orm import contains_eager
 from sqlalchemy.orm import joinedload
 from sqlalchemy.orm.attributes import InstrumentedAttribute
@@ -34,7 +33,9 @@ from pcapi.core.bookings.models import BookingStatusFilter
 from pcapi.core.bookings.models import ExternalBooking
 from pcapi.core.bookings.utils import convert_booking_dates_utc_to_venue_timezone
 from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.geography.models import Address
 from pcapi.core.offerers.models import Offerer
+from pcapi.core.offerers.models import OffererAddress
 from pcapi.core.offerers.models import UserOfferer
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.models import Offer
@@ -283,46 +284,61 @@ def get_bookings_from_deposit(deposit_id: int) -> list[Booking]:
 
 
 def _create_export_query(offer_id: int, event_beginning_date: date) -> BaseQuery:
-    return (
+    VenueOffererAddress = aliased(OffererAddress)
+    VenueAddress = aliased(Address)
+
+    with_entities: tuple[typing.Any, ...] = (
+        Booking.id.label("id"),
+        Venue.common_name.label("venueName"),  # type: ignore[attr-defined]
+        Offerer.postalCode.label("offererPostalCode"),
+        Offer.name.label("offerName"),
+        Stock.beginningDatetime.label("stockBeginningDatetime"),
+        Stock.offerId,
+        Offer.extraData["ean"].label("ean"),
+        User.firstName.label("beneficiaryFirstName"),
+        User.lastName.label("beneficiaryLastName"),
+        User.email.label("beneficiaryEmail"),
+        User.phoneNumber.label("beneficiaryPhoneNumber"),  # type: ignore[attr-defined]
+        User.postalCode.label("beneficiaryPostalCode"),
+        Booking.token,
+        Booking.priceCategoryLabel,
+        Booking.amount,
+        Booking.quantity,
+        Booking.status,
+        Booking.dateCreated.label("bookedAt"),
+        Booking.dateUsed.label("usedAt"),
+        Booking.reimbursementDate.label("reimbursedAt"),
+        Booking.cancellationDate.label("cancelledAt"),
+        Booking.isExternal.label("isExternal"),  # type: ignore[attr-defined]
+        Booking.isConfirmed,
+        # `get_batch` function needs a field called exactly `id` to work,
+        # the label prevents SA from using a bad (prefixed) label for this field
+        Booking.userId,
+    )
+    if FeatureToggle.WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE.is_active():
+        with_entities += (
+            Address.departmentCode.label("offerDepartmentCode"),
+            VenueAddress.departmentCode.label("venueDepartmentCode"),
+        )
+    else:
+        with_entities += (Venue.departementCode.label("venueDepartmentCode"),)
+
+    query = (
         Booking.query.join(Booking.offerer)
         .join(Booking.user)
         .join(Offerer.UserOfferers)
         .join(Booking.venue)
         .join(Booking.stock)
         .join(Stock.offer)
+        .outerjoin(Offer.offererAddress)
+        .join(OffererAddress.address)
+        .outerjoin(VenueOffererAddress, Venue.offererAddressId == VenueOffererAddress.id)
+        .join(VenueAddress, VenueOffererAddress.addressId == VenueAddress.id)
         .filter(Stock.offerId == offer_id, field_to_venue_timezone(Stock.beginningDatetime) == event_beginning_date)
         .order_by(Booking.id)
-        .with_entities(
-            Booking.id.label("id"),
-            Venue.common_name.label("venueName"),  # type: ignore[attr-defined]
-            Venue.departementCode.label("venueDepartmentCode"),
-            Offerer.postalCode.label("offererPostalCode"),
-            Offer.name.label("offerName"),
-            Stock.beginningDatetime.label("stockBeginningDatetime"),
-            Stock.offerId,
-            Offer.extraData["ean"].label("ean"),
-            User.firstName.label("beneficiaryFirstName"),
-            User.lastName.label("beneficiaryLastName"),
-            User.email.label("beneficiaryEmail"),
-            User.phoneNumber.label("beneficiaryPhoneNumber"),  # type: ignore[attr-defined]
-            User.postalCode.label("beneficiaryPostalCode"),
-            Booking.token,
-            Booking.priceCategoryLabel,
-            Booking.amount,
-            Booking.quantity,
-            Booking.status,
-            Booking.dateCreated.label("bookedAt"),
-            Booking.dateUsed.label("usedAt"),
-            Booking.reimbursementDate.label("reimbursedAt"),
-            Booking.cancellationDate.label("cancelledAt"),
-            Booking.isExternal.label("isExternal"),  # type: ignore[attr-defined]
-            Booking.isConfirmed,
-            # `get_batch` function needs a field called exactly `id` to work,
-            # the label prevents SA from using a bad (prefixed) label for this field
-            Booking.userId,
-        )
-        .distinct(Booking.id)
+        .with_entities(*with_entities)
     )
+    return query.distinct(Booking.id)
 
 
 def export_validated_bookings_by_offer_id(
@@ -389,10 +405,8 @@ def _get_filtered_bookings_query(
     venue_id: int | None = None,
     offer_id: int | None = None,
     offerer_address_id: int | None = None,
-    extra_joins: Iterable[Column] | None = None,
+    extra_joins: tuple[tuple[typing.Any, ...], ...] = (),
 ) -> BaseQuery:
-    extra_joins = extra_joins or tuple()
-
     bookings_query = (
         Booking.query.join(Booking.offerer)
         .join(Offerer.UserOfferers)
@@ -401,8 +415,11 @@ def _get_filtered_bookings_query(
         .join(Booking.externalBookings, isouter=True)
         .join(Booking.venue, isouter=True)
     )
-    for join_key in extra_joins:
-        bookings_query = bookings_query.join(join_key, isouter=True)
+    for join_key, *join_conditions in extra_joins:
+        if join_conditions:
+            bookings_query = bookings_query.join(join_key, *join_conditions, isouter=True)
+        else:
+            bookings_query = bookings_query.join(join_key, isouter=True)
 
     if not pro_user.has_admin_role:
         bookings_query = bookings_query.filter(UserOfferer.user == pro_user)
@@ -464,6 +481,46 @@ def _get_filtered_booking_report(
     venue_id: int | None = None,
     offer_id: int | None = None,
 ) -> str:
+    VenueOffererAddress = aliased(OffererAddress)
+    VenueAddress = aliased(Address)
+
+    with_entities: tuple[typing.Any, ...] = (
+        Venue.common_name.label("venueName"),  # type: ignore[attr-defined]
+        Offerer.postalCode.label("offererPostalCode"),
+        Offer.name.label("offerName"),
+        Stock.beginningDatetime.label("stockBeginningDatetime"),
+        Stock.offerId,
+        Offer.extraData["ean"].label("ean"),
+        User.firstName.label("beneficiaryFirstName"),
+        User.lastName.label("beneficiaryLastName"),
+        User.email.label("beneficiaryEmail"),
+        User.phoneNumber.label("beneficiaryPhoneNumber"),  # type: ignore[attr-defined]
+        User.postalCode.label("beneficiaryPostalCode"),
+        Booking.id,
+        Booking.token,
+        Booking.priceCategoryLabel,
+        Booking.amount,
+        Booking.quantity,
+        Booking.status,
+        Booking.dateCreated.label("bookedAt"),
+        Booking.dateUsed.label("usedAt"),
+        Booking.reimbursementDate.label("reimbursedAt"),
+        Booking.cancellationDate.label("cancelledAt"),
+        Booking.isExternal.label("isExternal"),  # type: ignore[attr-defined]
+        Booking.isConfirmed,
+        # `get_batch` function needs a field called exactly `id` to work,
+        # the label prevents SA from using a bad (prefixed) label for this field
+        Booking.id.label("id"),
+        Booking.userId,
+    )
+    if FeatureToggle.WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE.is_active():
+        with_entities += (
+            Address.departmentCode.label("offerDepartmentCode"),
+            VenueAddress.departmentCode.label("venueDepartmentCode"),
+        )
+    else:
+        with_entities += (Venue.departementCode.label("venueDepartmentCode"),)
+
     bookings_query = (
         _get_filtered_bookings_query(
             pro_user,
@@ -472,38 +529,16 @@ def _get_filtered_booking_report(
             event_date,
             venue_id,
             offer_id,
-            extra_joins=(Stock.offer, Booking.user),
+            extra_joins=(
+                (Stock.offer,),
+                (Booking.user,),
+                (Offer.offererAddress,),
+                (OffererAddress.address,),
+                (VenueOffererAddress, Venue.offererAddressId == VenueOffererAddress.id),
+                (VenueAddress, VenueOffererAddress.addressId == VenueAddress.id),
+            ),
         )
-        .with_entities(
-            Venue.common_name.label("venueName"),  # type: ignore[attr-defined]
-            Venue.departementCode.label("venueDepartmentCode"),
-            Offerer.postalCode.label("offererPostalCode"),
-            Offer.name.label("offerName"),
-            Stock.beginningDatetime.label("stockBeginningDatetime"),
-            Stock.offerId,
-            Offer.extraData["ean"].label("ean"),
-            User.firstName.label("beneficiaryFirstName"),
-            User.lastName.label("beneficiaryLastName"),
-            User.email.label("beneficiaryEmail"),
-            User.phoneNumber.label("beneficiaryPhoneNumber"),  # type: ignore[attr-defined]
-            User.postalCode.label("beneficiaryPostalCode"),
-            Booking.id,
-            Booking.token,
-            Booking.priceCategoryLabel,
-            Booking.amount,
-            Booking.quantity,
-            Booking.status,
-            Booking.dateCreated.label("bookedAt"),
-            Booking.dateUsed.label("usedAt"),
-            Booking.reimbursementDate.label("reimbursedAt"),
-            Booking.cancellationDate.label("cancelledAt"),
-            Booking.isExternal.label("isExternal"),  # type: ignore[attr-defined]
-            Booking.isConfirmed,
-            # `get_batch` function needs a field called exactly `id` to work,
-            # the label prevents SA from using a bad (prefixed) label for this field
-            Booking.id.label("id"),
-            Booking.userId,
-        )
+        .with_entities(*with_entities)
         .distinct(Booking.id)
     )
 
@@ -519,6 +554,42 @@ def _get_filtered_booking_pro(
     offer_id: int | None = None,
     offerer_address_id: int | None = None,
 ) -> BaseQuery:
+    VenueOffererAddress = aliased(OffererAddress)
+    VenueAddress = aliased(Address)
+
+    with_entities: tuple[typing.Any, ...] = (
+        Booking.token.label("bookingToken"),
+        Booking.dateCreated.label("bookedAt"),
+        Booking.quantity,
+        Booking.amount.label("bookingAmount"),
+        Booking.priceCategoryLabel,
+        Booking.dateUsed.label("usedAt"),
+        Booking.cancellationDate.label("cancelledAt"),
+        Booking.cancellationLimitDate,
+        Booking.status,
+        Booking.reimbursementDate.label("reimbursedAt"),
+        Booking.isExternal.label("isExternal"),  # type: ignore[attr-defined]
+        Booking.isConfirmed,
+        Offer.name.label("offerName"),
+        Offer.id.label("offerId"),
+        Offer.extraData["ean"].label("offerEan"),
+        User.firstName.label("beneficiaryFirstname"),
+        User.lastName.label("beneficiaryLastname"),
+        User.email.label("beneficiaryEmail"),
+        User.phoneNumber.label("beneficiaryPhoneNumber"),  # type: ignore[attr-defined]
+        Stock.beginningDatetime.label("stockBeginningDatetime"),
+        Booking.stockId,
+        Offerer.postalCode.label("offererPostalCode"),
+    )
+
+    if FeatureToggle.WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE.is_active():
+        with_entities += (
+            Address.departmentCode.label("offerDepartmentCode"),
+            VenueAddress.departmentCode.label("venueDepartmentCode"),
+        )
+    else:
+        with_entities += (Venue.departementCode.label("venueDepartmentCode"),)
+
     bookings_query = (
         _get_filtered_bookings_query(
             pro_user,
@@ -529,35 +600,15 @@ def _get_filtered_booking_pro(
             offer_id,
             offerer_address_id,
             extra_joins=(
-                Stock.offer,
-                Booking.user,
+                (Stock.offer,),
+                (Booking.user,),
+                (Offer.offererAddress,),
+                (OffererAddress.address,),
+                (VenueOffererAddress, Venue.offererAddressId == VenueOffererAddress.id),
+                (VenueAddress, VenueOffererAddress.addressId == VenueAddress.id),
             ),
         )
-        .with_entities(
-            Booking.token.label("bookingToken"),
-            Booking.dateCreated.label("bookedAt"),
-            Booking.quantity,
-            Booking.amount.label("bookingAmount"),
-            Booking.priceCategoryLabel,
-            Booking.dateUsed.label("usedAt"),
-            Booking.cancellationDate.label("cancelledAt"),
-            Booking.cancellationLimitDate,
-            Booking.status,
-            Booking.reimbursementDate.label("reimbursedAt"),
-            Booking.isExternal.label("isExternal"),  # type: ignore[attr-defined]
-            Booking.isConfirmed,
-            Offer.name.label("offerName"),
-            Offer.id.label("offerId"),
-            Offer.extraData["ean"].label("offerEan"),
-            User.firstName.label("beneficiaryFirstname"),
-            User.lastName.label("beneficiaryLastname"),
-            User.email.label("beneficiaryEmail"),
-            User.phoneNumber.label("beneficiaryPhoneNumber"),  # type: ignore[attr-defined]
-            Stock.beginningDatetime.label("stockBeginningDatetime"),
-            Booking.stockId,
-            Venue.departementCode.label("venueDepartmentCode"),
-            Offerer.postalCode.label("offererPostalCode"),
-        )
+        .with_entities(*with_entities)
         .distinct(Booking.id)
     )
 

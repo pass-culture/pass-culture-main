@@ -1044,13 +1044,17 @@ class GetIndividualBookingCSVDownloadTest(GetEndpointHelper):
     endpoint = "backoffice_web.individual_bookings.get_individual_booking_csv_download"
     needed_permission = perm_models.Permissions.READ_BOOKINGS
 
-    # session + current user + bookings
-    expected_num_queries = 3
+    # session + current user + bookings + check if WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE is active
+    expected_num_queries = 4
 
-    def test_csv_length(self, authenticated_client, bookings):
+    @pytest.mark.parametrize("is_oa_as_data_source_ff_active", (True, False))
+    def test_csv_length(self, authenticated_client, bookings, is_oa_as_data_source_ff_active):
         venue_id = bookings[0].venueId
 
-        with assert_num_queries(self.expected_num_queries):
+        with (
+            override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=is_oa_as_data_source_ff_active),
+            assert_num_queries(self.expected_num_queries),
+        ):
             response = authenticated_client.get(url_for(self.endpoint, venue=venue_id))
             assert response.status_code == 200
 
@@ -1061,17 +1065,21 @@ class GetIndividualBookingXLSXDownloadTest(GetEndpointHelper):
     endpoint = "backoffice_web.individual_bookings.get_individual_booking_xlsx_download"
     needed_permission = perm_models.Permissions.READ_BOOKINGS
 
-    # session + current user + bookings
-    expected_num_queries = 3
+    # session + current user + bookings + check if WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE is active
+    expected_num_queries = 4
 
     def reader_from_response(self, response):
         wb = openpyxl.load_workbook(BytesIO(response.data))
         return wb.active
 
-    def test_csv_length(self, authenticated_client, bookings):
+    @pytest.mark.parametrize("is_oa_as_data_source_ff_active", (True, False))
+    def test_csv_length(self, authenticated_client, bookings, is_oa_as_data_source_ff_active):
         venue_id = bookings[0].venueId
 
-        with assert_num_queries(self.expected_num_queries):
+        with (
+            override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=is_oa_as_data_source_ff_active),
+            assert_num_queries(self.expected_num_queries),
+        ):
             response = authenticated_client.get(url_for(self.endpoint, venue=venue_id))
             assert response.status_code == 200
 
