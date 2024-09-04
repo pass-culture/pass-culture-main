@@ -10,6 +10,7 @@ from pcapi.core.finance import utils as finance_utils
 from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import models as offers_models
+from pcapi.core.offers import repository as offers_repository
 from pcapi.core.offers import schemas as offers_schemas
 from pcapi.core.offers.validation import check_for_duplicated_price_categories
 from pcapi.models import api_errors
@@ -312,6 +313,43 @@ def post_event_price_categories(
         raise api_errors.ApiErrors(error.errors)
 
     return serialization.PriceCategoriesResponse.build_price_categories(created_price_categories)
+
+
+@blueprints.public_api.route("/public/offers/v1/events/<int:event_id>/price_categories", methods=["GET"])
+@api_key_required
+@spectree_serialize(
+    api=spectree_schemas.public_api_schema,
+    tags=[tags.EVENT_OFFER_PRICES],
+    response_model=serialization.PriceCategoriesResponse,
+    resp=SpectreeResponse(
+        **(
+            {"HTTP_200": (serialization.PriceCategoriesResponse, "The price category has been created successfully")}
+            # errors
+            | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
+            | http_responses.HTTP_400_BAD_REQUEST
+            | http_responses.HTTP_404_EVENT_NOT_FOUND
+        )
+    ),
+)
+def get_event_price_categories(
+    event_id: int, query: serialization.GetPriceCategoriesQueryParams
+) -> serialization.PriceCategoriesResponse:
+    """
+    Get price categories
+
+    Get existing price categories for given event
+    """
+    offer = utils.retrieve_offer_query(event_id).filter(offers_models.Offer.isEvent).one_or_none()
+
+    if not offer:
+        raise api_errors.ApiErrors({"event_id": ["The event could not be found"]}, status_code=404)
+
+    price_categories = offers_repository.get_offer_price_categories(
+        offer.id,
+        id_at_provider_list=query.ids_at_provider,  # type: ignore[arg-type]
+    )
+
+    return serialization.PriceCategoriesResponse.build_price_categories(price_categories)
 
 
 @blueprints.public_api.route(

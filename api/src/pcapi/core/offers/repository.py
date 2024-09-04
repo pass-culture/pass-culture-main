@@ -1169,6 +1169,18 @@ def get_paginated_offer_ids_by_venue_id(venue_id: int, limit: int, page: int = 0
     return [offer_id for offer_id, in query]
 
 
+def get_offer_price_categories(offer_id: int, id_at_provider_list: list[str] | None = None) -> BaseQuery:
+    """Return price categories for given offer, with the possibility to filter on `idAtProvider`"""
+    query = models.PriceCategory.query.filter(
+        models.PriceCategory.offerId == offer_id,
+    )
+
+    if id_at_provider_list is not None:
+        query = query.filter(models.PriceCategory.idAtProvider.in_(id_at_provider_list))
+
+    return query
+
+
 def exclude_offers_from_inactive_venue_provider(query: BaseQuery) -> BaseQuery:
     return (
         query.outerjoin(models.Offer.lastProvider)

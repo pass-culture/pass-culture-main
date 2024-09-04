@@ -3897,6 +3897,34 @@
                 "title": "GetOffersQueryParams",
                 "type": "object"
             },
+            "GetPriceCategoriesQueryParams": {
+                "properties": {
+                    "firstIndex": {
+                        "default": 1,
+                        "description": "The page of results will be fetched starting from `firstIndex` (which is a resource id).**To learn more about cursor-based pagination [see this page](/docs/understanding-our-api/resources/cursor-pagination)**.",
+                        "minimum": 1,
+                        "title": "Firstindex",
+                        "type": "integer"
+                    },
+                    "idsAtProvider": {
+                        "description": "List of your ids to filter on",
+                        "example": "5edd982915c2a74b9302e443,5edd982915e2a74vb9302e443",
+                        "nullable": true,
+                        "title": "Idsatprovider",
+                        "type": "string"
+                    },
+                    "limit": {
+                        "default": 50,
+                        "description": "Maximum number of items per page.",
+                        "exclusiveMinimum": 0,
+                        "maximum": 50,
+                        "title": "Limit",
+                        "type": "integer"
+                    }
+                },
+                "title": "GetPriceCategoriesQueryParams",
+                "type": "object"
+            },
             "GetProductCategoriesResponse": {
                 "items": {
                     "$ref": "#/components/schemas/ProductCategoryResponse"
@@ -9777,6 +9805,105 @@
             }
         },
         "/public/offers/v1/events/{event_id}/price_categories": {
+            "get": {
+                "description": "Get existing price categories for given event",
+                "operationId": "GetEventPriceCategories",
+                "parameters": [
+                    {
+                        "description": "",
+                        "in": "path",
+                        "name": "event_id",
+                        "required": true,
+                        "schema": {
+                            "format": "int32",
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "description": "Maximum number of items per page.",
+                        "in": "query",
+                        "name": "limit",
+                        "required": false,
+                        "schema": {
+                            "default": 50,
+                            "description": "Maximum number of items per page.",
+                            "exclusiveMinimum": 0,
+                            "maximum": 50,
+                            "title": "Limit",
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "description": "The page of results will be fetched starting from `firstIndex` (which is a resource id).**To learn more about cursor-based pagination [see this page](/docs/understanding-our-api/resources/cursor-pagination)**.",
+                        "in": "query",
+                        "name": "firstIndex",
+                        "required": false,
+                        "schema": {
+                            "default": 1,
+                            "description": "The page of results will be fetched starting from `firstIndex` (which is a resource id).**To learn more about cursor-based pagination [see this page](/docs/understanding-our-api/resources/cursor-pagination)**.",
+                            "minimum": 1,
+                            "title": "Firstindex",
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "description": "List of your ids to filter on",
+                        "in": "query",
+                        "name": "idsAtProvider",
+                        "required": false,
+                        "schema": {
+                            "description": "List of your ids to filter on",
+                            "example": "5edd982915c2a74b9302e443,5edd982915e2a74vb9302e443",
+                            "nullable": true,
+                            "title": "Idsatprovider",
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PriceCategoriesResponse"
+                                }
+                            }
+                        },
+                        "description": "The price category has been created successfully"
+                    },
+                    "400": {
+                        "description": "The request is invalid. The response body contains a list of errors."
+                    },
+                    "401": {
+                        "description": "Authentication is necessary to use this API."
+                    },
+                    "404": {
+                        "description": "The event offer could not be found."
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        },
+                        "description": "Unprocessable Entity"
+                    },
+                    "429": {
+                        "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "summary": "Get price categories",
+                "tags": [
+                    "Event offer prices"
+                ]
+            },
             "post": {
                 "description": "Batch create price categories for given event.",
                 "operationId": "PostEventPriceCategories",
