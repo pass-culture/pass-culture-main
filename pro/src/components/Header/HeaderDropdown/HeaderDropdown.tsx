@@ -210,8 +210,8 @@ export const HeaderDropdown = () => {
                                 <span className={styles['menu-item-name']}>
                                   {offererOption.label}
                                 </span>
-                                {selectedOffererName?.name ===
-                                  offererOption.label && (
+                                {selectedOffererName?.id ===
+                                  Number(offererOption.value) && (
                                   <SvgIcon
                                     src={fulValidateIcon}
                                     alt=""
