@@ -195,16 +195,16 @@ export const buildVenueOptions = (
 
 type SetDefaultInitialValuesProps = {
   filteredVenues: VenueListItemResponseModel[]
-  areSuggestedCategoriesEnabled: boolean
+  areSuggestedSubcategoriesUsed: boolean
 }
 
 export function setDefaultInitialValues({
   filteredVenues,
-  areSuggestedCategoriesEnabled,
+  areSuggestedSubcategoriesUsed,
 }: SetDefaultInitialValuesProps): DetailsFormValues {
   let venueId = ''
 
-  const venues = areSuggestedCategoriesEnabled
+  const venues = areSuggestedSubcategoriesUsed
     ? filteredVenues.filter((v) => !v.isVirtual)
     : filteredVenues
 

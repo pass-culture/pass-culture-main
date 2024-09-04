@@ -168,7 +168,7 @@ describe('setDefaultInitialValues', () => {
     expect(
       setDefaultInitialValues({
         filteredVenues: [venueListItemFactory({}), venueListItemFactory({})],
-        areSuggestedCategoriesEnabled: false,
+        areSuggestedSubcategoriesUsed: false,
       })
     ).toStrictEqual({
       author: '',
@@ -193,7 +193,7 @@ describe('setDefaultInitialValues', () => {
     expect(
       setDefaultInitialValues({
         filteredVenues: [venueListItemFactory({ id: 666 })],
-        areSuggestedCategoriesEnabled: false,
+        areSuggestedSubcategoriesUsed: false,
       })
     ).toStrictEqual(
       expect.objectContaining({

@@ -20,6 +20,7 @@ import { serializeApiCollectiveFilters } from 'core/Offers/utils/serializer'
 import { useActiveFeature } from 'hooks/useActiveFeature'
 import { useIsNewInterfaceActive } from 'hooks/useIsNewInterfaceActive'
 import { useNotification } from 'hooks/useNotification'
+import { useSuggestedSubcategoriesAbTest } from 'hooks/useSuggestedSubcategoriesAbTest'
 import phoneStrokeIcon from 'icons/stroke-phone.svg'
 import strokeProfIcon from 'icons/stroke-prof.svg'
 import { selectCurrentOffererId } from 'store/user/selectors'
@@ -35,6 +36,7 @@ import { OfferTypeFormValues } from './types'
 export const OfferTypeScreen = (): JSX.Element => {
   const isNewInterfaceActive = useIsNewInterfaceActive()
   const isSplitOfferEnabled = useActiveFeature('WIP_SPLIT_OFFER')
+  const areSuggestedSubcategoriesUsed = useSuggestedSubcategoriesAbTest()
   const navigate = useNavigate()
   const location = useLocation()
   const queryParams = new URLSearchParams(location.search)
@@ -169,13 +171,10 @@ export const OfferTypeScreen = (): JSX.Element => {
 
   const hasNotChosenOfferType = values.individualOfferSubtype === ''
 
-  const areSuggestedCategoriesEnabled = useActiveFeature(
-    'WIP_SUGGESTED_SUBCATEGORIES'
-  )
   const isDisableForIndividual =
     values.offerType === OFFER_TYPES.INDIVIDUAL_OR_DUO &&
     hasNotChosenOfferType &&
-    !areSuggestedCategoriesEnabled
+    !areSuggestedSubcategoriesUsed
 
   return (
     <div className={styles['offer-type-container']}>
@@ -206,7 +205,7 @@ export const OfferTypeScreen = (): JSX.Element => {
               </FormLayout.Row>
             </FormLayout.Section>
 
-            {!areSuggestedCategoriesEnabled &&
+            {!areSuggestedSubcategoriesUsed &&
               values.offerType === OFFER_TYPES.INDIVIDUAL_OR_DUO && (
                 <IndividualOfferType />
               )}

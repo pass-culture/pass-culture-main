@@ -21,6 +21,7 @@ import { PATCH_SUCCESS_MESSAGE } from 'core/shared/constants'
 import { useActiveFeature } from 'hooks/useActiveFeature'
 import { useNotification } from 'hooks/useNotification'
 import { useOfferWizardMode } from 'hooks/useOfferWizardMode'
+import { useSuggestedSubcategoriesAbTest } from 'hooks/useSuggestedSubcategoriesAbTest'
 
 import { ActionBar } from '../ActionBar/ActionBar'
 import { useIndividualOfferImageUpload } from '../hooks/useIndividualOfferImageUpload'
@@ -59,9 +60,7 @@ export const DetailsScreen = ({ venues }: DetailsScreenProps): JSX.Element => {
   const queryParams = new URLSearchParams(search)
   const queryOfferType = queryParams.get('offer-type')
 
-  const areSuggestedCategoriesEnabled = useActiveFeature(
-    'WIP_SUGGESTED_SUBCATEGORIES'
-  )
+  const areSuggestedSubcategoriesUsed = useSuggestedSubcategoriesAbTest()
   const isSearchByEanEnabled = useActiveFeature('WIP_EAN_CREATION')
 
   const { categories, subCategories, offer } = useIndividualOfferContext()
@@ -87,7 +86,7 @@ export const DetailsScreen = ({ venues }: DetailsScreenProps): JSX.Element => {
     offer === null
       ? setDefaultInitialValues({
           filteredVenues,
-          areSuggestedCategoriesEnabled,
+          areSuggestedSubcategoriesUsed,
         })
       : setDefaultInitialValuesFromOffer({
           offer,
@@ -196,7 +195,7 @@ export const DetailsScreen = ({ venues }: DetailsScreenProps): JSX.Element => {
           onClickPrevious={handlePreviousStepOrBackToReadOnly}
           onClickNext={async () => {
             if (
-              areSuggestedCategoriesEnabled &&
+              areSuggestedSubcategoriesUsed &&
               formik.values.suggestedSubcategory === ''
             ) {
               await formik.setFieldValue('suggestedSubcategory', 'OTHER')

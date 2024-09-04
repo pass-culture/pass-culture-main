@@ -20,6 +20,7 @@ import { useIndividualOfferContext } from 'context/IndividualOfferContext/Indivi
 import { showOptionsTree } from 'core/Offers/categoriesSubTypes'
 import { IndividualOfferImage } from 'core/Offers/types'
 import { useActiveFeature } from 'hooks/useActiveFeature'
+import { useSuggestedSubcategoriesAbTest } from 'hooks/useSuggestedSubcategoriesAbTest'
 import fullMoreIcon from 'icons/full-more.svg'
 import { selectCurrentOffererId } from 'store/user/selectors'
 import { Select } from 'ui-kit/form/Select/Select'
@@ -32,6 +33,7 @@ import { Subcategories } from './Subcategories/Subcategories'
 import { SuggestedSubcategories } from './SuggestedSubcategories/SuggestedSubcategories'
 import { DetailsFormValues } from './types'
 import { buildShowSubTypeOptions, buildVenueOptions } from './utils'
+
 const DEBOUNCE_TIME_BEFORE_REQUEST = 400
 
 type DetailsFormProps = {
@@ -53,6 +55,7 @@ export const DetailsForm = ({
   onImageDelete,
   imageOffer,
 }: DetailsFormProps): JSX.Element => {
+  const areSuggestedSubcategoriesUsed = useSuggestedSubcategoriesAbTest()
   const [suggestedSubcategories, setSuggestedSubcategories] = useState<
     string[]
   >([])
@@ -88,13 +91,9 @@ export const DetailsForm = ({
     .sort((a, b) => a.label.localeCompare(b.label, 'fr'))
   const showSubTypeOptions = buildShowSubTypeOptions(showType)
 
-  const areSuggestedCategoriesEnabled = useActiveFeature(
-    'WIP_SUGGESTED_SUBCATEGORIES'
-  )
-
   const venueOptions = buildVenueOptions(
     filteredVenues,
-    areSuggestedCategoriesEnabled
+    areSuggestedSubcategoriesUsed
   )
 
   const artisticInformationsFields = [
@@ -122,7 +121,7 @@ export const DetailsForm = ({
       : subcategoryConditionalFields.includes('musicType')
 
   async function getSuggestedSubcategories() {
-    if (!areSuggestedCategoriesEnabled && !offer) {
+    if (!areSuggestedSubcategoriesUsed && !offer) {
       return
     }
     const response = await api.getSuggestedSubcategories(
@@ -144,7 +143,7 @@ export const DetailsForm = ({
     >
   ) {
     handleChange(e)
-    if (areSuggestedCategoriesEnabled) {
+    if (areSuggestedSubcategoriesUsed) {
       await debouncedOnChangeGetSuggestedSubcategories()
     }
   }
@@ -153,12 +152,12 @@ export const DetailsForm = ({
     subcategoryId !== DEFAULT_DETAILS_FORM_VALUES.subcategoryId
 
   const SHOW_VENUE_SELECTION_FIELD =
-    !areSuggestedCategoriesEnabled || venueOptions.length > 1
+    !areSuggestedSubcategoriesUsed || venueOptions.length > 1
 
   const selectedOffererId = useSelector(selectCurrentOffererId)
 
   const showAddVenueBanner =
-    !areSuggestedCategoriesEnabled && venueOptions.length === 0
+    !areSuggestedSubcategoriesUsed && venueOptions.length === 0
 
   return (
     <>
@@ -222,7 +221,7 @@ export const DetailsForm = ({
           </>
         )}
       </FormLayout.Section>
-      {areSuggestedCategoriesEnabled && !offer
+      {areSuggestedSubcategoriesUsed && !offer
         ? suggestedSubcategories.length > 0 && (
             <SuggestedSubcategories
               suggestedSubcategories={suggestedSubcategories}
