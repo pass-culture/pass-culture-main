@@ -1899,3 +1899,60 @@ class GetStocksListFiltersTest:
         assert stocks[0] == stock3
         assert stocks[1] == stock1
         assert stocks[2] == stock2
+
+
+@pytest.mark.usefixtures("db_session")
+class GetOfferPriceCategoriesFiltersTest:
+
+    def test_should_return_all_price_categories_if_no_id_at_provider_given(self):
+        offer = factories.OfferFactory()
+        price_category_1 = factories.PriceCategoryFactory(offer=offer)
+        price_category_2 = factories.PriceCategoryFactory(offer=offer)
+
+        # When
+        price_categories = repository.get_offer_price_categories(offer.id)
+
+        # Then
+        assert price_categories[0] == price_category_1
+        assert price_categories[1] == price_category_2
+
+    def test_should_return_all_price_categories_of_given_event(self):
+        offer = factories.OfferFactory()
+        price_category_1 = factories.PriceCategoryFactory(offer=offer)
+        price_category_2 = factories.PriceCategoryFactory(offer=offer)
+        offer2 = factories.OfferFactory()
+        factories.PriceCategoryFactory(offer=offer2)  # should not appear in result
+
+        # When
+        price_categories = repository.get_offer_price_categories(offer.id)
+
+        # Then
+        assert len(price_categories.all()) == 2
+        assert price_categories[0] == price_category_1
+        assert price_categories[1] == price_category_2
+
+    def test_should_filter_by_id_at_provider(self):
+        offer = factories.OfferFactory()
+        factories.PriceCategoryFactory(offer=offer, idAtProvider="GutenMorgen")
+        price_category_2 = factories.PriceCategoryFactory(offer=offer, idAtProvider="bonjour")
+        price_category_3 = factories.PriceCategoryFactory(offer=offer, idAtProvider="hello")
+
+        # When
+        price_categories = repository.get_offer_price_categories(offer.id, id_at_provider_list=["bonjour", "hello"])
+
+        # Then
+        assert len(price_categories.all()) == 2
+        assert price_categories[0] == price_category_2
+        assert price_categories[1] == price_category_3
+
+    def test_should_return_no_result(self):
+        offer = factories.OfferFactory()
+        factories.PriceCategoryFactory(offer=offer, idAtProvider="GutenMorgen")
+        factories.PriceCategoryFactory(offer=offer, idAtProvider="bonjour")
+        factories.PriceCategoryFactory(offer=offer, idAtProvider="hello")
+
+        # When
+        price_categories = repository.get_offer_price_categories(offer.id, id_at_provider_list=[])
+
+        # Then
+        assert len(price_categories.all()) == 0
