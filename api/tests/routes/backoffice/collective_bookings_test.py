@@ -368,6 +368,21 @@ class ListCollectiveBookingsTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert set(int(row["ID résa"]) for row in rows) == {collective_bookings[1].id, collective_bookings[2].id}
 
+    def test_list_bookings_with_event_date_before_1900(
+        self,
+        authenticated_client,
+        collective_bookings,
+    ):
+        with assert_num_queries(2):  # user_session + user
+            response = authenticated_client.get(
+                url_for(
+                    self.endpoint,
+                    event_from_date=datetime.date(1, 1, 1),
+                    event_to_date=None,
+                )
+            )
+            assert response.status_code == 400
+
     @pytest.mark.parametrize(
         "from_date, to_date, expected_offers_name",
         [
