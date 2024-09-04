@@ -230,6 +230,7 @@ jobs:
     uses: ./.github/workflows/dev_on_workflow_tests_pro_e2e.yml
     if: |
       always() &&
+      needs.test-pro.result &&
       needs.pcapi-init-job.outputs.api-changed == 'true' ||
       needs.pcapi-init-job.outputs.pro-changed == 'true'
     with:
