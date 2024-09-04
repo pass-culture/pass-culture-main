@@ -398,7 +398,6 @@ class UseCollectiveBookingTest(PublicAPIRestrictedEnvEndpointHelper):
         plain_api_key, provider = self.setup_provider()
         pending_booking = build_pending_booking(provider)
         auth_client = client.with_explicit_token(plain_api_key)
-
         error = {"code": "ONLY_CONFIRMED_BOOKING_CAN_BE_USED"}
         with assert_attribute_does_not_change(pending_booking, "status"):
             self.use_booking(auth_client, pending_booking.id, status_code=403, json_error=error)
@@ -450,6 +449,89 @@ class UseCollectiveBookingTest(PublicAPIRestrictedEnvEndpointHelper):
             self.use_booking(auth_client, confirmed_booking.id, status_code=500, json_error=error)
 
     def use_booking(self, client, booking_id, status_code, json_error=None):
+        self.assert_request_has_expected_result(
+            client,
+            url_params={"booking_id": booking_id},
+            expected_status_code=status_code,
+            expected_error_json=json_error,
+        )
+
+
+class ResetCollectiveBookingTest(PublicAPIRestrictedEnvEndpointHelper):
+    endpoint_url = "/v2/collective/adage_mock/bookings/{booking_id}/pending"
+    endpoint_method = "post"
+    default_path_params = {"booking_id": 1}
+
+    def test_reset_booking_not_linked_to_key(self, client):
+        plain_api_key, _ = self.setup_provider()
+        auth_client = client.with_explicit_token(plain_api_key)
+
+        booking = factories.CollectiveBookingFactory()
+        with assert_attribute_does_not_change(booking, "status"):
+            self.reset_booking(auth_client, booking.id, status_code=404)
+
+    def test_can_reset_pending_booking(self, client):
+        plain_api_key, provider = self.setup_provider()
+        pending_booking = build_pending_booking(provider)
+        auth_client = client.with_explicit_token(plain_api_key)
+        with assert_attribute_does_not_change(pending_booking, "status"):
+            expected_num_queries = 1  # 1. get api key
+            expected_num_queries += 1  # 2. get FF
+            expected_num_queries += 1  # 3. get collective booking (no update triggered since status does not change)
+
+            booking_id = pending_booking.id
+            with assert_num_queries(expected_num_queries):
+                self.reset_booking(auth_client, booking_id, status_code=204)
+
+    def test_can_reset_confirmed_booking(self, client):
+        plain_api_key, provider = self.setup_provider()
+        confirmed_booking = build_confirmed_booking(provider)
+        auth_client = client.with_explicit_token(plain_api_key)
+
+        with assert_attribute_value_changes_to(confirmed_booking, "status", models.CollectiveBookingStatus.PENDING):
+            expected_num_queries = 1  # 1. get api key
+            expected_num_queries += 1  # 2. get FF
+            expected_num_queries += 1  # 3. get collective booking
+            expected_num_queries += 1  # 4. update booking
+
+            booking_id = confirmed_booking.id
+            with assert_num_queries(expected_num_queries):
+                self.reset_booking(auth_client, booking_id, status_code=204)
+
+    def test_can_reset_cancelled_booking(self, client):
+        plain_api_key, provider = self.setup_provider()
+        cancelled_booking = build_cancelled_booking(provider)
+        auth_client = client.with_explicit_token(plain_api_key)
+
+        with assert_attribute_value_changes_to(cancelled_booking, "status", models.CollectiveBookingStatus.PENDING):
+            expected_num_queries = 1  # 1. get api key
+            expected_num_queries += 1  # 2. get FF
+            expected_num_queries += 1  # 3. get collective booking and its stock
+            expected_num_queries += 1  # 4. update booking
+
+            booking_id = cancelled_booking.id
+            with assert_num_queries(expected_num_queries):
+                self.reset_booking(auth_client, booking_id, status_code=204)
+
+    def test_cannot_reset_used_booking(self, client):
+        plain_api_key, provider = self.setup_provider()
+        used_booking = build_used_booking(provider)
+        auth_client = client.with_explicit_token(plain_api_key)
+
+        err = {"code": "CANNOT_SET_BACK_USED_BOOKING_TO_PENDING"}
+        with assert_attribute_does_not_change(used_booking, "status"):
+            self.reset_booking(auth_client, used_booking.id, status_code=403, json_error=err)
+
+    def test_cannot_reset_reimbursed_booking(self, client):
+        plain_api_key, provider = self.setup_provider()
+        reimbursed_booking = build_reimbursed_booking(provider)
+        auth_client = client.with_explicit_token(plain_api_key)
+
+        err = {"code": "CANNOT_SET_BACK_REIMBURSED_BOOKING_TO_PENDING"}
+        with assert_attribute_does_not_change(reimbursed_booking, "status"):
+            self.reset_booking(auth_client, reimbursed_booking.id, status_code=403, json_error=err)
+
+    def reset_booking(self, client, booking_id, status_code, json_error=None):
         self.assert_request_has_expected_result(
             client,
             url_params={"booking_id": booking_id},
