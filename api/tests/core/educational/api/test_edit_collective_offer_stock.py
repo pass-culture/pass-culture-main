@@ -521,3 +521,29 @@ class returnErrorTest:
         # Then
         stock = CollectiveStock.query.filter_by(id=stock_to_be_updated.id).one()
         assert stock.price == 1200
+
+    def test_edit_price_or_ticket_number_if_status_used(self):
+        initial_event_date = datetime.datetime.utcnow() + datetime.timedelta(days=10)
+        initial_booking_limit_date = datetime.datetime.utcnow() + datetime.timedelta(days=5)
+        booking = educational_factories.CollectiveBookingFactory(status=CollectiveBookingStatus.USED)
+        stock_to_be_updated = educational_factories.CollectiveStockFactory(
+            beginningDatetime=initial_event_date,
+            price=1200,
+            numberOfTickets=30,
+            bookingLimitDatetime=initial_booking_limit_date,
+            collectiveBookings=[booking],
+        )
+        new_stock_data = collective_stock_serialize.CollectiveStockEditionBodyModel(
+            totalPrice=1500,
+            numberOfTickets=35,
+        )
+
+        # When
+        with pytest.raises(exceptions.PriceRequesteCantBedHigherThanActualPrice):
+            educational_api_stock.edit_collective_stock(
+                stock=stock_to_be_updated, stock_data=new_stock_data.dict(exclude_unset=True)
+            )
+
+        # Then
+        stock = CollectiveStock.query.filter_by(id=stock_to_be_updated.id).one()
+        assert stock.price == 1200
