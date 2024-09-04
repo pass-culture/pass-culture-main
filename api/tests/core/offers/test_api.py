@@ -1143,6 +1143,18 @@ class CreateDraftOfferTest:
         assert offer.motorDisabilityCompliant == True
         assert offer.visualDisabilityCompliant == False
 
+    def test_create_draft_offer_with_withrawal_details_from_venue(self):
+        venue = offerers_factories.VenueFactory(withdrawalDetails="Details from my venue")
+
+        body = offers_schemas.PostDraftOfferBodyModel(
+            name="A pretty good offer",
+            subcategoryId=subcategories.SEANCE_CINE.id,
+            venueId=venue.id,
+        )
+        offer = api.create_draft_offer(body, venue=venue)
+
+        assert offer.withdrawalDetails == venue.withdrawalDetails
+
     def test_cannot_create_activation_offer(self):
         venue = offerers_factories.VenueFactory()
         body = offers_schemas.PostDraftOfferBodyModel(
