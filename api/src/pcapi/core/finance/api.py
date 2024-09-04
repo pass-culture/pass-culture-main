@@ -871,57 +871,6 @@ def generate_cashflows(cutoff: datetime.datetime) -> models.CashflowBatch:
     return batch
 
 
-def _get_bank_accounts_for_invoices(batch: models.CashflowBatch) -> list[int]:
-    booking_query = (
-        models.Pricing.query.join(models.Pricing.booking)
-        .join(bookings_models.Booking.stock)
-        .join(models.Pricing.event)
-        .join(models.Pricing.pricingPoint)
-        .join(
-            offerers_models.VenueBankAccountLink,
-            offerers_models.VenueBankAccountLink.venueId == models.Pricing.pricingPointId,
-        )
-        .join(offerers_models.VenueBankAccountLink.bankAccount)
-        .filter(
-            models.Pricing.status == models.PricingStatus.PROCESSED,
-            models.Pricing.valueDate < batch.cutoff,
-            models.BankAccount.status == models.BankAccountApplicationStatus.ACCEPTED,
-            # Even if a booking is marked as used prematurely, we should
-            # wait for the event to happen.
-            sa.or_(
-                offers_models.Stock.beginningDatetime.is_(None),
-                offers_models.Stock.beginningDatetime < batch.cutoff,
-                models.FinanceEvent.bookingFinanceIncidentId.is_not(None),
-            ),
-        )
-        .with_entities(models.BankAccount.id)
-    )
-
-    collective_booking_query = (
-        models.Pricing.query.join(models.Pricing.collectiveBooking)
-        .join(educational_models.CollectiveBooking.collectiveStock)
-        .join(models.Pricing.event)
-        .join(models.Pricing.pricingPoint)
-        .join(
-            offerers_models.VenueBankAccountLink,
-            offerers_models.VenueBankAccountLink.venueId == models.Pricing.pricingPointId,
-        )
-        .join(offerers_models.VenueBankAccountLink.bankAccount)
-        .filter(
-            models.Pricing.status == models.PricingStatus.PROCESSED,
-            models.Pricing.valueDate < batch.cutoff,
-            models.BankAccount.status == models.BankAccountApplicationStatus.ACCEPTED,
-            # Even if a booking is marked as used prematurely, we should
-            # wait for the event to happen.
-            educational_models.CollectiveStock.pricingDatetimeField() < batch.cutoff,
-        )
-        .with_entities(models.BankAccount.id)
-    )
-
-    bank_account_entities = booking_query.union(collective_booking_query).distinct().all()
-    return [bank_account_entity[0] for bank_account_entity in bank_account_entities]
-
-
 def _generate_cashflows(batch: models.CashflowBatch) -> None:
     """Given an existing CashflowBatch and corresponding cutoff, generate
     a new cashflow for each bank account for which there is money to transfer.
@@ -1621,7 +1570,7 @@ def _filter_invoiceable_cashflows(query: BaseQuery) -> BaseQuery:
     )
 
 
-def _mark_free_pricings_as_invoiced(batch: models.CashflowBatch, bank_account_id: int) -> None:
+def _mark_free_pricings_as_invoiced(batch: models.CashflowBatch) -> None:
     # Don't generate cashflows if ever all of the priced bookings are free → avoid creating empty invoices
     free_pricings = (
         models.Pricing.query.outerjoin(models.Pricing.booking)
@@ -1636,9 +1585,12 @@ def _mark_free_pricings_as_invoiced(batch: models.CashflowBatch, bank_account_id
         )
         .outerjoin(offerers_models.VenueBankAccountLink.bankAccount)
         .filter(
+            models.FinanceEvent.venueId == offerers_models.VenueBankAccountLink.venueId,
             models.Pricing.status == models.PricingStatus.PROCESSED,
             models.Pricing.valueDate < batch.cutoff,
-            models.BankAccount.id == bank_account_id,
+            # Bookings can now be priced even if BankAccount is not ACCEPTED,
+            # but to generate cashflows we definitely need it.
+            models.BankAccount.status == models.BankAccountApplicationStatus.ACCEPTED,
             # Even if a booking is marked as used prematurely, we should
             # wait for the event to happen.
             sa.or_(
@@ -1752,17 +1704,11 @@ def generate_debit_notes(batch: models.CashflowBatch) -> None:
     """Generate (and store) all invoices."""
 
     debit_note_rows = _get_cashflows_by_bank_accounts(batch, only_debit_notes=True)
-    bank_accounts_ids = _get_bank_accounts_for_invoices(batch)
-    bank_accounts_with_cashflows = {row.bank_account_id for row in debit_note_rows}
-
-    for bank_account_id in bank_accounts_ids:
-        if bank_account_id not in bank_accounts_with_cashflows:
-            _mark_free_pricings_as_invoiced(batch, bank_account_id)
+    _mark_free_pricings_as_invoiced(batch)
 
     for row in debit_note_rows:
         try:
             with transaction():
-                _mark_free_pricings_as_invoiced(batch, row.bank_account_id)
                 extra = {"bank_account_id": row.bank_account_id}
                 with log_elapsed(logger, "Generated and sent debit note", extra):
                     generate_and_store_invoice(
@@ -1809,17 +1755,11 @@ def _get_cashflows_by_bank_accounts(batch: models.CashflowBatch, only_debit_note
 def generate_invoices(batch: models.CashflowBatch) -> None:
     """Generate (and store) all invoices."""
     rows = _get_cashflows_by_bank_accounts(batch)
-    bank_accounts_ids = _get_bank_accounts_for_invoices(batch)
-    bank_accounts_with_cashflows = {row.bank_account_id for row in rows}
-
-    for bank_account_id in bank_accounts_ids:
-        if bank_account_id not in bank_accounts_with_cashflows:
-            _mark_free_pricings_as_invoiced(batch, bank_account_id)
+    _mark_free_pricings_as_invoiced(batch)
 
     for row in rows:
         try:
             with transaction():
-                _mark_free_pricings_as_invoiced(batch, row.bank_account_id)
                 extra = {"bank_account_id": row.bank_account_id}
                 with log_elapsed(logger, "Generated and sent invoice", extra):
                     generate_and_store_invoice(
