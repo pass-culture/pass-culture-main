@@ -2,8 +2,8 @@ from operator import itemgetter
 
 import pytest
 
+from pcapi.core import testing
 import pcapi.core.educational.factories as educational_factories
-import pcapi.core.offerers.factories as offerers_factories
 
 from tests.routes.public.helpers import PublicAPIEndpointBaseHelper
 
@@ -13,8 +13,11 @@ class CollectiveOffersGetEducationalDomainsTest(PublicAPIEndpointBaseHelper):
     endpoint_url = "/v2/collective/educational-domains"
     endpoint_method = "get"
 
+    num_queries = 1  # select api_key, offerer and provider
+    num_queries += 1  # select features
+    num_queries += 1  # select educational_domain
+
     def test_list_educational_domains(self, client):
-        # Given
         plain_api_key, _ = self.setup_provider()
 
         programs = educational_factories.NationalProgramFactory.create_batch(2)
@@ -22,11 +25,9 @@ class CollectiveOffersGetEducationalDomainsTest(PublicAPIEndpointBaseHelper):
         domain1 = educational_factories.EducationalDomainFactory(name="Arts numériques", nationalPrograms=programs)
         domain2 = educational_factories.EducationalDomainFactory(name="Cinéma, audiovisuel")
 
-        # When
-        response = client.with_explicit_token(plain_api_key).get(self.endpoint_url)
-
-        # Then
-        assert response.status_code == 200
+        with testing.assert_num_queries(self.num_queries):
+            response = client.with_explicit_token(plain_api_key).get(self.endpoint_url)
+            assert response.status_code == 200
 
         response_list = sorted(response.json, key=itemgetter("id"))
         domain1_programs = [{"id": p.id, "name": p.name} for p in programs]
@@ -36,23 +37,11 @@ class CollectiveOffersGetEducationalDomainsTest(PublicAPIEndpointBaseHelper):
         ]
 
     def test_list_educational_domains_empty(self, client):
-        # Given
         plain_api_key, _ = self.setup_provider()
 
-        # When
-        response = client.with_explicit_token(plain_api_key).get(self.endpoint_url)
+        client = client.with_explicit_token(plain_api_key)
+        with testing.assert_num_queries(self.num_queries):
+            response = client.get(self.endpoint_url)
+            assert response.status_code == 200
 
-        # Then
-        assert response.status_code == 200
         assert response.json == []
-
-    def test_list_educational_domains_user_auth_returns_401(self, client):
-        # Given
-        user_offerer = offerers_factories.UserOffererFactory()
-        offerers_factories.ApiKeyFactory(offerer=user_offerer.offerer)
-
-        # When
-        response = client.with_session_auth(user_offerer.user.email).get(self.endpoint_url)
-
-        # Then
-        assert response.status_code == 401

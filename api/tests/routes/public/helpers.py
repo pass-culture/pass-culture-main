@@ -3,6 +3,7 @@ import uuid
 
 import pytest
 
+from pcapi.core import testing
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
@@ -10,7 +11,6 @@ from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.providers import factories as providers_factories
 from pcapi.core.providers import models as providers_models
-from pcapi.core.testing import override_settings
 
 from tests.conftest import TestClient
 
@@ -55,10 +55,10 @@ class PublicAPIEndpointBaseHelper(abc.ABC):
 
         if self.default_path_params:
             url = url.format(**self.default_path_params)
+        with testing.assert_num_queries(0):
+            response = client_method(url)
+            assert response.status_code == 401
 
-        response = client_method(url)
-
-        assert response.status_code == 401
         assert response.json == {"auth": "API key required"}
 
     def _setup_api_key(self, offerer, provider=None) -> str:
@@ -132,7 +132,7 @@ class PublicAPIVenueEndpointHelper(PublicAPIEndpointBaseHelper):
 
 
 class PublicAPIRestrictedEnvEndpointHelper(PublicAPIEndpointBaseHelper):
-    @override_settings(IS_PROD=True)
+    @testing.override_settings(IS_PROD=True)
     def test_should_not_be_usable_from_production_env(self, client):
         plain_api_key, _ = self.setup_provider()
         authenticated_client = client.with_explicit_token(plain_api_key)

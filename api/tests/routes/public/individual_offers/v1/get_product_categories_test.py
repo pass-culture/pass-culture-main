@@ -1,5 +1,6 @@
 import pytest
 
+from pcapi.core import testing
 from pcapi.routes.public.individual_offers.v1.serialization import ALLOWED_PRODUCT_SUBCATEGORIES
 
 from tests.routes.public.helpers import PublicAPIEndpointBaseHelper
@@ -12,12 +13,16 @@ class GetProductCategoriesTest(PublicAPIEndpointBaseHelper):
     endpoint_url = "/public/offers/v1/products/categories"
     endpoint_method = "get"
 
+    num_queries = 1  # select api_key, offerer and provider
+    num_queries += 1  # select features
+
     def test_returns_all_selectable_categories(self, client):
         plain_api_key, _ = self.setup_provider()
 
-        response = client.with_explicit_token(plain_api_key).get(self.endpoint_url)
+        with testing.assert_num_queries(self.num_queries):
+            response = client.with_explicit_token(plain_api_key).get(self.endpoint_url)
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         assert set(subcategory["id"] for subcategory in response.json) == set(
             subcategory.id for subcategory in ALLOWED_PRODUCT_SUBCATEGORIES
         )
@@ -25,9 +30,10 @@ class GetProductCategoriesTest(PublicAPIEndpointBaseHelper):
     def test_category_serialization(self, client):
         plain_api_key, _ = self.setup_provider()
 
-        response = client.with_explicit_token(plain_api_key).get(self.endpoint_url)
+        with testing.assert_num_queries(self.num_queries):
+            response = client.with_explicit_token(plain_api_key).get(self.endpoint_url)
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         assert all(
             {"id", "conditionalFields", "locationType"} == set(category_response.keys())
             for category_response in response.json

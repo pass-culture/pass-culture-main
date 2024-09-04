@@ -19,6 +19,11 @@ class GetEventTest(PublicAPIVenueEndpointHelper):
     endpoint_method = "get"
     default_path_params = {"event_id": 1}
 
+    num_queries_with_error = 1  # retrieve API key
+    num_queries_with_error += 1  # retrieve offer
+    num_queries_with_error += 1  # retrieve feature_flags for api key validation
+    num_queries = num_queries_with_error + 1  # future_offer (a backref)
+
     def setup_base_resource(self, venue=None) -> offers_models.Offer:
         venue = venue or self.setup_venue()
         product = offers_factories.ProductFactory(thumbCount=1)
@@ -34,27 +39,32 @@ class GetEventTest(PublicAPIVenueEndpointHelper):
 
     def test_should_raise_404_because_has_no_access_to_venue(self, client: TestClient):
         plain_api_key, _ = self.setup_provider()
-        event_offer = self.setup_base_resource()
-        response = client.with_explicit_token(plain_api_key).get(self.endpoint_url.format(event_id=event_offer.id))
-        assert response.status_code == 404
+        event_offer_id = self.setup_base_resource().id
+
+        # 1. api_key
+        # 2. feature
+        # 3. offer
+        with testing.assert_num_queries(self.num_queries_with_error):
+            response = client.with_explicit_token(plain_api_key).get(self.endpoint_url.format(event_id=event_offer_id))
+            assert response.status_code == 404
 
     def test_should_raise_404_because_venue_provider_is_inactive(self, client: TestClient):
         plain_api_key, venue_provider = self.setup_inactive_venue_provider()
-        event_offer = self.setup_base_resource(venue_provider.venue)
-        response = client.with_explicit_token(plain_api_key).get(self.endpoint_url.format(event_id=event_offer.id))
-        assert response.status_code == 404
+        event_offer_id = self.setup_base_resource(venue_provider.venue).id
+
+        # 1. api_key
+        # 2. feature
+        # 3. offer
+        with testing.assert_num_queries(self.num_queries_with_error):
+            response = client.with_explicit_token(plain_api_key).get(self.endpoint_url.format(event_id=event_offer_id))
+            assert response.status_code == 404
 
     def test_get_event(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         event_offer = self.setup_base_resource(venue=venue_provider.venue)
         event_offer_id = event_offer.id
 
-        num_query = 1  # retrieve API key
-        num_query += 1  # retrieve offer
-        num_query += 1  # retrieve feature_flags for api key validation
-        num_query += 1  # future_offer (a backref)
-
-        with testing.assert_num_queries(num_query):
+        with testing.assert_num_queries(self.num_queries):
             response = client.with_explicit_token(plain_api_key).get(self.endpoint_url.format(event_id=event_offer_id))
 
         assert response.status_code == 200
@@ -98,12 +108,7 @@ class GetEventTest(PublicAPIVenueEndpointHelper):
             publicationDate=publication_date,
         )
 
-        num_query = 1  # retrieve API key
-        num_query += 1  # retrieve offer
-        num_query += 1  # retrieve feature_flags for api key validation
-        num_query += 1  # future_offer (a backref)
-
-        with testing.assert_num_queries(num_query):
+        with testing.assert_num_queries(self.num_queries):
             response = client.with_explicit_token(plain_api_key).get(self.endpoint_url.format(event_id=event_offer_id))
 
         assert response.status_code == 200
@@ -115,34 +120,38 @@ class GetEventTest(PublicAPIVenueEndpointHelper):
             venue=venue_provider.venue,
             subcategoryId=subcategories.DECOUVERTE_METIERS.id,
         )
-
-        response = client.with_explicit_token(plain_api_key).get(self.endpoint_url.format(event_id=event_offer.id))
+        event_offer_id = event_offer.id
+        with testing.assert_num_queries(self.num_queries):
+            response = client.with_explicit_token(plain_api_key).get(self.endpoint_url.format(event_id=event_offer_id))
 
         assert response.status_code == 200
         assert response.json["categoryRelatedFields"]["category"] == "DECOUVERTE_METIERS"
 
     def test_get_event_without_ticket(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
-        event_offer = offers_factories.EventOfferFactory(
+        event_offer_id = offers_factories.EventOfferFactory(
             subcategoryId=subcategories.CONCERT.id,
             venue=venue_provider.venue,
             withdrawalType=offers_models.WithdrawalTypeEnum.ON_SITE,
-        )
+        ).id
 
-        response = client.with_explicit_token(plain_api_key).get(self.endpoint_url.format(event_id=event_offer.id))
-        assert response.status_code == 200
+        with testing.assert_num_queries(self.num_queries):
+            response = client.with_explicit_token(plain_api_key).get(self.endpoint_url.format(event_id=event_offer_id))
+            assert response.status_code == 200
+
         assert response.json["hasTicket"] is False
 
     def test_get_music_offer_without_music_type(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
-        event_offer = offers_factories.EventOfferFactory(
+        event_offer_id = offers_factories.EventOfferFactory(
             subcategoryId=subcategories.CONCERT.id,
             extraData=None,
             venue=venue_provider.venue,
-        )
+        ).id
 
-        response = client.with_explicit_token(plain_api_key).get(self.endpoint_url.format(event_id=event_offer.id))
-        assert response.status_code == 200
+        with testing.assert_num_queries(self.num_queries):
+            response = client.with_explicit_token(plain_api_key).get(self.endpoint_url.format(event_id=event_offer_id))
+            assert response.status_code == 200
         assert response.json["categoryRelatedFields"] == {
             "author": None,
             "category": "CONCERT",
@@ -152,24 +161,26 @@ class GetEventTest(PublicAPIVenueEndpointHelper):
 
     def test_ticket_collection_in_app(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
-        event_offer = offers_factories.EventOfferFactory(
+        event_offer_id = offers_factories.EventOfferFactory(
             venue=venue_provider.venue,
             withdrawalType=offers_models.WithdrawalTypeEnum.IN_APP,
-        )
+        ).id
 
-        response = client.with_explicit_token(plain_api_key).get(self.endpoint_url.format(event_id=event_offer.id))
+        with testing.assert_num_queries(self.num_queries):
+            response = client.with_explicit_token(plain_api_key).get(self.endpoint_url.format(event_id=event_offer_id))
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         assert response.json["hasTicket"] == True
 
     def test_ticket_collection_no_ticket(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
-        event_offer = offers_factories.EventOfferFactory(
+        event_offer_id = offers_factories.EventOfferFactory(
             venue=venue_provider.venue,
             withdrawalType=offers_models.WithdrawalTypeEnum.NO_TICKET,
-        )
+        ).id
 
-        response = client.with_explicit_token(plain_api_key).get(self.endpoint_url.format(event_id=event_offer.id))
+        with testing.assert_num_queries(self.num_queries):
+            response = client.with_explicit_token(plain_api_key).get(self.endpoint_url.format(event_id=event_offer_id))
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         assert response.json["hasTicket"] == False

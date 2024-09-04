@@ -1079,7 +1079,11 @@ def get_educational_domains_from_ids(ids: typing.Iterable[int]) -> list[educatio
 
 
 def get_all_educational_domains_ordered_by_name() -> list[educational_models.EducationalDomain]:
-    return educational_models.EducationalDomain.query.order_by(educational_models.EducationalDomain.name).all()
+    return (
+        educational_models.EducationalDomain.query.order_by(educational_models.EducationalDomain.name)
+        .options(sa.orm.joinedload(educational_models.EducationalDomain.nationalPrograms))
+        .all()
+    )
 
 
 def get_all_educational_institutions(offset: int = 0, limit: int = 0) -> tuple[tuple, int]:

@@ -3,6 +3,7 @@ import datetime
 from dateutil.relativedelta import relativedelta
 import pytest
 
+from pcapi.core import testing
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.finance import utils as finance_utils
 from pcapi.core.offers import factories as offers_factories
@@ -38,30 +39,53 @@ class GetBookingByTokenTest(PublicAPIVenueEndpointHelper):
             user__postalCode="75001",
             stock=stock,
         )
+
         return offer, stock, booking
 
     def test_should_raise_404_because_has_no_access_to_venue(self, client: TestClient):
         plain_api_key, _ = self.setup_provider()
         _, _, booking = self.setup_base_resource()
-        response = client.with_explicit_token(plain_api_key).get(self.endpoint_url.format(token=booking.token))
-        assert response.status_code == 404
+        token = booking.token
+        num_queries = 1  # select api_key
+        num_queries += 1  # select features
+        num_queries += 1  # select booking
+        with testing.assert_num_queries(num_queries):
+            response = client.with_explicit_token(plain_api_key).get(self.endpoint_url.format(token=token))
+            assert response.status_code == 404
 
     def test_should_raise_404_because_venue_provider_is_inactive(self, client: TestClient):
         plain_api_key, venue_provider = self.setup_inactive_venue_provider()
         _, _, booking = self.setup_base_resource(venue=venue_provider.venue)
-        response = client.with_explicit_token(plain_api_key).get(self.endpoint_url.format(token=booking.token))
-        assert response.status_code == 404
+        token = booking.token
+        num_queries = 1  # select api_key
+        num_queries += 1  # select features
+        num_queries += 1  # select booking
+        with testing.assert_num_queries(num_queries):
+            response = client.with_explicit_token(plain_api_key).get(self.endpoint_url.format(token=token))
+            assert response.status_code == 404
 
     def test_should_raise_404_because_of_missing_token(self, client):
-        response = client.get("/public/bookings/v1/token/")
-        assert response.status_code == 404
+        with testing.assert_num_queries(0):
+            response = client.get("/public/bookings/v1/token/")
+            assert response.status_code == 404
 
     def test_key_has_rights_and_regular_product_offer(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         offer, stock, booking = self.setup_base_resource(venue=venue_provider.venue)
 
-        response = client.with_explicit_token(plain_api_key).get(self.endpoint_url.format(token=booking.token))
-        assert response.status_code == 200
+        token = booking.token
+        num_queries = 1  # select api_key
+        num_queries += 1  # select features
+        num_queries += 1  # select booking
+        num_queries += 1  # check pricing exists
+        num_queries += 1  # select stock
+        num_queries += 1  # select offer
+        num_queries += 1  # select user
+        num_queries += 1  # select venue
+        with testing.assert_num_queries(num_queries):
+            response = client.with_explicit_token(plain_api_key).get(self.endpoint_url.format(token=token))
+            assert response.status_code == 200
+
         assert response.json == {
             "confirmationDate": date_utils.format_into_utc_date(booking.cancellationLimitDate),
             "creationDate": date_utils.format_into_utc_date(booking.dateCreated),
@@ -104,10 +128,21 @@ class GetBookingByTokenTest(PublicAPIVenueEndpointHelper):
             user__postalCode="69100",
             stock=event_stock,
         )
+        booking_token = booking.token
+        num_queries = 1  # select api_key
+        num_queries += 1  # select features
+        num_queries += 1  # select booking
+        num_queries += 1  # check pricing exists
+        num_queries += 1  # select stock
+        num_queries += 1  # select offer
+        num_queries += 1  # select user
+        num_queries += 1  # select price_category
+        num_queries += 1  # select price_category_label
+        num_queries += 1  # select venue
+        with testing.assert_num_queries(num_queries):
+            response = client.with_explicit_token(plain_api_key).get(self.endpoint_url.format(token=booking_token))
+            assert response.status_code == 200
 
-        response = client.with_explicit_token(plain_api_key).get(self.endpoint_url.format(token=booking.token))
-
-        assert response.status_code == 200
         assert response.json == {
             "confirmationDate": date_utils.format_into_utc_date(booking.cancellationLimitDate),
             "creationDate": date_utils.format_into_utc_date(booking.dateCreated),
@@ -141,7 +176,16 @@ class GetBookingByTokenTest(PublicAPIVenueEndpointHelper):
         stock = offers_factories.StockFactory(offer=offer, beginningDatetime=next_week)
         booking = bookings_factories.BookingFactory(stock=stock)
 
-        response = client.with_explicit_token(plain_api_key).get(self.endpoint_url.format(token=booking.token))
+        booking_token = booking.token
+        num_queries = 1  # select api_key
+        num_queries += 1  # select features
+        num_queries += 1  # select booking
+        num_queries += 1  # check pricing exists
+        num_queries += 1  # select stock
+        num_queries += 1  # select venue
+        with testing.assert_num_queries(num_queries):
+            response = client.with_explicit_token(plain_api_key).get(self.endpoint_url.format(token=booking_token))
+            assert response.status_code == 403
 
         cancellation_limit_date = datetime.datetime.strftime(
             date_utils.utc_datetime_to_department_timezone(
@@ -153,32 +197,37 @@ class GetBookingByTokenTest(PublicAPIVenueEndpointHelper):
         assert response.json == {
             "booking": f"Vous pourrez valider cette contremarque à partir du {cancellation_limit_date}, une fois le délai d’annulation passé."
         }
-        assert response.status_code == 403
 
     def test_should_raise_403_when_booking_is_refunded(self, client):
-        # Given
         plain_api_key, venue_provider = self.setup_active_venue_provider()
 
         offer = offers_factories.ThingOfferFactory(venue=venue_provider.venue)
         stock = offers_factories.StockFactory(offer=offer)
-        booking = bookings_factories.ReimbursedBookingFactory(stock=stock)
+        booking_token = bookings_factories.ReimbursedBookingFactory(stock=stock).token
 
-        # When
-        response = client.with_explicit_token(plain_api_key).get(self.endpoint_url.format(token=booking.token))
+        num_queries = 1  # select api_key
+        num_queries += 1  # select features
+        num_queries += 1  # select booking
+        with testing.assert_num_queries(num_queries):
+            response = client.with_explicit_token(plain_api_key).get(self.endpoint_url.format(token=booking_token))
+            assert response.status_code == 403
 
-        # Then
-        assert response.status_code == 403
         assert response.json == {"payment": "This booking has already been reimbursed"}
 
     def test_should_raise_410_when_booking_is_already_validated(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         product_offer = offers_factories.ThingOfferFactory(venue=venue_provider.venue)
         product_stock = offers_factories.StockFactory(offer=product_offer)
-        booking = bookings_factories.UsedBookingFactory(stock=product_stock)
+        booking_token = bookings_factories.UsedBookingFactory(stock=product_stock).token
 
-        response = client.with_explicit_token(plain_api_key).get(self.endpoint_url.format(token=booking.token))
+        num_queries = 1  # select api_key
+        num_queries += 1  # select features
+        num_queries += 1  # select booking
+        num_queries += 1  # check pricing exists
+        with testing.assert_num_queries(num_queries):
+            response = client.with_explicit_token(plain_api_key).get(self.endpoint_url.format(token=booking_token))
+            assert response.status_code == 410
 
-        assert response.status_code == 410
         assert response.json == {"booking": "This booking has already been validated"}
 
     def test_should_raise_410_when_booking_is_cancelled(self, client):
@@ -186,8 +235,14 @@ class GetBookingByTokenTest(PublicAPIVenueEndpointHelper):
         product_offer = offers_factories.ThingOfferFactory(venue=venue_provider.venue)
         product_stock = offers_factories.StockFactory(offer=product_offer)
         booking = bookings_factories.CancelledBookingFactory(stock=product_stock)
+        booking_token = booking.token
 
-        response = client.with_explicit_token(plain_api_key).get(self.endpoint_url.format(token=booking.token))
+        num_queries = 1  # select api_key
+        num_queries += 1  # select features
+        num_queries += 1  # select booking
+        num_queries += 1  # check pricing exists
+        with testing.assert_num_queries(num_queries):
+            response = client.with_explicit_token(plain_api_key).get(self.endpoint_url.format(token=booking_token))
+            assert response.status_code == 410
 
-        assert response.status_code == 410
         assert response.json == {"booking": "This booking has been cancelled"}

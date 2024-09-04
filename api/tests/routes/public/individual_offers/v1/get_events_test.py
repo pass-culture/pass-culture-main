@@ -6,7 +6,6 @@ from pcapi.core import testing
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
-from pcapi.core.testing import assert_no_duplicated_queries
 
 from tests.routes.public.helpers import PublicAPIVenueEndpointHelper
 
@@ -16,30 +15,39 @@ class GetEventsTest(PublicAPIVenueEndpointHelper):
     endpoint_url = "/public/offers/v1/events"
     endpoint_method = "get"
 
+    num_queries_with_error = 1  # select api_key, offerer and provider
+    num_queries_with_error += 1  # select features
+    num_queries_with_error += 1  # check provider EXISTS
+    num_queries = num_queries_with_error + 1  # select offers
+
     def test_should_raise_404_because_has_no_access_to_venue(self, client):
         plain_api_key, _ = self.setup_provider()
-        venue = self.setup_venue()
-        response = client.with_explicit_token(plain_api_key).get("%s?venueId=%s" % (self.endpoint_url, venue.id))
-        assert response.status_code == 404
+        venue_id = self.setup_venue().id
+
+        with testing.assert_num_queries(self.num_queries_with_error):
+            response = client.with_explicit_token(plain_api_key).get("%s?venueId=%s" % (self.endpoint_url, venue_id))
+            assert response.status_code == 404
 
     def test_should_raise_404_because_venue_provider_is_inactive(self, client):
         plain_api_key, venue_provider = self.setup_inactive_venue_provider()
-        response = client.with_explicit_token(plain_api_key).get(
-            self.endpoint_url, params={"venueId": venue_provider.venueId}
-        )
-        assert response.status_code == 404
+        venue_id = venue_provider.venueId
+
+        with testing.assert_num_queries(self.num_queries_with_error):
+            response = client.with_explicit_token(plain_api_key).get(self.endpoint_url, params={"venueId": venue_id})
+            assert response.status_code == 404
 
     def test_get_first_page_old_behavior_when_permission_system_not_enforced(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         offers = offers_factories.EventOfferFactory.create_batch(6, venue=venue_provider.venue)
         offers_factories.ThingOfferFactory.create_batch(3, venue=venue_provider.venue)  # not returned
 
-        with testing.assert_no_duplicated_queries():
+        venue_id = venue_provider.venueId
+        with testing.assert_num_queries(self.num_queries):
             response = client.with_explicit_token(plain_api_key).get(
-                self.endpoint_url, params={"venueId": venue_provider.venueId, "limit": 5}
+                self.endpoint_url, params={"venueId": venue_id, "limit": 5}
             )
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         assert [event["id"] for event in response.json["events"]] == [offer.id for offer in offers[0:5]]
 
     def test_get_first_page(self, client):
@@ -47,17 +55,19 @@ class GetEventsTest(PublicAPIVenueEndpointHelper):
         offers = offers_factories.EventOfferFactory.create_batch(6, venue=venue_provider.venue)
         offers_factories.ThingOfferFactory.create_batch(3, venue=venue_provider.venue)  # not returned
 
-        with testing.assert_no_duplicated_queries():
+        venue_id = venue_provider.venueId
+        with testing.assert_num_queries(self.num_queries):
             response = client.with_explicit_token(plain_api_key).get(
-                self.endpoint_url, params={"venueId": venue_provider.venueId, "limit": 5}
+                self.endpoint_url, params={"venueId": venue_id, "limit": 5}
             )
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         assert [event["id"] for event in response.json["events"]] == [offer.id for offer in offers[0:5]]
 
     # This test should be removed when our database has consistant data
     def test_get_offers_with_missing_fields(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
+        venue_id = venue_provider.venueId
         offer = offers_factories.EventOfferFactory(
             venue=venue_provider.venue,
             subcategoryId=subcategories.CONCERT.id,
@@ -74,15 +84,17 @@ class GetEventsTest(PublicAPIVenueEndpointHelper):
             withdrawalType=offers_models.WithdrawalTypeEnum.ON_SITE,
         )
 
-        response = client.with_explicit_token(plain_api_key).get(
-            self.endpoint_url, params={"venueId": venue_provider.venueId, "limit": 5}
-        )
+        with testing.assert_num_queries(self.num_queries):
+            response = client.with_explicit_token(plain_api_key).get(
+                self.endpoint_url, params={"venueId": venue_id, "limit": 5}
+            )
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         assert len(response.json["events"]) == 2
 
     def test_get_events_without_sub_types(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
+        venue_id = venue_provider.venueId
         offers_factories.EventOfferFactory(
             subcategoryId=subcategories.CONCERT.id,
             venue=venue_provider.venue,
@@ -93,10 +105,13 @@ class GetEventsTest(PublicAPIVenueEndpointHelper):
             venue=venue_provider.venue,
             extraData={"showType": "800"},
         )
-        response = client.with_explicit_token(plain_api_key).get(
-            self.endpoint_url, params={"venueId": venue_provider.venueId, "limit": 5}
-        )
-        assert response.status_code == 200
+
+        with testing.assert_num_queries(self.num_queries):
+            response = client.with_explicit_token(plain_api_key).get(
+                self.endpoint_url, params={"venueId": venue_id, "limit": 5}
+            )
+            assert response.status_code == 200
+
         assert len(response.json["events"]) == 2
 
     def test_get_events_using_ids_at_provider(self, client):
@@ -118,15 +133,16 @@ class GetEventsTest(PublicAPIVenueEndpointHelper):
             idAtProvider=id_at_provider_3,
         )
 
-        with assert_no_duplicated_queries():
+        venue_id = venue_provider.venueId
+        with testing.assert_num_queries(self.num_queries):
             response = client.with_explicit_token(plain_api_key).get(
                 self.endpoint_url,
                 params={
-                    "venueId": venue_provider.venueId,
+                    "venueId": venue_id,
                     "limit": 5,
                     "idsAtProvider": f"{id_at_provider_1},{id_at_provider_2}",
                 },
             )
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         assert [event["id"] for event in response.json["events"]] == [event_1.id, event_2.id]

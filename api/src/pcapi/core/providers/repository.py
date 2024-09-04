@@ -194,7 +194,12 @@ def is_cinema_external_ticket_applicable(offer: offers_models.Offer) -> bool:
 
 
 def get_providers_venues(provider_id: int) -> BaseQuery:
-    return Venue.query.join(models.VenueProvider).filter(models.VenueProvider.providerId == provider_id)
+    return (
+        Venue.query.join(models.VenueProvider)
+        .outerjoin(models.VenueProvider.externalUrls)
+        .options(sqla_orm.contains_eager(Venue.venueProviders).contains_eager(models.VenueProvider.externalUrls))
+        .filter(models.VenueProvider.providerId == provider_id)
+    )
 
 
 def _get_future_provider_events_requiring_a_ticketing_system_query(

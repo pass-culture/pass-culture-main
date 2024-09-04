@@ -18,32 +18,40 @@ class GetProductTest(PublicAPIVenueEndpointHelper):
     endpoint_method = "get"
     default_path_params = {"product_id": 1}
 
+    num_queries = 1  # select api_key, offerer and provider
+    num_queries += 1  # select features
+    num_queries += 1  # select offers
+
     def test_should_raise_404_because_has_no_access_to_venue(self, client):
         plain_api_key, _ = self.setup_provider()
         venue = self.setup_venue()
-        product_offer = offers_factories.ThingOfferFactory(
+        product_offer_id = offers_factories.ThingOfferFactory(
             venue=venue,
             description="Un livre de contrepèterie",
             name="Vieux motard que jamais",
             idAtProvider="provider_id_at_provider",
-        )
+        ).id
 
-        response = client.with_explicit_token(plain_api_key).get(self.endpoint_url.format(product_id=product_offer.id))
-
-        assert response.status_code == 404
+        with testing.assert_num_queries(self.num_queries):
+            response = client.with_explicit_token(plain_api_key).get(
+                self.endpoint_url.format(product_id=product_offer_id)
+            )
+            assert response.status_code == 404
 
     def test_should_raise_404_because_venue_provider_is_inactive(self, client):
         plain_api_key, venue_provider = self.setup_inactive_venue_provider()
-        product_offer = offers_factories.ThingOfferFactory(
+        product_offer_id = offers_factories.ThingOfferFactory(
             venue=venue_provider.venue,
             description="Un livre de contrepèterie",
             name="Vieux motard que jamais",
             idAtProvider="provider_id_at_provider",
-        )
+        ).id
 
-        response = client.with_explicit_token(plain_api_key).get(self.endpoint_url.format(product_id=product_offer.id))
-
-        assert response.status_code == 404
+        with testing.assert_num_queries(self.num_queries):
+            response = client.with_explicit_token(plain_api_key).get(
+                self.endpoint_url.format(product_id=product_offer_id)
+            )
+            assert response.status_code == 404
 
     def test_product_without_stock(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
@@ -54,10 +62,14 @@ class GetProductTest(PublicAPIVenueEndpointHelper):
             name="Vieux motard que jamais",
             idAtProvider="provider_id_at_provider",
         )
+        product_offer_id = product_offer.id
 
-        response = client.with_explicit_token(plain_api_key).get(self.endpoint_url.format(product_id=product_offer.id))
+        with testing.assert_num_queries(self.num_queries):
+            response = client.with_explicit_token(plain_api_key).get(
+                self.endpoint_url.format(product_id=product_offer_id)
+            )
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         assert response.json == {
             "bookingContact": None,
             "bookingEmail": None,
@@ -87,12 +99,16 @@ class GetProductTest(PublicAPIVenueEndpointHelper):
         product_offer = offers_factories.ThingOfferFactory(
             venue=venue, subcategoryId=subcategories.LIVRE_PAPIER.id, extraData=None
         )
+        product_offer_id = product_offer.id
         # This overpriced stock can be removed once all stocks have a price under 300 €
         offers_factories.StockFactory(offer=product_offer, price=decimal.Decimal("400.12"))
 
-        response = client.with_explicit_token(plain_api_key).get(self.endpoint_url.format(product_id=product_offer.id))
+        with testing.assert_num_queries(self.num_queries):
+            response = client.with_explicit_token(plain_api_key).get(
+                self.endpoint_url.format(product_id=product_offer_id)
+            )
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         assert response.json["categoryRelatedFields"] == {
             "author": None,
             "category": "LIVRE_PAPIER",
@@ -103,14 +119,17 @@ class GetProductTest(PublicAPIVenueEndpointHelper):
     def test_product_with_not_selectable_category_can_be_retrieved(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         venue = venue_provider.venue
-        product_offer = offers_factories.ThingOfferFactory(
+        product_offer_id = offers_factories.ThingOfferFactory(
             venue=venue,
             subcategoryId=subcategories.ABO_LUDOTHEQUE.id,
-        )
+        ).id
 
-        response = client.with_explicit_token(plain_api_key).get(self.endpoint_url.format(product_id=product_offer.id))
+        with testing.assert_num_queries(self.num_queries):
+            response = client.with_explicit_token(plain_api_key).get(
+                self.endpoint_url.format(product_id=product_offer_id)
+            )
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         assert response.json["categoryRelatedFields"] == {"category": "ABO_LUDOTHEQUE"}
 
     def test_product_with_stock_and_image(self, client):
@@ -125,11 +144,7 @@ class GetProductTest(PublicAPIVenueEndpointHelper):
         mediation = offers_factories.MediationFactory(offer=product_offer, credit="Ph. Oto")
         product_offer_id = product_offer.id
 
-        num_query = 1  # retrieve API key
-        num_query += 1  # retrieve offer
-        num_query += 1  # retrieve feature_flags for api key validation
-
-        with testing.assert_num_queries(num_query):
+        with testing.assert_num_queries(self.num_queries):
             response = client.with_explicit_token(plain_api_key).get(f"/public/offers/v1/products/{product_offer_id}")
 
         assert response.status_code == 200
@@ -148,9 +163,9 @@ class GetProductTest(PublicAPIVenueEndpointHelper):
     def test_404_when_requesting_an_event(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         venue = venue_provider.venue
-        event_offer = offers_factories.EventOfferFactory(venue=venue)
+        event_offer_id = offers_factories.EventOfferFactory(venue=venue).id
 
-        response = client.with_explicit_token(plain_api_key).get(f"/public/offers/v1/products/{event_offer.id}")
-
-        assert response.status_code == 404
+        with testing.assert_num_queries(self.num_queries):
+            response = client.with_explicit_token(plain_api_key).get(f"/public/offers/v1/products/{event_offer_id}")
+            assert response.status_code == 404
         assert response.json == {"product_id": ["The product offer could not be found"]}

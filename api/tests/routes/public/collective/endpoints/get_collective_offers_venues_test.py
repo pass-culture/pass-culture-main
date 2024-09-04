@@ -1,10 +1,10 @@
 from operator import itemgetter
 
-from flask import url_for
 import pytest
 
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.providers.factories as providers_factories
+from pcapi.core.testing import assert_num_queries
 from pcapi.utils.date import format_into_utc_date
 
 
@@ -12,8 +12,11 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 class CollectiveOffersGetVenuesTest:
+    num_queries = 1  # select api_key, offerer and provider
+    num_queries += 1  # select features
+    num_queries += 1  # select venue
+
     def test_list_venues(self, client):
-        # Given
         provider = providers_factories.ProviderFactory()
         venue1 = providers_factories.VenueProviderFactory(provider=provider).venue
         venue2 = providers_factories.VenueProviderFactory(provider=provider).venue
@@ -21,13 +24,9 @@ class CollectiveOffersGetVenuesTest:
 
         offerers_factories.VenueFactory()  # excluded from results
 
-        # When
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-            url_for("public_api.list_venues")
-        )
-
-        # Then
-        assert response.status_code == 200
+        with assert_num_queries(self.num_queries):
+            response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get("/v2/collective/venues")
+            assert response.status_code == 200
 
         response_list = sorted(response.json, key=itemgetter("id"))
         assert response_list == [
@@ -64,27 +63,27 @@ class CollectiveOffersGetVenuesTest:
 
         offerers_factories.VenueFactory()  # excluded from results
 
-        # When
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-            url_for("public_api.list_venues")
-        )
+        with assert_num_queries(self.num_queries):
+            response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get("/v2/collective/venues")
+            assert response.status_code == 200
 
-        # Then
-        assert response.status_code == 200
         assert response.json == []
 
     def test_list_venues_anonymous_returns_401(self, client):
-        # Given
         offerers_factories.VenueFactory()
 
-        # When
-        response = client.get(url_for("public_api.list_venues"))
-
-        # Then
-        assert response.status_code == 401
+        with assert_num_queries(0):
+            response = client.get("/v2/collective/venues")
+            assert response.status_code == 401
 
 
 class GetOfferersVenuesTest:
+    num_queries = 1  # select api_key, offerer and provider
+    num_queries += 1  # select features
+    num_queries += 1  # select offerer
+    num_queries += 1  # select provider
+    num_queries += 1  # select venue_provider_external_urls
+
     def test_get_offerers_venues(self, client):
         provider = providers_factories.ProviderFactory()
         venue = providers_factories.VenueProviderFactory(provider=provider).venue
@@ -92,11 +91,11 @@ class GetOfferersVenuesTest:
 
         offerers_factories.VenueFactory()  # excluded from results
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-            url_for("public_api.get_offerer_venues")
-        )
-
-        assert response.status_code == 200
+        with assert_num_queries(self.num_queries):
+            response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
+                "/public/offers/v1/offerer_venues"
+            )
+            assert response.status_code == 200
 
         offerer = venue.managingOfferer
         assert response.json == [
@@ -145,11 +144,11 @@ class GetOfferersVenuesTest:
 
         providers_factories.VenueProviderFactory(provider=provider)  # excluded
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-            url_for("public_api.get_offerer_venues", siren=siren)
-        )
-
-        assert response.status_code == 200
+        with assert_num_queries(self.num_queries):
+            response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
+                "/public/offers/v1/offerer_venues?siren=123456789"
+            )
+            assert response.status_code == 200
 
         assert len(response.json) == 1
         assert response.json[0]["offerer"]["siren"] == siren
@@ -158,5 +157,6 @@ class GetOfferersVenuesTest:
         assert response.json[0]["venues"][0]["id"] == venue.id
 
     def test_unauthenticated_client(self, client):
-        response = client.get(url_for("public_api.get_offerer_venues", siren="123456789"))
-        assert response.status_code == 401
+        with assert_num_queries(0):
+            response = client.get("/public/offers/v1/offerer_venues?siren=123456789")
+            assert response.status_code == 401

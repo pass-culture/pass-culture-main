@@ -2,6 +2,7 @@ import datetime
 
 import pytest
 
+from pcapi.core import testing
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.providers import factories as providers_factories
@@ -77,8 +78,19 @@ class GetOffererVenuesTest(PublicAPIEndpointBaseHelper):
             other_physical_venue,
         ) = self.create_multiple_venue_providers()
 
-        response = client.with_explicit_token(plain_api_key).get(self.endpoint_url)
-        assert response.status_code == 200
+        num_queries = 1  # select api_key, offerer and provider
+        num_queries += 1  # select features
+        num_queries += 1  # select offerer
+        num_queries += 1  # check provider exists
+        num_queries += 1  # select venue_provider_external_urls
+        num_queries += 1  # check provider exists
+        num_queries += 1  # select venue_provider_external_urls
+        num_queries += 1  # check provider exists
+        num_queries += 1  # select venue_provider_external_urls
+        with testing.assert_num_queries(num_queries):
+            response = client.with_explicit_token(plain_api_key).get(self.endpoint_url)
+            assert response.status_code == 200
+
         assert len(response.json) == 2
         assert response.json[0] == {
             "offerer": {
@@ -173,8 +185,13 @@ class GetOffererVenuesTest(PublicAPIEndpointBaseHelper):
         venue = self.setup_venue()
         providers_factories.VenueProviderFactory(venue=venue, provider=provider, isActive=False)
 
-        response = client.with_explicit_token(plain_api_key).get(self.endpoint_url)
-        assert response == 200
+        num_queries = 1  # select api_key, offerer and provider
+        num_queries += 1  # select features
+        num_queries += 1  # select offerer
+        with testing.assert_num_queries(num_queries):
+            response = client.with_explicit_token(plain_api_key).get(self.endpoint_url)
+            assert response.status_code == 200
+
         assert response.json == []
 
     def test_get_filtered_offerer_venues(self, client):
@@ -186,12 +203,22 @@ class GetOffererVenuesTest(PublicAPIEndpointBaseHelper):
             _,
             _,
         ) = self.create_multiple_venue_providers()
+        offerer_with_two_venues_siren = offerer_with_two_venues.siren
 
-        response = client.with_explicit_token(plain_api_key).get(
-            self.endpoint_url,
-            params={"siren": offerer_with_two_venues.siren},
-        )
-        assert response == 200
+        num_queries = 1  # select api_key, offerer and provider
+        num_queries += 1  # select features
+        num_queries += 1  # select offerer
+        num_queries += 1  # check provider exists
+        num_queries += 1  # select venue_provider_external_urls
+        num_queries += 1  # check provider exists
+        num_queries += 1  # select venue_provider_external_urls
+        with testing.assert_num_queries(num_queries):
+            response = client.with_explicit_token(plain_api_key).get(
+                self.endpoint_url,
+                params={"siren": offerer_with_two_venues_siren},
+            )
+            assert response.status_code == 200
+
         json_dict = response.json
         assert len(json_dict) == 1
         assert json_dict[0]["offerer"]["siren"] == offerer_with_two_venues.siren
@@ -199,19 +226,34 @@ class GetOffererVenuesTest(PublicAPIEndpointBaseHelper):
 
     def test_get_filtered_offerer_venues_with_siren_more_than_9_characters(self, client: TestClient):
         plain_api_key, _ = self.setup_provider()
-        response = client.with_explicit_token(plain_api_key).get(self.endpoint_url, params={"siren": "1234567890"})
-        assert response == 400
+
+        num_queries = 1  # select api_key, offerer and provider
+        num_queries += 1  # select features
+        with testing.assert_num_queries(num_queries):
+            response = client.with_explicit_token(plain_api_key).get(self.endpoint_url, params={"siren": "1234567890"})
+            assert response == 400
+
         assert response.json == {"siren": ['string does not match regex "^\\d{9}$"']}
 
     def test_get_filtered_offerer_venues_with_siren_less_than_9_characters(self, client: TestClient):
         plain_api_key, _ = self.setup_provider()
-        response = client.with_explicit_token(plain_api_key).get(self.endpoint_url, params={"siren": "1234890"})
-        assert response == 400
+
+        num_queries = 1  # select api_key, offerer and provider
+        num_queries += 1  # select features
+        with testing.assert_num_queries(num_queries):
+            response = client.with_explicit_token(plain_api_key).get(self.endpoint_url, params={"siren": "1234890"})
+            assert response == 400
+
         assert response.json == {"siren": ['string does not match regex "^\\d{9}$"']}
 
     def test_when_no_venues(self, client):
         plain_api_key, _ = self.setup_provider()
 
-        response = client.with_explicit_token(plain_api_key).get(self.endpoint_url)
-        assert response == 200
+        num_queries = 1  # select api_key, offerer and provider
+        num_queries += 1  # select features
+        num_queries += 1  # select offerer
+        with testing.assert_num_queries(num_queries):
+            response = client.with_explicit_token(plain_api_key).get(self.endpoint_url)
+            assert response.status_code == 200
+
         assert response.json == []
