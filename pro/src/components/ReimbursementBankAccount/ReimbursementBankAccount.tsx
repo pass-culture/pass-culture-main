@@ -109,7 +109,10 @@ export const ReimbursementBankAccount = ({
           </ButtonLink>
         </div>
       ) : (
-        <div className={styles['linked-venues-section']}>
+        <div
+          className={styles['linked-venues-section']}
+          data-testid="reimbursement-bank-account-linked-venues"
+        >
           <div className={styles['linked-venues-section-title']}>
             Lieu(x) rattaché(s) à ce compte bancaire
             {hasWarning && managedVenues.length > 0 && (

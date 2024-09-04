@@ -17,3 +17,12 @@ Feature: Financial Management - messages, links to external help page, reimburse
     Then I can see the reimbursement details
   # Scenario: I can download accounting receipt as pdf
   #   Then I can download accounting receipt as pdf
+
+    Scenario: Automatic link venue with bank account
+    Given I am logged in with account 2
+    And I go to the "Gestion financière" page
+    And I go to "Informations bancaires" view
+    When I remove "Lieu avec justificatif à 0€" venue from my bank account
+    Then no venue should be linked to my account
+    When I add "Lieu avec justificatif à 0€" venue to my bank account
+    Then "Lieu avec justificatif à 0€" venue should be linked to my account
