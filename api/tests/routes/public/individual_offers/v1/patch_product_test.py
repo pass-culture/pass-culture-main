@@ -1,6 +1,5 @@
 import datetime
 
-from flask import url_for
 import pytest
 
 from pcapi import settings
@@ -375,13 +374,13 @@ class PatchProductTest(PublicAPIVenueEndpointHelper, ProductEndpointHelper):
         # 7. reload offer and related data (before serialization)
         with assert_num_queries(7):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
-                url_for("public_api.edit_product"),
+                "/public/offers/v1/products",
                 json={"offerId": offer_id, "name": new_name, "description": new_desc},
             )
 
             assert response.status_code == 200
-            assert response.json["name"] == new_name
-            assert response.json["description"] == new_desc
+        assert response.json["name"] == new_name
+        assert response.json["description"] == new_desc
 
         db.session.refresh(product_offer)
         assert product_offer.name == new_name

@@ -11,41 +11,52 @@ class GetProductsTest(PublicAPIVenueEndpointHelper):
     endpoint_url = "/public/offers/v1/products"
     endpoint_method = "get"
 
+    num_queries_400 = 1  # select api_key, offerer and provider
+    num_queries_400 += 1  # select features
+    num_queries_404 = num_queries_400 + 1  # check venue_provider exists
+    num_queries_success = num_queries_404 + 1  # select offer
+
     def test_should_raise_404_because_has_no_access_to_venue(self, client):
         plain_api_key, _ = self.setup_provider()
-        venue = self.setup_venue()
-        response = client.with_explicit_token(plain_api_key).get("%s?venueId=%s" % (self.endpoint_url, venue.id))
-        assert response.status_code == 404
+        venue_id = self.setup_venue().id
+
+        with testing.assert_num_queries(self.num_queries_404):
+            response = client.with_explicit_token(plain_api_key).get("%s?venueId=%s" % (self.endpoint_url, venue_id))
+            assert response.status_code == 404
 
     def test_should_raise_404_because_venue_provider_is_inactive(self, client):
         plain_api_key, venue_provider = self.setup_inactive_venue_provider()
-        response = client.with_explicit_token(plain_api_key).get(
-            "%s?venueId=%s" % (self.endpoint_url, venue_provider.venueId)
-        )
-        assert response.status_code == 404
+        venue_id = venue_provider.venueId
+
+        with testing.assert_num_queries(self.num_queries_404):
+            response = client.with_explicit_token(plain_api_key).get("%s?venueId=%s" % (self.endpoint_url, venue_id))
+            assert response.status_code == 404
 
     def test_get_first_page(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         offers = offers_factories.ThingOfferFactory.create_batch(12, venue=venue_provider.venue)
 
-        with testing.assert_no_duplicated_queries():
+        venue_id = venue_provider.venueId
+        with testing.assert_num_queries(self.num_queries_success):
             response = client.with_explicit_token(plain_api_key).get(
-                f"/public/offers/v1/products?venueId={venue_provider.venueId}&limit=5"
+                f"/public/offers/v1/products?venueId={venue_id}&limit=5"
             )
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         assert [product["id"] for product in response.json["products"]] == [offer.id for offer in offers[0:5]]
 
     def test_get_last_page(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         offers = offers_factories.ThingOfferFactory.create_batch(12, venue=venue_provider.venue)
 
-        with testing.assert_no_duplicated_queries():
+        venue_id = venue_provider.venueId
+        first_index = offers[10].id
+        with testing.assert_num_queries(self.num_queries_success):
             response = client.with_explicit_token(plain_api_key).get(
-                f"/public/offers/v1/products?venueId={venue_provider.venueId}&limit=5&firstIndex={int(offers[10].id)}"
+                f"/public/offers/v1/products?venueId={venue_id}&limit=5&firstIndex={first_index}"
             )
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         assert [product["id"] for product in response.json["products"]] == [offer.id for offer in offers[10:12]]
 
     def test_get_product_using_ids_at_provider(self, client):
@@ -58,12 +69,13 @@ class GetProductsTest(PublicAPIVenueEndpointHelper):
         offer_2 = offers_factories.OfferFactory(idAtProvider=id_at_provider_2, venue=venue_provider.venue)
         offers_factories.OfferFactory(idAtProvider=id_at_provider_3, venue=venue_provider.venue)
 
-        with testing.assert_no_duplicated_queries():
+        venue_id = venue_provider.venueId
+        with testing.assert_num_queries(self.num_queries_success):
             response = client.with_explicit_token(plain_api_key).get(
-                f"/public/offers/v1/products?venueId={venue_provider.venueId}&limit=5&idsAtProvider={id_at_provider_1},{id_at_provider_2}"
+                f"/public/offers/v1/products?venueId={venue_id}&limit=5&idsAtProvider={id_at_provider_1},{id_at_provider_2}"
             )
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         assert [product["id"] for product in response.json["products"]] == [offer_1.id, offer_2.id]
 
     def test_should_return_a_200_event_if_the_offer_name_is_longer_than_90_signs_long(self, client):
@@ -72,34 +84,34 @@ class GetProductsTest(PublicAPIVenueEndpointHelper):
             "Bébé, apprends-moi à devenir ton parent : naissance, sommeil, attachement, pleurs, développement"
         )
         offers_factories.ThingOfferFactory(venue=venue_provider.venue, name=name_more_than_90_signs_long)
+        venue_id = venue_provider.venueId
 
-        with testing.assert_no_duplicated_queries():
-            response = client.with_explicit_token(plain_api_key).get(
-                f"/public/offers/v1/products?venueId={venue_provider.venueId}"
-            )
+        with testing.assert_num_queries(self.num_queries_success):
+            response = client.with_explicit_token(plain_api_key).get(f"/public/offers/v1/products?venueId={venue_id}")
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         assert response.json["products"][0]["name"] == name_more_than_90_signs_long
 
     def test_404_when_the_page_is_too_high(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
 
-        with testing.assert_no_duplicated_queries():
+        venue_id = venue_provider.venueId
+        with testing.assert_num_queries(self.num_queries_success):
             response = client.with_explicit_token(plain_api_key).get(
-                f"/public/offers/v1/products?venueId={venue_provider.venueId}&limit=5&firstIndex=1"
+                f"/public/offers/v1/products?venueId={venue_id}&limit=5&firstIndex=1"
             )
-        assert response.status_code == 200
+            assert response.status_code == 200
         assert response.json == {"products": []}
 
     def test_200_for_first_page_if_no_items(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
-
-        with testing.assert_no_duplicated_queries():
+        venue_id = venue_provider.venueId
+        with testing.assert_num_queries(self.num_queries_success):
             response = client.with_explicit_token(plain_api_key).get(
-                f"/public/offers/v1/products?venueId={venue_provider.venueId}&limit=5"
+                f"/public/offers/v1/products?venueId={venue_id}&limit=5"
             )
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         assert response.json == {
             "products": [],
         }
@@ -107,12 +119,13 @@ class GetProductsTest(PublicAPIVenueEndpointHelper):
     def test_400_when_limit_is_too_high(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
 
-        with testing.assert_no_duplicated_queries():
+        venue_id = venue_provider.venueId
+        with testing.assert_num_queries(self.num_queries_400):
             response = client.with_explicit_token(plain_api_key).get(
-                f"/public/offers/v1/products?venueId={venue_provider.venueId}&limit=51"
+                f"/public/offers/v1/products?venueId={venue_id}&limit=51"
             )
+            assert response.status_code == 400
 
-        assert response.status_code == 400
         assert response.json == {"limit": ["ensure this value is less than or equal to 50"]}
 
     def test_get_filtered_venue_offer(self, client):
@@ -121,19 +134,19 @@ class GetProductsTest(PublicAPIVenueEndpointHelper):
         offers_factories.ThingOfferFactory(
             venue__managingOfferer=venue_provider.venue.managingOfferer
         )  # offer attached to other venue
+        venue_id = venue_provider.venueId
 
-        with testing.assert_no_duplicated_queries():
-            response = client.with_explicit_token(plain_api_key).get(
-                f"/public/offers/v1/products?venueId={venue_provider.venueId}"
-            )
+        with testing.assert_num_queries(self.num_queries_success):
+            response = client.with_explicit_token(plain_api_key).get(f"/public/offers/v1/products?venueId={venue_id}")
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         assert [product["id"] for product in response.json["products"]] == [offer.id]
 
     def test_get_offer_with_more_than_1000_description(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
+        venue_id = venue_provider.venueId
         offers_factories.ThingOfferFactory(venue=venue_provider.venue, description="a" * 1001)
-        response = client.with_explicit_token(plain_api_key).get(
-            f"/public/offers/v1/products?venueId={venue_provider.venueId}"
-        )
-        assert response.status_code == 200
+
+        with testing.assert_num_queries(self.num_queries_success):
+            response = client.with_explicit_token(plain_api_key).get(f"/public/offers/v1/products?venueId={venue_id}")
+            assert response.status_code == 200

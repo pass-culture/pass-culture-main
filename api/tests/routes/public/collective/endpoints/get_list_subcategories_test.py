@@ -1,22 +1,23 @@
 import pytest
 
+from pcapi.core import testing
 import pcapi.core.offerers.factories as offerers_factories
 
 
 @pytest.mark.usefixtures("db_session")
 class CollectiveOffersGetCategoriesTest:
+    num_queries = 1  # select api_key, offerer and provider
+    num_queries += 1  # select features
+
     def test_list_sub_categories(self, client):
-        # Given
         offerer = offerers_factories.OffererFactory()
         offerers_factories.ApiKeyFactory(offerer=offerer)
 
-        # When
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-            "/v2/collective/subcategories"
-        )
-
-        # Then
-        assert response.status_code == 200
+        with testing.assert_num_queries(2):
+            response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
+                "/v2/collective/subcategories"
+            )
+            assert response.status_code == 200
 
         assert response.json == [
             {"id": "CINE_PLEIN_AIR", "label": "Cinéma plein air", "category": "Cinéma", "categoryId": "CINEMA"},
@@ -119,21 +120,16 @@ class CollectiveOffersGetCategoriesTest:
         ]
 
     def test_list_sub_categories_user_auth_returns_401(self, client):
-        # Given
         user_offerer = offerers_factories.UserOffererFactory()
+        email_user = user_offerer.user.email
         offerers_factories.ApiKeyFactory(offerer=user_offerer.offerer)
 
-        # When
-        response = client.with_session_auth(user_offerer.user.email).get("/v2/collective/subcategories")
-
-        # Then
-        assert response.status_code == 401
+        client = client.with_session_auth(email_user)
+        with testing.assert_num_queries(2):
+            response = client.get("/v2/collective/subcategories")
+            assert response.status_code == 401
 
     def test_list_sub_categories_anonymous_returns_401(self, client):
-        # Given
-
-        # When
-        response = client.get("/v2/collective/subcategories")
-
-        # Then
-        assert response.status_code == 401
+        with testing.assert_num_queries(0):
+            response = client.get("/v2/collective/subcategories")
+            assert response.status_code == 401

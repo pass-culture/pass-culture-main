@@ -3,6 +3,7 @@ import datetime
 from dateutil.relativedelta import relativedelta
 import pytest
 
+from pcapi.core import testing
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.offers import factories as offers_factories
 
@@ -29,14 +30,26 @@ class GetBookingsByOfferTest(PublicAPIVenueEndpointHelper):
     def test_should_raise_404_because_has_no_access_to_venue(self, client: TestClient):
         plain_api_key, _ = self.setup_provider()
         offer = self.setup_base_resource()
-        response = client.with_explicit_token(plain_api_key).get(self.endpoint_url, params={"offer_id": offer.id})
-        assert response.status_code == 404
+
+        offer_id = offer.id
+        num_queries = 1  # select api_key, offerer and provider
+        num_queries += 1  # select features
+        num_queries += 1  # select offer
+        with testing.assert_num_queries(num_queries):
+            response = client.with_explicit_token(plain_api_key).get(self.endpoint_url, params={"offer_id": offer_id})
+            assert response.status_code == 404
 
     def test_should_raise_404_because_venue_provider_is_inactive(self, client: TestClient):
         plain_api_key, venue_provider = self.setup_inactive_venue_provider()
         offer = self.setup_base_resource(venue=venue_provider.venue)
-        response = client.with_explicit_token(plain_api_key).get(self.endpoint_url, params={"offer_id": offer.id})
-        assert response.status_code == 404
+
+        offer_id = offer.id
+        num_queries = 1  # select api_key, offerer and provider
+        num_queries += 1  # select features
+        num_queries += 1  # select offer
+        with testing.assert_num_queries(num_queries):
+            response = client.with_explicit_token(plain_api_key).get(self.endpoint_url, params={"offer_id": offer_id})
+            assert response.status_code == 404
 
     def test_should_raise_404_because_offer_not_found(self, client: TestClient):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
@@ -47,11 +60,15 @@ class GetBookingsByOfferTest(PublicAPIVenueEndpointHelper):
             extraData={"ean": "1234567890123"},
         )
 
-        response = client.with_explicit_token(plain_api_key).get(
-            self.endpoint_url, params={"offer_id": product_offer.id + 1}
-        )
-
-        assert response.status_code == 404
+        product_offer_id = product_offer.id
+        num_queries = 1  # select api_key, offerer and provider
+        num_queries += 1  # select features
+        num_queries += 1  # select offer
+        with testing.assert_num_queries(num_queries):
+            response = client.with_explicit_token(plain_api_key).get(
+                self.endpoint_url, params={"offer_id": product_offer_id + 1}
+            )
+            assert response.status_code == 404
         assert response.json == {"offer": "we could not find this offer id"}
 
     def test_request_not_existing_page(self, client: TestClient):
@@ -67,11 +84,18 @@ class GetBookingsByOfferTest(PublicAPIVenueEndpointHelper):
             stock=product_stock,
         )
 
-        response = client.with_explicit_token(plain_api_key).get(
-            self.endpoint_url,
-            params={"offer_id": offer.id, "firstIndex": booking.id + 1},
-        )
-        assert response.status_code == 200
+        offer_id = offer.id
+        num_queries = 1  # select api_key, offerer and provider
+        num_queries += 1  # select features
+        num_queries += 1  # select offer
+        num_queries += 1  # select bookings
+        booking_id = booking.id
+        with testing.assert_num_queries(num_queries):
+            response = client.with_explicit_token(plain_api_key).get(
+                f"/public/bookings/v1/bookings?offer_id={offer_id}&firstIndex={booking_id + 1}",
+            )
+            assert response.status_code == 200
+
         assert response.json == {"bookings": []}
 
     def test_key_has_rights_and_regular_product_offer(self, client: TestClient):
@@ -92,10 +116,20 @@ class GetBookingsByOfferTest(PublicAPIVenueEndpointHelper):
             stock=product_stock,
         )
 
-        response = client.with_explicit_token(plain_api_key).get(
-            self.endpoint_url, params={"offer_id": product_offer.id}
-        )
-        assert response.status_code == 200
+        product_offer_id = product_offer.id
+        num_queries = 1  # select api_key, offerer and provider
+        num_queries += 1  # select features
+        num_queries += 1  # select offer
+        num_queries += 1  # select bookings
+        num_queries += 1  # select stock
+        num_queries += 1  # select user
+        num_queries += 1  # select venue
+        with testing.assert_num_queries(num_queries):
+            response = client.with_explicit_token(plain_api_key).get(
+                self.endpoint_url, params={"offer_id": product_offer_id}
+            )
+            assert response.status_code == 200
+
         assert response.json == {
             "bookings": [
                 {
@@ -149,9 +183,23 @@ class GetBookingsByOfferTest(PublicAPIVenueEndpointHelper):
             stock=event_stock,
         )
 
-        response = client.with_explicit_token(plain_api_key).get(self.endpoint_url, params={"offer_id": event_offer.id})
+        event_offer_id = event_offer.id
+        num_queries = 1  # select api_key, offerer and provider
+        num_queries += 1  # select features
+        num_queries += 1  # select offer
+        num_queries += 1  # select bookings
+        num_queries += 1  # select stock
+        num_queries += 1  # select user
+        num_queries += 1  # select price_category
+        num_queries += 1  # select price_category_label
+        num_queries += 1  # select venue
+        num_queries += 1  # select second user
+        with testing.assert_num_queries(num_queries):
+            response = client.with_explicit_token(plain_api_key).get(
+                self.endpoint_url, params={"offer_id": event_offer_id}
+            )
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         assert response.json == {
             "bookings": [
                 {
@@ -233,11 +281,25 @@ class GetBookingsByOfferTest(PublicAPIVenueEndpointHelper):
             stock=event_stock,
         )
 
-        response = client.with_explicit_token(plain_api_key).get(
-            self.endpoint_url, params={"offer_id": event_offer.id, "price_category_id": price_category.id}
-        )
+        event_offer_id = event_offer.id
+        price_category_id = price_category.id
+        num_queries = 1  # select api_key, offerer and provider
+        num_queries += 1  # select features
+        num_queries += 1  # select offer
+        num_queries += 1  # select bookings
+        num_queries += 1  # select stock
+        num_queries += 1  # select user
+        num_queries += 1  # select price_category
+        num_queries += 1  # select price_category_label
+        num_queries += 1  # select venue
+        num_queries += 1  # select second user
+        with testing.assert_num_queries(num_queries):
+            response = client.with_explicit_token(plain_api_key).get(
+                self.endpoint_url, params={"offer_id": event_offer_id, "price_category_id": price_category_id}
+            )
 
-        assert response.status_code == 200
+            assert response.status_code == 200
+
         assert response.json == {
             "bookings": [
                 {
@@ -322,11 +384,22 @@ class GetBookingsByOfferTest(PublicAPIVenueEndpointHelper):
             stock=event_stock_2,
         )
 
-        response = client.with_explicit_token(plain_api_key).get(
-            self.endpoint_url, params={"offer_id": event_offer.id, "stock_id": event_stock.id}
-        )
+        event_offer_id = event_offer.id
+        event_stock_id = event_stock.id
+        num_queries = 1  # select api_key, offerer and provider
+        num_queries += 1  # select features
+        num_queries += 1  # select offer
+        num_queries += 1  # select bookings
+        num_queries += 1  # select user
+        num_queries += 1  # select price_category
+        num_queries += 1  # select price_category_label
+        num_queries += 1  # select venue
+        with testing.assert_num_queries(num_queries):
+            response = client.with_explicit_token(plain_api_key).get(
+                self.endpoint_url, params={"offer_id": event_offer_id, "stock_id": event_stock_id}
+            )
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         assert response.json == {
             "bookings": [
                 {
@@ -387,11 +460,22 @@ class GetBookingsByOfferTest(PublicAPIVenueEndpointHelper):
             stock=event_stock_2,
         )
 
-        response = client.with_explicit_token(plain_api_key).get(
-            self.endpoint_url, params={"offer_id": event_offer.id, "beginning_datetime": past}
-        )
+        event_offer_id = event_offer.id
+        num_queries = 1  # select api_key, offerer and provider
+        num_queries += 1  # select features
+        num_queries += 1  # select offer
+        num_queries += 1  # select bookings
+        num_queries += 1  # select stock
+        num_queries += 1  # select user
+        num_queries += 1  # select price_category
+        num_queries += 1  # select price_category_label
+        num_queries += 1  # select venue
+        with testing.assert_num_queries(9):
+            response = client.with_explicit_token(plain_api_key).get(
+                self.endpoint_url, params={"offer_id": event_offer_id, "beginning_datetime": past}
+            )
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         assert response.json == {
             "bookings": [
                 {
@@ -453,11 +537,22 @@ class GetBookingsByOfferTest(PublicAPIVenueEndpointHelper):
             stock=event_stock_2,
         )
 
-        response = client.with_explicit_token(plain_api_key).get(
-            self.endpoint_url, params={"offer_id": event_offer.id, "status": "REIMBURSED"}
-        )
+        num_queries = 1  # select api_key, offerer and provider
+        num_queries += 1  # select features
+        num_queries += 1  # select offer
+        num_queries += 1  # select bookings
+        num_queries += 1  # select stock
+        num_queries += 1  # select user
+        num_queries += 1  # select price_category
+        num_queries += 1  # select price_category_label
+        num_queries += 1  # select venue
+        event_offer_id = event_offer.id
+        with testing.assert_num_queries(num_queries):
+            response = client.with_explicit_token(plain_api_key).get(
+                self.endpoint_url, params={"offer_id": event_offer_id, "status": "REIMBURSED"}
+            )
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         assert response.json == {
             "bookings": [
                 {
@@ -525,16 +620,27 @@ class GetBookingsByOfferTest(PublicAPIVenueEndpointHelper):
             stock=event_stock_2,
         )
 
-        response = client.with_explicit_token(plain_api_key).get(
-            self.endpoint_url,
-            params={
-                "offer_id": event_offer.id,
-                "status": "USED",
-                "beginning_datetime": past + datetime.timedelta(days=2),
-            },
-        )
+        num_queries = 1  # select api_key, offerer and provider
+        num_queries += 1  # select features
+        num_queries += 1  # select offer
+        num_queries += 1  # select bookings
+        num_queries += 1  # select stock
+        num_queries += 1  # select user
+        num_queries += 1  # select price_category
+        num_queries += 1  # select price_category_label
+        num_queries += 1  # select venue
+        event_offer_id = event_offer.id
+        with testing.assert_num_queries(num_queries):
+            response = client.with_explicit_token(plain_api_key).get(
+                self.endpoint_url,
+                params={
+                    "offer_id": event_offer_id,
+                    "status": "USED",
+                    "beginning_datetime": past + datetime.timedelta(days=2),
+                },
+            )
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         assert response.json == {
             "bookings": [
                 {
@@ -595,11 +701,23 @@ class GetBookingsByOfferTest(PublicAPIVenueEndpointHelper):
             stock=event_stock,
         )
 
-        response = client.with_explicit_token(plain_api_key).get(
-            self.endpoint_url, params={"offer_id": event_offer.id, "limit": 2}
-        )
+        num_queries = 1  # select api_key, offerer and provider
+        num_queries += 1  # select features
+        num_queries += 1  # select offer
+        num_queries += 1  # select bookings
+        num_queries += 1  # select stock
+        num_queries += 1  # select user
+        num_queries += 1  # select price_category
+        num_queries += 1  # select price_category_label
+        num_queries += 1  # select venue
+        num_queries += 1  # select second user
+        event_offer_id = event_offer.id
+        with testing.assert_num_queries(num_queries):
+            response = client.with_explicit_token(plain_api_key).get(
+                self.endpoint_url, params={"offer_id": event_offer_id, "limit": 2}
+            )
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         assert response.json == {
             "bookings": [
                 {
@@ -684,11 +802,24 @@ class GetBookingsByOfferTest(PublicAPIVenueEndpointHelper):
             stock=event_stock,
         )
 
-        response = client.with_explicit_token(plain_api_key).get(
-            self.endpoint_url, params={"offer_id": event_offer.id, "limit": 2, "firstIndex": booking_2.id}
-        )
+        num_queries = 1  # select api_key, offerer and provider
+        num_queries += 1  # select features
+        num_queries += 1  # select offer
+        num_queries += 1  # select bookings
+        num_queries += 1  # select stock
+        num_queries += 1  # select user
+        num_queries += 1  # select price_category
+        num_queries += 1  # select price_category_label
+        num_queries += 1  # select venue
+        num_queries += 1  # select second user
+        event_offer_id = event_offer.id
+        booking_2_id = booking_2.id
+        with testing.assert_num_queries(num_queries):
+            response = client.with_explicit_token(plain_api_key).get(
+                self.endpoint_url, params={"offer_id": event_offer_id, "limit": 2, "firstIndex": booking_2_id}
+            )
+            assert response.status_code == 200
 
-        assert response.status_code == 200
         assert response.json == {
             "bookings": [
                 {
@@ -751,10 +882,17 @@ class GetBookingsByOfferTest(PublicAPIVenueEndpointHelper):
             extraData={"ean": "1234567890123"},
         )
 
-        response = client.with_explicit_token(plain_api_key).get(
-            self.endpoint_url, params={"offer_id": product_offer.id}
-        )
-        assert response.status_code == 200
+        num_queries = 1  # select api_key, offerer and provider
+        num_queries += 1  # select features
+        num_queries += 1  # select offer
+        num_queries += 1  # select bookings
+        product_offer_id = product_offer.id
+        with testing.assert_num_queries(num_queries):
+            response = client.with_explicit_token(plain_api_key).get(
+                self.endpoint_url, params={"offer_id": product_offer_id}
+            )
+            assert response.status_code == 200
+
         assert response.json == {"bookings": []}
 
     def test_should_raise_400_because_no_offer_id_provided(self, client):
@@ -763,7 +901,9 @@ class GetBookingsByOfferTest(PublicAPIVenueEndpointHelper):
         product_stock = offers_factories.StockFactory(offer=product_offer)
         bookings_factories.UsedBookingFactory(stock=product_stock)
 
-        response = client.with_explicit_token(plain_api_key).get(self.endpoint_url)
+        num_queries = 1  # select api_key, offerer and provider
+        num_queries += 1  # select features
+        with testing.assert_num_queries(num_queries):
+            response = client.with_explicit_token(plain_api_key).get(self.endpoint_url)
 
-        assert response.status_code == 400
         assert response.json == {"offerId": ["field required"]}
