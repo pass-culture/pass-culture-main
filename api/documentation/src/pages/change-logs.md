@@ -13,6 +13,11 @@ title: Pass Culture API change logs
 **You can find a migration tutorial [here](/docs/tutorials/migrate-to-the-new-api).**
 :::
 
+## September 2024
+
+- You can now specify your own id when you [**create price categories**](/rest-api#tag/Event-offer-prices/operation/PostEventPriceCategories) or when you [**update a price category**](/rest-api#tag/Event-offer-prices/operation/PatchEventPriceCategory)
+- You can now access your event price categories using [**this endpoint**](/rest-api#tag/Event-offer-prices/operation/GetEventPriceCategories) and filter them using the `idsAtProvider` parameter
+
 ## July 2024
 
 - You can now access your provider information using [**this endpoint**](/rest-api#tag/Providers/operation/GetProvider).
