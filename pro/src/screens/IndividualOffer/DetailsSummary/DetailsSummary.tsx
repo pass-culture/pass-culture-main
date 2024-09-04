@@ -57,7 +57,7 @@ export function DetailsSummaryScreen({ offer }: DetailsSummaryScreenProps) {
   const conditionalFields = subcategory?.conditionalFields || []
 
   const aboutDescriptions: Description[] = [
-    { title: 'Title de l’offre', text: offerData.name },
+    { title: 'Titre de l’offre', text: offerData.name },
     { title: 'Description', text: offerData.description },
   ]
   const venueName = offerData.venuePublicName || offerData.venueName
