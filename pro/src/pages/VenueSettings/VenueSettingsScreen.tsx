@@ -244,11 +244,11 @@ export const VenueSettingsScreen = ({
             onCancel={() => setIsAddressChangeDialogOpen(false)}
             onConfirm={handleConfirmAddressChangeDialog}
             icon={strokeErrorIcon}
-            title="Ce changement d'adresse ne va pas s'impacter sur vos offres associées"
+            title="Ce changement d'adresse ne va pas s'impacter sur vos offres"
           >
             <p>
-              Rendez-vous sur vos offres pour rectifier l’adresse de vos offres
-              de votre choix.
+              Si vous souhaitez rectifier leur localisation, vous devez les
+              modifier individuellement.
             </p>
           </ConfirmDialog>
         )}
