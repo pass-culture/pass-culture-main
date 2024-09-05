@@ -137,8 +137,7 @@ export function SuggestedSubcategories({
             className={styles['items']}
             id="suggested-subcategories"
             aria-labelledby="suggested-subcategories-title"
-            aria-live="polite"
-            aria-atomic
+            role="status"
           >
             {hasApiBeenCalled ? (
               <>
