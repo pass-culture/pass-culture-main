@@ -11,10 +11,15 @@ import {
 import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
 import { ArchiveConfirmationModal } from 'components/ArchiveConfirmationModal/ArchiveConfirmationModal'
 import { canArchiveCollectiveOffer } from 'components/ArchiveConfirmationModal/utils/canArchiveCollectiveOffer'
-import { GET_COLLECTIVE_OFFERS_QUERY_KEY } from 'config/swrQueryKeys'
+import {
+  GET_COLLECTIVE_OFFERS_BOOKABLE_QUERY_KEY,
+  GET_COLLECTIVE_OFFERS_QUERY_KEY,
+  GET_TEMPLATE_COLLECTIVE_OFFERS_QUERY_KEY,
+} from 'config/swrQueryKeys'
 import { NOTIFICATION_LONG_SHOW_DURATION } from 'core/Notification/constants'
 import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from 'core/Offers/constants'
 import { useQueryCollectiveSearchFilters } from 'core/Offers/hooks/useQuerySearchFilters'
+import { useActiveFeature } from 'hooks/useActiveFeature'
 import { useNotification } from 'hooks/useNotification'
 import fullHideIcon from 'icons/full-hide.svg'
 import fullValidateIcon from 'icons/full-validate.svg'
@@ -31,7 +36,7 @@ export type CollectiveOffersActionsBarProps = {
   areAllOffersSelected: boolean
   clearSelectedOfferIds: () => void
   selectedOffers: CollectiveOfferResponseModel[]
-  toggleSelectAllCheckboxes: () => void
+  areTemplateOffers: boolean
 }
 
 const computeDeactivationSuccessMessage = (nbSelectedOffers: number) => {
@@ -113,6 +118,7 @@ export function CollectiveOffersActionsBar({
   selectedOffers,
   clearSelectedOfferIds,
   areAllOffersSelected,
+  areTemplateOffers,
 }: CollectiveOffersActionsBarProps) {
   const urlSearchFilters = useQueryCollectiveSearchFilters()
 
@@ -120,6 +126,16 @@ export function CollectiveOffersActionsBar({
   const [isDeactivationDialogOpen, setIsDeactivationDialogOpen] =
     useState(false)
   const [isArchiveDialogOpen, setIsArchiveDialogOpen] = useState(false)
+
+  const isNewOffersAndBookingsActive = useActiveFeature(
+    'WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE'
+  )
+
+  const offersQueryKey = isNewOffersAndBookingsActive
+    ? areTemplateOffers
+      ? GET_TEMPLATE_COLLECTIVE_OFFERS_QUERY_KEY
+      : GET_COLLECTIVE_OFFERS_BOOKABLE_QUERY_KEY
+    : GET_COLLECTIVE_OFFERS_QUERY_KEY
 
   const apiFilters = {
     ...DEFAULT_COLLECTIVE_SEARCH_FILTERS,
@@ -165,7 +181,7 @@ export function CollectiveOffersActionsBar({
     }
 
     clearSelectedOfferIds()
-    await mutate([GET_COLLECTIVE_OFFERS_QUERY_KEY, apiFilters])
+    await mutate([offersQueryKey, apiFilters])
   }
 
   function openArchiveOffersDialog() {
