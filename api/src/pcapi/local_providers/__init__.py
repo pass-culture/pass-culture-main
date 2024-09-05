@@ -5,11 +5,9 @@ from pcapi.local_providers.cinema_providers.cgr.cgr_stocks import CGRStocks
 from pcapi.local_providers.cinema_providers.ems.ems_stocks import EMSStocks
 from pcapi.local_providers.titelive_thing_descriptions.titelive_thing_descriptions import TiteLiveThingDescriptions
 from pcapi.local_providers.titelive_thing_thumbs.titelive_thing_thumbs import TiteLiveThingThumbs
-from pcapi.local_providers.titelive_things.titelive_things import TiteLiveThings
 
 
 __all__ = (
-    "TiteLiveThings",
     "TiteLiveThingDescriptions",
     "TiteLiveThingThumbs",
     "AllocineStocks",

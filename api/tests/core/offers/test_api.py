@@ -322,7 +322,7 @@ class CreateStockTest:
 
     def test_does_not_allow_creation_on_a_synchronized_offer(self):
         # Given
-        offer = factories.ThingOfferFactory(lastProvider=providers_factories.TiteLiveThingsProviderFactory())
+        offer = factories.ThingOfferFactory(lastProvider=providers_factories.APIProviderFactory())
 
         # When
         with pytest.raises(api_errors.ApiErrors) as error:
@@ -949,7 +949,7 @@ class DeleteStockTest:
         }
 
     def test_can_delete_if_stock_from_provider(self):
-        provider = providers_factories.TiteLiveThingsProviderFactory()
+        provider = providers_factories.APIProviderFactory()
         offer = factories.OfferFactory(lastProvider=provider, idAtProvider="1")
         stock = factories.StockFactory(offer=offer)
 
@@ -2056,35 +2056,6 @@ class RejectInappropriateProductTest:
         assert product.gcuCompatibilityType == models.GcuCompatibilityType.FRAUD_INCOMPATIBLE
 
         mocked_send_booking_cancellation_emails_to_user_and_offerer.assert_not_called()
-
-
-@pytest.mark.usefixtures("db_session")
-class DeactivatePermanentlyUnavailableProductTest:
-    @mock.patch("pcapi.core.search.async_index_offer_ids")
-    def test_should_deactivate_permanently_unavailable_products(self, mocked_async_index_offer_ids):
-        # Given
-        product1 = factories.ThingProductFactory(
-            subcategoryId=subcategories.LIVRE_PAPIER.id, extraData={"ean": "ean-de-test"}
-        )
-        product2 = factories.ThingProductFactory(
-            subcategoryId=subcategories.LIVRE_PAPIER.id, extraData={"ean": "ean-de-test"}
-        )
-        factories.OfferFactory(product=product1)
-        factories.OfferFactory(product=product1)
-        factories.OfferFactory(product=product2)
-
-        # When
-        api.deactivate_permanently_unavailable_products("ean-de-test")
-
-        # Then
-        products = models.Product.query.all()
-        offers = models.Offer.query.all()
-
-        assert any(product.name == "xxx" for product in products)
-        assert not any(offer.isActive for offer in offers)
-        assert any(offer.name == "xxx" for offer in offers)
-        mocked_async_index_offer_ids.assert_called_once()
-        assert set(mocked_async_index_offer_ids.call_args[0][0]) == {o.id for o in offers}
 
 
 @pytest.fixture(name="offer_matching_one_validation_rule")

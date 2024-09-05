@@ -17,19 +17,6 @@ logger = logging.getLogger(__name__)
 blueprint = Blueprint(__name__, __name__)
 
 
-@blueprint.cli.command("synchronize_titelive_things")
-@log_cron_with_transaction
-@cron_require_feature(FeatureToggle.SYNCHRONIZE_TITELIVE_PRODUCTS)
-def synchronize_titelive_things() -> None:
-    """Launches Titelive products synchronization through TiteLiveThings provider"""
-    if FeatureToggle.WIP_ENABLE_TITELIVE_API_FOR_BOOKS.is_active():
-        logger.info(
-            "FeatureToggle.WIP_ENABLE_TITELIVE_API_FOR_BOOKS is active. Use synchronize_titelive_book_products instead"
-        )
-        return
-    synchronize_data_for_provider("TiteLiveThings")
-
-
 @blueprint.cli.command("synchronize_titelive_thing_descriptions")
 @log_cron_with_transaction
 @cron_require_feature(FeatureToggle.SYNCHRONIZE_TITELIVE_PRODUCTS_DESCRIPTION)
