@@ -60,7 +60,7 @@ When('I fill in prices', () => {
   // manque un data-testid ou un accessibility label
   cy.get('[name="priceCategories[2].free"]').click()
 
-  cy.findByText('Accepter les réservations “Duo“').should('exist').click()
+  cy.findByText('Accepter les réservations “Duo“').should('exist')
 })
 
 When('I validate prices step', () => {
