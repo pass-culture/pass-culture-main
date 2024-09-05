@@ -50,7 +50,7 @@ class RateLimitExceeded(AdresseApiException):
 
 class AddressInfo(pydantic_v1.BaseModel):
     id: str
-    label: str
+    label: str | None
     postcode: str
     citycode: str  # inseeCode
     latitude: float

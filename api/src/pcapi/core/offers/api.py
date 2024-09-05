@@ -309,6 +309,8 @@ def create_offer(
 def get_offerer_address_from_address(
     venue: offerers_models.Venue, address: offerers_schemas.AddressBodyModel
 ) -> offerers_models.OffererAddress:
+    if not address.label or address.label == venue.common_name:
+        address.label = None
     address_from_api = offerers_api.create_offerer_address_from_address_api(
         street=address.street,
         postal_code=address.postalCode,
@@ -316,7 +318,11 @@ def get_offerer_address_from_address(
         latitude=float(address.latitude),
         longitude=float(address.longitude),
     )
-    return offerers_api.get_or_create_offerer_address(venue.managingOffererId, address_from_api.id, label=address.label)
+    return offerers_api.get_or_create_offerer_address(
+        venue.managingOffererId,
+        address_from_api.id,
+        label=address.label,
+    )
 
 
 def update_offer(

@@ -133,6 +133,67 @@ class Returns200Test:
         assert address.latitude == Decimal("48.85660")
         assert address.longitude == Decimal("2.3522")
 
+    @pytest.mark.parametrize("label", ["", None, True])
+    @patch("pcapi.connectors.api_adresse.get_address")
+    def test_patch_offer_with_address_twice(self, get_address_mock, label, client):
+        user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
+        venue = offerers_factories.VenueFactory(
+            managingOfferer=user_offerer.offerer,
+            offererAddress__address__street="1 rue de la paix",
+            offererAddress__address__city="Paris",
+            offererAddress__address__postalCode="75102",
+            offererAddress__address__latitude=48.8566,
+            offererAddress__address__longitude=2.3522,
+            offererAddress__label=None,
+        )
+        offer = offers_factories.OfferFactory(
+            subcategoryId=subcategories.ABO_MEDIATHEQUE.id,
+            venue=venue,
+            name="New name",
+            description="description",
+            offererAddress=venue.offererAddress,
+        )
+        oa_id = venue.offererAddress.id
+        if label is True:
+            label = venue.common_name
+
+        data = {
+            "name": "New name",
+            "externalTicketOfficeUrl": "http://example.net",
+            "mentalDisabilityCompliant": True,
+            "address": {
+                "street": "1 rue de la paix",
+                "city": "Paris",
+                "postalCode": "75102",
+                "latitude": 48.8566,
+                "longitude": 2.3522,
+                "label": label,
+            },
+        }
+        get_address_mock.return_value = AddressInfo(
+            street="1 rue de la paix",
+            city="Paris",
+            citycode="75102",
+            postcode="75102",
+            latitude=48.8566,
+            longitude=2.3522,
+            score=0.9,
+            id="75102_7560_00001",
+            label="",
+        )
+        response = client.with_session_auth("user@example.com").patch(f"/offers/{offer.id}", json=data)
+        assert response.status_code == 200
+        assert response.json["id"] == offer.id
+        updated_offer = Offer.query.get(offer.id)
+        assert updated_offer.offererAddress.id == oa_id
+        address = updated_offer.offererAddress.address
+        assert updated_offer.offererAddress.label == venue.offererAddress.label
+        assert address.street == "1 rue de la paix"
+        assert address.city == "Paris"
+        assert address.postalCode == "75102"
+        assert address.latitude == Decimal("48.85660")
+        assert address.longitude == Decimal("2.3522")
+
     def test_withdrawal_can_be_updated(self, client):
         offer = offers_factories.OfferFactory(
             subcategoryId=subcategories.CONCERT.id,
