@@ -569,7 +569,7 @@ class ListIndividualBookingsTest(GetEndpointHelper):
             (bookings_models.BookingCancellationReasons.OFFERER, "Annulée par l'acteur culturel"),
             (
                 bookings_models.BookingCancellationReasons.OFFERER_CONNECT_AS,
-                "Annulée pour l'acteur culturel par Hercule Poirot via Connect As",
+                "Annulée par Hercule Poirot via Connect As",
             ),
             (bookings_models.BookingCancellationReasons.BENEFICIARY, "Annulée par le bénéficiaire"),
             (bookings_models.BookingCancellationReasons.EXPIRED, "Expirée"),
