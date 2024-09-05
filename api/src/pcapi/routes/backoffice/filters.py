@@ -248,13 +248,11 @@ def format_booking_cancellation(
             | educational_models.CollectiveBookingCancellationReasons.OFFERER_CONNECT_AS
         ):
             if author:
-                return Markup(
-                    'Annulée pour l\'acteur culturel par <a class="link-primary" href="{url}">{full_name}</a> via Connect As'
-                ).format(
+                return Markup('Annulée par <a class="link-primary" href="{url}">{full_name}</a> via Connect As').format(
                     url=url_for("backoffice_web.bo_users.get_bo_user", user_id=author.id),
                     full_name=author.full_name,
                 )
-            return "Annulée pour l'acteur culturel via Connect As"
+            return "Annulée via Connect As"
         case (
             bookings_models.BookingCancellationReasons.BENEFICIARY
             | educational_models.CollectiveBookingCancellationReasons.BENEFICIARY

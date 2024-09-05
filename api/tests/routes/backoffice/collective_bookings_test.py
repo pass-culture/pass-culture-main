@@ -181,7 +181,7 @@ class ListCollectiveBookingsTest(GetEndpointHelper):
             (educational_models.CollectiveBookingCancellationReasons.OFFERER, "Annulée par l'acteur culturel"),
             (
                 educational_models.CollectiveBookingCancellationReasons.OFFERER_CONNECT_AS,
-                "Annulée pour l'acteur culturel par Hercule Poirot via Connect As",
+                "Annulée par Hercule Poirot via Connect As",
             ),
             (educational_models.CollectiveBookingCancellationReasons.BENEFICIARY, "Annulée par le bénéficiaire"),
             (educational_models.CollectiveBookingCancellationReasons.EXPIRED, "Expirée"),
