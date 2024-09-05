@@ -61,6 +61,7 @@ export const BookingOfferCell = ({
         href={editionUrl}
         title={booking.stock.offerName}
         className={styles['booking-offer-name']}
+        data-testid="booking-offer-name"
       >
         {booking.stock.offerName}
       </a>
