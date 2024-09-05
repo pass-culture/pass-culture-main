@@ -156,6 +156,20 @@ def test_get_siren_without_ape():
 
 
 @override_settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
+def test_get_siren_without_creation_date():
+    siren = "123456789"
+    with requests_mock.Mocker() as mock:
+        mock.get(
+            f"https://entreprise.api.gouv.fr/v3/insee/sirene/unites_legales/{siren}",
+            json=api_entreprise_test_data.RESPONSE_SIREN_WITHOUT_CREATION_DATE,
+        )
+        siren_info = api.get_siren(siren, with_address=False)
+        assert siren_info.siren == siren
+        assert siren_info.name == "PAS DE DATE DE CREATION"
+        assert siren_info.creation_date is None
+
+
+@override_settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
 def test_get_siren_invalid_parameter():
     siren = "111111111"
     with requests_mock.Mocker() as mock:

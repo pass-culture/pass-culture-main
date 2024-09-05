@@ -244,11 +244,15 @@ class EntrepriseBackend(BaseBackend):
             diffusible=is_diffusible,
             legal_category_code=siren_data["forme_juridique"]["code"],
             address=address,
-            creation_date=date_utils.utc_datetime_to_department_timezone(
-                # API Entreprise dates are timestamped at 0:00 Metropolitan French time
-                datetime.datetime.fromtimestamp(siren_data["date_creation"]),
-                departement_code=None,
-            ).date(),
+            creation_date=(
+                date_utils.utc_datetime_to_department_timezone(
+                    # API Entreprise dates are timestamped at 0:00 Metropolitan French time
+                    datetime.datetime.fromtimestamp(siren_data["date_creation"]),
+                    departement_code=None,
+                ).date()
+                if siren_data["date_creation"]
+                else None
+            ),
         )
 
     def get_siret(self, siret: str, raise_if_non_public: bool = False) -> models.SiretInfo:

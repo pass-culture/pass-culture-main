@@ -93,7 +93,7 @@ def empty_string_if_null(data: typing.Any | None) -> str:
     return str(data)
 
 
-def format_date(data: datetime.date | datetime.datetime, strformat: str = "%d/%m/%Y") -> str:
+def format_date(data: datetime.date | datetime.datetime | None, strformat: str = "%d/%m/%Y") -> str:
     if not data:
         return ""
     if isinstance(data, datetime.datetime):

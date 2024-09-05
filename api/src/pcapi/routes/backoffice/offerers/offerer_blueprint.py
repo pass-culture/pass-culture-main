@@ -1114,7 +1114,7 @@ def get_entreprise_info(offerer_id: int) -> utils.BackofficeResponse:
     if siren_info and siren_info.legal_category_code:
         data["show_dgfip_card"] = not (
             entreprise_api.siren_is_individual_or_public(siren_info)
-            or siren_info.creation_date.year >= datetime.date.today().year
+            or (siren_info.creation_date and siren_info.creation_date.year >= datetime.date.today().year)
         )
 
     return render_template("offerer/get/details/entreprise_info.html", offerer=offerer, **data)

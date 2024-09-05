@@ -545,6 +545,52 @@ RESPONSE_SIREN_WITHOUT_APE = {
     "meta": {"date_derniere_mise_a_jour": 1678921200, "redirect_from_siren": None},
 }
 
+RESPONSE_SIREN_WITHOUT_CREATION_DATE = {
+    "data": {
+        "siren": "123456789",
+        "rna": "W123000045",
+        "siret_siege_social": "12345678900012",
+        "categorie_entreprise": "PME",
+        "type": "personne_morale",
+        "personne_morale_attributs": {"raison_sociale": "PAS DE DATE DE CREATION", "sigle": None},
+        "personne_physique_attributs": {
+            "pseudonyme": None,
+            "prenom_usuel": None,
+            "prenom_1": None,
+            "prenom_2": None,
+            "prenom_3": None,
+            "prenom_4": None,
+            "nom_usage": None,
+            "nom_naissance": None,
+            "sexe": None,
+        },
+        "diffusable_commercialement": True,
+        "status_diffusion": "diffusible",
+        "forme_juridique": {"code": "9220", "libelle": "Association déclarée"},
+        "activite_principale": {
+            "code": "85.32Z",
+            "nomenclature": "NAFRev2",
+            "libelle": "Enseignement secondaire technique ou professionnel",
+        },
+        "tranche_effectif_salarie": {
+            "de": 10,
+            "a": 19,
+            "code": "11",
+            "date_reference": "2021",
+            "intitule": "10 à 19 salariés",
+        },
+        "etat_administratif": "A",
+        "economie_sociale_et_solidaire": True,
+        "date_cessation": None,
+        "date_creation": None,
+    },
+    "links": {
+        "siege_social": "https://entreprise.api.gouv.fr/v3/insee/sirene/etablissements/12345678900012",
+        "siege_social_adresse": "https://entreprise.api.gouv.fr/v3/insee/sirene/etablissements/12345678900012/adresse",
+    },
+    "meta": {"date_derniere_mise_a_jour": 1711062000, "redirect_from_siren": None},
+}
+
 
 RESPONSE_SIREN_ERROR_422 = {
     "errors": [
