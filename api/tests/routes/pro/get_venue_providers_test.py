@@ -18,11 +18,11 @@ class Returns200Test:
     @pytest.mark.usefixtures("db_session")
     def test_get_list_with_valid_venue_id(self, client):
         user_offerer = offerers_factories.UserOffererFactory()
-        titelive_things_provider = get_provider_by_local_class("TiteLiveThings")
+        provider = providers_factories.APIProviderFactory()
         venue_provider = providers_factories.VenueProviderFactory(
             venue__name="Librairie Titelive",
             venue__managingOfferer=user_offerer.offerer,
-            provider=titelive_things_provider,
+            provider=provider,
             lastSyncDate=datetime(2021, 8, 16),
             dateCreated=datetime(2021, 8, 15),
         )
@@ -66,11 +66,11 @@ class Returns400Test:
     @pytest.mark.usefixtures("db_session")
     def when_listing_all_venues_without_venue_id_argument(self, client):
         user_offerer = offerers_factories.UserOffererFactory()
-        titelive_things_provider = get_provider_by_local_class("TiteLiveThings")
+        provider = providers_factories.APIProviderFactory()
         providers_factories.VenueProviderFactory(
             venue__name="Librairie Titelive",
             venue__managingOfferer=user_offerer.offerer,
-            provider=titelive_things_provider,
+            provider=provider,
         )
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)

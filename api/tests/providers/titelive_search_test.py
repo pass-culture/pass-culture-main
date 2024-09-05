@@ -25,7 +25,6 @@ from pcapi.core.testing import override_settings
 from pcapi.core.users.factories import FavoriteFactory
 from pcapi.core.users.models import Favorite
 from pcapi.domain import music_types
-from pcapi.local_providers.titelive_things import titelive_things as ttl_constants
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.utils import requests
@@ -364,8 +363,8 @@ class TiteliveSearchTest:
 @pytest.mark.usefixtures("db_session")
 class TiteliveBookSearchTest:
     EAN_TEST = "9782370730541"
-    SCHOLAR_BOOK_GTL_ID = ttl_constants.GTL_LEVEL_01_SCHOOL + "040300"
-    EXTRACURRICULAR_GTL_ID = ttl_constants.GTL_LEVEL_01_EXTRACURRICULAR + "080000"
+    SCHOLAR_BOOK_GTL_ID = providers_constants.GTL_LEVEL_01_SCHOOL + "040300"
+    EXTRACURRICULAR_GTL_ID = providers_constants.GTL_LEVEL_01_EXTRACURRICULAR + "080000"
 
     def setup_api_response_fixture(self, requests_mock, fixture):
         _configure_login_and_images(requests_mock)
@@ -496,11 +495,11 @@ class TiteliveBookSearchTest:
     @pytest.mark.parametrize(
         "support_code",
         [
-            ttl_constants.CALENDAR_SUPPORT_CODE,
-            ttl_constants.POSTER_SUPPORT_CODE,
-            ttl_constants.PAPER_CONSUMABLE_SUPPORT_CODE,
-            ttl_constants.BOX_SUPPORT_CODE,
-            ttl_constants.OBJECT_SUPPORT_CODE,
+            providers_constants.CALENDAR_SUPPORT_CODE,
+            providers_constants.POSTER_SUPPORT_CODE,
+            providers_constants.PAPER_CONSUMABLE_SUPPORT_CODE,
+            providers_constants.BOX_SUPPORT_CODE,
+            providers_constants.OBJECT_SUPPORT_CODE,
         ],
     )
     def test_does_not_create_product_when_product_is_non_eligible_support_code(self, requests_mock, support_code):
@@ -537,7 +536,8 @@ class TiteliveBookSearchTest:
     def test_does_not_create_product_when_product_is_lectorat_eighteen(self, requests_mock):
         # Given
         self.setup_api_response_fixture(
-            requests_mock, fixtures.build_titelive_one_book_response(id_lectorat=ttl_constants.LECTORAT_EIGHTEEN_ID)
+            requests_mock,
+            fixtures.build_titelive_one_book_response(id_lectorat=providers_constants.LECTORAT_EIGHTEEN_ID),
         )
 
         # When
@@ -549,13 +549,13 @@ class TiteliveBookSearchTest:
     @pytest.mark.parametrize(
         "level_02_code_gtl",
         [
-            ttl_constants.GTL_LEVEL_02_BEFORE_3,
-            ttl_constants.GTL_LEVEL_02_AFTER_3_AND_BEFORE_6,
+            providers_constants.GTL_LEVEL_02_BEFORE_3,
+            providers_constants.GTL_LEVEL_02_AFTER_3_AND_BEFORE_6,
         ],
     )
     def test_does_not_create_product_when_product_is_small_young(self, requests_mock, level_02_code_gtl):
         # Given
-        young_gtl_id = ttl_constants.GTL_LEVEL_01_YOUNG + level_02_code_gtl + "0000"
+        young_gtl_id = providers_constants.GTL_LEVEL_01_YOUNG + level_02_code_gtl + "0000"
         self.setup_api_response_fixture(
             requests_mock, fixtures.build_titelive_one_book_response(gtl_id=young_gtl_id, gtl_level=2)
         )
@@ -732,7 +732,8 @@ class TiteliveBookSearchTest:
             gcuCompatibilityType=offers_models.GcuCompatibilityType.FRAUD_INCOMPATIBLE
         )
         self.setup_api_response_fixture(
-            requests_mock, fixtures.build_titelive_one_book_response(id_lectorat=ttl_constants.LECTORAT_EIGHTEEN_ID)
+            requests_mock,
+            fixtures.build_titelive_one_book_response(id_lectorat=providers_constants.LECTORAT_EIGHTEEN_ID),
         )
 
         # When

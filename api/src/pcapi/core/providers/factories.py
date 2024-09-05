@@ -180,17 +180,6 @@ class AllocineProviderFactory(BaseFactory):
     isActive = True
 
 
-class TiteLiveThingsProviderFactory(BaseFactory):
-    class Meta:
-        model = models.Provider
-        sqlalchemy_get_or_create = ["localClass"]
-
-    name = factory.Sequence("TiteLiveThings {}".format)
-    localClass = "TiteLiveThings"
-    enabledForPro = True
-    isActive = True
-
-
 class AllocineVenueProviderFactory(BaseFactory):
     class Meta:
         model = models.AllocineVenueProvider

@@ -36,7 +36,7 @@ Par exemple, TiteLive est à false pour le thing_thumbs
 ### __next__
 
  ```python
- class TiteLiveStocks(LocalProvider):
+ class AllocineStocks(LocalProvider):
   def __next__(self)
  ```
 
@@ -50,7 +50,7 @@ Pour récupérer par exemple les stocks via le provider Tite Live pour une venue
 Créer une nouvelle classe qui hérite de Class LocalProvider(Iterator)
 
  ```python
- class TiteLiveStocks(LocalProvider):
+ class AllocineStocks(LocalProvider):
  ```
 
 Les étapes

@@ -1189,43 +1189,6 @@ def reject_inappropriate_products(
     return True
 
 
-def deactivate_permanently_unavailable_products(ean: str) -> bool:
-    products = models.Product.query.filter(models.Product.extraData["ean"].astext == ean).all()
-    if not products:
-        return False
-
-    for product in products:
-        product.name = "xxx"
-        db.session.add(product)
-
-    offers = models.Offer.query.filter(models.Offer.productId.in_(p.id for p in products)).filter(
-        models.Offer.isActive.is_(True)
-    )
-    offer_ids = [offer_id for offer_id, in offers.with_entities(models.Offer.id).all()]
-    offers.update(values={"isActive": False, "name": "xxx"}, synchronize_session="fetch")
-
-    try:
-        db.session.commit()
-    except Exception as exception:  # pylint: disable=broad-except
-        logger.exception(
-            "Could not mark product and offers as permanently unavailable: %s",
-            extra={"ean": ean, "products": [p.id for p in products], "exc": str(exception)},
-        )
-        return False
-    logger.info(
-        "Deactivated permanently unavailable products",
-        extra={"ean": ean, "products": [p.id for p in products], "offers": offer_ids},
-    )
-
-    search.async_index_offer_ids(
-        offer_ids,
-        reason=search.IndexationReason.PRODUCT_DEACTIVATION,
-        log_extra={"ean": ean},
-    )
-
-    return True
-
-
 def resolve_offer_validation_sub_rule(sub_rule: models.OfferValidationSubRule, offer: AnyOffer) -> bool:
     if sub_rule.model:
         if sub_rule.model.value in OFFER_LIKE_MODELS and type(offer).__name__ == sub_rule.model.value:
