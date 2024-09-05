@@ -33,6 +33,13 @@ title: Pass Culture API change logs
 ### EANs availability check
 - You can now check if your EANs are available for bulk upsert using [**this endpoint**](/rest-api#tag/Product-offer-bulk-operations/operation/CheckEansAvailability)
 
+### Collective booking status (integration only) 
+It is possible to change the status of collective booking into the **integration** environment. We have created new endpoints to modify these statuses and simulate the booking timeline on the Adage side. Please check [rest api documentation](/rest-api#tag/Collective-bookings-Adage-mock)
+
+:::warning
+These routes are not available from the **production** environment, they only exists because there no Adage platform available from the **integration** environment.
+:::
+
 ## July 2024
 
 - You can now access your provider information using [**this endpoint**](/rest-api#tag/Providers/operation/GetProvider).
