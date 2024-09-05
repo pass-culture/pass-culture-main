@@ -115,7 +115,7 @@ describe('validationSchema', () => {
         'booking limit date can be in the past if the form is read only',
       formValues: {
         ...values,
-        bookingLimitDatetime: sub(new Date(), { days: 1 }).toISOString(),
+        bookingLimitDatetime: '2024-08-31T13:00:00Z',
       },
       expectedErrors: [],
       isReadOnly: true,
