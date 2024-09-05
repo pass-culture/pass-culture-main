@@ -4690,6 +4690,13 @@ csstype@^3.0.2:
   resolved "https://registry.yarnpkg.com/csstype/-/csstype-3.1.2.tgz#1d4bf9d572f11c14031f0436e1c10bc1f571f50b"
   integrity sha512-I7K1Uu0MBPzaFKg4nI5Q7Vs2t+3gWWW648spaF+Rg7pI9ds18Ugn+lvg4SHczUdKlHI5LWBXyqfS8+DufyBsgQ==
 
+cypress-fail-fast@^7.1.1:
+  version "7.1.1"
+  resolved "https://registry.yarnpkg.com/cypress-fail-fast/-/cypress-fail-fast-7.1.1.tgz#4be6ddbed8c284358faf488c73b6bd87f69cda49"
+  integrity sha512-9qPXikVY20OWdc97DO2++0AS4IF9kB+vuPhP8/0wXchcnFIsiCiwvQhOEBSdVHr1mZi87h0Z8jYEB4VLPzNkGg==
+  dependencies:
+    chalk "4.1.2"
+
 cypress@^13.14.2:
   version "13.14.2"
   resolved "https://registry.yarnpkg.com/cypress/-/cypress-13.14.2.tgz#4237eb7b26de2baeaa1f01e585f965d88fca7f39"

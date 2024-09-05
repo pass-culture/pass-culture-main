@@ -16,6 +16,7 @@
 // Import commands.js using ES2015 syntax:
 import './commands'
 import { configure } from '@testing-library/react'
+import 'cypress-fail-fast'
 
 // Set to `defaultCommandTimeout` to match the cypress default timeout
 configure({ asyncUtilTimeout: 4000 })
