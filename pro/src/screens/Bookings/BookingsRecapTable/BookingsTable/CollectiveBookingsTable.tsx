@@ -128,6 +128,7 @@ export const CollectiveBookingsTable = ({
 
             <th
               scope="col"
+              data-testid="institution-column"
               className={cn(
                 styles['column-institution'],
                 styles['table-header-cell']

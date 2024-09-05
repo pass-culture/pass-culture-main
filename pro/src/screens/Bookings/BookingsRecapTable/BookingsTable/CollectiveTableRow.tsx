@@ -97,7 +97,9 @@ export const CollectiveTableRow = ({
         >
           <div className={styles['cell-item-wrapper']}>
             <div>
-              <span>{institutionName}</span>
+              <span data-testid="booking-offer-institution">
+                {institutionName}
+              </span>
               <br />
             </div>
             <span className={styles['institution-cell-subtitle']}>
