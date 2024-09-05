@@ -199,10 +199,10 @@ export const TemplateCollectiveOffersScreen = ({
           <div role="status">
             {selectedOffers.length > 0 && (
               <CollectiveOffersActionsBar
+                areTemplateOffers
                 areAllOffersSelected={areAllOffersSelected}
                 clearSelectedOfferIds={clearSelectedOfferIds}
                 selectedOffers={selectedOffers}
-                toggleSelectAllCheckboxes={toggleSelectAllCheckboxes}
               />
             )}
           </div>

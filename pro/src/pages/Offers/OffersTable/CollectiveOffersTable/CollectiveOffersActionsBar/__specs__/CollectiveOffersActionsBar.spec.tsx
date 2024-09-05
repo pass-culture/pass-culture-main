@@ -58,7 +58,7 @@ describe('ActionsBar', () => {
         id: offerId,
       })),
       clearSelectedOfferIds: vi.fn(),
-      toggleSelectAllCheckboxes: vi.fn(),
+      areTemplateOffers: false,
       areAllOffersSelected: false,
     }
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({

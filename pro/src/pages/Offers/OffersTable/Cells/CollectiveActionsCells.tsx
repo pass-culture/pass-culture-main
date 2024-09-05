@@ -16,7 +16,11 @@ import { useAnalytics } from 'app/App/analytics/firebase'
 import { ArchiveConfirmationModal } from 'components/ArchiveConfirmationModal/ArchiveConfirmationModal'
 import { canArchiveCollectiveOffer } from 'components/ArchiveConfirmationModal/utils/canArchiveCollectiveOffer'
 import { CancelCollectiveBookingModal } from 'components/CancelCollectiveBookingModal/CancelCollectiveBookingModal'
-import { GET_COLLECTIVE_OFFERS_QUERY_KEY } from 'config/swrQueryKeys'
+import {
+  GET_COLLECTIVE_OFFERS_BOOKABLE_QUERY_KEY,
+  GET_COLLECTIVE_OFFERS_QUERY_KEY,
+  GET_TEMPLATE_COLLECTIVE_OFFERS_QUERY_KEY,
+} from 'config/swrQueryKeys'
 import {
   CollectiveBookingsEvents,
   Events,
@@ -85,6 +89,17 @@ export const CollectiveActionsCells = ({
   const shouldDisplayModal =
     !isLocalStorageAvailable ||
     localStorage.getItem(LOCAL_STORAGE_HAS_SEEN_MODAL_KEY) !== 'true'
+
+  const isNewOffersAndBookingsActive = useActiveFeature(
+    'WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE'
+  )
+
+  const offersQueryKey = isNewOffersAndBookingsActive
+    ? offer.isShowcase
+      ? GET_TEMPLATE_COLLECTIVE_OFFERS_QUERY_KEY
+      : GET_COLLECTIVE_OFFERS_BOOKABLE_QUERY_KEY
+    : GET_COLLECTIVE_OFFERS_QUERY_KEY
+
   const { mutate } = useSWRConfig()
 
   const isMarseilleActive = useActiveFeature('WIP_ENABLE_MARSEILLE')
@@ -152,7 +167,7 @@ export const CollectiveActionsCells = ({
     }
     try {
       await api.cancelCollectiveOfferBooking(offer.id)
-      await mutate([GET_COLLECTIVE_OFFERS_QUERY_KEY, apiFilters])
+      await mutate([offersQueryKey, apiFilters])
       isSelected && deselectOffer(offer)
       setIsCancelledBookingModalOpen(false)
       notify.success(
@@ -189,7 +204,7 @@ export const CollectiveActionsCells = ({
         await api.patchCollectiveOffersArchive({ ids: [offer.id] })
       }
 
-      await mutate([GET_COLLECTIVE_OFFERS_QUERY_KEY, apiFilters])
+      await mutate([offersQueryKey, apiFilters])
       isSelected && deselectOffer(offer)
       setIsArchivedModalOpen(false)
       notify.success('Une offre a bien été archivée', {
