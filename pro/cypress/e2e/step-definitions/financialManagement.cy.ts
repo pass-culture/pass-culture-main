@@ -26,16 +26,15 @@ When('I remove {string} venue from my bank account', (venue: string) => {
   cy.findByRole('dialog').within(() => {
     cy.findByLabelText(venue).should('be.checked')
     cy.findByLabelText(venue).uncheck()
-
     cy.findByText('Enregistrer').click()
+    cy.intercept({ method: 'GET', url: '/offerers/*' }).as('getOfferers')
     cy.findByText('Confirmer').click()
+    cy.wait('@getOfferers').its('response.statusCode').should('equal', 200)
   })
 })
 
 When('I add {string} venue to my bank account', (venue: string) => {
   cy.findByTestId('reimbursement-bank-account-linked-venues').within(() => {
-    cy.contains('Aucun lieu n’est rattaché à ce compte bancaire.')
-
     cy.findByText('Rattacher un lieu').click()
   })
 
@@ -154,9 +153,20 @@ Then('no venue should be linked to my account', () => {
     'contain',
     'Vos modifications ont bien été prises en compte.'
   )
+  cy.reload()
+  cy.findAllByTestId('spinner').should('not.exist')
+  cy.findByTestId('reimbursement-bank-account-linked-venues').within(() => {
+    cy.contains('Aucun lieu n’est rattaché à ce compte bancaire.')
+  })
 })
 
 Then('{string} venue should be linked to my account', (venue: string) => {
+  cy.findAllByTestId('global-notification-success').should(
+    'contain',
+    'Vos modifications ont bien été prises en compte.'
+  )
+  cy.reload()
+  cy.findAllByTestId('spinner').should('not.exist')
   cy.findByTestId('reimbursement-bank-account-linked-venues').within(() => {
     cy.contains('Lieu(x) rattaché(s) à ce compte bancaire')
     cy.contains('Certains de vos lieux ne sont pas rattachés.')
