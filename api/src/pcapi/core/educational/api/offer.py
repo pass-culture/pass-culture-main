@@ -532,15 +532,19 @@ def edit_collective_offer_public(
                 offer_validation.validate_national_program(new_values.get("nationalProgramId"), domains)
             offer.domains = domains
         elif key in ("educationalInstitutionId", "educationalInstitution"):
-            if value is not None:
-                institution = educational_repository.get_educational_institution_public(
-                    institution_id=new_values.get("educationalInstitutionId"),
-                    uai=new_values.get("educationalInstitution"),
-                )
-                if not institution:
-                    raise exceptions.EducationalInstitutionUnknown()
-                if not institution.isActive:
-                    raise exceptions.EducationalInstitutionIsNotActive()
+            if value is None:
+                continue
+
+            institution = educational_repository.get_educational_institution_public(
+                institution_id=new_values.get("educationalInstitutionId"),
+                uai=new_values.get("educationalInstitution"),
+            )
+
+            if not institution:
+                raise exceptions.EducationalInstitutionUnknown()
+            if not institution.isActive:
+                raise exceptions.EducationalInstitutionIsNotActive()
+
             offer.institution = institution
         elif key == "offerVenue":
             offer.offerVenue["venueId"] = value["venueId"] or None
