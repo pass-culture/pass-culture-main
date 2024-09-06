@@ -1,4 +1,5 @@
 import datetime
+import decimal
 import json
 from unittest.mock import patch
 
@@ -149,6 +150,7 @@ class BookEventTicketTest:
                 "offer_name": "La fête aux acouphènes",
                 "offer_price": 1010,
                 "price_category_id": stock.priceCategoryId,
+                "price_category_id_at_provider": None,
                 "price_category_label": "Tarif unique",
                 "stock_id": stock.id,
                 "stock_id_at_provider": "roi_des_forêts!",
@@ -205,7 +207,14 @@ class BookEventTicketTest:
             name="La fête aux acouphènes",
             venueId=venue.id,
         )
-        stock = offers_factories.EventStockFactory(offer=offer, idAtProviders="roi_des_forêts!")
+        price_category = offers_factories.PriceCategoryFactory(
+            offer=offer,
+            price=decimal.Decimal("10.1"),
+            idAtProvider="pause...",
+        )
+        stock = offers_factories.EventStockFactory(
+            offer=offer, idAtProviders="roi_des_forêts!", priceCategory=price_category
+        )
         booking = bookings_factories.BookingFactory(stock=stock, dateCreated=booking_creation_date, quantity=2)
         user = user_factories.BeneficiaryFactory(
             firstName="Jean",
@@ -224,7 +233,8 @@ class BookEventTicketTest:
                 "offer_name": "La fête aux acouphènes",
                 "offer_price": 1010,
                 "price_category_id": stock.priceCategoryId,
-                "price_category_label": "Tarif unique",
+                "price_category_id_at_provider": "pause...",
+                "price_category_label": stock.priceCategory.label,
                 "stock_id": stock.id,
                 "stock_id_at_provider": "roi_des_forêts!",
                 "user_birth_date": user.dateOfBirth.strftime("%Y-%m-%d"),
