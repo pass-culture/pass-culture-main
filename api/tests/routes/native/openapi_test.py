@@ -1756,6 +1756,8 @@ def test_public_api(client):
                         "CONCERTS_FESTIVALS",
                         "EVENEMENTS_EN_LIGNE",
                         "FILMS_SERIES_CINEMA",
+                        "CINEMA",
+                        "FILMS_DOCUMENTAIRES_SERIES",
                         "INSTRUMENTS",
                         "JEUX_JEUX_VIDEOS",
                         "LIVRES",
