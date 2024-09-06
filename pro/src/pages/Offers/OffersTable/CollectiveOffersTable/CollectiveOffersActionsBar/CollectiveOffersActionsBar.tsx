@@ -66,51 +66,41 @@ const toggleCollectiveOffersActiveInactiveStatus = async (
   selectedOffers: CollectiveOfferResponseModel[],
   notify: ReturnType<typeof useNotification>
 ) => {
-  try {
-    //  Differenciate template and bookable selected offers so that there can be two separarate api status update calls
-    const collectiveOfferIds = []
-    const collectiveOfferTemplateIds = []
+  //  Differenciate template and bookable selected offers so that there can be two separarate api status update calls
+  const collectiveOfferIds = []
+  const collectiveOfferTemplateIds = []
 
-    if (
-      selectedOffers.some(
-        (offer) => offer.status === CollectiveOfferStatus.ARCHIVED
-      )
-    ) {
-      notify.error(
-        `Une erreur est survenue lors de ${newStatus === CollectiveOfferDisplayedStatus.ACTIVE ? 'la publication' : 'la désactivation'} des offres sélectionnées`
-      )
-      return
-    }
-
-    for (const offer of selectedOffers) {
-      if (offer.isShowcase) {
-        collectiveOfferTemplateIds.push(offer.id)
-      } else {
-        collectiveOfferIds.push(offer.id)
-      }
-    }
-
-    if (collectiveOfferIds.length > 0) {
-      await api.patchCollectiveOffersActiveStatus({
-        ids: collectiveOfferIds.map((id) => Number(id)),
-        isActive: newStatus === CollectiveOfferDisplayedStatus.ACTIVE,
-      })
-    }
-
-    if (collectiveOfferTemplateIds.length > 0) {
-      await api.patchCollectiveOffersTemplateActiveStatus({
-        ids: collectiveOfferTemplateIds.map((ids) => Number(ids)),
-        isActive: newStatus === CollectiveOfferDisplayedStatus.ACTIVE,
-      })
-    }
-
-    notify.success(
-      newStatus === CollectiveOfferDisplayedStatus.ACTIVE
-        ? computeActivationSuccessMessage(selectedOffers.length)
-        : computeDeactivationSuccessMessage(selectedOffers.length)
+  if (
+    selectedOffers.some(
+      (offer) => offer.status === CollectiveOfferStatus.ARCHIVED
     )
-  } catch {
-    notify.error('Une erreur est survenue')
+  ) {
+    notify.error(
+      `Une erreur est survenue lors de ${newStatus === CollectiveOfferDisplayedStatus.ACTIVE ? 'la publication' : 'la désactivation'} des offres sélectionnées`
+    )
+    return
+  }
+
+  for (const offer of selectedOffers) {
+    if (offer.isShowcase) {
+      collectiveOfferTemplateIds.push(offer.id)
+    } else {
+      collectiveOfferIds.push(offer.id)
+    }
+  }
+
+  if (collectiveOfferIds.length > 0) {
+    await api.patchCollectiveOffersActiveStatus({
+      ids: collectiveOfferIds.map((id) => Number(id)),
+      isActive: newStatus === CollectiveOfferDisplayedStatus.ACTIVE,
+    })
+  }
+
+  if (collectiveOfferTemplateIds.length > 0) {
+    await api.patchCollectiveOffersTemplateActiveStatus({
+      ids: collectiveOfferTemplateIds.map((ids) => Number(ids)),
+      isActive: newStatus === CollectiveOfferDisplayedStatus.ACTIVE,
+    })
   }
 }
 
@@ -155,11 +145,19 @@ export function CollectiveOffersActionsBar({
       case CollectiveOfferDisplayedStatus.ACTIVE: {
         const updateOfferStatusMessage = getPublishOffersErrorMessage()
         if (!updateOfferStatusMessage) {
-          await toggleCollectiveOffersActiveInactiveStatus(
-            CollectiveOfferDisplayedStatus.ACTIVE,
-            selectedOffers,
-            notify
-          )
+          try {
+            await toggleCollectiveOffersActiveInactiveStatus(
+              CollectiveOfferDisplayedStatus.ACTIVE,
+              selectedOffers,
+              notify
+            )
+            await mutate([offersQueryKey, apiFilters])
+            notify.success(
+              computeActivationSuccessMessage(selectedOffers.length)
+            )
+          } catch {
+            notify.error('Une erreur est survenue')
+          }
         } else {
           notify.error(updateOfferStatusMessage)
           return
@@ -167,23 +165,48 @@ export function CollectiveOffersActionsBar({
         break
       }
       case CollectiveOfferDisplayedStatus.INACTIVE: {
+        try {
+          await toggleCollectiveOffersActiveInactiveStatus(
+            CollectiveOfferDisplayedStatus.INACTIVE,
+            selectedOffers,
+            notify
+          )
+          await mutate([offersQueryKey, apiFilters])
+          notify.success(
+            computeDeactivationSuccessMessage(selectedOffers.length)
+          )
+        } catch {
+          notify.error('Une erreur est survenue')
+        }
         setIsDeactivationDialogOpen(false)
-        await toggleCollectiveOffersActiveInactiveStatus(
-          CollectiveOfferDisplayedStatus.INACTIVE,
-          selectedOffers,
-          notify
-        )
         break
       }
       case CollectiveOfferDisplayedStatus.ARCHIVED: {
+        try {
+          await onArchiveOffers()
+          await mutate([offersQueryKey, apiFilters])
+          notify.success(
+            selectedOffers.length > 1
+              ? `${selectedOffers.length} offres ont bien été archivées`
+              : 'Une offre a bien été archivée',
+            {
+              duration: NOTIFICATION_LONG_SHOW_DURATION,
+            }
+          )
+        } catch {
+          notify.error(
+            'Une erreur est survenue lors de l’archivage de l’offre',
+            {
+              duration: NOTIFICATION_LONG_SHOW_DURATION,
+            }
+          )
+        }
         setIsArchiveDialogOpen(false)
-        await onArchiveOffers()
         break
       }
     }
 
     clearSelectedOfferIds()
-    await mutate([offersQueryKey, apiFilters])
   }
 
   function openArchiveOffersDialog() {
@@ -212,40 +235,25 @@ export function CollectiveOffersActionsBar({
   }
 
   const onArchiveOffers = async () => {
-    try {
-      const collectiveOfferIds = []
-      const collectiveOfferTemplateIds = []
+    const collectiveOfferIds = []
+    const collectiveOfferTemplateIds = []
 
-      for (const offer of selectedOffers) {
-        if (offer.isShowcase) {
-          collectiveOfferTemplateIds.push(offer.id)
-        } else {
-          collectiveOfferIds.push(offer.id)
-        }
+    for (const offer of selectedOffers) {
+      if (offer.isShowcase) {
+        collectiveOfferTemplateIds.push(offer.id)
+      } else {
+        collectiveOfferIds.push(offer.id)
       }
+    }
 
-      if (collectiveOfferTemplateIds.length > 0) {
-        await api.patchCollectiveOffersTemplateArchive({
-          ids: [...collectiveOfferTemplateIds],
-        })
-      }
-
-      if (collectiveOfferIds.length > 0) {
-        await api.patchCollectiveOffersArchive({ ids: [...collectiveOfferIds] })
-      }
-
-      notify.success(
-        selectedOffers.length > 1
-          ? `${selectedOffers.length} offres ont bien été archivées`
-          : 'Une offre a bien été archivée',
-        {
-          duration: NOTIFICATION_LONG_SHOW_DURATION,
-        }
-      )
-    } catch (error) {
-      notify.error('Une erreur est survenue lors de l’archivage de l’offre', {
-        duration: NOTIFICATION_LONG_SHOW_DURATION,
+    if (collectiveOfferTemplateIds.length > 0) {
+      await api.patchCollectiveOffersTemplateArchive({
+        ids: [...collectiveOfferTemplateIds],
       })
+    }
+
+    if (collectiveOfferIds.length > 0) {
+      await api.patchCollectiveOffersArchive({ ids: [...collectiveOfferIds] })
     }
   }
 

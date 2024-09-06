@@ -208,6 +208,50 @@ describe('ActionsBar', () => {
     expect(screen.getByText('Une erreur est survenue'))
   })
 
+  it('should show an error message when an error occurs after clicking on "Masquer" button when some offers are selected', async () => {
+    vi.spyOn(api, 'patchCollectiveOffersActiveStatus').mockRejectedValueOnce(
+      null
+    )
+    renderActionsBar({
+      ...props,
+      selectedOffers: [
+        collectiveOfferFactory({ id: 1, status: CollectiveOfferStatus.ACTIVE }),
+      ],
+    })
+
+    const inactiveButton = screen.getByText('Masquer')
+    await userEvent.click(inactiveButton)
+
+    const modalInactiveButton = screen.getByTestId(
+      'confirm-dialog-button-confirm'
+    )
+    await userEvent.click(modalInactiveButton)
+
+    expect(screen.getByText('Une erreur est survenue'))
+  })
+
+  it('should show an error message when an error occurs after clicking on "Archiver" button when some offers are selected', async () => {
+    vi.spyOn(api, 'patchCollectiveOffersArchive').mockRejectedValueOnce(null)
+    renderActionsBar({
+      ...props,
+      selectedOffers: [
+        collectiveOfferFactory({ id: 1, status: CollectiveOfferStatus.ACTIVE }),
+      ],
+    })
+
+    const archiveButton = screen.getByText('Archiver')
+    await userEvent.click(archiveButton)
+
+    const modalArchiveButton = screen.getByTestId(
+      'confirm-dialog-button-confirm'
+    )
+    await userEvent.click(modalArchiveButton)
+
+    expect(
+      screen.getByText('Une erreur est survenue lors de l’archivage de l’offre')
+    )
+  })
+
   it('should not deactivate offers on click on "Masquer" when at least one offer is not published or expired', async () => {
     renderActionsBar({
       ...props,
