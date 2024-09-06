@@ -1,7 +1,7 @@
 import { format } from 'date-fns'
 
 import {
-  GetIndividualOfferResponseModel,
+  GetIndividualOfferWithAddressResponseModel,
   GetOfferStockResponseModel,
 } from 'apiClient/v1'
 import { FORMAT_ISO_DATE_ONLY, isDateValid } from 'utils/date'
@@ -11,8 +11,9 @@ import { STOCK_THING_FORM_DEFAULT_VALUES } from '../constants'
 import { StockThingFormValues } from '../types'
 
 export const buildInitialValues = (
-  offer: GetIndividualOfferResponseModel,
-  stocks: GetOfferStockResponseModel[]
+  offer: GetIndividualOfferWithAddressResponseModel,
+  stocks: GetOfferStockResponseModel[],
+  useOffererAddressAsDataSourceEnabled: boolean
 ): StockThingFormValues => {
   if (stocks.length === 0) {
     return STOCK_THING_FORM_DEFAULT_VALUES
@@ -27,7 +28,9 @@ export const buildInitialValues = (
       ? format(
           getLocalDepartementDateTimeFromUtc(
             stocks[0].bookingLimitDatetime,
-            offer.venue.departementCode
+            useOffererAddressAsDataSourceEnabled
+              ? (offer.address?.departmentCode ?? '')
+              : offer.venue.departementCode
           ),
           FORMAT_ISO_DATE_ONLY
         )

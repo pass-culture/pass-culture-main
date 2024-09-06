@@ -7,7 +7,7 @@ import { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
 import {
-  GetIndividualOfferResponseModel,
+  GetIndividualOfferWithAddressResponseModel,
   GetStocksResponseModel,
   StocksOrderedBy,
   OfferStatus,
@@ -25,6 +25,7 @@ import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
 import { isOfferDisabled } from 'core/Offers/utils/isOfferDisabled'
 import { SelectOption } from 'custom_types/form'
+import { useActiveFeature } from 'hooks/useActiveFeature'
 import { SortingMode, useColumnSorting } from 'hooks/useColumnSorting'
 import { useNotification } from 'hooks/useNotification'
 import { useOfferWizardMode } from 'hooks/useOfferWizardMode'
@@ -116,7 +117,7 @@ function resetFormWithNewPage({
 }
 
 interface StocksEventEditionProps {
-  offer: GetIndividualOfferResponseModel
+  offer: GetIndividualOfferWithAddressResponseModel
 }
 
 export const StocksEventEdition = ({
@@ -132,13 +133,16 @@ export const StocksEventEdition = ({
     () => getPriceCategoryOptions(offer.priceCategories),
     [offer.priceCategories]
   )
+  const useOffererAddressAsDataSourceEnabled = useActiveFeature(
+    'WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE'
+  )
+  const departmentCode = useOffererAddressAsDataSourceEnabled
+    ? (offer.address?.departmentCode ?? '')
+    : offer.venue.departementCode
+
   const today = useMemo(
-    () =>
-      getLocalDepartementDateTimeFromUtc(
-        getToday(),
-        offer.venue.departementCode
-      ),
-    [offer.venue.departementCode]
+    () => getLocalDepartementDateTimeFromUtc(getToday(), departmentCode),
+    [departmentCode]
   )
 
   // states
@@ -175,10 +179,7 @@ export const StocksEventEdition = ({
         offer.id,
         dateFilter ? dateFilter : undefined,
         timeFilter
-          ? convertTimeFromVenueTimezoneToUtc(
-              timeFilter,
-              offer.venue.departementCode
-            )
+          ? convertTimeFromVenueTimezoneToUtc(timeFilter, departmentCode)
           : undefined,
         priceCategoryIdFilter ? Number(priceCategoryIdFilter) : undefined,
         currentSortingColumn ?? undefined,
@@ -189,7 +190,7 @@ export const StocksEventEdition = ({
       currentSortingColumn,
       dateFilter,
       offer.id,
-      offer.venue.departementCode,
+      departmentCode,
       page,
       priceCategoryIdFilter,
       currentSortingMode,
@@ -241,7 +242,7 @@ export const StocksEventEdition = ({
           lastProviderName: offer.lastProvider?.name ?? null,
           offerStatus: offer.status,
           priceCategoriesOptions,
-          departmentCode: offer.venue.departementCode,
+          departmentCode,
         })
       }
     }
@@ -269,7 +270,7 @@ export const StocksEventEdition = ({
     offer.status,
     priceCategoriesOptions,
     today,
-    offer.venue.departementCode,
+    departmentCode,
   ])
 
   const onSubmit = async (values: StocksEventFormValues) => {
@@ -300,11 +301,7 @@ export const StocksEventEdition = ({
     }
 
     try {
-      await submitToApi(
-        values.stocks,
-        offer.id,
-        offer.venue.departementCode ?? ''
-      )
+      await submitToApi(values.stocks, offer.id, departmentCode ?? '')
     } catch (error) {
       if (error instanceof Error) {
         notify.error(error.message)
@@ -319,12 +316,7 @@ export const StocksEventEdition = ({
   }
 
   const handleRecurrenceSubmit = async (values: RecurrenceFormValues) => {
-    await onRecurrenceSubmit(
-      values,
-      offer.venue.departementCode ?? '',
-      offer.id,
-      notify
-    )
+    await onRecurrenceSubmit(values, departmentCode ?? '', offer.id, notify)
     const response = await loadStocksFromCurrentFilters()
     resetFormWithNewPage({
       response,
@@ -334,7 +326,7 @@ export const StocksEventEdition = ({
       lastProviderName: offer.lastProvider?.name ?? null,
       offerStatus: offer.status,
       priceCategoriesOptions,
-      departmentCode: offer.venue.departementCode,
+      departmentCode,
     })
     setIsRecurrenceModalOpen(false)
   }
@@ -368,7 +360,7 @@ export const StocksEventEdition = ({
             lastProviderName: offer.lastProvider?.name ?? null,
             offerStatus: offer.status,
             priceCategoriesOptions,
-            departmentCode: offer.venue.departementCode,
+            departmentCode,
           })
         }
       }

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 
-import { GetIndividualOfferResponseModel } from 'apiClient/v1'
+import { GetIndividualOfferWithAddressResponseModel } from 'apiClient/v1'
+import { useActiveFeature } from 'hooks/useActiveFeature'
 import { useNotification } from 'hooks/useNotification'
 import fullMoreIcon from 'icons/full-more.svg'
 import { Button } from 'ui-kit/Button/Button'
@@ -12,7 +13,7 @@ import { RecurrenceFormValues } from './form/types'
 import { RecurrenceForm } from './RecurrenceForm'
 
 interface AddRecurrencesButtonProps {
-  offer: GetIndividualOfferResponseModel
+  offer: GetIndividualOfferWithAddressResponseModel
   reloadStocks: () => Promise<void>
   className?: string
 }
@@ -23,11 +24,17 @@ export const AddRecurrencesButton = ({
   className,
 }: AddRecurrencesButtonProps): JSX.Element => {
   const notify = useNotification()
-
   const [isRecurrenceModalOpen, setIsRecurrenceModalOpen] = useState(false)
 
+  const useOffererAddressAsDataSourceEnabled = useActiveFeature(
+    'WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE'
+  )
   const handleSubmit = async (values: RecurrenceFormValues) => {
-    await onSubmit(values, offer.venue.departementCode ?? '', offer.id, notify)
+    const departmentCode = useOffererAddressAsDataSourceEnabled
+      ? (offer.address?.departmentCode ?? '')
+      : (offer.venue.departementCode ?? '')
+
+    await onSubmit(values, departmentCode, offer.id, notify)
     await reloadStocks()
     setIsRecurrenceModalOpen(false)
   }

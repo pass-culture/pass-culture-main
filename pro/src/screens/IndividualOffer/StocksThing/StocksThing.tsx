@@ -5,7 +5,7 @@ import { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
 import {
-  GetIndividualOfferResponseModel,
+  GetIndividualOfferWithAddressResponseModel,
   GetOfferStockResponseModel,
   SubcategoryIdEnum,
 } from 'apiClient/v1'
@@ -48,7 +48,7 @@ import { setFormReadOnlyFields } from './utils/setFormReadOnlyFields'
 import { getValidationSchema } from './validationSchema'
 
 export interface StocksThingProps {
-  offer: GetIndividualOfferResponseModel
+  offer: GetIndividualOfferWithAddressResponseModel
 }
 
 export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
@@ -68,7 +68,13 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
     async function loadStocks() {
       const response = await api.getStocks(offer.id)
       setStocks(response.stocks)
-      formik.resetForm({ values: buildInitialValues(offer, response.stocks) })
+      formik.resetForm({
+        values: buildInitialValues(
+          offer,
+          response.stocks,
+          useOffererAddressAsDataSourceEnabled
+        ),
+      })
     }
 
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -80,9 +86,14 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
   /* istanbul ignore next: DEBT, TO FIX */
   const minQuantity = stocks.length > 0 ? stocks[0].bookingsQuantity : null
   const isDisabled = isOfferDisabled(offer.status)
+  const useOffererAddressAsDataSourceEnabled = useActiveFeature(
+    'WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE'
+  )
   const today = getLocalDepartementDateTimeFromUtc(
     getToday(),
-    offer.venue.departementCode
+    useOffererAddressAsDataSourceEnabled
+      ? (offer.address?.departmentCode ?? '')
+      : offer.venue.departementCode
   )
   const canBeDuo = subCategories.find(
     (subCategory) => subCategory.id === offer.subcategoryId
@@ -117,7 +128,13 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
 
     // Submit
     try {
-      await submitToApi(values, offer, formik.resetForm, formik.setErrors)
+      await submitToApi(
+        values,
+        offer,
+        formik.resetForm,
+        formik.setErrors,
+        useOffererAddressAsDataSourceEnabled
+      )
     } catch (error) {
       if (error instanceof Error) {
         notify.error(error.message)
@@ -133,7 +150,11 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
   }
 
   const formik = useFormik({
-    initialValues: buildInitialValues(offer, []),
+    initialValues: buildInitialValues(
+      offer,
+      [],
+      useOffererAddressAsDataSourceEnabled
+    ),
     onSubmit,
     validationSchema: getValidationSchema(mode, minQuantity),
   })

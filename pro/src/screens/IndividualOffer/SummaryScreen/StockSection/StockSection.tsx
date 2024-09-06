@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { api } from 'apiClient/api'
 import {
   GetIndividualOfferResponseModel,
+  GetIndividualOfferWithAddressResponseModel,
   GetOfferStockResponseModel,
   OfferStatus,
   StockStatsResponseModel,
@@ -12,6 +13,7 @@ import { SummaryDescriptionList } from 'components/SummaryLayout/SummaryDescript
 import { SummarySection } from 'components/SummaryLayout/SummarySection'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
+import { useActiveFeature } from 'hooks/useActiveFeature'
 import { useNotification } from 'hooks/useNotification'
 import { useOfferWizardMode } from 'hooks/useOfferWizardMode'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
@@ -37,7 +39,7 @@ export const getStockWarningText = (offer: GetIndividualOfferResponseModel) => {
 }
 
 export interface StockSectionProps {
-  offer: GetIndividualOfferResponseModel
+  offer: GetIndividualOfferWithAddressResponseModel
   canBeDuo?: boolean
 }
 
@@ -52,6 +54,14 @@ export const StockSection = ({
   >(undefined)
   const [stockThing, setStockThing] = useState<GetOfferStockResponseModel>()
   const notification = useNotification()
+
+  const useOffererAddressAsDataSourceEnabled = useActiveFeature(
+    'WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE'
+  )
+
+  const departmentCode = useOffererAddressAsDataSourceEnabled
+    ? (offer.address?.departmentCode ?? '')
+    : (offer.venue.departementCode ?? '')
 
   useEffect(() => {
     async function getStockThing() {
@@ -118,7 +128,7 @@ export const StockSection = ({
         {offer.isEvent ? (
           <RecurrenceSection
             stocksStats={stocksEventsStats}
-            departementCode={offer.venue.departementCode ?? ''}
+            departementCode={departmentCode}
           />
         ) : (
           <StockThingSection

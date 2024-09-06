@@ -4,7 +4,7 @@ import {
   isErrorAPIError,
   serializeApiErrors,
 } from 'apiClient/helpers'
-import { GetIndividualOfferResponseModel } from 'apiClient/v1'
+import { GetIndividualOfferWithAddressResponseModel } from 'apiClient/v1'
 
 import { serializeStockThingList } from './adapters/serializers'
 import { StockThingFormValues, StockThingFormik } from './types'
@@ -12,9 +12,10 @@ import { buildInitialValues } from './utils/buildInitialValues'
 
 export const submitToApi = async (
   values: StockThingFormValues,
-  offer: GetIndividualOfferResponseModel,
+  offer: GetIndividualOfferWithAddressResponseModel,
   resetForm: StockThingFormik['resetForm'],
-  setErrors: StockThingFormik['setErrors']
+  setErrors: StockThingFormik['setErrors'],
+  useOffererAddressAsDataSourceEnabled: boolean
 ) => {
   try {
     await api.patchOffer(offer.id, { isDuo: values.isDuo })
@@ -27,7 +28,12 @@ export const submitToApi = async (
   try {
     await api.upsertStocks({
       offerId: offer.id,
-      stocks: serializeStockThingList(values, offer.venue.departementCode),
+      stocks: serializeStockThingList(
+        values,
+        useOffererAddressAsDataSourceEnabled
+          ? (offer.address?.departmentCode ?? '')
+          : offer.venue.departementCode
+      ),
     })
   } catch (error) {
     if (isErrorAPIError(error)) {
@@ -51,6 +57,10 @@ export const submitToApi = async (
     api.getStocks(offer.id),
   ])
   resetForm({
-    values: buildInitialValues(offerResponse, stockResponse.stocks),
+    values: buildInitialValues(
+      offerResponse,
+      stockResponse.stocks,
+      useOffererAddressAsDataSourceEnabled
+    ),
   })
 }
