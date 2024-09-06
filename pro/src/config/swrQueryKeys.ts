@@ -12,6 +12,8 @@ export const GET_COLLECTIVE_OFFER_TEMPLATES_QUERY_KEY =
   'getCollectiveOfferTemplates'
 export const GET_COLLECTIVE_OFFERS_BOOKABLE_QUERY_KEY =
   'getCollectiveOffersBookable'
+export const GET_COLLECTIVE_OFFERS_TEMPLATE_QUERY_KEY =
+  'getTemplateCollectiveOffers'
 export const GET_COLLECTIVE_OFFERS_FOR_INSTITUTION_QUERY_KEY =
   'getCollectiveOffersForMyInstitution'
 export const GET_COLLECTIVE_OFFERS_QUERY_KEY = 'getCollectiveOffers'
@@ -42,8 +44,6 @@ export const GET_OFFERER_BANK_ACCOUNTS_AND_ATTACHED_VENUES_QUERY_KEY =
 export const GET_OFFERER_QUERY_KEY = 'getOfferer'
 export const GET_OFFERER_NAMES_QUERY_KEY = 'getOffererNames'
 export const GET_PROVIDERS_QUERY_KEY = 'getProviders'
-export const GET_TEMPLATE_COLLECTIVE_OFFERS_QUERY_KEY =
-  'getTemplateCollectiveOffers'
 export const GET_VALIDATED_OFFERERS_NAMES_QUERY_KEY = 'listOfferersNames'
 export const GET_VENUE_QUERY_KEY = 'getVenue'
 export const GET_VENUE_LABELS_QUERY_KEY = 'getVenueLabels'

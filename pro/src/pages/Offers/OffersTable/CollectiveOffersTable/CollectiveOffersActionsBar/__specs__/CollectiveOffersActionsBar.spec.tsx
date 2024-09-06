@@ -18,13 +18,20 @@ import {
   CollectiveOffersActionsBarProps,
 } from '../CollectiveOffersActionsBar'
 
-const renderActionsBar = (props: CollectiveOffersActionsBarProps) => {
+const renderActionsBar = (
+  props: CollectiveOffersActionsBarProps,
+  features: string[] = []
+) => {
   renderWithProviders(
     <>
       <CollectiveOffersActionsBar {...props} />
       <Notification />
     </>,
-    { storeOverrides: {}, initialRouterEntries: ['/offres/collectives'] }
+    {
+      storeOverrides: {},
+      initialRouterEntries: ['/offres/collectives'],
+      features,
+    }
   )
 }
 
@@ -35,6 +42,15 @@ vi.mock('apiClient/api', () => ({
     patchCollectiveOffersTemplateArchive: vi.fn(),
     patchCollectiveOffersArchive: vi.fn(),
   },
+}))
+
+const mockMutate = vi.fn()
+
+vi.mock('swr', async () => ({
+  ...(await vi.importActual('swr')),
+  useSWRConfig: () => ({
+    mutate: mockMutate,
+  }),
 }))
 
 const mockLogEvent = vi.fn()
@@ -401,5 +417,69 @@ describe('ActionsBar', () => {
         'Les offres liées à des réservations en cours ne peuvent pas être archivées'
       )
     ).toBeInTheDocument()
+  })
+
+  it('should refresh the offers list when the offer status is modified and the FF WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE is disabled', async () => {
+    renderActionsBar({
+      ...props,
+      selectedOffers: [
+        collectiveOfferFactory({
+          isShowcase: false,
+          status: CollectiveOfferStatus.INACTIVE,
+          hasBookingLimitDatetimesPassed: false,
+        }),
+      ],
+    })
+
+    await userEvent.click(screen.getByText('Publier'))
+
+    expect(mockMutate).toHaveBeenCalledWith(
+      expect.arrayContaining(['getCollectiveOffers'])
+    )
+  })
+
+  it('should refresh the offers list when the offer status is modified and the FF WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE is enabled', async () => {
+    renderActionsBar(
+      {
+        ...props,
+        selectedOffers: [
+          collectiveOfferFactory({
+            isShowcase: false,
+            status: CollectiveOfferStatus.INACTIVE,
+            hasBookingLimitDatetimesPassed: false,
+          }),
+        ],
+      },
+      ['WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE']
+    )
+
+    await userEvent.click(screen.getByText('Publier'))
+
+    expect(mockMutate).toHaveBeenCalledWith(
+      expect.arrayContaining(['getCollectiveOffersBookable'])
+    )
+  })
+
+  it('should refresh the template offers list when the offer status is modified and the FF WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE is enabled', async () => {
+    renderActionsBar(
+      {
+        ...props,
+        areTemplateOffers: true,
+        selectedOffers: [
+          collectiveOfferFactory({
+            isShowcase: true,
+            status: CollectiveOfferStatus.INACTIVE,
+            hasBookingLimitDatetimesPassed: false,
+          }),
+        ],
+      },
+      ['WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE']
+    )
+
+    await userEvent.click(screen.getByText('Publier'))
+
+    expect(mockMutate).toHaveBeenCalledWith(
+      expect.arrayContaining(['getTemplateCollectiveOffers'])
+    )
   })
 })
