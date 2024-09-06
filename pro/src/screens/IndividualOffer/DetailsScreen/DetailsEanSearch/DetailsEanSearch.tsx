@@ -1,5 +1,5 @@
 import { useFormikContext } from 'formik'
-import { useState, useEffect } from 'react'
+import { useState, useRef, useEffect } from 'react'
 
 import { api } from 'apiClient/api'
 import { isErrorAPIError, getError } from 'apiClient/helpers'
@@ -19,21 +19,33 @@ import styles from './DetailsEanSearch.module.scss'
 
 export type DetailsEanSearchProps = {
   setImageOffer: (imageOffer: IndividualOfferImage) => void
+  isClearAvailable?: boolean
 }
 
 export const DetailsEanSearch = ({
   setImageOffer,
+  isClearAvailable,
 }: DetailsEanSearchProps): JSX.Element => {
+  const inputRef = useRef<HTMLInputElement>(null)
   const [isFetchingProduct, setIsFetchingProduct] = useState(false)
   const [apiError, setApiError] = useState<string | null>(null)
+  const [wasCleared, setWasCleared] = useState(false)
 
   const { subCategories } = useIndividualOfferContext()
-  const { values, errors, setValues } = useFormikContext<DetailsFormValues>()
+  const { values, errors, setValues, resetForm } =
+    useFormikContext<DetailsFormValues>()
   const { ean, productId } = values
 
   useEffect(() => {
     setApiError(null)
   }, [ean])
+
+  useEffect(() => {
+    if (wasCleared && inputRef.current) {
+      inputRef.current.focus()
+      setWasCleared(false)
+    }
+  }, [wasCleared, productId])
 
   const onEanSearch = async () => {
     if (ean) {
@@ -105,10 +117,17 @@ export const DetailsEanSearch = ({
     }
   }
 
+  const onEanClear = () => {
+    resetForm()
+    setWasCleared(true)
+  }
+
   const isProductBased = !!productId
   const hasInputErrored = !!errors.ean
+  const shouldInputBeDisabled = isProductBased || isFetchingProduct
   const shouldButtonBeDisabled =
     isProductBased || !ean || hasInputErrored || !!apiError || isFetchingProduct
+  const displayClearButton = isProductBased && isClearAvailable
 
   const label = (
     <>
@@ -126,27 +145,30 @@ export const DetailsEanSearch = ({
     <div className={styles['details-ean-search']}>
       <div className={styles['details-ean-search-form']}>
         <TextInput
+          refForInput={inputRef}
           classNameLabel={styles['details-ean-search-label']}
           label={label}
           description="Format : EAN à 13 chiffres"
           name="ean"
           type="text"
-          disabled={isProductBased}
+          disabled={shouldInputBeDisabled}
           maxLength={13}
           isOptional
           countCharacters
-          rightIcon={strokeBarcode}
           {...(apiError && {
             externalError: apiError,
           })}
-          {...(isProductBased
+          {...(displayClearButton
             ? {
                 clearButtonProps: {
                   tooltip: 'Effacer',
-                  onClick: () => console.log('clear'),
+                  display: 'close',
+                  onClick: onEanClear,
                 },
               }
-            : {})}
+            : {
+                rightIcon: strokeBarcode,
+              })}
         />
         <Button
           className={styles['details-ean-search-button']}

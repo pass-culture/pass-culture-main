@@ -29,7 +29,11 @@ const contextValue: IndividualOfferContextValues = {
   setIsEvent: vi.fn(),
 }
 
-const EanSearchWrappedWithFormik = (): JSX.Element => {
+const EanSearchWrappedWithFormik = ({
+  isClearAvailable,
+}: {
+  isClearAvailable: boolean
+}): JSX.Element => {
   const formik = useFormik({
     initialValues: DEFAULT_DETAILS_FORM_VALUES,
     onSubmit: vi.fn(),
@@ -39,15 +43,22 @@ const EanSearchWrappedWithFormik = (): JSX.Element => {
 
   return (
     <FormikProvider value={formik}>
-      <DetailsEanSearch setImageOffer={setImageOffer} />
+      <DetailsEanSearch
+        setImageOffer={setImageOffer}
+        isClearAvailable={isClearAvailable}
+      />
     </FormikProvider>
   )
 }
 
-const renderDetailsEanSearch = () => {
+const renderDetailsEanSearch = ({
+  isClearAvailable,
+}: {
+  isClearAvailable: boolean
+}) => {
   return renderWithProviders(
     <IndividualOfferContext.Provider value={contextValue}>
-      <EanSearchWrappedWithFormik />
+      <EanSearchWrappedWithFormik isClearAvailable={isClearAvailable} />
     </IndividualOfferContext.Provider>
   )
 }
@@ -62,6 +73,7 @@ const successMessage =
   'Les informations suivantes ont été synchronisées' +
   ' à partir de l’EAN renseigné.'
 const errorMessage = 'Une erreur est survenue lors de la recherche'
+const clearButtonLabel = /Effacer/
 
 describe('DetailsEanSearch', () => {
   describe('when an EAN search is performed succesfully', () => {
@@ -76,10 +88,11 @@ describe('DetailsEanSearch', () => {
         performer: 'Boards of Canada',
         images: {},
       })
-      renderDetailsEanSearch()
     })
 
     it('should display a success message', async () => {
+      renderDetailsEanSearch({ isClearAvailable: true })
+
       const button = screen.getByRole('button', { name: buttonLabel })
       const eanInput = screen.getByRole('textbox', { name: inputLabel })
 
@@ -92,6 +105,8 @@ describe('DetailsEanSearch', () => {
     })
 
     it('should be disabled until the input is cleared', async () => {
+      renderDetailsEanSearch({ isClearAvailable: true })
+
       const button = screen.getByRole('button', { name: buttonLabel })
       const eanInput = screen.getByRole('textbox', { name: inputLabel })
 
@@ -104,14 +119,39 @@ describe('DetailsEanSearch', () => {
       expect(eanInput).toBeDisabled()
       expect(button).toBeDisabled()
 
-      // TODO: clear the input and test eanInput/button again.
+      // A clear button appears, when clicked, it should empty
+      // the input. The search button remains disabled, as
+      // the input is empty.
+      const clearButton = screen.getByRole('button', { name: clearButtonLabel })
+      expect(clearButton).toBeInTheDocument()
+      await userEvent.click(clearButton)
+
+      const newEanInput = screen.getByRole('textbox', { name: inputLabel })
+      expect(newEanInput).not.toBeDisabled()
+      expect(newEanInput).toHaveValue('')
+      expect(button).toBeDisabled()
+    })
+
+    it('should not display the clear button afterwards if unavailable (POST draft/edited offer contexts)', async () => {
+      renderDetailsEanSearch({ isClearAvailable: false })
+
+      const button = screen.getByRole('button', { name: buttonLabel })
+      const eanInput = screen.getByRole('textbox', { name: inputLabel })
+
+      await userEvent.type(eanInput, '9781234567897')
+      await userEvent.click(button)
+
+      const clearButton = screen.queryByRole('button', {
+        name: clearButtonLabel,
+      })
+      expect(clearButton).not.toBeInTheDocument()
     })
   })
 
   describe('when an EAN search ends with an error', () => {
     beforeEach(() => {
       vi.spyOn(api, 'getProductByEan').mockRejectedValue(new Error('error'))
-      renderDetailsEanSearch()
+      renderDetailsEanSearch({ isClearAvailable: true })
     })
 
     it('should display an error message', async () => {
