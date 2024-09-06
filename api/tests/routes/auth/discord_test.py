@@ -85,18 +85,24 @@ class DiscordSigninTest:
     @unittest.mock.patch(
         "pcapi.routes.auth.discord.discord_connector.retrieve_access_token", return_value="access_token"
     )
-    @unittest.mock.patch("pcapi.routes.auth.discord.discord_connector.get_user_id", return_value="discord_user_id")
-    @unittest.mock.patch("pcapi.routes.auth.discord.discord_connector.add_to_server")
-    def test_discord_webhook_success(
-        self, mock_add_to_server, mock_get_user_id, mock_retrieve_access_token, client, db_session
-    ):
+    def test_webhook_redirects_to_success_url(self, mock_retrieve_access_token, client):
         user = users_factories.BeneficiaryFactory()
-        discord_user = users_factories.DiscordUserFactory(user=user, discordId=None, hasAccess=True, isBanned=False)
 
-        client.get(url_for("auth.discord_call_back", code="discord_code", state=str(user.id)))
+        response = client.get(url_for("auth.discord_call_back", code="discord_code", state=str(user.id)))
 
         assert mock_retrieve_access_token.call_count == 1
         assert mock_retrieve_access_token.call_args[0][0] == "discord_code"
+
+        assert response.status_code == 303
+        assert url_for("auth.discord_success", access_token="access_token", user_id=user.id) in response.location
+
+    @unittest.mock.patch("pcapi.routes.auth.discord.discord_connector.get_user_id", return_value="discord_user_id")
+    @unittest.mock.patch("pcapi.routes.auth.discord.discord_connector.add_to_server")
+    def test_discord_credentials_success_page(self, mock_add_to_server, mock_get_user_id, client, db_session):
+        user = users_factories.BeneficiaryFactory()
+        discord_user = users_factories.DiscordUserFactory(user=user, discordId=None, hasAccess=True, isBanned=False)
+
+        client.get(url_for("auth.discord_success", user_id=str(user.id), access_token="access_token"))
 
         assert mock_get_user_id.call_count == 1
         assert mock_get_user_id.call_args[0][0] == "access_token"
@@ -108,16 +114,13 @@ class DiscordSigninTest:
         db_session.refresh(discord_user)
         assert discord_user.discordId == "discord_user_id"
 
-    @unittest.mock.patch(
-        "pcapi.routes.auth.discord.discord_connector.retrieve_access_token", return_value="access_token"
-    )
     @unittest.mock.patch("pcapi.routes.auth.discord.discord_connector.get_user_id", return_value="discord_user_id")
     @unittest.mock.patch("pcapi.routes.auth.discord.discord_connector.add_to_server")
-    def test_has_access_is_false(self, _mock_add_to_server, _mock_get_user_id, _mock_retrieve_access_token, client):
+    def test_has_access_is_false(self, _mock_add_to_server, _mock_get_user_id, client):
         user = users_factories.BeneficiaryFactory()
         users_factories.DiscordUserFactory(user=user, discordId=None, hasAccess=False, isBanned=False)
 
-        response = client.get(url_for("auth.discord_call_back", code="discord_code", state=str(user.id)))
+        response = client.get(url_for("auth.discord_success", user_id=str(user.id), access_token="access_token"))
 
         expected_query_params = (
             "Accès refusé au serveur Discord. Contacte le support pour plus d'informations".replace(" ", "%20")
@@ -128,15 +131,12 @@ class DiscordSigninTest:
         assert response.status_code == 303
         assert f"/auth/discord/signin?error={expected_query_params}" in response.location
 
-    @unittest.mock.patch(
-        "pcapi.routes.auth.discord.discord_connector.retrieve_access_token", return_value="access_token"
-    )
     @unittest.mock.patch("pcapi.routes.auth.discord.discord_connector.get_user_id", return_value="discord_user_id")
     @unittest.mock.patch("pcapi.routes.auth.discord.discord_connector.add_to_server")
-    def test_discord_user_is_none(self, _mock_add_to_server, _mock_get_user_id, _mock_retrieve_access_token, client):
+    def test_discord_user_is_none(self, _mock_add_to_server, _mock_get_user_id, client):
         user = users_factories.BeneficiaryFactory()
 
-        response = client.get(url_for("auth.discord_call_back", code="discord_code", state=str(user.id)))
+        response = client.get(url_for("auth.discord_success", user_id=str(user.id), access_token="access_token"))
 
         expected_query_params = (
             "Accès refusé au serveur Discord. Contacte le support pour plus d'informations".replace(" ", "%20")
@@ -146,6 +146,22 @@ class DiscordSigninTest:
 
         assert response.status_code == 303
         assert f"/auth/discord/signin?error={expected_query_params}" in response.location
+
+    @unittest.mock.patch("pcapi.routes.auth.discord.discord_connector.get_user_id", return_value="discord_user_id")
+    @unittest.mock.patch(
+        "pcapi.routes.auth.discord.discord_connector.add_to_server", side_effect=requests.exceptions.HTTPError()
+    )
+    def test_error_when_adding_to_server(self, _mock_add_to_server, _mock_get_user_id, client):
+        user = users_factories.BeneficiaryFactory()
+        users_factories.DiscordUserFactory(user=user, discordId=None, hasAccess=True, isBanned=False)
+
+        response = client.get(url_for("auth.discord_success", user_id=str(user.id), access_token="access_token"))
+
+        assert response.status_code == 200
+        assert (
+            "Erreur lors de l&#39;ajout au serveur Discord: réessaye en cliquant sur le bouton ci-dessous"
+            in response.data.decode("utf-8")
+        )
 
     def test_account_anonymized_user_request_account_state(self, client):
         form_data = {"email": "user@test.com", "password": settings.TEST_DEFAULT_PASSWORD}
