@@ -6,7 +6,10 @@ import { api } from 'apiClient/api'
 import { CancelablePromise, GetOffererResponseModel } from 'apiClient/v1'
 import { SelectOption } from 'custom_types/form'
 import { defaultGetOffererResponseModel } from 'utils/individualApiFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
+import {
+  renderWithProviders,
+  RenderWithProvidersOptions,
+} from 'utils/renderWithProviders'
 import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import { OffererStatsScreen } from '../OffererStatsScreen'
@@ -19,9 +22,13 @@ vi.mock('apiClient/api', () => ({
   },
 }))
 
-const renderOffererStatsScreen = (offererOptions: SelectOption[]) => {
+const renderOffererStatsScreen = (
+  offererOptions: SelectOption[],
+  options?: RenderWithProvidersOptions
+) => {
   renderWithProviders(<OffererStatsScreen offererOptions={offererOptions} />, {
     user: sharedCurrentUserFactory(),
+    ...options,
   })
 }
 
@@ -152,5 +159,21 @@ describe('OffererStatsScreen', () => {
 
     const venueSelect = await screen.findByLabelText('Lieu')
     await userEvent.selectOptions(venueSelect, 'all')
+  })
+
+  it('should have good wording for venues with WIP_ENABLE_OFFER_ADDRESS', async () => {
+    renderOffererStatsScreen(offererOptions, {
+      features: ['WIP_ENABLE_OFFER_ADDRESS'],
+    })
+
+    expect(
+      await screen.findByLabelText('Partenaire culturel')
+    ).toBeInTheDocument()
+
+    expect(
+      screen.queryByRole('option', { name: 'Tous les lieux' })
+    ).not.toBeInTheDocument()
+
+    expect(screen.queryByRole('option', { name: 'Tous' })).toBeInTheDocument()
   })
 })

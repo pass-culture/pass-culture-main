@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux'
 import { api } from 'apiClient/api'
 import { OffererStatsNoResult } from 'components/OffererStatsNoResult/OffererStatsNoResult'
 import { SelectOption } from 'custom_types/form'
+import { useActiveFeature } from 'hooks/useActiveFeature'
 import { useIsNewInterfaceActive } from 'hooks/useIsNewInterfaceActive'
 import { selectCurrentOffererId } from 'store/user/selectors'
 import { SelectInput } from 'ui-kit/form/Select/SelectInput'
@@ -20,6 +21,7 @@ export const OffererStatsScreen = ({
   offererOptions,
 }: OffererStatsScreenProps) => {
   const isNewInterfaceActive = useIsNewInterfaceActive()
+  const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
   const headerOffererId = useSelector(selectCurrentOffererId)
 
   const [iframeUrl, setIframeUrl] = useState('')
@@ -30,7 +32,7 @@ export const OffererStatsScreen = ({
   const [venueOptions, setVenueOptions] = useState<SelectOption[]>([])
   const ALL_VENUES_OPTION = {
     value: 'all',
-    label: 'Tous les lieux',
+    label: isOfferAddressEnabled ? 'Tous' : 'Tous les lieux',
   }
 
   const targetOffererId = isNewInterfaceActive
@@ -121,7 +123,11 @@ export const OffererStatsScreen = ({
 
       {venueOptions.length > 0 && iframeUrl ? (
         <>
-          <FieldLayout label="Lieu" name="venueId" isOptional>
+          <FieldLayout
+            label={isOfferAddressEnabled ? 'Partenaire culturel' : 'Lieu'}
+            name="venueId"
+            isOptional
+          >
             <SelectInput
               onChange={handleChangeVenue}
               name="venueId"
