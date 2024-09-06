@@ -189,7 +189,10 @@ export const DetailsScreen = ({ venues }: DetailsScreenProps): JSX.Element => {
           <ScrollToFirstErrorAfterSubmit />
           <FormLayout.MandatoryInfo />
           {shouldDisplayEanSearch && (
-            <DetailsEanSearch setImageOffer={setImageOffer} />
+            <DetailsEanSearch
+              setImageOffer={setImageOffer}
+              isClearAvailable={!offer?.productId}
+            />
           )}
           <DetailsForm
             filteredVenues={filteredVenues}

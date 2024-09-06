@@ -2,6 +2,7 @@ import cn from 'classnames'
 import React, { useId } from 'react'
 
 import fullClearIcon from 'icons/full-clear.svg'
+import fullCloseIcon from 'icons/full-close.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
@@ -30,6 +31,7 @@ export type FieldLayoutBaseProps = {
   inline?: boolean
   clearButtonProps?: React.ButtonHTMLAttributes<HTMLButtonElement> & {
     tooltip: string
+    display?: 'clear' | 'close'
   }
   ErrorDetails?: React.ReactNode
 }
@@ -72,6 +74,7 @@ export const FieldLayout = ({
 
   const showFooter =
     !hideFooter || hasError || hasCounter || Boolean(ErrorDetails)
+  const clearButtonDisplay = clearButtonProps?.display || 'clear'
 
   return (
     <div
@@ -114,17 +117,24 @@ export const FieldLayout = ({
         <div className={cn(styles['input-wrapper'], classNameInput)}>
           {children}
           {clearButtonProps && (
-            <div className={styles['clear-button-container']}>
+            <div
+              className={cn(
+                styles['clear-button-container'],
+                styles[`clear-button-${clearButtonDisplay}-container`]
+              )}
+            >
               <Button
                 {...clearButtonProps}
                 aria-describedby={tooltipId}
                 className={styles['clear-button']}
                 hasTooltip={true}
                 type="button"
-                icon={fullClearIcon}
+                icon={
+                  clearButtonDisplay === 'clear' ? fullClearIcon : fullCloseIcon
+                }
                 variant={ButtonVariant.TERNARY}
               >
-                Supprimer
+                {clearButtonProps.tooltip}
               </Button>
             </div>
           )}
