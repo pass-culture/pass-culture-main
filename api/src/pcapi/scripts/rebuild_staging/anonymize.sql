@@ -121,7 +121,7 @@ SET
   "tokenExpirationDate" = NULL
 ;
 
-UPDATE cgr_cinema_details SET password = '';
+UPDATE cgr_cinema_details SET password = 'gAAAAABm2qszKkneEsL_r-9YvryFCFCav-TedCnnHIY3RHizU8ijE6hg-C46JchXd7flfFXTMlpc9ybW_r8oIPGm55y6xK79e8m8zMN2PILTx1vjQQ4foSaCVeUiwsezkP9h9138lj8f'; -- encrypt("PLACEHOLDER-TO-AVOID-DECRYPTION-ERRORS")
 
 UPDATE cds_cinema_details
 SET "cinemaApiToken" = 'anonymized, you may have to set it if you want to use this provider'
