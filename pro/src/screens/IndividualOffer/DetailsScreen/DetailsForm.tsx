@@ -73,6 +73,7 @@ export const DetailsForm = ({
     venueId,
     name,
     suggestedSubcategory,
+    productId,
   } = values
   const { offer, subCategories } = useIndividualOfferContext()
 
@@ -181,8 +182,10 @@ export const DetailsForm = ({
 
   const showAddVenueBanner =
     !areSuggestedSubcategoriesUsed && venueOptions.length === 0
+
+  const isProductBased = !!productId
   const isSuggestedSubcategoryDisplayed =
-    areSuggestedSubcategoriesUsed && !offer
+    areSuggestedSubcategoriesUsed && !offer && !isProductBased
 
   const showOtherAddVenueBanner =
     areSuggestedSubcategoriesUsed &&
@@ -220,7 +223,13 @@ export const DetailsForm = ({
                   label={offerAddressEnabled ? 'Qui propose l’offre ?' : 'Lieu'}
                   name="venueId"
                   options={venueOptions}
-                  onChange={onChangeGetSuggestedSubcategories}
+                  onChange={async (ev) => {
+                    if (isProductBased) {
+                      return
+                    }
+
+                    await onChangeGetSuggestedSubcategories(ev)
+                  }}
                   disabled={
                     readOnlyFields.includes('venueId') ||
                     venueOptions.length === 1
@@ -300,11 +309,14 @@ export const DetailsForm = ({
             </FormLayout.Row>
           ) : (
             <>
-              <ImageUploaderOffer
-                onImageUpload={onImageUpload}
-                onImageDelete={onImageDelete}
-                imageOffer={imageOffer}
-              />
+              {(!isProductBased || imageOffer) && (
+                <ImageUploaderOffer
+                  onImageUpload={onImageUpload}
+                  onImageDelete={onImageDelete}
+                  imageOffer={imageOffer}
+                  hideActionButtons={isProductBased}
+                />
+              )}
               {displayArtisticInformations && (
                 <FormLayout.Section title="Informations artistiques">
                   {hasMusicType && (

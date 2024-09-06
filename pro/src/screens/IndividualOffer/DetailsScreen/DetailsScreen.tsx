@@ -32,7 +32,7 @@ import {
   isOfferSubtypeEvent,
 } from '../InformationsScreen/utils/filterCategories/filterCategories'
 
-import { DetailsEanSearch } from './DetailsEanSearch'
+import { DetailsEanSearch } from './DetailsEanSearch/DetailsEanSearch'
 import { DetailsForm } from './DetailsForm'
 import { DetailsFormValues } from './types'
 import {
@@ -55,8 +55,13 @@ export const DetailsScreen = ({ venues }: DetailsScreenProps): JSX.Element => {
   const { mutate } = useSWRConfig()
   const { search } = useLocation()
   const mode = useOfferWizardMode()
-  const { imageOffer, onImageDelete, onImageUpload, handleImageOnSubmit } =
-    useIndividualOfferImageUpload()
+  const {
+    imageOffer,
+    setImageOffer,
+    onImageDelete,
+    onImageUpload,
+    handleImageOnSubmit,
+  } = useIndividualOfferImageUpload()
   const queryParams = new URLSearchParams(search)
   const queryOfferType = queryParams.get('offer-type')
 
@@ -173,7 +178,9 @@ export const DetailsScreen = ({ venues }: DetailsScreenProps): JSX.Element => {
         )
   }
 
-  const readOnlyFields = setFormReadOnlyFields(offer)
+  const readOnlyFields = setFormReadOnlyFields(offer, !!formik.values.productId)
+  const shouldDisplayEanSearch =
+    isSearchByEanEnabled && isRecordStore && mode === OFFER_WIZARD_MODE.CREATION
 
   return (
     <FormikProvider value={formik}>
@@ -181,9 +188,9 @@ export const DetailsScreen = ({ venues }: DetailsScreenProps): JSX.Element => {
         <FormLayout fullWidthActions>
           <ScrollToFirstErrorAfterSubmit />
           <FormLayout.MandatoryInfo />
-          {isSearchByEanEnabled &&
-            isRecordStore &&
-            mode === OFFER_WIZARD_MODE.CREATION && <DetailsEanSearch />}
+          {shouldDisplayEanSearch && (
+            <DetailsEanSearch setImageOffer={setImageOffer} />
+          )}
           <DetailsForm
             filteredVenues={filteredVenues}
             filteredCategories={filteredCategories}

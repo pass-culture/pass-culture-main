@@ -115,6 +115,7 @@ export const useIndividualOfferImageUpload = () => {
 
   return {
     imageOffer,
+    setImageOffer,
     onImageUpload,
     onImageDelete,
     handleImageOnSubmit,

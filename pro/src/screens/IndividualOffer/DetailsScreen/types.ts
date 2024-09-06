@@ -16,4 +16,5 @@ export type DetailsFormValues = {
   durationMinutes?: string | null
   subcategoryConditionalFields: string[]
   suggestedSubcategory: string
+  productId: string
 }

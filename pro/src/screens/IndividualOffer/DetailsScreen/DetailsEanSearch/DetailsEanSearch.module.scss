@@ -3,9 +3,12 @@
 @use "styles/variables/_size.scss" as size;
 
 .details-ean-search {
-  display: flex;
-  flex-direction: column;
   margin-bottom: rem.torem(32px);
+
+  &-form {
+    display: flex;
+    flex-direction: column;
+  }
 
   &-label label {
     display: flex;
@@ -23,8 +26,15 @@
     margin-top: rem.torem(24px);
   }
 
+  &-callout {
+    font-weight: normal;
+    margin-top: rem.torem(16px);
+  }
+
   @media (min-width: size.$tablet) {
-    flex-direction: row;
+    &-form {
+      flex-direction: row;
+    }
 
     &-label {
       position: relative;
