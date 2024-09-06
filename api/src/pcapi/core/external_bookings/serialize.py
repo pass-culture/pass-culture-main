@@ -18,6 +18,7 @@ class ExternalEventBookingRequest(pydantic_v1.BaseModel):
     offer_name: str
     offer_price: pydantic_v1.StrictInt
     price_category_id: pydantic_v1.StrictInt | None
+    price_category_id_at_provider: str | None
     price_category_label: str | None
     stock_id: pydantic_v1.StrictInt
     stock_id_at_provider: str | None
@@ -46,6 +47,7 @@ class ExternalEventBookingRequest(pydantic_v1.BaseModel):
             {
                 "offer_price": finance_utils.to_eurocents(stock.priceCategory.price),
                 "price_category_id": stock.priceCategoryId,
+                "price_category_id_at_provider": stock.priceCategory.idAtProvider,
                 "price_category_label": stock.priceCategory.label,
             }
             if stock.priceCategory
