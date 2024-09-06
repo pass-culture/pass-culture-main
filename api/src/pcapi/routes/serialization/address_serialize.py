@@ -13,6 +13,7 @@ class AddressResponseModel(BaseModel):
     city: str
     latitude: float
     longitude: float
+    departmentCode: str | None
 
     class Config:
         orm_mode = True

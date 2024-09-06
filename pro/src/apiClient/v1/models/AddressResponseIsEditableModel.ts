@@ -5,6 +5,7 @@
 export type AddressResponseIsEditableModel = {
   banId?: string | null;
   city: string;
+  departmentCode?: string | null;
   id: number;
   id_oa: number;
   inseeCode?: string | null;
