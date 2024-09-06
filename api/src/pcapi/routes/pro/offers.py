@@ -313,7 +313,8 @@ def post_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.Ge
             fields = body.dict(by_alias=True)
             fields.pop("venueId")
             fields.pop("address")
-            fields["extraData"] = offers_api.deserialize_extra_data(fields["extraData"])
+            fields["extraData"] = offers_api.deserialize_extra_data(fields["extraData"], fields["subcategoryId"])
+
             offer_body = offers_schemas.CreateOffer(**fields)
             offer = offers_api.create_offer(offer_body, venue, offerer_address, is_from_private_api=True)
     except exceptions.OfferCreationBaseException as error:
@@ -419,7 +420,6 @@ def patch_offer(
     try:
         with repository.transaction():
             updates = body.dict(by_alias=True, exclude_unset=True)
-            updates["extraData"] = offers_api.deserialize_extra_data(updates.get("extraData", offer.extraData))
 
             offer_body = offers_schemas.UpdateOffer(**updates)
 

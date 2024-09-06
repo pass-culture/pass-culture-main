@@ -1566,7 +1566,41 @@ class UpdateOfferTest:
             visualDisabilityCompliant=False,
             motorDisabilityCompliant=False,
             mentalDisabilityCompliant=True,
-            extraData={"ean": "1234567890124"},
+        )
+        body = offers_schemas.UpdateOffer(
+            name="Old name",
+            audioDisabilityCompliant=False,
+            visualDisabilityCompliant=True,
+            motorDisabilityCompliant=True,
+            mentalDisabilityCompliant=False,
+        )
+        api.update_offer(offer, body)
+
+        offer = models.Offer.query.one()
+        assert offer.name == "Old name"
+        assert offer.audioDisabilityCompliant is False
+        assert offer.visualDisabilityCompliant is True
+        assert offer.motorDisabilityCompliant is True
+        assert offer.mentalDisabilityCompliant is False
+
+    def test_success_on_imported_offer_with_product_not_music_related_with_gtl_id(self):
+        provider = providers_factories.AllocineProviderFactory()
+        product = factories.ProductFactory(
+            subcategoryId=subcategories.LIVRE_PAPIER.id,
+            lastProvider=providers_factories.PublicApiProviderFactory(name="BookProvider"),
+            idAtProviders="1234567890123",
+            extraData={"gtl_id": "01020602", "author": "Asimov", "ean": "1234567890123"},
+        )
+        offer = factories.OfferFactory(
+            product=product,
+            lastProvider=provider,
+            name="Old name",
+            audioDisabilityCompliant=True,
+            visualDisabilityCompliant=False,
+            motorDisabilityCompliant=False,
+            mentalDisabilityCompliant=True,
+            extraData={"gtl_id": "01020602", "author": "Asimov", "ean": "1234567890123"},
+            subcategoryId=product.subcategoryId,
         )
         body = offers_schemas.UpdateOffer(
             name="Old name",
