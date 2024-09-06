@@ -30,23 +30,51 @@ def discord_signin() -> str:
     return render_template("discord_signin.html", form=form)
 
 
-def redirect_with_error(error_message: str) -> Response:
-    repository.mark_transaction_as_invalid()
-    return redirect(f"/auth/discord/signin?error={error_message}", code=303)
+@blueprint.auth_blueprint.route("/discord/success", methods=["GET"])
+@repository.atomic()
+def discord_success() -> Response | str:
+    access_token = request.args.get("access_token")
+    user_id = request.args.get("user_id")
 
+    if not access_token:
+        return redirect_with_error(f"{ERROR_STRING_PREFIX}access token non récupéré")
+    if not user_id:
+        return redirect_with_error(f"{ERROR_STRING_PREFIX}user_id pass Culture non récupéré")
 
-def handle_http_error(error: requests.exceptions.HTTPError) -> Response:
-    error_message = ""
-    if error.response:
-        error_message = error.response.json().get("error_description")
-        if not error_message:
-            error_message = error.response.text
-    error_message += "Tu peux réessayer ou contacter le support."
-    return redirect_with_error(ERROR_STRING_PREFIX + error_message)
+    try:
+        user_discord_id = discord_connector.get_user_id(access_token)
+    except requests.exceptions.HTTPError:
+        return render_retry_template(
+            access_token=access_token,
+            user_id=user_id,
+            error_message="Erreur lors de la récupération de l'identifiant Discord",
+        )
+
+    if not user_discord_id:
+        return render_retry_template(
+            access_token=access_token,
+            user_id=user_id,
+            error_message="Erreur lors de la récupération de l'identifiant Discord",
+        )
+    try:
+        update_discord_user(user_id, user_discord_id)
+    except auth_exceptions.DiscordUserAlreadyLinked:
+        return redirect_with_error("Ce compte Discord est déjà lié à un autre compte pass Culture.")
+    except auth_exceptions.UserNotAllowed:
+        return redirect_with_error("Accès refusé au serveur Discord. Contacte le support pour plus d'informations")
+
+    try:
+        discord_connector.add_to_server(access_token, user_discord_id)
+    except requests.exceptions.HTTPError:
+        return render_retry_template(
+            access_token=access_token,
+            user_id=user_id,
+            error_message="Erreur lors de l'ajout au serveur Discord",
+        )
+    return redirect(discord_connector.DISCORD_HOME_URI, code=303)
 
 
 @blueprint.auth_blueprint.route("/discord/callback", methods=["GET"])
-@repository.atomic()
 def discord_call_back() -> str | Response | None:
     code = request.args.get("code")
     user_id = request.args.get("state")
@@ -58,33 +86,16 @@ def discord_call_back() -> str | Response | None:
 
     try:
         access_token = discord_connector.retrieve_access_token(code)
-    except requests.exceptions.HTTPError as e:
-        return handle_http_error(e)
+    except requests.exceptions.HTTPError as error:
+        error_message = ""
+        if error.response:
+            error_message = error.response.json().get("error_description")
+            if not error_message:
+                error_message = error.response.text
+        error_message += "Tu peux réessayer ou contacter le support."
+        return redirect_with_error(ERROR_STRING_PREFIX + error_message)
 
-    if not access_token:
-        return redirect_with_error(f"{ERROR_STRING_PREFIX}access token non récupéré")
-
-    try:
-        user_discord_id = discord_connector.get_user_id(access_token)
-    except requests.exceptions.HTTPError as e:
-        return handle_http_error(e)
-
-    if not user_discord_id:
-        return redirect_with_error(f"{ERROR_STRING_PREFIX}discord id non récupéré")
-
-    try:
-        update_discord_user(user_id, user_discord_id)
-    except auth_exceptions.DiscordUserAlreadyLinked:
-        return redirect_with_error("Ce compte Discord est déjà lié à un autre compte pass Culture.")
-    except auth_exceptions.UserNotAllowed:
-        return redirect_with_error("Accès refusé au serveur Discord. Contacte le support pour plus d'informations")
-
-    try:
-        discord_connector.add_to_server(access_token, user_discord_id)
-    except requests.exceptions.HTTPError as e:
-        return handle_http_error(e)
-
-    return redirect(discord_connector.DISCORD_HOME_URI, code=303)
+    return redirect(f"/auth/discord/success?access_token={access_token}&user_id={user_id}", code=303)
 
 
 def update_discord_user(user_id: str, discord_id: str) -> None:
@@ -139,3 +150,26 @@ def discord_signin_post() -> str | Response | None:
 
     url_redirection = discord_connector.build_discord_redirection_uri(user.id)
     return redirect(url_redirection)
+
+
+def redirect_with_error(error_message: str) -> Response:
+    repository.mark_transaction_as_invalid()
+    return redirect(f"/auth/discord/signin?error={error_message}", code=303)
+
+
+def handle_http_error(error: requests.exceptions.HTTPError) -> Response:
+    error_message = ""
+    if error.response:
+        error_message = error.response.json().get("error_description")
+        if not error_message:
+            error_message = error.response.text
+    error_message += "Tu peux réessayer ou contacter le support."
+    return redirect_with_error(ERROR_STRING_PREFIX + error_message)
+
+
+def render_retry_template(access_token: str, user_id: str, error_message: str) -> str:
+    return render_template(
+        "discord_retry.html",
+        error=error_message,
+        url=f"/auth/discord/success?access_token={access_token}&user_id={user_id}",
+    )
