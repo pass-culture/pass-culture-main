@@ -798,6 +798,28 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIEndpointBaseHelper):
         offer = educational_models.CollectiveOffer.query.filter_by(id=stock.collectiveOffer.id).one()
         assert offer.institutionId == educational_institution.id
 
+    @pytest.mark.parametrize("institution_field", ["educationalInstitution", "educationalInstitutionId"])
+    def test_does_not_update_institution_if_field_is_null(self, institution_field, client):
+        venue_provider = provider_factories.VenueProviderFactory()
+        offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
+
+        offer = educational_factories.CollectiveStockFactory(
+            collectiveOffer__venue=venue_provider.venue,
+            collectiveOffer__provider=venue_provider.provider,
+            collectiveOffer__institution=educational_factories.EducationalInstitutionFactory(),
+        ).collectiveOffer
+
+        payload = {institution_field: None}
+        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+            response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
+                f"/v2/collective/offers/{offer.id}", json=payload
+            )
+
+        assert response.status_code == 200
+
+        offer = educational_models.CollectiveOffer.query.filter_by(id=offer.id).one()
+        assert offer.institutionId
+
     def test_patch_offer_invalid_subcategory(self, client):
         # Given
         venue_provider = provider_factories.VenueProviderFactory()
