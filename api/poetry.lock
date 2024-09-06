@@ -1282,18 +1282,19 @@ Flask = "*"
 
 [[package]]
 name = "flask-shell-ipython"
-version = "0.5.1"
+version = "0.5.3"
 description = "Replace default `flask shell` command by similar command running IPython."
 optional = false
-python-versions = ">=3.6, <4"
+python-versions = "<4.0,>=3.8"
 files = [
-    {file = "flask_shell_ipython-0.5.1-py2.py3-none-any.whl", hash = "sha256:8c948c0721bcc5b8eb274e1831c8a428dfc693099609c33d2f330091782cce10"},
+    {file = "flask_shell_ipython-0.5.3-py3-none-any.whl", hash = "sha256:c0a1905671ba7223d36e59854e7900832a0febf127e5c01793377af878560ebd"},
+    {file = "flask_shell_ipython-0.5.3.tar.gz", hash = "sha256:1a8bb90da18c34d15bc4ad817820101fffa93507a7eb685532ed518aea280848"},
 ]
 
 [package.dependencies]
 click = "*"
-Flask = ">=1.0"
-IPython = ">=5.0.0"
+flask = ">=1.0"
+ipython = ">=5.0.0"
 
 [[package]]
 name = "flask-sqlalchemy"
@@ -5636,4 +5637,4 @@ test = ["pytest"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "d8c757b22432cee799990f7098c6902638b5d4313d0fd1a251d80b27f535606f"
+content-hash = "5b5e87c3765f0d827561e12d19dbf779bbf452f2ed9b17c54308b35d9c4ec88b"
