@@ -19,7 +19,7 @@ import { CancelCollectiveBookingModal } from 'components/CancelCollectiveBooking
 import {
   GET_COLLECTIVE_OFFERS_BOOKABLE_QUERY_KEY,
   GET_COLLECTIVE_OFFERS_QUERY_KEY,
-  GET_TEMPLATE_COLLECTIVE_OFFERS_QUERY_KEY,
+  GET_COLLECTIVE_OFFERS_TEMPLATE_QUERY_KEY,
 } from 'config/swrQueryKeys'
 import {
   CollectiveBookingsEvents,
@@ -96,7 +96,7 @@ export const CollectiveActionsCells = ({
 
   const offersQueryKey = isNewOffersAndBookingsActive
     ? offer.isShowcase
-      ? GET_TEMPLATE_COLLECTIVE_OFFERS_QUERY_KEY
+      ? GET_COLLECTIVE_OFFERS_TEMPLATE_QUERY_KEY
       : GET_COLLECTIVE_OFFERS_BOOKABLE_QUERY_KEY
     : GET_COLLECTIVE_OFFERS_QUERY_KEY
 

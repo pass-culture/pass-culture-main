@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { mutate } from 'swr'
+import { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
 import {
@@ -14,7 +14,7 @@ import { canArchiveCollectiveOffer } from 'components/ArchiveConfirmationModal/u
 import {
   GET_COLLECTIVE_OFFERS_BOOKABLE_QUERY_KEY,
   GET_COLLECTIVE_OFFERS_QUERY_KEY,
-  GET_TEMPLATE_COLLECTIVE_OFFERS_QUERY_KEY,
+  GET_COLLECTIVE_OFFERS_TEMPLATE_QUERY_KEY,
 } from 'config/swrQueryKeys'
 import { NOTIFICATION_LONG_SHOW_DURATION } from 'core/Notification/constants'
 import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from 'core/Offers/constants'
@@ -131,9 +131,11 @@ export function CollectiveOffersActionsBar({
     'WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE'
   )
 
+  const { mutate } = useSWRConfig()
+
   const offersQueryKey = isNewOffersAndBookingsActive
     ? areTemplateOffers
-      ? GET_TEMPLATE_COLLECTIVE_OFFERS_QUERY_KEY
+      ? GET_COLLECTIVE_OFFERS_TEMPLATE_QUERY_KEY
       : GET_COLLECTIVE_OFFERS_BOOKABLE_QUERY_KEY
     : GET_COLLECTIVE_OFFERS_QUERY_KEY
 

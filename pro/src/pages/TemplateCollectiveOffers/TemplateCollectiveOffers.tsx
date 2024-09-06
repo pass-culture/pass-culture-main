@@ -7,7 +7,7 @@ import { CollectiveOfferStatus, CollectiveOfferType } from 'apiClient/v1'
 import { AppLayout } from 'app/AppLayout'
 import {
   GET_OFFERER_QUERY_KEY,
-  GET_TEMPLATE_COLLECTIVE_OFFERS_QUERY_KEY,
+  GET_COLLECTIVE_OFFERS_TEMPLATE_QUERY_KEY,
   GET_VENUES_QUERY_KEY,
 } from 'config/swrQueryKeys'
 import {
@@ -91,7 +91,7 @@ export const TemplateCollectiveOffers = (): JSX.Element => {
   }
 
   const offersQuery = useSWR(
-    [GET_TEMPLATE_COLLECTIVE_OFFERS_QUERY_KEY, apiFilters],
+    [GET_COLLECTIVE_OFFERS_TEMPLATE_QUERY_KEY, apiFilters],
     () => {
       const {
         nameOrIsbn,
