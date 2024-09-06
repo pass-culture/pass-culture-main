@@ -18,6 +18,7 @@ import { ImageUploaderOffer } from 'components/IndividualOfferForm/ImageUploader
 import { GET_MUSIC_TYPES_QUERY_KEY } from 'config/swrQueryKeys'
 import { useIndividualOfferContext } from 'context/IndividualOfferContext/IndividualOfferContext'
 import { showOptionsTree } from 'core/Offers/categoriesSubTypes'
+import { CATEGORY_STATUS } from 'core/Offers/constants'
 import { IndividualOfferImage } from 'core/Offers/types'
 import { useActiveFeature } from 'hooks/useActiveFeature'
 import { useSuggestedSubcategoriesAbTest } from 'hooks/useSuggestedSubcategoriesAbTest'
@@ -73,7 +74,7 @@ export const DetailsForm = ({
     name,
     suggestedSubcategory,
   } = values
-  const { offer } = useIndividualOfferContext()
+  const { offer, subCategories } = useIndividualOfferContext()
 
   const musicTypesQuery = useSWR(
     GET_MUSIC_TYPES_QUERY_KEY,
@@ -168,6 +169,7 @@ export const DetailsForm = ({
       await debouncedOnChangeGetSuggestedSubcategories()
     }
   }
+  const subcategory = subCategories.find((s) => s.id === subcategoryId)
 
   const isSubCategorySelected =
     subcategoryId !== DEFAULT_DETAILS_FORM_VALUES.subcategoryId
@@ -182,6 +184,11 @@ export const DetailsForm = ({
   const isSuggestedSubcategoryDisplayed =
     areSuggestedSubcategoriesUsed && !offer
 
+  const showOtherAddVenueBanner =
+    areSuggestedSubcategoriesUsed &&
+    venueOptions.length === 0 &&
+    subcategory?.onlineOfflinePlatform === CATEGORY_STATUS.OFFLINE
+
   return (
     <>
       <FormLayout.Section title="À propos de votre offre">
@@ -193,7 +200,7 @@ export const DetailsForm = ({
                   href: `/structures/${selectedOffererId}/lieux/creation`,
                   icon: {
                     src: fullMoreIcon,
-                    alt: 'Nouvelle fenêtre, par lieu',
+                    alt: '',
                   },
                   label: 'Ajouter un lieu',
                 },
@@ -272,139 +279,161 @@ export const DetailsForm = ({
       )}
       {isSubCategorySelected && (
         <>
-          <ImageUploaderOffer
-            onImageUpload={onImageUpload}
-            onImageDelete={onImageDelete}
-            imageOffer={imageOffer}
-          />
+          {showOtherAddVenueBanner ? (
+            <FormLayout.Row>
+              <Callout
+                links={[
+                  {
+                    href: `/structures/${selectedOffererId}/lieux/creation`,
+                    icon: {
+                      src: fullMoreIcon,
+                      alt: '',
+                    },
+                    label: 'Ajouter un lieu',
+                  },
+                ]}
+                variant={CalloutVariant.ERROR}
+              >
+                Pour créer une offre dans cette catégorie, ajoutez d’abord un
+                lieu à votre structure.
+              </Callout>
+            </FormLayout.Row>
+          ) : (
+            <>
+              <ImageUploaderOffer
+                onImageUpload={onImageUpload}
+                onImageDelete={onImageDelete}
+                imageOffer={imageOffer}
+              />
+              {displayArtisticInformations && (
+                <FormLayout.Section title="Informations artistiques">
+                  {hasMusicType && (
+                    <FormLayout.Row>
+                      <Select
+                        label="Genre musical"
+                        name="gtl_id"
+                        options={musicTypesOptions}
+                        defaultOption={{
+                          label: 'Choisir un genre musical',
+                          value: DEFAULT_DETAILS_FORM_VALUES.gtl_id,
+                        }}
+                        disabled={readOnlyFields.includes('gtl_id')}
+                      />
+                    </FormLayout.Row>
+                  )}
+                  {subcategoryConditionalFields.includes('showType') && (
+                    <>
+                      <FormLayout.Row>
+                        <Select
+                          label="Type de spectacle"
+                          name="showType"
+                          options={showTypesOptions}
+                          defaultOption={{
+                            label: 'Choisir un type de spectacle',
+                            value: DEFAULT_DETAILS_FORM_VALUES.showType,
+                          }}
+                          disabled={readOnlyFields.includes('showType')}
+                        />
+                      </FormLayout.Row>
+                      <FormLayout.Row>
+                        <Select
+                          label="Sous-type"
+                          name="showSubType"
+                          options={showSubTypeOptions}
+                          defaultOption={{
+                            label: 'Choisir un sous-type',
+                            value: DEFAULT_DETAILS_FORM_VALUES.showSubType,
+                          }}
+                          disabled={readOnlyFields.includes('showSubType')}
+                        />
+                      </FormLayout.Row>
+                    </>
+                  )}
+                  {subcategoryConditionalFields.includes('speaker') && (
+                    <FormLayout.Row>
+                      <TextInput
+                        isOptional
+                        label="Intervenant"
+                        maxLength={1000}
+                        name="speaker"
+                        disabled={readOnlyFields.includes('speaker')}
+                      />
+                    </FormLayout.Row>
+                  )}
+                  {subcategoryConditionalFields.includes('author') && (
+                    <FormLayout.Row>
+                      <TextInput
+                        isOptional
+                        label="Auteur"
+                        maxLength={1000}
+                        name="author"
+                        disabled={readOnlyFields.includes('author')}
+                      />
+                    </FormLayout.Row>
+                  )}
+                  {subcategoryConditionalFields.includes('visa') && (
+                    <FormLayout.Row>
+                      <TextInput
+                        isOptional
+                        label="Visa d’exploitation"
+                        maxLength={1000}
+                        name="visa"
+                        disabled={readOnlyFields.includes('visa')}
+                      />
+                    </FormLayout.Row>
+                  )}
+                  {subcategoryConditionalFields.includes('stageDirector') && (
+                    <FormLayout.Row>
+                      <TextInput
+                        isOptional
+                        label="Metteur en scène"
+                        maxLength={1000}
+                        name="stageDirector"
+                        disabled={readOnlyFields.includes('stageDirector')}
+                      />
+                    </FormLayout.Row>
+                  )}
+                  {subcategoryConditionalFields.includes('performer') && (
+                    <FormLayout.Row>
+                      <TextInput
+                        isOptional
+                        label="Interprète"
+                        maxLength={1000}
+                        name="performer"
+                        disabled={readOnlyFields.includes('performer')}
+                      />
+                    </FormLayout.Row>
+                  )}
+                  {subcategoryConditionalFields.includes('ean') && (
+                    <FormLayout.Row>
+                      <TextInput
+                        isOptional
+                        label="EAN-13 (European Article Numbering)"
+                        countCharacters
+                        name="ean"
+                        maxLength={13}
+                        disabled={readOnlyFields.includes('ean')}
+                      />
+                    </FormLayout.Row>
+                  )}
 
-          {displayArtisticInformations && (
-            <FormLayout.Section title="Informations artistiques">
-              {hasMusicType && (
-                <FormLayout.Row>
-                  <Select
-                    label="Genre musical"
-                    name="gtl_id"
-                    options={musicTypesOptions}
-                    defaultOption={{
-                      label: 'Choisir un genre musical',
-                      value: DEFAULT_DETAILS_FORM_VALUES.gtl_id,
-                    }}
-                    disabled={readOnlyFields.includes('gtl_id')}
-                  />
-                </FormLayout.Row>
+                  {subcategoryConditionalFields.includes('durationMinutes') && (
+                    <FormLayout.Row>
+                      <TimePicker
+                        isOptional
+                        label={'Durée'}
+                        name="durationMinutes"
+                        disabled={readOnlyFields.includes('durationMinutes')}
+                        suggestedTimeList={{
+                          min: '00:00',
+                          max: '04:00',
+                        }}
+                      />
+                    </FormLayout.Row>
+                  )}
+                </FormLayout.Section>
               )}
-              {subcategoryConditionalFields.includes('showType') && (
-                <>
-                  <FormLayout.Row>
-                    <Select
-                      label="Type de spectacle"
-                      name="showType"
-                      options={showTypesOptions}
-                      defaultOption={{
-                        label: 'Choisir un type de spectacle',
-                        value: DEFAULT_DETAILS_FORM_VALUES.showType,
-                      }}
-                      disabled={readOnlyFields.includes('showType')}
-                    />
-                  </FormLayout.Row>
-                  <FormLayout.Row>
-                    <Select
-                      label="Sous-type"
-                      name="showSubType"
-                      options={showSubTypeOptions}
-                      defaultOption={{
-                        label: 'Choisir un sous-type',
-                        value: DEFAULT_DETAILS_FORM_VALUES.showSubType,
-                      }}
-                      disabled={readOnlyFields.includes('showSubType')}
-                    />
-                  </FormLayout.Row>
-                </>
-              )}
-              {subcategoryConditionalFields.includes('speaker') && (
-                <FormLayout.Row>
-                  <TextInput
-                    isOptional
-                    label="Intervenant"
-                    maxLength={1000}
-                    name="speaker"
-                    disabled={readOnlyFields.includes('speaker')}
-                  />
-                </FormLayout.Row>
-              )}
-              {subcategoryConditionalFields.includes('author') && (
-                <FormLayout.Row>
-                  <TextInput
-                    isOptional
-                    label="Auteur"
-                    maxLength={1000}
-                    name="author"
-                    disabled={readOnlyFields.includes('author')}
-                  />
-                </FormLayout.Row>
-              )}
-              {subcategoryConditionalFields.includes('visa') && (
-                <FormLayout.Row>
-                  <TextInput
-                    isOptional
-                    label="Visa d’exploitation"
-                    maxLength={1000}
-                    name="visa"
-                    disabled={readOnlyFields.includes('visa')}
-                  />
-                </FormLayout.Row>
-              )}
-              {subcategoryConditionalFields.includes('stageDirector') && (
-                <FormLayout.Row>
-                  <TextInput
-                    isOptional
-                    label="Metteur en scène"
-                    maxLength={1000}
-                    name="stageDirector"
-                    disabled={readOnlyFields.includes('stageDirector')}
-                  />
-                </FormLayout.Row>
-              )}
-              {subcategoryConditionalFields.includes('performer') && (
-                <FormLayout.Row>
-                  <TextInput
-                    isOptional
-                    label="Interprète"
-                    maxLength={1000}
-                    name="performer"
-                    disabled={readOnlyFields.includes('performer')}
-                  />
-                </FormLayout.Row>
-              )}
-              {subcategoryConditionalFields.includes('ean') && (
-                <FormLayout.Row>
-                  <TextInput
-                    isOptional
-                    label="EAN-13 (European Article Numbering)"
-                    countCharacters
-                    name="ean"
-                    maxLength={13}
-                    disabled={readOnlyFields.includes('ean')}
-                  />
-                </FormLayout.Row>
-              )}
-
-              {subcategoryConditionalFields.includes('durationMinutes') && (
-                <FormLayout.Row>
-                  <TimePicker
-                    isOptional
-                    label={'Durée'}
-                    name="durationMinutes"
-                    disabled={readOnlyFields.includes('durationMinutes')}
-                    suggestedTimeList={{
-                      min: '00:00',
-                      max: '04:00',
-                    }}
-                  />
-                </FormLayout.Row>
-              )}
-            </FormLayout.Section>
+            </>
           )}
         </>
       )}

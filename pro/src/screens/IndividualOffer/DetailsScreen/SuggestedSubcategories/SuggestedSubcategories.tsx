@@ -124,7 +124,10 @@ export function SuggestedSubcategories({
   }
 
   return (
-    <FormLayout.Section title={'Type d’offre'}>
+    <FormLayout.Section
+      title={'Type d’offre'}
+      className={styles['suggested-subcategories-section']}
+    >
       <FormLayout.Row>
         <div className={styles['suggested-subcategories']}>
           <p

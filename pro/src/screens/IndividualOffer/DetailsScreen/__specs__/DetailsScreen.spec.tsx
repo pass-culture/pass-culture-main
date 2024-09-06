@@ -611,7 +611,7 @@ describe('screens:IndividualOffer::Informations', () => {
     })
   })
 
-  it('should display venue banner when venues are empty and suggested categories not enable', () => {
+  it('should display first venue banner when venues are empty and suggested categories not enable', () => {
     renderDetailsScreen(
       {
         ...props,
@@ -624,6 +624,35 @@ describe('screens:IndividualOffer::Informations', () => {
         'Pour créer une offre dans cette catégorie, ajoutez d’abord un lieu à votre structure.'
       )
     ).toBeInTheDocument()
+  })
+
+  it('should display second venue banner when only one virtual venue and not virtual subcategory chosen', async () => {
+    vi.spyOn(api, 'getSuggestedSubcategories').mockResolvedValue({
+      subcategoryIds: ['virtual', 'physical'],
+    })
+    vi.spyOn(useAnalytics, 'useRemoteConfigParams').mockReturnValue({
+      SUGGESTED_CATEGORIES: 'true',
+    })
+
+    renderDetailsScreen(
+      {
+        ...props,
+        venues: [venueListItemFactory({ id: 189, isVirtual: true })],
+      },
+      contextValue,
+      { features: ['WIP_SUGGESTED_SUBCATEGORIES'] }
+    )
+    await userEvent.type(screen.getByLabelText(/Titre de l’offre/), 'My title')
+    await userEvent.click(
+      await screen.findByText('Sous catégorie offline de A')
+    )
+
+    expect(
+      screen.getByText(
+        'Pour créer une offre dans cette catégorie, ajoutez d’abord un lieu à votre structure.'
+      )
+    ).toBeInTheDocument()
+    expect(screen.queryByText('Image de l’offre')).not.toBeInTheDocument()
   })
 
   describe('on creation', () => {
