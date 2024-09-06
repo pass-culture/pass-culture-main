@@ -41,6 +41,7 @@ vi.mock('apiClient/api', () => ({
     postDraftOffer: vi.fn(),
     patchDraftOffer: vi.fn(),
     getSuggestedSubcategories: vi.fn(),
+    getProductByEan: vi.fn(),
   },
 }))
 
@@ -146,6 +147,12 @@ describe('screens:IndividualOffer::Informations', () => {
         canBeEducational: false,
         canBeWithdrawable: false,
         onlineOfflinePlatform: CATEGORY_STATUS.OFFLINE,
+      }),
+      subcategoryFactory({
+        id: 'SUPPORT_PHYSIQUE_MUSIQUE_VINYLE',
+        categoryId: 'MUSIQUE_ENREGISTREE',
+        proLabel: 'Vinyles et autres supports',
+        conditionalFields: ['gtl_id', 'author', 'performer', 'ean'],
       }),
     ]
 
@@ -450,7 +457,6 @@ describe('screens:IndividualOffer::Informations', () => {
       durationMinutes: undefined,
       extraData: {
         author: 'Chuck Norris',
-        ean: '1234567891234',
         gtl_id: '',
         performer: 'Le Poing de Chuck',
         showSubType: 'PEGI 18',
@@ -656,54 +662,113 @@ describe('screens:IndividualOffer::Informations', () => {
   })
 
   describe('on creation', () => {
-    it('should render EAN search for record stores as a venue', () => {
-      const context = individualOfferContextValuesFactory({
-        categories,
-        subCategories,
-        offer: null,
+    describe('about EAN search', () => {
+      const eanSearchTitle = /Scanner ou rechercher un produit par EAN/
+      const eanInputLabel = /Nouveau Scanner ou rechercher un produit par EAN/
+      const eanButtonLabel = /Rechercher/
+
+      it('should render EAN search for record stores as a venue', () => {
+        const context = individualOfferContextValuesFactory({
+          categories,
+          subCategories,
+          offer: null,
+        })
+
+        renderDetailsScreen(
+          {
+            ...props,
+            venues: [
+              venueListItemFactory({
+                venueTypeCode: 'RECORD_STORE' as VenueTypeCode,
+              }),
+            ],
+          },
+          context,
+          { features: ['WIP_EAN_CREATION'] }
+        )
+
+        expect(screen.getByText(eanSearchTitle)).toBeInTheDocument()
       })
 
-      renderDetailsScreen(
-        {
-          ...props,
-          venues: [
-            venueListItemFactory({
-              venueTypeCode: 'RECORD_STORE' as VenueTypeCode,
-            }),
-          ],
-        },
-        context,
-        { features: ['WIP_EAN_CREATION'] }
-      )
+      it('should not render EAN search for other venues', () => {
+        const context = individualOfferContextValuesFactory({
+          categories,
+          subCategories,
+          offer: null,
+        })
 
-      expect(
-        screen.getByText(/Scanner ou rechercher un produit par EAN/)
-      ).toBeInTheDocument()
-    })
+        renderDetailsScreen(
+          {
+            ...props,
+            venues: [
+              venueListItemFactory({
+                venueTypeCode: VenueTypeCode.FESTIVAL,
+              }),
+            ],
+          },
+          context,
+          { features: ['WIP_EAN_CREATION'] }
+        )
 
-    it('should not render EAN search for other venues', () => {
-      const context = individualOfferContextValuesFactory({
-        categories,
-        subCategories,
-        offer: null,
+        expect(screen.queryByText(eanSearchTitle)).not.toBeInTheDocument()
       })
 
-      renderDetailsScreen(
-        {
-          ...props,
-          venues: [
-            venueListItemFactory({
-              venueTypeCode: VenueTypeCode.FESTIVAL,
-            }),
-          ],
-        },
-        context,
-        { features: ['WIP_EAN_CREATION'] }
-      )
+      it('should prefill the form with EAN search result', async () => {
+        const ean = '9781234567897'
+        const productData = {
+          id: 0,
+          name: 'Music has the right to children',
+          description: 'An album by Boards of Canada',
+          subcategoryId: 'SUPPORT_PHYSIQUE_MUSIQUE_VINYLE',
+          gtlId: '08000000',
+          author: 'Boards of Canada',
+          performer: 'Boards of Canada',
+          images: {
+            recto: 'https://www.example.com/image.jpg',
+          },
+        }
 
-      expect(
-        screen.queryByText(/Scanner ou rechercher un produit par EAN/)
-      ).not.toBeInTheDocument()
+        const context = individualOfferContextValuesFactory({
+          categories,
+          subCategories,
+          offer: null,
+        })
+
+        vi.spyOn(api, 'getProductByEan').mockResolvedValue(productData)
+        renderDetailsScreen(
+          {
+            ...props,
+            venues: [
+              venueListItemFactory({
+                venueTypeCode: 'RECORD_STORE' as VenueTypeCode,
+              }),
+            ],
+          },
+          context,
+          { features: ['WIP_EAN_CREATION'] }
+        )
+
+        const button = screen.getByRole('button', { name: eanButtonLabel })
+        const input = screen.getByRole('textbox', { name: eanInputLabel })
+
+        await userEvent.type(input, ean)
+        await userEvent.click(button)
+
+        // Inputs are filled with the product data and image is displayed.
+        const nameInputLabel = /Titre de l’offre/
+        const inputName = screen.getByRole('textbox', { name: nameInputLabel })
+        const image = screen.getByTestId('image-preview')
+        expect(inputName).toHaveValue(productData.name)
+        expect(image).toHaveAttribute('src', productData.images.recto)
+
+        // Inputs are disabled and image cannot be changed.
+        expect(inputName).toBeDisabled()
+        const imageEditLabel = /Ajouter une image/
+        const imageEditButton = screen.queryByRole('button', {
+          name: imageEditLabel,
+        })
+        expect(imageEditButton).not.toBeInTheDocument()
+      })
     })
   })
 

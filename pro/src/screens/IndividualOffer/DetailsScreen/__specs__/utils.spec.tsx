@@ -5,6 +5,7 @@ import {
   venueListItemFactory,
 } from 'utils/individualApiFactories'
 
+import { DEFAULT_DETAILS_FORM_VALUES } from '../constants'
 import {
   buildCategoryOptions,
   buildShowSubTypeOptions,
@@ -188,6 +189,7 @@ describe('setDefaultInitialValues', () => {
       subcategoryId: '',
       venueId: '',
       visa: '',
+      productId: '',
     })
 
     expect(
@@ -232,6 +234,7 @@ describe('setDefaultInitialValuesFromOffer', () => {
       subcategoryId: 'SEANCE_CINE',
       venueId: '6',
       visa: 'USA',
+      productId: '',
     })
   })
 })
@@ -256,10 +259,19 @@ describe('serializeDurationMinutes', () => {
 })
 
 describe('setFormReadOnlyFields', () => {
-  it('should not disable fields when there is no offer ', () => {
+  it('should disable all fields except venue when an ean search filled the form', () => {
+    const expectedValues = Object.keys(DEFAULT_DETAILS_FORM_VALUES).filter(
+      (key) => key !== 'venueId'
+    )
+
+    expect(setFormReadOnlyFields(null, true)).toStrictEqual(expectedValues)
+  })
+
+  it('should not disable fields when there is no offer and no ean search was performed', () => {
     expect(setFormReadOnlyFields(null)).toStrictEqual([])
   })
-  it('should disable som fields when updating offer ', () => {
+
+  it('should disable category/subcategory/venue fields when updating an offer', () => {
     expect(setFormReadOnlyFields(getIndividualOfferFactory({}))).toStrictEqual([
       'categoryId',
       'subcategoryId',
@@ -268,25 +280,7 @@ describe('setFormReadOnlyFields', () => {
   })
 
   it('should disable all fields when there offer is rejected or pending', () => {
-    const expectedKeys = [
-      'name',
-      'description',
-      'venueId',
-      'categoryId',
-      'subcategoryId',
-      'gtl_id',
-      'showType',
-      'showSubType',
-      'speaker',
-      'author',
-      'visa',
-      'stageDirector',
-      'performer',
-      'ean',
-      'durationMinutes',
-      'subcategoryConditionalFields',
-      'suggestedSubcategory',
-    ]
+    const expectedValues = Object.keys(DEFAULT_DETAILS_FORM_VALUES)
 
     expect(
       setFormReadOnlyFields(
@@ -294,36 +288,19 @@ describe('setFormReadOnlyFields', () => {
           status: OfferStatus.REJECTED,
         })
       )
-    ).toStrictEqual(expectedKeys)
+    ).toStrictEqual(expectedValues)
+
     expect(
       setFormReadOnlyFields(
         getIndividualOfferFactory({
           status: OfferStatus.PENDING,
         })
       )
-    ).toStrictEqual(expectedKeys)
+    ).toStrictEqual(expectedValues)
   })
 
   it('should disable all fields for provided offers', () => {
-    const expectedKeys = [
-      'name',
-      'description',
-      'venueId',
-      'categoryId',
-      'subcategoryId',
-      'gtl_id',
-      'showType',
-      'showSubType',
-      'speaker',
-      'author',
-      'visa',
-      'stageDirector',
-      'performer',
-      'ean',
-      'durationMinutes',
-      'subcategoryConditionalFields',
-      'suggestedSubcategory',
-    ]
+    const expectedValues = Object.keys(DEFAULT_DETAILS_FORM_VALUES)
 
     expect(
       setFormReadOnlyFields(
@@ -331,7 +308,7 @@ describe('setFormReadOnlyFields', () => {
           lastProvider: { name: 'provider' },
         })
       )
-    ).toStrictEqual(expectedKeys)
+    ).toStrictEqual(expectedValues)
   })
 })
 
@@ -355,6 +332,7 @@ describe('serializeExtraData', () => {
       durationMinutes: '',
       subcategoryConditionalFields: [],
       suggestedSubcategory: '',
+      productId: '',
     }
 
     expect(serializeExtraData(formValues)).toStrictEqual({
@@ -389,6 +367,7 @@ describe('serializeExtraData', () => {
       durationMinutes: '',
       subcategoryConditionalFields: [],
       suggestedSubcategory: '',
+      productId: '',
     }
 
     expect(serializeExtraData(formValues)).toStrictEqual({

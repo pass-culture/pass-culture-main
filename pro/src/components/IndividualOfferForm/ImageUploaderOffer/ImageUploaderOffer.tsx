@@ -21,12 +21,14 @@ export interface ImageUploaderOfferProps {
   onImageUpload: (values: OnImageUploadArgs) => Promise<void>
   onImageDelete: () => Promise<void>
   imageOffer?: IndividualOfferImage
+  hideActionButtons?: boolean
 }
 
 export const ImageUploaderOffer = ({
   onImageUpload,
   onImageDelete,
   imageOffer,
+  hideActionButtons,
 }: ImageUploaderOfferProps) => {
   const { offer } = useIndividualOfferContext()
   const selectedOffererId = useSelector(selectCurrentOffererId)
@@ -62,6 +64,7 @@ export const ImageUploaderOffer = ({
           initialValues={buildInitialValues(imageOffer)}
           mode={UploaderModeEnum.OFFER}
           onClickButtonImageAdd={logButtonAddClick}
+          hideActionButtons={hideActionButtons}
         />
       </FormLayout.Row>
     </FormLayout.Section>

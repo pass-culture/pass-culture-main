@@ -20,6 +20,7 @@ type TextInputProps = React.InputHTMLAttributes<HTMLInputElement> &
     step?: number | string
     hasDecimal?: boolean
     refForInput?: ForwardedRef<HTMLInputElement>
+    externalError?: string
     ErrorDetails?: React.ReactNode
     maxLength?: number
     showMandatoryAsterisk?: boolean
@@ -52,6 +53,7 @@ export const TextInput = ({
   description,
   clearButtonProps,
   hasLabelLineBreak = true,
+  externalError,
   ErrorDetails,
   showMandatoryAsterisk,
   ...props
@@ -65,7 +67,7 @@ export const TextInput = ({
   const regexHasDecimal = /[0-9,.]/
   const regexHasNotDecimal = /[0-9]/
   const regexIsNavigationKey = /Tab|Backspace|Enter/
-  const showError = meta.touched && !!meta.error
+  const showError = !!externalError || (meta.touched && !!meta.error)
 
   const describedBy = []
 
@@ -84,7 +86,7 @@ export const TextInput = ({
       classNameFooter={classNameFooter}
       classNameInput={classNameInput}
       count={countCharacters ? field.value.length : undefined}
-      error={meta.error}
+      error={externalError || meta.error}
       isOptional={isOptional}
       showMandatoryAsterisk={showMandatoryAsterisk}
       label={label}
@@ -112,7 +114,7 @@ export const TextInput = ({
       ) : (
         <BaseInput
           disabled={disabled}
-          hasError={meta.touched && !!meta.error}
+          hasError={showError}
           maxLength={maxLength}
           placeholder={placeholder}
           step={step}

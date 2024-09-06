@@ -263,6 +263,8 @@ export function setDefaultInitialValuesFromOffer({
     stageDirector:
       offer.extraData?.stageDirector ??
       DEFAULT_DETAILS_FORM_VALUES.stageDirector,
+    productId:
+      offer.productId?.toString() ?? DEFAULT_DETAILS_FORM_VALUES.productId,
   }
 }
 
@@ -289,8 +291,17 @@ export const serializeDurationMinutes = (
 }
 
 export function setFormReadOnlyFields(
-  offer: GetIndividualOfferResponseModel | null
+  offer: GetIndividualOfferResponseModel | null,
+  isProductBased?: boolean
 ): string[] {
+  if (isProductBased) {
+    const editableFields = ['venueId']
+
+    return Object.keys(DEFAULT_DETAILS_FORM_VALUES).filter(
+      (field) => !editableFields.includes(field)
+    )
+  }
+
   if (offer === null) {
     return []
   }
@@ -310,12 +321,12 @@ export const serializeExtraData = (formValues: DetailsFormValues) => ({
   author: formValues.author,
   gtl_id: formValues.gtl_id,
   performer: formValues.performer,
-  ean: formValues.ean,
   showType: formValues.showType,
   showSubType: formValues.showSubType,
   speaker: formValues.speaker,
   stageDirector: formValues.stageDirector,
   visa: formValues.visa,
+  ean: formValues.ean,
 })
 
 type PostPayload = {
@@ -325,6 +336,7 @@ type PostPayload = {
   name: string
   subcategoryId: string
   venueId: number
+  productId?: number
 }
 
 export function serializeDetailsPostData(
@@ -337,6 +349,7 @@ export function serializeDetailsPostData(
     description: formValues.description,
     durationMinutes: serializeDurationMinutes(formValues.durationMinutes ?? ''),
     extraData: serializeExtraData(formValues),
+    productId: formValues.productId ? Number(formValues.productId) : undefined,
   }
 }
 
@@ -351,11 +364,15 @@ type PatchPayload = {
 export function serializeDetailsPatchData(
   formValues: DetailsFormValues
 ): PatchPayload {
+  // Always remove EAN from serializedExtraData.
+  const extraData = serializeExtraData(formValues)
+  delete extraData.ean
+
   return {
     name: formValues.name,
     subcategoryId: formValues.subcategoryId,
     description: formValues.description,
     durationMinutes: serializeDurationMinutes(formValues.durationMinutes ?? ''),
-    extraData: serializeExtraData(formValues),
+    extraData,
   }
 }

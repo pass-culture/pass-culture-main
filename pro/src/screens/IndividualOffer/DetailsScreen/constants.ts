@@ -16,4 +16,5 @@ export const DEFAULT_DETAILS_FORM_VALUES = {
   durationMinutes: '',
   subcategoryConditionalFields: [],
   suggestedSubcategory: '',
+  productId: '',
 }
