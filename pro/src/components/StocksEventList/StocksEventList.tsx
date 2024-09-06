@@ -6,7 +6,7 @@ import { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
 import {
-  GetIndividualOfferResponseModel,
+  GetIndividualOfferWithAddressResponseModel,
   GetStocksResponseModel,
   PriceCategoryResponseModel,
   StocksOrderedBy,
@@ -61,7 +61,7 @@ export interface StocksEvent {
 export interface StocksEventListProps {
   priceCategories: PriceCategoryResponseModel[]
   departmentCode?: string | null
-  offer: GetIndividualOfferResponseModel
+  offer: GetIndividualOfferWithAddressResponseModel
   readonly?: boolean
   onStocksLoad?: (hasStocks: boolean) => void
   canAddStocks?: boolean

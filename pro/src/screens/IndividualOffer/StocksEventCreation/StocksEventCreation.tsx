@@ -2,11 +2,12 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useSWRConfig } from 'swr'
 
-import { GetIndividualOfferResponseModel } from 'apiClient/v1'
+import { GetIndividualOfferWithAddressResponseModel } from 'apiClient/v1'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { StocksEventList } from 'components/StocksEventList/StocksEventList'
 import { GET_OFFER_QUERY_KEY } from 'config/swrQueryKeys'
 import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
+import { useActiveFeature } from 'hooks/useActiveFeature'
 import { useNotification } from 'hooks/useNotification'
 import { useOfferWizardMode } from 'hooks/useOfferWizardMode'
 
@@ -16,7 +17,7 @@ import { HelpSection } from './HelpSection/HelpSection'
 import styles from './StocksEventCreation.module.scss'
 
 export interface StocksEventCreationProps {
-  offer: GetIndividualOfferResponseModel
+  offer: GetIndividualOfferWithAddressResponseModel
 }
 
 export const StocksEventCreation = ({
@@ -28,6 +29,10 @@ export const StocksEventCreation = ({
   const notify = useNotification()
 
   const [hasStocks, setHasStocks] = useState<boolean | null>(null)
+
+  const useOffererAddressAsDataSourceEnabled = useActiveFeature(
+    'WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE'
+  )
 
   const handlePreviousStep = () => {
     /* istanbul ignore next: DEBT, TO FIX */
@@ -57,6 +62,10 @@ export const StocksEventCreation = ({
     )
   }
 
+  const departmentCode = useOffererAddressAsDataSourceEnabled
+    ? (offer.address?.departmentCode ?? '')
+    : offer.venue.departementCode
+
   return (
     <>
       <div className={styles['container']}>
@@ -66,7 +75,7 @@ export const StocksEventCreation = ({
 
         <StocksEventList
           priceCategories={offer.priceCategories ?? []}
-          departmentCode={offer.venue.departementCode}
+          departmentCode={departmentCode}
           offer={offer}
           onStocksLoad={setHasStocks}
           canAddStocks
