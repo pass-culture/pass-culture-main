@@ -1245,9 +1245,13 @@ class PriceCategory(PcObject, Base, Model):
     stocks: sa_orm.Mapped[list["Stock"]] = relationship("Stock", back_populates="priceCategory", cascade="all")
     idAtProvider = sa.Column(sa.Text, nullable=True)
 
-    # First step : Create a unique index on offerId/idAtProvider
-    # Next step : (TO DO) Create a unique constraint based on this index
-    sa.Index("unique_ix_offer_id_id_at_provider", offerId, idAtProvider, unique=True)
+    __table_args__ = (
+        sa.UniqueConstraint(
+            "offerId",
+            "idAtProvider",
+            name="unique_offer_id_id_at_provider",
+        ),
+    )
 
     @property
     def label(self) -> str:
