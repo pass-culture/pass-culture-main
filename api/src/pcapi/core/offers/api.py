@@ -134,19 +134,23 @@ def build_new_offer_from_product(
     )
 
 
-def deserialize_extra_data(initial_extra_data: typing.Any) -> typing.Any:
+def deserialize_extra_data(initial_extra_data: typing.Any, subcategoryId: str) -> typing.Any:
     extra_data: dict = initial_extra_data
     if not extra_data:
         return None
-    # FIXME (ghaliela, 2024-02-16): If gtl id is sent in the extra data, musicType and musicSubType are not sent
-    if extra_data.get("gtl_id"):
-        extra_data["musicType"] = str(music_types.MUSIC_TYPES_BY_SLUG[MUSIC_SLUG_BY_GTL_ID[extra_data["gtl_id"]]].code)
-        extra_data["musicSubType"] = str(
-            music_types.MUSIC_SUB_TYPES_BY_SLUG[MUSIC_SLUG_BY_GTL_ID[extra_data["gtl_id"]]].code
-        )
-    # FIXME (ghaliela, 2024-02-16): If musicType is sent in the extra data, gtl id is not sent
-    elif extra_data.get("musicType"):
-        extra_data["gtl_id"] = GTL_IDS_BY_MUSIC_GENRE_CODE[int(extra_data["musicType"])]
+
+    if subcategoryId in subcategories.MUSIC_SUBCATEGORIES:
+        # FIXME (ghaliela, 2024-02-16): If gtl id is sent in the extra data, musicType and musicSubType are not sent
+        if extra_data.get("gtl_id"):
+            extra_data["musicType"] = str(
+                music_types.MUSIC_TYPES_BY_SLUG[MUSIC_SLUG_BY_GTL_ID[extra_data["gtl_id"]]].code
+            )
+            extra_data["musicSubType"] = str(
+                music_types.MUSIC_SUB_TYPES_BY_SLUG[MUSIC_SLUG_BY_GTL_ID[extra_data["gtl_id"]]].code
+            )
+        # FIXME (ghaliela, 2024-02-16): If musicType is sent in the extra data, gtl id is not sent
+        elif extra_data.get("musicType"):
+            extra_data["gtl_id"] = GTL_IDS_BY_MUSIC_GENRE_CODE[int(extra_data["musicType"])]
     return extra_data
 
 
@@ -325,7 +329,7 @@ def update_offer(
     aliases = set(body.dict(by_alias=True))
     fields = body.dict(by_alias=True, exclude_unset=True)
 
-    _extra_data = deserialize_extra_data(fields.get("extraData", offer.extraData))
+    _extra_data = deserialize_extra_data(fields.get("extraData", offer.extraData), offer.subcategoryId)
     fields["extraData"] = _format_extra_data(offer.subcategoryId, _extra_data) or {}
 
     if body.address:
