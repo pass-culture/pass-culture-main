@@ -2337,7 +2337,7 @@ class SubcategoriesTest:
         assert found_subcategory_ids == expected_subcategory_ids
 
         found_search_group_names = {x["name"] for x in response.json["searchGroups"]}
-        expected_search_group_names = {x.search_group_name for x in subcategories.ALL_SUBCATEGORIES}
+        expected_search_group_names = {x.name for x in subcategories.SEARCH_GROUPS}
         assert found_search_group_names == expected_search_group_names
 
         found_home_labels = {x["name"] for x in response.json["homepageLabels"]}
