@@ -382,12 +382,8 @@ class OffererAddressWithIsEditableGetterDict(GetterDict):
     def get(self, key: str, default: Any | None = None) -> Any:
         if key == "isEditable":
             return self.get("_isEditable", default)
-        if key == "street":
-            return self._obj.address.street
-        if key == "postalCode":
-            return self._obj.address.postalCode
-        if key == "city":
-            return self._obj.address.city
+        if key in ("street", "postalCode", "city", "departmentCode"):
+            return getattr(self._obj.address, key)
         return super().get(key, default)
 
 
@@ -398,6 +394,7 @@ class GetOffererAddressWithIsEditableResponseModel(BaseModel):
     postalCode: str
     city: str
     isEditable: bool
+    departmentCode: str | None
 
     class Config:
         getter_dict = OffererAddressWithIsEditableGetterDict

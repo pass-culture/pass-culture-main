@@ -395,6 +395,7 @@ class VenueListItemResponseGetterDict(GetterDict):
                 "label": self._obj.common_name,
                 "isEditable": False,
                 "isManualEdition": offerer_address.address.isManualEdition,
+                "departmentCode": offerer_address.address.departmentCode,
             }
             return address_serialize.AddressResponseIsEditableModel(**data)
         return super().get(key, default)

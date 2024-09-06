@@ -52,6 +52,7 @@ def test_response_serialization(client):
             "address": {
                 "banId": "75102_7560_00001",
                 "city": "Paris",
+                "departmentCode": "75",
                 "id": venue.offererAddress.addressId,
                 "id_oa": venue.offererAddressId,
                 "inseeCode": "75102",
@@ -107,6 +108,7 @@ def test_response_serialization(client):
             "address": {
                 "banId": "75102_7560_00001",
                 "city": "Paris",
+                "departmentCode": "75",
                 "id": venue_with_accessibility_provider.offererAddress.addressId,
                 "id_oa": venue_with_accessibility_provider.offererAddressId,
                 "inseeCode": "75102",

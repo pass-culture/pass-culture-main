@@ -849,7 +849,10 @@ def get_revenues_per_year(
 def get_offerer_addresses(offerer_id: int, only_with_offers: bool = False) -> BaseQuery:
     query = models.OffererAddress.query.filter(models.OffererAddress.offererId == offerer_id).options(
         sqla_orm.joinedload(models.OffererAddress.address).load_only(
-            geography_models.Address.street, geography_models.Address.postalCode, geography_models.Address.city
+            geography_models.Address.street,
+            geography_models.Address.postalCode,
+            geography_models.Address.city,
+            geography_models.Address.departmentCode,
         ),
         sqla_orm.with_expression(models.OffererAddress._isEditable, models.OffererAddress.isEditable.expression),  # type: ignore[attr-defined]
     )

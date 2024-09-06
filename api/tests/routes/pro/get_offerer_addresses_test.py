@@ -56,6 +56,7 @@ class Return200Test:
         assert response.json == [
             {
                 "city": "Paris",
+                "departmentCode": "75",
                 "id": offerer_address_1.id,
                 "isEditable": True,
                 "label": "1ere adresse",
@@ -64,6 +65,7 @@ class Return200Test:
             },
             {
                 "city": "Paris",
+                "departmentCode": "75",
                 "id": offerer_address_2.id,
                 "isEditable": True,
                 "label": "2eme adresse",
@@ -72,6 +74,7 @@ class Return200Test:
             },
             {
                 "city": "Paris",
+                "departmentCode": "75",
                 "id": offerer_address_3.id,
                 "isEditable": True,
                 "label": "3eme adresse",
@@ -113,6 +116,7 @@ class Return200Test:
             assert response.json == [
                 {
                     "city": "Paris",
+                    "departmentCode": "75",
                     "id": offerer_address_1.id,
                     "isEditable": False,
                     "label": "1ere adresse",
@@ -169,6 +173,7 @@ class Return200Test:
             assert response.json == [
                 {
                     "city": "Paris",
+                    "departmentCode": "75",
                     "id": offerer_address_1.id,
                     "isEditable": (not linked_to_venue),
                     "label": "1ere adresse",
@@ -177,6 +182,7 @@ class Return200Test:
                 },
                 {
                     "city": "Paris",
+                    "departmentCode": "75",
                     "id": offerer_address_2.id,
                     "isEditable": True,
                     "label": "2eme adresse",
@@ -185,6 +191,7 @@ class Return200Test:
                 },
                 {
                     "city": "Paris",
+                    "departmentCode": "75",
                     "id": offerer_address_3.id,
                     "isEditable": True,
                     "label": "3eme adresse",

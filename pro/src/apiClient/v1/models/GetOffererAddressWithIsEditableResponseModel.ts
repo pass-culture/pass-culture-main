@@ -4,6 +4,7 @@
 /* eslint-disable */
 export type GetOffererAddressWithIsEditableResponseModel = {
   city: string;
+  departmentCode?: string | null;
   id: number;
   isEditable: boolean;
   label?: string | null;
