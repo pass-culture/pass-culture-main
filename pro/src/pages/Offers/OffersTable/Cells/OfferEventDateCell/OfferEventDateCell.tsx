@@ -1,5 +1,8 @@
-import { CollectiveOfferResponseModel } from 'apiClient/v1'
-import { getDateTimeToFrenchText } from 'utils/date'
+import {
+  CollectiveOfferResponseModel,
+  ListOffersVenueResponseModel,
+} from 'apiClient/v1'
+import { getDateTimeToFrenchText, toDateStrippedOfTimezone } from 'utils/date'
 import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 
 import styles from '../Cells.module.scss'
@@ -7,6 +10,16 @@ import styles from '../Cells.module.scss'
 export interface OfferEventDateCellProps {
   offer: CollectiveOfferResponseModel
   headers?: string
+}
+
+function getOfferDate(
+  date: string,
+  isTemplate: boolean,
+  venue: ListOffersVenueResponseModel
+) {
+  return isTemplate
+    ? toDateStrippedOfTimezone(date)
+    : getLocalDepartementDateTimeFromUtc(date, venue.departementCode)
 }
 
 export const OfferEventDateCell = ({
@@ -17,8 +30,17 @@ export const OfferEventDateCell = ({
     if (!hour) {
       return
     }
+    const offerStartDatetime = getOfferDate(hour, offer.isShowcase, offer.venue)
 
-    const offerStartDatetime = new Date(hour)
+    if (
+      offer.isShowcase &&
+      offerStartDatetime.getHours() === 0 &&
+      offerStartDatetime.getMinutes() === 0
+    ) {
+      //  Template offers may not have a specific hour set. In that case the api created the dates at midnight UTC.
+      //  Therefore, template start dates at midnight UTC should not have a time displayed
+      return
+    }
 
     const timeFormatter = new Intl.DateTimeFormat('fr-FR', {
       hour: '2-digit',
@@ -47,18 +69,15 @@ export const OfferEventDateCell = ({
     if (offerDates.start === offerDates.end) {
       return [
         `${getDateTimeToFrenchText(
-          getLocalDepartementDateTimeFromUtc(
-            offerDates.start,
-            offer.venue.departementCode
-          ),
+          getOfferDate(offerDates.start, offer.isShowcase, offer.venue),
           options
         )}`,
       ]
     }
 
     return [
-      `du ${getDateTimeToFrenchText(new Date(offerDates.start), options)}`,
-      `au ${getDateTimeToFrenchText(new Date(offerDates.end), options)}`,
+      `du ${getDateTimeToFrenchText(getOfferDate(offerDates.start, offer.isShowcase, offer.venue), options)}`,
+      `au ${getDateTimeToFrenchText(getOfferDate(offerDates.end, offer.isShowcase, offer.venue), options)}`,
     ]
   }
 
