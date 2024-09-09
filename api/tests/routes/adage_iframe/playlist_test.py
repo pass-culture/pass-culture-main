@@ -224,7 +224,7 @@ class SharedOfferersPlaylistTests:
         IMAGE_URL = "http://localhost/image.png"
 
         institution = educational_factories.EducationalInstitutionFactory(
-            ruralLevel=educational_models.InstitutionRuralLevel.URBAIN_DENSE
+            ruralLevel=educational_models.InstitutionRuralLevel.GRANDS_CENTRES_URBAINS
         )
 
         expected_distance = 2.5
@@ -271,7 +271,7 @@ class SharedOfferersPlaylistTests:
         offerers_factories.VenueFactory()
 
         institution = educational_factories.EducationalInstitutionFactory(
-            ruralLevel=educational_models.InstitutionRuralLevel.URBAIN_DENSE
+            ruralLevel=educational_models.InstitutionRuralLevel.GRANDS_CENTRES_URBAINS
         )
 
         expected_distance = 2.5
@@ -333,7 +333,7 @@ class SharedOfferersPlaylistTests:
         offerers_factories.VenueFactory()
 
         institution = educational_factories.EducationalInstitutionFactory(
-            ruralLevel=educational_models.InstitutionRuralLevel.URBAIN_DENSE
+            ruralLevel=educational_models.InstitutionRuralLevel.GRANDS_CENTRES_URBAINS
         )
 
         for venue in playlist_venues:

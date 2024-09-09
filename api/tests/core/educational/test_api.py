@@ -629,10 +629,10 @@ class SynchroniseRuralityLevelTest:
     def test_should_update_rurality_level(self):
         et1 = educational_factories.EducationalInstitutionFactory(ruralLevel=None)
         et2 = educational_factories.EducationalInstitutionFactory(
-            ruralLevel=educational_models.InstitutionRuralLevel.RURAL_AUTONOME_PEU_DENSE
+            ruralLevel=educational_models.InstitutionRuralLevel.RURAL_A_HABITAT_DISPERSE
         )
         et3 = educational_factories.EducationalInstitutionFactory(
-            ruralLevel=educational_models.InstitutionRuralLevel.RURAL_AUTONOME_PEU_DENSE
+            ruralLevel=educational_models.InstitutionRuralLevel.RURAL_A_HABITAT_DISPERSE
         )
 
         mock_path = "pcapi.connectors.big_query.TestingBackend.run_query"
@@ -640,15 +640,15 @@ class SynchroniseRuralityLevelTest:
             mock_run_query.return_value = [
                 {
                     "institution_id": str(et1.id),
-                    "institution_rural_level": educational_models.InstitutionRuralLevel.RURAL_AUTONOME_PEU_DENSE.value,
+                    "institution_rural_level": educational_models.InstitutionRuralLevel.RURAL_A_HABITAT_DISPERSE.value,
                 },
                 {
                     "institution_id": str(et2.id),
-                    "institution_rural_level": educational_models.InstitutionRuralLevel.RURAL_AUTONOME_PEU_DENSE.value,
+                    "institution_rural_level": educational_models.InstitutionRuralLevel.RURAL_A_HABITAT_DISPERSE.value,
                 },
                 {
                     "institution_id": str(et3.id),
-                    "institution_rural_level": educational_models.InstitutionRuralLevel.URBAIN_DENSE.value,
+                    "institution_rural_level": educational_models.InstitutionRuralLevel.GRANDS_CENTRES_URBAINS.value,
                 },
             ]
             institution_api.synchronise_rurality_level()
@@ -657,6 +657,6 @@ class SynchroniseRuralityLevelTest:
             educational_models.EducationalInstitution.id
         ).all()
         assert [i.id for i in institutions] == [et1.id, et2.id, et3.id]
-        assert institutions[0].ruralLevel == educational_models.InstitutionRuralLevel.RURAL_AUTONOME_PEU_DENSE
-        assert institutions[1].ruralLevel == educational_models.InstitutionRuralLevel.RURAL_AUTONOME_PEU_DENSE
-        assert institutions[2].ruralLevel == educational_models.InstitutionRuralLevel.URBAIN_DENSE
+        assert institutions[0].ruralLevel == educational_models.InstitutionRuralLevel.RURAL_A_HABITAT_DISPERSE
+        assert institutions[1].ruralLevel == educational_models.InstitutionRuralLevel.RURAL_A_HABITAT_DISPERSE
+        assert institutions[2].ruralLevel == educational_models.InstitutionRuralLevel.GRANDS_CENTRES_URBAINS
