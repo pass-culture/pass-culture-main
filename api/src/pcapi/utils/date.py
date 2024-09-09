@@ -222,3 +222,7 @@ def days_ago_timestamp(days: int) -> int:
     """Get a timestamp from a date `days` ago"""
     days_ago = datetime.now(tz.utc) - timedelta(days=days)  # pylint: disable=datetime-now
     return int(days_ago.timestamp())
+
+
+def parse_titelive_date_to_string(date_str: str) -> str:
+    return str(parse_french_date(date_str))
