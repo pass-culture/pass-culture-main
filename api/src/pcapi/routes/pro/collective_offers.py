@@ -23,7 +23,6 @@ from pcapi.routes.serialization import collective_offers_serialize
 from pcapi.routes.serialization import educational_redactors
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.rest import check_user_has_access_to_offerer
-from pcapi.workers.update_all_offers_active_status_job import update_all_collective_offers_active_status_job
 
 from . import blueprint
 
@@ -384,41 +383,6 @@ def edit_collective_offer_template(
 
     offer = educational_api_offer.get_collective_offer_template_by_id(offer_id)
     return collective_offers_serialize.GetCollectiveOfferTemplateResponseModel.from_orm(offer)
-
-
-@private_api.route("/collective/offers/all-active-status", methods=["PATCH"])
-@login_required
-@spectree_serialize(
-    on_success_status=204,
-    api=blueprint.pro_private_schema,
-)
-def patch_all_collective_offers_active_status(
-    body: collective_offers_serialize.PatchAllCollectiveOffersActiveStatusBodyModel,
-) -> None:
-    if body.is_active:
-        if body.offerer_id:
-            if not offerers_api.can_offerer_create_educational_offer(body.offerer_id):
-                raise ApiErrors({"Partner": ["User not in Adage can't edit the offer"]}, status_code=403)
-        else:
-            offerers_ids = {user_offerer.offererId for user_offerer in current_user.UserOfferers}
-            for offerer_id in offerers_ids:
-                if not offerers_api.can_offerer_create_educational_offer(offerer_id):
-                    raise ApiErrors({"Partner": ["User not in Adage can't edit the offer"]}, status_code=403)
-
-    filters = {
-        "user_id": current_user.id,
-        "is_user_admin": current_user.has_admin_role,
-        "offerer_id": body.offerer_id,
-        "status": body.status,
-        "venue_id": body.venue_id,
-        "provider_id": None,
-        "category_id": body.category_id,
-        "name_or_isbn": body.name_or_isbn,
-        "creation_mode": body.creation_mode,
-        "period_beginning_date": body.period_beginning_date,
-        "period_ending_date": body.period_ending_date,
-    }
-    update_all_collective_offers_active_status_job.delay(filters, body.is_active)
 
 
 @private_api.route("/collective/offers/active-status", methods=["PATCH"])
