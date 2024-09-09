@@ -132,3 +132,17 @@ def acceslibre_matching(
     offerers_api.acceslibre_matching(
         batch_size=batch_size, dry_run=dry_run, start_from_batch=start_from_batch, n_days_to_fetch=n_days_to_fetch
     )
+
+
+@blueprint.cli.command("find_missing_match_at_acceslibre")
+@click.option("--dry-run", type=bool, default=True)
+@click.option("--batch-size", type=int, default=BATCH_SIZE, help="Size of venues batches to synchronize")
+@click.option("--start-from-batch", type=int, default=1, help="Start synchronization from batch number")
+def find_missing_match_at_acceslibre(
+    dry_run: bool = True,
+    batch_size: int = BATCH_SIZE,
+    start_from_batch: int = 1,
+) -> None:
+    offerers_api.find_missing_match_at_acceslibre(
+        batch_size=batch_size, dry_run=dry_run, start_from_batch=start_from_batch
+    )
