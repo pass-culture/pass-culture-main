@@ -4308,6 +4308,8 @@ class GetEntrepriseInfoRcsTest(GetEndpointHelper):
         assert "Date d'immatriculation : 02/01/2023" in content
         assert "Date de radiation" not in content
         assert "Activité du siège social : TEST" in content
+        assert "03/02/2023 : Observation 1" in content
+        assert "Date inconnue : Observation 2" in content
 
     def test_get_rcs_info_not_registered(self, authenticated_client):
         offerer = offerers_factories.OffererFactory(siren="020000006")

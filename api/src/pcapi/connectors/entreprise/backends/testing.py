@@ -179,6 +179,10 @@ class TestingBackend(BaseBackend):
             registration_date=datetime.date(2023, 1, 2),
             deregistration_date=None if self._is_active(siren) else datetime.date(2023, 12, 31),
             head_office_activity="TEST",
+            observations=[
+                models.RCSObservation(date=datetime.date(2023, 2, 3), label="Observation 1"),
+                models.RCSObservation(date=None, label="Observation 2"),
+            ],
         )
 
     def get_urssaf(self, siren: str) -> models.UrssafInfo:

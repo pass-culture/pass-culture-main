@@ -393,7 +393,7 @@ def test_get_rcs_deregistered():
         assert len(rcs_info.observations) == 2
         assert rcs_info.observations[0].date == datetime.date(2024, 1, 15)
         assert rcs_info.observations[0].label == "PREMIERE OBSERVATION"
-        assert rcs_info.observations[1].date == datetime.date(2024, 2, 3)
+        assert rcs_info.observations[1].date is None
         assert rcs_info.observations[1].label == "DEUXIEME OBSERVATION"
 
 

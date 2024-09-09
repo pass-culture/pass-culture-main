@@ -691,7 +691,7 @@ RESPONSE_RCS_DEREGISTERED_COMPANY = {
         ],
         "observations": [
             {"numero": "1234", "libelle": "PREMIERE OBSERVATION", "date": "2024-01-15"},
-            {"numero": "5678", "libelle": "DEUXIEME OBSERVATION", "date": "2024-02-03"},
+            {"numero": "5678", "libelle": "DEUXIEME OBSERVATION", "date": ""},
         ],
         "nom_commercial": "",
         "etablissement_principal": {

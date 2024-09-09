@@ -302,7 +302,7 @@ class EntrepriseBackend(BaseBackend):
                 for item in data["mandataires_sociaux"]
             ],
             observations=[
-                models.RCSObservation(date=item["date"], label=item["libelle"]) for item in data["observations"]
+                models.RCSObservation(date=item["date"] or None, label=item["libelle"]) for item in data["observations"]
             ],
         )
 
