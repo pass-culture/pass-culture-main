@@ -6,6 +6,7 @@ from pcapi.core.categories import subcategories_v2 as subcategories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import Offer
+from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 from pcapi.routes.native.v1.serialization.offerers import VenueTypeCode
 from pcapi.utils.date import format_into_utc_date
@@ -14,7 +15,6 @@ from pcapi.utils.date import format_into_utc_date
 @pytest.mark.usefixtures("db_session")
 class Returns200Test:
     def test_patch_draft_offer(self, client):
-        # Given
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
         venue = offerers_factories.VirtualVenueFactory(managingOfferer=user_offerer.offerer)
         offer = offers_factories.OfferFactory(
@@ -25,7 +25,6 @@ class Returns200Test:
             url="http://example.com/offer",
         )
 
-        # When
         data = {
             "name": "New name",
             "description": "New description",
@@ -33,7 +32,6 @@ class Returns200Test:
             "extraData": {"gtl_id": "07000000"},
         }
         response = client.with_session_auth("user@example.com").patch(f"/offers/draft/{offer.id}", json=data)
-        # Then
         assert response.status_code == 200
         assert response.json["id"] == offer.id
         assert response.json["venue"]["id"] == offer.venue.id
@@ -45,11 +43,70 @@ class Returns200Test:
         assert updated_offer.description == "New description"
         assert not updated_offer.product
 
+    @override_features(WIP_EAN_CREATION=False)
+    def test_patch_draft_offer_with_ean(self, client):
+        user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+        offer = offers_factories.OfferFactory(
+            name="Name",
+            subcategoryId=subcategories.LIVRE_PAPIER.id,
+            venue=venue,
+            description="description",
+            url="http://example.com/offer",
+        )
+
+        data = {
+            "name": "New name",
+            "description": "New description",
+            "subcategoryId": subcategories.LIVRE_PAPIER.id,
+            "extraData": {"gtl_id": "07000000", "ean": "1234567891234"},
+        }
+        response = client.with_session_auth("user@example.com").patch(f"/offers/draft/{offer.id}", json=data)
+        assert response.status_code == 200
+        assert response.json["id"] == offer.id
+        assert response.json["venue"]["id"] == offer.venue.id
+        assert response.json["productId"] == None
+
+        updated_offer = Offer.query.get(offer.id)
+        assert updated_offer.name == "New name"
+        assert updated_offer.subcategoryId == subcategories.LIVRE_PAPIER.id
+        assert updated_offer.description == "New description"
+        assert updated_offer.extraData["ean"] == "1234567891234"
+        assert not updated_offer.product
+
+    @override_features(WIP_EAN_CREATION=True)
+    def test_patch_draft_offer_without_product(self, client):
+        user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
+        venue = offerers_factories.VirtualVenueFactory(managingOfferer=user_offerer.offerer)
+        offer = offers_factories.OfferFactory(
+            name="Name",
+            subcategoryId=subcategories.LIVRE_PAPIER.id,
+            venue=venue,
+            description="description",
+            url="http://example.com/offer",
+        )
+
+        data = {
+            "name": "New name",
+            "description": "New description",
+            "extraData": {"author": "Nicolas Gogol"},
+        }
+        response = client.with_session_auth("user@example.com").patch(f"/offers/draft/{offer.id}", json=data)
+        assert response.status_code == 200
+        assert response.json["id"] == offer.id
+        assert response.json["venue"]["id"] == offer.venue.id
+        assert response.json["productId"] == None
+
+        updated_offer = Offer.query.get(offer.id)
+        assert updated_offer.name == "New name"
+        assert updated_offer.subcategoryId == subcategories.LIVRE_PAPIER.id
+        assert updated_offer.description == "New description"
+        assert not updated_offer.product
+
 
 @pytest.mark.usefixtures("db_session")
 class Returns400Test:
     def when_trying_to_patch_forbidden_attributes(self, client):
-        # Given
         offer = offers_factories.OfferFactory(
             subcategoryId=subcategories.CARTE_MUSEE.id,
             name="New name",
@@ -61,7 +118,6 @@ class Returns400Test:
             offerer=offer.venue.managingOfferer,
         )
 
-        # When
         data = {
             "dateCreated": format_into_utc_date(datetime(2019, 1, 1)),
             "dateModifiedAtLastProvider": format_into_utc_date(datetime(2019, 1, 1)),
@@ -73,7 +129,6 @@ class Returns400Test:
         }
         response = client.with_session_auth("user@example.com").patch(f"offers/draft/{offer.id}", json=data)
 
-        # Then
         assert response.status_code == 400
         assert response.json["lastProviderId"] == ["Vous ne pouvez pas changer cette information"]
         forbidden_keys = {
@@ -87,6 +142,7 @@ class Returns400Test:
         for key in forbidden_keys:
             assert key in response.json
 
+    @override_features(WIP_EAN_CREATION=True)
     def when_trying_to_patch_ean(self, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
         venue = offerers_factories.VenueFactory(
@@ -129,7 +185,6 @@ class Returns400Test:
 class Returns403Test:
     def when_user_is_not_attached_to_offerer(self, client):
         email = "user@example.com"
-        # Given
         offer = offers_factories.OfferFactory(
             name="Old name",
             subcategoryId=subcategories.CARTE_MUSEE.id,
@@ -138,11 +193,9 @@ class Returns403Test:
         )
         offerers_factories.UserOffererFactory(user__email=email)
 
-        # When
         data = {"name": "New name"}
         response = client.with_session_auth(email).patch(f"/offers/draft/{offer.id}", json=data)
 
-        # Then
         assert response.status_code == 403
         msg = "Vous n'avez pas les droits d'accès suffisants pour accéder à cette information."
         assert response.json["global"] == [msg]
