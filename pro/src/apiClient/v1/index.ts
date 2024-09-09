@@ -183,7 +183,6 @@ export type { OffererViewsModel } from './models/OffererViewsModel';
 export type { OfferImage } from './models/OfferImage';
 export { OfferStatus } from './models/OfferStatus';
 export type { OpeningHoursModel } from './models/OpeningHoursModel';
-export type { PatchAllCollectiveOffersActiveStatusBodyModel } from './models/PatchAllCollectiveOffersActiveStatusBodyModel';
 export type { PatchAllOffersActiveStatusBodyModel } from './models/PatchAllOffersActiveStatusBodyModel';
 export type { PatchCollectiveOfferActiveStatusBodyModel } from './models/PatchCollectiveOfferActiveStatusBodyModel';
 export type { PatchCollectiveOfferArchiveBodyModel } from './models/PatchCollectiveOfferArchiveBodyModel';

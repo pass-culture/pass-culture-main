@@ -626,32 +626,6 @@ class Returns403Test:
         assert response.status_code == 403
         assert response.json == {"venueId": "New venue needs to have the same offerer"}
 
-    def test_when_activating_all_existing_offers_active_status_when_cultural_partners_not_found(self, client):
-        # Given
-        offer1 = educational_factories.CollectiveOfferFactory(isActive=False)
-        venue = offer1.venue
-        offerer = venue.managingOfferer
-        offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offerer)
-
-        # When
-        client = client.with_session_auth("pro@example.com")
-        data = {
-            "isActive": True,
-            "offererId": offerer.id,
-            "page": 1,
-            "venueId": venue.id,
-        }
-
-        with patch(
-            "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer", return_value=False
-        ):
-            response = client.patch("/collective/offers/all-active-status", json=data)
-
-        # Then
-        assert response.status_code == 403
-        assert response.json == {"Partner": ["User not in Adage can't edit the offer"]}
-        assert offer1.isActive is False
-
 
 class Returns404Test:
     def test_returns_404_if_offer_does_not_exist(self, app, client):

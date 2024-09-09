@@ -770,21 +770,6 @@ class PatchCollectiveOfferArchiveBodyModel(BaseModel):
     ids: list[int]
 
 
-class PatchAllCollectiveOffersActiveStatusBodyModel(BaseModel):
-    is_active: bool
-    offerer_id: int | None
-    venue_id: int | None
-    name_or_isbn: str | None
-    category_id: str | None
-    creation_mode: str | None
-    status: str | None
-    period_beginning_date: datetime | None
-    period_ending_date: datetime | None
-
-    class Config:
-        alias_generator = to_camel
-
-
 class PatchCollectiveOfferEducationalInstitution(BaseModel):
     educational_institution_id: int | None
     teacher_email: str | None

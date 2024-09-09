@@ -75,7 +75,6 @@ import type { OffererAddressRequestModel } from '../models/OffererAddressRequest
 import type { OffererAddressResponseModel } from '../models/OffererAddressResponseModel';
 import type { OffererStatsResponseModel } from '../models/OffererStatsResponseModel';
 import type { OfferStatus } from '../models/OfferStatus';
-import type { PatchAllCollectiveOffersActiveStatusBodyModel } from '../models/PatchAllCollectiveOffersActiveStatusBodyModel';
 import type { PatchAllOffersActiveStatusBodyModel } from '../models/PatchAllOffersActiveStatusBodyModel';
 import type { PatchCollectiveOfferActiveStatusBodyModel } from '../models/PatchCollectiveOfferActiveStatusBodyModel';
 import type { PatchCollectiveOfferArchiveBodyModel } from '../models/PatchCollectiveOfferArchiveBodyModel';
@@ -816,26 +815,6 @@ export class DefaultService {
     return this.httpRequest.request({
       method: 'PATCH',
       url: '/collective/offers/active-status',
-      body: requestBody,
-      mediaType: 'application/json',
-      errors: {
-        403: `Forbidden`,
-        422: `Unprocessable Entity`,
-      },
-    });
-  }
-  /**
-   * patch_all_collective_offers_active_status <PATCH>
-   * @param requestBody
-   * @returns void
-   * @throws ApiError
-   */
-  public patchAllCollectiveOffersActiveStatus(
-    requestBody?: PatchAllCollectiveOffersActiveStatusBodyModel,
-  ): CancelablePromise<void> {
-    return this.httpRequest.request({
-      method: 'PATCH',
-      url: '/collective/offers/all-active-status',
       body: requestBody,
       mediaType: 'application/json',
       errors: {
