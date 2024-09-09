@@ -5,7 +5,6 @@ import click
 
 from pcapi.core.providers.titelive_book_search import TiteliveBookSearch
 from pcapi.core.providers.titelive_music_search import TiteliveMusicSearch
-from pcapi.local_providers.provider_manager import synchronize_data_for_provider
 from pcapi.models.feature import FeatureToggle
 from pcapi.scheduled_tasks.decorators import cron_require_feature
 from pcapi.scheduled_tasks.decorators import log_cron_with_transaction
@@ -15,19 +14,6 @@ from pcapi.utils.blueprint import Blueprint
 logger = logging.getLogger(__name__)
 
 blueprint = Blueprint(__name__, __name__)
-
-
-@blueprint.cli.command("synchronize_titelive_thing_thumbs")
-@log_cron_with_transaction
-@cron_require_feature(FeatureToggle.SYNCHRONIZE_TITELIVE_PRODUCTS_THUMBS)
-def synchronize_titelive_thing_thumbs() -> None:
-    """Launches Titelive thumbs synchronization through TiteLiveThingThumbs provider"""
-    if FeatureToggle.WIP_ENABLE_TITELIVE_API_FOR_BOOKS.is_active():
-        logger.info(
-            "FeatureToggle.WIP_ENABLE_TITELIVE_API_FOR_BOOKS is active. Use synchronize_titelive_book_products instead"
-        )
-        return
-    synchronize_data_for_provider("TiteLiveThingThumbs")
 
 
 @blueprint.cli.command("synchronize_titelive_music_products")

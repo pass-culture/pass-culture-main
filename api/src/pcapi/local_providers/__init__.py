@@ -3,11 +3,9 @@ from pcapi.local_providers.cinema_providers.boost.boost_stocks import BoostStock
 from pcapi.local_providers.cinema_providers.cds.cds_stocks import CDSStocks
 from pcapi.local_providers.cinema_providers.cgr.cgr_stocks import CGRStocks
 from pcapi.local_providers.cinema_providers.ems.ems_stocks import EMSStocks
-from pcapi.local_providers.titelive_thing_thumbs.titelive_thing_thumbs import TiteLiveThingThumbs
 
 
 __all__ = (
-    "TiteLiveThingThumbs",
     "AllocineStocks",
     "CDSStocks",
     "BoostStocks",
