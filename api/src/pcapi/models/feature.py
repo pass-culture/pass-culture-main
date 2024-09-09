@@ -78,8 +78,6 @@ class FeatureToggle(enum.Enum):
     PRICE_FINANCE_EVENTS = "Active la valorisation des évènements de finance"
     SYNCHRONIZE_ALLOCINE = "Permettre la synchronisation journalière avec Allociné"
     SYNCHRONIZE_TITELIVE_PRODUCTS = "Permettre limport journalier du référentiel des livres"
-    SYNCHRONIZE_TITELIVE_PRODUCTS_DESCRIPTION = "Permettre l'import journalier des résumés des livres"
-    SYNCHRONIZE_TITELIVE_PRODUCTS_THUMBS = "Permettre l'import journalier des couvertures de livres"
     SYNCHRONIZE_TITELIVE_API_MUSIC_PRODUCTS = (
         "Permettre l'import journalier du référentiel de la musique à travers l'API Titelive"
     )
@@ -110,7 +108,6 @@ class FeatureToggle(enum.Enum):
     WIP_ENABLE_NATIONAL_PROGRAM_NEW_RULES_PUBLIC_API = (
         "Activer les nouvelles règles de création et d'édition d'offres collecrives pour l'API publique (collective)"
     )
-    WIP_ENABLE_TITELIVE_API_FOR_BOOKS = "Activer l'utilisation de l'API Titelive pour les synchronisations produits pour les livres(désactive l'utilisation de l'utilisation de FTP pour la synchro)"
     ENABLE_PRO_NEW_NAV_MODIFICATION = "Activer la modification du statut de la navigation du portail pro"
     WIP_ENABLE_NEW_HASHING_ALGORITHM = "Activer le nouveau système de hachage des clés publiques d'API"
     WIP_BENEFICIARY_EXTRACT_TOOL = "Activer l'extraction de données personnelles (RGPD)"
@@ -189,7 +186,6 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_ENABLE_NEW_HASHING_ALGORITHM,
     FeatureToggle.WIP_ENABLE_OFFER_ADDRESS,
     FeatureToggle.WIP_ENABLE_REMINDER_MARKETING_MAIL_METADATA_DISPLAY,
-    FeatureToggle.WIP_ENABLE_TITELIVE_API_FOR_BOOKS,
     FeatureToggle.WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE,
     FeatureToggle.WIP_SPLIT_OFFER,
     FeatureToggle.WIP_SUGGESTED_SUBCATEGORIES,

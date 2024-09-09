@@ -49,10 +49,6 @@ def synchronize_titelive_music_products(from_date: datetime.datetime | None, fro
     default=1,
 )
 @log_cron_with_transaction
-@cron_require_feature(FeatureToggle.WIP_ENABLE_TITELIVE_API_FOR_BOOKS)
 @cron_require_feature(FeatureToggle.SYNCHRONIZE_TITELIVE_PRODUCTS)
-@cron_require_feature(FeatureToggle.SYNCHRONIZE_TITELIVE_PRODUCTS_DESCRIPTION)
-@cron_require_feature(FeatureToggle.SYNCHRONIZE_TITELIVE_PRODUCTS_THUMBS)
 def synchronize_titelive_book_products(from_date: datetime.datetime | None, from_page: int) -> None:
-    # When removing WIP_ENABLE_TITELIVE_API_FOR_BOOKS, also remove the 3 crons above (# synchronize_titelive_things_*), they will be obsolete
     TiteliveBookSearch().synchronize_products(from_date.date() if from_date else None, from_page)
