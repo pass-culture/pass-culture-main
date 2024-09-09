@@ -865,6 +865,37 @@
                 "title": "AccessibilityResponse",
                 "type": "object"
             },
+            "AvailableEANsResponse": {
+                "properties": {
+                    "available": {
+                        "description": "List of EANs that are available for upsert",
+                        "example": [
+                            "3700551782888",
+                            "9782895761792"
+                        ],
+                        "items": {
+                            "type": "string"
+                        },
+                        "title": "Available",
+                        "type": "array"
+                    },
+                    "rejected": {
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/RejectedEANsPartialResponse"
+                            }
+                        ],
+                        "description": "List of EANs that are not available for upsert, sorted by their rejection reasons",
+                        "title": "Rejected"
+                    }
+                },
+                "required": [
+                    "available",
+                    "rejected"
+                ],
+                "title": "AvailableEANsResponse",
+                "type": "object"
+            },
             "BON_ACHAT_INSTRUMENT_read": {
                 "description": "Bon d'achat instrument",
                 "properties": {
@@ -3502,6 +3533,21 @@
                     "category"
                 ],
                 "title": "FESTIVAL_SPECTACLE_read",
+                "type": "object"
+            },
+            "GetAvailableEANsListQuery": {
+                "properties": {
+                    "eans": {
+                        "description": "EANs list (max 100)",
+                        "example": "3700551782888,9782895761792",
+                        "title": "Eans",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "eans"
+                ],
+                "title": "GetAvailableEANsListQuery",
                 "type": "object"
             },
             "GetBookingResponse": {
@@ -7324,6 +7370,53 @@
                 "title": "RENCONTRE_read",
                 "type": "object"
             },
+            "RejectedEANsPartialResponse": {
+                "properties": {
+                    "notCompliantWithCgu": {
+                        "description": "List of EANS that do not comply with our CGU (General Terms and Conditions)",
+                        "example": [
+                            "3700551782888",
+                            "9782895761792"
+                        ],
+                        "items": {
+                            "type": "string"
+                        },
+                        "title": "Notcompliantwithcgu",
+                        "type": "array"
+                    },
+                    "notFound": {
+                        "description": "List of EANS not present in our database",
+                        "example": [
+                            "3700551782888",
+                            "9782895761792"
+                        ],
+                        "items": {
+                            "type": "string"
+                        },
+                        "title": "Notfound",
+                        "type": "array"
+                    },
+                    "subcategoryNotAllowed": {
+                        "description": "List of EANS that do not belong to an allowed category (only paper books, CDs, and vinyl records are permitted)",
+                        "example": [
+                            "3700551782888",
+                            "9782895761792"
+                        ],
+                        "items": {
+                            "type": "string"
+                        },
+                        "title": "Subcategorynotallowed",
+                        "type": "array"
+                    }
+                },
+                "required": [
+                    "notFound",
+                    "subcategoryNotAllowed",
+                    "notCompliantWithCgu"
+                ],
+                "title": "RejectedEANsPartialResponse",
+                "type": "object"
+            },
             "SALON_create": {
                 "description": "Salon, Convention",
                 "properties": {
@@ -10571,7 +10664,7 @@
                 ]
             },
             "post": {
-                "description": "This endpoint allows for the batch upsert (update or insert) of product offers and their corresponding stock levels using the **European Article Number (EAN-13)**. It performs the following operations:\n\n1. **Create Offers:** If a venue does not have an existing offer for a product identified by its EAN, the endpoint creates a new offer.\n\n2. **Update Offer Stocks:** It updates the stock levels for the product offers. If the stock quantity is set to `0`, the product offer stock is deleted.\n\nThe upsert process is **asynchronous**, meaning the operation may take some time to complete. The success response from this endpoint indicates only that the upsert job has been successfully added to the queue.",
+                "description": "This endpoint allows for the batch upsert (update or insert) of product offers and their corresponding stock levels using the **European Article Number (EAN-13)**. It performs the following operations:\n\n1. **Create Offers:** If a venue does not have an existing offer for a product identified by its EAN, the endpoint creates a new offer.\n\n2. **Update Offer Stocks:** It updates the stock levels for the product offers. If the stock quantity is set to `0`, the product offer stock is deleted.\n\nThe upsert process is **asynchronous**, meaning the operation may take some time to complete. The success response from this endpoint indicates only that the upsert job has been successfully added to the queue.\n\n**WARNING:** As it is an asynchronous you won't be given any feedback if one or more EANs is rejected. To make sure that your EANs won't be rejected please use [**this endpoint**](/rest-api#tag/Product-offer-bulk-operations/operation/CheckEansAvailability)",
                 "operationId": "PostProductOfferByEan",
                 "parameters": [],
                 "requestBody": {
@@ -10616,6 +10709,63 @@
                     }
                 ],
                 "summary": "Batch Upsert Product Offers by EAN",
+                "tags": [
+                    "Product offer bulk operations"
+                ]
+            }
+        },
+        "/public/offers/v1/products/ean/check_availability": {
+            "get": {
+                "description": "This endpoint checks the availability of a list of EANs (European Article Numbers) for a bulk upsert operation. The response contains the EANs categorized by their availability status.\n\n**Response Structure**\n\n- `available`: A list of EANs that are available for upsert.\n\n- `rejected`: A list of EANs that are not available for upsert, sorted by their rejection reasons.\n\n**Rejection Reasons**\n\nAn EAN can be rejected for the following reasons:\n\n- `notFound`: The EAN is not present in our database.\n\n- `subcategoryNotAllowed`: The product identified by the EAN does not belong to an allowed category (only paper books, CDs, and vinyl records are permitted).\n\n- `notCompliantWithCgu`: The product identified by the EAN does not comply with our CGU (General Terms and Conditions).",
+                "operationId": "CheckEansAvailability",
+                "parameters": [
+                    {
+                        "description": "EANs list (max 100)",
+                        "in": "query",
+                        "name": "eans",
+                        "required": true,
+                        "schema": {
+                            "description": "EANs list (max 100)",
+                            "example": "3700551782888,9782895761792",
+                            "title": "Eans",
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AvailableEANsResponse"
+                                }
+                            }
+                        },
+                        "description": "EANs by availability"
+                    },
+                    "401": {
+                        "description": "Authentication is necessary to use this API."
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        },
+                        "description": "Unprocessable Entity"
+                    },
+                    "429": {
+                        "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "summary": "Check EAN Availability for Bulk Upsert",
                 "tags": [
                     "Product offer bulk operations"
                 ]

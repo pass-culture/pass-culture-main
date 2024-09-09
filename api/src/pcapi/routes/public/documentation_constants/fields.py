@@ -157,6 +157,25 @@ class _FIELDS:
         description="European Article Number (EAN-13)",
         example="3700551782888",
     )
+    EANS_AVAILABLE = Field(
+        description="List of EANs that are available for upsert",
+        example=["3700551782888", "9782895761792"],
+    )
+    EANS_REJECTED = Field(
+        description="List of EANs that are not available for upsert, sorted by their rejection reasons",
+    )
+    EANS_REJECTED_BECAUSE_NOT_FOUND = Field(
+        description="List of EANS not present in our database",
+        example=["3700551782888", "9782895761792"],
+    )
+    EANS_REJECTED_BECAUSE_NOT_COMPLIANT = Field(
+        description="List of EANS that do not comply with our CGU (General Terms and Conditions)",
+        example=["3700551782888", "9782895761792"],
+    )
+    EANS_REJECTED_BECAUSE_CATEGORY_NOT_ALLOWED = Field(
+        description="List of EANS that do not belong to an allowed category (only paper books, CDs, and vinyl records are permitted)",
+        example=["3700551782888", "9782895761792"],
+    )
 
     # Event fields
     PRICE_CATEGORY_ID = Field(description="Price category id", example=12)

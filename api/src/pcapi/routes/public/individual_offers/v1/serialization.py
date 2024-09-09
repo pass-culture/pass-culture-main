@@ -835,6 +835,57 @@ class GetProductsListByEansQuery(serialization.ConfiguredBaseModel):
         return ean_list
 
 
+class GetAvailableEANsListQuery(serialization.ConfiguredBaseModel):
+    eans: str = fields.EANS_FILTER
+
+    @pydantic_v1.validator("eans")
+    def validate_ean_list(cls, eans: str) -> list[str]:
+        """The ean list must contain at least one element, at most 100
+        An ean must be a 13 digit integer"""
+        if not eans:
+            raise ValueError("EAN list must not be empty")
+
+        ean_list = eans.split(",")
+
+        if len(ean_list) > 100:
+            raise ValueError("Too many EANs")
+        for ean in ean_list:
+            if not ean.isdigit():
+                raise ValueError("EAN must be an integer")
+            if len(ean) != 13:
+                raise ValueError("Only 13 characters EAN are accepted")
+        return ean_list
+
+
+class RejectedEANsPartialResponse(serialization.ConfiguredBaseModel):
+    not_found: list[str] = fields.EANS_REJECTED_BECAUSE_NOT_FOUND
+    subcategory_not_allowed: list[str] = fields.EANS_REJECTED_BECAUSE_CATEGORY_NOT_ALLOWED
+    not_compliant_with_cgu: list[str] = fields.EANS_REJECTED_BECAUSE_NOT_COMPLIANT
+
+
+class AvailableEANsResponse(serialization.ConfiguredBaseModel):
+    available: list[str] = fields.EANS_AVAILABLE
+    rejected: RejectedEANsPartialResponse = fields.EANS_REJECTED
+
+    @classmethod
+    def build_response(
+        cls,
+        *,
+        available: list[str],
+        not_compliant_with_cgu: list[str],
+        not_found: list[str],
+        subcategory_not_allowed: list[str],
+    ) -> "AvailableEANsResponse":
+        return cls(
+            available=available,
+            rejected=RejectedEANsPartialResponse(
+                not_found=not_found,
+                subcategory_not_allowed=subcategory_not_allowed,
+                not_compliant_with_cgu=not_compliant_with_cgu,
+            ),
+        )
+
+
 class EventCategoryResponse(serialization.ConfiguredBaseModel):
     id: EventCategoryEnum  # type: ignore[valid-type]
     conditional_fields: dict[str, bool] = pydantic_v1.Field(

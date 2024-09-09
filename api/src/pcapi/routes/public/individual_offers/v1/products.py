@@ -350,6 +350,9 @@ def post_product_offer_by_ean(body: serialization.ProductsOfferByEanCreation) ->
     2. **Update Offer Stocks:** It updates the stock levels for the product offers. If the stock quantity is set to `0`, the product offer stock is deleted.
 
     The upsert process is **asynchronous**, meaning the operation may take some time to complete. The success response from this endpoint indicates only that the upsert job has been successfully added to the queue.
+
+    **WARNING:** As it is an asynchronous you won't be given any feedback if one or more EANs is rejected.
+    To make sure that your EANs won't be rejected please use [**this endpoint**](/rest-api#tag/Product-offer-bulk-operations/operation/CheckEansAvailability)
     """
     venue = utils.retrieve_venue_from_location(body.location)
     if venue.isVirtual:
@@ -478,16 +481,18 @@ def _create_or_update_ean_offers(serialized_products_stocks: dict, venue_id: int
     )
 
 
+ALLOWED_PRODUCT_SUBCATEGORIES = [
+    subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
+    subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id,
+    subcategories.LIVRE_PAPIER.id,
+]
+
+
 def _get_existing_products(ean_to_create: set[str]) -> list[offers_models.Product]:
-    allowed_product_subcategories = [
-        subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
-        subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id,
-        subcategories.LIVRE_PAPIER.id,
-    ]
     return offers_models.Product.query.filter(
         offers_models.Product.extraData["ean"].astext.in_(ean_to_create),
         offers_models.Product.can_be_synchronized == True,
-        offers_models.Product.subcategoryId.in_(allowed_product_subcategories),
+        offers_models.Product.subcategoryId.in_(ALLOWED_PRODUCT_SUBCATEGORIES),
         # FIXME (cepehang, 2023-09-21) remove these condition when the product table is cleaned up
         offers_models.Product.lastProviderId.is_not(None),
         offers_models.Product.idAtProviders.is_not(None),
@@ -627,6 +632,74 @@ def get_product_by_ean(
 
     return serialization.ProductOffersByEanResponse(
         products=[serialization.ProductOfferResponse.build_product_offer(offer) for offer in offers]
+    )
+
+
+@blueprints.public_api.route("/public/offers/v1/products/ean/check_availability", methods=["GET"])
+@api_key_required
+@spectree_serialize(
+    api=spectree_schemas.public_api_schema,
+    tags=[tags.PRODUCT_EAN_OFFERS],
+    response_model=serialization.AvailableEANsResponse,
+    resp=SpectreeResponse(
+        **(
+            {"HTTP_200": (serialization.AvailableEANsResponse, "EANs by availability")}
+            # errors
+            | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
+        )
+    ),
+)
+def check_eans_availability(
+    query: serialization.GetAvailableEANsListQuery,
+) -> serialization.AvailableEANsResponse:
+    """
+    Check EAN Availability for Bulk Upsert
+
+    This endpoint checks the availability of a list of EANs (European Article Numbers) for a bulk upsert operation.
+    The response contains the EANs categorized by their availability status.
+
+    **Response Structure**
+
+    - `available`: A list of EANs that are available for upsert.
+
+    - `rejected`: A list of EANs that are not available for upsert, sorted by their rejection reasons.
+
+    **Rejection Reasons**
+
+    An EAN can be rejected for the following reasons:
+
+    - `notFound`: The EAN is not present in our database.
+
+    - `subcategoryNotAllowed`: The product identified by the EAN does not belong to an allowed category (only paper books, CDs, and vinyl records are permitted).
+
+    - `notCompliantWithCgu`: The product identified by the EAN does not comply with our CGU (General Terms and Conditions).
+    """
+    eans_to_check = set(query.eans)
+    existing_products = offers_models.Product.query.filter(
+        offers_models.Product.extraData["ean"].astext.in_(eans_to_check),
+    ).all()
+
+    rejected_eans_because_subcategory_is_not_allowed = []
+    rejected_eans_for_cgu_violation = []
+    available_eans = []
+
+    for product in existing_products:
+        product_ean = product.extraData["ean"]
+        eans_to_check.remove(product_ean)
+
+        if product.subcategoryId not in ALLOWED_PRODUCT_SUBCATEGORIES:
+            rejected_eans_because_subcategory_is_not_allowed.append(product_ean)
+        elif not product.can_be_synchronized:
+            rejected_eans_for_cgu_violation.append(product_ean)
+        else:
+            available_eans.append(product_ean)
+
+    return serialization.AvailableEANsResponse.build_response(
+        available=available_eans,
+        # rejected
+        not_compliant_with_cgu=rejected_eans_for_cgu_violation,
+        not_found=list(eans_to_check),  # remaining EANs are the ones that were not found
+        subcategory_not_allowed=rejected_eans_because_subcategory_is_not_allowed,
     )
 
 
