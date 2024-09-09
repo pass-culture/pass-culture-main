@@ -78,6 +78,7 @@ export const TextArea = ({
         maxLength={maxLength}
         placeholder={placeholder}
         aria-required={!isOptional}
+        aria-controls={props['aria-controls']}
         ref={textAreaRef}
         {...field}
         onChange={(event) => {
