@@ -1,5 +1,3 @@
-import React from 'react'
-
 import { GetCollectiveOfferTemplateResponseModel } from 'apiClient/v1'
 import { SummaryDescriptionList } from 'components/SummaryLayout/SummaryDescriptionList'
 import { SummarySubSection } from 'components/SummaryLayout/SummarySubSection'
@@ -18,7 +16,12 @@ export const CollectiveOfferDateSection = ({
     const startDateWithoutTz = toDateStrippedOfTimezone(offer.dates.start)
     const endDateWithoutTz = toDateStrippedOfTimezone(offer.dates.end)
 
-    description = getRangeToFrenchText(startDateWithoutTz, endDateWithoutTz)
+    description = getRangeToFrenchText(
+      startDateWithoutTz,
+      endDateWithoutTz,
+      startDateWithoutTz.getHours() !== 0 ||
+        startDateWithoutTz.getMinutes() !== 0
+    )
   }
 
   return (

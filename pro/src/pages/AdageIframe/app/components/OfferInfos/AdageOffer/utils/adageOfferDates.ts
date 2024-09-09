@@ -15,14 +15,16 @@ export function getFormattedDatesForTemplateOffer(
 ) {
   // Template offer start & end dates timezone is to be ignored. A date entered in pro UI as "2024-01-25" at "15:15"
   //  is saved as "2024-01-25T15:15:00Z" and thus should be displayed as "Le 25 janvier 2024 à 15h15"
-  return (
-    (offer.dates?.start &&
-      offer.dates.end &&
-      getRangeToFrenchText(
-        toDateStrippedOfTimezone(offer.dates.start),
-        toDateStrippedOfTimezone(offer.dates.end)
-      )) ||
-    noDatesWording
+
+  if (!offer.dates?.start || !offer.dates.end) {
+    return noDatesWording
+  }
+  const start = toDateStrippedOfTimezone(offer.dates.start)
+  const end = toDateStrippedOfTimezone(offer.dates.end)
+  return getRangeToFrenchText(
+    start,
+    end,
+    start.getHours() !== 0 || start.getMinutes() !== 0
   )
 }
 
@@ -50,6 +52,7 @@ export function getFormattedDatesForBookableOffer(
     getLocalDepartementDateTimeFromUtc(
       offer.stock.endDatetime,
       offer.venue.departmentCode
-    )
+    ),
+    true
   )
 }

@@ -65,7 +65,7 @@ describe('getRangeToFrenchText', () => {
     const from = new Date('2020-11-17T08:15:00Z')
     const to = new Date('2020-11-17T23:59:00Z')
 
-    const formattedRange = getRangeToFrenchText(from, to)
+    const formattedRange = getRangeToFrenchText(from, to, true)
 
     expect(formattedRange).toBe('Le mardi 17 novembre 2020 à 08h15')
   })
@@ -74,7 +74,7 @@ describe('getRangeToFrenchText', () => {
     const from = new Date('2020-11-17T08:15:00Z')
     const to = new Date('2020-12-10T23:59:00Z')
 
-    const formattedRange = getRangeToFrenchText(from, to)
+    const formattedRange = getRangeToFrenchText(from, to, true)
 
     expect(formattedRange).toBe('Du 17 novembre au 10 décembre 2020 à 08h15')
   })
@@ -83,7 +83,7 @@ describe('getRangeToFrenchText', () => {
     const from = new Date('2020-11-17T08:15:00Z')
     const to = new Date('2021-01-10T23:59:00Z')
 
-    const formattedRange = getRangeToFrenchText(from, to)
+    const formattedRange = getRangeToFrenchText(from, to, true)
 
     expect(formattedRange).toBe(
       'Du 17 novembre 2020 au 10 janvier 2021 à 08h15'
@@ -94,32 +94,45 @@ describe('getRangeToFrenchText', () => {
     const from = new Date('2020-11-17T00:00:00Z')
     const to = new Date('2021-01-10T23:59:00Z')
 
-    const formattedRange = getRangeToFrenchText(from, to)
+    const formattedRange = getRangeToFrenchText(from, to, true)
 
-    expect(formattedRange).toBe('Du 17 novembre 2020 au 10 janvier 2021')
+    expect(formattedRange).toBe('Du 17 novembre 2020 au 10 janvier 2021 à 00h')
   })
 
   it('should not display the time minutes when the starting date minutes are 00', () => {
     const from = new Date('2020-11-17T08:00:00Z')
     const to = new Date('2021-01-10T23:59:00Z')
 
-    const formattedRange = getRangeToFrenchText(from, to)
+    const formattedRange = getRangeToFrenchText(from, to, true)
 
     expect(formattedRange).toBe('Du 17 novembre 2020 au 10 janvier 2021 à 08h')
   })
 
+  it('should not display the time', () => {
+    const from = new Date('2020-11-17T08:00:00Z')
+    const to = new Date('2021-01-10T23:59:00Z')
+
+    const formattedRange = getRangeToFrenchText(from, to, false)
+
+    expect(formattedRange).toBe('Du 17 novembre 2020 au 10 janvier 2021')
+  })
+})
+
+describe('formatShortDateForInput', () => {
   it('should format a date with the right format for a HTML input', () => {
     const date = new Date('2020-11-17T08:00:00Z')
 
     expect(formatShortDateForInput(date)).toBe('2020-11-17')
   })
-
+})
+describe('formatTimeForInput', () => {
   it('should format a time with the right format for a HTML input', () => {
     const date = new Date('2020-11-17T23:10:00Z')
 
     expect(formatTimeForInput(date)).toBe('23:10')
   })
-
+})
+describe('getDateToFrenchText', () => {
   it('should not return a date when transforming an invalid date into French text', () => {
     expect(getDateToFrenchText('0024-01-15T23:59:59+00:09:21')).toEqual(null)
   })
