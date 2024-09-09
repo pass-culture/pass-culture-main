@@ -10,7 +10,7 @@ from pcapi.connectors.titelive import GtlIdError
 from pcapi.core.categories import subcategories_v2 as subcategories
 import pcapi.core.providers.constants as providers_constants
 from pcapi.core.testing import override_settings
-from pcapi.domain.titelive import parse_things_date_to_string
+from pcapi.utils import date as date_utils
 
 from tests.connectors.titelive import fixtures
 
@@ -62,7 +62,7 @@ class TiteliveTest:
         assert product.extraData["prix_livre"] == article["prix"]
         assert product.extraData["collection"] == article["collection"]
         assert product.extraData["comic_series"] == article["serie"]
-        assert product.extraData["date_parution"] == parse_things_date_to_string(article["dateparution"])
+        assert product.extraData["date_parution"] == date_utils.parse_titelive_date_to_string(article["dateparution"])
         assert product.extraData["distributeur"] == article["distributeur"]
         assert product.extraData["editeur"] == article["editeur"]
         assert product.extraData["num_in_collection"] == article["collection_no"]

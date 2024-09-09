@@ -13,7 +13,6 @@ from pcapi.core.offers import exceptions as offers_exceptions
 import pcapi.core.offers.models as offers_models
 import pcapi.core.providers.constants as providers_constants
 import pcapi.core.providers.repository as providers_repository
-from pcapi.domain.titelive import parse_things_date_to_string
 from pcapi.utils import date as date_utils
 from pcapi.utils import requests
 from pcapi.utils.cache import get_from_cache
@@ -175,7 +174,9 @@ def get_new_product_from_ean13(ean: str) -> offers_models.Product:
             collection=article.get("collection"),
             comic_series=article.get("serie"),
             date_parution=(
-                parse_things_date_to_string(article.get("dateparution")) if "dateparution" in article else None
+                date_utils.parse_titelive_date_to_string(article.get("dateparution"))
+                if "dateparution" in article
+                else None
             ),
             distributeur=article["distributeur"],
             editeur=article["editeur"],
