@@ -36,7 +36,16 @@
         <p class="mb-1">
           <span class="fw-bold">Observations :</span>
           <ul class="mx-4 mb-0">
-            {% for observation in rcs_info.observations %}<li>{{ observation.date | format_date }} : {{ observation.label }}</li>{% endfor %}
+            {% for observation in rcs_info.observations %}
+              <li>
+                {%+ if observation.date +%}
+                {{ observation.date | format_date }} :
+                {%+ else +%}
+                Date inconnue :
+                {%+ endif %}
+                {{ observation.label }}
+              </li>
+            {% endfor %}
           </ul>
         </p>
       {% endif %}

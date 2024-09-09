@@ -54,7 +54,7 @@ class RCSCorporateOfficer(pydantic_v1.BaseModel):
 
 
 class RCSObservation(pydantic_v1.BaseModel):
-    date: datetime.date
+    date: datetime.date | None
     label: str
 
 
