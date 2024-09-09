@@ -165,18 +165,6 @@ def get_ems_oldest_sync_version() -> int:
     return version
 
 
-def find_latest_sync_part_end_event(provider: models.Provider) -> models.LocalProviderEvent:
-    return (
-        models.LocalProviderEvent.query.filter(
-            models.LocalProviderEvent.provider == provider,
-            models.LocalProviderEvent.type == models.LocalProviderEventType.SyncPartEnd,
-            models.LocalProviderEvent.date > datetime.datetime.utcnow() - datetime.timedelta(days=25),
-        )
-        .order_by(models.LocalProviderEvent.date.desc())
-        .first()
-    )
-
-
 def get_pivot_for_id_at_provider(id_at_provider: str, provider_id: int) -> models.CinemaProviderPivot | None:
     pivot = models.CinemaProviderPivot.query.filter(
         models.CinemaProviderPivot.idAtProvider == id_at_provider,
