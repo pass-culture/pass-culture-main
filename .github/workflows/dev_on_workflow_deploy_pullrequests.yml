@@ -1,0 +1,162 @@
+name: "3 [on_workflow] Deploy"
+on:
+  workflow_call:
+    inputs:
+      environment:
+        type: string
+        required: true
+      app_version:
+        type: string
+        required: true
+      teleport_version:
+        type: string
+        required: false
+        default: 15.2.5
+      teleport_proxy:
+        type: string
+        required: false
+        default: teleport.ehp.passculture.team:443
+      teleport_kubernetes_cluster:
+        type: string
+        required: false
+        default: passculture-metier-ehp
+    secrets:
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER:
+        required: true
+      GCP_EHP_SERVICE_ACCOUNT:
+        required: true
+
+jobs:
+  deploy-api:
+    name: "Deploy api"
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4.1.7
+      - name: "Authentification to Google"
+        uses: 'google-github-actions/auth@v2'
+        with:
+          workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+
+      # Get github api token that will be used to commit and push app_version to pass-culture-deployment repository
+      - name: "Get secrets (github)"
+        id: 'get-github-token'
+        uses: 'google-github-actions/get-secretmanager-secrets@v2'
+        with:
+          secrets: |-
+            API_TOKEN_GITHUB:passculture-metier-ehp/passculture-main-sa-access-token
+      - name: "Install Teleport"
+        uses: teleport-actions/setup@v1
+        with:
+          version: ${{ inputs.teleport_version }}
+      - name: "Teleport Authentication"
+        uses: teleport-actions/auth-k8s@v1
+        id: "teleport-auth"
+        with:
+          proxy: ${{ inputs.teleport_proxy }}
+          token: github-token
+          certificate-ttl: 1h
+          kubernetes-cluster: ${{ inputs.teleport_kubernetes_cluster }}
+
+            #- name: "Play pre-migrations"
+            #run: |
+            # set -e
+            #VERSION="${{ inputs.app_version }}"
+            #export ENVIRONMENT="${{ inputs.environment }}"
+            #IMAGE="europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry/pcapi"
+            #export IMAGE="${IMAGE}:${VERSION}"
+            #export DATE=$(date +"%Y-%m-%d--%H-%M-%S")
+            #envsubst < .github/workflows/templates/pre-upgrade-job.yaml | kubectl -n ${{ inputs.environment }} apply -f -
+            #while true;
+            #do
+            #kubectl logs -n ${{ inputs.environment }} -f jobs/pre-upgrade-${DATE} && break
+            #done
+            #kubectl wait --for=condition=complete --timeout=10900s -n ${{ inputs.environment }} jobs/pre-upgrade-${DATE}
+
+      # Get pcapi secrets from source code, to be passed later as a helmfile parameter.
+      - name: "Generate pcapi secrets list"
+        id: generate-pcapi-secrets-list
+        run: |
+          #Retrieve pcapi secrets list from source code
+          PCAPI_SECRETS=$(cat api/src/pcapi/settings.py | grep "secrets_utils.getlist(" | awk -F'=' '{print $1}')
+          PCAPI_SECRETS+=$(cat api/src/pcapi/settings.py | grep "secrets_utils.get(" | grep -oP '(?<=secrets_utils.get\(\").*?(?=\")')
+          #Sort list
+          PCAPI_SECRETS=$(echo $PCAPI_SECRETS | xargs -n1 | sort | xargs)
+          #Transform list into helm readable parameter list (pattern: --set secrets={item1,item2,item3})
+          PCAPI_SECRETS=secrets={$(echo $PCAPI_SECRETS | sed -r 's/ /,/g')}
+          echo "PCAPI_SECRETS=$PCAPI_SECRETS" >> "$GITHUB_OUTPUT"
+
+      # Checkout pass-culture-deployment repository containing pcapi helm value files
+      - uses: actions/checkout@v4.1.7
+        with:
+          repository: pass-culture/pass-culture-deployment
+          ref: values-for-pullrequests
+          token: ${{ steps.get-github-token.outputs.API_TOKEN_GITHUB }}
+          path: ./pass-culture-deployment
+
+      # Executes helmfile templating and push results to render-manifests repository
+      - name: "Generate and push rendered manifests"
+        uses: pass-culture/common-workflows/actions/render-push-manifests@render-push-manifests/v2.1.0
+        with:
+          environment: ${{ inputs.environment }}
+          app_name: pcapi
+          app_version: ${{ inputs.app_version }}
+          additional_args: ${{ steps.generate-pcapi-secrets-list.outputs.PCAPI_SECRETS }}
+          registry_workload_identity_secret_name: passculture-metier-ehp/infra-prod-gcp-workload-identity-provider
+          registry_service_account_secret_name: passculture-metier-ehp/passculture-main-artifact-registry-service-account
+          api_token_github_secret_name: passculture-metier-ehp/passculture-main-sa-access-token  
+          chart_values_repository: ""
+          helmfile_path: "./pass-culture-deployment/helm/pcapi"
+          rendered_manifests_target_branch: "pcapi/pullrequests"
+          is_pull_request: true
+
+      - name: "Install argocd cli"
+        id: install_argocd_cli
+        run: |
+          curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+          sudo install -m 555 argocd-linux-amd64 /usr/local/bin/argocd
+          rm argocd-linux-amd64
+
+      - name: "Check argocd application status"
+        id: check_status
+        run: |
+          kubectl config set-context --current --namespace=argocd
+          argocd app sync pcapi-pr-${{ github.event.pull_request.number }} --core --async --prune
+          argocd app wait pcapi-pr-${{ github.event.pull_request.number }} --core --timeout 600
+
+          #- name: "Play post-migrations"
+          #run: |
+          #set -e
+          #VERSION="${{ inputs.app_version }}"
+          #export ENVIRONMENT="${{ inputs.environment }}"
+          #IMAGE="europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry/pcapi"
+          #export IMAGE="${IMAGE}:${VERSION}"
+          #export DATE=$(date +"%Y-%m-%d--%H-%M-%S")
+          #envsubst < .github/workflows/templates/post-upgrade-job.yaml | kubectl -n ${{ inputs.environment }} apply -f -
+          #while true;
+          #do
+          #kubectl logs -n ${{ inputs.environment }} -f jobs/post-upgrade-${DATE} && break
+          #done
+          #kubectl wait --for=condition=complete --timeout=10900s -n ${{ inputs.environment }} jobs/post-upgrade-${DATE}
+
+          #deploy-pro-on-testing-on-firebase:
+          #name: "Deploy pro on testing live channel"
+          #needs: deploy-api
+          #if: |
+          #always() &&
+          #(needs.deploy-api.result == 'success' || needs.deploy-api.result == 'skipped') &&
+          #inputs.environment == 'testing' &&
+          #inputs.deploy_pro == true
+          #uses: ./.github/workflows/dev_on_workflow_deploy_pro_pr_version_generic.yml
+          #secrets:
+          #GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+          #GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+          #with:
+          #ENV: testing
+          #CHANNEL: "live"
+          #REF: ${{ github.ref }}
+          #CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
