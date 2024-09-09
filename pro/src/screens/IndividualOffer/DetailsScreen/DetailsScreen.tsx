@@ -143,6 +143,9 @@ export const DetailsScreen = ({ venues }: DetailsScreenProps): JSX.Element => {
       if (!isErrorAPIError(error)) {
         return
       }
+      for (const field in error.body) {
+        formik.setFieldError(field, error.body[field])
+      }
       // This is used from scroll to error
       formik.setStatus('apiError')
     }
