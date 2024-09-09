@@ -31,7 +31,7 @@ export const AddRecurrencesButton = ({
   )
   const handleSubmit = async (values: RecurrenceFormValues) => {
     const departmentCode = useOffererAddressAsDataSourceEnabled
-      ? (offer.address?.departmentCode ?? '')
+      ? (offer.address?.departmentCode ?? offer.venue.departementCode ?? '')
       : (offer.venue.departementCode ?? '')
 
     await onSubmit(values, departmentCode, offer.id, notify)

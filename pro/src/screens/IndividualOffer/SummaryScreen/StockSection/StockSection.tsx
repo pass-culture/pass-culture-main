@@ -60,7 +60,7 @@ export const StockSection = ({
   )
 
   const departmentCode = useOffererAddressAsDataSourceEnabled
-    ? (offer.address?.departmentCode ?? '')
+    ? (offer.address?.departmentCode ?? offer.venue.departementCode ?? '')
     : (offer.venue.departementCode ?? '')
 
   useEffect(() => {

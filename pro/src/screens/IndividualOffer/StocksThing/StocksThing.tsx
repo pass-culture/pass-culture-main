@@ -92,7 +92,7 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
   const today = getLocalDepartementDateTimeFromUtc(
     getToday(),
     useOffererAddressAsDataSourceEnabled
-      ? (offer.address?.departmentCode ?? '')
+      ? (offer.address?.departmentCode ?? offer.venue.departementCode ?? '')
       : offer.venue.departementCode
   )
   const canBeDuo = subCategories.find(
