@@ -169,7 +169,7 @@ class BookOfferTest:
         # 1 - UPDATE dnBookedQuantity
         # 1 - INSERT the new booking
         # 1 - SELECT the user
-        # 7 - SELECT the stock, booking, external_booking, stock, venue, offerer, provider
+        # 5 - SELECT the stock, booking, external_booking, stock, venue, offerer, provider
         # 1 - SELECT venue with bank activation & bank account
         # 1 - SELECT activation code
         # 1 - SELECT criterion
@@ -182,7 +182,7 @@ class BookOfferTest:
         # 1 - SELECT from offer that I don't get
         # 1 - SELECT bookings for the venue ???
         # 1 - SELECT feature
-        with assert_num_queries(36):
+        with assert_num_queries(34):
             booking = api.book_offer(beneficiary=beneficiary, stock_id=stock_id, quantity=1)
 
         # One request should have been sent to Batch to trigger the event
