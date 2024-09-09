@@ -71,14 +71,15 @@ export function getDateTimeToFrenchText(
   return Intl.DateTimeFormat('fr-FR', options).format(date)
 }
 
-export function getRangeToFrenchText(from: Date, to: Date): string {
+export function getRangeToFrenchText(
+  from: Date,
+  to: Date,
+  shouldDisplayTime: boolean
+): string {
   //  The time displayed will be the one taken from the first date
-
   const isSameYear = from.getFullYear() === to.getFullYear()
   const isSameMonth = isSameYear && from.getMonth() === to.getMonth()
   const isSameDay = isSameYear && isSameMonth && from.getDate() === to.getDate()
-
-  const shouldDisplayTime = from.getHours() !== 0 || from.getMinutes() !== 0
 
   const timeToFrenchText = getDateTimeToFrenchText(from, {
     hour: '2-digit',
