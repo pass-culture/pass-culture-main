@@ -299,7 +299,17 @@ def book_offer(
     Return a booking or raise an exception if it's not possible.
     Update a user's credit information on Batch.
     """
-    stock = offers_models.Stock.query.filter_by(id=stock_id).one_or_none()
+    stock = (
+        offers_models.Stock.query.filter_by(id=stock_id)
+        .options(
+            joinedload(Stock.offer)
+            .joinedload(Offer.venue)
+            .joinedload(Venue.offererAddress)
+            .joinedload(OffererAddress.address),
+            joinedload(Stock.offer).joinedload(Offer.offererAddress).joinedload(OffererAddress.address),
+        )
+        .one_or_none()
+    )
     if not stock:
         raise offers_exceptions.StockDoesNotExist()
 

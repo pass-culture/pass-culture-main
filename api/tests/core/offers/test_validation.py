@@ -14,6 +14,7 @@ from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.offers.models import WithdrawalTypeEnum
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.providers.repository import get_provider_by_local_class
+from pcapi.core.testing import override_features
 from pcapi.models.api_errors import ApiErrors
 
 import tests
@@ -736,6 +737,7 @@ class CheckOfferExtraDataTest:
         )
 
 
+@pytest.mark.usefixtures("db_session")
 class CheckBookingLimitDatetimeTest:
     def test_check_booking_limit_datetime_should_raise_because_booking_limit_is_one_hour_after(self):
         venue = offerers_factories.VenueFactory(departementCode=71)
@@ -781,6 +783,23 @@ class CheckBookingLimitDatetimeTest:
 
         validation.check_booking_limit_datetime(stock, beginning=None, booking_limit_datetime=booking_limit_date)
         validation.check_booking_limit_datetime(stock, beginning=beginning_date, booking_limit_datetime=None)
+
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    def test_check_booking_limit_datetime_should_not_raise_with_timezone(self):
+        venue = offerers_factories.VenueFactory(departementCode=71)
+        oa = offerers_factories.OffererAddressFactory(address__departmentCode=974)
+        offer = offers_factories.OfferFactory(venueId=venue.id, offererAddress=oa)
+        stock = offers_factories.StockFactory(offerId=offer.id)
+
+        beginning_date = datetime.datetime(2024, 7, 19, 8, tzinfo=datetime.timezone.utc)
+        booking_limit_date = beginning_date - datetime.timedelta(hours=1)
+
+        try:
+            validation.check_booking_limit_datetime(
+                stock, beginning=beginning_date, booking_limit_datetime=booking_limit_date
+            )
+        except exceptions.BookingLimitDatetimeTooLate as e:
+            assert False, f"Should not raise exception {e}"
 
 
 class CheckPublicationDateTest:
