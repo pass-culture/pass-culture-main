@@ -269,6 +269,65 @@ describe('screens:IndividualOffer::Informations', () => {
     ).toBeInTheDocument()
   })
 
+  it('should display error from api on fields', async () => {
+    vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
+      logEvent: mockLogEvent,
+    }))
+    vi.spyOn(api, 'postDraftOffer').mockRejectedValue({
+      message: 'oups',
+      name: 'ApiError',
+      body: { ean: 'broken ean from api' },
+    })
+    vi.spyOn(api, 'getMusicTypes').mockResolvedValue([
+      { canBeEvent: true, label: 'Pop', gtl_id: 'pop' },
+    ])
+    props.venues = [
+      venueListItemFactory({ id: 189 }),
+      venueListItemFactory({ id: 190 }),
+    ]
+
+    renderDetailsScreen(props, contextValue)
+
+    await userEvent.type(
+      screen.getByLabelText(/Titre de l’offre/),
+      'My super offer'
+    )
+    await userEvent.type(
+      screen.getByLabelText(/Description/),
+      'My super description'
+    )
+
+    await userEvent.selectOptions(await screen.findByLabelText(/Lieu/), '189')
+
+    await userEvent.selectOptions(
+      await screen.findByLabelText('Catégorie *'),
+      'A'
+    )
+
+    await userEvent.selectOptions(
+      await screen.findByLabelText('Sous-catégorie *'),
+      'physical'
+    )
+
+    await userEvent.type(screen.getByLabelText(/EAN/), '1234567891234')
+    await userEvent.selectOptions(
+      await screen.findByLabelText(/Type de spectacle/),
+      'Cirque'
+    )
+    await userEvent.selectOptions(
+      await screen.findByLabelText(/Sous-type/),
+      'Clown'
+    )
+    await userEvent.selectOptions(
+      await screen.findByLabelText(/Genre musical/),
+      'Pop'
+    )
+
+    await userEvent.click(screen.getByText(DEFAULTS.submitButtonLabel))
+
+    expect(screen.getByText('broken ean from api')).toBeInTheDocument()
+  })
+
   it('should submit the form with correct payload', async () => {
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
