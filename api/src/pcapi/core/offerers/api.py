@@ -2567,6 +2567,50 @@ def acceslibre_matching(batch_size: int, dry_run: bool, start_from_batch: int, n
         logger.info("Matching with acceslibre complete")
 
 
+def find_missing_match_at_acceslibre(batch_size: int, dry_run: bool, start_from_batch: int) -> None:
+    """
+    FIXME: ogeber, 09.09.2024 we should investigate why we're missing some match with our workflow, then delete this method
+
+    Some match have not been made using the current workflow, we use this method to fetch missing matchs.
+
+    This one should be used parsimoniously as it makes up to 4 request at acceslibre API to fetch a match, so
+    it takes a while.
+
+    If we use the --start-from-batch option, it will start synchronization from the given batch number
+    Use case: synchronization has failed with message "Could not update batch <n>"
+    """
+
+    count_before_match = count_permanent_venues_with_accessibility_provider()
+    logger.info("Number of venue synchronized before matching %d", count_before_match)
+    venues_list = get_permanent_venues_without_accessibility_provider()
+    num_batches = ceil(len(venues_list) / batch_size)
+    if start_from_batch > num_batches:
+        logger.info("Start from batch must be less than %d", num_batches)
+        return
+
+    start_batch_index = start_from_batch - 1
+    count_after_match = 0
+    for i in range(start_batch_index, num_batches):
+        batch_start = i * batch_size
+        batch_end = (i + 1) * batch_size
+        for venue in venues_list[batch_start:batch_end]:
+            set_accessibility_provider_id(venue)  # try to find a match at acceslibre
+            if venue.accessibilityProvider:
+                set_accessibility_infos_from_provider_id(venue)  # if match is found, fetch and write data
+
+        if dry_run:
+            count_after_match = count_permanent_venues_with_accessibility_provider()
+        else:
+            try:
+                db.session.commit()
+            except sa.exc.SQLAlchemyError:
+                logger.exception("Could not update batch %d", i + 1)
+                db.session.rollback()
+            count_after_match = count_permanent_venues_with_accessibility_provider()
+
+    logger.info("Matching complete, %s new match found", count_before_match - count_after_match)
+
+
 def update_offerer_address_label(offerer_address_id: int, new_label: str) -> None:
     try:
         models.OffererAddress.query.filter_by(id=offerer_address_id).update({"label": new_label})
