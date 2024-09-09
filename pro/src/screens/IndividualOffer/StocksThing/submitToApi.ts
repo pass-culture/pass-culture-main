@@ -31,7 +31,7 @@ export const submitToApi = async (
       stocks: serializeStockThingList(
         values,
         useOffererAddressAsDataSourceEnabled
-          ? (offer.address?.departmentCode ?? '')
+          ? (offer.address?.departmentCode ?? offer.venue.departementCode ?? '')
           : offer.venue.departementCode
       ),
     })

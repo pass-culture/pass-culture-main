@@ -21,7 +21,7 @@ export const RecurrenceSummary = ({
   )
 
   const departmentCode = useOffererAddressAsDataSourceEnabled
-    ? (offer.address?.departmentCode ?? '')
+    ? (offer.address?.departmentCode ?? offer.venue.departementCode ?? '')
     : offer.venue.departementCode
   return (
     <>

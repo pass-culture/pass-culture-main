@@ -137,7 +137,7 @@ export const StocksEventEdition = ({
     'WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE'
   )
   const departmentCode = useOffererAddressAsDataSourceEnabled
-    ? (offer.address?.departmentCode ?? '')
+    ? (offer.address?.departmentCode ?? offer.venue.departementCode ?? '')
     : offer.venue.departementCode
 
   const today = useMemo(

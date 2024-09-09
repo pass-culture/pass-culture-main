@@ -29,7 +29,9 @@ export const buildInitialValues = (
           getLocalDepartementDateTimeFromUtc(
             stocks[0].bookingLimitDatetime,
             useOffererAddressAsDataSourceEnabled
-              ? (offer.address?.departmentCode ?? '')
+              ? (offer.address?.departmentCode ??
+                  offer.venue.departementCode ??
+                  '')
               : offer.venue.departementCode
           ),
           FORMAT_ISO_DATE_ONLY
