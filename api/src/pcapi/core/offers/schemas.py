@@ -7,6 +7,7 @@ from pydantic.v1 import validator
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import schemas as offerers_schemas
 from pcapi.core.offers import models as offers_models
+from pcapi.models import feature
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import to_camel
 from pcapi.validation.routes.offers import check_offer_name_length_is_valid
@@ -46,7 +47,8 @@ class PatchDraftOfferBodyModel(BaseModel):
 
     @validator("extra_data", pre=True)
     def validate_extra_data(cls, extra_data: dict[str, typing.Any]) -> dict[str, typing.Any]:
-        check_offer_product_update(extra_data)
+        if feature.FeatureToggle.WIP_EAN_CREATION.is_active():
+            check_offer_product_update(extra_data)
         return extra_data
 
     class Config:
