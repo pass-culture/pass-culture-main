@@ -2495,64 +2495,88 @@ class GenerateInvoicesTest:
 
     @mock.patch("pcapi.core.finance.api._generate_invoice_html")
     @mock.patch("pcapi.core.finance.api._store_invoice_pdf")
-    @mock.patch("pcapi.core.finance.api._get_cashflows_by_bank_accounts")
     @pytest.mark.usefixtures("clean_temp_files")
-    def test_free_invoice_not_generated(self, _generate_invoice_html, _store_invoice_pdf, _get_cashflows):
-        _get_cashflows.return_value = []
-        venue = offerers_factories.VenueFactory(pricing_point="self")
-        bank_account = factories.BankAccountFactory(offerer=venue.managingOfferer)
-        offerers_factories.VenueBankAccountLinkFactory(venue=venue, bankAccount=bank_account)
-
+    def test_with_free_pricings(self, _generate_invoice_html, _store_invoice_pdf):
+        normal_venue = offerers_factories.VenueFactory(pricing_point="self")
+        normal_bank_account = factories.BankAccountFactory(offerer=normal_venue.managingOfferer)
+        offerers_factories.VenueBankAccountLinkFactory(venue=normal_venue, bankAccount=normal_bank_account)
         user = users_factories.BeneficiaryGrant18Factory()
-        booking = bookings_factories.BookingFactory(
+        normal_booking = bookings_factories.BookingFactory(
+            user=user,
+            quantity=1,
+            stock__price=Decimal("10"),
+            stock__offer__venue=normal_venue,
+        )  # 10€
+        normal_free_booking = bookings_factories.BookingFactory(
             user=user,
             quantity=1,
             stock__price=Decimal("0"),
-            stock__offer__venue=venue,
+            stock__offer__venue=normal_venue,
         )  # 0€
         bookings_api.mark_as_used(
-            booking=booking,
+            booking=normal_booking,
             validation_author_type=bookings_models.BookingValidationAuthorType.OFFERER,
         )
+        bookings_api.mark_as_used(
+            booking=normal_free_booking,
+            validation_author_type=bookings_models.BookingValidationAuthorType.OFFERER,
+        )
+
+        free_venue = offerers_factories.VenueFactory(pricing_point="self")
+        free_bank_account = factories.BankAccountFactory(offerer=free_venue.managingOfferer)
+        offerers_factories.VenueBankAccountLinkFactory(venue=free_venue, bankAccount=free_bank_account)
+        user = users_factories.BeneficiaryGrant18Factory()
+        free_booking = bookings_factories.BookingFactory(
+            user=user,
+            quantity=1,
+            stock__price=Decimal("0"),
+            stock__offer__venue=free_venue,
+        )  # 0€
+        bookings_api.mark_as_used(
+            booking=free_booking,
+            validation_author_type=bookings_models.BookingValidationAuthorType.OFFERER,
+        )
+
         finance_events = models.FinanceEvent.query.all()
-        assert len(finance_events) == 1
+        assert len(finance_events) == 3
 
-        finance_event = finance_events[0]
-        pricing = api.price_event(finance_event)
+        booking_pricing_dict = dict()
+        for fe in finance_events:
+            booking_pricing_dict[fe.bookingId] = api.price_event(fe)
 
-        assert pricing.amount == 0
-        assert pricing.revenue == 0
-        assert pricing.bookingId == booking.id
-        assert pricing.status == models.PricingStatus.VALIDATED
-        assert pricing.venueId == venue.id
-        assert pricing.eventId == finance_event.id
+        normal_pricing = booking_pricing_dict[normal_booking.id]
+        normal_free_pricing = booking_pricing_dict[normal_free_booking.id]
+        free_pricing = booking_pricing_dict[free_booking.id]
 
-        assert len(pricing.lines) == 2
-        assert {line.category for line in pricing.lines} == {
-            models.PricingLineCategory.OFFERER_REVENUE,
-            models.PricingLineCategory.OFFERER_CONTRIBUTION,
-        }
-        pricing_line_offerer_revenue = [
-            line for line in pricing.lines if line.category == models.PricingLineCategory.OFFERER_REVENUE
-        ][0]
-        pricing_line_offerer_contribution = [
-            line for line in pricing.lines if line.category == models.PricingLineCategory.OFFERER_CONTRIBUTION
-        ][0]
-        assert pricing_line_offerer_revenue.amount == 0
-        assert pricing_line_offerer_contribution.amount == 0
+        for pricing in [normal_free_pricing, free_pricing]:
+            assert pricing.amount == 0
+            assert pricing.status == models.PricingStatus.VALIDATED
+
+            assert len(pricing.lines) == 2
+            assert {line.category for line in pricing.lines} == {
+                models.PricingLineCategory.OFFERER_REVENUE,
+                models.PricingLineCategory.OFFERER_CONTRIBUTION,
+            }
+            pricing_line_offerer_revenue = [
+                line for line in pricing.lines if line.category == models.PricingLineCategory.OFFERER_REVENUE
+            ][0]
+            pricing_line_offerer_contribution = [
+                line for line in pricing.lines if line.category == models.PricingLineCategory.OFFERER_CONTRIBUTION
+            ][0]
+            assert pricing_line_offerer_revenue.amount == 0
+            assert pricing_line_offerer_contribution.amount == 0
 
         #################################################
         # Invoice the booking and reimburse the offerer #
         #################################################
-        cashflow_batch = factories.CashflowBatchFactory(label="Batch")
-        api._generate_cashflows(cashflow_batch)
-        assert len(cashflow_batch.cashflows) == 0
+        batch = api.generate_cashflows_and_payment_files(datetime.datetime.utcnow() + datetime.timedelta(days=3))
+        assert len(batch.cashflows) == 1
 
-        api.generate_invoices(cashflow_batch)
+        api.generate_invoices(batch)
 
-        assert 0 == models.Invoice.query.count()
-        assert booking.status == bookings_models.BookingStatus.REIMBURSED
-        assert pricing.status == models.PricingStatus.INVOICED
+        assert 1 == models.Invoice.query.count()
+        for pricing in [normal_pricing, normal_free_pricing, free_pricing]:
+            assert pricing.status == models.PricingStatus.INVOICED
 
 
 class GenerateInvoiceTest:

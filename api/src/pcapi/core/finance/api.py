@@ -1570,49 +1570,13 @@ def _filter_invoiceable_cashflows(query: BaseQuery) -> BaseQuery:
     )
 
 
-def _mark_free_pricings_as_invoiced(batch: models.CashflowBatch) -> None:
-    # Don't generate cashflows if ever all of the priced bookings are free → avoid creating empty invoices
+def _mark_free_pricings_as_invoiced() -> None:
     free_pricings = (
-        models.Pricing.query.outerjoin(models.Pricing.booking)
-        .outerjoin(bookings_models.Booking.stock)
-        .outerjoin(models.Pricing.collectiveBooking)
-        .outerjoin(educational_models.CollectiveBooking.collectiveStock)
-        .outerjoin(models.Pricing.event)
-        .outerjoin(models.Pricing.pricingPoint)
-        .outerjoin(
-            offerers_models.VenueBankAccountLink,
-            offerers_models.VenueBankAccountLink.venueId == models.Pricing.pricingPointId,
-        )
-        .outerjoin(offerers_models.VenueBankAccountLink.bankAccount)
+        models.Pricing.query.outerjoin(models.CashflowPricing)
+        # All the PROCESSED pricings without any Cashflow are free pricings
         .filter(
-            models.FinanceEvent.venueId == offerers_models.VenueBankAccountLink.venueId,
             models.Pricing.status == models.PricingStatus.PROCESSED,
-            models.Pricing.valueDate < batch.cutoff,
-            # Bookings can now be priced even if BankAccount is not ACCEPTED,
-            # but to generate cashflows we definitely need it.
-            models.BankAccount.status == models.BankAccountApplicationStatus.ACCEPTED,
-            # Even if a booking is marked as used prematurely, we should
-            # wait for the event to happen.
-            sa.or_(
-                sa.and_(
-                    models.Pricing.bookingId.is_not(None),
-                    sa.or_(
-                        offers_models.Stock.beginningDatetime.is_(None),
-                        offers_models.Stock.beginningDatetime < batch.cutoff,
-                    ),
-                ),
-                sa.and_(
-                    models.Pricing.collectiveBookingId.is_not(None),
-                    educational_models.CollectiveStock.pricingDatetimeField() < batch.cutoff,
-                ),
-                models.FinanceEvent.bookingFinanceIncidentId.is_not(None),
-            ),
-        )
-        .join(models.Pricing.lines)
-        .group_by(models.Pricing.id)
-        .having(
-            sqla_func.count(models.PricingLine.id)
-            == sqla_func.sum(sa.case((models.PricingLine.amount == 0, 1)), else_=0)
+            models.CashflowPricing.pricingId.is_(None),
         )
         .with_entities(models.Pricing.id)
         .all()
@@ -1704,7 +1668,7 @@ def generate_debit_notes(batch: models.CashflowBatch) -> None:
     """Generate (and store) all invoices."""
 
     debit_note_rows = _get_cashflows_by_bank_accounts(batch, only_debit_notes=True)
-    _mark_free_pricings_as_invoiced(batch)
+    _mark_free_pricings_as_invoiced()
 
     for row in debit_note_rows:
         try:
@@ -1755,7 +1719,7 @@ def _get_cashflows_by_bank_accounts(batch: models.CashflowBatch, only_debit_note
 def generate_invoices(batch: models.CashflowBatch) -> None:
     """Generate (and store) all invoices."""
     rows = _get_cashflows_by_bank_accounts(batch)
-    _mark_free_pricings_as_invoiced(batch)
+    _mark_free_pricings_as_invoiced()
 
     for row in rows:
         try:
