@@ -6,10 +6,11 @@
  * An enumeration.
  */
 export enum InstitutionRuralLevel {
-  URBAIN_DENSIT_INTERM_DIAIRE = 'urbain densité intermédiaire',
-  RURAL_SOUS_FORTE_INFLUENCE_D_UN_P_LE = 'rural sous forte influence d\'un pôle',
-  URBAIN_DENSE = 'urbain dense',
-  RURAL_SOUS_FAIBLE_INFLUENCE_D_UN_P_LE = 'rural sous faible influence d\'un pôle',
-  RURAL_AUTONOME_TR_S_PEU_DENSE = 'rural autonome très peu dense',
-  RURAL_AUTONOME_PEU_DENSE = 'rural autonome peu dense',
+  GRANDS_CENTRES_URBAINS = 'Grands centres urbains',
+  CEINTURES_URBAINES = 'Ceintures urbaines',
+  CENTRES_URBAINS_INTERM_DIAIRES = 'Centres urbains intermédiaires',
+  PETITES_VILLES = 'Petites villes',
+  BOURGS_RURAUX = 'Bourgs ruraux',
+  RURAL_HABITAT_DISPERS_ = 'Rural à habitat dispersé',
+  RURAL_HABITAT_TR_S_DISPERS_ = 'Rural à habitat très dispersé',
 }

@@ -141,22 +141,24 @@ class CollectiveBookingStatusFilter(enum.Enum):
 
 
 class InstitutionRuralLevel(enum.Enum):
-    URBAIN_DENSITE_INTERMEDIAIRE = "urbain densité intermédiaire"
-    RURAL_SOUS_FORTE_INFLUENCE_D_UN_POLE = "rural sous forte influence d'un pôle"
-    URBAIN_DENSE = "urbain dense"
-    RURAL_SOUS_FAIBLE_INFLUENCE_D_UN_POLE = "rural sous faible influence d'un pôle"
-    RURAL_AUTONOME_TRES_PEU_DENSE = "rural autonome très peu dense"
-    RURAL_AUTONOME_PEU_DENSE = "rural autonome peu dense"
+    GRANDS_CENTRES_URBAINS = "Grands centres urbains"  # URBAIN_DENSE
+    CEINTURES_URBAINES = "Ceintures urbaines"  # URBAIN_DENSE
+    CENTRES_URBAINS_INTERMEDIAIRES = "Centres urbains intermédiaires"  # URBAIN_DENSITE_INTERMEDIAIRE
+    PETITES_VILLES = "Petites villes"  # RURAL_SOUS_FORTE_INFLUENCE_D_UN_POLE
+    BOURGS_RURAUX = "Bourgs ruraux"  # RURAL_SOUS_FAIBLE_INFLUENCE_D_UN_POLE
+    RURAL_A_HABITAT_DISPERSE = "Rural à habitat dispersé"  # RURAL_AUTONOME_PEU_DENSE
+    RURAL_A_HABITAT_TRES_DISPERSE = "Rural à habitat très dispersé"  # RURAL_AUTONOME_TRES_PEU_DENSE
 
 
 # Mapping from rurality level to distance in km
 PLAYLIST_RURALITY_MAX_DISTANCE_MAPPING = {
-    InstitutionRuralLevel.URBAIN_DENSE: 3,
-    InstitutionRuralLevel.URBAIN_DENSITE_INTERMEDIAIRE: 10,
-    InstitutionRuralLevel.RURAL_SOUS_FORTE_INFLUENCE_D_UN_POLE: 15,
-    InstitutionRuralLevel.RURAL_SOUS_FAIBLE_INFLUENCE_D_UN_POLE: 60,
-    InstitutionRuralLevel.RURAL_AUTONOME_PEU_DENSE: 60,
-    InstitutionRuralLevel.RURAL_AUTONOME_TRES_PEU_DENSE: 60,
+    InstitutionRuralLevel.GRANDS_CENTRES_URBAINS: 3,
+    InstitutionRuralLevel.CEINTURES_URBAINES: 3,
+    InstitutionRuralLevel.CENTRES_URBAINS_INTERMEDIAIRES: 10,
+    InstitutionRuralLevel.PETITES_VILLES: 15,
+    InstitutionRuralLevel.BOURGS_RURAUX: 60,
+    InstitutionRuralLevel.RURAL_A_HABITAT_DISPERSE: 60,
+    InstitutionRuralLevel.RURAL_A_HABITAT_TRES_DISPERSE: 60,
 }
 
 

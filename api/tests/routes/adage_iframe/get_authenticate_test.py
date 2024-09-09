@@ -23,7 +23,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 DEFAULT_UAI = "EAU123"
-DEFAULT_RURAL_LEVEL = models.InstitutionRuralLevel.URBAIN_DENSE
+DEFAULT_RURAL_LEVEL = models.InstitutionRuralLevel.GRANDS_CENTRES_URBAINS
 
 
 @pytest.fixture(name="valid_user", scope="module")
