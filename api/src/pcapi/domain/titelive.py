@@ -7,10 +7,6 @@ TITELIVE_THINGS_DATE_FORMAT = "%d/%m/%Y"
 TITELIVE_DESCRIPTION_DATE_FORMAT = "%y%m%d"
 
 
-def read_description_date(date: str) -> datetime:
-    return datetime.strptime(date, TITELIVE_DESCRIPTION_DATE_FORMAT)
-
-
 def read_things_date(date: str) -> datetime:
     return datetime.strptime(date, TITELIVE_THINGS_DATE_FORMAT)
 
