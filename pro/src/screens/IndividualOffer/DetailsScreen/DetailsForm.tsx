@@ -179,6 +179,8 @@ export const DetailsForm = ({
 
   const showAddVenueBanner =
     !areSuggestedSubcategoriesUsed && venueOptions.length === 0
+  const isSuggestedSubcategoryDisplayed =
+    areSuggestedSubcategoriesUsed && !offer
 
   return (
     <>
@@ -216,7 +218,9 @@ export const DetailsForm = ({
                     readOnlyFields.includes('venueId') ||
                     venueOptions.length === 1
                   }
-                  aria-controls="suggested-subcategories"
+                  {...(isSuggestedSubcategoryDisplayed && {
+                    'aria-controls': 'suggested-subcategories',
+                  })}
                 />
               </FormLayout.Row>
             )}
@@ -228,7 +232,9 @@ export const DetailsForm = ({
                 name="name"
                 onChange={onChangeGetSuggestedSubcategories}
                 disabled={readOnlyFields.includes('name')}
-                aria-controls="suggested-subcategories"
+                {...(isSuggestedSubcategoryDisplayed && {
+                  'aria-controls': 'suggested-subcategories',
+                })}
               />
             </FormLayout.Row>
             <FormLayout.Row>
@@ -239,13 +245,15 @@ export const DetailsForm = ({
                 name="description"
                 onChange={onChangeGetSuggestedSubcategories}
                 disabled={readOnlyFields.includes('description')}
-                aria-controls="suggested-subcategories"
+                {...(isSuggestedSubcategoryDisplayed && {
+                  'aria-controls': 'suggested-subcategories',
+                })}
               />
             </FormLayout.Row>
           </>
         )}
       </FormLayout.Section>
-      {areSuggestedSubcategoriesUsed && !offer ? (
+      {isSuggestedSubcategoryDisplayed ? (
         <SuggestedSubcategories
           hasApiBeenCalled={hasSuggestionsApiBeenCalled}
           suggestedSubcategories={suggestedSubcategories}
