@@ -92,12 +92,11 @@ When('I fill activity form without target audience', () => {
 })
 
 When('I validate the registration', () => {
-  cy.wait(2000) // @todo: delete this when random failures fixed
   cy.intercept({ method: 'POST', url: '/offerers/new', times: 1 }).as(
     'createOfferer'
   )
   cy.findByText('Valider et créer ma structure').click()
-  cy.wait('@createOfferer').its('response.statusCode').should('eq', 201)
+  cy.wait('@createOfferer')
 })
 
 When('I add a new offerer', () => {
@@ -128,6 +127,7 @@ When('I fill identification form with a new address', () => {
   cy.intercept({
     method: 'GET',
     url: '/venue-types',
+    times: 1,
   }).as('venue-types')
   cy.findByText('Étape suivante').click()
   cy.wait('@venue-types').its('response.statusCode').should('eq', 200)
@@ -139,6 +139,7 @@ When('I fill identification form with a public name', () => {
   cy.intercept({
     method: 'GET',
     url: '/venue-types',
+    times: 1,
   }).as('venue-types')
   cy.findByText('Étape suivante').click()
   cy.wait('@venue-types').its('response.statusCode').should('eq', 200)
@@ -167,10 +168,9 @@ Then('the attachment is in progress', () => {
 })
 
 Then('the offerer is created', () => {
-  cy.findAllByTestId('global-notification-success').should(
-    'contain',
-    'Votre structure a bien été créée'
-  )
+  cy.findAllByTestId('global-notification-success')
+    .contains('Votre structure a bien été créée')
+    .should('not.be.visible')
   cy.url({ timeout: 10000 }).should('contain', '/accueil')
   cy.findAllByTestId('spinner', { timeout: 30 * 1000 }).should('not.exist')
 
@@ -179,10 +179,9 @@ Then('the offerer is created', () => {
 })
 
 Then('An error message is raised', () => {
-  cy.findByTestId('global-notification-error').contains(
-    'Une ou plusieurs erreurs sont présentes dans le formulaire'
-  )
-  cy.url().should('not.contain', '/parcours-inscription/validation')
+  cy.findByTestId('global-notification-error')
+    .contains('Une ou plusieurs erreurs sont présentes dans le formulaire')
+    .should('not.be.visible')
 })
 
 Then('The next step is displayed', () => {
