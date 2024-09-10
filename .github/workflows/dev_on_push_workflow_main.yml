@@ -1,16 +1,16 @@
-name: '1 [on_push] Initiate workflow'
+name: "1 [on_push] Initiate workflow"
 
 on:
   push:
     branches:
       - master
-      - 'maint/**'
+      - "maint/**"
 
 permissions: write-all
 
 jobs:
   pcapi-init-job:
-    name: 'pcapi init job'
+    name: "pcapi init job"
     runs-on: ubuntu-latest
     outputs:
       api-changed: ${{ steps.check-api-changes.outputs.any_modified }}
@@ -26,7 +26,7 @@ jobs:
         with:
           fetch-depth: 0
           fetch-tags: false
-      - name: 'Check api folder changes'
+      - name: "Check api folder changes"
         id: check-api-changes
         uses: tj-actions/changed-files@v45
         with:
@@ -35,24 +35,24 @@ jobs:
             !api/documentation/**
             !api/src/pcapi/scripts/**/main.py
             !api/src/pcapi/scripts/**/main.sql
-      - name: 'Check api documentation folder changes'
+      - name: "Check api documentation folder changes"
         id: check-api-documentation-changes
         uses: tj-actions/changed-files@v45
         with:
           files: api/documentation/**
-      - name: 'Check pro folder changes'
+      - name: "Check pro folder changes"
         id: check-pro-changes
         uses: tj-actions/changed-files@v45
         with:
           files: pro/**
-      - name: 'Check changes in dependencies (frontend + backend)'
+      - name: "Check changes in dependencies (frontend + backend)"
         id: check-dependencies-changes
         uses: tj-actions/changed-files@v45
         with:
           files: |
             api/poetry.lock
             pro/yarn.lock
-      - name: 'Define pcapi image tags.'
+      - name: "Define pcapi image tags."
         id: pcapi-tags
         run: |
           DOCKER_IMAGE="${{ env.docker_registry }}/pcapi"
@@ -63,46 +63,46 @@ jobs:
           echo "API_TAG=$API_TAG"
           echo $PUSH_TAGS >> "$GITHUB_OUTPUT"
           echo $API_TAG >> "$GITHUB_OUTPUT"
-      - name: 'Authentification to Google'
+      - name: "Authentification to Google"
         uses: 'google-github-actions/auth@v2'
         with:
           workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-      - name: 'Get Secret'
+      - name: "Get Secret"
         id: 'secrets'
         uses: 'google-github-actions/get-secretmanager-secrets@v2'
         with:
           secrets: |-
             ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER:passculture-metier-ehp/passculture-main-gcp-workload-identity-provider
             ARTIFACT_REGISTRY_SERVICE_ACCOUNT:passculture-metier-ehp/passculture-main-artifact-registry-service-account
-      - name: 'OpenID Connect Authentication'
-        id: 'openid-auth'
-        uses: 'google-github-actions/auth@v2'
+      - name: "OpenID Connect Authentication"
+        id: "openid-auth"
+        uses: "google-github-actions/auth@v2"
         with:
           create_credentials_file: false
-          token_format: 'access_token'
+          token_format: "access_token"
           workload_identity_provider: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
-      - name: 'Docker login'
-        id: 'docker-login'
-        uses: 'docker/login-action@v3'
+      - name: "Docker login"
+        id: "docker-login"
+        uses: "docker/login-action@v3"
         with:
-          registry: 'europe-west1-docker.pkg.dev'
-          username: 'oauth2accesstoken'
-          password: '${{ steps.openid-auth.outputs.access_token }}'
-      - name: 'pcapi'
+          registry: "europe-west1-docker.pkg.dev"
+          username: "oauth2accesstoken"
+          password: "${{ steps.openid-auth.outputs.access_token }}"
+      - name: "pcapi"
         id: check-checksum-tag
         run: ./.github/workflows/scripts/check-image-tag-exists.sh
         env:
           image: pcapi
           tag: ${{ steps.pcapi-tags.outputs.checksum-tag }}
-      - name: 'pcapi-console'
+      - name: "pcapi-console"
         id: check-console-checksum-tag
         run: ./.github/workflows/scripts/check-image-tag-exists.sh
         env:
           image: pcapi-console
           tag: ${{ steps.pcapi-tags.outputs.checksum-tag }}
-      - name: 'Summary'
+      - name: "Summary"
         run: |
           echo "[api] folder changed : ${{ steps.check-api-changes.outputs.any_modified }}"
           echo "[pcapi] push-tags : ${{ steps.pcapi-tags.outputs.push-tags }}"
@@ -112,7 +112,7 @@ jobs:
 
   check-folders-changes:
     # Perform all changes checks at once to remove the need for multiple checkouts accross jobs
-    name: 'Check changes in folders'
+    name: "Check changes in folders"
     runs-on: ubuntu-latest
     outputs:
       maintenance-site-changed: ${{ steps.check-maintenance-site-changes.outputs.any_modified }}
@@ -122,12 +122,12 @@ jobs:
         with:
           fetch-depth: 0
           fetch-tags: false
-      - name: 'Check maintenance-site folder changes'
+      - name: "Check maintenance-site folder changes"
         id: check-maintenance-site-changes
         uses: tj-actions/changed-files@v45
         with:
           files: maintenance-site/**
-      - name: 'Check db migration folder changes'
+      - name: "Check db migration folder changes"
         id: check-db-migrations-changes
         uses: tj-actions/changed-files@v45
         with:
@@ -136,7 +136,7 @@ jobs:
             api/src/pcapi/alembic/run_migrations.py
 
   build-pcapi:
-    name: '[pcapi] build docker image.'
+    name: "[pcapi] build docker image."
     needs: [pcapi-init-job]
     if: needs.pcapi-init-job.outputs.api-changed == 'true' && needs.pcapi-init-job.outputs.checksum-tag-exists == 'false'
     uses: ./.github/workflows/dev_on_workflow_build_docker_image.yml
@@ -149,7 +149,7 @@ jobs:
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
   build-pcapi-tests:
-    name: '[pcapi-tests] build docker image.'
+    name: "[pcapi-tests] build docker image."
     needs: [pcapi-init-job]
     if: needs.pcapi-init-job.outputs.api-changed == 'true'
     uses: ./.github/workflows/dev_on_workflow_build_docker_image.yml
@@ -162,7 +162,7 @@ jobs:
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
   build-pcapi-console:
-    name: '[pcapi-console] build docker image.'
+    name: "[pcapi-console] build docker image."
     needs: [pcapi-init-job]
     if: |
       ( needs.pcapi-init-job.outputs.api-changed == 'true' ||
@@ -178,8 +178,8 @@ jobs:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
-  prepare-cache-master: # on "master" branch only
-    name: 'Reset cache on master on dependency update'
+  prepare-cache-master:  # on "master" branch only
+    name: "Reset cache on master on dependency update"
     needs: [build-pcapi]
     uses: ./.github/workflows/dev_on_workflow_update_api_client_template.yml
     if: github.ref == 'refs/heads/master'
@@ -187,7 +187,7 @@ jobs:
       PCAPI_DOCKER_TAG: ${{ needs.pcapi-init-job.outputs.checksum-tag }}
       TRIGGER_ONLY_ON_API_CHANGE: false
       TRIGGER_ONLY_ON_DEPENDENCY_CHANGE: true
-      CACHE_BUCKET_NAME: 'passculture-infra-prod-github-runner-cache'
+      CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
       api-changed: ${{ needs.pcapi-init-job.outputs.api-changed }}
       dependencies-changed: ${{ needs.pcapi-init-job.outputs.dependencies-changed }}
     secrets:
@@ -195,7 +195,7 @@ jobs:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
 
   test-api:
-    name: 'Test api'
+    name: "Test api"
     needs: [pcapi-init-job, build-pcapi-tests]
     uses: ./.github/workflows/dev_on_workflow_tests_api.yml
     with:
@@ -205,7 +205,7 @@ jobs:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
 
   test-api-documentation:
-    name: 'Tests API documentation'
+    name: "Tests API documentation"
     needs: [pcapi-init-job]
     if: needs.pcapi-init-job.outputs.api-documentation-changed == 'true'
     uses: ./.github/workflows/dev_on_workflow_tests_api_documentation.yml
@@ -214,39 +214,39 @@ jobs:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
 
   test-pro:
-    name: 'Tests pro'
+    name: "Tests pro"
     needs: [pcapi-init-job]
     if: needs.pcapi-init-job.outputs.pro-changed == 'true'
     uses: ./.github/workflows/dev_on_workflow_tests_pro.yml
     with:
-      CACHE_BUCKET_NAME: 'passculture-infra-prod-github-runner-cache'
+      CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
   test-pro-e2e:
-    name: 'Tests pro E2E'
+    name: "Tests pro E2E"
     needs: [pcapi-init-job, build-pcapi]
     uses: ./.github/workflows/dev_on_workflow_tests_pro_e2e.yml
     if: |
-      contains(fromJSON('["success", "skipped"]'), needs.prepare-cache-master.result) &&
+      always() &&
       needs.pcapi-init-job.outputs.api-changed == 'true' ||
       needs.pcapi-init-job.outputs.pro-changed == 'true'
     with:
       tag: ${{ needs.build-pcapi.result == 'skipped' && 'latest' || needs.pcapi-init-job.outputs.checksum-tag }}
-      CACHE_BUCKET_NAME: 'passculture-infra-prod-github-runner-cache'
+      CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
   deploy-storybook:
-    name: 'Deploy Storybook'
+    name: "Deploy Storybook"
     needs: [pcapi-init-job]
     if: ${{ github.ref == 'refs/heads/master' && needs.pcapi-init-job.outputs.pro-changed == 'true' }}
     uses: ./.github/workflows/dev_on_workflow_deploy_storybook.yml
 
   push-pcapi:
-    name: 'Push pcapi docker image to registry'
+    name: "Push pcapi docker image to registry"
     needs: [build-pcapi, pcapi-init-job, test-api]
     uses: ./.github/workflows/dev_on_workflow_push_docker_image.yml
     with:
@@ -259,7 +259,7 @@ jobs:
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
   push-pcapi-console:
-    name: 'Push pcapi-console docker image to registry'
+    name: "Push pcapi-console docker image to registry"
     needs: [build-pcapi-console, pcapi-init-job, test-api]
     uses: ./.github/workflows/dev_on_workflow_push_docker_image.yml
     with:
@@ -272,7 +272,7 @@ jobs:
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
   deploy-to-testing:
-    name: 'Deploy to testing'
+    name: "Deploy to testing"
     needs: [test-api, test-pro, push-pcapi-console, push-pcapi]
     if: |
       always() &&
@@ -292,7 +292,7 @@ jobs:
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
   deploy-to-ops:
-    name: 'Deploy to ops'
+    name: "Deploy to ops"
     needs: [test-api, test-pro, push-pcapi-console, push-pcapi]
     if: |
       always() &&
@@ -313,7 +313,7 @@ jobs:
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
   deploy-maintenance-site:
-    name: 'Deploy maintenance site'
+    name: "Deploy maintenance site"
     needs: check-folders-changes
     if: |
       always() &&
@@ -325,7 +325,7 @@ jobs:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
 
   ping-data-team-on-slack:
-    name: 'Ping data team on slack'
+    name: "Ping data team on slack"
     needs: check-folders-changes
     if: |
       always() &&
@@ -337,7 +337,7 @@ jobs:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
 
   update-jira-issue:
-    name: 'Update Jira issue'
+    name: "Update Jira issue"
     if: ${{ always() && github.ref == 'refs/heads/master' }}
     concurrency: update-jira-issue-${{ github.workflow }}-${{ github.ref }}
     uses: ./.github/workflows/dev_on_workflow_update_jira_issues.yml
@@ -346,28 +346,28 @@ jobs:
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
   slack-notify:
-    name: 'Slack notification'
+    name: "Slack notification"
     runs-on: ubuntu-latest
     if: ${{ failure() && github.ref == 'refs/heads/master' }}
     needs: deploy-to-testing
     steps:
       - uses: technote-space/workflow-conclusion-action@v3
-      - name: 'Authentification to Google'
+      - name: "Authentification to Google"
         uses: 'google-github-actions/auth@v2'
         with:
           workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-      - name: 'Get Secret'
+      - name: "Get Secret"
         id: 'secrets'
         uses: 'google-github-actions/get-secretmanager-secrets@v2'
         with:
           secrets: |-
             SLACK_BOT_TOKEN:passculture-metier-ehp/passculture-ci-slack-bot-token
-      - name: 'Post to a Slack channel'
+      - name: "Post to a Slack channel"
         uses: slackapi/slack-github-action@v1.27.0
         with:
           # channel #alertes-deploiement
-          channel-id: 'CQAMNFVPS'
+          channel-id: "CQAMNFVPS"
           payload: |
             {
               "attachments": [
