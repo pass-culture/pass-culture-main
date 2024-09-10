@@ -14,7 +14,7 @@ from pcapi.models import db
 def update_or_create_reaction(
     user_id: int, offer_id: int, reaction_type: reactions_models.ReactionTypeEnum
 ) -> reactions_models.Reaction:
-    offer = offers_models.Offer.query.get(offer_id)
+    offer = offers_models.Offer.query.get_or_404(offer_id)
     if offer.productId:
         existing_reaction = reactions_models.Reaction.query.filter_by(userId=user_id, productId=offer.productId).first()
     else:
