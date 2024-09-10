@@ -226,7 +226,7 @@ jobs:
     needs: [pcapi-init-job, build-pcapi]
     uses: ./.github/workflows/dev_on_workflow_tests_pro_e2e.yml
     if: |
-      always() &&
+      contains(fromJSON('["success", "skipped"]'), needs.update-api-client-template.result) &&
       needs.pcapi-init-job.outputs.api-changed == 'true' || 
       needs.pcapi-init-job.outputs.pro-changed == 'true'
     with:
