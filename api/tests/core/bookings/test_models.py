@@ -8,6 +8,7 @@ import pytest
 from pcapi.core.bookings import factories
 from pcapi.core.bookings import models
 from pcapi.core.bookings.models import Booking
+from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.finance import factories as finance_factories
@@ -220,3 +221,23 @@ class BookingExpirationDateTest:
             "%d/%m/%Y"
         )
         assert not digital_book_booking.expirationDate
+
+
+class BookingCancellationReasonsTest:
+    @pytest.mark.parametrize(
+        "reason,expected",
+        [
+            (BookingCancellationReasons.OFFERER, False),
+            (BookingCancellationReasons.FRAUD, False),
+            (BookingCancellationReasons.FINANCE_INCIDENT, False),
+            (BookingCancellationReasons.BACKOFFICE, True),
+            (BookingCancellationReasons.BACKOFFICE_EVENT_CANCELLED, True),
+            (BookingCancellationReasons.BACKOFFICE_OVERBOOKING, True),
+            (BookingCancellationReasons.BACKOFFICE_BENEFICIARY_REQUEST, True),
+            (BookingCancellationReasons.BACKOFFICE_OFFER_MODIFIED, True),
+            (BookingCancellationReasons.BACKOFFICE_OFFER_WITH_WRONG_INFORMATION, True),
+            (BookingCancellationReasons.OFFERER_CONNECT_AS, False),
+        ],
+    )
+    def test_is_from_backoffice(self, reason: models.BookingCancellationReasons, expected: bool):
+        assert BookingCancellationReasons.is_from_backoffice(reason) is expected

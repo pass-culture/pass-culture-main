@@ -791,7 +791,7 @@ def mark_as_cancelled(
 
     if one_side_cancellation:
         if (
-            reason != BookingCancellationReasons.BACKOFFICE
+            not BookingCancellationReasons.is_from_backoffice(reason)
             or (
                 booking.stock.offer.lastProvider
                 and booking.stock.offer.lastProvider.localClass
