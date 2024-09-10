@@ -1,6 +1,7 @@
 import React from 'react'
 
-import { GetIndividualOfferResponseModel } from 'apiClient/v1'
+import { GetIndividualOfferWithAddressResponseModel } from 'apiClient/v1'
+import { useActiveFeature } from 'hooks/useActiveFeature'
 import { getIndividualOfferImage } from 'screens/IndividualOffer/utils/getIndividualOfferImage'
 
 import style from './OfferAppPreview.module.scss'
@@ -8,7 +9,7 @@ import { OptionsIcons } from './OptionsIcons/OptionsIcons'
 import { VenueDetails } from './VenueDetails/VenueDetails'
 
 interface OfferAppPreviewProps {
-  offer: GetIndividualOfferResponseModel
+  offer: GetIndividualOfferWithAddressResponseModel
 }
 
 export const OfferAppPreview = ({
@@ -16,6 +17,8 @@ export const OfferAppPreview = ({
 }: OfferAppPreviewProps): JSX.Element => {
   const { venue } = offer
   const image = getIndividualOfferImage(offer)
+
+  const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
 
   const cropPreviewText = (text: string, maxLength = 300): string => {
     if (text.trim().length > maxLength) {
@@ -60,6 +63,7 @@ export const OfferAppPreview = ({
         {!venue.isVirtual && (
           <VenueDetails
             venue={venue}
+            address={isOfferAddressEnabled ? offer.address : undefined}
             withdrawalDetails={
               offer.withdrawalDetails
                 ? cropPreviewText(offer.withdrawalDetails)
