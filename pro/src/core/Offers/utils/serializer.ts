@@ -3,10 +3,7 @@ import {
   ListOffersQueryModel,
 } from 'apiClient/v1'
 
-import {
-  DEFAULT_COLLECTIVE_SEARCH_FILTERS,
-  DEFAULT_SEARCH_FILTERS,
-} from '../constants'
+import { DEFAULT_SEARCH_FILTERS } from '../constants'
 import { CollectiveSearchFiltersParams, SearchFiltersParams } from '../types'
 
 export const serializeApiFilters = (
@@ -44,7 +41,8 @@ export const serializeApiFilters = (
 }
 
 export const serializeApiCollectiveFilters = (
-  searchFilters: Partial<CollectiveSearchFiltersParams>
+  searchFilters: Partial<CollectiveSearchFiltersParams>,
+  defaultFilters: CollectiveSearchFiltersParams
 ): ListCollectiveOffersQueryModel => {
   const listOffersQueryKeys = [
     'nameOrIsbn',
@@ -58,10 +56,14 @@ export const serializeApiCollectiveFilters = (
   ] satisfies (keyof CollectiveSearchFiltersParams)[]
 
   const body: ListOffersQueryModel & ListCollectiveOffersQueryModel = {}
-  const defaultFilters = DEFAULT_COLLECTIVE_SEARCH_FILTERS
+
   return listOffersQueryKeys.reduce((accumulator, field) => {
     const filterValue = searchFilters[field]
-    if (filterValue && filterValue !== defaultFilters[field]) {
+
+    if (
+      filterValue &&
+      (filterValue !== defaultFilters[field] || field === 'status')
+    ) {
       return {
         ...accumulator,
         [field]: filterValue,

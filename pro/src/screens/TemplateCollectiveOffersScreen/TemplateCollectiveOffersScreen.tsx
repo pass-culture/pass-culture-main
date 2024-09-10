@@ -7,7 +7,7 @@ import {
 } from 'apiClient/v1'
 import { NoData } from 'components/NoData/NoData'
 import {
-  DEFAULT_COLLECTIVE_SEARCH_FILTERS,
+  DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
   DEFAULT_PAGE,
   MAX_TOTAL_PAGES,
   NUMBER_OF_OFFERS_PER_PAGE,
@@ -68,7 +68,12 @@ export const TemplateCollectiveOffersScreen = ({
   const hasOffers = currentPageOffersSubset.length > 0
 
   const userHasNoOffers =
-    !isLoading && !hasOffers && !hasCollectiveSearchFilters(urlSearchFilters)
+    !isLoading &&
+    !hasOffers &&
+    !hasCollectiveSearchFilters(
+      urlSearchFilters,
+      DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS
+    )
 
   const areAllOffersSelected =
     selectedOffers.length > 0 &&
@@ -85,10 +90,8 @@ export const TemplateCollectiveOffersScreen = ({
   }
 
   const resetFilters = () => {
-    setSelectedFilters(DEFAULT_COLLECTIVE_SEARCH_FILTERS)
-    applyUrlFiltersAndRedirect({
-      ...DEFAULT_COLLECTIVE_SEARCH_FILTERS,
-    })
+    setSelectedFilters(DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS)
+    applyUrlFiltersAndRedirect(DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS)
   }
 
   const numberOfPages = Math.ceil(offers.length / NUMBER_OF_OFFERS_PER_PAGE)
@@ -101,20 +104,24 @@ export const TemplateCollectiveOffersScreen = ({
   }
 
   const applyFilters = (filters: CollectiveSearchFiltersParams) => {
-    applyUrlFiltersAndRedirect({ ...filters, page: DEFAULT_PAGE })
+    applyUrlFiltersAndRedirect({
+      ...filters,
+      page: DEFAULT_PAGE,
+    })
   }
 
   const removeOfferer = () => {
     const updatedFilters = {
       ...initialSearchFilters,
-      offererId: DEFAULT_COLLECTIVE_SEARCH_FILTERS.offererId,
+      offererId: DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS.offererId,
     }
     if (
       initialSearchFilters.venueId ===
-        DEFAULT_COLLECTIVE_SEARCH_FILTERS.venueId &&
-      initialSearchFilters.status !== DEFAULT_COLLECTIVE_SEARCH_FILTERS.status
+        DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS.venueId &&
+      initialSearchFilters.status !==
+        DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS.status
     ) {
-      updatedFilters.status = DEFAULT_COLLECTIVE_SEARCH_FILTERS.status
+      updatedFilters.status = DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS.status
     }
     applyUrlFiltersAndRedirect(updatedFilters)
   }

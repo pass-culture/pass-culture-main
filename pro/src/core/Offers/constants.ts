@@ -1,4 +1,8 @@
-import { OfferStatus, WithdrawalTypeEnum } from 'apiClient/v1'
+import {
+  CollectiveOfferDisplayedStatus,
+  OfferStatus,
+  WithdrawalTypeEnum,
+} from 'apiClient/v1'
 import { SelectOption } from 'custom_types/form'
 
 import {
@@ -94,7 +98,58 @@ export const DEFAULT_COLLECTIVE_SEARCH_FILTERS: CollectiveSearchFiltersParams =
     periodBeginningDate: ALL_EVENT_PERIODS,
     periodEndingDate: ALL_EVENT_PERIODS,
     page: DEFAULT_PAGE,
-    status: [],
+    status: [
+      CollectiveOfferDisplayedStatus.PENDING,
+      CollectiveOfferDisplayedStatus.REJECTED,
+      CollectiveOfferDisplayedStatus.ACTIVE,
+      CollectiveOfferDisplayedStatus.INACTIVE,
+      CollectiveOfferDisplayedStatus.PREBOOKED,
+      CollectiveOfferDisplayedStatus.BOOKED,
+      CollectiveOfferDisplayedStatus.EXPIRED,
+      CollectiveOfferDisplayedStatus.ENDED,
+      CollectiveOfferDisplayedStatus.DRAFT,
+    ],
+  }
+
+export const DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS: CollectiveSearchFiltersParams =
+  {
+    nameOrIsbn: ALL_OFFERS,
+    offererId: 'all',
+    venueId: ALL_VENUES,
+    format: ALL_FORMATS,
+    collectiveOfferType: CollectiveOfferTypeEnum.TEMPLATE,
+    periodBeginningDate: ALL_EVENT_PERIODS,
+    periodEndingDate: ALL_EVENT_PERIODS,
+    page: DEFAULT_PAGE,
+    status: [
+      CollectiveOfferDisplayedStatus.PENDING,
+      CollectiveOfferDisplayedStatus.REJECTED,
+      CollectiveOfferDisplayedStatus.ACTIVE,
+      CollectiveOfferDisplayedStatus.INACTIVE,
+      CollectiveOfferDisplayedStatus.DRAFT,
+    ],
+  }
+
+export const DEFAULT_COLLECTIVE_BOOKABLE_SEARCH_FILTERS: CollectiveSearchFiltersParams =
+  {
+    nameOrIsbn: ALL_OFFERS,
+    offererId: 'all',
+    venueId: ALL_VENUES,
+    format: ALL_FORMATS,
+    collectiveOfferType: CollectiveOfferTypeEnum.OFFER,
+    periodBeginningDate: ALL_EVENT_PERIODS,
+    periodEndingDate: ALL_EVENT_PERIODS,
+    page: DEFAULT_PAGE,
+    status: [
+      CollectiveOfferDisplayedStatus.PENDING,
+      CollectiveOfferDisplayedStatus.REJECTED,
+      CollectiveOfferDisplayedStatus.ACTIVE,
+      CollectiveOfferDisplayedStatus.PREBOOKED,
+      CollectiveOfferDisplayedStatus.BOOKED,
+      CollectiveOfferDisplayedStatus.EXPIRED,
+      CollectiveOfferDisplayedStatus.ENDED,
+      CollectiveOfferDisplayedStatus.DRAFT,
+    ],
   }
 
 export const ALL_VENUES_OPTION: SelectOption = {

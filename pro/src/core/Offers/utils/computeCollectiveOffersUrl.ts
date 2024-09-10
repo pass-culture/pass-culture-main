@@ -1,7 +1,9 @@
-import { DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
+import isEqual from 'lodash.isequal'
+
 import { translateApiParamsToQueryParams } from 'utils/translate'
 
 import { Audience } from '../../shared/types'
+import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from '../constants'
 import { CollectiveSearchFiltersParams } from '../types'
 
 const COLLECTIVE_OFFERS_URL = '/offres/collectives'
@@ -9,6 +11,7 @@ const TEMPLATE_COLLECTIVE_OFFERS_URL = '/offres/vitrines'
 
 export const computeCollectiveOffersUrl = (
   offersSearchFilters: Partial<CollectiveSearchFiltersParams>,
+  defaultFilters: CollectiveSearchFiltersParams = DEFAULT_COLLECTIVE_SEARCH_FILTERS,
   shouldComputeTemplateOfferUrl?: boolean
 ): string => {
   const emptyNewFilters: Partial<CollectiveSearchFiltersParams> = {}
@@ -17,8 +20,11 @@ export const computeCollectiveOffersUrl = (
     ...offersSearchFilters,
   }).reduce((accumulator, [filter, filterValue]) => {
     if (
-      filterValue !==
-      DEFAULT_SEARCH_FILTERS[filter as keyof CollectiveSearchFiltersParams]
+      !isEqual(
+        filterValue,
+        defaultFilters[filter as keyof CollectiveSearchFiltersParams]
+      ) ||
+      filter === 'status'
     ) {
       return {
         ...accumulator,

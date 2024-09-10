@@ -4,17 +4,17 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
+import { CollectiveOfferDisplayedStatus } from 'apiClient/v1'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { GET_OFFERER_QUERY_KEY } from 'config/swrQueryKeys'
 import {
   COLLECTIVE_OFFER_SUBTYPE,
   COLLECTIVE_OFFER_SUBTYPE_DUPLICATE,
-  DEFAULT_COLLECTIVE_SEARCH_FILTERS,
+  DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
   OFFER_TYPES,
   OFFER_WIZARD_MODE,
 } from 'core/Offers/constants'
-import { CollectiveOfferTypeEnum } from 'core/Offers/types'
 import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
 import { serializeApiCollectiveFilters } from 'core/Offers/utils/serializer'
 import { useActiveFeature } from 'hooks/useActiveFeature'
@@ -110,8 +110,7 @@ export const OfferTypeScreen = (): JSX.Element => {
       COLLECTIVE_OFFER_SUBTYPE_DUPLICATE.DUPLICATE
     ) {
       const apiFilters = {
-        ...DEFAULT_COLLECTIVE_SEARCH_FILTERS,
-        collectiveOfferType: CollectiveOfferTypeEnum.TEMPLATE,
+        ...DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
         offererId: queryOffererId ? queryOffererId : 'all',
         venueId: queryVenueId ? queryVenueId : 'all',
       }
@@ -126,7 +125,13 @@ export const OfferTypeScreen = (): JSX.Element => {
         periodEndingDate,
         collectiveOfferType,
         format,
-      } = serializeApiCollectiveFilters(apiFilters)
+      } = serializeApiCollectiveFilters(apiFilters, {
+        ...DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
+        status: [
+          ...DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS.status,
+          CollectiveOfferDisplayedStatus.ARCHIVED,
+        ],
+      })
 
       const templateOffersOnSelectedVenue = await api.getCollectiveOffers(
         nameOrIsbn,

@@ -10,7 +10,7 @@ import { FormLayout } from 'components/FormLayout/FormLayout'
 import {
   ALL_FORMATS_OPTION,
   ALL_VENUES_OPTION,
-  DEFAULT_COLLECTIVE_SEARCH_FILTERS,
+  DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
 } from 'core/Offers/constants'
 import { CollectiveSearchFiltersParams } from 'core/Offers/types'
 import { hasCollectiveSearchFilters } from 'core/Offers/utils/hasSearchFilters'
@@ -128,7 +128,7 @@ export const TemplateOffersSearchFilters = ({
     const dateToFilter =
       periodBeginningDate !== ''
         ? periodBeginningDate
-        : DEFAULT_COLLECTIVE_SEARCH_FILTERS.periodBeginningDate
+        : DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS.periodBeginningDate
     updateSearchFilters({ periodBeginningDate: dateToFilter })
   }
 
@@ -136,19 +136,22 @@ export const TemplateOffersSearchFilters = ({
     const dateToFilter =
       periodEndingDate !== ''
         ? periodEndingDate
-        : DEFAULT_COLLECTIVE_SEARCH_FILTERS.periodEndingDate
+        : DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS.periodEndingDate
     updateSearchFilters({ periodEndingDate: dateToFilter })
   }
 
   const requestFilteredOffers = (event: FormEvent) => {
     event.preventDefault()
-    applyFilters(selectedFilters)
+    applyFilters({
+      ...selectedFilters,
+      offererId: offerer?.id.toString() ?? '',
+    })
   }
 
   const resetCollectiveFilters = async () => {
     await formik.setFieldValue(
       'status',
-      DEFAULT_COLLECTIVE_SEARCH_FILTERS.status
+      DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS.status
     )
     resetFilters()
   }
@@ -242,7 +245,12 @@ export const TemplateOffersSearchFilters = ({
         <div className={styles['reset-filters']}>
           <Button
             icon={fullRefreshIcon}
-            disabled={!hasCollectiveSearchFilters(selectedFilters)}
+            disabled={
+              !hasCollectiveSearchFilters(
+                selectedFilters,
+                DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS
+              )
+            }
             onClick={resetCollectiveFilters}
             variant={ButtonVariant.TERNARY}
           >

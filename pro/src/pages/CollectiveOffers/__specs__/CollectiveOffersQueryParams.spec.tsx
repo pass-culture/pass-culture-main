@@ -107,7 +107,7 @@ describe('route CollectiveOffers', () => {
       await userEvent.click(nextPageIcon)
 
       expect(mockNavigate).toHaveBeenCalledWith(
-        '/offres/collectives?page=2&statut=en-attente&statut=refusee&statut=active&statut=inactive&statut=prereservee&statut=reservee&statut=expiree&statut=terminee',
+        '/offres/collectives?page=2&statut=en-attente&statut=refusee&statut=active&statut=inactive&statut=prereservee&statut=reservee&statut=expiree&statut=terminee&statut=brouillon',
         {
           replace: true,
         }
@@ -124,7 +124,7 @@ describe('route CollectiveOffers', () => {
       await userEvent.click(screen.getByText('Rechercher'))
 
       expect(mockNavigate).toHaveBeenCalledWith(
-        '/offres/collectives?nom-ou-isbn=AnyWord&statut=en-attente&statut=refusee&statut=active&statut=inactive&statut=prereservee&statut=reservee&statut=expiree&statut=terminee',
+        '/offres/collectives?nom-ou-isbn=AnyWord&statut=en-attente&statut=refusee&statut=active&statut=inactive&statut=prereservee&statut=reservee&statut=expiree&statut=terminee&statut=brouillon',
         {
           replace: true,
         }
@@ -140,7 +140,7 @@ describe('route CollectiveOffers', () => {
       await userEvent.click(screen.getByText('Rechercher'))
 
       expect(mockNavigate).toHaveBeenCalledWith(
-        '/offres/collectives?statut=en-attente&statut=refusee&statut=active&statut=inactive&statut=prereservee&statut=reservee&statut=expiree&statut=terminee',
+        '/offres/collectives?statut=en-attente&statut=refusee&statut=active&statut=inactive&statut=prereservee&statut=reservee&statut=expiree&statut=terminee&statut=brouillon',
         {
           replace: true,
         }
@@ -158,7 +158,7 @@ describe('route CollectiveOffers', () => {
       await userEvent.click(screen.getByText('Rechercher'))
 
       expect(mockNavigate).toHaveBeenCalledWith(
-        `/offres/collectives?lieu=1&statut=en-attente&statut=refusee&statut=active&statut=inactive&statut=prereservee&statut=reservee&statut=expiree&statut=terminee`,
+        `/offres/collectives?lieu=1&statut=en-attente&statut=refusee&statut=active&statut=inactive&statut=prereservee&statut=reservee&statut=expiree&statut=terminee&statut=brouillon`,
         {
           replace: true,
         }
@@ -180,7 +180,7 @@ describe('route CollectiveOffers', () => {
       await userEvent.click(screen.getByText('Rechercher'))
 
       expect(mockNavigate).toHaveBeenCalledWith(
-        '/offres/collectives?format=Concert&statut=en-attente&statut=refusee&statut=active&statut=inactive&statut=prereservee&statut=reservee&statut=expiree&statut=terminee',
+        '/offres/collectives?format=Concert&statut=en-attente&statut=refusee&statut=active&statut=inactive&statut=prereservee&statut=reservee&statut=expiree&statut=terminee&statut=brouillon',
         {
           replace: true,
         }
@@ -202,7 +202,7 @@ describe('route CollectiveOffers', () => {
       await userEvent.click(screen.getByRole('button', { name: 'Rechercher' }))
 
       expect(mockNavigate).toHaveBeenCalledWith(
-        '/offres/collectives?statut=en-attente&statut=refusee&statut=active&statut=inactive&statut=prereservee&statut=expiree&statut=terminee',
+        '/offres/collectives?statut=en-attente&statut=refusee&statut=active&statut=inactive&statut=prereservee&statut=expiree&statut=terminee&statut=brouillon',
         {
           replace: true,
         }
@@ -226,7 +226,7 @@ describe('route CollectiveOffers', () => {
       await userEvent.click(screen.getByRole('button', { name: 'Rechercher' }))
 
       expect(mockNavigate).toHaveBeenCalledWith(
-        '/offres/collectives?statut=refusee&statut=active&statut=inactive&statut=prereservee&statut=expiree&statut=terminee&statut=archivee',
+        '/offres/collectives?statut=refusee&statut=active&statut=inactive&statut=prereservee&statut=expiree&statut=terminee&statut=brouillon&statut=archivee',
         {
           replace: true,
         }
@@ -257,7 +257,7 @@ describe('route CollectiveOffers', () => {
       await userEvent.click(screen.getByTestId('remove-offerer-filter'))
 
       expect(mockNavigate).toHaveBeenCalledWith(
-        '/offres/collectives?statut=en-attente&statut=refusee&statut=active&statut=inactive&statut=prereservee&statut=reservee&statut=expiree&statut=terminee',
+        '/offres/collectives?statut=en-attente&statut=refusee&statut=active&statut=inactive&statut=prereservee&statut=reservee&statut=expiree&statut=terminee&statut=brouillon',
         {
           replace: true,
         }

@@ -1,4 +1,5 @@
 import { FormikProvider, useFormik } from 'formik'
+import isEqual from 'lodash.isequal'
 import { Dispatch, FormEvent, SetStateAction, useEffect } from 'react'
 
 import {
@@ -11,13 +12,13 @@ import {
   ALL_FORMATS_OPTION,
   ALL_VENUES_OPTION,
   COLLECTIVE_OFFER_TYPES_OPTIONS,
+  DEFAULT_COLLECTIVE_BOOKABLE_SEARCH_FILTERS,
   DEFAULT_COLLECTIVE_SEARCH_FILTERS,
 } from 'core/Offers/constants'
 import {
   CollectiveOfferTypeEnum,
   CollectiveSearchFiltersParams,
 } from 'core/Offers/types'
-import { hasCollectiveSearchFilters } from 'core/Offers/utils/hasSearchFilters'
 import { SelectOption } from 'custom_types/form'
 import { useActiveFeature } from 'hooks/useActiveFeature'
 import { useIsNewInterfaceActive } from 'hooks/useIsNewInterfaceActive'
@@ -95,6 +96,11 @@ export const CollectiveOffersSearchFilters = ({
   const isNewOffersAndBookingsActive = useActiveFeature(
     'WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE'
   )
+
+  const defaultCollectiveFilters = isNewOffersAndBookingsActive
+    ? DEFAULT_COLLECTIVE_BOOKABLE_SEARCH_FILTERS
+    : DEFAULT_COLLECTIVE_SEARCH_FILTERS
+
   const formats: SelectOption[] = Object.values(EacFormat).map((format) => ({
     value: format,
     label: format,
@@ -149,7 +155,7 @@ export const CollectiveOffersSearchFilters = ({
     const dateToFilter =
       periodBeginningDate !== ''
         ? periodBeginningDate
-        : DEFAULT_COLLECTIVE_SEARCH_FILTERS.periodBeginningDate
+        : defaultCollectiveFilters.periodBeginningDate
     updateSearchFilters({ periodBeginningDate: dateToFilter })
   }
 
@@ -157,20 +163,21 @@ export const CollectiveOffersSearchFilters = ({
     const dateToFilter =
       periodEndingDate !== ''
         ? periodEndingDate
-        : DEFAULT_COLLECTIVE_SEARCH_FILTERS.periodEndingDate
+        : defaultCollectiveFilters.periodEndingDate
     updateSearchFilters({ periodEndingDate: dateToFilter })
   }
 
   const requestFilteredOffers = (event: FormEvent) => {
     event.preventDefault()
-    applyFilters(selectedFilters)
+    applyFilters({
+      ...selectedFilters,
+      offererId: offerer?.id.toString() ?? 'all',
+    })
   }
 
   const resetCollectiveFilters = async () => {
-    await formik.setFieldValue(
-      'status',
-      DEFAULT_COLLECTIVE_SEARCH_FILTERS.status
-    )
+    await formik.setFieldValue('status', defaultCollectiveFilters.status)
+
     resetFilters()
   }
 
@@ -286,7 +293,10 @@ export const CollectiveOffersSearchFilters = ({
         <div className={styles['reset-filters']}>
           <Button
             icon={fullRefreshIcon}
-            disabled={!hasCollectiveSearchFilters(selectedFilters)}
+            disabled={isEqual(
+              { ...selectedFilters, offererId: 'all', page: 1 },
+              defaultCollectiveFilters
+            )}
             onClick={resetCollectiveFilters}
             variant={ButtonVariant.TERNARY}
           >

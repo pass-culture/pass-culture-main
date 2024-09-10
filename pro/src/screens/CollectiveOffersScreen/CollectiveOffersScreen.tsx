@@ -7,6 +7,7 @@ import {
 } from 'apiClient/v1'
 import { NoData } from 'components/NoData/NoData'
 import {
+  DEFAULT_COLLECTIVE_BOOKABLE_SEARCH_FILTERS,
   DEFAULT_COLLECTIVE_SEARCH_FILTERS,
   DEFAULT_PAGE,
   MAX_TOTAL_PAGES,
@@ -15,6 +16,7 @@ import {
 import { CollectiveSearchFiltersParams } from 'core/Offers/types'
 import { hasCollectiveSearchFilters } from 'core/Offers/utils/hasSearchFilters'
 import { SelectOption } from 'custom_types/form'
+import { useActiveFeature } from 'hooks/useActiveFeature'
 import { CollectiveOffersActionsBar } from 'pages/Offers/OffersTable/CollectiveOffersTable/CollectiveOffersActionsBar/CollectiveOffersActionsBar'
 import { CollectiveOffersTable } from 'pages/Offers/OffersTable/CollectiveOffersTable/CollectiveOffersTable'
 import { isSameOffer } from 'pages/Offers/utils/isSameOffer'
@@ -60,6 +62,14 @@ export const CollectiveOffersScreen = ({
   >([])
   const [selectedFilters, setSelectedFilters] = useState(initialSearchFilters)
 
+  const isNewOffersAndBookingsActive = useActiveFeature(
+    'WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE'
+  )
+
+  const defaultCollectiveFilters = isNewOffersAndBookingsActive
+    ? DEFAULT_COLLECTIVE_BOOKABLE_SEARCH_FILTERS
+    : DEFAULT_COLLECTIVE_SEARCH_FILTERS
+
   const currentPageOffersSubset = offers.slice(
     (currentPageNumber - 1) * NUMBER_OF_OFFERS_PER_PAGE,
     currentPageNumber * NUMBER_OF_OFFERS_PER_PAGE
@@ -68,7 +78,9 @@ export const CollectiveOffersScreen = ({
   const hasOffers = currentPageOffersSubset.length > 0
 
   const userHasNoOffers =
-    !isLoading && !hasOffers && !hasCollectiveSearchFilters(urlSearchFilters)
+    !isLoading &&
+    !hasOffers &&
+    !hasCollectiveSearchFilters(urlSearchFilters, defaultCollectiveFilters)
 
   const areAllOffersSelected =
     selectedOffers.length > 0 &&
@@ -85,10 +97,8 @@ export const CollectiveOffersScreen = ({
   }
 
   const resetFilters = () => {
-    setSelectedFilters(DEFAULT_COLLECTIVE_SEARCH_FILTERS)
-    applyUrlFiltersAndRedirect({
-      ...DEFAULT_COLLECTIVE_SEARCH_FILTERS,
-    })
+    setSelectedFilters(defaultCollectiveFilters)
+    applyUrlFiltersAndRedirect(defaultCollectiveFilters)
   }
 
   const numberOfPages = Math.ceil(offers.length / NUMBER_OF_OFFERS_PER_PAGE)
@@ -107,14 +117,13 @@ export const CollectiveOffersScreen = ({
   const removeOfferer = () => {
     const updatedFilters = {
       ...initialSearchFilters,
-      offererId: DEFAULT_COLLECTIVE_SEARCH_FILTERS.offererId,
+      offererId: defaultCollectiveFilters.offererId,
     }
     if (
-      initialSearchFilters.venueId ===
-        DEFAULT_COLLECTIVE_SEARCH_FILTERS.venueId &&
-      initialSearchFilters.status !== DEFAULT_COLLECTIVE_SEARCH_FILTERS.status
+      initialSearchFilters.venueId === defaultCollectiveFilters.venueId &&
+      initialSearchFilters.status !== defaultCollectiveFilters.status
     ) {
-      updatedFilters.status = DEFAULT_COLLECTIVE_SEARCH_FILTERS.status
+      updatedFilters.status = defaultCollectiveFilters.status
     }
     applyUrlFiltersAndRedirect(updatedFilters)
   }

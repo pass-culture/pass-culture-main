@@ -11,7 +11,7 @@ import {
   GET_VENUES_QUERY_KEY,
 } from 'config/swrQueryKeys'
 import {
-  DEFAULT_COLLECTIVE_SEARCH_FILTERS,
+  DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
   DEFAULT_PAGE,
 } from 'core/Offers/constants'
 import { useQueryCollectiveSearchFilters } from 'core/Offers/hooks/useQuerySearchFilters'
@@ -27,12 +27,17 @@ import { selectCurrentOffererId } from 'store/user/selectors'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 export const TemplateCollectiveOffers = (): JSX.Element => {
-  const urlSearchFilters = useQueryCollectiveSearchFilters()
+  const selectedOffererId = useSelector(selectCurrentOffererId)
+
+  const urlSearchFilters = useQueryCollectiveSearchFilters({
+    ...DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
+    offererId: selectedOffererId?.toString() ?? 'all',
+  })
+
   const currentPageNumber = urlSearchFilters.page ?? DEFAULT_PAGE
   const navigate = useNavigate()
   const { currentUser } = useCurrentUser()
   const isNewInterfaceActive = useIsNewInterfaceActive()
-  const selectedOffererId = useSelector(selectCurrentOffererId)
   const offererId = isNewInterfaceActive
     ? selectedOffererId
     : urlSearchFilters.offererId
@@ -40,7 +45,7 @@ export const TemplateCollectiveOffers = (): JSX.Element => {
   const offererQuery = useSWR(
     [GET_OFFERER_QUERY_KEY, offererId],
     ([, offererIdParam]) =>
-      offererId === DEFAULT_COLLECTIVE_SEARCH_FILTERS.offererId
+      offererId === DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS.offererId
         ? null
         : api.getOfferer(Number(offererIdParam)),
     { fallbackData: null }
@@ -55,18 +60,26 @@ export const TemplateCollectiveOffers = (): JSX.Element => {
   const venues = formatAndOrderVenues(data.venues)
 
   const redirectWithUrlFilters = (filters: CollectiveSearchFiltersParams) => {
-    navigate(computeCollectiveOffersUrl(filters, true), { replace: true })
+    navigate(
+      computeCollectiveOffersUrl(
+        filters,
+        DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
+        true
+      ),
+      { replace: true }
+    )
   }
 
   const isFilterByVenueOrOfferer = hasCollectiveSearchFilters(
     urlSearchFilters,
+    DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
     ['venueId', 'offererId']
   )
   //  Admin users are not allowed to check all offers at once or to use the status filter for performance reasons. Unless there is a venue or offerer filter active.
   const isRestrictedAsAdmin = currentUser.isAdmin && !isFilterByVenueOrOfferer
 
   const apiFilters: CollectiveSearchFiltersParams = {
-    ...DEFAULT_COLLECTIVE_SEARCH_FILTERS,
+    ...DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
     ...urlSearchFilters,
     ...(isRestrictedAsAdmin ? { status: [] } : {}),
     ...(isNewInterfaceActive
@@ -74,16 +87,6 @@ export const TemplateCollectiveOffers = (): JSX.Element => {
       : {}),
   }
   delete apiFilters.page
-
-  if (
-    isNewInterfaceActive &&
-    selectedOffererId &&
-    selectedOffererId.toString() !== urlSearchFilters.offererId
-  ) {
-    setTimeout(() => {
-      redirectWithUrlFilters(apiFilters)
-    })
-  }
 
   const offersQuery = useSWR(
     [GET_COLLECTIVE_OFFERS_TEMPLATE_QUERY_KEY, apiFilters],
@@ -98,7 +101,10 @@ export const TemplateCollectiveOffers = (): JSX.Element => {
         periodBeginningDate,
         periodEndingDate,
         format,
-      } = serializeApiCollectiveFilters(apiFilters)
+      } = serializeApiCollectiveFilters(
+        apiFilters,
+        DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS
+      )
 
       return api.getCollectiveOffers(
         nameOrIsbn,

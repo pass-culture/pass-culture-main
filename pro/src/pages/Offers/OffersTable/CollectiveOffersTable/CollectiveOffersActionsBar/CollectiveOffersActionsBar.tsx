@@ -17,7 +17,7 @@ import {
   GET_COLLECTIVE_OFFERS_TEMPLATE_QUERY_KEY,
 } from 'config/swrQueryKeys'
 import { NOTIFICATION_LONG_SHOW_DURATION } from 'core/Notification/constants'
-import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from 'core/Offers/constants'
+import { DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS } from 'core/Offers/constants'
 import { useQueryCollectiveSearchFilters } from 'core/Offers/hooks/useQuerySearchFilters'
 import { useActiveFeature } from 'hooks/useActiveFeature'
 import { useNotification } from 'hooks/useNotification'
@@ -130,7 +130,7 @@ export function CollectiveOffersActionsBar({
     : GET_COLLECTIVE_OFFERS_QUERY_KEY
 
   const apiFilters = {
-    ...DEFAULT_COLLECTIVE_SEARCH_FILTERS,
+    ...DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
     ...urlSearchFilters,
   }
   delete apiFilters.page
