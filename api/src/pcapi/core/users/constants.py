@@ -64,6 +64,22 @@ class SuspensionReason(enum.Enum):
     WAITING_FOR_ANONYMIZATION = "waiting for anonymization"
 
 
+FRAUD_SUSPENSION_REASONS = {
+    SuspensionReason.FRAUD_BOOKING_CANCEL,
+    SuspensionReason.FRAUD_CREATION_PRO,
+    SuspensionReason.FRAUD_DUPLICATE,
+    SuspensionReason.FRAUD_FAKE_DOCUMENT,
+    SuspensionReason.FRAUD_HACK,
+    SuspensionReason.FRAUD_RESELL_PASS,
+    SuspensionReason.FRAUD_RESELL_PRODUCT,
+    SuspensionReason.FRAUD_SUSPICION,
+    SuspensionReason.FRAUD_USURPATION,
+    SuspensionReason.FRAUD_USURPATION_PRO,
+    SuspensionReason.SUSPICIOUS_LOGIN_REPORTED_BY_USER,
+    SuspensionReason.SUSPENSION_FOR_INVESTIGATION_TEMP,
+}
+
+
 PRO_SUSPENSION_REASON_CHOICES = {
     SuspensionReason.CLOSED_STRUCTURE_DEFINITIVE: "Structure définitivement fermée",
     SuspensionReason.CLOSED_STRUCTURE_TEMP: "Structure fermée provisoirement",

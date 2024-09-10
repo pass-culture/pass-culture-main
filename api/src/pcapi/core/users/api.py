@@ -1526,12 +1526,17 @@ def has_unprocessed_extract(user: models.User) -> bool:
     return False
 
 
+def is_suspended_for_less_than_five_years(user: models.User) -> bool:
+    if user.suspension_reason in constants.FRAUD_SUSPENSION_REASONS:
+        return user.suspension_date > datetime.datetime.utcnow() - relativedelta(years=5)
+    return False
+
+
 def anonymize_user(user: models.User, *, author: models.User | None = None, force: bool = False) -> bool:
     """
     Anonymize the given User. If force is True, the function will anonymize the user even if they have an address and
     we cannot find an iris for it.
     """
-
     if has_unprocessed_extract(user):
         return False
 
@@ -1641,21 +1646,26 @@ def _remove_external_user(user: models.User) -> bool:
 
 def anonymize_non_pro_non_beneficiary_users(*, force: bool = False) -> None:
     """
-    Anonymize user accounts that have never been beneficiary (no deposits), are not pro (no pro role) and which have
-    not connected for at least 3 years.
+    Anonymize user accounts that have never been beneficiary (no deposits), are not pro (no pro
+    role) and which have not connected for at least 3 years and if they have been suspended it was
+    at least 5 years ago.
     """
-    users = (
-        models.User.query.outerjoin(
-            finance_models.Deposit,
-            models.User.deposits,
-        )
-        .filter(
-            ~models.User.email.like("%@passculture.app"),  # people who work or worked in the company
-            func.array_length(models.User.roles, 1).is_(None),  # no role, not already anonymized
-            finance_models.Deposit.userId.is_(None),  # no deposit
-            models.User.lastConnectionDate < datetime.datetime.utcnow() - relativedelta(years=3),
-        )
-        .all()
+    users = models.User.query.outerjoin(
+        finance_models.Deposit,
+        models.User.deposits,
+    ).filter(
+        ~models.User.email.like("%@passculture.app"),  # people who work or worked in the company
+        func.array_length(models.User.roles, 1).is_(None),  # no role, not already anonymized
+        finance_models.Deposit.userId.is_(None),  # no deposit
+        models.User.lastConnectionDate < datetime.datetime.utcnow() - relativedelta(years=3),
+        sa.or_(
+            models.User.suspension_reason.is_(None),  # type: ignore [attr-defined]
+            ~models.User.suspension_reason.in_(constants.FRAUD_SUSPENSION_REASONS),  # type: ignore [attr-defined]
+            sa.and_(
+                models.User.suspension_reason.in_(constants.FRAUD_SUSPENSION_REASONS),  # type: ignore [attr-defined]
+                models.User.suspension_date < datetime.datetime.utcnow() - relativedelta(years=5),  # type: ignore [operator]
+            ),
+        ),
     )
     for user in users:
         anonymize_user(user, force=force)
@@ -1708,8 +1718,9 @@ def has_user_pending_anonymization(user_id: int) -> bool:
 
 def anonymize_beneficiary_users(*, force: bool = False) -> None:
     """
-    Anonymize user accounts that have been beneficiaries which have not connected for at least 3 years, and
-    whose deposit has been expired for at least 5 years.
+    Anonymize user accounts that have been beneficiaries which have not connected for at least 3
+    years, and whose deposit has been expired for at least 5 years and if they have been suspended
+    it was at least 5 years ago.
     """
     beneficiaries = models.User.query.outerjoin(
         finance_models.Deposit,
@@ -1718,10 +1729,26 @@ def anonymize_beneficiary_users(*, force: bool = False) -> None:
         models.User.is_beneficiary,
         models.User.lastConnectionDate < datetime.datetime.utcnow() - relativedelta(years=3),
         finance_models.Deposit.expirationDate < datetime.datetime.utcnow() - relativedelta(years=5),
+        sa.or_(
+            models.User.suspension_reason.is_(None),  # type: ignore [attr-defined]
+            ~models.User.suspension_reason.in_(constants.FRAUD_SUSPENSION_REASONS),  # type: ignore [attr-defined]
+            sa.and_(
+                models.User.suspension_reason.in_(constants.FRAUD_SUSPENSION_REASONS),  # type: ignore [attr-defined]
+                models.User.suspension_date < datetime.datetime.utcnow() - relativedelta(years=5),  # type: ignore [operator]
+            ),
+        ),
     )
 
     beneficiaries_tagged_to_anonymize = models.User.query.join(models.GdprUserAnonymization).filter(
-        models.User.validatedBirthDate < datetime.datetime.utcnow() - relativedelta(years=21)
+        models.User.validatedBirthDate < datetime.datetime.utcnow() - relativedelta(years=21),
+        sa.or_(
+            models.User.suspension_reason.is_(None),  # type: ignore [attr-defined]
+            ~models.User.suspension_reason.in_(constants.FRAUD_SUSPENSION_REASONS),  # type: ignore [attr-defined]
+            sa.and_(
+                models.User.suspension_reason.in_(constants.FRAUD_SUSPENSION_REASONS),  # type: ignore [attr-defined]
+                models.User.suspension_date < datetime.datetime.utcnow() - relativedelta(years=5),  # type: ignore [operator]
+            ),
+        ),
     )
     for user in itertools.chain(beneficiaries, beneficiaries_tagged_to_anonymize):
         anonymize_user(user, force=force)

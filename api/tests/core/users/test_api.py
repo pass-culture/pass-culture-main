@@ -1914,6 +1914,83 @@ class AnonymizeNonProNonBeneficiaryUsersTest:
         assert user_to_anonymize.email == f"anonymous_{user_to_anonymize.id}@anonymized.passculture"
         assert sendinblue_testing.sendinblue_requests[0]["attributes"]["FIRSTNAME"] == ""
 
+    @pytest.mark.parametrize(
+        "reason",
+        [
+            users_constants.SuspensionReason.FRAUD_BOOKING_CANCEL,
+            users_constants.SuspensionReason.FRAUD_CREATION_PRO,
+            users_constants.SuspensionReason.FRAUD_DUPLICATE,
+            users_constants.SuspensionReason.FRAUD_FAKE_DOCUMENT,
+            users_constants.SuspensionReason.FRAUD_HACK,
+            users_constants.SuspensionReason.FRAUD_RESELL_PASS,
+            users_constants.SuspensionReason.FRAUD_RESELL_PRODUCT,
+            users_constants.SuspensionReason.FRAUD_SUSPICION,
+            users_constants.SuspensionReason.FRAUD_USURPATION,
+            users_constants.SuspensionReason.FRAUD_USURPATION_PRO,
+            users_constants.SuspensionReason.SUSPICIOUS_LOGIN_REPORTED_BY_USER,
+            users_constants.SuspensionReason.SUSPENSION_FOR_INVESTIGATION_TEMP,
+        ],
+    )
+    def test_anonymize_non_pro_non_beneficiary_user_recently_suspended_with_fraud(self, reason) -> None:
+        user_to_anonymize = users_factories.UserFactory(
+            firstName="user_to_anonymize",
+            lastConnectionDate=datetime.datetime.utcnow() - relativedelta(years=3, days=1),
+            isActive=False,
+        )
+        history_factories.SuspendedUserActionHistoryFactory(
+            actionDate=datetime.datetime.utcnow() - relativedelta(years=3, days=1),
+            actionType=history_models.ActionType.USER_SUSPENDED,
+            reason=reason,
+            user=user_to_anonymize,
+        )
+
+        users_api.anonymize_non_pro_non_beneficiary_users(force=True)
+
+        db.session.refresh(user_to_anonymize)
+
+        assert len(sendinblue_testing.sendinblue_requests) == 0
+        assert user_to_anonymize.firstName == "user_to_anonymize"
+
+    def test_anonymize_non_pro_non_beneficiary_user_suspended_5_years_ago_with_fraud(self) -> None:
+        user_to_anonymize = users_factories.UserFactory(
+            firstName="user_to_anonymize",
+            lastConnectionDate=datetime.datetime.utcnow() - relativedelta(years=3, days=1),
+            isActive=False,
+        )
+        history_factories.SuspendedUserActionHistoryFactory(
+            actionDate=datetime.datetime.utcnow() - relativedelta(years=5, days=1),
+            actionType=history_models.ActionType.USER_SUSPENDED,
+            reason=users_constants.SuspensionReason.FRAUD_RESELL_PRODUCT,
+            user=user_to_anonymize,
+        )
+
+        users_api.anonymize_non_pro_non_beneficiary_users(force=True)
+
+        db.session.refresh(user_to_anonymize)
+
+        assert len(sendinblue_testing.sendinblue_requests) == 1
+        assert user_to_anonymize.firstName != "user_to_anonymize"
+
+    def test_anonymize_non_pro_non_beneficiary_user_recently_suspended_without_fraud(self) -> None:
+        user_to_anonymize = users_factories.UserFactory(
+            firstName="user_to_anonymize",
+            lastConnectionDate=datetime.datetime.utcnow() - relativedelta(years=3, days=1),
+            isActive=False,
+        )
+        history_factories.SuspendedUserActionHistoryFactory(
+            actionDate=datetime.datetime.utcnow() - relativedelta(years=3, days=1),
+            actionType=history_models.ActionType.USER_SUSPENDED,
+            reason=users_constants.SuspensionReason.DEVICE_AT_RISK,
+            user=user_to_anonymize,
+        )
+
+        users_api.anonymize_non_pro_non_beneficiary_users(force=True)
+
+        db.session.refresh(user_to_anonymize)
+
+        assert len(sendinblue_testing.sendinblue_requests) == 1
+        assert user_to_anonymize.firstName != "user_to_anonymize"
+
 
 class AnonymizeProUserTest:
     @mock.patch("pcapi.core.users.api.delete_beamer_user")
@@ -2263,6 +2340,156 @@ class AnonymizeBeneficiaryUsersTest(StorageFolderManager):
 
         assert user_to_anonymize.firstName != f"Anonymous_{user_to_anonymize.id}"
         assert users_models.GdprUserAnonymization.query.count() == 1
+
+    @pytest.mark.parametrize(
+        "reason",
+        [
+            users_constants.SuspensionReason.FRAUD_BOOKING_CANCEL,
+            users_constants.SuspensionReason.FRAUD_CREATION_PRO,
+            users_constants.SuspensionReason.FRAUD_DUPLICATE,
+            users_constants.SuspensionReason.FRAUD_FAKE_DOCUMENT,
+            users_constants.SuspensionReason.FRAUD_HACK,
+            users_constants.SuspensionReason.FRAUD_RESELL_PASS,
+            users_constants.SuspensionReason.FRAUD_RESELL_PRODUCT,
+            users_constants.SuspensionReason.FRAUD_SUSPICION,
+            users_constants.SuspensionReason.FRAUD_USURPATION,
+            users_constants.SuspensionReason.FRAUD_USURPATION_PRO,
+            users_constants.SuspensionReason.SUSPICIOUS_LOGIN_REPORTED_BY_USER,
+            users_constants.SuspensionReason.SUSPENSION_FOR_INVESTIGATION_TEMP,
+        ],
+    )
+    def test_do_not_anonymize_user_tagged_when_he_is_21_and_recently_tagged_as_fraud(self, reason) -> None:
+        user_to_anonymize = users_factories.BeneficiaryFactory(
+            lastConnectionDate=datetime.datetime.utcnow(),
+            validatedBirthDate=datetime.datetime.utcnow() - relativedelta(years=21, days=12),
+        )
+        users_factories.GdprUserAnonymizationFactory(user=user_to_anonymize)
+        history_factories.SuspendedUserActionHistoryFactory(
+            actionDate=datetime.datetime.utcnow() - relativedelta(years=3, days=1),
+            actionType=history_models.ActionType.USER_SUSPENDED,
+            reason=reason,
+            user=user_to_anonymize,
+        )
+
+        users_api.anonymize_beneficiary_users(force=True)
+        db.session.refresh(user_to_anonymize)
+
+        assert user_to_anonymize.firstName != f"Anonymous_{user_to_anonymize.id}"
+        assert users_models.GdprUserAnonymization.query.count() == 1
+
+    def test_do_not_anonymize_user_tagged_when_he_is_21_and_tagged_as_fraud_5_years_ago(self) -> None:
+        user_to_anonymize = users_factories.BeneficiaryFactory(
+            lastConnectionDate=datetime.datetime.utcnow(),
+            validatedBirthDate=datetime.datetime.utcnow() - relativedelta(years=21, days=12),
+        )
+        users_factories.GdprUserAnonymizationFactory(user=user_to_anonymize)
+        history_factories.SuspendedUserActionHistoryFactory(
+            actionDate=datetime.datetime.utcnow() - relativedelta(years=5, days=1),
+            actionType=history_models.ActionType.USER_SUSPENDED,
+            reason=users_constants.SuspensionReason.FRAUD_RESELL_PRODUCT,
+            user=user_to_anonymize,
+        )
+
+        users_api.anonymize_beneficiary_users(force=True)
+        db.session.refresh(user_to_anonymize)
+
+        assert user_to_anonymize.firstName == f"Anonymous_{user_to_anonymize.id}"
+        assert users_models.GdprUserAnonymization.query.count() == 0
+
+    @pytest.mark.parametrize(
+        "reason",
+        [
+            users_constants.SuspensionReason.FRAUD_BOOKING_CANCEL,
+            users_constants.SuspensionReason.FRAUD_CREATION_PRO,
+            users_constants.SuspensionReason.FRAUD_DUPLICATE,
+            users_constants.SuspensionReason.FRAUD_FAKE_DOCUMENT,
+            users_constants.SuspensionReason.FRAUD_HACK,
+            users_constants.SuspensionReason.FRAUD_RESELL_PASS,
+            users_constants.SuspensionReason.FRAUD_RESELL_PRODUCT,
+            users_constants.SuspensionReason.FRAUD_SUSPICION,
+            users_constants.SuspensionReason.FRAUD_USURPATION,
+            users_constants.SuspensionReason.FRAUD_USURPATION_PRO,
+            users_constants.SuspensionReason.SUSPICIOUS_LOGIN_REPORTED_BY_USER,
+            users_constants.SuspensionReason.SUSPENSION_FOR_INVESTIGATION_TEMP,
+        ],
+    )
+    def test_anonymize_beneficiary_user_recently_suspended_with_fraud(self, reason) -> None:
+        user_to_anonymize = users_factories.BeneficiaryFactory(
+            firstName="user_to_anonymize",
+            age=18,
+            lastConnectionDate=datetime.datetime.utcnow() - relativedelta(years=3, days=1),
+            deposit__expirationDate=datetime.datetime.utcnow() - relativedelta(years=5, days=1),
+            isActive=False,
+        )
+        history_factories.SuspendedUserActionHistoryFactory(
+            actionDate=datetime.datetime.utcnow() - relativedelta(years=3, days=1),
+            actionType=history_models.ActionType.USER_SUSPENDED,
+            reason=reason,
+            user=user_to_anonymize,
+        )
+
+        users_api.anonymize_beneficiary_users(force=True)
+
+        db.session.refresh(user_to_anonymize)
+
+        assert len(sendinblue_testing.sendinblue_requests) == 0
+        assert user_to_anonymize.firstName == "user_to_anonymize"
+
+    def test_anonymize_beneficiary_user_suspended_5_years_ago_with_fraud(self) -> None:
+        user_to_anonymize = users_factories.BeneficiaryFactory(
+            firstName="user_to_anonymize",
+            age=18,
+            lastConnectionDate=datetime.datetime.utcnow() - relativedelta(years=3, days=1),
+            deposit__expirationDate=datetime.datetime.utcnow() - relativedelta(years=5, days=1),
+            isActive=False,
+        )
+        history_factories.SuspendedUserActionHistoryFactory(
+            actionDate=datetime.datetime.utcnow() - relativedelta(years=5, days=1),
+            actionType=history_models.ActionType.USER_SUSPENDED,
+            reason=users_constants.SuspensionReason.FRAUD_RESELL_PRODUCT,
+            user=user_to_anonymize,
+        )
+
+        users_api.anonymize_beneficiary_users(force=True)
+
+        db.session.refresh(user_to_anonymize)
+
+        assert len(sendinblue_testing.sendinblue_requests) == 1
+        assert user_to_anonymize.firstName != "user_to_anonymize"
+
+    @pytest.mark.parametrize(
+        "reason",
+        [
+            users_constants.SuspensionReason.CLOSED_STRUCTURE_DEFINITIVE,
+            users_constants.SuspensionReason.DELETED,
+            users_constants.SuspensionReason.DEVICE_AT_RISK,
+            users_constants.SuspensionReason.END_OF_CONTRACT,
+            users_constants.SuspensionReason.END_OF_ELIGIBILITY,
+            users_constants.SuspensionReason.UPON_USER_REQUEST,
+            users_constants.SuspensionReason.WAITING_FOR_ANONYMIZATION,
+        ],
+    )
+    def test_anonymize_beneficiary_user_recently_suspended_without_fraud(self, reason) -> None:
+        user_to_anonymize = users_factories.BeneficiaryFactory(
+            firstName="user_to_anonymize",
+            age=18,
+            lastConnectionDate=datetime.datetime.utcnow() - relativedelta(years=3, days=1),
+            deposit__expirationDate=datetime.datetime.utcnow() - relativedelta(years=5, days=1),
+            isActive=False,
+        )
+        history_factories.SuspendedUserActionHistoryFactory(
+            actionDate=datetime.datetime.utcnow() - relativedelta(years=3, days=1),
+            actionType=history_models.ActionType.USER_SUSPENDED,
+            reason=reason,
+            user=user_to_anonymize,
+        )
+
+        users_api.anonymize_beneficiary_users(force=True)
+
+        db.session.refresh(user_to_anonymize)
+
+        assert len(sendinblue_testing.sendinblue_requests) == 1
+        assert user_to_anonymize.firstName != "user_to_anonymize"
 
 
 class AnonymizeUserDepositsTest:
