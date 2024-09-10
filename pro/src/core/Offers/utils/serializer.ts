@@ -20,6 +20,7 @@ export const serializeApiFilters = (
     'offererId',
     'status',
     'venueId',
+    'offererAddressId',
     'categoryId',
     'creationMode',
     'periodBeginningDate',

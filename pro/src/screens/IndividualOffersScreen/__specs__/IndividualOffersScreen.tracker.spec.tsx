@@ -7,8 +7,8 @@ import { DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
 import { Audience } from 'core/shared/types'
 import {
   defaultGetOffererResponseModel,
-  getOfferManagingOffererFactory,
   getOffererNameFactory,
+  getOfferManagingOffererFactory,
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 import { sharedCurrentUserFactory } from 'utils/storeFactories'
@@ -55,6 +55,7 @@ describe('tracker IndividualOffersScreen', () => {
       audience: Audience.INDIVIDUAL,
       redirectWithUrlFilters: vi.fn(),
       venues: [],
+      offererAddresses: [],
       categories: [],
     }
 

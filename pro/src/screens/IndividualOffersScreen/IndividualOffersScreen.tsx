@@ -60,6 +60,7 @@ export type IndividualOffersScreenProps = {
   ) => void
   urlSearchFilters: SearchFiltersParams
   venues: SelectOption[]
+  offererAddresses: SelectOption[]
   categories?: SelectOption[]
   isRestrictedAsAdmin?: boolean
   offers?: ListOffersOfferResponseModel[]
@@ -74,6 +75,7 @@ export const IndividualOffersScreen = ({
   redirectWithUrlFilters,
   urlSearchFilters,
   venues,
+  offererAddresses,
   categories,
   isRestrictedAsAdmin,
   offers = [],
@@ -239,6 +241,7 @@ export const IndividualOffersScreen = ({
         selectedFilters={selectedFilters}
         setSelectedFilters={setSelectedFilters}
         venues={venues}
+        offererAddresses={offererAddresses}
         isRestrictedAsAdmin={isRestrictedAsAdmin}
       />
       {userHasNoOffers ? (

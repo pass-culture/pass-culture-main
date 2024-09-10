@@ -1,5 +1,6 @@
 import {
   type AddressResponseIsEditableModel,
+  GetOffererAddressesResponseModel,
   ListOffersVenueResponseModel,
   VenueListItemResponseModel,
 } from 'apiClient/v1'
@@ -41,5 +42,15 @@ export const formatAndOrderVenues = (venues: VenueListItemResponseModel[]) =>
     .map((venue) => ({
       value: venue.id.toString(),
       label: computeVenueDisplayName(venue),
+    }))
+    .sort(sortAlphabeticallyByLabel)
+
+export const formatAndOrderAddresses = (
+  addresses: GetOffererAddressesResponseModel
+) =>
+  addresses
+    .map((offerAddress) => ({
+      value: offerAddress.id.toString(),
+      label: computeAddressDisplayName(offerAddress),
     }))
     .sort(sortAlphabeticallyByLabel)

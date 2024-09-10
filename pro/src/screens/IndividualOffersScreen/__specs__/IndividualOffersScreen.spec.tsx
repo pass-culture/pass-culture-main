@@ -1,25 +1,30 @@
 import { screen, waitFor, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { expect } from 'vitest'
 
 import { api } from 'apiClient/api'
 import {
+  GetOffererAddressWithIsEditableResponseModel,
   ListOffersOfferResponseModel,
   OfferStatus,
   SharedCurrentUserResponseModel,
   UserRole,
 } from 'apiClient/v1'
 import {
+  ALL_OFFERER_ADDRESS_OPTION,
   ALL_VENUES_OPTION,
   DEFAULT_SEARCH_FILTERS,
 } from 'core/Offers/constants'
 import { SearchFiltersParams } from 'core/Offers/types'
 import * as useNotification from 'hooks/useNotification'
+import { computeAddressDisplayName } from 'repository/venuesService'
 import {
   defaultGetOffererResponseModel,
   getOffererNameFactory,
   getOfferManagingOffererFactory,
   listOffersOfferFactory,
 } from 'utils/individualApiFactories'
+import { offererAddressFactory } from 'utils/offererAddressFactories'
 import {
   renderWithProviders,
   RenderWithProvidersOptions,
@@ -80,6 +85,19 @@ const proVenuesOptions = [
   { value: 'JQ', label: 'Mon offerer - Offre numérique' },
 ]
 
+const offererAddress: GetOffererAddressWithIsEditableResponseModel[] = [
+  offererAddressFactory({
+    label: 'Label',
+  }),
+  offererAddressFactory({
+    city: 'New York',
+  }),
+]
+const offererAddressOptions = [
+  { value: '1', label: 'Label - 1 rue de paris 75001 Paris' },
+  { value: '2', label: '1 rue de paris 75001 New York' },
+]
+
 vi.mock('utils/date', async () => {
   return {
     ...(await vi.importActual('utils/date')),
@@ -121,6 +139,7 @@ describe('IndividualOffersScreen', () => {
       initialSearchFilters: DEFAULT_SEARCH_FILTERS,
       redirectWithUrlFilters: vi.fn(),
       venues: proVenuesOptions,
+      offererAddresses: offererAddressOptions,
       categories: categoriesAndSubcategories.categories.map(
         ({ id, proLabel }) => ({ value: id, label: proLabel })
       ),
@@ -333,6 +352,35 @@ describe('IndividualOffersScreen', () => {
       name: expectedSelectOptions[2].value,
     })
     expect(secondVenueOption).toBeInTheDocument()
+  })
+
+  it('should render offerer address filter with default option selected and given venues as options', () => {
+    const expectedSelectOptions = [
+      {
+        id: [ALL_OFFERER_ADDRESS_OPTION.value],
+        value: ALL_OFFERER_ADDRESS_OPTION.label,
+      },
+      {
+        id: [offererAddress[0].id],
+        value: computeAddressDisplayName(offererAddress[0]),
+      },
+      {
+        id: [offererAddress[1].id],
+        value: computeAddressDisplayName(offererAddress[1]),
+      },
+    ]
+
+    renderOffers(props, {
+      features: ['WIP_ENABLE_OFFER_ADDRESS'],
+    })
+
+    const addressSelect = screen.getByLabelText('Adresse')
+    expect(addressSelect).not.toBeDisabled()
+    expect(
+      screen.getByRole('option', { name: expectedSelectOptions[0].value })
+    ).toBeInTheDocument()
+
+    expect(addressSelect.children.length).toBe(expectedSelectOptions.length)
   })
 
   it('should render venue filter with given venue selected', () => {

@@ -17,6 +17,7 @@ import {
   listOffersOfferFactory,
   venueListItemFactory,
 } from 'utils/individualApiFactories'
+import { offererAddressFactory } from 'utils/offererAddressFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
@@ -111,6 +112,8 @@ describe('route Offers when user is admin', () => {
       undefined,
       undefined,
       undefined,
+      undefined,
+      undefined,
       undefined
     )
   })
@@ -139,6 +142,8 @@ describe('route Offers when user is admin', () => {
         undefined,
         undefined,
         undefined,
+        undefined,
+        undefined,
         undefined
       )
     })
@@ -148,6 +153,9 @@ describe('route Offers when user is admin', () => {
     vi.spyOn(api, 'getOfferer').mockResolvedValue(
       defaultGetOffererResponseModel
     )
+    vi.spyOn(api, 'getOffererAddresses').mockResolvedValue([
+      offererAddressFactory(),
+    ])
     const filters = {
       offererId: defaultGetOffererResponseModel.id.toString(),
       status: OfferStatus.INACTIVE,
@@ -156,7 +164,11 @@ describe('route Offers when user is admin', () => {
 
     await userEvent.click(screen.getByTestId('remove-offerer-filter'))
 
+    expect(api.getOffererAddresses).toHaveBeenCalled()
+
     expect(api.listOffers).toHaveBeenLastCalledWith(
+      undefined,
+      undefined,
       undefined,
       undefined,
       undefined,
@@ -174,6 +186,11 @@ describe('route Offers when user is admin', () => {
     vi.spyOn(api, 'getOfferer').mockResolvedValue(
       defaultGetOffererResponseModel
     )
+    vi.spyOn(api, 'getOffererAddresses').mockResolvedValueOnce([
+      offererAddressFactory({
+        label: 'Label',
+      }),
+    ])
     const filters = {
       venueId: venueId.toString(),
       status: OfferStatus.INACTIVE,
@@ -187,6 +204,8 @@ describe('route Offers when user is admin', () => {
       undefined,
       'INACTIVE',
       venueId.toString(),
+      undefined,
+      undefined,
       undefined,
       undefined,
       undefined,

@@ -2,12 +2,18 @@ import {
   screen,
   waitFor,
   waitForElementToBeRemoved,
+  within,
 } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Route, Routes } from 'react-router-dom'
+import { expect } from 'vitest'
 
 import { api } from 'apiClient/api'
-import { ListOffersOfferResponseModel, OfferStatus } from 'apiClient/v1'
+import {
+  GetOffererAddressWithIsEditableResponseModel,
+  ListOffersOfferResponseModel,
+  OfferStatus,
+} from 'apiClient/v1'
 import {
   ALL_CREATION_MODES,
   ALL_VENUES_OPTION,
@@ -22,6 +28,7 @@ import {
   listOffersOfferFactory,
   venueListItemFactory,
 } from 'utils/individualApiFactories'
+import { offererAddressFactory } from 'utils/offererAddressFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
@@ -52,12 +59,21 @@ const proVenues = [
   }),
 ]
 
+const offererAddress: GetOffererAddressWithIsEditableResponseModel[] = [
+  offererAddressFactory({
+    label: 'Label',
+  }),
+  offererAddressFactory({
+    city: 'New York',
+  }),
+]
 const renderOffers = async (
   filters: Partial<SearchFiltersParams> & {
     page?: number
     audience?: Audience
   } = DEFAULT_SEARCH_FILTERS,
-  features: string[] = []
+  features: string[] = [],
+  storeOverrides = {}
 ) => {
   const route = computeIndividualOffersUrl(filters)
 
@@ -73,6 +89,7 @@ const renderOffers = async (
       user: sharedCurrentUserFactory(),
       initialRouterEntries: [route],
       features,
+      storeOverrides,
     }
   )
 
@@ -123,6 +140,8 @@ describe('route Offers', () => {
             undefined,
             undefined,
             'EXPIRED',
+            undefined,
+            undefined,
             undefined,
             undefined,
             undefined,
@@ -185,6 +204,8 @@ describe('route Offers', () => {
             undefined,
             undefined,
             undefined,
+            undefined,
+            undefined,
             undefined
           )
         })
@@ -206,6 +227,8 @@ describe('route Offers', () => {
             undefined,
             undefined,
             proVenues[0].id.toString(),
+            undefined,
+            undefined,
             undefined,
             undefined,
             undefined,
@@ -231,6 +254,8 @@ describe('route Offers', () => {
             undefined,
             undefined,
             'CINEMA',
+            undefined,
+            undefined,
             undefined,
             undefined,
             undefined
@@ -260,6 +285,8 @@ describe('route Offers', () => {
             undefined,
             'imported',
             undefined,
+            undefined,
+            undefined,
             undefined
           )
         })
@@ -284,6 +311,8 @@ describe('route Offers', () => {
             undefined,
             undefined,
             '2020-12-25',
+            undefined,
+            undefined,
             undefined
           )
         })
@@ -307,7 +336,9 @@ describe('route Offers', () => {
             undefined,
             undefined,
             undefined,
-            '2020-12-27'
+            '2020-12-27',
+            undefined,
+            undefined
           )
         })
       })
@@ -346,6 +377,8 @@ describe('route Offers', () => {
           undefined,
           undefined,
           undefined,
+          undefined,
+          undefined,
           undefined
         )
       })
@@ -360,6 +393,8 @@ describe('route Offers', () => {
       await userEvent.click(screen.getByText('Rechercher'))
       await waitFor(() => {
         expect(api.listOffers).toHaveBeenCalledWith(
+          undefined,
+          undefined,
           undefined,
           undefined,
           undefined,
@@ -388,6 +423,8 @@ describe('route Offers', () => {
           undefined,
           undefined,
           proVenues[0].id.toString(),
+          undefined,
+          undefined,
           undefined,
           undefined,
           undefined,
@@ -426,6 +463,8 @@ describe('route Offers', () => {
           'test_id_1',
           undefined,
           undefined,
+          undefined,
+          undefined,
           undefined
         )
       })
@@ -456,6 +495,8 @@ describe('route Offers', () => {
           undefined,
           undefined,
           undefined,
+          undefined,
+          undefined,
           undefined
         )
       })
@@ -477,6 +518,8 @@ describe('route Offers', () => {
       await userEvent.click(screen.getByRole('button', { name: 'Rechercher' }))
       await waitFor(() => {
         expect(api.listOffers).toHaveBeenCalledWith(
+          undefined,
+          undefined,
           undefined,
           undefined,
           undefined,
@@ -512,6 +555,11 @@ describe('route Offers', () => {
         name: 'La structure',
         id,
       })
+      vi.spyOn(api, 'getOffererAddresses').mockResolvedValueOnce([
+        offererAddressFactory({
+          label: 'Label',
+        }),
+      ])
       const filters = { offererId: id.toString() }
       await renderOffers(filters)
 
@@ -537,6 +585,8 @@ describe('route Offers', () => {
           undefined,
           undefined,
           'manual',
+          undefined,
+          undefined,
           undefined,
           undefined
         )
@@ -565,6 +615,8 @@ describe('route Offers', () => {
         undefined,
         undefined,
         'manual',
+        undefined,
+        undefined,
         undefined,
         undefined
       )
@@ -679,6 +731,8 @@ describe('route Offers', () => {
           undefined,
           undefined,
           undefined,
+          undefined,
+          undefined,
           undefined
         )
       })
@@ -692,6 +746,8 @@ describe('route Offers', () => {
       })
       expect(api.listOffers).toHaveBeenNthCalledWith(
         3,
+        undefined,
+        undefined,
         undefined,
         undefined,
         undefined,
@@ -735,6 +791,8 @@ describe('route Offers', () => {
         undefined,
         undefined,
         undefined,
+        undefined,
+        undefined,
         undefined
       )
 
@@ -745,6 +803,8 @@ describe('route Offers', () => {
       })
       expect(api.listOffers).toHaveBeenNthCalledWith(
         3,
+        undefined,
+        undefined,
         undefined,
         undefined,
         undefined,
@@ -792,6 +852,54 @@ describe('route Offers', () => {
       expect(
         screen.queryByRole('columnheader', { name: 'Adresse' })
       ).toBeInTheDocument()
+    })
+
+    it('should have offerer address value when user filters by address', async () => {
+      vi.spyOn(api, 'getOffererAddresses').mockResolvedValueOnce(offererAddress)
+      vi.spyOn(api, 'getOfferer').mockResolvedValueOnce(
+        defaultGetOffererResponseModel
+      )
+      await renderOffers(DEFAULT_SEARCH_FILTERS, ['WIP_ENABLE_OFFER_ADDRESS'], {
+        user: {
+          selectedOffererId: defaultGetOffererResponseModel.id,
+          currentUser: sharedCurrentUserFactory({
+            navState: {
+              newNavDate: '2021-01-01',
+            },
+          }),
+        },
+      })
+      const offererAddressOption = screen.getByLabelText('Adresse')
+
+      await waitFor(() => {
+        expect(within(offererAddressOption).getAllByRole('option').length).toBe(
+          3
+        )
+      })
+
+      const firstOffererAddressOption =
+        within(offererAddressOption).getAllByRole('option')[1]
+
+      await userEvent.selectOptions(
+        offererAddressOption,
+        firstOffererAddressOption
+      )
+      await userEvent.click(screen.getByText('Rechercher'))
+
+      await waitFor(() => {
+        expect(api.listOffers).toHaveBeenCalledWith(
+          undefined,
+          defaultGetOffererResponseModel.id.toString(),
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          offererAddress[1].id.toString()
+        )
+      })
     })
   })
 })
