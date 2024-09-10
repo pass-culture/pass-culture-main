@@ -811,7 +811,8 @@ describe('screens:IndividualOffer::Informations', () => {
     props.venues = [venueListItemFactory({ id: 189 })]
 
     renderDetailsScreen(props, contextValue, {
-      features: ['WIP_SUGGESTED_SUBCATEGORIES'],
+      // There is no world where WIP_SUGGESTED_SUBCATEGORIES is enabled without WIP_SPLIT_OFFER
+      features: ['WIP_SPLIT_OFFER', 'WIP_SUGGESTED_SUBCATEGORIES'],
     })
 
     expect(screen.queryByText(/Lieu/)).not.toBeInTheDocument()

@@ -132,8 +132,10 @@ export const DetailsForm = ({
     subcategoryId === SubcategoryIdEnum.SUPPORT_PHYSIQUE_MUSIQUE_CD ||
     subcategoryId === SubcategoryIdEnum.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE
 
+  // Show the field if more than 1 venue (whatever the FF),
+  // otherwise if there is only 1 venue, we want to show only if both offerAddress and splitOfferEnabled are enabled
   const SHOW_VENUE_SELECTION_FIELD =
-    !areSuggestedSubcategoriesUsed || venueOptions.length > 1
+    venueOptions.length > 1 || (!offerAddressEnabled && !splitOfferEnabled)
 
   const selectedOffererId = useSelector(selectCurrentOffererId)
 
