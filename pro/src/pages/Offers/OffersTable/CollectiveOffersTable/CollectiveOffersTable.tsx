@@ -23,7 +23,6 @@ type CollectiveOffersTableProps = {
   areAllOffersSelected: boolean
   hasOffers: boolean
   isLoading: boolean
-  offersCount: number
   pageCount: number
   resetFilters: () => void
   setSelectedOffer: (offer: CollectiveOfferResponseModel) => void
@@ -32,7 +31,7 @@ type CollectiveOffersTableProps = {
   isAtLeastOneOfferChecked: boolean
   isRestrictedAsAdmin?: boolean
   selectedOffers: CollectiveOfferResponseModel[]
-  offers: CollectiveOfferResponseModel[] | undefined
+  offers: CollectiveOfferResponseModel[]
 }
 
 export enum CollectiveOffersSortingColumn {
@@ -89,7 +88,6 @@ export const CollectiveOffersTable = ({
   areAllOffersSelected,
   hasOffers,
   isLoading,
-  offersCount,
   pageCount,
   resetFilters,
   selectedOffers,
@@ -117,24 +115,26 @@ export const CollectiveOffersTable = ({
   )
 
   return (
-    <div aria-busy={isLoading} aria-live="polite">
+    <div>
+      <div role="status">
+        {offers.length > MAX_OFFERS_TO_DISPLAY && (
+          <Banner type="notification-info">
+            L’affichage est limité à 500 offres. Modifiez les filtres pour
+            affiner votre recherche.
+          </Banner>
+        )}
+        {hasOffers ? (
+          `${getOffersCountToDisplay(offers.length)} ${
+            offers.length <= 1 ? 'offre' : 'offres'
+          }`
+        ) : (
+          <span className="visually-hidden">aucune offre trouvée</span>
+        )}
+      </div>
       {isLoading ? (
         <Spinner className={styles['loading-spinner']} />
       ) : (
         <>
-          {offersCount > MAX_OFFERS_TO_DISPLAY && (
-            <Banner type="notification-info">
-              L’affichage est limité à 500 offres. Modifiez les filtres pour
-              affiner votre recherche.
-            </Banner>
-          )}
-          {hasOffers && (
-            <div>
-              {`${getOffersCountToDisplay(offersCount)} ${
-                offersCount <= 1 ? 'offre' : 'offres'
-              }`}
-            </div>
-          )}
           {hasOffers && (
             <>
               <div className={styles['select-all-container']}>

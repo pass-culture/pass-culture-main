@@ -185,7 +185,6 @@ export const CollectiveOffersScreen = ({
             areAllOffersSelected={areAllOffersSelected}
             hasOffers={hasOffers}
             isLoading={isLoading}
-            offersCount={offers.length}
             pageCount={pageCount}
             resetFilters={resetFilters}
             selectedOffers={selectedOffers}

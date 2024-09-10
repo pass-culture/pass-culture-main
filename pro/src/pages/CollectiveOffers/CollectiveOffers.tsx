@@ -26,7 +26,6 @@ import { useIsNewInterfaceActive } from 'hooks/useIsNewInterfaceActive'
 import { formatAndOrderVenues } from 'repository/venuesService'
 import { CollectiveOffersScreen } from 'screens/CollectiveOffersScreen/CollectiveOffersScreen'
 import { selectCurrentOffererId } from 'store/user/selectors'
-import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 export const CollectiveOffers = (): JSX.Element => {
   const urlSearchFilters = useQueryCollectiveSearchFilters()
@@ -142,22 +141,18 @@ export const CollectiveOffers = (): JSX.Element => {
 
   return (
     <AppLayout>
-      {offersQuery.isLoading ? (
-        <Spinner />
-      ) : (
-        <CollectiveOffersScreen
-          currentPageNumber={currentPageNumber}
-          currentUser={currentUser}
-          initialSearchFilters={apiFilters}
-          isLoading={offersQuery.isLoading}
-          offerer={offerer}
-          offers={displayedOffers}
-          redirectWithUrlFilters={redirectWithUrlFilters}
-          urlSearchFilters={urlSearchFilters}
-          venues={venues}
-          isRestrictedAsAdmin={isRestrictedAsAdmin}
-        />
-      )}
+      <CollectiveOffersScreen
+        currentPageNumber={currentPageNumber}
+        currentUser={currentUser}
+        initialSearchFilters={apiFilters}
+        isLoading={offersQuery.isLoading}
+        offerer={offerer}
+        offers={displayedOffers}
+        redirectWithUrlFilters={redirectWithUrlFilters}
+        urlSearchFilters={urlSearchFilters}
+        venues={venues}
+        isRestrictedAsAdmin={isRestrictedAsAdmin}
+      />
     </AppLayout>
   )
 }
