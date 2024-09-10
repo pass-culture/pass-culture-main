@@ -119,12 +119,10 @@ describe('route CollectiveOffers when user is admin', () => {
     vi.spyOn(api, 'getOfferer').mockResolvedValue(offerer)
 
     await renderOffers(filters)
-    await waitFor(async () => {
-      await userEvent.selectOptions(
-        screen.getByDisplayValue(venueName),
-        ALL_VENUES
-      )
-    })
+    await userEvent.selectOptions(
+      await screen.findByDisplayValue(venueName),
+      ALL_VENUES
+    )
 
     await userEvent.click(screen.getByText('Rechercher'))
 

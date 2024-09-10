@@ -1,7 +1,12 @@
 import { CollectiveOfferResponseModel } from 'apiClient/v1'
-import { MAX_OFFERS_TO_DISPLAY } from 'core/Offers/constants'
+import {
+  DEFAULT_COLLECTIVE_BOOKABLE_SEARCH_FILTERS,
+  DEFAULT_COLLECTIVE_SEARCH_FILTERS,
+  MAX_OFFERS_TO_DISPLAY,
+} from 'core/Offers/constants'
 import { CollectiveSearchFiltersParams } from 'core/Offers/types'
 import { hasCollectiveSearchFilters } from 'core/Offers/utils/hasSearchFilters'
+import { useActiveFeature } from 'hooks/useActiveFeature'
 import { SortingMode, useColumnSorting } from 'hooks/useColumnSorting'
 import { usePagination } from 'hooks/usePagination'
 import { getOffersCountToDisplay } from 'pages/Offers/domain/getOffersCountToDisplay'
@@ -101,6 +106,13 @@ export const CollectiveOffersTable = ({
 }: CollectiveOffersTableProps) => {
   const { currentSortingColumn, currentSortingMode, onColumnHeaderClick } =
     useColumnSorting<CollectiveOffersSortingColumn>()
+  const isNewOffersAndBookingsActive = useActiveFeature(
+    'WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE'
+  )
+
+  const defaultCollectiveFilters = isNewOffersAndBookingsActive
+    ? DEFAULT_COLLECTIVE_BOOKABLE_SEARCH_FILTERS
+    : DEFAULT_COLLECTIVE_SEARCH_FILTERS
 
   const sortedOffers = sortOffers(
     offers,
@@ -190,9 +202,11 @@ export const CollectiveOffersTable = ({
               />
             </div>
           )}
-          {!hasOffers && hasCollectiveSearchFilters(urlSearchFilters) && (
-            <NoResults resetFilters={resetFilters} />
-          )}
+          {!hasOffers &&
+            hasCollectiveSearchFilters(
+              urlSearchFilters,
+              defaultCollectiveFilters
+            ) && <NoResults resetFilters={resetFilters} />}
         </>
       )}
     </div>

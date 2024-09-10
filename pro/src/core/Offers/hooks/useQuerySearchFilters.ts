@@ -42,30 +42,31 @@ export const useQuerySearchFilters = (): SearchFiltersParams => {
   return urlSearchFilters
 }
 
-export const useQueryCollectiveSearchFilters =
-  (): CollectiveSearchFiltersParams => {
-    const { search } = useLocation()
+export const useQueryCollectiveSearchFilters = (
+  defaultCollectiveSearchFilters: CollectiveSearchFiltersParams = DEFAULT_COLLECTIVE_SEARCH_FILTERS
+): CollectiveSearchFiltersParams => {
+  const { search } = useLocation()
 
-    const urlParams = new URLSearchParams(search)
-    const queryParams = parseUrlParams(urlParams)
+  const urlParams = new URLSearchParams(search)
+  const queryParams = parseUrlParams(urlParams)
 
-    const translatedQuery = translateQueryParamsToApiParams(
-      {
-        ...queryParams,
-      },
-      Audience.COLLECTIVE
-    )
+  const translatedQuery = translateQueryParamsToApiParams(
+    {
+      ...queryParams,
+    },
+    Audience.COLLECTIVE
+  )
 
-    const urlFilters = {
-      ...DEFAULT_COLLECTIVE_SEARCH_FILTERS,
-      ...translatedQuery,
-    }
-
-    // Convert page type to number
-    urlFilters.page =
-      typeof urlFilters.page === 'string'
-        ? parseInt(urlFilters.page)
-        : urlFilters.page
-
-    return urlFilters
+  const urlFilters = {
+    ...defaultCollectiveSearchFilters,
+    ...translatedQuery,
   }
+
+  // Convert page type to number
+  urlFilters.page =
+    typeof urlFilters.page === 'string'
+      ? parseInt(urlFilters.page)
+      : urlFilters.page
+
+  return urlFilters
+}
