@@ -1,9 +1,11 @@
 import { addressResponseIsEditableModelFactory } from 'utils/commonOffersApiFactories'
 import { venueListItemFactory } from 'utils/individualApiFactories'
+import { offererAddressFactory } from 'utils/offererAddressFactories'
 
 import {
   computeAddressDisplayName,
   computeVenueDisplayName,
+  formatAndOrderAddresses,
   formatAndOrderVenues,
 } from '../venuesService'
 
@@ -39,24 +41,30 @@ describe('formatAndOrderVenues', () => {
     ])
   })
 
-  it('should format venue option with "offerer name - offre numérique" when venue is virtual', () => {
-    const venues = [
-      venueListItemFactory({
-        id: 1,
-        name: 'Offre numérique',
-        offererName: 'gilbert Joseph',
-        isVirtual: true,
-      }),
-    ]
+  describe('formatAndOrderAddresses', () => {
+    it('should sort offerer addresses alphabetically', () => {
+      const offererAddress = [
+        offererAddressFactory({
+          label: 'Adresse',
+        }),
+        offererAddressFactory({
+          street: '2 rue de Montreuil',
+        }),
+      ]
 
-    const formattedValues = formatAndOrderVenues(venues)
+      const sortingValues = formatAndOrderAddresses(offererAddress)
 
-    expect(formattedValues).toStrictEqual([
-      {
-        label: 'gilbert Joseph - Offre numérique',
-        value: venues[0].id.toString(),
-      },
-    ])
+      expect(sortingValues).toStrictEqual([
+        {
+          label: '2 rue de Montreuil 75001 Paris',
+          value: offererAddress[1].id.toString(),
+        },
+        {
+          label: 'Adresse - 1 Rue de paris 75001 Paris',
+          value: offererAddress[0].id.toString(),
+        },
+      ])
+    })
   })
 })
 

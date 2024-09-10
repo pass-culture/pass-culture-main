@@ -6,6 +6,7 @@ import { api } from 'apiClient/api'
 import { AppLayout } from 'app/AppLayout'
 import {
   GET_CATEGORIES_QUERY_KEY,
+  GET_OFFERER_ADDRESS_QUERY_KEY,
   GET_OFFERER_QUERY_KEY,
   GET_VENUES_QUERY_KEY,
 } from 'config/swrQueryKeys'
@@ -22,7 +23,10 @@ import { serializeApiFilters } from 'core/Offers/utils/serializer'
 import { Audience } from 'core/shared/types'
 import { useCurrentUser } from 'hooks/useCurrentUser'
 import { useIsNewInterfaceActive } from 'hooks/useIsNewInterfaceActive'
-import { formatAndOrderVenues } from 'repository/venuesService'
+import {
+  formatAndOrderAddresses,
+  formatAndOrderVenues,
+} from 'repository/venuesService'
 import { IndividualOffersScreen } from 'screens/IndividualOffersScreen/IndividualOffersScreen'
 import { selectCurrentOffererId } from 'store/user/selectors'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
@@ -81,6 +85,14 @@ export const OffersRoute = (): JSX.Element => {
   )
   const venues = formatAndOrderVenues(data.venues)
 
+  const offererAddressQuery = useSWR(
+    [GET_OFFERER_ADDRESS_QUERY_KEY, offerer?.id],
+    ([, offererIdParam]) =>
+      offererIdParam ? api.getOffererAddresses(offererIdParam, false) : [],
+    { fallbackData: [] }
+  )
+  const offererAddresses = formatAndOrderAddresses(offererAddressQuery.data)
+
   const isFilterByVenueOrOfferer = hasSearchFilters(urlSearchFilters, [
     'venueId',
     'offererId',
@@ -117,6 +129,8 @@ export const OffersRoute = (): JSX.Element => {
       creationMode,
       periodBeginningDate,
       periodEndingDate,
+      offererAddressId,
+      collectiveOfferType,
     } = serializeApiFilters(apiFilters)
 
     return api.listOffers(
@@ -127,7 +141,9 @@ export const OffersRoute = (): JSX.Element => {
       categoryId,
       creationMode,
       periodBeginningDate,
-      periodEndingDate
+      periodEndingDate,
+      collectiveOfferType,
+      offererAddressId
     )
   })
 
@@ -149,6 +165,7 @@ export const OffersRoute = (): JSX.Element => {
           redirectWithUrlFilters={redirectWithUrlFilters}
           urlSearchFilters={urlSearchFilters}
           venues={venues}
+          offererAddresses={offererAddresses}
           isRestrictedAsAdmin={isRestrictedAsAdmin}
         />
       )}

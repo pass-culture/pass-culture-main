@@ -58,6 +58,7 @@ export const OFFER_STATUS_DRAFT = OfferStatus.DRAFT
 
 const ALL_OFFERS = ''
 export const ALL_VENUES = 'all'
+const ALL_OFFERER_ADDRESSES = 'all'
 const ALL_CATEGORIES = 'all'
 export const ALL_FORMATS = 'all'
 export const ALL_STATUS = 'all'
@@ -80,7 +81,7 @@ export const DEFAULT_SEARCH_FILTERS: SearchFiltersParams = {
   periodBeginningDate: ALL_EVENT_PERIODS,
   periodEndingDate: ALL_EVENT_PERIODS,
   page: DEFAULT_PAGE,
-  offererAddressId: 'all',
+  offererAddressId: ALL_OFFERER_ADDRESSES,
 }
 
 export const DEFAULT_COLLECTIVE_SEARCH_FILTERS: CollectiveSearchFiltersParams =
@@ -99,6 +100,11 @@ export const DEFAULT_COLLECTIVE_SEARCH_FILTERS: CollectiveSearchFiltersParams =
 export const ALL_VENUES_OPTION: SelectOption = {
   label: 'Tous les lieux',
   value: ALL_VENUES,
+}
+
+export const ALL_OFFERER_ADDRESS_OPTION: SelectOption = {
+  label: 'Toutes les adresses',
+  value: ALL_OFFERER_ADDRESSES,
 }
 
 export const ALL_CATEGORIES_OPTION: SelectOption = {
