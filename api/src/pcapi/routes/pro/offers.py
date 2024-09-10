@@ -4,6 +4,8 @@ from flask import request
 from flask_login import current_user
 from flask_login import login_required
 import sqlalchemy as sqla
+from sqlalchemy.orm import joinedload
+from sqlalchemy.orm import load_only
 
 from pcapi import repository
 from pcapi.core.categories import categories
@@ -19,6 +21,7 @@ from pcapi.core.offers import schemas as offers_schemas
 import pcapi.core.offers.api as offers_api
 import pcapi.core.offers.repository as offers_repository
 from pcapi.core.offers.validation import check_for_duplicated_price_categories
+from pcapi.core.offers.validation import check_product_cgu_and_offerer
 from pcapi.models import api_errors
 from pcapi.models import db
 from pcapi.repository import transaction
@@ -612,32 +615,34 @@ def delete_price_category(offer_id: int, price_category_id: int) -> None:
     offers_api.delete_price_category(offer, price_category)
 
 
-@private_api.route("/get_product_by_ean/<string:ean>", methods=["GET"])
+@private_api.route("/get_product_by_ean/<string:ean>/<int:offerer_id>", methods=["GET"])
 @login_required
 @spectree_serialize(
     response_model=offers_serialize.GetProductInformations,
     api=blueprint.pro_private_schema,
 )
-def get_product_by_ean(ean: str) -> offers_serialize.GetProductInformations:
-    import sqlalchemy.orm as sa_orm
-
+def get_product_by_ean(ean: str, offerer_id: int) -> offers_serialize.GetProductInformations:
     product = (
         models.Product.query.filter(models.Product.extraData["ean"].astext == ean)
-        .options(sa_orm.joinedload(models.Product.productMediations))
+        .options(
+            load_only(
+                models.Product.id,
+                models.Product.extraData,
+                models.Product.gcuCompatibilityType,
+                models.Product.name,
+                models.Product.description,
+                models.Product.subcategoryId,
+                models.Product.thumbCount,
+            )
+        )
+        .options(joinedload(models.Product.productMediations))
         .one_or_none()
     )
-    if product is None:
-        raise api_errors.ApiErrors(
-            errors={
-                "ean": ["EAN non reconnu. Assurez-vous qu'il n'y ait pas d'erreur de saisie."],
-            },
-            status_code=422,
-        )
-    if not product.isGcuCompatible:
-        raise api_errors.ApiErrors(
-            errors={
-                "ean": ["EAN invalide. Ce produit n'est pas conforme à nos CGU."],
-            },
-            status_code=422,
-        )
+    offerer = (
+        offerers_models.Offerer.query.filter_by(id=offerer_id)
+        .options(load_only(offerers_models.Offerer.id))
+        .options(joinedload(offerers_models.Offerer.managedVenues).load_only(offerers_models.Venue.id))
+        .one_or_none()
+    )
+    check_product_cgu_and_offerer(product, ean, offerer)
     return offers_serialize.GetProductInformations.from_orm(product=product)

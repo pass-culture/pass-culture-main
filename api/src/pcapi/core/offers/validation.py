@@ -616,6 +616,40 @@ def check_ean_does_not_exist(ean: str | None, venue: offerers_models.Venue) -> N
             raise exceptions.OfferAlreadyExists("ean")
 
 
+def check_product_cgu_and_offerer(
+    product: models.Product | None, ean: str, offerer: offerers_models.Offerer | None
+) -> None:
+    if product is None:
+        raise api_errors.ApiErrors(
+            errors={
+                "ean": ["EAN non reconnu. Assurez-vous qu'il n'y ait pas d'erreur de saisie."],
+            },
+            status_code=422,
+        )
+    if offerer is None:
+        raise api_errors.ApiErrors(
+            errors={
+                "ean": ["Structure non reconnue."],
+            },
+            status_code=422,
+        )
+    if len(offerer.managedVenues) == 1:
+        try:
+            check_ean_does_not_exist(ean, offerer.managedVenues[0])
+        except exceptions.OfferAlreadyExists:
+            raise api_errors.ApiErrors(
+                errors={"ean": ["Une offre avec cet EAN existe déjà. Vous pouvez la retrouver dans l'onglet Offres."]},
+                status_code=422,
+            )
+    if not product.isGcuCompatible:
+        raise api_errors.ApiErrors(
+            errors={
+                "ean": ["EAN invalide. Ce produit n'est pas conforme à nos CGU."],
+            },
+            status_code=422,
+        )
+
+
 def _check_value_is_allowed(
     extra_data: models.OfferExtraData, extra_data_field: ExtraDataFieldEnum, allowed_values: dict
 ) -> None:

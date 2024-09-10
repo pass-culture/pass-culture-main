@@ -1196,17 +1196,20 @@ export class DefaultService {
   /**
    * get_product_by_ean <GET>
    * @param ean
+   * @param offererId
    * @returns GetProductInformations OK
    * @throws ApiError
    */
   public getProductByEan(
     ean: string,
+    offererId: number,
   ): CancelablePromise<GetProductInformations> {
     return this.httpRequest.request({
       method: 'GET',
-      url: '/get_product_by_ean/{ean}',
+      url: '/get_product_by_ean/{ean}/{offerer_id}',
       path: {
         'ean': ean,
+        'offerer_id': offererId,
       },
       errors: {
         403: `Forbidden`,
