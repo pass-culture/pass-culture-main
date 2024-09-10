@@ -111,6 +111,11 @@ export const useRemoteConfigParams = () => {
 
     return () => clearInterval(intervalId)
   }, [])
+
+  if (firebaseRemoteConfig) {
+    return getRemoteConfigParams()
+  }
+
   return remoteConfigParams
 }
 
