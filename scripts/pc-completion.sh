@@ -19,7 +19,7 @@ _pc_completions()
     opts="-h -e -b -f -t"
     
     # List of available commands
-    commands="access-db-logs alembic bash diff-schema dump-db install install-hooks logs pgcli psql psql-file psql-test python rebuild-backend reset-all-db reset-db-no-docker reset-db-test-no-docker reset-all-storage restart-backend restart-api-no-docker restore-db restore-db-intact set-git-config setup-no-docker start-backend start-api-no-docker start-backoffice-no-docker start-pro symlink test-backend test-backoffice"
+    commands="access-db-logs alembic bash diff-schema dump-db install install-hooks logs pgcli psql psql-file psql-test python rebuild-backend reset-all-db reset-db-no-docker reset-db-test-no-docker reset-all-storage restart-backend restart-proxy-backend restart-api-no-docker restore-db restore-db-intact set-git-config setup-no-docker start-backend start-proxy-backend start-api-no-docker start-backoffice-no-docker start-pro symlink test-backend test-backoffice up-backend"
 
     # Completion for options
     if [[ ${cur} == -* ]] ; then
@@ -36,4 +36,3 @@ _pc_completions()
     return 0
 }
 complete -F _pc_completions pc
-
