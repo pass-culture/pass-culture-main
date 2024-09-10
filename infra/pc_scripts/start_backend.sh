@@ -31,3 +31,7 @@ function rebuild_backend {
     sudo rm -rf $ROOT_PATH/api/static/object_store_data;
     docker-compose -f "$ROOT_PATH"/docker-compose-backend.yml down --volumes'
 }
+
+function up_backend {
+    RUN='docker-compose -f "$ROOT_PATH"/docker-compose-backend.yml up'
+}

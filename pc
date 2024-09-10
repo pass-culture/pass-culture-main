@@ -36,18 +36,21 @@ Commands:
   reset-db-test-no-docker  Clear test data in the local database (without docker)
   reset-all-storage     Delete all local images
   restart-backend       Restart API after removing the database and files
+  restart-proxy-backend Restart API after removing the database and files (to call when using a proxy)
   restart-api-no-docker Restart API after cleaning the database (without docker)
   restore-db            Restore a postgresql database from file (and anonymize data)
   restore-db-intact     Restore a postgresql database from file (non anonymized)
   set-git-config        Define a local Git configuration
   setup-no-docker       Create the setup to use no-docker pc commands
   start-backend         Start API and backoffice on localhost
+  start-proxy-backend   Start API and backoffice on localhost (to call when using a proxy)
   start-api-no-docker   Start API without docker
-  start-backoffice-no-docker  Start Backoffice withtout docker
+  start-backoffice-no-docker  Start Backoffice without docker
   start-pro             Start PC pro frontend on localhost
   symlink               Create symlink to use \"pc\" command (admin rights may be needed)
   test-backend          Run tests for the API
   test-backoffice       Run tests for the Backoffice
+  up-backend            Start API and backoffice on localhost (does not build the images)
   "
   exit 0
 fi
@@ -208,7 +211,7 @@ elif [[ "$CMD" == "restore-db" ]]; then
     ./api/scalingo/anonymize_database.sh -p Password_ ;
     rm $backup_file'
 
-# Start API server with database and nginx server
+# Start API server with database and nginx server (builds the images first)
 elif [[ "$CMD" == "start-backend" ]]; then
   source "$INFRA_SCRIPTS_PATH"/start_backend.sh
   start_backend
@@ -216,6 +219,11 @@ elif [[ "$CMD" == "start-backend" ]]; then
 elif [[ "$CMD" == "start-proxy-backend" ]]; then
   source "$INFRA_SCRIPTS_PATH"/start_backend.sh
   start_proxy_backend
+
+# Start API server with database and nginx server (without building the images)
+elif [[ "$CMD" == "up-backend" ]]; then
+  source "$INFRA_SCRIPTS_PATH"/start_backend.sh
+  up_backend
 
 # Commands to start API & Backoffice without docker
 elif [[ "$CMD" == "setup-no-docker" ]]; then
