@@ -164,7 +164,22 @@ def _pre_anonymize_user(user: users_models.User, author: users_models.User) -> N
         mark_transaction_as_invalid()
         flash("L'utilisateur est déjà en attente pour être anonymisé le jour de ses 21 ans", "warning")
     else:
+        users_api.suspend_account(
+            user=user,
+            reason=users_constants.SuspensionReason.WAITING_FOR_ANONYMIZATION,
+            actor=author,
+            comment="L'utilisateur sera anonymisé le jour de ses 21 ans",
+            is_backoffice_action=True,
+        )
+        db.session.add(users_models.GdprUserAnonymization(user=user))
+        db.session.flush()
         flash("L'utilisateur a été suspendu et sera anonymisé le jour de ses 21 ans", "success")
+
+
+def _has_user_pending_anonymization(user_id: int) -> bool:
+    return db.session.query(
+        users_models.GdprUserAnonymization.query.filter(users_models.GdprUserAnonymization.userId == user_id).exists()
+    ).scalar()
 
 
 @public_accounts_blueprint.route("/search", methods=["GET"])
