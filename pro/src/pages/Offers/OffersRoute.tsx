@@ -151,7 +151,7 @@ export const OffersRoute = (): JSX.Element => {
 
   return (
     <AppLayout>
-      {offersQuery.isLoading || offererQuery.isLoading ? (
+      {offererQuery.isLoading ? (
         <Spinner />
       ) : (
         <IndividualOffersScreen

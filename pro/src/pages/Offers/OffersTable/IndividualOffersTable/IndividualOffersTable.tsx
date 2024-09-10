@@ -64,24 +64,26 @@ export const IndividualOffersTable = ({
     )
 
   return (
-    <div aria-busy={isLoading} aria-live="polite">
+    <div>
+      <div role="status">
+        {offersCount > MAX_OFFERS_TO_DISPLAY && (
+          <Banner type="notification-info">
+            L’affichage est limité à 500 offres. Modifiez les filtres pour
+            affiner votre recherche.
+          </Banner>
+        )}
+        {hasOffers && (
+          <div>
+            {`${getOffersCountToDisplay(offersCount)} ${
+              offersCount <= 1 ? 'offre' : 'offres'
+            }`}
+          </div>
+        )}
+      </div>
       {isLoading ? (
         <Spinner className={styles['loading-spinner']} />
       ) : (
         <>
-          {offersCount > MAX_OFFERS_TO_DISPLAY && (
-            <Banner type="notification-info">
-              L’affichage est limité à 500 offres. Modifiez les filtres pour
-              affiner votre recherche.
-            </Banner>
-          )}
-          {hasOffers && (
-            <div>
-              {`${getOffersCountToDisplay(offersCount)} ${
-                offersCount <= 1 ? 'offre' : 'offres'
-              }`}
-            </div>
-          )}
           {hasOffers && (
             <>
               <div className={styles['select-all-container']}>
