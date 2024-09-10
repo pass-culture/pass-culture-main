@@ -107,20 +107,31 @@ describe('route CollectiveOffers when user is admin', () => {
     const filters = {
       venueId: venueId.toString(),
       status: [CollectiveOfferDisplayedStatus.INACTIVE],
-      offererId: 'EF',
+      offererId: '1',
     }
+
+    const offerer = {
+      ...defaultGetOffererResponseModel,
+      managedVenues: [],
+      name: 'La structure',
+    }
+
+    vi.spyOn(api, 'getOfferer').mockResolvedValue(offerer)
+
     await renderOffers(filters)
-    await userEvent.selectOptions(
-      screen.getByDisplayValue(venueName),
-      ALL_VENUES
-    )
+    await waitFor(async () => {
+      await userEvent.selectOptions(
+        screen.getByDisplayValue(venueName),
+        ALL_VENUES
+      )
+    })
 
     await userEvent.click(screen.getByText('Rechercher'))
 
     await waitFor(() => {
       expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
         undefined,
-        'EF',
+        '1',
         'INACTIVE',
         undefined,
         undefined,

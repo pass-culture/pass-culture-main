@@ -106,9 +106,12 @@ describe('route CollectiveOffers', () => {
 
       await userEvent.click(nextPageIcon)
 
-      expect(mockNavigate).toHaveBeenCalledWith('/offres/collectives?page=2', {
-        replace: true,
-      })
+      expect(mockNavigate).toHaveBeenCalledWith(
+        '/offres/collectives?page=2&statut=en-attente&statut=refusee&statut=active&statut=inactive&statut=prereservee&statut=reservee&statut=expiree&statut=terminee',
+        {
+          replace: true,
+        }
+      )
     })
 
     it('should have offer name value when name search value is not an empty string', async () => {
@@ -121,7 +124,7 @@ describe('route CollectiveOffers', () => {
       await userEvent.click(screen.getByText('Rechercher'))
 
       expect(mockNavigate).toHaveBeenCalledWith(
-        '/offres/collectives?nom-ou-isbn=AnyWord',
+        '/offres/collectives?nom-ou-isbn=AnyWord&statut=en-attente&statut=refusee&statut=active&statut=inactive&statut=prereservee&statut=reservee&statut=expiree&statut=terminee',
         {
           replace: true,
         }
@@ -136,9 +139,12 @@ describe('route CollectiveOffers', () => {
       )
       await userEvent.click(screen.getByText('Rechercher'))
 
-      expect(mockNavigate).toHaveBeenCalledWith('/offres/collectives', {
-        replace: true,
-      })
+      expect(mockNavigate).toHaveBeenCalledWith(
+        '/offres/collectives?statut=en-attente&statut=refusee&statut=active&statut=inactive&statut=prereservee&statut=reservee&statut=expiree&statut=terminee',
+        {
+          replace: true,
+        }
+      )
     })
 
     it('should have venue value when user filters by venue', async () => {
@@ -152,7 +158,7 @@ describe('route CollectiveOffers', () => {
       await userEvent.click(screen.getByText('Rechercher'))
 
       expect(mockNavigate).toHaveBeenCalledWith(
-        `/offres/collectives?lieu=${proVenues[0].id}`,
+        `/offres/collectives?lieu=1&statut=en-attente&statut=refusee&statut=active&statut=inactive&statut=prereservee&statut=reservee&statut=expiree&statut=terminee`,
         {
           replace: true,
         }
@@ -174,7 +180,7 @@ describe('route CollectiveOffers', () => {
       await userEvent.click(screen.getByText('Rechercher'))
 
       expect(mockNavigate).toHaveBeenCalledWith(
-        '/offres/collectives?format=Concert',
+        '/offres/collectives?format=Concert&statut=en-attente&statut=refusee&statut=active&statut=inactive&statut=prereservee&statut=reservee&statut=expiree&statut=terminee',
         {
           replace: true,
         }
@@ -196,7 +202,7 @@ describe('route CollectiveOffers', () => {
       await userEvent.click(screen.getByRole('button', { name: 'Rechercher' }))
 
       expect(mockNavigate).toHaveBeenCalledWith(
-        '/offres/collectives?statut=reservee',
+        '/offres/collectives?statut=en-attente&statut=refusee&statut=active&statut=inactive&statut=prereservee&statut=expiree&statut=terminee',
         {
           replace: true,
         }
@@ -220,7 +226,7 @@ describe('route CollectiveOffers', () => {
       await userEvent.click(screen.getByRole('button', { name: 'Rechercher' }))
 
       expect(mockNavigate).toHaveBeenCalledWith(
-        '/offres/collectives?statut=reservee&statut=en-attente&statut=archivee',
+        '/offres/collectives?statut=refusee&statut=active&statut=inactive&statut=prereservee&statut=expiree&statut=terminee&statut=archivee',
         {
           replace: true,
         }
@@ -250,9 +256,12 @@ describe('route CollectiveOffers', () => {
 
       await userEvent.click(screen.getByTestId('remove-offerer-filter'))
 
-      expect(mockNavigate).toHaveBeenCalledWith('/offres/collectives', {
-        replace: true,
-      })
+      expect(mockNavigate).toHaveBeenCalledWith(
+        '/offres/collectives?statut=en-attente&statut=refusee&statut=active&statut=inactive&statut=prereservee&statut=reservee&statut=expiree&statut=terminee',
+        {
+          replace: true,
+        }
+      )
     })
   })
 })
