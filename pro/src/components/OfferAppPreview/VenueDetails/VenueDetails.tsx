@@ -1,24 +1,30 @@
-import React from 'react'
-
-import { GetOfferVenueResponseModel } from 'apiClient/v1'
+import {
+  AddressResponseIsEditableModel,
+  GetOfferVenueResponseModel,
+} from 'apiClient/v1'
 
 import style from './VenueDetails.module.scss'
 
 interface VenueDetailsProps {
   venue: GetOfferVenueResponseModel
+  address?: AddressResponseIsEditableModel | null
   withdrawalDetails?: string
 }
 
 export const VenueDetails = ({
   venue,
+  address,
   withdrawalDetails,
 }: VenueDetailsProps): JSX.Element => {
-  const venueName = venue.publicName || venue.name
+  const addressObj = address || venue
+
+  const label = address ? address.label : venue.publicName || venue.name
+
   const venueAddressString = [
-    venueName,
-    venue.street,
-    venue.postalCode,
-    venue.city,
+    label,
+    addressObj.street,
+    addressObj.postalCode,
+    addressObj.city,
   ]
     .filter((str) => Boolean(str))
     .join(' - ')
