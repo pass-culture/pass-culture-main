@@ -63,6 +63,17 @@ class BookingCancellationReasons(enum.Enum):
     BACKOFFICE_OFFER_WITH_WRONG_INFORMATION = "BACKOFFICE_OFFER_WITH_WRONG_INFORMATION"
     OFFERER_CONNECT_AS = "OFFERER_CONNECT_AS"
 
+    @classmethod
+    def is_from_backoffice(cls, reason: "BookingCancellationReasons") -> bool:
+        return reason in (
+            cls.BACKOFFICE,
+            cls.BACKOFFICE_EVENT_CANCELLED,
+            cls.BACKOFFICE_OVERBOOKING,
+            cls.BACKOFFICE_BENEFICIARY_REQUEST,
+            cls.BACKOFFICE_OFFER_MODIFIED,
+            cls.BACKOFFICE_OFFER_WITH_WRONG_INFORMATION,
+        )
+
 
 class BookingStatus(enum.Enum):
     CONFIRMED = "CONFIRMED"
