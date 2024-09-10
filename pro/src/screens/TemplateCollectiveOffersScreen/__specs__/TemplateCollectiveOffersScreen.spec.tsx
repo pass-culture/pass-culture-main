@@ -10,6 +10,7 @@ import {
 import {
   ALL_VENUES_OPTION,
   DEFAULT_COLLECTIVE_SEARCH_FILTERS,
+  DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
 } from 'core/Offers/constants'
 import * as useNotification from 'hooks/useNotification'
 import { collectiveOfferFactory } from 'utils/collectiveApiFactories'
@@ -111,8 +112,8 @@ describe('TemplateCollectiveOffersScreen', () => {
       isLoading: false,
       offerer: { ...defaultGetOffererResponseModel },
       offers: offersRecap,
-      urlSearchFilters: DEFAULT_COLLECTIVE_SEARCH_FILTERS,
-      initialSearchFilters: DEFAULT_COLLECTIVE_SEARCH_FILTERS,
+      urlSearchFilters: DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
+      initialSearchFilters: DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
       redirectWithUrlFilters: vi.fn(),
       venues: proVenuesOptions,
       categories: categoriesAndSubcategories.categories.map(

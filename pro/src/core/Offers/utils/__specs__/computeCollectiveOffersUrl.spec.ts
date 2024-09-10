@@ -1,4 +1,5 @@
 import { CollectiveOfferDisplayedStatus } from 'apiClient/v1'
+import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from 'core/Offers/constants'
 
 import { computeCollectiveOffersUrl } from '../computeCollectiveOffersUrl'
 
@@ -39,7 +40,11 @@ describe('computeCollectiveOffersUrl', () => {
       page: 2,
     }
 
-    const value = computeCollectiveOffersUrl(offersSearchFilters, true)
+    const value = computeCollectiveOffersUrl(
+      offersSearchFilters,
+      DEFAULT_COLLECTIVE_SEARCH_FILTERS,
+      true
+    )
 
     expect(value).toBe(
       '/offres/vitrines?page=2&nom=test&structure=AY&lieu=EQ&categorie=CINEMA&statut=active&creation=manuelle&periode-evenement-debut=2020-11-30T00%3A00%3A00%2B01%3A00&periode-evenement-fin=2021-01-07T23%3A59%3A59%2B01%3A00'

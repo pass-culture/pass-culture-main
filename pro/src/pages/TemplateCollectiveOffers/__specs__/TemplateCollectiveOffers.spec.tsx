@@ -17,6 +17,7 @@ import {
 import {
   ALL_VENUES_OPTION,
   DEFAULT_COLLECTIVE_SEARCH_FILTERS,
+  DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
 } from 'core/Offers/constants'
 import { CollectiveSearchFiltersParams } from 'core/Offers/types'
 import { computeCollectiveOffersUrl } from 'core/Offers/utils/computeCollectiveOffersUrl'
@@ -43,7 +44,7 @@ const proVenues = [
 ]
 
 const renderOffers = async (
-  filters: Partial<CollectiveSearchFiltersParams> = DEFAULT_COLLECTIVE_SEARCH_FILTERS,
+  filters: Partial<CollectiveSearchFiltersParams> = DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
   features: string[] = []
 ) => {
   const route = computeCollectiveOffersUrl(filters)
@@ -96,7 +97,13 @@ describe('route TemplateCollectiveOffers', () => {
           expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
             undefined,
             undefined,
-            CollectiveOfferDisplayedStatus.REJECTED,
+            [
+              CollectiveOfferDisplayedStatus.PENDING,
+              CollectiveOfferDisplayedStatus.REJECTED,
+              CollectiveOfferDisplayedStatus.ACTIVE,
+              CollectiveOfferDisplayedStatus.INACTIVE,
+              CollectiveOfferDisplayedStatus.DRAFT,
+            ],
             undefined,
             undefined,
             undefined,
@@ -130,8 +137,11 @@ describe('route TemplateCollectiveOffers', () => {
             undefined,
             undefined,
             [
+              CollectiveOfferDisplayedStatus.PENDING,
               CollectiveOfferDisplayedStatus.REJECTED,
-              CollectiveOfferDisplayedStatus.ARCHIVED,
+              CollectiveOfferDisplayedStatus.ACTIVE,
+              CollectiveOfferDisplayedStatus.INACTIVE,
+              CollectiveOfferDisplayedStatus.DRAFT,
             ],
             undefined,
             undefined,
@@ -192,7 +202,13 @@ describe('route TemplateCollectiveOffers', () => {
           expect(api.getCollectiveOffers).toHaveBeenCalledWith(
             'Any word',
             undefined,
-            undefined,
+            [
+              CollectiveOfferDisplayedStatus.PENDING,
+              CollectiveOfferDisplayedStatus.REJECTED,
+              CollectiveOfferDisplayedStatus.ACTIVE,
+              CollectiveOfferDisplayedStatus.INACTIVE,
+              CollectiveOfferDisplayedStatus.DRAFT,
+            ],
             undefined,
             undefined,
             undefined,
@@ -217,7 +233,13 @@ describe('route TemplateCollectiveOffers', () => {
           expect(api.getCollectiveOffers).toHaveBeenCalledWith(
             undefined,
             undefined,
-            undefined,
+            [
+              CollectiveOfferDisplayedStatus.PENDING,
+              CollectiveOfferDisplayedStatus.REJECTED,
+              CollectiveOfferDisplayedStatus.ACTIVE,
+              CollectiveOfferDisplayedStatus.INACTIVE,
+              CollectiveOfferDisplayedStatus.DRAFT,
+            ],
             proVenues[0].id.toString(),
             undefined,
             undefined,
@@ -242,7 +264,13 @@ describe('route TemplateCollectiveOffers', () => {
           expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
             undefined,
             undefined,
-            undefined,
+            [
+              CollectiveOfferDisplayedStatus.PENDING,
+              CollectiveOfferDisplayedStatus.REJECTED,
+              CollectiveOfferDisplayedStatus.ACTIVE,
+              CollectiveOfferDisplayedStatus.INACTIVE,
+              CollectiveOfferDisplayedStatus.DRAFT,
+            ],
             undefined,
             undefined,
             undefined,
@@ -266,7 +294,13 @@ describe('route TemplateCollectiveOffers', () => {
           expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
             undefined,
             undefined,
-            undefined,
+            [
+              CollectiveOfferDisplayedStatus.PENDING,
+              CollectiveOfferDisplayedStatus.REJECTED,
+              CollectiveOfferDisplayedStatus.ACTIVE,
+              CollectiveOfferDisplayedStatus.INACTIVE,
+              CollectiveOfferDisplayedStatus.DRAFT,
+            ],
             undefined,
             undefined,
             undefined,
@@ -371,7 +405,13 @@ describe('route TemplateCollectiveOffers', () => {
         1,
         undefined,
         undefined,
-        undefined,
+        [
+          CollectiveOfferDisplayedStatus.PENDING,
+          CollectiveOfferDisplayedStatus.REJECTED,
+          CollectiveOfferDisplayedStatus.ACTIVE,
+          CollectiveOfferDisplayedStatus.INACTIVE,
+          CollectiveOfferDisplayedStatus.DRAFT,
+        ],
         '666',
         undefined,
         undefined,
@@ -389,7 +429,13 @@ describe('route TemplateCollectiveOffers', () => {
         2,
         undefined,
         undefined,
-        undefined,
+        [
+          CollectiveOfferDisplayedStatus.PENDING,
+          CollectiveOfferDisplayedStatus.REJECTED,
+          CollectiveOfferDisplayedStatus.ACTIVE,
+          CollectiveOfferDisplayedStatus.INACTIVE,
+          CollectiveOfferDisplayedStatus.DRAFT,
+        ],
         proVenues[0].id.toString(),
         undefined,
         undefined,
@@ -409,7 +455,13 @@ describe('route TemplateCollectiveOffers', () => {
         3,
         undefined,
         undefined,
-        undefined,
+        [
+          CollectiveOfferDisplayedStatus.PENDING,
+          CollectiveOfferDisplayedStatus.REJECTED,
+          CollectiveOfferDisplayedStatus.ACTIVE,
+          CollectiveOfferDisplayedStatus.INACTIVE,
+          CollectiveOfferDisplayedStatus.DRAFT,
+        ],
         undefined,
         undefined,
         undefined,
@@ -444,7 +496,13 @@ describe('route TemplateCollectiveOffers', () => {
         1,
         undefined,
         undefined,
-        undefined,
+        [
+          CollectiveOfferDisplayedStatus.PENDING,
+          CollectiveOfferDisplayedStatus.REJECTED,
+          CollectiveOfferDisplayedStatus.ACTIVE,
+          CollectiveOfferDisplayedStatus.INACTIVE,
+          CollectiveOfferDisplayedStatus.DRAFT,
+        ],
         '666',
         undefined,
         undefined,
@@ -462,7 +520,13 @@ describe('route TemplateCollectiveOffers', () => {
         2,
         undefined,
         undefined,
-        undefined,
+        [
+          CollectiveOfferDisplayedStatus.PENDING,
+          CollectiveOfferDisplayedStatus.REJECTED,
+          CollectiveOfferDisplayedStatus.ACTIVE,
+          CollectiveOfferDisplayedStatus.INACTIVE,
+          CollectiveOfferDisplayedStatus.DRAFT,
+        ],
         proVenues[0].id.toString(),
         undefined,
         undefined,
@@ -480,7 +544,13 @@ describe('route TemplateCollectiveOffers', () => {
         3,
         undefined,
         undefined,
-        undefined,
+        [
+          CollectiveOfferDisplayedStatus.PENDING,
+          CollectiveOfferDisplayedStatus.REJECTED,
+          CollectiveOfferDisplayedStatus.ACTIVE,
+          CollectiveOfferDisplayedStatus.INACTIVE,
+          CollectiveOfferDisplayedStatus.DRAFT,
+        ],
         undefined,
         undefined,
         undefined,

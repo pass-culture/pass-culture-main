@@ -11,7 +11,7 @@ import {
   CollectiveOfferResponseModel,
   CollectiveOffersStockResponseModel,
 } from 'apiClient/v1'
-import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from 'core/Offers/constants'
+import { DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS } from 'core/Offers/constants'
 import { CollectiveSearchFiltersParams } from 'core/Offers/types'
 import { computeCollectiveOffersUrl } from 'core/Offers/utils/computeCollectiveOffersUrl'
 import { collectiveOfferFactory } from 'utils/collectiveApiFactories'
@@ -30,11 +30,12 @@ vi.mock('react-router-dom', async () => ({
 }))
 
 const renderOffers = async (
-  filters: Partial<CollectiveSearchFiltersParams> = DEFAULT_COLLECTIVE_SEARCH_FILTERS
+  filters: Partial<CollectiveSearchFiltersParams> = DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS
 ) => {
   const shouldComputeTemplateOfferUrl = true
   const route = computeCollectiveOffersUrl(
     filters,
+    DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
     shouldComputeTemplateOfferUrl
   )
   renderWithProviders(
@@ -102,9 +103,12 @@ describe('route TemplateCollectiveOffers', () => {
 
       await userEvent.click(nextPageIcon)
 
-      expect(mockNavigate).toHaveBeenCalledWith('/offres/vitrines?page=2', {
-        replace: true,
-      })
+      expect(mockNavigate).toHaveBeenCalledWith(
+        '/offres/vitrines?page=2&statut=en-attente&statut=refusee&statut=active&statut=inactive&statut=brouillon',
+        {
+          replace: true,
+        }
+      )
     })
 
     it('should have offer name value when name search value is not an empty string', async () => {
@@ -117,7 +121,7 @@ describe('route TemplateCollectiveOffers', () => {
       await userEvent.click(screen.getByText('Rechercher'))
 
       expect(mockNavigate).toHaveBeenCalledWith(
-        '/offres/vitrines?nom-ou-isbn=AnyWord',
+        `/offres/vitrines?nom-ou-isbn=AnyWord&structure=&statut=en-attente&statut=refusee&statut=active&statut=inactive&statut=brouillon`,
         {
           replace: true,
         }
@@ -132,9 +136,12 @@ describe('route TemplateCollectiveOffers', () => {
       )
       await userEvent.click(screen.getByText('Rechercher'))
 
-      expect(mockNavigate).toHaveBeenCalledWith('/offres/vitrines', {
-        replace: true,
-      })
+      expect(mockNavigate).toHaveBeenCalledWith(
+        '/offres/vitrines?structure=&statut=en-attente&statut=refusee&statut=active&statut=inactive&statut=brouillon',
+        {
+          replace: true,
+        }
+      )
     })
 
     it('should have venue value when user filters by venue', async () => {
@@ -148,7 +155,7 @@ describe('route TemplateCollectiveOffers', () => {
       await userEvent.click(screen.getByText('Rechercher'))
 
       expect(mockNavigate).toHaveBeenCalledWith(
-        `/offres/vitrines?lieu=${proVenues[0].id}`,
+        `/offres/vitrines?structure=&lieu=${proVenues[0].id}&statut=en-attente&statut=refusee&statut=active&statut=inactive&statut=brouillon`,
         {
           replace: true,
         }
@@ -170,7 +177,7 @@ describe('route TemplateCollectiveOffers', () => {
       await userEvent.click(screen.getByText('Rechercher'))
 
       expect(mockNavigate).toHaveBeenCalledWith(
-        '/offres/vitrines?format=Concert',
+        '/offres/vitrines?structure=&format=Concert&statut=en-attente&statut=refusee&statut=active&statut=inactive&statut=brouillon',
         {
           replace: true,
         }
@@ -192,7 +199,7 @@ describe('route TemplateCollectiveOffers', () => {
       await userEvent.click(screen.getByRole('button', { name: 'Rechercher' }))
 
       expect(mockNavigate).toHaveBeenCalledWith(
-        '/offres/vitrines?statut=active',
+        '/offres/vitrines?structure=&statut=en-attente&statut=refusee&statut=inactive&statut=brouillon',
         {
           replace: true,
         }
@@ -215,7 +222,7 @@ describe('route TemplateCollectiveOffers', () => {
       await userEvent.click(screen.getByRole('button', { name: 'Rechercher' }))
 
       expect(mockNavigate).toHaveBeenCalledWith(
-        '/offres/vitrines?statut=en-attente&statut=archivee',
+        '/offres/vitrines?structure=&statut=refusee&statut=active&statut=inactive&statut=brouillon&statut=archivee',
         {
           replace: true,
         }
@@ -245,9 +252,12 @@ describe('route TemplateCollectiveOffers', () => {
 
       await userEvent.click(screen.getByTestId('remove-offerer-filter'))
 
-      expect(mockNavigate).toHaveBeenCalledWith('/offres/vitrines', {
-        replace: true,
-      })
+      expect(mockNavigate).toHaveBeenCalledWith(
+        '/offres/vitrines?statut=en-attente&statut=refusee&statut=active&statut=inactive&statut=brouillon',
+        {
+          replace: true,
+        }
+      )
     })
   })
 })

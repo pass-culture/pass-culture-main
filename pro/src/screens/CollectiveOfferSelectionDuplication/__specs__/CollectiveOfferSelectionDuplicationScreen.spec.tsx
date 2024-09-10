@@ -4,7 +4,10 @@ import { Formik } from 'formik'
 import React from 'react'
 
 import { api } from 'apiClient/api'
-import { CollectiveOfferResponseModel } from 'apiClient/v1'
+import {
+  CollectiveOfferDisplayedStatus,
+  CollectiveOfferResponseModel,
+} from 'apiClient/v1'
 import * as createFromTemplateUtils from 'core/OfferEducational/utils/createOfferFromTemplate'
 import * as useNotification from 'hooks/useNotification'
 import { collectiveOfferFactory } from 'utils/collectiveApiFactories'
@@ -104,13 +107,19 @@ describe('CollectiveOfferConfirmation', () => {
     expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
       'Le nom de l’offre 3',
       undefined,
+      [
+        CollectiveOfferDisplayedStatus.PENDING,
+        CollectiveOfferDisplayedStatus.REJECTED,
+        CollectiveOfferDisplayedStatus.ACTIVE,
+        CollectiveOfferDisplayedStatus.INACTIVE,
+        CollectiveOfferDisplayedStatus.DRAFT,
+      ],
       undefined,
       undefined,
       undefined,
       undefined,
       undefined,
       undefined,
-      'template',
       undefined
     )
   })
