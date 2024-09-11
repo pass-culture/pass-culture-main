@@ -162,18 +162,15 @@ export const FiltersTags = ({
           handleSubmit()
         })
       )}
-      {
-        // TODO : We should use a custom isEqual instead of lodash one
-        !isEqual(values, ADAGE_FILTERS_DEFAULT_VALUES) && (
-          <Button
-            onClick={resetForm}
-            icon={fullRefreshIcon}
-            variant={ButtonVariant.TERNARY}
-          >
-            Réinitialiser les filtres
-          </Button>
-        )
-      }
+      {!isEqual(values, ADAGE_FILTERS_DEFAULT_VALUES) && (
+        <Button
+          onClick={resetForm}
+          icon={fullRefreshIcon}
+          variant={ButtonVariant.TERNARY}
+        >
+          Réinitialiser les filtres
+        </Button>
+      )}
     </div>
   )
 }

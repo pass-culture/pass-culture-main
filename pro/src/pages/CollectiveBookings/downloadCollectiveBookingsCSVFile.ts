@@ -1,9 +1,25 @@
 import { api } from 'apiClient/api'
-import { CollectiveBookingStatusFilter } from 'apiClient/v1'
+import {
+  BookingStatusFilter,
+  CollectiveBookingStatusFilter,
+} from 'apiClient/v1'
 import { DEFAULT_PRE_FILTERS } from 'core/Bookings/constants'
 import { PreFiltersParams } from 'core/Bookings/types'
 import { isDateValid } from 'utils/date'
 import { downloadFile } from 'utils/downloadFile'
+
+const bookingStatusFilterToCollectiveBookingStatusFilter = (
+  bookingStatusFilter: BookingStatusFilter
+) => {
+  switch (bookingStatusFilter) {
+    case BookingStatusFilter.BOOKED:
+      return CollectiveBookingStatusFilter.BOOKED
+    case BookingStatusFilter.REIMBURSED:
+      return CollectiveBookingStatusFilter.REIMBURSED
+    case BookingStatusFilter.VALIDATED:
+      return CollectiveBookingStatusFilter.VALIDATED
+  }
+}
 
 export const downloadCollectiveBookingsCSVFile = async (
   filters: PreFiltersParams & { page?: number }
@@ -17,9 +33,9 @@ export const downloadCollectiveBookingsCSVFile = async (
       isDateValid(filters.offerEventDate)
       ? filters.offerEventDate
       : null,
-    // TODO fix PreFiltersParams type to use CollectiveBookingStatusFilter type
-    // @ts-expect-error
-    filters.bookingStatusFilter as CollectiveBookingStatusFilter,
+    bookingStatusFilterToCollectiveBookingStatusFilter(
+      filters.bookingStatusFilter
+    ),
     isDateValid(filters.bookingBeginningDate)
       ? filters.bookingBeginningDate
       : null,
