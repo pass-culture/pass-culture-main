@@ -23,11 +23,11 @@ const contextValue: IndividualOfferContextValues = {
   setIsEvent: vi.fn(),
 }
 
-type RequiredProps = 'isOfferProductBased' | 'isOfferCDOrVinyl'
+type RequiredProps = 'isProductBased' | 'isOfferCDOrVinyl'
 type DetailsSubFormTestProps = Partial<Pick<DetailsSubFormProps, RequiredProps>>
 
 const DetailsSubFormWrappedWithFormik = ({
-  isOfferProductBased = false,
+  isProductBased = false,
   isOfferCDOrVinyl = false,
 }: DetailsSubFormTestProps) => {
   const formik = useFormik({
@@ -41,7 +41,7 @@ const DetailsSubFormWrappedWithFormik = ({
   return (
     <FormikProvider value={formik}>
       <DetailsSubForm
-        isOfferProductBased={isOfferProductBased}
+        isProductBased={isProductBased}
         isOfferCDOrVinyl={isOfferCDOrVinyl}
         readOnlyFields={[]}
         onImageUpload={vi.fn()}
@@ -91,15 +91,26 @@ describe('DetailsSubForm', () => {
     expect(subFormDurationInput).toBeInTheDocument()
   })
 
-  it('should display a callout instead when the offer is a CD/vinyl, non-product based', () => {
-    renderDetailsSubForm({
-      isOfferProductBased: false,
-      isOfferCDOrVinyl: true,
-    })
+  describe('when the offer is product-based', () => {
+    it('should not display the EAN field since it would duplicate top EAN search/input field', () => {
+      renderDetailsSubForm({ isProductBased: true })
 
-    const calloutWrapper = screen.getByRole('alert')
-    const calloutLabel = /Cette catégorie nécessite un EAN./
-    expect(calloutWrapper).toBeInTheDocument()
-    expect(calloutWrapper).toHaveTextContent(calloutLabel)
+      const eanInput = screen.queryByRole('textbox', { name: /EAN/ })
+      expect(eanInput).not.toBeInTheDocument()
+    })
+  })
+
+  describe('when the offer is non-product based', () => {
+    it('should display a callout instead when the offer is a CD/vinyl', () => {
+      renderDetailsSubForm({
+        isProductBased: false,
+        isOfferCDOrVinyl: true,
+      })
+
+      const calloutWrapper = screen.getByRole('alert')
+      const calloutLabel = /Cette catégorie nécessite un EAN./
+      expect(calloutWrapper).toBeInTheDocument()
+      expect(calloutWrapper).toHaveTextContent(calloutLabel)
+    })
   })
 })
