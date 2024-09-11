@@ -787,10 +787,14 @@ def update_last_30_days_bookings_for_movies() -> list[offers_models.Product]:
 
 
 def update_booking_count_by_product() -> list[offers_models.Product]:
-    updated_products = update_last_30_days_bookings_for_eans()
-    updated_products += update_last_30_days_bookings_for_movies()
+    updated_ean_products = update_last_30_days_bookings_for_eans()
+    updated_movie_products = update_last_30_days_bookings_for_movies()
 
-    return updated_products
+    if settings.ALGOLIA_OFFERS_INDEX_MAX_SIZE >= 0:
+        updated_ean_products = updated_ean_products[:100]
+        updated_movie_products = updated_movie_products[:100]
+
+    return updated_ean_products + updated_movie_products
 
 
 def clean_processing_queues() -> None:
