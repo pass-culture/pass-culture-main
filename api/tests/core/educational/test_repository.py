@@ -13,6 +13,7 @@ from pcapi.core.educational.models import CollectiveOfferDisplayedStatus
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers.repository import _filter_collective_offers_by_statuses
 from pcapi.core.testing import assert_num_queries
+from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.models import offer_mixin
 
@@ -622,6 +623,25 @@ class FilterCollectiveOfferByStatusesTest:
         # Then
         assert filtered_nostatus_query.count() == 2
         assert set(filtered_nostatus_query.all()) == {pending_offer, booked_offer}
+
+    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    def test_reimboursed_statuses_with_new_statuses(self, app):
+        _booked_offer = create_collective_offer_by_status(CollectiveOfferDisplayedStatus.REIMBURSED)
+        base_query = CollectiveOffer.query
+
+        filtered_query = _filter_collective_offers_by_statuses(base_query, [CollectiveOfferDisplayedStatus.ENDED.value])
+
+        assert filtered_query.count() == 0
+
+    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
+    def test_reimboursed_statuses_without_new_statuses(self, app):
+        booked_offer = create_collective_offer_by_status(CollectiveOfferDisplayedStatus.REIMBURSED)
+        base_query = CollectiveOffer.query
+
+        filtered_query = _filter_collective_offers_by_statuses(base_query, [CollectiveOfferDisplayedStatus.ENDED.value])
+
+        assert filtered_query.count() == 1
+        assert set(filtered_query.all()) == {booked_offer}
 
 
 class HasCollectiveOffersForProgramAndVenueIdsTest:
