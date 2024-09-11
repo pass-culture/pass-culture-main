@@ -15,6 +15,7 @@ export type Link = {
   label: string
   target?: string
   isExternal?: boolean
+  isSectionLink?: boolean
   onClick?: () => void
   'aria-label'?: string
 }
@@ -28,10 +29,11 @@ export const LinkNode = ({
   href,
   label,
   isExternal,
+  isSectionLink,
   onClick,
   'aria-label': ariaLabel,
 }: Link): React.ReactNode => {
-  const forwardLink: LinkProps = { to: href, isExternal }
+  const forwardLink: LinkProps = { to: href, isExternal, isSectionLink }
   if (ariaLabel) {
     forwardLink['aria-label'] = ariaLabel
   }

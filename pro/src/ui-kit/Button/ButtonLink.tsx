@@ -11,6 +11,7 @@ import { ButtonVariant, IconPositionEnum, SharedButtonProps } from './types'
 export type LinkProps = {
   svgAlt?: string
   isExternal?: boolean
+  isSectionLink?: boolean
   to: string
   opensInNewTab?: boolean
   'aria-label'?: string
@@ -34,6 +35,7 @@ export const ButtonLink = forwardRef(
       svgAlt,
       onBlur,
       isExternal = false,
+      isSectionLink = false,
       opensInNewTab,
       to,
       ...props
@@ -80,37 +82,39 @@ export const ButtonLink = forwardRef(
     // If you want a link to be absolute you must start it with a slash
     // As this behavior can be quite confusing, we decided to enforce absolute links
     // for internal links so that developers can't make mistakes/forget to add the slash
-    const absoluteUrl = isExternal || to.startsWith('/') ? to : `/${to}`
+    const absoluteUrl =
+      isSectionLink || isExternal || to.startsWith('/') ? to : `/${to}`
 
     const callback: MouseEventHandler<HTMLAnchorElement> = (e) => onClick?.(e)
 
-    body = isExternal ? (
-      <a
-        className={classNames}
-        href={absoluteUrl}
-        onClick={callback}
-        onBlur={(e) => onBlur?.(e)}
-        rel="noopener noreferrer"
-        {...props}
-        target={props.target ?? (opensInNewTab ? '_blank' : '_self')}
-        ref={forwadedRef}
-      >
-        {body}
-      </a>
-    ) : (
-      <Link
-        className={classNames}
-        onClick={callback}
-        onBlur={(e) => onBlur?.(e)}
-        to={absoluteUrl}
-        aria-label={props['aria-label']}
-        target={props.target ?? (opensInNewTab ? '_blank' : '_self')}
-        {...props}
-        ref={forwadedRef}
-      >
-        {body}
-      </Link>
-    )
+    body =
+      isSectionLink || isExternal ? (
+        <a
+          className={classNames}
+          href={absoluteUrl}
+          onClick={callback}
+          onBlur={(e) => onBlur?.(e)}
+          rel="noopener noreferrer"
+          {...props}
+          target={props.target ?? (opensInNewTab ? '_blank' : '_self')}
+          ref={forwadedRef}
+        >
+          {body}
+        </a>
+      ) : (
+        <Link
+          className={classNames}
+          onClick={callback}
+          onBlur={(e) => onBlur?.(e)}
+          to={absoluteUrl}
+          aria-label={props['aria-label']}
+          target={props.target ?? (opensInNewTab ? '_blank' : '_self')}
+          {...props}
+          ref={forwadedRef}
+        >
+          {body}
+        </Link>
+      )
 
     return body
   }
