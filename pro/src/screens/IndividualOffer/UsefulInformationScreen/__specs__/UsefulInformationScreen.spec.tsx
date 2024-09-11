@@ -1,4 +1,4 @@
-import { screen, waitFor, within } from '@testing-library/react'
+import { screen, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import { api } from 'apiClient/api'
@@ -185,19 +185,19 @@ describe('screens:IndividualOffer::UsefulInformation', () => {
         id: 12,
       })
     )
+    vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: [] })
 
     renderUsefulInformationScreen(props, contextValue)
 
-    await waitFor(async () => {
-      await userEvent.type(
-        screen.getByLabelText(/Informations de retrait/),
-        'My information'
-      )
-      await userEvent.click(screen.getByLabelText(/Visuel/))
-      await userEvent.click(screen.getByLabelText(/Psychique ou cognitif/))
+    const withdrawalField = await screen.findByLabelText(
+      /Informations de retrait/
+    )
 
-      await userEvent.click(screen.getByText('Enregistrer les modifications'))
-    })
+    await userEvent.type(withdrawalField, 'My information')
+    await userEvent.click(screen.getByLabelText(/Visuel/))
+    await userEvent.click(screen.getByLabelText(/Psychique ou cognitif/))
+
+    await userEvent.click(screen.getByText('Enregistrer les modifications'))
 
     expect(api.patchOffer).toHaveBeenCalledOnce()
     expect(api.patchOffer).toHaveBeenCalledWith(3, {
