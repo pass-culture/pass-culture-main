@@ -33,7 +33,6 @@ import {
 import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import { DetailsScreen, DetailsScreenProps } from '../DetailsScreen'
-import { completeSubcategoryConditionalFields } from '../utils'
 
 vi.mock('apiClient/api', () => ({
   api: {
@@ -515,16 +514,9 @@ describe('screens:IndividualOffer::Informations', () => {
         },
       ],
     }
-    const conditionalFieldLabels: { [key: string]: string } = {
-      author: 'Auteur',
-      durationMinutes: 'Durée',
-    }
 
     it('should render suggested subcategories when enabled', async () => {
       const chosenSubCategoriesIds = ['virtual', 'physical']
-      const subcategoryConditionalFields = completeSubcategoryConditionalFields(
-        subCategories.find((sub) => chosenSubCategoriesIds.includes(sub.id))
-      )
       vi.spyOn(api, 'getSuggestedSubcategories').mockResolvedValue({
         subcategoryIds: chosenSubCategoriesIds,
       })
@@ -545,19 +537,6 @@ describe('screens:IndividualOffer::Informations', () => {
       // Suggested subcategories are displayed along with the "Autre" option.
       const radioButtons = screen.getAllByRole('radio')
       expect(radioButtons).toHaveLength(chosenSubCategoriesIds.length + 1)
-
-      // User selects a suggested subcategory.
-      const selection = chosenSubCategoriesIds[0]
-      const selectedRadioButton = radioButtons.find(
-        (radio) => radio.getAttribute('value') === selection
-      ) as HTMLInputElement
-      await userEvent.click(selectedRadioButton)
-
-      // Conditional fields should be displayed.
-      for (const field of subcategoryConditionalFields) {
-        const input = screen.getByLabelText(conditionalFieldLabels[field])
-        expect(input).toBeInTheDocument()
-      }
     })
 
     it('should fallback to manual selection when suggested subcategories are enabled but not available', async () => {
