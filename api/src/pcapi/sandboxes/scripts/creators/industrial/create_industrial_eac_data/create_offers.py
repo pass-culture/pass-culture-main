@@ -391,7 +391,8 @@ def create_booking_base_list(
                 collectiveStock__collectiveOffer__name=f"USED offer {next(number_iterator)} pour {offerer.name}",
                 collectiveStock__collectiveOffer__venue=next(venue_iterator),
                 collectiveStock__collectiveOffer__educational_domains=[next(domains_iterator)],
-                collectiveStock__beginningDatetime=datetime.utcnow() - timedelta(days=i),
+                collectiveStock__beginningDatetime=datetime.utcnow()
+                - timedelta(days=i + 2),  # all USED booking must be at least 2 days old
                 collectiveStock__bookingLimitDatetime=datetime.utcnow() - timedelta(days=15),
                 educationalYear=current_ansco,
                 educationalInstitution=next(institution_iterator),
