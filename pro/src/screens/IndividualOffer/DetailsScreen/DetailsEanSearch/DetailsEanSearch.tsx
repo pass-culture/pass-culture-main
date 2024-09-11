@@ -13,7 +13,7 @@ import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 import { Tag, TagVariant } from 'ui-kit/Tag/Tag'
 
 import { DetailsFormValues } from '../types'
-import { buildSubcategoryConditonalFields } from '../utils'
+import { hasMusicType } from '../utils'
 
 import styles from './DetailsEanSearch.module.scss'
 
@@ -60,9 +60,8 @@ export const DetailsEanSearch = ({
           throw new Error('Unknown or missing subcategoryId')
         }
 
-        const { subcategoryConditionalFields } =
-          buildSubcategoryConditonalFields(subCategory)
-        const { categoryId } = subCategory
+        const { categoryId, conditionalFields: subcategoryConditionalFields } =
+          subCategory
 
         const imageUrl = images.recto
         if (imageUrl) {
@@ -73,10 +72,12 @@ export const DetailsEanSearch = ({
           })
         }
 
-        // Fallback to "Autre" in case of missing gtlId
-        // to define "Genre musical" when relevant.
-        const fallbackGtlId = '19000000'
-        const gtl_id = gtlId || fallbackGtlId
+        let gtl_id = ''
+        if (hasMusicType(categoryId, subcategoryConditionalFields)) {
+          // Fallback to "Autre" in case of missing gtlId
+          // to define "Genre musical" when relevant.
+          gtl_id = gtlId || '19000000'
+        }
 
         await setValues({
           ...values,

@@ -33,7 +33,7 @@ import {
 import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import { DetailsScreen, DetailsScreenProps } from '../DetailsScreen'
-import { buildSubcategoryConditonalFields } from '../utils'
+import { completeSubcategoryConditionalFields } from '../utils'
 
 vi.mock('apiClient/api', () => ({
   api: {
@@ -522,7 +522,7 @@ describe('screens:IndividualOffer::Informations', () => {
 
     it('should render suggested subcategories when enabled', async () => {
       const chosenSubCategoriesIds = ['virtual', 'physical']
-      const { subcategoryConditionalFields } = buildSubcategoryConditonalFields(
+      const subcategoryConditionalFields = completeSubcategoryConditionalFields(
         subCategories.find((sub) => chosenSubCategoriesIds.includes(sub.id))
       )
       vi.spyOn(api, 'getSuggestedSubcategories').mockResolvedValue({
