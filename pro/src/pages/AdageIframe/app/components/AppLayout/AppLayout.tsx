@@ -36,11 +36,37 @@ export const AppLayout = (): JSX.Element => {
     isMarseilleEnabled && isUserInMarseilleProgram
   const venueId = params.get('venue')
   const offerId = params.get('offerid')
+  const tab = params.get('tab')
 
   const redirectToSearch =
     venueId ||
     redirectToMarseilleSearch ||
     adageUser.role === AdageFrontRoles.READONLY
+
+  const getRedirectPath = (): string => {
+    if (offerId) {
+      return `decouverte/offre/${offerId}${search}`
+    }
+
+    switch (tab) {
+      case 'institution':
+        return `mon-etablissement${search}`
+      case 'favoris':
+        return `mes-favoris${search}`
+      case 'recherche':
+        return `recherche${search}`
+      case 'decouverte':
+        return `decouverte${search}`
+      default:
+        if (redirectToSearch) {
+          return `recherche${search}${
+            redirectToMarseilleSearch ? '&program=marseille' : ''
+          }`
+        }
+        return `decouverte${search}`
+    }
+  }
+
   return (
     <div className={styles['app-layout']}>
       <AdageHeader />
@@ -52,23 +78,7 @@ export const AppLayout = (): JSX.Element => {
       >
         <ScrollRestoration />
         <Routes>
-          <Route
-            path=""
-            element={
-              offerId ? (
-                <Navigate to={`decouverte/offre/${offerId}${search}`} />
-              ) : redirectToSearch ? (
-                <Navigate
-                  to={`recherche${search}${
-                    //  To apply marseille student level filters only when redirecting to search from '/'
-                    redirectToMarseilleSearch ? '&program=marseille' : ''
-                  }`}
-                />
-              ) : (
-                <Navigate to={`decouverte${search}`} />
-              )
-            }
-          />
+          <Route path="" element={<Navigate to={getRedirectPath()} />} />
           <Route path="decouverte" element={<AdageDiscovery />} />
           <Route path="recherche" element={<OffersInstantSearch />} />
           <Route
