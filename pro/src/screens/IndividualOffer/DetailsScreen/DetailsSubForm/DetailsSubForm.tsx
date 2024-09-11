@@ -16,7 +16,7 @@ import { TimePicker } from 'ui-kit/form/TimePicker/TimePicker'
 
 import { DEFAULT_DETAILS_FORM_VALUES } from '../constants'
 import { DetailsFormValues } from '../types'
-import { buildShowSubTypeOptions } from '../utils'
+import { buildShowSubTypeOptions, hasMusicType } from '../utils'
 
 import styles from './DetailsSubForm.module.scss'
 
@@ -81,12 +81,6 @@ export const DetailsSubForm = ({
     (field) => subcategoryConditionalFields.includes(field)
   )
 
-  // Books have a gtl_id field, other categories have a musicType field
-  const hasMusicType =
-    categoryId !== 'LIVRE'
-      ? subcategoryConditionalFields.includes('gtl_id')
-      : subcategoryConditionalFields.includes('musicType')
-
   return (
     <>
       <div role="alert">
@@ -118,7 +112,7 @@ export const DetailsSubForm = ({
           )}
           {displayArtisticInformations && (
             <FormLayout.Section title="Informations artistiques">
-              {hasMusicType && (
+              {hasMusicType(categoryId, subcategoryConditionalFields) && (
                 <FormLayout.Row>
                   <Select
                     label="Genre musical"
