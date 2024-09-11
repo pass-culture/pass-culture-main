@@ -35,8 +35,8 @@ from pcapi.serialization.decorator import spectree_serialize
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
 from pcapi.utils import image_conversion
 from pcapi.utils.custom_keys import get_field
-from pcapi.validation.routes.users_authentifications import api_key_required
 from pcapi.validation.routes.users_authentifications import current_api_key
+from pcapi.validation.routes.users_authentifications import provider_api_key_required
 from pcapi.workers import worker
 from pcapi.workers.decorators import job
 
@@ -49,7 +49,7 @@ logger = logging.getLogger(__name__)
 
 
 @blueprints.public_api.route("/public/offers/v1/offerer_venues", methods=["GET"])
-@api_key_required
+@provider_api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.VENUES],
@@ -75,7 +75,7 @@ def get_offerer_venues(
 
 
 @blueprints.public_api.route("/public/offers/v1/show_types", methods=["GET"])
-@api_key_required
+@provider_api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.OFFER_ATTRIBUTES],
@@ -105,7 +105,7 @@ def get_show_types() -> serialization.GetShowTypesResponse:
 
 
 @blueprints.public_api.route("/public/offers/v1/music_types", methods=["GET"])
-@api_key_required
+@provider_api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.OFFER_ATTRIBUTES],
@@ -137,7 +137,7 @@ def get_music_types() -> serialization.GetMusicTypesResponse:
 
 
 @blueprints.public_api.route("/public/offers/v1/music_types/all", methods=["GET"])
-@api_key_required
+@provider_api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.OFFER_ATTRIBUTES],
@@ -168,7 +168,7 @@ def get_all_titelive_music_types() -> serialization.GetMusicTypesResponse:
 
 
 @blueprints.public_api.route("/public/offers/v1/music_types/event", methods=["GET"])
-@api_key_required
+@provider_api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.OFFER_ATTRIBUTES],
@@ -278,7 +278,7 @@ def _create_stock(product: offers_models.Offer, body: serialization.ProductOffer
 
 
 @blueprints.public_api.route("/public/offers/v1/products", methods=["POST"])
-@api_key_required
+@provider_api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.PRODUCT_OFFERS],
@@ -324,7 +324,7 @@ def post_product_offer(body: serialization.ProductOfferCreation) -> serializatio
 
 
 @blueprints.public_api.route("/public/offers/v1/products/ean", methods=["POST"])
-@api_key_required
+@provider_api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.PRODUCT_EAN_OFFERS],
@@ -567,7 +567,7 @@ def _create_offer_from_product(
 
 
 @blueprints.public_api.route("/public/offers/v1/products/<int:product_id>", methods=["GET"])
-@api_key_required
+@provider_api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.PRODUCT_OFFERS],
@@ -599,7 +599,7 @@ def get_product(product_id: int) -> serialization.ProductOfferResponse:
 
 
 @blueprints.public_api.route("/public/offers/v1/products/ean", methods=["GET"])
-@api_key_required
+@provider_api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.PRODUCT_EAN_OFFERS],
@@ -636,7 +636,7 @@ def get_product_by_ean(
 
 
 @blueprints.public_api.route("/public/offers/v1/products/ean/check_availability", methods=["GET"])
-@api_key_required
+@provider_api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.PRODUCT_EAN_OFFERS],
@@ -715,7 +715,7 @@ def _retrieve_offer_by_eans_query(eans: list[str], venueId: int) -> sqla.orm.Que
 
 
 @blueprints.public_api.route("/public/offers/v1/products", methods=["GET"])
-@api_key_required
+@provider_api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.PRODUCT_OFFERS],
@@ -765,7 +765,7 @@ def _check_offer_can_be_edited(offer: offers_models.Offer) -> None:
 
 
 @blueprints.public_api.route("/public/offers/v1/products", methods=["PATCH"])
-@api_key_required
+@provider_api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.PRODUCT_OFFERS],
@@ -876,7 +876,7 @@ def _upsert_product_stock(
 
 
 @blueprints.public_api.route("/public/offers/v1/products/categories", methods=["GET"])
-@api_key_required
+@provider_api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.PRODUCT_OFFERS],
@@ -905,7 +905,7 @@ def get_product_categories() -> serialization.GetProductCategoriesResponse:
 
 
 @blueprints.public_api.route("/public/offers/v1/<int:offer_id>/image", methods=["POST"])
-@api_key_required
+@provider_api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.IMAGE],
