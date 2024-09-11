@@ -117,7 +117,7 @@ class TiteliveSearch(abc.ABC, typing.Generic[TiteliveWorkType]):
         has_next_page = True
         while has_next_page:
             json_response = titelive.search_products(self.titelive_base, from_date, page_index)
-            product_page = self.deserialize_titelive_products(json_response)
+            product_page = self.get_product_info_from_search_response(json_response)
             recent_product_page = filter_recent_products(product_page, from_date)
             allowed_product_page, not_allowed_eans = self.partition_allowed_products(recent_product_page)
             allowed_product_page = [work for work in allowed_product_page if work.article]
@@ -128,6 +128,9 @@ class TiteliveSearch(abc.ABC, typing.Generic[TiteliveWorkType]):
             # sometimes titelive returns a partially filled page while having a next page in store for us
             has_next_page = bool(product_page)
             page_index += 1
+
+    def get_product_info_from_search_response(self, titelive_json_response: list[dict]) -> list[TiteliveWorkType]:
+        return self.deserialize_titelive_products(titelive_json_response)
 
     def deserialize_titelive_products(self, titelive_json_response: list[dict]) -> list[TiteliveWorkType]:
         deserialized_works = []

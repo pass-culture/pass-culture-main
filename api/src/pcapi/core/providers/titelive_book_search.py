@@ -108,6 +108,12 @@ class TiteliveBookSearch(TiteliveSearch[TiteLiveBookWork]):
         logger.info("Rejecting ineligible ean=%s because reason=%s", article.gencod, ineligibility_reason)
         return False
 
+    def get_product_info_from_search_response(self, titelive_json_response: list[dict]) -> list[TiteLiveBookWork]:
+        eans_to_update = extract_eans_from_titelive_response(titelive_json_response)
+        if not eans_to_update:
+            return []
+        return self.get_product_info_from_eans(eans_to_update)
+
     def get_product_info_from_eans(self, eans: set[str]) -> list[TiteLiveBookWork]:
         response = get_by_ean_list(eans)
         if "result" in response:
