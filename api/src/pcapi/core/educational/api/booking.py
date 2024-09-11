@@ -22,6 +22,7 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.users.models import User
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
+from pcapi.repository import atomic
 from pcapi.repository import repository
 from pcapi.repository import transaction
 from pcapi.routes.adage.v1.serialization import prebooking
@@ -405,7 +406,7 @@ def cancel_collective_booking(
     author_id: int | None = None,
 ) -> None:
     collective_booking_id = collective_booking.id
-    with transaction():
+    with atomic():
         educational_repository.get_and_lock_collective_stock(stock_id=collective_booking.collectiveStock.id)
         db.session.refresh(collective_booking)
         if finance_repository.has_reimbursement(collective_booking):

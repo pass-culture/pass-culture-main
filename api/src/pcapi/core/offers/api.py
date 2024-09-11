@@ -1887,12 +1887,17 @@ def move_event_offer(
 
             db.session.add(booking)
 
-    search.async_index_offer_ids(
-        {offer_id}, reason=search.IndexationReason.OFFER_UPDATE, log_extra={"changes": {"venueId"}}
+    on_commit(
+        partial(
+            search.async_index_offer_ids,
+            {offer_id},
+            reason=search.IndexationReason.OFFER_UPDATE,
+            log_extra={"changes": {"venueId"}},
+        )
     )
 
     if notify_beneficiary:
-        transactional_mails.send_email_for_each_ongoing_booking(offer)
+        on_commit(partial(transactional_mails.send_email_for_each_ongoing_booking, offer))
 
 
 def update_used_stock_price(

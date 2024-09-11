@@ -266,7 +266,7 @@ class Returns200Test:
         )
         response = client.with_session_auth("user@example.com").patch(f"/offers/{offer.id}", json=data)
 
-        assert response.status_code == 200
+        assert response.status_code == 200, response.json
         assert response.json["id"] == offer.id
         updated_offer = Offer.query.get(offer.id)
         address = updated_offer.offererAddress.address
