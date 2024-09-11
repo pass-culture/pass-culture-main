@@ -134,7 +134,7 @@ export const FieldLayout = ({
                 }
                 variant={ButtonVariant.TERNARY}
               >
-                {clearButtonProps.tooltip}
+                {clearButtonProps.tooltip || 'Supprimer'}
               </Button>
             </div>
           )}
