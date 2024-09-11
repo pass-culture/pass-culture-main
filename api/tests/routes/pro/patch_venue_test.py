@@ -130,7 +130,7 @@ class Returns200Test:
                     "old_info": "48.87004",
                 },
                 "longitude": {
-                    "new_info": "2.308289",
+                    "new_info": "2.30829",
                     "old_info": "2.3785",
                 },
                 "postalCode": {
@@ -151,7 +151,7 @@ class Returns200Test:
                     "old_info": "48.87004",
                 },
                 "offererAddress.address.longitude": {
-                    "new_info": "2.308289",
+                    "new_info": "2.30829",
                     "old_info": "2.3785",
                 },
                 "offererAddress.address.postalCode": {
@@ -266,7 +266,7 @@ class Returns200Test:
             "old_info": "48.87004",
         }
         assert venue.action_history[0].extraData["modified_info"]["longitude"] == {
-            "new_info": "2.308289",
+            "new_info": "2.30829",
             "old_info": "2.3785",
         }
         assert venue.action_history[0].extraData["modified_info"]["postalCode"] == {
@@ -354,11 +354,11 @@ class Returns200Test:
             "old_info": "75102_7560_00001",
         }
         assert venue.action_history[0].extraData["modified_info"]["latitude"] == {
-            "new_info": "47.066641",
+            "new_info": "47.06664",
             "old_info": "48.87004",
         }
         assert venue.action_history[0].extraData["modified_info"]["longitude"] == {
-            "new_info": "3.933363",
+            "new_info": "3.93336",
             "old_info": "2.3785",
         }
         assert venue.action_history[0].extraData["modified_info"]["postalCode"] == {
