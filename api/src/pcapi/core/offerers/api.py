@@ -57,8 +57,11 @@ from pcapi.models import feature
 from pcapi.models import pc_object
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.validation_status_mixin import ValidationStatus
+from pcapi.repository import is_managed_transaction
+from pcapi.repository import mark_transaction_as_invalid
 from pcapi.repository import on_commit
 from pcapi.repository import repository
+from pcapi.repository import transaction
 from pcapi.routes.serialization import offerers_serialize
 from pcapi.routes.serialization import venues_serialize
 import pcapi.routes.serialization.base as serialize_base
@@ -445,23 +448,21 @@ def create_venue(venue_data: venues_serialize.PostVenueBodyModel, author: users_
         venue.adageId = str(int(time.time()))
         venue.adageInscriptionDate = datetime.utcnow()
 
-    ava = educational_address_api.new_venue_address(venue)
+    adage_venue_address = educational_address_api.new_venue_address(venue)
 
     history_api.add_action(history_models.ActionType.VENUE_CREATED, author=author, venue=venue)
 
-    db.session.add_all([venue, ava])
+    db.session.add_all([venue, adage_venue_address])
     db.session.commit()
 
     if venue.siret:
         link_venue_to_pricing_point(venue, pricing_point_id=venue.id)
 
-    search.async_index_venue_ids(
-        [venue.id],
-        reason=search.IndexationReason.VENUE_CREATION,
+    on_commit(
+        functools.partial(search.async_index_venue_ids, [venue.id], reason=search.IndexationReason.VENUE_CREATION)
     )
-
     external_attributes_api.update_external_pro(venue.bookingEmail)
-    zendesk_sell.create_venue(venue)
+    on_commit(functools.partial(zendesk_sell.create_venue, venue))
 
     return venue
 
@@ -759,8 +760,11 @@ def link_venue_to_pricing_point(
                 "new_link_start": timestamp,
             },
         )
-    if commit:
+    if is_managed_transaction():
+        db.session.flush()
+    else:
         db.session.commit()
+
     logger.info(
         "Linked venue to pricing point",
         extra={
@@ -1009,7 +1013,7 @@ def create_offerer(
     repository.save(offerer)
 
     external_attributes_api.update_external_pro(user.email)
-    zendesk_sell.create_offerer(offerer)
+    on_commit(functools.partial(zendesk_sell.create_offerer, offerer))
 
     return user_offerer
 
@@ -2767,64 +2771,72 @@ def get_or_create_address(location_data: LocationData, is_manual_edition: bool =
     department_code = utils_regions.get_department_code_from_city_code(city_code)
     timezone = date_utils.get_department_timezone(department_code)
 
-    try:
-        address = geography_models.Address(
-            banId=ban_id,
-            inseeCode=insee_code,
-            street=street,
-            postalCode=postal_code,
-            city=city,
-            latitude=latitude,
-            longitude=longitude,
-            departmentCode=department_code,
-            timezone=timezone,
-            isManualEdition=is_manual_edition,
-        )
-        db.session.add(address)
-        db.session.flush()
-    except sa.exc.IntegrityError:
-        db.session.rollback()
-        address = geography_models.Address.query.filter(
-            geography_models.Address.street == street,
-            geography_models.Address.inseeCode == insee_code,
-            sa.or_(
-                geography_models.Address.isManualEdition.is_not(True),  # false or null
-                sa.and_(
-                    geography_models.Address.banId == ban_id,
-                    geography_models.Address.inseeCode == insee_code,
-                    geography_models.Address.street == street,
-                    geography_models.Address.postalCode == postal_code,
-                    geography_models.Address.city == city,
-                    geography_models.Address.latitude == decimal.Decimal(latitude),
-                    geography_models.Address.longitude == decimal.Decimal(longitude),
-                ),
-            ),
-        ).one()
-        if not math.isclose(float(address.latitude), float(latitude), rel_tol=0.00001) or not math.isclose(
-            float(address.longitude), float(longitude), rel_tol=0.00001
-        ):
-            logger.error(
-                "Unique constraint over street and inseeCode matched different coordinates",
-                extra={
-                    "address_id": address.id,
-                    "incoming_banId": ban_id,
-                    "address_latitude": address.latitude,
-                    "address_longitude": address.longitude,
-                    "incoming_latitude": latitude,
-                    "incoming_longitude": longitude,
-                },
+    with transaction():
+        try:
+            address = geography_models.Address(
+                banId=ban_id,
+                inseeCode=insee_code,
+                street=street,
+                postalCode=postal_code,
+                city=city,
+                latitude=latitude,
+                longitude=longitude,
+                departmentCode=department_code,
+                timezone=timezone,
+                isManualEdition=is_manual_edition,
             )
+            db.session.add(address)
+            db.session.flush()
+        except sa.exc.IntegrityError:
+            if is_managed_transaction():
+                mark_transaction_as_invalid()
+            else:
+                db.session.rollback()
+            address = geography_models.Address.query.filter(
+                geography_models.Address.street == street,
+                geography_models.Address.inseeCode == insee_code,
+                sa.or_(
+                    geography_models.Address.isManualEdition.is_not(True),  # false or null
+                    sa.and_(
+                        geography_models.Address.banId == ban_id,
+                        geography_models.Address.inseeCode == insee_code,
+                        geography_models.Address.street == street,
+                        geography_models.Address.postalCode == postal_code,
+                        geography_models.Address.city == city,
+                        geography_models.Address.latitude == decimal.Decimal(latitude),
+                        geography_models.Address.longitude == decimal.Decimal(longitude),
+                    ),
+                ),
+            ).one()
+            if not math.isclose(float(address.latitude), float(latitude), rel_tol=0.00001) or not math.isclose(
+                float(address.longitude), float(longitude), rel_tol=0.00001
+            ):
+                logger.error(
+                    "Unique constraint over street and inseeCode matched different coordinates",
+                    extra={
+                        "address_id": address.id,
+                        "incoming_banId": ban_id,
+                        "address_latitude": address.latitude,
+                        "address_longitude": address.longitude,
+                        "incoming_latitude": latitude,
+                        "incoming_longitude": longitude,
+                    },
+                )
 
     return address
 
 
 def get_or_create_offerer_address(offerer_id: int, address_id: int, label: str | None = None) -> models.OffererAddress:
-    try:
-        offerer_address = models.OffererAddress(offererId=offerer_id, addressId=address_id, label=label)
-        db.session.add(offerer_address)
-        db.session.flush()
-    except sa.exc.IntegrityError:
-        db.session.rollback()
+    with transaction():
+        try:
+            offerer_address = models.OffererAddress(offererId=offerer_id, addressId=address_id, label=label)
+            db.session.add(offerer_address)
+            db.session.flush()
+        except sa.exc.IntegrityError:
+            if is_managed_transaction():
+                mark_transaction_as_invalid()
+            else:
+                db.session.rollback()
 
     offerer_address = (
         models.OffererAddress.query.filter(

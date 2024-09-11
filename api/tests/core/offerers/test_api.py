@@ -1854,16 +1854,6 @@ class LinkVenueToPricingPointTest:
         msg = "Ce lieu a un SIRET, vous ne pouvez donc pas choisir un autre lieu pour le calcul du barème de remboursement."
         assert error.value.errors == {"pricingPointId": [msg]}
 
-    def test_no_commit(self):
-        venue = offerers_factories.VenueWithoutSiretFactory()
-        pricing_point = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
-
-        offerers_api.link_venue_to_pricing_point(venue, pricing_point.id, commit=False)
-
-        db.session.rollback()  # test after commit() is not called
-
-        assert offerers_models.VenuePricingPointLink.query.count() == 0
-
 
 class HasVenueAtLeastOneBookableOfferTest:
     @override_features(ENABLE_VENUE_STRICT_SEARCH=True)
