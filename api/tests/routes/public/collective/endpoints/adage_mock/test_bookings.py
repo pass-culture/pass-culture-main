@@ -298,7 +298,6 @@ class CancelCollectiveBookingTest(AdageMockEndpointHelper):
             expected_queries_count += 1  # 5. get collective booking (refresh)
             expected_queries_count += 1  # 6. does pricing exists for collective booking?
             expected_queries_count += 1  # 7. rollback
-            expected_queries_count += 1  # 8. get collective booking (reloaded by the logger)
 
             with assert_num_queries(expected_queries_count):
                 self.assert_request_has_expected_result(

@@ -428,9 +428,11 @@ def _get_offers(form: forms.GetOfferAdvancedSearchForm) -> list[offers_models.Of
 
 
 @list_offers_blueprint.route("", methods=["GET"])
+@atomic()
 def list_offers() -> utils.BackofficeResponse:
     form = forms.GetOfferAdvancedSearchForm(formdata=utils.get_query_params())
     if not form.validate():
+        mark_transaction_as_invalid()
         return render_template("offer/list.html", rows=[], form=form), 400
 
     if form.is_empty():
@@ -451,6 +453,7 @@ def list_offers() -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/<int:offer_id>/edit", methods=["GET"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_OFFERS)
 def get_edit_offer_form(offer_id: int) -> utils.BackofficeResponse:
     offer = (
@@ -501,6 +504,7 @@ def get_batch_validate_offers_form() -> utils.BackofficeResponse:
 def batch_validate_offers() -> utils.BackofficeResponse:
     form = empty_forms.BatchForm()
     if not form.validate():
+        mark_transaction_as_invalid()
         flash(utils.build_form_error_msg(form), "warning")
         return redirect(request.referrer, 400)
 
@@ -510,6 +514,7 @@ def batch_validate_offers() -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/batch/reject", methods=["GET"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def get_batch_reject_offers_form() -> utils.BackofficeResponse:
     form = empty_forms.BatchForm()
@@ -524,10 +529,12 @@ def get_batch_reject_offers_form() -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/batch-reject", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def batch_reject_offers() -> utils.BackofficeResponse:
     form = empty_forms.BatchForm()
     if not form.validate():
+        mark_transaction_as_invalid()
         flash(utils.build_form_error_msg(form), "warning")
         return redirect(request.referrer, 400)
 
@@ -537,11 +544,13 @@ def batch_reject_offers() -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/batch/edit", methods=["GET", "POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_OFFERS)
 def get_batch_edit_offer_form() -> utils.BackofficeResponse:
     form = forms.BatchEditOfferForm()
     if form.object_ids.data:
         if not form.validate():
+            mark_transaction_as_invalid()
             flash(utils.build_form_error_msg(form), "warning")
             return redirect(request.referrer, 400)
 
@@ -570,10 +579,12 @@ def get_batch_edit_offer_form() -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/batch-edit", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_OFFERS)
 def batch_edit_offer() -> utils.BackofficeResponse:
     form = forms.BatchEditOfferForm()
     if not form.validate():
+        mark_transaction_as_invalid()
         flash(utils.build_form_error_msg(form), "warning")
         return redirect(request.referrer, 400)
 
@@ -602,12 +613,12 @@ def batch_edit_offer() -> utils.BackofficeResponse:
 
         db.session.add(offer)
 
-    # A single commit at the end avoids refreshing other offers in the loop
-    db.session.commit()
-
-    search.async_index_offer_ids(
-        form.object_ids_list,
-        reason=search.IndexationReason.OFFER_BATCH_UPDATE,
+    on_commit(
+        functools.partial(
+            search.async_index_offer_ids,
+            form.object_ids_list,
+            reason=search.IndexationReason.OFFER_BATCH_UPDATE,
+        )
     )
 
     flash("Les offres ont été modifiées", "success")
@@ -615,6 +626,7 @@ def batch_edit_offer() -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/<int:offer_id>/edit", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_OFFERS)
 def edit_offer(offer_id: int) -> utils.BackofficeResponse:
     offer = offers_models.Offer.query.filter_by(id=offer_id).one_or_none()
@@ -624,6 +636,7 @@ def edit_offer(offer_id: int) -> utils.BackofficeResponse:
     form = forms.EditOfferForm()
 
     if not form.validate():
+        mark_transaction_as_invalid()
         flash("Le formulaire n'est pas valide", "warning")
         return redirect(request.referrer, 400)
 
@@ -636,7 +649,7 @@ def edit_offer(offer_id: int) -> utils.BackofficeResponse:
     #  Immediately index offer if tags are updated: tags are used by
     #  other tools (eg. building playlists for the home page) and
     #  waiting N minutes for the next indexing cron tasks is painful.
-    search.reindex_offer_ids([offer.id])
+    on_commit(functools.partial(search.reindex_offer_ids, [offer.id]))
 
     flash("L'offre a été modifiée", "success")
     return redirect(request.referrer or url_for("backoffice_web.offer.list_offers"), 303)
@@ -673,6 +686,7 @@ def validate_offer(offer_id: int) -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/<int:offer_id>/reject", methods=["GET"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def get_reject_offer_form(offer_id: int) -> utils.BackofficeResponse:
     offer = offers_models.Offer.query.filter_by(id=offer_id).one_or_none()
@@ -693,6 +707,7 @@ def get_reject_offer_form(offer_id: int) -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/<int:offer_id>/reject", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def reject_offer(offer_id: int) -> utils.BackofficeResponse:
     _batch_reject_offers([offer_id])
@@ -787,8 +802,12 @@ def _batch_reject_offers(offer_ids: list[int]) -> None:
 
             cancelled_bookings = bookings_api.cancel_bookings_from_rejected_offer(offer)
             for booking in cancelled_bookings:
-                transactional_mails.send_booking_cancellation_by_pro_to_beneficiary_email(
-                    booking, rejected_by_fraud_action=True
+                on_commit(
+                    functools.partial(
+                        transactional_mails.send_booking_cancellation_by_pro_to_beneficiary_email,
+                        booking,
+                        rejected_by_fraud_action=True,
+                    )
                 )
 
             repository.save(offer)
@@ -810,13 +829,17 @@ def _batch_reject_offers(offer_ids: list[int]) -> None:
     if len(offer_ids) > 0:
         favorites = users_models.Favorite.query.filter(users_models.Favorite.offerId.in_(offer_ids)).all()
         repository.delete(*favorites)
-        search.async_index_offer_ids(
-            offer_ids,
-            reason=search.IndexationReason.OFFER_BATCH_VALIDATION,
+        on_commit(
+            functools.partial(
+                search.async_index_offer_ids,
+                offer_ids,
+                reason=search.IndexationReason.OFFER_BATCH_VALIDATION,
+            )
         )
 
 
 @list_offers_blueprint.route("/<int:offer_id>", methods=["GET"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.READ_OFFERS)
 def get_offer_details(offer_id: int) -> utils.BackofficeResponse:
     offer_query = offers_models.Offer.query.filter(offers_models.Offer.id == offer_id).options(
@@ -951,6 +974,7 @@ def _manage_price_category(stock: offers_models.Stock, new_price: float) -> bool
 
 
 @list_offers_blueprint.route("/<int:offer_id>/stock/<int:stock_id>/edit", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_OFFERS)
 def edit_offer_stock(offer_id: int, stock_id: int) -> utils.BackofficeResponse:
     stock = (
@@ -966,12 +990,15 @@ def edit_offer_stock(offer_id: int, stock_id: int) -> utils.BackofficeResponse:
     )
 
     if stock.offerId != offer_id:
+        mark_transaction_as_invalid()
         flash("L'offer_id et le stock_id ne sont pas cohérents.", "warning")
         return redirect(url_for("backoffice_web.offer.get_offer_details", offer_id=offer_id), 303)
     if finance_api.are_cashflows_being_generated():
+        mark_transaction_as_invalid()
         flash("Le script de génération des cashflows est en cours, veuillez réessayer plus tard.", "warning")
         return redirect(url_for("backoffice_web.offer.get_offer_details", offer_id=offer_id), 303)
     if not _is_stock_editable(offer_id, stock_id):
+        mark_transaction_as_invalid()
         flash("Ce stock n'est pas éditable.", "warning")
         return redirect(url_for("backoffice_web.offer.get_offer_details", offer_id=offer_id), 303)
 
@@ -979,6 +1006,7 @@ def edit_offer_stock(offer_id: int, stock_id: int) -> utils.BackofficeResponse:
     old_price = stock.price
 
     if not form.validate():
+        mark_transaction_as_invalid()
         flash(utils.build_form_error_msg(form), "warning")
         return redirect(url_for("backoffice_web.offer.get_offer_details", offer_id=offer_id), 303)
 
@@ -1007,11 +1035,11 @@ def edit_offer_stock(offer_id: int, stock_id: int) -> utils.BackofficeResponse:
         },
     )
 
-    db.session.commit()
     return redirect(url_for("backoffice_web.offer.get_offer_details", offer_id=offer_id), 303)
 
 
 @list_offers_blueprint.route("/<int:offer_id>/stock/<int:stock_id>/confirm", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_OFFERS)
 def confirm_offer_stock(offer_id: int, stock_id: int) -> utils.BackofficeResponse:
     stock = offers_models.Stock.query.filter_by(id=stock_id).one()
@@ -1030,6 +1058,7 @@ def confirm_offer_stock(offer_id: int, stock_id: int) -> utils.BackofficeRespons
     form = forms.EditStockForm(old_price=stock.price)
 
     if not form.validate():
+        mark_transaction_as_invalid()
         return _generate_offer_stock_edit_form(offer_id, stock_id, form)
 
     alert = ""
@@ -1067,6 +1096,7 @@ def confirm_offer_stock(offer_id: int, stock_id: int) -> utils.BackofficeRespons
 
 
 @list_offers_blueprint.route("/<int:offer_id>/stock/<int:stock_id>/edit", methods=["GET"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_OFFERS)
 def get_offer_stock_edit_form(
     offer_id: int,
@@ -1137,6 +1167,7 @@ def _get_count_booking_prices_for_stock(stock: offers_models.Stock) -> list[tupl
 
 
 @list_offers_blueprint.route("/<int:offer_id>/reindex", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
 def reindex(offer_id: int) -> utils.BackofficeResponse:
     search.async_index_offer_ids(
@@ -1149,6 +1180,7 @@ def reindex(offer_id: int) -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/<int:offer_id>/edit-venue", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
 def edit_offer_venue(offer_id: int) -> utils.BackofficeResponse:
     offer_url = url_for("backoffice_web.offer.get_offer_details", offer_id=offer_id)
@@ -1164,6 +1196,7 @@ def edit_offer_venue(offer_id: int) -> utils.BackofficeResponse:
     try:
         form = forms.EditOfferVenueForm()
         if not form.validate():
+            mark_transaction_as_invalid()
             flash(utils.build_form_error_msg(form), "warning")
             return redirect(offer_url, 303)
 
@@ -1187,6 +1220,7 @@ def edit_offer_venue(offer_id: int) -> utils.BackofficeResponse:
         offers_api.move_event_offer(offer, destination_venue, notify_beneficiary=form.notify_beneficiary.data)
 
     except offers_exceptions.MoveOfferBaseException as exc:
+        mark_transaction_as_invalid()
         if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
             flash(
                 Markup("Le partenaire culturel de cette offre ne peut pas être modifié : {reason}").format(
@@ -1218,6 +1252,7 @@ def edit_offer_venue(offer_id: int) -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/<int:offer_id>/bookings.csv", methods=["GET"])
+@atomic()
 def download_bookings_csv(offer_id: int) -> utils.BackofficeResponse:
     export_data = booking_repository.get_export(
         user=current_user,
@@ -1234,6 +1269,7 @@ def download_bookings_csv(offer_id: int) -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/<int:offer_id>/bookings.xlsx", methods=["GET"])
+@atomic()
 def download_bookings_xlsx(offer_id: int) -> utils.BackofficeResponse:
     export_data = booking_repository.get_export(
         user=current_user,

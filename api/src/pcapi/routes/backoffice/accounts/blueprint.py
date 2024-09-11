@@ -1102,11 +1102,7 @@ def review_public_account(user_id: int) -> utils.BackofficeResponse:
             reviewed_eligibility=eligibility,
         )
     except (fraud_api.FraudCheckError, fraud_api.EligibilityError) as err:
-        # `validate_beneficiary` immediately creates some objects that
-        # will be considered dirty by SQLA.
-        # A rollback is therefore needed to prevent some unexpected
-        # objects to be persisted into database.
-        db.session.rollback()
+        mark_transaction_as_invalid()
         flash(escape(str(err)), "warning")
     else:
         flash("Validation réussie", "success")

@@ -4,6 +4,7 @@ import pcapi.connectors.dms.api as dms_connector_api
 import pcapi.core.subscription.api as subscription_api
 import pcapi.core.subscription.dms.api as dms_api
 import pcapi.core.users.models as users_models
+from pcapi.repository import atomic
 from pcapi.utils.blueprint import Blueprint
 
 
@@ -13,8 +14,9 @@ blueprint = Blueprint(__name__, __name__)
 @blueprint.cli.command("import_dms_application")
 @click.argument("application_number", type=int, required=True)
 def import_dms_application(application_number: int) -> None:
-    dms_application = dms_connector_api.DMSGraphQLClient().get_single_application_details(application_number)
-    dms_api.handle_dms_application(dms_application)
+    with atomic():
+        dms_application = dms_connector_api.DMSGraphQLClient().get_single_application_details(application_number)
+        dms_api.handle_dms_application(dms_application)
 
 
 @blueprint.cli.command("activate_user")

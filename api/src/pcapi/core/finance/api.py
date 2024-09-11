@@ -697,6 +697,7 @@ def _cancel_event_pricing(
         )
         pricing.status = models.PricingStatus.CANCELLED
         db.session.add(pricing)
+        db.session.flush()
         logger.info(
             "Cancelled pricing",
             extra={"event": event.id, "pricing": pricing.id},
@@ -707,7 +708,6 @@ def _cancel_event_pricing(
         else:
             db.session.rollback()
         raise
-    db.session.flush()
     return pricing
 
 
