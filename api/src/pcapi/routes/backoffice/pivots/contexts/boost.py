@@ -111,6 +111,7 @@ class BoostContext(PivotContext):
         pivot.tokenExpirationDate = None
 
         db.session.add(pivot)
+        db.session.flush()
         cls.check_if_api_call_is_ok(pivot)
         return True
 
