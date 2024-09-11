@@ -139,7 +139,13 @@ export const DetailsForm = ({
 
   const showAddVenueBanner =
     !areSuggestedSubcategoriesUsed && venueOptions.length === 0
-  const isProductBased = !!productId
+
+  // (Draft) offers are created via POST request.
+  // On Details screen, the form might be pre-filled with a product,
+  // until the form is submitted, the draft offer is not created yet.
+  const isOfferProductBased = !!offer?.productId
+  const isNotAnOfferYetButProductBased = !offer && !!productId
+  const isProductBased = isOfferProductBased || isNotAnOfferYetButProductBased
 
   const isSuggestedSubcategoryDisplayed =
     areSuggestedSubcategoriesUsed && !offer && !isProductBased
@@ -266,7 +272,7 @@ export const DetailsForm = ({
             </FormLayout.Row>
           ) : (
             <DetailsSubForm
-              isOfferProductBased={isProductBased}
+              isProductBased={isProductBased}
               isOfferCDOrVinyl={isSubCategoryCDOrVinyl}
               readOnlyFields={readOnlyFields}
               onImageUpload={onImageUpload}

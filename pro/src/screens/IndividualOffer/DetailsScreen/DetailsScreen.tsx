@@ -178,7 +178,14 @@ export const DetailsScreen = ({ venues }: DetailsScreenProps): JSX.Element => {
         )
   }
 
-  const readOnlyFields = setFormReadOnlyFields(offer, !!formik.values.productId)
+  // (Draft) offers are created via POST request.
+  // On Details screen, the form might be pre-filled with a product,
+  // until the form is submitted, the draft offer is not created yet.
+  const isOfferProductBased = !!offer?.productId
+  const isNotAnOfferYetButProductBased = !offer && !!formik.values.productId
+  const isProductBased = isOfferProductBased || isNotAnOfferYetButProductBased
+
+  const readOnlyFields = setFormReadOnlyFields(offer, isProductBased)
   const shouldDisplayEanSearch =
     isSearchByEanEnabled && isRecordStore && mode === OFFER_WIZARD_MODE.CREATION
 
@@ -191,7 +198,7 @@ export const DetailsScreen = ({ venues }: DetailsScreenProps): JSX.Element => {
           {shouldDisplayEanSearch && (
             <DetailsEanSearch
               setImageOffer={setImageOffer}
-              isClearAvailable={!offer?.productId}
+              isOfferProductBased={isOfferProductBased}
             />
           )}
           <DetailsForm

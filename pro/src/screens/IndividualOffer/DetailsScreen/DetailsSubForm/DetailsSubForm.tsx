@@ -33,7 +33,7 @@ export const ARTISTIC_INFORMATION_FIELDS = [
 ]
 
 export type DetailsSubFormProps = {
-  isOfferProductBased: boolean
+  isProductBased: boolean
   isOfferCDOrVinyl: boolean
   readOnlyFields: string[]
   onImageUpload: (values: OnImageUploadArgs) => Promise<void>
@@ -42,7 +42,7 @@ export type DetailsSubFormProps = {
 }
 
 export const DetailsSubForm = ({
-  isOfferProductBased,
+  isProductBased,
   isOfferCDOrVinyl,
   readOnlyFields,
   onImageUpload,
@@ -75,8 +75,8 @@ export const DetailsSubForm = ({
   // In the context of an offer creation, vinyls & CDs must be
   // product-based offers so the form must be pre-filled with
   // the results of an EAN search.
-  const displayRedirectionCallout = !isOfferProductBased && isOfferCDOrVinyl
-  const displayImageUploader = !isOfferProductBased || imageOffer
+  const displayRedirectionCallout = !isProductBased && isOfferCDOrVinyl
+  const displayImageUploader = !isProductBased || imageOffer
   const displayArtisticInformations = ARTISTIC_INFORMATION_FIELDS.some(
     (field) => subcategoryConditionalFields.includes(field)
   )
@@ -107,7 +107,7 @@ export const DetailsSubForm = ({
               onImageUpload={onImageUpload}
               onImageDelete={onImageDelete}
               imageOffer={imageOffer}
-              hideActionButtons={isOfferProductBased}
+              hideActionButtons={isProductBased}
             />
           )}
           {displayArtisticInformations && (
@@ -209,18 +209,19 @@ export const DetailsSubForm = ({
                   />
                 </FormLayout.Row>
               )}
-              {subcategoryConditionalFields.includes('ean') && (
-                <FormLayout.Row>
-                  <TextInput
-                    isOptional
-                    label="EAN-13 (European Article Numbering)"
-                    countCharacters
-                    name="ean"
-                    maxLength={13}
-                    disabled={readOnlyFields.includes('ean')}
-                  />
-                </FormLayout.Row>
-              )}
+              {subcategoryConditionalFields.includes('ean') &&
+                !isProductBased && (
+                  <FormLayout.Row>
+                    <TextInput
+                      isOptional
+                      label="EAN-13 (European Article Numbering)"
+                      countCharacters
+                      name="ean"
+                      maxLength={13}
+                      disabled={readOnlyFields.includes('ean')}
+                    />
+                  </FormLayout.Row>
+                )}
               {subcategoryConditionalFields.includes('durationMinutes') && (
                 <FormLayout.Row>
                   <TimePicker

@@ -19,12 +19,12 @@ import styles from './DetailsEanSearch.module.scss'
 
 export type DetailsEanSearchProps = {
   setImageOffer: (imageOffer: IndividualOfferImage) => void
-  isClearAvailable?: boolean
+  isOfferProductBased: boolean
 }
 
 export const DetailsEanSearch = ({
   setImageOffer,
-  isClearAvailable,
+  isOfferProductBased,
 }: DetailsEanSearchProps): JSX.Element => {
   const inputRef = useRef<HTMLInputElement>(null)
   const [isFetchingProduct, setIsFetchingProduct] = useState(false)
@@ -122,12 +122,21 @@ export const DetailsEanSearch = ({
     setWasCleared(true)
   }
 
-  const isProductBased = !!productId
+  const isNotAnOfferYetButProductBased = !isOfferProductBased && !!productId
+  const isProductBased = isOfferProductBased || isNotAnOfferYetButProductBased
   const hasInputErrored = !!errors.ean
+
   const shouldInputBeDisabled = isProductBased || isFetchingProduct
   const shouldButtonBeDisabled =
     isProductBased || !ean || hasInputErrored || !!apiError || isFetchingProduct
-  const displayClearButton = isProductBased && isClearAvailable
+  const displayClearButton = isNotAnOfferYetButProductBased
+
+  const calloutVariant = isNotAnOfferYetButProductBased
+    ? CalloutVariant.SUCCESS
+    : CalloutVariant.DEFAULT
+  const calloutLabel = isNotAnOfferYetButProductBased
+    ? 'Les informations suivantes ont été synchronisées à partir de l’EAN renseigné.'
+    : 'Les informations de cette page ne sont pas modifiables car elles sont liées à l’EAN renseigné.'
 
   const label = (
     <>
@@ -182,10 +191,9 @@ export const DetailsEanSearch = ({
         {isProductBased && (
           <Callout
             className={styles['details-ean-search-callout']}
-            variant={CalloutVariant.SUCCESS}
+            variant={calloutVariant}
           >
-            Les informations suivantes ont été synchronisées à partir de l’EAN
-            renseigné.
+            {calloutLabel}
           </Callout>
         )}
       </div>

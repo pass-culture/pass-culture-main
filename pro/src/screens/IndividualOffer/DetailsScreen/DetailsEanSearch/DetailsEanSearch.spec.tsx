@@ -29,11 +29,12 @@ const contextValue: IndividualOfferContextValues = {
   setIsEvent: vi.fn(),
 }
 
+type RequiredProps = 'isOfferProductBased'
+type DetailsEanSearchTestProps = Pick<DetailsEanSearchProps, RequiredProps>
+
 const EanSearchWrappedWithFormik = ({
-  isClearAvailable,
-}: {
-  isClearAvailable: boolean
-}): JSX.Element => {
+  isOfferProductBased,
+}: DetailsEanSearchTestProps): JSX.Element => {
   const formik = useFormik({
     initialValues: DEFAULT_DETAILS_FORM_VALUES,
     onSubmit: vi.fn(),
@@ -45,20 +46,16 @@ const EanSearchWrappedWithFormik = ({
     <FormikProvider value={formik}>
       <DetailsEanSearch
         setImageOffer={setImageOffer}
-        isClearAvailable={isClearAvailable}
+        isOfferProductBased={isOfferProductBased}
       />
     </FormikProvider>
   )
 }
 
-const renderDetailsEanSearch = ({
-  isClearAvailable,
-}: {
-  isClearAvailable: boolean
-}) => {
+const renderDetailsEanSearch = (props: DetailsEanSearchTestProps) => {
   return renderWithProviders(
     <IndividualOfferContext.Provider value={contextValue}>
-      <EanSearchWrappedWithFormik isClearAvailable={isClearAvailable} />
+      <EanSearchWrappedWithFormik {...props} />
     </IndividualOfferContext.Provider>
   )
 }
@@ -67,12 +64,11 @@ vi.mock('apiClient/api', () => ({
   api: { getProductByEan: vi.fn() },
 }))
 
-const buttonLabel = 'Rechercher'
-const inputLabel = 'Nouveau Scanner ou rechercher un produit par EAN'
-const successMessage =
-  'Les informations suivantes ont été synchronisées' +
-  ' à partir de l’EAN renseigné.'
-const errorMessage = 'Une erreur est survenue lors de la recherche'
+const buttonLabel = /Rechercher/
+const inputLabel = /Scanner ou rechercher un produit par EAN/
+const successMessage = /Les informations suivantes ont été synchronisées/
+const infoMessage = /Les informations de cette page ne sont pas modifiables/
+const errorMessage = /Une erreur est survenue lors de la recherche/
 const clearButtonLabel = /Effacer/
 
 describe('DetailsEanSearch', () => {
@@ -88,11 +84,11 @@ describe('DetailsEanSearch', () => {
         performer: 'Boards of Canada',
         images: {},
       })
+
+      renderDetailsEanSearch({ isOfferProductBased: false })
     })
 
     it('should display a success message', async () => {
-      renderDetailsEanSearch({ isClearAvailable: true })
-
       const button = screen.getByRole('button', { name: buttonLabel })
       const eanInput = screen.getByRole('textbox', { name: inputLabel })
 
@@ -105,8 +101,6 @@ describe('DetailsEanSearch', () => {
     })
 
     it('should be disabled until the input is cleared', async () => {
-      renderDetailsEanSearch({ isClearAvailable: true })
-
       const button = screen.getByRole('button', { name: buttonLabel })
       const eanInput = screen.getByRole('textbox', { name: inputLabel })
 
@@ -131,27 +125,29 @@ describe('DetailsEanSearch', () => {
       expect(newEanInput).toHaveValue('')
       expect(button).toBeDisabled()
     })
+  })
 
-    it('should not display the clear button afterwards if unavailable (POST draft/edited offer contexts)', async () => {
-      renderDetailsEanSearch({ isClearAvailable: false })
+  describe('when an EAN search *was* performed succesfully (after POST)', () => {
+    beforeEach(() => {
+      renderDetailsEanSearch({ isOfferProductBased: true })
+    })
 
-      const button = screen.getByRole('button', { name: buttonLabel })
-      const eanInput = screen.getByRole('textbox', { name: inputLabel })
-
-      await userEvent.type(eanInput, '9781234567897')
-      await userEvent.click(button)
-
+    it('should not display the clear button anymore', () => {
       const clearButton = screen.queryByRole('button', {
         name: clearButtonLabel,
       })
       expect(clearButton).not.toBeInTheDocument()
+    })
+
+    it('should display an info message', () => {
+      expect(screen.queryByText(infoMessage)).toBeInTheDocument()
     })
   })
 
   describe('when an EAN search ends with an error', () => {
     beforeEach(() => {
       vi.spyOn(api, 'getProductByEan').mockRejectedValue(new Error('error'))
-      renderDetailsEanSearch({ isClearAvailable: true })
+      renderDetailsEanSearch({ isOfferProductBased: false })
     })
 
     it('should display an error message', async () => {
