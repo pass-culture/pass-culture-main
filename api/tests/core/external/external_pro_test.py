@@ -24,7 +24,8 @@ pytestmark = pytest.mark.usefixtures("db_session")
 # 1 query on venue table with joinedload
 # 2 extra SQL queries: select exists on offer and booking tables
 # 1 extra query to check if the venue has any related collective offer with 'marseille en grand'
-EXPECTED_PRO_ATTR_NUM_QUERIES = 5
+# 1 check if the venue is concerned with marseille_en_grand
+EXPECTED_PRO_ATTR_NUM_QUERIES = 6
 
 
 def _build_params(subs, virt, perman, draft, accep, offer, book, attach, colloff, tploff, megoff):
@@ -239,8 +240,6 @@ def test_update_external_pro_user_attributes(
     )
 
     num_queries = EXPECTED_PRO_ATTR_NUM_QUERIES
-    if create_collective_offer or create_collective_offer_meg:
-        num_queries += 1
 
     with assert_num_queries(num_queries):
         attributes = get_pro_attributes(email)
@@ -357,7 +356,7 @@ def test_update_external_pro_booking_email_attributes():
         venueTypeCode=VenueTypeCode.MUSEUM,
     )
 
-    with assert_num_queries(4):
+    with assert_num_queries(5):
         attributes = get_pro_attributes(email)
 
     assert attributes.is_pro is True
@@ -403,7 +402,7 @@ def test_update_external_pro_booking_email_attributes_for_permanent_venue_with_b
         _bannerUrl="https://example.net/banner.jpg",
     )
 
-    with assert_num_queries(4):
+    with assert_num_queries(5):
         attributes = get_pro_attributes(email)
     assert attributes.isPermanent is True
     assert attributes.has_banner_url is True
@@ -424,7 +423,7 @@ def test_update_external_pro_booking_email_attributes_for_non_permanent_venue_wi
         _bannerUrl="https://example.net/banner.jpg",
     )
 
-    with assert_num_queries(4):
+    with assert_num_queries(5):
         attributes = get_pro_attributes(email)
     assert attributes.isPermanent is False
     assert attributes.has_banner_url is True
@@ -444,7 +443,7 @@ def test_update_external_pro_booking_email_attributes_for_non_permanent_venue_wi
         venueTypeCode=VenueTypeCode.MUSEUM,
     )
 
-    with assert_num_queries(4):
+    with assert_num_queries(5):
         attributes = get_pro_attributes(email)
     assert attributes.isPermanent is False
     assert attributes.has_banner_url is True
@@ -452,7 +451,8 @@ def test_update_external_pro_booking_email_attributes_for_non_permanent_venue_wi
 
 def test_update_external_pro_removed_email_attributes():
     # only 2 queries: user and venue - nothing found
-    with assert_num_queries(2):
+    # one query for marseille_en_grand
+    with assert_num_queries(3):
         attributes = get_pro_attributes("removed@example.net")
 
     assert attributes.is_pro is True
