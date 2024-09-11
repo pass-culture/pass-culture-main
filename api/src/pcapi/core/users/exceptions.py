@@ -99,3 +99,7 @@ class ProUserNotEligibleForNewNav(Exception):
 
 class ProUserNotYetEligibleForNewNav(Exception):
     pass
+
+
+class UserAlreadyHasPendingAnonymization(Exception):
+    pass
