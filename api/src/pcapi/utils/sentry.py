@@ -1,5 +1,6 @@
 import enum
 import random
+import re
 import sys
 import typing
 
@@ -30,6 +31,8 @@ LOWER_SAMPLE_RATE = DEFAULT_SAMPLE_RATE / 100
 LOWEST_SAMPLE_RATE = DEFAULT_SAMPLE_RATE / 1000
 NO_SAMPLE_RATE = 0.0
 
+NATIVE_PATH_REGEX = r"/native/v\d+/{path}"
+
 
 class SpecificPath(enum.Enum):
     BACKOFFICE_HOME = f"{backoffice_blueprint.BACKOFFICE_WEB_BLUEPRINT_NAME}.home"
@@ -44,6 +47,11 @@ def before_send(event: "Event", _hint: dict[str, typing.Any]) -> "Event | None":
     return event
 
 
+def _is_native_with_path(path: str, target: str) -> bool:
+    regex = NATIVE_PATH_REGEX.format(path=target.lstrip("/"))
+    return re.match(regex, path) is not None
+
+
 def custom_traces_sampler(sampling_context: dict) -> float:
     """
     This sampler defines a fraction of the DEFAULT_SAMPLE_RATE according to the requested path
@@ -51,6 +59,7 @@ def custom_traces_sampler(sampling_context: dict) -> float:
     At this time, the transaction name has not yet been defined by Flask, but we will later filter out
     some events in before_send_transaction()
     """
+    method = sampling_context.get("wsgi_environ", {}).get("REQUEST_METHOD")
     path = sampling_context.get("wsgi_environ", {}).get("PATH_INFO")
 
     # for instance : worker requests
@@ -71,6 +80,12 @@ def custom_traces_sampler(sampling_context: dict) -> float:
             score = LOWEST_SAMPLE_RATE
         case _ if path.startswith("/.well-knwon/"):
             score = LOWEST_SAMPLE_RATE
+
+        # external APIs calls
+        case _ if method == "GET" and _is_native_with_path(path, r"/offer/\d+"):
+            score = LOW_SAMPLE_RATE
+        case _ if method == "POST" and _is_native_with_path(path, "/bookings"):
+            score = LOW_SAMPLE_RATE
 
         # static files for BO
         case _ if path.startswith("/static"):

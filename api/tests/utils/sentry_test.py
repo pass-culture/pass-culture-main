@@ -7,6 +7,7 @@ from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
 from pcapi.routes.apis import private_api
+from pcapi.utils.sentry import _is_native_with_path
 from pcapi.utils.sentry import before_send
 from pcapi.utils.sentry import init_sentry_sdk
 
@@ -94,3 +95,8 @@ def test_validation_erros_are_stamped_with_custom_fingerprint(mocked_before_send
     client.get("/test/route-with-validation-error/field_2")
 
     mocked_before_send.assert_called_once()
+
+
+def test_match_native_parametrized_path():
+    assert _is_native_with_path("/native/v1/offers/123", r"/offers/\d+")
+    assert _is_native_with_path("/native/v2/bookings", "/bookings")
