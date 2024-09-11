@@ -1,3 +1,4 @@
+from functools import partial
 from secrets import token_urlsafe
 
 from flask import flash
@@ -21,6 +22,9 @@ from pcapi.core.providers import api as providers_api
 from pcapi.core.providers import models as providers_models
 from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
+from pcapi.repository import atomic
+from pcapi.repository import mark_transaction_as_invalid
+from pcapi.repository import on_commit
 
 from . import forms
 from .. import utils
@@ -35,6 +39,7 @@ providers_blueprint = utils.child_backoffice_blueprint(
 
 
 @providers_blueprint.route("", methods=["GET"])
+@atomic()
 def list_providers() -> utils.BackofficeResponse:
     is_active_count = (
         sa.select(sa.func.jsonb_object_agg(sa.text("status_group"), sa.text("number")))
@@ -82,6 +87,7 @@ def list_providers() -> utils.BackofficeResponse:
 
 
 @providers_blueprint.route("/new", methods=["GET"])
+@atomic()
 def get_create_provider_form() -> utils.BackofficeResponse:
     form = forms.CreateProviderForm()
 
@@ -96,10 +102,12 @@ def get_create_provider_form() -> utils.BackofficeResponse:
 
 
 @providers_blueprint.route("/", methods=["POST"])
+@atomic()
 def create_provider() -> utils.BackofficeResponse:
     form = forms.CreateProviderForm()
 
     if not form.validate():
+        mark_transaction_as_invalid()
         flash(utils.build_form_error_msg(form), "warning")
         return redirect(url_for("backoffice_web.providers.list_providers"), code=303)
 
@@ -129,13 +137,13 @@ def create_provider() -> utils.BackofficeResponse:
             comment="Création automatique via création de partenaire",
         )
 
-        db.session.commit()
+        db.session.flush()
     except sa.exc.IntegrityError:
-        db.session.rollback()
+        mark_transaction_as_invalid()
         flash("Ce partenaire existe déjà", "warning")
     else:
         if is_offerer_new:
-            zendesk_sell.create_offerer(offerer)
+            on_commit(partial(zendesk_sell.create_offerer, offerer))
         flash(
             Markup(
                 "Le nouveau partenaire <b>{name}</b> a été créé. "
@@ -192,6 +200,7 @@ def _render_provider_details(
 
 
 @providers_blueprint.route("/<int:provider_id>", methods=["GET"])
+@atomic()
 def get_provider(provider_id: int) -> utils.BackofficeResponse:
     provider = (
         providers_models.Provider.query.filter(providers_models.Provider.id == provider_id)
@@ -232,6 +241,7 @@ def _get_active_venue_providers_stats(provider_id: int) -> dict[str, int]:
 
 
 @providers_blueprint.route("/<int:provider_id>/stats", methods=["GET"])
+@atomic()
 def get_stats(provider_id: int) -> utils.BackofficeResponse:
     stats = _get_active_venue_providers_stats(provider_id)
     return render_template(
@@ -242,6 +252,7 @@ def get_stats(provider_id: int) -> utils.BackofficeResponse:
 
 
 @providers_blueprint.route("/<int:provider_id>/venues", methods=["GET"])
+@atomic()
 def get_venues(provider_id: int) -> utils.BackofficeResponse:
     venues = (
         offerers_models.Venue.query.join(
@@ -272,6 +283,7 @@ def get_venues(provider_id: int) -> utils.BackofficeResponse:
 
 
 @providers_blueprint.route("/<int:provider_id>/update", methods=["POST"])
+@atomic()
 def update_provider(provider_id: int) -> utils.BackofficeResponse:
     provider = providers_models.Provider.query.filter_by(id=provider_id).one_or_none()
     if not provider:
@@ -279,6 +291,7 @@ def update_provider(provider_id: int) -> utils.BackofficeResponse:
 
     form = forms.EditProviderForm()
     if not form.validate():
+        mark_transaction_as_invalid()
         msg = Markup(
             """
             <button type="button"
@@ -302,11 +315,11 @@ def update_provider(provider_id: int) -> utils.BackofficeResponse:
 
     try:
         db.session.add(provider)
-        db.session.commit()
+        db.session.flush()
         if not form.is_active.data:
-            providers_api.disable_offers_linked_to_provider(provider_id, current_user)
+            on_commit(partial(providers_api.disable_offers_linked_to_provider, provider_id, current_user))
     except sa.exc.IntegrityError:
-        db.session.rollback()
+        mark_transaction_as_invalid()
         flash("Ce partenaire existe déjà", "warning")
     else:
         flash("Les informations ont été mises à jour", "success")
