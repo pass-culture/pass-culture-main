@@ -158,22 +158,22 @@ def _anonymyze_user(user: users_models.User, author: users_models.User) -> None:
 
 
 def _pre_anonymize_user(user: users_models.User, author: users_models.User) -> None:
-    try:
-        users_api.pre_anonymize_user(user, author, is_backoffice_action=True)
-    except users_exceptions.UserAlreadyHasPendingAnonymization:
-        mark_transaction_as_invalid()
-        flash("L'utilisateur est déjà en attente pour être anonymisé le jour de ses 21 ans", "warning")
-    else:
-        users_api.suspend_account(
-            user=user,
-            reason=users_constants.SuspensionReason.WAITING_FOR_ANONYMIZATION,
-            actor=author,
-            comment="L'utilisateur sera anonymisé le jour de ses 21 ans",
-            is_backoffice_action=True,
-        )
+    if users_api.is_suspended_for_less_than_five_years(user):
         db.session.add(users_models.GdprUserAnonymization(user=user))
         db.session.flush()
-        flash("L'utilisateur a été suspendu et sera anonymisé le jour de ses 21 ans", "success")
+        flash(
+            "L'utilisateur sera anonymisé quand il aura plus de 21 ans et 5 ans après sa suspension pour fraude",
+            "success",
+        )
+    else:
+        try:
+            users_api.pre_anonymize_user(user, author, is_backoffice_action=True)
+        except users_exceptions.UserAlreadyHasPendingAnonymization:
+            mark_transaction_as_invalid()
+            flash("L'utilisateur est déjà en attente pour être anonymisé le jour de ses 21 ans", "warning")
+        else:
+            db.session.flush()
+            flash("L'utilisateur a été suspendu et sera anonymisé le jour de ses 21 ans", "success")
 
 
 def _has_user_pending_anonymization(user_id: int) -> bool:
