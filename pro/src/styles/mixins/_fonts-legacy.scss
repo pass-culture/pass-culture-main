@@ -3,18 +3,12 @@
 
 @mixin bold() {
   font-family: Montserrat-Bold, system-ui, sans-serif;
-  font-weight: 700;
-  font-style: normal;
 }
 
 @mixin semi-bold() {
   font-family: Montserrat-SemiBold, system-ui, sans-serif;
-  font-weight: 600;
-  font-style: normal;
 }
 
 @mixin medium() {
   font-family: Montserrat-Medium, system-ui, sans-serif;
-  font-weight: 500;
-  font-style: normal;
 }
