@@ -128,6 +128,15 @@ class TiteliveBookSearch(TiteliveSearch[TiteLiveBookWork]):
         return works
 
 
+def extract_eans_from_titelive_response(json_response: list[dict]) -> set[str]:
+    eans = set()
+    for work in json_response:
+        for article in work["article"].values():
+            eans.add(article["gencod"])
+
+    return eans
+
+
 EMPTY_GTL = GenreTitelive(code="".zfill(8), libelle="Empty GTL")
 
 
