@@ -18,7 +18,7 @@ from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.routes.backoffice.filters import format_titelive_id_lectorat
 
 from ...connectors.titelive import fixtures
-from ...connectors.titelive.fixtures import BOOK_BY_EAN_FIXTURE
+from ...connectors.titelive.fixtures import BOOK_BY_SINGLE_EAN_FIXTURE
 from .helpers import button as button_helpers
 from .helpers import html_parser
 from .helpers.get import GetEndpointHelper
@@ -50,8 +50,8 @@ class SearchEanTest(GetEndpointHelper):
 
     @patch("pcapi.routes.backoffice.titelive.blueprint.get_by_ean13")
     def test_search_ean_not_whitelisted(self, mock_get_by_ean13, authenticated_client):
-        mock_get_by_ean13.return_value = BOOK_BY_EAN_FIXTURE
-        article = BOOK_BY_EAN_FIXTURE["oeuvre"]["article"][0]
+        mock_get_by_ean13.return_value = BOOK_BY_SINGLE_EAN_FIXTURE
+        article = BOOK_BY_SINGLE_EAN_FIXTURE["oeuvre"]["article"][0]
 
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, **self.endpoint_kwargs))
@@ -63,12 +63,12 @@ class SearchEanTest(GetEndpointHelper):
 
         card_ean = soup.select("div.pc-ean-result")
         assert card_ean
-        assert BOOK_BY_EAN_FIXTURE["oeuvre"]["titre"] in card_titles[0]
+        assert BOOK_BY_SINGLE_EAN_FIXTURE["oeuvre"]["titre"] in card_titles[0]
         assert soup.select(
-            f"div.pc-ean-result img[src=\"{BOOK_BY_EAN_FIXTURE['oeuvre']['article'][0]['imagesUrl']['recto']}\"]"
+            f"div.pc-ean-result img[src=\"{BOOK_BY_SINGLE_EAN_FIXTURE['oeuvre']['article'][0]['imagesUrl']['recto']}\"]"
         )
-        assert BOOK_BY_EAN_FIXTURE["oeuvre"]["titre"] in card_text[0]
-        assert "EAN-13 : " + BOOK_BY_EAN_FIXTURE["ean"] in card_text[0]
+        assert BOOK_BY_SINGLE_EAN_FIXTURE["oeuvre"]["titre"] in card_text[0]
+        assert "EAN-13 : " + BOOK_BY_SINGLE_EAN_FIXTURE["ean"] in card_text[0]
         assert "Lectorat : " + format_titelive_id_lectorat(article["id_lectorat"]) in card_text[0]
         assert (
             "Prix HT : "
@@ -93,7 +93,7 @@ class SearchEanTest(GetEndpointHelper):
             author__firstName="Frank",
             author__lastName="Columbo",
         )
-        mock_get_by_ean13.return_value = BOOK_BY_EAN_FIXTURE
+        mock_get_by_ean13.return_value = BOOK_BY_SINGLE_EAN_FIXTURE
 
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, **self.endpoint_kwargs))
@@ -128,11 +128,11 @@ class WhitelistButtonTest(button_helpers.ButtonHelper):
         return url_for("backoffice_web.titelive.search_titelive", ean="9782070455379")
 
     def test_button_when_can_add_one(self, authenticated_client):
-        with patch("pcapi.routes.backoffice.titelive.blueprint.get_by_ean13", return_value=BOOK_BY_EAN_FIXTURE):
+        with patch("pcapi.routes.backoffice.titelive.blueprint.get_by_ean13", return_value=BOOK_BY_SINGLE_EAN_FIXTURE):
             super().test_button_when_can_add_one(authenticated_client)
 
     def test_no_button(self, client, roles_with_permissions):
-        with patch("pcapi.routes.backoffice.titelive.blueprint.get_by_ean13", return_value=BOOK_BY_EAN_FIXTURE):
+        with patch("pcapi.routes.backoffice.titelive.blueprint.get_by_ean13", return_value=BOOK_BY_SINGLE_EAN_FIXTURE):
             super().test_no_button(client, roles_with_permissions)
 
 
@@ -167,17 +167,17 @@ class AddProductWhitelistTest(PostEndpointHelper):
         self, mock_whitelist_product, mock_get_by_ean13, mocked_async_index_offer_ids, authenticated_client, form_data
     ):
         thing_product = offers_factories.ThingProductFactory(
-            extraData={"ean": BOOK_BY_EAN_FIXTURE["ean"]},
+            extraData={"ean": BOOK_BY_SINGLE_EAN_FIXTURE["ean"]},
             description="Tome 1",
-            idAtProviders=str(BOOK_BY_EAN_FIXTURE["ean"]),
+            idAtProviders=str(BOOK_BY_SINGLE_EAN_FIXTURE["ean"]),
             name="Immortelle randonnée ; Compostelle malgré moi",
             subcategoryId="LIVRE_PAPIER",
         )
-        mock_get_by_ean13.return_value = BOOK_BY_EAN_FIXTURE
+        mock_get_by_ean13.return_value = BOOK_BY_SINGLE_EAN_FIXTURE
         mock_whitelist_product.return_value = thing_product
         offers_to_restore = [
             offers_factories.ThingOfferFactory(
-                idAtProvider=BOOK_BY_EAN_FIXTURE["ean"],
+                idAtProvider=BOOK_BY_SINGLE_EAN_FIXTURE["ean"],
                 product=thing_product,
                 validation=offers_models.OfferValidationStatus.REJECTED,
                 lastValidationType=OfferValidationType.CGU_INCOMPATIBLE_PRODUCT,
@@ -192,21 +192,21 @@ class AddProductWhitelistTest(PostEndpointHelper):
         ]
         offers_not_to_restore = [
             offers_factories.ThingOfferFactory(
-                idAtProvider=BOOK_BY_EAN_FIXTURE["ean"],
+                idAtProvider=BOOK_BY_SINGLE_EAN_FIXTURE["ean"],
                 product=thing_product,
                 validation=offers_models.OfferValidationStatus.REJECTED,
                 lastValidationType=OfferValidationType.AUTO,
                 lastValidationDate=datetime.date.today() - datetime.timedelta(days=2),
             ),
             offers_factories.ThingOfferFactory(
-                idAtProvider=BOOK_BY_EAN_FIXTURE["ean"],
+                idAtProvider=BOOK_BY_SINGLE_EAN_FIXTURE["ean"],
                 product=thing_product,
                 validation=offers_models.OfferValidationStatus.PENDING,
                 lastValidationType=OfferValidationType.AUTO,
                 lastValidationDate=datetime.date.today() - datetime.timedelta(days=2),
             ),
             offers_factories.ThingOfferFactory(
-                idAtProvider=BOOK_BY_EAN_FIXTURE["ean"],
+                idAtProvider=BOOK_BY_SINGLE_EAN_FIXTURE["ean"],
                 product=thing_product,
                 validation=offers_models.OfferValidationStatus.DRAFT,
                 lastValidationType=OfferValidationType.CGU_INCOMPATIBLE_PRODUCT,
@@ -257,13 +257,13 @@ class AddProductWhitelistTest(PostEndpointHelper):
         self, mock_whitelist_product, mock_get_by_ean13, authenticated_client, requests_mock
     ):
         thing_product = offers_factories.ThingProductFactory(
-            extraData={"ean": BOOK_BY_EAN_FIXTURE["ean"]},
+            extraData={"ean": BOOK_BY_SINGLE_EAN_FIXTURE["ean"]},
             description="Tome 1",
-            idAtProviders=str(BOOK_BY_EAN_FIXTURE["ean"]),
+            idAtProviders=str(BOOK_BY_SINGLE_EAN_FIXTURE["ean"]),
             name="Immortelle randonnée ; Compostelle malgré moi",
             subcategoryId="LIVRE_PAPIER",
         )
-        mock_get_by_ean13.return_value = BOOK_BY_EAN_FIXTURE
+        mock_get_by_ean13.return_value = BOOK_BY_SINGLE_EAN_FIXTURE
         mock_whitelist_product.return_value = thing_product
         requests_mock.post(
             f"{settings.TITELIVE_EPAGINE_API_AUTH_URL}/login/test@example.com/token",
@@ -271,7 +271,7 @@ class AddProductWhitelistTest(PostEndpointHelper):
         )
         requests_mock.get(
             f"{settings.TITELIVE_EPAGINE_API_URL}/ean/{self.endpoint_kwargs['ean']}",
-            json=fixtures.BOOK_BY_EAN_FIXTURE,
+            json=fixtures.BOOK_BY_SINGLE_EAN_FIXTURE,
         )
         assert not fraud_models.ProductWhitelist.query.filter(
             fraud_models.ProductWhitelist.ean == self.endpoint_kwargs["ean"]
@@ -344,17 +344,17 @@ class AddProductWhitelistTest(PostEndpointHelper):
         self, mock_whitelist_product, mock_get_by_ean13, mocked_async_index_offer_ids, authenticated_client, legit_user
     ):
         thing_product = offers_factories.ThingProductFactory(
-            extraData={"ean": BOOK_BY_EAN_FIXTURE["ean"]},
+            extraData={"ean": BOOK_BY_SINGLE_EAN_FIXTURE["ean"]},
             description="Tome 1",
-            idAtProviders=str(BOOK_BY_EAN_FIXTURE["ean"]),
+            idAtProviders=str(BOOK_BY_SINGLE_EAN_FIXTURE["ean"]),
             name="Immortelle randonnée ; Compostelle malgré moi",
             subcategoryId="LIVRE_PAPIER",
         )
-        mock_get_by_ean13.return_value = BOOK_BY_EAN_FIXTURE
+        mock_get_by_ean13.return_value = BOOK_BY_SINGLE_EAN_FIXTURE
         mock_whitelist_product.return_value = thing_product
 
         offer = offers_factories.ThingOfferFactory(
-            idAtProvider=BOOK_BY_EAN_FIXTURE["ean"],
+            idAtProvider=BOOK_BY_SINGLE_EAN_FIXTURE["ean"],
             product=thing_product,
             validation=offers_models.OfferValidationStatus.REJECTED,
             lastValidationType=OfferValidationType.CGU_INCOMPATIBLE_PRODUCT,
@@ -382,7 +382,7 @@ class DeleteProductWhitelistTest(GetEndpointHelper):
 
     @patch("pcapi.routes.backoffice.titelive.blueprint.get_by_ean13")
     def test_remove_product_from_whitelist(self, mock_get_by_ean13, authenticated_client):
-        mock_get_by_ean13.return_value = BOOK_BY_EAN_FIXTURE
+        mock_get_by_ean13.return_value = BOOK_BY_SINGLE_EAN_FIXTURE
         ProductWhitelistFactory(ean=self.endpoint_kwargs["ean"])
         response = authenticated_client.get(url_for(self.endpoint, **self.endpoint_kwargs))
 
@@ -394,7 +394,7 @@ class DeleteProductWhitelistTest(GetEndpointHelper):
 
     @patch("pcapi.routes.backoffice.titelive.blueprint.get_by_ean13")
     def test_remove_product_whitelist_not_in_whitelist(self, mock_get_by_ean13, authenticated_client):
-        mock_get_by_ean13.return_value = BOOK_BY_EAN_FIXTURE
+        mock_get_by_ean13.return_value = BOOK_BY_SINGLE_EAN_FIXTURE
         response = authenticated_client.get(url_for(self.endpoint, **self.endpoint_kwargs))
 
         assert response.status_code == 303

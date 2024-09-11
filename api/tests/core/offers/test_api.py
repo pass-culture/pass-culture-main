@@ -2579,7 +2579,7 @@ class WhitelistExistingProductTest:
         )
         requests_mock.get(
             f"{settings.TITELIVE_EPAGINE_API_URL}/ean/{ean}",
-            json=fixtures.BOOK_BY_EAN_FIXTURE,
+            json=fixtures.BOOK_BY_SINGLE_EAN_FIXTURE,
         )
 
         product = factories.ProductFactory(
@@ -2609,7 +2609,7 @@ class WhitelistExistingProductTest:
 
         assert models.Product.query.one() == product
         assert product.isGcuCompatible
-        oeuvre = fixtures.BOOK_BY_EAN_FIXTURE["oeuvre"]
+        oeuvre = fixtures.BOOK_BY_SINGLE_EAN_FIXTURE["oeuvre"]
         article = oeuvre["article"][0]
         assert product.name == oeuvre["titre"]
         assert product.description == article["resume"]
@@ -2637,7 +2637,7 @@ class WhitelistExistingProductTest:
         )
         requests_mock.get(
             f"{settings.TITELIVE_EPAGINE_API_URL}/ean/{ean}",
-            json=fixtures.BOOK_BY_EAN_FIXTURE,
+            json=fixtures.BOOK_BY_SINGLE_EAN_FIXTURE,
         )
         assert not models.Product.query.filter(models.Product.idAtProviders == ean).one_or_none()
 
