@@ -391,6 +391,18 @@ class ReadProductBookingCountTest:
         assert search_testing.search_store["offers"][offer.id]["offer"].get("last30DaysBookings") == 1
 
 
+@mock.patch("pcapi.core.search.update_last_30_days_bookings_for_eans", return_value=list(range(101)))
+@mock.patch("pcapi.core.search.update_last_30_days_bookings_for_movies", return_value=list(range(101)))
+def test_limit_products_to_reindex_depending_on_algolia_limit(_mock_eans, _mock_movies):
+    with override_settings(ALGOLIA_OFFERS_INDEX_MAX_SIZE=-1):
+        items = search.update_booking_count_by_product()
+        assert len(items) == 202
+
+    with override_settings(ALGOLIA_OFFERS_INDEX_MAX_SIZE=1):
+        items = search.update_booking_count_by_product()
+        assert len(items) == 200
+
+
 def test_booking_count_for_movies():
     product = offers_factories.ProductFactory(subcategoryId=subcategories_v2.SEANCE_CINE.id)
     offer = offers_factories.OfferFactory(product=product)
