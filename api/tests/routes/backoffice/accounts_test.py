@@ -2667,6 +2667,26 @@ class AnonymizePublicAccountTest(PostEndpointHelper, StorageFolderManager):
 
         assert user.roles == [users_models.UserRole.ANONYMIZED]
 
+    def test_anonymize_public_is_suspended_for_fraud(self, authenticated_client):
+        user = users_factories.BeneficiaryFactory(isActive=False)
+        history_factories.SuspendedUserActionHistoryFactory(
+            actionDate=datetime.datetime.utcnow(),
+            actionType=history_models.ActionType.USER_SUSPENDED,
+            reason=users_constants.SuspensionReason.FRAUD_RESELL_PASS,
+            user=user,
+        )
+
+        response = self.post_to_endpoint(authenticated_client, user_id=user.id, follow_redirects=True)
+        assert response.status_code == 200
+
+        db.session.refresh(user)
+        assert not user.isActive
+        assert users_models.GdprUserAnonymization.query.filter_by(userId=user.id).count() == 1
+        assert (
+            "L'utilisateur sera anonymisé quand il aura plus de 21 ans et 5 ans après sa suspension pour fraude"
+            in html_parser.extract_alert(response.data)
+        )
+
 
 class ExtractPublicAccountTest(PostEndpointHelper):
     endpoint = "backoffice_web.public_accounts.create_extract_user_gdpr_data"
