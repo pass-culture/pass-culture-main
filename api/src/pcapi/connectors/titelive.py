@@ -124,6 +124,52 @@ def get_by_ean13(ean13: str) -> dict[str, typing.Any]:
     return response.json()
 
 
+def get_by_ean_list(ean_list: set[str]) -> dict[str, typing.Any]:
+    try:
+        query_params = "|".join(ean_list)
+        url = f"{settings.TITELIVE_EPAGINE_API_URL}/ean?in=ean={query_params}"
+        headers = {"Content-Type": "application", "Authorization": "Bearer  {}".format(get_jwt_token())}
+        response = requests.get(url, headers=headers)
+
+    except requests.exceptions.Timeout:
+        raise
+    except (urllib3_exceptions.HTTPError, requests.exceptions.RequestException) as e:
+        core_logging.log_for_supervision(
+            logger,
+            logging.ERROR,
+            "Titelive get by ean list: Network error",
+            extra={
+                "exception": e,
+                "alert": "Titelive error",
+                "error_type": "network",
+                "request_type": "get-by-ean-list",
+            },
+        )
+        raise requests.ExternalAPIException(is_retryable=True) from e
+
+    if not response.ok:
+        if response.status_code == 404:
+            raise offers_exceptions.TiteLiveAPINotExistingEAN()
+        if 400 <= response.status_code < 500:
+            core_logging.log_for_supervision(
+                logger,
+                logging.WARNING if response.status_code == 404 else logging.ERROR,
+                "Titelive get by ean list: External error: %s",
+                response.status_code,
+                extra={
+                    "alert": "Titelive error",
+                    "eans": ean_list,
+                    "error_type": "http",
+                    "status_code": response.status_code,
+                    "request_type": "get-by-ean-list",
+                    "response_text": response.text,
+                },
+            )
+            raise requests.ExternalAPIException(True, {"status_code": response.status_code})
+
+    return response.json()
+
+
 class GtlIdError(Exception):
     """Exception when GTL is not found."""
 

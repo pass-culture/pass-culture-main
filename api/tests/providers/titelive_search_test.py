@@ -366,12 +366,17 @@ class TiteliveBookSearchTest:
     SCHOLAR_BOOK_GTL_ID = providers_constants.GTL_LEVEL_01_SCHOOL + "040300"
     EXTRACURRICULAR_GTL_ID = providers_constants.GTL_LEVEL_01_EXTRACURRICULAR + "080000"
 
-    def setup_api_response_fixture(self, requests_mock, fixture):
+    def setup_api_response_fixture(self, requests_mock, fixture, eans=None):
         _configure_login_and_images(requests_mock)
         requests_mock.get(f"{settings.TITELIVE_EPAGINE_API_URL}/search?page=1", json=fixture)
         requests_mock.get(
             f"{settings.TITELIVE_EPAGINE_API_URL}/search?page=2", json=fixtures.EMPTY_MUSIC_SEARCH_FIXTURE
         )
+        if eans is None:
+            eans = []
+            if "result" in fixture:
+                eans = TiteliveBookSearch().extract_eans_from_titelive_response(fixture["result"])
+        requests_mock.get(f"{settings.TITELIVE_EPAGINE_API_URL}/ean?in=ean={'|'.join(eans)}", json=fixture)
 
     def build_previously_synced_book_product(
         self, ean=None, name=None, extra_data=None, gcuCompatibilityType=offers_models.GcuCompatibilityType.COMPATIBLE
@@ -847,3 +852,28 @@ class TiteliveBookSearchTest:
         # Then
         product = offers_models.Product.query.one()
         assert product.gcuCompatibilityType == offers_models.GcuCompatibilityType.FRAUD_INCOMPATIBLE
+
+    def test_get_information_from_titelive_multiple_ean_route(self, requests_mock):
+        self.setup_api_response_fixture(requests_mock, fixtures.BOOKS_BY_MULTIPLE_EANS_FIXTURE, eans=["1", "2"])
+
+        products = TiteliveBookSearch().get_product_info_from_eans(eans=["1", "2"])
+        assert products[0].article[0].gencod == "9782070726370"
+        assert products[1].article[0].gencod == "9782335010046"
+        assert len(products) == 2
+
+    def test_get_information_from_titelive_single_ean_route(self, requests_mock):
+        self.setup_api_response_fixture(requests_mock, fixtures.BOOK_BY_SINGLE_EAN_FIXTURE, eans=["1"])
+
+        products = TiteliveBookSearch().get_product_info_from_eans(eans=["1"])
+        assert products[0].article[0].gencod == "9782070455379"
+        assert len(products) == 1
+
+    def test_sync_skips_unparsable_work(self, requests_mock):
+        not_fully_parsable_response = copy.deepcopy(fixtures.BOOKS_BY_MULTIPLE_EANS_FIXTURE)
+        del not_fully_parsable_response["result"][0]["titre"]
+
+        self.setup_api_response_fixture(requests_mock, not_fully_parsable_response, eans=["1", "2"])
+
+        products = TiteliveBookSearch().get_product_info_from_eans(eans=["1", "2"])
+        assert products[0].article[0].gencod == "9782335010046"
+        assert len(products) == 1

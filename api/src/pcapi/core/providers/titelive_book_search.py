@@ -6,6 +6,7 @@ from pcapi.connectors.serialization.titelive_serializers import GenreTitelive
 from pcapi.connectors.serialization.titelive_serializers import TiteLiveBookArticle
 from pcapi.connectors.serialization.titelive_serializers import TiteLiveBookWork
 from pcapi.connectors.titelive import TiteliveBase
+from pcapi.connectors.titelive import get_by_ean_list
 from pcapi.core.categories.subcategories_v2 import LIVRE_PAPIER
 import pcapi.core.fraud.models as fraud_models
 from pcapi.core.offers import models as offers_models
@@ -106,6 +107,25 @@ class TiteliveBookSearch(TiteliveSearch[TiteLiveBookWork]):
 
         logger.info("Rejecting ineligible ean=%s because reason=%s", article.gencod, ineligibility_reason)
         return False
+
+    def get_product_info_from_eans(self, eans: set[str]) -> list[TiteLiveBookWork]:
+        response = get_by_ean_list(eans)
+        if "result" in response:
+            result = response["result"]
+        elif "oeuvre" in response:
+            result = [response["oeuvre"]]
+        else:
+            return []
+
+        works = []
+        for work in result:
+            try:
+                works.append(self.deserialize_titelive_product(work))
+            except pydantic.ValidationError as e:
+                logger.error("failed to deserialize titelive response", extra={"work": work, "exc": e})
+                continue
+
+        return works
 
 
 EMPTY_GTL = GenreTitelive(code="".zfill(8), libelle="Empty GTL")
