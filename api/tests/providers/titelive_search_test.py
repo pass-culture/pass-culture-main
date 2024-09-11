@@ -20,6 +20,7 @@ import pcapi.core.providers.factories as providers_factories
 import pcapi.core.providers.models as providers_models
 import pcapi.core.providers.repository as providers_repository
 from pcapi.core.providers.titelive_book_search import TiteliveBookSearch
+from pcapi.core.providers.titelive_book_search import extract_eans_from_titelive_response
 from pcapi.core.providers.titelive_music_search import TiteliveMusicSearch
 from pcapi.core.testing import override_settings
 from pcapi.core.users.factories import FavoriteFactory
@@ -375,7 +376,7 @@ class TiteliveBookSearchTest:
         if eans is None:
             eans = []
             if "result" in fixture:
-                eans = TiteliveBookSearch().extract_eans_from_titelive_response(fixture["result"])
+                eans = extract_eans_from_titelive_response(fixture["result"])
         requests_mock.get(f"{settings.TITELIVE_EPAGINE_API_URL}/ean?in=ean={'|'.join(eans)}", json=fixture)
 
     def build_previously_synced_book_product(
@@ -877,3 +878,7 @@ class TiteliveBookSearchTest:
         products = TiteliveBookSearch().get_product_info_from_eans(eans=["1", "2"])
         assert products[0].article[0].gencod == "9782335010046"
         assert len(products) == 1
+
+    def test_extract_eans_from_titelive_response(self):
+        eans = extract_eans_from_titelive_response(fixtures.TWO_BOOKS_RESPONSE_FIXTURE["result"])
+        assert eans == {"9782370730541", "9782848018676"}
