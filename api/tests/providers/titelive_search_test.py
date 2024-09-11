@@ -586,17 +586,19 @@ class TiteliveBookSearchTest:
     def test_should_not_create_product_when_product_is_paper_press(self, requests_mock):
         # When
         # One book press with tva
+        edited_fixture = copy.deepcopy(fixtures.TWO_BOOKS_RESPONSE_FIXTURE)
+
         non_synced_ean = "9999999999999"
-        fixtures.TWO_BOOKS_RESPONSE_FIXTURE["result"][0]["article"]["1"]["codesupport"] = "R"
-        fixtures.TWO_BOOKS_RESPONSE_FIXTURE["result"][0]["article"]["1"]["taux_tva"] = "2.10"
-        fixtures.TWO_BOOKS_RESPONSE_FIXTURE["result"][0]["article"]["1"]["code_tva"] = "1"
-        fixtures.TWO_BOOKS_RESPONSE_FIXTURE["result"][1]["article"]["1"]["gencod"] = non_synced_ean
+        edited_fixture["result"][0]["article"]["1"]["codesupport"] = "R"
+        edited_fixture["result"][0]["article"]["1"]["taux_tva"] = "2.10"
+        edited_fixture["result"][0]["article"]["1"]["code_tva"] = "1"
+        edited_fixture["result"][1]["article"]["1"]["gencod"] = non_synced_ean
 
         # One book not press with tva
-        fixtures.TWO_BOOKS_RESPONSE_FIXTURE["result"][1]["article"]["1"]["taux_tva"] = "2.10"
-        fixtures.TWO_BOOKS_RESPONSE_FIXTURE["result"][1]["article"]["1"]["code_tva"] = "1"
-        fixtures.TWO_BOOKS_RESPONSE_FIXTURE["result"][1]["article"]["1"]["gencod"] = self.EAN_TEST
-        self.setup_api_response_fixture(requests_mock, fixtures.TWO_BOOKS_RESPONSE_FIXTURE)
+        edited_fixture["result"][1]["article"]["1"]["taux_tva"] = "2.10"
+        edited_fixture["result"][1]["article"]["1"]["code_tva"] = "1"
+        edited_fixture["result"][1]["article"]["1"]["gencod"] = self.EAN_TEST
+        self.setup_api_response_fixture(requests_mock, edited_fixture)
 
         # When
         TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1), 1)
