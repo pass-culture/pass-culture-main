@@ -2313,9 +2313,12 @@ def accept_offerer_invitation_if_exists(user: users_models.User) -> None:
         )
         offerer_invitation.status = offerers_models.InvitationStatus.ACCEPTED
         db.session.add_all([user_offerer, offerer_invitation])
-        db.session.commit()
+        if is_managed_transaction():
+            db.session.flush()
+        else:
+            db.session.commit()
         external_attributes_api.update_external_pro(user.email)
-        zendesk_sell.create_offerer(user_offerer.offerer)
+        on_commit(functools.partial(zendesk_sell.create_offerer, user_offerer.offerer))
         logger.info(
             "UserOfferer created from invitation",
             extra={"offerer": user_offerer.offerer, "invitedUserId": user.id, "inviterUserId": inviter_user.id},
@@ -2788,40 +2791,43 @@ def get_or_create_address(location_data: LocationData, is_manual_edition: bool =
             db.session.add(address)
             db.session.flush()
         except sa.exc.IntegrityError:
+            address = None
             if is_managed_transaction():
                 mark_transaction_as_invalid()
             else:
                 db.session.rollback()
-            address = geography_models.Address.query.filter(
-                geography_models.Address.street == street,
-                geography_models.Address.inseeCode == insee_code,
-                sa.or_(
-                    geography_models.Address.isManualEdition.is_not(True),  # false or null
-                    sa.and_(
-                        geography_models.Address.banId == ban_id,
-                        geography_models.Address.inseeCode == insee_code,
-                        geography_models.Address.street == street,
-                        geography_models.Address.postalCode == postal_code,
-                        geography_models.Address.city == city,
-                        geography_models.Address.latitude == decimal.Decimal(latitude),
-                        geography_models.Address.longitude == decimal.Decimal(longitude),
-                    ),
+
+    if address is None:
+        address = geography_models.Address.query.filter(
+            geography_models.Address.street == street,
+            geography_models.Address.inseeCode == insee_code,
+            sa.or_(
+                geography_models.Address.isManualEdition.is_not(True),  # false or null
+                sa.and_(
+                    geography_models.Address.banId == ban_id,
+                    geography_models.Address.inseeCode == insee_code,
+                    geography_models.Address.street == street,
+                    geography_models.Address.postalCode == postal_code,
+                    geography_models.Address.city == city,
+                    geography_models.Address.latitude == decimal.Decimal(latitude),
+                    geography_models.Address.longitude == decimal.Decimal(longitude),
                 ),
-            ).one()
-            if not math.isclose(float(address.latitude), float(latitude), rel_tol=0.00001) or not math.isclose(
-                float(address.longitude), float(longitude), rel_tol=0.00001
-            ):
-                logger.error(
-                    "Unique constraint over street and inseeCode matched different coordinates",
-                    extra={
-                        "address_id": address.id,
-                        "incoming_banId": ban_id,
-                        "address_latitude": address.latitude,
-                        "address_longitude": address.longitude,
-                        "incoming_latitude": latitude,
-                        "incoming_longitude": longitude,
-                    },
-                )
+            ),
+        ).one()
+        if not math.isclose(float(address.latitude), float(latitude), rel_tol=0.00001) or not math.isclose(
+            float(address.longitude), float(longitude), rel_tol=0.00001
+        ):
+            logger.error(
+                "Unique constraint over street and inseeCode matched different coordinates",
+                extra={
+                    "address_id": address.id,
+                    "incoming_banId": ban_id,
+                    "address_latitude": address.latitude,
+                    "address_longitude": address.longitude,
+                    "incoming_latitude": latitude,
+                    "incoming_longitude": longitude,
+                },
+            )
 
     return address
 
