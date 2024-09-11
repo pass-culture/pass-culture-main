@@ -54,7 +54,6 @@ from pcapi.core.permissions import models as perm_models
 from pcapi.core.subscription.dms import api as dms_subscription_api
 import pcapi.core.subscription.phone_validation.exceptions as phone_validation_exceptions
 import pcapi.core.users.constants as users_constants
-import pcapi.core.users.models as users_models
 import pcapi.core.users.repository as users_repository
 import pcapi.core.users.utils as users_utils
 from pcapi.domain.password import check_password_strength
@@ -496,7 +495,7 @@ _BACKOFFICE_REASONS_WHICH_CANCEL_NON_EVENTS = {
 
 
 def _cancel_bookings_of_user_on_requested_account_suspension(
-    user: users_models.User,
+    user: models.User,
     reason: constants.SuspensionReason,
     is_backoffice_action: bool,
 ) -> int:
@@ -538,7 +537,7 @@ def _cancel_bookings_of_user_on_requested_account_suspension(
 
 
 def _cancel_bookings_from_user_on_requested_account_suspension(
-    user: users_models.User,
+    user: models.User,
     reason: constants.SuspensionReason,
 ) -> int:
     import pcapi.core.bookings.api as bookings_api
@@ -565,7 +564,7 @@ def unsuspend_account(
     suspension_reason = user.suspension_reason
     user.isActive = True
     db.session.add(user)
-    users_models.GdprUserAnonymization.query.filter(users_models.GdprUserAnonymization.userId == user.id).delete()
+    models.GdprUserAnonymization.query.filter(models.GdprUserAnonymization.userId == user.id).delete()
 
     history_api.add_action(history_models.ActionType.USER_UNSUSPENDED, author=actor, user=user, comment=comment)
 
@@ -631,7 +630,7 @@ def update_user_password(user: models.User, new_password: str) -> None:
     repository.save(user)
 
 
-def update_password_and_external_user(user: users_models.User, new_password: str) -> None:
+def update_password_and_external_user(user: models.User, new_password: str) -> None:
     user.setPassword(new_password)
     if not user.isEmailValidated:
         user.isEmailValidated = True
@@ -640,15 +639,15 @@ def update_password_and_external_user(user: users_models.User, new_password: str
 
 
 def update_user_info(
-    user: users_models.User,
-    author: users_models.User,
+    user: models.User,
+    author: models.User,
     cultural_survey_filled_date: datetime.datetime | T_UNCHANGED = UNCHANGED,
     email: str | T_UNCHANGED = UNCHANGED,
     first_name: str | T_UNCHANGED = UNCHANGED,
     last_name: str | T_UNCHANGED = UNCHANGED,
     needs_to_fill_cultural_survey: bool | T_UNCHANGED = UNCHANGED,
     phone_number: str | None | T_UNCHANGED = UNCHANGED,
-    phone_validation_status: users_models.PhoneValidationStatusType | None | T_UNCHANGED = UNCHANGED,
+    phone_validation_status: models.PhoneValidationStatusType | None | T_UNCHANGED = UNCHANGED,
     address: str | T_UNCHANGED = UNCHANGED,
     postal_code: str | T_UNCHANGED = UNCHANGED,
     city: str | T_UNCHANGED = UNCHANGED,
@@ -657,7 +656,7 @@ def update_user_info(
     marketing_email_subscription: bool | T_UNCHANGED = UNCHANGED,
     new_nav_pro_date: datetime.datetime | None | T_UNCHANGED = UNCHANGED,
     new_nav_pro_eligibility_date: datetime.datetime | None | T_UNCHANGED = UNCHANGED,
-    activity: users_models.ActivityEnum | T_UNCHANGED = UNCHANGED,
+    activity: models.ActivityEnum | T_UNCHANGED = UNCHANGED,
     commit: bool = True,
 ) -> history_api.ObjectUpdateSnapshot:
     old_email = None
@@ -755,11 +754,11 @@ def update_user_info(
     return snapshot
 
 
-def _has_underage_deposit(user: users_models.User) -> bool:
+def _has_underage_deposit(user: models.User) -> bool:
     return user.deposit is not None and user.deposit.type == finance_models.DepositType.GRANT_15_17
 
 
-def _update_underage_beneficiary_deposit_expiration_date(user: users_models.User) -> None:
+def _update_underage_beneficiary_deposit_expiration_date(user: models.User) -> None:
     if user.birth_date is None:
         raise ValueError("User has no birth_date")
     if not (user.deposit and user.deposit.expirationDate):
@@ -915,17 +914,15 @@ def create_pro_user(pro_user: users_serialization.ProUserCreationBodyV2Model) ->
     db.session.flush()
     invitation = offerers_models.OffererInvitation.query.filter_by(email=new_pro_user.email).first()
     if invitation:
-        inviter_pro_new_nav_state = users_models.UserProNewNavState.query.filter_by(
-            userId=invitation.userId
-        ).one_or_none()
+        inviter_pro_new_nav_state = models.UserProNewNavState.query.filter_by(userId=invitation.userId).one_or_none()
         if inviter_pro_new_nav_state and inviter_pro_new_nav_state.newNavDate is not None:
-            new_nav_pro = users_models.UserProNewNavState(
+            new_nav_pro = models.UserProNewNavState(
                 userId=new_pro_user.id,
                 newNavDate=datetime.datetime.utcnow(),
             )
             db.session.add(new_nav_pro)
     else:
-        new_nav_pro = users_models.UserProNewNavState(
+        new_nav_pro = models.UserProNewNavState(
             userId=new_pro_user.id,
             newNavDate=datetime.datetime.utcnow(),
         )
@@ -1203,7 +1200,7 @@ def get_public_account_base_query() -> BaseQuery:
     # However, some young users, including beneficiaries, work for organizations and are associated with offerers
     # using the same email as their personal account. So let's include "pro" users who are beneficiaries (doesn't
     # include those who are only in the subscription process).
-    public_accounts = models.User.query.outerjoin(users_models.User.backoffice_profile).filter(
+    public_accounts = models.User.query.outerjoin(models.User.backoffice_profile).filter(
         sa.or_(  # type: ignore[type-var]
             sa.and_(
                 sa.not_(models.User.has_pro_role),
@@ -1226,9 +1223,9 @@ def search_pro_account(search_query: str, *_: typing.Any) -> BaseQuery:
     )
 
     return _filter_user_accounts(pro_accounts, search_query).options(
-        sa.orm.with_expression(users_models.User.suspension_reason_expression, users_models.User.suspension_reason.expression),  # type: ignore[attr-defined]
-        sa.orm.with_expression(users_models.User.suspension_date_expression, users_models.User.suspension_date.expression),  # type: ignore[attr-defined]
-        sa.orm.joinedload(users_models.User.UserOfferers).load_only(offerers_models.UserOfferer.validationStatus),
+        sa.orm.with_expression(models.User.suspension_reason_expression, models.User.suspension_reason.expression),  # type: ignore[attr-defined]
+        sa.orm.with_expression(models.User.suspension_date_expression, models.User.suspension_date.expression),  # type: ignore[attr-defined]
+        sa.orm.joinedload(models.User.UserOfferers).load_only(offerers_models.UserOfferer.validationStatus),
     )
 
 
@@ -1243,9 +1240,9 @@ def get_pro_account_base_query(pro_id: int) -> BaseQuery:
 
 
 def search_backoffice_accounts(search_query: str) -> BaseQuery:
-    bo_accounts = models.User.query.join(users_models.User.backoffice_profile).options(
-        sa.orm.with_expression(users_models.User.suspension_reason_expression, users_models.User.suspension_reason.expression),  # type: ignore[attr-defined]
-        sa.orm.with_expression(users_models.User.suspension_date_expression, users_models.User.suspension_date.expression),  # type: ignore[attr-defined]
+    bo_accounts = models.User.query.join(models.User.backoffice_profile).options(
+        sa.orm.with_expression(models.User.suspension_reason_expression, models.User.suspension_reason.expression),  # type: ignore[attr-defined]
+        sa.orm.with_expression(models.User.suspension_date_expression, models.User.suspension_date.expression),  # type: ignore[attr-defined]
     )
 
     if not search_query:
@@ -1254,7 +1251,7 @@ def search_backoffice_accounts(search_query: str) -> BaseQuery:
     return _filter_user_accounts(bo_accounts, search_query)
 
 
-def validate_pro_user_email(user: users_models.User, author_user: users_models.User | None = None) -> None:
+def validate_pro_user_email(user: models.User, author_user: models.User | None = None) -> None:
     user.isEmailValidated = True
 
     if author_user:
@@ -1267,13 +1264,13 @@ def validate_pro_user_email(user: users_models.User, author_user: users_models.U
 
 
 def save_firebase_flags(user: models.User, firebase_value: dict) -> None:
-    user_pro_flags = users_models.UserProFlags.query.filter(users_models.UserProFlags.user == user).one_or_none()
+    user_pro_flags = models.UserProFlags.query.filter(models.UserProFlags.user == user).one_or_none()
     if user_pro_flags:
         if user.pro_flags.firebase and user.pro_flags.firebase != firebase_value:
             logger.warning("%s now has different Firebase flags than before", user)
         user.pro_flags.firebase = firebase_value
     else:
-        user_pro_flags = users_models.UserProFlags(user=user, firebase=firebase_value)
+        user_pro_flags = models.UserProFlags(user=user, firebase=firebase_value)
     repository.save(user_pro_flags)
 
 
@@ -1298,7 +1295,7 @@ def save_trusted_device(device_info: "account_serialization.TrustedDevice", user
         )
         return
 
-    trusted_device = users_models.TrustedDevice(
+    trusted_device = models.TrustedDevice(
         deviceId=device_info.device_id,
         os=device_info.os,
         source=device_info.source,
@@ -1309,7 +1306,7 @@ def save_trusted_device(device_info: "account_serialization.TrustedDevice", user
 
 def update_login_device_history(
     device_info: "account_serialization.TrustedDevice", user: models.User
-) -> users_models.LoginDeviceHistory | None:
+) -> models.LoginDeviceHistory | None:
     if not device_info.device_id:
         logger.info(
             "Invalid deviceId was provided for login device",
@@ -1323,7 +1320,7 @@ def update_login_device_history(
 
     location = users_utils.format_login_location(request.headers.get("X-Country"), request.headers.get("X-City"))
 
-    login_device = users_models.LoginDeviceHistory(
+    login_device = models.LoginDeviceHistory(
         deviceId=device_info.device_id,
         os=device_info.os,
         source=device_info.source,
@@ -1345,9 +1342,9 @@ def should_save_login_device_as_trusted_device(
         return False
 
     return db.session.query(
-        users_models.LoginDeviceHistory.query.with_entities(users_models.LoginDeviceHistory.deviceId)
-        .filter(users_models.LoginDeviceHistory.userId == user.id)
-        .filter(users_models.LoginDeviceHistory.deviceId == device_info.device_id)
+        models.LoginDeviceHistory.query.with_entities(models.LoginDeviceHistory.deviceId)
+        .filter(models.LoginDeviceHistory.userId == user.id)
+        .filter(models.LoginDeviceHistory.deviceId == device_info.device_id)
         .exists()
     ).scalar()
 
@@ -1364,14 +1361,14 @@ def is_login_device_a_trusted_device(
     return False
 
 
-def get_recent_suspicious_logins(user: users_models.User) -> list[users_models.LoginDeviceHistory]:
+def get_recent_suspicious_logins(user: models.User) -> list[models.LoginDeviceHistory]:
     yesterday = datetime.datetime.utcnow() - relativedelta(hours=24)
-    recent_logins = users_models.LoginDeviceHistory.query.filter(
-        users_models.LoginDeviceHistory.user == user,
-        users_models.LoginDeviceHistory.dateCreated >= yesterday,
+    recent_logins = models.LoginDeviceHistory.query.filter(
+        models.LoginDeviceHistory.user == user,
+        models.LoginDeviceHistory.dateCreated >= yesterday,
     ).all()
-    recent_trusted_devices = users_models.TrustedDevice.query.filter(
-        users_models.TrustedDevice.dateCreated >= yesterday,
+    recent_trusted_devices = models.TrustedDevice.query.filter(
+        models.TrustedDevice.dateCreated >= yesterday,
     ).all()
     user_trusted_device_ids = [device.deviceId for device in user.trusted_devices]
 
@@ -1392,7 +1389,7 @@ def get_recent_suspicious_logins(user: users_models.User) -> list[users_models.L
 
 
 def create_suspicious_login_email_token(
-    login_info: users_models.LoginDeviceHistory | None, user_id: int
+    login_info: models.LoginDeviceHistory | None, user_id: int
 ) -> token_utils.Token:
     if login_info is None:
         return token_utils.Token.create(
@@ -1446,16 +1443,14 @@ def save_device_info_and_notify_user(
 def delete_old_trusted_devices() -> None:
     five_years_ago = datetime.datetime.utcnow() - relativedelta(years=5)
 
-    users_models.TrustedDevice.query.filter(users_models.TrustedDevice.dateCreated <= five_years_ago).delete()
+    models.TrustedDevice.query.filter(models.TrustedDevice.dateCreated <= five_years_ago).delete()
     db.session.commit()
 
 
 def delete_old_login_device_history() -> None:
     thirteen_months_ago = datetime.datetime.utcnow() - relativedelta(months=13)
 
-    users_models.LoginDeviceHistory.query.filter(
-        users_models.LoginDeviceHistory.dateCreated <= thirteen_months_ago
-    ).delete()
+    models.LoginDeviceHistory.query.filter(models.LoginDeviceHistory.dateCreated <= thirteen_months_ago).delete()
     db.session.commit()
 
 
@@ -1464,11 +1459,11 @@ def _get_users_with_suspended_account() -> Query:
     # are ordered by userId and eventDate, this query will fetch the
     # latest event for each userId.
     return (
-        users_models.User.query.distinct(history_models.ActionHistory.userId)
-        .join(users_models.User.action_history)
+        models.User.query.distinct(history_models.ActionHistory.userId)
+        .join(models.User.action_history)
         .filter(
             history_models.ActionHistory.actionType == history_models.ActionType.USER_SUSPENDED,
-            users_models.User.isActive.is_(False),
+            models.User.isActive.is_(False),
         )
         .order_by(history_models.ActionHistory.userId, history_models.ActionHistory.actionDate.desc())
     )
@@ -1479,22 +1474,20 @@ def _get_users_with_suspended_account_to_notify(expiration_delta_in_days: int) -
     user_ids_and_latest_action = (
         _get_users_with_suspended_account()
         .with_entities(
-            users_models.User.id,
+            models.User.id,
             history_models.ActionHistory.actionDate,
             history_models.ActionHistory.extraData["reason"].astext.label("reason"),
         )
         .subquery()
     )
     return (
-        users_models.User.query.join(
-            user_ids_and_latest_action, user_ids_and_latest_action.c.id == users_models.User.id
-        )
+        models.User.query.join(user_ids_and_latest_action, user_ids_and_latest_action.c.id == models.User.id)
         .filter(
             user_ids_and_latest_action.c.actionDate - start >= datetime.timedelta(days=0),
             user_ids_and_latest_action.c.actionDate - start < datetime.timedelta(days=1),
             user_ids_and_latest_action.c.reason == constants.SuspensionReason.UPON_USER_REQUEST.value,
         )
-        .with_entities(users_models.User)
+        .with_entities(models.User)
     )
 
 
@@ -1503,21 +1496,19 @@ def get_suspended_upon_user_request_accounts_since(expiration_delta_in_days: int
     user_ids_and_latest_action = (
         _get_users_with_suspended_account()
         .with_entities(
-            users_models.User.id,
+            models.User.id,
             history_models.ActionHistory.actionDate,
             history_models.ActionHistory.extraData["reason"].astext.label("reason"),
         )
         .subquery()
     )
     return (
-        users_models.User.query.join(
-            user_ids_and_latest_action, user_ids_and_latest_action.c.id == users_models.User.id
-        )
+        models.User.query.join(user_ids_and_latest_action, user_ids_and_latest_action.c.id == models.User.id)
         .filter(
             user_ids_and_latest_action.c.actionDate <= start,
             user_ids_and_latest_action.c.reason == constants.SuspensionReason.UPON_USER_REQUEST.value,
         )
-        .with_entities(users_models.User)
+        .with_entities(models.User)
     )
 
 
@@ -1528,14 +1519,14 @@ def notify_users_before_deletion_of_suspended_account() -> None:
         transactional_mails.send_email_before_deletion_of_suspended_account(account)
 
 
-def has_unprocessed_extract(user: users_models.User) -> bool:
+def has_unprocessed_extract(user: models.User) -> bool:
     for extract in user.gdprUserDataExtract:
         if not extract.is_expired and not extract.dateProcessed:
             return True
     return False
 
 
-def anonymize_user(user: users_models.User, *, author: users_models.User | None = None, force: bool = False) -> bool:
+def anonymize_user(user: models.User, *, author: models.User | None = None, force: bool = False) -> bool:
     """
     Anonymize the given User. If force is True, the function will anonymize the user even if they have an address and
     we cannot find an iris for it.
@@ -1581,7 +1572,7 @@ def anonymize_user(user: users_models.User, *, author: users_models.User | None 
     for extract in user.gdprUserDataExtract:
         delete_gdpr_extract(extract.id)
 
-    users_models.GdprUserAnonymization.query.filter(users_models.GdprUserAnonymization.userId == user.id).delete()
+    models.GdprUserAnonymization.query.filter(models.GdprUserAnonymization.userId == user.id).delete()
 
     user.password = b"Anonymized"  # ggignore
     user.firstName = f"Anonymous_{user.id}"
@@ -1600,8 +1591,8 @@ def anonymize_user(user: users_models.User, *, author: users_models.User | None 
 
     external_email_anonymized = _remove_external_user(user)
 
-    users_models.TrustedDevice.query.filter(users_models.TrustedDevice.userId == user.id).delete()
-    users_models.LoginDeviceHistory.query.filter(users_models.LoginDeviceHistory.userId == user.id).delete()
+    models.TrustedDevice.query.filter(models.TrustedDevice.userId == user.id).delete()
+    models.LoginDeviceHistory.query.filter(models.LoginDeviceHistory.userId == user.id).delete()
     history_models.ActionHistory.query.filter(
         history_models.ActionHistory.userId == user.id,
         history_models.ActionHistory.offererId.is_(None),
@@ -1620,7 +1611,7 @@ def anonymize_user(user: users_models.User, *, author: users_models.User | None 
     return True
 
 
-def _remove_external_user(user: users_models.User) -> bool:
+def _remove_external_user(user: models.User) -> bool:
     # check if this email is used in booking_email (it should not be)
     is_email_used = (
         db.session.query(offerers_models.Venue.id)
@@ -1654,15 +1645,15 @@ def anonymize_non_pro_non_beneficiary_users(*, force: bool = False) -> None:
     not connected for at least 3 years.
     """
     users = (
-        users_models.User.query.outerjoin(
+        models.User.query.outerjoin(
             finance_models.Deposit,
-            users_models.User.deposits,
+            models.User.deposits,
         )
         .filter(
-            ~users_models.User.email.like("%@passculture.app"),  # people who work or worked in the company
-            func.array_length(users_models.User.roles, 1).is_(None),  # no role, not already anonymized
+            ~models.User.email.like("%@passculture.app"),  # people who work or worked in the company
+            func.array_length(models.User.roles, 1).is_(None),  # no role, not already anonymized
             finance_models.Deposit.userId.is_(None),  # no deposit
-            users_models.User.lastConnectionDate < datetime.datetime.utcnow() - relativedelta(years=3),
+            models.User.lastConnectionDate < datetime.datetime.utcnow() - relativedelta(years=3),
         )
         .all()
     )
@@ -1676,17 +1667,17 @@ def anonymize_beneficiary_users(*, force: bool = False) -> None:
     Anonymize user accounts that have been beneficiaries which have not connected for at least 3 years, and
     whose deposit has been expired for at least 5 years.
     """
-    beneficiaries = users_models.User.query.outerjoin(
+    beneficiaries = models.User.query.outerjoin(
         finance_models.Deposit,
-        users_models.User.deposits,
+        models.User.deposits,
     ).filter(
-        users_models.User.is_beneficiary,
-        users_models.User.lastConnectionDate < datetime.datetime.utcnow() - relativedelta(years=3),
+        models.User.is_beneficiary,
+        models.User.lastConnectionDate < datetime.datetime.utcnow() - relativedelta(years=3),
         finance_models.Deposit.expirationDate < datetime.datetime.utcnow() - relativedelta(years=5),
     )
 
-    beneficiaries_tagged_to_anonymize = users_models.User.query.join(users_models.GdprUserAnonymization).filter(
-        users_models.User.validatedBirthDate < datetime.datetime.utcnow() - relativedelta(years=21)
+    beneficiaries_tagged_to_anonymize = models.User.query.join(models.GdprUserAnonymization).filter(
+        models.User.validatedBirthDate < datetime.datetime.utcnow() - relativedelta(years=21)
     )
     for user in itertools.chain(beneficiaries, beneficiaries_tagged_to_anonymize):
         anonymize_user(user, force=force)
@@ -1702,15 +1693,15 @@ def anonymize_pro_users() -> None:
     three_years_ago = datetime.datetime.utcnow() - datetime.timedelta(days=365 * 3)
 
     exclude_non_pro_filters = [
-        ~users_models.User.roles.contains([users_models.UserRole.ADMIN]),
-        ~users_models.User.roles.contains([users_models.UserRole.ANONYMIZED]),
-        ~users_models.User.roles.contains([users_models.UserRole.BENEFICIARY]),
-        ~users_models.User.roles.contains([users_models.UserRole.UNDERAGE_BENEFICIARY]),
+        ~models.User.roles.contains([models.UserRole.ADMIN]),
+        ~models.User.roles.contains([models.UserRole.ANONYMIZED]),
+        ~models.User.roles.contains([models.UserRole.BENEFICIARY]),
+        ~models.User.roles.contains([models.UserRole.UNDERAGE_BENEFICIARY]),
     ]
 
     aliased_offerer = sa.orm.aliased(offerers_models.Offerer)
     aliased_user_offerer = sa.orm.aliased(offerers_models.UserOfferer)
-    aliased_user = sa.orm.aliased(users_models.User)
+    aliased_user = sa.orm.aliased(models.User)
 
     offerers = (
         db.session.query(aliased_offerer.id)
@@ -1723,45 +1714,45 @@ def anonymize_pro_users() -> None:
         )
     )
     validated_users = (
-        db.session.query(users_models.User.id)
-        .join(offerers_models.UserOfferer, users_models.User.UserOfferers)
+        db.session.query(models.User.id)
+        .join(offerers_models.UserOfferer, models.User.UserOfferers)
         .join(offerers_models.Offerer, offerers_models.UserOfferer.offerer)
         .filter(
             offerers_models.UserOfferer.validationStatus == ValidationStatus.VALIDATED,
             offerers_models.Offerer.isActive,
-            users_models.User.lastConnectionDate < three_years_ago,
+            models.User.lastConnectionDate < three_years_ago,
             *exclude_non_pro_filters,
             offerers.exists(),
         )
     )
 
     non_validated_users = (
-        db.session.query(users_models.User.id)
-        .join(offerers_models.UserOfferer, users_models.User.UserOfferers)
+        db.session.query(models.User.id)
+        .join(offerers_models.UserOfferer, models.User.UserOfferers)
         .filter(
             offerers_models.UserOfferer.validationStatus != ValidationStatus.VALIDATED,
-            users_models.User.lastConnectionDate < three_years_ago,
-            users_models.User.roles.contains([users_models.UserRole.PRO]),
+            models.User.lastConnectionDate < three_years_ago,
+            models.User.roles.contains([models.UserRole.PRO]),
             *exclude_non_pro_filters,
         )
     )
-    non_attached_users = db.session.query(users_models.User.id).filter(
-        users_models.User.lastConnectionDate < three_years_ago,
-        users_models.User.roles.contains([users_models.UserRole.NON_ATTACHED_PRO]),
+    non_attached_users = db.session.query(models.User.id).filter(
+        models.User.lastConnectionDate < three_years_ago,
+        models.User.roles.contains([models.UserRole.NON_ATTACHED_PRO]),
         *exclude_non_pro_filters,
     )
-    never_connected_users = db.session.query(users_models.User.id).filter(
-        users_models.User.lastConnectionDate.is_(None),
-        users_models.User.dateCreated < three_years_ago,
+    never_connected_users = db.session.query(models.User.id).filter(
+        models.User.lastConnectionDate.is_(None),
+        models.User.dateCreated < three_years_ago,
         sa.or_(
-            users_models.User.roles.contains([users_models.UserRole.PRO]),
-            users_models.User.roles.contains([users_models.UserRole.NON_ATTACHED_PRO]),
+            models.User.roles.contains([models.UserRole.PRO]),
+            models.User.roles.contains([models.UserRole.NON_ATTACHED_PRO]),
         ),
         *exclude_non_pro_filters,
     )
 
-    users = users_models.User.query.filter(
-        users_models.User.id.in_(
+    users = models.User.query.filter(
+        models.User.id.in_(
             sa.union(validated_users, non_validated_users, non_attached_users, never_connected_users).subquery(),
         ),
     )
@@ -1771,7 +1762,7 @@ def anonymize_pro_users() -> None:
     db.session.commit()
 
 
-def gdpr_delete_pro_user(user: users_models.User) -> None:
+def gdpr_delete_pro_user(user: models.User) -> None:
     try:
         delete_beamer_user(user.id)
     except BeamerException:
@@ -1790,7 +1781,7 @@ def gdpr_delete_pro_user(user: users_models.User) -> None:
     offerers_models.UserOfferer.query.filter(offerers_models.UserOfferer.userId == user.id).delete(
         synchronize_session=False,
     )
-    users_models.User.query.filter(users_models.User.id == user.id).delete(synchronize_session=False)
+    models.User.query.filter(models.User.id == user.id).delete(synchronize_session=False)
 
 
 def anonymize_user_deposits() -> None:
@@ -1875,7 +1866,7 @@ def delete_gdpr_extract(extract_id: int) -> None:
     models.GdprUserDataExtract.query.filter(models.GdprUserDataExtract.id == extract_id).delete()
 
 
-def _extract_gdpr_marketing_data(user: users_models.User) -> users_serialization.GdprMarketing:
+def _extract_gdpr_marketing_data(user: models.User) -> users_serialization.GdprMarketing:
     notification_subscriptions = user.notificationSubscriptions or {}
     return users_serialization.GdprMarketing(
         marketingEmails=notification_subscriptions.get("marketing_email") or False,
@@ -1884,17 +1875,17 @@ def _extract_gdpr_marketing_data(user: users_models.User) -> users_serialization
 
 
 def _extract_gdpr_devices_history(
-    user: users_models.User,
+    user: models.User,
 ) -> list[users_serialization.GdprLoginDeviceHistorySerializer]:
     login_devices_data = (
-        users_models.LoginDeviceHistory.query.filter(users_models.LoginDeviceHistory.user == user)
-        .order_by(users_models.LoginDeviceHistory.id)
+        models.LoginDeviceHistory.query.filter(models.LoginDeviceHistory.user == user)
+        .order_by(models.LoginDeviceHistory.id)
         .all()
     )
     return [users_serialization.GdprLoginDeviceHistorySerializer.from_orm(data) for data in login_devices_data]
 
 
-def _extract_gdpr_deposits(user: users_models.User) -> list[users_serialization.GdprDepositSerializer]:
+def _extract_gdpr_deposits(user: models.User) -> list[users_serialization.GdprDepositSerializer]:
     deposit_types = {
         finance_models.DepositType.GRANT_15_17.name: "Pass 15-17",
         finance_models.DepositType.GRANT_18.name: "Pass 18",
@@ -1917,18 +1908,18 @@ def _extract_gdpr_deposits(user: users_models.User) -> list[users_serialization.
     ]
 
 
-def _extract_gdpr_email_history(user: users_models.User) -> list[users_serialization.GdprEmailHistory]:
+def _extract_gdpr_email_history(user: models.User) -> list[users_serialization.GdprEmailHistory]:
     emails = (
-        users_models.UserEmailHistory.query.filter(
-            users_models.UserEmailHistory.user == user,
-            users_models.UserEmailHistory.eventType.in_(
+        models.UserEmailHistory.query.filter(
+            models.UserEmailHistory.user == user,
+            models.UserEmailHistory.eventType.in_(
                 [
-                    users_models.EmailHistoryEventTypeEnum.CONFIRMATION,
-                    users_models.EmailHistoryEventTypeEnum.ADMIN_UPDATE,
+                    models.EmailHistoryEventTypeEnum.CONFIRMATION,
+                    models.EmailHistoryEventTypeEnum.ADMIN_UPDATE,
                 ]
             ),
         )
-        .order_by(users_models.UserEmailHistory.id)
+        .order_by(models.UserEmailHistory.id)
         .all()
     )
     emails_history = []
@@ -1946,7 +1937,7 @@ def _extract_gdpr_email_history(user: users_models.User) -> list[users_serializa
     return emails_history
 
 
-def _extract_gdpr_action_history(user: users_models.User) -> list[users_serialization.GdprActionHistorySerializer]:
+def _extract_gdpr_action_history(user: models.User) -> list[users_serialization.GdprActionHistorySerializer]:
     actions_history = (
         history_models.ActionHistory.query.filter(
             history_models.ActionHistory.user == user,
@@ -1966,7 +1957,7 @@ def _extract_gdpr_action_history(user: users_models.User) -> list[users_serializ
 
 
 def _extract_gdpr_beneficiary_validation(
-    user: users_models.User,
+    user: models.User,
 ) -> list[users_serialization.GdprBeneficiaryValidation]:
     check_types = {
         fraud_models.FraudCheckType.DMS.name: "Démarches simplifiées",
@@ -1989,8 +1980,8 @@ def _extract_gdpr_beneficiary_validation(
         fraud_models.FraudCheckStatus.SUSPICIOUS.name: "Suspect",
     }
     eligibility_types = {
-        users_models.EligibilityType.AGE18.name: "Pass 18",
-        users_models.EligibilityType.UNDERAGE.name: "Pass 15-17",
+        models.EligibilityType.AGE18.name: "Pass 18",
+        models.EligibilityType.UNDERAGE.name: "Pass 15-17",
     }
     beneficiary_fraud_checks = (
         fraud_models.BeneficiaryFraudCheck.query.filter(fraud_models.BeneficiaryFraudCheck.user == user)
@@ -2013,7 +2004,7 @@ def _extract_gdpr_beneficiary_validation(
     ]
 
 
-def _extract_gdpr_booking_data(user: users_models.User) -> list[users_serialization.GdprBookingSerializer]:
+def _extract_gdpr_booking_data(user: models.User) -> list[users_serialization.GdprBookingSerializer]:
     booking_status = {
         bookings_models.BookingStatus.CONFIRMED.name: "Réservé",
         bookings_models.BookingStatus.USED.name: "Utilisé",
@@ -2050,7 +2041,7 @@ def _extract_gdpr_booking_data(user: users_models.User) -> list[users_serializat
     return bookings
 
 
-def _extract_gdpr_brevo_data(user: users_models.User) -> dict:
+def _extract_gdpr_brevo_data(user: models.User) -> dict:
     return get_raw_contact_data(user.email)
 
 
@@ -2096,7 +2087,7 @@ def _store_gdpr_archive(name: str, archive: bytes) -> None:
     )
 
 
-def extract_beneficiary_data(extract: users_models.GdprUserDataExtract) -> None:
+def extract_beneficiary_data(extract: models.GdprUserDataExtract) -> None:
     extract.dateProcessed = datetime.datetime.utcnow()
     user = extract.user
     data = users_serialization.GdprDataContainer(
@@ -2157,13 +2148,13 @@ def extract_beneficiary_data_command() -> bool:
         return False
 
     candidates = (
-        users_models.GdprUserDataExtract.query.filter(
-            users_models.GdprUserDataExtract.dateProcessed.is_(None),
-            users_models.GdprUserDataExtract.expirationDate > datetime.datetime.utcnow(),  # type: ignore [operator]
+        models.GdprUserDataExtract.query.filter(
+            models.GdprUserDataExtract.dateProcessed.is_(None),
+            models.GdprUserDataExtract.expirationDate > datetime.datetime.utcnow(),  # type: ignore [operator]
         )
         .options(
-            joinedload(users_models.GdprUserDataExtract.user),
-            joinedload(users_models.GdprUserDataExtract.authorUser),
+            joinedload(models.GdprUserDataExtract.user),
+            joinedload(models.GdprUserDataExtract.authorUser),
         )
         .limit(10)
         .all()
