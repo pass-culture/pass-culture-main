@@ -30,6 +30,7 @@ from pcapi.models import feature
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import atomic
 from pcapi.repository import mark_transaction_as_invalid
+from pcapi.repository import on_commit
 from pcapi.routes.backoffice import search_utils
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.pro import forms as pro_forms
@@ -107,6 +108,7 @@ def render_search_template(form: pro_forms.ProSearchForm | None = None) -> str:
 
 
 @pro_blueprint.route("/search", methods=["GET"])
+@atomic()
 def search_pro() -> utils.BackofficeResponse:
     """
     Renders two search pages: first the one with the search form, then
@@ -189,6 +191,7 @@ def _render_get_create_offerer_form(form: pro_forms.CreateOffererForm) -> str:
 
 
 @pro_blueprint.route("/create", methods=["GET"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.CREATE_PRO_ENTITY)
 def get_create_offerer_form() -> utils.BackofficeResponse:
     form = pro_forms.CreateOffererForm()
@@ -196,10 +199,12 @@ def get_create_offerer_form() -> utils.BackofficeResponse:
 
 
 @pro_blueprint.route("/create", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.CREATE_PRO_ENTITY)
 def create_offerer() -> utils.BackofficeResponse:
     form = pro_forms.CreateOffererForm()
     if not form.validate():
+        mark_transaction_as_invalid()
         return _render_get_create_offerer_form(form), 400
 
     pro_user = form.user
@@ -214,6 +219,7 @@ def create_offerer() -> utils.BackofficeResponse:
         if not postal_code:
             postal_code = city_info.postcode
     except api_adresse.AdresseApiException as exc:
+        mark_transaction_as_invalid()
         flash(
             Markup(
                 "Une erreur s'est produite lors de la recherche des coordonnées pour <b>{code} {city}</b> : {error}"
@@ -272,7 +278,7 @@ def create_offerer() -> utils.BackofficeResponse:
     venue = offerers_api.create_venue(venue_creation_info, current_user)
     offerers_api.create_venue_registration(venue.id, new_onboarding_info.target, new_onboarding_info.webPresence)
 
-    transactional_mails.send_welcome_to_pro_email(pro_user, venue)
+    on_commit(partial(transactional_mails.send_welcome_to_pro_email, pro_user, venue))
 
     if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
         flash(
