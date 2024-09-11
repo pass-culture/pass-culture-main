@@ -1,4 +1,4 @@
-import { screen, waitFor } from '@testing-library/react'
+import { screen, waitFor, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import React, { ComponentProps } from 'react'
 import { expect } from 'vitest'
@@ -10,6 +10,7 @@ import { Audience } from 'core/shared/types'
 import * as filterBookingsRecap from 'screens/Bookings/BookingsRecapTable/utils/filterBookingsRecap'
 import {
   collectiveBookingByIdFactory,
+  collectiveBookingCollectiveStockFactory,
   collectiveBookingFactory,
 } from 'utils/collectiveApiFactories'
 import { bookingRecapFactory } from 'utils/individualApiFactories'
@@ -162,178 +163,167 @@ describe('components | BookingsRecapTable', () => {
     )
   })
 
-  // TODO: Correct these tests to be not flaky
+  it('should sort by offer name', async () => {
+    const props: Props = {
+      ...defaultProps,
+      audience: Audience.COLLECTIVE,
+      bookingsRecap: [
+        collectiveBookingFactory({
+          bookingId: '123',
+          stock: collectiveBookingCollectiveStockFactory({
+            offerName: 'Offre de test 2',
+          }),
+        }),
+        collectiveBookingFactory({
+          bookingId: '456',
+          stock: collectiveBookingCollectiveStockFactory({
+            offerName: 'Offre de test 1',
+          }),
+        }),
+        collectiveBookingFactory({
+          bookingId: '789',
+          stock: collectiveBookingCollectiveStockFactory({
+            offerName: 'Offre de test 3',
+          }),
+        }),
+      ],
+      locationState: {
+        statuses: ['booked', 'cancelled'],
+      },
+    }
 
-  // it('should sort by offer name', async () => {
-  //   const props: Props = {
-  //     ...defaultProps,
-  //     audience: Audience.COLLECTIVE,
-  //     bookingsRecap: [
-  //       collectiveBookingFactory({
-  //         bookingId: '123',
-  //         stock: collectiveBookingCollectiveStockFactory({
-  //           offerName: 'Offre de test 2',
-  //         }),
-  //       }),
-  //       collectiveBookingFactory({
-  //         bookingId: '456',
-  //         stock: collectiveBookingCollectiveStockFactory({
-  //           offerName: 'Offre de test 1',
-  //         }),
-  //       }),
-  //       collectiveBookingFactory({
-  //         bookingId: '789',
-  //         stock: collectiveBookingCollectiveStockFactory({
-  //           offerName: 'Offre de test 3',
-  //         }),
-  //       }),
-  //     ],
-  //     locationState: {
-  //       statuses: ['booked', 'cancelled'],
-  //     },
-  //   }
+    const filter = vi.spyOn(filterBookingsRecap, 'filterBookingsRecap')
+    renderBookingRecap(props)
 
-  //   renderBookingRecap(props)
+    expect(filter).toHaveBeenCalledOnce()
 
-  //   expect(screen.getAllByTestId('booking-offer-name')[0]).toHaveTextContent(
-  //     /Offre de test 2/
-  //   )
-  //   expect(screen.getAllByTestId('booking-offer-name')[1]).toHaveTextContent(
-  //     /Offre de test 1/
-  //   )
-  //   expect(screen.getAllByTestId('booking-offer-name')[2]).toHaveTextContent(
-  //     /Offre de test 3/
-  //   )
+    await userEvent.click(
+      within(screen.getByText('Nom de l’offre').closest('th')!).getByRole(
+        'button'
+      )
+    )
 
-  //   await userEvent.click(
-  //     within(screen.getByText('Nom de l’offre').closest('th')!).getByRole(
-  //       'button'
-  //     )
-  //   )
+    expect(filter).toHaveBeenCalledOnce()
 
-  //   expect(screen.getAllByTestId('booking-offer-name')[0]).toHaveTextContent(
-  //     /Offre de test 1/
-  //   )
-  //   expect(screen.getAllByTestId('booking-offer-name')[1]).toHaveTextContent(
-  //     /Offre de test 2/
-  //   )
-  //   expect(screen.getAllByTestId('booking-offer-name')[2]).toHaveTextContent(
-  //     /Offre de test 3/
-  //   )
+    expect(screen.getAllByTestId('booking-offer-name')[0]).toHaveTextContent(
+      /Offre de test 1/
+    )
+    expect(screen.getAllByTestId('booking-offer-name')[1]).toHaveTextContent(
+      /Offre de test 2/
+    )
+    expect(screen.getAllByTestId('booking-offer-name')[2]).toHaveTextContent(
+      /Offre de test 3/
+    )
 
-  //   await userEvent.click(
-  //     within(screen.getByText('Nom de l’offre').closest('th')!).getByRole(
-  //       'button'
-  //     )
-  //   )
+    await userEvent.click(
+      within(screen.getByText('Nom de l’offre').closest('th')!).getByRole(
+        'button'
+      )
+    )
+    expect(filter).toHaveBeenCalledOnce()
 
-  //   expect(screen.getAllByTestId('booking-offer-name')[0]).toHaveTextContent(
-  //     /Offre de test 3/
-  //   )
-  //   expect(screen.getAllByTestId('booking-offer-name')[1]).toHaveTextContent(
-  //     /Offre de test 2/
-  //   )
-  //   expect(screen.getAllByTestId('booking-offer-name')[2]).toHaveTextContent(
-  //     /Offre de test 1/
-  //   )
-  // })
+    expect(screen.getAllByTestId('booking-offer-name')[0]).toHaveTextContent(
+      /Offre de test 3/
+    )
+    expect(screen.getAllByTestId('booking-offer-name')[1]).toHaveTextContent(
+      /Offre de test 2/
+    )
+    expect(screen.getAllByTestId('booking-offer-name')[2]).toHaveTextContent(
+      /Offre de test 1/
+    )
+  })
 
-  // it('should sort by institution name', async () => {
-  //   const props: Props = {
-  //     ...defaultProps,
-  //     audience: Audience.COLLECTIVE,
-  //     bookingsRecap: [
-  //       collectiveBookingFactory({
-  //         bookingId: '123',
-  //         institution: {
-  //           id: 1,
-  //           name: 'Collège 2',
-  //           city: 'City',
-  //           postalCode: '11111',
-  //           institutionId: 'ABCDEF',
-  //           institutionType: 'COLLEGE',
-  //           phoneNumber: '0102030405',
-  //         },
-  //         stock: collectiveBookingCollectiveStockFactory({
-  //           offerName: 'Offre de test 2',
-  //         }),
-  //       }),
-  //       collectiveBookingFactory({
-  //         bookingId: '456',
-  //         institution: {
-  //           id: 2,
-  //           name: 'Collège 1',
-  //           city: 'City',
-  //           postalCode: '11111',
-  //           institutionId: 'ABCDEF',
-  //           institutionType: 'COLLEGE',
-  //           phoneNumber: '0102030405',
-  //         },
-  //         stock: collectiveBookingCollectiveStockFactory({
-  //           offerName: 'Offre de test 1',
-  //         }),
-  //       }),
-  //       collectiveBookingFactory({
-  //         bookingId: '789',
-  //         institution: {
-  //           id: 3,
-  //           name: 'Collège 3',
-  //           city: 'City',
-  //           postalCode: '11111',
-  //           institutionId: 'ABCDEF',
-  //           institutionType: 'COLLEGE',
-  //           phoneNumber: '0102030405',
-  //         },
-  //         stock: collectiveBookingCollectiveStockFactory({
-  //           offerName: 'Offre de test 3',
-  //         }),
-  //       }),
-  //     ],
-  //     locationState: {
-  //       statuses: ['booked', 'cancelled'],
-  //     },
-  //   }
+  it('should sort by institution name', async () => {
+    const props: Props = {
+      ...defaultProps,
+      audience: Audience.COLLECTIVE,
+      bookingsRecap: [
+        collectiveBookingFactory({
+          bookingId: '123',
+          institution: {
+            id: 1,
+            name: 'Collège 2',
+            city: 'City',
+            postalCode: '11111',
+            institutionId: 'ABCDEF',
+            institutionType: 'COLLEGE',
+            phoneNumber: '0102030405',
+          },
+          stock: collectiveBookingCollectiveStockFactory({
+            offerName: 'Offre de test 2',
+          }),
+        }),
+        collectiveBookingFactory({
+          bookingId: '456',
+          institution: {
+            id: 2,
+            name: 'Collège 1',
+            city: 'City',
+            postalCode: '11111',
+            institutionId: 'ABCDEF',
+            institutionType: 'COLLEGE',
+            phoneNumber: '0102030405',
+          },
+          stock: collectiveBookingCollectiveStockFactory({
+            offerName: 'Offre de test 1',
+          }),
+        }),
+        collectiveBookingFactory({
+          bookingId: '789',
+          institution: {
+            id: 3,
+            name: 'Collège 3',
+            city: 'City',
+            postalCode: '11111',
+            institutionId: 'ABCDEF',
+            institutionType: 'COLLEGE',
+            phoneNumber: '0102030405',
+          },
+          stock: collectiveBookingCollectiveStockFactory({
+            offerName: 'Offre de test 3',
+          }),
+        }),
+      ],
+      locationState: {
+        statuses: ['booked', 'cancelled'],
+      },
+    }
 
-  //   renderBookingRecap(props)
+    const filter = vi.spyOn(filterBookingsRecap, 'filterBookingsRecap')
+    renderBookingRecap(props)
+    expect(filter).toHaveBeenCalledOnce()
 
-  //   expect(
-  //     screen.getAllByTestId('booking-offer-institution')[0]
-  //   ).toHaveTextContent(/Collège 2/)
-  //   expect(
-  //     screen.getAllByTestId('booking-offer-institution')[1]
-  //   ).toHaveTextContent(/Collège 1/)
-  //   expect(
-  //     screen.getAllByTestId('booking-offer-institution')[2]
-  //   ).toHaveTextContent(/Collège 3/)
+    await userEvent.click(
+      within(screen.getByTestId('institution-column')).getByRole('button')
+    )
+    expect(filter).toHaveBeenCalledOnce()
 
-  //   await userEvent.click(
-  //     within(screen.getByTestId('institution-column')).getByRole('button')
-  //   )
+    expect(
+      screen.getAllByTestId('booking-offer-institution')[0]
+    ).toHaveTextContent(/Collège 1/)
 
-  //   expect(
-  //     screen.getAllByTestId('booking-offer-institution')[0]
-  //   ).toHaveTextContent(/Collège 1/)
-  //   expect(
-  //     screen.getAllByTestId('booking-offer-institution')[1]
-  //   ).toHaveTextContent(/Collège 2/)
-  //   expect(
-  //     screen.getAllByTestId('booking-offer-institution')[2]
-  //   ).toHaveTextContent(/Collège 3/)
+    expect(
+      screen.getAllByTestId('booking-offer-institution')[1]
+    ).toHaveTextContent(/Collège 2/)
+    expect(
+      screen.getAllByTestId('booking-offer-institution')[2]
+    ).toHaveTextContent(/Collège 3/)
 
-  //   await userEvent.click(
-  //     within(screen.getByTestId('institution-column')).getByRole('button')
-  //   )
+    await userEvent.click(
+      within(screen.getByTestId('institution-column')).getByRole('button')
+    )
+    expect(filter).toHaveBeenCalledOnce()
 
-  //   expect(
-  //     screen.getAllByTestId('booking-offer-institution')[0]
-  //   ).toHaveTextContent(/Collège 3/)
-  //   expect(
-  //     screen.getAllByTestId('booking-offer-institution')[1]
-  //   ).toHaveTextContent(/Collège 2/)
-  //   expect(
-  //     screen.getAllByTestId('booking-offer-institution')[2]
-  //   ).toHaveTextContent(/Collège 1/)
-  // })
+    expect(
+      screen.getAllByTestId('booking-offer-institution')[0]
+    ).toHaveTextContent(/Collège 3/)
+    expect(
+      screen.getAllByTestId('booking-offer-institution')[1]
+    ).toHaveTextContent(/Collège 2/)
+    expect(
+      screen.getAllByTestId('booking-offer-institution')[2]
+    ).toHaveTextContent(/Collège 1/)
+  })
 
   it('should render the expected table with max given number of hits per page', () => {
     // Given
