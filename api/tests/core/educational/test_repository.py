@@ -638,6 +638,43 @@ class FilterCollectiveOfferByStatusesTest:
         assert filtered_nostatus_query.count() == 2
         assert set(filtered_nostatus_query.all()) == {pending_offer, booked_offer}
 
+    def test_filter_inactive_offer_due_to_booking_date_passed(self, app):
+        offer = educational_factories.CollectiveOfferFactory()
+
+        past = datetime.utcnow() - timedelta(days=2)
+        _stock = educational_factories.CollectiveStockFactory(bookingLimitDatetime=past, collectiveOffer=offer)
+
+        base_query = CollectiveOffer.query
+        # When
+        filtered_inactive_query = _filter_collective_offers_by_statuses(
+            base_query, [CollectiveOfferDisplayedStatus.INACTIVE.value]
+        )
+
+        filtered_active_query = _filter_collective_offers_by_statuses(
+            base_query, [CollectiveOfferDisplayedStatus.ACTIVE.value]
+        )
+
+        assert filtered_inactive_query.one() == offer
+        assert len(filtered_active_query.all()) == 0
+
+    def test_filter_out_active_offer_due_to_booking_date_passed(self, app):
+        offer = educational_factories.CollectiveOfferFactory()
+        futur = datetime.utcnow() + timedelta(days=2)
+        _stock = educational_factories.CollectiveStockFactory(bookingLimitDatetime=futur, collectiveOffer=offer)
+
+        base_query = CollectiveOffer.query
+        # When
+        filtered_inactive_query = _filter_collective_offers_by_statuses(
+            base_query, [CollectiveOfferDisplayedStatus.INACTIVE.value]
+        )
+
+        filtered_active_query = _filter_collective_offers_by_statuses(
+            base_query, [CollectiveOfferDisplayedStatus.ACTIVE.value]
+        )
+
+        assert len(filtered_inactive_query.all()) == 0
+        assert filtered_active_query.one() == offer
+
     @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     def test_reimboursed_statuses_with_new_statuses(self, app):
         _booked_offer = create_collective_offer_by_status(CollectiveOfferDisplayedStatus.REIMBURSED)
