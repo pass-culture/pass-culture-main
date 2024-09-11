@@ -1,4 +1,3 @@
-import abc
 import contextlib
 import uuid
 
@@ -20,24 +19,22 @@ from tests.conftest import TestClient
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-class PublicAPIEndpointBaseHelper(abc.ABC):
+class PublicAPIEndpointBaseHelper:
     """
     For Public API endpoints that require authentication
     """
 
     @property
-    @abc.abstractmethod
     def endpoint_url(self):
-        raise NotImplementedError()
+        raise NotImplementedError("You must add an attribute `endpoint_url` in your test class definition")
 
     @property
-    @abc.abstractmethod
     def endpoint_method(self):
         """
         Http verb used to call the endpoint
         Expected values: 'get', 'post', 'patch', 'delete'
         """
-        raise NotImplementedError()
+        raise NotImplementedError("You must add an attribute `endpoint_method` in your test class definition")
 
     @property
     def default_path_params(self) -> dict:
@@ -101,16 +98,15 @@ class PublicAPIEndpointBaseHelper(abc.ABC):
         return offerers_factories.VenueFactory()
 
 
+# pylint: disable=abstract-method
 class PublicAPIVenueEndpointHelper(PublicAPIEndpointBaseHelper):
     """
     For Public API endpoints that require an active `VenueProvider`
     """
 
-    @abc.abstractmethod
     def test_should_raise_404_because_has_no_access_to_venue(self, client: TestClient):
         raise NotImplementedError()
 
-    @abc.abstractmethod
     def test_should_raise_404_because_venue_provider_is_inactive(self, client: TestClient):
         raise NotImplementedError()
 

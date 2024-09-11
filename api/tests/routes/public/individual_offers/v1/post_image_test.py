@@ -23,14 +23,12 @@ IMAGES_DIR = Path(tests.__path__[0]) / "files"
 @pytest.mark.usefixtures("db_session")
 class PostProductImageTest(PublicAPIVenueEndpointHelper, ProductEndpointHelper):
     endpoint_url = "/public/offers/v1/{offer_id}/image"
+    endpoint_method = "post"
+    default_path_params = {"offer_id": 123435}
 
     def _get_valid_form(self) -> dict:
         thumb = (IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
         return {"file": (BytesIO(thumb), "image.jpg"), "credit": "John Do"}
-
-    def test_should_raise_401_because_not_authenticated(self, client):
-        response = client.post(self.endpoint_url.format(offer_id="123435"))
-        assert response.status_code == 401
 
     def test_should_raise_404_because_has_no_access_to_venue(self, client):
         plain_api_key, _ = self.setup_provider()
