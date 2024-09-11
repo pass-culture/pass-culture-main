@@ -101,8 +101,11 @@ def validate_beginning_datetime(beginning_datetime: datetime, values: dict[str, 
     return beginning_datetime
 
 
-def validate_start_datetime(start_datetime: datetime, values: dict[str, Any]) -> datetime:
+def validate_start_datetime(start_datetime: datetime | None, values: dict[str, Any]) -> datetime | None:
     # we need a datetime with timezone information which is not provided by datetime.utcnow.
+    if not start_datetime:
+        return None
+
     if start_datetime.tzinfo is not None:
         if start_datetime < datetime.now(timezone.utc):  # pylint: disable=datetime-now
             raise ValueError("L'évènement ne peut commencer dans le passé.")
@@ -111,8 +114,11 @@ def validate_start_datetime(start_datetime: datetime, values: dict[str, Any]) ->
     return start_datetime
 
 
-def validate_end_datetime(end_datetime: datetime, values: dict[str, Any]) -> datetime:
+def validate_end_datetime(end_datetime: datetime | None, values: dict[str, Any]) -> datetime | None:
     # we need a datetime with timezone information which is not provided by datetime.utcnow.
+    if not end_datetime:
+        return None
+
     if end_datetime.tzinfo is not None:
         if end_datetime < datetime.now(timezone.utc):  # pylint: disable=datetime-now
             raise ValueError("L'évènement ne peut se terminer dans le passé.")
@@ -471,8 +477,10 @@ class PostCollectiveOfferBodyModel(BaseModel):
         cls, end_datetime: datetime | None, values: dict[str, Any]
     ) -> datetime | None:
         start_datetime = values.get("start_datetime")
+        if not start_datetime or not end_datetime:
+            return None
 
-        if start_datetime and end_datetime < start_datetime:
+        if end_datetime < start_datetime:
             raise ValueError("La date de fin de l'évènement ne peut précéder la date de début.")
         return end_datetime
 

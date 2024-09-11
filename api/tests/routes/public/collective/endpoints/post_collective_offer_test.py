@@ -363,3 +363,74 @@ class CollectiveOffersPublicPostOfferMinimalTest:
 
         offer = educational_models.CollectiveOffer.query.filter_by(id=response.json["id"]).one()
         assert offer.name == payload["name"]
+
+
+@pytest.mark.usefixtures("db_session")
+class OptionalStandAndEndDatetimesTest(PublicAPIEndpointBaseHelper):
+    endpoint_url = "/v2/collective/offers/"
+    endpoint_method = "post"
+
+    def test_startdatetime_is_optional_and_ignored_when_null(self, public_client, payload):
+        payload["startDatetime"] = None
+        self.assert_offer_is_created_with_payload(public_client, payload)
+
+    def test_enddatetime_is_optional_and_ignored_when_null(self, public_client, payload):
+        payload["endDatetime"] = None
+        self.assert_offer_is_created_with_payload(public_client, payload)
+
+    def test_both_start_and_enddatetime_are_optional_and_ignored_when_null(self, public_client, payload):
+        payload["startDatetime"] = None
+        payload["endDatetime"] = None
+        self.assert_offer_is_created_with_payload(public_client, payload)
+
+    def test_both_start_and_enddatetime_are_set_and_not_ignored(self, public_client, payload):
+        start = datetime.now(timezone.utc) + timedelta(days=10)  # pylint: disable=datetime-now
+        end = datetime.now(timezone.utc) + timedelta(days=20)  # pylint: disable=datetime-now
+
+        payload["startDatetime"] = start.isoformat(timespec="seconds")
+        payload["endDatetime"] = end.isoformat(timespec="seconds")
+        self.assert_offer_is_created_with_payload(public_client, payload, start=start, end=end)
+
+    def test_start_can_be_set_with_null_end_ignored(self, public_client, payload):
+        start = datetime.now(timezone.utc) + timedelta(days=10)  # pylint: disable=datetime-now
+        payload["startDatetime"] = start.isoformat(timespec="seconds")
+        payload["endDatetime"] = None
+        self.assert_offer_is_created_with_payload(public_client, payload)
+
+    def test_end_can_be_set_with_null_start_ignored(self, public_client, payload):
+        end = datetime.now(timezone.utc) + timedelta(days=10)  # pylint: disable=datetime-now
+        payload["endDatetime"] = end.isoformat(timespec="seconds")
+        payload["startDatetime"] = None
+        self.assert_offer_is_created_with_payload(public_client, payload)
+
+    def assert_offer_is_created_with_payload(self, client, payload, start=None, end=None):
+        """Assert that the offer has been created with the expected
+        start and end datetimes.
+
+        Also check that when one is explicitly null, a default value
+        has been used: there can be no null start nor end date when the
+        offer is created.
+        """
+        with patch("pcapi.core.educational.adage_backends.get_adage_offerer") as mock:
+            mock.return_value = ["anything", "it does not matter"]
+            response = client.post("/v2/collective/offers/", json=payload)
+
+        assert response.status_code == 200
+
+        expected_start = self._parse_dt(start) if start is not None else response.json["beginningDatetime"]
+        assert response.json["startDatetime"] == expected_start
+
+        expected_end = self._parse_dt(end) if end is not None else response.json["beginningDatetime"]
+        assert response.json["endDatetime"] == expected_end
+
+        offer = educational_models.CollectiveOffer.query.filter_by(id=response.json["id"]).one()
+        assert offer.name == payload["name"]
+
+        expected_start = start if start is not None else offer.collectiveStock.beginningDatetime
+        assert offer.collectiveStock.startDatetime == expected_start.replace(tzinfo=None, microsecond=0)
+
+        expected_end = end if end is not None else offer.collectiveStock.beginningDatetime
+        assert offer.collectiveStock.endDatetime == expected_end.replace(tzinfo=None, microsecond=0)
+
+    def _parse_dt(self, dt):
+        return dt.isoformat(timespec="seconds").replace("+00:00", "")
