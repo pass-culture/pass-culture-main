@@ -52,7 +52,7 @@ class OfferValidationType(enum.Enum):
 
 @declarative_mixin
 class ValidationMixin:
-    lastValidationDate = sa.Column(sa.DateTime, index=True, nullable=True)
+    lastValidationDate = sa.Column(sa.DateTime, nullable=True)
 
     lastValidationType = sa.Column(sa.Enum(OfferValidationType, name="validation_type"), nullable=True)
 
