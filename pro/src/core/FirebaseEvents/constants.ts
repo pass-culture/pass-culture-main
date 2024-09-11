@@ -43,6 +43,7 @@ export enum Events {
   CLICKED_PAGINATION_PREVIOUS_PAGE = 'hasClickedPaginationPreviousPage',
   CLICKED_CONTACT_OUR_TEAMS = 'hasClickedContactOurTeams',
   CLICKED_ARCHIVE_COLLECTIVE_OFFER = 'hasClickedArchiveCollectiveOffer',
+  CLICKED_SAVE_DRAFT_AND_EXIT_COLLECTIVE_OFFER = 'hasClickedSaveDraftAndExitCollectiveOffer',
   FIRST_LOGIN = 'firstLogin',
   PAGE_VIEW = 'page_view',
   SIGNUP_FORM_ABORT = 'signupFormAbort',
