@@ -597,6 +597,16 @@ def _filter_collective_offers_by_statuses(query: BaseQuery, statuses: list[str] 
                 educational_models.CollectiveOffer.isArchived == False,
             )
         )
+        on_collective_offer_filters.append(
+            and_(
+                educational_models.CollectiveOffer.isArchived == False,
+                educational_models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.APPROVED,
+                # pylint: disable=comparison-with-callable
+                educational_models.CollectiveOffer.hasBookingLimitDatetimePassed == False,
+                educational_models.CollectiveOffer.status == offer_mixin.CollectiveOfferStatus.ACTIVE.name,
+            )
+        )
+
     if DisplayedStatus.INACTIVE.value in statuses:
         on_booking_status_filter.append(
             and_(
@@ -658,6 +668,7 @@ def add_last_booking_status_to_collective_offer_query(
     collective_stock_with_last_booking_status_query = (
         educational_models.CollectiveStock.query.with_entities(
             educational_models.CollectiveStock.collectiveOfferId,
+            educational_models.CollectiveStock.bookingLimitDatetime,
             educational_models.CollectiveBooking.status,
         )
         .outerjoin(educational_models.CollectiveBooking, educational_models.CollectiveStock.collectiveBookings)
