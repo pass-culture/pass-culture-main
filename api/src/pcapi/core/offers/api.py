@@ -1493,7 +1493,7 @@ def whitelist_product(idAtProviders: str) -> models.Product | None:
     product.gcuCompatibilityType = models.GcuCompatibilityType.COMPATIBLE
 
     db.session.add(product)
-    db.session.commit()
+    db.session.flush()
     return product
 
 
