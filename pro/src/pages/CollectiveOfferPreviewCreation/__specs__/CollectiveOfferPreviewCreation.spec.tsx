@@ -2,6 +2,8 @@ import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import { api } from 'apiClient/api'
+import * as useAnalytics from 'app/App/analytics/firebase'
+import { Events } from 'core/FirebaseEvents/constants'
 import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
 import { MandatoryCollectiveOfferFromParamsProps } from 'screens/OfferEducational/useCollectiveOfferFromParams'
 import { defaultAdageUser } from 'utils/adageFactories'
@@ -50,9 +52,15 @@ const defaultProps = {
   offerer: undefined,
 }
 
+const mockLogEvent = vi.fn()
+
 describe('CollectiveOfferPreviewCreation', () => {
   beforeEach(() => {
     vi.spyOn(api, 'getVenue').mockResolvedValue(defaultGetVenue)
+
+    vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
+      logEvent: mockLogEvent,
+    }))
   })
 
   it('should render collective offer preview ', async () => {
@@ -97,5 +105,26 @@ describe('CollectiveOfferPreviewCreation', () => {
     await userEvent.click(screen.getByText('Publier l’offre'))
 
     screen.getByText(/Félicitations, vous avez créé votre offre !/)
+  })
+
+  it('should call tracker when clicking save draft and exit', async () => {
+    renderCollectiveOfferPreviewCreation(
+      '/offre/A1/collectif/creation/recapitulatif',
+      defaultProps,
+      { features: ['WIP_ENABLE_COLLECTIVE_DRAFT_OFFERS'] }
+    )
+
+    await userEvent.click(
+      await screen.findByRole('link', {
+        name: /Sauvegarder le brouillon et quitter/,
+      })
+    )
+
+    expect(mockLogEvent).toHaveBeenCalledWith(
+      Events.CLICKED_SAVE_DRAFT_AND_EXIT_COLLECTIVE_OFFER,
+      {
+        from: '/',
+      }
+    )
   })
 })

@@ -9,11 +9,13 @@ import {
   GetCollectiveOfferTemplateResponseModel,
   GetOffererResponseModel,
 } from 'apiClient/v1'
+import { useAnalytics } from 'app/App/analytics/firebase'
 import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
 import {
   GET_COLLECTIVE_OFFER_QUERY_KEY,
   GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY,
 } from 'config/swrQueryKeys'
+import { Events } from 'core/FirebaseEvents/constants'
 import { Mode, isCollectiveOfferTemplate } from 'core/OfferEducational/types'
 import { useActiveFeature } from 'hooks/useActiveFeature'
 import { useNotification } from 'hooks/useNotification'
@@ -37,6 +39,7 @@ export const CollectiveOfferPreviewCreationScreen = ({
   const notify = useNotification()
   const navigate = useNavigate()
   const { mutate } = useSWRConfig()
+  const { logEvent } = useAnalytics()
   const [displayRedirectDialog, setDisplayRedirectDialog] = useState(false)
 
   const isCollectiveOfferDraftEnabled = useActiveFeature(
@@ -133,6 +136,10 @@ export const CollectiveOfferPreviewCreationScreen = ({
               to="/offres/collectives"
               variant={ButtonVariant.SECONDARY}
               onClick={() => {
+                logEvent(Events.CLICKED_SAVE_DRAFT_AND_EXIT_COLLECTIVE_OFFER, {
+                  from: location.pathname,
+                })
+
                 notify.success('Brouillon sauvegardé dans la liste des offres')
               }}
             >
