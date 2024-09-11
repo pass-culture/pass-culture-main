@@ -33,7 +33,11 @@ import { DEFAULT_DETAILS_FORM_VALUES } from './constants'
 import { Subcategories } from './Subcategories/Subcategories'
 import { SuggestedSubcategories } from './SuggestedSubcategories/SuggestedSubcategories'
 import { DetailsFormValues } from './types'
-import { buildShowSubTypeOptions, buildVenueOptions } from './utils'
+import {
+  buildShowSubTypeOptions,
+  buildVenueOptions,
+  hasMusicType,
+} from './utils'
 
 const DEBOUNCE_TIME_BEFORE_REQUEST = 400
 
@@ -117,12 +121,6 @@ export const DetailsForm = ({
   )
 
   const offerAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
-
-  // Books have a gtl_id field, other categories have a musicType field
-  const hasMusicType =
-    categoryId !== 'LIVRE'
-      ? subcategoryConditionalFields.includes('gtl_id')
-      : subcategoryConditionalFields.includes('musicType')
 
   async function getSuggestedSubcategories() {
     if (!areSuggestedSubcategoriesUsed && !offer) {
@@ -319,7 +317,7 @@ export const DetailsForm = ({
               )}
               {displayArtisticInformations && (
                 <FormLayout.Section title="Informations artistiques">
-                  {hasMusicType && (
+                  {hasMusicType(categoryId, subcategoryConditionalFields) && (
                     <FormLayout.Row>
                       <Select
                         label="Genre musical"

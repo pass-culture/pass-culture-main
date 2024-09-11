@@ -15,6 +15,16 @@ import { computeVenueDisplayName } from 'repository/venuesService'
 import { DEFAULT_DETAILS_FORM_VALUES } from './constants'
 import { DetailsFormValues } from './types'
 
+export const hasMusicType = (
+  categoryId: string,
+  subcategoryConditionalFields: string[]
+): boolean => {
+  // Books have a gtl_id field, other categories have a musicType field
+  return categoryId !== 'LIVRE'
+    ? subcategoryConditionalFields.includes('gtl_id')
+    : subcategoryConditionalFields.includes('musicType')
+}
+
 export const buildCategoryOptions = (
   categories: CategoryResponseModel[]
 ): SelectOption[] =>
@@ -58,22 +68,12 @@ export const buildShowSubTypeOptions = (showType: string): SelectOption[] => {
     .sort((a, b) => a.label.localeCompare(b.label, 'fr'))
 }
 
-export const buildSubcategoryConditonalFields = (
+export const completeSubcategoryConditionalFields = (
   subcategory?: SubcategoryResponseModel
-): {
-  subcategoryConditionalFields: string[]
-} => {
-  const subcategoryConditionalFields = [
-    ...new Set(subcategory?.conditionalFields),
-  ]
-  const isEvent = Boolean(subcategory?.isEvent)
-
-  if (isEvent) {
-    subcategoryConditionalFields.push('durationMinutes')
-  }
-
-  return { subcategoryConditionalFields }
-}
+): string[] => [
+  ...new Set(subcategory?.conditionalFields),
+  ...(subcategory?.isEvent ? ['durationMinutes'] : []),
+]
 
 type OnCategoryChangeProps = {
   readOnlyFields: string[]
@@ -146,8 +146,8 @@ export const onSubcategoryChange = async ({
     setIsEvent(newSubcategory?.isEvent ?? null)
   }
 
-  const { subcategoryConditionalFields: newSubcategoryConditionalFields } =
-    buildSubcategoryConditonalFields(newSubcategory)
+  const newSubcategoryConditionalFields =
+    completeSubcategoryConditionalFields(newSubcategory)
   await setFieldValue(
     'subcategoryConditionalFields',
     newSubcategoryConditionalFields
@@ -236,9 +236,6 @@ export function setDefaultInitialValuesFromOffer({
     throw Error('La categorie de l’offre est introuvable')
   }
 
-  const { subcategoryConditionalFields } =
-    buildSubcategoryConditonalFields(subcategory)
-
   return {
     ...DEFAULT_DETAILS_FORM_VALUES,
     name: offer.name,
@@ -249,7 +246,8 @@ export function setDefaultInitialValuesFromOffer({
     showType: offer.extraData?.showType ?? DEFAULT_DETAILS_FORM_VALUES.showType,
     showSubType:
       offer.extraData?.showSubType ?? DEFAULT_DETAILS_FORM_VALUES.showSubType,
-    subcategoryConditionalFields: subcategoryConditionalFields,
+    subcategoryConditionalFields:
+      completeSubcategoryConditionalFields(subcategory),
     durationMinutes: offer.durationMinutes
       ? deSerializeDurationMinutes(offer.durationMinutes)
       : DEFAULT_DETAILS_FORM_VALUES.durationMinutes,

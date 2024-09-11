@@ -7,9 +7,10 @@ import {
 
 import { DEFAULT_DETAILS_FORM_VALUES } from '../constants'
 import {
+  hasMusicType,
   buildCategoryOptions,
   buildShowSubTypeOptions,
-  buildSubcategoryConditonalFields,
+  completeSubcategoryConditionalFields,
   buildSubcategoryOptions,
   buildVenueOptions,
   deSerializeDurationMinutes,
@@ -19,6 +20,15 @@ import {
   setDefaultInitialValuesFromOffer,
   setFormReadOnlyFields,
 } from '../utils'
+
+describe('hasMusicType', () => {
+  it('should return true if categoryId=LIVRE and has a musicType as a conditional field', () =>
+    expect(hasMusicType('LIVRE', ['musicType'])).toBe(true))
+  it('should return true if categoryId!=LIVRE and has a gtl_id as a conditional field', () =>
+    expect(hasMusicType('AUTRE', ['gtl_id'])).toBe(true))
+  it('should return false otherwise', () =>
+    expect(hasMusicType('AUTRE', ['musicType'])).toBe(false))
+})
 
 describe('buildCategoryOptions', () => {
   it('should build category options', () => {
@@ -125,18 +135,18 @@ describe('buildShowSubTypeOptions', () => {
 describe('buildSubcategoryFields', () => {
   it('should build subcategory fields', () => {
     expect(
-      buildSubcategoryConditonalFields(subcategoryFactory({ isEvent: true }))
-    ).toStrictEqual({ subcategoryConditionalFields: ['durationMinutes'] })
+      completeSubcategoryConditionalFields(
+        subcategoryFactory({ isEvent: true })
+      )
+    ).toStrictEqual(['durationMinutes'])
     expect(
-      buildSubcategoryConditonalFields(
+      completeSubcategoryConditionalFields(
         subcategoryFactory({
           isEvent: false,
           conditionalFields: ['gtl_id', 'author', 'ean'],
         })
       )
-    ).toStrictEqual({
-      subcategoryConditionalFields: ['gtl_id', 'author', 'ean'],
-    })
+    ).toStrictEqual(['gtl_id', 'author', 'ean'])
   })
 })
 

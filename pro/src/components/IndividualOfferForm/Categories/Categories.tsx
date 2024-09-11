@@ -13,6 +13,7 @@ import { FormLayout } from 'components/FormLayout/FormLayout'
 import { INDIVIDUAL_OFFER_SUBTYPE } from 'core/Offers/constants'
 import fullMoreIcon from 'icons/full-more.svg'
 import {
+  hasMusicType,
   buildCategoryOptions,
   buildSubcategoryOptions,
 } from 'screens/IndividualOffer/DetailsScreen/utils'
@@ -132,10 +133,6 @@ export const Categories = ({
   }
 
   const hasCategory = categoryId !== FORM_DEFAULT_VALUES.categoryId
-  const hasMusicType =
-    categoryId !== 'LIVRE'
-      ? subCategoryFields.includes('gtl_id')
-      : subCategoryFields.includes('musicType')
   const hasShowType = subCategoryFields.includes('showType')
 
   return (
@@ -209,7 +206,7 @@ export const Categories = ({
         </FormLayout.Row>
       )}
 
-      {hasMusicType && (
+      {hasMusicType(categoryId, subCategoryFields) && (
         <MusicTypes
           readOnly={readOnlyFields.includes('gtl_id')}
           isEvent={isEvent}
