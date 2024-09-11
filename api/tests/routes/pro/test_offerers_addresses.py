@@ -38,9 +38,10 @@ class CreateOffererAddressesTest:
         # Fetch the user
         # Check permissions
         # Insert address
+        # Refresh address
         # Insert OffererAddress
         # Select OffererAddress & address
-        with assert_num_queries(6):
+        with assert_num_queries(7):
             response = http_client.post(
                 f"/offerers/{offerer_id}/addresses/",
                 json={
@@ -410,9 +411,10 @@ class CreateOffererAddressesTest:
         # Fetch the user
         # Check permissions
         # Insert address
+        # refresh address
         # Insert OffererAddress
         # Select OffererAddress & address
-        with assert_num_queries(6):
+        with assert_num_queries(7):
             response = http_client.post(
                 f"/offerers/{offerer_id}/addresses/",
                 json={
@@ -504,9 +506,10 @@ class CreateOffererAddressesTest:
         # Fetch the user
         # Check permissions
         # Insert address
+        # Refresh address
         # Select OffererAddress if exists
         # Insert offererAddress
-        with assert_num_queries(6):
+        with assert_num_queries(7):
             response = http_client.post(
                 f"/offerers/{offerer_id}/addresses/",
                 json={
