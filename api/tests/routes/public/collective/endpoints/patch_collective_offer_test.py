@@ -140,18 +140,16 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIEndpointBaseHelper):
 
     def test_patch_offer_price_should_be_lower(self, client):
         # Given
-        stock = educational_factories.CollectiveStockFactory()
-        offerer = stock.collectiveOffer.venue.managingOfferer
-        offerers_factories.ApiKeyFactory(offerer=offerer)
-
-        payload = {
-            "totalPrice": 1196.25,
-        }
+        plain_api_key, provider = self.setup_provider()
+        venue_provider = provider_factories.VenueProviderFactory(provider=provider)
+        offer = educational_factories.CollectiveOfferFactory(venue=venue_provider.venue)
+        stock = educational_factories.CollectiveStockFactory(collectiveOffer=offer)
 
         # When
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
-            response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
-                f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
+            response = client.with_explicit_token(plain_api_key).patch(
+                self.endpoint_url.format(offer_id=stock.collectiveOffer.id),
+                json={"totalPrice": 1196.25},
             )
 
         # Then

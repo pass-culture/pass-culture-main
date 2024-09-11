@@ -63,6 +63,22 @@ class PublicAPIEndpointBaseHelper(abc.ABC):
 
         assert response.json == {"auth": "API key required"}
 
+    def test_should_raise_401_because_api_key_not_linked_to_provider(self, client: TestClient):
+        """
+        Default test ensuring the API call is authenticated and that the API key authenticates a provider
+        """
+        plain_api_key = self.setup_old_api_key()
+        client_method = getattr(client.with_explicit_token(plain_api_key), self.endpoint_method)
+        url = self.endpoint_url
+
+        if self.default_path_params:
+            url = url.format(**self.default_path_params)
+        with testing.assert_num_queries(2):  # Select API key + select provider
+            response = client_method(url)
+            assert response.status_code == 401
+
+        assert response.json == {"auth": "Deprecated API key. Please contact provider support to get a new API key"}
+
     def _setup_api_key(self, offerer, provider=None) -> str:
         secret = str(uuid.uuid4())
         env = "test"

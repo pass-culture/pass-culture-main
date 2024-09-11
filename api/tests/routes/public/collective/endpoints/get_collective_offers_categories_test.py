@@ -3,19 +3,23 @@ import pytest
 from pcapi.core import testing
 import pcapi.core.offerers.factories as offerers_factories
 
+from tests.routes.public.helpers import PublicAPIEndpointBaseHelper
+
 
 @pytest.mark.usefixtures("db_session")
-class CollectiveOffersGetCategoriesTest:
+class CollectiveOffersGetCategoriesTest(PublicAPIEndpointBaseHelper):
+    endpoint_url = "/v2/collective/categories"
+    endpoint_method = "get"
+
     def test_list_categories(self, client):
+        plain_api_key, _ = self.setup_provider()
         offerer = offerers_factories.OffererFactory()
         offerers_factories.ApiKeyFactory(offerer=offerer)
 
         num_queries = 1  # select api_key, offerer and provider
         num_queries += 1  # select features
         with testing.assert_num_queries(num_queries):
-            response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-                "/v2/collective/categories"
-            )
+            response = client.with_explicit_token(plain_api_key).get(self.endpoint_url)
             assert response.status_code == 200
 
         assert response.json == [
@@ -41,10 +45,5 @@ class CollectiveOffersGetCategoriesTest:
 
         client = client.with_session_auth(user_offerer.user.email)
         with testing.assert_num_queries(testing.AUTHENTICATION_QUERIES):
-            response = client.get("/v2/collective/categories")
-            assert response.status_code == 401
-
-    def test_list_categories_anonymous_returns_401(self, client):
-        with testing.assert_num_queries(0):
-            response = client.get("/v2/collective/categories")
+            response = client.get(self.endpoint_url)
             assert response.status_code == 401

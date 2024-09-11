@@ -3,20 +3,22 @@ import pytest
 from pcapi.core import testing
 import pcapi.core.offerers.factories as offerers_factories
 
+from tests.routes.public.helpers import PublicAPIEndpointBaseHelper
+
 
 @pytest.mark.usefixtures("db_session")
-class CollectiveOffersGetCategoriesTest:
+class CollectiveOffersGetCategoriesTest(PublicAPIEndpointBaseHelper):
+    endpoint_url = "/v2/collective/subcategories"
+    endpoint_method = "get"
+
     num_queries = 1  # select api_key, offerer and provider
     num_queries += 1  # select features
 
     def test_list_sub_categories(self, client):
-        offerer = offerers_factories.OffererFactory()
-        offerers_factories.ApiKeyFactory(offerer=offerer)
+        plain_api_key, _ = self.setup_provider()
 
         with testing.assert_num_queries(2):
-            response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-                "/v2/collective/subcategories"
-            )
+            response = client.with_explicit_token(plain_api_key).get(self.endpoint_url)
             assert response.status_code == 200
 
         assert response.json == [

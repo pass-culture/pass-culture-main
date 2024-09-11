@@ -19,8 +19,8 @@ from pcapi.routes.public.documentation_constants import http_responses
 from pcapi.routes.public.documentation_constants import tags
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
-from pcapi.validation.routes.users_authentifications import api_key_required
 from pcapi.validation.routes.users_authentifications import current_api_key
+from pcapi.validation.routes.users_authentifications import provider_api_key_required
 
 
 logger = logging.getLogger(__name__)
@@ -28,7 +28,7 @@ logger = logging.getLogger(__name__)
 
 @blueprints.public_api.route("/v2/collective/adage_mock/bookings/<int:booking_id>/confirm", methods=["POST"])
 @utils.exclude_prod_environment
-@api_key_required
+@provider_api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     on_success_status=204,
@@ -70,7 +70,7 @@ def confirm_collective_booking(booking_id: int) -> None:
 
 @blueprints.public_api.route("/v2/collective/adage_mock/bookings/<int:booking_id>/cancel", methods=["POST"])
 @utils.exclude_prod_environment
-@api_key_required
+@provider_api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     on_success_status=204,

@@ -22,12 +22,12 @@ from pcapi.routes.serialization import collective_offers_serialize
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
 from pcapi.utils.image_conversion import DO_NOT_CROP
-from pcapi.validation.routes.users_authentifications import api_key_required
 from pcapi.validation.routes.users_authentifications import current_api_key
+from pcapi.validation.routes.users_authentifications import provider_api_key_required
 
 
 @blueprints.public_api.route("/v2/collective/offers/", methods=["GET"])
-@api_key_required
+@provider_api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.COLLECTIVE_OFFERS],
@@ -66,7 +66,7 @@ def get_collective_offers_public(
 
 
 @blueprints.public_api.route("/v2/collective/offers/<int:offer_id>", methods=["GET"])
-@api_key_required
+@provider_api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.COLLECTIVE_OFFERS],
@@ -116,7 +116,7 @@ def get_collective_offer_public(
 
 
 @blueprints.public_api.route("/v2/collective/offers/", methods=["POST"])
-@api_key_required
+@provider_api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.COLLECTIVE_OFFERS],
@@ -250,7 +250,7 @@ def post_collective_offer_public(
 
 
 @blueprints.public_api.route("/v2/collective/offers/<int:offer_id>", methods=["PATCH"])
-@api_key_required
+@provider_api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.COLLECTIVE_OFFERS],
@@ -538,7 +538,7 @@ def patch_collective_offer_public(
 
 
 @blueprints.public_api.route("/v2/collective/offers/formats", methods=["GET"])
-@api_key_required
+@provider_api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.COLLECTIVE_OFFERS],
