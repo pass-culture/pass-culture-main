@@ -24,14 +24,3 @@
     local("Montserrat-Italic"),
     url("/fonts/Montserrat-Italic.woff2") format("woff2");
 }
-
-@font-face {
-  font-family: Montserrat-ExtraBold;
-  font-weight: 800;
-  font-style: normal;
-  font-display: "swap";
-  src:
-    local("Montserrat ExtraBold"),
-    local("Montserrat-ExtraBold"),
-    url("/fonts/Montserrat-ExtraBold.woff2") format("woff2");
-}
