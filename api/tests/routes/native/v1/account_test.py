@@ -2858,3 +2858,78 @@ class SuspendAccountForSuspiciousLoginTest:
         assert len(user.suspension_action_history) == 1
         assert user.suspension_action_history[0].userId == user.id
         assert user.suspension_action_history[0].authorUserId == user.id
+
+
+class AnonymizeUserTest:
+    @pytest.mark.parametrize(
+        "roles",
+        [
+            [users_models.UserRole.UNDERAGE_BENEFICIARY],
+            [users_models.UserRole.BENEFICIARY],
+            [],
+        ],
+    )
+    def test_anonymize_ex_beneficiary(self, client, roles):
+        user = users_factories.BeneficiaryFactory(validatedBirthDate=date(2000, 1, 1), roles=roles)
+
+        response = client.with_token(email=user.email).post("/native/v1/account/anonymize")
+
+        assert response.status_code == 204
+        assert not user.isActive
+        assert users_models.GdprUserAnonymization.query.filter_by(userId=user.id).count() == 1
+
+    def test_no_deposit(self, client):
+        user = users_factories.UserFactory(age=16)
+
+        response = client.with_token(email=user.email).post("/native/v1/account/anonymize")
+
+        assert response.status_code == 204
+        assert not user.isActive
+        assert users_models.GdprUserAnonymization.query.filter_by(userId=user.id).count() == 1
+
+    def test_pending_gdpr_extract(self, client):
+        user = users_factories.BeneficiaryFactory(validatedBirthDate=date(2000, 1, 1))
+        users_factories.GdprUserDataExtractBeneficiaryFactory(user=user)
+
+        response = client.with_token(email=user.email).post("/native/v1/account/anonymize")
+
+        assert response.status_code == 400
+        assert response.json["code"] == "EXISTING_UNPROCESSED_GDPR_EXTRACT"
+        assert user.isActive
+
+    @pytest.mark.parametrize(
+        "role",
+        [
+            users_models.UserRole.PRO,
+            users_models.UserRole.NON_ATTACHED_PRO,
+            users_models.UserRole.ANONYMIZED,
+            users_models.UserRole.ADMIN,
+        ],
+    )
+    def test_not_anonymizable_role(self, client, role):
+        user = users_factories.BeneficiaryFactory(validatedBirthDate=date(2000, 1, 1), roles=[role])
+
+        response = client.with_token(email=user.email).post("/native/v1/account/anonymize")
+
+        assert response.status_code == 400
+        assert response.json["code"] == "NOT_ANONYMIZABLE_BENEFICIARY"
+        assert user.isActive
+
+    def test_active_beneficiary(self, client):
+        user = users_factories.BeneficiaryFactory()
+
+        response = client.with_token(email=user.email).post("/native/v1/account/anonymize")
+
+        assert response.status_code == 400
+        assert response.json["code"] == "NOT_ANONYMIZABLE_BENEFICIARY"
+        assert user.isActive
+
+    def test_pending_anonymization(self, client):
+        user = users_factories.BeneficiaryFactory(validatedBirthDate=date(2000, 1, 1))
+        users_factories.GdprUserAnonymizationFactory(user=user)
+
+        response = client.with_token(email=user.email).post("/native/v1/account/anonymize")
+
+        assert response.status_code == 400
+        assert response.json["code"] == "ALREADY_HAS_PENDING_ANONYMIZATION"
+        assert user.isActive

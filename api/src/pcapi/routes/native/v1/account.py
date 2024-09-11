@@ -496,6 +496,23 @@ def account_suspension_token_validation(token: str) -> None:
         raise api_errors.ApiErrors({"reason": "Le token est invalide."})
 
 
+@blueprint.native_route("/account/anonymize", methods=["POST"])
+@spectree_serialize(on_success_status=204, api=blueprint.api, on_error_statuses=[400])
+@authenticated_and_active_user_required
+@atomic()
+def anonymize_account(user: users_models.User) -> None:
+    if api.has_unprocessed_extract(user):
+        raise api_errors.ApiErrors({"code": "EXISTING_UNPROCESSED_GDPR_EXTRACT"})
+
+    if not api.is_beneficiary_anonymizable(user):
+        raise api_errors.ApiErrors({"code": "NOT_ANONYMIZABLE_BENEFICIARY"})
+
+    try:
+        api.pre_anonymize_user(user, author=user)
+    except exceptions.UserAlreadyHasPendingAnonymization:
+        raise api_errors.ApiErrors({"code": "ALREADY_HAS_PENDING_ANONYMIZATION"})
+
+
 @blueprint.native_route("/account/suspension_date", methods=["GET"])
 @spectree_serialize(response_model=serializers.UserSuspensionDateResponse, api=blueprint.api, on_success_status=200)
 @authenticated_maybe_inactive_user_required

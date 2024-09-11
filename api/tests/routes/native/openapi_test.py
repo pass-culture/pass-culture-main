@@ -2657,6 +2657,27 @@ def test_public_api(client):
                     "tags": [],
                 }
             },
+            "/native/v1/account/anonymize": {
+                "post": {
+                    "description": "",
+                    "operationId": "post__native_v1_account_anonymize",
+                    "parameters": [],
+                    "responses": {
+                        "204": {"description": "No Content"},
+                        "400": {"description": "Bad Request"},
+                        "403": {"description": "Forbidden"},
+                        "422": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
+                            },
+                            "description": "Unprocessable Entity",
+                        },
+                    },
+                    "security": [{"JWTAuth": []}],
+                    "summary": "anonymize_account <POST>",
+                    "tags": [],
+                }
+            },
             "/native/v1/account/suspend": {
                 "post": {
                     "description": "",
