@@ -289,13 +289,10 @@ def get_pro_attributes(email: str) -> models.ProAttributes:
         .all()
     )
 
-    is_eac_meg = False
-
-    venue_with_collective_offer = any(venue.adageId for venue in venues)
-
-    if venue_with_collective_offer:
-        venue_ids = {venue.id for venue in venues}
-        is_eac_meg = has_collective_offers_for_program_and_venue_ids("marseille_en_grand", venue_ids)
+    venue_ids = {venue.id for venue in venues}
+    is_eac_meg = has_collective_offers_for_program_and_venue_ids(
+        educational_models.PROGRAM_MARSEILLE_EN_GRAND, venue_ids
+    )
 
     if venues:
 

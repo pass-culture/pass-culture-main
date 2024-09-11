@@ -1873,6 +1873,9 @@ class CollectiveOfferTemplateEducationalRedactor(PcObject, Base, Model):
     )
 
 
+PROGRAM_MARSEILLE_EN_GRAND = "marseille_en_grand"
+
+
 class EducationalInstitutionProgramAssociation(Base, Model):
     """Association model between EducationalInstitution and
     EducationalInstitutionProgram (many-to-many)
