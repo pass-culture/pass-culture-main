@@ -9,6 +9,8 @@ from markupsafe import escape
 from pcapi.core.finance import siret_api
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.permissions import models as perm_models
+from pcapi.repository import atomic
+from pcapi.repository import mark_transaction_as_invalid
 
 from . import utils
 from .forms import pro_support as pro_support_forms
@@ -94,12 +96,14 @@ def _render_confirmation_page(
 
 
 @move_siret_blueprint.route("", methods=["GET"])
+@atomic()
 def move_siret() -> utils.BackofficeResponse:
     form = pro_support_forms.MoveSiretForm()
     return _render_form_page(form)
 
 
 @move_siret_blueprint.route("", methods=["POST"])
+@atomic()
 def post_move_siret() -> utils.BackofficeResponse:
     form, source_venue, target_venue = _validate_move_siret_form()
     if not source_venue or not target_venue:
@@ -113,6 +117,7 @@ def post_move_siret() -> utils.BackofficeResponse:
             bool(form.override_revenue_check.data),
         )
     except siret_api.CheckError as exc:
+        mark_transaction_as_invalid()
         flash(escape(str(exc)), "warning")
         return _render_form_page(form, code=400)
 
@@ -120,6 +125,7 @@ def post_move_siret() -> utils.BackofficeResponse:
 
 
 @move_siret_blueprint.route("/apply", methods=["POST"])
+@atomic()
 def apply_move_siret() -> utils.BackofficeResponse:
     form, source_venue, target_venue = _validate_move_siret_form()
     if not source_venue or not target_venue:
@@ -135,9 +141,11 @@ def apply_move_siret() -> utils.BackofficeResponse:
             author_user_id=current_user.id,
         )
     except siret_api.CheckError as exc:
+        mark_transaction_as_invalid()
         flash(Markup("La vérification a échoué : {message}").format(message=str(exc)), "warning")
         return _render_confirmation_page(form, source_venue, target_venue, code=400)
     except Exception as exc:  # pylint: disable=broad-except
+        mark_transaction_as_invalid()
         flash(Markup("Une erreur s'est produite : {message}").format(message=str(exc)), "warning")
         return _render_confirmation_page(form, source_venue, target_venue, code=400)
 
