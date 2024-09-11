@@ -1662,6 +1662,50 @@ def anonymize_non_pro_non_beneficiary_users(*, force: bool = False) -> None:
     db.session.commit()
 
 
+def is_beneficiary_anonymizable(user: models.User) -> bool:
+    if not is_only_beneficiary(user):
+        return False
+
+    # Check if the user never had credits.
+    if len(user.deposits) == 0:
+        return True
+
+    # Check if the user is over 21.
+    if (
+        user.validatedBirthDate
+        and users_utils.get_age_at_date(user.validatedBirthDate, datetime.datetime.utcnow()) >= 21
+    ):
+        return True
+    return False
+
+
+def is_only_beneficiary(user: models.User) -> bool:
+    # Check if the user is admin, pro or anonymised
+    beneficiary_roles = {models.UserRole.BENEFICIARY, models.UserRole.UNDERAGE_BENEFICIARY}
+    return beneficiary_roles.issuperset(user.roles)
+
+
+def pre_anonymize_user(user: models.User, author: models.User, is_backoffice_action: bool = False) -> None:
+    if has_user_pending_anonymization(user.id):
+        raise exceptions.UserAlreadyHasPendingAnonymization()
+
+    suspend_account(
+        user=user,
+        reason=constants.SuspensionReason.WAITING_FOR_ANONYMIZATION,
+        actor=author,
+        comment="L'utilisateur sera anonymisé le jour de ses 21 ans",
+        is_backoffice_action=is_backoffice_action,
+    )
+    db.session.add(models.GdprUserAnonymization(user=user))
+    db.session.flush()
+
+
+def has_user_pending_anonymization(user_id: int) -> bool:
+    return db.session.query(
+        models.GdprUserAnonymization.query.filter(models.GdprUserAnonymization.userId == user_id).exists()
+    ).scalar()
+
+
 def anonymize_beneficiary_users(*, force: bool = False) -> None:
     """
     Anonymize user accounts that have been beneficiaries which have not connected for at least 3 years, and
