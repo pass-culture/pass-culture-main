@@ -670,7 +670,7 @@ TWO_BOOKS_RESPONSE_FIXTURE = {
 
 # Extracted from actual response:
 # curl --location 'https://catsearch.epagine.fr/v1/ean/9782070455379' --header 'Authorization: Bearer xxx'
-BOOK_BY_EAN_FIXTURE = {
+BOOK_BY_SINGLE_EAN_FIXTURE = {
     "type": 1,
     "magid": "6505",
     "compatibility": [],

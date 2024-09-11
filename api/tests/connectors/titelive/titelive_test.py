@@ -26,7 +26,7 @@ class TiteliveTest:
         if "ean" in kwargs:
             requests_mock.get(
                 f"{settings.TITELIVE_EPAGINE_API_URL}/ean/{kwargs['ean']}",
-                json=kwargs.get("fixture", fixtures.BOOK_BY_EAN_FIXTURE),
+                json=kwargs.get("fixture", fixtures.BOOK_BY_SINGLE_EAN_FIXTURE),
             )
 
     def test_get_jwt_token(self, requests_mock):
@@ -36,14 +36,14 @@ class TiteliveTest:
 
     def test_get_by_ean13(self, requests_mock):
         ean = "9782070455379"
-        json = fixtures.BOOK_BY_EAN_FIXTURE
+        json = fixtures.BOOK_BY_SINGLE_EAN_FIXTURE
         self._configure_mock(requests_mock, ean=ean, fixture=json)
 
         assert titelive.get_by_ean13(ean) == json
 
     def test_get_new_product_from_ean_13(self, requests_mock):
         ean = "9782070455379"
-        json = fixtures.BOOK_BY_EAN_FIXTURE
+        json = fixtures.BOOK_BY_SINGLE_EAN_FIXTURE
         self._configure_mock(requests_mock, ean=ean, fixture=json)
 
         oeuvre = json["oeuvre"]
@@ -73,7 +73,7 @@ class TiteliveTest:
 
     def test_get_new_product_without_resume_from_ean_13(self, requests_mock):
         ean = "9782070455379"
-        json = deepcopy(fixtures.BOOK_BY_EAN_FIXTURE)
+        json = deepcopy(fixtures.BOOK_BY_SINGLE_EAN_FIXTURE)
         del json["oeuvre"]["article"][0]["resume"]
         self._configure_mock(requests_mock, ean=ean, fixture=json)
 
@@ -84,7 +84,7 @@ class TiteliveTest:
 
     def test_get_new_product_from_ean_13_without_gtl(self, requests_mock):
         ean = "9782070455379"
-        json = deepcopy(fixtures.BOOK_BY_EAN_FIXTURE)
+        json = deepcopy(fixtures.BOOK_BY_SINGLE_EAN_FIXTURE)
 
         del json["oeuvre"]["article"][0]["gtl"]
 
