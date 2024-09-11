@@ -2829,8 +2829,8 @@ class GetOffererAddressTest:
             assert address.street == "1 rue de la paix"
             assert address.city == "Paris"
             assert address.postalCode == "75103"
-            assert address.latitude == 40.8566
-            assert address.longitude == 1.3522
+            assert address.latitude == decimal.Decimal("40.85660")
+            assert address.longitude == decimal.Decimal("1.35220")
 
 
 class SendReminderEmailToIndividualOfferersTest:

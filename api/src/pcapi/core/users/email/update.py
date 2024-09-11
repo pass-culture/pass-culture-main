@@ -1,5 +1,6 @@
 from datetime import datetime
 import enum
+from functools import partial
 import logging
 
 from flask import current_app as app
@@ -16,6 +17,7 @@ from pcapi.core.users import repository as users_repository
 from pcapi.core.users.email.send import send_pro_user_emails_for_email_change
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
+from pcapi.repository import on_commit
 from pcapi.repository import repository
 from pcapi.repository import transaction
 from pcapi.utils.urls import generate_firebase_dynamic_link
@@ -325,7 +327,7 @@ def request_email_update_from_admin(user: models.User, email: str) -> None:
 
     repository.save(email_history, user)
 
-    api.request_email_confirmation(user)
+    on_commit(partial(api.request_email_confirmation, user))
 
 
 def full_email_update_by_admin(user: models.User, email: str, commit: bool = False) -> None:
