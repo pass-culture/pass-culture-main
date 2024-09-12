@@ -220,12 +220,10 @@ class ListOffersOfferResponseModelsGetterDict(GetterDict):
             ):  # The only offers without oa neither in themselves nor in venues are the numerics ones.
                 return None
             offererAddress = GetOffererAddressResponseModel.from_orm(offerer_address)
-            offererAddress.label = (
-                offererAddress.label if not offererAddress.isLinkedToVenue else self._obj.venue.common_name
-            )
+            label = self._obj.venue.common_name if offererAddress.isLinkedToVenue else offererAddress.label
             return AddressResponseIsLinkedToVenueModel(
                 **retrieve_address_info_from_oa(offerer_address),
-                label=offererAddress.label,
+                label=label,
                 isLinkedToVenue=offererAddress.isLinkedToVenue,
             )
         return super().get(key, default)
@@ -452,10 +450,10 @@ class IndividualOfferResponseGetterDict(GetterDict):
             if not offerer_address:
                 return None
             offererAddress = GetOffererAddressResponseModel.from_orm(offerer_address)
-            offererAddress.label = offererAddress.label or self._obj.venue.common_name
+            label = self._obj.venue.common_name if offererAddress.isLinkedToVenue else offererAddress.label
             return AddressResponseIsLinkedToVenueModel(
                 **retrieve_address_info_from_oa(offerer_address),
-                label=offererAddress.label,
+                label=label,
                 isLinkedToVenue=offererAddress.isLinkedToVenue,
             )
         return super().get(key, default)

@@ -232,7 +232,9 @@ class GetVenueResponseGetterDict(base.VenueResponseGetterDict):
             if not offerer_address:
                 return None
             return address_serialize.AddressResponseIsLinkedToVenueModel(
-                **address_serialize.retrieve_address_info_from_oa(offerer_address)
+                **address_serialize.retrieve_address_info_from_oa(offerer_address),
+                label=self._obj.common_name,
+                isLinkedToVenue=True,
             )
         return super().get(key, default)
 

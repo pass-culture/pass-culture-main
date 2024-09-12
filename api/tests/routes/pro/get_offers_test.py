@@ -88,7 +88,7 @@ class Returns200Test:
                     "inseeCode": "75102",
                     "isLinkedToVenue": True,
                     "isManualEdition": False,
-                    "label": "My public name",  # considering the venue.common_name
+                    "label": requested_venue.common_name,
                     "latitude": 48.87004,
                     "longitude": 2.3785,
                     "postalCode": "12000",
@@ -419,7 +419,7 @@ class Returns200Test:
                     "inseeCode": "75112",
                     "isLinkedToVenue": False,
                     "isManualEdition": False,
-                    "label": "Accor Arena",
+                    "label": offerer_address1.label,
                     "latitude": 48.87055,
                     "longitude": 2.34765,
                     "postalCode": "75002",
@@ -480,7 +480,7 @@ class Returns200Test:
                     "inseeCode": "75102",
                     "isLinkedToVenue": True,
                     "isManualEdition": False,
-                    "label": venue.publicName,
+                    "label": venue.common_name,
                     "latitude": 48.87004,
                     "longitude": 2.3785,
                     "postalCode": "75000",
@@ -661,7 +661,7 @@ class Returns200Test:
                     "id_oa": offerer_address1.id,
                     "banId": "75112_0877_00008",
                     "inseeCode": "75112",
-                    "label": "Accor Arena",
+                    "label": offerer_address1.label,
                     "street": "8 Boulevard de Bercy",
                     "postalCode": "75002",
                     "city": "Paris",
@@ -678,7 +678,7 @@ class Returns200Test:
         pro = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
-        offerer_address1 = offerers_factories.OffererAddressFactory(
+        offerer_address1 = offerers_factories.OffererAddressOfVenueFactory(
             offerer=offerer,
             address__street="4 Boulevard de Bercy",
             address__banId="75112_0877_00001",
@@ -727,7 +727,7 @@ class Returns200Test:
                     "id_oa": offerer_address1.id,
                     "banId": "75112_0877_00001",
                     "inseeCode": "75112",
-                    "label": "Best Place to be",
+                    "label": venue.common_name,
                     "street": "4 Boulevard de Bercy",
                     "postalCode": "75001",
                     "city": "Paris",
