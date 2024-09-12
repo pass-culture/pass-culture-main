@@ -41,7 +41,7 @@ interface DefaultInitialValuesFromOfferOptions {
 }
 export function setDefaultInitialValuesFromOffer(
   offer: GetIndividualOfferWithAddressResponseModel,
-  options: DefaultInitialValuesFromOfferOptions
+  options?: DefaultInitialValuesFromOfferOptions
 ): UsefulInformationFormValues {
   const baseAccessibility = {
     [AccessibilityEnum.VISUAL]: offer.visualDisabilityCompliant,
@@ -64,7 +64,7 @@ export function setDefaultInitialValuesFromOffer(
     //  then set this OA id in formik field (so it will be checked by default)
     //  Else, we can assume it's an "other" address
     const offerlocation =
-      options.selectedVenue?.address &&
+      options?.selectedVenue?.address &&
       options.selectedVenue.address.id_oa === offer.address.id_oa
         ? offer.address.id_oa
         : OFFER_LOCATION.OTHER_ADDRESS

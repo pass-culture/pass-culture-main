@@ -98,10 +98,15 @@ describe('screens:IndividualOffer::UsefulInformation', () => {
       categories,
       subCategories,
     })
+
+    vi.spyOn(api, 'getVenues').mockResolvedValue({
+      venues: [{ ...venueListItemFactory({ id: 1 }) }],
+    })
   })
 
   it('should render the component', async () => {
     renderUsefulInformationScreen(props, contextValue)
+
     expect(
       await screen.findByRole('heading', { name: 'Retrait de l’offre' })
     ).toBeInTheDocument()
@@ -185,8 +190,6 @@ describe('screens:IndividualOffer::UsefulInformation', () => {
         id: 12,
       })
     )
-    vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: [] })
-
     renderUsefulInformationScreen(props, contextValue)
 
     const withdrawalField = await screen.findByLabelText(
