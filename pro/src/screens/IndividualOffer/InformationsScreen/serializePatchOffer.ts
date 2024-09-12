@@ -75,6 +75,28 @@ export const serializePatchOffer = ({
     sentValues = Object.fromEntries(filtered)
   }
 
+  let addressValues = {}
+
+  if (
+    sentValues.city &&
+    sentValues.latitude &&
+    sentValues.longitude &&
+    sentValues.postalCode &&
+    sentValues.street &&
+    sentValues.locationLabel
+  ) {
+    addressValues = {
+      address: {
+        city: sentValues.city,
+        latitude: sentValues.latitude,
+        longitude: sentValues.longitude,
+        postalCode: sentValues.postalCode,
+        street: sentValues.street,
+        label: sentValues.locationLabel,
+      },
+    }
+  }
+
   return {
     audioDisabilityCompliant:
       sentValues.accessibility &&
@@ -111,13 +133,6 @@ export const serializePatchOffer = ({
     url: sentValues.url || undefined,
     shouldSendMail: shouldSendMail,
     bookingContact: sentValues.bookingContact || undefined,
-    address: {
-      city: sentValues.city ?? '',
-      latitude: sentValues.latitude ?? '',
-      longitude: sentValues.longitude ?? '',
-      postalCode: sentValues.postalCode ?? '',
-      street: sentValues.street ?? '',
-      label: sentValues.locationLabel ?? '',
-    },
+    ...addressValues,
   }
 }
