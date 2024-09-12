@@ -5,6 +5,6 @@ import{j as o}from"./jsx-runtime-Nms4Y4qS.js";import{b as i}from"./formik.esm-az
     cropBorderColor: '#FFF',
     cropBorderHeight: 30,
     cropBorderWidth: 40,
-    image: ((sampleImage as unknown) as File)
+    image: sampleImage as unknown as File
   }
 }`,...(t=(a=r.parameters)==null?void 0:a.docs)==null?void 0:t.source}}};const f=["Default"];export{r as Default,f as __namedExportsOrder,F as default};

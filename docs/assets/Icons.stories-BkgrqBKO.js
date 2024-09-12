@@ -4,7 +4,7 @@ import{j as r}from"./jsx-runtime-Nms4Y4qS.js";import{r as i}from"./index-BwDkhjy
   const [backgroundColorInput, setBackgroundColorInput] = useState('#ffffff');
   const onClick = async (e: React.MouseEvent<HTMLDivElement>) => {
     e.persist();
-    const target = (e.currentTarget as Element);
+    const target = e.currentTarget as Element;
     await navigator.clipboard.writeText(target.getAttribute('data-src') ?? '');
     target.classList.add(styles['copy-to-clipboard']);
     const timeoutId = setTimeout(() => {
