@@ -297,10 +297,7 @@ def format_booking_cancellation(
                     full_name=author.full_name,
                 )
             return "Annulée depuis le backoffice pour annulation d’évènement"
-        case (
-            educational_models.CollectiveBookingCancellationReasons.BACKOFFICE_OVERBOOKING
-            | bookings_models.BookingCancellationReasons.BACKOFFICE_OVERBOOKING
-        ):
+        case bookings_models.BookingCancellationReasons.BACKOFFICE_OVERBOOKING:
             if author:
                 return Markup(
                     'Annulée depuis le backoffice par <a class="link-primary" href="{url}">{full_name}</a> pour surbooking'
@@ -309,10 +306,7 @@ def format_booking_cancellation(
                     full_name=author.full_name,
                 )
             return "Annulée depuis le backoffice pour surbooking"
-        case (
-            educational_models.CollectiveBookingCancellationReasons.BACKOFFICE_BENEFICIARY_REQUEST
-            | bookings_models.BookingCancellationReasons.BACKOFFICE_BENEFICIARY_REQUEST
-        ):
+        case bookings_models.BookingCancellationReasons.BACKOFFICE_BENEFICIARY_REQUEST:
             if author:
                 return Markup(
                     'Annulée depuis le backoffice par <a class="link-primary" href="{url}">{full_name}</a> sur demande du bénéficiaire'
@@ -353,6 +347,8 @@ def format_booking_cancellation(
             return "Refusée par l'institution"
         case educational_models.CollectiveBookingCancellationReasons.REFUSED_BY_HEADMASTER:
             return "Refusée par le chef d'établissement"
+        case educational_models.CollectiveBookingCancellationReasons.PUBLIC_API:
+            return "Refusée sur l'API publique"
         case None:
             return ""
         case _:

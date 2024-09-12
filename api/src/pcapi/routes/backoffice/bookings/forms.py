@@ -220,6 +220,10 @@ class CancelCollectiveBookingForm(FlaskForm):
                 educational_models.CollectiveBookingCancellationReasons.OFFERER,
                 educational_models.CollectiveBookingCancellationReasons.OFFERER_CONNECT_AS,
                 educational_models.CollectiveBookingCancellationReasons.PUBLIC_API,
+                educational_models.CollectiveBookingCancellationReasons.EXPIRED,
+                educational_models.CollectiveBookingCancellationReasons.REFUSED_BY_HEADMASTER,
+                educational_models.CollectiveBookingCancellationReasons.REFUSED_BY_INSTITUTE,
+                educational_models.CollectiveBookingCancellationReasons.FINANCE_INCIDENT,
             ),
         ),
     )
@@ -234,6 +238,10 @@ class CancelIndividualBookingForm(FlaskForm):
             exclude_opts=(
                 bookings_models.BookingCancellationReasons.OFFERER,
                 bookings_models.BookingCancellationReasons.OFFERER_CONNECT_AS,
+                bookings_models.BookingCancellationReasons.BENEFICIARY,
+                bookings_models.BookingCancellationReasons.EXPIRED,
+                bookings_models.BookingCancellationReasons.REFUSED_BY_INSTITUTE,
+                bookings_models.BookingCancellationReasons.FINANCE_INCIDENT,
             ),
         ),
     )

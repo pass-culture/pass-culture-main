@@ -726,13 +726,13 @@ class CancelBookingTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             booking_id=booking_to_cancel.id,
-            form={"reason": bookings_models.BookingCancellationReasons.BENEFICIARY.value},
+            form={"reason": bookings_models.BookingCancellationReasons.BACKOFFICE.value},
         )
 
         assert response.status_code == 303
         db.session.refresh(booking_to_cancel)
         assert booking_to_cancel.status == bookings_models.BookingStatus.CANCELLED
-        assert booking_to_cancel.cancellationReason == bookings_models.BookingCancellationReasons.BENEFICIARY
+        assert booking_to_cancel.cancellationReason == bookings_models.BookingCancellationReasons.BACKOFFICE
         assert stock.quantity == 2
         assert stock.dnBookedQuantity == 1
 

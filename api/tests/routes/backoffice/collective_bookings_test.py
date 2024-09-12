@@ -187,19 +187,16 @@ class ListCollectiveBookingsTest(GetEndpointHelper):
             (educational_models.CollectiveBookingCancellationReasons.BENEFICIARY, "Annulée par le bénéficiaire"),
             (educational_models.CollectiveBookingCancellationReasons.EXPIRED, "Expirée"),
             (educational_models.CollectiveBookingCancellationReasons.FRAUD, "Fraude"),
+            (educational_models.CollectiveBookingCancellationReasons.PUBLIC_API, "Refusée sur l'API publique"),
             (educational_models.CollectiveBookingCancellationReasons.REFUSED_BY_INSTITUTE, "Refusée par l'institution"),
+            (
+                educational_models.CollectiveBookingCancellationReasons.REFUSED_BY_HEADMASTER,
+                "Refusée par le chef d'établissement",
+            ),
             (educational_models.CollectiveBookingCancellationReasons.FINANCE_INCIDENT, "Incident finance"),
             (
                 educational_models.CollectiveBookingCancellationReasons.BACKOFFICE_EVENT_CANCELLED,
                 "Annulée depuis le backoffice par Hercule Poirot pour annulation d’évènement",
-            ),
-            (
-                educational_models.CollectiveBookingCancellationReasons.BACKOFFICE_BENEFICIARY_REQUEST,
-                "Annulée depuis le backoffice par Hercule Poirot sur demande du bénéficiaire",
-            ),
-            (
-                educational_models.CollectiveBookingCancellationReasons.BACKOFFICE_OVERBOOKING,
-                "Annulée depuis le backoffice par Hercule Poirot pour surbooking",
             ),
             (
                 educational_models.CollectiveBookingCancellationReasons.BACKOFFICE_OFFER_MODIFIED,
