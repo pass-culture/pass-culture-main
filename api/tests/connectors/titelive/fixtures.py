@@ -492,7 +492,7 @@ TWO_BOOKS_RESPONSE_FIXTURE = {
                     "image": "1",
                     "image_spe": "1",
                     "image_alkor": 0,
-                    "image_4": "1",
+                    "image_4": 0,
                     "imagesUrl": {
                         "recto": "https://images.epagine.fr/676/9782848018676_1_75.jpg",
                         "vign": "https://images.epagine.fr/676/9782848018676_1_v.jpg",

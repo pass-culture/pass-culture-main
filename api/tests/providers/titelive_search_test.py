@@ -882,3 +882,27 @@ class TiteliveBookSearchTest:
     def test_extract_eans_from_titelive_response(self):
         eans = extract_eans_from_titelive_response(fixtures.TWO_BOOKS_RESPONSE_FIXTURE["result"])
         assert eans == {"9782370730541", "9782848018676"}
+
+    def test_ignores_verso_image_if_it_is_a_placeholder(self, requests_mock):
+        # Sometimes, titelive will link a placeholder image to the verso image
+        # This image should be ignored
+        self.setup_api_response_fixture(requests_mock, fixtures.TWO_BOOKS_RESPONSE_FIXTURE)
+
+        TiteliveBookSearch().synchronize_products(datetime.date(2022, 12, 1), 1)
+
+        products = offers_models.Product.query.all()
+        ean_no_verso_image = "9782848018676"
+        ean_verso_image = "9782370730541"
+
+        assert len(products) == 2
+
+        product_by_ean = {product.extraData.get("ean"): product for product in products}
+
+        product_without_verso_image = product_by_ean.get(ean_no_verso_image)
+        product_with_verso_image = product_by_ean.get(ean_verso_image)
+
+        assert product_without_verso_image is not None
+        assert product_without_verso_image.images.get("verso") is None
+
+        assert product_with_verso_image is not None
+        assert product_with_verso_image.images.get("verso") is not None
