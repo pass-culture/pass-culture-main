@@ -296,11 +296,14 @@ class Returns200Test:
         assert response.json["bookingsCount"] == 2
         assert response.json["hasStocks"] == True
 
-    def test_return_offer_offerer_address(self, client):
+    @pytest.mark.parametrize("offer_oa_label", ["label", None, ""])
+    def test_return_offer_offerer_address(self, offer_oa_label, client):
         """If offer has an offererAddress, it should be used"""
         user_offerer = offerers_factories.UserOffererFactory()
         venue_offerer_address = offerers_factories.OffererAddressFactory(offerer=user_offerer.offerer)
-        offer_offerer_address = offerers_factories.OffererAddressFactory(offerer=user_offerer.offerer)
+        offer_offerer_address = offerers_factories.OffererAddressFactory(
+            offerer=user_offerer.offerer, label=offer_oa_label
+        )
         offer = offers_factories.ThingOfferFactory(
             venue__managingOfferer=user_offerer.offerer,
             venue__offererAddress=venue_offerer_address,
@@ -347,7 +350,7 @@ class Returns200Test:
             assert response.status_code == 200
 
         assert response.json["address"] == {
-            "label": offerer_address.label,
+            "label": offer.venue.common_name,
             "id": offerer_address.address.id,
             "id_oa": offerer_address.id,
             "banId": offerer_address.address.banId,

@@ -89,8 +89,7 @@ class VenueFactory(BaseFactory):
     timezone = factory.LazyAttribute(lambda venue: get_department_timezone(venue.departementCode))
     _bannerUrl = None
     offererAddress = factory.SubFactory(
-        "pcapi.core.offerers.factories.OffererAddressFactory",
-        label=None,
+        "pcapi.core.offerers.factories.OffererAddressOfVenueFactory",
         address=factory.SubFactory(
             "pcapi.core.geography.factories.AddressFactory",
             banId=factory.SelfAttribute("...banId"),
@@ -480,6 +479,10 @@ class OffererAddressFactory(BaseFactory):
     label = factory.Sequence("Address label {}".format)
     address = factory.SubFactory(geography_factories.AddressFactory)
     offerer = factory.SubFactory(OffererFactory)
+
+
+class OffererAddressOfVenueFactory(OffererAddressFactory):
+    label = None
 
 
 class OffererConfidenceRuleFactory(BaseFactory):
