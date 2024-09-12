@@ -10,6 +10,7 @@ import { ImageUploaderOffer } from 'components/IndividualOfferForm/ImageUploader
 import { GET_MUSIC_TYPES_QUERY_KEY } from 'config/swrQueryKeys'
 import { showOptionsTree } from 'core/Offers/categoriesSubTypes'
 import { IndividualOfferImage } from 'core/Offers/types'
+import { useActiveFeature } from 'hooks/useActiveFeature'
 import { Select } from 'ui-kit/form/Select/Select'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 import { TimePicker } from 'ui-kit/form/TimePicker/TimePicker'
@@ -52,6 +53,7 @@ export const DetailsSubForm = ({
   const {
     values: { categoryId, showType, subcategoryConditionalFields },
   } = useFormikContext<DetailsFormValues>()
+  const isSearchByEanEnabled = useActiveFeature('WIP_EAN_CREATION')
 
   const musicTypesQuery = useSWR(
     GET_MUSIC_TYPES_QUERY_KEY,
@@ -75,7 +77,8 @@ export const DetailsSubForm = ({
   // In the context of an offer creation, vinyls & CDs must be
   // product-based offers so the form must be pre-filled with
   // the results of an EAN search.
-  const displayRedirectionCallout = !isProductBased && isOfferCDOrVinyl
+  const displayRedirectionCallout =
+    isSearchByEanEnabled && !isProductBased && isOfferCDOrVinyl
   const displayImageUploader = !isProductBased || imageOffer
   const displayArtisticInformations = ARTISTIC_INFORMATION_FIELDS.some(
     (field) => subcategoryConditionalFields.includes(field)
