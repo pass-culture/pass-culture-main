@@ -44,7 +44,10 @@ jobs:
         env:
           CREDENTIALS: ${{ steps.secrets.outputs.FIREBASE_TOKEN }}
           GOOGLE_APPLICATION_CREDENTIALS: "credentials.json"
+        # Temporary workaround to deploy firebase. Lines 49-51 should be replaced by `curl -sL https://firebase.tools | bash`
         run: |
-          curl -sL https://firebase.tools | bash
+          curl -sL https://firebase.tools > temp.sh
+          sed -i s/latest/v13.16.0/ temp.sh
+          cat temp.sh | bash
           echo $CREDENTIALS > credentials.json
           firebase hosting:clone pc-pro-${{ inputs.ENV }}:${{ inputs.VERSION }} pc-pro-${{ inputs.ENV }}:live
