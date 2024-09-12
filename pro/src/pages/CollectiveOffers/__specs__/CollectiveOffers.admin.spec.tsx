@@ -133,7 +133,7 @@ describe('route CollectiveOffers when user is admin', () => {
     })
     expect(
       screen.getByRole('combobox', {
-        name: 'Statut Nouveau',
+        name: 'Statut',
       })
     ).not.toBeDisabled()
   })
@@ -168,7 +168,7 @@ describe('route CollectiveOffers when user is admin', () => {
     })
     expect(
       screen.getByRole('combobox', {
-        name: 'Statut Nouveau',
+        name: 'Statut',
       })
     ).toBeDisabled()
   })
@@ -205,7 +205,7 @@ describe('route CollectiveOffers when user is admin', () => {
     })
     expect(
       screen.getByRole('combobox', {
-        name: 'Statut Nouveau',
+        name: 'Statut',
       })
     ).not.toBeDisabled()
   })
@@ -217,7 +217,7 @@ describe('route CollectiveOffers when user is admin', () => {
 
     expect(
       screen.getByRole('combobox', {
-        name: 'Statut Nouveau',
+        name: 'Statut',
       })
     ).not.toBeDisabled()
   })
@@ -229,7 +229,7 @@ describe('route CollectiveOffers when user is admin', () => {
 
     expect(
       screen.getByRole('combobox', {
-        name: 'Statut Nouveau',
+        name: 'Statut',
       })
     ).not.toBeDisabled()
   })

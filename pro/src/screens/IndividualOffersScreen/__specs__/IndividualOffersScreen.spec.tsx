@@ -439,7 +439,7 @@ describe('IndividualOffersScreen', () => {
 
     expect(
       screen.getByRole('combobox', {
-        name: 'Statut Nouveau',
+        name: 'Statut',
       })
     ).toBeInTheDocument()
     expect(screen.queryByText('Afficher les offres')).not.toBeInTheDocument()
@@ -459,7 +459,7 @@ describe('IndividualOffersScreen', () => {
     renderOffers(props)
     await userEvent.click(
       screen.getByRole('combobox', {
-        name: 'Statut Nouveau',
+        name: 'Statut',
       })
     )
 
