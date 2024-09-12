@@ -198,60 +198,6 @@ class Returns201Test:
         assert venue.adageInscriptionDate
         assert venue.managingOfferer.allowedOnAdage
 
-    @testing.override_features(
-        ENABLE_ZENDESK_SELL_CREATION=True, ENABLE_ADDRESS_WRITING_WHILE_CREATING_UPDATING_VENUE=False
-    )
-    def test_register_new_venue_without_double_model_writing(self, client, requests_mock):
-        user = ProFactory(
-            lastConnectionDate=datetime.utcnow(),
-        )
-        venue_data = create_valid_venue_data(user)
-
-        client = client.with_session_auth(email=user.email)
-        response = client.post("/venues", json=venue_data)
-
-        assert response.status_code == 201
-
-        venue = Venue.query.filter_by(id=response.json["id"]).one()
-        assert not geography_models.Address.query.one_or_none()
-        assert not models.OffererAddress.query.one_or_none()
-
-        assert venue.name == venue_data["name"]
-        assert venue.publicName == venue_data["publicName"]
-        assert venue.siret == venue_data["siret"]
-        assert venue.venueTypeCode.name == "BOOKSTORE"
-        assert venue.venueLabelId == venue_data["venueLabelId"]
-        assert venue.description == venue_data["description"]
-        assert venue.audioDisabilityCompliant == venue_data["audioDisabilityCompliant"]
-        assert venue.mentalDisabilityCompliant == venue_data["mentalDisabilityCompliant"]
-        assert venue.motorDisabilityCompliant == venue_data["motorDisabilityCompliant"]
-        assert venue.visualDisabilityCompliant == venue_data["visualDisabilityCompliant"]
-        assert venue.contact.email == venue_data["contact"]["email"]
-        assert venue.dmsToken
-
-        assert not venue.isPermanent
-        assert not venue.contact.phone_number
-        assert not venue.contact.social_medias
-
-        assert len(venue.adage_addresses) == 1
-        adage_addr = venue.adage_addresses[0]
-
-        assert adage_addr.venueId == venue.id
-        assert adage_addr.adageId == venue.adageId
-        assert adage_addr.adageInscriptionDate == venue.adageInscriptionDate
-
-        assert len(external_testing.sendinblue_requests) == 1
-        assert external_testing.zendesk_sell_requests == [
-            {
-                "action": "create",
-                "type": "Venue",
-                "id": response.json["id"],
-                "parent_organization_id": zendesk_testing.TESTING_ZENDESK_ID_OFFERER,
-            }
-        ]
-
-        assert not venue.offererAddressId
-
     def test_use_venue_name_retrieved_from_sirene_api(self, client):
         user = ProFactory()
         client = client.with_session_auth(email=user.email)

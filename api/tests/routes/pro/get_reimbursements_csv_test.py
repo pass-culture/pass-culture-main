@@ -494,15 +494,14 @@ def test_with_reimbursement_period_filter_with_pricings_collective_use_case(clie
 @testing.override_features(WIP_ENABLE_OFFER_ADDRESS=True)
 @pytest.mark.usefixtures("db_session")
 @pytest.mark.parametrize(
-    "offer_has_oa, venue_has_oa, len_addresses, expected_address",
+    "offer_has_oa, len_offerer_addresses, expected_address",
     [
-        (True, False, 1, "1 rue de la paix 75002 Paris"),
-        (False, True, 1, "1 boulevard Poissonnière 75000 Paris"),
-        (True, True, 2, "1 rue de la paix 75002 Paris"),
-        (False, False, 0, ""),
+        (True, 2, "1 rue de la paix 75002 Paris"),
+        (False, 1, "1 boulevard Poissonnière 75000 Paris"),
+        (True, 2, "1 rue de la paix 75002 Paris"),
     ],
 )
-def test_with_offer_address_and_venue_address(client, offer_has_oa, venue_has_oa, len_addresses, expected_address):
+def test_with_offer_address_and_venue_address(client, offer_has_oa, len_offerer_addresses, expected_address):
     """This case consider venue with oa and offer with oa"""
 
     cutoff = datetime.date(year=2023, month=1, day=1)
@@ -510,10 +509,7 @@ def test_with_offer_address_and_venue_address(client, offer_has_oa, venue_has_oa
     ending_date_iso_format = (cutoff + datetime.timedelta(days=2)).isoformat()
     ending_date_iso_format = datetime.date(year=2023, month=1, day=16).isoformat()
     offerer = offerers_factories.OffererFactory()
-    if venue_has_oa:
-        venue = offerers_factories.VenueFactory(managingOfferer=offerer, pricing_point="self")
-    else:
-        venue = offerers_factories.VenueFactory(managingOfferer=offerer, pricing_point="self", offererAddress=None)
+    venue = offerers_factories.VenueFactory(managingOfferer=offerer, pricing_point="self")
     bank_account = finance_factories.BankAccountFactory(offerer=offerer)
     offerers_factories.VenueBankAccountLinkFactory(
         venue=venue, bankAccount=bank_account, timespan=(datetime.datetime.utcnow(),)
@@ -593,5 +589,5 @@ def test_with_offer_address_and_venue_address(client, offer_has_oa, venue_has_oa
     assert len(rows) == 1
     assert len(bookings) == 1
     assert len(offers) == 1
-    assert len(addresses) == len_addresses
+    assert len(addresses) == len_offerer_addresses
     assert rows[0]["Adresse de l'offre"].strip() == expected_address
