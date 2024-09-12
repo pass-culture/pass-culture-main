@@ -2150,49 +2150,6 @@ class CreateFromOnboardingDataTest:
         # Venue Registration
         self.assert_venue_registration_attrs(created_venue)
 
-    @override_features(ENABLE_ADDRESS_WRITING_WHILE_CREATING_UPDATING_VENUE=False)
-    def test_new_siren_new_siret_without_double_model_writing(self, requests_mock):
-        user = users_factories.UserFactory(email="pro@example.com")
-        user.add_non_attached_pro_role()
-
-        onboarding_data = self.get_onboarding_data(create_venue_without_siret=False)
-        created_user_offerer = offerers_api.create_from_onboarding_data(user, onboarding_data)
-
-        assert not geography_models.Address.query.one_or_none()
-        assert not offerers_models.OffererAddress.query.one_or_none()
-
-        # Offerer has been created
-        created_offerer = created_user_offerer.offerer
-        assert created_offerer.name == "MINISTERE DE LA CULTURE"
-        assert created_offerer.siren == "853318459"
-        assert created_offerer.street == "3 RUE DE VALOIS"
-        assert created_offerer.postalCode == "75001"
-        assert created_offerer.city == "Paris"
-        assert created_offerer.validationStatus == ValidationStatus.NEW
-        # User is attached to offerer
-        assert created_user_offerer.userId == user.id
-        assert created_user_offerer.validationStatus == ValidationStatus.VALIDATED
-        # but does not have PRO role yet, because the Offerer is not validated
-        assert created_user_offerer.user.has_non_attached_pro_role
-        # 1 virtual Venue + 1 Venue with siret have been created
-        assert len(created_user_offerer.offerer.managedVenues) == 2
-        created_venue, created_virtual_venue = sorted(
-            created_user_offerer.offerer.managedVenues, key=lambda v: v.isVirtual
-        )
-        assert created_virtual_venue.isVirtual
-        self.assert_common_venue_attrs(created_venue)
-        assert created_venue.comment is None
-        assert created_venue.siret == "85331845900031"
-        assert created_venue.current_pricing_point_id == created_venue.id
-        assert not created_venue.offererAddressId
-
-        # Action logs (content already checked in test_new_siren_new_siret)
-        assert history_models.ActionHistory.query.count() == 2
-
-        self.assert_only_welcome_email_to_pro_was_sent()
-        # Venue Registration
-        self.assert_venue_registration_attrs(created_venue)
-
     def test_existing_siren_new_siret(self):
         offerer = offerers_factories.OffererFactory(siren="853318459")
         offerers_factories.VirtualVenueFactory(managingOfferer=offerer)

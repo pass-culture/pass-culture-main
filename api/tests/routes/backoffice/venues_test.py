@@ -917,7 +917,6 @@ class UpdateVenueTest(PostEndpointHelper):
             contact__email=contact_email,
             contact__website=website,
             contact__social_medias=social_medias,
-            offererAddress=None,
         )
 
         data = {
@@ -944,7 +943,7 @@ class UpdateVenueTest(PostEndpointHelper):
         assert response.location == url_for("backoffice_web.venue.get", venue_id=venue.id, _external=True)
 
         db.session.refresh(venue)
-        address = geography_models.Address.query.one()
+        address = geography_models.Address.query.order_by(geography_models.Address.id.desc()).first()
         offerer_address = offerers_models.OffererAddress.query.one()
 
         assert venue.name == data["name"]
@@ -980,10 +979,8 @@ class UpdateVenueTest(PostEndpointHelper):
         assert update_snapshot["latitude"]["new_info"] == data["latitude"]
         assert update_snapshot["longitude"]["new_info"] == data["longitude"]
         assert update_snapshot["venueTypeCode"]["new_info"] == data["venue_type_code"]
-        assert update_snapshot["offererAddressId"]["new_info"] == offerer_address.id
         assert update_snapshot["offererAddress.address.latitude"]["new_info"] == data["latitude"]
         assert update_snapshot["offererAddress.address.longitude"]["new_info"] == data["longitude"]
-        assert update_snapshot["offererAddress.address.city"]["new_info"] == data["city"]
 
         assert len(mails_testing.outbox) == 1
         # check that email is sent when venue is set to permanent and has no image
@@ -1083,7 +1080,6 @@ class UpdateVenueTest(PostEndpointHelper):
             contact__email=contact_email,
             contact__website=website,
             contact__social_medias=social_medias,
-            offererAddress=None,
         )
 
         data = {
@@ -1111,7 +1107,7 @@ class UpdateVenueTest(PostEndpointHelper):
         assert response.location == url_for("backoffice_web.venue.get", venue_id=venue.id, _external=True)
 
         db.session.refresh(venue)
-        address = geography_models.Address.query.one()
+        address = geography_models.Address.query.order_by(geography_models.Address.id.desc()).first()
         offerer_address = offerers_models.OffererAddress.query.one()
 
         assert venue.timezone == "America/Guadeloupe"
@@ -1257,82 +1253,6 @@ class UpdateVenueTest(PostEndpointHelper):
         assert address.latitude == Decimal("-20.88754")
         assert address.longitude == Decimal("55.45101")
         assert address.isManualEdition is True
-
-    @override_features(ENABLE_ADDRESS_WRITING_WHILE_CREATING_UPDATING_VENUE=False)
-    def test_update_venue_without_double_model_writing(self, authenticated_client, offerer):
-        contact_email = "contact.venue@example.com"
-        website = "update.venue@example.com"
-        social_medias = {"instagram": "https://instagram.com/update.venue"}
-        venue = offerers_factories.VenueFactory(
-            managingOfferer=offerer,
-            contact__email=contact_email,
-            contact__website=website,
-            contact__social_medias=social_medias,
-            offererAddress=None,
-        )
-
-        data = {
-            "name": "IKEA",
-            "public_name": "Ikea city",
-            "siret": venue.managingOfferer.siren + "98765",
-            "city": "Paris",
-            "postal_code": "75001",
-            "street": "23 Boulevard de la Madeleine",
-            "booking_email": venue.bookingEmail + ".update",
-            "phone_number": "+33102030456",
-            "is_permanent": True,
-            "latitude": "48.869311",
-            "longitude": "2.325463",
-            "venue_type_code": offerers_models.VenueTypeCode.CREATIVE_ARTS_STORE.name,
-            "acceslibre_url": "https://acceslibre.beta.gouv.fr/app/slug/",
-        }
-
-        response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
-
-        assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.venue.get", venue_id=venue.id, _external=True)
-
-        db.session.refresh(venue)
-        assert not geography_models.Address.query.one_or_none()
-        assert not offerers_models.OffererAddress.query.one_or_none()
-
-        assert venue.name == data["name"]
-        assert venue.publicName == data["public_name"]
-        assert venue.siret == data["siret"]
-        assert venue.city == data["city"]
-        assert venue.postalCode == data["postal_code"]
-        assert venue.banId is None
-        assert venue.street == data["street"]
-        assert venue.bookingEmail == data["booking_email"]
-        assert venue.contact.phone_number == data["phone_number"]
-        assert venue.isPermanent == data["is_permanent"]
-        assert venue.latitude == Decimal("48.86931")
-        assert venue.longitude == Decimal("2.32546")
-        assert venue.venueTypeCode == offerers_models.VenueTypeCode.CREATIVE_ARTS_STORE
-
-        assert not venue.offererAddressId
-
-        # should not have been updated or erased
-        assert venue.contact.email == contact_email
-        assert venue.contact.website == website
-        assert venue.contact.social_medias == social_medias
-
-        assert len(venue.action_history) == 1
-
-        update_snapshot = venue.action_history[0].extraData["modified_info"]
-
-        assert update_snapshot["street"]["new_info"] == data["street"]
-        assert update_snapshot["bookingEmail"]["new_info"] == data["booking_email"]
-        assert update_snapshot["latitude"]["new_info"] == data["latitude"]
-        assert update_snapshot["longitude"]["new_info"] == data["longitude"]
-        assert update_snapshot["venueTypeCode"]["new_info"] == data["venue_type_code"]
-
-        assert len(mails_testing.outbox) == 1
-        # check that email is sent when venue is set to permanent and has no image
-        assert mails_testing.outbox[0]["To"] == venue.bookingEmail
-        assert mails_testing.outbox[0]["template"] == TransactionalEmail.VENUE_NEEDS_PICTURE.value.__dict__
-        assert mails_testing.outbox[0]["params"]["VENUE_NAME"] == venue.common_name
-        assert mails_testing.outbox[0]["params"]["VENUE_FORM_URL"] == urls.build_pc_pro_venue_link(venue)
 
     def test_update_venue_contact_only(self, authenticated_client, offerer):
         contact_email = "contact.venue@example.com"

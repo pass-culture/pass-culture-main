@@ -91,6 +91,11 @@ class VenueModelConstraintsTest:
             repository.save(venue3)
         assert err.value.errors["isVirtual"] == ["Un lieu pour les offres numériques existe déjà pour cette structure"]
 
+    def test_physical_venue_must_have_an_offerer_address(self):
+        with pytest.raises(IntegrityError) as err:
+            factories.VenueFactory(offererAddress=None)
+        assert "check_physical_venue_has_offerer_address" in str(err.value)
+
 
 class VenueTimezonePropertyTest:
     def test_europe_paris_is_default_timezone(self):

@@ -843,62 +843,6 @@ class CreateOffererTest(PostEndpointHelper):
 
         assert response.location == url_for("backoffice_web.offerer.get", offerer_id=new_offerer.id, _external=True)
 
-    @override_features(ENABLE_ADDRESS_WRITING_WHILE_CREATING_UPDATING_VENUE=False)
-    def test_create_offerer_without_double_model_writing(self, legit_user, authenticated_client, non_diffusible_tag):
-        user = users_factories.NonAttachedProFactory()
-
-        form_data = {
-            "email": user.email,
-            "siret": "90000000100017",
-            "public_name": "Le Masque de Fer",
-            "venue_type_code": offerers_models.VenueTypeCode.PERFORMING_ARTS.name,
-            "web_presence": "https://www.example.com, https://offers.example.com",
-            "target": offerers_models.Target.INDIVIDUAL.name,
-            "ds_id": "12345",
-        }
-
-        response = self.post_to_endpoint(authenticated_client, form=form_data)
-        assert response.status_code == 303
-
-        new_offerer: offerers_models.Offerer = offerers_models.Offerer.query.one()
-        assert new_offerer.siren == "900000001"
-        assert new_offerer.name == form_data["public_name"]
-        assert new_offerer.street == "[ND]"
-        assert new_offerer.postalCode == "06400"
-        assert new_offerer.city == "CANNES"
-        assert new_offerer.isActive
-        assert new_offerer.isNew
-        assert new_offerer.tags == [non_diffusible_tag]
-
-        new_user_offerer: offerers_models.UserOfferer = offerers_models.UserOfferer.query.one()
-        assert new_user_offerer.user == user
-        assert new_user_offerer.offerer == new_offerer
-        assert new_user_offerer.isValidated
-
-        new_venue: offerers_models.Venue = offerers_models.Venue.query.filter_by(siret=form_data["siret"]).one()
-        assert new_venue.name == form_data["public_name"]
-        assert new_venue.publicName == form_data["public_name"]
-        assert new_venue.venueTypeCode == offerers_models.VenueTypeCode.PERFORMING_ARTS
-        assert new_venue.street == "[ND]"
-        assert new_venue.departementCode == "06"
-        assert new_venue.postalCode == "06400"
-        assert new_venue.city == "CANNES"
-        assert new_venue.latitude == Decimal("43.55547")  # centroid
-        assert new_venue.longitude == Decimal("7.00459")  # centroid
-
-        assert not geography_models.Address.query.one_or_none()
-        assert not offerers_models.OffererAddress.query.one_or_none()
-
-        venue_registration: offerers_models.VenueRegistration = offerers_models.VenueRegistration.query.one()
-        assert venue_registration.venueId == new_venue.id
-        assert venue_registration.target == offerers_models.Target.INDIVIDUAL
-        assert venue_registration.webPresence == form_data["web_presence"]
-
-        # Actions: content already checked in test_create_offerer
-        assert history_models.ActionHistory.query.count() == 2
-
-        assert response.location == url_for("backoffice_web.offerer.get", offerer_id=new_offerer.id, _external=True)
-
     def test_cant_create_offerer_because_email_does_not_exist(self, authenticated_client):
         email = "unknown@example.com"
 

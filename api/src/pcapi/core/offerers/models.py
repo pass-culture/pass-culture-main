@@ -742,6 +742,13 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
             return None
         return self.confidenceRule.confidenceLevel
 
+    __table_args__ = (
+        sa.CheckConstraint(
+            '("isVirtual" IS FALSE AND "offererAddressId" IS NOT NULL) OR "isVirtual" IS TRUE',
+            name="check_physical_venue_has_offerer_address",
+        ),
+    )
+
 
 class GooglePlacesInfo(PcObject, Base, Model):
     __tablename__ = "google_places_info"
