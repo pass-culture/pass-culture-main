@@ -28,9 +28,7 @@ class Returns403Test:
 
     def test_access_by_unauthorized_pro_user(self, client):
         pro_user = users_factories.ProFactory()
-        offer = offers_factories.ThingOfferFactory(
-            venue__latitude=None, venue__longitude=None, venue__offererAddress=None
-        )
+        offer = offers_factories.ThingOfferFactory()
 
         client = client.with_session_auth(pro_user.email)
         offer_id = offer.id
