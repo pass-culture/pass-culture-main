@@ -17,6 +17,13 @@ ADAGE_RESPONSE_FOR_INSTITUTION_WITHOUT_EMAIL = {
     "detail": "EMAIL_ADDRESS_DOES_NOT_EXIST",
 }
 
+ADAGE_RESPONSE_FOR_ERROR = {
+    "type": "http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html",
+    "title": "Error",
+    "status": 500,
+    "detail": "ERROR",
+}
+
 
 @pytest.mark.usefixtures("db_session")
 class AdageHttpClientTest:
@@ -57,9 +64,11 @@ class AdageHttpClientTest:
         booking_data = prebooking.serialize_collective_booking(booking)
 
         # When
-        requests_mock.post(f"{MOCK_API_URL}/v1/prereservation", status_code=500)
-        with pytest.raises(AdageException):
+        requests_mock.post(f"{MOCK_API_URL}/v1/prereservation", status_code=500, json=ADAGE_RESPONSE_FOR_ERROR)
+        with pytest.raises(AdageException) as ex:
             adage_client.notify_prebooking(booking_data)
+
+        assert ex.value.message == "Error posting new prebooking to Adage API - status code: 500 - error code: ERROR"
 
     @override_settings(ADAGE_API_URL=MOCK_API_URL)
     def test_notify_institution_association_success_if_201(self, requests_mock):
@@ -108,9 +117,11 @@ class AdageHttpClientTest:
         offer_data = serialize_collective_offer(offer)
 
         # When
-        requests_mock.post(f"{MOCK_API_URL}/v1/offre-assoc", status_code=500)
-        with pytest.raises(AdageException):
+        requests_mock.post(f"{MOCK_API_URL}/v1/offre-assoc", status_code=500, json=ADAGE_RESPONSE_FOR_ERROR)
+        with pytest.raises(AdageException) as ex:
             adage_client.notify_institution_association(offer_data)
+
+        assert ex.value.message == "Error getting Adage API - status code: 500 - error code: ERROR"
 
     @override_settings(ADAGE_API_URL=MOCK_API_URL)
     def test_redactor_when_collective_request_is_made_success_if_201(self, requests_mock):

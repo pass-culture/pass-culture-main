@@ -31,6 +31,26 @@ class AdageHttpClient(AdageClient):
         self.header_key = "X-omogen-api-key"
         super().__init__()
 
+    @staticmethod
+    def _get_api_adage_exception(api_response: requests.Response, message: str) -> exceptions.AdageException:
+        detail = dict(api_response.json()).get("detail", "")
+
+        full_message = f"{message} - status code: {api_response.status_code}"
+        if detail:
+            full_message = f"{full_message} - error code: {detail}"
+
+        return exceptions.AdageException(
+            message=full_message, status_code=api_response.status_code, response_text=api_response.text
+        )
+
+    @staticmethod
+    def _get_connection_error_adage_exception() -> exceptions.AdageException:
+        return exceptions.AdageException(
+            status_code=502,
+            response_text="Connection Error",
+            message="Cannot establish connection to omogen api",
+        )
+
     def notify_prebooking(self, data: prebooking.EducationalBookingResponse) -> None:
         api_url = f"{self.base_url}/v1/prereservation"
         try:
@@ -41,16 +61,10 @@ class AdageHttpClient(AdageClient):
             )
         except ConnectionError as exp:
             logger.info("could not connect to adage, error: %s", traceback.format_exc())
-            raise exceptions.AdageException(
-                status_code=502,
-                response_text="Connection Error",
-                message="Cannot establish connection to omogen api",
-            ) from exp
+            raise self._get_connection_error_adage_exception() from exp
 
         if api_response.status_code != 201 and not is_adage_institution_without_email(api_response):
-            raise exceptions.AdageException(
-                "Error posting new prebooking to Adage API.", api_response.status_code, api_response.text
-            )
+            raise self._get_api_adage_exception(api_response, "Error posting new prebooking to Adage API")
 
     def notify_offer_or_stock_edition(self, data: prebooking.EducationalBookingEdition) -> None:
         api_url = f"{self.base_url}/v1/prereservation-edit"
@@ -62,18 +76,10 @@ class AdageHttpClient(AdageClient):
             )
         except ConnectionError as exp:
             logger.info("could not connect to adage, error: %s", traceback.format_exc())
-            raise exceptions.AdageException(
-                status_code=502,
-                response_text="Connection Error",
-                message="Cannot establish connection to omogen api",
-            ) from exp
+            raise self._get_connection_error_adage_exception() from exp
 
         if api_response.status_code != 201:
-            raise exceptions.AdageException(
-                "Error posting booking edition notification to Adage API.",
-                api_response.status_code,
-                api_response.text,
-            )
+            raise self._get_api_adage_exception(api_response, "Error posting booking edition notification to Adage API")
 
     def get_adage_offerer(self, siren: str) -> list[AdageVenue]:
         api_url = f"{self.base_url}/v1/partenaire-culturel/{siren}"
@@ -85,18 +91,14 @@ class AdageHttpClient(AdageClient):
             )
         except ConnectionError as exp:
             logger.info("could not connect to adage, error: %s", traceback.format_exc())
-            raise exceptions.AdageException(
-                status_code=502,
-                response_text="Connection Error",
-                message="Cannot establish connection to omogen api",
-            ) from exp
+            raise self._get_connection_error_adage_exception() from exp
 
         if api_response.status_code == 404:
             raise exceptions.CulturalPartnerNotFoundException(
                 "Requested siren is not a known cultural partner for Adage"
             )
         if api_response.status_code != 200:
-            raise exceptions.AdageException("Error getting Adage API", api_response.status_code, api_response.text)
+            raise self._get_api_adage_exception(api_response, "Error getting Adage API")
 
         return parse_obj_as(list[AdageVenue], api_response.json())
 
@@ -110,17 +112,11 @@ class AdageHttpClient(AdageClient):
             )
         except ConnectionError as exp:
             logger.info("could not connect to adage, error: %s", traceback.format_exc())
-            raise exceptions.AdageException(
-                status_code=502,
-                response_text="Connection Error",
-                message="Cannot establish connection to omogen api",
-            ) from exp
+            raise self._get_connection_error_adage_exception() from exp
 
         if api_response.status_code != 201:
-            raise exceptions.AdageException(
-                "Error posting booking cancellation by offerer notification to Adage API.",
-                api_response.status_code,
-                api_response.text,
+            raise self._get_api_adage_exception(
+                api_response, "Error posting booking cancellation by offerer notification to Adage API"
             )
 
     def get_cultural_partners(self, timestamp: int | None = None) -> list[dict[str, str | int | float | None]]:
@@ -138,16 +134,12 @@ class AdageHttpClient(AdageClient):
             )
         except ConnectionError as exp:
             logger.info("could not connect to adage, error: %s", traceback.format_exc())
-            raise exceptions.AdageException(
-                status_code=502,
-                response_text="Connection Error",
-                message="Cannot establish connection to omogen api",
-            ) from exp
+            raise self._get_connection_error_adage_exception() from exp
 
         if api_response.status_code == 404:
             raise exceptions.CulturalPartnerNotFoundException("Requested cultural partners not found for Adage")
         if api_response.status_code != 200:
-            raise exceptions.AdageException("Error getting Adage API", api_response.status_code, api_response.text)
+            raise self._get_api_adage_exception(api_response, "Error getting Adage API")
 
         return api_response.json()
 
@@ -159,14 +151,10 @@ class AdageHttpClient(AdageClient):
             )
         except ConnectionError as exp:
             logger.info("could not connect to adage, error: %s", traceback.format_exc())
-            raise exceptions.AdageException(
-                status_code=502,
-                response_text="Connection Error",
-                message="Cannot establish connection to omogen api",
-            ) from exp
+            raise self._get_connection_error_adage_exception() from exp
 
         if api_response.status_code != 201 and not is_adage_institution_without_email(api_response):
-            raise exceptions.AdageException("Error getting Adage API", api_response.status_code, api_response.text)
+            raise self._get_api_adage_exception(api_response, "Error getting Adage API")
 
     def get_cultural_partner(self, siret: str) -> venues_serialize.AdageCulturalPartner:
         api_url = f"{self.base_url}/v1/etablissement-culturel/{siret}"
@@ -177,16 +165,12 @@ class AdageHttpClient(AdageClient):
             )
         except ConnectionError as exp:
             logger.info("could not connect to adage, error: %s", traceback.format_exc())
-            raise exceptions.AdageException(
-                status_code=502,
-                response_text="Connection Error",
-                message="Cannot establish connection to omogen api",
-            ) from exp
+            raise self._get_connection_error_adage_exception() from exp
 
         if api_response.status_code == 404:
             raise exceptions.CulturalPartnerNotFoundException("Requested cultural partner not found for Adage")
         if api_response.status_code != 200:
-            raise exceptions.AdageException("Error getting Adage API", api_response.status_code, api_response.text)
+            raise self._get_api_adage_exception(api_response, "Error getting Adage API")
 
         response_content = api_response.json()
 
@@ -211,7 +195,7 @@ class AdageHttpClient(AdageClient):
                     "Requested Ansco is not a known cultural partner for Adage"
                 )
             if api_response.status_code != 200:
-                raise exceptions.AdageException("Error getting Adage API", api_response.status_code, api_response.text)
+                raise self._get_api_adage_exception(api_response, "Error getting Adage API")
 
             response_json = api_response.json().get("etablissements", [])
             if not response_json:
@@ -231,16 +215,12 @@ class AdageHttpClient(AdageClient):
             )
         except ConnectionError as exp:
             logger.info("could not connect to adage, error: %s", traceback.format_exc())
-            raise exceptions.AdageException(
-                status_code=502,
-                response_text="Connection Error",
-                message="Cannot establish connection to omogen api",
-            ) from exp
+            raise self._get_connection_error_adage_exception() from exp
 
         if api_response.status_code == 404:
             raise exceptions.EducationalRedactorNotFound("Requested UAI not found")
         if api_response.status_code != 200:
-            raise exceptions.AdageException("Error getting Adage API", api_response.status_code, api_response.text)
+            raise self._get_api_adage_exception(api_response, "Error getting Adage API")
 
         response_content = api_response.json()
         redactors = response_content.get("redacteurs", [])
@@ -269,14 +249,10 @@ class AdageHttpClient(AdageClient):
             )
         except ConnectionError as exp:
             logger.info("could not connect to adage, error: %s", traceback.format_exc())
-            raise exceptions.AdageException(
-                status_code=502,
-                response_text="Connection Error",
-                message="Cannot establish connection to omogen api",
-            ) from exp
+            raise self._get_connection_error_adage_exception() from exp
 
         if api_response.status_code != 201:
-            raise exceptions.AdageException("Error getting Adage API", api_response.status_code, api_response.text)
+            raise self._get_api_adage_exception(api_response, "Error getting Adage API")
 
     def notify_redactor_when_collective_request_is_made(self, data: serialize.AdageCollectiveRequest) -> None:
         api_url = f"{self.base_url}/v1/offre-vitrine"
@@ -286,11 +262,7 @@ class AdageHttpClient(AdageClient):
             )
         except ConnectionError as exp:
             logger.info("could not connect to adage, error: %s", traceback.format_exc())
-            raise exceptions.AdageException(
-                status_code=502,
-                response_text="Connection Error",
-                message="Cannot establish connection to omogen api",
-            ) from exp
+            raise self._get_connection_error_adage_exception() from exp
 
         if api_response.status_code != 201 and not is_adage_institution_without_email(api_response):
-            raise exceptions.AdageException("Error getting Adage API", api_response.status_code, api_response.text)
+            raise self._get_api_adage_exception(api_response, "Error getting Adage API")
