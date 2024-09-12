@@ -247,7 +247,7 @@ describe('CollectiveOffersScreen', () => {
 
     expect(
       screen.getByRole('combobox', {
-        name: 'Statut Nouveau',
+        name: 'Statut',
       })
     ).toBeInTheDocument()
     expect(screen.queryByText('Afficher les offres')).not.toBeInTheDocument()
@@ -267,7 +267,7 @@ describe('CollectiveOffersScreen', () => {
     renderOffers(props)
     await userEvent.click(
       screen.getByRole('combobox', {
-        name: 'Statut Nouveau',
+        name: 'Statut',
       })
     )
 
@@ -423,19 +423,6 @@ describe('CollectiveOffersScreen', () => {
     )
   })
 
-  it('should display onboarding banner for archivage only in collective offer list', async () => {
-    renderOffers({
-      ...props,
-      offers: [],
-    })
-
-    expect(
-      await screen.findByText(
-        'C’est nouveau ! Vous pouvez désormais archiver vos offres collectives.'
-      )
-    ).toBeInTheDocument()
-  })
-
   it('should display a new column "Date de l’évènement" if FF is enabled', async () => {
     const featureOverrides = {
       features: ['ENABLE_COLLECTIVE_OFFERS_EXPIRATION'],
@@ -517,7 +504,7 @@ describe('CollectiveOffersScreen', () => {
 
     await userEvent.click(
       screen.getByRole('combobox', {
-        name: 'Statut Nouveau',
+        name: 'Statut',
       })
     )
 

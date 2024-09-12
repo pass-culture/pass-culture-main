@@ -24,7 +24,6 @@ import { SelectInput } from 'ui-kit/form/Select/SelectInput'
 import { BaseInput } from 'ui-kit/form/shared/BaseInput/BaseInput'
 import { FieldLayout } from 'ui-kit/form/shared/FieldLayout/FieldLayout'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
-import { Tag, TagVariant } from 'ui-kit/Tag/Tag'
 
 import styles from './IndividualOffersSearchFilters.module.scss'
 
@@ -233,9 +232,7 @@ export const IndividualOffersSearchFilters = ({
         <FormLayout.Row inline className={styles['reset-filters-row']}>
           <FieldLayout
             label={
-              <span className={styles['status-filter-label']}>
-                Statut<Tag variant={TagVariant.BLUE}>Nouveau</Tag>
-              </span>
+              <span className={styles['status-filter-label']}>Statut</span>
             }
             name="status"
             isOptional

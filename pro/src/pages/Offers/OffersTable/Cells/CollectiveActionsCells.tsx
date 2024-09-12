@@ -45,7 +45,6 @@ import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { ListIconButton } from 'ui-kit/ListIconButton/ListIconButton'
-import { Tag, TagVariant } from 'ui-kit/Tag/Tag'
 import {
   FORMAT_ISO_DATE_ONLY,
   formatBrowserTimezonedDateAsUTC,
@@ -377,12 +376,6 @@ export const CollectiveActionsCells = ({
                           >
                             Archiver
                           </Button>
-                          <Tag
-                            variant={TagVariant.BLUE}
-                            className={styles['status-filter-tag']}
-                          >
-                            Nouveau
-                          </Tag>
                         </div>
                       </DropdownMenu.Item>
                     </>

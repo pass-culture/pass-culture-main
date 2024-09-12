@@ -127,7 +127,7 @@ describe('route Offers', () => {
         await renderOffers()
 
         const statusSelect = screen.getByRole('combobox', {
-          name: 'Statut Nouveau',
+          name: 'Statut',
         })
         await userEvent.selectOptions(statusSelect, 'Expirée')
 
@@ -158,7 +158,7 @@ describe('route Offers', () => {
         await renderOffers()
 
         const statusSelect = screen.getByRole('combobox', {
-          name: 'Statut Nouveau',
+          name: 'Statut',
         })
         await userEvent.selectOptions(statusSelect, 'Expirée')
 
@@ -480,7 +480,7 @@ describe('route Offers', () => {
 
       await renderOffers()
       const statusSelect = screen.getByRole('combobox', {
-        name: 'Statut Nouveau',
+        name: 'Statut',
       })
       await userEvent.selectOptions(statusSelect, 'Épuisée')
 
@@ -511,7 +511,7 @@ describe('route Offers', () => {
       ])
       await renderOffers()
       const statusSelect = screen.getByRole('combobox', {
-        name: 'Statut Nouveau',
+        name: 'Statut',
       })
       await userEvent.selectOptions(statusSelect, 'Tous')
 

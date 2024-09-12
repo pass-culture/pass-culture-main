@@ -27,7 +27,6 @@ import { SelectAutocomplete } from 'ui-kit/form/SelectAutoComplete/SelectAutocom
 import { BaseInput } from 'ui-kit/form/shared/BaseInput/BaseInput'
 import { FieldLayout } from 'ui-kit/form/shared/FieldLayout/FieldLayout'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
-import { Tag, TagVariant } from 'ui-kit/Tag/Tag'
 
 import styles from './TemplateOffersSearchFilters.module.scss'
 
@@ -238,9 +237,7 @@ export const TemplateOffersSearchFilters = ({
             multi
             name="status"
             label={
-              <span className={styles['status-filter-label']}>
-                Statut<Tag variant={TagVariant.BLUE}>Nouveau</Tag>
-              </span>
+              <span className={styles['status-filter-label']}>Statut</span>
             }
             options={statusOptions}
             placeholder="Statuts"

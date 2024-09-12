@@ -384,19 +384,6 @@ describe('TemplateCollectiveOffersScreen', () => {
     )
   })
 
-  it('should display onboarding banner for archivage only in collective offer list', async () => {
-    renderOffers({
-      ...props,
-      offers: [],
-    })
-
-    expect(
-      await screen.findByText(
-        'C’est nouveau ! Vous pouvez désormais archiver vos offres collectives.'
-      )
-    ).toBeInTheDocument()
-  })
-
   it('should display a new column "Date de l’évènement" if FF is enabled', async () => {
     const featureOverrides = {
       features: ['ENABLE_COLLECTIVE_OFFERS_EXPIRATION'],
