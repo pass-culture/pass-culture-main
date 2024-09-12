@@ -154,6 +154,7 @@ export const CollectiveOfferConfirmationScreen = ({
 
       <Callout
         className={styles['confirmation-banner']}
+        title="Quelle est la prochaine étape ?"
         links={[
           {
             href: `https://aide.passculture.app/hc/fr/articles/4416082284945--Acteurs-Culturels-Quel-est-le-cycle-de-vie-de-mon-offre-collective-de-sa-cr%C3%A9ation-%C3%A0-son-remboursement`,
@@ -163,9 +164,6 @@ export const CollectiveOfferConfirmationScreen = ({
           },
         ]}
       >
-        <h2 className={styles['confirmation-banner-title']}>
-          Quelle est la prochaine étape ?
-        </h2>
         {isShowcase ? (
           <>
             Les enseignants intéressés par votre offre vitrine vous contacterons
