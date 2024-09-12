@@ -183,15 +183,20 @@ class TiteliveSearch(abc.ABC, typing.Generic[TiteliveWorkType]):
         products: list[offers_models.Product],
         titelive_page: list[TiteliveWorkType],
     ) -> list[offers_models.Product]:
-        thumbnail_url_by_ean: dict[str, dict[offers_models.TiteliveImageType, str | None]] = {
-            article.gencod: {
-                offers_models.TiteliveImageType.RECTO: article.imagesUrl.recto,
-                offers_models.TiteliveImageType.VERSO: article.imagesUrl.verso,
-            }
-            for work in titelive_page
-            for article in work.article
-            if article.has_image
-        }
+        thumbnail_url_by_ean: dict[str, dict[offers_models.TiteliveImageType, str]] = {}
+
+        for work in titelive_page:
+            for article in work.article:
+                thumbnail_url_by_ean[article.gencod] = {}
+                if article.has_image:
+                    thumbnail_url_by_ean[article.gencod][
+                        offers_models.TiteliveImageType.RECTO
+                    ] = article.imagesUrl.recto
+                if article.has_verso_image:
+                    thumbnail_url_by_ean[article.gencod][
+                        offers_models.TiteliveImageType.VERSO
+                    ] = article.imagesUrl.verso
+
         for product in products:
             assert product.extraData, "product %s initialized without extra data" % product.id
 
