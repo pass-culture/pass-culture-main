@@ -23,6 +23,7 @@ import { useNotification } from 'hooks/useNotification'
 import { SAVED_VENUE_ID_KEY } from 'pages/Home/Offerers/PartnerPages'
 import { updateSelectedOffererId, updateUser } from 'store/user/reducer'
 import { selectCurrentUser } from 'store/user/selectors'
+import { localStorageAvailable } from 'utils/localStorageAvailable'
 
 import { useBeamer } from './analytics/beamer'
 import { useFirebase } from './analytics/firebase'
@@ -74,8 +75,10 @@ export const App = (): JSX.Element | null => {
     if (location.search.includes('logout')) {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       api.signout()
-      localStorage.removeItem(SAVED_OFFERER_ID_KEY)
-      localStorage.removeItem(SAVED_VENUE_ID_KEY)
+      if (localStorageAvailable()) {
+        localStorage.removeItem(SAVED_OFFERER_ID_KEY)
+        localStorage.removeItem(SAVED_VENUE_ID_KEY)
+      }
       dispatch(updateUser(null))
       dispatch(updateSelectedOffererId(null))
     }

@@ -1,6 +1,6 @@
 import {
-  createAutocomplete,
   AutocompleteState,
+  createAutocomplete,
 } from '@algolia/autocomplete-core'
 import { createQuerySuggestionsPlugin } from '@algolia/autocomplete-plugin-query-suggestions'
 import { AutocompleteQuerySuggestionsHit } from '@algolia/autocomplete-plugin-query-suggestions/dist/esm/types'
@@ -8,14 +8,14 @@ import { createLocalStorageRecentSearchesPlugin } from '@algolia/autocomplete-pl
 import algoliasearch from 'algoliasearch/lite'
 import { FormikContext } from 'formik'
 import React, {
-  useState,
-  useMemo,
   BaseSyntheticEvent,
-  MouseEvent,
   KeyboardEvent,
-  useEffect,
-  useRef,
+  MouseEvent,
   useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
 } from 'react'
 import { useSearchBox } from 'react-instantsearch'
 import { useDispatch } from 'react-redux'
@@ -441,9 +441,11 @@ export const Autocomplete = ({
                         variant={ButtonVariant.QUATERNARYPINK}
                         icon={fullClearIcon}
                         onClick={() => {
-                          localStorage.removeItem(
-                            AUTOCOMPLETE_LOCAL_STORAGE_KEY
-                          )
+                          if (localStorageAvailable()) {
+                            localStorage.removeItem(
+                              AUTOCOMPLETE_LOCAL_STORAGE_KEY
+                            )
+                          }
                           autocomplete.setIsOpen(false)
                         }}
                         onBlur={() => {
