@@ -51,17 +51,24 @@ const DetailsSubFormWrappedWithFormik = ({
   )
 }
 
-const renderDetailsSubForm = (args?: DetailsSubFormTestProps) => {
+const renderDetailsSubForm = ({
+  props,
+  enableEANSearch = false,
+}: {
+  props?: DetailsSubFormTestProps
+  enableEANSearch?: boolean
+}) => {
   return renderWithProviders(
     <IndividualOfferContext.Provider value={contextValue}>
-      <DetailsSubFormWrappedWithFormik {...args} />
-    </IndividualOfferContext.Provider>
+      <DetailsSubFormWrappedWithFormik {...props} />
+    </IndividualOfferContext.Provider>,
+    enableEANSearch ? { features: ['WIP_EAN_CREATION'] } : {}
   )
 }
 
 describe('DetailsSubForm', () => {
   it('should display conditional fields based on the selected category', () => {
-    renderDetailsSubForm()
+    renderDetailsSubForm({})
 
     const subFormTextInputs = {
       speaker: /Intervenant/,
@@ -91,26 +98,34 @@ describe('DetailsSubForm', () => {
     expect(subFormDurationInput).toBeInTheDocument()
   })
 
-  describe('when the offer is product-based', () => {
-    it('should not display the EAN field since it would duplicate top EAN search/input field', () => {
-      renderDetailsSubForm({ isProductBased: true })
+  describe('when the EAN search is available', () => {
+    describe('when the offer is product-based', () => {
+      it('should not display the EAN field since it would duplicate top EAN search/input field', () => {
+        renderDetailsSubForm({
+          props: { isProductBased: true },
+          enableEANSearch: true,
+        })
 
-      const eanInput = screen.queryByRole('textbox', { name: /EAN/ })
-      expect(eanInput).not.toBeInTheDocument()
-    })
-  })
-
-  describe('when the offer is non-product based', () => {
-    it('should display a callout instead when the offer is a CD/vinyl', () => {
-      renderDetailsSubForm({
-        isProductBased: false,
-        isOfferCDOrVinyl: true,
+        const eanInput = screen.queryByRole('textbox', { name: /EAN/ })
+        expect(eanInput).not.toBeInTheDocument()
       })
+    })
 
-      const calloutWrapper = screen.getByRole('alert')
-      const calloutLabel = /Cette catégorie nécessite un EAN./
-      expect(calloutWrapper).toBeInTheDocument()
-      expect(calloutWrapper).toHaveTextContent(calloutLabel)
+    describe('when the offer is non-product based', () => {
+      it('should display a callout instead when the offer is a CD/vinyl', () => {
+        renderDetailsSubForm({
+          props: {
+            isProductBased: false,
+            isOfferCDOrVinyl: true,
+          },
+          enableEANSearch: true,
+        })
+
+        const calloutWrapper = screen.getByRole('alert')
+        const calloutLabel = /Cette catégorie nécessite un EAN./
+        expect(calloutWrapper).toBeInTheDocument()
+        expect(calloutWrapper).toHaveTextContent(calloutLabel)
+      })
     })
   })
 })
