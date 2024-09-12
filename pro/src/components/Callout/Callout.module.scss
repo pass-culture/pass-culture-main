@@ -8,7 +8,6 @@
   color: var(--color-black);
   border-radius: rem.torem(8px);
   padding: rem.torem(16px);
-  line-height: rem.torem(20px);
 
   &-default {
     background-color: var(--color-background-secondary);
@@ -51,6 +50,7 @@
   }
 
   .icon {
+    height: fonts.$body-line-height;
     min-width: rem.torem(20px);
     align-self: start;
     margin-right: rem.torem(16px);
