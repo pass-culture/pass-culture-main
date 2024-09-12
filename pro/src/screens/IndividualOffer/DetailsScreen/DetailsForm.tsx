@@ -77,6 +77,7 @@ export const DetailsForm = ({
   )
 
   const offerAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
+  const splitOfferEnabled = useActiveFeature('WIP_SPLIT_OFFER')
 
   async function getSuggestedSubcategories() {
     if (!areSuggestedSubcategoriesUsed && !offer) {
