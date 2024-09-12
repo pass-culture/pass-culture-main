@@ -1,11 +1,12 @@
 import typing
 
 import sqlalchemy as sa
+from sqlalchemy import exc
 
+from pcapi import repository
 from pcapi.core.educational import models as educational_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.models import db
-from pcapi.repository import repository
 
 
 def get_redactors_favorite_templates_subset(
@@ -20,24 +21,40 @@ def get_redactors_favorite_templates_subset(
 
 
 def add_offer_to_favorite_adage(
-    redactorId: int,
-    offerId: int,
+    redactor_id: int,
+    offer_id: int,
 ) -> educational_models.CollectiveOfferEducationalRedactor:
-    favorite_offer = educational_models.CollectiveOfferEducationalRedactor(
-        educationalRedactorId=redactorId, collectiveOfferId=offerId
-    )
-    repository.save(favorite_offer)
+    try:
+        with repository.transaction():
+            favorite_offer = educational_models.CollectiveOfferEducationalRedactor(
+                educationalRedactorId=redactor_id, collectiveOfferId=offer_id
+            )
+            db.session.add(favorite_offer)
+    except exc.IntegrityError as exception:
+        favorite_offer = educational_models.CollectiveOfferEducationalRedactor.query.filter_by(
+            educationalRedactorId=redactor_id, collectiveOfferId=offer_id
+        ).one_or_none()
+        if not favorite_offer:
+            raise exception
     return favorite_offer
 
 
 def add_offer_template_to_favorite_adage(
-    redactorId: int,
-    offerId: int,
+    redactor_id: int,
+    offer_id: int,
 ) -> educational_models.CollectiveOfferTemplateEducationalRedactor:
-    favorite_offer = educational_models.CollectiveOfferTemplateEducationalRedactor(
-        educationalRedactorId=redactorId, collectiveOfferTemplateId=offerId
-    )
-    repository.save(favorite_offer)
+    try:
+        with repository.transaction():
+            favorite_offer = educational_models.CollectiveOfferTemplateEducationalRedactor(
+                educationalRedactorId=redactor_id, collectiveOfferTemplateId=offer_id
+            )
+            db.session.add(favorite_offer)
+    except exc.IntegrityError as exception:
+        favorite_offer = educational_models.CollectiveOfferTemplateEducationalRedactor.query.filter_by(
+            educationalRedactorId=redactor_id, collectiveOfferTemplateId=offer_id
+        ).one_or_none()
+        if not favorite_offer:
+            raise exception
     return favorite_offer
 
 

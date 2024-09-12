@@ -30,8 +30,8 @@ def post_collective_offer_favorites(
         raise ApiErrors({"message": "Redactor not found"}, status_code=403)
 
     educational_api.add_offer_to_favorite_adage(
-        redactorId=redactor.id,
-        offerId=offer.id,
+        redactor_id=redactor.id,
+        offer_id=offer.id,
     )
 
     return
@@ -54,8 +54,8 @@ def post_collective_template_favorites(
         raise ApiErrors({"message": "Redactor not found"}, status_code=403)
 
     educational_api.add_offer_template_to_favorite_adage(
-        redactorId=redactor.id,
-        offerId=offerTemplate.id,
+        redactor_id=redactor.id,
+        offer_id=offerTemplate.id,
     )
 
     return

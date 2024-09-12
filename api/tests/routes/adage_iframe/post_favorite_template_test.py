@@ -16,11 +16,29 @@ class FavoriteTemplateTest:
             email=educational_redactor.email, uai=educational_institution.institutionId
         )
 
-        # when
         response = test_client.post(
             f"/adage-iframe/collective/templates/{collective_offer_template.id}/favorites",
         )
 
+        assert response.status_code == 204
+
+    def test_post_favorite_offer_template_multiple_times_test(self, client, caplog):
+        collective_offer_template = educational_factories.CollectiveOfferTemplateFactory()
+        educational_redactor = educational_factories.EducationalRedactorFactory()
+        educational_institution = educational_factories.EducationalInstitutionFactory()
+
+        test_client = client.with_adage_token(
+            email=educational_redactor.email, uai=educational_institution.institutionId
+        )
+
+        response = test_client.post(
+            f"/adage-iframe/collective/templates/{collective_offer_template.id}/favorites",
+        )
+        assert response.status_code == 204
+
+        response = test_client.post(
+            f"/adage-iframe/collective/templates/{collective_offer_template.id}/favorites",
+        )
         assert response.status_code == 204
 
     def test_post_favorite_no_template_test(self, client, caplog):
@@ -31,7 +49,6 @@ class FavoriteTemplateTest:
             email=educational_redactor.email, uai=educational_institution.institutionId
         )
 
-        # when
         response = test_client.post(
             "/adage-iframe/collective/templates/non/favorites",
         )
@@ -41,7 +58,6 @@ class FavoriteTemplateTest:
     def test_post_favorite_not_authentified_test(self, client, caplog):
         collective_offer_template = educational_factories.CollectiveOfferTemplateFactory()
 
-        # when
         response = client.post(
             f"/adage-iframe/collective/templates/{collective_offer_template.id}/favorites",
         )
