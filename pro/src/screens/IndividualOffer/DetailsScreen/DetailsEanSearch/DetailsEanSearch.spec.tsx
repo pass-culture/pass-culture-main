@@ -9,6 +9,7 @@ import {
 } from 'context/IndividualOfferContext/IndividualOfferContext'
 import { subcategoryFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import { DEFAULT_DETAILS_FORM_VALUES } from '../constants'
 
@@ -56,7 +57,15 @@ const renderDetailsEanSearch = (props: DetailsEanSearchTestProps) => {
   return renderWithProviders(
     <IndividualOfferContext.Provider value={contextValue}>
       <EanSearchWrappedWithFormik {...props} />
-    </IndividualOfferContext.Provider>
+    </IndividualOfferContext.Provider>,
+    {
+      storeOverrides: {
+        user: {
+          currentUser: sharedCurrentUserFactory(),
+          selectedOffererId: 1,
+        },
+      },
+    }
   )
 }
 
