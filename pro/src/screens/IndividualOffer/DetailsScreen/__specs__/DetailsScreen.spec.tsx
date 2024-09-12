@@ -94,6 +94,12 @@ const renderDetailsScreen = (
         }),
       ],
       ...options,
+      storeOverrides: {
+        user: {
+          currentUser: sharedCurrentUserFactory(),
+          selectedOffererId: 1,
+        },
+      },
     }
   )
 }

@@ -1,5 +1,6 @@
 import { useFormikContext } from 'formik'
 import { useState, useRef, useEffect } from 'react'
+import { useSelector } from 'react-redux'
 
 import { api } from 'apiClient/api'
 import { isErrorAPIError, getError } from 'apiClient/helpers'
@@ -8,6 +9,7 @@ import { CalloutVariant } from 'components/Callout/types'
 import { useIndividualOfferContext } from 'context/IndividualOfferContext/IndividualOfferContext'
 import { IndividualOfferImage } from 'core/Offers/types'
 import strokeBarcode from 'icons/stroke-barcode.svg'
+import { selectCurrentOffererId } from 'store/user/selectors'
 import { Button } from 'ui-kit/Button/Button'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 import { Tag, TagVariant } from 'ui-kit/Tag/Tag'
@@ -26,6 +28,7 @@ export const DetailsEanSearch = ({
   setImageOffer,
   isOfferProductBased,
 }: DetailsEanSearchProps): JSX.Element => {
+  const selectedOffererId = useSelector(selectCurrentOffererId)
   const inputRef = useRef<HTMLInputElement>(null)
   const [isFetchingProduct, setIsFetchingProduct] = useState(false)
   const [apiError, setApiError] = useState<string | null>(null)
@@ -51,7 +54,10 @@ export const DetailsEanSearch = ({
     if (ean) {
       try {
         setIsFetchingProduct(true)
-        const res = await api.getProductByEan(ean)
+        if (!selectedOffererId) {
+          throw new Error('Offerer should have already been selected')
+        }
+        const res = await api.getProductByEan(ean, selectedOffererId)
 
         const {
           id,
