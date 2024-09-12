@@ -7,7 +7,6 @@
 .select-input {
   @include formsM.input-theme;
 
-  line-height: rem.torem(36px);
   padding-right: rem.torem(forms.$input-right-icon-padding);
 
   @include formsM.input-theme-nested;
@@ -16,7 +15,6 @@
     border-radius: rem.torem(4px);
     padding: 0 size.$input-filter-variant-horizontal-padding;
     min-height: rem.torem(24px);
-    line-height: 1.3;
   }
 
   &.has-description {
