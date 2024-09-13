@@ -555,31 +555,45 @@ class FilterCollectiveOfferByStatusesTest:
 
         assert filtered_query.count() == len(self.ALL_STATUS)
 
-    @pytest.mark.parametrize("status", ALL_STATUS)
-    def test_filter_statuses_but_one(self, app, status):
-        # Given
+    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=False)
+    @pytest.mark.parametrize("status", ALL_STATUS - {CollectiveOfferDisplayedStatus.REIMBURSED})
+    def test_filter_statuses_but_one_without_new_statuses(self, app, status):
         all_offers_status_by_id = {create_collective_offer_by_status(s).id: s.value for s in self.ALL_STATUS}
 
         filtered_status = [status_enum.value for status_enum in self.ALL_STATUS if status_enum != status]
 
         base_query = CollectiveOffer.query
 
-        # When
         filtered_query = _filter_collective_offers_by_statuses(base_query, filtered_status)
 
-        # Then
         assert base_query.count() == len(self.ALL_STATUS)
 
         filtered_query_status = {all_offers_status_by_id[offer.id] for offer in filtered_query}
 
-        if status == CollectiveOfferDisplayedStatus.REIMBURSED:
-            assert filtered_query_status == {status.value for status in self.ALL_STATUS}
-            assert filtered_query.count() == len(self.ALL_STATUS)
-        else:
-            assert filtered_query_status == {
-                offer_status for offer_status in all_offers_status_by_id.values() if status.value != offer_status
-            }
-            assert filtered_query.count() == len(self.ALL_STATUS) - 1
+        assert filtered_query_status == {
+            offer_status for offer_status in all_offers_status_by_id.values() if status.value != offer_status
+        }
+        assert filtered_query.count() == len(self.ALL_STATUS) - 1
+
+    @pytest.mark.parametrize("status", ALL_STATUS)
+    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    def test_filter_statuses_but_one(self, app, status):
+        all_offers_status_by_id = {create_collective_offer_by_status(s).id: s.value for s in self.ALL_STATUS}
+
+        filtered_status = [status_enum.value for status_enum in self.ALL_STATUS if status_enum != status]
+
+        base_query = CollectiveOffer.query
+
+        filtered_query = _filter_collective_offers_by_statuses(base_query, filtered_status)
+
+        assert base_query.count() == len(self.ALL_STATUS)
+
+        filtered_query_status = {all_offers_status_by_id[offer.id] for offer in filtered_query}
+
+        assert filtered_query_status == {
+            offer_status for offer_status in all_offers_status_by_id.values() if status.value != offer_status
+        }
+        assert filtered_query.count() == len(self.ALL_STATUS) - 1
 
     def test_filter_with_no_statuses(self, app):
         # Given
