@@ -216,7 +216,7 @@ class ConfirmCollectiveBookingTest(PublicAPIRestrictedEnvEndpointHelper):
         plain_api_key, _ = self.setup_provider()
         auth_client = client.with_explicit_token(plain_api_key)
 
-        error = {"code": constants.EDUCATIONAL_BOOKING_NOT_FOUND}
+        error = {"code": "BOOKING_NOT_FOUND"}
         self.confirm_booking(auth_client, 0, status_code=404, json_error=error)
 
     def test_confirm_unknown_deposit(self, client):
@@ -230,6 +230,21 @@ class ConfirmCollectiveBookingTest(PublicAPIRestrictedEnvEndpointHelper):
         error = {"code": "DEPOSIT_NOT_FOUND"}
         with assert_attribute_does_not_change(pending_booking, "status"):
             self.confirm_booking(auth_client, pending_booking.id, status_code=404, json_error=error)
+
+    def test_cannot_confirm_booking_not_linked_to_key(self, client):
+        plain_api_key, _ = self.setup_provider()
+        auth_client = client.with_explicit_token(plain_api_key)
+
+        booking = factories.CollectiveBookingFactory()
+        error = {"code": "BOOKING_NOT_FOUND"}
+
+        with assert_attribute_does_not_change(booking, "status"):
+            booking_id = booking.id
+            # 1. get api key
+            # 2. get FF
+            # 3. get collective booking
+            with assert_num_queries(3):
+                self.confirm_booking(auth_client, booking_id, status_code=404, json_error=error)
 
     def confirm_booking(self, client, booking_id, status_code, json_error=None):
         self.assert_request_has_expected_result(
@@ -444,6 +459,21 @@ class UseCollectiveBookingTest(PublicAPIRestrictedEnvEndpointHelper):
         with assert_attribute_does_not_change(confirmed_booking, "status"):
             error = {"code": "FAILED_TO_USE_BOOKING_TRY_AGAIN_LATER"}
             self.use_booking(auth_client, confirmed_booking.id, status_code=500, json_error=error)
+
+    def test_cannot_use_booking_not_linked_to_key(self, client):
+        plain_api_key, _ = self.setup_provider()
+        auth_client = client.with_explicit_token(plain_api_key)
+
+        booking = factories.CollectiveBookingFactory()
+        error = {"code": "BOOKING_NOT_FOUND"}
+
+        with assert_attribute_does_not_change(booking, "status"):
+            booking_id = booking.id
+            # 1. get api key
+            # 2. get FF
+            # 3. get collective booking
+            with assert_num_queries(3):
+                self.use_booking(auth_client, booking_id, status_code=404, json_error=error)
 
     def use_booking(self, client, booking_id, status_code, json_error=None):
         self.assert_request_has_expected_result(
