@@ -49,6 +49,7 @@ from pcapi.core.offers.models import Stock
 import pcapi.core.offers.validation as offers_validation
 import pcapi.core.providers.exceptions as providers_exceptions
 import pcapi.core.providers.repository as providers_repository
+from pcapi.core.users.constants import SuspensionReason
 from pcapi.core.users.models import User
 from pcapi.core.users.repository import get_and_lock_user
 from pcapi.models import db
@@ -686,7 +687,7 @@ def cancel_bookings_from_stock_by_offerer(
 def cancel_bookings_from_rejected_offer(offer: offers_models.Offer) -> list[Booking]:
     cancelled_bookings = []
     for stock in offer.stocks:
-        cancelled_bookings.extend(_cancel_bookings_from_stock(stock, BookingCancellationReasons.FRAUD))
+        cancelled_bookings.extend(_cancel_bookings_from_stock(stock, BookingCancellationReasons.FRAUD_INAPPROPRIATE))
     logger.info(
         "Cancelled bookings for rejected offer",
         extra={
@@ -698,12 +699,19 @@ def cancel_bookings_from_rejected_offer(offer: offers_models.Offer) -> list[Book
     return cancelled_bookings
 
 
-def cancel_booking_for_fraud(booking: Booking) -> None:
+def cancel_booking_for_fraud(booking: Booking, reason: SuspensionReason) -> None:
     validation.check_booking_can_be_cancelled(booking)
-    cancelled = _cancel_booking(booking, BookingCancellationReasons.FRAUD)
+    cancelled = _cancel_booking(
+        booking,
+        (
+            BookingCancellationReasons.FRAUD_SUSPICION
+            if reason == SuspensionReason.FRAUD_SUSPICION
+            else BookingCancellationReasons.FRAUD
+        ),
+    )
     if not cancelled:
         return
-    logger.info("Cancelled booking for fraud reason", extra={"booking": booking.id})
+    logger.info("Cancelled booking for fraud reason", extra={"booking": booking.id, "reason": reason.value})
     transactional_mails.send_booking_cancellation_emails_to_user_and_offerer(booking, booking.cancellationReason)
 
 

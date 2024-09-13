@@ -201,6 +201,8 @@ def test_public_api(client):
                         "BENEFICIARY",
                         "EXPIRED",
                         "FRAUD",
+                        "FRAUD_SUSPICION",
+                        "FRAUD_INAPPROPRIATE",
                         "REFUSED_BY_INSTITUTE",
                         "FINANCE_INCIDENT",
                         "BACKOFFICE",

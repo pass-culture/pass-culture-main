@@ -47,6 +47,7 @@ from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_features
+from pcapi.core.users.constants import SuspensionReason
 import pcapi.core.users.factories as users_factories
 from pcapi.models import db
 from pcapi.models import feature
@@ -1574,13 +1575,24 @@ class CancelForFraudTest:
     def test_cancel(self):
         booking = bookings_factories.BookingFactory()
 
-        api.cancel_booking_for_fraud(booking)
+        api.cancel_booking_for_fraud(booking, reason=SuspensionReason.FRAUD_USURPATION)
 
         # cancellation can trigger more than one request to Batch
         assert len(push_testing.requests) >= 1
 
         assert booking.status is BookingStatus.CANCELLED
         assert booking.cancellationReason == BookingCancellationReasons.FRAUD
+
+    def test_cancel_with_suspicions(self):
+        booking = bookings_factories.BookingFactory()
+
+        api.cancel_booking_for_fraud(booking, reason=SuspensionReason.FRAUD_SUSPICION)
+
+        # cancellation can trigger more than one request to Batch
+        assert len(push_testing.requests) >= 1
+
+        assert booking.status is BookingStatus.CANCELLED
+        assert booking.cancellationReason == BookingCancellationReasons.FRAUD_SUSPICION
 
 
 @pytest.mark.usefixtures("db_session")
