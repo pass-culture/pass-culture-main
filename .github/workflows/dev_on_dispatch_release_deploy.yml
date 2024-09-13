@@ -57,7 +57,7 @@ jobs:
                         "type": "section",
                         "text": {
                             "type": "mrkdwn",
-                            "text": ":rocket: Un <https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}|déploiement> de `${{ github.ref_name }}` a été demandé sur `${{ github.event.inputs.target_environment }}` par ${{ github.actor }}"
+                            "text": ":rocket: Un <https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}|déploiement> de `${{ github.ref_name }}` a été demandé sur `${{ github.event.inputs.target_environment }}` par *${{ github.actor }}*"
                         }
                     }
                 ]
@@ -154,6 +154,16 @@ jobs:
         with:
           secrets: |-
             SLACK_BOT_TOKEN:passculture-metier-ehp/passculture-ci-slack-bot-token
+      - name: "Slack output"
+        id: "slack-text"
+        run: |
+          if [ "${{ env.WORKFLOW_CONCLUSION }}" == "success" ]; then
+            echo text=":rocket: Le déploiement initié par *${{ github.actor }}* de la version `v${{ needs.version.outputs.APP_VERSION }}` sur `${{ github.event.inputs.target_environment }}` a réussi"
+          elif [ "${{ env.WORKFLOW_CONCLUSION }}" == "cancelled" ]; then
+            echo text=":no_entry_sign: Le <https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}|déploiement> initié par *${{ github.actor }}* de la version `v${{ needs.version.outputs.APP_VERSION }}` sur `${{ github.event.inputs.target_environment }}` a été annulé"
+          else
+            echo text=":boom: Le <https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}|déploiement> initié par *${{ github.actor }}* de la version `v${{ needs.version.outputs.APP_VERSION }}` sur `${{ github.event.inputs.target_environment }}` a échoué"
+          fi
       - name: "Post outcome on #alertes-deploiement"
         if: always()
         uses: slackapi/slack-github-action@v1.27.0
@@ -161,20 +171,15 @@ jobs:
           channel-id: "CQAMNFVPS"
           payload: |
             {
-              "attachments": [
-                  {
-                    "mrkdwn_in": ["text"],
-                    "color": "${{ fromJSON('["#36a64f", "#A30002"]')[ env.WORKFLOW_CONCLUSION == 'failure'] }}",
-                    "author_name": "${{github.actor}}",
-                    "author_link": "https://github.com/${{github.actor}}",
-                    "author_icon": "https://github.com/${{github.actor}}.png",
-                    "title": "PCAPI Deployment",
-                    "title_link": "https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}",
-                    "text": "Le déploiement de la version `v${{ needs.version.outputs.APP_VERSION }}` a ${{ fromJSON('["réussi", "échoué"]')[env.WORKFLOW_CONCLUSION != 'success'] }} sur `${{ github.event.inputs.target_environment }}` ${{ fromJSON('[":muscle:", ":boom:"]')[env.WORKFLOW_CONCLUSION != 'success'] }}"
-                  }
-              ],
-              "unfurl_links": false,
-              "unfurl_media": false
+                "blocks": [
+                    {
+                        "type": "section",
+                        "text": {
+                            "type": "mrkdwn",
+                            "text": "${{ steps.slack-text.outputs.text }}"
+                        }
+                    }
+                ]
             }
         env:
           SLACK_BOT_TOKEN: ${{ steps.secrets.outputs.SLACK_BOT_TOKEN }}

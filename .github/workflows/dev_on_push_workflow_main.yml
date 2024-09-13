@@ -346,7 +346,7 @@ jobs:
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
   slack-notify:
-    name: "Slack notification"
+    name: "Slack notification of failed run"
     runs-on: ubuntu-latest
     if: ${{ failure() && github.ref == 'refs/heads/master' }}
     needs: deploy-to-testing
@@ -370,20 +370,15 @@ jobs:
           channel-id: "CQAMNFVPS"
           payload: |
             {
-              "attachments": [
-                {
-                  "mrkdwn_in": ["text"],
-                  "color": "#A30002",
-                  "author_name": "${{github.actor}}",
-                  "author_link": "https://github.com/${{github.actor}}",
-                  "author_icon": "https://github.com/${{github.actor}}.png",
-                  "title": "PCAPI Deployment",
-                  "title_link": "https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}",
-                  "text": "Le déploiement de la version `master` a échoué sur `testing` :boom:"
-                }
-              ],
-              "unfurl_links": false,
-              "unfurl_media": false
+                "blocks": [
+                    {
+                        "type": "section",
+                        "text": {
+                            "type": "mrkdwn",
+                            "text": ":boom: Le <https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}|déploiement> initié par *${{ github.actor }}* de la branche `master` sur `testing` a échoué"
+                        }
+                    }
+                ]
             }
         env:
           SLACK_BOT_TOKEN: ${{ steps.secrets.outputs.SLACK_BOT_TOKEN }}

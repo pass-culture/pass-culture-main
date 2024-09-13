@@ -119,11 +119,11 @@ jobs:
         id: "slack-text"
         run: |
           if [ "${{ env.WORKFLOW_CONCLUSION }}" == "success" ]; then
-            echo text="La pose du tag *${{ env.TAG_NAME }}* a réussi. Vous pouvez maintenant le <https://github.com/pass-culture/pass-culture-main/actions/workflows/dev_on_dispatch_release_deploy.yml|déployer> :rocket:" | tee -a $GITHUB_OUTPUT
+            echo text=":label: La pose du tag *${{ env.TAG_NAME }}* a réussi. Vous pouvez maintenant le <https://github.com/pass-culture/pass-culture-main/actions/workflows/dev_on_dispatch_release_deploy.yml|déployer>" | tee -a $GITHUB_OUTPUT
           elif [ "${{ env.WORKFLOW_CONCLUSION }}" == "cancelled" ]; then
-            echo text="La pose du tag a été annulée. Détails sur <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|Github>" | tee -a $GITHUB_OUTPUT
+            echo text=":no_entry_sign: La pose du tag a été <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|annulée>" | tee -a $GITHUB_OUTPUT
           else
-            echo text="La pose du tag *${{ env.TAG_NAME }}* a échoué :x: Détails sur <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|Github>" | tee -a $GITHUB_OUTPUT
+            echo text=":boom: La pose du tag *${{ env.TAG_NAME }}* a <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|échoué>" | tee -a $GITHUB_OUTPUT
           fi
       - name: "Post on #shérif"
         if: always()
@@ -131,35 +131,16 @@ jobs:
         env:
           SLACK_BOT_TOKEN: ${{ steps.secrets.outputs.SLACK_BOT_TOKEN }}
         with:
-          channel-id: CU0SQ8Y58
+          channel-id: "CU0SQ8Y58"
           payload: |
             {
-              "attachments": [
-                {
-                  "color": "${{ fromJSON('["#36a64f", "#A30002"]')[env.WORKFLOW_CONCLUSION == 'failure'] }}",
-                  "blocks": [
+                "blocks": [
                     {
-                      "type": "context",
-                      "elements": [
-                        {
-                          "type": "image",
-                          "image_url": "https://github.com/${{github.actor}}.png",
-                          "alt_text": "${{github.actor}}"
-                        },
-                        {
-                          "type": "mrkdwn",
-                          "text": "<https://github.com/${{github.actor}}|*${{github.actor}}*>"
+                        "type": "section",
+                        "text": {
+                            "type": "mrkdwn",
+                            "text": "${{ steps.slack-text.outputs.text }}"
                         }
-                      ]
-                    },
-                    {
-                      "type": "section",
-                      "text": {
-                        "type": "mrkdwn",
-                        "text": "${{ steps.slack-text.outputs.text }}"
-                      }
                     }
-                  ]
-                }
-              ]
+                ]
             }

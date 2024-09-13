@@ -166,7 +166,7 @@ jobs:
       - name: 'Show pcapi log when it fails'
         if: failure()
         run: docker logs pc-api
-      - name: "Post to a Slack channel"
+      - name: "Post failure message to slack"
         if: always() && failure() && github.ref == 'refs/heads/master'
         uses: slackapi/slack-github-action@v1.27.0
         with:
@@ -174,20 +174,15 @@ jobs:
           channel-id: "CPZ7U1CNP"
           payload: |
             {
-              "attachments": [
-                {
-                  "mrkdwn_in": ["text"],
-                  "color": "#A30002",
-                  "author_name": "${{github.actor}}",
-                  "author_link": "https://github.com/${{github.actor}}",
-                  "author_icon": "https://github.com/${{github.actor}}.png",
-                  "title": "Tests pro E2E",
-                  "title_link": "https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}",
-                  "text": "Les tests pro E2E échouent sur `master` :boom:"
-                }
-              ],
-              "unfurl_links": false,
-              "unfurl_media": false
+                "blocks": [
+                    {
+                        "type": "section",
+                        "text": {
+                            "type": "mrkdwn",
+                            "text": ":boom: Les tests E2E échouent sur `master` suite au merge par ${{github.actor}}"
+                        }
+                    }
+                ]
             }
         env:
           SLACK_BOT_TOKEN: ${{ steps.secrets.outputs.SLACK_BOT_TOKEN }}
