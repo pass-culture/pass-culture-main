@@ -35,8 +35,8 @@ def create_offers_with_price_categories(offerer: Offerer) -> None:
         offer=offer_event, priceCategoryLabel__label="GRATUIT", price=0, priceCategoryLabel__venue=venue
     )
 
-    EventStockFactory(offer=offer_event, priceCategory=price_gold)
-    EventStockFactory(offer=offer_event, priceCategory=price_silver)
-    EventStockFactory(offer=offer_event, priceCategory=price_bronze)
-    EventStockFactory(offer=offer_event, priceCategory=price_free)
+    EventStockFactory(offer=offer_event, priceCategory=price_gold, price=price_gold.price)
+    EventStockFactory(offer=offer_event, priceCategory=price_silver, price=price_silver.price)
+    EventStockFactory(offer=offer_event, priceCategory=price_bronze, price=price_bronze.price)
+    EventStockFactory(offer=offer_event, priceCategory=price_free, price=price_free.price)
     logger.info("create_offers with price categories")

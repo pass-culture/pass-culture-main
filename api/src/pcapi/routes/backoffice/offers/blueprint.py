@@ -299,12 +299,13 @@ def _get_offers(form: forms.GetOfferAdvancedSearchForm) -> list[offers_models.Of
             sa.select(
                 sa.func.jsonb_build_object(
                     "min_price",
-                    sa.func.min(offers_models.Stock.price),
+                    sa.func.min(sa.func.coalesce(offers_models.PriceCategory.price, offers_models.Stock.price)),
                     "max_price",
-                    sa.func.max(offers_models.Stock.price),
+                    sa.func.max(sa.func.coalesce(offers_models.PriceCategory.price, offers_models.Stock.price)),
                 )
             )
             .select_from(offers_models.Stock)
+            .outerjoin(offers_models.Stock.priceCategory)
             .filter(offers_models.Stock.offerId == offers_models.Offer.id, ~offers_models.Stock.isSoftDeleted)
             .correlate(offers_models.Offer)
             .scalar_subquery()
@@ -813,7 +814,11 @@ def get_offer_details(offer_id: int) -> utils.BackofficeResponse:
             offerers_models.Offerer.isActive,
             offerers_models.Offerer.validationStatus,
         ),
-        sa.orm.joinedload(offers_models.Offer.stocks),
+        sa.orm.joinedload(offers_models.Offer.stocks)
+        .joinedload(offers_models.Stock.priceCategory)
+        .load_only(offers_models.PriceCategory.price)
+        .joinedload(offers_models.PriceCategory.priceCategoryLabel)
+        .load_only(offers_models.PriceCategoryLabel.label),
         sa.orm.joinedload(offers_models.Offer.lastValidationAuthor).load_only(
             users_models.User.firstName, users_models.User.lastName
         ),

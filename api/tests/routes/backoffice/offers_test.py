@@ -1897,6 +1897,47 @@ class GetOfferDetailsTest(GetEndpointHelper):
         assert stocks_rows[0]["Prix"] == "10,10 €"
         assert stocks_rows[0]["Date / Heure"] == format_date(stock.beginningDatetime, "%d/%m/%Y à %Hh%M")
 
+    def test_get_offer_details_with_price_categories(self, authenticated_client):
+        venue = offerers_factories.VenueFactory()
+        offer = offers_factories.EventOfferFactory(venue=venue)
+        price_gold = offers_factories.PriceCategoryFactory(
+            offer=offer, priceCategoryLabel__label="OR", price=66.6, priceCategoryLabel__venue=venue
+        )
+        price_silver = offers_factories.PriceCategoryFactory(
+            offer=offer, priceCategoryLabel__label="ARGENT", price=42, priceCategoryLabel__venue=venue
+        )
+        price_bronze = offers_factories.PriceCategoryFactory(
+            offer=offer, priceCategoryLabel__label="BRONZE", price=13, priceCategoryLabel__venue=venue
+        )
+        price_free = offers_factories.PriceCategoryFactory(
+            offer=offer, priceCategoryLabel__label="GRATUIT", price=0, priceCategoryLabel__venue=venue
+        )
+
+        offers_factories.EventStockFactory(offer=offer, priceCategory=price_gold)
+        offers_factories.EventStockFactory(offer=offer, priceCategory=price_silver)
+        offers_factories.EventStockFactory(offer=offer, priceCategory=price_bronze)
+        offers_factories.EventStockFactory(offer=offer, priceCategory=price_free)
+
+        query_count = self.expected_num_queries
+        query_count += 1  # _get_editable_stock
+        query_count += 3  # check_can_move_event_offer
+
+        url = url_for(self.endpoint, offer_id=offer.id)
+        with assert_num_queries(query_count):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        stocks_rows = html_parser.extract_table_rows(response.data, parent_class="stock-tab-pane")
+        assert len(stocks_rows) == 4
+        assert stocks_rows[0]["Tarif"] == "GRATUIT"
+        assert stocks_rows[0]["Prix"] == "0,00 €"
+        assert stocks_rows[1]["Tarif"] == "BRONZE"
+        assert stocks_rows[1]["Prix"] == "13,00 €"
+        assert stocks_rows[2]["Tarif"] == "ARGENT"
+        assert stocks_rows[2]["Prix"] == "42,00 €"
+        assert stocks_rows[3]["Tarif"] == "OR"
+        assert stocks_rows[3]["Prix"] == "66,60 €"
+
     def test_get_offer_details_stocks_sorted_by_event_date_desc(self, authenticated_client):
         now = datetime.datetime.utcnow()
         offer = offers_factories.EventOfferFactory()
