@@ -100,6 +100,38 @@ class PostReactionTest:
         assert reaction.reactionType == ReactionTypeEnum.LIKE
         assert reaction.product == product
 
+    def test_post_bulk_reaction(self, client):
+        user = users_factories.BeneficiaryFactory()
+        offer = offers_factories.OfferFactory()
+        other_offer = offers_factories.OfferFactory()
+        client.with_token(user.email)
+
+        offer_id = offer.id
+        other_offer_id = other_offer.id
+
+        num_queries = 1  # select user
+        num_queries += 1  # select reactions
+        num_queries += 1  # select offer
+        num_queries += 1  # select offer
+        num_queries += 1  # Insert reactions
+        with assert_num_queries(num_queries):
+            response = client.post(
+                "/native/v1/reaction",
+                json={
+                    "reactions": [
+                        {"offerId": offer_id, "reactionType": "LIKE"},
+                        {"offerId": other_offer_id, "reactionType": "LIKE"},
+                    ]
+                },
+            )
+            assert response.status_code == 204
+
+        reaction = user.reactions[0]
+        assert reaction.reactionType == ReactionTypeEnum.LIKE
+
+        reaction = user.reactions[1]
+        assert reaction.reactionType == ReactionTypeEnum.LIKE
+
 
 class GetAvailableReactionTest:
     def test_should_be_logged_in_to_get_available_reactions(self, client):

@@ -8,17 +8,29 @@ from pcapi.core.bookings import models as bookings_models
 from pcapi.core.categories.subcategories_v2 import SEANCE_CINE
 from pcapi.core.offers import models as offers_models
 from pcapi.core.reactions import models as reactions_models
+from pcapi.core.users.models import User
 from pcapi.models import db
+from pcapi.routes.native.v1.serialization.reaction import PostOneReactionRequest
+
+
+def bulk_update_or_create_reaction(user: User, reactions: list[PostOneReactionRequest]) -> None:
+    for reaction in reactions:
+        update_or_create_reaction(user, reaction.offer_id, reaction.reaction_type)
+    db.session.flush()
 
 
 def update_or_create_reaction(
-    user_id: int, offer_id: int, reaction_type: reactions_models.ReactionTypeEnum
+    user: User,
+    offer_id: int,
+    reaction_type: reactions_models.ReactionTypeEnum,
 ) -> reactions_models.Reaction:
     offer = offers_models.Offer.query.get_or_404(offer_id)
     if offer.productId:
-        existing_reaction = reactions_models.Reaction.query.filter_by(userId=user_id, productId=offer.productId).first()
+        existing_reaction = next(
+            (reaction for reaction in user.reactions if reaction.productId == offer.productId), None
+        )
     else:
-        existing_reaction = reactions_models.Reaction.query.filter_by(userId=user_id, offerId=offer_id).first()
+        existing_reaction = next((reaction for reaction in user.reactions if reaction.offerId == offer_id), None)
 
     if existing_reaction:
         existing_reaction.reactionType = reaction_type
@@ -27,12 +39,11 @@ def update_or_create_reaction(
 
     reaction = reactions_models.Reaction(
         reactionType=reaction_type,
-        userId=user_id,
+        userId=user.id,
         offerId=offer_id if not offer.productId else None,
         productId=offer.productId,
     )
     db.session.add(reaction)
-    db.session.flush()
 
     return reaction
 
