@@ -1,19 +1,6 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/variables/_size.scss" as size;
 
-a.logo {
-  align-items: center;
-  color: var(--color-white);
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  justify-content: center;
-
-  svg {
-    width: rem.torem(119px);
-  }
-}
-
 .logo-unlogged {
   color: var(--color-white);
   max-width: rem.torem(135px);
