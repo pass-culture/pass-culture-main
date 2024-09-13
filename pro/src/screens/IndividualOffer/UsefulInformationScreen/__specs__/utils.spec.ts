@@ -3,6 +3,7 @@ import {
   SubcategoryResponseModel,
   WithdrawalTypeEnum,
 } from 'apiClient/v1'
+import { OFFER_LOCATION } from 'components/IndividualOfferForm/OfferLocation/constants'
 import { CATEGORY_STATUS } from 'core/Offers/constants'
 import { AccessibilityEnum } from 'core/shared/types'
 import {
@@ -217,6 +218,63 @@ describe('setDefaultInitialValuesFromOffer', () => {
     const result = setDefaultInitialValuesFromOffer(
       mockOfferWithNullWithdrawalDelay
     )
+
+    expect(result).toEqual(expectedValues)
+  })
+
+  it('should handle address fields', () => {
+    mockOffer.address = {
+      id: 1,
+      id_oa: 997,
+      isEditable: true,
+      isManualEdition: true,
+      latitude: 48.85332,
+      longitude: 2.348979,
+      postalCode: '75001',
+      street: '3 rue de Valois',
+      city: 'Paris',
+      label: 'Bureau',
+      banId: '35288_7283_00001',
+    }
+
+    const { street, postalCode, city, latitude, longitude } = mockOffer.address!
+    const addressAutocomplete = `${street} ${postalCode} ${city}`
+    const coords = `${latitude}, ${longitude}`
+
+    const expectedValues = {
+      isEvent: true,
+      isNational: false,
+      isVenueVirtual: false,
+      withdrawalDetails: 'Detailed info',
+      withdrawalDelay: 3,
+      withdrawalType: WithdrawalTypeEnum.BY_EMAIL,
+      accessibility: {
+        [AccessibilityEnum.VISUAL]: true,
+        [AccessibilityEnum.MENTAL]: false,
+        [AccessibilityEnum.AUDIO]: true,
+        [AccessibilityEnum.MOTOR]: false,
+        [AccessibilityEnum.NONE]: false,
+      },
+      bookingEmail: 'test@example.com',
+      bookingContact: 'Contact Info',
+      receiveNotificationEmails: true,
+      url: 'http://example.com',
+
+      offerlocation: OFFER_LOCATION.OTHER_ADDRESS,
+      manuallySetAddress: true,
+      'search-addressAutocomplete': addressAutocomplete,
+      addressAutocomplete,
+      coords,
+      banId: '35288_7283_00001',
+      locationLabel: 'Bureau',
+      street: '3 rue de Valois',
+      postalCode: '75001',
+      city: 'Paris',
+      latitude: '48.85332',
+      longitude: '2.348979',
+    }
+
+    const result = setDefaultInitialValuesFromOffer(mockOffer)
 
     expect(result).toEqual(expectedValues)
   })

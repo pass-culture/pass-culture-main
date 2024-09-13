@@ -182,6 +182,18 @@ describe('screens:IndividualOffer::UsefulInformation', () => {
     expect(
       screen.queryByLabelText(/Intitulé de la localisation/)
     ).toBeInTheDocument()
+
+    // If user toggle manual address fields
+    await userEvent.click(
+      screen.getByTitle(/Renseignez l’adresse manuellement/)
+    )
+    // ...then he should see the different address fields
+    expect(
+      screen.queryByLabelText(/Adresse postale/, { selector: '#street' })
+    ).toBeInTheDocument()
+    expect(screen.queryByLabelText(/Code postal/)).toBeInTheDocument()
+    expect(screen.queryByLabelText(/Ville/)).toBeInTheDocument()
+    expect(screen.queryByLabelText(/Coordonnées GPS/)).toBeInTheDocument()
   })
 
   it('should submit the form with correct payload', async () => {
