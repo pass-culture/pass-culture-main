@@ -58,6 +58,17 @@ class CancelCollectiveBookingTest(PublicAPIEndpointBaseHelper):
         db.session.refresh(booking)
         assert booking.status == educational_models.CollectiveBookingStatus.REIMBURSED
 
+    def test_cannot_cancel_used_booking(self, client, venue):
+        booking = educational_factories.UsedCollectiveBookingFactory(collectiveStock__collectiveOffer__venue=venue)
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
+            self.endpoint_url.format(booking_id=booking.id)
+        )
+        assert response.status_code == 403
+
+        db.session.refresh(booking)
+        assert booking.status == educational_models.CollectiveBookingStatus.USED
+
     def test_cannot_cancel_already_cancelled_booking(self, client, venue):
         booking = educational_factories.CancelledCollectiveBookingFactory(collectiveStock__collectiveOffer__venue=venue)
 

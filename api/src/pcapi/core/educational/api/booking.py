@@ -285,7 +285,7 @@ def get_collective_booking_by_id(booking_id: int) -> educational_models.Collecti
     return collective_booking
 
 
-def cancel_collective_offer_booking(offer_id: int, author_id: int, user_connect_as: bool) -> None:
+def cancel_collective_offer_booking(offer_id: int, author_id: int | None, user_connect_as: bool) -> None:
     collective_offer: educational_models.CollectiveOffer | None = (
         educational_models.CollectiveOffer.query.filter(educational_models.CollectiveOffer.id == offer_id)
         .options(
@@ -337,7 +337,7 @@ def notify_pro_pending_booking_confirmation_limit_in_3_days() -> None:
 def _cancel_collective_booking(
     collective_booking: educational_models.CollectiveBooking,
     reason: educational_models.CollectiveBookingCancellationReasons,
-    author_id: int,
+    author_id: int | None,
 ) -> None:
     with transaction():
         educational_repository.get_and_lock_collective_stock(stock_id=collective_booking.collectiveStock.id)
@@ -364,7 +364,7 @@ def _cancel_collective_booking(
 
 def _cancel_collective_booking_by_offerer(
     collective_stock: educational_models.CollectiveStock,
-    author_id: int,
+    author_id: int | None,
     user_connect_as: bool,
 ) -> educational_models.CollectiveBooking:
     """
@@ -399,6 +399,7 @@ def _cancel_collective_booking_by_offerer(
 def cancel_collective_booking(
     collective_booking: educational_models.CollectiveBooking,
     reason: educational_models.CollectiveBookingCancellationReasons,
+    force: bool = True,
     _from: str | None = None,
     author_id: int | None = None,
 ) -> None:
@@ -409,7 +410,7 @@ def cancel_collective_booking(
         if finance_repository.has_reimbursement(collective_booking):
             raise exceptions.BookingIsAlreadyRefunded()
         cancelled_event = finance_api.cancel_latest_event(collective_booking)
-        collective_booking.cancel_booking(reason=reason, cancel_even_if_used=True, author_id=author_id)
+        collective_booking.cancel_booking(reason=reason, cancel_even_if_used=force, author_id=author_id)
         if cancelled_event:
             finance_api.add_event(
                 finance_models.FinanceEventMotive.BOOKING_CANCELLED_AFTER_USE,
