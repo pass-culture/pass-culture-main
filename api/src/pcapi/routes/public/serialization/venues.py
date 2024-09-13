@@ -76,6 +76,7 @@ class OffererResponse(serialization.ConfiguredBaseModel):
     dateCreated: datetime.datetime = pydantic_v1.Field(..., alias="createdDatetime")
     name: str = pydantic_v1.Field(example="Structure A")
     siren: str | None = pydantic_v1.Field(example="123456789")
+    allowedOnAdage: bool = fields.ALLOWED_ON_ADAGE
 
 
 class GetOffererVenuesResponse(serialization.ConfiguredBaseModel):

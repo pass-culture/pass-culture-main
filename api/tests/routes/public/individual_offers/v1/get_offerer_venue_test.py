@@ -98,6 +98,7 @@ class GetOffererVenuesTest(PublicAPIEndpointBaseHelper):
                 "id": offerer_with_two_venues.id,
                 "name": "Offreur de fleurs",
                 "siren": "123456789",
+                "allowedOnAdage": offerer_with_two_venues.allowedOnAdage,
             },
             "venues": [
                 {
@@ -151,6 +152,7 @@ class GetOffererVenuesTest(PublicAPIEndpointBaseHelper):
                 "id": offerer_with_one_venue.id,
                 "name": "Offreur de prune",
                 "siren": "123456781",
+                "allowedOnAdage": offerer_with_one_venue.allowedOnAdage,
             },
             "venues": [
                 {
