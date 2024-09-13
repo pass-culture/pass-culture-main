@@ -20,6 +20,7 @@ import pcapi.core.offers.models as offers_models
 import pcapi.core.providers.exceptions as providers_exceptions
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.providers.repository import get_provider_by_local_class
+from pcapi.core.testing import override_features
 import pcapi.core.users.factories as user_factories
 from pcapi.tasks.serialization.external_api_booking_notification_tasks import BookingAction
 
@@ -337,6 +338,80 @@ class BookEventTicketTest:
             book_event_ticket(booking, stock, user, provider, None)
 
         assert str(error.value) == "External booking failed with status code 500 and message on est en carafe !!"
+
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    @patch("pcapi.core.external_bookings.api.requests.post")
+    def test_uses_offer_address_when_available(self, requests_post):
+        requests_post.return_value.status_code = 200
+        # The return value doesn't matter in this test, we just want the call to be successful
+        requests_post.return_value.json.return_value = {
+            "remainingQuantity": 12,
+            "tickets": [
+                {"barcode": "1234567AJSQ", "seat": "A12"},
+                {"barcode": "1234567AJSA", "seat": "A14"},
+            ],
+        }
+        provider = providers_factories.PublicApiProviderFactory()
+
+        # 2 offers : one without address
+        offer_without_address = offers_factories.EventOfferFactory(
+            withdrawalType=offers_models.WithdrawalTypeEnum.IN_APP,
+            lastProviderId=provider.id,
+            idAtProvider="oh_mon_bel_id",
+            name="La fête aux acouphènes",
+        )
+        stock_of_the_offer_without_address = offers_factories.EventStockFactory(
+            offer=offer_without_address, idAtProviders="stock_id"
+        )
+
+        # one with address
+        offerer_address = offerers_factories.OffererAddressFactory()
+        offer_with_address = offers_factories.EventOfferFactory(
+            withdrawalType=offers_models.WithdrawalTypeEnum.IN_APP,
+            lastProviderId=provider.id,
+            idAtProvider="autre_magnifik_id",
+            name="Lecture de la Magnifique",
+            offererAddress=offerer_address,
+        )
+        stock_of_the_offer_with_address = offers_factories.EventStockFactory(
+            offer=offer_with_address, idAtProviders="autre_stock_id"
+        )
+
+        # Internal bookings
+        booking_creation_date = datetime.datetime(2024, 5, 12)
+        booking_of_the_offer_with_adress = bookings_factories.BookingFactory(
+            stock=stock_of_the_offer_with_address, dateCreated=booking_creation_date, quantity=2
+        )
+        booking_of_the_offer_without_address = bookings_factories.BookingFactory(
+            stock=stock_of_the_offer_without_address, dateCreated=booking_creation_date, quantity=2
+        )
+        user = user_factories.BeneficiaryFactory(firstName="Jean", lastName="Passedemeyeur")
+
+        # book external tickets
+        book_event_ticket(
+            booking_of_the_offer_without_address,
+            stock_of_the_offer_without_address,
+            user,
+            provider,
+            None,
+        )
+        external_call_body = json.loads(requests_post.call_args_list[0].kwargs["json"])
+        assert external_call_body["venue_address"] == offer_without_address.venue.street
+        assert external_call_body["venue_name"] == offer_without_address.venue.name
+        assert external_call_body["venue_department_code"] == offer_without_address.venue.departementCode
+
+        book_event_ticket(
+            booking_of_the_offer_with_adress,
+            stock_of_the_offer_with_address,
+            user,
+            provider,
+            None,
+        )
+        external_call_body = json.loads(requests_post.call_args_list[1].kwargs["json"])
+
+        assert external_call_body["venue_address"] == offerer_address.address.street
+        assert external_call_body["venue_name"] == offerer_address.label
+        assert external_call_body["venue_department_code"] == offerer_address.address.departmentCode
 
 
 @pytest.mark.usefixtures("db_session")
