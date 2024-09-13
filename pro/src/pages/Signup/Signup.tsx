@@ -4,7 +4,7 @@ import { Outlet } from 'react-router-dom'
 import { AppLayout } from 'app/AppLayout'
 import { useActiveFeature } from 'hooks/useActiveFeature'
 import logoPassCultureProFullIcon from 'icons/logo-pass-culture-pro-full.svg'
-import logoStyles from 'styles/components/layout/_Logo.module.scss'
+import logoStyles from 'styles/components/_Logo.module.scss'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './Signup.module.scss'
