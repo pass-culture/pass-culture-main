@@ -6,7 +6,7 @@ from pcapi.core.educational import models
 from pcapi.core.educational.api import booking as educational_api_booking
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.providers.models as providers_models
-from pcapi.models.api_errors import ApiErrors
+from pcapi.models.api_errors import ForbiddenError
 from pcapi.routes.public import blueprints
 from pcapi.routes.public import spectree_schemas
 from pcapi.routes.public.documentation_constants import http_responses
@@ -44,13 +44,14 @@ def cancel_collective_booking(booking_id: int) -> None:
 
     try:
         reason = models.CollectiveBookingCancellationReasons.PUBLIC_API
-        educational_api_booking.cancel_collective_booking(booking, reason=reason)
+        educational_api_booking.cancel_collective_booking(booking, reason=reason, force=False)
     except educational_exceptions.CollectiveBookingAlreadyCancelled:
-        raise ApiErrors({"booking": "Impossible d'annuler une réservation déjà annulée"}, status_code=403)
+        raise ForbiddenError({"booking": "Impossible d'annuler une réservation déjà annulée"})
+    except educational_exceptions.CollectiveBookingIsAlreadyUsed:
+        raise ForbiddenError({"booking": "Cette réservation a déjà été utilisée et ne peut être annulée"})
     except educational_exceptions.BookingIsAlreadyRefunded:
-        raise ApiErrors(
-            {"booking": "Cette réservation est en train d’être remboursée, il est impossible de l’invalider"},
-            status_code=403,
+        raise ForbiddenError(
+            {"booking": "Cette réservation est en train d’être remboursée, il est impossible de l’invalider"}
         )
 
     educational_api_booking.notify_redactor_that_booking_has_been_cancelled(booking)
