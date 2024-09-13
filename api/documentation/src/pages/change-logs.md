@@ -16,9 +16,9 @@ title: Pass Culture API change logs
 ## September 2024
 
 ### `idAtProvider` in price category
-- You can now specify your own id when you [**create price categories**](/rest-api#tag/Event-offer-prices/operation/PostEventPriceCategories) or when you [**update a price category**](/rest-api#tag/Event-offer-prices/operation/PatchEventPriceCategory)
+- You can now specify your own id when you [**create price categories**](/rest-api#tag/Event-offer-prices/operation/PostEventPriceCategories), or when you [**update a price category**](/rest-api#tag/Event-offer-prices/operation/PatchEventPriceCategory), by adding an `idAtProvider` to your JSON payload.
 - You can now access your event price categories using [**this endpoint**](/rest-api#tag/Event-offer-prices/operation/GetEventPriceCategories) and filter them using the `idsAtProvider` parameter
-- Your price category id is now sent in [**our ticket request message**](/docs/understanding-our-api/managing-bookings/connection-with-ticketing-system#-our-request-payload)
+- Your price category id is now sent in [**our ticket request message**](/docs/understanding-our-api/managing-bookings/connection-with-ticketing-system#-our-request-payload) in the `price_category_id_at_provider` key
 
 ### EANs availability check
 - You can now check if your EANs are available for bulk upsert using [**this endpoint**](/rest-api#tag/Product-offer-bulk-operations/operation/CheckEansAvailability)
