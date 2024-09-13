@@ -28,7 +28,7 @@ export const OldHeader = forwardRef(() => {
       <nav className={styles['nav']} aria-label="Menu principal">
         <div className={styles['nav-brand']}>
           <NavLink
-            className={cn('logo', 'nav-item')}
+            className={cn(styles['logo'], 'nav-item')}
             to="/accueil"
             onClick={() => {
               logEvent(Events.CLICKED_PRO, { from: location.pathname })

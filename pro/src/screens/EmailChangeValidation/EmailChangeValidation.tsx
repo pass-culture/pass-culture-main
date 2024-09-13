@@ -1,7 +1,5 @@
-// react hooks and usages doc : https://reactjs.org/docs/hooks-intro.html
-import React from 'react'
-
 import logoPassCultureProFullIcon from 'icons/logo-pass-culture-pro-full.svg'
+import logoStyles from 'styles/components/layout/_Logo.module.scss'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
@@ -19,7 +17,7 @@ export const EmailChangeValidationScreen = ({
     <>
       <header className={styles['logo-side']}>
         <SvgIcon
-          className="logo-unlogged"
+          className={logoStyles['logo-unlogged']}
           viewBox="0 0 282 120"
           alt="Pass Culture pro, l’espace des acteurs culturels"
           src={logoPassCultureProFullIcon}
