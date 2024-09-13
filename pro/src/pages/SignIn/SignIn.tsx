@@ -13,6 +13,7 @@ import { useRedirectLoggedUser } from 'hooks/useRedirectLoggedUser'
 import logoPassCultureProFullIcon from 'icons/logo-pass-culture-pro-full.svg'
 import { CookiesFooter } from 'pages/CookiesFooter/CookiesFooter'
 import { updateUser } from 'store/user/reducer'
+import logoStyles from 'styles/components/layout/_Logo.module.scss'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { getReCaptchaToken } from 'utils/recaptcha'
 
@@ -106,7 +107,7 @@ export const SignIn = (): JSX.Element => {
     <AppLayout layout="without-nav">
       <header className={styles['logo-side']}>
         <SvgIcon
-          className="logo-unlogged"
+          className={logoStyles['logo-unlogged']}
           viewBox="0 0 282 120"
           alt="Pass Culture pro, l’espace des acteurs culturels"
           src={logoPassCultureProFullIcon}
