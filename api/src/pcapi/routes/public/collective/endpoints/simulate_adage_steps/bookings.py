@@ -117,7 +117,7 @@ def adage_mock_cancel_collective_booking(booking_id: int) -> None:
 
 @blueprints.public_api.route("/v2/collective/bookings/<int:booking_id>/use", methods=["POST"])
 @utils.exclude_prod_environment
-@api_key_required
+@provider_api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     on_success_status=204,
