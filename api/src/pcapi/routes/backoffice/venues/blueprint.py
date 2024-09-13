@@ -35,7 +35,8 @@ from pcapi.core.providers import models as providers_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
-from pcapi.repository import repository
+from pcapi.repository import atomic
+from pcapi.repository import on_commit
 from pcapi.routes.backoffice import autocomplete
 from pcapi.routes.backoffice import filters
 from pcapi.routes.backoffice import search_utils
@@ -792,6 +793,7 @@ def get_batch_edit_venues_form() -> utils.BackofficeResponse:
 
 
 @venue_blueprint.route("/batch-edit", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
 def batch_edit_venues() -> utils.BackofficeResponse:
     form = forms.BatchEditVenuesForm()
@@ -815,10 +817,15 @@ def batch_edit_venues() -> utils.BackofficeResponse:
 
     updated_venues = list(set(updated_criteria_venues + updated_permanent_venues))
 
-    repository.save(*updated_venues)
-    search.async_index_venue_ids(
-        [v.id for v in updated_venues],
-        reason=search.IndexationReason.VENUE_BATCH_UPDATE,
+    db.session.add_all(updated_venues)
+    db.session.flush()
+
+    on_commit(
+        partial(
+            search.async_index_venue_ids,
+            [v.id for v in updated_venues],
+            reason=search.IndexationReason.VENUE_BATCH_UPDATE,
+        )
     )
 
     flash("Les lieux ont été modifiés", "success")
@@ -861,9 +868,7 @@ def _update_permanent_venues(venues: list[offerers_models.Venue], is_permanent: 
         )
         venue.isPermanent = is_permanent
         if is_permanent and venue.thumbCount == 0:
-            transactional_mails.send_permanent_venue_needs_picture(venue)
-
-    db.session.flush()
+            on_commit(partial(transactional_mails.send_permanent_venue_needs_picture, venue))
 
     return venues_to_update
 
