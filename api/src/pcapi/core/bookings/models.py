@@ -53,6 +53,8 @@ class BookingCancellationReasons(enum.Enum):
     BENEFICIARY = "BENEFICIARY"
     EXPIRED = "EXPIRED"
     FRAUD = "FRAUD"
+    FRAUD_SUSPICION = "FRAUD_SUSPICION"
+    FRAUD_INAPPROPRIATE = "FRAUD_INAPPROPRIATE"
     REFUSED_BY_INSTITUTE = "REFUSED_BY_INSTITUTE"
     FINANCE_INCIDENT = "FINANCE_INCIDENT"
     BACKOFFICE = "BACKOFFICE"
@@ -72,6 +74,9 @@ class BookingCancellationReasons(enum.Enum):
             cls.BACKOFFICE_BENEFICIARY_REQUEST,
             cls.BACKOFFICE_OFFER_MODIFIED,
             cls.BACKOFFICE_OFFER_WITH_WRONG_INFORMATION,
+            cls.FRAUD,
+            cls.FRAUD_SUSPICION,
+            cls.FRAUD_INAPPROPRIATE,
         )
 
 

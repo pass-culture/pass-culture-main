@@ -34,7 +34,11 @@ def send_booking_cancellation_emails_to_user_and_offerer(
     elif reason == BookingCancellationReasons.OFFERER:
         send_booking_cancellation_by_pro_to_beneficiary_email(booking)
         send_booking_cancellation_confirmation_by_pro_to_pro_email(booking)
-    elif reason == BookingCancellationReasons.FRAUD:
+    elif reason in (
+        BookingCancellationReasons.FRAUD,
+        BookingCancellationReasons.FRAUD_INAPPROPRIATE,
+        BookingCancellationReasons.FRAUD_SUSPICION,
+    ):
         if rejected_by_fraud_action:
             send_booking_cancellation_by_pro_to_beneficiary_email(booking, rejected_by_fraud_action)
         send_booking_cancellation_by_beneficiary_to_pro_email(booking)

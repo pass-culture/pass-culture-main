@@ -228,7 +228,9 @@ class BookingCancellationReasonsTest:
         "reason,expected",
         [
             (BookingCancellationReasons.OFFERER, False),
-            (BookingCancellationReasons.FRAUD, False),
+            (BookingCancellationReasons.FRAUD, True),
+            (BookingCancellationReasons.FRAUD_SUSPICION, True),
+            (BookingCancellationReasons.FRAUD_INAPPROPRIATE, True),
             (BookingCancellationReasons.FINANCE_INCIDENT, False),
             (BookingCancellationReasons.BACKOFFICE, True),
             (BookingCancellationReasons.BACKOFFICE_EVENT_CANCELLED, True),

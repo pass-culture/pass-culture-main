@@ -235,51 +235,6 @@ class SuspendAccountTest:
         assert sendinblue_testing.sendinblue_requests[0]["email"] == pro.email
         assert sendinblue_testing.sendinblue_requests[0]["action"] == "delete"
 
-    def test_suspend_pro_fraud_suspicion(self):
-        booking = bookings_factories.BookingFactory()
-        pro = offerers_factories.UserOffererFactory(offerer=booking.offerer).user
-        author = users_factories.AdminFactory()
-        reason = users_constants.SuspensionReason.FRAUD_SUSPICION
-
-        users_api.suspend_account(pro, reason, author)
-
-        assert not pro.isActive
-        assert booking.status is BookingStatus.CANCELLED
-
-        history = history_models.ActionHistory.query.filter_by(userId=pro.id).all()
-        assert len(history) == 1
-        _assert_user_action_history_as_expected(
-            history[0], pro, author, history_models.ActionType.USER_SUSPENDED, reason
-        )
-
-        assert len(sendinblue_testing.sendinblue_requests) == 3
-        # update beneficiary and venue attributes after booking is canceled
-        assert sendinblue_testing.sendinblue_requests[0]["email"] == booking.user.email
-        assert len(sendinblue_testing.sendinblue_requests[0]["attributes"]) > 0
-        assert sendinblue_testing.sendinblue_requests[1]["email"] == booking.venue.bookingEmail
-        assert len(sendinblue_testing.sendinblue_requests[1]["attributes"]) > 0
-        # delete suspended user contact
-        assert sendinblue_testing.sendinblue_requests[2]["email"] == pro.email
-        assert sendinblue_testing.sendinblue_requests[2]["action"] == "delete"
-
-    def test_suspend_pro_with_other_offerer_users(self):
-        booking = bookings_factories.BookingFactory()
-        pro = offerers_factories.UserOffererFactory(offerer=booking.offerer).user
-        offerers_factories.UserOffererFactory(offerer=booking.offerer)
-        author = users_factories.AdminFactory()
-        reason = users_constants.SuspensionReason.FRAUD_SUSPICION
-
-        users_api.suspend_account(pro, reason, author)
-
-        assert not pro.isActive
-        assert booking.status is not BookingStatus.CANCELLED
-
-        history = history_models.ActionHistory.query.filter_by(userId=pro.id).all()
-        assert len(history) == 1
-        _assert_user_action_history_as_expected(
-            history[0], pro, author, history_models.ActionType.USER_SUSPENDED, reason
-        )
-
     def should_change_password_when_user_is_suspended_for_suspicious_login(self):
         user = users_factories.UserFactory()
         old_password_hash = user.password

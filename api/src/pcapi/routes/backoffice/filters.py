@@ -267,7 +267,17 @@ def format_booking_cancellation(
             bookings_models.BookingCancellationReasons.FRAUD
             | educational_models.CollectiveBookingCancellationReasons.FRAUD
         ):
-            return "Fraude"
+            return "Fraude avérée"
+        case (
+            bookings_models.BookingCancellationReasons.FRAUD_SUSPICION
+            | educational_models.CollectiveBookingCancellationReasons.FRAUD_SUSPICION
+        ):
+            return "Suspicion de fraude"
+        case (
+            bookings_models.BookingCancellationReasons.FRAUD_INAPPROPRIATE
+            | educational_models.CollectiveBookingCancellationReasons.FRAUD_INAPPROPRIATE
+        ):
+            return "Offre non conforme"
         case (
             educational_models.CollectiveBookingCancellationReasons.FINANCE_INCIDENT
             | bookings_models.BookingCancellationReasons.FINANCE_INCIDENT

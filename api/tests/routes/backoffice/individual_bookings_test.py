@@ -573,7 +573,9 @@ class ListIndividualBookingsTest(GetEndpointHelper):
             ),
             (bookings_models.BookingCancellationReasons.BENEFICIARY, "Annulée par le bénéficiaire"),
             (bookings_models.BookingCancellationReasons.EXPIRED, "Expirée"),
-            (bookings_models.BookingCancellationReasons.FRAUD, "Fraude"),
+            (bookings_models.BookingCancellationReasons.FRAUD, "Fraude avérée"),
+            (bookings_models.BookingCancellationReasons.FRAUD_SUSPICION, "Suspicion de fraude"),
+            (bookings_models.BookingCancellationReasons.FRAUD_INAPPROPRIATE, "Offre non conforme"),
             (
                 bookings_models.BookingCancellationReasons.REFUSED_BY_INSTITUTE,
                 "Refusée par l'institution",

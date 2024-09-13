@@ -1183,7 +1183,7 @@ def reject_inappropriate_products(
                     partial(
                         transactional_mails.send_booking_cancellation_emails_to_user_and_offerer,
                         booking,
-                        reason=BookingCancellationReasons.FRAUD,
+                        reason=BookingCancellationReasons.FRAUD_INAPPROPRIATE,
                         rejected_by_fraud_action=rejected_by_fraud_action,
                     ),
                 )
