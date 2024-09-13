@@ -123,7 +123,7 @@ describe('setDefaultInitialValuesFromOffer', () => {
       url: 'http://example.com',
     }
 
-    const result = setDefaultInitialValuesFromOffer(mockOffer)
+    const result = setDefaultInitialValuesFromOffer({ offer: mockOffer })
 
     expect(result).toEqual(expectedValues)
   })
@@ -159,9 +159,9 @@ describe('setDefaultInitialValuesFromOffer', () => {
       url: DEFAULT_USEFULL_INFORMATION_INTITIAL_VALUES['url'],
     }
 
-    const result = setDefaultInitialValuesFromOffer(
-      mockOfferWithMissingProperties
-    )
+    const result = setDefaultInitialValuesFromOffer({
+      offer: mockOfferWithMissingProperties,
+    })
 
     expect(result).toEqual(expectedValues)
   })
@@ -197,9 +197,9 @@ describe('setDefaultInitialValuesFromOffer', () => {
       url: DEFAULT_USEFULL_INFORMATION_INTITIAL_VALUES['url'],
     }
 
-    const result = setDefaultInitialValuesFromOffer(
-      mockOfferWithMissingProperties
-    )
+    const result = setDefaultInitialValuesFromOffer({
+      offer: mockOfferWithMissingProperties,
+    })
 
     expect(result).toEqual(expectedValues)
   })
@@ -211,13 +211,13 @@ describe('setDefaultInitialValuesFromOffer', () => {
     })
 
     const expectedValues = {
-      ...setDefaultInitialValuesFromOffer(mockOffer),
+      ...setDefaultInitialValuesFromOffer({ offer: mockOffer }),
       withdrawalDelay: undefined,
     }
 
-    const result = setDefaultInitialValuesFromOffer(
-      mockOfferWithNullWithdrawalDelay
-    )
+    const result = setDefaultInitialValuesFromOffer({
+      offer: mockOfferWithNullWithdrawalDelay,
+    })
 
     expect(result).toEqual(expectedValues)
   })
@@ -274,7 +274,7 @@ describe('setDefaultInitialValuesFromOffer', () => {
       longitude: '2.348979',
     }
 
-    const result = setDefaultInitialValuesFromOffer(mockOffer)
+    const result = setDefaultInitialValuesFromOffer({ offer: mockOffer })
 
     expect(result).toEqual(expectedValues)
   })
