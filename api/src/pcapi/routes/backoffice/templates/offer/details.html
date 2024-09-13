@@ -205,12 +205,14 @@
         {% call build_details_tabs_content_wrapper() %}
           {% call build_details_tab_content("stock", active_tab == 'stock') %}
             <table class="table mb-4 my-4">
+              {% set show_price_category = offer.stocks | map(attribute="priceCategory") | any %}
               <thead>
                 <tr>
                   <th scope="col"></th>
                   <th scope="col">Stock ID</th>
                   <th scope="col" class="col-2">Stock réservé</th>
                   <th scope="col" class="col-2">Stock restant</th>
+                  {% if show_price_category %}<th scope="col" class="col-2">Tarif</th>{% endif %}
                   <th scope="col" class="col-2">Prix</th>
                   {% if offer.isEvent %}
                     <th scope="col" class="col-2">Date / Heure</th>
@@ -251,7 +253,18 @@
                         {{ stock.remainingStock }}
                       {% endif %}
                     </td>
-                    <td>{{ stock.price | format_amount }}</td>
+                    {% if show_price_category %}
+                      <td>
+                        {% if stock.priceCategory %}{{ stock.priceCategory.label }}{% endif %}
+                      </td>
+                    {% endif %}
+                    <td>
+                      {% if stock.priceCategory %}
+                        {{ stock.priceCategory.price | format_amount }}{# same as PC Pro which shows priceCategory.price #}
+                      {% else %}
+                        {{ stock.price | format_amount }}
+                      {% endif %}
+                    </td>
                     {% if offer.isEvent %}
                       <td>{{ stock.beginningDatetime | format_date_time }}</td>
                       <td>{{ stock.bookingLimitDatetime | format_date_time }}</td>
