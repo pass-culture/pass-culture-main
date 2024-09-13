@@ -1,4 +1,3 @@
-import classNames from 'classnames'
 import { useFormikContext } from 'formik'
 import React from 'react'
 
@@ -62,20 +61,14 @@ export const FormStock = ({
         minDate={new Date()}
         name="startDatetime"
         onChange={handleStartDatetimeChange}
-        className={classNames(
-          styles['input-date'],
-          styles['custom-field-layout']
-        )}
+        className={styles['input-date']}
       />
       <DatePicker
         disabled={mode === Mode.READ_ONLY}
         label={END_DATE_LABEL}
         minDate={minEndDatetime}
         name="endDatetime"
-        className={classNames(
-          styles['input-date'],
-          styles['custom-field-layout']
-        )}
+        className={styles['input-date']}
       />
       <TimePicker
         disabled={mode === Mode.READ_ONLY}
@@ -90,7 +83,6 @@ export const FormStock = ({
         type="number"
         hasLabelLineBreak={false}
         rightIcon={strokeCollaborator}
-        className={styles['custom-field-layout']}
         classNameInput={styles['input-custom-width']}
       />
       <TextInput
@@ -100,7 +92,6 @@ export const FormStock = ({
         step={0.01} // allow user to enter a price with cents
         type="number"
         rightIcon={strokeEuroIcon}
-        className={styles['custom-field-layout']}
         classNameInput={styles['input-custom-width']}
       />
     </FormLayout.Row>
