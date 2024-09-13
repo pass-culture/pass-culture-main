@@ -164,7 +164,9 @@ describe('route Offers when user is admin', () => {
 
     await userEvent.click(screen.getByTestId('remove-offerer-filter'))
 
-    expect(api.getOffererAddresses).toHaveBeenCalled()
+    await waitFor(() => {
+      expect(api.getOffererAddresses).toHaveBeenCalled()
+    })
 
     expect(api.listOffers).toHaveBeenLastCalledWith(
       undefined,
