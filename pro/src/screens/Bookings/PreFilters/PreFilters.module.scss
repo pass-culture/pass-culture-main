@@ -11,29 +11,6 @@
   width: rem.torem(397px);
 }
 
-.bookings-page {
-  .vertical-bar {
-    background-color: var(--color-grey-medium);
-    height: rem.torem(40px);
-    width: rem.torem(1px);
-  }
-
-  .search-separator {
-    align-items: center;
-    display: flex;
-
-    .separator {
-      background-color: var(--color-grey-medium);
-      flex: 5;
-      height: rem.torem(1px);
-    }
-
-    button {
-      flex: 3;
-    }
-  }
-}
-
 .pre-filters-form {
   &:not(.has-result) {
     margin-bottom: rem.torem(32px);
@@ -57,6 +34,40 @@
 
   &-filters {
     margin-bottom: rem.torem(36px);
+  }
+}
+
+.button-group {
+  margin-bottom: rem.torem(32px);
+  position: relative;
+
+  &-buttons {
+    display: flex;
+    justify-content: center;
+    position: relative;
+    flex-wrap: wrap;
+    gap: rem.torem(8px);
+  }
+
+  &-separator {
+    border-bottom: rem.torem(1px) solid var(--color-grey-medium);
+    display: block;
+    position: absolute;
+    top: initial;
+    bottom: rem.torem(-24px);
+    width: 100%;
+  }
+
+  @media (min-width: size.$mobile) {
+    &-buttons {
+      flex-wrap: nowrap;
+      gap: initial;
+    }
+
+    &-separator {
+      top: 50%;
+      bottom: initial;
+    }
   }
 }
 

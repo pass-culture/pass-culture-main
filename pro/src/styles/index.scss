@@ -4,8 +4,3 @@
 @import "global/index";
 @import "components/index";
 @import "design-system/build/css/variables.css";
-
-// Components scoped imports.
-@import "src/pages/Bookings/BookingsRecap";
-@import "src/screens/Bookings/PreFilters/PreFilters.module";
-@import "src/screens/Bookings/BookingsRecapTable/Filters/Filters.module";

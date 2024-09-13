@@ -19,6 +19,8 @@ import {
   COLLECTIVE_BOOKING_STATUS_DISPLAY_INFORMATIONS,
 } from '../utils/bookingStatusConverter'
 
+import styles from './Filters.module.scss'
+
 const getAvailableBookingStatuses = (audience: Audience) => {
   const statuses =
     audience === Audience.INDIVIDUAL
@@ -114,31 +116,36 @@ export const FilterByBookingStatus = <
   return (
     <div ref={containerRef}>
       <button
-        className="bs-filter-button"
+        className={styles['bs-filter-button']}
         onClick={toggleTooltip}
         onKeyDown={handleKeyDown}
         type="button"
         aria-expanded={isToolTipVisible}
         aria-controls="booking-filter-tooltip"
       >
-        <span className="table-head-label status-filter">Statut</span>
-        <span className="status-container">
+        <span
+          className={cn(styles['table-head-label'], styles['status-filter'])}
+        >
+          Statut
+        </span>
+        <span className={styles['status-container']}>
           <SvgIcon
             alt="Filtrer par statut"
             src={fullSortIcon}
             className={cn(
-              'status-icon',
-              (bookingStatuses.length > 0 || isToolTipVisible) && 'active'
+              styles['status-icon'],
+              (bookingStatuses.length > 0 || isToolTipVisible) &&
+                styles['active']
             )}
           />
           {bookingStatuses.length > 0 && <span className="status-badge-icon" />}
         </span>
       </button>
-      <div className="bs-filter" id="booking-filter-tooltip">
+      <div className={styles['bs-filter']} id="booking-filter-tooltip">
         {isToolTipVisible && (
-          <div className="bs-filter-tooltip">
+          <div className={styles['bs-filter-tooltip']}>
             <fieldset>
-              <legend className="bs-filter-label">
+              <legend className={styles['bs-filter-label']}>
                 Afficher les réservations
               </legend>
 
