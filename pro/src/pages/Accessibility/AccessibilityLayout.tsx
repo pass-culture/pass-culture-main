@@ -2,7 +2,7 @@ import { AppLayout } from 'app/AppLayout'
 import { useCurrentUser } from 'hooks/useCurrentUser'
 import fullBackIcon from 'icons/full-back.svg'
 import logoPassCultureProFullIcon from 'icons/logo-pass-culture-pro-full.svg'
-import logoStyles from 'styles/components/layout/_Logo.module.scss'
+import logoStyles from 'styles/components/_Logo.module.scss'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 

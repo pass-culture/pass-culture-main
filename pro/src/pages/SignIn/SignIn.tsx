@@ -13,7 +13,7 @@ import { useRedirectLoggedUser } from 'hooks/useRedirectLoggedUser'
 import logoPassCultureProFullIcon from 'icons/logo-pass-culture-pro-full.svg'
 import { CookiesFooter } from 'pages/CookiesFooter/CookiesFooter'
 import { updateUser } from 'store/user/reducer'
-import logoStyles from 'styles/components/layout/_Logo.module.scss'
+import logoStyles from 'styles/components/_Logo.module.scss'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { getReCaptchaToken } from 'utils/recaptcha'
 
