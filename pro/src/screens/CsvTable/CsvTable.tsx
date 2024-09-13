@@ -67,7 +67,7 @@ export const CsvTableScreen = ({ getCsvData }: CsvTableProps): JSX.Element => {
           </tbody>
         </table>
       </div>
-      <hr />
+      <hr className={styles['separator']} />
     </main>
   ) : (
     <main className={styles['no-data-container']}>

@@ -52,6 +52,14 @@
   }
 }
 
+.separator {
+  @include dotted.dotted(var(--color-primary));
+
+  border: none;
+  height: rem.torem(2px);
+  margin: rem.torem(24px) 0;
+}
+
 .spinner-container {
   align-items: center;
   background-color: var(--color-white);

@@ -186,7 +186,7 @@ export const RequestFormDialog = ({
       {isDefaultForm &&
         (userRole === AdageFrontRoles.REDACTOR || isPreview) && (
           <>
-            <hr />
+            <hr className={styles['separator']} />
             <MandatoryInfo className={styles['form-mandatory']} />
             {isPreview && (
               <Callout

@@ -1,70 +1,17 @@
-@use "styles/mixins/_dotted.scss" as dotted;
+/* stylelint-disable selector-class-pattern */
+
 @use "styles/mixins/_fonts.scss" as fonts;
-@use "styles/mixins/_rem.scss" as rem;
-@use "styles/variables/_size.scss" as size;
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  font-synthesis: none;
-}
-
-html {
+body {
   color: var(--color-black);
-  height: 100%;
+  background-color: var(--color-white);
 }
 
 body,
 button,
 input,
 select,
+p,
 textarea {
-  font-family: Montserrat-Regular, "Helvetica Neue", arial, sans-serif;
-}
-
-body {
   @include fonts.body;
-
-  background-color: var(--color-white);
-  height: 100%;
-}
-
-table {
-  border-collapse: collapse;
-  border-spacing: 0;
-}
-
-hr {
-  @include dotted.dotted(var(--color-primary));
-
-  border: none;
-  height: rem.torem(2px);
-  margin: rem.torem(24px) 0;
-}
-
-a {
-  color: var(--color-black);
-  text-decoration: none;
-}
-
-p {
-  @include fonts.body;
-}
-
-address {
-  font-style: normal;
-}
-
-ul,
-ol {
-  list-style: none;
-}
-
-pre {
-  background-color: var(--color-grey-medium);
-}
-
-fieldset {
-  border: none;
 }
