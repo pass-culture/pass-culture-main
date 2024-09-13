@@ -10,6 +10,7 @@ export type DetailsFormValues = {
   author?: string
   performer?: string
   ean?: string
+  eanSearch?: string
   speaker?: string
   stageDirector?: string
   visa?: string

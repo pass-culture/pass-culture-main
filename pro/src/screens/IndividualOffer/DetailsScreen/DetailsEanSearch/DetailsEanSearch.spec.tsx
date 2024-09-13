@@ -34,10 +34,17 @@ type RequiredProps = 'isOfferProductBased'
 type DetailsEanSearchTestProps = Pick<DetailsEanSearchProps, RequiredProps>
 
 const EanSearchWrappedWithFormik = ({
-  isOfferProductBased,
-}: DetailsEanSearchTestProps): JSX.Element => {
+  props: { isOfferProductBased },
+  subcategoryId = DEFAULT_DETAILS_FORM_VALUES.subcategoryId,
+}: {
+  props: DetailsEanSearchTestProps
+  subcategoryId?: string
+}): JSX.Element => {
   const formik = useFormik({
-    initialValues: DEFAULT_DETAILS_FORM_VALUES,
+    initialValues: {
+      ...DEFAULT_DETAILS_FORM_VALUES,
+      subcategoryId,
+    },
     onSubmit: vi.fn(),
   })
 
@@ -53,10 +60,16 @@ const EanSearchWrappedWithFormik = ({
   )
 }
 
-const renderDetailsEanSearch = (props: DetailsEanSearchTestProps) => {
+const renderDetailsEanSearch = ({
+  props,
+  subcategoryId = DEFAULT_DETAILS_FORM_VALUES.subcategoryId,
+}: {
+  props: DetailsEanSearchTestProps
+  subcategoryId?: string
+}) => {
   return renderWithProviders(
     <IndividualOfferContext.Provider value={contextValue}>
-      <EanSearchWrappedWithFormik {...props} />
+      <EanSearchWrappedWithFormik props={props} subcategoryId={subcategoryId} />
     </IndividualOfferContext.Provider>,
     {
       storeOverrides: {
@@ -78,109 +91,142 @@ const inputLabel = /Scanner ou rechercher un produit par EAN/
 const successMessage = /Les informations suivantes ont été synchronisées/
 const infoMessage = /Les informations de cette page ne sont pas modifiables/
 const errorMessage = /Une erreur est survenue lors de la recherche/
+const subCatErrorMessage = /doivent être liées à un produit/
 const clearButtonLabel = /Effacer/
 
 describe('DetailsEanSearch', () => {
-  describe('when an EAN search is performed succesfully', () => {
-    beforeEach(() => {
-      vi.spyOn(api, 'getProductByEan').mockResolvedValue({
-        id: 0,
-        name: 'Music has the right to children',
-        description: 'An album by Boards of Canada',
-        subcategoryId: 'SUPPORT_PHYSIQUE_MUSIQUE_VINYLE',
-        gtlId: '08000000',
-        author: 'Boards of Canada',
-        performer: 'Boards of Canada',
-        images: {},
+  describe('before form submission - draft offer has not been created yet', () => {
+    describe('when no EAN search has been performed', () => {
+      it('should display a permanent error message if the subcategory requires an EAN', async () => {
+        renderDetailsEanSearch({
+          props: { isOfferProductBased: false },
+          subcategoryId: 'SUPPORT_PHYSIQUE_MUSIQUE_VINYLE',
+        })
+
+        expect(screen.getByText(subCatErrorMessage)).toBeInTheDocument()
+
+        const eanInput = screen.getByRole('textbox', { name: inputLabel })
+        await userEvent.type(eanInput, '9781234567897')
+
+        expect(screen.getByText(subCatErrorMessage)).toBeInTheDocument()
       })
 
-      renderDetailsEanSearch({ isOfferProductBased: false })
+      it('should let the submit button enabled', async () => {
+        renderDetailsEanSearch({ props: { isOfferProductBased: false } })
+
+        const eanInput = screen.getByRole('textbox', { name: inputLabel })
+        await userEvent.type(eanInput, '9781234567897')
+
+        const button = screen.getByRole('button', { name: buttonLabel })
+        expect(button).not.toBeDisabled()
+      })
     })
 
-    it('should display a success message', async () => {
-      const button = screen.getByRole('button', { name: buttonLabel })
-      const eanInput = screen.getByRole('textbox', { name: inputLabel })
+    describe('when an EAN search is performed succesfully', () => {
+      beforeEach(() => {
+        vi.spyOn(api, 'getProductByEan').mockResolvedValue({
+          id: 0,
+          name: 'Music has the right to children',
+          description: 'An album by Boards of Canada',
+          subcategoryId: 'SUPPORT_PHYSIQUE_MUSIQUE_VINYLE',
+          gtlId: '08000000',
+          author: 'Boards of Canada',
+          performer: 'Boards of Canada',
+          images: {},
+        })
 
-      expect(screen.queryByText(successMessage)).not.toBeInTheDocument()
+        renderDetailsEanSearch({ props: { isOfferProductBased: false } })
+      })
 
-      await userEvent.type(eanInput, '9781234567897')
-      await userEvent.click(button)
+      it('should display a success message', async () => {
+        const button = screen.getByRole('button', { name: buttonLabel })
+        const eanInput = screen.getByRole('textbox', { name: inputLabel })
 
-      expect(screen.queryByText(successMessage)).toBeInTheDocument()
+        expect(screen.queryByText(successMessage)).not.toBeInTheDocument()
+
+        await userEvent.type(eanInput, '9781234567897')
+        await userEvent.click(button)
+
+        expect(screen.queryByText(successMessage)).toBeInTheDocument()
+      })
+
+      it('should be disabled until the input is cleared', async () => {
+        const button = screen.getByRole('button', { name: buttonLabel })
+        const eanInput = screen.getByRole('textbox', { name: inputLabel })
+
+        expect(eanInput).not.toBeDisabled()
+        await userEvent.type(eanInput, '9781234567897')
+
+        expect(button).not.toBeDisabled()
+        await userEvent.click(button)
+
+        expect(eanInput).toBeDisabled()
+        expect(button).toBeDisabled()
+
+        // A clear button appears, when clicked, it should empty
+        // the input. The search button remains disabled, as
+        // the input is empty.
+        const clearButton = screen.getByRole('button', {
+          name: clearButtonLabel,
+        })
+        expect(clearButton).toBeInTheDocument()
+        await userEvent.click(clearButton)
+
+        const newEanInput = screen.getByRole('textbox', { name: inputLabel })
+        expect(newEanInput).not.toBeDisabled()
+        expect(newEanInput).toHaveValue('')
+        expect(button).toBeDisabled()
+      })
     })
 
-    it('should be disabled until the input is cleared', async () => {
-      const button = screen.getByRole('button', { name: buttonLabel })
-      const eanInput = screen.getByRole('textbox', { name: inputLabel })
+    describe('when an EAN search ends with an API error (only)', () => {
+      beforeEach(() => {
+        vi.spyOn(api, 'getProductByEan').mockRejectedValue(new Error('error'))
+        renderDetailsEanSearch({ props: { isOfferProductBased: false } })
+      })
 
-      expect(eanInput).not.toBeDisabled()
-      await userEvent.type(eanInput, '9781234567897')
+      it('should display an error message', async () => {
+        const button = screen.getByRole('button', { name: buttonLabel })
+        const eanInput = screen.getByRole('textbox', { name: inputLabel })
 
-      expect(button).not.toBeDisabled()
-      await userEvent.click(button)
+        expect(screen.queryByText(errorMessage)).not.toBeInTheDocument()
 
-      expect(eanInput).toBeDisabled()
-      expect(button).toBeDisabled()
+        await userEvent.type(eanInput, '9781234567897')
+        await userEvent.click(button)
 
-      // A clear button appears, when clicked, it should empty
-      // the input. The search button remains disabled, as
-      // the input is empty.
-      const clearButton = screen.getByRole('button', { name: clearButtonLabel })
-      expect(clearButton).toBeInTheDocument()
-      await userEvent.click(clearButton)
+        expect(screen.queryByText(errorMessage)).toBeInTheDocument()
+      })
 
-      const newEanInput = screen.getByRole('textbox', { name: inputLabel })
-      expect(newEanInput).not.toBeDisabled()
-      expect(newEanInput).toHaveValue('')
-      expect(button).toBeDisabled()
+      it('should disable the submit button', async () => {
+        const button = screen.getByRole('button', { name: buttonLabel })
+        const eanInput = screen.getByRole('textbox', { name: inputLabel })
+
+        await userEvent.type(eanInput, '9781234567897')
+
+        expect(button).not.toBeDisabled()
+        await userEvent.click(button)
+
+        expect(button).toBeDisabled()
+      })
     })
   })
 
-  describe('when an EAN search *was* performed succesfully (after POST)', () => {
-    beforeEach(() => {
-      renderDetailsEanSearch({ isOfferProductBased: true })
-    })
-
-    it('should not display the clear button anymore', () => {
-      const clearButton = screen.queryByRole('button', {
-        name: clearButtonLabel,
+  describe('after POST request (the form has been submitted)', () => {
+    describe('when an EAS search was performed succesfully', () => {
+      beforeEach(() => {
+        renderDetailsEanSearch({ props: { isOfferProductBased: true } })
       })
-      expect(clearButton).not.toBeInTheDocument()
-    })
 
-    it('should display an info message', () => {
-      expect(screen.queryByText(infoMessage)).toBeInTheDocument()
-    })
-  })
+      it('should not display the clear button anymore', () => {
+        const clearButton = screen.queryByRole('button', {
+          name: clearButtonLabel,
+        })
+        expect(clearButton).not.toBeInTheDocument()
+      })
 
-  describe('when an EAN search ends with an error', () => {
-    beforeEach(() => {
-      vi.spyOn(api, 'getProductByEan').mockRejectedValue(new Error('error'))
-      renderDetailsEanSearch({ isOfferProductBased: false })
-    })
-
-    it('should display an error message', async () => {
-      const button = screen.getByRole('button', { name: buttonLabel })
-      const eanInput = screen.getByRole('textbox', { name: inputLabel })
-
-      expect(screen.queryByText(errorMessage)).not.toBeInTheDocument()
-
-      await userEvent.type(eanInput, '9781234567897')
-      await userEvent.click(button)
-
-      expect(screen.queryByText(errorMessage)).toBeInTheDocument()
-    })
-
-    it('should disable the submit button', async () => {
-      const button = screen.getByRole('button', { name: buttonLabel })
-      const eanInput = screen.getByRole('textbox', { name: inputLabel })
-
-      await userEvent.type(eanInput, '9781234567897')
-
-      expect(button).not.toBeDisabled()
-      await userEvent.click(button)
-
-      expect(button).toBeDisabled()
+      it('should display an info message', () => {
+        expect(screen.queryByText(infoMessage)).toBeInTheDocument()
+      })
     })
   })
 })

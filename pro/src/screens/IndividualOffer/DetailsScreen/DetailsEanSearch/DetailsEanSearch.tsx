@@ -15,7 +15,7 @@ import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 import { Tag, TagVariant } from 'ui-kit/Tag/Tag'
 
 import { DetailsFormValues } from '../types'
-import { hasMusicType } from '../utils'
+import { hasMusicType, isSubCategoryCDOrVinyl } from '../utils'
 
 import styles from './DetailsEanSearch.module.scss'
 
@@ -31,13 +31,21 @@ export const DetailsEanSearch = ({
   const selectedOffererId = useSelector(selectCurrentOffererId)
   const inputRef = useRef<HTMLInputElement>(null)
   const [isFetchingProduct, setIsFetchingProduct] = useState(false)
+  const [subcatError, setSubcatError] = useState<string | null>(null)
   const [apiError, setApiError] = useState<string | null>(null)
   const [wasCleared, setWasCleared] = useState(false)
 
   const { subCategories } = useIndividualOfferContext()
-  const { values, errors, setValues, resetForm } =
-    useFormikContext<DetailsFormValues>()
-  const { ean, productId } = values
+  const {
+    values,
+    errors: { eanSearch: formikError },
+    setValues,
+    resetForm,
+  } = useFormikContext<DetailsFormValues>()
+  const { eanSearch: ean, productId, subcategoryId } = values
+
+  const isNotAnOfferYetButProductBased = !isOfferProductBased && !!productId
+  const isProductBased = isOfferProductBased || isNotAnOfferYetButProductBased
 
   useEffect(() => {
     setApiError(null)
@@ -49,6 +57,16 @@ export const DetailsEanSearch = ({
       setWasCleared(false)
     }
   }, [wasCleared, productId])
+
+  useEffect(() => {
+    if (!isProductBased && isSubCategoryCDOrVinyl(subcategoryId)) {
+      setSubcatError(
+        'Les offres de type CD ou Vinyle doivent être liées à un produit.'
+      )
+    } else {
+      setSubcatError(null)
+    }
+  }, [subcategoryId, isProductBased])
 
   const onEanSearch = async () => {
     if (ean) {
@@ -128,13 +146,9 @@ export const DetailsEanSearch = ({
     setWasCleared(true)
   }
 
-  const isNotAnOfferYetButProductBased = !isOfferProductBased && !!productId
-  const isProductBased = isOfferProductBased || isNotAnOfferYetButProductBased
-  const hasInputErrored = !!errors.ean
-
   const shouldInputBeDisabled = isProductBased || isFetchingProduct
   const shouldButtonBeDisabled =
-    isProductBased || !ean || hasInputErrored || !!apiError || isFetchingProduct
+    isProductBased || !ean || !!formikError || !!apiError || isFetchingProduct
   const displayClearButton = isNotAnOfferYetButProductBased
 
   const calloutVariant = isNotAnOfferYetButProductBased
@@ -156,6 +170,10 @@ export const DetailsEanSearch = ({
     </>
   )
 
+  const nonFormikError = subcatError || apiError
+  const errorArray = [formikError, apiError, subcatError].filter(Boolean)
+  const externalError = nonFormikError ? errorArray.join('\n') : undefined
+
   return (
     <div className={styles['details-ean-search']}>
       <div className={styles['details-ean-search-form']}>
@@ -164,14 +182,14 @@ export const DetailsEanSearch = ({
           classNameLabel={styles['details-ean-search-label']}
           label={label}
           description="Format : EAN à 13 chiffres"
-          name="ean"
+          name="eanSearch"
           type="text"
           disabled={shouldInputBeDisabled}
           maxLength={13}
           isOptional
           countCharacters
-          {...(apiError && {
-            externalError: apiError,
+          {...(externalError && {
+            externalError,
           })}
           {...(displayClearButton
             ? {
