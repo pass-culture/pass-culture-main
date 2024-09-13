@@ -2381,7 +2381,13 @@ class BatchEditVenuesTest(PostEndpointHelper):
     ):
         new_criterion = criteria_factories.CriterionFactory()
         venues = [
-            offerers_factories.VenueFactory(criteria=criteria[:2], isPermanent=set_permanent),
+            offerers_factories.VenueFactory(
+                # Ensure that inconsistency in database does not prevent from updating tags and/or permanent status
+                managingOfferer__siren="111111111",
+                siret="22222222233333",
+                criteria=criteria[:2],
+                isPermanent=set_permanent,
+            ),
             offerers_factories.VenueFactory(criteria=criteria[1:], isPermanent=not set_permanent),
         ]
 
