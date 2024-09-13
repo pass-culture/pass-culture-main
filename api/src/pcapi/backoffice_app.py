@@ -62,14 +62,19 @@ with app.app_context():
 
 if __name__ == "__main__":
     port = settings.FLASK_BACKOFFICE_PORT
-    if settings.IS_DEV and settings.DEBUG_ACTIVATED:
+    is_debugger_enabled = settings.IS_DEV and settings.DEBUG_ACTIVATED
+    if is_debugger_enabled:
         import debugpy
 
         if not debugpy.is_client_connected():
-            debugpy.listen(("0.0.0.0", 10003))
-            print("⏳ Code debugger can now be attached, press F5 in VS Code for example ⏳", flush=True)
+            debug_port = 10003
+            debugpy.listen(("0.0.0.0", debug_port))
+            print(
+                f"⏳ Code debugger can now be attached on port {debug_port}, press F5 in VS Code for example ⏳",
+                flush=True,
+            )
             debugpy.wait_for_client()
             print("🎉 Code debugger attached, enjoy debugging 🎉", flush=True)
 
     set_tag("pcapi.app_type", "app")
-    app.run(host="0.0.0.0", port=port, debug=True, use_reloader=True)
+    app.run(host="0.0.0.0", port=port, debug=True, use_reloader=not is_debugger_enabled)
