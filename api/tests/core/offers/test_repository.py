@@ -1436,6 +1436,7 @@ class GetFilteredCollectiveOffersTest:
         with assert_num_queries(1):
             assert offers.one() == collective_offer_draft
 
+    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
     def test_get_collective_offers_expired(self):
         user_offerer = offerers_factories.UserOffererFactory()
 
