@@ -369,6 +369,10 @@ class _FIELDS:
         description="Url on which tickets cancellation requests are sent when a beneficiary cancels its tickets for an event linked to this venue. If not set, our system will use the cancel url defined at provider level.",
         example="https://my-ticketing-solution.com/pass-culture-cancellation-endpoint",
     )
+    ALLOWED_ON_ADAGE = Field(
+        description="Can the offerer create collective offers?",
+        example=True,
+    )
 
 
 fields = _FIELDS()

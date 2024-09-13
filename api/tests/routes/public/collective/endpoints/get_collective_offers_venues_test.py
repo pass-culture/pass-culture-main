@@ -105,6 +105,7 @@ class GetOfferersVenuesTest:
                     "id": offerer.id,
                     "name": offerer.name,
                     "siren": offerer.siren,
+                    "allowedOnAdage": offerer.allowedOnAdage,
                 },
                 "venues": [
                     {

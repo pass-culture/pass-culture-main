@@ -5300,6 +5300,12 @@
             },
             "OffererResponse": {
                 "properties": {
+                    "allowedOnAdage": {
+                        "description": "Can the offerer create collective offers?",
+                        "example": true,
+                        "title": "Allowedonadage",
+                        "type": "boolean"
+                    },
                     "createdDatetime": {
                         "format": "date-time",
                         "title": "Createddatetime",
@@ -5324,7 +5330,8 @@
                 "required": [
                     "id",
                     "createdDatetime",
-                    "name"
+                    "name",
+                    "allowedOnAdage"
                 ],
                 "title": "OffererResponse",
                 "type": "object"
