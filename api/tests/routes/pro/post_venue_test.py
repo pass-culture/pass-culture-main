@@ -387,6 +387,18 @@ class Returns400Test:
         assert response.status_code == 400
         assert response.json["siret"] == ["SIRET is no longer active"]
 
+    def test_siret_already_exists(self, client):
+        user = ProFactory()
+        venue_data = create_valid_venue_data(user)
+        offerers_factories.VenueFactory(siret=venue_data["siret"])
+
+        client = client.with_session_auth(email=user.email)
+
+        response = client.post("/venues", json=venue_data)
+        assert response.status_code == 400
+
+        assert response.json["siret"] == "Un lieu avec ce SIRET existe déjà"
+
 
 class Returns403Test:
     def test_user_is_not_managing_offerer_create_venue(self, client):

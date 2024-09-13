@@ -439,7 +439,8 @@ def create_venue(venue_data: venues_serialize.PostVenueBodyModel, author: users_
 
     history_api.add_action(history_models.ActionType.VENUE_CREATED, author, venue=venue)
 
-    repository.save(venue, ava)
+    db.session.add_all([venue, ava])
+    db.session.commit()
 
     if venue.siret:
         link_venue_to_pricing_point(venue, pricing_point_id=venue.id)

@@ -1,6 +1,7 @@
 import typing
 
 from pcapi.core.offerers import constants as offerers_constants
+from pcapi.core.offerers import repository as offerers_repository
 from pcapi.models.api_errors import ApiErrors
 
 from . import models
@@ -20,6 +21,11 @@ def check_accessibility_compliance(venue: "venues_serialize.PostVenueBodyModel")
         venue.visualDisabilityCompliant,
     ]:
         raise ApiErrors(errors={"global": ["L'accessibilité du lieu doit être définie."]})
+
+
+def check_siret_does_not_exists(siret: str) -> None:
+    if offerers_repository.find_venue_by_siret(siret):
+        raise ApiErrors(errors={"siret": "Un lieu avec ce SIRET existe déjà"})
 
 
 def check_venue_edition(modifications: dict[str, typing.Any], venue: models.Venue) -> None:
