@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 
 import {
@@ -17,6 +17,7 @@ import {
   bookingIdOmnisearchFilter,
 } from './Filters/constants'
 import { FilterByOmniSearch } from './Filters/FilterByOmniSearch'
+import styles from './Filters/Filters.module.scss'
 import { Header } from './Header/Header'
 import { BookingsFilters } from './types'
 import { filterBookingsRecap } from './utils/filterBookingsRecap'
@@ -137,7 +138,7 @@ export const BookingsRecapTable = <
 
   return (
     <div>
-      <div className="filters-wrapper">
+      <div className={styles['filters-wrapper']}>
         <FilterByOmniSearch
           isDisabled={isLoading}
           keywords={filters.keywords}
@@ -146,7 +147,6 @@ export const BookingsRecapTable = <
           audience={audience}
         />
       </div>
-
       {filteredBookings.length !== 0 && (
         <Header
           bookingsRecapFilteredLength={filteredBookings.length}
@@ -155,7 +155,6 @@ export const BookingsRecapTable = <
           resetBookings={resetBookings}
         />
       )}
-
       {audience === Audience.INDIVIDUAL &&
         areIndividualBookings(filteredBookings) && (
           <IndividualBookingsTable
@@ -165,7 +164,6 @@ export const BookingsRecapTable = <
             resetFilters={resetAllFilters}
           />
         )}
-
       {audience === Audience.COLLECTIVE &&
         areCollectiveBookings(filteredBookings) && (
           <CollectiveBookingsTable

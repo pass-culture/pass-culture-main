@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import React, { ChangeEvent } from 'react'
+import { ChangeEvent } from 'react'
 
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { Events } from 'core/FirebaseEvents/constants'
