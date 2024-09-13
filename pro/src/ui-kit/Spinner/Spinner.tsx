@@ -1,8 +1,10 @@
 import cn from 'classnames'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import strokePass from 'icons/stroke-pass.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+
+import styles from './Spinner.module.scss'
 
 interface SpinnerProps {
   message?: string
@@ -30,10 +32,20 @@ export const Spinner = ({
   }, [])
 
   return (
-    <div className={cn('loading-spinner', className)} data-testid="spinner">
-      <SvgIcon src={strokePass} alt="" className="loading-spinner-icon" />
+    <div
+      className={cn(styles['loading-spinner'], className)}
+      data-testid="spinner"
+    >
+      <SvgIcon
+        src={strokePass}
+        alt=""
+        className={styles['loading-spinner-icon']}
+      />
 
-      <div className="content" data-dots={Array(nbDots).fill('.').join('')}>
+      <div
+        className={styles['content']}
+        data-dots={Array(nbDots).fill('.').join('')}
+      >
         {message}
       </div>
     </div>
