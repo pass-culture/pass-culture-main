@@ -1,5 +1,5 @@
 import logoPassCultureProFullIcon from 'icons/logo-pass-culture-pro-full.svg'
-import logoStyles from 'styles/components/layout/_Logo.module.scss'
+import logoStyles from 'styles/components/_Logo.module.scss'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
