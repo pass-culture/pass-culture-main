@@ -13,6 +13,7 @@ import {
 } from 'core/Offers/constants'
 import { isOfferSynchronized } from 'core/Offers/utils/synchronization'
 import { AccessibilityEnum } from 'core/shared/types'
+import { computeAddressDisplayName } from 'repository/venuesService'
 
 import { DEFAULT_USEFULL_INFORMATION_INTITIAL_VALUES } from './constants'
 import { UsefulInformationFormValues } from './types'
@@ -36,13 +37,14 @@ export const getFilteredVenueListBySubcategory = (
   )
 }
 
-interface DefaultInitialValuesFromOfferOptions {
-  selectedVenue: VenueListItemResponseModel | undefined
+interface SetDefaultInitialValuesFromOfferProps {
+  offer: GetIndividualOfferWithAddressResponseModel
+  selectedVenue?: VenueListItemResponseModel | undefined
 }
-export function setDefaultInitialValuesFromOffer(
-  offer: GetIndividualOfferWithAddressResponseModel,
-  options?: DefaultInitialValuesFromOfferOptions
-): UsefulInformationFormValues {
+export function setDefaultInitialValuesFromOffer({
+  offer,
+  selectedVenue = undefined,
+}: SetDefaultInitialValuesFromOfferProps): UsefulInformationFormValues {
   const baseAccessibility = {
     [AccessibilityEnum.VISUAL]: offer.visualDisabilityCompliant,
     [AccessibilityEnum.MENTAL]: offer.mentalDisabilityCompliant,
@@ -56,16 +58,16 @@ export function setDefaultInitialValuesFromOffer(
 
   let addressFields = {}
   if (offer.address) {
-    const { street, postalCode, city, latitude, longitude } = offer.address
-    const addressAutocomplete = `${street} ${postalCode} ${city}`
+    const { latitude, longitude } = offer.address
+    const addressAutocomplete = computeAddressDisplayName(offer.address, false)
     const coords = `${latitude}, ${longitude}`
 
     // If the venue's OA selected at step 1 is the same than the one we have saved in offer draft,
     //  then set this OA id in formik field (so it will be checked by default)
     //  Else, we can assume it's an "other" address
     const offerlocation =
-      options?.selectedVenue?.address &&
-      options.selectedVenue.address.id_oa === offer.address.id_oa
+      selectedVenue?.address &&
+      selectedVenue.address.id_oa === offer.address.id_oa
         ? offer.address.id_oa
         : OFFER_LOCATION.OTHER_ADDRESS
 

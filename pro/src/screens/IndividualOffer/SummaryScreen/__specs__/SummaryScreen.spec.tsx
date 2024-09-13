@@ -648,9 +648,10 @@ describe('Summary', () => {
         await screen.findByText('Localisation de l’offre')
       ).toBeInTheDocument()
 
+      // Should be present in recap section and in app preview section
       expect(
-        await screen.findByText('mon adresse - ma street 1 ma ville')
-      ).toBeInTheDocument()
+        await screen.findAllByText('mon adresse - ma street 1 ma ville')
+      ).toHaveLength(2)
     })
   })
 

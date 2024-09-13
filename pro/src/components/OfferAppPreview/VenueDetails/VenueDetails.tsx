@@ -2,6 +2,7 @@ import {
   AddressResponseIsEditableModel,
   GetOfferVenueResponseModel,
 } from 'apiClient/v1'
+import { computeAddressDisplayName } from 'repository/venuesService'
 
 import style from './VenueDetails.module.scss'
 
@@ -16,18 +17,19 @@ export const VenueDetails = ({
   address,
   withdrawalDetails,
 }: VenueDetailsProps): JSX.Element => {
-  const addressObj = address || venue
+  const { street, postalCode, city } = address || venue
 
   const label = address ? address.label : venue.publicName || venue.name
 
-  const venueAddressString = [
-    label,
-    addressObj.street,
-    addressObj.postalCode,
-    addressObj.city,
-  ]
-    .filter((str) => Boolean(str))
-    .join(' - ')
+  const venueAddressString = computeAddressDisplayName(
+    {
+      label,
+      street,
+      postalCode: postalCode || '',
+      city: city || '',
+    },
+    true
+  )
 
   return (
     <div className={style['venue-details']}>
