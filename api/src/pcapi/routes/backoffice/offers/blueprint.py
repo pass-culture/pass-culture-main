@@ -825,6 +825,7 @@ def get_offer_details(offer_id: int) -> utils.BackofficeResponse:
         sa.orm.joinedload(offers_models.Offer.criteria),
         sa.orm.joinedload(offers_models.Offer.flaggingValidationRules),
         sa.orm.joinedload(offers_models.Offer.mediations),
+        sa.orm.joinedload(offers_models.Offer.product).joinedload(offers_models.Product.productMediations),
         sa.orm.joinedload(offers_models.Offer.lastProvider).load_only(providers_models.Provider.name),
         sa.orm.joinedload(offers_models.Offer.offererAddress)
         .load_only(offerers_models.OffererAddress.label)

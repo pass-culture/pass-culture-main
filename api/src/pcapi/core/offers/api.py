@@ -121,7 +121,7 @@ def build_new_offer_from_product(
 ) -> models.Offer:
     return models.Offer(
         bookingEmail=venue.bookingEmail,
-        description=product.description,
+        description=product.description,  # type: ignore[call-arg]
         extraData=product.extraData,
         idAtProvider=id_at_provider,
         lastProviderId=provider_id,

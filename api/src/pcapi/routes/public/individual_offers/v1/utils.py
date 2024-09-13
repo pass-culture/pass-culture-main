@@ -51,7 +51,7 @@ def retrieve_offer_relations_query(query: sqla_orm.Query) -> sqla_orm.Query:
         .options(sqla_orm.joinedload(offers_models.Offer.mediations))
         .options(
             sqla_orm.joinedload(offers_models.Offer.product)
-            .load_only(offers_models.Product.id, offers_models.Product.thumbCount)
+            .load_only(offers_models.Product.id, offers_models.Product.thumbCount, offers_models.Product.description)
             .joinedload(offers_models.Product.productMediations)
         )
         .options(
