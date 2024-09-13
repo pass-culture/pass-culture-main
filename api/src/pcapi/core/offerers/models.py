@@ -323,7 +323,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
 
     thumb_path_component = "venues"
 
-    criteria: list["criteria_models.Criterion"] = sa.orm.relationship(
+    criteria: list["criteria_models.Criterion"] = sa_orm.relationship(
         "Criterion", backref=db.backref("venue_criteria", lazy="dynamic"), secondary="venue_criterion"
     )
 
@@ -402,7 +402,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
         "AccessibilityProvider", back_populates="venue", uselist=False
     )
 
-    adage_addresses: sa_orm.Mapped[typing.Sequence[educational_models.AdageVenueAddress]] = sa.orm.relationship(
+    adage_addresses: sa_orm.Mapped[typing.Sequence[educational_models.AdageVenueAddress]] = sa_orm.relationship(
         "AdageVenueAddress", back_populates="venue"
     )
 
@@ -968,7 +968,7 @@ class Offerer(
 
     sa.Index("ix_offerer_trgm_unaccent_city", sa.func.immutable_unaccent("city"), postgresql_using="gin")
 
-    UserOfferers: list["UserOfferer"] = sa.orm.relationship(
+    UserOfferers: list["UserOfferer"] = sa_orm.relationship(
         "UserOfferer", order_by="UserOfferer.id", back_populates="offerer"
     )
 
@@ -978,18 +978,18 @@ class Offerer(
 
     dateValidated = Column(DateTime, nullable=True, default=None)
 
-    tags: list["OffererTag"] = sa.orm.relationship("OffererTag", secondary="offerer_tag_mapping")
+    tags: list["OffererTag"] = sa_orm.relationship("OffererTag", secondary="offerer_tag_mapping")
 
-    offererProviders: list["OffererProvider"] = sa.orm.relationship("OffererProvider", back_populates="offerer")
+    offererProviders: list["OffererProvider"] = sa_orm.relationship("OffererProvider", back_populates="offerer")
     thumb_path_component = "offerers"
 
-    bankAccounts: list[finance_models.BankAccount] = sa.orm.relationship(
+    bankAccounts: list[finance_models.BankAccount] = sa_orm.relationship(
         finance_models.BankAccount,
         back_populates="offerer",
         passive_deletes=True,
     )
 
-    individualSubscription: Mapped["IndividualOffererSubscription | None"] = sa.orm.relationship(
+    individualSubscription: Mapped["IndividualOffererSubscription | None"] = sa_orm.relationship(
         "IndividualOffererSubscription", back_populates="offerer", uselist=False
     )
 
@@ -997,8 +997,8 @@ class Offerer(
 
     _street = Column("street", Text(), nullable=True)
 
-    hasNewNavUsers: sa_orm.Mapped["bool | None"] = sa.orm.query_expression()
-    hasOldNavUsers: sa_orm.Mapped["bool | None"] = sa.orm.query_expression()
+    hasNewNavUsers: sa_orm.Mapped["bool | None"] = sa_orm.query_expression()
+    hasOldNavUsers: sa_orm.Mapped["bool | None"] = sa_orm.query_expression()
 
     def __init__(self, street: str | None = None, **kwargs: typing.Any) -> None:
         if street:
@@ -1117,7 +1117,7 @@ class OffererTag(PcObject, Base, Model):
     label: str = Column(String(140))
     description: str = Column(Text)
 
-    categories: list["OffererTagCategory"] = sa.orm.relationship(
+    categories: list["OffererTagCategory"] = sa_orm.relationship(
         "OffererTagCategory", secondary="offerer_tag_category_mapping"
     )
 
@@ -1258,9 +1258,9 @@ class OffererAddress(PcObject, Base, Model):
     __tablename__ = "offerer_address"
     label: str | None = sa.Column(sa.Text(), nullable=True)
     addressId = sa.Column(sa.BigInteger, sa.ForeignKey("address.id"), index=True)
-    address: sa.orm.Mapped[geography_models.Address] = sa.orm.relationship("Address", foreign_keys=[addressId])
+    address: sa_orm.Mapped[geography_models.Address] = sa_orm.relationship("Address", foreign_keys=[addressId])
     offererId = sa.Column(sa.BigInteger, sa.ForeignKey("offerer.id", ondelete="CASCADE"), index=True)
-    offerer: sa.orm.Mapped["Offerer"] = sa.orm.relationship("Offerer", foreign_keys=[offererId])
+    offerer: sa_orm.Mapped["Offerer"] = sa_orm.relationship("Offerer", foreign_keys=[offererId])
 
     __table_args__ = (
         # FIXME (dramelet, 04-06-2024)
@@ -1272,7 +1272,7 @@ class OffererAddress(PcObject, Base, Model):
         ),
     )
 
-    _isEditable: sa.orm.Mapped["bool|None"] = sa.orm.query_expression()
+    _isEditable: sa_orm.Mapped["bool|None"] = sa_orm.query_expression()
 
     @hybrid_property
     def isEditable(self) -> bool:
@@ -1296,14 +1296,14 @@ class OffererConfidenceRule(PcObject, Base, Model):
     offererId = sa.Column(
         sa.BigInteger, sa.ForeignKey("offerer.id", ondelete="CASCADE"), index=True, unique=True, nullable=True
     )
-    offerer: sa.orm.Mapped["Offerer | None"] = sa.orm.relationship(
+    offerer: sa_orm.Mapped["Offerer | None"] = sa_orm.relationship(
         "Offerer", foreign_keys=[offererId], backref=sa_orm.backref("confidenceRule", uselist=False)
     )
 
     venueId = sa.Column(
         sa.BigInteger, sa.ForeignKey("venue.id", ondelete="CASCADE"), index=True, unique=True, nullable=True
     )
-    venue: sa.orm.Mapped["Venue | None"] = sa.orm.relationship(
+    venue: sa_orm.Mapped["Venue | None"] = sa_orm.relationship(
         "Venue", foreign_keys=[venueId], backref=sa_orm.backref("confidenceRule", uselist=False)
     )
 
