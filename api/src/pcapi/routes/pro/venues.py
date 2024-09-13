@@ -85,8 +85,8 @@ def get_venues(query: venues_serialize.VenueListQueryModel) -> venues_serialize.
 )
 def post_create_venue(body: venues_serialize.PostVenueBodyModel) -> venues_serialize.VenueResponseModel:
     check_user_has_access_to_offerer(current_user, body.managingOffererId)
-
     if body.siret:
+        validation.check_siret_does_not_exists(body.siret)
         siret_info = sirene.get_siret(body.siret)
         if not siret_info.active:
             raise ApiErrors(errors={"siret": ["SIRET is no longer active"]})
