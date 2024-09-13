@@ -244,7 +244,12 @@ def get_offers_details(offer_ids: list[int]) -> BaseQuery:
         .options(sa_orm.joinedload(models.Offer.reactions))
         .options(
             sa_orm.joinedload(models.Offer.product)
-            .load_only(models.Product.id, models.Product.last_30_days_booking, models.Product.thumbCount)
+            .load_only(
+                models.Product.id,
+                models.Product.description,
+                models.Product.last_30_days_booking,
+                models.Product.thumbCount,
+            )
             .joinedload(models.Product.productMediations)
         )
         .options(sa_orm.joinedload(models.Offer.product).joinedload(models.Product.reactions))
@@ -988,7 +993,7 @@ def get_offer_by_id(offer_id: int, load_options: OFFER_LOAD_OPTIONS = ()) -> mod
         if "mediations" in load_options:
             query = query.options(sa_orm.joinedload(models.Offer.mediations))
         if "product" in load_options:
-            query = query.options(sa_orm.joinedload(models.Offer.product))
+            query = query.options(sa_orm.joinedload(models.Offer.product).joinedload(models.Product.productMediations))
         if "price_category" in load_options:
             query = query.options(
                 sa_orm.joinedload(models.Offer.priceCategories).joinedload(models.PriceCategory.priceCategoryLabel)

@@ -26,7 +26,7 @@ class GetEventTest(PublicAPIVenueEndpointHelper):
 
     def setup_base_resource(self, venue=None) -> offers_models.Offer:
         venue = venue or self.setup_venue()
-        product = offers_factories.ProductFactory(thumbCount=1)
+        product = offers_factories.ProductFactory(thumbCount=1, description="Un livre de contrepèterie")
         return offers_factories.EventOfferFactory(
             subcategoryId=subcategories.SEANCE_CINE.id,
             venue=venue,

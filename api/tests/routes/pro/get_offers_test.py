@@ -30,11 +30,12 @@ class Returns200Test:
             publicName="My public name",
         )
         other_venue = offerers_factories.VenueFactory(managingOfferer=offerer, siret="54321987654321")
-        offer_on_requested_venue = offers_factories.ThingOfferFactory(
-            subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
+        product = offers_factories.ProductFactory(extraData={"ean": "123456789"}, description="my description")
+        offer_on_requested_venue = offers_factories.OfferFactory(
+            product=product,
             venue=requested_venue,
-            extraData={"ean": "123456789"},
             name="My Offer",
+            extraData={"ean": "123456789"},
         )
         offers_factories.ThingOfferFactory(venue=other_venue)
         stock = offers_factories.StockFactory(offer=offer_on_requested_venue)

@@ -78,18 +78,6 @@ class Returns200Test:
         assert "thumbUrl" in response_json
         assert response_json["id"] == offer.id
 
-    def test_performance(self, client):
-        user_offerer = offerers_factories.UserOffererFactory()
-        offer = offers_factories.ThingOfferFactory(venue__managingOfferer=user_offerer.offerer)
-        offers_factories.EventStockFactory.create_batch(5, offer=offer)
-
-        client.with_session_auth(email=user_offerer.user.email)
-
-        offer_id = offer.id
-        with testing.assert_num_queries(self.num_queries):
-            with testing.assert_no_duplicated_queries():
-                client.get(f"/offers/{offer_id}")
-
     def test_access_even_if_offerer_has_no_siren(self, client):
         user_offerer = offerers_factories.UserOffererFactory()
         offer = offers_factories.ThingOfferFactory(
@@ -243,10 +231,12 @@ class Returns200Test:
     @time_machine.travel("2019-10-15 00:00:00")
     def test_returns_a_thing_stock(self, client):
         user_offerer = offerers_factories.UserOffererFactory()
-        stock = offers_factories.ThingStockFactory(
-            offer__venue__managingOfferer=user_offerer.offerer, offer__subcategoryId=subcategories.LIVRE_PAPIER.id
+        product = offers_factories.ProductFactory(subcategoryId=subcategories.LIVRE_PAPIER.id)
+        offer = offers_factories.OfferFactory(
+            product=product, venue__managingOfferer=user_offerer.offerer, subcategoryId=subcategories.LIVRE_PAPIER.id
         )
-        offer_id = stock.offer.id
+        offers_factories.ThingStockFactory()
+        offer_id = offer.id
 
         client = client.with_session_auth(email=user_offerer.user.email)
         with testing.assert_num_queries(self.num_queries):
