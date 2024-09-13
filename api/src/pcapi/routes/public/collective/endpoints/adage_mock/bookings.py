@@ -53,7 +53,9 @@ def confirm_collective_booking(booking_id: int) -> None:
 
     Like this could happen within the Adage platform.
 
-    Warning: not available for production nor integration environments
+    **WARNING:** this endpoint is not available from the production
+    environment as it is a mock meant to ease the test of your
+    integrations.
     """
     _get_booking_or_raise_404(booking_id)  # check booking is linked to the provider
     try:
@@ -94,7 +96,9 @@ def adage_mock_cancel_collective_booking(booking_id: int) -> None:
 
     Like this could happen within the Adage platform.
 
-    Warning: not available for production nor integration environments
+    **WARNING:** this endpoint is not available from the production
+    environment as it is a mock meant to ease the test of your
+    integrations.
     """
     booking = _get_booking_or_raise_404(booking_id)
 
@@ -179,7 +183,9 @@ def reset_collective_booking(booking_id: int) -> None:
 
     Like this could happen within the Adage platform.
 
-    Warning: not available for production nor integration environments
+    **WARNING:** this endpoint is not available from the production
+    environment as it is a mock meant to ease the test of your
+    integrations.
     """
     booking = _get_booking_or_raise_404(booking_id)
 
@@ -234,7 +240,9 @@ def repay_collective_booking(booking_id: int) -> None:
 
     Like this could happen within the Adage platform.
 
-    Warning: not available for production nor integration environments
+    **WARNING:** this endpoint is not available from the production
+    environment as it is a mock meant to ease the test of your
+    integrations.
     """
     booking = _get_booking_or_raise_404(booking_id)
 
