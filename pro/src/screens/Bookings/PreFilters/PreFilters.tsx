@@ -205,9 +205,9 @@ export const PreFilters = ({
             </div>
           </FormLayout.Row>
         </div>
-        <div className="button-group">
-          <div className="button-group-buttons">
-            <span className="button-group-separator" />
+        <div className={styles['button-group']}>
+          <div className={styles['button-group-buttons']}>
+            <span className={styles['button-group-separator']} />
 
             <MultiDownloadButtonsModal
               downloadFunction={downloadBookingsCSV}
@@ -233,7 +233,6 @@ export const PreFilters = ({
           </div>
         </div>
       </form>
-
       {isRefreshRequired && (
         <p
           className={styles['pf-refresh-message']}
