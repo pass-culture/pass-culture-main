@@ -8,7 +8,6 @@ import {
   CategoryResponseModel,
   SubcategoryResponseModel,
   VenueListItemResponseModel,
-  SubcategoryIdEnum,
 } from 'apiClient/v1'
 import { Callout } from 'components/Callout/Callout'
 import { CalloutVariant } from 'components/Callout/types'
@@ -30,7 +29,7 @@ import { DetailsSubForm } from './DetailsSubForm/DetailsSubForm'
 import { Subcategories } from './Subcategories/Subcategories'
 import { SuggestedSubcategories } from './SuggestedSubcategories/SuggestedSubcategories'
 import { DetailsFormValues } from './types'
-import { buildVenueOptions } from './utils'
+import { buildVenueOptions, isSubCategoryCDOrVinyl } from './utils'
 
 const DEBOUNCE_TIME_BEFORE_REQUEST = 400
 
@@ -129,9 +128,6 @@ export const DetailsForm = ({
 
   const isSubCategorySelected =
     subcategoryId !== DEFAULT_DETAILS_FORM_VALUES.subcategoryId
-  const isSubCategoryCDOrVinyl =
-    subcategoryId === SubcategoryIdEnum.SUPPORT_PHYSIQUE_MUSIQUE_CD ||
-    subcategoryId === SubcategoryIdEnum.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE
 
   // Show the field if more than 1 venue (whatever the FF),
   // otherwise if there is only 1 venue, we want to show only if both offerAddress and splitOfferEnabled are enabled
@@ -276,7 +272,7 @@ export const DetailsForm = ({
           ) : (
             <DetailsSubForm
               isProductBased={isProductBased}
-              isOfferCDOrVinyl={isSubCategoryCDOrVinyl}
+              isOfferCDOrVinyl={isSubCategoryCDOrVinyl(subcategoryId)}
               readOnlyFields={readOnlyFields}
               onImageUpload={onImageUpload}
               onImageDelete={onImageDelete}

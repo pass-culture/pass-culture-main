@@ -6,6 +6,7 @@ import {
   OfferStatus,
   SubcategoryResponseModel,
   VenueListItemResponseModel,
+  SubcategoryIdEnum,
 } from 'apiClient/v1'
 import { showOptionsTree } from 'core/Offers/categoriesSubTypes'
 import { isOfferSynchronized } from 'core/Offers/utils/synchronization'
@@ -14,6 +15,13 @@ import { computeVenueDisplayName } from 'repository/venuesService'
 
 import { DEFAULT_DETAILS_FORM_VALUES } from './constants'
 import { DetailsFormValues } from './types'
+
+export const isSubCategoryCDOrVinyl = (subcategoryId: string): boolean => {
+  return (
+    subcategoryId === SubcategoryIdEnum.SUPPORT_PHYSIQUE_MUSIQUE_CD ||
+    subcategoryId === SubcategoryIdEnum.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE
+  )
+}
 
 export const hasMusicType = (
   categoryId: string,
@@ -252,6 +260,7 @@ export function setDefaultInitialValuesFromOffer({
       ? deSerializeDurationMinutes(offer.durationMinutes)
       : DEFAULT_DETAILS_FORM_VALUES.durationMinutes,
     ean: offer.extraData?.ean ?? DEFAULT_DETAILS_FORM_VALUES.ean,
+    eanSearch: offer.extraData?.ean ?? DEFAULT_DETAILS_FORM_VALUES.ean,
     visa: offer.extraData?.visa ?? DEFAULT_DETAILS_FORM_VALUES.visa,
     gtl_id: offer.extraData?.gtl_id ?? DEFAULT_DETAILS_FORM_VALUES.gtl_id,
     speaker: offer.extraData?.speaker ?? DEFAULT_DETAILS_FORM_VALUES.speaker,
