@@ -1613,12 +1613,24 @@ def test_public_api(client):
                     "title": "PostFeedbackBody",
                     "type": "object",
                 },
-                "PostReactionRequest": {
+                "PostOneReactionRequest": {
                     "properties": {
                         "offerId": {"title": "Offerid", "type": "integer"},
                         "reactionType": {"$ref": "#/components/schemas/ReactionTypeEnum"},
                     },
                     "required": ["offerId", "reactionType"],
+                    "title": "PostOneReactionRequest",
+                    "type": "object",
+                },
+                "PostReactionRequest": {
+                    "properties": {
+                        "reactions": {
+                            "items": {"$ref": "#/components/schemas/PostOneReactionRequest"},
+                            "title": "Reactions",
+                            "type": "array",
+                        }
+                    },
+                    "required": ["reactions"],
                     "title": "PostReactionRequest",
                     "type": "object",
                 },

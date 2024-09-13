@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 @authenticated_and_active_user_required
 @atomic()
 def post_reaction(user: users_models.User, body: serialization.PostReactionRequest) -> None:
-    reactions_api.update_or_create_reaction(user.id, body.offer_id, reaction_type=body.reaction_type)
+    reactions_api.bulk_update_or_create_reaction(user, body.reactions)
 
 
 @blueprint.native_route("/reaction/available", methods=["GET"])
