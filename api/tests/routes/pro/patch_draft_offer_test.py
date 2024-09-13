@@ -6,6 +6,8 @@ from pcapi.core.categories import subcategories_v2 as subcategories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import Offer
+import pcapi.core.providers.factories as providers_factories
+from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 from pcapi.routes.native.v1.serialization.offerers import VenueTypeCode
@@ -102,6 +104,82 @@ class Returns200Test:
         assert updated_offer.subcategoryId == subcategories.LIVRE_PAPIER.id
         assert updated_offer.description == "New description"
         assert not updated_offer.product
+
+    def test_patch_draft_offer_with_form_required_fields_should_not_update_existing_extra_data(self, client):
+        user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
+        venue = offerers_factories.VirtualVenueFactory(managingOfferer=user_offerer.offerer)
+        ems_provider = get_provider_by_local_class("EMSStocks")
+        venue_provider = providers_factories.VenueProviderFactory(provider=ems_provider, venue=venue)
+        cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(venue=venue_provider.venue)
+        offer = offers_factories.EventOfferFactory(
+            name="Film",
+            venue=venue_provider.venue,
+            subcategoryId=subcategories.SEANCE_CINE.id,
+            lastProviderId=cinema_provider_pivot.provider.id,
+            isDuo=False,
+            description="description",
+            extraData={"stageDirector": "Greta Gerwig"},
+        )
+
+        data = {
+            "name": "Film",
+            "description": "description",
+            "subcategoryId": subcategories.SEANCE_CINE.id,
+            "extraData": {
+                "author": "",
+                "gtl_id": "",
+                "performer": "",
+                "showType": "",
+                "showSubType": "",
+                "speaker": "",
+                "stageDirector": "Greta Gerwig",
+                "visa": "",
+            },
+        }
+        response = client.with_session_auth("user@example.com").patch(f"/offers/draft/{offer.id}", json=data)
+        assert response.status_code == 200
+        assert response.json["id"] == offer.id
+
+        updated_offer = Offer.query.get(offer.id)
+        assert updated_offer.extraData == {"stageDirector": "Greta Gerwig"}
+
+    def test_patch_draft_offer_with_form_required_fields_should_not_create_extra_data(self, client):
+        user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
+        venue = offerers_factories.VirtualVenueFactory(managingOfferer=user_offerer.offerer)
+        ems_provider = get_provider_by_local_class("EMSStocks")
+        venue_provider = providers_factories.VenueProviderFactory(provider=ems_provider, venue=venue)
+        cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(venue=venue_provider.venue)
+        offer = offers_factories.EventOfferFactory(
+            name="Film",
+            venue=venue_provider.venue,
+            subcategoryId=subcategories.SEANCE_CINE.id,
+            lastProviderId=cinema_provider_pivot.provider.id,
+            isDuo=False,
+            description="description",
+            extraData=None,
+        )
+
+        data = {
+            "name": "Film",
+            "description": "description",
+            "subcategoryId": subcategories.SEANCE_CINE.id,
+            "extraData": {
+                "author": "",
+                "gtl_id": "",
+                "performer": "",
+                "showType": "",
+                "showSubType": "",
+                "speaker": "",
+                "stageDirector": "",
+                "visa": "",
+            },
+        }
+        response = client.with_session_auth("user@example.com").patch(f"/offers/draft/{offer.id}", json=data)
+        assert response.status_code == 200
+        assert response.json["id"] == offer.id
+
+        updated_offer = Offer.query.get(offer.id)
+        assert updated_offer.extraData == {}
 
 
 @pytest.mark.usefixtures("db_session")
