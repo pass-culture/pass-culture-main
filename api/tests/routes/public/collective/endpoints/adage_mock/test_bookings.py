@@ -641,10 +641,10 @@ class RepayCollectiveBookingTest(PublicAPIRestrictedEnvEndpointHelper):
     @pytest.mark.parametrize(
         "booking_factory,expected_json",
         [
-            (factories.PendingCollectiveBookingFactory, {"code": f"CANNOT_REIMBURSE_PENDING_BOOKING"}),
-            (factories.CancelledCollectiveBookingFactory, {"code": f"CANNOT_REIMBURSE_CANCELLED_BOOKING"}),
-            (factories.ConfirmedCollectiveBookingFactory, {"code": f"CANNOT_REIMBURSE_CONFIRMED_BOOKING"}),
-            (factories.ReimbursedCollectiveBookingFactory, {"code": f"CANNOT_REIMBURSE_REIMBURSED_BOOKING"}),
+            (factories.PendingCollectiveBookingFactory, {"code": "CANNOT_REIMBURSE_PENDING_BOOKING"}),
+            (factories.CancelledCollectiveBookingFactory, {"code": "CANNOT_REIMBURSE_CANCELLED_BOOKING"}),
+            (factories.ConfirmedCollectiveBookingFactory, {"code": "CANNOT_REIMBURSE_CONFIRMED_BOOKING"}),
+            (factories.ReimbursedCollectiveBookingFactory, {"code": "CANNOT_REIMBURSE_REIMBURSED_BOOKING"}),
         ],
     )
     def test_should_raise_403_when_status_is_not_used(self, client, booking_factory, expected_json):
