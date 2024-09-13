@@ -136,5 +136,34 @@ describe('test updateIndividualOffer::serializers', () => {
         })
       ).toEqual(patchBody)
     })
+
+    it('should serialize patchBody with address data (WIP_ENABLE_OFFER_ADDRESS)', () => {
+      formValues = {
+        ...formValues,
+        city: 'Paris',
+        latitude: '48.853320',
+        longitude: '2.348979',
+        postalCode: '75001',
+        street: '3 Rue de Valois',
+        locationLabel: 'Bureau',
+      }
+      patchBody = {
+        ...patchBody,
+        address: {
+          city: 'Paris',
+          latitude: '48.853320',
+          longitude: '2.348979',
+          postalCode: '75001',
+          street: '3 Rue de Valois',
+          label: 'Bureau',
+        },
+      }
+      expect(
+        serializePatchOffer({
+          offer: getIndividualOfferFactory(),
+          formValues,
+        })
+      ).toEqual(patchBody)
+    })
   })
 })
