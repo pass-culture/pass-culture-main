@@ -1,4 +1,5 @@
 import { GetIndividualOfferWithAddressResponseModel } from 'apiClient/v1'
+import { addressResponseIsEditableModelFactory } from 'utils/commonOffersApiFactories'
 import {
   getOfferVenueFactory,
   getIndividualOfferFactory,
@@ -80,6 +81,28 @@ describe('StockThingForm::utils::buildInitialValues', () => {
       bookingLimitDatetime: '',
       price: 12,
       isDuo: true,
+    })
+  })
+
+  it('should format date with good department code if FF WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE_ENABLED', () => {
+    offer.address = addressResponseIsEditableModelFactory({
+      departmentCode: '987', // Pacific/Tahiti
+    })
+
+    const initialValues = buildInitialValues(
+      offer,
+      [getOfferStockFactory({ id: 8, bookingLimitDatetime: '2001-06-05' })],
+      !WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE_ENABLED
+    )
+
+    expect(initialValues).toEqual({
+      ...STOCK_THING_FORM_DEFAULT_VALUES,
+      bookingLimitDatetime: '2001-06-04',
+      isDuo: true,
+      price: 10,
+      quantity: 18,
+      remainingQuantity: 'unlimited',
+      stockId: 8,
     })
   })
 })
