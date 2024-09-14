@@ -16,7 +16,9 @@ from pcapi.core.bookings import models as bookings_models
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.models import CollectiveOfferDisplayedStatus as DisplayedStatus
+from pcapi.core.geography import models as geography_models
 from pcapi.core.offerers import models as offerers_models
+from pcapi.core.offers import models as offers_model
 from pcapi.core.providers import constants as providers_constants
 from pcapi.core.providers import models as providers_models
 from pcapi.core.reactions import models as reactions_models
@@ -303,16 +305,34 @@ def get_offers_by_filters(
         query = _filter_by_status(query, status)
     if period_beginning_date is not None or period_ending_date is not None:
         offer_alias = sa.orm.aliased(models.Offer)
+        # TODO: drop join  with venue once the  WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE feature is fully implemented
         stock_query = (
             models.Stock.query.join(offer_alias)
             .join(offerers_models.Venue)
             .filter(models.Stock.isSoftDeleted.is_(False))
             .filter(models.Stock.offerId == models.Offer.id)
         )
+        target_timezone = offerers_models.Venue.timezone
+        if FeatureToggle.WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE.is_active():
+            stock_query = (
+                stock_query.join(offers_model.Offer)
+                .join(
+                    offerers_models.OffererAddress,
+                    offers_model.Offer.offererAddressId == offerers_models.OffererAddress.id,
+                    isouter=True,
+                )
+                .join(geography_models.Address, offerers_models.OffererAddress.addressId == geography_models.Address.id)
+                .options(
+                    sa_orm.joinedload(offer_alias.offererAddress)
+                    .joinedload(offerers_models.OffererAddress.address)
+                    .joinedload(geography_models.Address)
+                )
+            )
+            target_timezone = geography_models.Address.timezone
         if period_beginning_date is not None:
             stock_query = stock_query.filter(
                 sa.func.timezone(
-                    offerers_models.Venue.timezone,
+                    target_timezone,
                     sa.func.timezone("UTC", models.Stock.beginningDatetime),
                 )
                 >= period_beginning_date
@@ -320,11 +340,12 @@ def get_offers_by_filters(
         if period_ending_date is not None:
             stock_query = stock_query.filter(
                 sa.func.timezone(
-                    offerers_models.Venue.timezone,
+                    target_timezone,
                     sa.func.timezone("UTC", models.Stock.beginningDatetime),
                 )
                 <= datetime.datetime.combine(period_ending_date, datetime.time.max),
             )
+
         query = query.filter(stock_query.exists())
     return query
 
