@@ -7,6 +7,7 @@ from pcapi.core import testing
 from pcapi.core.categories import subcategories_v2 as subcategories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
+from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 from pcapi.models.offer_mixin import OfferStatus
 
@@ -249,6 +250,56 @@ class Returns200Test:
             creation_mode=None,
             offerer_address_id=None,
         )
+
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    @pytest.mark.parametrize("dp", ["974", "971"])
+    def should_consider_the_offer_oa_timezone_for_begining_period(self, dp, client):
+        pro = users_factories.ProFactory()
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer, offererAddress__address__departmentCode="75")
+        oa = offerers_factories.OffererAddressFactory(address__departmentCode=dp)
+
+        offer = offers_factories.ThingOfferFactory(
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id, venue=venue, offererAddress=oa
+        )
+
+        offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.datetime(2024, 10, 10, 00, 00))
+        offerer_id = offerer.id
+        authenticated_client = client.with_session_auth(email=pro.email)
+        # +1 Feature flag
+        with testing.assert_num_queries(self.number_of_queries + 1):
+            response = authenticated_client.get(f"/offers?offererId={offerer_id}&periodBeginningDate=2024-10-10")
+            print(response)
+            if dp == "974":
+                assert response.json[0]["stocks"][0]["beginningDatetime"] == "2024-10-10T00:00:00Z"
+            else:
+                assert response.json == []
+
+    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+    @pytest.mark.parametrize("dp", ["974", "971"])
+    def should_consider_the_offer_oa_timezone_for_ending_period(self, dp, client):
+        pro = users_factories.ProFactory()
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer, offererAddress__address__departmentCode="75")
+        oa = offerers_factories.OffererAddressFactory(address__departmentCode=dp)
+
+        offer = offers_factories.ThingOfferFactory(
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id, venue=venue, offererAddress=oa
+        )
+
+        offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.datetime(2024, 10, 10, 00, 00))
+        offerer_id = offerer.id
+        authenticated_client = client.with_session_auth(email=pro.email)
+        # +1 Feature flag
+        with testing.assert_num_queries(self.number_of_queries + 1):
+            response = authenticated_client.get(f"/offers?offererId={offerer_id}&periodEndingDate=2024-10-9")
+            print(response)
+            if dp == "971":
+                assert response.json[0]["stocks"][0]["beginningDatetime"] == "2024-10-10T00:00:00Z"
+            else:
+                assert response.json == []
 
     @patch("pcapi.routes.pro.offers.offers_repository.get_capped_offers_for_filters")
     def test_results_are_filtered_by_given_period_ending_date(self, mocked_get_capped_offers, client):
