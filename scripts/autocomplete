@@ -1,0 +1,75 @@
+#! /bin/bash
+
+# =============================================
+# Autocomplete of pc utils
+# =============================================
+_autocomplete()
+{
+  local cur prev default_commands testing_commands local_commands env flag
+
+
+  COMPREPLY=()
+  cur=${COMP_WORDS[COMP_CWORD]}
+  prev=${COMP_WORDS[COMP_CWORD-1]}
+
+  # get asked env
+  flag=0
+  env='developement'
+  for item in "${COMP_WORDS[@]}"
+    do
+      if [ $flag -eq 1 ]; then
+        env="$item"
+        flag=0
+        break
+      fi
+      if [ "$item" = '-e' ]; then
+        flag=1
+      fi
+    done
+  
+  default_commands='bash psql psql-file python pgcli'
+  testing_commands="$default_commands diff-schema"
+  local_commands="$testing_commands alembic install install-hooks access-db-logs logs psql-test rebuild-backend reset-all-db reset-all-storage restart-backend restore-db restore-db-intact set-git-config start-backend start-pro symlink test-backend test-backoffice dump-db"
+
+  if [ $COMP_CWORD -eq 1 ]; then
+    COMPREPLY=( $(compgen -W "$local_commands" -- $cur) )
+  elif [ $COMP_CWORD -gt 1 ]; then
+    case "$prev" in
+      "-f")
+        COMPREPLY=( $(compgen -f -- ${cur}) )
+        ;;
+      "-e")
+        COMPREPLY=( $(compgen -W "development integration production staging testing" -- $cur) )
+        ;;
+      "-b")
+        COMPREPLY=( $(compgen -W "all current" -- $cur) )
+        ;;
+      *)
+        case "$env" in 
+          "development")
+            COMPREPLY=( $(compgen -W "$local_commands" -- $cur) )
+            ;;
+          "testing")
+            COMPREPLY=( $(compgen -W "$testing_commands" -- $cur) )
+            ;;
+          "integration")
+            COMPREPLY=( $(compgen -W "$testing_commands" -- $cur) )
+            ;;
+          "staging")
+            COMPREPLY=( $(compgen -W "$default_commands" -- $cur) )
+            ;;
+          "production")
+            COMPREPLY=( $(compgen -W "$default_commands" -- $cur) )
+            ;;
+          *)  
+            COMPREPLY=( $(compgen -W "$local_commands" -- $cur) )
+            ;;
+        esac
+        ;;
+    esac
+  fi
+
+  return 0
+}
+
+complete -F _autocomplete pc
