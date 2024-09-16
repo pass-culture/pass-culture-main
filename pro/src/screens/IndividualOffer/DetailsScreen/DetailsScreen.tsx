@@ -186,7 +186,7 @@ export const DetailsScreen = ({ venues }: DetailsScreenProps): JSX.Element => {
   const isProductBased = isOfferProductBased || isNotAnOfferYetButProductBased
 
   const readOnlyFields = setFormReadOnlyFields(offer, isProductBased)
-  const shouldDisplayEanSearch =
+  const isEanSearchDisplayed =
     isSearchByEanEnabled && isRecordStore && mode === OFFER_WIZARD_MODE.CREATION
 
   return (
@@ -195,13 +195,15 @@ export const DetailsScreen = ({ venues }: DetailsScreenProps): JSX.Element => {
         <FormLayout fullWidthActions>
           <ScrollToFirstErrorAfterSubmit />
           <FormLayout.MandatoryInfo />
-          {shouldDisplayEanSearch && (
+          {isEanSearchDisplayed && (
             <DetailsEanSearch
               setImageOffer={setImageOffer}
               isOfferProductBased={isOfferProductBased}
             />
           )}
           <DetailsForm
+            isEanSearchDisplayed={isEanSearchDisplayed}
+            isProductBased={isProductBased}
             filteredVenues={filteredVenues}
             filteredCategories={filteredCategories}
             filteredSubcategories={filteredSubcategories}

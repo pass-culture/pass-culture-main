@@ -34,6 +34,8 @@ import { buildVenueOptions, isSubCategoryCDOrVinyl } from './utils'
 const DEBOUNCE_TIME_BEFORE_REQUEST = 400
 
 type DetailsFormProps = {
+  isEanSearchDisplayed: boolean
+  isProductBased: boolean
   filteredVenues: VenueListItemResponseModel[]
   filteredCategories: CategoryResponseModel[]
   filteredSubcategories: SubcategoryResponseModel[]
@@ -44,6 +46,8 @@ type DetailsFormProps = {
 }
 
 export const DetailsForm = ({
+  isEanSearchDisplayed,
+  isProductBased,
   filteredVenues,
   filteredCategories,
   filteredSubcategories,
@@ -60,14 +64,8 @@ export const DetailsForm = ({
   >([])
   const { values, setValues, handleChange } =
     useFormikContext<DetailsFormValues>()
-  const {
-    subcategoryId,
-    description,
-    venueId,
-    name,
-    suggestedSubcategory,
-    productId,
-  } = values
+  const { subcategoryId, description, venueId, name, suggestedSubcategory } =
+    values
   const { offer, subCategories } = useIndividualOfferContext()
 
   const venueOptions = buildVenueOptions(
@@ -138,13 +136,6 @@ export const DetailsForm = ({
 
   const showAddVenueBanner =
     !areSuggestedSubcategoriesUsed && venueOptions.length === 0
-
-  // (Draft) offers are created via POST request.
-  // On Details screen, the form might be pre-filled with a product,
-  // until the form is submitted, the draft offer is not created yet.
-  const isOfferProductBased = !!offer?.productId
-  const isNotAnOfferYetButProductBased = !offer && !!productId
-  const isProductBased = isOfferProductBased || isNotAnOfferYetButProductBased
 
   const isSuggestedSubcategoryDisplayed =
     areSuggestedSubcategoriesUsed && !offer && !isProductBased
@@ -271,6 +262,7 @@ export const DetailsForm = ({
             </FormLayout.Row>
           ) : (
             <DetailsSubForm
+              isEanSearchDisplayed={isEanSearchDisplayed}
               isProductBased={isProductBased}
               isOfferCDOrVinyl={isSubCategoryCDOrVinyl(subcategoryId)}
               readOnlyFields={readOnlyFields}

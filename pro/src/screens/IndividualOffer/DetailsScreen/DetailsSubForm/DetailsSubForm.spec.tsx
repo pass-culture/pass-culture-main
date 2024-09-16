@@ -23,10 +23,14 @@ const contextValue: IndividualOfferContextValues = {
   setIsEvent: vi.fn(),
 }
 
-type RequiredProps = 'isProductBased' | 'isOfferCDOrVinyl'
+type RequiredProps =
+  | 'isEanSearchDisplayed'
+  | 'isProductBased'
+  | 'isOfferCDOrVinyl'
 type DetailsSubFormTestProps = Partial<Pick<DetailsSubFormProps, RequiredProps>>
 
 const DetailsSubFormWrappedWithFormik = ({
+  isEanSearchDisplayed = false,
   isProductBased = false,
   isOfferCDOrVinyl = false,
 }: DetailsSubFormTestProps) => {
@@ -41,6 +45,7 @@ const DetailsSubFormWrappedWithFormik = ({
   return (
     <FormikProvider value={formik}>
       <DetailsSubForm
+        isEanSearchDisplayed={isEanSearchDisplayed}
         isProductBased={isProductBased}
         isOfferCDOrVinyl={isOfferCDOrVinyl}
         readOnlyFields={[]}
@@ -57,7 +62,7 @@ const renderDetailsSubForm = ({
 }: {
   props?: DetailsSubFormTestProps
   enableEANSearch?: boolean
-}) => {
+} = {}) => {
   return renderWithProviders(
     <IndividualOfferContext.Provider value={contextValue}>
       <DetailsSubFormWrappedWithFormik {...props} />
@@ -66,9 +71,11 @@ const renderDetailsSubForm = ({
   )
 }
 
+const calloutLabel = /Cette catégorie nécessite un EAN./
+
 describe('DetailsSubForm', () => {
-  it('should display conditional fields based on the selected category', () => {
-    renderDetailsSubForm({})
+  it('should always display conditional fields based on the selected category / subcategory', () => {
+    renderDetailsSubForm()
 
     const subFormTextInputs = {
       speaker: /Intervenant/,
@@ -98,11 +105,14 @@ describe('DetailsSubForm', () => {
     expect(subFormDurationInput).toBeInTheDocument()
   })
 
-  describe('when the EAN search is available', () => {
-    describe('when the offer is product-based', () => {
+  describe('when EAN search is displayed', () => {
+    describe('when the offer is product based', () => {
       it('should not display the EAN field since it would duplicate top EAN search/input field', () => {
         renderDetailsSubForm({
-          props: { isProductBased: true },
+          props: {
+            isEanSearchDisplayed: true,
+            isProductBased: true,
+          },
           enableEANSearch: true,
         })
 
@@ -112,19 +122,25 @@ describe('DetailsSubForm', () => {
     })
 
     describe('when the offer is non-product based', () => {
-      it('should display a callout instead when the offer is a CD/vinyl', () => {
-        renderDetailsSubForm({
-          props: {
-            isProductBased: false,
-            isOfferCDOrVinyl: true,
-          },
-          enableEANSearch: true,
-        })
+      describe('when the offer is a CD/vinyl', () => {
+        it('should replace conditional fields with a subcategory related error callout', () => {
+          renderDetailsSubForm({
+            props: {
+              isEanSearchDisplayed: true,
+              isProductBased: false,
+              isOfferCDOrVinyl: true,
+            },
+            enableEANSearch: true,
+          })
 
-        const calloutWrapper = screen.getByRole('alert')
-        const calloutLabel = /Cette catégorie nécessite un EAN./
-        expect(calloutWrapper).toBeInTheDocument()
-        expect(calloutWrapper).toHaveTextContent(calloutLabel)
+          const calloutWrapper = screen.getByRole('alert')
+          expect(calloutWrapper).toBeInTheDocument()
+          expect(calloutWrapper).toHaveTextContent(calloutLabel)
+
+          const anchorLink = screen.getByRole('link', { name: /EAN/ })
+          expect(anchorLink).toBeInTheDocument()
+          expect(anchorLink).toHaveAttribute('href', '#eanSearch')
+        })
       })
     })
   })
