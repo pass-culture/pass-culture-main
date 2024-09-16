@@ -23,7 +23,6 @@ export const validationSchema = yup.object().shape({
     ),
   lastName: yup.string().max(128).required('Veuillez renseigner votre nom'),
   firstName: yup.string().max(128).required('Veuillez renseigner votre prénom'),
-  // TODO (mageoffray, 2022-05-12): Create a generic validator method for phone validation
   phoneNumber: yup
     .string()
     .min(10, 'Veuillez renseigner au moins 10 chiffres')
