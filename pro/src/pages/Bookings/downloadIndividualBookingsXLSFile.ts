@@ -1,4 +1,5 @@
 import { api } from 'apiClient/api'
+import { BookingStatusFilter } from 'apiClient/v1'
 import { DEFAULT_PRE_FILTERS } from 'core/Bookings/constants'
 import { PreFiltersParams } from 'core/Bookings/types'
 import { downloadFile } from 'utils/downloadFile'
@@ -18,7 +19,7 @@ export const downloadIndividualBookingsXLSFile = async (
       isDateValid(filters.offerEventDate)
       ? filters.offerEventDate
       : null,
-    filters.bookingStatusFilter,
+    filters.bookingStatusFilter as BookingStatusFilter,
     isDateValid(filters.bookingBeginningDate)
       ? filters.bookingBeginningDate
       : null,
