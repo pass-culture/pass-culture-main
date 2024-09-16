@@ -213,15 +213,14 @@ describe('screens:IndividualOffer::Informations', () => {
       },
       contextValue
     )
-    await userEvent.selectOptions(
-      await screen.findByLabelText('Catégorie *'),
-      'A'
-    )
+    const categoriesInput = await screen.findByLabelText('Catégorie *')
+    expect(categoriesInput).toBeEnabled()
+    await userEvent.selectOptions(categoriesInput, 'A')
 
-    await userEvent.selectOptions(
-      await screen.findByLabelText('Sous-catégorie *'),
-      'physical'
-    )
+    const subcategoriesInput = await screen.findByLabelText('Sous-catégorie *')
+    expect(subcategoriesInput).toBeEnabled()
+    await userEvent.selectOptions(subcategoriesInput, 'physical')
+
     expect(
       await screen.findByRole('heading', { name: 'Image de l’offre' })
     ).toBeInTheDocument()
@@ -807,6 +806,31 @@ describe('screens:IndividualOffer::Informations', () => {
       expect(
         screen.getByText('Sous catégorie offline de A')
       ).toBeInTheDocument()
+    })
+
+    it('should display categories and subcategories as disabled', () => {
+      vi.spyOn(useAnalytics, 'useRemoteConfigParams').mockReturnValue({
+        SUGGESTED_CATEGORIES: 'true',
+      })
+      const context = individualOfferContextValuesFactory({
+        categories,
+        subCategories,
+        offer: getIndividualOfferFactory({
+          subcategoryId: 'physical' as SubcategoryIdEnum,
+        }),
+      })
+
+      renderDetailsScreen(
+        props,
+        context,
+        {
+          features: ['WIP_SUGGESTED_SUBCATEGORIES'],
+        },
+        OFFER_WIZARD_MODE.EDITION
+      )
+
+      expect(screen.getByLabelText('Catégorie *')).toBeDisabled()
+      expect(screen.getByLabelText('Sous-catégorie *')).toBeDisabled()
     })
   })
 
