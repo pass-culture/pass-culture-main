@@ -1,5 +1,4 @@
 import { useFormikContext } from 'formik'
-import isEqual from 'lodash.isequal'
 
 import { OfferAddressType } from 'apiClient/adage'
 import fullClearIcon from 'icons/full-clear.svg'
@@ -11,7 +10,7 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import { SearchFormValues } from '../../OffersInstantSearch'
-import { ADAGE_FILTERS_DEFAULT_VALUES } from '../../utils'
+import { areFiltersEmpty } from '../../utils'
 import { LocalisationFilterStates } from '../OffersSearch'
 
 import styles from './FiltersTags.module.scss'
@@ -162,18 +161,15 @@ export const FiltersTags = ({
           handleSubmit()
         })
       )}
-      {
-        // TODO : We should use a custom isEqual instead of lodash one
-        !isEqual(values, ADAGE_FILTERS_DEFAULT_VALUES) && (
-          <Button
-            onClick={resetForm}
-            icon={fullRefreshIcon}
-            variant={ButtonVariant.TERNARY}
-          >
-            Réinitialiser les filtres
-          </Button>
-        )
-      }
+      {!areFiltersEmpty(values) && (
+        <Button
+          onClick={resetForm}
+          icon={fullRefreshIcon}
+          variant={ButtonVariant.TERNARY}
+        >
+          Réinitialiser les filtres
+        </Button>
+      )}
     </div>
   )
 }
