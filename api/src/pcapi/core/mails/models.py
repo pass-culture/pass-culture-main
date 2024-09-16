@@ -13,9 +13,7 @@ class EmailInfo:
 class TransactionalSender(Enum):
     SUPPORT = EmailInfo(settings.SUPPORT_EMAIL_ADDRESS, "pass Culture")
     SUPPORT_PRO = EmailInfo(settings.SUPPORT_PRO_EMAIL_ADDRESS, "pass Culture")
-    COMPLIANCE = EmailInfo(settings.COMPLIANCE_EMAIL_ADDRESS, "pass Culture")
     DEV = EmailInfo(settings.DEV_EMAIL_ADDRESS, "pass Culture")
-    HOMOLOGATION = EmailInfo(settings.HOMOLOGATION_EMAIL_ADDRESS, "pass Culture")
 
 
 @dataclasses.dataclass
@@ -53,7 +51,7 @@ class Template:
     id_not_prod: int
     tags: list[str] = dataclasses.field(default_factory=list)
     use_priority_queue: bool = False
-    sender: TransactionalSender = TransactionalSender.SUPPORT
+    sender: TransactionalSender | None = TransactionalSender.SUPPORT
     send_to_ehp: bool = True
 
     @property
@@ -63,16 +61,16 @@ class Template:
 
 @dataclasses.dataclass
 class TemplatePro(Template):
-    sender: TransactionalSender = TransactionalSender.SUPPORT_PRO
+    sender: TransactionalSender | None = None
 
 
 @dataclasses.dataclass
 class TransactionalEmailData:
     template: Template
-    reply_to: EmailInfo
+    reply_to: EmailInfo | None
     params: dict
 
     def __init__(self, template: Template, params: dict | None = None, reply_to: EmailInfo | None = None):
         self.template = template
         self.params = params or {}
-        self.reply_to = reply_to or template.sender.value
+        self.reply_to = reply_to or (template.sender.value if template.sender else None)
