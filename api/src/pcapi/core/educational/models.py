@@ -673,6 +673,9 @@ class CollectiveOffer(
                 if self.is_expired:
                     return CollectiveOfferDisplayedStatus.EXPIRED
 
+                if self.hasBookingLimitDatetimesPassed:
+                    return CollectiveOfferDisplayedStatus.INACTIVE
+
                 return CollectiveOfferDisplayedStatus.ACTIVE
 
             last_booking_status = bookings[-1].status

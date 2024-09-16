@@ -610,3 +610,16 @@ class CollectiveOfferDisplayedStatusTest:
         offer = create_collective_offer_by_status(status)
 
         assert offer.displayedStatus == status
+
+    def test_get_displayed_status_for_inactive_offer_due_to_booking_date_passed(self):
+        offer = factories.CollectiveOfferFactory()
+
+        past = datetime.datetime.utcnow() - datetime.timedelta(days=2)
+        stock = factories.CollectiveStockFactory(bookingLimitDatetime=past, collectiveOffer=offer)
+
+        assert offer.displayedStatus == CollectiveOfferDisplayedStatus.INACTIVE
+
+        futur = datetime.datetime.utcnow() + datetime.timedelta(days=2)
+        stock.bookingLimitDatetime = futur
+
+        assert offer.displayedStatus == CollectiveOfferDisplayedStatus.ACTIVE
