@@ -155,3 +155,19 @@ export const serializeFiltersForData = (
       : undefined,
   }
 }
+
+export const areFiltersEmpty = (filters: SearchFormValues) => {
+  return (
+    filters.domains.length === ADAGE_FILTERS_DEFAULT_VALUES.domains.length &&
+    filters.departments.length ===
+      ADAGE_FILTERS_DEFAULT_VALUES.departments.length &&
+    filters.academies.length ===
+      ADAGE_FILTERS_DEFAULT_VALUES.academies.length &&
+    filters.eventAddressType ===
+      ADAGE_FILTERS_DEFAULT_VALUES.eventAddressType &&
+    filters.geolocRadius === ADAGE_FILTERS_DEFAULT_VALUES.geolocRadius &&
+    filters.formats.length === ADAGE_FILTERS_DEFAULT_VALUES.formats.length &&
+    filters.venue === ADAGE_FILTERS_DEFAULT_VALUES.venue &&
+    filters.students.length === ADAGE_FILTERS_DEFAULT_VALUES.students.length
+  )
+}
