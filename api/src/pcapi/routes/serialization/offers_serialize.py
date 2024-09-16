@@ -223,7 +223,8 @@ class ListOffersOfferResponseModelsGetterDict(GetterDict):
             offererAddress.label = offererAddress.label if offererAddress.isEditable else self._obj.venue.common_name
             return AddressResponseIsEditableModel(
                 **retrieve_address_info_from_oa(offerer_address),
-                **offererAddress.dict(exclude={"id"}),
+                label=offererAddress.label,
+                isEditable=offererAddress.isEditable,
             )
         return super().get(key, default)
 
@@ -410,7 +411,8 @@ class IndividualOfferResponseGetterDict(GetterDict):
             offererAddress.label = offererAddress.label or self._obj.venue.common_name
             return AddressResponseIsEditableModel(
                 **retrieve_address_info_from_oa(offerer_address),
-                **offererAddress.dict(exclude={"id"}),
+                label=offererAddress.label,
+                isEditable=offererAddress.isEditable,
             )
         return super().get(key, default)
 

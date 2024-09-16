@@ -227,6 +227,13 @@ class GetVenueResponseGetterDict(base.VenueResponseGetterDict):
                 ):
                     return reimbursement_link.reimbursementPointId
             return None
+        if key == "address":
+            offerer_address = self._obj.offererAddress
+            if not offerer_address:
+                return None
+            return address_serialize.AddressResponseIsEditableModel(
+                **address_serialize.retrieve_address_info_from_oa(offerer_address)
+            )
         return super().get(key, default)
 
 
@@ -264,6 +271,7 @@ class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin
     bankAccount: BankAccountResponseModel | None
     isVisibleInApp: bool = True
     hasOffers: bool
+    address: address_serialize.AddressResponseIsEditableModel | None
 
     class Config:
         orm_mode = True
