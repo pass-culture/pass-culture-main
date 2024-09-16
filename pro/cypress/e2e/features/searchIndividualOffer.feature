@@ -60,8 +60,8 @@ Feature: Search individual offers
     And I select a date in one month
     And I validate my filters
     Then These 1 results should be displayed
-      |  |  | Titre                            | Lieu                    | Stocks | Status  |
-      |  |  | Un concert d'electro inoubliable | Michel et son accordéon |  1 000 | publiée |
+      |  |  | Titre                            | Lieu   | Stocks | Status  |
+      |  |  | Un concert d'electro inoubliable | Michel |  1 000 | publiée |
 
   Scenario: A search combining several filters should display expected results
     When I select offerer "Réseau de librairies" in offer page
