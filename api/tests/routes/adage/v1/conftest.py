@@ -49,6 +49,7 @@ def expected_serialized_prebooking(booking: models.CollectiveBooking) -> dict:
         "UAICode": booking.educationalInstitution.institutionId,
         "yearId": int(booking.educationalYearId),
         "status": booking.status.value,
+        "cancellationReason": booking.cancellationReason,
         "subcategoryLabel": offer.subcategory.app_label,
         "venueTimezone": venue.timezone,
         "totalAmount": float(stock.price),

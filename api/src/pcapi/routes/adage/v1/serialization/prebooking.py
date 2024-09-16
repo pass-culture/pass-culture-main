@@ -77,6 +77,9 @@ class EducationalBookingBaseResponse(AdageBaseResponseModel):
     UAICode: str = Field(description="Educational institution UAI code")
     yearId: int = Field(description="Shared year id")
     status: EducationalBookingStatus | CollectiveBookingStatus
+    cancellationReason: CollectiveBookingCancellationReasons | None = Field(
+        description="Reason when a prebooking order is cancelled"
+    )
     participants: list[str] = Field(description="List of class levels which can participate")
     priceDetail: str | None = Field(description="Offer's stock price detail")
     venueTimezone: str
@@ -221,6 +224,7 @@ def serialize_collective_booking(collective_booking: CollectiveBooking) -> Educa
         UAICode=collective_booking.educationalInstitution.institutionId,
         yearId=collective_booking.educationalYearId,  # type: ignore[arg-type]
         status=get_collective_booking_status(collective_booking),  # type: ignore[arg-type]
+        cancellationReason=collective_booking.cancellationReason,
         venueTimezone=venue.timezone,  # type: ignore[arg-type]
         subcategoryLabel=offer.subcategory.app_label if offer.subcategory else "",
         totalAmount=stock.price,
@@ -317,6 +321,7 @@ def serialize_reimbursement_notification(
         endDatetime=stock.endDatetime,
         cancellationDate=collective_booking.cancellationDate,
         cancellationLimitDate=collective_booking.cancellationLimitDate,
+        cancellationReason=collective_booking.cancellationReason,
         city=venue.city,
         confirmationDate=collective_booking.confirmationDate,
         confirmationLimitDate=collective_booking.confirmationLimitDate,
