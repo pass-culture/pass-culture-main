@@ -134,6 +134,7 @@ class Returns422Test:
         offerer_id = offerer.id
         offerers_factories.UserOffererFactory(user=user, offerer=offerer)
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+        offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
         product = offers_factories.ProductFactory(
             description="Product description",
             name="Product name",

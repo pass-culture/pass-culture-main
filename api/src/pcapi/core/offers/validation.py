@@ -637,7 +637,7 @@ def check_product_cgu_and_offerer(
             },
             status_code=422,
         )
-    if len(offerer.managedVenues) == 1:
+    if len([venue for venue in offerer.managedVenues if venue.isVirtual is False]) == 1:
         try:
             check_ean_does_not_exist(ean, offerer.managedVenues[0])
         except exceptions.OfferAlreadyExists:
