@@ -470,5 +470,5 @@ class EditStockForm(FlaskForm):
 
 class EditStockWithPriceCategoryForm(EditStockForm):
     update_pricecategory = fields.PCSwitchBooleanField(
-        "Modifier toute la catégorie de prix",
+        "Modifier toutes les réservations du tarif",
     )

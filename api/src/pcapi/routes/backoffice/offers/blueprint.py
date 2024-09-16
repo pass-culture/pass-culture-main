@@ -938,7 +938,7 @@ def edit_offer_stock(offer_id: int, stock_id: int) -> utils.BackofficeResponse:
     if update_linked_stock_bookings and linked_stocks:
         editable_stocks = _get_editable_stock(offer_id)
         if not editable_stocks.issuperset(s.id for s in linked_stocks):
-            flash("Certains stock de la catégorie de prix ne sont pas éditables", "warning")
+            flash("Certains stock du tarif ne sont pas éditables", "warning")
             return redirect(url_for("backoffice_web.offer.get_offer_details", offer_id=offer_id), 303)
 
     if form.price.data:
@@ -1089,7 +1089,6 @@ def _generate_offer_stock_edit_form(
     alert: str | None = None,
 ) -> utils.BackofficeResponse:
     stock = offers_models.Stock.query.filter_by(id=stock_id).one()
-    print(stock.priceCategoryId)
     if not form:
         if stock.priceCategoryId:
             form = forms.EditStockWithPriceCategoryForm(old_price=stock.price)
