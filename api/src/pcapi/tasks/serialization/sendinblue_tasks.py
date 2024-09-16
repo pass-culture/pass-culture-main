@@ -16,8 +16,8 @@ class SendTransactionalEmailRequest(BaseModel):
     params: dict | None = None
     template_id: int | None = None
     tags: list[str] | None = None
-    sender: dict
+    sender: dict | None = None
     subject: str | None = None
     html_content: str | None = None
     attachment: dict | None = None
-    reply_to: dict
+    reply_to: dict | None = None

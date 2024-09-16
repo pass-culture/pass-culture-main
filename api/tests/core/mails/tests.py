@@ -87,6 +87,36 @@ class SendinblueBackendTest:
         assert task_param.sender == expected_sent_data_no_reply.sender
         assert task_param.reply_to == expected_sent_data_no_reply.reply_to
 
+    @patch("pcapi.core.mails.backends.sendinblue.send_transactional_email_secondary_task.delay")
+    def test_send_mail_with_no_sender(self, mock_send_transactional_email_secondary_task):
+        self.mock_template = models.TemplatePro(
+            id_prod=1,
+            id_not_prod=10,
+            tags=["this_is_such_a_great_tag", "it_would_be_a_pity_if_anything_happened_to_it"],
+        )
+        self.data = models.TransactionalEmailData(template=self.mock_template, params=self.params, reply_to=None)
+
+        expected_sent_data = sendinblue_tasks.SendTransactionalEmailRequest(
+            recipients=self.recipients,
+            params=SendinblueBackendTest.params,
+            template_id=SendinblueBackendTest.data.template.id,
+            tags=SendinblueBackendTest.data.template.tags,
+            sender=None,
+            reply_to=None,
+        )
+
+        backend = self._get_backend_for_test()
+        backend().send_mail(recipients=self.recipients, bcc_recipients=self.bcc_recipients, data=self.data)
+
+        assert mock_send_transactional_email_secondary_task.call_count == 1
+        task_param = mock_send_transactional_email_secondary_task.call_args[0][0]
+
+        assert task_param.params == expected_sent_data.params
+        assert task_param.template_id == expected_sent_data.template_id
+        assert task_param.tags == expected_sent_data.tags
+        assert task_param.sender == expected_sent_data.sender
+        assert task_param.reply_to == expected_sent_data.reply_to
+
 
 @pytest.mark.usefixtures("db_session")
 class ToDevSendinblueBackendTest(SendinblueBackendTest):

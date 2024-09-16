@@ -148,12 +148,7 @@ class TransactionalEmail(Enum):
     NEW_BOOKING_TO_PRO = models.TemplatePro(id_prod=608, id_not_prod=59, tags=["pro_nouvelle_reservation"])
     NEW_OFFERER_VALIDATION = models.TemplatePro(id_prod=489, id_not_prod=58, tags=["pro_validation_structure"])
     NEW_OFFERER_REJECTION = models.TemplatePro(id_prod=790, id_not_prod=106, tags=["pro_rejet_structure"])
-    OFFER_APPROVAL_TO_PRO = models.TemplatePro(
-        id_prod=349,
-        id_not_prod=49,
-        tags=["pro_validation_offre"],
-        sender=models.TransactionalSender.COMPLIANCE,
-    )
+    OFFER_APPROVAL_TO_PRO = models.TemplatePro(id_prod=349, id_not_prod=49, tags=["pro_validation_offre"])
     OFFERER_ATTACHMENT_INVITATION_NEW_USER = models.TemplatePro(
         id_prod=1045, id_not_prod=137, tags=["pro_invitation_a_rejoindre_le_pass_nouveau_utilisateur"]
     )
@@ -166,31 +161,16 @@ class TransactionalEmail(Enum):
     OFFERER_ATTACHMENT_INVITATION_ACCEPTED = models.TemplatePro(
         id_prod=1048, id_not_prod=138, tags=["pro_invitation_rattachement_acceptee"]
     )
-    OFFER_REJECTION_TO_PRO = models.TemplatePro(
-        id_prod=375,
-        id_not_prod=48,
-        tags=["pro_offre_refusee"],
-        sender=models.TransactionalSender.COMPLIANCE,
-    )
-    OFFER_PENDING_TO_REJECTED_TO_PRO = models.TemplatePro(
-        id_prod=1026,
-        id_not_prod=141,
-        sender=models.TransactionalSender.COMPLIANCE,
-    )
-    OFFER_VALIDATED_TO_REJECTED_TO_PRO = models.TemplatePro(
-        id_prod=1023,
-        id_not_prod=140,
-        sender=models.TransactionalSender.COMPLIANCE,
-    )
+    OFFER_REJECTION_TO_PRO = models.TemplatePro(id_prod=375, id_not_prod=48, tags=["pro_offre_refusee"])
+    OFFER_PENDING_TO_REJECTED_TO_PRO = models.TemplatePro(id_prod=1026, id_not_prod=141)
+    OFFER_VALIDATED_TO_REJECTED_TO_PRO = models.TemplatePro(id_prod=1023, id_not_prod=140)
     OFFERER_ATTACHMENT_VALIDATION = models.TemplatePro(
         id_prod=488, id_not_prod=62, tags=["pro_rattachement_structure_valide"]
     )
     OFFERER_ATTACHMENT_REJECTION = models.TemplatePro(
         id_prod=792, id_not_prod=107, tags=["pro_rattachement_structure_rejet"]
     )
-    REMINDER_OFFERER_INDIVIDUAL_SUBSCRIPTION = models.Template(
-        id_prod=1295, id_not_prod=164, sender=models.TransactionalSender.HOMOLOGATION
-    )
+    REMINDER_OFFERER_INDIVIDUAL_SUBSCRIPTION = models.Template(id_prod=1295, id_not_prod=164)
     REMINDER_7_DAYS_BEFORE_EVENT_TO_PRO = models.TemplatePro(id_prod=587, id_not_prod=73, tags=["pro_rappel_event_J-7"])
     REMINDER_OFFER_CREATION_5_DAYS_AFTER_TO_PRO = models.TemplatePro(
         id_prod=566, id_not_prod=104, tags=["pro_relance_offre_J+5"]
@@ -213,11 +193,9 @@ class TransactionalEmail(Enum):
     BANK_ACCOUNT_VALIDATED = models.TemplatePro(
         id_prod=1095, id_not_prod=149, tags=["pro_cordonnées_bancaire_validées"]
     )
-    EXTERNAL_BOOKING_SUPPORT_CANCELLATION = models.TemplatePro(
-        id_prod=1189, id_not_prod=158, sender=models.TransactionalSender.SUPPORT_PRO
-    )
+    EXTERNAL_BOOKING_SUPPORT_CANCELLATION = models.TemplatePro(id_prod=1189, id_not_prod=158)
 
     # Finance incidents
-    RETRIEVE_INCIDENT_AMOUNT_ON_INDIVIDUAL_BOOKINGS = models.Template(id_prod=1111, id_not_prod=150)
-    RETRIEVE_INCIDENT_AMOUNT_ON_COLLECTIVE_BOOKINGS = models.Template(id_prod=1112, id_not_prod=151)
-    COMMERCIAL_GESTURE_REIMBURSEMENT = models.Template(id_prod=1187, id_not_prod=157)
+    RETRIEVE_INCIDENT_AMOUNT_ON_INDIVIDUAL_BOOKINGS = models.TemplatePro(id_prod=1111, id_not_prod=150)
+    RETRIEVE_INCIDENT_AMOUNT_ON_COLLECTIVE_BOOKINGS = models.TemplatePro(id_prod=1112, id_not_prod=151)
+    COMMERCIAL_GESTURE_REIMBURSEMENT = models.TemplatePro(id_prod=1187, id_not_prod=157)
