@@ -7,51 +7,20 @@ from pcapi.core.educational import models
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_features
 
-from tests.conftest import TestClient
-from tests.routes.public.helpers import PublicAPIRestrictedEnvEndpointHelper
 from tests.routes.public.helpers import assert_attribute_does_not_change
 from tests.routes.public.helpers import assert_attribute_value_changes_to
+
+from .base import AdageMockEndpointHelper
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-class ConfirmCollectiveBookingTest(PublicAPIRestrictedEnvEndpointHelper):
+class ConfirmCollectiveBookingTest(AdageMockEndpointHelper):
     endpoint_url = "/v2/collective/adage_mock/bookings/{booking_id}/confirm"
     endpoint_method = "post"
     default_path_params = {"booking_id": 1}
     default_factory = factories.PendingCollectiveBookingFactory
-
-    def setup_base_resource(self, *, factory=None, provider=None, venue=None, deposit=None) -> models.CollectiveBooking:
-        venue = venue or self.setup_venue()
-        deposit = deposit or factories.EducationalDepositFactory()
-        factory = factory or self.default_factory
-        offer = factories.CollectiveOfferFactory(provider=provider, venue=venue)
-        return factory(
-            collectiveStock__collectiveOffer=offer,
-            educationalInstitution=deposit.educationalInstitution,
-            educationalYear=deposit.educationalYear,
-        )
-
-    def test_should_raise_404_because_has_no_access_to_venue(self, client: TestClient):
-        plain_api_key, _ = self.setup_provider()
-        pending_booking = self.setup_base_resource()
-        self.assert_request_has_expected_result(
-            client.with_explicit_token(plain_api_key),
-            url_params={"booking_id": pending_booking.id},
-            expected_status_code=404,
-            expected_error_json={"code": "BOOKING_NOT_FOUND"},
-        )
-
-    def test_should_raise_404_because_venue_provider_is_inactive(self, client: TestClient):
-        plain_api_key, venue_provider = self.setup_inactive_venue_provider()
-        pending_booking = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
-        self.assert_request_has_expected_result(
-            client.with_explicit_token(plain_api_key),
-            url_params={"booking_id": pending_booking.id},
-            expected_status_code=404,
-            expected_error_json={"code": "BOOKING_NOT_FOUND"},
-        )
 
     def test_confirm_pending_booking(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
@@ -196,7 +165,7 @@ class ConfirmCollectiveBookingTest(PublicAPIRestrictedEnvEndpointHelper):
             )
 
 
-class CancelCollectiveBookingTest(PublicAPIRestrictedEnvEndpointHelper):
+class CancelCollectiveBookingTest(AdageMockEndpointHelper):
     endpoint_url = "/v2/collective/adage_mock/bookings/{booking_id}/cancel"
     endpoint_method = "post"
     default_path_params = {"booking_id": 1}
@@ -210,37 +179,6 @@ class CancelCollectiveBookingTest(PublicAPIRestrictedEnvEndpointHelper):
     on_success_num_queries += 1  # 6. does pricing exists for collective booking?
     on_success_num_queries += 1  # 7. get finance events for booking
     on_success_num_queries += 1  # 8. update booking
-
-    def setup_base_resource(self, *, factory=None, provider=None, venue=None, deposit=None) -> models.CollectiveBooking:
-        venue = venue or self.setup_venue()
-        deposit = deposit or factories.EducationalDepositFactory()
-        factory = factory or self.default_factory
-        offer = factories.CollectiveOfferFactory(provider=provider, venue=venue)
-        return factory(
-            collectiveStock__collectiveOffer=offer,
-            educationalInstitution=deposit.educationalInstitution,
-            educationalYear=deposit.educationalYear,
-        )
-
-    def test_should_raise_404_because_has_no_access_to_venue(self, client: TestClient):
-        plain_api_key, _ = self.setup_provider()
-        booking = self.setup_base_resource()
-        self.assert_request_has_expected_result(
-            client.with_explicit_token(plain_api_key),
-            url_params={"booking_id": booking.id},
-            expected_status_code=404,
-            expected_error_json={"code": "BOOKING_NOT_FOUND"},
-        )
-
-    def test_should_raise_404_because_venue_provider_is_inactive(self, client: TestClient):
-        plain_api_key, venue_provider = self.setup_inactive_venue_provider()
-        booking = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
-        self.assert_request_has_expected_result(
-            client.with_explicit_token(plain_api_key),
-            url_params={"booking_id": booking.id},
-            expected_status_code=404,
-            expected_error_json={"code": "BOOKING_NOT_FOUND"},
-        )
 
     @pytest.mark.parametrize(
         "booking_factory",
@@ -365,45 +303,11 @@ class CancelCollectiveBookingTest(PublicAPIRestrictedEnvEndpointHelper):
                 )
 
 
-class UseCollectiveBookingTest(PublicAPIRestrictedEnvEndpointHelper):
+class UseCollectiveBookingTest(AdageMockEndpointHelper):
     endpoint_url = "/v2/collective/bookings/{booking_id}/use"
     endpoint_method = "post"
     default_path_params = {"booking_id": 1}
     default_factory = factories.ConfirmedCollectiveBookingFactory
-
-    def setup_base_resource(self, *, factory=None, provider=None, venue=None) -> models.CollectiveBooking:
-        # data
-        venue = venue or self.setup_venue()
-        deposit = factories.EducationalDepositFactory()
-        offer = factories.CollectiveOfferFactory(provider=provider, venue=venue)
-        # factory
-        factory = factory or self.default_factory
-
-        return factory(
-            collectiveStock__collectiveOffer=offer,
-            educationalInstitution=deposit.educationalInstitution,
-            educationalYear=deposit.educationalYear,
-        )
-
-    def test_should_raise_404_because_has_no_access_to_venue(self, client: TestClient):
-        plain_api_key, _ = self.setup_provider()
-        booking = self.setup_base_resource()
-        self.assert_request_has_expected_result(
-            client.with_explicit_token(plain_api_key),
-            url_params={"booking_id": booking.id},
-            expected_status_code=404,
-            expected_error_json={"code": "BOOKING_NOT_FOUND"},
-        )
-
-    def test_should_raise_404_because_venue_provider_is_inactive(self, client: TestClient):
-        plain_api_key, venue_provider = self.setup_inactive_venue_provider()
-        booking = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
-        self.assert_request_has_expected_result(
-            client.with_explicit_token(plain_api_key),
-            url_params={"booking_id": booking.id},
-            expected_status_code=404,
-            expected_error_json={"code": "BOOKING_NOT_FOUND"},
-        )
 
     def test_use_confirmed_booking(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
@@ -469,45 +373,11 @@ class UseCollectiveBookingTest(PublicAPIRestrictedEnvEndpointHelper):
             )
 
 
-class ResetCollectiveBookingTest(PublicAPIRestrictedEnvEndpointHelper):
+class ResetCollectiveBookingTest(AdageMockEndpointHelper):
     endpoint_url = "/v2/collective/adage_mock/bookings/{booking_id}/pending"
     endpoint_method = "post"
     default_path_params = {"booking_id": 1}
     default_factory = factories.PendingCollectiveBookingFactory
-
-    def setup_base_resource(self, *, factory=None, provider=None, venue=None) -> models.CollectiveBooking:
-        # data
-        venue = venue or self.setup_venue()
-        deposit = factories.EducationalDepositFactory()
-        offer = factories.CollectiveOfferFactory(provider=provider, venue=venue)
-        # factory
-        factory = factory or self.default_factory
-
-        return factory(
-            collectiveStock__collectiveOffer=offer,
-            educationalInstitution=deposit.educationalInstitution,
-            educationalYear=deposit.educationalYear,
-        )
-
-    def test_should_raise_404_because_has_no_access_to_venue(self, client: TestClient):
-        plain_api_key, _ = self.setup_provider()
-        booking = self.setup_base_resource()
-        self.assert_request_has_expected_result(
-            client.with_explicit_token(plain_api_key),
-            url_params={"booking_id": booking.id},
-            expected_status_code=404,
-            expected_error_json={"code": "BOOKING_NOT_FOUND"},
-        )
-
-    def test_should_raise_404_because_venue_provider_is_inactive(self, client: TestClient):
-        plain_api_key, venue_provider = self.setup_inactive_venue_provider()
-        booking = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
-        self.assert_request_has_expected_result(
-            client.with_explicit_token(plain_api_key),
-            url_params={"booking_id": booking.id},
-            expected_status_code=404,
-            expected_error_json={"code": "BOOKING_NOT_FOUND"},
-        )
 
     def test_can_reset_pending_booking(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
@@ -579,45 +449,11 @@ class ResetCollectiveBookingTest(PublicAPIRestrictedEnvEndpointHelper):
                 )
 
 
-class RepayCollectiveBookingTest(PublicAPIRestrictedEnvEndpointHelper):
+class RepayCollectiveBookingTest(AdageMockEndpointHelper):
     endpoint_url = "/v2/collective/adage_mock/bookings/{booking_id}/repay"
     endpoint_method = "post"
     default_path_params = {"booking_id": 1}
     default_factory = factories.UsedCollectiveBookingFactory
-
-    def setup_base_resource(self, *, factory=None, provider=None, venue=None) -> models.CollectiveBooking:
-        # data
-        venue = venue or self.setup_venue()
-        deposit = factories.EducationalDepositFactory()
-        offer = factories.CollectiveOfferFactory(provider=provider, venue=venue)
-        # factory
-        factory = factory or self.default_factory
-
-        return factory(
-            collectiveStock__collectiveOffer=offer,
-            educationalInstitution=deposit.educationalInstitution,
-            educationalYear=deposit.educationalYear,
-        )
-
-    def test_should_raise_404_because_has_no_access_to_venue(self, client: TestClient):
-        plain_api_key, _ = self.setup_provider()
-        booking = self.setup_base_resource()
-        self.assert_request_has_expected_result(
-            client.with_explicit_token(plain_api_key),
-            url_params={"booking_id": booking.id},
-            expected_status_code=404,
-            expected_error_json={"code": "BOOKING_NOT_FOUND"},
-        )
-
-    def test_should_raise_404_because_venue_provider_is_inactive(self, client: TestClient):
-        plain_api_key, venue_provider = self.setup_inactive_venue_provider()
-        booking = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
-        self.assert_request_has_expected_result(
-            client.with_explicit_token(plain_api_key),
-            url_params={"booking_id": booking.id},
-            expected_status_code=404,
-            expected_error_json={"code": "BOOKING_NOT_FOUND"},
-        )
 
     def test_can_repay_used_booking(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
