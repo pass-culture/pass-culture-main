@@ -73,7 +73,7 @@ class HttpBackend:
         # all calls to recommendation api will not be verified.
         # The certificates are google-managed and seen as self-signed.
         verify = False
-        if settings.IS_PROD:
+        if not settings.WIP_ENABLE_RECOMMENDATION_INSECURE_CALLS:
             verify = True
         try:
             if method == "get":
