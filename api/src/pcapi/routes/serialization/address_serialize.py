@@ -28,7 +28,7 @@ class AddressResponseModel(BaseModel):
 class AddressResponseIsEditableModel(AddressResponseModel):
     label: str | None = None
     id_oa: int
-    isEditable: bool
+    isEditable: bool | None
     isManualEdition: bool
 
 
@@ -39,6 +39,9 @@ def retrieve_address_info_from_oa(offerer_address: OffererAddress) -> dict:
         id_oa=offerer_address.id,
         banId=offerer_address.address.banId,
         inseeCode=offerer_address.address.inseeCode,
+        postalCode=offerer_address.address.postalCode,
+        street=offerer_address.address.street,
+        city=offerer_address.address.city,
         longitude=offerer_address.address.longitude,
         latitude=offerer_address.address.latitude,
         isManualEdition=offerer_address.address.isManualEdition,

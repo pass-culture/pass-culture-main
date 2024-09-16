@@ -43,6 +43,7 @@ def get_venue(venue_id: int) -> venues_serialize.GetVenueResponseModel:
         .options(sqla_orm.joinedload(models.Venue.collectiveDomains))
         .options(sqla_orm.joinedload(models.Venue.collectiveDmsApplications))
         .options(sqla_orm.joinedload(models.Venue.bankAccountLinks).joinedload(models.VenueBankAccountLink.bankAccount))
+        .options(sqla_orm.joinedload(models.Venue.offererAddress).joinedload(models.OffererAddress.address))
     ).one_or_none()
     if not venue:
         flask.abort(404)

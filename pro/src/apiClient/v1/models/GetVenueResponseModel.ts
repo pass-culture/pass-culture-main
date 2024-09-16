@@ -2,6 +2,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { AddressResponseIsEditableModel } from './AddressResponseIsEditableModel';
 import type { BankAccountResponseModel } from './BankAccountResponseModel';
 import type { BannerMetaModel } from './BannerMetaModel';
 import type { DMSApplicationForEAC } from './DMSApplicationForEAC';
@@ -15,6 +16,7 @@ import type { VenueContactModel } from './VenueContactModel';
 import type { VenueTypeCode } from './VenueTypeCode';
 export type GetVenueResponseModel = {
   adageInscriptionDate?: string | null;
+  address?: AddressResponseIsEditableModel | null;
   audioDisabilityCompliant?: boolean | null;
   banId?: string | null;
   bankAccount?: BankAccountResponseModel | null;

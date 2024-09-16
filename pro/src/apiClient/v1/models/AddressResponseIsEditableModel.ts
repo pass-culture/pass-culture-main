@@ -8,7 +8,7 @@ export type AddressResponseIsEditableModel = {
   id: number;
   id_oa: number;
   inseeCode?: string | null;
-  isEditable: boolean;
+  isEditable?: boolean | null;
   isManualEdition: boolean;
   label?: string | null;
   latitude: number;
