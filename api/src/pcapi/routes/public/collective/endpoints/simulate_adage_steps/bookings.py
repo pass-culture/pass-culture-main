@@ -16,7 +16,6 @@ from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import ForbiddenError
 from pcapi.models.api_errors import ResourceNotFoundError
 from pcapi.repository import atomic
-from pcapi.routes.adage.v1.serialization import constants
 from pcapi.routes.public import blueprints
 from pcapi.routes.public import spectree_schemas
 from pcapi.routes.public.collective.endpoints.simulate_adage_steps import utils
@@ -26,9 +25,6 @@ from pcapi.serialization.decorator import spectree_serialize
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
 from pcapi.validation.routes.users_authentifications import current_api_key
 from pcapi.validation.routes.users_authentifications import provider_api_key_required
-
-
-logger = logging.getLogger(__name__)
 
 
 logger = logging.getLogger(__name__)
@@ -58,6 +54,7 @@ def confirm_collective_booking(booking_id: int) -> None:
 
     Warning: not available for production nor integration environments
     """
+    _get_booking_or_raise_404(booking_id)  # check booking is linked to the provider
     try:
         booking_api.confirm_collective_booking(booking_id)
     except exceptions.InsufficientFund:
@@ -70,8 +67,6 @@ def confirm_collective_booking(booking_id: int) -> None:
         raise ForbiddenError({"code": "EDUCATIONAL_BOOKING_IS_CANCELLED"})
     except bookings_exceptions.ConfirmationLimitDateHasPassed:
         raise ForbiddenError({"code": "CONFIRMATION_LIMIT_DATE_HAS_PASSED"})
-    except exceptions.EducationalBookingNotFound:
-        raise ResourceNotFoundError({"code": constants.EDUCATIONAL_BOOKING_NOT_FOUND})
     except exceptions.EducationalDepositNotFound:
         raise ResourceNotFoundError({"code": "DEPOSIT_NOT_FOUND"})
 
