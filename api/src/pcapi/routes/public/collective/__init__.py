@@ -18,4 +18,4 @@ def install_routes(app: Flask) -> None:
     if not settings.IS_PROD:
         # do not import this route when inside production environment.
         # it should not be exposed by automatic documentation tools.
-        from .endpoints.simulate_adage_steps import bookings as simulate_adage_bookings
+        from .endpoints.adage_mock import bookings as adage_mock
