@@ -1,5 +1,6 @@
 from datetime import date
 from datetime import datetime
+from datetime import timedelta
 import decimal
 from decimal import Decimal
 import enum
@@ -128,6 +129,70 @@ class CollectiveOfferDisplayedStatus(enum.Enum):
     REIMBURSED = "REIMBURSED"
     ARCHIVED = "ARCHIVED"
     DRAFT = "DRAFT"
+
+
+class CollectiveOfferAllowedAction(enum.Enum):
+    CAN_EDIT_DETAILS = "CAN_EDIT_DETAILS"
+    CAN_EDIT_DATES = "CAN_EDIT_DATES"
+    CAN_EDIT_INSTITUTION = "CAN_EDIT_INSTITUTION"
+    CAN_EDIT_DISCOUNT = "CAN_EDIT_DISCOUNT"
+    CAN_DUPLICATE = "CAN_DUPLICATE"
+    CAN_CANCEL = "CAN_CANCEL"
+    CAN_ARCHIVE = "CAN_ARCHIVE"
+
+
+ALLOWED_ACTIONS_BY_DISPLAYED_STATUS: dict[CollectiveOfferDisplayedStatus, tuple[CollectiveOfferAllowedAction, ...]] = {
+    CollectiveOfferDisplayedStatus.DRAFT: (
+        CollectiveOfferAllowedAction.CAN_EDIT_DETAILS,
+        CollectiveOfferAllowedAction.CAN_EDIT_DATES,
+        CollectiveOfferAllowedAction.CAN_EDIT_INSTITUTION,
+        CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT,
+        CollectiveOfferAllowedAction.CAN_ARCHIVE,
+    ),
+    CollectiveOfferDisplayedStatus.PENDING: (CollectiveOfferAllowedAction.CAN_DUPLICATE,),
+    CollectiveOfferDisplayedStatus.ACTIVE: (
+        CollectiveOfferAllowedAction.CAN_EDIT_DETAILS,
+        CollectiveOfferAllowedAction.CAN_EDIT_DATES,
+        CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT,
+        CollectiveOfferAllowedAction.CAN_DUPLICATE,
+        CollectiveOfferAllowedAction.CAN_ARCHIVE,
+    ),
+    CollectiveOfferDisplayedStatus.REJECTED: (
+        CollectiveOfferAllowedAction.CAN_DUPLICATE,
+        CollectiveOfferAllowedAction.CAN_ARCHIVE,
+    ),
+    CollectiveOfferDisplayedStatus.PREBOOKED: (
+        CollectiveOfferAllowedAction.CAN_EDIT_DETAILS,
+        CollectiveOfferAllowedAction.CAN_EDIT_DATES,
+        CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT,
+        CollectiveOfferAllowedAction.CAN_DUPLICATE,
+        CollectiveOfferAllowedAction.CAN_CANCEL,
+    ),
+    CollectiveOfferDisplayedStatus.BOOKED: (
+        CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT,
+        CollectiveOfferAllowedAction.CAN_DUPLICATE,
+        CollectiveOfferAllowedAction.CAN_CANCEL,
+    ),
+    CollectiveOfferDisplayedStatus.EXPIRED: (
+        CollectiveOfferAllowedAction.CAN_EDIT_DATES,
+        CollectiveOfferAllowedAction.CAN_ARCHIVE,
+    ),
+    CollectiveOfferDisplayedStatus.ENDED: (  # after 48h, cannot edit discount or cancel anymore
+        CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT,
+        CollectiveOfferAllowedAction.CAN_DUPLICATE,
+        CollectiveOfferAllowedAction.CAN_CANCEL,
+    ),
+    CollectiveOfferDisplayedStatus.REIMBURSED: (
+        CollectiveOfferAllowedAction.CAN_DUPLICATE,
+        CollectiveOfferAllowedAction.CAN_ARCHIVE,
+    ),
+    CollectiveOfferDisplayedStatus.CANCELLED: (
+        CollectiveOfferAllowedAction.CAN_DUPLICATE,
+        CollectiveOfferAllowedAction.CAN_ARCHIVE,
+    ),
+    CollectiveOfferDisplayedStatus.ARCHIVED: (CollectiveOfferAllowedAction.CAN_DUPLICATE,),
+    CollectiveOfferDisplayedStatus.INACTIVE: (),
+}
 
 
 class EducationalBookingStatus(enum.Enum):
@@ -567,6 +632,14 @@ class CollectiveOffer(
         return {"start": self.start, "end": self.end}
 
     @property
+    def is_two_days_past_end(self) -> bool:
+        end = self.end
+        if end is None:
+            return False
+
+        return end + timedelta(days=2) < datetime.utcnow()
+
+    @property
     def hasBookingLimitDatetimePassed(self) -> bool:
         if self.collectiveStock:
             return self.collectiveStock.hasBookingLimitDatetimePassed
@@ -698,6 +771,25 @@ class CollectiveOffer(
                 return CollectiveOfferDisplayedStatus.CANCELLED
 
         return CollectiveOfferDisplayedStatus.ACTIVE
+
+    @property
+    def allowed_actions(self) -> list[CollectiveOfferAllowedAction]:
+        displayed_status = self.displayedStatus
+        allowed_actions = ALLOWED_ACTIONS_BY_DISPLAYED_STATUS[displayed_status]
+
+        # an offer that has ended more than 48 hours ago cannot be edited or canceled
+        if displayed_status == CollectiveOfferDisplayedStatus.ENDED and self.is_two_days_past_end:
+            return list(
+                action
+                for action in allowed_actions
+                if action
+                not in {
+                    CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT,
+                    CollectiveOfferAllowedAction.CAN_CANCEL,
+                }
+            )
+
+        return list(allowed_actions)
 
     @property
     def subcategory(self) -> subcategories.Subcategory | None:
@@ -935,6 +1027,11 @@ class CollectiveOfferTemplate(
             return CollectiveOfferDisplayedStatus.INACTIVE
 
         return CollectiveOfferDisplayedStatus.ACTIVE
+
+    @property
+    def allowed_actions(self) -> None:
+        # TODO: this will be implemented once the actions are defined for an OfferTemplate
+        return None
 
     @property
     def start(self) -> datetime | None:

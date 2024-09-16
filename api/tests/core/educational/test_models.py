@@ -8,8 +8,10 @@ from sqlalchemy import exc as sa_exc
 from pcapi.core.educational import exceptions
 from pcapi.core.educational import factories
 from pcapi.core.educational.factories import create_collective_offer_by_status
+from pcapi.core.educational.models import ALLOWED_ACTIONS_BY_DISPLAYED_STATUS
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveOffer
+from pcapi.core.educational.models import CollectiveOfferAllowedAction
 from pcapi.core.educational.models import CollectiveOfferDisplayedStatus
 from pcapi.core.educational.models import CollectiveStock
 from pcapi.core.educational.models import EducationalDeposit
@@ -605,7 +607,7 @@ class EducationalInstitutionProgramTest:
 
 
 class CollectiveOfferDisplayedStatusTest:
-    @pytest.mark.parametrize("status", set(CollectiveOfferDisplayedStatus))
+    @pytest.mark.parametrize("status", CollectiveOfferDisplayedStatus)
     def test_get_offer_displayed_status(self, status):
         offer = create_collective_offer_by_status(status)
 
@@ -623,3 +625,43 @@ class CollectiveOfferDisplayedStatusTest:
         stock.bookingLimitDatetime = futur
 
         assert offer.displayedStatus == CollectiveOfferDisplayedStatus.ACTIVE
+
+
+class CollectiveOfferAllowedActionsTest:
+    @pytest.mark.parametrize("status", CollectiveOfferDisplayedStatus)
+    def test_get_offer_allowed_actions(self, status):
+        offer = create_collective_offer_by_status(status)
+
+        assert offer.allowed_actions == list(ALLOWED_ACTIONS_BY_DISPLAYED_STATUS[status])
+
+    def test_get_ended_offer_allowed_actions(self):
+        offer = create_collective_offer_by_status(CollectiveOfferDisplayedStatus.ENDED)
+
+        assert offer.allowed_actions == [
+            CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT,
+            CollectiveOfferAllowedAction.CAN_DUPLICATE,
+            CollectiveOfferAllowedAction.CAN_CANCEL,
+        ]
+
+        offer.collectiveStock.endDatetime = datetime.datetime.utcnow() - datetime.timedelta(days=3)
+        assert offer.allowed_actions == [
+            CollectiveOfferAllowedAction.CAN_DUPLICATE,
+        ]
+
+    def test_get_offer_template_allowed_actions(self):
+        offer = factories.CollectiveOfferTemplateFactory()
+
+        assert offer.allowed_actions == None
+
+    def test_is_two_days_past_end(self):
+        offer = factories.CollectiveOfferFactory()
+        factories.CollectiveStockFactory(collectiveOffer=offer)
+
+        assert offer.collectiveStock.endDatetime > datetime.datetime.utcnow()
+        assert not offer.is_two_days_past_end
+
+        offer.collectiveStock.endDatetime = None
+        assert not offer.is_two_days_past_end
+
+        offer.collectiveStock.endDatetime = datetime.datetime.utcnow() - datetime.timedelta(days=3)
+        assert offer.is_two_days_past_end
