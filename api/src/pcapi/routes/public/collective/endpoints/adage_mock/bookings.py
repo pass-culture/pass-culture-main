@@ -18,7 +18,7 @@ from pcapi.models.api_errors import ResourceNotFoundError
 from pcapi.repository import atomic
 from pcapi.routes.public import blueprints
 from pcapi.routes.public import spectree_schemas
-from pcapi.routes.public.collective.endpoints.simulate_adage_steps import utils
+from pcapi.routes.public.collective.endpoints.adage_mock import utils
 from pcapi.routes.public.documentation_constants import http_responses
 from pcapi.routes.public.documentation_constants import tags
 from pcapi.serialization.decorator import spectree_serialize

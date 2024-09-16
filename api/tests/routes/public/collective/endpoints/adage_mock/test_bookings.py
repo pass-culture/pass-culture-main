@@ -452,7 +452,7 @@ class UseCollectiveBookingTest(PublicAPIRestrictedEnvEndpointHelper):
             expected_error_json={"code": "BOOKING_NOT_FOUND"},
         )
 
-    @patch("pcapi.routes.public.collective.endpoints.simulate_adage_steps.bookings.finance_api")
+    @patch("pcapi.routes.public.collective.endpoints.adage_mock.bookings.finance_api")
     def test_booking_not_used_in_case_of_internal_error(self, api_mock, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         booking = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
