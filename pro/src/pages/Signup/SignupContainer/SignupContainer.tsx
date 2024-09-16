@@ -3,7 +3,7 @@ import React, { useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
-import { ProUserCreationBodyV2Model } from 'apiClient/v1'
+import { ApiError, ProUserCreationBodyV2Model } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { MandatoryInfo } from 'components/FormLayout/FormLayoutMandatoryInfo'
 import { Events } from 'core/FirebaseEvents/constants'
@@ -37,9 +37,8 @@ export const SignupContainer = (): JSX.Element => {
       if (response === RECAPTCHA_ERROR) {
         notification.error(RECAPTCHA_ERROR_MESSAGE)
       } else {
-        // TODO type this
-        // @ts-expect-error
-        onHandleFail(response.body ? response.body : {})
+        const body = (response as ApiError).body
+        onHandleFail(body ?? {})
       }
     }
   }
