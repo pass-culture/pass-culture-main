@@ -19,8 +19,6 @@ from pcapi.core.educational.adage_backends.serialize import serialize_collective
 from pcapi.core.educational.api import adage as educational_api_adage
 import pcapi.core.educational.api.national_program as national_program_api
 from pcapi.core.educational.exceptions import AdageException
-from pcapi.core.educational.models import CollectiveOffer
-from pcapi.core.educational.models import HasImageMixin
 from pcapi.core.educational.utils import get_image_from_url
 from pcapi.core.external.attributes.api import update_external_pro
 from pcapi.core.mails import transactional as transactional_mails
@@ -615,7 +613,7 @@ def publish_collective_offer_template(
     return offer_template
 
 
-def delete_image(obj: HasImageMixin) -> None:
+def delete_image(obj: educational_models.HasImageMixin) -> None:
     obj.delete_image()
     db.session.commit()
     return
@@ -788,4 +786,4 @@ def get_offer_coordinates(offer: AnyCollectiveOffer) -> tuple[float | Decimal, f
 
 
 def query_has_any_archived(collective_query: BaseQuery) -> bool:
-    return collective_query.filter(CollectiveOffer.isArchived).count() > 0
+    return collective_query.filter(educational_models.CollectiveOffer.isArchived).count() > 0

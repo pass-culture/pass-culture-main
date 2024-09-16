@@ -16,6 +16,7 @@ from pcapi.core.categories.subcategories_v2 import SubcategoryIdEnum
 from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveOffer
+from pcapi.core.educational.models import CollectiveOfferAllowedAction
 from pcapi.core.educational.models import CollectiveOfferDisplayedStatus
 from pcapi.core.educational.models import CollectiveOfferTemplate
 from pcapi.core.educational.models import CollectiveStock
@@ -153,6 +154,7 @@ class CollectiveOfferResponseModel(BaseModel):
     venue: base_serializers.ListOffersVenueResponseModel
     status: CollectiveOfferStatus
     displayedStatus: CollectiveOfferDisplayedStatus
+    allowedActions: list[CollectiveOfferAllowedAction] | None
     educationalInstitution: EducationalInstitutionResponseModel | None
     interventionArea: list[str]
     templateId: str | None
@@ -207,6 +209,7 @@ def _serialize_offer_paginated(offer: CollectiveOffer | CollectiveOfferTemplate)
         venue=_serialize_venue(offer.venue),  # type: ignore[arg-type]
         status=offer.status.name,
         displayedStatus=offer.displayedStatus,
+        allowedActions=offer.allowed_actions,
         isShowcase=is_offer_template,
         educationalInstitution=EducationalInstitutionResponseModel.from_orm(institution) if institution else None,
         interventionArea=offer.interventionArea,
@@ -433,11 +436,13 @@ class GetCollectiveOfferResponseModel(GetCollectiveOfferBaseResponseModel):
     formats: typing.Sequence[subcategories.EacFormat] | None
     isTemplate: bool = False
     dates: TemplateDatesModel | None
+    allowedActions: list[CollectiveOfferAllowedAction] | None
 
     @classmethod
     def from_orm(cls, offer: CollectiveOffer) -> "GetCollectiveOfferResponseModel":
         result = super().from_orm(offer)
         result.formats = offer.get_formats()
+        result.allowedActions = offer.allowed_actions
 
         if result.status == CollectiveOfferStatus.INACTIVE.name:
             result.isActive = False

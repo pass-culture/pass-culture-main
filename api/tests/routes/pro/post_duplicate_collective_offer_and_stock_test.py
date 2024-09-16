@@ -164,6 +164,13 @@ class Returns200Test:
                 "end": format_into_utc_date(offer.collectiveStock.endDatetime),
                 "start": format_into_utc_date(offer.collectiveStock.startDatetime),
             },
+            "allowedActions": [
+                "CAN_EDIT_DETAILS",
+                "CAN_EDIT_DATES",
+                "CAN_EDIT_INSTITUTION",
+                "CAN_EDIT_DISCOUNT",
+                "CAN_ARCHIVE",
+            ],
         }
 
     def test_duplicate_collective_offer_without_subcategoryId(self, client):

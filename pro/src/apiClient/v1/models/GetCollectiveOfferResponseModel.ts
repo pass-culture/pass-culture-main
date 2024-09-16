@@ -3,6 +3,7 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { CollectiveBookingStatus } from './CollectiveBookingStatus';
+import type { CollectiveOfferAllowedAction } from './CollectiveOfferAllowedAction';
 import type { CollectiveOfferDisplayedStatus } from './CollectiveOfferDisplayedStatus';
 import type { CollectiveOfferOfferVenueResponseModel } from './CollectiveOfferOfferVenueResponseModel';
 import type { CollectiveOfferStatus } from './CollectiveOfferStatus';
@@ -18,6 +19,7 @@ import type { StudentLevels } from './StudentLevels';
 import type { SubcategoryIdEnum } from './SubcategoryIdEnum';
 import type { TemplateDatesModel } from './TemplateDatesModel';
 export type GetCollectiveOfferResponseModel = {
+  allowedActions?: Array<CollectiveOfferAllowedAction> | null;
   audioDisabilityCompliant?: boolean | null;
   bookingEmails: Array<string>;
   collectiveStock?: GetCollectiveOfferCollectiveStockResponseModel | null;
