@@ -175,6 +175,7 @@ def log_consult_playlist_element(
             "playlistId": body.playlistId,
             "from": body.iframeFrom,
             "queryId": body.queryId,
+            "isMobile": body.isMobile,
         },
         user_email=authenticated_information.email,
         uai=authenticated_information.uai,
