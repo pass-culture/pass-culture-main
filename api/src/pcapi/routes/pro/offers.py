@@ -641,7 +641,11 @@ def get_product_by_ean(ean: str, offerer_id: int) -> offers_serialize.GetProduct
     offerer = (
         offerers_models.Offerer.query.filter_by(id=offerer_id)
         .options(load_only(offerers_models.Offerer.id))
-        .options(joinedload(offerers_models.Offerer.managedVenues).load_only(offerers_models.Venue.id))
+        .options(
+            joinedload(offerers_models.Offerer.managedVenues).load_only(
+                offerers_models.Venue.id, offerers_models.Venue.isVirtual
+            )
+        )
         .one_or_none()
     )
     check_product_cgu_and_offerer(product, ean, offerer)
