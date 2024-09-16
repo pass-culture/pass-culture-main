@@ -1924,7 +1924,11 @@ def move_event_offer(
 
 
 def update_used_stock_price(
-    stock: models.Stock, new_price: float | None = None, price_percent: decimal.Decimal | None = None
+    stock: models.Stock,
+    new_price: float | None = None,
+    price_percent: decimal.Decimal | None = None,
+    update_price_category: bool = False,
+    update_bookings: bool = True,
 ) -> None:
     if not stock.offer.isEvent:
         raise ValueError("Only stocks associated with an event offer can be edited with used bookings")
@@ -1933,36 +1937,49 @@ def update_used_stock_price(
 
     if new_price:
         stock.price = new_price
-        bookings_models.Booking.query.filter(
-            bookings_models.Booking.stockId == stock.id,
-        ).update({bookings_models.Booking.amount: func.least(new_price, bookings_models.Booking.amount)})
+        if update_bookings:
+            bookings_models.Booking.query.filter(
+                bookings_models.Booking.stockId == stock.id,
+            ).update(
+                {bookings_models.Booking.amount: func.least(new_price, bookings_models.Booking.amount)},
+            )
+        if update_price_category:
+            models.PriceCategory.query.filter(models.PriceCategory.id == stock.priceCategoryId).update(
+                {models.PriceCategory.price: new_price}
+            )
     elif price_percent:
         stock.price = round(stock.price * price_percent, 2)
-        bookings_models.Booking.query.filter(
-            bookings_models.Booking.stockId == stock.id,
-        ).update({bookings_models.Booking.amount: bookings_models.Booking.amount * price_percent})
+        if update_bookings:
+            bookings_models.Booking.query.filter(
+                bookings_models.Booking.stockId == stock.id,
+            ).update({bookings_models.Booking.amount: bookings_models.Booking.amount * price_percent})
+        if update_price_category:
+            models.PriceCategory.query.filter(models.PriceCategory.id == stock.priceCategoryId).update(
+                {models.PriceCategory.price: models.PriceCategory.price * price_percent}
+            )
 
-    first_finance_event = (
-        finance_models.FinanceEvent.query.join(bookings_models.Booking, finance_models.FinanceEvent.booking)
-        .filter(
-            finance_models.FinanceEvent.status != finance_models.FinanceEventStatus.CANCELLED,
-            bookings_models.Booking.stockId == stock.id,
+    if update_bookings:
+        first_finance_event = (
+            finance_models.FinanceEvent.query.join(bookings_models.Booking, finance_models.FinanceEvent.booking)
+            .filter(
+                finance_models.FinanceEvent.status != finance_models.FinanceEventStatus.CANCELLED,
+                bookings_models.Booking.stockId == stock.id,
+            )
+            .order_by(
+                finance_models.FinanceEvent.pricingOrderingDate,
+                finance_models.FinanceEvent.id,
+            )
+            .options(
+                sa.orm.joinedload(finance_models.FinanceEvent.booking),
+            )
+            .first()
         )
-        .order_by(
-            finance_models.FinanceEvent.pricingOrderingDate,
-            finance_models.FinanceEvent.id,
-        )
-        .options(
-            sa.orm.joinedload(finance_models.FinanceEvent.booking),
-        )
-        .first()
-    )
 
-    if first_finance_event:
-        finance_api.force_event_repricing(
-            event=first_finance_event,
-            reason=finance_models.PricingLogReason.CHANGE_AMOUNT,
-        )
+        if first_finance_event:
+            finance_api.force_event_repricing(
+                event=first_finance_event,
+                reason=finance_models.PricingLogReason.CHANGE_AMOUNT,
+            )
 
 
 def upsert_movie_product_from_provider(

@@ -51,6 +51,8 @@ from pcapi.utils import string as string_utils
 from . import forms
 
 
+PriceChangeEffect = namedtuple("PriceChangeEffect", ["quantity", "old_price", "new_price", "warning"])
+
 list_offers_blueprint = utils.child_backoffice_blueprint(
     "offer",
     __name__,
@@ -908,36 +910,70 @@ def edit_offer_stock(offer_id: int, stock_id: int) -> utils.BackofficeResponse:
         flash("Ce stock n'est pas éditable.", "warning")
         return redirect(url_for("backoffice_web.offer.get_offer_details", offer_id=offer_id), 303)
 
-    form = forms.EditStockForm(old_price=stock.price)
-    old_price = stock.price
+    if stock.priceCategoryId:
+        form = forms.EditStockWithPriceCategoryForm(old_price=stock.price)
+    else:
+        form = forms.EditStockForm(old_price=stock.price)
 
+    old_price = stock.price
+    new_price = 0.0  # helps pylint
     if not form.validate():
         flash(utils.build_form_error_msg(form), "warning")
         return redirect(url_for("backoffice_web.offer.get_offer_details", offer_id=offer_id), 303)
 
+    linked_stocks = []
+    update_linked_stock_bookings = False
+    if stock.priceCategoryId:
+        update_linked_stock_bookings = form.update_pricecategory.data
+        linked_stocks = offers_models.Stock.query.filter(
+            offers_models.Stock.priceCategoryId == stock.priceCategoryId,
+            offers_models.Stock.id != stock.id,
+        ).all()
+
+    if update_linked_stock_bookings and linked_stocks:
+        editable_stocks = _get_editable_stock(offer_id)
+        if not editable_stocks.issuperset(s.id for s in linked_stocks):
+            flash("Certains stock de la catégorie de prix ne sont pas éditables", "warning")
+            return redirect(url_for("backoffice_web.offer.get_offer_details", offer_id=offer_id), 303)
+
     if form.price.data:
-        offers_api.update_used_stock_price(stock=stock, new_price=form.price.data)
-        logger.info(
-            "A past stock price was updated by an administrator",
-            extra={
-                "user_id": current_user.id,
-                "stock_id": stock_id,
-                "old_price": float(old_price),
-                "new_price": float(form.price.data),
-            },
+        new_price = float(form.price.data)
+        offers_api.update_used_stock_price(
+            stock=stock,
+            new_price=form.price.data,
+            update_price_category=bool(stock.priceCategoryId),
         )
+        for stock in linked_stocks:
+            offers_api.update_used_stock_price(
+                stock=stock,
+                new_price=form.price.data,
+                update_bookings=update_linked_stock_bookings,
+            )
+
     if form.percent.data:
         price_percent = decimal.Decimal((100 - float(form.percent.data)) / 100)
-        offers_api.update_used_stock_price(stock=stock, price_percent=price_percent)
-        logger.info(
-            "A past stock price was updated by an administrator",
-            extra={
-                "user_id": current_user.id,
-                "stock_id": stock_id,
-                "old_price": float(old_price),
-                "new_price": float(round(old_price * price_percent, 2)),
-            },
+        new_price = float(round(old_price * price_percent, 2))
+        offers_api.update_used_stock_price(
+            stock=stock,
+            price_percent=price_percent,
+            update_price_category=bool(stock.priceCategoryId),
         )
+        for stock in linked_stocks:
+            offers_api.update_used_stock_price(
+                stock=stock,
+                price_percent=price_percent,
+                update_bookings=update_linked_stock_bookings,
+            )
+
+    logger.info(
+        "A past stock price was updated by an administrator",
+        extra={
+            "user_id": current_user.id,
+            "stock_id": stock_id,
+            "old_price": float(old_price),
+            "new_price": new_price,
+        },
+    )
 
     flash(f"Le stock {stock_id} a été mis à jour.", "success")
     db.session.commit()
@@ -960,29 +996,22 @@ def confirm_offer_stock(offer_id: int, stock_id: int) -> utils.BackofficeRespons
         alert = "Ce stock n'est pas éditable."
         return _generate_offer_stock_edit_form(offer_id, stock_id, alert=alert)
 
-    form = forms.EditStockForm(old_price=stock.price)
+    if stock.priceCategoryId:
+        form = forms.EditStockWithPriceCategoryForm(old_price=stock.price)
+    else:
+        form = forms.EditStockForm(old_price=stock.price)
 
     if not form.validate():
         return _generate_offer_stock_edit_form(offer_id, stock_id, form)
 
-    alert = ""
-    Effect = namedtuple("Effect", ["quantity", "old_price", "new_price", "warning"])
-    price_effect = []
-    for quantity, amount in _get_count_booking_prices_for_stock(stock):
-        if form.price.data:
-            new_price = min(amount, form.price.data)
-            if new_price != form.price.data:
-                alert = "Cette modification amènerait à augmenter le prix de certaines réservations. Celles-ci ne seront pas changées"
-            price_effect.append(Effect(quantity, amount, new_price, new_price != form.price.data))
-        elif form.percent.data:
-            price_effect.append(
-                Effect(
-                    quantity,
-                    amount,
-                    round((amount * (1 - form.percent.data / 100)), 2),
-                    False,
-                )
-            )
+    direct_price_effect, direct_alert = _generate_booking_price_change([stock], form)
+    if stock.priceCategoryId and form.update_pricecategory.data:
+        linked_stocks = offers_models.Stock.query.filter(
+            offers_models.Stock.priceCategoryId == stock.priceCategoryId, offers_models.Stock.id != stock.id
+        )
+        indirect_price_effect, indirect_alert = _generate_booking_price_change(linked_stocks, form)
+    else:
+        indirect_price_effect, indirect_alert = [], ""
 
     return render_template(
         "offer/confirm_stock_price_change.html",
@@ -993,10 +1022,34 @@ def confirm_offer_stock(offer_id: int, stock_id: int) -> utils.BackofficeRespons
         button_text="Continuer",
         information="Nombre de réservations actives par prix :",
         data_turbo="true",
-        price_effect=price_effect,
+        direct_price_effect=direct_price_effect,
+        indirect_price_effect=indirect_price_effect,
         stock=stock,
-        alert=alert,
+        alert=direct_alert or indirect_alert,
     )
+
+
+def _generate_booking_price_change(
+    stocks: list[offers_models.Stock], form: forms.EditStockForm
+) -> tuple[list[PriceChangeEffect], str]:
+    price_effect = []
+    alert = ""
+    for quantity, amount in _get_count_booking_prices_for_stocks(stocks):
+        if form.price.data:
+            new_price = min(amount, form.price.data)
+            if new_price != form.price.data:
+                alert = "Cette modification amènerait à augmenter le prix de certaines réservations. Celles-ci ne seront pas changées"
+            price_effect.append(PriceChangeEffect(quantity, amount, new_price, new_price != form.price.data))
+        elif form.percent.data:
+            price_effect.append(
+                PriceChangeEffect(
+                    quantity,
+                    amount,
+                    round((amount * (1 - form.percent.data / 100)), 2),
+                    False,
+                )
+            )
+    return price_effect, alert
 
 
 @list_offers_blueprint.route("/<int:offer_id>/stock/<int:stock_id>/edit", methods=["GET"])
@@ -1031,8 +1084,13 @@ def _generate_offer_stock_edit_form(
     alert: str | None = None,
 ) -> utils.BackofficeResponse:
     stock = offers_models.Stock.query.filter_by(id=stock_id).one()
+    print(stock.priceCategoryId)
+    if not form:
+        if stock.priceCategoryId:
+            form = forms.EditStockWithPriceCategoryForm(old_price=stock.price)
+        else:
+            form = forms.EditStockForm(old_price=stock.price)
 
-    form = form or forms.EditStockForm(old_price=stock.price)
     return render_template(
         "components/turbo/modal_form.html",
         form=form,
@@ -1042,21 +1100,22 @@ def _generate_offer_stock_edit_form(
         button_text="Continuer",
         information="Nombre de réservations actives par prix :",
         additional_data=(
-            (f"{q} réservation{pluralize(q)}", format_amount(a)) for q, a in _get_count_booking_prices_for_stock(stock)
+            (f"{q} réservation{pluralize(q)}", format_amount(a))
+            for q, a in _get_count_booking_prices_for_stocks([stock])
         ),
         data_turbo="true",
         alert=alert,
     )
 
 
-def _get_count_booking_prices_for_stock(stock: offers_models.Stock) -> list[tuple[int, decimal.Decimal]]:
+def _get_count_booking_prices_for_stocks(stocks: list[offers_models.Stock]) -> list[tuple[int, decimal.Decimal]]:
     bookings = (
         bookings_models.Booking.query.with_entities(
             bookings_models.Booking.amount,
             sa.func.count(bookings_models.Booking.id).label("quantity"),
         )
         .filter(
-            bookings_models.Booking.stockId == stock.id,
+            bookings_models.Booking.stockId.in_(s.id for s in stocks),
             bookings_models.Booking.status != bookings_models.BookingStatus.CANCELLED,
         )
         .group_by(

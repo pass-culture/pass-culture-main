@@ -466,3 +466,9 @@ class EditStockForm(FlaskForm):
             self.percent.errors += error
             return False
         return super().validate()
+
+
+class EditStockWithPriceCategoryForm(EditStockForm):
+    update_pricecategory = fields.PCSwitchBooleanField(
+        "Modifier toute la catégorie de prix",
+    )

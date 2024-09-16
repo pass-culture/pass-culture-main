@@ -2857,6 +2857,225 @@ class EditOfferStockTest(PostEndpointHelper):
         assert event.booking.stock.price == decimal.Decimal("10.00")
         assert event.booking.amount == decimal.Decimal("5.00")
 
+    def test_edit_stock_with_price_category_by_value(self, authenticated_client):
+        offer = offers_factories.OfferFactory(subcategoryId=subcategories.CONFERENCE.id)
+        price_category = offers_factories.PriceCategoryFactory(
+            offer=offer,
+            price=decimal.Decimal("123.45"),
+        )
+        stock_to_edit = offers_factories.StockFactory(
+            offer=offer,
+            price=decimal.Decimal("123.45"),
+            priceCategory=price_category,
+        )
+        booking_to_edit = bookings_factories.UsedBookingFactory(
+            stock=stock_to_edit,
+            amount=decimal.Decimal("123.45"),
+        )
+        other_stock = offers_factories.StockFactory(
+            offer=offer,
+            price=decimal.Decimal("123.45"),
+            priceCategory=price_category,
+        )
+        other_booking = bookings_factories.UsedBookingFactory(
+            stock=other_stock,
+            amount=decimal.Decimal("123.45"),
+        )
+
+        response = self.post_to_endpoint(
+            authenticated_client, offer_id=offer.id, stock_id=stock_to_edit.id, form={"price": "50,1"}
+        )
+
+        db.session.refresh(booking_to_edit)
+        db.session.refresh(stock_to_edit)
+        db.session.refresh(other_booking)
+        db.session.refresh(other_stock)
+        db.session.refresh(price_category)
+
+        assert response.status_code == 303
+
+        assert stock_to_edit.price == decimal.Decimal("50.1")
+        assert booking_to_edit.amount == decimal.Decimal("50.1")
+        assert price_category.price == decimal.Decimal("50.1")
+        assert other_stock.price == decimal.Decimal("50.1")
+        assert other_booking.amount == decimal.Decimal("123.45")
+
+    def test_edit_stock_with_price_category_by_percent(self, authenticated_client):
+        offer = offers_factories.OfferFactory(subcategoryId=subcategories.CONFERENCE.id)
+        price_category = offers_factories.PriceCategoryFactory(
+            offer=offer,
+            price=decimal.Decimal("100"),
+        )
+        stock_to_edit = offers_factories.StockFactory(
+            offer=offer,
+            price=decimal.Decimal("100"),
+            priceCategory=price_category,
+        )
+        booking_to_edit = bookings_factories.UsedBookingFactory(
+            stock=stock_to_edit,
+            amount=decimal.Decimal("100"),
+        )
+        other_stock = offers_factories.StockFactory(
+            offer=offer,
+            price=decimal.Decimal("100"),
+            priceCategory=price_category,
+        )
+        other_booking = bookings_factories.UsedBookingFactory(
+            stock=other_stock,
+            amount=decimal.Decimal("100"),
+        )
+
+        response = self.post_to_endpoint(
+            authenticated_client, offer_id=offer.id, stock_id=stock_to_edit.id, form={"percent": "10,0"}
+        )
+
+        db.session.refresh(booking_to_edit)
+        db.session.refresh(stock_to_edit)
+        db.session.refresh(other_booking)
+        db.session.refresh(other_stock)
+        db.session.refresh(price_category)
+
+        assert response.status_code == 303
+
+        assert stock_to_edit.price == decimal.Decimal("90")
+        assert booking_to_edit.amount == decimal.Decimal("90")
+        assert price_category.price == decimal.Decimal("90")
+        assert other_stock.price == decimal.Decimal("90")
+        assert other_booking.amount == decimal.Decimal("100")
+
+    def test_edit_all_bookings_in_price_category_by_value(self, authenticated_client):
+        offer = offers_factories.OfferFactory(subcategoryId=subcategories.CONFERENCE.id)
+        price_category = offers_factories.PriceCategoryFactory(offer=offer, price=decimal.Decimal("123.45"))
+        stock_to_edit = offers_factories.StockFactory(
+            offer=offer,
+            price=decimal.Decimal("123.45"),
+            priceCategory=price_category,
+        )
+        booking_to_edit = bookings_factories.UsedBookingFactory(
+            stock=stock_to_edit,
+            amount=decimal.Decimal("123.45"),
+        )
+        other_stock = offers_factories.StockFactory(
+            offer=offer,
+            price=decimal.Decimal("123.45"),
+            priceCategory=price_category,
+        )
+        other_booking = bookings_factories.UsedBookingFactory(
+            stock=other_stock,
+            amount=decimal.Decimal("123.45"),
+        )
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            offer_id=offer.id,
+            stock_id=stock_to_edit.id,
+            form={"price": "50,1", "update_pricecategory": "true"},
+        )
+
+        db.session.refresh(booking_to_edit)
+        db.session.refresh(stock_to_edit)
+        db.session.refresh(other_booking)
+        db.session.refresh(other_stock)
+        db.session.refresh(price_category)
+
+        assert response.status_code == 303
+
+        assert stock_to_edit.price == decimal.Decimal("50.1")
+        assert booking_to_edit.amount == decimal.Decimal("50.1")
+        assert price_category.price == decimal.Decimal("50.1")
+        assert other_stock.price == decimal.Decimal("50.1")
+        assert other_booking.amount == decimal.Decimal("50.1")
+
+    def test_edit_all_bookings_in_price_category_by_percent(self, authenticated_client):
+        offer = offers_factories.OfferFactory(subcategoryId=subcategories.CONFERENCE.id)
+        price_category = offers_factories.PriceCategoryFactory(offer=offer, price=decimal.Decimal("100"))
+        stock_to_edit = offers_factories.StockFactory(
+            offer=offer,
+            price=decimal.Decimal("100"),
+            priceCategory=price_category,
+        )
+        booking_to_edit = bookings_factories.UsedBookingFactory(
+            stock=stock_to_edit,
+            amount=decimal.Decimal("100"),
+        )
+        other_stock = offers_factories.StockFactory(
+            offer=offer,
+            price=decimal.Decimal("100"),
+            priceCategory=price_category,
+        )
+        other_booking = bookings_factories.UsedBookingFactory(
+            stock=other_stock,
+            amount=decimal.Decimal("100"),
+        )
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            offer_id=offer.id,
+            stock_id=stock_to_edit.id,
+            form={"percent": "10", "update_pricecategory": "true"},
+        )
+
+        db.session.refresh(booking_to_edit)
+        db.session.refresh(stock_to_edit)
+        db.session.refresh(other_booking)
+        db.session.refresh(other_stock)
+        db.session.refresh(price_category)
+
+        assert response.status_code == 303
+
+        assert stock_to_edit.price == decimal.Decimal("90.0")
+        assert booking_to_edit.amount == decimal.Decimal("90.0")
+        assert price_category.price == decimal.Decimal("90.0")
+        assert other_stock.price == decimal.Decimal("90.0")
+        assert other_booking.amount == decimal.Decimal("90.0")
+
+    def test_edit_stock_with_price_category_not_editable(self, authenticated_client):
+        offer = offers_factories.OfferFactory(subcategoryId=subcategories.CONFERENCE.id)
+        price_category = offers_factories.PriceCategoryFactory(offer=offer, price=decimal.Decimal("100"))
+        stock_to_edit = offers_factories.StockFactory(
+            offer=offer,
+            price=decimal.Decimal("100"),
+            priceCategory=price_category,
+        )
+        booking_to_edit = bookings_factories.UsedBookingFactory(
+            stock=stock_to_edit,
+            amount=decimal.Decimal("100"),
+        )
+        other_stock = offers_factories.StockFactory(
+            offer=offer,
+            price=decimal.Decimal("100"),
+            priceCategory=price_category,
+        )
+        other_booking = bookings_factories.ReimbursedBookingFactory(
+            stock=other_stock,
+            amount=decimal.Decimal("100"),
+        )
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            offer_id=offer.id,
+            stock_id=stock_to_edit.id,
+            form={"percent": "10", "update_pricecategory": "true"},
+            follow_redirects=True,
+        )
+
+        db.session.refresh(booking_to_edit)
+        db.session.refresh(stock_to_edit)
+        db.session.refresh(other_booking)
+        db.session.refresh(other_stock)
+        db.session.refresh(price_category)
+
+        assert response.status_code == 200
+
+        assert stock_to_edit.price == decimal.Decimal("100.0")
+        assert booking_to_edit.amount == decimal.Decimal("100.0")
+        assert price_category.price == decimal.Decimal("100.0")
+        assert other_stock.price == decimal.Decimal("100.0")
+        assert other_booking.amount == decimal.Decimal("100.0")
+        assert "Certains stock de la catégorie de prix ne sont pas éditables" in html_parser.extract_alert(
+            response.data
+        )
+
 
 class DownloadBookingsCSVTest(GetEndpointHelper):
     endpoint = "backoffice_web.offer.download_bookings_csv"
