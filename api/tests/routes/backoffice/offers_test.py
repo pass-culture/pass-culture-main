@@ -2816,7 +2816,7 @@ class EditOfferStockTest(PostEndpointHelper):
         response = authenticated_client.get(url_for("backoffice_web.offer.get_offer_details", offer_id=offer.id))
         assert response.status_code == 200
         assert (
-            "Les données envoyées comportent des erreurs. Réduction en pourcent (%) : La réduction du prix doit être entre 0 % et 100 %."
+            "Les données envoyées comportent des erreurs. Réduction en pourcentage (%) : La réduction du prix doit être entre 0 % et 100 %."
             in html_parser.extract_alert(response.data)
         )
 
@@ -2857,7 +2857,7 @@ class EditOfferStockTest(PostEndpointHelper):
         response = authenticated_client.get(url_for("backoffice_web.offer.get_offer_details", offer_id=offer.id))
         assert response.status_code == 200
         assert (
-            "Les données envoyées comportent des erreurs. Nouveau prix : Un seul des deux champs est utilisable à la fois ; Réduction en pourcent (%) : Un seul des deux champs est utilisable à la fois ;"
+            "Les données envoyées comportent des erreurs. Nouveau prix : Un seul des deux champs est utilisable à la fois ; Réduction en pourcentage (%) : Un seul des deux champs est utilisable à la fois ;"
             in html_parser.extract_alert(response.data)
         )
 
