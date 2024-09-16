@@ -218,7 +218,7 @@ def reset_collective_booking(booking_id: int) -> None:
         raise ApiErrors({"code": "FAILED_TO_SET_BACK_BOOKING_TO_PENDING"}, status_code=500)
 
 
-@blueprints.public_api.route("/v2/collective/adage_mock/bookings/<int:booking_id>/repay", methods=["POST"])
+@blueprints.public_api.route("/v2/collective/adage_mock/bookings/<int:booking_id>/reimburse", methods=["POST"])
 @utils.exclude_prod_environment
 @provider_api_key_required
 @spectree_serialize(
@@ -234,9 +234,9 @@ def reset_collective_booking(booking_id: int) -> None:
         )
     ),
 )
-def repay_collective_booking(booking_id: int) -> None:
+def reimburse_collective_booking(booking_id: int) -> None:
     """
-    Mock collective booking repayment.
+    Mock collective booking reimbursement.
 
     Like this could happen within the Adage platform.
 

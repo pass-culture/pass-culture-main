@@ -450,7 +450,7 @@ class ResetCollectiveBookingTest(AdageMockEndpointHelper):
 
 
 class RepayCollectiveBookingTest(AdageMockEndpointHelper):
-    endpoint_url = "/v2/collective/adage_mock/bookings/{booking_id}/repay"
+    endpoint_url = "/v2/collective/adage_mock/bookings/{booking_id}/reimburse"
     endpoint_method = "post"
     default_path_params = {"booking_id": 1}
     default_factory = factories.UsedCollectiveBookingFactory

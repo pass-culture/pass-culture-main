@@ -11253,10 +11253,10 @@
                 ]
             }
         },
-        "/v2/collective/adage_mock/bookings/{booking_id}/repay": {
+        "/v2/collective/adage_mock/bookings/{booking_id}/reimburse": {
             "post": {
                 "description": "Like this could happen within the Adage platform.\n\n**WARNING:** this endpoint is not available from the production environment as it is a mock meant to ease the test of your integrations.",
-                "operationId": "RepayCollectiveBooking",
+                "operationId": "ReimburseCollectiveBooking",
                 "parameters": [
                     {
                         "description": "",
@@ -11301,7 +11301,7 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "summary": "Mock collective booking repayment.",
+                "summary": "Mock collective booking reimbursement.",
                 "tags": [
                     "Collective bookings Adage mock"
                 ]
