@@ -145,7 +145,7 @@ class PublicAPIVenueEndpointHelper(PublicAPIEndpointBaseHelper):
         return plain_api_key, venue_provider
 
 
-class PublicAPIRestrictedEnvEndpointHelper(PublicAPIEndpointBaseHelper):
+class PublicAPIRestrictedEnvEndpointHelper(PublicAPIVenueEndpointHelper):
     @testing.override_settings(IS_PROD=True)
     def test_should_not_be_usable_from_production_env(self, client):
         plain_api_key, _ = self.setup_provider()
@@ -190,7 +190,7 @@ class PublicAPIRestrictedEnvEndpointHelper(PublicAPIEndpointBaseHelper):
         assert response.status_code == expected_status_code, self._format_wrong_status_code(
             response, expected_status_code
         )
-        if expected_error_json:
+        if expected_error_json is not None:
             for key, msg in expected_error_json.items():
                 assert response.json.get(key) == msg, f"[{key}] expected: {msg}, got: '{response.json.get(key)}'"
                 assert response.json.get(key) == msg, self._format_unexpected_json_error(response, key, msg)
