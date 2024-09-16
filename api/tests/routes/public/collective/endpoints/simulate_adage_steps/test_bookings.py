@@ -1,15 +1,13 @@
-import datetime
 from unittest.mock import patch
 
 import pytest
 
 from pcapi.core.educational import factories
 from pcapi.core.educational import models
-import pcapi.core.offerers.models as offerers_models
-import pcapi.core.providers.factories as providers_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_features
 
+from tests.conftest import TestClient
 from tests.routes.public.helpers import PublicAPIRestrictedEnvEndpointHelper
 from tests.routes.public.helpers import assert_attribute_does_not_change
 from tests.routes.public.helpers import assert_attribute_value_changes_to
@@ -18,101 +16,46 @@ from tests.routes.public.helpers import assert_attribute_value_changes_to
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-def _get_offerer(provider):
-    offerer = offerers_models.OffererProvider.query.filter_by(provider=provider).first().offerer
-
-    if not offerer:
-        offerer = providers_factories.OffererProviderFactory(
-            provider=provider,
-        ).offerer
-
-    return offerer
-
-
-def _build_current_year():
-    return factories.EducationalYearFactory(
-        beginningDate=datetime.datetime(factories._get_current_educational_year(), 9, 1),
-        expirationDate=datetime.datetime(factories._get_current_educational_year() + 1, 8, 31, 23, 59),
-    )
-
-
-def _build_booking(factory, provider, venue=None, year=None, institution=None):
-    if not year:
-        year = _build_current_year()
-
-    if not institution:
-        institution = factories.EducationalDepositFactory(educationalYear=year).educationalInstitution
-
-    if not venue:
-        offerer = _get_offerer(provider)
-        venue = providers_factories.VenueProviderFactory(venue__managingOfferer=offerer, provider=provider).venue
-
-    return factory(
-        educationalYear=year,
-        educationalInstitution=institution,
-        collectiveStock__collectiveOffer__provider=provider,
-        collectiveStock__collectiveOffer__venue=venue,
-    )
-
-
-def build_pending_booking(provider, venue=None, institution=None, year=None):
-    return _build_booking(
-        factory=factories.PendingCollectiveBookingFactory,
-        provider=provider,
-        venue=venue,
-        institution=institution,
-        year=year,
-    )
-
-
-def build_confirmed_booking(provider, venue=None, institution=None, year=None):
-    return _build_booking(
-        factory=factories.ConfirmedCollectiveBookingFactory,
-        provider=provider,
-        venue=venue,
-        institution=institution,
-        year=year,
-    )
-
-
-def build_used_booking(provider, venue=None, institution=None, year=None):
-    return _build_booking(
-        factory=factories.UsedCollectiveBookingFactory,
-        provider=provider,
-        venue=venue,
-        institution=institution,
-        year=year,
-    )
-
-
-def build_reimbursed_booking(provider, venue=None, institution=None, year=None):
-    return _build_booking(
-        factory=factories.ReimbursedCollectiveBookingFactory,
-        provider=provider,
-        venue=venue,
-        institution=institution,
-        year=year,
-    )
-
-
-def build_cancelled_booking(provider, venue=None, institution=None, year=None):
-    return _build_booking(
-        factory=factories.CancelledCollectiveBookingFactory,
-        provider=provider,
-        venue=venue,
-        institution=institution,
-        year=year,
-    )
-
-
 class ConfirmCollectiveBookingTest(PublicAPIRestrictedEnvEndpointHelper):
     endpoint_url = "/v2/collective/adage_mock/bookings/{booking_id}/confirm"
     endpoint_method = "post"
     default_path_params = {"booking_id": 1}
+    default_factory = factories.PendingCollectiveBookingFactory
+
+    def setup_base_resource(self, *, factory=None, provider=None, venue=None, deposit=None) -> models.CollectiveBooking:
+        venue = venue or self.setup_venue()
+        deposit = deposit or factories.EducationalDepositFactory()
+        factory = factory or self.default_factory
+        offer = factories.CollectiveOfferFactory(provider=provider, venue=venue)
+        return factory(
+            collectiveStock__collectiveOffer=offer,
+            educationalInstitution=deposit.educationalInstitution,
+            educationalYear=deposit.educationalYear,
+        )
+
+    def test_should_raise_404_because_has_no_access_to_venue(self, client: TestClient):
+        plain_api_key, _ = self.setup_provider()
+        pending_booking = self.setup_base_resource()
+        self.assert_request_has_expected_result(
+            client.with_explicit_token(plain_api_key),
+            url_params={"booking_id": pending_booking.id},
+            expected_status_code=404,
+            expected_error_json={"code": "BOOKING_NOT_FOUND"},
+        )
+
+    def test_should_raise_404_because_venue_provider_is_inactive(self, client: TestClient):
+        plain_api_key, venue_provider = self.setup_inactive_venue_provider()
+        pending_booking = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
+        self.assert_request_has_expected_result(
+            client.with_explicit_token(plain_api_key),
+            url_params={"booking_id": pending_booking.id},
+            expected_status_code=404,
+            expected_error_json={"code": "BOOKING_NOT_FOUND"},
+        )
 
     def test_confirm_pending_booking(self, client):
-        plain_api_key, provider = self.setup_provider()
-        pending_booking = build_pending_booking(provider)
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        pending_booking = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
         auth_client = client.with_explicit_token(plain_api_key)
 
         with assert_attribute_value_changes_to(pending_booking, "status", models.CollectiveBookingStatus.CONFIRMED):
@@ -121,8 +64,12 @@ class ConfirmCollectiveBookingTest(PublicAPIRestrictedEnvEndpointHelper):
             )
 
     def test_confirm_confirmed_booking(self, client):
-        plain_api_key, provider = self.setup_provider()
-        confirmed_booking = build_confirmed_booking(provider)
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        confirmed_booking = self.setup_base_resource(
+            factory=factories.ConfirmedCollectiveBookingFactory,
+            venue=venue_provider.venue,
+            provider=venue_provider.provider,
+        )
         auth_client = client.with_explicit_token(plain_api_key)
 
         with assert_attribute_does_not_change(confirmed_booking, "status"):
@@ -130,48 +77,34 @@ class ConfirmCollectiveBookingTest(PublicAPIRestrictedEnvEndpointHelper):
                 auth_client, url_params={"booking_id": confirmed_booking.id}, expected_status_code=204
             )
 
-    def test_confirm_used_booking(self, client):
-        plain_api_key, provider = self.setup_provider()
-        used_booking = build_used_booking(provider)
+    @pytest.mark.parametrize(
+        "booking_factory,expected_status_code,expected_json",
+        [
+            (factories.UsedCollectiveBookingFactory, 403, {"code": "CONFIRMATION_LIMIT_DATE_HAS_PASSED"}),
+            (factories.ReimbursedCollectiveBookingFactory, 403, {"code": "CONFIRMATION_LIMIT_DATE_HAS_PASSED"}),
+            (factories.CancelledCollectiveBookingFactory, 403, {"code": "EDUCATIONAL_BOOKING_IS_CANCELLED"}),
+        ],
+    )
+    def test_should_raise_403_because_status_does_not_allow_confirmation(
+        self, client, booking_factory, expected_status_code, expected_json
+    ):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        booking = self.setup_base_resource(
+            factory=booking_factory, venue=venue_provider.venue, provider=venue_provider.provider
+        )
         auth_client = client.with_explicit_token(plain_api_key)
 
-        with assert_attribute_does_not_change(used_booking, "status"):
+        with assert_attribute_does_not_change(booking, "status"):
             self.assert_request_has_expected_result(
                 auth_client,
-                url_params={"booking_id": used_booking.id},
-                expected_status_code=403,
-                expected_error_json={"code": "CONFIRMATION_LIMIT_DATE_HAS_PASSED"},
-            )
-
-    def test_confirm_reimbursed_booking(self, client):
-        plain_api_key, provider = self.setup_provider()
-        reimbursed_booking = build_reimbursed_booking(provider)
-        auth_client = client.with_explicit_token(plain_api_key)
-
-        with assert_attribute_does_not_change(reimbursed_booking, "status"):
-            self.assert_request_has_expected_result(
-                auth_client,
-                url_params={"booking_id": reimbursed_booking.id},
-                expected_status_code=403,
-                expected_error_json={"code": "CONFIRMATION_LIMIT_DATE_HAS_PASSED"},
-            )
-
-    def test_confirm_cancelled_booking(self, client):
-        plain_api_key, provider = self.setup_provider()
-        cancelled_booking = build_cancelled_booking(provider)
-        auth_client = client.with_explicit_token(plain_api_key)
-
-        with assert_attribute_does_not_change(cancelled_booking, "status"):
-            self.assert_request_has_expected_result(
-                auth_client,
-                url_params={"booking_id": cancelled_booking.id},
-                expected_status_code=403,
-                expected_error_json={"code": "EDUCATIONAL_BOOKING_IS_CANCELLED"},
+                url_params={"booking_id": booking.id},
+                expected_status_code=expected_status_code,
+                expected_error_json=expected_json,
             )
 
     def test_confirm_when_insufficient_fund(self, client):
-        plain_api_key, provider = self.setup_provider()
-        pending_booking = build_pending_booking(provider)
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        pending_booking = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
         auth_client = client.with_explicit_token(plain_api_key)
 
         for deposit in pending_booking.educationalInstitution.deposits:
@@ -187,17 +120,15 @@ class ConfirmCollectiveBookingTest(PublicAPIRestrictedEnvEndpointHelper):
 
     @override_features(ENABLE_EAC_FINANCIAL_PROTECTION=True)
     def test_confirm_when_insufficient_ministry_fund(self, client):
-        plain_api_key, provider = self.setup_provider()
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
         auth_client = client.with_explicit_token(plain_api_key)
-
-        current_year = _build_current_year()
-
-        pending_booking = build_pending_booking(provider, year=current_year)
-
-        venue = pending_booking.collectiveStock.collectiveOffer.venue
-        institution = pending_booking.educationalInstitution
-
-        used_booking = build_used_booking(provider, venue=venue, institution=institution, year=current_year)
+        pending_booking = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
+        used_booking = self.setup_base_resource(
+            factory=factories.UsedCollectiveBookingFactory,
+            venue=venue_provider.venue,
+            provider=venue_provider.provider,
+            deposit=pending_booking.educationalInstitution.deposits[0],
+        )
 
         # ensure offer's stock start between september and december
         # because this validation is not ran after and before that.
@@ -221,8 +152,8 @@ class ConfirmCollectiveBookingTest(PublicAPIRestrictedEnvEndpointHelper):
             )
 
     def test_confirm_when_insufficient_temporary_fund(self, client):
-        plain_api_key, provider = self.setup_provider()
-        pending_booking = build_pending_booking(provider)
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        pending_booking = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
         auth_client = client.with_explicit_token(plain_api_key)
 
         for deposit in pending_booking.educationalInstitution.deposits:
@@ -249,8 +180,8 @@ class ConfirmCollectiveBookingTest(PublicAPIRestrictedEnvEndpointHelper):
         )
 
     def test_confirm_unknown_deposit(self, client):
-        plain_api_key, provider = self.setup_provider()
-        pending_booking = build_pending_booking(provider)
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        pending_booking = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
         auth_client = client.with_explicit_token(plain_api_key)
 
         for deposit in pending_booking.educationalInstitution.deposits:
@@ -269,214 +200,270 @@ class CancelCollectiveBookingTest(PublicAPIRestrictedEnvEndpointHelper):
     endpoint_url = "/v2/collective/adage_mock/bookings/{booking_id}/cancel"
     endpoint_method = "post"
     default_path_params = {"booking_id": 1}
+    default_factory = factories.ConfirmedCollectiveBookingFactory
 
-    # 1. get api key
-    # 2. get FF
-    # 3. get collective booking
-    # 4. get collective stock (lock for update)
-    # 5. get collective booking (refresh)
-    # 6. does pricing exists for collective booking?
-    # 7. get finance events for booking
-    # 8. update booking
-    on_success_num_queries = 8
+    on_success_num_queries = 1  # 1. get api key
+    on_success_num_queries += 1  # 2. get FF
+    on_success_num_queries += 1  # 3. get collective booking
+    on_success_num_queries += 1  # 4. get collective stock (lock for update)
+    on_success_num_queries += 1  # 5. get collective booking (refresh)
+    on_success_num_queries += 1  # 6. does pricing exists for collective booking?
+    on_success_num_queries += 1  # 7. get finance events for booking
+    on_success_num_queries += 1  # 8. update booking
 
-    def test_can_cancel_confirmed_booking(self, client):
-        plain_api_key, provider = self.setup_provider()
-        confirmed_booking = build_confirmed_booking(provider)
+    def setup_base_resource(self, *, factory=None, provider=None, venue=None, deposit=None) -> models.CollectiveBooking:
+        venue = venue or self.setup_venue()
+        deposit = deposit or factories.EducationalDepositFactory()
+        factory = factory or self.default_factory
+        offer = factories.CollectiveOfferFactory(provider=provider, venue=venue)
+        return factory(
+            collectiveStock__collectiveOffer=offer,
+            educationalInstitution=deposit.educationalInstitution,
+            educationalYear=deposit.educationalYear,
+        )
+
+    def test_should_raise_404_because_has_no_access_to_venue(self, client: TestClient):
+        plain_api_key, _ = self.setup_provider()
+        booking = self.setup_base_resource()
+        self.assert_request_has_expected_result(
+            client.with_explicit_token(plain_api_key),
+            url_params={"booking_id": booking.id},
+            expected_status_code=404,
+            expected_error_json={"code": "BOOKING_NOT_FOUND"},
+        )
+
+    def test_should_raise_404_because_venue_provider_is_inactive(self, client: TestClient):
+        plain_api_key, venue_provider = self.setup_inactive_venue_provider()
+        booking = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
+        self.assert_request_has_expected_result(
+            client.with_explicit_token(plain_api_key),
+            url_params={"booking_id": booking.id},
+            expected_status_code=404,
+            expected_error_json={"code": "BOOKING_NOT_FOUND"},
+        )
+
+    @pytest.mark.parametrize(
+        "booking_factory",
+        [
+            factories.ConfirmedCollectiveBookingFactory,
+            factories.PendingCollectiveBookingFactory,
+            factories.UsedCollectiveBookingFactory,
+        ],
+    )
+    def test_should_cancel_booking(self, client, booking_factory):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        booking = self.setup_base_resource(
+            factory=booking_factory, venue=venue_provider.venue, provider=venue_provider.provider
+        )
         auth_client = client.with_explicit_token(plain_api_key)
 
-        with assert_attribute_value_changes_to(confirmed_booking, "status", models.CollectiveBookingStatus.CANCELLED):
-            booking_id = confirmed_booking.id
+        with assert_attribute_value_changes_to(booking, "status", models.CollectiveBookingStatus.CANCELLED):
+            booking_id = booking.id
             with assert_num_queries(self.on_success_num_queries):
-                self.cancel_booking(auth_client, booking_id, status_code=204)
-
-    def test_can_cancel_pending_booking(self, client):
-        plain_api_key, provider = self.setup_provider()
-        pending_booking = build_pending_booking(provider)
-        auth_client = client.with_explicit_token(plain_api_key)
-
-        with assert_attribute_value_changes_to(pending_booking, "status", models.CollectiveBookingStatus.CANCELLED):
-            booking_id = pending_booking.id
-            with assert_num_queries(self.on_success_num_queries):
-                self.cancel_booking(auth_client, booking_id, status_code=204)
-
-    def test_can_cancel_used_booking(self, client):
-        plain_api_key, provider = self.setup_provider()
-        used_booking = build_used_booking(provider)
-        auth_client = client.with_explicit_token(plain_api_key)
-
-        with assert_attribute_value_changes_to(used_booking, "status", models.CollectiveBookingStatus.CANCELLED):
-            booking_id = used_booking.id
-            with assert_num_queries(self.on_success_num_queries):
-                self.cancel_booking(auth_client, booking_id, status_code=204)
+                self.assert_request_has_expected_result(
+                    auth_client, url_params={"booking_id": booking_id}, expected_status_code=204
+                )
 
     def test_cannot_cancel_cancelled_booking(self, client):
-        plain_api_key, provider = self.setup_provider()
-        cancelled_booking = build_cancelled_booking(provider)
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        cancelled_booking = self.setup_base_resource(
+            factory=factories.CancelledCollectiveBookingFactory,
+            venue=venue_provider.venue,
+            provider=venue_provider.provider,
+        )
         auth_client = client.with_explicit_token(plain_api_key)
 
-        error = {"code": "ALREADY_CANCELLED_BOOKING"}
         with assert_attribute_does_not_change(cancelled_booking, "status"):
             booking_id = cancelled_booking.id
-            # 1. get api key
-            # 2. get FF
-            # 3. get collective booking
-            # 4. get collective stock (lock for update)
-            # 5. get collective booking (refresh)
-            # 6. does pricing exists for collective booking?
-            # 7. get finance events for booking
-            # 8. rollback
-            with assert_num_queries(8):
-                self.cancel_booking(auth_client, booking_id, status_code=403, json_error=error)
+
+            expected_queries_count = 1  # 1. get api key
+            expected_queries_count += 1  # 2. get FF
+            expected_queries_count += 1  # 3. get collective booking
+            expected_queries_count += 1  # 4. get collective stock (lock for update)
+            expected_queries_count += 1  # 5. get collective booking (refresh)
+            expected_queries_count += 1  # 6. does pricing exists for collective booking?
+            expected_queries_count += 1  # 7. get finance events for booking
+            expected_queries_count += 1  # 8. rollback
+
+            with assert_num_queries(expected_queries_count):
+                self.assert_request_has_expected_result(
+                    auth_client,
+                    url_params={"booking_id": booking_id},
+                    expected_status_code=403,
+                    expected_error_json={"code": "ALREADY_CANCELLED_BOOKING"},
+                )
 
     def test_cannot_cancel_reimbursed_booking(self, client):
-        plain_api_key, provider = self.setup_provider()
-        reimbursed_booking = build_reimbursed_booking(provider)
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        reimbursed_booking = self.setup_base_resource(
+            factory=factories.ReimbursedCollectiveBookingFactory,
+            venue=venue_provider.venue,
+            provider=venue_provider.provider,
+        )
         auth_client = client.with_explicit_token(plain_api_key)
 
-        error = {"code": "BOOKING_IS_REIMBURSED"}
         with assert_attribute_does_not_change(reimbursed_booking, "status"):
             booking_id = reimbursed_booking.id
-            # 1. get api key
-            # 2. get FF
-            # 3. get collective booking
-            # 4. get collective stock (lock for update)
-            # 5. get collective booking (refresh)
-            # 6. rollback
-            with assert_num_queries(6):
-                self.cancel_booking(auth_client, booking_id, status_code=403, json_error=error)
+
+            expected_queries_count = 1  # 1. get api key
+            expected_queries_count += 1  # 2. get FF
+            expected_queries_count += 1  # 3. get collective booking
+            expected_queries_count += 1  # 4. get collective stock (lock for update)
+            expected_queries_count += 1  # 5. get collective booking (refresh)
+            expected_queries_count += 1  # 6. rollback
+
+            with assert_num_queries(expected_queries_count):
+                self.assert_request_has_expected_result(
+                    auth_client,
+                    url_params={"booking_id": booking_id},
+                    expected_status_code=403,
+                    expected_error_json={"code": "BOOKING_IS_REIMBURSED"},
+                )
 
     def test_cannot_cancel_unknown_booking(self, client):
         plain_api_key, _ = self.setup_provider()
         auth_client = client.with_explicit_token(plain_api_key)
 
-        error = {"code": "BOOKING_NOT_FOUND"}
+        expected_queries_count = 1  # 1. get api key
+        expected_queries_count += 1  # 2. get FF
+        expected_queries_count += 1  # 3. get collective booking
 
-        # 1. get api key
-        # 2. get FF
-        # 3. get collective booking
-        with assert_num_queries(3):
-            self.cancel_booking(auth_client, 0, status_code=404, json_error=error)
-
-    def test_cannot_cancel_booking_not_linked_to_key(self, client):
-        plain_api_key, _ = self.setup_provider()
-        auth_client = client.with_explicit_token(plain_api_key)
-
-        booking = factories.CollectiveBookingFactory()
-        error = {"code": "BOOKING_NOT_FOUND"}
-
-        with assert_attribute_does_not_change(booking, "status"):
-            booking_id = booking.id
-            # 1. get api key
-            # 2. get FF
-            # 3. get collective booking
-            with assert_num_queries(3):
-                self.cancel_booking(auth_client, booking_id, status_code=404, json_error=error)
+        with assert_num_queries(expected_queries_count):
+            self.assert_request_has_expected_result(
+                auth_client,
+                url_params={"booking_id": 0},
+                expected_status_code=404,
+                expected_error_json={"code": "BOOKING_NOT_FOUND"},
+            )
 
     @patch("pcapi.core.educational.api.booking.finance_api")
     def test_unexpected_error_is_handled(self, mock_finance_api, client):
-        plain_api_key, provider = self.setup_provider()
-        confirmed_booking = build_confirmed_booking(provider)
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        booking = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
         auth_client = client.with_explicit_token(plain_api_key)
 
         mock_finance_api.cancel_latest_event.side_effect = [RuntimeError("test")]
 
-        error = {"code": "FAILED_TO_CANCEL_BOOKING_TRY_AGAIN"}
+        with assert_attribute_does_not_change(booking, "status"):
+            booking_id = booking.id
 
-        with assert_attribute_does_not_change(confirmed_booking, "status"):
-            booking_id = confirmed_booking.id
-            # 1. get api key
-            # 2. get FF
-            # 3. get collective booking
-            # 4. get collective stock (lock for update)
-            # 5. get collective booking (refresh)
-            # 6. does pricing exists for collective booking?
-            # 7. get finance events for booking
-            # 8. rollback
-            with assert_num_queries(8):
-                self.cancel_booking(auth_client, booking_id, status_code=500, json_error=error)
+            expected_queries_count = 1  # 1. get api key
+            expected_queries_count += 1  # 2. get FF
+            expected_queries_count += 1  # 3. get collective booking
+            expected_queries_count += 1  # 4. get collective stock (lock for update)
+            expected_queries_count += 1  # 5. get collective booking (refresh)
+            expected_queries_count += 1  # 6. does pricing exists for collective booking?
+            expected_queries_count += 1  # 7. get finance events for booking
+            expected_queries_count += 1  # 8. rollback
 
-    def cancel_booking(self, client, booking_id, status_code, json_error=None):
-        self.assert_request_has_expected_result(
-            client,
-            url_params={"booking_id": booking_id},
-            expected_status_code=status_code,
-            expected_error_json=json_error,
-        )
+            with assert_num_queries(expected_queries_count):
+                self.assert_request_has_expected_result(
+                    auth_client,
+                    url_params={"booking_id": booking_id},
+                    expected_status_code=500,
+                    expected_error_json={"code": "FAILED_TO_CANCEL_BOOKING_TRY_AGAIN"},
+                )
 
 
 class UseCollectiveBookingTest(PublicAPIRestrictedEnvEndpointHelper):
     endpoint_url = "/v2/collective/bookings/{booking_id}/use"
     endpoint_method = "post"
     default_path_params = {"booking_id": 1}
+    default_factory = factories.ConfirmedCollectiveBookingFactory
+
+    def setup_base_resource(self, *, factory=None, provider=None, venue=None) -> models.CollectiveBooking:
+        # data
+        venue = venue or self.setup_venue()
+        deposit = factories.EducationalDepositFactory()
+        offer = factories.CollectiveOfferFactory(provider=provider, venue=venue)
+        # factory
+        factory = factory or self.default_factory
+
+        return factory(
+            collectiveStock__collectiveOffer=offer,
+            educationalInstitution=deposit.educationalInstitution,
+            educationalYear=deposit.educationalYear,
+        )
+
+    def test_should_raise_404_because_has_no_access_to_venue(self, client: TestClient):
+        plain_api_key, _ = self.setup_provider()
+        booking = self.setup_base_resource()
+        self.assert_request_has_expected_result(
+            client.with_explicit_token(plain_api_key),
+            url_params={"booking_id": booking.id},
+            expected_status_code=404,
+            expected_error_json={"code": "BOOKING_NOT_FOUND"},
+        )
+
+    def test_should_raise_404_because_venue_provider_is_inactive(self, client: TestClient):
+        plain_api_key, venue_provider = self.setup_inactive_venue_provider()
+        booking = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
+        self.assert_request_has_expected_result(
+            client.with_explicit_token(plain_api_key),
+            url_params={"booking_id": booking.id},
+            expected_status_code=404,
+            expected_error_json={"code": "BOOKING_NOT_FOUND"},
+        )
 
     def test_use_confirmed_booking(self, client):
-        plain_api_key, provider = self.setup_provider()
-        confirmed_booking = build_confirmed_booking(provider)
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        confirmed_booking = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
         auth_client = client.with_explicit_token(plain_api_key)
 
         with assert_attribute_value_changes_to(confirmed_booking, "status", models.CollectiveBookingStatus.USED):
-            self.use_booking(auth_client, confirmed_booking.id, status_code=204)
+            self.assert_request_has_expected_result(
+                auth_client,
+                url_params={"booking_id": confirmed_booking.id},
+                expected_status_code=204,
+            )
 
-    def test_use_pending_booking(self, client):
-        plain_api_key, provider = self.setup_provider()
-        pending_booking = build_pending_booking(provider)
+    @pytest.mark.parametrize(
+        "booking_factory",
+        [
+            factories.PendingCollectiveBookingFactory,
+            factories.UsedCollectiveBookingFactory,
+            factories.CancelledCollectiveBookingFactory,
+            factories.ReimbursedCollectiveBookingFactory,
+        ],
+    )
+    def test_should_raise_403_when_status_is_not_confirmed(self, client, booking_factory):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        booking = self.setup_base_resource(
+            factory=booking_factory, venue=venue_provider.venue, provider=venue_provider.provider
+        )
         auth_client = client.with_explicit_token(plain_api_key)
 
-        error = {"code": "ONLY_CONFIRMED_BOOKING_CAN_BE_USED"}
-        with assert_attribute_does_not_change(pending_booking, "status"):
-            self.use_booking(auth_client, pending_booking.id, status_code=403, json_error=error)
+        with assert_attribute_does_not_change(booking, "status"):
+            self.assert_request_has_expected_result(
+                auth_client,
+                url_params={"booking_id": booking.id},
+                expected_status_code=403,
+                expected_error_json={"code": "ONLY_CONFIRMED_BOOKING_CAN_BE_USED"},
+            )
 
-    def test_use_used_booking(self, client):
-        plain_api_key, provider = self.setup_provider()
-        used_booking = build_used_booking(provider)
-        auth_client = client.with_explicit_token(plain_api_key)
-
-        error = {"code": "ONLY_CONFIRMED_BOOKING_CAN_BE_USED"}
-        with assert_attribute_does_not_change(used_booking, "status"):
-            self.use_booking(auth_client, used_booking.id, status_code=403, json_error=error)
-
-    def test_use_cancelled_booking(self, client):
-        plain_api_key, provider = self.setup_provider()
-        cancelled_booking = build_cancelled_booking(provider)
-        auth_client = client.with_explicit_token(plain_api_key)
-
-        error = {"code": "ONLY_CONFIRMED_BOOKING_CAN_BE_USED"}
-        with assert_attribute_does_not_change(cancelled_booking, "status"):
-            self.use_booking(auth_client, cancelled_booking.id, status_code=403, json_error=error)
-
-    def test_use_reimbursed_booking(self, client):
-        plain_api_key, provider = self.setup_provider()
-        reimbursed_booking = build_reimbursed_booking(provider)
-        auth_client = client.with_explicit_token(plain_api_key)
-
-        error = {"code": "ONLY_CONFIRMED_BOOKING_CAN_BE_USED"}
-        with assert_attribute_does_not_change(reimbursed_booking, "status"):
-            self.use_booking(auth_client, reimbursed_booking.id, status_code=403, json_error=error)
-
-    def test_use_unknown_booking(self, client):
+    def test_should_raise_404_when_booking_does_not_exist(self, client):
         plain_api_key, _ = self.setup_provider()
         auth_client = client.with_explicit_token(plain_api_key)
 
-        error = {"code": "BOOKING_NOT_FOUND"}
-        self.use_booking(auth_client, 0, status_code=404, json_error=error)
+        self.assert_request_has_expected_result(
+            auth_client,
+            url_params={"booking_id": 0},
+            expected_status_code=404,
+            expected_error_json={"code": "BOOKING_NOT_FOUND"},
+        )
 
     @patch("pcapi.routes.public.collective.endpoints.simulate_adage_steps.bookings.finance_api")
     def test_booking_not_used_in_case_of_internal_error(self, api_mock, client):
-        plain_api_key, provider = self.setup_provider()
-        confirmed_booking = build_confirmed_booking(provider)
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        booking = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
         auth_client = client.with_explicit_token(plain_api_key)
 
         api_mock.add_event.side_effect = [RuntimeError("test")]
 
-        with assert_attribute_does_not_change(confirmed_booking, "status"):
-            error = {"code": "FAILED_TO_USE_BOOKING_TRY_AGAIN_LATER"}
-            self.use_booking(auth_client, confirmed_booking.id, status_code=500, json_error=error)
-
-    def use_booking(self, client, booking_id, status_code, json_error=None):
-        self.assert_request_has_expected_result(
-            client,
-            url_params={"booking_id": booking_id},
-            expected_status_code=status_code,
-            expected_error_json=json_error,
-        )
+        with assert_attribute_does_not_change(booking, "status"):
+            self.assert_request_has_expected_result(
+                auth_client,
+                url_params={"booking_id": booking.id},
+                expected_status_code=500,
+                expected_error_json={"code": "FAILED_TO_USE_BOOKING_TRY_AGAIN_LATER"},
+            )
