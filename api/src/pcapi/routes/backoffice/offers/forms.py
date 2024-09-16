@@ -442,7 +442,7 @@ class EditStockForm(FlaskForm):
         use_locale=True,
     )
     percent = fields.PCDecimalField(
-        "Réduction en pourcent (%)",
+        "Réduction en pourcentage (%)",
         validators=[
             wtforms.validators.Optional(),
             wtforms.validators.NumberRange(
