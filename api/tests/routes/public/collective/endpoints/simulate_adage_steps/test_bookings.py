@@ -9,7 +9,6 @@ import pcapi.core.offerers.models as offerers_models
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_features
-from pcapi.routes.adage.v1.serialization import constants
 
 from tests.routes.public.helpers import PublicAPIRestrictedEnvEndpointHelper
 from tests.routes.public.helpers import assert_attribute_does_not_change
@@ -117,7 +116,9 @@ class ConfirmCollectiveBookingTest(PublicAPIRestrictedEnvEndpointHelper):
         auth_client = client.with_explicit_token(plain_api_key)
 
         with assert_attribute_value_changes_to(pending_booking, "status", models.CollectiveBookingStatus.CONFIRMED):
-            self.confirm_booking(auth_client, pending_booking.id, status_code=204)
+            self.assert_request_has_expected_result(
+                auth_client, url_params={"booking_id": pending_booking.id}, expected_status_code=204
+            )
 
     def test_confirm_confirmed_booking(self, client):
         plain_api_key, provider = self.setup_provider()
@@ -125,37 +126,48 @@ class ConfirmCollectiveBookingTest(PublicAPIRestrictedEnvEndpointHelper):
         auth_client = client.with_explicit_token(plain_api_key)
 
         with assert_attribute_does_not_change(confirmed_booking, "status"):
-            self.confirm_booking(auth_client, confirmed_booking.id, status_code=204)
+            self.assert_request_has_expected_result(
+                auth_client, url_params={"booking_id": confirmed_booking.id}, expected_status_code=204
+            )
 
     def test_confirm_used_booking(self, client):
         plain_api_key, provider = self.setup_provider()
         used_booking = build_used_booking(provider)
         auth_client = client.with_explicit_token(plain_api_key)
 
-        error = {"code": "CONFIRMATION_LIMIT_DATE_HAS_PASSED"}
-
         with assert_attribute_does_not_change(used_booking, "status"):
-            self.confirm_booking(auth_client, used_booking.id, status_code=403, json_error=error)
+            self.assert_request_has_expected_result(
+                auth_client,
+                url_params={"booking_id": used_booking.id},
+                expected_status_code=403,
+                expected_error_json={"code": "CONFIRMATION_LIMIT_DATE_HAS_PASSED"},
+            )
 
     def test_confirm_reimbursed_booking(self, client):
         plain_api_key, provider = self.setup_provider()
         reimbursed_booking = build_reimbursed_booking(provider)
         auth_client = client.with_explicit_token(plain_api_key)
 
-        error = {"code": "CONFIRMATION_LIMIT_DATE_HAS_PASSED"}
-
         with assert_attribute_does_not_change(reimbursed_booking, "status"):
-            self.confirm_booking(auth_client, reimbursed_booking.id, status_code=403, json_error=error)
+            self.assert_request_has_expected_result(
+                auth_client,
+                url_params={"booking_id": reimbursed_booking.id},
+                expected_status_code=403,
+                expected_error_json={"code": "CONFIRMATION_LIMIT_DATE_HAS_PASSED"},
+            )
 
     def test_confirm_cancelled_booking(self, client):
         plain_api_key, provider = self.setup_provider()
         cancelled_booking = build_cancelled_booking(provider)
         auth_client = client.with_explicit_token(plain_api_key)
 
-        error = {"code": "EDUCATIONAL_BOOKING_IS_CANCELLED"}
-
         with assert_attribute_does_not_change(cancelled_booking, "status"):
-            self.confirm_booking(auth_client, cancelled_booking.id, status_code=403, json_error=error)
+            self.assert_request_has_expected_result(
+                auth_client,
+                url_params={"booking_id": cancelled_booking.id},
+                expected_status_code=403,
+                expected_error_json={"code": "EDUCATIONAL_BOOKING_IS_CANCELLED"},
+            )
 
     def test_confirm_when_insufficient_fund(self, client):
         plain_api_key, provider = self.setup_provider()
@@ -165,9 +177,13 @@ class ConfirmCollectiveBookingTest(PublicAPIRestrictedEnvEndpointHelper):
         for deposit in pending_booking.educationalInstitution.deposits:
             deposit.amount = 0
 
-        error = {"code": "INSUFFICIENT_FUND"}
         with assert_attribute_does_not_change(pending_booking, "status"):
-            self.confirm_booking(auth_client, pending_booking.id, status_code=403, json_error=error)
+            self.assert_request_has_expected_result(
+                auth_client,
+                url_params={"booking_id": pending_booking.id},
+                expected_status_code=403,
+                expected_error_json={"code": "INSUFFICIENT_FUND"},
+            )
 
     @override_features(ENABLE_EAC_FINANCIAL_PROTECTION=True)
     def test_confirm_when_insufficient_ministry_fund(self, client):
@@ -196,9 +212,13 @@ class ConfirmCollectiveBookingTest(PublicAPIRestrictedEnvEndpointHelper):
         deposit_amount = sum(deposit.amount for deposit in institution.deposits)
         used_booking.collectiveStock.price = deposit_amount / 3
 
-        error = {"code": "INSUFFICIENT_MINISTRY_FUND"}
         with assert_attribute_does_not_change(pending_booking, "status"):
-            self.confirm_booking(auth_client, pending_booking.id, status_code=403, json_error=error)
+            self.assert_request_has_expected_result(
+                auth_client,
+                url_params={"booking_id": pending_booking.id},
+                expected_status_code=403,
+                expected_error_json={"code": "INSUFFICIENT_MINISTRY_FUND"},
+            )
 
     def test_confirm_when_insufficient_temporary_fund(self, client):
         plain_api_key, provider = self.setup_provider()
@@ -209,16 +229,24 @@ class ConfirmCollectiveBookingTest(PublicAPIRestrictedEnvEndpointHelper):
             deposit.amount = 0
             deposit.isFinal = False
 
-        error = {"code": "INSUFFICIENT_FUND_DEPOSIT_NOT_FINAL"}
         with assert_attribute_does_not_change(pending_booking, "status"):
-            self.confirm_booking(auth_client, pending_booking.id, status_code=403, json_error=error)
+            self.assert_request_has_expected_result(
+                auth_client,
+                url_params={"booking_id": pending_booking.id},
+                expected_status_code=403,
+                expected_error_json={"code": "INSUFFICIENT_FUND_DEPOSIT_NOT_FINAL"},
+            )
 
     def test_confirm_unknown_booking(self, client):
         plain_api_key, _ = self.setup_provider()
         auth_client = client.with_explicit_token(plain_api_key)
 
-        error = {"code": constants.EDUCATIONAL_BOOKING_NOT_FOUND}
-        self.confirm_booking(auth_client, 0, status_code=404, json_error=error)
+        self.assert_request_has_expected_result(
+            auth_client,
+            url_params={"booking_id": 9},
+            expected_status_code=404,
+            expected_error_json={"code": "BOOKING_NOT_FOUND"},
+        )
 
     def test_confirm_unknown_deposit(self, client):
         plain_api_key, provider = self.setup_provider()
@@ -228,17 +256,13 @@ class ConfirmCollectiveBookingTest(PublicAPIRestrictedEnvEndpointHelper):
         for deposit in pending_booking.educationalInstitution.deposits:
             deposit.educationalYear = factories.EducationalYearFactory()
 
-        error = {"code": "DEPOSIT_NOT_FOUND"}
         with assert_attribute_does_not_change(pending_booking, "status"):
-            self.confirm_booking(auth_client, pending_booking.id, status_code=404, json_error=error)
-
-    def confirm_booking(self, client, booking_id, status_code, json_error=None):
-        self.assert_request_has_expected_result(
-            client,
-            url_params={"booking_id": booking_id},
-            expected_status_code=status_code,
-            expected_error_json=json_error,
-        )
+            self.assert_request_has_expected_result(
+                auth_client,
+                url_params={"booking_id": pending_booking.id},
+                expected_status_code=404,
+                expected_error_json={"code": "DEPOSIT_NOT_FOUND"},
+            )
 
 
 class CancelCollectiveBookingTest(PublicAPIRestrictedEnvEndpointHelper):
