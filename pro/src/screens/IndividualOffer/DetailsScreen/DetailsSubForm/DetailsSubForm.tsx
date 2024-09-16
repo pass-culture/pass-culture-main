@@ -10,7 +10,6 @@ import { ImageUploaderOffer } from 'components/IndividualOfferForm/ImageUploader
 import { GET_MUSIC_TYPES_QUERY_KEY } from 'config/swrQueryKeys'
 import { showOptionsTree } from 'core/Offers/categoriesSubTypes'
 import { IndividualOfferImage } from 'core/Offers/types'
-import { useActiveFeature } from 'hooks/useActiveFeature'
 import { Select } from 'ui-kit/form/Select/Select'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 import { TimePicker } from 'ui-kit/form/TimePicker/TimePicker'
@@ -34,6 +33,7 @@ export const ARTISTIC_INFORMATION_FIELDS = [
 ]
 
 export type DetailsSubFormProps = {
+  isEanSearchDisplayed: boolean
   isProductBased: boolean
   isOfferCDOrVinyl: boolean
   readOnlyFields: string[]
@@ -43,6 +43,7 @@ export type DetailsSubFormProps = {
 }
 
 export const DetailsSubForm = ({
+  isEanSearchDisplayed,
   isProductBased,
   isOfferCDOrVinyl,
   readOnlyFields,
@@ -53,8 +54,6 @@ export const DetailsSubForm = ({
   const {
     values: { categoryId, showType, subcategoryConditionalFields },
   } = useFormikContext<DetailsFormValues>()
-  const isSearchByEanEnabled = useActiveFeature('WIP_EAN_CREATION')
-
   const musicTypesQuery = useSWR(
     GET_MUSIC_TYPES_QUERY_KEY,
     () => api.getMusicTypes(),
@@ -78,7 +77,7 @@ export const DetailsSubForm = ({
   // product-based offers so the form must be pre-filled with
   // the results of an EAN search.
   const displayRedirectionCallout =
-    isSearchByEanEnabled && !isProductBased && isOfferCDOrVinyl
+    isEanSearchDisplayed && !isProductBased && isOfferCDOrVinyl
   const displayImageUploader = !isProductBased || imageOffer
   const displayArtisticInformations = ARTISTIC_INFORMATION_FIELDS.some(
     (field) => subcategoryConditionalFields.includes(field)
@@ -92,7 +91,7 @@ export const DetailsSubForm = ({
             className={styles.callout}
             links={[
               {
-                href: '#ean',
+                href: '#eanSearch',
                 label: 'Scanner ou rechercher un produit par EAN',
                 isSectionLink: true,
               },

@@ -117,6 +117,7 @@ export const DetailsEanSearch = ({
 
         await setValues({
           ...values,
+          ean,
           name,
           description,
           categoryId,
