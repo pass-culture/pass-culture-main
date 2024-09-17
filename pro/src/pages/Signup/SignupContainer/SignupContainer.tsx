@@ -37,8 +37,8 @@ export const SignupContainer = (): JSX.Element => {
       if (response === RECAPTCHA_ERROR) {
         notification.error(RECAPTCHA_ERROR_MESSAGE)
       } else {
-        const body = (response as ApiError).body
-        onHandleFail(body ?? {})
+        const body = isErrorAPIError(response) ? response.body : {}
+        onHandleFail(body)
       }
     }
   }
