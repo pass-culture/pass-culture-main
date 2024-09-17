@@ -1096,6 +1096,7 @@ def test_public_api(client):
                         "LUDOTHEQUE",
                         "MATERIELS_CREATIFS",
                         "MUSIQUE_EN_LIGNE",
+                        "NATIVE_CATEGORY_NONE",
                         "PARTITIONS_DE_MUSIQUE",
                         "PODCAST",
                         "PRATIQUES_ET_ATELIERS_ARTISTIQUES",

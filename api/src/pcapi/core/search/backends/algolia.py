@@ -16,6 +16,7 @@ import sqlalchemy as sa
 
 from pcapi import settings
 from pcapi.core.categories import categories
+from pcapi.core.categories import subcategories_v2
 from pcapi.core.educational.academies import get_academy_from_department
 import pcapi.core.educational.api.offer as educational_api_offer
 import pcapi.core.educational.models as educational_models
@@ -526,7 +527,7 @@ class AlgoliaBackend(base.SearchBackend):
 
         search_groups = (
             offer.subcategory.native_category.parents
-            if offer.subcategory.native_category
+            if offer.subcategory.native_category != subcategories_v2.NATIVE_CATEGORY_NONE
             else [offer.subcategory.search_group_name]
         )
 
