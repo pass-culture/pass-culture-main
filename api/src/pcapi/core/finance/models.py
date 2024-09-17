@@ -176,6 +176,7 @@ class PricingLineCategory(enum.Enum):
     OFFERER_REVENUE = "offerer revenue"
     OFFERER_CONTRIBUTION = "offerer contribution"
     PASS_CULTURE_COMMISSION = "pass culture commission"
+    COMMERCIAL_GESTURE = "commercial gesture"
 
 
 class PricingLogReason(enum.Enum):
