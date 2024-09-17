@@ -155,34 +155,42 @@ class BookOfferTest:
         # There is a different email for the first venue booking
         bookings_factories.BookingFactory(stock=stock)
 
-        # 1 - SELECT the stock
-        # 1 - SELECT the offer
-        # 1 - SELECT the booking
-        # 1 - SELECT the stock FOR UPDATE (joined with offer)
-        # 2 - SELECT the user + SELECT FOR UPDATE
-        # 1 - SELECT COUNT reservations
-        # 1 - SELECT the venue
-        # 1 - SELECT offerer
-        # 1 - SELECT user's deposit
-        # 1 - SELECT the bookings not cancelled
-        # 1 - SELECT EXISTS on the booking's token
-        # 1 - UPDATE dnBookedQuantity
-        # 1 - INSERT the new booking
-        # 1 - SELECT the user
-        # 5 - SELECT the stock, booking, external_booking, stock, venue, offerer, provider
-        # 1 - SELECT venue with bank activation & bank account
-        # 1 - SELECT activation code
-        # 1 - SELECT criterion
-        # 1 - SELECT user's bookings with stock, offer, venue
-        # 1 - SELECT user's favorites
-        # 2 - SELECT user's deposit + wallet
-        # 1 - SELECT user's action history
-        # 1 - SELECT pro user by its email
-        # 1 - SELECT venue, offerer, bank info by the email
-        # 1 - SELECT from offer that I don't get
-        # 1 - SELECT bookings for the venue ???
-        # 1 - SELECT feature
-        with assert_num_queries(34):
+        num_queries = 1 # SELECT the stock, offer, venue, offerer_address, address
+        num_queries += 1 # Check if the venue as bookings
+        num_queries += 1 # SELECT the stock FOR UPDATE (joined with offer)
+        num_queries += 1 # SELECT the user
+        num_queries += 1 # SELECT the user FOR UPDATE
+        num_queries += 1 # Check if the user already has a booking on this stock
+        num_queries += 1 # SELECT the venue
+        num_queries += 1 # SELECT offerer
+        num_queries += 1 # SELECT user's deposit
+        num_queries += 1 # SELECT the bookings not cancelled related to the deposit
+        num_queries += 1 # Check if a booking with this token exists
+        num_queries += 1 # UPDATE dnBookedQuantity
+        num_queries += 1 # INSERT the new booking
+        num_queries += 1 # SELECT user
+        num_queries += 1 # SELECT stock and suitable offer
+        num_queries += 1 # SELECT booking
+        num_queries += 1 # SELECT external booking
+        num_queries += 1 # SELECT stock
+        num_queries += 1 # SELECT venue
+        num_queries += 1 # SELECT offerer
+        num_queries += 1 # SELECT provider
+        num_queries += 1 # SELECT venue with bank activation & bank account
+        num_queries += 1 # SELECT activationCode related to booking
+        num_queries += 1 # SELECT criterion related to offer
+        num_queries += 1 # SELECT booking related to the user and the offer order by creationDate
+        num_queries += 1 # SELECT user's favorites
+        num_queries += 1 # SELECT user's deposit
+        num_queries += 1 # SELECT user's wallet
+        num_queries += 1 # SELECT user's action history
+        num_queries += 1 # SELECT user, user_offerer, venue
+        num_queries += 1 # SELECT offerer, venue
+        num_queries += 1 # Check if a collectiveOffer from "Marseille en grand" exists
+        num_queries += 1 # Check if the offer has up to date stocks
+        num_queries += 1 # Check if the venue has up to date bookings
+        num_queries += 1 # SELECT FeatureToggle
+        with assert_num_queries(num_queries):
             booking = api.book_offer(beneficiary=beneficiary, stock_id=stock_id, quantity=1)
 
         # One request should have been sent to Batch to trigger the event
