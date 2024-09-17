@@ -166,7 +166,11 @@ export const SelectAutocomplete = ({
         break
       case ' ': //  Space key
       case 'Enter':
-        if (isOpen && hoveredOptionIndex !== null) {
+        if (
+          isOpen &&
+          hoveredOptionIndex !== null &&
+          filteredOptions[hoveredOptionIndex]
+        ) {
           event.preventDefault()
           await selectOption(String(filteredOptions[hoveredOptionIndex].value))
         }
