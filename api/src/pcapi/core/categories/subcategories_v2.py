@@ -27,14 +27,12 @@ class SearchNode:
         technical_name: str | None = None,
         gtls: list[str] | None = None,
         position: int | None = None,
-        search_filter: str | None = None,
     ) -> None:
         self.id = technical_name or str(uuid.uuid4())
         self.label = label
         self.gtls = gtls
         self.parents = parents or []
         self.position = position
-        self.search_filter = search_filter
 
     @property
     def search_value(self) -> str | None:
