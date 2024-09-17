@@ -148,6 +148,7 @@ export const DetailsEanSearch = ({
   }
 
   const shouldInputBeDisabled = isProductBased || isFetchingProduct
+  const shouldInputBeRequired = !!subcatError
   const shouldButtonBeDisabled =
     isProductBased || !ean || !!formikError || !!apiError || isFetchingProduct
   const displayClearButton = isNotAnOfferYetButProductBased
@@ -167,7 +168,10 @@ export const DetailsEanSearch = ({
       >
         Nouveau
       </Tag>
-      <span>Scanner ou rechercher un produit par EAN</span>
+      <span>
+        Scanner ou rechercher un produit par EAN
+        {shouldInputBeRequired && ' *'}
+      </span>
     </>
   )
 
@@ -187,7 +191,8 @@ export const DetailsEanSearch = ({
           type="text"
           disabled={shouldInputBeDisabled}
           maxLength={13}
-          isOptional
+          isOptional={!shouldInputBeRequired}
+          showMandatoryAsterisk={false}
           countCharacters
           {...(externalError && {
             externalError,

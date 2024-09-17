@@ -103,11 +103,14 @@ describe('DetailsEanSearch', () => {
           subcategoryId: 'SUPPORT_PHYSIQUE_MUSIQUE_VINYLE',
         })
 
-        expect(screen.getByText(subCatErrorMessage)).toBeInTheDocument()
-
         const eanInput = screen.getByRole('textbox', { name: inputLabel })
-        await userEvent.type(eanInput, '9781234567897')
 
+        // Input is now required.
+        expect(eanInput).toBeRequired()
+
+        // Error cannot be removed by typing in the input.
+        expect(screen.getByText(subCatErrorMessage)).toBeInTheDocument()
+        await userEvent.type(eanInput, '9781234567897')
         expect(screen.getByText(subCatErrorMessage)).toBeInTheDocument()
       })
 
