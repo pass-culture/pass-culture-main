@@ -17,6 +17,8 @@ export const downloadCollectiveBookingsCSVFile = async (
       isDateValid(filters.offerEventDate)
       ? filters.offerEventDate
       : null,
+    // TODO fix PreFiltersParams type to use CollectiveBookingStatusFilter type
+    // @ts-expect-error
     filters.bookingStatusFilter as CollectiveBookingStatusFilter,
     isDateValid(filters.bookingBeginningDate)
       ? filters.bookingBeginningDate
