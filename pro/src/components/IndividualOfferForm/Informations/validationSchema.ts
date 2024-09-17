@@ -9,7 +9,7 @@ export const getValidationSchema = (lastProvider?: string | null) => ({
     .string()
     .matches(/^\d*$/, "L'EAN doit être composé de 13 chiffres")
     .test({
-      message: "L'EAN doit être composé de 13 chiffres",
+      message: "L'EAN doit être composé de 13 chiffres.",
       test: (ean) => ean === undefined || ean.length === 13,
     }),
   speaker: yup.string(),
