@@ -1914,17 +1914,19 @@
   resolved "https://registry.yarnpkg.com/@storybook/components/-/components-8.3.0.tgz#45c39e5b6768efafe8e7dfd946c01617da59ae1a"
   integrity sha512-SO/iTkmWp3aYCIy8DEhRMoOn6K7lcKTPNC/YjTvOFFzwq/CLq86WNqz6aX+wV5n6MvWTs7evSwMoz7lp4Lc4sw==
 
-"@storybook/core@8.3.0":
-  version "8.3.0"
-  resolved "https://registry.yarnpkg.com/@storybook/core/-/core-8.3.0.tgz#c08ff10405fa935044678c8ae92c7be14dd01bdb"
-  integrity sha512-UeErpD0xRIP2nFA2TjPYxtEyv24O6VRfq2XXU5ki2QPYnxOxAPBbrMHCADjgBwNS4S2NUWTaVBYxybISVbrj+w==
+"@storybook/core@8.3.1":
+  version "8.3.1"
+  resolved "https://registry.yarnpkg.com/@storybook/core/-/core-8.3.1.tgz#8e991bdff670709de7b164c67cd9adcebe8b8d70"
+  integrity sha512-L8YTtUipcBvl4F8jFNnXU3NM1hnLwZ3Ge2l+SRVKUGoAZzdf/I8O/0eOeZ+3LM3PvDn8bC9x+qjhNyDgtT+ieQ==
   dependencies:
     "@storybook/csf" "^0.1.11"
     "@types/express" "^4.17.21"
+    better-opn "^3.0.2"
     browser-assert "^1.2.1"
     esbuild "^0.18.0 || ^0.19.0 || ^0.20.0 || ^0.21.0 || ^0.22.0 || ^0.23.0"
     esbuild-register "^3.5.0"
     express "^4.19.2"
+    jsdoc-type-pratt-parser "^4.0.0"
     process "^0.11.10"
     recast "^0.23.5"
     semver "^7.6.2"
@@ -3031,6 +3033,13 @@ bcrypt-pbkdf@^1.0.0:
   integrity sha512-qeFIXtP4MSoi6NLqO12WfqARWWuCKi2Rn/9hJLEmtB5yTNr9DqFWkJRCf2qShWzPeAMRnOgCrq0sg/KLv5ES9w==
   dependencies:
     tweetnacl "^0.14.3"
+
+better-opn@^3.0.2:
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/better-opn/-/better-opn-3.0.2.tgz#f96f35deaaf8f34144a4102651babcf00d1d8817"
+  integrity sha512-aVNobHnJqLiUelTaHat9DZ1qM2w0C0Eym4LPI/3JxOnSokGVdsl1T1kN7TFvsEAD8G47A6VKQ0TVHqbBnYMJlQ==
+  dependencies:
+    open "^8.0.4"
 
 binary-extensions@^2.0.0:
   version "2.2.0"
@@ -5898,6 +5907,11 @@ jsbn@~0.1.0:
   resolved "https://registry.yarnpkg.com/jsbn/-/jsbn-0.1.1.tgz#a5e654c2e5a2deb5f201d96cefbca80c0ef2f513"
   integrity sha512-UVU9dibq2JcFWxQPA6KCqj5O42VOmAY3zQUfEKxU0KpTGXwNoCjkX1e13eHNvw/xPynt6pU0rZ1htjWTNTSXsg==
 
+jsdoc-type-pratt-parser@^4.0.0:
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/jsdoc-type-pratt-parser/-/jsdoc-type-pratt-parser-4.1.0.tgz#ff6b4a3f339c34a6c188cbf50a16087858d22113"
+  integrity sha512-Hicd6JK5Njt2QB6XYFS7ok9e37O8AYk3jTcppG4YVQnYjOemymvTcmc7OWsmq/Qqj5TdRFO5/x/tIPmBeRtGHg==
+
 jsdom@^24.1.3:
   version "24.1.3"
   resolved "https://registry.yarnpkg.com/jsdom/-/jsdom-24.1.3.tgz#88e4a07cb9dd21067514a619e9f17b090a394a9f"
@@ -6632,7 +6646,7 @@ onetime@^6.0.0:
   dependencies:
     mimic-fn "^4.0.0"
 
-open@^8.4.0:
+open@^8.0.4, open@^8.4.0:
   version "8.4.2"
   resolved "https://registry.yarnpkg.com/open/-/open-8.4.2.tgz#5b5ffe2a8f793dcd2aad73e550cb87b59cb084f9"
   integrity sha512-7x81NCL719oNbsq/3mh+hVrAWmFuEYUqrq/Iw3kUzH8ReypT9QQ0BLoJS7/G9k6N81XjW4qHWtjWwe/9eLy1EQ==
@@ -7920,12 +7934,12 @@ storybook-addon-react-router-v6@^2.0.15:
     compare-versions "^6.0.0"
     react-inspector "6.0.2"
 
-storybook@^8.3.0:
-  version "8.3.0"
-  resolved "https://registry.yarnpkg.com/storybook/-/storybook-8.3.0.tgz#172a5d5e415b83bcb08a3a670a2e6f34383dfea1"
-  integrity sha512-XKU+nem9OKX/juvJPwka1Q7DTpSbOe0IMp8ZyLQWorhFKpquJdUjryl7Z9GiFZyyTykCqH4ItQ7h8PaOmqVMOw==
+storybook@^8.3.1:
+  version "8.3.1"
+  resolved "https://registry.yarnpkg.com/storybook/-/storybook-8.3.1.tgz#4f52975bb0b7895eb4ad8125b37c0b3bba33b555"
+  integrity sha512-CYqt5KOpaTgb8OczNo2+EtMi8YNDPi4vNVebVlLDOroWxyulb8I7MIOH9gALczcIOb+TZUArPztjoa8rkXTaDQ==
   dependencies:
-    "@storybook/core" "8.3.0"
+    "@storybook/core" "8.3.1"
 
 string-argv@0.3.1:
   version "0.3.1"
