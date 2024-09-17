@@ -8,7 +8,7 @@ import { api } from 'apiClient/api'
 import { GetOffererResponseModel } from 'apiClient/v1'
 import * as useAnalytics from 'app/App/analytics/firebase'
 import { Notification } from 'components/Notification/Notification'
-import { GET_OFFERER_QUERY_KEY } from 'config/swrQueryKeys'
+import { GET_OFFERER_BANKACCOUNTS_AND_ATTACHED_VENUES } from 'config/swrQueryKeys'
 import { BankAccountEvents } from 'core/FirebaseEvents/constants'
 import { BankInformations } from 'pages/Reimbursements/BankInformations/BankInformations'
 import {
@@ -260,6 +260,9 @@ describe('BankInformations page', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Enregistrer' }))
     await userEvent.click(screen.getByRole('button', { name: 'Confirmer' }))
 
-    expect(mockMutate).toHaveBeenNthCalledWith(1, [GET_OFFERER_QUERY_KEY, 1])
+    expect(mockMutate).toHaveBeenNthCalledWith(1, [
+      GET_OFFERER_BANKACCOUNTS_AND_ATTACHED_VENUES,
+      1,
+    ])
   })
 })
