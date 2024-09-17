@@ -128,7 +128,7 @@ def get_by_ean_list(ean_list: set[str]) -> dict[str, typing.Any]:
     try:
         query_params = "|".join(ean_list)
         url = f"{settings.TITELIVE_EPAGINE_API_URL}/ean?in=ean={query_params}"
-        headers = {"Content-Type": "application", "Authorization": "Bearer  {}".format(get_jwt_token())}
+        headers = {"Content-Type": "application", "Authorization": "Bearer {}".format(get_jwt_token())}
         response = requests.get(url, headers=headers)
 
     except requests.exceptions.Timeout:
