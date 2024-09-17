@@ -85,7 +85,7 @@ You will need to first **[create the event](/rest-api/#tag/Event-offers/operatio
 
 Here are the rules you should be aware of when creating an event:
 - the **number of price categories for an event** is limited to **`10`**
-- the **number of dates for an event** is limited to **`10 000`**
+- the **number of stocks for an event** is limited to **`10 000`**
 
 
 ## ⚡️ `Bookings`
