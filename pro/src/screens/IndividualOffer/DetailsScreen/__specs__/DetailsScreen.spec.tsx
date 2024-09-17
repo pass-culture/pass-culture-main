@@ -697,61 +697,119 @@ describe('screens:IndividualOffer::Informations', () => {
         expect(screen.queryByText(eanSearchTitle)).not.toBeInTheDocument()
       })
 
-      it('should prefill the form with EAN search result', async () => {
-        const ean = '9781234567897'
-        const productData = {
-          id: 0,
-          name: 'Music has the right to children',
-          description: 'An album by Boards of Canada',
-          subcategoryId: 'SUPPORT_PHYSIQUE_MUSIQUE_VINYLE',
-          gtlId: '08000000',
-          author: 'Boards of Canada',
-          performer: 'Boards of Canada',
-          images: {
-            recto: 'https://www.example.com/image.jpg',
-          },
-        }
+      describe('when a local draft offer is being created', () => {
+        it('should prefill the form with EAN search result', async () => {
+          const ean = '9781234567897'
+          const productData = {
+            id: 0,
+            name: 'Music has the right to children',
+            description: 'An album by Boards of Canada',
+            subcategoryId: 'SUPPORT_PHYSIQUE_MUSIQUE_VINYLE',
+            gtlId: '08000000',
+            author: 'Boards of Canada',
+            performer: 'Boards of Canada',
+            images: {
+              recto: 'https://www.example.com/image.jpg',
+            },
+          }
 
-        const context = individualOfferContextValuesFactory({
-          categories,
-          subCategories,
-          offer: null,
+          const context = individualOfferContextValuesFactory({
+            categories,
+            subCategories,
+            offer: null,
+          })
+
+          vi.spyOn(api, 'getProductByEan').mockResolvedValue(productData)
+          renderDetailsScreen(
+            {
+              ...props,
+              venues: [
+                venueListItemFactory({
+                  venueTypeCode: 'RECORD_STORE' as VenueTypeCode,
+                }),
+              ],
+            },
+            context,
+            { features: ['WIP_EAN_CREATION'] }
+          )
+
+          const button = screen.getByRole('button', { name: eanButtonLabel })
+          const input = screen.getByRole('textbox', { name: eanInputLabel })
+
+          await userEvent.type(input, ean)
+          await userEvent.click(button)
+
+          // Inputs are filled with the product data and image is displayed.
+          const nameInputLabel = /Titre de l’offre/
+          const inputName = screen.getByRole('textbox', {
+            name: nameInputLabel,
+          })
+          const image = screen.getByTestId('image-preview')
+          expect(inputName).toHaveValue(productData.name)
+          expect(image).toHaveAttribute('src', productData.images.recto)
+
+          // Inputs are disabled and image cannot be changed.
+          expect(inputName).toBeDisabled()
+          const imageEditLabel = /Ajouter une image/
+          const imageEditButton = screen.queryByRole('button', {
+            name: imageEditLabel,
+          })
+          expect(imageEditButton).not.toBeInTheDocument()
+        })
+      })
+
+      describe('when the draft offer being created is no longer local but posted', () => {
+        it('should render EAN search when the draft offer is product-based', () => {
+          const context = individualOfferContextValuesFactory({
+            categories,
+            subCategories,
+            offer: getIndividualOfferFactory({
+              subcategoryId:
+                'SUPPORT_PHYSIQUE_MUSIQUE_VINYLE' as SubcategoryIdEnum,
+              productId: 1,
+            }),
+          })
+
+          renderDetailsScreen(
+            {
+              ...props,
+              venues: [
+                venueListItemFactory({
+                  venueTypeCode: 'RECORD_STORE' as VenueTypeCode,
+                }),
+              ],
+            },
+            context,
+            { features: ['WIP_EAN_CREATION'] }
+          )
+
+          expect(screen.getByText(eanSearchTitle)).toBeInTheDocument()
         })
 
-        vi.spyOn(api, 'getProductByEan').mockResolvedValue(productData)
-        renderDetailsScreen(
-          {
-            ...props,
-            venues: [
-              venueListItemFactory({
-                venueTypeCode: 'RECORD_STORE' as VenueTypeCode,
-              }),
-            ],
-          },
-          context,
-          { features: ['WIP_EAN_CREATION'] }
-        )
+        it('should not render EAN search when the draft offer is non product-based', () => {
+          const context = individualOfferContextValuesFactory({
+            categories,
+            subCategories,
+            offer: getIndividualOfferFactory({
+              subcategoryId: 'physical' as SubcategoryIdEnum,
+            }),
+          })
 
-        const button = screen.getByRole('button', { name: eanButtonLabel })
-        const input = screen.getByRole('textbox', { name: eanInputLabel })
+          renderDetailsScreen(
+            {
+              ...props,
+              venues: [
+                venueListItemFactory({
+                  venueTypeCode: 'RECORD_STORE' as VenueTypeCode,
+                }),
+              ],
+            },
+            context,
+            { features: ['WIP_EAN_CREATION'] }
+          )
 
-        await userEvent.type(input, ean)
-        await userEvent.click(button)
-
-        // Inputs are filled with the product data and image is displayed.
-        const nameInputLabel = /Titre de l’offre/
-        const inputName = screen.getByRole('textbox', { name: nameInputLabel })
-        const image = screen.getByTestId('image-preview')
-        expect(inputName).toHaveValue(productData.name)
-        expect(image).toHaveAttribute('src', productData.images.recto)
-
-        // Inputs are disabled and image cannot be changed.
-        expect(inputName).toBeDisabled()
-        const imageEditLabel = /Ajouter une image/
-        const imageEditButton = screen.queryByRole('button', {
-          name: imageEditLabel,
+          expect(screen.queryByText(eanSearchTitle)).not.toBeInTheDocument()
         })
-        expect(imageEditButton).not.toBeInTheDocument()
       })
     })
   })
