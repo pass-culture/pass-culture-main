@@ -600,7 +600,7 @@ def _price_event(event: models.FinanceEvent) -> models.Pricing:
         lines = [
             models.PricingLine(
                 amount=amount,
-                category=models.PricingLineCategory.OFFERER_REVENUE,
+                category=models.PricingLineCategory.COMMERCIAL_GESTURE,
             ),
             models.PricingLine(
                 amount=0,
