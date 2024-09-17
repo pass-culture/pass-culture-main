@@ -29,6 +29,7 @@ OFFER_STATUS_FIELD_DESCRIPTION = """
 - `PENDING`: offer is pending for pass Culture rules compliance validation. This step may take up to 72 hours.\n\n
 - `REJECTED`: offer validation has been rejected because it is not compliant with pass Culture rules.\n\n
 - `SOLD_OUT`: offer is validated but there is no (more) stock available for booking.
+In the case of a collective offer, there is stock for only one booking ; if the booking is canceled, it is possible to book the collective offer again.
 """
 
 COLLECTIVE_OFFER_STATUS_FIELD_DESCRIPTION = (
