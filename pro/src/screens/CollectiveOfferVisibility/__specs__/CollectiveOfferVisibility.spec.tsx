@@ -135,13 +135,13 @@ describe('CollectiveOfferVisibility', () => {
         /Nom de l’établissement scolaire ou code UAI/
       )
     ).toBeDisabled()
-    expect(screen.getByText(/Enregistrer les modifications/)).toBeDisabled()
+    expect(screen.getByText(/Enregistrer et continuer/)).toBeDisabled()
   })
 
   it('should disable submit button if the user did not select an institution', () => {
     renderVisibilityStep(props)
     expect(
-      screen.getByRole('button', { name: /Étape suivante/ })
+      screen.getByRole('button', { name: /Enregistrer et continuer/ })
     ).toBeDisabled()
   })
 
@@ -204,7 +204,7 @@ describe('CollectiveOfferVisibility', () => {
     )
 
     await userEvent.click(
-      screen.getByRole('button', { name: /Étape suivante/ })
+      screen.getByRole('button', { name: /Enregistrer et continuer/ })
     )
     expect(
       api.patchCollectiveOffersEducationalInstitution
@@ -269,7 +269,7 @@ describe('CollectiveOfferVisibility', () => {
     )
 
     await userEvent.click(
-      screen.getByRole('button', { name: /Étape suivante/ })
+      screen.getByRole('button', { name: /Enregistrer et continuer/ })
     )
     expect(
       api.patchCollectiveOffersEducationalInstitution
@@ -456,10 +456,7 @@ describe('CollectiveOfferVisibility', () => {
   })
 
   it('should display saving information in action bar', async () => {
-    renderVisibilityStep(
-      { ...props, mode: Mode.CREATION },
-      { features: ['WIP_ENABLE_COLLECTIVE_DRAFT_OFFERS'] }
-    )
+    renderVisibilityStep({ ...props, mode: Mode.CREATION })
 
     expect(screen.getByText('Brouillon enregistré')).toBeInTheDocument()
 
@@ -469,10 +466,7 @@ describe('CollectiveOfferVisibility', () => {
   })
 
   it('should change saving information in action bar when form value change', async () => {
-    renderVisibilityStep(
-      { ...props, mode: Mode.CREATION },
-      { features: ['WIP_ENABLE_COLLECTIVE_DRAFT_OFFERS'] }
-    )
+    renderVisibilityStep({ ...props, mode: Mode.CREATION })
 
     vi.spyOn(
       api,

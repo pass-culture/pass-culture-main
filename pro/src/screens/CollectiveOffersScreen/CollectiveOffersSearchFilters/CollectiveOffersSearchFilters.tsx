@@ -69,6 +69,10 @@ const collectiveFilterStatus = [
   { label: 'Expirée', value: CollectiveOfferDisplayedStatus.EXPIRED },
   { label: 'Terminée', value: CollectiveOfferDisplayedStatus.ENDED },
   { label: 'Archivée', value: CollectiveOfferDisplayedStatus.ARCHIVED },
+  {
+    label: 'Brouillon',
+    value: CollectiveOfferDisplayedStatus.DRAFT,
+  },
 ]
 
 type StatusFormValues = {
@@ -105,10 +109,6 @@ export const CollectiveOffersSearchFilters = ({
     },
     onSubmit: () => {},
   })
-
-  const isCollectiveOfferDraftEnabled = useActiveFeature(
-    'WIP_ENABLE_COLLECTIVE_DRAFT_OFFERS'
-  )
 
   // TODO(anoukhello - 24/07/24) we should not use useEffect for this but an event handler on SelectAutocomplete
   useEffect(() => {
@@ -177,14 +177,7 @@ export const CollectiveOffersSearchFilters = ({
   const searchByOfferNameLabel = 'Nom de l’offre'
   const searchByOfferNamePlaceholder = 'Rechercher par nom d’offre'
 
-  const statusOptions = isCollectiveOfferDraftEnabled
-    ? collectiveFilterStatus.concat({
-        label: 'Brouillon',
-        value: CollectiveOfferDisplayedStatus.DRAFT,
-      })
-    : collectiveFilterStatus
-
-  const filteredStatusOptions = statusOptions.filter(
+  const filteredStatusOptions = collectiveFilterStatus.filter(
     (status) =>
       !isNewOffersAndBookingsActive ||
       status.value !== CollectiveOfferDisplayedStatus.INACTIVE

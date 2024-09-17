@@ -534,26 +534,14 @@ describe('route CollectiveOffers', () => {
     })
   })
 
-  it('should show all offers if the WIP_ENABLE_COLLECTIVE_DRAFT_OFFERS FF is enabled', async () => {
-    vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce([
-      collectiveOfferFactory({ status: CollectiveOfferStatus.ACTIVE }),
-      collectiveOfferFactory({ status: CollectiveOfferStatus.DRAFT }),
-    ])
-    await renderOffers(DEFAULT_COLLECTIVE_SEARCH_FILTERS, [
-      'WIP_ENABLE_COLLECTIVE_DRAFT_OFFERS',
-    ])
-
-    expect(screen.getByText('2 offres')).toBeInTheDocument()
-  })
-
-  it('should not show draft offers if the WIP_ENABLE_COLLECTIVE_DRAFT_OFFERS FF is disabled', async () => {
+  it('should show draft offers ', async () => {
     vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce([
       collectiveOfferFactory({ status: CollectiveOfferStatus.ACTIVE }),
       collectiveOfferFactory({ status: CollectiveOfferStatus.DRAFT }),
     ])
     await renderOffers(DEFAULT_COLLECTIVE_SEARCH_FILTERS)
 
-    expect(screen.getByText('1 offre')).toBeInTheDocument()
+    expect(screen.getByText('2 offres')).toBeInTheDocument()
   })
 
   it('should fetch only bookable offers when the WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE FF is active', async () => {

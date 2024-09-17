@@ -17,7 +17,6 @@ import {
 } from 'config/swrQueryKeys'
 import { Events } from 'core/FirebaseEvents/constants'
 import { Mode, isCollectiveOfferTemplate } from 'core/OfferEducational/types'
-import { useActiveFeature } from 'hooks/useActiveFeature'
 import { useNotification } from 'hooks/useNotification'
 import { AdagePreviewLayout } from 'pages/AdageIframe/app/components/OfferInfos/AdagePreviewLayout/AdagePreviewLayout'
 import { RedirectToBankAccountDialog } from 'screens/IndividualOffersScreen/RedirectToBankAccountDialog'
@@ -41,10 +40,6 @@ export const CollectiveOfferPreviewCreationScreen = ({
   const { mutate } = useSWRConfig()
   const { logEvent } = useAnalytics()
   const [displayRedirectDialog, setDisplayRedirectDialog] = useState(false)
-
-  const isCollectiveOfferDraftEnabled = useActiveFeature(
-    'WIP_ENABLE_COLLECTIVE_DRAFT_OFFERS'
-  )
 
   const backRedirectionUrl = offer.isTemplate
     ? `/offre/${offer.id}/collectif/vitrine/creation/recapitulatif`
@@ -131,21 +126,19 @@ export const CollectiveOfferPreviewCreationScreen = ({
           </ButtonLink>
         </ActionsBarSticky.Left>
         <ActionsBarSticky.Right dirtyForm={false} mode={Mode.CREATION}>
-          {isCollectiveOfferDraftEnabled && (
-            <ButtonLink
-              to="/offres/collectives"
-              variant={ButtonVariant.SECONDARY}
-              onClick={() => {
-                logEvent(Events.CLICKED_SAVE_DRAFT_AND_EXIT_COLLECTIVE_OFFER, {
-                  from: location.pathname,
-                })
+          <ButtonLink
+            to="/offres/collectives"
+            variant={ButtonVariant.SECONDARY}
+            onClick={() => {
+              logEvent(Events.CLICKED_SAVE_DRAFT_AND_EXIT_COLLECTIVE_OFFER, {
+                from: location.pathname,
+              })
 
-                notify.success('Brouillon sauvegardé dans la liste des offres')
-              }}
-            >
-              Sauvegarder le brouillon et quitter
-            </ButtonLink>
-          )}
+              notify.success('Brouillon sauvegardé dans la liste des offres')
+            }}
+          >
+            Sauvegarder le brouillon et quitter
+          </ButtonLink>
           <Button onClick={publishOffer}>Publier l’offre</Button>
         </ActionsBarSticky.Right>
       </ActionsBarSticky>

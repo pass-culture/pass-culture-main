@@ -17,7 +17,6 @@ import {
 } from 'core/OfferEducational/types'
 import { computeCollectiveOffersUrl } from 'core/Offers/utils/computeCollectiveOffersUrl'
 import { SelectOption } from 'custom_types/form'
-import { useActiveFeature } from 'hooks/useActiveFeature'
 import { useNotification } from 'hooks/useNotification'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
@@ -76,9 +75,6 @@ export const OfferEducationalForm = ({
   isSubmitting,
 }: OfferEducationalFormProps): JSX.Element => {
   const notify = useNotification()
-  const isCollectiveOfferDraftEnabled = useActiveFeature(
-    'WIP_ENABLE_COLLECTIVE_DRAFT_OFFERS'
-  )
 
   const [venuesOptions, setVenuesOptions] = useState<SelectOption[]>([])
   const [currentOfferer, setCurrentOfferer] =
@@ -208,25 +204,14 @@ export const OfferEducationalForm = ({
             Annuler et quitter
           </ButtonLink>
         </ActionsBarSticky.Left>
-        {isCollectiveOfferDraftEnabled ? (
-          <ActionsBarSticky.Right dirtyForm={dirty || !offer} mode={mode}>
-            <Button
-              type="submit"
-              disabled={!isEligible || mode === Mode.READ_ONLY || isSubmitting}
-            >
-              Enregistrer et continuer
-            </Button>
-          </ActionsBarSticky.Right>
-        ) : (
+        <ActionsBarSticky.Right dirtyForm={dirty || !offer} mode={mode}>
           <Button
             type="submit"
-            disabled={!isEligible || mode === Mode.READ_ONLY}
+            disabled={!isEligible || mode === Mode.READ_ONLY || isSubmitting}
           >
-            {mode === Mode.CREATION
-              ? 'Étape suivante'
-              : 'Enregistrer les modifications'}
+            Enregistrer et continuer
           </Button>
-        )}
+        </ActionsBarSticky.Right>
       </ActionsBarSticky>
     </>
   )

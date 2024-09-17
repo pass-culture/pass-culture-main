@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
-import { CollectiveOfferStatus, CollectiveOfferType } from 'apiClient/v1'
+import { CollectiveOfferType } from 'apiClient/v1'
 import { AppLayout } from 'app/AppLayout'
 import {
   GET_OFFERER_QUERY_KEY,
@@ -19,7 +19,6 @@ import { CollectiveSearchFiltersParams } from 'core/Offers/types'
 import { computeCollectiveOffersUrl } from 'core/Offers/utils/computeCollectiveOffersUrl'
 import { hasCollectiveSearchFilters } from 'core/Offers/utils/hasSearchFilters'
 import { serializeApiCollectiveFilters } from 'core/Offers/utils/serializer'
-import { useActiveFeature } from 'hooks/useActiveFeature'
 import { useCurrentUser } from 'hooks/useCurrentUser'
 import { useIsNewInterfaceActive } from 'hooks/useIsNewInterfaceActive'
 import { formatAndOrderVenues } from 'repository/venuesService'
@@ -37,10 +36,6 @@ export const TemplateCollectiveOffers = (): JSX.Element => {
   const offererId = isNewInterfaceActive
     ? selectedOffererId
     : urlSearchFilters.offererId
-
-  const isDraftCollectiveOffersEnabled = useActiveFeature(
-    'WIP_ENABLE_COLLECTIVE_DRAFT_OFFERS'
-  )
 
   const offererQuery = useSWR(
     [GET_OFFERER_QUERY_KEY, offererId],
@@ -121,12 +116,6 @@ export const TemplateCollectiveOffers = (): JSX.Element => {
     { fallbackData: [] }
   )
 
-  const displayedOffers = isDraftCollectiveOffersEnabled
-    ? offersQuery.data
-    : offersQuery.data.filter(
-        (offer) => offer.status !== CollectiveOfferStatus.DRAFT
-      )
-
   return (
     <AppLayout>
       {offersQuery.isLoading ? (
@@ -138,7 +127,7 @@ export const TemplateCollectiveOffers = (): JSX.Element => {
           initialSearchFilters={apiFilters}
           isLoading={offersQuery.isLoading}
           offerer={offerer}
-          offers={displayedOffers}
+          offers={offersQuery.data}
           redirectWithUrlFilters={redirectWithUrlFilters}
           urlSearchFilters={urlSearchFilters}
           venues={venues}

@@ -71,7 +71,7 @@ describe('CollectiveOfferSummaryCreation', () => {
       defaultProps
     )
 
-    const previousStepLink = screen.getByText('Étape précédente')
+    const previousStepLink = screen.getByText('Retour')
     expect(previousStepLink.getAttribute('href')).toBe(
       '/offre/1/collectif/visibilite?requete=1'
     )
@@ -80,10 +80,7 @@ describe('CollectiveOfferSummaryCreation', () => {
   it('should display the saved information in the action bar', async () => {
     await renderCollectiveOfferSummaryCreation(
       '/offre/A1/collectif/creation/recapitulatif',
-      defaultProps,
-      {
-        features: ['WIP_ENABLE_COLLECTIVE_DRAFT_OFFERS'],
-      }
+      defaultProps
     )
 
     expect(screen.getByText('Brouillon enregistré')).toBeInTheDocument()

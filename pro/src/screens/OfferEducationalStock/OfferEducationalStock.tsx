@@ -26,7 +26,6 @@ import {
   isCollectiveOfferTemplate,
 } from 'core/OfferEducational/types'
 import { NBSP } from 'core/shared/constants'
-import { useActiveFeature } from 'hooks/useActiveFeature'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -70,9 +69,6 @@ export const OfferEducationalStock = <
   const [isLoading, setIsLoading] = useState(false)
   const startDatetime =
     isCollectiveOffer(offer) && offer.collectiveStock?.startDatetime
-  const isCollectiveOfferDraftEnabled = useActiveFeature(
-    'WIP_ENABLE_COLLECTIVE_DRAFT_OFFERS'
-  )
 
   const preventPriceIncrease = Boolean(
     isCollectiveOffer(offer) &&
@@ -229,35 +225,19 @@ export const OfferEducationalStock = <
                 >
                   {mode === Mode.CREATION ? 'Retour' : 'Annuler et quitter'}
                 </ButtonLink>
-                {!isCollectiveOfferDraftEnabled && (
-                  <Button
-                    type="submit"
-                    className=""
-                    disabled={
-                      mode === Mode.READ_ONLY &&
-                      disablePriceAndParticipantInputs
-                    }
-                    isLoading={isLoading}
-                  >
-                    {mode !== Mode.CREATION
-                      ? 'Enregistrer les modifications'
-                      : 'Étape suivante'}
-                  </Button>
-                )}
               </ActionsBarSticky.Left>
-              {isCollectiveOfferDraftEnabled && (
-                <ActionsBarSticky.Right dirtyForm={dirty} mode={mode}>
-                  <Button
-                    type="submit"
-                    disabled={
-                      mode === Mode.READ_ONLY &&
-                      disablePriceAndParticipantInputs
-                    }
-                  >
-                    Enregistrer et continuer
-                  </Button>
-                </ActionsBarSticky.Right>
-              )}
+
+              <ActionsBarSticky.Right dirtyForm={dirty} mode={mode}>
+                <Button
+                  type="submit"
+                  disabled={
+                    mode === Mode.READ_ONLY && disablePriceAndParticipantInputs
+                  }
+                  isLoading={isLoading}
+                >
+                  Enregistrer et continuer
+                </Button>
+              </ActionsBarSticky.Right>
             </ActionsBarSticky>
           </FormLayout>
         </form>
