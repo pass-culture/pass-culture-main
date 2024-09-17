@@ -1,17 +1,16 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useLocation, useOutletContext } from 'react-router-dom'
-import { useSWRConfig } from 'swr'
+import useSWR, { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
-import {
-  BankAccountResponseModel,
-  GetOffererBankAccountsResponseModel,
-  ManagedVenues,
-} from 'apiClient/v1'
+import { BankAccountResponseModel } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { ReimbursementBankAccount } from 'components/ReimbursementBankAccount/ReimbursementBankAccount'
-import { GET_OFFERER_QUERY_KEY } from 'config/swrQueryKeys'
+import {
+  GET_OFFERER_BANKACCOUNTS_AND_ATTACHED_VENUES,
+  GET_OFFERER_QUERY_KEY,
+} from 'config/swrQueryKeys'
 import { BankAccountEvents } from 'core/FirebaseEvents/constants'
 import { useNotification } from 'hooks/useNotification'
 import fullMoreIcon from 'icons/full-more.svg'
@@ -39,50 +38,32 @@ export const BankInformations = (): JSX.Element => {
     selectedOfferer = null,
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   }: ReimbursementsContextProps = useOutletContext() ?? {}
-
-  const [isOffererBankAccountsLoading, setIsOffererBankAccountsLoading] =
-    useState<boolean>(false)
-  const [selectedOffererBankAccounts, setSelectedOffererBankAccounts] =
-    useState<GetOffererBankAccountsResponseModel | null>(null)
   const [selectedBankAccount, setSelectedBankAccount] =
     useState<BankAccountResponseModel | null>(null)
-  const [bankAccountVenues, setBankAccountVenues] = useState<
-    Array<ManagedVenues>
-  >([])
 
-  useEffect(() => {
-    const getSelectedOffererBankAccounts = async (
-      selectedOffererId: number
-    ) => {
-      setIsOffererBankAccountsLoading(true)
-      try {
-        const offererBankAccounts =
-          await api.getOffererBankAccountsAndAttachedVenues(selectedOffererId)
-        setSelectedOffererBankAccounts(offererBankAccounts)
-        setBankAccountVenues(offererBankAccounts.managedVenues)
-        setIsOffererBankAccountsLoading(false)
-      } catch (error) {
+  const bankAccountVenuesQuery = useSWR(
+    [GET_OFFERER_BANKACCOUNTS_AND_ATTACHED_VENUES, selectedOffererId],
+    ([, offererId]) =>
+      api.getOffererBankAccountsAndAttachedVenues(Number(offererId)),
+    {
+      onError: () =>
         notify.error(
           'Impossible de récupérer les informations relatives à vos comptes bancaires.'
-        )
-      } finally {
-        setIsOffererBankAccountsLoading(false)
-      }
+        ),
     }
+  )
 
-    selectedOffererId && void getSelectedOffererBankAccounts(selectedOffererId)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedOffererId])
-
-  if (isOffererBankAccountsLoading) {
+  if (bankAccountVenuesQuery.isLoading) {
     return <Spinner />
   }
 
-  const updateOfferer = async (newOffererId: number) => {
-    if (newOffererId) {
-      setIsOffererBankAccountsLoading(true)
-      await mutate([GET_OFFERER_QUERY_KEY, Number(newOffererId)])
-      setIsOffererBankAccountsLoading(false)
+  const updateOfferer = async (offererId: number) => {
+    if (offererId) {
+      await mutate([
+        GET_OFFERER_BANKACCOUNTS_AND_ATTACHED_VENUES,
+        Number(offererId),
+      ])
+      await mutate([GET_OFFERER_QUERY_KEY, Number(offererId)])
     }
   }
 
@@ -94,14 +75,18 @@ export const BankInformations = (): JSX.Element => {
       setSelectedBankAccount(null)
     }
   }
+  let bankAccountVenues = bankAccountVenuesQuery.data?.managedVenues
 
   const updateBankAccountVenuePricingPoint = (venueId: number) => {
-    setBankAccountVenues(
-      bankAccountVenues.map((venue) =>
-        venue.id === venueId ? { ...venue, hasPricingPoint: true } : venue
-      )
+    if (!bankAccountVenues) {
+      return
+    }
+    bankAccountVenues = bankAccountVenues.map((venue) =>
+      venue.id === venueId ? { ...venue, hasPricingPoint: true } : venue
     )
   }
+
+  const selectedOffererBankAccounts = bankAccountVenuesQuery.data
 
   return (
     <>
@@ -178,7 +163,7 @@ export const BankInformations = (): JSX.Element => {
         <LinkVenuesDialog
           offererId={selectedOfferer.id}
           selectedBankAccount={selectedBankAccount}
-          managedVenues={bankAccountVenues}
+          managedVenues={bankAccountVenues ?? []}
           updateBankAccountVenuePricingPoint={
             updateBankAccountVenuePricingPoint
           }

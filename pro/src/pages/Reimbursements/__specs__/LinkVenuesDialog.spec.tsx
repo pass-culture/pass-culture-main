@@ -159,7 +159,7 @@ describe('LinkVenueDialog', () => {
 
     expect(
       await screen.findByText(
-        /Un erreur est survenue. Vos modifications n’ont pas été prises en compte/
+        /Une erreur est survenue. Vos modifications n’ont pas été prises en compte/
       )
     ).toBeInTheDocument()
   })

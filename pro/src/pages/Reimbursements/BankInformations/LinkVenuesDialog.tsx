@@ -85,7 +85,7 @@ export const LinkVenuesDialog = ({
         formik.setSubmitting(false)
       } catch (e) {
         notification.error(
-          'Un erreur est survenue. Vos modifications n’ont pas été prises en compte.'
+          'Une erreur est survenue. Vos modifications n’ont pas été prises en compte.'
         )
       }
     }

@@ -153,7 +153,6 @@ Then('no venue should be linked to my account', () => {
     'contain',
     'Vos modifications ont bien été prises en compte.'
   )
-  cy.reload()
   cy.findAllByTestId('spinner').should('not.exist')
   cy.findByTestId('reimbursement-bank-account-linked-venues').within(() => {
     cy.contains('Aucun lieu n’est rattaché à ce compte bancaire.')
@@ -165,7 +164,6 @@ Then('{string} venue should be linked to my account', (venue: string) => {
     'contain',
     'Vos modifications ont bien été prises en compte.'
   )
-  cy.reload()
   cy.findAllByTestId('spinner').should('not.exist')
   cy.findByTestId('reimbursement-bank-account-linked-venues').within(() => {
     cy.contains('Lieu(x) rattaché(s) à ce compte bancaire')
