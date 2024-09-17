@@ -7,8 +7,11 @@ import { FormLayout } from 'components/FormLayout/FormLayout'
 import { MultiDownloadButtonsModal } from 'components/MultiDownloadButtonsModal/MultiDownloadButtonsModal'
 import { DEFAULT_PRE_FILTERS } from 'core/Bookings/constants'
 import { PreFiltersParams } from 'core/Bookings/types'
+import { ALL_OFFERER_ADDRESS_OPTION } from 'core/Offers/constants'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared/constants'
 import { Audience } from 'core/shared/types'
+import { SelectOption } from 'custom_types/form'
+import { useActiveFeature } from 'hooks/useActiveFeature'
 import { useNotification } from 'hooks/useNotification'
 import fullRefreshIcon from 'icons/full-refresh.svg'
 import { downloadIndividualBookingsCSVFile } from 'pages/Bookings/downloadIndividualBookingsCSVFile'
@@ -17,6 +20,8 @@ import { downloadCollectiveBookingsCSVFile } from 'pages/CollectiveBookings/down
 import { downloadCollectiveBookingsXLSFile } from 'pages/CollectiveBookings/downloadCollectiveBookingsXLSFile'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import { SelectInput } from 'ui-kit/form/Select/SelectInput'
+import { FieldLayout } from 'ui-kit/form/shared/FieldLayout/FieldLayout'
 import { isDateValid } from 'utils/date'
 
 import { Events } from '../../../core/FirebaseEvents/constants'
@@ -39,6 +44,7 @@ export interface PreFiltersProps {
   urlParams?: PreFiltersParams
   updateUrl: (selectedPreFilters: PreFiltersParams) => void
   venues: { id: string; displayName: string }[]
+  offererAddresses: SelectOption[]
 }
 
 export const PreFilters = ({
@@ -52,6 +58,7 @@ export const PreFilters = ({
   isLocalLoading,
   resetPreFilters,
   venues,
+  offererAddresses,
   updateUrl,
 }: PreFiltersProps): JSX.Element => {
   const notify = useNotification()
@@ -63,6 +70,7 @@ export const PreFilters = ({
       ...appliedPreFilters,
     })
   const [isDownloadingCSV, setIsDownloadingCSV] = useState<boolean>(false)
+  const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
 
   useEffect(
     () => setSelectedPreFilters({ ...appliedPreFilters }),
@@ -167,12 +175,34 @@ export const PreFilters = ({
       >
         <div className={styles['pre-filters-form-filters']}>
           <FormLayout.Row inline>
-            <FilterByVenue
-              isDisabled={isFiltersDisabled}
-              selectedVenueId={selectedPreFilters.offerVenueId}
-              updateFilters={updateSelectedFilters}
-              venuesFormattedAndOrdered={venues}
-            />
+            {isOfferAddressEnabled && audience === Audience.INDIVIDUAL ? (
+              <FieldLayout
+                label="Adresse"
+                name="address"
+                className={styles['venue-filter']}
+                isOptional
+              >
+                <SelectInput
+                  defaultOption={ALL_OFFERER_ADDRESS_OPTION}
+                  onChange={(event) =>
+                    updateSelectedFilters({
+                      offererAddressId: event.target.value,
+                    })
+                  }
+                  disabled={isFiltersDisabled}
+                  name="address"
+                  options={offererAddresses}
+                  value={selectedPreFilters.offererAddressId}
+                />
+              </FieldLayout>
+            ) : (
+              <FilterByVenue
+                isDisabled={isFiltersDisabled}
+                selectedVenueId={selectedPreFilters.offerVenueId}
+                updateFilters={updateSelectedFilters}
+                venuesFormattedAndOrdered={venues}
+              />
+            )}
 
             <FilterByEventDate
               isDisabled={isFiltersDisabled}

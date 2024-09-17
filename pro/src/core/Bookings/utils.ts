@@ -3,6 +3,7 @@ import { APIFilters, PreFiltersParams } from 'core/Bookings/types'
 
 export const buildBookingsRecapQuery = ({
   offerVenueId = DEFAULT_PRE_FILTERS.offerVenueId,
+  offererAddressId = DEFAULT_PRE_FILTERS.offererAddressId,
   offerEventDate = DEFAULT_PRE_FILTERS.offerEventDate,
   bookingBeginningDate = DEFAULT_PRE_FILTERS.bookingBeginningDate,
   bookingEndingDate = DEFAULT_PRE_FILTERS.bookingEndingDate,
@@ -14,6 +15,9 @@ export const buildBookingsRecapQuery = ({
 
   if (offerVenueId !== DEFAULT_PRE_FILTERS.offerVenueId) {
     params.venueId = offerVenueId
+  }
+  if (offererAddressId !== DEFAULT_PRE_FILTERS.offererAddressId) {
+    params.offererAddressId = offererAddressId
   }
   if (offerEventDate !== DEFAULT_PRE_FILTERS.offerEventDate) {
     params.eventDate = offerEventDate

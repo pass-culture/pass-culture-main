@@ -20,8 +20,10 @@ vi.mock('apiClient/api', () => ({
   api: { getVenues: vi.fn() },
 }))
 
-const renderPreFilters = (props: PreFiltersProps) => {
-  renderWithProviders(<PreFilters {...props} />)
+const renderPreFilters = (props: PreFiltersProps, features: string[] = []) => {
+  renderWithProviders(<PreFilters {...props} />, {
+    features,
+  })
 }
 
 describe('filter bookings by bookings period', () => {
@@ -38,6 +40,7 @@ describe('filter bookings by bookings period', () => {
           displayName: 'Mon nom de lieu',
         },
       ],
+      offererAddresses: [{ value: 21, label: 'label - street city cp' }],
       hasResult: true,
       resetPreFilters: vi.fn(),
       isFiltersDisabled: false,
@@ -106,6 +109,32 @@ describe('filter bookings by bookings period', () => {
       offerEventDate: '2020-12-13',
       offerId: undefined,
       offerVenueId: '12',
+      offererAddressId: 'all',
     })
+  })
+
+  it('should be able to filter by offererAddress', async () => {
+    renderPreFilters(props, ['WIP_ENABLE_OFFER_ADDRESS'])
+
+    const offerVenuIdInput = screen.getByLabelText('Adresse')
+    await userEvent.selectOptions(offerVenuIdInput, '21')
+
+    await userEvent.click(screen.getByText('Afficher'))
+    expect(mockUpdateUrl).toHaveBeenCalledWith({
+      bookingBeginningDate: DEFAULT_PRE_FILTERS.bookingBeginningDate,
+      bookingEndingDate: DEFAULT_PRE_FILTERS.bookingEndingDate,
+      bookingStatusFilter: DEFAULT_PRE_FILTERS.bookingStatusFilter,
+      offerEventDate: DEFAULT_PRE_FILTERS.offerEventDate,
+      offerId: DEFAULT_PRE_FILTERS.offerId,
+      offerVenueId: DEFAULT_PRE_FILTERS.offerVenueId,
+      offererAddressId: '21',
+    })
+  })
+
+  it('should not display offererAddress for collective audiance', () => {
+    props.audience = Audience.COLLECTIVE
+    renderPreFilters(props, ['WIP_ENABLE_OFFER_ADDRESS'])
+
+    expect(screen.queryByLabelText('Adresse')).not.toBeInTheDocument()
   })
 })
