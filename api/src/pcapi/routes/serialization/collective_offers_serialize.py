@@ -11,18 +11,9 @@ from pydantic.v1 import Field
 from pydantic.v1 import root_validator
 from pydantic.v1 import validator
 
-import pcapi.core.categories.subcategories_v2 as subcategories
-from pcapi.core.categories.subcategories_v2 import SubcategoryIdEnum
-from pcapi.core.educational.models import CollectiveBooking
-from pcapi.core.educational.models import CollectiveBookingStatus
-from pcapi.core.educational.models import CollectiveOffer
-from pcapi.core.educational.models import CollectiveOfferAllowedAction
-from pcapi.core.educational.models import CollectiveOfferDisplayedStatus
-from pcapi.core.educational.models import CollectiveOfferTemplate
-from pcapi.core.educational.models import CollectiveStock
-from pcapi.core.educational.models import OfferContactFormEnum
-from pcapi.core.educational.models import StudentLevels
-from pcapi.core.offerers.models import Venue
+from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.educational import models as educational_models
+from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import validation as offers_validation
 from pcapi.models.offer_mixin import CollectiveOfferStatus
 from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
@@ -77,7 +68,11 @@ class ListCollectiveOffersQueryModel(BaseModel):
     nameOrIsbn: str | None
     offerer_id: int | None
     # TODO: (raphaelpra, 2024-07-08): Remove the type CollectiveOfferDisplayedStatus when front only use list in request
-    status: list[CollectiveOfferDisplayedStatus] | CollectiveOfferDisplayedStatus | None
+    status: (
+        list[educational_models.CollectiveOfferDisplayedStatus]
+        | educational_models.CollectiveOfferDisplayedStatus
+        | None
+    )
     venue_id: int | None
     categoryId: str | None
     creation_mode: str | None
@@ -149,12 +144,12 @@ class CollectiveOfferResponseModel(BaseModel):
     name: str
     stocks: list[CollectiveOffersStockResponseModel]
     booking: CollectiveOffersBookingResponseModel | None
-    subcategoryId: SubcategoryIdEnum | EmptyStringToNone
+    subcategoryId: subcategories.SubcategoryIdEnum | EmptyStringToNone
     isShowcase: bool
     venue: base_serializers.ListOffersVenueResponseModel
     status: CollectiveOfferStatus
-    displayedStatus: CollectiveOfferDisplayedStatus
-    allowedActions: list[CollectiveOfferAllowedAction] | None
+    displayedStatus: educational_models.CollectiveOfferDisplayedStatus
+    allowedActions: list[educational_models.CollectiveOfferAllowedAction] | None
     educationalInstitution: EducationalInstitutionResponseModel | None
     interventionArea: list[str]
     templateId: str | None
@@ -177,20 +172,22 @@ class ListCollectiveOffersResponseModel(BaseModel):
 
 
 def serialize_collective_offers_capped(
-    paginated_offers: list[CollectiveOffer | CollectiveOfferTemplate],
+    paginated_offers: list[educational_models.CollectiveOffer | educational_models.CollectiveOfferTemplate],
 ) -> list[CollectiveOfferResponseModel]:
     return [_serialize_offer_paginated(offer) for offer in paginated_offers]
 
 
-def _serialize_offer_paginated(offer: CollectiveOffer | CollectiveOfferTemplate) -> CollectiveOfferResponseModel:
+def _serialize_offer_paginated(
+    offer: educational_models.CollectiveOffer | educational_models.CollectiveOfferTemplate,
+) -> CollectiveOfferResponseModel:
     serialized_stock = _serialize_stock(getattr(offer, "collectiveStock", None))
     last_booking = (
         _get_serialize_last_booking(offer.collectiveStock.collectiveBookings)
-        if isinstance(offer, CollectiveOffer) and offer.collectiveStock
+        if isinstance(offer, educational_models.CollectiveOffer) and offer.collectiveStock
         else None
     )
     serialized_stocks = [serialized_stock] if serialized_stock is not None else []
-    is_offer_template = isinstance(offer, CollectiveOfferTemplate)
+    is_offer_template = isinstance(offer, educational_models.CollectiveOfferTemplate)
     institution = getattr(offer, "institution", None)
     templateId = getattr(offer, "templateId", None)
 
@@ -223,7 +220,7 @@ def _serialize_offer_paginated(offer: CollectiveOffer | CollectiveOfferTemplate)
     )
 
 
-def _serialize_stock(stock: CollectiveStock | None = None) -> dict:
+def _serialize_stock(stock: educational_models.CollectiveStock | None = None) -> dict:
     if stock:
         return {
             "id": stock.id,
@@ -244,7 +241,7 @@ def _serialize_stock(stock: CollectiveStock | None = None) -> dict:
     }
 
 
-def _serialize_venue(venue: Venue) -> dict:
+def _serialize_venue(venue: offerers_models.Venue) -> dict:
     return {
         "id": venue.id,
         "isVirtual": venue.isVirtual,
@@ -255,7 +252,9 @@ def _serialize_venue(venue: Venue) -> dict:
     }
 
 
-def _get_serialize_last_booking(bookings: list[CollectiveBooking]) -> CollectiveOffersBookingResponseModel | None:
+def _get_serialize_last_booking(
+    bookings: list[educational_models.CollectiveBooking],
+) -> CollectiveOffersBookingResponseModel | None:
     if len(bookings) == 0:
         return None
     last_booking = sorted(bookings, key=lambda b: b.dateCreated, reverse=True)[0]
@@ -343,7 +342,7 @@ class GetCollectiveOfferBaseResponseModel(BaseModel, AccessibilityComplianceMixi
     dateCreated: datetime
     description: str
     durationMinutes: int | None
-    students: list[StudentLevels]
+    students: list[educational_models.StudentLevels]
     offerVenue: CollectiveOfferOfferVenueResponseModel
     contactEmail: str | None
     contactPhone: str | None
@@ -353,10 +352,10 @@ class GetCollectiveOfferBaseResponseModel(BaseModel, AccessibilityComplianceMixi
     isEditable: bool
     id: int
     name: str
-    subcategoryId: SubcategoryIdEnum | EmptyStringToNone
+    subcategoryId: subcategories.SubcategoryIdEnum | EmptyStringToNone
     venue: GetCollectiveOfferVenueResponseModel
     status: CollectiveOfferStatus
-    displayedStatus: CollectiveOfferDisplayedStatus
+    displayedStatus: educational_models.CollectiveOfferDisplayedStatus
     domains: list[OfferDomain]
     interventionArea: list[str]
     is_cancellable_from_offerer: bool = Field(alias="isCancellable")
@@ -380,7 +379,7 @@ class GetCollectiveOfferTemplateResponseModel(GetCollectiveOfferBaseResponseMode
     contactEmail: str | None
     contactPhone: str | None
     contactUrl: str | None
-    contactForm: OfferContactFormEnum | None
+    contactForm: educational_models.OfferContactFormEnum | None
 
     class Config:
         orm_mode = True
@@ -428,7 +427,7 @@ class GetCollectiveOfferResponseModel(GetCollectiveOfferBaseResponseModel):
     institution: EducationalInstitutionResponseModel | None
     isVisibilityEditable: bool
     templateId: int | None
-    lastBookingStatus: CollectiveBookingStatus | None
+    lastBookingStatus: educational_models.CollectiveBookingStatus | None
     lastBookingId: int | None
     teacher: EducationalRedactorResponseModel | None
     isPublicApi: bool
@@ -436,10 +435,10 @@ class GetCollectiveOfferResponseModel(GetCollectiveOfferBaseResponseModel):
     formats: typing.Sequence[subcategories.EacFormat] | None
     isTemplate: bool = False
     dates: TemplateDatesModel | None
-    allowedActions: list[CollectiveOfferAllowedAction] | None
+    allowedActions: list[educational_models.CollectiveOfferAllowedAction] | None
 
     @classmethod
-    def from_orm(cls, offer: CollectiveOffer) -> "GetCollectiveOfferResponseModel":
+    def from_orm(cls, offer: educational_models.CollectiveOffer) -> "GetCollectiveOfferResponseModel":
         result = super().from_orm(offer)
         result.formats = offer.get_formats()
         result.allowedActions = offer.allowed_actions
@@ -543,7 +542,7 @@ class PostCollectiveOfferBodyModel(BaseModel):
     mental_disability_compliant: bool = False
     motor_disability_compliant: bool = False
     visual_disability_compliant: bool = False
-    students: list[StudentLevels]
+    students: list[educational_models.StudentLevels]
     offer_venue: CollectiveOfferVenueBodyModel
     contact_email: EmailStrOrEmpty | None
     contact_phone: str | None
@@ -558,7 +557,7 @@ class PostCollectiveOfferBodyModel(BaseModel):
     formats: typing.Sequence[subcategories.EacFormat] | None
 
     @validator("students")
-    def validate_students(cls, students: list[str]) -> list[StudentLevels]:
+    def validate_students(cls, students: list[str]) -> list[educational_models.StudentLevels]:
         return shared_offers.validate_students(students)
 
     @root_validator
@@ -630,7 +629,7 @@ class PostCollectiveOfferTemplateBodyModel(PostCollectiveOfferBodyModel):
     price_detail: PriceDetail | None
     contact_email: EmailStr | None  # type: ignore[assignment]
     contact_url: AnyHttpUrl | None
-    contact_form: OfferContactFormEnum | None
+    contact_form: educational_models.OfferContactFormEnum | None
 
     # TODO(jeremieb) | None is temporary
     # when the frontend clients are up to date, dateRange should
@@ -663,12 +662,12 @@ class PatchCollectiveOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
     bookingEmails: list[str] | None
     description: str | None
     name: str | None
-    students: list[StudentLevels] | None
+    students: list[educational_models.StudentLevels] | None
     offerVenue: CollectiveOfferVenueBodyModel | None
     contactEmail: EmailStr | None
     contactPhone: str | None
     durationMinutes: int | None
-    subcategoryId: SubcategoryIdEnum | EmptyStringToNone
+    subcategoryId: subcategories.SubcategoryIdEnum | EmptyStringToNone
     domains: list[int] | None
     interventionArea: list[str] | None
     venueId: int | None
@@ -676,7 +675,7 @@ class PatchCollectiveOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
     formats: typing.Sequence[subcategories.EacFormat] | None
 
     @validator("students")
-    def validate_students(cls, students: list[str] | None) -> list[StudentLevels] | None:
+    def validate_students(cls, students: list[str] | None) -> list[educational_models.StudentLevels] | None:
         if not students:
             return None
         return shared_offers.validate_students(students)
@@ -736,7 +735,7 @@ class PatchCollectiveOfferTemplateBodyModel(PatchCollectiveOfferBodyModel):
     domains: list[int] | None
     dates: DateRangeModel | None
     contactUrl: str | None
-    contactForm: OfferContactFormEnum | None
+    contactForm: educational_models.OfferContactFormEnum | None
 
     @validator("domains")
     def validate_domains_collective_offer_template_edition(
