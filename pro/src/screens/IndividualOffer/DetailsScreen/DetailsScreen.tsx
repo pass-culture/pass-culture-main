@@ -181,13 +181,17 @@ export const DetailsScreen = ({ venues }: DetailsScreenProps): JSX.Element => {
   // (Draft) offers are created via POST request.
   // On Details screen, the form might be pre-filled with a product,
   // until the form is submitted, the draft offer is not created yet.
-  const isOfferProductBased = !!offer?.productId
+  const isOfferProductBased = !!offer && !!offer.productId
+  const isOfferButNotProductBased = !!offer && !offer.productId
   const isNotAnOfferYetButProductBased = !offer && !!formik.values.productId
   const isProductBased = isOfferProductBased || isNotAnOfferYetButProductBased
 
   const readOnlyFields = setFormReadOnlyFields(offer, isProductBased)
   const isEanSearchDisplayed =
-    isSearchByEanEnabled && isRecordStore && mode === OFFER_WIZARD_MODE.CREATION
+    isSearchByEanEnabled &&
+    isRecordStore &&
+    mode === OFFER_WIZARD_MODE.CREATION &&
+    !isOfferButNotProductBased
 
   return (
     <FormikProvider value={formik}>
