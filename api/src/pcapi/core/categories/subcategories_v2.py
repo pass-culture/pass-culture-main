@@ -400,6 +400,7 @@ NATIVE_CATEGORY_MUSIQUE_EN_LIGNE = NativeCategory(
     label="Musique en ligne",
     parents=[SEARCH_GROUP_CD_VINYLE_MUSIQUE_EN_LIGNE.id],
 )
+NATIVE_CATEGORY_NONE = NativeCategory(technical_name="NO_NATIVE_CATEGORY", label="None", parents=[])
 NATIVE_CATEGORY_PARTITIONS_DE_MUSIQUE = NativeCategory(
     technical_name="PARTITIONS_DE_MUSIQUE",
     label="Partitions de musique",
@@ -645,8 +646,8 @@ class Subcategory:
         return self.category.id
 
     @property
-    def native_category_id(self) -> str | None:
-        return self.native_category.id if self.native_category else None
+    def native_category_id(self) -> str:
+        return self.native_category.id
 
     @property
     def is_offline_only(self) -> bool:
@@ -1292,7 +1293,7 @@ FESTIVAL_LIVRE = Subcategory(
 CARTE_JEUNES = Subcategory(
     id="CARTE_JEUNES",
     category=categories.CARTE_JEUNES,
-    native_category=None,
+    native_category=NATIVE_CATEGORY_NONE,
     pro_label="Carte jeunes",
     app_label="Carte jeunes",
     search_group_name=SEARCH_GROUP_CARTES_JEUNES.id,
