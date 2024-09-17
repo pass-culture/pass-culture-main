@@ -3848,14 +3848,7 @@
             },
             "GetMusicTypesResponse": {
                 "items": {
-                    "anyOf": [
-                        {
-                            "$ref": "#/components/schemas/MusicTypeResponse"
-                        },
-                        {
-                            "$ref": "#/components/schemas/TiteliveMusicTypeResponse"
-                        }
-                    ]
+                    "$ref": "#/components/schemas/MusicTypeResponse"
                 },
                 "title": "GetMusicTypesResponse",
                 "type": "array"
@@ -4281,6 +4274,20 @@
                     "$ref": "#/components/schemas/ShowTypeResponse"
                 },
                 "title": "GetShowTypesResponse",
+                "type": "array"
+            },
+            "GetTiteliveEventMusicTypesResponse": {
+                "items": {
+                    "$ref": "#/components/schemas/TiteliveEventMusicTypeResponse"
+                },
+                "title": "GetTiteliveEventMusicTypesResponse",
+                "type": "array"
+            },
+            "GetTiteliveMusicTypesResponse": {
+                "items": {
+                    "$ref": "#/components/schemas/TiteliveMusicTypeResponse"
+                },
+                "title": "GetTiteliveMusicTypesResponse",
                 "type": "array"
             },
             "ImageBody": {
@@ -8376,6 +8383,45 @@
                 "title": "TELECHARGEMENT_MUSIQUE_read",
                 "type": "object"
             },
+            "TiteliveEventMusicTypeEnum": {
+                "description": "An enumeration.",
+                "enum": [
+                    "MUSIQUE_CLASSIQUE",
+                    "JAZZ-BLUES",
+                    "ELECTRO",
+                    "POP",
+                    "ROCK",
+                    "METAL",
+                    "ALTERNATIF",
+                    "VARIETES",
+                    "FUNK-SOUL-RNB-DISCO",
+                    "RAP-HIP HOP",
+                    "REGGAE-RAGGA",
+                    "MUSIQUE_DU_MONDE",
+                    "COUNTRY-FOLK",
+                    "AMBIANCE",
+                    "AUTRES"
+                ],
+                "title": "TiteliveEventMusicTypeEnum",
+                "type": "string"
+            },
+            "TiteliveEventMusicTypeResponse": {
+                "properties": {
+                    "id": {
+                        "$ref": "#/components/schemas/TiteliveEventMusicTypeEnum"
+                    },
+                    "label": {
+                        "title": "Label",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "id",
+                    "label"
+                ],
+                "title": "TiteliveEventMusicTypeResponse",
+                "type": "object"
+            },
             "TiteliveMusicTypeEnum": {
                 "description": "An enumeration.",
                 "enum": [
@@ -10201,7 +10247,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/GetMusicTypesResponse"
+                                    "$ref": "#/components/schemas/GetTiteliveMusicTypesResponse"
                                 }
                             }
                         },
@@ -10245,7 +10291,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/GetMusicTypesResponse"
+                                    "$ref": "#/components/schemas/GetTiteliveEventMusicTypesResponse"
                                 }
                             }
                         },
