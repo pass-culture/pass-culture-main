@@ -172,7 +172,11 @@ export const SelectAutocomplete = ({
           filteredOptions[hoveredOptionIndex]
         ) {
           event.preventDefault()
-          await selectOption(String(filteredOptions[hoveredOptionIndex].value))
+          if (filteredOptions[hoveredOptionIndex]) {
+            await selectOption(
+              String(filteredOptions[hoveredOptionIndex].value)
+            )
+          }
         }
         break
       case 'Escape':
