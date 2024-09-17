@@ -77,11 +77,6 @@ There are two requirements to meet in order to create a collective offer:
 Anyone using an API key which has access to the administrative venue.
 For example: one needs to create events for a local theatre. To do so, its API key must be linked to this venue. Again, this is not the location, this is the organizer. This theatre could then offer tickets for a film at the same location or an outdoor visit nearby, etc.
 
-#### Who can create a collective (bookable) offer?
-
-Anyone using an API key which has access to the administrative venue.
-For example: one needs to create events for a local theatre. To do so, its API key must be linked to this venue. Again, this is not the location, this is the organizer. This theatre could then offer tickets for a film at the same location or an outdoor visit nearby, etc.
-
 ## Update rules
 
 ### Offer templates
