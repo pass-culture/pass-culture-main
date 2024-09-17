@@ -1,5 +1,4 @@
 import { api } from 'apiClient/api'
-import { CollectiveBookingStatusFilter } from 'apiClient/v1'
 import { DEFAULT_PRE_FILTERS } from 'core/Bookings/constants'
 import { PreFiltersParams } from 'core/Bookings/types'
 import { downloadFile } from 'utils/downloadFile'
@@ -18,6 +17,8 @@ export const downloadCollectiveBookingsXLSFile = async (
       isDateValid(filters.offerEventDate)
       ? filters.offerEventDate
       : null,
+    // TODO fix PreFiltersParams type to use CollectiveBookingStatusFilter type
+    // @ts-expect-error
     filters.bookingStatusFilter as CollectiveBookingStatusFilter,
     isDateValid(filters.bookingBeginningDate)
       ? filters.bookingBeginningDate
