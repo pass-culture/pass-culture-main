@@ -2,6 +2,7 @@ import datetime
 import decimal
 
 import pytest
+import time_machine
 
 from pcapi.core.categories import subcategories_v2 as subcategories
 import pcapi.core.criteria.factories as criteria_factories
@@ -25,6 +26,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 @override_settings(ALGOLIA_LAST_30_DAYS_BOOKINGS_RANGE_THRESHOLDS=[1, 2, 3, 4])
 @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+@time_machine.travel("2024-01-01T00:00:00", tick=False)
 def test_serialize_offer():
     rayon = "Policier / Thriller format poche"  # fetched from provider
 
@@ -75,6 +77,7 @@ def test_serialize_offer():
             "dates": [],
             "description": "livre bien lire",
             "ean": "2221001648",
+            "indexedAt": "2024-01-01T00:00:00",
             "isDigital": False,
             "isDuo": False,
             "isEducational": False,
@@ -122,6 +125,7 @@ def test_serialize_offer():
 
 @override_settings(ALGOLIA_LAST_30_DAYS_BOOKINGS_RANGE_THRESHOLDS=[1, 2, 3, 4])
 @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
+@time_machine.travel("2024-01-01T00:00:00", tick=False)
 def test_serialize_offer_legacy():
     rayon = "Policier / Thriller format poche"  # fetched from provider
 
@@ -167,6 +171,7 @@ def test_serialize_offer_legacy():
             "dates": [],
             "description": "livre bien lire",
             "ean": "2221001648",
+            "indexedAt": "2024-01-01T00:00:00",
             "isDigital": False,
             "isDuo": False,
             "isEducational": False,
