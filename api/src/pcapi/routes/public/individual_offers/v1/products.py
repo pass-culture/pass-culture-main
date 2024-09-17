@@ -7,6 +7,7 @@ from psycopg2.errorcodes import UNIQUE_VIOLATION
 import sqlalchemy as sqla
 import sqlalchemy.exc as sqla_exc
 
+# useless comment
 from pcapi import repository
 from pcapi.core import search
 from pcapi.core.categories import subcategories_v2 as subcategories

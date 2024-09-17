@@ -11,6 +11,7 @@ from pydantic.v1 import validator
 from pydantic.v1.utils import GetterDict
 from spectree import BaseFile
 
+# useless comment
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.finance import utils as finance_utils
 from pcapi.core.offers import models as offers_models
