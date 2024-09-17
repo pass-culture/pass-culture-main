@@ -1167,36 +1167,36 @@ probabilistic = ["pyprobables (>=0.6,<0.7)"]
 
 [[package]]
 name = "fiona"
-version = "1.10.0"
+version = "1.10.1"
 description = "Fiona reads and writes spatial data files"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "fiona-1.10.0-cp310-cp310-macosx_10_15_x86_64.whl", hash = "sha256:2f8c6e7d2e5e2dc3b72b520cd160ca6d3689748b20d35b518eec9073f5a3c5bf"},
-    {file = "fiona-1.10.0-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:b2a42fb0a7168003015ab9648712f7d7eb971237af3c9be6000df69cd4b97ba7"},
-    {file = "fiona-1.10.0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:d95a93d6d37e04232b141d9f08190b30e7dc368126a34342d764b9d0a857d770"},
-    {file = "fiona-1.10.0-cp310-cp310-win_amd64.whl", hash = "sha256:382cffc905d44a933951857ae07f79cf59567db08f4201ed2a28f9f9bcc86932"},
-    {file = "fiona-1.10.0-cp311-cp311-macosx_10_15_x86_64.whl", hash = "sha256:2854fca6478ca3c1dc3f06531025550046f405488909a5be11ea97e4c55894db"},
-    {file = "fiona-1.10.0-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:ef27d75046e57b3e55c4b5d4e1bf7e43ef490e73ada5e86f9b148aa23a2e7fd4"},
-    {file = "fiona-1.10.0-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:16072f9313f60220310951561c5df29122d078d26316455dc58516c330881d35"},
-    {file = "fiona-1.10.0-cp311-cp311-win_amd64.whl", hash = "sha256:1a7f28c5667d5cb05891fd00ed8ca2d3067bb58c90ca928a2741c0da74daf10d"},
-    {file = "fiona-1.10.0-cp312-cp312-macosx_10_15_x86_64.whl", hash = "sha256:d099b1b5ab99db1d144ac47f657e14471178537d878ebd016c37afdf37303399"},
-    {file = "fiona-1.10.0-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:8ad1ea80555bc56047d4b4e60c9424cf66875f161b3e56ebd60fa0574dc6693f"},
-    {file = "fiona-1.10.0-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:a273cc957e86289609b47155f75d60c2cc37974a92618e016f75bc5ab9cc2dec"},
-    {file = "fiona-1.10.0-cp312-cp312-win_amd64.whl", hash = "sha256:ef44b3b0704244503a5f12ae92ca88b2cf4fedc9fd881b00c7c58b6899ca5133"},
-    {file = "fiona-1.10.0-cp313-cp313-macosx_10_15_x86_64.whl", hash = "sha256:80929d220a92b50592b5ce96233d631c61a3c9b9bebd26ea136e7e48ffb50616"},
-    {file = "fiona-1.10.0-cp313-cp313-macosx_11_0_arm64.whl", hash = "sha256:82514e8cc113245f2c7deda1c66f0aba67b183e20404365bbb7347e12b35c80f"},
-    {file = "fiona-1.10.0-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:8c1a555b2546d3c69d0826a526a5c3e50a1cd330c95e2e0ebf6e82fa81fc2d96"},
-    {file = "fiona-1.10.0-cp313-cp313-win_amd64.whl", hash = "sha256:bf11de868ab601b8d917dc38719b39bf8bdeaadc4fda9964d96b4b354e528fff"},
-    {file = "fiona-1.10.0-cp38-cp38-macosx_10_15_x86_64.whl", hash = "sha256:c0e72c4ed6ce7e2b2531a62844f3216528c149b55b89ff2881bcfe34d3b37300"},
-    {file = "fiona-1.10.0-cp38-cp38-macosx_11_0_arm64.whl", hash = "sha256:065328fcc61caeca7c5d4b0b1b741213e422997ea66eaa04c2e207e1609eb0e7"},
-    {file = "fiona-1.10.0-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:34575acb68b41009b28237121c728015aebb2ab3969cf46e57d9b9e5510ece61"},
-    {file = "fiona-1.10.0-cp38-cp38-win_amd64.whl", hash = "sha256:bfc9b76345a58ddcf9aae8697eb444728ff7a2cde7d5925f3031ff25e9eaa339"},
-    {file = "fiona-1.10.0-cp39-cp39-macosx_10_15_x86_64.whl", hash = "sha256:f335beb927c5e9d9997a9cf665d6eee2e24191a02582f01786afa76119b71110"},
-    {file = "fiona-1.10.0-cp39-cp39-macosx_11_0_arm64.whl", hash = "sha256:5f1db6fc3f9212fdc817628981731e0adcdce88b0afd30531986c732a75f6a98"},
-    {file = "fiona-1.10.0-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:cc68efb479a04be9a8e9c381940493c22a47f6aec5bbec22d0bb57a9cb240296"},
-    {file = "fiona-1.10.0-cp39-cp39-win_amd64.whl", hash = "sha256:d99d2faa8cb3590dc0018a2832af39e1930b39cfff53017f3681d505bf813fee"},
-    {file = "fiona-1.10.0.tar.gz", hash = "sha256:3529fd46d269ff3f70aeb9316a93ae95cf2f87d7e148a8ff0d68532bf81ff7ae"},
+    {file = "fiona-1.10.1-cp310-cp310-macosx_10_15_x86_64.whl", hash = "sha256:6e2a94beebda24e5db8c3573fe36110d474d4a12fac0264a3e083c75e9d63829"},
+    {file = "fiona-1.10.1-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:fc7366f99bdc18ec99441b9e50246fdf5e72923dc9cbb00267b2bf28edd142ba"},
+    {file = "fiona-1.10.1-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:8c32f424b0641c79f4036b96c2e80322fb181b4e415c8cd02d182baef55e6730"},
+    {file = "fiona-1.10.1-cp310-cp310-win_amd64.whl", hash = "sha256:9a67bd88918e87d64168bc9c00d9816d8bb07353594b5ce6c57252979d5dc86e"},
+    {file = "fiona-1.10.1-cp311-cp311-macosx_10_15_x86_64.whl", hash = "sha256:98fe556058b370da07a84f6537c286f87eb4af2343d155fbd3fba5d38ac17ed7"},
+    {file = "fiona-1.10.1-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:be29044d4aeebae92944b738160dc5f9afc4cdf04f551d59e803c5b910e17520"},
+    {file = "fiona-1.10.1-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:94bd3d448f09f85439e4b77c38b9de1aebe3eef24acc72bd631f75171cdfde51"},
+    {file = "fiona-1.10.1-cp311-cp311-win_amd64.whl", hash = "sha256:30594c0cd8682c43fd01e7cdbe000f94540f8fa3b7cb5901e805c88c4ff2058b"},
+    {file = "fiona-1.10.1-cp312-cp312-macosx_10_15_x86_64.whl", hash = "sha256:7338b8c68beb7934bde4ec9f49eb5044e5e484b92d940bc3ec27defdb2b06c67"},
+    {file = "fiona-1.10.1-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:8c77fcfd3cdb0d3c97237965f8c60d1696a64923deeeb2d0b9810286cbe25911"},
+    {file = "fiona-1.10.1-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:537872cbc9bda7fcdf73851c91bc5338fca2b502c4c17049ccecaa13cde1f18f"},
+    {file = "fiona-1.10.1-cp312-cp312-win_amd64.whl", hash = "sha256:41cde2c52c614457e9094ea44b0d30483540789e62fe0fa758c2a2963e980817"},
+    {file = "fiona-1.10.1-cp313-cp313-macosx_10_15_x86_64.whl", hash = "sha256:a00b05935c9900678b2ca660026b39efc4e4b916983915d595964eb381763ae7"},
+    {file = "fiona-1.10.1-cp313-cp313-macosx_11_0_arm64.whl", hash = "sha256:f78b781d5bcbbeeddf1d52712f33458775dbb9fd1b2a39882c83618348dd730f"},
+    {file = "fiona-1.10.1-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:29ceeb38e3cd30d91d68858d0817a1bb0c4f96340d334db4b16a99edb0902d35"},
+    {file = "fiona-1.10.1-cp313-cp313-win_amd64.whl", hash = "sha256:15751c90e29cee1e01fcfedf42ab85987e32f0b593cf98d88ed52199ef5ca623"},
+    {file = "fiona-1.10.1-cp38-cp38-macosx_10_15_x86_64.whl", hash = "sha256:6f1242f872dc33d3b4269dcaebf1838a359f9097e1cc848b0e11367bce010e4d"},
+    {file = "fiona-1.10.1-cp38-cp38-macosx_11_0_arm64.whl", hash = "sha256:65308b7a7e57fcc533de8a5855b0fce798faabc736d1340192dd8673ff61bc4e"},
+    {file = "fiona-1.10.1-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:632bc146355af5ff0d77e34ebd1be5072d623b4aedb754b94a3d8c356c4545ac"},
+    {file = "fiona-1.10.1-cp38-cp38-win_amd64.whl", hash = "sha256:b7b4c3c97b1d64a1b3321577e9edaebbd36b64006e278f225f300c497cc87c35"},
+    {file = "fiona-1.10.1-cp39-cp39-macosx_10_15_x86_64.whl", hash = "sha256:b62aa8d5a0981bd33d81c247219b1eaa1e655e0a0682b3a4759fccc40954bb30"},
+    {file = "fiona-1.10.1-cp39-cp39-macosx_11_0_arm64.whl", hash = "sha256:f4b19cb5bd22443ef439b39239272349023556994242a8f953a0147684e1c47f"},
+    {file = "fiona-1.10.1-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:fa7e7e5ad252ef29905384bf92e7d14dd5374584b525632652c2ab8925304670"},
+    {file = "fiona-1.10.1-cp39-cp39-win_amd64.whl", hash = "sha256:4e82d18acbe55230e9cf8ede2a836d99ea96b7c0cc7d2b8b993e6c9f0ac14dc2"},
+    {file = "fiona-1.10.1.tar.gz", hash = "sha256:b00ae357669460c6491caba29c2022ff0acfcbde86a95361ea8ff5cd14a86b68"},
 ]
 
 [package.dependencies]
@@ -5637,4 +5637,4 @@ test = ["pytest"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "7e742fdc45dccedd1d5742a9510f3f819b31f479e81cd8346b9331ccca08c198"
+content-hash = "a29692f468af8fdfe2bff98129be113557a834fb85e7ee342c7563eb1e74e591"
