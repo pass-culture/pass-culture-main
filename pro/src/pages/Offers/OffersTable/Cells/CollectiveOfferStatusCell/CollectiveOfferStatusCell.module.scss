@@ -11,7 +11,8 @@
 .status {
   &-expired,
   &-pending,
-  &-inactive {
+  &-inactive,
+  &-cancelled {
     background-color: var(--color-grey-dark);
   }
 
@@ -32,16 +33,14 @@
     }
   }
 
-  &-booked {
-    background-color: var(--color-secondary);
-  }
-
   &-active,
-  &-validated {
+  &-validated,
+  &-reimbursed {
     background-color: var(--color-valid);
   }
 
-  &-draft {
+  &-draft,
+  &-booked {
     background-color: var(--color-secondary);
   }
 

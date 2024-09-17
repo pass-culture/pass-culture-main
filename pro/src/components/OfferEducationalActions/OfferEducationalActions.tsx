@@ -205,7 +205,7 @@ export const OfferEducationalActions = ({
               <div className={style.separator} />{' '}
             </>
           )}
-          {getCollectiveStatusLabel(offer.status, lastBookingStatus || '')}
+          {getCollectiveStatusLabel(offer.status, offer.displayedStatus)}
         </div>
       )}
     </>

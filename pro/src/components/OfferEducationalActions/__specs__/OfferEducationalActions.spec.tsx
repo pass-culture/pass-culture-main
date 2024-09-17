@@ -1,9 +1,12 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import React from 'react'
 
 import { api } from 'apiClient/api'
-import { CollectiveBookingStatus, CollectiveOfferStatus } from 'apiClient/v1'
+import {
+  CollectiveBookingStatus,
+  CollectiveOfferDisplayedStatus,
+  CollectiveOfferStatus,
+} from 'apiClient/v1'
 import * as useAnalytics from 'app/App/analytics/firebase'
 import { GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY } from 'config/swrQueryKeys'
 import { CollectiveBookingsEvents } from 'core/FirebaseEvents/constants'
@@ -123,6 +126,7 @@ describe('OfferEducationalActions', () => {
   it('should display booking link for booked offer', () => {
     const offer = getCollectiveOfferFactory({
       status: CollectiveOfferStatus.SOLD_OUT,
+      displayedStatus: CollectiveOfferDisplayedStatus.BOOKED,
       lastBookingId: 1,
       lastBookingStatus: CollectiveBookingStatus.CONFIRMED,
     })
@@ -142,6 +146,7 @@ describe('OfferEducationalActions', () => {
   it('should display booking link for used booking', () => {
     const offer = getCollectiveOfferFactory({
       status: CollectiveOfferStatus.EXPIRED,
+      displayedStatus: CollectiveOfferDisplayedStatus.REIMBURSED,
       lastBookingId: 1,
       lastBookingStatus: CollectiveBookingStatus.USED,
     })
