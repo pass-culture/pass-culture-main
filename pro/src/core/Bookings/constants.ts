@@ -1,6 +1,7 @@
 import { format, startOfDay, subDays } from 'date-fns'
 
 import { BookingStatusFilter } from 'apiClient/v1'
+import { ALL_OFFERER_ADDRESSES } from 'core/Offers/constants'
 import { SelectOption } from 'custom_types/form'
 import { FORMAT_ISO_DATE_ONLY, getToday } from 'utils/date'
 
@@ -30,6 +31,7 @@ export const DEFAULT_PRE_FILTERS = {
   bookingStatusFilter: BookingStatusFilter.BOOKED,
   offerEventDate: ALL_DATES,
   offerVenueId: ALL_VENUES,
+  offererAddressId: ALL_OFFERER_ADDRESSES,
   offerId: undefined,
 }
 

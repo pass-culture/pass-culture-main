@@ -2,6 +2,7 @@ import { BookingStatusFilter } from 'apiClient/v1'
 
 export type PreFiltersParams = {
   offerVenueId: string
+  offererAddressId: string
   offerEventDate: string
   bookingBeginningDate: string
   bookingEndingDate: string
@@ -11,6 +12,7 @@ export type PreFiltersParams = {
 
 export type APIFilters = {
   venueId: string
+  offererAddressId: string
   eventDate: string
   bookingPeriodBeginningDate: string
   bookingPeriodEndingDate: string

@@ -15,6 +15,7 @@ import { NoData } from 'components/NoData/NoData'
 import {
   GET_BOOKINGS_QUERY_KEY,
   GET_HAS_BOOKINGS_QUERY_KEY,
+  GET_OFFERER_ADDRESS_QUERY_KEY,
   GET_VENUES_QUERY_KEY,
 } from 'config/swrQueryKeys'
 import { DEFAULT_PRE_FILTERS } from 'core/Bookings/constants'
@@ -28,7 +29,10 @@ import strokeLibraryIcon from 'icons/stroke-library.svg'
 import strokeUserIcon from 'icons/stroke-user.svg'
 import { ChoosePreFiltersMessage } from 'pages/Bookings/ChoosePreFiltersMessage/ChoosePreFiltersMessage'
 import { NoBookingsForPreFiltersMessage } from 'pages/Bookings/NoBookingsForPreFiltersMessage/NoBookingsForPreFiltersMessage'
-import { formatAndOrderVenues } from 'repository/venuesService'
+import {
+  formatAndOrderAddresses,
+  formatAndOrderVenues,
+} from 'repository/venuesService'
 import { selectCurrentOffererId } from 'store/user/selectors'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 import { Tabs } from 'ui-kit/Tabs/Tabs'
@@ -111,6 +115,17 @@ export const BookingsScreen = <
     })
   )
 
+  const offererAddressQuery = useSWR(
+    [
+      GET_OFFERER_ADDRESS_QUERY_KEY,
+      isNewInterfaceActive ? selectedOffererId : undefined,
+    ],
+    ([, offererIdParam]) =>
+      offererIdParam ? api.getOffererAddresses(offererIdParam, false) : [],
+    { fallbackData: [] }
+  )
+  const offererAddresses = formatAndOrderAddresses(offererAddressQuery.data)
+
   const bookingsQuery = useSWR(
     !isEqual(appliedPreFilters, initialAppliedFilters)
       ? [GET_BOOKINGS_QUERY_KEY, appliedPreFilters]
@@ -172,6 +187,9 @@ export const BookingsScreen = <
       const filterToLoad: PreFiltersParams = {
         offerVenueId:
           params.get('offerVenueId') ?? DEFAULT_PRE_FILTERS.offerVenueId,
+        offererAddressId:
+          params.get('offererAddressId') ??
+          DEFAULT_PRE_FILTERS.offererAddressId,
         // TODO typeguard this to remove the `as`
         bookingStatusFilter:
           (params.get('bookingStatusFilter') as BookingStatusFilter | null) ??
@@ -209,6 +227,9 @@ export const BookingsScreen = <
         ? { bookingEndingDate: filter.bookingEndingDate }
         : {}),
       ...(filter.offerVenueId ? { offerVenueId: filter.offerVenueId } : {}),
+      ...(filter.offererAddressId
+        ? { offererAddressId: filter.offererAddressId }
+        : {}),
     } as Partial<PreFiltersParams>
 
     setUrlParams({
@@ -262,6 +283,7 @@ export const BookingsScreen = <
         isTableLoading={bookingsQuery.isLoading}
         resetPreFilters={resetPreFilters}
         venues={venues}
+        offererAddresses={offererAddresses}
         urlParams={urlParams}
         updateUrl={updateUrl}
         wereBookingsRequested={wereBookingsRequested}

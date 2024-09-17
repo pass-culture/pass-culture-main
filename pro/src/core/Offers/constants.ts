@@ -58,7 +58,7 @@ export const OFFER_STATUS_DRAFT = OfferStatus.DRAFT
 
 const ALL_OFFERS = ''
 export const ALL_VENUES = 'all'
-const ALL_OFFERER_ADDRESSES = 'all'
+export const ALL_OFFERER_ADDRESSES = 'all'
 const ALL_CATEGORIES = 'all'
 export const ALL_FORMATS = 'all'
 export const ALL_STATUS = 'all'

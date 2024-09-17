@@ -20,6 +20,7 @@ export const getFilteredIndividualBookingsAdapter = async (
     }
     const {
       venueId,
+      offererAddressId,
       offerId,
       eventDate,
       bookingPeriodBeginningDate,
@@ -36,7 +37,8 @@ export const getFilteredIndividualBookingsAdapter = async (
       eventDate,
       bookingStatusFilter,
       bookingPeriodBeginningDate,
-      bookingPeriodEndingDate
+      bookingPeriodEndingDate,
+      offererAddressId
     )
     pages = bookings.pages
 
