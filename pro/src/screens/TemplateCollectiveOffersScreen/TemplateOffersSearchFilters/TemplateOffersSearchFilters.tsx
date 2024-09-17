@@ -15,7 +15,6 @@ import {
 import { CollectiveSearchFiltersParams } from 'core/Offers/types'
 import { hasCollectiveSearchFilters } from 'core/Offers/utils/hasSearchFilters'
 import { SelectOption } from 'custom_types/form'
-import { useActiveFeature } from 'hooks/useActiveFeature'
 import { useIsNewInterfaceActive } from 'hooks/useIsNewInterfaceActive'
 import fullRefreshIcon from 'icons/full-refresh.svg'
 import strokeCloseIcon from 'icons/stroke-close.svg'
@@ -59,6 +58,10 @@ const collectiveFilterStatus = [
     value: CollectiveOfferDisplayedStatus.INACTIVE,
   },
   { label: 'Archivée', value: CollectiveOfferDisplayedStatus.ARCHIVED },
+  {
+    label: 'Brouillon',
+    value: CollectiveOfferDisplayedStatus.DRAFT,
+  },
 ]
 
 type StatusFormValues = {
@@ -92,10 +95,6 @@ export const TemplateOffersSearchFilters = ({
     },
     onSubmit: () => {},
   })
-
-  const isCollectiveOfferDraftEnabled = useActiveFeature(
-    'WIP_ENABLE_COLLECTIVE_DRAFT_OFFERS'
-  )
 
   // TODO(anoukhello - 24/07/24) we should not use useEffect for this but an event handler on SelectAutocomplete
   useEffect(() => {
@@ -157,13 +156,6 @@ export const TemplateOffersSearchFilters = ({
 
   const searchByOfferNameLabel = 'Nom de l’offre'
   const searchByOfferNamePlaceholder = 'Rechercher par nom d’offre'
-
-  const statusOptions = isCollectiveOfferDraftEnabled
-    ? collectiveFilterStatus.concat({
-        label: 'Brouillon',
-        value: CollectiveOfferDisplayedStatus.DRAFT,
-      })
-    : collectiveFilterStatus
 
   return (
     <>
@@ -242,7 +234,7 @@ export const TemplateOffersSearchFilters = ({
                 Statut<Tag variant={TagVariant.BLUE}>Nouveau</Tag>
               </span>
             }
-            options={statusOptions}
+            options={collectiveFilterStatus}
             placeholder="Statuts"
             isOptional
             className={styles['status-filter']}

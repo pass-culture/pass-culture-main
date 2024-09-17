@@ -56,7 +56,7 @@ describe('screens | OfferEducational : event address step', () => {
 
     renderWithProviders(<OfferEducational {...props} />)
 
-    const buttonNextStep = screen.getByText('Étape suivante')
+    const buttonNextStep = screen.getByText('Enregistrer et continuer')
 
     expect(buttonNextStep).toBeInTheDocument()
 
@@ -73,7 +73,7 @@ describe('screens | OfferEducational : event address step', () => {
       initialRouterEntries: ['/offre/collectif/3/creation?requete=1'],
     })
 
-    const buttonNextStep = screen.getByText('Étape suivante')
+    const buttonNextStep = screen.getByText('Enregistrer et continuer')
 
     expect(buttonNextStep).toBeInTheDocument()
 

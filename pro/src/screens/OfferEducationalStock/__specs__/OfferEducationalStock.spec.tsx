@@ -141,7 +141,7 @@ describe('OfferEducationalStock', () => {
       })
       const priceInput = screen.getByLabelText('Prix total TTC *')
       const placeInput = screen.getByLabelText('Nombre de participants *')
-      const saveButton = screen.getByText('Enregistrer les modifications')
+      const saveButton = screen.getByText('Enregistrer et continuer')
 
       expect(descriptionInput).toBeDisabled()
       expect(priceInput).toBeDisabled()
@@ -159,7 +159,9 @@ describe('OfferEducationalStock', () => {
       mode: Mode.CREATION,
     }
     renderWithProviders(<OfferEducationalStock {...testProps} />)
-    const submitButton = screen.getByRole('button', { name: 'Étape suivante' })
+    const submitButton = screen.getByRole('button', {
+      name: 'Enregistrer et continuer',
+    })
     await userEvent.click(submitButton)
 
     expect(testProps.onSubmit).toHaveBeenCalled()
@@ -203,9 +205,7 @@ it('should display saved information in the action bar', () => {
     mode: Mode.CREATION,
   }
 
-  renderWithProviders(<OfferEducationalStock {...testProps} />, {
-    features: ['WIP_ENABLE_COLLECTIVE_DRAFT_OFFERS'],
-  })
+  renderWithProviders(<OfferEducationalStock {...testProps} />)
 
   expect(screen.getByText('Brouillon enregistré')).toBeInTheDocument()
 

@@ -114,9 +114,7 @@ describe('CollectiveOfferConfirmation', () => {
   })
 
   it('should redirect to list offer with success notification on press "Sauvegarder le brouillon et quitter"', async () => {
-    renderCollectiveOfferPreviewCreation(defaultProps, {
-      features: ['WIP_ENABLE_COLLECTIVE_DRAFT_OFFERS'],
-    })
+    renderCollectiveOfferPreviewCreation(defaultProps)
 
     const saveAndQuitButton = screen.getByText(
       'Sauvegarder le brouillon et quitter'

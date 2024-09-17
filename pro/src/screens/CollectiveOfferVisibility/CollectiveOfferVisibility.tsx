@@ -28,7 +28,6 @@ import {
   SENT_DATA_ERROR_MESSAGE,
 } from 'core/shared/constants'
 import { SelectOption } from 'custom_types/form'
-import { useActiveFeature } from 'hooks/useActiveFeature'
 import { useNotification } from 'hooks/useNotification'
 import strokeSearch from 'icons/stroke-search.svg'
 import { Button } from 'ui-kit/Button/Button'
@@ -87,9 +86,6 @@ export const CollectiveOfferVisibilityScreen = ({
   requestId = '',
 }: CollectiveOfferVisibilityProps) => {
   const notify = useNotification()
-  const isCollectiveOfferDraftEnabled = useActiveFeature(
-    'WIP_ENABLE_COLLECTIVE_DRAFT_OFFERS'
-  )
 
   const [teachersOptions, setTeachersOptions] = useState<TeacherOption[]>([])
   const [buttonPressed, setButtonPressed] = useState(false)
@@ -321,36 +317,19 @@ export const CollectiveOfferVisibilityScreen = ({
                 >
                   {mode === Mode.CREATION ? 'Retour' : 'Annuler et quitter'}
                 </ButtonLink>
-                {!isCollectiveOfferDraftEnabled && (
-                  <Button
-                    type="submit"
-                    disabled={
-                      buttonPressed ||
-                      !formik.values.institution ||
-                      mode === Mode.READ_ONLY
-                    }
-                    isLoading={false}
-                  >
-                    {mode === Mode.CREATION
-                      ? 'Étape suivante'
-                      : 'Enregistrer les modifications'}
-                  </Button>
-                )}
               </ActionsBarSticky.Left>
-              {isCollectiveOfferDraftEnabled && (
-                <ActionsBarSticky.Right dirtyForm={formik.dirty} mode={mode}>
-                  <Button
-                    type="submit"
-                    disabled={
-                      buttonPressed ||
-                      !formik.values.institution ||
-                      mode === Mode.READ_ONLY
-                    }
-                  >
-                    Enregistrer et continuer
-                  </Button>
-                </ActionsBarSticky.Right>
-              )}
+              <ActionsBarSticky.Right dirtyForm={formik.dirty} mode={mode}>
+                <Button
+                  type="submit"
+                  disabled={
+                    buttonPressed ||
+                    !formik.values.institution ||
+                    mode === Mode.READ_ONLY
+                  }
+                >
+                  Enregistrer et continuer
+                </Button>
+              </ActionsBarSticky.Right>
             </ActionsBarSticky>
           </FormLayout>
         </form>

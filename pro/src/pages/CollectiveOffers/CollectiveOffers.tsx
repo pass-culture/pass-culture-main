@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
-import { CollectiveOfferStatus, CollectiveOfferType } from 'apiClient/v1'
+import { CollectiveOfferType } from 'apiClient/v1'
 import { AppLayout } from 'app/AppLayout'
 import {
   GET_COLLECTIVE_OFFERS_BOOKABLE_QUERY_KEY,
@@ -37,10 +37,6 @@ export const CollectiveOffers = (): JSX.Element => {
   const offererId = isNewInterfaceActive
     ? selectedOffererId
     : urlSearchFilters.offererId
-
-  const isDraftCollectiveOffersEnabled = useActiveFeature(
-    'WIP_ENABLE_COLLECTIVE_DRAFT_OFFERS'
-  )
 
   const isNewOffersAndBookingsActive = useActiveFeature(
     'WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE'
@@ -133,12 +129,6 @@ export const CollectiveOffers = (): JSX.Element => {
     { fallbackData: [] }
   )
 
-  const displayedOffers = isDraftCollectiveOffersEnabled
-    ? offersQuery.data
-    : offersQuery.data.filter(
-        (offer) => offer.status !== CollectiveOfferStatus.DRAFT
-      )
-
   return (
     <AppLayout>
       <CollectiveOffersScreen
@@ -147,7 +137,7 @@ export const CollectiveOffers = (): JSX.Element => {
         initialSearchFilters={apiFilters}
         isLoading={offersQuery.isLoading}
         offerer={offerer}
-        offers={displayedOffers}
+        offers={offersQuery.data}
         redirectWithUrlFilters={redirectWithUrlFilters}
         urlSearchFilters={urlSearchFilters}
         venues={venues}

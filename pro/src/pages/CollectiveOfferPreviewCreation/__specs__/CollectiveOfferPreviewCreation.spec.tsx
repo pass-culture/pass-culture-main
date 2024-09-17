@@ -110,8 +110,7 @@ describe('CollectiveOfferPreviewCreation', () => {
   it('should call tracker when clicking save draft and exit', async () => {
     renderCollectiveOfferPreviewCreation(
       '/offre/A1/collectif/creation/recapitulatif',
-      defaultProps,
-      { features: ['WIP_ENABLE_COLLECTIVE_DRAFT_OFFERS'] }
+      defaultProps
     )
 
     await userEvent.click(
