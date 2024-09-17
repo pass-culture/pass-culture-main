@@ -141,23 +141,23 @@ def get_music_types() -> serialization.GetMusicTypesResponse:
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.OFFER_ATTRIBUTES],
-    response_model=serialization.GetMusicTypesResponse,
+    response_model=serialization.GetTiteliveMusicTypesResponse,
     resp=SpectreeResponse(
         **(
-            {"HTTP_200": (serialization.GetMusicTypesResponse, http_responses.HTTP_200_MESSAGE)}
+            {"HTTP_200": (serialization.GetTiteliveMusicTypesResponse, http_responses.HTTP_200_MESSAGE)}
             # errors
             | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
         )
     ),
 )
-def get_all_titelive_music_types() -> serialization.GetMusicTypesResponse:
+def get_all_titelive_music_types() -> serialization.GetTiteliveMusicTypesResponse:
     """
     Get all music types
 
     Return music types. Not all the music types returned by this endpoint are suitable
     for events. For events, use the [Get events music types endpoint](/rest-api#tag/Offer-attributes/operation/GetEventTiteliveMusicTypes).
     """
-    return serialization.GetMusicTypesResponse(
+    return serialization.GetTiteliveMusicTypesResponse(
         __root__=[
             serialization.TiteliveMusicTypeResponse(
                 id=TITELIVE_MUSIC_GENRES_BY_GTL_ID[music_type.gtl_id], label=music_type.label
@@ -172,24 +172,24 @@ def get_all_titelive_music_types() -> serialization.GetMusicTypesResponse:
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
     tags=[tags.OFFER_ATTRIBUTES],
-    response_model=serialization.GetMusicTypesResponse,
+    response_model=serialization.GetTiteliveEventMusicTypesResponse,
     resp=SpectreeResponse(
         **(
-            {"HTTP_200": (serialization.GetMusicTypesResponse, http_responses.HTTP_200_MESSAGE)}
+            {"HTTP_200": (serialization.GetTiteliveEventMusicTypesResponse, http_responses.HTTP_200_MESSAGE)}
             # errors
             | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
         )
     ),
 )
-def get_event_titelive_music_types() -> serialization.GetMusicTypesResponse:
+def get_event_titelive_music_types() -> serialization.GetTiteliveEventMusicTypesResponse:
     """
     Get events music types
 
     Return eligible music types for events.
     """
-    return serialization.GetMusicTypesResponse(
+    return serialization.GetTiteliveEventMusicTypesResponse(
         __root__=[
-            serialization.TiteliveMusicTypeResponse(
+            serialization.TiteliveEventMusicTypeResponse(
                 id=TITELIVE_MUSIC_GENRES_BY_GTL_ID[music_type.gtl_id], label=music_type.label
             )
             for music_type in TITELIVE_MUSIC_TYPES

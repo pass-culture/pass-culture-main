@@ -12,6 +12,7 @@ from pydantic.v1.utils import GetterDict
 from spectree import BaseFile
 
 from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.categories.categories import TITELIVE_MUSIC_TYPES
 from pcapi.core.finance import utils as finance_utils
 from pcapi.core.offers import models as offers_models
 from pcapi.core.providers import constants
@@ -71,6 +72,17 @@ MusicTypeEnum = StrEnum(  # type: ignore[call-overload]
 
 TiteliveMusicTypeEnum = StrEnum(  # type: ignore[call-overload]
     "TiteliveMusicTypeEnum", {music_type: music_type for music_type in constants.GTL_ID_BY_TITELIVE_MUSIC_GENRE}
+)
+
+TiteliveEventMusicTypeEnum = StrEnum(  # type: ignore[call-overload]
+    "TiteliveEventMusicTypeEnum",
+    {
+        constants.TITELIVE_MUSIC_GENRES_BY_GTL_ID[music_type.gtl_id]: constants.TITELIVE_MUSIC_GENRES_BY_GTL_ID[
+            music_type.gtl_id
+        ]
+        for music_type in TITELIVE_MUSIC_TYPES
+        if music_type.can_be_event
+    },
 )
 
 ShowTypeEnum = StrEnum(  # type: ignore[call-overload]
@@ -962,8 +974,21 @@ class TiteliveMusicTypeResponse(serialization.ConfiguredBaseModel):
     label: str
 
 
+class TiteliveEventMusicTypeResponse(serialization.ConfiguredBaseModel):
+    id: TiteliveEventMusicTypeEnum  # type: ignore[valid-type]
+    label: str
+
+
 class GetMusicTypesResponse(serialization.ConfiguredBaseModel):
-    __root__: list[MusicTypeResponse | TiteliveMusicTypeResponse]
+    __root__: list[MusicTypeResponse]
+
+
+class GetTiteliveMusicTypesResponse(serialization.ConfiguredBaseModel):
+    __root__: list[TiteliveMusicTypeResponse]
+
+
+class GetTiteliveEventMusicTypesResponse(serialization.ConfiguredBaseModel):
+    __root__: list[TiteliveEventMusicTypeResponse]
 
 
 class ImageUploadFile(BaseModel):
