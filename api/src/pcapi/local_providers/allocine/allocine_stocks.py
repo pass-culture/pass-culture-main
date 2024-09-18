@@ -90,7 +90,6 @@ class AllocineStocks(LocalProvider):
     def update_from_movie_information(self, offer: offers_models.Offer) -> None:
         offer.name = self.product.name
         offer.extraData = offer.extraData or offers_models.OfferExtraData()
-        offer.description = self.product.description
         offer.durationMinutes = self.product.durationMinutes
         offer.product = self.product
         if self.product.extraData:

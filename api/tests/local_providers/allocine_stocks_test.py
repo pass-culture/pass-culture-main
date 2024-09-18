@@ -116,6 +116,7 @@ class UpdateObjectsTest:
         created_offer = offers_models.Offer.query.one()
 
         assert created_offer.bookingEmail == "toto@example.com"
+        assert created_offer._description is None
         assert (
             created_offer.description
             == "Alors que la Premi\u00e8re Guerre Mondiale a \u00e9clat\u00e9, et en r\u00e9ponse aux propos des intellectuels allemands de l'\u00e9poque, Sacha Guitry filme les grands artistes de l'\u00e9poque qui contribuent au rayonnement culturel de la France.\n"

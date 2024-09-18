@@ -622,7 +622,10 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
 
     @description.setter
     def description(self, value: str | None) -> None:
-        self._description = value
+        if self.product:
+            self._description = None
+        else:
+            self._description = value
 
     @property
     def isEducational(self) -> bool:
