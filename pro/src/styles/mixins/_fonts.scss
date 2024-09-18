@@ -75,13 +75,6 @@ $caption-line-height: rem.torem(16px);
   line-height: $caption-line-height;
 }
 
-@mixin body-xs() {
-  font-family: var(--typography-body-xs-font-family), system-ui, sans-serif;
-  font-weight: var(--typography-body-xs-font-weight);
-  font-size: var(--typography-body-xs-font-size);
-  line-height: var(--typography-body-xs-line-height);
-}
-
 @mixin placeholder() {
   font-family: Montserrat-RegularItalic, system-ui, sans-serif;
   font-weight: 400;
