@@ -251,20 +251,16 @@ def create_draft_offer(
 
 
 def update_draft_offer(offer: models.Offer, body: offers_schemas.PatchDraftOfferBodyModel) -> models.Offer:
-    aliases = set(body.dict(by_alias=True))
     fields = body.dict(by_alias=True, exclude_unset=True)
-
-    _extra_data = deserialize_extra_data(fields.get("extraData", offer.extraData), offer.subcategoryId)
-    fields["extraData"] = _format_extra_data(offer.subcategoryId, _extra_data) or {}
 
     updates = {key: value for key, value in fields.items() if getattr(offer, key) != value}
     if not updates:
         return offer
 
     if "extraData" in updates:
-        extra_data = get_field(offer, updates, "extraData", aliases=aliases)
+        formatted_extra_data = _format_extra_data(offer.subcategoryId, body.extra_data) or {}
         validation.check_offer_extra_data(
-            offer.subcategoryId, extra_data, offer.venue, is_from_private_api=True, offer=offer
+            offer.subcategoryId, formatted_extra_data, offer.venue, is_from_private_api=True, offer=offer
         )
 
     for key, value in updates.items():
@@ -345,9 +341,6 @@ def update_offer(
     aliases = set(body.dict(by_alias=True))
     fields = body.dict(by_alias=True, exclude_unset=True)
 
-    _extra_data = deserialize_extra_data(fields.get("extraData", offer.extraData), offer.subcategoryId)
-    fields["extraData"] = _format_extra_data(offer.subcategoryId, _extra_data) or {}
-
     if body.address:
         fields["offererAddress"] = get_offerer_address_from_address(offer.venue, body.address)
         fields.pop("address", None)
@@ -372,9 +365,9 @@ def update_offer(
             visual_disability_compliant=get_field(offer, updates, "visualDisabilityCompliant", aliases=aliases),
         )
     if "extraData" in updates:
-        extra_data = get_field(offer, updates, "extraData", aliases=aliases)
+        formatted_extra_data = _format_extra_data(offer.subcategoryId, body.extra_data) or {}
         validation.check_offer_extra_data(
-            offer.subcategoryId, extra_data, offer.venue, is_from_private_api, offer=offer
+            offer.subcategoryId, formatted_extra_data, offer.venue, is_from_private_api, offer=offer
         )
     if "isDuo" in updates:
         is_duo = get_field(offer, updates, "isDuo", aliases=aliases)

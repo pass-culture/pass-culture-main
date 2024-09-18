@@ -1484,29 +1484,6 @@ class UpdateOfferTest:
         assert offer.name == "New name"
         assert offer.description == "new Description"
 
-    def test_raise_error_if_update_ean_for_offer_with_existing_ean(self):
-        offer = factories.OfferFactory(
-            name="Old name",
-            extraData={"ean": "1234567890123", "musicSubType": 524, "musicType": 520},
-            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
-        )
-        body = offers_schemas.UpdateOffer(
-            name="New name",
-            description="new Description",
-            extraData={"ean": "1234567890124", "gtl_id": "02000000"},
-        )
-        offer = api.update_offer(offer, body)
-        db.session.flush()
-
-        assert offer.name == "New name"
-        assert offer.description == "new Description"
-        assert offer.extraData == {
-            "ean": "1234567890124",
-            "gtl_id": "02000000",
-            "musicType": "501",
-            "musicSubType": "-1",
-        }
-
     def test_cannot_update_with_name_too_long(self):
         offer = factories.OfferFactory(name="Old name", extraData={"ean": "1234567890124"})
         body = offers_schemas.UpdateOffer(name="Luftballons" * 99)
