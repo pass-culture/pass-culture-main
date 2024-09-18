@@ -292,12 +292,16 @@ export function setFormReadOnlyFields(
   offer: GetIndividualOfferResponseModel | null,
   isProductBased?: boolean
 ): string[] {
-  if (isProductBased) {
+  if (isProductBased && offer === null) {
     const editableFields = ['venueId']
 
     return Object.keys(DEFAULT_DETAILS_FORM_VALUES).filter(
       (field) => !editableFields.includes(field)
     )
+  }
+
+  if (isProductBased && offer !== null) {
+    return Object.keys(DEFAULT_DETAILS_FORM_VALUES)
   }
 
   if (offer === null) {

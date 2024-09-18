@@ -269,7 +269,7 @@ describe('serializeDurationMinutes', () => {
 })
 
 describe('setFormReadOnlyFields', () => {
-  it('should disable all fields except venue when an ean search filled the form', () => {
+  it('should disable all fields except venue when an ean search filled the form and offer is not yet created', () => {
     const expectedValues = Object.keys(DEFAULT_DETAILS_FORM_VALUES).filter(
       (key) => key !== 'venueId'
     )
@@ -277,11 +277,19 @@ describe('setFormReadOnlyFields', () => {
     expect(setFormReadOnlyFields(null, true)).toStrictEqual(expectedValues)
   })
 
+  it('should disable all field when offer has been created and was created by ean', () => {
+    const expectedValues = Object.keys(DEFAULT_DETAILS_FORM_VALUES)
+
+    expect(
+      setFormReadOnlyFields(getIndividualOfferFactory({ productId: 1 }), true)
+    ).toStrictEqual(expectedValues)
+  })
+
   it('should not disable fields when there is no offer and no ean search was performed', () => {
     expect(setFormReadOnlyFields(null)).toStrictEqual([])
   })
 
-  it('should disable category/subcategory/venue fields when updating an offer', () => {
+  it('should disable category/subcategory/venue fields when updating a regular offer', () => {
     expect(setFormReadOnlyFields(getIndividualOfferFactory({}))).toStrictEqual([
       'categoryId',
       'subcategoryId',
