@@ -1,8 +1,11 @@
+from unittest import mock
+
 from pcapi.core.bookings import factories as bookings_factory
 from pcapi.core.bookings.factories import BookingFactory
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import OfferValidationStatus
+from pcapi.core.testing import override_features
 from pcapi.core.token import SecureToken
 from pcapi.core.token.serialization import ConnectAsInternalModel
 import pcapi.core.users.factories as users_factories
@@ -10,6 +13,7 @@ from pcapi.notifications.push import testing as push_testing
 
 
 class Returns200Test:
+    @override_features(WIP_DISABLE_NOTIFICATION_CANCEL_BOOKING=False)
     def when_current_user_has_rights_on_offer(self, client, db_session):
         # given
         offer = offers_factories.OfferFactory()
@@ -37,6 +41,30 @@ class Returns200Test:
             "user_ids": [booking.userId],
             "can_be_asynchronously_retried": False,
         }
+
+    @override_features(WIP_DISABLE_NOTIFICATION_CANCEL_BOOKING=True)
+    @mock.patch("pcapi.workers.push_notification_job.send_cancel_booking_notification.delay")
+    def when_current_user_has_rights_on_offer_with_disabled_notification_cancel_booking(
+        self, mocked_cancel_booking_notification, client
+    ):
+        # given
+        offer = offers_factories.OfferFactory()
+        user_offerer = offerers_factories.UserOffererFactory(
+            user__email="pro@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+        stock = offers_factories.StockFactory(offer=offer)
+        BookingFactory(stock=stock)
+
+        # when
+        response = client.with_session_auth("pro@example.com").delete(f"/stocks/{stock.id}")
+
+        # then
+        assert response.status_code == 200
+        assert response.json == {"id": stock.id}
+        assert stock.isSoftDeleted
+        assert stock.bookings[0].cancellationUser == user_offerer.user
+        assert not mocked_cancel_booking_notification.called
 
     def when_current_user_is_connect_as(self, client, db_session):
         # given
