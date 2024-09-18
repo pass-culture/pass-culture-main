@@ -58,7 +58,7 @@ export type SuggestionItem = AutocompleteQuerySuggestionsHit & {
   offerer: {
     name: string
   }
-  formats: string[]
+  formats?: string[]
 }
 
 const ALGOLIA_NUMBER_RECENT_SEARCHES = 5
@@ -239,7 +239,8 @@ export const Autocomplete = ({
           )
 
           if (itemId >= 0 && itemId < 3) {
-            await formik.setFieldValue('formats', [item.formats[0]])
+            item.formats &&
+              (await formik.setFieldValue('formats', [item.formats[0]]))
           } else {
             await formik.setFieldValue('formats', [])
           }
@@ -532,12 +533,16 @@ export const Autocomplete = ({
                       {...autocomplete.getListProps()}
                     >
                       {keywordSuggestionsItems.map((item, index) => {
-                        let displayValue = null
-                        const shouldDisplayFormats =
-                          index <= 2 && item.formats.length > 0
+                        let shouldDisplayFormats = false
+                        let displayValue = ''
 
-                        if (shouldDisplayFormats) {
-                          displayValue = item.formats[0]
+                        if (item.formats) {
+                          shouldDisplayFormats =
+                            index <= 2 && item.formats.length > 0
+
+                          if (shouldDisplayFormats) {
+                            displayValue = item.formats[0]
+                          }
                         }
 
                         return (
