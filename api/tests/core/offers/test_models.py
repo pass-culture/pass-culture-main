@@ -5,6 +5,7 @@ import pytest
 import pcapi.core.bookings.constants as bookings_constants
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories
 from pcapi.core.offers import models
 import pcapi.core.providers.factories as providers_factories
@@ -673,3 +674,24 @@ class OfferIsActivableTest:
         )
         factories.StockFactory(offer=offer_from_active_venue_provider)
         assert offer_from_active_venue_provider.isActivable
+
+
+class OfferfullAddressTest:
+    @pytest.mark.parametrize(
+        "label,street,expected_full_address",
+        [
+            ("label", "street of the full address", "label - street of the full address - 75000 - Paris"),
+            (None, "street of the full address", "street of the full address - 75000 - Paris"),
+            ("label", None, "label - 75000 - Paris"),
+            (None, None, "75000 - Paris"),
+        ],
+    )
+    def test_full_address(self, label, street, expected_full_address):
+        oa = offerers_factories.OffererAddressFactory(
+            label=label,
+            address__street=street,
+            address__postalCode="75000",
+            address__city="Paris",
+        )
+        offer = factories.OfferFactory(offererAddress=oa)
+        assert offer.fullAddress == expected_full_address

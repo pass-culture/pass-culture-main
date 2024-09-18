@@ -250,7 +250,18 @@ def mark_booking_as_used(booking_id: int) -> utils.BackofficeResponse:
 @repository.atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_BOOKINGS)
 def mark_booking_as_cancelled(booking_id: int) -> utils.BackofficeResponse:
-    booking = bookings_models.Booking.query.filter_by(id=booking_id).one_or_none()
+    booking = (
+        bookings_models.Booking.query.filter_by(id=booking_id)
+        .options(
+            sa.orm.load_only(bookings_models.Booking.stock.offer.offererAddress.label),
+            sa.orm.load_only(
+                bookings_models.Booking.stock.offer.offererAddress.address.street,
+                bookings_models.Booking.stock.offer.offererAddress.address.postalCode,
+                bookings_models.Booking.stock.offer.offererAddress.address.city,
+            ),
+        )
+        .one_or_none()
+    )
     if not booking:
         raise NotFound()
 

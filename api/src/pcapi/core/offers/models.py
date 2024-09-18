@@ -937,6 +937,12 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
             return None
         return self.futureOffer.publicationDate
 
+    @property
+    def fullAddress(self) -> str | None:
+        if self.offererAddress:
+            return self.offererAddress.fullAddress
+        return None
+
 
 class ActivationCode(PcObject, Base, Model):
     __tablename__ = "activation_code"
