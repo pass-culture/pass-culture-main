@@ -158,16 +158,16 @@ export const serializeFiltersForData = (
 
 export const areFiltersEmpty = (filters: SearchFormValues) => {
   return (
-    filters.domains.length === ADAGE_FILTERS_DEFAULT_VALUES.domains.length &&
-    filters.departments.length ===
-      ADAGE_FILTERS_DEFAULT_VALUES.departments.length &&
-    filters.academies.length ===
-      ADAGE_FILTERS_DEFAULT_VALUES.academies.length &&
-    filters.eventAddressType ===
-      ADAGE_FILTERS_DEFAULT_VALUES.eventAddressType &&
-    filters.geolocRadius === ADAGE_FILTERS_DEFAULT_VALUES.geolocRadius &&
-    filters.formats.length === ADAGE_FILTERS_DEFAULT_VALUES.formats.length &&
-    filters.venue === ADAGE_FILTERS_DEFAULT_VALUES.venue &&
-    filters.students.length === ADAGE_FILTERS_DEFAULT_VALUES.students.length
+    // Primitives defaults
+    filters.eventAddressType === OfferAddressType.OTHER &&
+    filters.geolocRadius === 50 &&
+    // Array defaults (empty)
+    filters.domains.length === 0 &&
+    filters.departments.length === 0 &&
+    filters.academies.length === 0 &&
+    filters.formats.length === 0 &&
+    filters.students.length === 0 &&
+    // venue default is null
+    filters.venue === null
   )
 }
