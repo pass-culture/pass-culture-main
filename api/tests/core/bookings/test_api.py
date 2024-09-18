@@ -57,6 +57,7 @@ from pcapi.utils import queue
 from pcapi.utils.requests import exceptions as requests_exception
 
 
+
 class BookOfferConcurrencyTest:
     @pytest.mark.usefixtures("clean_database")
     def test_create_booking(self, app):
