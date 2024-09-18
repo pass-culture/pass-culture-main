@@ -161,7 +161,6 @@ class BookOfferTest:
         num_queries += 1  # SELECT the user
         num_queries += 1  # SELECT the user FOR UPDATE
         num_queries += 1  # Check if the user already has a booking on this stock
-        num_queries += 1  # SELECT the venue
         num_queries += 1  # SELECT offerer
         num_queries += 1  # SELECT user's deposit
         num_queries += 1  # SELECT the bookings not cancelled related to the deposit
