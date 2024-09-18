@@ -90,6 +90,7 @@ class SendBeneficiaryUserDrivenCancellationEmailToOffererTest:
             "USER_EMAIL": booking.email,
             "USER_NAME": booking.userName,
             "VENUE_NAME": booking.venue.name,
+            "OFFER_ADDRESS": booking.stock.offer.fullAddress,
         }
 
 
@@ -120,6 +121,7 @@ class MakeOffererBookingRecapEmailAfterUserCancellationTest:
             "USER_EMAIL": booking.email,
             "USER_NAME": booking.userName,
             "VENUE_NAME": venue.name,
+            "OFFER_ADDRESS": booking.stock.offer.fullAddress,
         }
 
     @pytest.mark.usefixtures("db_session")
@@ -148,6 +150,7 @@ class MakeOffererBookingRecapEmailAfterUserCancellationTest:
             "USER_EMAIL": booking1.email,
             "USER_NAME": booking1.userName,
             "VENUE_NAME": venue.name,
+            "OFFER_ADDRESS": booking1.stock.offer.fullAddress,
         }
 
     @pytest.mark.usefixtures("db_session")
@@ -176,4 +179,5 @@ class MakeOffererBookingRecapEmailAfterUserCancellationTest:
             "USER_EMAIL": booking1.email,
             "USER_NAME": booking1.userName,
             "VENUE_NAME": virtual_venue.name,
+            "OFFER_ADDRESS": booking1.stock.offer.fullAddress,
         }

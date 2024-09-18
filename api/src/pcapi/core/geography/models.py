@@ -32,6 +32,10 @@ class Address(PcObject, Base, Model):
         sa.Boolean, nullable=True, server_default=sa.sql.expression.false(), default=False
     )
 
+    @property
+    def fullAddress(self) -> str:
+        return f"{self.street} - {self.postalCode} - {self.city}" if self.street else f"{self.postalCode} - {self.city}"
+
     __table_args__ = (
         sa.Index(
             "ix_partial_unique_address_per_street_and_insee_code",

@@ -1289,6 +1289,10 @@ class OffererAddress(PcObject, Base, Model):
     def isLinkedToVenue(cls) -> sa.sql.elements.BooleanClauseList:  # pylint: disable=no-self-argument
         return sa.select(1).where(Venue.offererAddressId == cls.id).exists()
 
+    @property
+    def fullAddress(self) -> str:
+        return f"{self.label} - {self.address.fullAddress}" if self.label else self.address.fullAddress
+
 
 class OffererConfidenceLevel(enum.Enum):
     # No default value when offerer follows rules in offer_validation_rule table,
