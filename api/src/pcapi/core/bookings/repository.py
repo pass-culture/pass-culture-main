@@ -330,11 +330,19 @@ def _create_export_query(offer_id: int, event_beginning_date: date) -> BaseQuery
         .join(Booking.venue)
         .join(Booking.stock)
         .join(Stock.offer)
-        .outerjoin(Offer.offererAddress)
-        .join(OffererAddress.address)
-        .outerjoin(VenueOffererAddress, Venue.offererAddressId == VenueOffererAddress.id)
-        .join(VenueAddress, VenueOffererAddress.addressId == VenueAddress.id)
-        .filter(Stock.offerId == offer_id, field_to_venue_timezone(Stock.beginningDatetime) == event_beginning_date)
+    )
+    if FeatureToggle.WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE.is_active():
+        query = (
+            query.join(Offer.offererAddress)
+            .join(OffererAddress.address)
+            .join(VenueOffererAddress, Venue.offererAddressId == VenueOffererAddress.id)
+            .join(VenueAddress, VenueOffererAddress.addressId == VenueAddress.id)
+        )
+
+    query = (
+        query.filter(
+            Stock.offerId == offer_id, field_to_venue_timezone(Stock.beginningDatetime) == event_beginning_date
+        )
         .order_by(Booking.id)
         .with_entities(*with_entities)
     )
