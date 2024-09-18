@@ -5,6 +5,7 @@ import { Route, Routes } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { HTTP_STATUS } from 'apiClient/helpers'
+import { ApiError } from 'apiClient/v1'
 import * as useAnalytics from 'app/App/analytics/firebase'
 import { Events } from 'core/FirebaseEvents/constants'
 import { getOffererNameFactory } from 'utils/individualApiFactories'
@@ -308,12 +309,24 @@ describe('Signup', () => {
           remove: vi.fn(),
         } as unknown as HTMLScriptElement)
         vi.spyOn(utils, 'getReCaptchaToken').mockResolvedValue('token')
-        vi.spyOn(api, 'signupProV2').mockRejectedValue({
-          body: {
-            phoneNumber: 'Le téléphone doit faire moins de 20 caractères',
-          },
-          status: HTTP_STATUS.GONE,
-        })
+        vi.spyOn(api, 'signupProV2').mockRejectedValue(
+          new ApiError(
+            {
+              method: 'GET',
+              url: 'https://noop',
+            },
+            {
+              body: {
+                phoneNumber: 'Le téléphone doit faire moins de 20 caractères',
+              },
+              status: HTTP_STATUS.GONE,
+              statusText: 'Bad Request',
+              url: 'https://noop',
+              ok: false,
+            },
+            ''
+          )
+        )
         renderSignUp()
 
         const submitButton = screen.getByRole('button', {
