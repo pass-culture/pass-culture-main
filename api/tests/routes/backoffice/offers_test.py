@@ -2898,6 +2898,78 @@ class EditOfferStockTest(PostEndpointHelper):
         assert event.booking.stock.price == decimal.Decimal("10.00")
         assert event.booking.amount == decimal.Decimal("5.00")
 
+    def test_offer_stock_edit_with_price_category(self, authenticated_client):
+        price_category = offers_factories.PriceCategoryFactory(
+            offer__subcategoryId=subcategories.CONFERENCE.id,
+            price=decimal.Decimal("123.45"),
+        )
+        label = price_category.priceCategoryLabel.label
+        offer = price_category.offer
+        stock_to_edit = offers_factories.StockFactory(
+            offer=offer,
+            price=decimal.Decimal("123.45"),
+            priceCategory=price_category,
+        )
+        booking_to_edit = bookings_factories.UsedBookingFactory(
+            stock=stock_to_edit,
+            amount=decimal.Decimal("123.45"),
+        )
+
+        response = self.post_to_endpoint(
+            authenticated_client, offer_id=offer.id, stock_id=stock_to_edit.id, form={"price": "50.1"}
+        )
+
+        db.session.expire_all()
+
+        assert response.status_code == 303
+
+        assert stock_to_edit.price == decimal.Decimal("50.1")
+        assert booking_to_edit.amount == decimal.Decimal("50.1")
+        assert price_category.price == decimal.Decimal("50.1")
+        assert price_category.priceCategoryLabel.label == label
+        assert stock_to_edit.priceCategory == price_category
+
+    def test_offer_stock_edit_with_price_category_with_multiple_stocks(self, authenticated_client):
+        price_category = offers_factories.PriceCategoryFactory(
+            offer__subcategoryId=subcategories.CONFERENCE.id,
+            price=decimal.Decimal("123.45"),
+        )
+        label = price_category.priceCategoryLabel.label
+        offer = price_category.offer
+        stock_to_edit = offers_factories.StockFactory(
+            offer=offer,
+            price=decimal.Decimal("123.45"),
+            priceCategory=price_category,
+        )
+        other_stock = offers_factories.StockFactory(
+            offer=offer,
+            price=decimal.Decimal("123.45"),
+            priceCategory=price_category,
+        )
+        booking_to_edit = bookings_factories.UsedBookingFactory(
+            stock=stock_to_edit,
+            amount=decimal.Decimal("123.45"),
+        )
+
+        response = self.post_to_endpoint(
+            authenticated_client, offer_id=offer.id, stock_id=stock_to_edit.id, form={"price": "50.1"}
+        )
+
+        db.session.expire_all()
+
+        assert response.status_code == 303
+        expected_label = f"{label} - Revalorisation du {datetime.date.today().strftime('%d/%m/%Y')}"
+        assert stock_to_edit.price == decimal.Decimal("50.1")
+        assert booking_to_edit.amount == decimal.Decimal("50.1")
+        assert stock_to_edit.priceCategory != price_category
+        assert stock_to_edit.priceCategory.price == decimal.Decimal("50.1")
+        assert stock_to_edit.priceCategory.priceCategoryLabel.label == expected_label
+
+        assert other_stock.price == decimal.Decimal("123.45")
+        assert other_stock.priceCategory == price_category
+        assert other_stock.priceCategory.price == decimal.Decimal("123.45")
+        assert other_stock.priceCategory.priceCategoryLabel.label == label
+
 
 class DownloadBookingsCSVTest(GetEndpointHelper):
     endpoint = "backoffice_web.offer.download_bookings_csv"

@@ -898,10 +898,51 @@ def _is_stock_editable(offer_id: int, stock_id: int) -> bool:
     return stock_id in _get_editable_stock(offer_id)
 
 
+def _manage_price_category(stock: offers_models.Stock, new_price: float) -> bool:
+    if stock.priceCategory is None:
+        return False
+
+    stock_count = (
+        db.session.query(sa.func.count(offers_models.Stock.id))
+        .filter(offers_models.Stock.priceCategoryId == stock.priceCategoryId)
+        .scalar()
+    )
+
+    if stock_count == 1:
+        stock.priceCategory.price = new_price
+        db.session.add(stock.priceCategory)
+        return False
+
+    new_price_category_label = offers_models.PriceCategoryLabel(
+        label=f"{stock.priceCategory.priceCategoryLabel.label} - Revalorisation du {datetime.date.today().strftime('%d/%m/%Y')}",
+        venue=stock.priceCategory.priceCategoryLabel.venue,
+    )
+    db.session.add(new_price_category_label)
+    new_price_category = offers_models.PriceCategory(
+        offerId=stock.offerId,
+        price=decimal.Decimal(new_price),
+        priceCategoryLabel=new_price_category_label,
+    )
+    db.session.add(new_price_category)
+    stock.priceCategory = new_price_category
+    db.session.add(stock)
+    return True
+
+
 @list_offers_blueprint.route("/<int:offer_id>/stock/<int:stock_id>/edit", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_OFFERS)
 def edit_offer_stock(offer_id: int, stock_id: int) -> utils.BackofficeResponse:
-    stock = offers_models.Stock.query.filter_by(id=stock_id).one()
+    stock = (
+        offers_models.Stock.query.filter(
+            offers_models.Stock.id == stock_id,
+        )
+        .options(
+            sa.orm.joinedload(offers_models.Stock.priceCategory).joinedload(
+                offers_models.PriceCategory.priceCategoryLabel
+            ),
+        )
+        .one()
+    )
 
     if stock.offerId != offer_id:
         flash("L'offer_id et le stock_id ne sont pas cohérents.", "warning")
@@ -920,31 +961,31 @@ def edit_offer_stock(offer_id: int, stock_id: int) -> utils.BackofficeResponse:
         flash(utils.build_form_error_msg(form), "warning")
         return redirect(url_for("backoffice_web.offer.get_offer_details", offer_id=offer_id), 303)
 
+    new_price = 0.0
     if form.price.data:
+        new_price = float(form.price.data)
         offers_api.update_used_stock_price(stock=stock, new_price=form.price.data)
-        logger.info(
-            "A past stock price was updated by an administrator",
-            extra={
-                "user_id": current_user.id,
-                "stock_id": stock_id,
-                "old_price": float(old_price),
-                "new_price": float(form.price.data),
-            },
-        )
+
     if form.percent.data:
         price_percent = decimal.Decimal((100 - float(form.percent.data)) / 100)
+        new_price = stock.price * price_percent
         offers_api.update_used_stock_price(stock=stock, price_percent=price_percent)
-        logger.info(
-            "A past stock price was updated by an administrator",
-            extra={
-                "user_id": current_user.id,
-                "stock_id": stock_id,
-                "old_price": float(old_price),
-                "new_price": float(round(old_price * price_percent, 2)),
-            },
-        )
 
-    flash(f"Le stock {stock_id} a été mis à jour.", "success")
+    db.session.flush()
+    if _manage_price_category(stock, new_price):
+        flash(f"Le stock {stock_id} a été mis à jour et un nouveau tarif a été créé", "success")
+    else:
+        flash(f"Le stock {stock_id} a été mis à jour.", "success")
+    logger.info(
+        "A past stock price was updated by an administrator",
+        extra={
+            "user_id": current_user.id,
+            "stock_id": stock_id,
+            "old_price": float(old_price),
+            "new_price": float(new_price),
+        },
+    )
+
     db.session.commit()
     return redirect(url_for("backoffice_web.offer.get_offer_details", offer_id=offer_id), 303)
 
