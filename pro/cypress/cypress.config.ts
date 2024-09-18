@@ -23,9 +23,13 @@ async function setupNodeEvents(
 }
 
 // ts-unused-exports:disable-next-line
+// eslint-disable-next-line import/no-default-export
 export default defineConfig({
   e2e: {
-    specPattern: '**/*.feature',
+    specPattern: [
+      //'**/*.feature',
+      '**/test-suites/*.cy.ts',
+    ],
 
     setupNodeEvents,
 
