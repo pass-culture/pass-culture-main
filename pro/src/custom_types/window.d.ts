@@ -20,6 +20,7 @@ declare global {
     grecaptcha?: {
       execute: (siteKey: string, action: { action: string }) => Promise<string>
       ready: (callback: () => Promise<void>) => void
+      reset: (siteKey: string) => void
     }
   }
 }
