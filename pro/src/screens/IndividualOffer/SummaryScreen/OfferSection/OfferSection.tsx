@@ -299,7 +299,7 @@ export const OfferSection = ({
           })}
           aria-label="Modifier les informations pratiques de l’offre"
         >
-          {isOfferAddressEnabled && (
+          {!offerData.isVenueVirtual && isOfferAddressEnabled && (
             <SummarySubSection title="Localisation de l’offre">
               <SummaryDescriptionList
                 descriptions={[

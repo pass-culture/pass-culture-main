@@ -181,7 +181,7 @@ export function DetailsSummaryScreen({ offer }: DetailsSummaryScreenProps) {
             </SummarySubSection>
           )}
         </SummarySection>
-        {isOfferAddressEnabled && (
+        {!offerData.isVenueVirtual && isOfferAddressEnabled && (
           <SummarySubSection title="Localisation de l’offre">
             <SummaryDescriptionList
               descriptions={[
