@@ -58,6 +58,7 @@ import { DialogStocksEventEditConfirm } from '../DialogStocksEventEditConfirm/Di
 import { useNotifyFormError } from '../hooks/useNotifyFormError'
 import { RecurrenceFormValues } from '../StocksEventCreation/form/types'
 import { RecurrenceForm } from '../StocksEventCreation/RecurrenceForm'
+import { getDepartmentCode } from '../utils/getDepartmentCode'
 import { getSuccessMessage } from '../utils/getSuccessMessage'
 
 import { EventCancellationBanner } from './EventCancellationBanner'
@@ -136,9 +137,10 @@ export const StocksEventEdition = ({
   const useOffererAddressAsDataSourceEnabled = useActiveFeature(
     'WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE'
   )
-  const departmentCode = useOffererAddressAsDataSourceEnabled
-    ? (offer.address?.departmentCode ?? offer.venue.departementCode ?? '')
-    : offer.venue.departementCode
+  const departmentCode = getDepartmentCode({
+    offer,
+    useOffererAddressAsDataSourceEnabled,
+  })
 
   const today = useMemo(
     () => getLocalDepartementDateTimeFromUtc(getToday(), departmentCode),
@@ -301,7 +303,7 @@ export const StocksEventEdition = ({
     }
 
     try {
-      await submitToApi(values.stocks, offer.id, departmentCode ?? '')
+      await submitToApi(values.stocks, offer.id, departmentCode)
     } catch (error) {
       if (error instanceof Error) {
         notify.error(error.message)
@@ -316,7 +318,7 @@ export const StocksEventEdition = ({
   }
 
   const handleRecurrenceSubmit = async (values: RecurrenceFormValues) => {
-    await onRecurrenceSubmit(values, departmentCode ?? '', offer.id, notify)
+    await onRecurrenceSubmit(values, departmentCode, offer.id, notify)
     const response = await loadStocksFromCurrentFilters()
     resetFormWithNewPage({
       response,

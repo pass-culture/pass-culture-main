@@ -12,6 +12,7 @@ import { useNotification } from 'hooks/useNotification'
 import { useOfferWizardMode } from 'hooks/useOfferWizardMode'
 
 import { ActionBar } from '../ActionBar/ActionBar'
+import { getDepartmentCode } from '../utils/getDepartmentCode'
 
 import { HelpSection } from './HelpSection/HelpSection'
 import styles from './StocksEventCreation.module.scss'
@@ -62,9 +63,10 @@ export const StocksEventCreation = ({
     )
   }
 
-  const departmentCode = useOffererAddressAsDataSourceEnabled
-    ? (offer.address?.departmentCode ?? offer.venue.departementCode ?? '')
-    : offer.venue.departementCode
+  const departmentCode = getDepartmentCode({
+    offer,
+    useOffererAddressAsDataSourceEnabled,
+  })
 
   return (
     <>

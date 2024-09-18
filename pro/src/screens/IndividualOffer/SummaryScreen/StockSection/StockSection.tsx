@@ -16,6 +16,7 @@ import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
 import { useActiveFeature } from 'hooks/useActiveFeature'
 import { useNotification } from 'hooks/useNotification'
 import { useOfferWizardMode } from 'hooks/useOfferWizardMode'
+import { getDepartmentCode } from 'screens/IndividualOffer/utils/getDepartmentCode'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 import { RecurrenceSection } from './RecurrenceSection/RecurrenceSection'
@@ -59,9 +60,10 @@ export const StockSection = ({
     'WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE'
   )
 
-  const departmentCode = useOffererAddressAsDataSourceEnabled
-    ? (offer.address?.departmentCode ?? offer.venue.departementCode ?? '')
-    : (offer.venue.departementCode ?? '')
+  const departmentCode = getDepartmentCode({
+    offer,
+    useOffererAddressAsDataSourceEnabled,
+  })
 
   useEffect(() => {
     async function getStockThing() {
