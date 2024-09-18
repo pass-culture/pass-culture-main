@@ -121,6 +121,7 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
 
         created_offer = offers_models.Offer.query.one()
         assert created_offer.bookingEmail == venue.bookingEmail
+        assert created_offer._description is None
         assert created_offer.description == product.description
         assert created_offer.extraData == product.extraData
         assert created_offer.lastProvider.name == "Technical provider"

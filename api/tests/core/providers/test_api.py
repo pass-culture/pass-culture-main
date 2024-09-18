@@ -25,6 +25,7 @@ from pcapi.core.providers import models as providers_models
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.users import factories as users_factories
 from pcapi.local_providers.provider_api import synchronize_provider_api
+from pcapi.models import db
 from pcapi.routes.serialization.venue_provider_serialize import PostVenueProviderBody
 
 
@@ -212,6 +213,7 @@ class SynchronizeStocksTest:
 
         # Test fill offers attributes
         assert created_offer.bookingEmail == venue.bookingEmail
+        assert created_offer._description is None
         assert created_offer.description == product.description
         assert created_offer.extraData == product.extraData
         assert created_offer.name == product.name
@@ -287,10 +289,15 @@ class SynchronizeStocksTest:
             provider_id=provider.id,
         )
 
+        # We need to commit to have the offer description property working
+        db.session.add_all([*new_offers, product])
+        db.session.commit()
+
         # Then
         assert len(new_offers) == 1
         new_offer = new_offers[0]
         assert new_offer.bookingEmail == "booking_email"
+        assert new_offer._description is None
         assert new_offer.description == "product_desc"
         assert new_offer.extraData == {"extra": "data"}
         assert new_offer.idAtProvider == "ean_product_ref"

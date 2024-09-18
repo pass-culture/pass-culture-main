@@ -146,6 +146,7 @@ class BoostStocksTest:
         assert created_offers[0].product == self._get_product_by_allocine_id(270935)
         assert created_offers[0].venue == venue_provider.venue
         assert created_offers[0].offererAddressId == venue_provider.venue.offererAddressId
+        assert created_offers[0]._description is None
         assert created_offers[0].description == "Description du produit allociné 3"
         assert created_offers[0].durationMinutes == 333
         assert created_offers[0].isDuo
@@ -164,6 +165,7 @@ class BoostStocksTest:
         assert created_offers[1].name == "Produit allociné 4"
         assert created_offers[1].product == self._get_product_by_allocine_id(269975)
         assert created_offers[1].venue == venue_provider.venue
+        assert created_offers[1]._description is None
         assert created_offers[1].description == "Description du produit allociné 4"
         assert created_offers[1].durationMinutes == 444
         assert created_offers[1].isDuo
@@ -231,6 +233,7 @@ class BoostStocksTest:
         assert created_offer.name == "Produit allociné 1"
         assert created_offer.product == self._get_product_by_allocine_id(263242)
         assert created_offer.venue == venue_provider.venue
+        assert created_offer._description is None
         assert created_offer.description == "Description du produit allociné 1"
         assert created_offer.durationMinutes == 111
         assert created_offer.isDuo

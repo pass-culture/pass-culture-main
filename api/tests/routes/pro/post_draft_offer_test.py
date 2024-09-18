@@ -87,6 +87,8 @@ class Returns201Test:
         assert response_dict["productId"] == product.id
         assert response_dict["extraData"] == {"ean": "9782123456803"}
         assert offer.product == product
+        assert offer._description is None
+        assert offer.description == product.description
 
     def test_create_offer_other_than_CD_or_vinyl_without_EAN_code_should_succeed_for_record_store(self, client):
         venue = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.RECORD_STORE)
@@ -165,6 +167,8 @@ class Returns201Test:
         assert response_dict["productId"] == offer.productId
         assert response_dict["extraData"] == {"gtl_id": "07000000", "ean": "1234567891234"}
         assert offer.product == product
+        assert offer.description == product.description
+        assert offer._description is None
 
     def test_create_offer_on_venue_with_accessibility_informations(self, client):
         venue = offerers_factories.VenueFactory(
