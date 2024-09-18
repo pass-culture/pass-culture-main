@@ -35,6 +35,7 @@ import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 import { ActionBar } from '../ActionBar/ActionBar'
 import { DialogStockThingDeleteConfirm } from '../DialogStockDeleteConfirm/DialogStockThingDeleteConfirm'
 import { useNotifyFormError } from '../hooks/useNotifyFormError'
+import { getDepartmentCode } from '../utils/getDepartmentCode'
 import { getSuccessMessage } from '../utils/getSuccessMessage'
 
 import { ActivationCodeFormDialog } from './ActivationCodeFormDialog/ActivationCodeFormDialog'
@@ -91,9 +92,7 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
   )
   const today = getLocalDepartementDateTimeFromUtc(
     getToday(),
-    useOffererAddressAsDataSourceEnabled
-      ? (offer.address?.departmentCode ?? offer.venue.departementCode ?? '')
-      : offer.venue.departementCode
+    getDepartmentCode({ offer, useOffererAddressAsDataSourceEnabled })
   )
   const canBeDuo = subCategories.find(
     (subCategory) => subCategory.id === offer.subcategoryId

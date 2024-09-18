@@ -6,6 +6,8 @@ import {
 } from 'apiClient/helpers'
 import { GetIndividualOfferWithAddressResponseModel } from 'apiClient/v1'
 
+import { getDepartmentCode } from '../utils/getDepartmentCode'
+
 import { serializeStockThingList } from './adapters/serializers'
 import { StockThingFormValues, StockThingFormik } from './types'
 import { buildInitialValues } from './utils/buildInitialValues'
@@ -30,9 +32,7 @@ export const submitToApi = async (
       offerId: offer.id,
       stocks: serializeStockThingList(
         values,
-        useOffererAddressAsDataSourceEnabled
-          ? (offer.address?.departmentCode ?? offer.venue.departementCode ?? '')
-          : offer.venue.departementCode
+        getDepartmentCode({ offer, useOffererAddressAsDataSourceEnabled })
       ),
     })
   } catch (error) {

@@ -4,6 +4,7 @@ import {
   GetIndividualOfferWithAddressResponseModel,
   GetOfferStockResponseModel,
 } from 'apiClient/v1'
+import { getDepartmentCode } from 'screens/IndividualOffer/utils/getDepartmentCode'
 import { FORMAT_ISO_DATE_ONLY, isDateValid } from 'utils/date'
 import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 
@@ -28,11 +29,7 @@ export const buildInitialValues = (
       ? format(
           getLocalDepartementDateTimeFromUtc(
             stocks[0].bookingLimitDatetime,
-            useOffererAddressAsDataSourceEnabled
-              ? (offer.address?.departmentCode ??
-                  offer.venue.departementCode ??
-                  '')
-              : offer.venue.departementCode
+            getDepartmentCode({ offer, useOffererAddressAsDataSourceEnabled })
           ),
           FORMAT_ISO_DATE_ONLY
         )

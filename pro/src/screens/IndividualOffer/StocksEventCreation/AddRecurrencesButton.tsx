@@ -8,6 +8,8 @@ import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
 
+import { getDepartmentCode } from '../utils/getDepartmentCode'
+
 import { onSubmit } from './form/onSubmit'
 import { RecurrenceFormValues } from './form/types'
 import { RecurrenceForm } from './RecurrenceForm'
@@ -30,9 +32,10 @@ export const AddRecurrencesButton = ({
     'WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE'
   )
   const handleSubmit = async (values: RecurrenceFormValues) => {
-    const departmentCode = useOffererAddressAsDataSourceEnabled
-      ? (offer.address?.departmentCode ?? offer.venue.departementCode ?? '')
-      : (offer.venue.departementCode ?? '')
+    const departmentCode = getDepartmentCode({
+      offer,
+      useOffererAddressAsDataSourceEnabled,
+    })
 
     await onSubmit(values, departmentCode, offer.id, notify)
     await reloadStocks()
