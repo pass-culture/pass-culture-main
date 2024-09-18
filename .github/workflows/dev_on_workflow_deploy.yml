@@ -68,7 +68,7 @@ jobs:
           teleport_kubernetes_cluster: ${{ inputs.teleport_kubernetes_cluster }}
 
       - name: "Play pre-migrations"
-        uses: pass-culture/common-workflows/actions/pcapi-migration@pcapi-migration/v0.2.0
+        uses: pass-culture/common-workflows/actions/pcapi-migration@teleport-connect/v0.1.0
         with:
           environment: ${{ inputs.environment }}
           app_version: ${{ inputs.app_version }}
@@ -107,7 +107,7 @@ jobs:
 
       # Executes helmfile templating and push results to render-manifests repository
       - name: "Generate and push rendered manifests"
-        uses: pass-culture/common-workflows/actions/render-push-manifests@render-push-manifests/v2.0.0
+        uses: pass-culture/common-workflows/actions/render-push-manifests@teleport-connect/v0.1.0
         with:
           environment: ${{ inputs.environment }}
           app_name: pcapi
@@ -118,11 +118,11 @@ jobs:
           chart_values_repository: ""
           helmfile_path: "./pass-culture-deployment/helm/pcapi"
       - name: "Sync ArgoCD application"
-        uses: pass-culture/common-workflows/actions/argocd-sync@argocd-sync/v0.3.0
+        uses: pass-culture/common-workflows/actions/argocd-sync@teleport-connect/v0.1.0
         with:
           app_name: pcapi-${{ inputs.environment }}
       - name: "Play post-migrations"
-        uses: pass-culture/common-workflows/actions/pcapi-migration@pcapi-migration/v0.2.0
+        uses: pass-culture/common-workflows/actions/pcapi-migration@teleport-connect/v0.1.0
         with:
           environment: ${{ inputs.environment }}
           app_version: ${{ inputs.app_version }}
