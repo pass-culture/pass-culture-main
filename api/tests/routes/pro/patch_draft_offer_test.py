@@ -105,36 +105,23 @@ class Returns200Test:
         assert updated_offer.description == "New description"
         assert not updated_offer.product
 
-    def test_patch_draft_offer_with_form_required_fields_should_not_update_existing_extra_data(self, client):
+    def test_patch_draft_with_extra_data(self, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
-        venue = offerers_factories.VirtualVenueFactory(managingOfferer=user_offerer.offerer)
-        ems_provider = get_provider_by_local_class("EMSStocks")
-        venue_provider = providers_factories.VenueProviderFactory(provider=ems_provider, venue=venue)
-        cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(venue=venue_provider.venue)
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
         offer = offers_factories.EventOfferFactory(
             name="Film",
-            venue=venue_provider.venue,
+            venue=venue,
             subcategoryId=subcategories.SEANCE_CINE.id,
-            lastProviderId=cinema_provider_pivot.provider.id,
             isDuo=False,
             description="description",
-            extraData={"stageDirector": "Greta Gerwig"},
+            extraData=None,
         )
 
         data = {
             "name": "Film",
             "description": "description",
             "subcategoryId": subcategories.SEANCE_CINE.id,
-            "extraData": {
-                "author": "",
-                "gtl_id": "",
-                "performer": "",
-                "showType": "",
-                "showSubType": "",
-                "speaker": "",
-                "stageDirector": "Greta Gerwig",
-                "visa": "",
-            },
+            "extraData": {"stageDirector": "Greta Gerwig"},
         }
         response = client.with_session_auth("user@example.com").patch(f"/offers/draft/{offer.id}", json=data)
         assert response.status_code == 200
@@ -143,7 +130,7 @@ class Returns200Test:
         updated_offer = Offer.query.get(offer.id)
         assert updated_offer.extraData == {"stageDirector": "Greta Gerwig"}
 
-    def test_patch_draft_offer_with_form_required_fields_should_not_create_extra_data(self, client):
+    def test_patch_draft_offer_with_empty_extra_data(self, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
         venue = offerers_factories.VirtualVenueFactory(managingOfferer=user_offerer.offerer)
         ems_provider = get_provider_by_local_class("EMSStocks")
@@ -179,7 +166,114 @@ class Returns200Test:
         assert response.json["id"] == offer.id
 
         updated_offer = Offer.query.get(offer.id)
-        assert updated_offer.extraData == {}
+        assert updated_offer.extraData == {
+            "author": "",
+            "gtl_id": "",
+            "performer": "",
+            "showType": "",
+            "showSubType": "",
+            "speaker": "",
+            "stageDirector": "",
+            "visa": "",
+        }
+
+    def test_patch_draft_offer_with_existing_extra_data_with_new_extra_data(self, client):
+        user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+        offer = offers_factories.EventOfferFactory(
+            name="Film",
+            venue=venue,
+            subcategoryId=subcategories.SEANCE_CINE.id,
+            isDuo=False,
+            description="description",
+            extraData={
+                "cast": ["Joan Baez", "Joe Cocker", "David Crosby"],
+                "eidr": "10.5240/ADBD-3CAA-43A0-7BF0-86E2-K",
+                "type": "FEATURE_FILM",
+                "visa": "37205",
+                "title": "Woodstock",
+                "genres": ["DOCUMENTARY", "HISTORICAL", "MUSIC"],
+                "credits": [
+                    {"person": {"lastName": "Wadleigh", "firstName": "Michael"}, "position": {"name": "DIRECTOR"}}
+                ],
+                "runtime": 185,
+                "theater": {"allocine_room_id": "W0135", "allocine_movie_id": 2634},
+                "backlink": "https://www.allocine.fr/film/fichefilm_gen_cfilm=2634.html",
+                "synopsis": "Le plus important rassemblement de la musique pop de ces vingt derni\u00e8res ann\u00e9es. Des groupes qui ont marqu\u00e9 leur \u00e9poque et une jeunesse qui a marqu\u00e9 la sienne.",
+                "companies": [{"name": "Wadleigh-Maurice", "activity": "Production"}],
+                "countries": ["USA"],
+                "posterUrl": "https://fr.web.img2.acsta.net/pictures/14/06/20/12/25/387023.jpg",
+                "allocineId": 2634,
+                "originalTitle": "Woodstock",
+                "stageDirector": "Michael Wadleigh",
+                "productionYear": 1970,
+            },
+        )
+
+        data = {
+            "name": "Film",
+            "description": "description",
+            "subcategoryId": subcategories.SEANCE_CINE.id,
+            "extraData": {
+                "author": "",
+                "gtl_id": "",
+                "performer": "",
+                "showType": "",
+                "showSubType": "",
+                "speaker": "",
+                "stageDirector": "Greta Gerwig",
+                "visa": "",
+                "cast": ["Joan Baez", "Joe Cocker", "David Crosby"],
+                "eidr": "10.5240/ADBD-3CAA-43A0-7BF0-86E2-K",
+                "type": "FEATURE_FILM",
+                "title": "Woodstock",
+                "genres": ["DOCUMENTARY", "HISTORICAL", "MUSIC"],
+                "credits": [
+                    {"person": {"lastName": "Wadleigh", "firstName": "Michael"}, "position": {"name": "DIRECTOR"}}
+                ],
+                "runtime": 185,
+                "theater": {"allocine_room_id": "W0135", "allocine_movie_id": 2634},
+                "backlink": "https://www.allocine.fr/film/fichefilm_gen_cfilm=2634.html",
+                "synopsis": "Le plus important rassemblement de la musique pop de ces vingt derni\u00e8res ann\u00e9es. Des groupes qui ont marqu\u00e9 leur \u00e9poque et une jeunesse qui a marqu\u00e9 la sienne.",
+                "companies": [{"name": "Wadleigh-Maurice", "activity": "Production"}],
+                "countries": ["USA"],
+                "posterUrl": "https://fr.web.img2.acsta.net/pictures/14/06/20/12/25/387023.jpg",
+                "allocineId": 2634,
+                "originalTitle": "Woodstock",
+                "productionYear": 1970,
+            },
+        }
+        response = client.with_session_auth("user@example.com").patch(f"/offers/draft/{offer.id}", json=data)
+        assert response.status_code == 200
+        assert response.json["id"] == offer.id
+
+        updated_offer = Offer.query.get(offer.id)
+        assert updated_offer.extraData == {
+            "cast": ["Joan Baez", "Joe Cocker", "David Crosby"],
+            "eidr": "10.5240/ADBD-3CAA-43A0-7BF0-86E2-K",
+            "type": "FEATURE_FILM",
+            "visa": "",
+            "title": "Woodstock",
+            "genres": ["DOCUMENTARY", "HISTORICAL", "MUSIC"],
+            "credits": [{"person": {"lastName": "Wadleigh", "firstName": "Michael"}, "position": {"name": "DIRECTOR"}}],
+            "runtime": 185,
+            "theater": {"allocine_room_id": "W0135", "allocine_movie_id": 2634},
+            "backlink": "https://www.allocine.fr/film/fichefilm_gen_cfilm=2634.html",
+            "synopsis": "Le plus important rassemblement de la musique pop de ces vingt derni\u00e8res ann\u00e9es. Des groupes qui ont marqu\u00e9 leur \u00e9poque et une jeunesse qui a marqu\u00e9 la sienne.",
+            "companies": [{"name": "Wadleigh-Maurice", "activity": "Production"}],
+            "countries": ["USA"],
+            "posterUrl": "https://fr.web.img2.acsta.net/pictures/14/06/20/12/25/387023.jpg",
+            "allocineId": 2634,
+            "originalTitle": "Woodstock",
+            "stageDirector": "Greta Gerwig",
+            "productionYear": 1970,
+            "author": "",
+            "gtl_id": "",
+            "performer": "",
+            "showType": "",
+            "showSubType": "",
+            "speaker": "",
+        }
 
 
 @pytest.mark.usefixtures("db_session")
