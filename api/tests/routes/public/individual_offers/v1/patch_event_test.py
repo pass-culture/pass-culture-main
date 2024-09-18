@@ -147,6 +147,7 @@ class PatchEventTest(PublicAPIVenueEndpointHelper):
         assert event_offer.extraData == {
             "author": "Maurice",
             "performer": "Pink Pâtisserie",
+            "stageDirector": "Robert",
         }
 
     def test_patch_all_fields(self, client):

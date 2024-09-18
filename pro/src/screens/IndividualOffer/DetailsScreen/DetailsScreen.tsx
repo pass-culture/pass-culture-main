@@ -105,7 +105,7 @@ export const DetailsScreen = ({ venues }: DetailsScreenProps): JSX.Element => {
         ? await api.postDraftOffer(serializeDetailsPostData(formValues))
         : await api.patchDraftOffer(
             offer.id,
-            serializeDetailsPatchData(formValues)
+            serializeDetailsPatchData(formValues, !!offer.lastProvider)
           )
 
       const receivedOfferId = response.id

@@ -174,8 +174,14 @@ export const UsefulInformationScreen = ({
     subcategories: conditionalFields,
     isOfferAddressEnabled,
   })
+
+  const initialValues = setDefaultInitialValuesFromOffer({
+    offer,
+    selectedVenue,
+  })
+
   const formik = useFormik({
-    initialValues: setDefaultInitialValuesFromOffer({ offer, selectedVenue }),
+    initialValues,
     onSubmit,
     validationSchema,
   })

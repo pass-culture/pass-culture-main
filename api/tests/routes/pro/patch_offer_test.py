@@ -13,6 +13,8 @@ import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.offers.models import WithdrawalTypeEnum
+import pcapi.core.providers.factories as providers_factories
+from pcapi.core.providers.repository import get_provider_by_local_class
 import pcapi.core.users.factories as users_factories
 from pcapi.utils.date import format_into_utc_date
 
@@ -52,6 +54,97 @@ class Returns200Test:
         assert updated_offer.mentalDisabilityCompliant
         assert updated_offer.subcategoryId == subcategories.ABO_PLATEFORME_VIDEO.id
         assert not updated_offer.product
+
+    def test_patch_offer_with_provider_extra_data(self, client):
+        user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+        ems_provider = get_provider_by_local_class("EMSStocks")
+        venue_provider = providers_factories.VenueProviderFactory(provider=ems_provider, venue=venue)
+        allocine_provider = providers_factories.AllocineProviderFactory(venue=venue_provider.venue)
+        offer = offers_factories.OfferFactory(
+            name="Film",
+            venue=venue,
+            lastProvider=allocine_provider,
+            subcategoryId=subcategories.SEANCE_CINE.id,
+            isDuo=False,
+            description="description",
+            extraData={
+                "cast": ["Joan Baez", "Joe Cocker", "David Crosby"],
+                "eidr": "10.5240/ADBD-3CAA-43A0-7BF0-86E2-K",
+                "type": "FEATURE_FILM",
+                "visa": "37205",
+                "title": "Woodstock",
+                "genres": ["DOCUMENTARY", "HISTORICAL", "MUSIC"],
+                "credits": [
+                    {"person": {"lastName": "Wadleigh", "firstName": "Michael"}, "position": {"name": "DIRECTOR"}}
+                ],
+                "runtime": 185,
+                "theater": {"allocine_room_id": "W0135", "allocine_movie_id": 2634},
+                "backlink": "https://www.allocine.fr/film/fichefilm_gen_cfilm=2634.html",
+                "synopsis": "Le plus important rassemblement de la musique pop de ces vingt derni\u00e8res ann\u00e9es. Des groupes qui ont marqu\u00e9 leur \u00e9poque et une jeunesse qui a marqu\u00e9 la sienne.",
+                "companies": [{"name": "Wadleigh-Maurice", "activity": "Production"}],
+                "countries": ["USA"],
+                "posterUrl": "https://fr.web.img2.acsta.net/pictures/14/06/20/12/25/387023.jpg",
+                "allocineId": 2634,
+                "originalTitle": "Woodstock",
+                "stageDirector": "Michael Wadleigh",
+                "productionYear": 1970,
+            },
+        )
+
+        data = {
+            "name": "New name",
+            "externalTicketOfficeUrl": "http://example.net",
+            "extraData": {
+                "cast": ["Joan Baez", "Joe Cocker", "David Crosby"],
+                "eidr": "10.5240/ADBD-3CAA-43A0-7BF0-86E2-K",
+                "type": "FEATURE_FILM",
+                "visa": "37205",
+                "title": "Woodstock",
+                "genres": ["DOCUMENTARY", "HISTORICAL", "MUSIC"],
+                "credits": [
+                    {"person": {"lastName": "Wadleigh", "firstName": "Michael"}, "position": {"name": "DIRECTOR"}}
+                ],
+                "runtime": 185,
+                "theater": {"allocine_room_id": "W0135", "allocine_movie_id": 2634},
+                "backlink": "https://www.allocine.fr/film/fichefilm_gen_cfilm=2634.html",
+                "synopsis": "Le plus important rassemblement de la musique pop de ces vingt derni\u00e8res ann\u00e9es. Des groupes qui ont marqu\u00e9 leur \u00e9poque et une jeunesse qui a marqu\u00e9 la sienne.",
+                "companies": [{"name": "Wadleigh-Maurice", "activity": "Production"}],
+                "countries": ["USA"],
+                "posterUrl": "https://fr.web.img2.acsta.net/pictures/14/06/20/12/25/387023.jpg",
+                "allocineId": 2634,
+                "originalTitle": "Woodstock",
+                "stageDirector": "Michael Wadleigh",
+                "productionYear": 1970,
+            },
+        }
+        response = client.with_session_auth("user@example.com").patch(f"/offers/{offer.id}", json=data)
+
+        assert response.status_code == 200
+        assert response.json["id"] == offer.id
+
+        updated_offer = Offer.query.get(offer.id)
+        assert updated_offer.name == "New name"
+        assert updated_offer.extraData == {
+            "cast": ["Joan Baez", "Joe Cocker", "David Crosby"],
+            "eidr": "10.5240/ADBD-3CAA-43A0-7BF0-86E2-K",
+            "type": "FEATURE_FILM",
+            "visa": "37205",
+            "title": "Woodstock",
+            "genres": ["DOCUMENTARY", "HISTORICAL", "MUSIC"],
+            "credits": [{"person": {"lastName": "Wadleigh", "firstName": "Michael"}, "position": {"name": "DIRECTOR"}}],
+            "runtime": 185,
+            "theater": {"allocine_room_id": "W0135", "allocine_movie_id": 2634},
+            "backlink": "https://www.allocine.fr/film/fichefilm_gen_cfilm=2634.html",
+            "synopsis": "Le plus important rassemblement de la musique pop de ces vingt derni\u00e8res ann\u00e9es. Des groupes qui ont marqu\u00e9 leur \u00e9poque et une jeunesse qui a marqu\u00e9 la sienne.",
+            "companies": [{"name": "Wadleigh-Maurice", "activity": "Production"}],
+            "countries": ["USA"],
+            "posterUrl": "https://fr.web.img2.acsta.net/pictures/14/06/20/12/25/387023.jpg",
+            "allocineId": 2634,
+            "originalTitle": "Woodstock",
+            "stageDirector": "Michael Wadleigh",
+            "productionYear": 1970,
+        }
 
     @pytest.mark.parametrize(
         "label, offer_has_oa, address_update_exist",
