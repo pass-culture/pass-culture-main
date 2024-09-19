@@ -219,6 +219,7 @@ class Returns200Test:
                 "postalCode": "75000",
                 "inseeCode": "75102",
                 "city": "Paris",
+                "departmentCode": "75",
                 "latitude": 48.87004,
                 "longitude": 2.3785,
                 "banId": "75102_7560_00001",

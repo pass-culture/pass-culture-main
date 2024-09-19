@@ -42,6 +42,7 @@ def retrieve_address_info_from_oa(offerer_address: OffererAddress) -> dict:
         inseeCode=offerer_address.address.inseeCode,
         postalCode=offerer_address.address.postalCode,
         street=offerer_address.address.street,
+        departmentCode=offerer_address.address.departmentCode,
         city=offerer_address.address.city,
         longitude=offerer_address.address.longitude,
         latitude=offerer_address.address.latitude,
