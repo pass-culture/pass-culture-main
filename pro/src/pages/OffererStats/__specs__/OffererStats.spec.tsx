@@ -27,7 +27,20 @@ vi.mock('@firebase/remote-config', () => ({
 }))
 
 const renderOffererStats = () => {
-  renderWithProviders(<OffererStats />, { user: sharedCurrentUserFactory() })
+  const user = sharedCurrentUserFactory({
+    navState: {
+      newNavDate: undefined,
+    },
+  })
+  renderWithProviders(<OffererStats />, {
+    user,
+    storeOverrides: {
+      user: {
+        currentUser: user,
+        selectedOffererId: null,
+      },
+    },
+  })
 }
 
 describe('OffererStatsScreen', () => {
@@ -69,7 +82,7 @@ describe('OffererStatsScreen', () => {
     })
   })
 
-  it('should display all offerer options on render', async () => {
+  it('should display all offerer options on render for old interface', async () => {
     renderOffererStats()
 
     await waitFor(() => {
@@ -79,7 +92,7 @@ describe('OffererStatsScreen', () => {
     expect(offererOption).toBeInTheDocument()
   })
 
-  it('should display error message if api call fail', async () => {
+  it('should display error message if api call fail  for old interface', async () => {
     const notifyError = vi.fn()
 
     const notifsImport = (await vi.importActual(
