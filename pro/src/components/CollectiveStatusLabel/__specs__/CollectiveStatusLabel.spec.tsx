@@ -1,9 +1,10 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 
 import {
   CollectiveOfferDisplayedStatus,
   CollectiveOfferStatus,
 } from 'apiClient/v1'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { CollectiveStatusLabel } from '../CollectiveStatusLabel'
 
@@ -60,13 +61,21 @@ describe('CollectiveStatusLabel', () => {
       displayedStatus: CollectiveOfferDisplayedStatus.DRAFT,
       expectedLabel: 'brouillon',
     },
+    {
+      displayedStatus: CollectiveOfferDisplayedStatus.ENDED,
+      expectedLabel: 'terminée',
+    },
+    {
+      displayedStatus: CollectiveOfferDisplayedStatus.REIMBURSED,
+      expectedLabel: 'terminée',
+    },
   ]
 
   it.each(testCases)(
     'should render %s status',
     ({ displayedStatus, status, expectedLabel }: TestCaseProps) => {
       const unrelevantStatus = CollectiveOfferStatus.PENDING
-      render(
+      renderWithProviders(
         <CollectiveStatusLabel
           offerDisplayedStatus={displayedStatus}
           offerStatus={status ?? unrelevantStatus}
@@ -75,4 +84,18 @@ describe('CollectiveStatusLabel', () => {
       expect(screen.getByText(expectedLabel)).toBeInTheDocument()
     }
   )
+
+  it('should render "remboursée" status when ff is active', () => {
+    const unrelevantStatus = CollectiveOfferStatus.PENDING
+    renderWithProviders(
+      <CollectiveStatusLabel
+        offerDisplayedStatus={CollectiveOfferDisplayedStatus.REIMBURSED}
+        offerStatus={unrelevantStatus}
+      />,
+      {
+        features: ['ENABLE_COLLECTIVE_NEW_STATUSES'],
+      }
+    )
+    expect(screen.getByText('remboursée')).toBeInTheDocument()
+  })
 })
