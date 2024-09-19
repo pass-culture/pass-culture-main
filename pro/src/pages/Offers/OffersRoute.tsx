@@ -93,10 +93,10 @@ export const OffersRoute = (): JSX.Element => {
   )
   const offererAddresses = formatAndOrderAddresses(offererAddressQuery.data)
 
-  const isFilterByVenueOrOfferer = hasSearchFilters(urlSearchFilters, [
-    'venueId',
-    'offererId',
-  ])
+  const isFilterByVenueOrOfferer = hasSearchFilters(
+    urlSearchFilters,
+    isNewInterfaceActive ? ['venueId'] : ['venueId', 'offererId']
+  )
   //  Admin users are not allowed to check all offers at once or to use the status filter for performance reasons. Unless there is a venue or offerer filter active.
   const isRestrictedAsAdmin = currentUser.isAdmin && !isFilterByVenueOrOfferer
 
