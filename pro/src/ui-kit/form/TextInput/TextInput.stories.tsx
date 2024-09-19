@@ -1,12 +1,10 @@
-import type { StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/react'
 import { Formik } from 'formik'
 import React from 'react'
 
-import strokeSearch from 'icons/stroke-search.svg'
-
 import { TextInput } from './TextInput'
 
-export default {
+const meta: Meta<typeof TextInput> = {
   title: 'ui-kit/forms/TextInput',
   component: TextInput,
   decorators: [
@@ -18,26 +16,28 @@ export default {
   ],
 }
 
-export const WithoutLabel: StoryObj<typeof TextInput> = {
-  args: {
-    name: 'email',
-    placeholder: 'Input placeholder',
-  },
-}
+export default meta
+type Story = StoryObj<typeof TextInput>
 
-export const WithLabel: StoryObj<typeof TextInput> = {
+export const Default: Story = {
   args: {
     name: 'email',
     label: 'Email',
-    placeholder: 'Input placeholder',
+    isLabelHidden: true,
   },
 }
 
-export const WithLeftIcon: StoryObj<typeof TextInput> = {
+export const ReadOnly: Story = {
   args: {
-    name: 'email',
-    label: 'Email',
-    placeholder: 'Input placeholder',
-    leftIcon: strokeSearch,
+    ...Default.args,
+    readOnly: true,
+    value: 'A text wrapped in a span',
+  },
+}
+
+export const WithExternalError: Story = {
+  args: {
+    ...Default.args,
+    externalError: 'This field is required',
   },
 }

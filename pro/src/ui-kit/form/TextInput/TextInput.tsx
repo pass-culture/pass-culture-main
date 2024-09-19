@@ -1,7 +1,7 @@
 import { useField } from 'formik'
 import React, { ForwardedRef } from 'react'
 
-import { BaseInput } from '../shared/BaseInput/BaseInput'
+import { BaseInput, BaseInputProps } from '../shared/BaseInput/BaseInput'
 import {
   FieldLayout,
   FieldLayoutBaseProps,
@@ -9,21 +9,41 @@ import {
 
 import styles from './TextInput.module.scss'
 
-type TextInputProps = React.InputHTMLAttributes<HTMLInputElement> &
-  FieldLayoutBaseProps & {
+type TextInputProps = FieldLayoutBaseProps &
+  BaseInputProps & {
+    /**
+     * A flag to make the input read-only.
+     * It becomes a span element with the value displayed.
+     * Only FieldLayout props, refForInput & value will then
+     * be used.
+     */
     readOnly?: boolean
-    type?: 'text' | 'number' | 'email' | 'url' | 'password' | 'tel' | 'search'
+    /**
+     * Allows to display input characters count.
+     * Must be provided with maxLength to be effective,
+     * Adds `field-characters-count-description-${name}`
+     * to the aria-describedby attribute of the input.
+     * Used for FieldLayout count prop.
+     */
     countCharacters?: boolean
-    leftIcon?: string
-    rightButton?: () => JSX.Element
-    rightIcon?: string
-    step?: number | string
+    /**
+     * Allows decimal numbers in the input.
+     * Must be provided with type="number" to be effective.
+     * Unused when readOnly is true.
+     */
     hasDecimal?: boolean
+    /**
+     * A forward ref to the span or the input element.
+     */
     refForInput?: ForwardedRef<HTMLInputElement>
+    /**
+     * A custom error message to be displayed.
+     * If this prop is provided, the error message will be displayed
+     * and the field will be marked as errored
+     * regardless of the field's formik state.
+     * Used for error & showError FieldLayout props.
+     */
     externalError?: string
-    ErrorDetails?: React.ReactNode
-    maxLength?: number
-    showMandatoryAsterisk?: boolean
   }
 
 export const TextInput = ({
@@ -103,12 +123,7 @@ export const TextInput = ({
       hasLabelLineBreak={hasLabelLineBreak}
     >
       {readOnly ? (
-        <span
-          className={styles['text-input-readonly']}
-          ref={refForInput}
-          {...field}
-          {...props}
-        >
+        <span className={styles['text-input-readonly']} ref={refForInput}>
           {props.value}
         </span>
       ) : (
