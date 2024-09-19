@@ -244,6 +244,8 @@ export function setDefaultInitialValuesFromOffer({
     throw Error('La categorie de l’offre est introuvable')
   }
 
+  const ean = offer.extraData?.ean ?? DEFAULT_DETAILS_FORM_VALUES.ean
+
   return {
     ...DEFAULT_DETAILS_FORM_VALUES,
     name: offer.name,
@@ -259,8 +261,8 @@ export function setDefaultInitialValuesFromOffer({
     durationMinutes: offer.durationMinutes
       ? deSerializeDurationMinutes(offer.durationMinutes)
       : DEFAULT_DETAILS_FORM_VALUES.durationMinutes,
-    ean: offer.extraData?.ean ?? DEFAULT_DETAILS_FORM_VALUES.ean,
-    eanSearch: offer.extraData?.ean ?? DEFAULT_DETAILS_FORM_VALUES.ean,
+    ean,
+    eanSearch: ean,
     visa: offer.extraData?.visa ?? DEFAULT_DETAILS_FORM_VALUES.visa,
     gtl_id: offer.extraData?.gtl_id ?? DEFAULT_DETAILS_FORM_VALUES.gtl_id,
     speaker: offer.extraData?.speaker ?? DEFAULT_DETAILS_FORM_VALUES.speaker,

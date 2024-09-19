@@ -168,10 +168,7 @@ export const DetailsEanSearch = ({
       >
         Nouveau
       </Tag>
-      <span>
-        Scanner ou rechercher un produit par EAN
-        {shouldInputBeRequired && ' *'}
-      </span>
+      Scanner ou rechercher un produit par EAN
     </>
   )
 
@@ -192,7 +189,6 @@ export const DetailsEanSearch = ({
           disabled={shouldInputBeDisabled}
           maxLength={13}
           isOptional={!shouldInputBeRequired}
-          showMandatoryAsterisk={false}
           countCharacters
           {...(externalError && {
             externalError,
