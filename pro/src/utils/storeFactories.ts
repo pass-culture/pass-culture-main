@@ -11,5 +11,8 @@ export const sharedCurrentUserFactory = (
   isEmailValidated: true,
   isImpersonated: false,
   roles: [],
+  navState: {
+    newNavDate: '2021-01-01',
+  },
   ...customSharedCurrentUser,
 })
