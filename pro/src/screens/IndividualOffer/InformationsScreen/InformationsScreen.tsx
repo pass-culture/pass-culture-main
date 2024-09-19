@@ -85,6 +85,8 @@ export const InformationsScreen = ({
   ).filter((venue) => venue.managingOffererId === Number(offererId))
 
   const offerAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
+  const isSearchByEanEnabled = useActiveFeature('WIP_EAN_CREATION')
+
   // TODO : Find a cleaner way to achieve this :
   // The only way to infer event type (physical or numeric) and make it works for both creation AND edition, is to check CATEGORY_STATUS or if an offer has a "url" (meaning that it's not physical)
   // (This is because CATEGORY_STATUS is always ONLINE_OR_OFFLINE for edition)
@@ -141,6 +143,7 @@ export const InformationsScreen = ({
 
     // Submit
     try {
+      const shouldNotSendExtraData = isSearchByEanEnabled && !!offer?.productId
       const response = !offer
         ? await api.postOffer(serializePostOffer(formValues))
         : await api.patchOffer(
@@ -149,6 +152,7 @@ export const InformationsScreen = ({
               offer,
               formValues,
               shouldSendMail: sendWithdrawalMail,
+              shouldNotSendExtraData,
             })
           )
 
