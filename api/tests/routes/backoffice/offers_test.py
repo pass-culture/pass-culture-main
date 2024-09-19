@@ -124,11 +124,12 @@ class ListOffersTest(GetEndpointHelper):
     # - fetch session (1 query)
     # - fetch user (1 query)
     # - fetch offers with joinedload including extra data (1 query)
-    expected_num_queries = 3
+    # - fetch connect as extended FF (1 query)
+    expected_num_queries = 4
 
     def test_list_offers_without_filter(self, authenticated_client, offers):
         # no filter => no query to fetch offers
-        with assert_num_queries(self.expected_num_queries - 1):
+        with assert_num_queries(self.expected_num_queries - 2):
             response = authenticated_client.get(url_for(self.endpoint))
             assert response.status_code == 200
 
@@ -530,7 +531,7 @@ class ListOffersTest(GetEndpointHelper):
             "search-3-operator": "GREATER_THAN_OR_EQUAL_TO",
             "search-3-price": 120000.20,
         }
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(self.expected_num_queries - 1):
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 200
 
@@ -862,7 +863,7 @@ class ListOffersTest(GetEndpointHelper):
             "search-2-operator": "IN",
             "search-2-validation": offers_models.OfferValidationStatus.PENDING.value,
         }
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(self.expected_num_queries - 1):
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 200
 
@@ -1542,8 +1543,8 @@ class GetOfferDetailsTest(GetEndpointHelper):
     endpoint_kwargs = {"offer_id": 1}
     needed_permission = perm_models.Permissions.READ_OFFERS
 
-    # session + user + offer with joined data
-    expected_num_queries = 3
+    # session + user + offer with joined data + connect as extended FF
+    expected_num_queries = 4
 
     def test_get_detail_offer(self, authenticated_client):
         offer = offers_factories.OfferFactory(

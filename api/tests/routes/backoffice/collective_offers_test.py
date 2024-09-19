@@ -84,7 +84,8 @@ class ListCollectiveOffersTest(GetEndpointHelper):
     # - fetch session (1 query)
     # - fetch user (1 query)
     # - fetch collective offers with joinedload including extra data (1 query)
-    expected_num_queries = 3
+    # - fetch connect as extended FF (1 query)
+    expected_num_queries = 4
 
     def _get_query_args_by_id(self, id_: int) -> dict[str, str]:
         return {
@@ -94,7 +95,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         }
 
     def test_list_collective_offers_without_filter(self, authenticated_client, collective_offers):
-        with assert_num_queries(self.expected_num_queries - 1):
+        with assert_num_queries(self.expected_num_queries - 2):
             response = authenticated_client.get(url_for(self.endpoint))
             assert response.status_code == 200
 
@@ -373,7 +374,10 @@ class ListCollectiveOffersTest(GetEndpointHelper):
             "search-3-operator": operator,
             "search-3-formats": [format.name for format in formats],
         }
-        with assert_num_queries(self.expected_num_queries):
+
+        # no connect as extended FF fetch if no offers
+        expected_num_queries = self.expected_num_queries if expected_offer_indexes else self.expected_num_queries - 1
+        with assert_num_queries(expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 200
 
@@ -404,7 +408,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
             "search-3-price": 21.20,
         }
 
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(self.expected_num_queries - 1):
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 200
 

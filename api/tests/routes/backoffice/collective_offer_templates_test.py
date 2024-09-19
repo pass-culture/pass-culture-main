@@ -61,7 +61,8 @@ class ListCollectiveOfferTemplatesTest(GetEndpointHelper):
     # - fetch user (1 query)
     expected_num_queries_when_no_query = 2
     # - fetch collective offer templates with joinedload including extra data (1 query)
-    expected_num_queries = expected_num_queries_when_no_query + 1
+    # - fetch connect as extended FF
+    expected_num_queries = expected_num_queries_when_no_query + 2
 
     def test_list_collective_offer_templates_without_filter(self, authenticated_client, collective_offer_templates):
         with assert_num_queries(self.expected_num_queries_when_no_query):

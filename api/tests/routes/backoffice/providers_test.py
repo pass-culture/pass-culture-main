@@ -295,7 +295,8 @@ class GetProviderVenuesTest(GetEndpointHelper):
 
     # - session + authenticated user (2 queries)
     # - venues with joined data (1 query)
-    expected_num_queries = 3
+    # - connect as extended FF (1 query)
+    expected_num_queries = 4
 
     def test_get_linked_venues(self, authenticated_client):
         offerer = offerers_factories.OffererFactory(name="Le videur pro")

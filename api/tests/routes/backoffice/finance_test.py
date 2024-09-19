@@ -1033,6 +1033,7 @@ class GetOverpaymentIncidentTest(GetEndpointHelper):
     expected_num_queries += 1  # Fetch Session
     expected_num_queries += 1  # Fetch User
     expected_num_queries += 1  # Fetch Incidents infos
+    expected_num_queries += 1  # Fetch connect as extended FF
 
     def test_get_incident(self, authenticated_client):
         finance_incident = finance_factories.FinanceIncidentFactory()
@@ -1133,6 +1134,7 @@ class GetCommercialGestureTest(GetEndpointHelper):
     expected_num_queries += 1  # Fetch Session
     expected_num_queries += 1  # Fetch User
     expected_num_queries += 1  # Fetch Incidents infos
+    expected_num_queries += 1  # Fetch connect as extended FF
 
     def test_get_incident(self, authenticated_client):
         finance_incident = finance_factories.FinanceIncidentFactory(kind=finance_models.IncidentType.COMMERCIAL_GESTURE)
@@ -1140,7 +1142,7 @@ class GetCommercialGestureTest(GetEndpointHelper):
         offerers_factories.VenueBankAccountLinkFactory(venue=finance_incident.venue, bankAccount=bank_account)
         url = url_for(self.endpoint, finance_incident_id=finance_incident.id)
 
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(self.expected_num_queries - 1):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 

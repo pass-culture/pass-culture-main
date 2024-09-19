@@ -168,7 +168,9 @@
                   </div>
                 </td>
                 <td>{{ links.build_offer_details_link(offer) }}</td>
-                <td>{{ links.build_offer_name_to_pc_pro_link(offer) }}</td>
+                <td>
+                  {{ links.build_offer_name_to_pc_pro_link(offer, is_feature_active("WIP_CONNECT_AS_EXTENDED") , has_permission("MANAGE_PRO_ENTITY")) }}
+                </td>
                 <td>{{ offer.subcategoryId | format_offer_category }}</td>
                 <td>{{ offer.subcategoryId | format_offer_subcategory }}</td>
                 {% if not has_permission("PRO_FRAUD_ACTIONS") %}

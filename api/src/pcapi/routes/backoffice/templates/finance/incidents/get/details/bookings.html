@@ -23,7 +23,9 @@
           </td>
           <td>{{ links.build_public_user_name_to_details_link(booking_finance_incident.beneficiary) }}</td>
           <td>{{ booking_finance_incident.booking | format_booking_status(with_badge=True) | safe }}</td>
-          <td>{{ links.build_offer_name_to_pc_pro_link(booking_finance_incident.booking.stock.offer) }}</td>
+          <td>
+            {{ links.build_offer_name_to_pc_pro_link(booking_finance_incident.booking.stock.offer, is_feature_active("WIP_CONNECT_AS_EXTENDED") , has_permission("MANAGE_PRO_ENTITY")) }}
+          </td>
           <td>{{ booking_finance_incident.booking.dateCreated | format_date("Le %d/%m/%Y à %Hh%M") }}</td>
         </tr>
         <tr class="collapse accordion-collapse pc-booking-{{ booking_finance_incident.booking.id }}"

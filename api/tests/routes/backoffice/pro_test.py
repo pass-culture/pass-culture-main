@@ -1472,3 +1472,135 @@ class GetConnectAsProUserTest(PostEndpointHelper):
             html_parser.extract_alert(redirected_response.data)
             == "Aucun utilisateur approprié n'a été trouvé pour se connecter à cette offre"
         )
+
+    @override_features(WIP_CONNECT_AS_EXTENDED=True)
+    def test_connect_as_bank_account(self, authenticated_client, legit_user):
+        bank_account = finance_factories.BankAccountFactory(offerer=offerers_factories.UserOffererFactory().offerer)
+
+        form_data = {"object_type": "bank_account", "object_id": bank_account.id, "redirect": "/bank_account"}
+        expected_token_data = {
+            "user_id": bank_account.offerer.UserOfferers[0].userId,
+            "internal_admin_id": legit_user.id,
+            "internal_admin_email": legit_user.email,
+            "redirect_link": settings.PRO_URL + "/bank_account",
+        }
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form=form_data,
+            expected_num_queries=self.expected_num_queries_without_user,
+        )
+
+        assert response.status_code == 303
+        base_url, key_token = response.location.rsplit("/", 1)
+        assert base_url + "/" == urls.build_pc_pro_connect_as_link("")
+        assert SecureToken(token=key_token).data == expected_token_data
+
+    @override_features(WIP_CONNECT_AS_EXTENDED=False)
+    def test_connect_as_bank_account_protected_by_feature_flag(self, authenticated_client):
+        bank_account = finance_factories.BankAccountFactory(offerer=offerers_factories.UserOffererFactory().offerer)
+
+        form_data = {"object_type": "bank_account", "object_id": bank_account.id, "redirect": "/bank_account"}
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form=form_data,
+            expected_num_queries=self.expected_num_queries_without_user,
+        )
+
+        assert response.status_code == 303
+        assert response.location == url_for("backoffice_web.home", _external=True)
+        redirected_response = authenticated_client.get(response.location)
+        assert (
+            html_parser.extract_alert(redirected_response.data)
+            == "L'utilisation de la version étendue de « connect as » requiert l'activation de la feature : WIP_CONNECT_AS_EXTENDED"
+        )
+
+    @override_features(WIP_CONNECT_AS_EXTENDED=True)
+    def test_connect_as_bank_account_without_user(self, authenticated_client):
+        bank_account = finance_factories.BankAccountFactory()
+
+        form_data = {"object_type": "bank_account", "object_id": bank_account.id, "redirect": "/bank_account"}
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form=form_data,
+            expected_num_queries=self.expected_num_queries_without_user + 1,  # +1 for rollback query
+        )
+
+        assert response.status_code == 303
+        assert response.location == url_for("backoffice_web.home", _external=True)
+        redirected_response = authenticated_client.get(response.location)
+        assert (
+            html_parser.extract_alert(redirected_response.data)
+            == "Aucun utilisateur approprié n'a été trouvé pour se connecter à ce compte bancaire"
+        )
+
+    @override_features(WIP_CONNECT_AS_EXTENDED=True)
+    def test_connect_as_bank_account_not_found(self, authenticated_client):
+        form_data = {"object_type": "bank_account", "object_id": 0, "redirect": "/bank_account"}
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form=form_data,
+            expected_num_queries=self.expected_num_queries_without_user + 1,  # +1 for rollback query
+        )
+
+        assert response.status_code == 303
+        assert response.location == url_for("backoffice_web.home", _external=True)
+        redirected_response = authenticated_client.get(response.location)
+        assert (
+            html_parser.extract_alert(redirected_response.data)
+            == "Aucun utilisateur approprié n'a été trouvé pour se connecter à ce compte bancaire"
+        )
+
+    @override_features(WIP_CONNECT_AS_EXTENDED=True)
+    def test_connect_as_bank_account_without_active_user(self, authenticated_client):
+        bank_account = finance_factories.BankAccountFactory(
+            offerer=offerers_factories.UserOffererFactory(
+                user__isActive=False,
+            ).offerer
+        )
+
+        form_data = {"object_type": "bank_account", "object_id": bank_account.id, "redirect": "/bank_account"}
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form=form_data,
+            expected_num_queries=self.expected_num_queries_without_user + 1,  # +1 for rollback query
+        )
+
+        assert response.status_code == 303
+        assert response.location == url_for("backoffice_web.home", _external=True)
+        redirected_response = authenticated_client.get(response.location)
+        assert (
+            html_parser.extract_alert(redirected_response.data)
+            == "Aucun utilisateur approprié n'a été trouvé pour se connecter à ce compte bancaire"
+        )
+
+    @override_features(WIP_CONNECT_AS_EXTENDED=True)
+    @pytest.mark.parametrize(
+        "roles",
+        [
+            [users_models.UserRole.PRO, users_models.UserRole.ADMIN],
+            [users_models.UserRole.ADMIN],
+            [users_models.UserRole.PRO, users_models.UserRole.ANONYMIZED],
+            [],
+        ],
+    )
+    def test_connect_as_bank_account_without_eligible_user(self, authenticated_client, roles):
+        bank_account = finance_factories.BankAccountFactory(
+            offerer=offerers_factories.UserOffererFactory(
+                user__roles=roles,
+            ).offerer
+        )
+        form_data = {"object_type": "bank_account", "object_id": bank_account.id, "redirect": "/bank_account"}
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form=form_data,
+            expected_num_queries=self.expected_num_queries_without_user + 1,  # +1 for rollback query
+        )
+
+        assert response.status_code == 303
+        assert response.location == url_for("backoffice_web.home", _external=True)
+        redirected_response = authenticated_client.get(response.location)
+        assert (
+            html_parser.extract_alert(redirected_response.data)
+            == "Aucun utilisateur approprié n'a été trouvé pour se connecter à ce compte bancaire"
+        )

@@ -100,7 +100,9 @@
                   {% endif %}
                 </td>
                 <td>{{ links.build_collective_offer_details_link(collective_offer) }}</td>
-                <td>{{ links.build_offer_name_to_pc_pro_link(collective_offer) }}</td>
+                <td>
+                  {{ links.build_offer_name_to_pc_pro_link(collective_offer, is_feature_active("WIP_CONNECT_AS_EXTENDED") , has_permission("MANAGE_PRO_ENTITY")) }}
+                </td>
                 <td>{{ collective_offer.formats | format_collective_offer_formats }}</td>
                 {% if has_permission("PRO_FRAUD_ACTIONS") %}
                   <td>
