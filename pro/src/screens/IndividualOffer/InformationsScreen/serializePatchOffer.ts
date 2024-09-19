@@ -95,6 +95,7 @@ export const serializePatchOffer = ({
         postalCode: sentValues.postalCode,
         street: sentValues.street,
         label: sentValues.locationLabel,
+        isManualEdition: sentValues.manuallySetAddress,
       },
     }
   }
