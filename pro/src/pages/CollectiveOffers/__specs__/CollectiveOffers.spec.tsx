@@ -9,8 +9,8 @@ import { userEvent } from '@testing-library/user-event'
 import { api } from 'apiClient/api'
 import {
   CollectiveOfferResponseModel,
-  CollectiveOfferStatus,
   CollectiveOffersStockResponseModel,
+  CollectiveOfferStatus,
 } from 'apiClient/v1'
 import {
   ALL_VENUES_OPTION,
@@ -20,7 +20,10 @@ import {
 import { CollectiveSearchFiltersParams } from 'core/Offers/types'
 import { computeCollectiveOffersUrl } from 'core/Offers/utils/computeCollectiveOffersUrl'
 import { collectiveOfferFactory } from 'utils/collectiveApiFactories'
-import { venueListItemFactory } from 'utils/individualApiFactories'
+import {
+  defaultGetOffererResponseModel,
+  venueListItemFactory,
+} from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
@@ -46,11 +49,17 @@ const renderOffers = async (
   features: string[] = []
 ) => {
   const route = computeCollectiveOffersUrl(filters)
-
+  const user = sharedCurrentUserFactory()
   renderWithProviders(<CollectiveOffers />, {
-    user: sharedCurrentUserFactory(),
+    user,
     initialRouterEntries: [route],
     features: features,
+    storeOverrides: {
+      user: {
+        selectedOffererId: 1,
+        currentUser: user,
+      },
+    },
   })
 
   await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
@@ -71,6 +80,9 @@ describe('route CollectiveOffers', () => {
     vi.spyOn(api, 'getCollectiveOffers').mockResolvedValue(offersRecap)
     vi.spyOn(api, 'listOfferersNames').mockResolvedValue({ offerersNames: [] })
     vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: proVenues })
+    vi.spyOn(api, 'getOfferer').mockResolvedValue({
+      ...defaultGetOffererResponseModel,
+    })
   })
 
   describe('filters', () => {
@@ -94,7 +106,7 @@ describe('route CollectiveOffers', () => {
         await waitFor(() => {
           expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
             undefined,
-            undefined,
+            '1',
             DEFAULT_COLLECTIVE_SEARCH_FILTERS.status,
             undefined,
             undefined,
@@ -128,7 +140,7 @@ describe('route CollectiveOffers', () => {
         await waitFor(() => {
           expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
             undefined,
-            undefined,
+            '1',
             DEFAULT_COLLECTIVE_SEARCH_FILTERS.status,
             undefined,
             undefined,
@@ -188,7 +200,7 @@ describe('route CollectiveOffers', () => {
         await waitFor(() => {
           expect(api.getCollectiveOffers).toHaveBeenCalledWith(
             'Any word',
-            undefined,
+            '1',
             DEFAULT_COLLECTIVE_SEARCH_FILTERS.status,
             undefined,
             undefined,
@@ -212,7 +224,7 @@ describe('route CollectiveOffers', () => {
         await waitFor(() => {
           expect(api.getCollectiveOffers).toHaveBeenCalledWith(
             'search string',
-            undefined,
+            '1',
             DEFAULT_COLLECTIVE_SEARCH_FILTERS.status,
             undefined,
             undefined,
@@ -227,6 +239,9 @@ describe('route CollectiveOffers', () => {
 
       it('should load offers with selected venue filter', async () => {
         await renderOffers()
+        await waitFor(() => {
+          expect(api.getVenues).toHaveBeenCalledWith(null, null, 1)
+        })
         const firstVenueOption = screen.getByRole('option', {
           name: proVenues[0].name,
         })
@@ -237,7 +252,7 @@ describe('route CollectiveOffers', () => {
         await waitFor(() => {
           expect(api.getCollectiveOffers).toHaveBeenCalledWith(
             undefined,
-            undefined,
+            '1',
             DEFAULT_COLLECTIVE_SEARCH_FILTERS.status,
             proVenues[0].id.toString(),
             undefined,
@@ -262,7 +277,7 @@ describe('route CollectiveOffers', () => {
         await waitFor(() => {
           expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
             undefined,
-            undefined,
+            '1',
             DEFAULT_COLLECTIVE_SEARCH_FILTERS.status,
             undefined,
             undefined,
@@ -286,7 +301,7 @@ describe('route CollectiveOffers', () => {
         await waitFor(() => {
           expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
             undefined,
-            undefined,
+            '1',
             DEFAULT_COLLECTIVE_SEARCH_FILTERS.status,
             undefined,
             undefined,
@@ -308,7 +323,7 @@ describe('route CollectiveOffers', () => {
         await waitFor(() => {
           expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
             undefined,
-            undefined,
+            '1',
             DEFAULT_COLLECTIVE_SEARCH_FILTERS.status,
             undefined,
             undefined,
@@ -400,7 +415,9 @@ describe('route CollectiveOffers', () => {
         venueId: '666',
       }
       await renderOffers(filters)
-
+      await waitFor(() => {
+        expect(api.getVenues).toHaveBeenCalledWith(null, null, 1)
+      })
       const firstVenueOption = screen.getByRole('option', {
         name: proVenues[0].name,
       })
@@ -413,7 +430,7 @@ describe('route CollectiveOffers', () => {
       expect(api.getCollectiveOffers).toHaveBeenNthCalledWith(
         1,
         undefined,
-        undefined,
+        '1',
         DEFAULT_COLLECTIVE_SEARCH_FILTERS.status,
         '666',
         undefined,
@@ -431,7 +448,7 @@ describe('route CollectiveOffers', () => {
       expect(api.getCollectiveOffers).toHaveBeenNthCalledWith(
         2,
         undefined,
-        undefined,
+        '1',
         DEFAULT_COLLECTIVE_SEARCH_FILTERS.status,
         proVenues[0].id.toString(),
         undefined,
@@ -451,7 +468,7 @@ describe('route CollectiveOffers', () => {
       expect(api.getCollectiveOffers).toHaveBeenNthCalledWith(
         3,
         undefined,
-        undefined,
+        '1',
         DEFAULT_COLLECTIVE_SEARCH_FILTERS.status,
         undefined,
         undefined,
@@ -473,7 +490,9 @@ describe('route CollectiveOffers', () => {
       }
 
       await renderOffers(filters)
-
+      await waitFor(() => {
+        expect(api.getVenues).toHaveBeenCalledWith(null, null, 1)
+      })
       const venueOptionToSelect = screen.getByRole('option', {
         name: proVenues[0].name,
       })
@@ -486,7 +505,7 @@ describe('route CollectiveOffers', () => {
       expect(api.getCollectiveOffers).toHaveBeenNthCalledWith(
         1,
         undefined,
-        undefined,
+        '1',
         DEFAULT_COLLECTIVE_SEARCH_FILTERS.status,
         '666',
         undefined,
@@ -504,7 +523,7 @@ describe('route CollectiveOffers', () => {
       expect(api.getCollectiveOffers).toHaveBeenNthCalledWith(
         2,
         undefined,
-        undefined,
+        '1',
         DEFAULT_COLLECTIVE_SEARCH_FILTERS.status,
         proVenues[0].id.toString(),
         undefined,
@@ -522,7 +541,7 @@ describe('route CollectiveOffers', () => {
       expect(api.getCollectiveOffers).toHaveBeenNthCalledWith(
         3,
         undefined,
-        undefined,
+        '1',
         DEFAULT_COLLECTIVE_SEARCH_FILTERS.status,
         undefined,
         undefined,
@@ -554,7 +573,7 @@ describe('route CollectiveOffers', () => {
     await waitFor(() => {
       expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
         undefined,
-        undefined,
+        '1',
         DEFAULT_COLLECTIVE_BOOKABLE_SEARCH_FILTERS.status,
         undefined,
         undefined,
