@@ -1,5 +1,6 @@
 import {
   screen,
+  waitFor,
   waitForElementToBeRemoved,
   within,
 } from '@testing-library/react'
@@ -30,7 +31,9 @@ vi.mock('react-router-dom', async () => ({
 }))
 
 const renderOffers = async (
-  filters: Partial<CollectiveSearchFiltersParams> = DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS
+  filters: Partial<CollectiveSearchFiltersParams> = DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
+  user = sharedCurrentUserFactory(),
+  selectedOffererId: number | null = 1
 ) => {
   const shouldComputeTemplateOfferUrl = true
   const route = computeCollectiveOffersUrl(
@@ -46,8 +49,14 @@ const renderOffers = async (
       />
     </router.Routes>,
     {
-      user: sharedCurrentUserFactory(),
+      user,
       initialRouterEntries: [route],
+      storeOverrides: {
+        user: {
+          selectedOffererId,
+          currentUser: user,
+        },
+      },
     }
   )
 
@@ -90,9 +99,14 @@ describe('route TemplateCollectiveOffers', () => {
     vi.spyOn(router, 'useNavigate').mockReturnValue(mockNavigate)
     vi.spyOn(api, 'listOfferersNames').mockResolvedValue({ offerersNames: [] })
     vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: proVenues })
+    vi.spyOn(api, 'getOfferer').mockResolvedValue({
+      ...defaultGetOffererResponseModel,
+    })
   })
 
   describe('url query params', () => {
+    const oldInterfaceUser = sharedCurrentUserFactory({ navState: null })
+
     it('should have page value when page value is not first page', async () => {
       const offersRecap = Array.from({ length: 11 }, () =>
         collectiveOfferFactory({ stocks })
@@ -104,7 +118,7 @@ describe('route TemplateCollectiveOffers', () => {
       await userEvent.click(nextPageIcon)
 
       expect(mockNavigate).toHaveBeenCalledWith(
-        '/offres/vitrines?page=2&statut=en-attente&statut=refusee&statut=active&statut=inactive&statut=brouillon',
+        '/offres/vitrines?page=2&structure=1&statut=en-attente&statut=refusee&statut=active&statut=inactive&statut=brouillon',
         {
           replace: true,
         }
@@ -121,7 +135,7 @@ describe('route TemplateCollectiveOffers', () => {
       await userEvent.click(screen.getByText('Rechercher'))
 
       expect(mockNavigate).toHaveBeenCalledWith(
-        `/offres/vitrines?nom-ou-isbn=AnyWord&structure=&statut=en-attente&statut=refusee&statut=active&statut=inactive&statut=brouillon`,
+        `/offres/vitrines?nom-ou-isbn=AnyWord&structure=1&statut=en-attente&statut=refusee&statut=active&statut=inactive&statut=brouillon`,
         {
           replace: true,
         }
@@ -137,7 +151,7 @@ describe('route TemplateCollectiveOffers', () => {
       await userEvent.click(screen.getByText('Rechercher'))
 
       expect(mockNavigate).toHaveBeenCalledWith(
-        '/offres/vitrines?structure=&statut=en-attente&statut=refusee&statut=active&statut=inactive&statut=brouillon',
+        '/offres/vitrines?structure=1&statut=en-attente&statut=refusee&statut=active&statut=inactive&statut=brouillon',
         {
           replace: true,
         }
@@ -146,6 +160,9 @@ describe('route TemplateCollectiveOffers', () => {
 
     it('should have venue value when user filters by venue', async () => {
       await renderOffers()
+      await waitFor(() => {
+        expect(api.getVenues).toHaveBeenCalledWith(null, null, 1)
+      })
       const firstVenueOption = screen.getByRole('option', {
         name: proVenues[0].name,
       })
@@ -155,7 +172,7 @@ describe('route TemplateCollectiveOffers', () => {
       await userEvent.click(screen.getByText('Rechercher'))
 
       expect(mockNavigate).toHaveBeenCalledWith(
-        `/offres/vitrines?structure=&lieu=${proVenues[0].id}&statut=en-attente&statut=refusee&statut=active&statut=inactive&statut=brouillon`,
+        `/offres/vitrines?structure=1&lieu=${proVenues[0].id}&statut=en-attente&statut=refusee&statut=active&statut=inactive&statut=brouillon`,
         {
           replace: true,
         }
@@ -177,7 +194,7 @@ describe('route TemplateCollectiveOffers', () => {
       await userEvent.click(screen.getByText('Rechercher'))
 
       expect(mockNavigate).toHaveBeenCalledWith(
-        '/offres/vitrines?structure=&format=Concert&statut=en-attente&statut=refusee&statut=active&statut=inactive&statut=brouillon',
+        '/offres/vitrines?structure=1&format=Concert&statut=en-attente&statut=refusee&statut=active&statut=inactive&statut=brouillon',
         {
           replace: true,
         }
@@ -199,7 +216,7 @@ describe('route TemplateCollectiveOffers', () => {
       await userEvent.click(screen.getByRole('button', { name: 'Rechercher' }))
 
       expect(mockNavigate).toHaveBeenCalledWith(
-        '/offres/vitrines?structure=&statut=en-attente&statut=refusee&statut=inactive&statut=brouillon',
+        '/offres/vitrines?structure=1&statut=en-attente&statut=refusee&statut=inactive&statut=brouillon',
         {
           replace: true,
         }
@@ -222,21 +239,21 @@ describe('route TemplateCollectiveOffers', () => {
       await userEvent.click(screen.getByRole('button', { name: 'Rechercher' }))
 
       expect(mockNavigate).toHaveBeenCalledWith(
-        '/offres/vitrines?structure=&statut=refusee&statut=active&statut=inactive&statut=brouillon&statut=archivee',
+        '/offres/vitrines?structure=1&statut=refusee&statut=active&statut=inactive&statut=brouillon&statut=archivee',
         {
           replace: true,
         }
       )
     })
 
-    it('should have offerer filter when user filters by offerer', async () => {
+    it('should have offerer filter when user filters by offerer for old interface', async () => {
       const filters = { offererId: 'A4' }
       vi.spyOn(api, 'getOfferer').mockResolvedValueOnce({
         ...defaultGetOffererResponseModel,
         name: 'La structure',
       })
 
-      await renderOffers(filters)
+      await renderOffers(filters, oldInterfaceUser, null)
 
       const offererFilter = screen.getByText('La structure')
       expect(offererFilter).toBeInTheDocument()
@@ -248,7 +265,7 @@ describe('route TemplateCollectiveOffers', () => {
         ...defaultGetOffererResponseModel,
         name: 'La structure',
       })
-      await renderOffers(filters)
+      await renderOffers(filters, oldInterfaceUser, null)
 
       await userEvent.click(screen.getByTestId('remove-offerer-filter'))
 
