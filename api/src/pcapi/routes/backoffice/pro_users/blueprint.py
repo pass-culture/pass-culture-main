@@ -227,7 +227,7 @@ def delete(user_id: int) -> utils.BackofficeResponse:
 
     # clear from mailing list
     if not offerers_models.Venue.query.filter(offerers_models.Venue.bookingEmail == user.email).limit(1).count():
-        mails_api.delete_contact(user.email)
+        mails_api.delete_contact(user.email, True)
 
     # clear from push notifications
     payload = DeleteBatchUserAttributesRequest(user_id=user.id)

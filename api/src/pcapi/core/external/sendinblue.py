@@ -18,6 +18,7 @@ from pcapi.core import mails as mails_api
 from pcapi.core.cultural_survey import models as cultural_survey_models
 from pcapi.core.external.attributes import models as attributes_models
 import pcapi.core.users.models as users_models
+from pcapi.models.feature import FeatureToggle
 from pcapi.tasks.sendinblue_tasks import update_contact_attributes_task
 from pcapi.tasks.serialization.sendinblue_tasks import UpdateSendinblueContactRequest
 
@@ -52,6 +53,7 @@ class SendinblueAttributes(Enum):
     HAS_BOOKINGS = "HAS_BOOKINGS"
     HAS_COLLECTIVE_OFFERS = "HAS_COLLECTIVE_OFFERS"
     HAS_COMPLETED_ID_CHECK = "HAS_COMPLETED_ID_CHECK"
+    HAS_INDIVIDUAL_OFFERS = "HAS_INDIVIDUAL_OFFERS"
     HAS_OFFERS = "HAS_OFFERS"
     INITIAL_CREDIT = "INITIAL_CREDIT"
     IS_ACTIVE_PRO = "IS_ACTIVE_PRO"
@@ -89,7 +91,8 @@ class SendinblueAttributes(Enum):
     VENUE_NAME = "VENUE_NAME"
     VENUE_TYPE = "VENUE_TYPE"
     IS_EAC = "IS_EAC"
-    IS_EAC_MEG = "EAC_MEG"
+    EAC_MEG = "EAC_MEG"
+    IS_EAC_MEG = "IS_EAC_MEG"  # for pro attributes
 
     @classmethod
     def list(cls) -> list[str]:
@@ -105,12 +108,13 @@ class SendinblueOptionalAttributes(Enum):
 def update_contact_email(user: users_models.User, old_email: str, new_email: str, asynchronous: bool = True) -> None:
     contact_list_ids = (
         [settings.SENDINBLUE_PRO_CONTACT_LIST_ID]
-        if (user.has_pro_role or user.has_non_attached_pro_role)
+        if user.has_any_pro_role
         else [settings.SENDINBLUE_YOUNG_CONTACT_LIST_ID]
     )
 
     contact_request = UpdateSendinblueContactRequest(
         email=old_email,
+        use_pro_subaccount=user.has_any_pro_role,
         attributes={"EMAIL": new_email},
         contact_list_ids=contact_list_ids,
         emailBlacklisted=(not user.get_notification_subscriptions().marketing_email),
@@ -128,7 +132,11 @@ def update_contact_attributes(
     cultural_survey_answers: dict[str, list[str]] | None = None,
     asynchronous: bool = True,
 ) -> None:
-    formatted_attributes = format_user_attributes(attributes)
+    if attributes.is_pro and FeatureToggle.WIP_ENABLE_BREVO_PRO_SUBACCOUNT.is_active():
+        assert isinstance(attributes, attributes_models.ProAttributes)  # helps mypy
+        formatted_attributes = format_pro_attributes(attributes)
+    else:
+        formatted_attributes = format_user_attributes(attributes)
 
     if cultural_survey_answers:
         formatted_attributes.update(format_cultural_survey_answers(cultural_survey_answers))
@@ -139,6 +147,7 @@ def update_contact_attributes(
 
     contact_request = UpdateSendinblueContactRequest(
         email=user_email,
+        use_pro_subaccount=attributes.is_pro,
         attributes=formatted_attributes,
         contact_list_ids=contact_list_ids,
         emailBlacklisted=(not attributes.marketing_email_subscription),  # attribute may be None
@@ -197,6 +206,7 @@ def format_user_attributes(attributes: attributes_models.UserAttributes | attrib
         SendinblueAttributes.HAS_BOOKINGS.value: _get_attr(attributes, "has_bookings"),
         SendinblueAttributes.HAS_COLLECTIVE_OFFERS.value: _get_attr(attributes, "has_collective_offers"),
         SendinblueAttributes.HAS_COMPLETED_ID_CHECK.value: _get_attr(attributes, "has_completed_id_check"),
+        SendinblueAttributes.HAS_INDIVIDUAL_OFFERS.value: _get_attr(attributes, "has_individual_offers"),
         SendinblueAttributes.HAS_OFFERS.value: _get_attr(attributes, "has_offers"),
         SendinblueAttributes.INITIAL_CREDIT.value: _get_attr(attributes, "domains_credit", lambda v: v.all.initial),
         SendinblueAttributes.IS_ACTIVE_PRO.value: _get_attr(attributes, "is_active_pro"),
@@ -243,7 +253,41 @@ def format_user_attributes(attributes: attributes_models.UserAttributes | attrib
         SendinblueAttributes.VENUE_NAME.value: _get_attr(attributes, "venues_names", format_list),
         SendinblueAttributes.VENUE_TYPE.value: _get_attr(attributes, "venues_types", format_list),
         SendinblueAttributes.IS_EAC.value: _get_attr(attributes, "is_eac"),
+        SendinblueAttributes.EAC_MEG.value: _get_attr(attributes, "is_eac_meg"),
+    }
+
+
+def format_pro_attributes(attributes: attributes_models.ProAttributes) -> dict:
+    return {
+        SendinblueAttributes.DEPARTMENT_CODE.value: _get_attr(attributes, "departement_code", format_list_or_str),
+        SendinblueAttributes.DMS_APPLICATION_APPROVED.value: _get_attr(attributes, "dms_application_approved"),
+        SendinblueAttributes.DMS_APPLICATION_SUBMITTED.value: _get_attr(attributes, "dms_application_submitted"),
+        SendinblueAttributes.FIRSTNAME.value: _get_attr(attributes, "first_name"),
+        SendinblueAttributes.HAS_BANNER_URL.value: _get_attr(attributes, "has_banner_url"),
+        SendinblueAttributes.HAS_BOOKINGS.value: _get_attr(attributes, "has_bookings"),
+        SendinblueAttributes.HAS_COLLECTIVE_OFFERS.value: _get_attr(attributes, "has_collective_offers"),
+        SendinblueAttributes.HAS_INDIVIDUAL_OFFERS.value: _get_attr(attributes, "has_individual_offers"),
+        SendinblueAttributes.HAS_OFFERS.value: _get_attr(attributes, "has_offers"),
+        SendinblueAttributes.IS_ACTIVE_PRO.value: _get_attr(attributes, "is_active_pro"),
+        SendinblueAttributes.IS_BOOKING_EMAIL.value: _get_attr(attributes, "is_booking_email"),
+        SendinblueAttributes.IS_EAC.value: _get_attr(attributes, "is_eac"),
         SendinblueAttributes.IS_EAC_MEG.value: _get_attr(attributes, "is_eac_meg"),
+        SendinblueAttributes.IS_PERMANENT.value: _get_attr(attributes, "isPermanent"),
+        SendinblueAttributes.IS_PRO.value: _get_attr(attributes, "is_pro"),
+        SendinblueAttributes.IS_USER_EMAIL.value: _get_attr(attributes, "is_user_email"),
+        SendinblueAttributes.IS_VIRTUAL.value: _get_attr(attributes, "isVirtual"),
+        SendinblueAttributes.LASTNAME.value: _get_attr(attributes, "last_name"),
+        SendinblueAttributes.MARKETING_EMAIL_SUBSCRIPTION.value: _get_attr(attributes, "marketing_email_subscription"),
+        SendinblueAttributes.OFFERER_NAME.value: _get_attr(attributes, "offerers_names", format_list),
+        SendinblueAttributes.OFFERER_TAG.value: _get_attr(attributes, "offerers_tags", format_list),
+        SendinblueAttributes.POSTAL_CODE.value: _get_attr(attributes, "postal_code", format_list_or_str),
+        SendinblueAttributes.USER_ID.value: _get_attr(attributes, "user_id"),
+        SendinblueAttributes.USER_IS_ATTACHED.value: _get_attr(attributes, "user_is_attached"),
+        SendinblueAttributes.USER_IS_CREATOR.value: _get_attr(attributes, "user_is_creator"),
+        SendinblueAttributes.VENUE_COUNT.value: _get_attr(attributes, "venues_ids", len),
+        SendinblueAttributes.VENUE_LABEL.value: _get_attr(attributes, "venues_labels", format_list),
+        SendinblueAttributes.VENUE_NAME.value: _get_attr(attributes, "venues_names", format_list),
+        SendinblueAttributes.VENUE_TYPE.value: _get_attr(attributes, "venues_types", format_list),
     }
 
 
@@ -309,10 +353,6 @@ def build_file_body(users_data: list[SendinblueUserUpdateData]) -> str:
 def import_contacts_in_sendinblue(
     sendinblue_users_data: list[SendinblueUserUpdateData], email_blacklist: bool = False
 ) -> None:
-    configuration = sib_api_v3_sdk.Configuration()
-    configuration.api_key["api-key"] = settings.SENDINBLUE_API_KEY
-    api_instance = sib_api_v3_sdk.ContactsApi(sib_api_v3_sdk.ApiClient(configuration))
-
     # Split users in sendinblue lists
     pro_users = [
         user_data for user_data in sendinblue_users_data if user_data.attributes[SendinblueAttributes.IS_PRO.value]
@@ -323,6 +363,14 @@ def import_contacts_in_sendinblue(
 
     # send pro users request
     if pro_users:
+        configuration = sib_api_v3_sdk.Configuration()
+        configuration.api_key["api-key"] = (
+            settings.SENDINBLUE_PRO_API_KEY
+            if FeatureToggle.WIP_ENABLE_BREVO_PRO_SUBACCOUNT.is_active()
+            else settings.SENDINBLUE_API_KEY
+        )
+        api_instance = sib_api_v3_sdk.ContactsApi(sib_api_v3_sdk.ApiClient(configuration))
+
         pro_users_file_body = build_file_body(pro_users)
         send_import_contacts_request(
             api_instance,
@@ -332,6 +380,10 @@ def import_contacts_in_sendinblue(
         )
     # send young users request
     if young_users:
+        configuration = sib_api_v3_sdk.Configuration()
+        configuration.api_key["api-key"] = settings.SENDINBLUE_API_KEY
+        api_instance = sib_api_v3_sdk.ContactsApi(sib_api_v3_sdk.ApiClient(configuration))
+
         young_users_file_body = build_file_body(young_users)
         send_import_contacts_request(
             api_instance,
@@ -368,7 +420,7 @@ def _send_import_request(
     return import_response.process_id
 
 
-def add_contacts_to_list(user_emails: Iterable[str], sib_list_id: int) -> bool:
+def add_contacts_to_list(user_emails: Iterable[str], sib_list_id: int, use_pro_subaccount: bool | None = False) -> bool:
     """
     Fills in a list of contacts using Sendinblue API.
     This function is intended to be used for automation and returns synchronously (waits for completion).
@@ -384,7 +436,10 @@ def add_contacts_to_list(user_emails: Iterable[str], sib_list_id: int) -> bool:
     """
 
     configuration = sib_api_v3_sdk.Configuration()
-    configuration.api_key["api-key"] = settings.SENDINBLUE_API_KEY
+    if FeatureToggle.WIP_ENABLE_BREVO_PRO_SUBACCOUNT.is_active() and use_pro_subaccount:
+        configuration.api_key["api-key"] = settings.SENDINBLUE_PRO_API_KEY
+    else:
+        configuration.api_key["api-key"] = settings.SENDINBLUE_API_KEY
     contacts_api_instance: ContactsApi = sib_api_v3_sdk.ContactsApi(sib_api_v3_sdk.ApiClient(configuration))
 
     iteration = 1

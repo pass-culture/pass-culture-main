@@ -1,4 +1,5 @@
 import datetime
+import functools
 import re
 import typing
 
@@ -29,6 +30,7 @@ from pcapi.models import db
 from pcapi.models import offer_mixin
 from pcapi.repository import atomic
 from pcapi.repository import mark_transaction_as_invalid
+from pcapi.repository import on_commit
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.collective_offers import forms
 from pcapi.routes.backoffice.forms import empty as empty_forms
@@ -332,8 +334,15 @@ def _batch_validate_or_reject_collective_offers(
             else [recipient.user.email for recipient in collective_offer.venue.managingOfferer.UserOfferers]
         )
 
-        transactional_mails.send_offer_validation_status_update_email(
-            collective_offer, old_validation_status, new_validation_status, recipients
+        offer_data = transactional_mails.get_email_data_from_offer(
+            collective_offer, old_validation_status, new_validation_status
+        )
+        on_commit(
+            functools.partial(
+                transactional_mails.send_offer_validation_status_update_email,
+                offer_data,
+                recipients,
+            )
         )
 
         if validation is offer_mixin.OfferValidationStatus.APPROVED and collective_offer.institutionId is not None:

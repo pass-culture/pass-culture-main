@@ -2,6 +2,7 @@ import dataclasses
 from enum import Enum
 
 from pcapi import settings
+from pcapi.models.feature import FeatureToggle
 
 
 @dataclasses.dataclass
@@ -46,7 +47,7 @@ class TransactionalWithoutTemplateEmailData:
         self.reply_to = reply_to or self.sender.value
 
 
-@dataclasses.dataclass
+@dataclasses.dataclass(kw_only=True)
 class Template:
     id_prod: int
     id_not_prod: int
@@ -58,10 +59,25 @@ class Template:
     def id(self) -> int:
         return self.id_prod if settings.IS_PROD else self.id_not_prod
 
+    @property
+    def use_pro_subaccount(self) -> bool:
+        return False
 
-@dataclasses.dataclass
+
+@dataclasses.dataclass(kw_only=True)
 class TemplatePro(Template):
-    pass
+    subaccount_id_prod: int
+    subaccount_id_not_prod: int
+
+    @property
+    def id(self) -> int:
+        if FeatureToggle.WIP_ENABLE_BREVO_PRO_SUBACCOUNT.is_active():
+            return self.subaccount_id_prod if settings.IS_PROD else self.subaccount_id_not_prod
+        return super().id
+
+    @property
+    def use_pro_subaccount(self) -> bool:
+        return FeatureToggle.WIP_ENABLE_BREVO_PRO_SUBACCOUNT.is_active()
 
 
 @dataclasses.dataclass

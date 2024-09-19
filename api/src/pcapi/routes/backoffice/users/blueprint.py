@@ -41,7 +41,7 @@ def _redirect_to_user_page(user: users_models.User) -> utils.BackofficeResponse:
         return redirect(request.referrer, code=303)
 
     # Fallback in case referrer is missing (maybe because of browser settings)
-    if user.has_pro_role or user.has_non_attached_pro_role:
+    if user.has_any_pro_role:
         return redirect(url_for("backoffice_web.pro_user.get", user_id=user.id), code=303)
 
     return redirect(url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id), code=303)
@@ -51,7 +51,7 @@ def _check_user_role_vs_backoffice_permission(user: users_models.User, unsuspend
     if user.has_admin_role:
         if not utils.has_current_user_permission(perm_models.Permissions.MANAGE_ADMIN_ACCOUNTS):
             raise Forbidden()
-    elif user.has_pro_role or user.has_non_attached_pro_role:
+    elif user.has_any_pro_role:
         if not utils.has_current_user_permission(perm_models.Permissions.PRO_FRAUD_ACTIONS):
             raise Forbidden()
     else:  # not pro, not admin
@@ -174,7 +174,7 @@ def _check_users_to_suspend(ids_list: set[int]) -> tuple[list[users_models.User]
         data = ", ".join(f"{user.id} ({user.email})" for user in sorted(admins, key=attrgetter("id")))
         errors.append(f"ID correspondant à un utilisateur admin : {data}")
 
-    pros = [user for user in users if user.has_pro_role or user.has_non_attached_pro_role]
+    pros = [user for user in users if user.has_any_pro_role]
     if pros:
         data = ", ".join(f"{user.id} ({user.email})" for user in sorted(pros, key=attrgetter("id")))
         errors.append(f"ID correspondant à un utilisateur pro : {data}")
@@ -250,7 +250,7 @@ def redirect_to_brevo_user_page(user_id: int) -> utils.BackofficeResponse:
     if not user:
         raise NotFound()
     try:
-        user_url = mails.get_contact_url(user.email)
+        user_url = mails.get_contact_url(user.email, user.has_any_pro_role)
     except ExternalAPIException as exp:
         flash("Impossible de rediriger vers Brevo suite a une erreur inconnue", "warning")
         logger.error(

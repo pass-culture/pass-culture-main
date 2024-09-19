@@ -51,7 +51,10 @@ def send_transactional_email(payload: SendTransactionalEmailRequest) -> None:
 
     try:
         configuration = sib_api_v3_sdk.Configuration()
-        configuration.api_key["api-key"] = settings.SENDINBLUE_API_KEY
+        if payload.use_pro_subaccount:
+            configuration.api_key["api-key"] = settings.SENDINBLUE_PRO_API_KEY
+        else:
+            configuration.api_key["api-key"] = settings.SENDINBLUE_API_KEY
         api_instance = sib_api_v3_sdk.TransactionalEmailsApi(sib_api_v3_sdk.ApiClient(configuration))
         api_instance.send_transac_email(send_smtp_email)
 

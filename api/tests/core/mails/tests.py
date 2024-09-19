@@ -5,6 +5,7 @@ import pytest
 
 from pcapi.core.mails import models
 from pcapi.core.mails import send
+from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
@@ -46,7 +47,9 @@ class SendinblueBackendTest:
     @patch("pcapi.core.mails.backends.sendinblue.send_transactional_email_secondary_task.delay")
     def test_send_mail(self, mock_send_transactional_email_secondary_task):
         backend = self._get_backend_for_test()
-        backend().send_mail(recipients=self.recipients, bcc_recipients=self.bcc_recipients, data=self.data)
+        backend(use_pro_subaccount=False).send_mail(
+            recipients=self.recipients, bcc_recipients=self.bcc_recipients, data=self.data
+        )
 
         assert mock_send_transactional_email_secondary_task.call_count == 1
         task_param = mock_send_transactional_email_secondary_task.call_args[0][0]
@@ -63,6 +66,8 @@ class SendinblueBackendTest:
         self.mock_template = models.TemplatePro(
             id_prod=1,
             id_not_prod=10,
+            subaccount_id_prod=0,
+            subaccount_id_not_prod=0,
             tags=["this_is_such_a_great_tag", "it_would_be_a_pity_if_anything_happened_to_it"],
         )
         self.data = models.TransactionalEmailData(template=self.mock_template, params=self.params, reply_to=None)
@@ -77,7 +82,9 @@ class SendinblueBackendTest:
         )
 
         backend = self._get_backend_for_test()
-        backend().send_mail(recipients=self.recipients, bcc_recipients=self.bcc_recipients, data=self.data)
+        backend(use_pro_subaccount=False).send_mail(
+            recipients=self.recipients, bcc_recipients=self.bcc_recipients, data=self.data
+        )
 
         assert mock_send_transactional_email_secondary_task.call_count == 1
         task_param = mock_send_transactional_email_secondary_task.call_args[0][0]
@@ -108,7 +115,9 @@ class ToDevSendinblueBackendTest(SendinblueBackendTest):
     @patch("pcapi.core.mails.backends.sendinblue.send_transactional_email_secondary_task.delay")
     def test_send_mail_to_dev(self, mock_send_transactional_email_secondary_task):
         backend = self._get_backend_for_test()
-        backend().send_mail(recipients=self.recipients, bcc_recipients=["test@example.com"], data=self.data)
+        backend(use_pro_subaccount=False).send_mail(
+            recipients=self.recipients, bcc_recipients=["test@example.com"], data=self.data
+        )
 
         assert mock_send_transactional_email_secondary_task.call_count == 1
         task_param = mock_send_transactional_email_secondary_task.call_args[0][0]
@@ -125,7 +134,7 @@ class ToDevSendinblueBackendTest(SendinblueBackendTest):
         users_factories.UserFactory(email=self.recipients[0], roles=[users_models.UserRole.TEST])
 
         backend = self._get_backend_for_test()
-        backend().send_mail(recipients=self.recipients, data=self.data)
+        backend(use_pro_subaccount=False).send_mail(recipients=self.recipients, data=self.data)
 
         assert mock_send_transactional_email_secondary_task.call_count == 1
         task_param = mock_send_transactional_email_secondary_task.call_args[0][0]
@@ -139,7 +148,9 @@ class ToDevSendinblueBackendTest(SendinblueBackendTest):
     @patch("pcapi.core.mails.backends.sendinblue.send_transactional_email_secondary_task.delay")
     def test_send_mail_whitelisted(self, mock_send_transactional_email_secondary_task, recipient):
         backend = self._get_backend_for_test()
-        backend().send_mail(recipients=[recipient, "lucy.ellingson@example.com"], data=self.data)
+        backend(use_pro_subaccount=False).send_mail(
+            recipients=[recipient, "lucy.ellingson@example.com"], data=self.data
+        )
 
         assert mock_send_transactional_email_secondary_task.call_count == 1
         task_param = mock_send_transactional_email_secondary_task.call_args[0][0]
@@ -152,7 +163,7 @@ class ToDevSendinblueBackendTest(SendinblueBackendTest):
         users_factories.UserFactory(email=recipient)
 
         backend = self._get_backend_for_test()
-        backend().send_mail(recipients=[recipient], data=self.data)
+        backend(use_pro_subaccount=False).send_mail(recipients=[recipient], data=self.data)
 
         assert mock_send_transactional_email_secondary_task.call_count == 1
         task_param = mock_send_transactional_email_secondary_task.call_args[0][0]
@@ -166,7 +177,7 @@ class ToDevSendinblueBackendTest(SendinblueBackendTest):
         users_factories.UserFactory(email=recipient)
 
         backend = self._get_backend_for_test()
-        backend().send_mail(recipients=[recipient], data=self.data)
+        backend(use_pro_subaccount=False).send_mail(recipients=[recipient], data=self.data)
 
         assert mock_send_transactional_email_secondary_task.call_count == 1
         task_param = mock_send_transactional_email_secondary_task.call_args[0][0]
@@ -213,3 +224,82 @@ class SendTest:
 
         assert mock_send_transactional_email_secondary_task.call_count == 1
         assert caplog.records == []
+
+    @pytest.mark.parametrize(
+        "feature_flag,template_class,expected_use_pro_subaccount",
+        [
+            (True, models.TemplatePro, True),
+            (True, models.Template, False),
+            (False, models.TemplatePro, False),
+            (False, models.Template, False),
+        ],
+    )
+    @override_settings(EMAIL_BACKEND="pcapi.core.mails.backends.sendinblue.SendinblueBackend")
+    @patch("pcapi.core.mails.backends.sendinblue.send_transactional_email_secondary_task.delay")
+    def test_send_mail_to_pro_with_FF(
+        self,
+        mock_send_transactional_email_secondary_task,
+        caplog,
+        feature_flag,
+        template_class,
+        expected_use_pro_subaccount,
+    ):
+        with override_features(WIP_ENABLE_BREVO_PRO_SUBACCOUNT=feature_flag):
+            if template_class == models.TemplatePro:
+                mock_template = template_class(
+                    id_prod=1, id_not_prod=10, send_to_ehp=False, subaccount_id_prod=0, subaccount_id_not_prod=0
+                )
+            else:
+                mock_template = template_class(id_prod=1, id_not_prod=10, send_to_ehp=False)
+            data = models.TransactionalEmailData(template=mock_template)
+            recipients = ["lucy.ellingson@example.com", "avery.kelly@example.com"]
+
+            with caplog.at_level(logging.INFO):
+                send(recipients=recipients, data=data)
+
+            assert mock_send_transactional_email_secondary_task.call_count == 1
+            assert (
+                mock_send_transactional_email_secondary_task.call_args[0][0].use_pro_subaccount
+                is expected_use_pro_subaccount
+            )
+
+    @pytest.mark.parametrize(
+        "feature_flag,template_class,expected_use_pro_subaccount",
+        [
+            (True, models.TemplatePro, True),
+            (True, models.Template, False),
+            (False, models.TemplatePro, False),
+            (False, models.Template, False),
+        ],
+    )
+    @override_settings(IS_TESTING=True)
+    @override_settings(EMAIL_BACKEND="pcapi.core.mails.backends.sendinblue.SendinblueBackend")
+    @patch("pcapi.core.mails.backends.sendinblue.send_transactional_email_secondary_task.delay")
+    def test_send_mail_to_pro_with_FF_in_ehp(
+        self,
+        mock_send_transactional_email_secondary_task,
+        caplog,
+        feature_flag,
+        template_class,
+        expected_use_pro_subaccount,
+    ):
+        with override_features(WIP_ENABLE_BREVO_PRO_SUBACCOUNT=feature_flag):
+            if template_class == models.TemplatePro:
+                mock_template = template_class(
+                    id_prod=1, id_not_prod=10, send_to_ehp=False, subaccount_id_prod=0, subaccount_id_not_prod=0
+                )
+            else:
+                mock_template = template_class(id_prod=1, id_not_prod=10, send_to_ehp=False)
+            data = models.TransactionalEmailData(template=mock_template)
+            recipients = ["lucy.ellingson@example.com", "avery.kelly@example.com"]
+
+            with caplog.at_level(logging.INFO):
+                send(recipients=recipients, data=data)
+
+            assert mock_send_transactional_email_secondary_task.call_count == 0
+            assert caplog.messages[0] == (
+                f"An email would be sent via Sendinblue {'using the PRO subaccount ' if expected_use_pro_subaccount else ''}to=lucy.ellingson@example.com, "
+                "avery.kelly@example.com, bcc=(): {'template': {'id_prod': 1, 'id_not_prod': 10, 'tags': [], 'use_priority_queue': False, "
+                f"'send_to_ehp': False{''', 'subaccount_id_prod': 0, 'subaccount_id_not_prod': 0''' if template_class==models.TemplatePro else ''}"
+                "}, 'reply_to': None, 'params': {}}"
+            )

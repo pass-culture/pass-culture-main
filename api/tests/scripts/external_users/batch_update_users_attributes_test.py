@@ -5,6 +5,9 @@ import pytest
 
 from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.external.batch import BATCH_DATETIME_FORMAT
+from pcapi.core.offerers.factories import UserOffererFactory
+from pcapi.core.offerers.factories import VenueFactory
+from pcapi.core.testing import override_features
 from pcapi.core.users.factories import BeneficiaryGrant18Factory
 from pcapi.core.users.factories import FavoriteFactory
 from pcapi.core.users.factories import UserFactory
@@ -144,6 +147,7 @@ def test_format_sendinblue_user():
         "HAS_BOOKINGS": None,
         "HAS_COLLECTIVE_OFFERS": None,
         "HAS_COMPLETED_ID_CHECK": True,
+        "HAS_INDIVIDUAL_OFFERS": None,
         "HAS_OFFERS": None,
         "INITIAL_CREDIT": Decimal("300.00"),
         "IS_ACTIVE_PRO": None,
@@ -181,4 +185,49 @@ def test_format_sendinblue_user():
         "VENUE_LABEL": None,
         "VENUE_NAME": None,
         "VENUE_TYPE": None,
+    }
+
+
+@override_features(WIP_ENABLE_BREVO_PRO_SUBACCOUNT=True)
+@pytest.mark.usefixtures("db_session")
+def test_format_sendinblue_pro():
+    user_offerer = UserOffererFactory()
+    user = user_offerer.user
+    offerer = user_offerer.offerer
+    venue = VenueFactory(bookingEmail=user.email, managingOfferer=offerer)
+
+    res = format_sendinblue_users([user])
+
+    assert len(res) == 1
+    assert res[0].email == user.email
+    assert res[0].attributes == {
+        "FIRSTNAME": user.firstName,
+        "IS_ACTIVE_PRO": True,
+        "IS_PRO": True,
+        "LASTNAME": user.lastName,
+        "DEPARTMENT_CODE": "75",
+        "DMS_APPLICATION_SUBMITTED": False,
+        "DMS_APPLICATION_APPROVED": False,
+        "HAS_BANNER_URL": True,
+        "HAS_BOOKINGS": False,
+        "HAS_COLLECTIVE_OFFERS": False,
+        "HAS_INDIVIDUAL_OFFERS": False,
+        "HAS_OFFERS": False,
+        "IS_EAC": False,
+        "IS_EAC_MEG": False,
+        "IS_BOOKING_EMAIL": True,
+        "IS_PERMANENT": False,
+        "IS_USER_EMAIL": True,
+        "IS_VIRTUAL": False,
+        "MARKETING_EMAIL_SUBSCRIPTION": True,
+        "OFFERER_NAME": offerer.name,
+        "OFFERER_TAG": "",
+        "POSTAL_CODE": "75000",
+        "USER_ID": user.id,
+        "USER_IS_ATTACHED": False,
+        "USER_IS_CREATOR": True,
+        "VENUE_COUNT": 1,
+        "VENUE_LABEL": "",
+        "VENUE_NAME": venue.name,
+        "VENUE_TYPE": venue.venueTypeCode.name,
     }

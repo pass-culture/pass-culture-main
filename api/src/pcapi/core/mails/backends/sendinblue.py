@@ -7,6 +7,7 @@ from sib_api_v3_sdk.rest import ApiException as SendinblueApiException
 
 from pcapi import settings
 from pcapi.core.users.repository import find_user_by_email
+from pcapi.models.feature import FeatureToggle
 from pcapi.tasks.sendinblue_tasks import send_transactional_email_primary_task
 from pcapi.tasks.sendinblue_tasks import send_transactional_email_secondary_task
 import pcapi.tasks.serialization.sendinblue_tasks as serializers
@@ -21,10 +22,13 @@ logger = logging.getLogger(__name__)
 
 
 class SendinblueBackend(BaseBackend):
-    def __init__(self) -> None:
+    def __init__(self, use_pro_subaccount: bool) -> None:
         super().__init__()
         configuration = sib_api_v3_sdk.Configuration()
-        configuration.api_key["api-key"] = settings.SENDINBLUE_API_KEY
+        if FeatureToggle.WIP_ENABLE_BREVO_PRO_SUBACCOUNT.is_active() and use_pro_subaccount:
+            configuration.api_key["api-key"] = settings.SENDINBLUE_PRO_API_KEY
+        else:
+            configuration.api_key["api-key"] = settings.SENDINBLUE_API_KEY
         self.contacts_api = sib_api_v3_sdk.ContactsApi(sib_api_v3_sdk.ApiClient(configuration))
 
     def send_mail(
@@ -45,6 +49,7 @@ class SendinblueBackend(BaseBackend):
                 subject=None,
                 html_content=None,
                 attachment=None,
+                use_pro_subaccount=data.template.use_pro_subaccount,
             )
             if data.template.use_priority_queue:
                 send_transactional_email_primary_task.delay(payload)

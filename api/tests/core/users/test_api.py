@@ -438,7 +438,12 @@ class ChangeUserEmailTest:
         email_update.validate_email_update_request(token)
 
         assert sendinblue_testing.sendinblue_requests == [
-            {"email": self.old_email, "attributes": {"EMAIL": self.new_email}, "emailBlacklisted": False}
+            {
+                "email": self.old_email,
+                "attributes": {"EMAIL": self.new_email},
+                "emailBlacklisted": False,
+                "use_pro_subaccount": False,
+            }
         ]
 
 

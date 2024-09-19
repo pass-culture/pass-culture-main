@@ -37,7 +37,7 @@ def delete_external_suspended_users(min_id: int = 0, do_update: bool = False) ->
             if not user.isActive:
                 retries = 3
                 try:
-                    mails_api.delete_contact(user.email)
+                    mails_api.delete_contact(user.email, user.has_any_pro_role)
                 except ExternalAPIException:
                     retries -= 1
                     if retries == 0:

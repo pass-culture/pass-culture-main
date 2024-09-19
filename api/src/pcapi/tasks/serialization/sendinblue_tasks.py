@@ -5,6 +5,7 @@ from pcapi.routes.serialization import BaseModel
 
 class UpdateSendinblueContactRequest(BaseModel):
     email: str
+    use_pro_subaccount: bool
     attributes: dict
     contact_list_ids: list[int]
     emailBlacklisted: bool
@@ -21,3 +22,4 @@ class SendTransactionalEmailRequest(BaseModel):
     html_content: str | None = None
     attachment: dict | None = None
     reply_to: dict | None = None
+    use_pro_subaccount: bool | None = False  # or None to handle queued emails at deployment time

@@ -1623,7 +1623,7 @@ def _remove_external_user(user: models.User) -> bool:
             attributes = external_attributes_api.get_anonymized_attributes(user)
             update_contact_attributes(user.email, attributes, asynchronous=False)
         else:
-            mails_api.delete_contact(user.email)
+            mails_api.delete_contact(user.email, user.has_any_pro_role)
     except ExternalAPIException as exc:
         # If is_retryable it is a real error. If this flag is False then it means the email is unknown for brevo.
         if exc.is_retryable:
@@ -2105,7 +2105,7 @@ def _extract_gdpr_booking_data(user: models.User) -> list[users_serialization.Gd
 
 
 def _extract_gdpr_brevo_data(user: models.User) -> dict:
-    return get_raw_contact_data(user.email)
+    return get_raw_contact_data(user.email, user.has_any_pro_role)
 
 
 def _dump_gdpr_data_container_as_json_bytes(

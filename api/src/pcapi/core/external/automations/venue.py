@@ -76,4 +76,6 @@ def pro_inactive_venues_automation() -> bool:
 
     List: pros-inactivité-90j
     """
-    return add_contacts_to_list(get_inactive_venues_emails(), settings.SENDINBLUE_PRO_INACTIVE_90_DAYS_ID)
+    return add_contacts_to_list(
+        get_inactive_venues_emails(), settings.SENDINBLUE_PRO_INACTIVE_90_DAYS_ID, use_pro_subaccount=True
+    )

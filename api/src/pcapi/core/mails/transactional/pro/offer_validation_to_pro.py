@@ -67,21 +67,28 @@ def retrieve_data_for_validated_offer_rejection_email(
     )
 
 
-def send_offer_validation_status_update_email(
+def get_email_data_from_offer(
     offer: Offer | educational_models.CollectiveOffer | educational_models.CollectiveOfferTemplate,
     old_status: OfferValidationStatus,
     validation_status: OfferValidationStatus,
-    recipient_emails: list[str],
-) -> None:
+) -> models.TransactionalEmailData | None:
     if validation_status is OfferValidationStatus.APPROVED:
         offer_data = retrieve_data_for_offer_approval_email(offer)
-        mails.send(recipients=recipient_emails, data=offer_data)
+        return offer_data
 
-    elif validation_status is OfferValidationStatus.REJECTED:
+    if validation_status is OfferValidationStatus.REJECTED:
         if old_status is OfferValidationStatus.PENDING:
-            offer_data = retrieve_data_for_pending_offer_rejection_email(offer)
-        elif old_status is OfferValidationStatus.APPROVED:
-            offer_data = retrieve_data_for_validated_offer_rejection_email(offer)
-        else:
-            offer_data = retrieve_data_for_offer_rejection_email(offer)
+            return retrieve_data_for_pending_offer_rejection_email(offer)
+        if old_status is OfferValidationStatus.APPROVED:
+            return retrieve_data_for_validated_offer_rejection_email(offer)
+        return retrieve_data_for_offer_rejection_email(offer)
+
+    return None
+
+
+def send_offer_validation_status_update_email(
+    offer_data: models.TransactionalEmailData | None,
+    recipient_emails: list[str],
+) -> None:
+    if offer_data:
         mails.send(recipients=recipient_emails, data=offer_data)
