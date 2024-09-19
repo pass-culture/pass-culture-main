@@ -1,5 +1,5 @@
 import { StoryObj } from '@storybook/react'
-import { withRouter } from 'storybook-addon-react-router-v6'
+import { withRouter } from 'storybook-addon-remix-react-router'
 
 import strokeLibraryIcon from 'icons/stroke-library.svg'
 import strokeUserIcon from 'icons/stroke-user.svg'

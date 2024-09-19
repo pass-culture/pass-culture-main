@@ -1,5 +1,5 @@
 import type { StoryObj } from '@storybook/react'
-import { withRouter } from 'storybook-addon-react-router-v6'
+import { withRouter } from 'storybook-addon-remix-react-router'
 
 import fullEditIcon from 'icons/full-edit.svg'
 import fullLinkIcon from 'icons/full-link.svg'
