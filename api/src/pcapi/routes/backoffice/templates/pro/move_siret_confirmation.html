@@ -3,7 +3,7 @@
 {% macro build_venue_card(venue, yearly_revenue) %}
   <div class="card">
     <div class="card-body">
-      <h5 class="mb-3">{{ build_venue_badges(venue) }}</h5>
+      <h5 class="mb-3">{{ build_venue_badges(venue, is_feature_active("WIP_ENABLE_OFFER_ADDRESS") ) }}</h5>
       <h5 class="card-title">{{ venue.name | upper }}</h5>
       <h6 class="card-subtitle mt-4 mb-3 text-muted">Venue ID : {{ venue.id }}</h6>
       <h6 class="card-subtitle mb-4 text-muted">SIRET : {{ venue.siret | empty_string_if_null }}</h6>

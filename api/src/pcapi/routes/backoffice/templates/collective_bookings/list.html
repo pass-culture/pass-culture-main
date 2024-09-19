@@ -63,7 +63,13 @@
               <th scope="col">Date de réservation</th>
               <th scope="col">Date de l'évènement</th>
               <th scope="col">Structure</th>
-              <th scope="col">Lieu</th>
+              <th scope="col">
+                {% if is_feature_active("WIP_ENABLE_OFFER_ADDRESS") %}
+                  Partenaire culturel
+                {% else %}
+                  Lieu
+                {% endif %}
+              </th>
             </tr>
           </thead>
           <tbody>

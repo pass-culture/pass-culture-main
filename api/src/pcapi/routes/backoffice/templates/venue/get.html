@@ -21,7 +21,7 @@
             <h2 class="card-title text-primary">
               {{ links.build_venue_name_to_pc_pro_link(venue, is_feature_active("WIP_CONNECT_AS_EXTENDED") , has_permission("MANAGE_PRO_ENTITY"), public_name=false) }}
             </h2>
-            <span class="fs-5 ps-4">{{ build_venue_badges(venue) }}</span>
+            <span class="fs-5 ps-4">{{ build_venue_badges(venue, is_feature_active("WIP_ENABLE_OFFER_ADDRESS") ) }}</span>
             <div class="d-flex row-reverse justify-content-end flex-grow-1">
               {% if has_permission("MANAGE_PRO_ENTITY") and has_active_provider %}
                 {% set fully_sync_venue_modal_label_id = random_hash() %}

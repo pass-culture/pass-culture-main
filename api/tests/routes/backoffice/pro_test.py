@@ -108,7 +108,8 @@ class SearchProUserTest:
 
     # - fetch session
     # - fetch authenticated user
-    expected_num_queries_when_no_query = 2
+    # - fetch WIP_ENABLE_OFFER_ADDRESS FF
+    expected_num_queries_when_no_query = 3
     # - fetch results
     # - fetch count for pagination
     expected_num_queries = expected_num_queries_when_no_query + 2
@@ -147,7 +148,8 @@ class SearchProUserTest:
         self._create_accounts()
 
         search_query = self.pro_accounts[5].id
-        with assert_num_queries(self.expected_num_queries):
+        # HTML not rendered -> WIP_ENABLE_OFFER_ADDRESS not loaded
+        with assert_num_queries(self.expected_num_queries - 1):
             response = authenticated_client.get(url_for(self.endpoint, q=search_query, pro_type=TypeOptions.USER.name))
             assert response.status_code == 303
 
@@ -180,7 +182,8 @@ class SearchProUserTest:
         self._create_accounts()
 
         search_query = self.pro_accounts[2].email
-        with assert_num_queries(self.expected_num_queries):
+        # HTML not rendered -> WIP_ENABLE_OFFER_ADDRESS not loaded
+        with assert_num_queries(self.expected_num_queries - 1):
             response = authenticated_client.get(url_for(self.endpoint, q=search_query, pro_type=TypeOptions.USER.name))
             assert response.status_code == 303
 
@@ -208,7 +211,8 @@ class SearchProUserTest:
     def test_can_search_pro_by_first_and_last_name(self, authenticated_client):
         self._create_accounts()
 
-        with assert_num_queries(self.expected_num_queries):
+        # HTML not rendered -> WIP_ENABLE_OFFER_ADDRESS not loaded
+        with assert_num_queries(self.expected_num_queries - 1):
             response = authenticated_client.get(
                 url_for(self.endpoint, q="Alice Dubois", pro_type=TypeOptions.USER.name)
             )
@@ -253,7 +257,8 @@ class SearchProUserTest:
         offerers_factories.UserOffererFactory(user=pro_beneficiary)
 
         search_query = pro_beneficiary.id
-        with assert_num_queries(self.expected_num_queries):
+        # HTML not rendered -> WIP_ENABLE_OFFER_ADDRESS not loaded
+        with assert_num_queries(self.expected_num_queries - 1):
             response = authenticated_client.get(url_for(self.endpoint, q=search_query, pro_type=TypeOptions.USER.name))
             assert response.status_code == 303
 
@@ -453,7 +458,7 @@ class SearchOffererTest:
     @pytest.mark.parametrize(
         "query,departments,feature_flag_count",
         [
-            ("987654321", [], 0),
+            ("987654321", [], 1),  # WIP_ENABLE_OFFER_ADDRESS FF
             ("festival@example.com", [], 1),
             ("Festival de la Montagne", [], 1),
             ("Librairie", ["62"], 1),
@@ -560,7 +565,8 @@ class SearchVenueTest:
     def test_can_search_venue_by_booking_email_domain(self, authenticated_client):
         self._create_venues()
 
-        with assert_num_queries(self.expected_num_queries):
+        # +1 for WIP_ENABLE_OFFER_ADDRESS
+        with assert_num_queries(self.expected_num_queries + 1):
             response = authenticated_client.get(
                 url_for(self.endpoint, q="@librairie.fr", pro_type=TypeOptions.VENUE.name)
             )
@@ -695,8 +701,8 @@ class SearchVenueTest:
     @pytest.mark.parametrize(
         "query,departments,feature_flag_count",
         [
-            ("987654321", [], 0),
-            ("festival@example.com", [], 0),
+            ("987654321", [], 1),  # WIP_ENABLE_OFFER_ADDRESS FF
+            ("festival@example.com", [], 1),  # WIP_ENABLE_OFFER_ADDRESS FF
             ("Festival de la Montagne", [], 1),
             ("Plage", ["74", "77"], 1),
         ],
@@ -718,10 +724,12 @@ class SearchBankAccountTest:
 
     # session + current user (2 queries)
     # results + count in .paginate (2 queries)
-    expected_num_queries = 4
+    # WIP_ENABLE_OFFER_ADDRESS FF (1 query)
+    expected_num_queries = 5
 
     def _search_for_one(self, authenticated_client, search_query: typing.Any, expected_id: int):
-        with assert_num_queries(self.expected_num_queries):
+        # HTML not rendered -> WIP_ENABLE_OFFER_ADDRESS not loaded
+        with assert_num_queries(self.expected_num_queries - 1):
             response = authenticated_client.get(
                 url_for(self.endpoint, q=str(search_query), pro_type=TypeOptions.BANK_ACCOUNT.name)
             )

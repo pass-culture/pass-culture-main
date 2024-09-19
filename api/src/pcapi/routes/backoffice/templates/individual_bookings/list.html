@@ -62,14 +62,14 @@
                       class="btn btn-outline-primary"
                       data-modal-selector="#overpayment-creation-modal"
                       data-mode="fetch"
-                      data-fetch-url="{{ url_for('backoffice_web.finance_incidents.get_individual_bookings_overpayment_creation_form') }}"
+                      data-fetch-url="{{ url_for("backoffice_web.finance_incidents.get_individual_bookings_overpayment_creation_form") }}"
                       data-use-confirmation-modal="true">Créer un incident</button>
               <button disabled
                       type="button"
                       class="btn btn-outline-primary"
                       data-modal-selector="#commercial-gesture-creation-modal"
                       data-mode="fetch"
-                      data-fetch-url="{{ url_for('backoffice_web.finance_incidents.get_individual_bookings_commercial_gesture_creation_form') }}"
+                      data-fetch-url="{{ url_for("backoffice_web.finance_incidents.get_individual_bookings_commercial_gesture_creation_form") }}"
                       data-use-confirmation-modal="true">Créer un geste commercial</button>
             </div>
           {% endif %}
@@ -99,7 +99,13 @@
               <th scope="col">Date de réservation</th>
               <th scope="col">Date de l'évènement</th>
               <th scope="col">Structure</th>
-              <th scope="col">Lieu</th>
+              <th scope="col">
+                {% if is_feature_active("WIP_ENABLE_OFFER_ADDRESS") %}
+                  Partenaire culturel
+                {% else %}
+                  Lieu
+                {% endif %}
+              </th>
             </tr>
           </thead>
           <tbody>
