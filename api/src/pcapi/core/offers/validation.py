@@ -577,6 +577,11 @@ def check_offer_extra_data(
             errors.add_error(field, "Ce champ est obligatoire")
 
     try:
+        _check_offer_has_product(offer)
+    except exceptions.OfferWithProductShouldNotUpdateExtraData as e:
+        errors.add_client_error(e)
+
+    try:
         ean = extra_data.get(ExtraDataFieldEnum.EAN.value)
         if ean and (not offer or (offer.extraData and ean != offer.extraData.get(ExtraDataFieldEnum.EAN.value))):
             _check_ean_field(extra_data, ExtraDataFieldEnum.EAN.value)
@@ -620,6 +625,11 @@ def check_ean_does_not_exist(ean: str | None, venue: offerers_models.Venue) -> N
     if repository.has_active_offer_with_ean(ean, venue):
         if ean:
             raise exceptions.OfferAlreadyExists("ean")
+
+
+def _check_offer_has_product(offer: models.Offer | None) -> None:
+    if FeatureToggle.WIP_EAN_CREATION.is_active() and offer and offer.product is not None:
+        raise exceptions.OfferWithProductShouldNotUpdateExtraData()
 
 
 def check_product_cgu_and_offerer(

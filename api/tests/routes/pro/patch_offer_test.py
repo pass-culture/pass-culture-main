@@ -15,6 +15,7 @@ from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.offers.models import WithdrawalTypeEnum
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.providers.repository import get_provider_by_local_class
+from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 from pcapi.utils.date import format_into_utc_date
 
@@ -54,6 +55,58 @@ class Returns200Test:
         assert updated_offer.mentalDisabilityCompliant
         assert updated_offer.subcategoryId == subcategories.ABO_PLATEFORME_VIDEO.id
         assert not updated_offer.product
+
+    def test_patch_offer_with_extra_data_should_not_remove_extra_data(self, client):
+        user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+        offer = offers_factories.OfferFactory(
+            subcategoryId=subcategories.LIVRE_PAPIER.id,
+            venue=venue,
+            extraData={"gtl_id": "01010101", "author": "Kewis Larol"},
+        )
+
+        data = {
+            "name": "New name",
+            "mentalDisabilityCompliant": True,
+        }
+        response = client.with_session_auth("user@example.com").patch(f"/offers/{offer.id}", json=data)
+
+        assert response.status_code == 200
+        assert response.json["id"] == offer.id
+        assert response.json["venue"]["id"] == offer.venue.id
+
+        updated_offer = Offer.query.get(offer.id)
+        assert updated_offer.extraData["gtl_id"] == "01010101"
+        assert updated_offer.extraData["author"] == "Kewis Larol"
+        assert updated_offer.mentalDisabilityCompliant
+        assert updated_offer.subcategoryId == subcategories.LIVRE_PAPIER.id
+        assert not updated_offer.product
+
+    @override_features(WIP_EAN_CREATION=True)
+    def test_patch_offer_with_product_with_same_ean(self, client):
+        user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
+        venue = offerers_factories.VirtualVenueFactory(managingOfferer=user_offerer.offerer)
+        product = offers_factories.ProductFactory(
+            subcategoryId=subcategories.LIVRE_PAPIER.id, extraData={"ean": "1111111111111"}
+        )
+        offer = offers_factories.OfferFactory(
+            subcategoryId=subcategories.LIVRE_PAPIER.id,
+            venue=venue,
+            name="New name",
+            url="test@test.com",
+            description="description",
+            extraData={"ean": "1111111111111"},
+            product=product,
+        )
+
+        data = {"extraData": {"ean": "1111111111111"}}
+        response = client.with_session_auth("user@example.com").patch(f"/offers/{offer.id}", json=data)
+
+        assert response.status_code == 200
+        assert response.json["id"] == offer.id
+
+        updated_offer = Offer.query.get(offer.id)
+        assert updated_offer.extraData == {"ean": "1111111111111"}
 
     def test_patch_offer_with_provider_extra_data(self, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
@@ -578,6 +631,29 @@ class Returns400Test:
         assert response.json["offer"] == [
             "Une offre qui a un ticket retirable doit avoir l'email du contact de réservation"
         ]
+
+    @override_features(WIP_EAN_CREATION=True)
+    def should_fail_when_trying_to_update_offer_with_product_with_new_ean(self, client):
+        user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+        product = offers_factories.ProductFactory(
+            subcategoryId=subcategories.LIVRE_PAPIER.id, extraData={"ean": "1111111111111"}
+        )
+        offer = offers_factories.OfferFactory(
+            subcategoryId=subcategories.LIVRE_PAPIER.id,
+            venue=venue,
+            name="New name",
+            url="test@test.com",
+            description="description",
+            extraData={"ean": "1111111111111"},
+            product=product,
+        )
+
+        data = {"extraData": {"ean": "2222222222222"}}
+        response = client.with_session_auth("user@example.com").patch(f"/offers/{offer.id}", json=data)
+
+        assert response.status_code == 400
+        assert response.json["global"] == ["Les extraData des offres avec produit ne sont pas modifialbles"]
 
 
 class Returns403Test:
