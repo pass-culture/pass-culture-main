@@ -269,10 +269,10 @@ export const HeaderDropdown = () => {
             <DropdownMenu.Item className={styles['menu-item']} asChild>
               <ButtonLink
                 icon={fullLogoutIcon}
-                to={`${location.pathname}?logout`}
+                to={`${pathname}?logout`}
                 onClick={() =>
                   logEvent(Events.CLICKED_LOGOUT, {
-                    from: location.pathname,
+                    from: pathname,
                   })
                 }
               >
