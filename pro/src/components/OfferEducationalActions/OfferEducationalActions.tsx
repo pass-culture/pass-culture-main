@@ -10,6 +10,7 @@ import {
   GetCollectiveOfferTemplateResponseModel,
 } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
+import { CollectiveStatusLabel } from 'components/CollectiveStatusLabel/CollectiveStatusLabel'
 import {
   GET_COLLECTIVE_OFFER_QUERY_KEY,
   GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY,
@@ -28,7 +29,6 @@ import { useNotification } from 'hooks/useNotification'
 import fullHideIcon from 'icons/full-hide.svg'
 import fullNextIcon from 'icons/full-next.svg'
 import strokeCheckIcon from 'icons/stroke-check.svg'
-import { getCollectiveStatusLabel } from 'pages/Offers/OffersTable/Cells/CollectiveOfferStatusCell/CollectiveOfferStatusCell'
 import { selectCurrentOffererId } from 'store/user/selectors'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
@@ -205,7 +205,10 @@ export const OfferEducationalActions = ({
               <div className={style.separator} />{' '}
             </>
           )}
-          {getCollectiveStatusLabel(offer.status, offer.displayedStatus)}
+          <CollectiveStatusLabel
+            offerStatus={offer.status}
+            offerDisplayedStatus={offer.displayedStatus}
+          />
         </div>
       )}
     </>
