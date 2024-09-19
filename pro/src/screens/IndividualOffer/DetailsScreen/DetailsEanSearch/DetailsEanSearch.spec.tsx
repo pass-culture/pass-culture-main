@@ -31,15 +31,14 @@ const contextValue: IndividualOfferContextValues = {
 }
 
 type RequiredProps = 'isOfferProductBased'
-type DetailsEanSearchTestProps = Pick<DetailsEanSearchProps, RequiredProps>
+type DetailsEanSearchTestProps = Pick<DetailsEanSearchProps, RequiredProps> & {
+  subcategoryId?: string
+}
 
 const EanSearchWrappedWithFormik = ({
-  props: { isOfferProductBased },
+  isOfferProductBased,
   subcategoryId = DEFAULT_DETAILS_FORM_VALUES.subcategoryId,
-}: {
-  props: DetailsEanSearchTestProps
-  subcategoryId?: string
-}): JSX.Element => {
+}: DetailsEanSearchTestProps): JSX.Element => {
   const formik = useFormik({
     initialValues: {
       ...DEFAULT_DETAILS_FORM_VALUES,
@@ -60,16 +59,10 @@ const EanSearchWrappedWithFormik = ({
   )
 }
 
-const renderDetailsEanSearch = ({
-  props,
-  subcategoryId = DEFAULT_DETAILS_FORM_VALUES.subcategoryId,
-}: {
-  props: DetailsEanSearchTestProps
-  subcategoryId?: string
-}) => {
+const renderDetailsEanSearch = (props: DetailsEanSearchTestProps) => {
   return renderWithProviders(
     <IndividualOfferContext.Provider value={contextValue}>
-      <EanSearchWrappedWithFormik props={props} subcategoryId={subcategoryId} />
+      <EanSearchWrappedWithFormik {...props} />
     </IndividualOfferContext.Provider>,
     {
       storeOverrides: {
@@ -99,7 +92,7 @@ describe('DetailsEanSearch', () => {
     describe('when no EAN search has been performed', () => {
       it('should display a permanent error message if the subcategory requires an EAN', async () => {
         renderDetailsEanSearch({
-          props: { isOfferProductBased: false },
+          isOfferProductBased: false,
           subcategoryId: 'SUPPORT_PHYSIQUE_MUSIQUE_VINYLE',
         })
 
@@ -115,7 +108,7 @@ describe('DetailsEanSearch', () => {
       })
 
       it('should let the submit button enabled', async () => {
-        renderDetailsEanSearch({ props: { isOfferProductBased: false } })
+        renderDetailsEanSearch({ isOfferProductBased: false })
 
         const eanInput = screen.getByRole('textbox', { name: inputLabel })
         await userEvent.type(eanInput, '9781234567897')
@@ -138,7 +131,7 @@ describe('DetailsEanSearch', () => {
           images: {},
         })
 
-        renderDetailsEanSearch({ props: { isOfferProductBased: false } })
+        renderDetailsEanSearch({ isOfferProductBased: false })
       })
 
       it('should display a success message', async () => {
@@ -185,7 +178,7 @@ describe('DetailsEanSearch', () => {
     describe('when an EAN search ends with an API error (only)', () => {
       beforeEach(() => {
         vi.spyOn(api, 'getProductByEan').mockRejectedValue(new Error('error'))
-        renderDetailsEanSearch({ props: { isOfferProductBased: false } })
+        renderDetailsEanSearch({ isOfferProductBased: false })
       })
 
       it('should display an error message', async () => {
@@ -217,7 +210,7 @@ describe('DetailsEanSearch', () => {
   describe('after POST request (the form has been submitted)', () => {
     describe('when an EAS search was performed succesfully', () => {
       beforeEach(() => {
-        renderDetailsEanSearch({ props: { isOfferProductBased: true } })
+        renderDetailsEanSearch({ isOfferProductBased: true })
       })
 
       it('should not display the clear button anymore', () => {
