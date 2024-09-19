@@ -26,8 +26,15 @@ const renderOffererStatsScreen = (
   offererOptions: SelectOption[],
   options?: RenderWithProvidersOptions
 ) => {
+  const user = sharedCurrentUserFactory()
   renderWithProviders(<OffererStatsScreen offererOptions={offererOptions} />, {
-    user: sharedCurrentUserFactory(),
+    user,
+    storeOverrides: {
+      user: {
+        selectedOffererId: 1,
+        currentUser: user,
+      },
+    },
     ...options,
   })
 }
@@ -109,8 +116,16 @@ describe('OffererStatsScreen', () => {
     expect(venueOption).toBeInTheDocument()
   })
 
-  it('should update venues  when selecting offerer and display offerer iframe', async () => {
-    renderOffererStatsScreen(offererOptions)
+  it('should update venues  when selecting offerer and display offerer iframe for old interface', async () => {
+    renderOffererStatsScreen(offererOptions, {
+      storeOverrides: {
+        user: {
+          selectedOffererId: 1,
+          currentUser: sharedCurrentUserFactory({ navState: null }),
+        },
+      },
+      user: sharedCurrentUserFactory({ navState: null }),
+    })
     await waitFor(() => {
       expect(api.getOfferer).toHaveBeenCalledTimes(1)
     })
