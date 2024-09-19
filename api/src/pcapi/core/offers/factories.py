@@ -21,11 +21,23 @@ from pcapi.models.offer_mixin import OfferValidationType
 from . import models
 
 
+EVENT_PRODUCT_SUBCATEGORIES_IDS = [subcategories.SEANCE_CINE.id]
+THINGS_PRODUCT_SUBCATEGORIES_IDS = [
+    subcategories.LIVRE_PAPIER.id,
+    subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
+    subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id,
+]
+ALL_PRODUCT_SUBCATEGORIES_IDS = EVENT_PRODUCT_SUBCATEGORIES_IDS + THINGS_PRODUCT_SUBCATEGORIES_IDS
+
+
 class ProductFactory(BaseFactory):
+    AVAILABLE_SUBCATEGORIES = ALL_PRODUCT_SUBCATEGORIES_IDS
+
     class Meta:
         model = models.Product
+        exclude = ("AVAILABLE_SUBCATEGORIES",)
 
-    subcategoryId = subcategories.SUPPORT_PHYSIQUE_FILM.id
+    subcategoryId = subcategories.LIVRE_PAPIER.id
     name = factory.Sequence("Product {}".format)
     description = factory.Sequence("A passionate description of product {}".format)
 
@@ -37,6 +49,9 @@ class ProductFactory(BaseFactory):
         **kwargs: typing.Any,
     ) -> models.Product:
         # Graciously provide the required idAtProviders if lastProvider is given.
+        if kwargs["subcategoryId"] not in cls.AVAILABLE_SUBCATEGORIES:
+            raise ValueError(f"Events products subcategory can only be one of {cls.AVAILABLE_SUBCATEGORIES}.")
+
         if kwargs.get("lastProvider") and not kwargs.get("idAtProviders"):
             kwargs["idAtProviders"] = uuid.uuid4()
 
@@ -62,11 +77,13 @@ class ProductMediationFactory(BaseFactory):
 
 
 class EventProductFactory(ProductFactory):
+    AVAILABLE_SUBCATEGORIES = EVENT_PRODUCT_SUBCATEGORIES_IDS
     subcategoryId = subcategories.SEANCE_CINE.id
 
 
 class ThingProductFactory(ProductFactory):
-    subcategoryId = subcategories.SUPPORT_PHYSIQUE_FILM.id
+    AVAILABLE_SUBCATEGORIES = THINGS_PRODUCT_SUBCATEGORIES_IDS
+    subcategoryId = subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id
 
 
 def build_extra_data_from_subcategory(

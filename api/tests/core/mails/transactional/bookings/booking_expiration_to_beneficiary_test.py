@@ -66,7 +66,7 @@ class SendExpiredBookingsEmailToBeneficiarySendinblueTest:
         now = datetime.utcnow()
         amnesiac_user = users_factories.BeneficiaryGrant18Factory(email="dory@example.com", firstName="Dory")
         long_ago = now - timedelta(days=31)
-        dvd = ProductFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id)
+        dvd = ProductFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id)
         expired_today_dvd_booking = CancelledBookingFactory(
             stock__offer__product=dvd,
             stock__offer__name="Memento",

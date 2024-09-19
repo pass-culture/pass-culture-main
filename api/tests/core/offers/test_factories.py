@@ -115,8 +115,10 @@ class ProductFactoryTest:
         assert re.match(r"\d{13}", book_product.extraData.get("ean"))
         assert book_product.extraData.get("gtl_id") in GTLS
 
-    def test_generate_concert_extra_data(self):
-        concert_product = ProductFactory(subcategoryId=subcategories.CONCERT.id, set_all_fields=True)
+    def test_generate_CDs_extra_data(self):
+        concert_product = ProductFactory(
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id, set_all_fields=True
+        )
 
         assert concert_product.extraData is not None
         assert isinstance(concert_product.extraData.get("author"), str)
@@ -131,19 +133,20 @@ class ProductFactoryTest:
 
         assert music_sub_type_code == -1 or music_sub_type in music_type.children
 
-    def test_generate_spectacle_representation_extra_data(self):
-        concert_product = ProductFactory(subcategoryId=subcategories.SPECTACLE_REPRESENTATION.id, set_all_fields=True)
+    def test_generate_vinyles_extra_data(self):
+        concert_product = ProductFactory(
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id, set_all_fields=True
+        )
 
         assert concert_product.extraData is not None
         assert isinstance(concert_product.extraData.get("author"), str)
-        assert isinstance(concert_product.extraData.get("stageDirector"), str)
         assert isinstance(concert_product.extraData.get("performer"), str)
 
-        show_type_code = int(concert_product.extraData.get("showType"))
-        show_type = show_types.SHOW_TYPES_BY_CODE.get(show_type_code)
-        assert show_type_code in show_types.SHOW_TYPES_BY_CODE
+        music_type_code = int(concert_product.extraData.get("musicType"))
+        music_type = music_types.MUSIC_TYPES_BY_CODE.get(music_type_code)
+        assert music_type_code in music_types.MUSIC_TYPES_BY_CODE
 
-        show_sub_type_code = int(concert_product.extraData.get("showSubType"))
-        show_sub_type = show_types.SHOW_SUB_TYPES_BY_CODE.get(show_sub_type_code)
+        music_sub_type_code = int(concert_product.extraData.get("musicSubType"))
+        music_sub_type = music_types.MUSIC_SUB_TYPES_BY_CODE.get(music_sub_type_code)
 
-        assert show_sub_type_code == -1 or show_sub_type in show_type.children
+        assert music_sub_type_code == -1 or music_sub_type in music_type.children

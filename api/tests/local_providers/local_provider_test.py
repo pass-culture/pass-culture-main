@@ -75,7 +75,7 @@ class UpdateObjectsTest:
             lastProvider=provider,
             idAtProviders=providable_info.id_at_providers,
             name="Old product name",
-            subcategoryId=subcategories.ACHAT_INSTRUMENT.id,
+            subcategoryId=subcategories.LIVRE_PAPIER.id,
         )
         local_provider = provider_test_utils.TestLocalProvider()
         next_function.side_effect = [[providable_info]]
@@ -98,7 +98,7 @@ class UpdateObjectsTest:
             lastProvider=provider,
             idAtProviders=providable_info.id_at_providers,
             name="Old product name",
-            subcategoryId=subcategories.ACHAT_INSTRUMENT.id,
+            subcategoryId=subcategories.LIVRE_PAPIER.id,
         )
         local_provider = provider_test_utils.TestLocalProvider()
         next_function.side_effect = [[providable_info]]
@@ -217,7 +217,7 @@ class HandleUpdateTest:
         providable_info = ProvidableInfo()
         product = offers_factories.ThingProductFactory(
             name="Old product name",
-            subcategoryId=subcategories.ACHAT_INSTRUMENT.id,
+            subcategoryId=subcategories.LIVRE_PAPIER.id,
             idAtProviders=providable_info.id_at_providers,
             lastProvider=provider,
         )
