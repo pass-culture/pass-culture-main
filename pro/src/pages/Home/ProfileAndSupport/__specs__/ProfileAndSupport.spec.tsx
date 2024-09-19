@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import React from 'react'
-import { Routes, Route } from 'react-router-dom'
+import { Route, Routes } from 'react-router-dom'
 
 import * as useAnalytics from 'app/App/analytics/firebase'
 import { Events } from 'core/FirebaseEvents/constants'
@@ -18,7 +18,10 @@ const renderProfileAndSupport = () => {
       <Route path="/profil" element={<h1>Page profil</h1>} />
       <Route path="/accueil" element={<ProfileAndSupport />} />
     </Routes>,
-    { user: sharedCurrentUserFactory(), initialRouterEntries: ['/accueil'] }
+    {
+      user: sharedCurrentUserFactory({ navState: null }),
+      initialRouterEntries: ['/accueil'],
+    }
   )
 }
 
