@@ -15,9 +15,14 @@ import {
 import { CollectiveSearchFiltersParams } from 'core/Offers/types'
 import { hasCollectiveSearchFilters } from 'core/Offers/utils/hasSearchFilters'
 import { SelectOption } from 'custom_types/form'
+import { useColumnSorting } from 'hooks/useColumnSorting'
+import { usePagination } from 'hooks/usePagination'
 import { CollectiveOffersActionsBar } from 'pages/Offers/OffersTable/CollectiveOffersTable/CollectiveOffersActionsBar/CollectiveOffersActionsBar'
 import { CollectiveOffersTable } from 'pages/Offers/OffersTable/CollectiveOffersTable/CollectiveOffersTable'
 import { isSameOffer } from 'pages/Offers/utils/isSameOffer'
+import { CollectiveOffersSortingColumn } from 'screens/CollectiveOffersScreen/CollectiveOffersScreen'
+import { Pagination } from 'ui-kit/Pagination/Pagination'
+import { sortCollectiveOffers } from 'utils/sortCollectiveOffers'
 
 import styles from './TemplateCollectiveOffersScreen.module.scss'
 import { TemplateOffersSearchFilters } from './TemplateOffersSearchFilters/TemplateOffersSearchFilters'
@@ -97,9 +102,25 @@ export const TemplateCollectiveOffersScreen = ({
   const numberOfPages = Math.ceil(offers.length / NUMBER_OF_OFFERS_PER_PAGE)
   const pageCount = Math.min(numberOfPages, MAX_TOTAL_PAGES)
 
+  const { currentSortingColumn, currentSortingMode, onColumnHeaderClick } =
+    useColumnSorting<CollectiveOffersSortingColumn>()
+
+  const sortedOffers = sortCollectiveOffers(
+    offers,
+    currentSortingColumn,
+    currentSortingMode
+  )
+
+  const { page, currentPageItems, setPage } = usePagination(
+    sortedOffers,
+    NUMBER_OF_OFFERS_PER_PAGE,
+    urlSearchFilters.page
+  )
+
   const applyUrlFiltersAndRedirect = (
     filters: CollectiveSearchFiltersParams
   ) => {
+    setPage(filters.page ?? 1)
     redirectWithUrlFilters(filters)
   }
 
@@ -163,11 +184,9 @@ export const TemplateCollectiveOffersScreen = ({
       ) : (
         <>
           <CollectiveOffersTable
-            applyUrlFiltersAndRedirect={applyUrlFiltersAndRedirect}
             areAllOffersSelected={areAllOffersSelected}
             hasOffers={hasOffers}
             isLoading={isLoading}
-            pageCount={pageCount}
             resetFilters={resetFilters}
             selectedOffers={selectedOffers}
             setSelectedOffer={onSetSelectedOffer}
@@ -175,8 +194,32 @@ export const TemplateCollectiveOffersScreen = ({
             urlSearchFilters={urlSearchFilters}
             isAtLeastOneOfferChecked={selectedOffers.length > 1}
             isRestrictedAsAdmin={isRestrictedAsAdmin}
-            offers={offers}
+            offers={sortedOffers}
+            onColumnHeaderClick={onColumnHeaderClick}
+            currentSortingColumn={currentSortingColumn}
+            currentSortingMode={currentSortingMode}
+            currentPageItems={currentPageItems}
           />
+          {hasOffers && (
+            <div className={styles['offers-pagination']}>
+              <Pagination
+                currentPage={page}
+                pageCount={pageCount}
+                onPreviousPageClick={() => {
+                  applyUrlFiltersAndRedirect({
+                    ...urlSearchFilters,
+                    page: page - 1,
+                  })
+                }}
+                onNextPageClick={() => {
+                  applyUrlFiltersAndRedirect({
+                    ...urlSearchFilters,
+                    page: page + 1,
+                  })
+                }}
+              />
+            </div>
+          )}
           <div role="status">
             {selectedOffers.length > 0 && (
               <CollectiveOffersActionsBar

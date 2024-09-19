@@ -2,17 +2,13 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/variables/_size.scss" as size;
 
-.offers-pagination {
-  margin-top: rem.torem(32px);
-}
-
 .select-all-container {
   display: flex;
   align-items: center;
   position: relative;
   margin-bottom: rem.torem(20px);
 
-  label {
+  &-label {
     @include fonts.caption;
   }
 }
