@@ -3,8 +3,7 @@ import classNames from 'classnames'
 import { SortArrow } from 'components/StocksEventList/SortArrow'
 import { useActiveFeature } from 'hooks/useActiveFeature'
 import { SortingMode } from 'hooks/useColumnSorting'
-
-import { CollectiveOffersSortingColumn } from '../CollectiveOffersTable'
+import { CollectiveOffersSortingColumn } from 'screens/CollectiveOffersScreen/CollectiveOffersScreen'
 
 import styles from './CollectiveOffersTableHead.module.scss'
 

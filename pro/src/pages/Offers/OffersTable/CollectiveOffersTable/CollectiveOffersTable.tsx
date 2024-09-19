@@ -9,12 +9,11 @@ import {
 import { CollectiveSearchFiltersParams } from 'core/Offers/types'
 import { hasCollectiveSearchFilters } from 'core/Offers/utils/hasSearchFilters'
 import { useActiveFeature } from 'hooks/useActiveFeature'
-import { SortingMode, useColumnSorting } from 'hooks/useColumnSorting'
-import { usePagination } from 'hooks/usePagination'
+import { SortingMode } from 'hooks/useColumnSorting'
 import { getOffersCountToDisplay } from 'pages/Offers/domain/getOffersCountToDisplay'
+import { CollectiveOffersSortingColumn } from 'screens/CollectiveOffersScreen/CollectiveOffersScreen'
 import { NoResults } from 'screens/IndividualOffersScreen/NoResults/NoResults'
 import { BaseCheckbox } from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
-import { Pagination } from 'ui-kit/Pagination/Pagination'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 import styles from './CollectiveOffersTable.module.scss'
@@ -22,14 +21,9 @@ import { CollectiveOffersTableBody } from './CollectiveOffersTableBody/Collectiv
 import { CollectiveOffersTableHead } from './CollectiveOffersTableHead/CollectiveOffersTableHead'
 
 type CollectiveOffersTableProps = {
-  applyUrlFiltersAndRedirect: (
-    filters: CollectiveSearchFiltersParams,
-    isRefreshing: boolean
-  ) => void
   areAllOffersSelected: boolean
   hasOffers: boolean
   isLoading: boolean
-  pageCount: number
   resetFilters: () => void
   setSelectedOffer: (offer: CollectiveOfferResponseModel) => void
   toggleSelectAllCheckboxes: () => void
@@ -38,75 +32,31 @@ type CollectiveOffersTableProps = {
   isRestrictedAsAdmin?: boolean
   selectedOffers: CollectiveOfferResponseModel[]
   offers: CollectiveOfferResponseModel[]
+  onColumnHeaderClick: (
+    headersName: CollectiveOffersSortingColumn
+  ) => SortingMode
+  currentSortingColumn: CollectiveOffersSortingColumn | null
+  currentSortingMode: SortingMode
+  currentPageItems: CollectiveOfferResponseModel[]
 }
-
-export enum CollectiveOffersSortingColumn {
-  EVENT_DATE = 'EVENT_DATE',
-}
-
-const sortByEventDate = (
-  offerA: CollectiveOfferResponseModel,
-  offerB: CollectiveOfferResponseModel
-) => {
-  const bookingDateOne = offerA.dates
-    ? new Date(offerA.dates.start)
-    : new Date()
-  const bookingDateTwo = offerB.dates
-    ? new Date(offerB.dates.start)
-    : new Date()
-  if (bookingDateOne > bookingDateTwo) {
-    return 1
-  } else if (bookingDateOne < bookingDateTwo) {
-    return -1
-  }
-  return 0
-}
-
-const sortOffers = (
-  offers: CollectiveOfferResponseModel[] | undefined,
-  currentSortingColumn: CollectiveOffersSortingColumn | null,
-  sortingMode: SortingMode
-) => {
-  if (!offers) {
-    return []
-  }
-
-  if (sortingMode === SortingMode.NONE) {
-    return offers
-  }
-
-  const sortedOffers = offers.slice()
-
-  switch (currentSortingColumn) {
-    case CollectiveOffersSortingColumn.EVENT_DATE:
-      return sortedOffers.sort(
-        (a, b) =>
-          sortByEventDate(a, b) * (sortingMode === SortingMode.ASC ? 1 : -1)
-      )
-    default:
-      return sortedOffers
-  }
-}
-
-const OFFERS_PER_PAGE = 10
 
 export const CollectiveOffersTable = ({
   areAllOffersSelected,
   hasOffers,
   isLoading,
-  pageCount,
   resetFilters,
   selectedOffers,
-  applyUrlFiltersAndRedirect,
   setSelectedOffer,
   toggleSelectAllCheckboxes,
   urlSearchFilters,
   isAtLeastOneOfferChecked,
   isRestrictedAsAdmin = false,
   offers,
+  onColumnHeaderClick,
+  currentSortingColumn,
+  currentSortingMode,
+  currentPageItems,
 }: CollectiveOffersTableProps) => {
-  const { currentSortingColumn, currentSortingMode, onColumnHeaderClick } =
-    useColumnSorting<CollectiveOffersSortingColumn>()
   const isNewOffersAndBookingsActive = useActiveFeature(
     'WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE'
   )
@@ -114,18 +64,6 @@ export const CollectiveOffersTable = ({
   const defaultCollectiveFilters = isNewOffersAndBookingsActive
     ? DEFAULT_COLLECTIVE_BOOKABLE_SEARCH_FILTERS
     : DEFAULT_COLLECTIVE_SEARCH_FILTERS
-
-  const sortedOffers = sortOffers(
-    offers,
-    currentSortingColumn,
-    currentSortingMode
-  )
-
-  const { page, previousPage, nextPage, currentPageItems } = usePagination(
-    sortedOffers,
-    OFFERS_PER_PAGE,
-    urlSearchFilters.page
-  )
 
   return (
     <div>
@@ -162,9 +100,15 @@ export const CollectiveOffersTable = ({
                   disabled={isRestrictedAsAdmin}
                   onChange={toggleSelectAllCheckboxes}
                   label={
-                    areAllOffersSelected
-                      ? 'Tout désélectionner'
-                      : 'Tout sélectionner'
+                    areAllOffersSelected ? (
+                      <span className={styles['select-all-container-label']}>
+                        Tout désélectionner
+                      </span>
+                    ) : (
+                      <span className={styles['select-all-container-label']}>
+                        Tout sélectionner
+                      </span>
+                    )
                   }
                 />
               </div>
@@ -183,28 +127,6 @@ export const CollectiveOffersTable = ({
                 />
               </table>
             </>
-          )}
-          {hasOffers && (
-            <div className={styles['offers-pagination']}>
-              <Pagination
-                currentPage={page}
-                pageCount={pageCount}
-                onPreviousPageClick={() => {
-                  previousPage()
-                  applyUrlFiltersAndRedirect(
-                    { ...urlSearchFilters, page: page - 1 },
-                    false
-                  )
-                }}
-                onNextPageClick={() => {
-                  nextPage()
-                  applyUrlFiltersAndRedirect(
-                    { ...urlSearchFilters, page: page + 1 },
-                    false
-                  )
-                }}
-              />
-            </div>
           )}
           {!hasOffers &&
             hasCollectiveSearchFilters(
