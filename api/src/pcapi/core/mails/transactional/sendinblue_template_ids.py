@@ -136,10 +136,10 @@ class TransactionalEmail(Enum):
     EVENT_OFFER_POSTPONED_CONFIRMATION_TO_PRO = models.TemplatePro(
         id_prod=519, id_not_prod=63, tags=["pro_offre_evenement_reportee"]
     )
-    PRO_EMAIL_CHANGE_CONFIRMATION = models.Template(
+    PRO_EMAIL_CHANGE_CONFIRMATION = models.TemplatePro(
         id_prod=602, id_not_prod=100, tags=["pro_changement_email_confirmation"], use_priority_queue=True
     )
-    PRO_EMAIL_CHANGE_REQUEST = models.Template(
+    PRO_EMAIL_CHANGE_REQUEST = models.TemplatePro(
         id_prod=601, id_not_prod=98, tags=["pro_changement_email_demande"], use_priority_queue=True
     )
     FIRST_VENUE_APPROVED_OFFER_TO_PRO = models.TemplatePro(id_prod=569, id_not_prod=75, tags=["pro_premiere_offre"])
@@ -170,7 +170,7 @@ class TransactionalEmail(Enum):
     OFFERER_ATTACHMENT_REJECTION = models.TemplatePro(
         id_prod=792, id_not_prod=107, tags=["pro_rattachement_structure_rejet"]
     )
-    REMINDER_OFFERER_INDIVIDUAL_SUBSCRIPTION = models.Template(id_prod=1295, id_not_prod=164)
+    REMINDER_OFFERER_INDIVIDUAL_SUBSCRIPTION = models.TemplatePro(id_prod=1295, id_not_prod=164)
     REMINDER_7_DAYS_BEFORE_EVENT_TO_PRO = models.TemplatePro(id_prod=587, id_not_prod=73, tags=["pro_rappel_event_J-7"])
     REMINDER_OFFER_CREATION_5_DAYS_AFTER_TO_PRO = models.TemplatePro(
         id_prod=566, id_not_prod=104, tags=["pro_relance_offre_J+5"]
