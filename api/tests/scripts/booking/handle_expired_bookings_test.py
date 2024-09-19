@@ -126,9 +126,9 @@ class CancelExpiredBookingsTest:
         now = datetime.utcnow()
         two_months_ago = now - timedelta(days=60)
 
-        dvd = ProductFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id)
+        cd = ProductFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id)
         expired_individual_booking = booking_factories.BookingFactory(
-            stock__offer__product=dvd, dateCreated=two_months_ago
+            stock__offer__product=cd, dateCreated=two_months_ago
         )
 
         book = ProductFactory(subcategoryId=subcategories.LIVRE_PAPIER.id)
@@ -240,9 +240,9 @@ class NotifyUsersOfExpiredBookingsTest:
         yesterday = now - timedelta(days=1)
         long_ago = now - timedelta(days=31)
         very_long_ago = now - timedelta(days=32)
-        dvd = ProductFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id)
-        expired_today_dvd_booking = booking_factories.CancelledBookingFactory(
-            stock__offer__product=dvd,
+        vinyle = ProductFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id)
+        expired_today_vinyle_booking = booking_factories.CancelledBookingFactory(
+            stock__offer__product=vinyle,
             dateCreated=long_ago,
             cancellationReason=BookingCancellationReasons.EXPIRED,
         )
@@ -252,9 +252,9 @@ class NotifyUsersOfExpiredBookingsTest:
             dateCreated=long_ago,
             cancellationReason=BookingCancellationReasons.EXPIRED,
         )
-        painting = ProductFactory(subcategoryId=subcategories.OEUVRE_ART.id)
+        book = ProductFactory(subcategoryId=subcategories.LIVRE_PAPIER.id)
         booking_factories.CancelledBookingFactory(
-            stock__offer__product=painting,
+            stock__offer__product=book,
             dateCreated=very_long_ago,
             cancellationReason=BookingCancellationReasons.EXPIRED,
             cancellationDate=yesterday,
@@ -268,13 +268,13 @@ class NotifyUsersOfExpiredBookingsTest:
             (outbox[1]["To"], outbox[1]["params"]["BOOKINGS"][0]["offer_name"]),
         }
 
-        dvd_user_email = expired_today_dvd_booking.user.email
-        dvd_offer_name = expired_today_dvd_booking.stock.offer.name
+        vinyle_user_email = expired_today_vinyle_booking.user.email
+        vinyle_offer_name = expired_today_vinyle_booking.stock.offer.name
 
         cd_user_email = expired_today_cd_booking.user.email
         cd_offer_name = expired_today_cd_booking.stock.offer.name
 
-        assert email_recaps == {(dvd_user_email, dvd_offer_name), (cd_user_email, cd_offer_name)}
+        assert email_recaps == {(vinyle_user_email, vinyle_offer_name), (cd_user_email, cd_offer_name)}
 
 
 class NotifyOfferersOfExpiredBookingsTest:
@@ -284,9 +284,9 @@ class NotifyOfferersOfExpiredBookingsTest:
         yesterday = now - timedelta(days=1)
         long_ago = now - timedelta(days=31)
         very_long_ago = now - timedelta(days=32)
-        dvd = ProductFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id)
-        expired_today_dvd_booking = booking_factories.CancelledBookingFactory(
-            stock__offer__product=dvd,
+        vinyle = ProductFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id)
+        expired_today_vinyle_booking = booking_factories.CancelledBookingFactory(
+            stock__offer__product=vinyle,
             dateCreated=long_ago,
             cancellationReason=BookingCancellationReasons.EXPIRED,
         )
@@ -296,9 +296,9 @@ class NotifyOfferersOfExpiredBookingsTest:
             dateCreated=long_ago,
             cancellationReason=BookingCancellationReasons.EXPIRED,
         )
-        painting = ProductFactory(subcategoryId=subcategories.OEUVRE_ART.id)
+        book = ProductFactory(subcategoryId=subcategories.LIVRE_PAPIER.id)
         _expired_yesterday_booking = booking_factories.CancelledBookingFactory(
-            stock__offer__product=painting,
+            stock__offer__product=book,
             dateCreated=very_long_ago,
             cancellationReason=BookingCancellationReasons.EXPIRED,
             cancellationDate=yesterday,
@@ -308,8 +308,8 @@ class NotifyOfferersOfExpiredBookingsTest:
 
         assert mocked_send_email_recap.call_count == 2
         assert mocked_send_email_recap.call_args_list[0][0] == (
-            expired_today_dvd_booking.offerer,
-            [expired_today_dvd_booking],
+            expired_today_vinyle_booking.offerer,
+            [expired_today_vinyle_booking],
         )
         assert mocked_send_email_recap.call_args_list[1][0] == (
             expired_today_cd_booking.offerer,

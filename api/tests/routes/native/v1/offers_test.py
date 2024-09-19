@@ -252,7 +252,7 @@ class OffersTest:
         assert response.json["withdrawalDetails"] == "modalité de retrait"
 
     def test_get_offer_with_unlimited_stock(self, client):
-        product = offers_factories.ProductFactory(thumbCount=1, subcategoryId=subcategories.CARTE_MUSEE.id)
+        product = offers_factories.ProductFactory(thumbCount=1)
         offer = offers_factories.OfferFactory(product=product, venue__isPermanent=True)
         offers_factories.ThingStockFactory(offer=offer, price=12.34, quantity=None)
 
@@ -266,10 +266,7 @@ class OffersTest:
         assert response.json["stocks"][0]["remainingQuantity"] is None
 
     def test_get_thing_offer(self, client):
-        product = offers_factories.ProductFactory(thumbCount=1, subcategoryId=subcategories.CARTE_MUSEE.id)
-        offer = offers_factories.OfferFactory(
-            product=product, venue__isPermanent=True, subcategoryId=subcategories.CARTE_MUSEE.id
-        )
+        offer = offers_factories.OfferFactory(venue__isPermanent=True, subcategoryId=subcategories.CARTE_MUSEE.id)
         offers_factories.ThingStockFactory(offer=offer, price=12.34)
 
         offer_id = offer.id
@@ -625,12 +622,12 @@ class OffersTest:
         assert len(offer.stocks) == 2
 
     def test_get_offer_with_product_mediation_and_thumb(self, client):
-        product = offers_factories.ProductFactory(thumbCount=1, subcategoryId=subcategories.CARTE_MUSEE.id)
+        product = offers_factories.ProductFactory(thumbCount=1, subcategoryId=subcategories.LIVRE_PAPIER.id)
         offers_factories.ProductMediationFactory(
             product=product, url="https://url.com", imageType=TiteliveImageType.RECTO
         )
         offer = offers_factories.OfferFactory(
-            product=product, venue__isPermanent=True, subcategoryId=subcategories.CARTE_MUSEE.id
+            product=product, venue__isPermanent=True, subcategoryId=subcategories.LIVRE_PAPIER.id
         )
         offers_factories.ThingStockFactory(offer=offer, price=12.34)
 
@@ -646,7 +643,7 @@ class OffersTest:
         }
 
     def test_get_offer_with_two_product_mediation(self, client):
-        product = offers_factories.ProductFactory(thumbCount=0, subcategoryId=subcategories.CARTE_MUSEE.id)
+        product = offers_factories.ProductFactory(thumbCount=0, subcategoryId=subcategories.LIVRE_PAPIER.id)
         offers_factories.ProductMediationFactory(
             product=product, url="https://url.com/recto", imageType=TiteliveImageType.RECTO
         )
@@ -654,7 +651,7 @@ class OffersTest:
             product=product, url="https://url.com/verso", imageType=TiteliveImageType.VERSO
         )
         offer = offers_factories.OfferFactory(
-            product=product, venue__isPermanent=True, subcategoryId=subcategories.CARTE_MUSEE.id
+            product=product, venue__isPermanent=True, subcategoryId=subcategories.LIVRE_PAPIER.id
         )
         offers_factories.ThingStockFactory(offer=offer, price=12.34)
 
@@ -670,9 +667,9 @@ class OffersTest:
         }
 
     def test_get_offer_with_thumb_only(self, client):
-        product = offers_factories.ProductFactory(id=111, thumbCount=1, subcategoryId=subcategories.CARTE_MUSEE.id)
+        product = offers_factories.ProductFactory(id=111, thumbCount=1, subcategoryId=subcategories.LIVRE_PAPIER.id)
         offer = offers_factories.OfferFactory(
-            product=product, venue__isPermanent=True, subcategoryId=subcategories.CARTE_MUSEE.id
+            product=product, venue__isPermanent=True, subcategoryId=subcategories.LIVRE_PAPIER.id
         )
         offers_factories.ThingStockFactory(offer=offer, price=12.34)
 
@@ -688,12 +685,12 @@ class OffersTest:
         }
 
     def test_get_offer_with_mediation_and_product_mediation(self, client):
-        product = offers_factories.ProductFactory(thumbCount=1, subcategoryId=subcategories.CARTE_MUSEE.id)
+        product = offers_factories.ProductFactory(thumbCount=1, subcategoryId=subcategories.LIVRE_PAPIER.id)
         offers_factories.ProductMediationFactory(
             product=product, url="https://url.com", imageType=TiteliveImageType.RECTO
         )
         offer = offers_factories.OfferFactory(
-            product=product, venue__isPermanent=True, subcategoryId=subcategories.CARTE_MUSEE.id
+            product=product, venue__isPermanent=True, subcategoryId=subcategories.LIVRE_PAPIER.id
         )
         offers_factories.ThingStockFactory(offer=offer, price=12.34)
         offers_factories.MediationFactory(id=111, offer=offer, thumbCount=2, credit="street credit")
@@ -929,7 +926,7 @@ class OffersV2Test:
         assert response.json["withdrawalDetails"] == "modalité de retrait"
 
     def test_get_offer_with_unlimited_stock(self, client):
-        product = offers_factories.ProductFactory(thumbCount=1, subcategoryId=subcategories.CARTE_MUSEE.id)
+        product = offers_factories.ProductFactory(thumbCount=1, subcategoryId=subcategories.LIVRE_PAPIER.id)
         offer = offers_factories.OfferFactory(product=product, venue__isPermanent=True)
         offers_factories.ThingStockFactory(offer=offer, price=12.34, quantity=None)
 
@@ -941,10 +938,7 @@ class OffersV2Test:
         assert response.json["stocks"][0]["remainingQuantity"] is None
 
     def test_get_thing_offer(self, client):
-        product = offers_factories.ProductFactory(thumbCount=1, subcategoryId=subcategories.CARTE_MUSEE.id)
-        offer = offers_factories.OfferFactory(
-            product=product, venue__isPermanent=True, subcategoryId=subcategories.CARTE_MUSEE.id
-        )
+        offer = offers_factories.OfferFactory(venue__isPermanent=True, subcategoryId=subcategories.CARTE_MUSEE.id)
         offers_factories.ThingStockFactory(offer=offer, price=12.34)
 
         offer_id = offer.id
@@ -1453,12 +1447,12 @@ class OffersV2Test:
         assert len(offer.stocks) == 2
 
     def test_get_offer_with_product_mediation_and_thumb(self, client):
-        product = offers_factories.ProductFactory(thumbCount=1, subcategoryId=subcategories.CARTE_MUSEE.id)
+        product = offers_factories.ProductFactory(thumbCount=1, subcategoryId=subcategories.LIVRE_PAPIER.id)
         offers_factories.ProductMediationFactory(
             product=product, url="https://url.com", imageType=TiteliveImageType.RECTO
         )
         offer = offers_factories.OfferFactory(
-            product=product, venue__isPermanent=True, subcategoryId=subcategories.CARTE_MUSEE.id
+            product=product, venue__isPermanent=True, subcategoryId=subcategories.LIVRE_PAPIER.id
         )
         offers_factories.ThingStockFactory(offer=offer, price=12.34)
 
@@ -1475,7 +1469,7 @@ class OffersV2Test:
         }
 
     def test_get_offer_with_two_product_mediation(self, client):
-        product = offers_factories.ProductFactory(thumbCount=0, subcategoryId=subcategories.CARTE_MUSEE.id)
+        product = offers_factories.ProductFactory(thumbCount=0, subcategoryId=subcategories.LIVRE_PAPIER.id)
         offers_factories.ProductMediationFactory(
             product=product, url="https://url.com/recto", imageType=TiteliveImageType.RECTO
         )
@@ -1483,7 +1477,7 @@ class OffersV2Test:
             product=product, url="https://url.com/verso", imageType=TiteliveImageType.VERSO
         )
         offer = offers_factories.OfferFactory(
-            product=product, venue__isPermanent=True, subcategoryId=subcategories.CARTE_MUSEE.id
+            product=product, venue__isPermanent=True, subcategoryId=subcategories.LIVRE_PAPIER.id
         )
         offers_factories.ThingStockFactory(offer=offer, price=12.34)
 
@@ -1504,9 +1498,9 @@ class OffersV2Test:
         }
 
     def test_get_offer_with_thumb_only(self, client):
-        product = offers_factories.ProductFactory(id=111, thumbCount=1, subcategoryId=subcategories.CARTE_MUSEE.id)
+        product = offers_factories.ProductFactory(id=111, thumbCount=1, subcategoryId=subcategories.LIVRE_PAPIER.id)
         offer = offers_factories.OfferFactory(
-            product=product, venue__isPermanent=True, subcategoryId=subcategories.CARTE_MUSEE.id
+            product=product, venue__isPermanent=True, subcategoryId=subcategories.LIVRE_PAPIER.id
         )
         offers_factories.ThingStockFactory(offer=offer, price=12.34)
 
@@ -1523,12 +1517,12 @@ class OffersV2Test:
         }
 
     def test_get_offer_with_mediation_and_product_mediation(self, client):
-        product = offers_factories.ProductFactory(thumbCount=1, subcategoryId=subcategories.CARTE_MUSEE.id)
+        product = offers_factories.ProductFactory(thumbCount=1, subcategoryId=subcategories.LIVRE_PAPIER.id)
         offers_factories.ProductMediationFactory(
             product=product, url="https://url.com", imageType=TiteliveImageType.RECTO
         )
         offer = offers_factories.OfferFactory(
-            product=product, venue__isPermanent=True, subcategoryId=subcategories.CARTE_MUSEE.id
+            product=product, venue__isPermanent=True, subcategoryId=subcategories.LIVRE_PAPIER.id
         )
         offers_factories.ThingStockFactory(offer=offer, price=12.34)
         offers_factories.MediationFactory(id=111, offer=offer, thumbCount=2, credit="street credit")

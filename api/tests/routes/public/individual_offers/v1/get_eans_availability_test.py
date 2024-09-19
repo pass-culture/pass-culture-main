@@ -34,7 +34,7 @@ class GetEANsAvailabilityTest(PublicAPIEndpointBaseHelper):
         # Invalid EAN because of subcategory
         invalid_ean_because_not_in_allowed_subcategory = "2234567890123"
         offers_factories.ProductFactory(
-            subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
+            subcategoryId=subcategories.SEANCE_CINE.id,
             name="Les 3000 mousquetaires contre Goldorak (collection Art & Essai)",
             extraData={
                 "ean": invalid_ean_because_not_in_allowed_subcategory,

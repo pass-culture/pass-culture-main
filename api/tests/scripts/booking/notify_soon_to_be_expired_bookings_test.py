@@ -22,9 +22,9 @@ class NotifyUsersOfSoonToBeExpiredBookingsTest:
         booking_date_23_days_ago = now - timedelta(days=23)
         booking_date_22_days_ago = now - timedelta(days=22)
 
-        dvd = ProductFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id)
+        vinyle = ProductFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id)
         expire_in_7_days_dvd_individual_booking = BookingFactory(
-            stock__offer__product=dvd,
+            stock__offer__product=vinyle,
             dateCreated=booking_date_23_days_ago,
         )
         non_expired_cd = ProductFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id)
