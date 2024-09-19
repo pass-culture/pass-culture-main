@@ -9,6 +9,8 @@ import {
   GetIndividualOfferResponseModel,
   type GetIndividualOfferWithAddressResponseModel,
 } from 'apiClient/v1'
+import { Callout } from 'components/Callout/Callout'
+import { CalloutVariant } from 'components/Callout/types'
 import { ConfirmDialog } from 'components/Dialog/ConfirmDialog/ConfirmDialog'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
@@ -31,7 +33,8 @@ import { ActionBar } from '../ActionBar/ActionBar'
 import { serializePatchOffer } from '../InformationsScreen/serializePatchOffer'
 
 import { UsefulInformationFormValues } from './types'
-import { UsefulInformationForm } from './UsefulInformationForm'
+import { UsefulInformationForm } from './UsefulInformationForm/UsefulInformationForm'
+import styles from './UsefulInformationScreen.module.scss'
 import { setDefaultInitialValuesFromOffer } from './utils'
 import { getValidationSchema } from './validationSchema'
 
@@ -57,6 +60,8 @@ export const UsefulInformationScreen = ({
 
   const [isWithdrawalMailDialogOpen, setIsWithdrawalMailDialogOpen] =
     useState<boolean>(false)
+  const [isAddressUpdateDialogOpen, setIsAddressUpdateDialogOpen] =
+    useState<boolean>(false)
 
   const [sendWithdrawalMail, setSendWithdrawalMail] = useState<boolean>(false)
 
@@ -71,18 +76,32 @@ export const UsefulInformationScreen = ({
     }
   }
 
+  function someFormFieldsChanged(fields: string[]): boolean {
+    return fields.some((field) => {
+      const fieldMeta = formik.getFieldMeta(field)
+      return fieldMeta.touched && fieldMeta.value !== fieldMeta.initialValue
+    })
+  }
+
   const onSubmit = async (
     formValues: UsefulInformationFormValues
   ): Promise<void> => {
     if (mode === OFFER_WIZARD_MODE.EDITION) {
-      const hasWithdrawalInformationsChanged = [
+      const hasWithdrawalInformationsChanged = someFormFieldsChanged([
         'withdrawalDetails',
         'withdrawalDelay',
         'withdrawalType',
-      ].some((field) => {
-        const fieldMeta = formik.getFieldMeta(field)
-        return fieldMeta.touched && fieldMeta.value !== fieldMeta.initialValue
-      })
+      ])
+
+      const hasAddressChanged = someFormFieldsChanged([
+        'offerlocation',
+        'locationLabel',
+        'search-addressAutocomplete',
+        'street',
+        'postalCode',
+        'city',
+        'coords',
+      ])
 
       const showWithdrawalMailDialog =
         offer.isActive &&
@@ -90,6 +109,13 @@ export const UsefulInformationScreen = ({
         hasWithdrawalInformationsChanged
       if (showWithdrawalMailDialog && !isWithdrawalMailDialogOpen) {
         setIsWithdrawalMailDialogOpen(true)
+        return
+      }
+
+      const showAddressChangeDialog =
+        offer.isActive && (offer.bookingsCount ?? 0) > 0 && hasAddressChanged
+      if (showAddressChangeDialog && !isAddressUpdateDialogOpen) {
+        setIsAddressUpdateDialogOpen(true)
         return
       }
     }
@@ -234,6 +260,32 @@ export const UsefulInformationScreen = ({
           icon={strokeMailIcon}
           title="Souhaitez-vous prévenir les bénéficiaires de la modification des modalités de retrait ?"
         />
+      )}
+      {isAddressUpdateDialogOpen && (
+        <ConfirmDialog
+          cancelText="Annuler"
+          confirmText="Je confirme le changement"
+          onCancel={() => {
+            setIsAddressUpdateDialogOpen(false)
+          }}
+          onConfirm={async () => {
+            await formik.submitForm()
+          }}
+          title="Le changement d’adresse va s’impacter à l’ensemble des réservations en cours associées."
+        >
+          <div className={styles['update-oa-wrapper']}>
+            <div>
+              Un email va être envoyé aux bénéficiaires ayant réservé les offres
+              concernées. Ils auront 48h pour annuler leur réservation s’ils le
+              souhaitent.
+            </div>
+            <Callout variant={CalloutVariant.WARNING}>
+              Si vous souhaitez que les réservations en cours conservent
+              l’ancienne adresse, veuillez créer une nouvelle offre avec la
+              nouvelle adresse.
+            </Callout>
+          </div>
+        </ConfirmDialog>
       )}
       <RouteLeavingGuardIndividualOffer
         when={formik.dirty && !formik.isSubmitting}

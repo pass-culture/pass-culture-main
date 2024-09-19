@@ -29,10 +29,11 @@ import {
   ticketSentDateOptions,
   ticketWithdrawalHourOptions,
   ticketWithdrawalTypeRadios,
-} from './constants'
-import { UsefulInformationFormValues } from './types'
+} from '../constants'
+import { UsefulInformationFormValues } from '../types'
+import { setFormReadOnlyFields } from '../utils'
+
 import styles from './UsefulInformationForm.module.scss'
-import { setFormReadOnlyFields } from './utils'
 
 interface UsefulInformationFormProps {
   conditionalFields: string[]
