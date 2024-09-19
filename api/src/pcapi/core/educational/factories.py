@@ -446,3 +446,34 @@ def create_collective_offer_by_status(
             return CollectiveOfferFactory(**kwargs)
 
     raise NotImplementedStatus(f"Factory for {status}")
+
+
+def create_collective_offer_template_by_status(
+    status: CollectiveOfferDisplayedStatus,
+    **kwargs: typing.Any,
+) -> models.CollectiveOfferTemplate:
+    match status.value:
+        case CollectiveOfferDisplayedStatus.ARCHIVED.value:
+            kwargs["dateArchived"] = datetime.datetime.utcnow()
+            return CollectiveOfferTemplateFactory(**kwargs)
+
+        case CollectiveOfferDisplayedStatus.REJECTED.value:
+            kwargs["validation"] = OfferValidationStatus.REJECTED
+            return CollectiveOfferTemplateFactory(**kwargs)
+
+        case CollectiveOfferDisplayedStatus.PENDING.value:
+            kwargs["validation"] = OfferValidationStatus.PENDING
+            return CollectiveOfferTemplateFactory(**kwargs)
+
+        case CollectiveOfferDisplayedStatus.DRAFT.value:
+            kwargs["validation"] = OfferValidationStatus.DRAFT
+            return CollectiveOfferTemplateFactory(**kwargs)
+
+        case CollectiveOfferDisplayedStatus.INACTIVE.value:
+            kwargs["isActive"] = False
+            return CollectiveOfferTemplateFactory(**kwargs)
+
+        case CollectiveOfferDisplayedStatus.ACTIVE.value:
+            return CollectiveOfferTemplateFactory(**kwargs)
+
+    raise NotImplementedStatus(f"Factory for {status}")

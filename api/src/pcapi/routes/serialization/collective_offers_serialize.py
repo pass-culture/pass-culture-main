@@ -149,7 +149,10 @@ class CollectiveOfferResponseModel(BaseModel):
     venue: base_serializers.ListOffersVenueResponseModel
     status: CollectiveOfferStatus
     displayedStatus: educational_models.CollectiveOfferDisplayedStatus
-    allowedActions: list[educational_models.CollectiveOfferAllowedAction] | None
+    allowedActions: (
+        list[educational_models.CollectiveOfferAllowedAction]
+        | list[educational_models.CollectiveOfferTemplateAllowedAction]
+    )
     educationalInstitution: EducationalInstitutionResponseModel | None
     interventionArea: list[str]
     templateId: str | None
@@ -206,7 +209,7 @@ def _serialize_offer_paginated(
         venue=_serialize_venue(offer.venue),  # type: ignore[arg-type]
         status=offer.status.name,
         displayedStatus=offer.displayedStatus,
-        allowedActions=offer.allowed_actions,
+        allowedActions=offer.allowedActions,
         isShowcase=is_offer_template,
         educationalInstitution=EducationalInstitutionResponseModel.from_orm(institution) if institution else None,
         interventionArea=offer.interventionArea,
@@ -380,6 +383,7 @@ class GetCollectiveOfferTemplateResponseModel(GetCollectiveOfferBaseResponseMode
     contactPhone: str | None
     contactUrl: str | None
     contactForm: educational_models.OfferContactFormEnum | None
+    allowedActions: list[educational_models.CollectiveOfferTemplateAllowedAction]
 
     class Config:
         orm_mode = True
@@ -435,13 +439,12 @@ class GetCollectiveOfferResponseModel(GetCollectiveOfferBaseResponseModel):
     formats: typing.Sequence[subcategories.EacFormat] | None
     isTemplate: bool = False
     dates: TemplateDatesModel | None
-    allowedActions: list[educational_models.CollectiveOfferAllowedAction] | None
+    allowedActions: list[educational_models.CollectiveOfferAllowedAction]
 
     @classmethod
     def from_orm(cls, offer: educational_models.CollectiveOffer) -> "GetCollectiveOfferResponseModel":
         result = super().from_orm(offer)
         result.formats = offer.get_formats()
-        result.allowedActions = offer.allowed_actions
 
         if result.status == CollectiveOfferStatus.INACTIVE.name:
             result.isActive = False

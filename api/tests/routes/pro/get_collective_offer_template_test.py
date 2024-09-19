@@ -53,6 +53,13 @@ class Returns200Test:
         }
         assert response.json["formats"] == offer.formats
         assert response.json["displayedStatus"] == "ACTIVE"
+        assert response.json["allowedActions"] == [
+            "CAN_EDIT_DETAILS",
+            "CAN_DUPLICATE",
+            "CAN_ARCHIVE",
+            "CAN_CREATE_BOOKABLE_OFFER",
+            "CAN_HIDE",
+        ]
 
     def test_performance(self, client):
         # Given

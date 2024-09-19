@@ -42,7 +42,11 @@ export const useCollectiveOfferFromParams = (
 
   const isTemplate = isTemplateId || pathNameIncludesTemplate
 
-  const { data: offer } = useSWR(
+  const { data: offer } = useSWR<
+    GetCollectiveOfferResponseModel | GetCollectiveOfferTemplateResponseModel,
+    any,
+    [string, number] | null
+  >(
     offerId !== undefined
       ? [
           isTemplate

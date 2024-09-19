@@ -7,7 +7,6 @@ from sqlalchemy import exc as sa_exc
 
 from pcapi.core.educational import exceptions
 from pcapi.core.educational import factories
-from pcapi.core.educational.factories import create_collective_offer_by_status
 from pcapi.core.educational.models import ALLOWED_ACTIONS_BY_DISPLAYED_STATUS
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveOffer
@@ -16,6 +15,7 @@ from pcapi.core.educational.models import CollectiveOfferDisplayedStatus
 from pcapi.core.educational.models import CollectiveStock
 from pcapi.core.educational.models import EducationalDeposit
 from pcapi.core.educational.models import HasImageMixin
+from pcapi.core.educational.models import TEMPLATE_ALLOWED_ACTIONS_BY_DISPLAYED_STATUS
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.providers.factories as providers_factories
 from pcapi.models import db
@@ -27,6 +27,15 @@ from pcapi.utils.image_conversion import ImageRatio
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
+
+COLLECTIVE_OFFER_TEMPLATE_STATUS_LIST = [
+    CollectiveOfferDisplayedStatus.ARCHIVED,
+    CollectiveOfferDisplayedStatus.REJECTED,
+    CollectiveOfferDisplayedStatus.PENDING,
+    CollectiveOfferDisplayedStatus.DRAFT,
+    CollectiveOfferDisplayedStatus.INACTIVE,
+    CollectiveOfferDisplayedStatus.ACTIVE,
+]
 
 
 class EducationalDepositTest:
@@ -609,7 +618,7 @@ class EducationalInstitutionProgramTest:
 class CollectiveOfferDisplayedStatusTest:
     @pytest.mark.parametrize("status", CollectiveOfferDisplayedStatus)
     def test_get_offer_displayed_status(self, status):
-        offer = create_collective_offer_by_status(status)
+        offer = factories.create_collective_offer_by_status(status)
 
         assert offer.displayedStatus == status
 
@@ -630,28 +639,23 @@ class CollectiveOfferDisplayedStatusTest:
 class CollectiveOfferAllowedActionsTest:
     @pytest.mark.parametrize("status", CollectiveOfferDisplayedStatus)
     def test_get_offer_allowed_actions(self, status):
-        offer = create_collective_offer_by_status(status)
+        offer = factories.create_collective_offer_by_status(status)
 
-        assert offer.allowed_actions == list(ALLOWED_ACTIONS_BY_DISPLAYED_STATUS[status])
+        assert offer.allowedActions == list(ALLOWED_ACTIONS_BY_DISPLAYED_STATUS[status])
 
     def test_get_ended_offer_allowed_actions(self):
-        offer = create_collective_offer_by_status(CollectiveOfferDisplayedStatus.ENDED)
+        offer = factories.create_collective_offer_by_status(CollectiveOfferDisplayedStatus.ENDED)
 
-        assert offer.allowed_actions == [
+        assert offer.allowedActions == [
             CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT,
             CollectiveOfferAllowedAction.CAN_DUPLICATE,
             CollectiveOfferAllowedAction.CAN_CANCEL,
         ]
 
         offer.collectiveStock.endDatetime = datetime.datetime.utcnow() - datetime.timedelta(days=3)
-        assert offer.allowed_actions == [
+        assert offer.allowedActions == [
             CollectiveOfferAllowedAction.CAN_DUPLICATE,
         ]
-
-    def test_get_offer_template_allowed_actions(self):
-        offer = factories.CollectiveOfferTemplateFactory()
-
-        assert offer.allowed_actions == None
 
     def test_is_two_days_past_end(self):
         offer = factories.CollectiveOfferFactory()
@@ -665,3 +669,9 @@ class CollectiveOfferAllowedActionsTest:
 
         offer.collectiveStock.endDatetime = datetime.datetime.utcnow() - datetime.timedelta(days=3)
         assert offer.is_two_days_past_end
+
+    @pytest.mark.parametrize("status", COLLECTIVE_OFFER_TEMPLATE_STATUS_LIST)
+    def test_get_offer_template_allowed_actions(self, status):
+        offer = factories.create_collective_offer_template_by_status(status)
+
+        assert offer.allowedActions == list(TEMPLATE_ALLOWED_ACTIONS_BY_DISPLAYED_STATUS[status])
