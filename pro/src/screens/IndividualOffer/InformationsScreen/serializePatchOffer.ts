@@ -49,12 +49,14 @@ interface SerializePatchOffer {
   offer: GetIndividualOfferResponseModel
   formValues: Partial<IndividualOfferFormValues>
   shouldSendMail?: boolean
+  shouldNotSendExtraData?: boolean
 }
 
 export const serializePatchOffer = ({
   offer,
   formValues,
   shouldSendMail = false,
+  shouldNotSendExtraData = false,
 }: SerializePatchOffer): PatchOfferBodyModel => {
   let sentValues: Partial<IndividualOfferFormValues> = formValues
   if (offer.lastProvider) {
@@ -103,7 +105,11 @@ export const serializePatchOffer = ({
       sentValues.accessibility &&
       sentValues.accessibility[AccessibilityEnum.AUDIO],
     description: sentValues.description,
-    extraData: serializeExtraData(sentValues),
+    ...(shouldNotSendExtraData
+      ? {}
+      : {
+          extraData: serializeExtraData(sentValues),
+        }),
     isNational: sentValues.isNational,
     isDuo: sentValues.isDuo,
     mentalDisabilityCompliant:
