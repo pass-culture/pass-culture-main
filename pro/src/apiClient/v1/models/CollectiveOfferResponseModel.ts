@@ -7,6 +7,7 @@ import type { CollectiveOfferDisplayedStatus } from './CollectiveOfferDisplayedS
 import type { CollectiveOffersBookingResponseModel } from './CollectiveOffersBookingResponseModel';
 import type { CollectiveOffersStockResponseModel } from './CollectiveOffersStockResponseModel';
 import type { CollectiveOfferStatus } from './CollectiveOfferStatus';
+import type { CollectiveOfferTemplateAllowedAction } from './CollectiveOfferTemplateAllowedAction';
 import type { EacFormat } from './EacFormat';
 import type { EducationalInstitutionResponseModel } from './EducationalInstitutionResponseModel';
 import type { ListOffersVenueResponseModel } from './ListOffersVenueResponseModel';
@@ -14,7 +15,7 @@ import type { NationalProgramModel } from './NationalProgramModel';
 import type { SubcategoryIdEnum } from './SubcategoryIdEnum';
 import type { TemplateDatesModel } from './TemplateDatesModel';
 export type CollectiveOfferResponseModel = {
-  allowedActions?: Array<CollectiveOfferAllowedAction> | null;
+  allowedActions: (Array<CollectiveOfferAllowedAction> | Array<CollectiveOfferTemplateAllowedAction>);
   booking?: CollectiveOffersBookingResponseModel | null;
   dates?: TemplateDatesModel | null;
   displayedStatus: CollectiveOfferDisplayedStatus;

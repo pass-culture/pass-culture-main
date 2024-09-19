@@ -67,9 +67,13 @@ export const CollectiveOfferSummary = ({
             <CollectiveOfferVenueSection venue={offer.venue} />
             <CollectiveOfferTypeSection offer={offer} />
             <CollectiveOfferImagePreview offer={offer} />
-            {offer.isTemplate && <CollectiveOfferDateSection offer={offer} />}
+            {isCollectiveOfferTemplate(offer) && (
+              <CollectiveOfferDateSection offer={offer} />
+            )}
             <CollectiveOfferLocationSection offer={offer} />
-            {offer.isTemplate && <CollectiveOfferPriceSection offer={offer} />}
+            {isCollectiveOfferTemplate(offer) && (
+              <CollectiveOfferPriceSection offer={offer} />
+            )}
             <CollectiveOfferParticipantSection students={offer.students} />
             <AccessibilitySummarySection
               accessibleItem={offer}

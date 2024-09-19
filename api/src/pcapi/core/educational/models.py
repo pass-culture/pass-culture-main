@@ -141,6 +141,15 @@ class CollectiveOfferAllowedAction(enum.Enum):
     CAN_ARCHIVE = "CAN_ARCHIVE"
 
 
+class CollectiveOfferTemplateAllowedAction(enum.Enum):
+    CAN_EDIT_DETAILS = "CAN_EDIT_DETAILS"
+    CAN_DUPLICATE = "CAN_DUPLICATE"
+    CAN_ARCHIVE = "CAN_ARCHIVE"
+    CAN_CREATE_BOOKABLE_OFFER = "CAN_CREATE_BOOKABLE_OFFER"
+    CAN_PUBLISH = "CAN_PUBLISH"
+    CAN_HIDE = "CAN_HIDE"
+
+
 ALLOWED_ACTIONS_BY_DISPLAYED_STATUS: dict[CollectiveOfferDisplayedStatus, tuple[CollectiveOfferAllowedAction, ...]] = {
     CollectiveOfferDisplayedStatus.DRAFT: (
         CollectiveOfferAllowedAction.CAN_EDIT_DETAILS,
@@ -192,6 +201,38 @@ ALLOWED_ACTIONS_BY_DISPLAYED_STATUS: dict[CollectiveOfferDisplayedStatus, tuple[
     ),
     CollectiveOfferDisplayedStatus.ARCHIVED: (CollectiveOfferAllowedAction.CAN_DUPLICATE,),
     CollectiveOfferDisplayedStatus.INACTIVE: (),
+}
+
+TEMPLATE_ALLOWED_ACTIONS_BY_DISPLAYED_STATUS: dict[
+    CollectiveOfferDisplayedStatus, tuple[CollectiveOfferTemplateAllowedAction, ...]
+] = {
+    CollectiveOfferDisplayedStatus.DRAFT: (
+        CollectiveOfferTemplateAllowedAction.CAN_EDIT_DETAILS,
+        CollectiveOfferTemplateAllowedAction.CAN_ARCHIVE,
+    ),
+    CollectiveOfferDisplayedStatus.PENDING: (CollectiveOfferTemplateAllowedAction.CAN_DUPLICATE,),
+    CollectiveOfferDisplayedStatus.ACTIVE: (
+        CollectiveOfferTemplateAllowedAction.CAN_EDIT_DETAILS,
+        CollectiveOfferTemplateAllowedAction.CAN_DUPLICATE,
+        CollectiveOfferTemplateAllowedAction.CAN_ARCHIVE,
+        CollectiveOfferTemplateAllowedAction.CAN_CREATE_BOOKABLE_OFFER,
+        CollectiveOfferTemplateAllowedAction.CAN_HIDE,
+    ),
+    CollectiveOfferDisplayedStatus.REJECTED: (
+        CollectiveOfferTemplateAllowedAction.CAN_DUPLICATE,
+        CollectiveOfferTemplateAllowedAction.CAN_ARCHIVE,
+    ),
+    CollectiveOfferDisplayedStatus.ARCHIVED: (
+        CollectiveOfferTemplateAllowedAction.CAN_DUPLICATE,
+        CollectiveOfferTemplateAllowedAction.CAN_CREATE_BOOKABLE_OFFER,
+    ),
+    CollectiveOfferDisplayedStatus.INACTIVE: (
+        CollectiveOfferTemplateAllowedAction.CAN_EDIT_DETAILS,
+        CollectiveOfferTemplateAllowedAction.CAN_DUPLICATE,
+        CollectiveOfferTemplateAllowedAction.CAN_ARCHIVE,
+        CollectiveOfferTemplateAllowedAction.CAN_CREATE_BOOKABLE_OFFER,
+        CollectiveOfferTemplateAllowedAction.CAN_PUBLISH,
+    ),
 }
 
 
@@ -773,7 +814,7 @@ class CollectiveOffer(
         return CollectiveOfferDisplayedStatus.ACTIVE
 
     @property
-    def allowed_actions(self) -> list[CollectiveOfferAllowedAction]:
+    def allowedActions(self) -> list[CollectiveOfferAllowedAction]:
         displayed_status = self.displayedStatus
         allowed_actions = ALLOWED_ACTIONS_BY_DISPLAYED_STATUS[displayed_status]
 
@@ -1029,9 +1070,8 @@ class CollectiveOfferTemplate(
         return CollectiveOfferDisplayedStatus.ACTIVE
 
     @property
-    def allowed_actions(self) -> None:
-        # TODO: this will be implemented once the actions are defined for an OfferTemplate
-        return None
+    def allowedActions(self) -> list[CollectiveOfferTemplateAllowedAction]:
+        return list(TEMPLATE_ALLOWED_ACTIONS_BY_DISPLAYED_STATUS[self.displayedStatus])
 
     @property
     def start(self) -> datetime | None:

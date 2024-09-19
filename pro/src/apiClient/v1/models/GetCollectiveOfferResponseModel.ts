@@ -19,7 +19,7 @@ import type { StudentLevels } from './StudentLevels';
 import type { SubcategoryIdEnum } from './SubcategoryIdEnum';
 import type { TemplateDatesModel } from './TemplateDatesModel';
 export type GetCollectiveOfferResponseModel = {
-  allowedActions?: Array<CollectiveOfferAllowedAction> | null;
+  allowedActions: Array<CollectiveOfferAllowedAction>;
   audioDisabilityCompliant?: boolean | null;
   bookingEmails: Array<string>;
   collectiveStock?: GetCollectiveOfferCollectiveStockResponseModel | null;

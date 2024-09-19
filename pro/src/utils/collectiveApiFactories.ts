@@ -56,6 +56,7 @@ export const collectiveOfferFactory = (
     isPublicApi: false,
     interventionArea: [],
     isShowcase: false,
+    allowedActions: [],
     ...customCollectiveOffer,
   }
 }
@@ -116,6 +117,7 @@ export const getCollectiveOfferFactory = (
     isVisibilityEditable: true,
     isTemplate: false,
     collectiveStock: getCollectiveOfferCollectiveStockFactory(),
+    allowedActions: [],
     ...customCollectiveOffer,
   }
 }
@@ -148,6 +150,7 @@ export const getCollectiveOfferTemplateFactory = (
     start: new Date().toISOString(),
     end: addDays(new Date(), 1).toISOString(),
   },
+  allowedActions: [],
   ...customCollectiveOfferTemplate,
 })
 

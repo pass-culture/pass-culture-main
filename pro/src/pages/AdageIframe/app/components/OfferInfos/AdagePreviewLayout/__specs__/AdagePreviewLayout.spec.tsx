@@ -2,6 +2,7 @@ import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 
 import { api } from 'apiClient/api'
 import {
+  GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
   OfferAddressType,
 } from 'apiClient/v1'
@@ -17,7 +18,9 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 import { AdagePreviewLayout } from '../AdagePreviewLayout'
 
 function renderAdagePreviewLayout(
-  offer: GetCollectiveOfferTemplateResponseModel = getCollectiveOfferTemplateFactory()
+  offer:
+    | GetCollectiveOfferTemplateResponseModel
+    | GetCollectiveOfferResponseModel = getCollectiveOfferTemplateFactory()
 ) {
   renderWithProviders(
     <AdageUserContextProvider adageUser={defaultAdageUser}>

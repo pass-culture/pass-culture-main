@@ -5,6 +5,7 @@
 import type { CollectiveOfferDisplayedStatus } from './CollectiveOfferDisplayedStatus';
 import type { CollectiveOfferOfferVenueResponseModel } from './CollectiveOfferOfferVenueResponseModel';
 import type { CollectiveOfferStatus } from './CollectiveOfferStatus';
+import type { CollectiveOfferTemplateAllowedAction } from './CollectiveOfferTemplateAllowedAction';
 import type { EacFormat } from './EacFormat';
 import type { GetCollectiveOfferVenueResponseModel } from './GetCollectiveOfferVenueResponseModel';
 import type { NationalProgramModel } from './NationalProgramModel';
@@ -14,6 +15,7 @@ import type { StudentLevels } from './StudentLevels';
 import type { SubcategoryIdEnum } from './SubcategoryIdEnum';
 import type { TemplateDatesModel } from './TemplateDatesModel';
 export type GetCollectiveOfferTemplateResponseModel = {
+  allowedActions: Array<CollectiveOfferTemplateAllowedAction>;
   audioDisabilityCompliant?: boolean | null;
   bookingEmails: Array<string>;
   contactEmail?: string | null;
