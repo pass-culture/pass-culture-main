@@ -52,7 +52,42 @@ When('I specify an offerer with a SIRET', () => {
   }).as('venuesSiret')
   cy.intercept(
     'GET',
-    'https://api-adresse.data.gouv.fr/search/?limit=1&q=*'
+    'https://api-adresse.data.gouv.fr/search/?limit=1&q=*',
+    (req) =>
+      req.reply({
+        statusCode: 200,
+        body: {
+          type: 'FeatureCollection',
+          version: 'draft',
+          features: [
+            {
+              type: 'Feature',
+              geometry: { type: 'Point', coordinates: [2.337933, 48.863666] },
+              properties: {
+                label: '3 Rue de Valois 75001 Paris',
+                score: 0.8136893939393939,
+                housenumber: '3',
+                id: '75101_9575_00003',
+                name: '3 Rue de Valois',
+                postcode: '75001',
+                citycode: '75101',
+                x: 651428.82,
+                y: 6862829.62,
+                city: 'Paris',
+                district: 'Paris 1er Arrondissement',
+                context: '75, Paris, Île-de-France',
+                type: 'housenumber',
+                importance: 0.61725,
+                street: 'Rue de Valois',
+              },
+            },
+          ],
+          attribution: 'BAN',
+          licence: 'ETALAB-2.0',
+          query: '3 RUE DE VALOIS Paris 75001',
+          limit: 1,
+        },
+      })
   ).as('search1Address')
   cy.findByText('Continuer').click()
   cy.wait(['@getSiret', '@venuesSiret', '@search1Address']).then(
