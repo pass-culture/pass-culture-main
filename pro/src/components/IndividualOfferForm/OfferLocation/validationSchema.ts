@@ -4,40 +4,60 @@ import { OFFER_LOCATION } from 'components/IndividualOfferForm/OfferLocation/con
 import { checkCoords } from 'utils/coords'
 
 const locationSchema = {
-  offerlocation: yup.string().required('Veuillez sélectionner un choix'),
+  offerlocation: yup.string().when('isVenueVirtual', {
+    is: false,
+    then: (schema) => schema.required('Veuillez sélectionner un choix'),
+  }),
   addressAutocomplete: yup
     .string()
-    .when(['offerlocation', 'manuallySetAddress'], {
-      is: (offerLocation: string, manuallySetAddress: boolean) =>
-        offerLocation === OFFER_LOCATION.OTHER_ADDRESS && !manuallySetAddress,
+    .when(['offerlocation', 'manuallySetAddress', 'isVenueVirtual'], {
+      is: (
+        offerLocation: string,
+        manuallySetAddress: boolean,
+        isVenueVirtual: boolean
+      ) =>
+        !isVenueVirtual &&
+        offerLocation === OFFER_LOCATION.OTHER_ADDRESS &&
+        !manuallySetAddress,
       then: (schema) =>
         schema.required(
           'Veuillez sélectionner une adresse parmi les suggestions'
         ),
     }),
-  street: yup.string().when('offerlocation', {
-    is: OFFER_LOCATION.OTHER_ADDRESS,
+  street: yup.string().when(['offerlocation', 'isVenueVirtual'], {
+    is: (offerLocation: string, isVenueVirtual: boolean) =>
+      !isVenueVirtual && offerLocation === OFFER_LOCATION.OTHER_ADDRESS,
     then: (schema) =>
       schema.required('Veuillez renseigner une adresse postale'),
   }),
-  postalCode: yup.string().when('offerlocation', {
-    is: OFFER_LOCATION.OTHER_ADDRESS,
+  postalCode: yup.string().when(['offerlocation', 'isVenueVirtual'], {
+    is: (offerLocation: string, isVenueVirtual: boolean) =>
+      !isVenueVirtual && offerLocation === OFFER_LOCATION.OTHER_ADDRESS,
     then: (schema) => schema.required('Veuillez renseigner un code postal'),
   }),
-  city: yup.string().when('offerlocation', {
-    is: OFFER_LOCATION.OTHER_ADDRESS,
+  city: yup.string().when(['offerlocation', 'isVenueVirtual'], {
+    is: (offerLocation: string, isVenueVirtual: boolean) =>
+      !isVenueVirtual && offerLocation === OFFER_LOCATION.OTHER_ADDRESS,
     then: (schema) => schema.required('Veuillez renseigner une ville'),
   }),
-  coords: yup.string().when(['offerlocation', 'manuallySetAddress'], {
-    is: (offerLocation: string, manuallySetAddress: boolean) =>
-      offerLocation === OFFER_LOCATION.OTHER_ADDRESS && manuallySetAddress,
-    then: (schema) =>
-      schema
-        .required('Veuillez renseigner les coordonnées GPS')
-        .test('coords', 'Veuillez respecter le format attendu', (value) =>
-          checkCoords(value)
-        ),
-  }),
+  coords: yup
+    .string()
+    .when(['offerlocation', 'manuallySetAddress', 'isVenueVirtual'], {
+      is: (
+        offerLocation: string,
+        manuallySetAddress: boolean,
+        isVenueVirtual: boolean
+      ) =>
+        !isVenueVirtual &&
+        offerLocation === OFFER_LOCATION.OTHER_ADDRESS &&
+        manuallySetAddress,
+      then: (schema) =>
+        schema
+          .required('Veuillez renseigner les coordonnées GPS')
+          .test('coords', 'Veuillez respecter le format attendu', (value) =>
+            checkCoords(value)
+          ),
+    }),
 }
 
 export const validationSchema = {
