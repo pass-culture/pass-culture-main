@@ -157,8 +157,6 @@ describe('test updateIndividualOffer::serializers', () => {
           postalCode: '75001',
           street: '3 Rue de Valois',
           label: 'Bureau',
-          // TODO: Remove that TS annotation when types are re-generated
-          // @ts-expect-error
           isManualEdition: true,
         },
       }
@@ -189,8 +187,6 @@ describe('test updateIndividualOffer::serializers', () => {
           postalCode: '75001',
           street: '3 Rue de Valois',
           label: '',
-          // TODO: Remove that TS annotation when types are re-generated
-          // @ts-expect-error
           isManualEdition: false,
         },
       }

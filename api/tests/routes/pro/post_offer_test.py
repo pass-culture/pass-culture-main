@@ -1,9 +1,7 @@
 from decimal import Decimal
-from unittest.mock import patch
 
 import pytest
 
-from pcapi.connectors import api_adresse
 from pcapi.core.categories import subcategories_v2 as subcategories
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers.models import Offer
@@ -210,11 +208,10 @@ class Returns200Test:
                 "longitude": "2.308289",
                 "postalCode": "75001",
                 "street": "3 Rue de Valois",
+                "isManualEdition": True,
             },
         }
-        with patch("pcapi.connectors.api_adresse.get_address") as mocked_get_address:
-            mocked_get_address.side_effect = api_adresse.NoResultException
-            response = client.with_session_auth("user@example.com").post("/offers", json=data)
+        response = client.with_session_auth("user@example.com").post("/offers", json=data)
 
         # Then
         assert response.status_code == 201
@@ -222,8 +219,8 @@ class Returns200Test:
         offer = Offer.query.get(offer_id)
         assert offer.offererAddress.address.isManualEdition
         assert offer.offererAddress.label == oa_label
-        assert offer.offererAddress.address.inseeCode == "06029"
         assert not offer.offererAddress.address.banId
+        assert offer.offererAddress.address.isManualEdition is True
 
     def when_creating_new_thing_offer(self, client):
         # Given

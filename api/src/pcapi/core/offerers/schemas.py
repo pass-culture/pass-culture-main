@@ -117,3 +117,4 @@ class AddressBodyModel(BaseModel):
     longitude: float | str
     postalCode: VenuePostalCode
     street: VenueAddress
+    isManualEdition: bool = False

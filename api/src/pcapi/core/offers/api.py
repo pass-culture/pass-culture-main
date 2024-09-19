@@ -331,6 +331,7 @@ def get_offerer_address_from_address(
         city=address.city,
         latitude=float(address.latitude),
         longitude=float(address.longitude),
+        is_manual_edition=address.isManualEdition,
     )
     return offerers_api.get_or_create_offerer_address(
         venue.managingOffererId,
