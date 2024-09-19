@@ -123,6 +123,7 @@ class FeatureToggle(enum.Enum):
     WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE = (
         "Activer la nouvelle structure des offres et réservations collectives"
     )
+    WIP_DISABLE_NOTIFICATION_CANCEL_BOOKING = "test"
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -187,6 +188,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE,
     FeatureToggle.WIP_SPLIT_OFFER,
     FeatureToggle.WIP_SUGGESTED_SUBCATEGORIES,
+    FeatureToggle.WIP_DISABLE_NOTIFICATION_CANCEL_BOOKING
     # Please keep alphabetic order
 )
 
