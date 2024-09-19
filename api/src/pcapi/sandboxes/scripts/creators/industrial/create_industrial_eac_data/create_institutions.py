@@ -90,7 +90,7 @@ def create_institutions() -> list[educational_models.EducationalInstitution]:
                 programs=[program],
                 postalCode="13014",
             ),
-            educational_factories.EducationalInstitutionFactory(institutionId="0921545E"),
+            educational_factories.EducationalInstitutionFactory(institutionId="0921935D"),
             educational_factories.EducationalInstitutionFactory(institutionId="0752525M"),
             educational_factories.EducationalInstitutionFactory(institutionId="0752902X"),
             educational_factories.EducationalInstitutionFactory(institutionId="0781537X"),
