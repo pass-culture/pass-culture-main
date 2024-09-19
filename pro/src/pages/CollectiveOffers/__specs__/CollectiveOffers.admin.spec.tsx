@@ -43,12 +43,20 @@ const proVenues = [
 ]
 
 const renderOffers = async (
-  filters: Partial<CollectiveSearchFiltersParams> = DEFAULT_COLLECTIVE_SEARCH_FILTERS
+  filters: Partial<CollectiveSearchFiltersParams> = DEFAULT_COLLECTIVE_SEARCH_FILTERS,
+  user = sharedCurrentUserFactory({ isAdmin: true }),
+  selectedOffererId: number | null = 1
 ) => {
   const route = computeCollectiveOffersUrl(filters)
 
   renderWithProviders(<CollectiveOffers />, {
-    user: sharedCurrentUserFactory({ isAdmin: true }),
+    user,
+    storeOverrides: {
+      user: {
+        selectedOffererId,
+        currentUser: user,
+      },
+    },
     initialRouterEntries: [route],
   })
 
@@ -56,6 +64,10 @@ const renderOffers = async (
 }
 
 describe('route CollectiveOffers when user is admin', () => {
+  const oldInterfaceUser = sharedCurrentUserFactory({
+    navState: null,
+    isAdmin: true,
+  })
   let offersRecap: CollectiveOfferResponseModel[]
   const stocks: Array<CollectiveOffersStockResponseModel> = [
     {
@@ -78,7 +90,16 @@ describe('route CollectiveOffers when user is admin', () => {
       venueId: venueId.toString(),
       status: [CollectiveOfferDisplayedStatus.INACTIVE],
     }
+    const offerer = {
+      ...defaultGetOffererResponseModel,
+      name: venueName,
+      id: venueId,
+    }
+    vi.spyOn(api, 'getOfferer').mockResolvedValue(offerer)
     await renderOffers(filters)
+    await waitFor(() => {
+      expect(api.getVenues).toHaveBeenCalledWith(null, null, 1)
+    })
     await userEvent.selectOptions(
       screen.getByDisplayValue(venueName),
       ALL_VENUES
@@ -89,7 +110,7 @@ describe('route CollectiveOffers when user is admin', () => {
     await waitFor(() => {
       expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
         undefined,
-        undefined,
+        '1',
         [],
         undefined,
         undefined,
@@ -147,7 +168,7 @@ describe('route CollectiveOffers when user is admin', () => {
     ).not.toBeDisabled()
   })
 
-  it('should reset and disable status filter for performance reasons when offerer filter is removed', async () => {
+  it('should reset and disable status filter for performance reasons when offerer filter is removed for old interface', async () => {
     const offerer = {
       ...defaultGetOffererResponseModel,
       name: 'La structure',
@@ -157,7 +178,7 @@ describe('route CollectiveOffers when user is admin', () => {
       offererId: String(offerer.id),
       status: [CollectiveOfferDisplayedStatus.INACTIVE],
     }
-    await renderOffers(filters)
+    await renderOffers(filters, oldInterfaceUser, null)
 
     await userEvent.click(screen.getByTestId('remove-offerer-filter'))
 
@@ -182,7 +203,7 @@ describe('route CollectiveOffers when user is admin', () => {
     ).toBeDisabled()
   })
 
-  it('should not reset or disable status filter when offerer filter is removed while venue filter is applied', async () => {
+  it('should not reset or disable status filter when offerer filter is removed while venue filter is applied for old interface', async () => {
     const { id: venueId } = proVenues[0]
     const offerer = {
       ...defaultGetOffererResponseModel,
@@ -194,7 +215,7 @@ describe('route CollectiveOffers when user is admin', () => {
       status: [CollectiveOfferDisplayedStatus.INACTIVE],
       offererId: String(offerer.id),
     }
-    await renderOffers(filters)
+    await renderOffers(filters, oldInterfaceUser, null)
 
     await userEvent.click(screen.getByTestId('remove-offerer-filter'))
 
