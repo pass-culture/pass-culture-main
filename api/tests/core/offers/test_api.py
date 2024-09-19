@@ -1076,7 +1076,7 @@ class CreateDraftOfferTest:
         assert models.Offer.query.count() == 1
 
     @override_features(WIP_SUGGESTED_SUBCATEGORIES=False)
-    def test_create_draft_offer_with_virtual_venue(self):
+    def test_create_draft_digitaloffer_with_virtual_venue(self):
         venue = offerers_factories.VirtualVenueFactory()
         body = offers_schemas.PostDraftOfferBodyModel(
             name="La Poudre",
@@ -1098,15 +1098,17 @@ class CreateDraftOfferTest:
         assert offer.visualDisabilityCompliant == None
 
     @override_features(WIP_SUGGESTED_SUBCATEGORIES=True)
-    def test_create_draft_offer_with_virtual_venue_with_subcategory_suggestion_must_fail(self):
-        venue = offerers_factories.VirtualVenueFactory()
+    def test_create_draft_physical_offer_on_virtual_venue_must_fail(self):
+        physical_venue = offerers_factories.VenueFactory(isVirtual=False)
+        virtual_venue = offerers_factories.VirtualVenueFactory(managingOffererId=physical_venue.managingOffererId)
+
         body = offers_schemas.PostDraftOfferBodyModel(
-            name="La Poudre",
-            subcategoryId=subcategories.PODCAST.id,
-            venueId=venue.id,
+            name="La Marguerite et le Maître",
+            subcategoryId=subcategories.LIVRE_PAPIER.id,
+            venueId=virtual_venue.id,
         )
         with pytest.raises(exceptions.OfferVenueShouldNotBeVirtual):
-            api.create_draft_offer(body, venue=venue)
+            api.create_draft_offer(body, venue=virtual_venue)
 
     def test_create_draft_offer_with_accessibility_provider(self):
         # when venue is synchronized with acceslibre, create draft offer should
