@@ -202,10 +202,11 @@ def _get_coherent_venue_with_subcategory(
     # FIXME: ogeber 30.08.2024 - This wont be useful when
     # virtual venues will be removed
     subcategory = subcategories.ALL_SUBCATEGORIES_DICT[offer_subcategory_id]
-    if venue.isVirtual:
+    if not subcategory.is_online_only and venue.isVirtual:
         raise exceptions.OfferVenueShouldNotBeVirtual()
-    if not subcategory.is_online_only and not venue.isVirtual:
+    if (subcategory.is_online_only and venue.isVirtual) or (not subcategory.is_online_only and not venue.isVirtual):
         return venue
+    # venue is physical and offer is digital : we look for virtual venue
     virtual_venue = offerers_repository.find_virtual_venue_by_offerer_id(venue.managingOffererId)
     if not virtual_venue:
         raise exceptions.OffererVirtualVenueNotFound()

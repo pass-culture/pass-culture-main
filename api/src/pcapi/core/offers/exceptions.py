@@ -342,7 +342,8 @@ class OffererVirtualVenueNotFound(Exception):
 
 
 class OfferVenueShouldNotBeVirtual(Exception):
-    pass
+    def __init__(self) -> None:
+        super().__init__("Une offre physique ne peut être associée à un lieu numérique")
 
 
 class BookingsHaveOtherPricingPoint(MoveOfferBaseException):
