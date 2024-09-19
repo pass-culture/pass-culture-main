@@ -42,7 +42,7 @@ def update_external_user(
         # suspended users have been removed from Brevo
         return
 
-    if user.has_pro_role:
+    if user.has_any_pro_role:
         update_external_pro(user.email)
     else:
         user_attributes = get_user_attributes(user)
@@ -147,7 +147,7 @@ def get_anonymized_attributes(user: users_models.User) -> models.UserAttributes 
 
 
 def get_user_or_pro_attributes(user: users_models.User) -> models.UserAttributes | models.ProAttributes:
-    if user.has_pro_role:
+    if user.has_any_pro_role:
         return get_pro_attributes(user.email)
     return get_user_attributes(user)
 

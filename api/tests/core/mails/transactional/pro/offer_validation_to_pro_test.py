@@ -5,6 +5,7 @@ import pytest
 
 import pcapi.core.educational.factories as educational_factories
 import pcapi.core.mails.testing as mails_testing
+from pcapi.core.mails.transactional.pro.offer_validation_to_pro import get_email_data_from_offer
 from pcapi.core.mails.transactional.pro.offer_validation_to_pro import retrieve_data_for_offer_approval_email
 from pcapi.core.mails.transactional.pro.offer_validation_to_pro import retrieve_data_for_offer_rejection_email
 from pcapi.core.mails.transactional.pro.offer_validation_to_pro import send_offer_validation_status_update_email
@@ -62,7 +63,8 @@ class SendinblueSendOfferValidationTest:
 
         # When
         send_offer_validation_status_update_email(
-            offer, offer.validation, OfferValidationStatus.APPROVED, ["jules.verne@example.com"]
+            get_email_data_from_offer(offer, offer.validation, OfferValidationStatus.APPROVED),
+            ["jules.verne@example.com"],
         )
 
         # Then
@@ -125,7 +127,8 @@ class SendinblueSendOfferValidationTest:
 
         # When
         send_offer_validation_status_update_email(
-            offer, offer.validation, OfferValidationStatus.REJECTED, ["jules.verne@example.com"]
+            get_email_data_from_offer(offer, offer.validation, OfferValidationStatus.REJECTED),
+            ["jules.verne@example.com"],
         )
 
         # Then
@@ -152,7 +155,8 @@ class SendinblueSendOfferValidationTest:
 
         # When
         send_offer_validation_status_update_email(
-            offer, offer.validation, OfferValidationStatus.REJECTED, ["jules.verne@example.com"]
+            get_email_data_from_offer(offer, offer.validation, OfferValidationStatus.REJECTED),
+            ["jules.verne@example.com"],
         )
 
         # Then
@@ -177,7 +181,8 @@ class SendinblueSendOfferValidationTest:
 
         # When
         send_offer_validation_status_update_email(
-            offer, offer.validation, OfferValidationStatus.REJECTED, ["jules.verne@example.com"]
+            get_email_data_from_offer(offer, offer.validation, OfferValidationStatus.REJECTED),
+            ["jules.verne@example.com"],
         )
 
         # Then

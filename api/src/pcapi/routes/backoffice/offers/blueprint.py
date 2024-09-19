@@ -1,6 +1,7 @@
 from collections import namedtuple
 import datetime
 import decimal
+import functools
 from io import BytesIO
 import logging
 import re
@@ -40,6 +41,7 @@ from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.repository import atomic
 from pcapi.repository import mark_transaction_as_invalid
+from pcapi.repository import on_commit
 from pcapi.repository import repository
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.filters import format_amount
@@ -478,6 +480,7 @@ def get_edit_offer_form(offer_id: int) -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/batch/validate", methods=["GET"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def get_batch_validate_offers_form() -> utils.BackofficeResponse:
     form = empty_forms.BatchForm()
@@ -492,6 +495,7 @@ def get_batch_validate_offers_form() -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/batch-validate", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def batch_validate_offers() -> utils.BackofficeResponse:
     form = empty_forms.BatchForm()
@@ -638,6 +642,7 @@ def edit_offer(offer_id: int) -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/<int:offer_id>/validate", methods=["GET"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def get_validate_offer_form(offer_id: int) -> utils.BackofficeResponse:
     offer = offers_models.Offer.query.filter_by(id=offer_id).one_or_none()
@@ -658,6 +663,7 @@ def get_validate_offer_form(offer_id: int) -> utils.BackofficeResponse:
 
 
 @list_offers_blueprint.route("/<int:offer_id>/validate", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def validate_offer(offer_id: int) -> utils.BackofficeResponse:
     _batch_validate_offers([offer_id])
@@ -740,16 +746,23 @@ def _batch_validate_offers(offer_ids: list[int]) -> None:
                 if offer.venue.bookingEmail
                 else [recipient.user.email for recipient in offer.venue.managingOfferer.UserOfferers]
             )
-            transactional_mails.send_offer_validation_status_update_email(
-                offer, old_validation, new_validation, recipients
+            offer_data = transactional_mails.get_email_data_from_offer(offer, old_validation, new_validation)
+            on_commit(
+                functools.partial(
+                    transactional_mails.send_offer_validation_status_update_email,
+                    offer_data,
+                    recipients,
+                )
             )
 
-    # A single commit at the end avoids refreshing other offers in the loop
-    db.session.commit()
+    db.session.flush()
 
-    search.async_index_offer_ids(
-        offer_ids,
-        reason=search.IndexationReason.OFFER_BATCH_VALIDATION,
+    on_commit(
+        functools.partial(
+            search.async_index_offer_ids,
+            offer_ids,
+            reason=search.IndexationReason.OFFER_BATCH_VALIDATION,
+        )
     )
 
 
@@ -783,8 +796,13 @@ def _batch_reject_offers(offer_ids: list[int]) -> None:
                 if offer.venue.bookingEmail
                 else [recipient.user.email for recipient in offer.venue.managingOfferer.UserOfferers]
             )
-            transactional_mails.send_offer_validation_status_update_email(
-                offer, old_validation, new_validation, recipients
+            offer_data = transactional_mails.get_email_data_from_offer(offer, old_validation, new_validation)
+            on_commit(
+                functools.partial(
+                    transactional_mails.send_offer_validation_status_update_email,
+                    offer_data,
+                    recipients,
+                )
             )
 
     if len(offer_ids) > 0:

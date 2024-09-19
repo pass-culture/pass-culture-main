@@ -86,7 +86,7 @@ def discard_session() -> None:
 def manage_pro_session(user: users_models.User | None) -> users_models.User | None:
     if not user:
         return None
-    if not (user.has_pro_role or user.has_non_attached_pro_role):
+    if not user.has_any_pro_role:
         return user
 
     if getattr(flask.request, "blueprint", "") not in PRO_APIS:

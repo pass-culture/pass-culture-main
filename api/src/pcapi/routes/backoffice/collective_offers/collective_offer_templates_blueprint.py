@@ -1,4 +1,5 @@
 import datetime
+import functools
 
 from flask import flash
 from flask import redirect
@@ -20,6 +21,7 @@ from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.repository import atomic
+from pcapi.repository import on_commit
 from pcapi.routes.backoffice import autocomplete
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.forms import empty as empty_forms
@@ -263,9 +265,15 @@ def _batch_validate_or_reject_collective_offer_templates(
             if collective_offer_template.venue.bookingEmail
             else [recipient.user.email for recipient in collective_offer_template.venue.managingOfferer.UserOfferers]
         )
-
-        transactional_mails.send_offer_validation_status_update_email(
-            collective_offer_template, old_validation_status, new_validation_status, recipients
+        offer_data = transactional_mails.get_email_data_from_offer(
+            collective_offer_template, old_validation_status, new_validation_status
+        )
+        on_commit(
+            functools.partial(
+                transactional_mails.send_offer_validation_status_update_email,
+                offer_data,
+                recipients,
+            )
         )
 
     search.async_index_collective_offer_template_ids(

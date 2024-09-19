@@ -21,28 +21,29 @@ def send(
             raise ValueError("Recipients should be a sequence, not a single string.")
         recipients = [recipients]
     backend = _get_backend(data)
-    backend().send_mail(recipients=recipients, bcc_recipients=bcc_recipients, data=data)
+    use_pro_subaccount = data.template.use_pro_subaccount if isinstance(data, models.TransactionalEmailData) else False
+    backend(use_pro_subaccount).send_mail(recipients=recipients, bcc_recipients=bcc_recipients, data=data)
 
 
 def create_contact(payload: sendinblue_tasks.UpdateSendinblueContactRequest) -> None:
     backend = import_string(settings.EMAIL_BACKEND)
-    backend().create_contact(payload)
+    backend(payload.use_pro_subaccount).create_contact(payload)
 
 
-def delete_contact(contact_email: str) -> None:
+def delete_contact(contact_email: str, use_pro_subaccount: bool) -> None:
     backend = import_string(settings.EMAIL_BACKEND)
-    backend().delete_contact(contact_email)
+    backend(use_pro_subaccount).delete_contact(contact_email)
 
 
-def get_contact_url(contact_email: str) -> str | None:
+def get_contact_url(contact_email: str, use_pro_subaccount: bool) -> str | None:
     backend = import_string(settings.EMAIL_BACKEND)
-    return backend().get_contact_url(contact_email)
+    return backend(use_pro_subaccount).get_contact_url(contact_email)
 
 
-def get_raw_contact_data(contact_email: str) -> dict:
+def get_raw_contact_data(contact_email: str, use_pro_subaccount: bool) -> dict:
     """Returns all data stored by the email provider on the given contact as a raw dict"""
     backend = import_string(settings.EMAIL_BACKEND)
-    return backend().get_raw_contact_data(contact_email)
+    return backend(use_pro_subaccount).get_raw_contact_data(contact_email)
 
 
 def _get_backend(data: models.TransactionalEmailData | models.TransactionalWithoutTemplateEmailData) -> type:

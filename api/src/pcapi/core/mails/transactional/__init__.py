@@ -38,6 +38,7 @@ from .pro.first_venue_approved_offer_to_pro import send_first_venue_approved_off
 from .pro.invoice_available_to_pro import send_invoice_available_to_pro_email
 from .pro.new_offerer_validation import send_new_offerer_rejection_email_to_pro
 from .pro.new_offerer_validation import send_new_offerer_validation_email_to_pro
+from .pro.offer_validation_to_pro import get_email_data_from_offer
 from .pro.offer_validation_to_pro import send_offer_validation_status_update_email
 from .pro.offerer_attachment_invitation import send_offerer_attachment_invitation
 from .pro.offerer_attachment_invitation import send_offerer_attachment_invitation_accepted

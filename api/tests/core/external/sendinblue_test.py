@@ -13,9 +13,11 @@ from pcapi.core.external.sendinblue import SendinblueUserUpdateData
 from pcapi.core.external.sendinblue import add_contacts_to_list
 from pcapi.core.external.sendinblue import build_file_body
 from pcapi.core.external.sendinblue import format_cultural_survey_answers
+from pcapi.core.external.sendinblue import format_pro_attributes
 from pcapi.core.external.sendinblue import format_user_attributes
 from pcapi.core.external.sendinblue import import_contacts_in_sendinblue
 from pcapi.core.external.sendinblue import make_update_request
+from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
 import pcapi.core.users.testing as sendinblue_testing
 from pcapi.tasks.serialization import sendinblue_tasks
@@ -78,6 +80,7 @@ class FormatUserAttributesTest:
             "DMS_APPLICATION_SUBMITTED": None,
             "DMS_APPLICATION_APPROVED": None,
             "HAS_BOOKINGS": None,
+            "HAS_INDIVIDUAL_OFFERS": None,
             "HAS_OFFERS": None,
             "HAS_BANNER_URL": None,
             "IS_BOOKING_EMAIL": None,
@@ -143,6 +146,7 @@ class FormatUserAttributesTest:
             "DMS_APPLICATION_APPROVED": True,
             "HAS_BANNER_URL": True,
             "HAS_BOOKINGS": True,
+            "HAS_INDIVIDUAL_OFFERS": True,
             "HAS_OFFERS": True,
             "IS_BOOKING_EMAIL": True,
             "IS_PERMANENT": True,
@@ -158,6 +162,41 @@ class FormatUserAttributesTest:
             "VENUE_TYPE": "BOOKSTORE,MOVIE",
             "IS_EAC": False,
             "EAC_MEG": False,
+        }
+
+    def test_new_format_pro_attributes(self):
+        formatted_attributes = format_pro_attributes(common_pro_attributes)
+
+        assert formatted_attributes == {
+            "FIRSTNAME": "First name",
+            "IS_ACTIVE_PRO": True,
+            "IS_PRO": True,
+            "LASTNAME": "Last name",
+            "DEPARTMENT_CODE": "04,06",
+            "DMS_APPLICATION_SUBMITTED": False,
+            "DMS_APPLICATION_APPROVED": True,
+            "HAS_BANNER_URL": True,
+            "HAS_BOOKINGS": True,
+            "HAS_COLLECTIVE_OFFERS": False,
+            "HAS_INDIVIDUAL_OFFERS": True,
+            "HAS_OFFERS": True,
+            "IS_EAC": False,
+            "IS_EAC_MEG": False,
+            "IS_BOOKING_EMAIL": True,
+            "IS_PERMANENT": True,
+            "IS_USER_EMAIL": True,
+            "IS_VIRTUAL": False,
+            "MARKETING_EMAIL_SUBSCRIPTION": True,
+            "OFFERER_NAME": "Offerer Name 1,Offerer Name 2",
+            "OFFERER_TAG": "top-acteur,collectivite",
+            "POSTAL_CODE": "04000,06400",
+            "USER_ID": 2,
+            "USER_IS_ATTACHED": False,
+            "USER_IS_CREATOR": True,
+            "VENUE_COUNT": 2,
+            "VENUE_LABEL": "Venue Label",
+            "VENUE_NAME": "Venue Name 1,Venue Name 2",
+            "VENUE_TYPE": "BOOKSTORE,MOVIE",
         }
 
 
@@ -218,10 +257,10 @@ class BulkImportUsersDataTest:
             ),
         ]
 
-        self.expected_header = "BOOKED_OFFER_CATEGORIES;BOOKED_OFFER_CATEGORIES_COUNT;BOOKED_OFFER_SUBCATEGORIES;BOOKING_COUNT;BOOKING_VENUES_COUNT;CREDIT;DATE_CREATED;DATE_OF_BIRTH;DEPARTMENT_CODE;DEPOSITS_COUNT;DEPOSIT_ACTIVATION_DATE;DEPOSIT_EXPIRATION_DATE;DMS_APPLICATION_APPROVED;DMS_APPLICATION_SUBMITTED;EAC_MEG;ELIGIBILITY;FIRSTNAME;HAS_BANNER_URL;HAS_BOOKINGS;HAS_COLLECTIVE_OFFERS;HAS_COMPLETED_ID_CHECK;HAS_OFFERS;INITIAL_CREDIT;IS_ACTIVE_PRO;IS_BENEFICIARY;IS_BENEFICIARY_18;IS_BOOKING_EMAIL;IS_CURRENT_BENEFICIARY;IS_EAC;IS_ELIGIBLE;IS_EMAIL_VALIDATED;IS_FORMER_BENEFICIARY;IS_PERMANENT;IS_PRO;IS_UNDERAGE_BENEFICIARY;IS_USER_EMAIL;IS_VIRTUAL;LASTNAME;LAST_BOOKING_DATE;LAST_FAVORITE_CREATION_DATE;LAST_VISIT_DATE;MARKETING_EMAIL_SUBSCRIPTION;MOST_BOOKED_MOVIE_GENRE;MOST_BOOKED_MUSIC_TYPE;MOST_BOOKED_OFFER_SUBCATEGORY;MOST_FAVORITE_OFFER_SUBCATEGORIES;OFFERER_NAME;OFFERER_TAG;PERMANENT_THEME_PREFERENCE;POSTAL_CODE;PRODUCT_BRUT_X_USE_DATE;USER_ID;USER_IS_ATTACHED;USER_IS_CREATOR;VENUE_COUNT;VENUE_LABEL;VENUE_NAME;VENUE_TYPE;EMAIL"
-        self.eren_expected_file_body = "CINEMA,LIVRE;2;ABO_LIVRE_NUMERIQUE,CARTE_CINE_ILLIMITE,CINE_PLEIN_AIR;4;3;480.00;06-02-2021;06-05-2003;12;1;;;;;;age-18;First name;;;;Yes;;500;;Yes;Yes;;Yes;;Yes;Yes;No;;No;No;;;Last name;06-05-2021;;;Yes;COMEDY;900;CINE_PLEIN_AIR;CINE_PLEIN_AIR,SUPPORT_PHYSIQUE_FILM;;;cinema;;06-05-2021;1;;;;;;;eren.yeager@shinganshina.paradis"
-        self.mikasa_expected_file_body = "CINEMA,LIVRE;2;ABO_LIVRE_NUMERIQUE,CARTE_CINE_ILLIMITE,CINE_PLEIN_AIR;4;3;480.00;06-02-2021;06-05-2003;12;1;;;;;;age-18;First name;;;Yes;Yes;;500;;Yes;Yes;;Yes;;Yes;Yes;No;;Yes;No;;;Last name;06-05-2021;;;Yes;COMEDY;900;CINE_PLEIN_AIR;CINE_PLEIN_AIR,SUPPORT_PHYSIQUE_FILM;;;cinema;;06-05-2021;2;;;;;;;mikasa.ackerman@shinganshina.paradis"
-        self.armin_expected_file_body = "CINEMA,LIVRE;2;ABO_LIVRE_NUMERIQUE,CARTE_CINE_ILLIMITE,CINE_PLEIN_AIR;4;3;480.00;06-02-2021;06-05-2003;12;1;;;;;;age-18;First name;;;;Yes;;500;;Yes;Yes;;Yes;;Yes;Yes;No;;No;No;;;Last name;06-05-2021;;;Yes;COMEDY;900;CINE_PLEIN_AIR;CINE_PLEIN_AIR,SUPPORT_PHYSIQUE_FILM;;;cinema;;06-05-2021;3;;;;;;;armin.arlert@shinganshina.paradis"
+        self.expected_header = "BOOKED_OFFER_CATEGORIES;BOOKED_OFFER_CATEGORIES_COUNT;BOOKED_OFFER_SUBCATEGORIES;BOOKING_COUNT;BOOKING_VENUES_COUNT;CREDIT;DATE_CREATED;DATE_OF_BIRTH;DEPARTMENT_CODE;DEPOSITS_COUNT;DEPOSIT_ACTIVATION_DATE;DEPOSIT_EXPIRATION_DATE;DMS_APPLICATION_APPROVED;DMS_APPLICATION_SUBMITTED;EAC_MEG;ELIGIBILITY;FIRSTNAME;HAS_BANNER_URL;HAS_BOOKINGS;HAS_COLLECTIVE_OFFERS;HAS_COMPLETED_ID_CHECK;HAS_INDIVIDUAL_OFFERS;HAS_OFFERS;INITIAL_CREDIT;IS_ACTIVE_PRO;IS_BENEFICIARY;IS_BENEFICIARY_18;IS_BOOKING_EMAIL;IS_CURRENT_BENEFICIARY;IS_EAC;IS_EAC_MEG;IS_ELIGIBLE;IS_EMAIL_VALIDATED;IS_FORMER_BENEFICIARY;IS_PERMANENT;IS_PRO;IS_UNDERAGE_BENEFICIARY;IS_USER_EMAIL;IS_VIRTUAL;LASTNAME;LAST_BOOKING_DATE;LAST_FAVORITE_CREATION_DATE;LAST_VISIT_DATE;MARKETING_EMAIL_SUBSCRIPTION;MOST_BOOKED_MOVIE_GENRE;MOST_BOOKED_MUSIC_TYPE;MOST_BOOKED_OFFER_SUBCATEGORY;MOST_FAVORITE_OFFER_SUBCATEGORIES;OFFERER_NAME;OFFERER_TAG;PERMANENT_THEME_PREFERENCE;POSTAL_CODE;PRODUCT_BRUT_X_USE_DATE;USER_ID;USER_IS_ATTACHED;USER_IS_CREATOR;VENUE_COUNT;VENUE_LABEL;VENUE_NAME;VENUE_TYPE;EMAIL"
+        self.eren_expected_file_body = "CINEMA,LIVRE;2;ABO_LIVRE_NUMERIQUE,CARTE_CINE_ILLIMITE,CINE_PLEIN_AIR;4;3;480.00;06-02-2021;06-05-2003;12;1;;;;;;age-18;First name;;;;Yes;;;500;;Yes;Yes;;Yes;;Yes;Yes;No;;No;No;;;Last name;06-05-2021;;;Yes;COMEDY;900;CINE_PLEIN_AIR;CINE_PLEIN_AIR,SUPPORT_PHYSIQUE_FILM;;;cinema;;06-05-2021;1;;;;;;;eren.yeager@shinganshina.paradis"
+        self.mikasa_expected_file_body = "CINEMA,LIVRE;2;ABO_LIVRE_NUMERIQUE,CARTE_CINE_ILLIMITE,CINE_PLEIN_AIR;4;3;480.00;06-02-2021;06-05-2003;12;1;;;;;;age-18;First name;;;Yes;Yes;;;500;;Yes;Yes;;Yes;;Yes;Yes;No;;Yes;No;;;Last name;06-05-2021;;;Yes;COMEDY;900;CINE_PLEIN_AIR;CINE_PLEIN_AIR,SUPPORT_PHYSIQUE_FILM;;;cinema;;06-05-2021;2;;;;;;;mikasa.ackerman@shinganshina.paradis"
+        self.armin_expected_file_body = "CINEMA,LIVRE;2;ABO_LIVRE_NUMERIQUE,CARTE_CINE_ILLIMITE,CINE_PLEIN_AIR;4;3;480.00;06-02-2021;06-05-2003;12;1;;;;;;age-18;First name;;;;Yes;;;500;;Yes;Yes;;Yes;;Yes;Yes;No;;No;No;;;Last name;06-05-2021;;;Yes;COMEDY;900;CINE_PLEIN_AIR;CINE_PLEIN_AIR,SUPPORT_PHYSIQUE_FILM;;;cinema;;06-05-2021;3;;;;;;;armin.arlert@shinganshina.paradis"
 
     def test_build_file_body(self):
         expected = (
@@ -264,12 +303,23 @@ class BulkImportUsersDataTest:
 
         mock_import_contacts.assert_has_calls([call(expected_pro_call), call(expected_young_call)], any_order=True)
 
+    @pytest.mark.parametrize(
+        "feature_flag,use_pro_subaccount",
+        [
+            (True, True),
+            (True, False),
+            (False, True),
+            (False, False),
+        ],
+    )
     @patch("pcapi.core.external.sendinblue.sib_api_v3_sdk.api.contacts_api.ContactsApi.import_contacts")
-    def test_add_contacts_to_list(self, mock_import_contacts):
-        result = add_contacts_to_list(
-            ["eren.yeager@shinganshina.paradis", "armin.arlert@shinganshina.paradis"],
-            SENDINBLUE_AUTOMATION_TEST_CONTACT_LIST_ID,
-        )
+    def test_add_contacts_to_list(self, mock_import_contacts, feature_flag, use_pro_subaccount):
+        with override_features(WIP_ENABLE_BREVO_PRO_SUBACCOUNT=feature_flag):
+            result = add_contacts_to_list(
+                ["eren.yeager@shinganshina.paradis", "armin.arlert@shinganshina.paradis"],
+                SENDINBLUE_AUTOMATION_TEST_CONTACT_LIST_ID,
+                use_pro_subaccount=use_pro_subaccount,
+            )
 
         mock_import_contacts.assert_called_once_with(
             RequestContactImport(
@@ -308,10 +358,7 @@ class BulkImportUsersDataTest:
         test_time = datetime.utcnow().strftime("%y%m%d.%H%M")
         thousands_emails = (f"test.{prefix}.{test_time}.{i:06d}@example.net" for i in range(1, count + 1))
 
-        result = add_contacts_to_list(
-            thousands_emails,
-            SENDINBLUE_AUTOMATION_TEST_CONTACT_LIST_ID,
-        )
+        result = add_contacts_to_list(thousands_emails, SENDINBLUE_AUTOMATION_TEST_CONTACT_LIST_ID)
 
         assert result is True
 
@@ -339,27 +386,40 @@ class BulkImportUsersDataTest:
         make_update_request(
             sendinblue_tasks.UpdateSendinblueContactRequest(
                 email=f"test.pro.{datetime.utcnow().strftime('%y%m%d.%H%M')}@example.net",
+                use_pro_subaccount=True,
                 attributes=format_user_attributes(common_pro_attributes),
                 contact_list_ids=[SENDINBLUE_PRO_TESTING_CONTACT_LIST_ID],
                 emailBlacklisted=False,
             )
         )
 
-    def test_make_update_request(self):
+    @pytest.mark.parametrize(
+        "feature_flag,use_pro_subaccount,expected_use_pro_subaccount",
+        [
+            (True, True, True),
+            (True, False, False),
+            (False, True, False),
+            (False, False, False),
+        ],
+    )
+    def test_make_update_request(self, feature_flag, use_pro_subaccount, expected_use_pro_subaccount):
         email = f"test.pro.{datetime.utcnow().strftime('%y%m%d.%H%M')}@example.net"
         attributes = format_user_attributes(common_pro_attributes)
 
-        make_update_request(
-            sendinblue_tasks.UpdateSendinblueContactRequest(
-                email=email,
-                attributes=attributes,
-                contact_list_ids=[SENDINBLUE_PRO_TESTING_CONTACT_LIST_ID],
-                emailBlacklisted=False,
+        with override_features(WIP_ENABLE_BREVO_PRO_SUBACCOUNT=feature_flag):
+            make_update_request(
+                sendinblue_tasks.UpdateSendinblueContactRequest(
+                    email=email,
+                    use_pro_subaccount=use_pro_subaccount,
+                    attributes=attributes,
+                    contact_list_ids=[SENDINBLUE_PRO_TESTING_CONTACT_LIST_ID],
+                    emailBlacklisted=False,
+                )
             )
-        )
 
         assert sendinblue_testing.sendinblue_requests[0] == {
             "email": email,
             "attributes": attributes,
             "emailBlacklisted": False,
+            "use_pro_subaccount": expected_use_pro_subaccount,
         }

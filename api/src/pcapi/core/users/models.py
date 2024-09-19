@@ -651,6 +651,14 @@ class User(PcObject, Base, Model, DeactivableMixin):
         return cls.roles.contains([UserRole.NON_ATTACHED_PRO])
 
     @hybrid_property
+    def has_any_pro_role(self) -> bool:
+        return self.has_pro_role or self.has_non_attached_pro_role
+
+    @has_any_pro_role.expression  # type: ignore[no-redef]
+    def has_any_pro_role(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
+        return expression.or_(cls.roles.contains([UserRole.PRO]), cls.roles.contains([UserRole.NON_ATTACHED_PRO]))
+
+    @hybrid_property
     def has_underage_beneficiary_role(self) -> bool:
         return UserRole.UNDERAGE_BENEFICIARY in self.roles
 

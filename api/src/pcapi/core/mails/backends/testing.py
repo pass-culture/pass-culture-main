@@ -2,6 +2,7 @@ from dataclasses import asdict
 from typing import Iterable
 
 from pcapi.core.users import testing as users_testing
+from pcapi.models.feature import FeatureToggle
 from pcapi.tasks.serialization import sendinblue_tasks
 
 from .. import models
@@ -14,6 +15,10 @@ class TestingBackend(BaseBackend):
     accessible from tests.
     """
 
+    def __init__(self, use_pro_subaccount: bool) -> None:
+        super().__init__()
+        self.use_pro_subaccount = use_pro_subaccount and FeatureToggle.WIP_ENABLE_BREVO_PRO_SUBACCOUNT.is_active()
+
     def send_mail(
         self,
         recipients: Iterable[str],
@@ -24,21 +29,33 @@ class TestingBackend(BaseBackend):
         sent_data["To"] = ", ".join(recipients)
         if bcc_recipients:
             sent_data["Bcc"] = ", ".join(bcc_recipients)
+        sent_data["use_pro_subaccount"] = self.use_pro_subaccount
         testing.outbox.append(sent_data)
 
     def create_contact(self, payload: sendinblue_tasks.UpdateSendinblueContactRequest) -> None:
         users_testing.sendinblue_requests.append(
-            {"email": payload.email, "attributes": payload.attributes, "emailBlacklisted": payload.emailBlacklisted}
+            {
+                "email": payload.email,
+                "attributes": payload.attributes,
+                "emailBlacklisted": payload.emailBlacklisted,
+                "use_pro_subaccount": self.use_pro_subaccount,
+            }
         )
 
     def delete_contact(self, contact_email: str) -> None:
-        users_testing.sendinblue_requests.append({"email": contact_email, "action": "delete"})
+        users_testing.sendinblue_requests.append(
+            {"email": contact_email, "action": "delete", "use_pro_subaccount": self.use_pro_subaccount}
+        )
 
     def get_contact_url(self, contact_email: str) -> None:
-        users_testing.sendinblue_requests.append({"email": contact_email, "action": "get_contact_url"})
+        users_testing.sendinblue_requests.append(
+            {"email": contact_email, "action": "get_contact_url", "use_pro_subaccount": self.use_pro_subaccount}
+        )
 
     def get_raw_contact_data(self, contact_email: str) -> dict:
-        users_testing.sendinblue_requests.append({"email": contact_email, "action": "get_raw_contact_data"})
+        users_testing.sendinblue_requests.append(
+            {"email": contact_email, "action": "get_raw_contact_data", "use_pro_subaccount": self.use_pro_subaccount}
+        )
         if contact_email == "valid_email@example.com":
             # dict from brevo documentation
             return {
