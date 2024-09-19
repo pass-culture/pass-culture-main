@@ -5,12 +5,14 @@ import {
   CollectiveOfferStatus,
   CollectiveOfferDisplayedStatus,
 } from 'apiClient/v1'
+import { useActiveFeature } from 'hooks/useActiveFeature'
 import fullHideIcon from 'icons/full-hide.svg'
 import strokeCalendarIcon from 'icons/stroke-calendar.svg'
 import strokeCheckIcon from 'icons/stroke-check.svg'
 import strokeClockIcon from 'icons/stroke-clock.svg'
 import strokeCloseIcon from 'icons/stroke-close.svg'
 import strokeDoubleCheckIcon from 'icons/stroke-double-check.svg'
+import strokeEuroIcon from 'icons/stroke-euro.svg'
 import strokeHourglassIcon from 'icons/stroke-hourglass.svg'
 import strokeThing from 'icons/stroke-thing.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
@@ -26,6 +28,10 @@ export const CollectiveStatusLabel = ({
   offerStatus,
   offerDisplayedStatus,
 }: CollectiveStatusLabelProps) => {
+  const areCollectiveNewStatusEnabled = useActiveFeature(
+    'ENABLE_COLLECTIVE_NEW_STATUSES'
+  )
+
   switch (offerDisplayedStatus) {
     case CollectiveOfferDisplayedStatus.PENDING:
       return (
@@ -128,7 +134,24 @@ export const CollectiveStatusLabel = ({
           label="expirée"
         />
       )
+    // @ts-expect-error Fallthrough case in switch.
     case CollectiveOfferDisplayedStatus.REIMBURSED:
+      if (areCollectiveNewStatusEnabled) {
+        return (
+          <StatusLabel
+            className={style['status-reimbursed']}
+            icon={
+              <SvgIcon
+                alt=""
+                src={strokeEuroIcon}
+                className={style['status-label-icon']}
+              />
+            }
+            label="remboursée"
+          />
+        )
+      }
+    // eslint-disable-next-line no-fallthrough
     case CollectiveOfferDisplayedStatus.ENDED:
       return (
         <StatusLabel
