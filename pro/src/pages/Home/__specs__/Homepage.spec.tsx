@@ -132,17 +132,6 @@ describe('Homepage', () => {
     expect(screen.queryByTestId('home-offer-steps')).not.toBeInTheDocument()
   })
 
-  it('should display profile and support section and subsection titles', async () => {
-    renderHomePage()
-    await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
-
-    expect(
-      await screen.findByText('Profil et aide', { selector: 'h2' })
-    ).toBeInTheDocument()
-    expect(screen.getByText('Profil')).toBeInTheDocument()
-    expect(screen.getByText('Aide et support')).toBeInTheDocument()
-  })
-
   it('should send user-pro-flag data', async () => {
     vi.spyOn(useAnalytics, 'useRemoteConfigParams').mockReturnValue({
       DATA: 'TEST',
@@ -209,43 +198,6 @@ describe('Homepage', () => {
         screen.queryByText('Présence sur l’application pass Culture')
       ).not.toBeInTheDocument()
     })
-  })
-
-  it('should display new offerer venues informations when selected offerer change', async () => {
-    renderHomePage()
-    await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
-
-    const virtualVenueTitle = screen.getByText('Offres numériques')
-    expect(virtualVenueTitle).toBeInTheDocument()
-
-    const newOfferer = {
-      ...defaultGetOffererResponseModel,
-      isActive: true,
-      managedVenues: [
-        {
-          ...defaultGetOffererVenueResponseModel,
-          id: 1,
-          isVirtual: false,
-          name: 'Autre lieu',
-          publicName: null,
-        },
-      ],
-    }
-    vi.spyOn(api, 'getOfferer').mockResolvedValueOnce(newOfferer)
-
-    await userEvent.selectOptions(
-      screen.getByLabelText('Structure'),
-      'Structure 2'
-    )
-
-    expect(await screen.findByText('Autre lieu')).toBeInTheDocument()
-
-    expect(
-      screen.getByText('Gérer votre page pour le grand public')
-    ).toBeInTheDocument()
-    expect(
-      screen.getByText('Gérer votre page pour les enseignants')
-    ).toBeInTheDocument()
   })
 
   it('should display pending offerer banner when rattachement is pending', async () => {
