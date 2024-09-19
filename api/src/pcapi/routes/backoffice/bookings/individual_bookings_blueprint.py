@@ -27,6 +27,7 @@ from pcapi.core.bookings import repository as booking_repository
 from pcapi.core.external_bookings.cds import exceptions as cds_exceptions
 from pcapi.core.external_bookings.cgr import exceptions as cgr_exceptions
 from pcapi.core.finance import models as finance_models
+from pcapi.core.geography import models as geography_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
@@ -253,12 +254,16 @@ def mark_booking_as_cancelled(booking_id: int) -> utils.BackofficeResponse:
     booking = (
         bookings_models.Booking.query.filter_by(id=booking_id)
         .options(
-            sa.orm.load_only(bookings_models.Booking.stock.offer.offererAddress.label),
-            sa.orm.load_only(
-                bookings_models.Booking.stock.offer.offererAddress.address.street,
-                bookings_models.Booking.stock.offer.offererAddress.address.postalCode,
-                bookings_models.Booking.stock.offer.offererAddress.address.city,
-            ),
+            sa.orm.joinedload(bookings_models.Booking.stock)
+            .load_only(offers_models.Stock.id)
+            .joinedload(offers_models.Stock.offer)
+            .load_only(offers_models.Offer.id)
+            .joinedload(offers_models.Offer.offererAddress)
+            .load_only(offerers_models.OffererAddress.label)
+            .joinedload(offerers_models.OffererAddress.address)
+            .load_only(
+                geography_models.Address.street, geography_models.Address.postalCode, geography_models.Address.city
+            )
         )
         .one_or_none()
     )

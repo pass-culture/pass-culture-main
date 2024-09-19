@@ -31,6 +31,7 @@ def get_booking_cancellation_confirmation_by_pro_email_data(
             "EVENT_HOUR": event_hour,
             "QUANTITY": quantity,
             "RESERVATIONS_NUMBER": len(bookings),
+            "OFFER_ADDRESS": offer.fullAddress,
         },
     )
 

@@ -50,6 +50,7 @@ class BookingCancellationConfirmationByProEmailData:
             "EVENT_HOUR": "12h20",
             "QUANTITY": 2,
             "RESERVATIONS_NUMBER": 1,
+            "OFFER_ADDRESS": offer.fullAddress,
         }
 
     def test_should_return_email_data_when_multiple_bookings_and_offer_is_a_thing(self):
@@ -95,6 +96,7 @@ class BookingCancellationConfirmationByProEmailData:
             "EVENT_HOUR": "",
             "QUANTITY": 7,
             "RESERVATIONS_NUMBER": 2,
+            "OFFER_ADDRESS": offer.fullAddress,
         }
 
 
