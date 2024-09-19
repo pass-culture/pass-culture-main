@@ -364,21 +364,13 @@ type PatchPayload = {
 }
 
 export function serializeDetailsPatchData(
-  formValues: DetailsFormValues,
-  isLastProviderOffer: boolean
+  formValues: DetailsFormValues
 ): PatchPayload {
-  let extraData
-  if (!isLastProviderOffer) {
-    // Always remove EAN from serializedExtraData.
-    extraData = serializeExtraData(formValues)
-    delete extraData.ean
-  }
-
   return {
     name: formValues.name,
     subcategoryId: formValues.subcategoryId,
     description: formValues.description,
     durationMinutes: serializeDurationMinutes(formValues.durationMinutes ?? ''),
-    extraData,
+    extraData: serializeExtraData(formValues),
   }
 }

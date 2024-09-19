@@ -462,6 +462,7 @@ describe('screens:IndividualOffer::Informations', () => {
       extraData: {
         author: 'Chuck Norris',
         gtl_id: '',
+        ean: '1234567891234',
         performer: 'Le Poing de Chuck',
         showSubType: 'PEGI 18',
         showType: 'Cinéma',

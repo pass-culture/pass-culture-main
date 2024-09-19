@@ -54,6 +54,7 @@ export const UsefulInformationScreen = ({
   const { mutate } = useSWRConfig()
   const { subCategories } = useIndividualOfferContext()
   const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
+  const isSearchByEanEnabled = useActiveFeature('WIP_EAN_CREATION')
 
   const [isWithdrawalMailDialogOpen, setIsWithdrawalMailDialogOpen] =
     useState<boolean>(false)
@@ -95,12 +96,14 @@ export const UsefulInformationScreen = ({
     }
 
     try {
+      const shouldNotSendExtraData = isSearchByEanEnabled && !!offer.productId
       const response = await api.patchOffer(
         offer.id,
         serializePatchOffer({
           offer,
           formValues,
           shouldSendMail: sendWithdrawalMail,
+          shouldNotSendExtraData,
         })
       )
 

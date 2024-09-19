@@ -101,16 +101,31 @@ export const DetailsScreen = ({ venues }: DetailsScreenProps): JSX.Element => {
   const onSubmit = async (formValues: DetailsFormValues): Promise<void> => {
     // Submit
     try {
-      const response = !offer
-        ? await api.postDraftOffer(serializeDetailsPostData(formValues))
-        : await api.patchDraftOffer(
-            offer.id,
-            serializeDetailsPatchData(formValues, !!offer.lastProvider)
-          )
+      // Draft offer PATCH requests are useless for product-based offers
+      // and synchronized / provider offers since neither of the inputs displayed in
+      // DetailsScreen can be edited at all
+      const isProviderOffer = !!offer?.lastProvider
+      const shouldNotPatchData =
+        isProviderOffer || (!isSearchByEanEnabled && !!offer?.productId)
+      let receivedOfferId = offer?.id
+      let response
+      if (!offer) {
+        response = await api.postDraftOffer(
+          serializeDetailsPostData(formValues)
+        )
+      } else if (!shouldNotPatchData) {
+        // Draft offer PATCH requests are useless for product-based offers and synchronized / provider offers since neither of the inputs displayed in DetailsScreen can be edited at all
+        response = await api.patchDraftOffer(
+          offer.id,
+          serializeDetailsPatchData(formValues)
+        )
+      }
 
-      const receivedOfferId = response.id
-      await handleImageOnSubmit(receivedOfferId)
-      await mutate([GET_OFFER_QUERY_KEY, receivedOfferId])
+      if (response) {
+        receivedOfferId = response.id
+        await handleImageOnSubmit(receivedOfferId)
+        await mutate([GET_OFFER_QUERY_KEY, receivedOfferId])
+      }
 
       // replace url to fix back button
       navigate(
