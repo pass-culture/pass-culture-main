@@ -46,6 +46,7 @@ describe('SignupJourneyRoutes::trackers', () => {
   it('should track logout', async () => {
     renderSignupJourneyRoutes()
 
+    await userEvent.click(screen.getByTestId('offerer-select'))
     await userEvent.click(screen.getByText('Se déconnecter'))
     expect(mockLogEvent).toHaveBeenCalledTimes(1)
     expect(mockLogEvent).toHaveBeenNthCalledWith(1, Events.CLICKED_LOGOUT, {
