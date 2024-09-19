@@ -4,7 +4,7 @@ from unittest.mock import patch
 
 import pytest
 
-from pcapi.connectors.api_adresse import AddressInfo
+from pcapi.connectors import api_adresse
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.categories import subcategories_v2 as subcategories
 import pcapi.core.mails.testing as mails_testing
@@ -253,7 +253,7 @@ class Returns200Test:
                 "label": label,
             },
         }
-        get_address_mock.return_value = AddressInfo(
+        get_address_mock.return_value = api_adresse.AddressInfo(
             street="1 rue de la paix",
             city="Paris",
             citycode="75102",
@@ -278,6 +278,104 @@ class Returns200Test:
         assert address.postalCode == "75102"
         assert address.latitude == Decimal("48.85660")
         assert address.longitude == Decimal("2.3522")
+        assert address.isManualEdition is False
+
+    @patch("pcapi.connectors.api_adresse.get_municipality_centroid")
+    def test_patch_offer_with_manual_address_edition(self, mocked_get_centroid, client):
+        # Given
+        user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+        offer = offers_factories.OfferFactory(
+            subcategoryId=subcategories.RENCONTRE.id,
+            venue=venue,
+            name="New name",
+            description="description",
+        )
+        mocked_get_centroid.return_value = api_adresse.AddressInfo(
+            id="98826",
+            label="Poum",
+            postcode="98826",
+            citycode="98826",
+            latitude=-20.203,
+            longitude=164.073,
+            score=0.9371472727272726,
+            city="Poum",
+            street=None,
+        )
+
+        # When
+        data = {
+            "name": "Visite des Marais Salins de Kô",
+            "externalTicketOfficeUrl": "http://example.net",
+            "mentalDisabilityCompliant": True,
+            "address": {
+                "street": "3, Chemin de la Plage",
+                "city": "Poum, Tiabet",
+                "postalCode": "98826",
+                "latitude": -20.08521415490879,
+                "longitude": 164.03239215718415,
+                "label": "Marais Salins de Kô",
+                "isManualEdition": True,
+            },
+        }
+
+        response = client.with_session_auth("user@example.com").patch(f"/offers/{offer.id}", json=data)
+
+        assert response.status_code == 200
+        assert response.json["id"] == offer.id
+        updated_offer = Offer.query.get(offer.id)
+        address = updated_offer.offererAddress.address
+        assert updated_offer.offererAddress.label == "Marais Salins de Kô"
+        assert address.street == data["address"]["street"]
+        assert address.city == data["address"]["city"]
+        assert address.postalCode == data["address"]["postalCode"]
+        assert address.inseeCode == "98826"
+        assert address.latitude == Decimal("-20.08521")
+        assert address.longitude == Decimal("164.03239")
+        assert address.isManualEdition is True
+
+    @patch("pcapi.connectors.api_adresse.get_municipality_centroid")
+    def test_unknown_result_from_api_adresse_doesnt_block_offer_creation(self, mocked_get_centroid, client):
+        # Given
+        user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+        offer = offers_factories.OfferFactory(
+            subcategoryId=subcategories.RENCONTRE.id,
+            venue=venue,
+            name="New name",
+            description="description",
+        )
+        mocked_get_centroid.side_effect = api_adresse.NoResultException
+        # When
+        data = {
+            "name": "Visite des Marais Salins de Kô",
+            "externalTicketOfficeUrl": "http://example.net",
+            "mentalDisabilityCompliant": True,
+            "address": {
+                "street": "3, Chemin de la Plage",
+                "city": "Poum, Tiabet",
+                "postalCode": "98826",
+                "latitude": -20.08521415490879,
+                "longitude": 164.03239215718415,
+                "label": "Marais Salins de Kô",
+                "isManualEdition": True,
+            },
+        }
+
+        response = client.with_session_auth("user@example.com").patch(f"/offers/{offer.id}", json=data)
+
+        assert response.status_code == 200
+        assert response.json["id"] == offer.id
+        updated_offer = Offer.query.get(offer.id)
+        address = updated_offer.offererAddress.address
+        assert updated_offer.offererAddress.label == "Marais Salins de Kô"
+        assert address.street == data["address"]["street"]
+        assert address.city == data["address"]["city"]
+        assert address.postalCode == data["address"]["postalCode"]
+        assert address.inseeCode == None
+        assert address.latitude == Decimal("-20.08521")
+        assert address.longitude == Decimal("164.03239")
+        assert address.isManualEdition is True
 
     @pytest.mark.parametrize("label", ["", None, True])
     @patch("pcapi.connectors.api_adresse.get_address")
@@ -316,7 +414,7 @@ class Returns200Test:
                 "label": label,
             },
         }
-        get_address_mock.return_value = AddressInfo(
+        get_address_mock.return_value = api_adresse.AddressInfo(
             street="1 rue de la paix",
             city="Paris",
             citycode="75102",
@@ -339,6 +437,7 @@ class Returns200Test:
         assert address.postalCode == "75102"
         assert address.latitude == Decimal("48.85660")
         assert address.longitude == Decimal("2.3522")
+        assert address.isManualEdition is False
 
     def test_withdrawal_can_be_updated(self, client):
         offer = offers_factories.OfferFactory(

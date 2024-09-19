@@ -4,6 +4,7 @@
 /* eslint-disable */
 export type AddressBodyModel = {
   city: string;
+  isManualEdition?: boolean;
   label?: string | null;
   latitude: (number | string);
   longitude: (number | string);
