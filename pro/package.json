@@ -52,7 +52,7 @@
     "classnames": "^2.5.1",
     "date-fns": "^3.6.0",
     "date-fns-tz": "^3.1.3",
-    "design-system": "https://github.com/pass-culture/design-system.git#v0.0.11",
+    "design-system": "https://github.com/pass-culture/design-system.git#v0.0.12",
     "dompurify": "^3.1.6",
     "downshift": "^9.0.8",
     "formik": "^2.4.6",
