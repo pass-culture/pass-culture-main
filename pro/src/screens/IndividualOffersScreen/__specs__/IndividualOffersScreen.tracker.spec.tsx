@@ -18,15 +18,18 @@ import {
   IndividualOffersScreenProps,
 } from '../IndividualOffersScreen'
 
-const renderOffers = (props: IndividualOffersScreenProps) =>
+const renderOffers = (props: IndividualOffersScreenProps) => {
+  const user = sharedCurrentUserFactory({ navState: null })
   renderWithProviders(<IndividualOffersScreen {...props} />, {
+    user,
     storeOverrides: {
       user: {
-        selectedOffererId: defaultGetOffererResponseModel.id,
-        currentUser: sharedCurrentUserFactory(),
+        selectedOffererId: 1,
+        currentUser: user,
       },
     },
   })
+}
 
 vi.mock('apiClient/api', () => ({
   api: {
