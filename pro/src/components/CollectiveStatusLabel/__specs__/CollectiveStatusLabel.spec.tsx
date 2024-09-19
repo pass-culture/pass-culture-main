@@ -2,24 +2,10 @@ import { render, screen } from '@testing-library/react'
 
 import {
   CollectiveOfferDisplayedStatus,
-  CollectiveOfferResponseModel,
   CollectiveOfferStatus,
 } from 'apiClient/v1'
-import { collectiveOfferFactory } from 'utils/collectiveApiFactories'
 
-import { CollectiveOfferStatusCell } from '../CollectiveOfferStatusCell'
-
-const renderCollectiveStatusLabel = (offer: CollectiveOfferResponseModel) => {
-  return render(
-    <table>
-      <tbody>
-        <tr>
-          <CollectiveOfferStatusCell offer={offer} />
-        </tr>
-      </tbody>
-    </table>
-  )
-}
+import { CollectiveStatusLabel } from '../CollectiveStatusLabel'
 
 interface TestCaseProps {
   status?: CollectiveOfferStatus
@@ -79,11 +65,13 @@ describe('CollectiveStatusLabel', () => {
   it.each(testCases)(
     'should render %s status',
     ({ displayedStatus, status, expectedLabel }: TestCaseProps) => {
-      const collectiveOffer = collectiveOfferFactory({
-        displayedStatus: displayedStatus,
-        status: status,
-      })
-      renderCollectiveStatusLabel(collectiveOffer)
+      const unrelevantStatus = CollectiveOfferStatus.PENDING
+      render(
+        <CollectiveStatusLabel
+          offerDisplayedStatus={displayedStatus}
+          offerStatus={status ?? unrelevantStatus}
+        />
+      )
       expect(screen.getByText(expectedLabel)).toBeInTheDocument()
     }
   )
