@@ -276,7 +276,7 @@ describe('OfferType', () => {
     await waitFor(() => {
       expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
         undefined,
-        undefined,
+        '1',
         [
           CollectiveOfferDisplayedStatus.PENDING,
           CollectiveOfferDisplayedStatus.REJECTED,
