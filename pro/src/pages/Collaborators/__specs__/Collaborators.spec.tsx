@@ -182,9 +182,17 @@ describe('AttachmentInvitations', () => {
         { email: 'email1@gmail.com', status: OffererMemberStatus.VALIDATED },
         { email: 'email2@gmail.com', status: OffererMemberStatus.VALIDATED },
         { email: 'email3@gmail.com', status: OffererMemberStatus.VALIDATED },
+        { email: 'email7@gmail.com', status: OffererMemberStatus.VALIDATED },
+        { email: 'email8@gmail.com', status: OffererMemberStatus.VALIDATED },
+        { email: 'email9@gmail.com', status: OffererMemberStatus.VALIDATED },
+        { email: 'email10@gmail.com', status: OffererMemberStatus.VALIDATED },
+        { email: 'email12@gmail.com', status: OffererMemberStatus.VALIDATED },
         { email: 'email4@gmail.com', status: OffererMemberStatus.PENDING },
         { email: 'email5@gmail.com', status: OffererMemberStatus.PENDING },
         { email: 'email6@gmail.com', status: OffererMemberStatus.PENDING },
+        { email: 'email11@gmail.com', status: OffererMemberStatus.VALIDATED },
+        { email: 'email13@gmail.com', status: OffererMemberStatus.VALIDATED },
+        { email: 'email14@gmail.com', status: OffererMemberStatus.VALIDATED },
       ],
     })
 
@@ -194,7 +202,7 @@ describe('AttachmentInvitations', () => {
       expect(screen.getByText('email1@gmail.com')).toBeInTheDocument()
     })
 
-    expect(screen.getAllByText(/Validé/)).toHaveLength(3)
+    expect(screen.getAllByText(/Validé/)).toHaveLength(8)
     expect(screen.getAllByText(/En attente/)).toHaveLength(2)
 
     expect(
