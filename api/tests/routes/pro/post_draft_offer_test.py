@@ -58,6 +58,22 @@ class Returns201Test:
         assert response_dict["isDuo"] == True
         assert not offer.product
 
+    @override_features(WIP_EAN_CREATION=False)
+    def test_create_offer_cd_or_vinyl_without_product_venue_record_store_should_succeed(self, client):
+        venue = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.RECORD_STORE)
+        offerer = venue.managingOfferer
+        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
+
+        data = {
+            "name": "Celeste",
+            "subcategoryId": subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
+            "venueId": venue.id,
+            "extraData": {"gtl_id": "07000000"},
+        }
+        response = client.with_session_auth("user@example.com").post("/offers/draft", json=data)
+
+        assert response.status_code == 201
+
     def test_created_offer_from_product_should_return_product_id(self, client):
         venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
