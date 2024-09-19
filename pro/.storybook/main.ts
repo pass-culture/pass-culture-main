@@ -3,13 +3,15 @@ import type { StorybookConfig } from '@storybook/react-vite'
 const config: StorybookConfig = {
   stories: [
     '../src/ui-kit/Icons/Icons.stories.tsx',
+    '../src/**/*.mdx',
     '../src/**/*.stories.@(js|jsx|ts|tsx)',
   ],
   addons: [
     '@storybook/addon-a11y',
     '@storybook/addon-controls',
+    '@storybook/addon-docs',
     '@storybook/preset-scss',
-    'storybook-addon-react-router-v6',
+    'storybook-addon-remix-react-router',
   ],
   typescript: {
     reactDocgen: 'react-docgen-typescript',
@@ -27,8 +29,7 @@ const config: StorybookConfig = {
     return config;
   },
   docs: {
-    autodocs: false,
-    defaultName: 'Documentation',
+    defaultName: 'Documentation'
   },
 }
 
