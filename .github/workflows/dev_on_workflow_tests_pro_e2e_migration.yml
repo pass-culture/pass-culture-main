@@ -1,4 +1,4 @@
-name: "3 [on_workflow] Tests E2E"
+name: "3 [on_workflow] Tests E2E - migrations"
 
 on:
   workflow_call:
@@ -127,8 +127,6 @@ jobs:
         with:
           resource: http://localhost:5001/health/api
           timeout: 120000
-      - name: "Load sandbox"
-        run: ../pc sandbox -n e2e
       - name: "Build vite application"
         run: yarn build:development
       - name: "Serve vite preview"
@@ -145,9 +143,10 @@ jobs:
           wait-on-timeout: 600
           working-directory: pro
           browser: chrome
-          config-file: cypress/old_cypress.config.ts
+          config-file: cypress/cypress.config.ts
           env: TAGS="@P0"
           record: ${{ github.ref == 'refs/heads/master' }} # for Cypress Cloud
+          spec: "cypress/e2e/migrations/*"
         env:
           CYPRESS_RECORD_KEY: ${{ steps.secrets.outputs.CYPRESS_CLOUD_RECORD_KEY }}
           CYPRESS_PROJECT_ID: ${{ steps.secrets.outputs.CYPRESS_CLOUD_PROJECT_ID }}

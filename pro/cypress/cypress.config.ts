@@ -25,8 +25,6 @@ async function setupNodeEvents(
 // ts-unused-exports:disable-next-line
 export default defineConfig({
   e2e: {
-    specPattern: '**/*.feature',
-
     setupNodeEvents,
 
     baseUrl: 'http://localhost:3001',
