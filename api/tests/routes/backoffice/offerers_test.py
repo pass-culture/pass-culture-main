@@ -1458,7 +1458,8 @@ class GetOffererVenuesTest(GetEndpointHelper):
 
     # - session + authenticated user (2 queries)
     # - venues with joined data (1 query)
-    expected_num_queries = 3
+    # - connect as extended FF (1 query)
+    expected_num_queries = 4
 
     def test_get_managed_venues(self, authenticated_client, offerer):
         now = datetime.datetime.utcnow()
@@ -1658,7 +1659,8 @@ class GetOffererBankAccountTest(GetEndpointHelper):
 
     # - session + authenticated user (2 queries)
     # - bank accounts (1 query)
-    expected_num_queries = 3
+    # - connect as extended FF (1 query)
+    expected_num_queries = 4
 
     def test_get_bank_accounts(self, authenticated_client, offerer):
         offerer = offerers_factories.OffererFactory()

@@ -31,35 +31,23 @@ def booking_app_link(booking: Booking) -> str:
 
 
 def build_pc_pro_offer_link(offer: CollectiveOffer | CollectiveOfferTemplate | Offer) -> str:
+    return f"{settings.PRO_URL}{build_pc_pro_offer_path(offer)}"
+
+
+def build_pc_pro_offer_path(offer: CollectiveOffer | CollectiveOfferTemplate | Offer) -> str:
     if isinstance(offer, CollectiveOffer):
-        return f"{settings.PRO_URL}/offre/{offer.id}/collectif/edition"
+        return f"/offre/{offer.id}/collectif/edition"
 
     if isinstance(offer, CollectiveOfferTemplate):
-        return f"{settings.PRO_URL}/offre/T-{offer.id}/collectif/edition"
+        return f"/offre/T-{offer.id}/collectif/edition"
 
-    return f"{settings.PRO_URL}/offre/individuelle/{offer.id}/recapitulatif"
-
-
-def build_pc_pro_offerer_link(offerer: offerers_models.Offerer) -> str:
-    return f"{settings.PRO_URL}/accueil?structure={offerer.id}&from-bo=true"
+    return f"/offre/individuelle/{offer.id}/recapitulatif"
 
 
 def build_pc_pro_venue_link(venue: offerers_models.Venue) -> str:
     if venue.isVirtual:
-        return build_pc_pro_offerer_link(venue.managingOfferer)
+        return f"{settings.PRO_URL}/accueil?structure={venue.managingOfferer.id}&from-bo=true"
     return f"{settings.PRO_URL}/structures/{venue.managingOffererId}/lieux/{venue.id}"
-
-
-def build_pc_pro_venue_parameters_link(venue: offerers_models.Venue) -> str:
-    return build_pc_pro_venue_link(venue) + "/parametres"
-
-
-def build_pc_pro_venue_bookings_link(venue: offerers_models.Venue) -> str:
-    return f"{settings.PRO_URL}/reservations?offerVenueId={venue.id}"
-
-
-def build_pc_pro_venue_offers_link(venue: offerers_models.Venue) -> str:
-    return f"{settings.PRO_URL}/offres?lieu={venue.id}"
 
 
 def build_pc_pro_bank_account_link(bank_account: finance_models.BankAccount) -> str:

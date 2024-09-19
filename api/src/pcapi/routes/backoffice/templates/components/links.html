@@ -30,7 +30,7 @@
       <a href="{{ redirect | build_pro_link }}"
          class="{{ class }}"
          onclick="document.getElementById('connect-as-form-{{ object_type }}-{{ object_id }}-{{ randomness }}').submit(); return false;">
-        {{ text_link }}<i class="bi bi-box-arrow-up-right"></i>
+        {{ text_link }} <i class="bi bi-box-arrow-up-right"></i>
       </a>
     {% else %}
       {{ text_link }}
@@ -128,30 +128,27 @@
 {% macro build_pro_offerer_offers_link(offerer, is_feature_active, has_permission) %}
   {{ build_connect_as_pseudo_link(offerer.id, "offerer", "/offres?structure="~offerer.id~"&from-bo=true", "Offres associées", "fw-bold link-primary", is_feature_active, has_permission) }}
 {% endmacro %}
-{% macro build_offerer_name_to_pc_pro_link(offerer) %}
-  <a href="{{ offerer | pc_pro_offerer_link }}"
-     class="link-primary"
-     target="_blank">{{ offerer.name }} <i class="bi bi-box-arrow-up-right"></i></a>
+{% macro build_offerer_name_to_pc_pro_link(offerer, is_feature_active, has_permission) %}
+  {{ build_connect_as_pseudo_link(offerer.id, "offerer", "/accueil?structure="~offerer.id~"&from-bo=true", offerer.name, "link-primary", is_feature_active, has_permission) }}
 {% endmacro %}
-{% macro build_venue_name_to_pc_pro_link(venue, public_name=true, siret=false) %}
-  <a href="{{ venue | pc_pro_venue_link }}"
-     class="link-primary"
-     target="_blank">{{ ((public_name and venue.publicName) or venue.name) + ((" - " + venue.siret) if siret else "") }} <i class="bi bi-box-arrow-up-right"></i></a>
+{% macro build_venue_name_to_pc_pro_link(venue, is_feature_active, has_permission, public_name=true, siret=false) %}
+  {% if venue.isVirtual %}
+    {{ build_connect_as_pseudo_link(venue.id, "venue", "/accueil?structure="~venue.managingOffererId~"&from-bo=true", (((public_name and venue.publicName) or venue.name) + ((" - " + venue.siret) if siret else "")), "link-primary", is_feature_active, has_permission) }}
+  {% else %}
+    {{ build_connect_as_pseudo_link(venue.id, "venue", "/structures/"~venue.managingOffererId~"/lieux/"~venue.id~"", (((public_name and venue.publicName) or venue.name) + ((" - " + venue.siret) if siret else "")), "link-primary", is_feature_active, has_permission) }}
+  {% endif %}
 {% endmacro %}
-{% macro build_venue_parameters_name_to_pc_pro_link(venue, public_name=true, siret=false) %}
-  <a href="{{ venue | pc_pro_venue_parameters_link }}"
-     class="link-primary"
-     target="_blank">{{ ((public_name and venue.publicName) or venue.name) + ((" - " + venue.siret) if siret else "") }} <i class="bi bi-box-arrow-up-right"></i></a>
+{% macro build_venue_parameters_name_to_pc_pro_link(venue, is_feature_active, has_permission) %}
+  {{ build_connect_as_pseudo_link(venue.id, "venue", "/structures/"~venue.managingOffererId~"/lieux/"~venue.id~"/parametres", (public_name or venue.name) , "link-primary", is_feature_active, has_permission) }}
 {% endmacro %}
-{% macro build_offer_name_to_pc_pro_link(offer) %}
-  <a href="{{ offer | pc_pro_offer_link }}"
-     class="link-primary"
-     target="_blank">{{ offer.name }} <i class="bi bi-box-arrow-up-right"></i></a>
+{% macro build_offer_name_to_pc_pro_link(offer, is_feature_active, has_permission) %}
+  {# this macro must be on one line or it breaks the connect as feature #}
+  {# djlint:off #}{% macro build_offer_name_to_pc_pro_url(offer) %}{{ offer | pc_pro_offer_link }}{% endmacro %}{# djlint:on #}
+  {% set offer_name_to_pc_pro_url = build_offer_name_to_pc_pro_url(offer) %}
+  {{ build_connect_as_pseudo_link(offer.id, "offer", offer_name_to_pc_pro_url, offer.name , "link-primary", is_feature_active, has_permission) }}
 {% endmacro %}
-{% macro build_bank_account_name_to_pc_pro_link(bank_account) %}
-  <a href="{{ bank_account | pc_pro_bank_account_link }}"
-     class="link-primary"
-     target="_blank">{{ bank_account.label }} <i class="bi bi-box-arrow-up-right"></i></a>
+{% macro build_bank_account_name_to_pc_pro_link(bank_account, is_feature_active, has_permission) %}
+  {{ build_connect_as_pseudo_link(bank_account.id, "bank_account", "/remboursements/informations-bancaires?structure="~bank_account.offererId~"&from-bo=true", bank_account.label , "link-primary", is_feature_active, has_permission) }}
 {% endmacro %}
 {# ----- external links ----- #}
 {% macro build_siren_to_external_link(offerer) %}

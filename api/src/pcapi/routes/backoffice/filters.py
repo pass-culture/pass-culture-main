@@ -1395,13 +1395,7 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["unescape"] = html.unescape
     app.jinja_env.filters["action_to_name"] = action_to_name
     app.jinja_env.filters["field_list_get_number_from_name"] = field_list_get_number_from_name
-    app.jinja_env.filters["pc_pro_bank_account_link"] = urls.build_pc_pro_bank_account_link
-    app.jinja_env.filters["pc_pro_offer_link"] = urls.build_pc_pro_offer_link
-    app.jinja_env.filters["pc_pro_offerer_link"] = urls.build_pc_pro_offerer_link
-    app.jinja_env.filters["pc_pro_venue_bookings_link"] = urls.build_pc_pro_venue_bookings_link
-    app.jinja_env.filters["pc_pro_venue_offers_link"] = urls.build_pc_pro_venue_offers_link
-    app.jinja_env.filters["pc_pro_venue_link"] = urls.build_pc_pro_venue_link
-    app.jinja_env.filters["pc_pro_venue_parameters_link"] = urls.build_pc_pro_venue_parameters_link
+    app.jinja_env.filters["pc_pro_offer_link"] = urls.build_pc_pro_offer_path
     app.jinja_env.filters["pc_backoffice_public_account_link"] = urls.build_backoffice_public_account_link
     app.jinja_env.filters["pc_backoffice_public_account_link_in_comment"] = (
         urls.build_backoffice_public_account_link_in_comment

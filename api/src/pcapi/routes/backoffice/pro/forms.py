@@ -144,6 +144,7 @@ class ConnectAsForm(FlaskForm):
     object_id = fields.PCStringField()
     object_type = fields.PCSelectField(
         choices=(
+            ("bank_account", "bank_account"),
             ("offer", "offer"),
             ("offerer", "offerer"),
             ("user", "user"),

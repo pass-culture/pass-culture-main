@@ -116,7 +116,8 @@ class GetBankAccountVenuesTest(GetEndpointHelper):
 
     # - session + authenticated user (2 queries)
     # - venues with joined data (1 query)
-    expected_num_queries = 3
+    # - FF connect as extended
+    expected_num_queries = 4
 
     def test_get_linked_venues(self, authenticated_client):
         bank_account = finance_factories.BankAccountFactory()

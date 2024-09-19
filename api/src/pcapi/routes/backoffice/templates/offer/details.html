@@ -16,7 +16,9 @@
         <div class="card-body">
           <div class="row justify-content-start align-items-center">
             <div class="col d-flex align-items-center justify-content-start">
-              <h2 class="card-title mb-3 text-primary">{{ links.build_offer_name_to_pc_pro_link(offer) }}</h2>
+              <h2 class="card-title mb-3 text-primary">
+                {{ links.build_offer_name_to_pc_pro_link(offer, is_feature_active("WIP_CONNECT_AS_EXTENDED") , has_permission("MANAGE_PRO_ENTITY")) }}
+              </h2>
               <span class="fs-5 ps-4">
                 {% if offer.lastProviderId %}
                   <span class="me-2 badge rounded-pill text-bg-secondary align-middle">

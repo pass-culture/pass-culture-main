@@ -201,7 +201,9 @@
                 <td>{{ booking.id }}</td>
                 <td>{{ booking.token }}</td>
                 <td>{{ links.build_public_user_name_to_details_link(booking.user) }}</td>
-                <td>{{ links.build_offer_name_to_pc_pro_link(offer) }}</td>
+                <td>
+                  {{ links.build_offer_name_to_pc_pro_link(offer, is_feature_active("WIP_CONNECT_AS_EXTENDED") , has_permission("MANAGE_PRO_ENTITY")) }}
+                </td>
                 <td>{{ links.build_offer_name_to_details_link(offer, text_attr="id") }}</td>
                 <td>{{ (offer.isDuo and booking.quantity == 2) | format_bool }}</td>
                 <td>{{ booking.stock.quantity }}</td>

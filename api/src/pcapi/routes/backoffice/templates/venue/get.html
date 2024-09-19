@@ -18,7 +18,9 @@
       <div class="card shadow">
         <div class="card-body">
           <div class="d-flex flex-fill align-items-center">
-            <h2 class="card-title text-primary">{{ links.build_venue_name_to_pc_pro_link(venue, public_name=false) }}</h2>
+            <h2 class="card-title text-primary">
+              {{ links.build_venue_name_to_pc_pro_link(venue, is_feature_active("WIP_CONNECT_AS_EXTENDED") , has_permission("MANAGE_PRO_ENTITY"), public_name=false) }}
+            </h2>
             <span class="fs-5 ps-4">{{ build_venue_badges(venue) }}</span>
             <div class="d-flex row-reverse justify-content-end flex-grow-1">
               {% if has_permission("MANAGE_PRO_ENTITY") and has_active_provider %}
@@ -254,20 +256,10 @@
                 </p>
               {% endfor %}
               <p class="mb-1">
-                <a href="{{ venue | pc_pro_venue_bookings_link }}"
-                   target="_blank"
-                   class="fw-bold link-primary">
-                  Réservations
-                  <i class="bi bi-box-arrow-up-right"></i>
-                </a>
+                {{ links.build_connect_as_pseudo_link(venue.id, "venue", "/reservations?offerVenueId="~venue.id~"", "Réservations " , "fw-bold link-primary", is_feature_active("WIP_CONNECT_AS_EXTENDED") , has_permission("MANAGE_PRO_ENTITY")) }}
               </p>
               <p class="mb-1">
-                <a href="{{ venue | pc_pro_venue_offers_link }}"
-                   target="_blank"
-                   class="fw-bold link-primary">
-                  Offres associées
-                  <i class="bi bi-box-arrow-up-right"></i>
-                </a>
+                {{ links.build_connect_as_pseudo_link(venue.id, "venue", "/offres?lieu="~venue.id~"", "Offres associées " , "fw-bold link-primary", is_feature_active("WIP_CONNECT_AS_EXTENDED") , has_permission("MANAGE_PRO_ENTITY")) }}
               </p>
               {% set search_params = {
                               "search-0-search_field": "VENUE",

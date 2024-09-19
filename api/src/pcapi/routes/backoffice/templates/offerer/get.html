@@ -20,7 +20,9 @@
       <div class="card shadow">
         <div class="card-body">
           <div class="d-flex flex-fill align-items-center">
-            <h2 class="card-title text-primary">{{ links.build_offerer_name_to_pc_pro_link(offerer) }}</h2>
+            <h2 class="card-title text-primary">
+              {{ links.build_offerer_name_to_pc_pro_link(offerer, is_feature_active("WIP_CONNECT_AS_EXTENDED") , has_permission("MANAGE_PRO_ENTITY")) }}
+            </h2>
             <span class="fs-5 ps-4">{{ build_offerer_badges(offerer) }}</span>
             <div class="d-flex row-reverse justify-content-end flex-grow-1">
               {% if has_permission("MANAGE_PRO_ENTITY") %}
