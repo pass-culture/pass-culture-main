@@ -85,8 +85,7 @@ export const serializePatchOffer = ({
     sentValues.latitude &&
     sentValues.longitude &&
     sentValues.postalCode &&
-    sentValues.street &&
-    sentValues.locationLabel
+    sentValues.street
   ) {
     addressValues = {
       address: {

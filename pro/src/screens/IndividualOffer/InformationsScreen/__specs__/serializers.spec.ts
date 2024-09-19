@@ -164,6 +164,35 @@ describe('test updateIndividualOffer::serializers', () => {
           formValues,
         })
       ).toEqual(patchBody)
+
+      // Test with empty label and manual edition false
+      formValues = {
+        ...formValues,
+        city: 'Paris',
+        latitude: '48.853320',
+        longitude: '2.348979',
+        postalCode: '75001',
+        street: '3 Rue de Valois',
+        locationLabel: '',
+      }
+      patchBody = {
+        ...patchBody,
+        address: {
+          city: 'Paris',
+          latitude: '48.853320',
+          longitude: '2.348979',
+          postalCode: '75001',
+          street: '3 Rue de Valois',
+          label: '',
+        },
+      }
+
+      expect(
+        serializePatchOffer({
+          offer: getIndividualOfferFactory(),
+          formValues,
+        })
+      ).toEqual(patchBody)
     })
   })
 })
