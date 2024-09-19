@@ -1,5 +1,6 @@
 import {
   screen,
+  waitFor,
   waitForElementToBeRemoved,
   within,
 } from '@testing-library/react'
@@ -93,6 +94,9 @@ describe('route CollectiveOffers', () => {
     vi.spyOn(router, 'useNavigate').mockReturnValue(mockNavigate)
     vi.spyOn(api, 'listOfferersNames').mockResolvedValue({ offerersNames: [] })
     vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: proVenues })
+    vi.spyOn(api, 'getOfferer').mockResolvedValue({
+      ...defaultGetOffererResponseModel,
+    })
   })
 
   describe('url query params', () => {
@@ -124,7 +128,7 @@ describe('route CollectiveOffers', () => {
       await userEvent.click(screen.getByText('Rechercher'))
 
       expect(mockNavigate).toHaveBeenCalledWith(
-        '/offres/collectives?nom-ou-isbn=AnyWord&statut=en-attente&statut=refusee&statut=active&statut=inactive&statut=prereservee&statut=reservee&statut=expiree&statut=terminee&statut=brouillon',
+        '/offres/collectives?nom-ou-isbn=AnyWord&structure=1&statut=en-attente&statut=refusee&statut=active&statut=inactive&statut=prereservee&statut=reservee&statut=expiree&statut=terminee&statut=brouillon',
         {
           replace: true,
         }
@@ -140,7 +144,7 @@ describe('route CollectiveOffers', () => {
       await userEvent.click(screen.getByText('Rechercher'))
 
       expect(mockNavigate).toHaveBeenCalledWith(
-        '/offres/collectives?statut=en-attente&statut=refusee&statut=active&statut=inactive&statut=prereservee&statut=reservee&statut=expiree&statut=terminee&statut=brouillon',
+        '/offres/collectives?structure=1&statut=en-attente&statut=refusee&statut=active&statut=inactive&statut=prereservee&statut=reservee&statut=expiree&statut=terminee&statut=brouillon',
         {
           replace: true,
         }
@@ -149,6 +153,9 @@ describe('route CollectiveOffers', () => {
 
     it('should have venue value when user filters by venue', async () => {
       await renderOffers()
+      await waitFor(() => {
+        expect(api.getVenues).toHaveBeenCalledWith(null, null, 1)
+      })
       const firstVenueOption = screen.getByRole('option', {
         name: proVenues[0].name,
       })
@@ -158,7 +165,7 @@ describe('route CollectiveOffers', () => {
       await userEvent.click(screen.getByText('Rechercher'))
 
       expect(mockNavigate).toHaveBeenCalledWith(
-        `/offres/collectives?lieu=1&statut=en-attente&statut=refusee&statut=active&statut=inactive&statut=prereservee&statut=reservee&statut=expiree&statut=terminee&statut=brouillon`,
+        `/offres/collectives?structure=1&lieu=1&statut=en-attente&statut=refusee&statut=active&statut=inactive&statut=prereservee&statut=reservee&statut=expiree&statut=terminee&statut=brouillon`,
         {
           replace: true,
         }
@@ -180,7 +187,7 @@ describe('route CollectiveOffers', () => {
       await userEvent.click(screen.getByText('Rechercher'))
 
       expect(mockNavigate).toHaveBeenCalledWith(
-        '/offres/collectives?format=Concert&statut=en-attente&statut=refusee&statut=active&statut=inactive&statut=prereservee&statut=reservee&statut=expiree&statut=terminee&statut=brouillon',
+        '/offres/collectives?structure=1&format=Concert&statut=en-attente&statut=refusee&statut=active&statut=inactive&statut=prereservee&statut=reservee&statut=expiree&statut=terminee&statut=brouillon',
         {
           replace: true,
         }
@@ -202,7 +209,7 @@ describe('route CollectiveOffers', () => {
       await userEvent.click(screen.getByRole('button', { name: 'Rechercher' }))
 
       expect(mockNavigate).toHaveBeenCalledWith(
-        '/offres/collectives?statut=en-attente&statut=refusee&statut=active&statut=inactive&statut=prereservee&statut=expiree&statut=terminee&statut=brouillon',
+        '/offres/collectives?structure=1&statut=en-attente&statut=refusee&statut=active&statut=inactive&statut=prereservee&statut=expiree&statut=terminee&statut=brouillon',
         {
           replace: true,
         }
@@ -226,38 +233,7 @@ describe('route CollectiveOffers', () => {
       await userEvent.click(screen.getByRole('button', { name: 'Rechercher' }))
 
       expect(mockNavigate).toHaveBeenCalledWith(
-        '/offres/collectives?statut=refusee&statut=active&statut=inactive&statut=prereservee&statut=expiree&statut=terminee&statut=brouillon&statut=archivee',
-        {
-          replace: true,
-        }
-      )
-    })
-
-    it('should have offerer filter when user filters by offerer', async () => {
-      const filters = { offererId: 'A4' }
-      vi.spyOn(api, 'getOfferer').mockResolvedValueOnce({
-        ...defaultGetOffererResponseModel,
-        name: 'La structure',
-      })
-
-      await renderOffers(filters)
-
-      const offererFilter = screen.getByText('La structure')
-      expect(offererFilter).toBeInTheDocument()
-    })
-
-    it('should have offerer value be removed when user removes offerer filter', async () => {
-      const filters = { offererId: 'A4' }
-      vi.spyOn(api, 'getOfferer').mockResolvedValueOnce({
-        ...defaultGetOffererResponseModel,
-        name: 'La structure',
-      })
-      await renderOffers(filters)
-
-      await userEvent.click(screen.getByTestId('remove-offerer-filter'))
-
-      expect(mockNavigate).toHaveBeenCalledWith(
-        '/offres/collectives?statut=en-attente&statut=refusee&statut=active&statut=inactive&statut=prereservee&statut=reservee&statut=expiree&statut=terminee&statut=brouillon',
+        '/offres/collectives?structure=1&statut=refusee&statut=active&statut=inactive&statut=prereservee&statut=expiree&statut=terminee&statut=brouillon&statut=archivee',
         {
           replace: true,
         }
