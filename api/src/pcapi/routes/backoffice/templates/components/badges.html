@@ -17,12 +17,20 @@
 {% macro build_old_navigation_badge() %}
   <span class="me-1 pb-1 badge rounded-pill text-bg-secondary-lighter">Ancienne interface</span>
 {% endmacro %}
-{% macro build_venue_badges(venue) %}
+{% macro build_venue_badges(venue, is_ENABLE_OFFER_ADDRESS_active) %}
   <span class="me-1 pb-1 badge rounded-pill text-bg-secondary align-middle">
-    {% if venue.isPermanent %}
-      Lieu permanent
+    {% if is_ENABLE_OFFER_ADDRESS_active %}
+      {% if venue.isPermanent %}
+        Partenaire culturel permanent
+      {% else %}
+        Partenaire culturel
+      {% endif %}
     {% else %}
-      Lieu
+      {% if venue.isPermanent %}
+        Lieu permanent
+      {% else %}
+        Lieu
+      {% endif %}
     {% endif %}
   </span>
   {% if not venue.managingOfferer.isActive %}

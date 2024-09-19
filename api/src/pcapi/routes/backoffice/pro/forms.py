@@ -35,7 +35,7 @@ def format_search_type_options(type_option: TypeOptions) -> str:
         case TypeOptions.OFFERER:
             return "Structure"
         case TypeOptions.VENUE:
-            return "Lieu"
+            return typing.cast(str, utils.VenueRenaming("Lieu", "Partenaire culturel"))
         case TypeOptions.USER:
             return "Compte pro"
         case TypeOptions.BANK_ACCOUNT:

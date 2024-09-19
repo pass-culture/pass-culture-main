@@ -63,7 +63,11 @@ class BaseBookingListForm(FlaskForm):
         endpoint="backoffice_web.autocomplete_offerers",
     )
     venue = fields.PCTomSelectField(
-        "Lieux", multiple=True, choices=[], validate_choice=False, endpoint="backoffice_web.autocomplete_venues"
+        typing.cast(str, utils.VenueRenaming("Lieux", "Partenaires culturels")),
+        multiple=True,
+        choices=[],
+        validate_choice=False,
+        endpoint="backoffice_web.autocomplete_venues",
     )
     status = fields.PCSelectMultipleField("États")
     cashflow_batches = fields.PCTomSelectField(

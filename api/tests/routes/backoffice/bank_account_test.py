@@ -35,7 +35,8 @@ class GetBankAccountTest(GetEndpointHelper):
     # get session (1 query)
     # get user with profile and permissions (1 query)
     # get bank_account (1 query)
-    expected_num_queries = 3
+    # get the features WIP_ENABLE_OFFER_ADDRESS (1 query)
+    expected_num_queries = 4
 
     @mock.patch("pcapi.routes.backoffice.bank_account.blueprint.dms_api.get_dms_stats", lambda x: None)
     def test_get_bank_account(self, authenticated_client):

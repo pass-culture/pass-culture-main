@@ -96,11 +96,11 @@ class ListCollectiveBookingsTest(GetEndpointHelper):
     # - fetch session (1 query)
     # - fetch user (1 query)
     # - fetch collective bookings with extra data (1 query)
-    # - check finance incident feature flag
+    # - check finance incident or offer address feature flag
     expected_num_queries = 4
 
     def test_list_bookings_without_filter(self, authenticated_client, collective_bookings):
-        with assert_num_queries(self.expected_num_queries - 2):
+        with assert_num_queries(self.expected_num_queries - 1):
             response = authenticated_client.get(url_for(self.endpoint))
             assert response.status_code == 200
 
@@ -270,7 +270,7 @@ class ListCollectiveBookingsTest(GetEndpointHelper):
 
     def test_list_bookings_by_id_not_found(self, authenticated_client, collective_bookings):
         search_query = str(collective_bookings[-1].id * 1000)
-        with assert_num_queries(self.expected_num_queries - 1):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, q=search_query))
             assert response.status_code == 200
 
@@ -400,7 +400,7 @@ class ListCollectiveBookingsTest(GetEndpointHelper):
         authenticated_client,
         collective_bookings,
     ):
-        with assert_num_queries(2):  # user_session + user
+        with assert_num_queries(3):  # user_session + user + offer address FF
             response = authenticated_client.get(
                 url_for(
                     self.endpoint,

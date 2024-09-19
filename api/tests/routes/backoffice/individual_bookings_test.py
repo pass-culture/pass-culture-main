@@ -117,10 +117,10 @@ class ListIndividualBookingsTest(GetEndpointHelper):
     # by a field added in the jinja template.
     # - fetch session (1 query)
     # - fetch user (1 query)
-    expected_num_queries_when_no_query = 2
+    # - check OA FF
+    expected_num_queries_when_no_query = 3
     # - fetch individual bookings with extra data (1 query)
-    # - check finance incident FF
-    expected_num_queries = expected_num_queries_when_no_query + 2
+    expected_num_queries = expected_num_queries_when_no_query + 1
 
     def test_list_bookings_without_filter(self, authenticated_client, bookings):
         with assert_num_queries(self.expected_num_queries_when_no_query):
@@ -254,8 +254,9 @@ class ListIndividualBookingsTest(GetEndpointHelper):
         assert rows[0]["ID résa"] == str(bookings[0].id)
 
     def test_list_bookings_by_token_not_found(self, authenticated_client, bookings):
+        # Keeping this for whenever we'll remove the WIP_ENABLE_OFFER_ADDRESS FF:
         # -1 query because no need to check incident ff when no result
-        with assert_num_queries(self.expected_num_queries - 1):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, q="IENA06"))
             assert response.status_code == 200
 
@@ -619,6 +620,26 @@ class ListIndividualBookingsTest(GetEndpointHelper):
         assert "Date d'annulation" in extra_data
         assert "Raison de l'annulation" in extra_data
         assert expected_text in extra_data
+
+    @override_features(WIP_ENABLE_OFFER_ADDRESS=False)
+    def test_list_bookings_venue_naming_without_oa(self, authenticated_client, bookings):
+        searched_booking_id = bookings[0].id
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, q=searched_booking_id))
+            assert response.status_code == 200
+
+        assert "Lieux" in str(response.data)
+        assert "Partenaires culturels" not in str(response.data)
+
+    @override_features(WIP_ENABLE_OFFER_ADDRESS=True)
+    def test_list_bookings_venue_naming_with_oa(self, authenticated_client, bookings):
+        searched_booking_id = bookings[0].id
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, q=searched_booking_id))
+            assert response.status_code == 200
+
+        assert "Lieux" not in str(response.data)
+        assert "Partenaires culturels" in str(response.data)
 
 
 class MarkBookingAsUsedTest(PostEndpointHelper):
