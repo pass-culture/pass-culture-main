@@ -73,7 +73,8 @@ const renderOffers = async (
     audience?: Audience
   } = DEFAULT_SEARCH_FILTERS,
   features: string[] = [],
-  storeOverrides = {}
+  user = sharedCurrentUserFactory(),
+  selectedOffererId: number | null = 1
 ) => {
   const route = computeIndividualOffersUrl(filters)
 
@@ -86,10 +87,15 @@ const renderOffers = async (
       />
     </Routes>,
     {
-      user: sharedCurrentUserFactory(),
+      user,
       initialRouterEntries: [route],
       features,
-      storeOverrides,
+      storeOverrides: {
+        user: {
+          selectedOffererId,
+          currentUser: user,
+        },
+      },
     }
   )
 
@@ -98,6 +104,7 @@ const renderOffers = async (
 
 describe('route Offers', () => {
   let offersRecap: ListOffersOfferResponseModel[]
+  const oldInterfaceUser = sharedCurrentUserFactory({ navState: null })
 
   beforeEach(() => {
     offersRecap = [listOffersOfferFactory({ venue: proVenues[0] })]
@@ -138,7 +145,7 @@ describe('route Offers', () => {
         await waitFor(() => {
           expect(api.listOffers).toHaveBeenLastCalledWith(
             undefined,
-            undefined,
+            '1',
             'EXPIRED',
             undefined,
             undefined,
@@ -198,7 +205,7 @@ describe('route Offers', () => {
         await waitFor(() => {
           expect(api.listOffers).toHaveBeenCalledWith(
             'Any word',
-            undefined,
+            '1',
             undefined,
             undefined,
             undefined,
@@ -224,7 +231,7 @@ describe('route Offers', () => {
         await waitFor(() => {
           expect(api.listOffers).toHaveBeenCalledWith(
             undefined,
-            undefined,
+            '1',
             undefined,
             proVenues[0].id.toString(),
             undefined,
@@ -250,7 +257,7 @@ describe('route Offers', () => {
         await waitFor(() => {
           expect(api.listOffers).toHaveBeenLastCalledWith(
             undefined,
-            undefined,
+            '1',
             undefined,
             undefined,
             'CINEMA',
@@ -279,7 +286,7 @@ describe('route Offers', () => {
         await waitFor(() => {
           expect(api.listOffers).toHaveBeenLastCalledWith(
             undefined,
-            undefined,
+            '1',
             undefined,
             undefined,
             undefined,
@@ -305,7 +312,7 @@ describe('route Offers', () => {
         await waitFor(() => {
           expect(api.listOffers).toHaveBeenLastCalledWith(
             undefined,
-            undefined,
+            '1',
             undefined,
             undefined,
             undefined,
@@ -330,7 +337,7 @@ describe('route Offers', () => {
         await waitFor(() => {
           expect(api.listOffers).toHaveBeenLastCalledWith(
             undefined,
-            undefined,
+            '1',
             undefined,
             undefined,
             undefined,
@@ -371,7 +378,7 @@ describe('route Offers', () => {
       await waitFor(() => {
         expect(api.listOffers).toHaveBeenCalledWith(
           'search string',
-          undefined,
+          '1',
           undefined,
           undefined,
           undefined,
@@ -394,7 +401,7 @@ describe('route Offers', () => {
       await waitFor(() => {
         expect(api.listOffers).toHaveBeenCalledWith(
           undefined,
-          undefined,
+          '1',
           undefined,
           undefined,
           undefined,
@@ -420,7 +427,7 @@ describe('route Offers', () => {
       await waitFor(() => {
         expect(api.listOffers).toHaveBeenCalledWith(
           undefined,
-          undefined,
+          '1',
           undefined,
           proVenues[0].id.toString(),
           undefined,
@@ -457,7 +464,7 @@ describe('route Offers', () => {
       await waitFor(() => {
         expect(api.listOffers).toHaveBeenCalledWith(
           undefined,
-          undefined,
+          '1',
           undefined,
           undefined,
           'test_id_1',
@@ -489,7 +496,7 @@ describe('route Offers', () => {
       await waitFor(() => {
         expect(api.listOffers).toHaveBeenCalledWith(
           undefined,
-          undefined,
+          '1',
           'SOLD_OUT',
           undefined,
           undefined,
@@ -519,7 +526,7 @@ describe('route Offers', () => {
       await waitFor(() => {
         expect(api.listOffers).toHaveBeenCalledWith(
           undefined,
-          undefined,
+          '1',
           undefined,
           undefined,
           undefined,
@@ -532,8 +539,8 @@ describe('route Offers', () => {
       })
     })
 
-    it('should have offerer filter when user filters by offerer', async () => {
-      const id = 654
+    it('should have offerer filter when user filters by offerer for old interface', async () => {
+      const id = 1
 
       vi.spyOn(api, 'getOfferer').mockResolvedValueOnce({
         ...defaultGetOffererResponseModel,
@@ -542,13 +549,13 @@ describe('route Offers', () => {
       })
       const filters = { offererId: id.toString() }
 
-      await renderOffers(filters)
+      await renderOffers(filters, [], oldInterfaceUser, null)
 
       const offererFilter = screen.getByText('La structure')
       expect(offererFilter).toBeInTheDocument()
     })
 
-    it('should have offerer value be removed when user removes offerer filter', async () => {
+    it('should have offerer value be removed when user removes offerer filter for old interface', async () => {
       const id = 654
       vi.spyOn(api, 'getOfferer').mockResolvedValueOnce({
         ...defaultGetOffererResponseModel,
@@ -561,7 +568,7 @@ describe('route Offers', () => {
         }),
       ])
       const filters = { offererId: id.toString() }
-      await renderOffers(filters)
+      await renderOffers(filters, [], oldInterfaceUser, null)
 
       await userEvent.click(screen.getByTestId('remove-offerer-filter'))
 
@@ -580,7 +587,7 @@ describe('route Offers', () => {
       await waitFor(() => {
         expect(api.listOffers).toHaveBeenCalledWith(
           undefined,
-          undefined,
+          '1',
           undefined,
           undefined,
           undefined,
@@ -610,7 +617,7 @@ describe('route Offers', () => {
 
       expect(api.listOffers).toHaveBeenCalledWith(
         undefined,
-        undefined,
+        '1',
         undefined,
         undefined,
         undefined,
@@ -624,9 +631,9 @@ describe('route Offers', () => {
   })
 
   describe('page navigation', () => {
-    it('should redirect to collective offers when user click on collective offer link', async () => {
+    it('should redirect to collective offers when user click on collective offer link (for old interface)', async () => {
       vi.spyOn(api, 'listOffers').mockResolvedValue(offersRecap)
-      await renderOffers()
+      await renderOffers(DEFAULT_SEARCH_FILTERS, [], oldInterfaceUser, null)
       screen.getByText('Rechercher')
       const collectiveAudienceLink = screen.getByText('Offres collectives', {
         selector: 'span',
@@ -725,7 +732,7 @@ describe('route Offers', () => {
         expect(api.listOffers).toHaveBeenNthCalledWith(
           2,
           undefined,
-          undefined,
+          '1',
           undefined,
           proVenues[0].id.toString(),
           undefined,
@@ -747,7 +754,7 @@ describe('route Offers', () => {
       expect(api.listOffers).toHaveBeenNthCalledWith(
         3,
         undefined,
-        undefined,
+        '1',
         undefined,
         undefined,
         undefined,
@@ -785,7 +792,7 @@ describe('route Offers', () => {
       expect(api.listOffers).toHaveBeenNthCalledWith(
         2,
         undefined,
-        undefined,
+        '1',
         undefined,
         proVenues[0].id.toString(),
         undefined,
@@ -804,7 +811,7 @@ describe('route Offers', () => {
       expect(api.listOffers).toHaveBeenNthCalledWith(
         3,
         undefined,
-        undefined,
+        '1',
         undefined,
         undefined,
         undefined,
@@ -859,16 +866,7 @@ describe('route Offers', () => {
       vi.spyOn(api, 'getOfferer').mockResolvedValueOnce(
         defaultGetOffererResponseModel
       )
-      await renderOffers(DEFAULT_SEARCH_FILTERS, ['WIP_ENABLE_OFFER_ADDRESS'], {
-        user: {
-          selectedOffererId: defaultGetOffererResponseModel.id,
-          currentUser: sharedCurrentUserFactory({
-            navState: {
-              newNavDate: '2021-01-01',
-            },
-          }),
-        },
-      })
+      await renderOffers(DEFAULT_SEARCH_FILTERS, ['WIP_ENABLE_OFFER_ADDRESS'])
       const offererAddressOption = screen.getByLabelText('Adresse')
 
       await waitFor(() => {
