@@ -301,6 +301,7 @@ export function CollectiveOffersActionsBar({
             updateOfferStatus(CollectiveOfferDisplayedStatus.ARCHIVED)
           }
           hasMultipleOffers={selectedOffers.length > 1}
+          selectedOffers={selectedOffers}
         />
       )}
 

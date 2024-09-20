@@ -1,5 +1,6 @@
 import { useLocation } from 'react-router-dom'
 
+import { CollectiveOfferResponseModel } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { ConfirmDialog } from 'components/Dialog/ConfirmDialog/ConfirmDialog'
 import { Events } from 'core/FirebaseEvents/constants'
@@ -9,20 +10,28 @@ interface OfferEducationalModalProps {
   onDismiss(): void
   onValidate(): void
   hasMultipleOffers?: boolean
+  selectedOffers?: CollectiveOfferResponseModel[]
 }
 
 export const ArchiveConfirmationModal = ({
   onDismiss,
   onValidate,
   hasMultipleOffers = false,
+  selectedOffers = [],
 }: OfferEducationalModalProps): JSX.Element => {
   const location = useLocation()
   const { logEvent } = useAnalytics()
 
   function onConfirmArchive() {
+    const collectiveOfferIds = selectedOffers.map((offer) =>
+      offer.id.toString()
+    )
+
     logEvent(Events.CLICKED_ARCHIVE_COLLECTIVE_OFFER, {
       from: location.pathname,
+      selected_offers: collectiveOfferIds,
     })
+
     onValidate()
   }
 
