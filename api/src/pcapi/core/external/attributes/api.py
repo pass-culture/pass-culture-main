@@ -543,7 +543,8 @@ def get_user_bookings(user: users_models.User) -> list[bookings_models.Booking]:
                 offers_models.Offer.subcategoryId,
                 offers_models.Offer.name,
                 offers_models.Offer.extraData,
-            )
+            ),
+            joinedload(bookings_models.Booking.incidents).joinedload(finance_models.BookingFinanceIncident.incident),
         )
         .filter(
             bookings_models.Booking.userId == user.id,

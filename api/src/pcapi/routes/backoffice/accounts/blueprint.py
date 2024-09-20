@@ -21,6 +21,7 @@ from werkzeug.exceptions import NotFound
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.external.attributes import api as external_attributes_api
 from pcapi.core.finance import api as finance_api
+from pcapi.core.finance import models as finance_models
 from pcapi.core.fraud import api as fraud_api
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.history import api as history_api
@@ -284,9 +285,12 @@ def render_public_account_details(
         users_models.User.query.filter_by(id=user_id)
         .options(
             sa.orm.joinedload(users_models.User.deposits),
-            sa.orm.subqueryload(users_models.User.userBookings)
-            .joinedload(bookings_models.Booking.stock)
-            .joinedload(offers_models.Stock.offer),
+            sa.orm.subqueryload(users_models.User.userBookings).options(
+                sa.orm.joinedload(bookings_models.Booking.stock).joinedload(offers_models.Stock.offer),
+                sa.orm.joinedload(bookings_models.Booking.incidents).joinedload(
+                    finance_models.BookingFinanceIncident.incident
+                ),
+            ),
             sa.orm.subqueryload(users_models.User.userBookings)
             .joinedload(bookings_models.Booking.offerer)
             .load_only(offerers_models.Offerer.name),
