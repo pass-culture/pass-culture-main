@@ -512,4 +512,23 @@ describe('CollectiveOffersScreen', () => {
       screen.queryByRole('option', { name: 'Masquée sur ADAGE' })
     ).not.toBeInTheDocument()
   })
+
+  it('should show the reimbursed status option if the ENABLE_COLLECTIVE_NEW_STATUSES FF is active', async () => {
+    renderOffers(
+      {
+        ...props,
+      },
+      { features: ['ENABLE_COLLECTIVE_NEW_STATUSES'] }
+    )
+
+    await userEvent.click(
+      screen.getByRole('combobox', {
+        name: 'Statut',
+      })
+    )
+
+    expect(
+      screen.getByRole('option', { name: 'Remboursée' })
+    ).toBeInTheDocument()
+  })
 })

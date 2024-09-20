@@ -51,6 +51,7 @@ const mapBrowserCollectiveStatusToApi: Record<
   refusee: CollectiveOfferDisplayedStatus.REJECTED,
   archivee: CollectiveOfferDisplayedStatus.ARCHIVED,
   brouillon: CollectiveOfferDisplayedStatus.DRAFT,
+  remboursee: CollectiveOfferDisplayedStatus.REIMBURSED,
 }
 
 const mapBrowserToApi = (audience: Audience) => ({

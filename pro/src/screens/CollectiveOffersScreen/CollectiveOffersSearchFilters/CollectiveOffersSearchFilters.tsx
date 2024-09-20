@@ -12,9 +12,8 @@ import {
   ALL_FORMATS_OPTION,
   ALL_VENUES_OPTION,
   COLLECTIVE_OFFER_TYPES_OPTIONS,
-  DEFAULT_COLLECTIVE_BOOKABLE_SEARCH_FILTERS,
-  DEFAULT_COLLECTIVE_SEARCH_FILTERS,
 } from 'core/Offers/constants'
+import { useDefaultCollectiveSearchFilters } from 'core/Offers/hooks/useDefaultCollectiveSearchFilters'
 import {
   CollectiveOfferTypeEnum,
   CollectiveSearchFiltersParams,
@@ -96,10 +95,11 @@ export const CollectiveOffersSearchFilters = ({
   const isNewOffersAndBookingsActive = useActiveFeature(
     'WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE'
   )
+  const areCollectiveNewStatusesEnabled = useActiveFeature(
+    'ENABLE_COLLECTIVE_NEW_STATUSES'
+  )
 
-  const defaultCollectiveFilters = isNewOffersAndBookingsActive
-    ? DEFAULT_COLLECTIVE_BOOKABLE_SEARCH_FILTERS
-    : DEFAULT_COLLECTIVE_SEARCH_FILTERS
+  const defaultCollectiveFilters = useDefaultCollectiveSearchFilters()
 
   const formats: SelectOption[] = Object.values(EacFormat).map((format) => ({
     value: format,
@@ -184,11 +184,21 @@ export const CollectiveOffersSearchFilters = ({
   const searchByOfferNameLabel = 'Nom de l’offre'
   const searchByOfferNamePlaceholder = 'Rechercher par nom d’offre'
 
-  const filteredStatusOptions = collectiveFilterStatus.filter(
-    (status) =>
-      !isNewOffersAndBookingsActive ||
-      status.value !== CollectiveOfferDisplayedStatus.INACTIVE
-  )
+  const filteredStatusOptions = [
+    ...collectiveFilterStatus.filter(
+      (status) =>
+        !isNewOffersAndBookingsActive ||
+        status.value !== CollectiveOfferDisplayedStatus.INACTIVE
+    ),
+    ...(areCollectiveNewStatusesEnabled
+      ? [
+          {
+            label: 'Remboursée',
+            value: CollectiveOfferDisplayedStatus.REIMBURSED,
+          },
+        ]
+      : []),
+  ]
 
   return (
     <>

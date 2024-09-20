@@ -7,16 +7,14 @@ import {
 } from 'apiClient/v1'
 import { NoData } from 'components/NoData/NoData'
 import {
-  DEFAULT_COLLECTIVE_BOOKABLE_SEARCH_FILTERS,
-  DEFAULT_COLLECTIVE_SEARCH_FILTERS,
   DEFAULT_PAGE,
   MAX_TOTAL_PAGES,
   NUMBER_OF_OFFERS_PER_PAGE,
 } from 'core/Offers/constants'
+import { useDefaultCollectiveSearchFilters } from 'core/Offers/hooks/useDefaultCollectiveSearchFilters'
 import { CollectiveSearchFiltersParams } from 'core/Offers/types'
 import { hasCollectiveSearchFilters } from 'core/Offers/utils/hasSearchFilters'
 import { SelectOption } from 'custom_types/form'
-import { useActiveFeature } from 'hooks/useActiveFeature'
 import { useColumnSorting } from 'hooks/useColumnSorting'
 import { usePagination } from 'hooks/usePagination'
 import { CollectiveOffersActionsBar } from 'pages/Offers/OffersTable/CollectiveOffersTable/CollectiveOffersActionsBar/CollectiveOffersActionsBar'
@@ -70,13 +68,7 @@ export const CollectiveOffersScreen = ({
   >([])
   const [selectedFilters, setSelectedFilters] = useState(initialSearchFilters)
 
-  const isNewOffersAndBookingsActive = useActiveFeature(
-    'WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE'
-  )
-
-  const defaultCollectiveFilters = isNewOffersAndBookingsActive
-    ? DEFAULT_COLLECTIVE_BOOKABLE_SEARCH_FILTERS
-    : DEFAULT_COLLECTIVE_SEARCH_FILTERS
+  const defaultCollectiveFilters = useDefaultCollectiveSearchFilters()
 
   const currentPageOffersSubset = offers.slice(
     (currentPageNumber - 1) * NUMBER_OF_OFFERS_PER_PAGE,
