@@ -1,14 +1,10 @@
 import { CollectiveOfferResponseModel } from 'apiClient/v1'
 import { Callout } from 'components/Callout/Callout'
 import { CalloutVariant } from 'components/Callout/types'
-import {
-  DEFAULT_COLLECTIVE_BOOKABLE_SEARCH_FILTERS,
-  DEFAULT_COLLECTIVE_SEARCH_FILTERS,
-  MAX_OFFERS_TO_DISPLAY,
-} from 'core/Offers/constants'
+import { MAX_OFFERS_TO_DISPLAY } from 'core/Offers/constants'
+import { useDefaultCollectiveSearchFilters } from 'core/Offers/hooks/useDefaultCollectiveSearchFilters'
 import { CollectiveSearchFiltersParams } from 'core/Offers/types'
 import { hasCollectiveSearchFilters } from 'core/Offers/utils/hasSearchFilters'
-import { useActiveFeature } from 'hooks/useActiveFeature'
 import { SortingMode } from 'hooks/useColumnSorting'
 import { getOffersCountToDisplay } from 'pages/Offers/domain/getOffersCountToDisplay'
 import { CollectiveOffersSortingColumn } from 'screens/CollectiveOffersScreen/CollectiveOffersScreen'
@@ -57,13 +53,7 @@ export const CollectiveOffersTable = ({
   currentSortingMode,
   currentPageItems,
 }: CollectiveOffersTableProps) => {
-  const isNewOffersAndBookingsActive = useActiveFeature(
-    'WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE'
-  )
-
-  const defaultCollectiveFilters = isNewOffersAndBookingsActive
-    ? DEFAULT_COLLECTIVE_BOOKABLE_SEARCH_FILTERS
-    : DEFAULT_COLLECTIVE_SEARCH_FILTERS
+  const defaultCollectiveFilters = useDefaultCollectiveSearchFilters()
 
   return (
     <div>

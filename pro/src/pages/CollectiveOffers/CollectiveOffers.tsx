@@ -9,11 +9,8 @@ import {
   GET_OFFERER_QUERY_KEY,
   GET_VENUES_QUERY_KEY,
 } from 'config/swrQueryKeys'
-import {
-  DEFAULT_COLLECTIVE_BOOKABLE_SEARCH_FILTERS,
-  DEFAULT_COLLECTIVE_SEARCH_FILTERS,
-  DEFAULT_PAGE,
-} from 'core/Offers/constants'
+import { DEFAULT_PAGE } from 'core/Offers/constants'
+import { useDefaultCollectiveSearchFilters } from 'core/Offers/hooks/useDefaultCollectiveSearchFilters'
 import { useQueryCollectiveSearchFilters } from 'core/Offers/hooks/useQuerySearchFilters'
 import { CollectiveSearchFiltersParams } from 'core/Offers/types'
 import { computeCollectiveOffersUrl } from 'core/Offers/utils/computeCollectiveOffersUrl'
@@ -37,9 +34,7 @@ export const CollectiveOffers = (): JSX.Element => {
   const isNewInterfaceActive = useIsNewInterfaceActive()
   const selectedOffererId = useSelector(selectCurrentOffererId)
 
-  const defaultCollectiveFilters = isNewOffersAndBookingsActive
-    ? DEFAULT_COLLECTIVE_BOOKABLE_SEARCH_FILTERS
-    : DEFAULT_COLLECTIVE_SEARCH_FILTERS
+  const defaultCollectiveFilters = useDefaultCollectiveSearchFilters()
 
   const urlSearchFilters = useQueryCollectiveSearchFilters({
     ...defaultCollectiveFilters,
