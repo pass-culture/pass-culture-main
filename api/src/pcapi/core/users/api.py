@@ -775,6 +775,15 @@ def add_comment_to_user(user: models.User, author_user: models.User, comment: st
     db.session.commit()
 
 
+def _get_booking_credit(booking: bookings_models.Booking) -> Decimal:
+    # Get only partial incidents
+    for booking_finance_incident in booking.incidents:
+        if booking_finance_incident.is_partial:
+            if booking_finance_incident.incident.status == finance_models.IncidentStatus.VALIDATED:
+                return Decimal(booking_finance_incident.newTotalAmount) / Decimal("100")
+    return booking.total_amount
+
+
 def get_domains_credit(
     user: models.User, user_bookings: list[bookings_models.Booking] | None = None
 ) -> models.DomainsCredit | None:
@@ -794,7 +803,10 @@ def get_domains_credit(
         all=models.Credit(
             initial=user.deposit.amount,
             remaining=(
-                max(user.deposit.amount - sum(booking.total_amount for booking in deposit_bookings), Decimal("0"))
+                max(
+                    user.deposit.amount - sum(_get_booking_credit(booking) for booking in deposit_bookings),
+                    Decimal("0"),
+                )
                 if user.has_active_deposit
                 else Decimal("0")
             ),
@@ -804,7 +816,7 @@ def get_domains_credit(
 
     if specific_caps.DIGITAL_CAP:
         digital_bookings_total = sum(
-            booking.total_amount
+            _get_booking_credit(booking)
             for booking in deposit_bookings
             if specific_caps.digital_cap_applies(booking.stock.offer)
         )
@@ -820,7 +832,7 @@ def get_domains_credit(
 
     if specific_caps.PHYSICAL_CAP:
         physical_bookings_total = sum(
-            booking.total_amount
+            _get_booking_credit(booking)
             for booking in deposit_bookings
             if specific_caps.physical_cap_applies(booking.stock.offer)
         )

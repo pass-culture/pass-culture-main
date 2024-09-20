@@ -33,6 +33,7 @@ from pcapi.core.bookings.models import BookingStatusFilter
 from pcapi.core.bookings.models import ExternalBooking
 from pcapi.core.bookings.utils import convert_booking_dates_utc_to_venue_timezone
 from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.finance.models import BookingFinanceIncident
 from pcapi.core.geography.models import Address
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import OffererAddress
@@ -278,7 +279,10 @@ def get_bookings_from_deposit(deposit_id: int) -> list[Booking]:
             Booking.depositId == deposit_id,
             Booking.status != BookingStatus.CANCELLED,
         )
-        .options(joinedload(Booking.stock).joinedload(Stock.offer))
+        .options(
+            joinedload(Booking.stock).joinedload(Stock.offer),
+            joinedload(Booking.incidents).joinedload(BookingFinanceIncident.incident),
+        )
         .all()
     )
 
