@@ -71,6 +71,8 @@ import pcapi.core.users.constants as users_constants
 import pcapi.core.users.models as users_models
 from pcapi.domain import reimbursement
 from pcapi.models import db
+from pcapi.repository import is_managed_transaction
+from pcapi.repository import mark_transaction_as_invalid
 from pcapi.repository import on_commit
 from pcapi.repository import transaction
 from pcapi.tasks import finance_tasks
@@ -700,7 +702,10 @@ def _cancel_event_pricing(
             extra={"event": event.id, "pricing": pricing.id},
         )
     except Exception:
-        db.session.rollback()
+        if is_managed_transaction():
+            mark_transaction_as_invalid()
+        else:
+            db.session.rollback()
         raise
     db.session.flush()
     return pricing

@@ -140,10 +140,8 @@ def add_criteria_to_offers() -> utils.BackofficeResponse:
     return redirect(url_for(".search_multiple_offers", ean=form.ean.data), code=303)
 
 
-# FIXME (prouzet, 2024-09-20): @atomic has been temporarily removed because of side effects:
-# changes are not persistent in database when NonCancellablePricingError at booking cancellation time.
-# => Restore @atomic after deeper investigation, full understanding and fix.
 @multiple_offers_blueprint.route("/set-product-gcu-incompatible", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def set_product_gcu_incompatible() -> utils.BackofficeResponse:
     form = forms.HiddenEanForm()
