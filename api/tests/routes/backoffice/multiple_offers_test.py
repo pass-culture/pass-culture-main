@@ -391,31 +391,33 @@ class SetProductGcuIncompatibleTest(PostEndpointHelper):
         offer = offers_factories.OfferFactory(product=product)
         stock = offers_factories.StockFactory(offer=offer)
 
-        booking = bookings_factories.UsedBookingFactory(stock=stock)
-        finance_event = finance_factories.UsedBookingFinanceEventFactory(booking=booking)
+        bookings_factories.BookingFactory(stock=stock)  # confirmed, will be cancelled
+
+        used_booking = bookings_factories.UsedBookingFactory(stock=stock)
+        finance_event = finance_factories.UsedBookingFinanceEventFactory(booking=used_booking)
         finance_factories.PricingFactory(
-            event=finance_event, booking=booking, status=finance_models.PricingStatus.VALIDATED
+            event=finance_event, booking=used_booking, status=finance_models.PricingStatus.VALIDATED
         )
 
-        booking = bookings_factories.CancelledBookingFactory(
+        cancelled_booking = bookings_factories.CancelledBookingFactory(
             stock=stock, dateUsed=factory.LazyFunction(datetime.datetime.utcnow)
         )
         finance_event = finance_factories.UsedBookingFinanceEventFactory(
-            booking=booking,
+            booking=cancelled_booking,
             venue=offer.venue,
             pricingPoint=offer.venue,
             status=finance_models.FinanceEventStatus.CANCELLED,
         )
         finance_factories.PricingFactory(
-            event=finance_event, booking=booking, status=finance_models.PricingStatus.CANCELLED
+            event=finance_event, booking=cancelled_booking, status=finance_models.PricingStatus.CANCELLED
         )
 
-        booking = bookings_factories.ReimbursedBookingFactory(stock=stock)
+        reimbursed_booking = bookings_factories.ReimbursedBookingFactory(stock=stock)
         finance_event = finance_factories.UsedBookingFinanceEventFactory(
-            booking=booking, venue=offer.venue, pricingPoint=offer.venue
+            booking=reimbursed_booking, venue=offer.venue, pricingPoint=offer.venue
         )
         finance_factories.PricingFactory(
-            event=finance_event, booking=booking, status=finance_models.PricingStatus.INVOICED
+            event=finance_event, booking=reimbursed_booking, status=finance_models.PricingStatus.INVOICED
         )
 
         response = self.post_to_endpoint(authenticated_client, form={"ean": "9781234567890"})
@@ -436,3 +438,6 @@ class SetProductGcuIncompatibleTest(PostEndpointHelper):
         assert offer.validation == offers_models.OfferValidationStatus.REJECTED
         assert offer.lastValidationType == OfferValidationType.CGU_INCOMPATIBLE_PRODUCT
         assert datetime.datetime.utcnow() - offer.lastValidationDate < datetime.timedelta(seconds=5)
+
+        assert bookings_models.Booking.query.filter(bookings_models.Booking.is_used_or_reimbursed).count() == 2
+        assert bookings_models.Booking.query.filter(bookings_models.Booking.isCancelled).count() == 2

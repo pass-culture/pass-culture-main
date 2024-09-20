@@ -645,18 +645,27 @@ def _cancel_bookings_from_stock(
     Cancel multiple bookings and update the users' credit information on Batch.
     Note that this will not reindex the stock.offer in Algolia
     """
-    deleted_bookings: list[Booking] = []
+    cancelled_bookings: list[Booking] = []
     for booking in stock.bookings:
+        # Do not make several SQL queries per booking then rollback to savepoint for those which cannot be cancelled.
+        # This optimization could avoid timeout in the backoffice when an EAN is rejected with many past bookings.
+        if booking.status in (BookingStatus.REIMBURSED, BookingStatus.CANCELLED):
+            continue
+
+        cancel_even_if_used = stock.offer.isEvent
+        if booking.status == BookingStatus.USED and not cancel_even_if_used:
+            continue
+
         if _cancel_booking(
             booking,
             reason,
-            cancel_even_if_used=typing.cast(bool, stock.offer.isEvent),
+            cancel_even_if_used=cancel_even_if_used,
             one_side_cancellation=one_side_cancellation,
             author_id=author_id,
         ):
-            deleted_bookings.append(booking)
+            cancelled_bookings.append(booking)
 
-    return deleted_bookings
+    return cancelled_bookings
 
 
 def cancel_booking_by_beneficiary(user: User, booking: Booking) -> None:
