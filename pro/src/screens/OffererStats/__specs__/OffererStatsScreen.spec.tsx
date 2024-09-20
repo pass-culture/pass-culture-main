@@ -116,30 +116,6 @@ describe('OffererStatsScreen', () => {
     expect(venueOption).toBeInTheDocument()
   })
 
-  it('should update venues  when selecting offerer and display offerer iframe for old interface', async () => {
-    renderOffererStatsScreen(offererOptions, {
-      storeOverrides: {
-        user: {
-          selectedOffererId: 1,
-          currentUser: sharedCurrentUserFactory({ navState: null }),
-        },
-      },
-      user: sharedCurrentUserFactory({ navState: null }),
-    })
-    await waitFor(() => {
-      expect(api.getOfferer).toHaveBeenCalledTimes(1)
-    })
-    const offererSelect = screen.getByLabelText('Structure')
-    await userEvent.selectOptions(offererSelect, '2')
-
-    const iframe = screen.getByTitle('Tableau des statistiques')
-    expect(iframe).toBeInTheDocument()
-    expect(iframe).toHaveAttribute('src', 'venueIframeUrl')
-
-    expect(screen.getByText('Terre de livres')).toBeInTheDocument()
-    expect(screen.getByText('La voie aux chapitres')).toBeInTheDocument()
-  })
-
   it('should display not display venue select if offerer has no venue', async () => {
     vi.spyOn(api, 'getOfferer').mockResolvedValue(
       defaultGetOffererResponseModel

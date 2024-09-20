@@ -104,7 +104,6 @@ const renderOffers = async (
 
 describe('route Offers', () => {
   let offersRecap: ListOffersOfferResponseModel[]
-  const oldInterfaceUser = sharedCurrentUserFactory({ navState: null })
 
   beforeEach(() => {
     offersRecap = [listOffersOfferFactory({ venue: proVenues[0] })]
@@ -539,42 +538,6 @@ describe('route Offers', () => {
       })
     })
 
-    it('should have offerer filter when user filters by offerer for old interface', async () => {
-      const id = 1
-
-      vi.spyOn(api, 'getOfferer').mockResolvedValueOnce({
-        ...defaultGetOffererResponseModel,
-        name: 'La structure',
-        id,
-      })
-      const filters = { offererId: id.toString() }
-
-      await renderOffers(filters, [], oldInterfaceUser, null)
-
-      const offererFilter = screen.getByText('La structure')
-      expect(offererFilter).toBeInTheDocument()
-    })
-
-    it('should have offerer value be removed when user removes offerer filter for old interface', async () => {
-      const id = 654
-      vi.spyOn(api, 'getOfferer').mockResolvedValueOnce({
-        ...defaultGetOffererResponseModel,
-        name: 'La structure',
-        id,
-      })
-      vi.spyOn(api, 'getOffererAddresses').mockResolvedValueOnce([
-        offererAddressFactory({
-          label: 'Label',
-        }),
-      ])
-      const filters = { offererId: id.toString() }
-      await renderOffers(filters, [], oldInterfaceUser, null)
-
-      await userEvent.click(screen.getByTestId('remove-offerer-filter'))
-
-      expect(screen.queryByText('La structure')).not.toBeInTheDocument()
-    })
-
     it('should have creation mode value when user filters by creation mode', async () => {
       await renderOffers()
 
@@ -631,19 +594,6 @@ describe('route Offers', () => {
   })
 
   describe('page navigation', () => {
-    it('should redirect to collective offers when user click on collective offer link (for old interface)', async () => {
-      vi.spyOn(api, 'listOffers').mockResolvedValue(offersRecap)
-      await renderOffers(DEFAULT_SEARCH_FILTERS, [], oldInterfaceUser, null)
-      screen.getByText('Rechercher')
-      const collectiveAudienceLink = screen.getByText('Offres collectives', {
-        selector: 'span',
-      })
-
-      await userEvent.click(collectiveAudienceLink)
-
-      expect(screen.getByText('Offres collectives')).toBeInTheDocument()
-    })
-
     it('should display next page when clicking on right arrow', async () => {
       const offers = Array.from({ length: 11 }, () => listOffersOfferFactory())
       vi.spyOn(api, 'listOffers').mockResolvedValueOnce(offers)
