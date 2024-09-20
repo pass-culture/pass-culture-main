@@ -27,6 +27,7 @@ export const serializeEditVenueBodyModel = (
     shouldSendMail: shouldSendMail,
     venueLabelId: !formValues.venueLabel ? null : Number(formValues.venueLabel),
     venueTypeCode: formValues.venueType as VenueTypeCode,
+    isManualEdition: formValues.manuallySetAddress,
   }
 
   if (hideSiret) {

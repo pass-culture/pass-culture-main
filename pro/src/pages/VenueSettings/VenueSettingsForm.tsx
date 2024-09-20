@@ -1,4 +1,4 @@
-import { useFormikContext } from 'formik'
+import { useField, useFormikContext } from 'formik'
 import { useLocation } from 'react-router-dom'
 
 import {
@@ -8,16 +8,22 @@ import {
   VenueTypeResponseModel,
 } from 'apiClient/v1'
 import { AddressSelect } from 'components/Address/Address'
+import { AddressManual } from 'components/AddressManual/AddressManual'
 import { FormLayout } from 'components/FormLayout/FormLayout'
+import { resetAddressFields } from 'components/IndividualOfferForm/utils/resetAddressFields'
 import { RouteLeavingGuardIndividualOffer } from 'components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
 import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import { SelectOption } from 'custom_types/form'
+import fullBackIcon from 'icons/full-back.svg'
+import fullNextIcon from 'icons/full-next.svg'
 import { ReimbursementFields } from 'pages/Offerers/Offerer/VenueV1/fields/ReimbursementFields/ReimbursementFields'
 import { BankAccountInfos } from 'pages/VenueCreation/BankAccountInfos/BankAccountInfos'
 import { buildVenueTypesOptions } from 'pages/VenueCreation/buildVenueTypesOptions'
 import { SiretOrCommentFields } from 'pages/VenueCreation/SiretOrCommentFields/SiretOrCommentFields'
 import { VenueFormActionBar } from 'pages/VenueCreation/VenueFormActionBar/VenueFormActionBar'
 import { WithdrawalDetails } from 'pages/VenueCreation/WithdrawalDetails/WithdrawalDetails'
+import { Button } from 'ui-kit/Button/Button'
+import { ButtonVariant } from 'ui-kit/Button/types'
 import { Select } from 'ui-kit/form/Select/Select'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
@@ -42,10 +48,21 @@ export const VenueSettingsForm = ({
   venueProviders,
   venue,
 }: VenueFormProps) => {
-  const { initialValues, dirty, isSubmitting } =
-    useFormikContext<VenueSettingsFormValues>()
+  const formik = useFormikContext<VenueSettingsFormValues>()
+  const { initialValues, dirty, isSubmitting } = formik
   const location = useLocation()
   const venueTypesOptions = buildVenueTypesOptions(venueTypes)
+
+  const [manuallySetAddress, , { setValue: setManuallySetAddress }] =
+    useField('manuallySetAddress')
+
+  const toggleManuallySetAddress = async () => {
+    const isAddressManual = !manuallySetAddress.value
+    await setManuallySetAddress(isAddressManual)
+    if (isAddressManual) {
+      await resetAddressFields({ formik })
+    }
+  }
 
   return (
     <>
@@ -87,8 +104,24 @@ export const VenueSettingsForm = ({
               </FormLayout.Row>
 
               <FormLayout.Row>
-                <AddressSelect />
+                <AddressSelect disabled={manuallySetAddress.value} />
               </FormLayout.Row>
+
+              <FormLayout.Row>
+                <Button
+                  variant={ButtonVariant.QUATERNARY}
+                  title="Renseignez l’adresse manuellement"
+                  icon={manuallySetAddress.value ? fullBackIcon : fullNextIcon}
+                  onClick={toggleManuallySetAddress}
+                >
+                  {manuallySetAddress.value ? (
+                    <>Revenir à la sélection automatique</>
+                  ) : (
+                    <>Vous ne trouvez pas votre adresse ?</>
+                  )}
+                </Button>
+              </FormLayout.Row>
+              {manuallySetAddress.value && <AddressManual />}
             </>
           )}
         </FormLayout.Section>
@@ -153,6 +186,7 @@ export const VenueSettingsForm = ({
         </FormLayout.Section>
 
         {!venue.siret && (
+          // FIXME: Uncontrolled field warning (debt)
           <ReimbursementFields
             offerer={offerer}
             scrollToSection={Boolean(location.state) || Boolean(location.hash)}
