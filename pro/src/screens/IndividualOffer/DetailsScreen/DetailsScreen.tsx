@@ -34,6 +34,7 @@ import {
 
 import { DetailsEanSearch } from './DetailsEanSearch/DetailsEanSearch'
 import { DetailsForm } from './DetailsForm'
+import { EanSearchCallout } from './EanSearchCallout/EanSearchCallout'
 import { DetailsFormValues } from './types'
 import {
   serializeDetailsPatchData,
@@ -198,15 +199,19 @@ export const DetailsScreen = ({ venues }: DetailsScreenProps): JSX.Element => {
   // until the form is submitted, the draft offer is not created yet.
   const isOfferProductBased = !!offer && !!offer.productId
   const isOfferButNotProductBased = !!offer && !offer.productId
-  const isNotAnOfferYetButProductBased = !offer && !!formik.values.productId
-  const isProductBased = isOfferProductBased || isNotAnOfferYetButProductBased
+  const isDirtyDraftOfferProductBased = !offer && !!formik.values.productId
+  const isProductBased = isOfferProductBased || isDirtyDraftOfferProductBased
 
   const readOnlyFields = setFormReadOnlyFields(offer, isProductBased)
+  const isEanSearchAvailable = isSearchByEanEnabled && isRecordStore
   const isEanSearchDisplayed =
-    isSearchByEanEnabled &&
-    isRecordStore &&
+    isEanSearchAvailable &&
     mode === OFFER_WIZARD_MODE.CREATION &&
     !isOfferButNotProductBased
+  const isEanSearchCalloutAloneDisplayed =
+    isEanSearchAvailable &&
+    mode === OFFER_WIZARD_MODE.EDITION &&
+    isOfferProductBased
 
   return (
     <FormikProvider value={formik}>
@@ -220,6 +225,7 @@ export const DetailsScreen = ({ venues }: DetailsScreenProps): JSX.Element => {
               isOfferProductBased={isOfferProductBased}
             />
           )}
+          {isEanSearchCalloutAloneDisplayed && <EanSearchCallout />}
           <DetailsForm
             isEanSearchDisplayed={isEanSearchDisplayed}
             isProductBased={isProductBased}

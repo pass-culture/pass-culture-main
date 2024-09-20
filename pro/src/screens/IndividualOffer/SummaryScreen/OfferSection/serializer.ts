@@ -124,7 +124,7 @@ export const serializeOfferSectionData = (
     withdrawalType: offer.withdrawalType || null,
     withdrawalDelay: offer.withdrawalDelay || null,
     status: offer.status,
-
+    isProductBased: !!offer.productId,
     isDuo: offer.isDuo,
     url: offer.url,
   }

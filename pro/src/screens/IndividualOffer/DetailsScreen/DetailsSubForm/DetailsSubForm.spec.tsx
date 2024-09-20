@@ -1,10 +1,14 @@
 import { screen } from '@testing-library/react'
 import { FormikProvider, useFormik } from 'formik'
+import { Route, Routes } from 'react-router-dom'
 
+import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import {
   IndividualOfferContext,
   IndividualOfferContextValues,
 } from 'context/IndividualOfferContext/IndividualOfferContext'
+import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
+import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { DEFAULT_DETAILS_FORM_VALUES } from '../constants'
@@ -59,15 +63,34 @@ const DetailsSubFormWrappedWithFormik = ({
 const renderDetailsSubForm = ({
   props,
   enableEANSearch = false,
+  mode = OFFER_WIZARD_MODE.CREATION,
 }: {
   props?: DetailsSubFormTestProps
   enableEANSearch?: boolean
+  mode?: OFFER_WIZARD_MODE
 } = {}) => {
+  const path = getIndividualOfferPath({
+    step: OFFER_WIZARD_STEP_IDS.DETAILS,
+    mode,
+  })
+  const options = {
+    initialRouterEntries: [path],
+  }
+
   return renderWithProviders(
-    <IndividualOfferContext.Provider value={contextValue}>
-      <DetailsSubFormWrappedWithFormik {...props} />
-    </IndividualOfferContext.Provider>,
-    enableEANSearch ? { features: ['WIP_EAN_CREATION'] } : {}
+    <>
+      <Routes>
+        <Route
+          path={path}
+          element={
+            <IndividualOfferContext.Provider value={contextValue}>
+              <DetailsSubFormWrappedWithFormik {...props} />
+            </IndividualOfferContext.Provider>
+          }
+        />
+      </Routes>
+    </>,
+    enableEANSearch ? { ...options, features: ['WIP_EAN_CREATION'] } : options
   )
 }
 
@@ -107,17 +130,32 @@ describe('DetailsSubForm', () => {
 
   describe('when EAN search is displayed', () => {
     describe('when the offer is product based', () => {
-      it('should not display the EAN field since it would duplicate top EAN search/input field', () => {
+      it('on creation, should not display the EAN field since it would duplicate top EAN search/input field', () => {
         renderDetailsSubForm({
           props: {
             isEanSearchDisplayed: true,
             isProductBased: true,
           },
           enableEANSearch: true,
+          mode: OFFER_WIZARD_MODE.CREATION,
         })
 
         const eanInput = screen.queryByRole('textbox', { name: /EAN/ })
         expect(eanInput).not.toBeInTheDocument()
+      })
+
+      it('on edition, should display the EAN field', () => {
+        renderDetailsSubForm({
+          props: {
+            isEanSearchDisplayed: true,
+            isProductBased: true,
+          },
+          enableEANSearch: true,
+          mode: OFFER_WIZARD_MODE.EDITION,
+        })
+
+        const eanInput = screen.getByRole('textbox', { name: /EAN/ })
+        expect(eanInput).toBeInTheDocument()
       })
     })
 

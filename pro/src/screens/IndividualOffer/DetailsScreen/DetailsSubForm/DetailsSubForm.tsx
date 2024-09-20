@@ -9,7 +9,9 @@ import { OnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/Moda
 import { ImageUploaderOffer } from 'components/IndividualOfferForm/ImageUploaderOffer/ImageUploaderOffer'
 import { GET_MUSIC_TYPES_QUERY_KEY } from 'config/swrQueryKeys'
 import { showOptionsTree } from 'core/Offers/categoriesSubTypes'
+import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { IndividualOfferImage } from 'core/Offers/types'
+import { useOfferWizardMode } from 'hooks/useOfferWizardMode'
 import { Select } from 'ui-kit/form/Select/Select'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 import { TimePicker } from 'ui-kit/form/TimePicker/TimePicker'
@@ -51,6 +53,7 @@ export const DetailsSubForm = ({
   onImageDelete,
   imageOffer,
 }: DetailsSubFormProps) => {
+  const mode = useOfferWizardMode()
   const {
     values: { categoryId, showType, subcategoryConditionalFields },
   } = useFormikContext<DetailsFormValues>()
@@ -82,6 +85,10 @@ export const DetailsSubForm = ({
   const displayArtisticInformations = ARTISTIC_INFORMATION_FIELDS.some(
     (field) => subcategoryConditionalFields.includes(field)
   )
+
+  const displayEanField =
+    subcategoryConditionalFields.includes('ean') &&
+    (mode === OFFER_WIZARD_MODE.CREATION ? !isProductBased : true)
 
   return (
     <>
@@ -211,19 +218,18 @@ export const DetailsSubForm = ({
                   />
                 </FormLayout.Row>
               )}
-              {subcategoryConditionalFields.includes('ean') &&
-                !isProductBased && (
-                  <FormLayout.Row>
-                    <TextInput
-                      isOptional
-                      label="EAN-13 (European Article Numbering)"
-                      countCharacters
-                      name="ean"
-                      maxLength={13}
-                      disabled={readOnlyFields.includes('ean')}
-                    />
-                  </FormLayout.Row>
-                )}
+              {displayEanField && (
+                <FormLayout.Row>
+                  <TextInput
+                    isOptional
+                    label="EAN-13 (European Article Numbering)"
+                    countCharacters
+                    name="ean"
+                    maxLength={13}
+                    disabled={readOnlyFields.includes('ean')}
+                  />
+                </FormLayout.Row>
+              )}
               {subcategoryConditionalFields.includes('durationMinutes') && (
                 <FormLayout.Row>
                   <TimePicker
