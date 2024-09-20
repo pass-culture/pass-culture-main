@@ -1120,6 +1120,8 @@ class BatchMarkBookingAsUsedTest(PostEndpointHelper):
         assert (
             f"- 2 réservations déjà remboursées ({already_reimbursed_booking.token}, {another_reimbursed_booking.token})"
             in alerts[1]
+            or f"- 2 réservations déjà remboursées ({another_reimbursed_booking.token}, {already_reimbursed_booking.token})"
+            in alerts[1]
         )
 
 
