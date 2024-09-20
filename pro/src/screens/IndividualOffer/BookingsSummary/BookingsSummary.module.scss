@@ -18,8 +18,8 @@
   gap: rem.torem(16px);
   flex-wrap: wrap;
   margin-bottom: rem.torem(16px);
-  
+
   &-title {
-    @include fonts.title3;
+    @include fonts.title2;
   }
 }

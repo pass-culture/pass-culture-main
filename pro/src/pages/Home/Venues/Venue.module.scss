@@ -24,17 +24,18 @@
 .toggle-wrapper {
   display: flex;
   align-items: center;
+
+  @include fonts.title3;
 }
 
 .venue-name {
-  @include fonts.title4;
-
   background: none;
   border: none;
   word-break: break-all;
 
   &-button {
     cursor: pointer;
+    @include fonts.title3;
   }
 }
 

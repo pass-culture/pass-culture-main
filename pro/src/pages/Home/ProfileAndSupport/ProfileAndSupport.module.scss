@@ -3,7 +3,7 @@
 @use "styles/variables/_size.scss" as size;
 
 .title {
-  @include fonts.title3;
+  @include fonts.title2;
 
   margin-bottom: rem.torem(16px);
 }
