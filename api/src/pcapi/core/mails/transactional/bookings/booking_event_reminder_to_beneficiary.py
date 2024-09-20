@@ -65,5 +65,6 @@ def get_booking_event_reminder_to_beneficiary_email_data(
                 else booking.stock.offer.venue.name
             ),
             "VENUE_POSTAL_CODE": booking.stock.offer.venue.postalCode,
+            "OFFER_ADDRESS": booking.stock.offer.fullAddress,
         },
     )

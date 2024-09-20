@@ -87,6 +87,7 @@ class GetBookingEventReminderToBeneficiaryEmailDataTest:
             "VENUE_CITY": "Paris",
             "VENUE_NAME": "Le Petit Rintintin",
             "VENUE_POSTAL_CODE": "75002",
+            "OFFER_ADDRESS": booking.stock.offer.fullAddress,
         }
 
     def should_return_event_specific_data_for_email_when_offer_is_a_duo_event(self):
