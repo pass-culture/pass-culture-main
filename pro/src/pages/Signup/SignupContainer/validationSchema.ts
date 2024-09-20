@@ -31,6 +31,7 @@ export const validationSchema = yup.object().shape({
     .test(
       'isPhoneValid',
       'Veuillez renseigner un numéro de téléphone valide, exemple : 612345678',
+      // TODO (jm) : Create a standard util function that can be used here and everywhere else (other "validationSchema.ts" files that checks phone numbers format
       (value) => {
         if (!value) {
           return false
