@@ -503,12 +503,14 @@ def get_collective_offers_template_by_filters(
             query_filters.append(
                 educational_models.CollectiveOfferTemplate.status == offer_mixin.CollectiveOfferStatus.EXPIRED.name
             )
-        remaining_statuses = set(statuses) - {
+        bookable_offer_statuses = {
             DisplayedStatus.BOOKED.value,
             DisplayedStatus.PREBOOKED.value,
             DisplayedStatus.ENDED.value,
             DisplayedStatus.EXPIRED.value,
+            DisplayedStatus.REIMBURSED.value,
         }
+        remaining_statuses = set(statuses) - bookable_offer_statuses
         for status in remaining_statuses:
             query_filters.append(
                 educational_models.CollectiveOfferTemplate.status == offer_mixin.CollectiveOfferStatus[status].name
