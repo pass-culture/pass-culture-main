@@ -44,8 +44,15 @@ Object.defineProperty(window, 'location', {
 })
 
 const renderHomePage = (options?: RenderWithProvidersOptions) => {
+  const user = sharedCurrentUserFactory()
   renderWithProviders(<Homepage />, {
-    user: sharedCurrentUserFactory(),
+    user,
+    storeOverrides: {
+      user: {
+        selectedOffererId: 1,
+        currentUser: user,
+      },
+    },
     ...options,
   })
 }
@@ -201,7 +208,8 @@ describe('Homepage', () => {
   })
 
   it('should display pending offerer banner when rattachement is pending', async () => {
-    vi.spyOn(api, 'getOfferer').mockRejectedValueOnce({ status: 403 })
+    // TODO: getOfferer called twice
+    vi.spyOn(api, 'getOfferer').mockRejectedValue({ status: 403 })
 
     renderHomePage()
 
@@ -251,14 +259,21 @@ describe('Homepage', () => {
     it('should display the banner if the user is eligible', async () => {
       vi.spyOn(api, 'postNewProNav').mockResolvedValue()
 
+      const oldInterfaceUser = sharedCurrentUserFactory({
+        navState: {
+          eligibilityDate: '2020-04-03T12:00:00+04:00',
+        },
+        hasSeenProTutorials: true,
+      })
       renderHomePage({
         features: ['WIP_ENABLE_PRO_SIDE_NAV'],
-        user: sharedCurrentUserFactory({
-          navState: {
-            eligibilityDate: '2020-04-03T12:00:00+04:00',
+        user: oldInterfaceUser,
+        storeOverrides: {
+          user: {
+            selectedOffererId: 1,
+            currentUser: oldInterfaceUser,
           },
-          hasSeenProTutorials: true,
-        }),
+        },
       })
 
       await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
