@@ -394,7 +394,7 @@ class SetProductGcuIncompatibleTest(PostEndpointHelper):
         booking = bookings_factories.UsedBookingFactory(stock=stock)
         finance_event = finance_factories.UsedBookingFinanceEventFactory(booking=booking)
         finance_factories.PricingFactory(
-            event=finance_event, booking=booking, status=finance_models.PricingStatus.CANCELLED
+            event=finance_event, booking=booking, status=finance_models.PricingStatus.VALIDATED
         )
 
         booking = bookings_factories.CancelledBookingFactory(
