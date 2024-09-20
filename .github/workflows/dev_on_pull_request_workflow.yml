@@ -221,24 +221,9 @@ jobs:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
-  test-pro-e2e:
-    name: "Tests pro E2E"
-    needs: [pcapi-init-job, build-pcapi]
-    uses: ./.github/workflows/dev_on_workflow_tests_pro_e2e.yml
-    if: |
-      always() &&
-      needs.pcapi-init-job.outputs.api-changed == 'true' || 
-      needs.pcapi-init-job.outputs.pro-changed == 'true'
-    with:
-      tag: ${{ needs.build-pcapi.result == 'skipped' && 'latest' || needs.pcapi-init-job.outputs.checksum-tag }}
-      CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
-    secrets:
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-
   # FIXME : (mageoffray, 19-09-2024)
   # this workflow is temporary and will be used to transitioned between
-  # e2e tests based on industrial sandbox and e2e tests based on micro sandboxes
+  # e2e tests based on e2e sandbox and e2e tests based on micro sandboxes
   test-pro-e2e-migration:
     name: "Tests pro E2E migrations"
     needs: [pcapi-init-job, build-pcapi]
@@ -246,6 +231,21 @@ jobs:
     if: |
       always() &&
       needs.pcapi-init-job.outputs.api-changed == 'true' ||
+      needs.pcapi-init-job.outputs.pro-changed == 'true'
+    with:
+      tag: ${{ needs.build-pcapi.result == 'skipped' && 'latest' || needs.pcapi-init-job.outputs.checksum-tag }}
+      CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
+    secrets:
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+  
+  test-pro-e2e:
+    name: "Tests pro E2E"
+    needs: [pcapi-init-job, build-pcapi]
+    uses: ./.github/workflows/dev_on_workflow_tests_pro_e2e.yml
+    if: |
+      always() &&
+      needs.pcapi-init-job.outputs.api-changed == 'true' || 
       needs.pcapi-init-job.outputs.pro-changed == 'true'
     with:
       tag: ${{ needs.build-pcapi.result == 'skipped' && 'latest' || needs.pcapi-init-job.outputs.checksum-tag }}
