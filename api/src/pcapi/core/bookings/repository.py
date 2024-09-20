@@ -937,6 +937,7 @@ def find_individual_bookings_event_happening_tomorrow_query() -> list[Booking]:
             .options(
                 contains_eager(Offer.venue),
                 contains_eager(Offer.criteria),
+                joinedload(Offer.offererAddress).load_only(OffererAddress.label).joinedload(OffererAddress.address),
             )
         )
         .all()

@@ -5666,3 +5666,17 @@ class GetTomorrowEventOfferTest:
         bookings = booking_repository.find_individual_bookings_event_happening_tomorrow_query()
 
         assert len(bookings) == 2
+
+    def test_find_tomorrow_event_offer_without_address(self):
+        tomorrow = datetime.utcnow() + timedelta(days=1)
+        bookings_factories.BookingFactory(
+            stock=offers_factories.EventStockFactory(
+                beginningDatetime=tomorrow,
+                offer__offererAddress=None,
+            )
+        )
+
+        with assert_num_queries(1):
+            bookings = booking_repository.find_individual_bookings_event_happening_tomorrow_query()
+
+        assert len(bookings) == 1
