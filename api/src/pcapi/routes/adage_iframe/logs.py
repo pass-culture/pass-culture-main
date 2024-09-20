@@ -48,6 +48,7 @@ def log_offer_list_view_switch(
             "source": body.source,
             "from": body.iframeFrom,
             "queryId": body.queryId,
+            "isMobile": body.isMobile,
         },
         uai=authenticated_information.uai,
         user_role=AdageFrontRoles.REDACTOR if institution else AdageFrontRoles.READONLY,

@@ -21,6 +21,7 @@ class AdagePlaylistType(enum.Enum):
 
 class OfferListSwitch(AdageBaseModel):
     source: str
+    isMobile: bool | None
 
 
 class CatalogViewBody(AdageBaseModel):

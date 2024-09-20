@@ -42,7 +42,7 @@ class LogsTest:
         with caplog.at_level(logging.INFO):
             response = test_client.post(
                 url_for("adage_iframe.log_offer_list_view_switch"),
-                json={"source": "offer_switch", "iframeFrom": "playlist", "queryId": "1234"},
+                json={"source": "offer_switch", "iframeFrom": "playlist", "queryId": "1234", "isMobile": True},
             )
 
         assert response.status_code == 204
@@ -51,6 +51,7 @@ class LogsTest:
             "analyticsSource": "adage",
             "source": "offer_switch",
             "queryId": "1234",
+            "isMobile": True,
             "from": "playlist",
             "uai": UAI,
             "user_role": AdageFrontRoles.READONLY,
