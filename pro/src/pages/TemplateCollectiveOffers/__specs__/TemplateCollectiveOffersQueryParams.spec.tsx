@@ -105,8 +105,6 @@ describe('route TemplateCollectiveOffers', () => {
   })
 
   describe('url query params', () => {
-    const oldInterfaceUser = sharedCurrentUserFactory({ navState: null })
-
     it('should have page value when page value is not first page', async () => {
       const offersRecap = Array.from({ length: 11 }, () =>
         collectiveOfferFactory({ stocks })
@@ -240,37 +238,6 @@ describe('route TemplateCollectiveOffers', () => {
 
       expect(mockNavigate).toHaveBeenCalledWith(
         '/offres/vitrines?structure=1&statut=refusee&statut=active&statut=inactive&statut=brouillon&statut=archivee',
-        {
-          replace: true,
-        }
-      )
-    })
-
-    it('should have offerer filter when user filters by offerer for old interface', async () => {
-      const filters = { offererId: 'A4' }
-      vi.spyOn(api, 'getOfferer').mockResolvedValueOnce({
-        ...defaultGetOffererResponseModel,
-        name: 'La structure',
-      })
-
-      await renderOffers(filters, oldInterfaceUser, null)
-
-      const offererFilter = screen.getByText('La structure')
-      expect(offererFilter).toBeInTheDocument()
-    })
-
-    it('should have offerer value be removed when user removes offerer filter', async () => {
-      const filters = { offererId: 'A4' }
-      vi.spyOn(api, 'getOfferer').mockResolvedValueOnce({
-        ...defaultGetOffererResponseModel,
-        name: 'La structure',
-      })
-      await renderOffers(filters, oldInterfaceUser, null)
-
-      await userEvent.click(screen.getByTestId('remove-offerer-filter'))
-
-      expect(mockNavigate).toHaveBeenCalledWith(
-        '/offres/vitrines?statut=en-attente&statut=refusee&statut=active&statut=inactive&statut=brouillon',
         {
           replace: true,
         }

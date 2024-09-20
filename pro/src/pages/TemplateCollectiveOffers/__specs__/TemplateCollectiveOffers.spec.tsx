@@ -138,9 +138,8 @@ describe('route TemplateCollectiveOffers', () => {
         await userEvent.click(
           screen.getByRole('button', { name: 'Rechercher' })
         )
-
         await waitFor(() => {
-          expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
+          expect(api.getCollectiveOffers).toHaveBeenCalledWith(
             undefined,
             '1',
             DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS.status,

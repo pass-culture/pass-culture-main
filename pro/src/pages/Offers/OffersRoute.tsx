@@ -48,9 +48,7 @@ export const OffersRoute = (): JSX.Element => {
       isNewInterfaceActive ? selectedOffererId : urlSearchFilters.offererId,
     ],
     ([, offererIdParam]) =>
-      (isNewInterfaceActive &&
-        urlSearchFilters.offererId === DEFAULT_SEARCH_FILTERS.offererId) ||
-      selectedOffererId
+      offererIdParam === DEFAULT_SEARCH_FILTERS.offererId
         ? null
         : api.getOfferer(Number(offererIdParam)),
     { fallbackData: null }

@@ -11,7 +11,7 @@ import {
 import { renderWithProviders } from 'utils/renderWithProviders'
 import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
-import { OffererStats } from '../OffererStats'
+import { OffererStats } from './OffererStats'
 
 vi.mock('apiClient/api', () => ({
   api: {
@@ -26,21 +26,19 @@ vi.mock('@firebase/remote-config', () => ({
   getValue: () => ({ asString: () => 'A1' }),
 }))
 
-const renderOffererStats = () => {
-  const user = sharedCurrentUserFactory({
-    navState: {
-      newNavDate: undefined,
-    },
-  })
+const renderOffererStats = async () => {
+  const user = sharedCurrentUserFactory()
   renderWithProviders(<OffererStats />, {
     user,
     storeOverrides: {
       user: {
         currentUser: user,
-        selectedOffererId: null,
+        selectedOffererId: 1,
       },
     },
   })
+
+  expect(await screen.findByText('Statistiques')).toBeInTheDocument()
 }
 
 describe('OffererStatsScreen', () => {
@@ -63,16 +61,7 @@ describe('OffererStatsScreen', () => {
       ],
     })
     vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
-      offerersNames: [
-        getOffererNameFactory({
-          id: 1,
-          name: 'Mon super cinéma',
-        }),
-        getOffererNameFactory({
-          id: 2,
-          name: 'Ma super librairie',
-        }),
-      ],
+      offerersNames: [getOffererNameFactory()],
     })
     vi.spyOn(api, 'getOffererStatsDashboardUrl').mockResolvedValue({
       dashboardUrl: 'fakeUrl',
@@ -82,17 +71,15 @@ describe('OffererStatsScreen', () => {
     })
   })
 
-  it('should display all offerer options on render for old interface', async () => {
-    renderOffererStats()
-
-    await waitFor(() => {
-      expect(api.listOfferersNames).toHaveBeenCalledTimes(1)
-    })
-    const offererOption = await screen.findByText('Mon super cinéma')
-    expect(offererOption).toBeInTheDocument()
+  it('should not display all offerer options on render', async () => {
+    await renderOffererStats()
+    const offererOption = screen.queryByLabelText('Structure')
+    expect(offererOption).not.toBeInTheDocument()
   })
 
-  it('should display error message if api call fail  for old interface', async () => {
+  it('should not display error message if offererNames call fails', async () => {
+    vi.spyOn(api, 'listOfferersNames').mockRejectedValue({})
+
     const notifyError = vi.fn()
 
     const notifsImport = (await vi.importActual(
@@ -102,17 +89,11 @@ describe('OffererStatsScreen', () => {
       ...notifsImport,
       error: notifyError,
     }))
-    vi.spyOn(api, 'listOfferersNames').mockRejectedValueOnce('')
-    renderOffererStats()
+    await renderOffererStats()
 
     await waitFor(() => {
       expect(api.listOfferersNames).toHaveBeenCalledTimes(1)
     })
-    await waitFor(() =>
-      expect(notifyError).toHaveBeenNthCalledWith(
-        1,
-        'Nous avons rencontré un problème lors de la récupération des données.'
-      )
-    )
+    await waitFor(() => expect(notifyError).not.toHaveBeenCalled())
   })
 })
