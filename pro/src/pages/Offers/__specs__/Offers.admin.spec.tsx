@@ -107,7 +107,7 @@ describe('route Offers when user is admin', () => {
       venueId: venueId.toString(),
       status: OfferStatus.INACTIVE,
     }
-    await renderOffers(filters /*, oldInterfaceAdmin, null*/)
+    await renderOffers(filters)
 
     await userEvent.selectOptions(
       screen.getByDisplayValue(venueName),
