@@ -79,6 +79,32 @@ describe('DetailsSummaryScreen', () => {
     expect(screen.getByText('Mon Lieu')).toBeInTheDocument()
     expect(screen.getByText('Catégorie A')).toBeInTheDocument()
     expect(screen.getByText('1234567891234')).toBeInTheDocument()
+    expect(screen.getByText(/Modifier/)).toBeInTheDocument()
+  })
+
+  describe('when the offer is product based', () => {
+    beforeEach(() => {
+      const offer = getIndividualOfferFactory({
+        name: 'Offre de test',
+        subcategoryId: SubcategoryIdEnum.SEANCE_CINE,
+        productId: 1234567891234,
+      })
+
+      renderDetailsSummaryScreen(offer)
+    })
+
+    it('should display a callout telling that details cannot be edited', () => {
+      expect(
+        screen.getByText(
+          /Les informations de cette page ne sont pas modifiables/
+        )
+      ).toBeInTheDocument()
+    })
+
+    it('should not display an edit button', () => {
+      const editButton = screen.queryByText(/Modifier/)
+      expect(editButton).not.toBeInTheDocument()
+    })
   })
 
   it('should render summary with right field with OA FF', async () => {

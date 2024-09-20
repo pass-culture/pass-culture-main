@@ -2,6 +2,8 @@ import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
 import { GetIndividualOfferWithAddressResponseModel } from 'apiClient/v1'
+import { Callout } from 'components/Callout/Callout'
+import { CalloutVariant } from 'components/Callout/types'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { OfferAppPreview } from 'components/OfferAppPreview/OfferAppPreview'
 import { SummaryAside } from 'components/SummaryLayout/SummaryAside'
@@ -157,17 +159,29 @@ export function DetailsSummaryScreen({ offer }: DetailsSummaryScreenProps) {
     (field) => conditionalFields.includes(field) || subcategory?.isEvent
   )
 
+  const cannotEditDetails = offerData.isProductBased
+
   return (
     <SummaryLayout>
       <SummaryContent>
+        {cannotEditDetails && (
+          <Callout variant={CalloutVariant.DEFAULT}>
+            Les informations de cette page ne sont pas modifiables car elles
+            sont liées à l’EAN renseigné.
+          </Callout>
+        )}
         <SummarySection
           title="Détails de l’offre"
-          editLink={getIndividualOfferUrl({
-            offerId: offer.id,
-            step: OFFER_WIZARD_STEP_IDS.DETAILS,
-            mode: OFFER_WIZARD_MODE.EDITION,
-          })}
-          aria-label="Modifier les détails de l’offre"
+          {...(cannotEditDetails
+            ? {}
+            : {
+                editLink: getIndividualOfferUrl({
+                  offerId: offer.id,
+                  step: OFFER_WIZARD_STEP_IDS.DETAILS,
+                  mode: OFFER_WIZARD_MODE.EDITION,
+                }),
+                'aria-label': 'Modifier les détails de l’offre',
+              })}
         >
           <SummarySubSection title="A propos de votre offre">
             <SummaryDescriptionList descriptions={aboutDescriptions} />

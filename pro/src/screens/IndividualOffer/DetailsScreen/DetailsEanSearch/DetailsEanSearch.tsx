@@ -4,8 +4,6 @@ import { useSelector } from 'react-redux'
 
 import { api } from 'apiClient/api'
 import { isErrorAPIError, getError } from 'apiClient/helpers'
-import { Callout } from 'components/Callout/Callout'
-import { CalloutVariant } from 'components/Callout/types'
 import { useIndividualOfferContext } from 'context/IndividualOfferContext/IndividualOfferContext'
 import { IndividualOfferImage } from 'core/Offers/types'
 import strokeBarcode from 'icons/stroke-barcode.svg'
@@ -14,6 +12,7 @@ import { Button } from 'ui-kit/Button/Button'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 import { Tag, TagVariant } from 'ui-kit/Tag/Tag'
 
+import { EanSearchCallout } from '../EanSearchCallout/EanSearchCallout'
 import { DetailsFormValues } from '../types'
 import { hasMusicType, isSubCategoryCDOrVinyl } from '../utils'
 
@@ -44,8 +43,8 @@ export const DetailsEanSearch = ({
   } = useFormikContext<DetailsFormValues>()
   const { eanSearch: ean, productId, subcategoryId } = values
 
-  const isNotAnOfferYetButProductBased = !isOfferProductBased && !!productId
-  const isProductBased = isOfferProductBased || isNotAnOfferYetButProductBased
+  const isDirtyDraftOfferProductBased = !isOfferProductBased && !!productId
+  const isProductBased = isOfferProductBased || isDirtyDraftOfferProductBased
 
   useEffect(() => {
     setApiError(null)
@@ -151,14 +150,7 @@ export const DetailsEanSearch = ({
   const shouldInputBeRequired = !!subcatError
   const shouldButtonBeDisabled =
     isProductBased || !ean || !!formikError || !!apiError || isFetchingProduct
-  const displayClearButton = isNotAnOfferYetButProductBased
-
-  const calloutVariant = isNotAnOfferYetButProductBased
-    ? CalloutVariant.SUCCESS
-    : CalloutVariant.DEFAULT
-  const calloutLabel = isNotAnOfferYetButProductBased
-    ? 'Les informations suivantes ont été synchronisées à partir de l’EAN renseigné.'
-    : 'Les informations de cette page ne sont pas modifiables car elles sont liées à l’EAN renseigné.'
+  const displayClearButton = isDirtyDraftOfferProductBased
 
   const label = (
     <>
@@ -213,14 +205,11 @@ export const DetailsEanSearch = ({
           Rechercher
         </Button>
       </div>
-      <div role="status">
+      <div role="status" className={styles['details-ean-search-callout']}>
         {isProductBased && (
-          <Callout
-            className={styles['details-ean-search-callout']}
-            variant={calloutVariant}
-          >
-            {calloutLabel}
-          </Callout>
+          <EanSearchCallout
+            isDirtyDraftOfferProductBased={isDirtyDraftOfferProductBased}
+          />
         )}
       </div>
     </div>
