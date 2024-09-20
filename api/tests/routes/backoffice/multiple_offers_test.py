@@ -1,13 +1,17 @@
 import dataclasses
 import datetime
 
+import factory
 from flask import url_for
 import pytest
 
-from pcapi.core.bookings import factories as booking_factory
+from pcapi.core.bookings import factories as bookings_factories
+from pcapi.core.bookings import models as bookings_models
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.criteria import factories as criteria_factories
 from pcapi.core.criteria import models as criteria_models
+from pcapi.core.finance import factories as finance_factories
+from pcapi.core.finance import models as finance_models
 from pcapi.core.mails import testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offerers import factories as offerers_factories
@@ -17,6 +21,7 @@ from pcapi.core.offers.models import Offer
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.providers import factories as providers_factories
 from pcapi.core.testing import assert_num_queries
+from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.models.offer_mixin import OfferValidationType
 
@@ -27,13 +32,13 @@ from .helpers.post import PostEndpointHelper
 
 
 pytestmark = [
-    pytest.mark.usefixtures("db_session"),
     pytest.mark.backoffice,
 ]
 
 # TODO Brice Bosson 27/09/2023 : remove products from manual offers when products will be restricted to synchronized offers only
 
 
+@pytest.mark.usefixtures("db_session")
 class MultipleOffersHomeTest(GetEndpointHelper):
     endpoint = "backoffice_web.multiple_offers.multiple_offers_home"
     needed_permission = perm_models.Permissions.READ_OFFERS
@@ -44,6 +49,7 @@ class MultipleOffersHomeTest(GetEndpointHelper):
             assert response.status_code == 200
 
 
+@pytest.mark.usefixtures("db_session")
 class SearchMultipleOffersTest(GetEndpointHelper):
     endpoint = "backoffice_web.multiple_offers.search_multiple_offers"
     needed_permission = perm_models.Permissions.READ_OFFERS
@@ -231,6 +237,7 @@ class SearchMultipleOffersTest(GetEndpointHelper):
         assert "La recherche ne correspond pas au format d'un EAN" in html_parser.extract_alert(response.data)
 
 
+@pytest.mark.usefixtures("db_session")
 class AddCriteriaToOffersButtonTest(button_helpers.ButtonHelper):
     needed_permission = perm_models.Permissions.MULTIPLE_OFFERS_ACTIONS
     button_label = "Tag des offres"
@@ -243,6 +250,7 @@ class AddCriteriaToOffersButtonTest(button_helpers.ButtonHelper):
         return url_for("backoffice_web.multiple_offers.search_multiple_offers", ean="9781234567890")
 
 
+@pytest.mark.usefixtures("db_session")
 class AddCriteriaToOffersTest(PostEndpointHelper):
     endpoint = "backoffice_web.multiple_offers.add_criteria_to_offers"
     endpoint_kwargs = {"ean": "9781234567890"}
@@ -281,6 +289,7 @@ class AddCriteriaToOffersTest(PostEndpointHelper):
         assert response.status_code == 303
 
 
+@pytest.mark.usefixtures("db_session")
 class SetProductGcuIncompatibleButtonTest(button_helpers.ButtonHelper):
     needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
     button_label = "Rendre le livre et les offres associées incompatibles avec les CGU"
@@ -297,6 +306,7 @@ class SetProductGcuIncompatibleTest(PostEndpointHelper):
     endpoint_kwargs = {"ean": "9781234567890"}
     needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
+    @pytest.mark.usefixtures("db_session")
     @pytest.mark.parametrize(
         "validation_status,gcu_compatibility_type",
         [
@@ -343,29 +353,86 @@ class SetProductGcuIncompatibleTest(PostEndpointHelper):
                 assert offer.lastValidationType == OfferValidationType.CGU_INCOMPATIBLE_PRODUCT
                 assert datetime.datetime.utcnow() - offer.lastValidationDate < datetime.timedelta(seconds=5)
 
-    def test_send_mail_when_edit_product_gcu_compatibility(self, authenticated_client):
+    @pytest.mark.usefixtures("db_session")
+    def test_cancel_bookings_and_send_transactional_email(self, authenticated_client):
         provider = providers_factories.APIProviderFactory()
-        product_1 = offers_factories.ThingProductFactory(
-            description="premier produit inapproprié",
+        product = offers_factories.ThingProductFactory(
+            description="Produit inapproprié",
             extraData={"ean": "9781234567890"},
             gcuCompatibilityType=offers_models.GcuCompatibilityType.COMPATIBLE,
             lastProvider=provider,
         )
         venue = offerers_factories.VenueFactory()
-        offer1 = offers_factories.OfferFactory(
-            product=product_1, venue=venue, validation=OfferValidationStatus.APPROVED
-        )
-        offers_factories.OfferFactory(product=product_1, venue=venue)
-
-        stock = offers_factories.StockFactory(offer=offer1, bookings=[booking_factory.BookingFactory()])
+        offer1 = offers_factories.OfferFactory(product=product, venue=venue, validation=OfferValidationStatus.APPROVED)
+        offers_factories.OfferFactory(product=product, venue=venue)
+        booking = bookings_factories.BookingFactory(stock__offer=offer1)
 
         response = self.post_to_endpoint(authenticated_client, form={"ean": "9781234567890"})
 
         assert response.status_code == 303
 
+        assert booking.status == bookings_models.BookingStatus.CANCELLED
+
         assert len(mails_testing.outbox) == 1
-        assert mails_testing.outbox[0]["To"] == stock.bookings[0].email
+        assert mails_testing.outbox[0]["To"] == booking.email
         assert mails_testing.outbox[0]["template"] == dataclasses.asdict(
             TransactionalEmail.BOOKING_CANCELLATION_BY_PRO_TO_BENEFICIARY.value
         )
         assert mails_testing.outbox[0]["params"]["REJECTED"] == True
+
+    @pytest.mark.usefixtures("clean_database")
+    def test_with_bookings_finance_events_and_pricings(self, authenticated_client):
+        product = offers_factories.ThingProductFactory(
+            description="Produit inapproprié",
+            extraData={"ean": "9781234567890"},
+            gcuCompatibilityType=offers_models.GcuCompatibilityType.COMPATIBLE,
+            lastProvider=providers_factories.APIProviderFactory(),
+        )
+        offer = offers_factories.OfferFactory(product=product)
+        stock = offers_factories.StockFactory(offer=offer)
+
+        booking = bookings_factories.UsedBookingFactory(stock=stock)
+        finance_event = finance_factories.UsedBookingFinanceEventFactory(booking=booking)
+        finance_factories.PricingFactory(
+            event=finance_event, booking=booking, status=finance_models.PricingStatus.CANCELLED
+        )
+
+        booking = bookings_factories.CancelledBookingFactory(
+            stock=stock, dateUsed=factory.LazyFunction(datetime.datetime.utcnow)
+        )
+        finance_event = finance_factories.UsedBookingFinanceEventFactory(
+            booking=booking,
+            venue=offer.venue,
+            pricingPoint=offer.venue,
+            status=finance_models.FinanceEventStatus.CANCELLED,
+        )
+        finance_factories.PricingFactory(
+            event=finance_event, booking=booking, status=finance_models.PricingStatus.CANCELLED
+        )
+
+        booking = bookings_factories.ReimbursedBookingFactory(stock=stock)
+        finance_event = finance_factories.UsedBookingFinanceEventFactory(
+            booking=booking, venue=offer.venue, pricingPoint=offer.venue
+        )
+        finance_factories.PricingFactory(
+            event=finance_event, booking=booking, status=finance_models.PricingStatus.INVOICED
+        )
+
+        response = self.post_to_endpoint(authenticated_client, form={"ean": "9781234567890"})
+
+        assert response.status_code == 303
+        assert response.location == url_for(
+            "backoffice_web.multiple_offers.search_multiple_offers", ean="9781234567890", _external=True
+        )
+
+        # ensure that we check that everything is committed, when using @atomic, transaction and with atomic (PC-31934)
+        db.session.close()
+        db.session.begin()
+
+        product = offers_models.Product.query.one()
+        offer = offers_models.Offer.query.one()
+
+        assert product.gcuCompatibilityType == offers_models.GcuCompatibilityType.FRAUD_INCOMPATIBLE
+        assert offer.validation == offers_models.OfferValidationStatus.REJECTED
+        assert offer.lastValidationType == OfferValidationType.CGU_INCOMPATIBLE_PRODUCT
+        assert datetime.datetime.utcnow() - offer.lastValidationDate < datetime.timedelta(seconds=5)

@@ -12,6 +12,7 @@ from pcapi.core.criteria import models as criteria_models
 from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
+from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.repository import atomic
 
@@ -139,8 +140,10 @@ def add_criteria_to_offers() -> utils.BackofficeResponse:
     return redirect(url_for(".search_multiple_offers", ean=form.ean.data), code=303)
 
 
+# FIXME (prouzet, 2024-09-20): @atomic has been temporarily removed because of side effects:
+# changes are not persistent in database when NonCancellablePricingError at booking cancellation time.
+# => Restore @atomic after deeper investigation, full understanding and fix.
 @multiple_offers_blueprint.route("/set-product-gcu-incompatible", methods=["POST"])
-@atomic()
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def set_product_gcu_incompatible() -> utils.BackofficeResponse:
     form = forms.HiddenEanForm()
@@ -148,8 +151,10 @@ def set_product_gcu_incompatible() -> utils.BackofficeResponse:
     if not form.validate():
         flash(utils.build_form_error_msg(form), "warning")
     elif offers_api.reject_inappropriate_products([form.ean.data], current_user, rejected_by_fraud_action=True):
+        db.session.commit()
         flash("Le produit a été rendu incompatible aux CGU et les offres ont été désactivées", "success")
     else:
+        db.session.rollback()
         flash("Une erreur s'est produite lors de l'opération", "warning")
 
     return redirect(url_for(".search_multiple_offers", ean=form.ean.data), code=303)
