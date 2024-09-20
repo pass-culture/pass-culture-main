@@ -126,6 +126,7 @@ class FeatureToggle(enum.Enum):
     WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE = (
         "Activer la nouvelle structure des offres et réservations collectives"
     )
+    WIP_UBBLE_V2 = "Utiliser l'API v2 d'Ubble pour l'identification des bénéficiaires"
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -187,9 +188,10 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_ENABLE_NEW_HASHING_ALGORITHM,
     FeatureToggle.WIP_ENABLE_OFFER_ADDRESS,
     FeatureToggle.WIP_ENABLE_REMINDER_MARKETING_MAIL_METADATA_DISPLAY,
-    FeatureToggle.WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE,
     FeatureToggle.WIP_SPLIT_OFFER,
     FeatureToggle.WIP_SUGGESTED_SUBCATEGORIES,
+    FeatureToggle.WIP_UBBLE_V2,
+    FeatureToggle.WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE,
     # Please keep alphabetic order
 )
 
