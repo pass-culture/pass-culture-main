@@ -16,6 +16,222 @@ from pcapi.utils import requests
 logger = logging.getLogger(__name__)
 
 
+INCLUDED_MODELS = {
+    "documents": ubble_fraud_models.UbbleIdentificationDocuments,
+    "document-checks": ubble_fraud_models.UbbleIdentificationDocumentChecks,
+    "reference-data-checks": ubble_fraud_models.UbbleIdentificationReferenceDataChecks,
+}
+
+
+def start_identification(
+    user_id: int, first_name: str, last_name: str, webhook_url: str, redirect_url: str
+) -> fraud_models.UbbleContent:
+    ubble_backend = _get_ubble_backend()
+    return ubble_backend.start_identification(user_id, first_name, last_name, webhook_url, redirect_url)
+
+
+def get_content(identification_id: str) -> fraud_models.UbbleContent:
+    ubble_backend = _get_ubble_backend()
+    return ubble_backend.get_content(identification_id)
+
+
+def download_ubble_picture(http_url: pydantic_networks.HttpUrl) -> tuple[str | None, typing.Any]:
+    try:
+        response = requests.get(http_url, stream=True)
+    except (urllib3_exceptions.HTTPError, requests.exceptions.RequestException) as e:
+        raise requests.ExternalAPIException(is_retryable=True) from e
+
+    if response.status_code == 429 or response.status_code >= 500:
+        logger.warning(
+            "Ubble picture-download: external error",
+            extra={"url": str(http_url), "status_code": response.status_code},
+        )
+        raise requests.ExternalAPIException(is_retryable=True)
+
+    if response.status_code == 403:
+        logger.error(
+            "Ubble picture-download: request has expired",
+            extra={"url": str(http_url), "status_code": response.status_code},
+        )
+        raise requests.ExternalAPIException(is_retryable=False)
+
+    if response.status_code != 200:
+        logger.error(  # pylint: disable=logging-fstring-interpolation
+            f"Ubble picture-download: unexpected error: {response.status_code}",
+            extra={"url": str(http_url)},
+        )
+        raise requests.ExternalAPIException(is_retryable=False)
+
+    return response.headers.get("content-type"), response.raw
+
+
+class UbbleBackend:
+    def start_identification(  # pylint: disable=too-many-positional-arguments
+        self,
+        user_id: int,
+        first_name: str,
+        last_name: str,
+        webhook_url: str,
+        redirect_url: str,
+    ) -> fraud_models.UbbleContent:
+        raise NotImplementedError()
+
+    def get_content(self, identification_id: str) -> fraud_models.UbbleContent:
+        raise NotImplementedError()
+
+
+class UbbleV1Backend(UbbleBackend):
+    def start_identification(  # pylint: disable=too-many-positional-arguments
+        self,
+        user_id: int,
+        first_name: str,
+        last_name: str,
+        webhook_url: str,
+        redirect_url: str,
+    ) -> fraud_models.UbbleContent:
+        session = configure_session()
+
+        data = {
+            "data": {
+                "type": "identifications",
+                "attributes": {
+                    "identification-form": {
+                        "external-user-id": user_id,
+                        "phone-number": None,
+                    },
+                    "reference-data": {
+                        "first-name": first_name,
+                        "last-name": last_name,
+                    },
+                    "webhook": webhook_url,
+                    "redirect_url": redirect_url,
+                },
+            }
+        }
+
+        try:
+            response = session.post(build_url("/identifications/", user_id), json=data)
+        except (urllib3_exceptions.HTTPError, requests.exceptions.RequestException) as e:
+            core_logging.log_for_supervision(
+                logger,
+                logging.ERROR,
+                "Ubble start-identification: Network error",
+                extra={
+                    "exception": e,
+                    "alert": "Ubble error",
+                    "error_type": "network",
+                    "request_type": "start-identification",
+                },
+            )
+            raise requests.ExternalAPIException(is_retryable=True) from e
+
+        if not response.ok:
+            # https://ubbleai.github.io/developer-documentation/#errors
+            if response.status_code == 429 or response.status_code >= 500:
+                core_logging.log_for_supervision(
+                    logger,
+                    logging.ERROR,
+                    "Ubble start-identification: External error: %s",
+                    response.status_code,
+                    extra={
+                        "alert": "Ubble error",
+                        "error_type": "http",
+                        "status_code": response.status_code,
+                        "request_type": "start-identification",
+                        "response_text": response.text,
+                    },
+                )
+                raise requests.ExternalAPIException(is_retryable=True)
+
+            core_logging.log_for_supervision(
+                logger,
+                logging.ERROR,
+                f"Ubble start-identification: Unexpected error: {response.status_code}, {response.text}",
+                extra={
+                    "alert": "Ubble error",
+                    "error_type": "http",
+                    "status_code": response.status_code,
+                    "request_type": "start-identification",
+                },
+            )
+
+            raise requests.ExternalAPIException(is_retryable=False)
+
+        content = _extract_useful_content_from_response(response.json())
+        core_logging.log_for_supervision(
+            logger,
+            logging.INFO,
+            "Valid response from Ubble",
+            extra={
+                "status_code": response.status_code,
+                "identification_id": str(content.identification_id),
+                "request_type": "start-identification",
+            },
+        )
+
+        logger.info(
+            "Ubble identification started",
+            extra={"identification_id": str(content.identification_id), "status": str(content.status)},
+        )
+
+        return content
+
+    def get_content(self, identification_id: str) -> fraud_models.UbbleContent:
+        session = configure_session()
+        base_extra_log = {"request_type": "get-content", "identification_id": identification_id}
+
+        try:
+            response = session.get(build_url(f"/identifications/{identification_id}/", identification_id))
+        except (urllib3_exceptions.HTTPError, requests.exceptions.RequestException) as e:
+            core_logging.log_for_supervision(
+                logger,
+                logging.ERROR,
+                "Ubble get-content: Network error",
+                extra={"exception": e, "error_type": "http"} | base_extra_log,
+            )
+            raise requests.ExternalAPIException(is_retryable=True) from e
+
+        if not response.ok:
+            if response.status_code >= 500 or response.status_code == 429:
+                core_logging.log_for_supervision(
+                    logger,
+                    logging.ERROR,
+                    "Ubble get-content: External error: %s",
+                    response.status_code,
+                    extra={"response_text": response.text, "error_type": "http", "status_code": response.status_code}
+                    | base_extra_log,
+                )
+                raise requests.ExternalAPIException(is_retryable=True)
+
+            core_logging.log_for_supervision(
+                logger,
+                logging.ERROR,
+                f"Ubble get-content: Unexpected error: {response.status_code}, {response.text}",  # ungroup errors on sentry
+                extra={"response_text": response.text, "status_code": response.status_code, "error_type": "http"}
+                | base_extra_log,
+            )
+            raise requests.ExternalAPIException(is_retryable=False)
+
+        content = _extract_useful_content_from_response(response.json())
+        core_logging.log_for_supervision(
+            logger,
+            logging.INFO,
+            "Valid response from Ubble",
+            extra={
+                "status_code": response.status_code,
+                "score": content.score,
+                "status": content.status.value if content.status else None,
+                "document_type": content.document_type,
+            }
+            | base_extra_log,
+        )
+        return content
+
+
+def _get_ubble_backend() -> UbbleBackend:
+    return UbbleV1Backend()
+
+
 def configure_session() -> requests.Session:
     session = requests.Session()
     session.auth = (settings.UBBLE_CLIENT_ID, settings.UBBLE_CLIENT_SECRET)
@@ -47,13 +263,6 @@ def build_url(path: str, id_: int | str | None = None) -> str:
         path = "/" + path
 
     return base_url + path
-
-
-INCLUDED_MODELS = {
-    "documents": ubble_fraud_models.UbbleIdentificationDocuments,
-    "document-checks": ubble_fraud_models.UbbleIdentificationDocumentChecks,
-    "reference-data-checks": ubble_fraud_models.UbbleIdentificationReferenceDataChecks,
-}
 
 
 def _get_included_attributes(response: dict, type_: str) -> ubble_fraud_models.UbbleIdentificationObject | None:
@@ -145,180 +354,3 @@ def _extract_useful_content_from_response(
         signed_image_back_url=getattr(documents, "signed_image_back_url", None),
     )
     return content
-
-
-def start_identification(
-    user_id: int,
-    first_name: str,
-    last_name: str,
-    webhook_url: str,
-    redirect_url: str,
-) -> fraud_models.UbbleContent:
-    session = configure_session()
-
-    data = {
-        "data": {
-            "type": "identifications",
-            "attributes": {
-                "identification-form": {
-                    "external-user-id": user_id,
-                    "phone-number": None,
-                },
-                "reference-data": {
-                    "first-name": first_name,
-                    "last-name": last_name,
-                },
-                "webhook": webhook_url,
-                "redirect_url": redirect_url,
-            },
-        }
-    }
-
-    try:
-        response = session.post(build_url("/identifications/", user_id), json=data)
-    except (urllib3_exceptions.HTTPError, requests.exceptions.RequestException) as e:
-        core_logging.log_for_supervision(
-            logger,
-            logging.ERROR,
-            "Ubble start-identification: Network error",
-            extra={
-                "exception": e,
-                "alert": "Ubble error",
-                "error_type": "network",
-                "request_type": "start-identification",
-            },
-        )
-        raise requests.ExternalAPIException(is_retryable=True) from e
-
-    if not response.ok:
-        # https://ubbleai.github.io/developer-documentation/#errors
-        if response.status_code == 429 or response.status_code >= 500:
-            core_logging.log_for_supervision(
-                logger,
-                logging.ERROR,
-                "Ubble start-identification: External error: %s",
-                response.status_code,
-                extra={
-                    "alert": "Ubble error",
-                    "error_type": "http",
-                    "status_code": response.status_code,
-                    "request_type": "start-identification",
-                    "response_text": response.text,
-                },
-            )
-            raise requests.ExternalAPIException(is_retryable=True)
-
-        core_logging.log_for_supervision(
-            logger,
-            logging.ERROR,
-            f"Ubble start-identification: Unexpected error: {response.status_code}, {response.text}",
-            extra={
-                "alert": "Ubble error",
-                "error_type": "http",
-                "status_code": response.status_code,
-                "request_type": "start-identification",
-            },
-        )
-
-        raise requests.ExternalAPIException(is_retryable=False)
-
-    content = _extract_useful_content_from_response(response.json())
-    core_logging.log_for_supervision(
-        logger,
-        logging.INFO,
-        "Valid response from Ubble",
-        extra={
-            "status_code": response.status_code,
-            "identification_id": str(content.identification_id),
-            "request_type": "start-identification",
-        },
-    )
-
-    logger.info(
-        "Ubble identification started",
-        extra={"identification_id": str(content.identification_id), "status": str(content.status)},
-    )
-
-    return content
-
-
-def get_content(identification_id: str) -> fraud_models.UbbleContent:
-    session = configure_session()
-    base_extra_log = {"request_type": "get-content", "identification_id": identification_id}
-
-    try:
-        response = session.get(build_url(f"/identifications/{identification_id}/", identification_id))
-    except (urllib3_exceptions.HTTPError, requests.exceptions.RequestException) as e:
-        core_logging.log_for_supervision(
-            logger,
-            logging.ERROR,
-            "Ubble get-content: Network error",
-            extra={"exception": e, "error_type": "http"} | base_extra_log,
-        )
-        raise requests.ExternalAPIException(is_retryable=True) from e
-
-    if not response.ok:
-        if response.status_code >= 500 or response.status_code == 429:
-            core_logging.log_for_supervision(
-                logger,
-                logging.ERROR,
-                "Ubble get-content: External error: %s",
-                response.status_code,
-                extra={"response_text": response.text, "error_type": "http", "status_code": response.status_code}
-                | base_extra_log,
-            )
-            raise requests.ExternalAPIException(is_retryable=True)
-
-        core_logging.log_for_supervision(
-            logger,
-            logging.ERROR,
-            f"Ubble get-content: Unexpected error: {response.status_code}, {response.text}",  # ungroup errors on sentry
-            extra={"response_text": response.text, "status_code": response.status_code, "error_type": "http"}
-            | base_extra_log,
-        )
-        raise requests.ExternalAPIException(is_retryable=False)
-
-    content = _extract_useful_content_from_response(response.json())
-    core_logging.log_for_supervision(
-        logger,
-        logging.INFO,
-        "Valid response from Ubble",
-        extra={
-            "status_code": response.status_code,
-            "score": content.score,
-            "status": content.status.value if content.status else None,
-            "document_type": content.document_type,
-        }
-        | base_extra_log,
-    )
-    return content
-
-
-def download_ubble_picture(http_url: pydantic_networks.HttpUrl) -> tuple[str | None, typing.Any]:
-    try:
-        response = requests.get(http_url, stream=True)
-    except (urllib3_exceptions.HTTPError, requests.exceptions.RequestException) as e:
-        raise requests.ExternalAPIException(is_retryable=True) from e
-
-    if response.status_code == 429 or response.status_code >= 500:
-        logger.warning(
-            "Ubble picture-download: external error",
-            extra={"url": str(http_url), "status_code": response.status_code},
-        )
-        raise requests.ExternalAPIException(is_retryable=True)
-
-    if response.status_code == 403:
-        logger.error(
-            "Ubble picture-download: request has expired",
-            extra={"url": str(http_url), "status_code": response.status_code},
-        )
-        raise requests.ExternalAPIException(is_retryable=False)
-
-    if response.status_code != 200:
-        logger.error(  # pylint: disable=logging-fstring-interpolation
-            f"Ubble picture-download: unexpected error: {response.status_code}",
-            extra={"url": str(http_url)},
-        )
-        raise requests.ExternalAPIException(is_retryable=False)
-
-    return response.headers.get("content-type"), response.raw
