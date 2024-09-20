@@ -1,9 +1,11 @@
 import logging
 
+from pcapi.core.categories import subcategories_v2
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
 from pcapi.repository import repository
+from pcapi.sandboxes.scripts.mocks.thing_mocks import MOCK_NAMES
 
 
 logger = logging.getLogger(__name__)
@@ -14,7 +16,6 @@ THINGS_PER_OFFERER = 5
 
 
 def create_industrial_thing_offers(
-    thing_products_by_name: dict[str, offers_models.Product],
     offerers_by_name: dict[str, offerers_models.Offerer],
     venues_by_name: dict[str, offerers_models.Venue],
 ) -> dict[str, offers_models.Offer]:
@@ -22,10 +23,11 @@ def create_industrial_thing_offers(
 
     thing_offers_by_name: dict[str, offers_models.Offer] = {}
 
+    thing_subcategories = [s for s in subcategories_v2.ALL_SUBCATEGORIES if not s.is_event]
+
     id_at_provider = 1234
     thing_index = 0
     offer_index = 0
-    thing_items = list(thing_products_by_name.items())
     for offerer in offerers_by_name.values():
         virtual_venue = [venue for venue in offerer.managedVenues if venue.isVirtual][0]
 
@@ -34,17 +36,20 @@ def create_industrial_thing_offers(
 
         for venue_thing_index in range(0, THINGS_PER_OFFERER):
             thing_venue = None
-            while thing_venue is None:
-                rest_thing_index = (venue_thing_index + thing_index) % len(thing_items)
-                (thing_name, thing_product) = thing_items[rest_thing_index]
-                if thing_product.subcategory.is_offline_only:
-                    thing_venue = physical_venue
-                elif thing_product.subcategory.is_online_only:
-                    thing_venue = virtual_venue
-                else:
-                    thing_venue = physical_venue
+            subcategory_index = (venue_thing_index + thing_index) % len(thing_subcategories)
+            subcategory = thing_subcategories[subcategory_index]
+            thing_name_index = (venue_thing_index + thing_index) % len(MOCK_NAMES)
+            thing_name = MOCK_NAMES[thing_name_index]
 
-                thing_index += 1
+            if subcategory.is_offline_only:
+                thing_venue = physical_venue
+            elif subcategory.is_online_only:
+                thing_venue = virtual_venue
+            else:
+                thing_venue = physical_venue
+
+            if thing_venue is None:
+                continue
 
             name = "{} / {}".format(thing_name, thing_venue.name)
             if offer_index % DEACTIVATED_OFFERS_PICK_MODULO == 0:
@@ -53,11 +58,11 @@ def create_industrial_thing_offers(
                 is_active = True
             thing_offers_by_name[name] = offers_factories.OfferFactory(
                 venue=thing_venue,
-                subcategoryId=thing_product.subcategoryId,
+                subcategoryId=subcategory.id,
                 isActive=is_active,
-                url="http://example.com" if thing_product.subcategory.is_online_only else None,
+                url="http://example.com" if subcategory.is_online_only else None,
                 idAtProvider=str(id_at_provider),
-                extraData=thing_product.extraData,
+                extraData=offers_factories.build_extra_data_from_subcategory(subcategory.id, set_all_fields=False),
             )
             offer_index += 1
             id_at_provider += 1

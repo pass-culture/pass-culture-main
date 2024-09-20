@@ -18,7 +18,6 @@ from pcapi.sandboxes.scripts.creators.industrial.create_industrial_draft_offers 
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_eac_data import create_eac_data
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_event_occurrences import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_event_offers import *
-from pcapi.sandboxes.scripts.creators.industrial.create_industrial_event_products import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_event_stocks import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_incidents import create_industrial_incidents
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_individual_offerers import (
@@ -41,7 +40,6 @@ from pcapi.sandboxes.scripts.creators.industrial.create_industrial_search_object
     create_industrial_search_indexed_objects,
 )
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_thing_offers import *
-from pcapi.sandboxes.scripts.creators.industrial.create_industrial_thing_products import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_thing_stocks import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_venues import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_venues_with_timezone import (
@@ -79,13 +77,9 @@ def save_industrial_sandbox() -> None:
 
     venues_by_name = create_industrial_venues(offerers_by_name)
 
-    event_products_by_name = create_industrial_event_products()
+    event_offers_by_name = create_industrial_event_offers(offerers_by_name)
 
-    thing_products_by_name = create_industrial_thing_products()
-
-    event_offers_by_name = create_industrial_event_offers(event_products_by_name, offerers_by_name)
-
-    thing_offers_by_name = create_industrial_thing_offers(thing_products_by_name, offerers_by_name, venues_by_name)
+    thing_offers_by_name = create_industrial_thing_offers(offerers_by_name, venues_by_name)
 
     create_industrial_draft_offers(offerers_by_name)
 
