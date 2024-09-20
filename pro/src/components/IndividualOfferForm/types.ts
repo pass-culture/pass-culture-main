@@ -1,9 +1,11 @@
 import type { FormikProps } from 'formik'
 
 import { WithdrawalTypeEnum } from 'apiClient/v1'
+import { type AddressFormValues } from 'components/AddressManual/AddressManual'
 import { AccessibilityFormValues } from 'core/shared/types'
 
-export interface IndividualOfferFormValues {
+// We makes "AddressFormValues" partial because the individual offer form may not have address fields (e.g. if it's a virtual offer)
+export interface IndividualOfferFormValues extends Partial<AddressFormValues> {
   isEvent?: boolean
   subCategoryFields: string[]
   name: string
@@ -38,15 +40,6 @@ export interface IndividualOfferFormValues {
   offerlocation?: string | undefined
   locationLabel?: string | null
   manuallySetAddress?: boolean
-  'search-addressAutocomplete'?: string
-  addressAutocomplete?: string
-  banId?: string | null
-  street?: string | null
-  postalCode?: string
-  city?: string
-  coords?: string
-  latitude?: string
-  longitude?: string
 }
 
 export type IndividualOfferForm = FormikProps<IndividualOfferFormValues>

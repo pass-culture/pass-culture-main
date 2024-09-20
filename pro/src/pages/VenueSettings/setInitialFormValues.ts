@@ -12,9 +12,10 @@ export const setInitialFormValues = (
     addressAutocomplete: `${venue.street} ${venue.postalCode} ${venue.city}`,
     'search-addressAutocomplete': `${venue.street} ${venue.postalCode} ${venue.city}`,
     city: venue.city || '',
+    coords: '',
     comment: venue.comment || '',
-    latitude: venue.latitude || 0,
-    longitude: venue.longitude || 0,
+    latitude: String(venue.latitude) || '',
+    longitude: String(venue.longitude) || '',
     bookingEmail: venue.bookingEmail || '',
     name: venue.name,
     postalCode: venue.postalCode || '',
@@ -25,5 +26,6 @@ export const setInitialFormValues = (
     venueType: venue.venueTypeCode,
     withdrawalDetails: venue.withdrawalDetails || '',
     isWithdrawalAppliedOnAllOffers: false,
+    manuallySetAddress: venue.address?.isManualEdition,
   }
 }

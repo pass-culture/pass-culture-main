@@ -4,7 +4,6 @@ import React from 'react'
 import { Callout } from 'components/Callout/Callout'
 import { CalloutVariant } from 'components/Callout/types'
 import { FormLayout } from 'components/FormLayout/FormLayout'
-import { type IndividualOfferFormValues } from 'components/IndividualOfferForm/types'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
@@ -12,10 +11,22 @@ import { getCoordsType, parseDms } from 'utils/coords'
 
 import styles from './AddressManual.module.scss'
 
+export interface AddressFormValues {
+  'search-addressAutocomplete': string
+  addressAutocomplete: string
+  banId: string | null
+  street: string | null
+  postalCode: string
+  city: string
+  coords: string
+  latitude: string
+  longitude: string
+}
+
 export const AddressManual = (): JSX.Element => {
   const [coords, coordsMeta] = useField<string>('coords')
 
-  const formik = useFormikContext<IndividualOfferFormValues>()
+  const formik = useFormikContext<AddressFormValues>()
 
   const onCoordsBlur = async (event: React.ChangeEvent<HTMLInputElement>) => {
     formik.handleChange(event)

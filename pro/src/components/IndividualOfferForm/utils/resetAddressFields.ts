@@ -1,8 +1,8 @@
 import { type FormikContextType } from 'formik'
 
-import { type IndividualOfferFormValues } from '../types'
+import { AddressFormValues } from 'components/AddressManual/AddressManual'
 
-const fieldsNames = [
+const fieldsNames: Array<keyof AddressFormValues> = [
   'street',
   'postalCode',
   'city',
@@ -10,15 +10,14 @@ const fieldsNames = [
   'longitude',
   'coords',
   'banId',
-  'locationLabel',
   'search-addressAutocomplete',
   'addressAutocomplete',
 ]
 
-export const resetAddressFields = async ({
+export const resetAddressFields = async <FormValues>({
   formik,
 }: {
-  formik: FormikContextType<IndividualOfferFormValues>
+  formik: FormikContextType<FormValues>
 }) => {
   // Empty all fields value
   await Promise.all(
