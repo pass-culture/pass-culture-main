@@ -398,6 +398,41 @@ describe('ActionsBar', () => {
     })
   })
 
+  it('should call tracker event when archiving an offer', async () => {
+    renderActionsBar({
+      ...props,
+      selectedOffers: [
+        collectiveOfferFactory({
+          id: 1,
+          status: CollectiveOfferStatus.ACTIVE,
+          stocks,
+        }),
+        collectiveOfferFactory({
+          id: 2,
+          status: CollectiveOfferStatus.ACTIVE,
+          stocks,
+          isShowcase: true,
+        }),
+      ],
+    })
+
+    const archivingButton = screen.getByText('Archiver')
+    await userEvent.click(archivingButton)
+
+    const confirmArchivingButton = screen.getByText('Archiver les offres')
+    await userEvent.click(confirmArchivingButton)
+
+    expect(mockLogEvent).toHaveBeenCalledTimes(1)
+    expect(mockLogEvent).toHaveBeenNthCalledWith(
+      1,
+      Events.CLICKED_ARCHIVE_COLLECTIVE_OFFER,
+      {
+        from: '/offres/collectives',
+        selected_offers: ['1', '2'],
+      }
+    )
+  })
+
   it('should archive offers on click on "Archiver"', async () => {
     renderActionsBar({
       ...props,
