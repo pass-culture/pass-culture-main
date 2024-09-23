@@ -317,6 +317,7 @@ class GetOffererStatsResponseModel(BaseModel):
     @classmethod
     def build(
         cls,
+        *,
         offerer_id: int,
         syncDate: datetime,
         dailyViews: list[dict],  # dicts are serialized from offerers_models.OffererViewsModel

@@ -273,11 +273,11 @@ def get_offerer_stats(offerer_id: int) -> offerers_serialize.GetOffererStatsResp
     daily_offerer_views = next(el for el in stats if el.table == DAILY_CONSULT_PER_OFFERER_LAST_180_DAYS_TABLE)
     daily_offerer_views_data = daily_offerer_views.jsonData["daily_views"]
     return offerers_serialize.GetOffererStatsResponseModel.build(
-        offerer_id,
-        min(top_offers.syncDate, daily_offerer_views.syncDate) if top_offers else daily_offerer_views.syncDate,
-        daily_offerer_views_data,
-        top_offers_data,
-        total_views_last_30_days,
+        offerer_id=offerer_id,
+        syncDate=min(top_offers.syncDate, daily_offerer_views.syncDate) if top_offers else daily_offerer_views.syncDate,
+        dailyViews=daily_offerer_views_data,
+        topOffers=top_offers_data,
+        total_views_last_30_days=total_views_last_30_days,
     )
 
 

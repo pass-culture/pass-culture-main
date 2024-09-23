@@ -104,6 +104,7 @@ def update_venue(
     venue: models.Venue,
     modifications: dict,
     author: users_models.User,
+    *,
     opening_hours: list[serialize_base.OpeningHoursModel] | None = None,
     contact_data: offerers_schemas.VenueContactModel | None = None,
     criteria: list[criteria_models.Criterion] | offerers_constants.T_UNCHANGED = offerers_constants.UNCHANGED,
@@ -1022,6 +1023,7 @@ def _format_tags(tags: typing.Iterable[models.OffererTag]) -> str:
 def update_offerer(
     offerer: models.Offerer,
     author: users_models.User,
+    *,
     name: str | offerers_constants.T_UNCHANGED = offerers_constants.UNCHANGED,
     city: str | offerers_constants.T_UNCHANGED = offerers_constants.UNCHANGED,
     postal_code: str | offerers_constants.T_UNCHANGED = offerers_constants.UNCHANGED,
