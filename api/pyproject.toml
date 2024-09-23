@@ -177,6 +177,11 @@ load-plugins = [
     "pcapi.utils.pylint",
     "pylint_pydantic",
 ]
+ignore-paths = [
+  # Many "too-many-positional-arguments" warnings in tests because of fixtures.
+  # Let's disable pylint for tests since the folder is already excluded in mypy configuration below.
+  "^tests/",
+]
 
 [tool.pylint."MESSAGES CONTROL"]
 enable = [
