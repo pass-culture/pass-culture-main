@@ -41,8 +41,8 @@ class ListRulesTest(GetEndpointHelper):
     endpoint = "backoffice_web.offer_validation_rules.list_rules"
     needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
-    # session + current_user
-    expected_num_queries = 3
+    # session + current_user + WIP_ENABLE_OFFER_ADDRESS FF
+    expected_num_queries = 4
     # offerer names and siren
     expected_num_queries_when_using_offerer = expected_num_queries + 1
     # venue names and siret
@@ -337,7 +337,7 @@ class GetCreateOfferValidationRuleFormTest(GetEndpointHelper):
     def test_get_create_form_test(self, legit_user, authenticated_client):
         form_url = url_for(self.endpoint)
 
-        with assert_num_queries(2):  # session + current user
+        with assert_num_queries(3):  # session + current user + WIP_ENABLE_OFFER_ADDRESS FF
             response = authenticated_client.get(form_url)
             assert response.status_code == 200
 
@@ -827,7 +827,7 @@ class GetEditOfferValidationRuleFormTest(GetEndpointHelper):
         )
         form_url = url_for(self.endpoint, rule_id=rule.id)
 
-        with assert_num_queries(4):  # session + current user + rule + sub rule
+        with assert_num_queries(5):  # session + current user + rule + sub rule + WIP_ENABLE_OFFER_ADDRESS FF
             response = authenticated_client.get(form_url)
             assert response.status_code == 200
 

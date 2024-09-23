@@ -19,7 +19,8 @@ pytestmark = [
 class SafeRedirectTest:
     # - session
     # - authenticated user
-    expected_num_queries = 2
+    # - WIP_ENABLE_OFFER_ADDRESS FF
+    expected_num_queries = 3
 
     def test_redirect_as_anonymous(self, client):
         response = client.get(url_for("backoffice_web.safe_redirect", url="https://example.com"))
@@ -31,7 +32,8 @@ class SafeRedirectTest:
     def test_redirect_safe_url(self, mock_check_url_is_safe, mock_request_url_scan, authenticated_client):
         url = "https://safe.example.com"
 
-        with assert_num_queries(self.expected_num_queries):
+        # redirect -> no FF loaded
+        with assert_num_queries(self.expected_num_queries - 1):
             response = authenticated_client.get(url_for("backoffice_web.safe_redirect", url=url))
             assert response.status_code == 303
 

@@ -99,7 +99,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         }
 
     def test_list_collective_offers_without_filter(self, authenticated_client, collective_offers):
-        with assert_num_queries(self.expected_num_queries - 2):
+        with assert_num_queries(self.expected_num_queries - 1):
             response = authenticated_client.get(url_for(self.endpoint))
             assert response.status_code == 200
 
@@ -381,7 +381,9 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         }
 
         # no connect as extended FF fetch if no offers
-        expected_num_queries = self.expected_num_queries if expected_offer_indexes else self.expected_num_queries - 1
+        # uncomment below once WIP_ENABLE_OFFER_ADDRESS FF is cleaned
+        # expected_num_queries = self.expected_num_queries if expected_offer_indexes else self.expected_num_queries - 1
+        expected_num_queries = self.expected_num_queries
         with assert_num_queries(expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 200
@@ -413,7 +415,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
             "search-3-price": 21.20,
         }
 
-        with assert_num_queries(self.expected_num_queries - 1):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 200
 
@@ -655,7 +657,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
             "search-0-operator": "INTERSECTS",
             "search-0-formats": [subcategories.EacFormat.PROJECTION_AUDIOVISUELLE.name],
         }
-        with assert_num_queries(2):  # only session + current user, before form validation
+        with assert_num_queries(3):  # only session + current user + FF, before form validation
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 400
 
@@ -676,7 +678,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
             "search-0-operator": operator,
             f"search-0-{operand}": "",
         }
-        with assert_num_queries(2):  # only session + current user, before form validation
+        with assert_num_queries(3):  # only session + current user, before form validation + FF
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 400
 
@@ -692,7 +694,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
             "search-4-search_field": "BOOKING_LIMIT_DATE",
             "search-4-operator": "DATE_TO",
         }
-        with assert_num_queries(2):  # only session + current user, before form validation
+        with assert_num_queries(3):  # only session + current user + FF, before form validation
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 400
 
@@ -707,7 +709,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
             "search-0-operator": "EQUALS",
             "search-0-string": "12, 34, A",
         }
-        with assert_num_queries(2):  # only session + current user, before form validation
+        with assert_num_queries(3):  # only session + current user + FF, before form validation
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 400
 
@@ -1017,7 +1019,8 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
     # - fetch user (1 query)
     # - fetch CollectiveOffer
     # - _is_collective_offer_price_editable
-    expected_num_queries = 4
+    # - WIP_ENABLE_OFFER_ADDRESS FF
+    expected_num_queries = 5
 
     def test_nominal(self, legit_user, authenticated_client):
         start_date = datetime.datetime.utcnow() - datetime.timedelta(days=1)
@@ -1088,7 +1091,7 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
         url = url_for(self.endpoint, collective_offer_id=pricing.collectiveBooking.collectiveStock.collectiveOffer.id)
         app.redis_client.set(finance_conf.REDIS_GENERATE_CASHFLOW_LOCK, "1", 600)
         try:
-            with assert_num_queries(3):
+            with assert_num_queries(4):
                 response = authenticated_client.get(url)
                 assert response.status_code == 200
         finally:

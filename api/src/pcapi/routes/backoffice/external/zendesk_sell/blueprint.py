@@ -10,6 +10,7 @@ from pcapi.core.external import zendesk_sell
 from pcapi.core.external.zendesk_sell_backends import BaseBackend
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.permissions import models as perm_models
+from pcapi.models import feature
 from pcapi.repository import atomic
 from pcapi.routes.backoffice import utils
 from pcapi.utils import requests
@@ -30,9 +31,14 @@ def _get_parent_organization_id(venue: offerers_models.Venue) -> int | None:
     try:
         zendesk_offerer_data = zendesk_sell_backend.get_offerer_by_id(offerer)
     except zendesk_sell.ContactFoundMoreThanOneError as e:
-        message = Markup(
-            "Attention : Plusieurs structures parentes possibles ont été trouvées pour ce lieu dans Zendesk Sell. <br/> <ul>"
-        )
+        if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
+            message = Markup(
+                "Attention : Plusieurs structures parentes possibles ont été trouvées pour ce partenaire culturel dans Zendesk Sell. <br/> <ul>"
+            )
+        else:
+            message = Markup(
+                "Attention : Plusieurs structures parentes possibles ont été trouvées pour ce lieu dans Zendesk Sell. <br/> <ul>"
+            )
         for item in e.items:
             message += Markup(
                 "<li>Identifiant Zendesk Sell : <b>{item_id}</b>, "
@@ -74,7 +80,10 @@ def update_offerer(offerer_id: int) -> utils.BackofficeResponse:
     url = url_for("backoffice_web.offerer.get", offerer_id=offerer_id)
 
     if zendesk_sell.is_offerer_only_virtual(offerer):
-        flash("Cette structure ne gère que des lieux virtuels", "warning")
+        if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
+            flash("Cette structure ne gère que des partenaires culturels virtuels", "warning")
+        else:
+            flash("Cette structure ne gère que des lieux virtuels", "warning")
         return redirect(url, code=303)
 
     try:
@@ -136,15 +145,23 @@ def update_venue(venue_id: int) -> utils.BackofficeResponse:
     url = url_for("backoffice_web.venue.get", venue_id=venue_id)
 
     if venue.isVirtual or not venue.isPermanent:
-        flash("Ce lieu est virtuel ou non permanent", "warning")
+        if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
+            flash("Ce partenaire culturel est virtuel ou non permanent", "warning")
+        else:
+            flash("Ce lieu est virtuel ou non permanent", "warning")
         return redirect(url, code=303)
 
     try:
         zendesk_venue_data = zendesk_sell_backend.get_venue_by_id(venue)
     except zendesk_sell.ContactFoundMoreThanOneError as e:
-        message = Markup(
-            "Plusieurs lieux ont été trouvés dans Zendesk Sell, aucun ne peut donc être mis à jour : <br/> <ul>"
-        )
+        if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
+            message = Markup(
+                "Plusieurs partenaires culturels ont été trouvés dans Zendesk Sell, aucun ne peut donc être mis à jour : <br/> <ul>"
+            )
+        else:
+            message = Markup(
+                "Plusieurs lieux ont été trouvés dans Zendesk Sell, aucun ne peut donc être mis à jour : <br/> <ul>"
+            )
         for item in e.items:
             message += Markup(
                 "<li>Identifiant Zendesk Sell : <b>{item_id}</b>, "
@@ -159,7 +176,10 @@ def update_venue(venue_id: int) -> utils.BackofficeResponse:
         flash(message, "warning")
         return redirect(url, code=303)
     except zendesk_sell.ContactNotFoundError:
-        flash("Le lieu n'a pas été trouvé dans Zendesk Sell", "warning")
+        if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
+            flash("Le partenaire culturel n'a pas été trouvé dans Zendesk Sell", "warning")
+        else:
+            flash("Le lieu n'a pas été trouvé dans Zendesk Sell", "warning")
         return redirect(url, code=303)
     except requests.exceptions.HTTPError as http_error:
         flash(
@@ -183,5 +203,8 @@ def update_venue(venue_id: int) -> utils.BackofficeResponse:
         )
         return redirect(url, code=303)
 
-    flash("Le lieu a été mis à jour sur Zendesk Sell", "success")
+    if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
+        flash("Le partenaire culturel a été mis à jour sur Zendesk Sell", "success")
+    else:
+        flash("Le lieu a été mis à jour sur Zendesk Sell", "success")
     return redirect(url, code=303)

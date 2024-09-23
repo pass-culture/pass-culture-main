@@ -6,8 +6,13 @@
   <thead>
     <tr>
       <th scope="col"></th>
-      <th scope="col">Id du Lieu</th>
-      <th scope="col">Lieu</th>
+      {% if is_feature_active("WIP_ENABLE_OFFER_ADDRESS") %}
+        <th scope="col">Id du partenaire culturel</th>
+        <th scope="col">Partenaire culturel</th>
+      {% else %}
+        <th scope="col">Id du Lieu</th>
+        <th scope="col">Lieu</th>
+      {% endif %}
       <th scope="col">Identifiant cinéma (Boost)</th>
       <th scope="col">URL du cinéma (Boost)</th>
     </tr>

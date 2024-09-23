@@ -168,14 +168,16 @@ class GetBankAccountHistoryTest(GetEndpointHelper):
 
     # - session + authenticated user (2 queries)
     # - full history with joined data (1 query)
-    expected_num_queries = 3
+    # - WIP_ENABLE_OFFER_ADDRESS FF
+    expected_num_queries = 4
 
     def test_no_action(self, authenticated_client):
         bank_account = finance_factories.BankAccountFactory()
 
         url = url_for(self.endpoint, bank_account_id=bank_account.id)
 
-        with assert_num_queries(self.expected_num_queries):
+        # no WIP_ENABLE_OFFER_ADDRESS FF
+        with assert_num_queries(self.expected_num_queries - 1):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 

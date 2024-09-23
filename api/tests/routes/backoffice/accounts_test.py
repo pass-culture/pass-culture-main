@@ -140,8 +140,8 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
     endpoint = "backoffice_web.public_accounts.search_public_accounts"
     needed_permission = perm_models.Permissions.READ_PUBLIC_ACCOUNT
 
-    # session + current user
-    expected_num_queries_when_no_query = 2
+    # session + current user + WIP_ENABLE_OFFER_ADDRESS
+    expected_num_queries_when_no_query = 3
 
     # + results + count
     expected_num_queries = expected_num_queries_when_no_query + 2
@@ -166,7 +166,8 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
         underage, _, _, _, _ = create_bunch_of_accounts()
         user_id = underage.id
 
-        with assert_num_queries(self.expected_num_queries):
+        # redirect -> no FF loaded
+        with assert_num_queries(self.expected_num_queries - 1):
             response = authenticated_client.get(url_for(self.endpoint, q=str(user_id)))
             assert response.status_code == 303
 
@@ -221,7 +222,8 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
     def test_can_search_public_account_by_first_name(self, authenticated_client, query, expected_index):
         accounts = create_bunch_of_accounts()
 
-        with assert_num_queries(self.expected_num_queries):
+        # redirect -> no FF loaded
+        with assert_num_queries(self.expected_num_queries - 1):
             response = authenticated_client.get(url_for(self.endpoint, q=query))
             assert response.status_code == 303
 
@@ -239,7 +241,8 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
     def test_can_search_public_account_by_name(self, authenticated_client, query):
         _, _, _, random, _ = create_bunch_of_accounts()
 
-        with assert_num_queries(self.expected_num_queries):
+        # redirect -> no FF loaded
+        with assert_num_queries(self.expected_num_queries - 1):
             response = authenticated_client.get(url_for(self.endpoint, q=query))
             assert response.status_code == 303
 
@@ -257,7 +260,8 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
         _, _, _, random, _ = create_bunch_of_accounts()
         email = random.email
 
-        with assert_num_queries(self.expected_num_queries):
+        # redirect -> no FF loaded
+        with assert_num_queries(self.expected_num_queries - 1):
             response = authenticated_client.get(url_for(self.endpoint, q=email))
             assert response.status_code == 303
 
@@ -301,7 +305,8 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
     def test_can_search_public_account_by_phone(self, authenticated_client, query):
         _, grant_18, _, _, _ = create_bunch_of_accounts()
 
-        with assert_num_queries(self.expected_num_queries):
+        # redirect -> no FF loaded
+        with assert_num_queries(self.expected_num_queries - 1):
             response = authenticated_client.get(url_for(self.endpoint, q=query))
             assert response.status_code == 303
 
@@ -319,7 +324,8 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
         _, _, _, _, no_address = create_bunch_of_accounts()
         phone_number = no_address.phoneNumber
 
-        with assert_num_queries(self.expected_num_queries):
+        # redirect -> no FF loaded
+        with assert_num_queries(self.expected_num_queries - 1):
             response = authenticated_client.get(url_for(self.endpoint, q=phone_number))
             assert response.status_code == 303
 
@@ -337,7 +343,8 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
     def test_can_search_public_account_by_both_first_name_and_name(self, authenticated_client, query):
         _, grant_18, _, _, _ = create_bunch_of_accounts()
 
-        with assert_num_queries(self.expected_num_queries):
+        # redirect -> no FF loaded
+        with assert_num_queries(self.expected_num_queries - 1):
             response = authenticated_client.get(url_for(self.endpoint, q=query))
             assert response.status_code == 303
 
@@ -400,7 +407,8 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
         offerers_factories.UserOffererFactory(user=young_and_pro)
         email = young_and_pro.email
 
-        with assert_num_queries(self.expected_num_queries):
+        # redirect -> no FF loaded
+        with assert_num_queries(self.expected_num_queries - 1):
             response = authenticated_client.get(url_for(self.endpoint, q=email))
             assert response.status_code == 303
 
@@ -468,7 +476,8 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
         db.session.flush()
 
         # Ensure that search result is redirected, no single card result with "4 résultats"
-        with assert_num_queries(self.expected_num_queries):
+        # redirect -> no FF loaded
+        with assert_num_queries(self.expected_num_queries - 1):
             response = authenticated_client.get(url_for(self.endpoint, q=email))
             assert response.status_code == 303
 
@@ -489,7 +498,8 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
 
         db.session.flush()
 
-        with assert_num_queries(self.expected_num_queries_when_old_email_and_single_result):
+        # redirect -> no FF loaded
+        with assert_num_queries(self.expected_num_queries_when_old_email_and_single_result - 1):
             response = authenticated_client.get(url_for(self.endpoint, q=old_email))
             assert response.status_code == 303
 
@@ -521,7 +531,8 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
         public_user = users_factories.UserFactory(lastName=common_name)
         suspended_user = users_factories.BeneficiaryGrant18Factory(lastName=common_name, isActive=False)
 
-        with assert_num_queries(self.expected_num_queries):
+        # redirect -> no FF loaded
+        with assert_num_queries(self.expected_num_queries - 1):
             response = authenticated_client.get(url_for(self.endpoint, q=common_name, filter=search_filter))
             assert response.status_code == 303
 

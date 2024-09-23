@@ -32,8 +32,8 @@ class ListEventsTest(GetEndpointHelper):
     endpoint = "backoffice_web.operations.list_events"
     needed_permission = perm_models.Permissions.MANAGE_SPECIAL_EVENTS
 
-    # authenticated user + user session + list of special events + count
-    expected_num_queries = 4
+    # authenticated user + user session + list of special events + count + WIP_ENABLE_OFFER_ADDRESS FF
+    expected_num_queries = 5
 
     def test_list_events(self, authenticated_client, special_events):
         with assert_num_queries(self.expected_num_queries):

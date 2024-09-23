@@ -36,11 +36,11 @@ class SearchEanTest(GetEndpointHelper):
     endpoint_kwargs = {"ean": "9782070455379"}
     needed_permission = perm_models.Permissions.READ_OFFERS
 
-    # session + current user + query
-    expected_num_queries = 3
+    # session + current user + query + WIP_ENABLE_OFFER_ADDRESS FF
+    expected_num_queries = 4
 
     def test_search_ean_initial(self, authenticated_client):
-        with assert_num_queries(2):
+        with assert_num_queries(3):
             response = authenticated_client.get(url_for(self.endpoint))
             assert response.status_code == 200
 

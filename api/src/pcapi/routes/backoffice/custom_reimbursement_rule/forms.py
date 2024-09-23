@@ -7,6 +7,7 @@ import wtforms
 
 from pcapi.core.categories import categories
 from pcapi.core.categories import subcategories_v2
+from pcapi.models import feature
 from pcapi.routes.backoffice.forms import fields
 from pcapi.routes.backoffice.forms import utils
 
@@ -114,11 +115,20 @@ class CreateCustomReimbursementRuleForm(FlaskForm):
         venue_id = self._fields["venue"].data[0]
 
         if not offerer_id and not venue_id:
-            flash("Il faut obligatoirement renseigner une structure ou un lieu", "warning")
+            if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
+                flash("Il faut obligatoirement renseigner une structure ou un partenaire culturel", "warning")
+            else:
+                flash("Il faut obligatoirement renseigner une structure ou un lieu", "warning")
             return False
 
         if offerer_id and venue_id:
-            flash("Un tarif dérogatoire ne peut pas concerner un lieu et une structure en même temps", "warning")
+            if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
+                flash(
+                    "Un tarif dérogatoire ne peut pas concerner un partenaire culturel et une structure en même temps",
+                    "warning",
+                )
+            else:
+                flash("Un tarif dérogatoire ne peut pas concerner un lieu et une structure en même temps", "warning")
             return False
         return super().validate(extra_validators)
 

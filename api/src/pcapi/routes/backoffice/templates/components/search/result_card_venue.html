@@ -1,8 +1,8 @@
-{% from "components/badges.html" import build_venue_badges %}
+{% from "components/badges.html" import build_venue_badges with context %}
 {% from "components/links.html" import build_offerer_name_to_details_link %}
 <div class="card shadow">
   <div class="card-body">
-    <h5 class="mb-3">{{ build_venue_badges(row, is_feature_active("WIP_ENABLE_OFFER_ADDRESS") ) }}</h5>
+    <h5 class="mb-3">{{ build_venue_badges(row) }}</h5>
     {% set link = get_link_to_detail(row.id, form=search_form, search_rank=index, total_items=rows.total) %}
     <h5 class="card-title">
       <a href="{{ link }}"

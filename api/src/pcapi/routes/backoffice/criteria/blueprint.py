@@ -12,11 +12,13 @@ from werkzeug.exceptions import NotFound
 from pcapi.core.criteria import models as criteria_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.models import db
+from pcapi.models import feature
 from pcapi.repository import atomic
 from pcapi.repository import mark_transaction_as_invalid
 from pcapi.routes.backoffice import search_utils
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.forms import empty as empty_forms
+from pcapi.routes.backoffice.forms import utils as forms_utils
 from pcapi.utils.clean_accents import clean_accents
 
 from . import forms as criteria_forms
@@ -110,7 +112,10 @@ def create_tag() -> utils.BackofficeResponse:
         mark_transaction_as_invalid()
         flash("Ce tag existe déjà", "warning")
     else:
-        flash("Le nouveau tag offres et lieux a été créé", "success")
+        if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
+            flash("Le nouveau tag offres et partenaires culturels a été créé", "success")
+        else:
+            flash("Le nouveau tag offres et lieux a été créé", "success")
 
     return redirect(url_for("backoffice_web.tags.list_tags"), code=303)
 
@@ -127,7 +132,7 @@ def get_create_tag_form() -> utils.BackofficeResponse:
         form=form,
         dst=url_for("backoffice_web.tags.create_tag"),
         div_id="create-offer-venue-tag",  # must be consistent with parameter passed to build_lazy_modal
-        title="Créer un tag offres et lieux",
+        title=forms_utils.VenueRenaming("Créer un tag offres et lieux", "Créer un tag offres et partenaires culturels"),
         button_text="Créer le tag",
     )
 
@@ -219,10 +224,16 @@ def get_delete_tag_form(tag_id: int) -> utils.BackofficeResponse:
     if not tag:
         raise NotFound()
 
-    information = Markup(
-        "Le tag <strong>{name}</strong> sera définitivement supprimé de la base de données et retiré de toutes les "
-        "offres et lieux auxquels il est associé. Veuillez confirmer ce choix."
-    ).format(name=tag.name)
+    if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
+        information = Markup(
+            "Le tag <strong>{name}</strong> sera définitivement supprimé de la base de données et retiré de toutes les "
+            "offres et partenaires culturels auxquels il est associé. Veuillez confirmer ce choix."
+        ).format(name=tag.name)
+    else:
+        information = Markup(
+            "Le tag <strong>{name}</strong> sera définitivement supprimé de la base de données et retiré de toutes les "
+            "offres et lieux auxquels il est associé. Veuillez confirmer ce choix."
+        ).format(name=tag.name)
 
     return render_template(
         "components/turbo/modal_form.html",

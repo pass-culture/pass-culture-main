@@ -75,7 +75,7 @@ class CreateOffererForm(FlaskForm):
     email = fields.PCEmailField("Adresse email du compte pro")
     siret = fields.PCSiretField("SIRET")
     public_name = fields.PCStringField(
-        "Nom d'usage du lieu",
+        typing.cast(str, utils.VenueRenaming("Nom d'usage du lieu", "Nom d'usage du partenaire culturel")),
         validators=(
             wtforms.validators.DataRequired("Information obligatoire"),
             wtforms.validators.Length(max=255, message="doit contenir au maximum %(max)d caractères"),

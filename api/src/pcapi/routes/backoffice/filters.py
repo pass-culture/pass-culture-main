@@ -34,6 +34,7 @@ from pcapi.core.users import models as users_models
 from pcapi.domain import show_types
 from pcapi.models import offer_mixin
 from pcapi.models import validation_status_mixin
+from pcapi.models.feature import FeatureToggle
 from pcapi.routes.backoffice.accounts import serialization as serialization_accounts
 from pcapi.utils import urls
 from pcapi.utils.csr import Csr
@@ -955,6 +956,8 @@ def format_offer_validation_sub_rule_field(sub_rule_field: offers_models.OfferVa
         case offers_models.OfferValidationSubRuleField.SHOW_SUB_TYPE_OFFER:
             return "Le sous-type de spectacle de l'offre individuelle"
         case offers_models.OfferValidationSubRuleField.ID_VENUE:
+            if FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
+                return "Le partenaire culturel proposant l'offre"
             return "Le lieu proposant l'offre"
         case offers_models.OfferValidationSubRuleField.ID_OFFERER:
             return "La structure proposant l'offre"
