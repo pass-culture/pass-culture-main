@@ -89,6 +89,7 @@ def index_venues_in_error() -> None:
 
 
 def _partially_index(
+    *,
     what: str,
     getter: typing.Callable,
     indexation_callback: typing.Callable,

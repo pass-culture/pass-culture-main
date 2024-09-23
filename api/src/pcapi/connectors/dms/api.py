@@ -211,6 +211,7 @@ class DMSGraphQLClient:
 
     def get_pro_bank_nodes_states(
         self,
+        *,
         procedure_number: int,
         state: dms_models.GraphQLApplicationStates | None = None,
         since: datetime.datetime | None = None,

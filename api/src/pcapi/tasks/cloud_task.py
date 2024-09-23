@@ -93,6 +93,7 @@ def enqueue_internal_task(
     queue: str,
     path: str,
     payload: typing.Any,
+    *,
     deduplicate: bool = False,
     delayed_seconds: int = 0,
     task_request_timeout: int | None = None,

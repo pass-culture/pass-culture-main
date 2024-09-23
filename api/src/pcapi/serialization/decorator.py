@@ -71,6 +71,7 @@ def _transform_query_args_to_dict(query_params: MultiDict, use_as_list: list[str
 # - form : the form data
 # You should type these arguments as pydantic models.
 def spectree_serialize(
+    *,
     headers: type[BaseModel] | None = None,
     cookies: type[BaseModel] | None = None,
     response_model: type[BaseModel] | None = None,

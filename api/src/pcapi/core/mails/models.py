@@ -32,6 +32,7 @@ class TransactionalWithoutTemplateEmailData:
 
     def __init__(
         self,
+        *,
         subject: str,
         html_content: str,
         sender: TransactionalSender,

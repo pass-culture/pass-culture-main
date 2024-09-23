@@ -339,6 +339,7 @@ class AsymetricToken(AbstractToken):
         private_key: bytes,
         public_key: bytes,
         ttl: timedelta | None,
+        *,
         data: dict | None = None,
     ) -> "AsymetricToken":
         random_uuid = str(uuid.uuid4())

@@ -233,7 +233,7 @@ class AsymetricTokenTest:
     def test_create_token_then_get_data(self):
         """testing the creation of a token and getting the data"""
         token = token_tools.AsymetricToken.create(
-            self.token_type, settings.DISCORD_JWT_PRIVATE_KEY, settings.DISCORD_JWT_PUBLIC_KEY, self.ttl, self.data
+            self.token_type, settings.DISCORD_JWT_PRIVATE_KEY, settings.DISCORD_JWT_PUBLIC_KEY, self.ttl, data=self.data
         )
         assert token.data == self.data
         assert token.type_ == self.token_type
@@ -251,7 +251,7 @@ class AsymetricTokenTest:
 
         with pytest.raises(InvalidToken):
             token_tools.AsymetricToken.create(
-                self.token_type, settings.DISCORD_JWT_PRIVATE_KEY, self.wrong_public_key, self.ttl, self.data
+                self.token_type, settings.DISCORD_JWT_PRIVATE_KEY, self.wrong_public_key, self.ttl, data=self.data
             )
 
     @override_settings(DISCORD_JWT_PRIVATE_KEY=private_key_pem, DISCORD_JWT_PUBLIC_KEY=public_key_pem)
@@ -262,7 +262,7 @@ class AsymetricTokenTest:
             settings.DISCORD_JWT_PRIVATE_KEY,
             settings.DISCORD_JWT_PUBLIC_KEY,
             self.ttl,
-            self.data,
+            data=self.data,
         )
         token = token_tools.AsymetricToken.load_without_checking(
             old_token.encoded_token, settings.DISCORD_JWT_PUBLIC_KEY
@@ -282,7 +282,7 @@ class AsymetricTokenTest:
             settings.DISCORD_JWT_PRIVATE_KEY,
             settings.DISCORD_JWT_PUBLIC_KEY,
             self.ttl,
-            self.data,
+            data=self.data,
         )
         with pytest.raises(InvalidToken):
             token_tools.AsymetricToken.load_without_checking(
