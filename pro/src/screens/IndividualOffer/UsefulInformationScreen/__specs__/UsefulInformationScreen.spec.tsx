@@ -144,7 +144,7 @@ describe('screens:IndividualOffer::UsefulInformation', () => {
             id: 945,
             id_oa: 1,
             inseeCode: '75056',
-            isEditable: false,
+            isNotLinkToVenue: false,
             isManualEdition: false,
             label: 'MINISTERE DE LA CULTURE',
             latitude: 48.87171,

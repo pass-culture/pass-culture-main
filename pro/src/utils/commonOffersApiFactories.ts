@@ -1,15 +1,15 @@
-import { AddressResponseIsEditableModel } from 'apiClient/v1'
+import { AddressResponseIsNotLinkToVenueModel } from 'apiClient/v1'
 
-export const addressResponseIsEditableModelFactory = (
-  customAddressResponseIsEditableModelFactory: Partial<AddressResponseIsEditableModel> = {}
-): AddressResponseIsEditableModel => {
+export const AddressResponseIsNotLinkToVenueModelFactory = (
+  customAddressResponseIsEditableModelFactory: Partial<AddressResponseIsNotLinkToVenueModel> = {}
+): AddressResponseIsNotLinkToVenueModel => {
   return {
     banId: 'ban',
     city: 'city',
     id: 1,
     id_oa: 1,
     inseeCode: 'inseeCode',
-    isEditable: true,
+    isNotLinkToVenue: true,
     isManualEdition: false,
     label: 'label',
     latitude: 48.866667,

@@ -1,5 +1,5 @@
 import {
-  AddressResponseIsEditableModel,
+  AddressResponseIsNotLinkToVenueModel,
   GetOfferVenueResponseModel,
 } from 'apiClient/v1'
 import { computeAddressDisplayName } from 'repository/venuesService'
@@ -8,7 +8,7 @@ import style from './VenueDetails.module.scss'
 
 interface VenueDetailsProps {
   venue: GetOfferVenueResponseModel
-  address?: AddressResponseIsEditableModel | null
+  address?: AddressResponseIsNotLinkToVenueModel | null
   withdrawalDetails?: string
 }
 

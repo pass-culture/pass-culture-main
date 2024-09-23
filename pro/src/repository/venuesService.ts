@@ -1,5 +1,5 @@
 import {
-  type AddressResponseIsEditableModel,
+  type AddressResponseIsNotLinkToVenueModel,
   GetOffererAddressesResponseModel,
   ListOffersVenueResponseModel,
   VenueListItemResponseModel,
@@ -17,7 +17,7 @@ export const computeVenueDisplayName = (
 }
 
 type MinimalAddressResponseModelToDisplay = Pick<
-  AddressResponseIsEditableModel,
+  AddressResponseIsNotLinkToVenueModel,
   'label' | 'city' | 'street' | 'postalCode'
 >
 export const computeAddressDisplayName = (

@@ -24,7 +24,7 @@ import {
 } from 'context/IndividualOfferContext/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
-import { addressResponseIsEditableModelFactory } from 'utils/commonOffersApiFactories'
+import { AddressResponseIsNotLinkToVenueModelFactory } from 'utils/commonOffersApiFactories'
 import { FORMAT_ISO_DATE_ONLY } from 'utils/date'
 import {
   categoryFactory,
@@ -622,7 +622,7 @@ describe('Summary', () => {
       customContext.offer = getIndividualOfferFactory({
         isEvent: true,
         address: {
-          ...addressResponseIsEditableModelFactory({
+          ...AddressResponseIsNotLinkToVenueModelFactory({
             label: 'mon adresse',
             city: 'ma ville',
             street: 'ma street',

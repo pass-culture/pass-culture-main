@@ -360,44 +360,26 @@ class GetOffererV2StatsResponseModel(BaseModel):
         orm_mode = True
 
 
+class OffererAddressGetterDict(GetterDict):
+    def get(self, key: str, default: Any | None = None) -> Any:
+        if key == "isNotLinkToVenue":
+            return self.get("_isNotLinkToVenue", default)
+        if key in ("street", "postalCode", "city", "departmentCode"):
+            return getattr(self._obj.address, key)
+        return super().get(key, default)
+
+
 class GetOffererAddressResponseModel(BaseModel):
     id: int
     label: str | None
     street: str | None
     postalCode: str
     city: str
-
-    @classmethod
-    def from_orm(cls, offerer_address: offerers_models.OffererAddress) -> "GetOffererAddressResponseModel":
-        offerer_address.street = offerer_address.address.street
-        offerer_address.postalCode = offerer_address.address.postalCode
-        offerer_address.city = offerer_address.address.city
-        return super().from_orm(offerer_address)
-
-    class Config:
-        orm_mode = True
-
-
-class OffererAddressWithIsEditableGetterDict(GetterDict):
-    def get(self, key: str, default: Any | None = None) -> Any:
-        if key == "isEditable":
-            return self.get("_isEditable", default)
-        if key in ("street", "postalCode", "city", "departmentCode"):
-            return getattr(self._obj.address, key)
-        return super().get(key, default)
-
-
-class GetOffererAddressWithIsEditableResponseModel(BaseModel):
-    id: int
-    label: str | None
-    street: str | None
-    postalCode: str
-    city: str
-    isEditable: bool
+    isNotLinkToVenue: bool
     departmentCode: str | None
 
     class Config:
-        getter_dict = OffererAddressWithIsEditableGetterDict
+        getter_dict = OffererAddressGetterDict
         orm_mode = True
 
 
@@ -408,7 +390,7 @@ class OffererAddressRequestModel(BaseModel):
 
 
 class GetOffererAddressesResponseModel(BaseModel):
-    __root__: list[GetOffererAddressWithIsEditableResponseModel]
+    __root__: list[GetOffererAddressResponseModel]
 
 
 class GetOffererAddressesQueryModel(BaseModel):

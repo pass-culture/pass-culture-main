@@ -2,15 +2,15 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type AddressResponseIsEditableModel = {
+export type AddressResponseIsNotLinkToVenueModel = {
   banId?: string | null;
   city: string;
   departmentCode?: string | null;
   id: number;
   id_oa: number;
   inseeCode?: string | null;
-  isEditable?: boolean | null;
   isManualEdition: boolean;
+  isNotLinkToVenue?: boolean | null;
   label?: string | null;
   latitude: number;
   longitude: number;
