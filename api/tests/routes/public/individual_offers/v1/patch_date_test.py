@@ -349,6 +349,24 @@ class PatchEventStockTest(PublicAPIVenueEndpointHelper):
             ],
         }
 
+    def test_should_raise_400_because_stock_idAtProvider_already_taken(self, client: TestClient):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        event, stock = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
+        duplicate_id_at_provider = "ouille ouille ouille"
+        offers_factories.StockFactory(offer=event, idAtProviders=duplicate_id_at_provider)
+
+        response = client.with_explicit_token(plain_api_key).patch(
+            self.endpoint_url.format(event_id=stock.offerId, stock_id=stock.id),
+            json={"idAtProvider": duplicate_id_at_provider},
+        )
+
+        assert response.status_code == 400
+        assert response.json == {
+            "idAtProvider": [
+                "`ouille ouille ouille` is already taken by another offer stock",
+            ],
+        }
+
     def test_find_no_stock_returns_404(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         event = offers_factories.EventOfferFactory(

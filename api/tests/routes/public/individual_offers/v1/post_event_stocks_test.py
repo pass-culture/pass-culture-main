@@ -18,7 +18,7 @@ class PostEventStocksTest(PublicAPIVenueEndpointHelper):
     default_path_params = {"event_id": 1}
 
     @staticmethod
-    def _get_base_payload(price_category_id) -> dict:
+    def _get_base_payload(price_category_id: int, id_at_provider: str | None = None) -> dict:
         next_week = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(weeks=1)
         next_month = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(days=30)
         next_month_in_non_utc_tz = date_utils.utc_datetime_to_department_timezone(next_month, "973")
@@ -29,7 +29,7 @@ class PostEventStocksTest(PublicAPIVenueEndpointHelper):
                     "bookingLimitDatetime": date_utils.format_into_utc_date(next_week),
                     "price_category_id": price_category_id,
                     "quantity": 10,
-                    "id_at_provider": "id_143556",
+                    "id_at_provider": id_at_provider,
                 }
             ]
         }
@@ -214,3 +214,16 @@ class PostEventStocksTest(PublicAPIVenueEndpointHelper):
             "dates.0.beginningDatetime": ["The datetime must be in the future."],
             "dates.0.bookingLimitDatetime": ["The datetime must be in the future."],
         }
+
+    def test_should_raise_400_because_id_at_provider_already_taken(self, client: TestClient):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        event, price_category = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
+        duplicate_id = "aïe aïe aïe"
+        offers_factories.StockFactory(offer=event, idAtProviders=duplicate_id)
+        response = client.with_explicit_token(plain_api_key).post(
+            self.endpoint_url.format(event_id=event.id),
+            json=self._get_base_payload(price_category_id=price_category.id, id_at_provider=duplicate_id),
+        )
+
+        assert response.status_code == 400
+        assert response.json == {"idAtProvider": ["`aïe aïe aïe` is already taken by another offer stock"]}

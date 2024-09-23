@@ -91,6 +91,18 @@ class CreateStockTest:
         assert created_stock.quantity == 7
         assert created_stock.idAtProviders == "heyyyy!"
 
+    def test_create_stock_with_id_at_provider_that_exists_in_different_offer(self):
+        # Given
+        id_at_provider = "dos_veces"
+        offer = factories.ThingOfferFactory()
+        factories.StockFactory(idAtProviders=id_at_provider)
+
+        # When
+        created_stock = api.create_stock(offer=offer, price=10, quantity=7, id_at_provider=id_at_provider)
+
+        # Then
+        assert created_stock.idAtProviders == id_at_provider
+
     def test_create_first_stock_of_offer(self):
         # Given
         offer = factories.ThingOfferFactory()
@@ -301,6 +313,24 @@ class CreateStockTest:
         # Then
         assert error.value.errors == {"beginningDatetime": ["Ce paramètre est obligatoire"]}
 
+    def test_does_not_allow_idAtProvider_that_is_already_taken(self):
+        # Given
+        duplicate_id_at_provider = "dos_veces"
+        offer = factories.EventOfferFactory()
+        factories.StockFactory(offer=offer, idAtProviders=duplicate_id_at_provider)
+
+        # When
+        with pytest.raises(exceptions.IdAtProviderAlreadyTakenByAnotherOfferStock) as error:
+            api.create_stock(
+                offer=offer,
+                id_at_provider=duplicate_id_at_provider,
+                price=10,
+                quantity=10,
+            )
+
+        # Then
+        assert error.value.errors == {"idAtProvider": ["`dos_veces` is already taken by another offer stock"]}
+
     def test_does_not_allow_booking_limit_after_beginning_for_an_event_offer(self):
         # Given
         offer = factories.EventOfferFactory()
@@ -361,16 +391,25 @@ class EditStockTest:
         assert edited_stock.quantity == 7
         assert update_info is False
 
-    def test_edit_stock_id_at_provider(self):
+    @pytest.mark.parametrize(
+        "init_value,edit_value",
+        [
+            ("I have a secret", "I'm Batman !!!"),
+            ("i_dont_want_to_change", "i_dont_want_to_change"),
+            ("i_am_going_to_be_erased", None),
+            (None, "i_have_an_id_now"),
+        ],
+    )
+    def test_edit_stock_id_at_provider(self, init_value, edit_value):
         # Given
-        existing_stock = factories.StockFactory(price=10, idAtProviders="I have a secret")
+        existing_stock = factories.StockFactory(price=10, idAtProviders=init_value)
 
         # When
-        edited_stock, _ = api.edit_stock(stock=existing_stock, id_at_provider="I'm Batman !!!")
+        edited_stock, _ = api.edit_stock(stock=existing_stock, id_at_provider=edit_value, quantity=2)
 
         # Then
         assert edited_stock == models.Stock.query.filter_by(id=existing_stock.id).first()
-        assert edited_stock.idAtProviders == "I'm Batman !!!"
+        assert edited_stock.idAtProviders == edit_value
 
     def test_edit_beginning_datetime(self):
         # Given

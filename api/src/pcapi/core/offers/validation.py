@@ -429,6 +429,21 @@ def check_can_input_id_at_provider_for_this_price_category(
         raise exceptions.IdAtProviderAlreadyTakenByAnotherOfferPriceCategory(id_at_provider)
 
 
+def check_can_input_id_at_provider_for_this_stock(
+    offer_id: int,
+    id_at_provider: str,
+    stock_id: int | None = None,
+) -> None:
+    id_at_provider_is_taken = repository.is_id_at_provider_taken_by_another_offer_stock(
+        offer_id,
+        id_at_provider,
+        stock_id,
+    )
+
+    if id_at_provider_is_taken:
+        raise exceptions.IdAtProviderAlreadyTakenByAnotherOfferStock(id_at_provider)
+
+
 def check_activation_codes_expiration_datetime(
     activation_codes_expiration_datetime: datetime.datetime | None,
     booking_limit_datetime: datetime.datetime | None,
