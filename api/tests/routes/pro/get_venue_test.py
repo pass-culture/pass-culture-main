@@ -225,7 +225,7 @@ class Returns200Test:
                 "banId": "75102_7560_00001",
                 "label": None,
                 "id_oa": venue.offererAddressId,
-                "isEditable": None,
+                "isNotLinkToVenue": None,
                 "isManualEdition": False,
             },
             "isVisibleInApp": True,

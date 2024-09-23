@@ -1279,14 +1279,14 @@ class OffererAddress(PcObject, Base, Model):
         ),
     )
 
-    _isEditable: sa_orm.Mapped["bool|None"] = sa_orm.query_expression()
+    _isNotLinkToVenue: sa_orm.Mapped["bool|None"] = sa_orm.query_expression()
 
     @hybrid_property
-    def isEditable(self) -> bool:
+    def isNotLinkToVenue(self) -> bool:
         return db.session.query(~sa.select(1).exists().where(Venue.offererAddressId == self.id)).scalar()
 
-    @isEditable.expression  # type: ignore[no-redef]
-    def isEditable(cls) -> sa.sql.elements.BooleanClauseList:  # pylint: disable=no-self-argument
+    @isNotLinkToVenue.expression  # type: ignore[no-redef]
+    def isNotLinkToVenue(cls) -> sa.sql.elements.BooleanClauseList:  # pylint: disable=no-self-argument
         return ~sa.select(1).where(Venue.offererAddressId == cls.id).exists()
 
 

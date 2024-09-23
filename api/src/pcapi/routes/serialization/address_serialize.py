@@ -26,10 +26,10 @@ class AddressResponseModel(BaseModel):
         return round(value, 5)
 
 
-class AddressResponseIsEditableModel(AddressResponseModel):
+class AddressResponseIsNotLinkToVenueModel(AddressResponseModel):
     label: str | None = None
     id_oa: int
-    isEditable: bool | None
+    isNotLinkToVenue: bool | None
     isManualEdition: bool
 
 

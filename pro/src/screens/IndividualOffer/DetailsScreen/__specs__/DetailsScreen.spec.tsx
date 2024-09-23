@@ -18,7 +18,7 @@ import {
 import { Events } from 'core/FirebaseEvents/constants'
 import { CATEGORY_STATUS, OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
-import { addressResponseIsEditableModelFactory } from 'utils/commonOffersApiFactories'
+import { AddressResponseIsNotLinkToVenueModelFactory } from 'utils/commonOffersApiFactories'
 import {
   categoryFactory,
   getIndividualOfferFactory,
@@ -488,7 +488,7 @@ describe('screens:IndividualOffer::Informations', () => {
           id: 1,
           name: 'Venue 1',
           address: {
-            ...addressResponseIsEditableModelFactory({
+            ...AddressResponseIsNotLinkToVenueModelFactory({
               label: 'mon adresse',
               city: 'ma ville',
               street: 'ma street',
@@ -505,7 +505,7 @@ describe('screens:IndividualOffer::Informations', () => {
           id: 2,
           name: 'Venue 2',
           address: {
-            ...addressResponseIsEditableModelFactory({
+            ...AddressResponseIsNotLinkToVenueModelFactory({
               label: 'mon adresse',
               city: 'ma ville',
               street: 'ma street',

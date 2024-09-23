@@ -2,11 +2,11 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type GetOffererAddressWithIsEditableResponseModel = {
+export type GetOffererAddressResponseModel = {
   city: string;
   departmentCode?: string | null;
   id: number;
-  isEditable: boolean;
+  isNotLinkToVenue: boolean;
   label?: string | null;
   postalCode: string;
   street?: string | null;

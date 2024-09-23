@@ -311,7 +311,7 @@ def get_offerer_addresses(
     offerer_addresses = repository.get_offerer_addresses(offerer_id, only_with_offers=query.onlyWithOffers)
     return offerers_serialize.GetOffererAddressesResponseModel(
         __root__=[
-            offerers_serialize.GetOffererAddressWithIsEditableResponseModel.from_orm(offerer_address)
+            offerers_serialize.GetOffererAddressResponseModel.from_orm(offerer_address)
             for offerer_address in offerer_addresses
         ]
     )
@@ -329,7 +329,7 @@ def patch_offerer_address(
             offerer_address = repository.get_offerer_address_of_offerer(offerer_id, offerer_address_id)
             if offerer_address is None:
                 raise ResourceNotFoundError()
-            if offerer_address._isEditable is False:
+            if offerer_address._isNotLinkToVenue is False:
                 raise ApiErrors({"label": "Le libellé de cette adresse n'est pas modifiable"}, status_code=400)
             try:
                 api.update_offerer_address_label(offerer_address_id, body.label)

@@ -10,7 +10,7 @@ import { expect } from 'vitest'
 
 import { api } from 'apiClient/api'
 import {
-  GetOffererAddressWithIsEditableResponseModel,
+  GetOffererAddressResponseModel,
   ListOffersOfferResponseModel,
   OfferStatus,
 } from 'apiClient/v1'
@@ -59,7 +59,7 @@ const proVenues = [
   }),
 ]
 
-const offererAddress: GetOffererAddressWithIsEditableResponseModel[] = [
+const offererAddress: GetOffererAddressResponseModel[] = [
   offererAddressFactory({
     label: 'Label',
   }),

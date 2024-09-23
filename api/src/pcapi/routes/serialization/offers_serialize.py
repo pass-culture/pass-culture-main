@@ -24,9 +24,9 @@ from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import ConfiguredBaseModel
 from pcapi.routes.serialization import base as base_serializers
 from pcapi.routes.serialization import collective_offers_serialize
-from pcapi.routes.serialization.address_serialize import AddressResponseIsEditableModel
+from pcapi.routes.serialization.address_serialize import AddressResponseIsNotLinkToVenueModel
 from pcapi.routes.serialization.address_serialize import retrieve_address_info_from_oa
-from pcapi.routes.serialization.offerers_serialize import GetOffererAddressWithIsEditableResponseModel
+from pcapi.routes.serialization.offerers_serialize import GetOffererAddressResponseModel
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
 from pcapi.validation.routes.offers import check_offer_name_length_is_valid
@@ -219,12 +219,14 @@ class ListOffersOfferResponseModelsGetterDict(GetterDict):
                 not offerer_address
             ):  # The only offers without oa neither in themselves nor in venues are the numerics ones.
                 return None
-            offererAddress = GetOffererAddressWithIsEditableResponseModel.from_orm(offerer_address)
-            offererAddress.label = offererAddress.label if offererAddress.isEditable else self._obj.venue.common_name
-            return AddressResponseIsEditableModel(
+            offererAddress = GetOffererAddressResponseModel.from_orm(offerer_address)
+            offererAddress.label = (
+                offererAddress.label if offererAddress.isNotLinkToVenue else self._obj.venue.common_name
+            )
+            return AddressResponseIsNotLinkToVenueModel(
                 **retrieve_address_info_from_oa(offerer_address),
                 label=offererAddress.label,
-                isEditable=offererAddress.isEditable,
+                isNotLinkToVenue=offererAddress.isNotLinkToVenue,
             )
         return super().get(key, default)
 
@@ -245,7 +247,7 @@ class ListOffersOfferResponseModel(BaseModel):
     venue: base_serializers.ListOffersVenueResponseModel
     status: OfferStatus
     isShowcase: bool | None
-    address: AddressResponseIsEditableModel | None
+    address: AddressResponseIsNotLinkToVenueModel | None
 
     class Config:
         json_encoders = {datetime.datetime: format_into_utc_date}
@@ -395,28 +397,6 @@ class PriceCategoryResponseModel(BaseModel):
         orm_mode = True
 
 
-class IndividualOfferResponseGetterDict(GetterDict):
-    def get(self, key: str, default: Any | None = None) -> Any:
-        if key == "address":
-            if not self._obj.offererAddress:
-                offerer_address = self._obj.venue.offererAddress
-            else:
-                offerer_address = self._obj.offererAddress
-            # TODO(xordoquy): the following code should be removed once the
-            # migration of offerer_address from venues is performed.
-            # Alternatively, might be a good idea to keep it and log a warning too
-            if not offerer_address:
-                return None
-            offererAddress = GetOffererAddressWithIsEditableResponseModel.from_orm(offerer_address)
-            offererAddress.label = offererAddress.label or self._obj.venue.common_name
-            return AddressResponseIsEditableModel(
-                **retrieve_address_info_from_oa(offerer_address),
-                label=offererAddress.label,
-                isEditable=offererAddress.isEditable,
-            )
-        return super().get(key, default)
-
-
 class GetIndividualOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
     activeMediation: GetOfferMediationResponseModel | None
     bookingContact: str | None
@@ -459,8 +439,30 @@ class GetIndividualOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
         use_enum_values = True
 
 
+class IndividualOfferResponseGetterDict(GetterDict):
+    def get(self, key: str, default: Any | None = None) -> Any:
+        if key == "address":
+            if not self._obj.offererAddress:
+                offerer_address = self._obj.venue.offererAddress
+            else:
+                offerer_address = self._obj.offererAddress
+            # TODO(xordoquy): the following code should be removed once the
+            # migration of offerer_address from venues is performed.
+            # Alternatively, might be a good idea to keep it and log a warning too
+            if not offerer_address:
+                return None
+            offererAddress = GetOffererAddressResponseModel.from_orm(offerer_address)
+            offererAddress.label = offererAddress.label or self._obj.venue.common_name
+            return AddressResponseIsNotLinkToVenueModel(
+                **retrieve_address_info_from_oa(offerer_address),
+                label=offererAddress.label,
+                isNotLinkToVenue=offererAddress.isNotLinkToVenue,
+            )
+        return super().get(key, default)
+
+
 class GetIndividualOfferWithAddressResponseModel(GetIndividualOfferResponseModel):
-    address: AddressResponseIsEditableModel | None
+    address: AddressResponseIsNotLinkToVenueModel | None
     hasPendingBookings: bool
 
     class Config:
