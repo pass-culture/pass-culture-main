@@ -1,9 +1,9 @@
 # PASS-CULTURE-API
 
-Voici le backend de l'application pass Culture; il est lancé via `docker-compose` en utilisant le fichier
+Voici le backend de l'application pass Culture; il est lancé via `docker compose` en utilisant le fichier
 `docker-compose-backend.yml` du répertoire parent de `api`: `pass-culture-main`.
 
-Plus de détails sur le lancement de l'infra docker-compose sont accessibles dans le
+Plus de détails sur le lancement de l'infra docker compose sont accessibles dans le
 [README de pass-culture-main](https://github.com/pass-culture/pass-culture-main#readme)
 
 ## OpenAPI
@@ -96,7 +96,7 @@ locale. Pour ça:
 
 ## Tests
 
-Une fois le le backend lancé, les tests peuvent être exécutés avec ou sans docker-compose
+Une fois le le backend lancé, les tests peuvent être exécutés avec ou sans docker compose
 
 ### 1. Lancement des tests avec docker compose
 
@@ -125,10 +125,10 @@ Troubleshoot :
 Si les tests ne se lancent pas avec Docker, il faut recréer la base de données de tests et relancer le cache redis 
 
 * Soit en démarrant les conteneurs de la base de données _pc-postgres-test_ (spécifique aux tests) et du cache
-  _redis_ via docker-compose
+  _redis_ via docker compose
 
 ```shell
-    docker-compose -f ../docker-compose-backend.yml up -d postgres-test redis
+    docker compose -f ../docker-compose-backend.yml up -d postgres-test redis
  ```
 
 * Soit en démarrant ces conteneurs via docker
@@ -256,7 +256,7 @@ Pour que les commandes soient enregistrées par Flask, il faut que le fichier `p
 Pour que les commandes soient exécutées, il faut ouvrir une PR sur le repo pass-culture/pass-culture-deployment
 Les infos sont dans le [README](https://github.com/pass-culture/pass-culture-deployment)
 
-## Lancement du backend sans utiliser docker-compose
+## Lancement du backend sans utiliser docker compose
 
 *Pour repasser sur docker par la suite, la __NOTE__ en fin de ce paragraphe est __importante__*
 

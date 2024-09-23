@@ -30,7 +30,7 @@ Le repo `main` contient les 4 projets suivants :
 
 - Docker
   - [docker](https://docs.docker.com/install/) (testé avec 19.03.12)
-  - [docker-compose](https://docs.docker.com/compose/install/#install-compose) (testé avec 1.26.2)
+  - [docker compose (inclus avec Docker Desktop)](https://docs.docker.com/compose/install/#install-compose) (testé avec 1.26.2)
 - [NVM](https://github.com/creationix/nvm) (Node Version Manager)
   - `curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.34.0/install.sh | bash`
 - [Node](https://nodejs.org/en/download/)
@@ -72,7 +72,7 @@ Les README de chaque sous-projet détailleront leurs installations spécifiques.
 ### Lancer les applications
 
 Voici de brèves instructions pour lancer l'API et les différents frontends via le script `pc`, qui fait appel à
-docker-compose. On trouvera dans le [README](./api#readme) d'`api` d'autres
+docker compose. On trouvera dans le [README](./api#readme) d'`api` d'autres
 manières de lancer le backend.
 
 #### api
