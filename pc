@@ -30,7 +30,7 @@ Commands:
   psql-file             Execute requests from the specified file on the local database
   psql-test             Connect to the local test database
   python                Open a Python prompt the given environment
-  rebuild-backend       Force docker-compose to build the docker images
+  rebuild-backend       Force docker compose to build the docker images
   reset-all-db          Clear all data in the local database
   reset-db-no-docker    Clear all data in the local database (without docker)
   reset-db-test-no-docker  Clear test data in the local database (without docker)
@@ -169,11 +169,11 @@ elif [[ "$CMD" == "dump-db" ]]; then
   RUN='mkdir -p "$ROOT_PATH/db_dumps";
     docker exec pc-postgres pg_dump -d pass_culture -U pass_culture -F c > "$ROOT_PATH"/db_dumps/`date +%Y%m%d_%H%M%S`.pgdump'
 
-# Force docker-compose to build the docker images
+# Force docker compose to build the docker images
 elif [[ "$CMD" == "rebuild-backend" ]]; then
-  RUN='docker-compose -f "$ROOT_PATH/docker-compose-backend.yml" build --no-cache;
+  RUN='docker compose -f "$ROOT_PATH/docker-compose-backend.yml" build --no-cache;
     sudo rm -rf $ROOT_PATH/api/static/object_store_data;
-    docker-compose -f "$ROOT_PATH/docker-compose-backend.yml" down --volumes'
+    docker compose -f "$ROOT_PATH/docker-compose-backend.yml" down --volumes'
 
 # Execute request from specified file
 elif [[ "$CMD" == "psql-file" ]]; then
