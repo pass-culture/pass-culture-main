@@ -26,12 +26,17 @@ class SendExpiredBookingsRecapEmailToOffererTest:
         assert mails_testing.outbox[0]["template"] == TransactionalEmail.BOOKING_EXPIRATION_TO_PRO.value.__dict__
         assert mails_testing.outbox[0]["params"]
 
-    def test_should_send_two_emails_to_offerer_when_expired_books_bookings_and_other_bookings_cancelled(self):
+    @pytest.mark.parametrize("has_offerer_address", [True, False])
+    def test_should_send_two_emails_to_offerer_when_expired_books_bookings_and_other_bookings_cancelled(
+        self, has_offerer_address
+    ):
         offerer = offerers_factories.OffererFactory()
+        oa = offerers_factories.OffererAddressFactory(offerer=offerer)
         expired_today_dvd_booking = bookings_factories.BookingFactory(
             stock__offer__name="Intouchables",
             stock__offer__bookingEmail="offerer.booking@example.com",
             stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
+            stock__offer__offererAddress=oa if has_offerer_address else None,
         )
         expired_today_book_booking = bookings_factories.BookingFactory(
             stock__offer__name="Les misérables",
@@ -43,6 +48,8 @@ class SendExpiredBookingsRecapEmailToOffererTest:
 
         assert len(mails_testing.outbox) == 2
         email1, email2 = mails_testing.outbox  # pylint: disable=unbalanced-tuple-unpacking
+        email1["params"]["OFFER_ADRESS"] == oa.fullAddress if has_offerer_address else None
+        email2["params"]["OFFER_ADRESS"] == oa.fullAddress if has_offerer_address else None
         assert email1["template"] == TransactionalEmail.BOOKING_EXPIRATION_TO_PRO.value.__dict__
         assert email1["params"]["WITHDRAWAL_PERIOD"] == 10
         assert email1["params"]["BOOKINGS"][0]["offer_name"] == "Les misérables"
