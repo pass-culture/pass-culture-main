@@ -1,6 +1,7 @@
 from flask import jsonify
 
 from pcapi.models.api_errors import ApiErrors
+from pcapi.repository.clean_database import clean_all_database
 from pcapi.routes.apis import private_api
 from pcapi.sandboxes.scripts import getters
 
@@ -24,6 +25,7 @@ def get_sandbox(module_name, getter_name):  # type: ignore [no-untyped-def]
     getter = getattr(cypress_module, getter_name)
 
     try:
+        clean_all_database(reset_ids=True)
         obj = getter()
         return jsonify(obj)
     except Exception as e:
