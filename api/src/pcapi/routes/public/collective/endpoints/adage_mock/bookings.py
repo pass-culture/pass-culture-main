@@ -102,6 +102,10 @@ def adage_mock_cancel_collective_booking(booking_id: int) -> None:
     """
     booking = _get_booking_or_raise_404(booking_id)
 
+    # avoid extra query in case of a rollback
+    # booking id can't be saved to avoid an extra query (TODO: why?)
+    api_key_id = current_api_key.id
+
     try:
         reason = models.CollectiveBookingCancellationReasons.PUBLIC_API
         booking_api.cancel_collective_booking(booking, reason=reason, _from="adage_mock_api")
@@ -109,9 +113,9 @@ def adage_mock_cancel_collective_booking(booking_id: int) -> None:
         raise ForbiddenError({"code": "ALREADY_CANCELLED_BOOKING"})
     except exceptions.BookingIsAlreadyRefunded:
         raise ForbiddenError({"code": "BOOKING_IS_REIMBURSED"})
-    except Exception as err:
-        err_extras = {"booking": booking_id, "api_key": current_api_key.id, "err": str(err)}
-        logger.error("Adage mock. Failed to cancel booking.", extra=err_extras)
+    except Exception:
+        err_extras = {"booking": booking.id, "api_key_id": api_key_id}
+        logger.exception("Adage mock. Failed to cancel booking.", extra=err_extras)
         raise ApiErrors({"code": "FAILED_TO_CANCEL_BOOKING_TRY_AGAIN"}, status_code=500)
 
 
@@ -147,6 +151,10 @@ def use_collective_booking(booking_id: int) -> None:
     if booking.status != models.CollectiveBookingStatus.CONFIRMED:
         raise ForbiddenError({"code": "ONLY_CONFIRMED_BOOKING_CAN_BE_USED"})
 
+    # avoid extra two queries in case of a rollback
+    booking_id = booking.id
+    api_key_id = current_api_key.id
+
     try:
         with atomic():
             booking.dateUsed = datetime.now(timezone.utc)  # pylint: disable=datetime-now
@@ -156,8 +164,9 @@ def use_collective_booking(booking_id: int) -> None:
                 finance_models.FinanceEventMotive.BOOKING_USED,
                 booking=booking,
             )
-    except Exception as err:
-        logger.error("[adage mock] failed to use booking", extra={"booking": booking.id, "error": str(err)})
+    except Exception:
+        err_extras = {"booking": booking.id, "api_key_id": api_key_id}
+        logger.exception("[adage mock] failed to use booking", extra=err_extras)
         raise ApiErrors({"code": "FAILED_TO_USE_BOOKING_TRY_AGAIN_LATER"}, status_code=500)
 
 
@@ -197,11 +206,15 @@ def reset_collective_booking(booking_id: int) -> None:
     try:
         if booking.status == models.CollectiveBookingStatus.CANCELLED:
             booking.uncancel_booking()
-    except Exception as err:
+    except Exception:
+        # avoid extra two queries because of the rollback
+        booking_id = booking.id
+        api_key_id = current_api_key.id
+
         db.session.rollback()
 
-        err_extras = {"booking": booking.id, "api_key": current_api_key.id, "err": str(err)}
-        logger.error("Adage mock. Failed to set cancelled booking back to pending state", extra=err_extras)
+        err_extras = {"booking": booking.id, "api_key_id": api_key_id}
+        logger.exception("Adage mock. Failed to set cancelled booking back to pending state", extra=err_extras)
         raise ApiErrors({"code": "FAILED_TO_SET_BACK_CANCELLED_BOOKING_TO_PENDING"}, status_code=500)
 
     try:
@@ -210,11 +223,15 @@ def reset_collective_booking(booking_id: int) -> None:
 
         db.session.add(booking)
         db.session.commit()
-    except Exception as err:
+    except Exception:
+        # avoid extra two queries because of the rollback
+        booking_id = booking.id
+        api_key_id = current_api_key.id
+
         db.session.rollback()
 
-        err_extras = {"booking": booking.id, "api_key": current_api_key.id, "err": str(err)}
-        logger.error("Adage mock. Failed to set booking back to pending state", extra=err_extras)
+        err_extras = {"booking": booking.id, "api_key_id": api_key_id}
+        logger.exception("Adage mock. Failed to set booking back to pending state", extra=err_extras)
         raise ApiErrors({"code": "FAILED_TO_SET_BACK_BOOKING_TO_PENDING"}, status_code=500)
 
 
@@ -255,11 +272,15 @@ def reimburse_collective_booking(booking_id: int) -> None:
 
         db.session.add(booking)
         db.session.commit()
-    except Exception as err:
+    except Exception:
+        # avoid extra two queries because of the rollback
+        booking_id = booking.id
+        api_key_id = current_api_key.id
+
         db.session.rollback()
 
-        err_extras = {"booking": booking.id, "api_key": current_api_key.id, "error": str(err)}
-        logger.error("Adage mock. Failed to repay booking.", extra=err_extras)
+        err_extras = {"booking": booking.id, "api_key_id": api_key_id}
+        logger.exception("Adage mock. Failed to repay booking.", extra=err_extras)
 
         raise ApiErrors({"code": "REPAYMENT_FAILED_TRY_AGAIN_LATER"}, status_code=500)
 
