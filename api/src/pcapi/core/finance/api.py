@@ -2612,6 +2612,7 @@ def create_offer_reimbursement_rule(
 
 
 def _create_reimbursement_rule(
+    *,
     offerer_id: int | None = None,
     venue_id: int | None = None,
     offer_id: int | None = None,

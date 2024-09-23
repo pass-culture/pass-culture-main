@@ -61,6 +61,7 @@ def move_siret(
     target_venue: offerers_models.Venue,
     siret: str,
     comment: str,
+    *,
     override_revenue_check: bool = False,
     author_user_id: int | None = None,
 ) -> None:
@@ -217,6 +218,7 @@ def _delete_ongoing_pricings(venue: offerers_models.Venue) -> None:
 def check_can_remove_siret(
     venue: offerers_models.Venue,
     comment: str,
+    *,
     override_revenue_check: bool = False,
     check_offerer_has_other_siret: bool = False,
 ) -> None:
@@ -251,13 +253,14 @@ def check_can_remove_siret(
 def remove_siret(
     venue: offerers_models.Venue,
     comment: str,
+    *,
     apply_changes: bool = False,
     override_revenue_check: bool = False,
     new_pricing_point_id: int | None = None,
     author_user_id: int | None = None,
     new_db_session: bool = True,
 ) -> None:
-    check_can_remove_siret(venue, comment, override_revenue_check)
+    check_can_remove_siret(venue, comment, override_revenue_check=override_revenue_check)
     old_siret = venue.siret
     now = datetime.datetime.utcnow()
 
