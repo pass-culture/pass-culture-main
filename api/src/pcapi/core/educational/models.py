@@ -214,6 +214,15 @@ class InstitutionRuralLevel(enum.Enum):
     RURAL_A_HABITAT_DISPERSE = "Rural à habitat dispersé"  # RURAL_AUTONOME_PEU_DENSE
     RURAL_A_HABITAT_TRES_DISPERSE = "Rural à habitat très dispersé"  # RURAL_AUTONOME_TRES_PEU_DENSE
 
+    # OLD Values for migration purpose
+    # FIXME: Remove those old values
+    URBAIN_DENSITE_INTERMEDIAIRE = "urbain densité intermédiaire"
+    RURAL_SOUS_FORTE_INFLUENCE_D_UN_POLE = "rural sous forte influence d'un pôle"
+    URBAIN_DENSE = "urbain dense"
+    RURAL_SOUS_FAIBLE_INFLUENCE_D_UN_POLE = "rural sous faible influence d'un pôle"
+    RURAL_AUTONOME_TRES_PEU_DENSE = "rural autonome très peu dense"
+    RURAL_AUTONOME_PEU_DENSE = "rural autonome peu dense"
+
 
 # Mapping from rurality level to distance in km
 PLAYLIST_RURALITY_MAX_DISTANCE_MAPPING = {
@@ -224,6 +233,14 @@ PLAYLIST_RURALITY_MAX_DISTANCE_MAPPING = {
     InstitutionRuralLevel.BOURGS_RURAUX: 60,
     InstitutionRuralLevel.RURAL_A_HABITAT_DISPERSE: 60,
     InstitutionRuralLevel.RURAL_A_HABITAT_TRES_DISPERSE: 60,
+    # OLD Values for migration purpose
+    # FIXME: Remove those old values
+    InstitutionRuralLevel.URBAIN_DENSE: 3,
+    InstitutionRuralLevel.URBAIN_DENSITE_INTERMEDIAIRE: 10,
+    InstitutionRuralLevel.RURAL_SOUS_FORTE_INFLUENCE_D_UN_POLE: 15,
+    InstitutionRuralLevel.RURAL_SOUS_FAIBLE_INFLUENCE_D_UN_POLE: 60,
+    InstitutionRuralLevel.RURAL_AUTONOME_PEU_DENSE: 60,
+    InstitutionRuralLevel.RURAL_AUTONOME_TRES_PEU_DENSE: 60,
 }
 
 
