@@ -19,6 +19,7 @@ from pcapi.utils import email as email_utils
 
 
 def get_bookings(
+    *,
     base_query: BaseQuery,
     form: BaseBookingListForm,
     stock_class: type[educational_models.CollectiveStock | offers_models.Stock],

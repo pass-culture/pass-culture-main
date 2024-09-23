@@ -502,6 +502,7 @@ def _get_status(status: str) -> RegistrationStepStatus | None:
 class RegistrationStep:
     def __init__(
         self,
+        *,
         step_id: int,
         description: str,
         subscription_item_status: str,
