@@ -85,7 +85,7 @@ export const DetailsSubForm = ({
 
   return (
     <>
-      <div role="alert">
+      <div role="alert" data-testid="details-subcategory-ean-callout">
         {displayRedirectionCallout && (
           <Callout
             className={styles.callout}

@@ -1,4 +1,4 @@
-import { useFormikContext } from 'formik'
+import { FormikProvider, Form, useFormik } from 'formik'
 import { useState, useRef, useEffect } from 'react'
 import { useSelector } from 'react-redux'
 
@@ -6,27 +6,33 @@ import { api } from 'apiClient/api'
 import { isErrorAPIError, getError } from 'apiClient/helpers'
 import { Callout } from 'components/Callout/Callout'
 import { CalloutVariant } from 'components/Callout/types'
-import { useIndividualOfferContext } from 'context/IndividualOfferContext/IndividualOfferContext'
-import { IndividualOfferImage } from 'core/Offers/types'
+import { FormLayout } from 'components/FormLayout/FormLayout'
 import strokeBarcode from 'icons/stroke-barcode.svg'
 import { selectCurrentOffererId } from 'store/user/selectors'
 import { Button } from 'ui-kit/Button/Button'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 import { Tag, TagVariant } from 'ui-kit/Tag/Tag'
 
-import { DetailsFormValues } from '../types'
-import { hasMusicType, isSubCategoryCDOrVinyl } from '../utils'
+import { Product } from '../types'
+import { isSubCategoryCDOrVinyl } from '../utils'
+import { eanSearchValidationSchema } from '../validationSchema'
 
 import styles from './DetailsEanSearch.module.scss'
 
 export type DetailsEanSearchProps = {
-  setImageOffer: (imageOffer: IndividualOfferImage) => void
+  productId: string
+  subcategoryId: string
   isOfferProductBased: boolean
+  onEanSearch: (ean: string, product: Product) => Promise<void>
+  resetForm: () => void
 }
 
 export const DetailsEanSearch = ({
-  setImageOffer,
+  productId,
+  subcategoryId,
   isOfferProductBased,
+  onEanSearch,
+  resetForm,
 }: DetailsEanSearchProps): JSX.Element => {
   const selectedOffererId = useSelector(selectCurrentOffererId)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -35,17 +41,17 @@ export const DetailsEanSearch = ({
   const [apiError, setApiError] = useState<string | null>(null)
   const [wasCleared, setWasCleared] = useState(false)
 
-  const { subCategories } = useIndividualOfferContext()
-  const {
-    values,
-    errors: { eanSearch: formikError },
-    setValues,
-    resetForm,
-  } = useFormikContext<DetailsFormValues>()
-  const { eanSearch: ean, productId, subcategoryId } = values
-
   const isNotAnOfferYetButProductBased = !isOfferProductBased && !!productId
   const isProductBased = isOfferProductBased || isNotAnOfferYetButProductBased
+
+  const formik = useFormik({
+    initialValues: { eanSearch: '' },
+    validationSchema: eanSearchValidationSchema,
+    onSubmit: () => undefined,
+  })
+
+  const ean = formik.values.eanSearch
+  const formikError = formik.errors.eanSearch
 
   useEffect(() => {
     setApiError(null)
@@ -68,67 +74,20 @@ export const DetailsEanSearch = ({
     }
   }, [subcategoryId, isProductBased])
 
-  const onEanSearch = async () => {
+  const onSearch = async () => {
     if (ean) {
       try {
         setIsFetchingProduct(true)
+
+        // FIXME: vraiment, vraiment pas fan de cette logique.
+        // On ne devrait juste pas afficher le composant de recherche
+        // EAN si la structure n'est pas sélectionnée.
         if (!selectedOffererId) {
           throw new Error('Offerer should have already been selected')
         }
-        const res = await api.getProductByEan(ean, selectedOffererId)
 
-        const {
-          id,
-          name,
-          description,
-          subcategoryId,
-          gtlId,
-          author,
-          performer,
-          images,
-        } = res
-
-        const subCategory = subCategories.find(
-          (subCategory) => subCategory.id === subcategoryId
-        )
-
-        if (!subCategory) {
-          throw new Error('Unknown or missing subcategoryId')
-        }
-
-        const { categoryId, conditionalFields: subcategoryConditionalFields } =
-          subCategory
-
-        const imageUrl = images.recto
-        if (imageUrl) {
-          setImageOffer({
-            originalUrl: imageUrl,
-            url: imageUrl,
-            credit: null,
-          })
-        }
-
-        let gtl_id = ''
-        if (hasMusicType(categoryId, subcategoryConditionalFields)) {
-          // Fallback to "Autre" in case of missing gtlId
-          // to define "Genre musical" when relevant.
-          gtl_id = gtlId || '19000000'
-        }
-
-        await setValues({
-          ...values,
-          ean,
-          name,
-          description,
-          categoryId,
-          subcategoryId,
-          gtl_id,
-          author,
-          performer,
-          subcategoryConditionalFields,
-          suggestedSubcategory: '',
-          productId: id.toString() || '',
-        })
+        const product = await api.getProductByEan(ean, selectedOffererId)
+        await onEanSearch(ean, product)
 
         setIsFetchingProduct(false)
       } catch (err) {
@@ -177,52 +136,59 @@ export const DetailsEanSearch = ({
   const externalError = nonFormikError ? errorArray.join('\n') : undefined
 
   return (
-    <div className={styles['details-ean-search']}>
-      <div className={styles['details-ean-search-form']}>
-        <TextInput
-          refForInput={inputRef}
-          classNameLabel={styles['details-ean-search-label']}
-          label={label}
-          description="Format : EAN à 13 chiffres"
-          name="eanSearch"
-          type="text"
-          disabled={shouldInputBeDisabled}
-          maxLength={13}
-          isOptional={!shouldInputBeRequired}
-          countCharacters
-          {...(externalError && {
-            externalError,
-          })}
-          {...(displayClearButton
-            ? {
-                clearButtonProps: {
-                  tooltip: 'Effacer',
-                  display: 'close',
-                  onClick: onEanClear,
-                },
-              }
-            : {
-                rightIcon: strokeBarcode,
-              })}
-        />
-        <Button
-          className={styles['details-ean-search-button']}
-          disabled={shouldButtonBeDisabled}
-          onClick={onEanSearch}
-        >
-          Rechercher
-        </Button>
-      </div>
-      <div role="status">
-        {isProductBased && (
-          <Callout
-            className={styles['details-ean-search-callout']}
-            variant={calloutVariant}
-          >
-            {calloutLabel}
-          </Callout>
-        )}
-      </div>
-    </div>
+    <FormikProvider value={formik}>
+      <Form>
+        <FormLayout fullWidthActions>
+          <div className={styles['details-ean-search']}>
+            <div className={styles['details-ean-search-form']}>
+              <TextInput
+                refForInput={inputRef}
+                classNameLabel={styles['details-ean-search-label']}
+                label={label}
+                description="Format : EAN à 13 chiffres"
+                name="eanSearch"
+                type="text"
+                disabled={shouldInputBeDisabled}
+                maxLength={13}
+                isOptional={!shouldInputBeRequired}
+                countCharacters
+                {...(externalError && {
+                  externalError,
+                })}
+                {...(displayClearButton
+                  ? {
+                      clearButtonProps: {
+                        tooltip: 'Effacer',
+                        display: 'close',
+                        onClick: onEanClear,
+                      },
+                    }
+                  : {
+                      rightIcon: strokeBarcode,
+                    })}
+              />
+              <Button
+                type="submit"
+                className={styles['details-ean-search-button']}
+                disabled={shouldButtonBeDisabled}
+                onClick={onSearch}
+              >
+                Rechercher
+              </Button>
+            </div>
+            <div role="status">
+              {isProductBased && (
+                <Callout
+                  className={styles['details-ean-search-callout']}
+                  variant={calloutVariant}
+                >
+                  {calloutLabel}
+                </Callout>
+              )}
+            </div>
+          </div>
+        </FormLayout>
+      </Form>
+    </FormikProvider>
   )
 }

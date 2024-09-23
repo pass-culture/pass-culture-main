@@ -19,3 +19,17 @@ export type DetailsFormValues = {
   suggestedSubcategory: string
   productId: string
 }
+
+export type Product = {
+  id: number
+  name: string
+  description: string
+  subcategoryId: string
+  gtlId: string
+  author: string
+  performer: string
+  images: {
+    recto?: string
+    verso?: string
+  }
+}
