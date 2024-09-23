@@ -4052,7 +4052,7 @@ class UserRecreditTest:
 
         validated_birth_date = datetime.datetime.utcnow() - relativedelta(years=validated_age)
         users_api.update_user_info(
-            user, users_factories.UserFactory(roles=["ADMIN"]), validated_birth_date=validated_birth_date.date()
+            user, author=users_factories.UserFactory(roles=["ADMIN"]), validated_birth_date=validated_birth_date.date()
         )
 
         can_be_recredited_for_validated_age = api._can_be_recredited(user)
@@ -4063,7 +4063,7 @@ class UserRecreditTest:
 
         sixteen_years_ago = datetime.datetime.utcnow() - relativedelta(years=16)
         users_api.update_user_info(
-            user, users_factories.UserFactory(roles=["ADMIN"]), validated_birth_date=sixteen_years_ago.date()
+            user, author=users_factories.UserFactory(roles=["ADMIN"]), validated_birth_date=sixteen_years_ago.date()
         )
 
         next_year = datetime.datetime.utcnow() + relativedelta(years=1)
@@ -4078,7 +4078,7 @@ class UserRecreditTest:
             user = users_factories.HonorStatementValidatedUserFactory()
         seventeen_years_ago = datetime.datetime.utcnow() - relativedelta(years=17)
         users_api.update_user_info(
-            user, users_factories.UserFactory(roles=["ADMIN"]), validated_birth_date=seventeen_years_ago.date()
+            user, author=users_factories.UserFactory(roles=["ADMIN"]), validated_birth_date=seventeen_years_ago.date()
         )
         users_factories.DepositGrantFactory(user=user)
         fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
