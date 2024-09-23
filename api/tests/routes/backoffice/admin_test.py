@@ -31,8 +31,8 @@ class GetRolesTest(GetEndpointHelper):
     endpoint = "backoffice_web.get_roles"
     needed_permission = perm_models.Permissions.MANAGE_PERMISSIONS
 
-    # session + current user + roles + permissions
-    expected_num_queries = 4
+    # session + current user + roles + permissions + WIP_ENABLE_OFFER_ADDRESS FF
+    expected_num_queries = 5
 
     def test_can_list_roles_and_permissions(self, authenticated_client):
         perm_factories.RoleFactory(name="test_role_1")
@@ -212,7 +212,7 @@ class GetRolesHistoryTest(GetEndpointHelper):
 class ListFeatureFlagsTest(GetEndpointWithoutPermissionHelper):
     endpoint = "backoffice_web.list_feature_flags"
 
-    # user + session + list of feature flags
+    # user + session + list of feature flags + WIP_ENABLE_OFFER_ADDRESS FF
     expected_num_queries = 3
 
     def test_list_feature_flags(self, authenticated_client):
@@ -220,7 +220,8 @@ class ListFeatureFlagsTest(GetEndpointWithoutPermissionHelper):
         first_feature_flag.isActive = True
         db.session.flush()
 
-        with assert_num_queries(self.expected_num_queries):
+        # +1 for WIP_ENABLE_OFFER_ADDRESS FF in templates
+        with assert_num_queries(self.expected_num_queries + 1):
             response = authenticated_client.get(url_for(self.endpoint))
             assert response.status_code == 200
 
@@ -232,7 +233,8 @@ class ListFeatureFlagsTest(GetEndpointWithoutPermissionHelper):
         first_feature_flag.isActive = False
         db.session.flush()
 
-        with assert_num_queries(self.expected_num_queries):
+        # +1 for WIP_ENABLE_OFFER_ADDRESS FF in templates
+        with assert_num_queries(self.expected_num_queries + 1):
             response = authenticated_client.get(url_for(self.endpoint))
             assert response.status_code == 200
 
@@ -324,7 +326,8 @@ class SearchBoUsersTest(GetEndpointHelper):
     # - fetch authenticated user
     # - fetch results
     # - fetch count for pagination
-    expected_num_queries = 4
+    # - fetch WIP_ENABLE_OFFER_ADDRESS FF
+    expected_num_queries = 5
 
     def test_search_without_filter(self, authenticated_client, legit_user):
         user1 = users_factories.AdminFactory()
@@ -397,7 +400,7 @@ class SearchBoUsersTest(GetEndpointHelper):
         assert_user_equals(cards_text[0], users[0])
 
     def test_search_invalid(self, authenticated_client):
-        with assert_num_queries(2):  # only session + current user
+        with assert_num_queries(3):  # only session + current user + WIP_ENABLE_OFFER_ADDRESS FF
             response = authenticated_client.get(url_for(self.endpoint, q="%"))
             assert response.status_code == 400
 

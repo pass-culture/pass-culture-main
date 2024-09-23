@@ -813,7 +813,7 @@ class GetCreateOffererFormTest(GetEndpointHelper):
     def test_get_create_offerer_form(self, authenticated_client):
         url = url_for(self.endpoint)
 
-        with assert_num_queries(2):  # session + current user
+        with assert_num_queries(3):  # session + current user + WIP_ENABLE_OFFER_ADDRESS FF
             response = authenticated_client.get(url)
             assert response.status_code == 200
 

@@ -1661,7 +1661,8 @@ class GetOffererCollectiveDmsApplicationsTest(GetEndpointHelper):
 
     # - session + authenticated user (2 queries)
     # - dms applications with joined data (1 query)
-    expected_num_queries = 3
+    # - WIP_ENABLE_OFFER_ADDRESS FF (1 query)
+    expected_num_queries = 4
 
     def test_get_collective_dms_applications(self, authenticated_client):
         offerer = offerers_factories.OffererFactory(siren="123456789")
@@ -1840,7 +1841,8 @@ class ListOfferersToValidateTest(GetEndpointHelper):
         # - session + authenticated user (2 queries)
         # - validation status count (1 query)
         # - offerer tags filter (1 query)
-        expected_num_queries_when_no_query = 4
+        # - WIP_ENABLE_OFFER_ADDRESS FF (1 query)
+        expected_num_queries_when_no_query = 5
         # - get results (1 query)
         # - get results count (1 query)
         expected_num_queries = expected_num_queries_when_no_query + 2
@@ -2839,7 +2841,8 @@ class ListUserOffererToValidateTest(GetEndpointHelper):
 
     # - session + authenticated user (2 queries)
     # - offerer tags filter (1 query)
-    expected_num_queries_when_no_query = 3
+    # - WIP_ENABLE_OFFER_ADDRESS FF (1 query)
+    expected_num_queries_when_no_query = 4
     # - get results (1 query)
     # - get results count (1 query)
     expected_num_queries = expected_num_queries_when_no_query + 2
@@ -3787,7 +3790,8 @@ class ListOffererTagsTest(GetEndpointHelper):
     # - fetch session (1 query)
     # - fetch user (1 query)
     # - fetch categories and tags (2 queries)
-    expected_num_queries = 4
+    # - fetch WIP_ENABLE_OFFER_ADDRESS FF
+    expected_num_queries = 5
 
     def test_list_offerer_tags(self, authenticated_client):
         category = offerers_factories.OffererTagCategoryFactory(label="indépendant")

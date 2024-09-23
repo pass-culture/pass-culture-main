@@ -65,7 +65,8 @@ class ListCollectiveOfferTemplatesTest(GetEndpointHelper):
     expected_num_queries = expected_num_queries_when_no_query + 2
 
     def test_list_collective_offer_templates_without_filter(self, authenticated_client, collective_offer_templates):
-        with assert_num_queries(self.expected_num_queries_when_no_query):
+        # +1 for WIP_ENABLE_OFFER_ADDRESS FF
+        with assert_num_queries(self.expected_num_queries_when_no_query + 1):
             response = authenticated_client.get(url_for(self.endpoint))
             assert response.status_code == 200
 
@@ -281,7 +282,8 @@ class GetCollectiveOfferTemplateDetailTest(GetEndpointHelper):
             formats=[EacFormat.PROJECTION_AUDIOVISUELLE],
         )
         url = url_for(self.endpoint, collective_offer_template_id=collectiveOfferTemplate.id)
-        with assert_num_queries(self.expected_num_queries):
+        # +1 query WIP_ENABLE_OFFER_ADDRESS FF
+        with assert_num_queries(self.expected_num_queries + 1):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 

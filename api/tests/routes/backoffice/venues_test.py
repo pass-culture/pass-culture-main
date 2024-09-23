@@ -107,7 +107,8 @@ class ListVenuesTest(GetEndpointHelper):
     # - fetch user (1 query)
     # - fetch venue_label for select (1 query)
     # - fetch venues with joinedload including extra data (1 query)
-    expected_num_queries = 4
+    # - fetch WIP_ENABLE_OFFER_ADDRESS FF
+    expected_num_queries = 5
 
     def test_list_venues_without_filter(self, authenticated_client):
         response = authenticated_client.get(url_for(self.endpoint))
@@ -126,7 +127,7 @@ class ListVenuesTest(GetEndpointHelper):
         assert rows[0]["Nom"] == venues[0].name
         assert rows[0]["Nom d'usage"] == venues[0].publicName
         assert rows[0]["Structure"] == venues[0].managingOfferer.name
-        assert rows[0]["Lieu permanent"] == "Lieu permanent"
+        assert rows[0]["Permanent"] == "Lieu permanent"
         assert rows[0]["Label"] == venues[0].venueLabel.label
         assert sorted(rows[0]["Tags"].split()) == sorted("Criterion_cinema Criterion_art".split())
         assert rows[0]["Date de création"] == venues[0].dateCreated.strftime("%d/%m/%Y")
@@ -1977,7 +1978,8 @@ class GetVenueHistoryTest(GetEndpointHelper):
     # get session (1 query)
     # get user with profile and permissions (1 query)
     # get history (1 query)
-    expected_num_queries = 3
+    # get WIP_ENABLE_OFFER_ADDRESS FF (1 query)
+    expected_num_queries = 4
 
     class CommentButtonTest(button_helpers.ButtonHelper):
         needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
@@ -2090,7 +2092,7 @@ class GetVenueHistoryTest(GetEndpointHelper):
         db.session.expire(venue)
 
         auth_client = client.with_bo_session_auth(read_only_bo_user)
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(self.expected_num_queries - 1):
             response = auth_client.get(url)
             assert response.status_code == 200
 
@@ -2224,7 +2226,7 @@ class GetBatchEditVenuesFormTest(PostEndpointHelper):
     needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
 
     def test_get_empty_batch_edit_venues_form(self, legit_user, authenticated_client):
-        with assert_num_queries(2):  # session + current user
+        with assert_num_queries(3):  # session + current user + FF
             response = authenticated_client.get(url_for(self.endpoint))
             assert response.status_code == 200
 
@@ -2238,9 +2240,9 @@ class GetBatchEditVenuesFormTest(PostEndpointHelper):
             "object_ids": ",".join(str(venue.id) for venue in venues),
         }
 
-        with assert_num_queries(self.fetch_csrf_num_queries + 3):  # session + current user + criteria
-            response = self.post_to_endpoint(authenticated_client, form=form_data)
-            assert response.status_code == 200
+        # session + current user + criteria + FF
+        response = self.post_to_endpoint(authenticated_client, form=form_data, expected_num_queries=4)
+        assert response.status_code == 200
 
         autocomplete_select = html_parser.get_soup(response.data).find(
             "select", attrs={"data-tomselect-autocomplete-url": "/autocomplete/criteria"}

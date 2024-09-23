@@ -17,9 +17,9 @@
 {% macro build_old_navigation_badge() %}
   <span class="me-1 pb-1 badge rounded-pill text-bg-secondary-lighter">Ancienne interface</span>
 {% endmacro %}
-{% macro build_venue_badges(venue, is_ENABLE_OFFER_ADDRESS_active) %}
+{% macro build_venue_badges(venue) %}
   <span class="me-1 pb-1 badge rounded-pill text-bg-secondary align-middle">
-    {% if is_ENABLE_OFFER_ADDRESS_active %}
+    {% if is_feature_active("WIP_ENABLE_OFFER_ADDRESS") %}
       {% if venue.isPermanent %}
         Partenaire culturel permanent
       {% else %}

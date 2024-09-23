@@ -38,7 +38,7 @@ class IndividualOffersSearchAttributes(enum.Enum):
     VALIDATION = "État"
     ID = "ID de l'offre"
     MEDIATION = "Image"
-    VENUE = "Lieu"
+    VENUE = forms_utils.VenueRenaming("Lieu", "Partenaire culturel")
     ADDRESS = "Adresse de l'offre"
     NAME = "Nom de l'offre"
     SYNCHRONIZED = "Offre synchronisée"
@@ -246,7 +246,7 @@ class OfferAdvancedSearchSubForm(forms_utils.PCForm):
         ],
     )
     venue = fields.PCTomSelectField(
-        "Lieux",
+        typing.cast(str, forms_utils.VenueRenaming("Lieux", "Partenaires culturels")),
         multiple=True,
         choices=[],
         validate_choice=False,
@@ -415,7 +415,9 @@ class BatchEditOfferForm(empty_forms.BatchForm, EditOfferForm):
 
 
 class EditOfferVenueForm(FlaskForm):
-    venue = fields.PCSelectWithPlaceholderValueField("Nouveau lieu", choices=[], validate_choice=False)
+    venue = fields.PCSelectWithPlaceholderValueField(
+        forms_utils.VenueRenaming("Nouveau lieu", "Nouveau partenaire culturel"), choices=[], validate_choice=False
+    )
     notify_beneficiary = fields.PCSwitchBooleanField("Notifier les jeunes", full_row=True)
 
     def set_venue_choices(self, venues: list[offerers_models.Venue]) -> None:

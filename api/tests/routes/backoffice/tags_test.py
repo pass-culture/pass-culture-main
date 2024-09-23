@@ -124,7 +124,8 @@ class ListTagsTest(GetEndpointHelper):
     # - fetch session and user (2 queries)
     # - fetch tags: rows and count (2 queries)
     # - fetch categories (1 query)
-    expected_num_queries = 5
+    # - fetch WIP_ENABLE_OFFER_ADDRESS FF
+    expected_num_queries = 6
 
     def test_list_tags(self, authenticated_client):
         categories = criteria_factories.CriterionCategoryFactory.create_batch(2)

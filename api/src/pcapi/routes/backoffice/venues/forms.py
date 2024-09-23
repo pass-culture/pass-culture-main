@@ -9,6 +9,7 @@ from pcapi.connectors import acceslibre as acceslibre_connector
 from pcapi.core.geography import constants as geography_constants
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.permissions import models as perm_models
+from pcapi.models import feature
 from pcapi.routes.backoffice import filters
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.forms import fields
@@ -71,7 +72,9 @@ class EditVenueForm(EditVirtualVenueForm):
     venue_type_code = fields.PCSelectWithPlaceholderValueField(
         "Activité principale", choices=utils.choices_from_enum(offerers_models.VenueTypeCode)
     )
-    is_permanent = fields.PCSwitchBooleanField("Lieu permanent")
+    is_permanent = fields.PCSwitchBooleanField(
+        typing.cast(str, utils.VenueRenaming("Lieu permanent", "Partenaire culturel permanent"))
+    )
     acceslibre_url = fields.PCOptStringField(
         "URL chez acceslibre",
         validators=(wtforms.validators.Optional(), wtforms.validators.URL()),
@@ -121,6 +124,8 @@ class EditVenueForm(EditVirtualVenueForm):
     def validate_street(self, street: fields.PCStringField) -> fields.PCStringField:
         # database constraint: check_is_virtual_xor_has_address
         if not street.data and not self.siret.data:
+            if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
+                raise validators.ValidationError("L'adresse est obligatoire pour un partenaire culturel sans SIRET")
             raise validators.ValidationError("L'adresse est obligatoire pour un lieu sans SIRET")
         return street
 
@@ -165,6 +170,10 @@ class EditVenueForm(EditVirtualVenueForm):
             if self.venue.isPermanent:
                 acceslibre_url.data = None
             else:
+                if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
+                    raise validators.ValidationError(
+                        "Vous ne pouvez pas ajouter d'url à ce partenaire culturel car il n'est pas permanent"
+                    )
                 raise validators.ValidationError(
                     "Vous ne pouvez pas ajouter d'url à ce lieu car il n'est pas permanent"
                 )
@@ -190,7 +199,12 @@ class FraudForm(FlaskForm):
 
 
 class CommentForm(FlaskForm):
-    comment = fields.PCCommentField("Commentaire interne pour le lieu")
+    comment = fields.PCCommentField(
+        typing.cast(
+            str,
+            utils.VenueRenaming("Commentaire interne pour le lieu", "Commentaire interne pour le partenaire culturel"),
+        )
+    )
 
 
 def _get_all_venue_labels_query() -> sa.orm.Query:
@@ -201,8 +215,19 @@ class GetVenuesListForm(utils.PCForm):
     class Meta:
         csrf = False
 
-    q = fields.PCOptSearchField("ID ou liste d'ID de lieu, nom du lieu")
-    type = fields.PCSelectMultipleField("Type de lieu", choices=utils.choices_from_enum(offerers_models.VenueTypeCode))
+    q = fields.PCOptSearchField(
+        typing.cast(
+            str,
+            utils.VenueRenaming(
+                "ID ou liste d'ID de lieu, nom du lieu",
+                "ID ou liste d'ID de partenaire culturel, nom du partenaire culturel",
+            ),
+        )
+    )
+    type = fields.PCSelectMultipleField(
+        typing.cast(str, utils.VenueRenaming("Type de lieu", "Type de partenaire culturel")),
+        choices=utils.choices_from_enum(offerers_models.VenueTypeCode),
+    )
     venue_label = fields.PCQuerySelectMultipleField(
         "Label",
         query_factory=_get_all_venue_labels_query,
@@ -258,11 +283,30 @@ class BatchEditVenuesForm(empty_forms.BatchForm):
     criteria = fields.PCTomSelectField(
         "Tags", multiple=True, choices=[], validate_choice=False, endpoint="backoffice_web.autocomplete_criteria"
     )
-    all_permanent = fields.PCCheckboxField("Marquer tous les lieux comme permanents")
-    all_not_permanent = fields.PCCheckboxField("Marquer tous les lieux comme non permanents")
+    all_permanent = fields.PCCheckboxField(
+        typing.cast(
+            str,
+            utils.VenueRenaming(
+                "Marquer tous les lieux comme permanents", "Marquer tous les partenaires culturels comme permanents"
+            ),
+        )
+    )
+    all_not_permanent = fields.PCCheckboxField(
+        typing.cast(
+            str,
+            utils.VenueRenaming(
+                "Marquer tous les lieux comme non permanents",
+                "Marquer tous les partenaires culturels comme non permanents",
+            ),
+        )
+    )
 
     def validate_all_permanent(self, all_permanent: fields.PCCheckboxField) -> fields.PCCheckboxField:
         if all_permanent.data and self._fields["all_not_permanent"].data:
+            if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
+                raise wtforms.ValidationError(
+                    "Impossible de passer tous les partenaires culturels en permanents et non permanents"
+                )
             raise wtforms.ValidationError("Impossible de passer tous les lieux en permanents et non permanents")
 
         return all_permanent
@@ -291,4 +335,11 @@ class PricingPointForm(utils.PCForm):
 
 
 class RemoveSiretForm(RemovePricingPointForm, PricingPointForm):
-    comment = fields.PCCommentField("Commentaire qui apparaîtra sur le lieu")
+    comment = fields.PCCommentField(
+        typing.cast(
+            str,
+            utils.VenueRenaming(
+                "Commentaire qui apparaîtra sur le lieu", "Commentaire qui apparaîtra sur le partenaire culturel"
+            ),
+        )
+    )

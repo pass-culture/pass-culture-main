@@ -129,7 +129,7 @@ class ListOffersTest(GetEndpointHelper):
 
     def test_list_offers_without_filter(self, authenticated_client, offers):
         # no filter => no query to fetch offers
-        with assert_num_queries(self.expected_num_queries - 2):
+        with assert_num_queries(self.expected_num_queries - 1):
             response = authenticated_client.get(url_for(self.endpoint))
             assert response.status_code == 200
 
@@ -531,7 +531,7 @@ class ListOffersTest(GetEndpointHelper):
             "search-3-operator": "GREATER_THAN_OR_EQUAL_TO",
             "search-3-price": 120000.20,
         }
-        with assert_num_queries(self.expected_num_queries - 1):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 200
 
@@ -880,7 +880,7 @@ class ListOffersTest(GetEndpointHelper):
             "search-2-operator": "IN",
             "search-2-validation": offers_models.OfferValidationStatus.PENDING.value,
         }
-        with assert_num_queries(self.expected_num_queries - 1):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 200
 
@@ -973,7 +973,7 @@ class ListOffersTest(GetEndpointHelper):
             "search-0-operator": "IN",
             "search-0-category": categories.LIVRE.id,
         }
-        with assert_num_queries(2):  # only session + current user, before form validation
+        with assert_num_queries(3):  # only session + current user + FF, before form validation
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 400
 
@@ -993,7 +993,7 @@ class ListOffersTest(GetEndpointHelper):
             "search-0-operator": operator,
             f"search-0-{operand}": "",
         }
-        with assert_num_queries(2):  # only session + current user, before form validation
+        with assert_num_queries(3):  # only session + current user, before form validation + FF
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 400
 
@@ -1009,7 +1009,7 @@ class ListOffersTest(GetEndpointHelper):
             "search-4-search_field": "BOOKING_LIMIT_DATE",
             "search-4-operator": "DATE_TO",
         }
-        with assert_num_queries(2):  # only session + current user, before form validation
+        with assert_num_queries(3):  # only session + current user + FF, before form validation
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 400
 
@@ -1024,7 +1024,7 @@ class ListOffersTest(GetEndpointHelper):
             "search-0-operator": "IN",
             "search-0-criteria": "A",
         }
-        with assert_num_queries(2):  # only session + current user, before form validation
+        with assert_num_queries(3):  # only session + current user + FF, before form validation
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 400
 
@@ -1036,7 +1036,7 @@ class ListOffersTest(GetEndpointHelper):
             "search-0-operator": "OUT",
             "search-0-category": "13",
         }
-        with assert_num_queries(2):  # only session + current user, before form validation
+        with assert_num_queries(3):  # only session + current user + FF, before form validation
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 400
 
@@ -1058,7 +1058,7 @@ class ListOffersTest(GetEndpointHelper):
             "search-0-operator": "EQUALS",
             "search-0-string": value,
         }
-        with assert_num_queries(2):  # only session + current user, before form validation
+        with assert_num_queries(3):  # only session + current user + FF, before form validation
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 400
 
@@ -2011,7 +2011,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
         offer = offers_factories.EventOfferFactory(venue=venue)
 
         url = url_for(self.endpoint, offer_id=offer.id, _external=True)
-        # Additional queries to check if "Modifier le lieu" should be displayed or not":
+        # Additional queries to check if "Modifier le partenaire culturel" should be displayed or not":
         # - _get_editable_stock
         # - count stocks with beginningDatetime in the past
         # - count reimbursed bookings

@@ -149,7 +149,7 @@ class ListCustomReimbursementRulesTest(GetEndpointHelper):
     def test_list_rules_by_id_not_found(self, authenticated_client):
         rules = finance_factories.CustomReimbursementRuleFactory.create_batch(5)
         search_query = str(rules[-1].id * 1000)
-        with assert_num_queries(self.expected_num_queries - 1):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, q=search_query))
             assert response.status_code == 200
 
@@ -608,7 +608,8 @@ class GetReimburementStatsTest(GetEndpointHelper):
     # - fetch session (1 query)
     # - fetch user (1 query)
     # - fetch custom reimbursement rules statistics (1 query)
-    expected_num_queries = 3
+    # - fetch WIP_ENABLE_OFFER_ADDRESS FF
+    expected_num_queries = 4
 
     def test_get_data(self, authenticated_client):
         finance_factories.CustomReimbursementRuleFactory.create_batch(4, offerer=offerers_factories.OffererFactory())

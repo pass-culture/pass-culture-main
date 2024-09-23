@@ -1,4 +1,5 @@
 import enum
+import typing
 
 from flask_wtf import FlaskForm
 from wtforms.validators import Optional
@@ -83,7 +84,9 @@ class GetIncidentsSearchForm(forms_utils.PCForm):
     )
 
     venue = fields.PCTomSelectField(
-        "Lieux porteurs de l'offre",
+        typing.cast(
+            str, forms_utils.VenueRenaming("Lieux porteurs de l'offre", "Partenaires culturels porteurs de l'offre")
+        ),
         multiple=True,
         choices=[],
         validate_choice=False,

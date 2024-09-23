@@ -124,7 +124,7 @@ class GetDownloadBookingsForm(FlaskForm):
     class Meta:
         csrf = False
 
-    venue = fields.PCIntegerField("Lieu")
+    venue = fields.PCIntegerField(utils.VenueRenaming("Lieux", "Partenaires culturels"))
     from_to_date = fields.PCDateRangeField(
         "Créées entre",
         validators=(wtforms.validators.Optional(),),

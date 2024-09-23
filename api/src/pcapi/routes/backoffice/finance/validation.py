@@ -4,6 +4,7 @@ from pcapi.core.bookings import models as bookings_models
 from pcapi.core.educational import models as educational_models
 from pcapi.core.finance import models as finance_models
 from pcapi.models import db
+from pcapi.models import feature
 
 
 class Valid:
@@ -72,8 +73,13 @@ def check_incident_bookings(bookings: list[bookings_models.Booking]) -> Valid:
         )
 
     if len({booking.venueId for booking in bookings}) > 1:
+        if not feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
+            return Valid(
+                is_valid=False, message="Un incident ne peut être créé qu'à partir de réservations venant du même lieu."
+            )
         return Valid(
-            is_valid=False, message="Un incident ne peut être créé qu'à partir de réservations venant du même lieu."
+            is_valid=False,
+            message="Un incident ne peut être créé qu'à partir de réservations venant du même partenaire culturel.",
         )
 
     if sum(booking.total_amount for booking in bookings) == 0:
@@ -111,9 +117,14 @@ def check_commercial_gesture_bookings(bookings: list[bookings_models.Booking]) -
         )
 
     if len({booking.venueId for booking in bookings}) > 1:
+        if not feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
+            return Valid(
+                is_valid=False,
+                message="Un geste commercial ne peut être créé qu'à partir de réservations venant du même lieu.",
+            )
         return Valid(
             is_valid=False,
-            message="Un geste commercial ne peut être créé qu'à partir de réservations venant du même lieu.",
+            message="Un geste commercial ne peut être créé qu'à partir de réservations venant du même partenaire culturel.",
         )
 
     return Valid(True)
