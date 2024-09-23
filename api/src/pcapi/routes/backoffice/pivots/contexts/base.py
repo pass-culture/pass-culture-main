@@ -99,7 +99,7 @@ class PivotContext:
 
         if cinema_provider_pivot.venue:
             history_api.add_action(
-                action_type=history_models.ActionType.PIVOT_DELETED,
+                history_models.ActionType.PIVOT_DELETED,
                 author=current_user,
                 venue=cinema_provider_pivot.venue,
                 comment=f"Pivot {pivot_name}",

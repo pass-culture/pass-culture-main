@@ -125,7 +125,7 @@ def _create_pro_user(row: dict) -> User:
 
     history_api.add_action(
         history_models.ActionType.OFFERER_VALIDATED,
-        None,
+        author=None,
         user=user,
         offerer=offerer,
         comment="Validée automatiquement par le script de création",

@@ -86,7 +86,7 @@ def create_pivot(name: str) -> utils.BackofficeResponse:
         can_create_pivot = pivot_context.create_pivot(form)
         if can_create_pivot:
             history_api.add_action(
-                action_type=history_models.ActionType.PIVOT_CREATED,
+                history_models.ActionType.PIVOT_CREATED,
                 author=current_user,
                 venue=venue,
                 cinema_id=pivot_context.get_cinema_id(form),

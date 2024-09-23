@@ -439,7 +439,7 @@ def create_venue(venue_data: venues_serialize.PostVenueBodyModel, author: users_
 
     ava = educational_address_api.new_venue_address(venue)
 
-    history_api.add_action(history_models.ActionType.VENUE_CREATED, author, venue=venue)
+    history_api.add_action(history_models.ActionType.VENUE_CREATED, author=author, venue=venue)
 
     db.session.add_all([venue, ava])
     db.session.commit()
@@ -952,7 +952,7 @@ def create_offerer(
             _add_new_onboarding_info_to_extra_data(new_onboarding_info, extra_data)
             history_api.add_action(
                 history_models.ActionType.USER_OFFERER_NEW,
-                author,
+                author=author,
                 user=user,
                 offerer=offerer,
                 comment=comment,
@@ -983,7 +983,12 @@ def create_offerer(
         extra_data.update(kwargs)
 
         history_api.add_action(
-            history_models.ActionType.OFFERER_NEW, author, user=user, offerer=offerer, comment=comment, **extra_data
+            history_models.ActionType.OFFERER_NEW,
+            author=author,
+            user=user,
+            offerer=offerer,
+            comment=comment,
+            **extra_data,
         )
 
     # keep commit with repository.save() as long as siren is validated in pcapi.validation.models.offerer
@@ -1047,7 +1052,7 @@ def update_offerer(
 
     if modified_info:
         history_api.add_action(
-            history_models.ActionType.INFO_MODIFIED, author, offerer=offerer, modified_info=modified_info
+            history_models.ActionType.INFO_MODIFIED, author=author, offerer=offerer, modified_info=modified_info
         )
 
     # keep commit with repository.save() as long as postal code is validated in pcapi.validation.models.offerer
@@ -1134,7 +1139,7 @@ def set_offerer_attachment_pending(
     db.session.add(user_offerer)
     history_api.add_action(
         history_models.ActionType.USER_OFFERER_PENDING,
-        author_user,
+        author=author_user,
         user=user_offerer.user,
         offerer=user_offerer.offerer,
         comment=comment,
@@ -1153,7 +1158,7 @@ def reject_offerer_attachment(
 
     history_api.add_action(
         history_models.ActionType.USER_OFFERER_REJECTED,
-        author_user,
+        author=author_user,
         user=user_offerer.user,
         offerer=user_offerer.offerer,
         comment=comment,
@@ -1181,7 +1186,7 @@ def delete_offerer_attachment(
 
     history_api.add_action(
         history_models.ActionType.USER_OFFERER_DELETED,
-        author_user,
+        author=author_user,
         user=user_offerer.user,
         offerer=user_offerer.offerer,
         comment=comment,
@@ -1207,7 +1212,7 @@ def validate_offerer(offerer: models.Offerer, author_user: users_models.User) ->
 
     history_api.add_action(
         history_models.ActionType.OFFERER_VALIDATED,
-        author_user,
+        author=author_user,
         offerer=offerer,
         user=applicants[0] if applicants else None,  # before validation we should have only one applicant
     )
@@ -1269,7 +1274,7 @@ def reject_offerer(
     db.session.add(offerer)
     history_api.add_action(
         history_models.ActionType.OFFERER_REJECTED,
-        author_user,
+        author=author_user,
         offerer=offerer,
         user=first_user_to_register_offerer,
         **action_args,
@@ -1337,7 +1342,7 @@ def set_offerer_pending(
 
     history_api.add_action(
         history_models.ActionType.OFFERER_PENDING,
-        author_user,
+        author=author_user,
         offerer=offerer,
         venue=None,  # otherwise mypy does not accept extra_data dict
         user=None,  # otherwise mypy does not accept extra_data dict
@@ -1352,12 +1357,12 @@ def set_offerer_pending(
 
 
 def add_comment_to_offerer(offerer: offerers_models.Offerer, author_user: users_models.User, comment: str) -> None:
-    history_api.add_action(history_models.ActionType.COMMENT, author_user, offerer=offerer, comment=comment)
+    history_api.add_action(history_models.ActionType.COMMENT, author=author_user, offerer=offerer, comment=comment)
     db.session.flush()
 
 
 def add_comment_to_venue(venue: offerers_models.Venue, author_user: users_models.User, comment: str) -> None:
-    history_api.add_action(history_models.ActionType.COMMENT, author_user, venue=venue, comment=comment)
+    history_api.add_action(history_models.ActionType.COMMENT, author=author_user, venue=venue, comment=comment)
     db.session.commit()
 
 
@@ -2185,7 +2190,7 @@ def invite_member(offerer: models.Offerer, email: str, current_user: users_model
         db.session.add_all([offerer_invitation, new_user_offerer])
         history_api.add_action(
             history_models.ActionType.USER_OFFERER_NEW,
-            current_user,
+            author=current_user,
             user=existing_user,
             offerer=offerer_invitation.offerer,
             comment="Rattachement créé par invitation",
@@ -2253,7 +2258,7 @@ def accept_offerer_invitation_if_exists(user: users_models.User) -> None:
         )
         history_api.add_action(
             history_models.ActionType.USER_OFFERER_NEW,
-            user,
+            author=user,
             user=user,
             offerer=offerer_invitation.offerer,
             comment="Rattachement créé par invitation",
@@ -2875,7 +2880,7 @@ def update_fraud_info(
         kwargs["comment"] = comment
 
     history_api.add_action(
-        history_models.ActionType.FRAUD_INFO_MODIFIED, author_user, offerer=offerer, venue=venue, **kwargs
+        history_models.ActionType.FRAUD_INFO_MODIFIED, author=author_user, offerer=offerer, venue=venue, **kwargs
     )
 
     return True

@@ -1200,7 +1200,10 @@ def get_entreprise_urssaf_info(offerer_id: int) -> utils.BackofficeResponse:
         data["urssaf_error"] = str(error) or "Une erreur s'est produite lors de l'appel à API Entreprise"
     else:
         history_api.add_action(
-            history_models.ActionType.OFFERER_ATTESTATION_CHECKED, current_user, offerer=offerer, provider="URSSAF"
+            history_models.ActionType.OFFERER_ATTESTATION_CHECKED,
+            author=current_user,
+            offerer=offerer,
+            provider="URSSAF",
         )
         db.session.flush()
 
@@ -1225,7 +1228,10 @@ def get_entreprise_dgfip_info(offerer_id: int) -> utils.BackofficeResponse:
         data["dgfip_error"] = str(error) or "Une erreur s'est produite lors de l'appel à API Entreprise"
     else:
         history_api.add_action(
-            history_models.ActionType.OFFERER_ATTESTATION_CHECKED, current_user, offerer=offerer, provider="DGFIP"
+            history_models.ActionType.OFFERER_ATTESTATION_CHECKED,
+            author=current_user,
+            offerer=offerer,
+            provider="DGFIP",
         )
         db.session.flush()
 

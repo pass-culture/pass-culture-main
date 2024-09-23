@@ -302,11 +302,7 @@ def connect_as(token: str) -> Response:
             },
         )
 
-    history_api.add_action(
-        action_type=history_models.ActionType.CONNECT_AS_USER,
-        author=current_user,
-        user=user,
-    )
+    history_api.add_action(history_models.ActionType.CONNECT_AS_USER, author=current_user, user=user)
 
     discard_session()
     logout_user()

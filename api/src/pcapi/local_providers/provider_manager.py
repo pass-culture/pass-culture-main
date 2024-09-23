@@ -241,7 +241,7 @@ def collect_elligible_venues_and_activate_ems_sync() -> None:
                 },
             )
             history_api.add_action(
-                action_type=history_models.ActionType.LINK_VENUE_PROVIDER_DELETED,
+                history_models.ActionType.LINK_VENUE_PROVIDER_DELETED,
                 author=None,
                 venue=venue_to_activate,
                 provider_id=allocine_venue_provider.providerId,

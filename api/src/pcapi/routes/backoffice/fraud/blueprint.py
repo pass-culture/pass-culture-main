@@ -155,7 +155,7 @@ def blacklist_domain_name() -> utils.BackofficeResponse:
     db.session.add(domain)
 
     history_api.add_action(
-        action_type=history_models.ActionType.BLACKLIST_DOMAIN_NAME,
+        history_models.ActionType.BLACKLIST_DOMAIN_NAME,
         author=current_user,
         domain=form.domain.data,
         deactivated_users=sorted([(user.id, user.email) for user in users]),
@@ -198,7 +198,7 @@ def remove_blacklisted_domain_name(domain: str) -> utils.BackofficeResponse:
 
     query.delete(synchronize_session=False)
     history_api.add_action(
-        action_type=history_models.ActionType.REMOVE_BLACKLISTED_DOMAIN_NAME,
+        history_models.ActionType.REMOVE_BLACKLISTED_DOMAIN_NAME,
         author=current_user,
         domain=row.domain,
     )

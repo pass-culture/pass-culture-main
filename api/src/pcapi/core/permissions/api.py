@@ -48,7 +48,7 @@ def update_role(
     db.session.flush()
 
     history_api.add_action(
-        action_type=history_models.ActionType.ROLE_PERMISSIONS_CHANGED,
+        history_models.ActionType.ROLE_PERMISSIONS_CHANGED,
         author=author,
         role_name=role.name,
         modified_info=modified_info,

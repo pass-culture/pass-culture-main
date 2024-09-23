@@ -16,6 +16,7 @@ from pcapi.models import db
 
 def add_action(
     action_type: models.ActionType,
+    *,
     author: users_models.User | None,
     user: users_models.User | None = None,
     offerer: offerers_models.Offerer | None = None,
@@ -161,7 +162,7 @@ class ObjectUpdateSnapshot:
 
         return add_action(
             models.ActionType.INFO_MODIFIED,
-            self.author,
+            author=self.author,
             **self.add_action_target,
             modified_info=self.to_dict(),
         )

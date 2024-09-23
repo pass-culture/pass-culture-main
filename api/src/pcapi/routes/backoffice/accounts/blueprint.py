@@ -1002,7 +1002,7 @@ def manually_validate_phone_number(user_id: int) -> utils.BackofficeResponse:
 
     user.phoneValidationStatus = users_models.PhoneValidationStatusType.VALIDATED
     db.session.add(user)
-    history_api.add_action(action_type=history_models.ActionType.USER_PHONE_VALIDATED, author=current_user, user=user)
+    history_api.add_action(history_models.ActionType.USER_PHONE_VALIDATED, author=current_user, user=user)
     db.session.flush()
 
     subscription_api.activate_beneficiary_if_no_missing_step(user)
@@ -1323,8 +1323,6 @@ def invalidate_public_account_password(user_id: int) -> utils.BackofficeResponse
 
     users_api.update_user_password(user, random_password())
 
-    history_api.add_action(
-        action_type=history_models.ActionType.USER_PASSWORD_INVALIDATED, author=current_user, user=user
-    )
+    history_api.add_action(history_models.ActionType.USER_PASSWORD_INVALIDATED, author=current_user, user=user)
     flash("Le mot de passe du compte a bien été invalidé", "success")
     return redirect(get_public_account_link(user_id, active_tab="history"), code=303)

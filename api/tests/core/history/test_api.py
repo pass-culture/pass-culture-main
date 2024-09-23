@@ -20,7 +20,7 @@ class LogActionTest:
 
         returned_action = history_api.add_action(
             history_models.ActionType.OFFERER_REJECTED,
-            admin,
+            author=admin,
             user=user_offerer.user,
             offerer=user_offerer.offerer,
             comment="Test rejected",
@@ -47,7 +47,7 @@ class LogActionTest:
         admin = users_factories.AdminFactory()
 
         with pytest.raises(ValueError) as err:
-            history_api.add_action(history_models.ActionType.OFFERER_PENDING, admin)
+            history_api.add_action(history_models.ActionType.OFFERER_PENDING, author=admin)
             db.session.commit()
 
         assert "No resource" in str(err.value)
@@ -59,7 +59,7 @@ class LogActionTest:
 
         action = history_api.add_action(
             history_models.ActionType.OFFERER_VALIDATED,
-            admin,
+            author=admin,
             user=user_offerer.user,
             offerer=user_offerer.offerer,
         )
@@ -84,7 +84,7 @@ class LogActionTest:
         with pytest.raises(RuntimeError):
             history_api.add_action(
                 history_models.ActionType.OFFERER_VALIDATED,
-                admin,
+                author=admin,
                 user=user,
                 offerer=unsaved_offerer,
             )

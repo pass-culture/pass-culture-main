@@ -861,7 +861,7 @@ def _update_permanent_venues(venues: list[offerers_models.Venue], is_permanent: 
 
     for venue in venues_to_update:
         add_action(
-            action_type=history_models.ActionType.INFO_MODIFIED,
+            history_models.ActionType.INFO_MODIFIED,
             author=current_user,
             venue=venue,
             modified_info={"isPermanent": {"old_info": venue.isPermanent, "new_info": is_permanent}},
