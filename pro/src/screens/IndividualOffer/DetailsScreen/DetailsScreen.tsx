@@ -35,13 +35,14 @@ import {
 import { DetailsEanSearch } from './DetailsEanSearch/DetailsEanSearch'
 import { DetailsForm } from './DetailsForm'
 import { EanSearchCallout } from './EanSearchCallout/EanSearchCallout'
-import { DetailsFormValues } from './types'
+import { DetailsFormValues, Product } from './types'
 import {
   serializeDetailsPatchData,
   serializeDetailsPostData,
   setDefaultInitialValues,
   setDefaultInitialValuesFromOffer,
   setFormReadOnlyFields,
+  hasMusicType,
 } from './utils'
 import { validationSchema } from './validationSchema'
 
@@ -213,52 +214,112 @@ export const DetailsScreen = ({ venues }: DetailsScreenProps): JSX.Element => {
     mode === OFFER_WIZARD_MODE.EDITION &&
     isOfferProductBased
 
+  const onEanSearch = async (ean: string, product: Product): Promise<void> => {
+    const {
+      id,
+      name,
+      description,
+      subcategoryId,
+      gtlId,
+      author,
+      performer,
+      images,
+    } = product
+
+    const subCategory = subCategories.find(
+      (subCategory) => subCategory.id === subcategoryId
+    )
+
+    if (!subCategory) {
+      throw new Error('Unknown or missing subcategoryId')
+    }
+
+    const { categoryId, conditionalFields: subcategoryConditionalFields } =
+      subCategory
+
+    const imageUrl = images.recto
+    if (imageUrl) {
+      setImageOffer({
+        originalUrl: imageUrl,
+        url: imageUrl,
+        credit: null,
+      })
+    }
+
+    let gtl_id = ''
+    if (hasMusicType(categoryId, subcategoryConditionalFields)) {
+      // Fallback to "Autre" in case of missing gtlId
+      // to define "Genre musical" when relevant.
+      gtl_id = gtlId || '19000000'
+    }
+
+    await formik.setValues({
+      ...formik.values,
+      ean,
+      name,
+      description,
+      categoryId,
+      subcategoryId,
+      gtl_id,
+      author,
+      performer,
+      subcategoryConditionalFields,
+      suggestedSubcategory: '',
+      productId: id.toString() || '',
+    })
+  }
+
   return (
-    <FormikProvider value={formik}>
-      <Form>
-        <FormLayout fullWidthActions>
-          <ScrollToFirstErrorAfterSubmit />
-          <FormLayout.MandatoryInfo />
-          {isEanSearchDisplayed && (
-            <DetailsEanSearch
-              setImageOffer={setImageOffer}
-              isOfferProductBased={isOfferProductBased}
-            />
-          )}
-          {isEanSearchCalloutAloneDisplayed && <EanSearchCallout />}
-          <DetailsForm
-            isEanSearchDisplayed={isEanSearchDisplayed}
-            isProductBased={isProductBased}
-            filteredVenues={filteredVenues}
-            filteredCategories={filteredCategories}
-            filteredSubcategories={filteredSubcategories}
-            readonlyFields={readOnlyFields}
-            onImageUpload={onImageUpload}
-            onImageDelete={onImageDelete}
-            imageOffer={imageOffer}
-          />
-        </FormLayout>
-        <ActionBar
-          onClickPrevious={handlePreviousStepOrBackToReadOnly}
-          onClickNext={async () => {
-            if (
-              areSuggestedSubcategoriesUsed &&
-              formik.values.suggestedSubcategory === ''
-            ) {
-              await formik.setFieldValue('suggestedSubcategory', 'OTHER')
-            }
-          }}
-          step={OFFER_WIZARD_STEP_IDS.DETAILS}
-          isDisabled={
-            formik.isSubmitting ||
-            Boolean(offer && isOfferDisabled(offer.status))
-          }
-          dirtyForm={formik.dirty || offer === null}
+    <>
+      {isEanSearchDisplayed && (
+        <DetailsEanSearch
+          productId={formik.values.productId}
+          subcategoryId={formik.values.subcategoryId}
+          isOfferProductBased={isOfferProductBased}
+          onEanSearch={onEanSearch}
+          resetForm={formik.resetForm}
         />
-      </Form>
-      <RouteLeavingGuardIndividualOffer
-        when={formik.dirty && !formik.isSubmitting}
-      />
-    </FormikProvider>
+      )}
+      {isEanSearchCalloutAloneDisplayed && <EanSearchCallout />}
+      <FormikProvider value={formik}>
+        <Form>
+          <FormLayout fullWidthActions>
+            <ScrollToFirstErrorAfterSubmit />
+            <FormLayout.MandatoryInfo />
+            <DetailsForm
+              isEanSearchDisplayed={isEanSearchDisplayed}
+              isProductBased={isProductBased}
+              filteredVenues={filteredVenues}
+              filteredCategories={filteredCategories}
+              filteredSubcategories={filteredSubcategories}
+              readonlyFields={readOnlyFields}
+              onImageUpload={onImageUpload}
+              onImageDelete={onImageDelete}
+              imageOffer={imageOffer}
+            />
+          </FormLayout>
+          <ActionBar
+            onClickPrevious={handlePreviousStepOrBackToReadOnly}
+            onClickNext={async () => {
+              if (
+                areSuggestedSubcategoriesUsed &&
+                formik.values.suggestedSubcategory === ''
+              ) {
+                await formik.setFieldValue('suggestedSubcategory', 'OTHER')
+              }
+            }}
+            step={OFFER_WIZARD_STEP_IDS.DETAILS}
+            isDisabled={
+              formik.isSubmitting ||
+              Boolean(offer && isOfferDisabled(offer.status))
+            }
+            dirtyForm={formik.dirty || offer === null}
+          />
+        </Form>
+        <RouteLeavingGuardIndividualOffer
+          when={formik.dirty && !formik.isSubmitting}
+        />
+      </FormikProvider>
+    </>
   )
 }

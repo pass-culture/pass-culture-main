@@ -2,25 +2,20 @@ import * as yup from 'yup'
 
 import { DEFAULT_DETAILS_FORM_VALUES } from './constants'
 
+const eanValidation = yup
+  .string()
+  .matches(/^\d*$/, "L'EAN doit être composé de 13 chiffres")
+  .test({
+    message: "L'EAN doit être composé de 13 chiffres.",
+    test: (ean) => ean === undefined || ean.length === 13,
+  })
+
 export const validationSchema = yup.object().shape({
   name: yup.string().max(90).required('Veuillez renseigner un titre'),
   description: yup.string(),
   author: yup.string(),
   performer: yup.string(),
-  ean: yup
-    .string()
-    .matches(/^\d*$/, "L'EAN doit être composé de 13 chiffres")
-    .test({
-      message: "L'EAN doit être composé de 13 chiffres.",
-      test: (ean) => ean === undefined || ean.length === 13,
-    }),
-  eanSearch: yup
-    .string()
-    .matches(/^\d*$/, "L'EAN doit être composé de 13 chiffres")
-    .test({
-      message: "L'EAN doit être composé de 13 chiffres.",
-      test: (ean) => ean === undefined || ean.length === 13,
-    }),
+  ean: eanValidation,
   speaker: yup.string(),
   stageDirector: yup.string(),
   visa: yup.string(),
@@ -39,7 +34,6 @@ export const validationSchema = yup.object().shape({
     then: (schema) =>
       schema.required('Veuillez sélectionner une sous-catégorie'),
   }),
-
   showType: yup.string().when('subcategoryConditionalFields', {
     is: (subcategoryConditionalFields: string[]) =>
       subcategoryConditionalFields.includes('showType'),
@@ -63,4 +57,8 @@ export const validationSchema = yup.object().shape({
     then: (schema) => schema.required('Veuillez sélectionner un genre musical'),
   }),
   venueId: yup.string().required('Veuillez sélectionner un lieu'),
+})
+
+export const eanSearchValidationSchema = yup.object().shape({
+  eanSearch: eanValidation,
 })
