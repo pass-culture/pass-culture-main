@@ -9,7 +9,6 @@ from pcapi.sandboxes.scripts.creators.e2e.create_e2e_draft_offers import create_
 from pcapi.sandboxes.scripts.creators.e2e.create_e2e_eac_data import create_eac_data
 from pcapi.sandboxes.scripts.creators.e2e.create_e2e_event_occurrences import *
 from pcapi.sandboxes.scripts.creators.e2e.create_e2e_event_offers import *
-from pcapi.sandboxes.scripts.creators.e2e.create_e2e_event_products import *
 from pcapi.sandboxes.scripts.creators.e2e.create_e2e_event_stocks import *
 from pcapi.sandboxes.scripts.creators.e2e.create_e2e_incidents import create_e2e_incidents
 from pcapi.sandboxes.scripts.creators.e2e.create_e2e_individual_offerers import create_e2e_individual_offerers
@@ -25,7 +24,6 @@ from pcapi.sandboxes.scripts.creators.e2e.create_e2e_pro_users import *
 from pcapi.sandboxes.scripts.creators.e2e.create_e2e_pro_users_api_keys import *
 from pcapi.sandboxes.scripts.creators.e2e.create_e2e_search_objects import create_e2e_search_indexed_objects
 from pcapi.sandboxes.scripts.creators.e2e.create_e2e_thing_offers import *
-from pcapi.sandboxes.scripts.creators.e2e.create_e2e_thing_products import *
 from pcapi.sandboxes.scripts.creators.e2e.create_e2e_thing_stocks import *
 from pcapi.sandboxes.scripts.creators.e2e.create_e2e_venues import *
 from pcapi.sandboxes.scripts.creators.e2e.create_offer_with_thousand_stocks import create_offer_with_thousand_stocks
@@ -50,13 +48,9 @@ def save_e2e_sandbox() -> None:
 
     venues_by_name = create_e2e_venues(offerers_by_name)
 
-    event_products_by_name = create_e2e_event_products()
+    event_offers_by_name = create_e2e_event_offers(offerers_by_name)
 
-    thing_products_by_name = create_e2e_thing_products()
-
-    event_offers_by_name = create_e2e_event_offers(event_products_by_name, offerers_by_name)
-
-    thing_offers_by_name = create_e2e_thing_offers(thing_products_by_name, offerers_by_name, venues_by_name)
+    thing_offers_by_name = create_e2e_thing_offers(offerers_by_name, venues_by_name)
 
     create_e2e_draft_offers(offerers_by_name)
 
