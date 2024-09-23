@@ -155,6 +155,7 @@ def delete_all_users_phone_validation_tokens(user: models.User) -> None:
 
 
 def create_account(
+    *,
     email: str,
     password: str | None,
     birthdate: datetime.date,
@@ -226,6 +227,7 @@ def setup_login(
 
 def _update_user_information(
     user: models.User,
+    *,
     first_name: str | None = None,
     last_name: str | None = None,
     validated_birth_date: datetime.date | None = None,
@@ -617,6 +619,7 @@ def update_password_and_external_user(user: models.User, new_password: str) -> N
 
 def update_user_info(
     user: models.User,
+    *,
     author: models.User,
     cultural_survey_filled_date: datetime.datetime | T_UNCHANGED = UNCHANGED,
     email: str | T_UNCHANGED = UNCHANGED,

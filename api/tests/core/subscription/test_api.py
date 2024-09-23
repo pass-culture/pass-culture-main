@@ -1163,7 +1163,13 @@ class CompleteProfileTest:
         )
 
         subscription_api.complete_profile(
-            user, "address", "city", "12400", users_models.ActivityEnum.STUDENT, "harry", "cover"
+            user,
+            address="address",
+            city="city",
+            postal_code="12400",
+            activity=users_models.ActivityEnum.STUDENT,
+            first_name="harry",
+            last_name="cover",
         )
 
         assert subscription_repository.get_completed_profile_check(user, users_models.EligibilityType.AGE18)

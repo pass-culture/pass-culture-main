@@ -519,6 +519,7 @@ def requires_manual_review_before_activation(
 
 def complete_profile(
     user: users_models.User,
+    *,
     address: str,
     city: str,
     postal_code: str,
