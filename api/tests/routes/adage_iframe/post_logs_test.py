@@ -59,15 +59,15 @@ class LogsTest:
         }
 
     @pytest.mark.parametrize(
-        "playlist_type,element_id,index,offer_id,venue_id,domain_id,is_mobile",
+        "playlist_type,element_id,index,offer_id,venue_id,domain_id",
         [
-            ("offer", 34, 1, 34, None, None, None),
-            ("venue", 45, 2, None, 45, None, True),
-            ("domain", 56, None, None, None, 56, False),
+            ("offer", 34, 1, 34, None, None),
+            ("venue", 45, 2, None, 45, None),
+            ("domain", 56, None, None, None, 56),
         ],
     )
     def test_log_consult_playlist_element(
-        self, test_client, caplog, playlist_type, element_id, index, offer_id, venue_id, domain_id, is_mobile
+        self, test_client, caplog, playlist_type, element_id, index, offer_id, venue_id, domain_id
     ):
         with caplog.at_level(logging.INFO):
             response = test_client.post(
@@ -80,7 +80,6 @@ class LogsTest:
                     "index": index,
                     "playlistId": 99,
                     "playlistType": playlist_type,
-                    "isMobile": is_mobile,
                 },
             )
 
@@ -98,7 +97,6 @@ class LogsTest:
             "venueId": venue_id,
             "domainId": domain_id,
             "index": index,
-            "isMobile": is_mobile,
         }
 
     def test_log_has_seen_whole_playlist(self, test_client, caplog):
