@@ -4,19 +4,14 @@ import type * as Preset from '@docusaurus/preset-classic';
 import type * as Redocusaurus from 'redocusaurus';
 
 const env = process.env['ENV'];
-const EXPECTED_OPEN_API_JSON_PATH = './../tests/routes/public/expected_openapi.json';
+const PUBLIC_API_OPENAPI_JSON_PATH = './static/openapi.json';
 
-const getOpenAPIJsonUrlFromEnv = (): string => {
-  if (env === 'testing' || env === 'staging') {
-    return `https://backend.${env}.passculture.team/openapi.json`;
+const getOpenAPIJsonFromEnv = (): string => {
+  if (env === 'dev') {
+    return 'http://localhost:5001/openapi.json';
   }
-  if (env === 'production') {
-    return 'https://backend.passculture.pro/openapi.json';
-  }
-  if (env === 'ci-tests') {
-    return EXPECTED_OPEN_API_JSON_PATH;
-  }
-  return 'http://localhost:5001/openapi.json';
+
+  return PUBLIC_API_OPENAPI_JSON_PATH;
 }
 
 const getDocumentationBaseUrlFromEnv = (): string => {
@@ -62,7 +57,7 @@ const config: Config = {
       {
         specs: [
           {
-            spec: getOpenAPIJsonUrlFromEnv(),
+            spec: getOpenAPIJsonFromEnv(),
             route: '/rest-api/',
           },
         ],
