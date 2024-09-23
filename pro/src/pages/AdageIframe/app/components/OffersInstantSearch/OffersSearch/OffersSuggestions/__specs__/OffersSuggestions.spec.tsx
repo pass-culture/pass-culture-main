@@ -36,6 +36,7 @@ vi.mock('apiClient/api', () => ({
   apiAdage: {
     getCollectiveOfferTemplate: vi.fn(),
     getCollectiveOffer: vi.fn(),
+    logOfferListViewSwitch: vi.fn(),
   },
 }))
 

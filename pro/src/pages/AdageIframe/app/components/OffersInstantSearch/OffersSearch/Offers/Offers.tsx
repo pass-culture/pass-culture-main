@@ -107,6 +107,17 @@ export const Offers = ({
     )
 
   useEffect(() => {
+    if (isMobileScreen !== undefined) {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      apiAdage.logOfferListViewSwitch({
+        iframeFrom: location.pathname,
+        source: adageViewType,
+        isMobile: isMobileScreen,
+      })
+    }
+  }, [isMobileScreen])
+
+  useEffect(() => {
     isMobileScreen && dispatch(setSearchView('grid'))
   }, [isMobileScreen, dispatch])
 
@@ -128,12 +139,16 @@ export const Offers = ({
 
   function toggleButtonClicked(button: ToggleButton) {
     const viewType = button.id === 'list' ? 'list' : 'grid'
+    const source = button.id === 'list' ? 'grid' : 'list'
     dispatch(setSearchView(viewType))
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    apiAdage.logOfferListViewSwitch({
-      iframeFrom: location.pathname,
-      source: viewType,
-    })
+    if (adageViewType !== viewType) {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      apiAdage.logOfferListViewSwitch({
+        iframeFrom: location.pathname,
+        source,
+        isMobile: isMobileScreen,
+      })
+    }
   }
 
   function triggerOfferClickLog(

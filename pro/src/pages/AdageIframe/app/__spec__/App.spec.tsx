@@ -1,5 +1,4 @@
 import { screen } from '@testing-library/react'
-import React from 'react'
 import { Configure } from 'react-instantsearch'
 
 import { AdageFrontRoles } from 'apiClient/adage'
@@ -81,6 +80,7 @@ vi.mock('apiClient/api', () => ({
     logTrackingFilter: vi.fn(),
     getCollectiveOffer: vi.fn(),
     logHasSeenAllPlaylist: vi.fn(),
+    logOfferListViewSwitch: vi.fn(),
   },
 }))
 
