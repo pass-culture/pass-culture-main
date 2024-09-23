@@ -34,9 +34,8 @@ class TestingBackend(BaseBackend):
     def delete_contact(self, contact_email: str) -> None:
         users_testing.sendinblue_requests.append({"email": contact_email, "action": "delete"})
 
-    def get_contact_url(self, contact_email: str) -> str | None:
+    def get_contact_url(self, contact_email: str) -> None:
         users_testing.sendinblue_requests.append({"email": contact_email, "action": "get_contact_url"})
-        return None
 
     def get_raw_contact_data(self, contact_email: str) -> dict:
         users_testing.sendinblue_requests.append({"email": contact_email, "action": "get_raw_contact_data"})

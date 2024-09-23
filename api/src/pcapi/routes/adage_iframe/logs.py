@@ -31,7 +31,6 @@ def log_catalog_view(
         user_role=AdageFrontRoles.REDACTOR if institution else AdageFrontRoles.READONLY,
         user_email=authenticated_information.email,
     )
-    return
 
 
 @blueprint.adage_iframe.route("/logs/offer-list-view-switch", methods=["POST"])
@@ -73,7 +72,6 @@ def log_search_button_click(
         uai=authenticated_information.uai,
         user_role=AdageFrontRoles.REDACTOR if institution else AdageFrontRoles.READONLY,
     )
-    return
 
 
 @blueprint.adage_iframe.route("/logs/offer-detail", methods=["POST"])
@@ -91,7 +89,6 @@ def log_offer_details_button_click(
         uai=authenticated_information.uai,
         user_role=AdageFrontRoles.REDACTOR if institution else AdageFrontRoles.READONLY,
     )
-    return
 
 
 @blueprint.adage_iframe.route("/logs/offer-template-detail", methods=["POST"])
@@ -109,7 +106,6 @@ def log_offer_template_details_button_click(
         uai=authenticated_information.uai,
         user_role=AdageFrontRoles.REDACTOR if institution else AdageFrontRoles.READONLY,
     )
-    return
 
 
 @blueprint.adage_iframe.route("/logs/booking-modal-button", methods=["POST"])
@@ -132,7 +128,6 @@ def log_booking_modal_button_click(
         uai=authenticated_information.uai,
         user_role=AdageFrontRoles.REDACTOR if institution else AdageFrontRoles.READONLY,
     )
-    return
 
 
 @blueprint.adage_iframe.route("/logs/contact-modal-button", methods=["POST"])
@@ -155,7 +150,6 @@ def log_contact_modal_button_click(
         uai=authenticated_information.uai,
         user_role=AdageFrontRoles.REDACTOR if institution else AdageFrontRoles.READONLY,
     )
-    return
 
 
 @blueprint.adage_iframe.route("/logs/consult-playlist-element", methods=["POST"])
@@ -205,7 +199,6 @@ def log_fav_offer_button_click(
         uai=authenticated_information.uai,
         user_role=AdageFrontRoles.REDACTOR if institution else AdageFrontRoles.READONLY,
     )
-    return
 
 
 @blueprint.adage_iframe.route("/logs/has-seen-whole-playlist/", methods=["POST"])
@@ -227,7 +220,6 @@ def log_has_seen_whole_playlist(
         uai=authenticated_information.uai,
         user_role=AdageFrontRoles.REDACTOR if institution else AdageFrontRoles.READONLY,
     )
-    return
 
 
 @blueprint.adage_iframe.route("/logs/header-link-click/", methods=["POST"])
@@ -264,7 +256,6 @@ def log_request_form_popin_dismiss(
         uai=authenticated_information.uai,
         user_role=AdageFrontRoles.REDACTOR if institution else AdageFrontRoles.READONLY,
     )
-    return
 
 
 @blueprint.adage_iframe.route("/logs/tracking-filter", methods=["POST"])
@@ -299,7 +290,6 @@ def log_tracking_filter(
         uai=authenticated_information.uai,
         user_role=AdageFrontRoles.REDACTOR if institution else AdageFrontRoles.READONLY,
     )
-    return
 
 
 @blueprint.adage_iframe.route("/logs/sat-survey", methods=["POST"])
@@ -320,7 +310,6 @@ def log_open_satisfaction_survey(
         user_role=AdageFrontRoles.REDACTOR if institution else AdageFrontRoles.READONLY,
         user_email=authenticated_information.email,
     )
-    return
 
 
 @blueprint.adage_iframe.route("/logs/tracking-autocompletion", methods=["POST"])
@@ -343,7 +332,6 @@ def log_tracking_autocomplete_suggestion_click(
         user_role=AdageFrontRoles.REDACTOR if institution else AdageFrontRoles.READONLY,
         user_email=authenticated_information.email,
     )
-    return
 
 
 @blueprint.adage_iframe.route("/logs/tracking-map", methods=["POST"])
@@ -361,7 +349,6 @@ def log_tracking_map(
         user_role=AdageFrontRoles.REDACTOR if institution else AdageFrontRoles.READONLY,
         user_email=authenticated_information.email,
     )
-    return
 
 
 @blueprint.adage_iframe.route("/logs/playlist", methods=["POST"])
@@ -382,7 +369,6 @@ def log_has_seen_all_playlist(
         user_role=AdageFrontRoles.REDACTOR if institution else AdageFrontRoles.READONLY,
         user_email=authenticated_information.email,
     )
-    return
 
 
 @blueprint.adage_iframe.route("/logs/search-show-more", methods=["POST"])
@@ -400,7 +386,6 @@ def log_search_show_more(
         user_role=AdageFrontRoles.REDACTOR if institution else AdageFrontRoles.READONLY,
         user_email=authenticated_information.email,
     )
-    return
 
 
 @blueprint.adage_iframe.route("/logs/tracking-cta-share", methods=["POST"])

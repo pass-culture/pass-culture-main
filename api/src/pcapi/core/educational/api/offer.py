@@ -618,7 +618,6 @@ def publish_collective_offer_template(
 def delete_image(obj: educational_models.HasImageMixin) -> None:
     obj.delete_image()
     db.session.commit()
-    return
 
 
 def attach_image(
