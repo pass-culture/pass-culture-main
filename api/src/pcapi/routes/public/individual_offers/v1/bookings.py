@@ -35,6 +35,7 @@ def _get_base_booking_query() -> sqla_orm.Query:
 
 def _get_paginated_and_filtered_bookings(
     offer_id: int,
+    *,
     price_category_id: int | None,
     stock_id: int | None,
     status: booking_models.BookingStatus | None,
@@ -101,12 +102,12 @@ def get_bookings_by_offer(
 
     bookings = _get_paginated_and_filtered_bookings(
         query.offer_id,
-        query.price_category_id,
-        query.stock_id,
-        query.status,
-        query.beginning_datetime,
-        query.firstIndex,
-        query.limit,
+        price_category_id=query.price_category_id,
+        stock_id=query.stock_id,
+        status=query.status,
+        beginning_datetime=query.beginning_datetime,
+        firstIndex=query.firstIndex,
+        limit=query.limit,
     )
 
     return serialization.GetFilteredBookingsResponse(

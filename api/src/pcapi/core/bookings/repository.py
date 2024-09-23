@@ -117,6 +117,7 @@ def booking_export_header() -> list[str]:
 
 def find_by_pro_user(
     user: User,
+    *,
     booking_period: tuple[date, date] | None = None,
     status_filter: BookingStatusFilter | None = None,
     event_date: date | None = None,
@@ -128,7 +129,7 @@ def find_by_pro_user(
 ) -> tuple[BaseQuery, int]:
     total_bookings_recap = _get_filtered_bookings_count(
         user,
-        booking_period,
+        period=booking_period,
         status_filter=status_filter,
         event_date=event_date,
         venue_id=venue_id,
@@ -379,6 +380,7 @@ def export_bookings_by_offer_id(
 
 def get_export(
     user: User,
+    *,
     booking_period: tuple[date, date] | None = None,
     status_filter: BookingStatusFilter | None = BookingStatusFilter.BOOKED,
     event_date: date | None = None,
@@ -411,6 +413,7 @@ def serialize_offer_type_educational_or_individual(offer_is_educational: bool) -
 
 def _get_filtered_bookings_query(
     pro_user: User,
+    *,
     period: tuple[date, date] | None = None,
     status_filter: BookingStatusFilter | None = None,
     event_date: date | None = None,
@@ -465,6 +468,7 @@ def _get_filtered_bookings_query(
 
 def _get_filtered_bookings_count(
     pro_user: User,
+    *,
     period: tuple[date, date] | None = None,
     status_filter: BookingStatusFilter | None = None,
     event_date: date | None = None,
@@ -474,7 +478,13 @@ def _get_filtered_bookings_count(
 ) -> int:
     bookings = (
         _get_filtered_bookings_query(
-            pro_user, period, status_filter, event_date, venue_id, offer_id, offerer_address_id
+            pro_user,
+            period=period,
+            status_filter=status_filter,
+            event_date=event_date,
+            venue_id=venue_id,
+            offer_id=offer_id,
+            offerer_address_id=offerer_address_id,
         )
         .with_entities(Booking.id, Booking.quantity)
         .distinct(Booking.id)
@@ -487,6 +497,7 @@ def _get_filtered_bookings_count(
 
 def _get_filtered_booking_report(
     pro_user: User,
+    *,
     period: tuple[date, date] | None,
     status_filter: BookingStatusFilter | None,
     event_date: date | None = None,
@@ -536,11 +547,11 @@ def _get_filtered_booking_report(
     bookings_query = (
         _get_filtered_bookings_query(
             pro_user,
-            period,
-            status_filter,
-            event_date,
-            venue_id,
-            offer_id,
+            period=period,
+            status_filter=status_filter,
+            event_date=event_date,
+            venue_id=venue_id,
+            offer_id=offer_id,
             extra_joins=(
                 (Stock.offer,),
                 (Booking.user,),
@@ -559,6 +570,7 @@ def _get_filtered_booking_report(
 
 def _get_filtered_booking_pro(
     pro_user: User,
+    *,
     period: tuple[date, date] | None = None,
     status_filter: BookingStatusFilter | None = None,
     event_date: date | None = None,
@@ -605,12 +617,12 @@ def _get_filtered_booking_pro(
     bookings_query = (
         _get_filtered_bookings_query(
             pro_user,
-            period,
-            status_filter,
-            event_date,
-            venue_id,
-            offer_id,
-            offerer_address_id,
+            period=period,
+            status_filter=status_filter,
+            event_date=event_date,
+            venue_id=venue_id,
+            offer_id=offer_id,
+            offerer_address_id=offerer_address_id,
             extra_joins=(
                 (Stock.offer,),
                 (Booking.user,),

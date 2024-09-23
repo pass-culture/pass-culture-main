@@ -59,6 +59,7 @@ def send_email_for_each_ongoing_booking(offer: Offer) -> None:
 
 
 def send_booking_withdrawal_updated(
+    *,
     recipients: list[str],
     user_first_name: str,
     offer_name: str,
@@ -70,19 +71,20 @@ def send_booking_withdrawal_updated(
     venue_address: str,
 ) -> None:
     data = get_booking_withdrawal_updated_email_data(
-        user_first_name,
-        offer_name,
-        offer_token,
-        offer_withdrawal_delay,
-        offer_withdrawal_details,
-        offer_withdrawal_type,
-        offerer_name,
-        venue_address,
+        user_first_name=user_first_name,
+        offer_name=offer_name,
+        offer_token=offer_token,
+        offer_withdrawal_delay=offer_withdrawal_delay,
+        offer_withdrawal_details=offer_withdrawal_details,
+        offer_withdrawal_type=offer_withdrawal_type,
+        offerer_name=offerer_name,
+        venue_address=venue_address,
     )
     mails.send(recipients=recipients, data=data)
 
 
 def get_booking_withdrawal_updated_email_data(
+    *,
     user_first_name: str,
     offer_name: str,
     offer_token: str,
