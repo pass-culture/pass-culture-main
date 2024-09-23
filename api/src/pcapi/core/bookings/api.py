@@ -461,6 +461,7 @@ def _book_event_external_ticket(booking: Booking, stock: Stock, beneficiary: Use
 def _cancel_booking(
     booking: Booking,
     reason: BookingCancellationReasons,
+    *,
     cancel_even_if_used: bool = False,
     raise_if_error: bool = False,
     one_side_cancellation: bool = False,
@@ -531,6 +532,7 @@ def _cancel_booking(
 def _execute_cancel_booking(
     booking: Booking,
     reason: BookingCancellationReasons,
+    *,
     cancel_even_if_used: bool = False,
     raise_if_error: bool = False,
     one_side_cancellation: bool = False,
