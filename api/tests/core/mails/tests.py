@@ -1,4 +1,3 @@
-import dataclasses
 import logging
 from unittest.mock import patch
 
@@ -30,7 +29,6 @@ class SendinblueBackendTest:
         params=params,
         template_id=data.template.id,
         tags=data.template.tags,
-        sender=dataclasses.asdict(models.TransactionalSender.SUPPORT.value),
         reply_to={"email": "reply_to@example.com", "name": "Tom S."},
     )
 
@@ -58,34 +56,7 @@ class SendinblueBackendTest:
         assert task_param.params == self.expected_sent_data.params
         assert task_param.template_id == self.expected_sent_data.template_id
         assert task_param.tags == self.expected_sent_data.tags
-        assert task_param.sender == self.expected_sent_data.sender
         assert task_param.reply_to == self.expected_sent_data.reply_to
-
-    @override_settings(WHITELISTED_EMAIL_RECIPIENTS=["lucy.ellingson@example.com", "avery.kelly@example.com"])
-    @patch("pcapi.core.mails.backends.sendinblue.send_transactional_email_secondary_task.delay")
-    def test_send_mail_with_no_reply_equal_overrided_by_sender(self, mock_send_transactional_email_secondary_task):
-        self.data = models.TransactionalEmailData(template=self.mock_template, params=self.params, reply_to=None)
-
-        expected_sent_data_no_reply = sendinblue_tasks.SendTransactionalEmailRequest(
-            recipients=self.recipients,
-            params=SendinblueBackendTest.params,
-            template_id=SendinblueBackendTest.data.template.id,
-            tags=SendinblueBackendTest.data.template.tags,
-            sender=dataclasses.asdict(models.TransactionalSender.SUPPORT.value),
-            reply_to=dataclasses.asdict(models.TransactionalSender.SUPPORT.value),
-        )
-
-        backend = self._get_backend_for_test()
-        backend().send_mail(recipients=self.recipients, data=self.data)
-
-        assert mock_send_transactional_email_secondary_task.call_count == 1
-        task_param = mock_send_transactional_email_secondary_task.call_args[0][0]
-        assert set(task_param.recipients) == set(expected_sent_data_no_reply.recipients)
-        assert task_param.params == expected_sent_data_no_reply.params
-        assert task_param.template_id == expected_sent_data_no_reply.template_id
-        assert task_param.tags == expected_sent_data_no_reply.tags
-        assert task_param.sender == expected_sent_data_no_reply.sender
-        assert task_param.reply_to == expected_sent_data_no_reply.reply_to
 
     @patch("pcapi.core.mails.backends.sendinblue.send_transactional_email_secondary_task.delay")
     def test_send_mail_with_no_sender(self, mock_send_transactional_email_secondary_task):
@@ -126,7 +97,7 @@ class ToDevSendinblueBackendTest(SendinblueBackendTest):
         params=SendinblueBackendTest.params,
         template_id=SendinblueBackendTest.data.template.id,
         tags=SendinblueBackendTest.data.template.tags,
-        sender=dataclasses.asdict(models.TransactionalSender.SUPPORT.value),
+        sender=None,
         reply_to={"email": "reply_to@example.com", "name": "Tom S."},
     )
 
@@ -222,7 +193,7 @@ class SendTest:
         assert caplog.messages[0] == (
             "An email would be sent via Sendinblue to=lucy.ellingson@example.com, avery.kelly@example.com, bcc=(): "
             "{'template': {'id_prod': 11, 'id_not_prod': 12, 'tags': ['some', 'stuff'], 'use_priority_queue': False, "
-            "'sender': <TransactionalSender.SUPPORT: EmailInfo(email='support@example.com', name='pass Culture')>, 'send_to_ehp': False}, "
+            "'send_to_ehp': False}, "
             "'reply_to': {'email': 'reply_to@example.com', 'name': 'Tom S.'}, 'params': {}}"
         )
 

@@ -34,7 +34,7 @@ class TransactionalWithoutTemplateEmailData:
         self,
         subject: str,
         html_content: str,
-        sender: TransactionalSender = TransactionalSender.SUPPORT_PRO,
+        sender: TransactionalSender,
         attachment: TransactionalAttachment | None = None,
         reply_to: EmailInfo | None = None,
     ):
@@ -51,7 +51,6 @@ class Template:
     id_not_prod: int
     tags: list[str] = dataclasses.field(default_factory=list)
     use_priority_queue: bool = False
-    sender: TransactionalSender | None = TransactionalSender.SUPPORT
     send_to_ehp: bool = True
 
     @property
@@ -61,7 +60,7 @@ class Template:
 
 @dataclasses.dataclass
 class TemplatePro(Template):
-    sender: TransactionalSender | None = None
+    pass
 
 
 @dataclasses.dataclass
@@ -73,4 +72,4 @@ class TransactionalEmailData:
     def __init__(self, template: Template, params: dict | None = None, reply_to: EmailInfo | None = None):
         self.template = template
         self.params = params or {}
-        self.reply_to = reply_to or (template.sender.value if template.sender else None)
+        self.reply_to = reply_to

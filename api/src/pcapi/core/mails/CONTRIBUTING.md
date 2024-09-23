@@ -34,7 +34,6 @@ class Template:
     id_not_prod: int
     tags: list[str] = dataclasses.field(default_factory=list)
     use_priority_queue: bool = False
-    sender: TransactionalSender = TransactionalSender.SUPPORT
 ```
 id_prod = id du template Sendinblue en production
 id_not_prod = id du template Sendinblue en testing et staging (même compte Sendinblue)

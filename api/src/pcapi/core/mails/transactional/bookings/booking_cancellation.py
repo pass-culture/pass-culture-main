@@ -87,6 +87,5 @@ def get_booking_cancellation_confirmation_by_pro_email_data(
     )
 
     return models.TransactionalWithoutTemplateEmailData(
-        subject=email_subject,
-        html_content=email_html,
+        subject=email_subject, html_content=email_html, sender=models.TransactionalSender.SUPPORT_PRO
     )
