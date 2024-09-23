@@ -26,9 +26,19 @@ logger = logging.getLogger(__name__)
 
 @job(worker.low_queue)
 def create_or_update_ean_offers(serialized_products_stocks: dict, venue_id: int, provider_id: int) -> None:
+    """
+    This method upserts product offers & related stocks using EANs.
+
+    There are 4 steps :
+        1. Computation of offers to create
+        2. Creation of non existing offers with their stocks
+        3. Update of existing offers and their stocks
+        4. Addition of an async job to synchronize updated offers on Algolia
+    """
     provider = providers_models.Provider.query.filter_by(id=provider_id).one()
     venue = offerers_models.Venue.query.filter_by(id=venue_id).one()
 
+    # Step 1: Computation of offers that need to be created
     ean_to_create_or_update = set(serialized_products_stocks.keys())
 
     offers_to_update = _get_existing_offers(ean_to_create_or_update, venue)
@@ -42,6 +52,7 @@ def create_or_update_ean_offers(serialized_products_stocks: dict, venue_id: int,
     ean_list_to_create = ean_to_create_or_update - ean_list_to_update
     offers_to_index = []
     with repository.transaction():
+        # Step 2: Creation of non existing offers with their stocks
         if ean_list_to_create:
             created_offers = []
             existing_products = _get_existing_products(ean_list_to_create)
@@ -109,6 +120,7 @@ def create_or_update_ean_offers(serialized_products_stocks: dict, venue_id: int,
                         },
                     )
 
+        # Step 3: Update of existing offers and their stocks
         for offer in offers_to_update:
             try:
                 offer.lastProvider = provider
@@ -137,6 +149,7 @@ def create_or_update_ean_offers(serialized_products_stocks: dict, venue_id: int,
                     extra={"ean": ean, "venue_id": venue_id, "provider_id": provider_id, "exc": exc.__class__.__name__},
                 )
 
+    # Step 4: Addition of an async job to synchronize updated offers on Algolia
     search.async_index_offer_ids(
         offers_to_index,
         reason=search.IndexationReason.OFFER_UPDATE,
