@@ -3,15 +3,12 @@ import decimal
 
 import pytest
 
-from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.utils import date as date_utils
 
 from tests.conftest import TestClient
 from tests.routes.public.helpers import PublicAPIVenueEndpointHelper
-
-from . import utils
 
 
 @pytest.mark.usefixtures("db_session")
@@ -39,9 +36,11 @@ class PostEventStocksTest(PublicAPIVenueEndpointHelper):
 
     def setup_base_resource(self, venue=None, provider=None) -> tuple[offers_models.Offer, offers_models.PriceCategory]:
         event = offers_factories.EventOfferFactory(venue=venue or self.setup_venue(), lastProvider=provider)
-        category_label = offers_factories.PriceCategoryLabelFactory(label="carre or", venue=event.venue)
         price_category = offers_factories.PriceCategoryFactory(
-            offer=event, price=decimal.Decimal("88.99"), priceCategoryLabel=category_label
+            offer=event,
+            price=decimal.Decimal("88.99"),
+            priceCategoryLabel__label="carre or",
+            priceCategoryLabel__venue=event.venue,
         )
 
         return event, price_category
@@ -65,19 +64,15 @@ class PostEventStocksTest(PublicAPIVenueEndpointHelper):
         assert response.status_code == 404
 
     def test_new_dates_are_added(self, client):
-        venue, api_key = utils.create_offerer_provider_linked_to_venue()
-        event_offer = offers_factories.EventOfferFactory(
-            venue=venue,
-            lastProvider=api_key.provider,
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        event, carre_or_price_category = self.setup_base_resource(
+            venue=venue_provider.venue, provider=venue_provider.provider
         )
-        carre_or_category_label = offers_factories.PriceCategoryLabelFactory(label="carre or", venue=event_offer.venue)
-        carre_or_price_category = offers_factories.PriceCategoryFactory(
-            offer=event_offer, price=decimal.Decimal("88.99"), priceCategoryLabel=carre_or_category_label
-        )
-
-        free_category_label = offers_factories.PriceCategoryLabelFactory(label="gratuit", venue=event_offer.venue)
         free_price_category = offers_factories.PriceCategoryFactory(
-            offer=event_offer, price=decimal.Decimal("0"), priceCategoryLabel=free_category_label
+            offer=event,
+            price=decimal.Decimal("0"),
+            priceCategoryLabel__label="gratuit",
+            priceCategoryLabel__venue=venue_provider.venue,
         )
 
         next_week = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(weeks=1)
@@ -85,8 +80,8 @@ class PostEventStocksTest(PublicAPIVenueEndpointHelper):
         next_month_in_non_utc_tz = date_utils.utc_datetime_to_department_timezone(next_month, "973")
         two_months_from_now = next_month + datetime.timedelta(days=30)
         two_months_from_now_in_non_utc_tz = date_utils.utc_datetime_to_department_timezone(two_months_from_now, "972")
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
-            f"/public/offers/v1/events/{event_offer.id}/dates",
+        response = client.with_explicit_token(plain_api_key).post(
+            self.endpoint_url.format(event_id=event.id),
             json={
                 "dates": [
                     {
@@ -107,7 +102,7 @@ class PostEventStocksTest(PublicAPIVenueEndpointHelper):
         )
 
         assert response.status_code == 200
-        created_stocks = offers_models.Stock.query.filter(offers_models.Stock.offerId == event_offer.id).all()
+        created_stocks = offers_models.Stock.query.filter(offers_models.Stock.offerId == event.id).all()
         assert len(created_stocks) == 2
         first_stock = next(stock for stock in created_stocks if stock.beginningDatetime == next_month)
         assert first_stock.price == decimal.Decimal("88.99")
@@ -151,14 +146,14 @@ class PostEventStocksTest(PublicAPIVenueEndpointHelper):
             ],
         }
 
-    def test_invalid_offer_id(self, client):
-        utils.create_offerer_provider_linked_to_venue()
+    def test_should_raise_404_because_of_invalid_offer_id(self, client):
+        plain_api_key, _ = self.setup_provider()
 
         next_week = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(weeks=1)
         next_month = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(days=30)
         next_month_in_non_utc_tz = date_utils.utc_datetime_to_department_timezone(next_month, "973")
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
-            "/public/offers/v1/events/quinze/dates",
+        response = client.with_explicit_token(plain_api_key).post(
+            self.endpoint_url.format(event_id="gouzi_gouzi"),
             json={
                 "dates": [
                     {
@@ -173,62 +168,35 @@ class PostEventStocksTest(PublicAPIVenueEndpointHelper):
 
         assert response.status_code == 404
 
-    def test_404_price_category_id(self, client):
-        venue, api_key = utils.create_offerer_provider_linked_to_venue()
-        event_offer = offers_factories.EventOfferFactory(
-            venue=venue,
-            lastProvider=api_key.provider,
-        )
+    def test_should_raise_404_because_of_price_category_id(self, client):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        event, _ = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
+        payload_with_not_existing_category_id = self._get_base_payload(0)
 
-        next_week = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(weeks=1)
-        next_month = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(days=30)
-        next_month_in_non_utc_tz = date_utils.utc_datetime_to_department_timezone(next_month, "973")
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
-            f"/public/offers/v1/events/{event_offer.id}/dates",
-            json={
-                "dates": [
-                    {
-                        "beginningDatetime": next_month_in_non_utc_tz.isoformat(),
-                        "bookingLimitDatetime": date_utils.format_into_utc_date(next_week),
-                        "priceCategoryId": 0,
-                        "quantity": 10,
-                    }
-                ]
-            },
+        response = client.with_explicit_token(plain_api_key).post(
+            self.endpoint_url.format(event_id=event.id),
+            json=payload_with_not_existing_category_id,
         )
 
         assert response.status_code == 404
 
-    def test_404_for_product_offer(self, client):
-        venue, _ = utils.create_offerer_provider_linked_to_venue()
-        product_offer = offers_factories.ThingOfferFactory(venue=venue)
+    def test_should_raise_404_because_of_product_offer(self, client):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        product = offers_factories.ThingOfferFactory(venue=venue_provider.venue)
 
-        next_week = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(weeks=1)
-        next_month = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(days=30)
-        next_month_in_non_utc_tz = date_utils.utc_datetime_to_department_timezone(next_month, "973")
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
-            f"/public/offers/v1/events/{product_offer.id}/dates",
-            json={
-                "dates": [
-                    {
-                        "beginningDatetime": next_month_in_non_utc_tz.isoformat(),
-                        "bookingLimitDatetime": date_utils.format_into_utc_date(next_week),
-                        "priceCategoryId": 0,
-                        "quantity": 10,
-                    },
-                ],
-            },
+        response = client.with_explicit_token(plain_api_key).post(
+            self.endpoint_url.format(event_id=product.id), json=self._get_base_payload(0)
         )
 
         assert response.status_code == 404
         assert response.json == {"event_id": ["The event could not be found"]}
 
-    def test_400_for_dates_in_past(self, client):
-        venue, _ = utils.create_offerer_provider_linked_to_venue()
-        product_offer = offers_factories.ThingOfferFactory(venue=venue)
+    def test_should_raise_400_for_dates_in_past(self, client):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        event, _ = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
-            f"/public/offers/v1/events/{product_offer.id}/dates",
+        response = client.with_explicit_token(plain_api_key).post(
+            self.endpoint_url.format(event_id=event.id),
             json={
                 "dates": [
                     {
