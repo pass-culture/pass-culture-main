@@ -8,7 +8,6 @@ export type PlaylistBody = {
   iframeFrom: string;
   index?: number | null;
   isFromNoResult?: boolean | null;
-  isMobile?: boolean | null;
   playlistId: number;
   playlistType: AdagePlaylistType;
   queryId?: string | null;

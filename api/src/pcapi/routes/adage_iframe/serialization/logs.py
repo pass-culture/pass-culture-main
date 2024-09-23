@@ -46,7 +46,6 @@ class PlaylistBody(AdageBaseModel):
     playlistId: int
     elementId: int | None
     index: int | None
-    isMobile: bool | None
 
 
 class SearchBody(AdageBaseModel):
