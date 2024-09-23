@@ -2708,6 +2708,22 @@ files = [
 ]
 
 [[package]]
+name = "PcCommitizen"
+version = "0.1.0"
+description = ""
+optional = false
+python-versions = "*"
+files = []
+develop = false
+
+[package.dependencies]
+commitizen = "*"
+
+[package.source]
+type = "directory"
+url = "tools/pc_commitizen"
+
+[[package]]
 name = "pexpect"
 version = "4.8.0"
 description = "Pexpect allows easy control of interactive console applications."
@@ -5637,4 +5653,4 @@ test = ["pytest"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "7f15ab01d2fbdf5836cab7bb2a53fef7e460af802884215ece9a6278e403b396"
+content-hash = "95070f19fe8a79024592d5155e71a71fac7355238b789ab39ba108dc79c6d7c2"
