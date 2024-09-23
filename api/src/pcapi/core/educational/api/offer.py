@@ -90,6 +90,7 @@ def unindex_expired_collective_offers_template(process_all_expired: bool = False
 
 
 def list_collective_offers_for_pro_user(
+    *,
     user_id: int,
     user_is_admin: bool,
     category_id: str | None,
@@ -145,6 +146,7 @@ def list_collective_offers_for_pro_user(
 
 
 def list_public_collective_offers(
+    *,
     required_id: int,
     venue_id: int | None = None,
     status: offer_mixin.CollectiveOfferStatus | None = None,

@@ -488,6 +488,7 @@ def get_collective_stock(collective_stock_id: int) -> educational_models.Collect
 
 
 def get_collective_offers_for_filters(
+    *,
     user_id: int,
     user_is_admin: bool,
     offers_limit: int,
@@ -533,6 +534,7 @@ def get_collective_offers_for_filters(
 
 
 def get_collective_offers_template_for_filters(
+    *,
     user_id: int,
     user_is_admin: bool,
     offers_limit: int,
@@ -581,6 +583,7 @@ def _get_filtered_collective_bookings_query(
     status_filter: educational_models.CollectiveBookingStatusFilter | None = None,
     event_date: date | None = None,
     venue_id: int | None = None,
+    *,
     extra_joins: tuple[tuple[typing.Any, ...], ...] = (),
 ) -> sa.orm.Query:
 
@@ -635,6 +638,7 @@ def _get_filtered_collective_bookings_query(
 
 
 def list_public_collective_offers(
+    *,
     required_id: int,
     status: offer_mixin.CollectiveOfferStatus | None = None,
     venue_id: int | None = None,
@@ -719,6 +723,7 @@ def _get_filtered_collective_bookings_pro(
 
 
 def find_collective_bookings_by_pro_user(
+    *,
     user: User,
     booking_period: tuple[date, date] | None = None,
     status_filter: educational_models.CollectiveBookingStatusFilter | None = None,
@@ -1137,6 +1142,7 @@ def get_all_educational_institutions(offset: int = 0, limit: int = 0) -> tuple[t
 
 
 def search_educational_institution(
+    *,
     educational_institution_id: int | None,
     name: str | None,
     institution_type: str | None,

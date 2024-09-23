@@ -288,6 +288,7 @@ class HasImageMixin:
 
     def set_image(
         self,
+        *,
         image: bytes,
         credit: str,
         crop_params: CropParams,

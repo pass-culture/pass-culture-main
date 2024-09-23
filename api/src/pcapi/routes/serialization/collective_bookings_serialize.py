@@ -132,6 +132,7 @@ def _get_booking_status(status: models.CollectiveBookingStatus, is_confirmed: bo
 
 
 def build_status_history(
+    *,
     booking_status: models.CollectiveBookingStatus,
     booking_date: datetime,
     cancellation_date: datetime | None,
