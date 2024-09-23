@@ -200,7 +200,7 @@ def update_bank_account(bank_account_id: int) -> utils.BackofficeResponse:
     if bank_account.label != form.label.data:
         history_api.add_action(
             history_models.ActionType.INFO_MODIFIED,
-            current_user,
+            author=current_user,
             bank_account=bank_account,
             modified_info={"label": {"old_info": bank_account.label, "new_info": form.label.data}},
         )

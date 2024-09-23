@@ -120,7 +120,7 @@ def delete_venue_provider(
     provider_id = venue_provider.provider.id
     history_api.add_action(
         history_models.ActionType.LINK_VENUE_PROVIDER_DELETED,
-        author,
+        author=author,
         venue=venue_provider.venue,
         provider_id=venue_provider.providerId,
         provider_name=venue_provider.provider.name,

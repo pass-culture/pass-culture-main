@@ -771,7 +771,7 @@ def _update_underage_beneficiary_deposit_expiration_date(user: models.User) -> N
 
 
 def add_comment_to_user(user: models.User, author_user: models.User, comment: str) -> None:
-    history_api.add_action(history_models.ActionType.COMMENT, author_user, user=user, comment=comment)
+    history_api.add_action(history_models.ActionType.COMMENT, author=author_user, user=user, comment=comment)
     db.session.commit()
 
 
@@ -2172,11 +2172,7 @@ def extract_beneficiary_data(extract: models.GdprUserDataExtract) -> None:
         archive=archive.getvalue(),
     )
 
-    add_action(
-        action_type=ActionType.USER_EXTRACT_DATA,
-        author=extract.authorUser,
-        user=extract.user,
-    )
+    add_action(ActionType.USER_EXTRACT_DATA, author=extract.authorUser, user=extract.user)
     db.session.flush()
 
 

@@ -358,7 +358,7 @@ def create_rule() -> utils.BackofficeResponse:
             _add_sub_rule_data_to_history(sub_rule, sub_rules_info["sub_rules_created"])
         history_api.add_action(
             history_models.ActionType.RULE_CREATED,
-            current_user,
+            author=current_user,
             rule=new_rule,
             sub_rules_info=sub_rules_info,
         )
@@ -413,7 +413,7 @@ def delete_rule(rule_id: int) -> utils.BackofficeResponse:
             rule_to_delete.isActive = False
             history_api.add_action(
                 history_models.ActionType.RULE_DELETED,
-                current_user,
+                author=current_user,
                 rule=rule_to_delete,
                 sub_rules_info=sub_rules_info,
             )
@@ -578,7 +578,7 @@ def edit_rule(rule_id: int) -> utils.BackofficeResponse:
         ):
             history_api.add_action(
                 history_models.ActionType.RULE_MODIFIED,
-                current_user,
+                author=current_user,
                 rule=rule_to_update,
                 sub_rules_info=sub_rules_info,
             )

@@ -83,7 +83,7 @@ def check_offerer_siren_task(payload: CheckOffererSirenRequest) -> None:
                 else:
                     history_api.add_action(
                         history_models.ActionType.INFO_MODIFIED,
-                        None,
+                        author=None,
                         offerer=offerer,
                         comment="La structure est détectée comme inactive via l'API Sirene (INSEE)",
                         modified_info={"tags": {"new_info": tag.label}},

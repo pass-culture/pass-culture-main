@@ -124,7 +124,7 @@ def create_provider() -> utils.BackofficeResponse:
 
         history_api.add_action(
             history_models.ActionType.OFFERER_NEW,
-            current_user,
+            author=current_user,
             offerer=offerer,
             comment="Création automatique via création de partenaire",
         )
