@@ -32,11 +32,11 @@ Feature: Search individual offers
   # pourrait être un TU/TI, on le met en E2E temporairement
 
   Scenario: A search with "Catégories" filter should display expected results
-    When I select "Jeux" in "Catégories"
+    When I select "Instrument de musique" in "Catégories"
     And I validate my filters
     Then These 1 results should be displayed
       |  |  | Titre | Lieu          | Stocks | Status  |
-      |  |  | Offer | Terrain vague |     16 | expirée |
+      |  |  | Offer | Terrain vague |     20 | publiée |
 
   Scenario: A search by offer status should display expected results
     When I select offerer "Réseau de librairies" in offer page
