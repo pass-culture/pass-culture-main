@@ -40,10 +40,8 @@ class SendinblueBackend(BaseBackend):
                 template_id=data.template.id,
                 params=data.params,
                 tags=data.template.tags,
-                sender=asdict(data.template.sender.value) if data.template.sender else None,
-                reply_to=(
-                    asdict(data.reply_to) if data.reply_to else None
-                ),  # equal to sender if reply_to is None and sender is not
+                sender=None,
+                reply_to=(asdict(data.reply_to) if data.reply_to else None),
                 subject=None,
                 html_content=None,
                 attachment=None,

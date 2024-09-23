@@ -71,6 +71,7 @@ class ToDevSendinblueBackend(SendinblueBackend):
                 f"<div>Le contenu suivant serait envoyé par sms au numéro {recipient}</div>"
                 f"<div>{content}</div></div>"
             ),
+            sender=mails_models.TransactionalSender.SUPPORT_PRO,
         )
 
         try:
