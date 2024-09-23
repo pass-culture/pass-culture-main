@@ -13,7 +13,6 @@ export const DEFAULT_DETAILS_FORM_VALUES = {
   stageDirector: '',
   performer: '',
   ean: '',
-  eanSearch: '',
   durationMinutes: '',
   subcategoryConditionalFields: [],
   suggestedSubcategory: '',

@@ -30,14 +30,19 @@ const contextValue: IndividualOfferContextValues = {
   setIsEvent: vi.fn(),
 }
 
-type RequiredProps = 'isOfferProductBased'
-type DetailsEanSearchTestProps = Pick<DetailsEanSearchProps, RequiredProps> & {
-  subcategoryId?: string
+const LABELS = {
+  eanSearchInput: /Scanner ou rechercher un produit par EAN/,
+  eanSearchButton: /Rechercher/,
 }
 
+type DetailsEanSearchTestProps = Partial<DetailsEanSearchProps>
+
 const EanSearchWrappedWithFormik = ({
-  isOfferProductBased,
+  productId = DEFAULT_DETAILS_FORM_VALUES.productId,
   subcategoryId = DEFAULT_DETAILS_FORM_VALUES.subcategoryId,
+  isOfferProductBased = false,
+  onEanSearch = vi.fn(),
+  resetForm = vi.fn(),
 }: DetailsEanSearchTestProps): JSX.Element => {
   const formik = useFormik({
     initialValues: {
@@ -47,13 +52,14 @@ const EanSearchWrappedWithFormik = ({
     onSubmit: vi.fn(),
   })
 
-  const setImageOffer: DetailsEanSearchProps['setImageOffer'] = vi.fn()
-
   return (
     <FormikProvider value={formik}>
       <DetailsEanSearch
-        setImageOffer={setImageOffer}
+        productId={productId}
+        subcategoryId={subcategoryId}
         isOfferProductBased={isOfferProductBased}
+        onEanSearch={onEanSearch}
+        resetForm={resetForm}
       />
     </FormikProvider>
   )
@@ -79,111 +85,156 @@ vi.mock('apiClient/api', () => ({
   api: { getProductByEan: vi.fn() },
 }))
 
-const buttonLabel = /Rechercher/
-const inputLabel = /Scanner ou rechercher un produit par EAN/
 const successMessage = /Les informations suivantes ont été synchronisées/
 const infoMessage = /Les informations de cette page ne sont pas modifiables/
 const errorMessage = /Une erreur est survenue lors de la recherche/
+const formatErrorMessage = /doit être composé de 13 chiffres/
 const subCatErrorMessage = /doivent être liées à un produit/
 const clearButtonLabel = /Effacer/
 
+const getInput = () =>
+  screen.getByRole('textbox', {
+    name: LABELS.eanSearchInput,
+  })
+
+const getButton = () =>
+  screen.getByRole('button', {
+    name: LABELS.eanSearchButton,
+  })
+
 describe('DetailsEanSearch', () => {
-  describe('before form submission - draft offer has not been created yet', () => {
+  it('should display an input and a submit button within a dedicated form', () => {
+    renderDetailsEanSearch({})
+
+    const input = getInput()
+    const button = getButton()
+
+    expect(input).toBeInTheDocument()
+    expect(button).toBeInTheDocument()
+    expect(button).toHaveAttribute('type', 'submit')
+  })
+
+  describe('when the draft offer has not been created yet (dirty)', () => {
     describe('when no EAN search has been performed', () => {
-      it('should display a permanent error message if the subcategory requires an EAN', async () => {
-        renderDetailsEanSearch({
-          isOfferProductBased: false,
-          subcategoryId: 'SUPPORT_PHYSIQUE_MUSIQUE_VINYLE',
-        })
+      it('should call the ean search API when the form is submitted', async () => {
+        const onEanSearch = vi.fn()
+        renderDetailsEanSearch({ onEanSearch })
 
-        const eanInput = screen.getByRole('textbox', { name: inputLabel })
+        await userEvent.type(getInput(), '9781234567897')
+        await userEvent.click(getButton())
 
-        // Input is now required.
-        expect(eanInput).toBeRequired()
-
-        // Error cannot be removed by typing in the input.
-        expect(screen.getByText(subCatErrorMessage)).toBeInTheDocument()
-        await userEvent.type(eanInput, '9781234567897')
-        expect(screen.getByText(subCatErrorMessage)).toBeInTheDocument()
+        expect(api.getProductByEan).toHaveBeenCalledWith('9781234567897', 1)
+        expect(onEanSearch.mock.calls.length).toBe(1)
       })
 
-      it('should let the submit button enabled', async () => {
-        renderDetailsEanSearch({ isOfferProductBased: false })
+      describe('when the input has format issues', () => {
+        it('should display an error message', async () => {
+          renderDetailsEanSearch({})
 
-        const eanInput = screen.getByRole('textbox', { name: inputLabel })
-        await userEvent.type(eanInput, '9781234567897')
+          await userEvent.type(getInput(), '123')
+          await userEvent.tab()
 
-        const button = screen.getByRole('button', { name: buttonLabel })
-        expect(button).not.toBeDisabled()
+          expect(getInput()).toBeInvalid()
+          expect(screen.getByRole('alert')).toHaveTextContent(
+            formatErrorMessage
+          )
+        })
+
+        it('should disable the submit button', async () => {
+          renderDetailsEanSearch({})
+
+          expect(getButton()).toBeDisabled()
+          await userEvent.type(getInput(), '123')
+          expect(getButton()).toBeDisabled()
+        })
+      })
+
+      describe('when the subcategory requires an EAN', () => {
+        it('should display a (cumulative) error message that cannot be cleared on new inputs', async () => {
+          renderDetailsEanSearch({
+            isOfferProductBased: false,
+            subcategoryId: 'SUPPORT_PHYSIQUE_MUSIQUE_VINYLE',
+          })
+
+          // Input is now required.
+          const eanInput = getInput()
+          expect(eanInput).toBeRequired()
+
+          // Error cannot be removed by typing in the input.
+          expect(screen.getByText(subCatErrorMessage)).toBeInTheDocument()
+          await userEvent.type(eanInput, '9781234567897')
+          expect(screen.getByText(subCatErrorMessage)).toBeInTheDocument()
+        })
+
+        it('should let the submit button enabled', async () => {
+          renderDetailsEanSearch({ isOfferProductBased: false })
+
+          await userEvent.type(getInput(), '9781234567897')
+          expect(getButton()).not.toBeDisabled()
+        })
       })
     })
 
+    /* DetailsEanSearch is rerendered with productId and subcategoryId props. */
     describe('when an EAN search is performed succesfully', () => {
-      beforeEach(() => {
-        vi.spyOn(api, 'getProductByEan').mockResolvedValue({
-          id: 0,
-          name: 'Music has the right to children',
-          description: 'An album by Boards of Canada',
+      it('should display a success message', () => {
+        renderDetailsEanSearch({
+          isOfferProductBased: false,
+          productId: '0000',
           subcategoryId: 'SUPPORT_PHYSIQUE_MUSIQUE_VINYLE',
-          gtlId: '08000000',
-          author: 'Boards of Canada',
-          performer: 'Boards of Canada',
-          images: {},
         })
 
-        renderDetailsEanSearch({ isOfferProductBased: false })
+        const status = screen.getAllByRole('status')
+        expect(
+          status.some(
+            (s) => s.textContent && successMessage.test(s.textContent)
+          )
+        ).toBe(true)
       })
 
-      it('should display a success message', async () => {
-        const button = screen.getByRole('button', { name: buttonLabel })
-        const eanInput = screen.getByRole('textbox', { name: inputLabel })
+      it('should be entirely disabled', () => {
+        renderDetailsEanSearch({
+          isOfferProductBased: false,
+          productId: '0000',
+          subcategoryId: 'SUPPORT_PHYSIQUE_MUSIQUE_VINYLE',
+        })
 
-        expect(screen.queryByText(successMessage)).not.toBeInTheDocument()
-
-        await userEvent.type(eanInput, '9781234567897')
-        await userEvent.click(button)
-
-        expect(screen.queryByText(successMessage)).toBeInTheDocument()
+        expect(getInput()).toBeDisabled()
+        expect(getButton()).toBeDisabled()
       })
 
-      it('should be disabled until the input is cleared', async () => {
-        const button = screen.getByRole('button', { name: buttonLabel })
-        const eanInput = screen.getByRole('textbox', { name: inputLabel })
+      it('should clear the form when the clear button is clicked', async () => {
+        const resetForm = vi.fn()
+        renderDetailsEanSearch({
+          isOfferProductBased: false,
+          productId: '0000',
+          subcategoryId: 'SUPPORT_PHYSIQUE_MUSIQUE_VINYLE',
+          resetForm,
+        })
 
-        expect(eanInput).not.toBeDisabled()
-        await userEvent.type(eanInput, '9781234567897')
-
-        expect(button).not.toBeDisabled()
-        await userEvent.click(button)
-
-        expect(eanInput).toBeDisabled()
-        expect(button).toBeDisabled()
-
-        // A clear button appears, when clicked, it should empty
-        // the input. The search button remains disabled, as
-        // the input is empty.
         const clearButton = screen.getByRole('button', {
           name: clearButtonLabel,
         })
+
         expect(clearButton).toBeInTheDocument()
         await userEvent.click(clearButton)
-
-        const newEanInput = screen.getByRole('textbox', { name: inputLabel })
-        expect(newEanInput).not.toBeDisabled()
-        expect(newEanInput).toHaveValue('')
-        expect(button).toBeDisabled()
+        expect(resetForm.mock.calls.length).toBe(1)
       })
     })
 
-    describe('when an EAN search ends with an API error (only)', () => {
+    describe('when an EAN search is performed and ends with an error', () => {
       beforeEach(() => {
         vi.spyOn(api, 'getProductByEan').mockRejectedValue(new Error('error'))
         renderDetailsEanSearch({ isOfferProductBased: false })
       })
 
       it('should display an error message', async () => {
-        const button = screen.getByRole('button', { name: buttonLabel })
-        const eanInput = screen.getByRole('textbox', { name: inputLabel })
+        const button = screen.getByRole('button', {
+          name: LABELS.eanSearchButton,
+        })
+        const eanInput = screen.getByRole('textbox', {
+          name: LABELS.eanSearchInput,
+        })
 
         expect(screen.queryByText(errorMessage)).not.toBeInTheDocument()
 
@@ -192,10 +243,13 @@ describe('DetailsEanSearch', () => {
 
         expect(screen.queryByText(errorMessage)).toBeInTheDocument()
       })
-
       it('should disable the submit button', async () => {
-        const button = screen.getByRole('button', { name: buttonLabel })
-        const eanInput = screen.getByRole('textbox', { name: inputLabel })
+        const button = screen.getByRole('button', {
+          name: LABELS.eanSearchButton,
+        })
+        const eanInput = screen.getByRole('textbox', {
+          name: LABELS.eanSearchInput,
+        })
 
         await userEvent.type(eanInput, '9781234567897')
 
@@ -207,22 +261,21 @@ describe('DetailsEanSearch', () => {
     })
   })
 
-  describe('after POST request (the form has been submitted)', () => {
-    describe('when an EAS search was performed succesfully', () => {
-      beforeEach(() => {
-        renderDetailsEanSearch({ isOfferProductBased: true })
-      })
+  describe('when the draft offer has been created and the offer is product-based', () => {
+    beforeEach(() => {
+      renderDetailsEanSearch({ isOfferProductBased: true })
+    })
 
-      it('should not display the clear button anymore', () => {
-        const clearButton = screen.queryByRole('button', {
+    it('should not display the clear button anymore', () => {
+      expect(
+        screen.queryByRole('button', {
           name: clearButtonLabel,
         })
-        expect(clearButton).not.toBeInTheDocument()
-      })
+      ).not.toBeInTheDocument()
+    })
 
-      it('should display an info message', () => {
-        expect(screen.queryByText(infoMessage)).toBeInTheDocument()
-      })
+    it('should display an info message', () => {
+      expect(screen.queryByText(infoMessage)).toBeInTheDocument()
     })
   })
 })

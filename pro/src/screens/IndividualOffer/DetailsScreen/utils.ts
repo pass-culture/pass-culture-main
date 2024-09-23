@@ -264,7 +264,6 @@ export function setDefaultInitialValuesFromOffer({
       ? deSerializeDurationMinutes(offer.durationMinutes)
       : DEFAULT_DETAILS_FORM_VALUES.durationMinutes,
     ean,
-    eanSearch: ean,
     visa: offer.extraData?.visa ?? DEFAULT_DETAILS_FORM_VALUES.visa,
     gtl_id: offer.extraData?.gtl_id ?? DEFAULT_DETAILS_FORM_VALUES.gtl_id,
     speaker: offer.extraData?.speaker ?? DEFAULT_DETAILS_FORM_VALUES.speaker,
