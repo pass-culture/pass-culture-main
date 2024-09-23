@@ -11,6 +11,7 @@ def create_thumb(
     model_with_thumb: HasThumbMixin,
     image_as_bytes: bytes,
     storage_id_suffix_str: str,
+    *,
     crop_params: CropParams | None = None,
     ratio: ImageRatio = ImageRatio.PORTRAIT,
     keep_ratio: bool = False,

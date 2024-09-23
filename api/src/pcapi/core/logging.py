@@ -94,7 +94,7 @@ def get_api_key_offerer_id() -> int | None:
 
 
 def monkey_patch_logger_makeRecord() -> None:
-    def makeRecord(self, name, level, fn, lno, msg, args, exc_info, func=None, extra=None, sinfo=None):  # type: ignore[no-untyped-def]
+    def makeRecord(self, name, level, fn, lno, msg, args, exc_info, func=None, extra=None, sinfo=None):  # type: ignore[no-untyped-def] # pylint: disable=too-many-positional-arguments
         """Make a record but store ``extra`` arguments in an ``extra``
         attribute (not only as direct attributes of the object itself,
         like the original method does).
@@ -123,7 +123,7 @@ def monkey_patch_logger_makeRecord() -> None:
 
 
 def monkey_patch_logger_log() -> None:
-    def _log(  # type: ignore[no-untyped-def]
+    def _log(  # type: ignore[no-untyped-def]  # pylint: disable=too-many-positional-arguments
         self,
         level,
         msg,

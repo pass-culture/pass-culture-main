@@ -291,6 +291,7 @@ def _process_in_progress_application(
     fraud_check_status: fraud_models.FraudCheckStatus,
     application_scalar_id: str,
     birth_date_error: fraud_models.DmsFieldErrorDetails | None,
+    *,
     is_application_updatable: bool,
 ) -> None:
     if not application_content.field_errors and birth_date_error is None:
@@ -382,6 +383,7 @@ def _process_user_not_found_error(
     procedure_number: int,
     state: dms_models.GraphQLApplicationStates,
     application_scalar_id: str,
+    *,
     latest_modification_datetime: datetime.datetime,
 ) -> None:
     orphan = dms_repository.get_orphan_dms_application_by_application_id(application_number)

@@ -434,7 +434,7 @@ def synchronize_stocks(
         products_by_provider_reference,
         offers_by_venue_reference,
         venue,
-        provider_id,
+        provider_id=provider_id,
     )
     new_offers_references = [new_offer.idAtProvider for new_offer in new_offers if new_offer.idAtProvider]
 
@@ -477,6 +477,7 @@ def _build_new_offers_from_stock_details(
     products_by_provider_reference: dict[str, offers_models.Product],
     existing_offers_by_venue_reference: dict[str, int],
     venue: offerers_models.Venue,
+    *,
     provider_id: int | None,
 ) -> list[offers_models.Offer]:
     new_offers = []

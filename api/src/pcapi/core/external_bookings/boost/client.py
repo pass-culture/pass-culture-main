@@ -117,6 +117,7 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
 
     def get_collection_items(
         self,
+        *,
         resource: boost.ResourceBoost,
         collection_class: type[boost_serializers.Collection],
         per_page: int = 30,

@@ -257,6 +257,7 @@ class ApiAdresseBackend(BaseBackend):
         self,
         method: str,
         url: str,
+        *,
         params: dict | None = None,
         files: list | None = None,
         timeout: int | float | None = None,

@@ -33,6 +33,7 @@ class BatchBackend:
         self,
         method: str,
         url: str,
+        *,
         api_name: str,
         payload: dict | list | None = None,
         can_be_asynchronously_retried: bool = False,

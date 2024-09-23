@@ -192,6 +192,7 @@ def _get_backend() -> "BaseBackend":
 
 def find_venue_at_accessibility_provider(
     name: str,
+    *,
     public_name: str | None = None,
     siret: str | None = None,
     ban_id: str | None = None,
@@ -230,6 +231,7 @@ def id_exists_at_acceslibre(slug: str) -> bool:
 
 def get_id_at_accessibility_provider(
     name: str,
+    *,
     public_name: str | None = None,
     siret: str | None = None,
     ban_id: str | None = None,
@@ -266,6 +268,7 @@ def extract_street_name(address: str | None = None, city: str | None = None, pos
 
 
 def address_match(
+    *,
     acceslibre_address: str | None = None,
     acceslibre_city: str | None = None,
     acceslibre_postal_code: str | None = None,
@@ -299,6 +302,7 @@ def name_match(acceslibre_name: str, venue_name: str, venue_public_name: str) ->
 
 
 def match_venue_with_acceslibre(
+    *,
     acceslibre_results: list[AcceslibreResult],
     venue_name: str,
     venue_public_name: str | None = None,
@@ -385,6 +389,7 @@ class BaseBackend:
     def find_venue_at_accessibility_provider(
         self,
         name: str,
+        *,
         public_name: str | None = None,
         siret: str | None = None,
         ban_id: str | None = None,
@@ -402,6 +407,7 @@ class BaseBackend:
     def get_id_at_accessibility_provider(
         self,
         name: str,
+        *,
         public_name: str | None = None,
         siret: str | None = None,
         ban_id: str | None = None,
@@ -422,6 +428,7 @@ class TestingBackend(BaseBackend):
     def find_venue_at_accessibility_provider(
         self,
         name: str,
+        *,
         public_name: str | None = None,
         siret: str | None = None,
         ban_id: str | None = None,
@@ -461,6 +468,7 @@ class TestingBackend(BaseBackend):
     def get_id_at_accessibility_provider(
         self,
         name: str,
+        *,
         public_name: str | None = None,
         siret: str | None = None,
         ban_id: str | None = None,
@@ -557,6 +565,7 @@ class AcceslibreBackend(BaseBackend):
     def find_venue_at_accessibility_provider(
         self,
         name: str,
+        *,
         public_name: str | None = None,
         siret: str | None = None,
         ban_id: str | None = None,
@@ -656,6 +665,7 @@ class AcceslibreBackend(BaseBackend):
     def get_id_at_accessibility_provider(
         self,
         name: str,
+        *,
         public_name: str | None = None,
         siret: str | None = None,
         ban_id: str | None = None,
@@ -664,7 +674,13 @@ class AcceslibreBackend(BaseBackend):
         address: str | None = None,
     ) -> AcceslibreInfos | None:
         matching_venue = find_venue_at_accessibility_provider(
-            name, public_name, siret, ban_id, city, postal_code, address
+            name,
+            public_name=public_name,
+            siret=siret,
+            ban_id=ban_id,
+            city=city,
+            postal_code=postal_code,
+            address=address,
         )
         if matching_venue:
             return AcceslibreInfos(slug=matching_venue.slug, url=matching_venue.web_url)

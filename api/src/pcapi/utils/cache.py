@@ -26,6 +26,7 @@ class _CacheProxy:
 
 
 def get_from_cache(
+    *,
     retriever: Callable[..., pydantic_v1.BaseModel | str],
     key_template: str,
     key_args: tuple[str, ...] | dict[str, Any] | None = None,

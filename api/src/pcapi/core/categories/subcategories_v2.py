@@ -22,6 +22,7 @@ class SearchNode:
     def __init__(
         self,
         label: str,
+        *,
         parents: list[str] | None = None,
         technical_name: str | None = None,
         gtls: list[str] | None = None,
