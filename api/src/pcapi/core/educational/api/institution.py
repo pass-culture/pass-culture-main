@@ -33,6 +33,7 @@ def get_educational_institution_department_code(
 
 
 def search_educational_institution(
+    *,
     educational_institution_id: int | None,
     name: str | None,
     institution_type: str | None,

@@ -221,6 +221,7 @@ def refuse_collective_booking(educational_booking_id: int) -> educational_models
 
 
 def get_collective_booking_report(
+    *,
     user: User,
     booking_period: tuple[datetime.date, datetime.date] | None = None,
     status_filter: (

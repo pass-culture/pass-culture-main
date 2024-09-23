@@ -112,7 +112,12 @@ def edit_collective_stock(
     booking_limit = serialization_utils.as_utc_without_timezone(booking_limit) if booking_limit else None
 
     updatable_fields = _extract_updatable_fields_from_stock_data(
-        stock, stock_data, beginning, start_datetime, end_datetime, booking_limit
+        stock,
+        stock_data,
+        beginning=beginning,
+        start_datetime=start_datetime,
+        end_datetime=end_datetime,
+        booking_limit_datetime=booking_limit,
     )
 
     check_beginning = beginning
@@ -221,6 +226,7 @@ def _check_start_and_end_dates_in_same_educational_year(
 def _extract_updatable_fields_from_stock_data(
     stock: educational_models.CollectiveStock,
     stock_data: dict,
+    *,
     beginning: datetime.datetime | None,
     start_datetime: datetime.datetime | None,
     end_datetime: datetime.datetime | None,
