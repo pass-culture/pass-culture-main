@@ -29,6 +29,7 @@ def _join_venue(query: sa.orm.Query, is_venue_table_joined: bool = False) -> tup
 
 def _apply_query_filters(
     query: sa.orm.Query,
+    *,
     q: str | None,  # search query
     regions: list[str] | None,
     tags: list[offerers_models.OffererTag] | None,
@@ -172,6 +173,7 @@ def _get_tags_subquery() -> sa.sql.selectable.ScalarSelect:
 
 
 def list_offerers_to_be_validated(
+    *,
     q: str | None,  # search query
     regions: list[str] | None = None,
     tags: list[offerers_models.OffererTag] | None = None,
@@ -265,15 +267,15 @@ def list_offerers_to_be_validated(
 
     query = _apply_query_filters(
         query,
-        q,
-        regions,
-        tags,
-        status,
-        dms_adage_status,
-        from_datetime,
-        to_datetime,
-        offerers_models.Offerer,
-        offerers_models.Offerer.id,
+        q=q,
+        regions=regions,
+        tags=tags,
+        status=status,
+        dms_adage_status=dms_adage_status,
+        from_datetime=from_datetime,
+        to_datetime=to_datetime,
+        cls=offerers_models.Offerer,
+        offerer_id_column=offerers_models.Offerer.id,
     )
 
     # after _apply_query_filters so that outerjoin below is after union (not required for filters),
@@ -320,6 +322,7 @@ def list_offerers_to_be_validated(
 
 
 def list_users_offerers_to_be_validated(
+    *,
     q: str | None,  # search query
     regions: list[str] | None = None,
     tags: list[offerers_models.OffererTag] | None = None,
@@ -386,15 +389,15 @@ def list_users_offerers_to_be_validated(
 
     query = _apply_query_filters(
         query,
-        q,
-        regions,
-        tags,
-        status,
-        None,  # no dms_adage_status for UserOfferer
-        from_datetime,
-        to_datetime,
-        offerers_models.UserOfferer,
-        offerers_models.UserOfferer.offererId,
+        q=q,
+        regions=regions,
+        tags=tags,
+        status=status,
+        dms_adage_status=None,  # no dms_adage_status for UserOfferer
+        from_datetime=from_datetime,
+        to_datetime=to_datetime,
+        cls=offerers_models.UserOfferer,
+        offerer_id_column=offerers_models.UserOfferer.offererId,
     )
 
     if last_instructor_ids:

@@ -316,6 +316,7 @@ class PCDateRangeField(wtforms.StringField):
     def __init__(
         self,
         label: str,
+        *,
         max_date: datetime.date | None = None,
         reset_to_blank: bool = False,
         calendar_start_date: datetime.date | None = None,
@@ -423,6 +424,7 @@ class PcPostalAddressAutocomplete(wtforms.StringField):
     def __init__(
         self,
         label: str,
+        *,
         street: str | None,
         ban_id: str | None,
         city: str | None,

@@ -67,15 +67,15 @@ def list_offerers_to_validate() -> utils.BackofficeResponse:
         form.status.data = [ValidationStatus.NEW.value]
 
     offerers = validation_repository.list_offerers_to_be_validated(
-        form.q.data,
-        form.regions.data,
-        form.tags.data,
-        form.status.data,
-        form.ae_documents_received.data,
-        form.instructors.data,
-        form.dms_adage_status.data,
-        date_utils.date_to_localized_datetime(form.from_date.data, datetime.datetime.min.time()),
-        date_utils.date_to_localized_datetime(form.to_date.data, datetime.datetime.max.time()),
+        q=form.q.data,
+        regions=form.regions.data,
+        tags=form.tags.data,
+        status=form.status.data,
+        ae_documents_received=form.ae_documents_received.data,
+        last_instructor_ids=form.instructors.data,
+        dms_adage_status=form.dms_adage_status.data,
+        from_datetime=date_utils.date_to_localized_datetime(form.from_date.data, datetime.datetime.min.time()),
+        to_datetime=date_utils.date_to_localized_datetime(form.to_date.data, datetime.datetime.max.time()),
     )
 
     sorted_offerers: BaseQuery = offerers.order_by(
@@ -478,14 +478,14 @@ def list_offerers_attachments_to_validate() -> utils.BackofficeResponse:
         form.status.data = [ValidationStatus.NEW.value]
 
     users_offerers = validation_repository.list_users_offerers_to_be_validated(
-        form.q.data,
-        form.regions.data,
-        form.tags.data,
-        form.status.data,
-        form.instructors.data,
-        form.offerer_status.data,
-        date_utils.date_to_localized_datetime(form.from_date.data, datetime.datetime.min.time()),
-        date_utils.date_to_localized_datetime(form.to_date.data, datetime.datetime.max.time()),
+        q=form.q.data,
+        regions=form.regions.data,
+        tags=form.tags.data,
+        status=form.status.data,
+        last_instructor_ids=form.instructors.data,
+        offerer_status=form.offerer_status.data,
+        from_datetime=date_utils.date_to_localized_datetime(form.from_date.data, datetime.datetime.min.time()),
+        to_datetime=date_utils.date_to_localized_datetime(form.to_date.data, datetime.datetime.max.time()),
     )
 
     sorted_users_offerers: BaseQuery = users_offerers.order_by(
