@@ -68,6 +68,7 @@ class StocksOrderedBy(str, enum.Enum):
 
 
 def get_capped_offers_for_filters(
+    *,
     user_id: int,
     user_is_admin: bool,
     offers_limit: int,
@@ -262,6 +263,7 @@ def get_offers_details(offer_ids: list[int]) -> BaseQuery:
 
 
 def get_offers_by_filters(
+    *,
     user_id: int,
     user_is_admin: bool,
     offerer_id: int | None = None,
@@ -356,6 +358,7 @@ def get_offers_by_filters(
 
 
 def get_collective_offers_by_filters(
+    *,
     user_id: int,
     user_is_admin: bool,
     offerer_id: int | None = None,
@@ -444,6 +447,7 @@ def get_collective_offers_by_filters(
 
 
 def get_collective_offers_template_by_filters(
+    *,
     user_id: int,
     user_is_admin: bool,
     offerer_id: int | None = None,
@@ -1106,6 +1110,7 @@ def _order_stocks_by(query: BaseQuery, order_by: StocksOrderedBy, order_by_desc:
 
 
 def get_filtered_stocks(
+    *,
     offer_id: int,
     venue: offerers_models.Venue,
     date: datetime.date | None = None,
@@ -1158,7 +1163,9 @@ def hard_delete_filtered_stocks(
     time: datetime.time | None = None,
     price_category_id: int | None = None,
 ) -> None:
-    subquery = get_filtered_stocks(offer_id, venue, date, time, price_category_id)
+    subquery = get_filtered_stocks(
+        offer_id=offer_id, venue=venue, date=date, time=time, price_category_id=price_category_id
+    )
     subquery = subquery.with_entities(models.Stock.id)
     models.Stock.query.filter(models.Stock.id.in_(subquery)).delete(synchronize_session=False)
     db.session.commit()

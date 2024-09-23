@@ -62,6 +62,7 @@ def _fill_offer_expired(offer: Offer, non_expired_count: int, active_count: int)
 
 
 def _fill_favorite_offer(
+    *,
     favorite: Favorite,
     min_price: Decimal,
     max_price: Decimal,

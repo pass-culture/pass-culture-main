@@ -321,7 +321,9 @@ def post_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.Ge
             fields["extraData"] = offers_api.deserialize_extra_data(fields["extraData"], fields["subcategoryId"])
 
             offer_body = offers_schemas.CreateOffer(**fields)
-            offer = offers_api.create_offer(offer_body, venue, offerer_address, is_from_private_api=True)
+            offer = offers_api.create_offer(
+                offer_body, venue=venue, offerer_address=offerer_address, is_from_private_api=True
+            )
     except exceptions.OfferCreationBaseException as error:
         raise api_errors.ApiErrors(error.errors, status_code=400)
 
