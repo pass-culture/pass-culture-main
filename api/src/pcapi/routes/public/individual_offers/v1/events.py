@@ -466,8 +466,12 @@ def post_event_stocks(event_id: int, body: serialization.DatesCreation) -> seria
                         id_at_provider=date.id_at_provider,
                     )
                 )
-    except (offers_exceptions.OfferCreationBaseException, offers_exceptions.OfferEditionBaseException) as error:
-        raise api_errors.ApiErrors(error.errors, status_code=400)
+    except (
+        offers_exceptions.OfferCreationBaseException,
+        offers_exceptions.OfferEditionBaseException,
+        offers_exceptions.StockEditBaseException,
+    ) as error:
+        raise api_errors.ApiErrors(error.errors)
 
     return serialization.PostDatesResponse(
         dates=[serialization.DateResponse.build_date(new_date) for new_date in new_dates]
@@ -626,8 +630,12 @@ def patch_event_stock(
                 editing_provider=current_api_key.provider,
             )
         offers_api.handle_stocks_edition([(stock_to_edit, is_beginning_updated)])
-    except (offers_exceptions.OfferCreationBaseException, offers_exceptions.OfferEditionBaseException) as error:
-        raise api_errors.ApiErrors(error.errors, status_code=400)
+    except (
+        offers_exceptions.OfferCreationBaseException,
+        offers_exceptions.OfferEditionBaseException,
+        offers_exceptions.StockEditBaseException,
+    ) as error:
+        raise api_errors.ApiErrors(error.errors)
     except booking_exceptions.BookingIsAlreadyCancelled:
         raise api_errors.ResourceGoneError({"booking": ["Cette réservation a été annulée"]})
     except booking_exceptions.BookingIsAlreadyRefunded:

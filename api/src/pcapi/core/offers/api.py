@@ -675,6 +675,9 @@ def create_stock(
 ) -> models.Stock:
     validation.check_booking_limit_datetime(None, beginning_datetime, booking_limit_datetime)
 
+    if id_at_provider is not None:
+        validation.check_can_input_id_at_provider_for_this_stock(offer.id, id_at_provider)
+
     activation_codes = activation_codes or []
     if activation_codes:
         validation.check_offer_is_digital(offer)
@@ -787,6 +790,12 @@ def edit_stock(
         modifications["beginningDatetime"] = beginning_datetime
 
     if id_at_provider not in (UNCHANGED, stock.idAtProviders):
+        if id_at_provider is not None:
+            validation.check_can_input_id_at_provider_for_this_stock(
+                stock.offer.id,
+                id_at_provider,  # type: ignore[arg-type]
+                stock.id,
+            )
         modifications["idAtProviders"] = id_at_provider
 
     if not modifications:
