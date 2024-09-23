@@ -99,6 +99,7 @@ def create_offers(
 
 
 def create_offers_base_list(
+    *,
     provider: providers_models.Provider,
     offerer: offerers_models.Offerer,
     institutions: list[educational_models.EducationalInstitution],
@@ -352,6 +353,7 @@ def add_image_to_offer(offer: educational_models.HasImageMixin, image_name: str)
 
 
 def create_booking_base_list(
+    *,
     offerer: offerers_models.Offerer,
     institutions: list[educational_models.EducationalInstitution],
     domains: list[educational_models.EducationalDomain],

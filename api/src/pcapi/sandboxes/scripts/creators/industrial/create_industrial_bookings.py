@@ -51,7 +51,12 @@ def create_industrial_bookings(offers_by_name: dict[str, Offer], users_by_name: 
             _create_has_booked_some_bookings(bookings_by_name, active_offers_with_stocks, user, user_name)
         else:
             token = _create_bookings_for_other_beneficiaries(
-                bookings_by_name, list_of_users_with_no_more_money, active_offers_with_stocks, token, user, user_name
+                bookings_by_name=bookings_by_name,
+                list_of_users_with_no_more_money=list_of_users_with_no_more_money,
+                offers_by_name=active_offers_with_stocks,
+                token=token,
+                user=user,
+                user_name=user_name,
             )
 
     repository.save(*bookings_by_name.values())
@@ -61,6 +66,7 @@ def create_industrial_bookings(offers_by_name: dict[str, Offer], users_by_name: 
 
 
 def _create_bookings_for_other_beneficiaries(
+    *,
     bookings_by_name: dict[str, Booking],
     list_of_users_with_no_more_money: list[User],
     offers_by_name: dict[str, Offer],

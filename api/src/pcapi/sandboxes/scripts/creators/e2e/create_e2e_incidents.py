@@ -100,6 +100,7 @@ COLLECTIVE_INCIDENT_PARAMS = [
 
 
 def _create_one_individual_incident(
+    *,
     offerer: offerers_models.Offerer,
     pro: users_models.User,
     iteration: int,
@@ -208,6 +209,7 @@ def _create_one_individual_incident(
 
 
 def _create_one_collective_incident(
+    *,
     offerer: offerers_models.Offerer,
     pro: users_models.User,
     iteration: int,
@@ -324,27 +326,27 @@ def create_e2e_incidents() -> None:
 
     for i, params in enumerate(INDIVIDUAL_INCIDENT_PARAMS):
         _create_one_individual_incident(
-            offerer,
-            pro,
-            i,
-            bool(params["with_other_venue"]),
-            bool(params["with_over_revenue_threshold_booking"]),
-            bool(params["multiple_bookings"]),
-            bool(params["force_debit_note"]),
-            bool(params["is_partial"]),
-            str(params["comment"]),
+            offerer=offerer,
+            pro=pro,
+            iteration=i,
+            with_other_venue=bool(params["with_other_venue"]),
+            with_over_revenue_threshold_booking=bool(params["with_over_revenue_threshold_booking"]),
+            multiple_bookings=bool(params["multiple_bookings"]),
+            force_debit_note=bool(params["force_debit_note"]),
+            is_partial=bool(params["is_partial"]),
+            comment=str(params["comment"]),
         )
         logger.info("Created individual incident")
 
     for i, params in enumerate(COLLECTIVE_INCIDENT_PARAMS):
         _create_one_collective_incident(
-            offerer,
-            pro,
-            i,
-            bool(params["with_other_venue"]),
-            bool(params["with_over_revenue_threshold_booking"]),
-            bool(params["multiple_bookings"]),
-            bool(params["force_debit_note"]),
-            str(params["comment"]),
+            offerer=offerer,
+            pro=pro,
+            iteration=i,
+            with_other_venue=bool(params["with_other_venue"]),
+            with_over_revenue_threshold_booking=bool(params["with_over_revenue_threshold_booking"]),
+            multiple_bookings=bool(params["multiple_bookings"]),
+            force_debit_note=bool(params["force_debit_note"]),
+            comment=str(params["comment"]),
         )
         logger.info("Created collective incident")
