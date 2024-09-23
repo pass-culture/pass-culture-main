@@ -272,6 +272,7 @@ def update_draft_offer(offer: models.Offer, body: offers_schemas.PatchDraftOffer
 
 def create_offer(
     body: offers_schemas.CreateOffer,
+    *,
     venue: offerers_models.Venue,
     offerer_address: offerers_models.OffererAddress | None = None,
     provider: providers_models.Provider | None = None,
@@ -281,7 +282,12 @@ def create_offer(
     body.extra_data = _format_extra_data(body.subcategory_id, body.extra_data) or {}
 
     validation.check_offer_withdrawal(
-        body.withdrawal_type, body.withdrawal_delay, body.subcategory_id, body.booking_contact, provider, venue_provider
+        withdrawal_type=body.withdrawal_type,
+        withdrawal_delay=body.withdrawal_delay,
+        subcategory_id=body.subcategory_id,
+        booking_contact=body.booking_contact,
+        provider=provider,
+        venue_provider=venue_provider,
     )
     validation.check_offer_subcategory_is_valid(body.subcategory_id)
     validation.check_offer_extra_data(body.subcategory_id, body.extra_data, venue, is_from_private_api)
@@ -388,7 +394,11 @@ def update_offer(
         withdrawal_delay = get_field(offer, updates, "withdrawalDelay", aliases=aliases)
         withdrawal_type = get_field(offer, updates, "withdrawalType", aliases=aliases)
         validation.check_offer_withdrawal(
-            withdrawal_type, withdrawal_delay, offer.subcategoryId, booking_contact, offer.lastProvider
+            withdrawal_type=withdrawal_type,
+            withdrawal_delay=withdrawal_delay,
+            subcategory_id=offer.subcategoryId,
+            booking_contact=booking_contact,
+            provider=offer.lastProvider,
         )
 
     validation.check_validation_status(offer)
@@ -663,6 +673,7 @@ def _notify_beneficiaries_upon_stock_edit(stock: models.Stock, bookings: list[bo
 
 def create_stock(
     offer: models.Offer,
+    *,
     quantity: int | None,
     activation_codes: list[str] | None = None,
     activation_codes_expiration_datetime: datetime.datetime | None = None,
@@ -734,6 +745,7 @@ def create_stock(
 
 def edit_stock(
     stock: models.Stock,
+    *,
     price: decimal.Decimal | None | T_UNCHANGED = UNCHANGED,
     quantity: int | None | T_UNCHANGED = UNCHANGED,
     beginning_datetime: datetime.datetime | None | T_UNCHANGED = UNCHANGED,
@@ -954,6 +966,7 @@ def create_mediation(
     offer: models.Offer,
     credit: str | None,
     image_as_bytes: bytes,
+    *,
     crop_params: image_conversion.CropParams | None = None,
     keep_ratio: bool = False,
     min_width: int | None = validation.MIN_THUMBNAIL_WIDTH,
@@ -1581,6 +1594,7 @@ def create_price_category(
 def edit_price_category(
     offer: models.Offer,
     price_category: models.PriceCategory,
+    *,
     label: str | T_UNCHANGED = UNCHANGED,
     price: decimal.Decimal | T_UNCHANGED = UNCHANGED,
     editing_provider: providers_models.Provider | None = None,

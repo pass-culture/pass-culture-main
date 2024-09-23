@@ -4304,7 +4304,7 @@ class EditPriceCategoryTest:
         updated_price_category = api.edit_price_category(
             price_category.offer,
             price_category,
-            "Carré Diamant, à part en vendant un rein vous n'y accéderez jamais",
+            label="Carré Diamant, à part en vendant un rein vous n'y accéderez jamais",
             id_at_provider="price_category_ou_il_faut_khalass",
         )
         assert updated_price_category.label == "Carré Diamant, à part en vendant un rein vous n'y accéderez jamais"

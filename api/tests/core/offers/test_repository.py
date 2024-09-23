@@ -1361,7 +1361,7 @@ class GetFilteredCollectiveOffersTest:
         )
 
         offers = repository.get_collective_offers_by_filters(
-            user_offerer.userId,
+            user_id=user_offerer.userId,
             user_is_admin=False,
             statuses=[educational_models.CollectiveOfferDisplayedStatus.PREBOOKED.value],
         )
@@ -1380,7 +1380,7 @@ class GetFilteredCollectiveOffersTest:
         )
 
         offers = repository.get_collective_offers_by_filters(
-            user_offerer.userId,
+            user_id=user_offerer.userId,
             user_is_admin=False,
             statuses=[educational_models.CollectiveOfferDisplayedStatus.ENDED.value],
         )
@@ -1396,7 +1396,7 @@ class GetFilteredCollectiveOffersTest:
         )
 
         offers = repository.get_collective_offers_by_filters(
-            user_offerer.userId,
+            user_id=user_offerer.userId,
             user_is_admin=False,
             formats=[subcategories.EacFormat.CONCERT],
         )
@@ -1413,7 +1413,7 @@ class GetFilteredCollectiveOffersTest:
         )
 
         offers = repository.get_collective_offers_by_filters(
-            user_offerer.userId,
+            user_id=user_offerer.userId,
             user_is_admin=False,
             statuses=[educational_models.CollectiveOfferDisplayedStatus.ARCHIVED.value],
         )
@@ -1427,7 +1427,7 @@ class GetFilteredCollectiveOffersTest:
         )
 
         offers = repository.get_collective_offers_by_filters(
-            user_offerer.userId,
+            user_id=user_offerer.userId,
             user_is_admin=False,
         )
 
@@ -1463,7 +1463,7 @@ class GetFilteredCollectiveOffersTest:
         )
 
         offers = repository.get_collective_offers_by_filters(
-            user_offerer.userId,
+            user_id=user_offerer.userId,
             user_is_admin=False,
             statuses=[educational_models.CollectiveOfferDisplayedStatus.EXPIRED.value],
         )

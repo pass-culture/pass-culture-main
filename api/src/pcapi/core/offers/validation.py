@@ -321,6 +321,7 @@ def check_image_size(image_as_bytes: bytes, max_size: int = MAX_THUMBNAIL_SIZE) 
 
 def check_image(
     image_as_bytes: bytes,
+    *,
     accepted_types: tuple = ACCEPTED_THUMBNAIL_FORMATS,
     min_width: int | None = MIN_THUMBNAIL_WIDTH,
     min_height: int | None = MIN_THUMBNAIL_HEIGHT,
@@ -482,6 +483,7 @@ def check_offer_is_eligible_for_educational(subcategory_id: str | None) -> None:
 
 
 def check_offer_withdrawal(
+    *,
     withdrawal_type: models.WithdrawalTypeEnum | None,
     withdrawal_delay: int | None,
     subcategory_id: str,

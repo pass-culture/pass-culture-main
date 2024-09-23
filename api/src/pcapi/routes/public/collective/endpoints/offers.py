@@ -151,7 +151,7 @@ def post_collective_offer_public(
             raise ApiErrors(errors={"imageFile": ["La valeur ne semble pas être du base 64 valide."]})
         try:
             offers_validation.check_image(
-                image_as_bytes=image_as_bytes,
+                image_as_bytes,
                 accepted_types=offers_validation.ACCEPTED_THUMBNAIL_FORMATS,
                 min_width=offers_validation.STANDARD_THUMBNAIL_WIDTH,
                 min_height=offers_validation.STANDARD_THUMBNAIL_HEIGHT,
@@ -428,7 +428,7 @@ def patch_collective_offer_public(
                 raise ApiErrors(errors={"imageFile": ["La valeur ne semble pas être du base 64 valide."]})
             try:
                 offers_validation.check_image(
-                    image_as_bytes=image_as_bytes,
+                    image_as_bytes,
                     accepted_types=offers_validation.ACCEPTED_THUMBNAIL_FORMATS,
                     min_width=offers_validation.STANDARD_THUMBNAIL_WIDTH,
                     min_height=offers_validation.STANDARD_THUMBNAIL_HEIGHT,
