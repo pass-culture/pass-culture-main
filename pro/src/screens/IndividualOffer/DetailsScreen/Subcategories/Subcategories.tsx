@@ -14,6 +14,8 @@ import {
   buildSubcategoryOptions,
 } from '../utils'
 
+import styles from './Subcategories.module.scss'
+
 type SuggestedSubcategoriesProps = {
   readOnlyFields: string[]
   filteredCategories: CategoryResponseModel[]
@@ -38,7 +40,10 @@ export function Subcategories({
   )
 
   return (
-    <FormLayout.Section title={'Type d’offre'}>
+    <FormLayout.Section
+      title={'Type d’offre'}
+      className={styles['subcategories-section']}
+    >
       <FormLayout.Row
         sideComponent={
           <InfoBox

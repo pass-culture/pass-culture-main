@@ -103,7 +103,7 @@ export const DetailsSubForm = ({
         )}
       </div>
       {!displayRedirectionCallout && (
-        <>
+        <div className={styles['sub-form']}>
           {displayImageUploader && (
             <ImageUploaderOffer
               onImageUpload={onImageUpload}
@@ -240,7 +240,7 @@ export const DetailsSubForm = ({
               )}
             </FormLayout.Section>
           )}
-        </>
+        </div>
       )}
     </>
   )
