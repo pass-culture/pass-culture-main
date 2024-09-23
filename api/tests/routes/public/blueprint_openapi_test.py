@@ -4,7 +4,7 @@ import json
 
 def _get_expected_json():
     data = {}
-    with open("./tests/routes/public/expected_openapi.json", "r", encoding="UTF-8") as f:
+    with open("./documentation/static/openapi.json", "r", encoding="UTF-8") as f:
         data = json.load(f)
 
     return data
@@ -17,7 +17,8 @@ def test_public_api_openapi_json(client):
     # JSON to be tested
     response_json = copy.deepcopy(response.json)
 
-    # To regenerate the expected JSON use the command `flask generate_expected_openapi_json` (in `/usr/src/app/`)
+    # To regenerate the expected JSON use the command `flask generate_public_api_openapi_json` (in `/usr/src/app/`)
+    # (if you are using docker, the command is `pc generate_public_api_openapi_json`)
     expected = _get_expected_json()
 
     # Test paths key (assertions are split for better error readability)
