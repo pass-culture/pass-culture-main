@@ -788,7 +788,7 @@ class EligibleActivableFactory(EligibleGrant18Factory):
         create: bool,
         extracted: fraud_models.BeneficiaryFraudCheck | None,
         **kwargs: typing.Any,
-    ) -> fraud_models.BeneficiaryFraudCheck | None:
+    ) -> None:
         import pcapi.core.fraud.factories as fraud_factories
 
         fraud_factories.BeneficiaryFraudCheckFactory(
@@ -815,7 +815,6 @@ class EligibleActivableFactory(EligibleGrant18Factory):
             eligibilityType=models.EligibilityType.AGE18,
         )
         fraud_factories.ProfileCompletionFraudCheckFactory(user=obj, eligibilityType=models.EligibilityType.AGE18)
-        return None
 
 
 class EligibleActivableUnderageFactory(EligibleUnderageFactory):

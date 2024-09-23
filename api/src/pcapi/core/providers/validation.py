@@ -10,8 +10,6 @@ def check_ticketing_urls_are_coherently_set(external_booking_url: str | None, ex
     if not (both_set or both_unset):
         raise exceptions.TicketingUrlsMustBeBothSet()
 
-    return
-
 
 def check_ticketing_urls_can_be_unset(provider: provider_models.Provider) -> None:
     future_events_requiring_ticketing_systems = repository.get_future_events_requiring_provider_ticketing_system(
@@ -21,8 +19,6 @@ def check_ticketing_urls_can_be_unset(provider: provider_models.Provider) -> Non
         raise exceptions.TicketingUrlsCannotBeUnset(
             blocking_events_ids=[event.id for event in future_events_requiring_ticketing_systems]
         )
-
-    return
 
 
 def check_venue_ticketing_urls_can_be_unset(venue_provider: provider_models.VenueProvider) -> None:
@@ -41,5 +37,3 @@ def check_venue_ticketing_urls_can_be_unset(venue_provider: provider_models.Venu
         raise exceptions.TicketingUrlsCannotBeUnset(
             blocking_events_ids=[event.id for event in future_events_requiring_ticketing_systems]
         )
-
-    return

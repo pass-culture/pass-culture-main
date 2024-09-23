@@ -43,12 +43,11 @@ class LoggerBackend(BaseBackend):
             contact_email,
         )
 
-    def get_contact_url(self, contact_email: str) -> str | None:
+    def get_contact_url(self, contact_email: str) -> None:
         logger.info(
             "A request to Sendinblue Contact API would be sent for user %s to to get their info.",
             contact_email,
         )
-        return None
 
     def get_raw_contact_data(self, contact_email: str) -> dict:
         logger.info(

@@ -138,4 +138,3 @@ def merge_institution_prebookings(body: prebooking_serialization.MergeInstitutio
         institution_source=institution_source,
         institution_destination=institution_destination,
     )
-    return

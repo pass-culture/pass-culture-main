@@ -34,8 +34,6 @@ def post_collective_offer_favorites(
         offer_id=offer.id,
     )
 
-    return
-
 
 @blueprint.adage_iframe.route("/collective/templates/<int:offer_id>/favorites", methods=["POST"])
 @spectree_serialize(on_success_status=204, api=blueprint.api)
@@ -58,8 +56,6 @@ def post_collective_template_favorites(
         offer_id=offerTemplate.id,
     )
 
-    return
-
 
 @blueprint.adage_iframe.route("/collective/offer/<int:offer_id>/favorites", methods=["DELETE"])
 @spectree_serialize(on_success_status=204, api=blueprint.api)
@@ -79,8 +75,6 @@ def delete_favorite_for_collective_offer(authenticated_information: Authenticate
     ).delete(synchronize_session=False)
 
     db.session.commit()
-
-    return
 
 
 @blueprint.adage_iframe.route("/collective/template/<int:offer_template_id>/favorites", methods=["DELETE"])
@@ -103,8 +97,6 @@ def delete_favorite_for_collective_offer_template(
     ).delete(synchronize_session=False)
 
     db.session.commit()
-
-    return
 
 
 @blueprint.adage_iframe.route("/collective/favorites", methods=["GET"])

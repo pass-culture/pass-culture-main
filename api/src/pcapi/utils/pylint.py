@@ -117,12 +117,10 @@ class RequestsImportChecker(pylint.checkers.BaseChecker):
         names = [name.split(".")[0] for name, _alias in node.names]
         if "requests" in names:
             self.add_message(MSG_REQUESTS_IMPORT, node=node, line=node.lineno)
-            return
 
     def visit_importfrom(self, node: astroid.nodes.ImportFrom) -> None:
         if node.modname.split(".")[0] == "requests":
             self.add_message(MSG_REQUESTS_IMPORT, node=node, line=node.lineno)
-            return
 
 
 def register(linter: pylint.lint.PyLinter) -> None:
