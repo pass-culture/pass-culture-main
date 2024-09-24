@@ -58,3 +58,12 @@ class Address(PcObject, Base, Model):
         sa.CheckConstraint('length("departmentCode") = 2 OR length("departmentCode") = 3'),
         sa.CheckConstraint('length("timezone") <= 50'),
     )
+
+
+class PointsOfInterests(PcObject, Base, Model):
+    __tablename__ = "points_of_interests"
+    label: str = sa.Column(sa.Text())
+    description: str | None = sa.Column(sa.Text(), nullable=True)
+
+    addressId = sa.Column(sa.BigInteger, sa.ForeignKey("address.id"), index=True)
+    address: sa.orm.Mapped[Address] = sa.orm.relationship("Address", foreign_keys=[addressId])
