@@ -367,46 +367,6 @@ def get_venues_by_ids(ids: Collection[int]) -> Collection[models.Venue]:
     )
 
 
-def find_offerers_validated_3_days_ago_with_no_venues() -> list[models.Offerer]:
-    offerer_ids_recently_validated_subquery = models.Offerer.query.filter(
-        models.Offerer.isActive,
-        sqla.cast(models.Offerer.dateValidated, sqla.Date) == (date.today() - timedelta(days=3)),
-    ).with_entities(models.Offerer.id)
-
-    has_venues_with_offers_subquery = (
-        sqla.select(1)
-        .select_from(models.Venue)
-        .join(offers_models.Offer)
-        .where(models.Venue.managingOffererId == models.Offerer.id)
-        .correlate(models.Offerer)
-        .exists()
-    )
-
-    has_physical_venues_subquery = (
-        sqla.select(1)
-        .select_from(models.Venue)
-        .where(models.Venue.managingOffererId == models.Offerer.id, sqla.not_(models.Venue.isVirtual))
-        .correlate(models.Offerer)
-        .exists()
-    )
-
-    offerer_recently_validated_with_offers = (
-        db.session.query(
-            models.Offerer,
-            has_venues_with_offers_subquery.label("hasVenuesWithOffers"),
-            has_physical_venues_subquery.label("hasPhysicalVenues"),
-        )
-        .filter(models.Offerer.id.in_(offerer_ids_recently_validated_subquery))
-        .all()
-    )
-
-    return [
-        row.Offerer
-        for row in offerer_recently_validated_with_offers
-        if row.hasVenuesWithOffers is False and row.hasPhysicalVenues is False
-    ]
-
-
 def get_emails_by_venue(venue: models.Venue) -> set[str]:
     """
     Get all emails for which pro attributes may be modified when the venue is updated or deleted.

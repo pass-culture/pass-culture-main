@@ -20,7 +20,6 @@ import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.offerers.repository import (
     find_venues_of_offerers_with_no_offer_and_at_least_one_physical_venue_and_validated_x_days_ago,
 )
-from pcapi.core.offerers.repository import find_offerers_validated_3_days_ago_with_no_venues
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.core.offers.repository import check_stock_consistency
@@ -267,23 +266,6 @@ def send_email_reminder_offer_creation_j10_to_pro() -> None:
                 "Could not send email reminder offer creation j+10 to pro",
                 extra={
                     "venue.id": venue_id,
-                },
-            )
-
-
-@blueprint.cli.command("send_email_reminder_venue_creation")
-@log_cron_with_transaction
-def send_email_reminder_venue_creation_to_pro() -> None:
-    """Triggers email reminder to pro 3 days after offerer validation if a venue is not created"""
-    offerers = find_offerers_validated_3_days_ago_with_no_venues()
-    for offerer in offerers:
-        try:
-            transactional_mails.send_reminder_venue_creation_to_pro(offerer)
-        except Exception:  # pylint: disable=broad-except
-            logger.exception(
-                "Could not send email reminder venue creation to pro",
-                extra={
-                    "offererId": offerer.id,
                 },
             )
 

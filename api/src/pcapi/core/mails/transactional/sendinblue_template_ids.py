@@ -178,7 +178,6 @@ class TransactionalEmail(Enum):
     REMINDER_OFFER_CREATION_10_DAYS_AFTER_TO_PRO = models.TemplatePro(
         id_prod=567, id_not_prod=105, tags=["pro_relance_offre_J+10"]
     )
-    REMINDER_VENUE_CREATION_TO_PRO = models.TemplatePro(id_prod=571, id_not_prod=97, tags=["pro_relance_lieu"])
     RESET_PASSWORD_TO_PRO = models.TemplatePro(id_prod=364, id_not_prod=47, tags=["pro_reinit_mdp"])
     RESET_PASSWORD_TO_CONNECTED_PRO = models.TemplatePro(
         id_prod=754, id_not_prod=99, tags=["pro_reinit_mdp_when_connected"]
