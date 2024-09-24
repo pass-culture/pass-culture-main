@@ -177,36 +177,6 @@ class GetSirenByOffererIdTest:
             repository.find_siren_by_offerer_id(0)
 
 
-class GetOfferersValidatedThreeDaysAgoWithNoVenuesCreatedTest:
-    def test_return_offerer_validated_three_days_ago_with_no_physical_venue_and_digital_venue_with_no_offers(
-        self,
-    ):
-        # given
-        five_days_ago = datetime.utcnow() - timedelta(days=5)
-        offerer_with_venue = offerers_factories.OffererFactory(dateValidated=five_days_ago)
-        offerers_factories.VenueFactory(managingOfferer=offerer_with_venue)
-
-        three_days_ago = datetime.utcnow() - timedelta(days=3)
-        offerer_with_venue2 = offerers_factories.OffererFactory(dateValidated=three_days_ago)
-        offerers_factories.VenueFactory(managingOfferer=offerer_with_venue2)
-
-        offerer_with_digital_venue_and_has_offers = offerers_factories.OffererFactory(dateValidated=three_days_ago)
-        digital_venue = offerers_factories.VirtualVenueFactory(
-            managingOfferer=offerer_with_digital_venue_and_has_offers
-        )
-        offers_factories.DigitalOfferFactory(venue=digital_venue)
-
-        offerer_with_only_digital_venue_and_no_offers = offerers_factories.OffererFactory(dateValidated=three_days_ago)
-        offerers_factories.VirtualVenueFactory(managingOfferer=offerer_with_only_digital_venue_and_no_offers)
-
-        # when
-        offerers = repository.find_offerers_validated_3_days_ago_with_no_venues()
-
-        # then
-        assert len(offerers) == 1
-        assert offerers[0] == offerer_with_only_digital_venue_and_no_offers
-
-
 class HasNoOfferAndAtLeastOnePhysicalVenueAndCreatedSinceXDaysTest:
     def test_should_return_two_venues_of_offerer_without_offers_and_validated_5_days_ago(self):
         five_days_ago = datetime.utcnow() - timedelta(days=5)
