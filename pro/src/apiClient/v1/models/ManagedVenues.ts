@@ -7,6 +7,7 @@ export type ManagedVenues = {
   commonName: string;
   hasPricingPoint: boolean;
   id: number;
+  name: string;
   siret?: string | null;
 };
 

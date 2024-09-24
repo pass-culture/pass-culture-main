@@ -10,6 +10,7 @@ import {
 } from 'apiClient/v1'
 import * as useAnalytics from 'app/App/analytics/firebase'
 import { BankAccountEvents } from 'core/FirebaseEvents/constants'
+import { defaultManagedVenues } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { ReimbursementBankAccount } from '../ReimbursementBankAccount'
@@ -64,10 +65,9 @@ describe('ReimbursementBankAccount', () => {
 
     managedVenues = [
       {
+        ...defaultManagedVenues,
         bankAccountId: 1,
-        commonName: 'venue',
         hasPricingPoint: false,
-        id: 11,
       },
     ]
   })
@@ -120,10 +120,7 @@ describe('ReimbursementBankAccount', () => {
   it('should not render venues linked to bank account with only one bank account', () => {
     bankAccount.linkedVenues = []
     managedVenues.push({
-      bankAccountId: null,
-      commonName: 'second venue',
-      hasPricingPoint: false,
-      id: 12,
+      ...defaultManagedVenues,
     })
     renderReimbursementBankAccount(bankAccount, managedVenues)
 
@@ -159,10 +156,7 @@ describe('ReimbursementBankAccount', () => {
 
   it('should render with several venues not linked to bank account', () => {
     managedVenues.push({
-      bankAccountId: null,
-      commonName: 'second venue',
-      hasPricingPoint: false,
-      id: 12,
+      ...defaultManagedVenues,
     })
     renderReimbursementBankAccount(bankAccount, managedVenues)
 
@@ -185,10 +179,7 @@ describe('ReimbursementBankAccount', () => {
 
   it('should render with several venues not linked to bank account', () => {
     managedVenues.push({
-      bankAccountId: null,
-      commonName: 'second venue',
-      hasPricingPoint: false,
-      id: 12,
+      ...defaultManagedVenues,
     })
     renderReimbursementBankAccount(bankAccount, managedVenues)
 
@@ -200,10 +191,7 @@ describe('ReimbursementBankAccount', () => {
   it('should display error icon if one or more venues are not linked to an account', () => {
     bankAccount.linkedVenues = []
     managedVenues.push({
-      bankAccountId: 1,
-      commonName: 'second venue',
-      hasPricingPoint: false,
-      id: 12,
+      ...defaultManagedVenues,
     })
     renderReimbursementBankAccount(bankAccount, managedVenues, 1, true)
 
