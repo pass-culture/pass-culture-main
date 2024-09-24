@@ -98,7 +98,10 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
     "product_management": [
         perm_models.Permissions.FEATURE_FLIPPING,
     ],
-    "charge_developpement": [],
+    "charge_developpement": [
+        perm_models.Permissions.READ_PRO_ENTITY,
+        perm_models.Permissions.MANAGE_SPECIAL_EVENTS,
+    ],
     "lecture_seule": [
         perm_models.Permissions.READ_ADMIN_ACCOUNTS,
         perm_models.Permissions.READ_PUBLIC_ACCOUNT,

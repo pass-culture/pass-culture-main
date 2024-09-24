@@ -1,0 +1,63 @@
+{% from "components/generic_modal.html" import build_modal_form with context %}
+{% extends "layouts/connected.html" %}
+{% block page %}
+  <div class="pt-3 px-5">
+    <h2 class="fw-light">Opérations spéciales</h2>
+    <div class="mt-4">
+      {{ build_modal_form("create-special-event", url_for("backoffice_web.operations.create_event") ,
+      create_form, "Importer une opération spéciale", "Importer une opération spéciale", "Importer") }}
+    </div>
+    <div class="mt-4">
+      <form name="filter-special-event"
+            action="{{ dst }}"
+            method="get"
+            class="col-8 row">
+        <div class="col-8">
+          <div class="input-group mb-3">
+            {% for form_field in form %}{{ form_field }}{% endfor %}
+          </div>
+        </div>
+        <div class="col-4">
+          <button type="submit"
+                  class="btn btn-primary">Appliquer</button>
+        </div>
+      </form>
+    </div>
+    <div>
+      {% if rows and rows.total > 0 %}
+        <div class="d-flex justify-content-between">
+          <p class="lead num-results">{{ rows.total }} résultat{{ rows.total | pluralize }}</p>
+          <div>{% include "components/search/pagination.html" %}</div>
+        </div>
+        <table class="table mb-4">
+          <thead>
+            <tr>
+              <th scope="col"></th>
+              <th scope="col">ID</th>
+              <th scope="col" class="col-2">Id. Typeform</th>
+              <th scope="col" class="col-9">Titre</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for special_event in rows.items %}
+              <tr>
+                <td></td>
+                <td>{{ special_event.id }}</td>
+                <td>
+                  <a href="https://admin.typeform.com/form/{{ special_event.externalId }}/create"
+                     target="_blank"
+                     title="Ouvrir dans Typeform"
+                     class="link-primary">
+                  {{ special_event.externalId }} <i class="bi bi-box-arrow-up-right"></i></a>
+                </td>
+                <td>{{ special_event.title }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <p class="lead num-results">Aucun résultat</p>
+      {% endif %}
+    </div>
+  </div>
+{% endblock %}

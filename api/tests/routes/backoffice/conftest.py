@@ -120,7 +120,9 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
     ],
     "product_management": [perm_models.Permissions.FEATURE_FLIPPING],
     "charge_developpement": [
+        perm_models.Permissions.READ_PRO_ENTITY,
         perm_models.Permissions.MANAGE_OFFERS_AND_VENUES_TAGS,
+        perm_models.Permissions.MANAGE_SPECIAL_EVENTS,
     ],
     "lecture_seule": [
         perm_models.Permissions.READ_ADMIN_ACCOUNTS,
@@ -164,6 +166,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.READ_REIMBURSEMENT_RULES,
         perm_models.Permissions.CREATE_REIMBURSEMENT_RULES,
         perm_models.Permissions.MANAGE_TECH_PARTNERS,
+        perm_models.Permissions.MANAGE_SPECIAL_EVENTS,
     ],
     "dpo": [
         perm_models.Permissions.READ_PUBLIC_ACCOUNT,

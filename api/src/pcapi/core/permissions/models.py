@@ -75,6 +75,8 @@ class Permissions(enum.Enum):
 
     EXTRACT_PUBLIC_ACCOUNT = "extraire les données personnelles (RGPD) d'un compte"
 
+    MANAGE_SPECIAL_EVENTS = "gérer les opérations spéciales"
+
     @classmethod
     def exists(cls, name: str) -> bool:
         try:
