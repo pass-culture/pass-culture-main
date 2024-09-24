@@ -13,6 +13,7 @@ import pcapi.core.geography.models as geography_models
 import pcapi.core.history.models as history_models
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.models as offers_models
+from pcapi.core.operations import models as operations_models
 import pcapi.core.permissions.models as perm_models
 import pcapi.core.providers.models as providers_models
 import pcapi.core.users.models as users_models
@@ -123,6 +124,10 @@ tables_to_clean: list[flask_sqlalchemy.Model] = [
     perm_models.Role,
     history_models.ActionHistory,
     educational_models.NationalProgram,
+    operations_models.SpecialEventAnswer,
+    operations_models.SpecialEventResponse,
+    operations_models.SpecialEventQuestion,
+    operations_models.SpecialEvent,
 ]
 
 

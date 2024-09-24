@@ -63,6 +63,7 @@ from pcapi.sandboxes.scripts.creators.industrial.create_offers_with_price_catego
     create_offers_with_price_categories,
 )
 from pcapi.sandboxes.scripts.creators.industrial.create_offers_with_status import create_offers_with_status
+from pcapi.sandboxes.scripts.creators.industrial.create_special_events import create_special_events
 
 
 def save_industrial_sandbox() -> None:
@@ -151,3 +152,5 @@ def save_industrial_sandbox() -> None:
     create_gdpr_user_extract_data()
 
     create_industrial_commercial_gestures()
+
+    create_special_events()
