@@ -37,17 +37,18 @@ Feature: ADAGE discovery
     Then the iframe search page should be displayed correctly
     When I go back to search page
 
-  Scenario: It should save view type in search page
-    When I open adage iframe with search page
-    Then offer descriptions are displayed
-    When I chose grid view
-    Then offer descriptions are not displayed
-    When I add first offer to favorites
-    And I go to "Mes Favoris" menu
-    Then offer descriptions are displayed
-    When I go to "Rechercher" menu
-    Then offer descriptions are not displayed
-    And the first favorite is unselected
+  # FIXME(PC-31998) fix offer ids mismatch between algolia and e2e sandbox
+  # Scenario: It should save view type in search page
+  #   When I open adage iframe with search page
+  #   Then offer descriptions are displayed
+  #   When I chose grid view
+  #   Then offer descriptions are not displayed
+  #   When I add first offer to favorites
+  #   And I go to "Mes Favoris" menu
+  #   Then offer descriptions are displayed
+  #   When I go to "Rechercher" menu
+  #   Then offer descriptions are not displayed
+  #   And the first favorite is unselected
 
   Scenario: It should redirect to adage search page with filtered venue
     When I open adage iframe with venue
@@ -65,10 +66,11 @@ Feature: ADAGE discovery
     And "Arts numériques" in "Domaine artistique (1)" filter is selected
     Then I see no offer
 
-  Scenario: It should save last page of offers searched when navigating the iframe
-    When I open adage iframe with search page
-    And I chose grid view
-    And I go the the next page of searched offers
-    And I go to "Mes Favoris" menu
-    And I go to "Rechercher" menu
-    Then the first offer of the second page is displayed
+# FIXME(PC-31998) fix offer ids mismatch between algolia and e2e sandbox
+# Scenario: It should save last page of offers searched when navigating the iframe
+#   When I open adage iframe with search page
+#   And I chose grid view
+#   And I go the the next page of searched offers
+#   And I go to "Mes Favoris" menu
+#   And I go to "Rechercher" menu
+#   Then the first offer of the second page is displayed
