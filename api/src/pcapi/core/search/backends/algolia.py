@@ -19,6 +19,7 @@ from pcapi.core.categories import categories
 from pcapi.core.educational.academies import get_academy_from_department
 import pcapi.core.educational.api.offer as educational_api_offer
 import pcapi.core.educational.models as educational_models
+import pcapi.core.european_offers.models as european_offers_models
 import pcapi.core.offerers.api as offerers_api
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.models as offers_models
@@ -150,6 +151,7 @@ class AlgoliaBackend(base.SearchBackend):
             settings.ALGOLIA_COLLECTIVE_OFFER_TEMPLATES_INDEX_NAME
         )
         self.algolia_venues_client = client.init_index(settings.ALGOLIA_VENUES_INDEX_NAME)
+        self.algolia_european_offers_client = client.init_index(settings.ALGOLIA_EUROPEAN_OFFERS_INDEX_NAME)
         self.redis_client = current_app.redis_client
 
     def _can_enqueue_offer_ids(self, offer_ids: abc.Collection[int]) -> bool:
@@ -757,6 +759,47 @@ class AlgoliaBackend(base.SearchBackend):
                     "Found old processing queue, moved back items to originating queue",
                     extra={"queue": originating_queue, "processing_queue": processing_queue},
                 )
+
+    @classmethod
+    def serialize_european_offer(cls, european_offer: european_offers_models.EuropeanOffer) -> dict:
+        object_to_index: dict[str, typing.Any] = {
+            "objectID": european_offer.id,
+            "european_offer": {
+                "imageAlt": european_offer.imageAlt,
+                "title": european_offer.title,
+                "description": european_offer.description,
+                "date": european_offer.date,
+                "imageUrl": european_offer.imageUrl,
+                "currency": european_offer.currency,
+                "price": european_offer.price,
+                "externalUrl": european_offer.externalUrl,
+                "country": european_offer.country,
+                "street": european_offer.street,
+                "city": european_offer.city,
+                "zipcode": european_offer.zipcode,
+            },
+            "_geoloc": format_coordinates(european_offer.latitude, european_offer.longitude),
+        }
+
+        object_to_index["european_offer"] = {
+            key: value for key, value in object_to_index["european_offer"].items() if value is not None
+        }
+
+        return object_to_index
+
+    def index_european_offers(self, european_offers: abc.Collection[european_offers_models.EuropeanOffer]) -> None:
+        if not european_offers:
+            return
+        objects = [self.serialize_european_offer(european_offer) for european_offer in european_offers]
+        self.algolia_european_offers_client.save_objects(objects)
+
+    def unindex_all_european_offers(self) -> None:
+        self.algolia_european_offers_client.clear_objects()
+
+    def unindex_european_offer_ids(self, european_offer_ids: abc.Collection[int]) -> None:
+        if not european_offer_ids:
+            return
+        self.algolia_european_offers_client.delete_objects(european_offer_ids)
 
 
 def position(venue: offerers_models.Venue) -> dict[str, float]:

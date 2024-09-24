@@ -12,6 +12,7 @@ from pcapi.connectors.big_query.queries.last_30_days_booking import Last30DaysBo
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.categories import subcategories_v2
 from pcapi.core.educational import models as educational_models
+from pcapi.core.european_offers import models as european_offers_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
 import pcapi.core.offers.repository as offers_repository
@@ -800,3 +801,58 @@ def update_booking_count_by_product() -> list[offers_models.Product]:
 def clean_processing_queues() -> None:
     backend = _get_backend()
     backend.clean_processing_queues()
+
+
+def index_european_offer_ids(
+    european_offer_ids: abc.Collection[int],
+) -> None:
+    logger.info("Starting to index european_offers", extra={"count": len(european_offer_ids)})
+    backend = _get_backend()
+
+    to_add = []
+
+    european_offers = european_offers_models.EuropeanOffer.query.filter(
+        european_offers_models.EuropeanOffer.id.in_(european_offer_ids)
+    )
+
+    for european_offer in european_offers:
+        to_add.append(european_offer)
+
+    to_add_ids = [european_offer.id for european_offer in to_add]
+
+    logger.info(
+        "Finished sorting european_offers: starting to index",
+        extra={"count_to_add": len(to_add)},
+    )
+
+    try:
+        backend.index_european_offers(to_add)
+    except Exception as exc:  # pylint: disable=broad-except
+        _log_indexation_error(
+            "european_offers",
+            ids=to_add_ids,
+            exc=exc,
+            from_error_queue=False,
+        )
+    else:
+        logger.info("Finished indexing european_offers", extra={"count": len(to_add)})
+
+
+def unindex_european_offer_ids(european_offer_ids: abc.Collection[int]) -> None:
+    if not european_offer_ids:
+        return
+    backend = _get_backend()
+    try:
+        backend.unindex_european_offer_ids(european_offer_ids)
+    except Exception:  # pylint: disable=broad-except
+        logger.exception("Could not unindex european_offers", extra={"european_offer_ids": european_offer_ids})
+
+
+def unindex_all_european_offers() -> None:
+    backend = _get_backend()
+    try:
+        backend.unindex_all_offers()
+    except Exception:  # pylint: disable=broad-except
+        if not settings.CATCH_INDEXATION_EXCEPTIONS:
+            raise
+        logger.exception("Could not unindex all european offers")

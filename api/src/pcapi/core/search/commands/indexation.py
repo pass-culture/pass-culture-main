@@ -7,6 +7,7 @@ from pcapi import settings
 from pcapi.core import search
 from pcapi.core.educational.api.offer import unindex_expired_collective_offers_template
 import pcapi.core.educational.repository as collective_offers_repository
+import pcapi.core.european_offers.repository as european_offers_repository
 from pcapi.core.offerers import api as offerers_api
 import pcapi.core.offers.api as offers_api
 import pcapi.core.offers.repository as offers_repository
@@ -218,3 +219,15 @@ def clean_indexation_processing_queues() -> None:
 def remove_duplicates_from_venue_indexation_queue() -> None:
     # TODO (lixxday) : remove after cron is removed
     pass
+
+
+def _index_all_european_offers() -> None:
+    european_offers = european_offers_repository.get_all_european_offers()
+    european_offer_ids = [european_offer.id for european_offer in european_offers]
+    search.index_european_offer_ids(european_offer_ids)
+    logger.info("Index %d european_offers", len(european_offer_ids))
+
+
+@blueprint.cli.command("index_all_european_offers")
+def index_all_european_offers() -> None:
+    _index_all_european_offers()

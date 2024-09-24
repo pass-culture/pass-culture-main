@@ -5,6 +5,7 @@ import typing
 
 if typing.TYPE_CHECKING:
     import pcapi.core.educational.models as educational_models
+    import pcapi.core.european_offers.models as european_offers_models
     import pcapi.core.offerers.models as offerers_models
     import pcapi.core.offers.models as offers_models
 
@@ -102,4 +103,17 @@ class SearchBackend:
         raise NotImplementedError()
 
     def clean_processing_queues(self) -> None:
+        raise NotImplementedError()
+
+    @classmethod
+    def serialize_european_offer(cls, european_offer) -> dict:
+        raise NotImplementedError()
+
+    def index_european_offers(self, european_offers: abc.Collection) -> None:
+        raise NotImplementedError()
+
+    def unindex_all_european_offers(self) -> None:
+        raise NotImplementedError()
+
+    def unindex_european_offer_ids(self, european_offer_ids: abc.Collection[int]) -> None:
         raise NotImplementedError()
