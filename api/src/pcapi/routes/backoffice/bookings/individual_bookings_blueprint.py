@@ -101,23 +101,16 @@ def _get_individual_bookings(
             sa.orm.joinedload(bookings_models.Booking.incidents)
             .joinedload(finance_models.BookingFinanceIncident.incident)
             .load_only(finance_models.FinanceIncident.id, finance_models.FinanceIncident.status),
+            sa.orm.joinedload(bookings_models.Booking.deposit).load_only(finance_models.Deposit.expirationDate),
         )
     )
 
     if form.deposit.data and form.deposit.data != booking_forms.DEPOSIT_DEFAULT_VALUE:
-        base_query = base_query.join(finance_models.Deposit, bookings_models.Booking.deposit).options(
-            sa.orm.contains_eager(bookings_models.Booking.deposit).load_only(
-                finance_models.Deposit.expirationDate,
-            )
-        )
+        base_query = base_query.join(finance_models.Deposit, bookings_models.Booking.deposit)
         if form.deposit.data == "active":
             base_query = base_query.filter(finance_models.Deposit.expirationDate > sa.func.now())
         elif form.deposit.data == "expired":
             base_query = base_query.filter(finance_models.Deposit.expirationDate <= sa.func.now())
-    else:
-        base_query = base_query.options(
-            sa.orm.joinedload(bookings_models.Booking.deposit).load_only(finance_models.Deposit.expirationDate),
-        )
 
     or_filters = []
     if form.q.data:
