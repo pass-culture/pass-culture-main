@@ -1,0 +1,253 @@
+[
+  {
+    "title": {
+      "fr": "Monastère des Hiéronymites",
+      "en": "Monastery of Jerónimos",
+      "it": "Monastero dei Geronimiti"
+    },
+    "description": {
+      "fr": "Classé au patrimoine mondial de l'UNESCO, ce monastère est un chef-d'œuvre de l'architecture manuéline. Il a été construit pour célébrer le retour de Vasco de Gama d'Inde.",
+      "en": "A UNESCO World Heritage site, this monastery is a masterpiece of Manueline architecture. It was built to celebrate Vasco da Gama's return from India.",
+      "it": "Sito patrimonio mondiale dell'UNESCO, questo monastero è un capolavoro dell'architettura manuelina. Fu costruito per celebrare il ritorno di Vasco da Gama dall'India."
+    },
+    "image_url": "https://fr.wikipedia.org/wiki/Monast%C3%A8re_des_Hi%C3%A9ronymites#/media/Fichier:Jer%C3%B3nimos_April_2009-4.jpg",
+    "image_alt": {
+      "fr": "Façade du Monastère des Hiéronymites avec ses détails architecturaux.",
+      "en": "Facade of the Jerónimos Monastery with its architectural details.",
+      "it": "Facciata del Monastero dei Geronimiti con i suoi dettagli architettonici."
+    },
+
+    "country": "Portugal",
+    "street": "Praça do Império",
+    "city": "Lisbonne",
+    "zipcode": "1400-206",
+    "latitude": 38.6979,
+    "longitude": -9.206,
+    "external_url": "http://www.mosteirojeronimos.pt/",
+    "price": 10,
+    "currency": "EUR"
+  },
+  {
+    "title": {
+      "fr": "Tour de Belém",
+      "en": "Belém Tower",
+      "it": "Torre di Belém"
+    },
+    "description": {
+      "fr": "Cette tour emblématique, construite au XVIe siècle, servait à défendre l'entrée du port de Lisbonne. Inscrite au patrimoine mondial de l'UNESCO.",
+      "en": "This iconic tower, built in the 16th century, served to defend the entrance to Lisbon's port. It is a UNESCO World Heritage site.",
+      "it": "Questa torre iconica, costruita nel XVI secolo, serviva a difendere l'ingresso al porto di Lisbona. È patrimonio mondiale dell'UNESCO."
+    },
+    "image_url": "https://fr.wikipedia.org/wiki/Tour_de_Bel%C3%A9m#/media/Fichier:Torre_Belem_(Lisboa).jpg",
+    "image_alt": {
+      "fr": "La Tour de Belém, symbole de Lisbonne, entourée par le fleuve.",
+      "en": "The Belém Tower, a symbol of Lisbon, surrounded by the river.",
+      "it": "La Torre di Belém, simbolo di Lisbona, circondata dal fiume."
+    },
+
+    "country": "Portugal",
+    "street": "Av. Brasília",
+    "city": "Lisbonne",
+    "zipcode": "1400-038",
+    "latitude": 38.6916,
+    "longitude": -9.215,
+    "external_url": "http://www.torrebelem.gov.pt/",
+    "price": 6,
+    "currency": "EUR"
+  },
+  {
+    "title": {
+      "fr": "Musée Calouste Gulbenkian",
+      "en": "Calouste Gulbenkian Museum",
+      "it": "Museo Calouste Gulbenkian"
+    },
+    "description": {
+      "fr": "Musée présentant une collection d'art allant des antiquités égyptiennes et gréco-romaines aux œuvres de maîtres européens comme Rembrandt, Monet, et René Lalique.",
+      "en": "This museum showcases a collection of art ranging from Egyptian and Greco-Roman antiquities to works by European masters like Rembrandt, Monet, and René Lalique.",
+      "it": "Questo museo presenta una collezione d'arte che spazia dalle antichità egizie e greco-romane alle opere dei maestri europei come Rembrandt, Monet e René Lalique."
+    },
+    "image_url": "https://fr.wikipedia.org/wiki/Mus%C3%A9e_Calouste-Gulbenkian#/media/Fichier:Museu_Calouste_Gulbenkian_(Main_Entrance).jpg",
+    "image_alt": {
+      "fr": "Intérieur du Musée Calouste Gulbenkian avec des œuvres d'art exposées.",
+      "en": "Interior of the Calouste Gulbenkian Museum with displayed artworks.",
+      "it": "Interno del Museo Calouste Gulbenkian con opere d'arte esposte."
+    },
+
+    "country": "Portugal",
+    "street": "Av. de Berna 45A",
+    "city": "Lisbonne",
+    "zipcode": "1067-001",
+    "latitude": 38.7369,
+    "longitude": -9.1534,
+    "external_url": "https://gulbenkian.pt/museu/",
+    "price": 10,
+    "currency": "EUR"
+  },
+  {
+    "title": {
+      "fr": "Musée national de l'Azulejo",
+      "en": "National Tile Museum",
+      "it": "Museo Nazionale dell'Azulejo"
+    },
+    "description": {
+      "fr": "Ce musée retrace l'évolution de l'art de l'azulejo, la célèbre céramique portugaise, depuis le XVe siècle.",
+      "en": "This museum traces the evolution of azulejo art, the famous Portuguese ceramic, from the 15th century.",
+      "it": "Questo museo traccia l'evoluzione dell'arte dell'azulejo, la famosa ceramica portoghese, dal XV secolo."
+    },
+    "image_url": "https://fr.wikipedia.org/wiki/Mus%C3%A9e_national_de_l%27Azulejo#/media/Fichier:Madre_Deus_December_2012-4a.jpg",
+    "image_alt": {
+      "fr": "Exposition d'azulejos au Musée national de l'Azulejo.",
+      "en": "Exhibition of azulejos at the National Tile Museum.",
+      "it": "Esposizione di azulejos al Museo Nazionale dell'Azulejo."
+    },
+
+    "country": "Portugal",
+    "street": "Rua da Madre de Deus 4",
+    "city": "Lisbonne",
+    "zipcode": "1900-312",
+    "latitude": 38.7188,
+    "longitude": -9.1203,
+    "external_url": "http://www.museudoazulejo.gov.pt/",
+    "price": 5,
+    "currency": "EUR"
+  },
+  {
+    "title": {
+      "fr": "Alfama et Château de São Jorge",
+      "en": "Alfama and São Jorge Castle",
+      "it": "Alfama e Castello di São Jorge"
+    },
+    "description": {
+      "fr": "Balade dans le quartier historique de l'Alfama jusqu'au château offrant des vues panoramiques sur Lisbonne. L'Alfama est aussi le berceau du fado.",
+      "en": "Stroll through the historic Alfama district to the castle offering panoramic views of Lisbon. Alfama is also the birthplace of fado.",
+      "it": "Passeggia nel quartiere storico di Alfama fino al castello che offre viste panoramiche su Lisbona. Alfama è anche la culla del fado."
+    },
+    "image_url": "https://fr.wikipedia.org/wiki/Ch%C3%A2teau_Saint-Georges_%28Lisbonne%29#/media/Fichier:LisbonCastle.jpg",
+    "image_alt": {
+      "fr": "Vue panoramique depuis le Château de São Jorge sur le quartier de l'Alfama.",
+      "en": "Panoramic view from São Jorge Castle over the Alfama district.",
+      "it": "Vista panoramica dal Castello di São Jorge sul quartiere di Alfama."
+    },
+
+    "country": "Portugal",
+    "street": "Rua de Santa Cruz do Castelo",
+    "city": "Lisbonne",
+    "zipcode": "1100-129",
+    "latitude": 38.7139,
+    "longitude": -9.1334,
+    "external_url": "http://castelodesaojorge.pt/",
+    "price": 10,
+    "currency": "EUR"
+  },
+  {
+    "title": {
+      "fr": "LX Factory",
+      "en": "LX Factory",
+      "it": "LX Factory"
+    },
+    "description": {
+      "fr": "Ancien complexe industriel transformé en centre culturel avec des galeries d'art, boutiques et restaurants branchés.",
+      "en": "Former industrial complex transformed into a cultural hub with art galleries, trendy shops, and restaurants.",
+      "it": "Ex complesso industriale trasformato in centro culturale con gallerie d'arte, negozi e ristoranti alla moda."
+    },
+    "image_url": "https://fr.wikipedia.org/wiki/LXFactory#/media/Fichier:LX_Factory_(22379332901).jpg",
+    "image_alt": {
+      "fr": "Intérieur du LX Factory avec des boutiques et des restaurants modernes.",
+      "en": "Interior of LX Factory with modern shops and restaurants.",
+      "it": "Interno di LX Factory con negozi e ristoranti moderni."
+    },
+
+    "country": "Portugal",
+    "street": "Rua Rodrigues de Faria 103",
+    "city": "Lisbonne",
+    "zipcode": "1300-501",
+    "latitude": 38.6935,
+    "longitude": -9.1914,
+    "external_url": "https://lxfactory.com/",
+    "price": 5,
+    "currency": "ERU"
+  },
+  {
+    "title": {
+      "fr": "Musée Berardo",
+      "en": "Berardo Museum",
+      "it": "Museo Berardo"
+    },
+    "description": {
+      "fr": "Exposition d'art moderne et contemporain avec des œuvres de Picasso, Dalí, Warhol et d'autres grands artistes.",
+      "en": "Exhibition of modern and contemporary art with works by Picasso, Dalí, Warhol, and other great artists.",
+      "it": "Esposizione di arte moderna e contemporanea con opere di Picasso, Dalí, Warhol e altri grandi artisti."
+    },
+    "image_url": "https://fr.wikipedia.org/wiki/Mus%C3%A9e_Berardo#/media/Fichier:Berardo_Collection_Museum.png",
+    "image_alt": {
+      "fr": "Une des salles du Musée Berardo présentant des œuvres d'art moderne.",
+      "en": "One of the rooms of the Berardo Museum showcasing modern art.",
+      "it": "Una delle sale del Museo Berardo che espone arte moderna."
+    },
+
+    "country": "Portugal",
+    "street": "Praça do Império",
+    "city": "Lisbonne",
+    "zipcode": "1449-003",
+    "latitude": 38.6975,
+    "longitude": -9.207,
+    "external_url": "http://www.museuberardo.pt/",
+    "price": 5,
+    "currency": "EUR"
+  },
+  {
+    "title": {
+      "fr": "Ascenseur de Santa Justa",
+      "en": "Santa Justa Lift",
+      "it": "Ascensore di Santa Justa"
+    },
+    "description": {
+      "fr": "Ascenseur néo-gothique offrant une vue imprenable sur le centre de Lisbonne, conçu par un disciple de Gustave Eiffel.",
+      "en": "Neo-Gothic lift offering an amazing view of central Lisbon, designed by a disciple of Gustave Eiffel.",
+      "it": "Ascensore neogotico che offre una vista incredibile sul centro di Lisbona, progettato da un discepolo di Gustave Eiffel."
+    },
+    "image_url": "https://fr.wikipedia.org/wiki/Ascenseur_de_Santa_Justa#/media/Fichier:Lisbon_(Lisboa)_historic_elevator_Santa_Justa_Luca_Galuzzi_2006.jpg",
+    "image_alt": {
+      "fr": "L'ascenseur de Santa Justa avec vue sur le centre de Lisbonne.",
+      "en": "The Santa Justa Lift with a view over central Lisbon.",
+      "it": "L'ascensore di Santa Justa con vista sul centro di Lisbona."
+    },
+
+    "country": "Portugal",
+    "street": "Rua do Ouro",
+    "city": "Lisbonne",
+    "zipcode": "1100-150",
+    "latitude": 38.7121,
+    "longitude": -9.1396,
+    "external_url": "http://www.carris.pt/en/santa-justa-lift/",
+    "price": 5,
+    "currency": "EUR"
+  },
+  {
+    "title": {
+      "fr": "Océanarium de Lisbonne",
+      "en": "Lisbon Oceanarium",
+      "it": "Oceanario di Lisbona"
+    },
+    "description": {
+      "fr": "L'un des plus grands aquariums d'Europe, mettant en valeur la biodiversité des océans. Idéal pour les sorties en famille.",
+      "en": "One of the largest aquariums in Europe, showcasing the biodiversity of the oceans. Ideal for family outings.",
+      "it": "Uno dei più grandi acquari d'Europa, che mette in risalto la biodiversità degli oceani. Ideale per le uscite in famiglia."
+    },
+    "image_url": "https://en.wikipedia.org/wiki/Lisbon_Oceanarium#/media/File:Lisbon_Oceanarium_2.jpg",
+    "image_alt": {
+      "fr": "Un aquarium avec diverses espèces marines à l'Océanarium de Lisbonne.",
+      "en": "An aquarium with various marine species at the Lisbon Oceanarium.",
+      "it": "Un acquario con varie specie marine all'Oceanario di Lisbona."
+    },
+    "country": "Portugal",
+    "street": "Esplanada Dom Carlos I",
+    "city": "Lisbonne",
+    "zipcode": "1990-005",
+    "latitude": 38.7633,
+    "longitude": -9.0937,
+    "external_url": "https://www.oceanario.pt/",
+    "price": 19,
+    "currency": "EUR"
+  }
+]

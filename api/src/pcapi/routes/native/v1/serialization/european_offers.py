@@ -1,9 +1,11 @@
 from datetime import datetime
+import logging
 
-from pcapi.core.european_offers import models
-from pcapi.models import db
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import ConfiguredBaseModel
+
+
+logger = logging.getLogger(__name__)
 
 
 class LangField(BaseModel):
@@ -12,12 +14,12 @@ class LangField(BaseModel):
     it: str | None
 
 
-class EuropeanOfferData(ConfiguredBaseModel):
+class EuropeanOfferResponse(ConfiguredBaseModel):
     # description
     imageAlt: LangField | None
     title: LangField | None
     description: LangField | None
-    date: datetime | None
+    date: datetime
     imageUrl: str | None
     # order
     currency: str | None
@@ -30,10 +32,3 @@ class EuropeanOfferData(ConfiguredBaseModel):
     zipcode: str | None
     latitude: float
     longitude: float
-
-
-def create_offer(offerData: EuropeanOfferData) -> models.EuropeanOffer:
-    data = offerData.dict()
-    offer = models.EuropeanOffer(**data)
-    db.session.add(offer)
-    return offer
