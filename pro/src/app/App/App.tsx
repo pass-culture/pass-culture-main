@@ -13,6 +13,7 @@ import { api } from 'apiClient/api'
 import { isErrorAPIError } from 'apiClient/helpers'
 import { useLogExtraProData } from 'app/App/hook/useLogExtraProData'
 import { findCurrentRoute } from 'app/AppRouter/findCurrentRoute'
+import { loadConfig } from 'appConfig'
 import { Notification } from 'components/Notification/Notification'
 import {
   GET_DATA_ERROR_MESSAGE,
@@ -63,6 +64,11 @@ export const App = (): JSX.Element | null => {
   useLogExtraProData()
 
   const isNewInterfaceActive = useIsNewInterfaceActive()
+
+  useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    loadConfig()
+  }, [])
 
   useEffect(() => {
     document.documentElement.setAttribute(

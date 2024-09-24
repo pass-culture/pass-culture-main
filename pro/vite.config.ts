@@ -4,10 +4,12 @@ import react from '@vitejs/plugin-react'
 import * as preloads from 'design-system/dist/build/ts/font-preloads'
 import { visualizer } from 'rollup-plugin-visualizer'
 import { defineConfig, PluginOption } from 'vite'
+import dynamicImport from 'vite-plugin-dynamic-import'
 import { createHtmlPlugin } from 'vite-plugin-html'
 import tsconfigPaths from 'vite-tsconfig-paths'
 
 // ts-unused-exports:disable-next-line
+// eslint-disable-next-line import/no-default-export
 export default defineConfig(({ mode }) => {
   return {
     root: './src',
@@ -16,6 +18,9 @@ export default defineConfig(({ mode }) => {
       sourcemap: true,
       emptyOutDir: true,
       assetsInlineLimit: 0,
+    },
+    css: {
+      devSourcemap: true,
     },
     resolve: {
       alias: {
@@ -31,6 +36,7 @@ export default defineConfig(({ mode }) => {
       }),
       visualizer({ filename: 'bundleStats.html' }) as PluginOption,
       htmlPlugin(),
+      dynamicImport(),
     ],
     server: { port: 3001 },
     preview: { port: 3001 },
@@ -49,9 +55,6 @@ export default defineConfig(({ mode }) => {
       minThreads: 4,
       maxThreads: 6,
       testTimeout: 30000,
-    },
-    css: {
-      devSourcemap: true,
     },
   }
 })
