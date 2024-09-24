@@ -249,6 +249,8 @@ def edit_event(event_id: int, body: serialization.EventOfferEdition) -> serializ
             updates = body.dict(by_alias=True, exclude_unset=True)
             dc = updates.get("accessibility", {})
             extra_data = copy.deepcopy(offer.extraData)
+            is_active = get_field(offer, updates, "isActive")
+
             offer_body = offers_schemas.UpdateOffer(
                 audioDisabilityCompliant=get_field(offer, dc, "audioDisabilityCompliant"),
                 mentalDisabilityCompliant=get_field(offer, dc, "mentalDisabilityCompliant"),
@@ -263,7 +265,7 @@ def edit_event(event_id: int, body: serialization.EventOfferEdition) -> serializ
                     if "categoryRelatedFields" in updates
                     else extra_data
                 ),
-                isActive=get_field(offer, updates, "isActive"),
+                isActive=is_active if is_active is not None else offer.isActive,
                 idAtProvider=get_field(offer, updates, "idAtProvider"),
                 isDuo=get_field(offer, updates, "enableDoubleBookings", col="isDuo"),
                 withdrawalDetails=get_field(offer, updates, "itemCollectionDetails", col="withdrawalDetails"),
