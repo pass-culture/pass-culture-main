@@ -1,6 +1,7 @@
 /* istanbul ignore file: Those are test helpers, their coverage is not relevant */
 import { render } from '@testing-library/react'
 import React, { ReactNode } from 'react'
+import { I18nextProvider } from 'react-i18next'
 import { Provider } from 'react-redux'
 import { createMemoryRouter, RouterProvider } from 'react-router-dom'
 import { SWRConfig } from 'swr'
@@ -11,6 +12,8 @@ import {
 } from 'apiClient/v1'
 import { RootState } from 'store/rootReducer'
 import { configureTestStore } from 'store/testUtils'
+
+import i18n from './i18nForTests'
 
 export type RenderWithProvidersOptions = {
   storeOverrides?: Partial<RootState>
@@ -63,9 +66,11 @@ export const renderWithProviders = (
 
   const { rerender, ...otherRenderResult } = render(
     <Provider store={store}>
-      <SWRConfig value={{ provider: () => new Map() }}>
-        <RouterProvider router={router} />
-      </SWRConfig>
+      <I18nextProvider i18n={i18n}>
+        <SWRConfig value={{ provider: () => new Map() }}>
+          <RouterProvider router={router} />
+        </SWRConfig>
+      </I18nextProvider>
     </Provider>
   )
 
@@ -76,9 +81,11 @@ export const renderWithProviders = (
 
       return rerender(
         <Provider store={store}>
-          <SWRConfig value={{ provider: () => new Map() }}>
-            <RouterProvider router={router} />
-          </SWRConfig>
+          <I18nextProvider i18n={i18n}>
+            <SWRConfig value={{ provider: () => new Map() }}>
+              <RouterProvider router={router} />
+            </SWRConfig>
+          </I18nextProvider>
         </Provider>
       )
     },

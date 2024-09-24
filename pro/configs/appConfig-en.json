@@ -1,0 +1,14 @@
+{
+  "name": "pass English Culture",
+  "languages": {
+    "supportedLngs": ["en"],
+    "fallbackLng": "en"
+  },
+  "ui": {
+    "logo": "/icons/logo-pass-culture-pro.svg",
+    "colors": {
+      "primary": "red",
+      "secondary": "red"
+    }
+  }
+}

@@ -1,4 +1,5 @@
 import './styles/index.scss'
+import './i18n'
 import React from 'react'
 import { createRoot } from 'react-dom/client'
 
@@ -7,7 +8,6 @@ import { Root } from 'Root'
 import { SENTRY_SERVER_URL } from 'utils/config'
 
 import { unregister } from './registerServiceWorker'
-
 const isAdageIframe = window.location.href.includes('adage-iframe')
 
 // Initialize sentry

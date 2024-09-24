@@ -1,4 +1,5 @@
 import React from 'react'
+import { useTranslation } from 'react-i18next'
 
 import fullLinkIcon from 'icons/full-link.svg'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
@@ -8,6 +9,8 @@ import newsletterImage from './assets/newsletter.svg'
 import styles from './Newsletter.module.scss'
 
 export const Newsletter = () => {
+  const { t } = useTranslation('common')
+
   return (
     <div className={styles['newsletter-container']}>
       <ButtonLink
@@ -18,8 +21,7 @@ export const Newsletter = () => {
         opensInNewTab
         icon={fullLinkIcon}
       >
-        Inscrivez-vous à notre newsletter pour recevoir les actualités du pass
-        Culture
+        {t('newsletter')}
         <img
           src={newsletterImage}
           alt=""
