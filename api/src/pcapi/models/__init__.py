@@ -15,6 +15,7 @@ def install_models() -> None:
     import pcapi.core.bookings.models
     import pcapi.core.criteria.models
     import pcapi.core.educational.models
+    import pcapi.core.european_offers.models
     import pcapi.core.finance.models
     import pcapi.core.fraud.models
     import pcapi.core.geography.models
