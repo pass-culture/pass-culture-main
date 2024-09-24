@@ -1,6 +1,8 @@
 import enum
 
 from flask import Flask
+from flask_cors import CORS
+from flask_sse import sse
 
 from pcapi import settings
 
@@ -11,6 +13,7 @@ class UrlPrefix(enum.Enum):
     ADAGE_IFRAME = "/adage-iframe"
     SAML = "/saml"
     AUTH = "/auth"
+    STREAM = "/stream"
 
 
 def install_all_routes(app: Flask) -> None:
@@ -38,6 +41,7 @@ def install_all_routes(app: Flask) -> None:
     from . import public
     from . import saml
     from . import shared
+    from . import stream
 
     adage.install_routes(app)
     external.install_routes(app)
@@ -51,6 +55,7 @@ def install_all_routes(app: Flask) -> None:
     adage_iframe.install_routes(app)
     pcapi.tasks.install_handlers(app)
     institutional.install_routes(app)
+    stream.install_routes(app)
 
     app.register_blueprint(adage_v1_blueprint, url_prefix=UrlPrefix.ADAGE_V1.value)
     app.register_blueprint(native_blueprint, url_prefix=UrlPrefix.NATIVE.value)
@@ -63,3 +68,10 @@ def install_all_routes(app: Flask) -> None:
     app.register_blueprint(private_api)
     app.register_blueprint(public_api)
     app.register_blueprint(auth_blueprint, url_prefix=UrlPrefix.AUTH.value)
+    # TODO: move in a blueprint file
+    CORS(
+        sse,
+        origins="*",
+        supports_credentials=True,
+    )
+    app.register_blueprint(sse, url_prefix=UrlPrefix.STREAM.value)

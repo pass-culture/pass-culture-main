@@ -35,6 +35,8 @@ with app.app_context():
     preprocess_scss(settings.BACKOFFICE_WATCH_SCSS_CHANGE)
     install_all_routes(app)
 
+    app.config["REDIS_URL"] = settings.REDIS_URL
+
     setup_metrics(app)
 
 
