@@ -89,6 +89,7 @@ class LinkedVenues(BaseModel):
 
 class ManagedVenues(BaseModel):
     id: int
+    name: str
     commonName: str
     siret: str | None
     bankAccountId: int | None
@@ -108,6 +109,7 @@ class ManagedVenues(BaseModel):
 
         if venue.bankAccountLinks:
             venue.bankAccountId = venue.bankAccountLinks[0].bankAccountId
+        venue.name = venue.name
         venue.commonName = venue.common_name
         venue.hasPricingPoint = bool(venue.pricing_point_links)
 
