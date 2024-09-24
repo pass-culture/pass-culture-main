@@ -10,8 +10,8 @@
       "en": "A UNESCO World Heritage site, this monastery is a masterpiece of Manueline architecture. It was built to celebrate Vasco da Gama's return from India.",
       "it": "Sito patrimonio mondiale dell'UNESCO, questo monastero è un capolavoro dell'architettura manuelina. Fu costruito per celebrare il ritorno di Vasco da Gama dall'India."
     },
-    "image_url": "https://fr.wikipedia.org/wiki/Monast%C3%A8re_des_Hi%C3%A9ronymites#/media/Fichier:Jer%C3%B3nimos_April_2009-4.jpg",
-    "image_alt": {
+    "imageUrl": "https://fr.wikipedia.org/wiki/Monast%C3%A8re_des_Hi%C3%A9ronymites#/media/Fichier:Jer%C3%B3nimos_April_2009-4.jpg",
+    "imageAlt": {
       "fr": "Façade du Monastère des Hiéronymites avec ses détails architecturaux.",
       "en": "Facade of the Jerónimos Monastery with its architectural details.",
       "it": "Facciata del Monastero dei Geronimiti con i suoi dettagli architettonici."
@@ -23,7 +23,7 @@
     "zipcode": "1400-206",
     "latitude": 38.6979,
     "longitude": -9.206,
-    "external_url": "http://www.mosteirojeronimos.pt/",
+    "externalUrl": "http://www.mosteirojeronimos.pt/",
     "price": 10,
     "currency": "EUR"
   },
@@ -38,8 +38,8 @@
       "en": "This iconic tower, built in the 16th century, served to defend the entrance to Lisbon's port. It is a UNESCO World Heritage site.",
       "it": "Questa torre iconica, costruita nel XVI secolo, serviva a difendere l'ingresso al porto di Lisbona. È patrimonio mondiale dell'UNESCO."
     },
-    "image_url": "https://fr.wikipedia.org/wiki/Tour_de_Bel%C3%A9m#/media/Fichier:Torre_Belem_(Lisboa).jpg",
-    "image_alt": {
+    "imageUrl": "https://fr.wikipedia.org/wiki/Tour_de_Bel%C3%A9m#/media/Fichier:Torre_Belem_(Lisboa).jpg",
+    "imageAlt": {
       "fr": "La Tour de Belém, symbole de Lisbonne, entourée par le fleuve.",
       "en": "The Belém Tower, a symbol of Lisbon, surrounded by the river.",
       "it": "La Torre di Belém, simbolo di Lisbona, circondata dal fiume."
@@ -51,7 +51,7 @@
     "zipcode": "1400-038",
     "latitude": 38.6916,
     "longitude": -9.215,
-    "external_url": "http://www.torrebelem.gov.pt/",
+    "externalUrl": "http://www.torrebelem.gov.pt/",
     "price": 6,
     "currency": "EUR"
   },
@@ -66,8 +66,8 @@
       "en": "This museum showcases a collection of art ranging from Egyptian and Greco-Roman antiquities to works by European masters like Rembrandt, Monet, and René Lalique.",
       "it": "Questo museo presenta una collezione d'arte che spazia dalle antichità egizie e greco-romane alle opere dei maestri europei come Rembrandt, Monet e René Lalique."
     },
-    "image_url": "https://fr.wikipedia.org/wiki/Mus%C3%A9e_Calouste-Gulbenkian#/media/Fichier:Museu_Calouste_Gulbenkian_(Main_Entrance).jpg",
-    "image_alt": {
+    "imageUrl": "https://fr.wikipedia.org/wiki/Mus%C3%A9e_Calouste-Gulbenkian#/media/Fichier:Museu_Calouste_Gulbenkian_(Main_Entrance).jpg",
+    "imageAlt": {
       "fr": "Intérieur du Musée Calouste Gulbenkian avec des œuvres d'art exposées.",
       "en": "Interior of the Calouste Gulbenkian Museum with displayed artworks.",
       "it": "Interno del Museo Calouste Gulbenkian con opere d'arte esposte."
@@ -79,7 +79,7 @@
     "zipcode": "1067-001",
     "latitude": 38.7369,
     "longitude": -9.1534,
-    "external_url": "https://gulbenkian.pt/museu/",
+    "externalUrl": "https://gulbenkian.pt/museu/",
     "price": 10,
     "currency": "EUR"
   },
@@ -94,8 +94,8 @@
       "en": "This museum traces the evolution of azulejo art, the famous Portuguese ceramic, from the 15th century.",
       "it": "Questo museo traccia l'evoluzione dell'arte dell'azulejo, la famosa ceramica portoghese, dal XV secolo."
     },
-    "image_url": "https://fr.wikipedia.org/wiki/Mus%C3%A9e_national_de_l%27Azulejo#/media/Fichier:Madre_Deus_December_2012-4a.jpg",
-    "image_alt": {
+    "imageUrl": "https://fr.wikipedia.org/wiki/Mus%C3%A9e_national_de_l%27Azulejo#/media/Fichier:Madre_Deus_December_2012-4a.jpg",
+    "imageAlt": {
       "fr": "Exposition d'azulejos au Musée national de l'Azulejo.",
       "en": "Exhibition of azulejos at the National Tile Museum.",
       "it": "Esposizione di azulejos al Museo Nazionale dell'Azulejo."
@@ -107,7 +107,7 @@
     "zipcode": "1900-312",
     "latitude": 38.7188,
     "longitude": -9.1203,
-    "external_url": "http://www.museudoazulejo.gov.pt/",
+    "externalUrl": "http://www.museudoazulejo.gov.pt/",
     "price": 5,
     "currency": "EUR"
   },
@@ -122,8 +122,8 @@
       "en": "Stroll through the historic Alfama district to the castle offering panoramic views of Lisbon. Alfama is also the birthplace of fado.",
       "it": "Passeggia nel quartiere storico di Alfama fino al castello che offre viste panoramiche su Lisbona. Alfama è anche la culla del fado."
     },
-    "image_url": "https://fr.wikipedia.org/wiki/Ch%C3%A2teau_Saint-Georges_%28Lisbonne%29#/media/Fichier:LisbonCastle.jpg",
-    "image_alt": {
+    "imageUrl": "https://fr.wikipedia.org/wiki/Ch%C3%A2teau_Saint-Georges_%28Lisbonne%29#/media/Fichier:LisbonCastle.jpg",
+    "imageAlt": {
       "fr": "Vue panoramique depuis le Château de São Jorge sur le quartier de l'Alfama.",
       "en": "Panoramic view from São Jorge Castle over the Alfama district.",
       "it": "Vista panoramica dal Castello di São Jorge sul quartiere di Alfama."
@@ -135,7 +135,7 @@
     "zipcode": "1100-129",
     "latitude": 38.7139,
     "longitude": -9.1334,
-    "external_url": "http://castelodesaojorge.pt/",
+    "externalUrl": "http://castelodesaojorge.pt/",
     "price": 10,
     "currency": "EUR"
   },
@@ -150,8 +150,8 @@
       "en": "Former industrial complex transformed into a cultural hub with art galleries, trendy shops, and restaurants.",
       "it": "Ex complesso industriale trasformato in centro culturale con gallerie d'arte, negozi e ristoranti alla moda."
     },
-    "image_url": "https://fr.wikipedia.org/wiki/LXFactory#/media/Fichier:LX_Factory_(22379332901).jpg",
-    "image_alt": {
+    "imageUrl": "https://fr.wikipedia.org/wiki/LXFactory#/media/Fichier:LX_Factory_(22379332901).jpg",
+    "imageAlt": {
       "fr": "Intérieur du LX Factory avec des boutiques et des restaurants modernes.",
       "en": "Interior of LX Factory with modern shops and restaurants.",
       "it": "Interno di LX Factory con negozi e ristoranti moderni."
@@ -163,7 +163,7 @@
     "zipcode": "1300-501",
     "latitude": 38.6935,
     "longitude": -9.1914,
-    "external_url": "https://lxfactory.com/",
+    "externalUrl": "https://lxfactory.com/",
     "price": 5,
     "currency": "ERU"
   },
@@ -178,8 +178,8 @@
       "en": "Exhibition of modern and contemporary art with works by Picasso, Dalí, Warhol, and other great artists.",
       "it": "Esposizione di arte moderna e contemporanea con opere di Picasso, Dalí, Warhol e altri grandi artisti."
     },
-    "image_url": "https://fr.wikipedia.org/wiki/Mus%C3%A9e_Berardo#/media/Fichier:Berardo_Collection_Museum.png",
-    "image_alt": {
+    "imageUrl": "https://fr.wikipedia.org/wiki/Mus%C3%A9e_Berardo#/media/Fichier:Berardo_Collection_Museum.png",
+    "imageAlt": {
       "fr": "Une des salles du Musée Berardo présentant des œuvres d'art moderne.",
       "en": "One of the rooms of the Berardo Museum showcasing modern art.",
       "it": "Una delle sale del Museo Berardo che espone arte moderna."
@@ -191,7 +191,7 @@
     "zipcode": "1449-003",
     "latitude": 38.6975,
     "longitude": -9.207,
-    "external_url": "http://www.museuberardo.pt/",
+    "externalUrl": "http://www.museuberardo.pt/",
     "price": 5,
     "currency": "EUR"
   },
@@ -206,8 +206,8 @@
       "en": "Neo-Gothic lift offering an amazing view of central Lisbon, designed by a disciple of Gustave Eiffel.",
       "it": "Ascensore neogotico che offre una vista incredibile sul centro di Lisbona, progettato da un discepolo di Gustave Eiffel."
     },
-    "image_url": "https://fr.wikipedia.org/wiki/Ascenseur_de_Santa_Justa#/media/Fichier:Lisbon_(Lisboa)_historic_elevator_Santa_Justa_Luca_Galuzzi_2006.jpg",
-    "image_alt": {
+    "imageUrl": "https://fr.wikipedia.org/wiki/Ascenseur_de_Santa_Justa#/media/Fichier:Lisbon_(Lisboa)_historic_elevator_Santa_Justa_Luca_Galuzzi_2006.jpg",
+    "imageAlt": {
       "fr": "L'ascenseur de Santa Justa avec vue sur le centre de Lisbonne.",
       "en": "The Santa Justa Lift with a view over central Lisbon.",
       "it": "L'ascensore di Santa Justa con vista sul centro di Lisbona."
@@ -219,7 +219,7 @@
     "zipcode": "1100-150",
     "latitude": 38.7121,
     "longitude": -9.1396,
-    "external_url": "http://www.carris.pt/en/santa-justa-lift/",
+    "externalUrl": "http://www.carris.pt/en/santa-justa-lift/",
     "price": 5,
     "currency": "EUR"
   },
@@ -234,8 +234,8 @@
       "en": "One of the largest aquariums in Europe, showcasing the biodiversity of the oceans. Ideal for family outings.",
       "it": "Uno dei più grandi acquari d'Europa, che mette in risalto la biodiversità degli oceani. Ideale per le uscite in famiglia."
     },
-    "image_url": "https://en.wikipedia.org/wiki/Lisbon_Oceanarium#/media/File:Lisbon_Oceanarium_2.jpg",
-    "image_alt": {
+    "imageUrl": "https://en.wikipedia.org/wiki/Lisbon_Oceanarium#/media/File:Lisbon_Oceanarium_2.jpg",
+    "imageAlt": {
       "fr": "Un aquarium avec diverses espèces marines à l'Océanarium de Lisbonne.",
       "en": "An aquarium with various marine species at the Lisbon Oceanarium.",
       "it": "Un acquario con varie specie marine all'Oceanario di Lisbona."
@@ -246,7 +246,7 @@
     "zipcode": "1990-005",
     "latitude": 38.7633,
     "longitude": -9.0937,
-    "external_url": "https://www.oceanario.pt/",
+    "externalUrl": "https://www.oceanario.pt/",
     "price": 19,
     "currency": "EUR"
   }
