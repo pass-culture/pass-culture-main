@@ -15,6 +15,7 @@ class LangField(BaseModel):
 
 
 class EuropeanOfferResponse(ConfiguredBaseModel):
+    id: int
     # description
     imageAlt: LangField | None
     title: LangField | None
