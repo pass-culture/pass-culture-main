@@ -1,0 +1,79 @@
+# API Publique
+
+L'API publique est documentée [ici](https://developers.staging.passculture.team/rest-api). Nous détaillons ici les différentes étapes pour exécuter les tests auto d'API.
+Un certain nombre d'étapes sont à faire en premier.
+
+## Générer des clés d'API (manuel)
+
+### Créer un partenaire technique
+
+Sur le [backoffice](https://backoffice.staging.passculture.team) aller sur [Synchronisation partenaires techniques](https://backoffice.staging.passculture.team/pro/providers) et `Créer un partenaire`.
+
+![Fenêtre de synchronisation de partenaire technique du Back Office](./images/SynchroPartenairesTechniques.png)
+
+Choisir:
+* un `Nom de partenaire`
+* un `SIREN` (d'une entreprise non existance dans le BO, et ayant plusieurs lieux attachés: penser chaines de restaurant, magasins avec plusieurs adresses, etc)
+* une `ville`
+* un `code postal`
+
+Cliquer sur `Créer le partenaire`
+
+![Clé d'api sous la forme `stagin_xxx`](./images/APIKey.png)
+
+Bien noter la clé d'API dans le message vert du haut de la fenêtre. Ce sera le `bearerToken`.
+
+### Créer une clé d'API à l'ancien format
+
+Aller sur la page d'une structure existante (n'importe laquelle, par exemple [celle-ci](https://backoffice.staging.passculture.team/pro/offerer/214)) et cliquer sur `Générer une clé API`, confirmer et notez la valeur de la clé. Ce sera le `oldBearerToken`.
+
+## Portail pro
+
+### Création d'un compte
+
+Sur le [portail pro](https://pro.staging.passculture.team/), créez un nouveau compte.
+
+### Ajout de structures et de lieux
+
+Se connecter avec le nouveau compte et à la première connexion, `Finalisez l'inscription` en choisissant le `siret` d'établissement relié au `siren` utilisé lors de la création du partenaire technique.
+
+### Rattachement de la structure
+
+Dans le Back Office, aller sur [Rattachements à valider](https://backoffice.staging.passculture.team/pro/validation/user-offerer), vous verrez votre compte apparaitre (en haut) avec la structure du `siren`. Valider ce rattachement.
+
+![Rattachement](./images/Rattachement.png)
+
+### Synchronisation du logiciel
+
+Sur le portail pro, la structure rattachée doit apparaitre sur la page d'accueil. Cliquez sur `Gérer ma page` de l'adresse du lieu créé, puis `paramètres généraux`, puis `Sélectionner un logiciel` et choisir le nom du compte créé. Ensuite cliquer sur le bouton `Synchroniser`.
+Une fois ceci fait, sur la page d'accueil, un petit tag `API` doit apparaitre à côté de l'adresse.
+
+### Création de lieux supplémentaires
+
+A ce jour, nous avons besoin de 3 lieux qui seront utilisés dans les tests `postman`. Il faut donc en créer 2 autres en plus, et les synchroniser `Synchronisation du logiciel` comme décrit plus haut.
+
+![Lieux créés avec tag API de synchro](./images/LieuxCrees.png)
+
+## Configuration Postman
+
+### Import collection et environnement
+
+Dans Postman, importer la collection `API Testing.postman_collection.json` et l'environnement staging `Staging.postman_environment.json`.
+
+### Configuration
+
+Editer l'environnement `staging` et modifier:
+* `bearerToken`
+* `oldBearerToken`
+* `siren`
+avec les valeurs adéquates
+
+![Configuration de l'environnement staging](./images/PostmanStaging.png)
+
+## Exécuter les tests dans Postman
+
+Il ne vous restera plus qu'à cliquer sur les `...` au niveau du titre `API testing` de la collection puis choisir `Run collection` et enfin `Run API Testing`!
+
+![Postman run](./images/PostmanRun.png)
+
+> **Note**: Une fois les tests lancés et les données consommées, il faut refaire les premières étapes jusqu'à la `configuration Postman` avec de nouveaux siret et un nouveau compte pour relancer.
