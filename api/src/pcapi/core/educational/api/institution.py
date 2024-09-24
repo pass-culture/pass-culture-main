@@ -205,10 +205,11 @@ def synchronise_rurality_level() -> None:
 
     for rural_level, ids in ids_by_rurality_target.items():
         ids_to_update = ids - ids_by_rurality_actual.get(rural_level, set())
+        rural_level_enum = educational_models.InstitutionRuralLevel(rural_level) if rural_level else None
         if ids_to_update:
             educational_models.EducationalInstitution.query.filter(
                 educational_models.EducationalInstitution.id.in_(ids_to_update)
-            ).update({"ruralLevel": educational_models.InstitutionRuralLevel(rural_level)})
+            ).update({"ruralLevel": rural_level_enum})
 
     db.session.commit()
 
