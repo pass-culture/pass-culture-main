@@ -1228,7 +1228,11 @@ class GetOverpaymentCreationFormTest(PostEndpointHelper):
     endpoint = "backoffice_web.finance_incidents.get_individual_bookings_overpayment_creation_form"
     needed_permission = perm_models.Permissions.MANAGE_INCIDENTS
 
-    expected_num_queries = 7
+    # 1. get user's session
+    # 2. get user
+    # 3. get booking
+    # 4. check finance incident exists
+    expected_num_queries = 4
 
     def test_get_overpayment_creation_for_one_booking_form(self, authenticated_client, invoiced_pricing):
         venue = offerers_factories.VenueFactory()
@@ -1317,7 +1321,14 @@ class GetCollectiveBookingOverpaymentFormTest(PostEndpointHelper):
     endpoint_kwargs = {"collective_booking_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_INCIDENTS
 
-    expected_num_queries = 10
+    # 1. get booking
+    # 2. get user's session
+    # 3. get user
+    # 4. get collective booking (again, with more data)
+    # 5. get collective stock
+    # 6. get pricing
+    # 7. check finance incident exists
+    expected_num_queries = 7
 
     def test_get_form(self, authenticated_client, invoiced_collective_pricing):
         collective_booking = educational_factories.ReimbursedCollectiveBookingFactory(
@@ -1466,7 +1477,11 @@ class GetCommercialGestureCreationFormTest(PostEndpointHelper):
     endpoint = "backoffice_web.finance_incidents.get_individual_bookings_commercial_gesture_creation_form"
     needed_permission = perm_models.Permissions.MANAGE_INCIDENTS
 
-    expected_num_queries = 7
+    # 1. get user's session
+    # 2. get user
+    # 3. get booking
+    # 4. check finance incident exists
+    expected_num_queries = 4
 
     def test_get_commercial_gesture_creation_for_one_booking_form(self, authenticated_client):
         venue = offerers_factories.VenueFactory(name="Etablissement")

@@ -2237,7 +2237,7 @@ class GetBatchEditVenuesFormTest(PostEndpointHelper):
             "object_ids": ",".join(str(venue.id) for venue in venues),
         }
 
-        with assert_num_queries(self.fetch_csrf_num_queries + 3):  # session + current user + criteria
+        with assert_num_queries(3):  # session + current user + criteria
             response = self.post_to_endpoint(authenticated_client, form=form_data)
             assert response.status_code == 200
 
