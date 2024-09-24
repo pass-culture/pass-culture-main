@@ -587,3 +587,7 @@ GDPR_LOCK_TIMEOUT = int(os.environ.get("GDPR_LOCK_TIMEOUT", "900"))
 # DISCORD pass culture bot
 DISCORD_CLIENT_SECRET = secrets_utils.get("DISCORD_CLIENT_SECRET")
 DISCORD_BOT_TOKEN = secrets_utils.get("DISCORD_BOT_TOKEN")
+
+# TYPEFORM
+TYPEFORM_BACKEND = os.environ.get("TYPEFORM_BACKEND", "pcapi.connectors.typeform.TestingBackend")
+TYPEFORM_API_KEY = secrets_utils.get("TYPEFORM_API_KEY")
