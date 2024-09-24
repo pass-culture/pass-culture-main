@@ -3,6 +3,7 @@
 export const GET_BOOKINGS_QUERY_KEY = 'getBookings'
 export const GET_CATEGORIES_QUERY_KEY = 'getCategories'
 export const GET_CLASSROOM_PLAYLIST_QUERY_KEY = 'getClassroomPlaylist'
+export const GET_COLLECTIVE_ACADEMIES = 'getCollectiveAcademies'
 export const GET_COLLECTIVE_BOOKING_BY_ID_QUERY_KEY = 'getCollectiveBookingById'
 export const GET_COLLECTIVE_FAVORITES = 'getCollectiveFavorites'
 export const GET_COLLECTIVE_OFFER_QUERY_KEY = 'getCollectiveOffer'

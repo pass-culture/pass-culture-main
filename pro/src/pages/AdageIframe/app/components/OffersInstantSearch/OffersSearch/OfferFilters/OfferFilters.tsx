@@ -1,10 +1,12 @@
 import { Form, FormikProvider, useFormikContext } from 'formik'
-import React, { useEffect, useState } from 'react'
+import { useState } from 'react'
+import useSWR from 'swr'
 
 import { AdageFrontRoles, EacFormat, OfferAddressType } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
 import { AdageButtonFilter } from 'components/AdageButtonFilter/AdageButtonFilter'
 import { FormLayout } from 'components/FormLayout/FormLayout'
+import { GET_COLLECTIVE_ACADEMIES } from 'config/swrQueryKeys'
 import strokeBuildingIcon from 'icons/stroke-building.svg'
 import strokeFranceIcon from 'icons/stroke-france.svg'
 import strokeNearIcon from 'icons/stroke-near.svg'
@@ -13,10 +15,12 @@ import { useAdageUser } from 'pages/AdageIframe/app/hooks/useAdageUser'
 import { Option } from 'pages/AdageIframe/app/types'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { AdageMultiselect } from 'ui-kit/form/AdageMultiselect/AdageMultiselect'
+import {
+  AdageMultiselect,
+  ItemProps,
+} from 'ui-kit/form/AdageMultiselect/AdageMultiselect'
 import { RadioGroup } from 'ui-kit/form/RadioGroup/RadioGroup'
 import { Slider } from 'ui-kit/form/Slider/Slider'
-import { sendSentryCustomError } from 'utils/sendSentryCustomError'
 
 import { SearchFormValues } from '../../OffersInstantSearch'
 import { LocalisationFilterStates } from '../OffersSearch'
@@ -75,7 +79,6 @@ export const OfferFilters = ({
 
   const activeLocalisationFilterCount = getActiveLocalisationFilterCount()
 
-  const [academiesOptions, setAcademieOptions] = useState<Option[]>([])
   const [formatsOptions] = useState<Option<EacFormat>[]>(
     Object.values(EacFormat).map((format) => ({
       value: format,
@@ -104,24 +107,17 @@ export const OfferFilters = ({
 
     resetLocalisationFilterState()
   }
-  useEffect(() => {
-    const loadFiltersOptions = async () => {
-      try {
-        const academies = await apiAdage.getAcademies()
-        setAcademieOptions(
-          academies.map((academy) => ({
-            value: academy,
-            label: academy,
-          }))
-        )
-      } catch (e) {
-        sendSentryCustomError(e)
-      }
-    }
 
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    loadFiltersOptions()
-  }, [])
+  const { data } = useSWR(
+    [GET_COLLECTIVE_ACADEMIES],
+    () => apiAdage.getAcademies(),
+    { fallbackData: [] }
+  )
+
+  const academiesOptions: ItemProps[] = data.map((academy) => ({
+    value: academy,
+    label: academy,
+  }))
 
   const clearFormikFieldValue = async (
     fieldName: string,
