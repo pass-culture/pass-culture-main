@@ -3,6 +3,7 @@ import pytest
 from pcapi import settings
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
+from pcapi.models import db
 from pcapi.utils import human_ids
 
 from tests.conftest import TestClient
@@ -234,3 +235,21 @@ class PatchEventTest(PublicAPIVenueEndpointHelper):
 
         assert response.status_code == 400
         assert response.json == {"idAtProvider": ["`rolala` is already taken by another venue offer"]}
+
+    def test_update_with_non_nullable_fields_does_not_update_them(self, client):
+        plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=True)
+        event_offer = offers_factories.EventOfferFactory(
+            venue=venue_provider.venue,
+            lastProvider=venue_provider.provider,
+            isActive=True,
+        )
+
+        response = client.with_explicit_token(plain_api_key).patch(
+            self.endpoint_url.format(event_id=event_offer.id),
+            json={"isActive": None},
+        )
+
+        assert response.status_code == 200
+
+        db.session.refresh(event_offer)
+        assert event_offer.isActive
