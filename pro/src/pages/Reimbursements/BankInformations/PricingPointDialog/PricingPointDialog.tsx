@@ -60,7 +60,7 @@ export const PricingPointDialog = ({
   const venuesOptions = [
     { label: 'Sélectionner un lieu dans la liste', value: '' },
     ...venues.map((venue) => ({
-      label: `${venue.commonName} - ${venue.siret}`,
+      label: `${venue.name} - ${venue.siret}`,
       value: venue.id.toString(),
     })),
   ]

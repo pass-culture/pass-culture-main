@@ -8,12 +8,12 @@ import {
   BookingRecapStatus,
   CategoryResponseModel,
   GetIndividualOfferWithAddressResponseModel,
-  GetOfferManagingOffererResponseModel,
-  GetOfferStockResponseModel,
-  GetOfferVenueResponseModel,
   GetOffererNameResponseModel,
   GetOffererResponseModel,
   GetOffererVenueResponseModel,
+  GetOfferManagingOffererResponseModel,
+  GetOfferStockResponseModel,
+  GetOfferVenueResponseModel,
   ListOffersOfferResponseModel,
   ListOffersStockResponseModel,
   ManagedVenues,
@@ -26,9 +26,9 @@ import {
   VenueTypeCode,
 } from 'apiClient/v1'
 import {
-  GetBookingResponse,
   BookingFormula,
   BookingOfferType,
+  GetBookingResponse,
 } from 'apiClient/v2'
 import { StocksEvent } from 'components/StocksEventList/StocksEventList'
 import { IndividualOfferContextValues } from 'context/IndividualOfferContext/IndividualOfferContext'
@@ -408,6 +408,7 @@ export const defaultBankAccount: BankAccountResponseModel = {
 
 export const defaultManagedVenues: ManagedVenues = {
   commonName: 'Mon super lieu',
+  name: 'RAISON SOCIALE',
   id: 1,
   siret: '123456789',
   hasPricingPoint: true,

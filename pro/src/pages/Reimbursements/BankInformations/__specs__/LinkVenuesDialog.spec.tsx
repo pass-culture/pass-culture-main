@@ -5,8 +5,8 @@ import { api } from 'apiClient/api'
 import { BankAccountResponseModel, ManagedVenues } from 'apiClient/v1'
 import * as useNotification from 'hooks/useNotification'
 import {
-  defaultManagedVenues,
   defaultBankAccount,
+  defaultManagedVenues,
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -110,7 +110,7 @@ describe('LinkVenueDialog', () => {
       screen.getByLabelText(
         'Lieu avec SIRET utilisé pour le calcul de votre barème de remboursement *'
       ),
-      screen.getByRole('option', { name: 'Mon super lieu - 123456789' })
+      screen.getByRole('option', { name: 'RAISON SOCIALE - 123456789' })
     )
     await userEvent.click(
       screen.getByRole('button', { name: 'Valider la sélection' })
@@ -131,7 +131,7 @@ describe('LinkVenueDialog', () => {
       error: mockNotifyError,
     }))
     const managedVenues = [
-      { ...defaultManagedVenues, id: 1, hasPricingPoint: true },
+      { ...defaultManagedVenues, id: 1, hasPricingPoint: true, name: 'raison' },
       {
         ...defaultManagedVenues,
         id: 2,
@@ -152,7 +152,7 @@ describe('LinkVenueDialog', () => {
       screen.getByLabelText(
         'Lieu avec SIRET utilisé pour le calcul de votre barème de remboursement *'
       ),
-      screen.getByRole('option', { name: 'Mon super lieu - 123456789' })
+      screen.getByRole('option', { name: 'raison - 123456789' })
     )
     await userEvent.click(
       screen.getByRole('button', { name: 'Valider la sélection' })

@@ -7,12 +7,14 @@ import { api } from 'apiClient/api'
 import {
   BankAccountApplicationStatus,
   BankAccountResponseModel,
-  ManagedVenues,
 } from 'apiClient/v1'
 import * as useAnalytics from 'app/App/analytics/firebase'
 import { BankInformations } from 'pages/Reimbursements/BankInformations/BankInformations'
 import { ReimbursementsContextProps } from 'pages/Reimbursements/Reimbursements'
-import { defaultGetOffererResponseModel } from 'utils/individualApiFactories'
+import {
+  defaultGetOffererResponseModel,
+  defaultManagedVenues,
+} from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
@@ -31,12 +33,6 @@ const defaultBankAccountResponseModel: BankAccountResponseModel = {
   ],
   obfuscatedIban: 'XXXX-123',
   status: BankAccountApplicationStatus.ACCEPTE,
-}
-const defaultManagedVenues: ManagedVenues = {
-  commonName: 'wanted',
-  id: 1,
-  siret: 'costume',
-  hasPricingPoint: true,
 }
 
 const mockLogEvent = vi.fn()
@@ -73,7 +69,12 @@ describe('BankInformations', () => {
     vi.spyOn(api, 'getOffererBankAccountsAndAttachedVenues').mockResolvedValue({
       bankAccounts: [defaultBankAccountResponseModel],
       id: 1,
-      managedVenues: [defaultManagedVenues],
+      managedVenues: [
+        {
+          ...defaultManagedVenues,
+          commonName: 'wanted',
+        },
+      ],
     })
 
     vi.spyOn(router, 'useSearchParams').mockReturnValue([
