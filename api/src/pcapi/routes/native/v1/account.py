@@ -549,3 +549,10 @@ def unsuspend_account(user: users_models.User) -> None:
         raise api_errors.ForbiddenError({"code": "UNSUSPENSION_LIMIT_REACHED"})
 
     api.unsuspend_account(user, actor=user, send_email=True)
+
+
+@blueprint.native_route("/account/achievements", methods=["GET"])
+@authenticated_and_active_user_required
+@spectree_serialize(api=blueprint.api, response_model=serializers.AchievementsResponse)
+def get_achievements(user: users_models.User) -> serializers.AchievementsResponse:
+    return serializers.AchievementsResponse(achievements=user.achievements)

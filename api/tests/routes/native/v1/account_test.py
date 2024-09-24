@@ -18,6 +18,7 @@ import time_machine
 from pcapi import settings
 from pcapi.connectors.google_oauth import GoogleUser
 from pcapi.core import token as token_utils
+from pcapi.core.achievements import factories as achievements_factories
 from pcapi.core.bookings import factories as booking_factories
 from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.bookings.factories import CancelledBookingFactory
@@ -2933,3 +2934,20 @@ class AnonymizeUserTest:
         assert response.status_code == 400
         assert response.json["code"] == "ALREADY_HAS_PENDING_ANONYMIZATION"
         assert user.isActive
+
+
+class AchievementsTest:
+    def test_get_empty_achievements(self, client):
+        user = users_factories.BeneficiaryFactory()
+        response = client.with_token(email=user.email).get("/native/v1/account/achievements")
+        assert response.status_code == 200
+        assert response.json["achievements"] == []
+
+    def test_get_achievements(self, client):
+        user_achievement = achievements_factories.UserAchievementFactory()
+
+        response = client.with_token(email=user_achievement.user.email).get("/native/v1/account/achievements")
+        assert response.status_code == 200
+        print(response.json)
+        assert response.json["achievements"][0]["achievement"]["slug"] == user_achievement.achievement.slug
+        assert response.json["achievements"][0]["completionDate"] == user_achievement.completionDate.isoformat() + "Z"

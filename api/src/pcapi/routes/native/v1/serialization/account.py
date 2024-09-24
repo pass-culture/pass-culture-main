@@ -287,3 +287,20 @@ class UserSuspensionStatusResponse(ConfiguredBaseModel):
 
 class SuspendAccountForSuspiciousLoginRequest(ConfiguredBaseModel):
     token: str
+
+
+class Achievement(ConfiguredBaseModel):
+    slug: str
+    name: str
+    description: str
+    category: str
+    icon: str
+
+
+class UserAchievement(ConfiguredBaseModel):
+    achievement: Achievement
+    completionDate: datetime.datetime
+
+
+class AchievementsResponse(ConfiguredBaseModel):
+    achievements: list[UserAchievement]

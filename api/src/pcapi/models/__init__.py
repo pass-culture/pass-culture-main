@@ -12,6 +12,7 @@ from pcapi import settings
 def install_models() -> None:
     """Let SQLAlchemy know about our database models."""
     # pylint: disable=unused-import
+    import pcapi.core.achievements.models
     import pcapi.core.bookings.models
     import pcapi.core.criteria.models
     import pcapi.core.educational.models
