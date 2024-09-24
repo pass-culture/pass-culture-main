@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next'
+
 import {
   GetCollectiveOfferTemplateResponseModel,
   GetCollectiveOfferResponseModel,
@@ -21,6 +23,7 @@ interface CollectiveOfferSummaryProps {
 export const CollectiveOfferTypeSection = ({
   offer,
 }: CollectiveOfferSummaryProps) => {
+  const { t } = useTranslation('common')
   const offerTypeDescriptions: Description[] = []
 
   offerTypeDescriptions.push({
@@ -39,16 +42,16 @@ export const CollectiveOfferTypeSection = ({
 
   return (
     <>
-      <SummarySubSection title="Type d’offre">
+      <SummarySubSection title={t('offer_type')}>
         <SummaryDescriptionList descriptions={offerTypeDescriptions} />
       </SummarySubSection>
 
       <SummarySubSection title="Informations artistiques">
         <SummaryDescriptionList
           descriptions={[
-            { title: 'Titre de l’offre', text: offer.name },
+            { title: t('offer_title'), text: offer.name },
             {
-              title: 'Description',
+              title: t('description'),
               text: !offer.description ? (
                 DEFAULT_RECAP_VALUE
               ) : (

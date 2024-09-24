@@ -31,6 +31,10 @@ const createRouterFromOverrides = (
     initialEntries: overrides?.initialRouterEntries,
   })
 
+export const renderWithi18nProvider = (children: ReactNode) => {
+  render(<I18nextProvider i18n={i18n}>{children}</I18nextProvider>)
+}
+
 export const renderWithProviders = (
   component: ReactNode,
   overrides?: RenderWithProvidersOptions,

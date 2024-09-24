@@ -1,5 +1,6 @@
 import { format } from 'date-fns'
 import React, { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
@@ -34,6 +35,7 @@ interface BookingsSummaryScreenProps {
 export const BookingsSummaryScreen = ({
   offer,
 }: BookingsSummaryScreenProps) => {
+  const { t } = useTranslation('common')
   const [bookings, setBookings] = useState<BookingRecapResponseModel[] | null>(
     null
   )
@@ -99,7 +101,7 @@ export const BookingsSummaryScreen = ({
   return (
     <>
       <div className={styles['header']}>
-        <h2 className={styles['header-title']}>Réservations</h2>
+        <h2 className={styles['header-title']}>{t('reservations')}</h2>
         {!stockSchedulesAndPricesByDateQuery.isLoading &&
           offer.isEvent &&
           bookings !== null &&

@@ -1,5 +1,6 @@
 import { useFormikContext } from 'formik'
 import React from 'react'
+import { useTranslation } from 'react-i18next'
 
 import {
   GetOffererNameResponseModel,
@@ -38,6 +39,7 @@ export const UsefulInformations = ({
   isVenueVirtual,
   readOnlyFields = [],
 }: UsefulInformationsProps): JSX.Element => {
+  const { t } = useTranslation('common')
   const {
     values: { subCategoryFields, withdrawalType },
   } = useFormikContext<IndividualOfferFormValues>()
@@ -51,7 +53,7 @@ export const UsefulInformations = ({
   const displayBookingContact = offerSubCategory?.canBeWithdrawable
 
   return (
-    <FormLayout.Section title="Informations pratiques">
+    <FormLayout.Section title={t('practical_information')}>
       <Venue
         offererNames={offererNames}
         venueList={venueList}

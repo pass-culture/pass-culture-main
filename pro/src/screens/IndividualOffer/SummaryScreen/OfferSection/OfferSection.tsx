@@ -1,4 +1,5 @@
 import cn from 'classnames'
+import { useTranslation } from 'react-i18next'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
@@ -38,6 +39,7 @@ export const OfferSection = ({
   offer,
   isEventPublicationFormShown,
 }: OfferSummaryProps): JSX.Element => {
+  const { t } = useTranslation('common')
   const mode = useOfferWizardMode()
   const { categories, subCategories } = useIndividualOfferContext()
   const musicTypesQuery = useSWR(
@@ -63,7 +65,7 @@ export const OfferSection = ({
   }
 
   const offerTypeDescriptions: Description[] = [
-    { title: 'Catégorie', text: offerData.categoryName },
+    { title: t('category'), text: offerData.categoryName },
     { title: 'Sous-catégorie', text: offerData.subCategoryName },
   ]
   if (!isSplitOfferEnabled) {
@@ -87,8 +89,8 @@ export const OfferSection = ({
     }
   }
   const aboutDescriptions: Description[] = [
-    { title: 'Titre de l’offre', text: offerData.name },
-    { title: 'Description', text: offerData.description || '-' },
+    { title: t('offer_title'), text: offerData.name },
+    { title: t('description'), text: offerData.description || '-' },
   ]
   const venueName = offerData.venuePublicName || offerData.venueName
   if (isOfferAddressEnabled) {
@@ -110,11 +112,11 @@ export const OfferSection = ({
   const artisticInfoDescriptions: Description[] = []
   if (!isSplitOfferEnabled) {
     artisticInfoDescriptions.push({
-      title: 'Titre de l’offre',
+      title: t('offer_title'),
       text: offerData.name,
     })
     artisticInfoDescriptions.push({
-      title: 'Description',
+      title: t('description'),
       text: offerData.description || '-',
     })
   } else {
@@ -242,7 +244,7 @@ export const OfferSection = ({
 
   return (
     <SummarySection
-      title="Détails de l’offre"
+      title={t('offer_details')}
       editLink={getIndividualOfferUrl({
         offerId: offer.id,
         step: isSplitOfferEnabled
@@ -260,11 +262,11 @@ export const OfferSection = ({
     >
       {isSplitOfferEnabled ? (
         <>
-          <SummarySubSection title="À propos de votre offre">
+          <SummarySubSection title={t('about_your_offer')}>
             <SummaryDescriptionList descriptions={aboutDescriptions} />
           </SummarySubSection>
 
-          <SummarySubSection title="Type d’offre">
+          <SummarySubSection title={t('offer_type')}>
             <SummaryDescriptionList descriptions={offerTypeDescriptions} />
           </SummarySubSection>
 
@@ -276,7 +278,7 @@ export const OfferSection = ({
         </>
       ) : (
         <>
-          <SummarySubSection title="Type d’offre">
+          <SummarySubSection title={t('offer_type')}>
             <SummaryDescriptionList descriptions={offerTypeDescriptions} />
           </SummarySubSection>
 
@@ -288,7 +290,7 @@ export const OfferSection = ({
 
       {isSplitOfferEnabled ? (
         <SummarySection
-          title="Informations pratiques"
+          title={t('practical_information')}
           editLink={getIndividualOfferUrl({
             offerId: offer.id,
             step: OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS,
@@ -335,7 +337,7 @@ export const OfferSection = ({
         </SummarySection>
       ) : (
         <>
-          <SummarySubSection title="Informations pratiques">
+          <SummarySubSection title={t('practical_information')}>
             <SummaryDescriptionList descriptions={practicalInfoDescriptions} />
           </SummarySubSection>
 

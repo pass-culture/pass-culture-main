@@ -1,5 +1,6 @@
 import { FormikProvider, useFormik } from 'formik'
 import React, { useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useDispatch } from 'react-redux'
 import { Navigate, useSearchParams } from 'react-router-dom'
 
@@ -35,6 +36,7 @@ interface SigninApiErrorResponse {
 }
 
 export const SignIn = (): JSX.Element => {
+  const { t } = useTranslation('common')
   useRedirectLoggedUser()
   const notify = useNotification()
   const dispatch = useDispatch()
@@ -119,9 +121,7 @@ export const SignIn = (): JSX.Element => {
           Bienvenue sur l’espace dédié aux acteurs culturels
         </h1>
 
-        <div className={styles['mandatory']}>
-          Tous les champs suivis d’un * sont obligatoires.
-        </div>
+        <div className={styles['mandatory']}>{t('mandatory_fields')}</div>
         <FormikProvider value={formik}>
           <SigninForm />
         </FormikProvider>

@@ -1,4 +1,5 @@
 import { Form, Formik, FormikConfig, FormikConsumer } from 'formik'
+import { useTranslation } from 'react-i18next'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useSWRConfig } from 'swr'
 
@@ -32,6 +33,7 @@ interface VenueFormProps {
 }
 
 export const VenueEditionForm = ({ venue }: VenueFormProps) => {
+  const { t } = useTranslation('common')
   const navigate = useNavigate()
   const location = useLocation()
   const notify = useNotification()
@@ -121,7 +123,7 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
               <FormLayout.Row>
                 <TextArea
                   name="description"
-                  label="Description"
+                  label={t('description')}
                   description="Par exemple : mon établissement propose des spectacles, de l’improvisation..."
                   maxLength={1000}
                   isOptional

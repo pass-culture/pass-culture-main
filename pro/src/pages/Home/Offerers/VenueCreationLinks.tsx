@@ -1,4 +1,5 @@
 import React from 'react'
+import { useTranslation } from 'react-i18next'
 import { useLocation } from 'react-router-dom'
 
 import { GetOffererResponseModel } from 'apiClient/v1'
@@ -21,6 +22,7 @@ interface VenueCreationLinksProps {
 }
 
 export const VenueCreationLinks = ({ offerer }: VenueCreationLinksProps) => {
+  const { t } = useTranslation('common')
   const isVenueCreationAvailable = useActiveFeature('API_SIRENE_AVAILABLE')
   const { logEvent } = useAnalytics()
   const location = useLocation()
@@ -51,7 +53,7 @@ export const VenueCreationLinks = ({ offerer }: VenueCreationLinksProps) => {
             })
           }}
         >
-          Ajouter un lieu
+          {t('add_a_place')}
         </ButtonLink>
       </div>
     </div>

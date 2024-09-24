@@ -1,5 +1,6 @@
 import { isBefore } from 'date-fns'
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { useSWRConfig } from 'swr'
 
@@ -35,6 +36,7 @@ export const CollectiveOfferPreviewCreationScreen = ({
   offer,
   offerer,
 }: CollectiveOfferSummaryCreationProps) => {
+  const { t } = useTranslation('common')
   const notify = useNotification()
   const navigate = useNavigate()
   const { mutate } = useSWRConfig()
@@ -122,7 +124,7 @@ export const CollectiveOfferPreviewCreationScreen = ({
       <ActionsBarSticky>
         <ActionsBarSticky.Left>
           <ButtonLink variant={ButtonVariant.SECONDARY} to={backRedirectionUrl}>
-            Retour
+            {t('back')}
           </ButtonLink>
         </ActionsBarSticky.Left>
         <ActionsBarSticky.Right dirtyForm={false} mode={Mode.CREATION}>

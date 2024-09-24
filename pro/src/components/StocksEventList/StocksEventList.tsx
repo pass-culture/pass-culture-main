@@ -1,5 +1,6 @@
 import cn from 'classnames'
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import { useSearchParams } from 'react-router-dom'
 import { useSWRConfig } from 'swr'
@@ -83,6 +84,7 @@ export const StocksEventList = ({
   onStocksLoad,
   canAddStocks = false,
 }: StocksEventListProps): JSX.Element => {
+  const { t } = useTranslation('common')
   // utilities
   const { logEvent } = useAnalytics()
   const notify = useNotification()
@@ -522,7 +524,9 @@ export const StocksEventList = ({
                       styles['header']
                     )}
                   >
-                    <span className={styles['header-name']}>Réservations</span>
+                    <span className={styles['header-name']}>
+                      {t('reservations')}
+                    </span>
 
                     <SortArrow
                       onClick={() =>
@@ -644,7 +648,10 @@ export const StocksEventList = ({
                     </td>
 
                     {readonly ? (
-                      <td className={styles['data']} data-label="Réservations">
+                      <td
+                        className={styles['data']}
+                        data-label={t('reservations')}
+                      >
                         {stock.bookingsQuantity}
                       </td>
                     ) : (

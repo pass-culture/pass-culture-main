@@ -1,5 +1,6 @@
 import { useFormikContext } from 'formik'
 import React from 'react'
+import { useTranslation } from 'react-i18next'
 
 import {
   GetOffererNameResponseModel,
@@ -44,6 +45,7 @@ export const Venue = ({
   hideOfferer = false,
   readOnlyFields = [],
 }: VenueProps): JSX.Element => {
+  const { t } = useTranslation('common')
   const formik = useFormikContext<IndividualOfferFormValues>()
   const { values, setFieldValue } = formik
   const { isDisabled: isOffererDisabled, offererOptions } =
@@ -92,7 +94,7 @@ export const Venue = ({
       <FormLayout.Row>
         <Select
           disabled={isVenueDisabled || readOnlyFields.includes('venueId')}
-          label={isOfferAddressEnabled ? `Qui propose l’offre ?` : 'Lieu'}
+          label={isOfferAddressEnabled ? t('who_proposes_offer') : 'Lieu'}
           name="venueId"
           options={venueOptions}
           onChange={(event) =>

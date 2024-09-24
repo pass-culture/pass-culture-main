@@ -1,5 +1,6 @@
 import { useFormikContext } from 'formik'
 import { useCallback, useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import {
   GetCollectiveOfferResponseModel,
@@ -74,6 +75,7 @@ export const OfferEducationalForm = ({
   offer,
   isSubmitting,
 }: OfferEducationalFormProps): JSX.Element => {
+  const { t } = useTranslation('common')
   const notify = useNotification()
 
   const [venuesOptions, setVenuesOptions] = useState<SelectOption[]>([])
@@ -208,7 +210,7 @@ export const OfferEducationalForm = ({
             type="submit"
             disabled={!isEligible || mode === Mode.READ_ONLY || isSubmitting}
           >
-            Enregistrer et continuer
+            {t('save_and_continue')}
           </Button>
         </ActionsBarSticky.Right>
       </ActionsBarSticky>

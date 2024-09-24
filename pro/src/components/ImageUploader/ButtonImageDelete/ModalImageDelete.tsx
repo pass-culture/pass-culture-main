@@ -1,4 +1,5 @@
 import React from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { ConfirmDialog } from 'components/Dialog/ConfirmDialog/ConfirmDialog'
 import strokeTrashIcon from 'icons/stroke-trash.svg'
@@ -14,9 +15,10 @@ export const ModalImageDelete = ({
   onConfirm,
   onDismiss,
 }: ModalImageDeleteProps): JSX.Element => {
+  const { t } = useTranslation('common')
   return (
     <ConfirmDialog
-      cancelText="Retour"
+      cancelText={t('back')}
       confirmText="Supprimer"
       icon={strokeTrashIcon}
       isLoading={isLoading}

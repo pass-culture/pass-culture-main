@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import {
   generatePath,
@@ -32,6 +33,7 @@ import { VenueEditionFormScreen } from './VenueEditionFormScreen'
 import { VenueEditionHeader } from './VenueEditionHeader'
 
 export const VenueEdition = (): JSX.Element | null => {
+  const { t } = useTranslation('common')
   const { offererId, venueId } = useParams<{
     offererId: string
     venueId: string
@@ -111,7 +113,7 @@ export const VenueEdition = (): JSX.Element | null => {
 
   const titleText =
     activeStep === 'collective'
-      ? 'Page dans ADAGE'
+      ? t('adage_page')
       : !venue.isPermanent
         ? 'Page adresse'
         : 'Page sur l’application'

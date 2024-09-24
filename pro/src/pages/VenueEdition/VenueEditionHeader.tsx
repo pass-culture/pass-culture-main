@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 
 import { api } from 'apiClient/api'
@@ -59,6 +60,7 @@ export const VenueEditionHeader = ({
   offerer,
   venueTypes,
 }: VenueEditionHeaderProps) => {
+  const { t } = useTranslation('common')
   const { logEvent } = useAnalytics()
   const notify = useNotification()
   const isNewSideBarNavigation = useIsNewInterfaceActive()
@@ -176,7 +178,7 @@ export const VenueEditionHeader = ({
             className={styles['venue-button']}
             to={`/offre/creation?lieu=${venue.id}&structure=${offerer.id}`}
           >
-            Créer une offre
+            {t('create_offer')}
           </ButtonLink>
         )}
       </div>

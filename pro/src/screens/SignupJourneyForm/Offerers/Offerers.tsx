@@ -1,5 +1,6 @@
 import cn from 'classnames'
 import React, { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import useSWR from 'swr'
@@ -34,6 +35,7 @@ import { ActionBar } from '../ActionBar/ActionBar'
 import styles from './Offerers.module.scss'
 
 export const Offerers = (): JSX.Element => {
+  const { t } = useTranslation('common')
   const { logEvent } = useAnalytics()
   const notify = useNotification()
   const navigate = useNavigate()
@@ -194,7 +196,7 @@ export const Offerers = (): JSX.Element => {
         Ajouter une nouvelle structure
       </Button>
       <ActionBar
-        previousStepTitle="Retour"
+        previousStepTitle={t('back')}
         hideRightButton
         onClickPrevious={() => {
           setOfferer(null)

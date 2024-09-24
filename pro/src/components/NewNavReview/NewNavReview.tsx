@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next'
+
 import strokeShoutIcon from 'icons/stroke-shout.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -8,6 +10,7 @@ import styles from './NewNavReview.module.scss'
 import { NewNavReviewDialog } from './NewNavReviewDialog/NewNavReviewDialog'
 
 export const NewNavReview = () => {
+  const { t } = useTranslation('common')
   return (
     <>
       <div className={styles['new-nav-review-container']}>
@@ -19,13 +22,15 @@ export const NewNavReview = () => {
         />
         <div>
           <span className={styles['new-nav-review-bold-text']}>
-            Vous êtes sur la nouvelle interface !
+            {t('new_interface_message_part_one')}
           </span>{' '}
-          Dites-nous ce que vous en pensez pour nous aider à l’améliorer.
+          {t('new_interface_message_part_two')}
         </div>
         <DialogBuilder
           trigger={
-            <Button variant={ButtonVariant.SECONDARY}>Je donne mon avis</Button>
+            <Button variant={ButtonVariant.SECONDARY}>
+              {t('give_feedback')}
+            </Button>
           }
         >
           <NewNavReviewDialog />

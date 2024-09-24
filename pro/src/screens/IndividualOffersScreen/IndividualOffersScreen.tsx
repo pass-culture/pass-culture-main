@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import useSWR from 'swr'
 
@@ -80,6 +81,7 @@ export const IndividualOffersScreen = ({
   isRestrictedAsAdmin,
   offers = [],
 }: IndividualOffersScreenProps): JSX.Element => {
+  const { t } = useTranslation('common')
   const [selectedOffers, setSelectedOffers] = useState<
     ListOffersOfferResponseModel[]
   >([])
@@ -171,7 +173,7 @@ export const IndividualOffersScreen = ({
   )
 
   const isNewInterfaceActive = useIsNewInterfaceActive()
-  const title = isNewInterfaceActive ? 'Offres individuelles' : 'Offres'
+  const title = isNewInterfaceActive ? 'Offres individuelles' : t('offers')
 
   function onSetSelectedOffer(offer: ListOffersOfferResponseModel) {
     const matchingOffer = selectedOffers.find((selectedOffer) =>
@@ -199,7 +201,7 @@ export const IndividualOffersScreen = ({
             to={`/offre/creation${selectedOffererId ? `?structure=${selectedOffererId}` : ''}`}
             icon={fullPlusIcon}
           >
-            Créer une offre
+            {t('create_offer')}
           </ButtonLink>
         )}
       </div>

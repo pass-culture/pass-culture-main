@@ -1,5 +1,6 @@
 import cn from 'classnames'
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { apiAdage } from 'apiClient/api'
 import { useNotification } from 'hooks/useNotification'
@@ -19,6 +20,7 @@ interface SurveySatisfactionProps {
 export const SurveySatisfaction = ({
   queryId,
 }: SurveySatisfactionProps): JSX.Element => {
+  const { t } = useTranslation('common')
   const [shouldHideSurveySatisfaction, setShouldHideSurveySatisfaction] =
     useState(false)
 
@@ -84,7 +86,7 @@ export const SurveySatisfaction = ({
             className={styles['survey-button']}
             onClick={logOpenSatisfactionSurvey}
           >
-            Je donne mon avis
+            {t('give_feedback')}
           </ButtonLink>
         </div>
       </div>

@@ -1,5 +1,6 @@
 import cn from 'classnames'
 import React, { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import {
   GetOffererResponseModel,
@@ -28,6 +29,7 @@ export interface VenueProps {
 }
 
 export const Venue = ({ offerer, venue, isFirstVenue }: VenueProps) => {
+  const { t } = useTranslation('common')
   const shouldShowVenueOfferSteps = shouldShowVenueOfferStepsForVenue(venue)
 
   const [prevInitialOpenState, setPrevInitialOpenState] = useState(
@@ -52,7 +54,7 @@ export const Venue = ({ offerer, venue, isFirstVenue }: VenueProps) => {
 
   const editVenueLink = `/structures/${offerer?.id}/lieux/${venue.id}`
   const venueDisplayName = venue.isVirtual
-    ? 'Offres numériques'
+    ? t('digital_offers')
     : venue.publicName || venue.name
 
   return (
@@ -114,7 +116,7 @@ export const Venue = ({ offerer, venue, isFirstVenue }: VenueProps) => {
               )
             }
           >
-            Gérer ma page
+            {t('manage_my_page')}
           </ButtonLink>
         </div>
       </div>

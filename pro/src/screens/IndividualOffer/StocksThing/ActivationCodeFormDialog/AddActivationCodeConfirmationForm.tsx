@@ -1,4 +1,5 @@
 import React from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -21,6 +22,7 @@ export const AddActivationCodeConfirmationForm = ({
   today,
   minExpirationDate,
 }: AddActivationCodeConfirmationFormProps) => {
+  const { t } = useTranslation('common')
   const getMinimumExpirationDatetime = (date: Date) => {
     const result = new Date(date)
     result.setDate(result.getDate() + 7)
@@ -64,7 +66,7 @@ export const AddActivationCodeConfirmationForm = ({
           onClick={clearActivationCodes}
           variant={ButtonVariant.SECONDARY}
         >
-          Retour
+          {t('back')}
         </Button>
         <Button onClick={submitActivationCodes}>Valider</Button>
       </div>

@@ -1,4 +1,5 @@
 import { useFormikContext } from 'formik'
+import { useTranslation } from 'react-i18next'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
@@ -51,6 +52,7 @@ export const DetailsSubForm = ({
   onImageDelete,
   imageOffer,
 }: DetailsSubFormProps) => {
+  const { t } = useTranslation('common')
   const {
     values: { categoryId, showType, subcategoryConditionalFields },
   } = useFormikContext<DetailsFormValues>()
@@ -92,7 +94,7 @@ export const DetailsSubForm = ({
             links={[
               {
                 href: '#eanSearch',
-                label: 'Scanner ou rechercher un produit par EAN',
+                label: t('scan_or_search_ean'),
                 isSectionLink: true,
               },
             ]}

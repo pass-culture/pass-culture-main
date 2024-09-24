@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { api } from 'apiClient/api'
 import {
@@ -61,6 +62,7 @@ const StatBlock = ({ icon, count, label, link, linkLabel }: StatBlockProps) => (
 )
 
 export const OfferStats = ({ offerer, className }: OfferStatsProps) => {
+  const { t } = useTranslation('common')
   const [stats, setStats] = useState<GetOffererV2StatsResponseModel | null>(
     null
   )
@@ -81,7 +83,7 @@ export const OfferStats = ({ offerer, className }: OfferStatsProps) => {
 
   return (
     <Card className={className}>
-      <h3 className={styles['title']}>Vos offres publiées</h3>
+      <h3 className={styles['title']}>{t('your_published_offers')}</h3>
 
       <div className={styles['container']}>
         {isLoading || stats === null ? (
@@ -94,17 +96,17 @@ export const OfferStats = ({ offerer, className }: OfferStatsProps) => {
             <StatBlock
               icon={strokePhoneIcon}
               count={stats.publishedPublicOffers}
-              label="à destination du grand public"
+              label={t('offers_for_public')}
               link={`/offres?structure=${offerer.id}&status=active`}
-              linkLabel="Voir les offres individuelles publiées"
+              linkLabel={t('view_published_individual_offers')}
             />
 
             <StatBlock
               icon={strokeTeacherIcon}
               count={stats.publishedEducationalOffers}
-              label="à destination de groupes scolaires"
+              label={t('offers_for_schools')}
               link={`/offres/collectives?structure=${offerer.id}&status=active`}
-              linkLabel="Voir les offres collectives publiées"
+              linkLabel={t('view_published_collective_offers')}
             />
           </>
         )}
@@ -139,7 +141,7 @@ export const OfferStats = ({ offerer, className }: OfferStatsProps) => {
               <StatBlock
                 icon={strokePhoneIcon}
                 count={stats.pendingPublicOffers}
-                label="à destination du grand public"
+                label={t('offers_for_public')}
                 link={`/offres?structure=${offerer.id}&status=en-attente`}
                 linkLabel="Voir les offres individuelles en attente"
               />
@@ -147,7 +149,7 @@ export const OfferStats = ({ offerer, className }: OfferStatsProps) => {
               <StatBlock
                 icon={strokeTeacherIcon}
                 count={stats.pendingEducationalOffers}
-                label="à destination de groupes scolaires"
+                label={t('offers_for_schools')}
                 link={`/offres/collectives?structure=${offerer.id}&status=en-attente`}
                 linkLabel="Voir les offres collectives en attente"
               />

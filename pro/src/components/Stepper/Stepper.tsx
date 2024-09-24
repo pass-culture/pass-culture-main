@@ -1,5 +1,6 @@
 import cn from 'classnames'
 import React, { useLayoutEffect, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { StepContent } from 'components/Stepper/StepContent'
 import { findLastIndex } from 'utils/findLastIndex'
@@ -32,6 +33,7 @@ export const Stepper = ({
   steps,
   className,
 }: StepperProps): JSX.Element => {
+  const { t } = useTranslation('common')
   const listRef = useRef<HTMLOListElement>(null)
   const [stepperWidth, setStepperWidth] = useState(0)
 
@@ -77,7 +79,7 @@ export const Stepper = ({
               {isActive && (
                 <span className={styles['visually-hidden']}>
                   {' '}
-                  (étape en cours)
+                  {t('current_step')}
                 </span>
               )}
               {!isLastStep && (

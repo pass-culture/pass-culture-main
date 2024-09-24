@@ -1,5 +1,6 @@
 import { useFormikContext } from 'formik'
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { CategoryResponseModel, SubcategoryResponseModel } from 'apiClient/v1'
 import { FormLayout } from 'components/FormLayout/FormLayout'
@@ -34,6 +35,7 @@ export function SuggestedSubcategories({
   filteredCategories,
   filteredSubcategories,
 }: SuggestedSubcategoriesProps) {
+  const { t } = useTranslation('common')
   const [prevSelectedSubCategory, setPrevSelectedFromPrevSuggestions] =
     useState<string | null>(null)
   const { subCategories, setIsEvent } = useIndividualOfferContext()
@@ -125,7 +127,7 @@ export function SuggestedSubcategories({
 
   return (
     <FormLayout.Section
-      title={'Type d’offre'}
+      title={t('offer_type')}
       className={styles['suggested-subcategories-section']}
     >
       <FormLayout.Row>
@@ -170,18 +172,16 @@ export function SuggestedSubcategories({
                   opensInNewTab: true,
                 }}
               >
-                Une sélection précise de vos catégories permettra au grand
-                public de facilement trouver votre offre. Une fois validées,
-                vous ne pourrez pas les modifier.
+                {t('category_selection_info')}
               </InfoBox>
             }
           >
             <Select
-              label="Catégorie"
+              label={t('category')}
               name="categoryId"
               options={categoryOptions}
               defaultOption={{
-                label: 'Choisir une catégorie',
+                label: t('choose_category'),
                 value: DEFAULT_DETAILS_FORM_VALUES.categoryId,
               }}
               disabled={readOnlyFields.includes('categoryId')}

@@ -1,5 +1,6 @@
 import * as Dialog from '@radix-ui/react-dialog'
 import { FieldArray, FormikProvider, useFormik } from 'formik'
+import { useTranslation } from 'react-i18next'
 
 import { PriceCategoryResponseModel } from 'apiClient/v1'
 import { FormLayout } from 'components/FormLayout/FormLayout'
@@ -102,6 +103,7 @@ export const RecurrenceForm = ({
   priceCategories,
   handleSubmit,
 }: RecurrenceFormProps): JSX.Element => {
+  const { t } = useTranslation('common')
   const priceCategoryOptions = getPriceCategoryOptions(priceCategories)
 
   const formik = useFormik({
@@ -127,9 +129,7 @@ export const RecurrenceForm = ({
           <h1 className={styles['title']}>Ajouter une ou plusieurs dates</h1>
         </Dialog.Title>
 
-        <div className={styles['mandatory']}>
-          Tous les champs suivis d’un * sont obligatoires.
-        </div>
+        <div className={styles['mandatory']}>{t('mandatory_fields')}</div>
 
         <fieldset>
           <div className={styles['section']}>

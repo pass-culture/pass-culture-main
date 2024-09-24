@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next'
+
 import { GetVenueResponseModel } from 'apiClient/v1'
 import { AccessibilitySummarySection } from 'components/AccessibilitySummarySection/AccessibilitySummarySection'
 import { Callout } from 'components/Callout/Callout'
@@ -12,6 +14,7 @@ interface VenueEditionReadOnlyProps {
 }
 
 export const VenueEditionReadOnly = ({ venue }: VenueEditionReadOnlyProps) => {
+  const { t } = useTranslation('common')
   return (
     <SummarySection
       title="Vos informations pour le grand public"
@@ -24,7 +27,7 @@ export const VenueEditionReadOnly = ({ venue }: VenueEditionReadOnlyProps) => {
         <SummaryDescriptionList
           descriptions={[
             {
-              title: 'Description',
+              title: t('description'),
               text: venue.description ?? 'Non renseignée',
             },
           ]}

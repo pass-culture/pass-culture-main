@@ -1,6 +1,7 @@
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import cn from 'classnames'
 import React, { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
 import { useLocation, useSearchParams } from 'react-router-dom'
 import useSWR from 'swr'
@@ -31,6 +32,7 @@ import { sortByLabel } from 'utils/strings'
 import styles from './HeaderDropdown.module.scss'
 
 export const HeaderDropdown = () => {
+  const { t } = useTranslation('common')
   const { logEvent } = useAnalytics()
   const currentUser = useSelector(selectCurrentUser)
   const currentOffererId = useSelector(selectCurrentOffererId)
@@ -181,7 +183,7 @@ export const HeaderDropdown = () => {
                           variant={ButtonVariant.TERNARY}
                           onClick={() => setSubOpen(false)}
                         >
-                          Retour
+                          {t('back')}
                         </Button>
                         <div className={styles['sub-popin-header-text']}>
                           Structure
@@ -260,7 +262,7 @@ export const HeaderDropdown = () => {
             <DropdownMenu.Label
               className={cn(styles['menu-title'], styles['tablet-only'])}
             >
-              Centre d’aide
+              {t('help_center')}
             </DropdownMenu.Label>
             <div className={styles['tablet-only']}>
               <HelpDropdownMenu />

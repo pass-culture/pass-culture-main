@@ -1,4 +1,5 @@
 import cn from 'classnames'
+import { useTranslation } from 'react-i18next'
 import { NavLink } from 'react-router-dom'
 
 import { AdageFrontRoles, AdageHeaderLink } from 'apiClient/adage'
@@ -18,6 +19,7 @@ type AdageHeaderMenuProps = {
 export const AdageHeaderMenu = ({
   logAdageLinkClick,
 }: AdageHeaderMenuProps) => {
+  const { t } = useTranslation('common')
   const params = new URLSearchParams(location.search)
   const adageAuthToken = params.get('token')
 
@@ -65,7 +67,7 @@ export const AdageHeaderMenu = ({
               {({ isActive }) => (
                 <div className={styles['adage-header-link-focus']}>
                   <SvgIcon src={strokeSearchIcon} alt="" width="20" />
-                  Rechercher
+                  {t('search')}
                   <span className={styles['active-link-visually-hidden']}>
                     {isActive ? ' (Onglet actif)' : null}
                   </span>

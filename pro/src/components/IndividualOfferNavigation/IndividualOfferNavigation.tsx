@@ -1,4 +1,5 @@
 import React, { FC } from 'react'
+import { useTranslation } from 'react-i18next'
 import { generatePath, useLocation } from 'react-router-dom'
 
 import { Step, StepPattern, Stepper } from 'components/Stepper/Stepper'
@@ -25,6 +26,7 @@ interface IndividualOfferNavigationProps {
 export const IndividualOfferNavigation: FC<IndividualOfferNavigationProps> = ({
   isUsefulInformationSubmitted,
 }) => {
+  const { t } = useTranslation('common')
   const isSplitOfferEnabled = useActiveFeature('WIP_SPLIT_OFFER')
   const { offer, isEvent: isEventOfferContext } = useIndividualOfferContext()
   const activeStep = useActiveStep(Object.values(OFFER_WIZARD_STEP_IDS))
@@ -48,7 +50,7 @@ export const IndividualOfferNavigation: FC<IndividualOfferNavigationProps> = ({
     if (mode === OFFER_WIZARD_MODE.READ_ONLY) {
       steps.push({
         id: OFFER_WIZARD_STEP_IDS.SUMMARY,
-        label: 'Détails de l’offre',
+        label: t('offer_details'),
         path: getIndividualOfferPath({
           step: OFFER_WIZARD_STEP_IDS.SUMMARY,
           mode,
@@ -58,7 +60,7 @@ export const IndividualOfferNavigation: FC<IndividualOfferNavigationProps> = ({
     } else {
       steps.push({
         id: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-        label: 'Détails de l’offre',
+        label: t('offer_details'),
         path: getIndividualOfferPath({
           step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
           mode,
@@ -71,7 +73,7 @@ export const IndividualOfferNavigation: FC<IndividualOfferNavigationProps> = ({
     steps.push(
       {
         id: OFFER_WIZARD_STEP_IDS.DETAILS,
-        label: 'Détails de l’offre',
+        label: t('offer_details'),
         path: getIndividualOfferPath({
           step: OFFER_WIZARD_STEP_IDS.DETAILS,
           mode,
@@ -80,7 +82,7 @@ export const IndividualOfferNavigation: FC<IndividualOfferNavigationProps> = ({
       },
       {
         id: OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS,
-        label: 'Informations pratiques',
+        label: t('practical_information'),
         path: getIndividualOfferPath({
           step: OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS,
           mode,

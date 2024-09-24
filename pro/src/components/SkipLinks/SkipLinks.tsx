@@ -1,4 +1,5 @@
 import React from 'react'
+import { useTranslation } from 'react-i18next'
 
 import fullNextIcon from 'icons/full-next.svg'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
@@ -13,8 +14,9 @@ interface SkipLinksProps {
 export const SkipLinks = ({
   displayMenu = false,
 }: SkipLinksProps): JSX.Element => {
+  const { t } = useTranslation('common')
   const buttons: { anchor: string; label: string }[] = [
-    { anchor: '#content', label: 'Aller au contenu' },
+    { anchor: '#content', label: t('go_to_content') },
   ].concat(displayMenu ? { anchor: '#header-navigation', label: 'Menu' } : [])
 
   return (

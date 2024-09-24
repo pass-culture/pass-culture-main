@@ -1,5 +1,6 @@
 import { FormikProvider, useFormik } from 'formik'
 import { useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
@@ -85,6 +86,7 @@ export const CollectiveOfferVisibilityScreen = ({
   offer,
   requestId = '',
 }: CollectiveOfferVisibilityProps) => {
+  const { t } = useTranslation('common')
   const notify = useNotification()
 
   const [teachersOptions, setTeachersOptions] = useState<TeacherOption[]>([])
@@ -315,7 +317,7 @@ export const CollectiveOfferVisibilityScreen = ({
                       : '/offres/collectives'
                   }
                 >
-                  {mode === Mode.CREATION ? 'Retour' : 'Annuler et quitter'}
+                  {mode === Mode.CREATION ? t('back') : 'Annuler et quitter'}
                 </ButtonLink>
               </ActionsBarSticky.Left>
               <ActionsBarSticky.Right dirtyForm={formik.dirty} mode={mode}>
@@ -327,7 +329,7 @@ export const CollectiveOfferVisibilityScreen = ({
                     mode === Mode.READ_ONLY
                   }
                 >
-                  Enregistrer et continuer
+                  {t('save_and_continue')}
                 </Button>
               </ActionsBarSticky.Right>
             </ActionsBarSticky>

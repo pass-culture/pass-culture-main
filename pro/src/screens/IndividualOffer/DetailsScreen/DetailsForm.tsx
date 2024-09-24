@@ -1,5 +1,6 @@
 import { useFormikContext } from 'formik'
 import React, { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import { useDebouncedCallback } from 'use-debounce'
 
@@ -56,6 +57,7 @@ export const DetailsForm = ({
   onImageDelete,
   imageOffer,
 }: DetailsFormProps): JSX.Element => {
+  const { t } = useTranslation('common')
   const areSuggestedSubcategoriesUsed = useSuggestedSubcategoriesAbTest()
   const [hasSuggestionsApiBeenCalled, setHasSuggestionsApiBeenCalled] =
     useState(false)
@@ -147,7 +149,7 @@ export const DetailsForm = ({
 
   return (
     <>
-      <FormLayout.Section title="À propos de votre offre">
+      <FormLayout.Section title={t('about_your_offer')}>
         {showAddVenueBanner && (
           <FormLayout.Row>
             <Callout
@@ -158,7 +160,7 @@ export const DetailsForm = ({
                     src: fullMoreIcon,
                     alt: '',
                   },
-                  label: 'Ajouter un lieu',
+                  label: t('add_a_place'),
                 },
               ]}
               variant={CalloutVariant.ERROR}
@@ -173,7 +175,7 @@ export const DetailsForm = ({
             {SHOW_VENUE_SELECTION_FIELD && (
               <FormLayout.Row>
                 <Select
-                  label={offerAddressEnabled ? 'Qui propose l’offre ?' : 'Lieu'}
+                  label={offerAddressEnabled ? t('who_proposes_offer') : 'Lieu'}
                   name="venueId"
                   options={venueOptions}
                   onChange={async (ev) => {
@@ -196,7 +198,7 @@ export const DetailsForm = ({
             <FormLayout.Row>
               <TextInput
                 countCharacters
-                label="Titre de l’offre"
+                label={t('offer_title')}
                 maxLength={90}
                 name="name"
                 onChange={onChangeGetSuggestedSubcategories}
@@ -209,7 +211,7 @@ export const DetailsForm = ({
             <FormLayout.Row>
               <TextArea
                 isOptional
-                label="Description"
+                label={t('description')}
                 maxLength={1000}
                 name="description"
                 onChange={onChangeGetSuggestedSubcategories}
@@ -251,7 +253,7 @@ export const DetailsForm = ({
                       src: fullMoreIcon,
                       alt: '',
                     },
-                    label: 'Ajouter un lieu',
+                    label: t('add_a_place'),
                   },
                 ]}
                 variant={CalloutVariant.ERROR}

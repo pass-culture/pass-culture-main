@@ -1,6 +1,7 @@
 import { FormikProvider, useFormik } from 'formik'
 import isEqual from 'lodash.isequal'
 import { Dispatch, FormEvent, SetStateAction, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import {
   CollectiveOfferDisplayedStatus,
@@ -92,6 +93,7 @@ export const CollectiveOffersSearchFilters = ({
   venues,
   isRestrictedAsAdmin = false,
 }: CollectiveOffersSearchFiltersProps): JSX.Element => {
+  const { t } = useTranslation('common')
   const isNewInterfaceActive = useIsNewInterfaceActive()
   const isNewOffersAndBookingsActive = useActiveFeature(
     'WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE'
@@ -306,7 +308,7 @@ export const CollectiveOffersSearchFilters = ({
         <div className={styles['search-separator']}>
           <div className={styles['separator']} />
           <Button type="submit" disabled={disableAllFilters}>
-            Rechercher
+            {t('search')}
           </Button>
           <div className={styles['separator']} />
         </div>

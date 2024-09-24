@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next'
+
 import {
   CollectiveOfferTemplateResponseModel,
   CollectiveOfferResponseModel,
@@ -34,6 +36,7 @@ export const AdageOffer = ({
   setInstitutionOfferCount,
   institutionOfferCount,
 }: AdageOfferProps) => {
+  const { t } = useTranslation('common')
   const isOfferBookable = isCollectiveOfferBookable(offer)
 
   return (
@@ -51,7 +54,7 @@ export const AdageOffer = ({
             <div className={styles['offer-section-header']}>
               <SvgIcon alt="" src={strokeArticleIcon} width="24" />
               <h2 className={styles['offer-section-header-title']}>
-                Détails de l’offre
+                {t('offer_details')}
               </h2>
             </div>
 
@@ -64,7 +67,7 @@ export const AdageOffer = ({
             <div className={styles['offer-section-header']}>
               <SvgIcon alt="" src={strokeInfoIcon} width="24" />
               <h2 className={styles['offer-section-header-title']}>
-                Informations pratiques
+                {t('practical_information')}
               </h2>
             </div>
 

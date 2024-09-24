@@ -1,4 +1,5 @@
 import * as Dialog from '@radix-ui/react-dialog'
+import { useTranslation } from 'react-i18next'
 
 import { UploaderModeEnum } from 'components/ImageUploader/types'
 
@@ -16,6 +17,7 @@ export const ModalAppPreview = ({
   mode,
   imageUrl,
 }: ModalAppPreviewProps): JSX.Element => {
+  const { t } = useTranslation('common')
   const AppPreview = {
     [UploaderModeEnum.VENUE]: AppPreviewVenue,
     [UploaderModeEnum.OFFER]: AppPreviewOffer,
@@ -25,7 +27,7 @@ export const ModalAppPreview = ({
   return (
     <div className={style['container']}>
       <Dialog.Title asChild>
-        <h1 className={style['header']}>Ajouter une image</h1>
+        <h1 className={style['header']}>{t('add_image')}</h1>
       </Dialog.Title>
 
       <div className={style['subtitle']}>

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import {
   GetOffererResponseModel,
@@ -46,6 +47,7 @@ export const PartnerPages = ({
   offerer,
   venueTypes,
 }: PartnerPagesProps) => {
+  const { t } = useTranslation('common')
   const [selectedVenueId, setSelectedVenueId] = useState<string>(
     venues.length > 0
       ? (getSavedVenueId(venues) ?? venues[0].id.toString())
@@ -63,18 +65,16 @@ export const PartnerPages = ({
   return (
     <section className={styles['section']}>
       <h3 className={styles['title']}>
-        {venues.length === 1 ? 'Votre page partenaire' : 'Vos pages partenaire'}
+        {venues.length === 1 ? 'Votre page partenaire' : t('partner_pages')}
       </h3>
 
       <p className={styles['description']}>
-        Complétez vos informations pour présenter votre activité au grand public
-        sur le site et l’application pass Culture à destination des jeunes et /
-        ou auprès des enseignants sur la plateforme ADAGE.
+        {t('complete_information_for_public')}
       </p>
 
       {venues.length > 1 && (
         <>
-          <FieldLayout label="Sélectionnez votre page partenaire" name="venues">
+          <FieldLayout label={t('select_partner_page')} name="venues">
             <SelectInput
               name="venues"
               options={venuesOptions}
