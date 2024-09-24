@@ -34,6 +34,8 @@ import type { EditVenueCollectiveDataBodyModel } from '../models/EditVenueCollec
 import type { EducationalDomainsResponseModel } from '../models/EducationalDomainsResponseModel';
 import type { EducationalInstitutionsResponseModel } from '../models/EducationalInstitutionsResponseModel';
 import type { EducationalRedactors } from '../models/EducationalRedactors';
+import type { EuropeanOfferData } from '../models/EuropeanOfferData';
+import type { EuropeanOfferResponse } from '../models/EuropeanOfferResponse';
 import type { EventDatesInfos } from '../models/EventDatesInfos';
 import type { FinanceBankAccountListResponseModel } from '../models/FinanceBankAccountListResponseModel';
 import type { GenerateOffererApiKeyResponse } from '../models/GenerateOffererApiKeyResponse';
@@ -1137,6 +1139,26 @@ export class DefaultService {
       },
       errors: {
         401: `Unauthorized`,
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+  /**
+   * post_european_offer <POST>
+   * @param requestBody
+   * @returns EuropeanOfferResponse Created
+   * @throws ApiError
+   */
+  public postEuropeanOffer(
+    requestBody?: EuropeanOfferData,
+  ): CancelablePromise<EuropeanOfferResponse> {
+    return this.httpRequest.request({
+      method: 'POST',
+      url: '/european_offers',
+      body: requestBody,
+      mediaType: 'application/json',
+      errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
