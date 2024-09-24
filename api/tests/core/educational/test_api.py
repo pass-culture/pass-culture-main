@@ -634,6 +634,9 @@ class SynchroniseRuralityLevelTest:
         et3 = educational_factories.EducationalInstitutionFactory(
             ruralLevel=educational_models.InstitutionRuralLevel.RURAL_A_HABITAT_DISPERSE
         )
+        et4 = educational_factories.EducationalInstitutionFactory(
+            ruralLevel=educational_models.InstitutionRuralLevel.RURAL_A_HABITAT_DISPERSE
+        )
 
         mock_path = "pcapi.connectors.big_query.TestingBackend.run_query"
         with mock.patch(mock_path) as mock_run_query:
@@ -650,13 +653,18 @@ class SynchroniseRuralityLevelTest:
                     "institution_id": str(et3.id),
                     "institution_rural_level": educational_models.InstitutionRuralLevel.GRANDS_CENTRES_URBAINS.value,
                 },
+                {
+                    "institution_id": str(et4.id),
+                    "institution_rural_level": None,
+                },
             ]
             institution_api.synchronise_rurality_level()
 
         institutions = educational_models.EducationalInstitution.query.order_by(
             educational_models.EducationalInstitution.id
         ).all()
-        assert [i.id for i in institutions] == [et1.id, et2.id, et3.id]
+        assert [i.id for i in institutions] == [et1.id, et2.id, et3.id, et4.id]
         assert institutions[0].ruralLevel == educational_models.InstitutionRuralLevel.RURAL_A_HABITAT_DISPERSE
         assert institutions[1].ruralLevel == educational_models.InstitutionRuralLevel.RURAL_A_HABITAT_DISPERSE
         assert institutions[2].ruralLevel == educational_models.InstitutionRuralLevel.GRANDS_CENTRES_URBAINS
+        assert institutions[3].ruralLevel == None
