@@ -461,36 +461,33 @@ class ListIndividualBookingsTest(GetEndpointHelper):
         assert set(row["Contremarque"] for row in rows) == {bookings[0].token, bookings[2].token}
 
     @pytest.mark.parametrize(
-        "deposit_filter_value, result_token",
+        "deposit_filter_value, result_token, result_active",
         [
-            ("expired", "EXPIRD"),
-            ("active", "ACTIVE"),
+            ("expired", "EXPIRD", "Non"),
+            ("active", "ACTIVE", "Oui"),
         ],
     )
-    def test_list_bookings_by_deposit_expiration_status(self, authenticated_client, deposit_filter_value, result_token):
-        old_user = users_factories.BeneficiaryGrant18Factory()
-        expired_deposit_booking = bookings_factories.UsedBookingFactory(
-            user=old_user,
-            token="EXPIRD",
-        )
-        users_factories.DepositGrantFactory(
-            bookings=[expired_deposit_booking],
-            dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=5),
-            expirationDate=datetime.datetime.utcnow() - datetime.timedelta(days=1),
-        )
+    def test_list_bookings_by_deposit_expiration_status(
+        self, authenticated_client, deposit_filter_value, result_token, result_active
+    ):
+        offer = offers_factories.OfferFactory()
+        offer_id = offer.id
 
-        new_user = users_factories.BeneficiaryGrant18Factory()
-        bookings_factories.UsedBookingFactory(
-            user=new_user,
-            token="ACTIVE",
-        )
+        expired_deposit_booking = bookings_factories.UsedBookingFactory(token="EXPIRD", stock__offer=offer)
+        expired_deposit_booking.deposit.expirationDate = datetime.datetime.utcnow() - datetime.timedelta(days=1)
+        db.session.flush()
+
+        bookings_factories.UsedBookingFactory(token="ACTIVE", stock__offer=offer)
 
         with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, deposit=deposit_filter_value))
+            # Also search on offer ID to have something realistic (cartesian product found and fixed in such a case)
+            response = authenticated_client.get(url_for(self.endpoint, q=str(offer_id), deposit=deposit_filter_value))
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert set(row["Contremarque"] for row in rows) == {result_token}
+        assert len(rows) == 1
+        assert rows[0]["Contremarque"] == result_token
+        assert rows[0]["Crédit actif"] == result_active
 
     def test_list_bookings_with_only_all_deposit_filter_considered_as_empty_form(self, authenticated_client):
         old_user = users_factories.BeneficiaryGrant18Factory()
