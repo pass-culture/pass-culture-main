@@ -6,6 +6,7 @@ import { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
 import {
+  CollectiveOfferDisplayedStatus,
   CollectiveOfferStatus,
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
@@ -22,6 +23,7 @@ import {
   OFFER_FROM_TEMPLATE_ENTRIES,
 } from 'core/FirebaseEvents/constants'
 import { NOTIFICATION_LONG_SHOW_DURATION } from 'core/Notification/constants'
+import { isCollectiveOffer } from 'core/OfferEducational/types'
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
 import { createOfferFromTemplate } from 'core/OfferEducational/utils/createOfferFromTemplate'
 import { useActiveFeature } from 'hooks/useActiveFeature'
@@ -97,6 +99,11 @@ export const CollectiveOfferNavigation = ({
   const canEditOffer =
     offer?.status !== CollectiveOfferStatus.ARCHIVED &&
     location.pathname.includes('edition')
+
+  const canPreviewOffer =
+    (isCollectiveOffer(offer) &&
+      offer.displayedStatus !== CollectiveOfferDisplayedStatus.ARCHIVED) ||
+    !isCollectiveOffer(offer)
 
   const requestIdUrl = requestId ? `?requete=${requestId}` : ''
 
@@ -229,9 +236,11 @@ export const CollectiveOfferNavigation = ({
   return isEditingExistingOffer ? (
     <>
       <div className={styles['duplicate-offer']}>
-        <ButtonLink to={previewLink} icon={fullShowIcon}>
-          Aperçu dans ADAGE
-        </ButtonLink>
+        {canPreviewOffer && (
+          <ButtonLink to={previewLink} icon={fullShowIcon}>
+            Aperçu dans ADAGE
+          </ButtonLink>
+        )}
 
         {isArchivable && (
           <Button
