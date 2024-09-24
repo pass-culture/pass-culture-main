@@ -128,12 +128,11 @@ def create_offers_base_list(
     offers = []
     templates = []
     if basic_offers:
-        for _ in range(size):
+        for _i in range(size):
             stock = educational_factories.CollectiveStockFactory(
                 collectiveOffer__name=f"offer {next(number_iterator)} pour {offerer.name}",
                 collectiveOffer__educational_domains=[next(domains_iterator)],
                 collectiveOffer__venue=next(venue_iterator),
-                collectiveOffer__institution=next(institution_iterator),
                 collectiveOffer__nationalProgram=next(national_program_iterator),
                 collectiveOffer__bookingEmails=["toto@totoland.com"],
                 collectiveOffer__author=user_factory.ProFactory(email="eac_1_lieu@example.com"),
@@ -141,33 +140,12 @@ def create_offers_base_list(
                 beginningDatetime=datetime.utcnow() + timedelta(days=60),
             )
             offers.append(stock.collectiveOffer)
-
-        if settings.CREATE_ADAGE_TESTING_DATA:
-            # add an offer with and emoji so that ADAGE can check that the encoding works
-            institution = educational_models.EducationalInstitution.query.filter(
-                educational_models.EducationalInstitution.institutionId == "0131251P"
-            ).one()
-
-            stock = educational_factories.CollectiveStockFactory(
-                collectiveOffer__name=f"offer {next(number_iterator)} pour {offerer.name} 🍕",
-                collectiveOffer__educational_domains=[next(domains_iterator)],
-                collectiveOffer__venue=next(venue_iterator),
-                collectiveOffer__institution=institution,
-                collectiveOffer__nationalProgram=next(national_program_iterator),
-                collectiveOffer__bookingEmails=["toto@totoland.com"],
-                collectiveOffer__author=user_factory.ProFactory(email="eac_1_lieu@example.com"),
-                collectiveOffer__formats=[EacFormat.PROJECTION_AUDIOVISUELLE],
-                beginningDatetime=datetime.utcnow() + timedelta(days=60),
-            )
-            offers.append(stock.collectiveOffer)
-
     if image_offers:
-        for _ in range(size):
+        for _i in range(5):
             stock = educational_factories.CollectiveStockFactory(
                 collectiveOffer__name=f"offer {next(number_iterator)} pour {offerer.name} with image",
                 collectiveOffer__educational_domains=[next(domains_iterator)],
                 collectiveOffer__venue=next(venue_iterator),
-                collectiveOffer__institution=next(institution_iterator),
                 collectiveOffer__bookingEmails=["toto@totoland.com"],
                 beginningDatetime=datetime.utcnow() + timedelta(days=60),
             )
@@ -189,7 +167,7 @@ def create_offers_base_list(
                 lastName="MARIANNE",
                 civility="Mme",
             )
-        for _ in range(size):
+        for _i in range(5):
             stock = educational_factories.CollectiveStockFactory(
                 collectiveOffer__name=f"offer {next(number_iterator)} pour {offerer.name} to teacher",
                 collectiveOffer__educational_domains=[next(domains_iterator)],
@@ -200,9 +178,8 @@ def create_offers_base_list(
                 beginningDatetime=datetime.utcnow() + timedelta(days=60),
             )
             offers.append(stock.collectiveOffer)
-
     if public_api_offers:
-        for _ in range(size):
+        for _i in range(5):
             stock = educational_factories.CollectiveStockFactory(
                 collectiveOffer__name=f"offer {next(number_iterator)} pour {offerer.name} public api",
                 collectiveOffer__educational_domains=[next(domains_iterator)],
@@ -215,42 +192,36 @@ def create_offers_base_list(
                 beginningDatetime=datetime.utcnow() + timedelta(days=60),
             )
             offers.append(stock.collectiveOffer)
-
     if expired_offers:
-        for _ in range(size):
+        for _i in range(5):
             stock = educational_factories.CollectiveStockFactory(
                 collectiveOffer__name=f"offer {next(number_iterator)} pour {offerer.name} expired",
                 collectiveOffer__educational_domains=[next(domains_iterator)],
                 collectiveOffer__venue=next(venue_iterator),
-                collectiveOffer__institution=next(institution_iterator),
                 collectiveOffer__bookingEmails=["toto@totoland.com"],
                 bookingLimitDatetime=datetime.utcnow() - timedelta(days=2),
                 beginningDatetime=datetime.utcnow(),
             )
             offers.append(stock.collectiveOffer)
-
     if pending_offers:
-        for _ in range(size):
+        for _i in range(5):
             educational_factories.CollectiveStockFactory(
                 collectiveOffer__name=f"offer {next(number_iterator)} pour {offerer.name} pending",
                 collectiveOffer__educational_domains=[next(domains_iterator)],
                 collectiveOffer__venue=next(venue_iterator),
-                collectiveOffer__institution=next(institution_iterator),
                 collectiveOffer__validation=OfferValidationStatus.PENDING,
                 collectiveOffer__bookingEmails=["toto@totoland.com"],
                 beginningDatetime=datetime.utcnow() + timedelta(days=60),
             )
             offers.append(stock.collectiveOffer)
-
     if offers_next_year:
         current_year = datetime.utcnow().year
         target_year = current_year + 2 if datetime.utcnow().month >= 9 else current_year + 1
-        for _ in range(size):
+        for _i in range(5):
             stock = educational_factories.CollectiveStockFactory(
                 collectiveOffer__name=f"offer next year {next(number_iterator)} pour {offerer.name}",
                 collectiveOffer__educational_domains=[next(domains_iterator)],
                 collectiveOffer__venue=next(venue_iterator),
-                collectiveOffer__institution=next(institution_iterator),
                 collectiveOffer__bookingEmails=["toto@totoland.com"],
                 beginningDatetime=datetime(target_year, 3, 18),
                 bookingLimitDatetime=datetime(target_year, 3, 3),
@@ -258,33 +229,29 @@ def create_offers_base_list(
             offers.append(stock.collectiveOffer)
 
     if offers_intervention_56:
-        for _ in range(size):
+        for _ in range(5):
             stock = educational_factories.CollectiveStockFactory(
                 collectiveOffer__name=f"offer {next(number_iterator)} pour {offerer.name} interventionArea 56",
                 collectiveOffer__educational_domains=[next(domains_iterator)],
                 collectiveOffer__venue=next(venue_iterator),
-                collectiveOffer__institution=next(institution_iterator),
                 collectiveOffer__interventionArea=["56"],
                 collectiveOffer__bookingEmails=["toto@totoland.com"],
                 beginningDatetime=datetime.utcnow() + timedelta(days=60),
             )
             offers.append(stock.collectiveOffer)
-
     if offers_intervention_91:
-        for _ in range(size):
+        for _i in range(5):
             stock = educational_factories.CollectiveStockFactory(
                 collectiveOffer__name=f"offer {next(number_iterator)} pour {offerer.name} interventionArea 91",
                 collectiveOffer__educational_domains=[next(domains_iterator)],
                 collectiveOffer__venue=next(venue_iterator),
-                collectiveOffer__institution=next(institution_iterator),
                 collectiveOffer__interventionArea=["91"],
                 collectiveOffer__bookingEmails=["toto@totoland.com"],
                 beginningDatetime=datetime.utcnow() + timedelta(days=60),
             )
             offers.append(stock.collectiveOffer)
-
     if basic_templates:
-        for _ in range(5):
+        for _i in range(5):
             template = educational_factories.CollectiveOfferTemplateFactory(
                 name=f"offer {next(number_iterator)} pour {offerer.name} basic template",
                 educational_domains=[next(domains_iterator)],
@@ -295,7 +262,6 @@ def create_offers_base_list(
                 formats=[EacFormat.PROJECTION_AUDIOVISUELLE],
             )
             templates.append(template)
-
         if from_templates_offers:
             for template in 4 * [templates[0]] + 1 * [templates[1]]:
                 educational_factories.CollectiveStockFactory(
@@ -306,9 +272,7 @@ def create_offers_base_list(
                     collectiveOffer__institution=next(institution_iterator),
                     collectiveOffer__nationalProgram=next(national_program_iterator),
                     collectiveOffer__bookingEmails=["toto@totoland.com"],
-                    beginningDatetime=datetime.utcnow() + timedelta(days=60),
                 )
-
     if image_template:
         for _ in range(5):
             template = educational_factories.CollectiveOfferTemplateFactory(
@@ -319,9 +283,8 @@ def create_offers_base_list(
             )
             add_image_to_offer(template, next(image_iterator))
             templates.append(template)
-
     if offers_with_request:
-        for i in range(size):
+        for i in range(5):
             number = next(number_iterator)
             template = educational_factories.CollectiveOfferTemplateFactory(
                 name=f"offer {number} pour {offerer.name} template request",
