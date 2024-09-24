@@ -8,7 +8,7 @@ import { BaseInput } from '../shared/BaseInput/BaseInput'
 
 import styles from './AdageMultiselect.module.scss'
 
-interface ItemProps {
+export interface ItemProps {
   label: string
   value: number | string | string[]
 }

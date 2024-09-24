@@ -15,6 +15,12 @@ import { OfferFilters } from '../OfferFilters'
 const handleSubmit = vi.fn()
 const mockSetLocalisationFilterState = vi.fn()
 
+vi.mock('apiClient/api', () => ({
+  apiAdage: {
+    getAcademies: vi.fn(),
+  },
+}))
+
 const renderOfferFilters = (
   initialValues: SearchFormValues,
   localisationFilterState = LocalisationFilterStates.NONE,
