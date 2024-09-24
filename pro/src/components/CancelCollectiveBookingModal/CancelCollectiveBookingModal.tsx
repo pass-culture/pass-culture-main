@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next'
+
 import { ConfirmDialog } from 'components/Dialog/ConfirmDialog/ConfirmDialog'
 import strokeTrashIcon from 'icons/stroke-trash.svg'
 import strokeWrongIcon from 'icons/stroke-wrong.svg'
@@ -15,6 +17,7 @@ export const CancelCollectiveBookingModal = ({
   onValidate,
   isFromOffer = false,
 }: OfferEducationalModalProps): JSX.Element => {
+  const { t } = useTranslation('common')
   const modalTitle = isFromOffer
     ? 'Êtes-vous sûr de vouloir annuler la réservation liée à cette offre ? '
     : 'Voulez-vous annuler la réservation ?'
@@ -23,7 +26,7 @@ export const CancelCollectiveBookingModal = ({
     <ConfirmDialog
       onCancel={onDismiss}
       onConfirm={onValidate}
-      cancelText={isFromOffer ? 'Annuler' : 'Retour'}
+      cancelText={isFromOffer ? 'Annuler' : t('back')}
       confirmText={isFromOffer ? 'Annuler la réservation' : 'Confirmer'}
       icon={isFromOffer ? strokeWrongIcon : strokeTrashIcon}
       title={modalTitle}

@@ -1,6 +1,7 @@
 import cn from 'classnames'
 import { format } from 'date-fns'
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { api } from 'apiClient/api'
 import {
@@ -28,6 +29,7 @@ interface StatisticsDashboardProps {
 }
 
 export const StatisticsDashboard = ({ offerer }: StatisticsDashboardProps) => {
+  const { t } = useTranslation('common')
   const [stats, setStats] = useState<GetOffererStatsResponseModel | null>(null)
   const [isLoading, setIsLoading] = useState(false)
 
@@ -54,9 +56,7 @@ export const StatisticsDashboard = ({ offerer }: StatisticsDashboardProps) => {
   return (
     <>
       <div className={styles['header']}>
-        <h2 className={styles['title']}>
-          Présence sur l’application pass Culture
-        </h2>
+        <h2 className={styles['title']}>{t('pass_culture_app_presence')}</h2>
 
         {displayCreateOfferButton && (
           <ButtonLink
@@ -64,7 +64,7 @@ export const StatisticsDashboard = ({ offerer }: StatisticsDashboardProps) => {
             to={createOfferLink}
             icon={fullMoreIcon}
           >
-            Créer une offre
+            {t('create_offer')}
           </ButtonLink>
         )}
       </div>
@@ -97,13 +97,13 @@ export const StatisticsDashboard = ({ offerer }: StatisticsDashboardProps) => {
               />
 
               {offerer.hasActiveOffer
-                ? 'Les statistiques de consultation de vos offres seront bientôt disponibles.'
+                ? t('consultation_statistics_available_soon')
                 : 'Créez vos premières offres grand public pour être visible par les bénéficiaires'}
             </div>
           )}
 
           <div className={styles['sync-date']}>
-            Dernière mise à jour :{' '}
+            {t('last_update')} :{' '}
             {stats?.syncDate ? (
               format(new Date(stats.syncDate), FORMAT_DD_MM_YYYY_HH_mm)
             ) : (

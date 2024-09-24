@@ -1,6 +1,7 @@
 import cn from 'classnames'
 import { Form, FormikProvider, useFormik } from 'formik'
 import { useCallback, useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
@@ -28,6 +29,7 @@ import { pluralize } from 'utils/pluralize'
 import styles from './CollectiveOfferSelectionDuplication.module.scss'
 
 export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
+  const { t } = useTranslation('common')
   const [isLoading, setIsLoading] = useState(false)
   const [offers, setOffers] = useState<CollectiveOfferResponseModel[]>([])
   const [showAll, setShowAll] = useState(true)
@@ -151,7 +153,7 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
                 aria-label="Button de recherche"
                 icon={strokeSearchIcon}
               >
-                Rechercher
+                {t('search')}
               </Button>
             </Form>
           </FormikProvider>

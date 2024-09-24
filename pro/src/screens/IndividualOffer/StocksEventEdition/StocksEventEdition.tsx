@@ -2,6 +2,7 @@ import cn from 'classnames'
 import { FieldArray, FormikProvider, useFormik } from 'formik'
 import isEqual from 'lodash/isEqual'
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useSWRConfig } from 'swr'
 
@@ -124,6 +125,7 @@ interface StocksEventEditionProps {
 export const StocksEventEdition = ({
   offer,
 }: StocksEventEditionProps): JSX.Element => {
+  const { t } = useTranslation('common')
   // utilities
   const mode = useOfferWizardMode()
   const navigate = useNavigate()
@@ -643,7 +645,7 @@ export const StocksEventEdition = ({
                           scope="col"
                         >
                           <span className={styles['header-name']}>
-                            Réservations
+                            {t('reservations')}
                           </span>
 
                           <SortArrow
@@ -795,7 +797,7 @@ export const StocksEventEdition = ({
                                   formik.values.stocks[index].bookingsQuantity
                                 }
                                 readOnly
-                                label="Réservations"
+                                label={t('reservations')}
                                 isLabelHidden
                                 smallLabel
                                 hideFooter

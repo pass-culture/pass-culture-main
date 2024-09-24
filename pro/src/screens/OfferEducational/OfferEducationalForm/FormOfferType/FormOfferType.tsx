@@ -1,4 +1,5 @@
 import { useFormikContext } from 'formik'
+import { useTranslation } from 'react-i18next'
 
 import { EacFormat } from 'apiClient/adage'
 import { FormLayout } from 'components/FormLayout/FormLayout'
@@ -29,6 +30,7 @@ export const FormOfferType = ({
   nationalPrograms,
   disableForm,
 }: FormTypeProps): JSX.Element => {
+  const { t } = useTranslation('common')
   const { values } = useFormikContext<OfferEducationalFormValues>()
 
   const eacFormatOptions = Object.entries(EacFormat).map(([, value]) => ({
@@ -43,7 +45,7 @@ export const FormOfferType = ({
   return (
     <FormLayout.Section
       description="Le type de l’offre permet de la caractériser et de la valoriser au mieux pour les enseignants et chefs d’établissement."
-      title="Type d’offre"
+      title={t('offer_type')}
     >
       {domainsOptions.length > 0 && (
         <FormLayout.Row>

@@ -1,4 +1,5 @@
 import cn from 'classnames'
+import { useTranslation } from 'react-i18next'
 import { useLocation } from 'react-router-dom'
 
 import { useAnalytics } from 'app/App/analytics/firebase'
@@ -19,6 +20,7 @@ export const LegalInfos = ({
   title,
   className,
 }: LegalInfoProps): JSX.Element => {
+  const { t } = useTranslation('common')
   const location = useLocation()
   const { logEvent } = useAnalytics()
   return (
@@ -47,7 +49,7 @@ export const LegalInfos = ({
         opensInNewTab
         variant={ButtonVariant.QUATERNARY}
       >
-        Charte des Données Personnelles
+        {t('data_privacy_policy')}
       </ButtonLink>
       <span>
         {

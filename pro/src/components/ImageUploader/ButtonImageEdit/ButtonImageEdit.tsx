@@ -1,5 +1,6 @@
 import cn from 'classnames'
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import fullEditIcon from 'icons/full-edit.svg'
 import strokeMoreIcon from 'icons/stroke-more.svg'
@@ -34,6 +35,7 @@ export const ButtonImageEdit = ({
   onClickButtonImage,
   children,
 }: ButtonImageEditProps): JSX.Element => {
+  const { t } = useTranslation('common')
   const { imageUrl, originalImageUrl } = initialValues
 
   const [isModalImageOpen, setIsModalImageOpen] = useState(false)
@@ -83,7 +85,7 @@ export const ButtonImageEdit = ({
                   alt=""
                   className={style['icon']}
                 />
-                <span className={style['label']}>Ajouter une image</span>
+                <span className={style['label']}>{t('add_image')}</span>
               </>
             </button>
           )

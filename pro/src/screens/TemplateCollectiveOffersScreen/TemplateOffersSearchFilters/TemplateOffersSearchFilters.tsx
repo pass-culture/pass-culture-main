@@ -1,5 +1,6 @@
 import { FormikProvider, useFormik } from 'formik'
 import { Dispatch, FormEvent, SetStateAction, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import {
   CollectiveOfferDisplayedStatus,
@@ -79,6 +80,7 @@ export const TemplateOffersSearchFilters = ({
   venues,
   isRestrictedAsAdmin = false,
 }: TemplateOffersSearchFiltersProps): JSX.Element => {
+  const { t } = useTranslation('common')
   const isNewInterfaceActive = useIsNewInterfaceActive()
   const formats: SelectOption[] = Object.values(EacFormat).map((format) => ({
     value: format,
@@ -260,7 +262,7 @@ export const TemplateOffersSearchFilters = ({
         <div className={styles['search-separator']}>
           <div className={styles['separator']} />
           <Button type="submit" disabled={disableAllFilters}>
-            Rechercher
+            {t('search')}
           </Button>
           <div className={styles['separator']} />
         </div>

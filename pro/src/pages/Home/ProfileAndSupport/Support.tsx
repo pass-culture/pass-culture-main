@@ -1,4 +1,5 @@
 import React from 'react'
+import { useTranslation } from 'react-i18next'
 import { useLocation } from 'react-router-dom'
 
 import { useAnalytics } from 'app/App/analytics/firebase'
@@ -17,6 +18,7 @@ import { Card } from '../Card'
 import styles from './Support.module.scss'
 
 export const Support: () => JSX.Element | null = () => {
+  const { t } = useTranslation('common')
   const { logEvent } = useAnalytics()
   const location = useLocation()
   const isNewSideBarNavigation = useIsNewInterfaceActive()
@@ -39,7 +41,7 @@ export const Support: () => JSX.Element | null = () => {
                 })
               }
             >
-              Centre d’aide
+              {t('help_center')}
             </ButtonLink>
           </li>
 
@@ -101,7 +103,7 @@ export const Support: () => JSX.Element | null = () => {
                     orejime.show()
                   }}
                 >
-                  Gestion des cookies
+                  {t('cookie_management')}
                 </Button>
               </li>
             </>

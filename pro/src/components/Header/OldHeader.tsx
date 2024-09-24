@@ -1,5 +1,6 @@
 import cn from 'classnames'
 import { forwardRef } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Link, NavLink, useLocation } from 'react-router-dom'
 
 import { useAnalytics } from 'app/App/analytics/firebase'
@@ -20,6 +21,7 @@ import styles from './OldHeader.module.scss'
 const NAV_ITEM_ICON_SIZE = '24'
 
 export const OldHeader = forwardRef(() => {
+  const { t } = useTranslation('common')
   const { logEvent } = useAnalytics()
   const isOffererStatsActive = useActiveFeature('ENABLE_OFFERER_STATS')
   const location = useLocation()
@@ -62,7 +64,7 @@ export const OldHeader = forwardRef(() => {
                 alt=""
                 width={NAV_ITEM_ICON_SIZE}
               />
-              Accueil
+              {t('home')}
             </NavLink>
           </li>
           <li>
@@ -83,7 +85,7 @@ export const OldHeader = forwardRef(() => {
                 alt=""
                 width={NAV_ITEM_ICON_SIZE}
               />
-              Guichet
+              {t('ticket_office')}
             </NavLink>
           </li>
           <li>
@@ -104,7 +106,7 @@ export const OldHeader = forwardRef(() => {
                 alt=""
                 width={NAV_ITEM_ICON_SIZE}
               />
-              Offres
+              {t('offers')}
             </NavLink>
           </li>
           <li>
@@ -127,7 +129,7 @@ export const OldHeader = forwardRef(() => {
                 className={styles['nav-item-icon']}
                 width={NAV_ITEM_ICON_SIZE}
               />
-              Réservations
+              {t('reservations')}
             </NavLink>
           </li>
           <li>
@@ -150,7 +152,7 @@ export const OldHeader = forwardRef(() => {
                 alt=""
                 width={NAV_ITEM_ICON_SIZE}
               />
-              Gestion financière
+              {t('financial_management')}
             </NavLink>
           </li>
           {isOffererStatsActive && (
@@ -174,7 +176,7 @@ export const OldHeader = forwardRef(() => {
                   className={styles['nav-item-icon']}
                   width={NAV_ITEM_ICON_SIZE}
                 />
-                Statistiques
+                {t('statistics')}
               </NavLink>
             </li>
           )}

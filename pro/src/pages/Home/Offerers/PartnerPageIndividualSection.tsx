@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next'
+
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { Events } from 'core/FirebaseEvents/constants'
 import { useIsNewInterfaceActive } from 'hooks/useIsNewInterfaceActive'
@@ -29,6 +31,7 @@ export function PartnerPageIndividualSection({
   isVisibleInApp,
   isDisplayedInHomepage = false,
 }: PartnerPageIndividualSectionProps) {
+  const { t } = useTranslation('common')
   const notify = useNotification()
   const { logEvent } = useAnalytics()
   const isNewInterfaceActive = useIsNewInterfaceActive()
@@ -51,7 +54,7 @@ export function PartnerPageIndividualSection({
     <section className={styles['details']}>
       <div>
         {isDisplayedInHomepage ? (
-          <h4 className={styles['details-title']}>Grand public</h4>
+          <h4 className={styles['details-title']}>{t('big_public')}</h4>
         ) : (
           <span className={styles['details-normal']}>
             État de votre page partenaire sur l’application :
@@ -70,7 +73,7 @@ export function PartnerPageIndividualSection({
       {isDisplayedInHomepage && (
         <p className={styles['details-description']}>
           {isVisibleInApp
-            ? 'Votre page partenaire est visible sur l’application pass Culture.'
+            ? t('your_partner_page_is_visible')
             : 'Votre page n’est pas visible par les utilisateurs de l’application pass Culture. Vos offres publiées restent cependant visibles et réservables par les bénéficiaires.'}
         </p>
       )}
@@ -88,7 +91,7 @@ export function PartnerPageIndividualSection({
             })
           }
         >
-          Gérer votre page pour le grand public
+          {t('manage_page_for_public')}
         </ButtonLink>
       )}
       {isVisibleInApp && (
@@ -102,7 +105,7 @@ export function PartnerPageIndividualSection({
             className={styles['details-link']}
             onClick={logVenueLinkClick}
           >
-            Voir votre page dans l’application
+            {t('view_page_in_app')}
           </ButtonLink>
 
           <Button
@@ -111,7 +114,7 @@ export function PartnerPageIndividualSection({
             className={styles['details-link']}
             onClick={copyVenueLink}
           >
-            Copier le lien de la page
+            {t('copy_page_link')}
           </Button>
         </>
       )}

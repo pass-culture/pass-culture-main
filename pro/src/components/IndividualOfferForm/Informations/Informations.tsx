@@ -1,5 +1,6 @@
 import { useFormikContext } from 'formik'
 import React from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { TextArea } from 'ui-kit/form/TextArea/TextArea'
@@ -16,6 +17,7 @@ export interface InformationsProps {
 export const Informations = ({
   readOnlyFields = [],
 }: InformationsProps): JSX.Element => {
+  const { t } = useTranslation('common')
   const {
     values: { subCategoryFields },
   } = useFormikContext<IndividualOfferFormValues>()
@@ -33,7 +35,7 @@ export const Informations = ({
       <FormLayout.Row>
         <TextInput
           countCharacters
-          label="Titre de l’offre"
+          label={t('offer_title')}
           maxLength={90}
           name="name"
           disabled={readOnlyFields.includes('name')}
@@ -42,7 +44,7 @@ export const Informations = ({
       <FormLayout.Row>
         <TextArea
           isOptional
-          label="Description"
+          label={t('description')}
           maxLength={1000}
           name="description"
           disabled={readOnlyFields.includes('description')}

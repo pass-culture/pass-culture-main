@@ -1,5 +1,6 @@
 import { FormikProvider, useFormik } from 'formik'
 import React, { useId, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { apiContremarque } from 'apiClient/api'
 import { isErrorAPIError } from 'apiClient/helpers'
@@ -22,6 +23,7 @@ interface FormValues {
 }
 
 export const Desk = (): JSX.Element => {
+  const { t } = useTranslation('common')
   const [token, setToken] = useState('')
   const [isTokenValidated, setIsTokenValidated] = useState(false)
   const [booking, setBooking] = useState<GetBookingResponse | null>(null)
@@ -144,7 +146,7 @@ export const Desk = (): JSX.Element => {
 
   return (
     <AppLayout>
-      <h1 className={styles['title']}>Guichet</h1>
+      <h1 className={styles['title']}>{t('ticket_office')}</h1>
       <p className={styles.advice}>
         Saisissez les contremarques présentées par les bénéficiaires afin de les
         valider ou de les invalider.

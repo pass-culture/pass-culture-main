@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
@@ -34,6 +35,7 @@ type DetailsSummaryScreenProps = {
 }
 
 export function DetailsSummaryScreen({ offer }: DetailsSummaryScreenProps) {
+  const { t } = useTranslation('common')
   const mode = useOfferWizardMode()
   const { categories, subCategories } = useIndividualOfferContext()
   const isSplitOfferEnabled = useActiveFeature('WIP_SPLIT_OFFER')
@@ -57,8 +59,8 @@ export function DetailsSummaryScreen({ offer }: DetailsSummaryScreenProps) {
   const conditionalFields = subcategory?.conditionalFields || []
 
   const aboutDescriptions: Description[] = [
-    { title: 'Titre de l’offre', text: offerData.name },
-    { title: 'Description', text: offerData.description },
+    { title: t('offer_title'), text: offerData.name },
+    { title: t('description'), text: offerData.description },
   ]
   const venueName = offerData.venuePublicName || offerData.venueName
   if (isOfferAddressEnabled) {
@@ -79,7 +81,7 @@ export function DetailsSummaryScreen({ offer }: DetailsSummaryScreenProps) {
   }
 
   const typeDescriptions: Description[] = [
-    { title: 'Catégorie', text: offerData.categoryName },
+    { title: t('category'), text: offerData.categoryName },
     { title: 'Sous-catégorie', text: offerData.subCategoryName },
   ]
 
@@ -161,7 +163,7 @@ export function DetailsSummaryScreen({ offer }: DetailsSummaryScreenProps) {
     <SummaryLayout>
       <SummaryContent>
         <SummarySection
-          title="Détails de l’offre"
+          title={t('offer_details')}
           editLink={getIndividualOfferUrl({
             offerId: offer.id,
             step: OFFER_WIZARD_STEP_IDS.DETAILS,
@@ -172,7 +174,7 @@ export function DetailsSummaryScreen({ offer }: DetailsSummaryScreenProps) {
           <SummarySubSection title="A propos de votre offre">
             <SummaryDescriptionList descriptions={aboutDescriptions} />
           </SummarySubSection>
-          <SummarySubSection title="Type d’offre">
+          <SummarySubSection title={t('offer_type')}>
             <SummaryDescriptionList descriptions={typeDescriptions} />
           </SummarySubSection>
           {displayArtisticInformations && (

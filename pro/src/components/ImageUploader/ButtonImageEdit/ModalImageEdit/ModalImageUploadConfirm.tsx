@@ -1,4 +1,5 @@
 import * as Dialog from '@radix-ui/react-dialog'
+import { useTranslation } from 'react-i18next'
 
 import { AppPreviewOffer } from 'components/ImageUploader/AppPreviewOffer/AppPreviewOffer'
 import { AppPreviewVenue } from 'components/ImageUploader/AppPreviewVenue/AppPreviewVenue'
@@ -24,6 +25,7 @@ export const ModalImageUploadConfirm = ({
   onUploadImage,
   mode,
 }: ModalImageUploadConfirmProps): JSX.Element => {
+  const { t } = useTranslation('common')
   const AppPreview = {
     [UploaderModeEnum.VENUE]: AppPreviewVenue,
     [UploaderModeEnum.OFFER]: AppPreviewOffer,
@@ -45,11 +47,11 @@ export const ModalImageUploadConfirm = ({
         <Button
           className={style['button']}
           onClick={onGoBack}
-          title="Retour"
+          title={t('back')}
           type="button"
           variant={ButtonVariant.SECONDARY}
         >
-          Retour
+          {t('back')}
         </Button>
         <Dialog.Close asChild>
           <Button

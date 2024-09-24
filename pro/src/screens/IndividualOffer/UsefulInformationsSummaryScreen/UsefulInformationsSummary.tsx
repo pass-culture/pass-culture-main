@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next'
+
 import { GetIndividualOfferResponseModel } from 'apiClient/v1'
 import { AccessibilitySummarySection } from 'components/AccessibilitySummarySection/AccessibilitySummarySection'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
@@ -24,6 +26,7 @@ type DetailsSummaryScreenProps = {
 export function UsefulInformationsSummaryScreen({
   offer,
 }: DetailsSummaryScreenProps) {
+  const { t } = useTranslation('common')
   const practicalInfoDescriptions: Description[] = []
 
   if (offer.withdrawalType) {
@@ -58,7 +61,7 @@ export function UsefulInformationsSummaryScreen({
     <SummaryLayout>
       <SummaryContent>
         <SummarySection
-          title="Informations pratiques"
+          title={t('practical_information')}
           editLink={getIndividualOfferUrl({
             offerId: offer.id,
             step: OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS,

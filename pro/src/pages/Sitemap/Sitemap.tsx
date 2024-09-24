@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 
@@ -7,11 +8,12 @@ import { selectCurrentOffererId } from 'store/user/selectors'
 import styles from './Sitemap.module.scss'
 
 export const Sitemap = () => {
+  const { t } = useTranslation('common')
   const selectedOffererId = useSelector(selectCurrentOffererId)
 
   return (
     <AppLayout>
-      <h1 className={styles['title']}>Plan du site</h1>
+      <h1 className={styles['title']}>{t('site_map')}</h1>
       <ul className={styles['sitemap-list']} data-testid="sitemap">
         <li className={styles['sitemap-list-item']}>
           <Link
@@ -27,32 +29,36 @@ export const Sitemap = () => {
           </Link>
         </li>
         <li className={styles['sitemap-list-item']}>
-          <span className={styles['sitemap-list-title']}>Individuel</span>
+          <span className={styles['sitemap-list-title']}>
+            {t('individual')}
+          </span>
           <ul className={styles['sitemap-sub-list']}>
             <li className={styles['sitemap-list-item']}>
               <Link to="/offres" className={styles['sitemap-link']}>
-                Offres
+                {t('offers')}
               </Link>
             </li>
             <li className={styles['sitemap-list-item']}>
               <Link to="/reservations" className={styles['sitemap-link']}>
-                Réservations
+                {t('reservations')}
               </Link>
             </li>
             <li className={styles['sitemap-list-item']}>
               <Link to="/guichet" className={styles['sitemap-link']}>
-                Guichet
+                {t('ticket_office')}
               </Link>
             </li>
           </ul>
         </li>
 
         <li className={styles['sitemap-list-item']}>
-          <span className={styles['sitemap-list-title']}>Collectif</span>
+          <span className={styles['sitemap-list-title']}>
+            {t('collective')}
+          </span>
           <ul className={styles['sitemap-sub-list']}>
             <li className={styles['sitemap-list-item']}>
               <Link to="/offres/collectives" className={styles['sitemap-link']}>
-                Offres
+                {t('offers')}
               </Link>
             </li>
             <li className={styles['sitemap-list-item']}>
@@ -60,19 +66,19 @@ export const Sitemap = () => {
                 to="/reservations/collectives"
                 className={styles['sitemap-link']}
               >
-                Réservations
+                {t('reservations')}
               </Link>
             </li>
           </ul>
         </li>
         <li className={styles['sitemap-list-item']}>
           <Link to="/statistiques" className={styles['sitemap-link']}>
-            Statistiques
+            {t('statistics')}
           </Link>
         </li>
         <li className={styles['sitemap-list-item']}>
           <span className={styles['sitemap-list-title']}>
-            Gestion financière
+            {t('financial_management')}
           </span>
           <ul className={styles['sitemap-sub-list']}>
             <li className={styles['sitemap-list-item']}>
@@ -92,7 +98,7 @@ export const Sitemap = () => {
         </li>
         <li className={styles['sitemap-list-item']}>
           <Link to="/collaborateurs" className={styles['sitemap-link']}>
-            Collaborateurs
+            {t('collaborators')}
           </Link>
         </li>
         <li className={styles['sitemap-list-item']}>

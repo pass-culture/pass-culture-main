@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next'
+
 import {
   CollectiveOfferStatus,
   GetCollectiveOfferResponseModel,
@@ -41,6 +43,7 @@ export const CollectiveOfferSummary = ({
   stockEditLink,
   visibilityEditLink,
 }: CollectiveOfferSummaryProps) => {
+  const { t } = useTranslation('common')
   const offerManuallyCreated = isCollectiveOffer(offer) && !offer.isPublicApi
 
   const isOfferTemplate = isCollectiveOfferTemplate(offer)
@@ -58,7 +61,7 @@ export const CollectiveOfferSummary = ({
             </div>
           )}
           <SummarySection
-            title="Détails de l’offre"
+            title={t('offer_details')}
             editLink={
               canEditOffer && (offerManuallyCreated || offer.isTemplate)
                 ? offerEditLink

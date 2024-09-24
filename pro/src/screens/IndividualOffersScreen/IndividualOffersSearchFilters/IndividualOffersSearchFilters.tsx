@@ -1,4 +1,5 @@
 import { Dispatch, FormEvent, SetStateAction } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { GetOffererResponseModel, OfferStatus } from 'apiClient/v1'
 import { FormLayout } from 'components/FormLayout/FormLayout'
@@ -65,6 +66,7 @@ export const IndividualOffersSearchFilters = ({
   categories,
   isRestrictedAsAdmin = false,
 }: IndividualOffersSearchFiltersProps): JSX.Element => {
+  const { t } = useTranslation('common')
   const isNewInterfaceActive = useIsNewInterfaceActive()
   const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
 
@@ -259,7 +261,7 @@ export const IndividualOffersSearchFilters = ({
         <div className={styles['search-separator']}>
           <div className={styles['separator']} />
           <Button type="submit" disabled={disableAllFilters}>
-            Rechercher
+            {t('search')}
           </Button>
           <div className={styles['separator']} />
         </div>

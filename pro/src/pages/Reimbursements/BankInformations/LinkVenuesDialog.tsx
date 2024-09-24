@@ -3,6 +3,7 @@ import cn from 'classnames'
 import { FormikProvider, useFormik } from 'formik'
 import isEqual from 'lodash.isequal'
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { api } from 'apiClient/api'
 import { BankAccountResponseModel, ManagedVenues } from 'apiClient/v1'
@@ -38,6 +39,7 @@ export const LinkVenuesDialog = ({
   closeDialog,
   updateBankAccountVenuePricingPoint,
 }: LinkVenuesDialogProps) => {
+  const { t } = useTranslation('common')
   const [showDiscardChangesDialog, setShowDiscardChangesDialog] =
     useState<boolean>(false)
   const [showUnlinkVenuesDialog, setShowUnlinkVenuesDialog] =
@@ -282,7 +284,7 @@ export const LinkVenuesDialog = ({
             submitForm(true)
           }}
           confirmText="Confirmer"
-          cancelText="Retour"
+          cancelText={t('back')}
         />
       )}
     </>

@@ -1,4 +1,5 @@
 import React from 'react'
+import { useTranslation } from 'react-i18next'
 
 import fullRefreshIcon from 'icons/full-refresh.svg'
 import { Button } from 'ui-kit/Button/Button'
@@ -20,6 +21,7 @@ export const ModalFilterLayout = ({
   onClean,
   onSearch,
 }: ModalFilterLayoutProps) => {
+  const { t } = useTranslation('common')
   return (
     <div className={styles['modal-content']}>
       {title && <div className={styles['modal-content-title']}>{title}</div>}
@@ -41,7 +43,7 @@ export const ModalFilterLayout = ({
               onClick={onSearch}
               testId="search-button-modal"
             >
-              Rechercher
+              {t('search')}
             </Button>
           </div>
         </>

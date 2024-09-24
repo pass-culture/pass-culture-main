@@ -1,5 +1,6 @@
 import { FormikProvider, useFormik } from 'formik'
 import React, { useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 
 import { FormLayout } from 'components/FormLayout/FormLayout'
@@ -17,6 +18,7 @@ import {
 import { validationSchema } from './validationSchema'
 
 export const OffererAuthentication = (): JSX.Element => {
+  const { t } = useTranslation('common')
   const navigate = useNavigate()
 
   const { offerer, setOfferer } = useSignupJourneyContext()
@@ -71,7 +73,7 @@ export const OffererAuthentication = (): JSX.Element => {
             onClickPrevious={handlePreviousStep}
             previousTo={SIGNUP_JOURNEY_STEP_IDS.OFFERER}
             nextTo={SIGNUP_JOURNEY_STEP_IDS.ACTIVITY}
-            previousStepTitle="Retour"
+            previousStepTitle={t('back')}
             isDisabled={formik.isSubmitting}
             legalCategoryCode={offerer?.legalCategoryCode}
           />

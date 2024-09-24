@@ -1,4 +1,5 @@
 import classNames from 'classnames'
+import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 
 import { orejime } from 'app/App/analytics/orejime'
@@ -15,6 +16,7 @@ type FooterProps = {
   layout?: 'basic' | 'funnel' | 'without-nav' | 'sticky-actions'
 }
 export const Footer = ({ layout }: FooterProps) => {
+  const { t } = useTranslation('common')
   const currentUser = useSelector(selectCurrentUser)
   const isNewSideBarNavigation = useIsNewInterfaceActive()
 
@@ -38,7 +40,7 @@ export const Footer = ({ layout }: FooterProps) => {
             opensInNewTab
             icon={fullLinkIcon}
           >
-            CGU professionnels
+            {t('professional_terms_of_use')}
           </ButtonLink>
         </li>
         <li>
@@ -49,7 +51,7 @@ export const Footer = ({ layout }: FooterProps) => {
             opensInNewTab
             icon={fullLinkIcon}
           >
-            Charte des Données Personnelles
+            {t('data_privacy_policy')}
           </ButtonLink>
         </li>
         <li>
@@ -60,7 +62,7 @@ export const Footer = ({ layout }: FooterProps) => {
         {currentUser && (
           <li>
             <ButtonLink variant={ButtonVariant.QUATERNARY} to="/plan-du-site">
-              Plan du site
+              {t('site_map')}
             </ButtonLink>
           </li>
         )}
@@ -69,7 +71,7 @@ export const Footer = ({ layout }: FooterProps) => {
             variant={ButtonVariant.QUATERNARY}
             onClick={() => orejime.show()}
           >
-            Gestion des cookies
+            {t('cookie_management')}
           </Button>
         </li>
       </ul>

@@ -4,6 +4,7 @@
 
 import { Form, FormikProvider, useFormik } from 'formik'
 import React, { useCallback, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import { useLocation } from 'react-router-dom'
 import useSWR from 'swr'
@@ -33,6 +34,7 @@ const SUCCESS_MESSAGE = "L'invitation a bien été envoyée."
 const ERROR_MESSAGE = 'Une erreur est survenue lors de l’envoi de l’invitation.'
 
 export const Collaborators = (): JSX.Element | null => {
+  const { t } = useTranslation('common')
   const offererId = useSelector(selectCurrentOffererId)
 
   const { logEvent } = useAnalytics()
@@ -104,7 +106,7 @@ export const Collaborators = (): JSX.Element | null => {
 
   return (
     <AppLayout>
-      <h1 className={styles['title']}>Collaborateurs</h1>
+      <h1 className={styles['title']}>{t('collaborators')}</h1>
 
       <section className={styles['section']} ref={scrollToSection}>
         <h2
@@ -112,7 +114,7 @@ export const Collaborators = (): JSX.Element | null => {
             styles[isNewInterface ? 'main-list-title-new' : 'main-list-title']
           }
         >
-          {isNewInterface ? 'Liste des collaborateurs' : 'Collaborateurs'}
+          {isNewInterface ? 'Liste des collaborateurs' : t('collaborators')}
         </h2>
 
         {members.length > 0 && (

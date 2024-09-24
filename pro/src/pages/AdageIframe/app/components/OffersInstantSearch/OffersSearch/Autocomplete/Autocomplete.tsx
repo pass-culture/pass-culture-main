@@ -17,6 +17,7 @@ import React, {
   useRef,
   useState,
 } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useSearchBox } from 'react-instantsearch'
 import { useDispatch } from 'react-redux'
 
@@ -87,6 +88,7 @@ export const Autocomplete = ({
   initialQuery,
   placeholder,
 }: AutocompleteProps) => {
+  const { t } = useTranslation('common')
   const dispatch = useDispatch()
 
   const { refine } = useSearchBox()
@@ -416,7 +418,7 @@ export const Autocomplete = ({
                 }}
                 className={styles['form-search-button']}
               >
-                Rechercher
+                {t('search')}
               </Button>
             </div>
 

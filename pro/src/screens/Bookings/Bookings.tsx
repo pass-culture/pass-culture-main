@@ -1,5 +1,6 @@
 import isEqual from 'lodash.isequal'
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import { useLocation, useNavigate } from 'react-router-dom'
 import useSWR from 'swr'
@@ -66,6 +67,7 @@ export const BookingsScreen = <
   getFilteredBookingsAdapter,
   getUserHasBookingsAdapter,
 }: BookingsProps<T>): JSX.Element => {
+  const { t } = useTranslation('common')
   const { currentUser: user } = useCurrentUser()
   const notify = useNotification()
   const { logEvent } = useAnalytics()
@@ -247,7 +249,7 @@ export const BookingsScreen = <
     ? audience === Audience.COLLECTIVE
       ? 'Réservations collectives'
       : 'Réservations individuelles'
-    : 'Réservations'
+    : t('reservations')
 
   return (
     <div className="bookings-page">

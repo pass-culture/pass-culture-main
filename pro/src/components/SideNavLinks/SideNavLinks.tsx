@@ -1,5 +1,6 @@
 import classnames from 'classnames'
 import { useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
 import { NavLink, useLocation } from 'react-router-dom'
 import useSWR from 'swr'
@@ -46,6 +47,7 @@ const INDIVIDUAL_LINKS = ['/offres', '/guichet']
 const COLLECTIVE_LINKS = ['/offres/collectives']
 
 export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
+  const { t } = useTranslation('common')
   const isOffererStatsActive = useActiveFeature('ENABLE_OFFERER_STATS')
   const isNewCollectiveOffersStructureEnabled = useActiveFeature(
     'WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE'
@@ -115,7 +117,7 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
       {selectedOffererQuery.data && isUserOffererValidated && (
         <li className={styles['nav-links-create-offer-wrapper']}>
           <ButtonLink variant={ButtonVariant.PRIMARY} to={createOfferPageUrl}>
-            Créer une offre
+            {t('create_offer')}
           </ButtonLink>
         </li>
       )}
@@ -129,7 +131,7 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
           }
         >
           <SvgIcon src={strokeHomeIcon} alt="" width={NAV_ITEM_ICON_SIZE} />
-          <span className={styles['nav-links-item-title']}>Accueil</span>
+          <span className={styles['nav-links-item-title']}>{t('home')}</span>
         </NavLink>
       </li>
       <li>
@@ -143,7 +145,7 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
           id="individual-sublist-button"
         >
           <SvgIcon src={strokePhoneIcon} alt="" width={NAV_ITEM_ICON_SIZE} />
-          <span className={styles['nav-section-title']}>Individuel</span>
+          <span className={styles['nav-section-title']}>{t('individual')}</span>
           <SvgIcon
             src={isIndividualSectionOpen ? fullUpIcon : fullDownIcon}
             alt=""
@@ -168,7 +170,7 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
                 end
               >
                 <span className={styles['nav-links-item-without-icon']}>
-                  Offres
+                  {t('offers')}
                 </span>
               </NavLink>
             </li>
@@ -183,7 +185,7 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
                 }
               >
                 <span className={styles['nav-links-item-without-icon']}>
-                  Réservations
+                  {t('reservations')}
                 </span>
               </NavLink>
             </li>
@@ -197,7 +199,7 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
                 }
               >
                 <span className={styles['nav-links-item-without-icon']}>
-                  Guichet
+                  {t('ticket_office')}
                 </span>
               </NavLink>
             </li>
@@ -232,7 +234,7 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
           id="collective-sublist-button"
         >
           <SvgIcon src={strokeTeacherIcon} alt="" width={NAV_ITEM_ICON_SIZE} />
-          <span className={styles['nav-section-title']}>Collectif</span>
+          <span className={styles['nav-section-title']}>{t('collective')}</span>
           <SvgIcon
             src={isCollectiveSectionOpen ? fullUpIcon : fullDownIcon}
             alt=""
@@ -271,7 +273,7 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
                 }
               >
                 <span className={styles['nav-links-item-without-icon']}>
-                  Offres
+                  {t('offers')}
                 </span>
               </NavLink>
             </li>
@@ -286,7 +288,7 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
                 }
               >
                 <span className={styles['nav-links-item-without-icon']}>
-                  Réservations
+                  {t('reservations')}
                 </span>
               </NavLink>
             </li>
@@ -302,7 +304,7 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
                   end
                 >
                   <span className={styles['nav-links-item-without-icon']}>
-                    Page dans ADAGE
+                    {t('adage_page')}
                   </span>
                 </NavLink>
               </li>
@@ -321,7 +323,7 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
             }
           >
             <SvgIcon src={strokePieIcon} alt="" width={NAV_ITEM_ICON_SIZE} />
-            Statistiques
+            {t('statistics')}
           </NavLink>
         </li>
       )}
@@ -341,7 +343,7 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
           }
         >
           <SvgIcon src={strokeEuroIcon} alt="" width={NAV_ITEM_ICON_SIZE} />
-          Gestion financière
+          {t('financial_management')}
         </NavLink>
       </li>
       <li>
@@ -358,7 +360,7 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
             alt=""
             width={NAV_ITEM_ICON_SIZE}
           />
-          Collaborateurs
+          {t('collaborators')}
         </NavLink>
       </li>
     </ul>

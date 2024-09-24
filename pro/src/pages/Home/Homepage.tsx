@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
 import { useSearchParams } from 'react-router-dom'
 import useSWR from 'swr'
@@ -52,6 +53,7 @@ const HAS_CLOSED_BETA_TEST_BANNER = 'HAS_CLOSED_BETA_TEST_BANNER'
 const HAS_CLOSED_WELCOME_BETA_BANNER = 'HAS_CLOSED_WELCOME_BETA_BANNER'
 
 export const Homepage = (): JSX.Element => {
+  const { t } = useTranslation('common')
   const dispatch = useDispatch()
   const hasNewSideBarNavigation = useIsNewInterfaceActive()
   const { currentUser } = useCurrentUser()
@@ -193,9 +195,7 @@ export const Homepage = (): JSX.Element => {
 
   return (
     <AppLayout>
-      <h1 className={styles['title']}>
-        Bienvenue dans l’espace acteurs culturels
-      </h1>
+      <h1 className={styles['title']}>{t('welcome_cultural_space')}</h1>
 
       {seesNewNavAvailableBanner && (
         <div className={styles['beta-banner']}>

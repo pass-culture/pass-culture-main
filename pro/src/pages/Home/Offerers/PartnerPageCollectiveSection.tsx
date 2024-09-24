@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next'
+
 import { DMSApplicationForEAC, DMSApplicationstatus } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { Events } from 'core/FirebaseEvents/constants'
@@ -29,6 +31,7 @@ export function PartnerPageCollectiveSection({
   collectiveDmsApplications,
   isDisplayedInHomepage = false,
 }: PartnerPageCollectiveSectionProps) {
+  const { t } = useTranslation('common')
   const { logEvent } = useAnalytics()
 
   const lastDmsApplication = getLastCollectiveDmsApplication(
@@ -50,14 +53,10 @@ export function PartnerPageCollectiveSection({
   if (allowedOnAdage) {
     return (
       <AdageInformations
-        tagText="Référencé dans ADAGE"
+        tagText={t('referenced_in_adage')}
         variant={TagVariant.LIGHT_GREEN}
         isDisplayedInHomepage={isDisplayedInHomepage}
-        description={
-          isDisplayedInHomepage
-            ? 'Les enseignants voient les offres vitrines et celles que vous adressez à leur établissement sur ADAGE. Complétez vos informations à destination des enseignants pour qu’ils vous contactent !'
-            : undefined
-        }
+        description={isDisplayedInHomepage ? t('what_teachers_see') : undefined}
         offererId={offererId}
         venueId={venueId}
         venueName={venueName}
@@ -167,13 +166,14 @@ function AdageInformations({
   venueId,
   venueName,
 }: AdageInformationsProps) {
+  const { t } = useTranslation('common')
   const { logEvent } = useAnalytics()
   const isNewInterfaceActive = useIsNewInterfaceActive()
   return (
     <section className={styles['details']}>
       <div>
         {isDisplayedInHomepage ? (
-          <h4 className={styles['details-title']}>Enseignants</h4>
+          <h4 className={styles['details-title']}>{t('teachers')}</h4>
         ) : (
           <span className={styles['details-normal']}>
             État auprès des enseignants&nbsp;:
@@ -200,7 +200,7 @@ function AdageInformations({
             })
           }
         >
-          Gérer votre page pour les enseignants
+          {t('manage_page_for_teachers')}
         </ButtonLink>
       )}
       {children}

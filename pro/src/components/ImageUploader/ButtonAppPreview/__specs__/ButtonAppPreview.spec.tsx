@@ -1,9 +1,10 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
 import { UploaderModeEnum } from 'components/ImageUploader/types'
 import { RootState } from 'store/rootReducer'
+import { renderWithi18nProvider } from 'utils/renderWithProviders'
 
 import { ButtonAppPreview, ButtonAppPreviewProps } from '../ButtonAppPreview'
 
@@ -12,7 +13,7 @@ interface RenderButtonAppPreviewProps {
   props: ButtonAppPreviewProps
 }
 const renderButtonAppPreview = ({ props }: RenderButtonAppPreviewProps) => {
-  return render(<ButtonAppPreview {...props} />)
+  return renderWithi18nProvider(<ButtonAppPreview {...props} />)
 }
 
 describe('ButtonAppPreview', () => {

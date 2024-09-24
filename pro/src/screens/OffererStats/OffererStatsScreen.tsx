@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 
 import { api } from 'apiClient/api'
@@ -20,6 +21,7 @@ interface OffererStatsScreenProps {
 export const OffererStatsScreen = ({
   offererOptions,
 }: OffererStatsScreenProps) => {
+  const { t } = useTranslation('common')
   const isNewInterfaceActive = useIsNewInterfaceActive()
   const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
   const headerOffererId = useSelector(selectCurrentOffererId)
@@ -103,7 +105,7 @@ export const OffererStatsScreen = ({
 
   return (
     <div className={styles['offerer-stats']}>
-      <h1 className={styles['title']}>Statistiques</h1>
+      <h1 className={styles['title']}>{t('statistics')}</h1>
       <p className={styles['offerer-stats-description']}>
         Vos statistiques sont calculées et mises à jour quotidiennement dans la
         nuit.

@@ -1,5 +1,6 @@
 import cn from 'classnames'
 import React from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { orejime } from 'app/App/analytics/orejime'
 import { useIsNewInterfaceActive } from 'hooks/useIsNewInterfaceActive'
@@ -10,6 +11,7 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 import styles from './CookiesFooter.module.scss'
 
 export const CookiesFooter = ({ className }: { className?: string }) => {
+  const { t } = useTranslation('common')
   const isNewSideBarNavigation = useIsNewInterfaceActive()
 
   if (isNewSideBarNavigation) {
@@ -27,12 +29,12 @@ export const CookiesFooter = ({ className }: { className?: string }) => {
               isExternal
               opensInNewTab
             >
-              CGU professionnels
+              {t('professional_terms_of_use')}
             </ButtonLink>
           </li>
           <li>
             <ButtonLink variant={ButtonVariant.QUATERNARY} to="/accessibilite">
-              Accessibilité : non conforme
+              {t('accessibility_not_compliant')}
             </ButtonLink>
           </li>
           <li>
@@ -43,7 +45,7 @@ export const CookiesFooter = ({ className }: { className?: string }) => {
               isExternal
               opensInNewTab
             >
-              Charte des Données Personnelles
+              {t('data_privacy_policy')}
             </ButtonLink>
           </li>
           <li>
@@ -51,7 +53,7 @@ export const CookiesFooter = ({ className }: { className?: string }) => {
               variant={ButtonVariant.QUATERNARY}
               onClick={() => orejime.show()}
             >
-              Gestion des cookies
+              {t('cookie_management')}
             </Button>
           </li>
         </ul>

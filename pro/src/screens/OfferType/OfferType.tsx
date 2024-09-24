@@ -1,4 +1,5 @@
 import { FormikProvider, useFormik } from 'formik'
+import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import { useLocation, useNavigate } from 'react-router-dom'
 import useSWR from 'swr'
@@ -34,6 +35,7 @@ import styles from './OfferType.module.scss'
 import { OfferTypeFormValues } from './types'
 
 export const OfferTypeScreen = (): JSX.Element => {
+  const { t } = useTranslation('common')
   const isNewInterfaceActive = useIsNewInterfaceActive()
   const isSplitOfferEnabled = useActiveFeature('WIP_SPLIT_OFFER')
   const areSuggestedSubcategoriesUsed = useSuggestedSubcategoriesAbTest()
@@ -183,7 +185,7 @@ export const OfferTypeScreen = (): JSX.Element => {
 
   return (
     <div className={styles['offer-type-container']}>
-      <h1 className={styles['offer-type-title']}>Créer une offre</h1>
+      <h1 className={styles['offer-type-title']}>{t('create_offer')}</h1>
       <FormikProvider value={formik}>
         <form onSubmit={formik.handleSubmit}>
           <FormLayout>

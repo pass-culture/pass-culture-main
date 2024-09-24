@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next'
+
 import {
   CollectiveOfferTemplateResponseModel,
   CollectiveOfferResponseModel,
@@ -28,6 +30,7 @@ const computeDurationString = (durationMinutes?: number | null) => {
 export function AdageOfferDetailsSection({
   offer,
 }: AdageOfferDetailsSectionProps) {
+  const { t } = useTranslation('common')
   const domains = offer.domains
   const formats = offer.formats || []
   const duration = computeDurationString(offer.durationMinutes)
@@ -98,7 +101,7 @@ export function AdageOfferDetailsSection({
       {offer.description && (
         <div className={styles['offer-section-group-item-description']}>
           <h3 className={styles['offer-section-group-item-subtitle']}>
-            Description
+            {t('description')}
           </h3>
           <Markdown markdownText={offer.description} />
         </div>

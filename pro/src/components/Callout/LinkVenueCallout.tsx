@@ -1,4 +1,5 @@
 import React from 'react'
+import { useTranslation } from 'react-i18next'
 import { useLocation } from 'react-router-dom'
 
 import { GetOffererResponseModel } from 'apiClient/v1'
@@ -15,6 +16,7 @@ export interface LinkVenueCalloutProps {
 export const LinkVenueCallout = ({
   offerer,
 }: LinkVenueCalloutProps): JSX.Element | null => {
+  const { t } = useTranslation('common')
   const { logEvent } = useAnalytics()
   const location = useLocation()
 
@@ -33,7 +35,7 @@ export const LinkVenueCallout = ({
         {
           href:
             '/remboursements/informations-bancaires?structure=' + offerer.id,
-          label: 'Gérer le rattachement de mes lieux',
+          label: t('manage_bank_linking'),
           onClick: () => {
             logEvent(BankAccountEvents.CLICKED_ADD_VENUE_TO_BANK_ACCOUNT, {
               from: location.pathname,
@@ -44,11 +46,11 @@ export const LinkVenueCallout = ({
       ]}
       variant={CalloutVariant.ERROR}
     >
-      Dernière étape pour vous faire rembourser : rattachez
+      {t('last_step_reimbursement_part_one')}
       {offerer.venuesWithNonFreeOffersWithoutBankAccounts.length > 1
-        ? ' vos lieux '
-        : ' votre lieu '}
-      à un compte bancaire
+        ? t('last_step_reimbursement_part_two_1')
+        : t('last_step_reimbursement_part_two_2')}
+      {t('last_step_reimbursement_part_three')}
     </Callout>
   )
 }

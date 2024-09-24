@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
 
 import {
@@ -21,6 +22,7 @@ interface CollectiveOfferSummaryCreationProps {
 export const CollectiveOfferSummaryCreationScreen = ({
   offer,
 }: CollectiveOfferSummaryCreationProps) => {
+  const { t } = useTranslation('common')
   const { requete: requestId } = useParams()
 
   const nextRedirectionUrl = offer.isTemplate
@@ -46,12 +48,12 @@ export const CollectiveOfferSummaryCreationScreen = ({
       <ActionsBarSticky>
         <ActionsBarSticky.Left>
           <ButtonLink variant={ButtonVariant.SECONDARY} to={backRedirectionUrl}>
-            Retour
+            {t('back')}
           </ButtonLink>
         </ActionsBarSticky.Left>
         <ActionsBarSticky.Right dirtyForm={false} mode={Mode.CREATION}>
           <ButtonLink variant={ButtonVariant.PRIMARY} to={nextRedirectionUrl}>
-            Enregistrer et continuer
+            {t('save_and_continue')}
           </ButtonLink>
         </ActionsBarSticky.Right>
       </ActionsBarSticky>

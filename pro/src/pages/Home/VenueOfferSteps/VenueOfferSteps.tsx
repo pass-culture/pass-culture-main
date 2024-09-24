@@ -1,5 +1,6 @@
 import cn from 'classnames'
 import React from 'react'
+import { useTranslation } from 'react-i18next'
 
 import {
   GetOffererResponseModel,
@@ -43,6 +44,7 @@ export const VenueOfferSteps = ({
   isInsidePartnerBlock = false,
   className,
 }: VenueOfferStepsProps) => {
+  const { t } = useTranslation('common')
   const { logEvent } = useAnalytics()
   const isVenueCreationAvailable = useActiveFeature('API_SIRENE_AVAILABLE')
 
@@ -82,7 +84,7 @@ export const VenueOfferSteps = ({
     >
       {(!venue?.hasCreatedOffer || shouldDisplayEACInformationSection) && (
         <>
-          <h3 className={styles['card-title']}>Prochaines étapes : </h3>
+          <h3 className={styles['card-title']}>{t('next_steps')}</h3>
 
           <div className={styles['venue-offer-steps']}>
             {!hasVenue && (
@@ -135,7 +137,7 @@ export const VenueOfferSteps = ({
                 icon={fullNextIcon}
                 to={`/offre/creation?lieu=${venue.id}&structure=${offerer.id}`}
               >
-                Créer une offre
+                {t('create_offer')}
               </ButtonLink>
             )}
 

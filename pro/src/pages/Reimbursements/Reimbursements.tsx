@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import { Outlet } from 'react-router-dom'
 import useSWR from 'swr'
@@ -20,6 +21,7 @@ export type ReimbursementsContextProps = {
 }
 
 export const Reimbursements = (): JSX.Element => {
+  const { t } = useTranslation('common')
   const selectedOffererId = useSelector(selectCurrentOffererId)
 
   const offererNamesQuery = useSWR(
@@ -47,7 +49,7 @@ export const Reimbursements = (): JSX.Element => {
   return (
     <AppLayout>
       <div className={styles['reimbursements-container']}>
-        <h1 className={styles['title']}>Gestion financière</h1>
+        <h1 className={styles['title']}>{t('financial_management')}</h1>
         <div>
           <ReimbursementsTabs selectedOfferer={offererQuery.data} />
 

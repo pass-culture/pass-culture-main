@@ -1,5 +1,6 @@
 import { useFormikContext } from 'formik'
 import { useState, useRef, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 
 import { api } from 'apiClient/api'
@@ -28,6 +29,7 @@ export const DetailsEanSearch = ({
   setImageOffer,
   isOfferProductBased,
 }: DetailsEanSearchProps): JSX.Element => {
+  const { t } = useTranslation('common')
   const selectedOffererId = useSelector(selectCurrentOffererId)
   const inputRef = useRef<HTMLInputElement>(null)
   const [isFetchingProduct, setIsFetchingProduct] = useState(false)
@@ -166,9 +168,9 @@ export const DetailsEanSearch = ({
         className={styles['details-ean-search-tag']}
         variant={TagVariant.BLUE}
       >
-        Nouveau
+        {t('new')}
       </Tag>
-      Scanner ou rechercher un produit par EAN
+      {t('scan_or_search_ean')}
     </>
   )
 
@@ -183,7 +185,7 @@ export const DetailsEanSearch = ({
           refForInput={inputRef}
           classNameLabel={styles['details-ean-search-label']}
           label={label}
-          description="Format : EAN à 13 chiffres"
+          description={t('ean_format')}
           name="eanSearch"
           type="text"
           disabled={shouldInputBeDisabled}
@@ -210,7 +212,7 @@ export const DetailsEanSearch = ({
           disabled={shouldButtonBeDisabled}
           onClick={onEanSearch}
         >
-          Rechercher
+          {t('search')}
         </Button>
       </div>
       <div role="status">

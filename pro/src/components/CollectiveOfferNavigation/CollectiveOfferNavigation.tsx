@@ -1,5 +1,6 @@
 import cn from 'classnames'
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useSWRConfig } from 'swr'
@@ -73,6 +74,7 @@ export const CollectiveOfferNavigation = ({
   isArchivable,
   offer,
 }: CollectiveOfferNavigationProps): JSX.Element => {
+  const { t } = useTranslation('common')
   const { logEvent } = useAnalytics()
   const notify = useNotification()
   const navigate = useNavigate()
@@ -104,7 +106,7 @@ export const CollectiveOfferNavigation = ({
     if (!isTemplate && canEditOffer) {
       stepList[CollectiveOfferStep.DETAILS] = {
         id: CollectiveOfferStep.DETAILS,
-        label: 'Détails de l’offre',
+        label: t('offer_details'),
         url: `/offre/${offerId}/collectif/edition`,
       }
       stepList[CollectiveOfferStep.STOCKS] = {
@@ -121,7 +123,7 @@ export const CollectiveOfferNavigation = ({
   } else {
     stepList[CollectiveOfferStep.DETAILS] = {
       id: CollectiveOfferStep.DETAILS,
-      label: 'Détails de l’offre',
+      label: t('offer_details'),
     }
     if (!isTemplate) {
       stepList[CollectiveOfferStep.STOCKS] = {

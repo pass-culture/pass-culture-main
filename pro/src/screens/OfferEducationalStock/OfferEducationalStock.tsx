@@ -2,6 +2,7 @@
 import { addDays, isAfter, isBefore } from 'date-fns'
 import { FormikProvider, useFormik } from 'formik'
 import React, { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import * as yup from 'yup'
 
 import {
@@ -66,6 +67,7 @@ export const OfferEducationalStock = <
   mode,
   requestId = '',
 }: OfferEducationalStockProps<T>): JSX.Element => {
+  const { t } = useTranslation('common')
   const [isLoading, setIsLoading] = useState(false)
   const startDatetime =
     isCollectiveOffer(offer) && offer.collectiveStock?.startDatetime
@@ -223,7 +225,7 @@ export const OfferEducationalStock = <
                       : '/offres/collectives'
                   }
                 >
-                  {mode === Mode.CREATION ? 'Retour' : 'Annuler et quitter'}
+                  {mode === Mode.CREATION ? t('back') : 'Annuler et quitter'}
                 </ButtonLink>
               </ActionsBarSticky.Left>
 
@@ -235,7 +237,7 @@ export const OfferEducationalStock = <
                   }
                   isLoading={isLoading}
                 >
-                  Enregistrer et continuer
+                  {t('save_and_continue')}
                 </Button>
               </ActionsBarSticky.Right>
             </ActionsBarSticky>

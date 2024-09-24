@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useLocation, useSearchParams } from 'react-router-dom'
 
 import { GetOffererResponseModel, VenueTypeResponseModel } from 'apiClient/v1'
@@ -36,6 +37,7 @@ export const Offerers = ({
   isUserOffererValidated,
   venueTypes,
 }: OfferersProps) => {
+  const { t } = useTranslation('common')
   const [openSuccessDialog, setOpenSuccessDialog] = useState(false)
 
   const isNewInterfaceActive = useIsNewInterfaceActive()
@@ -77,7 +79,7 @@ export const Offerers = ({
           {selectedOfferer && openSuccessDialog && (
             <RedirectDialog
               icon={strokePartyIcon}
-              redirectText="Créer une offre"
+              redirectText={t('create_offer')}
               redirectLink={{
                 to: `/offre/creation?structure=${selectedOfferer.id}`,
                 isExternal: false,
@@ -133,14 +135,10 @@ export const Offerers = ({
                * with h2 and the homepage margin style once the WIP_PARTNER_PAGE FF is removed.
                */}
               <h3 className={styles['title']} style={{ marginTop: '16px' }}>
-                Vos adresses
+                {t('your_addresses')}
               </h3>
 
-              <p>
-                Renseignez ci-dessous les lieux dans lesquels vous proposez vos
-                offres. Si le lieu appartient à votre structure une page
-                partenaire y sera automatiquement associée.
-              </p>
+              <p>{t('add_places_you_offer')}</p>
 
               <VenueList offerer={selectedOfferer} />
             </>

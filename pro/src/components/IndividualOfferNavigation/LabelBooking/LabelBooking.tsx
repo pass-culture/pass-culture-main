@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next'
+
 import styles from './LabelBooking.module.scss'
 
 type LabelBooking = {
@@ -5,9 +7,11 @@ type LabelBooking = {
 }
 
 export function LabelBooking({ bookingsCount }: LabelBooking) {
+  const { t } = useTranslation('common')
+
   return (
     <>
-      Réservations
+      {t('reservations')}
       {bookingsCount > 0 && (
         <span className={styles['bookings-count']}>
           {new Intl.NumberFormat('fr-FR').format(bookingsCount)}

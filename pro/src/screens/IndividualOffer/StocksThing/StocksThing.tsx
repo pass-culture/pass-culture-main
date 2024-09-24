@@ -1,5 +1,6 @@
 import { FormikProvider, useFormik } from 'formik'
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { useSWRConfig } from 'swr'
 
@@ -53,6 +54,7 @@ export interface StocksThingProps {
 }
 
 export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
+  const { t } = useTranslation('common')
   const mode = useOfferWizardMode()
   const isSplitOfferEnabled = useActiveFeature('WIP_SPLIT_OFFER')
   const navigate = useNavigate()
@@ -345,9 +347,7 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
       <form onSubmit={formik.handleSubmit} data-testid="stock-thing-form">
         <FormLayout>
           <div aria-current="page">
-            <div className={styles['mandatory']}>
-              Tous les champs suivis d’un * sont obligatoires.
-            </div>
+            <div className={styles['mandatory']}>{t('mandatory_fields')}</div>
             <FormLayoutDescription
               description={description}
               links={links}
@@ -425,7 +425,7 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
                     name="bookingsQuantity"
                     value={formik.values.bookingsQuantity || 0}
                     readOnly
-                    label="Réservations"
+                    label={t('reservations')}
                     isOptional
                     smallLabel
                     className={styles['field-layout-shrink']}

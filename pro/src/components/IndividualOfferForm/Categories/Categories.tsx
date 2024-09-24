@@ -1,6 +1,7 @@
 import cn from 'classnames'
 import { useFormikContext } from 'formik'
 import React from 'react'
+import { useTranslation } from 'react-i18next'
 
 import {
   CategoryResponseModel,
@@ -51,6 +52,7 @@ export const Categories = ({
   venueList,
   isEvent,
 }: CategoriesProps): JSX.Element => {
+  const { t } = useTranslation('common')
   const {
     values: { categoryId, subCategoryFields, offererId },
     setFieldValue,
@@ -139,7 +141,7 @@ export const Categories = ({
     <FormLayout.Section
       title={
         <>
-          <span>Type d’offre</span>
+          <span>{t('offer_type')}</span>
           {offerSubtype !== null && (
             <OfferSubtypeTag
               className={styles['offer-type-tag']}
@@ -162,18 +164,16 @@ export const Categories = ({
               opensInNewTab: true,
             }}
           >
-            Une sélection précise de vos catégories permettra au grand public de
-            facilement trouver votre offre. Une fois validées, vous ne pourrez
-            pas les modifier.
+            {t('category_selection_info')}
           </InfoBox>
         }
       >
         <Select
-          label="Catégorie"
+          label={t('category')}
           name="categoryId"
           options={categoryOptions}
           defaultOption={{
-            label: 'Choisir une catégorie',
+            label: t('choose_category'),
             value: FORM_DEFAULT_VALUES.categoryId,
           }}
           disabled={readOnlyFields.includes('categoryId')}
@@ -223,7 +223,7 @@ export const Categories = ({
               {
                 href: `/structures/${offererId}/lieux/creation`,
                 icon: { src: fullMoreIcon, alt: 'Nouvelle fenêtre, par lieu' },
-                label: 'Ajouter un lieu',
+                label: t('add_a_place'),
               },
             ]}
             variant={CalloutVariant.ERROR}

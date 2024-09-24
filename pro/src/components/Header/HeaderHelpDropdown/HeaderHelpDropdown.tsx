@@ -1,5 +1,6 @@
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import cn from 'classnames'
+import { useTranslation } from 'react-i18next'
 
 import { HelpDropdownMenu } from 'components/Header/HeaderHelpDropdown/HelpDropdownMenu'
 import fullDownIcon from 'icons/full-down.svg'
@@ -11,6 +12,7 @@ import dropdownStyles from '../HeaderDropdown/HeaderDropdown.module.scss'
 import styles from './HeaderHelpDropdown.module.scss'
 
 export const HeaderHelpDropdown = () => {
+  const { t } = useTranslation('common')
   return (
     <DropdownMenu.Root>
       <DropdownMenu.Trigger asChild>
@@ -21,7 +23,7 @@ export const HeaderHelpDropdown = () => {
           icon={fullDownIcon}
           iconPosition={IconPositionEnum.RIGHT}
         >
-          Centre d’aide
+          {t('help_center')}
         </Button>
       </DropdownMenu.Trigger>
       <DropdownMenu.Portal>

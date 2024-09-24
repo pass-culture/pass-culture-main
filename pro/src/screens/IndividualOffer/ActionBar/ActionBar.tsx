@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next'
+
 import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
@@ -29,6 +31,7 @@ export const ActionBar = ({
   step,
   dirtyForm,
 }: ActionBarProps) => {
+  const { t } = useTranslation('common')
   const mode = useOfferWizardMode()
   const backOfferUrl = computeIndividualOffersUrl({})
   const notify = useNotification()
@@ -42,7 +45,7 @@ export const ActionBar = ({
           variant={ButtonVariant.SECONDARY}
           disabled={isDisabled}
         >
-          Retour
+          {t('back')}
         </Button>
       )
     }
@@ -112,7 +115,7 @@ export const ActionBar = ({
               disabled={isDisabled}
               onClick={onClickNext}
             >
-              Enregistrer et continuer
+              {t('save_and_continue')}
             </Button>
           )}
         </>
