@@ -7,6 +7,7 @@ import type { OffererApiKey } from './OffererApiKey';
 export type GetOffererResponseModel = {
   allowedOnAdage: boolean;
   apiKey: OffererApiKey;
+  canCreateEuropeanOffers: boolean;
   city: string;
   dateCreated: string;
   demarchesSimplifieesApplicationId?: string | null;

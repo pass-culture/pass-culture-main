@@ -216,15 +216,17 @@ export const OfferTypeScreen = (): JSX.Element => {
                   value={OFFER_TYPES.EDUCATIONAL}
                   className={styles['offer-type-button']}
                 />
-                <RadioButtonWithImage
-                  name="offerType"
-                  logo={<EuropeIcon className={styles['button-icon']} />}
-                  isChecked={values.offerType === OFFER_TYPES.EUROPEAN}
-                  label={t('to_european')}
-                  onChange={handleChange}
-                  value={OFFER_TYPES.EUROPEAN}
-                  className={styles['offer-type-button']}
-                />
+                {offerer?.canCreateEuropeanOffers && (
+                  <RadioButtonWithImage
+                    name="offerType"
+                    logo={<EuropeIcon className={styles['button-icon']} />}
+                    isChecked={values.offerType === OFFER_TYPES.EUROPEAN}
+                    label={t('to_european')}
+                    onChange={handleChange}
+                    value={OFFER_TYPES.EUROPEAN}
+                    className={styles['offer-type-button']}
+                  />
+                )}
               </FormLayout.Row>
             </FormLayout.Section>
 

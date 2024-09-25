@@ -5,14 +5,17 @@ import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 
 // import { api } from 'apiClient/api'
+import { api } from 'apiClient/api'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { RouteLeavingGuardIndividualOffer } from 'components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
 import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import { useIndividualOfferContext } from 'context/IndividualOfferContext/IndividualOfferContext'
 import { isOfferDisabled } from 'core/Offers/utils/isOfferDisabled'
+import { useNotification } from 'hooks/useNotification'
 import strokeEuroIcon from 'icons/stroke-euro.svg'
 import { ActionBar } from 'screens/IndividualOffer/ActionBar/ActionBar'
+import { Checkbox } from 'ui-kit/form/Checkbox/Checkbox'
 import { DatePicker } from 'ui-kit/form/DatePicker/DatePicker'
 import { TextArea } from 'ui-kit/form/TextArea/TextArea'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
@@ -26,72 +29,46 @@ import {
 } from './utils'
 
 export const EuropeanOffer = (): JSX.Element => {
+  const notification = useNotification()
   const { t, i18n } = useTranslation('common')
   const navigate = useNavigate()
 
   const { offer } = useIndividualOfferContext()
 
   const initialValues = setDefaultInitialValues()
-  const onSubmit = (formValues: EuropeanFormFrontValues) => {
-    console.log('onSubmit', formValues)
-    // Submit
-    /* try {
-      const response = !offer
-        ? await api.postDraftOffer(serializeDetailsPostData(formValues))
-        : await api.patchDraftOffer(
-            offer.id,
-            serializeDetailsPatchData(formValues, !!offer.lastProvider)
-          )
+  const onSubmit = async (formValues: EuropeanFormFrontValues) => {
+    try {
+      console.log('formValues', formValues)
 
-      const receivedOfferId = response.id
-      await handleImageOnSubmit(receivedOfferId)
-      await mutate([GET_OFFER_QUERY_KEY, receivedOfferId])
+      // FIXME
+      // So we dont send this to the api
+      // as long as it doesnt support it.
+      delete formValues['autoTranslate']
 
-      // replace url to fix back button
-      navigate(
-        getIndividualOfferUrl({
-          step: OFFER_WIZARD_STEP_IDS.DETAILS,
-          offerId: receivedOfferId,
-          mode,
-        }),
-        { replace: true }
-      )
-      const nextStep =
-        mode === OFFER_WIZARD_MODE.EDITION
-          ? OFFER_WIZARD_STEP_IDS.DETAILS
-          : OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS
+      const locale = i18n.language
 
-      logEvent(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-        offerId: receivedOfferId,
-        venueId: formik.values.venueId,
-        offerType: 'individual',
-        subcategoryId: formik.values.subcategoryId,
-        choosenSuggestedSubcategory: formik.values.suggestedSubcategory,
+      const { id } = await api.postEuropeanOffer({
+        ...formValues,
+        title: {
+          [locale]: formValues.name,
+        },
+        description: {
+          [locale]: formValues.description,
+        },
+        imageAlt: {
+          [locale]: formValues.imageAlt,
+        },
+        date: `${formValues.date} 00:00:00`,
+        latitude: formValues.latitude ?? 0,
+        longitude: formValues.longitude ?? 0,
+        price: formValues.price ?? 0,
+        // autoTranslate: formValues.autoTranslate ?? false,
       })
-      navigate(
-        getIndividualOfferUrl({
-          offerId: receivedOfferId,
-          step: nextStep,
-          mode:
-            mode === OFFER_WIZARD_MODE.EDITION
-              ? OFFER_WIZARD_MODE.READ_ONLY
-              : mode,
-        })
-      )
-    } catch (error) {
-      if (!isErrorAPIError(error)) {
-        return
-      }
-      for (const field in error.body) {
-        formik.setFieldError(field, error.body[field])
-      }
-      // This is used from scroll to error
-      formik.setStatus('apiError')
+      navigate(`/offre/individuelle/${id}/creation/confirmation`)
+    } catch (err) {
+      console.error(err)
+      notification.error('An error occurred while creating the offer')
     }
-
-    if (offer && formik.dirty) {
-      notify.success(PATCH_SUCCESS_MESSAGE)
-    } */
   }
 
   const formik = useFormik({
@@ -109,7 +86,11 @@ export const EuropeanOffer = (): JSX.Element => {
           <h1 className={styles['title']}>{t('create_european_offer')}</h1>
           <ScrollToFirstErrorAfterSubmit />
           <FormLayout.MandatoryInfo />
+
           <FormLayout.Section title={t('about_your_offer')}>
+            <FormLayout.Row>
+              <Checkbox label={t('auto_translate')} name="autoTranslate" />
+            </FormLayout.Row>
             <FormLayout.Row>
               <TextInput
                 countCharacters
@@ -133,48 +114,46 @@ export const EuropeanOffer = (): JSX.Element => {
                 language={i18n.language}
                 apiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}
                 options={{ types: ['geocode'] }}
-                onPlaceSelected={(place) => {
-                  console.log(place)
-                  console.log(place.geometry.location.lat())
+                onPlaceSelected={async (place) => {
+                  const relevantAddressComponentKeysMap = [
+                    'locality',
+                    'country',
+                    'street_number',
+                    'route',
+                    'postal_code',
+                  ]
 
-                  /* const relevantAddressComponentKeysMap = {
-                    'street_number': 'street',
-                    'route': 'street',
-                    'locality': 'city',
-                    'country': 'country',
-                    'postal_code': 'zipcode',
-                  }
-                  const { city, country, street, zipcode } =
-                    place.address_components.reduce(
-                      (acc, component) => {
-                        const { types, long_name: value } = component
-                        for (const t of types) {
-                          if (Object.keys(relevantAddressComponentKeys).includes(t)) {
-                            acc[relevantAddressComponentKeys[t]] = value
-                            break
-                          }
+                  const res = place.address_components.reduce(
+                    (acc: any, component: any) => {
+                      const { types, long_name: value } = component
+                      for (const t of types) {
+                        if (relevantAddressComponentKeysMap.includes(t)) {
+                          acc[t] = value
+                          break
                         }
-                      },
-                      {
-                        city: '',
-                        country: '',
-                        street: '',
-                        zipcode: '',
                       }
-                    )
-                  const { lat: latitude, long: longitude } =
-                    place.geometry.location
-                  // Set city, country, street, latitude, longitude
-                  // zipcode and currency
+
+                      return acc
+                    },
+                    {
+                      locality: '',
+                      country: '',
+                      street_number: '',
+                      route: '',
+                      postal_code: '',
+                    }
+                  )
+
+                  const { lat, lng } = place.geometry.location
                   await formik.setValues({
                     ...formik.values,
-                    city,
-                    country,
-                    street,
-                    zipcode,
-                    latitude,
-                    longitude,
-                  }) */
+                    city: res.locality,
+                    country: res.country,
+                    street: `${res.street_number}, ${res.route}`,
+                    zipcode: res.postal_code,
+                    latitude: lat(),
+                    longitude: lng(),
+                  })
                 }}
               />
             </FormLayout.Row>
@@ -197,6 +176,7 @@ export const EuropeanOffer = (): JSX.Element => {
             </FormLayout.Row>
             <FormLayout.Row>
               <TextInput
+                isOptional
                 label={t('image_url')}
                 name="imageUrl"
                 type="text"

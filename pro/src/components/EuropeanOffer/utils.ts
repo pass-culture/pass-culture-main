@@ -34,6 +34,7 @@ export type EuropeanFormFrontValues = {
   imageAlt?: string
   price?: number
   name: string
+  autoTranslate?: boolean
 }
 
 const DEFAULT_EUROPEAN_FORM_VALUES: EuropeanFormFrontValues = {
@@ -43,7 +44,7 @@ const DEFAULT_EUROPEAN_FORM_VALUES: EuropeanFormFrontValues = {
   latitude: 0,
   longitude: 0,
   zipcode: '',
-  currency: '',
+  currency: 'EUR',
   date: '',
   description: '',
   externalUrl: '',
@@ -51,6 +52,7 @@ const DEFAULT_EUROPEAN_FORM_VALUES: EuropeanFormFrontValues = {
   imageAlt: '',
   price: 0,
   name: '',
+  autoTranslate: true,
 }
 
 export const setDefaultInitialValues = (): EuropeanFormFrontValues => {

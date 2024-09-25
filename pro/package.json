@@ -95,6 +95,7 @@
     "@testing-library/react": "^16.0.1",
     "@testing-library/user-event": "^14.5.2",
     "@types/dompurify": "^3.0.5",
+    "@types/google.maps": "^3.58.1",
     "@types/lodash.isequal": "^4.5.8",
     "@types/lodash.memoize": "^4.1.9",
     "@types/node": "^20.16.6",
