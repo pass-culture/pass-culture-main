@@ -51,6 +51,7 @@ import tests
 from tests.core.subscription.test_factories import IdentificationState
 from tests.core.subscription.test_factories import UbbleIdentificationIncludedDocumentsFactory
 from tests.core.subscription.test_factories import UbbleIdentificationResponseFactory
+from tests.routes.backoffice.helpers import html_parser
 from tests.test_utils import json_default
 
 
@@ -2271,6 +2272,185 @@ def test_invoices_csv_commercial_gesture():
     assert row_commercial_gesture["Somme des tickets de facturation"] == Decimal("-1010.0")
 
 
+@pytest.mark.usefixtures("clean_temp_files", "css_font_http_request_mock")
+def test_invoice_pdf_commercial_gesture(monkeypatch):
+    invoice_htmls = []
+
+    def _store_invoice_pdf(invoice_storage_id, invoice_html) -> None:
+        invoice_htmls.append(invoice_html)
+
+    monkeypatch.setattr(api, "_store_invoice_pdf", _store_invoice_pdf)
+
+    offerer = offerers_factories.OffererFactory(name="Association de coiffeurs", siren="853318959")
+    bank_account = factories.BankAccountFactory(offerer=offerer)
+    venue = offerers_factories.VenueFactory(
+        pricing_point="self",
+        managingOfferer=offerer,
+        bank_account=bank_account,
+        siret="85331845900023",
+    )
+    author_user = users_factories.UserFactory()
+
+    user = users_factories.BeneficiaryGrant18Factory()
+    # Empty the user's balance
+    initial_booking = bookings_factories.BookingFactory(
+        user=user,
+        quantity=57,
+        stock__price=Decimal("5.0"),
+        stock__offer__venue=venue,
+    )  # 285€
+    bookings_api.mark_as_used(
+        booking=initial_booking,
+        validation_author_type=bookings_models.BookingValidationAuthorType.OFFERER,
+    )
+    assert len(initial_booking.finance_events) == 1
+    api.price_event(initial_booking.finance_events[0])
+
+    # Create a booking and use it
+    stock = offers_factories.StockFactory(price=Decimal("10.1"), offer__venue=venue)
+    booking = bookings_factories.BookingFactory(user=user, stock=stock)
+    bookings_api.mark_as_used(
+        booking=booking,
+        validation_author_type=bookings_models.BookingValidationAuthorType.OFFERER,
+    )
+    assert len(booking.finance_events) == 1
+    api.price_event(booking.finance_events[0])
+
+    # Cancel the booking
+    bookings_api.mark_as_cancelled(
+        booking=booking,
+        reason=bookings_models.BookingCancellationReasons.BACKOFFICE,
+    )
+
+    # Additional booking to further empty the balance
+    additional_booking = bookings_factories.BookingFactory(
+        user=user,
+        quantity=1,
+        stock__price=Decimal("13.3"),
+        stock__offer__venue=venue,
+    )  # €13.3
+    bookings_api.mark_as_used(
+        booking=additional_booking,
+        validation_author_type=bookings_models.BookingValidationAuthorType.OFFERER,
+    )
+    assert len(additional_booking.finance_events) == 1
+    api.price_event(additional_booking.finance_events[0])
+
+    # Create the commercial gesture
+    commercial_gesture = api.create_finance_commercial_gesture(
+        bookings=[booking],
+        amount=Decimal("10.1"),
+        author=author_user,
+        origin="test",
+    )
+    # Validate the commercial gesture
+    api.validate_finance_commercial_gesture(commercial_gesture, author=author_user)
+    assert commercial_gesture.status == models.IncidentStatus.VALIDATED
+    assert len(commercial_gesture.booking_finance_incidents) == 1
+    assert len(commercial_gesture.booking_finance_incidents[0].finance_events) == 1
+    api.price_event(commercial_gesture.booking_finance_incidents[0].finance_events[0])
+
+    cutoff = datetime.datetime.utcnow() + datetime.timedelta(days=1)
+    batch = api.generate_cashflows_and_payment_files(cutoff)
+    api.generate_invoices(batch)
+
+    invoices = models.Invoice.query.all()
+    assert len(invoices) == 1
+    invoice = invoices[0]
+    assert len(invoice.lines) == 2
+    assert {l.label for l in invoice.lines} == {"Réservations", "Gestes commerciaux"}
+
+    bookings_line = [l for l in invoice.lines if l.label == "Réservations"][0]
+    assert bookings_line.contributionAmount == 0
+    assert bookings_line.group == {"label": "Barème général", "position": 1}
+    assert bookings_line.rate == Decimal("1.0")
+    assert bookings_line.reimbursedAmount == -298_30
+
+    commercial_gestures_line = [l for l in invoice.lines if l.label == "Gestes commerciaux"][0]
+    assert commercial_gestures_line.contributionAmount == 0
+    assert commercial_gestures_line.group == {"label": "Barème général", "position": 1}
+    assert commercial_gestures_line.rate == Decimal("1.0")
+    assert commercial_gestures_line.reimbursedAmount == -10_10
+
+    assert len(invoice_htmls) == 1
+    invoice_html = invoice_htmls[0].encode("utf-8")
+
+    ###################
+    # Test main table #
+    ###################
+    main_table = html_parser.get_tag(invoice_html, class_=None, tag="table")
+    general_rate_rows = html_parser.extract(main_table, tag="tr", class_="coloredSection")
+    assert len(general_rate_rows) == 1
+    general_rate_row = general_rate_rows[0]
+    assert general_rate_row == "Barème général"
+    main_table_soup = html_parser.get_soup(main_table)
+    # remove the 1 column row to be able to parse the rest
+    main_table_soup.find("tr", class_="coloredSection").decompose()
+    main_table_rows = html_parser.extract_table_rows(str(main_table_soup).encode("utf-8"))
+    assert {"Réservations", "Gestes commerciaux", "SOUS-TOTAL", "TOTAL"} == {r["Typologie"] for r in main_table_rows}
+    bookings_row = [r for r in main_table_rows if r["Typologie"] == "Réservations"][0]
+    commercial_gestures_row = [r for r in main_table_rows if r["Typologie"] == "Gestes commerciaux"][0]
+    subtotal_row = [r for r in main_table_rows if r["Typologie"] == "SOUS-TOTAL"][0]
+    total_row = [r for r in main_table_rows if r["Typologie"] == "TOTAL"][0]
+
+    assert bookings_row["Montant de la contribution offreur (TTC)"] == "0,00 €"
+    assert bookings_row["Montant des réservations validées (TTC)"] == "298,30 €"
+    assert bookings_row["Montant remboursé (TTC)"] == "298,30 €"
+    assert bookings_row["Taux de contribution offreur (%)"] == "0 %"
+    assert bookings_row["Taux de remboursement (%)"] == "100 %"
+
+    assert commercial_gestures_row["Montant de la contribution offreur (TTC)"] == "0,00 €"
+    assert commercial_gestures_row["Montant des réservations validées (TTC)"] == "10,10 €"
+    assert commercial_gestures_row["Montant remboursé (TTC)"] == "10,10 €"
+    assert commercial_gestures_row["Taux de contribution offreur (%)"] == "0 %"
+    assert commercial_gestures_row["Taux de remboursement (%)"] == "100 %"
+
+    assert subtotal_row["Montant de la contribution offreur (TTC)"] == "0,00 €"
+    assert subtotal_row["Montant des réservations validées (TTC)"] == "308,40 €"
+    assert subtotal_row["Montant remboursé (TTC)"] == "308,40 €"
+
+    assert total_row["Montant de la contribution offreur (TTC)"] == "0,00 €"
+    assert total_row["Montant des réservations validées (TTC)"] == "308,40 €"
+    assert total_row["Montant remboursé (TTC)"] == "308,40 €"
+
+    ############################
+    # Test total account table #
+    ############################
+    total_account_table = html_parser.get_tag(invoice_html, class_="totalAccountTable", tag="table")
+    total_rate_rows = html_parser.extract(total_account_table, tag="tr", class_="coloredSection")
+    assert len(total_rate_rows) == 1
+    total_rate_row = total_rate_rows[0]
+    assert total_rate_row == "TOTAL RÈGLEMENT PASS CULTURE 308,40 €"
+    total_account_table_soup = html_parser.get_soup(total_account_table)
+    # remove the 1 column row to be able to parse the rest
+    total_account_table_soup.find("tr", class_="coloredSection").decompose()
+    total_account_table_rows = html_parser.extract_table_rows(str(total_account_table_soup).encode("utf-8"))
+    assert len(total_account_table_rows) == 1
+    total_account_table_row = total_account_table_rows[0]
+    assert total_account_table_row["Date"] == invoice.date.strftime("%d/%m/%Y")
+    assert total_account_table_row["Destinataire"] == bank_account.label
+    assert total_account_table_row["Mode de règlement"] == f"Virement {bank_account.iban}"
+    assert total_account_table_row["Montant réglé"] == "308,40 €"
+    assert total_account_table_row["N° de virement"] == batch.label
+
+    ####################################
+    # Test reimbursment by venue table #
+    ####################################
+    reimbursement_by_venue_table = html_parser.get_tag(invoice_html, class_="reimbursmentByVenueTable", tag="table")
+    reimbursement_by_venue_rows = html_parser.extract_table_rows(reimbursement_by_venue_table)
+    assert len(reimbursement_by_venue_rows) == 1
+    reimbursement_by_venue_row = reimbursement_by_venue_rows[0]
+
+    assert reimbursement_by_venue_row["Contribution offreur incidents (TTC)"] == "20,20 €"
+    assert reimbursement_by_venue_row["Dont offres collectives (TTC)"] == "0,00 €"
+    assert reimbursement_by_venue_row["Dont offres individuelles (TTC)"] == "308,40 €"
+    assert reimbursement_by_venue_row["Incidents (TTC)"] == "10,10 €"
+    assert reimbursement_by_venue_row["Lieux"] == venue.name
+    assert reimbursement_by_venue_row["Montant de la contribution offreur (TTC)"] == "0,00 €"
+    assert reimbursement_by_venue_row["Montant des réservations validées (TTC)"] == "298,30 €"
+    assert reimbursement_by_venue_row["Montant remboursé (TTC)"] == "308,40 €"
+
+
 def test_generate_invoice_file(clean_temp_files):
     first_siret = "12345678900"
     venue = offerers_factories.VenueFactory(siret=first_siret, pricing_point="self")
@@ -3093,19 +3273,13 @@ class GenerateInvoiceTest:
             )
 
         assert invoice.amount == -20 * 100
-        assert len(invoice.lines) == 2
-        line1 = invoice.lines[0]
-        assert line1.group == {"label": "Barème général", "position": 1}
-        assert line1.contributionAmount == 0
-        assert line1.reimbursedAmount == -20 * 100
-        assert line1.rate == 1
-        assert line1.label == "Réservations"
-        line2 = invoice.lines[1]
-        assert line2.group == {"label": "Barème non remboursé", "position": 3}
-        assert line2.contributionAmount == 0
-        assert line2.reimbursedAmount == 0
-        assert line2.rate == 0
-        assert line2.label == "Réservations"
+        assert len(invoice.lines) == 1
+        line = invoice.lines[0]
+        assert line.group == {"label": "Barème général", "position": 1}
+        assert line.contributionAmount == 0
+        assert line.reimbursedAmount == -20 * 100
+        assert line.rate == 1
+        assert line.label == "Réservations"
 
     def test_update_statuses_and_booking_reimbursement_date(self):
         venue = offerers_factories.VenueFactory(pricing_point="self")
