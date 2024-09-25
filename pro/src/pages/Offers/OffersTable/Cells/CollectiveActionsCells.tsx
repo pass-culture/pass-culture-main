@@ -401,6 +401,7 @@ export const CollectiveActionsCells = ({
           <ArchiveConfirmationModal
             onDismiss={() => setIsArchivedModalOpen(false)}
             onValidate={archiveOffer}
+            offerId={offer.id}
           />
         )}
       </div>
