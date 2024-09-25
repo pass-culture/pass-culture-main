@@ -10,7 +10,7 @@ client = OpenAI(
 system_promt = (
     "You are a language expert, your job is to translate a text written in Portuguese into three languages"
     " (English, Italian, French). These translations should be stored in a JSON where the keys"
-    " are the languages written in lowercase, "
+    " are en for English, it for Italian, and fr for French, "
     "and the values are the translations of each respective language"
 )
 user_query = "translate this text: "

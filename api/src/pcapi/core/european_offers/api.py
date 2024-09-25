@@ -50,5 +50,8 @@ def create_offer(offerData: EuropeanOfferData) -> models.EuropeanOffer:
         offer.title = translated_title
         offer.description = translated_description
         offer.imageAlt = translated_image_alt
+        print(f"{offer.title=}")
+        print(f"{offer.description=}")
+        print(f"{offer.imageAlt=}")
     db.session.add(offer)
     return offer
