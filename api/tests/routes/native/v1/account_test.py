@@ -1,5 +1,7 @@
 import dataclasses
 from datetime import date
+from pcapi.core.offers import factories as offers_factories
+from pcapi.core.achievements.models import AchievementType
 from datetime import datetime
 from datetime import timedelta
 from decimal import Decimal
@@ -2937,12 +2939,14 @@ class AnonymizeUserTest:
 
 
 class AchievementsTest:
+    @pytest.mark.usefixtures("db_session")
     def test_get_empty_achievements(self, client):
         user = users_factories.BeneficiaryFactory()
         response = client.with_token(email=user.email).get("/native/v1/account/achievements")
         assert response.status_code == 200
         assert response.json["achievements"] == []
 
+    @pytest.mark.usefixtures("db_session")
     def test_get_achievements(self, client):
         user_achievement = achievements_factories.UserAchievementFactory()
 
@@ -2951,3 +2955,56 @@ class AchievementsTest:
         print(response.json)
         assert response.json["achievements"][0]["achievement"]["slug"] == user_achievement.achievement.slug
         assert response.json["achievements"][0]["completionDate"] == user_achievement.completionDate.isoformat() + "Z"
+
+    def test_user_unlock_achievement_when_fav_offer_first_time(self, client, db_session):
+        user = users_factories.BeneficiaryFactory()
+        achievements_factories.AchievementFactory(slug=AchievementType.FIRST_FAVORITE_OFFER.value)
+        offer = offers_factories.OfferFactory()
+        offer_id = offer.id
+
+        assert len(user.achievements) == 0
+
+        http_client = client.with_token(email=user.email)
+
+        response = http_client.post("/native/v1/me/favorites", json={"offerId": offer_id})
+        assert response.status_code == 200
+
+        db_session.refresh(user)
+
+        assert len(user.achievements) == 1
+
+        response = http_client.get("/native/v1/account/achievements")
+        assert response.status_code == 200
+
+        achievements = response.json["achievements"]
+        assert len(achievements) == 1
+        
+        assert response.json["achievements"][0]["achievement"]["slug"] == "FIRST_FAVORITE_OFFER"
+
+    def test_when_user_fav_multiple_offers(self, client, db_session):
+        user = users_factories.BeneficiaryFactory()
+        achievements_factories.AchievementFactory(slug=AchievementType.FIRST_FAVORITE_OFFER.value)
+        offer = offers_factories.OfferFactory()
+        second_offer = offers_factories.OfferFactory()
+
+        offer_id = offer.id
+        second_offer_id = second_offer.id 
+
+        assert len(user.achievements) == 0
+
+        http_client = client.with_token(email=user.email)
+
+        response = http_client.post("/native/v1/me/favorites", json={"offerId": offer_id})
+        assert response.status_code == 200
+
+        db_session.refresh(user)
+
+        assert len(user.achievements) == 1
+
+        response = http_client.post("/native/v1/me/favorites", json={"offerId": second_offer.id})
+        assert response.status_code == 200
+
+        db_session.refresh(user)
+
+        assert len(user.achievements) == 1
+
