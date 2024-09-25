@@ -1527,40 +1527,73 @@ def find_reimbursement_rule(rule_reference: str | int) -> models.ReimbursementRu
     return models.CustomReimbursementRule.query.get(rule_reference)
 
 
-def _make_invoice_line(
-    group: models.RuleGroup, pricings: list, line_rate: decimal.Decimal | None = None, is_incident_line: bool = False
-) -> tuple[models.InvoiceLine, int]:
-    reimbursed_amount = 0
-    flat_lines = list(itertools.chain.from_iterable(pricing.lines for pricing in pricings))
-    # ingoing
-    contribution_amount = sum(
-        line.amount for line in flat_lines if line.category == models.PricingLineCategory.OFFERER_CONTRIBUTION
-    )
-    # outgoing
-    offerer_revenue = sum(
-        line.amount for line in flat_lines if line.category == models.PricingLineCategory.OFFERER_REVENUE
-    )
-    passculture_commission = sum(
-        line.amount for line in flat_lines if line.category == models.PricingLineCategory.PASS_CULTURE_COMMISSION
-    )
+def _make_invoice_lines(
+    group: models.RuleGroup, pricings: list, line_rate: decimal.Decimal | None
+) -> list[models.InvoiceLine]:
+    totals = {
+        "bookings": {
+            "offerer_contribution": 0,
+            "offerer_revenue": 0,
+            "pass_culture_commission": 0,
+        },
+        "commercial_gestures": {
+            "offerer_contribution": 0,
+            "offerer_revenue": 0,
+            "pass_culture_commission": 0,
+        },
+        "incidents": {
+            "offerer_contribution": 0,
+            "offerer_revenue": 0,
+            "pass_culture_commission": 0,
+        },
+    }
+    titles = {"bookings": "Réservations", "commercial_gestures": "Gestes commerciaux", "incidents": "Incidents"}
+    for pricing in pricings:
+        for line in pricing.lines:
+            if line.category == models.PricingLineCategory.OFFERER_CONTRIBUTION:
+                if pricing.event.bookingFinanceIncidentId:
+                    totals["incidents"]["offerer_contribution"] += line.amount
+                else:
+                    totals["bookings"]["offerer_contribution"] += line.amount
+            elif line.category == models.PricingLineCategory.OFFERER_REVENUE:
+                if pricing.event.bookingFinanceIncidentId:
+                    totals["incidents"]["offerer_revenue"] += line.amount
+                else:
+                    totals["bookings"]["offerer_revenue"] += line.amount
+            elif line.category == models.PricingLineCategory.PASS_CULTURE_COMMISSION:
+                if pricing.event.bookingFinanceIncidentId:
+                    totals["incidents"]["pass_culture_commission"] += line.amount
+                else:
+                    totals["bookings"]["pass_culture_commission"] += line.amount
+            elif line.category == models.PricingLineCategory.COMMERCIAL_GESTURE:
+                totals["commercial_gestures"]["offerer_revenue"] += line.amount
+            else:
+                raise ValueError(f"Unknown value for pricing line category: {line.category}")
 
-    reimbursed_amount += offerer_revenue + contribution_amount + passculture_commission
-    if offerer_revenue:
-        # A rate is calculated for this line if we are using a
-        # CustomRule with an amount instead of a rate.
-        rate = line_rate or (decimal.Decimal(reimbursed_amount) / decimal.Decimal(offerer_revenue)).quantize(
-            decimal.Decimal("0.0001")
+    lines = []
+    for label, totals_for_label in totals.items():
+        if all(amount == 0 for amount in totals_for_label.values()):
+            continue
+        reimbursed_amount = sum(totals_for_label.values())
+        if offerer_revenue := totals_for_label["offerer_revenue"]:
+            # A rate is calculated for this line if we are using a
+            # CustomRule with an amount instead of a rate.
+            rate = line_rate or (decimal.Decimal(reimbursed_amount) / decimal.Decimal(offerer_revenue)).quantize(
+                decimal.Decimal("0.0001")
+            )
+        else:
+            rate = decimal.Decimal(0)
+
+        invoice_line = models.InvoiceLine(
+            label=titles[label],
+            group=group.value,
+            contributionAmount=totals_for_label["offerer_contribution"],
+            reimbursedAmount=reimbursed_amount,
+            rate=rate,
         )
-    else:
-        rate = decimal.Decimal(0)
-    invoice_line = models.InvoiceLine(
-        label="Incidents" if is_incident_line else "Réservations",
-        group=group.value,
-        contributionAmount=contribution_amount,
-        reimbursedAmount=reimbursed_amount,
-        rate=rate,
-    )
-    return invoice_line, reimbursed_amount
+        lines.append(invoice_line)
+
+    return lines
 
 
 def _filter_invoiceable_cashflows(query: BaseQuery) -> BaseQuery:
@@ -2013,7 +2046,6 @@ def _generate_invoice(
     invoice = models.Invoice(
         bankAccountId=bank_account_id,
     )
-    total_reimbursed_amount = 0
     cashflows = _filter_invoiceable_cashflows(
         models.Cashflow.query.filter(models.Cashflow.id.in_(cashflow_ids)).options(
             sqla_orm.joinedload(models.Cashflow.pricings)
@@ -2034,9 +2066,7 @@ def _generate_invoice(
     pricings_and_rates_by_rule_group = defaultdict(list)
     pricings_by_custom_rule = defaultdict(list)
 
-    cashflows_pricings = [cf.pricings for cf in cashflows]
-    flat_pricings = list(itertools.chain.from_iterable(cashflows_pricings))
-    for pricing in flat_pricings:
+    for pricing in sum([cf.pricings for cf in cashflows], []):
         rule_reference = pricing.standardRule or pricing.customRuleId
         rule = find_reimbursement_rule(rule_reference)
         if isinstance(rule, models.CustomReimbursementRule):
@@ -2050,48 +2080,13 @@ def _generate_invoice(
         for pricing, rate in pricings_and_rates:
             rates[rate].append(pricing)
         for rate, pricings in rates.items():
-            incident_pricings = []
-            other_pricings = []
-            for pricing in pricings:
-                if pricing.event.bookingFinanceIncidentId:
-                    incident_pricings.append(pricing)
-                else:
-                    other_pricings.append(pricing)
-
-            if other_pricings:
-                invoice_line, reimbursed_amount = _make_invoice_line(rule_group, other_pricings, rate)
-                invoice_lines.append(invoice_line)
-                total_reimbursed_amount += reimbursed_amount
-
-            if incident_pricings:
-                invoice_line, reimbursed_amount = _make_invoice_line(
-                    rule_group, incident_pricings, is_incident_line=True
-                )
-                invoice_lines.append(invoice_line)
-                total_reimbursed_amount += reimbursed_amount
+            invoice_lines += _make_invoice_lines(rule_group, pricings, rate)
 
     for custom_rule, pricings in pricings_by_custom_rule.items():
-        incident_pricings = []
-        other_pricings = []
-        for pricing in pricings:
-            if pricing.eventId and pricing.event.bookingFinanceIncidentId:
-                incident_pricings.append(pricing)
-            else:
-                other_pricings.append(pricing)
         # An InvoiceLine rate will be calculated for a CustomRule with a set reimbursed amount
-        if other_pricings:
-            invoice_line, reimbursed_amount = _make_invoice_line(custom_rule.group, other_pricings, custom_rule.rate)
-            invoice_lines.append(invoice_line)
-            total_reimbursed_amount += reimbursed_amount
+        invoice_lines += _make_invoice_lines(custom_rule.group, pricings, custom_rule.rate)
 
-        if incident_pricings:
-            invoice_line, reimbursed_amount = _make_invoice_line(
-                custom_rule.group, incident_pricings, is_incident_line=True
-            )
-            invoice_lines.append(invoice_line)
-            total_reimbursed_amount += reimbursed_amount
-
-    invoice.amount = total_reimbursed_amount
+    invoice.amount = sum(line.reimbursedAmount for line in invoice_lines)
     # As of Python 3.9, DEFAULT_ENTROPY is 32 bytes
     invoice.token = secrets.token_urlsafe()
     scheme_name = "invoice.reference" if not is_debit_note else "debit_note.reference"
