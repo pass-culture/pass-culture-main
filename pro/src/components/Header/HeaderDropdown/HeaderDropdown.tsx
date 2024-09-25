@@ -112,7 +112,7 @@ export const HeaderDropdown = () => {
       <DropdownMenu.Trigger asChild>
         <button
           className={styles['dropdown-button']}
-          title={selectedOffererName?.name || 'Profil'}
+          title={selectedOffererName?.name || t('profile')}
           data-testid="offerer-select"
         >
           <SvgIcon src={fullProfilIcon} alt="" width="18" />
@@ -146,7 +146,7 @@ export const HeaderDropdown = () => {
             {offererOptions.length > 1 && (
               <>
                 <DropdownMenu.Label className={styles['menu-title']}>
-                  Structure
+                  {t('offerer')}
                 </DropdownMenu.Label>
                 <div className={styles['menu-email']}>
                   {selectedOffererName?.name}
@@ -167,7 +167,7 @@ export const HeaderDropdown = () => {
                       icon={fullSwitchIcon}
                       className={styles['menu-item']}
                     >
-                      Changer de structure
+                      {t('change_offerer')}
                     </Button>
                   </DropdownMenu.SubTrigger>
                   <DropdownMenu.Portal>
@@ -186,7 +186,7 @@ export const HeaderDropdown = () => {
                           {t('back')}
                         </Button>
                         <div className={styles['sub-popin-header-text']}>
-                          Structure
+                          {t('offerer')}
                         </div>
                       </div>
                       <div
@@ -246,13 +246,13 @@ export const HeaderDropdown = () => {
             )}
 
             <DropdownMenu.Label className={styles['menu-title']}>
-              Profil
+              {t('profile')}
             </DropdownMenu.Label>
             <div className={styles['menu-email']}>{currentUser?.email}</div>
             {!hideProfile && (
               <DropdownMenu.Item className={styles['menu-item']} asChild>
                 <ButtonLink icon={fullProfilIcon} to="/profil">
-                  Voir mon profil
+                  {t('show_my_profile')}
                 </ButtonLink>
               </DropdownMenu.Item>
             )}
@@ -278,7 +278,7 @@ export const HeaderDropdown = () => {
                   })
                 }
               >
-                Se déconnecter
+                {t('logout')}
               </ButtonLink>
             </DropdownMenu.Item>
           </div>

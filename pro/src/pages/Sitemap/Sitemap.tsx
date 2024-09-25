@@ -103,7 +103,7 @@ export const Sitemap = () => {
         </li>
         <li className={styles['sitemap-list-item']}>
           <Link to="/profil" className={styles['sitemap-link']}>
-            Profil
+            {t('profile')}
           </Link>
         </li>
       </ul>

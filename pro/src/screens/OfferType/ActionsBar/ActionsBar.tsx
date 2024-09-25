@@ -1,4 +1,5 @@
 import React from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
@@ -16,6 +17,7 @@ interface ActionsBarProps {
 export const ActionsBar = ({
   disableNextButton = false,
 }: ActionsBarProps): JSX.Element => {
+  const { t } = useTranslation('common')
   const { logEvent } = useAnalytics()
 
   return (
@@ -26,7 +28,7 @@ export const ActionsBar = ({
           variant={ButtonVariant.SECONDARY}
           onClick={() => logEvent(Events.CLICKED_CANCEL_OFFER_CREATION)}
         >
-          Annuler et quitter
+          {t('cancel_and_quit')}
         </ButtonLink>
       </ActionsBarSticky.Left>
       <ActionsBarSticky.Right>
@@ -36,7 +38,7 @@ export const ActionsBar = ({
           iconPosition={IconPositionEnum.RIGHT}
           disabled={disableNextButton}
         >
-          Étape suivante
+          {t('next_step')}
         </Button>
       </ActionsBarSticky.Right>
     </ActionsBarSticky>

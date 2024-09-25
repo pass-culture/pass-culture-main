@@ -107,7 +107,7 @@ export const Offerers = ({
 
           {!isNewInterfaceActive && (
             <>
-              <h2 className={styles['title']}>Structure</h2>
+              <h2 className={styles['title']}>{t('offerer')}</h2>
 
               <OffererDetails
                 isUserOffererValidated={isUserOffererValidated}

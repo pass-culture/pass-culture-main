@@ -1,4 +1,5 @@
 import { useFormikContext } from 'formik'
+import { useTranslation } from 'react-i18next'
 
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { INDIVIDUAL_OFFER_SUBTYPE } from 'core/Offers/constants'
@@ -12,12 +13,13 @@ import styles from '../OfferType.module.scss'
 import { OfferTypeFormValues } from '../types'
 
 export const IndividualOfferType = (): JSX.Element | null => {
+  const { t } = useTranslation('common')
   const { values, handleChange } = useFormikContext<OfferTypeFormValues>()
 
   return (
     <>
       <FormLayout.Section
-        title="Votre offre est :"
+        title={t('your_offer_is')}
         className={styles['subtype-section']}
       >
         <FormLayout.Row inline mdSpaceAfter>
@@ -29,8 +31,8 @@ export const IndividualOfferType = (): JSX.Element | null => {
               values.individualOfferSubtype ===
               INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_GOOD
             }
-            label="Un bien physique"
-            description="Livre, instrument de musique, abonnement, cartes et pass…"
+            label={t('physical_good')}
+            description={t('physical_good_description')}
             onChange={handleChange}
             value={INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_GOOD}
             dataTestid={`radio-${INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_GOOD}`}
@@ -46,8 +48,8 @@ export const IndividualOfferType = (): JSX.Element | null => {
               values.individualOfferSubtype ===
               INDIVIDUAL_OFFER_SUBTYPE.VIRTUAL_GOOD
             }
-            label="Un bien numérique"
-            description="Ebook, jeu vidéo, abonnement streaming..."
+            label={t('digital_good')}
+            description={t('digital_good_description')}
             onChange={handleChange}
             value={INDIVIDUAL_OFFER_SUBTYPE.VIRTUAL_GOOD}
             dataTestid={`radio-${INDIVIDUAL_OFFER_SUBTYPE.VIRTUAL_GOOD}`}
@@ -63,8 +65,8 @@ export const IndividualOfferType = (): JSX.Element | null => {
               values.individualOfferSubtype ===
               INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_EVENT
             }
-            label="Un évènement physique daté"
-            description="Concert, représentation, conférence, ateliers..."
+            label={t('physical_event')}
+            description={t('physical_event_description')}
             onChange={handleChange}
             value={INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_EVENT}
             dataTestid={`radio-${INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_EVENT}`}
@@ -80,8 +82,8 @@ export const IndividualOfferType = (): JSX.Element | null => {
               values.individualOfferSubtype ===
               INDIVIDUAL_OFFER_SUBTYPE.VIRTUAL_EVENT
             }
-            label="Un évènement numérique daté"
-            description="Livestream, cours en ligne, conférence en ligne..."
+            label={t('digital_event')}
+            description={t('digital_event_description')}
             onChange={handleChange}
             value={INDIVIDUAL_OFFER_SUBTYPE.VIRTUAL_EVENT}
             dataTestid={`radio-${INDIVIDUAL_OFFER_SUBTYPE.VIRTUAL_EVENT}`}

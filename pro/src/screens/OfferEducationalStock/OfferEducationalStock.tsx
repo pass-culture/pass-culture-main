@@ -225,7 +225,7 @@ export const OfferEducationalStock = <
                       : '/offres/collectives'
                   }
                 >
-                  {mode === Mode.CREATION ? t('back') : 'Annuler et quitter'}
+                  {mode === Mode.CREATION ? t('back') : t('cancel_and_quit')}
                 </ButtonLink>
               </ActionsBarSticky.Left>
 

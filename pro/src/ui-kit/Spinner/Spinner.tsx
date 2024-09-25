@@ -1,5 +1,6 @@
 import cn from 'classnames'
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import strokePass from 'icons/stroke-pass.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
@@ -11,10 +12,8 @@ interface SpinnerProps {
   className?: string
 }
 
-export const Spinner = ({
-  message = 'Chargement en cours',
-  className,
-}: SpinnerProps): JSX.Element => {
+export const Spinner = ({ message, className }: SpinnerProps): JSX.Element => {
+  const { t } = useTranslation('common')
   const [nbDots, setNbDots] = useState(3)
   const [timer, setTimer] = useState<number | null>(null)
 
@@ -46,7 +45,7 @@ export const Spinner = ({
         className={styles['content']}
         data-dots={Array(nbDots).fill('.').join('')}
       >
-        {message}
+        {message || t('loading')}
       </div>
     </div>
   )

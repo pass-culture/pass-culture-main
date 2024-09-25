@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { UserPhoneBodyModel } from 'apiClient/v1'
 import { BannerRGS } from 'components/Banner/BannerRGS'
@@ -22,10 +23,11 @@ export const UserProfile = ({
   userPhoneInitialValues,
   userEmailInitialValues,
 }: UserProfileProps): JSX.Element => {
+  const { t } = useTranslation('common')
   const [currentForm, setCurrentForm] = useState<Forms | null>(null)
   return (
     <div className={styles['profil-container']}>
-      <h1 className={styles['profil-title']}>Profil</h1>
+      <h1 className={styles['profil-title']}>{t('profile')}</h1>
       <BannerRGS className={styles.banner} />
       <UserIdentity
         setCurrentForm={(value: Forms | null) => setCurrentForm(value)}

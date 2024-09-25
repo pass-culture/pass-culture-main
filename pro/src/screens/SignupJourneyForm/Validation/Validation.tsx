@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import useSWR from 'swr'
@@ -30,6 +31,7 @@ import { ActionBar } from '../ActionBar/ActionBar'
 import styles from './Validation.module.scss'
 
 export const Validation = (): JSX.Element => {
+  const { t } = useTranslation('common')
   const { logEvent } = useAnalytics()
   const notify = useNotification()
   const navigate = useNavigate()
@@ -45,7 +47,7 @@ export const Validation = (): JSX.Element => {
   const { currentUser } = useCurrentUser()
 
   const targetCustomerLabel = {
-    [Target.INDIVIDUAL]: 'Au grand public',
+    [Target.INDIVIDUAL]: t('to_public'),
     [Target.EDUCATIONAL]: 'À des groupes scolaires',
     [Target.INDIVIDUAL_AND_EDUCATIONAL]:
       'Au grand public et à des groupes scolaires',

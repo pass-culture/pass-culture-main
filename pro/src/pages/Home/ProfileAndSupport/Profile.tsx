@@ -1,4 +1,5 @@
 import React from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { Events } from 'core/FirebaseEvents/constants'
@@ -53,13 +54,14 @@ export const formatPhoneNumber = (phoneNumber: string | null | undefined) => {
 }
 
 export const Profile = () => {
+  const { t } = useTranslation('common')
   const { logEvent } = useAnalytics()
 
   const { currentUser: user } = useCurrentUser()
   return (
     <Card data-testid="card-profile">
       <div className={styles['header-row']}>
-        <h3 className={styles['title']}>Profil</h3>
+        <h3 className={styles['title']}>{t('profile')}</h3>
 
         <ButtonLink
           variant={ButtonVariant.TERNARY}

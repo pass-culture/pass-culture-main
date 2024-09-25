@@ -58,7 +58,7 @@ export const ActionBar = ({
     ) : (
       <>
         <Button onClick={onClickPrevious} variant={ButtonVariant.SECONDARY}>
-          Annuler et quitter
+          {t('cancel_and_quit')}
         </Button>
 
         <Button type="submit" onClick={onClickNext} disabled={isDisabled}>

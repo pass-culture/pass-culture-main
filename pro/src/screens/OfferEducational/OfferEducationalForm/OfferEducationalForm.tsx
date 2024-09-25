@@ -202,7 +202,7 @@ export const OfferEducationalForm = ({
             variant={ButtonVariant.SECONDARY}
             to={computeCollectiveOffersUrl({})}
           >
-            Annuler et quitter
+            {t('cancel_and_quit')}
           </ButtonLink>
         </ActionsBarSticky.Left>
         <ActionsBarSticky.Right dirtyForm={dirty || !offer} mode={mode}>

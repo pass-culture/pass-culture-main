@@ -1,5 +1,6 @@
 import { useFormikContext } from 'formik'
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 
 import { GetOffererResponseModel, VenueTypeResponseModel } from 'apiClient/v1'
@@ -61,6 +62,7 @@ export const VenueCreationForm = ({
   venueTypes,
   isSiretValued,
 }: VenueFormProps) => {
+  const { t } = useTranslation('common')
   const { initialValues, isSubmitting } =
     useFormikContext<VenueCreationFormValues>()
   const selectedOffererId = useSelector(selectCurrentOffererId)
@@ -184,7 +186,7 @@ export const VenueCreationForm = ({
       <ActionsBarSticky>
         <ActionsBarSticky.Left>
           <ButtonLink variant={ButtonVariant.SECONDARY} to="/accueil">
-            Annuler et quitter
+            {t('cancel_and_quit')}
           </ButtonLink>
         </ActionsBarSticky.Left>
         <ActionsBarSticky.Right>

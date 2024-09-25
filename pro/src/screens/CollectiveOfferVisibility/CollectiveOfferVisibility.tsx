@@ -317,7 +317,7 @@ export const CollectiveOfferVisibilityScreen = ({
                       : '/offres/collectives'
                   }
                 >
-                  {mode === Mode.CREATION ? t('back') : 'Annuler et quitter'}
+                  {mode === Mode.CREATION ? t('back') : t('cancel_and_quit')}
                 </ButtonLink>
               </ActionsBarSticky.Left>
               <ActionsBarSticky.Right dirtyForm={formik.dirty} mode={mode}>

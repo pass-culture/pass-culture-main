@@ -218,12 +218,12 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
                     variant={ButtonVariant.SECONDARY}
                     to={computeCollectiveOffersUrl({})}
                   >
-                    Annuler et quitter
+                    {t('cancel_and_quit')}
                   </ButtonLink>
                 </ActionsBarSticky.Left>
                 <ActionsBarSticky.Right>
                   <Button type="submit" disabled={false}>
-                    Étape suivante
+                    {t('next_step')}
                   </Button>
                 </ActionsBarSticky.Right>
               </ActionsBarSticky>
