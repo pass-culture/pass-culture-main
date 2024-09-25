@@ -255,10 +255,6 @@ def get_incident_overpayment(finance_incident_id: int) -> utils.BackofficeRespon
 @utils.permission_required(perm_models.Permissions.READ_INCIDENTS)
 def get_commercial_gesture(finance_incident_id: int) -> utils.BackofficeResponse:
     incident = _get_incident(finance_incident_id, kind=finance_models.IncidentType.COMMERCIAL_GESTURE)
-    commercial_gesture_amount = sum(
-        (booking_finance_incident.commercial_gesture_amount or 0)
-        for booking_finance_incident in incident.booking_finance_incidents
-    )
     bookings_total_amount = sum(
         (booking_incident.booking or booking_incident.collectiveBooking).total_amount
         for booking_incident in incident.booking_finance_incidents
@@ -267,7 +263,7 @@ def get_commercial_gesture(finance_incident_id: int) -> utils.BackofficeResponse
     return render_template(
         "finance/incidents/get_commercial_gesture.html",
         incident=incident,
-        commercial_gesture_amount=commercial_gesture_amount,
+        commercial_gesture_amount=incident.due_amount_by_offerer,
         bookings_total_amount=bookings_total_amount,
         active_tab=request.args.get("active_tab", "bookings"),
     )
@@ -829,7 +825,7 @@ def _get_finance_overpayment_incident_validation_form(
 def _get_finance_commercial_gesture_validation_form(
     finance_incident: finance_models.FinanceIncident,
 ) -> utils.BackofficeResponse:
-    commercial_gesture_amount = finance_utils.to_euros(finance_incident.commercial_gesture_amount)
+    commercial_gesture_amount = finance_utils.to_euros(finance_incident.due_amount_by_offerer)
     bank_account_link = finance_incident.venue.current_bank_account_link
     bank_account_details_str = "du lieu" if not bank_account_link else bank_account_link.bankAccount.label
     validation_url = "backoffice_web.finance_incidents.validate_finance_commercial_gesture"

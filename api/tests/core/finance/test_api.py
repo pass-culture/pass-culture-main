@@ -44,6 +44,7 @@ import pcapi.core.users.factories as users_factories
 import pcapi.core.users.models as users_models
 from pcapi.models import db
 import pcapi.notifications.push.testing as push_testing
+from pcapi.routes.backoffice.finance import validation
 from pcapi.utils import human_ids
 import pcapi.utils.db as db_utils
 
@@ -512,6 +513,61 @@ class PriceEventTest:
         assert user.wallet_balance == Decimal("265")
         assert booking.status == bookings_models.BookingStatus.REIMBURSED
 
+    def test_compute_commercial_gesture_new_total_amount_multiple_bookings(self):
+        venue = offerers_factories.VenueFactory(pricing_point="self")
+        user = users_factories.BeneficiaryGrant18Factory()
+        author_user = users_factories.UserFactory()
+        price_amount = Decimal("5.1")
+        commercial_gesture_amount = Decimal("15.1")
+        stock = offers_factories.StockFactory(price=price_amount, offer__venue=venue)
+
+        booking1 = bookings_factories.BookingFactory(
+            user=user,
+            quantity=4,
+            amount=price_amount,
+            stock=stock,
+        )
+        booking2 = bookings_factories.BookingFactory(
+            user=user,
+            quantity=3,
+            amount=price_amount,
+            stock=stock,
+        )
+        booking3 = bookings_factories.BookingFactory(
+            user=user,
+            quantity=1,
+            amount=price_amount,
+            stock=stock,
+        )
+        bookings = [booking1, booking2, booking3]
+        commercial_gesture = api.create_finance_commercial_gesture(
+            bookings=bookings,
+            amount=Decimal("15.1"),
+            author=author_user,
+            origin="test",
+        )
+        validation.check_commercial_gesture_bookings(bookings)
+        validation.check_commercial_gesture_total_amount(commercial_gesture_amount, bookings)
+        commercial_gesture = api.create_finance_commercial_gesture(
+            author=author_user,
+            bookings=bookings,
+            amount=commercial_gesture_amount,
+            origin="create_industrial_commercial_gestures in industrial sandbox (partial commercial gesture)",
+        )
+        assert commercial_gesture.due_amount_by_offerer == 15_10
+        booking_finance_incidents = commercial_gesture.booking_finance_incidents
+        assert len(booking_finance_incidents) == 3
+        assert {b.bookingId for b in booking_finance_incidents} == {booking1.id, booking2.id, booking3.id}
+        booking_finance_incident1 = [b for b in booking_finance_incidents if b.bookingId == booking1.id][0]
+        booking_finance_incident2 = [b for b in booking_finance_incidents if b.bookingId == booking2.id][0]
+        booking_finance_incident3 = [b for b in booking_finance_incidents if b.bookingId == booking3.id][0]
+        assert booking_finance_incident1.newTotalAmount == 12_85
+        assert booking_finance_incident2.newTotalAmount == 9_63
+        assert booking_finance_incident3.newTotalAmount == 3_22
+        assert booking_finance_incident1.due_amount_by_offerer == 7_55
+        assert booking_finance_incident2.due_amount_by_offerer == 5_67
+        assert booking_finance_incident3.due_amount_by_offerer == 1_88
+
     def test_pricing_commercial_gesture_workflow(self):
         # regular commercial gesture workflow:
         # 1. Offer is created by the offerer
@@ -678,7 +734,7 @@ class PriceEventTest:
         booking_finance_incident = commercial_gesture.booking_finance_incidents[0]
         assert booking_finance_incident.bookingId == booking.id
         assert booking_finance_incident.incidentId == commercial_gesture.id
-        assert booking_finance_incident.commercial_gesture_amount == 10_10
+        assert booking_finance_incident.due_amount_by_offerer == 10_10
         finance_event_count = models.FinanceEvent.query.filter(
             models.FinanceEvent.id.in_(
                 (

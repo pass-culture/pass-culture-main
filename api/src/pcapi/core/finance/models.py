@@ -1002,18 +1002,7 @@ class FinanceIncident(PcObject, Base, Model):
         """
         Returns the amount we want to retrieve from the offerer for this incident.
         """
-        return sum(
-            utils.to_eurocents((booking_incident.booking or booking_incident.collectiveBooking).total_amount)
-            - booking_incident.newTotalAmount
-            for booking_incident in self.booking_finance_incidents
-        )
-
-    @property
-    def commercial_gesture_amount(self) -> int:
-        return sum(
-            booking_finance_incident.commercial_gesture_amount
-            for booking_finance_incident in self.booking_finance_incidents
-        )
+        return sum(booking_incident.due_amount_by_offerer for booking_incident in self.booking_finance_incidents)
 
     @property
     def author_full_name(self) -> str:
@@ -1118,16 +1107,13 @@ class BookingFinanceIncident(PcObject, Base, Model):
     )
 
     @property
-    def commercial_gesture_amount(self) -> int | None:  # in cents
-        # Evaluates to None if the incident is not a commercial gesture
-        # A commercial gesture's amount is the value we want to give to the offerer.
-        # We store in  `newTotalAmount` what should have been the booking amount.
-        # `commercial_gesture_amount` is thus always a negative amount.
-        if self.incident.kind == IncidentType.COMMERCIAL_GESTURE:
-            individual_or_collective_booking = self.booking or self.collectiveBooking
-            assert individual_or_collective_booking  # helps mypy, already ensured by database constraint
-            return utils.to_eurocents(individual_or_collective_booking.total_amount) - self.newTotalAmount
-        return None
+    def due_amount_by_offerer(self) -> int:
+        """
+        Returns the amount we want to retrieve from the offerer.
+        """
+        booking = self.booking or self.collectiveBooking
+        assert booking  # helps mypy, already ensured by database constraint
+        return utils.to_eurocents(booking.total_amount) - self.newTotalAmount
 
     @property
     def is_partial(self) -> bool:
