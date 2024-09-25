@@ -14,8 +14,10 @@
     {% for offerer_address in offerer_addresses %}
       <tr>
         <th scope="row"></th>
-        <td>{{ offerer_address.label }}</td>
-        <td>{{ offerer_address.address.street }} {{ offerer_address.address.postalCode }} {{ offerer_address.address.city }}</td>
+        <td>{{ offerer_address.label | empty_string_if_null }}</td>
+        <td>
+          {{ offerer_address.address.street | empty_string_if_null }} {{ offerer_address.address.postalCode }} {{ offerer_address.address.city }}
+        </td>
         <td>{{ links.build_external_address_link(offerer_address.address) }}</td>
         <td>
           {% set search_params = {
