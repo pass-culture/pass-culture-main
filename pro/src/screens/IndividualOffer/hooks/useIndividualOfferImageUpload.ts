@@ -71,20 +71,26 @@ export const useIndividualOfferImageUpload = () => {
     }
     if (offer === null) {
       setImageOfferCreationArgs(creationArgs)
-      const imageUrl = await imageFileToDataUrl(imageFile)
-      setImageOffer({
-        originalUrl: imageUrl,
-        url: imageCroppedDataUrl || imageUrl,
-        credit,
-        cropParams: cropParams
-          ? {
-              xCropPercent: cropParams.x,
-              yCropPercent: cropParams.y,
-              heightCropPercent: cropParams.height,
-              widthCropPercent: cropParams.width,
-            }
-          : undefined,
-      })
+      try {
+        const imageUrl = await imageFileToDataUrl(imageFile)
+        setImageOffer({
+          originalUrl: imageUrl,
+          url: imageCroppedDataUrl || imageUrl,
+          credit,
+          cropParams: cropParams
+            ? {
+                xCropPercent: cropParams.x,
+                yCropPercent: cropParams.y,
+                heightCropPercent: cropParams.height,
+                widthCropPercent: cropParams.width,
+              }
+            : undefined,
+        })
+      } catch (e) {
+        notify.error(
+          'Une erreur est survenue lors de le téléversement de votre image. Est-ce que votre image existe encore ?'
+        )
+      }
     } else {
       try {
         await handleImageOnSubmit(offer.id, creationArgs)
