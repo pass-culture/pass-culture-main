@@ -231,3 +231,8 @@ def _index_all_european_offers() -> None:
 @blueprint.cli.command("index_all_european_offers")
 def index_all_european_offers() -> None:
     _index_all_european_offers()
+
+
+@blueprint.cli.command("unindex_all_european_offers")
+def unindex_all_european_offers() -> None:
+    search.unindex_all_european_offers()
