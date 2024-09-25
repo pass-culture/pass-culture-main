@@ -3,10 +3,11 @@ import { ForwardedRef, forwardRef } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
 
 import { useAnalytics } from 'app/App/analytics/firebase'
+// import { appLogo } from 'appConfig'
+import { AppLogo } from 'appConfig'
 import { HeaderHelpDropdown } from 'components/Header/HeaderHelpDropdown/HeaderHelpDropdown'
 import { Events } from 'core/FirebaseEvents/constants'
 import fullBurgerIcon from 'icons/full-burger.svg'
-import logoPassCultureProIcon from 'icons/logo-pass-culture-pro.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
@@ -57,12 +58,13 @@ export const Header = forwardRef(
           <div className={styles['nav-brand']}>
             {disableHomeLink ? (
               <div className={cn(styles['logo'], styles['logo-link-disabled'])}>
-                <SvgIcon
+                <AppLogo />
+                {/* <SvgIcon
                   alt="Pass Culture pro, l’espace des acteurs culturels"
-                  src={logoPassCultureProIcon}
-                  viewBox="0 0 119 40"
-                  width="119"
-                />
+                  src={appLogo.name}
+                  viewBox={appLogo.viewBox}
+                  width={appLogo.width}
+                /> */}
               </div>
             ) : (
               <NavLink
@@ -72,12 +74,7 @@ export const Header = forwardRef(
                   logEvent(Events.CLICKED_PRO, { from: location.pathname })
                 }}
               >
-                <SvgIcon
-                  alt="Pass Culture pro, l’espace des acteurs culturels"
-                  src={logoPassCultureProIcon}
-                  viewBox="0 0 119 40"
-                  width="119"
-                />
+                <AppLogo />
               </NavLink>
             )}
           </div>

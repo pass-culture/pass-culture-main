@@ -7,5 +7,6 @@
   },
   "stylelint.validate": ["css", "scss"],
   "cucumberautocomplete.steps": ["cypress/e2e/step-definitions/*.cy.ts"],
-  "cucumberautocomplete.strictGherkinCompletion": true
+  "cucumberautocomplete.strictGherkinCompletion": true,
+  "svg.preview.background": "black"
 }
