@@ -4,6 +4,7 @@ from flask_login import login_required
 
 from pcapi import repository
 from pcapi.core.european_offers import api as european_offers_api
+from pcapi.core import search
 from pcapi.routes.apis import private_api
 from pcapi.routes.native.v1.serialization.european_offers import EuropeanOfferResponse
 from pcapi.serialization.decorator import spectree_serialize
@@ -24,5 +25,5 @@ logger = logging.getLogger(__name__)
 def post_european_offer(body: european_offers_api.EuropeanOfferData) -> EuropeanOfferResponse:
     with repository.transaction():
         offer = european_offers_api.create_offer(body)
-
+    search.index_european_offer_ids([offer.id])
     return EuropeanOfferResponse.from_orm(offer)
