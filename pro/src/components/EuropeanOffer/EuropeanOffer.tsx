@@ -145,15 +145,15 @@ export const EuropeanOffer = (): JSX.Element => {
                   )
 
                   const { lat, lng } = place.geometry.location
-                  await formik.setValues({
-                    ...formik.values,
-                    city: res.locality,
-                    country: res.country,
-                    street: `${res.street_number}, ${res.route}`,
-                    zipcode: res.postal_code,
-                    latitude: lat(),
-                    longitude: lng(),
-                  })
+                  await formik.setFieldValue('city', res.locality)
+                  await formik.setFieldValue('country', res.locality)
+                  await formik.setFieldValue(
+                    'street',
+                    `${res.street_number}, ${res.route}`
+                  )
+                  await formik.setFieldValue('zipcode', res.postal_code)
+                  await formik.setFieldValue('latitude', lat())
+                  await formik.setFieldValue('longitude', lng())
                 }}
               />
             </FormLayout.Row>
