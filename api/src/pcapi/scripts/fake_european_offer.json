@@ -3,18 +3,21 @@
     "title": {
       "fr": "Monastère des Hiéronymites",
       "en": "Monastery of Jerónimos",
-      "it": "Monastero dei Geronimiti"
+      "it": "Monastero dei Geronimiti",
+      "pt": "Monastère des Hiéronymites"
     },
     "description": {
       "fr": "Classé au patrimoine mondial de l'UNESCO, ce monastère est un chef-d'œuvre de l'architecture manuéline. Il a été construit pour célébrer le retour de Vasco de Gama d'Inde.",
       "en": "A UNESCO World Heritage site, this monastery is a masterpiece of Manueline architecture. It was built to celebrate Vasco da Gama's return from India.",
-      "it": "Sito patrimonio mondiale dell'UNESCO, questo monastero è un capolavoro dell'architettura manuelina. Fu costruito per celebrare il ritorno di Vasco da Gama dall'India."
+      "it": "Sito patrimonio mondiale dell'UNESCO, questo monastero è un capolavoro dell'architettura manuelina. Fu costruito per celebrare il ritorno di Vasco da Gama dall'India.",
+      "pt": "Sito patrimonio mondiale dell'UNESCO, questo monastero è un capolavoro dell'architettura manuelina. Fu costruito per celebrare il ritorno di Vasco da Gama dall'India."
     },
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Jerónimos_April_2009-4.jpg/1920px-Jerónimos_April_2009-4.jpg",
     "imageAlt": {
       "fr": "Façade du Monastère des Hiéronymites avec ses détails architecturaux.",
       "en": "Facade of the Jerónimos Monastery with its architectural details.",
-      "it": "Facciata del Monastero dei Geronimiti con i suoi dettagli architettonici."
+      "it": "Facciata del Monastero dei Geronimiti con i suoi dettagli architettonici.",
+      "pt": "Facciata del Monastero dei Geronimiti con i suoi dettagli architettonici."
     },
 
     "country": "Portugal",
@@ -31,18 +34,21 @@
     "title": {
       "fr": "Tour de Belém",
       "en": "Belém Tower",
-      "it": "Torre di Belém"
+      "it": "Torre di Belém",
+      "pt": "Torre di Belém"
     },
     "description": {
       "fr": "Cette tour emblématique, construite au XVIe siècle, servait à défendre l'entrée du port de Lisbonne. Inscrite au patrimoine mondial de l'UNESCO.",
       "en": "This iconic tower, built in the 16th century, served to defend the entrance to Lisbon's port. It is a UNESCO World Heritage site.",
-      "it": "Questa torre iconica, costruita nel XVI secolo, serviva a difendere l'ingresso al porto di Lisbona. È patrimonio mondiale dell'UNESCO."
+      "it": "Questa torre iconica, costruita nel XVI secolo, serviva a difendere l'ingresso al porto di Lisbona. È patrimonio mondiale dell'UNESCO.",
+      "pt": "Questa torre iconica, costruita nel XVI secolo, serviva a difendere l'ingresso al porto di Lisbona. È patrimonio mondiale dell'UNESCO."
     },
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/Torre_Belem_(Lisboa).jpg/1920px-Torre_Belem_(Lisboa).jpg",
     "imageAlt": {
       "fr": "La Tour de Belém, symbole de Lisbonne, entourée par le fleuve.",
       "en": "The Belém Tower, a symbol of Lisbon, surrounded by the river.",
-      "it": "La Torre di Belém, simbolo di Lisbona, circondata dal fiume."
+      "it": "La Torre di Belém, simbolo di Lisbona, circondata dal fiume.",
+      "pt": "La Torre di Belém, simbolo di Lisbona, circondata dal fiume."
     },
 
     "country": "Portugal",
@@ -59,18 +65,21 @@
     "title": {
       "fr": "Musée Calouste Gulbenkian",
       "en": "Calouste Gulbenkian Museum",
-      "it": "Museo Calouste Gulbenkian"
+      "it": "Museo Calouste Gulbenkian",
+      "pt": "Museo Calouste Gulbenkian"
     },
     "description": {
       "fr": "Musée présentant une collection d'art allant des antiquités égyptiennes et gréco-romaines aux œuvres de maîtres européens comme Rembrandt, Monet, et René Lalique.",
       "en": "This museum showcases a collection of art ranging from Egyptian and Greco-Roman antiquities to works by European masters like Rembrandt, Monet, and René Lalique.",
-      "it": "Questo museo presenta una collezione d'arte che spazia dalle antichità egizie e greco-romane alle opere dei maestri europei come Rembrandt, Monet e René Lalique."
+      "it": "Questo museo presenta una collezione d'arte che spazia dalle antichità egizie e greco-romane alle opere dei maestri europei come Rembrandt, Monet e René Lalique.",
+      "pt": "Questo museo presenta una collezione d'arte che spazia dalle antichità egizie e greco-romane alle opere dei maestri europei come Rembrandt, Monet e René Lalique."
     },
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/Lisbonne_gulbenkian_salle_orient.jpg/2880px-Lisbonne_gulbenkian_salle_orient.jpg",
     "imageAlt": {
       "fr": "Intérieur du Musée Calouste Gulbenkian avec des œuvres d'art exposées.",
       "en": "Interior of the Calouste Gulbenkian Museum with displayed artworks.",
-      "it": "Interno del Museo Calouste Gulbenkian con opere d'arte esposte."
+      "it": "Interno del Museo Calouste Gulbenkian con opere d'arte esposte.",
+      "pt": "Interno del Museo Calouste Gulbenkian con opere d'arte esposte."
     },
 
     "country": "Portugal",
@@ -87,18 +96,21 @@
     "title": {
       "fr": "Musée national de l'Azulejo",
       "en": "National Tile Museum",
-      "it": "Museo Nazionale dell'Azulejo"
+      "it": "Museo Nazionale dell'Azulejo",
+      "pt": "Museo Nazionale dell'Azulejo"
     },
     "description": {
       "fr": "Ce musée retrace l'évolution de l'art de l'azulejo, la célèbre céramique portugaise, depuis le XVe siècle.",
       "en": "This museum traces the evolution of azulejo art, the famous Portuguese ceramic, from the 15th century.",
-      "it": "Questo museo traccia l'evoluzione dell'arte dell'azulejo, la famosa ceramica portoghese, dal XV secolo."
+      "it": "Questo museo traccia l'evoluzione dell'arte dell'azulejo, la famosa ceramica portoghese, dal XV secolo.",
+      "pt": "Questo museo traccia l'evoluzione dell'arte dell'azulejo, la famosa ceramica portoghese, dal XV secolo."
     },
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Azulejo_December_2012-8a.jpg/2880px-Azulejo_December_2012-8a.jpg",
     "imageAlt": {
       "fr": "Exposition d'azulejos au Musée national de l'Azulejo.",
       "en": "Exhibition of azulejos at the National Tile Museum.",
-      "it": "Esposizione di azulejos al Museo Nazionale dell'Azulejo."
+      "it": "Esposizione di azulejos al Museo Nazionale dell'Azulejo.",
+      "pt": "Esposizione di azulejos al Museo Nazionale dell'Azulejo."
     },
 
     "country": "Portugal",
@@ -115,18 +127,21 @@
     "title": {
       "fr": "Alfama et Château de São Jorge",
       "en": "Alfama and São Jorge Castle",
-      "it": "Alfama e Castello di São Jorge"
+      "it": "Alfama e Castello di São Jorge",
+      "pt": "Alfama e Castello di São Jorge"
     },
     "description": {
       "fr": "Balade dans le quartier historique de l'Alfama jusqu'au château offrant des vues panoramiques sur Lisbonne. L'Alfama est aussi le berceau du fado.",
       "en": "Stroll through the historic Alfama district to the castle offering panoramic views of Lisbon. Alfama is also the birthplace of fado.",
-      "it": "Passeggia nel quartiere storico di Alfama fino al castello che offre viste panoramiche su Lisbona. Alfama è anche la culla del fado."
+      "it": "Passeggia nel quartiere storico di Alfama fino al castello che offre viste panoramiche su Lisbona. Alfama è anche la culla del fado.",
+      "pt": "Passeggia nel quartiere storico di Alfama fino al castello che offre viste panoramiche su Lisbona. Alfama è anche la culla del fado."
     },
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/c/cf/LisbonCastle.jpg",
     "imageAlt": {
       "fr": "Vue panoramique depuis le Château de São Jorge sur le quartier de l'Alfama.",
       "en": "Panoramic view from São Jorge Castle over the Alfama district.",
-      "it": "Vista panoramica dal Castello di São Jorge sul quartiere di Alfama."
+      "it": "Vista panoramica dal Castello di São Jorge sul quartiere di Alfama.",
+      "pt": "Vista panoramica dal Castello di São Jorge sul quartiere di Alfama."
     },
 
     "country": "Portugal",
@@ -143,18 +158,21 @@
     "title": {
       "fr": "Musée Berardo",
       "en": "Berardo Museum",
-      "it": "Museo Berardo"
+      "it": "Museo Berardo",
+      "pt": "Museo Berardo"
     },
     "description": {
       "fr": "Exposition d'art moderne et contemporain avec des œuvres de Picasso, Dalí, Warhol et d'autres grands artistes.",
       "en": "Exhibition of modern and contemporary art with works by Picasso, Dalí, Warhol, and other great artists.",
-      "it": "Esposizione di arte moderna e contemporanea con opere di Picasso, Dalí, Warhol e altri grandi artisti."
+      "it": "Esposizione di arte moderna e contemporanea con opere di Picasso, Dalí, Warhol e altri grandi artisti.",
+      "pt": "Esposizione di arte moderna e contemporanea con opere di Picasso, Dalí, Warhol e altri grandi artisti."
     },
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/Berardo_Collection_Museum.png/1280px-Berardo_Collection_Museum.png",
     "imageAlt": {
       "fr": "Une des salles du Musée Berardo présentant des œuvres d'art moderne.",
       "en": "One of the rooms of the Berardo Museum showcasing modern art.",
-      "it": "Una delle sale del Museo Berardo che espone arte moderna."
+      "it": "Una delle sale del Museo Berardo che espone arte moderna.",
+      "pt": "Una delle sale del Museo Berardo che espone arte moderna."
     },
 
     "country": "Portugal",
@@ -171,18 +189,21 @@
     "title": {
       "fr": "Ascenseur de Santa Justa",
       "en": "Santa Justa Lift",
-      "it": "Ascensore di Santa Justa"
+      "it": "Ascensore di Santa Justa",
+      "pt": "Ascensore di Santa Justa"
     },
     "description": {
       "fr": "Ascenseur néo-gothique offrant une vue imprenable sur le centre de Lisbonne, conçu par un disciple de Gustave Eiffel.",
       "en": "Neo-Gothic lift offering an amazing view of central Lisbon, designed by a disciple of Gustave Eiffel.",
-      "it": "Ascensore neogotico che offre una vista incredibile sul centro di Lisbona, progettato da un discepolo di Gustave Eiffel."
+      "it": "Ascensore neogotico che offre una vista incredibile sul centro di Lisbona, progettato da un discepolo di Gustave Eiffel.",
+      "pt": "Ascensore neogotico che offre una vista incredibile sul centro di Lisbona, progettato da un discepolo di Gustave Eiffel."
     },
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Elevador_de_Santa_Justa_machinery.jpg/1920px-Elevador_de_Santa_Justa_machinery.jpg",
     "imageAlt": {
       "fr": "L'ascenseur de Santa Justa avec vue sur le centre de Lisbonne.",
       "en": "The Santa Justa Lift with a view over central Lisbon.",
-      "it": "L'ascensore di Santa Justa con vista sul centro di Lisbona."
+      "it": "L'ascensore di Santa Justa con vista sul centro di Lisbona.",
+      "pt": "L'ascensore di Santa Justa con vista sul centro di Lisbona."
     },
 
     "country": "Portugal",
@@ -199,18 +220,21 @@
     "title": {
       "fr": "Océanarium de Lisbonne",
       "en": "Lisbon Oceanarium",
-      "it": "Oceanario di Lisbona"
+      "it": "Oceanario di Lisbona",
+      "pt": "Oceanario di Lisbona"
     },
     "description": {
       "fr": "L'un des plus grands aquariums d'Europe, mettant en valeur la biodiversité des océans. Idéal pour les sorties en famille.",
       "en": "One of the largest aquariums in Europe, showcasing the biodiversity of the oceans. Ideal for family outings.",
-      "it": "Uno dei più grandi acquari d'Europa, che mette in risalto la biodiversità degli oceani. Ideale per le uscite in famiglia."
+      "it": "Uno dei più grandi acquari d'Europa, che mette in risalto la biodiversità degli oceani. Ideale per le uscite in famiglia.",
+      "pt": "Uno dei più grandi acquari d'Europa, che mette in risalto la biodiversità degli oceani. Ideale per le uscite in famiglia."
     },
     "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Lisbon_Oceanarium_2.jpg/1920px-Lisbon_Oceanarium_2.jpg",
     "imageAlt": {
       "fr": "Un aquarium avec diverses espèces marines à l'Océanarium de Lisbonne.",
       "en": "An aquarium with various marine species at the Lisbon Oceanarium.",
-      "it": "Un acquario con varie specie marine all'Oceanario di Lisbona."
+      "it": "Un acquario con varie specie marine all'Oceanario di Lisbona.",
+      "pt": "Un acquario con varie specie marine all'Oceanario di Lisbona."
     },
     "country": "Portugal",
     "street": "Esplanada Dom Carlos I",

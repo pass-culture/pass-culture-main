@@ -30,13 +30,15 @@ def add_fake_european_offers(clear: bool) -> None:
 
     if clear:
         european_offers_repository.delete_all_european_offers()
+        search.unindex_all_european_offers()
 
     data = _get_json_data()
     with repository.transaction():
         for offer_dict in data:
             offer = api.EuropeanOfferData(**offer_dict)
             european_offer = api.create_offer(offer)
-            search.index_european_offer_ids([european_offer.id])
+    all_european_offers = european_offers_repository.get_all_european_offers()
+    search.index_european_offer_ids([european_offer.id for european_offer in all_european_offers])
 
     count = european_offers_repository.get_all_european_offers_count()
     logger.info("There are now %d EuropeOffers !", count)
