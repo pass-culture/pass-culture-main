@@ -13,6 +13,7 @@ import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './Header.module.scss'
 import { HeaderDropdown } from './HeaderDropdown/HeaderDropdown'
+import { Headeri18nDropdown } from './Headeri18nDropdown/Headeri18nDropdown'
 
 type HeaderProps = {
   lateralPanelOpen?: boolean
@@ -84,6 +85,7 @@ export const Header = forwardRef(
             <HeaderHelpDropdown />
           </div>
           <HeaderDropdown />
+          <Headeri18nDropdown />
         </div>
       </header>
     )
