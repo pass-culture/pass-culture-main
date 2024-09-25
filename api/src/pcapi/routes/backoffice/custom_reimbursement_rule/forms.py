@@ -112,8 +112,6 @@ class CreateCustomReimbursementRuleForm(FlaskForm):
     def validate(self, extra_validators: dict | None = None) -> bool:
         offerer_id = self._fields["offerer"].data[0]
         venue_id = self._fields["venue"].data[0]
-        print(offerer_id)
-        print(venue_id)
 
         if not offerer_id and not venue_id:
             flash("Il faut obligatoirement renseigner une structure ou un lieu", "warning")
