@@ -851,7 +851,7 @@ def unindex_european_offer_ids(european_offer_ids: abc.Collection[int]) -> None:
 def unindex_all_european_offers() -> None:
     backend = _get_backend()
     try:
-        backend.unindex_all_offers()
+        backend.unindex_all_european_offers()
     except Exception:  # pylint: disable=broad-except
         if not settings.CATCH_INDEXATION_EXCEPTIONS:
             raise
