@@ -30,6 +30,7 @@ import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 import { ActionsBar } from './ActionsBar/ActionsBar'
 import { CollectiveOfferType } from './CollectiveOfferType/CollectiveOfferType'
+import { EuropeIcon } from './EuropeIcon'
 import { IndividualOfferType } from './IndividualOfferType/IndividualOfferType'
 import styles from './OfferType.module.scss'
 import { OfferTypeFormValues } from './types'
@@ -76,6 +77,12 @@ export const OfferTypeScreen = (): JSX.Element => {
   const offerer = offererQuery.data
 
   const onSubmit = async (values: OfferTypeFormValues) => {
+    if (values.offerType === OFFER_TYPES.EUROPEAN) {
+      return navigate({
+        pathname: '/offre/european/creation',
+      })
+    }
+
     if (values.offerType === OFFER_TYPES.INDIVIDUAL_OR_DUO) {
       const params = new URLSearchParams(location.search)
       if (values.individualOfferSubtype) {
@@ -207,6 +214,15 @@ export const OfferTypeScreen = (): JSX.Element => {
                   label="À un groupe scolaire"
                   onChange={handleChange}
                   value={OFFER_TYPES.EDUCATIONAL}
+                  className={styles['offer-type-button']}
+                />
+                <RadioButtonWithImage
+                  name="offerType"
+                  logo={<EuropeIcon className={styles['button-icon']} />}
+                  isChecked={values.offerType === OFFER_TYPES.EUROPEAN}
+                  label="Public européen"
+                  onChange={handleChange}
+                  value={OFFER_TYPES.EUROPEAN}
                   className={styles['offer-type-button']}
                 />
               </FormLayout.Row>

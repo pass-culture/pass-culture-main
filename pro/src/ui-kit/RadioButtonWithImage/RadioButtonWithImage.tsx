@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import React from 'react'
+import React, { ReactNode } from 'react'
 
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
@@ -10,7 +10,8 @@ import styles from './RadioButtonWithImage.module.scss'
 interface RadioButtonWithImageProps {
   name: string
   isChecked: boolean
-  icon: string
+  icon?: string
+  logo?: ReactNode
   label: string
   description?: string
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
@@ -24,6 +25,7 @@ export const RadioButtonWithImage = ({
   name,
   isChecked,
   icon,
+  logo,
   label,
   description,
   onChange,
@@ -63,7 +65,11 @@ export const RadioButtonWithImage = ({
       />
     )}
 
-    <SvgIcon src={icon} className={styles['button-icon']} alt="" />
+    {icon ? (
+      <SvgIcon src={icon} className={styles['button-icon']} alt="" />
+    ) : (
+      logo
+    )}
 
     <input
       checked={isChecked}
