@@ -63,7 +63,7 @@ export async function loadConfig() {
         config.ui.colors.backgroundAccentLight
       )
     })
-    .catch(() => {
+    .catch((err) => {
       // Error happend
     })
 }
