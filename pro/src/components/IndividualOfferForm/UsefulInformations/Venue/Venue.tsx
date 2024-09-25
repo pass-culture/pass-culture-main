@@ -84,7 +84,7 @@ export const Venue = ({
         <FormLayout.Row>
           <Select
             disabled={isOffererDisabled || readOnlyFields.includes('offererId')}
-            label="Structure"
+            label={t('offerer')}
             name="offererId"
             options={offererOptions}
             onChange={onOffererChange}

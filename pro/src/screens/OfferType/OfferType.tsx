@@ -196,13 +196,13 @@ export const OfferTypeScreen = (): JSX.Element => {
       <FormikProvider value={formik}>
         <form onSubmit={formik.handleSubmit}>
           <FormLayout>
-            <FormLayout.Section title="À qui destinez-vous cette offre ?">
+            <FormLayout.Section title={t('offer_target')}>
               <FormLayout.Row inline>
                 <RadioButtonWithImage
                   name="offerType"
                   icon={phoneStrokeIcon}
                   isChecked={values.offerType === OFFER_TYPES.INDIVIDUAL_OR_DUO}
-                  label="Au grand public"
+                  label={t('to_public')}
                   onChange={handleChange}
                   value={OFFER_TYPES.INDIVIDUAL_OR_DUO}
                   className={styles['offer-type-button']}
@@ -211,7 +211,7 @@ export const OfferTypeScreen = (): JSX.Element => {
                   name="offerType"
                   icon={strokeProfIcon}
                   isChecked={values.offerType === OFFER_TYPES.EDUCATIONAL}
-                  label="À un groupe scolaire"
+                  label={t('to_schools')}
                   onChange={handleChange}
                   value={OFFER_TYPES.EDUCATIONAL}
                   className={styles['offer-type-button']}

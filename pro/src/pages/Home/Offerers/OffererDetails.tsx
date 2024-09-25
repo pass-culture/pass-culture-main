@@ -1,5 +1,6 @@
 import cn from 'classnames'
 import React from 'react'
+import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 
@@ -30,6 +31,7 @@ export const OffererDetails = ({
   isUserOffererValidated,
   offererOptions,
 }: OffererDetailsProps) => {
+  const { t } = useTranslation('common')
   const { logEvent } = useAnalytics()
   const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
@@ -65,7 +67,7 @@ export const OffererDetails = ({
             data-testid="offerer-details-offerId"
             options={[...offererOptions, addOffererOption]}
             value={selectedOffererId ? String(selectedOffererId) : ''}
-            aria-label="Structure"
+            aria-label={t('offerer')}
           />
         </div>
 

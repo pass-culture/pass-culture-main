@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import { Link, Outlet, useLocation } from 'react-router-dom'
 
@@ -17,6 +18,7 @@ import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import styles from './SignupJourney.module.scss'
 
 export const SignupJourneyRoutes = () => {
+  const { t } = useTranslation('common')
   const { logEvent } = useAnalytics()
   const location = useLocation()
   const hasNewInterface = useIsNewInterfaceActive()
@@ -60,7 +62,7 @@ export const SignupJourneyRoutes = () => {
                   alt=""
                   width="20"
                 />
-                Se déconnecter
+                {t('logout')}
               </Link>
             </div>
           </header>

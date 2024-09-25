@@ -112,7 +112,7 @@ export const OffererStatsScreen = ({
       </p>
 
       {!isNewInterfaceActive && (
-        <FieldLayout label="Structure" name="offererId" isOptional>
+        <FieldLayout label={t('offerer')} name="offererId" isOptional>
           <SelectInput
             onChange={handleChangeOfferer}
             name="offererId"

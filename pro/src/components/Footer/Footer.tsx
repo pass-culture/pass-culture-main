@@ -56,7 +56,7 @@ export const Footer = ({ layout }: FooterProps) => {
         </li>
         <li>
           <ButtonLink variant={ButtonVariant.QUATERNARY} to="/accessibilite">
-            Accessibilité : non conforme
+            {t('accessibility_not_compliant')}
           </ButtonLink>
         </li>
         {currentUser && (

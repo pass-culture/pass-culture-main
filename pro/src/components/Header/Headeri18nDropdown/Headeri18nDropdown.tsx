@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next'
 
 import fullDownIcon from 'icons/full-down.svg'
 import { SelectInput } from 'ui-kit/form/Select/SelectInput'
+import { localStorageAvailable } from 'utils/localStorageAvailable'
 
 import styles from './Headeri18nDropdown.module.scss'
 
@@ -11,6 +12,12 @@ export const Headeri18nDropdown = () => {
   const handleChangeLanguage = async (
     e: React.ChangeEvent<HTMLSelectElement>
   ) => {
+    const selectedLanguage = e.target.value
+
+    if (localStorageAvailable()) {
+      localStorage.setItem('i18nextLng', selectedLanguage)
+    }
+
     await i18n.changeLanguage(e.target.value)
   }
 

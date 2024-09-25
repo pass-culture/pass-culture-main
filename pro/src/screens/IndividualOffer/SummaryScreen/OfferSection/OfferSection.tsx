@@ -182,7 +182,7 @@ export const OfferSection = ({
   const practicalInfoDescriptions: Description[] = []
   if (!isSplitOfferEnabled) {
     practicalInfoDescriptions.push({
-      title: 'Structure',
+      title: t('offerer'),
       text: offerData.offererName,
     })
     practicalInfoDescriptions.push({

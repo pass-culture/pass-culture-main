@@ -1,5 +1,6 @@
 import { FormikProvider, useFormik } from 'formik'
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { useSWRConfig } from 'swr'
 
@@ -49,6 +50,7 @@ export const CollectiveDataForm = ({
   culturalPartners,
   venue,
 }: CollectiveDataFormProps): JSX.Element | null => {
+  const { t } = useTranslation('common')
   const notify = useNotification()
   const navigate = useNavigate()
 
@@ -228,7 +230,7 @@ export const CollectiveDataForm = ({
               variant={ButtonVariant.SECONDARY}
               to={`/structures/${venue.managingOfferer.id}/lieux/${venue.id}/collectif`}
             >
-              Annuler et quitter
+              {t('cancel_and_quit')}
             </ButtonLink>
             <Button type="submit" isLoading={formik.isSubmitting}>
               Enregistrer et quitter
