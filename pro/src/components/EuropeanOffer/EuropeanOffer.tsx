@@ -62,7 +62,7 @@ export const EuropeanOffer = (): JSX.Element => {
         latitude: formValues.latitude ?? 0,
         longitude: formValues.longitude ?? 0,
         price: formValues.price ?? 0,
-        // autoTranslate: formValues.autoTranslate ?? false,
+        autoTranslate: formValues.autoTranslate ?? false,
       })
       navigate(`/offre/individuelle/${id}/creation/confirmation`)
     } catch (err) {

@@ -4,6 +4,7 @@
 /* eslint-disable */
 import type { LangField } from './LangField';
 export type EuropeanOfferData = {
+  autoTranslate: boolean;
   city?: string | null;
   country?: string | null;
   currency?: string | null;
