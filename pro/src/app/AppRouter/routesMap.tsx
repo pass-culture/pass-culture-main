@@ -117,6 +117,11 @@ export const routes: RouteConfig[] = [
     title: 'Choix de la nature de l’offre - Créer une offre',
   },
   {
+    lazy: () => import('pages/EuropeanOffer/EuropeanOffer'),
+    path: '/offre/european/creation',
+    title: 'Offre européenne - Créer une offre',
+  },
+  {
     lazy: () => import('pages/Offers/OffersRoute'),
     path: '/offres',
     title: 'Offres individuelles',

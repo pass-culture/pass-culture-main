@@ -2,11 +2,13 @@ import { render, screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Form, Formik } from 'formik'
 import React from 'react'
+import { I18nextProvider } from 'react-i18next'
 import * as yup from 'yup'
 
 import { IndividualOfferFormValues } from 'components/IndividualOfferForm/types'
 import { Button } from 'ui-kit/Button/Button'
 
+import i18n from '../../../../utils/i18nForTests'
 import { Informations, InformationsProps } from '../Informations'
 import { getValidationSchema } from '../validationSchema'
 
@@ -20,18 +22,20 @@ const renderInformations = ({
   onSubmit: () => void
 }) => {
   const rtlReturns = render(
-    <Formik
-      initialValues={initialValues}
-      onSubmit={onSubmit}
-      validationSchema={yup.object().shape(getValidationSchema())}
-    >
-      <Form>
-        <Informations {...props} />
-        <Button type="submit" isLoading={false}>
-          Submit
-        </Button>
-      </Form>
-    </Formik>
+    <I18nextProvider i18n={i18n}>
+      <Formik
+        initialValues={initialValues}
+        onSubmit={onSubmit}
+        validationSchema={yup.object().shape(getValidationSchema())}
+      >
+        <Form>
+          <Informations {...props} />
+          <Button type="submit" isLoading={false}>
+            Submit
+          </Button>
+        </Form>
+      </Formik>
+    </I18nextProvider>
   )
 
   return {

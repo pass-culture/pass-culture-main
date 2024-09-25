@@ -80,13 +80,13 @@ export const ActionBar = ({
                 width="16"
                 className={styles['draft-saved-icon']}
               />
-              Brouillon enregistré
+              {t('draft_saved')}
             </span>
           )}
           {dirtyForm === true && (
             <span className={styles['draft-indicator']}>
               <div className={styles['draft-not-saved-icon']} />
-              Brouillon non enregistré
+              {t('draft_unsaved')}
             </span>
           )}
           {step === OFFER_WIZARD_STEP_IDS.SUMMARY ? (

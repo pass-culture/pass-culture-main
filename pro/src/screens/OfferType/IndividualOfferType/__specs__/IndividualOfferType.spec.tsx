@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import { FormikProvider, useFormik } from 'formik'
+import { I18nextProvider } from 'react-i18next'
 
 import {
   COLLECTIVE_OFFER_SUBTYPE,
@@ -9,6 +10,7 @@ import {
 } from 'core/Offers/constants'
 import { OfferTypeFormValues } from 'screens/OfferType/types'
 
+import i18n from '../../../../utils/i18nForTests'
 import { IndividualOfferType } from '../IndividualOfferType'
 
 const TestForm = (): JSX.Element => {
@@ -33,7 +35,7 @@ const TestForm = (): JSX.Element => {
 }
 
 const renderOfferTypeIndividual = () => {
-  return render(<TestForm />)
+  return <I18nextProvider i18n={i18n}>{render(<TestForm />)}</I18nextProvider>
 }
 
 describe('OfferTypeIndividual', () => {

@@ -12,6 +12,7 @@ export interface BaseInputProps
   filterVariant?: boolean
   leftIcon?: string
   rightIcon?: string
+  currencyAbbreviation?: string
   rightButton?: () => JSX.Element
   id?: string
 }
@@ -25,6 +26,7 @@ export const BaseInput = forwardRef(
       name,
       leftIcon,
       rightIcon,
+      currencyAbbreviation,
       rightButton,
       id,
       ...props
@@ -68,6 +70,7 @@ export const BaseInput = forwardRef(
           >
             {hasLeftIcon && <SvgIcon src={leftIcon} alt="" />}
             {hasRightIcon && <SvgIcon src={rightIcon} alt="" />}
+            {currencyAbbreviation}
             {hasButton && rightButton()}
           </span>
         </div>

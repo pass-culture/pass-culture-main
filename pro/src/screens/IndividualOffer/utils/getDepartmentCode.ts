@@ -4,7 +4,7 @@ export const getDepartmentCode = ({
   offer,
   useOffererAddressAsDataSourceEnabled,
 }: {
-  offer: GetIndividualOfferWithAddressResponseModel
+  offer?: GetIndividualOfferWithAddressResponseModel
   useOffererAddressAsDataSourceEnabled: boolean
 }): string => {
   return offer.address?.departmentCode && useOffererAddressAsDataSourceEnabled

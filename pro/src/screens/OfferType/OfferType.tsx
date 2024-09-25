@@ -220,7 +220,7 @@ export const OfferTypeScreen = (): JSX.Element => {
                   name="offerType"
                   logo={<EuropeIcon className={styles['button-icon']} />}
                   isChecked={values.offerType === OFFER_TYPES.EUROPEAN}
-                  label="Public européen"
+                  label={t('to_european')}
                   onChange={handleChange}
                   value={OFFER_TYPES.EUROPEAN}
                   className={styles['offer-type-button']}
