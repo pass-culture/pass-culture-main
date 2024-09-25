@@ -23,10 +23,9 @@ def translate(text) -> str:
             {"role": "user", "content": user_query + text},
         ],
         model="gpt-4o",
-        # response_format={"type": "json_object"},
+        response_format={"type": "json_object"},
     )
-
     response_json = json.loads(chat_completion.model_dump_json(indent=2))
     content = response_json["choices"][0]["message"]["content"]
-
-    return content
+    content_json = json.loads(content)
+    return content_json
