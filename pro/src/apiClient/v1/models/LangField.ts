@@ -3,8 +3,8 @@
 /* tslint:disable */
 /* eslint-disable */
 export type LangField = {
-  en?: string | null;
-  fr?: string | null;
-  it?: string | null;
-};
-
+  en?: string | null
+  fr?: string | null
+  it?: string | null
+  pt?: string | null
+}

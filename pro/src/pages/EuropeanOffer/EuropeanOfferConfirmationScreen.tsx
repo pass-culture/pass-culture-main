@@ -5,7 +5,7 @@ import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
-import styles from './IndividualOfferConfirmationScreen.module.scss'
+import styles from './EuropeanOfferConfirmationScreen.module.scss'
 
 export const EuropeanOfferConfirmationScreen = (): JSX.Element => {
   const { t } = useTranslation('common')
@@ -18,7 +18,7 @@ export const EuropeanOfferConfirmationScreen = (): JSX.Element => {
           alt=""
           className={styles['validate-icon']}
         />
-        <h2 className={styles['confirmation-title']}>Offre publiée !</h2>
+        <h2 className={styles['confirmation-title']}>{t('offer_published')}</h2>
         <p className={styles['confirmation-details']}>
           {t('confirmation_description')}
         </p>

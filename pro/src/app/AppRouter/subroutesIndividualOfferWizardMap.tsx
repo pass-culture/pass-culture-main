@@ -124,7 +124,7 @@ export const routesIndividualOfferWizard: RouteConfig[] = [
   },
   {
     lazy: () => import('pages/EuropeanOffer/Confirmation'),
-    path: '/offre/individuelle/:offerId/european-confirmation',
+    path: '/offre/individuelle/european-confirmation',
     title: 'Confirmation - Offre européenne publiée',
   },
   // booking summary page

@@ -40,23 +40,16 @@ export const EuropeanOffer = (): JSX.Element => {
     try {
       console.log('formValues', formValues)
 
-      // FIXME
-      // So we dont send this to the api
-      // as long as it doesnt support it.
-      delete formValues['autoTranslate']
-
-      const locale = i18n.language
-
-      const { id } = await api.postEuropeanOffer({
+      await api.postEuropeanOffer({
         ...formValues,
         title: {
-          [locale]: formValues.name,
+          pt: formValues.name,
         },
         description: {
-          [locale]: formValues.description,
+          pt: formValues.description,
         },
         imageAlt: {
-          [locale]: formValues.imageAlt,
+          pt: formValues.imageAlt,
         },
         date: `${formValues.date} 00:00:00`,
         latitude: formValues.latitude ?? 0,
@@ -64,7 +57,7 @@ export const EuropeanOffer = (): JSX.Element => {
         price: formValues.price ?? 0,
         autoTranslate: formValues.autoTranslate ?? false,
       })
-      navigate(`/offre/individuelle/${id}/european-confirmation`)
+      navigate(`/offre/individuelle/european-confirmation`)
     } catch (err) {
       console.error(err)
       notification.error('An error occurred while creating the offer')
