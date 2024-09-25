@@ -2956,7 +2956,8 @@ class AchievementsTest:
         assert response.json["achievements"][0]["achievement"]["slug"] == user_achievement.achievement.slug
         assert response.json["achievements"][0]["completionDate"] == user_achievement.completionDate.isoformat() + "Z"
 
-    def test_user_unlock_achievement_when_fav_offer_first_time(self, client, db_session):
+    @patch("pcapi.core.achievements.api.sse.publish")
+    def test_user_unlock_achievement_when_fav_offer_first_time(self, mocked_publish, client, db_session):
         user = users_factories.BeneficiaryFactory()
         achievements_factories.AchievementFactory(slug=AchievementType.FIRST_FAVORITE_OFFER.value)
         offer = offers_factories.OfferFactory()
@@ -2980,8 +2981,10 @@ class AchievementsTest:
         assert len(achievements) == 1
         
         assert response.json["achievements"][0]["achievement"]["slug"] == "FIRST_FAVORITE_OFFER"
+        mocked_publish.assert_called_once_with({"message": "FIRST_FAVORITE_OFFER"}, type="achievement_unlocked")
 
-    def test_when_user_fav_multiple_offers(self, client, db_session):
+    @patch("pcapi.core.achievements.api.sse.publish")
+    def test_when_user_fav_multiple_offers(self, mocked_publish, client, db_session):
         user = users_factories.BeneficiaryFactory()
         achievements_factories.AchievementFactory(slug=AchievementType.FIRST_FAVORITE_OFFER.value)
         offer = offers_factories.OfferFactory()
@@ -3007,4 +3010,6 @@ class AchievementsTest:
         db_session.refresh(user)
 
         assert len(user.achievements) == 1
+
+        mocked_publish.assert_called_once_with({"message": "FIRST_FAVORITE_OFFER"}, type="achievement_unlocked")
 
