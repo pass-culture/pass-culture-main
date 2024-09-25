@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from pcapi.connectors import openai
 from pcapi.core.european_offers import models
 from pcapi.models import db
 from pcapi.routes.serialization import BaseModel
@@ -10,6 +11,7 @@ class LangField(BaseModel):
     en: str | None
     fr: str | None
     it: str | None
+    pt: str | None
 
 
 class EuropeanOfferData(ConfiguredBaseModel):
@@ -30,10 +32,23 @@ class EuropeanOfferData(ConfiguredBaseModel):
     zipcode: str | None
     latitude: float
     longitude: float
+    # openAI translation
+    autoTranslate: bool
 
 
 def create_offer(offerData: EuropeanOfferData) -> models.EuropeanOffer:
     data = offerData.dict()
+    auto_translate = data.pop("autoTranslate")
     offer = models.EuropeanOffer(**data)
+    if auto_translate:
+        translated_title = openai.translate(offerData.title)
+        translated_description = openai.translate(offerData.description)
+        translated_image_alt = openai.translate(offerData.imageAlt)
+        print(f"{translated_title=}")
+        print(f"{translated_description=}")
+        print(f"{translated_image_alt=}")
+        offer.title = translated_title
+        offer.description = translated_description
+        offer.imageAlt = translated_image_alt
     db.session.add(offer)
     return offer

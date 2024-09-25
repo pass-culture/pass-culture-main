@@ -7,7 +7,7 @@ logger = logging.getLogger(__name__)
 
 
 def get_all_european_offers():
-    return models.EuropeanOffer.query.all()
+    return models.EuropeanOffer.query.order_by("id").all()
 
 
 def get_all_european_offers_count():

@@ -19,6 +19,7 @@ class LangField(typing.TypedDict):
     en: str | None
     fr: str | None
     it: str | None
+    pt: str | None
 
 
 class EuropeanOffer(PcObject, Base, Model):
