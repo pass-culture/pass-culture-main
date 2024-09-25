@@ -7,7 +7,6 @@ import { CollectiveOfferType } from 'apiClient/v1'
 import { AppLayout } from 'app/AppLayout'
 import {
   GET_OFFERER_QUERY_KEY,
-  GET_COLLECTIVE_OFFERS_TEMPLATE_QUERY_KEY,
   GET_VENUES_QUERY_KEY,
 } from 'config/swrQueryKeys'
 import {
@@ -17,6 +16,7 @@ import {
 import { useQueryCollectiveSearchFilters } from 'core/Offers/hooks/useQuerySearchFilters'
 import { CollectiveSearchFiltersParams } from 'core/Offers/types'
 import { computeCollectiveOffersUrl } from 'core/Offers/utils/computeCollectiveOffersUrl'
+import { getCollectiveOffersSwrKeys } from 'core/Offers/utils/getCollectiveOffersSwrKeys'
 import { hasCollectiveSearchFilters } from 'core/Offers/utils/hasSearchFilters'
 import { serializeApiCollectiveFilters } from 'core/Offers/utils/serializer'
 import { useCurrentUser } from 'hooks/useCurrentUser'
@@ -78,6 +78,14 @@ export const TemplateCollectiveOffers = (): JSX.Element => {
   //  Admin users are not allowed to check all offers at once or to use the status filter for performance reasons. Unless there is a venue or offerer filter active.
   const isRestrictedAsAdmin = currentUser.isAdmin && !isFilterByVenueOrOfferer
 
+  const collectiveOffersQueryKeys = getCollectiveOffersSwrKeys({
+    isNewOffersAndBookingsActive: true,
+    isInTemplateOffersPage: true,
+    urlSearchFilters,
+    isNewInterfaceActive,
+    selectedOffererId,
+  })
+
   const apiFilters: CollectiveSearchFiltersParams = {
     ...DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
     ...urlSearchFilters,
@@ -89,7 +97,7 @@ export const TemplateCollectiveOffers = (): JSX.Element => {
   delete apiFilters.page
 
   const offersQuery = useSWR(
-    [GET_COLLECTIVE_OFFERS_TEMPLATE_QUERY_KEY, apiFilters],
+    collectiveOffersQueryKeys,
     () => {
       const {
         nameOrIsbn,

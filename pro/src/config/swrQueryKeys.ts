@@ -14,7 +14,7 @@ export const GET_COLLECTIVE_OFFER_TEMPLATES_QUERY_KEY =
 export const GET_COLLECTIVE_OFFERS_BOOKABLE_QUERY_KEY =
   'getCollectiveOffersBookable'
 export const GET_COLLECTIVE_OFFERS_TEMPLATE_QUERY_KEY =
-  'getTemplateCollectiveOffers'
+  'getCollectiveOffersTemplate'
 export const GET_COLLECTIVE_OFFERS_FOR_INSTITUTION_QUERY_KEY =
   'getCollectiveOffersForMyInstitution'
 export const GET_COLLECTIVE_OFFERS_QUERY_KEY = 'getCollectiveOffers'
