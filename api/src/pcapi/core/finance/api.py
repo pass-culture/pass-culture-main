@@ -593,10 +593,10 @@ def _price_event(event: models.FinanceEvent) -> models.Pricing:
             ),
         ]
     elif event.motive == models.FinanceEventMotive.INCIDENT_COMMERCIAL_GESTURE:
-        assert event.bookingFinanceIncident and event.bookingFinanceIncident.commercial_gesture_amount  # helps mypy
+        assert event.bookingFinanceIncident and event.bookingFinanceIncident.due_amount_by_offerer  # helps mypy
         rule = reimbursement.CommercialGestureReimbursementRule()
-        amount = -event.bookingFinanceIncident.commercial_gesture_amount  # outgoing, thus negative
-        offerer_revenue_amount = -event.bookingFinanceIncident.commercial_gesture_amount
+        amount = -event.bookingFinanceIncident.due_amount_by_offerer  # outgoing, thus negative
+        offerer_revenue_amount = -event.bookingFinanceIncident.due_amount_by_offerer
         pricing_booking_id = None
         pricing_collective_booking_id = None
         lines = [
@@ -3229,9 +3229,29 @@ def create_finance_commercial_gesture(
     booking_finance_incidents_to_create = []
     total_bookings_quantity = sum(booking.quantity for booking in bookings)
     total_amount = sum(utils.to_eurocents(booking.total_amount) for booking in bookings)
-    for booking in bookings:
+    amount_cents = utils.to_eurocents(amount)
+    # First calculate the partial commercial gesture's amount for each booking in the list except the last one:
+    # → (∑<bookings amounts> - <input commercial gesture amount>) * <booking quantity> ÷ ∑<bookings quantity>
+    # Then calculate the last booking's commercial gesture amount based on the (n - 1) first amounts to avoid rounding issues:
+    # → <total commercial gesture amount> - <sum of partial commercial gesture amounts previously calculated>
+    # The sum of created partial commercial gestures should be equal to: ∑<bookings amounts> - <input commercial gesture amount>
+    for booking in bookings[:-1]:
         # all bookings in a commercial gesture must be from the same stock → they all have the same amount
-        new_total_amount = total_amount - ((utils.to_eurocents(amount) * booking.quantity) // total_bookings_quantity)
+        new_total_amount = (total_amount - amount_cents) * booking.quantity // total_bookings_quantity
+        booking_finance_incidents_to_create.append(
+            models.BookingFinanceIncident(
+                bookingId=booking.id,
+                incidentId=incident.id,
+                beneficiaryId=booking.userId,
+                newTotalAmount=new_total_amount,
+            )
+        )
+    # Calculate the commercial gesture's amount for the last remaining booking (cf. the comments above ↑)
+    for booking in bookings[-1:]:
+        # all bookings in a commercial gesture must be from the same stock → they all have the same amount
+        new_total_amount = (total_amount - amount_cents) - sum(
+            b.newTotalAmount for b in booking_finance_incidents_to_create
+        )
         booking_finance_incidents_to_create.append(
             models.BookingFinanceIncident(
                 bookingId=booking.id,
