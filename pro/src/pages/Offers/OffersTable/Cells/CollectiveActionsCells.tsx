@@ -17,11 +17,6 @@ import { ArchiveConfirmationModal } from 'components/ArchiveConfirmationModal/Ar
 import { canArchiveCollectiveOffer } from 'components/ArchiveConfirmationModal/utils/canArchiveCollectiveOffer'
 import { CancelCollectiveBookingModal } from 'components/CancelCollectiveBookingModal/CancelCollectiveBookingModal'
 import {
-  GET_COLLECTIVE_OFFERS_BOOKABLE_QUERY_KEY,
-  GET_COLLECTIVE_OFFERS_QUERY_KEY,
-  GET_COLLECTIVE_OFFERS_TEMPLATE_QUERY_KEY,
-} from 'config/swrQueryKeys'
-import {
   CollectiveBookingsEvents,
   Events,
   OFFER_FROM_TEMPLATE_ENTRIES,
@@ -31,7 +26,9 @@ import { createOfferFromBookableOffer } from 'core/OfferEducational/utils/create
 import { createOfferFromTemplate } from 'core/OfferEducational/utils/createOfferFromTemplate'
 import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from 'core/Offers/constants'
 import { CollectiveSearchFiltersParams } from 'core/Offers/types'
+import { getCollectiveOffersSwrKeys } from 'core/Offers/utils/getCollectiveOffersSwrKeys'
 import { useActiveFeature } from 'hooks/useActiveFeature'
+import { useIsNewInterfaceActive } from 'hooks/useIsNewInterfaceActive'
 import { useNotification } from 'hooks/useNotification'
 import fullClearIcon from 'icons/full-clear.svg'
 import fullCopyIcon from 'icons/full-duplicate.svg'
@@ -78,6 +75,7 @@ export const CollectiveActionsCells = ({
   const navigate = useNavigate()
   const notify = useNotification()
   const { logEvent } = useAnalytics()
+  const isNewInterfaceActive = useIsNewInterfaceActive()
   const selectedOffererId = useSelector(selectCurrentOffererId)
 
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -93,11 +91,13 @@ export const CollectiveActionsCells = ({
     'WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE'
   )
 
-  const offersQueryKey = isNewOffersAndBookingsActive
-    ? offer.isShowcase
-      ? GET_COLLECTIVE_OFFERS_TEMPLATE_QUERY_KEY
-      : GET_COLLECTIVE_OFFERS_BOOKABLE_QUERY_KEY
-    : GET_COLLECTIVE_OFFERS_QUERY_KEY
+  const collectiveOffersQueryKeys = getCollectiveOffersSwrKeys({
+    isNewOffersAndBookingsActive,
+    isInTemplateOffersPage: offer.isShowcase,
+    urlSearchFilters,
+    isNewInterfaceActive,
+    selectedOffererId,
+  })
 
   const { mutate } = useSWRConfig()
 
@@ -166,7 +166,7 @@ export const CollectiveActionsCells = ({
     }
     try {
       await api.cancelCollectiveOfferBooking(offer.id)
-      await mutate([offersQueryKey, apiFilters])
+      await mutate(collectiveOffersQueryKeys)
       isSelected && deselectOffer(offer)
       setIsCancelledBookingModalOpen(false)
       notify.success(
@@ -203,7 +203,7 @@ export const CollectiveActionsCells = ({
         await api.patchCollectiveOffersArchive({ ids: [offer.id] })
       }
 
-      await mutate([offersQueryKey, apiFilters])
+      await mutate(collectiveOffersQueryKeys)
       isSelected && deselectOffer(offer)
       setIsArchivedModalOpen(false)
       notify.success('Une offre a bien été archivée', {

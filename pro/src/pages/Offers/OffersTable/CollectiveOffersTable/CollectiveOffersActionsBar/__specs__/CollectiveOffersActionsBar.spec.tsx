@@ -558,7 +558,7 @@ describe('ActionsBar', () => {
     await userEvent.click(screen.getByText('Publier'))
 
     expect(mockMutate).toHaveBeenCalledWith(
-      expect.arrayContaining(['getTemplateCollectiveOffers'])
+      expect.arrayContaining(['getCollectiveOffersTemplate'])
     )
   })
 })

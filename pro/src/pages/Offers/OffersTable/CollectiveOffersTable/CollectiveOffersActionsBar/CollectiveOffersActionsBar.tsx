@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useSelector } from 'react-redux'
 import { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
@@ -11,19 +12,16 @@ import {
 import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
 import { ArchiveConfirmationModal } from 'components/ArchiveConfirmationModal/ArchiveConfirmationModal'
 import { canArchiveCollectiveOffer } from 'components/ArchiveConfirmationModal/utils/canArchiveCollectiveOffer'
-import {
-  GET_COLLECTIVE_OFFERS_BOOKABLE_QUERY_KEY,
-  GET_COLLECTIVE_OFFERS_QUERY_KEY,
-  GET_COLLECTIVE_OFFERS_TEMPLATE_QUERY_KEY,
-} from 'config/swrQueryKeys'
 import { NOTIFICATION_LONG_SHOW_DURATION } from 'core/Notification/constants'
-import { DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS } from 'core/Offers/constants'
 import { useQueryCollectiveSearchFilters } from 'core/Offers/hooks/useQuerySearchFilters'
+import { getCollectiveOffersSwrKeys } from 'core/Offers/utils/getCollectiveOffersSwrKeys'
 import { useActiveFeature } from 'hooks/useActiveFeature'
+import { useIsNewInterfaceActive } from 'hooks/useIsNewInterfaceActive'
 import { useNotification } from 'hooks/useNotification'
 import fullHideIcon from 'icons/full-hide.svg'
 import fullValidateIcon from 'icons/full-validate.svg'
 import strokeThingIcon from 'icons/stroke-thing.svg'
+import { selectCurrentOffererId } from 'store/user/selectors'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
@@ -117,23 +115,22 @@ export function CollectiveOffersActionsBar({
     useState(false)
   const [isArchiveDialogOpen, setIsArchiveDialogOpen] = useState(false)
 
+  const isNewInterfaceActive = useIsNewInterfaceActive()
+  const selectedOffererId = useSelector(selectCurrentOffererId)
+
   const isNewOffersAndBookingsActive = useActiveFeature(
     'WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE'
   )
 
   const { mutate } = useSWRConfig()
 
-  const offersQueryKey = isNewOffersAndBookingsActive
-    ? areTemplateOffers
-      ? GET_COLLECTIVE_OFFERS_TEMPLATE_QUERY_KEY
-      : GET_COLLECTIVE_OFFERS_BOOKABLE_QUERY_KEY
-    : GET_COLLECTIVE_OFFERS_QUERY_KEY
-
-  const apiFilters = {
-    ...DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
-    ...urlSearchFilters,
-  }
-  delete apiFilters.page
+  const collectiveOffersQueryKeys = getCollectiveOffersSwrKeys({
+    isNewOffersAndBookingsActive,
+    isInTemplateOffersPage: areTemplateOffers,
+    urlSearchFilters,
+    isNewInterfaceActive,
+    selectedOffererId,
+  })
 
   async function updateOfferStatus(
     newSatus:
@@ -151,7 +148,7 @@ export function CollectiveOffersActionsBar({
               selectedOffers,
               notify
             )
-            await mutate([offersQueryKey, apiFilters])
+            await mutate(collectiveOffersQueryKeys)
             notify.success(
               computeActivationSuccessMessage(selectedOffers.length)
             )
@@ -171,7 +168,7 @@ export function CollectiveOffersActionsBar({
             selectedOffers,
             notify
           )
-          await mutate([offersQueryKey, apiFilters])
+          await mutate(collectiveOffersQueryKeys)
           notify.success(
             computeDeactivationSuccessMessage(selectedOffers.length)
           )
@@ -184,7 +181,7 @@ export function CollectiveOffersActionsBar({
       case CollectiveOfferDisplayedStatus.ARCHIVED: {
         try {
           await onArchiveOffers()
-          await mutate([offersQueryKey, apiFilters])
+          await mutate(collectiveOffersQueryKeys)
           notify.success(
             selectedOffers.length > 1
               ? `${selectedOffers.length} offres ont bien été archivées`
