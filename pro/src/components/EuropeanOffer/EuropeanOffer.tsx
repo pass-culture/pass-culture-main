@@ -64,7 +64,7 @@ export const EuropeanOffer = (): JSX.Element => {
         price: formValues.price ?? 0,
         autoTranslate: formValues.autoTranslate ?? false,
       })
-      navigate(`/offre/individuelle/${id}/creation/confirmation`)
+      navigate(`/offre/individuelle/${id}/european-confirmation`)
     } catch (err) {
       console.error(err)
       notification.error('An error occurred while creating the offer')

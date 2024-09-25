@@ -130,5 +130,8 @@
   "your_offer_is": "Votre offre est :",
   "your_partner_page_is_visible": "Votre page partenaire est visible sur l’application pass Culture.",
   "your_published_offers": "Vos offres publiées",
-  "youth_card": "Carte jeunes"
+  "youth_card": "Carte jeunes",
+  "confirmation_description": "Votre offre est désormais disponible à la réservation sur l’application pass Culture.",
+  "create_a_new_offer": "Créer une nouvelle offre",
+  "offer_published": "Offre publiée !"
 }
