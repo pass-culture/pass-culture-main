@@ -23,6 +23,9 @@ import pcapi.utils.date as date_utils
 from pcapi.utils.email import sanitize_email
 
 
+ERASME_TAG = "erasme"
+
+
 class GetOffererVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
     adageInscriptionDate: datetime | None
     street: str | None
@@ -105,6 +108,7 @@ class GetOffererResponseModel(BaseModel):
     hasActiveOffer: bool
     allowedOnAdage: bool
     hasBankAccountWithPendingCorrections: bool
+    canCreateEuropeanOffers: bool
 
     @classmethod
     def from_orm(cls, row: Row) -> "GetOffererResponseModel":
@@ -137,6 +141,9 @@ class GetOffererResponseModel(BaseModel):
         offerer.hasNonFreeOffer = row.hasNonFreeOffer
         offerer.hasActiveOffer = row.hasActiveOffer
         offerer.hasBankAccountWithPendingCorrections = row.hasBankAccountWithPendingCorrections
+
+        offerer_tag_names = {tag.name for tag in offerer.tags}
+        offerer.canCreateEuropeanOffers = ERASME_TAG in offerer_tag_names
 
         # We would like the response attribute to be called
         # `managedVenues` but we don't want to use the

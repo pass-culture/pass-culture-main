@@ -30,3 +30,4 @@ def create_industrial_offerer_tags() -> None:
     offerers_factories.OffererTagFactory(name="adage", label="Adage", categories=[homologation])
     offerers_factories.OffererTagFactory(name="siren-caduc", label="SIREN caduc", categories=[homologation])
     offerers_factories.OffererTagFactory(name="non-diffusible", label="Non-diffusible", categories=[homologation])
+    offerers_factories.OffererTagFactory(name="erasme", label="Erasme")
