@@ -1,8 +1,11 @@
 import json
 import logging
 
+import click
+
 from pcapi import repository
 from pcapi.core.european_offers import api
+import pcapi.core.european_offers.repository as european_offers_repository
 from pcapi.utils.blueprint import Blueprint
 
 
@@ -19,12 +22,19 @@ def _get_json_data() -> list[dict]:
 
 
 @blueprint.cli.command("add_fake_european_offers")
-def add_fake_european_offers() -> None:
-    """
-    Regenerate the expected_openapi.json used in the blueprint_openapi_test
-    """
+@click.option("--clear", help="Clear EuropeanOffer table", type=bool, default=False)
+def add_fake_european_offers(clear: bool) -> None:
+    count = european_offers_repository.get_all_european_offers_count()
+    logger.info("We start with %d EuropeOffers", count)
+
+    if clear:
+        european_offers_repository.delete_all_european_offers()
+
     data = _get_json_data()
     with repository.transaction():
         for offer_dict in data:
             offer = api.EuropeanOfferData(**offer_dict)
             api.create_offer(offer)
+
+    count = european_offers_repository.get_all_european_offers_count()
+    logger.info("There are now %d EuropeOffers !", count)
