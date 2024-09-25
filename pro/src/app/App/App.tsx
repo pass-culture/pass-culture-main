@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import {
   Navigate,
@@ -89,6 +89,29 @@ export const App = (): JSX.Element | null => {
       dispatch(updateSelectedOffererId(null))
     }
   }, [location])
+
+  const [loading, setLoading] = useState<boolean>(true)
+
+  useEffect(() => {
+    // Fonction asynchrone pour charger la configuration
+    const load = async () => {
+      try {
+        await loadConfig()
+      } catch (error) {
+        // Error
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    load()
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+  }, [])
+
+  if (loading) {
+    return <div>Chargement de la configuration...</div>
+  }
 
   const currentRoute = findCurrentRoute(location)
   if (!currentRoute?.meta?.public && currentUser === null) {

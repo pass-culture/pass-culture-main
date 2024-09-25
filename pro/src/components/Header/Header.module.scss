@@ -59,6 +59,7 @@
     display: inline-flex;
     height: 100%;
     color: var(--color-input-text-color);
+    fill: var(--color-input-text-color);
 
     svg {
       width: rem.torem(80px);

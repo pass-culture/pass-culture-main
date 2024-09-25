@@ -5,7 +5,11 @@
     "fallbackLng": "en"
   },
   "ui": {
-    "logo": "/icons/logo-pass-culture-pro.svg",
+    "logo": {
+      "name": "logo-pass-culture-pro",
+      "viewBox": "0 0 119 40",
+      "width": "119px"
+    },
     "colors": {
       "primary": "#320096",
       "secondary": "#320096"

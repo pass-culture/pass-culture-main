@@ -1,0 +1,14 @@
+{
+  "name": "pass Italian Culture",
+  "languages": {
+    "supportedLngs": ["it"],
+    "fallbackLng": "it"
+  },
+  "ui": {
+    "logo": "ItalianLogo",
+    "colors": {
+      "primary": "#008000",
+      "secondary": "#f7230c"
+    }
+  }
+}
