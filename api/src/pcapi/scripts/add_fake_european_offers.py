@@ -4,6 +4,7 @@ import logging
 import click
 
 from pcapi import repository
+from pcapi.core import search
 from pcapi.core.european_offers import api
 import pcapi.core.european_offers.repository as european_offers_repository
 from pcapi.utils.blueprint import Blueprint
@@ -34,7 +35,8 @@ def add_fake_european_offers(clear: bool) -> None:
     with repository.transaction():
         for offer_dict in data:
             offer = api.EuropeanOfferData(**offer_dict)
-            api.create_offer(offer)
+            european_offer = api.create_offer(offer)
+            search.index_european_offer_ids([european_offer.id])
 
     count = european_offers_repository.get_all_european_offers_count()
     logger.info("There are now %d EuropeOffers !", count)

@@ -141,34 +141,6 @@
   },
   {
     "title": {
-      "fr": "LX Factory",
-      "en": "LX Factory",
-      "it": "LX Factory"
-    },
-    "description": {
-      "fr": "Ancien complexe industriel transformé en centre culturel avec des galeries d'art, boutiques et restaurants branchés.",
-      "en": "Former industrial complex transformed into a cultural hub with art galleries, trendy shops, and restaurants.",
-      "it": "Ex complesso industriale trasformato in centro culturale con gallerie d'arte, negozi e ristoranti alla moda."
-    },
-    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b8/LX_Factory_Lisbon_(44353483285).jpg/1920px-LX_Factory_Lisbon_(44353483285).jpg",
-    "imageAlt": {
-      "fr": "Intérieur du LX Factory avec des boutiques et des restaurants modernes.",
-      "en": "Interior of LX Factory with modern shops and restaurants.",
-      "it": "Interno di LX Factory con negozi e ristoranti moderni."
-    },
-
-    "country": "Portugal",
-    "street": "Rua Rodrigues de Faria 103",
-    "city": "Lisbonne",
-    "zipcode": "1300-501",
-    "latitude": 38.6935,
-    "longitude": -9.1914,
-    "externalUrl": "https://lxfactory.com/",
-    "price": 5,
-    "currency": "ERU"
-  },
-  {
-    "title": {
       "fr": "Musée Berardo",
       "en": "Berardo Museum",
       "it": "Museo Berardo"

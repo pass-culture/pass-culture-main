@@ -33,12 +33,13 @@ class EuropeanOfferData(ConfiguredBaseModel):
     latitude: float
     longitude: float
     # openAI translation
-    autoTranslate: bool
+    autoTranslate: bool | None
 
 
 def create_offer(offerData: EuropeanOfferData) -> models.EuropeanOffer:
     data = offerData.dict()
     auto_translate = data.pop("autoTranslate")
+    auto_translate = False
     offer = models.EuropeanOffer(**data)
     print(f"{offerData.title.pt=}")
     if auto_translate:
