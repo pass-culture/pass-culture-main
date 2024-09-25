@@ -9,6 +9,7 @@ import strokeThingIcon from 'icons/stroke-thing.svg'
 interface OfferEducationalModalProps {
   onDismiss(): void
   onValidate(): void
+  offerId?: number
   hasMultipleOffers?: boolean
   selectedOffers?: CollectiveOfferResponseModel[]
 }
@@ -18,6 +19,7 @@ export const ArchiveConfirmationModal = ({
   onValidate,
   hasMultipleOffers = false,
   selectedOffers = [],
+  offerId,
 }: OfferEducationalModalProps): JSX.Element => {
   const location = useLocation()
   const { logEvent } = useAnalytics()
@@ -29,7 +31,8 @@ export const ArchiveConfirmationModal = ({
 
     logEvent(Events.CLICKED_ARCHIVE_COLLECTIVE_OFFER, {
       from: location.pathname,
-      selected_offers: collectiveOfferIds,
+      selected_offers:
+        selectedOffers.length > 0 ? collectiveOfferIds : offerId?.toString(),
     })
 
     onValidate()

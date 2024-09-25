@@ -293,6 +293,7 @@ export const CollectiveOfferNavigation = ({
         <ArchiveConfirmationModal
           onDismiss={() => setIsArchiveModalOpen(false)}
           onValidate={archiveOffer}
+          offerId={offerId}
         />
       )}
     </>
