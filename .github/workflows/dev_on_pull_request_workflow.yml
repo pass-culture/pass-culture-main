@@ -58,7 +58,7 @@ jobs:
           files: |
             api/poetry.lock
             pro/yarn.lock
-      # checkout source branch of the pull request 
+      # checkout source branch of the pull request
       - uses: actions/checkout@v4.1.7
         with:
           ref: ${{ github.event.pull_request.head.sha }}
@@ -107,7 +107,7 @@ jobs:
         run: ./.github/workflows/scripts/check-image-tag-exists.sh
         env:
           image: pcapi
-          tag: ${{ steps.pcapi-tags.outputs.checksum-tag }} 
+          tag: ${{ steps.pcapi-tags.outputs.checksum-tag }}
       - name: "pcapi-console"
         id: check-console-checksum-tag
         run: ./.github/workflows/scripts/check-image-tag-exists.sh
@@ -134,6 +134,7 @@ jobs:
       ref: ${{ github.event.pull_request.head.sha }}
       image: pcapi
       tag: ${{ needs.pcapi-init-job.outputs.checksum-tag }}
+      infra-image-tag: "develop"
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
@@ -148,6 +149,7 @@ jobs:
       ref: ${{ github.event.pull_request.head.sha }}
       image: pcapi-tests
       tag: ${{ needs.pcapi-init-job.outputs.checksum-tag }}
+      infra-image-tag: "develop"
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
@@ -161,6 +163,7 @@ jobs:
       ref: ${{ github.event.pull_request.head.sha }}
       image: pcapi-console
       tag: ${{ needs.pcapi-init-job.outputs.checksum-tag }}
+      infra-image-tag: "develop"
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
@@ -239,15 +242,16 @@ jobs:
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-  
+
   test-pro-e2e:
     name: "Tests pro E2E"
     needs: [pcapi-init-job, build-pcapi]
     uses: ./.github/workflows/dev_on_workflow_tests_pro_e2e.yml
     if: |
       always() &&
+      needs.pcapi-init-job.outputs.api-changed == 'true' ||
       !cancelled() &&
-      needs.pcapi-init-job.outputs.api-changed == 'true' || 
+      needs.pcapi-init-job.outputs.api-changed == 'true' ||
       needs.pcapi-init-job.outputs.pro-changed == 'true'
     with:
       tag: ${{ needs.build-pcapi.result == 'skipped' && 'latest' || needs.pcapi-init-job.outputs.checksum-tag }}
