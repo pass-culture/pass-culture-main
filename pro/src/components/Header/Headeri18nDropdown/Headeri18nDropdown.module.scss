@@ -1,0 +1,21 @@
+.i18n-dropdown {
+  font-size: 0.75rem;
+  border: none;
+  height: 1.5rem;
+  cursor: pointer;
+  background: none;
+  margin-right: 1rem;
+
+  &:hover {
+    box-shadow: none !important;
+    text-decoration: underline;
+  }
+
+  &:focus {
+    outline: none !important;
+  }
+}
+
+.i18n-dropdown-icon svg {
+  height: 1rem;
+}

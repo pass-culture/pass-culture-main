@@ -15,6 +15,8 @@ interface SelectInputProps extends ComponentProps<'select'> {
   filterVariant?: boolean
   hasDescription?: boolean
   value: string
+  icon?: string
+  iconClassName?: string
 }
 
 export const SelectInput = ({
@@ -26,6 +28,8 @@ export const SelectInput = ({
   disabled,
   options,
   className,
+  icon,
+  iconClassName,
   ...field
 }: SelectInputProps): JSX.Element => (
   <div
@@ -57,11 +61,11 @@ export const SelectInput = ({
       ))}
     </select>
     <div
-      className={cn(styles['select-input-icon'], {
+      className={cn(styles['select-input-icon'], iconClassName, {
         [styles['filter-variant']]: filterVariant,
       })}
     >
-      <SvgIcon src={strokeDownIcon} alt="" width="0" />
+      <SvgIcon src={icon || strokeDownIcon} alt="" width="0" />
     </div>
   </div>
 )
