@@ -1,0 +1,20 @@
+{
+  "name": "pass Culture",
+  "languages": {
+    "supportedLngs": ["en", "fr"],
+    "fallbackLng": "en"
+  },
+  "ui": {
+    "logo": "FrenchLogo",
+    "colors": {
+      "primary": "#320096",
+      "secondary": "#320096",
+      "secondaryLighter": "#c1a3ff",
+      "secondaryLight": "#6123df",
+      "secondaryDark": "#25026c",
+      "primaryDark": "#25026c",
+      "backgroundSecondary": "#f3edff",
+      "backgroundAccentLight": "#e5f0ff"
+    }
+  }
+}
