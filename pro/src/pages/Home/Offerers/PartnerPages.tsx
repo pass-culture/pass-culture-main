@@ -65,7 +65,7 @@ export const PartnerPages = ({
   return (
     <section className={styles['section']}>
       <h3 className={styles['title']}>
-        {venues.length === 1 ? 'Votre page partenaire' : t('partner_pages')}
+        {venues.length === 1 ? t('partner_page') : t('partner_pages')}
       </h3>
 
       <p className={styles['description']}>
