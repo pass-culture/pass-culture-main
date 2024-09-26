@@ -25,15 +25,15 @@
             {% endif %}
           </h5>
           <div class="d-flex row-reverse justify-content-end flex-grow-1">
-            {% if edit_account_form %}
-              {{ build_modal_form("edit-account", edit_account_dst, edit_account_form, "Modifier les informations", "Modifier les informations", "Enregistrer") }}
-            {% endif %}
             {% if user.isActive %}
               <div class="mx-3 pt-2 pc-brevo-logo-link">
                 <a href="{{ url_for('backoffice_web.users.redirect_to_brevo_user_page', user_id=user.id) }}"
                    target="_blank"
                    rel="noreferrer noopener">{{ logo.brevo() }}</a>
               </div>
+            {% endif %}
+            {% if edit_account_form %}
+              {{ build_modal_form("edit-account", edit_account_dst, edit_account_form, "Modifier les informations", "Modifier les informations", "Enregistrer") }}
             {% endif %}
           </div>
         </div>
