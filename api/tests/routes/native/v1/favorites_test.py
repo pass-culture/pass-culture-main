@@ -333,6 +333,30 @@ class GetTest:
                 True,
             ]
 
+        def test_uses_offerer_address_if_available(self, client):
+            # Given
+            user = users_factories.UserFactory()
+            offerer_address = offerers_factories.OffererAddressFactory()
+            offer = offers_factories.OfferFactory(offererAddress=offerer_address)
+            client.with_token(user.email)
+            # When
+
+            client.post(FAVORITES_URL, json={"offerId": offer.id})
+            # 1: Fetch the user for auth
+            # 1: Fetch the favorites
+            num_queries = 1  # Get user
+            num_queries += 1  # Get favorites
+            with assert_num_queries(num_queries):
+                response = client.get(FAVORITES_URL)
+
+            # Then
+            assert response.status_code == 200
+            assert response.json["favorites"][0]["offer"]["coordinates"] == {
+                "latitude": float(offerer_address.address.latitude),
+                "longitude": float(offerer_address.address.longitude),
+            }
+            assert response.json["favorites"][0]["offer"]["venueName"] == offerer_address.label
+
     class Returns401Test:
         def when_user_is_not_logged_in(self, client):
             # When
