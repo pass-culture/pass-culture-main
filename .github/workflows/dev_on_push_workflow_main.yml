@@ -233,6 +233,7 @@ jobs:
     uses: ./.github/workflows/dev_on_workflow_tests_pro_e2e_migration.yml
     if: |
       always() &&
+      !cancelled() &&
       needs.pcapi-init-job.outputs.api-changed == 'true' ||
       needs.pcapi-init-job.outputs.pro-changed == 'true'
     with:
@@ -248,6 +249,7 @@ jobs:
     uses: ./.github/workflows/dev_on_workflow_tests_pro_e2e.yml
     if: |
       always() &&
+      !cancelled() &&
       needs.pcapi-init-job.outputs.api-changed == 'true' ||
       needs.pcapi-init-job.outputs.pro-changed == 'true'
     with:
