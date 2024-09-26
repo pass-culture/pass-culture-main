@@ -12,6 +12,7 @@ from pcapi import settings
 from pcapi.core.external.attributes.api import update_external_user
 from pcapi.core.external.batch import track_offer_added_to_favorites_event
 from pcapi.core.offerers.models import Offerer
+from pcapi.core.offerers.models import OffererAddress
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.exceptions import OfferNotFound
 from pcapi.core.offers.models import Mediation
@@ -142,6 +143,7 @@ def get_favorites_for(user: User, favorite_id: int | None = None) -> list[Favori
             .joinedload(Product.productMediations)
         )
         .options(joinedload(Favorite.offer).joinedload(Offer.stocks))
+        .options(joinedload(Favorite.offer).joinedload(Offer.offererAddress).joinedload(OffererAddress.address))
         .order_by(Favorite.id.desc())
     )
 
