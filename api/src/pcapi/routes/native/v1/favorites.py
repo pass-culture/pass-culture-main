@@ -1,7 +1,5 @@
 from datetime import datetime
 from decimal import Decimal
-from pcapi.core.achievements.models import Achievement, AchievementType, UserAchievement
-from pcapi.core.achievements import api as achievements_api
 
 from sqlalchemy import and_
 from sqlalchemy import exc
@@ -11,6 +9,10 @@ from sqlalchemy.orm import Load
 from sqlalchemy.orm import joinedload
 
 from pcapi import settings
+from pcapi.core.achievements import api as achievements_api
+from pcapi.core.achievements.models import Achievement
+from pcapi.core.achievements.models import AchievementType
+from pcapi.core.achievements.models import UserAchievement
 from pcapi.core.external.attributes.api import update_external_user
 from pcapi.core.external.batch import track_offer_added_to_favorites_event
 from pcapi.core.offerers.models import Offerer
@@ -211,7 +213,7 @@ def create_favorite(user: User, body: serializers.FavoriteRequest) -> serializer
     else:
         update_external_user(user)
         track_offer_added_to_favorites_event(user.id, offer)
-    achievements_api.create_user_achievements(user, AchievementType.FIRST_FAVORITE_OFFER.value)
+    achievements_api.create_user_achievements(user, AchievementType.FIRST_ADD_FAVORITE.value)
 
     favorite = get_favorites_for(user, favorite.id)[0]
     return serializers.FavoriteResponse.from_orm(favorite)

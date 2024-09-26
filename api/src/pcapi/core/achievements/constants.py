@@ -1,50 +1,9 @@
-# {
-#     id: 'FIRST_ADD_FAVORITE',
-#     name: 'First favorite',
-#     description: 'Add your first favorite',
-#     category: 'Favorites',
-#     icon: 'Profile',
-#   },
-#   {
-#     id: 'SECOND_ADD_FAVORITE',
-#     name: 'Second favorite',
-#     description: 'Add your second favorite',
-#     category: 'Favorites',
-#     icon: 'Profile',
-#   },
-#   {
-#     id: 'THIRD_ADD_FAVORITE',
-#     name: 'Third favorite',
-#     description: 'Add your third favorite',
-#     category: 'Favorites',
-#     icon: 'Info',
-#   },
-#   {
-#     id: 'FIRST_WATCH_MOVIE',
-#     name: 'First movie',
-#     description: 'Watch your first movie',
-#     category: 'Cinema',
-#     icon: 'Info',
-#   },
-#   {
-#     id: 'SECOND_WATCH_MOVIE',
-#     name: 'Second movie',
-#     description: 'Watch your second movie',
-#     category: 'Cinema',
-#     icon: 'Info',
-#   },
-#   {
-#     id: 'THIRD_WATCH_MOVIE',
-#     name: 'Third movie',
-#     description: 'Watch your third movie',
-#     category: 'Cinema',
-#     icon: 'Profile',
-#   },
 from pcapi.core.achievements.models import Achievement
+from pcapi.core.achievements.models import AchievementType
 
 
 FIRST_ADD_FAVORITE = Achievement(
-    slug="FIRST_ADD_FAVORITE",
+    slug=AchievementType.FIRST_ADD_FAVORITE.value,
     name="Premier favori (WIP)",
     description="Ajoute une offre à tes favoris",
     category="Favorites",
@@ -52,7 +11,7 @@ FIRST_ADD_FAVORITE = Achievement(
 )
 
 SECOND_ADD_FAVORITE = Achievement(
-    slug="SECOND_ADD_FAVORITE",
+    slug=AchievementType.SECOND_ADD_FAVORITE.value,
     name="Second favori (WIP)",
     description="Ajoute une offre à tes favoris",
     category="Favorites",
@@ -60,7 +19,7 @@ SECOND_ADD_FAVORITE = Achievement(
 )
 
 THIRD_ADD_FAVORITE = Achievement(
-    slug="THIRD_ADD_FAVORITE",
+    slug=AchievementType.THIRD_ADD_FAVORITE.value,
     name="Troisième favori (WIP)",
     description="Ajoute une offre à tes favoris",
     category="Favorites",

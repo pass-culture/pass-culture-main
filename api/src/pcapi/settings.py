@@ -587,3 +587,8 @@ GDPR_LOCK_TIMEOUT = int(os.environ.get("GDPR_LOCK_TIMEOUT", "900"))
 # DISCORD pass culture bot
 DISCORD_CLIENT_SECRET = secrets_utils.get("DISCORD_CLIENT_SECRET")
 DISCORD_BOT_TOKEN = secrets_utils.get("DISCORD_BOT_TOKEN")
+
+from sqlalchemy.util import deprecations
+
+
+deprecations.SILENCE_UBER_WARNING = True
