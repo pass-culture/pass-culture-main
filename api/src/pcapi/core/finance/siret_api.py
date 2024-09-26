@@ -8,6 +8,7 @@ import pcapi.core.history.models as history_models
 from pcapi.core.offerers import api as offerers_api
 import pcapi.core.offerers.models as offerers_models
 from pcapi.models import db
+from pcapi.repository import atomic
 import pcapi.utils.db as db_utils
 
 from . import models
@@ -72,7 +73,6 @@ def move_siret(
         override_revenue_check=override_revenue_check,
     )
 
-    db.session.rollback()  # discard any previous transaction to start a fresh new one.
     queries = [
         """
         update finance_event
@@ -114,8 +114,7 @@ def move_siret(
         """,
     ]
 
-    try:
-        db.session.begin()
+    with atomic():
         for query in queries:
             db.session.execute(
                 sa.text(query),
@@ -156,11 +155,6 @@ def move_siret(
                 },
             )
         )
-    except Exception:
-        db.session.rollback()
-        raise
-
-    db.session.commit()
 
 
 def has_pending_pricings(pricing_point: offerers_models.Venue) -> bool:
