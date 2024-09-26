@@ -178,8 +178,10 @@ def _render_provider_details(
             booking_external_url=provider.bookingExternalUrl,
             cancel_external_url=provider.cancelExternalUrl,
             notification_external_url=provider.notificationExternalUrl,
-            hmac_key=provider.hmacKey,
+            provider_hmac_key=provider.hmacKey,
         )
+
+        edit_form.provider_hmac_key.flags.copy_button = provider.hmacKey is not None
 
     return render_template(
         "providers/get.html",
@@ -267,35 +269,6 @@ def get_venues(provider_id: int) -> utils.BackofficeResponse:
     )
 
     return render_template("providers/get/venues.html", venues=venues, provider_id=provider_id)
-
-
-@providers_blueprint.route("/<int:provider_id>/update", methods=["GET"])
-def get_update_provider_form(provider_id: int) -> utils.BackofficeResponse:
-    provider = providers_models.Provider.query.filter_by(id=provider_id).one_or_none()
-    if not provider:
-        raise NotFound()
-
-    form = forms.EditProviderForm(
-        name=provider.name,
-        logo_url=provider.logoUrl,
-        enabled_for_pro=provider.enabledForPro,
-        is_active=provider.isActive,
-        booking_external_url=provider.bookingExternalUrl,
-        cancel_external_url=provider.cancelExternalUrl,
-        notification_external_url=provider.notificationExternalUrl,
-        provider_hmac_key=provider.hmacKey,
-    )
-
-    form.provider_hmac_key.flags.copy_button = provider.hmacKey is not None
-
-    return render_template(
-        "components/turbo/modal_form.html",
-        form=form,
-        dst=url_for("backoffice_web.providers.update_provider", provider_id=provider_id),
-        div_id=f"update-provider-{provider_id}",  # must be consistent with parameter passed to build_lazy_modal
-        title="Modifier un partenaire technique synchronisé avec le pass Culture",
-        button_text="Modifier le partenaire",
-    )
 
 
 @providers_blueprint.route("/<int:provider_id>/update", methods=["POST"])
