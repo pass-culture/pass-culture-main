@@ -218,6 +218,8 @@ export function setDefaultInitialValues({
 
   if (venues.length === 1) {
     venueId = String(venues[0].id)
+  } else if (venues.length === 0 && filteredVenues.length > 0) {
+    venueId = String(filteredVenues[0].id)
   }
 
   return {
