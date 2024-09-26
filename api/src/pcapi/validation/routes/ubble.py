@@ -11,6 +11,7 @@ import pydantic.v1 as pydantic_v1
 from pcapi import settings
 from pcapi.core.fraud.ubble import models as ubble_fraud_models
 from pcapi.models.api_errors import ForbiddenError
+from pcapi.models.api_errors import UnauthorizedError
 
 
 UBBLE_SIGNATURE_RE = re.compile(r"^ts=(?P<ts>\d+),v1=(?P<v1>\S{64})$")
@@ -49,16 +50,22 @@ def require_ubble_signature(route_function: Callable[..., Any]) -> Callable:
     @functools.wraps(route_function)
     def validate_ubble_signature(*args: Any, **kwargs: Any) -> flask.Response:
         error = ForbiddenError(errors={"signature": ["Invalid signature"]})
-        signature = getattr(
-            UBBLE_SIGNATURE_RE.match(flask.request.headers.get("Ubble-Signature", "")),
-            "groupdict",
-            lambda: None,
-        )()
-        if not (signature and signature.get("ts") and signature.get("v1")):
+
+        raw_signature = flask.request.headers.get("Ubble-Signature", None)
+        if raw_signature is None:
+            raise UnauthorizedError()
+
+        signature = UBBLE_SIGNATURE_RE.match(raw_signature)
+        if not signature:
             raise error
 
-        expected_signature = compute_signature(signature["ts"].encode("utf-8"), flask.request.data)
-        if signature["v1"] != expected_signature:
+        credentials = signature.groupdict()
+
+        if not credentials.get("ts") or not credentials.get("v1"):
+            raise error
+
+        expected_signature = compute_signature(credentials["ts"].encode("utf-8"), flask.request.data)
+        if credentials["v1"] != expected_signature:
             raise error
 
         return route_function(*args, **kwargs)

@@ -1,6 +1,7 @@
 from flask_login import login_required
 
 from pcapi.connectors.entreprise import sirene
+from pcapi.models import api_errors
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import sirene as sirene_serializers
 from pcapi.serialization.decorator import spectree_serialize
@@ -16,6 +17,11 @@ from . import blueprint
     api=blueprint.pro_private_schema,
 )
 def get_siren_info(siren: str) -> sirene_serializers.SirenInfo:
+    if not siren.isnumeric():
+        raise api_errors.ApiErrors(
+            {"code": "INVALID_SIREN", "message": "Siren invalide"},
+            status_code=400,
+        )
     info = sirene.get_siren(siren, with_address=True)
     assert info.address  # helps mypy
     info_address_dict = info.address.dict()
