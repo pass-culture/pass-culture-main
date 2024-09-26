@@ -2811,3 +2811,47 @@ class InvalidatePublicAccountPasswordTest(PostEndpointHelper):
             "Seul le mot de passe d'un compte bénéficiaire ou grand public peut être invalidé"
             in html_parser.extract_alert(response.data)
         )
+
+
+class SendPublicAccountPasswordResetEmailTest(PostEndpointHelper):
+    endpoint = "backoffice_web.public_accounts.send_public_account_reset_password_email"
+    endpoint_kwargs = {"user_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT
+
+    # authenticated user session
+    # authenticated user
+    # targeted user by id
+    expected_queries = 3
+
+    def test_send_public_account_reset_password_email(self, authenticated_client, legit_user):
+        user = users_factories.BeneficiaryFactory()
+        user_password_before_response = user.password
+
+        response = self.post_to_endpoint(
+            authenticated_client, user_id=user.id, expected_num_queries=self.expected_queries
+        )
+        assert response.status_code == 303
+
+        assert user_password_before_response == user.password
+
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0]["To"] == user.email
+        assert mails_testing.outbox[0]["template"] == TransactionalEmail.NEW_PASSWORD_REQUEST.value.__dict__
+        assert "2Fmot-de-passe-perdu%3Ftoken%3" in mails_testing.outbox[0]["params"]["RESET_PASSWORD_LINK"]
+
+        response = authenticated_client.get(response.location)
+        assert html_parser.extract_alert(response.data) == "L'envoi du mail de changement de mot de passe a été initié"
+
+    def test_user_not_found(self, authenticated_client):
+        response = self.post_to_endpoint(authenticated_client, user_id=0)
+        assert response.status_code == 404
+
+    def test_with_non_beneficiary_user(self, authenticated_client, legit_user):
+        user = users_factories.ProFactory()
+
+        response = self.post_to_endpoint(authenticated_client, user_id=user.id)
+        response = authenticated_client.get(response.location)
+        assert (
+            html_parser.extract_alert(response.data)
+            == "La fonctionnalité n'est disponible que pour un compte bénéficiaire ou grand public"
+        )

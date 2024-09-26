@@ -369,6 +369,8 @@ def render_public_account_details(
             {
                 "edit_account_form": edit_account_form,
                 "edit_account_dst": url_for(".update_public_account", user_id=user.id),
+                "password_reset_dst": url_for(".send_public_account_reset_password_email", user_id=user.id),
+                "password_reset_form": empty_forms.EmptyForm(),
                 "password_invalidation_dst": url_for(".invalidate_public_account_password", user_id=user.id),
                 "password_invalidation_form": empty_forms.EmptyForm(),
                 "manual_review_form": (
@@ -1326,4 +1328,21 @@ def invalidate_public_account_password(user_id: int) -> utils.BackofficeResponse
 
     history_api.add_action(history_models.ActionType.USER_PASSWORD_INVALIDATED, author=current_user, user=user)
     flash("Le mot de passe du compte a bien été invalidé", "success")
+    return redirect(get_public_account_link(user_id, active_tab="history"), code=303)
+
+
+@public_accounts_blueprint.route("/<int:user_id>/send-reset-password-email", methods=["POST"])
+@atomic()
+@utils.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
+def send_public_account_reset_password_email(user_id: int) -> utils.BackofficeResponse:
+    user = users_models.User.query.filter(users_models.User.id == user_id).one_or_none()
+    if not user:
+        raise NotFound()
+    if not (user.is_beneficiary or user.roles == []):
+        flash("La fonctionnalité n'est disponible que pour un compte bénéficiaire ou grand public", "warning")
+        return redirect(get_public_account_link(user_id, active_tab="history"), code=303)
+
+    users_api.request_password_reset(user)
+
+    flash("L'envoi du mail de changement de mot de passe a été initié", "success")
     return redirect(get_public_account_link(user_id, active_tab="history"), code=303)
