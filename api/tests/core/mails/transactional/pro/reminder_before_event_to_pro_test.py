@@ -42,6 +42,7 @@ class Reminder7DaysBeforeEventToProEmailTest:
             "EVENT_DATE": "dimanche 1 mai 2022",
             "EVENT_HOUR": "16h10",
             "BOOKING_COUNT": 3,
+            "OFFER_ADDRESS": offer.fullAddress,
         }
 
     def test_sends_email_to_pro_venue_booking_email_when_offer_booking_email_is_missing(self):
@@ -69,6 +70,7 @@ class Reminder7DaysBeforeEventToProEmailTest:
             "EVENT_DATE": "dimanche 1 mai 2022",
             "EVENT_HOUR": "16h10",
             "BOOKING_COUNT": 2,
+            "OFFER_ADDRESS": offer.fullAddress,
         }
 
     def test_get_email_metadata(self):
@@ -89,4 +91,5 @@ class Reminder7DaysBeforeEventToProEmailTest:
             "EVENT_DATE": "mercredi 2 mars 2022",
             "EVENT_HOUR": "15h20",
             "BOOKING_COUNT": 1,
+            "OFFER_ADDRESS": offer.fullAddress,
         }
