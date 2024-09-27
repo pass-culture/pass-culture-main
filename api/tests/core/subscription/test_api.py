@@ -1454,7 +1454,6 @@ class ActivateBeneficiaryIfNoMissingStepTest:
         assert user.deposit.source == f"dossier FraudCheckType.EDUCONNECT [{identity_fraud_check.thirdPartyId}]"
         assert user.deposit.amount == 30
 
-    @override_features(ENABLE_PHONE_VALIDATION=False)
     def test_rejected_identity(self):
         user = self.eligible_user(validate_phone=False)
 

@@ -172,8 +172,6 @@ def get_phone_validation_subscription_item(
             status = models.SubscriptionItemStatus.OK
         elif user.is_phone_validation_skipped:
             status = models.SubscriptionItemStatus.SKIPPED
-        elif not FeatureToggle.ENABLE_PHONE_VALIDATION.is_active():
-            status = models.SubscriptionItemStatus.NOT_ENABLED
         elif fraud_repository.has_failed_phone_validation(user):
             status = models.SubscriptionItemStatus.KO
         elif is_eligibility_activable(user, eligibility):
@@ -820,7 +818,7 @@ def get_subscription_steps_to_display(
 
 def _get_ordered_steps(user: users_models.User) -> list[models.SubscriptionStep]:
     ordered_steps = []
-    if user.eligibility == users_models.EligibilityType.AGE18 and FeatureToggle.ENABLE_PHONE_VALIDATION.is_active():
+    if user.eligibility == users_models.EligibilityType.AGE18:
         ordered_steps.append(models.SubscriptionStep.PHONE_VALIDATION)
     ordered_steps.append(models.SubscriptionStep.PROFILE_COMPLETION)
     if requires_identity_check_step(user):
