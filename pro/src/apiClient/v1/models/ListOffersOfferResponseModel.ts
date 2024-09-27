@@ -2,13 +2,13 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { AddressResponseIsNotLinkToVenueModel } from './AddressResponseIsNotLinkToVenueModel';
+import type { AddressResponseIsLinkedToVenueModel } from './AddressResponseIsLinkedToVenueModel';
 import type { ListOffersStockResponseModel } from './ListOffersStockResponseModel';
 import type { ListOffersVenueResponseModel } from './ListOffersVenueResponseModel';
 import type { OfferStatus } from './OfferStatus';
 import type { SubcategoryIdEnum } from './SubcategoryIdEnum';
 export type ListOffersOfferResponseModel = {
-  address?: AddressResponseIsNotLinkToVenueModel | null;
+  address?: AddressResponseIsLinkedToVenueModel | null;
   hasBookingLimitDatetimesPassed: boolean;
   id: number;
   isActive: boolean;

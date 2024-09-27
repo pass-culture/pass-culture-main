@@ -1,5 +1,5 @@
 import {
-  AddressResponseIsNotLinkToVenueModel,
+  AddressResponseIsLinkedToVenueModel,
   GetOfferVenueResponseModel,
 } from 'apiClient/v1'
 import { computeAddressDisplayName } from 'repository/venuesService'
@@ -8,7 +8,7 @@ import style from './VenueDetails.module.scss'
 
 interface VenueDetailsProps {
   venue: GetOfferVenueResponseModel
-  address?: AddressResponseIsNotLinkToVenueModel | null
+  address?: AddressResponseIsLinkedToVenueModel | null
   withdrawalDetails?: string
 }
 

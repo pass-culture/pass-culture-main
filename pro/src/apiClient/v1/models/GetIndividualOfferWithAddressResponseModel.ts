@@ -2,7 +2,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { AddressResponseIsNotLinkToVenueModel } from './AddressResponseIsNotLinkToVenueModel';
+import type { AddressResponseIsLinkedToVenueModel } from './AddressResponseIsLinkedToVenueModel';
 import type { GetOfferLastProviderResponseModel } from './GetOfferLastProviderResponseModel';
 import type { GetOfferMediationResponseModel } from './GetOfferMediationResponseModel';
 import type { GetOfferVenueResponseModel } from './GetOfferVenueResponseModel';
@@ -12,7 +12,7 @@ import type { SubcategoryIdEnum } from './SubcategoryIdEnum';
 import type { WithdrawalTypeEnum } from './WithdrawalTypeEnum';
 export type GetIndividualOfferWithAddressResponseModel = {
   activeMediation?: GetOfferMediationResponseModel | null;
-  address?: AddressResponseIsNotLinkToVenueModel | null;
+  address?: AddressResponseIsLinkedToVenueModel | null;
   audioDisabilityCompliant?: boolean | null;
   bookingContact?: string | null;
   bookingEmail?: string | null;

@@ -231,7 +231,7 @@ class GetVenueResponseGetterDict(base.VenueResponseGetterDict):
             offerer_address = self._obj.offererAddress
             if not offerer_address:
                 return None
-            return address_serialize.AddressResponseIsNotLinkToVenueModel(
+            return address_serialize.AddressResponseIsLinkedToVenueModel(
                 **address_serialize.retrieve_address_info_from_oa(offerer_address)
             )
         return super().get(key, default)
@@ -271,7 +271,7 @@ class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin
     bankAccount: BankAccountResponseModel | None
     isVisibleInApp: bool = True
     hasOffers: bool
-    address: address_serialize.AddressResponseIsNotLinkToVenueModel | None
+    address: address_serialize.AddressResponseIsLinkedToVenueModel | None
 
     class Config:
         orm_mode = True
@@ -393,11 +393,11 @@ class VenueListItemResponseGetterDict(GetterDict):
                 "street": offerer_address.address.street,
                 "city": offerer_address.address.city,
                 "label": self._obj.common_name,
-                "isNotLinkToVenue": False,
+                "isLinkedToVenue": True,
                 "isManualEdition": offerer_address.address.isManualEdition,
                 "departmentCode": offerer_address.address.departmentCode,
             }
-            return address_serialize.AddressResponseIsNotLinkToVenueModel(**data)
+            return address_serialize.AddressResponseIsLinkedToVenueModel(**data)
         return super().get(key, default)
 
 
@@ -415,7 +415,7 @@ class VenueListItemResponseModel(BaseModel, AccessibilityComplianceMixin):
     collectiveSubCategoryId: str | None
     venueTypeCode: offerers_models.VenueTypeCode
     externalAccessibilityData: acceslibre_serializers.ExternalAccessibilityDataModel | None
-    address: address_serialize.AddressResponseIsNotLinkToVenueModel | None
+    address: address_serialize.AddressResponseIsLinkedToVenueModel | None
 
     @classmethod
     def from_orm(

@@ -2,7 +2,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { AddressResponseIsNotLinkToVenueModel } from './AddressResponseIsNotLinkToVenueModel';
+import type { AddressResponseIsLinkedToVenueModel } from './AddressResponseIsLinkedToVenueModel';
 import type { BankAccountResponseModel } from './BankAccountResponseModel';
 import type { BannerMetaModel } from './BannerMetaModel';
 import type { DMSApplicationForEAC } from './DMSApplicationForEAC';
@@ -16,7 +16,7 @@ import type { VenueContactModel } from './VenueContactModel';
 import type { VenueTypeCode } from './VenueTypeCode';
 export type GetVenueResponseModel = {
   adageInscriptionDate?: string | null;
-  address?: AddressResponseIsNotLinkToVenueModel | null;
+  address?: AddressResponseIsLinkedToVenueModel | null;
   audioDisabilityCompliant?: boolean | null;
   banId?: string | null;
   bankAccount?: BankAccountResponseModel | null;

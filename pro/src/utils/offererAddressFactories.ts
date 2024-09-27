@@ -12,7 +12,7 @@ export const offererAddressFactory = (
   return {
     id: currentOaId,
     city: 'Paris',
-    isNotLinkToVenue: true,
+    isLinkedToVenue: true,
     postalCode: '75001',
     street: '1 Rue de paris',
     ...customOffererAddress,

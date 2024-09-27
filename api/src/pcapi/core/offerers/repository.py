@@ -814,7 +814,7 @@ def get_offerer_addresses(offerer_id: int, only_with_offers: bool = False) -> Ba
             geography_models.Address.city,
             geography_models.Address.departmentCode,
         ),
-        sqla_orm.with_expression(models.OffererAddress._isNotLinkToVenue, models.OffererAddress.isNotLinkToVenue.expression),  # type: ignore[attr-defined]
+        sqla_orm.with_expression(models.OffererAddress._isLinkedToVenue, models.OffererAddress.isLinkedToVenue.expression),  # type: ignore[attr-defined]
     )
 
     if only_with_offers:
@@ -830,7 +830,7 @@ def get_offerer_address_of_offerer(offerer_id: int, offerer_address_id: int) -> 
             models.OffererAddress.offererId == offerer_id, models.OffererAddress.id == offerer_address_id
         )
         .options(
-            sqla_orm.with_expression(models.OffererAddress._isNotLinkToVenue, models.OffererAddress.isNotLinkToVenue.expression)  # type: ignore[attr-defined]
+            sqla_orm.with_expression(models.OffererAddress._isLinkedToVenue, models.OffererAddress.isLinkedToVenue.expression)  # type: ignore[attr-defined]
         )
         .one_or_none()
     )
