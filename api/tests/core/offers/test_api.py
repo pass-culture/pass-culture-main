@@ -1710,23 +1710,20 @@ class UpdateOfferTest:
         assert offer.mentalDisabilityCompliant is False
 
     def test_success_on_imported_offer_with_product_not_music_related_with_gtl_id(self):
-        provider = providers_factories.AllocineProviderFactory()
+        provider = providers_factories.PublicApiProviderFactory(name="BookProvider")
         product = factories.ProductFactory(
             subcategoryId=subcategories.LIVRE_PAPIER.id,
-            lastProvider=providers_factories.PublicApiProviderFactory(name="BookProvider"),
+            lastProvider=provider,
             idAtProviders="1234567890123",
             extraData={"gtl_id": "01020602", "author": "Asimov", "ean": "1234567890123"},
         )
         offer = factories.OfferFactory(
             product=product,
             lastProvider=provider,
-            name="Old name",
             audioDisabilityCompliant=True,
             visualDisabilityCompliant=False,
             motorDisabilityCompliant=False,
             mentalDisabilityCompliant=True,
-            extraData={"gtl_id": "01020602", "author": "Asimov", "ean": "1234567890123"},
-            subcategoryId=product.subcategoryId,
         )
         body = offers_schemas.UpdateOffer(
             name="Old name",

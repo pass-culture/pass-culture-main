@@ -1586,12 +1586,8 @@ class GetOfferDetailsTest(GetEndpointHelper):
         assert html_parser.count_table_rows(response.data) == 0
 
     def test_get_detail_offer_with_product(self, authenticated_client):
-        product = offers_factories.ProductFactory(subcategoryId=subcategories.LIVRE_PAPIER.id)
-        offer = offers_factories.OfferFactory(
-            product=product,
-            name="good book",
-            subcategoryId=subcategories.LIVRE_PAPIER.id,
-        )
+        product = offers_factories.ProductFactory(subcategoryId=subcategories.LIVRE_PAPIER.id, name="good book")
+        offer = offers_factories.OfferFactory(product=product)
         url = url_for(self.endpoint, offer_id=offer.id, _external=True)
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)

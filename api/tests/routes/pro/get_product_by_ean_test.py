@@ -142,7 +142,7 @@ class Returns422Test:
             extraData={"ean": "EANDUPRODUIT", "author": "Martin Dupont"},
             gcuCompatibilityType=GcuCompatibilityType.COMPATIBLE,
         )
-        offers_factories.OfferFactory(product=product, venue=venue, extraData={"ean": product.extraData["ean"]})
+        offers_factories.OfferFactory(product=product, venue=venue)
 
         test_client = client.with_session_auth(email=user.email)
         num_queries = testing.AUTHENTICATION_QUERIES

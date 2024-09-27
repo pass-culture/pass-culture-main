@@ -172,15 +172,14 @@ class Returns200Test:
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
         venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
         product = offers_factories.ProductFactory(
-            subcategoryId=subcategories.LIVRE_PAPIER.id, extraData={"gtl_id": "07000000", "ean": "1111111111111"}
+            name="Name",
+            description="description",
+            subcategoryId=subcategories.LIVRE_PAPIER.id,
+            extraData={"gtl_id": "07000000", "ean": "1111111111111"},
         )
         offer = offers_factories.OfferFactory(
-            name="Name",
-            subcategoryId=subcategories.LIVRE_PAPIER.id,
             venue=venue,
-            description="description",
             url="http://example.com/offer",
-            extraData={"gtl_id": "07000000", "ean": "1111111111111"},
             product=product,
         )
 
@@ -338,14 +337,13 @@ class Returns400Test:
             managingOfferer=user_offerer.offerer, venueTypeCode=VenueTypeCode.RECORD_STORE
         )
         product = offers_factories.ProductFactory(
-            subcategoryId=subcategories.LIVRE_PAPIER.id, extraData={"ean": "1111111111111"}
+            subcategoryId=subcategories.LIVRE_PAPIER.id,
+            extraData={"ean": "1111111111111"},
+            name="Name",
+            description="description",
         )
         offer = offers_factories.OfferFactory(
-            name="Name",
-            subcategoryId=subcategories.LIVRE_PAPIER.id,
             venue=venue,
-            description="description",
-            extraData={"ean": "1111111111111"},
             product=product,
         )
 

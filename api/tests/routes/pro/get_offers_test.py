@@ -31,12 +31,12 @@ class Returns200Test:
             publicName="My public name",
         )
         other_venue = offerers_factories.VenueFactory(managingOfferer=offerer, siret="54321987654321")
-        product = offers_factories.ProductFactory(extraData={"ean": "123456789"}, description="my description")
+        product = offers_factories.ProductFactory(
+            name="My Offer", extraData={"ean": "123456789"}, description="my description"
+        )
         offer_on_requested_venue = offers_factories.OfferFactory(
             product=product,
             venue=requested_venue,
-            name="My Offer",
-            extraData={"ean": "123456789"},
         )
         offers_factories.ThingOfferFactory(venue=other_venue)
         stock = offers_factories.StockFactory(offer=offer_on_requested_venue)
@@ -69,7 +69,7 @@ class Returns200Test:
                     }
                 ],
                 "thumbUrl": None,
-                "subcategoryId": "SUPPORT_PHYSIQUE_FILM",
+                "subcategoryId": "LIVRE_PAPIER",
                 "venue": {
                     "departementCode": departement_code,
                     "id": requested_venue.id,

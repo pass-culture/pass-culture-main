@@ -347,11 +347,10 @@ def test_serialize_offer_gtl():
 
 
 def test_use_titelive_music_type_if_offer_is_music():
-    product = offers_factories.ProductFactory(extraData={"gtl_id": "01000000"})
-    offer = offers_factories.OfferFactory(
-        product=product,
-        subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
+    product = offers_factories.ProductFactory(
+        extraData={"gtl_id": "01000000"}, subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id
     )
+    offer = offers_factories.OfferFactory(product=product)
     serialized = algolia.AlgoliaBackend().serialize_offer(offer, 0)
     assert serialized["offer"]["gtl_level1"] == "Musique Classique"
     assert "gtl_level2" not in serialized["offer"]

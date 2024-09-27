@@ -87,15 +87,14 @@ class Returns200Test:
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
         venue = offerers_factories.VirtualVenueFactory(managingOfferer=user_offerer.offerer)
         product = offers_factories.ProductFactory(
-            subcategoryId=subcategories.LIVRE_PAPIER.id, extraData={"ean": "1111111111111"}
+            subcategoryId=subcategories.LIVRE_PAPIER.id,
+            extraData={"ean": "1111111111111"},
+            name="New name",
+            description="description",
         )
         offer = offers_factories.OfferFactory(
-            subcategoryId=subcategories.LIVRE_PAPIER.id,
             venue=venue,
-            name="New name",
             url="test@test.com",
-            description="description",
-            extraData={"ean": "1111111111111"},
             product=product,
         )
 
@@ -736,15 +735,14 @@ class Returns400Test:
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
         venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
         product = offers_factories.ProductFactory(
-            subcategoryId=subcategories.LIVRE_PAPIER.id, extraData={"ean": "1111111111111"}
+            subcategoryId=subcategories.LIVRE_PAPIER.id,
+            extraData={"ean": "1111111111111"},
+            name="New name",
+            description="description",
         )
         offer = offers_factories.OfferFactory(
-            subcategoryId=subcategories.LIVRE_PAPIER.id,
             venue=venue,
-            name="New name",
             url="test@test.com",
-            description="description",
-            extraData={"ean": "1111111111111"},
             product=product,
         )
 

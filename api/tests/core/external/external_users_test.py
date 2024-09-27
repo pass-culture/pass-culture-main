@@ -115,9 +115,11 @@ def test_get_user_attributes_beneficiary_with_v1_deposit():
         phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
     )
     offer = OfferFactory(
-        product=ProductFactory(id=list(TRACKED_PRODUCT_IDS.keys())[0]),
-        subcategoryId=subcategories.SEANCE_CINE.id,
-        extraData={"genres": ["THRILLER"]},
+        product=ProductFactory(
+            id=list(TRACKED_PRODUCT_IDS.keys())[0],
+            subcategoryId=subcategories.SEANCE_CINE.id,
+            extraData={"genres": ["THRILLER"]},
+        ),
     )
     b1 = BookingFactory(user=user, amount=10, dateCreated=datetime(2023, 12, 6, 10), stock__offer=offer)
     b2 = BookingFactory(
@@ -267,7 +269,9 @@ def test_get_user_attributes_beneficiary_because_of_credit():
         phoneNumber="+33607080901",
         phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
     )
-    offer1 = OfferFactory(product=ProductFactory(id=list(TRACKED_PRODUCT_IDS.keys())[0]))
+    offer1 = OfferFactory(
+        product=ProductFactory(id=list(TRACKED_PRODUCT_IDS.keys())[0], subcategoryId=subcategories.SEANCE_CINE.id)
+    )
     offer2 = EventOfferFactory(venue=offer1.venue, isDuo=True)
     offer3 = OfferFactory()
     BookingFactory(user=user, amount=100, dateCreated=datetime(2022, 12, 6, 11), stock__offer=offer1)
@@ -316,7 +320,7 @@ def test_get_user_attributes_beneficiary_because_of_credit():
         last_favorite_creation_date=favorite.dateCreated,
         last_visit_date=user.lastConnectionDate,
         marketing_email_subscription=True,
-        most_booked_subcategory="SUPPORT_PHYSIQUE_FILM",
+        most_booked_subcategory="SEANCE_CINE",
         most_booked_movie_genre=None,
         most_booked_music_type=None,
         most_favorite_offer_subcategories=["CONCERT"],
@@ -477,9 +481,9 @@ def test_get_bookings_categories_and_subcategories():
     CancelledBookingFactory(user=user)
 
     assert get_bookings_categories_and_subcategories(get_user_bookings(user)) == BookingsAttributes(
-        booking_categories=["FILM"],
-        booking_subcategories=["SUPPORT_PHYSIQUE_FILM"],
-        most_booked_subcategory="SUPPORT_PHYSIQUE_FILM",
+        booking_categories=["LIVRE"],
+        booking_subcategories=["LIVRE_PAPIER"],
+        most_booked_subcategory="LIVRE_PAPIER",
     )
 
 
@@ -494,10 +498,10 @@ def test_get_bookings_categories_and_subcategories_most_booked():
 
     booking_attributes = get_bookings_categories_and_subcategories(get_user_bookings(user))
 
-    # 2xFILM, 1xCINE => FILM is the most booked
-    assert booking_attributes.booking_categories == ["CINEMA", "FILM"]
-    assert booking_attributes.booking_subcategories == ["CINE_PLEIN_AIR", "SUPPORT_PHYSIQUE_FILM"]
-    assert booking_attributes.most_booked_subcategory == "SUPPORT_PHYSIQUE_FILM"
+    # 2xLIVRE_PAPIER, 1xCINE => LIVRE_PAPIER is the most booked
+    assert booking_attributes.booking_categories == ["CINEMA", "LIVRE"]
+    assert booking_attributes.booking_subcategories == ["CINE_PLEIN_AIR", "LIVRE_PAPIER"]
+    assert booking_attributes.most_booked_subcategory == "LIVRE_PAPIER"
     assert booking_attributes.most_booked_movie_genre is None
     assert booking_attributes.most_booked_music_type is None
 
@@ -515,9 +519,9 @@ def test_get_bookings_categories_and_subcategories_most_booked_on_price():
     booking_attributes = get_bookings_categories_and_subcategories(get_user_bookings(user))
 
     # 2xFILM, 2xCINE, but FILM has the highest credit spent => FILM is the most booked
-    assert booking_attributes.booking_categories == ["CINEMA", "FILM"]
-    assert booking_attributes.booking_subcategories == ["CINE_PLEIN_AIR", "SUPPORT_PHYSIQUE_FILM"]
-    assert booking_attributes.most_booked_subcategory == "SUPPORT_PHYSIQUE_FILM"
+    assert booking_attributes.booking_categories == ["CINEMA", "LIVRE"]
+    assert booking_attributes.booking_subcategories == ["CINE_PLEIN_AIR", "LIVRE_PAPIER"]
+    assert booking_attributes.most_booked_subcategory == "LIVRE_PAPIER"
     assert booking_attributes.most_booked_movie_genre is None
     assert booking_attributes.most_booked_music_type is None
 
@@ -537,9 +541,9 @@ def test_get_bookings_categories_and_subcategories_most_booked_on_count():
 
     booking_attributes = get_bookings_categories_and_subcategories(get_user_bookings(user))
 
-    # 2xFILM, 3xCINE => CINE is the most booked, even if the highest credit spent is still FILM
-    assert booking_attributes.booking_categories == ["CINEMA", "FILM"]
-    assert booking_attributes.booking_subcategories == ["CINE_PLEIN_AIR", "SUPPORT_PHYSIQUE_FILM"]
+    # 2xLIVRE_PAPIER, 3xCINE => CINE is the most booked, even if the highest credit spent is still FILM
+    assert booking_attributes.booking_categories == ["CINEMA", "LIVRE"]
+    assert booking_attributes.booking_subcategories == ["CINE_PLEIN_AIR", "LIVRE_PAPIER"]
     assert booking_attributes.most_booked_subcategory == "CINE_PLEIN_AIR"
     assert booking_attributes.most_booked_movie_genre == "DRAMA"
     assert booking_attributes.most_booked_music_type is None
@@ -564,18 +568,18 @@ def test_get_bookings_categories_and_subcategories_music_first():
 
     booking_attributes = get_bookings_categories_and_subcategories(get_user_bookings(user))
 
-    # most booked subcategory is SUPPORT_PHYSIQUE_FILM, which category is FILM
+    # most booked subcategory is LIVRE_PAPIER, which category is LIVRE
     # but most booked category is MUSIQUE_ENREGISTREE, so most_booked_music_type is computed among 2 categories
-    assert booking_attributes.booking_categories == ["FILM", "MUSIQUE_ENREGISTREE", "MUSIQUE_LIVE"]
+    assert booking_attributes.booking_categories == ["LIVRE", "MUSIQUE_ENREGISTREE", "MUSIQUE_LIVE"]
     assert booking_attributes.booking_subcategories == [
         "CAPTATION_MUSIQUE",
         "CONCERT",
         "EVENEMENT_MUSIQUE",
-        "SUPPORT_PHYSIQUE_FILM",
+        "LIVRE_PAPIER",
         "SUPPORT_PHYSIQUE_MUSIQUE_CD",
         "TELECHARGEMENT_MUSIQUE",
     ]
-    assert booking_attributes.most_booked_subcategory == "SUPPORT_PHYSIQUE_FILM"
+    assert booking_attributes.most_booked_subcategory == "LIVRE_PAPIER"
     assert booking_attributes.most_booked_movie_genre is None
     assert booking_attributes.most_booked_music_type == "800"
 
