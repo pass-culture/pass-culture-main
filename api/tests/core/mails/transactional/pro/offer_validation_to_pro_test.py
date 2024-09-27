@@ -93,6 +93,7 @@ class SendinblueSendOfferValidationTest:
             "OFFER_NAME": "Ma petite offre",
             "VENUE_NAME": "Mon stade",
             "PC_PRO_OFFER_LINK": f"{PRO_URL}/offre/individuelle/{offer.id}/recapitulatif",
+            "OFFER_ADDRESS": offer.fullAddress,
         }
 
     def test_get_validation_rejection_correct_collective_attribute(self):
@@ -105,6 +106,7 @@ class SendinblueSendOfferValidationTest:
         # Then
         assert new_offer_validation_email.template == TransactionalEmail.OFFER_REJECTION_TO_PRO.value
         assert new_offer_validation_email.params["IS_COLLECTIVE_OFFER"] is True
+        assert new_offer_validation_email.params["OFFER_ADDRESS"] is None
 
     def test_get_validation_rejection_correct_collective_template_attribute(self):
         # Given
@@ -116,6 +118,7 @@ class SendinblueSendOfferValidationTest:
         # Then
         assert new_offer_validation_email.template == TransactionalEmail.OFFER_REJECTION_TO_PRO.value
         assert new_offer_validation_email.params["IS_COLLECTIVE_OFFER"] is True
+        assert new_offer_validation_email.params["OFFER_ADDRESS"] is None
 
     def test_send_validated_offer_rejection_email(
         self,
@@ -192,4 +195,5 @@ class SendinblueSendOfferValidationTest:
             "OFFER_NAME": offer.name,
             "PC_PRO_OFFER_LINK": f"{PRO_URL}/offre/individuelle/{offer.id}/recapitulatif",
             "VENUE_NAME": venue.name,
+            "OFFER_ADDRESS": offer.fullAddress,
         }
