@@ -27,5 +27,6 @@ def get_event_offer_postponed_confirmation_to_pro_email_data(
                 format_date(get_event_datetime(stock), format="full", locale="fr") if stock.offer.isEvent else None
             ),
             "BOOKING_COUNT": booking_count,
+            "OFFER_ADDRESS": stock.offer.fullAddress,
         },
     )
