@@ -4382,7 +4382,7 @@ class GetCsvReportTest:
         venue_for_book = offerers_factories.VenueFactory(
             managingOfferer=offerer, name="Lieu pour un livre", siret="41816609600069"
         )
-        product_book = offers_factories.ThingProductFactory(name="Harry Potter")
+        product_book = offers_factories.ThingProductFactory(name="Harry Potter", extraData=dict({"ean": "9876543234"}))
         offer_for_book = offers_factories.ThingOfferFactory(
             venue=venue_for_book, product=product_book, extraData=dict({"ean": "9876543234"})
         )
@@ -4444,7 +4444,7 @@ class GetCsvReportTest:
         venue_for_book = offerers_factories.VenueFactory(
             managingOfferer=offerer, name="Lieu pour un livre", siret="41816609600069"
         )
-        product_book = offers_factories.ThingProductFactory(name="Harry Potter")
+        product_book = offers_factories.ThingProductFactory(name="Harry Potter", extraData=dict({"ean": "9876543234"}))
         offer_for_book = offers_factories.ThingOfferFactory(
             venue=venue_for_book, product=product_book, extraData=dict({"ean": "9876543234"})
         )
@@ -4506,7 +4506,7 @@ class GetCsvReportTest:
         venue_for_book = offerers_factories.VenueFactory(
             managingOfferer=offerer, name="Lieu pour un livre", publicName="Librairie Châtelet", siret="41816609600069"
         )
-        product_book = offers_factories.ThingProductFactory(name="Harry Potter")
+        product_book = offers_factories.ThingProductFactory(name="Harry Potter", extraData=dict({"ean": "9876543234"}))
         offer_for_book = offers_factories.ThingOfferFactory(
             venue=venue_for_book, product=product_book, extraData=dict({"ean": "9876543234"})
         )
@@ -4571,10 +4571,8 @@ class GetCsvReportTest:
         venue_for_book = offerers_factories.VenueFactory(
             managingOfferer=offerer, name="Lieu pour un livre", publicName="Librairie Châtelet", siret="41816609600069"
         )
-        product_book = offers_factories.ThingProductFactory(name="Harry Potter")
-        offer_for_book = offers_factories.ThingOfferFactory(
-            venue=venue_for_book, product=product_book, extraData=dict({"ean": "9876543234"})
-        )
+        product_book = offers_factories.ThingProductFactory(name="Harry Potter", extraData=dict({"ean": "9876543234"}))
+        offer_for_book = offers_factories.ThingOfferFactory(venue=venue_for_book, product=product_book)
         stock_for_book = offers_factories.ThingStockFactory(offer=offer_for_book, price=0)
         bookings_factories.UsedBookingFactory(
             user=beneficiary,

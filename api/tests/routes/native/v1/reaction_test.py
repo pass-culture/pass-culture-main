@@ -203,9 +203,9 @@ class GetAvailableReactionTest:
     def test_get_available_reactions_takes_product_reaction_into_account(self, client):
         user = users_factories.BeneficiaryFactory()
 
-        product = offers_factories.ProductFactory()
-        product_offer_1 = offers_factories.OfferFactory(product=product, subcategoryId=subcategories.SEANCE_CINE.id)
-        product_offer_2 = offers_factories.OfferFactory(product=product, subcategoryId=subcategories.SEANCE_CINE.id)
+        product = offers_factories.ProductFactory(subcategoryId=subcategories.SEANCE_CINE.id)
+        product_offer_1 = offers_factories.OfferFactory(product=product)
+        product_offer_2 = offers_factories.OfferFactory(product=product)
 
         # User booked and reacted to the product_offer_1
         more_than_24h_ago = datetime.datetime.utcnow() - datetime.timedelta(hours=25)

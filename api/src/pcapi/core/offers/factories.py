@@ -160,9 +160,15 @@ class OfferFactory(BaseFactory):
         model = models.Offer
 
     venue = factory.SubFactory(offerers_factories.VenueFactory)
-    subcategoryId = subcategories.SUPPORT_PHYSIQUE_FILM.id
-    name = factory.Sequence("Offer {}".format)
-    description = factory.Sequence("A passionate description of offer {}".format)
+    subcategoryId = factory.LazyAttribute(
+        lambda o: (o.product.subcategoryId if hasattr(o, "product") else subcategories.SUPPORT_PHYSIQUE_FILM.id)
+    )
+    name = factory.LazyAttributeSequence(
+        lambda o, n: o.product.name if hasattr(o, "product") and o.product else f"Offer {n}"
+    )
+    description = factory.LazyAttributeSequence(
+        lambda o, n: None if hasattr(o, "product") and o.product else f"A passionate description of offer {n}"
+    )
     audioDisabilityCompliant = False
     mentalDisabilityCompliant = False
     motorDisabilityCompliant = False
@@ -185,15 +191,24 @@ class OfferFactory(BaseFactory):
                 models.OfferValidationStatus.REJECTED,
                 models.OfferValidationStatus.PENDING,
             )
-        if "extraData" not in kwargs:
-            product = kwargs.get("product")
-            if product:
-                kwargs["extraData"] = product.extraData
-            subcategory_id = kwargs.get("subcategoryId")
-            assert isinstance(
-                subcategory_id, str
-            )  # if the subcategoryId was not given in the factory, it will get the default subcategoryId
-            kwargs["extraData"] = build_extra_data_from_subcategory(subcategory_id, kwargs.pop("set_all_fields", False))
+
+        product = kwargs.get("product")
+        if product:
+            _check_offer_kwargs(product, kwargs)
+            kwargs["name"] = product.name
+            kwargs["subcategoryId"] = product.subcategoryId
+            kwargs["description"] = None
+            kwargs["extraData"] = product.extraData
+            kwargs["durationMinutes"] = product.durationMinutes
+        else:
+            if "extraData" not in kwargs:
+                subcategory_id = kwargs.get("subcategoryId")
+                assert isinstance(
+                    subcategory_id, str
+                )  # if the subcategoryId was not given in the factory, it will get the default subcategoryId
+                kwargs["extraData"] = build_extra_data_from_subcategory(
+                    subcategory_id, kwargs.pop("set_all_fields", False)
+                )
         if "offererAddress" not in kwargs and "offererAddressId" not in kwargs:
             venue = kwargs.get("venue")
             if venue:
@@ -202,16 +217,35 @@ class OfferFactory(BaseFactory):
         return super()._create(model_class, *args, **kwargs)
 
 
+def _check_offer_kwargs(product: models.Product, kwargs: dict[str, typing.Any]) -> None:
+    if kwargs.get("name") and kwargs.get("name") != product.name:
+        raise ValueError("Name of the offer and the product must be the same")
+    if kwargs.get("subcategoryId") and kwargs.get("subcategoryId") != product.subcategoryId:
+        raise ValueError("SubcategoryId of the offer and the product must be the same")
+    if kwargs.get("extraData") and kwargs.get("extraData") != product.extraData:
+        raise ValueError("ExtraData of the offer and the product must be the same")
+    if kwargs.get("durationMinutes") and kwargs.get("durationMinutes") != product.durationMinutes:
+        raise ValueError("DurationMinutes of the offer and the product must be the same")
+    if kwargs.get("description"):
+        raise ValueError("Description of the offer must be None when product is given")
+
+
 class EventOfferFactory(OfferFactory):
-    subcategoryId = subcategories.SEANCE_CINE.id
+    subcategoryId = factory.LazyAttribute(
+        lambda o: (o.product.subcategoryId if hasattr(o, "product") else subcategories.SEANCE_CINE.id)
+    )
 
 
 class ThingOfferFactory(OfferFactory):
-    subcategoryId = subcategories.CARTE_CINE_ILLIMITE.id
+    subcategoryId = factory.LazyAttribute(
+        lambda o: (o.product.subcategoryId if hasattr(o, "product") else subcategories.CARTE_CINE_ILLIMITE.id)
+    )
 
 
 class DigitalOfferFactory(OfferFactory):
-    subcategoryId = subcategories.VOD.id
+    subcategoryId = factory.LazyAttribute(
+        lambda o: (o.product.subcategoryId if hasattr(o, "product") else subcategories.VOD.id)
+    )
     url = factory.Sequence("http://example.com/offer/{}".format)
     venue = factory.SubFactory(offerers_factories.VirtualVenueFactory)
 
