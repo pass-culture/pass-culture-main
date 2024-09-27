@@ -3,22 +3,31 @@ import { humanizeSiret } from 'core/Venue/utils'
 
 import { VenueSettingsFormValues } from './types'
 
-export const setInitialFormValues = (
+export const setInitialFormValues = ({
+  venue,
+  isOfferAddressEnabled = false,
+}: {
   venue: GetVenueResponseModel
-): VenueSettingsFormValues => {
+  isOfferAddressEnabled?: boolean
+}): VenueSettingsFormValues => {
+  // if WIP_ENABLE_OFFER_ADDRESS is enabled, it will takes address fields from "venue.address" object instead of "venue"
+  const addressFields =
+    isOfferAddressEnabled && venue.address ? venue.address : venue
+
   return {
-    street: venue.street || '',
-    banId: venue.banId || '',
-    addressAutocomplete: `${venue.street} ${venue.postalCode} ${venue.city}`,
-    'search-addressAutocomplete': `${venue.street} ${venue.postalCode} ${venue.city}`,
-    city: venue.city || '',
-    coords: '',
+    street: addressFields.street || '',
+    postalCode: addressFields.postalCode || '',
+    city: addressFields.city || '',
+    addressAutocomplete: `${addressFields.street} ${addressFields.postalCode} ${addressFields.city}`,
+    'search-addressAutocomplete': `${addressFields.street} ${addressFields.postalCode} ${addressFields.city}`,
+    coords: `${addressFields.latitude}, ${addressFields.longitude}`,
+    latitude: String(addressFields.latitude) || '',
+    longitude: String(addressFields.longitude) || '',
+    banId: addressFields.banId || null,
+    manuallySetAddress: venue.address?.isManualEdition,
     comment: venue.comment || '',
-    latitude: String(venue.latitude) || '',
-    longitude: String(venue.longitude) || '',
     bookingEmail: venue.bookingEmail || '',
     name: venue.name,
-    postalCode: venue.postalCode || '',
     venueSiret: venue.pricingPoint?.id || null,
     publicName: venue.publicName || '',
     siret: humanizeSiret(venue.siret || ''),
@@ -26,6 +35,5 @@ export const setInitialFormValues = (
     venueType: venue.venueTypeCode,
     withdrawalDetails: venue.withdrawalDetails || '',
     isWithdrawalAppliedOnAllOffers: false,
-    manuallySetAddress: venue.address?.isManualEdition,
   }
 }
