@@ -76,6 +76,7 @@ def get_expected_base_sendinblue_email_data(booking, mediation, **overrides):
             "OFFER_WITHDRAWAL_TYPE": None,
             "OFFER_WITHDRAWAL_DELAY": None,
             "FEATURES": "",
+            "OFFER_ADDRESS": booking.stock.offer.fullAddress,
         },
     )
     email_data.params.update(overrides)
