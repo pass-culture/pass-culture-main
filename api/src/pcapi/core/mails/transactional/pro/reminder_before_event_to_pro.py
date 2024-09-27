@@ -18,6 +18,7 @@ def get_reminder_7_days_before_event_email_data(stock: Stock) -> models.Transact
             "EVENT_DATE": format_date(event_datetime, format="full", locale="fr"),
             "EVENT_HOUR": get_time_formatted_for_email(event_datetime),
             "BOOKING_COUNT": stock.dnBookedQuantity,
+            "OFFER_ADDRESS": stock.offer.fullAddress,
         },
     )
 
