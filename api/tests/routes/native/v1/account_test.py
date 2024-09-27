@@ -164,9 +164,7 @@ class AccountTest:
     def test_status_contains_subscription_status_when_eligible(self, client):
         user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=18))
 
-        expected_num_queries = (
-            6  # user + beneficiary_fraud_review + feature + beneficiary_fraud_check + deposit + booking
-        )
+        expected_num_queries = 5  # user + beneficiary_fraud_review + beneficiary_fraud_check + deposit + booking
 
         client.with_token(user.email)
         with assert_num_queries(expected_num_queries):

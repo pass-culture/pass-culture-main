@@ -69,7 +69,7 @@ class BannerTest:
         user = users_factories.UserFactory(dateOfBirth=dateOfBirth)
 
         client.with_token(email=user.email)
-        with assert_num_queries(self.expected_num_queries_without_subscription_check + 1):  # 1 FF checked
+        with assert_num_queries(self.expected_num_queries_without_subscription_check):
             response = client.get("/native/v1/banner?isGeolocated=false")
             assert response.status_code == 200
 
@@ -176,9 +176,7 @@ class BannerTest:
         user = users_factories.ExUnderageBeneficiaryFactory()
 
         client.with_token(email=user.email)
-        with assert_num_queries(
-            self.expected_num_queries_without_subscription_check + 1
-        ):  # FF ENABLE_PHONE_VALIDATION checked
+        with assert_num_queries(self.expected_num_queries_without_subscription_check):
             response = client.get("/native/v1/banner")
             assert response.status_code == 200
 
@@ -198,9 +196,7 @@ class BannerTest:
         assert user.age == 18
 
         client.with_token(email=user.email)
-        with assert_num_queries(
-            self.expected_num_queries_without_subscription_check + 1
-        ):  # FF ENABLE_PHONE_VALIDATION checked
+        with assert_num_queries(self.expected_num_queries_without_subscription_check):
             response = client.get("/native/v1/banner")
             assert response.status_code == 200
 
