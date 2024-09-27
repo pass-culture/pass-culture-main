@@ -48,6 +48,7 @@ def get_first_venue_approved_offer_email_data(offer: Offer) -> models.Transactio
             ),
             "PC_PRO_OFFER_LINK": build_pc_pro_offer_link(offer),
             "NEEDS_BANK_INFORMATION_REMINDER": venue.current_bank_account is None,
+            "OFFER_ADDRESS": offer.fullAddress,
         },
     )
 

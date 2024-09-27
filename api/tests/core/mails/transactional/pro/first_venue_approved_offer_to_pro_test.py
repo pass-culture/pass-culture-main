@@ -37,6 +37,7 @@ class SendinblueSendFirstVenueOfferEmailTest:
             "PC_PRO_OFFER_LINK": f"{PRO_URL}/offre/individuelle/{offer.id}/recapitulatif",
             "WITHDRAWAL_PERIOD": 30,
             "NEEDS_BANK_INFORMATION_REMINDER": True,
+            "OFFER_ADDRESS": offer.fullAddress,
         }
 
     def test_get_first_venue_approved_book_offer_correct_email_metadata(self):
@@ -63,6 +64,7 @@ class SendinblueSendFirstVenueOfferEmailTest:
             "PC_PRO_OFFER_LINK": f"{PRO_URL}/offre/individuelle/{offer.id}/recapitulatif",
             "WITHDRAWAL_PERIOD": 10,
             "NEEDS_BANK_INFORMATION_REMINDER": True,
+            "OFFER_ADDRESS": offer.fullAddress,
         }
 
     def test_get_first_venue_with_bank_account_validated_correct_email_metadata(self):
@@ -70,7 +72,11 @@ class SendinblueSendFirstVenueOfferEmailTest:
         offerers_factories.VenueBankAccountLinkFactory(venue=venue)
         offer = offers_factories.OfferFactory(name="Ma première offre", venue=venue)
 
-        with assert_num_queries(2):
+        # offer
+        # venue
+        # offererAddress
+        # Address
+        with assert_num_queries(4):
             new_offer_validation_email = get_first_venue_approved_offer_email_data(offer)
 
         assert new_offer_validation_email.template == TransactionalEmail.FIRST_VENUE_APPROVED_OFFER_TO_PRO.value
@@ -83,6 +89,7 @@ class SendinblueSendFirstVenueOfferEmailTest:
             "PC_PRO_OFFER_LINK": f"{PRO_URL}/offre/individuelle/{offer.id}/recapitulatif",
             "WITHDRAWAL_PERIOD": 30,
             "NEEDS_BANK_INFORMATION_REMINDER": False,
+            "OFFER_ADDRESS": offer.fullAddress,
         }
 
     def test_send_offer_approval_email(self):
@@ -108,4 +115,5 @@ class SendinblueSendFirstVenueOfferEmailTest:
             "IS_DIGITAL": False,
             "WITHDRAWAL_PERIOD": 30,
             "NEEDS_BANK_INFORMATION_REMINDER": True,
+            "OFFER_ADDRESS": offer.fullAddress,
         }
