@@ -329,7 +329,7 @@ def patch_offerer_address(
             offerer_address = repository.get_offerer_address_of_offerer(offerer_id, offerer_address_id)
             if offerer_address is None:
                 raise ResourceNotFoundError()
-            if offerer_address._isNotLinkToVenue is False:
+            if offerer_address._isLinkedToVenue is True:
                 raise ApiErrors({"label": "Le libellé de cette adresse n'est pas modifiable"}, status_code=400)
             try:
                 api.update_offerer_address_label(offerer_address_id, body.label)

@@ -363,8 +363,8 @@ class GetOffererV2StatsResponseModel(BaseModel):
 
 class OffererAddressGetterDict(GetterDict):
     def get(self, key: str, default: Any | None = None) -> Any:
-        if key == "isNotLinkToVenue":
-            return self.get("_isNotLinkToVenue", default)
+        if key == "isLinkedToVenue":
+            return self.get("_isLinkedToVenue", default)
         if key in ("street", "postalCode", "city", "departmentCode"):
             return getattr(self._obj.address, key)
         return super().get(key, default)
@@ -376,7 +376,7 @@ class GetOffererAddressResponseModel(BaseModel):
     street: str | None
     postalCode: str
     city: str
-    isNotLinkToVenue: bool
+    isLinkedToVenue: bool
     departmentCode: str | None
 
     class Config:

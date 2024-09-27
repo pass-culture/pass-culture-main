@@ -1279,15 +1279,15 @@ class OffererAddress(PcObject, Base, Model):
         ),
     )
 
-    _isNotLinkToVenue: sa_orm.Mapped["bool|None"] = sa_orm.query_expression()
+    _isLinkedToVenue: sa_orm.Mapped["bool|None"] = sa_orm.query_expression()
 
     @hybrid_property
-    def isNotLinkToVenue(self) -> bool:
-        return db.session.query(~sa.select(1).exists().where(Venue.offererAddressId == self.id)).scalar()
+    def isLinkedToVenue(self) -> bool:
+        return db.session.query(sa.select(1).exists().where(Venue.offererAddressId == self.id)).scalar()
 
-    @isNotLinkToVenue.expression  # type: ignore[no-redef]
-    def isNotLinkToVenue(cls) -> sa.sql.elements.BooleanClauseList:  # pylint: disable=no-self-argument
-        return ~sa.select(1).where(Venue.offererAddressId == cls.id).exists()
+    @isLinkedToVenue.expression  # type: ignore[no-redef]
+    def isLinkedToVenue(cls) -> sa.sql.elements.BooleanClauseList:  # pylint: disable=no-self-argument
+        return sa.select(1).where(Venue.offererAddressId == cls.id).exists()
 
 
 class OffererConfidenceLevel(enum.Enum):

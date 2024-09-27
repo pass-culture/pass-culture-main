@@ -201,7 +201,7 @@ class Returns200Test:
                 "longitude": float(venue.offererAddress.address.longitude),
                 "postalCode": venue.offererAddress.address.postalCode,
                 "street": venue.offererAddress.address.street,
-                "isNotLinkToVenue": venue.offererAddress.isNotLinkToVenue,
+                "isLinkedToVenue": venue.offererAddress.isLinkedToVenue,
                 "isManualEdition": venue.offererAddress.address.isManualEdition,
             },
             "venue": {
@@ -326,7 +326,7 @@ class Returns200Test:
             "longitude": float(offer_offerer_address.address.longitude),
             "postalCode": offer_offerer_address.address.postalCode,
             "street": offer_offerer_address.address.street,
-            "isNotLinkToVenue": offer_offerer_address.isNotLinkToVenue,
+            "isLinkedToVenue": offer_offerer_address.isLinkedToVenue,
             "isManualEdition": offer_offerer_address.address.isManualEdition,
         }
 
@@ -358,7 +358,7 @@ class Returns200Test:
             "longitude": float(offerer_address.address.longitude),
             "postalCode": offerer_address.address.postalCode,
             "street": offerer_address.address.street,
-            "isNotLinkToVenue": offerer_address.isNotLinkToVenue,
+            "isLinkedToVenue": offerer_address.isLinkedToVenue,
             "isManualEdition": offerer_address.address.isManualEdition,
         }
 

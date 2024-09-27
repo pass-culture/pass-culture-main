@@ -226,7 +226,7 @@ describe('setDefaultInitialValuesFromOffer', () => {
     mockOffer.address = {
       id: 1,
       id_oa: 997,
-      isNotLinkToVenue: true,
+      isLinkedToVenue: true,
       isManualEdition: true,
       latitude: 48.85332,
       longitude: 2.348979,

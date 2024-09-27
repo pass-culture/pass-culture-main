@@ -1,6 +1,6 @@
 import classNames from 'classnames'
 
-import { AddressResponseIsNotLinkToVenueModel } from 'apiClient/v1'
+import { AddressResponseIsLinkedToVenueModel } from 'apiClient/v1'
 import { computeAddressDisplayName } from 'repository/venuesService'
 
 import styles from './Cells.module.scss'
@@ -8,7 +8,7 @@ import styles from './Cells.module.scss'
 export function AddressCell({
   address,
 }: {
-  address: AddressResponseIsNotLinkToVenueModel
+  address: AddressResponseIsLinkedToVenueModel
 }) {
   return (
     <td

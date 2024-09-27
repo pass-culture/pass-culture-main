@@ -1,15 +1,15 @@
-import { AddressResponseIsNotLinkToVenueModel } from 'apiClient/v1'
+import { AddressResponseIsLinkedToVenueModel } from 'apiClient/v1'
 
-export const AddressResponseIsNotLinkToVenueModelFactory = (
-  customAddressResponseIsEditableModelFactory: Partial<AddressResponseIsNotLinkToVenueModel> = {}
-): AddressResponseIsNotLinkToVenueModel => {
+export const AddressResponseIsLinkedToVenueModelFactory = (
+  customAddressResponseIsEditableModelFactory: Partial<AddressResponseIsLinkedToVenueModel> = {}
+): AddressResponseIsLinkedToVenueModel => {
   return {
     banId: 'ban',
     city: 'city',
     id: 1,
     id_oa: 1,
     inseeCode: 'inseeCode',
-    isNotLinkToVenue: true,
+    isLinkedToVenue: true,
     isManualEdition: false,
     label: 'label',
     latitude: 48.866667,

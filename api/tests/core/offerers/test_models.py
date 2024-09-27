@@ -438,21 +438,21 @@ class OffererConfidenceRuleTest:
 
 
 class OffererAddressTest:
-    def test_offerer_address_isNotLinkToVenue_property_should_be_false(self):
+    def test_offerer_address_isLinkedToVenue_property_should_be_true(self):
         offererAddress = factories.OffererAddressFactory()
         factories.VenueFactory(offererAddress=offererAddress)
-        assert offererAddress.isNotLinkToVenue is False
+        assert offererAddress.isLinkedToVenue is True
 
-    def test_offerers_address_is_notLinkedToVenue_property_should_be_true(self):
+    def test_offerers_address_is_notLinkedToVenue_property_should_be_false(self):
         offererAddress = factories.OffererAddressFactory()
-        assert offererAddress.isNotLinkToVenue is True
+        assert offererAddress.isLinkedToVenue is False
 
-    def test_offerers_address_isNotLinkToVenue_expression_should_be_false(self):
+    def test_offerers_address_isLinkedToVenue_expression_should_be_false(self):
         offererAddress = factories.OffererAddressFactory()
-        assert models.OffererAddress.query.filter_by(id=offererAddress.id).one().isNotLinkToVenue is True
-        assert models.OffererAddress.query.filter(models.OffererAddress.isNotLinkToVenue == True).one()
+        assert models.OffererAddress.query.filter_by(id=offererAddress.id).one().isLinkedToVenue is False
+        assert models.OffererAddress.query.filter(models.OffererAddress.isLinkedToVenue == False).one()
 
-    def test_offerers_address_isNotLinkToVenue_expression_should_be_true(self):
+    def test_offerers_address_isLinkedToVenue_expression_should_be_true(self):
         offererAddress = factories.OffererAddressFactory()
         factories.VenueFactory(offererAddress=offererAddress)
-        assert models.OffererAddress.query.filter(models.OffererAddress.isNotLinkToVenue == False).one()
+        assert models.OffererAddress.query.filter(models.OffererAddress.isLinkedToVenue == True).one()

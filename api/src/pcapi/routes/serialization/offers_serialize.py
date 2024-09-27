@@ -24,7 +24,7 @@ from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import ConfiguredBaseModel
 from pcapi.routes.serialization import base as base_serializers
 from pcapi.routes.serialization import collective_offers_serialize
-from pcapi.routes.serialization.address_serialize import AddressResponseIsNotLinkToVenueModel
+from pcapi.routes.serialization.address_serialize import AddressResponseIsLinkedToVenueModel
 from pcapi.routes.serialization.address_serialize import retrieve_address_info_from_oa
 from pcapi.routes.serialization.offerers_serialize import GetOffererAddressResponseModel
 from pcapi.serialization.utils import to_camel
@@ -221,12 +221,12 @@ class ListOffersOfferResponseModelsGetterDict(GetterDict):
                 return None
             offererAddress = GetOffererAddressResponseModel.from_orm(offerer_address)
             offererAddress.label = (
-                offererAddress.label if offererAddress.isNotLinkToVenue else self._obj.venue.common_name
+                offererAddress.label if not offererAddress.isLinkedToVenue else self._obj.venue.common_name
             )
-            return AddressResponseIsNotLinkToVenueModel(
+            return AddressResponseIsLinkedToVenueModel(
                 **retrieve_address_info_from_oa(offerer_address),
                 label=offererAddress.label,
-                isNotLinkToVenue=offererAddress.isNotLinkToVenue,
+                isLinkedToVenue=offererAddress.isLinkedToVenue,
             )
         return super().get(key, default)
 
@@ -247,7 +247,7 @@ class ListOffersOfferResponseModel(BaseModel):
     venue: base_serializers.ListOffersVenueResponseModel
     status: OfferStatus
     isShowcase: bool | None
-    address: AddressResponseIsNotLinkToVenueModel | None
+    address: AddressResponseIsLinkedToVenueModel | None
 
     class Config:
         json_encoders = {datetime.datetime: format_into_utc_date}
@@ -453,16 +453,16 @@ class IndividualOfferResponseGetterDict(GetterDict):
                 return None
             offererAddress = GetOffererAddressResponseModel.from_orm(offerer_address)
             offererAddress.label = offererAddress.label or self._obj.venue.common_name
-            return AddressResponseIsNotLinkToVenueModel(
+            return AddressResponseIsLinkedToVenueModel(
                 **retrieve_address_info_from_oa(offerer_address),
                 label=offererAddress.label,
-                isNotLinkToVenue=offererAddress.isNotLinkToVenue,
+                isLinkedToVenue=offererAddress.isLinkedToVenue,
             )
         return super().get(key, default)
 
 
 class GetIndividualOfferWithAddressResponseModel(GetIndividualOfferResponseModel):
-    address: AddressResponseIsNotLinkToVenueModel | None
+    address: AddressResponseIsLinkedToVenueModel | None
     hasPendingBookings: bool
 
     class Config:
