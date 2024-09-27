@@ -9,6 +9,7 @@ from operator import and_
 import typing
 
 from flask_sqlalchemy import BaseQuery
+import sqlalchemy as sa
 from sqlalchemy import Date
 from sqlalchemy import case
 from sqlalchemy import cast
@@ -336,6 +337,7 @@ def _create_export_query(offer_id: int, event_beginning_date: date) -> BaseQuery
         .join(Booking.stock)
         .join(Stock.offer)
     )
+    timezone_column: sa.orm.Mapped[typing.Any] | sa.sql.functions.Function = Venue.timezone
     if FeatureToggle.WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE.is_active():
         query = (
             query.outerjoin(Offer.offererAddress)
@@ -343,10 +345,12 @@ def _create_export_query(offer_id: int, event_beginning_date: date) -> BaseQuery
             .join(VenueOffererAddress, Venue.offererAddressId == VenueOffererAddress.id)
             .join(VenueAddress, VenueOffererAddress.addressId == VenueAddress.id)
         )
+        timezone_column = func.coalesce(Address.timezone, VenueAddress.timezone)
 
     query = (
         query.filter(
-            Stock.offerId == offer_id, field_to_venue_timezone(Stock.beginningDatetime) == event_beginning_date
+            Stock.offerId == offer_id,
+            field_to_venue_timezone(Stock.beginningDatetime, timezone_column) == event_beginning_date,
         )
         .order_by(Booking.id)
         .with_entities(*with_entities)
@@ -402,9 +406,10 @@ def get_export(
     return _serialize_csv_report(bookings_query)
 
 
-# FIXME (Gautier, 03-25-2022): also used in collective_booking. SHould we move it to core or some other place?
-def field_to_venue_timezone(field: InstrumentedAttribute) -> cast:
-    return cast(func.timezone(Venue.timezone, func.timezone("UTC", field)), Date)
+def field_to_venue_timezone(
+    field: InstrumentedAttribute, column: sa.orm.Mapped[typing.Any] | sa.sql.functions.Function
+) -> cast:
+    return cast(func.timezone(column, func.timezone("UTC", field)), Date)
 
 
 def serialize_offer_type_educational_or_individual(offer_is_educational: bool) -> str:
@@ -422,6 +427,8 @@ def _get_filtered_bookings_query(
     offerer_address_id: int | None = None,
     extra_joins: tuple[tuple[typing.Any, ...], ...] = (),
 ) -> BaseQuery:
+    VenueOffererAddress = aliased(OffererAddress)
+    VenueAddress = aliased(Address)
     bookings_query = (
         Booking.query.join(Booking.offerer)
         .join(Offerer.UserOfferers)
@@ -430,6 +437,15 @@ def _get_filtered_bookings_query(
         .join(Booking.externalBookings, isouter=True)
         .join(Booking.venue, isouter=True)
     )
+    timezone_column: sa.orm.Mapped[typing.Any] | sa.sql.functions.Function = Venue.timezone
+    if FeatureToggle.WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE.is_active():
+        bookings_query = (
+            bookings_query.outerjoin(Offer.offererAddress)
+            .outerjoin(OffererAddress.address)
+            .join(VenueOffererAddress, Venue.offererAddressId == VenueOffererAddress.id)
+            .join(VenueAddress, VenueOffererAddress.addressId == VenueAddress.id)
+        )
+        timezone_column = func.coalesce(Address.timezone, VenueAddress.timezone)
     for join_key, *join_conditions in extra_joins:
         if join_conditions:
             bookings_query = bookings_query.join(join_key, *join_conditions, isouter=True)
@@ -449,7 +465,7 @@ def _get_filtered_bookings_query(
         )
 
         bookings_query = bookings_query.filter(
-            field_to_venue_timezone(period_attribut_filter).between(*period, symmetric=True)
+            field_to_venue_timezone(period_attribut_filter, timezone_column).between(*period, symmetric=True)
         )
 
     if venue_id is not None:
@@ -462,7 +478,9 @@ def _get_filtered_bookings_query(
         bookings_query = bookings_query.filter(Offer.offererAddressId == offerer_address_id)
 
     if event_date:
-        bookings_query = bookings_query.filter(field_to_venue_timezone(Stock.beginningDatetime) == event_date)
+        bookings_query = bookings_query.filter(
+            field_to_venue_timezone(Stock.beginningDatetime, timezone_column) == event_date
+        )
     return bookings_query
 
 
