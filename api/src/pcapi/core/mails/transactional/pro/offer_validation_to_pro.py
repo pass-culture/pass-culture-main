@@ -21,6 +21,7 @@ def retrieve_data_for_offer_approval_email(
             "PUBLICATION_DATE": publication_date,
             "VENUE_NAME": offer.venue.publicName or offer.venue.name,
             "PC_PRO_OFFER_LINK": build_pc_pro_offer_link(offer),
+            "OFFER_ADDRESS": offer.fullAddress if isinstance(offer, Offer) else None,
         },
     )
 

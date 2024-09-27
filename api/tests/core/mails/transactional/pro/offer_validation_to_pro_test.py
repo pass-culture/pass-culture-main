@@ -19,10 +19,10 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 class SendinblueSendOfferValidationTest:
-    def test_get_validation_approval_correct_email_metadata(self):
+    @pytest.mark.parametrize("factory_class", [offers_factories.DigitalOfferFactory, offers_factories.OfferFactory])
+    def test_get_validation_approval_correct_email_metadata(self, factory_class):
         # Given
-        offer = offers_factories.OfferFactory(name="Ma petite offre", venue__name="Mon stade")
-
+        offer = factory_class(name="Ma petite offre", venue__name="Mon stade")
         # When
         new_offer_validation_email = retrieve_data_for_offer_approval_email(offer)
 
@@ -33,6 +33,7 @@ class SendinblueSendOfferValidationTest:
             "PUBLICATION_DATE": None,
             "VENUE_NAME": "Mon stade",
             "PC_PRO_OFFER_LINK": f"{PRO_URL}/offre/individuelle/{offer.id}/recapitulatif",
+            "OFFER_ADDRESS": offer.fullAddress,
         }
 
     def test_get_validation_approval_correct_email_metadata_when_future_offer(self):
@@ -51,6 +52,7 @@ class SendinblueSendOfferValidationTest:
             "PUBLICATION_DATE": publication_date.strftime("%d/%m/%Y"),
             "VENUE_NAME": "Mon stade",
             "PC_PRO_OFFER_LINK": f"{PRO_URL}/offre/individuelle/{offer.id}/recapitulatif",
+            "OFFER_ADDRESS": offer.fullAddress,
         }
 
     def test_send_offer_approval_email(
@@ -74,6 +76,7 @@ class SendinblueSendOfferValidationTest:
             "PUBLICATION_DATE": None,
             "PC_PRO_OFFER_LINK": f"{PRO_URL}/offre/individuelle/{offer.id}/recapitulatif",
             "VENUE_NAME": venue.name,
+            "OFFER_ADDRESS": offer.fullAddress,
         }
 
     def test_get_validation_rejection_correct_email_metadata(self):
