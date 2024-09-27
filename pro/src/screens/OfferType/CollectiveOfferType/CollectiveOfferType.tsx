@@ -1,4 +1,5 @@
 import { useFormikContext } from 'formik'
+import { useSelector } from 'react-redux'
 import { useLocation } from 'react-router-dom'
 
 import { GetOffererResponseModel } from 'apiClient/v1'
@@ -14,6 +15,7 @@ import strokeBookedIcon from 'icons/stroke-booked.svg'
 import duplicateOfferIcon from 'icons/stroke-duplicate-offer.svg'
 import strokeNewOfferIcon from 'icons/stroke-new-offer.svg'
 import strokeTemplateOfferIcon from 'icons/stroke-template-offer.svg'
+import { selectCurrentOffererId } from 'store/user/selectors'
 import { RadioButtonWithImage } from 'ui-kit/RadioButtonWithImage/RadioButtonWithImage'
 import { getLastDmsApplicationForOfferer } from 'utils/getLastCollectiveDmsApplication'
 
@@ -29,7 +31,7 @@ export const CollectiveOfferType = ({ offerer }: CollectiveOfferTypeProps) => {
   const { values, handleChange } = useFormikContext<OfferTypeFormValues>()
 
   const queryParams = new URLSearchParams(location.search)
-  const queryOffererId = queryParams.get('structure')
+  const queryOffererId = useSelector(selectCurrentOffererId)
   const queryVenueId = queryParams.get('lieu')
 
   const lastDmsApplication = getLastDmsApplicationForOfferer(
