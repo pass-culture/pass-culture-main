@@ -10,7 +10,6 @@ import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 from sqlalchemy.sql.expression import extract
 
-from pcapi.core.bookings.repository import field_to_venue_timezone
 import pcapi.core.categories.subcategories_v2 as subcategories
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import models as educational_models
@@ -18,6 +17,7 @@ from pcapi.core.finance import models as finance_models
 from pcapi.core.geography import models as geography_models
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import models as offerers_models
+from pcapi.core.offerers.models import Venue
 from pcapi.core.offers import repository as offers_repository
 from pcapi.core.providers import models as providers_models
 from pcapi.core.users.models import User
@@ -1363,3 +1363,7 @@ def has_collective_offers_for_program_and_venue_ids(program_name: str, venue_ids
     )
 
     return db.session.query(query).scalar()
+
+
+def field_to_venue_timezone(field: sa_orm.InstrumentedAttribute) -> sa.cast:
+    return sa.cast(sa.func.timezone(Venue.timezone, sa.func.timezone("UTC", field)), sa.Date)
