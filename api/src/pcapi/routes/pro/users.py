@@ -6,6 +6,7 @@ from flask_login import current_user
 from flask_login import login_required
 from flask_login import login_user
 from flask_login import logout_user
+from sqlalchemy.exc import IntegrityError
 from werkzeug import Response
 
 from pcapi import settings
@@ -237,7 +238,20 @@ def signout() -> None:
 @login_required
 @spectree_serialize(on_success_status=204, on_error_statuses=[400], api=blueprint.pro_private_schema)
 def post_pro_flags(body: users_serializers.ProFlagsQueryModel) -> None:
-    users_api.save_flags(user=current_user, flags=body.dict())
+    user = current_user._get_current_object()
+    try:
+        users_api.save_flags(user=user, flags=body.dict())
+    except IntegrityError as e:
+        # FIXME ogeber 27.09.2024 this log is here to investigate an issue of updating the
+        # user's pro flags, which used an empty user id, using the _get_current_object() is
+        # suspected to resolve this problem (hopefully)
+        # If there is no more errors using this method in the future, we can remove this try/except
+        logger.exception(
+            "Error during updating pro flags for user %d (current user object is %d) with the following error %s",
+            user,
+            current_user,
+            e,
+        )
 
 
 @blueprint.pro_private_api.route("/users/cookies", methods=["POST"])
