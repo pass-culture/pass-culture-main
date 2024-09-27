@@ -45,6 +45,7 @@ class SendEventOfferPosponedConfirmationToProEmailTest:
             "VENUE_NAME": venue.name,
             "EVENT_DATE": "mardi 1 mars 2022",
             "BOOKING_COUNT": 3,
+            "OFFER_ADDRESS": offer.fullAddress,
         }
 
     def test_get_email_metadata(self):
@@ -66,4 +67,5 @@ class SendEventOfferPosponedConfirmationToProEmailTest:
             "VENUE_NAME": venue.name,
             "EVENT_DATE": "mercredi 2 mars 2022",
             "BOOKING_COUNT": 3,
+            "OFFER_ADDRESS": offer.fullAddress,
         }
