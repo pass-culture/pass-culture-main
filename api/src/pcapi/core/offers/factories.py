@@ -248,6 +248,7 @@ class DigitalOfferFactory(OfferFactory):
     )
     url = factory.Sequence("http://example.com/offer/{}".format)
     venue = factory.SubFactory(offerers_factories.VirtualVenueFactory)
+    offererAddress = None
 
 
 class PriceCategoryLabelFactory(BaseFactory):
