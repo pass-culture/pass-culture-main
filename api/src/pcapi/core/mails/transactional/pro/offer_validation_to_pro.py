@@ -36,6 +36,7 @@ def retrieve_data_for_offer_rejection_email(
             "VENUE_NAME": offer.venue.publicName or offer.venue.name,
             "PC_PRO_OFFER_LINK": build_pc_pro_offer_link(offer),
             "IS_COLLECTIVE_OFFER": not isinstance(offer, Offer),
+            "OFFER_ADDRESS": offer.fullAddress if isinstance(offer, Offer) else None,
         },
     )
 
