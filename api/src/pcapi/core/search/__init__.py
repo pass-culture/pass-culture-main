@@ -43,6 +43,8 @@ class IndexationReason(enum.Enum):
     OFFER_MANUAL_REINDEXATION = "offer-manual-reindexation"
     OFFER_REINDEXATION = "offer-reindexation"  # reason for the reindexation of venues
     OFFER_UPDATE = "offer-update"
+    OFFERER_ACTIVATION = "offerer-activation"
+    OFFERER_DEACTIVATION = "offerer-deactivation"
     OFFERER_VALIDATION = "offerer-validation"
     PRODUCT_DEACTIVATION = "product-deactivation"
     PRODUCT_REJECTION = "product-rejection"

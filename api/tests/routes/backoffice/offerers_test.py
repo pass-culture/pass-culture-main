@@ -1,12 +1,14 @@
 import datetime
 from operator import attrgetter
 import re
+from unittest.mock import patch
 
 from flask import url_for
 import pytest
 
 from pcapi import settings
 from pcapi.connectors.entreprise.backends.testing import TestingBackend
+from pcapi.core import search
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.educational import factories as educational_factories
@@ -25,6 +27,7 @@ from pcapi.core.permissions import models as perm_models
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
+from pcapi.core.users import testing
 from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.routes.backoffice.filters import format_date
@@ -327,7 +330,95 @@ class GetOffererTest(GetEndpointHelper):
             return url_for("backoffice_web.offerer.get", offerer_id=offerer.id)
 
 
-class SuspendOffererTest(PostEndpointHelper):
+class ActivateOrDeactivateOffererHelper(PostEndpointHelper):
+    offerer_initial_status = ValidationStatus.VALIDATED
+    offerer_initially_active = True
+    indexation_reason = NotImplemented
+    default_form_data = {"comment": "Test"}
+
+    def test_should_update_sendinblue_contacts(self, authenticated_client):
+        offerer = offerers_factories.OffererFactory(
+            validationStatus=self.offerer_initial_status, isActive=self.offerer_initially_active
+        )
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+        users_offerer = offerers_factories.UserOffererFactory.create_batch(2, offerer=offerer)
+
+        response = self.post_to_endpoint(authenticated_client, offerer_id=offerer.id, form=self.default_form_data)
+        assert response.status_code == 303
+
+        assert {sib_request["email"] for sib_request in testing.sendinblue_requests} == {
+            venue.bookingEmail,
+            users_offerer[0].user.email,
+            users_offerer[1].user.email,
+        }
+
+    def test_should_update_zendesk_sell(self, authenticated_client):
+        offerer = offerers_factories.OffererFactory(
+            validationStatus=self.offerer_initial_status, isActive=self.offerer_initially_active
+        )
+        offerers_factories.VenueFactory(managingOfferer=offerer)
+
+        response = self.post_to_endpoint(authenticated_client, offerer_id=offerer.id, form=self.default_form_data)
+        assert response.status_code == 303
+
+        assert testing.zendesk_sell_requests == [
+            {
+                "action": "update",
+                "id": offerer.id,
+                "type": "Offerer",
+                "zendesk_id": "1111111",
+            }
+        ]
+
+    @patch("pcapi.core.search.async_index_collective_offer_template_ids")
+    @patch("pcapi.core.search.async_index_offers_of_venue_ids")
+    @patch("pcapi.core.search.async_index_venue_ids")
+    def test_should_reindex_offers(
+        self,
+        mock_async_index_venue_ids,
+        mock_async_index_offers_of_venue_ids,
+        mock_async_index_collective_offer_template_ids,
+        authenticated_client,
+    ):
+        offerer = offerers_factories.OffererFactory(
+            validationStatus=self.offerer_initial_status, isActive=self.offerer_initially_active
+        )
+        venues = offerers_factories.VenueFactory.create_batch(2, managingOfferer=offerer)
+        collective_offer_templates = []
+        for venue in venues:
+            offers_factories.OfferFactory(venue=venue)
+            collective_offer_templates += educational_factories.CollectiveOfferTemplateFactory.create_batch(
+                2, venue=venue
+            )
+
+        response = self.post_to_endpoint(authenticated_client, offerer_id=offerer.id, form=self.default_form_data)
+        assert response.status_code == 303
+
+        mock_async_index_venue_ids.assert_called_once_with(
+            {venue.id for venue in venues},
+            reason=self.indexation_reason,
+        )
+        mock_async_index_offers_of_venue_ids.assert_called_once_with(
+            {venue.id for venue in venues},
+            reason=self.indexation_reason,
+        )
+        mock_async_index_collective_offer_template_ids.assert_called_once_with(
+            {collective_offer_template.id for collective_offer_template in collective_offer_templates},
+            reason=self.indexation_reason,
+        )
+
+
+class ActivateOffererHelper(ActivateOrDeactivateOffererHelper):
+    offerer_initially_active = False
+    indexation_reason = search.IndexationReason.OFFERER_ACTIVATION
+
+
+class DeactivateOffererHelper(ActivateOrDeactivateOffererHelper):
+    offerer_initially_active = True
+    indexation_reason = search.IndexationReason.OFFERER_DEACTIVATION
+
+
+class SuspendOffererTest(DeactivateOffererHelper):
     endpoint = "backoffice_web.offerer.suspend_offerer"
     endpoint_kwargs = {"offerer_id": 1}
     needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
@@ -373,7 +464,7 @@ class SuspendOffererTest(PostEndpointHelper):
         assert history_models.ActionHistory.query.count() == 0
 
 
-class UnsuspendOffererTest(PostEndpointHelper):
+class UnsuspendOffererTest(ActivateOffererHelper):
     endpoint = "backoffice_web.offerer.unsuspend_offerer"
     endpoint_kwargs = {"offerer_id": 1}
     needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
@@ -2415,10 +2506,12 @@ class ListOfferersToValidateTest(GetEndpointHelper):
             assert html_parser.count_table_rows(response.data) == 0
 
 
-class ValidateOffererTest(PostEndpointHelper):
+class ValidateOffererTest(ActivateOffererHelper):
     endpoint = "backoffice_web.validation.validate_offerer"
     endpoint_kwargs = {"offerer_id": 1}
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
+    offerer_initial_status = ValidationStatus.NEW
+    indexation_reason = search.IndexationReason.OFFERER_VALIDATION
 
     def test_validate_offerer(self, legit_user, authenticated_client):
         user_offerer = offerers_factories.UserNotValidatedOffererFactory()
@@ -2485,10 +2578,12 @@ class GetRejectOffererFormTest(GetEndpointHelper):
             assert response.status_code == 200
 
 
-class RejectOffererTest(PostEndpointHelper):
+class RejectOffererTest(DeactivateOffererHelper):
     endpoint = "backoffice_web.validation.reject_offerer"
     endpoint_kwargs = {"offerer_id": 1}
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
+    default_form_data = {"rejection_reason": "ELIGIBILITY"}
+    offerer_initial_status = ValidationStatus.VALIDATED
 
     def test_reject_offerer(self, legit_user, authenticated_client):
         user = users_factories.NonAttachedProFactory()
@@ -2607,7 +2702,7 @@ class GetOffererPendingFormTest(GetEndpointHelper):
             assert response.status_code == 200
 
 
-class SetOffererPendingTest(PostEndpointHelper):
+class SetOffererPendingTest(DeactivateOffererHelper):
     endpoint = "backoffice_web.validation.set_offerer_pending"
     endpoint_kwargs = {"offerer_id": 1}
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
