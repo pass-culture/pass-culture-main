@@ -1221,24 +1221,7 @@ def validate_offerer(offerer: models.Offerer, author_user: users_models.User) ->
 
     db.session.flush()
 
-    managed_venues = offerer.managedVenues
-    on_commit(
-        functools.partial(
-            search.async_index_offers_of_venue_ids,
-            [venue.id for venue in managed_venues],
-            reason=search.IndexationReason.OFFERER_VALIDATION,
-        ),
-    )
-
-    for applicant in applicants:
-        on_commit(
-            functools.partial(
-                external_attributes_api.update_external_pro,
-                applicant.email,
-            ),
-        )
-
-    on_commit(functools.partial(zendesk_sell.update_offerer, offerer))
+    _update_external_offerer(offerer, search.IndexationReason.OFFERER_VALIDATION)
 
     if applicants:
         on_commit(
@@ -1247,7 +1230,7 @@ def validate_offerer(offerer: models.Offerer, author_user: users_models.User) ->
                 offerer,
             ),
         )
-    for managed_venue in managed_venues:
+    for managed_venue in offerer.managedVenues:
         if managed_venue.adageId:
             emails = offerers_repository.get_emails_by_venue(managed_venue)
             on_commit(
@@ -1308,13 +1291,7 @@ def reject_offerer(
     db.session.flush()
 
     if was_validated:
-        for applicant in applicants:
-            on_commit(
-                functools.partial(
-                    external_attributes_api.update_external_pro,
-                    applicant.email,
-                ),
-            )
+        _update_external_offerer(offerer, search.IndexationReason.OFFERER_DEACTIVATION)
 
 
 def set_offerer_pending(
@@ -1324,6 +1301,7 @@ def set_offerer_pending(
     tags_to_add: typing.Iterable[offerers_models.OffererTag] | None = None,
     tags_to_remove: typing.Iterable[offerers_models.OffererTag] | None = None,
 ) -> None:
+    was_validated = offerer.isValidated
     offerer.validationStatus = ValidationStatus.PENDING
     offerer.isActive = True
 
@@ -1356,6 +1334,9 @@ def set_offerer_pending(
     )
 
     db.session.flush()
+
+    if was_validated:  # in case it was validated by mistake, then moved to PENDING state again
+        _update_external_offerer(offerer, reason=search.IndexationReason.OFFERER_DEACTIVATION)
 
 
 def add_comment_to_offerer(offerer: offerers_models.Offerer, author_user: users_models.User, comment: str) -> None:
@@ -2056,7 +2037,7 @@ def suspend_offerer(offerer: models.Offerer, actor: users_models.User, comment: 
     history_api.add_action(history_models.ActionType.OFFERER_SUSPENDED, author=actor, offerer=offerer, comment=comment)
     db.session.flush()
 
-    on_commit(functools.partial(_update_external_offerer, offerer))
+    _update_external_offerer(offerer, reason=search.IndexationReason.OFFERER_DEACTIVATION)
 
 
 def unsuspend_offerer(offerer: models.Offerer, actor: users_models.User, comment: str | None) -> None:
@@ -2069,14 +2050,34 @@ def unsuspend_offerer(offerer: models.Offerer, actor: users_models.User, comment
         history_models.ActionType.OFFERER_UNSUSPENDED, author=actor, offerer=offerer, comment=comment
     )
     db.session.flush()
-    on_commit(functools.partial(_update_external_offerer, offerer))
+
+    _update_external_offerer(offerer, search.IndexationReason.OFFERER_ACTIVATION)
 
 
-def _update_external_offerer(offerer: models.Offerer) -> None:
+def _update_external_offerer(offerer: models.Offerer, reason: search.IndexationReason) -> None:
     for email in offerers_repository.get_emails_by_offerer(offerer):
-        external_attributes_api.update_external_pro(email)
+        external_attributes_api.update_external_pro(email)  # uses on_commit
 
-    zendesk_sell.update_offerer(offerer)
+    on_commit(functools.partial(zendesk_sell.update_offerer, offerer))
+
+    venue_ids = {venue.id for venue in offerer.managedVenues}
+    if not venue_ids:
+        return
+
+    # _reindex_* unindexes venues and offers which are not eligible for search (including offerer no longer active)
+    on_commit(functools.partial(search.async_index_venue_ids, venue_ids, reason=reason))
+    on_commit(functools.partial(search.async_index_offers_of_venue_ids, venue_ids, reason=reason))
+
+    packed_collective_ids = db.session.query(educational_models.CollectiveOfferTemplate.id).filter(
+        educational_models.CollectiveOfferTemplate.venueId.in_(venue_ids)
+    )
+    on_commit(
+        functools.partial(
+            search.async_index_collective_offer_template_ids,
+            {i for i, in packed_collective_ids},
+            reason=reason,
+        )
+    )
 
 
 def delete_offerer(offerer_id: int) -> None:
