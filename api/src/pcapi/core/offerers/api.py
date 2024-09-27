@@ -2678,10 +2678,13 @@ def find_missing_match_at_acceslibre(batch_size: int, dry_run: bool, start_from_
         batch_start = i * batch_size
         batch_end = (i + 1) * batch_size
         for venue in venues_list[batch_start:batch_end]:
-            set_accessibility_provider_id(venue)  # try to find a match at acceslibre
-            if venue.accessibilityProvider:
-                set_accessibility_infos_from_provider_id(venue)  # if match is found, fetch and write data
-
+            try:
+                set_accessibility_provider_id(venue)  # try to find a match at acceslibre
+                if venue.accessibilityProvider:
+                    set_accessibility_infos_from_provider_id(venue)  # if match is found, fetch and write data
+            except accessibility_provider.AccesLibreApiException as e:
+                logger.error("Acceslibre API Error %s when trying to match venue %d", e, venue.id)
+                continue
         if dry_run:
             count_after_match = count_permanent_venues_with_accessibility_provider()
         else:
@@ -2692,7 +2695,7 @@ def find_missing_match_at_acceslibre(batch_size: int, dry_run: bool, start_from_
                 db.session.rollback()
             count_after_match = count_permanent_venues_with_accessibility_provider()
 
-    logger.info("Matching complete, %s new match found", count_before_match - count_after_match)
+    logger.info("Matching complete, %s new match found", count_after_match - count_before_match)
 
 
 def update_offerer_address_label(offerer_address_id: int, new_label: str) -> None:
