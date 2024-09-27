@@ -106,7 +106,7 @@ export const DetailsScreen = ({ venues }: DetailsScreenProps): JSX.Element => {
       // DetailsScreen can be edited at all
       const isProviderOffer = !!offer?.lastProvider
       const shouldNotPatchData =
-        isProviderOffer || (!isSearchByEanEnabled && !!offer?.productId)
+        isProviderOffer || (isSearchByEanEnabled && !!offer?.productId)
       let receivedOfferId = offer?.id
       let response
       if (!offer) {
