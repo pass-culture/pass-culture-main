@@ -14,7 +14,8 @@ on:
         type: string
       infra-image-tag:
         # Second docker image tag for infra purpose
-        required: true
+        required: false
+        default: "develop"
         type: string
       image:
         required: true
@@ -64,9 +65,7 @@ jobs:
         with:
           context: api
           target: ${{ inputs.image }}
-          tags:
-            ${{ steps.compute-image-name.outputs.image_name }}
-            ${{ inputs.infra-image-tag }}
+          tags: ${{ steps.compute-image-name.outputs.image_name }}, ${{ env.registry }}/${{ inputs.image }}:${{ inputs.infra-image-tag }}
 
       - name: "Store artifact"
         run: |

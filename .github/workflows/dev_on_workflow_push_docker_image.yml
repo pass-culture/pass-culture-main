@@ -72,10 +72,11 @@ jobs:
         run: |
           docker load --input ${{ runner.temp }}/${{ inputs.image }}-${{ inputs.checksum-tag }}.tar
           docker image tag ${{ steps.compute-image-name.outputs.image_name }} "${{ env.registry }}/${{ inputs.image }}:${{ inputs.commit-hash }}"
+          docker image tag ${{ steps.compute-image-name.outputs.image_name }} "${{ env.registry }}/${{ inputs.image }}:develop"
           if [ ${{ inputs.tag-latest }} == 'true' ]; then
             docker image tag ${{ steps.compute-image-name.outputs.image_name }} "${{ env.registry }}/${{ inputs.image }}:latest"
           fi
-          docker image push --all-tags ${{ env.registry }}/${{ inputs.image }} 
+          docker image push --all-tags ${{ env.registry }}/${{ inputs.image }}
       - name: "Get the image digest"
         id: get_digest
         run: echo "digest=$(docker inspect --format='{{index .RepoDigests 0}}' ${{ steps.compute-image-name.outputs.image_name }})" >> $GITHUB_OUTPUT
