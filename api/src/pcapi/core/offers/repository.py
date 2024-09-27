@@ -1074,6 +1074,15 @@ def get_offer_and_extradata(offer_id: int) -> models.Offer | None:
         .options(sa_orm.joinedload(models.Offer.priceCategories).joinedload(models.PriceCategory.priceCategoryLabel))
         .options(sa_orm.with_expression(models.Offer.isNonFreeOffer, is_non_free_offer_subquery(offer_id)))
         .options(sa_orm.with_expression(models.Offer.bookingsCount, get_bookings_count_subquery(offer_id)))
+        .options(
+            sa_orm.joinedload(models.Offer.offererAddress)
+            .load_only(
+                offerers_models.OffererAddress.id,
+                offerers_models.OffererAddress.label,
+                offerers_models.OffererAddress.addressId,
+            )
+            .joinedload(offerers_models.OffererAddress.address),
+        )
         .one_or_none()
     )
 

@@ -7,6 +7,7 @@ from pcapi.core.categories import subcategories_v2 as subcategories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
+from pcapi.core.testing import assert_num_queries
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.utils.date import local_datetime_to_default_timezone
 
@@ -30,6 +31,20 @@ class Returns404Test:
 @patch("pcapi.core.search.async_index_offer_ids")
 @pytest.mark.usefixtures("db_session")
 class Returns200Test:
+    num_queries = 1  # 1 session
+    num_queries += 1  # 2 user
+    num_queries += 1  # 3 offer
+    num_queries += 1  # 4 user_offerer
+    num_queries += 1  # 5 offer+stock+offererAddress+Address+mediaton
+    num_queries += 1  # 6 available stock (date comparison)
+    num_queries += 1  # 7 venue
+    num_queries += 1  # 8 validation status
+    num_queries += 1  # 9 offerer_confidence
+    num_queries += 1  # 10 offerer_confidenc
+    num_queries += 1  # 11 offer_validation_rule + offer_validation_sub_rule
+    num_queries += 1  # 12 future_offer
+    num_queries += 1  # 13 update offer
+
     @patch("pcapi.core.mails.transactional.send_first_venue_approved_offer_email_to_pro")
     def test_patch_publish_offer(
         self,
@@ -44,7 +59,9 @@ class Returns200Test:
         )
 
         client = client.with_session_auth("user@example.com")
-        response = client.patch("/offers/publish", json={"id": stock.offerId})
+        offer_id = stock.offerId
+        with assert_num_queries(self.num_queries):
+            response = client.patch("/offers/publish", json={"id": offer_id})
 
         assert response.status_code == 200
         content = response.json
@@ -77,13 +94,16 @@ class Returns200Test:
 
         client = client.with_session_auth("user@example.com")
         publication_date = datetime.datetime.utcnow().replace(minute=0, second=0) + datetime.timedelta(days=30)
-        response = client.patch(
-            "/offers/publish",
-            json={
-                "id": stock.offerId,
-                "publicationDate": publication_date.isoformat(),
-            },
-        )
+        offer_id = stock.offerId
+        # +1 insert into future_offer
+        with assert_num_queries(self.num_queries + 1):
+            response = client.patch(
+                "/offers/publish",
+                json={
+                    "id": offer_id,
+                    "publicationDate": publication_date.isoformat(),
+                },
+            )
 
         assert response.status_code == 200
         content = response.json
@@ -118,13 +138,16 @@ class Returns200Test:
 
         client = client.with_session_auth("user@example.com")
         publication_date = datetime.datetime.utcnow().replace(minute=0, second=0) + datetime.timedelta(days=30)
-        response = client.patch(
-            "/offers/publish",
-            json={
-                "id": stock.offerId,
-                "publicationDate": publication_date.isoformat(),
-            },
-        )
+        offer_id = stock.offerId
+        # +1 insert into future_offer
+        with assert_num_queries(self.num_queries + 1):
+            response = client.patch(
+                "/offers/publish",
+                json={
+                    "id": offer_id,
+                    "publicationDate": publication_date.isoformat(),
+                },
+            )
 
         assert response.status_code == 200
         offer = offers_models.Offer.query.get(stock.offer.id)
