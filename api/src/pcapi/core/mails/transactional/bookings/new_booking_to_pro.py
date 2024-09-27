@@ -104,6 +104,7 @@ def get_new_booking_to_pro_email_data(
                 else booking_constants.BOOKINGS_AUTO_EXPIRY_DELAY.days
             ),
             "FEATURES": ", ".join(booking.stock.features),
+            "OFFER_ADDRESS": offer.fullAddress,
         },
     )
 

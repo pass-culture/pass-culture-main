@@ -64,6 +64,7 @@ def get_expected_base_email_data(booking, **overrides):
         "VENUE_NAME": "Lieu de l'offreur",
         "WITHDRAWAL_PERIOD": 30,
         "FEATURES": "",
+        "OFFER_ADDRESS": booking.stock.offer.fullAddress,
     }
     email_data_params.update(overrides)
     return email_data_params
