@@ -104,20 +104,15 @@ jobs:
           channel-id: "CPZ7U1CNP"
           payload: |
             {
-              "attachments": [
-                {
-                  "mrkdwn_in": ["text"],
-                  "color": "#A30002",
-                  "author_name": "${{github.actor}}",
-                  "author_link": "https://github.com/${{github.actor}}",
-                  "author_icon": "https://github.com/${{github.actor}}.png",
-                  "title": "Pro tests",
-                  "title_link": "https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}",
-                  "text": "Les tests unitaires de pro échouent sur `master` :boom:"
-                }
-              ],
-              "unfurl_links": false,
-              "unfurl_media": false
+                "blocks": [
+                    {
+                        "type": "section",
+                        "text": {
+                            "type": "mrkdwn",
+                            "text": ":boom: [PRO] Les <https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}|tests unitaires> de la branche `master` ont échoué suite au merge par ${{github.actor}}"
+                        }
+                    }
+                ]
             }
         env:
           SLACK_BOT_TOKEN: ${{ steps.secrets.outputs.SLACK_BOT_TOKEN }}

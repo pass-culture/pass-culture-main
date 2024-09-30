@@ -92,7 +92,7 @@ jobs:
         with:
           image: ${{ steps.compute-image-name.outputs.image_name }}
           run: mypy src
-      - name: "Slack Notification"
+      - name: "Post failure message to slack"
         if: ${{ failure() && github.ref == 'refs/heads/master'  }}
         uses: slackapi/slack-github-action@v1.27.0
         with:
@@ -100,20 +100,15 @@ jobs:
           channel-id: "CPZ7U1CNP"
           payload: |
             {
-            "attachments": [
-              {
-                "mrkdwn_in": ["text"],
-                "color": "#A30002",
-                "author_name": "${{github.actor}}",
-                "author_link": "https://github.com/${{github.actor}}",
-                "author_icon": "https://github.com/${{github.actor}}.png",
-                "title": "Api tests",
-                "title_link": "https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}",
-                "text": "Les tests quality-checks échouent sur `master` :boom:"
-              }
-            ],
-            "unfurl_links": false,
-            "unfurl_media": false
+                "blocks": [
+                    {
+                        "type": "section",
+                        "text": {
+                            "type": "mrkdwn",
+                            "text": ":boom: [API] Les vérifications de qualité du code échouent sur `master` suite au merge par ${{github.actor}}"
+                        }
+                    }
+                ]
             }
         env:
           SLACK_BOT_TOKEN: ${{ steps.secrets.outputs.SLACK_BOT_TOKEN }}
@@ -174,7 +169,7 @@ jobs:
         with:
           image: ${{ steps.compute-image-name.outputs.image_name }}
           run: pylint src tests --jobs=15
-      - name: "Slack Notification"
+      - name: "Post failure message to Slack"
         if: ${{ failure() && github.ref == 'refs/heads/master'  }}
         uses: slackapi/slack-github-action@v1.27.0
         with:
@@ -182,20 +177,15 @@ jobs:
           channel-id: "CPZ7U1CNP"
           payload: |
             {
-            "attachments": [
-              {
-                "mrkdwn_in": ["text"],
-                "color": "#A30002",
-                "author_name": "${{github.actor}}",
-                "author_link": "https://github.com/${{github.actor}}",
-                "author_icon": "https://github.com/${{github.actor}}.png",
-                "title": "Api tests",
-                "title_link": "https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}",
-                "text": "Les tests pylint-checks échouent sur `master` :boom:"
-              }
-            ],
-            "unfurl_links": false,
-            "unfurl_media": false
+                "blocks": [
+                    {
+                        "type": "section",
+                        "text": {
+                            "type": "mrkdwn",
+                            "text": ":boom: [API] La validation pylint échoue sur `master` suite au merge par ${{github.actor}}"
+                        }
+                    }
+                ]
             }
         env:
           SLACK_BOT_TOKEN: ${{ steps.secrets.outputs.SLACK_BOT_TOKEN }}
@@ -375,20 +365,15 @@ jobs:
           channel-id: "CPZ7U1CNP"
           payload: |
             {
-            "attachments": [
-              {
-                "mrkdwn_in": ["text"],
-                "color": "#A30002",
-                "author_name": "${{github.actor}}",
-                "author_link": "https://github.com/${{github.actor}}",
-                "author_icon": "https://github.com/${{github.actor}}.png",
-                "title": "Api tests",
-                "title_link": "https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}",
-                "text": "Les tests database échouent sur `master` :boom:"
-              }
-            ],
-            "unfurl_links": false,
-            "unfurl_media": false
+                "blocks": [
+                    {
+                        "type": "section",
+                        "text": {
+                            "type": "mrkdwn",
+                            "text": ":boom: [API] La vérification des migrations échoue sur `master` suite au merge par ${{github.actor}}"
+                        }
+                    }
+                ]
             }
         env:
           SLACK_BOT_TOKEN: ${{ steps.secrets.outputs.SLACK_BOT_TOKEN }}
@@ -516,7 +501,7 @@ jobs:
           report_paths: "${{ runner.workspace }}/pass-culture-main/api/tests/junit.xml"
           check_name: "Pytest Report"
           fail_on_failure: true
-      - name: "Slack Notification"
+      - name: "Post failure message to Slack"
         if: ${{ failure() && github.ref == 'refs/heads/master'  }}
         uses: slackapi/slack-github-action@v1.27.0
         with:
@@ -524,20 +509,15 @@ jobs:
           channel-id: "CPZ7U1CNP"
           payload: |
             {
-              "attachments": [
-                {
-                  "mrkdwn_in": ["text"],
-                  "color": "#A30002",
-                  "author_name": "${{github.actor}}",
-                  "author_link": "https://github.com/${{github.actor}}",
-                  "author_icon": "https://github.com/${{github.actor}}.png",
-                  "title": "Api tests",
-                  "title_link": "https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}",
-                  "text": "Les tests pytest échouent sur `master` :boom:"
-                }
-              ],
-              "unfurl_links": false,
-              "unfurl_media": false
+                "blocks": [
+                    {
+                        "type": "section",
+                        "text": {
+                            "type": "mrkdwn",
+                            "text": ":boom: [API] Les tests unitaires échouent sur `master` suite au merge par ${{github.actor}}"
+                        }
+                    }
+                ]
             }
         env:
           SLACK_BOT_TOKEN: ${{ steps.secrets.outputs.SLACK_BOT_TOKEN }}
