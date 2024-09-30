@@ -15,6 +15,7 @@ const renderTabs = (nav?: string) => {
         path="/offres"
         element={
           <Tabs
+            selectedKey="individual"
             tabs={[
               {
                 label: 'Offres individuelles',
@@ -44,7 +45,7 @@ describe('src | components | Tabs', () => {
   it('should render tabs', () => {
     renderTabs()
     expect(
-      screen.getByRole('link', {
+      screen.getByRole('tab', {
         name: 'Offres individuelles',
       })
     ).toHaveAttribute('href', '/offres')
@@ -64,20 +65,26 @@ describe('src | components | Tabs', () => {
       renderTabs('Offres individuelles et collectives')
 
       expect(
-        screen.getByRole('link', {
+        screen.getByRole('tab', {
           name: 'Offres individuelles',
         })
-      ).toHaveAttribute('aria-current', 'page')
+      ).toHaveAttribute('aria-selected', 'true')
+
+      expect(
+        screen.getByRole('tab', {
+          name: 'Offres individuelles',
+        })
+      ).toHaveAttribute('data-state', 'active')
     })
 
     it('should not indicate current page', () => {
       renderTabs('Offres individuelles et collectives')
 
       expect(
-        screen.getByRole('link', {
+        screen.getByRole('tab', {
           name: 'Offres collectives',
         })
-      ).not.toHaveAttribute('aria-current', 'page')
+      ).not.toHaveAttribute('aria-selected', 'true')
     })
   })
 })
