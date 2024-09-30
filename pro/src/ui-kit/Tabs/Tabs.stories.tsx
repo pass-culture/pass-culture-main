@@ -18,33 +18,13 @@ export const Default: StoryObj<typeof Tabs> = {
     tabs: [
       {
         label: 'Offres individuelles',
-        url: 'offres/indiv',
+        url: '#',
         key: 'individual',
         icon: strokeUserIcon,
       },
       {
         label: 'Offres collectives',
-        url: 'offres/collectives',
-        key: 'collective',
-        icon: strokeLibraryIcon,
-      },
-    ],
-  },
-}
-
-export const DefaultWithButton: StoryObj<typeof Tabs> = {
-  args: {
-    selectedKey: 'individual',
-    tabs: [
-      {
-        label: 'Offres individuelles',
-        onClick: () => {},
-        key: 'individual',
-        icon: strokeUserIcon,
-      },
-      {
-        label: 'Offres collectives',
-        onClick: () => {},
+        url: '#',
         key: 'collective',
         icon: strokeLibraryIcon,
       },

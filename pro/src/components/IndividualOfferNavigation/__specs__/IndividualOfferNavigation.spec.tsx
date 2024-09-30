@@ -281,7 +281,7 @@ describe('test IndividualOfferNavigation', () => {
 
       expect(screen.getByText('Informations screen')).toBeInTheDocument()
       expect(
-        screen.getByRole('link', { name: 'Dates & Capacités' })
+        screen.getByRole('tab', { name: 'Dates & Capacités' })
       ).toBeInTheDocument()
     })
 

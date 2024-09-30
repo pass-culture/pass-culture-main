@@ -53,12 +53,8 @@
 
     &.is-selected {
       border-bottom: rem.torem(2px) solid var(--color-primary);
-
-      .tabs-tab-link,
-      .tabs-tab-button {
-        color: var(--color-primary);
-        text-decoration: none;
-      }
+      color: var(--color-primary);
+      text-decoration: none;
 
       .tabs-tab-icon {
         fill: var(--color-primary);

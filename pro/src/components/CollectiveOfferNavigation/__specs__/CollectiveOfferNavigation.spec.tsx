@@ -223,19 +223,22 @@ describe('CollectiveOfferNavigation', () => {
     props.isCreatingOffer = false
     renderCollectiveOfferNavigation(props)
 
-    const linkItems = await screen.findAllByRole('link')
+    const links = await screen.findAllByRole('link')
+    const tabs = await screen.findAllByRole('tab')
 
-    expect(linkItems).toHaveLength(4)
-    expect(linkItems[0].getAttribute('href')).toBe(
+    expect(links).toHaveLength(1)
+    expect(links[0].getAttribute('href')).toBe(
       `/offre/${offerId}/collectif/apercu`
     )
-    expect(linkItems[1].getAttribute('href')).toBe(
+    expect(tabs).toHaveLength(3)
+
+    expect(tabs[0].getAttribute('href')).toBe(
       `/offre/${offerId}/collectif/edition`
     )
-    expect(linkItems[2].getAttribute('href')).toBe(
+    expect(tabs[1].getAttribute('href')).toBe(
       `/offre/${offerId}/collectif/stocks/edition`
     )
-    expect(linkItems[3].getAttribute('href')).toBe(
+    expect(tabs[2].getAttribute('href')).toBe(
       `/offre/${offerId}/collectif/visibilite/edition`
     )
   })
