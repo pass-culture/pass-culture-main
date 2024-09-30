@@ -2858,6 +2858,24 @@ class SuspendAccountForSuspiciousLoginTest:
         assert user.suspension_action_history[0].authorUserId == user.id
 
 
+class SuspendAccountForHackSuspicionTest:
+    def test_suspend_account_for_suspicious_login(self, client):
+        booking = booking_factories.BookingFactory()
+        user = booking.user
+
+        response = client.with_token(user.email).post("/native/v1/account/suspend_for_hack_suspicion")
+
+        assert response.status_code == 204
+        assert booking.status == BookingStatus.CANCELLED
+        db.session.refresh(user)
+        assert not user.isActive
+        assert user.suspension_reason == users_constants.SuspensionReason.SUSPICIOUS_LOGIN_REPORTED_BY_USER
+        assert user.suspension_date
+        assert len(user.suspension_action_history) == 1
+        assert user.suspension_action_history[0].userId == user.id
+        assert user.suspension_action_history[0].authorUserId == user.id
+
+
 class AnonymizeUserTest:
     @pytest.mark.parametrize(
         "roles",
