@@ -156,7 +156,36 @@ class BookOfferTest:
         # There is a different email for the first venue booking
         bookings_factories.BookingFactory(stock=stock)
 
-        booking = api.book_offer(beneficiary=beneficiary, stock_id=stock_id, quantity=1)
+        # 1 - SELECT the stock
+        # 1 - SELECT the offer
+        # 1 - SELECT the booking
+        # 1 - SELECT the stock FOR UPDATE (joined with offer)
+        # 2 - SELECT the user + SELECT FOR UPDATE
+        # 1 - SELECT COUNT reservations
+        # 1 - SELECT the venue
+        # 1 - SELECT offerer
+        # 1 - SELECT user's deposit
+        # 1 - SELECT the bookings not cancelled
+        # 1 - SELECT EXISTS on the booking's token
+        # 1 - UPDATE dnBookedQuantity
+        # 1 - INSERT the new booking
+        # 1 - SELECT the user
+        # 8 - SELECT the stock, booking, external_booking, stock, venue, offerer, offererAddress, provider
+        # 1 - SELECT venue with bank activation & bank account
+        # 1 - SELECT OA (probably should be with the venue)
+        # 1 - SELECT activation code
+        # 1 - SELECT criterion
+        # 1 - SELECT user's bookings with stock, offer, venue
+        # 1 - SELECT user's favorites
+        # 2 - SELECT user's deposit + wallet
+        # 1 - SELECT user's action history
+        # 1 - SELECT pro user by its email
+        # 1 - SELECT venue, offerer, bank info by the email
+        # 1 - SELECT from offer that I don't get
+        # 1 - SELECT bookings for the venue ???
+        # 1 - SELECT feature
+        with assert_num_queries(36):
+            booking = api.book_offer(beneficiary=beneficiary, stock_id=stock_id, quantity=1)
 
         # One request should have been sent to Batch to trigger the event
         # HAS_BOOKED_OFFER, and another one with the user's
@@ -1147,7 +1176,7 @@ class CancelByBeneficiaryTest:
         providers_factories.OffererProviderFactory(provider=provider)
         stock = offers_factories.StockFactory(
             offer__lastProvider=provider,
-            offer__venue__street="1 boulevard Poissonniere",
+            offer__venue__offererAddress__address__street="1 boulevard Poissonniere",
             offer__extraData={"ean": "1234567890123"},
             dnBookedQuantity=1,
             idAtProviders="",
@@ -1190,7 +1219,7 @@ class CancelByBeneficiaryTest:
         providers_factories.OffererProviderFactory(provider=provider)
         stock = offers_factories.EventStockFactory(
             offer__lastProvider=provider,
-            offer__venue__street="1 boulevard Poissonniere",
+            offer__venue__offererAddress__address__street="1 boulevard Poissonniere",
             offer__extraData={"ean": "1234567890123"},
             offer__withdrawalType=offers_models.WithdrawalTypeEnum.NO_TICKET,
             dnBookedQuantity=1,

@@ -538,13 +538,11 @@ def check_booking_limit_datetime(
             offer = stock.collectiveOffer
         else:
             offer = stock.offer
-        reference_dp_code = offer.venue.departementCode
-        if FeatureToggle.WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE.is_active():
-            reference_dp_code = (
-                offer.offererAddress.address.departmentCode
-                if offer.offererAddress and not isinstance(stock, educational_models.CollectiveStock)
-                else offer.venue.offererAddress.address.departmentCode  # type: ignore[union-attr]
-            )
+        reference_dp_code = (
+            offer.offererAddress.address.departmentCode
+            if offer.offererAddress and not isinstance(stock, educational_models.CollectiveStock)
+            else offer.venue.offererAddress.address.departmentCode  # type: ignore[union-attr]
+        )
         if reference_dp_code is not None:  # update to timezone
             beginning = date.utc_datetime_to_department_timezone(beginning, reference_dp_code)
             booking_limit_datetime = date.utc_datetime_to_department_timezone(booking_limit_datetime, reference_dp_code)
