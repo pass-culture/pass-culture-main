@@ -4,6 +4,9 @@ from spectree import Tag
 # BOOKING
 BOOKINGS = Tag(name="Bookings", description="Endpoints to manage the bookings of an offer (event and product).")
 
+# ADDRESSES
+ADDRESSES = Tag(name="Addresses", description="[Beta] Endpoints to manage offers addresses")
+
 # EVENT OFFERS
 EVENT_OFFERS = Tag(
     name="Event offers", description="Endpoints to manage event offers data of a venue (except prices and dates)."
@@ -50,6 +53,8 @@ OPEN_API_TAGS = [
     PROVIDERS,
     # VENUES
     VENUES,
+    # ADDRESSES,
+    ADDRESSES,
     # PRODUCTS
     PRODUCT_EAN_OFFERS,
     PRODUCT_OFFERS,

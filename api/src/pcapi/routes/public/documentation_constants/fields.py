@@ -111,6 +111,17 @@ class _FIELDS:
         False, description="Is accessible for people with visual disability", example=True
     )
 
+    # Address fields
+    BAN_ID = Field(
+        description="Id from the French **[Base nationale d'adresses](https://adresse.data.gouv.fr/)**",
+        example="75101_8635_00182",  # Ban id of the French Ministry of Culture
+    )
+    LATITUDE = Field(description="Latitude coordinate", example=48.86696)
+    LONGITUDE = Field(description="Longitude coordinate", example=2.31014)
+    CITY = Field(description="City", example="Paris")
+    POSTAL_CODE = Field(description="Postal Code", example="75001")
+    STREET = Field(description="Street name and number", example="182 Rue Saint-Honoré")
+
     # Offer fields
     OFFER_ID = Field(description="Offer id", example=12345)
     OFFER_STATUS = Field(description=descriptions.OFFER_STATUS_FIELD_DESCRIPTION, example="ACTIVE")
