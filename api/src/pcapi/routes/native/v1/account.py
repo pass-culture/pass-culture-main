@@ -472,6 +472,13 @@ def suspend_account(user: users_models.User) -> None:
     transactional_mails.send_user_request_to_delete_account_reception_email(user)
 
 
+@blueprint.native_route("/account/suspend_for_hack_suspicion", methods=["POST"])
+@spectree_serialize(api=blueprint.api, on_success_status=204)
+@authenticated_and_active_user_required
+def suspend_account_for_hack_suspicion(user: users_models.User) -> None:
+    api.suspend_account(user, constants.SuspensionReason.SUSPICIOUS_LOGIN_REPORTED_BY_USER, actor=user)
+
+
 @blueprint.native_route("/account/suspend_for_suspicious_login", methods=["POST"])
 @spectree_serialize(api=blueprint.api, on_success_status=204, on_error_statuses=[400, 401, 404])
 def suspend_account_for_suspicious_login(body: serializers.SuspendAccountForSuspiciousLoginRequest) -> None:

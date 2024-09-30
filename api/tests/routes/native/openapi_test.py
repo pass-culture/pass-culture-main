@@ -2744,6 +2744,26 @@ def test_public_api(client):
                     "tags": [],
                 }
             },
+            "/native/v1/account/suspend_for_hack_suspicion": {
+                "post": {
+                    "description": "",
+                    "operationId": "post__native_v1_account_suspend_for_hack_suspicion",
+                    "parameters": [],
+                    "responses": {
+                        "204": {"description": "No Content"},
+                        "403": {"description": "Forbidden"},
+                        "422": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
+                            },
+                            "description": "Unprocessable Entity",
+                        },
+                    },
+                    "security": [{"JWTAuth": []}],
+                    "summary": "suspend_account_for_hack_suspicion <POST>",
+                    "tags": [],
+                }
+            },
             "/native/v1/account/suspend_for_suspicious_login": {
                 "post": {
                     "description": "",
