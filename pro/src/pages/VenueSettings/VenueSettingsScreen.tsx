@@ -224,34 +224,31 @@ export const VenueSettingsScreen = ({
           />
         </form>
 
-        {isWithdrawalDialogOpen && (
-          <ConfirmDialog
-            cancelText="Ne pas envoyer"
-            confirmText="Envoyer un email"
-            leftButtonAction={handleCancelWithdrawalDialog}
-            onCancel={() => setIsWithdrawalDialogOpen(false)}
-            onConfirm={handleConfirmWithdrawalDialog}
-            icon={strokeMailIcon}
-            title="Souhaitez-vous prévenir les bénéficiaires de la modification des modalités de retrait ?"
-          />
-        )}
-
-        {isAddressChangeDialogOpen && venue.hasOffers && (
-          <ConfirmDialog
-            cancelText="Annuler"
-            confirmText="Confirmer le changement d'adresse"
-            leftButtonAction={handleCancelAddressChangeDialog}
-            onCancel={() => setIsAddressChangeDialogOpen(false)}
-            onConfirm={handleConfirmAddressChangeDialog}
-            icon={strokeErrorIcon}
-            title="Ce changement d'adresse ne va pas s'impacter sur vos offres"
-          >
-            <p>
-              Si vous souhaitez rectifier leur localisation, vous devez les
-              modifier individuellement.
-            </p>
-          </ConfirmDialog>
-        )}
+        <ConfirmDialog
+          cancelText="Ne pas envoyer"
+          confirmText="Envoyer un email"
+          leftButtonAction={handleCancelWithdrawalDialog}
+          onCancel={() => setIsWithdrawalDialogOpen(false)}
+          onConfirm={handleConfirmWithdrawalDialog}
+          icon={strokeMailIcon}
+          title="Souhaitez-vous prévenir les bénéficiaires de la modification des modalités de retrait ?"
+          open={isWithdrawalDialogOpen}
+        />
+        <ConfirmDialog
+          cancelText="Annuler"
+          confirmText="Confirmer le changement d'adresse"
+          leftButtonAction={handleCancelAddressChangeDialog}
+          onCancel={() => setIsAddressChangeDialogOpen(false)}
+          onConfirm={handleConfirmAddressChangeDialog}
+          icon={strokeErrorIcon}
+          title="Ce changement d'adresse ne va pas s'impacter sur vos offres"
+          open={isAddressChangeDialogOpen && venue.hasOffers}
+        >
+          <p>
+            Si vous souhaitez rectifier leur localisation, vous devez les
+            modifier individuellement.
+          </p>
+        </ConfirmDialog>
       </FormikProvider>
     </>
   )

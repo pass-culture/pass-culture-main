@@ -178,22 +178,21 @@ export const PriceCategoriesScreen = ({
 
   return (
     <FormikProvider value={formik}>
-      {isConfirmationModalOpen && (
-        <ConfirmDialog
-          onCancel={() => setIsConfirmationModalOpen(false)}
-          onConfirm={formik.submitForm}
-          title="Cette modification de tarif s’appliquera à l’ensemble des dates qui y sont associées."
-          confirmText="Confirmer la modification"
-          cancelText="Annuler"
-        >
-          {(offer.bookingsCount ?? 0) > 0 && (
-            <>
-              Le tarif restera inchangé pour les personnes ayant déjà réservé
-              cette offre.
-            </>
-          )}
-        </ConfirmDialog>
-      )}
+      <ConfirmDialog
+        onCancel={() => setIsConfirmationModalOpen(false)}
+        onConfirm={formik.submitForm}
+        title="Cette modification de tarif s’appliquera à l’ensemble des dates qui y sont associées."
+        confirmText="Confirmer la modification"
+        cancelText="Annuler"
+        open={isConfirmationModalOpen}
+      >
+        {(offer.bookingsCount ?? 0) > 0 && (
+          <>
+            Le tarif restera inchangé pour les personnes ayant déjà réservé
+            cette offre.
+          </>
+        )}
+      </ConfirmDialog>
 
       <form onSubmit={formik.handleSubmit}>
         <PriceCategoriesForm

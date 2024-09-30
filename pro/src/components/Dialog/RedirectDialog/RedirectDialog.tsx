@@ -34,6 +34,7 @@ export const RedirectDialog = ({
   cancelText,
   onCancel,
   withRedirectLinkIcon = true,
+  open,
 }: RedirectDialogProps): JSX.Element => {
   return (
     <Dialog
@@ -44,6 +45,7 @@ export const RedirectDialog = ({
       hideIcon={hideIcon}
       explanation={children}
       extraClassNames={`${extraClassNames} ${styles['confirm-dialog-explanation']}`}
+      open={open}
     >
       <div className={styles['redirect-dialog-actions']}>
         <ButtonLink

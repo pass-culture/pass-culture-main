@@ -21,6 +21,7 @@ describe('screen Offers', () => {
       cancelRedirectUrl: '/url',
       offerId: 1,
       venueId: 2,
+      isDialogOpen: true,
     }
 
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({

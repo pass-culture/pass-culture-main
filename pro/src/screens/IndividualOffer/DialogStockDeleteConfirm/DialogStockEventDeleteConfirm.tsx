@@ -8,11 +8,13 @@ import styles from './DialogStockDeleteConfirm.module.scss'
 interface DialogStockDeleteConfirmProps {
   onConfirm: () => void
   onCancel: () => void
+  isDialogOpen: boolean
 }
 
 export const DialogStockEventDeleteConfirm = ({
   onConfirm,
   onCancel,
+  isDialogOpen,
 }: DialogStockDeleteConfirmProps) => {
   return (
     <ConfirmDialog
@@ -22,6 +24,7 @@ export const DialogStockEventDeleteConfirm = ({
       confirmText="Confirmer la suppression"
       cancelText="Annuler"
       icon={strokeTrashIcon}
+      open={isDialogOpen}
     >
       <p className={styles['first-block']}>
         {'Elle ne sera plus disponible à la réservation et '}

@@ -7,12 +7,14 @@ interface ModalImageDeleteProps {
   isLoading: boolean
   onConfirm: () => void
   onDismiss: () => void
+  isDialogOpen: boolean
 }
 
 export const ModalImageDelete = ({
   isLoading,
   onConfirm,
   onDismiss,
+  isDialogOpen,
 }: ModalImageDeleteProps): JSX.Element => {
   return (
     <ConfirmDialog
@@ -23,6 +25,7 @@ export const ModalImageDelete = ({
       onCancel={onDismiss}
       onConfirm={onConfirm}
       title="Supprimer l’image"
+      open={isDialogOpen}
     >
       Souhaitez-vous vraiment supprimer cette image ?
     </ConfirmDialog>

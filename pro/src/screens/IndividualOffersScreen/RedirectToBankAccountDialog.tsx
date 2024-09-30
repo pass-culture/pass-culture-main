@@ -12,12 +12,14 @@ export interface RedirectToBankAccountDialogProps {
   cancelRedirectUrl: string
   offerId: number
   venueId: number
+  isDialogOpen: boolean
 }
 
 export const RedirectToBankAccountDialog = ({
   cancelRedirectUrl,
   offerId,
   venueId,
+  isDialogOpen,
 }: RedirectToBankAccountDialogProps): JSX.Element => {
   const navigate = useNavigate()
   const { logEvent } = useAnalytics()
@@ -46,6 +48,7 @@ export const RedirectToBankAccountDialog = ({
       cancelText="Plus tard"
       cancelIcon={fullWaitIcon}
       withRedirectLinkIcon={false}
+      open={isDialogOpen}
     >
       <p>Vous pouvez dès à présent ajouter un compte bancaire.</p>
       <p>

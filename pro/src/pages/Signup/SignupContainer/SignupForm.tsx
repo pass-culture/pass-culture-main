@@ -28,9 +28,10 @@ export const SignupForm = (): JSX.Element => {
     <>
       <ScrollToFirstErrorAfterSubmit />
 
-      {isModalOpen && (
-        <MaybeAppUserDialog onCancel={() => setIsModalOpen(false)} />
-      )}
+      <MaybeAppUserDialog
+        onCancel={() => setIsModalOpen(false)}
+        isDialogOpen={isModalOpen}
+      />
 
       <FormLayout>
         <FormLayout.Row>

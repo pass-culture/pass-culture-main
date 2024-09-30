@@ -204,21 +204,20 @@ export const Offerers = (): JSX.Element => {
         isDisabled={false}
         legalCategoryCode={offerer.legalCategoryCode}
       />
-      {showLinkDialog && (
-        <ConfirmDialog
-          icon={strokeCollaboratorIcon}
-          onCancel={cancelLinkUserToOfferer}
-          title="Êtes-vous sûr de vouloir rejoindre cet espace ?"
-          onConfirm={doLinkAccount}
-          confirmText="Rejoindre cet espace"
-          cancelText="Annuler"
-          extraClassNames={styles['dialog-content']}
-        >
-          <div className={styles['dialog-info']}>
-            Votre demande sera prise en compte et analysée par nos équipes.
-          </div>
-        </ConfirmDialog>
-      )}
+      <ConfirmDialog
+        icon={strokeCollaboratorIcon}
+        onCancel={cancelLinkUserToOfferer}
+        title="Êtes-vous sûr de vouloir rejoindre cet espace ?"
+        onConfirm={doLinkAccount}
+        confirmText="Rejoindre cet espace"
+        cancelText="Annuler"
+        extraClassNames={styles['dialog-content']}
+        open={showLinkDialog}
+      >
+        <div className={styles['dialog-info']}>
+          Votre demande sera prise en compte et analysée par nos équipes.
+        </div>
+      </ConfirmDialog>
     </div>
   )
 }

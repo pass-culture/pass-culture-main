@@ -13,7 +13,11 @@ const mockLogEvent = vi.fn()
 describe('AddBankInformations', () => {
   it('should render dialog', () => {
     renderWithProviders(
-      <AddBankInformationsDialog closeDialog={vi.fn()} offererId={0} />
+      <AddBankInformationsDialog
+        closeDialog={vi.fn()}
+        offererId={0}
+        isDialogOpen
+      />
     )
 
     expect(
@@ -37,7 +41,11 @@ describe('AddBankInformations', () => {
     }))
 
     renderWithProviders(
-      <AddBankInformationsDialog closeDialog={vi.fn()} offererId={0} />
+      <AddBankInformationsDialog
+        closeDialog={vi.fn()}
+        offererId={0}
+        isDialogOpen
+      />
     )
 
     await userEvent.click(

@@ -1,11 +1,15 @@
 import './MaybeAppUserDialog.scss'
 
-import React from 'react'
-
 import { RedirectDialog } from 'components/Dialog/RedirectDialog/RedirectDialog'
 import strokeFraudIcon from 'icons/stroke-fraud.svg'
 
-export const MaybeAppUserDialog = ({ onCancel }: { onCancel: () => void }) => {
+export const MaybeAppUserDialog = ({
+  onCancel,
+  isDialogOpen,
+}: {
+  onCancel: () => void
+  isDialogOpen: boolean
+}) => {
   return (
     <RedirectDialog
       icon={strokeFraudIcon}
@@ -18,6 +22,7 @@ export const MaybeAppUserDialog = ({ onCancel }: { onCancel: () => void }) => {
       title="Il semblerait que tu ne sois pas"
       secondTitle={` un professionnel de la culture`}
       onCancel={onCancel}
+      open={isDialogOpen}
     >
       <p>
         Tu essayes de t’inscrire sur l’espace pass Culture Pro dédié aux

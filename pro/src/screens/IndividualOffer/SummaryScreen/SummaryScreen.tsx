@@ -205,13 +205,12 @@ export const SummaryScreen = () => {
             mode !== OFFER_WIZARD_MODE.CREATION ? false : formik.isSubmitting
           }
         />
-        {displayRedirectDialog && (
-          <RedirectToBankAccountDialog
-            cancelRedirectUrl={offerConfirmationStepUrl}
-            offerId={offer.venue.managingOfferer.id}
-            venueId={offer.venue.id}
-          />
-        )}
+        <RedirectToBankAccountDialog
+          cancelRedirectUrl={offerConfirmationStepUrl}
+          offerId={offer.venue.managingOfferer.id}
+          venueId={offer.venue.id}
+          isDialogOpen={displayRedirectDialog}
+        />
       </Form>
     </FormikProvider>
   )

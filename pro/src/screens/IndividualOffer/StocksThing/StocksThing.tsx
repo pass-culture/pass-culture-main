@@ -326,21 +326,19 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
 
   return (
     <FormikProvider value={formik}>
-      {isDeleteConfirmVisible && (
-        <DialogStockThingDeleteConfirm
-          onConfirm={onConfirmDeleteStock}
-          onCancel={() => setIsDeleteConfirmVisible(false)}
-        />
-      )}
+      <DialogStockThingDeleteConfirm
+        onConfirm={onConfirmDeleteStock}
+        onCancel={() => setIsDeleteConfirmVisible(false)}
+        isDialogOpen={isDeleteConfirmVisible}
+      />
 
-      {isActivationCodeFormVisible && (
-        <ActivationCodeFormDialog
-          onSubmit={submitActivationCodes}
-          onCancel={() => setIsActivationCodeFormVisible(false)}
-          today={today}
-          minExpirationDate={minExpirationDate}
-        />
-      )}
+      <ActivationCodeFormDialog
+        onSubmit={submitActivationCodes}
+        onCancel={() => setIsActivationCodeFormVisible(false)}
+        today={today}
+        minExpirationDate={minExpirationDate}
+        isDialogOpen={isActivationCodeFormVisible}
+      />
 
       <form onSubmit={formik.handleSubmit} data-testid="stock-thing-form">
         <FormLayout>

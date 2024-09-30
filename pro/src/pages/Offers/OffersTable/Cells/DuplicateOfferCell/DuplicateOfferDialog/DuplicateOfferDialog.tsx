@@ -8,9 +8,11 @@ import styles from './DuplicateOfferDialog.module.scss'
 export const DuplicateOfferDialog = ({
   onCancel,
   onConfirm,
+  isDialogOpen,
 }: {
   onCancel: () => void
   onConfirm: (shouldNotDisplayModalAgain: boolean) => void
+  isDialogOpen: boolean
 }) => {
   const [isCheckboxChecked, setIsCheckboxChecked] = useState(false)
 
@@ -22,6 +24,7 @@ export const DuplicateOfferDialog = ({
       confirmText="Créer une offre réservable"
       cancelText="Annuler"
       hideIcon
+      open={isDialogOpen}
     >
       <p className={styles['duplicate-offer-dialog-text']}>
         Les informations que vous avez renseignées dans l’offre vitrine seront

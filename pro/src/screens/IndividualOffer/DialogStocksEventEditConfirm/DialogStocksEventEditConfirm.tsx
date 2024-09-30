@@ -5,11 +5,13 @@ import { ConfirmDialog } from 'components/Dialog/ConfirmDialog/ConfirmDialog'
 interface DialogStocksEventEditConfirmProps {
   onConfirm: () => void
   onCancel: () => void
+  isDialogOpen: boolean
 }
 
 export const DialogStocksEventEditConfirm = ({
   onConfirm,
   onCancel,
+  isDialogOpen,
 }: DialogStocksEventEditConfirmProps) => {
   return (
     <ConfirmDialog
@@ -18,6 +20,7 @@ export const DialogStocksEventEditConfirm = ({
       title="Des réservations sont en cours pour cette offre"
       confirmText="Confirmer les modifications"
       cancelText="Annuler"
+      open={isDialogOpen}
     >
       <p>
         Si vous avez changé la date ou l’heure de l’évènement, les bénéficiaires

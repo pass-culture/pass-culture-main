@@ -25,7 +25,11 @@ describe('DeactivationConfirmDialog', () => {
   }
 
   it('should call onCancel when pressing Annuler button', async () => {
-    renderDeactivationConfirmDialog({ ...props, nbSelectedOffers: 1 })
+    renderDeactivationConfirmDialog({
+      ...props,
+      nbSelectedOffers: 1,
+      isDialogOpen: true,
+    })
 
     const onCancelButton = screen.getByText('Annuler')
     await userEvent.click(onCancelButton)
@@ -33,7 +37,11 @@ describe('DeactivationConfirmDialog', () => {
   })
 
   it('should call onConfirm when pressing Masquer button', async () => {
-    renderDeactivationConfirmDialog({ ...props, nbSelectedOffers: 1 })
+    renderDeactivationConfirmDialog({
+      ...props,
+      nbSelectedOffers: 1,
+      isDialogOpen: true,
+    })
 
     const onConfirmButton = screen.getByText('Masquer')
     await userEvent.click(onConfirmButton)
@@ -41,7 +49,11 @@ describe('DeactivationConfirmDialog', () => {
   })
 
   it('should render text for one offer', () => {
-    renderDeactivationConfirmDialog({ ...props, nbSelectedOffers: 1 })
+    renderDeactivationConfirmDialog({
+      ...props,
+      nbSelectedOffers: 1,
+      isDialogOpen: true,
+    })
 
     expect(
       screen.getByText(/Vous avez sélectionné 1 offre/)
@@ -57,7 +69,11 @@ describe('DeactivationConfirmDialog', () => {
   })
 
   it('should render text for multiple offers', () => {
-    renderDeactivationConfirmDialog({ ...props, nbSelectedOffers: 2 })
+    renderDeactivationConfirmDialog({
+      ...props,
+      nbSelectedOffers: 2,
+      isDialogOpen: true,
+    })
 
     expect(
       screen.getByText(/Vous avez sélectionné 2 offres/)

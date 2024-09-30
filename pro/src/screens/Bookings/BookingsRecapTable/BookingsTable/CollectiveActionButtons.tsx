@@ -97,12 +97,11 @@ export const CollectiveActionButtons = ({
           </ButtonLink>
         )}
       </div>
-      {isModalOpen && (
-        <CancelCollectiveBookingModal
-          onDismiss={() => setIsModalOpen(false)}
-          onValidate={cancelBooking}
-        />
-      )}
+      <CancelCollectiveBookingModal
+        onDismiss={() => setIsModalOpen(false)}
+        onValidate={cancelBooking}
+        isDialogOpen={isModalOpen}
+      />
     </>
   )
 }

@@ -74,8 +74,9 @@ export const Offerers = ({
     <>
       {userHasOfferers && (
         <>
-          {selectedOfferer && openSuccessDialog && (
+          {selectedOfferer && (
             <RedirectDialog
+              open={openSuccessDialog}
               icon={strokePartyIcon}
               redirectText="Créer une offre"
               redirectLink={{

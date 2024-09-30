@@ -6,11 +6,13 @@ import strokeTrashIcon from 'icons/stroke-trash.svg'
 interface DialogStockDeleteConfirmProps {
   onConfirm: () => void
   onCancel: () => void
+  isDialogOpen: boolean
 }
 
 export const DialogStockThingDeleteConfirm = ({
   onConfirm,
   onCancel,
+  isDialogOpen,
 }: DialogStockDeleteConfirmProps) => {
   return (
     <ConfirmDialog
@@ -20,6 +22,7 @@ export const DialogStockThingDeleteConfirm = ({
       confirmText="Supprimer"
       cancelText="Annuler"
       icon={strokeTrashIcon}
+      open={isDialogOpen}
     >
       <p>
         {'Ce stock ne sera plus disponible à la réservation et '}

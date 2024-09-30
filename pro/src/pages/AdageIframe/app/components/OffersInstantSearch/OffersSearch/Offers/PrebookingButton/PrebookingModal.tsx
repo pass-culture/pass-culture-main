@@ -5,12 +5,14 @@ interface PrebookingModal {
   closeModal: () => void
   preBookCurrentStock: () => Promise<void>
   isPreview?: boolean
+  isDialogOpen: boolean
 }
 
 export const PrebookingModal = ({
   closeModal,
   preBookCurrentStock,
   isPreview = false,
+  isDialogOpen,
 }: PrebookingModal): JSX.Element => {
   return (
     <ConfirmDialog
@@ -21,6 +23,7 @@ export const PrebookingModal = ({
       confirmText="Préréserver"
       cancelText="Fermer"
       confirmButtonDisabled={isPreview}
+      open={isDialogOpen}
     >
       <p>
         Si oui, une fois votre préréservation confirmée :

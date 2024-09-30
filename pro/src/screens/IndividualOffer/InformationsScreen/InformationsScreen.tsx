@@ -278,24 +278,23 @@ export const InformationsScreen = ({
         </form>
       </FormLayout>
 
-      {isWithdrawalMailDialogOpen && (
-        <ConfirmDialog
-          cancelText="Ne pas envoyer"
-          confirmText="Envoyer un email"
-          onCancel={() => {
-            setIsWithdrawalMailDialogOpen(false)
-          }}
-          leftButtonAction={async () => {
-            await formik.submitForm()
-          }}
-          onConfirm={async () => {
-            setSendWithdrawalMail(true)
-            await formik.submitForm()
-          }}
-          icon={strokeMailIcon}
-          title="Souhaitez-vous prévenir les bénéficiaires de la modification des modalités de retrait ?"
-        />
-      )}
+      <ConfirmDialog
+        cancelText="Ne pas envoyer"
+        confirmText="Envoyer un email"
+        onCancel={() => {
+          setIsWithdrawalMailDialogOpen(false)
+        }}
+        leftButtonAction={async () => {
+          await formik.submitForm()
+        }}
+        onConfirm={async () => {
+          setSendWithdrawalMail(true)
+          await formik.submitForm()
+        }}
+        icon={strokeMailIcon}
+        title="Souhaitez-vous prévenir les bénéficiaires de la modification des modalités de retrait ?"
+        open={isWithdrawalMailDialogOpen}
+      />
       <RouteLeavingGuardIndividualOffer
         when={formik.dirty && !formik.isSubmitting}
       />

@@ -11,6 +11,7 @@ export interface CollectiveDeactivationConfirmDialogProps {
   nbSelectedOffers: number
   onCancel: (status: boolean) => void
   onConfirm: () => void
+  isDialogOpen: boolean
 }
 
 export const CollectiveDeactivationConfirmDialog = ({
@@ -18,6 +19,7 @@ export const CollectiveDeactivationConfirmDialog = ({
   onCancel,
   nbSelectedOffers,
   onConfirm,
+  isDialogOpen,
 }: CollectiveDeactivationConfirmDialogProps): JSX.Element => {
   const { logEvent } = useAnalytics()
   const location = useLocation()
@@ -51,6 +53,7 @@ export const CollectiveDeactivationConfirmDialog = ({
           ? `êtes-vous sûr de vouloir la masquer${NBSP}?`
           : `êtes-vous sûr de vouloir toutes les masquer${NBSP}?`
       }
+      open={isDialogOpen}
     >
       {nbSelectedOffers === 1
         ? `Dans ce cas, elle ne sera plus visible par les enseignants sur ADAGE.`

@@ -250,41 +250,37 @@ export const LinkVenuesDialog = ({
         </div>
       </DialogBuilder>
 
-      {showDiscardChangesDialog && (
-        <ConfirmDialog
-          extraClassNames={cn(styles['discard-dialog'], {
-            [styles['discard-dialog-with-banner']]:
-              hasVenuesWithoutPricingPoint,
-          })}
-          icon={strokeWarningIcon}
-          onCancel={() => setShowDiscardChangesDialog(false)}
-          title="Les informations non sauvegardées ne seront pas prises en compte"
-          onConfirm={() => {
-            setShowDiscardChangesDialog(false)
-            closeDialog()
-          }}
-          confirmText="Quitter sans enregistrer"
-          cancelText="Annuler"
-        />
-      )}
-      {showUnlinkVenuesDialog && (
-        <ConfirmDialog
-          extraClassNames={cn(styles['discard-dialog'], {
-            [styles['discard-dialog-with-banner']]:
-              hasVenuesWithoutPricingPoint,
-          })}
-          icon={strokeWarningIcon}
-          onCancel={() => setShowUnlinkVenuesDialog(false)}
-          title="Attention : le ou les lieux désélectionnés ne seront plus remboursés sur ce compte bancaire"
-          onConfirm={() => {
-            setShowUnlinkVenuesDialog(false)
-            // eslint-disable-next-line @typescript-eslint/no-floating-promises
-            submitForm(true)
-          }}
-          confirmText="Confirmer"
-          cancelText="Retour"
-        />
-      )}
+      <ConfirmDialog
+        extraClassNames={cn(styles['discard-dialog'], {
+          [styles['discard-dialog-with-banner']]: hasVenuesWithoutPricingPoint,
+        })}
+        icon={strokeWarningIcon}
+        onCancel={() => setShowDiscardChangesDialog(false)}
+        title="Les informations non sauvegardées ne seront pas prises en compte"
+        onConfirm={() => {
+          setShowDiscardChangesDialog(false)
+          closeDialog()
+        }}
+        confirmText="Quitter sans enregistrer"
+        cancelText="Annuler"
+        open={showDiscardChangesDialog}
+      />
+      <ConfirmDialog
+        extraClassNames={cn(styles['discard-dialog'], {
+          [styles['discard-dialog-with-banner']]: hasVenuesWithoutPricingPoint,
+        })}
+        icon={strokeWarningIcon}
+        onCancel={() => setShowUnlinkVenuesDialog(false)}
+        title="Attention : le ou les lieux désélectionnés ne seront plus remboursés sur ce compte bancaire"
+        onConfirm={() => {
+          setShowUnlinkVenuesDialog(false)
+          // eslint-disable-next-line @typescript-eslint/no-floating-promises
+          submitForm(true)
+        }}
+        confirmText="Confirmer"
+        cancelText="Retour"
+        open={showUnlinkVenuesDialog}
+      />
     </>
   )
 }

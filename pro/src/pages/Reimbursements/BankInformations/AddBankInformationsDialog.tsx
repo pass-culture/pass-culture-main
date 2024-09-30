@@ -14,11 +14,13 @@ import styles from './AddBankInformationsDialog.module.scss'
 interface ReimbursmentPointDialogProps {
   closeDialog: () => void
   offererId?: number
+  isDialogOpen: boolean
 }
 
 export const AddBankInformationsDialog = ({
   closeDialog,
   offererId,
+  isDialogOpen,
 }: ReimbursmentPointDialogProps) => {
   const { logEvent } = useAnalytics()
   return (
@@ -27,6 +29,7 @@ export const AddBankInformationsDialog = ({
       explanation="Démarches Simplifiées est une plateforme sécurisée de démarches administratives en ligne qui permet de déposer votre dossier de compte bancaire."
       icon={strokeLinkIcon}
       onCancel={closeDialog}
+      open={isDialogOpen}
     >
       <ButtonLink
         to={DS_BANK_ACCOUNT_PROCEDURE_ID}

@@ -252,50 +252,48 @@ export const UsefulInformationScreen = ({
           dirtyForm={formik.dirty}
         />
       </Form>
-      {isWithdrawalMailDialogOpen && (
-        <ConfirmDialog
-          cancelText="Ne pas envoyer"
-          confirmText="Envoyer un email"
-          onCancel={() => {
-            setIsWithdrawalMailDialogOpen(false)
-          }}
-          leftButtonAction={async () => {
-            await formik.submitForm()
-          }}
-          onConfirm={async () => {
-            setSendWithdrawalMail(true)
-            await formik.submitForm()
-          }}
-          icon={strokeMailIcon}
-          title="Souhaitez-vous prévenir les bénéficiaires de la modification des modalités de retrait ?"
-        />
-      )}
-      {isAddressUpdateDialogOpen && (
-        <ConfirmDialog
-          cancelText="Annuler"
-          confirmText="Je confirme le changement"
-          onCancel={() => {
-            setIsAddressUpdateDialogOpen(false)
-          }}
-          onConfirm={async () => {
-            await formik.submitForm()
-          }}
-          title="Le changement d’adresse va s’impacter à l’ensemble des réservations en cours associées."
-        >
-          <div className={styles['update-oa-wrapper']}>
-            <div>
-              Un email va être envoyé aux bénéficiaires ayant réservé les offres
-              concernées. Ils auront 48h pour annuler leur réservation s’ils le
-              souhaitent.
-            </div>
-            <Callout variant={CalloutVariant.WARNING}>
-              Si vous souhaitez que les réservations en cours conservent
-              l’ancienne adresse, veuillez créer une nouvelle offre avec la
-              nouvelle adresse.
-            </Callout>
+      <ConfirmDialog
+        cancelText="Ne pas envoyer"
+        confirmText="Envoyer un email"
+        onCancel={() => {
+          setIsWithdrawalMailDialogOpen(false)
+        }}
+        leftButtonAction={async () => {
+          await formik.submitForm()
+        }}
+        onConfirm={async () => {
+          setSendWithdrawalMail(true)
+          await formik.submitForm()
+        }}
+        icon={strokeMailIcon}
+        title="Souhaitez-vous prévenir les bénéficiaires de la modification des modalités de retrait ?"
+        open={isWithdrawalMailDialogOpen}
+      />
+      <ConfirmDialog
+        cancelText="Annuler"
+        confirmText="Je confirme le changement"
+        onCancel={() => {
+          setIsAddressUpdateDialogOpen(false)
+        }}
+        onConfirm={async () => {
+          await formik.submitForm()
+        }}
+        open={isAddressUpdateDialogOpen}
+        title="Le changement d’adresse va s’impacter à l’ensemble des réservations en cours associées."
+      >
+        <div className={styles['update-oa-wrapper']}>
+          <div>
+            Un email va être envoyé aux bénéficiaires ayant réservé les offres
+            concernées. Ils auront 48h pour annuler leur réservation s’ils le
+            souhaitent.
           </div>
-        </ConfirmDialog>
-      )}
+          <Callout variant={CalloutVariant.WARNING}>
+            Si vous souhaitez que les réservations en cours conservent
+            l’ancienne adresse, veuillez créer une nouvelle offre avec la
+            nouvelle adresse.
+          </Callout>
+        </div>
+      </ConfirmDialog>
       <RouteLeavingGuardIndividualOffer
         when={formik.dirty && !formik.isSubmitting}
       />

@@ -66,16 +66,15 @@ export const DeleteDraftCell = ({ offer }: DeleteDraftOffersProps) => {
 
   return (
     <>
-      {isConfirmDialogOpen && (
-        <ConfirmDialog
-          icon={strokeTrashIcon}
-          cancelText="Annuler"
-          confirmText="Supprimer ce brouillon"
-          onCancel={closeDeleteDraftDialog}
-          onConfirm={onConfirmDeleteDraftOffer}
-          title={`Voulez-vous supprimer le brouillon : "${offer.name}" ?`}
-        />
-      )}
+      <ConfirmDialog
+        icon={strokeTrashIcon}
+        cancelText="Annuler"
+        confirmText="Supprimer ce brouillon"
+        onCancel={closeDeleteDraftDialog}
+        onConfirm={onConfirmDeleteDraftOffer}
+        title={`Voulez-vous supprimer le brouillon : "${offer.name}" ?`}
+        open={isConfirmDialogOpen}
+      />
       <ListIconButton
         onClick={() => setIsConfirmDialogOpen(true)}
         className={styles['button']}

@@ -90,34 +90,33 @@ export const PricingPoint = ({ offerer, venue }: PricingPointProps) => {
         </Callout>
       )}
 
-      {isConfirmSiretDialogOpen && (
-        <ConfirmDialog
-          cancelText="Annuler"
-          confirmText="Valider ma sélection"
-          onCancel={() => {
-            setIsConfirmSiretDialogOpen(false)
-          }}
-          onConfirm={handleClick}
-          icon={strokeValidIcon}
-          title="Êtes-vous sûr de vouloir sélectionner"
-          secondTitle={`ce lieu avec SIRET\u00a0?`}
-          isLoading={isSubmitingPricingPoint}
+      <ConfirmDialog
+        cancelText="Annuler"
+        confirmText="Valider ma sélection"
+        onCancel={() => {
+          setIsConfirmSiretDialogOpen(false)
+        }}
+        onConfirm={handleClick}
+        icon={strokeValidIcon}
+        title="Êtes-vous sûr de vouloir sélectionner"
+        secondTitle={`ce lieu avec SIRET\u00a0?`}
+        isLoading={isSubmitingPricingPoint}
+        open={isConfirmSiretDialogOpen}
+      >
+        <p className={styles['text-dialog']}>
+          Vous avez sélectionné un lieu avec SIRET qui sera utilisé pour le
+          calcul de vos remboursements
+          <br />
+          Ce choix ne pourra pas être modifié.
+        </p>
+        <ButtonLink
+          icon={fullLinkIcon}
+          to="https://aide.passculture.app/hc/fr/sections/4411991876241-Modalités-de-remboursements"
+          isExternal
         >
-          <p className={styles['text-dialog']}>
-            Vous avez sélectionné un lieu avec SIRET qui sera utilisé pour le
-            calcul de vos remboursements
-            <br />
-            Ce choix ne pourra pas être modifié.
-          </p>
-          <ButtonLink
-            icon={fullLinkIcon}
-            to="https://aide.passculture.app/hc/fr/sections/4411991876241-Modalités-de-remboursements"
-            isExternal
-          >
-            En savoir plus sur les remboursements
-          </ButtonLink>
-        </ConfirmDialog>
-      )}
+          En savoir plus sur les remboursements
+        </ButtonLink>
+      </ConfirmDialog>
 
       {!venue.pricingPoint && (
         <p className={styles['reimbursement-subtitle']}>

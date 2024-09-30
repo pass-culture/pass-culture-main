@@ -62,19 +62,18 @@ export const ContactButton = ({
           {children ?? 'Contacter'}
         </Button>
       </div>
-      {isModalOpen && (
-        <RequestFormDialog
-          closeModal={closeModal}
-          offerId={offerId}
-          userEmail={userEmail}
-          userRole={userRole}
-          contactEmail={contactEmail ?? ''}
-          contactPhone={contactPhone ?? ''}
-          contactUrl={contactUrl ?? ''}
-          contactForm={contactForm ?? ''}
-          isPreview={isPreview}
-        />
-      )}
+      <RequestFormDialog
+        closeModal={closeModal}
+        offerId={offerId}
+        userEmail={userEmail}
+        userRole={userRole}
+        contactEmail={contactEmail ?? ''}
+        contactPhone={contactPhone ?? ''}
+        contactUrl={contactUrl ?? ''}
+        contactForm={contactForm ?? ''}
+        isPreview={isPreview}
+        isDialogOpen={isModalOpen}
+      />
     </>
   )
 }

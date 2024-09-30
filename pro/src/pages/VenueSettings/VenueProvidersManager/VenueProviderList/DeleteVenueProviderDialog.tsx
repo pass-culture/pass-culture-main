@@ -8,12 +8,14 @@ interface DeleteVenueProviderDialogProps {
   onConfirm: () => void
   onCancel: () => void
   isLoading: boolean
+  isDialogOpen: boolean
 }
 
 export const DeleteVenueProviderDialog = ({
   onConfirm,
   onCancel,
   isLoading,
+  isDialogOpen,
 }: DeleteVenueProviderDialogProps): JSX.Element => {
   return (
     <ConfirmDialog
@@ -25,6 +27,7 @@ export const DeleteVenueProviderDialog = ({
       confirmText="Supprimer la synchronisation"
       cancelText="Annuler"
       hideIcon={true}
+      open={isDialogOpen}
     >
       <div className={style['explanation']}>
         En supprimant la synchronisation de vos offres :

@@ -113,22 +113,25 @@ export const PriceCategoriesForm = ({
           name="priceCategories"
           render={(arrayHelpers) => (
             <FormLayout.Section title="Tarifs">
-              {currentDeletionIndex !== null && (
-                <ConfirmDialog
-                  onCancel={() => setCurrentDeletionIndex(null)}
-                  onConfirm={() =>
-                    onDeletePriceCategory(
-                      currentDeletionIndex,
-                      arrayHelpers,
-                      values.priceCategories,
-                      values.priceCategories[currentDeletionIndex].id
-                    )
+              <ConfirmDialog
+                onCancel={() => setCurrentDeletionIndex(null)}
+                onConfirm={() => {
+                  if (!currentDeletionIndex) {
+                    return
                   }
-                  title="En supprimant ce tarif vous allez aussi supprimer l’ensemble des dates qui lui sont associées."
-                  confirmText="Confirmer la supression"
-                  cancelText="Annuler"
-                />
-              )}
+
+                  return onDeletePriceCategory(
+                    currentDeletionIndex,
+                    arrayHelpers,
+                    values.priceCategories,
+                    values.priceCategories[currentDeletionIndex].id
+                  )
+                }}
+                title="En supprimant ce tarif vous allez aussi supprimer l’ensemble des dates qui lui sont associées."
+                confirmText="Confirmer la supression"
+                cancelText="Annuler"
+                open={currentDeletionIndex !== null}
+              />
               {values.priceCategories.map((priceCategory, index) => (
                 <fieldset key={index}>
                   <legend className="visually-hidden">Tarif {index + 1}</legend>
