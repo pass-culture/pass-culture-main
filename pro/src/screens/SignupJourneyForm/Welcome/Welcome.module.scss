@@ -1,5 +1,6 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/fonts-design-system.scss" as fonts-design-system;
 
 $welcome-gap: rem.torem(32px);
 
@@ -12,7 +13,7 @@ $welcome-gap: rem.torem(32px);
 }
 
 .title {
-  @include fonts.title1;
+  @include fonts-design-system.title1;
 }
 
 .continue-button {

@@ -1,6 +1,6 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/variables/_size.scss" as size;
-@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/fonts-design-system.scss" as fonts-design-system;
 
 .venue-list {
   margin-top: rem.torem(16px);
@@ -25,7 +25,7 @@
   display: flex;
   align-items: center;
 
-  @include fonts.title3;
+  @include fonts-design-system.title3;
 }
 
 .venue-name {
@@ -34,8 +34,9 @@
   word-break: break-all;
 
   &-button {
+    @include fonts-design-system.title3;
+
     cursor: pointer;
-    @include fonts.title3;
   }
 }
 

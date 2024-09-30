@@ -1,5 +1,5 @@
 @use "styles/mixins/_rem.scss" as rem;
-@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/fonts-design-system.scss" as fonts-design-system;
 @use "styles/variables/_forms.scss" as forms;
 @use "styles/variables/_size.scss" as size;
 @use "styles/mixins/_layout.scss" as layout;
@@ -17,11 +17,11 @@
 }
 
 .title {
-  @include fonts.title1;
+  @include fonts-design-system.title1;
 
   margin: rem.torem(24px) 0;
 }
 
 .subtitle {
-  @include fonts.title2;
+  @include fonts-design-system.title2;
 }

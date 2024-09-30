@@ -1,5 +1,6 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/fonts-design-system.scss" as fonts-design-system;
 @use "styles/variables/_size.scss" as size;
 
 $info-box-width: clamp(rem.torem(240px), 29vw, rem.torem(316px));
@@ -36,7 +37,7 @@ $info-box-margin-left: rem.torem(24px);
     margin-bottom: rem.torem(24px);
 
     &-title {
-      @include fonts.title2;
+      @include fonts-design-system.title2;
     }
 
     &-header {
@@ -62,7 +63,7 @@ $info-box-margin-left: rem.torem(24px);
     &-title {
       margin-bottom: rem.torem(24px);
 
-      @include fonts.title4;
+      @include fonts-design-system.title4;
     }
   }
 
