@@ -17,9 +17,19 @@
     }
   }
 
+  .content {
+    position: relative;
+  }
+
   .content::after {
-    content: attr(data-dots);
+    content: "";
+    animation: dots 3s infinite linear;
     position: absolute;
+
+    @media screen and (prefers-reduced-motion: reduce) {
+      content: "...";
+      animation: none;
+    }
   }
 }
 
@@ -30,5 +40,20 @@
 
   to {
     transform: rotate(359deg);
+  }
+}
+
+@keyframes dots {
+  0%,
+  100% {
+    content: ".";
+  }
+
+  33.3% {
+    content: "..";
+  }
+
+  66.6% {
+    content: "...";
   }
 }
