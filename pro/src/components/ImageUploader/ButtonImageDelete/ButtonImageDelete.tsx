@@ -24,25 +24,24 @@ export const ButtonImageDelete = ({
   }
 
   return (
-    <>
-      <Button
-        onClick={() => setIsModalOpen(true)}
-        variant={ButtonVariant.TERNARY}
-      >
-        <SvgIcon
-          alt=""
-          className={styles['button-image-delete-icon']}
-          src={fullTrashIcon}
-        />
-        Supprimer
-      </Button>
-
-      <ModalImageDelete
-        isLoading={isLoading}
-        onConfirm={onConfirm}
-        onDismiss={() => setIsModalOpen(false)}
-        isDialogOpen={isModalOpen}
-      />
-    </>
+    <ModalImageDelete
+      isLoading={isLoading}
+      onConfirm={onConfirm}
+      onDismiss={() => setIsModalOpen(false)}
+      isDialogOpen={isModalOpen}
+      trigger={
+        <Button
+          onClick={() => setIsModalOpen(true)}
+          variant={ButtonVariant.TERNARY}
+        >
+          <SvgIcon
+            alt=""
+            className={styles['button-image-delete-icon']}
+            src={fullTrashIcon}
+          />
+          Supprimer
+        </Button>
+      }
+    />
   )
 }
