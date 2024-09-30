@@ -8,7 +8,6 @@ import typing
 from flask_sqlalchemy import BaseQuery
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
-from sqlalchemy.orm import aliased
 from sqlalchemy.sql.expression import extract
 
 from pcapi.core.bookings.repository import field_to_venue_timezone
@@ -770,9 +769,6 @@ def get_filtered_collective_booking_report(
     event_date: datetime | None = None,
     venue_id: int | None = None,
 ) -> BaseQuery:
-    VenueOffererAddress = aliased(offerers_models.OffererAddress)
-    VenueAddress = aliased(geography_models.Address)
-
     with_entities: tuple[typing.Any, ...] = (
         offerers_models.Venue.common_name.label("venueName"),  # type: ignore[attr-defined]
         offerers_models.Offerer.postalCode.label("offererPostalCode"),
@@ -799,10 +795,7 @@ def get_filtered_collective_booking_report(
     )
 
     if FeatureToggle.WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE.is_active():
-        with_entities += (
-            geography_models.Address.departmentCode.label("offerDepartmentCode"),
-            VenueAddress.departmentCode.label("venueDepartmentCode"),
-        )
+        with_entities += (geography_models.Address.departmentCode.label("venueDepartmentCode"),)
     else:
         with_entities += (offerers_models.Venue.departementCode.label("venueDepartmentCode"),)
 
@@ -816,10 +809,11 @@ def get_filtered_collective_booking_report(
             (educational_models.CollectiveStock.collectiveOffer,),
             (educational_models.CollectiveBooking.educationalRedactor,),
             (educational_models.CollectiveBooking.educationalInstitution,),
-            (educational_models.CollectiveOffer.offererAddress,),
-            (offerers_models.OffererAddress.address,),
-            (VenueOffererAddress, offerers_models.Venue.offererAddressId == VenueOffererAddress.id),
-            (VenueAddress, VenueOffererAddress.addressId == VenueAddress.id),
+            (
+                offerers_models.OffererAddress,
+                offerers_models.Venue.offererAddressId == offerers_models.OffererAddress.id,
+            ),
+            (geography_models.Address, offerers_models.OffererAddress.addressId == geography_models.Address.id),
         ),
     )
     bookings_query = bookings_query.with_entities(*with_entities)
