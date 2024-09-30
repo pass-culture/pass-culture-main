@@ -271,6 +271,7 @@ export const DetailsScreen = ({ venues }: DetailsScreenProps): JSX.Element => {
 
   return (
     <>
+      <FormLayout.MandatoryInfo />
       {isEanSearchDisplayed && (
         <DetailsEanSearch
           productId={formik.values.productId}
@@ -285,7 +286,6 @@ export const DetailsScreen = ({ venues }: DetailsScreenProps): JSX.Element => {
         <Form>
           <FormLayout fullWidthActions>
             <ScrollToFirstErrorAfterSubmit />
-            <FormLayout.MandatoryInfo />
             <DetailsForm
               isEanSearchDisplayed={isEanSearchDisplayed}
               isProductBased={isProductBased}
