@@ -18,3 +18,12 @@ export const isOfferAllocineSynchronized = (
   }
   return isAllocineProvider(offer.lastProvider)
 }
+
+export const isOfferProductBased = (
+  offer?: GetIndividualOfferResponseModel | null
+): boolean => {
+  if (!offer) {
+    return false
+  }
+  return Boolean(offer.productId) && !isOfferSynchronized(offer)
+}

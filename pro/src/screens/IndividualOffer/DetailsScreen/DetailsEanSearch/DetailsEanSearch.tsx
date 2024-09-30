@@ -19,17 +19,19 @@ import { eanSearchValidationSchema } from '../validationSchema'
 import styles from './DetailsEanSearch.module.scss'
 
 export type DetailsEanSearchProps = {
+  isDirtyDraftOffer: boolean
   productId: string
   subcategoryId: string
-  isOfferProductBased: boolean
+  ean?: string
   onEanSearch: (ean: string, product: Product) => Promise<void>
   resetForm: () => void
 }
 
 export const DetailsEanSearch = ({
+  isDirtyDraftOffer,
   productId,
   subcategoryId,
-  isOfferProductBased,
+  ean: initialEan,
   onEanSearch,
   resetForm,
 }: DetailsEanSearchProps): JSX.Element => {
@@ -40,11 +42,12 @@ export const DetailsEanSearch = ({
   const [apiError, setApiError] = useState<string | null>(null)
   const [wasCleared, setWasCleared] = useState(false)
 
-  const isNotAnOfferYetButProductBased = !isOfferProductBased && !!productId
-  const isProductBased = isOfferProductBased || isNotAnOfferYetButProductBased
+  const isProductBased = !!productId
+  const isDirtyDraftOfferProductBased = isDirtyDraftOffer && isProductBased
+  const isDirtyDraftOfferNotProductBased = isDirtyDraftOffer && !isProductBased
 
   const formik = useFormik({
-    initialValues: { eanSearch: '' },
+    initialValues: { eanSearch: initialEan || '' },
     validationSchema: eanSearchValidationSchema,
     onSubmit: () => undefined,
   })
@@ -64,14 +67,17 @@ export const DetailsEanSearch = ({
   }, [wasCleared, productId])
 
   useEffect(() => {
-    if (!isProductBased && isSubCategoryCDOrVinyl(subcategoryId)) {
+    if (
+      isDirtyDraftOfferNotProductBased &&
+      isSubCategoryCDOrVinyl(subcategoryId)
+    ) {
       setSubcatError(
         'Les offres de type CD ou Vinyle doivent être liées à un produit.'
       )
     } else {
       setSubcatError(null)
     }
-  }, [subcategoryId, isProductBased])
+  }, [isDirtyDraftOfferNotProductBased, subcategoryId])
 
   const onSearch = async () => {
     if (ean) {
@@ -107,7 +113,7 @@ export const DetailsEanSearch = ({
   const shouldInputBeRequired = !!subcatError
   const shouldButtonBeDisabled =
     isProductBased || !ean || !!formikError || !!apiError || isFetchingProduct
-  const displayClearButton = isNotAnOfferYetButProductBased
+  const displayClearButton = isDirtyDraftOfferProductBased
 
   const label = (
     <>
@@ -169,7 +175,7 @@ export const DetailsEanSearch = ({
             <div role="status" className={styles['details-ean-search-callout']}>
               {isProductBased && (
                 <EanSearchCallout
-                  isDirtyDraftOfferProductBased={isNotAnOfferYetButProductBased}
+                  isDirtyDraftOfferProductBased={isDirtyDraftOfferProductBased}
                 />
               )}
             </div>

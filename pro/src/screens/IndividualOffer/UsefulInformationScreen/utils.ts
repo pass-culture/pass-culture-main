@@ -11,7 +11,7 @@ import {
   OFFER_STATUS_PENDING,
   OFFER_STATUS_REJECTED,
 } from 'core/Offers/constants'
-import { isOfferSynchronized } from 'core/Offers/utils/synchronization'
+import { isOfferSynchronized } from 'core/Offers/utils/typology'
 import { AccessibilityEnum } from 'core/shared/types'
 import { computeAddressDisplayName } from 'repository/venuesService'
 

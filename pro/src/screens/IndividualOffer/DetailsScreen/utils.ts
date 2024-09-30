@@ -9,7 +9,7 @@ import {
   SubcategoryIdEnum,
 } from 'apiClient/v1'
 import { showOptionsTree } from 'core/Offers/categoriesSubTypes'
-import { isOfferSynchronized } from 'core/Offers/utils/synchronization'
+import { isOfferSynchronized } from 'core/Offers/utils/typology'
 import { SelectOption } from 'custom_types/form'
 import { computeVenueDisplayName } from 'repository/venuesService'
 
