@@ -1,5 +1,4 @@
 import { addDays, isBefore, max } from 'date-fns'
-import React from 'react'
 
 import {
   CollectiveBookingBankAccountStatus,
@@ -11,7 +10,6 @@ import { useAnalytics } from 'app/App/analytics/firebase'
 import { BOOKING_STATUS } from 'core/Bookings/constants'
 import { CollectiveBookingsEvents } from 'core/FirebaseEvents/constants'
 import fullEditIcon from 'icons/full-edit.svg'
-import fullLinkIcon from 'icons/full-link.svg'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import {
@@ -182,7 +180,6 @@ export const CollectiveTimeLine = ({
                   variant={ButtonVariant.TERNARY}
                   to="https://aide.passculture.app/hc/fr/articles/4405297381788--Acteurs-Culturels-Que-faire-si-le-groupe-scolaire-n-est-pas-au-complet-ou-doit-annuler-sa-participation-"
                   isExternal
-                  icon={fullLinkIcon}
                 >
                   Je rencontre un problème à cette étape
                 </ButtonLink>
@@ -260,11 +257,11 @@ export const CollectiveTimeLine = ({
           <br />
           <br />
           Nous espérons que votre évènement s’est bien déroulé.
+          <br />
           <ButtonLink
             variant={ButtonVariant.TERNARY}
             to="https://aide.passculture.app/hc/fr/articles/4405297381788--Acteurs-Culturels-Que-faire-si-le-groupe-scolaire-n-est-pas-au-complet-ou-doit-annuler-sa-participation-"
             isExternal
-            icon={fullLinkIcon}
           >
             Je rencontre un problème à cette étape
           </ButtonLink>
@@ -324,7 +321,6 @@ export const CollectiveTimeLine = ({
           variant={ButtonVariant.TERNARY}
           to="https://aide.passculture.app/hc/fr/articles/4411992051601"
           isExternal
-          icon={fullLinkIcon}
         >
           Voir le calendrier des remboursements
         </ButtonLink>
@@ -387,7 +383,6 @@ export const CollectiveTimeLine = ({
         <ButtonLink
           variant={ButtonVariant.TERNARY}
           to={`remboursements/informations-bancaires?structure=${bookingDetails.offererId}`}
-          icon={fullLinkIcon}
           className={styles['button-important']}
         >
           Paramétrer les informations bancaires
@@ -412,7 +407,6 @@ export const CollectiveTimeLine = ({
           variant={ButtonVariant.TERNARY}
           to={`https://www.demarches-simplifiees.fr/dossiers/${bookingDetails.venueDMSApplicationId}/messagerie`}
           isExternal
-          icon={fullLinkIcon}
         >
           Voir le dossier en cours
         </ButtonLink>

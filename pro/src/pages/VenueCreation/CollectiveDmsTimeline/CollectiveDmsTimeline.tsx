@@ -3,7 +3,6 @@ import { useAnalytics } from 'app/App/analytics/firebase'
 import { Callout } from 'components/Callout/Callout'
 import { CalloutVariant } from 'components/Callout/types'
 import { Events } from 'core/FirebaseEvents/constants'
-import fullLinkIcon from 'icons/full-link.svg'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { Timeline, TimelineStepType } from 'ui-kit/Timeline/Timeline'
@@ -88,7 +87,6 @@ export const CollectiveDmsTimeline = ({
           variant={ButtonVariant.TERNARY}
           to={collectiveDmsApplicationLink}
           isExternal
-          icon={fullLinkIcon}
           onClick={() =>
             logClickOnDmsLink(DMSApplicationstatus.EN_CONSTRUCTION)
           }
@@ -99,7 +97,6 @@ export const CollectiveDmsTimeline = ({
           variant={ButtonVariant.TERNARY}
           to={collectiveDmsContactSupport}
           isExternal
-          icon={fullLinkIcon}
         >
           Contacter les services des Ministères de l’Education Nationale et de
           la Culture
@@ -128,7 +125,6 @@ export const CollectiveDmsTimeline = ({
           variant={ButtonVariant.TERNARY}
           to={collectiveDmsApplicationLink}
           isExternal
-          icon={fullLinkIcon}
           onClick={() => logClickOnDmsLink(DMSApplicationstatus.EN_INSTRUCTION)}
         >
           Consulter ma messagerie sur Démarches Simplifiées
@@ -169,7 +165,6 @@ export const CollectiveDmsTimeline = ({
           variant={ButtonVariant.TERNARY}
           to={collectiveDmsApplicationLink}
           isExternal
-          icon={fullLinkIcon}
           onClick={() => logClickOnDmsLink(DMSApplicationstatus.ACCEPTE)}
         >
           Consulter ma messagerie sur Démarches Simplifiées
