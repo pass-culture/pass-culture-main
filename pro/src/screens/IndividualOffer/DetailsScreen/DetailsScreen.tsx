@@ -17,6 +17,10 @@ import { Events } from 'core/FirebaseEvents/constants'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
 import { isOfferDisabled } from 'core/Offers/utils/isOfferDisabled'
+import {
+  isOfferProductBased,
+  isOfferSynchronized,
+} from 'core/Offers/utils/typology'
 import { PATCH_SUCCESS_MESSAGE } from 'core/shared/constants'
 import { useActiveFeature } from 'hooks/useActiveFeature'
 import { useNotification } from 'hooks/useNotification'
@@ -66,13 +70,14 @@ export const DetailsScreen = ({ venues }: DetailsScreenProps): JSX.Element => {
   } = useIndividualOfferImageUpload()
   const queryParams = new URLSearchParams(search)
   const queryOfferType = queryParams.get('offer-type')
+  const offerSubtype = getOfferSubtypeFromParam(queryOfferType)
+  const categoryStatus = getCategoryStatusFromOfferSubtype(offerSubtype)
 
   const areSuggestedSubcategoriesUsed = useSuggestedSubcategoriesAbTest()
   const isSearchByEanEnabled = useActiveFeature('WIP_EAN_CREATION')
 
   const { categories, subCategories, offer } = useIndividualOfferContext()
-  const offerSubtype = getOfferSubtypeFromParam(queryOfferType)
-  const categoryStatus = getCategoryStatusFromOfferSubtype(offerSubtype)
+  const isDirtyDraftOffer = !offer
 
   const [filteredCategories, filteredSubcategories] = filterCategories(
     categories,
@@ -89,16 +94,15 @@ export const DetailsScreen = ({ venues }: DetailsScreenProps): JSX.Element => {
     (venue) => venue.venueTypeCode === ('RECORD_STORE' as VenueTypeCode)
   )
 
-  const initialValues =
-    offer === null
-      ? setDefaultInitialValues({
-          filteredVenues,
-          areSuggestedSubcategoriesUsed,
-        })
-      : setDefaultInitialValuesFromOffer({
-          offer,
-          subcategories: subCategories,
-        })
+  const initialValues = isDirtyDraftOffer
+    ? setDefaultInitialValues({
+        filteredVenues,
+        areSuggestedSubcategoriesUsed,
+      })
+    : setDefaultInitialValuesFromOffer({
+        offer,
+        subcategories: subCategories,
+      })
 
   const onSubmit = async (formValues: DetailsFormValues): Promise<void> => {
     // Submit
@@ -106,12 +110,12 @@ export const DetailsScreen = ({ venues }: DetailsScreenProps): JSX.Element => {
       // Draft offer PATCH requests are useless for product-based offers
       // and synchronized / provider offers since neither of the inputs displayed in
       // DetailsScreen can be edited at all
-      const isProviderOffer = !!offer?.lastProvider
       const shouldNotPatchData =
-        isProviderOffer || (isSearchByEanEnabled && !!offer?.productId)
+        isOfferSynchronized(offer) ||
+        (isSearchByEanEnabled && isOfferProductBased(offer))
       let receivedOfferId = offer?.id
       let response
-      if (!offer) {
+      if (isDirtyDraftOffer) {
         response = await api.postDraftOffer(
           serializeDetailsPostData(formValues)
         )
@@ -198,10 +202,9 @@ export const DetailsScreen = ({ venues }: DetailsScreenProps): JSX.Element => {
   // (Draft) offers are created via POST request.
   // On Details screen, the form might be pre-filled with a product,
   // until the form is submitted, the draft offer is not created yet.
-  const isOfferProductBased = !!offer && !!offer.productId
-  const isOfferButNotProductBased = !!offer && !offer.productId
-  const isDirtyDraftOfferProductBased = !offer && !!formik.values.productId
-  const isProductBased = isOfferProductBased || isDirtyDraftOfferProductBased
+  const isOfferButNotProductBased =
+    !isDirtyDraftOffer && !isOfferProductBased(offer)
+  const isProductBased = !!formik.values.productId
 
   const readOnlyFields = setFormReadOnlyFields(offer, isProductBased)
   const isEanSearchAvailable = isSearchByEanEnabled && isRecordStore
@@ -212,7 +215,7 @@ export const DetailsScreen = ({ venues }: DetailsScreenProps): JSX.Element => {
   const isEanSearchCalloutAloneDisplayed =
     isEanSearchAvailable &&
     mode === OFFER_WIZARD_MODE.EDITION &&
-    isOfferProductBased
+    isOfferProductBased(offer)
 
   const onEanSearch = async (ean: string, product: Product): Promise<void> => {
     const {
@@ -274,9 +277,10 @@ export const DetailsScreen = ({ venues }: DetailsScreenProps): JSX.Element => {
       <FormLayout.MandatoryInfo />
       {isEanSearchDisplayed && (
         <DetailsEanSearch
+          isDirtyDraftOffer={isDirtyDraftOffer}
           productId={formik.values.productId}
           subcategoryId={formik.values.subcategoryId}
-          isOfferProductBased={isOfferProductBased}
+          ean={formik.values.ean}
           onEanSearch={onEanSearch}
           resetForm={formik.resetForm}
         />

@@ -35,12 +35,16 @@ const LABELS = {
   eanSearchButton: /Rechercher/,
 }
 
-type DetailsEanSearchTestProps = Partial<DetailsEanSearchProps>
+type DetailsEanSearchTestProps = Partial<DetailsEanSearchProps> & {
+  wasEanSearchPerformed?: boolean
+}
 
 const EanSearchWrappedWithFormik = ({
+  isDirtyDraftOffer = false,
+  wasEanSearchPerformed = false,
   productId = DEFAULT_DETAILS_FORM_VALUES.productId,
   subcategoryId = DEFAULT_DETAILS_FORM_VALUES.subcategoryId,
-  isOfferProductBased = false,
+  ean = DEFAULT_DETAILS_FORM_VALUES.ean,
   onEanSearch = vi.fn(),
   resetForm = vi.fn(),
 }: DetailsEanSearchTestProps): JSX.Element => {
@@ -52,12 +56,20 @@ const EanSearchWrappedWithFormik = ({
     onSubmit: vi.fn(),
   })
 
+  const hasCompleteValues = !isDirtyDraftOffer || wasEanSearchPerformed
+  const mockedSubCategoryId = hasCompleteValues
+    ? 'SUPPORT_PHYSIQUE_MUSIQUE_VINYLE'
+    : subcategoryId
+  const mockedProductId = hasCompleteValues ? '0000' : productId
+  const mockedEan = hasCompleteValues ? '9781234567897' : ean
+
   return (
     <FormikProvider value={formik}>
       <DetailsEanSearch
-        productId={productId}
-        subcategoryId={subcategoryId}
-        isOfferProductBased={isOfferProductBased}
+        isDirtyDraftOffer={isDirtyDraftOffer}
+        productId={mockedProductId}
+        subcategoryId={mockedSubCategoryId}
+        ean={mockedEan}
         onEanSearch={onEanSearch}
         resetForm={resetForm}
       />
@@ -65,7 +77,7 @@ const EanSearchWrappedWithFormik = ({
   )
 }
 
-const renderDetailsEanSearch = (props: DetailsEanSearchTestProps) => {
+const renderDetailsEanSearch = (props: DetailsEanSearchTestProps = {}) => {
   return renderWithProviders(
     <IndividualOfferContext.Provider value={contextValue}>
       <EanSearchWrappedWithFormik {...props} />
@@ -104,7 +116,7 @@ const getButton = () =>
 
 describe('DetailsEanSearch', () => {
   it('should display an input and a submit button within a dedicated form', () => {
-    renderDetailsEanSearch({})
+    renderDetailsEanSearch()
 
     const input = getInput()
     const button = getButton()
@@ -118,7 +130,7 @@ describe('DetailsEanSearch', () => {
     describe('when no EAN search has been performed', () => {
       it('should call the ean search API when the form is submitted', async () => {
         const onEanSearch = vi.fn()
-        renderDetailsEanSearch({ onEanSearch })
+        renderDetailsEanSearch({ isDirtyDraftOffer: true, onEanSearch })
 
         await userEvent.type(getInput(), '9781234567897')
         await userEvent.click(getButton())
@@ -129,7 +141,7 @@ describe('DetailsEanSearch', () => {
 
       describe('when the input has format issues', () => {
         it('should display an error message', async () => {
-          renderDetailsEanSearch({})
+          renderDetailsEanSearch({ isDirtyDraftOffer: true })
 
           await userEvent.type(getInput(), '123')
           await userEvent.tab()
@@ -141,7 +153,7 @@ describe('DetailsEanSearch', () => {
         })
 
         it('should disable the submit button', async () => {
-          renderDetailsEanSearch({})
+          renderDetailsEanSearch({ isDirtyDraftOffer: true })
 
           expect(getButton()).toBeDisabled()
           await userEvent.type(getInput(), '123')
@@ -152,7 +164,7 @@ describe('DetailsEanSearch', () => {
       describe('when the subcategory requires an EAN', () => {
         it('should display a (cumulative) error message that cannot be cleared on new inputs', async () => {
           renderDetailsEanSearch({
-            isOfferProductBased: false,
+            isDirtyDraftOffer: true,
             subcategoryId: 'SUPPORT_PHYSIQUE_MUSIQUE_VINYLE',
           })
 
@@ -167,7 +179,10 @@ describe('DetailsEanSearch', () => {
         })
 
         it('should let the submit button enabled', async () => {
-          renderDetailsEanSearch({ isOfferProductBased: false })
+          renderDetailsEanSearch({
+            isDirtyDraftOffer: true,
+            subcategoryId: 'SUPPORT_PHYSIQUE_MUSIQUE_VINYLE',
+          })
 
           await userEvent.type(getInput(), '9781234567897')
           expect(getButton()).not.toBeDisabled()
@@ -175,13 +190,11 @@ describe('DetailsEanSearch', () => {
       })
     })
 
-    /* DetailsEanSearch is rerendered with productId and subcategoryId props. */
     describe('when an EAN search is performed succesfully', () => {
       it('should display a success message', () => {
         renderDetailsEanSearch({
-          isOfferProductBased: false,
-          productId: '0000',
-          subcategoryId: 'SUPPORT_PHYSIQUE_MUSIQUE_VINYLE',
+          isDirtyDraftOffer: true,
+          wasEanSearchPerformed: true,
         })
 
         const status = screen.getAllByRole('status')
@@ -194,9 +207,8 @@ describe('DetailsEanSearch', () => {
 
       it('should be entirely disabled', () => {
         renderDetailsEanSearch({
-          isOfferProductBased: false,
-          productId: '0000',
-          subcategoryId: 'SUPPORT_PHYSIQUE_MUSIQUE_VINYLE',
+          isDirtyDraftOffer: true,
+          wasEanSearchPerformed: true,
         })
 
         expect(getInput()).toBeDisabled()
@@ -206,9 +218,8 @@ describe('DetailsEanSearch', () => {
       it('should clear the form when the clear button is clicked', async () => {
         const resetForm = vi.fn()
         renderDetailsEanSearch({
-          isOfferProductBased: false,
-          productId: '0000',
-          subcategoryId: 'SUPPORT_PHYSIQUE_MUSIQUE_VINYLE',
+          isDirtyDraftOffer: true,
+          wasEanSearchPerformed: true,
           resetForm,
         })
 
@@ -217,56 +228,44 @@ describe('DetailsEanSearch', () => {
         })
 
         expect(clearButton).toBeInTheDocument()
+
         await userEvent.click(clearButton)
         expect(resetForm.mock.calls.length).toBe(1)
       })
     })
 
     describe('when an EAN search is performed and ends with an error', () => {
-      beforeEach(() => {
-        vi.spyOn(api, 'getProductByEan').mockRejectedValue(new Error('error'))
-        renderDetailsEanSearch({ isOfferProductBased: false })
-      })
-
       it('should display an error message', async () => {
-        const button = screen.getByRole('button', {
-          name: LABELS.eanSearchButton,
-        })
-        const eanInput = screen.getByRole('textbox', {
-          name: LABELS.eanSearchInput,
-        })
+        vi.spyOn(api, 'getProductByEan').mockRejectedValue(new Error('error'))
+        renderDetailsEanSearch({ isDirtyDraftOffer: true })
 
         expect(screen.queryByText(errorMessage)).not.toBeInTheDocument()
 
-        await userEvent.type(eanInput, '9781234567897')
-        await userEvent.click(button)
+        await userEvent.type(getInput(), '9781234567897')
+        await userEvent.click(getButton())
 
         expect(screen.queryByText(errorMessage)).toBeInTheDocument()
       })
+
       it('should disable the submit button', async () => {
-        const button = screen.getByRole('button', {
-          name: LABELS.eanSearchButton,
-        })
-        const eanInput = screen.getByRole('textbox', {
-          name: LABELS.eanSearchInput,
-        })
+        vi.spyOn(api, 'getProductByEan').mockRejectedValue(new Error('error'))
+        renderDetailsEanSearch({ isDirtyDraftOffer: true })
 
-        await userEvent.type(eanInput, '9781234567897')
+        await userEvent.type(getInput(), '9781234567897')
+        await userEvent.click(getButton())
 
-        expect(button).not.toBeDisabled()
-        await userEvent.click(button)
-
-        expect(button).toBeDisabled()
+        expect(getButton()).toBeDisabled()
       })
     })
   })
 
   describe('when the draft offer has been created and the offer is product-based', () => {
-    beforeEach(() => {
-      renderDetailsEanSearch({ isOfferProductBased: true })
-    })
-
     it('should not display the clear button anymore', () => {
+      renderDetailsEanSearch({
+        isDirtyDraftOffer: false,
+        wasEanSearchPerformed: true,
+      })
+
       expect(
         screen.queryByRole('button', {
           name: clearButtonLabel,
@@ -275,6 +274,11 @@ describe('DetailsEanSearch', () => {
     })
 
     it('should display an info message', () => {
+      renderDetailsEanSearch({
+        isDirtyDraftOffer: false,
+        wasEanSearchPerformed: true,
+      })
+
       expect(screen.queryByText(infoMessage)).toBeInTheDocument()
     })
   })
