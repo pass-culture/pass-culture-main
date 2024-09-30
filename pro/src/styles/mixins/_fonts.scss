@@ -6,30 +6,6 @@ $body-line-height: 1.25em;
 $body-font-size: rem.torem(15px);
 $caption-line-height: rem.torem(16px);
 
-@mixin title1() {
-  font-family: var(--typography-title1-font-family), system-ui, sans-serif;
-  font-size: var(--typography-title1-font-size);
-  line-height: var(--typography-title1-line-height);
-}
-
-@mixin title2() {
-  font-family: var(--typography-title2-font-family), system-ui, sans-serif;
-  font-size: var(--typography-title2-font-size);
-  line-height: var(--typography-title2-line-height);
-}
-
-@mixin title3() {
-  font-family: var(--typography-title3-font-family), system-ui, sans-serif;
-  font-size: var(--typography-title3-font-size);
-  line-height: var(--typography-title3-line-height);
-}
-
-@mixin title4() {
-  font-family: var(--typography-title4-font-family), system-ui, sans-serif;
-  font-size: var(--typography-title4-font-size);
-  line-height: var(--typography-title4-line-height);
-}
-
 @mixin button() {
   font-family: Montserrat-Bold, system-ui, sans-serif;
   font-size: rem.torem(15px);

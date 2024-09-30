@@ -3,11 +3,12 @@
 @use "styles/variables/_size.scss" as size;
 @use "styles/mixins/_forms.scss" as formsM;
 @use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/fonts-design-system.scss" as fonts-design-system;
 
 .title {
   margin-bottom: rem.torem(24px);
 
-  @include fonts.title3;
+  @include fonts-design-system.title3;
 
   @media (max-width: size.$tablet) {
     margin-top: rem.torem(32px);
@@ -22,7 +23,7 @@
 }
 
 .legend {
-  @include fonts.title4;
+  @include fonts-design-system.title4;
 
   display: flex;
   align-items: center;

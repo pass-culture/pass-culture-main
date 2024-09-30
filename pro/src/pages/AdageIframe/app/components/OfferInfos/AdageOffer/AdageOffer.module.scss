@@ -1,5 +1,6 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/fonts-design-system.scss" as fonts-design-system;
 @use "styles/variables/_size.scss" as size;
 
 .offer {
@@ -56,7 +57,7 @@
     margin-bottom: rem.torem(16px);
 
     &-title {
-      @include fonts.title2;
+      @include fonts-design-system.title2;
     }
   }
 

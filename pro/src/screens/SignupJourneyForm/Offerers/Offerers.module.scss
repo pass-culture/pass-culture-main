@@ -1,5 +1,6 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/fonts-design-system.scss" as fonts-design-system;
 
 $offerers-gap: rem.torem(16px);
 $medium-gap: rem.torem(16px);
@@ -54,7 +55,7 @@ $small-gap: rem.torem(8px);
 }
 
 .title-4 {
-  @include fonts.title4;
+  @include fonts-design-system.title4;
 }
 
 .dialog-content {

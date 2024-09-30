@@ -1,4 +1,5 @@
 @use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/fonts-design-system.scss" as fonts-design-system;
 @use "styles/mixins/_rem.scss" as rem;
 
 .section {
@@ -7,7 +8,7 @@
   padding-top: 0;
 
   .main-list-title {
-    @include fonts.title2;
+    @include fonts-design-system.title2;
 
     border-bottom: rem.torem(2px) solid var(--color-black);
     margin-bottom: rem.torem(24px);
@@ -15,7 +16,7 @@
   }
 
   .main-list-title-new {
-    @include fonts.title2;
+    @include fonts-design-system.title2;
 
     margin-top: rem.torem(26px);
     margin-bottom: rem.torem(24px);
@@ -120,5 +121,5 @@
 }
 
 .title {
-  @include fonts.title1;
+  @include fonts-design-system.title1;
 }

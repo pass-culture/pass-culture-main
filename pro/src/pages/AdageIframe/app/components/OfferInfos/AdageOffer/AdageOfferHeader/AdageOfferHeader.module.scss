@@ -1,5 +1,6 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/fonts-design-system.scss" as fonts-design-system;
 @use "styles/variables/_size.scss" as size;
 
 .offer-header-image-container {
@@ -39,7 +40,7 @@
 }
 
 .offer-header-title {
-  @include fonts.title4;
+  @include fonts-design-system.title4;
 }
 
 .offer-header-details-structure {
@@ -89,7 +90,7 @@
 
 @container (min-width: #{size.$mobile}) {
   .offer-header-title {
-    @include fonts.title3;
+    @include fonts-design-system.title3;
   }
 
   .offer-header-title-container {
@@ -108,6 +109,6 @@
 
 @container (min-width: #{size.$tablet}) {
   .offer-header-title {
-    @include fonts.title1;
+    @include fonts-design-system.title1;
   }
 }

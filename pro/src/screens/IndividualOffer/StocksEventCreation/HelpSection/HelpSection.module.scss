@@ -2,6 +2,7 @@
 @use "styles/variables/_forms.scss" as forms;
 @use "styles/variables/_size.scss" as size;
 @use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/fonts-design-system.scss" as fonts-design-system;
 
 .container {
   position: relative;
@@ -11,7 +12,7 @@
 }
 
 .title {
-  @include fonts.title2;
+  @include fonts-design-system.title2;
 
   position: absolute;
   top: 0;
