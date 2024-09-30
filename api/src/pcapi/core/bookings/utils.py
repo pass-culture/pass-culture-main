@@ -47,13 +47,22 @@ def _apply_departement_timezone(naive_datetime: datetime | None, departement_cod
     return naive_datetime.astimezone(departement_tz) if naive_datetime is not None else None
 
 
-def convert_booking_dates_utc_to_venue_timezone(
-    date_without_timezone: datetime, booking: "CollectiveBooking | Booking"
-) -> datetime | None:
+def convert_booking_dates_utc_to_venue_timezone(date_without_timezone: datetime, booking: "Booking") -> datetime | None:
     if FeatureToggle.WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE.is_active():
         if booking.offerDepartmentCode:
             department_code = booking.offerDepartmentCode
             return _apply_departement_timezone(naive_datetime=date_without_timezone, departement_code=department_code)
+    if booking.venueDepartmentCode:
+        return _apply_departement_timezone(
+            naive_datetime=date_without_timezone, departement_code=booking.venueDepartmentCode
+        )
+    offerer_department_code = postal_code_utils.PostalCode(booking.offererPostalCode).get_departement_code()
+    return _apply_departement_timezone(naive_datetime=date_without_timezone, departement_code=offerer_department_code)
+
+
+def convert_collective_booking_dates_utc_to_venue_timezone(
+    date_without_timezone: datetime, booking: "CollectiveBooking"
+) -> datetime | None:
     if booking.venueDepartmentCode:
         return _apply_departement_timezone(
             naive_datetime=date_without_timezone, departement_code=booking.venueDepartmentCode
