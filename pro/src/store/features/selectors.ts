@@ -16,8 +16,16 @@ export const isFeatureActive = (
 
 const selectFeatures = (state: RootState) => state.features.list
 
-export const selectActiveFeatures = createSelector(selectFeatures, (features) =>
-  [...features].filter((feature) => feature.isActive).map(({ name }) => name)
+export const selectActiveFeatures = createSelector(
+  selectFeatures,
+  (features) => {
+    if (!Array.isArray(features)) {
+      return []
+    }
+    return features
+      .filter((feature) => feature.isActive)
+      .map(({ name }) => name)
+  }
 )
 
 export const selectLastLoaded = (state: RootState) => state.features.lastLoaded
