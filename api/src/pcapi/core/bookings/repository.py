@@ -338,8 +338,8 @@ def _create_export_query(offer_id: int, event_beginning_date: date) -> BaseQuery
     )
     if FeatureToggle.WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE.is_active():
         query = (
-            query.join(Offer.offererAddress)
-            .join(OffererAddress.address)
+            query.outerjoin(Offer.offererAddress)
+            .outerjoin(OffererAddress.address)
             .join(VenueOffererAddress, Venue.offererAddressId == VenueOffererAddress.id)
             .join(VenueAddress, VenueOffererAddress.addressId == VenueAddress.id)
         )
