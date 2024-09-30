@@ -38,7 +38,11 @@ export const StoreProvider = ({
     const initializeFeatures = async () => {
       try {
         const response = await api.listFeatures()
-        dispatch(updateFeatures(response))
+
+        // FIXME: This is a workaround to prevent the app from crashing when
+        // the response is undefined. This should be fixed in the API.
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+        dispatch(updateFeatures(response || []))
       } catch {
         dispatch(updateFeatures([]))
       }
