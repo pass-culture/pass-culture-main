@@ -6,8 +6,8 @@ from pcapi.routes.serialization import BaseModel
 class UpdateSendinblueContactRequest(BaseModel):
     email: str
     attributes: dict
-    contact_list_ids: list[int]
-    emailBlacklisted: bool
+    contact_list_ids: list[int] | None = None
+    emailBlacklisted: bool | None = None
 
 
 class SendTransactionalEmailRequest(BaseModel):
