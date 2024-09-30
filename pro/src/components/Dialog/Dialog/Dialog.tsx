@@ -16,6 +16,8 @@ export interface DialogProps {
   icon?: string
   hideIcon?: boolean
   extraClassNames?: string
+  trigger?: React.ReactNode | React.ReactNode[]
+  open?: boolean
 }
 
 export const Dialog = ({
@@ -27,11 +29,17 @@ export const Dialog = ({
   icon,
   hideIcon = false,
   extraClassNames,
+  trigger,
+  open,
 }: DialogProps): JSX.Element => {
   const titleId = useId()
 
   return (
-    <DialogBuilder defaultOpen onOpenChange={(open) => !open && onCancel()}>
+    <DialogBuilder
+      open={open}
+      onOpenChange={(open) => !open && onCancel()}
+      trigger={trigger}
+    >
       <div className={`${styles['dialog']} ${extraClassNames}`}>
         {!hideIcon && (
           <SvgIcon
