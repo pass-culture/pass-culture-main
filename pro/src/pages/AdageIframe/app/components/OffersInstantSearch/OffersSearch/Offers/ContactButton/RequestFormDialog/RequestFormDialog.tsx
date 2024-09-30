@@ -27,6 +27,7 @@ export interface RequestFormDialogProps {
   contactForm: string
   contactUrl: string
   isPreview: boolean
+  isDialogOpen: boolean
 }
 
 export const RequestFormDialog = ({
@@ -39,6 +40,7 @@ export const RequestFormDialog = ({
   contactForm,
   contactUrl,
   isPreview,
+  isDialogOpen,
 }: RequestFormDialogProps): JSX.Element => {
   const notify = useNotification()
 
@@ -268,6 +270,7 @@ export const RequestFormDialog = ({
       onCancel={closeRequestFormDialog}
       title=""
       hideIcon
+      open={isDialogOpen}
     >
       <span className={styles['form-title']}>
         Vous souhaitez contacter ce partenaire ?

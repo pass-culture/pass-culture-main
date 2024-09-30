@@ -8,12 +8,14 @@ interface OfferEducationalModalProps {
   onDismiss(): void
   onValidate(): void
   isFromOffer?: boolean
+  isDialogOpen: boolean
 }
 
 export const CancelCollectiveBookingModal = ({
   onDismiss,
   onValidate,
   isFromOffer = false,
+  isDialogOpen,
 }: OfferEducationalModalProps): JSX.Element => {
   const modalTitle = isFromOffer
     ? 'Êtes-vous sûr de vouloir annuler la réservation liée à cette offre ? '
@@ -27,6 +29,7 @@ export const CancelCollectiveBookingModal = ({
       confirmText={isFromOffer ? 'Annuler la réservation' : 'Confirmer'}
       icon={isFromOffer ? strokeWrongIcon : strokeTrashIcon}
       title={modalTitle}
+      open={isDialogOpen}
     >
       {isFromOffer ? (
         <p className={styles['modal-text']}>Cette action est irréversible. </p>

@@ -23,6 +23,7 @@ const renderRequestFormDialog = (props?: Partial<RequestFormDialogProps>) => {
       contactPhone=""
       contactUrl=""
       isPreview={false}
+      isDialogOpen
       {...props}
     />
   )

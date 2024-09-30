@@ -91,34 +91,33 @@ export const StocksProviderForm = ({
           Lancer la synchronisation
         </Button>
       </div>
-      {isConfirmDialogOpened && (
-        <ConfirmDialog
-          cancelText="Annuler"
-          confirmText="Continuer"
-          onCancel={handleCloseConfirmDialog}
-          onConfirm={handleFormSubmit}
-          title="Demander la synchronisation par API avec un logiciel tiers ?"
-          icon={strokeConnectIcon}
+      <ConfirmDialog
+        cancelText="Annuler"
+        confirmText="Continuer"
+        onCancel={handleCloseConfirmDialog}
+        onConfirm={handleFormSubmit}
+        title="Demander la synchronisation par API avec un logiciel tiers ?"
+        icon={strokeConnectIcon}
+        open={isConfirmDialogOpened}
+      >
+        <p>
+          En sélectionnant un logiciel, vous l’autorisez à créer des offres
+          automatiquement et/ou à gérer les réservations. Chaque synchronisation
+          par API est spécifique et dépend de l’intégration développée par
+          l’éditeur du logiciel.
+        </p>
+        <ButtonLink
+          className={styles['aide-stock-button']}
+          icon={fullLinkIcon}
+          isExternal
+          to="https://aide.passculture.app/hc/fr/articles/10616916478236"
+          opensInNewTab
+          aria-label="Nouvelle fenêtre"
+          variant={ButtonVariant.QUATERNARY}
         >
-          <p>
-            En sélectionnant un logiciel, vous l’autorisez à créer des offres
-            automatiquement et/ou à gérer les réservations. Chaque
-            synchronisation par API est spécifique et dépend de l’intégration
-            développée par l’éditeur du logiciel.
-          </p>
-          <ButtonLink
-            className={styles['aide-stock-button']}
-            icon={fullLinkIcon}
-            isExternal
-            to="https://aide.passculture.app/hc/fr/articles/10616916478236"
-            opensInNewTab
-            aria-label="Nouvelle fenêtre"
-            variant={ButtonVariant.QUATERNARY}
-          >
-            Visitez notre FAQ pour plus d’informations
-          </ButtonLink>
-        </ConfirmDialog>
-      )}
+          Visitez notre FAQ pour plus d’informations
+        </ButtonLink>
+      </ConfirmDialog>
     </>
   )
 }

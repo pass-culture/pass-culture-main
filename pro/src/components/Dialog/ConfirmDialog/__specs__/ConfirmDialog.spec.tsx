@@ -15,6 +15,7 @@ describe('ConfirmDialog', () => {
         onCancel={onCancel}
         confirmText="Valider"
         cancelText="Annuler"
+        open
       />
     )
 
@@ -30,6 +31,7 @@ describe('ConfirmDialog', () => {
         onCancel={onCancel}
         confirmText="Valider"
         cancelText="Annuler"
+        open
       />
     )
 
@@ -46,6 +48,7 @@ describe('ConfirmDialog', () => {
         confirmText="Valider"
         cancelText="Annuler"
         confirmButtonDisabled={true}
+        open
       />
     )
 

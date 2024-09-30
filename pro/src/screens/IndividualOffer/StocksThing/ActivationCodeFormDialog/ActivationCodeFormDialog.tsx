@@ -16,6 +16,7 @@ interface ActivationCodeFormProps {
   onSubmit: (activationCodes: string[]) => void
   today: Date
   minExpirationDate: Date | null
+  isDialogOpen: boolean
 }
 
 export const ActivationCodeFormDialog = ({
@@ -23,6 +24,7 @@ export const ActivationCodeFormDialog = ({
   onSubmit,
   today,
   minExpirationDate,
+  isDialogOpen,
 }: ActivationCodeFormProps) => {
   const [errorMessage, setErrorMessage] = useState('')
   const [unsavedActivationCodes, setUnsavedActivationCodes] =
@@ -78,6 +80,7 @@ export const ActivationCodeFormDialog = ({
       title="Ajouter des codes d’activation"
       icon={strokeCodeIcon}
       extraClassNames={styles['activation-codes-upload']}
+      open={isDialogOpen}
     >
       {hasNoActivationCodes && (
         <AddActivationCodeForm

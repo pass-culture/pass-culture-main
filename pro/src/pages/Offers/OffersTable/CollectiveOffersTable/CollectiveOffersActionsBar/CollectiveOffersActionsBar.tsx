@@ -280,27 +280,25 @@ export function CollectiveOffersActionsBar({
 
   return (
     <>
-      {isDeactivationDialogOpen && (
-        <CollectiveDeactivationConfirmDialog
-          areAllOffersSelected={areAllOffersSelected}
-          nbSelectedOffers={selectedOffers.length}
-          onConfirm={() =>
-            updateOfferStatus(CollectiveOfferDisplayedStatus.INACTIVE)
-          }
-          onCancel={() => setIsDeactivationDialogOpen(false)}
-        />
-      )}
+      <CollectiveDeactivationConfirmDialog
+        areAllOffersSelected={areAllOffersSelected}
+        nbSelectedOffers={selectedOffers.length}
+        onConfirm={() =>
+          updateOfferStatus(CollectiveOfferDisplayedStatus.INACTIVE)
+        }
+        onCancel={() => setIsDeactivationDialogOpen(false)}
+        isDialogOpen={isDeactivationDialogOpen}
+      />
 
-      {isArchiveDialogOpen && (
-        <ArchiveConfirmationModal
-          onDismiss={() => setIsArchiveDialogOpen(false)}
-          onValidate={() =>
-            updateOfferStatus(CollectiveOfferDisplayedStatus.ARCHIVED)
-          }
-          hasMultipleOffers={selectedOffers.length > 1}
-          selectedOffers={selectedOffers}
-        />
-      )}
+      <ArchiveConfirmationModal
+        onDismiss={() => setIsArchiveDialogOpen(false)}
+        onValidate={() =>
+          updateOfferStatus(CollectiveOfferDisplayedStatus.ARCHIVED)
+        }
+        hasMultipleOffers={selectedOffers.length > 1}
+        selectedOffers={selectedOffers}
+        isDialogOpen={isArchiveDialogOpen}
+      />
 
       <ActionsBarSticky>
         <ActionsBarSticky.Left>

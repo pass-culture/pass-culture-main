@@ -22,6 +22,7 @@ describe('DeactivationConfirmDialog', () => {
     onCancel: onCancelDialogMock,
     nbSelectedOffers: 0,
     onConfirm: onConfirmDialogMock,
+    isDialogOpen: true,
   }
 
   it('should called onCancel button onclick', async () => {

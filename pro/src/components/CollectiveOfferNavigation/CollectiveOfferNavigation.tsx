@@ -289,13 +289,12 @@ export const CollectiveOfferNavigation = ({
           ].includes(activeStep),
         })}
       />
-      {isArchiveModalOpen && (
-        <ArchiveConfirmationModal
-          onDismiss={() => setIsArchiveModalOpen(false)}
-          onValidate={archiveOffer}
-          offerId={offerId}
-        />
-      )}
+      <ArchiveConfirmationModal
+        onDismiss={() => setIsArchiveModalOpen(false)}
+        onValidate={archiveOffer}
+        offerId={offerId}
+        isDialogOpen={isArchiveModalOpen}
+      />
     </>
   ) : (
     <Stepper activeStep={activeStep} className={className} steps={steps} />

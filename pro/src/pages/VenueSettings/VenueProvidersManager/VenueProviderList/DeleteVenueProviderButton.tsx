@@ -57,13 +57,12 @@ export const DeleteVenueProviderButton = ({
         Supprimer
       </Button>
 
-      {isModalOpen && (
-        <DeleteVenueProviderDialog
-          onConfirm={tryToDeleteVenueProvider}
-          onCancel={() => setIsModalOpen(false)}
-          isLoading={isLoading}
-        />
-      )}
+      <DeleteVenueProviderDialog
+        onConfirm={tryToDeleteVenueProvider}
+        onCancel={() => setIsModalOpen(false)}
+        isLoading={isLoading}
+        isDialogOpen={isModalOpen}
+      />
     </>
   )
 }

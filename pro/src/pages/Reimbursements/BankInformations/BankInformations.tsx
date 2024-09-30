@@ -151,14 +151,13 @@ export const BankInformations = (): JSX.Element => {
       >
         Ajouter un compte bancaire
       </Button>
-      {showAddBankInformationsDialog && (
-        <AddBankInformationsDialog
-          closeDialog={() => {
-            setShowAddBankInformationsDialog(false)
-          }}
-          offererId={selectedOfferer?.id}
-        />
-      )}
+      <AddBankInformationsDialog
+        closeDialog={() => {
+          setShowAddBankInformationsDialog(false)
+        }}
+        offererId={selectedOfferer?.id}
+        isDialogOpen={showAddBankInformationsDialog}
+      />
       {selectedBankAccount !== null && selectedOfferer !== null && (
         <LinkVenuesDialog
           offererId={selectedOfferer.id}

@@ -142,11 +142,12 @@ export const CollectiveOfferPreviewCreationScreen = ({
           <Button onClick={publishOffer}>Publier l’offre</Button>
         </ActionsBarSticky.Right>
       </ActionsBarSticky>
-      {displayRedirectDialog && offerer?.id && (
+      {offerer?.id && (
         <RedirectToBankAccountDialog
           cancelRedirectUrl={confirmationUrl}
           offerId={offerer.id}
           venueId={offer.venue.id}
+          isDialogOpen={displayRedirectDialog}
         />
       )}
     </div>

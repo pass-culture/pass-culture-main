@@ -384,26 +384,23 @@ export const CollectiveActionsCells = ({
             </DropdownMenu.Content>
           </DropdownMenu.Portal>
         </DropdownMenu.Root>
-        {isModalOpen && shouldDisplayModal && (
-          <DuplicateOfferDialog
-            onCancel={() => setIsModalOpen(false)}
-            onConfirm={onDialogConfirm}
-          />
-        )}
-        {isCancelledBookingModalOpen && (
-          <CancelCollectiveBookingModal
-            onDismiss={() => setIsCancelledBookingModalOpen(false)}
-            onValidate={cancelBooking}
-            isFromOffer
-          />
-        )}
-        {isArchivedModalOpen && (
-          <ArchiveConfirmationModal
-            onDismiss={() => setIsArchivedModalOpen(false)}
-            onValidate={archiveOffer}
-            offerId={offer.id}
-          />
-        )}
+        <DuplicateOfferDialog
+          onCancel={() => setIsModalOpen(false)}
+          onConfirm={onDialogConfirm}
+          isDialogOpen={isModalOpen && shouldDisplayModal}
+        />
+        <CancelCollectiveBookingModal
+          onDismiss={() => setIsCancelledBookingModalOpen(false)}
+          onValidate={cancelBooking}
+          isFromOffer
+          isDialogOpen={isCancelledBookingModalOpen}
+        />
+        <ArchiveConfirmationModal
+          onDismiss={() => setIsArchivedModalOpen(false)}
+          onValidate={archiveOffer}
+          offerId={offer.id}
+          isDialogOpen={isArchivedModalOpen}
+        />
       </div>
     </td>
   )

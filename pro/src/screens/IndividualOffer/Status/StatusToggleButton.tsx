@@ -69,16 +69,15 @@ export const StatusToggleButton = ({ offer }: StatusToggleButtonProps) => {
 
   return (
     <>
-      {isPublicationConfirmationModalOpen && (
-        <ConfirmDialog
-          title={`Attention, vous allez publier une offre programmée pour le ${publicationDate} à ${publicationTime}.`}
-          secondTitle="Êtes-vous sûr de vouloir continuer ?"
-          cancelText="Annuler"
-          confirmText="Confirmer la publication"
-          onCancel={() => setIsPublicationConfirmationModalOpen(false)}
-          onConfirm={toggleOfferActiveStatus}
-        />
-      )}
+      <ConfirmDialog
+        title={`Attention, vous allez publier une offre programmée pour le ${publicationDate} à ${publicationTime}.`}
+        secondTitle="Êtes-vous sûr de vouloir continuer ?"
+        cancelText="Annuler"
+        confirmText="Confirmer la publication"
+        onCancel={() => setIsPublicationConfirmationModalOpen(false)}
+        onConfirm={toggleOfferActiveStatus}
+        open={isPublicationConfirmationModalOpen}
+      />
 
       <Button
         variant={ButtonVariant.TERNARY}

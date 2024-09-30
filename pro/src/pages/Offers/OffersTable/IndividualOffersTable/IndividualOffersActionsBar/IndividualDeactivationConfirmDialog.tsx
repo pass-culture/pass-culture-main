@@ -11,6 +11,7 @@ export interface DeactivationConfirmDialogProps {
   nbSelectedOffers: number
   onCancel: (status: boolean) => void
   onConfirm: () => void
+  isDialogOpen: boolean
 }
 
 export const IndividualDeactivationConfirmDialog = ({
@@ -18,14 +19,15 @@ export const IndividualDeactivationConfirmDialog = ({
   onCancel,
   nbSelectedOffers,
   onConfirm,
+  isDialogOpen,
 }: DeactivationConfirmDialogProps): JSX.Element => {
   const { logEvent } = useAnalytics()
   const location = useLocation()
 
   return (
     <ConfirmDialog
-      cancelText={'Annuler'}
-      confirmText={'Désactiver'}
+      cancelText="Annuler"
+      confirmText="Désactiver"
       onCancel={() => {
         logEvent(Events.CLICKED_CANCELED_SELECTED_OFFERS, {
           from: location.pathname,
@@ -51,6 +53,7 @@ export const IndividualDeactivationConfirmDialog = ({
           ? `êtes-vous sûr de vouloir la désactiver${NBSP}?`
           : `êtes-vous sûr de vouloir toutes les désactiver${NBSP}?`
       }
+      open={isDialogOpen}
     >
       {nbSelectedOffers === 1
         ? `Dans ce cas, elle ne sera plus visible sur l’application pass Culture.`

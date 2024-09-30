@@ -9,6 +9,7 @@ interface ToggleVenueProviderStatusDialogProps {
   onCancel: () => void
   isLoading: boolean
   isActive: boolean
+  isDialogOpen: boolean
 }
 
 export const ToggleVenueProviderStatusDialog = ({
@@ -16,6 +17,7 @@ export const ToggleVenueProviderStatusDialog = ({
   onCancel,
   isLoading,
   isActive,
+  isDialogOpen,
 }: ToggleVenueProviderStatusDialogProps) => {
   return (
     <ConfirmDialog
@@ -34,7 +36,8 @@ export const ToggleVenueProviderStatusDialog = ({
           : 'Réactiver la synchronisation'
       }
       cancelText="Annuler"
-      hideIcon={true}
+      hideIcon
+      open={isDialogOpen}
     >
       {isActive ? (
         <div className={style['explanation']}>

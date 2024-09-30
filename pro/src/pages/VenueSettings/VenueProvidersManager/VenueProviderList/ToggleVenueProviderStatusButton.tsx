@@ -77,14 +77,13 @@ export const ToggleVenueProviderStatusButton = ({
         </Button>
       )}
 
-      {isModalOpen && (
-        <ToggleVenueProviderStatusDialog
-          onCancel={() => setIsModalOpen(false)}
-          onConfirm={updateVenueProviderStatus}
-          isLoading={isLoading}
-          isActive={venueProvider.isActive}
-        />
-      )}
+      <ToggleVenueProviderStatusDialog
+        onCancel={() => setIsModalOpen(false)}
+        onConfirm={updateVenueProviderStatus}
+        isLoading={isLoading}
+        isActive={venueProvider.isActive}
+        isDialogOpen={isModalOpen}
+      />
     </>
   )
 }

@@ -37,13 +37,12 @@ export const ButtonImageDelete = ({
         Supprimer
       </Button>
 
-      {isModalOpen && (
-        <ModalImageDelete
-          isLoading={isLoading}
-          onConfirm={onConfirm}
-          onDismiss={() => setIsModalOpen(false)}
-        />
-      )}
+      <ModalImageDelete
+        isLoading={isLoading}
+        onConfirm={onConfirm}
+        onDismiss={() => setIsModalOpen(false)}
+        isDialogOpen={isModalOpen}
+      />
     </>
   )
 }

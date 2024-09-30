@@ -181,22 +181,20 @@ export const IndividualOffersActionsBar = ({
 
   return (
     <>
-      {isDeactivationDialogOpen && (
-        <IndividualDeactivationConfirmDialog
-          areAllOffersSelected={areAllOffersSelected}
-          nbSelectedOffers={selectedOfferIds.length}
-          onConfirm={handleDeactivateOffers}
-          onCancel={() => setIsDeactivationDialogOpen(false)}
-        />
-      )}
+      <IndividualDeactivationConfirmDialog
+        areAllOffersSelected={areAllOffersSelected}
+        nbSelectedOffers={selectedOfferIds.length}
+        onConfirm={handleDeactivateOffers}
+        onCancel={() => setIsDeactivationDialogOpen(false)}
+        isDialogOpen={isDeactivationDialogOpen}
+      />
 
-      {isDeleteDialogOpen && (
-        <DeleteConfirmDialog
-          onCancel={() => setIsDeleteDialogOpen(false)}
-          nbSelectedOffers={selectedOfferIds.length}
-          handleDelete={handleDelete}
-        />
-      )}
+      <DeleteConfirmDialog
+        onCancel={() => setIsDeleteDialogOpen(false)}
+        nbSelectedOffers={selectedOfferIds.length}
+        handleDelete={handleDelete}
+        isDialogOpen={isDeleteDialogOpen}
+      />
 
       <ActionsBarSticky>
         <ActionsBarSticky.Left>

@@ -47,7 +47,7 @@ export const RouteLeavingGuard = ({
     blocker.proceed()
   }
 
-  return blocker.state === 'blocked' ? (
+  return (
     <ConfirmDialog
       extraClassNames={extraClassNames}
       onCancel={closeModal}
@@ -58,8 +58,9 @@ export const RouteLeavingGuard = ({
       title={dialogTitle}
       confirmText={rightButton}
       cancelText={leftButton}
+      open={blocker.state === 'blocked'}
     >
       {children}
     </ConfirmDialog>
-  ) : null
+  )
 }

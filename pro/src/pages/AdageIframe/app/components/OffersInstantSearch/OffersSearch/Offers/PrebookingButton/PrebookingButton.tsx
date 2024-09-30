@@ -134,13 +134,12 @@ export const PrebookingButton = ({
         )}
       </div>
 
-      {isModalOpen && (
-        <PrebookingModal
-          closeModal={closeModal}
-          preBookCurrentStock={preBookCurrentStock}
-          isPreview={isPreview}
-        />
-      )}
+      <PrebookingModal
+        closeModal={closeModal}
+        preBookCurrentStock={preBookCurrentStock}
+        isPreview={isPreview}
+        isDialogOpen={isModalOpen}
+      />
     </>
   ) : null
 }

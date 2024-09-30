@@ -147,9 +147,10 @@ export const Offerer = (): JSX.Element => {
 
   return (
     <>
-      {showIsAppUserDialog && (
-        <MaybeAppUserDialog onCancel={formik.handleSubmit} />
-      )}
+      <MaybeAppUserDialog
+        onCancel={formik.handleSubmit}
+        isDialogOpen={showIsAppUserDialog}
+      />
       <FormLayout className={styles['offerer-layout']}>
         <FormikProvider value={formik}>
           <form

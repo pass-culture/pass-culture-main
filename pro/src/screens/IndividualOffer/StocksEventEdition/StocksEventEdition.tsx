@@ -425,12 +425,11 @@ export const StocksEventEdition = ({
 
   return (
     <FormikProvider value={formik}>
-      {isStocksEventConfirmModal && (
-        <DialogStocksEventEditConfirm
-          onConfirm={formik.submitForm}
-          onCancel={() => setIsStocksEventConfirmModal(false)}
-        />
-      )}
+      <DialogStocksEventEditConfirm
+        onConfirm={formik.submitForm}
+        onCancel={() => setIsStocksEventConfirmModal(false)}
+        isDialogOpen={isStocksEventConfirmModal}
+      />
 
       <FormLayout>
         <div aria-current="page">
@@ -836,15 +835,17 @@ export const StocksEventEdition = ({
                     }}
                   />
 
-                  {stockToDeleteWithConfirmation !== null && (
-                    <DialogStockEventDeleteConfirm
-                      onConfirm={async () => {
-                        await onDeleteStock(stockToDeleteWithConfirmation)
-                        setStockToDeleteWithConfirmation(null)
-                      }}
-                      onCancel={() => setStockToDeleteWithConfirmation(null)}
-                    />
-                  )}
+                  <DialogStockEventDeleteConfirm
+                    onConfirm={async () => {
+                      if (!stockToDeleteWithConfirmation) {
+                        return
+                      }
+                      await onDeleteStock(stockToDeleteWithConfirmation)
+                      setStockToDeleteWithConfirmation(null)
+                    }}
+                    onCancel={() => setStockToDeleteWithConfirmation(null)}
+                    isDialogOpen={stockToDeleteWithConfirmation !== null}
+                  />
                 </div>
               )}
             />
@@ -861,24 +862,25 @@ export const StocksEventEdition = ({
       <RouteLeavingGuardIndividualOffer
         when={formik.dirty && !formik.isSubmitting}
       />
-      {(shouldBlockNextPageNavigationFormIsDirty ||
-        shouldBlockPreviousPageNavigationFormIsDirty) && (
-        <ConfirmDialog
-          onCancel={resetPageNavigationBlockers}
-          leftButtonAction={() => {
-            resetPageNavigationBlockers()
-            if (shouldBlockPreviousPageNavigationFormIsDirty) {
-              previousPage()
-            } else {
-              nextPage()
-            }
-          }}
-          onConfirm={resetPageNavigationBlockers}
-          title="Les informations non enregistrées seront perdues"
-          confirmText="Rester sur la page"
-          cancelText="Quitter la page"
-        />
-      )}
+      <ConfirmDialog
+        onCancel={resetPageNavigationBlockers}
+        leftButtonAction={() => {
+          resetPageNavigationBlockers()
+          if (shouldBlockPreviousPageNavigationFormIsDirty) {
+            previousPage()
+          } else {
+            nextPage()
+          }
+        }}
+        onConfirm={resetPageNavigationBlockers}
+        title="Les informations non enregistrées seront perdues"
+        confirmText="Rester sur la page"
+        cancelText="Quitter la page"
+        open={
+          shouldBlockNextPageNavigationFormIsDirty ||
+          shouldBlockPreviousPageNavigationFormIsDirty
+        }
+      />
     </FormikProvider>
   )
 }
