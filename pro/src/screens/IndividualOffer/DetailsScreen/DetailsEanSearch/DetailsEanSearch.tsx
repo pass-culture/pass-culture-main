@@ -74,7 +74,6 @@ export const DetailsEanSearch = ({
   }, [subcategoryId, isProductBased])
 
   const onSearch = async () => {
-    console.log('onSearch', ean)
     if (ean) {
       try {
         setIsFetchingProduct(true)
@@ -99,7 +98,7 @@ export const DetailsEanSearch = ({
   }
 
   const onEanClear = () => {
-    console.log('onEanClear')
+    formik.resetForm()
     resetForm()
     setWasCleared(true)
   }
