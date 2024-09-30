@@ -104,7 +104,7 @@
     "@types/react-router-dom": "^5.3.3",
     "@typescript-eslint/eslint-plugin": "^7.18.0",
     "@typescript-eslint/parser": "^7.18.0",
-    "@vitejs/plugin-react": "^4.3.1",
+    "@vitejs/plugin-react": "^4.3.2",
     "@vitest/coverage-v8": "^2.0.4",
     "cypress": "^13.14.2",
     "cypress-fail-fast": "^7.1.1",
