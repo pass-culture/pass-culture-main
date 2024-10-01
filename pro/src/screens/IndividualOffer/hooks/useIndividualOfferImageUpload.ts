@@ -88,7 +88,7 @@ export const useIndividualOfferImageUpload = () => {
         })
       } catch (e) {
         notify.error(
-          'Une erreur est survenue lors de le téléversement de votre image. Est-ce que votre image existe encore ?'
+          'Une erreur est survenue lors du téléchargement de l’image.'
         )
       }
     } else {
