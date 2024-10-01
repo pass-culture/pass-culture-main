@@ -180,7 +180,7 @@ def get_pro_attributes(email: str) -> models.ProAttributes:
                 offerers_models.Offerer.name, offerers_models.Offerer.isActive, offerers_models.Offerer.validationStatus
             )
             .joinedload(offerers_models.Offerer.tags)
-            .load_only(offerers_models.OffererTag.label),
+            .load_only(offerers_models.OffererTag.name),
             # Fetch all attachments to these offerers, to check if current user is the "creator" (first user)
             joinedload(users_models.User.UserOfferers)
             .load_only(offerers_models.UserOfferer.id)
@@ -234,7 +234,7 @@ def get_pro_attributes(email: str) -> models.ProAttributes:
             all_venues += offerer.managedVenues
 
             offerers_names.add(offerer.name)
-            offerers_tags.update(tag.label for tag in offerer.tags)
+            offerers_tags.update(tag.name for tag in offerer.tags)
 
             if min((uo.id, uo.userId) for uo in offerer.UserOfferers)[1] == user.id:
                 user_is_creator = True
@@ -282,7 +282,7 @@ def get_pro_attributes(email: str) -> models.ProAttributes:
             contains_eager(offerers_models.Venue.managingOfferer)
             .load_only(offerers_models.Offerer.name)
             .joinedload(offerers_models.Offerer.tags)
-            .load_only(offerers_models.OffererTag.label),
+            .load_only(offerers_models.OffererTag.name),
             joinedload(offerers_models.Venue.bankInformation).load_only(finance_models.BankInformation.status),
             joinedload(offerers_models.Venue.venueLabel).load_only(offerers_models.VenueLabel.label),
         )
@@ -299,7 +299,7 @@ def get_pro_attributes(email: str) -> models.ProAttributes:
         all_venues += venues
         for venue in venues:
             offerers_names.add(venue.managingOfferer.name)
-            offerers_tags.update(tag.label for tag in venue.managingOfferer.tags)
+            offerers_tags.update(tag.name for tag in venue.managingOfferer.tags)
 
         has_individual_offers = offerers_repository.venues_have_offers(*venues)
 

@@ -89,7 +89,9 @@ def test_update_external_pro_user_attributes(
     venue_label_b = offerers_factories.VenueLabelFactory(label="Scènes conventionnées")
 
     offerer1 = offerers_factories.OffererFactory(
-        siren="111222333", name="Plage Culture", tags=[offerers_factories.OffererTagFactory(label="Top Acteur")]
+        siren="111222333",
+        name="Plage Culture",
+        tags=[offerers_factories.OffererTagFactory(name="top-acteur", label="Top Acteur")],
     )
     if attached in ("one", "all"):
         offerers_factories.UserOffererFactory(user=ProFactory(), offerer=offerer1)
@@ -160,7 +162,9 @@ def test_update_external_pro_user_attributes(
 
     # Offerer not linked to user email but with the same booking email
     offerer3 = offerers_factories.OffererFactory(
-        siren="777899888", name="Plage Events", tags=[offerers_factories.OffererTagFactory(label="Collectivité")]
+        siren="777899888",
+        name="Plage Events",
+        tags=[offerers_factories.OffererTagFactory(name="collectivite", label="Collectivité")],
     )
     venue3 = offerers_factories.VenueFactory(
         managingOfferer=offerer3,
@@ -224,7 +228,7 @@ def test_update_external_pro_user_attributes(
         siren="999999999",
         name="Structure désactivée",
         isActive=False,
-        tags=[offerers_factories.OffererTagFactory(label="Désactivé")],
+        tags=[offerers_factories.OffererTagFactory(name="desactive", label="Désactivé")],
     )
     offerers_factories.UserOffererFactory(user=pro_user, offerer=inactive_offerer)
     offerers_factories.VenueFactory(
@@ -254,7 +258,7 @@ def test_update_external_pro_user_attributes(
         if create_virtual
         else {"Juste Libraire", "Plage Culture", "Plage Events"}
     )
-    assert attributes.offerers_tags == {"Top Acteur", "Collectivité"}
+    assert attributes.offerers_tags == {"top-acteur", "collectivite"}
     assert len(attributes.venues_ids) == 5 if create_virtual else 4
     assert (
         attributes.venues_names

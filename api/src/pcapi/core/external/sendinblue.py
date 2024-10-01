@@ -64,7 +64,6 @@ class SendinblueAttributes(Enum):
     IS_EMAIL_VALIDATED = "IS_EMAIL_VALIDATED"
     IS_PERMANENT = "IS_PERMANENT"
     IS_PRO = "IS_PRO"
-    IS_TAGGED_COLLECTIVITE = "IS_TAGGED_COLLECTIVITE"
     IS_UNDERAGE_BENEFICIARY = "IS_UNDERAGE_BENEFICIARY"
     IS_USER_EMAIL = "IS_USER_EMAIL"
     IS_VIRTUAL = "IS_VIRTUAL"
@@ -78,6 +77,7 @@ class SendinblueAttributes(Enum):
     MOST_BOOKED_MUSIC_TYPE = "MOST_BOOKED_MUSIC_TYPE"
     MOST_FAVORITE_OFFER_SUBCATEGORIES = "MOST_FAVORITE_OFFER_SUBCATEGORIES"
     OFFERER_NAME = "OFFERER_NAME"
+    OFFERER_TAG = "OFFERER_TAG"
     PERMANENT_THEME_PREFERENCE = "PERMANENT_THEME_PREFERENCE"
     POSTAL_CODE = "POSTAL_CODE"
     PRODUCT_BRUT_X_USE_DATE = "PRODUCT_BRUT_X_USE_DATE"
@@ -211,9 +211,6 @@ def format_user_attributes(attributes: attributes_models.UserAttributes | attrib
         SendinblueAttributes.IS_EMAIL_VALIDATED.value: _get_attr(attributes, "is_email_validated"),
         SendinblueAttributes.IS_PERMANENT.value: _get_attr(attributes, "isPermanent"),
         SendinblueAttributes.IS_PRO.value: _get_attr(attributes, "is_pro"),
-        SendinblueAttributes.IS_TAGGED_COLLECTIVITE.value: _get_attr(
-            attributes, "offerers_tags", lambda tags: "Collectivité" in tags
-        ),
         SendinblueAttributes.IS_UNDERAGE_BENEFICIARY.value: _get_attr(
             attributes, "roles", lambda v: users_models.UserRole.UNDERAGE_BENEFICIARY.value in v
         ),
@@ -231,6 +228,7 @@ def format_user_attributes(attributes: attributes_models.UserAttributes | attrib
             attributes, "most_favorite_offer_subcategories", format_list
         ),
         SendinblueAttributes.OFFERER_NAME.value: _get_attr(attributes, "offerers_names", format_list),
+        SendinblueAttributes.OFFERER_TAG.value: _get_attr(attributes, "offerers_tags", format_list),
         SendinblueAttributes.PERMANENT_THEME_PREFERENCE.value: _get_attr(attributes, "subscribed_themes", format_list)
         or "",
         SendinblueAttributes.POSTAL_CODE.value: _get_attr(attributes, "postal_code", format_list_or_str),
