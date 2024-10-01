@@ -284,6 +284,7 @@ export const DetailsScreen = ({ venues }: DetailsScreenProps): JSX.Element => {
           productId={formik.values.productId}
           subcategoryId={formik.values.subcategoryId}
           initialEan={offer?.extraData?.ean}
+          eanSubmitError={formik.status === 'apiError' ? formik.errors.ean : ''}
           onEanSearch={onEanSearch}
           resetForm={formik.resetForm}
         />

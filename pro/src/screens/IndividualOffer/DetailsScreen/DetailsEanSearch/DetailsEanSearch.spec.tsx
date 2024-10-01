@@ -45,6 +45,7 @@ const EanSearchWrappedWithFormik = ({
   productId = DEFAULT_DETAILS_FORM_VALUES.productId,
   subcategoryId = DEFAULT_DETAILS_FORM_VALUES.subcategoryId,
   initialEan = '',
+  eanSubmitError = '',
   onEanSearch = vi.fn(),
   resetForm = vi.fn(),
 }: DetailsEanSearchTestProps): JSX.Element => {
@@ -70,6 +71,7 @@ const EanSearchWrappedWithFormik = ({
         productId={mockedProductId}
         subcategoryId={mockedSubCategoryId}
         initialEan={initialEan}
+        eanSubmitError={eanSubmitError}
         onEanSearch={onEanSearch}
         resetForm={resetForm}
       />
@@ -231,6 +233,17 @@ describe('DetailsEanSearch', () => {
 
         await userEvent.click(clearButton)
         expect(resetForm.mock.calls.length).toBe(1)
+      })
+
+      it('should display an error message if POST API ends with an EAN err', () => {
+        const eanSubmitError = 'This EAN is already used'
+        renderDetailsEanSearch({
+          isDirtyDraftOffer: true,
+          wasEanSearchPerformedSuccessfully: true,
+          eanSubmitError,
+        })
+
+        expect(screen.queryByText(eanSubmitError)).toBeInTheDocument()
       })
     })
 

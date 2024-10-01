@@ -23,6 +23,7 @@ export type DetailsEanSearchProps = {
   productId: string
   subcategoryId: string
   initialEan?: string
+  eanSubmitError?: string
   onEanSearch: (ean: string, product: Product) => Promise<void>
   resetForm: () => void
 }
@@ -32,6 +33,7 @@ export const DetailsEanSearch = ({
   productId,
   subcategoryId,
   initialEan,
+  eanSubmitError,
   onEanSearch,
   resetForm,
 }: DetailsEanSearchProps): JSX.Element => {
@@ -39,7 +41,7 @@ export const DetailsEanSearch = ({
   const inputRef = useRef<HTMLInputElement>(null)
   const [isFetchingProduct, setIsFetchingProduct] = useState(false)
   const [subcatError, setSubcatError] = useState<string | null>(null)
-  const [apiError, setApiError] = useState<string | null>(null)
+  const [productApiError, setProductApiError] = useState<string | null>(null)
   const [wasCleared, setWasCleared] = useState(false)
 
   const isProductBased = !!productId
@@ -56,7 +58,7 @@ export const DetailsEanSearch = ({
   const formikError = formik.errors.eanSearch
 
   useEffect(() => {
-    setApiError(null)
+    setProductApiError(null)
   }, [ean])
 
   useEffect(() => {
@@ -98,7 +100,7 @@ export const DetailsEanSearch = ({
           ? getError(err).ean?.[0] || fallbackMessage
           : fallbackMessage
         setIsFetchingProduct(false)
-        setApiError(errorMessage)
+        setProductApiError(errorMessage)
       }
     }
   }
@@ -108,6 +110,8 @@ export const DetailsEanSearch = ({
     resetForm()
     setWasCleared(true)
   }
+
+  const apiError = eanSubmitError || productApiError
 
   const shouldInputBeDisabled = isProductBased || isFetchingProduct
   const shouldInputBeRequired = !!subcatError
