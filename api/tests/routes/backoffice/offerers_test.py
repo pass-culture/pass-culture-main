@@ -580,6 +580,8 @@ class UpdateOffererTest(PostEndpointHelper):
 
     def test_update_offerer(self, legit_user, authenticated_client):
         offerer_to_edit = offerers_factories.OffererFactory()
+        venues = offerers_factories.VenueFactory.create_batch(2, managingOfferer=offerer_to_edit)
+        users_offerer = offerers_factories.UserOffererFactory.create_batch(2, offerer=offerer_to_edit)
 
         old_name = offerer_to_edit.name
         new_name = "Librairie bretonne"
@@ -638,6 +640,14 @@ class UpdateOffererTest(PostEndpointHelper):
         assert f"Code postal : {old_postal_code} => {offerer_to_edit.postalCode}" in history_rows[0]["Commentaire"]
         assert f"Adresse : {old_street} => {offerer_to_edit.street}" in history_rows[0]["Commentaire"]
 
+        assert len(testing.sendinblue_requests) == 4
+        assert {sendinblue_request["email"] for sendinblue_request in testing.sendinblue_requests} == {
+            venues[0].bookingEmail,
+            venues[1].bookingEmail,
+            users_offerer[0].user.email,
+            users_offerer[1].user.email,
+        }
+
     def test_update_offerer_tags(self, legit_user, authenticated_client):
         offerer_to_edit = offerers_factories.OffererFactory(
             street="Place de la Liberté", postalCode="29200", city="Brest"
@@ -646,6 +656,7 @@ class UpdateOffererTest(PostEndpointHelper):
         tag2 = offerers_factories.OffererTagFactory(label="Deuxième tag")
         tag3 = offerers_factories.OffererTagFactory(label="Troisième tag")
         offerers_factories.OffererTagMappingFactory(tagId=tag1.id, offererId=offerer_to_edit.id)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer_to_edit)
 
         base_form = {
             "name": offerer_to_edit.name,
@@ -674,6 +685,9 @@ class UpdateOffererTest(PostEndpointHelper):
         assert "Premier tag => Deuxième tag, Troisième tag" in history_rows[0]["Commentaire"]
         for item in ("Adresse", "Code postal", "Ville"):
             assert item not in history_rows[0]["Commentaire"]
+
+        assert len(testing.sendinblue_requests) == 1
+        assert testing.sendinblue_requests[0]["email"] == venue.bookingEmail
 
     def test_update_offerer_empty_name(self, legit_user, authenticated_client):
         offerer = offerers_factories.OffererFactory(name="Original")
