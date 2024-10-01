@@ -51,6 +51,8 @@ def collective_offers_fixture() -> tuple:
     ).collectiveOffer
     collective_offer_2 = educational_factories.CollectiveStockFactory(
         beginningDatetime=datetime.date.today() + datetime.timedelta(days=3),
+        startDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=3),
+        endDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=24),
         collectiveOffer__institution=collective_offer_1.institution,
         collectiveOffer__name="A Very Specific Name",
         collectiveOffer__formats=[subcategories.EacFormat.PROJECTION_AUDIOVISUELLE],
@@ -60,6 +62,8 @@ def collective_offers_fixture() -> tuple:
     ).collectiveOffer
     collective_offer_3 = educational_factories.CollectiveStockFactory(
         beginningDatetime=datetime.date.today(),
+        startDatetime=datetime.datetime.utcnow(),
+        endDatetime=datetime.datetime.utcnow(),
         collectiveOffer__dateCreated=datetime.date.today() - datetime.timedelta(days=2),
         collectiveOffer__institution=educational_factories.EducationalInstitutionFactory(),
         collectiveOffer__name="A Very Specific Name That Is Longer",
@@ -158,8 +162,9 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         assert rows[0]["Formats"] == ", ".join([fmt.value for fmt in collective_offers[1].formats])
         assert rows[0]["État"] == "Validée"
         assert rows[0]["Date de création"] == (datetime.date.today() - datetime.timedelta(days=5)).strftime("%d/%m/%Y")
-        assert rows[0]["Date de l'évènement"] == (datetime.date.today() + datetime.timedelta(days=3)).strftime(
-            "%d/%m/%Y"
+        assert (
+            rows[0]["Date de l'évènement"]
+            == f"{(datetime.date.today() + datetime.timedelta(days=3)).strftime('%d/%m/%Y')} → {(datetime.date.today() + datetime.timedelta(days=24)).strftime('%d/%m/%Y')}"
         )
         assert rows[0]["Tarif"] == "11,00 €"
         assert rows[0]["Structure"] == collective_offers[1].venue.managingOfferer.name
@@ -977,9 +982,12 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
     expected_num_queries = 4
 
     def test_nominal(self, legit_user, authenticated_client):
-        event_date = datetime.datetime.utcnow() - datetime.timedelta(days=1)
+        start_date = datetime.datetime.utcnow() - datetime.timedelta(days=1)
+        end_date = start_date + datetime.timedelta(days=28)
         collective_booking = educational_factories.CollectiveBookingFactory(
-            collectiveStock__beginningDatetime=event_date,
+            collectiveStock__beginningDatetime=start_date,
+            collectiveStock__startDatetime=start_date,
+            collectiveStock__endDatetime=end_date,
             collectiveStock__collectiveOffer__teacher=educational_factories.EducationalRedactorFactory(
                 firstName="Pacôme", lastName="De Champignac"
             ),
@@ -997,6 +1005,10 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
 
         content_as_text = html_parser.content_as_text(response.data)
         assert "Ajuster le prix de l'offre" in content_as_text
+        assert (
+            f"Date de l'évènement : {start_date.strftime('%d/%m/%Y')} → {end_date.strftime('%d/%m/%Y')}"
+            in content_as_text
+        )
         assert "Statut : Expirée" in content_as_text
         assert "État : Validée" in content_as_text
         assert "Utilisateur de la dernière validation" not in content_as_text
