@@ -4,6 +4,7 @@ from pcapi.core.bookings import factories as booking_factory
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offer_models
+from pcapi.core.testing import override_features
 from pcapi.core.token import SecureToken
 from pcapi.core.token.serialization import ConnectAsInternalModel
 import pcapi.core.users.factories as users_factories
@@ -63,6 +64,7 @@ class Returns204Test:
         assert booking_1.cancellationUser == admin
         assert booking_2.cancellationUser == admin
 
+    @override_features(WIP_DISABLE_NOTIFICATION_CANCEL_BOOKING=False)
     def test_delete_unaccessible_stocks(self, client):
         # Given
         offer = offers_factories.OfferFactory()

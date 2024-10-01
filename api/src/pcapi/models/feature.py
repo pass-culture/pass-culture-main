@@ -33,6 +33,7 @@ class FeatureToggle(enum.Enum):
     BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS = "Active la validation d'un bénéficiaire via les contrôles de sécurité"
     DISABLE_ENTERPRISE_API = "Désactiver les appels à l'API entreprise"
     DISABLE_BOOST_EXTERNAL_BOOKINGS = "Désactiver les réservations externes Boost"
+    WIP_DISABLE_NOTIFICATION_CANCEL_BOOKING = "Désactiver les notifications d'annulation de réservation"
     DISABLE_CDS_EXTERNAL_BOOKINGS = "Désactiver les réservations externes CDS"
     DISABLE_CGR_EXTERNAL_BOOKINGS = "Désactiver les réservations externes CGR"
     DISABLE_EMS_EXTERNAL_BOOKINGS = "Désactiver les réservations externes EMS"
@@ -148,6 +149,7 @@ class Feature(PcObject, Base, Model, DeactivableMixin):
 FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.DISABLE_BOOST_EXTERNAL_BOOKINGS,
     FeatureToggle.DISABLE_CDS_EXTERNAL_BOOKINGS,
+    FeatureToggle.WIP_DISABLE_NOTIFICATION_CANCEL_BOOKING,
     FeatureToggle.DISABLE_CGR_EXTERNAL_BOOKINGS,
     FeatureToggle.DISABLE_EMS_EXTERNAL_BOOKINGS,
     FeatureToggle.DISABLE_ENTERPRISE_API,
