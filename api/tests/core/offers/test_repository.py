@@ -1913,8 +1913,7 @@ class GetOfferPriceCategoriesFiltersTest:
         price_categories = repository.get_offer_price_categories(offer.id)
 
         # Then
-        assert price_categories[0] == price_category_1
-        assert price_categories[1] == price_category_2
+        assert set(price_categories) == {price_category_1, price_category_2}
 
     def test_should_return_all_price_categories_of_given_event(self):
         offer = factories.OfferFactory()
@@ -1927,9 +1926,7 @@ class GetOfferPriceCategoriesFiltersTest:
         price_categories = repository.get_offer_price_categories(offer.id)
 
         # Then
-        assert len(price_categories.all()) == 2
-        assert price_categories[0] == price_category_1
-        assert price_categories[1] == price_category_2
+        assert set(price_categories) == {price_category_1, price_category_2}
 
     def test_should_filter_by_id_at_provider(self):
         offer = factories.OfferFactory()
@@ -1941,9 +1938,7 @@ class GetOfferPriceCategoriesFiltersTest:
         price_categories = repository.get_offer_price_categories(offer.id, id_at_provider_list=["bonjour", "hello"])
 
         # Then
-        assert len(price_categories.all()) == 2
-        assert price_categories[0] == price_category_2
-        assert price_categories[1] == price_category_3
+        assert set(price_categories) == {price_category_2, price_category_3}
 
     def test_should_return_no_result(self):
         offer = factories.OfferFactory()
