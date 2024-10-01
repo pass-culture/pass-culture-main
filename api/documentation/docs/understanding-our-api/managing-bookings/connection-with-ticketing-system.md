@@ -117,7 +117,7 @@ In case of success, here is the JSON we expect in return :
 
 | Key              | Type | Nullable | Explanation |
 | :---------------- | :------ | :----: | :-------- |
-| **remainingQuantity** | Integer | **`false`** | Number of tickets still available after this booking (for us to update our stock) |
+| **remainingQuantity** | Integer | **`true`** | Number of tickets still available after this booking (for us to update our stock). To indicate an unlimited quantity, set `remainingQuantity` to `null` (not to `"unlimited"`). Please note that this field is **mandatory**. |
 | **tickets** | Array | **`false`** | Booked tickets (should contain one or two items) |
 | **tickets[].barcode** | String | **`false`** | Ticket barcode **(⚠️ mandatory)** |
 | **tickets[].seat** | String | **`true`** | Ticket seat |
