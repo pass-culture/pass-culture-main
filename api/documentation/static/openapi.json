@@ -5928,6 +5928,58 @@
                 "title": "PhysicalLocation",
                 "type": "object"
             },
+            "PostAddressBody": {
+                "properties": {
+                    "city": {
+                        "description": "City",
+                        "example": "Paris",
+                        "maxLength": 200,
+                        "minLength": 1,
+                        "title": "City",
+                        "type": "string"
+                    },
+                    "latitude": {
+                        "description": "Latitude coordinate",
+                        "example": 48.86696,
+                        "maximum": 90,
+                        "minimum": -90,
+                        "title": "Latitude",
+                        "type": "number"
+                    },
+                    "longitude": {
+                        "description": "Longitude coordinate",
+                        "example": 2.31014,
+                        "maximum": 180,
+                        "minimum": -180,
+                        "title": "Longitude",
+                        "type": "number"
+                    },
+                    "postalCode": {
+                        "description": "Postal Code",
+                        "example": "75001",
+                        "pattern": "^(?:0[1-9]|[1-8]\\d|9[0-8])\\d{3}$",
+                        "title": "Postalcode",
+                        "type": "string"
+                    },
+                    "street": {
+                        "description": "Street name and number",
+                        "example": "182 Rue Saint-Honor\u00e9",
+                        "maxLength": 200,
+                        "minLength": 1,
+                        "title": "Street",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "latitude",
+                    "longitude",
+                    "city",
+                    "postalCode",
+                    "street"
+                ],
+                "title": "PostAddressBody",
+                "type": "object"
+            },
             "PostCollectiveOfferBodyModel": {
                 "additionalProperties": false,
                 "properties": {
@@ -9485,6 +9537,60 @@
                     }
                 ],
                 "summary": "Get Address",
+                "tags": [
+                    "Addresses"
+                ]
+            },
+            "post": {
+                "description": "This endpoint adds a new address to the Pass Culture database, allowing you to associate it with your offers for localization.\n\nBefore inserting the address, this endpoints does two things :\n\n- **Address Existence Check:** The system verifies if an address with the same coordinates (`latitude`, longitude) already exists in the database. If it does, the request will return a 400 Bad Request error.\n\n- **BAN API Lookup:** The endpoint checks the address against the Base Adresse Nationale (BAN) API. If the address exists there, the `banId` will be added to the stored address.",
+                "operationId": "PostAddress",
+                "parameters": [],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PostAddressBody"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GetAddressResponse"
+                                }
+                            }
+                        },
+                        "description": "Your request was succesful."
+                    },
+                    "400": {
+                        "description": "The request is invalid. The response body contains a list of errors."
+                    },
+                    "401": {
+                        "description": "Authentication is necessary to use this API."
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        },
+                        "description": "Unprocessable Entity"
+                    },
+                    "429": {
+                        "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "summary": "Create Address",
                 "tags": [
                     "Addresses"
                 ]

@@ -1,4 +1,5 @@
 from pydantic.v1 import ConstrainedFloat
+from pydantic.v1 import ConstrainedStr
 from pydantic.v1 import root_validator
 
 from pcapi.routes import serialization
@@ -13,6 +14,21 @@ class Latitude(ConstrainedFloat):
 class Longitude(ConstrainedFloat):
     le = 180
     ge = -180
+
+
+class City(ConstrainedStr):
+    max_length = 200
+    min_length = 1
+
+
+class Street(ConstrainedStr):
+    max_length = 200
+    min_length = 1
+
+
+class PostalCode(ConstrainedStr):
+    # First 2 digit are the departement code so should be between 01 and 98
+    regex = r"^(?:0[1-9]|[1-8]\d|9[0-8])\d{3}$"
 
 
 class GetAddressQuery(serialization.ConfiguredBaseModel):
@@ -43,6 +59,14 @@ class GetAddressQuery(serialization.ConfiguredBaseModel):
             raise ValueError("Either `latitude/longitude` or `banId` must be set")
 
         return values
+
+
+class PostAddressBody(serialization.ConfiguredBaseModel):
+    latitude: Latitude = fields.LATITUDE
+    longitude: Longitude = fields.LONGITUDE
+    city: City = fields.CITY
+    postalCode: PostalCode = fields.POSTAL_CODE
+    street: Street = fields.STREET
 
 
 class GetAddressResponse(serialization.ConfiguredBaseModel):
