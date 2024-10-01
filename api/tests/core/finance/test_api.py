@@ -223,6 +223,7 @@ class PriceEventTest:
         assert pricing2.lines[1].category == models.PricingLineCategory.OFFERER_CONTRIBUTION
         assert pricing2.lines[1].amount == 5 * 100
 
+    @override_features(USE_END_DATE_FOR_COLLECTIVE_PRICING=False)
     def test_pricing_collective(self):
         event1 = self._make_collective_event(price=19_999)
         booking1 = event1.collectiveBooking
@@ -233,7 +234,41 @@ class PriceEventTest:
         assert pricing1.booking is None
         assert pricing1.venue == booking1.venue
         assert pricing1.pricingPoint == booking1.venue
-        assert pricing1.valueDate == booking1.dateUsed
+        assert pricing1.valueDate == booking1.collectiveStock.beginningDatetime
+        assert pricing1.amount == -(19_999 * 100)
+        assert pricing1.standardRule == "Remboursement total pour les offres éducationnelles"
+        assert pricing1.customRule is None
+        assert pricing1.revenue == 0
+        assert pricing1.lines[0].category == models.PricingLineCategory.OFFERER_REVENUE
+        assert pricing1.lines[0].amount == -(19_999 * 100)
+        assert pricing1.lines[1].category == models.PricingLineCategory.OFFERER_CONTRIBUTION
+        assert pricing1.lines[1].amount == 0
+
+        event2 = self._make_collective_event(price=100)
+        booking2 = event2.collectiveBooking
+        api.price_event(event2)
+        pricing2 = models.Pricing.query.filter_by(collectiveBooking=booking2).one()
+        assert pricing2.collectiveBooking == booking2
+        assert pricing2.amount == -(100 * 100)
+        assert pricing1.revenue == 0
+        assert pricing2.standardRule == "Remboursement total pour les offres éducationnelles"
+        assert pricing2.lines[0].category == models.PricingLineCategory.OFFERER_REVENUE
+        assert pricing2.lines[0].amount == -(100 * 100)
+        assert pricing2.lines[1].category == models.PricingLineCategory.OFFERER_CONTRIBUTION
+        assert pricing2.lines[1].amount == 0
+
+    @override_features(USE_END_DATE_FOR_COLLECTIVE_PRICING=True)
+    def test_pricing_collective_with_endDatetime(self):
+        event1 = self._make_collective_event(price=19_999)
+        booking1 = event1.collectiveBooking
+        api.price_event(event1)
+        pricing1 = models.Pricing.query.one()
+        assert pricing1.event == event1
+        assert pricing1.collectiveBooking == booking1
+        assert pricing1.booking is None
+        assert pricing1.venue == booking1.venue
+        assert pricing1.pricingPoint == booking1.venue
+        assert pricing1.valueDate == booking1.collectiveStock.endDatetime
         assert pricing1.amount == -(19_999 * 100)
         assert pricing1.standardRule == "Remboursement total pour les offres éducationnelles"
         assert pricing1.customRule is None
@@ -989,7 +1024,7 @@ class AddEventTest:
         assert event.collectiveBooking == booking
         assert event.status == models.FinanceEventStatus.READY
         assert event.motive == motive
-        assert event.valueDate == booking.dateUsed
+        assert event.valueDate == booking.collectiveStock.beginningDatetime
         assert event.venue == booking.venue
         assert event.pricingPoint == pricing_point
         assert event.pricingOrderingDate == booking.collectiveStock.beginningDatetime
@@ -1015,7 +1050,7 @@ class AddEventTest:
         assert event.collectiveBooking == booking
         assert event.status == models.FinanceEventStatus.READY
         assert event.motive == motive
-        assert event.valueDate == booking.dateUsed
+        assert event.valueDate == booking.collectiveStock.endDatetime
         assert event.venue == booking.venue
         assert event.pricingPoint == pricing_point
         assert event.pricingOrderingDate == booking.collectiveStock.endDatetime
