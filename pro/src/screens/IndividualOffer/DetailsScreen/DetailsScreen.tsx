@@ -4,7 +4,7 @@ import { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
 import { isErrorAPIError } from 'apiClient/helpers'
-import { VenueListItemResponseModel, VenueTypeCode } from 'apiClient/v1'
+import { VenueListItemResponseModel } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { getFilteredVenueListByCategoryStatus } from 'components/IndividualOfferForm/utils/getFilteredVenueList'
@@ -21,7 +21,10 @@ import { PATCH_SUCCESS_MESSAGE } from 'core/shared/constants'
 import { useActiveFeature } from 'hooks/useActiveFeature'
 import { useNotification } from 'hooks/useNotification'
 import { useOfferWizardMode } from 'hooks/useOfferWizardMode'
-import { useSuggestedSubcategoriesAbTest } from 'hooks/useSuggestedSubcategoriesAbTest'
+import {
+  isRecordStore,
+  useSuggestedSubcategoriesAbTest,
+} from 'hooks/useSuggestedSubcategoriesAbTest'
 
 import { ActionBar } from '../ActionBar/ActionBar'
 import { useIndividualOfferImageUpload } from '../hooks/useIndividualOfferImageUpload'
@@ -66,7 +69,6 @@ export const DetailsScreen = ({ venues }: DetailsScreenProps): JSX.Element => {
   const queryParams = new URLSearchParams(search)
   const queryOfferType = queryParams.get('offer-type')
 
-  const areSuggestedSubcategoriesUsed = useSuggestedSubcategoriesAbTest()
   const isSearchByEanEnabled = useActiveFeature('WIP_EAN_CREATION')
 
   const { categories, subCategories, offer } = useIndividualOfferContext()
@@ -84,9 +86,9 @@ export const DetailsScreen = ({ venues }: DetailsScreenProps): JSX.Element => {
     venues,
     categoryStatus
   )
-  const isRecordStore = filteredVenues.some(
-    (venue) => venue.venueTypeCode === ('RECORD_STORE' as VenueTypeCode)
-  )
+
+  const areSuggestedSubcategoriesUsed =
+    useSuggestedSubcategoriesAbTest(filteredVenues)
 
   const initialValues =
     offer === null
@@ -203,7 +205,8 @@ export const DetailsScreen = ({ venues }: DetailsScreenProps): JSX.Element => {
   const isProductBased = isOfferProductBased || isDirtyDraftOfferProductBased
 
   const readOnlyFields = setFormReadOnlyFields(offer, isProductBased)
-  const isEanSearchAvailable = isSearchByEanEnabled && isRecordStore
+  const isEanSearchAvailable =
+    isSearchByEanEnabled && isRecordStore(filteredVenues)
   const isEanSearchDisplayed =
     isEanSearchAvailable &&
     mode === OFFER_WIZARD_MODE.CREATION &&
