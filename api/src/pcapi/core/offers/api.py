@@ -876,7 +876,7 @@ def publish_offer(
     user: users_models.User | None,
     publication_date: datetime.datetime | None = None,
 ) -> models.Offer:
-    publication_date = _format_publication_date(publication_date, offer.venue.timezone)  # type: ignore[arg-type]
+    publication_date = _format_publication_date(publication_date, offer.venue.timezone)
     validation.check_publication_date(offer, publication_date)
 
     update_offer_fraud_information(offer, user)

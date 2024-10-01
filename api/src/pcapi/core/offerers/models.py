@@ -261,7 +261,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
     # https://doc.adresse.data.gouv.fr/mettre-a-jour-sa-base-adresse-locale/le-format-base-adresse-locale
     banId = Column(Text(), nullable=True)
 
-    timezone = Column(String(50), nullable=False, default=METROPOLE_TIMEZONE, server_default=METROPOLE_TIMEZONE)
+    timezone: str = Column(String(50), nullable=False, default=METROPOLE_TIMEZONE, server_default=METROPOLE_TIMEZONE)
 
     publicName = Column(String(255), nullable=True)
     sa.Index("ix_venue_trgm_unaccent_public_name", sa.func.immutable_unaccent("name"), postgresql_using="gin")

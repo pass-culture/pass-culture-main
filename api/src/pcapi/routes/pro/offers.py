@@ -104,7 +104,7 @@ def get_offer(offer_id: int) -> offers_serialize.GetIndividualOfferWithAddressRe
 )
 def get_stocks(offer_id: int, query: offers_serialize.StocksQueryModel) -> offers_serialize.GetStocksResponseModel:
     try:
-        offer = offers_repository.get_offer_by_id(offer_id)
+        offer = offers_repository.get_offer_by_id(offer_id, load_options=["offerer_address"])
     except exceptions.OfferNotFound:
         raise api_errors.ApiErrors(
             errors={
@@ -116,7 +116,7 @@ def get_stocks(offer_id: int, query: offers_serialize.StocksQueryModel) -> offer
     has_stocks = offers_repository.offer_has_stocks(offer_id=offer_id)
     if has_stocks:
         filtered_stocks = offers_repository.get_filtered_stocks(
-            offer_id=offer_id,
+            offer=offer,
             date=query.date,
             time=query.time,
             price_category_id=query.price_category_id,
@@ -169,7 +169,7 @@ def delete_stocks(offer_id: int, body: offers_serialize.DeleteStockListBody) -> 
 )
 def delete_all_filtered_stocks(offer_id: int, body: offers_serialize.DeleteFilteredStockListBody) -> None:
     try:
-        offer = offers_repository.get_offer_by_id(offer_id)
+        offer = offers_repository.get_offer_by_id(offer_id, load_options=["offerer_address"])
     except exceptions.OfferNotFound:
         raise api_errors.ApiErrors(
             errors={
@@ -180,7 +180,7 @@ def delete_all_filtered_stocks(offer_id: int, body: offers_serialize.DeleteFilte
 
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
     offers_repository.hard_delete_filtered_stocks(
-        offer_id=offer_id,
+        offer=offer,
         venue=offer.venue,
         date=body.date,
         time=body.time,

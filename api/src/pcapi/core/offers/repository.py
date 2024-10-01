@@ -1132,7 +1132,7 @@ def _order_stocks_by(query: BaseQuery, order_by: StocksOrderedBy, order_by_desc:
 
 def get_filtered_stocks(
     *,
-    offer_id: int,
+    offer: offers_model.Offer,
     venue: offerers_models.Venue,
     date: datetime.date | None = None,
     time: datetime.time | None = None,
@@ -1144,7 +1144,7 @@ def get_filtered_stocks(
         models.Stock.query.join(models.Offer)
         .join(offerers_models.Venue)
         .filter(
-            models.Stock.offerId == offer_id,
+            models.Stock.offerId == offer.id,
             models.Stock.isSoftDeleted == False,
         )
     )
@@ -1153,10 +1153,15 @@ def get_filtered_stocks(
     if date is not None:
         query = query.filter(sa.cast(models.Stock.beginningDatetime, sa.Date) == date)
     if time is not None:
-        # Transform user time input into the venue timezone
         dt = datetime.datetime.combine(datetime.datetime.today(), time)
-        venue_timezone = pytz.timezone(venue.timezone)  # type: ignore[arg-type]
-        venue_time = dt.replace(tzinfo=pytz.utc).astimezone(venue_timezone).time()
+        timezone = pytz.timezone(venue.timezone)
+
+        if FeatureToggle.WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE.is_active():
+            if offer.offererAddress:
+                timezone = pytz.timezone(offer.offererAddress.address.timezone)
+            elif venue.offererAddress:
+                timezone = pytz.timezone(venue.offererAddress.address.timezone)
+        address_time = dt.replace(tzinfo=pytz.utc).astimezone(timezone).time()
 
         query = query.filter(
             sa.cast(
@@ -1165,28 +1170,26 @@ def get_filtered_stocks(
                 ),
                 sa.Time,
             )
-            >= venue_time.replace(second=0),
+            >= address_time.replace(second=0),
             sa.cast(
                 sa.func.timezone(
                     offerers_models.Venue.timezone, sa.func.timezone("UTC", models.Stock.beginningDatetime)
                 ),
                 sa.Time,
             )
-            <= venue_time.replace(second=59),
+            <= address_time.replace(second=59),
         )
     return _order_stocks_by(query, order_by, order_by_desc)
 
 
 def hard_delete_filtered_stocks(
-    offer_id: int,
+    offer: offers_model.Offer,
     venue: offerers_models.Venue,
     date: datetime.date | None = None,
     time: datetime.time | None = None,
     price_category_id: int | None = None,
 ) -> None:
-    subquery = get_filtered_stocks(
-        offer_id=offer_id, venue=venue, date=date, time=time, price_category_id=price_category_id
-    )
+    subquery = get_filtered_stocks(offer=offer, venue=venue, date=date, time=time, price_category_id=price_category_id)
     subquery = subquery.with_entities(models.Stock.id)
     models.Stock.query.filter(models.Stock.id.in_(subquery)).delete(synchronize_session=False)
     db.session.commit()
