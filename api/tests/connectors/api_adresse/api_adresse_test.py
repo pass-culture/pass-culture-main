@@ -67,6 +67,19 @@ def test_fallback_to_municipality(requests_mock):
 
 
 @override_settings(ADRESSE_BACKEND="pcapi.connectors.api_adresse.ApiAdresseBackend")
+def test_should_not_fallback_to_municipality_if_strict_is_set_to_True(requests_mock):
+    address = "123456789"
+    postcode = "75018"
+    city = "Paris"
+    requests_mock.get(
+        "https://api-adresse.data.gouv.fr/search?q=123456789&postcode=75018&autocomplete=0&limit=1",
+        json=fixtures.NO_FEATURE_RESPONSE,
+    )
+    with pytest.raises(api_adresse.NoResultException):
+        api_adresse.get_address(address, postcode, city, strict=True)
+
+
+@override_settings(ADRESSE_BACKEND="pcapi.connectors.api_adresse.ApiAdresseBackend")
 def test_no_match(requests_mock):
     address = "123456789"
     postcode = "75018"  # not a valid code
