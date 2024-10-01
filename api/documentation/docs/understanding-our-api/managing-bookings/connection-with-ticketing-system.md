@@ -120,7 +120,7 @@ In case of success, here is the JSON we expect in return :
 | **remainingQuantity** | Integer | **`false`** | Number of tickets still available after this booking (for us to update our stock) |
 | **tickets** | Array | **`false`** | Booked tickets (should contain one or two items) |
 | **tickets[].barcode** | String | **`false`** | Ticket barcode **(⚠️ mandatory)** |
-| **tickets[].seat** | String | `true` | Ticket seat |
+| **tickets[].seat** | String | **`true`** | Ticket seat |
 
 ### 🚫 Error responses
 
