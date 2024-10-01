@@ -144,7 +144,7 @@ def get_collective_bookings_per_year_response(
             confirmationLimitDate=booking.confirmationLimitDate,
             totalAmount=booking.collectiveStock.price,
             beginningDatetime=booking.collectiveStock.beginningDatetime,
-            venueTimezone=booking.collectiveStock.collectiveOffer.venue.timezone,  # type: ignore[arg-type]
+            venueTimezone=booking.collectiveStock.collectiveOffer.venue.timezone,
             name=booking.collectiveStock.collectiveOffer.name,
             redactorEmail=booking.educationalRedactor.email,
             domainIds=[domain.id for domain in booking.collectiveStock.collectiveOffer.domains],
@@ -225,7 +225,7 @@ def serialize_collective_booking(collective_booking: CollectiveBooking) -> Educa
         yearId=collective_booking.educationalYearId,  # type: ignore[arg-type]
         status=get_collective_booking_status(collective_booking),  # type: ignore[arg-type]
         cancellationReason=collective_booking.cancellationReason,
-        venueTimezone=venue.timezone,  # type: ignore[arg-type]
+        venueTimezone=venue.timezone,
         subcategoryLabel=offer.subcategory.app_label if offer.subcategory else "",
         totalAmount=stock.price,
         url=offer_app_link(offer),
@@ -353,7 +353,7 @@ def serialize_reimbursement_notification(
         UAICode=collective_booking.educationalInstitution.institutionId,
         yearId=collective_booking.educationalYearId,  # type: ignore[arg-type]
         status=get_collective_booking_status(collective_booking),  # type: ignore[arg-type]
-        venueTimezone=venue.timezone,  # type: ignore[arg-type]
+        venueTimezone=venue.timezone,
         subcategoryLabel=offer.subcategory.app_label if offer.subcategory else "",
         totalAmount=stock.price,
         url=offer_app_link(offer),
