@@ -1860,12 +1860,12 @@
   dependencies:
     "@sentry/types" "8.32.0"
 
-"@storybook/addon-a11y@^8.3.3":
-  version "8.3.3"
-  resolved "https://registry.yarnpkg.com/@storybook/addon-a11y/-/addon-a11y-8.3.3.tgz#1ab0db4b559f6ba6bb33c928c634b15d21bd5a72"
-  integrity sha512-TiCbNfKJOBD2b8mMqHOii8ntdt0V4+ifAgzmGku+F1hdf2EhEw1nL6CHpvnx/GBXoGeK4mrPJIKKoPNp+zz0dw==
+"@storybook/addon-a11y@^8.3.4":
+  version "8.3.4"
+  resolved "https://registry.yarnpkg.com/@storybook/addon-a11y/-/addon-a11y-8.3.4.tgz#572fafefe7d938ebc0d6f412844669f8a0ba077b"
+  integrity sha512-mbLAJ9vW879Fq66zTUp7Gn7GQ9ZieYDj90ngMsZIjX42SsJEkeIrwbpkwbHlJBlWm2cm7hcF+BrULI0CmTIFpQ==
   dependencies:
-    "@storybook/addon-highlight" "8.3.3"
+    "@storybook/addon-highlight" "8.3.4"
     axe-core "^4.2.0"
 
 "@storybook/addon-controls@^8.3.4":
@@ -1878,10 +1878,10 @@
     lodash "^4.17.21"
     ts-dedent "^2.0.0"
 
-"@storybook/addon-highlight@8.3.3":
-  version "8.3.3"
-  resolved "https://registry.yarnpkg.com/@storybook/addon-highlight/-/addon-highlight-8.3.3.tgz#2e1d96bdd8049af7343300cbb43adb4480f3ed7d"
-  integrity sha512-MB084xJM66rLU+iFFk34kjLUiAWzDiy6Kz4uZRa1CnNqEK0sdI8HaoQGgOxTIa2xgJor05/8/mlYlMkP/0INsQ==
+"@storybook/addon-highlight@8.3.4":
+  version "8.3.4"
+  resolved "https://registry.yarnpkg.com/@storybook/addon-highlight/-/addon-highlight-8.3.4.tgz#77d6f2793e371723f9184900f4ceb6aef0a24f46"
+  integrity sha512-rxZTeuZyZ7RnU+xmRhS01COFLbGnVEmlUNxBw8ArsrTEZKW5PbKpIxNLTj9F0zdH8H0MfryJGP+Aadcm0oHWlw==
   dependencies:
     "@storybook/global" "^5.0.0"
 
