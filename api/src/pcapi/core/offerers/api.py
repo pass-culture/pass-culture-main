@@ -2808,38 +2808,31 @@ def get_or_create_offerer_address(offerer_id: int, address_id: int, label: str |
     return offerer_address
 
 
-def create_offerer_address_from_address_api(
-    street: str,
-    postal_code: str,
-    city: str,
-    latitude: float,
-    longitude: float,
-    is_manual_edition: bool,
-) -> geography_models.Address:
-    if is_manual_edition:
+def create_offerer_address_from_address_api(address: offerers_schemas.AddressBodyModel) -> geography_models.Address:
+    if address.isManualEdition:
         try:
-            address_info = api_adresse.get_municipality_centroid(city=city, postcode=postal_code)
+            address_info = api_adresse.get_municipality_centroid(city=address.city, postcode=address.postalCode)
             location_data = LocationData(
-                city=city,
-                postal_code=postal_code,
-                latitude=latitude,
-                longitude=longitude,
-                street=street,
+                city=address.city,
+                postal_code=address.postalCode,
+                latitude=float(address.latitude),
+                longitude=float(address.longitude),
+                street=address.street,
                 insee_code=address_info.citycode,
                 ban_id=None,
             )
         except api_adresse.NoResultException:
             location_data = LocationData(
-                city=city,
-                postal_code=postal_code,
-                latitude=latitude,
-                longitude=longitude,
-                street=street,
+                city=address.city,
+                postal_code=address.postalCode,
+                latitude=float(address.latitude),
+                longitude=float(address.longitude),
+                street=address.street,
                 insee_code=None,
                 ban_id=None,
             )
     else:
-        address_info = api_adresse.get_address(street, postal_code, city)
+        address_info = api_adresse.get_address(address.street, address.postalCode, address.city)
         location_data = LocationData(
             city=address_info.city,
             postal_code=address_info.postcode,
@@ -2849,7 +2842,7 @@ def create_offerer_address_from_address_api(
             insee_code=address_info.citycode,
             ban_id=address_info.id,
         )
-    return get_or_create_address(location_data, is_manual_edition=is_manual_edition)
+    return get_or_create_address(location_data, is_manual_edition=address.isManualEdition)
 
 
 def update_fraud_info(
