@@ -36,7 +36,6 @@ import { OfferTypeFormValues } from './types'
 export const OfferTypeScreen = (): JSX.Element => {
   const isNewInterfaceActive = useIsNewInterfaceActive()
   const isSplitOfferEnabled = useActiveFeature('WIP_SPLIT_OFFER')
-  const areSuggestedSubcategoriesUsed = useSuggestedSubcategoriesAbTest()
   const navigate = useNavigate()
   const location = useLocation()
   const queryParams = new URLSearchParams(location.search)
@@ -72,6 +71,10 @@ export const OfferTypeScreen = (): JSX.Element => {
   )
 
   const offerer = offererQuery.data
+
+  const areSuggestedSubcategoriesUsed = useSuggestedSubcategoriesAbTest(
+    offerer?.managedVenues ?? []
+  )
 
   const onSubmit = async (values: OfferTypeFormValues) => {
     if (values.offerType === OFFER_TYPES.INDIVIDUAL_OR_DUO) {
