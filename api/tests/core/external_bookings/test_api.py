@@ -192,6 +192,58 @@ class BookEventTicketTest:
         assert [ticket.barcode for ticket in tickets] == ["1234567AJSQ", "1234567AJSA"]
 
     @patch("pcapi.core.external_bookings.api.requests.post")
+    def test_should_successfully_book_an_event_ticket_with_null_remaining_quantity(self, requests_post):
+        provider = providers_factories.PublicApiProviderFactory()
+        booking = bookings_factories.BookingFactory(stock__offer__lastProviderId=provider.id, quantity=2)
+
+        requests_post.return_value.status_code = 200
+        requests_post.return_value.json.return_value = {
+            "remainingQuantity": None,
+            "tickets": [
+                {"barcode": "1234567AJSQ", "seat": "A12"},
+                {"barcode": "1234567AJSA", "seat": "A14"},
+            ],
+        }
+
+        tickets, remaining_quantity = book_event_ticket(booking, booking.stock, booking.user, provider, None)
+
+        assert not remaining_quantity
+        assert {ticket.barcode for ticket in tickets} == {"1234567AJSQ", "1234567AJSA"}
+
+    @patch("pcapi.core.external_bookings.api.requests.post")
+    def test_should_raise_an_error_because_remaining_quantity_is_missing(self, requests_post):
+        provider = providers_factories.PublicApiProviderFactory()
+        booking = bookings_factories.BookingFactory(stock__offer__lastProviderId=provider.id, quantity=2)
+
+        requests_post.return_value.status_code = 200
+        requests_post.return_value.json.return_value = {
+            "tickets": [
+                {"barcode": "1234567AJSQ", "seat": "A12"},
+                {"barcode": "1234567AJSA", "seat": "A14"},
+            ],
+        }
+
+        with pytest.raises(external_bookings_exceptions.ExternalBookingException):
+            book_event_ticket(booking, booking.stock, booking.user, provider, None)
+
+    @patch("pcapi.core.external_bookings.api.requests.post")
+    def test_should_raise_an_error_because_response_cant_be_parsed(self, requests_post):
+        provider = providers_factories.PublicApiProviderFactory()
+        booking = bookings_factories.BookingFactory(stock__offer__lastProviderId=provider.id, quantity=2)
+
+        requests_post.return_value.status_code = 200
+        requests_post.return_value.json.return_value = {
+            "remainingQuantity": "unlimited",
+            "tickets": [
+                {"barcode": "1234567AJSQ", "seat": "A12"},
+                {"barcode": "1234567AJSA", "seat": "A14"},
+            ],
+        }
+
+        with pytest.raises(external_bookings_exceptions.ExternalBookingException):
+            book_event_ticket(booking, booking.stock, booking.user, provider, None)
+
+    @patch("pcapi.core.external_bookings.api.requests.post")
     def test_should_successfully_book_an_event_ticket_using_venue_external_url(self, requests_post):
         booking_creation_date = datetime.datetime(2024, 5, 12)
         provider = providers_factories.PublicApiProviderFactory()
