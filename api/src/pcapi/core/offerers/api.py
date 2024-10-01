@@ -1061,7 +1061,7 @@ def update_offerer(
     # keep commit with repository.save() as long as postal code is validated in pcapi.validation.models.offerer
     repository.save(offerer)
 
-    on_commit(functools.partial(zendesk_sell.update_offerer, offerer))
+    _update_external_offerer(offerer)
 
 
 def remove_pro_role_and_add_non_attached_pro_role(users: list[users_models.User]) -> None:
@@ -1222,7 +1222,7 @@ def validate_offerer(offerer: models.Offerer, author_user: users_models.User) ->
 
     db.session.flush()
 
-    _update_external_offerer(offerer, search.IndexationReason.OFFERER_VALIDATION)
+    _update_external_offerer(offerer, index_with_reason=search.IndexationReason.OFFERER_VALIDATION)
 
     if applicants:
         on_commit(
@@ -1292,7 +1292,7 @@ def reject_offerer(
     db.session.flush()
 
     if was_validated:
-        _update_external_offerer(offerer, search.IndexationReason.OFFERER_DEACTIVATION)
+        _update_external_offerer(offerer, index_with_reason=search.IndexationReason.OFFERER_DEACTIVATION)
 
 
 def set_offerer_pending(
@@ -1337,7 +1337,7 @@ def set_offerer_pending(
     db.session.flush()
 
     if was_validated:  # in case it was validated by mistake, then moved to PENDING state again
-        _update_external_offerer(offerer, reason=search.IndexationReason.OFFERER_DEACTIVATION)
+        _update_external_offerer(offerer, index_with_reason=search.IndexationReason.OFFERER_DEACTIVATION)
 
 
 def add_comment_to_offerer(offerer: offerers_models.Offerer, author_user: users_models.User, comment: str) -> None:
@@ -2055,7 +2055,7 @@ def suspend_offerer(offerer: models.Offerer, actor: users_models.User, comment: 
     history_api.add_action(history_models.ActionType.OFFERER_SUSPENDED, author=actor, offerer=offerer, comment=comment)
     db.session.flush()
 
-    _update_external_offerer(offerer, reason=search.IndexationReason.OFFERER_DEACTIVATION)
+    _update_external_offerer(offerer, index_with_reason=search.IndexationReason.OFFERER_DEACTIVATION)
 
 
 def unsuspend_offerer(offerer: models.Offerer, actor: users_models.User, comment: str | None) -> None:
@@ -2069,22 +2069,27 @@ def unsuspend_offerer(offerer: models.Offerer, actor: users_models.User, comment
     )
     db.session.flush()
 
-    _update_external_offerer(offerer, search.IndexationReason.OFFERER_ACTIVATION)
+    _update_external_offerer(offerer, index_with_reason=search.IndexationReason.OFFERER_ACTIVATION)
 
 
-def _update_external_offerer(offerer: models.Offerer, reason: search.IndexationReason) -> None:
+def _update_external_offerer(
+    offerer: models.Offerer, *, index_with_reason: search.IndexationReason | None = None
+) -> None:
     for email in offerers_repository.get_emails_by_offerer(offerer):
         external_attributes_api.update_external_pro(email)  # uses on_commit
 
     on_commit(functools.partial(zendesk_sell.update_offerer, offerer))
+
+    if not index_with_reason:
+        return
 
     venue_ids = {venue.id for venue in offerer.managedVenues}
     if not venue_ids:
         return
 
     # _reindex_* unindexes venues and offers which are not eligible for search (including offerer no longer active)
-    on_commit(functools.partial(search.async_index_venue_ids, venue_ids, reason=reason))
-    on_commit(functools.partial(search.async_index_offers_of_venue_ids, venue_ids, reason=reason))
+    on_commit(functools.partial(search.async_index_venue_ids, venue_ids, reason=index_with_reason))
+    on_commit(functools.partial(search.async_index_offers_of_venue_ids, venue_ids, reason=index_with_reason))
 
     packed_collective_ids = db.session.query(educational_models.CollectiveOfferTemplate.id).filter(
         educational_models.CollectiveOfferTemplate.venueId.in_(venue_ids)
@@ -2093,7 +2098,7 @@ def _update_external_offerer(offerer: models.Offerer, reason: search.IndexationR
         functools.partial(
             search.async_index_collective_offer_template_ids,
             {i for i, in packed_collective_ids},
-            reason=reason,
+            reason=index_with_reason,
         )
     )
 
