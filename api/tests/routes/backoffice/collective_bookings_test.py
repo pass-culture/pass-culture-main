@@ -52,6 +52,8 @@ def collective_bookings_fixture() -> tuple:
         collectiveStock__collectiveOffer__formats=[subcategories.EacFormat.VISITE_GUIDEE],
         collectiveStock__bookingLimitDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=2),
         collectiveStock__beginningDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=3),
+        collectiveStock__startDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=3),
+        collectiveStock__endDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=24),
         dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=3),
     )
     # 2
@@ -157,6 +159,10 @@ class ListCollectiveBookingsTest(GetEndpointHelper):
         )
         assert row["Date de l'évènement"].startswith(
             (datetime.date.today() + datetime.timedelta(days=3)).strftime("%d/%m/%Y à ")
+        )
+        assert (
+            f" → {(datetime.date.today() + datetime.timedelta(days=24)).strftime('%d/%m/%Y')}"
+            in row["Date de l'évènement"]
         )
         assert row["Structure"] == collective_bookings[1].offerer.name
         assert row["Lieu"] == collective_bookings[1].venue.name

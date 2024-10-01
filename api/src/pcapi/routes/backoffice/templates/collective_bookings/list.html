@@ -194,7 +194,14 @@
                   </td>
                 {% endif %}
                 <td>{{ collective_booking.dateCreated | format_date_time }}</td>
-                <td>{{ collective_booking.collectiveStock.beginningDatetime | format_date_time }}</td>
+                <td>
+                  {% if collective_booking.collectiveStock %}
+                    {% set start_date = (collective_booking.collectiveStock.startDatetime or collective_booking.collectiveStock.beginningDatetime) | format_date_time %}
+                    {% set end_date = collective_booking.collectiveStock.endDatetime | format_date_time %}
+                    {{ start_date }}
+                    {% if end_date and end_date != start_date %}→ {{ end_date }}{% endif %}
+                  {% endif %}
+                </td>
                 <td>{{ links.build_offerer_name_to_details_link(collective_booking.offerer) }}</td>
                 <td>{{ links.build_venue_name_to_details_link(collective_booking.venue) }}</td>
               </tr>
