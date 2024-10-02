@@ -327,6 +327,8 @@ class SearchOffererTest:
     # - fetch results
     # - fetch count for pagination
     expected_num_queries = 4
+    # - fetch feature flag: WIP_ENABLE_BO_PRO_SEARCH_BY_SIMILARITY
+    expected_num_queries_with_ff = expected_num_queries + 1
 
     def _create_offerers(
         self,
@@ -383,10 +385,11 @@ class SearchOffererTest:
             total_items=1,
         )
 
+    @override_features(WIP_ENABLE_BO_PRO_SEARCH_BY_SIMILARITY=True)
     def test_can_search_offerer_by_name(self, authenticated_client):
         self._create_offerers()
 
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(self.expected_num_queries_with_ff):
             response = authenticated_client.get(
                 url_for(self.endpoint, q="Théâtre du Centre", pro_type=TypeOptions.OFFERER.name)
             )
@@ -398,10 +401,44 @@ class SearchOffererTest:
         assert_offerer_equals(cards_text[0], self.offerers[2])  # Théâtre du Centre (most relevant)
         assert_offerer_equals(cards_text[1], self.offerers[11])  # Théâtre du Centaure (very close to the first one)
 
+    @override_features(WIP_ENABLE_BO_PRO_SEARCH_BY_SIMILARITY=False)
+    def test_can_search_offerer_by_name_without_similarity(self, authenticated_client):
+        self._create_offerers()
+
+        with assert_num_queries(self.expected_num_queries_with_ff):
+            response = authenticated_client.get(
+                url_for(self.endpoint, q="Librairie du C", pro_type=TypeOptions.OFFERER.name)
+            )
+            assert response.status_code == 200
+
+        cards_text = html_parser.extract_cards_text(response.data)
+        assert len(cards_text) == 2
+        assert_offerer_equals(cards_text[0], self.offerers[6])
+        assert_offerer_equals(cards_text[1], self.offerers[3])
+
+    @override_features(WIP_ENABLE_BO_PRO_SEARCH_BY_SIMILARITY=False)
+    def test_can_search_offerer_by_words_in_name_without_similarity(self, authenticated_client):
+        self._create_offerers()
+
+        with assert_num_queries(self.expected_num_queries_with_ff):
+            response = authenticated_client.get(
+                url_for(self.endpoint, q="cine de plage", pro_type=TypeOptions.OFFERER.name)
+            )
+            assert response.status_code == 303
+
+        assert_response_location(
+            response,
+            "backoffice_web.offerer.get",
+            offerer_id=self.offerers[1].id,  # Cinéma de la plage
+            q="cine de plage",
+            search_rank=1,
+            total_items=1,
+        )
+
     def test_can_search_offerer_by_name_and_department(self, authenticated_client):
         self._create_offerers()
 
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(self.expected_num_queries_with_ff):
             response = authenticated_client.get(
                 url_for(self.endpoint, q="Librairie", pro_type=TypeOptions.OFFERER.name, departments=["03", "971"])
             )
@@ -413,19 +450,19 @@ class SearchOffererTest:
         assert_offerer_equals(cards_text[1], self.offerers[6])  # Librairie du Centre
 
     @pytest.mark.parametrize(
-        "query,departments",
+        "query,departments,feature_flag_count",
         [
-            ("987654321", []),
-            ("festival@example.com", []),
-            ("Festival de la Montagne", []),
-            ("Librairie", ["62"]),
-            ("Plage", ["03"]),
+            ("987654321", [], 0),
+            ("festival@example.com", [], 1),
+            ("Festival de la Montagne", [], 1),
+            ("Librairie", ["62"], 1),
+            ("Plage", ["03"], 1),
         ],
     )
-    def test_can_search_offerer_no_result(self, authenticated_client, query, departments):
+    def test_can_search_offerer_no_result(self, authenticated_client, query, departments, feature_flag_count):
         self._create_offerers()
 
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(self.expected_num_queries + feature_flag_count):
             response = authenticated_client.get(
                 url_for(self.endpoint, q=query, pro_type=TypeOptions.OFFERER.name, departments=departments)
             )
@@ -442,6 +479,8 @@ class SearchVenueTest:
     # - fetch results
     # - fetch count for pagination
     expected_num_queries = 4
+    # - fetch feature flag: WIP_ENABLE_BO_PRO_SEARCH_BY_SIMILARITY
+    expected_num_queries_with_ff = 5
 
     def _create_venues(
         self,
@@ -548,7 +587,7 @@ class SearchVenueTest:
     def test_can_search_venue_by_name(self, authenticated_client):
         self._create_venues()
 
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(self.expected_num_queries_with_ff):
             response = authenticated_client.get(url_for(self.endpoint, q="Alpha", pro_type=TypeOptions.VENUE.name))
             assert response.status_code == 200
 
@@ -562,7 +601,7 @@ class SearchVenueTest:
     def test_can_search_venue_by_name_and_department(self, authenticated_client):
         self._create_venues()
 
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(self.expected_num_queries_with_ff):
             response = authenticated_client.get(
                 url_for(self.endpoint, q="cinema", pro_type=TypeOptions.VENUE.name, departments=["974", "80"])
             )
@@ -574,10 +613,11 @@ class SearchVenueTest:
         assert_venue_equals(sorted_cards_text[0], self.venues[1])  # Cinéma Beta
         assert_venue_equals(sorted_cards_text[1], self.venues[7])  # Cinéma Delta
 
+    @override_features(WIP_ENABLE_BO_PRO_SEARCH_BY_SIMILARITY=True)
     def test_can_search_venue_by_public_name(self, authenticated_client):
         self._create_venues()
 
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(self.expected_num_queries_with_ff):
             response = authenticated_client.get(
                 url_for(self.endpoint, q="Théâtre du Centre", pro_type=TypeOptions.VENUE.name)
             )
@@ -588,6 +628,37 @@ class SearchVenueTest:
         assert len(cards_text) <= 8  # Results should not contain Libraire/Cinéma + Gare/Plage
         assert_venue_equals(cards_text[0], self.venues[2])  # Théâtre du Centre (most relevant)
         assert_venue_equals(cards_text[1], self.venues[11])  # Théâtre du Centaure (very close to the first one)
+
+    @override_features(WIP_ENABLE_BO_PRO_SEARCH_BY_SIMILARITY=False)
+    def test_can_search_venue_by_public_name_without_similarity(self, authenticated_client):
+        self._create_venues()
+
+        with assert_num_queries(self.expected_num_queries_with_ff):
+            response = authenticated_client.get(url_for(self.endpoint, q="du Centre", pro_type=TypeOptions.VENUE.name))
+            assert response.status_code == 200
+
+        cards_text = html_parser.extract_cards_text(response.data)
+        assert len(cards_text) == 3
+        assert_venue_equals(cards_text[0], self.venues[2])
+
+    @override_features(WIP_ENABLE_BO_PRO_SEARCH_BY_SIMILARITY=False)
+    def test_can_search_venue_by_words_in_public_name_without_similarity(self, authenticated_client):
+        self._create_venues()
+
+        with assert_num_queries(self.expected_num_queries_with_ff):
+            response = authenticated_client.get(
+                url_for(self.endpoint, q="Librairie Centre", pro_type=TypeOptions.VENUE.name)
+            )
+            assert response.status_code == 303
+
+        assert_response_location(
+            response,
+            "backoffice_web.venue.get",
+            venue_id=self.venues[6].id,  # Librairie du Centre
+            q="Librairie Centre",
+            search_rank=1,
+            total_items=1,
+        )
 
     @pytest.mark.parametrize(
         "query,expected_venue_index",
@@ -621,13 +692,18 @@ class SearchVenueTest:
         )
 
     @pytest.mark.parametrize(
-        "query,departments",
-        [("987654321", []), ("festival@example.com", []), ("Festival de la Montagne", []), ("Plage", ["74", "77"])],
+        "query,departments,feature_flag_count",
+        [
+            ("987654321", [], 0),
+            ("festival@example.com", [], 0),
+            ("Festival de la Montagne", [], 1),
+            ("Plage", ["74", "77"], 1),
+        ],
     )
-    def test_can_search_venue_no_result(self, authenticated_client, query, departments):
+    def test_can_search_venue_no_result(self, authenticated_client, query, departments, feature_flag_count):
         self._create_venues()
 
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(self.expected_num_queries + feature_flag_count):
             response = authenticated_client.get(
                 url_for(self.endpoint, q=query, pro_type=TypeOptions.VENUE.name, departments=departments)
             )

@@ -110,6 +110,9 @@ class FeatureToggle(enum.Enum):
     )
     ENABLE_PRO_NEW_NAV_MODIFICATION = "Activer la modification du statut de la navigation du portail pro"
     WIP_ENABLE_NEW_HASHING_ALGORITHM = "Activer le nouveau système de hachage des clés publiques d'API"
+    WIP_ENABLE_BO_PRO_SEARCH_BY_SIMILARITY = (
+        "Activer la recherche par similarité pour les structures et lieux dans le backoffice"
+    )
     WIP_BENEFICIARY_EXTRACT_TOOL = "Activer l'extraction de données personnelles (RGPD)"
     USE_END_DATE_FOR_COLLECTIVE_PRICING = "Utiliser la date de fin du stock collectif comme date de valorisation."
     WIP_ENABLE_OFFER_ADDRESS = "Activer l'association des offres à des adresses."
