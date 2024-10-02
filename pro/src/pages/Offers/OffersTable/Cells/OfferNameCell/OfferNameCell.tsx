@@ -12,6 +12,7 @@ import {
 } from 'core/Offers/constants'
 import { useActiveFeature } from 'hooks/useActiveFeature'
 import fullErrorIcon from 'icons/full-error.svg'
+import { getDepartmentCode } from 'screens/IndividualOffer/utils/getDepartmentCode'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { Tag, TagVariant } from 'ui-kit/Tag/Tag'
 import { useTooltipProps } from 'ui-kit/Tooltip/useTooltipProps'
@@ -39,14 +40,29 @@ export const OfferNameCell = ({
     'ENABLE_COLLECTIVE_OFFERS_EXPIRATION'
   )
 
+  const useOffererAddressAsDataSourceEnabled = useActiveFeature(
+    'WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE'
+  )
+
   const getDateInformations = () => {
-    const {
-      stocks,
-      venue: { departementCode },
-    } = offer
+    const { stocks } = offer
+
+    let departmentCode = ''
+    // If that offer is not educational, it means it's an individual offer …
+    if (!isOfferEducational(offer)) {
+      // … so we want here to use the offer's address 'departmentCode' (under FF)
+      departmentCode = getDepartmentCode({
+        offer,
+        useOffererAddressAsDataSourceEnabled,
+      })
+    } else {
+      // … else, use venue's departementCode for educational offers
+      departmentCode = offer.venue.departementCode ?? ''
+    }
+
     const { beginningDatetime } = stocks[0] ?? {}
     /* istanbul ignore next: DEBT, TO FIX */
-    if (offer.isShowcase || !beginningDatetime || !departementCode) {
+    if (offer.isShowcase || !beginningDatetime || !departmentCode) {
       return null
     }
 
@@ -55,7 +71,7 @@ export const OfferNameCell = ({
     return stockSize === 1
       ? formatLocalTimeDateString(
           beginningDatetime,
-          departementCode,
+          departmentCode,
           FORMAT_DD_MM_YYYY_HH_mm
         )
       : pluralize(stockSize, 'date')
