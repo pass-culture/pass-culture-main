@@ -53,7 +53,7 @@ pycountry = "24.6.1"
 pydantic = { version = "==2.*", extras = ["email"] }
 pyjwt = { version = "2.9.0", extras = ["crypto"] }
 pypdf = "^5.0.1"
-pyproj = "^3.6.1"
+pyproj = "^3.7.0"
 pysaml2 = "^7.5.0"
 python-dateutil = "2.9.0.post0"
 python-dotenv = "1.0.1"
