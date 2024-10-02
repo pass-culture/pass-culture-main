@@ -46,19 +46,28 @@ BOOKING_DATE_STATUS_MAPPING: dict[educational_models.CollectiveBookingStatusFilt
 }
 
 
-def find_bookings_happening_in_x_days(number_of_days: int) -> list[educational_models.CollectiveBooking]:
+def find_bookings_starting_in_x_days(number_of_days: int) -> list[educational_models.CollectiveBooking]:
     target_day = datetime.utcnow() + timedelta(days=number_of_days)
     start = datetime.combine(target_day, time.min)
     end = datetime.combine(target_day, time.max)
-    return find_bookings_starting_in_interval(start, end)
+    return find_bookings_in_interval(start, end, educational_models.CollectiveStock.beginningDatetime)
 
 
-def find_bookings_starting_in_interval(start: datetime, end: datetime) -> list[educational_models.CollectiveBooking]:
+def find_bookings_ending_in_x_days(number_of_days: int) -> list[educational_models.CollectiveBooking]:
+    target_day = datetime.utcnow() + timedelta(days=number_of_days)
+    start = datetime.combine(target_day, time.min)
+    end = datetime.combine(target_day, time.max)
+    return find_bookings_in_interval(start, end, educational_models.CollectiveStock.endDatetime)
+
+
+def find_bookings_in_interval(
+    start: datetime, end: datetime, dateColumn: sa.Column
+) -> list[educational_models.CollectiveBooking]:
     query = educational_models.CollectiveBooking.query.join(
         educational_models.CollectiveStock, educational_models.CollectiveBooking.collectiveStock
     )
     query = query.filter(
-        educational_models.CollectiveStock.beginningDatetime.between(start, end),
+        dateColumn.between(start, end),
         educational_models.CollectiveBooking.status != educational_models.CollectiveBookingStatus.CANCELLED,
     )
     query = query.options(sa.orm.joinedload(educational_models.CollectiveBooking.collectiveStock, innerjoin=True))
