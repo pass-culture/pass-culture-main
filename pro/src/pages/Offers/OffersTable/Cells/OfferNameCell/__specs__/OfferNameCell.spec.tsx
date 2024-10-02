@@ -6,17 +6,25 @@ import {
   collectiveOfferFactory,
   listOffersVenueFactory,
 } from 'utils/collectiveApiFactories'
+import { AddressResponseIsLinkedToVenueModelFactory } from 'utils/commonOffersApiFactories'
 import { FORMAT_DD_MM_YYYY_HH_mm } from 'utils/date'
 import {
+  getOfferVenueFactory,
   listOffersOfferFactory,
   listOffersStockFactory,
 } from 'utils/individualApiFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
+import {
+  renderWithProviders,
+  RenderWithProvidersOptions,
+} from 'utils/renderWithProviders'
 import { formatLocalTimeDateString } from 'utils/timezone'
 
 import { OfferNameCell, OfferNameCellProps } from '../OfferNameCell'
 
-const renderOfferNameCell = (props: OfferNameCellProps) =>
+const renderOfferNameCell = (
+  props: OfferNameCellProps,
+  options?: RenderWithProvidersOptions
+) =>
   renderWithProviders(
     <table>
       <tbody>
@@ -27,6 +35,7 @@ const renderOfferNameCell = (props: OfferNameCellProps) =>
     </table>,
     {
       initialRouterEntries: ['/offres'],
+      ...options,
     }
   )
 
@@ -144,5 +153,88 @@ describe('OfferNameCell', () => {
 
     expect(screen.queryByText('12/12/2024 14:00')).not.toBeInTheDocument()
     expect(screen.getByText('2 dates')).toBeInTheDocument()
+  })
+
+  describe('departmentCode', () => {
+    // Creates an COLLECTIVE offer
+    const collectiveOffer = collectiveOfferFactory({
+      stocks: [
+        listOffersStockFactory({
+          beginningDatetime: '2024-10-01T10:00:00.000', // this datetime is UTC
+        }),
+      ],
+      name: 'Collective offer',
+      venue: listOffersVenueFactory({
+        departementCode: '75', // Paris departement code (UTC+2 EDT)
+      }),
+    })
+
+    // Creates an INDIVIDUAL offer
+    const individualOffer = listOffersOfferFactory({
+      stocks: [
+        listOffersStockFactory({
+          beginningDatetime: '2024-10-01T10:00:00.000', // this datetime is UTC
+        }),
+      ],
+      address: AddressResponseIsLinkedToVenueModelFactory({
+        departmentCode: '972', // Fort-de-France (Martinique) department code (UTC-4 EDT)
+      }),
+      name: 'Individual offer',
+      isEvent: true,
+      venue: {
+        offererName: 'Le Piton',
+        ...getOfferVenueFactory({
+          departementCode: '974', // Saint-Denis (La Réunion) department code (UTC+4 EDT)
+        }),
+      },
+    })
+
+    it('should use collective offer’s venue department code', () => {
+      renderOfferNameCell({
+        // Using the COLLECTIVE offer that have a venue located at Paris
+        offer: collectiveOffer,
+        editionOfferLink: '#',
+      })
+
+      // We expect here to see 12h00 because for the 01/10/2024, Paris is UTC+2
+      expect(
+        screen.getByRole('cell', {
+          name: /Collective offer 01\/10\/2024 12:00/,
+        })
+      ).toBeInTheDocument()
+    })
+
+    it('should use individual offer’s venue departement code', () => {
+      renderOfferNameCell({
+        // Using the INDIVIDUAL offer that have VENUE departement code at Saint-Denis (La Réunion)
+        offer: individualOffer,
+        editionOfferLink: '#',
+      })
+
+      // We expect here to see 14h00 because for the 01/10/2024, Saint-Denis is UTC+4
+      expect(
+        screen.getByRole('cell', {
+          name: /Individual offer 01\/10\/2024 14:00/,
+        })
+      ).toBeInTheDocument()
+    })
+
+    it('should use individual offer’s address department code if WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE', () => {
+      renderOfferNameCell(
+        {
+          // Using the same INDIVIDUAL offer that have an address (OA) located at Fort-de-France (Martinique)
+          offer: individualOffer,
+          editionOfferLink: '#',
+        },
+        { features: ['WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE'] }
+      )
+
+      // We expect here to see 06h00 because for the 01/10/2024, Fort-de-France is UTC-4
+      expect(
+        screen.getByRole('cell', {
+          name: /Individual offer 01\/10\/2024 06:00/,
+        })
+      ).toBeInTheDocument()
+    })
   })
 })

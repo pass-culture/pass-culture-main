@@ -1,10 +1,15 @@
-import { GetIndividualOfferWithAddressResponseModel } from 'apiClient/v1'
+import {
+  GetIndividualOfferWithAddressResponseModel,
+  ListOffersOfferResponseModel,
+} from 'apiClient/v1'
 
 export const getDepartmentCode = ({
   offer,
   useOffererAddressAsDataSourceEnabled,
 }: {
-  offer: GetIndividualOfferWithAddressResponseModel
+  offer:
+    | GetIndividualOfferWithAddressResponseModel
+    | ListOffersOfferResponseModel
   useOffererAddressAsDataSourceEnabled: boolean
 }): string => {
   return offer.address?.departmentCode && useOffererAddressAsDataSourceEnabled
