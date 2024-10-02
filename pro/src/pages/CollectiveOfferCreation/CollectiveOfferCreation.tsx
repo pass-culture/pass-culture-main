@@ -42,6 +42,7 @@ export const CollectiveOfferCreation = ({
           isTemplate={isTemplate}
           isFromTemplate={isCollectiveOffer(offer) && Boolean(offer.templateId)}
           requestId={requestId}
+          offer={offer}
         >
           <OfferEducational
             userOfferers={offerEducationalFormData.offerers}

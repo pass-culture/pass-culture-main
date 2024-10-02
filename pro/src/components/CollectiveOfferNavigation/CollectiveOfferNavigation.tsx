@@ -23,7 +23,10 @@ import {
   OFFER_FROM_TEMPLATE_ENTRIES,
 } from 'core/FirebaseEvents/constants'
 import { NOTIFICATION_LONG_SHOW_DURATION } from 'core/Notification/constants'
-import { isCollectiveOffer } from 'core/OfferEducational/types'
+import {
+  isCollectiveOffer,
+  isCollectiveOfferTemplate,
+} from 'core/OfferEducational/types'
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
 import { createOfferFromTemplate } from 'core/OfferEducational/utils/createOfferFromTemplate'
 import { useActiveFeature } from 'hooks/useActiveFeature'
@@ -126,16 +129,18 @@ export const CollectiveOfferNavigation = ({
       }
     }
   } else {
+    //  Creating an offer
     stepList[CollectiveOfferStep.DETAILS] = {
       id: CollectiveOfferStep.DETAILS,
       label: 'Détails de l’offre',
     }
     if (!isTemplate) {
+      //  These steps only exist for bookable offers
       stepList[CollectiveOfferStep.STOCKS] = {
         id: CollectiveOfferStep.STOCKS,
         label: 'Dates et prix',
-        url: offerId ? `/offre/${offerId}/collectif/stocks${requestIdUrl}` : '',
       }
+
       stepList[CollectiveOfferStep.VISIBILITY] = {
         id: CollectiveOfferStep.VISIBILITY,
         label: 'Établissement et enseignant',
@@ -154,47 +159,45 @@ export const CollectiveOfferNavigation = ({
       label: 'Confirmation',
     }
 
-    //  Steps witout url will be displayed as disabeld in the stepper,
-    //  that's why we need to add url only to the current step and the previeous steps
+    const hasOfferPassedDetailsStep = offer && offerId
+    const hasOfferPassedStocksStep =
+      hasOfferPassedDetailsStep &&
+      (isCollectiveOfferTemplate(offer) || offer.collectiveStock)
+    const hasOfferPassedVisibilityStep =
+      hasOfferPassedStocksStep &&
+      (isCollectiveOfferTemplate(offer) || offer.institution)
 
-    // Add clickable urls depending on current completion
-    // Switch fallthrough is intended, this is precisely the kind of use case for it
-    /* eslint-disable no-fallthrough */
-    switch (activeStep) {
-      // @ts-expect-error switch fallthrough
-      case CollectiveOfferStep.CONFIRMATION:
-        stepList[CollectiveOfferStep.PREVIEW].url = isTemplate
-          ? `/offre/${offerId}/collectif/vitrine/creation/apercu`
-          : `/offre/${offerId}/collectif/creation/apercu`
+    if (hasOfferPassedDetailsStep) {
+      //  The user can go back to the details page after it has been filled the first time
+      stepList[CollectiveOfferStep.DETAILS].url = isTemplate
+        ? `/offre/collectif/vitrine/${offerId}/creation`
+        : `/offre/collectif/${offerId}/creation${requestIdUrl}`
 
-      // @ts-expect-error switch fallthrough
-      case CollectiveOfferStep.PREVIEW:
-        stepList[CollectiveOfferStep.SUMMARY].url = isTemplate
-          ? `/offre/${offerId}/collectif/vitrine/creation/recapitulatif`
-          : `/offre/${offerId}/collectif/creation/recapitulatif`
+      if (
+        !isCollectiveOfferTemplate(offer) &&
+        stepList[CollectiveOfferStep.STOCKS]
+      ) {
+        //  The stocks step is accessible when the details form has been filled and the offer is bookable
+        stepList[CollectiveOfferStep.STOCKS].url =
+          `/offre/${offerId}/collectif/stocks`
+      }
+    }
 
-      // @ts-expect-error switch fallthrough
-      case CollectiveOfferStep.SUMMARY:
-        if (!isTemplate && stepList[CollectiveOfferStep.VISIBILITY]) {
-          stepList[CollectiveOfferStep.VISIBILITY].url =
-            `/offre/${offerId}/collectif/visibilite`
-        }
+    if (hasOfferPassedStocksStep && stepList[CollectiveOfferStep.VISIBILITY]) {
+      //  The visibility tab is only accessible when the stocks form has been filled
+      stepList[CollectiveOfferStep.VISIBILITY].url =
+        `/offre/${offerId}/collectif/visibilite`
+    }
 
-      // @ts-expect-error switch fallthrough
-      case CollectiveOfferStep.VISIBILITY:
-        if (!isTemplate && stepList[CollectiveOfferStep.STOCKS]) {
-          stepList[CollectiveOfferStep.STOCKS].url =
-            `/offre/${offerId}/collectif/stocks`
-        }
+    if (hasOfferPassedVisibilityStep) {
+      //  The summary tab is only accessible when the visibility form has been filled (or the offer is a template)
+      stepList[CollectiveOfferStep.SUMMARY].url = isTemplate
+        ? `/offre/${offerId}/collectif/vitrine/creation/recapitulatif`
+        : `/offre/${offerId}/collectif/creation/recapitulatif`
 
-      // @ts-expect-error switch fallthrough
-      case CollectiveOfferStep.STOCKS:
-        stepList[CollectiveOfferStep.DETAILS].url = isTemplate
-          ? `/offre/collectif/vitrine/${offerId}/creation`
-          : `/offre/collectif/${offerId}/creation${requestIdUrl}`
-
-      case CollectiveOfferStep.DETAILS:
-      // Nothing to do here
+      stepList[CollectiveOfferStep.PREVIEW].url = isTemplate
+        ? `/offre/${offerId}/collectif/vitrine/creation/apercu`
+        : `/offre/${offerId}/collectif/creation/apercu`
     }
   }
 
