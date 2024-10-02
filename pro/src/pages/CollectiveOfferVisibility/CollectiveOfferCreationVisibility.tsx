@@ -69,6 +69,7 @@ export const CollectiveOfferVisibility = ({
         isTemplate={isTemplate}
         isCreation={isCreation}
         requestId={requestId}
+        offer={offer}
       >
         <CollectiveOfferVisibilityScreen
           mode={Mode.CREATION}

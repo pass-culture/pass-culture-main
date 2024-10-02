@@ -131,9 +131,15 @@ describe('CollectiveOfferNavigation', () => {
   })
 
   it('should show different links if offer is template', async () => {
-    props.isTemplate = true
-    props.activeStep = CollectiveOfferStep.SUMMARY
-    renderCollectiveOfferNavigation(props)
+    renderCollectiveOfferNavigation({
+      ...props,
+      activeStep: CollectiveOfferStep.SUMMARY,
+      offer: getCollectiveOfferFactory({
+        institution: undefined,
+        collectiveStock: undefined,
+      }),
+      isTemplate: true,
+    })
 
     const listItems = await screen.findAllByRole('listitem')
     expect(listItems).toHaveLength(4)
@@ -148,8 +154,15 @@ describe('CollectiveOfferNavigation', () => {
   })
 
   it('should show links if stocks is the active step', () => {
-    props.activeStep = CollectiveOfferStep.STOCKS
-    renderCollectiveOfferNavigation(props)
+    renderCollectiveOfferNavigation({
+      ...props,
+      activeStep: CollectiveOfferStep.STOCKS,
+      offer: getCollectiveOfferFactory({
+        institution: undefined,
+        collectiveStock: undefined,
+      }),
+    })
+
     const links = screen.queryAllByRole('link')
     expect(links).toHaveLength(2)
     expect(links[0].getAttribute('href')).toBe(
@@ -161,21 +174,13 @@ describe('CollectiveOfferNavigation', () => {
   })
 
   it('should show links if visibility is the active step', () => {
-    props.activeStep = CollectiveOfferStep.VISIBILITY
-    renderCollectiveOfferNavigation(props)
-    const links = screen.queryAllByRole('link')
-    expect(links).toHaveLength(2)
-    expect(links[0].getAttribute('href')).toBe(
-      `/offre/collectif/${offerId}/creation`
-    )
-    expect(links[1].getAttribute('href')).toBe(
-      `/offre/${offerId}/collectif/stocks`
-    )
-  })
-
-  it('should show links if summary is the active step', () => {
-    props.activeStep = CollectiveOfferStep.SUMMARY
-    renderCollectiveOfferNavigation(props)
+    renderCollectiveOfferNavigation({
+      ...props,
+      activeStep: CollectiveOfferStep.VISIBILITY,
+      offer: getCollectiveOfferFactory({
+        institution: undefined,
+      }),
+    })
     const links = screen.queryAllByRole('link')
     expect(links).toHaveLength(3)
     expect(links[0].getAttribute('href')).toBe(
@@ -189,9 +194,55 @@ describe('CollectiveOfferNavigation', () => {
     )
   })
 
+  it('should show links if summary is the active step', () => {
+    renderCollectiveOfferNavigation({
+      ...props,
+      activeStep: CollectiveOfferStep.SUMMARY,
+      offer: getCollectiveOfferFactory({
+        institution: {
+          city: '',
+          id: 1,
+          institutionId: '2',
+          name: '',
+          phoneNumber: '',
+          postalCode: '',
+        },
+      }),
+    })
+    const links = screen.queryAllByRole('link')
+    expect(links).toHaveLength(5)
+    expect(links[0].getAttribute('href')).toBe(
+      `/offre/collectif/${offerId}/creation`
+    )
+    expect(links[1].getAttribute('href')).toBe(
+      `/offre/${offerId}/collectif/stocks`
+    )
+    expect(links[2].getAttribute('href')).toBe(
+      `/offre/${offerId}/collectif/visibilite`
+    )
+    expect(links[3].getAttribute('href')).toBe(
+      `/offre/${offerId}/collectif/creation/recapitulatif`
+    )
+    expect(links[4].getAttribute('href')).toBe(
+      `/offre/${offerId}/collectif/creation/apercu`
+    )
+  })
+
   it('should show links if confirmation is the active step', () => {
-    props.activeStep = CollectiveOfferStep.CONFIRMATION
-    renderCollectiveOfferNavigation(props)
+    renderCollectiveOfferNavigation({
+      ...props,
+      activeStep: CollectiveOfferStep.CONFIRMATION,
+      offer: getCollectiveOfferFactory({
+        institution: {
+          city: '',
+          id: 1,
+          institutionId: '2',
+          name: '',
+          phoneNumber: '',
+          postalCode: '',
+        },
+      }),
+    })
     const links = screen.queryAllByRole('link')
     expect(links).toHaveLength(5)
     expect(links[0].getAttribute('href')).toBe(
@@ -209,8 +260,12 @@ describe('CollectiveOfferNavigation', () => {
   })
 
   it('should show links if confirmation is the active step and the offer is template', () => {
-    props.activeStep = CollectiveOfferStep.CONFIRMATION
-    renderCollectiveOfferNavigation({ ...props, isTemplate: true })
+    renderCollectiveOfferNavigation({
+      ...props,
+      activeStep: CollectiveOfferStep.CONFIRMATION,
+      offer: getCollectiveOfferTemplateFactory(),
+      isTemplate: true,
+    })
     const links = screen.queryAllByRole('link')
     expect(links).toHaveLength(3)
   })
@@ -483,5 +538,40 @@ describe('CollectiveOfferNavigation', () => {
     })
 
     expect(screen.queryByTestId('stepper')).not.toBeInTheDocument()
+  })
+
+  it('should be able to go to the visibility ans stocks step if the institurion and stock are already filled', () => {
+    renderCollectiveOfferNavigation({
+      ...props,
+      offer: getCollectiveOfferFactory(),
+      isTemplate: false,
+      activeStep: CollectiveOfferStep.DETAILS,
+    })
+
+    expect(
+      screen.getByRole('link', { name: /Établissement et enseignant/ })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('link', { name: /Dates et prix/ })
+    ).toBeInTheDocument()
+  })
+
+  it('should be able to go to the stocks step if the details are already filled', () => {
+    renderCollectiveOfferNavigation({
+      ...props,
+      offer: getCollectiveOfferFactory({
+        institution: undefined,
+        collectiveStock: undefined,
+      }),
+      activeStep: CollectiveOfferStep.DETAILS,
+    })
+
+    expect(
+      screen.queryByRole('link', { name: /Établissement et enseignant/ })
+    ).not.toBeInTheDocument()
+
+    expect(
+      screen.getByRole('link', { name: /Dates et prix/ })
+    ).toBeInTheDocument()
   })
 })

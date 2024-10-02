@@ -20,6 +20,7 @@ export const CollectiveOfferPreviewCreation = ({
         isFromTemplate={isCollectiveOffer(offer) && Boolean(offer.templateId)}
         isTemplate={isTemplate}
         isCreation
+        offer={offer}
       >
         <CollectiveOfferPreviewCreationScreen offer={offer} offerer={offerer} />
         <RouteLeavingGuardCollectiveOfferCreation when={false} />

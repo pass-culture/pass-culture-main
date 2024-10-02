@@ -175,6 +175,7 @@ export const CollectiveOfferStockCreation = ({
         isTemplate={isTemplate}
         isCreation={isCreation}
         requestId={requestId}
+        offer={offer}
       >
         <OfferEducationalStock
           initialValues={initialValues}
