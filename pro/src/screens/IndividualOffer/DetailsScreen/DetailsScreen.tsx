@@ -283,7 +283,7 @@ export const DetailsScreen = ({ venues }: DetailsScreenProps): JSX.Element => {
           isDirtyDraftOffer={isDirtyDraftOffer}
           productId={formik.values.productId}
           subcategoryId={formik.values.subcategoryId}
-          ean={formik.values.ean}
+          initialEan={offer?.extraData?.ean}
           onEanSearch={onEanSearch}
           resetForm={formik.resetForm}
         />

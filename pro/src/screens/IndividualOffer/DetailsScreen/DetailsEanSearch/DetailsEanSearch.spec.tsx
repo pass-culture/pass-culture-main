@@ -36,15 +36,15 @@ const LABELS = {
 }
 
 type DetailsEanSearchTestProps = Partial<DetailsEanSearchProps> & {
-  wasEanSearchPerformed?: boolean
+  wasEanSearchPerformedSuccessfully?: boolean
 }
 
 const EanSearchWrappedWithFormik = ({
   isDirtyDraftOffer = false,
-  wasEanSearchPerformed = false,
+  wasEanSearchPerformedSuccessfully = false,
   productId = DEFAULT_DETAILS_FORM_VALUES.productId,
   subcategoryId = DEFAULT_DETAILS_FORM_VALUES.subcategoryId,
-  ean = DEFAULT_DETAILS_FORM_VALUES.ean,
+  initialEan = '',
   onEanSearch = vi.fn(),
   resetForm = vi.fn(),
 }: DetailsEanSearchTestProps): JSX.Element => {
@@ -56,12 +56,12 @@ const EanSearchWrappedWithFormik = ({
     onSubmit: vi.fn(),
   })
 
-  const hasCompleteValues = !isDirtyDraftOffer || wasEanSearchPerformed
+  const hasCompleteValues =
+    !isDirtyDraftOffer || wasEanSearchPerformedSuccessfully
   const mockedSubCategoryId = hasCompleteValues
     ? 'SUPPORT_PHYSIQUE_MUSIQUE_VINYLE'
     : subcategoryId
   const mockedProductId = hasCompleteValues ? '0000' : productId
-  const mockedEan = hasCompleteValues ? '9781234567897' : ean
 
   return (
     <FormikProvider value={formik}>
@@ -69,7 +69,7 @@ const EanSearchWrappedWithFormik = ({
         isDirtyDraftOffer={isDirtyDraftOffer}
         productId={mockedProductId}
         subcategoryId={mockedSubCategoryId}
-        ean={mockedEan}
+        initialEan={initialEan}
         onEanSearch={onEanSearch}
         resetForm={resetForm}
       />
@@ -194,7 +194,7 @@ describe('DetailsEanSearch', () => {
       it('should display a success message', () => {
         renderDetailsEanSearch({
           isDirtyDraftOffer: true,
-          wasEanSearchPerformed: true,
+          wasEanSearchPerformedSuccessfully: true,
         })
 
         const status = screen.getAllByRole('status')
@@ -208,7 +208,7 @@ describe('DetailsEanSearch', () => {
       it('should be entirely disabled', () => {
         renderDetailsEanSearch({
           isDirtyDraftOffer: true,
-          wasEanSearchPerformed: true,
+          wasEanSearchPerformedSuccessfully: true,
         })
 
         expect(getInput()).toBeDisabled()
@@ -219,7 +219,7 @@ describe('DetailsEanSearch', () => {
         const resetForm = vi.fn()
         renderDetailsEanSearch({
           isDirtyDraftOffer: true,
-          wasEanSearchPerformed: true,
+          wasEanSearchPerformedSuccessfully: true,
           resetForm,
         })
 
@@ -234,7 +234,7 @@ describe('DetailsEanSearch', () => {
       })
     })
 
-    describe('when an EAN search is performed and ends with an error', () => {
+    describe('when an EAN search is performed and ends with a product API error', () => {
       it('should display an error message', async () => {
         vi.spyOn(api, 'getProductByEan').mockRejectedValue(new Error('error'))
         renderDetailsEanSearch({ isDirtyDraftOffer: true })
@@ -260,10 +260,23 @@ describe('DetailsEanSearch', () => {
   })
 
   describe('when the draft offer has been created and the offer is product-based', () => {
+    const initialEan = '9781234567897'
+
+    it('should init the input with the offer EAN', () => {
+      renderDetailsEanSearch({
+        isDirtyDraftOffer: false,
+        wasEanSearchPerformedSuccessfully: true,
+        initialEan,
+      })
+
+      expect(getInput()).toHaveValue(initialEan)
+    })
+
     it('should not display the clear button anymore', () => {
       renderDetailsEanSearch({
         isDirtyDraftOffer: false,
-        wasEanSearchPerformed: true,
+        wasEanSearchPerformedSuccessfully: true,
+        initialEan,
       })
 
       expect(
@@ -276,7 +289,8 @@ describe('DetailsEanSearch', () => {
     it('should display an info message', () => {
       renderDetailsEanSearch({
         isDirtyDraftOffer: false,
-        wasEanSearchPerformed: true,
+        wasEanSearchPerformedSuccessfully: true,
+        initialEan,
       })
 
       expect(screen.queryByText(infoMessage)).toBeInTheDocument()
