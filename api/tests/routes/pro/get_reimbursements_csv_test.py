@@ -497,7 +497,7 @@ def test_with_reimbursement_period_filter_with_pricings_collective_use_case(clie
     "offer_has_oa, len_offerer_addresses, expected_address",
     [
         (True, 2, "1 rue de la paix 75002 Paris"),
-        (False, 1, "1 boulevard Poissonnière 75000 Paris"),
+        (False, 1, "1 boulevard Poissonnière 75002 Paris"),
         (True, 2, "1 rue de la paix 75002 Paris"),
     ],
 )

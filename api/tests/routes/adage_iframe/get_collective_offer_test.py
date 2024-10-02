@@ -94,7 +94,7 @@ class CollectiveOfferTest:
                 "imgUrl": None,
                 "managingOfferer": {"name": offer.venue.managingOfferer.name},
                 "name": offer.venue.name,
-                "postalCode": "75000",
+                "postalCode": "75002",
                 "departmentCode": offer.venue.departementCode,
                 "publicName": offer.venue.publicName,
             },

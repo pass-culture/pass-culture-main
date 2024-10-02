@@ -86,7 +86,7 @@ class GetBookingEventReminderToBeneficiaryEmailDataTest:
             "VENUE_ADDRESS": "1 boulevard Poissonnière",
             "VENUE_CITY": "Paris",
             "VENUE_NAME": "Le Petit Rintintin",
-            "VENUE_POSTAL_CODE": "75000",
+            "VENUE_POSTAL_CODE": "75002",
         }
 
     def should_return_event_specific_data_for_email_when_offer_is_a_duo_event(self):

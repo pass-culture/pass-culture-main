@@ -301,7 +301,7 @@ class DigitalOffersSendinblueTest:
             USER_FIRST_NAME="Jeanne",
             VENUE_ADDRESS="1 boulevard Poissonnière",
             VENUE_CITY="Paris",
-            VENUE_POSTAL_CODE="75000",
+            VENUE_POSTAL_CODE="75002",
             BOOKING_DATE="1 janvier 2018",
             BOOKING_HOUR="01h00",
             EXPIRATION_DELAY=None,

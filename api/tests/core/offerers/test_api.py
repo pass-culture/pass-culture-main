@@ -87,7 +87,7 @@ class CreateVenueTest:
         return {
             "street": "rue du test",
             "city": "Paris",
-            "postalCode": "75000",
+            "postalCode": "75002",
             "banId": "75113_1834_00007",
             "latitude": 1,
             "longitude": 1,
@@ -111,7 +111,7 @@ class CreateVenueTest:
         assert venue.street == "rue du test"
         assert venue.banId == "75113_1834_00007"
         assert venue.city == "Paris"
-        assert venue.postalCode == "75000"
+        assert venue.postalCode == "75002"
         assert venue.latitude == 1
         assert venue.longitude == 1
         assert venue.managingOfferer == user_offerer.offerer

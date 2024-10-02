@@ -216,7 +216,7 @@ class Returns200Test:
             "address": {
                 "id": venue.offererAddress.addressId,
                 "street": "1 boulevard Poissonnière",
-                "postalCode": "75000",
+                "postalCode": "75002",
                 "inseeCode": "75102",
                 "city": "Paris",
                 "departmentCode": "75",

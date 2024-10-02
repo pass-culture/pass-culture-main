@@ -33,7 +33,7 @@ class OffererFactory(BaseFactory):
 
     name = factory.Sequence("Le Petit Rintintin Management {}".format)
     street = "1 boulevard Poissonnière"
-    postalCode = "75000"
+    postalCode = "75002"
     city = "Paris"
     siren = factory.Sequence(lambda n: siren_utils.complete_siren_or_siret(f"{n + 1:08}"))  # ensures valid format
     isActive = True
@@ -68,7 +68,7 @@ class VenueFactory(BaseFactory):
     managingOfferer = factory.SubFactory(OffererFactory)
     street = factory.LazyAttribute(lambda o: None if o.isVirtual else "1 boulevard Poissonnière")
     banId = factory.LazyAttribute(lambda o: None if o.isVirtual else "75102_7560_00001")
-    postalCode = factory.LazyAttribute(lambda o: None if o.isVirtual else "75000")
+    postalCode = factory.LazyAttribute(lambda o: None if o.isVirtual else "75002")
     departementCode = factory.LazyAttribute(lambda o: None if o.isVirtual else _get_department_code(o.postalCode))
     city = factory.LazyAttribute(lambda o: None if o.isVirtual else "Paris")
     publicName = factory.SelfAttribute("name")

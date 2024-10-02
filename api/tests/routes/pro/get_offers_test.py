@@ -483,7 +483,7 @@ class Returns200Test:
                     "label": venue.common_name,
                     "latitude": 48.87004,
                     "longitude": 2.3785,
-                    "postalCode": "75000",
+                    "postalCode": "75002",
                     "street": "1 boulevard Poissonnière",
                 },
             }

@@ -133,7 +133,7 @@ class GetOffererVenuesTest(PublicAPIEndpointBaseHelper):
                     "location": {
                         "address": "1 boulevard Poissonnière",
                         "city": "Paris",
-                        "postalCode": "75000",
+                        "postalCode": "75002",
                         "type": "physical",
                     },
                     "publicName": "Tiff tuff",
@@ -167,7 +167,7 @@ class GetOffererVenuesTest(PublicAPIEndpointBaseHelper):
                     "location": {
                         "address": "1 boulevard Poissonnière",
                         "city": "Paris",
-                        "postalCode": "75000",
+                        "postalCode": "75002",
                         "type": "physical",
                     },
                     "publicName": "wiff wuff",
