@@ -58,7 +58,7 @@ jobs:
           service_account: ${{ steps.secrets.outputs.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
       - name: "Docker login"
         id: docker-login
-        uses: "docker/login-action@v1"
+        uses: "docker/login-action@v3"
         with:
           registry: "europe-west1-docker.pkg.dev"
           username: "oauth2accesstoken"
