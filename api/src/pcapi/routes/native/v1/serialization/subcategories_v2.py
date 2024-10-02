@@ -49,6 +49,7 @@ class NativeCategoryResponseModelv2(BaseModel):
     name: subcategories_v2.NativeCategoryIdEnumv2
     value: str | None
     genre_type: subcategories_v2.GenreType | None
+    parents: list[subcategories_v2.SearchGroupNameEnumv2]
 
     class Config:
         alias_generator = to_camel
