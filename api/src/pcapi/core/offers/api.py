@@ -1730,45 +1730,6 @@ def get_stocks_stats(offer_id: int) -> StocksStats:
         )
 
 
-def fill_offer_extra_data_from_product_data(product_id: int) -> None:
-    offer_ids = []
-
-    product = models.Product.query.filter_by(id=product_id).one_or_none()
-
-    if not product:
-        raise exceptions.ProductNotFound()
-
-    try:
-        with transaction():
-            offers = models.Offer.query.filter_by(productId=product_id).all()
-
-            offer_ids = [offer.id for offer in offers]
-
-            for offer in offers:
-                offer.name = product.name
-                offer.extraData = offer.extraData or {}
-                offer.extraData.update(product.extraData)
-                db.session.add(offer)
-                logger.info(
-                    "Update offer extra data from product extra data",
-                    extra={"product_id": product_id, "offer_id": offer.id},
-                )
-
-        if offer_ids:
-            search.async_index_offer_ids(
-                set(offer_ids),
-                reason=search.IndexationReason.PRODUCT_UPDATE,
-                log_extra={"product_id": product_id, "updated_extra_data": True},
-            )
-
-    except Exception as exception:
-        logger.exception(
-            "Could not update offers extra data from product",
-            extra={"product": product_id, "offers": offer_ids, "exc": str(exception)},
-        )
-        raise exceptions.NotUpdateProductOrOffers(exception)
-
-
 def check_can_move_event_offer(offer: models.Offer) -> list[offerers_models.Venue]:
     if not offer.isEvent:
         raise exceptions.OfferIsNotEvent()
