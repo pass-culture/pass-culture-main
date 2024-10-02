@@ -2,7 +2,7 @@ import * as Dialog from '@radix-ui/react-dialog'
 
 import { Button } from 'ui-kit/Button/Button'
 
-import topImage from './assets/new-banner-beta.svg'
+import topImage from './assets/new-banner-beta.png'
 import styles from './WelcomeToTheNewBetaBanner.module.scss'
 
 export const WelcomeToTheNewBetaBanner = (): JSX.Element => {

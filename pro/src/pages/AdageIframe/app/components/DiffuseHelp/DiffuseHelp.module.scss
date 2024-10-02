@@ -7,6 +7,10 @@
   border-radius: rem.torem(8px);
   background-color: var(--color-background-secondary);
 
+  &-icon {
+    width: rem.torem(32px);
+  }
+
   &-infos {
     display: flex;
     flex-direction: column;

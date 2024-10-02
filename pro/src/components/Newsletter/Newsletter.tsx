@@ -4,8 +4,8 @@ import fullLinkIcon from 'icons/full-link.svg'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
-import newsletterImage from './assets/newsletter.svg'
 import styles from './Newsletter.module.scss'
+import { NewsletterSVG } from './NewsletterSVG'
 
 export const Newsletter = () => {
   return (
@@ -20,11 +20,7 @@ export const Newsletter = () => {
       >
         Inscrivez-vous à notre newsletter pour recevoir les actualités du pass
         Culture
-        <img
-          src={newsletterImage}
-          alt=""
-          className={styles['newsletter-img']}
-        />
+        <NewsletterSVG className={styles['newsletter-img']} />
       </ButtonLink>
     </div>
   )

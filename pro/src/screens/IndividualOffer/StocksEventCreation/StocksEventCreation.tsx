@@ -70,6 +70,7 @@ export const StocksEventCreation = ({
 
   return (
     <>
+      TEST
       <div className={styles['container']}>
         {hasStocks === false && (
           <HelpSection className={styles['help-section']} />

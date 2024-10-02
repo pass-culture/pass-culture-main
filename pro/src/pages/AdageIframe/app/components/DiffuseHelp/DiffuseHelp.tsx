@@ -1,8 +1,8 @@
 import cn from 'classnames'
 import React, { useState } from 'react'
 
-import helpIcon from 'icons/shadow-tips-help.svg'
 import strokeCloseIcon from 'icons/stroke-close.svg'
+import { ShadowTipsHelpIcon } from 'ui-kit/Icons/SVGs/ShadowTipsHelpIcon'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { localStorageAvailable } from 'utils/localStorageAvailable'
 
@@ -34,7 +34,7 @@ export const DiffuseHelp = ({
       <div className={styles['diffuse-help-infos']}>
         <div className={styles['diffuse-help-container']}>
           <div className={styles['diffuse-help-header']}>
-            <SvgIcon src={helpIcon} alt="" width="32" />
+            <ShadowTipsHelpIcon className={styles['diffuse-help-icon']} />
             <div className={styles['diffuse-help-title']}>Le saviez-vous ?</div>
           </div>
           <button

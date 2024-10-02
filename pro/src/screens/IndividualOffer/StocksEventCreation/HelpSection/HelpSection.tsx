@@ -1,14 +1,14 @@
 import cn from 'classnames'
-import React from 'react'
+import React, { createElement } from 'react'
 
 import styles from './HelpSection.module.scss'
-import step1 from './step1.svg'
-import step2 from './step2.svg'
-import step3 from './step3.svg'
+import { Step1SVG } from './Step1SVG'
+import { Step2SVG } from './Step2SVG'
+import { Step3SVG } from './Step3SVG'
 
 interface StepProps {
   stepNumber: number
-  image: string
+  image: React.ElementType
   content: string
 }
 
@@ -16,7 +16,7 @@ const Step = ({ stepNumber, image, content }: StepProps) => (
   <li className={styles['step']}>
     <div className={styles['step-hero']}>
       <div className={styles['step-number']}>{stepNumber}</div>
-      <img src={image} alt="" className={styles['step-image']} />
+      {createElement(image, { className: styles['step-image'] })}
     </div>
     {content}
   </li>
@@ -33,19 +33,19 @@ export const HelpSection = ({ className }: Props): JSX.Element => (
     <ol className={styles['steps-list']}>
       <Step
         stepNumber={1}
-        image={step1}
+        image={Step1SVG}
         content="Ajoutez une ou plusieurs dates et le nombre de places"
       />
 
       <Step
         stepNumber={2}
-        image={step2}
+        image={Step2SVG}
         content="Visualisez les dates créées"
       />
 
       <Step
         stepNumber={3}
-        image={step3}
+        image={Step3SVG}
         content="Si besoin, ajoutez de nouvelles dates"
       />
     </ol>
