@@ -5,7 +5,7 @@ import { BaseInput } from 'ui-kit/form/shared/BaseInput/BaseInput'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './Icons.module.scss'
-import { fullIcons, otherIcons, shadowIcons, strokeIcons } from './iconsList'
+import { fullIcons, otherIcons, strokeIcons } from './iconsList'
 
 const fuzzyMatch = (pattern: string, str: string) => {
   pattern = '.*' + pattern.toLowerCase().split('').join('.*') + '.*'
@@ -16,7 +16,6 @@ const fuzzyMatch = (pattern: string, str: string) => {
 const iconsSections = [
   { title: 'Full icons', icons: fullIcons },
   { title: 'Stroke icons', icons: strokeIcons },
-  { title: 'Shadow icons', icons: shadowIcons },
   { title: 'Other icons', icons: otherIcons },
 ]
 

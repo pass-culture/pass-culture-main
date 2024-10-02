@@ -53,8 +53,6 @@ import fullWarningIcon from 'icons/full-warning.svg'
 import logoPassCultureProFullIcon from 'icons/logo-pass-culture-pro-full.svg'
 import logoPassCultureProIcon from 'icons/logo-pass-culture-pro.svg'
 import logoPassCultureIcon from 'icons/logo-pass-culture.svg'
-import shadowTipsHelpIcon from 'icons/shadow-tips-help.svg'
-import shadowTipsWarningIcon from 'icons/shadow-tips-warning.svg'
 import stroke404Icon from 'icons/stroke-404.svg'
 import strokeAccessibilityBrainIcon from 'icons/stroke-accessibility-brain.svg'
 import strokeAccessibilityEarIcon from 'icons/stroke-accessibility-ear.svg'
@@ -270,11 +268,6 @@ export const strokeIcons: IconListItem[] = [
   { src: strokeShoutIcon },
   { src: strokeCollaboratorIcon },
   { src: strokeBarcodeIcon },
-]
-
-export const shadowIcons: IconListItem[] = [
-  { src: shadowTipsHelpIcon },
-  { src: shadowTipsWarningIcon },
 ]
 
 export const otherIcons: IconListItem[] = [
