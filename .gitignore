@@ -48,3 +48,7 @@ docs-build/
 
 # Certificate to start the api with a proxy
 *.pem
+
+# Certificates for local mutal TLS
+*.crt
+*.key
