@@ -22,7 +22,7 @@ export type DetailsEanSearchProps = {
   isDirtyDraftOffer: boolean
   productId: string
   subcategoryId: string
-  ean?: string
+  initialEan?: string
   onEanSearch: (ean: string, product: Product) => Promise<void>
   resetForm: () => void
 }
@@ -31,7 +31,7 @@ export const DetailsEanSearch = ({
   isDirtyDraftOffer,
   productId,
   subcategoryId,
-  ean: initialEan,
+  initialEan,
   onEanSearch,
   resetForm,
 }: DetailsEanSearchProps): JSX.Element => {
