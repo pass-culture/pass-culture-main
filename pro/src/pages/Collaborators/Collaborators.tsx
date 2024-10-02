@@ -183,7 +183,7 @@ export const Collaborators = (): JSX.Element | null => {
               <Form className={styles['invitation-form']}>
                 <FormLayout>
                   <FormLayout.Row
-                    className={styles['invitation-email-wrapepr']}
+                    className={styles['invitation-email-wrapper']}
                   >
                     <EmailSpellCheckInput
                       name="email"
@@ -191,15 +191,14 @@ export const Collaborators = (): JSX.Element | null => {
                       label="Adresse email"
                       className={styles['invitation-email-field']}
                     />
-                    <div className={styles['add-member-button-wrapper']}>
-                      <Button
-                        type="submit"
-                        isLoading={isLoading}
-                        className={styles['add-member-button']}
-                      >
-                        Inviter
-                      </Button>
-                    </div>
+                    <Button
+                      type="submit"
+                      isLoading={isLoading}
+                      className={styles['add-member-button']}
+                      data-error={formik.errors.email ? 'true' : 'false'}
+                    >
+                      Inviter
+                    </Button>
                   </FormLayout.Row>
                 </FormLayout>
               </Form>

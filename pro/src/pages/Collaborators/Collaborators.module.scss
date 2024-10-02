@@ -39,8 +39,9 @@
     margin-bottom: rem.torem(32px);
   }
 
-  .invitation-email-wrapepr {
+  .invitation-email-wrapper {
     display: flex;
+    align-items: flex-end;
     gap: rem.torem(8px);
   }
 
@@ -49,12 +50,14 @@
     margin-bottom: rem.torem(8px);
   }
 
-  .add-member-button-wrapper {
-    padding-top: rem.torem(26px);
-  }
-
   .add-member-button {
-    margin-bottom: rem.torem(24px);
+    margin-bottom: rem.torem(32px);
+
+    @media (width <= 414px) {
+      &[data-error="true"] {
+        margin-bottom: rem.torem(48px);
+      }
+    }
   }
 
   .members-container {
