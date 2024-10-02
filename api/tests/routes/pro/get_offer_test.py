@@ -220,7 +220,7 @@ class Returns200Test:
                 "mentalDisabilityCompliant": False,
                 "motorDisabilityCompliant": False,
                 "name": "La petite librairie",
-                "postalCode": "75000",
+                "postalCode": "75002",
                 "publicName": "La petite librairie",
                 "visualDisabilityCompliant": False,
             },
