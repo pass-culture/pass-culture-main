@@ -597,6 +597,15 @@ class NotifyProUserOneDayAfterTest:
             collectiveStock__beginningDatetime=datetime.datetime(2021, 1, 6),
             status=educational_models.CollectiveBookingStatus.CONFIRMED,
         )
+        # should not send email only the endDate should be taken into account
+        educational_factories.CollectiveBookingFactory(
+            collectiveStock__collectiveOffer__name="booking8",
+            collectiveStock__collectiveOffer__bookingEmails=["booking1@example.com", "booking1-2@example.com"],
+            collectiveStock__beginningDatetime=datetime.datetime(2020, 1, 6),
+            collectiveStock__endDatetime=datetime.datetime(2020, 1, 9),  # -> a different endDatetime
+            status=educational_models.CollectiveBookingStatus.CONFIRMED,
+        )
+
         educational_api_booking.notify_pro_users_one_day_after()
         assert mock_mail_sender.call_count == 2
         for args in mock_mail_sender.call_args_list:
