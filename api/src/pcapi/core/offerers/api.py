@@ -67,6 +67,7 @@ from pcapi.utils import crypto
 from pcapi.utils import human_ids
 from pcapi.utils import image_conversion
 from pcapi.utils import regions as utils_regions
+from pcapi.utils.clean_accents import clean_accents
 import pcapi.utils.date as date_utils
 import pcapi.utils.db as db_utils
 import pcapi.utils.email as email_utils
@@ -1552,9 +1553,15 @@ def search_offerer(search_query: str, departments: typing.Iterable[str] = ()) ->
         else:
             offerers = offerers.filter(models.Offerer.id == int(search_query))
     else:
-        offerers = offerers.filter(
-            sa.func.similarity(models.Offerer.name, search_query) > settings.BACKOFFICE_SEARCH_SIMILARITY_MINIMAL_SCORE
-        )
+        if FeatureToggle.WIP_ENABLE_BO_PRO_SEARCH_BY_SIMILARITY.is_active():
+            offerers = offerers.filter(
+                sa.func.similarity(models.Offerer.name, search_query)
+                > settings.BACKOFFICE_SEARCH_SIMILARITY_MINIMAL_SCORE
+            )
+        else:
+            search_words = f'%{clean_accents(search_query).replace(" ", "%").replace("-", "%")}%'
+            offerers = offerers.filter(sa.func.immutable_unaccent(offerers_models.Offerer.name).ilike(search_words))
+
         # Always order by similarity when searching by name
         offerers = offerers.order_by(sa.desc(sa.func.similarity(models.Offerer.name, search_query)))
 
@@ -1610,23 +1617,34 @@ def search_venue(search_query: str, departments: typing.Iterable[str] = ()) -> B
         elif dms_token_term := re.match(DMS_TOKEN_REGEX, search_query):
             venues = venues.filter(models.Venue.dmsToken == dms_token_term.group(1).lower())
         else:
-            # non-numeric terms are searched by trigram distance in the name
-            venues = venues.filter(
-                sa.or_(
-                    sa.func.similarity(models.Venue.name, search_query)
-                    > settings.BACKOFFICE_SEARCH_SIMILARITY_MINIMAL_SCORE,
-                    sa.func.similarity(models.Venue.publicName, search_query)
-                    > settings.BACKOFFICE_SEARCH_SIMILARITY_MINIMAL_SCORE,
-                )
-            ).order_by(
-                # Always order by similarity when searching by name
-                sa.desc(
-                    sa.func.greatest(
-                        sa.func.similarity(models.Venue.name, search_query),
-                        sa.func.similarity(models.Venue.publicName, search_query),
+            if FeatureToggle.WIP_ENABLE_BO_PRO_SEARCH_BY_SIMILARITY.is_active():
+                # non-numeric terms are searched by trigram distance in the name
+                venues = venues.filter(
+                    sa.or_(
+                        sa.func.similarity(models.Venue.name, search_query)
+                        > settings.BACKOFFICE_SEARCH_SIMILARITY_MINIMAL_SCORE,
+                        sa.func.similarity(models.Venue.publicName, search_query)
+                        > settings.BACKOFFICE_SEARCH_SIMILARITY_MINIMAL_SCORE,
                     )
                 )
+            else:
+                search_words = f'%{clean_accents(search_query).replace(" ", "%").replace("-", "%")}%'
+                venues = venues.filter(
+                    sa.or_(
+                        sa.func.immutable_unaccent(offerers_models.Venue.name).ilike(search_words),
+                        sa.func.immutable_unaccent(offerers_models.Venue.publicName).ilike(search_words),
+                    )
+                )
+
+        # Always order by similarity when searching by name
+        venues = venues.order_by(
+            sa.desc(
+                sa.func.greatest(
+                    sa.func.similarity(models.Venue.name, search_query),
+                    sa.func.similarity(models.Venue.publicName, search_query),
+                )
             )
+        )
 
     # At the end, order by id, in case of equal similarity score
     venues = venues.order_by(models.Venue.id)
