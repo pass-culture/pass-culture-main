@@ -18,6 +18,52 @@ from pcapi.domain.show_types import SHOW_TYPES_LABEL_BY_CODE
 from pcapi.domain.show_types import ShowType
 
 
+@dataclass
+class GenreTypeContent:
+    name: str  # name used to index (Algolia)
+    value: str  # value to display
+
+
+class GenreType(Enum):
+    BOOK = "BOOK"
+    MUSIC = "MUSIC"
+    SHOW = "SHOW"
+    MOVIE = "MOVIE"
+
+    @property
+    def values(self) -> list[GenreTypeContent]:
+        return {
+            type(self).BOOK.name: self.book_values(),
+            type(self).MUSIC.name: self.music_values(),
+            type(self).SHOW.name: self.show_values(),
+            type(self).MOVIE.name: self.movie_values(),
+        }[self.name]
+
+    @property
+    def trees(self) -> list[BookType] | list[MovieType] | list[MusicType] | list[ShowType]:
+        return {
+            type(self).BOOK.name: BOOK_TYPES,
+            type(self).MUSIC.name: MUSIC_TYPES,
+            type(self).SHOW.name: SHOW_TYPES,
+            type(self).MOVIE.name: MOVIE_TYPES,
+        }[
+            self.name
+        ]  # type: ignore[return-value]
+
+    def book_values(self) -> list[GenreTypeContent]:
+        return [GenreTypeContent(name=value, value=value) for value in sorted(BOOK_MACRO_SECTIONS)]
+
+    def music_values(self) -> list[GenreTypeContent]:
+        return [GenreTypeContent(name=value, value=value) for value in sorted(MUSIC_TYPES_LABEL_BY_CODE.values())]
+
+    def show_values(self) -> list[GenreTypeContent]:
+        return [GenreTypeContent(name=value, value=value) for value in sorted(SHOW_TYPES_LABEL_BY_CODE.values())]
+
+    def movie_values(self) -> list[GenreTypeContent]:
+        values = [GenreTypeContent(name=movie_type.name, value=movie_type.label) for movie_type in MOVIE_TYPES]
+        return sorted(values, key=lambda x: x.value)
+
+
 class SearchNode:
     def __init__(
         self,
@@ -73,6 +119,10 @@ class NativeCategory(SearchNode):
 
         cls.instances.append(obj)
         return obj
+
+    def __init__(self, *args: typing.Any, genre_type: GenreType | None = None, **kwargs: typing.Any) -> None:
+        super().__init__(*args, **kwargs)
+        self.genre_type = genre_type
 
     @property
     def search_value(self) -> str | None:
@@ -280,6 +330,7 @@ NATIVE_CATEGORY_ABONNEMENTS_SPECTACLE = NativeCategory(
     technical_name="ABONNEMENTS_SPECTACLE",
     label="Abonnements spectacle",
     parents=[SEARCH_GROUP_SPECTACLES.id],
+    genre_type=GenreType.SHOW,
 )
 NATIVE_CATEGORY_ACHAT_LOCATION_INSTRUMENT = NativeCategory(
     technical_name="ACHAT_LOCATION_INSTRUMENT",
@@ -310,16 +361,19 @@ NATIVE_CATEGORY_CD = NativeCategory(
     technical_name="CD",
     label="CD",
     parents=[SEARCH_GROUP_CD_VINYLE_MUSIQUE_EN_LIGNE.id],
+    genre_type=GenreType.MUSIC,
 )
 NATIVE_CATEGORY_CONCERTS_EN_LIGNE = NativeCategory(
     technical_name="CONCERTS_EN_LIGNE",
     label="Concerts en ligne",
     parents=[SEARCH_GROUP_EVENEMENTS_EN_LIGNE.id],
+    genre_type=GenreType.MUSIC,
 )
 NATIVE_CATEGORY_CONCERTS_EVENEMENTS = NativeCategory(
     technical_name="CONCERTS_EVENEMENTS",
     label="Concerts, évènements",
     parents=[SEARCH_GROUP_CONCERTS_FESTIVALS.id],
+    genre_type=GenreType.MUSIC,
 )
 NATIVE_CATEGORY_CONCOURS = NativeCategory(
     technical_name="CONCOURS",
@@ -360,6 +414,7 @@ NATIVE_CATEGORY_FESTIVALS = NativeCategory(
     technical_name="FESTIVALS",
     label="Festivals",
     parents=[SEARCH_GROUP_CONCERTS_FESTIVALS.id],
+    genre_type=GenreType.MUSIC,
 )
 NATIVE_CATEGORY_FESTIVAL_DU_LIVRE = NativeCategory(
     technical_name="FESTIVAL_DU_LIVRE",
@@ -395,6 +450,7 @@ NATIVE_CATEGORY_LIVRES_PAPIER = NativeCategory(
     technical_name="LIVRES_PAPIER",
     label="Livres papier",
     parents=[SEARCH_GROUP_LIVRES.id],
+    genre_type=GenreType.BOOK,
 )
 NATIVE_CATEGORY_LUDOTHEQUE = NativeCategory(
     technical_name="LUDOTHEQUE",
@@ -410,6 +466,7 @@ NATIVE_CATEGORY_MUSIQUE_EN_LIGNE = NativeCategory(
     technical_name="MUSIQUE_EN_LIGNE",
     label="Musique en ligne",
     parents=[SEARCH_GROUP_CD_VINYLE_MUSIQUE_EN_LIGNE.id],
+    genre_type=GenreType.MUSIC,
 )
 NATIVE_CATEGORY_NONE = NativeCategory(technical_name="NATIVE_CATEGORY_NONE", label="None", parents=[])
 NATIVE_CATEGORY_PARTITIONS_DE_MUSIQUE = NativeCategory(
@@ -467,21 +524,25 @@ NATIVE_CATEGORY_SEANCES_DE_CINEMA = NativeCategory(
     technical_name="SEANCES_DE_CINEMA",
     label="Séances de cinéma",
     parents=[SEARCH_GROUP_FILMS_SERIES_CINEMA.id, SEARCH_GROUP_CINEMA.id],
+    genre_type=GenreType.MOVIE,
 )
 NATIVE_CATEGORY_SPECTACLES_ENREGISTRES = NativeCategory(
     technical_name="SPECTACLES_ENREGISTRES",
     label="Spectacles enregistrés",
     parents=[SEARCH_GROUP_SPECTACLES.id],
+    genre_type=GenreType.SHOW,
 )
 NATIVE_CATEGORY_SPECTACLES_REPRESENTATIONS = NativeCategory(
     technical_name="SPECTACLES_REPRESENTATIONS",
     label="Spectacles & représentations",
     parents=[SEARCH_GROUP_SPECTACLES.id],
+    genre_type=GenreType.SHOW,
 )
 NATIVE_CATEGORY_VINYLES = NativeCategory(
     technical_name="VINYLES",
     label="Vinyles et autres supports",
     parents=[SEARCH_GROUP_CD_VINYLE_MUSIQUE_EN_LIGNE.id],
+    genre_type=GenreType.MUSIC,
 )
 NATIVE_CATEGORY_VISITES_CULTURELLES = NativeCategory(
     technical_name="VISITES_CULTURELLES",
@@ -536,52 +597,6 @@ class ReimbursementRuleChoices(Enum):
     STANDARD = "STANDARD"
     NOT_REIMBURSED = "NOT_REIMBURSED"
     BOOK = "BOOK"
-
-
-@dataclass
-class GenreTypeContent:
-    name: str  # name used to index (Algolia)
-    value: str  # value to display
-
-
-class GenreType(Enum):
-    BOOK = "BOOK"
-    MUSIC = "MUSIC"
-    SHOW = "SHOW"
-    MOVIE = "MOVIE"
-
-    @property
-    def values(self) -> list[GenreTypeContent]:
-        return {
-            type(self).BOOK.name: self.book_values(),
-            type(self).MUSIC.name: self.music_values(),
-            type(self).SHOW.name: self.show_values(),
-            type(self).MOVIE.name: self.movie_values(),
-        }[self.name]
-
-    @property
-    def trees(self) -> list[BookType] | list[MovieType] | list[MusicType] | list[ShowType]:
-        return {
-            type(self).BOOK.name: BOOK_TYPES,
-            type(self).MUSIC.name: MUSIC_TYPES,
-            type(self).SHOW.name: SHOW_TYPES,
-            type(self).MOVIE.name: MOVIE_TYPES,
-        }[
-            self.name
-        ]  # type: ignore[return-value]
-
-    def book_values(self) -> list[GenreTypeContent]:
-        return [GenreTypeContent(name=value, value=value) for value in sorted(BOOK_MACRO_SECTIONS)]
-
-    def music_values(self) -> list[GenreTypeContent]:
-        return [GenreTypeContent(name=value, value=value) for value in sorted(MUSIC_TYPES_LABEL_BY_CODE.values())]
-
-    def show_values(self) -> list[GenreTypeContent]:
-        return [GenreTypeContent(name=value, value=value) for value in sorted(SHOW_TYPES_LABEL_BY_CODE.values())]
-
-    def movie_values(self) -> list[GenreTypeContent]:
-        values = [GenreTypeContent(name=movie_type.name, value=movie_type.label) for movie_type in MOVIE_TYPES]
-        return sorted(values, key=lambda x: x.value)
 
 
 class ExtraDataFieldEnum(Enum):
