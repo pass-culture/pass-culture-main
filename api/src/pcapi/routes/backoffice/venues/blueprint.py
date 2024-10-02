@@ -568,6 +568,7 @@ def delete_venue(venue_id: int) -> utils.BackofficeResponse:
         Markup("Le lieu {venue_name} ({venue_id}) a été supprimé").format(venue_name=venue_name, venue_id=venue_id),
         "success",
     )
+    db.session.commit()
     return redirect(url_for("backoffice_web.pro.search_pro"), code=303)
 
 
