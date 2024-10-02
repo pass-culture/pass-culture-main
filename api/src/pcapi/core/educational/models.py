@@ -717,6 +717,21 @@ class CollectiveOffer(
             .where(aliased_collective_stock.hasBeginningDatetimePassed.is_(True))
         )
 
+    @hybrid_property
+    def hasEndDatetimePassed(self) -> bool:
+        if not self.collectiveStock:
+            return False
+        return self.collectiveStock.hasEndDatetimePassed
+
+    @hasEndDatetimePassed.expression  # type: ignore[no-redef]
+    def hasEndDatetimePassed(cls) -> Exists:  # pylint: disable=no-self-argument
+        aliased_collective_stock = sa.orm.aliased(CollectiveStock)
+        return (
+            sa.exists()
+            .where(aliased_collective_stock.collectiveOfferId == cls.id)
+            .where(aliased_collective_stock.hasEndDatetimePassed.is_(True))
+        )
+
     @property
     def days_until_booking_limit(self) -> int | None:
         if not self.collectiveStock:
@@ -798,8 +813,8 @@ class CollectiveOffer(
             last_booking_status = bookings[-1].status
 
             # pylint: disable=using-constant-test
-            if self.is_expired:
-                if last_booking_status == CollectiveBookingStatus.USED:
+            if self.hasEndDatetimePassed:
+                if last_booking_status in {CollectiveBookingStatus.USED, CollectiveBookingStatus.CONFIRMED}:
                     return CollectiveOfferDisplayedStatus.ENDED
                 if last_booking_status == CollectiveBookingStatus.REIMBURSED:
                     return CollectiveOfferDisplayedStatus.REIMBURSED
@@ -1134,6 +1149,16 @@ class CollectiveOfferTemplate(
         return sa.sql.expression.false()
 
     @hybrid_property
+    def hasEndDatetimePassed(self) -> bool:
+        # this property is here for compatibility reasons
+        return False
+
+    @hasEndDatetimePassed.expression  # type: ignore[no-redef]
+    def hasEndDatetimePassed(cls) -> False_:  # pylint: disable=no-self-argument
+        # this property is here for compatibility reasons
+        return sa.sql.expression.false()
+
+    @hybrid_property
     def isArchived(self) -> bool:
         return self.dateArchived is not None
 
@@ -1336,6 +1361,14 @@ class CollectiveStock(PcObject, Base, Model):
     @hasBeginningDatetimePassed.expression  # type: ignore[no-redef]
     def hasBeginningDatetimePassed(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
         return cls.beginningDatetime <= sa.func.now()
+
+    @hybrid_property
+    def hasEndDatetimePassed(self) -> bool:
+        return self.endDatetime <= datetime.utcnow()
+
+    @hasEndDatetimePassed.expression  # type: ignore[no-redef]
+    def hasEndDatetimePassed(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
+        return cls.endDatetime <= sa.func.now()
 
     @hybrid_property
     def isEventExpired(self) -> bool:  # todo rewrite

@@ -635,6 +635,17 @@ class CollectiveOfferDisplayedStatusTest:
 
         assert offer.displayedStatus == CollectiveOfferDisplayedStatus.ACTIVE
 
+    def test_get_displayed_status_for_offer_when_in_between_beginningDatetime_endDatetime(self):
+        offer = factories.CollectiveOfferFactory()
+        yesterday = datetime.datetime.utcnow() - datetime.timedelta(days=1)
+        futur = datetime.datetime.utcnow() + datetime.timedelta(days=2)
+        stock = factories.CollectiveStockFactory(
+            collectiveOffer=offer, beginningDatetime=yesterday, endDatetime=futur, bookingLimitDatetime=futur
+        )
+        _booking = factories.UsedCollectiveBookingFactory(collectiveStock=stock)
+
+        assert offer.displayedStatus == CollectiveOfferDisplayedStatus.BOOKED
+
 
 class CollectiveOfferAllowedActionsTest:
     @pytest.mark.parametrize("status", CollectiveOfferDisplayedStatus)
