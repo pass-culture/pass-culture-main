@@ -6,6 +6,7 @@ from tests.conftest import TestClient
 from tests.routes.public.helpers import PublicAPIEndpointBaseHelper
 
 
+@pytest.mark.skip(reason="endpoint disabled")
 @pytest.mark.usefixtures("db_session")
 class GetAddressTest(PublicAPIEndpointBaseHelper):
     endpoint_url = "/public/offers/v1/addresses"
