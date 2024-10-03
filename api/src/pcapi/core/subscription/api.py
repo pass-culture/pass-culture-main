@@ -175,7 +175,11 @@ def get_phone_validation_subscription_item(
         elif fraud_repository.has_failed_phone_validation(user):
             status = models.SubscriptionItemStatus.KO
         elif is_eligibility_activable(user, eligibility):
-            status = models.SubscriptionItemStatus.TODO
+            has_user_filled_phone = user.phoneNumber is not None
+            if has_user_filled_phone:
+                status = models.SubscriptionItemStatus.OK
+            else:
+                status = models.SubscriptionItemStatus.TODO
         else:
             status = models.SubscriptionItemStatus.VOID
 
