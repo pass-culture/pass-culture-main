@@ -548,7 +548,7 @@ class AlgoliaBackend(base.SearchBackend):
                 "gtlCodeLevel2": gtl_code_2,
                 "gtlCodeLevel3": gtl_code_3,
                 "gtlCodeLevel4": gtl_code_4,
-                "indexedAt": datetime.datetime.utcnow().isoformat(),
+                "indexedAt": datetime.date.today().isoformat(),
                 "isDigital": offer.isDigital,
                 "isDuo": offer.isDuo,
                 "isEducational": False,
