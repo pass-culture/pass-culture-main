@@ -112,6 +112,7 @@ def edit_venue(venue_id: int, body: venues_serialize.EditVenueBodyModel) -> venu
     not_venue_fields = {
         "isAccessibilityAppliedOnAllOffers",
         "isEmailAppliedOnAllOffers",
+        "isManualEdition",
         "isWithdrawalAppliedOnAllOffers",
         "contact",
         "shouldSendMail",
@@ -142,6 +143,7 @@ def edit_venue(venue_id: int, body: venues_serialize.EditVenueBodyModel) -> venu
         author=current_user,
         contact_data=body.contact,
         opening_hours=body.openingHours,
+        is_manual_edition=body.isManualEdition or False,
     )
 
     if have_accessibility_changes and body.isAccessibilityAppliedOnAllOffers:
