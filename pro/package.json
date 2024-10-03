@@ -45,7 +45,7 @@
     "@firebase/remote-config": "0.4.9",
     "@radix-ui/react-dialog": "^1.1.1",
     "@radix-ui/react-dropdown-menu": "^2.1.1",
-    "@radix-ui/react-tabs": "^1.1.0",
+    "@radix-ui/react-tabs": "^1.1.1",
     "@reduxjs/toolkit": "^2.2.7",
     "@sentry/browser": "^8.33.0",
     "@sentry/react": "^8.32.0",
