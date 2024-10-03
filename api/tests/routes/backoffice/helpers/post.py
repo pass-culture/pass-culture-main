@@ -1,5 +1,7 @@
+import flask
 from flask import g
 from flask import url_for
+import flask_wtf
 
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
@@ -13,10 +15,6 @@ class PostEndpointWithoutPermissionHelper(base.BaseHelper):
     Can be used when no permission is required
     """
 
-    # Number of queries to fetch csrf token from homepage
-    # Same as expected_num_queries in HomePageTest
-    fetch_csrf_num_queries = 3
-
     @property
     def method(self) -> str:
         return "post"
@@ -24,10 +22,6 @@ class PostEndpointWithoutPermissionHelper(base.BaseHelper):
     @property
     def form(self) -> dict:
         return {"csrf_token": g.get("csrf_token", None)}
-
-    def fetch_csrf_token(self, client):
-        # will generate a csrf token (for the logout button)
-        client.get(url_for("backoffice_web.home"))
 
     def post_to_endpoint(
         self,
@@ -38,8 +32,6 @@ class PostEndpointWithoutPermissionHelper(base.BaseHelper):
         expected_num_queries: int | None = None,
         **url_kwargs,
     ):
-        self.fetch_csrf_token(client)
-
         url = url_for(self.endpoint, **url_kwargs)
 
         if form is None:
@@ -54,12 +46,13 @@ class PostEndpointWithoutPermissionHelper(base.BaseHelper):
         return client.post(url, form=form, headers=headers, follow_redirects=follow_redirects)
 
     def test_not_logged_in(self, client):
-        self.fetch_csrf_token(client)
+        # will generate a csrf token (for the logout button)
+        client.get(url_for("backoffice_web.home"))
 
         client_method = getattr(client, self.method)
         response = client_method(self.path, form=self.form)
 
-        assert response.status_code in (302, 303)
+        assert response.status_code in (302, 303), response.status_code
         assert response.location == url_for("backoffice_web.home", _external=True)
 
     def test_missing_csrf_token(self, client):
@@ -68,8 +61,12 @@ class PostEndpointWithoutPermissionHelper(base.BaseHelper):
         authenticated_client = client.with_bo_session_auth(user)
         client_method = getattr(authenticated_client, self.method)
 
+        # remove csrf token from session (signed token) and g.
+        flask.session.pop("csrf_token", None)
+        g.pop("csrf_token", None)
+
         response = client_method(self.path, form=self.form)
-        assert response.status_code == 400
+        assert response.status_code == 400, f"got {response.status_code} instead of 400"
 
 
 class PostEndpointHelper(PostEndpointWithoutPermissionHelper, unauthorized.UnauthorizedHelperBase):
@@ -80,8 +77,6 @@ class PostEndpointHelper(PostEndpointWithoutPermissionHelper, unauthorized.Unaut
     def test_missing_permission(self, client):
         user = self.setup_user()
 
-        self.fetch_csrf_token(client)
-
         authenticated_client = client.with_bo_session_auth(user)
         client_method = getattr(authenticated_client, self.method)
 
@@ -90,8 +85,6 @@ class PostEndpointHelper(PostEndpointWithoutPermissionHelper, unauthorized.Unaut
 
     def test_no_backoffice_profile(self, client):
         user = users_factories.UserFactory()
-
-        self.fetch_csrf_token(client)
 
         authenticated_client = client.with_bo_session_auth(user)
         client_method = getattr(authenticated_client, self.method)

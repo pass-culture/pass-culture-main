@@ -35,6 +35,7 @@ from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationType
+from pcapi.repository.clean_database import clean_all_database
 from pcapi.routes.backoffice.filters import format_date
 
 from .helpers import button as button_helpers
@@ -50,12 +51,15 @@ pytestmark = [
 
 
 @pytest.fixture(scope="function", name="criteria")
-def criteria_fixture() -> list:
+def criteria_fixture():
+    return build_criteria()
+
+
+def build_criteria():
     return criteria_factories.CriterionFactory.create_batch(4)
 
 
-@pytest.fixture(scope="function", name="offers")
-def offers_fixture(criteria) -> tuple:
+def build_offers(criteria):
     offer_with_unlimited_stock = offers_factories.OfferFactory(
         criteria=[criteria[0]],
         venue__postalCode="47000",
@@ -127,7 +131,51 @@ class ListOffersTest(GetEndpointHelper):
     # - fetch connect as extended FF (1 query)
     expected_num_queries = 4
 
-    def test_list_offers_without_filter(self, authenticated_client, offers):
+    @classmethod
+    def setup_class(cls):
+        """Load all the needed data once instead of saving and rolling
+        it back for each test.
+
+        Note: each test must be wrapped inside a transaction to avoid
+        any side effect. One can edit any data inside a test but this
+        should not affect others.
+        """
+        # rerun the whole db setup phase to be safe
+        # even if it should already have been done.
+        from alembic import command
+        from alembic.config import Config
+
+        from pcapi import settings
+        from pcapi.backoffice_app import app
+        from pcapi.install_database_extensions import install_database_extensions
+
+        db.init_app(app)
+        install_database_extensions()
+
+        # run transactions
+        alembic_cfg = Config("alembic.ini")
+        alembic_cfg.set_main_option("sqlalchemy.url", settings.DATABASE_URL)
+        command.upgrade(alembic_cfg, "pre@head")
+        command.upgrade(alembic_cfg, "post@head")
+
+        # in case previous run's teardown crashed or did not run
+        clean_all_database()
+
+        criteria = build_criteria()
+        offers = build_offers(criteria)
+
+        cls.unlimited_stock_offer = offers[0]
+        cls.limited_stock_offer = offers[1]
+        cls.two_criteria_offer = offers[2]
+        cls.many_types_offer = offers[3]
+        cls.criteria = criteria
+        cls.offers = offers
+
+    @classmethod
+    def teardown_class(cls):
+        clean_all_database()
+
+    def test_list_offers_without_filter(self, authenticated_client):
         # no filter => no query to fetch offers
         with assert_num_queries(self.expected_num_queries - 2):
             response = authenticated_client.get(url_for(self.endpoint))
@@ -149,7 +197,6 @@ class ListOffersTest(GetEndpointHelper):
         read_only_bo_user,
         pro_fraud_admin,
         support_pro_n2_admin,
-        offers,
         admin_user,
         stock_data_expected,
         tag_data_expected,
@@ -157,35 +204,36 @@ class ListOffersTest(GetEndpointHelper):
     ):
         user = locals()[admin_user]
         client = client.with_bo_session_auth(user)
-        query_args = self._get_query_args_by_id(offers[0].id)
+
+        query_args = self._get_query_args_by_id(self.unlimited_stock_offer.id)
         with assert_num_queries(self.expected_num_queries):
             response = client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 1
-        assert rows[0]["ID"] == str(offers[0].id)
-        assert rows[0]["Nom de l'offre"] == offers[0].name
-        assert rows[0]["Catégorie"] == offers[0].category.pro_label
-        assert rows[0]["Sous-catégorie"] == offers[0].subcategory.pro_label
+        assert rows[0]["ID"] == str(self.unlimited_stock_offer.id)
+        assert rows[0]["Nom de l'offre"] == self.unlimited_stock_offer.name
+        assert rows[0]["Catégorie"] == self.unlimited_stock_offer.category.pro_label
+        assert rows[0]["Sous-catégorie"] == self.unlimited_stock_offer.subcategory.pro_label
         assert rows[0]["État"] == "Validée"
         assert rows[0]["Date de création"] == (datetime.date.today()).strftime("%d/%m/%Y")
         assert rows[0]["Dernière validation"] == ""
-        assert rows[0]["Dép."] == offers[0].venue.departementCode
-        assert rows[0]["Structure"] == offers[0].venue.managingOfferer.name
-        assert rows[0]["Lieu"] == offers[0].venue.name
+        assert rows[0]["Dép."] == self.unlimited_stock_offer.venue.departementCode
+        assert rows[0]["Structure"] == self.unlimited_stock_offer.venue.managingOfferer.name
+        assert rows[0]["Lieu"] == self.unlimited_stock_offer.venue.name
 
         if stock_data_expected:
             assert rows[0]["Stock réservé"] == "0"
             assert rows[0]["Stock restant"] == "Illimité"
-            assert rows[0]["Créateur de l'offre"] == offers[0].author.full_name
+            assert rows[0]["Créateur de l'offre"] == self.unlimited_stock_offer.author.full_name
         else:
             assert "Stock réservé" not in rows[0]
             assert "Stock restant" not in rows[0]
             assert "Créateur de l'offre" not in rows[0]
 
         if tag_data_expected:
-            assert rows[0]["Tag"] == offers[0].criteria[0].name
+            assert rows[0]["Tag"] == self.unlimited_stock_offer.criteria[0].name
             assert rows[0]["Pond."] == ""
         else:
             assert "Tag" not in rows[0]
@@ -200,21 +248,21 @@ class ListOffersTest(GetEndpointHelper):
             assert "Score data" not in rows[0]
             assert "Tarif" not in rows[0]
 
-    def test_list_offers_by_ids_list(self, authenticated_client, offers):
-        query_args = self._get_query_args_by_id(f"{offers[0].id}, {offers[2].id}\n")
+    def test_list_offers_by_ids_list(self, authenticated_client):
+        query_args = self._get_query_args_by_id(f"{self.unlimited_stock_offer.id}, {self.two_criteria_offer.id}\n")
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 2
-        assert set(int(row["ID"]) for row in rows) == {offers[0].id, offers[2].id}
+        assert set(int(row["ID"]) for row in rows) == {self.unlimited_stock_offer.id, self.two_criteria_offer.id}
 
-    def test_list_offers_by_name(self, authenticated_client, offers):
+    def test_list_offers_by_name(self, authenticated_client):
         query_args = {
             "search-0-search_field": "NAME",
             "search-0-operator": "CONTAINS",
-            "search-0-string": offers[1].name,
+            "search-0-string": self.limited_stock_offer.name,
         }
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
@@ -223,21 +271,21 @@ class ListOffersTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 2
         rows = sorted(rows, key=itemgetter("ID"))  # ensures deterministic order
-        assert rows[0]["ID"] == str(offers[1].id)
-        assert rows[0]["Nom de l'offre"] == offers[1].name
-        assert rows[0]["Catégorie"] == offers[1].category.pro_label
-        assert rows[0]["Sous-catégorie"] == offers[1].subcategory.pro_label
+        assert rows[0]["ID"] == str(self.limited_stock_offer.id)
+        assert rows[0]["Nom de l'offre"] == self.limited_stock_offer.name
+        assert rows[0]["Catégorie"] == self.limited_stock_offer.category.pro_label
+        assert rows[0]["Sous-catégorie"] == self.limited_stock_offer.subcategory.pro_label
         assert rows[0]["État"] == "Validée"
         assert rows[0]["Date de création"] == (datetime.date.today()).strftime("%d/%m/%Y")
         assert rows[0]["Dernière validation"] == "22/02/2022"
-        assert rows[0]["Dép."] == offers[1].venue.departementCode
-        assert rows[0]["Structure"] == offers[1].venue.managingOfferer.name
-        assert rows[0]["Lieu"] == offers[1].venue.name
-        assert rows[1]["ID"] == str(offers[2].id)
-        assert rows[1]["Nom de l'offre"] == offers[2].name
+        assert rows[0]["Dép."] == self.limited_stock_offer.venue.departementCode
+        assert rows[0]["Structure"] == self.limited_stock_offer.venue.managingOfferer.name
+        assert rows[0]["Lieu"] == self.limited_stock_offer.venue.name
+        assert rows[1]["ID"] == str(self.two_criteria_offer.id)
+        assert rows[1]["Nom de l'offre"] == self.two_criteria_offer.name
 
     @pytest.mark.parametrize("ean", ["9781234567890", " 978-1234567890", "978 1234567890\t"])
-    def test_list_offers_by_ean(self, authenticated_client, offers, ean):
+    def test_list_offers_by_ean(self, authenticated_client, ean):
         query_args = {
             "search-0-search_field": "EAN",
             "search-0-operator": "EQUALS",
@@ -249,10 +297,10 @@ class ListOffersTest(GetEndpointHelper):
 
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 1
-        assert int(rows[0]["ID"]) == offers[2].id
+        assert int(rows[0]["ID"]) == self.two_criteria_offer.id
 
     @pytest.mark.parametrize("visa", ["2023123456", " 2023 123456 ", "2023-123456\t"])
-    def test_list_offers_by_visa(self, authenticated_client, offers, visa):
+    def test_list_offers_by_visa(self, authenticated_client, visa):
         query_args = {
             "search-0-search_field": "VISA",
             "search-0-operator": "EQUALS",
@@ -264,9 +312,9 @@ class ListOffersTest(GetEndpointHelper):
 
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 1
-        assert int(rows[0]["ID"]) == offers[1].id
+        assert int(rows[0]["ID"]) == self.limited_stock_offer.id
 
-    def test_list_offers_by_creation_date(self, authenticated_client, offers):
+    def test_list_offers_by_creation_date(self, authenticated_client):
         query_args = {
             "search-0-search_field": "CREATION_DATE",
             "search-0-operator": "DATE_TO",
@@ -280,9 +328,9 @@ class ListOffersTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert set(int(row["ID"]) for row in rows) == {offers[2].id}
+        assert set(int(row["ID"]) for row in rows) == {self.two_criteria_offer.id}
 
-    def test_list_offers_by_status_and_event_date(self, authenticated_client, offers):
+    def test_list_offers_by_status_and_event_date(self, authenticated_client):
         query_args = {
             "search-0-search_field": "STATUS",
             "search-0-operator": "IN",
@@ -297,18 +345,22 @@ class ListOffersTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert set(int(row["ID"]) for row in rows) == {offers[1].id}
+        assert set(int(row["ID"]) for row in rows) == {self.limited_stock_offer.id}
 
-    def test_list_offers_without_sort_should_not_have_created_date_sort_link(self, authenticated_client, offers):
-        query_args = self._get_query_args_by_id(offers[0].id)
+    def test_list_offers_without_sort_should_not_have_created_date_sort_link(self, authenticated_client):
+        query_args = self._get_query_args_by_id(self.unlimited_stock_offer.id)
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 200
 
         assert "sort=dateCreated&amp;order=desc" not in str(response.data)
 
-    def test_list_offers_with_sort_should_have_created_date_sort_link(self, authenticated_client, offers):
-        query_args = self._get_query_args_by_id(offers[0].id) | {"sort": "dateCreated", "order": "asc", "q": "e"}
+    def test_list_offers_with_sort_should_have_created_date_sort_link(self, authenticated_client):
+        query_args = self._get_query_args_by_id(self.unlimited_stock_offer.id) | {
+            "sort": "dateCreated",
+            "order": "asc",
+            "q": "e",
+        }
 
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
@@ -316,7 +368,7 @@ class ListOffersTest(GetEndpointHelper):
 
         assert "sort=dateCreated&amp;order=desc" in str(response.data)
 
-    def test_list_offers_with_and_sort_should_have_created_date_sort_link(self, authenticated_client, offers):
+    def test_list_offers_with_and_sort_should_have_created_date_sort_link(self, authenticated_client):
         query_args = {
             "sort": "dateCreated",
             "order": "asc",
@@ -335,46 +387,7 @@ class ListOffersTest(GetEndpointHelper):
         )
         assert expected_url in str(response.data)
 
-    @pytest.mark.parametrize(
-        "operator,valid_date,not_valid_date",
-        [
-            (
-                "DATE_FROM",
-                datetime.datetime.utcnow() + datetime.timedelta(days=1),
-                datetime.datetime.utcnow() - datetime.timedelta(days=1),
-            ),
-            (
-                "DATE_TO",
-                datetime.datetime.utcnow() - datetime.timedelta(days=1),
-                datetime.datetime.utcnow() + datetime.timedelta(days=1),
-            ),
-        ],
-    )
-    def test_list_offers_with_booking_limit_date_filter(
-        self, authenticated_client, operator, valid_date, not_valid_date
-    ):
-        should_be_displayed_offer = offers_factories.OfferFactory(
-            stocks=[offers_factories.StockFactory(bookingLimitDatetime=valid_date)]
-        )
-        offers_factories.OfferFactory(stocks=[offers_factories.StockFactory()])
-        offers_factories.OfferFactory(stocks=[offers_factories.StockFactory(bookingLimitDatetime=not_valid_date)])
-
-        query_args = {
-            "order": "asc",
-            "search-0-search_field": "BOOKING_LIMIT_DATE",
-            "search-0-operator": operator,
-            "search-0-date": datetime.date.today(),
-        }
-
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, **query_args))
-            assert response.status_code == 200
-
-        rows = html_parser.extract_table_rows(response.data)
-        assert len(rows) == 1
-        assert rows[0]["ID"] == str(should_be_displayed_offer.id)
-
-    def test_list_offers_by_event_date(self, authenticated_client, offers):
+    def test_list_offers_by_event_date(self, authenticated_client):
         offers_factories.EventStockFactory(beginningDatetime=datetime.date.today() + datetime.timedelta(days=1))
         stock = offers_factories.EventStockFactory(beginningDatetime=datetime.date.today())
         offers_factories.EventStockFactory(beginningDatetime=datetime.date.today() - datetime.timedelta(days=1))
@@ -391,7 +404,7 @@ class ListOffersTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert set(int(row["ID"]) for row in rows) == {stock.offer.id}
 
-    def test_list_offers_by_event_date_gte_only(self, authenticated_client, offers):
+    def test_list_offers_by_event_date_gte_only(self, authenticated_client):
         # Query investigated for performance issue in PC-23801
         query_args = {
             "limit": "100",
@@ -408,7 +421,7 @@ class ListOffersTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert set(int(row["ID"]) for row in rows) == {offers[1].id}
+        assert set(int(row["ID"]) for row in rows) == {self.limited_stock_offer.id}
 
     @pytest.mark.parametrize(
         "operator,criteria_indexes,expected_offer_indexes",
@@ -421,13 +434,11 @@ class ListOffersTest(GetEndpointHelper):
             ("NOT_EXIST", [], [1]),
         ],
     )
-    def test_list_offers_by_criterion(
-        self, authenticated_client, criteria, offers, operator, criteria_indexes, expected_offer_indexes
-    ):
+    def test_list_offers_by_criterion(self, authenticated_client, operator, criteria_indexes, expected_offer_indexes):
         query_args = {
             "search-3-search_field": "TAG",
             "search-3-operator": operator,
-            "search-3-criteria": [criteria[criterion_index].id for criterion_index in criteria_indexes],
+            "search-3-criteria": [self.criteria[criterion_index].id for criterion_index in criteria_indexes],
         }
         with assert_num_queries(
             self.expected_num_queries + int(bool(criteria_indexes))
@@ -436,16 +447,16 @@ class ListOffersTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert set(int(row["ID"]) for row in rows) == {offers[index].id for index in expected_offer_indexes}
+        assert set(int(row["ID"]) for row in rows) == {self.offers[index].id for index in expected_offer_indexes}
 
-    def test_list_offers_by_in_and_not_in_criteria(self, authenticated_client, criteria, offers):
+    def test_list_offers_by_in_and_not_in_criteria(self, authenticated_client):
         query_args = {
             "search-0-search_field": "TAG",
             "search-0-operator": "IN",
-            "search-0-criteria": criteria[0].id,
+            "search-0-criteria": self.criteria[0].id,
             "search-2-search_field": "TAG",
             "search-2-operator": "NOT_IN",
-            "search-2-criteria": criteria[1].id,
+            "search-2-criteria": self.criteria[1].id,
         }
         with assert_num_queries(
             self.expected_num_queries + 2
@@ -454,9 +465,9 @@ class ListOffersTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert set(int(row["ID"]) for row in rows) == {offers[0].id}
+        assert set(int(row["ID"]) for row in rows) == {self.unlimited_stock_offer.id}
 
-    def test_list_offers_by_category(self, authenticated_client, offers):
+    def test_list_offers_by_category(self, authenticated_client):
         query_args = {
             "search-3-search_field": "CATEGORY",
             "search-3-operator": "IN",
@@ -467,9 +478,9 @@ class ListOffersTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert set(int(row["ID"]) for row in rows) == {offers[1].id, offers[2].id}
+        assert set(int(row["ID"]) for row in rows) == {self.limited_stock_offer.id, self.two_criteria_offer.id}
 
-    def test_list_offers_by_subcategory(self, authenticated_client, offers):
+    def test_list_offers_by_subcategory(self, authenticated_client):
         query_args = {
             "search-3-search_field": "SUBCATEGORY",
             "search-3-operator": "IN",
@@ -480,9 +491,9 @@ class ListOffersTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert set(int(row["ID"]) for row in rows) == {offers[2].id}
+        assert set(int(row["ID"]) for row in rows) == {self.two_criteria_offer.id}
 
-    def test_list_offers_by_price(self, authenticated_client, offers):
+    def test_list_offers_by_price(self, authenticated_client):
         query_args = {
             "search-3-search_field": "PRICE",
             "search-3-operator": "GREATER_THAN_OR_EQUAL_TO",
@@ -494,7 +505,7 @@ class ListOffersTest(GetEndpointHelper):
 
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 1
-        assert rows[0]["ID"] == str(offers[0].id)
+        assert rows[0]["ID"] == str(self.unlimited_stock_offer.id)
 
     def test_list_offers_by_price_multiple_stocks(self, authenticated_client):
         offer_with_multiple_stocks_valid_and_not_valid = offers_factories.OfferFactory()
@@ -525,7 +536,7 @@ class ListOffersTest(GetEndpointHelper):
         assert len(rows) == 1
         assert rows[0]["ID"] == str(offer_with_multiple_stocks_valid_and_not_valid.id)
 
-    def test_list_offers_by_price_no_offer_is_valid(self, authenticated_client, offers):
+    def test_list_offers_by_price_no_offer_is_valid(self, authenticated_client):
         query_args = {
             "search-3-search_field": "PRICE",
             "search-3-operator": "GREATER_THAN_OR_EQUAL_TO",
@@ -538,7 +549,7 @@ class ListOffersTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 0
 
-    def test_list_offers_by_department(self, authenticated_client, offers):
+    def test_list_offers_by_department(self, authenticated_client):
         query_args = {
             "search-3-search_field": "DEPARTMENT",
             "search-3-operator": "IN",
@@ -550,9 +561,9 @@ class ListOffersTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert set(int(row["ID"]) for row in rows) == {offers[0].id, offers[2].id}
+        assert set(int(row["ID"]) for row in rows) == {self.unlimited_stock_offer.id, self.two_criteria_offer.id}
 
-    def test_list_offers_by_region(self, authenticated_client, offers):
+    def test_list_offers_by_region(self, authenticated_client):
         query_args = {
             "search-0-search_field": "REGION",
             "search-0-operator": "IN",
@@ -563,7 +574,7 @@ class ListOffersTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert {int(row["ID"]) for row in rows} == {offers[1].id, offers[2].id}
+        assert {int(row["ID"]) for row in rows} == {self.limited_stock_offer.id, self.two_criteria_offer.id}
 
     def test_list_offers_with_mediations(self, authenticated_client):
         mediation = offers_factories.MediationFactory()
@@ -580,22 +591,7 @@ class ListOffersTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert {int(row["ID"]) for row in rows} == {mediation.offerId}
 
-    def test_list_offers_without_mediations(self, authenticated_client):
-        offers_factories.MediationFactory()
-        offer = offers_factories.OfferFactory()
-        query_args = {
-            "search-0-search_field": "MEDIATION",
-            "search-0-operator": "NULLABLE",
-            "search-0-boolean": "false",
-        }
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, **query_args))
-            assert response.status_code == 200
-
-        rows = html_parser.extract_table_rows(response.data)
-        assert {int(row["ID"]) for row in rows} == {offer.id}
-
-    def test_list_offers_advanced_search_by_music_type_with_titelive_genres(self, authenticated_client, offers):
+    def test_list_offers_advanced_search_by_music_type_with_titelive_genres(self, authenticated_client):
         query_args = {
             "search-3-search_field": "MUSIC_TYPE_GTL",
             "search-3-operator": "IN",
@@ -607,9 +603,9 @@ class ListOffersTest(GetEndpointHelper):
             assert response.status_code == 200
 
         row = html_parser.extract_table_rows(response.data)
-        assert int(row[0]["ID"]) == offers[0].id
+        assert int(row[0]["ID"]) == self.unlimited_stock_offer.id
 
-    def test_list_offers_by_show_type(self, authenticated_client, offers):
+    def test_list_offers_by_show_type(self, authenticated_client):
         query_args = {
             "search-3-search_field": "SHOW_TYPE",
             "search-3-operator": "IN",
@@ -621,9 +617,9 @@ class ListOffersTest(GetEndpointHelper):
             assert response.status_code == 200
 
         row = html_parser.extract_table_rows(response.data)
-        assert int(row[0]["ID"]) == offers[1].id
+        assert int(row[0]["ID"]) == self.limited_stock_offer.id
 
-    def test_list_offers_by_show_sub_type(self, authenticated_client, offers):
+    def test_list_offers_by_show_sub_type(self, authenticated_client):
         query_args = {
             "search-3-search_field": "SHOW_SUB_TYPE",
             "search-3-operator": "IN",
@@ -635,10 +631,10 @@ class ListOffersTest(GetEndpointHelper):
             assert response.status_code == 200
 
         row = html_parser.extract_table_rows(response.data)
-        assert int(row[0]["ID"]) == offers[1].id
+        assert int(row[0]["ID"]) == self.limited_stock_offer.id
 
-    def test_list_offers_by_venue(self, authenticated_client, offers):
-        venue_id = offers[1].venueId
+    def test_list_offers_by_venue(self, authenticated_client):
+        venue_id = self.limited_stock_offer.venueId
         query_args = {
             "search-3-search_field": "VENUE",
             "search-3-operator": "IN",
@@ -649,10 +645,11 @@ class ListOffersTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert set(int(row["ID"]) for row in rows) == {offers[1].id}
+        assert set(int(row["ID"]) for row in rows) == {self.limited_stock_offer.id}
 
-    def test_list_offers_by_address(self, authenticated_client, offers):
-        for offer in offers[:3]:
+    def test_list_offers_by_address(self, authenticated_client):
+        offers = [db.session.merge(offer) for offer in self.offers[:3]]
+        for offer in offers:
             offer.offererAddress = offerers_factories.OffererAddressFactory(offerer=offer.venue.managingOfferer)
             db.session.add(offer)
         db.session.flush()
@@ -670,7 +667,7 @@ class ListOffersTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert set(int(row["ID"]) for row in rows) == {offers[2].id}
 
-    def test_list_offers_by_status(self, authenticated_client, offers):
+    def test_list_offers_by_status(self, authenticated_client):
         offer = offers_factories.OfferFactory(isActive=False)
 
         query_args = {
@@ -685,8 +682,8 @@ class ListOffersTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert set(int(row["ID"]) for row in rows) == {offer.id}
 
-    def test_list_offers_by_offerer(self, authenticated_client, offers):
-        offerer_id = offers[1].venue.managingOffererId
+    def test_list_offers_by_offerer(self, authenticated_client):
+        offerer_id = self.limited_stock_offer.venue.managingOffererId
         query_args = {
             "search-3-search_field": "OFFERER",
             "search-3-operator": "IN",
@@ -697,10 +694,10 @@ class ListOffersTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert set(int(row["ID"]) for row in rows) == {offers[1].id}
+        assert set(int(row["ID"]) for row in rows) == {self.limited_stock_offer.id}
 
-    def test_list_offers_by_validation(self, authenticated_client, offers):
-        status = offers[2].validation
+    def test_list_offers_by_validation(self, authenticated_client):
+        status = self.two_criteria_offer.validation
         query_args = {
             "search-3-search_field": "VALIDATION",
             "search-3-operator": "IN",
@@ -711,12 +708,12 @@ class ListOffersTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert set(int(row["ID"]) for row in rows) == {offers[2].id}
+        assert set(int(row["ID"]) for row in rows) == {self.two_criteria_offer.id}
         assert rows[0]["État"] == "Rejetée"
 
-    def test_list_offers_by_four_filters(self, authenticated_client, criteria, offers):
-        criterion_id = criteria[1].id
-        venue_id = offers[2].venueId
+    def test_list_offers_by_four_filters(self, authenticated_client):
+        criterion_id = self.two_criteria_offer.criteria[0].id
+        venue_id = self.two_criteria_offer.venueId
 
         query_args = {
             "search-0-search_field": "TAG",
@@ -737,7 +734,7 @@ class ListOffersTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert set(int(row["ID"]) for row in rows) == {offers[2].id}
+        assert set(int(row["ID"]) for row in rows) == {self.two_criteria_offer.id}
 
     @pytest.mark.parametrize(
         "order,expected_list",
@@ -828,7 +825,7 @@ class ListOffersTest(GetEndpointHelper):
             == "Raison de score faible : Prix Sous-catégorie Description de l'offre"
         )
 
-    def test_list_offers_by_no_tags(self, authenticated_client, offers):
+    def test_list_offers_by_no_tags(self, authenticated_client):
         query_args = {
             "search-0-search_field": "TAG",
             "search-0-operator": "NOT_EXIST",
@@ -838,9 +835,9 @@ class ListOffersTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert set(int(row["ID"]) for row in rows) == {offers[1].id}
+        assert set(int(row["ID"]) for row in rows) == {self.limited_stock_offer.id}
 
-    def test_list_offers_by_no_tags_and_validation(self, authenticated_client, offers):
+    def test_list_offers_by_no_tags_and_validation(self, authenticated_client):
         query_args = {
             "search-0-search_field": "TAG",
             "search-0-operator": "NOT_EXIST",
@@ -853,9 +850,9 @@ class ListOffersTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert set(int(row["ID"]) for row in rows) == {offers[1].id}
+        assert set(int(row["ID"]) for row in rows) == {self.limited_stock_offer.id}
 
-    def test_list_offers_by_no_tags_and_other_validation(self, authenticated_client, offers):
+    def test_list_offers_by_no_tags_and_other_validation(self, authenticated_client):
         query_args = {
             "search-0-search_field": "TAG",
             "search-0-operator": "NOT_EXIST",
@@ -878,23 +875,6 @@ class ListOffersTest(GetEndpointHelper):
             "search-0-search_field": "SYNCHRONIZED",
             "search-0-operator": "NULLABLE",
             "search-0-boolean": "true",
-        }
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, **query_args))
-            assert response.status_code == 200
-
-        rows = html_parser.extract_table_rows(response.data)
-        assert len(rows) == 1
-        assert rows[0]["Nom de l'offre"] == "good"
-
-    def test_list_offers_has_no_provider(self, authenticated_client):
-        provider = providers_factories.ProviderFactory()
-        offers_factories.OfferFactory(name="bad", idAtProvider="pouet", lastProvider=provider)
-        offers_factories.OfferFactory(name="good")
-        query_args = {
-            "search-0-search_field": "SYNCHRONIZED",
-            "search-0-operator": "NULLABLE",
-            "search-0-boolean": "false",
         }
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
@@ -950,7 +930,7 @@ class ListOffersTest(GetEndpointHelper):
 
     # === Error cases ===
 
-    def test_list_offers_by_invalid_field(self, authenticated_client, offers):
+    def test_list_offers_by_invalid_field(self, authenticated_client):
         query_args = {
             "search-0-search_field": "CATEGRY",
             "search-0-operator": "IN",
@@ -962,7 +942,7 @@ class ListOffersTest(GetEndpointHelper):
 
         assert html_parser.extract_alert(response.data) == "Le filtre CATEGRY est invalide."
 
-    def test_list_offers_by_category_and_missing_date(self, authenticated_client, offers):
+    def test_list_offers_by_category_and_missing_date(self, authenticated_client):
         query_args = {
             "search-0-search_field": "CATEGORY",
             "search-0-operator": "IN",
@@ -981,7 +961,7 @@ class ListOffersTest(GetEndpointHelper):
             == "Le filtre « Date de création » est vide. Le filtre « Date limite de réservation » est vide."
         )
 
-    def test_list_offers_by_invalid_criteria(self, authenticated_client, offers):
+    def test_list_offers_by_invalid_criteria(self, authenticated_client):
         query_args = {
             "search-0-search_field": "TAG",
             "search-0-operator": "IN",
@@ -993,7 +973,7 @@ class ListOffersTest(GetEndpointHelper):
 
         assert html_parser.extract_alert(response.data) == "Le filtre « Tag » est vide."
 
-    def test_list_offers_using_invalid_operator(self, authenticated_client, offers):
+    def test_list_offers_using_invalid_operator(self, authenticated_client):
         query_args = {
             "search-0-search_field": "CATEGORY",
             "search-0-operator": "OUT",
@@ -1189,13 +1169,103 @@ class ListOffersTest(GetEndpointHelper):
         assert rows[0]["Lieu"] == "Venue Revue manuelle"
 
 
+class ListOffersWithoutDbPreloadTest(GetEndpointHelper):
+    endpoint = "backoffice_web.offer.list_offers"
+    needed_permission = perm_models.Permissions.READ_OFFERS
+
+    def _get_query_args_by_id(self, id_: int) -> dict[str, str]:
+        return {
+            "search-0-search_field": "ID",
+            "search-0-operator": "IN",
+            "search-0-string": str(id_),
+        }
+
+    # Use assert_num_queries() instead of assert_no_duplicated_queries() which does not detect one extra query caused
+    # by a field added in the jinja template.
+    # - fetch session (1 query)
+    # - fetch user (1 query)
+    # - fetch offers with joinedload including extra data (1 query)
+    expected_num_queries = 3
+
+    @pytest.mark.parametrize(
+        "operator,valid_date,not_valid_date",
+        [
+            (
+                "DATE_FROM",
+                datetime.datetime.utcnow() + datetime.timedelta(days=1),
+                datetime.datetime.utcnow() - datetime.timedelta(days=1),
+            ),
+            (
+                "DATE_TO",
+                datetime.datetime.utcnow() - datetime.timedelta(days=1),
+                datetime.datetime.utcnow() + datetime.timedelta(days=1),
+            ),
+        ],
+    )
+    def test_list_offers_with_booking_limit_date_filter(
+        self, authenticated_client, operator, valid_date, not_valid_date
+    ):
+        should_be_displayed_offer = offers_factories.OfferFactory(
+            stocks=[offers_factories.StockFactory(bookingLimitDatetime=valid_date)]
+        )
+        offers_factories.OfferFactory(stocks=[offers_factories.StockFactory()])
+        offers_factories.OfferFactory(stocks=[offers_factories.StockFactory(bookingLimitDatetime=not_valid_date)])
+
+        query_args = {
+            "order": "asc",
+            "search-0-search_field": "BOOKING_LIMIT_DATE",
+            "search-0-operator": operator,
+            "search-0-date": datetime.date.today(),
+        }
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["ID"] == str(should_be_displayed_offer.id)
+
+    def test_list_offers_without_mediations(self, authenticated_client):
+        offers_factories.MediationFactory()
+        offer = offers_factories.OfferFactory()
+        query_args = {
+            "search-0-search_field": "MEDIATION",
+            "search-0-operator": "NULLABLE",
+            "search-0-boolean": "false",
+        }
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert {int(row["ID"]) for row in rows} == {offer.id}
+
+    def test_list_offers_has_no_provider(self, authenticated_client):
+        provider = providers_factories.ProviderFactory()
+        offers_factories.OfferFactory(name="bad", idAtProvider="pouet", lastProvider=provider)
+        offers_factories.OfferFactory(name="good")
+        query_args = {
+            "search-0-search_field": "SYNCHRONIZED",
+            "search-0-operator": "NULLABLE",
+            "search-0-boolean": "false",
+        }
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["Nom de l'offre"] == "good"
+
+
 class EditOfferTest(PostEndpointHelper):
     endpoint = "backoffice_web.offer.edit_offer"
     endpoint_kwargs = {"offer_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_OFFERS
 
     @patch("pcapi.core.search.reindex_offer_ids")
-    def test_update_offer_tags(self, mock_reindex_offer_ids, legit_user, authenticated_client, criteria):
+    def test_update_offertags(self, mock_reindex_offer_ids, legit_user, authenticated_client, criteria):
         offer_to_edit = offers_factories.OfferFactory(
             name="A Very Specific Name That Is Longer",
             criteria=[criteria[0]],
@@ -3046,7 +3116,7 @@ class DownloadBookingsXLSXTest(GetEndpointHelper):
         assert sheet.cell(row=1, column=1).value == "Lieu"
         assert sheet.cell(row=2, column=1).value == booking1.venue.name
         assert sheet.cell(row=3, column=1).value == booking2.venue.name
-        assert sheet.cell(row=4, column=1).value == None
+        assert sheet.cell(row=4, column=1).value is None
 
 
 class ActivateOfferTest(PostEndpointHelper):

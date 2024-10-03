@@ -10,10 +10,12 @@ import urllib.parse
 
 from alembic import command
 from alembic.config import Config
+import flask
 from flask import Flask
 from flask import g
 from flask.testing import FlaskClient
 from flask_jwt_extended.utils import create_access_token
+import flask_wtf
 import pytest
 from requests.auth import _basic_auth_str  # pylint: disable=wrong-requests-import
 import requests_mock
@@ -57,6 +59,7 @@ def pytest_configure(config):
 
 def build_backoffice_app():
     from flask_login import FlaskLoginClient
+    import flask_wtf
 
     from pcapi.backoffice_app import app
     from pcapi.backoffice_app import csrf
@@ -86,6 +89,7 @@ def build_backoffice_app():
 
             login_user(user, remember=True)
             login_manager.stamp_session(user)
+            flask_wtf.csrf.generate_csrf()
 
             return ""
 
@@ -206,7 +210,8 @@ def client_fixture(app: Flask):
     # trouble during tests (backoffice only, api routes do not have the
     # the csrf protection enabled during tests)
     g.pop("csrf_token", default=None)
-    return TestClient(app.test_client())
+    with app.test_client() as base_client:
+        yield TestClient(base_client)
 
 
 @pytest.fixture(name="ubble_mock")
