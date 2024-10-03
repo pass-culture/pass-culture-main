@@ -115,6 +115,7 @@ def test_serialize_offer():
             "name": "La Moyenne Librairie SA",
             "publicName": "La Moyenne Librairie",
             "venue_type": VenueTypeCode.LIBRARY.name,
+            "isPermanent": True,
         },
         "_geoloc": {
             "lat": geography_factories.DEFAULT_LATITUDE,
@@ -209,6 +210,7 @@ def test_serialize_offer_legacy():
             "postalCode": offer.venue.postalCode,
             "publicName": "La Moyenne Librairie",
             "venue_type": VenueTypeCode.LIBRARY.name,
+            "isPermanent": True,
         },
         "_geoloc": {"lat": 48.87004, "lng": 2.3785},
     }
