@@ -1,5 +1,6 @@
 from datetime import date
 from datetime import datetime
+import decimal
 import enum
 import typing
 
@@ -311,6 +312,12 @@ class CollectiveOfferOfferVenueResponseModel(BaseModel):
     addressType: OfferAddressType
     otherAddress: str
     venueId: int | None
+    name: str | None
+    publicName: str | None
+    address: str | None
+    postalCode: str | None
+    city: str | None
+    distance: decimal.Decimal | None
 
     _validated_venue_id = validator("venueId", pre=True, allow_reuse=True)(validate_venue_id)
 
