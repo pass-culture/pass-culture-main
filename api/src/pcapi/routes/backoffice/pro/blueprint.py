@@ -13,6 +13,7 @@ from werkzeug.exceptions import NotFound
 
 from pcapi import settings
 from pcapi.connectors import api_adresse
+from pcapi.core.educational import models as educational_models
 from pcapi.core.finance import models as finance_models
 from pcapi.core.mails import transactional as transactional_mails
 from pcapi.core.offerers import api as offerers_api
@@ -359,6 +360,48 @@ def _get_user_id_from_offer_id(offer_id: int) -> int:
     return user_id
 
 
+def _get_user_id_from_collective_offer_id(offer_id: int) -> int:
+    if not FeatureToggle.WIP_CONNECT_AS_EXTENDED.is_active():
+        raise ValueError(
+            "L'utilisation de la version étendue de « connect as » requiert l'activation de la feature : WIP_CONNECT_AS_EXTENDED"
+        )
+    query = get_user_id_for_connect_as_base_query()
+    user_id = (
+        query.join(offerers_models.UserOfferer.offerer)
+        .join(offerers_models.Offerer.managedVenues)
+        .join(offerers_models.Venue.collectiveOffers)
+        .filter(educational_models.CollectiveOffer.id == offer_id)
+        .order_by(offerers_models.UserOfferer.id)
+        .limit(1)
+        .scalar()
+    )
+    if not user_id:
+        raise ValueError("Aucun utilisateur approprié n'a été trouvé pour se connecter à cette offre collective")
+    return user_id
+
+
+def _get_user_id_from_collective_offer_template_id(offer_id: int) -> int:
+    if not FeatureToggle.WIP_CONNECT_AS_EXTENDED.is_active():
+        raise ValueError(
+            "L'utilisation de la version étendue de « connect as » requiert l'activation de la feature : WIP_CONNECT_AS_EXTENDED"
+        )
+    query = get_user_id_for_connect_as_base_query()
+    user_id = (
+        query.join(offerers_models.UserOfferer.offerer)
+        .join(offerers_models.Offerer.managedVenues)
+        .join(offerers_models.Venue.collectiveOfferTemplates)
+        .filter(educational_models.CollectiveOfferTemplate.id == offer_id)
+        .order_by(offerers_models.UserOfferer.id)
+        .limit(1)
+        .scalar()
+    )
+    if not user_id:
+        raise ValueError(
+            "Aucun utilisateur approprié n'a été trouvé pour se connecter à cette offre collective vitrine"
+        )
+    return user_id
+
+
 def _get_user_id_from_bank_account_id(bank_account_id: int) -> int:
     if not FeatureToggle.WIP_CONNECT_AS_EXTENDED.is_active():
         raise ValueError(
@@ -393,6 +436,10 @@ def connect_as() -> utils.BackofficeResponse:
         match form.object_type.data:
             case "bank_account":
                 user_id = _get_user_id_from_bank_account_id(form.object_id.data)
+            case "collective_offer":
+                user_id = _get_user_id_from_collective_offer_id(form.object_id.data)
+            case "collective_offer_template":
+                user_id = _get_user_id_from_collective_offer_template_id(form.object_id.data)
             case "offer":
                 user_id = _get_user_id_from_offer_id(form.object_id.data)
             case "offerer":
