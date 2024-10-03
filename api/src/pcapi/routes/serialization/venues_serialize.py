@@ -337,6 +337,7 @@ class EditVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
     venueLabelId: int | None
     withdrawalDetails: offerers_schemas.VenueWithdrawalDetails | None
     isAccessibilityAppliedOnAllOffers: bool | None
+    isManualEdition: bool | None
     isWithdrawalAppliedOnAllOffers: bool | None
     isEmailAppliedOnAllOffers: bool | None
     description: offerers_schemas.VenueDescription | None
