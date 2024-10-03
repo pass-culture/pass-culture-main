@@ -33,7 +33,7 @@ export interface ActivityFormProps {
 export const ActivityForm = ({
   venueTypes,
 }: ActivityFormProps): JSX.Element => {
-  const { values } = useFormikContext<ActivityFormValues>()
+  const { values, errors } = useFormikContext<ActivityFormValues>()
   const venueTypesOptions = buildVenueTypesOptions(venueTypes)
 
   return (
@@ -71,6 +71,7 @@ export const ActivityForm = ({
                 />
 
                 <div
+                  data-error={errors.socialUrls?.[index] ? 'true' : 'false'}
                   className={cn(styles['form-row-actions'], {
                     [styles['first-row']]: index === 0,
                   })}

@@ -14,19 +14,30 @@
 }
 
 .form-row-actions {
-  margin-top: rem.torem(4px);
+  margin-bottom: rem.torem(36px);
+
+  @media (width <= 432px) {
+    &[data-error="true"] {
+      margin-bottom: rem.torem(50px);
+    }
+  }
 }
 
 .input-gap {
   display: flex;
   flex-wrap: nowrap;
   gap: rem.torem(8px);
+  align-items: end;
 }
 
 .first-row {
-  margin-top: calc(
-    #{forms.$label-space-before-input} + #{forms.$input-space-before-error} + #{fonts.$caption-line-height}
-  );
+  margin-bottom: rem.torem(36px);
+
+  @media (width <= 432px) {
+    &[data-error="true"] {
+      margin-bottom: rem.torem(52px);
+    }
+  }
 }
 
 .delete-button {
