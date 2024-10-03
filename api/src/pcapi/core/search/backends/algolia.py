@@ -593,6 +593,7 @@ class AlgoliaBackend(base.SearchBackend):
                 "name": venue.name,
                 "publicName": venue.publicName,
                 "venue_type": venue.venueTypeCode.name,
+                "isPermanent": venue.isPermanent,
             },
             "_geoloc": position(venue),
         }
