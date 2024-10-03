@@ -420,6 +420,23 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 0
 
+    def test_list_free_collective_offers(self, authenticated_client):
+        free_collective_offer = educational_factories.CollectiveStockFactory(price=0).collectiveOffer
+        offers_factories.StockFactory(price=0.1)
+
+        query_args = {
+            "search-0-search_field": "PRICE",
+            "search-0-operator": "EQUALS",
+            "search-0-price": 0,
+        }
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["ID"] == str(free_collective_offer.id)
+
     def test_list_offers_by_in_and_not_in_formats(self, authenticated_client, collective_offers):
         query_args = {
             "search-0-search_field": "FORMATS",
@@ -632,7 +649,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
 
     # === Error cases ===
 
-    def test_list_offers_by_invalid_field(self, authenticated_client, collective_offers):
+    def test_list_offers_by_invalid_field(self, authenticated_client):
         query_args = {
             "search-0-search_field": "FARMOTS",
             "search-0-operator": "INTERSECTS",
@@ -644,7 +661,28 @@ class ListCollectiveOffersTest(GetEndpointHelper):
 
         assert html_parser.extract_alert(response.data) == "Le filtre FARMOTS est invalide."
 
-    def test_list_offers_by_formats_and_missing_date(self, authenticated_client, collective_offers):
+    @pytest.mark.parametrize(
+        "search_field,operator,operand",
+        [
+            ("PRICE", "EQUALS", "price"),
+            ("ID", "EQUALS", "string"),
+            ("FORMATS", "INTERSECTS", "formats"),
+            ("REGION", "IN", "region"),
+        ],
+    )
+    def test_list_offers_by_empty_field(self, authenticated_client, search_field, operator, operand):
+        query_args = {
+            "search-0-search_field": search_field,
+            "search-0-operator": operator,
+            f"search-0-{operand}": "",
+        }
+        with assert_num_queries(2):  # only session + current user, before form validation
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 400
+
+        assert "est vide" in html_parser.extract_alert(response.data)
+
+    def test_list_offers_by_formats_and_missing_date(self, authenticated_client):
         query_args = {
             "search-0-search_field": "FORMATS",
             "search-0-operator": "INTERSECTS",

@@ -538,6 +538,23 @@ class ListOffersTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 0
 
+    def test_list_free_offers(self, authenticated_client):
+        free_offer = offers_factories.StockFactory(price=0).offer
+        offers_factories.StockFactory(price=0.1)
+
+        query_args = {
+            "search-0-search_field": "PRICE",
+            "search-0-operator": "EQUALS",
+            "search-0-price": 0,
+        }
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["ID"] == str(free_offer.id)
+
     def test_list_offers_by_department(self, authenticated_client, offers):
         query_args = {
             "search-3-search_field": "DEPARTMENT",
@@ -950,7 +967,7 @@ class ListOffersTest(GetEndpointHelper):
 
     # === Error cases ===
 
-    def test_list_offers_by_invalid_field(self, authenticated_client, offers):
+    def test_list_offers_by_invalid_field(self, authenticated_client):
         query_args = {
             "search-0-search_field": "CATEGRY",
             "search-0-operator": "IN",
@@ -962,7 +979,27 @@ class ListOffersTest(GetEndpointHelper):
 
         assert html_parser.extract_alert(response.data) == "Le filtre CATEGRY est invalide."
 
-    def test_list_offers_by_category_and_missing_date(self, authenticated_client, offers):
+    @pytest.mark.parametrize(
+        "search_field,operator,operand",
+        [
+            ("PRICE", "EQUALS", "price"),
+            ("EAN", "EQUALS", "string"),
+            ("REGION", "IN", "region"),
+        ],
+    )
+    def test_list_offers_by_empty_field(self, authenticated_client, search_field, operator, operand):
+        query_args = {
+            "search-0-search_field": search_field,
+            "search-0-operator": operator,
+            f"search-0-{operand}": "",
+        }
+        with assert_num_queries(2):  # only session + current user, before form validation
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+            assert response.status_code == 400
+
+        assert "est vide" in html_parser.extract_alert(response.data)
+
+    def test_list_offers_by_category_and_missing_date(self, authenticated_client):
         query_args = {
             "search-0-search_field": "CATEGORY",
             "search-0-operator": "IN",
@@ -981,7 +1018,7 @@ class ListOffersTest(GetEndpointHelper):
             == "Le filtre « Date de création » est vide. Le filtre « Date limite de réservation » est vide."
         )
 
-    def test_list_offers_by_invalid_criteria(self, authenticated_client, offers):
+    def test_list_offers_by_invalid_criteria(self, authenticated_client):
         query_args = {
             "search-0-search_field": "TAG",
             "search-0-operator": "IN",
@@ -993,7 +1030,7 @@ class ListOffersTest(GetEndpointHelper):
 
         assert html_parser.extract_alert(response.data) == "Le filtre « Tag » est vide."
 
-    def test_list_offers_using_invalid_operator(self, authenticated_client, offers):
+    def test_list_offers_using_invalid_operator(self, authenticated_client):
         query_args = {
             "search-0-search_field": "CATEGORY",
             "search-0-operator": "OUT",
