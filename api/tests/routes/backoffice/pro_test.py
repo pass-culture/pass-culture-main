@@ -8,6 +8,7 @@ from flask import url_for
 import pytest
 
 from pcapi import settings
+from pcapi.core.educational import factories as educational_factories
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.geography import models as geography_models
 from pcapi.core.history import factories as history_factories
@@ -1679,4 +1680,276 @@ class GetConnectAsProUserTest(PostEndpointHelper):
         assert (
             html_parser.extract_alert(redirected_response.data)
             == "Aucun utilisateur approprié n'a été trouvé pour se connecter à ce compte bancaire"
+        )
+
+    @override_features(WIP_CONNECT_AS_EXTENDED=True)
+    def test_connect_as_collective_offer(self, authenticated_client, legit_user):
+        user_offerer = offerers_factories.UserOffererFactory()
+        offer = educational_factories.CollectiveOfferFactory(
+            venue__managingOfferer=user_offerer.offerer,
+        )
+        form_data = {"object_type": "collective_offer", "object_id": offer.id, "redirect": "/venue"}
+        expected_token_data = {
+            "user_id": user_offerer.userId,
+            "internal_admin_id": legit_user.id,
+            "internal_admin_email": legit_user.email,
+            "redirect_link": settings.PRO_URL + "/venue",
+        }
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form=form_data,
+            expected_num_queries=self.expected_num_queries_without_user,
+        )
+
+        assert response.status_code == 303
+        base_url, key_token = response.location.rsplit("/", 1)
+        assert base_url + "/" == urls.build_pc_pro_connect_as_link("")
+        assert SecureToken(token=key_token).data == expected_token_data
+
+    @override_features(WIP_CONNECT_AS_EXTENDED=False)
+    def test_connect_as_collective_offer_protected_by_feature_flag(self, authenticated_client):
+        offer = educational_factories.CollectiveOfferFactory()
+
+        form_data = {"object_type": "collective_offer", "object_id": offer.id, "redirect": "/venue"}
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form=form_data,
+            expected_num_queries=self.expected_num_queries_without_user,
+        )
+
+        assert response.status_code == 303
+        assert response.location == url_for("backoffice_web.home", _external=True)
+        redirected_response = authenticated_client.get(response.location)
+        assert (
+            html_parser.extract_alert(redirected_response.data)
+            == "L'utilisation de la version étendue de « connect as » requiert l'activation de la feature : WIP_CONNECT_AS_EXTENDED"
+        )
+
+    @override_features(WIP_CONNECT_AS_EXTENDED=True)
+    def test_connect_as_collective_offer_without_user(self, authenticated_client):
+        offer = educational_factories.CollectiveOfferFactory()
+
+        form_data = {"object_type": "collective_offer", "object_id": offer.id, "redirect": "/venue"}
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form=form_data,
+            expected_num_queries=self.expected_num_queries_without_user + 1,  # +1 for rollback query
+        )
+
+        assert response.status_code == 303
+        assert response.location == url_for("backoffice_web.home", _external=True)
+        redirected_response = authenticated_client.get(response.location)
+        assert (
+            html_parser.extract_alert(redirected_response.data)
+            == "Aucun utilisateur approprié n'a été trouvé pour se connecter à cette offre collective"
+        )
+
+    @override_features(WIP_CONNECT_AS_EXTENDED=True)
+    def test_connect_as_collective_offer_not_found(self, authenticated_client):
+        form_data = {"object_type": "collective_offer", "object_id": 0, "redirect": "/venue"}
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form=form_data,
+            expected_num_queries=self.expected_num_queries_without_user + 1,  # +1 for rollback query
+        )
+
+        assert response.status_code == 303
+        assert response.location == url_for("backoffice_web.home", _external=True)
+        redirected_response = authenticated_client.get(response.location)
+        assert (
+            html_parser.extract_alert(redirected_response.data)
+            == "Aucun utilisateur approprié n'a été trouvé pour se connecter à cette offre collective"
+        )
+
+    @override_features(WIP_CONNECT_AS_EXTENDED=True)
+    def test_connect_as_collective_offer_without_active_user(self, authenticated_client):
+        user_offerer = offerers_factories.UserOffererFactory(
+            user__isActive=False,
+        )
+        offer = educational_factories.CollectiveOfferFactory(
+            venue__managingOfferer=user_offerer.offerer,
+        )
+
+        form_data = {"object_type": "collective_offer", "object_id": offer.id, "redirect": "/venue"}
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form=form_data,
+            expected_num_queries=self.expected_num_queries_without_user + 1,  # +1 for rollback query
+        )
+
+        assert response.status_code == 303
+        assert response.location == url_for("backoffice_web.home", _external=True)
+        redirected_response = authenticated_client.get(response.location)
+        assert (
+            html_parser.extract_alert(redirected_response.data)
+            == "Aucun utilisateur approprié n'a été trouvé pour se connecter à cette offre collective"
+        )
+
+    @override_features(WIP_CONNECT_AS_EXTENDED=True)
+    @pytest.mark.parametrize(
+        "roles",
+        [
+            [users_models.UserRole.PRO, users_models.UserRole.ADMIN],
+            [users_models.UserRole.ADMIN],
+            [users_models.UserRole.PRO, users_models.UserRole.ANONYMIZED],
+            [],
+        ],
+    )
+    def test_connect_as_collective_offer_without_eligible_user(self, authenticated_client, roles):
+        user_offerer = offerers_factories.UserOffererFactory(
+            user__roles=roles,
+        )
+        offer = educational_factories.CollectiveOfferFactory(
+            venue__managingOfferer=user_offerer.offerer,
+        )
+        form_data = {"object_type": "collective_offer", "object_id": offer.id, "redirect": "/venue"}
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form=form_data,
+            expected_num_queries=self.expected_num_queries_without_user + 1,  # +1 for rollback query
+        )
+
+        assert response.status_code == 303
+        assert response.location == url_for("backoffice_web.home", _external=True)
+        redirected_response = authenticated_client.get(response.location)
+        assert (
+            html_parser.extract_alert(redirected_response.data)
+            == "Aucun utilisateur approprié n'a été trouvé pour se connecter à cette offre collective"
+        )
+
+    @override_features(WIP_CONNECT_AS_EXTENDED=True)
+    def test_connect_as_collective_offer_template(self, authenticated_client, legit_user):
+        user_offerer = offerers_factories.UserOffererFactory()
+        offer = educational_factories.CollectiveOfferTemplateFactory(
+            venue__managingOfferer=user_offerer.offerer,
+        )
+        form_data = {"object_type": "collective_offer_template", "object_id": offer.id, "redirect": "/venue"}
+        expected_token_data = {
+            "user_id": user_offerer.userId,
+            "internal_admin_id": legit_user.id,
+            "internal_admin_email": legit_user.email,
+            "redirect_link": settings.PRO_URL + "/venue",
+        }
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form=form_data,
+            expected_num_queries=self.expected_num_queries_without_user,
+        )
+
+        assert response.status_code == 303
+        base_url, key_token = response.location.rsplit("/", 1)
+        assert base_url + "/" == urls.build_pc_pro_connect_as_link("")
+        assert SecureToken(token=key_token).data == expected_token_data
+
+    @override_features(WIP_CONNECT_AS_EXTENDED=False)
+    def test_connect_as_collective_offer_template_protected_by_feature_flag(self, authenticated_client):
+        offer = educational_factories.CollectiveOfferTemplateFactory()
+
+        form_data = {"object_type": "collective_offer_template", "object_id": offer.id, "redirect": "/venue"}
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form=form_data,
+            expected_num_queries=self.expected_num_queries_without_user,
+        )
+
+        assert response.status_code == 303
+        assert response.location == url_for("backoffice_web.home", _external=True)
+        redirected_response = authenticated_client.get(response.location)
+        assert (
+            html_parser.extract_alert(redirected_response.data)
+            == "L'utilisation de la version étendue de « connect as » requiert l'activation de la feature : WIP_CONNECT_AS_EXTENDED"
+        )
+
+    @override_features(WIP_CONNECT_AS_EXTENDED=True)
+    def test_connect_as_collective_offer_template_without_user(self, authenticated_client):
+        offer = educational_factories.CollectiveOfferTemplateFactory()
+
+        form_data = {"object_type": "collective_offer_template", "object_id": offer.id, "redirect": "/venue"}
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form=form_data,
+            expected_num_queries=self.expected_num_queries_without_user + 1,  # +1 for rollback query
+        )
+
+        assert response.status_code == 303
+        assert response.location == url_for("backoffice_web.home", _external=True)
+        redirected_response = authenticated_client.get(response.location)
+        assert (
+            html_parser.extract_alert(redirected_response.data)
+            == "Aucun utilisateur approprié n'a été trouvé pour se connecter à cette offre collective vitrine"
+        )
+
+    @override_features(WIP_CONNECT_AS_EXTENDED=True)
+    def test_connect_as_collective_offer_template_not_found(self, authenticated_client):
+        form_data = {"object_type": "collective_offer_template", "object_id": 0, "redirect": "/venue"}
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form=form_data,
+            expected_num_queries=self.expected_num_queries_without_user + 1,  # +1 for rollback query
+        )
+
+        assert response.status_code == 303
+        assert response.location == url_for("backoffice_web.home", _external=True)
+        redirected_response = authenticated_client.get(response.location)
+        assert (
+            html_parser.extract_alert(redirected_response.data)
+            == "Aucun utilisateur approprié n'a été trouvé pour se connecter à cette offre collective vitrine"
+        )
+
+    @override_features(WIP_CONNECT_AS_EXTENDED=True)
+    def test_connect_as_collective_offer_template_without_active_user(self, authenticated_client):
+        user_offerer = offerers_factories.UserOffererFactory(
+            user__isActive=False,
+        )
+        offer = educational_factories.CollectiveOfferTemplateFactory(
+            venue__managingOfferer=user_offerer.offerer,
+        )
+
+        form_data = {"object_type": "collective_offer_template", "object_id": offer.id, "redirect": "/venue"}
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form=form_data,
+            expected_num_queries=self.expected_num_queries_without_user + 1,  # +1 for rollback query
+        )
+
+        assert response.status_code == 303
+        assert response.location == url_for("backoffice_web.home", _external=True)
+        redirected_response = authenticated_client.get(response.location)
+        assert (
+            html_parser.extract_alert(redirected_response.data)
+            == "Aucun utilisateur approprié n'a été trouvé pour se connecter à cette offre collective vitrine"
+        )
+
+    @override_features(WIP_CONNECT_AS_EXTENDED=True)
+    @pytest.mark.parametrize(
+        "roles",
+        [
+            [users_models.UserRole.PRO, users_models.UserRole.ADMIN],
+            [users_models.UserRole.ADMIN],
+            [users_models.UserRole.PRO, users_models.UserRole.ANONYMIZED],
+            [],
+        ],
+    )
+    def test_connect_as_collective_offer_template_without_eligible_user(self, authenticated_client, roles):
+        user_offerer = offerers_factories.UserOffererFactory(
+            user__roles=roles,
+        )
+        offer = educational_factories.CollectiveOfferTemplateFactory(
+            venue__managingOfferer=user_offerer.offerer,
+        )
+        form_data = {"object_type": "collective_offer_template", "object_id": offer.id, "redirect": "/venue"}
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form=form_data,
+            expected_num_queries=self.expected_num_queries_without_user + 1,  # +1 for rollback query
+        )
+
+        assert response.status_code == 303
+        assert response.location == url_for("backoffice_web.home", _external=True)
+        redirected_response = authenticated_client.get(response.location)
+        assert (
+            html_parser.extract_alert(redirected_response.data)
+            == "Aucun utilisateur approprié n'a été trouvé pour se connecter à cette offre collective vitrine"
         )

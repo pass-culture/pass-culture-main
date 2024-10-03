@@ -145,6 +145,8 @@ class ConnectAsForm(FlaskForm):
     object_type = fields.PCSelectField(
         choices=(
             ("bank_account", "bank_account"),
+            ("collective_offer", "collective_offer"),
+            ("collective_offer_template", "collective_offer_template"),
             ("offer", "offer"),
             ("offerer", "offerer"),
             ("user", "user"),

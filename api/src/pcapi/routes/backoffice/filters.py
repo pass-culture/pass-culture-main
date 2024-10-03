@@ -1321,6 +1321,16 @@ def build_pro_link(path: str) -> str:
     return settings.PRO_URL + path
 
 
+def get_offer_type(
+    offer: offers_models.Offer | educational_models.CollectiveOffer | educational_models.CollectiveOfferTemplate,
+) -> str:
+    if isinstance(offer, educational_models.CollectiveOffer):
+        return "collective_offer"
+    if isinstance(offer, educational_models.CollectiveOfferTemplate):
+        return "collective_offer_template"
+    return "offer"
+
+
 def install_template_filters(app: Flask) -> None:
     app.jinja_env.trim_blocks = True
     app.jinja_env.lstrip_blocks = True
@@ -1407,3 +1417,4 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_finance_incident_type_str"] = format_finance_incident_type_str
     app.jinja_env.filters["format_venue_provider_count"] = format_venue_provider_count
     app.jinja_env.filters["build_pro_link"] = build_pro_link
+    app.jinja_env.filters["offer_type"] = get_offer_type
