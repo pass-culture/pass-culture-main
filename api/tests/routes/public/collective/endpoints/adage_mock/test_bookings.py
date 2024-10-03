@@ -1,3 +1,6 @@
+from datetime import datetime
+from datetime import timedelta
+from datetime import timezone
 from unittest.mock import patch
 
 import pytest
@@ -6,7 +9,10 @@ from pcapi.core.educational import factories
 from pcapi.core.educational import models
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_features
+from pcapi.models import db
+from pcapi.models.offer_mixin import OfferValidationStatus
 
+from tests.routes.public.helpers import PublicAPIRestrictedEnvEndpointHelper
 from tests.routes.public.helpers import assert_attribute_does_not_change
 from tests.routes.public.helpers import assert_attribute_value_changes_to
 
@@ -504,3 +510,259 @@ class RepayCollectiveBookingTest(AdageMockEndpointHelper):
                     expected_status_code=403,
                     expected_error_json=expected_json,
                 )
+
+
+class BookCollectiveOfferTest(PublicAPIRestrictedEnvEndpointHelper):
+    endpoint_url = "/v2/collective/adage_mock/offer/{offer_id}/book"
+    endpoint_method = "post"
+    default_path_params = {"offer_id": 1}
+    default_factory = factories.CollectiveOfferFactory
+
+    def test_can_book_collective_offer(self, client):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        auth_client = client.with_explicit_token(plain_api_key)
+
+        deposit = factories.EducationalDepositFactory(educationalYear=factories.EducationalCurrentYearFactory())
+        offer = factories.CollectiveStockFactory(
+            collectiveOffer__provider=venue_provider.provider,
+            collectiveOffer__venue=venue_provider.venue,
+            collectiveOffer__institution=deposit.educationalInstitution,
+        ).collectiveOffer
+
+        offer_id = offer.id
+
+        expected_num_queries = 1  # 1. get api key
+        expected_num_queries += 1  # 2. get FF
+        expected_num_queries += 1  # 3. get collective offer
+        expected_num_queries += 1  # 4. get stock (booking limit datetime)
+        expected_num_queries += 1  # 5. get venue
+        expected_num_queries += 1  # 6. search redactor
+        expected_num_queries += 1  # 7. save (new) redactor
+        expected_num_queries += 1  # 8. get institution (with program) based on UAI
+        expected_num_queries += 1  # 9. select (same) stock for update
+        expected_num_queries += 1  # 10. get (same) collective offer
+        expected_num_queries += 1  # 11. get (same) venue
+        expected_num_queries += 1  # 12. get (same) offerer
+        expected_num_queries += 1  # 13. search for offer's bookings
+        expected_num_queries += 1  # 14. get educational year (filtered)
+        expected_num_queries += 1  # 15. get redactor
+        expected_num_queries += 1  # 16. create new booking
+        expected_num_queries += 1  # 17. get (same) stock
+        expected_num_queries += 1  # 18. get (same) booking
+        expected_num_queries += 1  # 19. get (same) offer
+        expected_num_queries += 1  # 20. get (same) venue
+        expected_num_queries += 1  # 21. get (same) redactor
+        expected_num_queries += 1  # 22. get (same) institution
+        expected_num_queries += 1  # 23. get educational domain and collective domain
+        expected_num_queries += 1  # 24. get (same) offerer
+
+        with assert_num_queries(expected_num_queries):
+            self.assert_request_has_expected_result(
+                auth_client,
+                url_params={"offer_id": offer_id},
+                expected_status_code=204,
+            )
+
+        db.session.refresh(offer)
+        bookings = offer.collectiveStock.collectiveBookings
+        assert bookings
+        assert len(bookings) == 1
+
+        booking = bookings[0]
+        assert booking.status == models.CollectiveBookingStatus.PENDING
+
+    def test_cannot_book_inactive_offer(self, client):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        auth_client = client.with_explicit_token(plain_api_key)
+
+        deposit = factories.EducationalDepositFactory(educationalYear=factories.EducationalCurrentYearFactory())
+        offer = factories.CollectiveStockFactory(
+            collectiveOffer__provider=venue_provider.provider,
+            collectiveOffer__venue=venue_provider.venue,
+            collectiveOffer__institution=deposit.educationalInstitution,
+            collectiveOffer__isActive=False,
+        ).collectiveOffer
+
+        self.assert_request_has_expected_result(
+            auth_client,
+            url_params={"offer_id": offer.id},
+            expected_status_code=403,
+            expected_error_json={"code": "OFFER_IS_NOT_BOOKABLE"},
+        )
+
+        db.session.refresh(offer)
+        assert not offer.collectiveStock.collectiveBookings
+
+    @pytest.mark.parametrize(
+        "validation_status",
+        [OfferValidationStatus.DRAFT, OfferValidationStatus.PENDING, OfferValidationStatus.REJECTED],
+    )
+    def test_cannot_book_not_approved_offer(self, client, validation_status):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        auth_client = client.with_explicit_token(plain_api_key)
+
+        deposit = factories.EducationalDepositFactory(educationalYear=factories.EducationalCurrentYearFactory())
+        offer = factories.CollectiveStockFactory(
+            collectiveOffer__provider=venue_provider.provider,
+            collectiveOffer__venue=venue_provider.venue,
+            collectiveOffer__institution=deposit.educationalInstitution,
+            collectiveOffer__validation=validation_status,
+        ).collectiveOffer
+
+        self.assert_request_has_expected_result(
+            auth_client,
+            url_params={"offer_id": offer.id},
+            expected_status_code=403,
+            expected_error_json={"code": "OFFER_IS_NOT_BOOKABLE"},
+        )
+
+        db.session.refresh(offer)
+        assert not offer.collectiveStock.collectiveBookings
+
+    def test_cannot_book_soldout_offer(self, client):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        auth_client = client.with_explicit_token(plain_api_key)
+
+        deposit = factories.EducationalDepositFactory(educationalYear=factories.EducationalCurrentYearFactory())
+        institution = deposit.educationalInstitution
+        offer = factories.UsedCollectiveBookingFactory(
+            collectiveStock__collectiveOffer__provider=venue_provider.provider,
+            collectiveStock__collectiveOffer__venue=venue_provider.venue,
+            collectiveStock__collectiveOffer__institution=institution,
+        ).collectiveStock.collectiveOffer
+
+        self.assert_request_has_expected_result(
+            auth_client,
+            url_params={"offer_id": offer.id},
+            expected_status_code=403,
+            expected_error_json={"code": "OFFER_IS_NOT_BOOKABLE"},
+        )
+
+        # offer is sold out because of used booking.
+        # no new booking should have been created.
+        db.session.refresh(offer)
+        assert len(offer.collectiveStock.collectiveBookings) == 1
+
+    def test_cannot_book_offer_without_institution(self, client):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        auth_client = client.with_explicit_token(plain_api_key)
+
+        offer = factories.CollectiveStockFactory(
+            collectiveOffer__provider=venue_provider.provider,
+            collectiveOffer__venue=venue_provider.venue,
+            collectiveOffer__institution=None,
+        ).collectiveOffer
+
+        self.assert_request_has_expected_result(
+            auth_client,
+            url_params={"offer_id": offer.id},
+            expected_status_code=403,
+            expected_error_json={"code": "OFFER_IS_NOT_LINKED_TO_AN_INSTITUTION"},
+        )
+
+        db.session.refresh(offer)
+        assert not offer.collectiveStock.collectiveBookings
+
+    def test_cannot_book_offer_if_educational_year_is_missing(self, client):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        auth_client = client.with_explicit_token(plain_api_key)
+
+        offer = factories.CollectiveStockFactory(
+            collectiveOffer__provider=venue_provider.provider,
+            collectiveOffer__venue=venue_provider.venue,
+            collectiveOffer__institution=factories.EducationalInstitutionFactory(),
+        ).collectiveOffer
+
+        self.assert_request_has_expected_result(
+            auth_client,
+            url_params={"offer_id": offer.id},
+            expected_status_code=403,
+            expected_error_json={"code": "OFFERS_YEAR_NOT_FOUND"},
+        )
+
+        db.session.refresh(offer)
+        assert not offer.collectiveStock.collectiveBookings
+
+    def test_cannot_book_offer_if_no_educational_year_matches_beginning(self, client):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        auth_client = client.with_explicit_token(plain_api_key)
+
+        deposit = factories.EducationalDepositFactory(educationalYear=factories.EducationalCurrentYearFactory())
+        offer = factories.CollectiveStockFactory(
+            collectiveOffer__provider=venue_provider.provider,
+            collectiveOffer__venue=venue_provider.venue,
+            # deposit creates an educational year
+            collectiveOffer__institution=deposit.educationalInstitution,
+            # beginning will not match the educational year
+            beginningDatetime=datetime.now(timezone.utc) + timedelta(weeks=512),
+        ).collectiveOffer
+
+        self.assert_request_has_expected_result(
+            auth_client,
+            url_params={"offer_id": offer.id},
+            expected_status_code=403,
+            expected_error_json={"code": "OFFERS_YEAR_NOT_FOUND"},
+        )
+
+        db.session.refresh(offer)
+        assert not offer.collectiveStock.collectiveBookings
+
+    def test_cannot_book_offer_if_unexpected_error(self, client):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        auth_client = client.with_explicit_token(plain_api_key)
+
+        deposit = factories.EducationalDepositFactory(educationalYear=factories.EducationalCurrentYearFactory())
+        offer = factories.CollectiveStockFactory(
+            collectiveOffer__provider=venue_provider.provider,
+            collectiveOffer__venue=venue_provider.venue,
+            collectiveOffer__institution=deposit.educationalInstitution,
+        ).collectiveOffer
+
+        with patch("pcapi.core.educational.api.booking.book_collective_offer") as mock:
+            mock.side_effect = [RuntimeError("test")]
+
+            self.assert_request_has_expected_result(
+                auth_client,
+                url_params={"offer_id": offer.id},
+                expected_status_code=500,
+                expected_error_json={"code": "OFFER_BOOKING_FAILED_TRY_AGAIN_LATER"},
+            )
+
+        db.session.refresh(offer)
+        assert not offer.collectiveStock.collectiveBookings
+
+    def test_should_raise_404_because_has_no_access_to_venue(self, client):
+        plain_api_key, _ = self.setup_provider()
+        auth_client = client.with_explicit_token(plain_api_key)
+
+        deposit = factories.EducationalDepositFactory(educationalYear=factories.EducationalCurrentYearFactory())
+        offer = factories.CollectiveStockFactory(
+            collectiveOffer__institution=deposit.educationalInstitution
+        ).collectiveOffer
+
+        self.assert_request_has_expected_result(
+            auth_client, url_params={"offer_id": offer.id}, expected_status_code=404
+        )
+
+        db.session.refresh(offer)
+        assert not offer.collectiveStock.collectiveBookings
+
+    def test_should_raise_404_because_venue_provider_is_inactive(self, client):
+        plain_api_key, venue_provider = self.setup_inactive_venue_provider()
+        auth_client = client.with_explicit_token(plain_api_key)
+
+        deposit = factories.EducationalDepositFactory(educationalYear=factories.EducationalCurrentYearFactory())
+        offer = factories.CollectiveStockFactory(
+            collectiveOffer__provider=venue_provider.provider,
+            collectiveOffer__venue=venue_provider.venue,
+            collectiveOffer__institution=deposit.educationalInstitution,
+        ).collectiveOffer
+
+        self.assert_request_has_expected_result(
+            auth_client,
+            url_params={"offer_id": offer.id},
+            expected_status_code=404,
+        )
+
+        db.session.refresh(offer)
+        assert not offer.collectiveStock.collectiveBookings

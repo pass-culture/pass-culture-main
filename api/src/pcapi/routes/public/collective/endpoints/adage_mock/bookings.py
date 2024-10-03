@@ -17,6 +17,7 @@ from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import ForbiddenError
 from pcapi.models.api_errors import ResourceNotFoundError
 from pcapi.repository import atomic
+from pcapi.routes.adage_iframe.serialization.adage_authentication import RedactorInformation
 from pcapi.routes.public import blueprints
 from pcapi.routes.public import spectree_schemas
 from pcapi.routes.public.collective.endpoints.adage_mock import utils
@@ -283,6 +284,79 @@ def reimburse_collective_booking(booking_id: int) -> None:
         logger.exception("Adage mock. Failed to repay booking.", extra=err_extras)
 
         raise ApiErrors({"code": "REPAYMENT_FAILED_TRY_AGAIN_LATER"}, status_code=500)
+
+
+@blueprints.public_api.route("/v2/collective/adage_mock/offer/<int:offer_id>/book", methods=["POST"])
+@utils.exclude_prod_environment
+@provider_api_key_required
+@spectree_serialize(
+    api=spectree_schemas.public_api_schema,
+    on_success_status=204,
+    tags=[tags.COLLECTIVE_ADAGE_MOCK],
+    resp=SpectreeResponse(
+        **(
+            http_responses.HTTP_204_COLLECTIVE_BOOKING_STATUS_UPDATE
+            | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
+            | http_responses.HTTP_403_COLLECTIVE_BOOKING_STATUS_UPDATE_REFUSED
+            | http_responses.HTTP_404_COLLECTIVE_OFFER_NOT_FOUND
+        )
+    ),
+)
+def adage_mock_book_offer(offer_id: int) -> None:
+    """
+    Mock collective offer booking
+
+    Like this could happen within the Adage platform.
+
+    **WARNING:** this endpoint is not available from the production
+    environment as it is a mock meant to ease the test of your
+    integrations.
+    """
+    offer = _get_offer_or_raise_404(offer_id)
+
+    if not offer.isBookable:
+        raise ForbiddenError({"code": "OFFER_IS_NOT_BOOKABLE"})
+
+    institution = offer.institution
+    if not institution:
+        raise ForbiddenError({"code": "OFFER_IS_NOT_LINKED_TO_AN_INSTITUTION"})
+
+    uai = institution.institutionId
+    redactor_information = RedactorInformation(
+        civility="", lastname=f"integration {uai}", firstname="redactor", email=f"redactor.{uai}@example.fr", uai=uai
+    )
+
+    try:
+        booking_api.book_collective_offer(redactor_information, offer.collectiveStock.id)
+    except exceptions.EducationalYearNotFound:
+        raise ForbiddenError({"code": "OFFERS_YEAR_NOT_FOUND"})
+    except Exception:
+        err_extras = {"offer": offer_id, "api_key_id": current_api_key.id}
+        logger.exception("Adage mock. Failed to prebook offer.", extra=err_extras)
+
+        raise ApiErrors({"code": "OFFER_BOOKING_FAILED_TRY_AGAIN_LATER"}, status_code=500)
+
+
+def _get_offer_or_raise_404(offer_id: int) -> models.CollectiveOffer:
+    offer = (
+        models.CollectiveOffer.query.filter(models.CollectiveOffer.id == offer_id)
+        .join(offerers_models.Venue)
+        .join(providers_models.VenueProvider)
+        .filter(providers_models.VenueProvider.providerId == current_api_key.providerId)
+        .filter(providers_models.VenueProvider.isActive == True)
+        .options(sa.orm.joinedload(models.CollectiveOffer.institution))
+        .options(
+            sa.orm.selectinload(models.CollectiveOffer.collectiveStock).joinedload(
+                models.CollectiveStock.collectiveBookings
+            )
+        )
+        .options(sa.orm.selectinload(models.CollectiveOffer.venue).joinedload(offerers_models.Venue.managingOfferer))
+        .one_or_none()
+    )
+
+    if not offer:
+        raise ResourceNotFoundError({"code": "OFFER_NOT_FOUND"})
+    return offer
 
 
 def _get_booking_or_raise_404(booking_id: int) -> models.CollectiveBooking:
