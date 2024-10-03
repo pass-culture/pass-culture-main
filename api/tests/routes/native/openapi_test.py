@@ -1068,6 +1068,7 @@ def test_public_api(client):
                 "NativeCategoryIdEnumv2": {
                     "description": "An enumeration.",
                     "enum": [
+                        "ABO_PLATEFORME_VIDEO",
                         "ABONNEMENTS_MUSEE",
                         "ABONNEMENTS_SPECTACLE",
                         "ACHAT_LOCATION_INSTRUMENT",
@@ -1087,7 +1088,6 @@ def test_public_api(client):
                         "EVENEMENTS_PATRIMOINE",
                         "FESTIVALS",
                         "FESTIVAL_DU_LIVRE",
-                        "FILMS_SERIES_EN_LIGNE",
                         "JEUX_EN_LIGNE",
                         "JEUX_PHYSIQUES",
                         "LIVRES_AUDIO_PHYSIQUES",
@@ -1109,6 +1109,7 @@ def test_public_api(client):
                         "SEANCES_DE_CINEMA",
                         "SPECTACLES_ENREGISTRES",
                         "SPECTACLES_REPRESENTATIONS",
+                        "VIDEOS_ET_DOCUMENTAIRES",
                         "VINYLES",
                         "VISITES_CULTURELLES",
                         "VISITES_CULTURELLES_EN_LIGNE",
