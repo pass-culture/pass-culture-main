@@ -340,8 +340,11 @@ def update_offer(
     aliases = set(body.dict(by_alias=True))
     fields = body.dict(by_alias=True, exclude_unset=True)
 
-    if body.address:
-        fields["offererAddress"] = get_offerer_address_from_address(offer.venue, body.address)
+    if address := body.address:
+        if address.isVenueAddress:
+            fields["offererAddress"] = offer.venue.offererAddress
+        else:
+            fields["offererAddress"] = get_offerer_address_from_address(offer.venue, body.address)
         fields.pop("address", None)
 
     should_send_mail = fields.pop("shouldSendMail", False)

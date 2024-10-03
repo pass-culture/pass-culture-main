@@ -279,6 +279,35 @@ class Returns200Test:
         assert address.longitude == Decimal("2.3522")
         assert address.isManualEdition is False
 
+    @patch("pcapi.connectors.api_adresse.get_address")
+    def test_user_can_link_offer_to_the_offerer_address_of_venue(self, get_address_mock, client):
+        user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+        offer = offers_factories.OfferFactory(
+            subcategoryId=subcategories.ABO_MEDIATHEQUE.id,
+            venue=venue,
+            name="New name",
+            description="description",
+            offererAddress=None,
+        )
+        data = {
+            "address": {
+                "isVenueAddress": True,
+                "street": venue.offererAddress.address.street,
+                "city": venue.offererAddress.address.city,
+                "postalCode": venue.offererAddress.address.postalCode,
+                "latitude": venue.offererAddress.address.latitude,
+                "longitude": venue.offererAddress.address.longitude,
+            },
+        }
+        response = client.with_session_auth("user@example.com").patch(f"/offers/{offer.id}", json=data)
+        get_address_mock.assert_not_called()
+
+        assert response.status_code == 200
+        assert response.json["id"] == offer.id
+        updated_offer = Offer.query.get(offer.id)
+        assert offer.offererAddressId == venue.offererAddressId
+
     @patch("pcapi.connectors.api_adresse.get_municipality_centroid")
     def test_patch_offer_with_manual_address_edition(self, mocked_get_centroid, client):
         # Given
