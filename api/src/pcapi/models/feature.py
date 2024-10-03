@@ -109,7 +109,6 @@ class FeatureToggle(enum.Enum):
         "Activer les nouvelles règles de création et d'édition d'offres collecrives pour l'API publique (collective)"
     )
     ENABLE_PRO_NEW_NAV_MODIFICATION = "Activer la modification du statut de la navigation du portail pro"
-    WIP_ENABLE_NEW_HASHING_ALGORITHM = "Activer le nouveau système de hachage des clés publiques d'API"
     WIP_ENABLE_BO_PRO_SEARCH_BY_SIMILARITY = (
         "Activer la recherche par similarité pour les structures et lieux dans le backoffice"
     )
@@ -184,7 +183,6 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_EAN_CREATION,
     FeatureToggle.WIP_ENABLE_MOCK_UBBLE,
     FeatureToggle.WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE,
-    FeatureToggle.WIP_ENABLE_NEW_HASHING_ALGORITHM,
     FeatureToggle.WIP_ENABLE_OFFER_ADDRESS,
     FeatureToggle.WIP_ENABLE_REMINDER_MARKETING_MAIL_METADATA_DISPLAY,
     FeatureToggle.WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE,
