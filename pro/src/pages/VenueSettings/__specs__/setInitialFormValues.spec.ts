@@ -66,7 +66,6 @@ describe('setInitialFormValues', () => {
           banId: '49759_1304_00002',
           departmentCode: '34',
           inseeCode: '34172',
-          isEditable: true,
           label: 'Centre commercial',
         },
       },

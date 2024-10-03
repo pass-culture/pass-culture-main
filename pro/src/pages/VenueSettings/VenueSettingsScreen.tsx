@@ -129,12 +129,7 @@ export const VenueSettingsScreen = ({
     try {
       await api.editVenue(
         venue.id,
-        serializeEditVenueBodyModel(
-          values,
-          !venue.siret,
-          venue.isVirtual,
-          shouldSendMail
-        )
+        serializeEditVenueBodyModel(values, !venue.siret, shouldSendMail)
       )
       await mutate([GET_VENUE_QUERY_KEY, String(venue.id)])
 

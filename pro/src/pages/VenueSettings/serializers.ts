@@ -6,7 +6,6 @@ import { VenueSettingsFormValues } from './types'
 export const serializeEditVenueBodyModel = (
   formValues: VenueSettingsFormValues,
   hideSiret: boolean,
-  isVenueVirtual: boolean,
   shouldSendMail?: boolean
 ): EditVenueBodyModel => {
   const payload: EditVenueBodyModel = {
