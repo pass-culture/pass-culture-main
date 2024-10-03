@@ -3,12 +3,18 @@
     <thead>
       <tr>
         <th scope="col">Rôle</th>
+        <th scope="col">Permissions</th>
       </tr>
     </thead>
     <tbody>
-      {% for role_name in roles | map(attribute="name") | sort %}
+      {% for role in roles | sort(attribute="name") %}
         <tr>
-          <td>{{ role_name }}</td>
+          <td class="w-50">{{ role.name }}</td>
+          <td class="w-50">
+            <ul>
+              {% for permission in role.permissions %}<li>{{ permission.name | format_permission_name }}</li>{% endfor %}
+            </ul>
+          </td>
         </tr>
       {% endfor %}
     </tbody>

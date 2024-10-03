@@ -10,6 +10,7 @@ from flask import url_for
 from flask_login import current_user
 from flask_sqlalchemy import BaseQuery
 import sqlalchemy as sa
+from werkzeug.exceptions import Forbidden
 from werkzeug.exceptions import NotFound
 
 from pcapi.core.history import models as history_models
@@ -33,7 +34,6 @@ bo_users_blueprint = utils.child_backoffice_blueprint(
     "bo_users",
     __name__,
     url_prefix="/admin/bo-users",
-    permission=perm_models.Permissions.READ_ADMIN_ACCOUNTS,
 )
 
 
@@ -49,6 +49,7 @@ def get_admin_account_link(user_id: int, form: forms.BOUserSearchForm | None, **
 
 @bo_users_blueprint.route("/search", methods=["GET"])
 @atomic()
+@utils.permission_required(perm_models.Permissions.READ_ADMIN_ACCOUNTS)
 def search_bo_users() -> utils.BackofficeResponse:
     request_args = utils.get_query_params()
     form = forms.BOUserSearchForm(formdata=request_args)
@@ -104,7 +105,9 @@ def render_bo_user_page(user_id: int, edit_form: forms.EditBOUserForm | None = N
             .joinedload(history_models.ActionHistory.authorUser)
             .load_only(users_models.User.firstName, users_models.User.lastName),
             sa.orm.joinedload(users_models.User.email_history),
-            sa.orm.joinedload(users_models.User.backoffice_profile).joinedload(perm_models.BackOfficeUserProfile.roles),
+            sa.orm.joinedload(users_models.User.backoffice_profile)
+            .joinedload(perm_models.BackOfficeUserProfile.roles)
+            .joinedload(perm_models.Role.permissions),
         )
         .one_or_none()
     )
@@ -112,34 +115,55 @@ def render_bo_user_page(user_id: int, edit_form: forms.EditBOUserForm | None = N
     if not user:
         raise NotFound()
 
-    if not edit_form and utils.has_current_user_permission(perm_models.Permissions.MANAGE_ADMIN_ACCOUNTS):
-        edit_form = forms.EditBOUserForm(
-            last_name=user.lastName,
-            first_name=user.firstName,
-            email=user.email,
+    kwargs = user_forms.get_toggle_suspension_args(
+        user, required_permission=perm_models.Permissions.MANAGE_ADMIN_ACCOUNTS
+    )
+
+    if utils.has_current_user_permission(perm_models.Permissions.READ_ADMIN_ACCOUNTS):
+        kwargs.update(
+            {
+                "search_form": forms.BOUserSearchForm(q=request.args.get("q")),
+                "search_dst": url_for(".search_bo_users"),
+            }
+        )
+
+    if utils.has_current_user_permission(perm_models.Permissions.MANAGE_ADMIN_ACCOUNTS):
+        if not edit_form:
+            edit_form = forms.EditBOUserForm(
+                last_name=user.lastName,
+                first_name=user.firstName,
+                email=user.email,
+            )
+        kwargs.update(
+            {
+                "edit_account_form": edit_form,
+                "edit_account_dst": url_for(".update_bo_user", user_id=user.id) if edit_form else None,
+            }
         )
 
     return render_template(
         "accounts/get.html",
         layout="layouts/admin.html",
-        search_form=forms.BOUserSearchForm(q=request.args.get("q")),
-        search_dst=url_for(".search_bo_users"),
         user=user,
-        edit_account_form=edit_form,
-        edit_account_dst=url_for(".update_bo_user", user_id=user.id) if edit_form else None,
         history=get_bo_user_history(user),
         roles=user.backoffice_profile.roles if user.backoffice_profile else [],
         active_tab=request.args.get("active_tab", "history"),
-        extract_user_form=None,
-        **user_forms.get_toggle_suspension_args(
-            user, required_permission=perm_models.Permissions.MANAGE_ADMIN_ACCOUNTS
-        ),
+        **kwargs,
     )
 
 
 @bo_users_blueprint.route("/<int:user_id>", methods=["GET"])
 @atomic()
+@utils.custom_login_required(redirect_to="backoffice_web.home")
 def get_bo_user(user_id: int) -> utils.BackofficeResponse:
+    if not (
+        current_user.backoffice_profile
+        and (
+            current_user.id == user_id or utils.has_current_user_permission(perm_models.Permissions.READ_ADMIN_ACCOUNTS)
+        )
+    ):
+        raise Forbidden()
+
     return render_bo_user_page(user_id)
 
 

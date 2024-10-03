@@ -365,14 +365,19 @@ def render_public_account_details(
         if utils.has_current_user_permission(perm_models.Permissions.EXTRACT_PUBLIC_ACCOUNT):
             if user.is_beneficiary or user.roles == []:
                 extract_user_form = empty_forms.EmptyForm()
+        if utils.has_current_user_permission(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT):
+            kwargs.update(
+                {
+                    "password_reset_dst": url_for(".send_public_account_reset_password_email", user_id=user.id),
+                    "password_reset_form": empty_forms.EmptyForm(),
+                    "password_invalidation_dst": url_for(".invalidate_public_account_password", user_id=user.id),
+                    "password_invalidation_form": empty_forms.EmptyForm(),
+                }
+            )
         kwargs.update(
             {
                 "edit_account_form": edit_account_form,
                 "edit_account_dst": url_for(".update_public_account", user_id=user.id),
-                "password_reset_dst": url_for(".send_public_account_reset_password_email", user_id=user.id),
-                "password_reset_form": empty_forms.EmptyForm(),
-                "password_invalidation_dst": url_for(".invalidate_public_account_password", user_id=user.id),
-                "password_invalidation_form": empty_forms.EmptyForm(),
                 "manual_review_form": (
                     account_forms.ManualReviewForm()
                     if utils.has_current_user_permission(perm_models.Permissions.BENEFICIARY_FRAUD_ACTIONS)
