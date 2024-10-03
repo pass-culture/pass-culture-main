@@ -41,6 +41,7 @@
         "filterOnly(offer.category)",
         "filterOnly(offer.dates)",
         "searchable(offer.ean)",
+        "filterOnly(offer.indexedAt)",
         "filterOnly(offer.isDigital)",
         "filterOnly(offer.isDuo)",
         "filterOnly(offer.isEducational)",
