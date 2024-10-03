@@ -14,13 +14,16 @@ import {
   individualOfferContextValuesFactory,
   subcategoryFactory,
 } from 'utils/individualApiFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
+import {
+  renderWithProviders,
+  RenderWithProvidersOptions,
+} from 'utils/renderWithProviders'
 
 import { DetailsSummaryScreen } from '../DetailsSummary'
 
 const renderDetailsSummaryScreen = (
   offer: GetIndividualOfferWithAddressResponseModel,
-  feature: string[] = []
+  options?: RenderWithProvidersOptions
 ) => {
   const categories = [
     categoryFactory({
@@ -61,7 +64,7 @@ const renderDetailsSummaryScreen = (
       <DetailsSummaryScreen offer={offer} />
     </IndividualOfferContext.Provider>,
     {
-      features: feature,
+      ...options,
     }
   )
 }
@@ -107,7 +110,7 @@ describe('DetailsSummaryScreen', () => {
     })
   })
 
-  it('should render summary with right field with OA FF', async () => {
+  it('should have "Qui propose l’offre ?" section if WIP_ENABLE_OFFER_ADDRESS FF is active', async () => {
     const offer = getIndividualOfferFactory({
       name: 'Offre de test',
       subcategoryId: SubcategoryIdEnum.SEANCE_CINE,
@@ -121,11 +124,10 @@ describe('DetailsSummaryScreen', () => {
       },
     })
 
-    renderDetailsSummaryScreen(offer, ['WIP_ENABLE_OFFER_ADDRESS'])
+    renderDetailsSummaryScreen(offer, {
+      features: ['WIP_ENABLE_OFFER_ADDRESS'],
+    })
 
     expect(await screen.findByText(/Qui propose l’offre/)).toBeInTheDocument()
-    expect(
-      await screen.findByText('Localisation de l’offre')
-    ).toBeInTheDocument()
   })
 })

@@ -3,19 +3,25 @@ import { screen } from '@testing-library/react'
 import {
   GetIndividualOfferWithAddressResponseModel,
   WithdrawalTypeEnum,
+  SubcategoryIdEnum,
 } from 'apiClient/v1'
 import { IndividualOfferContext } from 'context/IndividualOfferContext/IndividualOfferContext'
+import { AddressResponseIsLinkedToVenueModelFactory } from 'utils/commonOffersApiFactories'
 import {
   getIndividualOfferFactory,
   getOfferVenueFactory,
   individualOfferContextValuesFactory,
 } from 'utils/individualApiFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
+import {
+  renderWithProviders,
+  RenderWithProvidersOptions,
+} from 'utils/renderWithProviders'
 
 import { UsefulInformationsSummaryScreen } from '../UsefulInformationsSummary'
 
 const renderUsefulInformationsSummaryScreen = (
-  offer: GetIndividualOfferWithAddressResponseModel
+  offer: GetIndividualOfferWithAddressResponseModel,
+  options?: RenderWithProvidersOptions
 ) => {
   const contextValue = individualOfferContextValuesFactory({
     offer,
@@ -24,7 +30,10 @@ const renderUsefulInformationsSummaryScreen = (
   renderWithProviders(
     <IndividualOfferContext.Provider value={contextValue}>
       <UsefulInformationsSummaryScreen offer={offer} />
-    </IndividualOfferContext.Provider>
+    </IndividualOfferContext.Provider>,
+    {
+      ...options,
+    }
   )
 }
 
@@ -49,5 +58,28 @@ describe('UsefulInformationsSummaryScreen', () => {
     ).toBeInTheDocument()
     expect(screen.getByText('robert@exemple.com')).toBeInTheDocument()
     expect(screen.getByText('https://www.example.com')).toBeInTheDocument()
+  })
+
+  it('should render summary with right field with OA FF', async () => {
+    const offer = getIndividualOfferFactory({
+      name: 'Offre de test',
+      subcategoryId: SubcategoryIdEnum.SEANCE_CINE,
+      address: {
+        ...AddressResponseIsLinkedToVenueModelFactory({
+          label: 'mon adresse',
+          city: 'ma ville',
+          street: 'ma street',
+          postalCode: '1',
+        }),
+      },
+    })
+
+    renderUsefulInformationsSummaryScreen(offer, {
+      features: ['WIP_ENABLE_OFFER_ADDRESS'],
+    })
+
+    expect(
+      await screen.findByText('Localisation de l’offre')
+    ).toBeInTheDocument()
   })
 })

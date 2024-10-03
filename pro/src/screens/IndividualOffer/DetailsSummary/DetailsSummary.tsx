@@ -22,7 +22,6 @@ import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
 import { useActiveFeature } from 'hooks/useActiveFeature'
 import { useOfferWizardMode } from 'hooks/useOfferWizardMode'
 import phoneStrokeIcon from 'icons/stroke-phone.svg'
-import { computeAddressDisplayName } from 'repository/venuesService'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
@@ -195,18 +194,6 @@ export function DetailsSummaryScreen({ offer }: DetailsSummaryScreenProps) {
             </SummarySubSection>
           )}
         </SummarySection>
-        {!offerData.isVenueVirtual && isOfferAddressEnabled && (
-          <SummarySubSection title="Localisation de l’offre">
-            <SummaryDescriptionList
-              descriptions={[
-                {
-                  title: 'Adresse',
-                  text: computeAddressDisplayName(offerData.address!),
-                },
-              ]}
-            />
-          </SummarySubSection>
-        )}
       </SummaryContent>
       <SummaryAside>
         <div className={styles['title-container']}>
