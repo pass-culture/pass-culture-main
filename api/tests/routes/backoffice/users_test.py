@@ -101,9 +101,9 @@ class SuspendUserTest(PostEndpointHelper):
             (users_constants.SuspensionReason.FRAUD_HACK, True, False),
             (users_constants.SuspensionReason.FRAUD_RESELL_PASS, True, True),
             (users_constants.SuspensionReason.FRAUD_RESELL_PRODUCT, True, True),
-            (users_constants.SuspensionReason.FRAUD_SUSPICION, False, False),
-            (users_constants.SuspensionReason.SUSPICIOUS_LOGIN_REPORTED_BY_USER, True, False),
-            (users_constants.SuspensionReason.UPON_USER_REQUEST, True, False),
+            (users_constants.SuspensionReason.FRAUD_SUSPICION, True, False),
+            (users_constants.SuspensionReason.SUSPICIOUS_LOGIN_REPORTED_BY_USER, True, True),
+            (users_constants.SuspensionReason.UPON_USER_REQUEST, True, True),
             (users_constants.SuspensionReason.SUSPENSION_FOR_INVESTIGATION_TEMP, False, False),
         ],
     )

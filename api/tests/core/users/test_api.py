@@ -86,20 +86,47 @@ def _assert_user_action_history_as_expected(
 
 @pytest.mark.usefixtures("db_session")
 class CancelBeneficiaryBookingsOnSuspendAccountTest:
-    def should_cancel_booking_when_the_offer_is_a_thing(self):
+    @pytest.mark.parametrize(
+        "reason,is_backoffice_action",
+        [
+            (users_constants.SuspensionReason.UPON_USER_REQUEST, False),
+            (users_constants.SuspensionReason.FRAUD_RESELL_PRODUCT, True),
+            (users_constants.SuspensionReason.FRAUD_SUSPICION, True),
+            (users_constants.SuspensionReason.FRAUD_USURPATION, True),
+        ],
+    )
+    def should_cancel_booking_when_the_offer_is_a_thing(self, reason, is_backoffice_action):
         booking_thing = bookings_factories.BookingFactory(
             stock__offer__subcategoryId=subcategories_v2.CARTE_CINE_ILLIMITE.id,
             status=BookingStatus.CONFIRMED,
         )
 
         author = users_factories.AdminFactory()
-        reason = users_constants.SuspensionReason.FRAUD_SUSPICION
 
-        users_api.suspend_account(booking_thing.user, reason, author)
+        users_api.suspend_account(booking_thing.user, reason, author, is_backoffice_action=is_backoffice_action)
 
         assert booking_thing.status is BookingStatus.CANCELLED
 
-    def should_cancel_booking_when_event_is_still_cancellable(self):
+    @pytest.mark.parametrize(
+        "reason", [users_constants.SuspensionReason.FRAUD_SUSPICION, users_constants.SuspensionReason.FRAUD_USURPATION]
+    )
+    def should_not_cancel_booking_on_suspicion_when_the_offer_is_an_event(self, reason):
+        booking_thing = bookings_factories.BookingFactory(stock=offers_factories.EventStockFactory())
+
+        author = users_factories.AdminFactory()
+
+        users_api.suspend_account(booking_thing.user, reason, author, is_backoffice_action=True)
+
+        assert booking_thing.status is BookingStatus.CONFIRMED
+
+    @pytest.mark.parametrize(
+        "reason,is_backoffice_action",
+        [
+            (users_constants.SuspensionReason.UPON_USER_REQUEST, False),
+            (users_constants.SuspensionReason.FRAUD_RESELL_PRODUCT, True),
+        ],
+    )
+    def should_cancel_booking_when_event_is_still_cancellable(self, reason, is_backoffice_action):
         """
         ---[        cancellable       ][         not cancellable        ]-->
         ---|---------------------------|--------------------------------|-->
@@ -118,9 +145,8 @@ class CancelBeneficiaryBookingsOnSuspendAccountTest:
         )
 
         author = users_factories.AdminFactory()
-        reason = users_constants.SuspensionReason.FRAUD_SUSPICION
 
-        users_api.suspend_account(booking_event.user, reason, author)
+        users_api.suspend_account(booking_event.user, reason, author, is_backoffice_action=is_backoffice_action)
 
         assert booking_event.status is BookingStatus.CANCELLED
 
@@ -143,7 +169,7 @@ class CancelBeneficiaryBookingsOnSuspendAccountTest:
         )
 
         author = users_factories.AdminFactory()
-        reason = users_constants.SuspensionReason.FRAUD_SUSPICION
+        reason = users_constants.SuspensionReason.UPON_USER_REQUEST
 
         users_api.suspend_account(booking_event.user, reason, author)
 
@@ -155,10 +181,10 @@ class SuspendAccountTest:
     def test_suspend_admin(self):
         user = users_factories.AdminFactory()
         users_factories.UserSessionFactory(user=user)
-        reason = users_constants.SuspensionReason.FRAUD_SUSPICION
+        reason = users_constants.SuspensionReason.FRAUD_RESELL_PRODUCT
         author = users_factories.AdminFactory()
 
-        users_api.suspend_account(user, reason, author)
+        users_api.suspend_account(user, reason, author, is_backoffice_action=True)
 
         assert user.suspension_reason == reason
         assert _datetime_within_last_5sec(user.suspension_date)
@@ -186,11 +212,11 @@ class SuspendAccountTest:
         )
         used_booking = bookings_factories.UsedBookingFactory(user=user)
         author = users_factories.AdminFactory()
-        reason = users_constants.SuspensionReason.FRAUD_SUSPICION
+        reason = users_constants.SuspensionReason.FRAUD_RESELL_PRODUCT
         comment = "Dossier n°12345"
         old_password_hash = user.password
 
-        users_api.suspend_account(user, reason, author, comment=comment)
+        users_api.suspend_account(user, reason, author, comment=comment, is_backoffice_action=True)
 
         db.session.refresh(user)
 
@@ -223,7 +249,7 @@ class SuspendAccountTest:
         author = users_factories.AdminFactory()
         reason = users_constants.SuspensionReason.END_OF_CONTRACT
 
-        users_api.suspend_account(pro, reason, author)
+        users_api.suspend_account(pro, reason, author, is_backoffice_action=True)
 
         assert not pro.isActive
         assert booking.status is BookingStatus.CONFIRMED  # not canceled

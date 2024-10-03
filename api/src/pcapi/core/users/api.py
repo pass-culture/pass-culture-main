@@ -476,7 +476,6 @@ _USER_REQUESTED_REASONS = {
 }
 
 _AUTO_REQUESTED_REASONS = {
-    constants.SuspensionReason.FRAUD_SUSPICION,
     constants.SuspensionReason.BLACKLISTED_DOMAIN_NAME,
 }
 
@@ -488,6 +487,8 @@ _BACKOFFICE_REASONS_WHICH_CANCEL_ALL_BOOKINGS = {
 }
 
 _BACKOFFICE_REASONS_WHICH_CANCEL_NON_EVENTS = {
+    constants.SuspensionReason.FRAUD_SUSPICION,
+    constants.SuspensionReason.FRAUD_USURPATION,
     constants.SuspensionReason.FRAUD_HACK,
     constants.SuspensionReason.SUSPICIOUS_LOGIN_REPORTED_BY_USER,
     constants.SuspensionReason.UPON_USER_REQUEST,
@@ -507,16 +508,14 @@ def _cancel_bookings_of_user_on_requested_account_suspension(
         bookings_models.Booking.status == bookings_models.BookingStatus.CONFIRMED,
     )
 
-    if (is_backoffice_action and reason in _BACKOFFICE_REASONS_WHICH_CANCEL_ALL_BOOKINGS) or (
-        not is_backoffice_action and reason in _NON_BO_REASONS_WHICH_CANCEL_ALL_BOOKINGS
-    ):
+    if reason in _BACKOFFICE_REASONS_WHICH_CANCEL_ALL_BOOKINGS | _NON_BO_REASONS_WHICH_CANCEL_ALL_BOOKINGS:
         bookings_query = bookings_query.filter(
             sa.or_(
                 datetime.datetime.utcnow() < bookings_models.Booking.cancellationLimitDate,
                 bookings_models.Booking.cancellationLimitDate.is_(None),
             ),
         )
-    elif is_backoffice_action and reason in _BACKOFFICE_REASONS_WHICH_CANCEL_NON_EVENTS:
+    elif reason in _BACKOFFICE_REASONS_WHICH_CANCEL_NON_EVENTS:
         bookings_query = (
             bookings_query.join(bookings_models.Booking.stock)
             .join(offers_models.Stock.offer)
