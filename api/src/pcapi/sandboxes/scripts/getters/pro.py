@@ -11,7 +11,7 @@ def create_new_pro_user() -> dict:
 def create_new_pro_user_and_offerer() -> dict:
     pro_user = users_factories.ProFactory()
     offerer = offerers_factories.OffererFactory()
-    venue = offerers_factories.VenueFactory(name="Mon Lieu", managingOfferer=offerer, isPermanent=True)
+    venue = offerers_factories.VenueFactory(managingOfferer=offerer, isPermanent=True)
     offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
     return {"user": get_pro_user_helper(pro_user), "siret": venue.siret}
 

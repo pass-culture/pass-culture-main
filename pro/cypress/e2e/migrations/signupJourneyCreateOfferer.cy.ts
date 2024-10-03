@@ -47,7 +47,7 @@ const addressInterceptionPayload = {
 
 describe('Signup journey with new venue', () => {
   let login = ''
-  const mySiret: string = '12345678912345'
+  const mySiret = '12345678912345'
   const password = 'user@AZERTY123'
   const venueName = 'MINISTERE DE LA CULTURE'
 
@@ -59,6 +59,25 @@ describe('Signup journey with new venue', () => {
     }).then((response) => {
       login = response.body.user.email
     })
+    cy.intercept('GET', `/sirene/siret/**`, (req) =>
+      req.reply({
+        statusCode: 200,
+        body: siretInterceptionPayload(mySiret, venueName),
+      })
+    ).as('getSiret')
+    cy.intercept({
+      method: 'GET',
+      url: `/venues/siret/**`,
+    }).as('venuesSiret')
+    cy.intercept(
+      'GET',
+      'https://api-adresse.data.gouv.fr/search/?limit=1&q=*',
+      (req) =>
+        req.reply({
+          statusCode: 200,
+          body: addressInterceptionPayload,
+        })
+    ).as('search1Address')
   })
 
   it('Should sign up with a new account, create a new offerer with an unknown SIRET', () => {
@@ -73,25 +92,6 @@ describe('Signup journey with new venue', () => {
     // When I specify a venue with a SIRET
     cy.url().should('contain', '/parcours-inscription/structure')
     cy.findByLabelText('Numéro de SIRET à 14 chiffres *').type(mySiret)
-    cy.intercept('GET', `/sirene/siret/${mySiret}`, (req) =>
-      req.reply({
-        statusCode: 200,
-        body: siretInterceptionPayload(mySiret, venueName),
-      })
-    ).as('getSiret')
-    cy.intercept({
-      method: 'GET',
-      url: `/venues/siret/${mySiret}`,
-    }).as('venuesSiret')
-    cy.intercept(
-      'GET',
-      'https://api-adresse.data.gouv.fr/search/?limit=1&q=*',
-      (req) =>
-        req.reply({
-          statusCode: 200,
-          body: addressInterceptionPayload,
-        })
-    ).as('search1Address')
     cy.findByText('Continuer').click()
     cy.wait(['@getSiret', '@venuesSiret', '@search1Address']).then(
       (interception) => {
@@ -171,9 +171,28 @@ describe('Signup journey with known venue', () => {
       login = response.body.user.email
       mySiret = response.body.siret
     })
+    cy.intercept('GET', `/sirene/siret/**`, (req) =>
+      req.reply({
+        statusCode: 200,
+        body: siretInterceptionPayload(mySiret, venueName),
+      })
+    ).as('getSiret')
+    cy.intercept({
+      method: 'GET',
+      url: `/venues/siret/**`,
+    }).as('venuesSiret')
+    cy.intercept(
+      'GET',
+      'https://api-adresse.data.gouv.fr/search/?limit=1&q=*',
+      (req) =>
+        req.reply({
+          statusCode: 200,
+          body: addressInterceptionPayload,
+        })
+    ).as('search1Address')
   })
 
-  it('should sign up with a new account and a known offerer, create a new offerer in the space', () => {
+  it('Should sign up with a new account and a known offerer, create a new offerer in the space', () => {
     cy.login({
       email: login,
       password: password,
@@ -185,25 +204,6 @@ describe('Signup journey with known venue', () => {
     // When I specify an offerer with a SIRET
     cy.url().should('contain', '/parcours-inscription/structure')
     cy.findByLabelText('Numéro de SIRET à 14 chiffres *').type(mySiret)
-    cy.intercept('GET', `/sirene/siret/${mySiret}`, (req) =>
-      req.reply({
-        statusCode: 200,
-        body: siretInterceptionPayload(mySiret, venueName),
-      })
-    ).as('getSiret')
-    cy.intercept({
-      method: 'GET',
-      url: `/venues/siret/${mySiret}`,
-    }).as('venuesSiret')
-    cy.intercept(
-      'GET',
-      'https://api-adresse.data.gouv.fr/search/?limit=1&q=*',
-      (req) =>
-        req.reply({
-          statusCode: 200,
-          body: addressInterceptionPayload,
-        })
-    ).as('search1Address')
     cy.findByText('Continuer').click()
     cy.wait(['@getSiret', '@venuesSiret', '@search1Address']).then(
       (interception) => {
@@ -295,7 +295,7 @@ describe('Signup journey with known venue', () => {
     ).should('be.visible')
   })
 
-  it('should sign up with a new account and a known offerer', () => {
+  it('Should sign up with a new account and a known offerer', () => {
     cy.login({
       email: login,
       password: password,
@@ -308,25 +308,6 @@ describe('Signup journey with known venue', () => {
     // When I specify an offerer with a SIRET
     cy.url().should('contain', '/parcours-inscription/structure')
     cy.findByLabelText('Numéro de SIRET à 14 chiffres *').type(mySiret)
-    cy.intercept('GET', `/sirene/siret/${mySiret}`, (req) =>
-      req.reply({
-        statusCode: 200,
-        body: siretInterceptionPayload(mySiret, venueName),
-      })
-    ).as('getSiret')
-    cy.intercept({
-      method: 'GET',
-      url: `/venues/siret/${mySiret}`,
-    }).as('venuesSiret')
-    cy.intercept(
-      'GET',
-      'https://api-adresse.data.gouv.fr/search/?limit=1&q=*',
-      (req) =>
-        req.reply({
-          statusCode: 200,
-          body: addressInterceptionPayload,
-        })
-    ).as('search1Address')
     cy.findByText('Continuer').click()
     cy.wait(['@getSiret', '@venuesSiret', '@search1Address']).then(
       (interception) => {
