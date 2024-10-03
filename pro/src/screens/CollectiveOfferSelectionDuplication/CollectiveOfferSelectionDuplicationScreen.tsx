@@ -4,12 +4,11 @@ import { useCallback, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
-import { CollectiveOfferResponseModel } from 'apiClient/v1'
+import { CollectiveOfferResponseModel, CollectiveOfferType } from 'apiClient/v1'
 import { AppLayout } from 'app/AppLayout'
 import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
 import { createOfferFromTemplate } from 'core/OfferEducational/utils/createOfferFromTemplate'
 import { DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS } from 'core/Offers/constants'
-import { CollectiveOfferTypeEnum } from 'core/Offers/types'
 import { computeCollectiveOffersUrl } from 'core/Offers/utils/computeCollectiveOffersUrl'
 import { serializeApiCollectiveFilters } from 'core/Offers/utils/serializer'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared/constants'
@@ -59,19 +58,16 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
         creationMode,
         periodBeginningDate,
         periodEndingDate,
-        collectiveOfferType,
         format,
       } = serializeApiCollectiveFilters(
         {
           ...DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
           nameOrIsbn: offerName,
-          collectiveOfferType: CollectiveOfferTypeEnum.TEMPLATE,
           offererId: queryOffererId ? queryOffererId : 'all',
           venueId: queryVenueId ? queryVenueId : 'all',
         },
         DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS
       )
-
       try {
         const offers = await api.getCollectiveOffers(
           nameOrIsbn,
@@ -82,7 +78,7 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
           creationMode,
           periodBeginningDate,
           periodEndingDate,
-          collectiveOfferType,
+          CollectiveOfferType.TEMPLATE,
           format
         )
 
