@@ -5,6 +5,7 @@
 export type AddressBodyModel = {
   city: string;
   isManualEdition?: boolean;
+  isVenueAddress?: boolean;
   label?: string | null;
   latitude: (number | string);
   longitude: (number | string);

@@ -111,6 +111,7 @@ class VenueWithdrawalDetails(pydantic_v1.ConstrainedStr):
 
 
 class AddressBodyModel(BaseModel):
+    isVenueAddress: bool = False
     city: VenueCity
     label: str | None
     latitude: float | str
