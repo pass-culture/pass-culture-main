@@ -45,8 +45,8 @@
   border-right: rem.torem(1px) solid var(--color-grey-medium);
 
   &-open {
-    min-height: calc(100% - #{size.$top-menu-height});
-    height: auto;
+    height: calc(100% - #{size.$top-menu-height});
+    overflow: hidden;
 
     @media (min-width: size.$laptop) {
       min-height: 100%;
@@ -54,9 +54,13 @@
     }
   }
 
-  &-first-group {
+  &-group {
     display: flex;
     flex-direction: column;
+
+    &:nth-child(2) {
+      height: 100%;
+    }
   }
 
   &-create-offer-wrapper {
@@ -124,5 +128,9 @@
 
       padding-left: rem.torem(28px);
     }
+  }
+
+  &-scroll {
+    overflow: scroll;
   }
 }

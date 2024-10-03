@@ -31,7 +31,6 @@ describe('SideNavLinks', () => {
   it('should toggle individual section on individual section button click', async () => {
     renderSideNavLinks()
 
-    await userEvent.click(screen.getByRole('button', { name: 'Individuel' }))
     expect(
       screen.queryByRole('link', { name: 'Guichet' })
     ).not.toBeInTheDocument()
@@ -42,10 +41,9 @@ describe('SideNavLinks', () => {
   it('should toggle collective section on collective section button click', async () => {
     renderSideNavLinks()
 
+    expect(screen.queryAllByRole('link', { name: 'Offres' })).toHaveLength(0)
     await userEvent.click(screen.getByRole('button', { name: 'Collectif' }))
     expect(screen.getAllByRole('link', { name: 'Offres' })).toHaveLength(1)
-    await userEvent.click(screen.getByRole('button', { name: 'Collectif' }))
-    expect(screen.getAllByRole('link', { name: 'Offres' })).toHaveLength(2)
   })
 
   it('should show template offers link in collective offer section link when FF is enabled', async () => {
@@ -53,9 +51,14 @@ describe('SideNavLinks', () => {
       features: ['WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE'],
     })
 
-    // close individual section
-    await userEvent.click(screen.getByRole('button', { name: 'Individuel' }))
+    expect(
+      screen.queryByRole('link', { name: 'Offres vitrines' })
+    ).not.toBeInTheDocument()
 
+    expect(
+      screen.queryByRole('link', { name: 'Offres vitrines' })
+    ).not.toBeInTheDocument()
+    await userEvent.click(screen.getByRole('button', { name: 'Collectif' }))
     expect(
       screen.getByRole('link', { name: 'Offres vitrines' })
     ).toBeInTheDocument()
@@ -68,8 +71,7 @@ describe('SideNavLinks', () => {
   it('should not show template offers link in collective offer section link when FF is disabled', async () => {
     renderSideNavLinks()
 
-    // close individual section
-    await userEvent.click(screen.getByRole('button', { name: 'Individuel' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Collectif' }))
 
     expect(
       screen.queryByRole('link', { name: 'Offres vitrines' })
@@ -95,17 +97,19 @@ describe('SideNavLinks', () => {
         },
       },
     })
-
+    expect(screen.queryByText('Page sur l’application')).not.toBeInTheDocument()
+    await userEvent.click(screen.getByRole('button', { name: 'Individuel' }))
     expect(
       await screen.findByText('Page sur l’application')
     ).toBeInTheDocument()
   })
 
-  it('should not display partner link if user as no partner page', () => {
+  it('should not display partner link if user as no partner page', async () => {
     renderSideNavLinks({
       user: sharedCurrentUserFactory({ hasPartnerPage: false }),
     })
-
+    expect(screen.queryByText('Page sur l’application')).not.toBeInTheDocument()
+    await userEvent.click(screen.getByRole('button', { name: 'Individuel' }))
     expect(screen.queryByText('Page sur l’application')).not.toBeInTheDocument()
   })
 
