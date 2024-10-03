@@ -231,9 +231,7 @@ export const IndividualOffersSearchFilters = ({
         </FormLayout.Row>
         <FormLayout.Row inline className={styles['reset-filters-row']}>
           <FieldLayout
-            label={
-              <span className={styles['status-filter-label']}>Statut</span>
-            }
+            label="Statut"
             name="status"
             isOptional
             className={styles['status-filter']}

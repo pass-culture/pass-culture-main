@@ -62,6 +62,7 @@ $status-filter-margin-top: rem.torem(24px);
 }
 
 .status-filter {
+  margin-top: rem.torem(24px);
   width: fit-content;
   margin-bottom: 0;
 }
@@ -83,14 +84,12 @@ $status-filter-margin-top: rem.torem(24px);
 
 @media (min-width: size.$laptop) {
   .status-filter {
+    margin-top: 0;
     margin-bottom: rem.torem(8px);
   }
 
   .reset-filters-row {
     flex-direction: row;
-  }
-
-  .reset-filters {
-    margin-top: $status-filter-margin-top;
+    align-items: center;
   }
 }

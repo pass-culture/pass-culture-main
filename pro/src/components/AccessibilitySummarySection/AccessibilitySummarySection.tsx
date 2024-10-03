@@ -25,42 +25,50 @@ export const AccessibilitySummarySection = ({
   accessibleItem,
   accessibleWording,
   callout,
-}: AccessibilitySummarySectionProps) => (
-  <SummarySubSection title="Modalités d’accessibilité">
-    {callout && <div className={styles['callout']}>{callout}</div>}
-
-    {!accessibleItem.visualDisabilityCompliant &&
-    !accessibleItem.motorDisabilityCompliant &&
-    !accessibleItem.mentalDisabilityCompliant &&
-    !accessibleItem.audioDisabilityCompliant ? (
-      <SummaryDescriptionList descriptions={[{ text: 'Non accessible' }]} />
-    ) : (
-      <SummaryDescriptionList descriptions={[{ text: accessibleWording }]} />
-    )}
-    <ul className={styles['accessibility-list']}>
-      {accessibleItem.visualDisabilityCompliant && (
-        <li>
-          <AccessibilityLabel name={AccessibilityEnum.VISUAL} />
-        </li>
+}: AccessibilitySummarySectionProps) => {
+  const {
+    visualDisabilityCompliant,
+    motorDisabilityCompliant,
+    mentalDisabilityCompliant,
+    audioDisabilityCompliant,
+  } = accessibleItem
+  const isAccessible =
+    visualDisabilityCompliant ||
+    motorDisabilityCompliant ||
+    mentalDisabilityCompliant ||
+    audioDisabilityCompliant
+  return (
+    <SummarySubSection title="Modalités d’accessibilité">
+      {callout && <div className={styles['callout']}>{callout}</div>}
+      <SummaryDescriptionList
+        descriptions={[
+          { text: !isAccessible ? 'Non accessible' : accessibleWording },
+        ]}
+      />
+      {isAccessible && (
+        <ul className={styles['accessibility-list']}>
+          {visualDisabilityCompliant && (
+            <li>
+              <AccessibilityLabel name={AccessibilityEnum.VISUAL} />
+            </li>
+          )}
+          {mentalDisabilityCompliant && (
+            <li>
+              <AccessibilityLabel name={AccessibilityEnum.MENTAL} />
+            </li>
+          )}
+          {motorDisabilityCompliant && (
+            <li>
+              <AccessibilityLabel name={AccessibilityEnum.MOTOR} />
+            </li>
+          )}
+          {audioDisabilityCompliant && (
+            <li>
+              <AccessibilityLabel name={AccessibilityEnum.AUDIO} />
+            </li>
+          )}
+        </ul>
       )}
-
-      {accessibleItem.mentalDisabilityCompliant && (
-        <li>
-          <AccessibilityLabel name={AccessibilityEnum.MENTAL} />
-        </li>
-      )}
-
-      {accessibleItem.motorDisabilityCompliant && (
-        <li>
-          <AccessibilityLabel name={AccessibilityEnum.MOTOR} />
-        </li>
-      )}
-
-      {accessibleItem.audioDisabilityCompliant && (
-        <li>
-          <AccessibilityLabel name={AccessibilityEnum.AUDIO} />
-        </li>
-      )}
-    </ul>
-  </SummarySubSection>
-)
+    </SummarySubSection>
+  )
+}
