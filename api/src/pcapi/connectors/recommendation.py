@@ -6,6 +6,9 @@ API, and this module returns the raw response.
 
 import json
 import logging
+import warnings
+
+from urllib3 import exceptions as urllib_execptions
 
 from pcapi import settings
 import pcapi.core.users.models as users_models
@@ -72,12 +75,16 @@ class HttpBackend:
         # Calls to recommendation api are made with `verify=False` because:
         # The certificates are google-managed and seen as self-signed.
         try:
-            if method == "get":
-                response = requests.get(url, params=params, disable_synchronous_retry=True, verify=False)
-            elif method == "post":
-                response = requests.post(url, params=params, json=body, disable_synchronous_retry=True, verify=False)
-            else:
-                raise ValueError(f"Unexpected method: {method}")
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore", urllib_execptions.InsecureRequestWarning)
+                if method == "get":
+                    response = requests.get(url, params=params, disable_synchronous_retry=True, verify=False)
+                elif method == "post":
+                    response = requests.post(
+                        url, params=params, json=body, disable_synchronous_retry=True, verify=False
+                    )
+                else:
+                    raise ValueError(f"Unexpected method: {method}")
             response.raise_for_status()
         except requests.exceptions.Timeout:
             raise RecommendationApiTimeoutException()
