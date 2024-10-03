@@ -226,7 +226,7 @@ class GetCollectiveOfferAdvancedSearchForm(forms.GetOffersBaseFields):
         if field_name:
             field_attribute_name = form_field_configuration.get(field_name, {}).get("field", "")
             field_data = sub_search.get(field_attribute_name)  # type: ignore[call-overload]
-            if field_data:
+            if field_data not in (None, []):
                 return False
             if operator in operator_no_require_value:
                 return False
