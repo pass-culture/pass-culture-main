@@ -114,7 +114,7 @@ export const UsefulInformationScreen = ({
       }
 
       const showAddressChangeDialog =
-        offer.isActive && (offer.bookingsCount ?? 0) > 0 && hasAddressChanged
+        offer.isActive && offer.hasPendingBookings && hasAddressChanged
       if (showAddressChangeDialog && !isAddressUpdateDialogOpen) {
         setIsAddressUpdateDialogOpen(true)
         return
