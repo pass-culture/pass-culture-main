@@ -1,3 +1,5 @@
+import { MailSlurp } from 'mailslurp-client'
+
 declare namespace Cypress {
   interface Chainable {
     login(params: {
@@ -7,13 +9,15 @@ declare namespace Cypress {
       refusePopupCookies?: boolean
     }): Chainable
 
+    mailslurp: () => Promise<MailSlurp>
+
     setFeatureFlags(features: Feature[]): Chainable
 
     refuseCookies(): Chainable
 
     getFakeAdageToken(): Chainable
 
-    setSliderValue(value: number): Chainable<void>
+    setSliderValue(value: number): Chainable
   }
 }
 

@@ -37,6 +37,7 @@ export default defineConfig({
   viewportHeight: 1080,
   viewportWidth: 1920,
   defaultCommandTimeout: 30000,
+  responseTimeout: 30000,
   requestTimeout: 30000,
   video: true,
   videoCompression: true,
@@ -45,5 +46,6 @@ export default defineConfig({
     FAIL_FAST_STRATEGY: 'run',
     FAIL_FAST_ENABLED: true,
     FAIL_FAST_BAIL: 3,
+    MAILSLURP_API_KEY: '**',
   },
 })
