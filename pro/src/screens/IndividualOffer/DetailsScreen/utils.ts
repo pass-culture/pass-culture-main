@@ -344,7 +344,7 @@ export const serializeExtraData = (formValues: DetailsFormValues) => ({
 })
 
 type PostPayload = {
-  description?: string
+  description?: string | null
   durationMinutes?: number
   extraData?: Record<string, unknown>
   name: string
@@ -368,7 +368,7 @@ export function serializeDetailsPostData(
 }
 
 type PatchPayload = {
-  description?: string
+  description?: string | null
   durationMinutes?: number
   extraData?: Record<string, unknown>
   name: string

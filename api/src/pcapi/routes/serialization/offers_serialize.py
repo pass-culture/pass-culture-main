@@ -590,7 +590,7 @@ class GetMusicTypesResponse(BaseModel):
 class GetProductInformations(BaseModel):
     id: int
     name: str
-    description: str
+    description: str | None
     subcategoryId: str
     gtl_id: str
     author: str
