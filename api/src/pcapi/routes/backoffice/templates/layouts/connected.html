@@ -17,7 +17,7 @@
   </nav>
 {% endmacro %}
 {% macro menu_section_item(title, path) %}
-  {% set url = url_for(path) %}
+  {% set url = url_for(path, **kwargs) %}
   {% set is_active = "active" if request.path == url else "" %}
   <a class="nav-link ps-5 py-1 g-0 {{ is_active }} rounded-0 text-reset"
      href="{{ url }}">{{ title }}</a>
@@ -150,6 +150,7 @@
               {% endif %}
               <div class="nav nav-pills flex-column">
                 {% call menu_section("Admin") %}
+                  {{ menu_section_item('Mon compte backoffice', 'backoffice_web.bo_users.get_bo_user', user_id=current_user.id, active_tab='roles') }}
                   {% if has_permission("MANAGE_PERMISSIONS") %}{{ menu_section_item('Gestion des rôles', 'backoffice_web.get_roles') }}{% endif %}
                   {% if has_permission("READ_ADMIN_ACCOUNTS") %}
                     {{ menu_section_item('Utilisateurs BackOffice', 'backoffice_web.bo_users.search_bo_users') }}

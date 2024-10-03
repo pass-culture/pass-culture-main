@@ -493,6 +493,7 @@ class GetBoUserTest(GetEndpointHelper):
             perm_models.Roles.SUPPORT_N2.value,
             perm_models.Roles.SUPPORT_PRO.value,
         ]
+        assert "visualiser une structure, un lieu ou un compte pro" in " ".join([row["Permissions"] for row in rows])
 
     @pytest.mark.parametrize("user_factory", [users_factories.BeneficiaryGrant18Factory, users_factories.ProFactory])
     def test_get_non_bo_user(self, authenticated_client, user_factory):
@@ -504,6 +505,36 @@ class GetBoUserTest(GetEndpointHelper):
         with assert_num_queries(expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
             assert response.status_code == 404
+
+    def test_get_my_backoffice_profile(self, pro_fraud_admin, client):
+        my_id = pro_fraud_admin.id
+        client = client.with_bo_session_auth(pro_fraud_admin)
+
+        with assert_num_queries(self.expected_num_queries + 1):  # FF
+            response = client.get(url_for(self.endpoint, user_id=my_id))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data, parent_class="roles-tab-pane")
+        assert len(rows) == 1
+        assert rows[0]["Rôle"] == perm_models.Roles.FRAUDE_CONFORMITE.value
+        assert "actions exclusives à l'équipe Fraude et Conformité (PRO)" in rows[0]["Permissions"]
+
+    def test_get_other_backoffice_profile_without_permission(self, pro_fraud_admin, client):
+        client = client.with_bo_session_auth(pro_fraud_admin)
+        user_id = users_factories.AdminFactory().id
+
+        response = client.get(url_for(self.endpoint, user_id=user_id))
+        assert response.status_code == 403
+
+
+class UpdateButtonTest(button_helpers.ButtonHelper):
+    needed_permission = perm_models.Permissions.MANAGE_ADMIN_ACCOUNTS
+    button_label = "Modifier les informations"
+
+    @property
+    def path(self):
+        user = users_factories.AdminFactory()
+        return url_for("backoffice_web.bo_users.get_bo_user", user_id=user.id)
 
 
 class SuspendButtonTest(button_helpers.ButtonHelper):

@@ -146,7 +146,7 @@
                 {% endif %}
               {% endif %}
             </div>
-            {% if has_permission("MANAGE_PUBLIC_ACCOUNT") %}
+            {% if password_reset_form %}
               <div>
                 {{ build_modal_form("send-reset-password-email", password_reset_dst, password_reset_form,
                                 "Envoyer le mail de changement de mot de passe",
@@ -154,6 +154,8 @@
                                 "Confirmer l'envoi",
                                 "En confirmant, l'email de mot de passe perdu contenant un lien de réinitialisation valide 24 heures sera envoyé à " + user.email + ".") }}
               </div>
+            {% endif %}
+            {% if password_invalidation_form %}
               <div>
                 {{ build_modal_form("invalidate-account-password", password_invalidation_dst, password_invalidation_form, "Invalider le mot de passe", "Invalider le mot de passe", "Confirmer l'invalidation") }}
               </div>
