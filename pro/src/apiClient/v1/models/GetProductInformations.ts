@@ -4,7 +4,7 @@
 /* eslint-disable */
 export type GetProductInformations = {
   author: string;
-  description: string;
+  description?: string | null;
   gtlId: string;
   id: number;
   images: Record<string, any>;
