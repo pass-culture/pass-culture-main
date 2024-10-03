@@ -1,4 +1,4 @@
-import { GetIndividualOfferResponseModel } from 'apiClient/v1'
+import { GetIndividualOfferWithAddressResponseModel } from 'apiClient/v1'
 import { AccessibilitySummarySection } from 'components/AccessibilitySummarySection/AccessibilitySummarySection'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { SummaryContent } from 'components/SummaryLayout/SummaryContent'
@@ -14,17 +14,21 @@ import {
   OFFER_WIZARD_MODE,
 } from 'core/Offers/constants'
 import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
+import { useActiveFeature } from 'hooks/useActiveFeature'
+import { computeAddressDisplayName } from 'repository/venuesService'
 
 import { humanizeDelay } from '../SummaryScreen/OfferSection/utils'
 
 type DetailsSummaryScreenProps = {
-  offer: GetIndividualOfferResponseModel
+  offer: GetIndividualOfferWithAddressResponseModel
 }
 
 export function UsefulInformationsSummaryScreen({
   offer,
 }: DetailsSummaryScreenProps) {
   const practicalInfoDescriptions: Description[] = []
+
+  const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
 
   if (offer.withdrawalType) {
     practicalInfoDescriptions.push({
@@ -66,6 +70,18 @@ export function UsefulInformationsSummaryScreen({
           })}
           aria-label="Modifier les détails de l’offre"
         >
+          {!offer.venue.isVirtual && isOfferAddressEnabled && (
+            <SummarySubSection title="Localisation de l’offre">
+              <SummaryDescriptionList
+                descriptions={[
+                  {
+                    title: 'Adresse',
+                    text: computeAddressDisplayName(offer.address!),
+                  },
+                ]}
+              />
+            </SummarySubSection>
+          )}
           <SummarySubSection title="Retrait de l’offre">
             <SummaryDescriptionList descriptions={practicalInfoDescriptions} />
           </SummarySubSection>
