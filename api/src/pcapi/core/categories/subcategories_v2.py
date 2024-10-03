@@ -263,6 +263,7 @@ SEARCH_GROUP_EVENEMENTS_EN_LIGNE = SearchGroup(
     label="Évènements en ligne",
     position=14,
 )
+# FIXME (thconte, 2024-10-03): Delete this SearchGroup once app's minimal version has bumped
 SEARCH_GROUP_FILMS_SERIES_CINEMA = SearchGroup(
     technical_name="FILMS_SERIES_CINEMA",
     label="Cinéma, films et séries",
@@ -321,6 +322,11 @@ SEARCH_GROUP_SPECTACLES = SearchGroup(
 # endregion
 
 # region NativeCategory
+NATIVE_CATEGORY_ABO_PLATEFORME_VIDEO = NativeCategory(
+    technical_name="ABO_PLATEFORME_VIDEO",
+    label="Abonnements aux plateformes de streaming",
+    parents=[SEARCH_GROUP_FILMS_SERIES_CINEMA.id, SEARCH_GROUP_FILMS_DOCUMENTAIRES_SERIES.id],
+)
 NATIVE_CATEGORY_ABONNEMENTS_MUSEE = NativeCategory(
     technical_name="ABONNEMENTS_MUSEE",
     label="Abonnements musée",
@@ -420,11 +426,6 @@ NATIVE_CATEGORY_FESTIVAL_DU_LIVRE = NativeCategory(
     technical_name="FESTIVAL_DU_LIVRE",
     label="Évènements autour du livre",
     parents=[SEARCH_GROUP_LIVRES.id],
-)
-NATIVE_CATEGORY_FILMS_SERIES_EN_LIGNE = NativeCategory(
-    technical_name="FILMS_SERIES_EN_LIGNE",
-    label="Films, séries en ligne",
-    parents=[SEARCH_GROUP_FILMS_SERIES_CINEMA.id, SEARCH_GROUP_FILMS_DOCUMENTAIRES_SERIES.id],
 )
 NATIVE_CATEGORY_JEUX_EN_LIGNE = NativeCategory(
     technical_name="JEUX_EN_LIGNE",
@@ -537,6 +538,11 @@ NATIVE_CATEGORY_SPECTACLES_REPRESENTATIONS = NativeCategory(
     label="Spectacles & représentations",
     parents=[SEARCH_GROUP_SPECTACLES.id],
     genre_type=GenreType.SHOW,
+)
+NATIVE_CATEGORY_VIDEOS_ET_DOCUMENTAIRES = NativeCategory(
+    technical_name="VIDEOS_ET_DOCUMENTAIRES",
+    label="Vidéos et documentaires",
+    parents=[SEARCH_GROUP_FILMS_SERIES_CINEMA.id, SEARCH_GROUP_FILMS_DOCUMENTAIRES_SERIES.id],
 )
 NATIVE_CATEGORY_VINYLES = NativeCategory(
     technical_name="VINYLES",
@@ -725,7 +731,7 @@ ABO_MEDIATHEQUE = Subcategory(
 VOD = Subcategory(
     id="VOD",
     category=categories.FILM,
-    native_category=NATIVE_CATEGORY_FILMS_SERIES_EN_LIGNE,
+    native_category=NATIVE_CATEGORY_VIDEOS_ET_DOCUMENTAIRES,
     pro_label="Vidéo à la demande",
     app_label="Vidéo à la demande",
     search_group_name=SEARCH_GROUP_FILMS_SERIES_CINEMA.id,
@@ -744,7 +750,7 @@ VOD = Subcategory(
 ABO_PLATEFORME_VIDEO = Subcategory(
     id="ABO_PLATEFORME_VIDEO",
     category=categories.FILM,
-    native_category=NATIVE_CATEGORY_FILMS_SERIES_EN_LIGNE,
+    native_category=NATIVE_CATEGORY_ABO_PLATEFORME_VIDEO,
     pro_label="Abonnement plateforme streaming",
     app_label="Abonnement plateforme streaming",
     search_group_name=SEARCH_GROUP_FILMS_SERIES_CINEMA.id,
@@ -763,7 +769,7 @@ ABO_PLATEFORME_VIDEO = Subcategory(
 AUTRE_SUPPORT_NUMERIQUE = Subcategory(
     id="AUTRE_SUPPORT_NUMERIQUE",
     category=categories.FILM,
-    native_category=NATIVE_CATEGORY_FILMS_SERIES_EN_LIGNE,
+    native_category=NATIVE_CATEGORY_VIDEOS_ET_DOCUMENTAIRES,
     pro_label="Autre support numérique",
     app_label="Autre support numérique",
     search_group_name=SEARCH_GROUP_FILMS_SERIES_CINEMA.id,
