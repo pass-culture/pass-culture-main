@@ -55,6 +55,29 @@ class Returns200Test:
             "images": product.images,
         }
 
+    def test_get_product_by_ean_empty_product_description(self, client):
+        user = users_factories.UserFactory()
+        offerer = offerers_factories.OffererFactory()
+        offerer_id = offerer.id
+        offerers_factories.UserOffererFactory(user=user, offerer=offerer)
+        offerers_factories.VenueFactory(managingOfferer=offerer)
+        product = offers_factories.ProductFactory(
+            description=None,
+            name="Product name",
+            subcategoryId=subcategories_v2.LIVRE_PAPIER.id,
+            extraData={"ean": "1234567891011", "author": "Martin Dupont"},
+            gcuCompatibilityType=GcuCompatibilityType.COMPATIBLE,
+        )
+
+        test_client = client.with_session_auth(email=user.email)
+        num_queries = testing.AUTHENTICATION_QUERIES
+        num_queries += 1  # select product join load mediations
+        num_queries += 1  # select offerer join load venue
+        num_queries += 1  # select offer
+        with testing.assert_num_queries(num_queries):
+            response = test_client.get(f"/get_product_by_ean/1234567891011/{offerer_id}")
+            assert response.status_code == 200
+
     def test_get_product_by_ean_offerer_with_multiple_venues_offer_with_product(self, client):
         user = users_factories.UserFactory()
         offerer = offerers_factories.OffererFactory()
