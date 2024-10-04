@@ -78,7 +78,7 @@ export function setDefaultInitialValuesFromOffer({
       addressAutocomplete,
       coords,
       banId: offer.address.banId,
-      locationLabel: offer.address.label,
+      locationLabel: offer.address.label ?? '',
       street: offer.address.street,
       postalCode: offer.address.postalCode,
       city: offer.address.city,
