@@ -523,7 +523,7 @@ NATIVE_CATEGORY_SALONS_ET_METIERS = NativeCategory(
 )
 NATIVE_CATEGORY_SEANCES_DE_CINEMA = NativeCategory(
     technical_name="SEANCES_DE_CINEMA",
-    label="Séances de cinéma",
+    label="Films à l'affiche",
     parents=[SEARCH_GROUP_FILMS_SERIES_CINEMA.id, SEARCH_GROUP_CINEMA.id],
     genre_type=GenreType.MOVIE,
 )
