@@ -107,15 +107,18 @@ def notify_users_bookings_not_retrieved() -> None:
     send a notification to each user.
     """
     bookings = get_soon_expiring_bookings(settings.SOON_EXPIRING_BOOKINGS_DAYS_BEFORE_EXPIRATION)
-    for booking in bookings:
-        try:
-            notification_data = get_soon_expiring_bookings_with_offers_notification_data(booking)
-            batch_tasks.send_transactional_notification_task.delay(notification_data)
-        except BookingIsExpired:
-            logger.exception("Booking %d is expired", booking.id, extra={"booking": booking.id, "user": booking.userId})
-        except Exception:  # pylint: disable=broad-except
-            logger.exception(
-                "Failed to register send_transactional_notification_task for booking %d",
-                booking.id,
-                extra={"booking": booking.id, "user": booking.userId},
-            )
+    if not FeatureToggle.WIP_DISABLE_NOTIFICATION_SOON_EXPIRING_BOOKINGS.is_active():
+        for booking in bookings:
+            try:
+                notification_data = get_soon_expiring_bookings_with_offers_notification_data(booking)
+                batch_tasks.send_transactional_notification_task.delay(notification_data)
+            except BookingIsExpired:
+                logger.exception(
+                    "Booking %d is expired", booking.id, extra={"booking": booking.id, "user": booking.userId}
+                )
+            except Exception:  # pylint: disable=broad-except
+                logger.exception(
+                    "Failed to register send_transactional_notification_task for booking %d",
+                    booking.id,
+                    extra={"booking": booking.id, "user": booking.userId},
+                )
