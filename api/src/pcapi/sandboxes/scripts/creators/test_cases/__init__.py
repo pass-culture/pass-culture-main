@@ -302,7 +302,7 @@ def create_venues_across_cities() -> None:
                     offers_factories.StockFactory(quantity=random.randint(10, 100), offer=offer)
 
             for _ in range(3):
-                offers_factories.EventOfferFactory(
+                event_offer = offers_factories.EventOfferFactory(
                     venue=venue,
                     product=None,
                     subcategoryId=random.choice(list(subcategories_v2.EVENT_SUBCATEGORIES)),
@@ -313,7 +313,7 @@ def create_venues_across_cities() -> None:
                 for _ in range(random.randint(1, 10)):
                     offers_factories.EventStockFactory(
                         quantity=random.randint(10, 100),
-                        offer=offer,
+                        offer=event_offer,
                         beginningDatetime=datetime.datetime.utcnow()
                         + datetime.timedelta(
                             days=random.randint(30, 59),
