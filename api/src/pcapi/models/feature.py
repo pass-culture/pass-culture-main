@@ -36,6 +36,7 @@ class FeatureToggle(enum.Enum):
     DISABLE_CDS_EXTERNAL_BOOKINGS = "Désactiver les réservations externes CDS"
     DISABLE_CGR_EXTERNAL_BOOKINGS = "Désactiver les réservations externes CGR"
     DISABLE_EMS_EXTERNAL_BOOKINGS = "Désactiver les réservations externes EMS"
+    DISCORD_ENABLE_NEW_ACCESS = "Activer/Désactiver l'accès au serveur Discord à des nouveaux utilisateurs"
     DISPLAY_DMS_REDIRECTION = "Affiche une redirection vers DMS si ID Check est KO"
     EMS_CANCEL_PENDING_EXTERNAL_BOOKING = "Annuler les réservations externes EMS qui ont échouées"
     ENABLE_ADDRESS_WRITING_WHILE_CREATING_UPDATING_VENUE = (

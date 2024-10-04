@@ -10,6 +10,7 @@ from pcapi import settings
 from pcapi.connectors import discord as discord_connector
 from pcapi.core.history import factories as history_factories
 from pcapi.core.testing import assert_num_queries
+from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import factories as users_factories
@@ -272,3 +273,24 @@ class DiscordSigninTest:
 
         created_discord_link = DiscordUser.query.filter_by(userId=underage_user.id).first()
         assert not created_discord_link.hasAccess
+
+    @override_features(DISCORD_ENABLE_NEW_ACCESS=False)
+    def test_discord_signin_disabled(self, client):
+        response = client.get(url_for("auth.discord_signin"))
+        assert response.status_code == 200
+        assert "L'accès au serveur Discord du pass Culture est désactivé" in response.data.decode()
+
+    @override_features(DISCORD_ENABLE_NEW_ACCESS=False)
+    def test_discord_signin_disabled_post(self, client):
+        form_data = {
+            "email": "user@test.com",
+            "password": settings.TEST_DEFAULT_PASSWORD,
+        }
+        user = users_factories.BeneficiaryFactory(
+            email=form_data["email"], password=form_data["password"], isActive=True
+        )
+
+        response = self.post_to_endpoint(client, form=form_data)
+
+        assert response.status_code == 200
+        assert "L'accès au serveur Discord du pass Culture est désactivé" in response.data.decode()
