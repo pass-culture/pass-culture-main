@@ -1,6 +1,6 @@
 export type DetailsFormValues = {
   name: string
-  description?: string | null
+  description: string
   venueId: string
   categoryId: string
   subcategoryId: string
