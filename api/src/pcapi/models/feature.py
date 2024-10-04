@@ -36,6 +36,7 @@ class FeatureToggle(enum.Enum):
     WIP_DISABLE_NOTIFICATION_CANCEL_BOOKING = "Désactiver les notifications d'annulation de réservation"
     WIP_DISABLE_NOTIFICATION_FAVORITE_NOT_BOOKED = "Désactiver les notifications d'annulation de favorie non réservé"
     WIP_DISABLE_NOTIFICATION_OFFER_LINK = "Désactiver les notifications de lien d'offre"
+    WIP_DISABLE_NOTIFICATION_TODAY_STOCK = "Désactiver les notifications de stock du jour"
     DISABLE_CDS_EXTERNAL_BOOKINGS = "Désactiver les réservations externes CDS"
     DISABLE_CGR_EXTERNAL_BOOKINGS = "Désactiver les réservations externes CGR"
     DISABLE_EMS_EXTERNAL_BOOKINGS = "Désactiver les réservations externes EMS"
@@ -154,6 +155,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_DISABLE_NOTIFICATION_CANCEL_BOOKING,
     FeatureToggle.WIP_DISABLE_NOTIFICATION_FAVORITE_NOT_BOOKED,
     FeatureToggle.WIP_DISABLE_NOTIFICATION_OFFER_LINK,
+    FeatureToggle.WIP_DISABLE_NOTIFICATION_TODAY_STOCK,
     FeatureToggle.DISABLE_CGR_EXTERNAL_BOOKINGS,
     FeatureToggle.DISABLE_EMS_EXTERNAL_BOOKINGS,
     FeatureToggle.DISABLE_ENTERPRISE_API,

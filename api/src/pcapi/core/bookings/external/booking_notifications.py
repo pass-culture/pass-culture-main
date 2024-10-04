@@ -10,6 +10,7 @@ from pcapi.core.bookings.exceptions import BookingIsExpired
 from pcapi.core.bookings.repository import get_soon_expiring_bookings
 import pcapi.core.offers.repository as offers_repository
 from pcapi.core.offers.repository import find_today_event_stock_ids_metropolitan_france
+from pcapi.models.feature import FeatureToggle
 from pcapi.notifications.push.transactional_notifications import (
     get_soon_expiring_bookings_with_offers_notification_data,
 )
@@ -33,11 +34,12 @@ def send_today_events_notifications_metropolitan_france() -> None:
         logger.warning("No stock found", extra={"today_min": today_min, "departments": today_max})
         return
 
-    for stock_id in stock_ids:
-        try:
-            send_today_stock_notification.delay(stock_id)
-        except Exception:  # pylint: disable=broad-except
-            logger.exception("Could not send today stock notification", extra={"stock": stock_id})
+    if not FeatureToggle.WIP_DISABLE_NOTIFICATION_TODAY_STOCK.is_active():
+        for stock_id in stock_ids:
+            try:
+                send_today_stock_notification.delay(stock_id)
+            except Exception:  # pylint: disable=broad-except
+                logger.exception("Could not send today stock notification", extra={"stock": stock_id})
 
 
 def send_today_events_notifications_overseas(utc_mean_offset: int, departments: typing.Iterable[str]) -> None:
