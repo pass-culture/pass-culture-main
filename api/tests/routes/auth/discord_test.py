@@ -13,6 +13,8 @@ from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_settings
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import factories as users_factories
+from pcapi.core.users.models import DiscordUser
+from pcapi.core.users.models import UserRole
 from pcapi.utils import requests
 
 
@@ -113,39 +115,6 @@ class DiscordSigninTest:
 
         db_session.refresh(discord_user)
         assert discord_user.discordId == "discord_user_id"
-
-    @unittest.mock.patch("pcapi.routes.auth.discord.discord_connector.get_user_id", return_value="discord_user_id")
-    @unittest.mock.patch("pcapi.routes.auth.discord.discord_connector.add_to_server")
-    def test_has_access_is_false(self, _mock_add_to_server, _mock_get_user_id, client):
-        user = users_factories.BeneficiaryFactory()
-        users_factories.DiscordUserFactory(user=user, discordId=None, hasAccess=False, isBanned=False)
-
-        response = client.get(url_for("auth.discord_success", user_id=str(user.id), access_token="access_token"))
-
-        expected_query_params = (
-            "Accès refusé au serveur Discord. Contacte le support pour plus d'informations".replace(" ", "%20")
-            .replace("è", "%C3%A8")
-            .replace("é", "%C3%A9")
-        )
-
-        assert response.status_code == 303
-        assert f"/auth/discord/signin?error={expected_query_params}" in response.location
-
-    @unittest.mock.patch("pcapi.routes.auth.discord.discord_connector.get_user_id", return_value="discord_user_id")
-    @unittest.mock.patch("pcapi.routes.auth.discord.discord_connector.add_to_server")
-    def test_discord_user_is_none(self, _mock_add_to_server, _mock_get_user_id, client):
-        user = users_factories.BeneficiaryFactory()
-
-        response = client.get(url_for("auth.discord_success", user_id=str(user.id), access_token="access_token"))
-
-        expected_query_params = (
-            "Accès refusé au serveur Discord. Contacte le support pour plus d'informations".replace(" ", "%20")
-            .replace("è", "%C3%A8")
-            .replace("é", "%C3%A9")
-        )
-
-        assert response.status_code == 303
-        assert f"/auth/discord/signin?error={expected_query_params}" in response.location
 
     @unittest.mock.patch("pcapi.routes.auth.discord.discord_connector.get_user_id", return_value="discord_user_id")
     @unittest.mock.patch(
@@ -254,3 +223,52 @@ class DiscordSigninTest:
 
         db_session.refresh(discord_user)
         assert discord_user.discordId is None
+
+    @unittest.mock.patch("pcapi.routes.auth.discord.discord_connector.get_user_id", return_value="discord_user_id")
+    @unittest.mock.patch(
+        "pcapi.routes.auth.discord.discord_connector.add_to_server", side_effect=requests.exceptions.HTTPError()
+    )
+    def test_discord_user_has_access_if_beneficiary(
+        self, _mock_discord_getter, _mock_add_to_server, client, db_session
+    ):
+        user = users_factories.BeneficiaryFactory()
+
+        response = client.get(url_for("auth.discord_success", user_id=str(user.id), access_token="access_token"))
+        assert response.status_code == 200
+
+        created_discord_link = DiscordUser.query.filter_by(userId=user.id).first()
+        assert created_discord_link.hasAccess
+
+    @unittest.mock.patch("pcapi.routes.auth.discord.discord_connector.get_user_id", return_value="discord_user_id")
+    @unittest.mock.patch(
+        "pcapi.routes.auth.discord.discord_connector.add_to_server", side_effect=requests.exceptions.HTTPError()
+    )
+    def test_discord_user_has_not_access_if_non_beneficiary(
+        self, _mock_discord_getter, _mock_add_to_server, client, db_session
+    ):
+        non_beneficiary = users_factories.UserFactory()
+
+        response = client.get(
+            url_for("auth.discord_success", user_id=str(non_beneficiary.id), access_token="access_token")
+        )
+        assert response.status_code == 303
+
+        created_discord_link = DiscordUser.query.filter_by(userId=non_beneficiary.id).first()
+        assert not created_discord_link.hasAccess
+
+    @unittest.mock.patch("pcapi.routes.auth.discord.discord_connector.get_user_id", return_value="discord_user_id")
+    @unittest.mock.patch(
+        "pcapi.routes.auth.discord.discord_connector.add_to_server", side_effect=requests.exceptions.HTTPError()
+    )
+    def test_discord_user_has_not_access_if_underage_beneficiary(
+        self, _mock_discord_getter, _mock_add_to_server, client, db_session
+    ):
+        underage_user = users_factories.BeneficiaryFactory(roles=[UserRole.UNDERAGE_BENEFICIARY])
+
+        response = client.get(
+            url_for("auth.discord_success", user_id=str(underage_user.id), access_token="access_token")
+        )
+        assert response.status_code == 303
+
+        created_discord_link = DiscordUser.query.filter_by(userId=underage_user.id).first()
+        assert not created_discord_link.hasAccess
