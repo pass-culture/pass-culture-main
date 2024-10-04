@@ -60,6 +60,12 @@ def discord_success() -> Response | str:
         update_discord_user(user_id, user_discord_id)
     except auth_exceptions.DiscordUserAlreadyLinked:
         return redirect_with_error("Ce compte Discord est déjà lié à un autre compte pass Culture.")
+    except auth_exceptions.UserUnderage:
+        return redirect_with_error("Accès refusé au serveur Discord. Tu dois être majeur pour accéder à ce serveur.")
+    except auth_exceptions.UserNotABeneficiary:
+        return redirect_with_error(
+            "Accès refusé au serveur Discord. Tu dois être bénéficiaire du pass Culture pour accéder à ce serveur."
+        )
     except auth_exceptions.UserNotAllowed:
         return redirect_with_error("Accès refusé au serveur Discord. Contacte le support pour plus d'informations")
 
@@ -103,16 +109,22 @@ def update_discord_user(user_id: str, discord_id: str) -> None:
     if already_linked_user:
         raise auth_exceptions.DiscordUserAlreadyLinked()
 
-    user = user_models.User.query.get(user_id)
+    user: user_models.User = user_models.User.query.get(user_id)
     discord_user = user.discordUser
 
     if discord_user is None:
-        # We still add the user to the database even if he doesn't have access to the discord server
         discord_user = user_models.DiscordUser(userId=user.id, discordId=discord_id, hasAccess=False)
-        db.session.add(discord_user)
-        raise auth_exceptions.UserNotAllowed()
+
+    discord_user.hasAccess = user.has_beneficiary_role
+    db.session.add(discord_user)
+    db.session.flush()
 
     if not discord_user.hasAccess:
+        if not user.is_beneficiary:
+            raise auth_exceptions.UserNotABeneficiary()
+
+        if user.age and user.age < 18:
+            raise auth_exceptions.UserUnderage()
         raise auth_exceptions.UserNotAllowed()
 
     discord_user.discordId = discord_id
