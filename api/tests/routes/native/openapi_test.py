@@ -43,6 +43,7 @@ def test_public_api(client):
                         "SUSPENDED_UPON_USER_REQUEST",
                         "SUSPICIOUS_LOGIN_REPORTED_BY_USER",
                         "DELETED",
+                        "WAITING_FOR_ANONYMIZATION",
                     ],
                     "title": "AccountState",
                 },
