@@ -46,8 +46,10 @@ class Returns200Test:
     num_queries += 1  # 13 update offer
 
     @patch("pcapi.core.mails.transactional.send_first_venue_approved_offer_email_to_pro")
+    @patch("pcapi.core.offers.api.rule_flags_offer", return_value=False)
     def test_patch_publish_offer(
         self,
+        mock_rule_flags_offer,
         mocked_send_first_venue_approved_offer_email_to_pro,
         mock_async_index_offer_ids,
         client,
@@ -76,8 +78,10 @@ class Returns200Test:
         mocked_send_first_venue_approved_offer_email_to_pro.assert_called_once_with(offer)
 
     @patch("pcapi.core.mails.transactional.send_first_venue_approved_offer_email_to_pro")
+    @patch("pcapi.core.offers.api.rule_flags_offer", return_value=False)
     def test_patch_publish_future_offer(
         self,
+        mock_rule_flags_offer,
         mocked_send_first_venue_approved_offer_email_to_pro,
         mock_async_index_offer_ids,
         client,
