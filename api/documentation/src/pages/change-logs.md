@@ -13,6 +13,10 @@ title: Pass Culture API change logs
 **You can find a migration tutorial [here](/docs/tutorials/migrate-to-the-new-api).**
 :::
 
+## October 2024
+
+- The [**"Get event stocks" endpoint**](/rest-api#tag/Event-offer-stocks/operation/GetEventStocks) now supports filtering results by the `idsAtProvider` parameter (ie. by your own ids)
+
 ## September 2024
 
 ### `idAtProvider` in price category

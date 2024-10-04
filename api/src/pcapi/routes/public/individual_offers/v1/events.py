@@ -494,7 +494,7 @@ def post_event_stocks(event_id: int, body: serialization.DatesCreation) -> seria
         )
     ),
 )
-def get_event_stocks(event_id: int, query: serialization.GetDatesQueryParams) -> serialization.GetDatesResponse:
+def get_event_stocks(event_id: int, query: serialization.GetEventStocksQueryParams) -> serialization.GetDatesResponse:
     """
     Get event stocks
 
@@ -509,6 +509,10 @@ def get_event_stocks(event_id: int, query: serialization.GetDatesQueryParams) ->
         sqla.not_(offers_models.Stock.isSoftDeleted),
         offers_models.Stock.id >= query.firstIndex,
     ).with_entities(offers_models.Stock.id)
+
+    if query.ids_at_provider is not None:
+        stock_id_query = stock_id_query.filter(offers_models.Stock.idAtProviders.in_(query.ids_at_provider))
+
     total_stock_ids = [stock_id for (stock_id,) in stock_id_query.all()]
 
     stocks = (

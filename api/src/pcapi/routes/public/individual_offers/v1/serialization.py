@@ -804,8 +804,18 @@ class GetPriceCategoriesQueryParams(IndexPaginationQueryParams):
         return None
 
 
-class GetDatesQueryParams(IndexPaginationQueryParams):
-    pass
+class GetEventStocksQueryParams(IndexPaginationQueryParams):
+    ids_at_provider: str | None = fields.IDS_AT_PROVIDER_FILTER
+
+    @pydantic_v1.validator("ids_at_provider")
+    def validate_ids_at_provider(cls, ids_at_provider: str) -> list[str] | None:
+        if ids_at_provider:
+            ids_at_provider_list = ids_at_provider.split(",")
+            if len(ids_at_provider_list) > 100:
+                raise ValueError("Too many ids")
+            return ids_at_provider_list
+
+        return None
 
 
 class ProductOffersResponse(serialization.ConfiguredBaseModel):
