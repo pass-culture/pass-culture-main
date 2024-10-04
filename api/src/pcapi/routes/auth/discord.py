@@ -10,6 +10,7 @@ from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import models as user_models
 from pcapi.core.users import repository as users_repo
 from pcapi.models import db
+from pcapi.models.feature import FeatureToggle
 import pcapi.routes.auth.exceptions as auth_exceptions
 from pcapi.routes.auth.forms.forms import SigninForm
 from pcapi.utils import requests
@@ -23,11 +24,14 @@ ERROR_STRING_PREFIX = "Erreur d'authentification Discord: "
 
 @blueprint.auth_blueprint.route("/discord/signin", methods=["GET"])
 def discord_signin() -> str:
-    form = SigninForm()
-    if error_message := request.args.get("error"):
-        form.error_message = error_message
+    if FeatureToggle.DISCORD_ENABLE_NEW_ACCESS.is_active():
+        form = SigninForm()
+        if error_message := request.args.get("error"):
+            form.error_message = error_message
 
-    return render_template("discord_signin.html", form=form)
+        return render_template("discord_signin.html", form=form)
+
+    return render_template("discord_signin_disabled.html")
 
 
 @blueprint.auth_blueprint.route("/discord/success", methods=["GET"])
@@ -132,6 +136,9 @@ def update_discord_user(user_id: str, discord_id: str) -> None:
 
 @blueprint.auth_blueprint.route("/discord/signin", methods=["POST"])
 def discord_signin_post() -> str | Response | None:
+    if not FeatureToggle.DISCORD_ENABLE_NEW_ACCESS.is_active():
+        return render_template("discord_signin_disabled.html")
+
     csrf = CSRFProtect()
     csrf.protect()
     form = SigninForm()
