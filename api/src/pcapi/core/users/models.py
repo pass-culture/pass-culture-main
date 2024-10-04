@@ -140,6 +140,7 @@ class AccountState(enum.Enum):
     SUSPENDED_UPON_USER_REQUEST = "SUSPENDED_UPON_USER_REQUEST"
     SUSPICIOUS_LOGIN_REPORTED_BY_USER = "SUSPICIOUS_LOGIN_REPORTED_BY_USER"
     DELETED = "DELETED"
+    WAITING_FOR_ANONYMIZATION = "WAITING_FOR_ANONYMIZATION"
 
     @property
     def is_deleted(self) -> bool:
@@ -547,6 +548,8 @@ class User(PcObject, Base, Model, DeactivableMixin):
                         return AccountState.SUSPENDED_UPON_USER_REQUEST
                     case constants.SuspensionReason.SUSPICIOUS_LOGIN_REPORTED_BY_USER:
                         return AccountState.SUSPICIOUS_LOGIN_REPORTED_BY_USER
+                    case constants.SuspensionReason.WAITING_FOR_ANONYMIZATION:
+                        return AccountState.WAITING_FOR_ANONYMIZATION
 
                 return AccountState.SUSPENDED
 

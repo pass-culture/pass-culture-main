@@ -85,6 +85,17 @@ class SigninTest:
         assert response.status_code == 200
         assert response.json["accountState"] == AccountState.SUSPICIOUS_LOGIN_REPORTED_BY_USER.value
 
+    def test_account_suspended_by_user_for_anonymization(self, client):
+        data = {"identifier": "user@test.com", "password": settings.TEST_DEFAULT_PASSWORD}
+        user = users_factories.UserFactory(email=data["identifier"], password=data["password"], isActive=False)
+        history_factories.SuspendedUserActionHistoryFactory(
+            user=user, reason=users_constants.SuspensionReason.WAITING_FOR_ANONYMIZATION
+        )
+
+        response = client.post("/native/v1/signin", json=data)
+        assert response.status_code == 200
+        assert response.json["accountState"] == AccountState.WAITING_FOR_ANONYMIZATION.value
+
     def test_account_deleted_account_state(self, client):
         data = {"identifier": "user@test.com", "password": settings.TEST_DEFAULT_PASSWORD}
         user = users_factories.UserFactory(email=data["identifier"], password=data["password"], isActive=False)
