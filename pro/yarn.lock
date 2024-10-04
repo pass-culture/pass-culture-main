@@ -1932,10 +1932,10 @@
   resolved "https://registry.yarnpkg.com/@storybook/components/-/components-8.3.4.tgz#9ea844251534b2aabe51afac37e345cb4361ceef"
   integrity sha512-iQzLJd87uGbFBbYNqlrN/ABrnx3dUrL0tjPCarzglzshZoPCNOsllJeJx5TJwB9kCxSZ8zB9TTOgr7NXl+oyVA==
 
-"@storybook/core@8.3.4":
-  version "8.3.4"
-  resolved "https://registry.yarnpkg.com/@storybook/core/-/core-8.3.4.tgz#35c1a2fbb8b31c7015647309c50a08bd20961522"
-  integrity sha512-4PZB91JJpuKfcjeOR2LXj3ABaPLLSd2P/SfYOKNCygrDstsQa/yay3/yN5Z9yi1cIG84KRr6/sUW+0x8HsGLPg==
+"@storybook/core@8.3.5":
+  version "8.3.5"
+  resolved "https://registry.yarnpkg.com/@storybook/core/-/core-8.3.5.tgz#d77c93bb67c2df12e3bf84ae7def4693891b225d"
+  integrity sha512-GOGfTvdioNa/n+Huwg4u/dsyYyBcM+gEcdxi3B7i5x4yJ3I912KoVshumQAOF2myKSRdI8h8aGWdx7nnjd0+5Q==
   dependencies:
     "@storybook/csf" "^0.1.11"
     "@types/express" "^4.17.21"
@@ -7948,12 +7948,12 @@ storybook-addon-react-router-v6@^2.0.15:
     compare-versions "^6.0.0"
     react-inspector "6.0.2"
 
-storybook@^8.3.4:
-  version "8.3.4"
-  resolved "https://registry.yarnpkg.com/storybook/-/storybook-8.3.4.tgz#caca649de88372679c126a9bf8ae4ed14406e9a3"
-  integrity sha512-nzvuK5TsEgJwcWGLGgafabBOxKn37lfJVv7ZoUVPgJIjk2mNRyJDFwYRJzUZaD37eiR/c/lQ6MoaeqlGwiXoxw==
+storybook@^8.3.5:
+  version "8.3.5"
+  resolved "https://registry.yarnpkg.com/storybook/-/storybook-8.3.5.tgz#aef0542c08e245b7ac22742c1e1633a125063b8e"
+  integrity sha512-hYQVtP2l+3kO8oKDn4fjXXQYxgTRsj/LaV6lUMJH0zt+OhVmDXKJLxmdUP4ieTm0T8wEbSYosFavgPcQZlxRfw==
   dependencies:
-    "@storybook/core" "8.3.4"
+    "@storybook/core" "8.3.5"
 
 string-argv@0.3.1:
   version "0.3.1"
