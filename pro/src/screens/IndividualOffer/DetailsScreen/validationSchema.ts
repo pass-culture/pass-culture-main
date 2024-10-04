@@ -11,7 +11,7 @@ const eanValidation = yup
   })
 
 export const validationSchema = yup.object().shape({
-  name: yup.string().max(90).required('Veuillez renseigner un titre'),
+  name: yup.string().trim().max(90).required('Veuillez renseigner un titre'),
   description: yup.string(),
   author: yup.string(),
   performer: yup.string(),
