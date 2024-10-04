@@ -263,7 +263,7 @@ export const DetailsScreen = ({ venues }: DetailsScreenProps): JSX.Element => {
       ...formik.values,
       ean,
       name,
-      description,
+      description: description || '',
       categoryId,
       subcategoryId,
       gtl_id,
