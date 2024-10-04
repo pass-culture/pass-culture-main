@@ -222,7 +222,7 @@ def test_format_sendinblue_pro():
         "MARKETING_EMAIL_SUBSCRIPTION": True,
         "OFFERER_NAME": offerer.name,
         "OFFERER_TAG": "",
-        "POSTAL_CODE": "75000",
+        "POSTAL_CODE": "75002",
         "USER_ID": user.id,
         "USER_IS_ATTACHED": False,
         "USER_IS_CREATOR": True,
