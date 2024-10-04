@@ -58,7 +58,19 @@ class GetEventStocksTest(PublicAPIVenueEndpointHelper):
             response = client.with_explicit_token(plain_api_key).get(self.endpoint_url.format(event_id=event_id))
             assert response.status_code == 404
 
-    def test_event_with_dates(self, client):
+    def test_should_raise_400_because_too_many_ids_at_provider(self, client: TestClient):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        event_offer = offers_factories.EventOfferFactory(
+            venue=venue_provider.venue, lastProvider=venue_provider.provider
+        )
+        response = client.with_explicit_token(plain_api_key).get(
+            self.endpoint_url.format(event_id=event_offer.id),
+            params={"idsAtProvider": ",".join(["1234567890123" for _ in range(101)])},
+        )
+        assert response.status_code == 400
+        assert response.json == {"idsAtProvider": ["Too many ids"]}
+
+    def test_event_with_dates(self, client: TestClient):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         event_offer = offers_factories.EventOfferFactory(
             venue=venue_provider.venue, lastProvider=venue_provider.provider
@@ -69,61 +81,82 @@ class GetEventStocksTest(PublicAPIVenueEndpointHelper):
             offer=event_offer, price=12.34, priceCategoryLabel__label="carre or"
         )
         two_weeks_from_now = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(weeks=2)
+        stock1_id_at_provider = "5edd982915c2a74b9302e443"
         bookable_stock = offers_factories.EventStockFactory(
             offer=event_offer,
             priceCategory=price_category,
             quantity=10,
             bookingLimitDatetime=two_weeks_from_now,
             beginningDatetime=two_weeks_from_now,
-            idAtProviders="Il y a deux types d'id",
+            idAtProviders=stock1_id_at_provider,
         )
         not_booked_price_category = offers_factories.PriceCategoryFactory(
             offer=event_offer, price=299.99, priceCategoryLabel__label="ultra vip"
         )
+        stock2_id_at_provider = "2ezz982915c2a74b9302e546"
         stock_without_booking = offers_factories.EventStockFactory(
             offer=event_offer,
             priceCategory=not_booked_price_category,
             quantity=2,
             bookingLimitDatetime=two_weeks_from_now,
             beginningDatetime=two_weeks_from_now,
+            idAtProviders=stock2_id_at_provider,
         )
         offers_factories.EventStockFactory(offer=event_offer, isSoftDeleted=True)  # deleted stock, not returned
         bookings_factories.BookingFactory(stock=bookable_stock)
+        expected_serialized_stock1 = {
+            "beginningDatetime": date_utils.format_into_utc_date(two_weeks_from_now),
+            "bookedQuantity": 1,
+            "bookingLimitDatetime": date_utils.format_into_utc_date(two_weeks_from_now),
+            "id": bookable_stock.id,
+            "priceCategory": {
+                "id": price_category.id,
+                "label": "carre or",
+                "price": 1234,
+                "idAtProvider": None,
+            },
+            "quantity": 10,
+            "idAtProvider": "5edd982915c2a74b9302e443",
+        }
+        expected_serialized_stock2 = {
+            "beginningDatetime": date_utils.format_into_utc_date(two_weeks_from_now),
+            "bookedQuantity": 0,
+            "bookingLimitDatetime": date_utils.format_into_utc_date(two_weeks_from_now),
+            "id": stock_without_booking.id,
+            "priceCategory": {
+                "id": not_booked_price_category.id,
+                "label": not_booked_price_category.label,
+                "price": not_booked_price_category.price * 100,
+                "idAtProvider": None,
+            },
+            "quantity": 2,
+            "idAtProvider": "2ezz982915c2a74b9302e546",
+        }
 
+        # Without filtering on `idsAtProvider`
         with testing.assert_num_queries(self.num_queries_with_stocks):
             response = client.with_explicit_token(plain_api_key).get(self.endpoint_url.format(event_id=event_offer_id))
             assert response.status_code == 200
 
-        assert response.json["dates"] == [
-            {
-                "beginningDatetime": date_utils.format_into_utc_date(two_weeks_from_now),
-                "bookedQuantity": 1,
-                "bookingLimitDatetime": date_utils.format_into_utc_date(two_weeks_from_now),
-                "id": bookable_stock.id,
-                "priceCategory": {
-                    "id": price_category.id,
-                    "label": "carre or",
-                    "price": 1234,
-                    "idAtProvider": None,
-                },
-                "quantity": 10,
-                "idAtProvider": "Il y a deux types d'id",
-            },
-            {
-                "beginningDatetime": date_utils.format_into_utc_date(two_weeks_from_now),
-                "bookedQuantity": 0,
-                "bookingLimitDatetime": date_utils.format_into_utc_date(two_weeks_from_now),
-                "id": stock_without_booking.id,
-                "priceCategory": {
-                    "id": not_booked_price_category.id,
-                    "label": not_booked_price_category.label,
-                    "price": not_booked_price_category.price * 100,
-                    "idAtProvider": None,
-                },
-                "quantity": 2,
-                "idAtProvider": None,
-            },
-        ]
+        assert response.json["dates"] == [expected_serialized_stock1, expected_serialized_stock2]
+
+        # With filtering on `idsAtProvider`
+        with testing.assert_num_queries(self.num_queries_with_stocks):
+            response = client.with_explicit_token(plain_api_key).get(
+                self.endpoint_url.format(event_id=event_offer_id), params={"idsAtProvider": stock2_id_at_provider}
+            )
+            assert response.status_code == 200
+
+        assert response.json["dates"] == [expected_serialized_stock2]
+
+        with testing.assert_num_queries(self.num_queries_with_stocks):
+            response = client.with_explicit_token(plain_api_key).get(
+                self.endpoint_url.format(event_id=event_offer_id),
+                params={"idsAtProvider": f"{stock1_id_at_provider},{stock2_id_at_provider}"},
+            )
+            assert response.status_code == 200
+
+        assert response.json["dates"] == [expected_serialized_stock1, expected_serialized_stock2]
 
     def test_event_without_dates(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()

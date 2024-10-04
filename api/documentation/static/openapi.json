@@ -3668,27 +3668,6 @@
                 "title": "GetBookingResponse",
                 "type": "object"
             },
-            "GetDatesQueryParams": {
-                "properties": {
-                    "firstIndex": {
-                        "default": 1,
-                        "description": "The page of results will be fetched starting from `firstIndex` (which is a resource id).**To learn more about cursor-based pagination [see this page](/docs/understanding-our-api/resources/cursor-pagination)**.",
-                        "minimum": 1,
-                        "title": "Firstindex",
-                        "type": "integer"
-                    },
-                    "limit": {
-                        "default": 50,
-                        "description": "Maximum number of items per page.",
-                        "exclusiveMinimum": 0,
-                        "maximum": 50,
-                        "title": "Limit",
-                        "type": "integer"
-                    }
-                },
-                "title": "GetDatesQueryParams",
-                "type": "object"
-            },
             "GetDatesResponse": {
                 "properties": {
                     "dates": {
@@ -3711,6 +3690,34 @@
                 },
                 "title": "GetEventCategoriesResponse",
                 "type": "array"
+            },
+            "GetEventStocksQueryParams": {
+                "properties": {
+                    "firstIndex": {
+                        "default": 1,
+                        "description": "The page of results will be fetched starting from `firstIndex` (which is a resource id).**To learn more about cursor-based pagination [see this page](/docs/understanding-our-api/resources/cursor-pagination)**.",
+                        "minimum": 1,
+                        "title": "Firstindex",
+                        "type": "integer"
+                    },
+                    "idsAtProvider": {
+                        "description": "List of your ids to filter on (max 100)",
+                        "example": "5edd982915c2a74b9302e443,5edd982915e2a74vb9302e443",
+                        "nullable": true,
+                        "title": "Idsatprovider",
+                        "type": "string"
+                    },
+                    "limit": {
+                        "default": 50,
+                        "description": "Maximum number of items per page.",
+                        "exclusiveMinimum": 0,
+                        "maximum": 50,
+                        "title": "Limit",
+                        "type": "integer"
+                    }
+                },
+                "title": "GetEventStocksQueryParams",
+                "type": "object"
             },
             "GetFilteredBookingsRequest": {
                 "properties": {
@@ -3909,7 +3916,7 @@
                         "type": "integer"
                     },
                     "idsAtProvider": {
-                        "description": "List of your ids to filter on",
+                        "description": "List of your ids to filter on (max 100)",
                         "example": "5edd982915c2a74b9302e443,5edd982915e2a74vb9302e443",
                         "nullable": true,
                         "title": "Idsatprovider",
@@ -3946,7 +3953,7 @@
                         "type": "integer"
                     },
                     "idsAtProvider": {
-                        "description": "List of your ids to filter on",
+                        "description": "List of your ids to filter on (max 100)",
                         "example": "5edd982915c2a74b9302e443,5edd982915e2a74vb9302e443",
                         "nullable": true,
                         "title": "Idsatprovider",
@@ -9360,12 +9367,12 @@
                         }
                     },
                     {
-                        "description": "List of your ids to filter on",
+                        "description": "List of your ids to filter on (max 100)",
                         "in": "query",
                         "name": "idsAtProvider",
                         "required": false,
                         "schema": {
-                            "description": "List of your ids to filter on",
+                            "description": "List of your ids to filter on (max 100)",
                             "example": "5edd982915c2a74b9302e443,5edd982915e2a74vb9302e443",
                             "nullable": true,
                             "title": "Idsatprovider",
@@ -9686,6 +9693,19 @@
                             "title": "Firstindex",
                             "type": "integer"
                         }
+                    },
+                    {
+                        "description": "List of your ids to filter on (max 100)",
+                        "in": "query",
+                        "name": "idsAtProvider",
+                        "required": false,
+                        "schema": {
+                            "description": "List of your ids to filter on (max 100)",
+                            "example": "5edd982915c2a74b9302e443,5edd982915e2a74vb9302e443",
+                            "nullable": true,
+                            "title": "Idsatprovider",
+                            "type": "string"
+                        }
                     }
                 ],
                 "responses": {
@@ -9986,12 +10006,12 @@
                         }
                     },
                     {
-                        "description": "List of your ids to filter on",
+                        "description": "List of your ids to filter on (max 100)",
                         "in": "query",
                         "name": "idsAtProvider",
                         "required": false,
                         "schema": {
-                            "description": "List of your ids to filter on",
+                            "description": "List of your ids to filter on (max 100)",
                             "example": "5edd982915c2a74b9302e443,5edd982915e2a74vb9302e443",
                             "nullable": true,
                             "title": "Idsatprovider",
@@ -10428,12 +10448,12 @@
                         }
                     },
                     {
-                        "description": "List of your ids to filter on",
+                        "description": "List of your ids to filter on (max 100)",
                         "in": "query",
                         "name": "idsAtProvider",
                         "required": false,
                         "schema": {
-                            "description": "List of your ids to filter on",
+                            "description": "List of your ids to filter on (max 100)",
                             "example": "5edd982915c2a74b9302e443,5edd982915e2a74vb9302e443",
                             "nullable": true,
                             "title": "Idsatprovider",

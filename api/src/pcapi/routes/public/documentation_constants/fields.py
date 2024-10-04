@@ -73,7 +73,8 @@ class _FIELDS:
         example="2024-05-10T15:00:00+02:00",
     )
     IDS_AT_PROVIDER_FILTER = Field(
-        description="List of your ids to filter on", example="5edd982915c2a74b9302e443,5edd982915e2a74vb9302e443"
+        description="List of your ids to filter on (max 100)",
+        example="5edd982915c2a74b9302e443,5edd982915e2a74vb9302e443",
     )
 
     # Pagination Fields
