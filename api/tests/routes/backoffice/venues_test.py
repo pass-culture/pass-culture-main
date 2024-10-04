@@ -2924,6 +2924,49 @@ class RemoveSiretTest(PostEndpointHelper):
         assert venue.current_pricing_point == target_venue
 
 
+class PostToggleVenueProviderIsActiveTest(PostEndpointHelper):
+    endpoint = "backoffice_web.venue.toggle_venue_provider_is_active"
+    endpoint_kwargs = {"venue_id": 1, "provider_id": 1}
+    needed_permission = perm_models.Permissions.ADVANCED_PRO_SUPPORT
+
+    @pytest.mark.parametrize("is_active,verb", [(True, "mise en pause"), (False, "réactivée")])
+    def test_toggle_venue_provider_is_active(self, authenticated_client, legit_user, is_active, verb):
+        venue_provider = providers_factories.VenueProviderFactory(provider__name="Test provider", isActive=is_active)
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            venue_id=venue_provider.venue.id,
+            provider_id=venue_provider.provider.id,
+        )
+        assert response.status_code == 303
+
+        db.session.refresh(venue_provider)
+        assert venue_provider.isActive is not is_active
+
+        action = history_models.ActionHistory.query.one()
+        assert action.actionType == history_models.ActionType.LINK_VENUE_PROVIDER_UPDATED
+        assert action.authorUserId == legit_user.id
+        assert action.venueId == venue_provider.venue.id
+        assert action.extraData["provider_id"] == venue_provider.provider.id
+        assert action.extraData["provider_name"] == "Test provider"
+        assert action.extraData["modified_info"] == {"isActive": {"old_info": is_active, "new_info": not is_active}}
+
+        response = authenticated_client.get(response.location)
+        assert html_parser.extract_alert(response.data) == f"La synchronisation du lieu avec le provider a été {verb}."
+
+    def test_toggle_wrong_provider(self, authenticated_client):
+        venue_provider = providers_factories.VenueProviderFactory()
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            venue_id=venue_provider.venue.id,
+            provider_id=0,
+        )
+        assert response.status_code == 404
+        assert providers_models.VenueProvider.query.filter(providers_models.VenueProvider.id == venue_provider.id).one()
+        assert history_models.ActionHistory.query.count() == 0
+
+
 class PostDeleteVenueProviderTest(PostEndpointHelper):
     endpoint = "backoffice_web.venue.delete_venue_provider"
     endpoint_kwargs = {"venue_id": 1, "provider_id": 1}
@@ -2940,9 +2983,10 @@ class PostDeleteVenueProviderTest(PostEndpointHelper):
             provider_id=provider_id,
         )
         assert response.status_code == 303
-        assert not providers_models.VenueProvider.query.filter(
-            providers_models.VenueProvider.id == venue_provider.id
-        ).all()
+        assert (
+            providers_models.VenueProvider.query.filter(providers_models.VenueProvider.id == venue_provider.id).count()
+            == 0
+        )
         action = history_models.ActionHistory.query.one()
         assert action.actionType == history_models.ActionType.LINK_VENUE_PROVIDER_DELETED
         assert action.authorUserId == legit_user.id
@@ -2954,7 +2998,7 @@ class PostDeleteVenueProviderTest(PostEndpointHelper):
         )
 
         response = authenticated_client.get(response.location)
-        assert "Le lien entre le lieu et le provider a été supprimé." in html_parser.extract_alert(response.data)
+        assert html_parser.extract_alert(response.data) == "Le lien entre le lieu et le provider a été supprimé."
 
     def test_delete_venue_wrong_provider(self, authenticated_client):
         venue_provider = providers_factories.VenueProviderFactory()
@@ -2990,7 +3034,7 @@ class PostDeleteVenueProviderTest(PostEndpointHelper):
         )
 
         response = authenticated_client.get(response.location)
-        assert "Impossible de supprimer le lien entre le lieu et Allociné." in html_parser.extract_alert(response.data)
+        assert html_parser.extract_alert(response.data) == "Impossible de supprimer le lien entre le lieu et Allociné."
 
 
 class GetEntrepriseInfoTest(GetEndpointHelper):

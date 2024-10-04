@@ -122,7 +122,7 @@ def update_venue_provider(body: PostVenueProviderBody) -> VenueProviderResponse:
     if not venue_provider:
         raise NotFound
 
-    updated = api.update_venue_provider(venue_provider, body)
+    updated = api.update_venue_provider(venue_provider, body, current_user)
     return VenueProviderResponse.from_orm(updated)
 
 

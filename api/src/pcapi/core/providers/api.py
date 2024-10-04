@@ -135,16 +135,26 @@ def delete_venue_provider(
     )
 
 
-def update_venue_provider(
-    venue_provider: providers_models.VenueProvider, venue_provider_payload: PostVenueProviderBody
-) -> providers_models.VenueProvider:
-    if venue_provider.isActive != venue_provider_payload.isActive:
-        venue_provider.isActive = bool(venue_provider_payload.isActive)
-        if not venue_provider.isActive and venue_provider.venue.bookingEmail:
+def activate_or_deactivate_venue_provider(
+    venue_provider: providers_models.VenueProvider, set_active: bool, author: users_models.User, send_email: bool = True
+) -> None:
+    if venue_provider.isActive != set_active:
+        history_api.add_action(
+            history_models.ActionType.LINK_VENUE_PROVIDER_UPDATED,
+            author=author,
+            venue=venue_provider.venue,
+            provider_id=venue_provider.providerId,
+            provider_name=venue_provider.provider.name,
+            modified_info={"isActive": {"old_info": venue_provider.isActive, "new_info": set_active}},
+        )
+
+        venue_provider.isActive = set_active
+        if send_email and not venue_provider.isActive and venue_provider.venue.bookingEmail:
             transactional_mails.send_venue_provider_disabled_email(venue_provider.venue.bookingEmail)
         update_venue_synchronized_offers_active_status_job.delay(
             venue_provider.venueId, venue_provider.providerId, venue_provider.isActive
         )
+
         logger.info(
             "Updated VenueProvider %s isActive attribut to %s",
             venue_provider.id,
@@ -153,6 +163,13 @@ def update_venue_provider(
             technical_message_id="offer.sync.reactivated" if venue_provider.isActive else "offer.sync.deactivated",
         )
 
+
+def update_venue_provider(
+    venue_provider: providers_models.VenueProvider,
+    venue_provider_payload: PostVenueProviderBody,
+    author: users_models.User,
+) -> providers_models.VenueProvider:
+    activate_or_deactivate_venue_provider(venue_provider, bool(venue_provider_payload.isActive), author)
     if venue_provider.isFromAllocineProvider:
         venue_provider = update_allocine_venue_provider(venue_provider, venue_provider_payload)
     else:

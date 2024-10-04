@@ -903,6 +903,8 @@ def format_modified_info_name(info_name: str) -> str:
             return "Adresse - Latitude"
         case "offererAddress.address.longitude":
             return "Adresse - Longitude"
+        case "isActive":
+            return "Actif"
 
     if day := match_opening_hours(info_name):
         return f"Horaires du {day}"

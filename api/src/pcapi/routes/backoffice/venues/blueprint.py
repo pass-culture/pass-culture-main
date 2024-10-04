@@ -420,9 +420,7 @@ def get_revenue_details(venue_id: int) -> utils.BackofficeResponse:
     )
 
 
-@venue_blueprint.route("/<int:venue_id>/provider/<int:provider_id>/delete", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
-def delete_venue_provider(venue_id: int, provider_id: int) -> utils.BackofficeResponse:
+def _fetch_venue_provider(venue_id: int, provider_id: int) -> providers_models.VenueProvider:
     venue_provider = (
         providers_models.VenueProvider.query.filter(
             providers_models.VenueProvider.providerId == provider_id,
@@ -435,8 +433,43 @@ def delete_venue_provider(venue_id: int, provider_id: int) -> utils.BackofficeRe
         .one_or_none()
     )
 
-    if not venue_provider:
+    if venue_provider is None:
         raise NotFound()
+
+    return venue_provider
+
+
+@venue_blueprint.route("/<int:venue_id>/provider/<int:provider_id>/active", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
+def toggle_venue_provider_is_active(venue_id: int, provider_id: int) -> utils.BackofficeResponse:
+    venue_provider = _fetch_venue_provider(venue_id, provider_id)
+
+    set_active = not venue_provider.isActive
+    providers_api.activate_or_deactivate_venue_provider(
+        venue_provider, set_active, author=current_user, send_email=False
+    )
+    if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
+        flash(
+            Markup("La synchronisation du partenaire culturel avec le provider a été {verb}.").format(
+                verb="réactivée" if set_active else "mise en pause"
+            ),
+            "info",
+        )
+    else:
+        flash(
+            Markup("La synchronisation du lieu avec le provider a été {verb}.").format(
+                verb="réactivée" if set_active else "mise en pause"
+            ),
+            "info",
+        )
+
+    return redirect(url_for("backoffice_web.venue.get", venue_id=venue_id), code=303)
+
+
+@venue_blueprint.route("/<int:venue_id>/provider/<int:provider_id>/delete", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
+def delete_venue_provider(venue_id: int, provider_id: int) -> utils.BackofficeResponse:
+    venue_provider = _fetch_venue_provider(venue_id, provider_id)
 
     if venue_provider.isFromAllocineProvider:
         if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():

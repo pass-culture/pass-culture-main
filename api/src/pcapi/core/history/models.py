@@ -64,6 +64,7 @@ class ActionType(enum.Enum):
     VENUE_CREATED = "Lieu créé"
     LINK_VENUE_BANK_ACCOUNT_DEPRECATED = "Lieu dissocié d'un compte bancaire"
     LINK_VENUE_BANK_ACCOUNT_CREATED = "Lieu associé à un compte bancaire"
+    LINK_VENUE_PROVIDER_UPDATED = "Lien avec le partenaire technique modifié"
     LINK_VENUE_PROVIDER_DELETED = "Suppression du lien avec le partenaire technique"
     SYNC_VENUE_TO_PROVIDER = "Synchronisation du lieu avec un partenaire technique"
 
