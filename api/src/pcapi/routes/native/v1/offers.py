@@ -13,6 +13,7 @@ from pcapi.core.offers.models import Stock
 from pcapi.core.users.models import User
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import ResourceNotFoundError
+from pcapi.models.feature import FeatureToggle
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.repository import atomic
 from pcapi.routes.native.security import authenticated_and_active_user_required
@@ -131,7 +132,8 @@ def send_offer_link_by_push(user: User, offer_id: int) -> None:
     offer = Offer.query.get_or_404(offer_id)
     if offer.validation != OfferValidationStatus.APPROVED:
         raise ResourceNotFoundError()
-    push_notification_job.send_offer_link_by_push_job.delay(user.id, offer_id)
+    if not FeatureToggle.WIP_DISABLE_NOTIFICATION_OFFER_LINK.is_active():
+        push_notification_job.send_offer_link_by_push_job.delay(user.id, offer_id)
 
 
 @blueprint.native_route("/subcategories/v2", methods=["GET"])

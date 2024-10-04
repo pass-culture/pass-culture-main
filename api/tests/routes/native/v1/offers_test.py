@@ -2055,6 +2055,7 @@ class SendOfferWebAppLinkTest:
 
 
 class SendOfferLinkNotificationTest:
+    @override_features(WIP_DISABLE_NOTIFICATION_OFFER_LINK=False)
     def test_send_offer_link_notification(self, client):
         """
         Test that a push notification to the user is send with a link to the
@@ -2078,6 +2079,21 @@ class SendOfferLinkNotificationTest:
         assert notification["user_ids"] == [user.id]
 
         assert offer.name in notification["message"]["title"]
+
+    @override_features(WIP_DISABLE_NOTIFICATION_OFFER_LINK=True)
+    def test_send_offer_link_notification_with_disabled_notification_offer_link(self, client):
+
+        offer = offers_factories.OfferFactory()
+        offer_id = offer.id
+
+        user = users_factories.UserFactory()
+        client = client.with_token(user.email)
+
+        with assert_no_duplicated_queries():
+            response = client.post(f"/native/v1/send_offer_link_by_push/{offer_id}")
+            assert response.status_code == 204
+
+        assert len(notifications_testing.requests) == 0
 
     def test_send_offer_link_notification_not_found(self, client):
         """Test that no push notification is sent when offer is not found"""
