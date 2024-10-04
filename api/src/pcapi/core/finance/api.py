@@ -135,10 +135,7 @@ def add_event(
         models.FinanceEventMotive.BOOKING_USED_AFTER_CANCELLATION,
     ):
         assert booking.dateUsed
-        if isinstance(booking, bookings_models.Booking):
-            value_date = booking.dateUsed
-        else:
-            value_date = booking.collectiveStock.pricing_datetime
+        value_date = booking.dateUsed
 
         pricing_point_id = booking.venue.current_pricing_point_id
         if pricing_point_id:
