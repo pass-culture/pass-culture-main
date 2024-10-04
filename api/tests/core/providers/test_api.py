@@ -438,15 +438,24 @@ class DeleteVenueProviderTest:
 class DisableVenueProviderTest:
     @mock.patch("pcapi.core.providers.api.update_venue_synchronized_offers_active_status_job.delay")
     def test_disable_venue_provider(self, mocked_update_all_offers_active_status_job):
+        user = users_factories.UserFactory()
         venue_provider = providers_factories.VenueProviderFactory()
         venue = venue_provider.venue
 
         request = PostVenueProviderBody(venueId=venue.id, providerId=venue_provider.providerId, isActive=False)
-        api.update_venue_provider(venue_provider, request)
+        api.update_venue_provider(venue_provider, request, user)
 
         assert len(mails_testing.outbox) == 1  # test number of emails sent
         assert mails_testing.outbox[0]["To"] == venue.bookingEmail
         assert mails_testing.outbox[0]["template"] == asdict(TransactionalEmail.VENUE_SYNC_DISABLED.value)
+
+        action = history_models.ActionHistory.query.one()
+        assert action.actionType == history_models.ActionType.LINK_VENUE_PROVIDER_UPDATED
+        assert action.authorUserId == user.id
+        assert action.venueId == venue.id
+        assert action.extraData["provider_id"] == venue_provider.provider.id
+        assert action.extraData["provider_name"] == venue_provider.provider.name
+        assert action.extraData["modified_info"] == {"isActive": {"old_info": True, "new_info": False}}
 
 
 class ConnectVenueToAllocineTest:
