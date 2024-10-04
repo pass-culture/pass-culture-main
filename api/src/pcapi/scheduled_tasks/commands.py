@@ -420,18 +420,18 @@ def _send_notification_favorites_not_booked() -> None:
     """
     max_length = settings.BATCH_MAX_USERS_PER_TRANSACTIONAL_NOTIFICATION
     rows = big_query_queries.FavoritesNotBooked().execute(max_length)
+    if not FeatureToggle.WIP_DISABLE_NOTIFICATION_FAVORITE_NOT_BOOKED.is_active():
+        for row in rows:
+            try:
+                notification_data = transactional_notifications.get_favorites_not_booked_notification_data(
+                    row.offer_id, row.offer_name, row.user_ids
+                )
 
-    for row in rows:
-        try:
-            notification_data = transactional_notifications.get_favorites_not_booked_notification_data(
-                row.offer_id, row.offer_name, row.user_ids
-            )
-
-            if notification_data:
-                push.send_transactional_notification(notification_data)
-        except Exception:  # pylint: disable=broad-except
-            log_extra = {"offer": row.offer_id, "users": row.user_ids, "count": len(row.user_ids)}
-            logger.error("Favorites not booked: failed to send notification", extra=log_extra)
+                if notification_data:
+                    push.send_transactional_notification(notification_data)
+            except Exception:  # pylint: disable=broad-except
+                log_extra = {"offer": row.offer_id, "users": row.user_ids, "count": len(row.user_ids)}
+                logger.error("Favorites not booked: failed to send notification", extra=log_extra)
 
 
 @blueprint.cli.command("delete_old_trusted_devices")
