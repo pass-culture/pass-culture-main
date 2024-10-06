@@ -909,7 +909,6 @@ class UpdateVenueTest(PostEndpointHelper):
             street="23 Boulevard de la Madeleine",
         ),
     )
-    @override_features(ENABLE_ADDRESS_WRITING_WHILE_CREATING_UPDATING_VENUE=True)
     def test_update_venue(self, mock_get_address, authenticated_client, offerer):
         contact_email = "contact.venue@example.com"
         website = "update.venue@example.com"
@@ -991,8 +990,7 @@ class UpdateVenueTest(PostEndpointHelper):
         assert mails_testing.outbox[0]["params"]["VENUE_NAME"] == venue.common_name
         assert mails_testing.outbox[0]["params"]["VENUE_FORM_URL"] == urls.build_pc_pro_venue_link(venue)
 
-    @override_features(ENABLE_ADDRESS_WRITING_WHILE_CREATING_UPDATING_VENUE=True)
-    def test_update_venue_location_with_offerer_address(self, authenticated_client, offerer):
+    def test_update_venue_location_with_offerer_address_not_manual(self, authenticated_client, offerer):
         contact_email = "contact.venue@example.com"
         website = "update.venue@example.com"
         social_medias = {"instagram": "https://instagram.com/update.venue"}
@@ -1070,7 +1068,6 @@ class UpdateVenueTest(PostEndpointHelper):
             ),
         ],
     )
-    @override_features(ENABLE_ADDRESS_WRITING_WHILE_CREATING_UPDATING_VENUE=True)
     def test_updating_venue_manual_address(
         self, authenticated_client, offerer, api_adresse_patch_params, expected_insee_code
     ):
@@ -1148,7 +1145,6 @@ class UpdateVenueTest(PostEndpointHelper):
             street="unused",
         ),
     )
-    @override_features(ENABLE_ADDRESS_WRITING_WHILE_CREATING_UPDATING_VENUE=True)
     def test_update_venue_manual_address_reuses_existing_address(
         self, mock_get_municipality_centroid, authenticated_client
     ):
@@ -1207,7 +1203,6 @@ class UpdateVenueTest(PostEndpointHelper):
             street="unused",
         ),
     )
-    @override_features(ENABLE_ADDRESS_WRITING_WHILE_CREATING_UPDATING_VENUE=True)
     def test_update_venue_manual_address_with_gps_difference(
         self, mock_get_municipality_centroid, authenticated_client
     ):
