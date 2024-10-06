@@ -44,6 +44,7 @@ def populate_missing_data_from_venue(venue_data: dict, venue: offerers_models.Ve
 
 
 class Returns200Test:
+
     def test_should_update_venue(self, client) -> None:
         # given
         user_offerer = offerers_factories.UserOffererFactory(
@@ -55,6 +56,7 @@ class Returns200Test:
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
         venue_id = venue.id
+        venue_oa_address_id = venue.offererAddress.addressId
 
         # when
         venue_data = populate_missing_data_from_venue(
@@ -63,6 +65,13 @@ class Returns200Test:
                 "venueTypeCode": "BOOKSTORE",
                 "venueLabelId": venue_label.id,
                 "withdrawalDetails": "",  # should not appear in history with None => ""
+                # Default data from api adresse TestingBackend
+                "street": "3 Rue de Valois",
+                "banId": "75101_9575_00003",
+                "city": "Paris",
+                "latitude": 48.87171,
+                "longitude": 2.308289,
+                "postalCode": "75001",
             },
             venue,
         )
@@ -71,7 +80,7 @@ class Returns200Test:
 
         # then
         assert response.status_code == 200
-        venue = offerers_models.Venue.query.get(venue_id)
+        new_venue = offerers_models.Venue.query.get(venue_id)
         assert venue.publicName == "Ma librairie"
         assert venue.venueTypeCode == offerers_models.VenueTypeCode.BOOKSTORE
         assert response.json["street"] == venue.street
@@ -105,45 +114,58 @@ class Returns200Test:
                 "contact.email": {"new_info": "no.contact.field@is.mandatory.com", "old_info": "contact@venue.com"},
                 "contact.phone_number": {"new_info": None, "old_info": "+33102030405"},
                 "contact.website": {"new_info": None, "old_info": "https://my.website.com"},
+                # venue table location field
+                "street": {
+                    "new_info": "3 Rue de Valois",
+                    "old_info": "1 boulevard Poissonnière",
+                },
+                "banId": {
+                    "new_info": "75101_9575_00003",
+                    "old_info": "75102_7560_00001",
+                },
+                "latitude": {
+                    "new_info": "48.87171",
+                    "old_info": "48.87004",
+                },
+                "longitude": {
+                    "new_info": "2.308289",
+                    "old_info": "2.3785",
+                },
+                "postalCode": {
+                    "new_info": "75001",
+                    "old_info": "75002",
+                },
+                # oa infos
+                "offererAddress.address.banId": {
+                    "new_info": "75101_9575_00003",
+                    "old_info": "75102_7560_00001",
+                },
+                "offererAddress.address.inseeCode": {
+                    "new_info": "75056",
+                    "old_info": "75102",
+                },
+                "offererAddress.address.latitude": {
+                    "new_info": "48.87171",
+                    "old_info": "48.87004",
+                },
+                "offererAddress.address.longitude": {
+                    "new_info": "2.308289",
+                    "old_info": "2.3785",
+                },
+                "offererAddress.address.postalCode": {
+                    "new_info": "75001",
+                    "old_info": "75002",
+                },
+                "offererAddress.address.street": {
+                    "new_info": "3 Rue de Valois",
+                    "old_info": "1 boulevard Poissonnière",
+                },
+                "offererAddress.addressId": {
+                    "new_info": venue.offererAddress.addressId,
+                    "old_info": venue_oa_address_id,
+                },
             }
         }
-
-    @override_features(ENABLE_ADDRESS_WRITING_WHILE_CREATING_UPDATING_VENUE=True)
-    def test_update_venue_location_should_update_venue_offerer_address(self, client, requests_mock) -> None:
-        user_offerer = offerers_factories.UserOffererFactory()
-        address = geography_factories.AddressFactory(
-            street="1 boulevard Poissonnière", postalCode="75000", inseeCode="75000", city="Paris"
-        )
-        offerer_address = offerers_factories.OffererAddressFactory(offerer=user_offerer.offerer, address=address)
-        venue = offerers_factories.VenueFactory(
-            managingOfferer=user_offerer.offerer,
-            street=address.street,
-            postalCode=address.postalCode,
-            city=address.city,
-            offererAddress=offerer_address,
-        )
-
-        auth_request = client.with_session_auth(email=user_offerer.user.email)
-        venue_id = venue.id
-
-        venue_data = populate_missing_data_from_venue(
-            {
-                # Default data from api adresse TestingBackend
-                "street": "3 Rue de Valois",
-                "banId": "75101_9575_00003",
-                "city": "Paris",
-                "latitude": 48.87171,
-                "longitude": 2.308289,
-                "postalCode": "75001",
-            },
-            venue,
-        )
-
-        response = auth_request.patch("/venues/%s" % venue.id, json=venue_data)
-
-        # then
-        assert response.status_code == 200
-        venue = offerers_models.Venue.query.one()
         address = geography_models.Address.query.order_by(geography_models.Address.id.desc()).first()
         offerer_address = offerers_models.OffererAddress.query.one()
 
@@ -157,37 +179,6 @@ class Returns200Test:
         assert offerer_address.addressId == address.id
         assert offerer_address.label is None
 
-        assert response.json["street"] == venue.street
-        assert response.json["banId"] == venue.banId
-        assert response.json["city"] == venue.city
-        assert response.json["siret"] == venue.siret
-        assert response.json["postalCode"] == venue.postalCode
-        assert len(venue.action_history) == 1
-        assert venue.action_history[0].actionType == history_models.ActionType.INFO_MODIFIED
-        assert venue.action_history[0].venueId == venue_id
-        assert venue.action_history[0].authorUser.id == user_offerer.user.id
-        assert venue.action_history[0].extraData["modified_info"]["street"] == {
-            "new_info": "3 Rue de Valois",
-            "old_info": "1 boulevard Poissonnière",
-        }
-        assert venue.action_history[0].extraData["modified_info"]["banId"] == {
-            "new_info": "75101_9575_00003",
-            "old_info": "75102_7560_00001",
-        }
-        assert venue.action_history[0].extraData["modified_info"]["latitude"] == {
-            "new_info": "48.87171",
-            "old_info": "48.87004",
-        }
-        assert venue.action_history[0].extraData["modified_info"]["longitude"] == {
-            "new_info": "2.308289",
-            "old_info": "2.3785",
-        }
-        assert venue.action_history[0].extraData["modified_info"]["postalCode"] == {
-            "new_info": "75001",
-            "old_info": "75000",
-        }
-
-    @override_features(ENABLE_ADDRESS_WRITING_WHILE_CREATING_UPDATING_VENUE=True)
     def test_update_venue_location_with_manual_edition(self, client, requests_mock) -> None:
         user_offerer = offerers_factories.UserOffererFactory()
         address = geography_factories.AddressFactory(

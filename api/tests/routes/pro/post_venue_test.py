@@ -96,9 +96,7 @@ venue_malformed_test_data = [
 
 class Returns201Test:
     @testing.override_settings(ADRESSE_BACKEND="pcapi.connectors.api_adresse.ApiAdresseBackend")
-    @testing.override_features(
-        ENABLE_ZENDESK_SELL_CREATION=True, ENABLE_ADDRESS_WRITING_WHILE_CREATING_UPDATING_VENUE=True
-    )
+    @testing.override_features(ENABLE_ZENDESK_SELL_CREATION=True)
     def test_register_new_venue(self, client, requests_mock):
         api_adresse_response = get_api_address_response()
         user = ProFactory(
@@ -172,9 +170,7 @@ class Returns201Test:
         ADRESSE_BACKEND="pcapi.connectors.api_adresse.ApiAdresseBackend",
         IS_INTEGRATION=True,
     )
-    @testing.override_features(
-        ENABLE_ZENDESK_SELL_CREATION=True, ENABLE_ADDRESS_WRITING_WHILE_CREATING_UPDATING_VENUE=True
-    )
+    @testing.override_features(ENABLE_ZENDESK_SELL_CREATION=True)
     def test_register_new_venue_from_integration_env(self, client, requests_mock):
         api_adresse_response = get_api_address_response()
         user = ProFactory()

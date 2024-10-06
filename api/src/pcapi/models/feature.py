@@ -39,9 +39,6 @@ class FeatureToggle(enum.Enum):
     DISCORD_ENABLE_NEW_ACCESS = "Activer/Désactiver l'accès au serveur Discord à des nouveaux utilisateurs"
     DISPLAY_DMS_REDIRECTION = "Affiche une redirection vers DMS si ID Check est KO"
     EMS_CANCEL_PENDING_EXTERNAL_BOOKING = "Annuler les réservations externes EMS qui ont échouées"
-    ENABLE_ADDRESS_WRITING_WHILE_CREATING_UPDATING_VENUE = (
-        "Activer la double écriture dans les tables Address & OffererAddress"
-    )
     ENABLE_AUTO_VALIDATION_FOR_EXTERNAL_BOOKING = (
         "Valide automatiquement après 48h les offres issues de l'api billeterie cinéma"
     )

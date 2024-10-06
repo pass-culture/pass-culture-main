@@ -115,7 +115,7 @@ def update_venue(
     new_permanent = not venue.isPermanent and modifications.get("isPermanent")
 
     venue_snapshot = history_api.ObjectUpdateSnapshot(venue, author)
-    if not venue.isVirtual and FeatureToggle.ENABLE_ADDRESS_WRITING_WHILE_CREATING_UPDATING_VENUE.is_active():
+    if not venue.isVirtual:
         update_venue_location(
             venue, modifications, author=author, venue_snapshot=venue_snapshot, is_manual_edition=is_manual_edition
         )
@@ -395,26 +395,25 @@ def upsert_venue_opening_hours(venue: models.Venue, opening_hours: serialize_bas
 def create_venue(venue_data: venues_serialize.PostVenueBodyModel, author: users_models.User) -> models.Venue:
     venue = models.Venue()
 
-    if feature.FeatureToggle.ENABLE_ADDRESS_WRITING_WHILE_CREATING_UPDATING_VENUE.is_active():
-        if utils_regions.NON_DIFFUSIBLE_TAG in venue_data.street:
-            address_info = api_adresse.get_municipality_centroid(venue_data.city, venue_data.postalCode)
-            address_info.street = utils_regions.NON_DIFFUSIBLE_TAG
-        else:
-            address_info = api_adresse.get_address(venue_data.street, venue_data.postalCode, venue_data.city)
+    if utils_regions.NON_DIFFUSIBLE_TAG in venue_data.street:
+        address_info = api_adresse.get_municipality_centroid(venue_data.city, venue_data.postalCode)
+        address_info.street = utils_regions.NON_DIFFUSIBLE_TAG
+    else:
+        address_info = api_adresse.get_address(venue_data.street, venue_data.postalCode, venue_data.city)
 
-        address = get_or_create_address(
-            LocationData(
-                city=address_info.city,
-                postal_code=address_info.postcode,
-                latitude=address_info.latitude,
-                longitude=address_info.longitude,
-                street=address_info.street,
-                insee_code=address_info.citycode,
-                ban_id=address_info.id,
-            )
+    address = get_or_create_address(
+        LocationData(
+            city=address_info.city,
+            postal_code=address_info.postcode,
+            latitude=address_info.latitude,
+            longitude=address_info.longitude,
+            street=address_info.street,
+            insee_code=address_info.citycode,
+            ban_id=address_info.id,
         )
-        offerer_address = get_or_create_offerer_address(venue_data.managingOffererId, address.id)
-        venue.offererAddressId = offerer_address.id
+    )
+    offerer_address = get_or_create_offerer_address(venue_data.managingOffererId, address.id)
+    venue.offererAddressId = offerer_address.id
 
     data = venue_data.dict(by_alias=True)
     data["dmsToken"] = generate_dms_token()
