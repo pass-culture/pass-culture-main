@@ -76,14 +76,20 @@ describe('test renderSignupJourneyStepper', () => {
     const { tabAuthentication, tabActivity, tabValidation } =
       renderSignupJourneyStepper(contextValue)
 
-    tabAuthentication && (await userEvent.click(tabAuthentication))
+    if (tabAuthentication) {
+      await userEvent.click(tabAuthentication)
+    }
 
     expect(mockLogEvent).toHaveBeenCalledTimes(0)
 
-    tabActivity && (await userEvent.click(tabActivity))
+    if (tabActivity) {
+      await userEvent.click(tabActivity)
+    }
     expect(mockLogEvent).toHaveBeenCalledTimes(0)
 
-    tabValidation && (await userEvent.click(tabValidation))
+    if (tabValidation) {
+      await userEvent.click(tabValidation)
+    }
     expect(mockLogEvent).toHaveBeenCalledTimes(0)
   })
 
@@ -99,7 +105,9 @@ describe('test renderSignupJourneyStepper', () => {
       '/parcours-inscription/activite'
     )
 
-    tabAuthentication && (await userEvent.click(tabAuthentication))
+    if (tabAuthentication) {
+      await userEvent.click(tabAuthentication)
+    }
     expect(mockLogEvent).toHaveBeenCalledTimes(1)
     expect(mockLogEvent).toHaveBeenNthCalledWith(
       1,
@@ -124,7 +132,9 @@ describe('test renderSignupJourneyStepper', () => {
       '/parcours-inscription/activite'
     )
 
-    tabActivity && (await userEvent.click(tabActivity))
+    if (tabActivity) {
+      await userEvent.click(tabActivity)
+    }
     expect(mockLogEvent).not.toHaveBeenCalled()
   })
 
@@ -148,7 +158,9 @@ describe('test renderSignupJourneyStepper', () => {
 
     expect(screen.getByText('Validation screen')).toBeInTheDocument()
 
-    tabActivity && (await userEvent.click(tabActivity))
+    if (tabActivity) {
+      await userEvent.click(tabActivity)
+    }
     expect(mockLogEvent).toHaveBeenCalledTimes(1)
     expect(mockLogEvent).toHaveBeenNthCalledWith(
       1,
@@ -160,7 +172,9 @@ describe('test renderSignupJourneyStepper', () => {
       }
     )
 
-    tabValidation && (await userEvent.click(tabValidation))
+    if (tabValidation) {
+      await userEvent.click(tabValidation)
+    }
     expect(mockLogEvent).toHaveBeenCalledTimes(2)
     expect(mockLogEvent).toHaveBeenNthCalledWith(
       2,
@@ -172,7 +186,9 @@ describe('test renderSignupJourneyStepper', () => {
       }
     )
 
-    tabAuthentication && (await userEvent.click(tabAuthentication))
+    if (tabAuthentication) {
+      await userEvent.click(tabAuthentication)
+    }
     expect(mockLogEvent).toHaveBeenCalledTimes(3)
     expect(mockLogEvent).toHaveBeenNthCalledWith(
       3,

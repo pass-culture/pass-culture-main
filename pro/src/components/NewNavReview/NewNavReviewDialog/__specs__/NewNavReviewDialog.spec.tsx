@@ -121,36 +121,34 @@ describe('NewNavReviewDialog', () => {
       screen.queryByRole('heading', { name: 'Votre avis compte !' })
     ).not.toBeInTheDocument()
   })
-  it('should show error message and close dialog on error'),
-    async () => {
-      vi.spyOn(api, 'submitNewNavReview').mockRejectedValueOnce({})
 
-      const notifsImport = (await vi.importActual(
-        'hooks/useNotification'
-      )) as ReturnType<typeof useNotification.useNotification>
-      vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
-        ...notifsImport,
-        error: notifyError,
-      }))
+  it('should show error message and close dialog on error', async () => {
+    vi.spyOn(api, 'submitNewNavReview').mockRejectedValueOnce(new Error())
 
-      renderNewNavReviewDialog()
+    const notifsImport = (await vi.importActual(
+      'hooks/useNotification'
+    )) as ReturnType<typeof useNotification.useNotification>
+    vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
+      ...notifsImport,
+      error: notifyError,
+    }))
 
-      const morePleasantRadioButton = screen.getByRole('radio', {
-        name: /Plus agréable/,
-      })
-      await userEvent.click(morePleasantRadioButton)
-      const moreConvenientRadioButton = screen.getByRole('radio', {
-        name: /Plus pratique/,
-      })
-      await userEvent.click(moreConvenientRadioButton)
+    renderNewNavReviewDialog()
 
-      const submitButton = screen.getByRole('button', { name: 'Envoyer' })
-      await userEvent.click(submitButton)
-      expect(
-        screen.queryByRole('heading', { name: 'Votre avis compte !' })
-      ).not.toBeInTheDocument()
-      expect(notifyError).toHaveBeenCalledWith(
-        'Une erreur est survenue. Merci de réessayer plus tard.'
-      )
-    }
+    const morePleasantRadioButton = screen.getByRole('radio', {
+      name: /Plus agréable/,
+    })
+    await userEvent.click(morePleasantRadioButton)
+    const moreConvenientRadioButton = screen.getByRole('radio', {
+      name: /Plus pratique/,
+    })
+    await userEvent.click(moreConvenientRadioButton)
+
+    const submitButton = screen.getByRole('button', { name: 'Envoyer' })
+    await userEvent.click(submitButton)
+
+    expect(notifyError).toHaveBeenCalledWith(
+      'Une erreur est survenue. Merci de réessayer plus tard.'
+    )
+  })
 })

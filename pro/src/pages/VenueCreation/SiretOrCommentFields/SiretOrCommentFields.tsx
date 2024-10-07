@@ -61,7 +61,7 @@ export const SiretOrCommentFields = ({
       !isSiretStartingWithSiren(siret, siren) ||
       !isSiretSelected
     ) {
-      setIsFieldNameFrozen && setIsFieldNameFrozen(false)
+      setIsFieldNameFrozen?.(false)
       return
     }
 
@@ -70,10 +70,9 @@ export const SiretOrCommentFields = ({
 
       /* istanbul ignore next: DEBT, TO FIX */
       const address = `${response.values?.address} ${response.values?.postalCode} ${response.values?.city}`
-      setIsFieldNameFrozen &&
-        setIsFieldNameFrozen(
-          response.values !== undefined && response.values.siret.length > 0
-        )
+      setIsFieldNameFrozen?.(
+        response.values !== undefined && response.values.siret.length > 0
+      )
       await setFieldValue('name', response.values?.name)
       // getSuggestions pour récupérer les adresses
       const adressSuggestions = await apiAdresse.getDataFromAddress(address)

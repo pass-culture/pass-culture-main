@@ -11,9 +11,9 @@ export const useInitReCaptcha = (): void => {
       // Can be undefined according to sentry errors
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       if (gcaptchaScript) {
-        window.grecaptcha &&
-          window.grecaptcha.reset &&
-          window.grecaptcha.reset(RECAPTCHA_SITE_KEY)
+        if (window.grecaptcha) {
+          window.grecaptcha.reset?.(RECAPTCHA_SITE_KEY)
+        }
         gcaptchaScript.remove()
 
         // Remove all the widgets already added

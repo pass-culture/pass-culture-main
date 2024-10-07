@@ -155,25 +155,26 @@ export const PriceCategoriesScreen = ({
     validationSchema,
     onSubmit,
   })
-
   const handlePreviousStepOrBackToReadOnly = () => {
-    mode === OFFER_WIZARD_MODE.EDITION
-      ? navigate(
-          getIndividualOfferUrl({
-            offerId: offer.id,
-            step: OFFER_WIZARD_STEP_IDS.TARIFS,
-            mode: OFFER_WIZARD_MODE.READ_ONLY,
-          })
-        )
-      : navigate(
-          getIndividualOfferUrl({
-            offerId: offer.id,
-            step: isSplitOfferEnabled
-              ? OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS
-              : OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-            mode,
-          })
-        )
+    if (mode === OFFER_WIZARD_MODE.EDITION) {
+      navigate(
+        getIndividualOfferUrl({
+          offerId: offer.id,
+          step: OFFER_WIZARD_STEP_IDS.TARIFS,
+          mode: OFFER_WIZARD_MODE.READ_ONLY,
+        })
+      )
+    } else {
+      navigate(
+        getIndividualOfferUrl({
+          offerId: offer.id,
+          step: isSplitOfferEnabled
+            ? OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS
+            : OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+          mode,
+        })
+      )
+    }
   }
 
   return (

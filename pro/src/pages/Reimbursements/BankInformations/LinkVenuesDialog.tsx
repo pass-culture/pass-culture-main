@@ -83,7 +83,7 @@ export const LinkVenuesDialog = ({
         notification.success('Vos modifications ont bien été prises en compte.')
         closeDialog(true)
         formik.setSubmitting(false)
-      } catch (e) {
+      } catch {
         notification.error(
           'Une erreur est survenue. Vos modifications n’ont pas été prises en compte.'
         )
@@ -125,7 +125,9 @@ export const LinkVenuesDialog = ({
       <DialogBuilder
         defaultOpen
         onOpenChange={(open) => {
-          !open && closeDialog()
+          if (!open) {
+            closeDialog()
+          }
         }}
       >
         <div

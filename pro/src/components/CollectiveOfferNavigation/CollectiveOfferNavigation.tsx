@@ -229,7 +229,7 @@ export const CollectiveOfferNavigation = ({
       notify.success('Une offre a bien été archivée', {
         duration: NOTIFICATION_LONG_SHOW_DURATION,
       })
-    } catch (error) {
+    } catch {
       notify.error('Une erreur est survenue lors de l’archivage de l’offre', {
         duration: NOTIFICATION_LONG_SHOW_DURATION,
       })

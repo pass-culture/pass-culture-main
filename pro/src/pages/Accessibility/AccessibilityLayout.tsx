@@ -19,7 +19,7 @@ export const AccessibilityLayout = ({
   try {
     const user = useCurrentUser()
     isUserConnected = Boolean(user)
-  } catch (e) {
+  } catch {
     isUserConnected = false
   }
 

@@ -90,7 +90,7 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
 
         setOffers(offers)
         setIsLoading(false)
-      } catch (error) {
+      } catch {
         setIsLoading(false)
         return notify.error(GET_DATA_ERROR_MESSAGE)
       }

@@ -55,7 +55,7 @@ export const RequestFormDialog = ({
       await apiAdage.createCollectiveRequest(offerId, payload)
       notify.success('Votre demande a bien été envoyée')
       closeModal()
-    } catch (error) {
+    } catch {
       notify.error(
         'Impossible de créer la demande.\nVeuillez contacter le support pass culture'
       )

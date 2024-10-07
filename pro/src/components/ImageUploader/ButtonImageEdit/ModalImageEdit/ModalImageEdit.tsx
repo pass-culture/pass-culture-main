@@ -53,7 +53,7 @@ export const ModalImageEdit = ({
     async function setImageFromUrl(url: string) {
       try {
         setImage(await getFileFromURL(url))
-      } catch (e) {
+      } catch {
         notification.error('Erreur lors de la récupération de votre image.')
       }
     }

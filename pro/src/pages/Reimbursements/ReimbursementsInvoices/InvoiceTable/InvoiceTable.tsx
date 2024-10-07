@@ -154,7 +154,7 @@ export const InvoiceTable = ({ invoices }: InvoiceTableProps) => {
         await api.getReimbursementsCsvV2(references),
         'remboursements_pass_culture.csv'
       )
-    } catch (error) {
+    } catch {
       notify.error(GET_DATA_ERROR_MESSAGE)
     }
   }

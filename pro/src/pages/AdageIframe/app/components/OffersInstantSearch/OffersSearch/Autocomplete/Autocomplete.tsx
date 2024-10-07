@@ -239,8 +239,9 @@ export const Autocomplete = ({
           )
 
           if (itemId >= 0 && itemId < 3) {
-            item.formats &&
-              (await formik.setFieldValue('formats', [item.formats[0]]))
+            if (item.formats) {
+              await formik.setFieldValue('formats', [item.formats[0]])
+            }
           } else {
             await formik.setFieldValue('formats', [])
           }

@@ -175,20 +175,20 @@ export const Homepage = (): JSX.Element => {
         })
       )
       setIsNewNavEnabled(true)
-    } catch (error) {
+    } catch {
       notify.error("Impossible de réaliser l'action. Réessayez plus tard")
     }
   }
-
   function hideBanner() {
-    localStorageAvailable() &&
+    if (localStorageAvailable()) {
       localStorage.setItem(HAS_CLOSED_BETA_TEST_BANNER, 'true')
+    }
     setSeesNewNavAvailableBanner(false)
   }
-
   function onWelcomeDialogOpenChange(open: boolean) {
-    localStorageAvailable() && !open
-    localStorage.setItem(HAS_CLOSED_WELCOME_BETA_BANNER, 'true')
+    if (localStorageAvailable() && !open) {
+      localStorage.setItem(HAS_CLOSED_WELCOME_BETA_BANNER, 'true')
+    }
   }
 
   return (

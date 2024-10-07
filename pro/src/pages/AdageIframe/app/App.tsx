@@ -43,7 +43,9 @@ export const App = (): JSX.Element => {
       try {
         const user = await apiAdage.authenticate()
         setUser(user)
-        user.email && setSentryUser({ email: user.email })
+        if (user.email) {
+          setSentryUser({ email: user.email })
+        }
       } catch {
         setUser(null)
       } finally {

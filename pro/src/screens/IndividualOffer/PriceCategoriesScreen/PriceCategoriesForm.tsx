@@ -96,7 +96,7 @@ export const PriceCategoriesForm = ({
         }
         try {
           await api.postPriceCategories(offer.id, requestBody)
-        } catch (error) {
+        } catch {
           notify.error(
             'Une erreur est survenue lors de la mise à jour de votre tarif'
           )

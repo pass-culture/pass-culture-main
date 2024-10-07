@@ -4,7 +4,6 @@ import { convertFromCsvToObject } from 'utils/csvConverter'
 
 export const getCsvData = (csvUrl: string): Promise<TableData | null> => {
   return new Promise((resolve, reject) => {
-    // eslint-disable-next-line @typescript-eslint/no-extra-semi
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     ;(async () => {
       try {
@@ -16,7 +15,7 @@ export const getCsvData = (csvUrl: string): Promise<TableData | null> => {
         } else {
           reject(null)
         }
-      } catch (error) {
+      } catch {
         reject(null)
       }
     })()

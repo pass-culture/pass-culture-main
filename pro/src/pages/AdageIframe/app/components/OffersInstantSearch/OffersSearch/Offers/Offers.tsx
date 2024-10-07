@@ -118,7 +118,9 @@ export const Offers = ({
   }, [isMobileScreen])
 
   useEffect(() => {
-    isMobileScreen && dispatch(setSearchView('grid'))
+    if (isMobileScreen) {
+      dispatch(setSearchView('grid'))
+    }
   }, [isMobileScreen, dispatch])
 
   if (isLoading && offers.length === 0) {

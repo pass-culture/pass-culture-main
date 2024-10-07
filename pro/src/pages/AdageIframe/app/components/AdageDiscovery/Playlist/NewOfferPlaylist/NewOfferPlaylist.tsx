@@ -43,7 +43,7 @@ export const NewOfferPlaylist = ({
         const result = await apiAdage.newTemplateOffersPlaylist()
 
         setOffers(result.collectiveOffers)
-      } catch (e) {
+      } catch {
         return error(GET_DATA_ERROR_MESSAGE)
       } finally {
         setLoading(false)

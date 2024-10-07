@@ -18,7 +18,7 @@ export const validationSchema = yup.object().shape({
         let phoneNumber
         try {
           phoneNumber = parseAndValidateFrenchPhoneNumber(value)
-        } catch (e) {
+        } catch {
           return false
         }
         const isValid = phoneNumber.isValid()

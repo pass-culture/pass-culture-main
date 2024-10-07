@@ -39,7 +39,7 @@ export const NewNavReviewDialog = () => {
       setDisplayConfirmation(true)
     } catch (e) {
       sendSentryCustomError(e)
-      notify.error('Une erreur est survenue. Merci de réessayer plus tard')
+      notify.error('Une erreur est survenue. Merci de réessayer plus tard.')
     }
   }
 

@@ -27,7 +27,7 @@ export const createOfferFromBookableOffer = async (
       false,
       offerResponse
     )
-  } catch (error) {
+  } catch {
     return notify.error(
       'Une erreur est survenue lors de la récupération de votre offre'
     )

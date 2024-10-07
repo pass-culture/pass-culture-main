@@ -167,7 +167,9 @@ export const CollectiveActionsCells = ({
     try {
       await api.cancelCollectiveOfferBooking(offer.id)
       await mutate(collectiveOffersQueryKeys)
-      isSelected && deselectOffer(offer)
+      if (isSelected) {
+        deselectOffer(offer)
+      }
       setIsCancelledBookingModalOpen(false)
       notify.success(
         'La réservation sur cette offre a été annulée avec succès, votre offre sera à nouveau visible sur ADAGE.',
@@ -202,14 +204,15 @@ export const CollectiveActionsCells = ({
       } else {
         await api.patchCollectiveOffersArchive({ ids: [offer.id] })
       }
-
       await mutate(collectiveOffersQueryKeys)
-      isSelected && deselectOffer(offer)
+      if (isSelected) {
+        deselectOffer(offer)
+      }
       setIsArchivedModalOpen(false)
       notify.success('Une offre a bien été archivée', {
         duration: NOTIFICATION_LONG_SHOW_DURATION,
       })
-    } catch (error) {
+    } catch {
       notify.error('Une erreur est survenue lors de l’archivage de l’offre', {
         duration: NOTIFICATION_LONG_SHOW_DURATION,
       })

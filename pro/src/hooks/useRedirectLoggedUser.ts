@@ -19,7 +19,9 @@ export const useRedirectLoggedUser = () => {
     const redirectUrl = searchParams.has('de')
       ? searchParams.get('de')
       : `/accueil?${searchParams}`
-    redirectUrl && navigate(redirectUrl)
+    if (redirectUrl) {
+      navigate(redirectUrl)
+    }
   }
 
   useEffect(() => {

@@ -58,7 +58,7 @@ export const StatusToggleButton = ({ offer }: StatusToggleButtonProps) => {
           offerType: 'individual',
         })
       }
-    } catch (error) {
+    } catch {
       notification.error(
         'Une erreur est survenue, veuillez réessayer ultérieurement.'
       )

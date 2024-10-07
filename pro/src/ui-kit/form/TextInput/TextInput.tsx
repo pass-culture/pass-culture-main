@@ -133,7 +133,9 @@ export const TextInput = ({
               const testInput = hasDecimal
                 ? !regexHasDecimal.test(event.key)
                 : !regexHasNotDecimal.test(event.key)
-              testInput && event.preventDefault()
+              if (testInput) {
+                event.preventDefault()
+              }
             }
           }}
           // Disable changing input value on scroll over a number input

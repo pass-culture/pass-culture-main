@@ -44,7 +44,7 @@ export const PricingPointDialog = ({
         })
         updateVenuePricingPoint(selectedVenue.id)
         closeDialog()
-      } catch (e) {
+      } catch {
         notification.error(
           'Une erreur est survenue. Merci de réessayer plus tard'
         )

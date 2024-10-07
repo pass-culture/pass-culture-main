@@ -86,7 +86,7 @@ export const useIndividualOfferImageUpload = () => {
               }
             : undefined,
         })
-      } catch (e) {
+      } catch {
         notify.error(
           'Une erreur est survenue lors du téléchargement de l’image.'
         )

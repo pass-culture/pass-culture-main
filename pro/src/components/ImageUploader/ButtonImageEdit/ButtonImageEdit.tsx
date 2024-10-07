@@ -39,7 +39,9 @@ export const ButtonImageEdit = ({
   const [isModalImageOpen, setIsModalImageOpen] = useState(false)
 
   const onClickButtonImageAdd = () => {
-    onClickButtonImage && onClickButtonImage()
+    if (onClickButtonImage) {
+      onClickButtonImage()
+    }
   }
 
   const handleImageDelete = () => {
