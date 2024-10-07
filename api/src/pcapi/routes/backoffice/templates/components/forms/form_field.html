@@ -14,6 +14,6 @@
      data-configuration-class="pc-{{ configuration_name }}"
      data-base-name="pc-field-{{ field.name }}">
   {% for form_field in field %}{{ form_field }}{% endfor %}
-  <span class="d-none pc-{{ configuration_name }} plop"
+  <span class="d-none pc-{{ configuration_name }}"
         data-base-name="{{ field.name }}">{{ field.json_data }}</span>
 </div>
