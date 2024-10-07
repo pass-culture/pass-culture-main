@@ -927,6 +927,7 @@ class DeleteStockTest:
             reason=search.IndexationReason.STOCK_DELETION,
         )
 
+    @override_features(WIP_DISABLE_NOTIFICATION_CANCEL_BOOKING=False)
     def test_delete_stock_cancel_bookings_and_send_emails(self):
         offerer_email = "offerer@example.com"
         stock = factories.EventStockFactory(
@@ -986,6 +987,33 @@ class DeleteStockTest:
             },
             "can_be_asynchronously_retried": False,
         }
+
+    @override_features(WIP_DISABLE_NOTIFICATION_CANCEL_BOOKING=True)
+    @mock.patch("pcapi.workers.push_notification_job.send_cancel_booking_notification.delay")
+    def test_delete_stock_cancel_bookings_and_send_emails_with_ff_disable_notification_cancel_booking(
+        self, mocked_cancel_booking_notification
+    ):
+        offerer_email = "offerer@example.com"
+        stock = factories.EventStockFactory(
+            offer__bookingEmail=offerer_email,
+            offer__venue__pricing_point="self",
+        )
+        bookings_factories.BookingFactory(stock=stock)
+        bookings_factories.CancelledBookingFactory(stock=stock)
+        bookings_factories.UsedBookingFactory(stock=stock)
+        event4 = finance_factories.UsedBookingFinanceEventFactory(booking__stock=stock)
+        booking4 = event4.booking
+        finance_factories.PricingFactory(
+            event=event4,
+            booking=booking4,
+            status=finance_models.PricingStatus.PROCESSED,
+        )
+
+        api.delete_stock(stock)
+
+        # cancellation can trigger more than one request to Batch
+        assert len(push_testing.requests) >= 1
+        assert not mocked_cancel_booking_notification.called
 
     def test_can_delete_if_stock_from_provider(self):
         provider = providers_factories.APIProviderFactory()

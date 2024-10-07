@@ -1438,6 +1438,8 @@ class CancelByBeneficiaryTest:
 
 @pytest.mark.usefixtures("db_session")
 class CancelByOffererTest:
+
+    @override_features(WIP_DISABLE_NOTIFICATION_CANCEL_BOOKING=False)
     def test_cancel(self):
         booking = bookings_factories.BookingFactory()
 
@@ -1461,6 +1463,20 @@ class CancelByOffererTest:
             "user_ids": [booking.userId],
             "can_be_asynchronously_retried": False,
         }
+
+    @override_features(WIP_DISABLE_NOTIFICATION_CANCEL_BOOKING=True)
+    @mock.patch("pcapi.workers.push_notification_job.send_cancel_booking_notification.delay")
+    def test_cancel_with_feature_notification_cancel_booking_activated(self, mocked_cancel_booking_notification_delay):
+        booking = bookings_factories.BookingFactory()
+
+        api.cancel_booking_by_offerer(booking)
+
+        # cancellation can trigger more than one request to Batch
+        assert len(push_testing.requests) >= 1
+
+        assert booking.status is BookingStatus.CANCELLED
+        assert booking.cancellationReason == BookingCancellationReasons.OFFERER
+        assert not mocked_cancel_booking_notification_delay.called
 
     def test_raise_if_already_cancelled(self):
         booking = bookings_factories.CancelledBookingFactory(cancellationReason=BookingCancellationReasons.BENEFICIARY)
