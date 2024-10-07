@@ -8,36 +8,37 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 import styles from './BoxRounded.module.scss'
 
 interface BoxRoundedProps {
-  children: JSX.Element
-  onClickModify: () => void
+  children: React.ReactNode
+  className?: string
+  onClickModify?: () => void
   showButtonModify?: boolean
 }
 
 export const BoxRounded = ({
   children,
+  className,
   onClickModify,
   showButtonModify = true,
 }: BoxRoundedProps) => {
+  const displayEditButton = showButtonModify && !!onClickModify
+
   return (
     <div
-      className={cn(styles['expandable-box'], {
-        [styles['expandable-box-closed']]: showButtonModify,
+      className={cn(styles['expandable-box'], className, {
+        [styles['expandable-box-closed']]: displayEditButton,
       })}
     >
-      <div
-        className={cn(styles['modify-button-container'], {
-          [styles['hidden']]: !showButtonModify,
-        })}
-      >
-        <Button
-          variant={ButtonVariant.TERNARY}
-          onClick={() => onClickModify()}
-          icon={fullEditIcon}
-        >
-          Modifier
-        </Button>
-      </div>
-
+      {displayEditButton && (
+        <div className={styles['modify-button-container']}>
+          <Button
+            variant={ButtonVariant.TERNARY}
+            onClick={onClickModify}
+            icon={fullEditIcon}
+          >
+            Modifier
+          </Button>
+        </div>
+      )}
       {children}
     </div>
   )

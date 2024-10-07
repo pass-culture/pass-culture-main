@@ -39,19 +39,18 @@ export const SelectedValuesTags = ({
       {selectedOptions.map((value: string, i) => (
         <li key={`tag-${fieldName}-${value}`} className={styles['tag']}>
           <button
+            aria-label={`Supprimer ${optionsLabelById[value]}`}
             className={cn(styles['tag-close-button'], {
               [styles['tag-close-button--disabled']]: disabled,
             })}
             onClick={() => onTagRemoved(value, i)}
-            title={'Supprimer ' + optionsLabelById[value]}
             type="button"
             disabled={disabled}
           >
             {optionsLabelById[value]}
-
             <SvgIcon
               src={strokeCloseIcon}
-              alt={'Supprimer ' + optionsLabelById[value]}
+              alt=""
               className={styles['tag-close-button-icon']}
             />
           </button>

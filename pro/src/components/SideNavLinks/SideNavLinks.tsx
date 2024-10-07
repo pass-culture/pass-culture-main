@@ -51,6 +51,8 @@ const COLLECTIVE_LINKS = ['/offres/collectives']
 
 export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
   const isOffererStatsActive = useActiveFeature('ENABLE_OFFERER_STATS')
+  const isOffererStatsV2Active = useActiveFeature('WIP_OFFERER_STATS_V2')
+
   const isNewCollectiveOffersStructureEnabled = useActiveFeature(
     'WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE'
   )
@@ -342,7 +344,7 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
             </ul>
           )}
         </li>
-        {isOffererStatsActive && (
+        {isOffererStatsActive && !isOffererStatsV2Active && (
           <li>
             <NavLink
               to="/statistiques"

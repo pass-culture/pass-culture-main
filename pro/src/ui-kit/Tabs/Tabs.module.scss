@@ -17,6 +17,14 @@
 
     &-label {
       display: flex;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+
+    &-new {
+      margin-left: rem.torem(8px);
     }
 
     &-icon {
@@ -30,20 +38,6 @@
     &-link {
       display: flex;
 
-      &:hover {
-        text-decoration: underline;
-      }
-    }
-
-    &-button {
-      &:hover,
-      &:focus-visible {
-        text-decoration: none;
-      }
-    }
-
-    &-button,
-    &-link {
       &:focus-visible {
         border-radius: rem.torem(4px);
         outline: rem.torem(1px) solid var(--color-input-text-color);
@@ -57,11 +51,6 @@
       text-decoration: none;
 
       .tabs-tab-icon {
-        fill: var(--color-primary);
-        color: var(--color-primary);
-      }
-
-      .tabs-tab-button svg {
         fill: var(--color-primary);
         color: var(--color-primary);
       }

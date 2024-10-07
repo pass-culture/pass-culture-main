@@ -4,6 +4,7 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+import { Tag, TagVariant } from 'ui-kit/Tag/Tag'
 
 import styles from './Tabs.module.scss'
 
@@ -12,6 +13,7 @@ export interface Tab {
   key: string
   url?: string
   icon?: string
+  isNew?: boolean
 }
 
 interface TabsProps {
@@ -35,7 +37,7 @@ export const Tabs = ({
       value={selectedKey}
     >
       <TabsPrimitive.List className={styles['tabs']}>
-        {tabs.map(({ key, label, url, icon }) => (
+        {tabs.map(({ key, label, url, icon, isNew = false }) => (
           <TabsPrimitive.Trigger
             className={cn(styles['tabs-tab'], {
               [styles['is-selected']]: selectedKey === key,
@@ -54,6 +56,14 @@ export const Tabs = ({
                 />
               )}
               <span className={styles['tabs-tab-label']}>{label}</span>
+              {isNew && (
+                <Tag
+                  className={styles['tabs-tab-new']}
+                  variant={TagVariant.BLUE}
+                >
+                  Nouveau
+                </Tag>
+              )}
             </Link>
           </TabsPrimitive.Trigger>
         ))}
