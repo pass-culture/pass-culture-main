@@ -61,3 +61,7 @@ export function useMediaQuery(
 
   return matches
 }
+
+// Height at which the side nav has to scroll
+export const SIDE_NAV_MIN_HEIGHT_COLLAPSE_MEDIA_QUERY =
+  '(max-height: 41.875rem)'

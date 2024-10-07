@@ -33,6 +33,16 @@ export const renderWithProviders = (
   overrides?: RenderWithProvidersOptions,
   initialPath?: string
 ) => {
+  // Added here to mock the sidebar collapse for all the tests
+  Object.defineProperty(window, 'matchMedia', {
+    writable: true,
+    value: () => ({
+      matches: false,
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+    }),
+  })
+
   const featuresList = (overrides?.features ?? []).map(
     (feature, index): FeatureResponseModel => ({
       id: String(index),
