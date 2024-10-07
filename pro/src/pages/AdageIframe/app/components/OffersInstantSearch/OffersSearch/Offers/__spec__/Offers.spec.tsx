@@ -13,6 +13,7 @@ import {
   StudentLevels,
 } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
+import * as useMediaQuery from 'hooks/useMediaQuery'
 import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
 import {
   defaultCollectiveOffer,
@@ -20,8 +21,8 @@ import {
   defaultUseStatsReturn,
 } from 'utils/adageFactories'
 import {
-  RenderWithProvidersOptions,
   renderWithProviders,
+  RenderWithProvidersOptions,
 } from 'utils/renderWithProviders'
 
 import { Offers, OffersProps } from '../Offers'
@@ -45,15 +46,6 @@ vi.mock('apiClient/api', () => ({
     logOfferTemplateDetailsButtonClick: vi.fn(),
   },
 }))
-
-Object.defineProperty(window, 'matchMedia', {
-  writable: true,
-  value: () => ({
-    matches: false,
-    addListener: vi.fn(),
-    removeListener: vi.fn(),
-  }),
-})
 
 vi.mock('utils/config', async () => {
   return {
@@ -121,6 +113,8 @@ const renderOffers = (
   adageUser: AuthenticatedResponse,
   options?: RenderWithProvidersOptions
 ) => {
+  vi.spyOn(useMediaQuery, 'useMediaQuery').mockReturnValue(false)
+
   return renderWithProviders(
     <AdageUserContextProvider adageUser={adageUser}>
       <Formik onSubmit={() => {}} initialValues={{}}>
@@ -612,15 +606,6 @@ describe('offers', () => {
   })
 
   it('should change to grid vue when breakpoint active', async () => {
-    Object.defineProperty(window, 'matchMedia', {
-      writable: true,
-      value: () => ({
-        matches: true,
-        addListener: vi.fn(),
-        removeListener: vi.fn(),
-      }),
-    })
-
     vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(offerInParis)
     vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(
       offerInCayenne
@@ -667,15 +652,6 @@ describe('offers', () => {
   })
 
   it('should trigger a log event when clicking the offer when the offers are in grid mode', async () => {
-    Object.defineProperty(window, 'matchMedia', {
-      writable: true,
-      value: () => ({
-        matches: true,
-        addListener: vi.fn(),
-        removeListener: vi.fn(),
-      }),
-    })
-
     vi.spyOn(apiAdage, 'getCollectiveOfferTemplates').mockResolvedValueOnce({
       collectiveOffers: [otherOffer],
     })
@@ -686,6 +662,7 @@ describe('offers', () => {
     }))
 
     renderOffers(offersProps, adageUser)
+    vi.spyOn(useMediaQuery, 'useMediaQuery').mockReturnValueOnce(true)
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
     const link = screen.getByRole('link', {

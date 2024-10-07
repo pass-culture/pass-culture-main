@@ -1,8 +1,10 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { beforeEach, describe, expect } from 'vitest'
 import { axe } from 'vitest-axe'
 
 import { api } from 'apiClient/api'
+import * as useMediaQuery from 'hooks/useMediaQuery'
 import {
   defaultGetOffererResponseModel,
   defaultGetOffererVenueResponseModel,
@@ -129,5 +131,43 @@ describe('SideNavLinks', () => {
     expect(
       screen.queryByRole('link', { name: 'Créer une offre' })
     ).not.toBeInTheDocument()
+  })
+
+  describe('small height devices', () => {
+    beforeEach(() => {
+      vi.spyOn(useMediaQuery, 'useMediaQuery').mockReturnValue(true)
+    })
+
+    it('should collapse menus', () => {
+      renderSideNavLinks()
+
+      const individualAccordionButton = screen.getByRole('button', {
+        name: 'Individuel',
+      })
+      expect(individualAccordionButton).toBeInTheDocument()
+      expect(
+        screen.queryByRole('link', { name: 'Guichet' })
+      ).not.toBeInTheDocument()
+    })
+
+    it('should collapse one menu at a time', async () => {
+      renderSideNavLinks()
+
+      const individualAccordionButton = screen.getByRole('button', {
+        name: 'Individuel',
+      })
+      const collectiveAccordionButton = screen.getByRole('button', {
+        name: 'Collectif',
+      })
+
+      await userEvent.click(individualAccordionButton)
+      expect(
+        screen.queryByRole('link', { name: 'Guichet' })
+      ).toBeInTheDocument()
+      await userEvent.click(collectiveAccordionButton)
+      expect(
+        screen.queryByRole('link', { name: 'Guichet' })
+      ).not.toBeInTheDocument()
+    })
   })
 })

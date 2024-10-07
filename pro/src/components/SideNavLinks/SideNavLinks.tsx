@@ -1,5 +1,4 @@
 import classnames from 'classnames'
-import cn from 'classnames'
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { NavLink, useLocation } from 'react-router-dom'
@@ -12,6 +11,10 @@ import { hasStatusCode } from 'core/OfferEducational/utils/hasStatusCode'
 import { SAVED_OFFERER_ID_KEY } from 'core/shared/constants'
 import { useActiveFeature } from 'hooks/useActiveFeature'
 import { useIsNewInterfaceActive } from 'hooks/useIsNewInterfaceActive'
+import {
+  SIDE_NAV_MIN_HEIGHT_COLLAPSE_MEDIA_QUERY,
+  useMediaQuery,
+} from 'hooks/useMediaQuery'
 import fullDownIcon from 'icons/full-down.svg'
 import fullUpIcon from 'icons/full-up.svg'
 import strokeCollaboratorIcon from 'icons/stroke-collaborator.svg'
@@ -21,7 +24,10 @@ import strokePhoneIcon from 'icons/stroke-phone.svg'
 import strokePieIcon from 'icons/stroke-pie.svg'
 import strokeTeacherIcon from 'icons/stroke-teacher.svg'
 import { getSavedVenueId } from 'pages/Home/Offerers/PartnerPages'
-import { setOpenSection } from 'store/nav/reducer'
+import {
+  setIsCollectiveSectionOpen,
+  setIsIndividualSectionOpen,
+} from 'store/nav/reducer'
 import {
   selectIsCollectiveSectionOpen,
   selectIsIndividualSectionOpen,
@@ -56,6 +62,9 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
   const isIndividualSectionOpen = useSelector(selectIsIndividualSectionOpen)
   const isCollectiveSectionOpen = useSelector(selectIsCollectiveSectionOpen)
   const selectedOffererId = useSelector(selectCurrentOffererId)
+  const sideNavCollapseSize = useMediaQuery(
+    SIDE_NAV_MIN_HEIGHT_COLLAPSE_MEDIA_QUERY
+  )
 
   const selectedOffererQuery = useSWR(
     selectedOffererId ? [GET_OFFERER_QUERY_KEY, selectedOffererId] : null,
@@ -89,12 +98,15 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
     permanentVenues[0]?.id
 
   useEffect(() => {
-    if (INDIVIDUAL_LINKS.includes(location.pathname)) {
-      dispatch(setOpenSection('individual'))
-    } else if (COLLECTIVE_LINKS.includes(location.pathname)) {
-      dispatch(setOpenSection('collective'))
+    if (sideNavCollapseSize) {
+      dispatch(
+        setIsIndividualSectionOpen(INDIVIDUAL_LINKS.includes(location.pathname))
+      )
+      dispatch(
+        setIsCollectiveSectionOpen(COLLECTIVE_LINKS.includes(location.pathname))
+      )
     }
-  }, [dispatch, location.pathname])
+  }, [sideNavCollapseSize, dispatch, location.pathname])
 
   const offererId = localStorageAvailable()
     ? localStorage.getItem(SAVED_OFFERER_ID_KEY)
@@ -119,7 +131,12 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
           </li>
         </ul>
       )}
-      <ul className={cn(styles['nav-links-group'], styles['nav-links-scroll'])}>
+      <ul
+        className={classnames(
+          styles['nav-links-group'],
+          styles['nav-links-scroll']
+        )}
+      >
         <li>
           <NavLink
             to="/accueil"
@@ -135,11 +152,13 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
         </li>
         <li>
           <button
-            onClick={() =>
-              dispatch(
-                setOpenSection(isIndividualSectionOpen ? null : 'individual')
-              )
-            }
+            onClick={() => {
+              const willOpenIndividualSection = !isIndividualSectionOpen
+              if (sideNavCollapseSize && willOpenIndividualSection) {
+                dispatch(setIsCollectiveSectionOpen(false))
+              }
+              dispatch(setIsIndividualSectionOpen(willOpenIndividualSection))
+            }}
             className={(styles['nav-links-item'], styles['nav-section-button'])}
             aria-expanded={isIndividualSectionOpen}
             aria-controls="individual-sublist"
@@ -226,11 +245,15 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
         </li>
         <li>
           <button
-            onClick={() =>
+            onClick={() => {
+              const willdOpenCollectiveSection = !isCollectiveSectionOpen
+              if (sideNavCollapseSize && willdOpenCollectiveSection) {
+                dispatch(setIsIndividualSectionOpen(false))
+              }
               dispatch(
-                setOpenSection(isCollectiveSectionOpen ? null : 'collective')
+                dispatch(setIsCollectiveSectionOpen(willdOpenCollectiveSection))
               )
-            }
+            }}
             className={(styles['nav-links-item'], styles['nav-section-button'])}
             aria-expanded={isCollectiveSectionOpen}
             aria-controls="collective-sublist"
