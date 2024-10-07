@@ -135,6 +135,9 @@ class FeatureToggle(enum.Enum):
     WIP_DISABLE_SEND_NOTIFICATIONS_FAVORITES_NOT_BOOKED = (
         "Désactiver la notification push Batch pour les favoris non-réservés"
     )
+    WIP_DISABLE_TODAY_STOCK_NOTIFICATION = (
+        "Désactiver la notification push Batch pour les réservations se déroulant le jour même"
+    )
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -192,6 +195,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_CONNECT_AS_EXTENDED,
     FeatureToggle.WIP_DISABLE_NOTIFY_USERS_BOOKINGS_NOT_RETRIEVED,
     FeatureToggle.WIP_DISABLE_SEND_NOTIFICATIONS_FAVORITES_NOT_BOOKED,
+    FeatureToggle.WIP_DISABLE_TODAY_STOCK_NOTIFICATION,
     FeatureToggle.WIP_EAN_CREATION,
     FeatureToggle.WIP_ENABLE_BREVO_PRO_SUBACCOUNT,
     FeatureToggle.WIP_ENABLE_MOCK_UBBLE,
