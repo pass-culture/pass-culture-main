@@ -4,6 +4,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
+import { CollectiveOfferType as CollectiveOfferApiType } from 'apiClient/v1'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { GET_OFFERER_QUERY_KEY } from 'config/swrQueryKeys'
@@ -125,7 +126,6 @@ export const OfferTypeScreen = (): JSX.Element => {
         creationMode,
         periodBeginningDate,
         periodEndingDate,
-        collectiveOfferType,
         format,
       } = serializeApiCollectiveFilters(
         apiFilters,
@@ -141,7 +141,7 @@ export const OfferTypeScreen = (): JSX.Element => {
         creationMode,
         periodBeginningDate,
         periodEndingDate,
-        collectiveOfferType,
+        CollectiveOfferApiType.TEMPLATE,
         format
       )
 

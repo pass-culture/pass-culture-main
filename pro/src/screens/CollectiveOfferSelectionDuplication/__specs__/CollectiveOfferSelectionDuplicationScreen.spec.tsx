@@ -1,4 +1,8 @@
-import { screen, waitFor } from '@testing-library/react'
+import {
+  screen,
+  waitFor,
+  waitForElementToBeRemoved,
+} from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Formik } from 'formik'
 
@@ -66,6 +70,8 @@ describe('CollectiveOfferConfirmation', () => {
       initialValues,
       onSubmit,
     })
+
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
     expect(
       screen.getByText('Rechercher l’offre vitrine à dupliquer')

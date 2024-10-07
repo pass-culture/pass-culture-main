@@ -279,7 +279,7 @@ describe('OfferType', () => {
         undefined,
         undefined,
         undefined,
-        undefined,
+        'template',
         undefined
       )
     })
