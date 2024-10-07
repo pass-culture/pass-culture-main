@@ -27,6 +27,9 @@ def send_today_events_notifications_metropolitan_france() -> None:
     France but not the morning (11h UTC -> 12h/13h local time) and
     send notifications to all the users.
     """
+    if FeatureToggle.WIP_DISABLE_TODAY_STOCK_NOTIFICATION.is_active():
+        return
+
     today_min, today_max = _setup_today_min_max(utc_mean_offset=1)
     stock_ids = find_today_event_stock_ids_metropolitan_france(today_min, today_max)
 
@@ -51,6 +54,9 @@ def send_today_events_notifications_overseas(utc_mean_offset: int, departments: 
         to target bookings from la Réunion,
         send_today_events_notifications_overseas(5, ["974"])
     """
+    if FeatureToggle.WIP_DISABLE_TODAY_STOCK_NOTIFICATION.is_active():
+        return
+
     today_min, today_max = _setup_today_min_max(utc_mean_offset)
     stock_ids = offers_repository.find_today_event_stock_ids_from_departments(today_min, today_max, departments)
 
