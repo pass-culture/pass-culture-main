@@ -10,6 +10,7 @@ from pcapi.core.bookings.exceptions import BookingIsExpired
 from pcapi.core.bookings.repository import get_soon_expiring_bookings
 import pcapi.core.offers.repository as offers_repository
 from pcapi.core.offers.repository import find_today_event_stock_ids_metropolitan_france
+from pcapi.models.feature import FeatureToggle
 from pcapi.notifications.push.transactional_notifications import (
     get_soon_expiring_bookings_with_offers_notification_data,
 )
@@ -104,6 +105,9 @@ def notify_users_bookings_not_retrieved() -> None:
     Find soon expiring bookings that will expire in exactly N days and
     send a notification to each user.
     """
+    if FeatureToggle.WIP_DISABLE_NOTIFY_USERS_BOOKINGS_NOT_RETRIEVED.is_active():
+        return
+
     bookings = get_soon_expiring_bookings(settings.SOON_EXPIRING_BOOKINGS_DAYS_BEFORE_EXPIRATION)
     for booking in bookings:
         try:
