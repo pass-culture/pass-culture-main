@@ -78,6 +78,7 @@ describe('Signup journey with new venue', () => {
           body: addressInterceptionPayload,
         })
     ).as('search1Address')
+    cy.intercept({ method: 'GET', url: '/offerers/names' }).as('getOfferers')
   })
 
   it('Should sign up with a new account, create a new offerer with an unknown SIRET', () => {
@@ -152,8 +153,8 @@ describe('Signup journey with new venue', () => {
       .should('not.be.visible')
     cy.url({ timeout: 10000 }).should('contain', '/accueil')
     cy.findAllByTestId('spinner', { timeout: 30 * 1000 }).should('not.exist')
-    // FIXME PC-32171 this should be directly good without need to refresh
-    // cy.findByText('First Venue').should('be.visible')
+    cy.wait('@getOfferers').its('response.statusCode').should('eq', 200)
+    cy.findByText('First Venue').should('be.visible')
   })
 })
 
@@ -191,6 +192,7 @@ describe('Signup journey with known venue', () => {
           body: addressInterceptionPayload,
         })
     ).as('search1Address')
+    cy.intercept({ method: 'GET', url: '/offerers/names' }).as('getOfferers')
   })
 
   it('Should sign up with a new account and a known offerer, create a new offerer in the space', () => {
@@ -289,12 +291,12 @@ describe('Signup journey with known venue', () => {
       .should('not.be.visible')
     cy.url({ timeout: 10000 }).should('contain', '/accueil')
     cy.findAllByTestId('spinner', { timeout: 30 * 1000 }).should('not.exist')
+    cy.wait('@getOfferers').its('response.statusCode').should('eq', 200)
 
     // Then the attachment is in progress
-    // FIXME PC-32171 this should be directly good without need to refresh
-    // cy.contains(
-    //   'Le rattachement à votre structure est en cours de traitement par les équipes du pass Culture'
-    // ).should('be.visible')
+    cy.contains(
+      'Le rattachement à votre structure est en cours de traitement par les équipes du pass Culture'
+    ).should('be.visible')
   })
 
   it('Should sign up with a new account and a known offerer', () => {
@@ -338,11 +340,12 @@ describe('Signup journey with known venue', () => {
     // When I am redirected to homepage
     cy.url({ timeout: 10000 }).should('contain', '/accueil')
     cy.findAllByTestId('spinner', { timeout: 30 * 1000 }).should('not.exist')
+    cy.reload()
+    cy.wait('@getOfferers').its('response.statusCode').should('eq', 200)
 
     // Then the attachment is in progress
-    // FIXME PC-32171 this should be directly good without need to refresh
-    // cy.contains(
-    //   'Le rattachement à votre structure est en cours de traitement par les équipes du pass Culture'
-    // ).should('be.visible')
+    cy.contains(
+      'Le rattachement à votre structure est en cours de traitement par les équipes du pass Culture'
+    ).should('be.visible')
   })
 })
