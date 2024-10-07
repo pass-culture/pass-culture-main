@@ -962,26 +962,6 @@ def _find_today_event_stock_ids_filter_by_departments(
     return {stock.id for stock in query}
 
 
-def delete_past_draft_collective_offers() -> None:
-    yesterday = datetime.datetime.utcnow() - datetime.timedelta(days=1)
-    collective_offer_ids_tuple = educational_models.CollectiveOffer.query.filter(
-        educational_models.CollectiveOffer.dateCreated < yesterday,
-        educational_models.CollectiveOffer.validation == models.OfferValidationStatus.DRAFT,
-    ).with_entities(educational_models.CollectiveOffer.id)
-    collective_offer_ids = [collective_offer_id for (collective_offer_id,) in collective_offer_ids_tuple]
-
-    # Handle collective offers having a stock but user did not save institution association
-    # Thus the collective offer is not fully created
-    educational_models.CollectiveStock.query.filter(
-        educational_models.CollectiveStock.collectiveOfferId.in_(collective_offer_ids)
-    ).delete()
-    educational_models.CollectiveOffer.query.filter(
-        educational_models.CollectiveOffer.id.in_(collective_offer_ids)
-    ).delete()
-
-    db.session.commit()
-
-
 def delete_future_offer(offer_id: int) -> None:
     models.FutureOffer.query.filter_by(offerId=offer_id).delete()
 

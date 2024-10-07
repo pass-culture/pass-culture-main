@@ -1175,32 +1175,6 @@ class GetExpiredOffersTest:
 
 
 @pytest.mark.usefixtures("db_session")
-class DeletePastDraftOfferTest:
-    def test_delete_past_draft_collective_offers(self):
-        two_days_ago = datetime.datetime.utcnow() - datetime.timedelta(days=2)
-        educational_factories.CollectiveOfferFactory(
-            dateCreated=two_days_ago, validation=offer_mixin.OfferValidationStatus.DRAFT
-        )
-        past_offer = educational_factories.CollectiveOfferFactory(
-            dateCreated=two_days_ago, validation=offer_mixin.OfferValidationStatus.PENDING
-        )
-        today_offer = educational_factories.CollectiveOfferFactory(
-            dateCreated=datetime.datetime.utcnow(), validation=offer_mixin.OfferValidationStatus.DRAFT
-        )
-        # past offer with collective stock but user did not finalize offer creation
-        # with institution association
-        educational_factories.CollectiveStockFactory(
-            collectiveOffer__dateCreated=two_days_ago,
-            collectiveOffer__validation=offer_mixin.OfferValidationStatus.DRAFT,
-        )
-
-        repository.delete_past_draft_collective_offers()
-
-        collective_offers = educational_models.CollectiveOffer.query.all()
-        assert set(collective_offers) == {today_offer, past_offer}
-
-
-@pytest.mark.usefixtures("db_session")
 class AvailableActivationCodeTest:
     def test_activation_code_is_available_for_a_stock(self):
         # GIVEN

@@ -23,7 +23,6 @@ from pcapi.core.offerers.repository import (
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.core.offers.repository import check_stock_consistency
-from pcapi.core.offers.repository import delete_past_draft_collective_offers
 from pcapi.core.offers.repository import find_event_stocks_happening_in_x_days
 import pcapi.core.providers.repository as providers_repository
 from pcapi.core.providers.repository import get_provider_by_local_class
@@ -274,14 +273,6 @@ def send_email_reminder_offer_creation_j10_to_pro() -> None:
 @log_cron_with_transaction
 def _send_email_reminder_tomorrow_event_to_beneficiaries() -> None:
     send_email_reminder_tomorrow_event_to_beneficiaries()
-
-
-@blueprint.cli.command("clean_past_draft_offers")
-@log_cron_with_transaction
-def clean_past_draft_offers() -> None:
-    """Deletes past collective offers that are in draft status.
-    Individual offers are not deleted, pro users can delete and manage them themselves."""
-    delete_past_draft_collective_offers()
 
 
 @blueprint.cli.command("users_turned_eighteen_automation")
