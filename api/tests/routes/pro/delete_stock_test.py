@@ -3,6 +3,7 @@ from pcapi.core.bookings.factories import BookingFactory
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import OfferValidationStatus
+from pcapi.core.testing import override_features
 from pcapi.core.token import SecureToken
 from pcapi.core.token.serialization import ConnectAsInternalModel
 import pcapi.core.users.factories as users_factories
@@ -10,6 +11,7 @@ from pcapi.notifications.push import testing as push_testing
 
 
 class Returns200Test:
+    @override_features(WIP_DISABLE_CANCEL_BOOKING_NOTIFICATION=False)
     def when_current_user_has_rights_on_offer(self, client, db_session):
         # given
         offer = offers_factories.OfferFactory()
@@ -37,6 +39,28 @@ class Returns200Test:
             "user_ids": [booking.userId],
             "can_be_asynchronously_retried": False,
         }
+
+    @override_features(WIP_DISABLE_CANCEL_BOOKING_NOTIFICATION=True)
+    def when_current_user_has_rights_on_offer_with_FF(self, client, db_session):
+        # given
+        offer = offers_factories.OfferFactory()
+        user_offerer = offerers_factories.UserOffererFactory(
+            user__email="pro@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+        stock = offers_factories.StockFactory(offer=offer)
+        booking = BookingFactory(stock=stock)
+
+        # when
+        response = client.with_session_auth("pro@example.com").delete(f"/stocks/{stock.id}")
+
+        # then
+        assert response.status_code == 200
+        assert response.json == {"id": stock.id}
+        assert stock.isSoftDeleted
+        assert stock.bookings[0].cancellationUser == user_offerer.user
+        cancel_notification_requests = [req for req in push_testing.requests if req.get("group_id") == "Cancel_booking"]
+        assert len(cancel_notification_requests) == 0
 
     def when_current_user_is_connect_as(self, client, db_session):
         # given

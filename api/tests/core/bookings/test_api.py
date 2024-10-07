@@ -1439,6 +1439,7 @@ class CancelByBeneficiaryTest:
 
 @pytest.mark.usefixtures("db_session")
 class CancelByOffererTest:
+    @override_features(WIP_DISABLE_CANCEL_BOOKING_NOTIFICATION=False)
     def test_cancel(self):
         booking = bookings_factories.BookingFactory()
 
@@ -1462,6 +1463,18 @@ class CancelByOffererTest:
             "user_ids": [booking.userId],
             "can_be_asynchronously_retried": False,
         }
+
+    @override_features(WIP_DISABLE_CANCEL_BOOKING_NOTIFICATION=True)
+    def test_cancel_with_FF(self):
+        booking = bookings_factories.BookingFactory()
+
+        api.cancel_booking_by_offerer(booking)
+
+        assert booking.status is BookingStatus.CANCELLED
+        assert booking.cancellationReason == BookingCancellationReasons.OFFERER
+
+        cancel_notification_requests = [req for req in push_testing.requests if req.get("group_id") == "Cancel_booking"]
+        assert len(cancel_notification_requests) == 0
 
     def test_raise_if_already_cancelled(self):
         booking = bookings_factories.CancelledBookingFactory(cancellationReason=BookingCancellationReasons.BENEFICIARY)

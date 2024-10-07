@@ -129,6 +129,9 @@ class FeatureToggle(enum.Enum):
         "Activer la nouvelle structure des offres et réservations collectives"
     )
     WIP_UBBLE_V2 = "Utiliser l'API v2 d'Ubble pour l'identification des bénéficiaires"
+    WIP_DISABLE_CANCEL_BOOKING_NOTIFICATION = (
+        "Désactiver la notification push Batch pour l'annulation d'une réservation"
+    )
     WIP_DISABLE_NOTIFY_USERS_BOOKINGS_NOT_RETRIEVED = (
         "Désactiver la notification push Batch pour les réservations sur le point d'expirer"
     )
@@ -193,6 +196,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.USE_END_DATE_FOR_COLLECTIVE_PRICING,
     FeatureToggle.WIP_BENEFICIARY_EXTRACT_TOOL,
     FeatureToggle.WIP_CONNECT_AS_EXTENDED,
+    FeatureToggle.WIP_DISABLE_CANCEL_BOOKING_NOTIFICATION,
     FeatureToggle.WIP_DISABLE_NOTIFY_USERS_BOOKINGS_NOT_RETRIEVED,
     FeatureToggle.WIP_DISABLE_SEND_NOTIFICATIONS_FAVORITES_NOT_BOOKED,
     FeatureToggle.WIP_DISABLE_TODAY_STOCK_NOTIFICATION,
