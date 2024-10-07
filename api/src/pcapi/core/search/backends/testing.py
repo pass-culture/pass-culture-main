@@ -22,6 +22,13 @@ class FakeClient:
     def clear_objects(self) -> None:
         testing.search_store[self.key] = {}
 
+    def search(self, query: str, params: dict) -> dict:
+        if query == "ok":
+            start = params.get("page", 0) * 1000
+            count = params.get("hitsPerPage", 20)
+            return {"hits": [{"objectID": i} for i in range(start, start + count)]}
+        return {"hits": []}
+
 
 class TestingBackend(AlgoliaBackend):
     """A backend to be used by automated tests.

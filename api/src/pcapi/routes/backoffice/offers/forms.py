@@ -53,6 +53,17 @@ class IndividualOffersSearchAttributes(enum.Enum):
     VISA = "Visa d'exploitation"
 
 
+class IndividualOffersAlgoliaSearchAttributes(enum.Enum):
+    CATEGORY = "Catégorie"
+    DEPARTMENT = "Département"
+    EAN = "EAN-13"
+    VENUE = "Lieu"
+    REGION = "Région"
+    SUBCATEGORY = "Sous-catégorie"
+    OFFERER = "Structure"
+    SHOW_TYPE = "Type de spectacle"
+
+
 operator_no_require_value = ["NOT_EXIST"]
 
 form_field_configuration = {
@@ -87,6 +98,17 @@ form_field_configuration = {
     },
     "SYNCHRONIZED": {"field": "boolean", "operator": ["NULLABLE"]},
     "PROVIDER": {"field": "provider", "operator": ["IN", "NOT_IN"]},
+}
+
+algolia_form_field_configuration = {
+    "CATEGORY": {"field": "category", "operator": ["IN", "NOT_IN"]},
+    "DEPARTMENT": {"field": "department", "operator": ["IN", "NOT_IN"]},
+    "REGION": {"field": "region", "operator": ["IN", "NOT_IN"]},
+    "EAN": {"field": "string", "operator": ["EQUALS", "NOT_EQUALS"]},
+    "OFFERER": {"field": "offerer", "operator": ["IN", "NOT_IN"]},
+    "SUBCATEGORY": {"field": "subcategory", "operator": ["IN", "NOT_IN"]},
+    "VENUE": {"field": "venue", "operator": ["IN", "NOT_IN"]},
+    "SHOW_TYPE": {"field": "show_type", "operator": ["IN", "NOT_IN"]},
 }
 
 
@@ -332,24 +354,125 @@ class OfferAdvancedSearchSubForm(forms_utils.PCForm):
         return string
 
 
-class GetOfferAdvancedSearchForm(GetOffersBaseFields):
+class OfferAlgoliaSearchSubForm(forms_utils.PCForm):
+    class Meta:
+        csrf = False
+        locales = ["fr_FR", "fr"]
+
+    json_data = json.dumps(
+        {
+            "display_configuration": algolia_form_field_configuration,
+            "all_available_fields": [
+                "category",
+                "department",
+                "region",
+                "offerer",
+                "string",
+                "subcategory",
+                "venue",
+                "show_type",
+            ],
+            "sub_rule_type_field_name": "search_field",
+            "operator_field_name": "operator",
+        }
+    )
+
+    def __init__(self, *args: list, **kwargs: dict):
+        super().__init__(*args, **kwargs)
+        autocomplete.prefill_offerers_choices(self.offerer)
+        autocomplete.prefill_venues_choices(self.venue)
+
+    search_field = fields.PCSelectWithPlaceholderValueField(
+        "Champ de recherche",
+        choices=forms_utils.choices_from_enum(IndividualOffersAlgoliaSearchAttributes),
+        validators=[
+            wtforms.validators.Optional(""),
+        ],
+    )
+    operator = fields.PCSelectField(
+        "Opérateur",
+        choices=forms_utils.choices_from_enum(utils.AdvancedSearchOperators),
+        default=utils.AdvancedSearchOperators.EQUALS,  # avoids empty option
+        validators=[
+            wtforms.validators.Optional(""),
+        ],
+    )
+    category = fields.PCSelectMultipleField(
+        "Catégories",
+        choices=forms_utils.choices_from_enum(categories.CategoryIdLabelEnum),
+        search_inline=True,
+        field_list_compatibility=True,
+    )
+    subcategory = fields.PCSelectMultipleField(
+        "Sous-catégories",
+        choices=forms_utils.choices_from_enum(subcategories.SubcategoryProLabelEnumv2),
+        search_inline=True,
+        field_list_compatibility=True,
+    )
+    department = fields.PCSelectMultipleField(
+        "Départements",
+        choices=constants.area_choices,
+        search_inline=True,
+        field_list_compatibility=True,
+    )
+    region = fields.PCSelectMultipleField(
+        "Régions",
+        choices=utils.get_regions_choices(),
+        search_inline=True,
+        field_list_compatibility=True,
+    )
+    offerer = fields.PCTomSelectField(
+        "Structures",
+        multiple=True,
+        choices=[],
+        validate_choice=False,
+        endpoint="backoffice_web.autocomplete_offerers",
+        search_inline=True,
+        field_list_compatibility=True,
+    )
+    string = fields.PCOptStringField(
+        "Texte",
+        validators=[
+            wtforms.validators.Length(max=4096, message="Doit contenir moins de %(max)d caractères"),
+        ],
+    )
+    venue = fields.PCTomSelectField(
+        "Lieux",
+        multiple=True,
+        choices=[],
+        validate_choice=False,
+        endpoint="backoffice_web.autocomplete_venues",
+        search_inline=True,
+        field_list_compatibility=True,
+    )
+    show_type = fields.PCSelectMultipleField(
+        "Type de spectacle",
+        choices=[(str(s), show_types.SHOW_TYPES_LABEL_BY_CODE[s]) for s in show_types.SHOW_TYPES_LABEL_BY_CODE],
+        search_inline=True,
+        field_list_compatibility=True,
+    )
+
+    def validate_string(self, string: fields.PCStringField) -> fields.PCStringField:
+        if string.data:
+            search_field = self._fields["search_field"].data
+            if search_field == "EAN":
+                if not string_utils.is_ean_valid(string.data):
+                    raise wtforms.validators.ValidationError("La recherche ne correspond pas au format d'un EAN-13")
+                string.data = string_utils.format_ean_or_visa(string.data)
+        return string
+
+
+class BaseOfferAdvancedSearchForm(GetOffersBaseFields):
     class Meta:
         csrf = False
 
     method = "GET"
-    only_validated_offerers = fields.PCSwitchBooleanField(
-        "Uniquement les offres des structures validées", full_row=True
-    )
+
     search = fields.PCFieldListField(
         fields.PCFormField(OfferAdvancedSearchSubForm),
         label="recherches",
         min_entries=1,
     )
-
-    def is_empty(self) -> bool:
-        empty = not self.only_validated_offerers.data
-        empty = empty and GetOfferAdvancedSearchForm.is_search_empty(self.search.data)
-        return empty and super().is_empty()
 
     @staticmethod
     def is_sub_search_empty(sub_search: dict[str, typing.Any]) -> bool:
@@ -367,7 +490,7 @@ class GetOfferAdvancedSearchForm(GetOffersBaseFields):
     @staticmethod
     def is_search_empty(search_data: list[dict[str, typing.Any]]) -> bool:
         for sub_search in search_data:
-            if not GetOfferAdvancedSearchForm.is_sub_search_empty(sub_search):
+            if not BaseOfferAdvancedSearchForm.is_sub_search_empty(sub_search):
                 return False
         return True
 
@@ -390,7 +513,7 @@ class GetOfferAdvancedSearchForm(GetOffersBaseFields):
 
         for sub_search in self.search.data:
             if search_field := sub_search.get("search_field"):
-                if GetOfferAdvancedSearchForm.is_sub_search_empty(sub_search):
+                if BaseOfferAdvancedSearchForm.is_sub_search_empty(sub_search):
                     try:
                         errors.append(f"Le filtre « {IndividualOffersSearchAttributes[search_field].value} » est vide.")
                     except KeyError:
@@ -401,6 +524,31 @@ class GetOfferAdvancedSearchForm(GetOffersBaseFields):
             return False
 
         return super().validate(extra_validators)
+
+
+class GetOfferAdvancedSearchForm(BaseOfferAdvancedSearchForm):
+    only_validated_offerers = fields.PCSwitchBooleanField(
+        "Uniquement les offres des structures validées", full_row=True
+    )
+
+    def is_empty(self) -> bool:
+        empty = not self.only_validated_offerers.data
+        empty = empty and GetOfferAdvancedSearchForm.is_search_empty(self.search.data)
+        return empty and super().is_empty()
+
+
+class GetOfferAlgoliaSearchForm(BaseOfferAdvancedSearchForm):
+    algolia_search = fields.PCOptStringField("Recherche", full_width=True)
+    search = fields.PCFieldListField(
+        fields.PCFormField(OfferAlgoliaSearchSubForm),
+        label="recherches",
+        min_entries=1,
+    )
+
+    def is_empty(self) -> bool:
+        empty = not self.algolia_search.data
+        empty = empty and GetOfferAlgoliaSearchForm.is_search_empty(self.search.data)
+        return empty and super().is_empty()
 
 
 class EditOfferForm(FlaskForm):
