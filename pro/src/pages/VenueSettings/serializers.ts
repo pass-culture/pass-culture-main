@@ -23,7 +23,7 @@ export const serializeEditVenueBodyModel = (
     withdrawalDetails: formValues.withdrawalDetails,
     isEmailAppliedOnAllOffers: true,
     isWithdrawalAppliedOnAllOffers: formValues.isWithdrawalAppliedOnAllOffers,
-    shouldSendMail: shouldSendMail,
+    shouldSendMail,
     venueLabelId: !formValues.venueLabel ? null : Number(formValues.venueLabel),
     venueTypeCode: formValues.venueType as VenueTypeCode,
     isManualEdition: formValues.manuallySetAddress,
