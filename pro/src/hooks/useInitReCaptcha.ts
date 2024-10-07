@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 
+import { isError } from 'apiClient/helpers'
 import { RECAPTCHA_SITE_KEY } from 'utils/config'
 import { initReCaptchaScript } from 'utils/recaptcha'
 
@@ -11,8 +12,17 @@ export const useInitReCaptcha = (): void => {
       // Can be undefined according to sentry errors
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       if (gcaptchaScript) {
-        if (window.grecaptcha) {
-          window.grecaptcha.reset?.(RECAPTCHA_SITE_KEY)
+        try {
+          if (window.grecaptcha) {
+            window.grecaptcha.reset?.(RECAPTCHA_SITE_KEY)
+          }
+        } catch (e) {
+          if (isError(e) && e.message.includes('Method not found')) {
+            // This happens for Android 13/14 devices
+          } else {
+            // Rethrow the error
+            throw e
+          }
         }
         gcaptchaScript.remove()
 
