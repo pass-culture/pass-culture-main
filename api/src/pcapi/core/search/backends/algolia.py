@@ -770,14 +770,22 @@ class AlgoliaBackend(base.SearchBackend):
                 count,
             )
         ):
-            # handle alogolia pagination of results
+
+            # handle algolia pagination of results
             hits_per_page = min(count, count - _count, 1000)
             params["page"] = page
             params["hitsPerPage"] = hits_per_page
             try:
                 results = self.algolia_offers_client.search(query, params)
             except Exception as exp:
-                logger.exception("Failed to search in algolia: %s", exp)
+                logger.exception(
+                    "Failed to search in algolia: %s",
+                    exp,
+                    extra={
+                        "query": query,
+                        "filters": filters,
+                    },
+                )
                 raise SearchError("Failed to search in algolia")
 
             for result in results.get("hits", []):
