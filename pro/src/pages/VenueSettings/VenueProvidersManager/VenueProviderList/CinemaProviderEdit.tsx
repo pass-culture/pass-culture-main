@@ -40,7 +40,7 @@ export const CinemaProviderEdit = ({
         "Les modifications ont bien été importées et s'appliqueront aux nouvelles séances créées."
       )
       return true
-    } catch (error) {
+    } catch {
       notification.error('Une erreur s’est produite, veuillez réessayer')
       return false
     }

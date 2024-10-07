@@ -73,7 +73,7 @@ const updateIndividualOffersStatus = async (
           ? computeAllActivationSuccessMessage(selectedOfferIds.length)
           : computeAllDeactivationSuccessMessage(selectedOfferIds.length)
       )
-    } catch (error) {
+    } catch {
       notify.error(
         `Une erreur est survenue lors de ${
           isActive ? 'l’activation' : 'la désactivation'
@@ -91,7 +91,7 @@ const updateIndividualOffersStatus = async (
           ? computeActivationSuccessMessage(selectedOfferIds.length)
           : computeDeactivationSuccessMessage(selectedOfferIds.length)
       )
-    } catch (error) {
+    } catch {
       notify.error(
         `Une erreur est survenue lors de ${
           isActive ? 'l’activation' : 'la désactivation'
@@ -127,7 +127,9 @@ export const IndividualOffersActionsBar = ({
 
   const handleClose = () => {
     clearSelectedOfferIds()
-    areAllOffersSelected && toggleSelectAllCheckboxes()
+    if (areAllOffersSelected) {
+      toggleSelectAllCheckboxes()
+    }
   }
 
   const handleUpdateOffersStatus = async (isActivating: boolean) => {

@@ -33,7 +33,7 @@ export const DeleteVenueProviderButton = ({
       await api.deleteVenueProvider(venueProviderId)
 
       await mutate([GET_VENUE_PROVIDERS_QUERY_KEY, venue.id])
-    } catch (exception) {
+    } catch {
       notification.error(
         'Une erreur est survenue. Merci de réessayer plus tard.'
       )

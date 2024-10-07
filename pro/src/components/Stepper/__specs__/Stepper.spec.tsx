@@ -104,7 +104,9 @@ describe('Stepper', () => {
 
     const informationLink = screen.getByText('Informations').closest('a')
 
-    informationLink && (await userEvent.click(informationLink))
+    if (informationLink) {
+      await userEvent.click(informationLink)
+    }
 
     expect(onClick).toHaveBeenCalledTimes(1)
   })

@@ -214,23 +214,24 @@ export const UsefulInformationScreen = ({
     onSubmit,
     validationSchema,
   })
-
   const handlePreviousStepOrBackToReadOnly = () => {
-    mode === OFFER_WIZARD_MODE.CREATION
-      ? navigate(
-          getIndividualOfferUrl({
-            offerId: offer.id,
-            step: OFFER_WIZARD_STEP_IDS.DETAILS,
-            mode: OFFER_WIZARD_MODE.CREATION,
-          })
-        )
-      : navigate(
-          getIndividualOfferUrl({
-            offerId: offer.id,
-            step: OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS,
-            mode: OFFER_WIZARD_MODE.READ_ONLY,
-          })
-        )
+    if (mode === OFFER_WIZARD_MODE.CREATION) {
+      navigate(
+        getIndividualOfferUrl({
+          offerId: offer.id,
+          step: OFFER_WIZARD_STEP_IDS.DETAILS,
+          mode: OFFER_WIZARD_MODE.CREATION,
+        })
+      )
+    } else {
+      navigate(
+        getIndividualOfferUrl({
+          offerId: offer.id,
+          step: OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS,
+          mode: OFFER_WIZARD_MODE.READ_ONLY,
+        })
+      )
+    }
   }
 
   return (

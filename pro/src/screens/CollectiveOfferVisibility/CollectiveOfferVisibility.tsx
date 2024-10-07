@@ -222,7 +222,7 @@ export const CollectiveOfferVisibilityScreen = ({
           })
         )
       )
-    } catch (e) {
+    } catch {
       notify.error(GET_DATA_ERROR_MESSAGE)
     }
   }

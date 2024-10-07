@@ -24,7 +24,7 @@ export const Toggle = ({
 
   const onClick = useCallback(() => {
     setIsActive(!isActive)
-    handleClick && handleClick()
+    handleClick?.()
   }, [isActive, setIsActive])
 
   return (

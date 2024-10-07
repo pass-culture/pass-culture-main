@@ -46,10 +46,12 @@ export const useCollectiveOfferImageUpload = (
         }
 
         try {
-          isTemplate
-            ? await api.deleteOfferTemplateImage(offerId)
-            : await api.deleteOfferImage(offerId)
-        } catch (error) {
+          if (isTemplate) {
+            await api.deleteOfferTemplateImage(offerId)
+          } else {
+            await api.deleteOfferImage(offerId)
+          }
+        } catch {
           notify.error(
             'Une erreur est survenue lors de la suppression de l’image de l’offre'
           )

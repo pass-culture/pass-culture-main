@@ -94,7 +94,7 @@ export const DetailsForm = ({
       }
 
       setSuggestedSubcategories(response.subcategoryIds)
-    } catch (err) {
+    } catch {
       if (!suggestedSubcategory) {
         await setValues({
           ...values,

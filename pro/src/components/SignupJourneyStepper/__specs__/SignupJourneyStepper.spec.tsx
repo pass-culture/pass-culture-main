@@ -73,10 +73,14 @@ describe('test SignupJourneyStepper', () => {
 
     expect(screen.getByText('Authentication screen')).toBeInTheDocument()
 
-    tabActivity && (await userEvent.click(tabActivity))
+    if (tabActivity) {
+      await userEvent.click(tabActivity)
+    }
     expect(screen.queryByText('Activity screen')).not.toBeInTheDocument()
 
-    tabValidation && (await userEvent.click(tabValidation))
+    if (tabValidation) {
+      await userEvent.click(tabValidation)
+    }
     expect(screen.queryByText('Validation screen')).not.toBeInTheDocument()
   })
 
@@ -94,10 +98,14 @@ describe('test SignupJourneyStepper', () => {
 
     expect(screen.getByText('Activity screen')).toBeInTheDocument()
 
-    tabValidation && (await userEvent.click(tabValidation))
+    if (tabValidation) {
+      await userEvent.click(tabValidation)
+    }
     expect(screen.queryByText('Validation screen')).not.toBeInTheDocument()
 
-    tabAuthentication && (await userEvent.click(tabAuthentication))
+    if (tabAuthentication) {
+      await userEvent.click(tabAuthentication)
+    }
     expect(screen.getByText('Authentication screen')).toBeInTheDocument()
   })
 
@@ -118,16 +126,24 @@ describe('test SignupJourneyStepper', () => {
 
     expect(screen.getByText('Validation screen')).toBeInTheDocument()
 
-    tabActivity && (await userEvent.click(tabActivity))
+    if (tabActivity) {
+      await userEvent.click(tabActivity)
+    }
     expect(screen.getByText('Activity screen')).toBeInTheDocument()
 
-    tabValidation && (await userEvent.click(tabValidation))
+    if (tabValidation) {
+      await userEvent.click(tabValidation)
+    }
     expect(screen.getByText('Validation screen')).toBeInTheDocument()
 
-    tabAuthentication && (await userEvent.click(tabAuthentication))
+    if (tabAuthentication) {
+      await userEvent.click(tabAuthentication)
+    }
     expect(screen.getByText('Authentication screen')).toBeInTheDocument()
 
-    tabValidation && (await userEvent.click(tabValidation))
+    if (tabValidation) {
+      await userEvent.click(tabValidation)
+    }
     expect(screen.getByText('Validation screen')).toBeInTheDocument()
   })
 

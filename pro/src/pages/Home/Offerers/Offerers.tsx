@@ -43,9 +43,10 @@ export const Offerers = ({
   const location = useLocation()
   const [searchParams, setSearchParams] = useSearchParams()
   const { logEvent } = useAnalytics()
-
   useEffect(() => {
-    location.search === '?success' && setOpenSuccessDialog(true)
+    if (location.search === '?success') {
+      setOpenSuccessDialog(true)
+    }
   }, [location.search])
 
   if (isLoading) {

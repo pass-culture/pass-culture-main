@@ -90,11 +90,12 @@ export const PrebookingButton = ({
 
     setHasPrebookedOffer(true)
 
-    !isPreview &&
+    if (!isPreview) {
       setInstitutionOfferCount?.(
         institutionOfferCount ? institutionOfferCount - 1 : 0
       )
-    setOfferPrebooked && setOfferPrebooked(true)
+    }
+    setOfferPrebooked?.(true)
     closeModal()
     notification.success('Votre préréservation a été effectuée avec succès')
   }, [stock.id, offerId, queryId])

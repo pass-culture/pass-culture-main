@@ -57,7 +57,7 @@ export const OfferFavoriteButton = ({
       })
 
       afterFavoriteChange?.(false)
-    } catch (error) {
+    } catch {
       setIsFavorite(true)
     }
     setIsLoading(false)
@@ -84,7 +84,7 @@ export const OfferFavoriteButton = ({
       })
 
       afterFavoriteChange?.(true)
-    } catch (error) {
+    } catch {
       setIsFavorite(false)
     }
     setIsLoading(false)

@@ -57,7 +57,9 @@ export const ActionBar = ({
         icon={fullLeftIcon}
         onClick={() => {
           onClickPrevious()
-          previousTo && logActionBarNavigation(previousTo)
+          if (previousTo) {
+            logActionBarNavigation(previousTo)
+          }
         }}
         variant={ButtonVariant.SECONDARY}
         disabled={isDisabled}
@@ -79,8 +81,10 @@ export const ActionBar = ({
         iconPosition={IconPositionEnum.RIGHT}
         disabled={isDisabled}
         onClick={() => {
-          onClickNext && onClickNext()
-          nextTo && logActionBarNavigation(nextTo)
+          onClickNext?.()
+          if (nextTo) {
+            logActionBarNavigation(nextTo)
+          }
         }}
       >
         {nextStepTitle}

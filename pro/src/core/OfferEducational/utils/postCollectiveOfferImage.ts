@@ -40,7 +40,7 @@ export const postCollectiveOfferImage = async ({
         croppingRectX: 0,
         croppingRectY: 0,
       })
-    } catch (e) {
+    } catch {
       notify.error('Impossible de récupérer votre image')
     }
   }

@@ -347,7 +347,7 @@ describe('CollectiveDataEdition', () => {
           screen.getByLabelText(mainlandOptions[0].label)
         ).not.toBeChecked()
       )
-      for await (const option of domtomOptions) {
+      for (const option of domtomOptions) {
         await userEvent.click(screen.getByLabelText(option.label))
       }
       domtomOptions.forEach((option) =>
@@ -369,7 +369,7 @@ describe('CollectiveDataEdition', () => {
       expect(mainlandOption).toBeInTheDocument()
 
       // check all mainland options
-      for await (const option of mainlandOptions) {
+      for (const option of mainlandOptions) {
         await userEvent.click(
           screen.getByRole('checkbox', { name: option.label })
         )
@@ -378,7 +378,7 @@ describe('CollectiveDataEdition', () => {
       expect(mainlandOption).toBeChecked()
 
       // check all other departments
-      for await (const option of domtomOptions) {
+      for (const option of domtomOptions) {
         await userEvent.click(screen.getByLabelText(option.label))
       }
 

@@ -165,27 +165,28 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
 
   const handlePreviousStepOrBackToReadOnly = () => {
     /* istanbul ignore next: DEBT, TO FIX */
-    mode === OFFER_WIZARD_MODE.EDITION
-      ? navigate(
-          getIndividualOfferUrl({
-            offerId: offer.id,
-            step: OFFER_WIZARD_STEP_IDS.STOCKS,
-            mode: OFFER_WIZARD_MODE.READ_ONLY,
-          })
-        )
-      : navigate(
-          getIndividualOfferUrl({
-            offerId: offer.id,
-            step: isSplitOfferEnabled
-              ? OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS
-              : OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-            mode,
-          })
-        )
+    if (mode === OFFER_WIZARD_MODE.EDITION) {
+      navigate(
+        getIndividualOfferUrl({
+          offerId: offer.id,
+          step: OFFER_WIZARD_STEP_IDS.STOCKS,
+          mode: OFFER_WIZARD_MODE.READ_ONLY,
+        })
+      )
+    } else {
+      navigate(
+        getIndividualOfferUrl({
+          offerId: offer.id,
+          step: isSplitOfferEnabled
+            ? OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS
+            : OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+          mode,
+        })
+      )
+    }
   }
 
   const onConfirmDeleteStock = async () => {
-    /* istanbul ignore next: DEBT, TO FIX */
     if (formik.values.stockId === undefined) {
       formik.resetForm({ values: STOCK_THING_FORM_DEFAULT_VALUES })
       return

@@ -188,17 +188,18 @@ export const DetailsScreen = ({ venues }: DetailsScreenProps): JSX.Element => {
     validationSchema,
     onSubmit,
   })
-
   const handlePreviousStepOrBackToReadOnly = () => {
-    mode === OFFER_WIZARD_MODE.CREATION
-      ? navigate('/offre/creation')
-      : navigate(
-          getIndividualOfferUrl({
-            offerId: offer?.id,
-            step: OFFER_WIZARD_STEP_IDS.DETAILS,
-            mode: OFFER_WIZARD_MODE.READ_ONLY,
-          })
-        )
+    if (mode === OFFER_WIZARD_MODE.CREATION) {
+      navigate('/offre/creation')
+    } else {
+      navigate(
+        getIndividualOfferUrl({
+          offerId: offer?.id,
+          step: OFFER_WIZARD_STEP_IDS.DETAILS,
+          mode: OFFER_WIZARD_MODE.READ_ONLY,
+        })
+      )
+    }
   }
 
   // (Draft) offers are created via POST request.

@@ -44,7 +44,7 @@ const fetchWithErrorHandler = async (path: string, options: RequestInit) => {
       )
     }
     return Promise.resolve(results)
-  } catch (err) {
+  } catch {
     return Promise.reject(null)
   }
 }
