@@ -35,7 +35,6 @@ from pcapi.core.object_storage import delete_public_object
 from pcapi.core.object_storage import store_public_object
 from pcapi.models import Base
 from pcapi.models import Model
-from pcapi.models import db
 from pcapi.models import feature
 from pcapi.models import offer_mixin
 from pcapi.models.accessibility_mixin import AccessibilityMixin
@@ -796,11 +795,9 @@ class CollectiveOffer(
             return CollectiveOfferDisplayedStatus.INACTIVE
 
         if self.validation == offer_mixin.OfferValidationStatus.APPROVED:
-            collective_stock = self.collectiveStock
+            last_booking_status = self.lastBookingStatus
 
-            bookings = collective_stock.collectiveBookings if collective_stock else []
-
-            if not any(bookings):
+            if last_booking_status is None:
                 # pylint: disable=using-constant-test
                 if self.is_expired:
                     return CollectiveOfferDisplayedStatus.EXPIRED
@@ -809,8 +806,6 @@ class CollectiveOffer(
                     return CollectiveOfferDisplayedStatus.INACTIVE
 
                 return CollectiveOfferDisplayedStatus.ACTIVE
-
-            last_booking_status = bookings[-1].status
 
             # pylint: disable=using-constant-test
             if self.hasEndDatetimePassed:
@@ -888,23 +883,23 @@ class CollectiveOffer(
         return self.collectiveStock.is_cancellable_from_offerer
 
     @property
+    def lastBooking(self) -> "CollectiveBooking | None":
+        stock = self.collectiveStock
+        if stock is None:
+            return None
+
+        bookings = sorted(stock.collectiveBookings, key=lambda booking: booking.dateCreated)
+        return bookings[-1] if bookings else None
+
+    @property
     def lastBookingId(self) -> int | None:
-        query = db.session.query(func.max(CollectiveBooking.id))
-        query = query.join(CollectiveStock, CollectiveBooking.collectiveStock)
-        query = query.filter(CollectiveStock.collectiveOfferId == self.id)
-        return query.scalar()
+        booking = self.lastBooking
+        return booking.id if booking else None
 
     @property
     def lastBookingStatus(self) -> CollectiveBookingStatus | None:
-        subquery = db.session.query(func.max(CollectiveBooking.id))
-        subquery = subquery.join(CollectiveStock, CollectiveBooking.collectiveStock)
-        subquery = subquery.filter(CollectiveStock.collectiveOfferId == self.id)
-
-        query = db.session.query(CollectiveBooking.status)
-        query = query.join(CollectiveStock, CollectiveBooking.collectiveStock)
-        query = query.filter(CollectiveStock.collectiveOfferId == self.id, CollectiveBooking.id.in_(subquery))
-        result = query.one_or_none()
-        return result[0] if result else None
+        booking = self.lastBooking
+        return booking.status if booking else None
 
     @hybrid_property
     def is_expired(self) -> bool:
