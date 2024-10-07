@@ -73,6 +73,7 @@ class PCOptStringField(wtforms.StringField):
     ]
 
     def __init__(self, label: str | None = None, **kwargs: typing.Any):
+        self.full_width = kwargs.pop("full_width", False)
         super().__init__(label, filters=(sanitize_pc_string,), **kwargs)
 
 

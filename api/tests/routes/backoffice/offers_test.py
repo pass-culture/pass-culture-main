@@ -1398,6 +1398,107 @@ class BatchEditOfferTest(PostEndpointHelper):
         )
 
 
+class ListAlgoliaOffersTest(GetEndpointHelper):
+    endpoint = "backoffice_web.offer.list_algolia_offers"
+    needed_permission = perm_models.Permissions.READ_OFFERS
+
+    # Use assert_num_queries() instead of assert_no_duplicated_queries() which does not detect one extra query caused
+    # by a field added in the jinja template.
+    # - fetch session (1 query)
+    # - fetch user (1 query)
+    # - fetch offers with joinedload including extra data (1 query)
+    # - fetch connect as extended FF (1 query)
+    expected_num_queries = 4
+
+    def test_list_offers_without_filter(self, authenticated_client, offers):
+        # no filter => no query to fetch offers
+        with assert_num_queries(self.expected_num_queries - 1):
+            response = authenticated_client.get(url_for(self.endpoint))
+            assert response.status_code == 200
+
+        assert html_parser.count_table_rows(response.data) == 0
+
+    def test_list_offers_by_query(self, authenticated_client):
+        offer_to_display = offers_factories.OfferFactory(name="display")
+        offers_factories.OfferFactory(name="hide")
+
+        query_args = {"algolia_search": "display", "limit": 100}
+
+        with patch(
+            "pcapi.routes.backoffice.offers.blueprint.seach_offers_ids", side_effect=((offer_to_display.id,),)
+        ) as algolia_mock:
+            with assert_num_queries(self.expected_num_queries):
+                response = authenticated_client.get(url_for(self.endpoint, **query_args))
+                assert response.status_code == 200
+            algolia_mock.assert_called_once_with(query="display", filters="", count=101)
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["ID"] == str(offer_to_display.id)
+
+    def test_list_offers_by_query_with_filters(self, authenticated_client):
+        offer_to_display = offers_factories.OfferFactory(name="display")
+        offers_factories.OfferFactory(name="hide")
+
+        query_args = {
+            "algolia_search": "display",
+            "limit": 1000,
+            "search-0-search_field": "CATEGORY",
+            "search-0-operator": "IN",
+            "search-0-category": ["CARTE_JEUNES", "CINEMA"],
+            "search-1-search_field": "EAN",
+            "search-1-operator": "EQUALS",
+            "search-1-string": "1234567890123",
+        }
+
+        with patch(
+            "pcapi.routes.backoffice.offers.blueprint.seach_offers_ids", side_effect=((offer_to_display.id,),)
+        ) as algolia_mock:
+            with assert_num_queries(self.expected_num_queries):
+                response = authenticated_client.get(url_for(self.endpoint, **query_args))
+                assert response.status_code == 200
+            algolia_mock.assert_called_once_with(
+                query="display",
+                filters="(offer.category:CARTE_CINE_ILLIMITE OR offer.category:CARTE_CINE_MULTISEANCES OR offer.category:CARTE_JEUNES OR offer.category:CINE_PLEIN_AIR OR offer.category:CINE_VENTE_DISTANCE OR offer.category:EVENEMENT_CINE OR offer.category:FESTIVAL_CINE OR offer.category:SEANCE_CINE) AND offer.ean:1234567890123",
+                count=1001,
+            )
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["ID"] == str(offer_to_display.id)
+
+    def test_list_offers_with_negative_filters(self, authenticated_client):
+        offer_to_display = offers_factories.OfferFactory(name="display")
+        offers_factories.OfferFactory(name="hide")
+
+        query_args = {
+            "algolia_search": "display",
+            "limit": 1000,
+            "search-0-search_field": "CATEGORY",
+            "search-0-operator": "NOT_IN",
+            "search-0-category": ["CARTE_JEUNES", "CINEMA"],
+            "search-1-search_field": "EAN",
+            "search-1-operator": "NOT_EQUALS",
+            "search-1-string": "1234567890123",
+        }
+
+        with patch(
+            "pcapi.routes.backoffice.offers.blueprint.seach_offers_ids", side_effect=((offer_to_display.id,),)
+        ) as algolia_mock:
+            with assert_num_queries(self.expected_num_queries):
+                response = authenticated_client.get(url_for(self.endpoint, **query_args))
+                assert response.status_code == 200
+            algolia_mock.assert_called_once_with(
+                query="display",
+                filters="NOT (offer.category:CARTE_CINE_ILLIMITE OR offer.category:CARTE_CINE_MULTISEANCES OR offer.category:CARTE_JEUNES OR offer.category:CINE_PLEIN_AIR OR offer.category:CINE_VENTE_DISTANCE OR offer.category:EVENEMENT_CINE OR offer.category:FESTIVAL_CINE OR offer.category:SEANCE_CINE) AND NOT offer.ean:1234567890123",
+                count=1001,
+            )
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["ID"] == str(offer_to_display.id)
+
+
 class ValidateOfferTest(PostEndpointHelper):
     endpoint = "backoffice_web.offer.validate_offer"
     endpoint_kwargs = {"offer_id": 1}

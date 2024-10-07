@@ -5,7 +5,10 @@
 {% block page %}
   <div class="pt-3 px-5">
     <h2 class="fw-light">Offres individuelles</h2>
-    {{ build_advanced_filters_form(form, dst) }}
+    <div id="advancer-seach">{{ build_advanced_filters_form(advanced_form, advanced_dest) }}</div>
+    {% if is_feature_active("WIP_ALGOLIA_SEARCH_BO") %}
+      <div id="algolia-search">{{ build_advanced_filters_form(algolia_form, algolia_dest) }}</div>
+    {% endif %}
     <div>
       {% if rows %}
         <div class="d-flex justify-content-between">
