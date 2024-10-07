@@ -25,6 +25,10 @@ from pcapi.utils.module_loading import import_string
 logger = logging.getLogger(__name__)
 
 
+class SearchError(Exception):
+    pass
+
+
 class IndexationReason(enum.Enum):
     BOOKING_CANCELLATION = "booking-cancellation"
     BOOKING_COUNT_CHANGE = "booking-count-change"
@@ -677,6 +681,11 @@ def unindex_all_venues() -> None:
         if not settings.CATCH_INDEXATION_EXCEPTIONS:
             raise
         logger.exception("Could not unindex all venues")
+
+
+def seach_offers_ids(query: str = "", filters: str = "", count: int = 20) -> list[int]:
+    backend = _get_backend()
+    return backend.seach_offers_ids(query, filters, count)
 
 
 def get_last_30_days_bookings_for_eans() -> dict[str, int]:
