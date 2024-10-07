@@ -30,20 +30,29 @@ type AdagePreviewLayoutProps = {
 
 export const AdagePreviewLayout = ({ offer }: AdagePreviewLayoutProps) => {
   const [venue, setVenue] = useState<GetVenueResponseModel | null>(null)
+
   const [loadingVenue, setLoadingVenue] = useState(false)
   useState<GetVenueResponseModel | null>(null)
 
   useEffect(() => {
     async function getOfferVenue() {
+      const venueId =
+        offer.offerVenue.addressType === OfferAddressType.OFFERER_VENUE
+          ? offer.offerVenue.venueId
+          : offer.venue.id
+      if (!venueId) {
+        return
+      }
+
       setLoadingVenue(true)
-      const venue = await api.getVenue(offer.venue.id)
+      const venue = await api.getVenue(venueId)
       setLoadingVenue(false)
       setVenue(venue)
     }
 
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     getOfferVenue()
-  }, [offer.id, offer.venue.id])
+  }, [offer.venue.id, offer.offerVenue.venueId, offer.offerVenue.addressType])
 
   if (loadingVenue) {
     return <Spinner />

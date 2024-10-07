@@ -70,6 +70,7 @@ describe('AdagePreviewLayout', () => {
       offerVenue: {
         ...offer.offerVenue,
         addressType: OfferAddressType.OFFERER_VENUE,
+        venueId: 1,
       },
     })
 

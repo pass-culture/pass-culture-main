@@ -23,6 +23,12 @@ vi.mock('react-router-dom', async () => ({
   default: vi.fn(),
 }))
 
+vi.mock('apiClient/api', () => ({
+  api: {
+    getVenue: vi.fn(),
+  },
+}))
+
 const renderCollectiveOfferPreviewCreation = (
   path: string,
   props: MandatoryCollectiveOfferFromParamsProps,
