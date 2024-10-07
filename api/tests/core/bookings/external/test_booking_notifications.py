@@ -10,6 +10,7 @@ from pcapi.core.bookings.external.booking_notifications import notify_users_book
 from pcapi.core.bookings.external.booking_notifications import send_today_events_notifications_metropolitan_france
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.offers import factories as offers_factories
+from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
 from pcapi.notifications.push import testing
@@ -55,6 +56,7 @@ def test_send_today_events_notifications_only_to_individual_bookings_users():
 
 @pytest.mark.usefixtures("db_session")
 @override_settings(SOON_EXPIRING_BOOKINGS_DAYS_BEFORE_EXPIRATION=3)
+@override_features(WIP_DISABLE_NOTIFY_USERS_BOOKINGS_NOT_RETRIEVED=False)
 def test_notify_users_bookings_not_retrieved() -> None:
     user = users_factories.BeneficiaryGrant18Factory()
     stock = offers_factories.ThingStockFactory()
@@ -72,3 +74,18 @@ def test_notify_users_bookings_not_retrieved() -> None:
     assert (
         data["message"]["body"] == f'Vite, il ne te reste plus que 3 jours pour récupérer "{booking.stock.offer.name}"'
     )
+
+
+@pytest.mark.usefixtures("db_session")
+@override_settings(SOON_EXPIRING_BOOKINGS_DAYS_BEFORE_EXPIRATION=3)
+@override_features(WIP_DISABLE_NOTIFY_USERS_BOOKINGS_NOT_RETRIEVED=True)
+def test_notify_users_bookings_not_retrieved_with_FF() -> None:
+    user = users_factories.BeneficiaryGrant18Factory()
+    stock = offers_factories.ThingStockFactory()
+    creation_date = datetime.utcnow() - constants.BOOKINGS_AUTO_EXPIRY_DELAY + timedelta(days=3)
+
+    # booking that will expire in three days
+    bookings_factories.BookingFactory(user=user, stock=stock, dateCreated=creation_date)
+
+    notify_users_bookings_not_retrieved()
+    assert len(testing.requests) == 0
