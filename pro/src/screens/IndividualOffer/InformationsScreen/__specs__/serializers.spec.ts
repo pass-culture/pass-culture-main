@@ -1,5 +1,6 @@
 /* istanbul ignore file: DEBT, TO FIX */
 import { PatchOfferBodyModel, PostOfferBodyModel } from 'apiClient/v1'
+import { OFFER_LOCATION } from 'components/IndividualOfferForm/OfferLocation/constants'
 import { IndividualOfferFormValues } from 'components/IndividualOfferForm/types'
 import { AccessibilityEnum } from 'core/shared/types'
 import { getIndividualOfferFactory } from 'utils/individualApiFactories'
@@ -83,6 +84,7 @@ describe('test updateIndividualOffer::serializers', () => {
         durationMinutes: '2:00',
         receiveNotificationEmails: true,
         bookingEmail: 'booking@email.org',
+        bookingContact: undefined,
         isDuo: false,
         url: 'https://my.url',
         isVenueVirtual: false,
@@ -147,6 +149,7 @@ describe('test updateIndividualOffer::serializers', () => {
         street: '3 Rue de Valois',
         locationLabel: 'Bureau',
         manuallySetAddress: true,
+        offerlocation: OFFER_LOCATION.OTHER_ADDRESS,
       }
       patchBody = {
         ...patchBody,
@@ -158,6 +161,7 @@ describe('test updateIndividualOffer::serializers', () => {
           street: '3 Rue de Valois',
           label: 'Bureau',
           isManualEdition: true,
+          isVenueAddress: false,
         },
       }
       expect(
@@ -177,6 +181,7 @@ describe('test updateIndividualOffer::serializers', () => {
         street: '3 Rue de Valois',
         locationLabel: '',
         manuallySetAddress: false,
+        offerlocation: OFFER_LOCATION.OTHER_ADDRESS,
       }
       patchBody = {
         ...patchBody,
@@ -188,6 +193,105 @@ describe('test updateIndividualOffer::serializers', () => {
           street: '3 Rue de Valois',
           label: '',
           isManualEdition: false,
+          isVenueAddress: false,
+        },
+      }
+
+      expect(
+        serializePatchOffer({
+          offer: getIndividualOfferFactory(),
+          formValues,
+        })
+      ).toEqual(patchBody)
+    })
+
+    it('should send isVenueAddress flag set to true when location is the same as the venue (WIP_ENABLE_OFFER_ADDRESS)', () => {
+      formValues = {
+        ...formValues,
+        city: 'Paris',
+        latitude: '48.853320',
+        longitude: '2.348979',
+        postalCode: '75001',
+        street: '3 Rue de Valois',
+        locationLabel: 'Bureau',
+        manuallySetAddress: true,
+        offerlocation: '1',
+      }
+      patchBody = {
+        ...patchBody,
+        address: {
+          city: 'Paris',
+          latitude: '48.853320',
+          longitude: '2.348979',
+          postalCode: '75001',
+          street: '3 Rue de Valois',
+          label: 'Bureau',
+          isManualEdition: true,
+          isVenueAddress: true,
+        },
+      }
+      expect(
+        serializePatchOffer({
+          offer: getIndividualOfferFactory(),
+          formValues,
+        })
+      ).toEqual(patchBody)
+    })
+    it('should send isVenueAddress flag set to false when user select another location (WIP_ENABLE_OFFER_ADDRESS)', () => {
+      formValues = {
+        ...formValues,
+        city: 'Paris',
+        latitude: '48.853320',
+        longitude: '2.348979',
+        postalCode: '75001',
+        street: '3 Rue de Valois',
+        locationLabel: 'Bureau',
+        manuallySetAddress: true,
+        offerlocation: OFFER_LOCATION.OTHER_ADDRESS,
+      }
+      patchBody = {
+        ...patchBody,
+        address: {
+          city: 'Paris',
+          latitude: '48.853320',
+          longitude: '2.348979',
+          postalCode: '75001',
+          street: '3 Rue de Valois',
+          label: 'Bureau',
+          isManualEdition: true,
+          isVenueAddress: false,
+        },
+      }
+      expect(
+        serializePatchOffer({
+          offer: getIndividualOfferFactory(),
+          formValues,
+        })
+      ).toEqual(patchBody)
+
+      // Test with empty label and manual edition false
+      formValues = {
+        ...formValues,
+        city: 'Paris',
+        latitude: '48.853320',
+        longitude: '2.348979',
+        postalCode: '75001',
+        street: '3 Rue de Valois',
+        locationLabel: '',
+        manuallySetAddress: false,
+        offerlocation: OFFER_LOCATION.OTHER_ADDRESS,
+      }
+      patchBody = {
+        ...patchBody,
+        address: {
+          city: 'Paris',
+          latitude: '48.853320',
+          longitude: '2.348979',
+          postalCode: '75001',
+          street: '3 Rue de Valois',
+          label: '',
+          isManualEdition: false,
+          isVenueAddress: false,
         },
       }
 

@@ -415,11 +415,16 @@ def patch_all_offers_active_status(
 def patch_offer(
     offer_id: int, body: offers_serialize.PatchOfferBodyModel
 ) -> offers_serialize.GetIndividualOfferResponseModel:
-    offer = models.Offer.query.options(
-        sqla.orm.joinedload(models.Offer.stocks).joinedload(models.Stock.bookings),
-        sqla.orm.joinedload(models.Offer.venue).joinedload(offerers_models.Venue.managingOfferer),
-        sqla.orm.joinedload(models.Offer.product),
-    ).get(offer_id)
+    offer = (
+        models.Offer.query.options(
+            sqla.orm.joinedload(models.Offer.stocks).joinedload(models.Stock.bookings),
+            sqla.orm.joinedload(models.Offer.venue).joinedload(offerers_models.Venue.managingOfferer),
+            sqla.orm.joinedload(models.Offer.venue).joinedload(offerers_models.Venue.offererAddress),
+            sqla.orm.joinedload(models.Offer.product),
+        )
+        .filter_by(id=offer_id)
+        .one_or_none()
+    )
     if not offer:
         raise api_errors.ResourceNotFoundError
 

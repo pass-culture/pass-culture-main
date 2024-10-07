@@ -4,6 +4,7 @@ import {
   PostOfferBodyModel,
   WithdrawalTypeEnum,
 } from 'apiClient/v1'
+import { OFFER_LOCATION } from 'components/IndividualOfferForm/OfferLocation/constants'
 import { IndividualOfferFormValues } from 'components/IndividualOfferForm/types'
 import { SYNCHRONIZED_OFFER_EDITABLE_FIELDS } from 'core/Offers/constants'
 import { isAllocineOffer } from 'core/Providers/utils/localProvider'
@@ -96,6 +97,10 @@ export const serializePatchOffer = ({
         street: sentValues.street,
         label: sentValues.locationLabel,
         isManualEdition: sentValues.manuallySetAddress,
+        isVenueAddress:
+          sentValues.offerlocation === OFFER_LOCATION.OTHER_ADDRESS
+            ? false
+            : true,
       },
     }
   }
