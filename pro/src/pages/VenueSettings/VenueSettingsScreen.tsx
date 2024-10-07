@@ -98,15 +98,22 @@ export const VenueSettingsScreen = ({
   const handleDialogAddressChange = () => {
     const latitudeMeta = formik.getFieldMeta('latitude')
     const longitudeMeta = formik.getFieldMeta('longitude')
+    const coordsMeta = formik.getFieldMeta('coords')
+    const streetMeta = formik.getFieldMeta('street')
+    const postalCodeMeta = formik.getFieldMeta('postalCode')
+    const cityMeta = formik.getFieldMeta('city')
 
-    // If any of the address fields changed, then latitude and longitude will change and we can suppose that any part of the address changed
-    // So we should display the dialog
-
+    // If any of the address fields changed, we should display the dialog
     if (
       (latitudeMeta.touched &&
         latitudeMeta.value !== latitudeMeta.initialValue) ||
       (longitudeMeta.touched &&
-        longitudeMeta.value !== longitudeMeta.initialValue)
+        longitudeMeta.value !== longitudeMeta.initialValue) ||
+      (postalCodeMeta.touched &&
+        postalCodeMeta.value !== postalCodeMeta.initialValue) ||
+      (coordsMeta.touched && coordsMeta.value !== coordsMeta.initialValue) ||
+      (cityMeta.touched && cityMeta.value !== cityMeta.initialValue) ||
+      (streetMeta.touched && streetMeta.value !== streetMeta.initialValue)
     ) {
       if (isAddressChangeDialogOpen) {
         setIsAddressChangeDialogOpen(false)
