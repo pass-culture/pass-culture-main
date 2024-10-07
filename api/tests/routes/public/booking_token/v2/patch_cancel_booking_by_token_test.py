@@ -11,12 +11,14 @@ import pcapi.core.external_bookings.factories as external_bookings_factories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.providers.factories as providers_factories
+from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 import pcapi.notifications.push.testing as push_testing
 
 
 class Returns204Test:
     @pytest.mark.usefixtures("db_session")
+    @override_features(WIP_DISABLE_CANCEL_BOOKING_NOTIFICATION=False)
     def test_should_returns_204_with_cancellation_allowed(self, client):
         # Given
         stock = offers_factories.EventStockFactory(offer__name="Chouette concert")
@@ -45,6 +47,30 @@ class Returns204Test:
             "user_ids": [booking.userId],
             "can_be_asynchronously_retried": False,
         }
+
+    @pytest.mark.usefixtures("db_session")
+    @override_features(WIP_DISABLE_CANCEL_BOOKING_NOTIFICATION=True)
+    def test_should_returns_204_with_cancellation_allowed_with_FF(self, client):
+        # Given
+        stock = offers_factories.EventStockFactory(offer__name="Chouette concert")
+        booking = bookings_factories.BookingFactory(stock=stock)
+        offerers_factories.ApiKeyFactory(offerer=booking.offerer)
+
+        # When
+        response = client.patch(
+            f"/v2/bookings/cancel/token/{booking.token}",
+            headers={"Authorization": "Bearer " + offerers_factories.DEFAULT_CLEAR_API_KEY},
+        )
+
+        # Then
+        # cancellation can trigger more than one request to Batch
+        assert len(push_testing.requests) >= 1
+        assert response.status_code == 204
+        updated_booking = Booking.query.one()
+        assert updated_booking.status is BookingStatus.CANCELLED
+
+        cancel_notification_requests = [req for req in push_testing.requests if req.get("group_id") == "Cancel_booking"]
+        assert len(cancel_notification_requests) == 0
 
     @pytest.mark.usefixtures("db_session")
     def test_should_returns_204_with_lowercase_token(self, client):
