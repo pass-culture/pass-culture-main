@@ -1,0 +1,5 @@
+@use "styles/mixins/_rem.scss" as rem;
+
+.income-venue-selector {
+  max-width: rem.torem(300px);
+}

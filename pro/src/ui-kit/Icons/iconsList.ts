@@ -104,6 +104,7 @@ import strokeNewIcon from 'icons/stroke-new.svg'
 import strokeNoBookingIcon from 'icons/stroke-no-booking.svg'
 import strokeOfferIcon from 'icons/stroke-offer.svg'
 import strokeOffersIcon from 'icons/stroke-offers.svg'
+import strokePageNotFoundIcon from 'icons/stroke-page-not-found.svg'
 import strokePartyIcon from 'icons/stroke-party.svg'
 import strokePassIcon from 'icons/stroke-pass.svg'
 import strokePhoneIcon from 'icons/stroke-phone.svg'
@@ -268,6 +269,7 @@ export const strokeIcons: IconListItem[] = [
   { src: strokeShoutIcon },
   { src: strokeCollaboratorIcon },
   { src: strokeBarcodeIcon },
+  { src: strokePageNotFoundIcon, viewBox: '0 0 130 100' },
 ]
 
 export const otherIcons: IconListItem[] = [

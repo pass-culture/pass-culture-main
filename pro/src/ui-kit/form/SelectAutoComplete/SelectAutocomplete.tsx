@@ -61,6 +61,7 @@ export const SelectAutocomplete = ({
   type = 'text',
   leftIcon,
   maxDisplayedOptions,
+  isLabelHidden,
 }: SelectAutocompleteProps): JSX.Element => {
   const { setFieldTouched, setFieldValue } = useFormikContext<any>()
 
@@ -248,6 +249,7 @@ export const SelectAutocomplete = ({
       smallLabel={smallLabel}
       inline={inline}
       description={description}
+      isLabelHidden={isLabelHidden}
     >
       <div
         className={cx(styles['multi-select-autocomplete-container'], className)}

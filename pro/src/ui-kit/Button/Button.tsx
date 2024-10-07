@@ -16,6 +16,8 @@ export interface ButtonProps
     React.ButtonHTMLAttributes<HTMLButtonElement> {
   hasTooltip?: boolean
   isLoading?: boolean
+  iconAlt?: string
+  tooltipContentClassName?: string
 }
 
 export const Button = forwardRef(
@@ -24,6 +26,7 @@ export const Button = forwardRef(
       className,
       children,
       icon,
+      iconAlt = '',
       iconPosition = IconPositionEnum.LEFT,
       variant = ButtonVariant.PRIMARY,
       type = 'button',
@@ -31,6 +34,7 @@ export const Button = forwardRef(
       testId,
       isLoading = false,
       disabled,
+      tooltipContentClassName,
       ...buttonAttrs
     }: ButtonProps,
     buttonRef: ForwardedRef<HTMLButtonElement>
@@ -46,7 +50,7 @@ export const Button = forwardRef(
         {icon && !isLoading && iconPosition !== IconPositionEnum.RIGHT && (
           <SvgIcon
             src={icon}
-            alt=""
+            alt={iconAlt}
             className={cn(styles['button-icon'], {
               [styles['has-tooltip']]: hasTooltip,
             })}
@@ -65,7 +69,7 @@ export const Button = forwardRef(
         {icon && !isLoading && iconPosition === IconPositionEnum.RIGHT && (
           <SvgIcon
             src={icon}
-            alt=""
+            alt={iconAlt}
             className={styles['button-icon']}
             width="20"
           />
@@ -90,7 +94,11 @@ export const Button = forwardRef(
         ref={buttonRef}
       >
         {hasTooltip ? (
-          <Tooltip content={children} visuallyHidden={isTooltipHidden}>
+          <Tooltip
+            content={children}
+            visuallyHidden={isTooltipHidden}
+            tooltipContentClassName={tooltipContentClassName}
+          >
             {content}
           </Tooltip>
         ) : (
