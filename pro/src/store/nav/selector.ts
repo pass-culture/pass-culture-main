@@ -1,7 +1,7 @@
 import { RootState } from 'store/rootReducer'
 
 export const selectIsIndividualSectionOpen = (state: RootState) =>
-  state.nav.openSection === 'individual'
+  state.nav.isIndividualSectionOpen
 
 export const selectIsCollectiveSectionOpen = (state: RootState) =>
-  state.nav.openSection === 'collective'
+  state.nav.isCollectiveSectionOpen
