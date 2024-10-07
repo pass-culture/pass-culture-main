@@ -128,6 +128,7 @@ class FeatureToggle(enum.Enum):
     WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE = (
         "Activer la nouvelle structure des offres et réservations collectives"
     )
+    WIP_ALGOLIA_SEARCH_BO = "Activer la recherche algolia dans le BO"
     WIP_UBBLE_V2 = "Utiliser l'API v2 d'Ubble pour l'identification des bénéficiaires"
 
     def is_active(self) -> bool:
@@ -182,6 +183,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.LOG_EMS_CINEMAS_AVAILABLE_FOR_SYNC,
     FeatureToggle.SYNCHRONIZE_TITELIVE_API_MUSIC_PRODUCTS,
     FeatureToggle.USE_END_DATE_FOR_COLLECTIVE_PRICING,
+    FeatureToggle.WIP_ALGOLIA_SEARCH_BO,
     FeatureToggle.WIP_BENEFICIARY_EXTRACT_TOOL,
     FeatureToggle.WIP_CONNECT_AS_EXTENDED,
     FeatureToggle.WIP_EAN_CREATION,
