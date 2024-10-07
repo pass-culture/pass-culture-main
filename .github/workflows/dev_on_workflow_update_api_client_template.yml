@@ -107,7 +107,7 @@ jobs:
         with:
           resource: http://localhost:5001/health/api
           timeout: 120000
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v4
         if: steps.evaluate-variables.outputs.should-run-cache == 'true'
         with:
           node-version-file: "pro/.nvmrc"
