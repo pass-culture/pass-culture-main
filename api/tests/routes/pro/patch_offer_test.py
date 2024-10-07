@@ -15,6 +15,7 @@ from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.offers.models import WithdrawalTypeEnum
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.providers.repository import get_provider_by_local_class
+from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 from pcapi.utils.date import format_into_utc_date
@@ -300,7 +301,10 @@ class Returns200Test:
                 "longitude": venue.offererAddress.address.longitude,
             },
         }
-        response = client.with_session_auth("user@example.com").patch(f"/offers/{offer.id}", json=data)
+        offer_id = offer.id
+        http_client = client.with_session_auth("user@example.com")
+        with assert_num_queries(12):
+            response = http_client.patch(f"/offers/{offer_id}", json=data)
         get_address_mock.assert_not_called()
 
         assert response.status_code == 200
