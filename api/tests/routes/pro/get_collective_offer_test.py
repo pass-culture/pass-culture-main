@@ -18,6 +18,14 @@ import pcapi.core.users.factories as users_factories
 
 @pytest.mark.usefixtures("db_session")
 class Returns200Test:
+    # session
+    # user
+    # offerer
+    # user_offerer
+    # collective_offer
+    # google_places_info
+    num_queries = 6
+
     def test_filtering(self, client):
         offer = educational_factories.PendingCollectiveBookingFactory().collectiveStock.collectiveOffer
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
@@ -53,16 +61,9 @@ class Returns200Test:
         # When
         client = client.with_session_auth(email="user@example.com")
         offer_id = offer.id
-        expected_num_queries = 10
-        # session
-        # user
-        # offerer
-        # collective_stock
-        # national_program
-        # collective_booking
-        # max collective_booking
-        # educational_redactor
-        # provider
+        expected_num_queries = self.num_queries
+        expected_num_queries += 1  # educational_redactor
+        expected_num_queries += 1  # provider
         with assert_num_queries(expected_num_queries):
             response = client.get(f"/collective/offers/{offer_id}")
             assert response.status_code == 200
@@ -106,16 +107,7 @@ class Returns200Test:
         # When
         client = client.with_session_auth(email="user@example.com")
         offer_id = offer.id
-        expected_num_queries = 8
-        # session
-        # user
-        # offerer
-        # user_offerer
-        # collective_offer
-        # google_places_info
-        # collective_booking
-        # max collective_booking
-        with assert_num_queries(expected_num_queries):
+        with assert_num_queries(self.num_queries):
             response = client.get(f"/collective/offers/{offer_id}")
             assert response.status_code == 200
 
@@ -135,16 +127,7 @@ class Returns200Test:
         # When
         client = client.with_session_auth(email="user@example.com")
         offer_id = offer.id
-        expected_num_queries = 8
-        # session
-        # user
-        # offerer
-        # user_offerer
-        # collective_offer
-        # google_places_info
-        # collective_booking
-        # max collective_booking
-        with assert_num_queries(expected_num_queries):
+        with assert_num_queries(self.num_queries):
             response = client.get(f"/collective/offers/{offer_id}")
             assert response.status_code == 200
 
@@ -165,16 +148,7 @@ class Returns200Test:
         # When
         client = client.with_session_auth(email="user@example.com")
         offer_id = offer.id
-        expected_num_queries = 8
-        # session
-        # user
-        # offerer
-        # user_offerer
-        # collective_offer
-        # google_places_info
-        # collective_booking
-        # max collective_booking
-        with assert_num_queries(expected_num_queries):
+        with assert_num_queries(self.num_queries):
             response = client.get(f"/collective/offers/{offer_id}")
             assert response.status_code == 200
 
@@ -195,16 +169,7 @@ class Returns200Test:
         client = client.with_session_auth(email="user@example.com")
         offer_id = offer.id
 
-        expected_num_queries = 8
-        # session
-        # user
-        # offerer
-        # user_offerer
-        # collective_offer
-        # google_places_info
-        # collective_booking
-        # max collective_booking
-        with testing.assert_num_queries(expected_num_queries):
+        with testing.assert_num_queries(self.num_queries):
             with testing.assert_no_duplicated_queries():
                 client.get(f"/collective/offers/{offer_id}")
 
@@ -223,16 +188,7 @@ class Returns200Test:
         # When
         client = client.with_session_auth(email="user@example.com")
         offer_id = offer.id
-        expected_num_queries = 8
-        # session
-        # user
-        # offerer
-        # user_offerer
-        # collective_offer
-        # google_places_info
-        # collective_booking
-        # max collective_booking
-        with assert_num_queries(expected_num_queries):
+        with assert_num_queries(self.num_queries):
             response = client.get(f"/collective/offers/{offer_id}")
             assert response.status_code == 200
 
@@ -256,16 +212,8 @@ class Returns200Test:
         # When
         client = client.with_session_auth(email="user@example.com")
         offer_id = offer.id
-        expected_num_queries = 9
-        # session
-        # user
-        # offerer
-        # user_offerer
-        # collective_offer
-        # google_places_info
-        # collective_booking
-        # max collective_booking
-        # educational_redactor
+        expected_num_queries = self.num_queries
+        expected_num_queries += 1  # educational_redactor
         with assert_num_queries(expected_num_queries):
             response = client.get(f"/collective/offers/{offer_id}")
             assert response.status_code == 200
@@ -285,16 +233,7 @@ class Returns200Test:
 
         client = client.with_session_auth(email="user@example.com")
         offer_id = offer.id
-        expected_num_queries = 8
-        # session
-        # user
-        # offerer
-        # user_offerer
-        # collective_offer
-        # google_places_info
-        # collective_booking
-        # max collective_booking
-        with assert_num_queries(expected_num_queries):
+        with assert_num_queries(self.num_queries):
             response = client.get(f"/collective/offers/{offer_id}")
             assert response.status_code == 200
 
@@ -318,16 +257,7 @@ class Returns200Test:
 
         dst = url_for("Private API.get_collective_offer", offer_id=offer.id)
         client = client.with_session_auth(user.email)
-        expected_num_queries = 8
-        # session
-        # user
-        # offerer
-        # user_offerer
-        # collective_offer
-        # google_places_info
-        # collective_booking
-        # max collective_booking
-        with assert_num_queries(expected_num_queries):
+        with assert_num_queries(self.num_queries):
             response = client.get(dst)
             assert response.status_code == 200
         assert response.json["subcategoryId"] is None
@@ -348,16 +278,7 @@ class Returns200Test:
         # When
         client = client.with_session_auth(email="user@example.com")
         offer_id = offer.id
-        expected_num_queries = 8
-        # session
-        # user
-        # offerer
-        # user_offerer
-        # collective_offer
-        # google_places_info
-        # collective_booking
-        # max collective_booking
-        with testing.assert_num_queries(expected_num_queries):
+        with testing.assert_num_queries(self.num_queries):
             response = client.get(f"/collective/offers/{offer_id}")
             assert response.status_code == 200
 

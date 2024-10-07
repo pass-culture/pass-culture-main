@@ -646,6 +646,21 @@ class CollectiveOfferDisplayedStatusTest:
 
         assert offer.displayedStatus == CollectiveOfferDisplayedStatus.BOOKED
 
+    def test_get_displayed_status_for_offer_with_cancelled_booking(self):
+        yesterday = datetime.datetime.utcnow() - datetime.timedelta(days=1)
+
+        offer = factories.CollectiveOfferFactory()
+        stock = factories.CollectiveStockFactory(
+            collectiveOffer=offer, beginningDatetime=yesterday, endDatetime=yesterday
+        )
+        factories.CancelledCollectiveBookingFactory(
+            collectiveStock=stock, dateCreated=yesterday - datetime.timedelta(days=3)
+        )
+        factories.ReimbursedCollectiveBookingFactory(collectiveStock=stock, dateCreated=datetime.datetime.utcnow())
+
+        assert offer.lastBookingStatus == CollectiveBookingStatus.REIMBURSED
+        assert offer.displayedStatus == CollectiveOfferDisplayedStatus.REIMBURSED
+
 
 class CollectiveOfferAllowedActionsTest:
     @pytest.mark.parametrize("status", CollectiveOfferDisplayedStatus)
