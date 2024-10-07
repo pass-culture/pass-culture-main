@@ -24,6 +24,7 @@ import pcapi.core.offerers.api as offerers_api
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.models as offers_models
 from pcapi.core.providers import titelive_gtl
+from pcapi.core.search import SearchError
 from pcapi.core.search.backends import base
 from pcapi.domain.music_types import MUSIC_TYPES_LABEL_BY_CODE
 from pcapi.domain.show_types import SHOW_TYPES_LABEL_BY_CODE
@@ -37,7 +38,7 @@ from pcapi.utils.stopwords import STOPWORDS
 logger = logging.getLogger(__name__)
 
 Numeric = float | decimal.Decimal
-
+MAX_SEARCH_QUERY_COUNT = 1000
 
 REDIS_OFFER_IDS_NAME = "search:algolia:offer-ids:set"
 REDIS_OFFER_IDS_IN_ERROR_NAME = "search:algolia:offer-ids-in-error:set"
@@ -759,6 +760,34 @@ class AlgoliaBackend(base.SearchBackend):
                     "Found old processing queue, moved back items to originating queue",
                     extra={"queue": originating_queue, "processing_queue": processing_queue},
                 )
+
+    def search_offer_ids(self, query: str = "", filters: str = "", count: int = 20) -> list[int]:
+        ids: list[int] = []
+        params: dict[str, str | int] = {"filters": filters}
+        for page, _count in enumerate(range(0, count, MAX_SEARCH_QUERY_COUNT)):
+            # handle algolia pagination of results
+            hits_per_page = min(count, count - _count, MAX_SEARCH_QUERY_COUNT)
+            params["page"] = page
+            params["hitsPerPage"] = hits_per_page
+            try:
+                results = self.algolia_offers_client.search(query, params)
+            except Exception as exp:
+                logger.exception(
+                    "Failed to search in algolia: %s",
+                    exp,
+                    extra={
+                        "query": query,
+                        "filters": filters,
+                    },
+                )
+                raise SearchError("Failed to search in algolia")
+
+            for result in results.get("hits", []):
+                ids.append(result["objectID"])
+
+            if len(results.get("hits", [])) < hits_per_page:
+                break
+        return ids
 
 
 def position(venue: offerers_models.Venue) -> dict[str, float]:
