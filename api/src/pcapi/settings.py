@@ -606,3 +606,12 @@ DISCORD_BOT_TOKEN = secrets_utils.get("DISCORD_BOT_TOKEN")
 # TYPEFORM
 TYPEFORM_BACKEND = os.environ.get("TYPEFORM_BACKEND", "pcapi.connectors.typeform.TestingBackend")
 TYPEFORM_API_KEY = secrets_utils.get("TYPEFORM_API_KEY")
+
+# CLICKHOUSE
+CLICKHOUSE_BACKEND = os.environ.get(
+    "CLICKHOUSE_BACKEND",
+    "pcapi.connectors.clickhouse.backend.ClickhouseBackend",
+)
+CLICKHOUSE_IP = secrets_utils.get("CLICKHOUSE_IP", "127.0.0.1")
+CLICKHOUSE_USER = secrets_utils.get("CLICKHOUSE_USER", "default")
+CLICKHOUSE_PASSWORD = secrets_utils.get("CLICKHOUSE_PASSWORD")
