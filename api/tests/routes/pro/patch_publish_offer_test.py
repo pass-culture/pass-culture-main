@@ -35,15 +35,14 @@ class Returns200Test:
     num_queries += 1  # 2 user
     num_queries += 1  # 3 offer
     num_queries += 1  # 4 user_offerer
-    num_queries += 1  # 5 offer+stock+offererAddress+Address+mediaton
+    num_queries += 1  # 5 offer+stock+offererAddress+Address+mediaton+venue
     num_queries += 1  # 6 available stock (date comparison)
-    num_queries += 1  # 7 venue
-    num_queries += 1  # 8 validation status
-    num_queries += 1  # 9 offerer_confidence
-    num_queries += 1  # 10 offerer_confidenc
-    num_queries += 1  # 11 offer_validation_rule + offer_validation_sub_rule
-    num_queries += 1  # 12 future_offer
-    num_queries += 1  # 13 update offer
+    num_queries += 1  # 7 validation status
+    num_queries += 1  # 8 offerer_confidence
+    num_queries += 1  # 9 offerer_confidenc
+    num_queries += 1  # 10 offer_validation_rule + offer_validation_sub_rule
+    num_queries += 1  # 11 future_offer
+    num_queries += 1  # 12 update offer
 
     @patch("pcapi.core.mails.transactional.send_first_venue_approved_offer_email_to_pro")
     @patch("pcapi.core.offers.api.rule_flags_offer", return_value=False)

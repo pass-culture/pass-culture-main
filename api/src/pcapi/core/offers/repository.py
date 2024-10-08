@@ -1083,6 +1083,7 @@ def get_offer_and_extradata(offer_id: int) -> models.Offer | None:
             )
             .joinedload(offerers_models.OffererAddress.address),
         )
+        .options(sa_orm.joinedload(models.Offer.venue))
         .one_or_none()
     )
 
