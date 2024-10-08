@@ -448,6 +448,8 @@ def toggle_venue_provider_is_active(venue_id: int, provider_id: int) -> utils.Ba
     providers_api.activate_or_deactivate_venue_provider(
         venue_provider, set_active, author=current_user, send_email=False
     )
+    db.session.commit()
+
     if feature.FeatureToggle.WIP_ENABLE_OFFER_ADDRESS.is_active():
         flash(
             Markup("La synchronisation du partenaire culturel avec le provider a été {verb}.").format(
