@@ -47,6 +47,7 @@ Cypress.Commands.add(
   'login',
   ({ email, password, redirectUrl, refusePopupCookies = true }) => {
     cy.intercept({ method: 'POST', url: '/users/signin' }).as('signinUser')
+    cy.intercept({ method: 'GET', url: '/offerers/names' }).as('offererNames')
 
     cy.visit('/connexion')
     if (refusePopupCookies) {
@@ -56,10 +57,10 @@ Cypress.Commands.add(
     cy.get('#email').type(email)
     cy.get('#password').type(password)
     cy.get('button[type=submit]').click()
-    cy.wait('@signinUser')
+    cy.wait(['@signinUser', '@offererNames'])
 
     cy.url().should('contain', redirectUrl ?? '/accueil')
-    cy.findAllByTestId('spinner').should('not.exist')
+    cy.findAllByTestId('spinner', { timeout: 60 * 1000 }).should('not.exist')
   }
 )
 
