@@ -3535,6 +3535,56 @@
                 "title": "FESTIVAL_SPECTACLE_read",
                 "type": "object"
             },
+            "GetAddressResponse": {
+                "properties": {
+                    "banId": {
+                        "description": "Id from the French **[Base nationale d'adresses](https://adresse.data.gouv.fr/)**",
+                        "example": "75101_8635_00182",
+                        "nullable": true,
+                        "title": "Banid",
+                        "type": "string"
+                    },
+                    "city": {
+                        "description": "City",
+                        "example": "Paris",
+                        "nullable": true,
+                        "title": "City",
+                        "type": "string"
+                    },
+                    "latitude": {
+                        "description": "Latitude coordinate",
+                        "example": 48.86696,
+                        "title": "Latitude",
+                        "type": "number"
+                    },
+                    "longitude": {
+                        "description": "Longitude coordinate",
+                        "example": 2.31014,
+                        "title": "Longitude",
+                        "type": "number"
+                    },
+                    "postalCode": {
+                        "description": "Postal Code",
+                        "example": "75001",
+                        "nullable": true,
+                        "title": "Postalcode",
+                        "type": "string"
+                    },
+                    "street": {
+                        "description": "Street name and number",
+                        "example": "182 Rue Saint-Honor\u00e9",
+                        "nullable": true,
+                        "title": "Street",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "latitude",
+                    "longitude"
+                ],
+                "title": "GetAddressResponse",
+                "type": "object"
+            },
             "GetAvailableEANsListQuery": {
                 "properties": {
                     "eans": {
@@ -9326,6 +9376,67 @@
                 "summary": "Validate booking",
                 "tags": [
                     "Bookings"
+                ]
+            }
+        },
+        "/public/offers/v1/addresses/{address_id}": {
+            "get": {
+                "description": "Return an address by id",
+                "operationId": "GetAddress",
+                "parameters": [
+                    {
+                        "description": "",
+                        "in": "path",
+                        "name": "address_id",
+                        "required": true,
+                        "schema": {
+                            "format": "int32",
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GetAddressResponse"
+                                }
+                            }
+                        },
+                        "description": "Your request was succesful."
+                    },
+                    "400": {
+                        "description": "The request is invalid. The response body contains a list of errors."
+                    },
+                    "401": {
+                        "description": "Authentication is necessary to use this API."
+                    },
+                    "404": {
+                        "description": "The address could not be found."
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        },
+                        "description": "Unprocessable Entity"
+                    },
+                    "429": {
+                        "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "summary": "Get Address",
+                "tags": [
+                    "Addresses"
                 ]
             }
         },
