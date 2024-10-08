@@ -18,6 +18,7 @@ title: Pass Culture API change logs
 ### Addresses endpoints
 - **Search Addresses:** You can now search for addresses in the pass Culture database using the [**Search Addresses endpoint**](/rest-api#tag/Addresses/operation/SearchAddresses)
 - **Get Address:** You can now retrieve an existing address from the pass Culture database with the [**Get Address endpoint**](/rest-api#tag/Addresses/operation/GetAddress)
+- **Create Address:** You can add an address to the pass Culture database with the [**Create Address endpoint**](/rest-api#tag/Addresses/operation/CreateAddress)
 
 ### Stocks endpoints
 - The [**"Get event stocks" endpoint**](/rest-api#tag/Event-offer-stocks/operation/GetEventStocks) now supports filtering results by the `idsAtProvider` parameter (ie. by your own ids)

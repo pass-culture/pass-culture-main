@@ -865,6 +865,113 @@
                 "title": "AccessibilityResponse",
                 "type": "object"
             },
+            "AddressModel": {
+                "properties": {
+                    "city": {
+                        "description": "City",
+                        "example": "Paris",
+                        "maxLength": 200,
+                        "minLength": 1,
+                        "title": "City",
+                        "type": "string"
+                    },
+                    "latitude": {
+                        "description": "Latitude coordinate",
+                        "example": 48.86696,
+                        "maximum": 90,
+                        "minimum": -90,
+                        "nullable": true,
+                        "title": "Latitude",
+                        "type": "number"
+                    },
+                    "longitude": {
+                        "description": "Longitude coordinate",
+                        "example": 2.31014,
+                        "maximum": 180,
+                        "minimum": -180,
+                        "nullable": true,
+                        "title": "Longitude",
+                        "type": "number"
+                    },
+                    "postalCode": {
+                        "description": "Postal Code",
+                        "example": "75001",
+                        "pattern": "^(?:0[1-9]|[1-8]\\d|9[0-8])\\d{3}$",
+                        "title": "Postalcode",
+                        "type": "string"
+                    },
+                    "street": {
+                        "description": "Street name and number",
+                        "example": "182 Rue Saint-Honor\u00e9",
+                        "maxLength": 200,
+                        "minLength": 1,
+                        "title": "Street",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "street",
+                    "city",
+                    "postalCode"
+                ],
+                "title": "AddressModel",
+                "type": "object"
+            },
+            "AddressResponse": {
+                "properties": {
+                    "banId": {
+                        "description": "Id from the French **[Base nationale d'adresses](https://adresse.data.gouv.fr/)**",
+                        "example": "75101_8635_00182",
+                        "nullable": true,
+                        "title": "Banid",
+                        "type": "string"
+                    },
+                    "city": {
+                        "description": "City",
+                        "example": "Paris",
+                        "nullable": true,
+                        "title": "City",
+                        "type": "string"
+                    },
+                    "id": {
+                        "title": "Id",
+                        "type": "integer"
+                    },
+                    "latitude": {
+                        "description": "Latitude coordinate",
+                        "example": 48.86696,
+                        "title": "Latitude",
+                        "type": "number"
+                    },
+                    "longitude": {
+                        "description": "Longitude coordinate",
+                        "example": 2.31014,
+                        "title": "Longitude",
+                        "type": "number"
+                    },
+                    "postalCode": {
+                        "description": "Postal Code",
+                        "example": "75001",
+                        "nullable": true,
+                        "title": "Postalcode",
+                        "type": "string"
+                    },
+                    "street": {
+                        "description": "Street name and number",
+                        "example": "182 Rue Saint-Honor\u00e9",
+                        "nullable": true,
+                        "title": "Street",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "id",
+                    "latitude",
+                    "longitude"
+                ],
+                "title": "AddressResponse",
+                "type": "object"
+            },
             "AvailableEANsResponse": {
                 "properties": {
                     "available": {
@@ -3533,61 +3640,6 @@
                     "category"
                 ],
                 "title": "FESTIVAL_SPECTACLE_read",
-                "type": "object"
-            },
-            "GetAddressResponse": {
-                "properties": {
-                    "banId": {
-                        "description": "Id from the French **[Base nationale d'adresses](https://adresse.data.gouv.fr/)**",
-                        "example": "75101_8635_00182",
-                        "nullable": true,
-                        "title": "Banid",
-                        "type": "string"
-                    },
-                    "city": {
-                        "description": "City",
-                        "example": "Paris",
-                        "nullable": true,
-                        "title": "City",
-                        "type": "string"
-                    },
-                    "id": {
-                        "title": "Id",
-                        "type": "integer"
-                    },
-                    "latitude": {
-                        "description": "Latitude coordinate",
-                        "example": 48.86696,
-                        "title": "Latitude",
-                        "type": "number"
-                    },
-                    "longitude": {
-                        "description": "Longitude coordinate",
-                        "example": 2.31014,
-                        "title": "Longitude",
-                        "type": "number"
-                    },
-                    "postalCode": {
-                        "description": "Postal Code",
-                        "example": "75001",
-                        "nullable": true,
-                        "title": "Postalcode",
-                        "type": "string"
-                    },
-                    "street": {
-                        "description": "Street name and number",
-                        "example": "182 Rue Saint-Honor\u00e9",
-                        "nullable": true,
-                        "title": "Street",
-                        "type": "string"
-                    }
-                },
-                "required": [
-                    "id",
-                    "latitude",
-                    "longitude"
-                ],
-                "title": "GetAddressResponse",
                 "type": "object"
             },
             "GetAvailableEANsListQuery": {
@@ -8076,63 +8128,11 @@
                 "title": "SUPPORT_PHYSIQUE_MUSIQUE_VINYLE_read",
                 "type": "object"
             },
-            "SearchAddressQuery": {
-                "properties": {
-                    "city": {
-                        "description": "City",
-                        "example": "Paris",
-                        "maxLength": 200,
-                        "minLength": 1,
-                        "title": "City",
-                        "type": "string"
-                    },
-                    "latitude": {
-                        "description": "Latitude coordinate",
-                        "example": 48.86696,
-                        "maximum": 90,
-                        "minimum": -90,
-                        "nullable": true,
-                        "title": "Latitude",
-                        "type": "number"
-                    },
-                    "longitude": {
-                        "description": "Longitude coordinate",
-                        "example": 2.31014,
-                        "maximum": 180,
-                        "minimum": -180,
-                        "nullable": true,
-                        "title": "Longitude",
-                        "type": "number"
-                    },
-                    "postalCode": {
-                        "description": "Postal Code",
-                        "example": "75001",
-                        "pattern": "^(?:0[1-9]|[1-8]\\d|9[0-8])\\d{3}$",
-                        "title": "Postalcode",
-                        "type": "string"
-                    },
-                    "street": {
-                        "description": "Street name and number",
-                        "example": "182 Rue Saint-Honor\u00e9",
-                        "maxLength": 200,
-                        "minLength": 1,
-                        "title": "Street",
-                        "type": "string"
-                    }
-                },
-                "required": [
-                    "street",
-                    "city",
-                    "postalCode"
-                ],
-                "title": "SearchAddressQuery",
-                "type": "object"
-            },
             "SearchAddressResponse": {
                 "properties": {
                     "addresses": {
                         "items": {
-                            "$ref": "#/components/schemas/GetAddressResponse"
+                            "$ref": "#/components/schemas/AddressResponse"
                         },
                         "title": "Addresses",
                         "type": "array"
@@ -9452,9 +9452,68 @@
                 ]
             }
         },
+        "/public/offers/v1/addresses": {
+            "post": {
+                "description": "This endpoint allows you to add an address to the Pass Culture database.\n\nBefore the address is saved, it will be normalized using the [**Base Nationale d'Adresses (BAN) API**](https://adresse.data.gouv.fr/).\n\n**Important Notes:**\n\n- If the address is not found in the BAN API, you must provide valid `latitude` and `longitude` coordinates. Otherwise, the endpoint will return a **400 Bad Request** error.\n\n- If the municipality (identified by the `city` and `postalCode` parameters) is not found in the BAN API, the endpoint will return a **400 Bad Request** error.",
+                "operationId": "CreateAddress",
+                "parameters": [],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AddressModel"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AddressResponse"
+                                }
+                            }
+                        },
+                        "description": "Your request was succesful."
+                    },
+                    "400": {
+                        "description": "The request is invalid. The response body contains a list of errors."
+                    },
+                    "401": {
+                        "description": "Authentication is necessary to use this API."
+                    },
+                    "404": {
+                        "description": "The municipality could not be found on the Base Nationale d'Adresses (BAN) API."
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        },
+                        "description": "Unprocessable Entity"
+                    },
+                    "429": {
+                        "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "summary": "Create Address",
+                "tags": [
+                    "Addresses"
+                ]
+            }
+        },
         "/public/offers/v1/addresses/search": {
             "get": {
-                "description": "This endpoint returns addresses that match the provided literal address. To enhance the precision of the search, you can provide optional latitude and longitude coordinates.\n\nIf the municipality does not exist on the Base Nationale d'Adresses (BAN) API, this endpoints will return a **400 Resource not found** error.\n\nIf no address matches the given parameters, you may use the **Create Address** endpoint to add a new address.",
+                "description": "This endpoint returns addresses that match the provided literal address. To enhance the precision of the search, you can provide optional latitude and longitude coordinates.\n\nIf no address matches the given parameters, you may use the **Create Address** endpoint to add a new address.\n\n**Important Note:** If the municipality (identified by the `city` and `postalCode` parameters) is not found on the [**Base Nationale d'Adresses (BAN) API**](https://adresse.data.gouv.fr/), this endpoints will return a **400 Bad Request** error.",
                 "operationId": "SearchAddresses",
                 "parameters": [
                     {
@@ -9595,7 +9654,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/GetAddressResponse"
+                                    "$ref": "#/components/schemas/AddressResponse"
                                 }
                             }
                         },

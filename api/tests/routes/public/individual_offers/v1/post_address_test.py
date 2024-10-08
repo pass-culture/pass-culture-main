@@ -5,21 +5,19 @@ import pytest
 from pcapi.connectors.api_adresse import AddressInfo
 from pcapi.connectors.api_adresse import NoResultException
 from pcapi.core.geography import factories as geography_factories
+from pcapi.core.geography import models as geography_models
 
 from tests.conftest import TestClient
 from tests.routes.public.helpers import PublicAPIEndpointBaseHelper
 
 
 @pytest.mark.usefixtures("db_session")
-class SearchAddressesTest(PublicAPIEndpointBaseHelper):
-    endpoint_url = "/public/offers/v1/addresses/search"
-    endpoint_method = "get"
-
-    num_queries = 1  # select api_key, offerer and provider
-    num_queries += 1  # select address
+class CreateAddressTest(PublicAPIEndpointBaseHelper):
+    endpoint_url = "/public/offers/v1/addresses"
+    endpoint_method = "post"
 
     @staticmethod
-    def _get_base_query() -> dict:
+    def _get_base_body() -> dict:
         return {
             "postalCode": "75001",
             "city": "Paris",
@@ -51,7 +49,7 @@ class SearchAddressesTest(PublicAPIEndpointBaseHelper):
         return ban_address, manual_address
 
     @pytest.mark.parametrize(
-        "partial_query,expected_json",
+        "partial_body,expected_json",
         [
             (
                 {"postalCode": "7500"},
@@ -69,10 +67,10 @@ class SearchAddressesTest(PublicAPIEndpointBaseHelper):
             ({"longitude": "hey"}, {"longitude": ["value is not a valid float"]}),
         ],
     )
-    def test_should_raise_400_because_of_bad_params(self, client: TestClient, partial_query, expected_json):
+    def test_should_raise_400_because_of_bad_params(self, client: TestClient, partial_body, expected_json):
         plain_api_key, _ = self.setup_provider()
-        query = dict(self._get_base_query(), **partial_query)
-        result = client.with_explicit_token(plain_api_key).get(self.endpoint_url, params=query)
+        body = dict(self._get_base_body(), **partial_body)
+        result = client.with_explicit_token(plain_api_key).post(self.endpoint_url, json=body)
 
         assert result.status_code == 400
         assert result.json == expected_json
@@ -89,62 +87,61 @@ class SearchAddressesTest(PublicAPIEndpointBaseHelper):
     )
     def test_should_raise_400_because_of_missing_params(self, client: TestClient, missing_param, expected_json):
         plain_api_key, _ = self.setup_provider()
-        query = self._get_base_query()
-        query.pop(missing_param)
-        result = client.with_explicit_token(plain_api_key).get(self.endpoint_url, params=query)
+        body = self._get_base_body()
+        body.pop(missing_param)
+        result = client.with_explicit_token(plain_api_key).post(self.endpoint_url, json=body)
 
         assert result.status_code == 400
         assert result.json == expected_json
 
     @patch("pcapi.connectors.api_adresse.get_address")
-    def test_should_return_existing_address_based_on_address_returned_by_the_ban_api(
-        self, get_address_mock, client: TestClient
-    ):
+    def test_should_add_an_address_using_the_ban_api(self, get_address_mock, client: TestClient):
         plain_api_key, _ = self.setup_provider()
-        exiting_address, _ = self.set_base_resources()
+
         get_address_mock.return_value = AddressInfo(
             id="75101_8635_00182",
             postcode="75101",
-            citycode="8635",  # inseeCode
+            citycode="75108",  # inseeCode
             latitude=48.86696,
             longitude=2.31014,
             score=0.98,
             city="Paris",
             street="182 Rue Saint-Honoré",
         )
-        result = client.with_explicit_token(plain_api_key).get(self.endpoint_url, params=self._get_base_query())
+        result = client.with_explicit_token(plain_api_key).post(self.endpoint_url, json=self._get_base_body())
 
         get_address_mock.assert_called_once_with(
             address="182 rue St Honoré", postcode="75001", city="Paris", strict=True
         )
+        created_address = geography_models.Address.query.filter(
+            geography_models.Address.banId == "75101_8635_00182"
+        ).one_or_none()
+
+        assert created_address is not None
+        assert not created_address.isManualEdition
         assert result.status_code == 200
         assert result.json == {
-            "addresses": [
-                {
-                    "id": exiting_address.id,
-                    "banId": "75101_8635_00182",
-                    "postalCode": "75101",
-                    "city": "Paris",
-                    "street": "182 Rue Saint-Honoré",
-                    "latitude": 48.86696,
-                    "longitude": 2.31014,
-                }
-            ]
+            "id": created_address.id,
+            "banId": "75101_8635_00182",
+            "postalCode": "75101",
+            "city": "Paris",
+            "street": "182 Rue Saint-Honoré",
+            "latitude": 48.86696,
+            "longitude": 2.31014,
         }
 
     @patch("pcapi.connectors.api_adresse.get_municipality_centroid")
     @patch("pcapi.connectors.api_adresse.get_address")
-    def test_should_return_existing_address_based_on_municipality(
+    def test_should_return_add_an_address_using_the_municipality(
         self, get_address_mock, get_municipality_centroid_mock, client: TestClient
     ):
         plain_api_key, _ = self.setup_provider()
-        _, manual_address = self.set_base_resources()
 
         get_address_mock.side_effect = NoResultException()  # mock no result from BAN API
         get_municipality_centroid_mock.return_value = AddressInfo(
             id="71430",
             postcode="71640",
-            citycode="71430",  # inseeCode
+            citycode="71430",
             latitude=46.808463,
             longitude=4.701174,
             score=0.93,
@@ -152,28 +149,36 @@ class SearchAddressesTest(PublicAPIEndpointBaseHelper):
             street=None,
         )
 
-        result = client.with_explicit_token(plain_api_key).get(
+        result = client.with_explicit_token(plain_api_key).post(
             self.endpoint_url,
-            params={"postalCode": "71640", "city": "St Jean de Vaux", "street": "Dans le champ derrière chez oim"},
+            json={
+                "postalCode": "71640",
+                "city": "St Jean de Vaux",
+                "street": "Dans le champ derrière chez oim",
+                "latitude": 46.80847,
+                "longitude": 4.70118,
+            },
         )
 
         get_address_mock.assert_called_once_with(
             address="Dans le champ derrière chez oim", postcode="71640", city="St Jean de Vaux", strict=True
         )
         get_municipality_centroid_mock.assert_called_once_with(postcode="71640", city="St Jean de Vaux")
+        created_address = geography_models.Address.query.filter(
+            geography_models.Address.inseeCode == "71430"
+        ).one_or_none()
+
+        assert created_address is not None
+        assert created_address.isManualEdition
         assert result.status_code == 200
         assert result.json == {
-            "addresses": [
-                {
-                    "id": manual_address.id,
-                    "banId": None,
-                    "postalCode": "71640",
-                    "city": "Saint-Jean-de-Vaux",
-                    "street": "Dans le champ derrière chez oim",
-                    "latitude": 46.81201,
-                    "longitude": 4.70024,
-                }
-            ]
+            "id": created_address.id,
+            "banId": None,
+            "postalCode": "71640",
+            "city": "Saint-Jean-de-Vaux",
+            "street": "Dans le champ derrière chez oim",
+            "latitude": 46.80847,
+            "longitude": 4.70118,
         }
 
     @patch("pcapi.connectors.api_adresse.get_municipality_centroid")
@@ -182,17 +187,18 @@ class SearchAddressesTest(PublicAPIEndpointBaseHelper):
         self, get_address_mock, get_municipality_centroid_mock, client: TestClient
     ):
         plain_api_key, _ = self.setup_provider()
-        self.set_base_resources()
         # mock no result from BAN API
         get_address_mock.side_effect = NoResultException()
         get_municipality_centroid_mock.side_effect = NoResultException()
 
-        result = client.with_explicit_token(plain_api_key).get(
+        result = client.with_explicit_token(plain_api_key).post(
             self.endpoint_url,
-            params={
+            json={
                 "postalCode": "75017",
                 "city": "Parisse (comme disent les Anglais)",
                 "street": "Place Perave de ouf",
+                "latitude": 48.86696,
+                "longitude": 2.31014,
             },
         )
 
@@ -206,4 +212,44 @@ class SearchAddressesTest(PublicAPIEndpointBaseHelper):
         assert result.status_code == 400
         assert result.json == {
             "__root__": [f"No municipality found for `city=Parisse (comme disent les Anglais)` and `postalCode=75017`"]
+        }
+
+    @patch("pcapi.connectors.api_adresse.get_municipality_centroid")
+    @patch("pcapi.connectors.api_adresse.get_address")
+    def test_should_raise_400_because_specific_address_not_found_on_BAN_API_and_lat_long_not_given(
+        self, get_address_mock, get_municipality_centroid_mock, client: TestClient
+    ):
+        plain_api_key, _ = self.setup_provider()
+
+        get_address_mock.side_effect = NoResultException()  # mock no result from BAN API
+        get_municipality_centroid_mock.return_value = AddressInfo(
+            id="71430",
+            postcode="71640",
+            citycode="71430",
+            latitude=46.808463,
+            longitude=4.701174,
+            score=0.93,
+            city="Saint-Jean-de-Vaux",
+            street=None,
+        )
+
+        result = client.with_explicit_token(plain_api_key).post(
+            self.endpoint_url,
+            json={
+                "postalCode": "71640",
+                "city": "St Jean de Vaux",
+                "street": "Dans le champ derrière chez oim",
+            },
+        )
+
+        get_address_mock.assert_called_once_with(
+            address="Dans le champ derrière chez oim", postcode="71640", city="St Jean de Vaux", strict=True
+        )
+        get_municipality_centroid_mock.assert_called_once_with(postcode="71640", city="St Jean de Vaux")
+
+        assert result.status_code == 400
+        assert result.json == {
+            "__root__": [
+                "The address you provided could not be found in the BAN API. Please provide valid `latitude` and `longitude` coordinates for this address to proceed."
+            ]
         }
