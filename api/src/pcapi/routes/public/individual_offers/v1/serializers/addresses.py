@@ -31,7 +31,7 @@ class PostalCode(ConstrainedStr):
     regex = r"^(?:0[1-9]|[1-8]\d|9[0-8])\d{3}$"
 
 
-class SearchAddressQuery(serialization.ConfiguredBaseModel):
+class AddressModel(serialization.ConfiguredBaseModel):
     street: Street = fields.STREET
     city: City = fields.CITY
     postalCode: PostalCode = fields.POSTAL_CODE
@@ -52,7 +52,7 @@ class SearchAddressQuery(serialization.ConfiguredBaseModel):
         return values
 
 
-class GetAddressResponse(serialization.ConfiguredBaseModel):
+class AddressResponse(serialization.ConfiguredBaseModel):
     id: int
     latitude: float = fields.LATITUDE
     longitude: float = fields.LONGITUDE
@@ -63,4 +63,4 @@ class GetAddressResponse(serialization.ConfiguredBaseModel):
 
 
 class SearchAddressResponse(serialization.ConfiguredBaseModel):
-    addresses: list[GetAddressResponse]
+    addresses: list[AddressResponse]
