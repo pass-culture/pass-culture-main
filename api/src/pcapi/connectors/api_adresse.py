@@ -153,12 +153,16 @@ def get_municipality_centroid(city: str, postcode: str | None = None, citycode: 
 
 def get_address(
     address: str,
+    *,
     postcode: str | None = None,
     city: str | None = None,
     citycode: str | None = None,
+    strict: bool = False,
 ) -> AddressInfo:
     """Return information about the requested address."""
-    return _get_backend().get_single_address_result(address=address, postcode=postcode, citycode=citycode, city=city)
+    return _get_backend().get_single_address_result(
+        address=address, postcode=postcode, citycode=citycode, city=city, strict=strict
+    )
 
 
 def search_address(address: str, limit: int = 10) -> list[AddressInfo]:
@@ -184,9 +188,11 @@ class BaseBackend:
     def get_single_address_result(
         self,
         address: str,
+        *,
         postcode: str | None,
         city: str | None = None,
         citycode: str | None = None,
+        strict: bool = False,
     ) -> AddressInfo:
         raise NotImplementedError()
 
@@ -222,9 +228,11 @@ class TestingBackend(BaseBackend):
     def get_single_address_result(
         self,
         address: str,
+        *,
         postcode: str | None,
         city: str | None = None,
         citycode: str | None = None,
+        strict: bool = False,
     ) -> AddressInfo:
         return AddressInfo(
             id="75101_9575_00003",
@@ -335,9 +343,11 @@ class ApiAdresseBackend(BaseBackend):
     def get_single_address_result(
         self,
         address: str,
+        *,
         postcode: str | None,
         city: str | None = None,
         citycode: str | None = None,
+        strict: bool = False,
     ) -> AddressInfo:
         """
         No human interaction so we limit to 1 result, and add a filter on the INSEE code (Code Officiel Géographique)
@@ -360,9 +370,10 @@ class ApiAdresseBackend(BaseBackend):
                 "No result from API Adresse for queried address",
                 extra={"queried_address": address, "postcode": postcode},
             )
-            if city is not None and postcode is not None:
-                return self.get_municipality_centroid(city=city, postcode=postcode, citycode=citycode)
-            raise NoResultException
+            if strict or city is None or postcode is None:  # i.e. we cannot get municipality centroid
+                raise NoResultException
+
+            return self.get_municipality_centroid(city=city, postcode=postcode, citycode=citycode)
 
         result = self._format_result(data["features"][0])
 
@@ -374,8 +385,11 @@ class ApiAdresseBackend(BaseBackend):
             "queried_address": address,
             "score": result.score,
         }
+
         if result.score < RELIABLE_SCORE_THRESHOLD:
             logger.info("Result from API Adresse has a low score", extra=extra)
+            if strict:
+                raise NoResultException
         else:
             logger.info("Retrieved details from API Adresse for query", extra=extra)
         return result
