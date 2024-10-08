@@ -817,7 +817,10 @@ class CollectiveOffer(
                 if last_booking_status in {CollectiveBookingStatus.USED, CollectiveBookingStatus.CONFIRMED}:
                     return CollectiveOfferDisplayedStatus.ENDED
                 if last_booking_status == CollectiveBookingStatus.REIMBURSED:
-                    return CollectiveOfferDisplayedStatus.REIMBURSED
+                    if feature.FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active():
+                        return CollectiveOfferDisplayedStatus.REIMBURSED
+                    return CollectiveOfferDisplayedStatus.ENDED
+
                 return CollectiveOfferDisplayedStatus.EXPIRED
 
             if last_booking_status in {CollectiveBookingStatus.CONFIRMED, CollectiveBookingStatus.USED}:
@@ -825,7 +828,10 @@ class CollectiveOffer(
             if last_booking_status == CollectiveBookingStatus.PENDING:
                 return CollectiveOfferDisplayedStatus.PREBOOKED
             if last_booking_status == CollectiveBookingStatus.CANCELLED:
-                return CollectiveOfferDisplayedStatus.CANCELLED
+                if feature.FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active():
+                    return CollectiveOfferDisplayedStatus.CANCELLED
+
+                return CollectiveOfferDisplayedStatus.EXPIRED
 
         return CollectiveOfferDisplayedStatus.ACTIVE
 
