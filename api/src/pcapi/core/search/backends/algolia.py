@@ -23,6 +23,7 @@ import pcapi.core.educational.models as educational_models
 import pcapi.core.offerers.api as offerers_api
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.models as offers_models
+from pcapi.core.offers.utils import get_offer_address
 from pcapi.core.providers import titelive_gtl
 from pcapi.core.search.backends import base
 from pcapi.domain.music_types import MUSIC_TYPES_LABEL_BY_CODE
@@ -509,21 +510,12 @@ class AlgoliaBackend(base.SearchBackend):
             gtl_code_3 = gtl_id[:6] + "00" * 1
             gtl_code_4 = gtl_id
 
-        address = None
-        city = None
-        department_code = None
-        postal_code = None
-        if FeatureToggle.WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE.is_active():
-            if venue.offererAddress is not None:
-                address = venue.offererAddress.address.street
-                city = venue.offererAddress.address.city
-                department_code = venue.offererAddress.address.departmentCode
-                postal_code = venue.offererAddress.address.postalCode
-        else:
-            address = venue.street
-            city = venue.city
-            department_code = venue.departementCode
-            postal_code = venue.postalCode
+        offer_address = get_offer_address(offer)
+        label = offer_address.label
+        address = offer_address.street
+        city = offer_address.city
+        department_code = offer_address.departmentCode
+        postal_code = offer_address.postalCode
 
         search_groups = (
             offer.subcategory.native_category.parents
@@ -592,7 +584,7 @@ class AlgoliaBackend(base.SearchBackend):
                 "isVisualDisabilityCompliant": venue.visualDisabilityCompliant,
                 "name": venue.name,
                 "postalCode": postal_code,
-                "publicName": venue.publicName,
+                "publicName": label,
                 "venue_type": venue.venueTypeCode.name,
             },
             "_geoloc": position(venue),
