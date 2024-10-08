@@ -2,10 +2,10 @@ import datetime
 import typing
 
 from pcapi.core.categories import subcategories_v2
-from pcapi.core.offerers.models import Venue
 import pcapi.core.offers.models as offers_models
 from pcapi.core.offers.utils import offer_app_link
 from pcapi.core.providers import constants as providers_constants
+from pcapi.models.feature import FeatureToggle
 
 
 Metadata = dict[str, typing.Any]
@@ -17,20 +17,44 @@ book_subcategories = {
 }
 
 
-def _get_metadata_from_venue(venue: Venue) -> Metadata:
+def _get_location_metadata(offer: offers_models.Offer) -> Metadata:
+    venue = offer.venue
+    address = None
+    city = None
+    postalCode = None
+    name = None
+    latitude = None
+    longitude = None
+    if FeatureToggle.WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE.is_active():
+        if offer.offererAddress is not None:
+            address = offer.offererAddress.address.street
+            city = offer.offererAddress.address.city
+            postalCode = offer.offererAddress.address.postalCode
+            latitude = offer.offererAddress.address.latitude
+            longitude = offer.offererAddress.address.longitude
+            name = offer.offererAddress.label
+
+    else:
+        address = venue.street
+        city = venue.city
+        postalCode = venue.postalCode
+        name = venue.name
+        latitude = venue.latitude
+        longitude = venue.longitude
+
     return {
         "@type": "Place",
-        "name": venue.name,
+        "name": name,
         "address": {
             "@type": "PostalAddress",
-            "streetAddress": venue.street,
-            "postalCode": venue.postalCode,
-            "addressLocality": venue.city,
+            "streetAddress": address,
+            "postalCode": postalCode,
+            "addressLocality": city,
         },
         "geo": {
             "@type": "GeoCoordinates",
-            "latitude": str(venue.latitude),
-            "longitude": str(venue.longitude),
+            "latitude": str(latitude),
+            "longitude": str(longitude),
         },
     }
 
@@ -74,7 +98,7 @@ def _get_event_metadata_from_offer(offer: offers_models.Offer) -> Metadata:
         event_metadata["eventAttendanceMode"] = "OnlineEventAttendanceMode"
     else:
         event_metadata["eventAttendanceMode"] = "OfflineEventAttendanceMode"
-        event_metadata["location"] = _get_metadata_from_venue(offer.venue)
+        event_metadata["location"] = _get_location_metadata(offer)
 
     if offer.metadataFirstBeginningDatetime:
         firstBeginningDatetime: datetime.datetime = offer.metadataFirstBeginningDatetime
