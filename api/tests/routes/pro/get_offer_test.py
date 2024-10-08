@@ -190,7 +190,7 @@ class Returns200Test:
             "thumbUrl": None,
             "url": None,
             "address": {
-                "label": venue.offererAddress.label or venue.common_name,
+                "label": venue.common_name,
                 "id": venue.offererAddress.address.id,
                 "id_oa": venue.offererAddress.id,
                 "banId": venue.offererAddress.address.banId,
