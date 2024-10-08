@@ -2,6 +2,7 @@ import copy
 import datetime
 import pathlib
 import re
+import unittest
 
 import pytest
 import time_machine
@@ -878,6 +879,18 @@ class TiteliveBookSearchTest:
         products = TiteliveBookSearch().get_product_info_from_eans(eans=["1", "2"])
         assert products[0].article[0].gencod == "9782335010046"
         assert len(products) == 1
+
+    @unittest.mock.patch(
+        "pcapi.core.providers.titelive_book_search.get_by_ean_list", return_value={"result": [1, 2, 3, 4, 5]}
+    )
+    def test_no_logger_called_when_titelive_returns_an_integer_as_work(
+        self, _mock_get_titelive_by_eans, caplog, requests_mock
+    ):
+        _configure_login_and_images(requests_mock)
+        products = TiteliveBookSearch().get_product_info_from_eans(eans=["1223345"])
+        assert len(products) == 0
+
+        assert len(caplog.records) == 0
 
     def test_extract_eans_from_titelive_response(self):
         eans = extract_eans_from_titelive_response(fixtures.TWO_BOOKS_RESPONSE_FIXTURE["result"])
