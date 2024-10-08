@@ -680,7 +680,7 @@ def link_venue_to_pricing_point(
     If it had, then it will raise an error, unless the force_link parameter is True, in exceptional circumstances.
     """
     validation.check_venue_can_be_linked_to_pricing_point(venue, pricing_point_id)
-    collective_stock_datetime = educational_models.CollectiveStock.pricingDatetimeField().name
+    collective_stock_datetime = educational_models.CollectiveStock.endDatetime.name
     if not timestamp:
         timestamp = datetime.utcnow()
     current_link = models.VenuePricingPointLink.query.filter(

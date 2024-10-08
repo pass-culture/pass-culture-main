@@ -105,7 +105,7 @@ def get_pricing_ordering_date(
     if isinstance(booking, bookings_models.Booking):
         eventDatetime = booking.stock.beginningDatetime
     else:
-        eventDatetime = booking.collectiveStock.pricing_datetime
+        eventDatetime = booking.collectiveStock.endDatetime
     # IMPORTANT: if you change this, you must also adapt the SQL query
     # in `core.offerers.api.link_venue_to_pricing_point()`
     return max(
@@ -909,7 +909,7 @@ def _generate_cashflows(batch: models.CashflowBatch) -> None:
             ),
             sa.and_(
                 models.Pricing.collectiveBookingId.is_not(None),
-                educational_models.CollectiveStock.pricingDatetimeField() < batch.cutoff,
+                educational_models.CollectiveStock.endDatetime < batch.cutoff,
             ),
             models.FinanceEvent.bookingFinanceIncidentId.is_not(None),
         ),

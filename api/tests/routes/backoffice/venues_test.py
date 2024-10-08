@@ -2490,7 +2490,7 @@ class SetPricingPointTest(PostEndpointHelper):
     # +1 session
     # +1 user
     # +1 venue and venues from the same offerer
-    # +1 FF USE_END_DATE_FOR_COLLECTIVE_PRICING
+    # +1 feature flags
     # +1 pricing point validation
     # +1 check if the venue already has a link
     # +3 set pricing point

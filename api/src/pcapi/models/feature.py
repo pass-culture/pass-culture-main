@@ -116,7 +116,6 @@ class FeatureToggle(enum.Enum):
         "Activer la recherche par similarité pour les structures et lieux dans le backoffice"
     )
     WIP_BENEFICIARY_EXTRACT_TOOL = "Activer l'extraction de données personnelles (RGPD)"
-    USE_END_DATE_FOR_COLLECTIVE_PRICING = "Utiliser la date de fin du stock collectif comme date de valorisation."
     WIP_ENABLE_OFFER_ADDRESS = "Activer l'association des offres à des adresses."
     WIP_SPLIT_OFFER = "Activer le nouveau parcours de création/édition d'offre individuelle"
     WIP_SUGGESTED_SUBCATEGORIES = "Activer les sous-catégories suggérées par IA lors de la création d'offre"
@@ -181,7 +180,6 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.ID_CHECK_ADDRESS_AUTOCOMPLETION,
     FeatureToggle.LOG_EMS_CINEMAS_AVAILABLE_FOR_SYNC,
     FeatureToggle.SYNCHRONIZE_TITELIVE_API_MUSIC_PRODUCTS,
-    FeatureToggle.USE_END_DATE_FOR_COLLECTIVE_PRICING,
     FeatureToggle.WIP_BENEFICIARY_EXTRACT_TOOL,
     FeatureToggle.WIP_CONNECT_AS_EXTENDED,
     FeatureToggle.WIP_EAN_CREATION,
