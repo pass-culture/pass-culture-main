@@ -35,7 +35,6 @@ from pcapi.core.object_storage import delete_public_object
 from pcapi.core.object_storage import store_public_object
 from pcapi.models import Base
 from pcapi.models import Model
-from pcapi.models import feature
 from pcapi.models import offer_mixin
 from pcapi.models.accessibility_mixin import AccessibilityMixin
 from pcapi.models.pc_object import PcObject
@@ -1313,17 +1312,6 @@ class CollectiveStock(PcObject, Base, Model):
     numberOfTickets: int = sa.Column(sa.Integer, nullable=False)
 
     priceDetail = sa.Column(sa.Text, nullable=True)
-
-    @property
-    def pricing_datetime(self) -> datetime:
-        field = self.pricingDatetimeField()
-        return getattr(self, field.name)
-
-    @classmethod
-    def pricingDatetimeField(cls) -> sa.Column:
-        if feature.FeatureToggle.USE_END_DATE_FOR_COLLECTIVE_PRICING.is_active():
-            return cls.endDatetime
-        return cls.beginningDatetime
 
     @property
     def isBookable(self) -> bool:
