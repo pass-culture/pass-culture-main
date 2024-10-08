@@ -16,8 +16,8 @@ import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { Notification } from 'components/Notification/Notification'
 import {
-  IndividualOfferContextValues,
   IndividualOfferContext,
+  IndividualOfferContextValues,
 } from 'context/IndividualOfferContext/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import {
@@ -27,9 +27,9 @@ import {
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { FORMAT_ISO_DATE_ONLY } from 'utils/date'
 import {
-  getOfferVenueFactory,
   getIndividualOfferFactory,
   getOfferStockFactory,
+  getOfferVenueFactory,
   individualOfferContextValuesFactory,
   subcategoryFactory,
 } from 'utils/individualApiFactories'
@@ -45,15 +45,6 @@ vi.mock('utils/date', async () => {
       .fn()
       .mockImplementation(() => new Date('2020-12-15T12:00:00Z')),
   }
-})
-
-Object.defineProperty(window, 'matchMedia', {
-  writable: true,
-  value: () => ({
-    matches: false,
-    addListener: vi.fn(),
-    removeListener: vi.fn(),
-  }),
 })
 
 const renderStockThingScreen = async (

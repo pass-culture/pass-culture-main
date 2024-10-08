@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react'
 import React from 'react'
-import { Configure } from 'react-instantsearch'
 import * as instantSearch from 'react-instantsearch'
+import { Configure } from 'react-instantsearch'
 
 import { AuthenticatedResponse } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
@@ -15,8 +15,8 @@ import {
   defaultUseStatsReturn,
 } from 'utils/adageFactories'
 import {
-  RenderWithProvidersOptions,
   renderWithProviders,
+  RenderWithProvidersOptions,
 } from 'utils/renderWithProviders'
 
 import { ADAGE_FILTERS_DEFAULT_VALUES } from '../../../utils'
@@ -39,15 +39,6 @@ vi.mock('apiClient/api', () => ({
     logOfferListViewSwitch: vi.fn(),
   },
 }))
-
-Object.defineProperty(window, 'matchMedia', {
-  writable: true,
-  value: () => ({
-    matches: false,
-    addListener: vi.fn(),
-    removeListener: vi.fn(),
-  }),
-})
 
 const renderOffersSuggestionsComponent = (
   props: OffersSuggestionsProps,
