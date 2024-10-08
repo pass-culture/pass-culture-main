@@ -51,6 +51,7 @@ describe('test updateIndividualOffer::serializers', () => {
   describe('test serializePatchOffer', () => {
     let formValues: IndividualOfferFormValues
     let patchBody: PatchOfferBodyModel
+
     beforeEach(() => {
       formValues = {
         isEvent: false,
@@ -88,6 +89,14 @@ describe('test updateIndividualOffer::serializers', () => {
         isDuo: false,
         url: 'https://my.url',
         isVenueVirtual: false,
+        city: 'Paris',
+        latitude: '48.853320',
+        longitude: '2.348979',
+        postalCode: '75001',
+        street: '3 Rue de Valois',
+        locationLabel: 'Ville lumière',
+        manuallySetAddress: false,
+        offerlocation: OFFER_LOCATION.OTHER_ADDRESS,
       }
       patchBody = {
         audioDisabilityCompliant: true,
@@ -106,6 +115,16 @@ describe('test updateIndividualOffer::serializers', () => {
         durationMinutes: 120,
         bookingEmail: 'booking@email.org',
         shouldSendMail: false,
+        address: {
+          city: 'Paris',
+          latitude: '48.853320',
+          longitude: '2.348979',
+          postalCode: '75001',
+          street: '3 Rue de Valois',
+          label: 'Ville lumière',
+          isManualEdition: false,
+          isVenueAddress: false,
+        },
       }
     })
 
@@ -139,61 +158,18 @@ describe('test updateIndividualOffer::serializers', () => {
       ).toEqual(patchBody)
     })
 
-    it('should serialize patchBody with address data (WIP_ENABLE_OFFER_ADDRESS)', () => {
+    it('should serialize patchBody with empty address label and manual edition false', () => {
       formValues = {
         ...formValues,
-        city: 'Paris',
-        latitude: '48.853320',
-        longitude: '2.348979',
-        postalCode: '75001',
-        street: '3 Rue de Valois',
-        locationLabel: 'Bureau',
-        manuallySetAddress: true,
-        offerlocation: OFFER_LOCATION.OTHER_ADDRESS,
-      }
-      patchBody = {
-        ...patchBody,
-        address: {
-          city: 'Paris',
-          latitude: '48.853320',
-          longitude: '2.348979',
-          postalCode: '75001',
-          street: '3 Rue de Valois',
-          label: 'Bureau',
-          isManualEdition: true,
-          isVenueAddress: false,
-        },
-      }
-      expect(
-        serializePatchOffer({
-          offer: getIndividualOfferFactory(),
-          formValues,
-        })
-      ).toEqual(patchBody)
-
-      // Test with empty label and manual edition false
-      formValues = {
-        ...formValues,
-        city: 'Paris',
-        latitude: '48.853320',
-        longitude: '2.348979',
-        postalCode: '75001',
-        street: '3 Rue de Valois',
         locationLabel: '',
         manuallySetAddress: false,
-        offerlocation: OFFER_LOCATION.OTHER_ADDRESS,
       }
       patchBody = {
         ...patchBody,
         address: {
-          city: 'Paris',
-          latitude: '48.853320',
-          longitude: '2.348979',
-          postalCode: '75001',
-          street: '3 Rue de Valois',
+          ...patchBody.address!,
           label: '',
           isManualEdition: false,
-          isVenueAddress: false,
         },
       }
 
@@ -205,28 +181,15 @@ describe('test updateIndividualOffer::serializers', () => {
       ).toEqual(patchBody)
     })
 
-    it('should send isVenueAddress flag set to true when location is the same as the venue (WIP_ENABLE_OFFER_ADDRESS)', () => {
+    it('should send isVenueAddress flag set to true when user select the venue location', () => {
       formValues = {
         ...formValues,
-        city: 'Paris',
-        latitude: '48.853320',
-        longitude: '2.348979',
-        postalCode: '75001',
-        street: '3 Rue de Valois',
-        locationLabel: 'Bureau',
-        manuallySetAddress: true,
-        offerlocation: '1',
+        offerlocation: '1', // any ID that represents the venue OA location
       }
       patchBody = {
         ...patchBody,
         address: {
-          city: 'Paris',
-          latitude: '48.853320',
-          longitude: '2.348979',
-          postalCode: '75001',
-          street: '3 Rue de Valois',
-          label: 'Bureau',
-          isManualEdition: true,
+          ...patchBody.address!,
           isVenueAddress: true,
         },
       }
@@ -237,28 +200,16 @@ describe('test updateIndividualOffer::serializers', () => {
         })
       ).toEqual(patchBody)
     })
+
     it('should send isVenueAddress flag set to false when user select another location (WIP_ENABLE_OFFER_ADDRESS)', () => {
       formValues = {
         ...formValues,
-        city: 'Paris',
-        latitude: '48.853320',
-        longitude: '2.348979',
-        postalCode: '75001',
-        street: '3 Rue de Valois',
-        locationLabel: 'Bureau',
-        manuallySetAddress: true,
-        offerlocation: OFFER_LOCATION.OTHER_ADDRESS,
+        offerlocation: OFFER_LOCATION.OTHER_ADDRESS, // user choosed to set another address
       }
       patchBody = {
         ...patchBody,
         address: {
-          city: 'Paris',
-          latitude: '48.853320',
-          longitude: '2.348979',
-          postalCode: '75001',
-          street: '3 Rue de Valois',
-          label: 'Bureau',
-          isManualEdition: true,
+          ...patchBody.address!,
           isVenueAddress: false,
         },
       }
@@ -272,11 +223,6 @@ describe('test updateIndividualOffer::serializers', () => {
       // Test with empty label and manual edition false
       formValues = {
         ...formValues,
-        city: 'Paris',
-        latitude: '48.853320',
-        longitude: '2.348979',
-        postalCode: '75001',
-        street: '3 Rue de Valois',
         locationLabel: '',
         manuallySetAddress: false,
         offerlocation: OFFER_LOCATION.OTHER_ADDRESS,
@@ -284,11 +230,7 @@ describe('test updateIndividualOffer::serializers', () => {
       patchBody = {
         ...patchBody,
         address: {
-          city: 'Paris',
-          latitude: '48.853320',
-          longitude: '2.348979',
-          postalCode: '75001',
-          street: '3 Rue de Valois',
+          ...patchBody.address!,
           label: '',
           isManualEdition: false,
           isVenueAddress: false,
