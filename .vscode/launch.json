@@ -14,7 +14,9 @@
                 "FLASK_RUN_IP": "0.0.0.0",
                 "FLASK_RUN_PORT": "5001"
             },
-            "args": ["run"]
+            "args": [
+                "run"
+            ]
         },
         {
             "name": "Flask backoffice server",
@@ -29,7 +31,9 @@
                 "FLASK_RUN_IP": "0.0.0.0",
                 "FLASK_RUN_PORT": "5002"
             },
-            "args": ["run"]
+            "args": [
+                "run"
+            ]
         },
         // Use these two configurations to attach to a running server
         // You will need the env var DEBUG_ACTIVATED=1
@@ -41,7 +45,10 @@
                     "remoteRoot": "${workspaceFolder}"
                 }
             ],
-            "connect": {"host": "localhost", "port": 10002},
+            "connect": {
+                "host": "localhost",
+                "port": 10002
+            },
             "request": "attach",
             "subProcess": true,
             "type": "debugpy",
@@ -55,11 +62,36 @@
                     "remoteRoot": "${workspaceFolder}"
                 }
             ],
-            "connect": {"host": "localhost", "port": 10003},
+            "connect": {
+                "host": "localhost",
+                "port": 10003
+            },
             "request": "attach",
             "subProcess": true,
             "type": "debugpy",
             "justMyCode": false
+        },
+        // Debug a local python script (without docker)
+        // To use the default path value, create the file api/src/pcapi/scripts/local_debug_script.py
+        // To access Flask app features, add this in your python file:
+        // from pcapi.app import app
+        // app.app_context().push()
+        {
+            "name": "Local python script",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${input:pythonScriptPath}",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}/api",
+            "justMyCode": false,
+        }
+    ],
+    "inputs": [
+        {
+            "id": "pythonScriptPath",
+            "type": "promptString",
+            "default": "${workspaceFolder}/api/src/pcapi/scripts/local_debug_script.py",
+            "description": "Path to the python file to debug"
         }
     ]
 }
