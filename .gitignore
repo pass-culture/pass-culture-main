@@ -52,3 +52,6 @@ docs-build/
 # Certificates for local mutal TLS
 *.crt
 *.key
+
+# Script for VSCode local debugging
+/api/src/pcapi/scripts/local_debug_script.py
