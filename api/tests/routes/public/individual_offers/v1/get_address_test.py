@@ -32,6 +32,7 @@ class GetAddressTest(PublicAPIEndpointBaseHelper):
         result = client.with_explicit_token(plain_api_key).get(self.endpoint_url.format(address_id=address_id))
         assert result.status_code == 200
         assert result.json == {
+            "id": address_id,
             "banId": "75101_8635_00182",
             "postalCode": "75001",
             "city": "Paris",

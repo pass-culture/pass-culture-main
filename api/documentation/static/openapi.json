@@ -3551,6 +3551,10 @@
                         "title": "City",
                         "type": "string"
                     },
+                    "id": {
+                        "title": "Id",
+                        "type": "integer"
+                    },
                     "latitude": {
                         "description": "Latitude coordinate",
                         "example": 48.86696,
@@ -3579,6 +3583,7 @@
                     }
                 },
                 "required": [
+                    "id",
                     "latitude",
                     "longitude"
                 ],
@@ -8071,6 +8076,74 @@
                 "title": "SUPPORT_PHYSIQUE_MUSIQUE_VINYLE_read",
                 "type": "object"
             },
+            "SearchAddressQuery": {
+                "properties": {
+                    "city": {
+                        "description": "City",
+                        "example": "Paris",
+                        "maxLength": 200,
+                        "minLength": 1,
+                        "title": "City",
+                        "type": "string"
+                    },
+                    "latitude": {
+                        "description": "Latitude coordinate",
+                        "example": 48.86696,
+                        "maximum": 90,
+                        "minimum": -90,
+                        "nullable": true,
+                        "title": "Latitude",
+                        "type": "number"
+                    },
+                    "longitude": {
+                        "description": "Longitude coordinate",
+                        "example": 2.31014,
+                        "maximum": 180,
+                        "minimum": -180,
+                        "nullable": true,
+                        "title": "Longitude",
+                        "type": "number"
+                    },
+                    "postalCode": {
+                        "description": "Postal Code",
+                        "example": "75001",
+                        "pattern": "^(?:0[1-9]|[1-8]\\d|9[0-8])\\d{3}$",
+                        "title": "Postalcode",
+                        "type": "string"
+                    },
+                    "street": {
+                        "description": "Street name and number",
+                        "example": "182 Rue Saint-Honor\u00e9",
+                        "maxLength": 200,
+                        "minLength": 1,
+                        "title": "Street",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "street",
+                    "city",
+                    "postalCode"
+                ],
+                "title": "SearchAddressQuery",
+                "type": "object"
+            },
+            "SearchAddressResponse": {
+                "properties": {
+                    "addresses": {
+                        "items": {
+                            "$ref": "#/components/schemas/GetAddressResponse"
+                        },
+                        "title": "Addresses",
+                        "type": "array"
+                    }
+                },
+                "required": [
+                    "addresses"
+                ],
+                "title": "SearchAddressResponse",
+                "type": "object"
+            },
             "ShowTypeEnum": {
                 "description": "An enumeration.",
                 "enum": [
@@ -9376,6 +9449,128 @@
                 "summary": "Validate booking",
                 "tags": [
                     "Bookings"
+                ]
+            }
+        },
+        "/public/offers/v1/addresses/search": {
+            "get": {
+                "description": "This endpoint returns addresses that match the provided literal address. To enhance the precision of the search, you can provide optional latitude and longitude coordinates.\n\nIf the municipality does not exist on the Base Nationale d'Adresses (BAN) API, this endpoints will return a **400 Resource not found** error.\n\nIf no address matches the given parameters, you may use the **Create Address** endpoint to add a new address.",
+                "operationId": "SearchAddresses",
+                "parameters": [
+                    {
+                        "description": "Street name and number",
+                        "in": "query",
+                        "name": "street",
+                        "required": true,
+                        "schema": {
+                            "description": "Street name and number",
+                            "example": "182 Rue Saint-Honor\u00e9",
+                            "maxLength": 200,
+                            "minLength": 1,
+                            "title": "Street",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "City",
+                        "in": "query",
+                        "name": "city",
+                        "required": true,
+                        "schema": {
+                            "description": "City",
+                            "example": "Paris",
+                            "maxLength": 200,
+                            "minLength": 1,
+                            "title": "City",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "Postal Code",
+                        "in": "query",
+                        "name": "postalCode",
+                        "required": true,
+                        "schema": {
+                            "description": "Postal Code",
+                            "example": "75001",
+                            "pattern": "^(?:0[1-9]|[1-8]\\d|9[0-8])\\d{3}$",
+                            "title": "Postalcode",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "Latitude coordinate",
+                        "in": "query",
+                        "name": "latitude",
+                        "required": false,
+                        "schema": {
+                            "description": "Latitude coordinate",
+                            "example": 48.86696,
+                            "maximum": 90,
+                            "minimum": -90,
+                            "nullable": true,
+                            "title": "Latitude",
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "description": "Longitude coordinate",
+                        "in": "query",
+                        "name": "longitude",
+                        "required": false,
+                        "schema": {
+                            "description": "Longitude coordinate",
+                            "example": 2.31014,
+                            "maximum": 180,
+                            "minimum": -180,
+                            "nullable": true,
+                            "title": "Longitude",
+                            "type": "number"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SearchAddressResponse"
+                                }
+                            }
+                        },
+                        "description": "Your request was succesful."
+                    },
+                    "400": {
+                        "description": "The request is invalid. The response body contains a list of errors."
+                    },
+                    "401": {
+                        "description": "Authentication is necessary to use this API."
+                    },
+                    "404": {
+                        "description": "The municipality could not be found on the Base Nationale d'Adresses (BAN) API."
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        },
+                        "description": "Unprocessable Entity"
+                    },
+                    "429": {
+                        "description": "You have made too many requests. (**rate limit: 200 requests/minute**)"
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "summary": "Search Addresses",
+                "tags": [
+                    "Addresses"
                 ]
             }
         },
