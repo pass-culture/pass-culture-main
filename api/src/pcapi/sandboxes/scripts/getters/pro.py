@@ -26,8 +26,9 @@ def create_regular_pro_user() -> dict:
     offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
     offerers_factories.VenueFactory(name="Mon Lieu", managingOfferer=offerer, isPermanent=True)
     offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
+    offerers_factories.VenueLabelFactory(label="Musée de France")
 
-    return {"user": get_pro_user_helper(pro_user)}
+    return {"user": get_pro_user_helper(pro_user), "siren": offerer.siren}
 
 
 def create_regular_pro_user_with_virtual_offer() -> dict:
