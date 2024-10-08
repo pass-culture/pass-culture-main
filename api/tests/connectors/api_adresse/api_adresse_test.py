@@ -26,7 +26,7 @@ def test_nominal_case(requests_mock):
         "https://api-adresse.data.gouv.fr/search",
         json=fixtures.ONE_FEATURE_RESPONSE,
     )
-    address_info = api_adresse.get_address(address, postcode, city)
+    address_info = api_adresse.get_address(address, postcode=postcode, city=city)
     assert address_info == api_adresse.AddressInfo(
         id="75118_2974_00018",
         label="18 Rue Duhesme 75018 Paris",
@@ -53,7 +53,7 @@ def test_fallback_to_municipality(requests_mock):
         "https://api-adresse.data.gouv.fr/search?q=Paris&postcode=75018&type=municipality&autocomplete=0&limit=1",
         json=fixtures.MUNICIPALITY_CENTROID_RESPONSE,
     )
-    address_info = api_adresse.get_address(address, postcode, city)
+    address_info = api_adresse.get_address(address, postcode=postcode, city=city)
     assert address_info == api_adresse.AddressInfo(
         id="75118",
         label="Paris 18e Arrondissement",
@@ -76,7 +76,37 @@ def test_no_match(requests_mock):
         json=fixtures.NO_FEATURE_RESPONSE,
     )
     with pytest.raises(api_adresse.NoResultException):
-        api_adresse.get_address(address, postcode, city)
+        api_adresse.get_address(address, postcode=postcode, city=city)
+
+
+@override_settings(ADRESSE_BACKEND="pcapi.connectors.api_adresse.ApiAdresseBackend")
+def test_should_raise_if_strict_is_set_to_true_and_score_is_below_RELIABLE_SCORE_THRESHOLD(requests_mock):
+    address = "123456789"
+    postcode = "75018"
+    city = "Paris"
+    requests_mock.get(
+        "https://api-adresse.data.gouv.fr/search",
+        json=fixtures.ONE_UNRELIABLE_FEATURE_RESPONSE,
+    )
+    with pytest.raises(api_adresse.NoResultException):
+        api_adresse.get_address(address, postcode=postcode, city=city, strict=True)
+
+
+@override_settings(ADRESSE_BACKEND="pcapi.connectors.api_adresse.ApiAdresseBackend")
+def test_should_not_fallback_to_municipality_if_strict_is_set_to_true(requests_mock):
+    address = "123456789"
+    postcode = "75018"
+    city = "Paris"
+    requests_mock.get(
+        "https://api-adresse.data.gouv.fr/search?q=123456789&postcode=75018&autocomplete=0&limit=1",
+        json=fixtures.NO_FEATURE_RESPONSE,
+    )
+    requests_mock.get(
+        "https://api-adresse.data.gouv.fr/search?q=Paris&postcode=75018&type=municipality&autocomplete=0&limit=1",
+        json=fixtures.MUNICIPALITY_CENTROID_RESPONSE,
+    )
+    with pytest.raises(api_adresse.NoResultException):
+        api_adresse.get_address(address, postcode=postcode, city=city, strict=True)
 
 
 @pytest.mark.parametrize(
@@ -99,7 +129,7 @@ def test_error_handling(status_code, expected_exception, requests_mock):
     )
 
     with pytest.raises(expected_exception):
-        api_adresse.get_address(address, postcode, city)
+        api_adresse.get_address(address, postcode=postcode, city=city)
 
 
 @override_settings(ADRESSE_BACKEND="pcapi.connectors.api_adresse.ApiAdresseBackend")
@@ -113,7 +143,7 @@ def test_error_handling_on_non_json_response(requests_mock):
         text="non-JSON content",
     )
     with pytest.raises(api_adresse.AdresseApiException):
-        api_adresse.get_address(address, postcode, city)
+        api_adresse.get_address(address, postcode=postcode, city=city)
 
 
 @override_settings(ADRESSE_BACKEND="pcapi.connectors.api_adresse.ApiAdresseBackend")

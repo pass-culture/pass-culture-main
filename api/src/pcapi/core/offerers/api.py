@@ -238,7 +238,7 @@ def update_venue_location(
     )
 
     if not is_manual_edition:
-        address_info = api_adresse.get_address(street, postal_code, city)
+        address_info = api_adresse.get_address(address=street, postcode=postal_code, city=city)
         location_data = LocationData(
             city=address_info.city,
             postal_code=address_info.postcode,
@@ -399,7 +399,9 @@ def create_venue(venue_data: venues_serialize.PostVenueBodyModel, author: users_
         address_info = api_adresse.get_municipality_centroid(venue_data.city, venue_data.postalCode)
         address_info.street = utils_regions.NON_DIFFUSIBLE_TAG
     else:
-        address_info = api_adresse.get_address(venue_data.street, venue_data.postalCode, venue_data.city)
+        address_info = api_adresse.get_address(
+            address=venue_data.street, postcode=venue_data.postalCode, city=venue_data.city
+        )
 
     address = get_or_create_address(
         LocationData(
@@ -2846,7 +2848,7 @@ def create_offerer_address_from_address_api(address: offerers_schemas.AddressBod
                 ban_id=None,
             )
     else:
-        address_info = api_adresse.get_address(address.street, address.postalCode, address.city)
+        address_info = api_adresse.get_address(address=address.street, postcode=address.postalCode, city=address.city)
         location_data = LocationData(
             city=address_info.city,
             postal_code=address_info.postcode,
