@@ -46,15 +46,6 @@ vi.mock('utils/date', async () => {
   }
 })
 
-Object.defineProperty(window, 'matchMedia', {
-  writable: true,
-  value: () => ({
-    matches: false,
-    addListener: vi.fn(),
-    removeListener: vi.fn(),
-  }),
-})
-
 const renderStockThingScreen = () =>
   renderWithProviders(
     <>

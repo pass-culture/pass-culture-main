@@ -7,18 +7,11 @@ import {
   defaultUseInfiniteHitsReturn,
 } from 'utils/adageFactories'
 import {
-  RenderWithProvidersOptions,
   renderWithProviders,
+  RenderWithProvidersOptions,
 } from 'utils/renderWithProviders'
 
 import { AppLayout } from '../AppLayout'
-
-Object.defineProperty(window, 'matchMedia', {
-  writable: true,
-  value: () => ({
-    matches: true,
-  }),
-})
 
 vi.mock(
   '../../OffersInstantSearch/OffersSearch/Autocomplete/Autocomplete',
@@ -107,6 +100,13 @@ const renderAppLayout = (
     </AdageUserContextProvider>,
     options
   )
+
+  Object.defineProperty(window, 'matchMedia', {
+    writable: true,
+    value: () => ({
+      matches: true,
+    }),
+  })
 }
 
 const featureOverrides = {

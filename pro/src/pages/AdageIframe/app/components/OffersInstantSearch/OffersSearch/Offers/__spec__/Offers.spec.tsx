@@ -616,15 +616,6 @@ describe('offers', () => {
     expect(
       screen.queryByText('Une offre vraiment chouette')
     ).not.toBeInTheDocument()
-
-    Object.defineProperty(window, 'matchMedia', {
-      writable: true,
-      value: () => ({
-        matches: false,
-        addListener: vi.fn(),
-        removeListener: vi.fn(),
-      }),
-    })
   })
 
   it('should trigger a log event when clicking the offer when the offers are in list mode', async () => {
@@ -675,15 +666,6 @@ describe('offers', () => {
     await userEvent.click(link)
 
     expect(apiAdage.logOfferTemplateDetailsButtonClick).toHaveBeenCalled()
-
-    Object.defineProperty(window, 'matchMedia', {
-      writable: true,
-      value: () => ({
-        matches: false,
-        addListener: vi.fn(),
-        removeListener: vi.fn(),
-      }),
-    })
   })
 
   it('should call tracker when clicking on toggle button view', async () => {
@@ -708,13 +690,5 @@ describe('offers', () => {
     expect(apiAdage.logOfferListViewSwitch).toHaveBeenCalledWith(
       expect.objectContaining({ iframeFrom: '/', source: 'list' })
     )
-    Object.defineProperty(window, 'matchMedia', {
-      writable: true,
-      value: () => ({
-        matches: false,
-        addListener: vi.fn(),
-        removeListener: vi.fn(),
-      }),
-    })
   })
 })

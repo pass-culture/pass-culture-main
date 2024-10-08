@@ -5,8 +5,8 @@ import { AdageFrontRoles } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
 import { Notification } from 'components/Notification/Notification'
 import {
-  RenderWithProvidersOptions,
   renderWithProviders,
+  RenderWithProvidersOptions,
 } from 'utils/renderWithProviders'
 
 import { App } from '../App'
@@ -99,15 +99,6 @@ vi.mock('@algolia/autocomplete-plugin-query-suggestions', () => {
       }
     }),
   }
-})
-
-Object.defineProperty(window, 'matchMedia', {
-  writable: true,
-  value: () => ({
-    matches: false,
-    addListener: vi.fn(),
-    removeListener: vi.fn(),
-  }),
 })
 
 const renderApp = (options?: RenderWithProvidersOptions) => {
