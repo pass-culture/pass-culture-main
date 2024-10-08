@@ -128,6 +128,9 @@ class TiteliveBookSearch(TiteliveSearch[TiteLiveBookWork]):
             try:
                 works.append(self.deserialize_titelive_product(work))
             except pydantic.ValidationError as e:
+                # work may be an integer, in that case, we can ignore the serialization error
+                if isinstance(work, int):
+                    continue
                 logger.error("failed to deserialize titelive response", extra={"work": work, "exc": e})
                 continue
 
