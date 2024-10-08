@@ -940,6 +940,7 @@ def create_offerer(
         if not user_offerer:
             user_offerer = models.UserOfferer(offerer=offerer, user=user, validationStatus=ValidationStatus.NEW)
             db.session.add(user_offerer)
+            db.session.flush()
 
         if offerer.isRejected:
             # When offerer was rejected, it is considered as a new offerer in validation process;
@@ -996,7 +997,7 @@ def create_offerer(
 
     # keep commit with repository.save() as long as siren is validated in pcapi.validation.models.offerer
     repository.save(offerer)
-
+    db.session.commit()
     external_attributes_api.update_external_pro(user.email)
     zendesk_sell.create_offerer(offerer)
 
