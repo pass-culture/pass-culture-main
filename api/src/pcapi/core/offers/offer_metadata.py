@@ -3,9 +3,9 @@ import typing
 
 from pcapi.core.categories import subcategories_v2
 import pcapi.core.offers.models as offers_models
+from pcapi.core.offers.utils import get_offer_address
 from pcapi.core.offers.utils import offer_app_link
 from pcapi.core.providers import constants as providers_constants
-from pcapi.models.feature import FeatureToggle
 
 
 Metadata = dict[str, typing.Any]
@@ -18,43 +18,20 @@ book_subcategories = {
 
 
 def _get_location_metadata(offer: offers_models.Offer) -> Metadata:
-    venue = offer.venue
-    address = None
-    city = None
-    postalCode = None
-    name = None
-    latitude = None
-    longitude = None
-    if FeatureToggle.WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE.is_active():
-        if offer.offererAddress is not None:
-            address = offer.offererAddress.address.street
-            city = offer.offererAddress.address.city
-            postalCode = offer.offererAddress.address.postalCode
-            latitude = offer.offererAddress.address.latitude
-            longitude = offer.offererAddress.address.longitude
-            name = offer.offererAddress.label
-
-    else:
-        address = venue.street
-        city = venue.city
-        postalCode = venue.postalCode
-        name = venue.name
-        latitude = venue.latitude
-        longitude = venue.longitude
-
+    offer_address = get_offer_address(offer)
     return {
         "@type": "Place",
-        "name": name,
+        "name": offer_address.label,
         "address": {
             "@type": "PostalAddress",
-            "streetAddress": address,
-            "postalCode": postalCode,
-            "addressLocality": city,
+            "streetAddress": offer_address.street,
+            "postalCode": offer_address.postalCode,
+            "addressLocality": offer_address.city,
         },
         "geo": {
             "@type": "GeoCoordinates",
-            "latitude": str(latitude),
-            "longitude": str(longitude),
+            "latitude": str(offer_address.latitude),
+            "longitude": str(offer_address.longitude),
         },
     }
 
