@@ -38,8 +38,8 @@ class ListCollectiveOffersQueryModel(BaseModel):
 
 class OfferVenueModel(BaseModel):
     venueId: int | None = fields.VENUE_ID
-    otherAddress: str | None
-    addressType: collective_offers_serialize.OfferAddressType
+    otherAddress: str | None = fields.OFFER_VENUE_OTHER_ADDRESS
+    addressType: collective_offers_serialize.OfferAddressType = fields.OFFER_VENUE_ADDRESS_TYPE
 
     _validated_venue_id = validator("venueId", pre=True, allow_reuse=True)(validate_venue_id)
 
@@ -501,7 +501,7 @@ class PatchCollectiveOfferBodyModel(BaseModel):
     domains: list[int] | None = fields.COLLECTIVE_OFFER_EDUCATIONAL_DOMAINS
     students: list[str] | None = fields.COLLECTIVE_OFFER_STUDENT_LEVELS
     offerVenue: OfferVenueModel | None
-    interventionArea: list[str] | None
+    interventionArea: list[str] | None = fields.COLLECTIVE_OFFER_INTERVENTION_AREA
     durationMinutes: int | None = fields.DURATION_MINUTES
     audioDisabilityCompliant: bool | None = fields.AUDIO_DISABILITY_COMPLIANT
     mentalDisabilityCompliant: bool | None = fields.MENTAL_DISABILITY_COMPLIANT

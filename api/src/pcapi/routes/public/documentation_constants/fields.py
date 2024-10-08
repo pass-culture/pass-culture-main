@@ -88,7 +88,7 @@ class _FIELDS:
     # Image Fields
     IMAGE_CREDIT = Field(description="Image owner or author", example="Jane Doe")
     IMAGE_FILE = Field(
-        description="Image file encoded in base64 string. Image format must be PNG or JPEG. Size must be between 400x600 and 800x1200 pixels. Aspect ratio must be 2:3 (portrait format)."
+        description="Image file encoded in base64 string. Image format must be PNG or JPEG. Size must be between 400x600 and 800x1200 pixels. Aspect ratio must be 2:3 (portrait format).",
     )
     IMAGE_URL = Field(description="Image URL publicly accessible", example="https://example.com/image.png")
 
@@ -258,7 +258,6 @@ class _FIELDS:
     COLLECTIVE_OFFER_IS_SOLD_OUT = Field(description="Is your offer sold out", example=False)
     COLLECTIVE_OFFER_NATIONAL_PROGRAM_ID = Field(
         description=f"Id of the national program linked to your offer. The national programs list can be found on **[this endpoint (`Get all known national programs`)]({GET_NATIONAL_PROGRAMS_ANCHOR})**",
-        example=123456,
     )
     COLLECTIVE_OFFER_DATE_CREATED = Field(description="Collective offer creation date")
     COLLECTIVE_OFFER_BEGINNING_DATETIME = Field(
@@ -376,6 +375,12 @@ class _FIELDS:
         description="Can the offerer create collective offers?",
         example=True,
     )
+    OFFER_VENUE_ADDRESS_TYPE = Field(
+        description=descriptions.OFFER_VENUE_ADDRESS_TYPE_DESCRIPTION,
+        example="offererVenue",
+    )
+    OFFER_VENUE_OTHER_ADDRESS = Field(description="Address that will be shared to the users", example=None)
+    COLLECTIVE_OFFER_INTERVENTION_AREA = Field(description="Department codes (eg. '77', '2A')", example="75")
 
 
 fields = _FIELDS()

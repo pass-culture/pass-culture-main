@@ -41,6 +41,12 @@ You have **three options** for the location:
 - `"address"`: Use this if the offer takes place at a different location from your venue
 """
 
+OFFER_VENUE_ADDRESS_TYPE_DESCRIPTION = """
+- `offererVenue` means a db-known venue (`venueId` field is then mandatory).
+- `other` means that the address should be specified using the `otherAddress` field (which becomes mandatory).
+- `school` means that the event takes place inside the educational institution (the other two fields becomes meaningless).
+"""
+
 COLLECTIVE_OFFER_STATUS_FIELD_DESCRIPTION = (
     OFFER_STATUS_FIELD_DESCRIPTION + "\n\n" + "- `ARCHIVED`: offer is archived by pro."
 )

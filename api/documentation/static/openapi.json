@@ -5433,9 +5433,17 @@
                 "additionalProperties": false,
                 "properties": {
                     "addressType": {
-                        "$ref": "#/components/schemas/OfferAddressType"
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/OfferAddressType"
+                            }
+                        ],
+                        "description": "\n- `offererVenue` means a db-known venue (`venueId` field is then mandatory).\n- `other` means that the address should be specified using the `otherAddress` field (which becomes mandatory).\n- `school` means that the event takes place inside the educational institution (the other two fields becomes meaningless).\n",
+                        "example": "offererVenue"
                     },
                     "otherAddress": {
+                        "description": "Address that will be shared to the users",
+                        "example": null,
                         "nullable": true,
                         "title": "Otheraddress",
                         "type": "string"
@@ -5882,6 +5890,8 @@
                         "type": "string"
                     },
                     "interventionArea": {
+                        "description": "Department codes (eg. '77', '2A')",
+                        "example": "75",
                         "items": {
                             "type": "string"
                         },
@@ -5919,7 +5929,6 @@
                     },
                     "nationalProgramId": {
                         "description": "Id of the national program linked to your offer. The national programs list can be found on **[this endpoint (`Get all known national programs`)](#tag/Collective-offer-attributes/operation/GetNationalPrograms)**",
-                        "example": 123456,
                         "nullable": true,
                         "title": "Nationalprogramid",
                         "type": "integer"
@@ -6172,7 +6181,6 @@
                     },
                     "nationalProgramId": {
                         "description": "Id of the national program linked to your offer. The national programs list can be found on **[this endpoint (`Get all known national programs`)](#tag/Collective-offer-attributes/operation/GetNationalPrograms)**",
-                        "example": 123456,
                         "nullable": true,
                         "title": "Nationalprogramid",
                         "type": "integer"
