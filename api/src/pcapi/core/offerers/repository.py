@@ -62,6 +62,11 @@ def get_all_offerers_for_user(
             models.UserOfferer.userId == user.id,
             sqla.not_(models.UserOfferer.isRejected) & sqla.not_(models.UserOfferer.isDeleted),
         ]
+        user_offerer = models.UserOfferer.filter_by(id=user.id)
+        print(user_offerer)
+        print(user_offerer.isRejected)
+        print(user_offerer.isDeleted)
+
         if not include_non_validated_user_offerers:
             user_offerer_filters.append(models.UserOfferer.isValidated)
         query = query.join(models.Offerer.UserOfferers).filter(*user_offerer_filters)
