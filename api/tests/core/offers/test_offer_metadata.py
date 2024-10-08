@@ -3,9 +3,12 @@ import datetime
 import pytest
 
 from pcapi.core.categories import subcategories_v2
+from pcapi.core.geography import factories as geography_factories
+from pcapi.core.offerers import factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.offer_metadata import get_metadata_from_offer
 from pcapi.core.providers.constants import BookFormat
+from pcapi.core.testing import override_features
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -218,6 +221,46 @@ class OfferMetadataTest:
             metadata = get_metadata_from_offer(offer)
 
             assert metadata["offers"]["availability"] == "https://schema.org/SoldOut"
+
+        @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
+        def should_have_offer_location_when_available(self):
+            venue = offerers_factories.VenueFactory(
+                name="Le Poney qui tousse",
+                street="Rue du Poney qui tousse",
+                postalCode="75001",
+                city="Boulgourville",
+                latitude="47.097456",
+                longitude="-1.270040",
+            )
+            address = geography_factories.AddressFactory(
+                street="Rue du poney qui respire",
+                postalCode="75002",
+                city="Paris",
+                latitude="47",
+                longitude="-1",
+            )
+            offer_address = offerers_factories.OffererAddressFactory(
+                address=address, label="Le grand poney qui respire"
+            )
+            offer = offers_factories.EventOfferFactory(venue=venue, offererAddress=offer_address)
+
+            metadata = get_metadata_from_offer(offer)
+
+            assert metadata["location"] == {
+                "@type": "Place",
+                "name": "Le grand poney qui respire",
+                "address": {
+                    "@type": "PostalAddress",
+                    "streetAddress": "Rue du poney qui respire",
+                    "postalCode": "75002",
+                    "addressLocality": "Paris",
+                },
+                "geo": {
+                    "@type": "GeoCoordinates",
+                    "latitude": "47.00000",
+                    "longitude": "-1.00000",
+                },
+            }
 
     class GivenABookTest:
         @pytest.mark.parametrize(
