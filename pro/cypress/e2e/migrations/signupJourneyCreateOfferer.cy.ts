@@ -153,6 +153,9 @@ describe('Signup journey with new venue', () => {
       .should('not.be.visible')
     cy.url({ timeout: 10000 }).should('contain', '/accueil')
     cy.findAllByTestId('spinner', { timeout: 30 * 1000 }).should('not.exist')
+
+    // TODO: Find a better way to wait for the offerer to be created
+    cy.reload()
     cy.wait('@getOfferers').its('response.statusCode').should('eq', 200)
     cy.findByText('First Venue').should('be.visible')
   })
@@ -291,6 +294,9 @@ describe('Signup journey with known venue', () => {
       .should('not.be.visible')
     cy.url({ timeout: 10000 }).should('contain', '/accueil')
     cy.findAllByTestId('spinner', { timeout: 30 * 1000 }).should('not.exist')
+
+    // TODO: Find a better way to wait for the offerer to be created
+    cy.reload()
     cy.wait('@getOfferers').its('response.statusCode').should('eq', 200)
 
     // Then the attachment is in progress
@@ -340,6 +346,8 @@ describe('Signup journey with known venue', () => {
     // When I am redirected to homepage
     cy.url({ timeout: 10000 }).should('contain', '/accueil')
     cy.findAllByTestId('spinner', { timeout: 30 * 1000 }).should('not.exist')
+
+    // TODO: Find a better way to wait for the offerer to be created
     cy.reload()
     cy.wait('@getOfferers').its('response.statusCode').should('eq', 200)
 
