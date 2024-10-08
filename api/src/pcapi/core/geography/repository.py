@@ -29,17 +29,33 @@ def get_iris_from_address(
     return iris
 
 
-def get_address_by_ban_id(ban_id: str) -> geography_models.Address | None:
-    return geography_models.Address.query.filter(geography_models.Address.banId == ban_id).one_or_none()
-
-
-def get_address_by_lat_long(latitude: float, longitude: float) -> geography_models.Address | None:
+def search_addresses(
+    *,
+    street: str,
+    city: str,
+    postal_code: str,
+    latitude: float | None = None,
+    longitude: float | None = None,
+) -> list[geography_models.Address]:
     """
-    Return address corresponding to given latitude and longitude.
-    Given `latitude` and `longitude` are rounded to five decimal places
-    (as it is the precision of the latitude and longitude stored in our DB).
+    Most of the time should return either a list with one element or an empty list.
+    However it is possible to imagine cases where for one literal address,
+    there are several addresses with different (`latitude`,`longitude`).
+
+    :latitude/longitude:
+        - they are rounded to five decimal places (as it is the precision of the latitude and longitude stored in our DB)
+        - they are taken into account only if both params are filled
     """
-    return geography_models.Address.query.filter(
-        geography_models.Address.latitude == Decimal(f"{latitude:.5f}"),
-        geography_models.Address.longitude == Decimal(f"{longitude:.5f}"),
-    ).one_or_none()
+    base_query = geography_models.Address.query.filter(
+        geography_models.Address.street == street,
+        geography_models.Address.city == city,
+        geography_models.Address.postalCode == postal_code,
+    )
+
+    if latitude is not None and longitude is not None:
+        base_query = base_query.filter(
+            geography_models.Address.latitude == Decimal(f"{latitude:.5f}"),
+            geography_models.Address.longitude == Decimal(f"{longitude:.5f}"),
+        )
+
+    return base_query.all()
