@@ -1,5 +1,3 @@
-from pcapi.models.api_errors import ApiErrors
-
 from . import models
 
 
