@@ -64,6 +64,7 @@ from pcapi.sandboxes.scripts.creators.industrial.create_offers_with_price_catego
 )
 from pcapi.sandboxes.scripts.creators.industrial.create_offers_with_status import create_offers_with_status
 from pcapi.sandboxes.scripts.creators.industrial.create_special_events import create_special_events
+from pcapi.sandboxes.scripts.creators.industrial.create_user_offerers import create_user_offerers
 
 
 def save_industrial_sandbox() -> None:
@@ -154,3 +155,6 @@ def save_industrial_sandbox() -> None:
     create_industrial_commercial_gestures()
 
     create_special_events()
+
+    # run this last as we fill out missing user offerers
+    create_user_offerers()
