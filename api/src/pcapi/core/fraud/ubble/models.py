@@ -5,6 +5,15 @@ import pydantic.v1 as pydantic_v1
 
 
 class UbbleIdentificationStatus(enum.Enum):
+    # ubble v2
+    PENDING = "pending"
+    CAPTURE_IN_PROGRESS = "capture_in_progress"
+    CHECKS_IN_PROGRESS = "checks_in_progress"
+    APPROVED = "approved"
+    DECLINED = "declined"
+    RETRY_REQUIRED = "retry_required"
+    REFUSED = "refused"
+    # ubble v1
     UNINITIATED = "uninitiated"  # Identification has only been created (user has not started the verification flow)
     INITIATED = "initiated"  # User has started the verification flow
     PROCESSING = "processing"  # User has ended the verification flow, identification-url is not usable anymore
