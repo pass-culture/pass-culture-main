@@ -5,6 +5,7 @@ import random
 import string
 import time
 
+import psycopg2.errors
 import sqlalchemy as sa
 
 from pcapi import settings
@@ -16,14 +17,10 @@ app.app_context().push()
 logger = logging.getLogger(__name__)
 
 
-def do_all_in_sql(min_id: int, max_id: int, batch_size: int, dry_run: bool, do_vacuum: bool = False) -> None:
-    unique_name = "".join(random.choices(string.ascii_letters, k=5))
-    start_time = datetime.datetime.utcnow()
-    try:
-        logger.info("starting script id %s at %s", unique_name, datetime.datetime.utcnow())
-        db.session.execute(sa.text("SET SESSION statement_timeout = '400s'"))
-
-        for i in range(min_id, max_id, batch_size):
+def update_offer_batch(min_id: int, max_id: int) -> None:
+    nb_retry = 3
+    while nb_retry > 0:
+        try:
             db.session.execute(
                 sa.text(
                     """
@@ -38,8 +35,26 @@ def do_all_in_sql(min_id: int, max_id: int, batch_size: int, dry_run: bool, do_v
                 and offer.id <:max_id ;            
                 """
                 ),
-                {"min_id": i, "max_id": i + batch_size},
+                {"min_id": min_id, "max_id": max_id},
             )
+            return
+        except psycopg2.errors.QueryCanceled:
+            logger.info("Timeout on offererAddressId rows between %s and %s ", min_id, max_id)
+            db.session.rollback()
+            nb_retry = nb_retry - 1
+            if nb_retry == 0:
+                raise
+
+
+def do_all_in_sql(min_id: int, max_id: int, batch_size: int, dry_run: bool, do_vacuum: bool = False) -> None:
+    unique_name = "".join(random.choices(string.ascii_letters, k=5))
+    start_time = datetime.datetime.utcnow()
+    try:
+        logger.info("starting script id %s at %s", unique_name, datetime.datetime.utcnow())
+        db.session.execute(sa.text("SET SESSION statement_timeout = '400s'"))
+
+        for i in range(min_id, max_id, batch_size):
+            update_offer_batch(i, i + batch_size)
             logger.info("Updated offererAddressId rows between %s and %s ", i, i + batch_size)
             if not dry_run:
                 db.session.commit()
