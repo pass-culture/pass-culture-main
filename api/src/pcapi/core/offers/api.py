@@ -324,7 +324,7 @@ def create_offer(
 def get_offerer_address_from_address(
     venue: offerers_models.Venue, address: offerers_schemas.AddressBodyModel
 ) -> offerers_models.OffererAddress:
-    if not address.label or address.label == venue.common_name:
+    if not address.label:
         address.label = None
     address_from_api = offerers_api.create_offerer_address_from_address_api(address)
     return offerers_api.get_or_create_offerer_address(
