@@ -1,0 +1,25 @@
+{% macro display_selector(name, options, class) %}
+  <div class="pc-display-selector {{ class }}"
+       data-pc-input-name="{{ name }}">
+    {% for text, tooltip, value in options %}
+      <div class="form-check form-check-inline">
+        <input class="form-check-input"
+               type="radio"
+               name="{{ name }}"
+               id="{{ name }}-{{ loop.index }}"
+               value="{{ value }}"
+               checked>
+        <label class="form-check-label"
+               for="{{ name }}-{{ loop.index }}">
+          {{ text }}
+          {% if tooltip %}
+            <i class="bi bi-question-diamond-fill"
+               data-bs-toggle="tooltip"
+               data-bs-placement="top"
+               data-bs-title="{{ tooltip }}"></i>
+          {% endif %}
+        </label>
+      </div>
+    {% endfor %}
+  </div>
+{% endmacro %}
