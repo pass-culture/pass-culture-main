@@ -60,10 +60,7 @@ export const serializeApiCollectiveFilters = (
   return listOffersQueryKeys.reduce((accumulator, field) => {
     const filterValue = searchFilters[field]
 
-    if (
-      filterValue &&
-      (filterValue !== defaultFilters[field] || field === 'status')
-    ) {
+    if (filterValue && filterValue !== defaultFilters[field]) {
       return {
         ...accumulator,
         [field]: filterValue,

@@ -4,7 +4,6 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
-import { CollectiveOfferDisplayedStatus } from 'apiClient/v1'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { GET_OFFERER_QUERY_KEY } from 'config/swrQueryKeys'
@@ -128,13 +127,10 @@ export const OfferTypeScreen = (): JSX.Element => {
         periodEndingDate,
         collectiveOfferType,
         format,
-      } = serializeApiCollectiveFilters(apiFilters, {
-        ...DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
-        status: [
-          ...DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS.status,
-          CollectiveOfferDisplayedStatus.ARCHIVED,
-        ],
-      })
+      } = serializeApiCollectiveFilters(
+        apiFilters,
+        DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS
+      )
 
       const templateOffersOnSelectedVenue = await api.getCollectiveOffers(
         nameOrIsbn,

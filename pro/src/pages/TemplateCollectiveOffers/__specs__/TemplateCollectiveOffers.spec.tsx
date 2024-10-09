@@ -8,6 +8,7 @@ import { userEvent } from '@testing-library/user-event'
 
 import { api } from 'apiClient/api'
 import {
+  CollectiveOfferDisplayedStatus,
   CollectiveOfferResponseModel,
   CollectiveOffersStockResponseModel,
   CollectiveOfferStatus,
@@ -107,10 +108,11 @@ describe('route TemplateCollectiveOffers', () => {
         )
 
         await waitFor(() => {
-          expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
+          expect(api.getCollectiveOffers).toHaveBeenNthCalledWith(
+            2,
             undefined,
             '1',
-            DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS.status,
+            CollectiveOfferDisplayedStatus.REJECTED,
             undefined,
             undefined,
             undefined,
@@ -139,10 +141,14 @@ describe('route TemplateCollectiveOffers', () => {
           screen.getByRole('button', { name: 'Rechercher' })
         )
         await waitFor(() => {
-          expect(api.getCollectiveOffers).toHaveBeenCalledWith(
+          expect(api.getCollectiveOffers).toHaveBeenNthCalledWith(
+            2,
             undefined,
             '1',
-            DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS.status,
+            [
+              CollectiveOfferDisplayedStatus.REJECTED,
+              CollectiveOfferDisplayedStatus.ARCHIVED,
+            ],
             undefined,
             undefined,
             undefined,
@@ -202,7 +208,7 @@ describe('route TemplateCollectiveOffers', () => {
           expect(api.getCollectiveOffers).toHaveBeenCalledWith(
             'Any word',
             '1',
-            DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS.status,
+            undefined,
             undefined,
             undefined,
             undefined,
@@ -230,7 +236,7 @@ describe('route TemplateCollectiveOffers', () => {
           expect(api.getCollectiveOffers).toHaveBeenCalledWith(
             undefined,
             '1',
-            DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS.status,
+            undefined,
             proVenues[0].id.toString(),
             undefined,
             undefined,
@@ -255,7 +261,7 @@ describe('route TemplateCollectiveOffers', () => {
           expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
             undefined,
             '1',
-            DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS.status,
+            undefined,
             undefined,
             undefined,
             undefined,
@@ -279,7 +285,7 @@ describe('route TemplateCollectiveOffers', () => {
           expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
             undefined,
             '1',
-            DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS.status,
+            undefined,
             undefined,
             undefined,
             undefined,
@@ -387,7 +393,7 @@ describe('route TemplateCollectiveOffers', () => {
         1,
         undefined,
         '1',
-        DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS.status,
+        undefined,
         '666',
         undefined,
         undefined,
@@ -405,7 +411,7 @@ describe('route TemplateCollectiveOffers', () => {
         2,
         undefined,
         '1',
-        DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS.status,
+        undefined,
         proVenues[0].id.toString(),
         undefined,
         undefined,
@@ -425,7 +431,7 @@ describe('route TemplateCollectiveOffers', () => {
         3,
         undefined,
         '1',
-        DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS.status,
+        undefined,
         undefined,
         undefined,
         undefined,
@@ -463,7 +469,7 @@ describe('route TemplateCollectiveOffers', () => {
         1,
         undefined,
         '1',
-        DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS.status,
+        undefined,
         '666',
         undefined,
         undefined,
@@ -481,7 +487,7 @@ describe('route TemplateCollectiveOffers', () => {
         2,
         undefined,
         '1',
-        DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS.status,
+        undefined,
         proVenues[0].id.toString(),
         undefined,
         undefined,
@@ -499,7 +505,7 @@ describe('route TemplateCollectiveOffers', () => {
         3,
         undefined,
         '1',
-        DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS.status,
+        undefined,
         undefined,
         undefined,
         undefined,
