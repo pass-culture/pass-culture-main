@@ -10,7 +10,6 @@ const fieldsNames = [
   'longitude',
   'coords',
   'banId',
-  'locationLabel',
   'search-addressAutocomplete',
   'addressAutocomplete',
 ]

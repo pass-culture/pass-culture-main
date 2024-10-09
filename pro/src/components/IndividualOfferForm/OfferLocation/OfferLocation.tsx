@@ -62,6 +62,8 @@ export const OfferLocation = ({ venue }: OfferLocationProps): JSX.Element => {
       ])
     } else {
       await resetAddressFields({ formik })
+      await formik.setFieldValue('locationLabel', '')
+      await formik.setFieldTouched('locationLabel', false)
     }
   }
 
