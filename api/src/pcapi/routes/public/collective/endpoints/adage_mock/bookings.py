@@ -1,3 +1,4 @@
+from contextlib import suppress
 from datetime import datetime
 from datetime import timezone
 import logging
@@ -23,6 +24,7 @@ from pcapi.routes.public import spectree_schemas
 from pcapi.routes.public.collective.endpoints.adage_mock import utils
 from pcapi.routes.public.documentation_constants import http_responses
 from pcapi.routes.public.documentation_constants import tags
+from pcapi.routes.serialization import ConfiguredBaseModel
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
 from pcapi.validation.routes.users_authentifications import current_api_key
@@ -30,6 +32,11 @@ from pcapi.validation.routes.users_authentifications import provider_api_key_req
 
 
 logger = logging.getLogger(__name__)
+
+
+class BookedCollectiveOffer(ConfiguredBaseModel):
+    booking_id: int
+    booking_status: models.CollectiveBookingStatus
 
 
 @blueprints.public_api.route("/v2/collective/adage_mock/bookings/<int:booking_id>/confirm", methods=["POST"])
@@ -291,18 +298,19 @@ def reimburse_collective_booking(booking_id: int) -> None:
 @provider_api_key_required
 @spectree_serialize(
     api=spectree_schemas.public_api_schema,
-    on_success_status=204,
+    on_success_status=200,
+    response_model=BookedCollectiveOffer,
     tags=[tags.COLLECTIVE_ADAGE_MOCK],
     resp=SpectreeResponse(
         **(
-            http_responses.HTTP_204_COLLECTIVE_BOOKING_STATUS_UPDATE
-            | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
-            | http_responses.HTTP_403_COLLECTIVE_BOOKING_STATUS_UPDATE_REFUSED
+            http_responses.HTTP_200_REQUEST_SUCCESSFUL
+            | http_responses.HTTP_403_UNTHAUTHORIZED
             | http_responses.HTTP_404_COLLECTIVE_OFFER_NOT_FOUND
+            | http_responses.HTTP_40X_SHARED_BY_API_ENDPOINTS
         )
     ),
 )
-def adage_mock_book_offer(offer_id: int) -> None:
+def adage_mock_book_offer(offer_id: int) -> BookedCollectiveOffer:
     """
     Mock collective offer booking
 
@@ -315,6 +323,9 @@ def adage_mock_book_offer(offer_id: int) -> None:
     offer = _get_offer_or_raise_404(offer_id)
 
     if not offer.isBookable:
+        with suppress(AttributeError):
+            if offer.collectiveStock.collectiveBookings:
+                raise ForbiddenError({"code": "OFFER_IS_NOT_BOOKABLE_BECAUSE_BOOKING_EXISTS"})
         raise ForbiddenError({"code": "OFFER_IS_NOT_BOOKABLE"})
 
     institution = offer.institution
@@ -327,7 +338,7 @@ def adage_mock_book_offer(offer_id: int) -> None:
     )
 
     try:
-        booking_api.book_collective_offer(redactor_information, offer.collectiveStock.id)
+        booking = booking_api.book_collective_offer(redactor_information, offer.collectiveStock.id)
     except exceptions.EducationalYearNotFound:
         raise ForbiddenError({"code": "OFFERS_YEAR_NOT_FOUND"})
     except Exception:
@@ -335,6 +346,8 @@ def adage_mock_book_offer(offer_id: int) -> None:
         logger.exception("Adage mock. Failed to prebook offer.", extra=err_extras)
 
         raise ApiErrors({"code": "OFFER_BOOKING_FAILED_TRY_AGAIN_LATER"}, status_code=500)
+
+    return BookedCollectiveOffer(booking_id=booking.id, booking_status=booking.status)
 
 
 def _get_offer_or_raise_404(offer_id: int) -> models.CollectiveOffer:

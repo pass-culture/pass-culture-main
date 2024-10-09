@@ -195,6 +195,8 @@ class PublicAPIRestrictedEnvEndpointHelper(PublicAPIVenueEndpointHelper):
                 assert response.json.get(key) == msg, f"[{key}] expected: {msg}, got: '{response.json.get(key)}'"
                 assert response.json.get(key) == msg, self._format_unexpected_json_error(response, key, msg)
 
+        return response
+
     def _format_wrong_status_code(self, response, expected_status):
         return f"expected: {expected_status}, got: {response.status_code}, json: '{response.json}'"
 
