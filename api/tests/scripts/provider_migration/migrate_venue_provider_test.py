@@ -28,6 +28,13 @@ FAKE_VENUES_TO_MIGRATE_BY_DATE_AND_HOUR = {
 }
 
 
+def test_migration_json_is_correct():
+    migration_dict = migrate_venue_provider._load_migration_json()
+    for day in migration_dict.keys():
+        for hour in migration_dict[day].keys():
+            migrate_venue_provider.MigrationData(**migration_dict[day][hour])
+
+
 class GetMigrationDateAndHourKeysTest:
     @pytest.mark.parametrize(
         "utc_datetime,expected_target_date,expected_target_hour",
@@ -99,8 +106,8 @@ class RetrieveMigrationDataTest:
 
 @pytest.mark.usefixtures("db_session")
 @mock.patch(
-    "pcapi.scripts.provider_migration.migrate_venue_provider.VENUES_TO_MIGRATE_BY_DATE_AND_HOUR",
-    FAKE_VENUES_TO_MIGRATE_BY_DATE_AND_HOUR,
+    "pcapi.scripts.provider_migration.migrate_venue_provider._PATH_TO_MIGRATION_JSON",
+    "tests/scripts/provider_migration/fake_migration.json",
 )
 class ExecuteScheduledVenueProviderMigrationTest:
     @mock.patch("pcapi.scripts.provider_migration.migrate_venue_provider._migrate_venue_providers")
