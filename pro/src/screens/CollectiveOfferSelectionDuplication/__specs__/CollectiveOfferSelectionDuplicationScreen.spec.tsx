@@ -227,7 +227,7 @@ describe('CollectiveOfferConfirmation', () => {
     await waitFor(() =>
       expect(notifyError).toHaveBeenNthCalledWith(
         1,
-        'Vous devez séléctionner une offre vitrine à dupliquer'
+        'Vous devez sélectionner une offre vitrine à dupliquer'
       )
     )
   })

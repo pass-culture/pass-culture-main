@@ -107,7 +107,7 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
     const templateOfferId = formikSelection.values.templateOfferId
     if (templateOfferId === '') {
       return notify.error(
-        'Vous devez séléctionner une offre vitrine à dupliquer'
+        'Vous devez sélectionner une offre vitrine à dupliquer'
       )
     }
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
