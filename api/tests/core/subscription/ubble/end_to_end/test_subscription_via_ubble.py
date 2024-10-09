@@ -9,6 +9,7 @@ import pytest
 import requests_mock
 import time_machine
 
+from pcapi import settings
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.fraud.ubble.models import UbbleIdentificationStatus
@@ -63,13 +64,14 @@ class UbbleEndToEndTest:
 
         with requests_mock.Mocker() as requests_mocker:
             requests_mocker.post(
-                "https://api.ubble.ai/identifications/", json=requests_data.START_IDENTIFICATION_RESPONSE
+                f"{settings.UBBLE_API_URL}/identifications/", json=requests_data.START_IDENTIFICATION_RESPONSE
             )
 
             response = client.post(
                 "/native/v1/ubble_identification",
                 json={"redirectUrl": "https://passculture.app/verification-identite/fin"},
             )
+            assert response.status_code == 200, response.json
 
         assert requests_mocker.last_request.json() == {
             "data": {
@@ -103,7 +105,7 @@ class UbbleEndToEndTest:
 
         with requests_mock.Mocker() as requests_mocker:
             requests_mocker.get(
-                f"https://api.ubble.ai/identifications/{requests_data.IDENTIFICATION_ID}/",
+                f"{settings.UBBLE_API_URL}/identifications/{requests_data.IDENTIFICATION_ID}/",
                 json=requests_data.INITIATED_IDENTIFICATION_RESPONSE,
             )
 
@@ -141,7 +143,7 @@ class UbbleEndToEndTest:
 
         with requests_mock.Mocker() as requests_mocker:
             requests_mocker.get(
-                f"https://api.ubble.ai/identifications/{requests_data.IDENTIFICATION_ID}/",
+                f"{settings.UBBLE_API_URL}/identifications/{requests_data.IDENTIFICATION_ID}/",
                 json=requests_data.PROCESSING_IDENTIFICATION_RESPONSE,
             )
 
@@ -181,7 +183,7 @@ class UbbleEndToEndTest:
         }
         with requests_mock.Mocker() as requests_mocker:
             requests_mocker.get(
-                f"https://api.ubble.ai/identifications/{requests_data.IDENTIFICATION_ID}/",
+                f"{settings.UBBLE_API_URL}/identifications/{requests_data.IDENTIFICATION_ID}/",
                 json=requests_data.PROCESSED_IDENTIFICATION_RESPONSE,
             )
             storage_path_matcher = re.compile("https://storage.ubble.ai/*")
