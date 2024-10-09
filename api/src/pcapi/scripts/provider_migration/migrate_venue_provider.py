@@ -1,4 +1,6 @@
+import csv
 import datetime
+import json
 import logging
 
 import pydantic.v1 as pydantic_v1
@@ -12,7 +14,6 @@ from pcapi.core.providers import models as providers_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.repository import transaction
-from pcapi.scripts.provider_migration.data import VENUES_TO_MIGRATE_BY_DATE_AND_HOUR
 from pcapi.utils.date import utc_datetime_to_department_timezone
 
 
@@ -20,6 +21,111 @@ logger = logging.getLogger(__name__)
 
 
 BACKEND_USER_ID = 2568200  # id of our backend tech lead user
+
+_PATH_TO_MIGRATION_JSON = "./src/pcapi/scripts/provider_migration/data/migration.json"
+_TARGET_HOUR_FORMAT = "%HH"
+_TARGET_DAY_FORMAT = "%d/%m/%y"
+
+
+class MigrationJsonGenerationException(Exception):
+    pass
+
+
+class CsvRowException(Exception):
+    pass
+
+
+def _load_migration_json() -> dict:
+    data = {}
+    with open(_PATH_TO_MIGRATION_JSON, "r", encoding="UTF-8") as f:
+        data = json.load(f)
+
+    return data
+
+
+def _dump_migration_json(json_dict: dict) -> None:
+    with open(_PATH_TO_MIGRATION_JSON, "w", encoding="UTF-8") as f:
+        json.dump(json_dict, f, indent=4)
+
+
+def _parse_row(row: list[str]) -> tuple[int, str, str]:
+    if len(row) != 3:
+        raise CsvRowException(f"Expected 3 elements, got {len(row)}")
+
+    venue_id, target_day, target_hour = row
+
+    try:
+        int(venue_id)
+    except ValueError:
+        raise CsvRowException(f"Column 1 - expected int, got {venue_id}")
+
+    try:
+        datetime.datetime.strptime(target_day, _TARGET_DAY_FORMAT)
+    except ValueError:
+        raise CsvRowException(f"Column 2 - expected date in format `{_TARGET_DAY_FORMAT}`, got {target_day}")
+
+    try:
+        datetime.datetime.strptime(target_hour, _TARGET_HOUR_FORMAT)
+    except ValueError:
+        raise CsvRowException(f"Column 3 - expected hour in format `{_TARGET_HOUR_FORMAT}`, got {target_hour}")
+
+    return int(venue_id), target_day, target_hour
+
+
+def sort_date_keys(date_string: str) -> float:
+    return datetime.datetime.strptime(date_string, _TARGET_DAY_FORMAT).timestamp()
+
+
+def generate_migration_json_from_csv(path: str, provider_id: int, comment: str) -> None:
+    """
+    Generate JSON file that contained scheduled migrations
+
+    :path         : Path to CSV file that should have the following structure :
+                        # venue_id, date in format `"%d/%m/%y`, hour in format `%HH`
+                        3185,21/10/24,14H
+                        4306,21/10/24,10H
+                        #...
+    :provider_id  : Id of target provider
+    :comment      : Comment that will be added in ActionHistory, for instance:
+                    `(PC-32205) Migrate bookshops using Librisoft to new API for stock update.`
+    """
+    migration_dict = _load_migration_json()
+
+    with open(path, "r", encoding="UTF-8", newline="") as csvfile:
+        reader = csv.reader(csvfile, delimiter=",")
+        for row_number, row in enumerate(reader, start=1):
+            try:
+                venue_id, target_day, target_hour = _parse_row(row)
+            except CsvRowException as e:
+                raise MigrationJsonGenerationException(f"Row {row_number} - {str(e)}")
+
+            # Get existing value or initialize dicts
+            day_dict = migration_dict.get(target_day, {})
+            hour_dict = day_dict.get(
+                target_hour,
+                {
+                    "target_provider_id": provider_id,
+                    "comment": comment,
+                    "venues_ids": [],
+                },  # initial values
+            )
+
+            if hour_dict["target_provider_id"] != provider_id:
+                raise MigrationJsonGenerationException(
+                    f"Another provider (Provider #{hour_dict['target_provider_id']}) already has a migration scheduled for this time slot ({target_day} - {target_hour})"
+                )
+
+            # Update values
+            if venue_id not in hour_dict["venues_ids"]:
+                hour_dict["venues_ids"].append(int(venue_id))
+
+            day_dict[target_hour] = hour_dict
+            migration_dict[target_day] = day_dict
+
+    # order keys
+    ordered_migration = dict(sorted(migration_dict.items(), key=lambda item: sort_date_keys(item[0])))
+
+    _dump_migration_json(ordered_migration)
 
 
 class MigrationData(pydantic_v1.BaseModel):
@@ -47,8 +153,9 @@ def execute_scheduled_venue_provider_migration(target_day: str, target_hour: str
     :target_day  : Expected format `%d/%m/%y`, for instance: `07/10/24`
     :target_hour : Expected format `%HH`, for instance: `10H`
     """
+    venues_to_migrate_by_date_and_hour = _load_migration_json()
     logging_message, migration_data = _retrieve_migration_data(
-        VENUES_TO_MIGRATE_BY_DATE_AND_HOUR,
+        venues_to_migrate_by_date_and_hour,
         target_day=target_day,
         target_hour=target_hour,
     )
