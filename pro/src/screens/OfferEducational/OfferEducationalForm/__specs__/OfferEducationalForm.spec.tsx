@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import { Formik } from 'formik'
 
 import { DEFAULT_EAC_FORM_VALUES } from 'core/OfferEducational/constants'
@@ -56,12 +56,14 @@ describe('OfferEducationalForm', () => {
     ).toBeInTheDocument()
   })
 
-  it('should not render price details if offer is not template', () => {
+  it('should not render price details if offer is not template', async () => {
     renderOfferEducationalForm({ ...defaultProps, isTemplate: false })
 
-    expect(
-      screen.queryByRole('heading', { name: 'Prix' })
-    ).not.toBeInTheDocument()
+    await waitFor(() => {
+      expect(
+        screen.queryByRole('heading', { name: 'Prix' })
+      ).not.toBeInTheDocument()
+    })
   })
 
   it('should show the dates section if the offer is a template', async () => {
@@ -71,46 +73,48 @@ describe('OfferEducationalForm', () => {
     ).toBeInTheDocument()
   })
 
-  it('should not show the dates section if the offer is not a template', () => {
+  it('should not show the dates section if the offer is not a template', async () => {
     renderOfferEducationalForm({ ...defaultProps, isTemplate: false })
 
-    expect(
-      screen.queryByRole('heading', { name: 'Date et heure' })
-    ).not.toBeInTheDocument()
+    await waitFor(() => {
+      expect(
+        screen.queryByRole('heading', { name: 'Date et heure' })
+      ).not.toBeInTheDocument()
+    })
   })
 
-  it('should show the custom form section', () => {
+  it('should show the custom form section', async () => {
     renderOfferEducationalForm({
       ...defaultProps,
       isTemplate: true,
     })
 
-    expect(screen.getByRole('checkbox', { name: 'Par email' }))
-    expect(screen.getByRole('checkbox', { name: 'Par téléphone' }))
-    expect(screen.getByRole('checkbox', { name: 'Via un formulaire' }))
+    expect(await screen.findByRole('checkbox', { name: 'Par email' }))
+    expect(await screen.findByRole('checkbox', { name: 'Par téléphone' }))
+    expect(await screen.findByRole('checkbox', { name: 'Via un formulaire' }))
   })
 
-  it('should have no custom contact checked initially', () => {
+  it('should have no custom contact checked initially', async () => {
     renderOfferEducationalForm({ ...defaultProps, isTemplate: true })
 
     expect(
-      screen.getByRole('checkbox', { name: 'Par email' })
+      await screen.findByRole('checkbox', { name: 'Par email' })
     ).not.toBeChecked()
     expect(
-      screen.getByRole('checkbox', { name: 'Par téléphone' })
+      await screen.findByRole('checkbox', { name: 'Par téléphone' })
     ).not.toBeChecked()
     expect(
-      screen.getByRole('checkbox', { name: 'Via un formulaire' })
+      await screen.findByRole('checkbox', { name: 'Via un formulaire' })
     ).not.toBeChecked()
   })
 
-  it('should disable save button when access is read only', () => {
+  it('should disable save button when access is read only', async () => {
     renderOfferEducationalForm({
       ...defaultProps,
       mode: Mode.READ_ONLY,
     })
 
-    const saveButton = screen.getByText('Enregistrer et continuer')
+    const saveButton = await screen.findByText('Enregistrer et continuer')
     expect(saveButton).toBeDisabled()
   })
 
