@@ -110,12 +110,9 @@ describe('route CollectiveOffers', () => {
 
       await userEvent.click(nextPageIcon)
 
-      expect(mockNavigate).toHaveBeenCalledWith(
-        '/offres/collectives?page=2&statut=en-attente&statut=refusee&statut=active&statut=inactive&statut=prereservee&statut=reservee&statut=expiree&statut=terminee&statut=brouillon',
-        {
-          replace: true,
-        }
-      )
+      expect(mockNavigate).toHaveBeenCalledWith('/offres/collectives?page=2', {
+        replace: true,
+      })
     })
 
     it('should have offer name value when name search value is not an empty string', async () => {
@@ -128,7 +125,7 @@ describe('route CollectiveOffers', () => {
       await userEvent.click(screen.getByText('Rechercher'))
 
       expect(mockNavigate).toHaveBeenCalledWith(
-        '/offres/collectives?nom-ou-isbn=AnyWord&structure=1&statut=en-attente&statut=refusee&statut=active&statut=inactive&statut=prereservee&statut=reservee&statut=expiree&statut=terminee&statut=brouillon',
+        '/offres/collectives?nom-ou-isbn=AnyWord&structure=1',
         {
           replace: true,
         }
@@ -144,7 +141,7 @@ describe('route CollectiveOffers', () => {
       await userEvent.click(screen.getByText('Rechercher'))
 
       expect(mockNavigate).toHaveBeenCalledWith(
-        '/offres/collectives?structure=1&statut=en-attente&statut=refusee&statut=active&statut=inactive&statut=prereservee&statut=reservee&statut=expiree&statut=terminee&statut=brouillon',
+        '/offres/collectives?structure=1',
         {
           replace: true,
         }
@@ -165,7 +162,7 @@ describe('route CollectiveOffers', () => {
       await userEvent.click(screen.getByText('Rechercher'))
 
       expect(mockNavigate).toHaveBeenCalledWith(
-        `/offres/collectives?structure=1&lieu=1&statut=en-attente&statut=refusee&statut=active&statut=inactive&statut=prereservee&statut=reservee&statut=expiree&statut=terminee&statut=brouillon`,
+        `/offres/collectives?structure=1&lieu=1`,
         {
           replace: true,
         }
@@ -187,7 +184,7 @@ describe('route CollectiveOffers', () => {
       await userEvent.click(screen.getByText('Rechercher'))
 
       expect(mockNavigate).toHaveBeenCalledWith(
-        '/offres/collectives?structure=1&format=Concert&statut=en-attente&statut=refusee&statut=active&statut=inactive&statut=prereservee&statut=reservee&statut=expiree&statut=terminee&statut=brouillon',
+        '/offres/collectives?structure=1&format=Concert',
         {
           replace: true,
         }
@@ -209,7 +206,7 @@ describe('route CollectiveOffers', () => {
       await userEvent.click(screen.getByRole('button', { name: 'Rechercher' }))
 
       expect(mockNavigate).toHaveBeenCalledWith(
-        '/offres/collectives?structure=1&statut=en-attente&statut=refusee&statut=active&statut=inactive&statut=prereservee&statut=expiree&statut=terminee&statut=brouillon',
+        '/offres/collectives?structure=1&statut=reservee',
         {
           replace: true,
         }
@@ -233,7 +230,7 @@ describe('route CollectiveOffers', () => {
       await userEvent.click(screen.getByRole('button', { name: 'Rechercher' }))
 
       expect(mockNavigate).toHaveBeenCalledWith(
-        '/offres/collectives?structure=1&statut=refusee&statut=active&statut=inactive&statut=prereservee&statut=expiree&statut=terminee&statut=brouillon&statut=archivee',
+        '/offres/collectives?structure=1&statut=reservee&statut=en-attente&statut=archivee',
         {
           replace: true,
         }

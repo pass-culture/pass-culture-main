@@ -1,13 +1,9 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Formik } from 'formik'
-import React from 'react'
 
 import { api } from 'apiClient/api'
-import {
-  CollectiveOfferDisplayedStatus,
-  CollectiveOfferResponseModel,
-} from 'apiClient/v1'
+import { CollectiveOfferResponseModel } from 'apiClient/v1'
 import * as createFromTemplateUtils from 'core/OfferEducational/utils/createOfferFromTemplate'
 import * as useNotification from 'hooks/useNotification'
 import { collectiveOfferFactory } from 'utils/collectiveApiFactories'
@@ -80,19 +76,15 @@ describe('CollectiveOfferConfirmation', () => {
 
     expect(api.getCollectiveOffers).toHaveBeenCalledTimes(1)
 
-    await waitFor(() =>
-      expect(screen.getByText('offer name 2')).toBeInTheDocument()
-    )
+    expect(await screen.findByText('offer name 2')).toBeInTheDocument()
   })
 
   it('should display list of offers matching user search', async () => {
     renderCollectiveOfferSelectionDuplication({ initialValues, onSubmit })
 
-    await waitFor(() =>
-      expect(
-        screen.getByText('Les dernières offres vitrines créées')
-      ).toBeInTheDocument()
-    )
+    expect(
+      await screen.findByText('Les dernières offres vitrines créées')
+    ).toBeInTheDocument()
 
     const searchField = screen.getByPlaceholderText(
       'Rechercher une offre vitrine'
@@ -107,13 +99,7 @@ describe('CollectiveOfferConfirmation', () => {
     expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
       'Le nom de l’offre 3',
       undefined,
-      [
-        CollectiveOfferDisplayedStatus.PENDING,
-        CollectiveOfferDisplayedStatus.REJECTED,
-        CollectiveOfferDisplayedStatus.ACTIVE,
-        CollectiveOfferDisplayedStatus.INACTIVE,
-        CollectiveOfferDisplayedStatus.DRAFT,
-      ],
+      undefined,
       undefined,
       undefined,
       undefined,

@@ -8,13 +8,13 @@ import { userEvent } from '@testing-library/user-event'
 
 import { api } from 'apiClient/api'
 import {
+  CollectiveOfferDisplayedStatus,
   CollectiveOfferResponseModel,
   CollectiveOffersStockResponseModel,
   CollectiveOfferStatus,
 } from 'apiClient/v1'
 import {
   ALL_VENUES_OPTION,
-  DEFAULT_COLLECTIVE_BOOKABLE_SEARCH_FILTERS,
   DEFAULT_COLLECTIVE_SEARCH_FILTERS,
 } from 'core/Offers/constants'
 import { CollectiveSearchFiltersParams } from 'core/Offers/types'
@@ -104,10 +104,11 @@ describe('route CollectiveOffers', () => {
         )
 
         await waitFor(() => {
-          expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
+          expect(api.getCollectiveOffers).toHaveBeenNthCalledWith(
+            2,
             undefined,
             '1',
-            DEFAULT_COLLECTIVE_SEARCH_FILTERS.status,
+            CollectiveOfferDisplayedStatus.EXPIRED,
             undefined,
             undefined,
             undefined,
@@ -142,10 +143,15 @@ describe('route CollectiveOffers', () => {
         )
 
         await waitFor(() => {
-          expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
+          expect(api.getCollectiveOffers).toHaveBeenNthCalledWith(
+            2,
             undefined,
             '1',
-            DEFAULT_COLLECTIVE_SEARCH_FILTERS.status,
+            [
+              CollectiveOfferDisplayedStatus.EXPIRED,
+              CollectiveOfferDisplayedStatus.PREBOOKED,
+              CollectiveOfferDisplayedStatus.BOOKED,
+            ],
             undefined,
             undefined,
             undefined,
@@ -205,7 +211,7 @@ describe('route CollectiveOffers', () => {
           expect(api.getCollectiveOffers).toHaveBeenCalledWith(
             'Any word',
             '1',
-            DEFAULT_COLLECTIVE_SEARCH_FILTERS.status,
+            undefined,
             undefined,
             undefined,
             undefined,
@@ -229,7 +235,7 @@ describe('route CollectiveOffers', () => {
           expect(api.getCollectiveOffers).toHaveBeenCalledWith(
             'search string',
             '1',
-            DEFAULT_COLLECTIVE_SEARCH_FILTERS.status,
+            undefined,
             undefined,
             undefined,
             undefined,
@@ -257,7 +263,7 @@ describe('route CollectiveOffers', () => {
           expect(api.getCollectiveOffers).toHaveBeenCalledWith(
             undefined,
             '1',
-            DEFAULT_COLLECTIVE_SEARCH_FILTERS.status,
+            undefined,
             proVenues[0].id.toString(),
             undefined,
             undefined,
@@ -282,7 +288,7 @@ describe('route CollectiveOffers', () => {
           expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
             undefined,
             '1',
-            DEFAULT_COLLECTIVE_SEARCH_FILTERS.status,
+            undefined,
             undefined,
             undefined,
             undefined,
@@ -306,7 +312,7 @@ describe('route CollectiveOffers', () => {
           expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
             undefined,
             '1',
-            DEFAULT_COLLECTIVE_SEARCH_FILTERS.status,
+            undefined,
             undefined,
             undefined,
             undefined,
@@ -328,7 +334,7 @@ describe('route CollectiveOffers', () => {
           expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
             undefined,
             '1',
-            DEFAULT_COLLECTIVE_SEARCH_FILTERS.status,
+            undefined,
             undefined,
             undefined,
             undefined,
@@ -435,7 +441,7 @@ describe('route CollectiveOffers', () => {
         1,
         undefined,
         '1',
-        DEFAULT_COLLECTIVE_SEARCH_FILTERS.status,
+        undefined,
         '666',
         undefined,
         undefined,
@@ -453,7 +459,7 @@ describe('route CollectiveOffers', () => {
         2,
         undefined,
         '1',
-        DEFAULT_COLLECTIVE_SEARCH_FILTERS.status,
+        undefined,
         proVenues[0].id.toString(),
         undefined,
         undefined,
@@ -473,7 +479,7 @@ describe('route CollectiveOffers', () => {
         3,
         undefined,
         '1',
-        DEFAULT_COLLECTIVE_SEARCH_FILTERS.status,
+        undefined,
         undefined,
         undefined,
         undefined,
@@ -510,7 +516,7 @@ describe('route CollectiveOffers', () => {
         1,
         undefined,
         '1',
-        DEFAULT_COLLECTIVE_SEARCH_FILTERS.status,
+        undefined,
         '666',
         undefined,
         undefined,
@@ -528,7 +534,7 @@ describe('route CollectiveOffers', () => {
         2,
         undefined,
         '1',
-        DEFAULT_COLLECTIVE_SEARCH_FILTERS.status,
+        undefined,
         proVenues[0].id.toString(),
         undefined,
         undefined,
@@ -546,7 +552,7 @@ describe('route CollectiveOffers', () => {
         3,
         undefined,
         '1',
-        DEFAULT_COLLECTIVE_SEARCH_FILTERS.status,
+        undefined,
         undefined,
         undefined,
         undefined,
@@ -578,7 +584,7 @@ describe('route CollectiveOffers', () => {
       expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
         undefined,
         '1',
-        DEFAULT_COLLECTIVE_BOOKABLE_SEARCH_FILTERS.status,
+        undefined,
         undefined,
         undefined,
         undefined,

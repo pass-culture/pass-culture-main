@@ -1,5 +1,3 @@
-import isEqual from 'lodash.isequal'
-
 import { translateApiParamsToQueryParams } from 'utils/translate'
 
 import { Audience } from '../../shared/types'
@@ -20,11 +18,8 @@ export const computeCollectiveOffersUrl = (
     ...offersSearchFilters,
   }).reduce((accumulator, [filter, filterValue]) => {
     if (
-      !isEqual(
-        filterValue,
-        defaultFilters[filter as keyof CollectiveSearchFiltersParams]
-      ) ||
-      filter === 'status'
+      filterValue !==
+      defaultFilters[filter as keyof CollectiveSearchFiltersParams]
     ) {
       return {
         ...accumulator,

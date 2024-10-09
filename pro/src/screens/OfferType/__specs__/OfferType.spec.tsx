@@ -3,11 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 import { Route, Routes } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
-import {
-  CancelablePromise,
-  CollectiveOfferDisplayedStatus,
-  GetOffererResponseModel,
-} from 'apiClient/v1'
+import { CancelablePromise, GetOffererResponseModel } from 'apiClient/v1'
 import * as useAnalytics from 'app/App/analytics/firebase'
 import { Events } from 'core/FirebaseEvents/constants'
 import * as useNotification from 'hooks/useNotification'
@@ -277,13 +273,7 @@ describe('OfferType', () => {
       expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
         undefined,
         '1',
-        [
-          CollectiveOfferDisplayedStatus.PENDING,
-          CollectiveOfferDisplayedStatus.REJECTED,
-          CollectiveOfferDisplayedStatus.ACTIVE,
-          CollectiveOfferDisplayedStatus.INACTIVE,
-          CollectiveOfferDisplayedStatus.DRAFT,
-        ],
+        undefined,
         undefined,
         undefined,
         undefined,

@@ -116,7 +116,7 @@ describe('route TemplateCollectiveOffers', () => {
       await userEvent.click(nextPageIcon)
 
       expect(mockNavigate).toHaveBeenCalledWith(
-        '/offres/vitrines?page=2&structure=1&statut=en-attente&statut=refusee&statut=active&statut=inactive&statut=brouillon',
+        '/offres/vitrines?page=2&structure=1',
         {
           replace: true,
         }
@@ -133,7 +133,7 @@ describe('route TemplateCollectiveOffers', () => {
       await userEvent.click(screen.getByText('Rechercher'))
 
       expect(mockNavigate).toHaveBeenCalledWith(
-        `/offres/vitrines?nom-ou-isbn=AnyWord&structure=1&statut=en-attente&statut=refusee&statut=active&statut=inactive&statut=brouillon`,
+        `/offres/vitrines?nom-ou-isbn=AnyWord&structure=1`,
         {
           replace: true,
         }
@@ -149,7 +149,7 @@ describe('route TemplateCollectiveOffers', () => {
       await userEvent.click(screen.getByText('Rechercher'))
 
       expect(mockNavigate).toHaveBeenCalledWith(
-        '/offres/vitrines?structure=1&statut=en-attente&statut=refusee&statut=active&statut=inactive&statut=brouillon',
+        '/offres/vitrines?structure=1',
         {
           replace: true,
         }
@@ -170,7 +170,7 @@ describe('route TemplateCollectiveOffers', () => {
       await userEvent.click(screen.getByText('Rechercher'))
 
       expect(mockNavigate).toHaveBeenCalledWith(
-        `/offres/vitrines?structure=1&lieu=${proVenues[0].id}&statut=en-attente&statut=refusee&statut=active&statut=inactive&statut=brouillon`,
+        `/offres/vitrines?structure=1&lieu=${proVenues[0].id}`,
         {
           replace: true,
         }
@@ -192,7 +192,7 @@ describe('route TemplateCollectiveOffers', () => {
       await userEvent.click(screen.getByText('Rechercher'))
 
       expect(mockNavigate).toHaveBeenCalledWith(
-        '/offres/vitrines?structure=1&format=Concert&statut=en-attente&statut=refusee&statut=active&statut=inactive&statut=brouillon',
+        '/offres/vitrines?structure=1&format=Concert',
         {
           replace: true,
         }
@@ -214,7 +214,7 @@ describe('route TemplateCollectiveOffers', () => {
       await userEvent.click(screen.getByRole('button', { name: 'Rechercher' }))
 
       expect(mockNavigate).toHaveBeenCalledWith(
-        '/offres/vitrines?structure=1&statut=en-attente&statut=refusee&statut=inactive&statut=brouillon',
+        '/offres/vitrines?structure=1&statut=active',
         {
           replace: true,
         }
@@ -237,7 +237,7 @@ describe('route TemplateCollectiveOffers', () => {
       await userEvent.click(screen.getByRole('button', { name: 'Rechercher' }))
 
       expect(mockNavigate).toHaveBeenCalledWith(
-        '/offres/vitrines?structure=1&statut=refusee&statut=active&statut=inactive&statut=brouillon&statut=archivee',
+        '/offres/vitrines?structure=1&statut=en-attente&statut=archivee',
         {
           replace: true,
         }
