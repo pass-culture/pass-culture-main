@@ -409,9 +409,20 @@ class Returns200Test:
         assert address.longitude == Decimal("164.03239")
         assert address.isManualEdition is True
 
-    @pytest.mark.parametrize("label", ["", None, True])
+    @pytest.mark.parametrize(
+        "label,is_manual",
+        [
+            ("", False),
+            ("   ", False),
+            (None, False),
+            (True, False),
+            ("New name", True),
+        ],
+    )
     @patch("pcapi.connectors.api_adresse.get_address")
-    def test_patch_offer_with_address_twice(self, get_address_mock, label, client):
+    def test_patch_offer_with_address_twice(self, get_address_mock, label, is_manual, client):
+        """Ensures that OA linked to venue sees their labels set to None and that manually
+        edited OA gets its label, even if it is the same as the venue"""
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
         venue = offerers_factories.VenueFactory(
             managingOfferer=user_offerer.offerer,
@@ -444,6 +455,8 @@ class Returns200Test:
                 "latitude": 48.8566,
                 "longitude": 2.3522,
                 "label": label,
+                "isVenueAddress": not is_manual,
+                "isManualEdition": is_manual,
             },
         }
         get_address_mock.return_value = api_adresse.AddressInfo(
@@ -461,15 +474,19 @@ class Returns200Test:
         assert response.status_code == 200
         assert response.json["id"] == offer.id
         updated_offer = Offer.query.get(offer.id)
-        assert updated_offer.offererAddress.id == oa_id
         address = updated_offer.offererAddress.address
-        assert updated_offer.offererAddress.label == venue.offererAddress.label
+        if not is_manual:
+            assert updated_offer.offererAddress.label is None
+            assert updated_offer.offererAddress.id == oa_id
+        else:
+            assert updated_offer.offererAddress.label == "New name"
+            assert updated_offer.offererAddress.id != oa_id
         assert address.street == "1 rue de la paix"
         assert address.city == "Paris"
         assert address.postalCode == "75102"
         assert address.latitude == Decimal("48.85660")
         assert address.longitude == Decimal("2.3522")
-        assert address.isManualEdition is False
+        assert address.isManualEdition == is_manual
 
     def test_withdrawal_can_be_updated(self, client):
         offer = offers_factories.OfferFactory(
