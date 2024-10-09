@@ -231,7 +231,7 @@ def create_account(body: serializers.AccountRequest) -> None:
         except api_recaptcha.ReCaptchaException:
             raise api_errors.ApiErrors({"token": "The given token is not valid"})
 
-    password.check_password_strength("password", body.password)
+    password.compute_password_strength_violations("password", body.password)
 
     try:
         created_user = api.create_account(

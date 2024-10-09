@@ -14,7 +14,7 @@ from pcapi.core.users import models as user_models
 from pcapi.core.users import repository as users_repo
 from pcapi.core.users.models import User
 from pcapi.core.users.repository import find_user_by_email
-from pcapi.domain.password import check_password_strength
+from pcapi.domain.password import compute_password_strength_violations
 from pcapi.models import api_errors
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
@@ -129,7 +129,7 @@ def change_password(user: User, body: ChangePasswordRequest) -> None:
         raise ForbiddenError()
 
     try:
-        check_password_strength("newPassword", body.new_password)
+        compute_password_strength_violations("newPassword", body.new_password)
     except ApiErrors:
         raise ApiErrors({"code": "WEAK_PASSWORD", "newPassword": ["Le nouveau mot de passe est trop faible"]})
 

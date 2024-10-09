@@ -56,7 +56,7 @@ import pcapi.core.subscription.phone_validation.exceptions as phone_validation_e
 import pcapi.core.users.constants as users_constants
 import pcapi.core.users.repository as users_repository
 import pcapi.core.users.utils as users_utils
-from pcapi.domain.password import check_password_strength
+from pcapi.domain.password import compute_password_strength_violations
 from pcapi.domain.password import random_password
 from pcapi.models import db
 from pcapi.models import feature
@@ -365,7 +365,7 @@ def request_password_reset(user: models.User | None, reason: constants.Suspensio
 
 
 def reset_password_with_token(new_password: str, encoded_reset_password_token: str) -> models.User:
-    check_password_strength("newPassword", new_password)
+    compute_password_strength_violations("newPassword", new_password)
     token = None
     try:
         token = token_utils.Token.load_and_check(encoded_reset_password_token, token_utils.TokenType.RESET_PASSWORD)
