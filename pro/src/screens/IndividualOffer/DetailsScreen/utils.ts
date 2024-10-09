@@ -332,15 +332,15 @@ export function setFormReadOnlyFields(
 }
 
 export const serializeExtraData = (formValues: DetailsFormValues) => ({
-  author: formValues.author,
+  author: formValues.author?.trim(),
   gtl_id: formValues.gtl_id,
-  performer: formValues.performer,
+  performer: formValues.performer?.trim(),
   showType: formValues.showType,
   showSubType: formValues.showSubType,
-  speaker: formValues.speaker,
-  stageDirector: formValues.stageDirector,
-  visa: formValues.visa,
-  ean: formValues.ean,
+  speaker: formValues.speaker?.trim(),
+  stageDirector: formValues.stageDirector?.trim(),
+  visa: formValues.visa?.trim(),
+  ean: formValues.ean?.trim(),
 })
 
 type PostPayload = {
@@ -357,10 +357,10 @@ export function serializeDetailsPostData(
   formValues: DetailsFormValues
 ): PostPayload {
   return {
-    name: formValues.name,
+    name: formValues.name.trim(),
     subcategoryId: formValues.subcategoryId,
     venueId: Number(formValues.venueId),
-    description: formValues.description,
+    description: formValues.description.trim(),
     durationMinutes: serializeDurationMinutes(formValues.durationMinutes ?? ''),
     extraData: serializeExtraData(formValues),
     productId: formValues.productId ? Number(formValues.productId) : undefined,

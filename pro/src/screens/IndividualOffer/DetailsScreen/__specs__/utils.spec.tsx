@@ -19,6 +19,7 @@ import {
   setDefaultInitialValues,
   setDefaultInitialValuesFromOffer,
   setFormReadOnlyFields,
+  serializeDetailsPostData,
 } from '../utils'
 
 describe('hasMusicType', () => {
@@ -398,6 +399,51 @@ describe('serializeExtraData', () => {
       speaker: '',
       stageDirector: '',
       visa: '',
+    })
+  })
+})
+
+describe('serializeDetailsPostData', () => {
+  it('should trim spaces in all string fields', () => {
+    const formValues = {
+      name: ' Festival de la Musique ',
+      description: ' Ancien festival annuel musical ',
+      venueId: '0',
+      categoryId: 'anything',
+      subcategoryId: 'anything',
+      showType: 'a showtype',
+      showSubType: 'a showSubtype',
+      gtl_id: 'a gtl id',
+      author: ' Boris Vian ',
+      performer: ' Marcel et son orchestre ',
+      ean: ' any ean ',
+      speaker: ' Robert Smith ',
+      stageDirector: ' Bob Sinclar ',
+      visa: ' 123456789 ',
+      durationMinutes: '',
+      subcategoryConditionalFields: [],
+      suggestedSubcategory: '',
+      productId: '',
+    }
+
+    expect(serializeDetailsPostData(formValues)).toStrictEqual({
+      name: 'Festival de la Musique',
+      subcategoryId: 'anything',
+      venueId: 0,
+      description: 'Ancien festival annuel musical',
+      durationMinutes: undefined,
+      extraData: {
+        author: 'Boris Vian',
+        gtl_id: 'a gtl id',
+        performer: 'Marcel et son orchestre',
+        showType: 'a showtype',
+        showSubType: 'a showSubtype',
+        speaker: 'Robert Smith',
+        stageDirector: 'Bob Sinclar',
+        visa: '123456789',
+        ean: 'any ean',
+      },
+      productId: undefined,
     })
   })
 })

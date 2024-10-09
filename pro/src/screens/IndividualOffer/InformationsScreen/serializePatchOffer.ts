@@ -90,12 +90,12 @@ export const serializePatchOffer = ({
   ) {
     addressValues = {
       address: {
-        city: sentValues.city,
+        city: sentValues.city.trim(),
         latitude: sentValues.latitude,
         longitude: sentValues.longitude,
-        postalCode: sentValues.postalCode,
-        street: sentValues.street,
-        label: sentValues.locationLabel,
+        postalCode: sentValues.postalCode.trim(),
+        street: sentValues.street.trim(),
+        label: sentValues.locationLabel?.trim(),
         isManualEdition: sentValues.manuallySetAddress,
         isVenueAddress:
           sentValues.offerlocation === OFFER_LOCATION.OTHER_ADDRESS
@@ -109,7 +109,7 @@ export const serializePatchOffer = ({
     audioDisabilityCompliant:
       sentValues.accessibility &&
       sentValues.accessibility[AccessibilityEnum.AUDIO],
-    description: sentValues.description,
+    description: sentValues.description?.trim(),
     ...(shouldNotSendExtraData
       ? {}
       : {
@@ -123,14 +123,14 @@ export const serializePatchOffer = ({
     motorDisabilityCompliant:
       sentValues.accessibility &&
       sentValues.accessibility[AccessibilityEnum.MOTOR],
-    name: sentValues.name,
+    name: sentValues.name?.trim(),
     withdrawalDelay:
       sentValues.withdrawalDelay === undefined
         ? sentValues.withdrawalType === WithdrawalTypeEnum.NO_TICKET
           ? null
           : undefined
         : Number(sentValues.withdrawalDelay),
-    withdrawalDetails: sentValues.withdrawalDetails ?? undefined,
+    withdrawalDetails: sentValues.withdrawalDetails?.trim() ?? undefined,
     visualDisabilityCompliant:
       sentValues.accessibility &&
       sentValues.accessibility[AccessibilityEnum.VISUAL],

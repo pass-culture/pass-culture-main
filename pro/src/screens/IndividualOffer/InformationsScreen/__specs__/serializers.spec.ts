@@ -244,5 +244,38 @@ describe('test updateIndividualOffer::serializers', () => {
         })
       ).toEqual(patchBody)
     })
+
+    it('should trim blank spaces in string fields', () => {
+      formValues = {
+        ...formValues,
+        name: '   test name    ',
+        description: '  test description   ',
+        withdrawalDetails: '  test withdrawalDetails  ',
+        locationLabel: ' test label     ',
+        street: '  test street   ',
+        city: '    test city     ',
+        postalCode: ' test postalCode     ',
+      }
+      patchBody = {
+        ...patchBody,
+        name: 'test name',
+        description: 'test description',
+        withdrawalDetails: 'test withdrawalDetails',
+        address: {
+          ...patchBody.address!,
+          label: 'test label',
+          street: 'test street',
+          city: 'test city',
+          postalCode: 'test postalCode',
+        },
+      }
+
+      expect(
+        serializePatchOffer({
+          offer: getIndividualOfferFactory(),
+          formValues,
+        })
+      ).toEqual(patchBody)
+    })
   })
 })
