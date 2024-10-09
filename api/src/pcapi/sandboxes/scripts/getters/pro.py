@@ -1,6 +1,8 @@
+from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.educational import models as educational_models
 import pcapi.core.educational.factories as educational_factories
 import pcapi.core.offerers.factories as offerers_factories
+import pcapi.core.offers.factories as offers_factories
 from pcapi.core.users import factories as users_factories
 from pcapi.sandboxes.scripts.utils.helpers import get_pro_user_helper
 
@@ -65,3 +67,54 @@ def create_adage_environnement() -> dict:
 
     # offer result by algolia are mocked in e2e test
     return {"offerId": offer.id}
+
+
+def create_pro_user_with_individual_offers() -> dict:
+    pro_user = users_factories.ProFactory()
+    offerer = offerers_factories.OffererFactory()
+    offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
+    venue = offerers_factories.VenueFactory(name="Mon Lieu", managingOfferer=offerer, isPermanent=True)
+    offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
+    offer1 = offers_factories.ThingOfferFactory(venue=venue, name="Une super offre")
+    offers_factories.StockFactory(offer=offer1)
+    offer2 = offers_factories.ThingOfferFactory(
+        venue=venue,
+        name="Une offre avec ean",
+        extraData=dict({"ean": "1234567891234"}),
+        subcategoryId=subcategories.LIVRE_PAPIER.id,
+    )
+    offers_factories.StockFactory(offer=offer2)
+    offer3 = offers_factories.ThingOfferFactory(
+        venue=venue,
+        name="Une flûte traversière",
+        subcategoryId=subcategories.ACHAT_INSTRUMENT.id,
+    )
+    offers_factories.StockFactory(offer=offer3)
+
+    offer4 = offers_factories.EventOfferFactory(
+        venue=venue,
+        name="Un concert d'electro inoubliable",
+        subcategoryId=subcategories.CONCERT.id,
+        extraData={"gtl_id": "04000000"},
+    )
+    offers_factories.StockFactory(offer=offer4)
+
+    offer5 = offers_factories.ThingOfferFactory(
+        venue=venue,
+        name="Une autre offre incroyable",
+        subcategoryId=subcategories.LIVRE_PAPIER.id,
+    )
+    offers_factories.StockFactory(offer=offer5)
+    offer6 = offers_factories.ThingOfferFactory(
+        venue=venue,
+        name="Encore une offre incroyable",
+        subcategoryId=subcategories.LIVRE_PAPIER.id,
+    )
+    offers_factories.StockFactory(offer=offer6)
+    offers_factories.ThingOfferFactory(
+        venue=venue,
+        name="Une offre épuisée",
+        subcategoryId=subcategories.LIVRE_PAPIER.id,
+    )
+
+    return {"user": get_pro_user_helper(pro_user)}
