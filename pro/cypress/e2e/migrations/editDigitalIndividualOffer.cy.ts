@@ -1,16 +1,16 @@
 describe('Modify a digital individual offer', () => {
-  const login = 'activation@example.com'
+  let login: string
   const password = 'user@AZERTY123'
 
   before(() => {
     cy.visit('/connexion')
+    cy.request({
+      method: 'GET',
+      url: 'http://localhost:5001/sandboxes/pro/create_regular_pro_user_with_virtual_offer',
+    }).then((response) => {
+      login = response.body.user.email
+    })
     cy.setFeatureFlags([{ name: 'WIP_SPLIT_OFFER', isActive: true }])
-    // cy.request({
-    //   method: 'GET',
-    //   url: 'http://localhost:5001/sandboxes/pro/create_regular_pro_user',
-    // }).then((response) => {
-    //   login = response.body.user.email
-    // })
   })
 
   it('I should be able to modify the url of a digital offer', function () {
@@ -43,7 +43,7 @@ describe('Modify a digital individual offer', () => {
     cy.url().should('contain', '/edition/pratiques')
 
     // I update the url link
-    const randomUrl = `http://myrandomurl${Math.random().toString().substring(2, 5)}.fr/`
+    const randomUrl = `http://myrandomurl.fr/`
     cy.get('input#url').clear().type(randomUrl)
     cy.findByText('Enregistrer les modifications').click()
     cy.findAllByTestId('global-notification-success').should(

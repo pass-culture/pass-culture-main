@@ -30,6 +30,18 @@ def create_regular_pro_user() -> dict:
     return {"user": get_pro_user_helper(pro_user)}
 
 
+def create_regular_pro_user_with_virtual_offer() -> dict:
+    pro_user = users_factories.ProFactory()
+    offerer = offerers_factories.OffererFactory()
+    offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
+    offerers_factories.VenueFactory(name="Mon Lieu", managingOfferer=offerer, isPermanent=True)
+    virtual_venue = offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
+    offers_factories.OfferFactory(
+        name="Mon offre virtuelle", subcategoryId=subcategories.ABO_PLATEFORME_VIDEO.id, venue=virtual_venue
+    )
+    return {"user": get_pro_user_helper(pro_user)}
+
+
 def create_adage_environnement() -> dict:
     current_year = educational_factories.EducationalCurrentYearFactory()
     next_year = educational_factories.EducationalYearFactory()
