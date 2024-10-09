@@ -124,3 +124,7 @@ When('I publish my offer', () => {
   })
   cy.wait('@getOffer', { timeout: 60000 })
 })
+
+Given('I go to {string} view', (tab: string) => {
+  cy.findByText(tab).click()
+})
