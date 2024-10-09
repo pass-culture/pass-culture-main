@@ -10,6 +10,7 @@ describe('Financial Management - messages, links to external help page, reimburs
     }).then((response) => {
       login = response.body.user.email
     })
+    cy.intercept({ method: 'GET', url: '/offerers/*' }).as('getOfferers')
   })
 
   it('Check messages, reimbursement details and offerer selection change', () => {
@@ -147,6 +148,7 @@ describe('Financial Management - messages, links to external help page, reimburs
     cy.findByTestId('offerers-selection-menu')
       .findByText('Structure avec informations bancaires')
       .click()
+    cy.wait('@getOfferers').its('response.statusCode').should('equal', 200)
     cy.findByTestId('header-dropdown-menu-div').should('not.exist')
     cy.findAllByTestId('spinner').should('not.exist')
 
@@ -177,7 +179,6 @@ describe('Financial Management - messages, links to external help page, reimburs
       cy.findByLabelText(venue).should('be.checked')
       cy.findByLabelText(venue).uncheck()
       cy.findByText('Enregistrer').click()
-      cy.intercept({ method: 'GET', url: '/offerers/*' }).as('getOfferers')
       cy.findByText('Confirmer').click()
       cy.wait('@getOfferers').its('response.statusCode').should('equal', 200)
     })
