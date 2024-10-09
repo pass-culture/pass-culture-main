@@ -6699,10 +6699,10 @@ optionator@^0.9.3:
     prelude-ls "^1.2.1"
     type-check "^0.4.0"
 
-orejime@^2.3.0:
-  version "2.3.0"
-  resolved "https://registry.yarnpkg.com/orejime/-/orejime-2.3.0.tgz#1fc6f570c9bcb11538cc5d270997a526d8135af0"
-  integrity sha512-eDUgd5yEF5pCIUHPNXVDKmgH+4k4GEwxU7eexBFeVESba3ZYDHSDq4ULXiF2LnZwxg+H6Qi28o8rGfGxNeOriA==
+orejime@^2.3.1:
+  version "2.3.1"
+  resolved "https://registry.yarnpkg.com/orejime/-/orejime-2.3.1.tgz#bd814a921be21457dc03d27c9f93f26ec9592648"
+  integrity sha512-LpJCuOG7mvR5fwD3wr+FoHPG+DX2t7+dJ4gBZnWICnNHtOTNuBzne0T+JcK0nW30JjiYULq1vfOaSLU2qmHCPg==
   dependencies:
     "@babel/runtime" "^7.1.2"
     react-modal "^3.13.1"
