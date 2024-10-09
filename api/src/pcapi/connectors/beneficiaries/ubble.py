@@ -1,15 +1,19 @@
 from contextlib import suppress
+import functools
 import logging
 import typing
 
 from pydantic.v1 import networks as pydantic_networks
+from pydantic.v1 import parse_obj_as
 from urllib3 import exceptions as urllib3_exceptions
 
 from pcapi import settings
+from pcapi.connectors.serialization import ubble_serializers
 from pcapi.core import logging as core_logging
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.fraud.ubble import models as ubble_fraud_models
 from pcapi.core.users import models as users_models
+from pcapi.models.feature import FeatureToggle
 from pcapi.utils import requests
 
 
@@ -75,6 +79,109 @@ class UbbleBackend:
         redirect_url: str,
     ) -> fraud_models.UbbleContent:
         raise NotImplementedError()
+
+    def get_content(self, identification_id: str) -> fraud_models.UbbleContent:
+        raise NotImplementedError()
+
+
+P = typing.ParamSpec("P")
+
+
+def log_and_handle_response_status(
+    request_type: str,
+) -> typing.Callable[[typing.Callable[P, fraud_models.UbbleContent]], typing.Callable[P, fraud_models.UbbleContent]]:
+    def log_response_status_and_reraise_if_needed(
+        ubble_content_function: typing.Callable[P, fraud_models.UbbleContent]
+    ) -> typing.Callable[P, fraud_models.UbbleContent]:
+        @functools.wraps(ubble_content_function)
+        def wrapper(*args: P.args, **kwargs: P.kwargs) -> fraud_models.UbbleContent:
+            try:
+                ubble_content = ubble_content_function(*args, **kwargs)
+
+                logger.info(
+                    "Valid response from Ubble",
+                    extra={"identification_id": str(ubble_content.identification_id), "request_type": request_type},
+                )
+
+                return ubble_content
+            except requests.exceptions.HTTPError as e:
+                response = e.response
+                if response.status_code == 429 or response.status_code >= 500:
+                    logger.error(
+                        f"Ubble {request_type}: External error: %s",
+                        response.status_code,
+                        extra={
+                            "alert": "Ubble error",
+                            "error_type": "http",
+                            "status_code": response.status_code,
+                            "request_type": request_type,
+                            "response_text": response.text,
+                            "url": response.url,
+                        },
+                    )
+                    raise requests.ExternalAPIException(is_retryable=True) from e
+
+                logger.error(
+                    f"Ubble {request_type}: Unexpected error: %s",
+                    response.status_code,
+                    extra={
+                        "alert": "Ubble error",
+                        "error_type": "http",
+                        "status_code": response.status_code,
+                        "request_type": request_type,
+                        "response_text": response.text,
+                        "url": response.url,
+                    },
+                )
+                raise requests.ExternalAPIException(is_retryable=True) from e
+            except (urllib3_exceptions.HTTPError, requests.exceptions.RequestException) as e:
+                logger.error(
+                    "Ubble %s: Network error",
+                    request_type,
+                    extra={
+                        "exception": e,
+                        "alert": "Ubble error",
+                        "error_type": "network",
+                        "request_type": request_type,
+                    },
+                )
+                raise requests.ExternalAPIException(is_retryable=True) from e
+
+        return wrapper
+
+    return log_response_status_and_reraise_if_needed
+
+
+class UbbleV2Backend(UbbleBackend):
+    @log_and_handle_response_status("create-and-start-idv")
+    def start_identification(  # pylint: disable=too-many-positional-arguments
+        self,
+        user_id: int,
+        first_name: str,
+        last_name: str,
+        webhook_url: str,
+        redirect_url: str,
+    ) -> fraud_models.UbbleContent:
+        response = requests.post(
+            build_url("/v2/create-and-start-idv", user_id),
+            json={
+                "declared_data": {"name": f"{first_name} {last_name}"},
+                "webhook_url": webhook_url,
+                "redirect_url": redirect_url,
+            },
+            cert=(settings.UBBLE_CLIENT_CERTIFICATE_PATH, settings.UBBLE_CLIENT_KEY_PATH),
+        )
+        response.raise_for_status()
+
+        ubble_identification = parse_obj_as(ubble_serializers.UbbleIdentificationResponse, response.json())
+        ubble_content = ubble_serializers.convert_identification_to_ubble_content(ubble_identification)
+
+        logger.info(
+            "Ubble identification started",
+            extra={"identification_id": str(ubble_content.identification_id), "status": str(ubble_content.status)},
+        )
+
+        return ubble_content
 
     def get_content(self, identification_id: str) -> fraud_models.UbbleContent:
         raise NotImplementedError()
@@ -229,6 +336,8 @@ class UbbleV1Backend(UbbleBackend):
 
 
 def _get_ubble_backend() -> UbbleBackend:
+    if FeatureToggle.WIP_UBBLE_V2.is_active():
+        return UbbleV2Backend()
     return UbbleV1Backend()
 
 

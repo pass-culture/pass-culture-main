@@ -355,7 +355,7 @@ class UbbleContent(common_models.IdentityCheckContent):
     first_name: str | None
     gender: users_models.GenderEnum | None
     id_document_number: str | None
-    identification_id: pydantic_v1.UUID4 | None
+    identification_id: str | None
     identification_url: pydantic_v1.HttpUrl | None
     last_name: str | None
     married_name: str | None
