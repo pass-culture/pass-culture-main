@@ -33,9 +33,10 @@ class NotPricingPointVenueForReimbursementRule(ReimbursementRuleValidationError)
     pass
 
 
-class DepositTypeAlreadyGrantedException(ApiErrors):
+class DepositTypeAlreadyGrantedException(Exception):
     def __init__(self, deposit_type: models.DepositType) -> None:
-        super().__init__({"user": [f'Cet utilisateur a déjà été crédité de la subvention "{deposit_type.name}".']})
+        super().__init__()
+        self.deposit_type = deposit_type
 
 
 class UserNotGrantable(Exception):
