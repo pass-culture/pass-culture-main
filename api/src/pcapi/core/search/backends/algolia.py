@@ -24,6 +24,7 @@ import pcapi.core.offerers.api as offerers_api
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.models as offers_models
 from pcapi.core.providers import titelive_gtl
+from pcapi.core.search import SearchError
 from pcapi.core.search.backends import base
 from pcapi.domain.music_types import MUSIC_TYPES_LABEL_BY_CODE
 from pcapi.domain.show_types import SHOW_TYPES_LABEL_BY_CODE
@@ -759,6 +760,35 @@ class AlgoliaBackend(base.SearchBackend):
                     "Found old processing queue, moved back items to originating queue",
                     extra={"queue": originating_queue, "processing_queue": processing_queue},
                 )
+
+    def seach_offers_ids(self, query: str = "", filters: str = "", count: int = 20) -> list[int]:
+        ids: list[int] = []
+        params: dict[str, str | int] = {"filters": filters}
+        for page, _count in enumerate(
+            range(
+                0,
+                count,
+            )
+        ):
+            # handle alogolia pagination of results
+            hits_per_page = min(count, count - _count, 1000)
+            params["page"] = page
+            params["hitsPerPage"] = hits_per_page
+            try:
+                results = self.algolia_offers_client.search(query, params)
+            except Exception as exp:
+                logger.exception("Failed to search in algolia: %s", exp)
+                raise SearchError("Failed to search in algolia")
+
+            for result in results.get("hits", []):
+                if result.get("objectID"):
+                    ids.append(result["objectID"])
+                else:
+                    raise SearchError("Invalid data recieved from algolia")
+
+            if len(results.get("hits", [])) < hits_per_page:
+                break
+        return ids
 
 
 def position(venue: offerers_models.Venue) -> dict[str, float]:

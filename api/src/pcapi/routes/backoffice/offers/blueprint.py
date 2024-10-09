@@ -36,6 +36,7 @@ from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.providers import models as providers_models
+from pcapi.core.search import seach_offers_ids
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models import feature
@@ -257,6 +258,74 @@ SUBQUERY_DICT: dict[str, dict[str, typing.Any]] = {
 }
 
 
+ALGOLIA_FIELD_TO_PYTHON: dict[str, dict[str, typing.Any]] = {
+    "CATEGORY": {
+        "field": "category",
+        "facet": "offer.category",
+        "special": lambda l: [
+            subcategory.id for subcategory in subcategories_v2.ALL_SUBCATEGORIES if subcategory.category.id in l
+        ],
+    },
+    "DEPARTMENT": {
+        "field": "department",
+        "facet": "venue.departmentCode",
+    },
+    "REGION": {
+        "field": "region",
+        "facet": "venue.departmentCode",
+        "special": regions_utils.get_department_codes_for_regions,
+    },
+    "EAN": {
+        "field": "string",
+        "facet": "offer.ean",
+        "special": string_utils.format_ean_or_visa,
+    },
+    "EVENT_DATE": {"field": "date", "facet": "offer.dates", "special": lambda d: d.timestamp()},
+    "NAME": {
+        "field": "string",
+        "facet": "offer.name",
+    },
+    "OFFERER": {
+        "field": "offerer",
+        "facet": "offerer.name",
+        "special": lambda x: x,
+    },
+    "SUBCATEGORY": {
+        "field": "subcategory",
+        "facet": "offer.subCategoryId",
+    },
+    "VENUE": {
+        "field": "venue",
+        "facet": "venue.id",
+    },
+    "SHOW_TYPE": {
+        "field": "show_type",
+        "facet": "offer.showType",
+    },
+    "PRICE": {"field": "price", "facet": "offer.prices", "special": lambda x: x},
+}
+
+
+def _get_offer_ids_algolia(form: forms.GetOfferAlgoliaSearchForm) -> list[int]:
+
+    filter_str, warnings = utils.generate_algolia_search_string(
+        search_parameters=form.search.data,
+        fields_definition=ALGOLIA_FIELD_TO_PYTHON,
+    )
+    for warning in warnings:
+        flash(escape(warning), "warning")
+
+    # +1 to check if there are more results than requested
+    # union() above may cause duplicates, but distinct() affects performance and causes timeout;
+    # actually duplicate ids can be accepted since the current function is called inside .in_()
+    ids = seach_offers_ids(
+        query=form.algolia_search.data,
+        filters=filter_str,
+        count=form.limit.data + 1,
+    )
+    return ids
+
+
 def _get_offer_ids_query(form: forms.GetOfferAdvancedSearchForm) -> BaseQuery:
     query, inner_joins, _, warnings = utils.generate_search_query(
         query=offers_models.Offer.query,
@@ -281,7 +350,9 @@ def _get_offer_ids_query(form: forms.GetOfferAdvancedSearchForm) -> BaseQuery:
     return query.with_entities(offers_models.Offer.id).limit(form.limit.data + 1)
 
 
-def _get_offers(form: forms.GetOfferAdvancedSearchForm) -> list[offers_models.Offer]:
+def _get_offers_by_ids(
+    ids: list[int] | BaseQuery, *, sort: str | None = None, order: str | None = None
+) -> list[offers_models.Offer]:
     if utils.has_current_user_permission(perm_models.Permissions.PRO_FRAUD_ACTIONS):
         # Those columns are not shown to fraud pro users
         booked_quantity_subquery: sa.sql.selectable.ScalarSelect | sa.sql.elements.Null = sa.null()
@@ -381,7 +452,7 @@ def _get_offers(form: forms.GetOfferAdvancedSearchForm) -> list[offers_models.Of
             rules_subquery.label("rules"),
             min_max_prices_subquery.label("prices"),
         )
-        .filter(offers_models.Offer.id.in_(_get_offer_ids_query(form)))
+        .filter(offers_models.Offer.id.in_(ids))
         # 1-1 relationships so join will not increase the number of SQL rows
         .join(offers_models.Offer.venue)
         .join(offerers_models.Venue.managingOfferer)
@@ -420,9 +491,9 @@ def _get_offers(form: forms.GetOfferAdvancedSearchForm) -> list[offers_models.Of
         )
     )
 
-    if form.sort.data:
-        order = form.order.data or "desc"
-        query = query.order_by(getattr(getattr(offers_models.Offer, form.sort.data), order)())
+    if sort:
+        order = order or "desc"
+        query = query.order_by(getattr(getattr(offers_models.Offer, sort), order)())
 
     return query.all()
 
@@ -431,21 +502,85 @@ def _get_offers(form: forms.GetOfferAdvancedSearchForm) -> list[offers_models.Of
 def list_offers() -> utils.BackofficeResponse:
     form = forms.GetOfferAdvancedSearchForm(formdata=utils.get_query_params())
     if not form.validate():
-        return render_template("offer/list.html", rows=[], form=form), 400
+        return (
+            render_template(
+                "offer/list.html",
+                rows=[],
+                advanced_form=form,
+                advanced_dest=url_for(".list_offers"),
+                algolia_form=forms.GetOfferAlgoliaSearchForm(),
+                algolia_dest=url_for(".list_algolia_offers"),
+                date_created_sort_url=form.get_sort_link_with_search_data(".list_offers") if form.sort.data else None,
+            ),
+            400,
+        )
 
     if form.is_empty():
         form_data = MultiDict(utils.get_query_params())
         form_data.update({"search-0-search_field": "ID", "search-0-operator": "IN"})
         form = forms.GetOfferAdvancedSearchForm(formdata=form_data)
-        return render_template("offer/list.html", rows=[], form=form)
+        return render_template(
+            "offer/list.html",
+            rows=[],
+            advanced_form=form,
+            advanced_dest=url_for(".list_offers"),
+            algolia_form=forms.GetOfferAlgoliaSearchForm(),
+            algolia_dest=url_for(".list_algolia_offers"),
+            date_created_sort_url=form.get_sort_link_with_search_data(".list_offers") if form.sort.data else None,
+        )
 
-    offers = _get_offers(form)
+    offers = _get_offers_by_ids(
+        ids=_get_offer_ids_query(form),
+        sort=form.sort.data,
+        order=form.order.data,
+    )
     offers = utils.limit_rows(offers, form.limit.data)
 
     return render_template(
         "offer/list.html",
         rows=offers,
-        form=form,
+        advanced_form=form,
+        advanced_dest=url_for(".list_offers"),
+        algolia_form=forms.GetOfferAlgoliaSearchForm(),
+        algolia_dest=url_for(".list_algolia_offers"),
+        date_created_sort_url=form.get_sort_link_with_search_data(".list_offers") if form.sort.data else None,
+    )
+
+
+@list_offers_blueprint.route("/algolia", methods=["GET"])
+def list_algolia_offers() -> utils.BackofficeResponse:
+    form = forms.GetOfferAlgoliaSearchForm(formdata=utils.get_query_params())
+    if not form.validate():
+        return (
+            render_template(
+                "offer/list.html",
+                rows=[],
+                advanced_form=form,
+                advanced_dest=url_for(".list_offers"),
+                algolia_form=form,
+                algolia_dest=url_for(".list_algolia_offers"),
+                date_created_sort_url=form.get_sort_link_with_search_data(".list_offers") if form.sort.data else None,
+            ),
+            400,
+        )
+
+    offer_ids = _get_offer_ids_algolia(form)
+    offers = []
+    if offer_ids:
+        offers = _get_offers_by_ids(
+            ids=offer_ids,
+            sort=form.sort.data,
+            order=form.order.data,
+        )
+        offers = utils.limit_rows(offers, form.limit.data)
+
+    return render_template(
+        "offer/list.html",
+        rows=offers,
+        advanced_form=forms.GetOfferAdvancedSearchForm(),
+        advanced_dest=url_for(".list_offers"),
+        algolia_form=form,
+        algolia_dest=url_for(".list_algolia_offers"),
         date_created_sort_url=form.get_sort_link_with_search_data(".list_offers") if form.sort.data else None,
     )
 
