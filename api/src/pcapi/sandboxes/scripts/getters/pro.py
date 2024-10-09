@@ -116,5 +116,20 @@ def create_pro_user_with_individual_offers() -> dict:
         name="Une offre épuisée",
         subcategoryId=subcategories.LIVRE_PAPIER.id,
     )
+    return {"user": get_pro_user_helper(pro_user)}
 
+
+def create_pro_user_with_collective_offers() -> dict:
+    pro_user = users_factories.ProFactory()
+    offerer = offerers_factories.OffererFactory()
+    offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
+    venue = offerers_factories.VenueFactory(name="Mon Lieu", managingOfferer=offerer, isPermanent=True)
+    offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
+
+    educational_factories.CollectiveOfferTemplateFactory(
+        name="Mon offre collective",
+        venue=venue,
+        subcategoryId=subcategories.SEANCE_CINE.id,
+        formats=[subcategories.EacFormat.PROJECTION_AUDIOVISUELLE],
+    )
     return {"user": get_pro_user_helper(pro_user)}
