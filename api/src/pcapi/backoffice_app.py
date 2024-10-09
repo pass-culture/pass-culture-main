@@ -30,6 +30,16 @@ csrf = CSRFProtect()
 csrf.init_app(app)
 
 
+@app.after_request
+def add_headers(response: Response) -> Response:
+    # Cache static files in the browser to avoid many requests when every page is loaded, which would cause many
+    # database queries for users in before_request() and many logs printed (on 2024-10-09, 36 files, 72 db queries).
+    if request.path.startswith("/static/") or request.path.startswith("/favicon"):
+        response.headers["Cache-Control"] = "public,max-age=3600"
+
+    return response
+
+
 @app.errorhandler(CSRFError)
 def handle_csrf_error(error: typing.Any) -> tuple[str, int]:
     mark_transaction_as_invalid()
