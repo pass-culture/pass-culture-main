@@ -11397,14 +11397,14 @@
                     }
                 ],
                 "responses": {
-                    "204": {
-                        "description": "This collective booking's status has been successfully updated"
+                    "200": {
+                        "description": "Your request was succesful."
                     },
                     "401": {
                         "description": "Authentication is necessary to use this API."
                     },
                     "403": {
-                        "description": "Collective booking status updated has been refused"
+                        "description": "You do not have the necessary rights to use this API."
                     },
                     "404": {
                         "description": "The collective offer could not be found."

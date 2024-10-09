@@ -556,11 +556,14 @@ class BookCollectiveOfferTest(PublicAPIRestrictedEnvEndpointHelper):
         expected_num_queries += 1  # 24. get (same) offerer
 
         with assert_num_queries(expected_num_queries):
-            self.assert_request_has_expected_result(
+            response = self.assert_request_has_expected_result(
                 auth_client,
                 url_params={"offer_id": offer_id},
-                expected_status_code=204,
+                expected_status_code=200,
             )
+
+        assert response.json["bookingId"]
+        assert response.json["bookingStatus"] == models.CollectiveBookingStatus.PENDING.value
 
         db.session.refresh(offer)
         bookings = offer.collectiveStock.collectiveBookings
@@ -634,7 +637,7 @@ class BookCollectiveOfferTest(PublicAPIRestrictedEnvEndpointHelper):
             auth_client,
             url_params={"offer_id": offer.id},
             expected_status_code=403,
-            expected_error_json={"code": "OFFER_IS_NOT_BOOKABLE"},
+            expected_error_json={"code": "OFFER_IS_NOT_BOOKABLE_BECAUSE_BOOKING_EXISTS"},
         )
 
         # offer is sold out because of used booking.
