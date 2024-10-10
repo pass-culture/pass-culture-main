@@ -1,3 +1,5 @@
+from functools import partial
+
 from flask import flash
 from flask import redirect
 from flask import render_template
@@ -23,6 +25,9 @@ from pcapi.models import beneficiary_import as beneficiary_import_models
 from pcapi.models import beneficiary_import_status as beneficiary_import_status_models
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
+from pcapi.repository import atomic
+from pcapi.repository import mark_transaction_as_invalid
+from pcapi.repository import on_commit
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.pro import forms as pro_forms
@@ -43,6 +48,7 @@ pro_user_blueprint = utils.child_backoffice_blueprint(
 
 
 @pro_user_blueprint.route("", methods=["GET"])
+@atomic()
 def get(user_id: int) -> utils.BackofficeResponse:
     # Make sure user is pro
     user = (
@@ -110,6 +116,7 @@ def get(user_id: int) -> utils.BackofficeResponse:
 
 
 @pro_user_blueprint.route("/details", methods=["GET"])
+@atomic()
 def get_details(user_id: int) -> utils.BackofficeResponse:
     user = users_api.get_pro_account_base_query(user_id).one_or_none()
     if not user:
@@ -140,6 +147,7 @@ def get_details(user_id: int) -> utils.BackofficeResponse:
 
 
 @pro_user_blueprint.route("", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
 def update_pro_user(user_id: int) -> utils.BackofficeResponse:
     user = (
@@ -153,6 +161,7 @@ def update_pro_user(user_id: int) -> utils.BackofficeResponse:
     else:
         form = pro_users_forms.EditProUserForm()
     if not form.validate():
+        mark_transaction_as_invalid()
         dst = url_for(".update_pro_user", user_id=user_id)
         flash("Le formulaire n'est pas valide", "warning")
         return render_template("pro_user/get.html", form=form, dst=dst, user=user), 400
@@ -191,21 +200,23 @@ def update_pro_user(user_id: int) -> utils.BackofficeResponse:
         try:
             email_update.request_email_update_from_admin(user, form.email.data)
         except users_exceptions.EmailExistsError:
+            mark_transaction_as_invalid()
             form.email.errors.append("L'email est déjà associé à un autre utilisateur")
             dst = url_for(".update_pro_user", user_id=user.id)
             return render_template("pro_user/get.html", form=form, dst=dst, user=user), 400
 
-        external_attributes_api.update_external_pro(old_email)  # to delete previous user info from SendinBlue
+        external_attributes_api.update_external_pro(old_email)  # to delete previous user info from Brevo
         external_attributes_api.update_external_user(user)
 
     snapshot.add_action()
-    db.session.commit()
+    db.session.flush()
 
     flash("Les informations ont été mises à jour", "success")
     return redirect(url_for(".get", user_id=user_id), code=303)
 
 
 @pro_user_blueprint.route("/delete", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
 def delete(user_id: int) -> utils.BackofficeResponse:
     user = users_api.get_pro_account_base_query(user_id).populate_existing().with_for_update().one_or_none()
@@ -213,25 +224,28 @@ def delete(user_id: int) -> utils.BackofficeResponse:
         raise NotFound()
 
     if not _user_can_be_deleted(user):
+        mark_transaction_as_invalid()
         flash("Le compte est rattaché à une structure", "warning")
         return redirect(url_for("backoffice_web.pro_user.get", user_id=user_id), code=303)
 
     form = pro_users_forms.DeleteProUser()
     if not form.validate():
+        mark_transaction_as_invalid()
         flash("Le formulaire n'est pas valide", "warning")
         return redirect(url_for("backoffice_web.pro_user.get", user_id=user_id), code=303)
 
     if not form.email.data == user.email:
+        mark_transaction_as_invalid()
         flash("L'email saisi ne correspond pas à celui du compte", "warning")
         return redirect(url_for("backoffice_web.pro_user.get", user_id=user_id), code=303)
 
     # clear from mailing list
     if not offerers_models.Venue.query.filter(offerers_models.Venue.bookingEmail == user.email).limit(1).count():
-        mails_api.delete_contact(user.email, True)
+        on_commit(partial(mails_api.delete_contact, user.email, True))
 
     # clear from push notifications
     payload = DeleteBatchUserAttributesRequest(user_id=user.id)
-    delete_user_attributes_task.delay(payload)
+    on_commit(partial(delete_user_attributes_task.delay, payload))
 
     # Delete all related objects if the user has already been created as a beneficiary
     beneficiary_import_status_models.BeneficiaryImportStatus.query.filter(
@@ -259,12 +273,13 @@ def delete(user_id: int) -> utils.BackofficeResponse:
     )
 
     users_models.User.query.filter(users_models.User.id == user_id).delete(synchronize_session=False)
-    db.session.commit()
+    db.session.flush()
     flash("Le compte a été supprimé", "success")
     return redirect(url_for("backoffice_web.pro.search_pro"), code=303)
 
 
 @pro_user_blueprint.route("/comment", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
 def comment_pro_user(user_id: int) -> utils.BackofficeResponse:
     user = (
@@ -278,6 +293,7 @@ def comment_pro_user(user_id: int) -> utils.BackofficeResponse:
 
     form = pro_users_forms.CommentForm()
     if not form.validate():
+        mark_transaction_as_invalid()
         flash(utils.build_form_error_msg(form), "warning")
         return redirect(url_for("backoffice_web.pro_user.get", user_id=user_id), code=303)
 
@@ -288,6 +304,7 @@ def comment_pro_user(user_id: int) -> utils.BackofficeResponse:
 
 
 @pro_user_blueprint.route("/validate-email", methods=["POST"])
+@atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
 def validate_pro_user_email(user_id: int) -> utils.BackofficeResponse:
     user = (
@@ -297,6 +314,7 @@ def validate_pro_user_email(user_id: int) -> utils.BackofficeResponse:
         raise NotFound()
 
     if user.isEmailValidated:
+        mark_transaction_as_invalid()
         flash(Markup("L'email <b>{email}</b> est déjà validé !").format(email=user.email), "warning")
     else:
         users_api.validate_pro_user_email(user=user, author_user=current_user)
