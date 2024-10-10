@@ -7,6 +7,7 @@ import { DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
 import { useQuerySearchFilters } from 'core/Offers/hooks/useQuerySearchFilters'
 import { SearchFiltersParams } from 'core/Offers/types'
 import { serializeApiFilters } from 'core/Offers/utils/serializer'
+import { useActiveFeature } from 'hooks/useActiveFeature'
 import { useNotification } from 'hooks/useNotification'
 import fullHideIcon from 'icons/full-hide.svg'
 import fullTrashIcon from 'icons/full-trash.svg'
@@ -45,11 +46,20 @@ const computeAllDeactivationSuccessMessage = (nbSelectedOffers: number) =>
     ? 'Les offres sont en cours de désactivation, veuillez rafraichir dans quelques instants'
     : 'Une offre est en cours de désactivation, veuillez rafraichir dans quelques instants'
 
-const computeDeactivationSuccessMessage = (nbSelectedOffers: number) => {
+const computeDeactivationSuccessMessage = (
+  nbSelectedOffers: number,
+  areNewStatusesEnabled: boolean
+) => {
+  const deactivateWordingPlural = areNewStatusesEnabled
+    ? 'mises en pause'
+    : 'désactivées'
+  const deactivateWording = areNewStatusesEnabled
+    ? 'mise en pause'
+    : 'désactivée'
   const successMessage =
     nbSelectedOffers > 1
-      ? `offres ont bien été désactivées`
-      : `offre a bien été désactivée`
+      ? `offres ont bien été ${deactivateWordingPlural}`
+      : `offre a bien été ${deactivateWording}`
   return `${nbSelectedOffers} ${successMessage}`
 }
 
@@ -58,9 +68,13 @@ const updateIndividualOffersStatus = async (
   areAllOffersSelected: boolean,
   selectedOfferIds: number[],
   notify: ReturnType<typeof useNotification>,
-  apiFilters: SearchFiltersParams
+  apiFilters: SearchFiltersParams,
+  areNewStatusesEnabled: boolean
 ) => {
   const payload = serializeApiFilters(apiFilters)
+  const deactivationWording = areNewStatusesEnabled
+    ? 'la mise en pause'
+    : 'la désactivation'
   if (areAllOffersSelected) {
     //  Bulk edit if all editable offers are selected
     try {
@@ -76,7 +90,7 @@ const updateIndividualOffersStatus = async (
     } catch {
       notify.error(
         `Une erreur est survenue lors de ${
-          isActive ? 'l’activation' : 'la désactivation'
+          isActive ? 'l’activation' : deactivationWording
         } des offres`
       )
     }
@@ -89,12 +103,15 @@ const updateIndividualOffersStatus = async (
       notify.error(
         isActive
           ? computeActivationSuccessMessage(selectedOfferIds.length)
-          : computeDeactivationSuccessMessage(selectedOfferIds.length)
+          : computeDeactivationSuccessMessage(
+              selectedOfferIds.length,
+              areNewStatusesEnabled
+            )
       )
     } catch {
       notify.error(
         `Une erreur est survenue lors de ${
-          isActive ? 'l’activation' : 'la désactivation'
+          isActive ? 'l’activation' : deactivationWording
         } des offres`
       )
     }
@@ -118,6 +135,9 @@ export const IndividualOffersActionsBar = ({
   const [isDeactivationDialogOpen, setIsDeactivationDialogOpen] =
     useState(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
+  const areNewStatusesEnabled = useActiveFeature(
+    'ENABLE_COLLECTIVE_NEW_STATUSES'
+  )
 
   const apiFilters = {
     ...DEFAULT_SEARCH_FILTERS,
@@ -138,7 +158,8 @@ export const IndividualOffersActionsBar = ({
       areAllOffersSelected,
       selectedOfferIds,
       notify,
-      apiFilters
+      apiFilters,
+      areNewStatusesEnabled
     )
 
     handleClose()
@@ -211,7 +232,7 @@ export const IndividualOffersActionsBar = ({
             icon={fullHideIcon}
             variant={ButtonVariant.SECONDARY}
           >
-            Désactiver
+            {areNewStatusesEnabled ? 'Mettre en pause' : 'Désactiver'}
           </Button>
           <Button
             onClick={handleOpenDeleteDialog}

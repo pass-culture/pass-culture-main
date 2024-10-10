@@ -5,6 +5,7 @@ import { Callout } from 'components/Callout/Callout'
 import { CalloutVariant } from 'components/Callout/types'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OfferEducationalFormValues } from 'core/OfferEducational/types'
+import { useActiveFeature } from 'hooks/useActiveFeature'
 import { DatePicker } from 'ui-kit/form/DatePicker/DatePicker'
 import { RadioGroup } from 'ui-kit/form/RadioGroup/RadioGroup'
 import { TimePicker } from 'ui-kit/form/TimePicker/TimePicker'
@@ -23,6 +24,9 @@ export const FormDates = ({
 }: FormDatesProps): JSX.Element => {
   const { values, setFieldValue } =
     useFormikContext<OfferEducationalFormValues>()
+  const areNewStatusesEnabled = useActiveFeature(
+    'ENABLE_COLLECTIVE_NEW_STATUSES'
+  )
   const minBeginningDate = dateCreated ? new Date(dateCreated) : new Date()
   const minDateForEndingDate = isDateValid(values.beginningDate)
     ? new Date(values.beginningDate)
@@ -34,6 +38,10 @@ export const FormDates = ({
       await setFieldValue('endingDate', newBeginningDate)
     }
   }
+
+  const deactivateWording = areNewStatusesEnabled
+    ? 'mise en pause'
+    : 'désactivée'
 
   return (
     <FormLayout.Section title="Date et heure">
@@ -55,8 +63,8 @@ export const FormDates = ({
       {values.datesType === 'specific_dates' && (
         <>
           <Callout variant={CalloutVariant.INFO} className={styles.banner}>
-            Votre offre sera désactivée automatiquement à l’issue des dates
-            précisées ci-dessous.
+            {`Votre offre sera ${deactivateWording} automatiquement à l’issue des dates
+            précisées ci-dessous.`}
           </Callout>
           <FormLayout.Row className={styles.container}>
             <DatePicker

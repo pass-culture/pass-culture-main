@@ -7,6 +7,7 @@ import { useAnalytics } from 'app/App/analytics/firebase'
 import { ConfirmDialog } from 'components/Dialog/ConfirmDialog/ConfirmDialog'
 import { GET_OFFER_QUERY_KEY } from 'config/swrQueryKeys'
 import { Events } from 'core/FirebaseEvents/constants'
+import { useActiveFeature } from 'hooks/useActiveFeature'
 import { useNotification } from 'hooks/useNotification'
 import fullHideIcon from 'icons/full-hide.svg'
 import strokeCheckIcon from 'icons/stroke-check.svg'
@@ -29,6 +30,9 @@ export const StatusToggleButton = ({ offer }: StatusToggleButtonProps) => {
     isPublicationConfirmationModalOpen,
     setIsPublicationConfirmationModalOpen,
   ] = useState(false)
+  const areCollectiveNewStatusesEnabled = useActiveFeature(
+    'ENABLE_COLLECTIVE_NEW_STATUSES'
+  )
   const { date: publicationDate, time: publicationTime } = formatDateTimeParts(
     offer.publicationDate
   )
@@ -49,8 +53,11 @@ export const StatusToggleButton = ({ offer }: StatusToggleButtonProps) => {
         isActive: !offer.isActive,
       })
       await mutate([GET_OFFER_QUERY_KEY, offer.id])
+      const deactivationWording = areCollectiveNewStatusesEnabled
+        ? 'mise en pause'
+        : 'désactivée'
       notification.success(
-        `L’offre a bien été ${offer.isActive ? 'désactivée' : 'publiée'}.`
+        `L’offre a bien été ${offer.isActive ? deactivationWording : 'publiée'}.`
       )
       if (isPublicationConfirmationModalOpen) {
         logEvent(Events.CLICKED_PUBLISH_FUTURE_OFFER_EARLIER, {
@@ -66,6 +73,10 @@ export const StatusToggleButton = ({ offer }: StatusToggleButtonProps) => {
       setIsPublicationConfirmationModalOpen(false)
     }
   }
+
+  const deactivateWording = areCollectiveNewStatusesEnabled
+    ? 'Mettre en pause'
+    : 'Désactiver'
 
   return (
     <>
@@ -86,10 +97,10 @@ export const StatusToggleButton = ({ offer }: StatusToggleButtonProps) => {
         )}
         onClick={toggleOfferActiveStatus}
         icon={
-          offer.status !== OfferStatus.INACTIVE ? fullHideIcon : strokeCheckIcon
+          offer.status === OfferStatus.INACTIVE ? strokeCheckIcon : fullHideIcon
         }
       >
-        {offer.status !== OfferStatus.INACTIVE ? 'Désactiver' : 'Publier'}
+        {offer.status === OfferStatus.INACTIVE ? 'Publier' : deactivateWording}
       </Button>
     </>
   )

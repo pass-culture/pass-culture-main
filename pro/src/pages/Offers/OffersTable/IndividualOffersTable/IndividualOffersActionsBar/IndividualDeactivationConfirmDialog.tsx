@@ -4,6 +4,7 @@ import { useAnalytics } from 'app/App/analytics/firebase'
 import { ConfirmDialog } from 'components/Dialog/ConfirmDialog/ConfirmDialog'
 import { Events } from 'core/FirebaseEvents/constants'
 import { NBSP } from 'core/shared/constants'
+import { useActiveFeature } from 'hooks/useActiveFeature'
 import fullEyeIcon from 'icons/full-hide.svg'
 
 export interface DeactivationConfirmDialogProps {
@@ -21,13 +22,19 @@ export const IndividualDeactivationConfirmDialog = ({
   onConfirm,
   isDialogOpen,
 }: DeactivationConfirmDialogProps): JSX.Element => {
+  const areNewStatusesEnabled = useActiveFeature(
+    'ENABLE_COLLECTIVE_NEW_STATUSES'
+  )
   const { logEvent } = useAnalytics()
   const location = useLocation()
 
+  const deactivateWording = areNewStatusesEnabled
+    ? 'mettre en pause'
+    : 'désactiver'
   return (
     <ConfirmDialog
       cancelText="Annuler"
-      confirmText="Désactiver"
+      confirmText={areNewStatusesEnabled ? 'Mettre en pause' : 'Désactiver'}
       onCancel={() => {
         logEvent(Events.CLICKED_CANCELED_SELECTED_OFFERS, {
           from: location.pathname,
@@ -50,8 +57,8 @@ export const IndividualDeactivationConfirmDialog = ({
       }
       secondTitle={
         nbSelectedOffers === 1
-          ? `êtes-vous sûr de vouloir la désactiver${NBSP}?`
-          : `êtes-vous sûr de vouloir toutes les désactiver${NBSP}?`
+          ? `êtes-vous sûr de vouloir la ${deactivateWording}${NBSP}?`
+          : `êtes-vous sûr de vouloir toutes les ${deactivateWording}${NBSP}?`
       }
       open={isDialogOpen}
     >

@@ -1,12 +1,12 @@
-import { render, screen } from '@testing-library/react'
-import React from 'react'
+import { screen } from '@testing-library/react'
 
 import { OfferStatus } from 'apiClient/v1'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { StatusLabel } from '../StatusLabel'
 
-const renderStatusLabel = (status: OfferStatus) => {
-  return render(<StatusLabel status={status} />)
+const renderStatusLabel = (status: OfferStatus, features?: string[]) => {
+  return renderWithProviders(<StatusLabel status={status} />, { features })
 }
 
 describe('StatusLabel', () => {
@@ -37,5 +37,13 @@ describe('StatusLabel', () => {
   it('should display "épuisée" if offer is sold out', () => {
     renderStatusLabel(OfferStatus.SOLD_OUT)
     expect(screen.getByText('épuisée')).toBeInTheDocument()
+  })
+  it('should display "non conforme" if offer is rejected when FF is active', () => {
+    renderStatusLabel(OfferStatus.REJECTED, ['ENABLE_COLLECTIVE_NEW_STATUSES'])
+    expect(screen.getByText('non conforme')).toBeInTheDocument()
+  })
+  it('should display "en instruction" if offer is pending when FF is active', () => {
+    renderStatusLabel(OfferStatus.PENDING, ['ENABLE_COLLECTIVE_NEW_STATUSES'])
+    expect(screen.getByText('en instruction')).toBeInTheDocument()
   })
 })

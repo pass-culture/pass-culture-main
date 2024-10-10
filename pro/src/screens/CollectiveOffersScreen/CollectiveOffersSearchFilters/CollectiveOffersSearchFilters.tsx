@@ -184,12 +184,27 @@ export const CollectiveOffersSearchFilters = ({
   const searchByOfferNameLabel = 'Nom de l’offre'
   const searchByOfferNamePlaceholder = 'Rechercher par nom d’offre'
 
-  const filteredStatusOptions = [
-    ...collectiveFilterStatus.filter(
-      (status) =>
-        !isNewOffersAndBookingsActive ||
-        status.value !== CollectiveOfferDisplayedStatus.INACTIVE
-    ),
+  const statusFilterOptions = [
+    ...collectiveFilterStatus
+      .filter(
+        (status) =>
+          !isNewOffersAndBookingsActive ||
+          status.value !== CollectiveOfferDisplayedStatus.INACTIVE
+      )
+      .map((status) => {
+        if (areCollectiveNewStatusesEnabled) {
+          if (status.value === CollectiveOfferDisplayedStatus.PENDING) {
+            return { ...status, label: 'En instruction' }
+          }
+          if (status.value === CollectiveOfferDisplayedStatus.REJECTED) {
+            return { ...status, label: 'Non conforme' }
+          }
+          if (status.value === CollectiveOfferDisplayedStatus.INACTIVE) {
+            return { ...status, label: 'En pause' }
+          }
+        }
+        return status
+      }),
     ...(areCollectiveNewStatusesEnabled
       ? [
           {
@@ -291,7 +306,7 @@ export const CollectiveOffersSearchFilters = ({
               label={
                 <span className={styles['status-filter-label']}>Statut</span>
               }
-              options={filteredStatusOptions}
+              options={statusFilterOptions}
               placeholder="Statuts"
               isOptional
               className={styles['status-filter']}

@@ -67,6 +67,9 @@ export const IndividualOffersSearchFilters = ({
 }: IndividualOffersSearchFiltersProps): JSX.Element => {
   const isNewInterfaceActive = useIsNewInterfaceActive()
   const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
+  const areCollectiveNewStatusesEnabled = useActiveFeature(
+    'ENABLE_COLLECTIVE_NEW_STATUSES'
+  )
 
   const updateSearchFilters = (
     newSearchFilters: Partial<SearchFiltersParams>
@@ -129,6 +132,21 @@ export const IndividualOffersSearchFilters = ({
   )
   const searchByOfferNamePlaceholder =
     'Rechercher par nom d’offre ou par EAN-13'
+
+  const statusFilterOptions = individualFilterStatus.map((status) => {
+    if (areCollectiveNewStatusesEnabled) {
+      if (status.value === OfferStatus.PENDING) {
+        return { ...status, label: 'En instruction' }
+      }
+      if (status.value === OfferStatus.REJECTED) {
+        return { ...status, label: 'Non conforme' }
+      }
+      if (status.value === OfferStatus.INACTIVE) {
+        return { ...status, label: 'En pause' }
+      }
+    }
+    return status
+  })
 
   return (
     <>
@@ -241,7 +259,7 @@ export const IndividualOffersSearchFilters = ({
               name="status"
               onChange={storeOfferStatus}
               disabled={disableAllFilters || isRestrictedAsAdmin}
-              options={individualFilterStatus}
+              options={statusFilterOptions}
             />
           </FieldLayout>
           <Button

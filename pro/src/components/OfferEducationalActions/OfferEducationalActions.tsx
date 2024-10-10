@@ -17,14 +17,11 @@ import {
 } from 'config/swrQueryKeys'
 import { CollectiveBookingsEvents } from 'core/FirebaseEvents/constants'
 import {
-  offerAdageActivated,
-  offerAdageDeactivate,
-} from 'core/OfferEducational/constants'
-import {
   isCollectiveOffer,
   isCollectiveOfferTemplate,
   Mode,
 } from 'core/OfferEducational/types'
+import { useActiveFeature } from 'hooks/useActiveFeature'
 import { useNotification } from 'hooks/useNotification'
 import fullHideIcon from 'icons/full-hide.svg'
 import fullNextIcon from 'icons/full-next.svg'
@@ -59,6 +56,9 @@ export const OfferEducationalActions = ({
   const { logEvent } = useAnalytics()
   const notify = useNotification()
   const selectedOffererId = useSelector(selectCurrentOffererId)
+  const areNewStatusesEnabled = useActiveFeature(
+    'ENABLE_COLLECTIVE_NEW_STATUSES'
+  )
   const lastBookingId = isCollectiveOffer(offer) ? offer.lastBookingId : null
   const lastBookingStatus = isCollectiveOffer(offer)
     ? offer.lastBookingStatus
@@ -80,6 +80,10 @@ export const OfferEducationalActions = ({
   }
 
   const { mutate } = useSWRConfig()
+
+  const offerAdageActivated =
+    'Votre offre est maintenant active et visible dans ADAGE'
+  const offerAdageDeactivate = `Votre offre est ${areNewStatusesEnabled ? 'mise en pause' : 'désactivée'} et n’est plus visible sur ADAGE`
 
   const setIsOfferActive = async (isActive: boolean) => {
     try {
@@ -170,7 +174,7 @@ export const OfferEducationalActions = ({
               iconPosition={IconPositionEnum.LEFT}
             >
               {offer.isActive
-                ? 'Masquer la publication sur ADAGE'
+                ? `${areNewStatusesEnabled ? 'Mettre en pause' : 'Masquer la publication'} sur ADAGE`
                 : 'Publier sur ADAGE'}
             </Button>
           )}

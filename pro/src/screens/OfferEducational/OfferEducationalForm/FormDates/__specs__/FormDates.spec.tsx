@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { addYears, format } from 'date-fns'
 import { Formik } from 'formik'
@@ -8,6 +8,7 @@ import { OfferEducationalFormValues } from 'core/OfferEducational/types'
 import { getOfferEducationalValidationSchema } from 'screens/OfferEducational/validationSchema'
 import { Button } from 'ui-kit/Button/Button'
 import { FORMAT_ISO_DATE_ONLY } from 'utils/date'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { FormDates, FormDatesProps } from '../FormDates'
 
@@ -15,7 +16,7 @@ const renderFormDates = (
   props: FormDatesProps,
   initialValues: OfferEducationalFormValues
 ) => {
-  render(
+  renderWithProviders(
     <Formik
       initialValues={initialValues}
       onSubmit={vi.fn()}
