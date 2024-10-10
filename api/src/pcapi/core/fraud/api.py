@@ -652,7 +652,7 @@ def handle_ok_manual_review(
         ) from err
 
     except finance_exceptions.DepositTypeAlreadyGrantedException as err:
-        raise EligibilityError("Un déposit de ce type a déjà été créé") from err
+        raise EligibilityError("Un crédit identique a déjà été accordé à l'utilisateur") from err
 
 
 def handle_dms_redirection_review(

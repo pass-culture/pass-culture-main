@@ -1541,7 +1541,10 @@ class GetPublicAccountHistoryTest:
     def test_history_contains_email_changes(self):
         user = users_factories.UserFactory(dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=1))
         email_request = users_factories.EmailUpdateEntryFactory(
-            user=user, creationDate=datetime.datetime.utcnow() - datetime.timedelta(minutes=10)
+            user=user,
+            creationDate=datetime.datetime.utcnow() - datetime.timedelta(minutes=10),
+            newUserEmail=None,
+            newDomainEmail=None,
         )
         email_confirmation = users_factories.EmailConfirmationEntryFactory(
             user=user, creationDate=datetime.datetime.utcnow() - datetime.timedelta(minutes=5)
@@ -1564,7 +1567,7 @@ class GetPublicAccountHistoryTest:
 
         assert history[2].actionType == "Demande de changement d'email"
         assert history[2].actionDate == email_request.creationDate
-        assert history[2].comment == f"de {email_request.oldEmail} à {email_request.newEmail}"
+        assert history[2].comment == f"Lien envoyé à {email_request.oldEmail} pour choisir une nouvelle adresse email"
 
     def test_history_contains_suspensions(self):
         user = users_factories.UserFactory(dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=3))
