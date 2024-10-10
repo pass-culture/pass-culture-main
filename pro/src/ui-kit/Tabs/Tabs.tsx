@@ -13,6 +13,9 @@ export interface Tab {
   key: string
   url?: string
   icon?: string
+  /**
+   * A flag to display a "new" tag next to the tab.
+   */
   isNew?: boolean
 }
 
