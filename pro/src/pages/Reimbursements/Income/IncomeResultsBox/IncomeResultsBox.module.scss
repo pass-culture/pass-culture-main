@@ -40,14 +40,14 @@
 
 .income-results-block-number {
   @include fonts.bold;
+
   font-size: rem.torem(21px);
   text-align: left;
 }
 
 .income-results-box {
   display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
+  flex-flow: row wrap;
   gap: rem.torem(20px);
 
   &:first-child {
@@ -57,7 +57,6 @@
 
 .income-results-subbox {
   display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
+  flex-flow: row wrap;
   row-gap: rem.torem(20px);
 }
