@@ -9,7 +9,6 @@ import styles from './Button.module.scss'
 import { ButtonVariant, IconPositionEnum, SharedButtonProps } from './types'
 
 export type LinkProps = {
-  svgAlt?: string
   isExternal?: boolean
   isSectionLink?: boolean
   to: string
@@ -32,7 +31,7 @@ export const ButtonLink = forwardRef(
       onClick,
       variant = ButtonVariant.TERNARY,
       iconPosition = IconPositionEnum.LEFT,
-      svgAlt,
+      iconAlt,
       onBlur,
       isExternal = false,
       isSectionLink = false,
@@ -52,14 +51,14 @@ export const ButtonLink = forwardRef(
     const svgIcon = opensInNewTab ? (
       <SvgIcon
         src={icon ?? fullLinkIcon}
-        alt={svgAlt ?? 'Nouvelle fenêtre'}
+        alt={iconAlt ?? 'Nouvelle fenêtre'}
         className={styles['button-icon']}
         width="22"
       />
     ) : icon ? (
       <SvgIcon
         src={icon}
-        alt={svgAlt ?? ''}
+        alt={iconAlt ?? ''}
         className={styles['button-icon']}
         width="22"
       />

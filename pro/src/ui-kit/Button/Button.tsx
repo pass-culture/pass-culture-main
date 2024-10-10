@@ -16,7 +16,6 @@ export interface ButtonProps
     React.ButtonHTMLAttributes<HTMLButtonElement> {
   hasTooltip?: boolean
   isLoading?: boolean
-  iconAlt?: string
   tooltipContentClassName?: string
 }
 
@@ -26,7 +25,7 @@ export const Button = forwardRef(
       className,
       children,
       icon,
-      iconAlt = '',
+      iconAlt,
       iconPosition = IconPositionEnum.LEFT,
       variant = ButtonVariant.PRIMARY,
       type = 'button',
