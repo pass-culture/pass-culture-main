@@ -17,6 +17,12 @@ export type FieldLayoutBaseProps = {
   name: string
   description?: string
   maxLength?: number
+  /**
+   * A flag to hide the label.
+   * To be used with caution, as it can affect accessibility.
+   * Do not use it if the label is mandatory, placeholder is not
+   * a substitute for a label.
+   */
   isLabelHidden?: boolean
   hasLabelLineBreak?: boolean
   isOptional?: boolean
