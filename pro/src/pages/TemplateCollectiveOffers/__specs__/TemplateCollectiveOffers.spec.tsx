@@ -101,7 +101,7 @@ describe('route TemplateCollectiveOffers', () => {
           })
         )
         const list = screen.getByTestId('list')
-        await userEvent.click(within(list).getByText('Refusée'))
+        await userEvent.click(within(list).getByText('Non conforme'))
 
         await userEvent.click(
           screen.getByRole('button', { name: 'Rechercher' })
@@ -134,7 +134,7 @@ describe('route TemplateCollectiveOffers', () => {
           })
         )
         const list = screen.getByTestId('list')
-        await userEvent.click(within(list).getByText('Refusée'))
+        await userEvent.click(within(list).getByText('Non conforme'))
         await userEvent.click(within(list).getByText('Archivée'))
 
         await userEvent.click(
@@ -172,7 +172,7 @@ describe('route TemplateCollectiveOffers', () => {
           })
         )
         const list = screen.getByTestId('list')
-        await userEvent.click(within(list).getByText('Masquée sur ADAGE'))
+        await userEvent.click(within(list).getByText('En pause'))
 
         await userEvent.click(
           screen.getByRole('button', { name: 'Rechercher' })
