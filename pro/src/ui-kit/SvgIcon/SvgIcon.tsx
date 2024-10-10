@@ -1,9 +1,25 @@
 import React from 'react'
 
 export interface SvgIconProps {
+  /**
+   * The SVG src path.
+   * SVGs are usually imported as React components from the pro/src/icons folder.
+   * To use them, you must import the SVG and pass it as the src prop.
+   */
   src: string
-  alt: string
+  /**
+   * An alternative text for the icon.
+   * If provided and non-empty, the SVG will have a role="img" and an aria-label attribute.
+   * If undefined or empty, the SVG will have an aria-hidden attribute instead, as a
+   * decorative icon.
+   */
+  alt?: string
   className?: string
+  /**
+   * The SVG viewBox attribute.
+   * This must be provided if the SVG viewBox is known to be different from 0 0 48 48.
+   * Otherwise, the SVG wont be displayed correctly.
+   */
   viewBox?: string
   width?: string
   style?: React.CSSProperties
@@ -16,7 +32,7 @@ export interface SvgIconProps {
 // - if the viewBox is different from 0 0 48 48, you must pass it as a prop
 export const SvgIcon = ({
   src,
-  alt,
+  alt = '',
   className,
   viewBox = '0 0 48 48',
   width,
@@ -26,9 +42,7 @@ export const SvgIcon = ({
     <svg
       className={className}
       viewBox={viewBox}
-      {...(alt !== ''
-        ? { 'aria-label': alt, role: 'img' }
-        : { 'aria-hidden': true })}
+      {...(alt ? { 'aria-label': alt, role: 'img' } : { 'aria-hidden': true })}
       {...(width ? { width } : {})}
       style={style}
     >

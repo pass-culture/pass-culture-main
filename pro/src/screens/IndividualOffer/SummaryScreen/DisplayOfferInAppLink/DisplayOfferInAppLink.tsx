@@ -6,7 +6,6 @@ import { WEBAPP_URL } from 'utils/config'
 
 interface DisplayOfferInAppLinkProps extends SharedButtonProps {
   id: number
-  icon?: string
   children: React.ReactNode
   onClick?: () => void
   className?: string
@@ -14,7 +13,7 @@ interface DisplayOfferInAppLinkProps extends SharedButtonProps {
 
 export const DisplayOfferInAppLink: FunctionComponent<
   DisplayOfferInAppLinkProps
-> = ({ id, icon, children, variant, onClick, className }) => {
+> = ({ id, icon, iconAlt, children, variant, onClick, className }) => {
   const offerPreviewUrl = `${WEBAPP_URL}/offre/${id}`
 
   return (
@@ -23,6 +22,7 @@ export const DisplayOfferInAppLink: FunctionComponent<
       isExternal
       variant={variant}
       icon={icon}
+      iconAlt={iconAlt}
       className={className}
       onClick={(event) => {
         event.preventDefault()
