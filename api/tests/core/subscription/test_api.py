@@ -720,6 +720,15 @@ class SubscriptionItemTest:
             == subscription_models.SubscriptionItemStatus.TODO
         )
 
+    @override_features(ENABLE_PHONE_VALIDATION=True)
+    def test_phone_validation_item_with_eligible_user_validation_todo(self):
+        user = users_factories.UserFactory(dateOfBirth=self.AGE18_ELIGIBLE_BIRTH_DATE, _phoneNumber="0123456789")
+        assert (
+            subscription_api.get_phone_validation_subscription_item(user, users_models.EligibilityType.AGE18).status
+            == subscription_models.SubscriptionItemStatus.TODO
+        )
+
+    @override_features(ENABLE_PHONE_VALIDATION=False)
     def test_phone_validation_item_with_eligible_user_done_without_validation(self):
         user = users_factories.UserFactory(dateOfBirth=self.AGE18_ELIGIBLE_BIRTH_DATE, _phoneNumber="0123456789")
         assert (
