@@ -130,6 +130,16 @@ class CollectiveOfferDisplayedStatus(enum.Enum):
     DRAFT = "DRAFT"
 
 
+COLLECTIVE_OFFER_TEMPLATE_STATUSES: typing.Final = (
+    CollectiveOfferDisplayedStatus.ARCHIVED,
+    CollectiveOfferDisplayedStatus.REJECTED,
+    CollectiveOfferDisplayedStatus.PENDING,
+    CollectiveOfferDisplayedStatus.DRAFT,
+    CollectiveOfferDisplayedStatus.INACTIVE,
+    CollectiveOfferDisplayedStatus.ACTIVE,
+)
+
+
 class CollectiveOfferAllowedAction(enum.Enum):
     CAN_EDIT_DETAILS = "CAN_EDIT_DETAILS"
     CAN_EDIT_DATES = "CAN_EDIT_DATES"

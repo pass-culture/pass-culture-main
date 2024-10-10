@@ -8,6 +8,7 @@ from sqlalchemy import exc as sa_exc
 from pcapi.core.educational import exceptions
 from pcapi.core.educational import factories
 from pcapi.core.educational.models import ALLOWED_ACTIONS_BY_DISPLAYED_STATUS
+from pcapi.core.educational.models import COLLECTIVE_OFFER_TEMPLATE_STATUSES
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import CollectiveOfferAllowedAction
@@ -27,15 +28,6 @@ from pcapi.utils.image_conversion import ImageRatio
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
-
-COLLECTIVE_OFFER_TEMPLATE_STATUS_LIST = [
-    CollectiveOfferDisplayedStatus.ARCHIVED,
-    CollectiveOfferDisplayedStatus.REJECTED,
-    CollectiveOfferDisplayedStatus.PENDING,
-    CollectiveOfferDisplayedStatus.DRAFT,
-    CollectiveOfferDisplayedStatus.INACTIVE,
-    CollectiveOfferDisplayedStatus.ACTIVE,
-]
 
 
 class EducationalDepositTest:
@@ -696,7 +688,7 @@ class CollectiveOfferAllowedActionsTest:
         offer.collectiveStock.endDatetime = datetime.datetime.utcnow() - datetime.timedelta(days=3)
         assert offer.is_two_days_past_end
 
-    @pytest.mark.parametrize("status", COLLECTIVE_OFFER_TEMPLATE_STATUS_LIST)
+    @pytest.mark.parametrize("status", COLLECTIVE_OFFER_TEMPLATE_STATUSES)
     def test_get_offer_template_allowed_actions(self, status):
         offer = factories.create_collective_offer_template_by_status(status)
 

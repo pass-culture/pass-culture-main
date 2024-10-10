@@ -1228,6 +1228,30 @@ class GetCollectiveOffersTemplateByFiltersTest:
         assert len(result) == 1
         assert result[0].id == template.id
 
+    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    def test_status_no_result(self):
+        template = educational_factories.CollectiveOfferTemplateFactory(
+            validation=offer_mixin.OfferValidationStatus.APPROVED
+        )
+
+        result = repository.get_collective_offers_template_by_filters(
+            user_id=users_factories.AdminFactory().id,
+            user_is_admin=True,
+            statuses=[educational_models.CollectiveOfferDisplayedStatus.ACTIVE.value],
+        )
+        assert result.one() == template
+
+        statuses_no_result = set(educational_models.CollectiveOfferDisplayedStatus) - {
+            educational_models.CollectiveOfferDisplayedStatus.ACTIVE
+        }
+        for status in statuses_no_result:
+            result = repository.get_collective_offers_template_by_filters(
+                user_id=users_factories.AdminFactory().id,
+                user_is_admin=True,
+                statuses=[status.value],
+            )
+            assert result.count() == 0
+
     def test_formats_filter(self):
         # given
         user = users_factories.AdminFactory()

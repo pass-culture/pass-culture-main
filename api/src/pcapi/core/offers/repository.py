@@ -493,36 +493,20 @@ def get_collective_offers_template_by_filters(
         # 1. it's unlikely that a book will contain its EAN in its name
         # 2. we need to migrate models.Offer.extraData to JSONB in order to use `union`
         query = query.filter(educational_models.CollectiveOfferTemplate.name.ilike(search))
+
     if statuses:
-        query_filters: list = []
-        if DisplayedStatus.BOOKED.value in statuses or DisplayedStatus.PREBOOKED.value in statuses:
-            query_filters.append(
-                educational_models.CollectiveOfferTemplate.status == offer_mixin.CollectiveOfferStatus.SOLD_OUT.name
-            )
-        if DisplayedStatus.ENDED.value in statuses or DisplayedStatus.EXPIRED.value in statuses:
-            query_filters.append(
-                educational_models.CollectiveOfferTemplate.status == offer_mixin.CollectiveOfferStatus.EXPIRED.name
-            )
-        bookable_offer_statuses = {
-            DisplayedStatus.BOOKED.value,
-            DisplayedStatus.PREBOOKED.value,
-            DisplayedStatus.ENDED.value,
-            DisplayedStatus.EXPIRED.value,
-            DisplayedStatus.REIMBURSED.value,
-        }
-        remaining_statuses = set(statuses) - bookable_offer_statuses
-        for status in remaining_statuses:
-            query_filters.append(
-                educational_models.CollectiveOfferTemplate.status == offer_mixin.CollectiveOfferStatus[status].name
-            )
-        if query_filters:
-            query = query.filter(or_(*query_filters))
+        template_statuses = set(statuses) & set(
+            st.value for st in educational_models.COLLECTIVE_OFFER_TEMPLATE_STATUSES
+        )
+        query = query.filter(educational_models.CollectiveOfferTemplate.status.in_(template_statuses))  # type: ignore[attr-defined]
+
     if formats:
         query = query.filter(
             educational_models.CollectiveOfferTemplate.formats.overlap(
                 postgresql.array((format.name for format in formats))
             )
         )
+
     return query
 
 
