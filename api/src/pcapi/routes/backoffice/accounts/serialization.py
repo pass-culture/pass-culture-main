@@ -115,6 +115,8 @@ class EmailChangeAction(AccountAction):
 
     @property
     def comment(self) -> str | None:
+        if not self._email_change.newEmail:
+            return f"Lien envoyé à {self._email_change.oldEmail} pour choisir une nouvelle adresse email"
         return f"de {self._email_change.oldEmail} à {self._email_change.newEmail}"
 
 
