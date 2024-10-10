@@ -1,0 +1,1 @@
+const o={backgrounds:{grid:{cellSize:8}},controls:{expanded:!0,matchers:{color:/(background|color)$/i,date:/Date$/}},options:{storySort:{order:["icons","ui-kit","components"],method:"alphabetical"}}},t=["autodocs"];export{o as parameters,t as tags};
