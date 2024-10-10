@@ -322,7 +322,7 @@ describe('SelectAutocomplete', () => {
       ).not.toBeInTheDocument()
 
       expect(
-        screen.getByRole('button', { name: 'Ain Supprimer Ain' })
+        screen.getByRole('button', { name: 'Supprimer Ain' })
       ).toHaveFocus()
     })
 
@@ -340,11 +340,11 @@ describe('SelectAutocomplete', () => {
       )
 
       await userEvent.click(
-        screen.getByRole('button', { name: 'Ain Supprimer Ain' })
+        screen.getByRole('button', { name: 'Supprimer Ain' })
       )
 
       expect(
-        screen.getByRole('button', { name: 'Aisne Supprimer Aisne' })
+        screen.getByRole('button', { name: 'Supprimer Aisne' })
       ).toHaveFocus()
     })
 
