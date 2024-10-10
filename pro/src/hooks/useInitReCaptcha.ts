@@ -17,7 +17,11 @@ export const useInitReCaptcha = (): void => {
             window.grecaptcha.reset?.(RECAPTCHA_SITE_KEY)
           }
         } catch (e) {
-          if (isError(e) && e.message.includes('Method not found')) {
+          if (
+            isError(e) &&
+            (e.message.includes('Method not found') ||
+              e.message.includes('Uncaught (in promise) Timeout'))
+          ) {
             // This happens for Android 13/14 devices
           } else {
             // Rethrow the error
