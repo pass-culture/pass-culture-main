@@ -176,7 +176,7 @@ def get_phone_validation_subscription_item(
             status = models.SubscriptionItemStatus.KO
         elif is_eligibility_activable(user, eligibility):
             has_user_filled_phone = user.phoneNumber is not None
-            if has_user_filled_phone:
+            if not FeatureToggle.ENABLE_PHONE_VALIDATION.is_active() and has_user_filled_phone:
                 status = models.SubscriptionItemStatus.OK
             else:
                 status = models.SubscriptionItemStatus.TODO
