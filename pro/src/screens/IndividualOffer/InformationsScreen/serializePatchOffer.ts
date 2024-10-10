@@ -9,6 +9,7 @@ import { IndividualOfferFormValues } from 'components/IndividualOfferForm/types'
 import { SYNCHRONIZED_OFFER_EDITABLE_FIELDS } from 'core/Offers/constants'
 import { isAllocineOffer } from 'core/Providers/utils/localProvider'
 import { AccessibilityEnum } from 'core/shared/types'
+import { trimStringsInObject } from 'utils/trimStringsInObject'
 
 export const serializeExtraData = (
   formValues: Partial<IndividualOfferFormValues>
@@ -90,12 +91,12 @@ export const serializePatchOffer = ({
   ) {
     addressValues = {
       address: {
-        city: sentValues.city.trim(),
+        city: sentValues.city,
         latitude: sentValues.latitude,
         longitude: sentValues.longitude,
-        postalCode: sentValues.postalCode.trim(),
-        street: sentValues.street.trim(),
-        label: sentValues.locationLabel?.trim(),
+        postalCode: sentValues.postalCode,
+        street: sentValues.street,
+        label: sentValues.locationLabel,
         isManualEdition: sentValues.manuallySetAddress,
         isVenueAddress:
           sentValues.offerlocation === OFFER_LOCATION.OTHER_ADDRESS
@@ -105,11 +106,11 @@ export const serializePatchOffer = ({
     }
   }
 
-  return {
+  return trimStringsInObject({
     audioDisabilityCompliant:
       sentValues.accessibility &&
       sentValues.accessibility[AccessibilityEnum.AUDIO],
-    description: sentValues.description?.trim(),
+    description: sentValues.description,
     ...(shouldNotSendExtraData
       ? {}
       : {
@@ -123,14 +124,14 @@ export const serializePatchOffer = ({
     motorDisabilityCompliant:
       sentValues.accessibility &&
       sentValues.accessibility[AccessibilityEnum.MOTOR],
-    name: sentValues.name?.trim(),
+    name: sentValues.name,
     withdrawalDelay:
       sentValues.withdrawalDelay === undefined
         ? sentValues.withdrawalType === WithdrawalTypeEnum.NO_TICKET
           ? null
           : undefined
         : Number(sentValues.withdrawalDelay),
-    withdrawalDetails: sentValues.withdrawalDetails?.trim() ?? undefined,
+    withdrawalDetails: sentValues.withdrawalDetails ?? undefined,
     visualDisabilityCompliant:
       sentValues.accessibility &&
       sentValues.accessibility[AccessibilityEnum.VISUAL],
@@ -146,5 +147,5 @@ export const serializePatchOffer = ({
     shouldSendMail: shouldSendMail,
     bookingContact: sentValues.bookingContact || undefined,
     ...addressValues,
-  }
+  })
 }

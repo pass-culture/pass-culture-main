@@ -12,6 +12,7 @@ import { showOptionsTree } from 'core/Offers/categoriesSubTypes'
 import { isOfferSynchronized } from 'core/Offers/utils/typology'
 import { SelectOption } from 'custom_types/form'
 import { computeVenueDisplayName } from 'repository/venuesService'
+import { trimStringsInObject } from 'utils/trimStringsInObject'
 
 import { DEFAULT_DETAILS_FORM_VALUES } from './constants'
 import { DetailsFormValues } from './types'
@@ -331,17 +332,19 @@ export function setFormReadOnlyFields(
   return ['categoryId', 'subcategoryId', 'venueId']
 }
 
-export const serializeExtraData = (formValues: DetailsFormValues) => ({
-  author: formValues.author?.trim(),
-  gtl_id: formValues.gtl_id,
-  performer: formValues.performer?.trim(),
-  showType: formValues.showType,
-  showSubType: formValues.showSubType,
-  speaker: formValues.speaker?.trim(),
-  stageDirector: formValues.stageDirector?.trim(),
-  visa: formValues.visa?.trim(),
-  ean: formValues.ean?.trim(),
-})
+export const serializeExtraData = (formValues: DetailsFormValues) => {
+  return trimStringsInObject({
+    author: formValues.author,
+    gtl_id: formValues.gtl_id,
+    performer: formValues.performer,
+    showType: formValues.showType,
+    showSubType: formValues.showSubType,
+    speaker: formValues.speaker,
+    stageDirector: formValues.stageDirector,
+    visa: formValues.visa,
+    ean: formValues.ean,
+  })
+}
 
 type PostPayload = {
   description?: string | null
@@ -356,15 +359,15 @@ type PostPayload = {
 export function serializeDetailsPostData(
   formValues: DetailsFormValues
 ): PostPayload {
-  return {
-    name: formValues.name.trim(),
+  return trimStringsInObject({
+    name: formValues.name,
     subcategoryId: formValues.subcategoryId,
     venueId: Number(formValues.venueId),
-    description: formValues.description.trim(),
+    description: formValues.description,
     durationMinutes: serializeDurationMinutes(formValues.durationMinutes ?? ''),
     extraData: serializeExtraData(formValues),
     productId: formValues.productId ? Number(formValues.productId) : undefined,
-  }
+  })
 }
 
 type PatchPayload = {
