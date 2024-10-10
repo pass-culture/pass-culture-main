@@ -38,10 +38,12 @@ def update_offer_batch(min_id: int, max_id: int) -> None:
                 {"min_id": min_id, "max_id": max_id},
             )
             return
-        except psycopg2.errors.QueryCanceled:
-            logger.info("Timeout on offererAddressId rows between %s and %s ", min_id, max_id)
+        except Exception as e:
+            logger.info(
+                "Erreur de type %s sur les lignes offererAddressId entre %s et %s", type(e).__name__, min_id, max_id
+            )
             db.session.rollback()
-            nb_retry = nb_retry - 1
+            nb_retry -= 1
             if nb_retry == 0:
                 raise
 
