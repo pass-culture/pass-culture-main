@@ -6,6 +6,7 @@ class WithdrawalChangedMailBookingDetail(BaseModel):
     user_first_name: str
     offer_name: str
     offer_token: str
+    offer_address: str | None
 
 
 class WithdrawalChangedMailRequest(BaseModel):

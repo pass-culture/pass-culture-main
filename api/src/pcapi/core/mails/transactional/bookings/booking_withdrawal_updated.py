@@ -4,6 +4,7 @@ from pcapi.core import mails
 import pcapi.core.bookings.models as bookings_models
 from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.core.offerers.models import OffererAddress
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.models import ActivationCode
 from pcapi.core.offers.models import Offer
@@ -29,9 +30,16 @@ def send_email_for_each_ongoing_booking(offer: Offer) -> None:
             sqla.orm.joinedload(bookings_models.Booking.user).load_only(User.firstName, User.email),
             sqla.orm.joinedload(bookings_models.Booking.stock)
             .joinedload(Stock.offer)
+            .load_only(Offer.id, Offer.withdrawalDelay, Offer.withdrawalDetails, Offer.withdrawalType)
             .joinedload(Offer.venue)
             .load_only(Venue.street),
             sqla.orm.joinedload(bookings_models.Booking.activationCode).load_only(ActivationCode.code),
+            sqla.orm.joinedload(bookings_models.Booking.stock)
+            .load_only(Stock.id)
+            .joinedload(Stock.offer)
+            .load_only(Offer.id)
+            .joinedload(Offer.offererAddress)
+            .joinedload(OffererAddress.address),
         )
     )
 
@@ -53,6 +61,7 @@ def send_email_for_each_ongoing_booking(offer: Offer) -> None:
                 user_first_name=booking.user.firstName,
                 offer_name=offer.name,
                 offer_token=booking.activationCode.code if booking.activationCode else booking.token,
+                offer_address=booking.stock.offer.offererAddress.fullAddress,
             )
         )
     send_withdrawal_detail_changed_emails.delay(mails_request)
@@ -69,6 +78,7 @@ def send_booking_withdrawal_updated(
     offer_withdrawal_type: str | None,
     offerer_name: str,
     venue_address: str,
+    offer_address: str | None,
 ) -> None:
     data = get_booking_withdrawal_updated_email_data(
         user_first_name=user_first_name,
@@ -79,6 +89,7 @@ def send_booking_withdrawal_updated(
         offer_withdrawal_type=offer_withdrawal_type,
         offerer_name=offerer_name,
         venue_address=venue_address,
+        offer_address=offer_address,
     )
     mails.send(recipients=recipients, data=data)
 
@@ -93,6 +104,7 @@ def get_booking_withdrawal_updated_email_data(
     offer_withdrawal_type: str | None,
     offerer_name: str,
     venue_address: str,
+    offer_address: str | None,
 ) -> models.TransactionalEmailData:
     return models.TransactionalEmailData(
         template=TransactionalEmail.OFFER_WITHDRAWAL_UPDATED_BY_PRO.value,
@@ -105,5 +117,6 @@ def get_booking_withdrawal_updated_email_data(
             "OFFERER_NAME": offerer_name,
             "USER_FIRST_NAME": user_first_name,
             "VENUE_ADDRESS": venue_address,
+            "OFFER_ADDRESS": offer_address,
         },
     )
