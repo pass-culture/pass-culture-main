@@ -44,16 +44,16 @@ interface TemplateOffersSearchFiltersProps {
 
 const collectiveFilterStatus = [
   {
-    label: 'Validation en attente',
+    label: 'En instruction',
     value: CollectiveOfferDisplayedStatus.PENDING,
   },
   {
-    label: 'Refusée',
+    label: 'Non conforme',
     value: CollectiveOfferDisplayedStatus.REJECTED,
   },
   { label: 'Publiée sur ADAGE', value: CollectiveOfferDisplayedStatus.ACTIVE },
   {
-    label: 'Masquée sur ADAGE',
+    label: 'En pause',
     value: CollectiveOfferDisplayedStatus.INACTIVE,
   },
   { label: 'Archivée', value: CollectiveOfferDisplayedStatus.ARCHIVED },
@@ -80,6 +80,7 @@ export const TemplateOffersSearchFilters = ({
   isRestrictedAsAdmin = false,
 }: TemplateOffersSearchFiltersProps): JSX.Element => {
   const isNewInterfaceActive = useIsNewInterfaceActive()
+
   const formats: SelectOption[] = Object.values(EacFormat).map((format) => ({
     value: format,
     label: format,
