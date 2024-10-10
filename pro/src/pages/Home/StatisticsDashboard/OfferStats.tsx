@@ -7,6 +7,7 @@ import {
 } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { Events } from 'core/FirebaseEvents/constants'
+import { useActiveFeature } from 'hooks/useActiveFeature'
 import fullLinkIcon from 'icons/full-link.svg'
 import fullShowIcon from 'icons/full-show.svg'
 import strokePhoneIcon from 'icons/stroke-phone.svg'
@@ -66,6 +67,9 @@ export const OfferStats = ({ offerer, className }: OfferStatsProps) => {
   )
   const [isLoading, setIsLoading] = useState(false)
   const { logEvent } = useAnalytics()
+  const areNewStatusesEnabled = useActiveFeature(
+    'ENABLE_COLLECTIVE_NEW_STATUSES'
+  )
 
   useEffect(() => {
     const loadStats = async () => {
@@ -78,6 +82,10 @@ export const OfferStats = ({ offerer, className }: OfferStatsProps) => {
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     loadStats()
   }, [offerer.id])
+
+  const pendingOfferWording = areNewStatusesEnabled
+    ? 'en instruction'
+    : 'en attente'
 
   return (
     <Card className={className}>
@@ -114,7 +122,9 @@ export const OfferStats = ({ offerer, className }: OfferStatsProps) => {
         (stats.pendingEducationalOffers > 0 ||
           stats.pendingPublicOffers > 0) && (
           <div className={styles['pending-offers']}>
-            <h3 className={styles['title']}>Vos offres en attente</h3>
+            <h3 className={styles['title']}>
+              Vos offres {pendingOfferWording}
+            </h3>
 
             <div className={styles['pending-description']}>
               <p>
@@ -141,7 +151,7 @@ export const OfferStats = ({ offerer, className }: OfferStatsProps) => {
                 count={stats.pendingPublicOffers}
                 label="à destination du grand public"
                 link={`/offres?structure=${offerer.id}&status=en-attente`}
-                linkLabel="Voir les offres individuelles en attente"
+                linkLabel={`Voir les offres individuelles ${pendingOfferWording}`}
               />
 
               <StatBlock
@@ -149,7 +159,7 @@ export const OfferStats = ({ offerer, className }: OfferStatsProps) => {
                 count={stats.pendingEducationalOffers}
                 label="à destination de groupes scolaires"
                 link={`/offres/collectives?structure=${offerer.id}&status=en-attente`}
-                linkLabel="Voir les offres collectives en attente"
+                linkLabel={`Voir les offres collectives ${pendingOfferWording}`}
               />
             </div>
           </div>

@@ -28,7 +28,7 @@ export const CollectiveStatusLabel = ({
   offerStatus,
   offerDisplayedStatus,
 }: CollectiveStatusLabelProps) => {
-  const areCollectiveNewStatusEnabled = useActiveFeature(
+  const areNewStatusesEnabled = useActiveFeature(
     'ENABLE_COLLECTIVE_NEW_STATUSES'
   )
 
@@ -44,7 +44,7 @@ export const CollectiveStatusLabel = ({
               alt=""
             />
           }
-          label="en attente"
+          label={areNewStatusesEnabled ? 'en instruction' : 'en attente'}
         />
       )
     case CollectiveOfferDisplayedStatus.REJECTED:
@@ -58,7 +58,7 @@ export const CollectiveStatusLabel = ({
               className={style['status-label-icon']}
             />
           }
-          label="refusée"
+          label={areNewStatusesEnabled ? 'non conforme' : 'refusée'}
         />
       )
     case CollectiveOfferDisplayedStatus.INACTIVE:
@@ -72,7 +72,7 @@ export const CollectiveStatusLabel = ({
               className={style['status-label-icon']}
             />
           }
-          label="masquée"
+          label={areNewStatusesEnabled ? 'en pause' : 'masquée'}
         />
       )
     case CollectiveOfferDisplayedStatus.ACTIVE:
@@ -136,7 +136,7 @@ export const CollectiveStatusLabel = ({
       )
     // @ts-expect-error Fallthrough case in switch.
     case CollectiveOfferDisplayedStatus.REIMBURSED:
-      if (areCollectiveNewStatusEnabled) {
+      if (areNewStatusesEnabled) {
         return (
           <StatusLabel
             className={style['status-reimbursed']}
@@ -189,7 +189,7 @@ export const CollectiveStatusLabel = ({
               className={style['status-label-icon']}
             />
           }
-          label="masquée"
+          label={areNewStatusesEnabled ? 'en pause' : 'masquée'}
         />
       )
     case CollectiveOfferDisplayedStatus.ARCHIVED:

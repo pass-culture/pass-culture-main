@@ -98,4 +98,46 @@ describe('CollectiveStatusLabel', () => {
     )
     expect(screen.getByText('remboursée')).toBeInTheDocument()
   })
+
+  it('should render "non conforme" status when ff is active for REJECTED displayed status', () => {
+    const unrelevantStatus = CollectiveOfferStatus.PENDING
+    renderWithProviders(
+      <CollectiveStatusLabel
+        offerDisplayedStatus={CollectiveOfferDisplayedStatus.REJECTED}
+        offerStatus={unrelevantStatus}
+      />,
+      {
+        features: ['ENABLE_COLLECTIVE_NEW_STATUSES'],
+      }
+    )
+    expect(screen.getByText('non conforme')).toBeInTheDocument()
+  })
+
+  it('should render "en pause" status when ff is active for INACTIVE displayed status', () => {
+    const unrelevantStatus = CollectiveOfferStatus.PENDING
+    renderWithProviders(
+      <CollectiveStatusLabel
+        offerDisplayedStatus={CollectiveOfferDisplayedStatus.INACTIVE}
+        offerStatus={unrelevantStatus}
+      />,
+      {
+        features: ['ENABLE_COLLECTIVE_NEW_STATUSES'],
+      }
+    )
+    expect(screen.getByText('en pause')).toBeInTheDocument()
+  })
+
+  it('should render "en instruction" status when ff is active for PENDING displayed status', () => {
+    const unrelevantStatus = CollectiveOfferStatus.PENDING
+    renderWithProviders(
+      <CollectiveStatusLabel
+        offerDisplayedStatus={CollectiveOfferDisplayedStatus.PENDING}
+        offerStatus={unrelevantStatus}
+      />,
+      {
+        features: ['ENABLE_COLLECTIVE_NEW_STATUSES'],
+      }
+    )
+    expect(screen.getByText('en instruction')).toBeInTheDocument()
+  })
 })

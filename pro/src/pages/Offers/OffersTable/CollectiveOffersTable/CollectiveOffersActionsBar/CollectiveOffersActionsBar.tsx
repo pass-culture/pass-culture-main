@@ -37,11 +37,17 @@ export type CollectiveOffersActionsBarProps = {
   areTemplateOffers: boolean
 }
 
-const computeDeactivationSuccessMessage = (nbSelectedOffers: number) => {
+const computeDeactivationSuccessMessage = (
+  nbSelectedOffers: number,
+  areNewStatusesEnabled: boolean
+) => {
+  const deactivationWording = areNewStatusesEnabled
+    ? 'mise en pause'
+    : 'masquée'
   const successMessage =
     nbSelectedOffers > 1
-      ? `offres ont bien été masquées`
-      : `offre a bien été masquée`
+      ? `offres ont bien été ${deactivationWording}s`
+      : `offre a bien été ${deactivationWording}`
   return `${nbSelectedOffers} ${successMessage}`
 }
 
@@ -121,6 +127,9 @@ export function CollectiveOffersActionsBar({
   const isNewOffersAndBookingsActive = useActiveFeature(
     'WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE'
   )
+  const areNewStatusesEnabled = useActiveFeature(
+    'ENABLE_COLLECTIVE_NEW_STATUSES'
+  )
 
   const { mutate } = useSWRConfig()
 
@@ -170,7 +179,10 @@ export function CollectiveOffersActionsBar({
           )
           await mutate(collectiveOffersQueryKeys)
           notify.success(
-            computeDeactivationSuccessMessage(selectedOffers.length)
+            computeDeactivationSuccessMessage(
+              selectedOffers.length,
+              areNewStatusesEnabled
+            )
           )
         } catch {
           notify.error('Une erreur est survenue')
@@ -223,7 +235,7 @@ export function CollectiveOffersActionsBar({
   function openDeactivateOffersDialog() {
     if (!canDeactivateCollectiveOffers(selectedOffers)) {
       notify.error(
-        'Seules les offres au statut publié ou expiré peuvent être masquées.'
+        `Seules les offres au statut publié ou expiré peuvent être ${areNewStatusesEnabled ? 'mises en pause' : 'masquées'}.`
       )
       clearSelectedOfferIds()
       return
@@ -323,7 +335,7 @@ export function CollectiveOffersActionsBar({
             icon={fullHideIcon}
             variant={ButtonVariant.SECONDARY}
           >
-            Masquer
+            {areNewStatusesEnabled ? 'Mettre en pause' : 'Masquer'}
           </Button>
           <Button
             onClick={() =>
