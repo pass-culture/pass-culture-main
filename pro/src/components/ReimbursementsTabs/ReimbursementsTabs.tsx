@@ -62,7 +62,7 @@ export const ReimbursementsTabs = ({
     if (isOffererStatsV2Active) {
       steps.push({
         id: STEP_ID_INCOMES,
-        label: 'Revenus générés',
+        label: 'Chiffre d’affaires',
         url: '/remboursements/revenus',
         isNew: true,
       })

@@ -29,6 +29,6 @@ export const routesReimbursements: RouteConfig[] = [
   {
     element: <Income />,
     path: '/remboursements/revenus',
-    title: 'Revenus générés',
+    title: 'Chiffre d’affaires',
   },
 ]
