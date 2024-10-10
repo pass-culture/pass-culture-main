@@ -23,6 +23,9 @@ from .. import utils
 from ..forms import empty as empty_forms
 
 
+# TODO remove : trigger docker build.
+
+
 @blueprint.backoffice_web.route("/admin/roles", methods=["GET"])
 @atomic()
 @utils.permission_required(perm_models.Permissions.MANAGE_PERMISSIONS)
