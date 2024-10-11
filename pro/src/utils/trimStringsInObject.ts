@@ -1,19 +1,25 @@
 import { isPlainObject } from './isPlainObject'
 
-export const trimStringsInObject = (obj: any, visited = new Set()) => {
+export const trimStringsInObject = <T extends Record<string, any>>(
+  obj: T,
+  visited = new Set<object>()
+): T => {
   // handle circular references
   if (!isPlainObject(obj) || visited.has(obj)) {
     return obj
   }
   visited.add(obj)
 
-  for (const key of Object.keys(obj)) {
+  const result: any = Array.isArray(obj) ? [] : {}
+  for (const key of Object.keys(obj) as Array<keyof T>) {
     if (typeof obj[key] === 'string') {
-      obj[key] = obj[key].trim()
+      result[key] = obj[key].trim()
     } else if (isPlainObject(obj[key])) {
-      obj[key] = trimStringsInObject(obj[key], visited)
+      result[key] = trimStringsInObject(obj[key], visited)
+    } else {
+      result[key] = obj[key]
     }
   }
 
-  return obj
+  return result
 }
