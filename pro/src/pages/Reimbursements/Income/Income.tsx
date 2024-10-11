@@ -22,7 +22,7 @@ import { IncomeByYear } from './types'
 
 // FIXME: remove this, use real data.
 // Follow-up Jira ticket : https://passculture.atlassian.net/browse/PC-32278
-const MOCK_INCOME_BY_YEAR: IncomeByYear = {
+export const MOCK_INCOME_BY_YEAR: IncomeByYear = {
   2021: {},
   2022: {
     aggregatedRevenue: {
@@ -64,13 +64,12 @@ export const Income = () => {
     { fallbackData: { venues: [] } }
   )
   const venues = formatAndOrderVenues(data.venues)
+  const venueValues = venues.map((v) => v.value)
 
   const [isIncomeLoading, setIsIncomeLoading] = useState(false)
   const [incomeApiError] = useState<Error>()
 
-  const [selectedVenues, setSelectedVenues] = useState<string[]>(
-    venues.map((v) => v.value)
-  )
+  const [selectedVenues, setSelectedVenues] = useState<string[]>([])
   const [incomeByYear, setIncomeByYear] = useState<IncomeByYear>()
   const [activeYear, setActiveYear] = useState<number>()
 
@@ -83,22 +82,27 @@ export const Income = () => {
     activeYearIncome.aggregatedRevenue || activeYearIncome.expectedRevenue
 
   useEffect(() => {
+    if (venueValues.length > 0 && selectedVenues.length === 0) {
+      setSelectedVenues(venueValues)
+    }
+  }, [venueValues, selectedVenues])
+
+  useEffect(() => {
     if (selectedVenues.length > 0) {
       setIsIncomeLoading(true)
       const incomeByYear = MOCK_INCOME_BY_YEAR
       setIncomeByYear(incomeByYear)
+
+      if (!activeYear) {
+        const years = Object.keys(incomeByYear)
+          .map(Number)
+          .sort((a, b) => a - b)
+        setActiveYear(years[years.length - 1])
+      }
+
       setIsIncomeLoading(false)
     }
-  }, [selectedVenues])
-
-  useEffect(() => {
-    if (incomeByYear && !activeYear) {
-      const years = Object.keys(incomeByYear)
-        .map(Number)
-        .sort((a, b) => a - b)
-      setActiveYear(years[years.length - 1])
-    }
-  }, [incomeByYear, activeYear])
+  }, [selectedVenues, activeYear])
 
   if (areVenuesLoading || isIncomeLoading) {
     return <Spinner />
