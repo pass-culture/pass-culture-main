@@ -241,7 +241,7 @@ def get_collective_offers_for_my_institution(
 
     offers = [
         offer
-        for offer in educational_institution_api.get_offers_for_my_institution(authenticated_information.uai).all()
+        for offer in educational_institution_api.get_offers_for_my_institution(authenticated_information.uai)
         if offer.isBookable
     ]
 

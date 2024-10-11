@@ -37,7 +37,7 @@ class CollectiveOfferTest:
         venue = offerers_factories.VenueFactory()
         institution = educational_factories.EducationalInstitutionFactory(institutionId=UAI)
         stocks = educational_factories.CollectiveStockFactory.create_batch(
-            2,
+            3,
             beginningDatetime=START_DATE,
             collectiveOffer__institution=institution,
             collectiveOffer__offerVenue={
@@ -46,6 +46,8 @@ class CollectiveOfferTest:
                 "otherAddress": "",
             },
         )
+        # this archived offer should not appear in the result
+        stocks[2].collectiveOffer.dateArchived = datetime.utcnow() - timedelta(days=1)
 
         dst = url_for("adage_iframe.get_collective_offers_for_my_institution")
 
