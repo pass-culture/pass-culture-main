@@ -16,12 +16,8 @@ describe('Create and update venue', () => {
     cy.intercept({ method: 'PATCH', url: '/venues/*' }).as('patchVenue')
     cy.intercept({
       method: 'GET',
-      url: 'https://api-adresse.data.gouv.fr/search/?limit=5&q=89%20Rue%20la%20Bo%C3%A9tie%2075008%20Paris',
+      url: 'https://api-adresse.data.gouv.fr/search/?limit=*',
     }).as('searchAddress')
-    cy.intercept({
-      method: 'GET',
-      url: 'https://api-adresse.data.gouv.fr/search/?limit=1&q=3%20RUE%20DE%20VALOIS%20Paris%2075001',
-    }).as('searchAddress2')
     cy.intercept({ method: 'POST', url: '/venues' }).as('postVenues')
   })
 
@@ -126,7 +122,7 @@ describe('Create and update venue', () => {
 
     // I add a valid Siret
     cy.findByLabelText('SIRET du lieu *').type(siret + '{enter}')
-    cy.wait(['@getSiretVenue', '@searchAddress2'])
+    cy.wait(['@getSiretVenue', '@searchAddress'])
     cy.findByTestId('error-siret').should('not.exist')
 
     // I add venue with Siret details
