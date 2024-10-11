@@ -14,6 +14,8 @@ declare namespace Cypress {
     getFakeAdageToken(): Chainable
 
     setSliderValue(value: number): Chainable<void>
+
+    stepLog(params: { message: string }): Chainable
   }
 }
 

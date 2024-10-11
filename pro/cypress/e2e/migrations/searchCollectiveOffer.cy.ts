@@ -18,27 +18,28 @@ describe('Search collective offers', () => {
   })
 
   it('A search with several filters should display expected results', () => {
+    cy.stepLog({ message: 'I am logged in' })
     cy.login({
       email: login,
       password: password,
       redirectUrl: '/',
     })
 
-    // I go to Offres collectives view
+    cy.stepLog({ message: 'I go to Offres collectives view' })
     cy.visit('/offres/collectives')
     cy.wait('@collectiveOffers')
 
-    // I select "Mon Lieu" in "Lieu"
+    cy.stepLog({ message: 'I select "Mon Lieu" in "Lieu"' })
     cy.findByLabelText('Lieu').select(venueName)
 
-    // I select "Projection audiovisuelle" in "Format"
+    cy.stepLog({ message: 'I select "Projection audiovisuelle" in "Format"' })
     cy.findByLabelText('Format').select('Projection audiovisuelle')
 
-    // I validate my collective filters
+    cy.stepLog({ message: 'I validate my collective filters' })
     cy.findByText('Rechercher').click()
     cy.wait('@collectiveOffers')
 
-    // These 5 results should be displayed
+    cy.stepLog({ message: 'These 5 results should be displayed' })
     const data = [
       ['', '', 'Titre', 'Lieu', 'Établissement', 'Status'],
       ['', '', offerName, venueName, 'Tous les établissements', 'publiée'],

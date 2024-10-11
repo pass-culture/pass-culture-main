@@ -82,15 +82,17 @@ describe('Signup journey with new venue', () => {
   })
 
   it('Should sign up with a new account, create a new offerer with an unknown SIRET', () => {
+    cy.stepLog({ message: 'I am logged in' })
     cy.login({
       email: login,
       password: password,
       redirectUrl: '/',
     })
-    // When I start offerer creation
+
+    cy.stepLog({ message: 'I start offerer creation' })
     cy.findByText('Commencer').click()
 
-    // When I specify a venue with a SIRET
+    cy.stepLog({ message: 'I specify a venue with a SIRET' })
     cy.url().should('contain', '/parcours-inscription/structure')
     cy.findByLabelText('Numéro de SIRET à 14 chiffres *').type(mySiret)
     cy.findByText('Continuer').click()
@@ -108,7 +110,7 @@ describe('Signup journey with new venue', () => {
       }
     )
 
-    // When I fill identification form with a public name
+    cy.stepLog({ message: 'I fill identification form with a public name' })
     cy.url().should('contain', '/parcours-inscription/identification')
     cy.findByLabelText('Nom public').type('First Venue')
     cy.intercept({
@@ -119,7 +121,7 @@ describe('Signup journey with new venue', () => {
     cy.findByText('Étape suivante').click()
     cy.wait('@venue-types').its('response.statusCode').should('eq', 200)
 
-    // When I fill activity form without target audience
+    cy.stepLog({ message: 'I fill activity form without target audience' })
     cy.url().should('contain', '/parcours-inscription/activite')
     cy.findByLabelText('Activité principale *').select('Spectacle vivant')
     cy.findByText('Étape suivante').click()
@@ -127,27 +129,27 @@ describe('Signup journey with new venue', () => {
       'Veuillez sélectionner une des réponses ci-dessus'
     )
 
-    // Then an error message is raised
+    cy.stepLog({ message: 'an error message is raised' })
     cy.findByTestId('global-notification-error')
       .contains('Une ou plusieurs erreurs sont présentes dans le formulaire')
       .should('not.be.visible')
 
-    // When I fill in missing target audience
+    cy.stepLog({ message: 'I fill in missing target audience' })
     cy.url().should('contain', '/parcours-inscription/activite')
     cy.findByText('Au grand public').click()
     cy.findByText('Étape suivante').click()
 
-    // The next step is displayed
+    cy.stepLog({ message: 'the next step is displayed' })
     cy.url().should('contain', '/parcours-inscription/validation')
 
-    // When I validate the registration
+    cy.stepLog({ message: 'I validate the registration' })
     cy.intercept({ method: 'POST', url: '/offerers/new', times: 1 }).as(
       'createOfferer'
     )
     cy.findByText('Valider et créer ma structure').click()
     cy.wait('@createOfferer')
 
-    // Then the offerer is created
+    cy.stepLog({ message: 'the offerer is created' })
     cy.findAllByTestId('global-notification-success')
       .contains('Votre structure a bien été créée')
       .should('not.be.visible')
@@ -199,15 +201,17 @@ describe('Signup journey with known venue', () => {
   })
 
   it('Should sign up with a new account and a known offerer, create a new offerer in the space', () => {
+    cy.stepLog({ message: 'I am logged in' })
     cy.login({
       email: login,
       password: password,
       redirectUrl: '/',
     })
-    // When I start offerer creation
+
+    cy.stepLog({ message: 'I start offerer creation' })
     cy.findByText('Commencer').click()
 
-    // When I specify an offerer with a SIRET
+    cy.stepLog({ message: 'I specify an offerer with a SIRET' })
     cy.url().should('contain', '/parcours-inscription/structure')
     cy.findByLabelText('Numéro de SIRET à 14 chiffres *').type(mySiret)
     cy.findByText('Continuer').click()
@@ -225,7 +229,7 @@ describe('Signup journey with known venue', () => {
       }
     )
 
-    // When I add a new offerer
+    cy.stepLog({ message: 'I add a new offerer' })
     cy.url().should('contain', '/parcours-inscription/structure/rattachement')
     cy.intercept(
       'GET',
@@ -234,7 +238,7 @@ describe('Signup journey with known venue', () => {
     cy.findByText('Ajouter une nouvelle structure').click()
     cy.wait('@search5Address')
 
-    // When I fill identification form with a new address
+    cy.stepLog({ message: 'I fill identification form with a new address' })
     cy.url().should('contain', '/parcours-inscription/identification')
     cy.findByLabelText('Adresse postale *').clear()
     cy.findByLabelText('Adresse postale *').invoke(
@@ -257,7 +261,7 @@ describe('Signup journey with known venue', () => {
     cy.findByText('Étape suivante').click()
     cy.wait('@venue-types').its('response.statusCode').should('eq', 200)
 
-    // When I fill activity form without main activity
+    cy.stepLog({ message: 'I fill activity form without main activity' })
     cy.url().should('contain', '/parcours-inscription/activite')
     cy.findByLabelText('Activité principale *').select(
       'Sélectionnez votre activité principale'
@@ -268,27 +272,27 @@ describe('Signup journey with known venue', () => {
       'Veuillez sélectionner une activité principale'
     )
 
-    // Then An error message is raised
+    cy.stepLog({ message: 'an error message is raised' })
     cy.findByTestId('global-notification-error')
       .contains('Une ou plusieurs erreurs sont présentes dans le formulaire')
       .should('not.be.visible')
 
-    // When I fill in missing main activity
+    cy.stepLog({ message: 'I fill in missing main activity' })
     cy.url().should('contain', '/parcours-inscription/activite')
     cy.findByLabelText('Activité principale *').select('Spectacle vivant')
     cy.findByText('Étape suivante').click()
 
-    // Then The next step is displayed
+    cy.stepLog({ message: 'the next step is displayed' })
     cy.url().should('contain', '/parcours-inscription/validation')
 
-    // When I validate the registration
+    cy.stepLog({ message: 'I validate the registration' })
     cy.intercept({ method: 'POST', url: '/offerers/new', times: 1 }).as(
       'createOfferer'
     )
     cy.findByText('Valider et créer ma structure').click()
     cy.wait('@createOfferer')
 
-    // Then the offerer is created
+    cy.stepLog({ message: 'the offerer is created' })
     cy.findAllByTestId('global-notification-success')
       .contains('Votre structure a bien été créée')
       .should('not.be.visible')
@@ -299,23 +303,24 @@ describe('Signup journey with known venue', () => {
     cy.reload()
     cy.wait('@getOfferers').its('response.statusCode').should('eq', 200)
 
-    // Then the attachment is in progress
+    cy.stepLog({ message: 'the attachment is in progress' })
     cy.contains(
       'Le rattachement à votre structure est en cours de traitement par les équipes du pass Culture'
     ).should('be.visible')
   })
 
   it('Should sign up with a new account and a known offerer', () => {
+    cy.stepLog({ message: 'I am logged in' })
     cy.login({
       email: login,
       password: password,
       redirectUrl: '/',
     })
 
-    // When I start offerer creation
+    cy.stepLog({ message: 'I start offerer creation' })
     cy.findByText('Commencer').click()
 
-    // When I specify an offerer with a SIRET
+    cy.stepLog({ message: 'I specify an offerer with a SIRET' })
     cy.url().should('contain', '/parcours-inscription/structure')
     cy.findByLabelText('Numéro de SIRET à 14 chiffres *').type(mySiret)
     cy.findByText('Continuer').click()
@@ -333,17 +338,14 @@ describe('Signup journey with known venue', () => {
       }
     )
 
-    // When I chose to join the space
+    cy.stepLog({ message: 'I chose to join the space' })
     cy.contains('Rejoindre cet espace').click()
-
     cy.intercept({ method: 'POST', url: '/offerers' }).as('postOfferers')
     cy.findByTestId('confirm-dialog-button-confirm').click()
     cy.wait('@postOfferers').its('response.statusCode').should('eq', 201)
-
-    // Confirmation page
     cy.contains('Accéder à votre espace').click()
 
-    // When I am redirected to homepage
+    cy.stepLog({ message: 'I am redirected to homepage' })
     cy.url({ timeout: 10000 }).should('contain', '/accueil')
     cy.findAllByTestId('spinner', { timeout: 30 * 1000 }).should('not.exist')
 
@@ -351,7 +353,7 @@ describe('Signup journey with known venue', () => {
     cy.reload()
     cy.wait('@getOfferers').its('response.statusCode').should('eq', 200)
 
-    // Then the attachment is in progress
+    cy.stepLog({ message: 'the attachment is in progress' })
     cy.contains(
       'Le rattachement à votre structure est en cours de traitement par les équipes du pass Culture'
     ).should('be.visible')
