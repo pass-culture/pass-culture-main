@@ -666,8 +666,19 @@ class CollectiveOfferAllowedActionsTest:
     @pytest.mark.parametrize("status", CollectiveOfferDisplayedStatus)
     def test_get_offer_allowed_actions(self, status):
         offer = factories.create_collective_offer_by_status(status)
-
         assert offer.allowedActions == list(ALLOWED_ACTIONS_BY_DISPLAYED_STATUS[status])
+
+    @pytest.mark.parametrize("status", CollectiveOfferDisplayedStatus)
+    def test_get_offer_allowed_actions_public_api(self, status):
+        offer = factories.create_collective_offer_by_status(status)
+        offer.provider = providers_factories.ProviderFactory()
+
+        assert set(offer.allowedActions) == set(ALLOWED_ACTIONS_BY_DISPLAYED_STATUS[status]) - {
+            CollectiveOfferAllowedAction.CAN_EDIT_DETAILS,
+            CollectiveOfferAllowedAction.CAN_EDIT_DATES,
+            CollectiveOfferAllowedAction.CAN_EDIT_INSTITUTION,
+            CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT,
+        }
 
     def test_get_ended_offer_allowed_actions(self):
         offer = factories.create_collective_offer_by_status(CollectiveOfferDisplayedStatus.ENDED)

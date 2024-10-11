@@ -148,7 +148,9 @@ class CollectiveOfferTemplateAllowedAction(enum.Enum):
     CAN_HIDE = "CAN_HIDE"
 
 
-ALLOWED_ACTIONS_BY_DISPLAYED_STATUS: dict[CollectiveOfferDisplayedStatus, tuple[CollectiveOfferAllowedAction, ...]] = {
+ALLOWED_ACTIONS_BY_DISPLAYED_STATUS: typing.Final[
+    dict[CollectiveOfferDisplayedStatus, tuple[CollectiveOfferAllowedAction, ...]]
+] = {
     CollectiveOfferDisplayedStatus.DRAFT: (
         CollectiveOfferAllowedAction.CAN_EDIT_DETAILS,
         CollectiveOfferAllowedAction.CAN_EDIT_DATES,
@@ -201,8 +203,8 @@ ALLOWED_ACTIONS_BY_DISPLAYED_STATUS: dict[CollectiveOfferDisplayedStatus, tuple[
     CollectiveOfferDisplayedStatus.INACTIVE: (),
 }
 
-TEMPLATE_ALLOWED_ACTIONS_BY_DISPLAYED_STATUS: dict[
-    CollectiveOfferDisplayedStatus, tuple[CollectiveOfferTemplateAllowedAction, ...]
+TEMPLATE_ALLOWED_ACTIONS_BY_DISPLAYED_STATUS: typing.Final[
+    dict[CollectiveOfferDisplayedStatus, tuple[CollectiveOfferTemplateAllowedAction, ...]]
 ] = {
     CollectiveOfferDisplayedStatus.DRAFT: (
         CollectiveOfferTemplateAllowedAction.CAN_EDIT_DETAILS,
@@ -827,20 +829,29 @@ class CollectiveOffer(
     def allowedActions(self) -> list[CollectiveOfferAllowedAction]:
         displayed_status = self.displayedStatus
         allowed_actions = ALLOWED_ACTIONS_BY_DISPLAYED_STATUS[displayed_status]
+        not_allowed: set[CollectiveOfferAllowedAction] = set()
 
-        # an offer that has ended more than 48 hours ago cannot be edited or canceled
+        # an offer that has ended more than 48 hours ago cannot have its price edited or be canceled
         if displayed_status == CollectiveOfferDisplayedStatus.ENDED and self.is_two_days_past_end:
-            return list(
-                action
-                for action in allowed_actions
-                if action
-                not in {
+            not_allowed = not_allowed.union(
+                {
                     CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT,
                     CollectiveOfferAllowedAction.CAN_CANCEL,
                 }
             )
 
-        return list(allowed_actions)
+        # an offer created with the public API can only be edited with the API
+        if self.isPublicApi:
+            not_allowed = not_allowed.union(
+                {
+                    CollectiveOfferAllowedAction.CAN_EDIT_DETAILS,
+                    CollectiveOfferAllowedAction.CAN_EDIT_DATES,
+                    CollectiveOfferAllowedAction.CAN_EDIT_INSTITUTION,
+                    CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT,
+                }
+            )
+
+        return [action for action in allowed_actions if action not in not_allowed]
 
     @property
     def subcategory(self) -> subcategories.Subcategory | None:
