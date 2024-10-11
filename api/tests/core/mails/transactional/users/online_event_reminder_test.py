@@ -31,16 +31,16 @@ class OnlineEventReminderTest:
             url="http://example.com/offer/1", subcategoryId=subcategories.CONFERENCE.id
         )
         # Event happening in less than 1 hour
-        offers_factories.EventStockFactory(beginningDatetime=self.in_50_minutes, offer=online_conference)
+        stock_50m = offers_factories.EventStockFactory(beginningDatetime=self.in_50_minutes, offer=online_conference)
         # Event happening in less than 30 minutes
-        offers_factories.EventStockFactory(beginningDatetime=self.in_20_minutes, offer=online_conference)
+        stock_20m = offers_factories.EventStockFactory(beginningDatetime=self.in_20_minutes, offer=online_conference)
         # Event happening in more than 1 hour
-        offers_factories.EventStockFactory(beginningDatetime=self.in_2_hours, offer=online_conference)
+        stock_2h = offers_factories.EventStockFactory(beginningDatetime=self.in_2_hours, offer=online_conference)
 
         # All events are booked
-        bookings_factories.BookingFactory(stock=online_conference.stocks[0])
-        bookings_factories.BookingFactory(stock=online_conference.stocks[1])
-        bookings_factories.BookingFactory(stock=online_conference.stocks[2])
+        bookings_factories.BookingFactory(stock=stock_50m)
+        bookings_factories.BookingFactory(stock=stock_20m)
+        bookings_factories.BookingFactory(stock=stock_2h)
 
         query = online_event_reminder._get_online_bookings_happening_soon()
 
