@@ -37,12 +37,12 @@ describe('Create individual offers', () => {
       password: password,
       redirectUrl: '/',
     })
-    cy.findAllByTestId('spinner').should('not.exist')
-
     cy.stepLog({
       message: 'I want to create "Un évènement physique daté" offer',
     })
-    cy.findAllByText('Créer une offre').first().click()
+    cy.findAllByText('Créer une offre', { timeout: 60 * 1000 })
+      .first()
+      .click()
 
     cy.findByText('Au grand public').click()
     cy.findByText('Un évènement physique daté').click()
@@ -181,18 +181,10 @@ describe('Create individual offers', () => {
 
     cy.stepLog({ message: 'I go to the offers list' })
     cy.findByText('Voir la liste des offres').click()
-    cy.wait(
-      [
-        '@getOfferersNames',
-        '@getOffer',
-        '@getCategories',
-        '@getVenuesForOfferer',
-      ],
-      {
-        requestTimeout: 60 * 1000 * 5,
-        responseTimeout: 60 * 1000 * 5,
-      }
-    )
+    cy.wait(['@getOfferersNames', '@getOffer', '@getCategories'], {
+      requestTimeout: 60 * 1000 * 3,
+      responseTimeout: 60 * 1000 * 3,
+    })
 
     cy.stepLog({ message: 'my new offer should be displayed' })
     cy.url().should('contain', '/offres')
@@ -211,8 +203,9 @@ describe('Create individual offers', () => {
       password: password,
       redirectUrl: '/',
     })
-    cy.findAllByTestId('spinner').should('not.exist')
-    cy.findAllByText('Créer une offre').first().click()
+    cy.findAllByText('Créer une offre', { timeout: 60 * 1000 })
+      .first()
+      .click()
 
     cy.stepLog({ message: 'I want to create "Un bien physique" offer' })
     cy.findByText('Au grand public').click()
@@ -277,7 +270,9 @@ describe('Create individual offers', () => {
 
     cy.stepLog({ message: 'I validate offer useful informations step' })
     cy.findByText('Enregistrer et continuer').click()
-    cy.wait(['@getOffer', '@patchOffer'])
+    cy.wait(['@getOffer', '@patchOffer', '@getStocks'], {
+      responseTimeout: 60 * 1000 * 3,
+    })
 
     cy.stepLog({ message: 'I fill in stocks' })
     cy.get('#price').type('42')
@@ -302,18 +297,11 @@ describe('Create individual offers', () => {
 
     cy.stepLog({ message: 'I go to the offers list' })
     cy.findByText('Voir la liste des offres').click()
-    cy.wait(
-      [
-        '@getOfferersNames',
-        '@getOffer',
-        '@getCategories',
-        '@getVenuesForOfferer',
-      ],
-      {
-        requestTimeout: 60 * 1000 * 5,
-        responseTimeout: 60 * 1000 * 5,
-      }
-    )
+    cy.url().should('contain', '/offres')
+    cy.wait(['@getOfferersNames', '@getOffer', '@getCategories'], {
+      requestTimeout: 60 * 1000 * 3,
+      responseTimeout: 60 * 1000 * 3,
+    })
 
     cy.stepLog({ message: 'my new physical offer should be displayed' })
     cy.contains('H2G2 Le Guide du voyageur galactique')
