@@ -53,6 +53,7 @@ describe('Search individual offers', () => {
   })
 
   it('A search with a name should display expected results', () => {
+    cy.stepLog({ message: 'I am logged in' })
     cy.login({
       email: login,
       password: password,
@@ -64,16 +65,16 @@ describe('Search individual offers', () => {
     })
     cy.findAllByTestId('spinner').should('not.exist')
 
-    // I search with the text "Une super offre"
+    cy.stepLog({ message: 'I search with the text "Une super offre"' })
     cy.findByPlaceholderText('Rechercher par nom d’offre ou par EAN-13').type(
       offerName1
     )
 
-    // I validate my filters
+    cy.stepLog({ message: 'I validate my filters' })
     cy.findByText('Rechercher').click()
     cy.wait('@searchOffers').its('response.statusCode').should('eq', 200)
 
-    // These results should be displayed
+    cy.stepLog({ message: 'These results should be displayed' })
     const expectedResults = [
       ['', '', 'Titre', 'Lieu', 'Stocks', 'Status'],
       ['', '', offerName1, venueName, '1 000', 'publiée'],
@@ -87,6 +88,8 @@ describe('Search individual offers', () => {
 
   it('A search with a EAN should display expected results', () => {
     const ean = '1234567891234'
+
+    cy.stepLog({ message: 'I am logged in' })
     cy.login({
       email: login,
       password: password,
@@ -98,16 +101,16 @@ describe('Search individual offers', () => {
     })
     cy.findAllByTestId('spinner').should('not.exist')
 
-    // I search with the text "1234567891234"
+    cy.stepLog({ message: 'I search with the text:' + ean })
     cy.findByPlaceholderText('Rechercher par nom d’offre ou par EAN-13').type(
       ean
     )
 
-    // I validate my filters
+    cy.stepLog({ message: 'I validate my filters' })
     cy.findByText('Rechercher').click()
     cy.wait('@searchOffers').its('response.statusCode').should('eq', 200)
 
-    // This results should be displayed
+    cy.stepLog({ message: 'These results should be displayed' })
     const expectedResults = [
       ['', '', 'Titre', 'Lieu', 'Stocks', 'Status'],
       ['', '', offerName2 + ean, venueName, '1 000', 'publiée'],
@@ -120,6 +123,7 @@ describe('Search individual offers', () => {
   })
 
   it('A search with "Catégories" filter should display expected results', () => {
+    cy.stepLog({ message: 'I am logged in' })
     cy.login({
       email: login,
       password: password,
@@ -131,14 +135,14 @@ describe('Search individual offers', () => {
     })
     cy.findAllByTestId('spinner').should('not.exist')
 
-    // I select "Instrument de musique" in "Catégories"
+    cy.stepLog({ message: 'I select "Instrument de musique" in "Catégories"' })
     cy.findByLabelText('Catégories').select('Instrument de musique')
 
-    // I validate my filters
+    cy.stepLog({ message: 'I validate my filters' })
     cy.findByText('Rechercher').click()
     cy.wait('@searchOffers').its('response.statusCode').should('eq', 200)
 
-    // These results should be displayed
+    cy.stepLog({ message: 'These results should be displayed' })
     const expectedResults = [
       ['', '', 'Titre', 'Lieu', 'Stocks', 'Status'],
       ['', '', offerName3, venueName, '1 000', 'publiée'],
@@ -151,6 +155,7 @@ describe('Search individual offers', () => {
   })
 
   it('A search by offer status should display expected results', () => {
+    cy.stepLog({ message: 'I am logged in' })
     cy.login({
       email: login,
       password: password,
@@ -162,16 +167,16 @@ describe('Search individual offers', () => {
     })
     cy.findAllByTestId('spinner').should('not.exist')
 
-    // I select "Publiée" in offer status
+    cy.stepLog({ message: 'I select "Publiée" in offer status' })
     cy.findByTestId('wrapper-status').within(() => {
       cy.get('select').select('Publiée')
     })
 
-    // I validate my filters
+    cy.stepLog({ message: 'I validate my filters' })
     cy.findByText('Rechercher').click()
     cy.wait('@searchOffers').its('response.statusCode').should('eq', 200)
 
-    // These results should be displayed
+    cy.stepLog({ message: 'These results should be displayed' })
     const expectedResults = [
       ['', '', 'Titre', 'Lieu', 'Stocks', 'Status'],
       ['', '', offerName6, venueName, '1 000', 'publiée'],
@@ -189,6 +194,7 @@ describe('Search individual offers', () => {
   })
 
   it('A search by date should display expected results', () => {
+    cy.stepLog({ message: 'I am logged in' })
     cy.login({
       email: login,
       password: password,
@@ -200,16 +206,16 @@ describe('Search individual offers', () => {
     })
     cy.findAllByTestId('spinner').should('not.exist')
 
-    // I select a date in one month
+    cy.stepLog({ message: 'I select a date in one month' })
     const dateSearch = format(addDays(new Date(), 30), 'yyyy-MM-dd')
     cy.findByLabelText('Début de la période').type(dateSearch)
     cy.findByLabelText('Fin de la période').type(dateSearch)
 
-    // I validate my filters
+    cy.stepLog({ message: 'I validate my filters' })
     cy.findByText('Rechercher').click()
     cy.wait('@searchOffers').its('response.statusCode').should('eq', 200)
 
-    // These results should be displayed
+    cy.stepLog({ message: 'These results should be displayed' })
     const expectedResults = [
       ['', '', 'Titre', 'Lieu', 'Stocks', 'Status'],
       ['', '', offerName4, venueName, '1 000', 'publiée'],
@@ -222,6 +228,7 @@ describe('Search individual offers', () => {
   })
 
   it('A search combining several filters should display expected results', () => {
+    cy.stepLog({ message: 'I am logged in' })
     cy.login({
       email: login,
       password: password,
@@ -234,31 +241,31 @@ describe('Search individual offers', () => {
 
     cy.findAllByTestId('spinner').should('not.exist')
 
-    // I search with the text "Livre"
+    cy.stepLog({ message: 'I search with the text "Livre"' })
     cy.findByPlaceholderText('Rechercher par nom d’offre ou par EAN-13').type(
       'incroyable'
     )
 
-    // I validate my filters)
+    cy.stepLog({ message: 'I validate my filters' })
     cy.findByText('Rechercher').click()
     cy.wait('@searchOffers').its('response.statusCode').should('eq', 200)
 
-    // I select "Livre" in "Catégories"
+    cy.stepLog({ message: 'I select "Livre" in "Catégories"' })
     cy.findByLabelText('Catégories').select('Livre')
 
-    // I select "Librairie 10" in "Lieu"
+    cy.stepLog({ message: 'I select "Librairie 10" in "Lieu"' })
     cy.findByLabelText('Lieu').select(venueName)
 
-    // I select "Publiée" in offer status
+    cy.stepLog({ message: 'I select "Publiée" in offer status' })
     cy.findByTestId('wrapper-status').within(() => {
       cy.get('select').select('Publiée')
     })
 
-    // I validate my filters
+    cy.stepLog({ message: 'I validate my filters' })
     cy.findByText('Rechercher').click()
     cy.wait('@searchOffers').its('response.statusCode').should('eq', 200)
 
-    // These 2 results should be displayed
+    cy.stepLog({ message: 'These 2 results should be displayed' })
     const expectedResults = [
       ['', '', 'Titre', 'Lieu', 'Stocks', 'Status'],
       ['', '', offerName6, venueName, '1 000', 'publiée'],
@@ -270,10 +277,10 @@ describe('Search individual offers', () => {
 
     expectOffersAreFound(expectedResults)
 
-    // I reset all filters
+    cy.stepLog({ message: 'I reset all filters' })
     cy.findByText('Réinitialiser les filtres').click()
 
-    // All filters are empty
+    cy.stepLog({ message: 'All filters are empty' })
     cy.findByPlaceholderText('Rechercher par nom d’offre ou par EAN-13').should(
       'be.empty'
     )
@@ -292,7 +299,7 @@ describe('Search individual offers', () => {
     cy.findByLabelText('Début de la période').invoke('val').should('be.empty')
     cy.findByLabelText('Fin de la période').invoke('val').should('be.empty')
 
-    // These results should be displayed
+    cy.stepLog({ message: 'These results should be displayed' })
     const expectedResults2 = [
       ['', '', 'Titre', 'Lieu', 'Stocks', 'Status'],
       ['', '', offerName7, venueName, '0', 'épuisée'],

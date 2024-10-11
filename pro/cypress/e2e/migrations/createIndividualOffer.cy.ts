@@ -10,6 +10,7 @@ describe('Create individual offers', () => {
     }).then((response) => {
       login = response.body.user.email
     })
+    cy.stepLog({ message: 'I activate a feature flag "WIP_SPLIT_OFFER"' })
     cy.setFeatureFlags([{ name: 'WIP_SPLIT_OFFER', isActive: true }])
     cy.intercept({ method: 'GET', url: '/offers/*' }).as('getOffer')
     cy.intercept({ method: 'POST', url: '/offers/draft' }).as('postDraftOffer')
@@ -30,21 +31,24 @@ describe('Create individual offers', () => {
   })
 
   it('Should create an individual offer (event)', () => {
-    // When I go to the "Créer une offre" page
+    cy.stepLog({ message: 'I am logged in with account' })
     cy.login({
       email: login,
       password: password,
       redirectUrl: '/',
     })
     cy.findAllByTestId('spinner').should('not.exist')
+
+    cy.stepLog({
+      message: 'I want to create "Un évènement physique daté" offer',
+    })
     cy.findAllByText('Créer une offre').first().click()
 
-    // And I want to create "Un évènement physique daté" offer
     cy.findByText('Au grand public').click()
     cy.findByText('Un évènement physique daté').click()
     cy.findByText('Étape suivante').click()
 
-    // When I fill in event details
+    cy.stepLog({ message: 'I fill in event details' })
     cy.findByLabelText('Titre de l’offre *').type('Le Diner de Devs')
     cy.findByLabelText('Description').type(
       'Une PO invite des développeurs à dîner...'
@@ -54,19 +58,19 @@ describe('Create individual offers', () => {
     cy.findByLabelText('Type de spectacle *').select('Théâtre')
     cy.findByLabelText('Sous-type *').select('Comédie')
 
-    // When I validate event details step
+    cy.stepLog({ message: 'I validate event details step' })
     cy.findByText('Enregistrer et continuer').click()
     cy.wait(['@getOffer', '@postDraftOffer'])
 
-    // When I fill in event useful informations
+    cy.stepLog({ message: 'I fill in event useful informations' })
     cy.findByText('Retrait sur place (guichet, comptoir...)').click()
     cy.findByLabelText('Email de contact *').type('passculture@example.com')
 
-    // When I validate event useful informations step
+    cy.stepLog({ message: 'I validate event useful informations step' })
     cy.findByText('Enregistrer et continuer').click()
     cy.wait(['@getOffer', '@patchOffer'])
 
-    // When I fill in prices
+    cy.stepLog({ message: 'I fill in prices' })
     cy.findByLabelText('Intitulé du tarif *').should(
       'have.value',
       'Tarif unique'
@@ -101,13 +105,13 @@ describe('Create individual offers', () => {
 
     cy.findByText('Accepter les réservations “Duo“').should('exist')
 
-    // When I validate prices step
+    cy.stepLog({ message: 'I validate prices step' })
     cy.findByText('Enregistrer et continuer').click()
     cy.wait(['@patchOffer', '@getOffer', '@getStocks'], {
       responseTimeout: 60 * 1000 * 3,
     })
 
-    // When I fill in recurrence
+    cy.stepLog({ message: 'I fill in recurrence' })
     cy.findByText('Ajouter une ou plusieurs dates').click()
 
     cy.findByText('Toutes les semaines').click()
@@ -158,14 +162,14 @@ describe('Create individual offers', () => {
     // manque un data-testid ou un placeholder ou un label accessible
     cy.get('[name="bookingLimitDateInterval"]').type('3')
 
-    // When I validate recurrence step
+    cy.stepLog({ message: 'I validate recurrence step' })
     cy.findByText('Valider').click()
     cy.wait(['@postStocks'])
 
     cy.findByText('Enregistrer et continuer').click()
     cy.contains('Accepter les réservations "Duo" : Oui')
 
-    // When I publish my offer
+    cy.stepLog({ message: 'I publish my offer' })
     cy.findByText('Publier l’offre').click()
     cy.findByText('Plus tard').click()
     cy.wait('@publishOffer', {
@@ -175,7 +179,7 @@ describe('Create individual offers', () => {
     })
     cy.wait('@getOffer', { timeout: 60000 })
 
-    // When I go to the offers list
+    cy.stepLog({ message: 'I go to the offers list' })
     cy.findByText('Voir la liste des offres').click()
     cy.wait(
       [
@@ -190,7 +194,7 @@ describe('Create individual offers', () => {
       }
     )
 
-    // Then my new offer should be displayed
+    cy.stepLog({ message: 'my new offer should be displayed' })
     cy.url().should('contain', '/offres')
     cy.contains('Le Diner de Devs')
     cy.contains('396 dates')
@@ -201,7 +205,7 @@ describe('Create individual offers', () => {
     const offerDesc =
       'Une quête pour obtenir la question ultime sur la vie, l’univers et tout le reste.'
 
-    // When I go to the "Créer une offre" page
+    cy.stepLog({ message: 'I am logged in with account' })
     cy.login({
       email: login,
       password: password,
@@ -210,12 +214,12 @@ describe('Create individual offers', () => {
     cy.findAllByTestId('spinner').should('not.exist')
     cy.findAllByText('Créer une offre').first().click()
 
-    // And I want to create "Un bien physique" offer
+    cy.stepLog({ message: 'I want to create "Un bien physique" offer' })
     cy.findByText('Au grand public').click()
     cy.findByText('Un bien physique').click()
     cy.findByText('Étape suivante').click()
 
-    // When('I fill in details for physical offer', () => {
+    cy.stepLog({ message: 'I fill in details for physical offer' })
     cy.findByLabelText('Titre de l’offre *').type(offerTitle)
     cy.findByLabelText('Description').type(offerDesc)
 
@@ -240,7 +244,7 @@ describe('Create individual offers', () => {
     cy.findByText('Suivant').click()
     cy.findByText('Enregistrer').click()
 
-    // Then the details of offer should be correct
+    cy.stepLog({ message: 'the details of offer should be correct' })
     cy.findByLabelText('Titre de l’offre *').should('have.value', offerTitle)
     cy.findByLabelText('Description').should('have.text', offerDesc)
 
@@ -256,11 +260,11 @@ describe('Create individual offers', () => {
         .and('eq', 705)
     })
 
-    // When I validate offer details step
+    cy.stepLog({ message: 'I validate offer details step' })
     cy.findByText('Enregistrer et continuer').click()
     cy.wait(['@getOffer', '@postDraftOffer'])
 
-    // When I fill in useful informations for physical offer
+    cy.stepLog({ message: 'I fill in useful informations for physical offer' })
     cy.findByLabelText('Informations de retrait').type(
       'Seuls les dauphins et les souris peuvent le lire.'
     )
@@ -271,22 +275,22 @@ describe('Create individual offers', () => {
 
     cy.findByText('Être notifié par email des réservations').click()
 
-    // When I validate offer useful informations step
+    cy.stepLog({ message: 'I validate offer useful informations step' })
     cy.findByText('Enregistrer et continuer').click()
     cy.wait(['@getOffer', '@patchOffer'])
 
-    // When I fill in stocks
+    cy.stepLog({ message: 'I fill in stocks' })
     cy.get('#price').type('42')
     cy.get('#bookingLimitDatetime').type('2042-05-03')
     cy.get('#quantity').type('42')
 
-    // When I validate stocks step
+    cy.stepLog({ message: 'I validate stocks step' })
     cy.findByText('Enregistrer et continuer').click()
     cy.wait(['@patchOffer', '@postStocks', '@getOffer'], {
       responseTimeout: 30 * 1000,
     })
 
-    // When I publish my offer
+    cy.stepLog({ message: 'I publish my offer' })
     cy.findByText('Publier l’offre').click()
     cy.findByText('Plus tard').click()
     cy.wait('@publishOffer', {
@@ -296,7 +300,7 @@ describe('Create individual offers', () => {
     })
     cy.wait('@getOffer', { timeout: 60000 })
 
-    // When I go to the offers list
+    cy.stepLog({ message: 'I go to the offers list' })
     cy.findByText('Voir la liste des offres').click()
     cy.wait(
       [
@@ -311,7 +315,7 @@ describe('Create individual offers', () => {
       }
     )
 
-    // Then my new physical offer should be displayed
+    cy.stepLog({ message: 'my new physical offer should be displayed' })
     cy.contains('H2G2 Le Guide du voyageur galactique')
     cy.get('@ean').then((ean) => {
       cy.contains(ean.toString())

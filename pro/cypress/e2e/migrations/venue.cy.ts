@@ -23,19 +23,19 @@ describe('Create and update venue', () => {
 
   it('A pro user can add a venue without SIRET', () => {
     const venueNameWithoutSiret = 'Lieu sans Siret'
-
+    cy.stepLog({ message: 'I am logged in' })
     cy.login({
       email: login,
       password: password,
     })
 
-    // I want to add a venue
+    cy.stepLog({ message: 'I want to add a venue' })
     cy.findByText('Ajouter un lieu', { timeout: 60 * 1000 }).click()
 
-    // I choose a venue which already has a Siret
+    cy.stepLog({ message: 'I choose a venue which already has a Siret' })
     cy.findByText('Ce lieu possède un SIRET').click()
 
-    // I add venue without Siret details
+    cy.stepLog({ message: 'I add venue without Siret details' })
     cy.findByLabelText('Commentaire du lieu sans SIRET *').type(
       'Commentaire du lieu sans SIRET'
     )
@@ -49,17 +49,17 @@ describe('Create and update venue', () => {
     cy.findByText('Visuel').click()
     cy.findByLabelText('Adresse email *').type('email@example.com')
 
-    // I validate venue step
+    cy.stepLog({ message: 'I validate venue step' })
     cy.findByText('Enregistrer et créer le lieu').click()
     cy.wait('@postVenues', { timeout: 60 * 1000 })
       .its('response.statusCode')
       .should('eq', 201)
 
-    // I skip offer creation
+    cy.stepLog({ message: 'I skip offer creation' })
     cy.findByText('Plus tard').click()
     cy.url().should('contain', 'accueil')
 
-    // I open my venue without Siret resume
+    cy.stepLog({ message: 'I open my venue without Siret resume' })
     cy.findByRole('link', {
       name: 'Gérer la page de ' + venueNameWithoutSiret,
     }).click()
@@ -67,7 +67,7 @@ describe('Create and update venue', () => {
     cy.findAllByTestId('spinner').should('not.exist')
     cy.contains(venueNameWithoutSiret).should('be.visible')
 
-    // I add an image to my venue
+    cy.stepLog({ message: 'I add an image to my venue' })
     cy.findByText('Ajouter une image').click()
     cy.get('input[type=file]').selectFile('cypress/data/dog.jpg', {
       force: true,
@@ -81,11 +81,13 @@ describe('Create and update venue', () => {
       'Prévisualisation de votre image dans l’application pass Culture'
     )
     cy.findByText('Enregistrer').click()
+
+    cy.stepLog({ message: 'I should see a success message' })
     cy.findByTestId('global-notification-success', {
       timeout: 30 * 1000,
     }).should('contain', 'Vos modifications ont bien été prises en compte')
 
-    // I should see details of my venue
+    cy.stepLog({ message: 'I should see details of my venue' })
     cy.contains(venueNameWithoutSiret)
     cy.findByText('Modifier l’image').should('be.visible')
   })
@@ -112,37 +114,38 @@ describe('Create and update venue', () => {
       })
     ).as('getSiretVenue')
 
+    cy.stepLog({ message: 'I am logged in' })
     cy.login({
       email: login,
       password: password,
     })
 
-    // I want to add a venue
+    cy.stepLog({ message: 'I want to add a venue' })
     cy.findByText('Ajouter un lieu', { timeout: 60 * 1000 }).click()
 
-    // I add a valid Siret
+    cy.stepLog({ message: 'I add a valid Siret' })
     cy.findByLabelText('SIRET du lieu *').type(siret + '{enter}')
     cy.wait(['@getSiretVenue', '@searchAddress'])
     cy.findByTestId('error-siret').should('not.exist')
 
-    // I add venue with Siret details
+    cy.stepLog({ message: 'I add venue with Siret details' })
     cy.findByLabelText('Nom public').type(venueNameWithSiret)
     cy.findByLabelText('Activité principale *').select('Festival')
     cy.findByText('Moteur').click()
     cy.findByText('Auditif').click()
     cy.findByLabelText('Adresse email *').type('email@example.com')
 
-    // I validate venue step
+    cy.stepLog({ message: 'I validate venue step' })
     cy.findByText('Enregistrer et créer le lieu').click()
     cy.wait('@postVenues', { timeout: 60 * 1000 })
       .its('response.statusCode')
       .should('eq', 201)
 
-    // I skip offer creation
+    cy.stepLog({ message: 'I skip offer creation' })
     cy.findByText('Plus tard').click()
     cy.url().should('contain', 'accueil')
 
-    // I should see my venue with Siret resume
+    cy.stepLog({ message: 'I should see my venue with Siret resume' })
     cy.reload() // newly created venue sometimes not displayed
     cy.findByRole('link', {
       name: 'Gérer la page de ' + venueNameWithSiret + '',
@@ -151,12 +154,13 @@ describe('Create and update venue', () => {
   })
 
   it('It should update a venue', () => {
+    cy.stepLog({ message: 'I am logged in' })
     cy.login({
       email: login,
       password: password,
     })
 
-    // I go to the venue page in Individual section
+    cy.stepLog({ message: 'I go to the venue page in Individual section' })
     cy.findByText('Votre page partenaire', { timeout: 60 * 1000 })
       .scrollIntoView()
       .should('be.visible')
@@ -165,7 +169,7 @@ describe('Create and update venue', () => {
     cy.findByText('À propos de votre activité').should('be.visible')
     cy.findByText('Modifier').click()
 
-    // I update Individual section data
+    cy.stepLog({ message: 'I update Individual section data' })
     cy.findAllByLabelText('Description')
       .clear()
       .type('On peut ajouter des choses, vraiment fantastique !!!')
@@ -175,14 +179,14 @@ describe('Create and update venue', () => {
     cy.findByText('Enregistrer').click()
     cy.wait('@patchVenue')
 
-    // Individual section data should be updated
+    cy.stepLog({ message: 'Individual section data should be updated' })
     cy.url().should('include', '/structures').and('include', '/lieux')
     cy.findByText('Vos informations pour le grand public').should('be.visible')
     cy.findByText(
       'On peut ajouter des choses, vraiment fantastique !!!'
     ).should('be.visible')
 
-    // I go to the venue page in Paramètres généraux
+    cy.stepLog({ message: 'I go to the venue page in Paramètres généraux' })
     cy.findAllByTestId('spinner').should('not.exist')
     cy.findByText('Paramètres généraux').click()
     cy.url()
@@ -191,7 +195,7 @@ describe('Create and update venue', () => {
       .and('include', '/parametres')
     cy.findAllByTestId('spinner').should('not.exist')
 
-    // I update Paramètres généraux data
+    cy.stepLog({ message: 'I update Paramètres généraux data' })
     cy.findByLabelText(
       'Label du ministère de la Culture ou du Centre national du cinéma et de l’image animée'
     ).select('Musée de France')
@@ -204,13 +208,13 @@ describe('Create and update venue', () => {
     cy.wait('@patchVenue')
     cy.findAllByTestId('spinner').should('not.exist')
 
-    // I go to the venue page in Paramètres généraux
+    cy.stepLog({ message: 'I go to the venue page in Paramètres généraux' })
     cy.url().should('not.include', '/parametres')
     cy.findByText('Paramètres généraux').click()
     cy.url().should('include', '/parametres')
     cy.findAllByTestId('spinner').should('not.exist')
 
-    // Paramètres généraux data should be updated
+    cy.stepLog({ message: 'paramètres généraux data should be updated' })
     cy.findByText(
       'En main bien propres, avec un masque et un gel hydroalcoolique, didiou !'
     )
