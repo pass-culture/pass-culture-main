@@ -47,4 +47,26 @@ describe('trimStringsInObject', () => {
       },
     })
   })
+
+  it('should handle circular references', () => {
+    const circularObj = {
+      one: ' one ',
+      two: {
+        three: 3,
+        four: ' four ',
+        five: undefined,
+      },
+    } as Record<string, any>
+    // Makes a circular reference
+    circularObj.two.five = circularObj
+
+    expect(() => trimStringsInObject(circularObj)).not.toThrow()
+
+    const result = trimStringsInObject(circularObj)
+
+    expect(result.one).toBe('one')
+    expect(result.two.four).toBe('four')
+    expect(result.two.three).toBe(3)
+    expect(result.two.five).toBe(circularObj)
+  })
 })
