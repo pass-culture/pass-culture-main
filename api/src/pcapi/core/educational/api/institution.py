@@ -247,7 +247,10 @@ def get_offers_for_my_institution(uai: str) -> BaseQuery:
             sa.orm.joinedload(educational_models.CollectiveOffer.nationalProgram),
             sa.orm.joinedload(educational_models.CollectiveOffer.domains),
         )
-        .filter(educational_models.EducationalInstitution.institutionId == uai)
+        .filter(
+            educational_models.EducationalInstitution.institutionId == uai,
+            educational_models.CollectiveOffer.isArchived == False,
+        )
     )
 
 
