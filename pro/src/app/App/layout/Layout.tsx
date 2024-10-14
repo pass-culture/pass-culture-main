@@ -14,18 +14,16 @@ import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { LateralPanel } from './LateralPanel/LateralPanel'
 import styles from './Layout.module.scss'
 
-export interface LayoutMainHeading {
-  text: string
-  className?: string
-}
-
 export interface LayoutProps {
   children?: React.ReactNode
   /**
    * Name of the page to display in the main heading.
    * Make sure that only one heading is displayed per page.
    */
-  mainHeading?: LayoutMainHeading
+  mainHeading?: {
+    text: string
+    className?: string
+  }
   layout?: 'basic' | 'funnel' | 'without-nav' | 'sticky-actions'
 }
 
