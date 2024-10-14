@@ -6,13 +6,15 @@ import styles from './MultiyearScheme.module.scss'
 
 export const MultiyearScheme = () => {
   return (
-    <AccessibilityLayout>
+    <AccessibilityLayout
+      mainHeading={{
+        text: 'Schéma pluriannuel d’accessibilité 2024 - 2025',
+        className: styles['heading1-scheme'],
+      }}
+    >
       <ButtonLink to="/accessibilite/" icon={fullBackIcon}>
         Retour vers la page Informations d’accessibilité
       </ButtonLink>
-      <h1 className={styles['heading1-scheme']}>
-        Schéma pluriannuel d’accessibilité 2024 - 2025
-      </h1>
       <h2 className={styles['heading2']}>INTRODUCTION</h2>
       <p className={styles['paragraph']}>
         L’article 47 de la loi n° 2005-102 du 11 février 2005 pour l’égalité des

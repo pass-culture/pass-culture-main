@@ -7,11 +7,10 @@ import styles from './AccessibilityMenu.module.scss'
 
 export function AccessibilityMenu() {
   return (
-    <AccessibilityLayout showBackToSignInButton>
-      <h1 className={styles['title-accessibility']}>
-        Informations d’accessibilité
-      </h1>
-
+    <AccessibilityLayout
+      mainHeading={{ text: 'Informations d’accessibilité' }}
+      showBackToSignInButton
+    >
       <div className={styles['menu-accessibility']}>
         <ButtonLink
           to="/accessibilite/engagements"
