@@ -39,6 +39,7 @@ export const Header = forwardRef(
         <div className={styles['top-menu-content']}>
           {!disableHomeLink && (
             <Button
+              id="header-nav-toggle"
               ref={openButtonRef}
               aria-expanded={lateralPanelOpen}
               className={styles['burger-icon']}
