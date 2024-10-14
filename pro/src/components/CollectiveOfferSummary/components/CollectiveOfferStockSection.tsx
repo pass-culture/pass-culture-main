@@ -1,11 +1,11 @@
 import React from 'react'
 
 import { GetCollectiveOfferCollectiveStockResponseModel } from 'apiClient/v1'
+import { FORMAT_DD_MM_YYYY, FORMAT_HH_mm } from 'commons/utils/date'
 import { SummaryDescriptionList } from 'components/SummaryLayout/SummaryDescriptionList'
 import { SummarySubSection } from 'components/SummaryLayout/SummarySubSection'
 import { TOTAL_PRICE_LABEL } from 'screens/OfferEducationalStock/constants/labels'
 import { Divider } from 'ui-kit/Divider/Divider'
-import { FORMAT_DD_MM_YYYY, FORMAT_HH_mm } from 'utils/date'
 
 import { DEFAULT_RECAP_VALUE } from './constants'
 import { formatDateTime } from './utils/formatDatetime'

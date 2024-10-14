@@ -9,6 +9,16 @@ import {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
 } from 'apiClient/v1'
+import { MAX_DETAILS_LENGTH } from 'commons/core/OfferEducational/constants'
+import {
+  OfferEducationalStockFormValues,
+  isCollectiveOffer,
+  Mode,
+  EducationalOfferType,
+  isCollectiveOfferTemplate,
+} from 'commons/core/OfferEducational/types'
+import { NBSP } from 'commons/core/shared/constants'
+import { isDateValid } from 'commons/utils/date'
 import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
 import { BannerPublicApi } from 'components/Banner/BannerPublicApi'
 import { Callout } from 'components/Callout/Callout'
@@ -17,21 +27,11 @@ import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OfferEducationalActions } from 'components/OfferEducationalActions/OfferEducationalActions'
 import { RouteLeavingGuardCollectiveOfferCreation } from 'components/RouteLeavingGuardCollectiveOfferCreation/RouteLeavingGuardCollectiveOfferCreation'
 import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
-import { MAX_DETAILS_LENGTH } from 'core/OfferEducational/constants'
-import {
-  OfferEducationalStockFormValues,
-  isCollectiveOffer,
-  Mode,
-  EducationalOfferType,
-  isCollectiveOfferTemplate,
-} from 'core/OfferEducational/types'
-import { NBSP } from 'core/shared/constants'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { DatePicker } from 'ui-kit/form/DatePicker/DatePicker'
 import { TextArea } from 'ui-kit/form/TextArea/TextArea'
-import { isDateValid } from 'utils/date'
 
 import {
   BOOKING_LIMIT_DATETIME_LABEL,

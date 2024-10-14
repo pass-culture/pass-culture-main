@@ -6,7 +6,6 @@
  * A venue that is already linked to a bank account.
  */
 export type LinkedVenues = {
-  commonName: string;
-  id: number;
-};
-
+  commonName: string
+  id: number
+}

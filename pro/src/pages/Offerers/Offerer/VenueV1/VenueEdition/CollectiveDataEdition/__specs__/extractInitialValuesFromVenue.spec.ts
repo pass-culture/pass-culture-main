@@ -1,5 +1,5 @@
 import { GetVenueResponseModel, StudentLevels } from 'apiClient/v1'
-import { defaultGetVenue } from 'utils/collectiveApiFactories'
+import { defaultGetVenue } from 'commons/utils/collectiveApiFactories'
 
 import { COLLECTIVE_DATA_FORM_INITIAL_VALUES } from '../CollectiveDataForm/initialValues'
 import { extractInitialValuesFromVenue } from '../CollectiveDataForm/utils/extractInitialValuesFromVenue'

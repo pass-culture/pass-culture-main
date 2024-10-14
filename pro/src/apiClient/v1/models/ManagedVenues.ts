@@ -3,11 +3,10 @@
 /* tslint:disable */
 /* eslint-disable */
 export type ManagedVenues = {
-  bankAccountId?: number | null;
-  commonName: string;
-  hasPricingPoint: boolean;
-  id: number;
-  name: string;
-  siret?: string | null;
-};
-
+  bankAccountId?: number | null
+  commonName: string
+  hasPricingPoint: boolean
+  id: number
+  name: string
+  siret?: string | null
+}

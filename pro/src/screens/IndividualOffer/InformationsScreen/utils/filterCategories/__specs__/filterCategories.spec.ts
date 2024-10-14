@@ -2,11 +2,11 @@ import { CategoryResponseModel, SubcategoryResponseModel } from 'apiClient/v1'
 import {
   CATEGORY_STATUS,
   INDIVIDUAL_OFFER_SUBTYPE,
-} from 'core/Offers/constants'
+} from 'commons/core/Offers/constants'
 import {
   categoryFactory,
   subcategoryFactory,
-} from 'utils/individualApiFactories'
+} from 'commons/utils/individualApiFactories'
 
 import {
   getOfferSubtypeFromParam,

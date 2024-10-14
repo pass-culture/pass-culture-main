@@ -3,12 +3,11 @@
 /* tslint:disable */
 /* eslint-disable */
 export type PostDraftOfferBodyModel = {
-  description?: string | null;
-  durationMinutes?: number | null;
-  extraData?: any;
-  name: string;
-  productId?: number | null;
-  subcategoryId: string;
-  venueId: number;
-};
-
+  description?: string | null
+  durationMinutes?: number | null
+  extraData?: any
+  name: string
+  productId?: number | null
+  subcategoryId: string
+  venueId: number
+}

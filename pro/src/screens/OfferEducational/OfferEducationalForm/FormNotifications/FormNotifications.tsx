@@ -1,7 +1,7 @@
 import { FieldArray, useFormikContext } from 'formik'
 
+import { OfferEducationalFormValues } from 'commons/core/OfferEducational/types'
 import { FormLayout } from 'components/FormLayout/FormLayout'
-import { OfferEducationalFormValues } from 'core/OfferEducational/types'
 import fullMoreIcon from 'icons/full-more.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'

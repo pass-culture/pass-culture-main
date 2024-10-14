@@ -3,7 +3,6 @@
 /* tslint:disable */
 /* eslint-disable */
 export type Coordinates = {
-  latitude?: number | null;
-  longitude?: number | null;
-};
-
+  latitude?: number | null
+  longitude?: number | null
+}

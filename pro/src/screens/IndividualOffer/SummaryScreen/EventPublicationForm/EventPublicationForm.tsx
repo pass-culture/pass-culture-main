@@ -1,7 +1,7 @@
 import { useFormikContext } from 'formik'
 
+import { SelectOption } from 'commons/custom_types/form'
 import { FormLayout } from 'components/FormLayout/FormLayout'
-import { SelectOption } from 'custom_types/form'
 import { Divider } from 'ui-kit/Divider/Divider'
 import { DatePicker } from 'ui-kit/form/DatePicker/DatePicker'
 import { RadioButton } from 'ui-kit/form/RadioButton/RadioButton'

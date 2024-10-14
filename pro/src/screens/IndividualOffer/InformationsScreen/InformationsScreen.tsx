@@ -9,6 +9,19 @@ import {
   GetOffererNameResponseModel,
   VenueListItemResponseModel,
 } from 'apiClient/v1'
+import { GET_OFFER_QUERY_KEY } from 'commons/config/swrQueryKeys'
+import { useIndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
+import {
+  CATEGORY_STATUS,
+  OFFER_WIZARD_MODE,
+} from 'commons/core/Offers/constants'
+import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
+import { isOfferDisabled } from 'commons/core/Offers/utils/isOfferDisabled'
+import { PATCH_SUCCESS_MESSAGE } from 'commons/core/shared/constants'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
+import { useCurrentUser } from 'commons/hooks/useCurrentUser'
+import { useNotification } from 'commons/hooks/useNotification'
+import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
 import { ConfirmDialog } from 'components/Dialog/ConfirmDialog/ConfirmDialog'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { IndividualOfferForm } from 'components/IndividualOfferForm/IndividualOfferForm'
@@ -20,16 +33,6 @@ import { setInitialFormValues } from 'components/IndividualOfferForm/utils/setIn
 import { getValidationSchema } from 'components/IndividualOfferForm/validationSchema'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { RouteLeavingGuardIndividualOffer } from 'components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
-import { GET_OFFER_QUERY_KEY } from 'config/swrQueryKeys'
-import { useIndividualOfferContext } from 'context/IndividualOfferContext/IndividualOfferContext'
-import { CATEGORY_STATUS, OFFER_WIZARD_MODE } from 'core/Offers/constants'
-import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
-import { isOfferDisabled } from 'core/Offers/utils/isOfferDisabled'
-import { PATCH_SUCCESS_MESSAGE } from 'core/shared/constants'
-import { useActiveFeature } from 'hooks/useActiveFeature'
-import { useCurrentUser } from 'hooks/useCurrentUser'
-import { useNotification } from 'hooks/useNotification'
-import { useOfferWizardMode } from 'hooks/useOfferWizardMode'
 import strokeMailIcon from 'icons/stroke-mail.svg'
 
 import { ActionBar } from '../ActionBar/ActionBar'

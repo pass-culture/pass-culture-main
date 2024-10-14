@@ -3,11 +3,10 @@
 /* tslint:disable */
 /* eslint-disable */
 export type LocalOfferersPlaylistOffer = {
-  city?: string | null;
-  distance?: number | null;
-  id: number;
-  imgUrl?: string | null;
-  name: string;
-  publicName?: string | null;
-};
-
+  city?: string | null
+  distance?: number | null
+  id: number
+  imgUrl?: string | null
+  name: string
+  publicName?: string | null
+}

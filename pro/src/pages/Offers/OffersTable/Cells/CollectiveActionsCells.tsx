@@ -13,23 +13,30 @@ import {
   CollectiveOfferStatus,
 } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
-import { ArchiveConfirmationModal } from 'components/ArchiveConfirmationModal/ArchiveConfirmationModal'
-import { canArchiveCollectiveOffer } from 'components/ArchiveConfirmationModal/utils/canArchiveCollectiveOffer'
-import { CancelCollectiveBookingModal } from 'components/CancelCollectiveBookingModal/CancelCollectiveBookingModal'
 import {
   CollectiveBookingsEvents,
   Events,
   OFFER_FROM_TEMPLATE_ENTRIES,
-} from 'core/FirebaseEvents/constants'
-import { NOTIFICATION_LONG_SHOW_DURATION } from 'core/Notification/constants'
-import { createOfferFromBookableOffer } from 'core/OfferEducational/utils/createOfferFromBookableOffer'
-import { createOfferFromTemplate } from 'core/OfferEducational/utils/createOfferFromTemplate'
-import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from 'core/Offers/constants'
-import { CollectiveSearchFiltersParams } from 'core/Offers/types'
-import { getCollectiveOffersSwrKeys } from 'core/Offers/utils/getCollectiveOffersSwrKeys'
-import { useActiveFeature } from 'hooks/useActiveFeature'
-import { useIsNewInterfaceActive } from 'hooks/useIsNewInterfaceActive'
-import { useNotification } from 'hooks/useNotification'
+} from 'commons/core/FirebaseEvents/constants'
+import { NOTIFICATION_LONG_SHOW_DURATION } from 'commons/core/Notification/constants'
+import { createOfferFromBookableOffer } from 'commons/core/OfferEducational/utils/createOfferFromBookableOffer'
+import { createOfferFromTemplate } from 'commons/core/OfferEducational/utils/createOfferFromTemplate'
+import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from 'commons/core/Offers/constants'
+import { CollectiveSearchFiltersParams } from 'commons/core/Offers/types'
+import { getCollectiveOffersSwrKeys } from 'commons/core/Offers/utils/getCollectiveOffersSwrKeys'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
+import { useIsNewInterfaceActive } from 'commons/hooks/useIsNewInterfaceActive'
+import { useNotification } from 'commons/hooks/useNotification'
+import { selectCurrentOffererId } from 'commons/store/user/selectors'
+import {
+  FORMAT_ISO_DATE_ONLY,
+  formatBrowserTimezonedDateAsUTC,
+  isDateValid,
+} from 'commons/utils/date'
+import { localStorageAvailable } from 'commons/utils/localStorageAvailable'
+import { ArchiveConfirmationModal } from 'components/ArchiveConfirmationModal/ArchiveConfirmationModal'
+import { canArchiveCollectiveOffer } from 'components/ArchiveConfirmationModal/utils/canArchiveCollectiveOffer'
+import { CancelCollectiveBookingModal } from 'components/CancelCollectiveBookingModal/CancelCollectiveBookingModal'
 import fullClearIcon from 'icons/full-clear.svg'
 import fullCopyIcon from 'icons/full-duplicate.svg'
 import fullPenIcon from 'icons/full-edit.svg'
@@ -37,17 +44,10 @@ import fullNextIcon from 'icons/full-next.svg'
 import fullPlusIcon from 'icons/full-plus.svg'
 import fullThreeDotsIcon from 'icons/full-three-dots.svg'
 import strokeThingIcon from 'icons/stroke-thing.svg'
-import { selectCurrentOffererId } from 'store/user/selectors'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { ListIconButton } from 'ui-kit/ListIconButton/ListIconButton'
-import {
-  FORMAT_ISO_DATE_ONLY,
-  formatBrowserTimezonedDateAsUTC,
-  isDateValid,
-} from 'utils/date'
-import { localStorageAvailable } from 'utils/localStorageAvailable'
 
 import { BookingLinkCell } from './BookingLinkCell'
 import styles from './Cells.module.scss'

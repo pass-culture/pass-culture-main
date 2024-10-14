@@ -3,12 +3,11 @@
 /* tslint:disable */
 /* eslint-disable */
 export type ProUserCreationBodyV2Model = {
-  contactOk: boolean;
-  email: string;
-  firstName: string;
-  lastName: string;
-  password: string;
-  phoneNumber: string;
-  token: string;
-};
-
+  contactOk: boolean
+  email: string
+  firstName: string
+  lastName: string
+  password: string
+  phoneNumber: string
+  token: string
+}

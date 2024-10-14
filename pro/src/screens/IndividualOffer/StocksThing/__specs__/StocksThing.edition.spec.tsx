@@ -13,19 +13,19 @@ import {
 } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
-import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
-import { Notification } from 'components/Notification/Notification'
-import { IndividualOfferContextProvider } from 'context/IndividualOfferContext/IndividualOfferContext'
-import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
+import { IndividualOfferContextProvider } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
+import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
 import {
   getIndividualOfferPath,
   getIndividualOfferUrl,
-} from 'core/Offers/utils/getIndividualOfferUrl'
-import { PATCH_SUCCESS_MESSAGE } from 'core/shared/constants'
+} from 'commons/core/Offers/utils/getIndividualOfferUrl'
+import { PATCH_SUCCESS_MESSAGE } from 'commons/core/shared/constants'
+import { getOfferStockFactory } from 'commons/utils/individualApiFactories'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
+import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
+import { Notification } from 'components/Notification/Notification'
 import { Stocks } from 'pages/IndividualOfferWizard/Stocks/Stocks'
-import { getOfferStockFactory } from 'utils/individualApiFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 vi.mock('screens/IndividualOffer/Informations/utils', () => {
   return {
@@ -37,9 +37,9 @@ vi.mock('repository/pcapi/pcapi', () => ({
   postThumbnail: vi.fn(),
 }))
 
-vi.mock('utils/date', async () => {
+vi.mock('commons/utils/date', async () => {
   return {
-    ...(await vi.importActual('utils/date')),
+    ...(await vi.importActual('commons/utils/date')),
     getToday: vi
       .fn()
       .mockImplementation(() => new Date('2020-12-15T12:00:00Z')),

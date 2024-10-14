@@ -5,7 +5,7 @@ import {
   CollectiveOfferStatus,
   CollectiveOfferDisplayedStatus,
 } from 'apiClient/v1'
-import { useActiveFeature } from 'hooks/useActiveFeature'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import fullHideIcon from 'icons/full-hide.svg'
 import strokeCalendarIcon from 'icons/stroke-calendar.svg'
 import strokeCheckIcon from 'icons/stroke-check.svg'

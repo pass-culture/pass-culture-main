@@ -8,15 +8,15 @@ import { api } from 'apiClient/api'
 import { ApiError } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
-import { DEFAULT_ADDRESS_FORM_VALUES } from 'components/Address/constants'
-import { Notification } from 'components/Notification/Notification'
 import {
   SignupJourneyContext,
   SignupJourneyContextValues,
-} from 'context/SignupJourneyContext/SignupJourneyContext'
-import * as siretApiValidate from 'core/Venue/siretApiValidate'
-import { renderWithProviders } from 'utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'utils/storeFactories'
+} from 'commons/context/SignupJourneyContext/SignupJourneyContext'
+import * as siretApiValidate from 'commons/core/Venue/siretApiValidate'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
+import { DEFAULT_ADDRESS_FORM_VALUES } from 'components/Address/constants'
+import { Notification } from 'components/Notification/Notification'
 
 import { DEFAULT_OFFERER_FORM_VALUES } from '../constants'
 import { Offerer } from '../Offerer'

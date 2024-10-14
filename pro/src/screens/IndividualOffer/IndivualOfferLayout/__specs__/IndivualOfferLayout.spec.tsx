@@ -3,12 +3,12 @@ import { addDays } from 'date-fns'
 import React from 'react'
 
 import { OfferStatus } from 'apiClient/v1'
-import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
-import { getIndividualOfferFactory } from 'utils/individualApiFactories'
+import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
+import { getIndividualOfferFactory } from 'commons/utils/individualApiFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
-} from 'utils/renderWithProviders'
+} from 'commons/utils/renderWithProviders'
 
 import {
   IndivualOfferLayout,

@@ -3,9 +3,8 @@
 /* tslint:disable */
 /* eslint-disable */
 export type MotorDisabilityModel = {
-  entrance?: string;
-  exterior?: string;
-  facilities?: string;
-  parking?: string;
-};
-
+  entrance?: string
+  exterior?: string
+  facilities?: string
+  parking?: string
+}

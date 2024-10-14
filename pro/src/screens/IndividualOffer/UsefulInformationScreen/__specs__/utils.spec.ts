@@ -3,14 +3,14 @@ import {
   SubcategoryResponseModel,
   WithdrawalTypeEnum,
 } from 'apiClient/v1'
-import { OFFER_LOCATION } from 'components/IndividualOfferForm/OfferLocation/constants'
-import { CATEGORY_STATUS } from 'core/Offers/constants'
-import { AccessibilityEnum } from 'core/shared/types'
+import { CATEGORY_STATUS } from 'commons/core/Offers/constants'
+import { AccessibilityEnum } from 'commons/core/shared/types'
 import {
   getIndividualOfferFactory,
   subcategoryFactory,
   venueListItemFactory,
-} from 'utils/individualApiFactories'
+} from 'commons/utils/individualApiFactories'
+import { OFFER_LOCATION } from 'components/IndividualOfferForm/OfferLocation/constants'
 
 import { DEFAULT_USEFULL_INFORMATION_INTITIAL_VALUES } from '../constants'
 import {

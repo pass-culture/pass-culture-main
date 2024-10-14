@@ -1,10 +1,10 @@
 import React from 'react'
 
 import { StockStatsResponseModel } from 'apiClient/v1'
+import { FORMAT_DD_MM_YYYY } from 'commons/utils/date'
+import { pluralizeString } from 'commons/utils/pluralize'
+import { formatLocalTimeDateString } from 'commons/utils/timezone'
 import { SummaryDescriptionList } from 'components/SummaryLayout/SummaryDescriptionList'
-import { FORMAT_DD_MM_YYYY } from 'utils/date'
-import { pluralizeString } from 'utils/pluralize'
-import { formatLocalTimeDateString } from 'utils/timezone'
 
 interface RecurrenceSectionProps {
   stocksStats?: StockStatsResponseModel

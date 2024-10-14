@@ -2,13 +2,12 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { GetCollectiveOfferManagingOffererResponseModel } from './GetCollectiveOfferManagingOffererResponseModel';
+import type { GetCollectiveOfferManagingOffererResponseModel } from './GetCollectiveOfferManagingOffererResponseModel'
 export type GetCollectiveOfferVenueResponseModel = {
-  departementCode?: string | null;
-  id: number;
-  imgUrl?: string | null;
-  managingOfferer: GetCollectiveOfferManagingOffererResponseModel;
-  name: string;
-  publicName?: string | null;
-};
-
+  departementCode?: string | null
+  id: number
+  imgUrl?: string | null
+  managingOfferer: GetCollectiveOfferManagingOffererResponseModel
+  name: string
+  publicName?: string | null
+}

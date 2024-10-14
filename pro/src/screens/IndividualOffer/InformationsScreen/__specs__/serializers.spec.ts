@@ -1,9 +1,9 @@
 /* istanbul ignore file: DEBT, TO FIX */
 import { PatchOfferBodyModel, PostOfferBodyModel } from 'apiClient/v1'
+import { AccessibilityEnum } from 'commons/core/shared/types'
+import { getIndividualOfferFactory } from 'commons/utils/individualApiFactories'
 import { OFFER_LOCATION } from 'components/IndividualOfferForm/OfferLocation/constants'
 import { IndividualOfferFormValues } from 'components/IndividualOfferForm/types'
-import { AccessibilityEnum } from 'core/shared/types'
-import { getIndividualOfferFactory } from 'utils/individualApiFactories'
 
 import {
   serializeDurationMinutes,

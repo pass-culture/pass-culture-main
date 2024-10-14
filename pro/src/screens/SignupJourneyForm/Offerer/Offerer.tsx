@@ -5,19 +5,22 @@ import { useNavigate } from 'react-router-dom'
 import { api } from 'apiClient/api'
 import { isError } from 'apiClient/helpers'
 import { useAnalytics } from 'app/App/analytics/firebase'
+import { useSignupJourneyContext } from 'commons/context/SignupJourneyContext/SignupJourneyContext'
+import { Events } from 'commons/core/FirebaseEvents/constants'
+import {
+  FORM_ERROR_MESSAGE,
+  GET_DATA_ERROR_MESSAGE,
+} from 'commons/core/shared/constants'
+import {
+  getSiretData,
+  GetSiretDataResponse,
+} from 'commons/core/Venue/getSiretData'
+import { useNotification } from 'commons/hooks/useNotification'
 import { BannerInvisibleSiren } from 'components/Banner/BannerInvisibleSiren'
 import { Callout } from 'components/Callout/Callout'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OnboardingFormNavigationAction } from 'components/SignupJourneyFormLayout/constants'
 import { SIGNUP_JOURNEY_STEP_IDS } from 'components/SignupJourneyStepper/constants'
-import { useSignupJourneyContext } from 'context/SignupJourneyContext/SignupJourneyContext'
-import { Events } from 'core/FirebaseEvents/constants'
-import {
-  FORM_ERROR_MESSAGE,
-  GET_DATA_ERROR_MESSAGE,
-} from 'core/shared/constants'
-import { getSiretData, GetSiretDataResponse } from 'core/Venue/getSiretData'
-import { useNotification } from 'hooks/useNotification'
 import { MAYBE_APP_USER_APE_CODE } from 'pages/Signup/SignupContainer/constants'
 import { MaybeAppUserDialog } from 'pages/Signup/SignupContainer/MaybeAppUserDialog/MaybeAppUserDialog'
 

@@ -3,6 +3,5 @@
 /* tslint:disable */
 /* eslint-disable */
 export type GenerateOffererApiKeyResponse = {
-  apiKey: string;
-};
-
+  apiKey: string
+}

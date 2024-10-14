@@ -13,34 +13,34 @@ import {
 } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
-import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
-import { Notification } from 'components/Notification/Notification'
 import {
   IndividualOfferContext,
   IndividualOfferContextValues,
-} from 'context/IndividualOfferContext/IndividualOfferContext'
-import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
+} from 'commons/context/IndividualOfferContext/IndividualOfferContext'
+import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
 import {
   getIndividualOfferPath,
   getIndividualOfferUrl,
-} from 'core/Offers/utils/getIndividualOfferUrl'
-import { ButtonLink } from 'ui-kit/Button/ButtonLink'
-import { FORMAT_ISO_DATE_ONLY } from 'utils/date'
+} from 'commons/core/Offers/utils/getIndividualOfferUrl'
+import { FORMAT_ISO_DATE_ONLY } from 'commons/utils/date'
 import {
   getIndividualOfferFactory,
   getOfferStockFactory,
   getOfferVenueFactory,
   individualOfferContextValuesFactory,
   subcategoryFactory,
-} from 'utils/individualApiFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
+} from 'commons/utils/individualApiFactories'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
+import { Notification } from 'components/Notification/Notification'
+import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 
 import { serializeThingBookingLimitDatetime } from '../adapters/serializers'
 import { StocksThing, StocksThingProps } from '../StocksThing'
 
-vi.mock('utils/date', async () => {
+vi.mock('commons/utils/date', async () => {
   return {
-    ...(await vi.importActual('utils/date')),
+    ...(await vi.importActual('commons/utils/date')),
     getToday: vi
       .fn()
       .mockImplementation(() => new Date('2020-12-15T12:00:00Z')),

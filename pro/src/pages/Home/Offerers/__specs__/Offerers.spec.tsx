@@ -4,11 +4,11 @@ import React from 'react'
 import {
   defaultGetOffererVenueResponseModel,
   defaultGetOffererResponseModel,
-} from 'utils/individualApiFactories'
+} from 'commons/utils/individualApiFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
-} from 'utils/renderWithProviders'
+} from 'commons/utils/renderWithProviders'
 
 import { Offerers, OfferersProps } from '../Offerers'
 

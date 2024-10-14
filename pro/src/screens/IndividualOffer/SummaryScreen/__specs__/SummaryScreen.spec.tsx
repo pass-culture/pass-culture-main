@@ -16,16 +16,14 @@ import {
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import * as useAnalytics from 'app/App/analytics/firebase'
-import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
-import { Notification } from 'components/Notification/Notification'
 import {
   IndividualOfferContext,
   IndividualOfferContextValues,
-} from 'context/IndividualOfferContext/IndividualOfferContext'
-import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
-import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
-import { AddressResponseIsLinkedToVenueModelFactory } from 'utils/commonOffersApiFactories'
-import { FORMAT_ISO_DATE_ONLY } from 'utils/date'
+} from 'commons/context/IndividualOfferContext/IndividualOfferContext'
+import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
+import { getIndividualOfferPath } from 'commons/core/Offers/utils/getIndividualOfferUrl'
+import { AddressResponseIsLinkedToVenueModelFactory } from 'commons/utils/commonOffersApiFactories'
+import { FORMAT_ISO_DATE_ONLY } from 'commons/utils/date'
 import {
   categoryFactory,
   defaultGetOffererResponseModel,
@@ -35,11 +33,13 @@ import {
   individualOfferContextValuesFactory,
   subcategoryFactory,
   venueListItemFactory,
-} from 'utils/individualApiFactories'
+} from 'commons/utils/individualApiFactories'
 import {
   renderWithProviders,
   RenderWithProvidersOptions,
-} from 'utils/renderWithProviders'
+} from 'commons/utils/renderWithProviders'
+import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
+import { Notification } from 'components/Notification/Notification'
 
 import { SummaryScreen } from '../SummaryScreen'
 

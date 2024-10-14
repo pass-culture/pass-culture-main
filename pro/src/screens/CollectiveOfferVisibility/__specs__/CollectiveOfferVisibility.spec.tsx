@@ -8,15 +8,15 @@ import {
   CollectiveOfferStatus,
   EducationalInstitutionResponseModel,
 } from 'apiClient/v1'
-import { DEFAULT_VISIBILITY_FORM_VALUES } from 'core/OfferEducational/constants'
-import { Mode } from 'core/OfferEducational/types'
-import { SENT_DATA_ERROR_MESSAGE } from 'core/shared/constants'
-import * as useNotification from 'hooks/useNotification'
-import { getCollectiveOfferFactory } from 'utils/collectiveApiFactories'
+import { DEFAULT_VISIBILITY_FORM_VALUES } from 'commons/core/OfferEducational/constants'
+import { Mode } from 'commons/core/OfferEducational/types'
+import { SENT_DATA_ERROR_MESSAGE } from 'commons/core/shared/constants'
+import * as useNotification from 'commons/hooks/useNotification'
+import { getCollectiveOfferFactory } from 'commons/utils/collectiveApiFactories'
 import {
   renderWithProviders,
   RenderWithProvidersOptions,
-} from 'utils/renderWithProviders'
+} from 'commons/utils/renderWithProviders'
 
 import {
   CollectiveOfferVisibilityScreen,
@@ -250,7 +250,7 @@ describe('CollectiveOfferVisibility', () => {
     const notifyError = vi.fn()
 
     const notifsImport = (await vi.importActual(
-      'hooks/useNotification'
+      'commons/hooks/useNotification'
     )) as ReturnType<typeof useNotification.useNotification>
     vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
       ...notifsImport,

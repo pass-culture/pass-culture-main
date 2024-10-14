@@ -2,8 +2,8 @@ import cn from 'classnames'
 import React from 'react'
 
 import { TopOffersResponseData } from 'apiClient/v1'
+import { pluralizeString } from 'commons/utils/pluralize'
 import { Thumb } from 'ui-kit/Thumb/Thumb'
-import { pluralizeString } from 'utils/pluralize'
 
 import styles from './MostViewedOffers.module.scss'
 

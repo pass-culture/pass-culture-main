@@ -1,8 +1,8 @@
 import { useState } from 'react'
 
 import { GetIndividualOfferWithAddressResponseModel } from 'apiClient/v1'
-import { useActiveFeature } from 'hooks/useActiveFeature'
-import { useNotification } from 'hooks/useNotification'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
+import { useNotification } from 'commons/hooks/useNotification'
 import fullMoreIcon from 'icons/full-more.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'

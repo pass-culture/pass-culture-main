@@ -3,11 +3,11 @@ import { useLocation } from 'react-router-dom'
 
 import { GetOffererResponseModel } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
-import { Events } from 'core/FirebaseEvents/constants'
-import { useActiveFeature } from 'hooks/useActiveFeature'
+import { Events } from 'commons/core/FirebaseEvents/constants'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
+import { UNAVAILABLE_ERROR_PAGE } from 'commons/utils/routes'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
 
 import {
   getVirtualVenueFromOfferer,

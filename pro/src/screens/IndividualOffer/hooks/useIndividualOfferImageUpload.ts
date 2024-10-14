@@ -1,11 +1,11 @@
 import { useCallback, useState } from 'react'
 
 import { api } from 'apiClient/api'
+import { useIndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
+import { IndividualOfferImage } from 'commons/core/Offers/types'
+import { SENT_DATA_ERROR_MESSAGE } from 'commons/core/shared/constants'
+import { useNotification } from 'commons/hooks/useNotification'
 import { OnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
-import { useIndividualOfferContext } from 'context/IndividualOfferContext/IndividualOfferContext'
-import { IndividualOfferImage } from 'core/Offers/types'
-import { SENT_DATA_ERROR_MESSAGE } from 'core/shared/constants'
-import { useNotification } from 'hooks/useNotification'
 
 import { imageFileToDataUrl } from '../InformationsScreen/utils/files'
 import { getIndividualOfferImage } from '../utils/getIndividualOfferImage'

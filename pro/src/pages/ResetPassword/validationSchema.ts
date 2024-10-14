@@ -1,6 +1,6 @@
 import * as yup from 'yup'
 
-import { passwordValidationStatus } from 'core/shared/utils/validation'
+import { passwordValidationStatus } from 'commons/core/shared/utils/validation'
 
 export const validationSchema = yup.object().shape({
   newPasswordValue: yup

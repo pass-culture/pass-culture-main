@@ -1,8 +1,8 @@
 import {
   collectiveBookingCollectiveStockFactory,
   collectiveBookingFactory,
-} from 'utils/collectiveApiFactories'
-import { bookingRecapFactory } from 'utils/individualApiFactories'
+} from 'commons/utils/collectiveApiFactories'
+import { bookingRecapFactory } from 'commons/utils/individualApiFactories'
 
 import {
   sortByBeneficiaryName,

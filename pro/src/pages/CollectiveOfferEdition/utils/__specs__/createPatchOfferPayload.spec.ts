@@ -3,8 +3,8 @@ import {
   PatchCollectiveOfferBodyModel,
   OfferAddressType,
 } from 'apiClient/v1'
-import { OfferEducationalFormValues } from 'core/OfferEducational/types'
-import { buildStudentLevelsMapWithDefaultValue } from 'core/OfferEducational/utils/buildStudentLevelsMapWithDefaultValue'
+import { OfferEducationalFormValues } from 'commons/core/OfferEducational/types'
+import { buildStudentLevelsMapWithDefaultValue } from 'commons/core/OfferEducational/utils/buildStudentLevelsMapWithDefaultValue'
 
 import {
   createPatchOfferPayload,

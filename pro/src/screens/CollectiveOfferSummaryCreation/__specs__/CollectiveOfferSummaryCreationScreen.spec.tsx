@@ -3,8 +3,8 @@ import { screen } from '@testing-library/react'
 import {
   getCollectiveOfferFactory,
   getCollectiveOfferTemplateFactory,
-} from 'utils/collectiveApiFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
+} from 'commons/utils/collectiveApiFactories'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { CollectiveOfferSummaryCreationScreen } from '../CollectiveOfferSummaryCreationScreen'
 

@@ -4,15 +4,15 @@ import React from 'react'
 
 import { api } from 'apiClient/api'
 import * as useAnalytics from 'app/App/analytics/firebase'
+import { Events } from 'commons/core/FirebaseEvents/constants'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
 import { OnboardingFormNavigationAction } from 'components/SignupJourneyFormLayout/constants'
 import { SIGNUP_JOURNEY_STEP_IDS } from 'components/SignupJourneyStepper/constants'
-import { Events } from 'core/FirebaseEvents/constants'
 import {
   ActionBarProps,
   ActionBar,
 } from 'screens/SignupJourneyForm/ActionBar/ActionBar'
-import { renderWithProviders } from 'utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 const mockLogEvent = vi.fn()
 

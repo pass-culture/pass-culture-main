@@ -7,8 +7,9 @@ import {
 } from 'apiClient/v1'
 import { CollectiveBookingCancellationReasons } from 'apiClient/v1/models/CollectiveBookingCancellationReasons'
 import { useAnalytics } from 'app/App/analytics/firebase'
-import { BOOKING_STATUS } from 'core/Bookings/constants'
-import { CollectiveBookingsEvents } from 'core/FirebaseEvents/constants'
+import { BOOKING_STATUS } from 'commons/core/Bookings/constants'
+import { CollectiveBookingsEvents } from 'commons/core/FirebaseEvents/constants'
+import { getDateToFrenchText } from 'commons/utils/date'
 import fullEditIcon from 'icons/full-edit.svg'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -17,7 +18,6 @@ import {
   TimelineStep,
   TimelineStepType,
 } from 'ui-kit/Timeline/Timeline'
-import { getDateToFrenchText } from 'utils/date'
 
 import styles from './CollectiveTimeLine.module.scss'
 

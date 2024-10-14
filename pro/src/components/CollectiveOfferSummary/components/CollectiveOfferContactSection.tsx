@@ -2,12 +2,12 @@ import {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
 } from 'apiClient/v1'
+import { isCollectiveOfferTemplate } from 'commons/core/OfferEducational/types'
 import {
   Description,
   SummaryDescriptionList,
 } from 'components/SummaryLayout/SummaryDescriptionList'
 import { SummarySubSection } from 'components/SummaryLayout/SummarySubSection'
-import { isCollectiveOfferTemplate } from 'core/OfferEducational/types'
 
 interface CollectiveOfferContactSectionProps {
   offer:

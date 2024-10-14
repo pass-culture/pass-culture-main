@@ -1,7 +1,7 @@
 import { addYears } from 'date-fns'
 import * as yup from 'yup'
 
-import { isDateValid } from 'utils/date'
+import { isDateValid } from 'commons/utils/date'
 
 export const validationSchema = yup.object().shape({
   publicationDate: yup.string().when('publicationMode', {

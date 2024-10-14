@@ -8,16 +8,13 @@ Un screen compose et orcherstre les éléments de la page (`components` et `ui-k
 
 ## Objectif
 
-Mettre à disposition une unité fonctionelle complete testable en isolation du state global et des appels faits au back-end.
-Permettre de travailler dans storybook sans interférences.
+Mettre à disposition une unité fonctionelle complete testable en isolation du state global et des appels faits au back-end. Permettre de travailler dans storybook sans interférences.
 
 ## Stratégie de tests
 
-Nous concentrons nos efforts de tests ici, puisque la plupart du fonctionnel y est implémenté.
-Il est aussi possible d'exporter des actions depuis un dossier `tests-utils` à la fois utilisés localement et à vocation d'être ré-employé dans les tests des pages. 
+Nous concentrons nos efforts de tests ici, puisque la plupart du fonctionnel y est implémenté. Il est aussi possible d'exporter des actions depuis un dossier `tests-utils` à la fois utilisés localement et à vocation d'être ré-employé dans les tests des pages.
 
-
-## structure 
+## structure
 
 ```
 /Screens
@@ -35,18 +32,18 @@ Il est aussi possible d'exporter des actions depuis un dossier `tests-utils` à 
 |   +-- index.ts                        // required
 ```
 
-## imports 
+## imports
 
-on importera un `screen` ainsi : 
+on importera un `screen` ainsi :
 
 ```js
 import MonScreen from '@screens/MonScreen'
 ```
 
-on accedera aux tests-utils ainsi : 
+on accedera aux tests-utils ainsi :
 
 ```js
-import { 
+import {
   UneActionComplexeDeTest,
   UneAutreActionComplexeDeTest,
   UnMockPratique,
@@ -54,6 +51,7 @@ import {
 ```
 
 ## DO
+
 - nommer le screen principal comme le dossier
 - exporter par defaut le screen principal depuis l’index
 - créer une story pour le screen

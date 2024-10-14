@@ -4,8 +4,8 @@ import { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import { v4 as uuidv4 } from 'uuid'
 
-import { localStorageAvailable } from 'utils/localStorageAvailable'
-import { sendSentryCustomError } from 'utils/sendSentryCustomError'
+import { localStorageAvailable } from 'commons/utils/localStorageAvailable'
+import { sendSentryCustomError } from 'commons/utils/sendSentryCustomError'
 
 import {
   Consents,

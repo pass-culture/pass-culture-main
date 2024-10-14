@@ -5,10 +5,10 @@ import {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
 } from 'apiClient/v1'
+import { OfferCollectiveImage } from 'commons/core/Offers/types'
+import { useNotification } from 'commons/hooks/useNotification'
+import { sendSentryCustomError } from 'commons/utils/sendSentryCustomError'
 import { OnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
-import { OfferCollectiveImage } from 'core/Offers/types'
-import { useNotification } from 'hooks/useNotification'
-import { sendSentryCustomError } from 'utils/sendSentryCustomError'
 
 export const useCollectiveOfferImageUpload = (
   offer?:

@@ -6,12 +6,12 @@ import {
   GetEducationalOffererVenueResponseModel,
   OfferAddressType,
 } from 'apiClient/v1'
+import { DEFAULT_EAC_FORM_VALUES } from 'commons/core/OfferEducational/constants'
+import { OfferEducationalFormValues } from 'commons/core/OfferEducational/types'
+import { offerInterventionOptions } from 'commons/core/shared/interventionOptions'
+import { handleAllFranceDepartmentOptions } from 'commons/core/shared/utils/handleAllFranceDepartmentOptions'
+import { SelectOption } from 'commons/custom_types/form'
 import { FormLayout } from 'components/FormLayout/FormLayout'
-import { DEFAULT_EAC_FORM_VALUES } from 'core/OfferEducational/constants'
-import { OfferEducationalFormValues } from 'core/OfferEducational/types'
-import { offerInterventionOptions } from 'core/shared/interventionOptions'
-import { handleAllFranceDepartmentOptions } from 'core/shared/utils/handleAllFranceDepartmentOptions'
-import { SelectOption } from 'custom_types/form'
 import { RadioGroup } from 'ui-kit/form/RadioGroup/RadioGroup'
 import { Select } from 'ui-kit/form/Select/Select'
 import { SelectAutocomplete } from 'ui-kit/form/SelectAutoComplete/SelectAutocomplete'

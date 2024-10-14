@@ -18,16 +18,16 @@ import {
   ALL_VENUES_OPTION,
   DEFAULT_COLLECTIVE_SEARCH_FILTERS,
   DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
-} from 'core/Offers/constants'
-import { CollectiveSearchFiltersParams } from 'core/Offers/types'
-import { computeCollectiveOffersUrl } from 'core/Offers/utils/computeCollectiveOffersUrl'
-import { collectiveOfferFactory } from 'utils/collectiveApiFactories'
+} from 'commons/core/Offers/constants'
+import { CollectiveSearchFiltersParams } from 'commons/core/Offers/types'
+import { computeCollectiveOffersUrl } from 'commons/core/Offers/utils/computeCollectiveOffersUrl'
+import { collectiveOfferFactory } from 'commons/utils/collectiveApiFactories'
 import {
   defaultGetOffererResponseModel,
   venueListItemFactory,
-} from 'utils/individualApiFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'utils/storeFactories'
+} from 'commons/utils/individualApiFactories'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
 
 import { TemplateCollectiveOffers } from '../TemplateCollectiveOffers'
 

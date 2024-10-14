@@ -1,9 +1,9 @@
 import { screen } from '@testing-library/react'
 import React from 'react'
 
+import { getCollectiveOfferFactory } from 'commons/utils/collectiveApiFactories'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { MandatoryCollectiveOfferFromParamsProps } from 'screens/OfferEducational/useCollectiveOfferFromParams'
-import { getCollectiveOfferFactory } from 'utils/collectiveApiFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { CollectiveOfferVisibility } from '../CollectiveOfferCreationVisibility'
 

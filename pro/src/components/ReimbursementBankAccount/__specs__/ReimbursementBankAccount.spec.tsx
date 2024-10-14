@@ -9,9 +9,9 @@ import {
   ManagedVenues,
 } from 'apiClient/v1'
 import * as useAnalytics from 'app/App/analytics/firebase'
-import { BankAccountEvents } from 'core/FirebaseEvents/constants'
-import { defaultManagedVenues } from 'utils/individualApiFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
+import { BankAccountEvents } from 'commons/core/FirebaseEvents/constants'
+import { defaultManagedVenues } from 'commons/utils/individualApiFactories'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { ReimbursementBankAccount } from '../ReimbursementBankAccount'
 

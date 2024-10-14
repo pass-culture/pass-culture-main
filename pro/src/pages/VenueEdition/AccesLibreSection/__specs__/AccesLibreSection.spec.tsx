@@ -1,7 +1,7 @@
 import { axe } from 'vitest-axe'
 
-import { defaultGetVenue } from 'utils/collectiveApiFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
+import { defaultGetVenue } from 'commons/utils/collectiveApiFactories'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { AccesLibreSection, AccesLibreSectionProps } from '../AccesLibreSection'
 

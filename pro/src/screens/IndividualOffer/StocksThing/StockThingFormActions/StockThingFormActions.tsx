@@ -1,4 +1,4 @@
-import { useMediaQuery } from 'hooks/useMediaQuery'
+import { useMediaQuery } from 'commons/hooks/useMediaQuery'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 

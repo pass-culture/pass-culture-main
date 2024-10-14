@@ -3,7 +3,6 @@
 /* tslint:disable */
 /* eslint-disable */
 export type CreatePriceCategoryModel = {
-  label: string;
-  price: number;
-};
-
+  label: string
+  price: number
+}

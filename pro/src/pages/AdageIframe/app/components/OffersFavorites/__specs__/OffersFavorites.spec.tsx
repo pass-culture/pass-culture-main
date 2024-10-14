@@ -8,10 +8,10 @@ import {
   CollectiveOfferTemplateResponseModel,
 } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
-import { GET_COLLECTIVE_FAVORITES } from 'config/swrQueryKeys'
+import { GET_COLLECTIVE_FAVORITES } from 'commons/config/swrQueryKeys'
+import { defaultCollectiveTemplateOffer } from 'commons/utils/adageFactories'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
-import { defaultCollectiveTemplateOffer } from 'utils/adageFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { OffersFavorites } from '../OffersFavorites'
 

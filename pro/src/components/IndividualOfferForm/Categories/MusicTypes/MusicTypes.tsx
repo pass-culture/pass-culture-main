@@ -1,9 +1,9 @@
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
+import { GET_MUSIC_TYPES_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { FORM_DEFAULT_VALUES } from 'components/IndividualOfferForm/constants'
-import { GET_MUSIC_TYPES_QUERY_KEY } from 'config/swrQueryKeys'
 import { Select } from 'ui-kit/form/Select/Select'
 
 interface MusicTypesProps {

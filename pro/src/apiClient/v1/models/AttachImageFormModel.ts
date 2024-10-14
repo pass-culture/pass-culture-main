@@ -3,10 +3,9 @@
 /* tslint:disable */
 /* eslint-disable */
 export type AttachImageFormModel = {
-  credit: string;
-  croppingRectHeight: number;
-  croppingRectWidth: number;
-  croppingRectX: number;
-  croppingRectY: number;
-};
-
+  credit: string
+  croppingRectHeight: number
+  croppingRectWidth: number
+  croppingRectX: number
+  croppingRectY: number
+}

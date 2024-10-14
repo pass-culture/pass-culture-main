@@ -1,9 +1,9 @@
 import { screen } from '@testing-library/react'
 import { Formik } from 'formik'
 
-import { DEFAULT_EAC_FORM_VALUES } from 'core/OfferEducational/constants'
-import { OfferEducationalFormValues } from 'core/OfferEducational/types'
-import { renderWithProviders } from 'utils/renderWithProviders'
+import { DEFAULT_EAC_FORM_VALUES } from 'commons/core/OfferEducational/constants'
+import { OfferEducationalFormValues } from 'commons/core/OfferEducational/types'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { FormContactTemplateCustomForm } from '../FormContactTemplateCustomForm'
 

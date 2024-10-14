@@ -8,7 +8,7 @@ import {
   defaultAdageUser,
   defaultCollectiveOffer,
   defaultCollectiveTemplateOffer,
-} from 'utils/adageFactories'
+} from 'commons/utils/adageFactories'
 
 import { getOfferTags } from '../getOfferTags'
 

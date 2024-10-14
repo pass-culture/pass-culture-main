@@ -2,6 +2,8 @@ import * as Dialog from '@radix-ui/react-dialog'
 import { FieldArray, FormikProvider, useFormik } from 'formik'
 
 import { PriceCategoryResponseModel } from 'apiClient/v1'
+import { isDateValid } from 'commons/utils/date'
+import { formatLocalTimeDateString } from 'commons/utils/timezone'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import fullMoreIcon from 'icons/full-more.svg'
 import fullNextIcon from 'icons/full-next.svg'
@@ -20,8 +22,6 @@ import { FieldError } from 'ui-kit/form/shared/FieldError/FieldError'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 import { TimePicker } from 'ui-kit/form/TimePicker/TimePicker'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
-import { isDateValid } from 'utils/date'
-import { formatLocalTimeDateString } from 'utils/timezone'
 
 import { getPriceCategoryOptions } from '../StocksEventEdition/getPriceCategoryOptions'
 

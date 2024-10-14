@@ -1,7 +1,7 @@
 import { api } from 'apiClient/api'
 import { CollectiveBookingResponseModel } from 'apiClient/v1'
-import { PreFiltersParams } from 'core/Bookings/types'
-import { buildBookingsRecapQuery } from 'core/Bookings/utils'
+import { PreFiltersParams } from 'commons/core/Bookings/types'
+import { buildBookingsRecapQuery } from 'commons/core/Bookings/utils'
 
 const MAX_LOADED_PAGES = 5
 

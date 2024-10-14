@@ -4,9 +4,9 @@ import * as router from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { GetCollectiveOfferResponseModel } from 'apiClient/v1'
-import { RootState } from 'store/rootReducer'
-import { getCollectiveOfferFactory } from 'utils/collectiveApiFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
+import { RootState } from 'commons/store/rootReducer'
+import { getCollectiveOfferFactory } from 'commons/utils/collectiveApiFactories'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { defaultCreationProps } from '../__tests-utils__/defaultProps'
 import { OfferEducational, OfferEducationalProps } from '../OfferEducational'
@@ -28,7 +28,7 @@ vi.mock('react-router-dom', async () => ({
 
 Element.prototype.scrollIntoView = vi.fn()
 
-vi.mock('utils/windowMatchMedia', () => ({
+vi.mock('commons/utils/windowMatchMedia', () => ({
   doesUserPreferReducedMotion: vi.fn(() => true),
 }))
 

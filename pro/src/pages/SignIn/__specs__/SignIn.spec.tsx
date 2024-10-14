@@ -10,15 +10,15 @@ import { ApiError, SharedLoginUserResponseModel } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import * as useAnalytics from 'app/App/analytics/firebase'
-import { Notification } from 'components/Notification/Notification'
-import { Events } from 'core/FirebaseEvents/constants'
-import { getOffererNameFactory } from 'utils/individualApiFactories'
-import * as utils from 'utils/recaptcha'
+import { Events } from 'commons/core/FirebaseEvents/constants'
+import { getOffererNameFactory } from 'commons/utils/individualApiFactories'
+import * as utils from 'commons/utils/recaptcha'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
-} from 'utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'utils/storeFactories'
+} from 'commons/utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
+import { Notification } from 'components/Notification/Notification'
 
 import { SignIn } from '../SignIn'
 
@@ -30,7 +30,7 @@ vi.mock('apiClient/api', () => ({
   },
 }))
 
-vi.mock('utils/windowMatchMedia', () => ({
+vi.mock('commons/utils/windowMatchMedia', () => ({
   doesUserPreferReducedMotion: vi.fn(),
 }))
 

@@ -3,15 +3,18 @@ import { useState } from 'react'
 
 import { api } from 'apiClient/api'
 import { AppLayout } from 'app/AppLayout'
-import { RECAPTCHA_ERROR, RECAPTCHA_ERROR_MESSAGE } from 'core/shared/constants'
-import { useInitReCaptcha } from 'hooks/useInitReCaptcha'
-import { useNotification } from 'hooks/useNotification'
-import { useRedirectLoggedUser } from 'hooks/useRedirectLoggedUser'
+import {
+  RECAPTCHA_ERROR,
+  RECAPTCHA_ERROR_MESSAGE,
+} from 'commons/core/shared/constants'
+import { useInitReCaptcha } from 'commons/hooks/useInitReCaptcha'
+import { useNotification } from 'commons/hooks/useNotification'
+import { useRedirectLoggedUser } from 'commons/hooks/useRedirectLoggedUser'
+import { getReCaptchaToken } from 'commons/utils/recaptcha'
 import logoPassCultureProFullIcon from 'icons/logo-pass-culture-pro-full.svg'
 import logoStyles from 'styles/components/_Logo.module.scss'
 import { Hero } from 'ui-kit/Hero/Hero'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
-import { getReCaptchaToken } from 'utils/recaptcha'
 
 import { ChangePasswordRequestForm } from './ChangePasswordRequestForm/ChangePasswordRequestForm'
 import styles from './LostPassword.module.scss'

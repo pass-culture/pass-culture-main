@@ -9,28 +9,28 @@ import {
   GET_OFFERER_ADDRESS_QUERY_KEY,
   GET_OFFERER_QUERY_KEY,
   GET_VENUES_QUERY_KEY,
-} from 'config/swrQueryKeys'
+} from 'commons/config/swrQueryKeys'
 import {
   ALL_STATUS,
   DEFAULT_PAGE,
   DEFAULT_SEARCH_FILTERS,
-} from 'core/Offers/constants'
-import { useQuerySearchFilters } from 'core/Offers/hooks/useQuerySearchFilters'
-import { SearchFiltersParams } from 'core/Offers/types'
-import { computeIndividualOffersUrl } from 'core/Offers/utils/computeIndividualOffersUrl'
-import { hasSearchFilters } from 'core/Offers/utils/hasSearchFilters'
-import { serializeApiFilters } from 'core/Offers/utils/serializer'
-import { Audience } from 'core/shared/types'
-import { useCurrentUser } from 'hooks/useCurrentUser'
-import { useIsNewInterfaceActive } from 'hooks/useIsNewInterfaceActive'
+} from 'commons/core/Offers/constants'
+import { useQuerySearchFilters } from 'commons/core/Offers/hooks/useQuerySearchFilters'
+import { SearchFiltersParams } from 'commons/core/Offers/types'
+import { computeIndividualOffersUrl } from 'commons/core/Offers/utils/computeIndividualOffersUrl'
+import { hasSearchFilters } from 'commons/core/Offers/utils/hasSearchFilters'
+import { serializeApiFilters } from 'commons/core/Offers/utils/serializer'
+import { Audience } from 'commons/core/shared/types'
+import { useCurrentUser } from 'commons/hooks/useCurrentUser'
+import { useIsNewInterfaceActive } from 'commons/hooks/useIsNewInterfaceActive'
+import { selectCurrentOffererId } from 'commons/store/user/selectors'
+import { sortByLabel } from 'commons/utils/strings'
 import {
   formatAndOrderAddresses,
   formatAndOrderVenues,
 } from 'repository/venuesService'
 import { IndividualOffersScreen } from 'screens/IndividualOffersScreen/IndividualOffersScreen'
-import { selectCurrentOffererId } from 'store/user/selectors'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
-import { sortByLabel } from 'utils/strings'
 
 export const GET_OFFERS_QUERY_KEY = 'listOffers'
 

@@ -7,20 +7,20 @@ import {
   EacFormat,
   GetOffererResponseModel,
 } from 'apiClient/v1'
-import { FormLayout } from 'components/FormLayout/FormLayout'
 import {
   ALL_FORMATS_OPTION,
   ALL_VENUES_OPTION,
   COLLECTIVE_OFFER_TYPES_OPTIONS,
-} from 'core/Offers/constants'
-import { useDefaultCollectiveSearchFilters } from 'core/Offers/hooks/useDefaultCollectiveSearchFilters'
+} from 'commons/core/Offers/constants'
+import { useDefaultCollectiveSearchFilters } from 'commons/core/Offers/hooks/useDefaultCollectiveSearchFilters'
 import {
   CollectiveOfferTypeEnum,
   CollectiveSearchFiltersParams,
-} from 'core/Offers/types'
-import { SelectOption } from 'custom_types/form'
-import { useActiveFeature } from 'hooks/useActiveFeature'
-import { useIsNewInterfaceActive } from 'hooks/useIsNewInterfaceActive'
+} from 'commons/core/Offers/types'
+import { SelectOption } from 'commons/custom_types/form'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
+import { useIsNewInterfaceActive } from 'commons/hooks/useIsNewInterfaceActive'
+import { FormLayout } from 'components/FormLayout/FormLayout'
 import fullRefreshIcon from 'icons/full-refresh.svg'
 import strokeCloseIcon from 'icons/stroke-close.svg'
 import { Button } from 'ui-kit/Button/Button'

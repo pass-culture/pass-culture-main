@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 
+import { API_URL } from 'commons/utils/config'
+import { getKey } from 'commons/utils/strings'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
-import { API_URL } from 'utils/config'
-import { getKey } from 'utils/strings'
 
 import styles from './CsvTable.module.scss'
 import { TableData } from './types'

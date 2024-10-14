@@ -2,8 +2,8 @@ import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
-import * as localStorageAvailable from 'utils/localStorageAvailable'
-import { renderWithProviders } from 'utils/renderWithProviders'
+import * as localStorageAvailable from 'commons/utils/localStorageAvailable'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { DiffuseHelp } from '../DiffuseHelp'
 

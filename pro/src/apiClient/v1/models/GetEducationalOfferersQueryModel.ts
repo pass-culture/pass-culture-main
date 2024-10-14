@@ -3,6 +3,5 @@
 /* tslint:disable */
 /* eslint-disable */
 export type GetEducationalOfferersQueryModel = {
-  offerer_id?: number | null;
-};
-
+  offerer_id?: number | null
+}

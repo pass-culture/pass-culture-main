@@ -1,6 +1,6 @@
 import { StoryObj } from '@storybook/react'
 
-import { getIndividualOfferFactory } from 'utils/individualApiFactories'
+import { getIndividualOfferFactory } from 'commons/utils/individualApiFactories'
 
 import testImg from './__specs__/offer_storie_image.jpg'
 import { OfferAppPreview } from './OfferAppPreview'

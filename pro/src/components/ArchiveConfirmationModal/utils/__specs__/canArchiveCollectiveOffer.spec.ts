@@ -6,7 +6,7 @@ import {
 import {
   collectiveOfferFactory,
   getCollectiveOfferFactory,
-} from 'utils/collectiveApiFactories'
+} from 'commons/utils/collectiveApiFactories'
 
 import {
   canArchiveCollectiveOffer,

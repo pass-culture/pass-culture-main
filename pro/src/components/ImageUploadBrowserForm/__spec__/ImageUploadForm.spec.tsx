@@ -2,8 +2,8 @@ import { render, screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
+import { createImageFile } from 'commons/utils/testFileHelpers'
 import { UploaderModeEnum } from 'components/ImageUploader/types'
-import { createImageFile } from 'utils/testFileHelpers'
 
 import { ImageUploadBrowserForm } from '../ImageUploadBrowserForm'
 

@@ -2,4 +2,4 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type AcademiesResponseModel = Array<string>;
+export type AcademiesResponseModel = Array<string>

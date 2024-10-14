@@ -1,7 +1,7 @@
 import { screen, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { renderWithProviders } from 'utils/renderWithProviders'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { defaultCreationProps } from '../__tests-utils__/defaultProps'
 import {

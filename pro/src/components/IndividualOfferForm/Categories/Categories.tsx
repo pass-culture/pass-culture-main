@@ -7,10 +7,10 @@ import {
   SubcategoryResponseModel,
   VenueListItemResponseModel,
 } from 'apiClient/v1'
+import { INDIVIDUAL_OFFER_SUBTYPE } from 'commons/core/Offers/constants'
 import { Callout } from 'components/Callout/Callout'
 import { CalloutVariant } from 'components/Callout/types'
 import { FormLayout } from 'components/FormLayout/FormLayout'
-import { INDIVIDUAL_OFFER_SUBTYPE } from 'core/Offers/constants'
 import fullMoreIcon from 'icons/full-more.svg'
 import {
   hasMusicType,

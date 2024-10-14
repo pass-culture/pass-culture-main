@@ -3,9 +3,8 @@
 /* tslint:disable */
 /* eslint-disable */
 export type GetCollectiveOfferManagingOffererResponseModel = {
-  allowedOnAdage: boolean;
-  id: number;
-  name: string;
-  siren?: string | null;
-};
-
+  allowedOnAdage: boolean
+  id: number
+  name: string
+  siren?: string | null
+}

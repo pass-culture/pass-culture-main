@@ -5,9 +5,9 @@ import { serializeStockEventEdition } from '../serializers'
 import { STOCK_EVENT_FORM_DEFAULT_VALUES } from '../StockFormList/constants'
 import { StockEventFormValues } from '../StockFormList/types'
 
-vi.mock('utils/date', async () => {
+vi.mock('commons/utils/date', async () => {
   return {
-    ...(await vi.importActual('utils/date')),
+    ...(await vi.importActual('commons/utils/date')),
     getToday: vi.fn(() => new Date('2020-12-15T12:00:00Z')),
   }
 })

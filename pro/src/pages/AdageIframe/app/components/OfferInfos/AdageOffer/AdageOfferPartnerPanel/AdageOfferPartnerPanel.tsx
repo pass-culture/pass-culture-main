@@ -2,6 +2,7 @@ import {
   AuthenticatedResponse,
   CollectiveOfferTemplateResponseModel,
 } from 'apiClient/adage'
+import { getHumanizeRelativeDistance } from 'commons/utils/getDistance'
 import { Callout } from 'components/Callout/Callout'
 import { CalloutVariant } from 'components/Callout/types'
 import fullLinkIcon from 'icons/full-link.svg'
@@ -10,7 +11,6 @@ import strokeInstitutionIcon from 'icons/stroke-institution.svg'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
-import { getHumanizeRelativeDistance } from 'utils/getDistance'
 
 import { ContactButton } from '../../../OffersInstantSearch/OffersSearch/Offers/ContactButton/ContactButton'
 

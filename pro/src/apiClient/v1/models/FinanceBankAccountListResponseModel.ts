@@ -2,5 +2,6 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { FinanceBankAccountResponseModel } from './FinanceBankAccountResponseModel';
-export type FinanceBankAccountListResponseModel = Array<FinanceBankAccountResponseModel>;
+import type { FinanceBankAccountResponseModel } from './FinanceBankAccountResponseModel'
+export type FinanceBankAccountListResponseModel =
+  Array<FinanceBankAccountResponseModel>

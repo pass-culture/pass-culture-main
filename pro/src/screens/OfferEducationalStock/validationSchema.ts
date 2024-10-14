@@ -1,7 +1,7 @@
 import { isBefore, isSameDay } from 'date-fns'
 import * as yup from 'yup'
 
-import { MAX_DETAILS_LENGTH } from 'core/OfferEducational/constants'
+import { MAX_DETAILS_LENGTH } from 'commons/core/OfferEducational/constants'
 
 import { getMaxEndDateInSchoolYear } from './utils/getMaxEndDateInSchoolYear'
 

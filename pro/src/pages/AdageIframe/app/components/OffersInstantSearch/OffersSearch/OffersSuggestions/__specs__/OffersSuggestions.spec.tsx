@@ -6,18 +6,18 @@ import { Configure } from 'react-instantsearch'
 import { AuthenticatedResponse } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
 import { OfferAddressType } from 'apiClient/v1'
-import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
 import {
   defaultAdageUser,
   defaultCollectiveOffer,
   defaultCollectiveTemplateOffer,
   defaultUseInfiniteHitsReturn,
   defaultUseStatsReturn,
-} from 'utils/adageFactories'
+} from 'commons/utils/adageFactories'
 import {
   renderWithProviders,
   RenderWithProvidersOptions,
-} from 'utils/renderWithProviders'
+} from 'commons/utils/renderWithProviders'
+import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
 
 import { ADAGE_FILTERS_DEFAULT_VALUES } from '../../../utils'
 import { OffersSuggestions, OffersSuggestionsProps } from '../OffersSuggestions'

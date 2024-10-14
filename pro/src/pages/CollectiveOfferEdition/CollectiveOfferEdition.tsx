@@ -1,8 +1,11 @@
 import React from 'react'
 
 import { AppLayout } from 'app/AppLayout'
+import {
+  isCollectiveOfferTemplate,
+  Mode,
+} from 'commons/core/OfferEducational/types'
 import { CollectiveOfferLayout } from 'components/CollectiveOfferLayout/CollectiveOfferLayout'
-import { isCollectiveOfferTemplate, Mode } from 'core/OfferEducational/types'
 import { OfferEducational } from 'screens/OfferEducational/OfferEducational'
 import {
   MandatoryCollectiveOfferFromParamsProps,

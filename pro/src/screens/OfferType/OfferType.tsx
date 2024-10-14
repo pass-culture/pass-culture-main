@@ -5,25 +5,25 @@ import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
 import { CollectiveOfferType as CollectiveOfferApiType } from 'apiClient/v1'
-import { FormLayout } from 'components/FormLayout/FormLayout'
-import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
-import { GET_OFFERER_QUERY_KEY } from 'config/swrQueryKeys'
+import { GET_OFFERER_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import {
   COLLECTIVE_OFFER_SUBTYPE,
   COLLECTIVE_OFFER_SUBTYPE_DUPLICATE,
   DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
   OFFER_TYPES,
   OFFER_WIZARD_MODE,
-} from 'core/Offers/constants'
-import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
-import { serializeApiCollectiveFilters } from 'core/Offers/utils/serializer'
-import { useActiveFeature } from 'hooks/useActiveFeature'
-import { useIsNewInterfaceActive } from 'hooks/useIsNewInterfaceActive'
-import { useNotification } from 'hooks/useNotification'
-import { useSuggestedSubcategoriesAbTest } from 'hooks/useSuggestedSubcategoriesAbTest'
+} from 'commons/core/Offers/constants'
+import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
+import { serializeApiCollectiveFilters } from 'commons/core/Offers/utils/serializer'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
+import { useIsNewInterfaceActive } from 'commons/hooks/useIsNewInterfaceActive'
+import { useNotification } from 'commons/hooks/useNotification'
+import { useSuggestedSubcategoriesAbTest } from 'commons/hooks/useSuggestedSubcategoriesAbTest'
+import { selectCurrentOffererId } from 'commons/store/user/selectors'
+import { FormLayout } from 'components/FormLayout/FormLayout'
+import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import phoneStrokeIcon from 'icons/stroke-phone.svg'
 import strokeProfIcon from 'icons/stroke-prof.svg'
-import { selectCurrentOffererId } from 'store/user/selectors'
 import { RadioButtonWithImage } from 'ui-kit/RadioButtonWithImage/RadioButtonWithImage'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 

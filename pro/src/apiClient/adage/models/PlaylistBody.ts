@@ -2,14 +2,13 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { AdagePlaylistType } from './AdagePlaylistType';
+import type { AdagePlaylistType } from './AdagePlaylistType'
 export type PlaylistBody = {
-  elementId?: number | null;
-  iframeFrom: string;
-  index?: number | null;
-  isFromNoResult?: boolean | null;
-  playlistId: number;
-  playlistType: AdagePlaylistType;
-  queryId?: string | null;
-};
-
+  elementId?: number | null
+  iframeFrom: string
+  index?: number | null
+  isFromNoResult?: boolean | null
+  playlistId: number
+  playlistType: AdagePlaylistType
+  queryId?: string | null
+}

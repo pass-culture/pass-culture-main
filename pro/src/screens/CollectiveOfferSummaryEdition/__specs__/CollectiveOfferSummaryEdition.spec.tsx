@@ -5,10 +5,10 @@ import {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
 } from 'apiClient/v1'
-import { Mode } from 'core/OfferEducational/types'
-import { getCollectiveOfferTemplateFactory } from 'utils/collectiveApiFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'utils/storeFactories'
+import { Mode } from 'commons/core/OfferEducational/types'
+import { getCollectiveOfferTemplateFactory } from 'commons/utils/collectiveApiFactories'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
 
 import { CollectiveOfferSummaryEditionScreen } from '../CollectiveOfferSummaryEdition'
 

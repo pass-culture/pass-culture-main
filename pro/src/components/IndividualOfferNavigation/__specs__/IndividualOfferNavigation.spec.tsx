@@ -6,14 +6,14 @@ import { generatePath, Route, Routes } from 'react-router-dom'
 import {
   IndividualOfferContextValues,
   IndividualOfferContext,
-} from 'context/IndividualOfferContext/IndividualOfferContext'
-import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
-import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
+} from 'commons/context/IndividualOfferContext/IndividualOfferContext'
+import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
+import { getIndividualOfferPath } from 'commons/core/Offers/utils/getIndividualOfferUrl'
 import {
   getIndividualOfferFactory,
   individualOfferContextValuesFactory,
-} from 'utils/individualApiFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
+} from 'commons/utils/individualApiFactories'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { OFFER_WIZARD_STEP_IDS } from '../constants'
 import { IndividualOfferNavigation } from '../IndividualOfferNavigation'

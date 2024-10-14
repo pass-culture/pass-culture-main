@@ -5,9 +5,9 @@ import { waitFor } from '@testing-library/react'
 import React from 'react'
 import { expect, vi } from 'vitest'
 
-import { firebaseConfig } from 'config/firebase'
-import { renderWithProviders } from 'utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'utils/storeFactories'
+import { firebaseConfig } from 'commons/config/firebase'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
 
 import { destroyFirebase, useFirebase } from '../firebase'
 

@@ -10,10 +10,10 @@ import {
   GET_EDUCATIONAL_DOMAINS_QUERY_KEY,
   GET_EDUCATIONAL_OFFERERS_QUERY_KEY,
   GET_NATIONAL_PROGRAMS_QUERY_KEY,
-} from 'config/swrQueryKeys'
-import { getUserOfferersFromOffer } from 'core/OfferEducational/utils/getUserOfferersFromOffer'
-import { serializeEducationalOfferers } from 'core/OfferEducational/utils/serializeEducationalOfferers'
-import { SelectOption } from 'custom_types/form'
+} from 'commons/config/swrQueryKeys'
+import { getUserOfferersFromOffer } from 'commons/core/OfferEducational/utils/getUserOfferersFromOffer'
+import { serializeEducationalOfferers } from 'commons/core/OfferEducational/utils/serializeEducationalOfferers'
+import { SelectOption } from 'commons/custom_types/form'
 
 type OfferEducationalFormData = {
   domains: SelectOption[]

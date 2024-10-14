@@ -9,17 +9,17 @@ import { Route, Routes } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { PostOffererResponseModel, Target } from 'apiClient/v1'
-import { Address } from 'components/Address/types'
-import { Notification } from 'components/Notification/Notification'
-import { DEFAULT_ACTIVITY_VALUES } from 'context/SignupJourneyContext/constants'
+import { DEFAULT_ACTIVITY_VALUES } from 'commons/context/SignupJourneyContext/constants'
 import {
   SignupJourneyContextValues,
   SignupJourneyContext,
-} from 'context/SignupJourneyContext/SignupJourneyContext'
+} from 'commons/context/SignupJourneyContext/SignupJourneyContext'
+import * as utils from 'commons/utils/recaptcha'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
+import { Address } from 'components/Address/types'
+import { Notification } from 'components/Notification/Notification'
 import { Validation } from 'screens/SignupJourneyForm/Validation/Validation'
-import * as utils from 'utils/recaptcha'
-import { renderWithProviders } from 'utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 vi.mock('apiClient/api', () => ({
   api: {

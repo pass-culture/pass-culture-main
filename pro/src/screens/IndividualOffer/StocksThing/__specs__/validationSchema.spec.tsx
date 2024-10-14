@@ -1,5 +1,5 @@
-import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
-import { getYupValidationSchemaErrors } from 'utils/yupValidationTestHelpers'
+import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
+import { getYupValidationSchemaErrors } from 'commons/utils/yupValidationTestHelpers'
 
 import { stockThingFormValuesFactory } from '../stockThingFormValuesFactory'
 import { StockThingFormValues } from '../types'

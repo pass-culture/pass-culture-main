@@ -8,10 +8,10 @@ import {
   OfferEducationalStockFormValues,
   Mode,
   EducationalOfferType,
-} from 'core/OfferEducational/types'
+} from 'commons/core/OfferEducational/types'
+import { FORMAT_ISO_DATE_ONLY } from 'commons/utils/date'
 import { generateValidationSchema } from 'screens/OfferEducationalStock/validationSchema'
 import { Button } from 'ui-kit/Button/Button'
-import { FORMAT_ISO_DATE_ONLY } from 'utils/date'
 
 import { FormStock, FormStockProps } from '../FormStock'
 

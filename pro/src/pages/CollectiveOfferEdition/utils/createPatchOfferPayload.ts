@@ -5,10 +5,10 @@ import {
   PatchCollectiveOfferBodyModel,
   PatchCollectiveOfferTemplateBodyModel,
 } from 'apiClient/v1'
-import { OfferEducationalFormValues } from 'core/OfferEducational/types'
-import { serializeDates } from 'core/OfferEducational/utils/createOfferPayload'
-import { parseDuration } from 'core/OfferEducational/utils/parseDuration'
-import { serializeParticipants } from 'core/OfferEducational/utils/serializeParticipants'
+import { OfferEducationalFormValues } from 'commons/core/OfferEducational/types'
+import { serializeDates } from 'commons/core/OfferEducational/utils/createOfferPayload'
+import { parseDuration } from 'commons/core/OfferEducational/utils/parseDuration'
+import { serializeParticipants } from 'commons/core/OfferEducational/utils/serializeParticipants'
 
 type PatchOfferSerializer<T> = {
   [key in keyof OfferEducationalFormValues]?: (

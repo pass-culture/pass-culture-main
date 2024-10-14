@@ -1,5 +1,5 @@
-import { collectiveOfferFactory } from 'utils/collectiveApiFactories'
-import { listOffersOfferFactory } from 'utils/individualApiFactories'
+import { collectiveOfferFactory } from 'commons/utils/collectiveApiFactories'
+import { listOffersOfferFactory } from 'commons/utils/individualApiFactories'
 
 import { isSameOffer } from '../isSameOffer'
 

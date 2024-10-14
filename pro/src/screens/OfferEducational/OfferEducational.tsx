@@ -10,39 +10,39 @@ import {
   GetCollectiveOfferTemplateResponseModel,
   GetEducationalOffererResponseModel,
 } from 'apiClient/v1'
-import { OfferEducationalActions } from 'components/OfferEducationalActions/OfferEducationalActions'
-import { RouteLeavingGuardCollectiveOfferCreation } from 'components/RouteLeavingGuardCollectiveOfferCreation/RouteLeavingGuardCollectiveOfferCreation'
 import {
   GET_COLLECTIVE_OFFER_QUERY_KEY,
   GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY,
-} from 'config/swrQueryKeys'
+} from 'commons/config/swrQueryKeys'
 import {
   isCollectiveOffer,
   isCollectiveOfferTemplate,
   Mode,
   OfferEducationalFormValues,
-} from 'core/OfferEducational/types'
-import { applyVenueDefaultsToFormValues } from 'core/OfferEducational/utils/applyVenueDefaultsToFormValues'
-import { computeInitialValuesFromOffer } from 'core/OfferEducational/utils/computeInitialValuesFromOffer'
-import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
+} from 'commons/core/OfferEducational/types'
+import { applyVenueDefaultsToFormValues } from 'commons/core/OfferEducational/utils/applyVenueDefaultsToFormValues'
+import { computeInitialValuesFromOffer } from 'commons/core/OfferEducational/utils/computeInitialValuesFromOffer'
+import { computeURLCollectiveOfferId } from 'commons/core/OfferEducational/utils/computeURLCollectiveOfferId'
 import {
   createCollectiveOfferPayload,
   createCollectiveOfferTemplatePayload,
-} from 'core/OfferEducational/utils/createOfferPayload'
+} from 'commons/core/OfferEducational/utils/createOfferPayload'
 import {
   FORM_ERROR_MESSAGE,
   SENT_DATA_ERROR_MESSAGE,
-} from 'core/shared/constants'
-import { SelectOption } from 'custom_types/form'
-import { useActiveFeature } from 'hooks/useActiveFeature'
-import { useIsNewInterfaceActive } from 'hooks/useIsNewInterfaceActive'
-import { useNotification } from 'hooks/useNotification'
+} from 'commons/core/shared/constants'
+import { SelectOption } from 'commons/custom_types/form'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
+import { useIsNewInterfaceActive } from 'commons/hooks/useIsNewInterfaceActive'
+import { useNotification } from 'commons/hooks/useNotification'
+import { selectCurrentOffererId } from 'commons/store/user/selectors'
+import { OfferEducationalActions } from 'components/OfferEducationalActions/OfferEducationalActions'
+import { RouteLeavingGuardCollectiveOfferCreation } from 'components/RouteLeavingGuardCollectiveOfferCreation/RouteLeavingGuardCollectiveOfferCreation'
 import {
   createPatchOfferPayload,
   createPatchOfferTemplatePayload,
 } from 'pages/CollectiveOfferEdition/utils/createPatchOfferPayload'
 import { queryParamsFromOfferer } from 'pages/Offers/utils/queryParamsFromOfferer'
-import { selectCurrentOffererId } from 'store/user/selectors'
 
 import styles from './OfferEducational.module.scss'
 import { OfferEducationalForm } from './OfferEducationalForm/OfferEducationalForm'

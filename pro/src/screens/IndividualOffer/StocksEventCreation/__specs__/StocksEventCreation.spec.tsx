@@ -6,20 +6,20 @@ import { Route, Routes } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { GetOfferStockResponseModel } from 'apiClient/v1'
-import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
-import { Notification } from 'components/Notification/Notification'
-import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
+import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
 import {
   getIndividualOfferPath,
   getIndividualOfferUrl,
-} from 'core/Offers/utils/getIndividualOfferUrl'
-import { ButtonLink } from 'ui-kit/Button/ButtonLink'
-import { FORMAT_ISO_DATE_ONLY } from 'utils/date'
+} from 'commons/core/Offers/utils/getIndividualOfferUrl'
+import { FORMAT_ISO_DATE_ONLY } from 'commons/utils/date'
 import {
   getIndividualOfferFactory,
   getOfferStockFactory,
-} from 'utils/individualApiFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
+} from 'commons/utils/individualApiFactories'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
+import { Notification } from 'components/Notification/Notification'
+import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 
 import {
   StocksEventCreationProps,

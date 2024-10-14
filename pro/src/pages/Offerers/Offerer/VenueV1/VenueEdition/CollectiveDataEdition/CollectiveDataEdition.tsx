@@ -4,17 +4,17 @@ import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
 import { GetVenueResponseModel } from 'apiClient/v1'
-import { Callout } from 'components/Callout/Callout'
 import {
   GET_CULTURAL_PARTNERS_QUERY_KEY,
   GET_EDUCATIONAL_DOMAINS_QUERY_KEY,
   GET_EDUCATIONAL_STATUSES_QUERY_KEY,
-} from 'config/swrQueryKeys'
-import { SelectOption } from 'custom_types/form'
+} from 'commons/config/swrQueryKeys'
+import { SelectOption } from 'commons/custom_types/form'
+import { getLastCollectiveDmsApplication } from 'commons/utils/getLastCollectiveDmsApplication'
+import { Callout } from 'components/Callout/Callout'
 import { PartnerPageCollectiveSection } from 'pages/Home/Offerers/PartnerPageCollectiveSection'
 import { CollectiveDmsTimeline } from 'pages/VenueCreation/CollectiveDmsTimeline/CollectiveDmsTimeline'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
-import { getLastCollectiveDmsApplication } from 'utils/getLastCollectiveDmsApplication'
 
 import styles from './CollectiveDataEdition.module.scss'
 import { CollectiveDataEditionReadOnly } from './CollectiveDataEditionReadOnly'

@@ -3,9 +3,9 @@ import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
 import * as useAnalytics from 'app/App/analytics/firebase'
-import { defaultGetOffererResponseModel } from 'utils/individualApiFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'utils/storeFactories'
+import { defaultGetOffererResponseModel } from 'commons/utils/individualApiFactories'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
 
 import { OffererDetails, OffererDetailsProps } from '../OffererDetails'
 

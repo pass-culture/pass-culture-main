@@ -7,16 +7,16 @@ import {
   SubcategoryResponseModel,
   VenueListItemResponseModel,
 } from 'apiClient/v1'
-import { FormLayout } from 'components/FormLayout/FormLayout'
-import { OnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
-import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import {
   CATEGORY_STATUS,
   INDIVIDUAL_OFFER_SUBTYPE,
-} from 'core/Offers/constants'
-import { IndividualOfferImage } from 'core/Offers/types'
-import { useActiveFeature } from 'hooks/useActiveFeature'
-import { useCurrentUser } from 'hooks/useCurrentUser'
+} from 'commons/core/Offers/constants'
+import { IndividualOfferImage } from 'commons/core/Offers/types'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
+import { useCurrentUser } from 'commons/hooks/useCurrentUser'
+import { FormLayout } from 'components/FormLayout/FormLayout'
+import { OnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
+import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 
 import { Accessibility } from './Accessibility/Accessibility'
 import { Categories } from './Categories/Categories'

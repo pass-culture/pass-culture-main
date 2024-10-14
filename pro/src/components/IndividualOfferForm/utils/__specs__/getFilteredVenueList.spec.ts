@@ -1,9 +1,9 @@
 import { SubcategoryResponseModel } from 'apiClient/v1'
-import { CATEGORY_STATUS } from 'core/Offers/constants'
+import { CATEGORY_STATUS } from 'commons/core/Offers/constants'
 import {
   subcategoryFactory,
   venueListItemFactory,
-} from 'utils/individualApiFactories'
+} from 'commons/utils/individualApiFactories'
 
 import {
   getFilteredVenueListByCategoryStatus,

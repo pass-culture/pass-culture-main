@@ -2,5 +2,5 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { MusicTypeResponse } from './MusicTypeResponse';
-export type GetMusicTypesResponse = Array<MusicTypeResponse>;
+import type { MusicTypeResponse } from './MusicTypeResponse'
+export type GetMusicTypesResponse = Array<MusicTypeResponse>

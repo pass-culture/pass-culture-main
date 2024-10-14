@@ -4,15 +4,15 @@ import React from 'react'
 import { Route, Routes } from 'react-router-dom'
 
 import { Target } from 'apiClient/v1'
-import { DEFAULT_ADDRESS_FORM_VALUES } from 'components/Address/constants'
-import { DEFAULT_ACTIVITY_VALUES } from 'context/SignupJourneyContext/constants'
+import { DEFAULT_ACTIVITY_VALUES } from 'commons/context/SignupJourneyContext/constants'
 import {
   SignupJourneyContext,
   SignupJourneyContextValues,
-} from 'context/SignupJourneyContext/SignupJourneyContext'
+} from 'commons/context/SignupJourneyContext/SignupJourneyContext'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
+import { DEFAULT_ADDRESS_FORM_VALUES } from 'components/Address/constants'
 import { DEFAULT_OFFERER_FORM_VALUES } from 'screens/SignupJourneyForm/Offerer/constants'
-import { renderWithProviders } from 'utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import { SignupJourneyStepper } from '../SignupJourneyStepper'
 

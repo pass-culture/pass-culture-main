@@ -1,7 +1,7 @@
 import * as yup from 'yup'
 
-import { siretApiValidate } from 'core/Venue/siretApiValidate'
-import { unhumanizeSiret } from 'core/Venue/utils'
+import { siretApiValidate } from 'commons/core/Venue/siretApiValidate'
+import { unhumanizeSiret } from 'commons/core/Venue/utils'
 
 export const valideSiretLength = (siret: string) =>
   unhumanizeSiret(siret).length === 14

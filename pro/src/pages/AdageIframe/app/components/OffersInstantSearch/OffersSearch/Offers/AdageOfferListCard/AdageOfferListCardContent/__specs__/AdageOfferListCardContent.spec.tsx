@@ -1,12 +1,12 @@
 import { screen } from '@testing-library/react'
 
 import { AuthenticatedResponse, EacFormat } from 'apiClient/adage'
-import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
 import {
   defaultAdageUser,
   defaultCollectiveTemplateOffer,
-} from 'utils/adageFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
+} from 'commons/utils/adageFactories'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
 
 import {
   AdageOfferListCardContent,

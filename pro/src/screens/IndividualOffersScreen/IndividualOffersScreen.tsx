@@ -9,8 +9,7 @@ import {
   OfferStatus,
   UserRole,
 } from 'apiClient/v1'
-import { NoData } from 'components/NoData/NoData'
-import { GET_VALIDATED_OFFERERS_NAMES_QUERY_KEY } from 'config/swrQueryKeys'
+import { GET_VALIDATED_OFFERERS_NAMES_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import {
   DEFAULT_COLLECTIVE_SEARCH_FILTERS,
   DEFAULT_PAGE,
@@ -18,24 +17,25 @@ import {
   MAX_TOTAL_PAGES,
   NUMBER_OF_OFFERS_PER_PAGE,
   OFFER_STATUS_DRAFT,
-} from 'core/Offers/constants'
+} from 'commons/core/Offers/constants'
 import {
   CollectiveSearchFiltersParams,
   SearchFiltersParams,
-} from 'core/Offers/types'
-import { computeCollectiveOffersUrl } from 'core/Offers/utils/computeCollectiveOffersUrl'
-import { computeIndividualOffersUrl } from 'core/Offers/utils/computeIndividualOffersUrl'
-import { hasSearchFilters } from 'core/Offers/utils/hasSearchFilters'
-import { Audience } from 'core/shared/types'
-import { SelectOption } from 'custom_types/form'
-import { useIsNewInterfaceActive } from 'hooks/useIsNewInterfaceActive'
+} from 'commons/core/Offers/types'
+import { computeCollectiveOffersUrl } from 'commons/core/Offers/utils/computeCollectiveOffersUrl'
+import { computeIndividualOffersUrl } from 'commons/core/Offers/utils/computeIndividualOffersUrl'
+import { hasSearchFilters } from 'commons/core/Offers/utils/hasSearchFilters'
+import { Audience } from 'commons/core/shared/types'
+import { SelectOption } from 'commons/custom_types/form'
+import { useIsNewInterfaceActive } from 'commons/hooks/useIsNewInterfaceActive'
+import { selectCurrentOffererId } from 'commons/store/user/selectors'
+import { NoData } from 'components/NoData/NoData'
 import fullPlusIcon from 'icons/full-plus.svg'
 import strokeLibraryIcon from 'icons/stroke-library.svg'
 import strokeUserIcon from 'icons/stroke-user.svg'
 import { IndividualOffersActionsBar } from 'pages/Offers/OffersTable/IndividualOffersTable/IndividualOffersActionsBar/IndividualOffersActionsBar'
 import { IndividualOffersTable } from 'pages/Offers/OffersTable/IndividualOffersTable/IndividualOffersTable'
 import { isSameOffer } from 'pages/Offers/utils/isSameOffer'
-import { selectCurrentOffererId } from 'store/user/selectors'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { Tabs } from 'ui-kit/Tabs/Tabs'

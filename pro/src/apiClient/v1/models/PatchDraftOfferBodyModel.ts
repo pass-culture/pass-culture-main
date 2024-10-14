@@ -3,10 +3,9 @@
 /* tslint:disable */
 /* eslint-disable */
 export type PatchDraftOfferBodyModel = {
-  description?: string | null;
-  durationMinutes?: number | null;
-  extraData?: Record<string, any> | null;
-  name?: string | null;
-  subcategoryId?: string | null;
-};
-
+  description?: string | null
+  durationMinutes?: number | null
+  extraData?: Record<string, any> | null
+  name?: string | null
+  subcategoryId?: string | null
+}

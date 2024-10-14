@@ -40,7 +40,14 @@ $rem-px-only: false !default;
         math.div($value, 1rem) * $rem-baseline,
         $separator
       );
-    } @else if type-of($value) == "number" and unit($value) == "px" and $to == "rem" {
+    } @else if
+      type-of($value) ==
+      "number" and
+      unit($value) ==
+      "px" and
+      $to ==
+      "rem"
+    {
       $result: list.append(
         $result,
         math.div($value, $rem-baseline) * 1rem,

@@ -4,15 +4,15 @@ import { Form, Formik } from 'formik'
 import React from 'react'
 
 import * as useAnalytics from 'app/App/analytics/firebase'
-import { UploaderModeEnum } from 'components/ImageUploader/types'
-import { IndividualOfferContext } from 'context/IndividualOfferContext/IndividualOfferContext'
-import { Events } from 'core/FirebaseEvents/constants'
+import { IndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
+import { Events } from 'commons/core/FirebaseEvents/constants'
 import {
   getIndividualOfferFactory,
   individualOfferContextValuesFactory,
-} from 'utils/individualApiFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'utils/storeFactories'
+} from 'commons/utils/individualApiFactories'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
+import { UploaderModeEnum } from 'components/ImageUploader/types'
 
 import {
   ImageUploaderOffer,

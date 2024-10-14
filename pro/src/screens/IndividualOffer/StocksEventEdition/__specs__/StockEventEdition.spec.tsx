@@ -18,29 +18,29 @@ import {
 } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
-import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
-import { Notification } from 'components/Notification/Notification'
-import { STOCKS_PER_PAGE } from 'components/StocksEventList/StocksEventList'
-import { IndividualOfferContextProvider } from 'context/IndividualOfferContext/IndividualOfferContext'
-import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
+import { IndividualOfferContextProvider } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
+import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
 import {
   getIndividualOfferPath,
   getIndividualOfferUrl,
-} from 'core/Offers/utils/getIndividualOfferUrl'
-import { PATCH_SUCCESS_MESSAGE } from 'core/shared/constants'
-import { Stocks } from 'pages/IndividualOfferWizard/Stocks/Stocks'
-import { ButtonLink } from 'ui-kit/Button/ButtonLink'
-import { FORMAT_ISO_DATE_ONLY } from 'utils/date'
+} from 'commons/core/Offers/utils/getIndividualOfferUrl'
+import { PATCH_SUCCESS_MESSAGE } from 'commons/core/shared/constants'
+import { FORMAT_ISO_DATE_ONLY } from 'commons/utils/date'
 import {
   getIndividualOfferFactory,
   getOfferStockFactory,
-} from 'utils/individualApiFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'utils/storeFactories'
+} from 'commons/utils/individualApiFactories'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
+import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
+import { Notification } from 'components/Notification/Notification'
+import { STOCKS_PER_PAGE } from 'components/StocksEventList/StocksEventList'
+import { Stocks } from 'pages/IndividualOfferWizard/Stocks/Stocks'
+import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 
-vi.mock('utils/date', async () => {
+vi.mock('commons/utils/date', async () => {
   return {
-    ...(await vi.importActual('utils/date')),
+    ...(await vi.importActual('commons/utils/date')),
     getToday: vi.fn(() => new Date('2020-12-15T12:00:00Z')),
   }
 })

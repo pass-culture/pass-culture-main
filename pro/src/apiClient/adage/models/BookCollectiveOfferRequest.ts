@@ -3,6 +3,5 @@
 /* tslint:disable */
 /* eslint-disable */
 export type BookCollectiveOfferRequest = {
-  stockId: number;
-};
-
+  stockId: number
+}

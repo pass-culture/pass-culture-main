@@ -1,5 +1,5 @@
 import { EditVenueBodyModel, VenueTypeCode } from 'apiClient/v1'
-import { unhumanizeSiret } from 'core/Venue/utils'
+import { unhumanizeSiret } from 'commons/core/Venue/utils'
 
 import { VenueSettingsFormValues } from './types'
 

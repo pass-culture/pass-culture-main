@@ -2,9 +2,9 @@ import cx from 'classnames'
 import React from 'react'
 
 import { GetBookingResponse } from 'apiClient/v2'
+import { formatLocalTimeDateString } from 'commons/utils/timezone'
 import strokeDuoIcon from 'icons/stroke-duo.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
-import { formatLocalTimeDateString } from 'utils/timezone'
 
 import styles from './BookingDetails.module.scss'
 

@@ -1,7 +1,7 @@
 /* istanbul ignore file: DEBT, TO FIX */
 import { PostOfferBodyModel } from 'apiClient/v1'
+import { AccessibilityEnum } from 'commons/core/shared/types'
 import { IndividualOfferFormValues } from 'components/IndividualOfferForm/types'
-import { AccessibilityEnum } from 'core/shared/types'
 
 /* istanbul ignore next: DEBT, TO FIX */
 const serializeExtraData = (

@@ -1,7 +1,7 @@
 import { GetVenueResponseModel } from 'apiClient/v1'
+import { mapDayToFrench } from 'commons/utils/date'
 import { SummaryDescriptionList } from 'components/SummaryLayout/SummaryDescriptionList'
 import { SummarySubSection } from 'components/SummaryLayout/SummarySubSection'
-import { mapDayToFrench } from 'utils/date'
 
 import styles from './OpeningHoursReadOnly.module.scss'
 

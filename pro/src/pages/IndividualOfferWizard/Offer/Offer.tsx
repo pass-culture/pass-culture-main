@@ -3,20 +3,20 @@ import { useSearchParams } from 'react-router-dom'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
-import { BannerCreateOfferAdmin } from 'components/Banner/BannerCreateOfferAdmin'
 import {
   GET_VENUES_QUERY_KEY,
   GET_OFFERER_NAMES_QUERY_KEY,
-} from 'config/swrQueryKeys'
-import { useIndividualOfferContext } from 'context/IndividualOfferContext/IndividualOfferContext'
-import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
-import { useActiveFeature } from 'hooks/useActiveFeature'
-import { useCurrentUser } from 'hooks/useCurrentUser'
-import { useOfferWizardMode } from 'hooks/useOfferWizardMode'
+} from 'commons/config/swrQueryKeys'
+import { useIndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
+import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
+import { useCurrentUser } from 'commons/hooks/useCurrentUser'
+import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
+import { selectCurrentOffererId } from 'commons/store/user/selectors'
+import { BannerCreateOfferAdmin } from 'components/Banner/BannerCreateOfferAdmin'
 import { IndivualOfferLayout } from 'screens/IndividualOffer/IndivualOfferLayout/IndivualOfferLayout'
 import { getTitle } from 'screens/IndividualOffer/IndivualOfferLayout/utils/getTitle'
 import { InformationsScreen } from 'screens/IndividualOffer/InformationsScreen/InformationsScreen'
-import { selectCurrentOffererId } from 'store/user/selectors'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 export const Offer = (): JSX.Element | null => {

@@ -2,9 +2,10 @@ import { useSelector } from 'react-redux'
 import { useLocation } from 'react-router-dom'
 
 import { AppLayout } from 'app/AppLayout'
+import { isCollectiveOffer, Mode } from 'commons/core/OfferEducational/types'
+import { useIsNewInterfaceActive } from 'commons/hooks/useIsNewInterfaceActive'
+import { selectCurrentOffererId } from 'commons/store/user/selectors'
 import { CollectiveOfferLayout } from 'components/CollectiveOfferLayout/CollectiveOfferLayout'
-import { isCollectiveOffer, Mode } from 'core/OfferEducational/types'
-import { useIsNewInterfaceActive } from 'hooks/useIsNewInterfaceActive'
 import { queryParamsFromOfferer } from 'pages/Offers/utils/queryParamsFromOfferer'
 import { OfferEducational } from 'screens/OfferEducational/OfferEducational'
 import {
@@ -12,7 +13,6 @@ import {
   withOptionalCollectiveOfferFromParams,
 } from 'screens/OfferEducational/useCollectiveOfferFromParams'
 import { useOfferEducationalFormData } from 'screens/OfferEducational/useOfferEducationalFormData'
-import { selectCurrentOffererId } from 'store/user/selectors'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 export const CollectiveOfferCreation = ({

@@ -1,6 +1,6 @@
 import { addMonths, endOfMonth, isToday } from 'date-fns'
 
-import { getToday, isDateValid } from 'utils/date'
+import { getToday, isDateValid } from 'commons/utils/date'
 
 import { MonthlyOption, RecurrenceDays } from './types'
 

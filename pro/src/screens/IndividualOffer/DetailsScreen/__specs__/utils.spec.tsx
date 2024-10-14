@@ -3,7 +3,7 @@ import {
   getIndividualOfferFactory,
   subcategoryFactory,
   venueListItemFactory,
-} from 'utils/individualApiFactories'
+} from 'commons/utils/individualApiFactories'
 
 import { DEFAULT_DETAILS_FORM_VALUES } from '../constants'
 import {

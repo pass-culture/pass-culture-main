@@ -4,13 +4,13 @@ import { userEvent } from '@testing-library/user-event'
 import { AdageFrontRoles, AuthenticatedResponse } from 'apiClient/adage'
 import { AdageHeaderLink } from 'apiClient/adage/models/AdageHeaderLink'
 import { apiAdage } from 'apiClient/api'
-import * as useNotification from 'hooks/useNotification'
-import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
-import { defaultEducationalInstitution } from 'utils/adageFactories'
+import * as useNotification from 'commons/hooks/useNotification'
+import { defaultEducationalInstitution } from 'commons/utils/adageFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
-} from 'utils/renderWithProviders'
+} from 'commons/utils/renderWithProviders'
+import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
 
 import { AdageHeader } from '../AdageHeader'
 
@@ -50,7 +50,7 @@ describe('AdageHeader', () => {
 
   beforeEach(async () => {
     const notifsImport = (await vi.importActual(
-      'hooks/useNotification'
+      'commons/hooks/useNotification'
     )) as ReturnType<typeof useNotification.useNotification>
     vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
       ...notifsImport,

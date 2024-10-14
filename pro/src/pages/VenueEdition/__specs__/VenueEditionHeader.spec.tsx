@@ -3,15 +3,15 @@ import { userEvent } from '@testing-library/user-event'
 
 import { VenueTypeCode } from 'apiClient/v1'
 import * as useAnalytics from 'app/App/analytics/firebase'
-import { UploaderModeEnum } from 'components/ImageUploader/types'
-import { Events } from 'core/FirebaseEvents/constants'
-import { defaultGetVenue } from 'utils/collectiveApiFactories'
-import { defaultGetOffererResponseModel } from 'utils/individualApiFactories'
+import { Events } from 'commons/core/FirebaseEvents/constants'
+import { defaultGetVenue } from 'commons/utils/collectiveApiFactories'
+import { defaultGetOffererResponseModel } from 'commons/utils/individualApiFactories'
 import {
   renderWithProviders,
   RenderWithProvidersOptions,
-} from 'utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'utils/storeFactories'
+} from 'commons/utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
+import { UploaderModeEnum } from 'components/ImageUploader/types'
 
 import {
   VenueEditionHeader,

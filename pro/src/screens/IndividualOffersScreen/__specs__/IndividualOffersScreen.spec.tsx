@@ -14,22 +14,22 @@ import {
   ALL_OFFERER_ADDRESS_OPTION,
   ALL_VENUES_OPTION,
   DEFAULT_SEARCH_FILTERS,
-} from 'core/Offers/constants'
-import { SearchFiltersParams } from 'core/Offers/types'
-import * as useNotification from 'hooks/useNotification'
-import { computeAddressDisplayName } from 'repository/venuesService'
+} from 'commons/core/Offers/constants'
+import { SearchFiltersParams } from 'commons/core/Offers/types'
+import * as useNotification from 'commons/hooks/useNotification'
 import {
   defaultGetOffererResponseModel,
   getOffererNameFactory,
   getOfferManagingOffererFactory,
   listOffersOfferFactory,
-} from 'utils/individualApiFactories'
-import { offererAddressFactory } from 'utils/offererAddressFactories'
+} from 'commons/utils/individualApiFactories'
+import { offererAddressFactory } from 'commons/utils/offererAddressFactories'
 import {
   renderWithProviders,
   RenderWithProvidersOptions,
-} from 'utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'utils/storeFactories'
+} from 'commons/utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
+import { computeAddressDisplayName } from 'repository/venuesService'
 
 import {
   IndividualOffersScreen,
@@ -98,9 +98,9 @@ const offererAddressOptions = [
   { value: '2', label: '1 rue de paris 75001 New York' },
 ]
 
-vi.mock('utils/date', async () => {
+vi.mock('commons/utils/date', async () => {
   return {
-    ...(await vi.importActual('utils/date')),
+    ...(await vi.importActual('commons/utils/date')),
     getToday: vi
       .fn()
       .mockImplementation(() => new Date('2020-12-15T12:00:00Z')),
@@ -146,7 +146,7 @@ describe('IndividualOffersScreen', () => {
     }
 
     const notifsImport = (await vi.importActual(
-      'hooks/useNotification'
+      'commons/hooks/useNotification'
     )) as ReturnType<typeof useNotification.useNotification>
     vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
       ...notifsImport,

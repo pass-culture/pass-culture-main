@@ -3,7 +3,6 @@
 /* tslint:disable */
 /* eslint-disable */
 export type LegalStatusResponseModel = {
-  id: number;
-  name: string;
-};
-
+  id: number
+  name: string
+}

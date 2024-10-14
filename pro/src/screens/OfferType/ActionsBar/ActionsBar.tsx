@@ -1,9 +1,9 @@
 import React from 'react'
 
 import { useAnalytics } from 'app/App/analytics/firebase'
+import { Events } from 'commons/core/FirebaseEvents/constants'
+import { computeIndividualOffersUrl } from 'commons/core/Offers/utils/computeIndividualOffersUrl'
 import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
-import { Events } from 'core/FirebaseEvents/constants'
-import { computeIndividualOffersUrl } from 'core/Offers/utils/computeIndividualOffersUrl'
 import fullRightIcon from 'icons/full-right.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'

@@ -6,11 +6,10 @@
  * Available stock quantity for a book
  */
 export type UpdateVenueStockBodyModel = {
-  available: number;
-  price: number;
+  available: number
+  price: number
   /**
    * Format: EAN13
    */
-  ref: string;
-};
-
+  ref: string
+}

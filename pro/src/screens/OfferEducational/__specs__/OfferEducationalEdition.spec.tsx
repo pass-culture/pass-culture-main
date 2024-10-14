@@ -1,12 +1,12 @@
 import { screen, waitFor } from '@testing-library/react'
 import React from 'react'
 
-import { Mode } from 'core/OfferEducational/types'
+import { Mode } from 'commons/core/OfferEducational/types'
 import {
   getCollectiveOfferFactory,
   getCollectiveOfferVenueFactory,
-} from 'utils/collectiveApiFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
+} from 'commons/utils/collectiveApiFactories'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { defaultEditionProps } from '../__tests-utils__/defaultProps'
 import {

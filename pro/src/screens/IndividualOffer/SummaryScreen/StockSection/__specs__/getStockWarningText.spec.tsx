@@ -1,5 +1,5 @@
 import { OfferStatus } from 'apiClient/v1'
-import { getIndividualOfferFactory } from 'utils/individualApiFactories'
+import { getIndividualOfferFactory } from 'commons/utils/individualApiFactories'
 
 import { getStockWarningText } from '../StockSection'
 

@@ -2,7 +2,7 @@ import {
   SubcategoryResponseModel,
   VenueListItemResponseModel,
 } from 'apiClient/v1'
-import { CATEGORY_STATUS } from 'core/Offers/constants'
+import { CATEGORY_STATUS } from 'commons/core/Offers/constants'
 
 export const getFilteredVenueListBySubcategory = (
   venueList: VenueListItemResponseModel[],

@@ -3,6 +3,5 @@
 /* tslint:disable */
 /* eslint-disable */
 export type MentalDisabilityModel = {
-  trainedPersonnel?: string;
-};
-
+  trainedPersonnel?: string
+}

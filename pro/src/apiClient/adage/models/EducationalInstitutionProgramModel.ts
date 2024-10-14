@@ -3,8 +3,7 @@
 /* tslint:disable */
 /* eslint-disable */
 export type EducationalInstitutionProgramModel = {
-  description?: string | null;
-  label?: string | null;
-  name: string;
-};
-
+  description?: string | null
+  label?: string | null
+  name: string
+}

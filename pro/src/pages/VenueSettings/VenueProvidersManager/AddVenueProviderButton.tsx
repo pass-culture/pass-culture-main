@@ -7,15 +7,15 @@ import { useAnalytics } from 'app/App/analytics/firebase'
 import {
   GET_PROVIDERS_QUERY_KEY,
   GET_VENUE_PROVIDERS_QUERY_KEY,
-} from 'config/swrQueryKeys'
-import { SynchronizationEvents } from 'core/FirebaseEvents/constants'
+} from 'commons/config/swrQueryKeys'
+import { SynchronizationEvents } from 'commons/core/FirebaseEvents/constants'
+import { sortByLabel } from 'commons/utils/strings'
 import fullMoreIcon from 'icons/full-more.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SelectInput } from 'ui-kit/form/Select/SelectInput'
 import { FieldLayout } from 'ui-kit/form/shared/FieldLayout/FieldLayout'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
-import { sortByLabel } from 'utils/strings'
 
 import { DEFAULT_PROVIDER_OPTION } from './utils/_constants'
 import { VenueProviderForm } from './VenueProviderForm'

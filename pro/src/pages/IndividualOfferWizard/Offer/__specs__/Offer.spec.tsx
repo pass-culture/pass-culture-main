@@ -2,14 +2,14 @@ import { screen } from '@testing-library/react'
 import React from 'react'
 import { generatePath } from 'react-router-dom'
 
-import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
-import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
-import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
+import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
+import { getIndividualOfferPath } from 'commons/core/Offers/utils/getIndividualOfferUrl'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
-} from 'utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'utils/storeFactories'
+} from 'commons/utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
+import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 
 import { Offer } from '../Offer'
 

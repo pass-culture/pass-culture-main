@@ -1,13 +1,13 @@
 import { screen } from '@testing-library/react'
 
 import { api } from 'apiClient/api'
+import { getCollectiveOfferFactory } from 'commons/utils/collectiveApiFactories'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import {
   managedVenueFactory,
   userOffererFactory,
 } from 'screens/OfferEducational/__tests-utils__/userOfferersFactory'
 import { OptionalCollectiveOfferFromParamsProps } from 'screens/OfferEducational/useCollectiveOfferFromParams'
-import { getCollectiveOfferFactory } from 'utils/collectiveApiFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { CollectiveOfferCreation } from '../CollectiveOfferCreation'
 

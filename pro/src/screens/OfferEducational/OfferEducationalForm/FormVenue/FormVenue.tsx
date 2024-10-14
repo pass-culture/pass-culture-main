@@ -6,16 +6,16 @@ import {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
 } from 'apiClient/v1'
-import { Callout } from 'components/Callout/Callout'
-import { CalloutVariant } from 'components/Callout/types'
-import { FormLayout } from 'components/FormLayout/FormLayout'
 import {
   isCollectiveOffer,
   Mode,
   OfferEducationalFormValues,
-} from 'core/OfferEducational/types'
-import { applyVenueDefaultsToFormValues } from 'core/OfferEducational/utils/applyVenueDefaultsToFormValues'
-import { SelectOption } from 'custom_types/form'
+} from 'commons/core/OfferEducational/types'
+import { applyVenueDefaultsToFormValues } from 'commons/core/OfferEducational/utils/applyVenueDefaultsToFormValues'
+import { SelectOption } from 'commons/custom_types/form'
+import { Callout } from 'components/Callout/Callout'
+import { CalloutVariant } from 'components/Callout/types'
+import { FormLayout } from 'components/FormLayout/FormLayout'
 import { Select } from 'ui-kit/form/Select/Select'
 
 import { OFFERER_LABEL, VENUE_LABEL } from '../../constants/labels'

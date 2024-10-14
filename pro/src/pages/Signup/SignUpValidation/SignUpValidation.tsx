@@ -4,7 +4,7 @@ import { useParams, Navigate } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { getError, isErrorAPIError } from 'apiClient/helpers'
-import { selectCurrentUser } from 'store/user/selectors'
+import { selectCurrentUser } from 'commons/store/user/selectors'
 
 type Params = { token: string }
 

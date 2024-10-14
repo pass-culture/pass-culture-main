@@ -10,11 +10,11 @@ import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import {
   SignupJourneyContext,
   SignupJourneyContextValues,
-} from 'context/SignupJourneyContext/SignupJourneyContext'
-import * as getSirenData from 'core/Offerers/getSirenData'
+} from 'commons/context/SignupJourneyContext/SignupJourneyContext'
+import * as getSirenData from 'commons/core/Offerers/getSirenData'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
 import { DEFAULT_OFFERER_FORM_VALUES } from 'screens/SignupJourneyForm/Offerer/constants'
-import { renderWithProviders } from 'utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import { Offerers } from '../Offerers'
 

@@ -3,11 +3,11 @@ import { userEvent } from '@testing-library/user-event'
 import { addYears, format } from 'date-fns'
 import { Formik } from 'formik'
 
-import { DEFAULT_EAC_FORM_VALUES } from 'core/OfferEducational/constants'
-import { OfferEducationalFormValues } from 'core/OfferEducational/types'
+import { DEFAULT_EAC_FORM_VALUES } from 'commons/core/OfferEducational/constants'
+import { OfferEducationalFormValues } from 'commons/core/OfferEducational/types'
+import { FORMAT_ISO_DATE_ONLY } from 'commons/utils/date'
 import { getOfferEducationalValidationSchema } from 'screens/OfferEducational/validationSchema'
 import { Button } from 'ui-kit/Button/Button'
-import { FORMAT_ISO_DATE_ONLY } from 'utils/date'
 
 import { FormDates, FormDatesProps } from '../FormDates'
 

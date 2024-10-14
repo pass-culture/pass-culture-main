@@ -4,13 +4,13 @@ import React from 'react'
 
 import { api } from 'apiClient/api'
 import { CancelablePromise, GetOffererResponseModel } from 'apiClient/v1'
-import { SelectOption } from 'custom_types/form'
-import { defaultGetOffererResponseModel } from 'utils/individualApiFactories'
+import { SelectOption } from 'commons/custom_types/form'
+import { defaultGetOffererResponseModel } from 'commons/utils/individualApiFactories'
 import {
   renderWithProviders,
   RenderWithProvidersOptions,
-} from 'utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'utils/storeFactories'
+} from 'commons/utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
 
 import { OffererStatsScreen } from '../OffererStatsScreen'
 

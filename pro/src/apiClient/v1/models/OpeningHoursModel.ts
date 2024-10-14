@@ -3,7 +3,6 @@
 /* tslint:disable */
 /* eslint-disable */
 export type OpeningHoursModel = {
-  timespan?: Array<Array<string>> | null;
-  weekday: string;
-};
-
+  timespan?: Array<Array<string>> | null
+  weekday: string
+}

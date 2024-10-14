@@ -7,14 +7,14 @@ import { api } from 'apiClient/api'
 import { ApiError } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
-import { BOOKING_STATUS } from 'core/Bookings/constants'
-import { NOTIFICATION_LONG_SHOW_DURATION } from 'core/Notification/constants'
-import * as useNotification from 'hooks/useNotification'
+import { BOOKING_STATUS } from 'commons/core/Bookings/constants'
+import { NOTIFICATION_LONG_SHOW_DURATION } from 'commons/core/Notification/constants'
+import * as useNotification from 'commons/hooks/useNotification'
 import {
   collectiveBookingCollectiveStockFactory,
   collectiveBookingFactory,
-} from 'utils/collectiveApiFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
+} from 'commons/utils/collectiveApiFactories'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import {
   CollectiveActionButtons,
@@ -63,7 +63,7 @@ describe('collectiveActionButton api call', () => {
   const notifySuccess = vi.fn()
   beforeEach(async () => {
     const notifsImport = (await vi.importActual(
-      'hooks/useNotification'
+      'commons/hooks/useNotification'
     )) as ReturnType<typeof useNotification.useNotification>
     vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
       ...notifsImport,

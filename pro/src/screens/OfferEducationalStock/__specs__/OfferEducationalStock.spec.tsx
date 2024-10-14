@@ -4,14 +4,14 @@ import { addDays, addMinutes, format, subDays } from 'date-fns'
 import * as router from 'react-router-dom'
 
 import { CollectiveBookingStatus } from 'apiClient/v1'
-import { DEFAULT_EAC_STOCK_FORM_VALUES } from 'core/OfferEducational/constants'
-import { Mode, EducationalOfferType } from 'core/OfferEducational/types'
+import { DEFAULT_EAC_STOCK_FORM_VALUES } from 'commons/core/OfferEducational/constants'
+import { Mode, EducationalOfferType } from 'commons/core/OfferEducational/types'
 import {
   getCollectiveOfferFactory,
   getCollectiveOfferCollectiveStockFactory,
-} from 'utils/collectiveApiFactories'
-import { FORMAT_HH_mm, FORMAT_ISO_DATE_ONLY } from 'utils/date'
-import { renderWithProviders } from 'utils/renderWithProviders'
+} from 'commons/utils/collectiveApiFactories'
+import { FORMAT_HH_mm, FORMAT_ISO_DATE_ONLY } from 'commons/utils/date'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { DETAILS_PRICE_LABEL } from '../constants/labels'
 import {

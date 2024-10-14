@@ -3,9 +3,9 @@ import { useLocation } from 'react-router-dom'
 
 import { GetOffererResponseModel } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
+import { BankAccountEvents } from 'commons/core/FirebaseEvents/constants'
 import { Callout } from 'components/Callout/Callout'
 import { CalloutVariant } from 'components/Callout/types'
-import { BankAccountEvents } from 'core/FirebaseEvents/constants'
 
 interface AddBankAccountCalloutProps {
   offerer?: GetOffererResponseModel | null

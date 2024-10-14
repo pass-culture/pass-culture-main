@@ -1,7 +1,7 @@
 import React from 'react'
 
 import { GetIndividualOfferWithAddressResponseModel } from 'apiClient/v1'
-import { useActiveFeature } from 'hooks/useActiveFeature'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { getIndividualOfferImage } from 'screens/IndividualOffer/utils/getIndividualOfferImage'
 
 import style from './OfferAppPreview.module.scss'

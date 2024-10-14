@@ -5,20 +5,20 @@ import {
   CollectiveOfferResponseModel,
   ListOffersOfferResponseModel,
 } from 'apiClient/v1'
-import { isOfferEducational } from 'core/OfferEducational/types'
+import { isOfferEducational } from 'commons/core/OfferEducational/types'
 import {
   OFFER_STATUS_PENDING,
   OFFER_STATUS_SOLD_OUT,
-} from 'core/Offers/constants'
-import { useActiveFeature } from 'hooks/useActiveFeature'
+} from 'commons/core/Offers/constants'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
+import { FORMAT_DD_MM_YYYY_HH_mm } from 'commons/utils/date'
+import { pluralize } from 'commons/utils/pluralize'
+import { formatLocalTimeDateString } from 'commons/utils/timezone'
 import fullErrorIcon from 'icons/full-error.svg'
 import { getDepartmentCode } from 'screens/IndividualOffer/utils/getDepartmentCode'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { Tag, TagVariant } from 'ui-kit/Tag/Tag'
 import { useTooltipProps } from 'ui-kit/Tooltip/useTooltipProps'
-import { FORMAT_DD_MM_YYYY_HH_mm } from 'utils/date'
-import { pluralize } from 'utils/pluralize'
-import { formatLocalTimeDateString } from 'utils/timezone'
 
 import styles from '../Cells.module.scss'
 

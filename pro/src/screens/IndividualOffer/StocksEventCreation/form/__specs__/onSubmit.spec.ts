@@ -1,6 +1,6 @@
 import { api } from 'apiClient/api'
+import { StocksEventFactory } from 'commons/utils/individualApiFactories'
 import { StocksEvent } from 'components/StocksEventList/StocksEventList'
-import { StocksEventFactory } from 'utils/individualApiFactories'
 
 import { onSubmit } from '../onSubmit'
 import {

@@ -2,9 +2,9 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { GetBookingResponse } from '../models/GetBookingResponse';
-import type { CancelablePromise } from '../core/CancelablePromise';
-import type { BaseHttpRequest } from '../core/BaseHttpRequest';
+import type { GetBookingResponse } from '../models/GetBookingResponse'
+import type { CancelablePromise } from '../core/CancelablePromise'
+import type { BaseHttpRequest } from '../core/BaseHttpRequest'
 export class DPrCiEApiContremarqueService {
   constructor(public readonly httpRequest: BaseHttpRequest) {}
   /**
@@ -14,14 +14,12 @@ export class DPrCiEApiContremarqueService {
    * @returns void
    * @throws ApiError
    */
-  public patchCancelBookingByToken(
-    token: string,
-  ): CancelablePromise<void> {
+  public patchCancelBookingByToken(token: string): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'PATCH',
       url: '/v2/bookings/cancel/token/{token}',
       path: {
-        'token': token,
+        token: token,
       },
       errors: {
         401: `Authentification nécessaire`,
@@ -30,7 +28,7 @@ export class DPrCiEApiContremarqueService {
         410: `La contremarque a déjà été annulée`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
   /**
    * @deprecated
@@ -39,14 +37,12 @@ export class DPrCiEApiContremarqueService {
    * @returns void
    * @throws ApiError
    */
-  public patchBookingKeepByToken(
-    token: string,
-  ): CancelablePromise<void> {
+  public patchBookingKeepByToken(token: string): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'PATCH',
       url: '/v2/bookings/keep/token/{token}',
       path: {
-        'token': token,
+        token: token,
       },
       errors: {
         401: `Authentification nécessaire`,
@@ -55,7 +51,7 @@ export class DPrCiEApiContremarqueService {
         410: `La requête est refusée car la contremarque n'a pas encore été validée, a été annulée, ou son remboursement a été initié`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
   /**
    * @deprecated
@@ -65,13 +61,13 @@ export class DPrCiEApiContremarqueService {
    * @throws ApiError
    */
   public getBookingByTokenV2(
-    token: string,
+    token: string
   ): CancelablePromise<GetBookingResponse> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/v2/bookings/token/{token}',
       path: {
-        'token': token,
+        token: token,
       },
       errors: {
         401: `Authentification nécessaire`,
@@ -81,7 +77,7 @@ export class DPrCiEApiContremarqueService {
         En l’invalidant vous indiquez qu’elle n’a pas été utilisée et vous ne serez pas remboursé.`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
   /**
    * @deprecated
@@ -90,14 +86,12 @@ export class DPrCiEApiContremarqueService {
    * @returns void
    * @throws ApiError
    */
-  public patchBookingUseByToken(
-    token: string,
-  ): CancelablePromise<void> {
+  public patchBookingUseByToken(token: string): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'PATCH',
       url: '/v2/bookings/use/token/{token}',
       path: {
-        'token': token,
+        token: token,
       },
       errors: {
         401: `Authentification nécessaire`,
@@ -107,6 +101,6 @@ export class DPrCiEApiContremarqueService {
         En l’invalidant vous indiquez qu’elle n’a pas été utilisée et vous ne serez pas remboursé.`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 }

@@ -2,14 +2,14 @@ import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
-import { Notification } from 'components/Notification/Notification'
-import { AdageUserContext } from 'pages/AdageIframe/app/providers/AdageUserContext'
-import { defaultAdageUser } from 'utils/adageFactories'
-import * as localStorageAvailable from 'utils/localStorageAvailable'
+import { defaultAdageUser } from 'commons/utils/adageFactories'
+import * as localStorageAvailable from 'commons/utils/localStorageAvailable'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
-} from 'utils/renderWithProviders'
+} from 'commons/utils/renderWithProviders'
+import { Notification } from 'components/Notification/Notification'
+import { AdageUserContext } from 'pages/AdageIframe/app/providers/AdageUserContext'
 
 import { Autocomplete } from '../Autocomplete'
 

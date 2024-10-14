@@ -2,9 +2,9 @@ import { FormikProvider, useFormik } from 'formik'
 import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 
+import { useSignupJourneyContext } from 'commons/context/SignupJourneyContext/SignupJourneyContext'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { SIGNUP_JOURNEY_STEP_IDS } from 'components/SignupJourneyStepper/constants'
-import { useSignupJourneyContext } from 'context/SignupJourneyContext/SignupJourneyContext'
 
 import { ActionBar } from '../ActionBar/ActionBar'
 import { DEFAULT_OFFERER_FORM_VALUES } from '../Offerer/constants'

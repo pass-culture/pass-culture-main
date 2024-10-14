@@ -1,4 +1,10 @@
 import { GetIndividualOfferWithAddressResponseModel } from 'apiClient/v1'
+import {
+  OFFER_WITHDRAWAL_TYPE_LABELS,
+  OFFER_WIZARD_MODE,
+} from 'commons/core/Offers/constants'
+import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { AccessibilitySummarySection } from 'components/AccessibilitySummarySection/AccessibilitySummarySection'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { SummaryContent } from 'components/SummaryLayout/SummaryContent'
@@ -9,12 +15,6 @@ import {
 import { SummaryLayout } from 'components/SummaryLayout/SummaryLayout'
 import { SummarySection } from 'components/SummaryLayout/SummarySection'
 import { SummarySubSection } from 'components/SummaryLayout/SummarySubSection'
-import {
-  OFFER_WITHDRAWAL_TYPE_LABELS,
-  OFFER_WIZARD_MODE,
-} from 'core/Offers/constants'
-import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
-import { useActiveFeature } from 'hooks/useActiveFeature'
 import { computeAddressDisplayName } from 'repository/venuesService'
 
 import { humanizeDelay } from '../SummaryScreen/OfferSection/utils'

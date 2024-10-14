@@ -6,9 +6,9 @@ import { SubcategoryIdEnum } from 'apiClient/v1'
 import {
   IndividualOfferContext,
   IndividualOfferContextValues,
-} from 'context/IndividualOfferContext/IndividualOfferContext'
-import { REIMBURSEMENT_RULES } from 'core/Finances/constants'
-import { CATEGORY_STATUS } from 'core/Offers/constants'
+} from 'commons/context/IndividualOfferContext/IndividualOfferContext'
+import { REIMBURSEMENT_RULES } from 'commons/core/Finances/constants'
+import { CATEGORY_STATUS } from 'commons/core/Offers/constants'
 import {
   categoryFactory,
   getIndividualOfferFactory,
@@ -16,12 +16,12 @@ import {
   individualOfferContextValuesFactory,
   subcategoryFactory,
   venueListItemFactory,
-} from 'utils/individualApiFactories'
+} from 'commons/utils/individualApiFactories'
 import {
   renderWithProviders,
   RenderWithProvidersOptions,
-} from 'utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'utils/storeFactories'
+} from 'commons/utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
 
 import {
   UsefulInformationScreen,

@@ -2,8 +2,8 @@ import React from 'react'
 import { useLocation } from 'react-router-dom'
 
 import { useAnalytics } from 'app/App/analytics/firebase'
+import { Events } from 'commons/core/FirebaseEvents/constants'
 import { Callout } from 'components/Callout/Callout'
-import { Events } from 'core/FirebaseEvents/constants'
 
 import styles from './OperationProcedures.module.scss'
 

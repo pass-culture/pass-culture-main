@@ -5,16 +5,16 @@ import { expect } from 'vitest'
 
 import { api } from 'apiClient/api'
 import * as useAnalytics from 'app/App/analytics/firebase'
-import { CollectiveBookingsEvents } from 'core/FirebaseEvents/constants'
-import { Audience } from 'core/shared/types'
-import * as filterBookingsRecap from 'screens/Bookings/BookingsRecapTable/utils/filterBookingsRecap'
+import { CollectiveBookingsEvents } from 'commons/core/FirebaseEvents/constants'
+import { Audience } from 'commons/core/shared/types'
 import {
   collectiveBookingByIdFactory,
   collectiveBookingCollectiveStockFactory,
   collectiveBookingFactory,
-} from 'utils/collectiveApiFactories'
-import { bookingRecapFactory } from 'utils/individualApiFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
+} from 'commons/utils/collectiveApiFactories'
+import { bookingRecapFactory } from 'commons/utils/individualApiFactories'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import * as filterBookingsRecap from 'screens/Bookings/BookingsRecapTable/utils/filterBookingsRecap'
 
 import { BookingsRecapTable } from '../BookingsRecapTable'
 import {
@@ -22,7 +22,7 @@ import {
   DEFAULT_OMNISEARCH_CRITERIA,
 } from '../Filters/constants'
 
-vi.mock('utils/windowMatchMedia', () => ({
+vi.mock('commons/utils/windowMatchMedia', () => ({
   doesUserPreferReducedMotion: vi.fn(() => true),
 }))
 Element.prototype.scrollIntoView = vi.fn()

@@ -1,10 +1,10 @@
 import cn from 'classnames'
 import React, { useState } from 'react'
 
+import { localStorageAvailable } from 'commons/utils/localStorageAvailable'
 import strokeCloseIcon from 'icons/stroke-close.svg'
 import { ShadowTipsHelpIcon } from 'ui-kit/Icons/SVGs/ShadowTipsHelpIcon'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
-import { localStorageAvailable } from 'utils/localStorageAvailable'
 
 import styles from './DiffuseHelp.module.scss'
 const LOCAL_STORAGE_HAS_SEEN_DIFFUSE_HELP_KEY = 'DIFFUSE_HELP_ADAGE_SEEN'

@@ -11,20 +11,21 @@ import {
   CollectiveBookingResponseModel,
 } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
-import { NoData } from 'components/NoData/NoData'
 import {
   GET_BOOKINGS_QUERY_KEY,
   GET_HAS_BOOKINGS_QUERY_KEY,
   GET_OFFERER_ADDRESS_QUERY_KEY,
   GET_VENUES_QUERY_KEY,
-} from 'config/swrQueryKeys'
-import { DEFAULT_PRE_FILTERS } from 'core/Bookings/constants'
-import { PreFiltersParams } from 'core/Bookings/types'
-import { Events } from 'core/FirebaseEvents/constants'
-import { Audience } from 'core/shared/types'
-import { useCurrentUser } from 'hooks/useCurrentUser'
-import { useIsNewInterfaceActive } from 'hooks/useIsNewInterfaceActive'
-import { useNotification } from 'hooks/useNotification'
+} from 'commons/config/swrQueryKeys'
+import { DEFAULT_PRE_FILTERS } from 'commons/core/Bookings/constants'
+import { PreFiltersParams } from 'commons/core/Bookings/types'
+import { Events } from 'commons/core/FirebaseEvents/constants'
+import { Audience } from 'commons/core/shared/types'
+import { useCurrentUser } from 'commons/hooks/useCurrentUser'
+import { useIsNewInterfaceActive } from 'commons/hooks/useIsNewInterfaceActive'
+import { useNotification } from 'commons/hooks/useNotification'
+import { selectCurrentOffererId } from 'commons/store/user/selectors'
+import { NoData } from 'components/NoData/NoData'
 import strokeLibraryIcon from 'icons/stroke-library.svg'
 import strokeUserIcon from 'icons/stroke-user.svg'
 import { ChoosePreFiltersMessage } from 'pages/Bookings/ChoosePreFiltersMessage/ChoosePreFiltersMessage'
@@ -33,11 +34,10 @@ import {
   formatAndOrderAddresses,
   formatAndOrderVenues,
 } from 'repository/venuesService'
-import { selectCurrentOffererId } from 'store/user/selectors'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 import { Tabs } from 'ui-kit/Tabs/Tabs'
 
-import { stringify } from '../../utils/query-string'
+import { stringify } from '../../commons/utils/query-string'
 
 import styles from './Bookings.module.scss'
 import { BookingsRecapTable } from './BookingsRecapTable/BookingsRecapTable'

@@ -3,7 +3,6 @@
 /* tslint:disable */
 /* eslint-disable */
 export type TemplateDatesModel = {
-  end: string;
-  start: string;
-};
-
+  end: string
+  start: string
+}

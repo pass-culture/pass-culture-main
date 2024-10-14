@@ -3,11 +3,11 @@ import React, { useEffect } from 'react'
 
 import { CollectiveBookingResponseModel } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
+import { Events } from 'commons/core/FirebaseEvents/constants'
+import { Audience } from 'commons/core/shared/types'
+import { SortingMode, useColumnSorting } from 'commons/hooks/useColumnSorting'
+import { usePagination } from 'commons/hooks/usePagination'
 import { SortArrow } from 'components/StocksEventList/SortArrow'
-import { Events } from 'core/FirebaseEvents/constants'
-import { Audience } from 'core/shared/types'
-import { SortingMode, useColumnSorting } from 'hooks/useColumnSorting'
-import { usePagination } from 'hooks/usePagination'
 import { BookingsFilters } from 'screens/Bookings/BookingsRecapTable/types'
 import {
   sortByBookingDate,

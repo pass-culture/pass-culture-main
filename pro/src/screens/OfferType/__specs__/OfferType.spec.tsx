@@ -5,19 +5,19 @@ import { Route, Routes } from 'react-router-dom'
 import { api } from 'apiClient/api'
 import { CancelablePromise, GetOffererResponseModel } from 'apiClient/v1'
 import * as useAnalytics from 'app/App/analytics/firebase'
-import { Events } from 'core/FirebaseEvents/constants'
-import * as useNotification from 'hooks/useNotification'
+import { Events } from 'commons/core/FirebaseEvents/constants'
+import * as useNotification from 'commons/hooks/useNotification'
 import {
   collectiveOfferFactory,
   defaultDMSApplicationForEAC,
-} from 'utils/collectiveApiFactories'
+} from 'commons/utils/collectiveApiFactories'
 import {
   defaultGetOffererResponseModel,
   defaultGetOffererVenueResponseModel,
   getOffererNameFactory,
-} from 'utils/individualApiFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'utils/storeFactories'
+} from 'commons/utils/individualApiFactories'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
 
 import { OfferTypeScreen } from '../OfferType'
 
@@ -290,7 +290,7 @@ describe('OfferType', () => {
   it('should display error message if trying to duplicate without template offer', async () => {
     const notifyError = vi.fn()
     const notifsImport = (await vi.importActual(
-      'hooks/useNotification'
+      'commons/hooks/useNotification'
     )) as ReturnType<typeof useNotification.useNotification>
     vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
       ...notifsImport,

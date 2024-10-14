@@ -1,7 +1,7 @@
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 
 import { useAnalytics } from 'app/App/analytics/firebase'
-import { Events } from 'core/FirebaseEvents/constants'
+import { Events } from 'commons/core/FirebaseEvents/constants'
 import fullLinkIcon from 'icons/full-link.svg'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 

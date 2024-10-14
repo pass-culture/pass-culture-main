@@ -4,13 +4,13 @@ import * as router from 'react-router-dom'
 
 import { AuthenticatedResponse, OfferAddressType } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
-import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
 import {
   defaultAdageUser,
   defaultCollectiveOffer,
   defaultCollectiveTemplateOffer,
-} from 'utils/adageFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
+} from 'commons/utils/adageFactories'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
 
 import { CardComponentProps, OfferCardComponent } from '../OfferCard'
 

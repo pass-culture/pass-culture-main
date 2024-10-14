@@ -8,12 +8,12 @@ import {
   GetIndividualOfferResponseModel,
   GetIndividualOfferWithAddressResponseModel,
 } from 'apiClient/v1'
+import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
+import { getIndividualOfferPath } from 'commons/core/Offers/utils/getIndividualOfferUrl'
+import { getIndividualOfferFactory } from 'commons/utils/individualApiFactories'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
-import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
-import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
-import { getIndividualOfferFactory } from 'utils/individualApiFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
 
 import {
   PriceCategoriesScreen,

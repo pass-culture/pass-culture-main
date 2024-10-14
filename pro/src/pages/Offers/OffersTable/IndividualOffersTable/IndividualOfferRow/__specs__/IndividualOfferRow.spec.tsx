@@ -10,13 +10,13 @@ import {
 } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
-import { Notification } from 'components/Notification/Notification'
-import { listOffersVenueFactory } from 'utils/collectiveApiFactories'
+import { listOffersVenueFactory } from 'commons/utils/collectiveApiFactories'
 import {
   listOffersOfferFactory,
   listOffersStockFactory,
-} from 'utils/individualApiFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
+} from 'commons/utils/individualApiFactories'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { Notification } from 'components/Notification/Notification'
 
 import {
   IndividualOfferRow,

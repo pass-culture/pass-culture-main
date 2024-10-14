@@ -2,12 +2,12 @@ import {
   GetOffererNameResponseModel,
   VenueListItemResponseModel,
 } from 'apiClient/v1'
-import { FORM_DEFAULT_VALUES } from 'components/IndividualOfferForm/constants'
-import { IndividualOfferFormValues } from 'components/IndividualOfferForm/types'
 import {
   getOffererNameFactory,
   venueListItemFactory,
-} from 'utils/individualApiFactories'
+} from 'commons/utils/individualApiFactories'
+import { FORM_DEFAULT_VALUES } from 'components/IndividualOfferForm/constants'
+import { IndividualOfferFormValues } from 'components/IndividualOfferForm/types'
 
 import { setDefaultInitialFormValues } from '../setDefaultInitialFormValues'
 

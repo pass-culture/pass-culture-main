@@ -1,4 +1,4 @@
-import { getYupValidationSchemaErrors } from 'utils/yupValidationTestHelpers'
+import { getYupValidationSchemaErrors } from 'commons/utils/yupValidationTestHelpers'
 
 import { PRICE_CATEGORY_PRICE_MAX } from '../constants'
 import {

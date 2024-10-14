@@ -3,13 +3,12 @@
 /* tslint:disable */
 /* eslint-disable */
 export type AddressBodyModel = {
-  city: string;
-  isManualEdition?: boolean;
-  isVenueAddress?: boolean;
-  label?: string | null;
-  latitude: (number | string);
-  longitude: (number | string);
-  postalCode: string;
-  street: string;
-};
-
+  city: string
+  isManualEdition?: boolean
+  isVenueAddress?: boolean
+  label?: string | null
+  latitude: number | string
+  longitude: number | string
+  postalCode: string
+  street: string
+}

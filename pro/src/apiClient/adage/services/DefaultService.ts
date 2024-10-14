@@ -2,40 +2,40 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { AcademiesResponseModel } from '../models/AcademiesResponseModel';
-import type { AdageBaseModel } from '../models/AdageBaseModel';
-import type { AdageHeaderLogBody } from '../models/AdageHeaderLogBody';
-import type { AuthenticatedResponse } from '../models/AuthenticatedResponse';
-import type { BookCollectiveOfferRequest } from '../models/BookCollectiveOfferRequest';
-import type { BookCollectiveOfferResponse } from '../models/BookCollectiveOfferResponse';
-import type { CatalogViewBody } from '../models/CatalogViewBody';
-import type { CategoriesResponseModel } from '../models/CategoriesResponseModel';
-import type { CollectiveOfferResponseModel } from '../models/CollectiveOfferResponseModel';
-import type { CollectiveOfferTemplateResponseModel } from '../models/CollectiveOfferTemplateResponseModel';
-import type { CollectiveRequestBody } from '../models/CollectiveRequestBody';
-import type { CollectiveRequestResponseModel } from '../models/CollectiveRequestResponseModel';
-import type { EacFormatsResponseModel } from '../models/EacFormatsResponseModel';
-import type { EducationalInstitutionWithBudgetResponseModel } from '../models/EducationalInstitutionWithBudgetResponseModel';
-import type { FavoritesResponseModel } from '../models/FavoritesResponseModel';
-import type { ListCollectiveOffersResponseModel } from '../models/ListCollectiveOffersResponseModel';
-import type { ListCollectiveOfferTemplateResponseModel } from '../models/ListCollectiveOfferTemplateResponseModel';
-import type { ListFeatureResponseModel } from '../models/ListFeatureResponseModel';
-import type { LocalOfferersPlaylist } from '../models/LocalOfferersPlaylist';
-import type { OfferFavoriteBody } from '../models/OfferFavoriteBody';
-import type { OfferIdBody } from '../models/OfferIdBody';
-import type { OfferListSwitch } from '../models/OfferListSwitch';
-import type { PlaylistBody } from '../models/PlaylistBody';
-import type { PostCollectiveRequestBodyModel } from '../models/PostCollectiveRequestBodyModel';
-import type { RedactorPreferences } from '../models/RedactorPreferences';
-import type { SearchBody } from '../models/SearchBody';
-import type { StockIdBody } from '../models/StockIdBody';
-import type { TrackingAutocompleteSuggestionBody } from '../models/TrackingAutocompleteSuggestionBody';
-import type { TrackingCTAShareBody } from '../models/TrackingCTAShareBody';
-import type { TrackingFilterBody } from '../models/TrackingFilterBody';
-import type { TrackingShowMoreBody } from '../models/TrackingShowMoreBody';
-import type { VenueResponse } from '../models/VenueResponse';
-import type { CancelablePromise } from '../core/CancelablePromise';
-import type { BaseHttpRequest } from '../core/BaseHttpRequest';
+import type { AcademiesResponseModel } from '../models/AcademiesResponseModel'
+import type { AdageBaseModel } from '../models/AdageBaseModel'
+import type { AdageHeaderLogBody } from '../models/AdageHeaderLogBody'
+import type { AuthenticatedResponse } from '../models/AuthenticatedResponse'
+import type { BookCollectiveOfferRequest } from '../models/BookCollectiveOfferRequest'
+import type { BookCollectiveOfferResponse } from '../models/BookCollectiveOfferResponse'
+import type { CatalogViewBody } from '../models/CatalogViewBody'
+import type { CategoriesResponseModel } from '../models/CategoriesResponseModel'
+import type { CollectiveOfferResponseModel } from '../models/CollectiveOfferResponseModel'
+import type { CollectiveOfferTemplateResponseModel } from '../models/CollectiveOfferTemplateResponseModel'
+import type { CollectiveRequestBody } from '../models/CollectiveRequestBody'
+import type { CollectiveRequestResponseModel } from '../models/CollectiveRequestResponseModel'
+import type { EacFormatsResponseModel } from '../models/EacFormatsResponseModel'
+import type { EducationalInstitutionWithBudgetResponseModel } from '../models/EducationalInstitutionWithBudgetResponseModel'
+import type { FavoritesResponseModel } from '../models/FavoritesResponseModel'
+import type { ListCollectiveOffersResponseModel } from '../models/ListCollectiveOffersResponseModel'
+import type { ListCollectiveOfferTemplateResponseModel } from '../models/ListCollectiveOfferTemplateResponseModel'
+import type { ListFeatureResponseModel } from '../models/ListFeatureResponseModel'
+import type { LocalOfferersPlaylist } from '../models/LocalOfferersPlaylist'
+import type { OfferFavoriteBody } from '../models/OfferFavoriteBody'
+import type { OfferIdBody } from '../models/OfferIdBody'
+import type { OfferListSwitch } from '../models/OfferListSwitch'
+import type { PlaylistBody } from '../models/PlaylistBody'
+import type { PostCollectiveRequestBodyModel } from '../models/PostCollectiveRequestBodyModel'
+import type { RedactorPreferences } from '../models/RedactorPreferences'
+import type { SearchBody } from '../models/SearchBody'
+import type { StockIdBody } from '../models/StockIdBody'
+import type { TrackingAutocompleteSuggestionBody } from '../models/TrackingAutocompleteSuggestionBody'
+import type { TrackingCTAShareBody } from '../models/TrackingCTAShareBody'
+import type { TrackingFilterBody } from '../models/TrackingFilterBody'
+import type { TrackingShowMoreBody } from '../models/TrackingShowMoreBody'
+import type { VenueResponse } from '../models/VenueResponse'
+import type { CancelablePromise } from '../core/CancelablePromise'
+import type { BaseHttpRequest } from '../core/BaseHttpRequest'
 export class DefaultService {
   constructor(public readonly httpRequest: BaseHttpRequest) {}
   /**
@@ -51,7 +51,7 @@ export class DefaultService {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
   /**
    * get_academies <GET>
@@ -66,7 +66,7 @@ export class DefaultService {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
   /**
    * book_collective_offer <POST>
@@ -75,7 +75,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public bookCollectiveOffer(
-    requestBody?: BookCollectiveOfferRequest,
+    requestBody?: BookCollectiveOfferRequest
   ): CancelablePromise<BookCollectiveOfferResponse> {
     return this.httpRequest.request({
       method: 'POST',
@@ -87,7 +87,7 @@ export class DefaultService {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
   /**
    * get_collective_favorites <GET>
@@ -102,7 +102,7 @@ export class DefaultService {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
   /**
    * get_educational_institution_with_budget <GET>
@@ -117,7 +117,7 @@ export class DefaultService {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
   /**
    * delete_favorite_for_collective_offer <DELETE>
@@ -126,19 +126,19 @@ export class DefaultService {
    * @throws ApiError
    */
   public deleteFavoriteForCollectiveOffer(
-    offerId: number,
+    offerId: number
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'DELETE',
       url: '/adage-iframe/collective/offer/{offer_id}/favorites',
       path: {
-        'offer_id': offerId,
+        offer_id: offerId,
       },
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
   /**
    * get_collective_offer_templates <GET>
@@ -147,20 +147,20 @@ export class DefaultService {
    * @throws ApiError
    */
   public getCollectiveOfferTemplates(
-    ids: Array<number>,
+    ids: Array<number>
   ): CancelablePromise<ListCollectiveOfferTemplateResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/adage-iframe/collective/offers-template/',
       query: {
-        'ids': ids,
+        ids: ids,
       },
       errors: {
         403: `Forbidden`,
         404: `Not Found`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
   /**
    * get_collective_offer_template <GET>
@@ -169,20 +169,20 @@ export class DefaultService {
    * @throws ApiError
    */
   public getCollectiveOfferTemplate(
-    offerId: number,
+    offerId: number
   ): CancelablePromise<CollectiveOfferTemplateResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/adage-iframe/collective/offers-template/{offer_id}',
       path: {
-        'offer_id': offerId,
+        offer_id: offerId,
       },
       errors: {
         403: `Forbidden`,
         404: `Not Found`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
   /**
    * create_collective_request <POST>
@@ -193,13 +193,13 @@ export class DefaultService {
    */
   public createCollectiveRequest(
     offerId: number,
-    requestBody?: PostCollectiveRequestBodyModel,
+    requestBody?: PostCollectiveRequestBodyModel
   ): CancelablePromise<CollectiveRequestResponseModel> {
     return this.httpRequest.request({
       method: 'POST',
       url: '/adage-iframe/collective/offers-template/{offer_id}/request',
       path: {
-        'offer_id': offerId,
+        offer_id: offerId,
       },
       body: requestBody,
       mediaType: 'application/json',
@@ -208,7 +208,7 @@ export class DefaultService {
         404: `Not Found`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
   /**
    * get_collective_offers_for_my_institution <GET>
@@ -223,7 +223,7 @@ export class DefaultService {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
   /**
    * get_collective_offer <GET>
@@ -232,20 +232,20 @@ export class DefaultService {
    * @throws ApiError
    */
   public getCollectiveOffer(
-    offerId: number,
+    offerId: number
   ): CancelablePromise<CollectiveOfferResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/adage-iframe/collective/offers/{offer_id}',
       path: {
-        'offer_id': offerId,
+        offer_id: offerId,
       },
       errors: {
         403: `Forbidden`,
         404: `Not Found`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
   /**
    * post_collective_offer_favorites <POST>
@@ -254,19 +254,19 @@ export class DefaultService {
    * @throws ApiError
    */
   public postCollectiveOfferFavorites(
-    offerId: number,
+    offerId: number
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
       url: '/adage-iframe/collective/offers/{offer_id}/favorites',
       path: {
-        'offer_id': offerId,
+        offer_id: offerId,
       },
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
   /**
    * delete_favorite_for_collective_offer_template <DELETE>
@@ -275,19 +275,19 @@ export class DefaultService {
    * @throws ApiError
    */
   public deleteFavoriteForCollectiveOfferTemplate(
-    offerTemplateId: number,
+    offerTemplateId: number
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'DELETE',
       url: '/adage-iframe/collective/template/{offer_template_id}/favorites',
       path: {
-        'offer_template_id': offerTemplateId,
+        offer_template_id: offerTemplateId,
       },
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
   /**
    * post_collective_template_favorites <POST>
@@ -296,19 +296,19 @@ export class DefaultService {
    * @throws ApiError
    */
   public postCollectiveTemplateFavorites(
-    offerId: number,
+    offerId: number
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
       url: '/adage-iframe/collective/templates/{offer_id}/favorites',
       path: {
-        'offer_id': offerId,
+        offer_id: offerId,
       },
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
   /**
    * list_features <GET>
@@ -324,7 +324,7 @@ export class DefaultService {
         404: `Not Found`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
   /**
    * log_booking_modal_button_click <POST>
@@ -333,7 +333,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public logBookingModalButtonClick(
-    requestBody?: StockIdBody,
+    requestBody?: StockIdBody
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
@@ -345,7 +345,7 @@ export class DefaultService {
         404: `Not Found`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
   /**
    * log_catalog_view <POST>
@@ -354,7 +354,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public logCatalogView(
-    requestBody?: CatalogViewBody,
+    requestBody?: CatalogViewBody
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
@@ -366,7 +366,7 @@ export class DefaultService {
         404: `Not Found`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
   /**
    * log_consult_playlist_element <POST>
@@ -375,7 +375,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public logConsultPlaylistElement(
-    requestBody?: PlaylistBody,
+    requestBody?: PlaylistBody
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
@@ -387,7 +387,7 @@ export class DefaultService {
         404: `Not Found`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
   /**
    * log_contact_modal_button_click <POST>
@@ -396,7 +396,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public logContactModalButtonClick(
-    requestBody?: OfferIdBody,
+    requestBody?: OfferIdBody
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
@@ -408,7 +408,7 @@ export class DefaultService {
         404: `Not Found`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
   /**
    * log_contact_url_click <POST>
@@ -417,7 +417,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public logContactUrlClick(
-    requestBody?: OfferIdBody,
+    requestBody?: OfferIdBody
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
@@ -429,7 +429,7 @@ export class DefaultService {
         404: `Not Found`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
   /**
    * log_fav_offer_button_click <POST>
@@ -438,7 +438,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public logFavOfferButtonClick(
-    requestBody?: OfferFavoriteBody,
+    requestBody?: OfferFavoriteBody
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
@@ -450,7 +450,7 @@ export class DefaultService {
         404: `Not Found`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
   /**
    * log_has_seen_whole_playlist <POST>
@@ -459,7 +459,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public logHasSeenWholePlaylist(
-    requestBody?: PlaylistBody,
+    requestBody?: PlaylistBody
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
@@ -471,7 +471,7 @@ export class DefaultService {
         404: `Not Found`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
   /**
    * log_header_link_click <POST>
@@ -480,7 +480,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public logHeaderLinkClick(
-    requestBody?: AdageHeaderLogBody,
+    requestBody?: AdageHeaderLogBody
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
@@ -492,7 +492,7 @@ export class DefaultService {
         404: `Not Found`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
   /**
    * log_offer_details_button_click <POST>
@@ -501,7 +501,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public logOfferDetailsButtonClick(
-    requestBody?: StockIdBody,
+    requestBody?: StockIdBody
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
@@ -513,7 +513,7 @@ export class DefaultService {
         404: `Not Found`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
   /**
    * log_offer_list_view_switch <POST>
@@ -522,7 +522,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public logOfferListViewSwitch(
-    requestBody?: OfferListSwitch,
+    requestBody?: OfferListSwitch
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
@@ -534,7 +534,7 @@ export class DefaultService {
         404: `Not Found`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
   /**
    * log_offer_template_details_button_click <POST>
@@ -543,7 +543,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public logOfferTemplateDetailsButtonClick(
-    requestBody?: OfferIdBody,
+    requestBody?: OfferIdBody
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
@@ -555,7 +555,7 @@ export class DefaultService {
         404: `Not Found`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
   /**
    * log_has_seen_all_playlist <POST>
@@ -564,7 +564,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public logHasSeenAllPlaylist(
-    requestBody?: AdageBaseModel,
+    requestBody?: AdageBaseModel
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
@@ -576,7 +576,7 @@ export class DefaultService {
         404: `Not Found`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
   /**
    * log_request_form_popin_dismiss <POST>
@@ -585,7 +585,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public logRequestFormPopinDismiss(
-    requestBody?: CollectiveRequestBody,
+    requestBody?: CollectiveRequestBody
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
@@ -597,7 +597,7 @@ export class DefaultService {
         404: `Not Found`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
   /**
    * log_open_satisfaction_survey <POST>
@@ -606,7 +606,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public logOpenSatisfactionSurvey(
-    requestBody?: AdageBaseModel,
+    requestBody?: AdageBaseModel
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
@@ -618,7 +618,7 @@ export class DefaultService {
         404: `Not Found`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
   /**
    * log_search_button_click <POST>
@@ -627,7 +627,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public logSearchButtonClick(
-    requestBody?: SearchBody,
+    requestBody?: SearchBody
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
@@ -639,7 +639,7 @@ export class DefaultService {
         404: `Not Found`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
   /**
    * log_search_show_more <POST>
@@ -648,7 +648,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public logSearchShowMore(
-    requestBody?: TrackingShowMoreBody,
+    requestBody?: TrackingShowMoreBody
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
@@ -660,7 +660,7 @@ export class DefaultService {
         404: `Not Found`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
   /**
    * log_tracking_autocomplete_suggestion_click <POST>
@@ -669,7 +669,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public logTrackingAutocompleteSuggestionClick(
-    requestBody?: TrackingAutocompleteSuggestionBody,
+    requestBody?: TrackingAutocompleteSuggestionBody
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
@@ -681,7 +681,7 @@ export class DefaultService {
         404: `Not Found`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
   /**
    * log_tracking_cta_share <POST>
@@ -690,7 +690,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public logTrackingCtaShare(
-    requestBody?: TrackingCTAShareBody,
+    requestBody?: TrackingCTAShareBody
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
@@ -702,7 +702,7 @@ export class DefaultService {
         404: `Not Found`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
   /**
    * log_tracking_filter <POST>
@@ -711,7 +711,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public logTrackingFilter(
-    requestBody?: TrackingFilterBody,
+    requestBody?: TrackingFilterBody
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
@@ -723,7 +723,7 @@ export class DefaultService {
         404: `Not Found`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
   /**
    * log_tracking_map <POST>
@@ -731,9 +731,7 @@ export class DefaultService {
    * @returns void
    * @throws ApiError
    */
-  public logTrackingMap(
-    requestBody?: AdageBaseModel,
-  ): CancelablePromise<void> {
+  public logTrackingMap(requestBody?: AdageBaseModel): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
       url: '/adage-iframe/logs/tracking-map',
@@ -744,7 +742,7 @@ export class DefaultService {
         404: `Not Found`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
   /**
    * get_educational_offers_categories <GET>
@@ -759,7 +757,7 @@ export class DefaultService {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
   /**
    * get_educational_offers_formats <GET>
@@ -774,7 +772,7 @@ export class DefaultService {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
   /**
    * get_classroom_playlist <GET>
@@ -789,7 +787,7 @@ export class DefaultService {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
   /**
    * get_local_offerers_playlist <GET>
@@ -804,7 +802,7 @@ export class DefaultService {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
   /**
    * get_new_offerers_playlist <GET>
@@ -819,7 +817,7 @@ export class DefaultService {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
   /**
    * new_template_offers_playlist <GET>
@@ -835,7 +833,7 @@ export class DefaultService {
         404: `Not Found`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
   /**
    * save_redactor_preferences <POST>
@@ -844,7 +842,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public saveRedactorPreferences(
-    requestBody?: RedactorPreferences,
+    requestBody?: RedactorPreferences
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
@@ -855,7 +853,7 @@ export class DefaultService {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
   /**
    * create_adage_jwt_fake_token <GET>
@@ -871,7 +869,7 @@ export class DefaultService {
         404: `Not Found`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
   /**
    * get_venue_by_siret <GET>
@@ -882,22 +880,22 @@ export class DefaultService {
    */
   public getVenueBySiret(
     siret: string,
-    getRelative: boolean = false,
+    getRelative: boolean = false
   ): CancelablePromise<VenueResponse> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/adage-iframe/venues/siret/{siret}',
       path: {
-        'siret': siret,
+        siret: siret,
       },
       query: {
-        'getRelative': getRelative,
+        getRelative: getRelative,
       },
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
   /**
    * get_venue_by_id <GET>
@@ -908,21 +906,21 @@ export class DefaultService {
    */
   public getVenueById(
     venueId: number,
-    getRelative: boolean = false,
+    getRelative: boolean = false
   ): CancelablePromise<VenueResponse> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/adage-iframe/venues/{venue_id}',
       path: {
-        'venue_id': venueId,
+        venue_id: venueId,
       },
       query: {
-        'getRelative': getRelative,
+        getRelative: getRelative,
       },
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 }

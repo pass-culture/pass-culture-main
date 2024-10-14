@@ -4,15 +4,15 @@ import {
   SubcategoryResponseModel,
   VenueListItemResponseModel,
 } from 'apiClient/v1'
-import { FORM_DEFAULT_VALUES } from 'components/IndividualOfferForm/constants'
-import { OFFER_LOCATION } from 'components/IndividualOfferForm/OfferLocation/constants'
 import {
   CATEGORY_STATUS,
   OFFER_STATUS_PENDING,
   OFFER_STATUS_REJECTED,
-} from 'core/Offers/constants'
-import { isOfferSynchronized } from 'core/Offers/utils/typology'
-import { AccessibilityEnum } from 'core/shared/types'
+} from 'commons/core/Offers/constants'
+import { isOfferSynchronized } from 'commons/core/Offers/utils/typology'
+import { AccessibilityEnum } from 'commons/core/shared/types'
+import { FORM_DEFAULT_VALUES } from 'components/IndividualOfferForm/constants'
+import { OFFER_LOCATION } from 'components/IndividualOfferForm/OfferLocation/constants'
 import { computeAddressDisplayName } from 'repository/venuesService'
 
 import { DEFAULT_USEFULL_INFORMATION_INTITIAL_VALUES } from './constants'

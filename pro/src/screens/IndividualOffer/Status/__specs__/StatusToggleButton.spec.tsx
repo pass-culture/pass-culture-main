@@ -6,13 +6,13 @@ import React from 'react'
 import { api } from 'apiClient/api'
 import { OfferStatus } from 'apiClient/v1'
 import * as useAnalytics from 'app/App/analytics/firebase'
-import { Events } from 'core/FirebaseEvents/constants'
-import * as useNotification from 'hooks/useNotification'
-import { getIndividualOfferFactory } from 'utils/individualApiFactories'
+import { Events } from 'commons/core/FirebaseEvents/constants'
+import * as useNotification from 'commons/hooks/useNotification'
+import { getIndividualOfferFactory } from 'commons/utils/individualApiFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
-} from 'utils/renderWithProviders'
+} from 'commons/utils/renderWithProviders'
 
 import {
   StatusToggleButton,

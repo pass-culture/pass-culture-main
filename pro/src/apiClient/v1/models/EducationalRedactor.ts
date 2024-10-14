@@ -3,9 +3,8 @@
 /* tslint:disable */
 /* eslint-disable */
 export type EducationalRedactor = {
-  email: string;
-  gender?: string | null;
-  name: string;
-  surname: string;
-};
-
+  email: string
+  gender?: string | null
+  name: string
+  surname: string
+}

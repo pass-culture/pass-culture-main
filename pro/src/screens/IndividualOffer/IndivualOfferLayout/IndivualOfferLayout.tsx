@@ -1,12 +1,12 @@
 import cn from 'classnames'
 
 import { GetIndividualOfferResponseModel, OfferStatus } from 'apiClient/v1'
+import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
+import { formatDateTimeParts, isDateValid } from 'commons/utils/date'
+import { localStorageAvailable } from 'commons/utils/localStorageAvailable'
 import { IndividualOfferNavigation } from 'components/IndividualOfferNavigation/IndividualOfferNavigation'
-import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import fullWaitIcon from 'icons/full-wait.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
-import { formatDateTimeParts, isDateValid } from 'utils/date'
-import { localStorageAvailable } from 'utils/localStorageAvailable'
 
 import { Status } from '../Status/Status'
 import { SynchronizedProviderInformation } from '../SynchronisedProviderInfos/SynchronizedProviderInformation'

@@ -7,11 +7,11 @@ import {
   GetVenueResponseModel,
   VenueTypeResponseModel,
 } from 'apiClient/v1'
+import { SelectOption } from 'commons/custom_types/form'
 import { AddressSelect } from 'components/Address/Address'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { RouteLeavingGuardIndividualOffer } from 'components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
 import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
-import { SelectOption } from 'custom_types/form'
 import { ReimbursementFields } from 'pages/Offerers/Offerer/VenueV1/fields/ReimbursementFields/ReimbursementFields'
 import { BankAccountInfos } from 'pages/VenueCreation/BankAccountInfos/BankAccountInfos'
 import { buildVenueTypesOptions } from 'pages/VenueCreation/buildVenueTypesOptions'

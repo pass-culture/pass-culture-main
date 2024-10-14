@@ -3,7 +3,6 @@
 /* tslint:disable */
 /* eslint-disable */
 export type UserIdentityBodyModel = {
-  firstName: string;
-  lastName: string;
-};
-
+  firstName: string
+  lastName: string
+}

@@ -7,18 +7,18 @@ import { expect } from 'vitest'
 import { api } from 'apiClient/api'
 import { GetOffererResponseModel } from 'apiClient/v1'
 import * as useAnalytics from 'app/App/analytics/firebase'
-import { Notification } from 'components/Notification/Notification'
-import { GET_OFFERER_BANKACCOUNTS_AND_ATTACHED_VENUES } from 'config/swrQueryKeys'
-import { BankAccountEvents } from 'core/FirebaseEvents/constants'
-import { BankInformations } from 'pages/Reimbursements/BankInformations/BankInformations'
+import { GET_OFFERER_BANKACCOUNTS_AND_ATTACHED_VENUES } from 'commons/config/swrQueryKeys'
+import { BankAccountEvents } from 'commons/core/FirebaseEvents/constants'
 import {
   defaultBankAccount,
   defaultGetOffererResponseModel,
   defaultManagedVenues,
   getOffererNameFactory,
-} from 'utils/individualApiFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'utils/storeFactories'
+} from 'commons/utils/individualApiFactories'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
+import { Notification } from 'components/Notification/Notification'
+import { BankInformations } from 'pages/Reimbursements/BankInformations/BankInformations'
 
 const mockMutate = vi.fn()
 vi.mock('swr', async () => ({

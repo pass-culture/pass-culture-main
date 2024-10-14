@@ -3,6 +3,5 @@
 /* tslint:disable */
 /* eslint-disable */
 export type CollectiveOfferTemplateResponseIdModel = {
-  id: number;
-};
-
+  id: number
+}

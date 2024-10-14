@@ -3,8 +3,8 @@ import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
 import { apiAdage } from 'apiClient/api'
-import * as useNotification from 'hooks/useNotification'
-import { renderWithProviders } from 'utils/renderWithProviders'
+import * as useNotification from 'commons/hooks/useNotification'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { SurveySatisfaction } from '../SurveySatisfaction'
 
@@ -39,7 +39,7 @@ describe('SurveySatisfaction', () => {
     const notifyError = vi.fn()
 
     const notifsImport = (await vi.importActual(
-      'hooks/useNotification'
+      'commons/hooks/useNotification'
     )) as ReturnType<typeof useNotification.useNotification>
     vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
       ...notifsImport,

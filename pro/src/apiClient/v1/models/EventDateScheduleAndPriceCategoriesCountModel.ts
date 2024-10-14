@@ -3,8 +3,7 @@
 /* tslint:disable */
 /* eslint-disable */
 export type EventDateScheduleAndPriceCategoriesCountModel = {
-  eventDate: string;
-  priceCategoriesCount: number;
-  scheduleCount: number;
-};
-
+  eventDate: string
+  priceCategoriesCount: number
+  scheduleCount: number
+}

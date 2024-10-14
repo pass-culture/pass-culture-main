@@ -4,8 +4,8 @@ import { Route, Routes } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { routesSignupJourney } from 'app/AppRouter/subroutesSignupJourneyMap'
-import { renderWithProviders } from 'utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'utils/storeFactories'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
 
 import { SignupJourneyRoutes } from '../SignupJourneyRoutes'
 

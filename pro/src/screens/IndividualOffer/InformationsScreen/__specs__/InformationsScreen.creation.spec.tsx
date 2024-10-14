@@ -11,23 +11,26 @@ import {
 } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
-import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
-import { Notification } from 'components/Notification/Notification'
 import {
   IndividualOfferContext,
   IndividualOfferContextValues,
-} from 'context/IndividualOfferContext/IndividualOfferContext'
-import { CATEGORY_STATUS, OFFER_WIZARD_MODE } from 'core/Offers/constants'
-import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
+} from 'commons/context/IndividualOfferContext/IndividualOfferContext'
+import {
+  CATEGORY_STATUS,
+  OFFER_WIZARD_MODE,
+} from 'commons/core/Offers/constants'
+import { getIndividualOfferPath } from 'commons/core/Offers/utils/getIndividualOfferUrl'
 import {
   categoryFactory,
   getOffererNameFactory,
   individualOfferContextValuesFactory,
   subcategoryFactory,
   venueListItemFactory,
-} from 'utils/individualApiFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'utils/storeFactories'
+} from 'commons/utils/individualApiFactories'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
+import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
+import { Notification } from 'components/Notification/Notification'
 
 import {
   InformationsScreen,
@@ -40,7 +43,7 @@ vi.mock('screens/IndividualOffer/Informations/utils', () => {
   }
 })
 
-vi.mock('utils/windowMatchMedia', () => ({
+vi.mock('commons/utils/windowMatchMedia', () => ({
   doesUserPreferReducedMotion: vi.fn(() => true),
 }))
 

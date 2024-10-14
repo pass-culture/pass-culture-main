@@ -2,13 +2,13 @@ import { screen } from '@testing-library/react'
 
 import { AdageFrontRoles, StudentLevels } from 'apiClient/adage'
 import { OfferAddressType } from 'apiClient/v1'
-import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
 import {
   defaultAdageUser,
   defaultCollectiveOffer,
   defaultCollectiveTemplateOffer,
-} from 'utils/adageFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
+} from 'commons/utils/adageFactories'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
 
 import { AdageOfferProps } from '../../AdageOffer'
 import { AdageOfferHeader } from '../AdageOfferHeader'

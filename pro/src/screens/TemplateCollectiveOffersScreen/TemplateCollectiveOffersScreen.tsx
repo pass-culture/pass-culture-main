@@ -5,24 +5,24 @@ import {
   GetOffererResponseModel,
   UserRole,
 } from 'apiClient/v1'
-import { NoData } from 'components/NoData/NoData'
 import {
   DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
   DEFAULT_PAGE,
   MAX_TOTAL_PAGES,
   NUMBER_OF_OFFERS_PER_PAGE,
-} from 'core/Offers/constants'
-import { CollectiveSearchFiltersParams } from 'core/Offers/types'
-import { hasCollectiveSearchFilters } from 'core/Offers/utils/hasSearchFilters'
-import { SelectOption } from 'custom_types/form'
-import { useColumnSorting } from 'hooks/useColumnSorting'
-import { usePagination } from 'hooks/usePagination'
+} from 'commons/core/Offers/constants'
+import { CollectiveSearchFiltersParams } from 'commons/core/Offers/types'
+import { hasCollectiveSearchFilters } from 'commons/core/Offers/utils/hasSearchFilters'
+import { SelectOption } from 'commons/custom_types/form'
+import { useColumnSorting } from 'commons/hooks/useColumnSorting'
+import { usePagination } from 'commons/hooks/usePagination'
+import { sortCollectiveOffers } from 'commons/utils/sortCollectiveOffers'
+import { NoData } from 'components/NoData/NoData'
 import { CollectiveOffersActionsBar } from 'pages/Offers/OffersTable/CollectiveOffersTable/CollectiveOffersActionsBar/CollectiveOffersActionsBar'
 import { CollectiveOffersTable } from 'pages/Offers/OffersTable/CollectiveOffersTable/CollectiveOffersTable'
 import { isSameOffer } from 'pages/Offers/utils/isSameOffer'
 import { CollectiveOffersSortingColumn } from 'screens/CollectiveOffersScreen/CollectiveOffersScreen'
 import { Pagination } from 'ui-kit/Pagination/Pagination'
-import { sortCollectiveOffers } from 'utils/sortCollectiveOffers'
 
 import styles from './TemplateCollectiveOffersScreen.module.scss'
 import { TemplateOffersSearchFilters } from './TemplateOffersSearchFilters/TemplateOffersSearchFilters'

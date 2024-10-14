@@ -3,11 +3,10 @@
 /* tslint:disable */
 /* eslint-disable */
 export type VenueResponse = {
-  adageId?: string | null;
-  departementCode: string;
-  id: number;
-  name: string;
-  publicName?: string | null;
-  relative: Array<number>;
-};
-
+  adageId?: string | null
+  departementCode: string
+  id: number
+  name: string
+  publicName?: string | null
+  relative: Array<number>
+}

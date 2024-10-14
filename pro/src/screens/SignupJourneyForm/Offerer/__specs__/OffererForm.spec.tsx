@@ -9,10 +9,10 @@ import {
   SignupJourneyContextValues,
   SignupJourneyContext,
   Offerer,
-} from 'context/SignupJourneyContext/SignupJourneyContext'
+} from 'commons/context/SignupJourneyContext/SignupJourneyContext'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
 import { Button } from 'ui-kit/Button/Button'
-import { renderWithProviders } from 'utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import { DEFAULT_OFFERER_FORM_VALUES } from '../constants'
 import { OffererForm, OffererFormValues } from '../OffererForm'

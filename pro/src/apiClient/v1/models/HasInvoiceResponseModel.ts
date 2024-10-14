@@ -3,6 +3,5 @@
 /* tslint:disable */
 /* eslint-disable */
 export type HasInvoiceResponseModel = {
-  hasInvoice: boolean;
-};
-
+  hasInvoice: boolean
+}

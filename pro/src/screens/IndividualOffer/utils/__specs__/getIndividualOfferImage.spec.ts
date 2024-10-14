@@ -1,4 +1,4 @@
-import { getIndividualOfferFactory } from 'utils/individualApiFactories'
+import { getIndividualOfferFactory } from 'commons/utils/individualApiFactories'
 
 import { getIndividualOfferImage } from '../getIndividualOfferImage'
 

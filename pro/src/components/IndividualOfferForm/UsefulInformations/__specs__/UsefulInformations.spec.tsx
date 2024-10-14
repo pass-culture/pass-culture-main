@@ -8,17 +8,17 @@ import {
   WithdrawalTypeEnum,
   VenueListItemResponseModel,
 } from 'apiClient/v1'
-import { IndividualOfferFormValues } from 'components/IndividualOfferForm/types'
-import { setDefaultInitialFormValues } from 'components/IndividualOfferForm/utils/setDefaultInitialFormValues'
-import { REIMBURSEMENT_RULES } from 'core/Finances/constants'
-import { CATEGORY_STATUS } from 'core/Offers/constants'
-import { Button } from 'ui-kit/Button/Button'
+import { REIMBURSEMENT_RULES } from 'commons/core/Finances/constants'
+import { CATEGORY_STATUS } from 'commons/core/Offers/constants'
 import {
   getOffererNameFactory,
   subcategoryFactory,
   venueListItemFactory,
-} from 'utils/individualApiFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
+} from 'commons/utils/individualApiFactories'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { IndividualOfferFormValues } from 'components/IndividualOfferForm/types'
+import { setDefaultInitialFormValues } from 'components/IndividualOfferForm/utils/setDefaultInitialFormValues'
+import { Button } from 'ui-kit/Button/Button'
 
 import {
   UsefulInformations,

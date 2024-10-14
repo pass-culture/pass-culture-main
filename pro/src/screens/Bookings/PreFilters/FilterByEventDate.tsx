@@ -1,10 +1,10 @@
 import React from 'react'
 
-import { DEFAULT_PRE_FILTERS } from 'core/Bookings/constants'
-import { PreFiltersParams } from 'core/Bookings/types'
+import { DEFAULT_PRE_FILTERS } from 'commons/core/Bookings/constants'
+import { PreFiltersParams } from 'commons/core/Bookings/types'
+import { isDateValid } from 'commons/utils/date'
 import { BaseDatePicker } from 'ui-kit/form/DatePicker/BaseDatePicker'
 import { FieldLayout } from 'ui-kit/form/shared/FieldLayout/FieldLayout'
-import { isDateValid } from 'utils/date'
 
 import styles from './PreFilters.module.scss'
 

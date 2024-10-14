@@ -10,27 +10,30 @@ import {
   VenueTypeCode,
 } from 'apiClient/v1'
 import * as useAnalytics from 'app/App/analytics/firebase'
-import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import {
   IndividualOfferContext,
   IndividualOfferContextValues,
-} from 'context/IndividualOfferContext/IndividualOfferContext'
-import { Events } from 'core/FirebaseEvents/constants'
-import { CATEGORY_STATUS, OFFER_WIZARD_MODE } from 'core/Offers/constants'
-import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
-import { AddressResponseIsLinkedToVenueModelFactory } from 'utils/commonOffersApiFactories'
+} from 'commons/context/IndividualOfferContext/IndividualOfferContext'
+import { Events } from 'commons/core/FirebaseEvents/constants'
+import {
+  CATEGORY_STATUS,
+  OFFER_WIZARD_MODE,
+} from 'commons/core/Offers/constants'
+import { getIndividualOfferPath } from 'commons/core/Offers/utils/getIndividualOfferUrl'
+import { AddressResponseIsLinkedToVenueModelFactory } from 'commons/utils/commonOffersApiFactories'
 import {
   categoryFactory,
   getIndividualOfferFactory,
   individualOfferContextValuesFactory,
   subcategoryFactory,
   venueListItemFactory,
-} from 'utils/individualApiFactories'
+} from 'commons/utils/individualApiFactories'
 import {
   renderWithProviders,
   RenderWithProvidersOptions,
-} from 'utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'utils/storeFactories'
+} from 'commons/utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
+import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 
 import { DetailsScreen, DetailsScreenProps } from '../DetailsScreen'
 
@@ -44,7 +47,7 @@ vi.mock('apiClient/api', () => ({
   },
 }))
 
-vi.mock('utils/windowMatchMedia', () => ({
+vi.mock('commons/utils/windowMatchMedia', () => ({
   doesUserPreferReducedMotion: vi.fn(() => true),
 }))
 

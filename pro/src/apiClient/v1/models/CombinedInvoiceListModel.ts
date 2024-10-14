@@ -3,6 +3,5 @@
 /* tslint:disable */
 /* eslint-disable */
 export type CombinedInvoiceListModel = {
-  invoiceReferences: Array<string>;
-};
-
+  invoiceReferences: Array<string>
+}

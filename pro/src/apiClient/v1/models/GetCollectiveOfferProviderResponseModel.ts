@@ -3,6 +3,5 @@
 /* tslint:disable */
 /* eslint-disable */
 export type GetCollectiveOfferProviderResponseModel = {
-  name: string;
-};
-
+  name: string
+}

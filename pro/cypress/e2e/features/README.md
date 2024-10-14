@@ -14,8 +14,7 @@ Comme dit dans le titre, ne réécrivez pas un test (ou une assertion) qui exist
 
 ### Nommez vos features et scénarios de manière à ce qu'on sache exactement ce qu'ils vont faire
 
-En lisant votre feature et votre scénario on devrait savoir immédiatement ce que ça teste.
-Pour trouver l'inspiration, on pourra par exemple utiliser une tournure à la Friends : "Celui où..."
+En lisant votre feature et votre scénario on devrait savoir immédiatement ce que ça teste. Pour trouver l'inspiration, on pourra par exemple utiliser une tournure à la Friends : "Celui où..."
 
 ### Faites le plus court possible
 
@@ -36,7 +35,6 @@ la seule exception tolérée dans le contexte Pass Culture sera le cas des parco
 votre scénario ne devrait pas parler de l'interface (boutons, liens, etc.). Vous devriez parler de l'intention de l'utlisateur plutôt que de ses interactions.
 
 _Ex:_ `I click on "Plus Tard" link in confirmation popin`_, devrait plutôt ressembler à :_ `I skip offer creation`
-
 
 ## Gardez le projet propre
 

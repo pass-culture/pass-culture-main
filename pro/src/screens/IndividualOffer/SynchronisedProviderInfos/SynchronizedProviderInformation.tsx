@@ -1,6 +1,6 @@
+import { getProviderInfo } from 'commons/core/Providers/utils/getProviderInfo'
 import { Callout } from 'components/Callout/Callout'
 import { CalloutVariant } from 'components/Callout/types'
-import { getProviderInfo } from 'core/Providers/utils/getProviderInfo'
 
 import styles from './SynchronizedProviderInformation.module.scss'
 

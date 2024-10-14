@@ -2,20 +2,19 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { Coordinates } from './Coordinates';
-import type { OfferManagingOffererResponse } from './OfferManagingOffererResponse';
+import type { Coordinates } from './Coordinates'
+import type { OfferManagingOffererResponse } from './OfferManagingOffererResponse'
 export type OfferVenueResponse = {
-  adageId?: string | null;
-  address?: string | null;
-  city?: string | null;
-  coordinates: Coordinates;
-  departmentCode?: string | null;
-  distance?: number | null;
-  id: number;
-  imgUrl?: string | null;
-  managingOfferer: OfferManagingOffererResponse;
-  name: string;
-  postalCode?: string | null;
-  publicName?: string | null;
-};
-
+  adageId?: string | null
+  address?: string | null
+  city?: string | null
+  coordinates: Coordinates
+  departmentCode?: string | null
+  distance?: number | null
+  id: number
+  imgUrl?: string | null
+  managingOfferer: OfferManagingOffererResponse
+  name: string
+  postalCode?: string | null
+  publicName?: string | null
+}

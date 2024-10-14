@@ -5,7 +5,7 @@ import {
   BookingRecapResponseBookingStatusHistoryModel,
   BookingStatusHistoryResponseModel,
 } from 'apiClient/v1'
-import { toDateStrippedOfTimezone } from 'utils/date'
+import { toDateStrippedOfTimezone } from 'commons/utils/date'
 
 import { getBookingStatusDisplayInformations } from '../../utils/bookingStatusConverter'
 

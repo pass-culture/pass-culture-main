@@ -1,6 +1,6 @@
 import type { CountryCode } from 'libphonenumber-js'
 
-import { parseAndValidateFrenchPhoneNumber } from 'core/shared/utils/parseAndValidateFrenchPhoneNumber'
+import { parseAndValidateFrenchPhoneNumber } from 'commons/core/shared/utils/parseAndValidateFrenchPhoneNumber'
 
 import { PHONE_CODE_COUNTRY_CODE_OPTIONS } from '../constants'
 

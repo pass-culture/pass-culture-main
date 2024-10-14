@@ -8,11 +8,11 @@ import {
   VenueListItemResponseModel,
   SubcategoryIdEnum,
 } from 'apiClient/v1'
-import { showOptionsTree } from 'core/Offers/categoriesSubTypes'
-import { isOfferSynchronized } from 'core/Offers/utils/typology'
-import { SelectOption } from 'custom_types/form'
+import { showOptionsTree } from 'commons/core/Offers/categoriesSubTypes'
+import { isOfferSynchronized } from 'commons/core/Offers/utils/typology'
+import { SelectOption } from 'commons/custom_types/form'
+import { trimStringsInObject } from 'commons/utils/trimStringsInObject'
 import { computeVenueDisplayName } from 'repository/venuesService'
-import { trimStringsInObject } from 'utils/trimStringsInObject'
 
 import { DEFAULT_DETAILS_FORM_VALUES } from './constants'
 import { DetailsFormValues } from './types'

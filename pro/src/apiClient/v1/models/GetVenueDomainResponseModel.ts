@@ -3,7 +3,6 @@
 /* tslint:disable */
 /* eslint-disable */
 export type GetVenueDomainResponseModel = {
-  id: number;
-  name: string;
-};
-
+  id: number
+  name: string
+}

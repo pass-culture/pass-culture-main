@@ -3,6 +3,5 @@
 /* tslint:disable */
 /* eslint-disable */
 export type DeleteOfferRequestBody = {
-  ids: Array<number>;
-};
-
+  ids: Array<number>
+}

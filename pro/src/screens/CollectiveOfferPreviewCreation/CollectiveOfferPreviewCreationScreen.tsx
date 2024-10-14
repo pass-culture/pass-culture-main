@@ -10,14 +10,17 @@ import {
   GetOffererResponseModel,
 } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
-import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
 import {
   GET_COLLECTIVE_OFFER_QUERY_KEY,
   GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY,
-} from 'config/swrQueryKeys'
-import { Events } from 'core/FirebaseEvents/constants'
-import { Mode, isCollectiveOfferTemplate } from 'core/OfferEducational/types'
-import { useNotification } from 'hooks/useNotification'
+} from 'commons/config/swrQueryKeys'
+import { Events } from 'commons/core/FirebaseEvents/constants'
+import {
+  Mode,
+  isCollectiveOfferTemplate,
+} from 'commons/core/OfferEducational/types'
+import { useNotification } from 'commons/hooks/useNotification'
+import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
 import { AdagePreviewLayout } from 'pages/AdageIframe/app/components/OfferInfos/AdagePreviewLayout/AdagePreviewLayout'
 import { RedirectToBankAccountDialog } from 'screens/IndividualOffersScreen/RedirectToBankAccountDialog'
 import { Button } from 'ui-kit/Button/Button'
