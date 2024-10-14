@@ -2721,14 +2721,6 @@ def find_missing_match_at_acceslibre(batch_size: int, dry_run: bool, start_from_
     logger.info("Matching complete, %s new match found", count_after_match - count_before_match)
 
 
-def update_offerer_address_label(offerer_address_id: int, new_label: str) -> None:
-    try:
-        models.OffererAddress.query.filter_by(id=offerer_address_id).update({"label": new_label})
-        db.session.flush()
-    except sa.exc.IntegrityError:
-        raise exceptions.OffererAddressLabelAlreadyUsed()
-
-
 LocationData = typing.TypedDict(
     "LocationData",
     {
