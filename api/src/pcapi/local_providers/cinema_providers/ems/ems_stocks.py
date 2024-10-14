@@ -55,8 +55,7 @@ class EMSStocks:
 
             product = self.get_or_create_movie_product(event)
             offer = self.get_or_create_offer(event, self.provider.id, self.venue)
-            offer.product = product
-            offer = self.fill_offer_attributes(offer, event)
+            offer = self.fill_offer_attributes(offer, product, event)
             errors = entity_validator.validate(offer)
             if errors and len(errors.errors) > 0:
                 self.created_objects -= 1
@@ -156,23 +155,23 @@ class EMSStocks:
         self.created_objects += 1
         return offer
 
-    def fill_offer_attributes(self, offer: offers_models.Offer, event: ems_serializers.Event) -> offers_models.Offer:
-        if event.title:
-            offer.name = event.title
-        if event.synopsis:
-            offer.description = event.synopsis
-        if event.duration:
-            offer.durationMinutes = event.duration
+    def fill_offer_attributes(
+        self, offer: offers_models.Offer, product: offers_models.Product | None, event: ems_serializers.Event
+    ) -> offers_models.Offer:
         offer.isDuo = self.is_duo
-
-        if offer.product:
-            offer.name = offer.product.name
-            offer.description = offer.product.description
-            offer.durationMinutes = offer.product.durationMinutes
-            if offer.product.extraData:
+        if product:
+            offer.name = product.name
+            if product.extraData:
                 offer.extraData = offer.extraData or offers_models.OfferExtraData()
-                offer.extraData.update(offer.product.extraData)
-
+                offer.extraData.update(product.extraData)
+            offer.product = product
+        else:
+            if event.title:
+                offer.name = event.title
+            if event.synopsis:
+                offer.description = event.synopsis
+            if event.duration:
+                offer.durationMinutes = event.duration
         return offer
 
     def get_or_create_stock(

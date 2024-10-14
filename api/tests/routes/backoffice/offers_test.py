@@ -1636,19 +1636,11 @@ class GetOfferDetailsTest(GetEndpointHelper):
             assert response.status_code == 200
 
     def test_get_detail_event_offer(self, authenticated_client):
-        offer = offers_factories.OfferFactory(
+        product = offers_factories.ProductFactory(
             name="good movie",
-            offererAddress=None,
             subcategoryId=subcategories.SEANCE_CINE.id,
             durationMinutes=133,
             description="description",
-            idAtProvider="pouet provider",
-            isActive=True,
-            isDuo=False,
-            audioDisabilityCompliant=True,
-            mentalDisabilityCompliant=False,
-            motorDisabilityCompliant=None,
-            visualDisabilityCompliant=False,
             extraData={
                 "cast": [
                     "first actor",
@@ -1702,6 +1694,17 @@ class GetOfferDetailsTest(GetEndpointHelper):
                 "diffusionVersion": "VO",
                 "performer": "John Doe",
             },
+        )
+        offer = offers_factories.OfferFactory(
+            product=product,
+            offererAddress=None,
+            idAtProvider="pouet provider",
+            isActive=True,
+            isDuo=False,
+            audioDisabilityCompliant=True,
+            mentalDisabilityCompliant=False,
+            motorDisabilityCompliant=None,
+            visualDisabilityCompliant=False,
         )
 
         url = url_for(self.endpoint, offer_id=offer.id, _external=True)
