@@ -242,11 +242,6 @@ class Stock(PcObject, Base, Model, SoftDeletableMixin):
     # FIXME: mageoffray (2024-01-05) : remove this column when Provider API is not used anymore
     rawProviderQuantity = sa.Column(sa.Integer, nullable=True)
     features: list[str] = sa.Column(postgresql.ARRAY(sa.Text), nullable=False, server_default=sa.text("'{}'::text[]"))
-    offererAddressId: int = sa.Column(sa.BigInteger, sa.ForeignKey("offerer_address.id"), nullable=True)
-    offererAddress: sa.orm.Mapped["OffererAddress"] = sa.orm.relationship(
-        "OffererAddress", foreign_keys=[offererAddressId], uselist=False
-    )
-    sa.Index("ix_stock_offererAddressId", offererAddressId, postgresql_where=offererAddressId.is_not(None))
 
     @declared_attr
     def lastProviderId(cls) -> sa_orm.Mapped[int | None]:  # pylint: disable=no-self-argument
