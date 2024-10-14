@@ -302,7 +302,10 @@ ALGOLIA_FIELD_TO_PYTHON: dict[str, dict[str, typing.Any]] = {
         "field": "show_type",
         "facet": "offer.showType",
     },
-    "PRICE": {"field": "price", "facet": "offer.prices", "special": lambda x: x},
+    "PRICE": {
+        "field": "price",
+        "facet": "offer.prices",
+    },
 }
 
 
@@ -316,10 +319,8 @@ def _get_offer_ids_algolia(form: forms.GetOfferAlgoliaSearchForm) -> list[int]:
         flash(escape(warning), "warning")
 
     # +1 to check if there are more results than requested
-    # union() above may cause duplicates, but distinct() affects performance and causes timeout;
-    # actually duplicate ids can be accepted since the current function is called inside .in_()
     ids = seach_offers_ids(
-        query=form.algolia_search.data,
+        query=form.algolia_search.data or "",
         filters=filter_str,
         count=form.limit.data + 1,
     )
