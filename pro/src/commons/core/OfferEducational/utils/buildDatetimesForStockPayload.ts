@@ -1,6 +1,6 @@
 import { endOfDay, isSameDay } from 'date-fns'
 
-import { buildDateTime } from 'screens/IndividualOffer/StocksEventEdition/serializers'
+import { buildDateTime } from 'components/IndividualOffer/StocksEventEdition/serializers'
 
 import {
   isDateValid,

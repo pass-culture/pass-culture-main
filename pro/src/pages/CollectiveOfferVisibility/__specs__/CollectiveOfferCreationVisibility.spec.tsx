@@ -3,7 +3,7 @@ import React from 'react'
 
 import { getCollectiveOfferFactory } from 'commons/utils/collectiveApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
-import { MandatoryCollectiveOfferFromParamsProps } from 'screens/OfferEducational/useCollectiveOfferFromParams'
+import { MandatoryCollectiveOfferFromParamsProps } from 'pages/CollectiveOffer/CollectiveOffer/components/OfferEducational/useCollectiveOfferFromParams'
 
 import { CollectiveOfferVisibility } from '../CollectiveOfferCreationVisibility'
 

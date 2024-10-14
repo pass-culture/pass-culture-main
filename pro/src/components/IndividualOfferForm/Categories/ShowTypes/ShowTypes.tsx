@@ -2,9 +2,9 @@ import { useFormikContext } from 'formik'
 
 import { showOptionsTree } from 'commons/core/Offers/categoriesSubTypes'
 import { FormLayout } from 'components/FormLayout/FormLayout'
+import { buildShowSubTypeOptions } from 'components/IndividualOffer/DetailsScreen/utils'
 import { FORM_DEFAULT_VALUES } from 'components/IndividualOfferForm/constants'
 import { IndividualOfferFormValues } from 'components/IndividualOfferForm/types'
-import { buildShowSubTypeOptions } from 'screens/IndividualOffer/DetailsScreen/utils'
 import { Select } from 'ui-kit/form/Select/Select'
 
 interface ShowTypesProps {

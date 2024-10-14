@@ -22,8 +22,8 @@ import { serializeApiCollectiveFilters } from 'commons/core/Offers/utils/seriali
 import { useCurrentUser } from 'commons/hooks/useCurrentUser'
 import { useIsNewInterfaceActive } from 'commons/hooks/useIsNewInterfaceActive'
 import { selectCurrentOffererId } from 'commons/store/user/selectors'
+import { TemplateCollectiveOffersScreen } from 'pages/TemplateCollectiveOffers/TemplateCollectiveOffersScreen/TemplateCollectiveOffersScreen'
 import { formatAndOrderVenues } from 'repository/venuesService'
-import { TemplateCollectiveOffersScreen } from 'screens/TemplateCollectiveOffersScreen/TemplateCollectiveOffersScreen'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 export const TemplateCollectiveOffers = (): JSX.Element => {

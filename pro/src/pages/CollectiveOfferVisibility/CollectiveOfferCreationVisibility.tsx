@@ -14,12 +14,12 @@ import {
 } from 'commons/core/OfferEducational/types'
 import { extractInitialVisibilityValues } from 'commons/core/OfferEducational/utils/extractInitialVisibilityValues'
 import { CollectiveOfferLayout } from 'components/CollectiveOfferLayout/CollectiveOfferLayout'
-import { queryParamsFromOfferer } from 'pages/Offers/utils/queryParamsFromOfferer'
-import { CollectiveOfferVisibilityScreen } from 'screens/CollectiveOfferVisibility/CollectiveOfferVisibility'
 import {
   MandatoryCollectiveOfferFromParamsProps,
   withCollectiveOfferFromParams,
-} from 'screens/OfferEducational/useCollectiveOfferFromParams'
+} from 'pages/CollectiveOffer/CollectiveOffer/components/OfferEducational/useCollectiveOfferFromParams'
+import { CollectiveOfferVisibilityScreen } from 'pages/CollectiveOfferVisibility/components/CollectiveOfferVisibility/CollectiveOfferVisibility'
+import { queryParamsFromOfferer } from 'pages/Offers/utils/queryParamsFromOfferer'
 
 import { getEducationalInstitutions } from './getEducationalInstitutions'
 

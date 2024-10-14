@@ -25,11 +25,11 @@ import { useCurrentUser } from 'commons/hooks/useCurrentUser'
 import { useIsNewInterfaceActive } from 'commons/hooks/useIsNewInterfaceActive'
 import { selectCurrentOffererId } from 'commons/store/user/selectors'
 import { sortByLabel } from 'commons/utils/strings'
+import { IndividualOffersScreen } from 'pages/Offers/components/IndividualOffersScreen/IndividualOffersScreen'
 import {
   formatAndOrderAddresses,
   formatAndOrderVenues,
 } from 'repository/venuesService'
-import { IndividualOffersScreen } from 'screens/IndividualOffersScreen/IndividualOffersScreen'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 export const GET_OFFERS_QUERY_KEY = 'listOffers'

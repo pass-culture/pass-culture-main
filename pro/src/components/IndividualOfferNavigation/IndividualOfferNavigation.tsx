@@ -7,11 +7,11 @@ import { getIndividualOfferPath } from 'commons/core/Offers/utils/getIndividualO
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useActiveStep } from 'commons/hooks/useActiveStep'
 import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
-import { Step, StepPattern, Stepper } from 'components/Stepper/Stepper'
 import {
   getOfferSubtypeFromParam,
   isOfferSubtypeEvent,
-} from 'screens/IndividualOffer/InformationsScreen/utils/filterCategories/filterCategories'
+} from 'components/IndividualOffer/InformationsScreen/utils/filterCategories/filterCategories'
+import { Step, StepPattern, Stepper } from 'components/Stepper/Stepper'
 import { Tabs } from 'ui-kit/Tabs/Tabs'
 
 import { OFFER_WIZARD_STEP_IDS } from './constants'
