@@ -12,9 +12,3 @@
   justify-content: space-between;
   align-items: center;
 }
-
-.title-accessibility {
-  @include fonts-design-system.title1;
-
-  margin-bottom: rem.torem(32px);
-}

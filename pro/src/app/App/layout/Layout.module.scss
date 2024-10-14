@@ -2,6 +2,7 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/variables/_size.scss" as size;
 @use "styles/variables/_z-index.scss" as zIndex;
+@use "styles/mixins/fonts-design-system.scss" as fonts-design-system;
 
 $connect-as-header-height: rem.torem(52px);
 
@@ -88,5 +89,30 @@ $connect-as-header-height: rem.torem(52px);
     align-items: center;
     justify-content: center;
     width: 100%;
+  }
+}
+
+.main-heading-wrapper {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: rem.torem(32px);
+}
+
+.main-heading {
+  @include fonts-design-system.title1;
+}
+
+.back-to-nav-link {
+  margin-left: rem.torem(16px);
+  opacity: 0;
+  height: rem.torem(24px);
+  width: rem.torem(24px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:active, &:focus {
+    opacity: 1;
   }
 }

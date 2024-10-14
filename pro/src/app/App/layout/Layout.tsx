@@ -6,6 +6,7 @@ import { Footer } from 'components/Footer/Footer'
 import { Header } from 'components/Header/Header'
 import { NewNavReview } from 'components/NewNavReview/NewNavReview'
 import { SkipLinks } from 'components/SkipLinks/SkipLinks'
+import fullGoTop from 'icons/full-go-top.svg'
 import fullInfoIcon from 'icons/full-info.svg'
 import { selectCurrentUser } from 'store/user/selectors'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
@@ -13,14 +14,26 @@ import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { LateralPanel } from './LateralPanel/LateralPanel'
 import styles from './Layout.module.scss'
 
-interface LayoutProps {
-  children?: React.ReactNode
-  pageName?: string
+export interface LayoutMainHeading {
+  text: string
   className?: string
+}
+
+export interface LayoutProps {
+  children?: React.ReactNode
+  /**
+   * Name of the page to display in the main heading.
+   * Make sure that only one heading is displayed per page.
+   */
+  mainHeading?: LayoutMainHeading
   layout?: 'basic' | 'funnel' | 'without-nav' | 'sticky-actions'
 }
 
-export const Layout = ({ children, layout = 'basic' }: LayoutProps) => {
+export const Layout = ({
+  children,
+  mainHeading,
+  layout = 'basic',
+}: LayoutProps) => {
   const currentUser = useSelector(selectCurrentUser)
   const [lateralPanelOpen, setLateralPanelOpen] = useState(false)
 
@@ -95,6 +108,29 @@ export const Layout = ({ children, layout = 'basic' }: LayoutProps) => {
               })}
             >
               <main id="content">
+                {mainHeading && (
+                  <div className={styles['main-heading-wrapper']}>
+                    <h1
+                      className={cn(
+                        styles['main-heading'],
+                        mainHeading.className
+                      )}
+                    >
+                      {mainHeading.text}
+                    </h1>
+                    <a
+                      id="back-to-nav-link"
+                      href="#lateral-panel"
+                      className={styles['back-to-nav-link']}
+                    >
+                      <SvgIcon
+                        src={fullGoTop}
+                        alt="Revenir à la barre de navigation"
+                        width="20"
+                      />
+                    </a>
+                  </div>
+                )}
                 {layout === 'funnel' || layout === 'without-nav' ? (
                   children
                 ) : (

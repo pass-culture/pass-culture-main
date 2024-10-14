@@ -8,13 +8,15 @@ import styles from './Declaration.module.scss'
 
 export const Declaration = () => {
   return (
-    <AccessibilityLayout>
+    <AccessibilityLayout
+      mainHeading={{
+        text: 'Déclaration d’accessibilité',
+        className: styles['heading1-declaration'],
+      }}
+    >
       <ButtonLink to="/accessibilite/" icon={fullBackIcon}>
         Retour vers la page Informations d’accessibilité
       </ButtonLink>
-      <h1 className={styles['heading1-declaration']}>
-        Déclaration d’accessibilité
-      </h1>
       <p className={styles['paragraph']}>
         Le pass Culture s’engage à rendre son site internet et ses applications
         mobiles accessibles conformément à l’article 47 de la loi n° 2005-102 du

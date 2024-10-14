@@ -1,4 +1,4 @@
-import { AppLayout } from 'app/AppLayout'
+import { AppLayout, AppLayoutProps } from 'app/AppLayout'
 import { useCurrentUser } from 'hooks/useCurrentUser'
 import fullBackIcon from 'icons/full-back.svg'
 import logoPassCultureProFullIcon from 'icons/logo-pass-culture-pro-full.svg'
@@ -8,13 +8,15 @@ import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './AccessibilityLayout.module.scss'
 
+interface AccessibilityLayoutProps extends AppLayoutProps {
+  showBackToSignInButton?: boolean
+}
+
 export const AccessibilityLayout = ({
   children,
   showBackToSignInButton,
-}: {
-  children?: React.ReactNode
-  showBackToSignInButton?: boolean
-}) => {
+  mainHeading,
+}: AccessibilityLayoutProps) => {
   let isUserConnected = false
   try {
     const user = useCurrentUser()
@@ -24,9 +26,9 @@ export const AccessibilityLayout = ({
   }
 
   return isUserConnected ? (
-    <AppLayout>{children}</AppLayout>
+    <AppLayout mainHeading={mainHeading}>{children}</AppLayout>
   ) : (
-    <AppLayout layout="without-nav">
+    <AppLayout mainHeading={mainHeading} layout="without-nav">
       <header className={styles['logo-side']}>
         <SvgIcon
           className={logoStyles['logo-unlogged']}

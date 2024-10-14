@@ -2,19 +2,22 @@ import React from 'react'
 
 import { useIsNewInterfaceActive } from 'hooks/useIsNewInterfaceActive'
 
-import { Layout } from './App/layout/Layout'
+import { Layout, LayoutProps } from './App/layout/Layout'
 import { OldLayout } from './App/layout/OldLayout'
 
-interface AppLayoutProps {
-  children?: React.ReactNode
-  layout?: 'basic' | 'funnel' | 'without-nav' | 'sticky-actions'
-}
+export type AppLayoutProps = LayoutProps
 
-export const AppLayout = ({ children, layout = 'basic' }: AppLayoutProps) => {
+export const AppLayout = ({
+  children,
+  mainHeading,
+  layout = 'basic',
+}: AppLayoutProps) => {
   const isNewSideBarNavigation = useIsNewInterfaceActive()
 
   return isNewSideBarNavigation ? (
-    <Layout layout={layout}>{children}</Layout>
+    <Layout mainHeading={mainHeading} layout={layout}>
+      {children}
+    </Layout>
   ) : (
     <OldLayout layout={layout}>{children}</OldLayout>
   )

@@ -1,12 +1,6 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/fonts-design-system.scss" as fonts-design-system;
 
-.heading1-scheme {
-  @include fonts-design-system.title1;
-
-  margin-bottom: rem.torem(32px);
-}
-
 .heading2 {
   @include fonts-design-system.title2;
 }
