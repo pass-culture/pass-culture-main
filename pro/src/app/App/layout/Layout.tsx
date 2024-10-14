@@ -6,6 +6,7 @@ import { Footer } from 'components/Footer/Footer'
 import { Header } from 'components/Header/Header'
 import { NewNavReview } from 'components/NewNavReview/NewNavReview'
 import { SkipLinks } from 'components/SkipLinks/SkipLinks'
+import { useMediaQuery } from 'hooks/useMediaQuery'
 import fullGoTop from 'icons/full-go-top.svg'
 import fullInfoIcon from 'icons/full-info.svg'
 import { selectCurrentUser } from 'store/user/selectors'
@@ -38,6 +39,8 @@ export const Layout = ({
   const openButtonRef = useRef<HTMLButtonElement>(null)
   const closeButtonRef = useRef<HTMLButtonElement>(null)
   const navPanel = useRef<HTMLDivElement>(null)
+
+  const isMobileScreen = useMediaQuery('(max-width: 46.5rem)')
 
   const shouldDisplayNewNavReview =
     Boolean(currentUser?.navState?.eligibilityDate) &&
@@ -118,7 +121,9 @@ export const Layout = ({
                     </h1>
                     <a
                       id="back-to-nav-link"
-                      href="#lateral-panel"
+                      href={
+                        isMobileScreen ? '#header-nav-toggle' : '#lateral-panel'
+                      }
                       className={styles['back-to-nav-link']}
                     >
                       <SvgIcon

@@ -61,6 +61,7 @@ export const LateralPanel = ({
   return (
     <nav
       id="lateral-panel"
+      tabIndex={-1}
       className={classnames({
         [styles['lateral-panel-wrapper']]: true,
         [styles['lateral-panel-wrapper-open']]: lateralPanelOpen,
