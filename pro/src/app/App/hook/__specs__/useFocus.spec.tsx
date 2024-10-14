@@ -8,7 +8,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { useFocus } from '../useFocus'
 
-const FocusTopPage = (): null => {
+const FocusTopPageOrBackToNavLink = (): null => {
   useFocus()
   return null
 }
@@ -20,19 +20,34 @@ const renderUseFocusRoutes = (url = '/accueil') => {
         path="/accueil"
         element={
           <>
-            <SkipLinks />
             <span>Main page</span>
-            <Link to="/guichet">Guichet</Link>
+            <Link to="/page-without-back-to-nav">
+              Page Without "Back to Nav" link
+            </Link>
+            <Link to="/page-with-back-to-nav">
+              Page With "Back to Nav" link
+            </Link>
           </>
         }
       />
       <Route
-        path="/guichet"
+        path="/page-without-back-to-nav"
         element={
           <>
-            <FocusTopPage />
+            <FocusTopPageOrBackToNavLink />
             <SkipLinks />
-            <span>Guichet page</span>
+            <span>Page Without "Back to Nav" link</span>
+          </>
+        }
+      />
+      <Route
+        path="/page-with-back-to-nav"
+        element={
+          <>
+            <FocusTopPageOrBackToNavLink />
+            <SkipLinks />
+            <a id="back-to-nav-link" href="#" />
+            <span>Page With "Back to Nav" link</span>
           </>
         }
       />
@@ -42,9 +57,25 @@ const renderUseFocusRoutes = (url = '/accueil') => {
 }
 
 describe('useFocus', () => {
-  it('should focus on top of the page when user navigates to another page', async () => {
+  it('should focus on back to nav link when user navigates to another page', async () => {
     renderUseFocusRoutes()
-    await userEvent.click(screen.getByRole('link', { name: 'Guichet' }))
+    await userEvent.click(
+      screen.getByRole('link', { name: 'Page With "Back to Nav" link' })
+    )
+
+    screen.debug()
+
+    expect(document.activeElement?.id).toEqual('back-to-nav-link')
+    await userEvent.tab()
+    expect(document.activeElement?.id).not.toEqual('back-to-nav-link')
+  })
+
+  it('should focus on top of the page as a fallback', async () => {
+    renderUseFocusRoutes()
+    await userEvent.click(
+      screen.getByRole('link', { name: 'Page Without "Back to Nav" link' })
+    )
+
     expect(document.activeElement?.id).toEqual('top-page')
     await userEvent.tab()
     expect(document.activeElement?.id).not.toEqual('top-page')
