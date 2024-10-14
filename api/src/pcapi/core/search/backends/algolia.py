@@ -564,6 +564,7 @@ class AlgoliaBackend(base.SearchBackend):
                 "nativeCategoryId": offer.subcategory.native_category_id,
                 "prices": sorted(prices),
                 "rankingWeight": offer.rankingWeight,
+                "releaseDate": product_extra_data.get("releaseDate"),
                 # TODO(thconte, 2024-08-23): keep searchGroups and remove
                 # remove searchGroupNamev2 once app minimal version has been bumped
                 "searchGroupNamev2": search_groups,
