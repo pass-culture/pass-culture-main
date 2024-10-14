@@ -1,5 +1,5 @@
 {% from "components/forms.html" import build_filters_form with context %}
-{% import "components/links.html" as links %}
+{% import "components/links.html" as links with context %}
 {% from "components/turbo/lazy_modal.html" import build_lazy_modal with context %}
 {% extends "layouts/connected.html" %}
 {% set can_edit = has_permission("MANAGE_PRO_ENTITY") %}
@@ -35,7 +35,7 @@
                         class="btn btn-outline-primary"
                         data-modal-selector="#batch-edit-venues-modal"
                         data-mode="fetch"
-                        data-fetch-url="{{ url_for("backoffice_web.venue.get_batch_edit_venues_form") }}"
+                        data-fetch-url="{{ url_for('backoffice_web.venue.get_batch_edit_venues_form') }}"
                         data-use-confirmation-modal="true">Éditer les partenaires culturels</button>
               {% else %}
                 <button disabled
@@ -43,7 +43,7 @@
                         class="btn btn-outline-primary"
                         data-modal-selector="#batch-edit-venues-modal"
                         data-mode="fetch"
-                        data-fetch-url="{{ url_for("backoffice_web.venue.get_batch_edit_venues_form") }}"
+                        data-fetch-url="{{ url_for('backoffice_web.venue.get_batch_edit_venues_form') }}"
                         data-use-confirmation-modal="true">Éditer les lieux</button>
               {% endif %}
             </div>

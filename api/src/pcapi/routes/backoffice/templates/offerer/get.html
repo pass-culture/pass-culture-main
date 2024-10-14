@@ -2,7 +2,7 @@
 {% from "components/badges.html" import build_offerer_badges %}
 {% from "components/forms.html" import build_form_fields_group with context %}
 {% from "components/generic_modal.html" import build_modal_form with context %}
-{% import "components/links.html" as links %}
+{% import "components/links.html" as links with context %}
 {% from "components/presentation/details/tabs.html" import build_details_tab %}
 {% from "components/presentation/details/tabs.html" import build_details_tabs_wrapper %}
 {% from "components/presentation/details/tabs.html" import build_details_tab_content %}
@@ -20,9 +20,7 @@
       <div class="card shadow">
         <div class="card-body">
           <div class="d-flex flex-fill align-items-center">
-            <h2 class="card-title text-primary">
-              {{ links.build_offerer_name_to_pc_pro_link(offerer, is_feature_active("WIP_CONNECT_AS_EXTENDED") , has_permission("MANAGE_PRO_ENTITY")) }}
-            </h2>
+            <h2 class="card-title text-primary">{{ links.build_offerer_name_to_pc_pro_link(offerer) }}</h2>
             <span class="fs-5 ps-4">{{ build_offerer_badges(offerer) }}</span>
             <div class="d-flex row-reverse justify-content-end flex-grow-1">
               {% if has_permission("MANAGE_PRO_ENTITY") %}
@@ -160,9 +158,7 @@
               {% endif %}
             </div>
             <div class="col-4">
-              <p class="mb-1">
-                {{ links.build_pro_offerer_offers_link(offerer, is_feature_active("WIP_CONNECT_AS_EXTENDED") , has_permission("MANAGE_PRO_ENTITY")) }}
-              </p>
+              <p class="mb-1">{{ links.build_pro_offerer_offers_link(offerer) }}</p>
               {% set search_params = {
                               "search-0-search_field": "OFFERER",
                               "search-0-operator": "IN",

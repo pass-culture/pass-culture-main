@@ -1,5 +1,5 @@
 {% import "components/forms.html" as forms with context %}
-{% import "components/links.html" as links %}
+{% import "components/links.html" as links with context %}
 {% from "components/turbo/lazy_modal.html" import build_lazy_modal with context %}
 {% from "components/turbo/spinner.html" import build_loading_spinner with context %}
 {% extends "layouts/connected.html" %}
@@ -23,7 +23,7 @@
     <div class="filters-container">{{ forms.build_filters_form(form, dst) }}</div>
     <div class="row">
       <div class="col-md-11 mb-4">
-        <turbo-frame id="reimbursement_stats" src="{{ url_for("backoffice_web.reimbursement_rules.get_stats") }}">
+        <turbo-frame id="reimbursement_stats" src="{{ url_for('backoffice_web.reimbursement_rules.get_stats') }}">
         {{ build_loading_spinner() }}
         </turbo-frame>
       </div>
@@ -85,32 +85,20 @@
                 </td>
                 <td>{{ reimbursement_rule.id }}</td>
                 {% if reimbursement_rule.offerer %}
-                  <td>
-                    {{ links.build_offerer_name_to_pc_pro_link(reimbursement_rule.offerer, is_feature_active("WIP_CONNECT_AS_EXTENDED") , has_permission("MANAGE_PRO_ENTITY")) }}
-                  </td>
+                  <td>{{ links.build_offerer_name_to_pc_pro_link(reimbursement_rule.offerer) }}</td>
                   <td>{{ reimbursement_rule.offerer.siren }}</td>
                   <td></td>
                   <td></td>
                 {% elif reimbursement_rule.venue %}
-                  <td>
-                    {{ links.build_offerer_name_to_pc_pro_link(reimbursement_rule.venue.managingOfferer, is_feature_active("WIP_CONNECT_AS_EXTENDED") , has_permission("MANAGE_PRO_ENTITY")) }}
-                  </td>
+                  <td>{{ links.build_offerer_name_to_pc_pro_link(reimbursement_rule.venue.managingOfferer) }}</td>
                   <td>{{ reimbursement_rule.venue.managingOfferer.siren }}</td>
-                  <td>
-                    {{ links.build_venue_name_to_pc_pro_link(reimbursement_rule.venue, is_feature_active("WIP_CONNECT_AS_EXTENDED") , has_permission("MANAGE_PRO_ENTITY"), siret=true) }}
-                  </td>
+                  <td>{{ links.build_venue_name_to_pc_pro_link(reimbursement_rule.venue, siret=true) }}</td>
                   <td></td>
                 {% else %}
-                  <td>
-                    {{ links.build_offerer_name_to_pc_pro_link(reimbursement_rule.offer.venue.managingOfferer, is_feature_active("WIP_CONNECT_AS_EXTENDED") , has_permission("MANAGE_PRO_ENTITY")) }}
-                  </td>
+                  <td>{{ links.build_offerer_name_to_pc_pro_link(reimbursement_rule.offer.venue.managingOfferer) }}</td>
                   <td>{{ reimbursement_rule.offer.venue.managingOfferer.siren }}</td>
-                  <td>
-                    {{ links.build_venue_name_to_pc_pro_link(reimbursement_rule.offer.venue, is_feature_active("WIP_CONNECT_AS_EXTENDED") , has_permission("MANAGE_PRO_ENTITY")) }}
-                  </td>
-                  <td>
-                    {{ links.build_offer_name_to_pc_pro_link(reimbursement_rule.offer, is_feature_active("WIP_CONNECT_AS_EXTENDED") , has_permission("MANAGE_PRO_ENTITY")) }}
-                  </td>
+                  <td>{{ links.build_venue_name_to_pc_pro_link(reimbursement_rule.offer.venue) }}</td>
+                  <td>{{ links.build_offer_name_to_pc_pro_link(reimbursement_rule.offer) }}</td>
                 {% endif %}
                 <td>{{ reimbursement_rule.rate | format_rate_multiply_by_100 }}</td>
                 <td>{{ reimbursement_rule.amount | format_cents if reimbursement_rule.amount else "" }}</td>

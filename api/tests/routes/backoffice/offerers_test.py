@@ -25,6 +25,7 @@ from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.testing import assert_num_queries
+from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.core.users import testing
@@ -1207,7 +1208,8 @@ class GetOffererUsersTest(GetEndpointHelper):
     # - session + authenticated user (2 queries)
     # - users with joined data (1 query)
     # - offerer_invitation data
-    expected_num_queries = 4
+    # - retrieve FF WIP_CONNECT_AS_EXTENDED
+    expected_num_queries = 5
 
     def test_get_pro_users(self, authenticated_client, offerer):
         uo1 = offerers_factories.UserOffererFactory(
@@ -1264,6 +1266,7 @@ class GetOffererUsersTest(GetEndpointHelper):
             ([users_models.UserRole.PRO], True, True),
         ],
     )
+    @override_features(WIP_CONNECT_AS_EXTENDED=True)
     def test_connect_as_available_for_pro(self, authenticated_client, offerer, roles, active, result):
         user = users_factories.ProFactory(roles=roles, isActive=active)
         offerers_factories.UserOffererFactory(
@@ -1272,7 +1275,11 @@ class GetOffererUsersTest(GetEndpointHelper):
         )
 
         url = url_for(self.endpoint, offerer_id=offerer.id)
-        with assert_num_queries(self.expected_num_queries):
+        expected_num_queries = self.expected_num_queries
+        if not result:
+            # no FF to retrieve in that case
+            expected_num_queries -= 1
+        with assert_num_queries(expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -1358,7 +1365,7 @@ class GetOffererUsersTest(GetEndpointHelper):
 
         url = url_for(self.endpoint, offerer_id=offerer.id)
 
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(self.expected_num_queries - 1):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
