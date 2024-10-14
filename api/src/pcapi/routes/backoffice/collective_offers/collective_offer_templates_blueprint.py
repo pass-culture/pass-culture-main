@@ -21,6 +21,7 @@ from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.repository import atomic
+from pcapi.repository import mark_transaction_as_invalid
 from pcapi.repository import on_commit
 from pcapi.routes.backoffice import autocomplete
 from pcapi.routes.backoffice import utils
@@ -243,42 +244,49 @@ def _batch_validate_or_reject_collective_offer_templates(
     collective_offer_template_update_failed_ids: list[int] = []
 
     for collective_offer_template in collective_offer_templates:
-        old_validation_status = collective_offer_template.validation
-        new_validation_status = validation
-        collective_offer_template.validation = new_validation_status
-        collective_offer_template.lastValidationDate = datetime.datetime.utcnow()
-        collective_offer_template.lastValidationType = OfferValidationType.MANUAL
-        collective_offer_template.lastValidationAuthorUserId = current_user.id
-        if validation is OfferValidationStatus.APPROVED:
-            collective_offer_template.isActive = True
+        with atomic():
+            old_validation_status = collective_offer_template.validation
+            new_validation_status = validation
+            collective_offer_template.validation = new_validation_status
+            collective_offer_template.lastValidationDate = datetime.datetime.utcnow()
+            collective_offer_template.lastValidationType = OfferValidationType.MANUAL
+            collective_offer_template.lastValidationAuthorUserId = current_user.id
+            if validation is OfferValidationStatus.APPROVED:
+                collective_offer_template.isActive = True
 
-        try:
-            db.session.flush()
-        except Exception:  # pylint: disable=broad-except
-            collective_offer_template_update_failed_ids.append(collective_offer_template.id)
-            continue
+            try:
+                db.session.flush()
+            except Exception:  # pylint: disable=broad-except
+                mark_transaction_as_invalid()
+                collective_offer_template_update_failed_ids.append(collective_offer_template.id)
+                continue
 
-        collective_offer_template_update_succeed_ids.append(collective_offer_template.id)
+            collective_offer_template_update_succeed_ids.append(collective_offer_template.id)
 
-        recipients = (
-            [collective_offer_template.venue.bookingEmail]
-            if collective_offer_template.venue.bookingEmail
-            else [recipient.user.email for recipient in collective_offer_template.venue.managingOfferer.UserOfferers]
-        )
-        offer_data = transactional_mails.get_email_data_from_offer(
-            collective_offer_template, old_validation_status, new_validation_status
-        )
-        on_commit(
-            functools.partial(
-                transactional_mails.send_offer_validation_status_update_email,
-                offer_data,
-                recipients,
+            recipients = (
+                [collective_offer_template.venue.bookingEmail]
+                if collective_offer_template.venue.bookingEmail
+                else [
+                    recipient.user.email for recipient in collective_offer_template.venue.managingOfferer.UserOfferers
+                ]
             )
-        )
+            offer_data = transactional_mails.get_email_data_from_offer(
+                collective_offer_template, old_validation_status, new_validation_status
+            )
+            on_commit(
+                functools.partial(
+                    transactional_mails.send_offer_validation_status_update_email,
+                    offer_data,
+                    recipients,
+                )
+            )
 
-    search.async_index_collective_offer_template_ids(
-        collective_offer_template_update_succeed_ids,
-        reason=search.IndexationReason.OFFER_BATCH_VALIDATION,
+    on_commit(
+        functools.partial(
+            search.async_index_collective_offer_template_ids,
+            collective_offer_template_update_succeed_ids,
+            reason=search.IndexationReason.OFFER_BATCH_VALIDATION,
+        ),
     )
 
     if len(collective_offer_template_update_succeed_ids) == 1:
