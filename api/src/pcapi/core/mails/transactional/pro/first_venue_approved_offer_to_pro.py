@@ -8,6 +8,7 @@ from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.finance import models as finance_models
 from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.core.offerers.models import OffererAddress
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offerers.models import VenueBankAccountLink
 from pcapi.core.offers.models import Offer
@@ -28,7 +29,8 @@ def get_first_venue_approved_offer_email_data(offer: Offer) -> models.Transactio
             sa.orm.contains_eager(Venue.bankAccountLinks)
             .load_only(VenueBankAccountLink.timespan)
             .contains_eager(VenueBankAccountLink.bankAccount)
-            .load_only(finance_models.BankAccount.id, finance_models.BankAccount.status)
+            .load_only(finance_models.BankAccount.id, finance_models.BankAccount.status),
+            sa.orm.joinedload(Venue.offererAddress).joinedload(OffererAddress.address),
         )
         .one()
     )
