@@ -1262,7 +1262,8 @@ def save_firebase_flags(user: models.User, firebase_value: dict) -> None:
         user.pro_flags.firebase = firebase_value
     else:
         user_pro_flags = models.UserProFlags(user=user, firebase=firebase_value)
-    repository.save(user_pro_flags)
+    db.session.add(user_pro_flags)
+    db.session.commit()
 
 
 def save_flags(user: models.User, flags: dict) -> None:

@@ -238,18 +238,26 @@ def signout() -> None:
 @login_required
 @spectree_serialize(on_success_status=204, on_error_statuses=[400], api=blueprint.pro_private_schema)
 def post_pro_flags(body: users_serializers.ProFlagsQueryModel) -> None:
-    user = current_user._get_current_object()
+    current_user_obj = current_user._get_current_object()
+    user = users_models.User.query.filter(users_models.User.id == current_user_obj.id).one_or_none()
+
+    if not user:
+        raise ApiErrors(
+            errors={
+                "user": "L'utilisateur demandé n'existe pas",
+            },
+            status_code=404,
+        )
     try:
         users_api.save_flags(user=user, flags=body.dict())
     except IntegrityError as e:
-        # FIXME ogeber 27.09.2024 this log is here to investigate an issue of updating the
-        # user's pro flags, which used an empty user id, using the _get_current_object() is
-        # suspected to resolve this problem (hopefully)
-        # If there is no more errors using this method in the future, we can remove this try/except
+        # FIXME ogeber 14.10.2024 this log is here to investigate an issue of updating the
+        # user's pro flags. Remove when fixed
         logger.exception(
-            "Error during updating pro flags for user %d (current user object is %d) with the following error %s",
+            "Error during updating pro flags for user %d (current user is %d, current user object is %d) with the following error %s",
             user,
             current_user,
+            current_user_obj,
             e,
         )
 
