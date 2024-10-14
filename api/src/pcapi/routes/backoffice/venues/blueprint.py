@@ -32,7 +32,6 @@ from pcapi.core.offerers import schemas as offerers_schemas
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.providers import api as providers_api
 from pcapi.core.providers import models as providers_models
-from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models import feature
 from pcapi.models.api_errors import ApiErrors
@@ -130,40 +129,9 @@ def _get_venues(form: forms.GetVenuesListForm) -> list[offerers_models.Venue]:
 
 
 def get_venue(venue_id: int) -> offerers_models.Venue:
-    has_new_nav_users_subquery = (
-        sa.select(1)
-        .select_from(offerers_models.UserOfferer)
-        .join(
-            users_models.UserProNewNavState,
-            sa.and_(
-                users_models.UserProNewNavState.userId == offerers_models.UserOfferer.userId,
-                users_models.UserProNewNavState.newNavDate < datetime.utcnow(),
-            ),
-        )
-        .where(offerers_models.UserOfferer.offererId == offerers_models.Venue.managingOffererId)
-        .correlate(offerers_models.Venue)
-        .exists()
-    )
-
-    has_old_nav_users_subquery = (
-        sa.select(1)
-        .select_from(offerers_models.UserOfferer)
-        .outerjoin(
-            users_models.UserProNewNavState,
-            users_models.UserProNewNavState.userId == offerers_models.UserOfferer.userId,
-        )
-        .where(
-            offerers_models.UserOfferer.offererId == offerers_models.Venue.managingOffererId,
-            users_models.UserProNewNavState.newNavDate.is_(None),
-        )
-        .correlate(offerers_models.Venue)
-        .exists()
-    )
 
     venue_query = offerers_models.Venue.query.filter(offerers_models.Venue.id == venue_id).options(
         sa.orm.joinedload(offerers_models.Venue.managingOfferer)
-        .with_expression(offerers_models.Offerer.hasNewNavUsers, has_new_nav_users_subquery)
-        .with_expression(offerers_models.Offerer.hasOldNavUsers, has_old_nav_users_subquery)
         .joinedload(offerers_models.Offerer.confidenceRule)
         .load_only(offerers_models.OffererConfidenceRule.confidenceLevel)
     )

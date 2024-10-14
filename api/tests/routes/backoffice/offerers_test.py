@@ -119,62 +119,6 @@ class GetOffererTest(GetEndpointHelper):
         assert "Validée" in badges
         assert "Suspendue" not in badges
 
-    @pytest.mark.parametrize(
-        "new_nav_users,old_nav_users",
-        [
-            (True, True),
-            (False, True),
-            (True, False),
-            (False, False),
-        ],
-    )
-    def test_get_offerer_with_new_nav_badges(self, new_nav_users, old_nav_users, authenticated_client, offerer):
-        if new_nav_users:
-            user_with_new_nav = users_factories.ProFactory()
-            offerers_factories.UserOffererFactory(user=user_with_new_nav, offerer=offerer)
-        if old_nav_users:
-            _user_exclude_from_beta_test = users_factories.ProFactory(new_pro_portal__deactivate=True)
-
-            user_with_nav_date_in_the_future = users_factories.ProFactory(
-                new_pro_portal__eligibilityDate=None,
-                new_pro_portal__newNavDate=datetime.datetime.utcnow() + datetime.timedelta(days=5),
-            )
-            offerers_factories.UserOffererFactory(user=user_with_nav_date_in_the_future, offerer=offerer)
-
-            user_with_old_nav = users_factories.ProFactory(
-                new_pro_portal__eligibilityDate=None,
-                new_pro_portal__newNavDate=None,
-            )
-            offerers_factories.UserOffererFactory(user=user_with_old_nav, offerer=offerer)
-
-            eligible_user_with_inactivated_new_nav = users_factories.ProFactory(
-                new_pro_portal__eligibilityDate=datetime.datetime.utcnow(),
-                new_pro_portal__newNavDate=None,
-            )
-            offerers_factories.UserOffererFactory(user=eligible_user_with_inactivated_new_nav, offerer=offerer)
-
-        url = url_for(self.endpoint, offerer_id=offerer.id)
-
-        # if offerer is not removed from the current session, any get
-        # query won't be executed because of this specific testing
-        # environment. This would tamper the real database queries
-        # count.
-        db.session.expire(offerer)
-
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url)
-            assert response.status_code == 200
-
-        badges = html_parser.extract(response.data, tag="span", class_="badge")
-        assert "Structure" in badges
-        assert "Validée" in badges
-        assert "Suspendue" not in badges
-
-        if new_nav_users:
-            assert "Nouvelle interface" in badges
-        if old_nav_users:
-            assert "Ancienne interface" in badges
-
     def test_offerer_detail_contains_venue_bank_information_stats(
         self,
         authenticated_client,
@@ -1463,21 +1407,9 @@ class GetOffererUsersTest(GetEndpointHelper):
         options = select.find_all("option")
         assert [option["value"] for option in options] == ["", str(user3.id), str(user2.id)]
 
-    def test_user_offerer_details_tab_with_new_nav_tags(self, authenticated_client, offerer):
-        user_with_new_nav = users_factories.ProFactory()
-        offerers_factories.UserOffererFactory(user=user_with_new_nav, offerer=offerer)
-
-        user_with_old_nav = users_factories.ProFactory(
-            new_pro_portal__eligibilityDate=None,
-            new_pro_portal__newNavDate=None,
-        )
-        offerers_factories.UserOffererFactory(user=user_with_old_nav, offerer=offerer)
-
-        eligible_user_with_inactivated_new_nav = users_factories.ProFactory(
-            new_pro_portal__eligibilityDate=datetime.datetime.utcnow(),
-            new_pro_portal__newNavDate=None,
-        )
-        offerers_factories.UserOffererFactory(user=eligible_user_with_inactivated_new_nav, offerer=offerer)
+    def test_user_offerer_details_tab(self, authenticated_client, offerer):
+        user = users_factories.ProFactory()
+        offerers_factories.UserOffererFactory(user=user, offerer=offerer)
 
         url = url_for(self.endpoint, offerer_id=offerer.id)
 
@@ -1487,25 +1419,12 @@ class GetOffererUsersTest(GetEndpointHelper):
 
         rows = html_parser.extract_table_rows(response.data)
 
-        assert len(rows) == 3
+        assert len(rows) == 1
 
-        assert rows[0]["ID"] == str(user_with_new_nav.id)
+        assert rows[0]["ID"] == str(user.id)
         assert rows[0]["Statut"] == "Validé"
-        assert rows[0]["Interface"] == "Nouvelle interface"
-        assert rows[0]["Prénom / Nom"] == user_with_new_nav.full_name
-        assert rows[0]["Email"] == user_with_new_nav.email
-
-        assert rows[1]["ID"] == str(user_with_old_nav.id)
-        assert rows[1]["Statut"] == "Validé"
-        assert rows[1]["Interface"] == "Ancienne interface"
-        assert rows[1]["Prénom / Nom"] == user_with_old_nav.full_name
-        assert rows[1]["Email"] == user_with_old_nav.email
-
-        assert rows[2]["ID"] == str(eligible_user_with_inactivated_new_nav.id)
-        assert rows[2]["Statut"] == "Validé"
-        assert rows[2]["Interface"] == "Ancienne interface"
-        assert rows[2]["Prénom / Nom"] == eligible_user_with_inactivated_new_nav.full_name
-        assert rows[2]["Email"] == eligible_user_with_inactivated_new_nav.email
+        assert rows[0]["Prénom / Nom"] == user.full_name
+        assert rows[0]["Email"] == user.email
 
 
 class GetDeleteOffererAttachmentFormTest(GetEndpointHelper):

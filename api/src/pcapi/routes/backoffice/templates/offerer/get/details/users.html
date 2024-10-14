@@ -1,6 +1,4 @@
 {% from "components/badges.html" import build_user_offerer_status_badge %}
-{% from "components/badges.html" import build_new_navigation_badge %}
-{% from "components/badges.html" import build_old_navigation_badge %}
 {% from "components/generic_modal.html" import build_modal_form with context %}
 {% import "components/links.html" as links %}
 {% from "components/turbo/lazy_modal.html" import build_lazy_modal with context %}
@@ -22,7 +20,6 @@
       <th scope="col"></th>
       <th scope="col">ID</th>
       <th scope="col">Statut</th>
-      <th scope="col">Interface</th>
       <th scope="col">Prénom / Nom</th>
       <th scope="col">Email</th>
       <th scope="col">Invitation</th>
@@ -84,13 +81,6 @@
             {% if not row.isActive %}<span class="badge rounded-pill text-bg-danger align-middle">{{ row.isActive | format_state }}</span>{% endif %}
           {% else %}
             <span class="me-1 pb-1 badge rounded-pill text-bg-light">Invité</span>
-          {% endif %}
-        </td>
-        <td>
-          {% if row.hasNewNav %}
-            {{ build_new_navigation_badge() }}
-          {% else %}
-            {{ build_old_navigation_badge() }}
           {% endif %}
         </td>
         <td class="fw-bolder text-break">{{ row.full_name | empty_string_if_null }}</td>

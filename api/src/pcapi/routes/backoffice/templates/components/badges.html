@@ -11,12 +11,6 @@
     <span class="me-1 pb-1 badge rounded-pill text-bg-danger">{{ deleted }}</span>
   {% endif %}
 {% endmacro %}
-{% macro build_new_navigation_badge() %}
-  <span class="me-1 pb-1 badge rounded-pill text-bg-secondary-light">Nouvelle interface</span>
-{% endmacro %}
-{% macro build_old_navigation_badge() %}
-  <span class="me-1 pb-1 badge rounded-pill text-bg-secondary-lighter">Ancienne interface</span>
-{% endmacro %}
 {% macro build_venue_badges(venue) %}
   <span class="me-1 pb-1 badge rounded-pill text-bg-secondary align-middle">
     {% if is_feature_active("WIP_ENABLE_OFFER_ADDRESS") %}
@@ -39,8 +33,6 @@
       Suspendu
     </span>
   {% endif %}
-  {% if venue.managingOfferer.hasNewNavUsers %}{{ build_new_navigation_badge() }}{% endif %}
-  {% if venue.managingOfferer.hasOldNavUsers %}{{ build_old_navigation_badge() }}{% endif %}
 {% endmacro %}
 {% macro build_offerer_status_badge(offerer) %}
   {{ build_status_badge(offerer, "Nouvelle", "En attente", "Validée", "Rejetée", "Supprimée") }}
@@ -54,8 +46,6 @@
       Suspendue
     </span>
   {% endif %}
-  {% if offerer.hasNewNavUsers %}{{ build_new_navigation_badge() }}{% endif %}
-  {% if offerer.hasOldNavUsers %}{{ build_old_navigation_badge() }}{% endif %}
 {% endmacro %}
 {% macro build_user_offerer_status_badge(user_offerer) %}
   {{ build_status_badge(user_offerer, "Nouveau", "En attente", "Validé", "Rejeté", "Supprimé") }}

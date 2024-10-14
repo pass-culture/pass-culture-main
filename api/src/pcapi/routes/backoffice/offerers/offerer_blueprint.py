@@ -118,38 +118,6 @@ def _load_offerer_data(offerer_id: int) -> sa.engine.Row:
         .exists()
     )
 
-    has_new_nav_users_subquery = (
-        sa.select(1)
-        .select_from(offerers_models.UserOfferer)
-        .join(
-            users_models.UserProNewNavState,
-            sa.and_(
-                users_models.UserProNewNavState.userId == offerers_models.UserOfferer.userId,
-                users_models.UserProNewNavState.newNavDate < datetime.datetime.utcnow(),
-            ),
-        )
-        .where(
-            offerers_models.UserOfferer.offererId == offerers_models.Offerer.id,
-        )
-        .correlate(offerers_models.Offerer)
-        .exists()
-    )
-
-    has_old_nav_users_subquery = (
-        sa.select(1)
-        .select_from(offerers_models.UserOfferer)
-        .outerjoin(
-            users_models.UserProNewNavState,
-            users_models.UserProNewNavState.userId == offerers_models.UserOfferer.userId,
-        )
-        .where(
-            offerers_models.UserOfferer.offererId == offerers_models.Offerer.id,
-            users_models.UserProNewNavState.newNavDate.is_(None),
-        )
-        .correlate(offerers_models.Offerer)
-        .exists()
-    )
-
     offerer_query = (
         db.session.query(
             offerers_models.Offerer,
@@ -166,8 +134,6 @@ def _load_offerer_data(offerer_id: int) -> sa.engine.Row:
             sa.orm.joinedload(offerers_models.Offerer.individualSubscription).load_only(
                 offerers_models.IndividualOffererSubscription.id
             ),
-            sa.orm.with_expression(offerers_models.Offerer.hasNewNavUsers, has_new_nav_users_subquery),
-            sa.orm.with_expression(offerers_models.Offerer.hasOldNavUsers, has_old_nav_users_subquery),
             sa.orm.joinedload(offerers_models.Offerer.confidenceRule).load_only(
                 offerers_models.OffererConfidenceRule.confidenceLevel
             ),
@@ -615,7 +581,6 @@ def get_pro_users(offerer_id: int) -> utils.BackofficeResponse:
             users_models.User.roles,
             offerers_models.UserOfferer,
             offerers_models.OffererInvitation,
-            users_models.UserProNewNavState.newNavDate.is_not(None).label("hasNewNav"),
         )
         .select_from(users_models.User)
         .outerjoin(
@@ -632,7 +597,6 @@ def get_pro_users(offerer_id: int) -> utils.BackofficeResponse:
                 offerers_models.OffererInvitation.email == users_models.User.email,
             ),
         )
-        .outerjoin(users_models.UserProNewNavState, users_models.UserProNewNavState.userId == users_models.User.id)
         .options(options)
         .filter(users_models.User.id.in_(user_ids_subquery))
         .order_by(offerers_models.UserOfferer.id, users_models.User.full_name)

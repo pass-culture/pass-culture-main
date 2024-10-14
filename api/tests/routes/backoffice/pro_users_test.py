@@ -163,54 +163,6 @@ class GetProUserTest(GetEndpointHelper):
         expected_url = url_for("backoffice_web.pro.search_pro", _external=True)
         assert response.location == expected_url
 
-    @pytest.mark.parametrize("has_new_nav", [True, False])
-    def test_get_pro_user_with_new_nav_badges(self, authenticated_client, has_new_nav):
-        if has_new_nav:
-            user_kwargs = {"user__new_pro_portal__newNavDate": datetime.datetime.utcnow()}
-        else:
-            user_kwargs = {"user__new_pro_portal__deactivate": True}
-        user = offerers_factories.UserOffererFactory(
-            user__phoneNumber="+33638656565",
-            user__postalCode="29000",
-            **user_kwargs,
-        ).user
-        url = url_for(self.endpoint, user_id=user.id)
-
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url)
-            assert response.status_code == 200
-
-        badges = html_parser.extract(response.data, tag="span", class_="badge")
-        assert "Pro" in badges
-        assert "Validé" in badges
-        assert "Suspendu" not in badges
-
-        if has_new_nav:
-            assert "Nouvelle interface" in badges
-        else:
-            assert "Ancienne interface" in badges
-
-    @override_features(ENABLE_PRO_NEW_NAV_MODIFICATION=True)
-    def test_form_should_fill_pro_new_nav_state_dates(self, authenticated_client, db_session):
-        old_newNavDate = datetime.datetime(2024, 4, 25, 8, 13, 3, 114129)
-        old_eligibilityDate = datetime.datetime(2029, 4, 25, 8, 18, 3, 114129)
-        user_to_edit = offerers_factories.UserOffererFactory(
-            user__postalCode="74000",
-            user__new_pro_portal__newNavDate=old_newNavDate,
-            user__new_pro_portal__eligibilityDate=old_eligibilityDate,
-        ).user
-        db_session.flush()
-        url = url_for("backoffice_web.pro_user.get", user_id=user_to_edit.id)
-
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url)
-            assert response.status_code == 200
-
-        content = html_parser.extract_input_value(response.data, name="new_nav_date")
-        assert content == "2024-04-25T10:13"
-        content = html_parser.extract_input_value(response.data, name="eligibility_date")
-        assert content == "2029-04-25T10:18"
-
     def test_get_pro_user_with_null_names(self, authenticated_client, db_session):
         pro_user = users_factories.ProFactory(firstName=None, lastName=None)
         url = url_for("backoffice_web.pro_user.get", user_id=pro_user.id)
@@ -300,100 +252,6 @@ class UpdateProUserTest(PostEndpointHelper):
             "modified_info": {"notificationSubscriptions.marketing_email": {"old_info": True, "new_info": False}}
         }
 
-    @override_features(ENABLE_PRO_NEW_NAV_MODIFICATION=True)
-    def test_set_new_nav_date(self, legit_user, authenticated_client):
-        user_to_edit = offerers_factories.UserOffererFactory(
-            user__postalCode="74000",
-            user__new_pro_portal__deactivate=True,
-        ).user
-
-        new_nav_date = datetime.datetime(2025, 6, 7, 8, 9, 10)  # CEST
-        eligibility_date = datetime.datetime(2029, 7, 7, 8, 9, 10)  # CEST
-
-        form_data = {
-            "first_name": user_to_edit.firstName,
-            "last_name": user_to_edit.lastName,
-            "email": user_to_edit.email,
-            "postal_code": user_to_edit.postalCode,
-            "phone_number": user_to_edit.phoneNumber,
-            "new_nav_date": new_nav_date.strftime(date_utils.DATETIME_FIELD_FORMAT),
-            "eligibility_date": eligibility_date.strftime(date_utils.DATETIME_FIELD_FORMAT),
-            "marketing_email_subscription": "on",
-        }
-
-        response = self.post_to_endpoint(authenticated_client, user_id=user_to_edit.id, form=form_data)
-        assert response.status_code == 303
-
-        user_to_edit = users_models.User.query.filter_by(id=user_to_edit.id).one()
-        assert user_to_edit.pro_new_nav_state.newNavDate == datetime.datetime(2025, 6, 7, 6, 9)
-        assert user_to_edit.pro_new_nav_state.eligibilityDate == datetime.datetime(2029, 7, 7, 6, 9)
-
-        action = history_models.ActionHistory.query.one()
-        assert action.actionType == history_models.ActionType.INFO_MODIFIED
-        assert action.authorUser == legit_user
-        assert action.user == user_to_edit
-        assert action.actionDate is not None
-        assert action.extraData["modified_info"] == {
-            "pro_new_nav_state.newNavDate": {"old_info": None, "new_info": "2025-06-07 06:09:00"},
-            "pro_new_nav_state.eligibilityDate": {"old_info": None, "new_info": "2029-07-07 06:09:00"},
-        }
-
-    @override_features(ENABLE_PRO_NEW_NAV_MODIFICATION=True)
-    @pytest.mark.parametrize("new_nav_date", [None, datetime.datetime(2024, 4, 25, 8, 11)])
-    @pytest.mark.parametrize("eligibility_date", [None, datetime.datetime(2024, 4, 24, 8, 11)])
-    def test_modify_nav_date(self, legit_user, authenticated_client, eligibility_date, new_nav_date):
-
-        new_nav_date_paris = new_nav_date.strftime(date_utils.DATETIME_FIELD_FORMAT) if new_nav_date else None
-        eligibility_date_paris = (
-            eligibility_date.strftime(date_utils.DATETIME_FIELD_FORMAT) if eligibility_date else None
-        )
-        old_newNavDate = datetime.datetime(2024, 4, 25, 8, 13)
-        old_eligibilityDate = datetime.datetime(2029, 4, 29, 8, 18)
-        user_to_edit = offerers_factories.UserOffererFactory(
-            user__postalCode="74000",
-            user__new_pro_portal__newNavDate=old_newNavDate,
-            user__new_pro_portal__eligibilityDate=old_eligibilityDate,
-        ).user
-        form_data = {
-            "first_name": user_to_edit.firstName,
-            "last_name": user_to_edit.lastName,
-            "email": user_to_edit.email,
-            "postal_code": user_to_edit.postalCode,
-            "phone_number": user_to_edit.phoneNumber,
-            "new_nav_date": new_nav_date_paris,
-            "eligibility_date": eligibility_date_paris,
-        }
-
-        response = self.post_to_endpoint(authenticated_client, user_id=user_to_edit.id, form=form_data)
-        assert response.status_code == 303
-
-        user_edited = users_models.User.query.filter_by(id=user_to_edit.id).one()
-        assert user_edited.pro_new_nav_state.eligibilityDate == (
-            datetime.datetime(2024, 4, 24, 6, 11) if eligibility_date else None
-        )
-        assert user_edited.pro_new_nav_state.newNavDate == (
-            datetime.datetime(2024, 4, 25, 6, 11) if new_nav_date else None
-        )
-
-        action = history_models.ActionHistory.query.one()
-        assert action.actionType == history_models.ActionType.INFO_MODIFIED
-        assert action.actionDate is not None
-        assert action.authorUser == legit_user
-        assert action.user == user_to_edit
-        assert action.extraData["modified_info"]["pro_new_nav_state.newNavDate"]["old_info"] == str(old_newNavDate)[:19]
-        assert (
-            action.extraData["modified_info"]["pro_new_nav_state.eligibilityDate"]["old_info"]
-            == str(old_eligibilityDate)[:19]
-        )
-
-        assert action.extraData["modified_info"]["pro_new_nav_state.newNavDate"]["new_info"] == (
-            "2024-04-25 06:11:00" if new_nav_date else None
-        )
-
-        assert action.extraData["modified_info"]["pro_new_nav_state.eligibilityDate"]["new_info"] == (
-            "2024-04-24 06:11:00" if eligibility_date else None
-        )
-
     @pytest.mark.parametrize("user_factory", [users_factories.BeneficiaryGrant18Factory, users_factories.AdminFactory])
     def test_update_non_pro_user(self, authenticated_client, user_factory):
         user = user_factory()
@@ -472,51 +330,6 @@ class GetProUserHistoryTest(GetEndpointHelper):
             assert response.status_code == 200
 
         assert html_parser.count_table_rows(response.data, parent_class="history-tab-pane") == 0
-
-    @override_features(ENABLE_PRO_NEW_NAV_MODIFICATION=True)
-    def test_new_nav_dates_in_history(self, authenticated_client):
-        old_eligibility_date = datetime.datetime(2024, 4, 27, 8, 13, 3, 0)
-        old_new_nav_date = datetime.datetime(2024, 4, 28, 8, 13, 3, 0)
-        new_eligibility_date = datetime.datetime(2024, 4, 24, 8, 11, 0, 0)
-        new_nav_date = datetime.datetime(2024, 4, 25, 8, 11, 0, 0)
-        user = offerers_factories.UserOffererFactory(
-            user__new_pro_portal__eligibilityDate=new_eligibility_date,
-            user__new_pro_portal__newNavDate=new_nav_date,
-        ).user
-        history_factories.ActionHistoryFactory(
-            actionType=history_models.ActionType.INFO_MODIFIED,
-            user=user,
-            extraData={
-                "modified_info": {
-                    "pro_new_nav_state.eligibilityDate": {
-                        "old_info": old_eligibility_date.strftime("%Y-%m-%d %H:%M:%S"),
-                        "new_info": new_eligibility_date.strftime("%Y-%m-%d %H:%M:%S"),
-                    },
-                    "pro_new_nav_state.newNavDate": {
-                        "old_info": old_new_nav_date.strftime("%Y-%m-%d %H:%M:%S"),
-                        "new_info": new_nav_date.strftime("%Y-%m-%d %H:%M:%S"),
-                    },
-                }
-            },
-        )
-        url = url_for("backoffice_web.pro_user.get_details", user_id=user.id)
-
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url)
-            assert response.status_code == 200
-
-        rows = html_parser.extract_table_rows(response.data, parent_class="history-tab-pane")
-        assert len(rows) == 1
-
-        assert rows[0]["Type"] == history_models.ActionType.INFO_MODIFIED.value
-        assert (
-            "Date d'éligibilité à la nouvelle interface Pro : 2024-04-27 08:13:03 => 2024-04-24 08:11:00"
-            in rows[0]["Commentaire"]
-        )
-        assert (
-            "Date de passage sur la nouvelle interface Pro : 2024-04-28 08:13:03 => 2024-04-25 08:11:00"
-            in rows[0]["Commentaire"]
-        )
 
     @pytest.mark.parametrize("user_factory", [users_factories.BeneficiaryGrant18Factory, users_factories.AdminFactory])
     def test_non_pro_user_history(self, authenticated_client, user_factory):
