@@ -6,16 +6,10 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 
 import styles from './SkipLinks.module.scss'
 
-interface SkipLinksProps {
-  displayMenu?: boolean
-}
-
-export const SkipLinks = ({
-  displayMenu = false,
-}: SkipLinksProps): JSX.Element => {
+export const SkipLinks = (): JSX.Element => {
   const buttons: { anchor: string; label: string }[] = [
     { anchor: '#content', label: 'Aller au contenu' },
-  ].concat(displayMenu ? { anchor: '#header-navigation', label: 'Menu' } : [])
+  ]
 
   return (
     <>

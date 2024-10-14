@@ -6,18 +6,15 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { SkipLinks } from '../SkipLinks'
 
-const renderApp = ({ displayMenu }: { displayMenu?: boolean }) =>
+const renderApp = () =>
   renderWithProviders(
     <Routes>
       <Route
         element={
           <div>
-            <SkipLinks displayMenu={displayMenu} />
-            <div id="header-navigation">
-              <a href="#">first focusable content element</a>
-            </div>
+            <SkipLinks />
             <div id="content">
-              <a href="#">second focusable content element</a>
+              <a href="#">focusable content element</a>
             </div>
           </div>
         }
@@ -29,13 +26,8 @@ const renderApp = ({ displayMenu }: { displayMenu?: boolean }) =>
 
 describe('SkipLinks', () => {
   it('should render', () => {
-    renderApp({})
+    renderApp()
     expect(screen.queryByText('Aller au contenu')).toBeInTheDocument()
     expect(screen.queryByText('Menu')).not.toBeInTheDocument()
-  })
-
-  it('should display menu', () => {
-    renderApp({ displayMenu: true })
-    expect(screen.queryByText('Menu')).toBeInTheDocument()
   })
 })
