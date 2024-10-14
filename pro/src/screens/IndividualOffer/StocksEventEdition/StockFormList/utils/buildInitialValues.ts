@@ -1,9 +1,13 @@
 import { format } from 'date-fns'
 
 import { GetOfferStockResponseModel, OfferStatus } from 'apiClient/v1'
-import { SelectOption } from 'custom_types/form'
-import { FORMAT_HH_mm, FORMAT_ISO_DATE_ONLY, isDateValid } from 'utils/date'
-import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
+import { SelectOption } from 'commons/custom_types/form'
+import {
+  FORMAT_HH_mm,
+  FORMAT_ISO_DATE_ONLY,
+  isDateValid,
+} from 'commons/utils/date'
+import { getLocalDepartementDateTimeFromUtc } from 'commons/utils/timezone'
 
 import { StocksEventFormValues } from '../types'
 

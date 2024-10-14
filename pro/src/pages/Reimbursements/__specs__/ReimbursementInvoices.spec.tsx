@@ -9,20 +9,20 @@ import { expect } from 'vitest'
 import { api } from 'apiClient/api'
 import { BankAccountResponseModel } from 'apiClient/v1'
 import * as useAnalytics from 'app/App/analytics/firebase'
-import { Events } from 'core/FirebaseEvents/constants'
-import { defaultBankAccount } from 'utils/individualApiFactories'
+import { Events } from 'commons/core/FirebaseEvents/constants'
+import { defaultBankAccount } from 'commons/utils/individualApiFactories'
 import {
   renderWithProviders,
   RenderWithProvidersOptions,
-} from 'utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'utils/storeFactories'
+} from 'commons/utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
 
 import { ReimbursementsInvoices } from '../ReimbursementsInvoices/ReimbursementsInvoices'
 
 const mockLogEvent = vi.fn()
 
-vi.mock('utils/date', async () => ({
-  ...(await vi.importActual('utils/date')),
+vi.mock('commons/utils/date', async () => ({
+  ...(await vi.importActual('commons/utils/date')),
   getToday: vi.fn(() => new Date('2020-12-15T12:00:00Z')),
 }))
 

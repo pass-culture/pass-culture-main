@@ -7,14 +7,14 @@ import {
   GetVenueResponseModel,
   VenueTypeResponseModel,
 } from 'apiClient/v1'
+import { SelectOption } from 'commons/custom_types/form'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { AddressSelect } from 'components/Address/Address'
 import { AddressManual } from 'components/AddressManual/AddressManual'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { resetAddressFields } from 'components/IndividualOfferForm/utils/resetAddressFields'
 import { RouteLeavingGuardIndividualOffer } from 'components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
 import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
-import { SelectOption } from 'custom_types/form'
-import { useActiveFeature } from 'hooks/useActiveFeature'
 import fullBackIcon from 'icons/full-back.svg'
 import fullNextIcon from 'icons/full-next.svg'
 import { ReimbursementFields } from 'pages/Offerers/Offerer/VenueV1/fields/ReimbursementFields/ReimbursementFields'

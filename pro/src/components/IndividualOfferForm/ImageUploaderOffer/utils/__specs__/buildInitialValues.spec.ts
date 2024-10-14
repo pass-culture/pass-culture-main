@@ -1,4 +1,4 @@
-import { IndividualOfferImage } from 'core/Offers/types'
+import { IndividualOfferImage } from 'commons/core/Offers/types'
 
 import { buildInitialValues } from '../buildInitialValues'
 

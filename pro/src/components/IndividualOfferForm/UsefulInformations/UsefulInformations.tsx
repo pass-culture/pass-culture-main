@@ -6,10 +6,10 @@ import {
   SubcategoryResponseModel,
   VenueListItemResponseModel,
 } from 'apiClient/v1'
+import { REIMBURSEMENT_RULES } from 'commons/core/Finances/constants'
 import { OfferRefundWarning } from 'components/Banner/OfferRefundWarning'
 import { WithdrawalReminder } from 'components/Banner/WithdrawalReminder'
 import { FormLayout } from 'components/FormLayout/FormLayout'
-import { REIMBURSEMENT_RULES } from 'core/Finances/constants'
 import { Checkbox } from 'ui-kit/form/Checkbox/Checkbox'
 import { TextArea } from 'ui-kit/form/TextArea/TextArea'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'

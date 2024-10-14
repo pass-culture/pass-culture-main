@@ -3,12 +3,12 @@ import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
 import * as useAnalytics from 'app/App/analytics/firebase'
-import { Events } from 'core/FirebaseEvents/constants'
+import { Events } from 'commons/core/FirebaseEvents/constants'
 import {
   defaultGetOffererVenueResponseModel,
   defaultGetOffererResponseModel,
-} from 'utils/individualApiFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
+} from 'commons/utils/individualApiFactories'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { VenueCreationLinks } from '../VenueCreationLinks'
 

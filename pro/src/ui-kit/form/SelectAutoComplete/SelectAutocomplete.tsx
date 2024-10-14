@@ -2,7 +2,7 @@ import cx from 'classnames'
 import { useField, useFormikContext } from 'formik'
 import { KeyboardEventHandler, useEffect, useRef, useState } from 'react'
 
-import { SelectOption } from 'custom_types/form'
+import { SelectOption } from 'commons/custom_types/form'
 
 import { BaseInput } from '../shared/BaseInput/BaseInput'
 import {

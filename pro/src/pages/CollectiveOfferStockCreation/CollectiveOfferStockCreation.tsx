@@ -8,26 +8,26 @@ import {
   GetCollectiveOfferResponseModel,
 } from 'apiClient/v1'
 import { AppLayout } from 'app/AppLayout'
-import { CollectiveOfferLayout } from 'components/CollectiveOfferLayout/CollectiveOfferLayout'
 import {
   GET_COLLECTIVE_OFFER_QUERY_KEY,
   GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY,
   GET_COLLECTIVE_REQUEST_INFORMATIONS_QUERY_KEY,
-} from 'config/swrQueryKeys'
+} from 'commons/config/swrQueryKeys'
 import {
   isCollectiveOffer,
   isCollectiveOfferTemplate,
   OfferEducationalStockFormValues,
   EducationalOfferType,
   Mode,
-} from 'core/OfferEducational/types'
-import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
-import { createPatchStockDataPayload } from 'core/OfferEducational/utils/createPatchStockDataPayload'
-import { createStockDataPayload } from 'core/OfferEducational/utils/createStockDataPayload'
-import { extractInitialStockValues } from 'core/OfferEducational/utils/extractInitialStockValues'
-import { hasStatusCodeAndErrorsCode } from 'core/OfferEducational/utils/hasStatusCode'
-import { FORM_ERROR_MESSAGE } from 'core/shared/constants'
-import { useNotification } from 'hooks/useNotification'
+} from 'commons/core/OfferEducational/types'
+import { computeURLCollectiveOfferId } from 'commons/core/OfferEducational/utils/computeURLCollectiveOfferId'
+import { createPatchStockDataPayload } from 'commons/core/OfferEducational/utils/createPatchStockDataPayload'
+import { createStockDataPayload } from 'commons/core/OfferEducational/utils/createStockDataPayload'
+import { extractInitialStockValues } from 'commons/core/OfferEducational/utils/extractInitialStockValues'
+import { hasStatusCodeAndErrorsCode } from 'commons/core/OfferEducational/utils/hasStatusCode'
+import { FORM_ERROR_MESSAGE } from 'commons/core/shared/constants'
+import { useNotification } from 'commons/hooks/useNotification'
+import { CollectiveOfferLayout } from 'components/CollectiveOfferLayout/CollectiveOfferLayout'
 import { queryParamsFromOfferer } from 'pages/Offers/utils/queryParamsFromOfferer'
 import {
   MandatoryCollectiveOfferFromParamsProps,

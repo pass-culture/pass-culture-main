@@ -5,21 +5,21 @@ import { api } from 'apiClient/api'
 import { isErrorAPIError } from 'apiClient/helpers'
 import { GetCollectiveOfferResponseModel } from 'apiClient/v1'
 import { AppLayout } from 'app/AppLayout'
-import { CollectiveOfferLayout } from 'components/CollectiveOfferLayout/CollectiveOfferLayout'
-import { GET_COLLECTIVE_OFFER_QUERY_KEY } from 'config/swrQueryKeys'
+import { GET_COLLECTIVE_OFFER_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import {
   isCollectiveOfferTemplate,
   OfferEducationalStockFormValues,
   Mode,
-} from 'core/OfferEducational/types'
-import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
-import { createPatchStockDataPayload } from 'core/OfferEducational/utils/createPatchStockDataPayload'
-import { extractInitialStockValues } from 'core/OfferEducational/utils/extractInitialStockValues'
+} from 'commons/core/OfferEducational/types'
+import { computeURLCollectiveOfferId } from 'commons/core/OfferEducational/utils/computeURLCollectiveOfferId'
+import { createPatchStockDataPayload } from 'commons/core/OfferEducational/utils/createPatchStockDataPayload'
+import { extractInitialStockValues } from 'commons/core/OfferEducational/utils/extractInitialStockValues'
 import {
   FORM_ERROR_MESSAGE,
   PATCH_SUCCESS_MESSAGE,
-} from 'core/shared/constants'
-import { useNotification } from 'hooks/useNotification'
+} from 'commons/core/shared/constants'
+import { useNotification } from 'commons/hooks/useNotification'
+import { CollectiveOfferLayout } from 'components/CollectiveOfferLayout/CollectiveOfferLayout'
 import {
   MandatoryCollectiveOfferFromParamsProps,
   withCollectiveOfferFromParams,

@@ -4,15 +4,15 @@ import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
 import { AppLayout } from 'app/AppLayout'
-import { GET_OFFERER_NAMES_QUERY_KEY } from 'config/swrQueryKeys'
-import { GET_DATA_ERROR_MESSAGE } from 'core/shared/constants'
-import { SelectOption } from 'custom_types/form'
-import { useIsNewInterfaceActive } from 'hooks/useIsNewInterfaceActive'
-import { useNotification } from 'hooks/useNotification'
+import { GET_OFFERER_NAMES_QUERY_KEY } from 'commons/config/swrQueryKeys'
+import { GET_DATA_ERROR_MESSAGE } from 'commons/core/shared/constants'
+import { SelectOption } from 'commons/custom_types/form'
+import { useIsNewInterfaceActive } from 'commons/hooks/useIsNewInterfaceActive'
+import { useNotification } from 'commons/hooks/useNotification'
+import { selectCurrentOffererId } from 'commons/store/user/selectors'
+import { sortByLabel } from 'commons/utils/strings'
 import { OffererStatsScreen } from 'screens/OffererStats/OffererStatsScreen'
-import { selectCurrentOffererId } from 'store/user/selectors'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
-import { sortByLabel } from 'utils/strings'
 
 export const OffererStats = (): JSX.Element | null => {
   const notify = useNotification()

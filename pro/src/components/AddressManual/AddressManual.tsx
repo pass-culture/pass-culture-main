@@ -1,13 +1,13 @@
 import { useField, useFormikContext } from 'formik'
 import React from 'react'
 
+import { getCoordsType, parseDms } from 'commons/utils/coords'
 import { Callout } from 'components/Callout/Callout'
 import { CalloutVariant } from 'components/Callout/types'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
-import { getCoordsType, parseDms } from 'utils/coords'
 
 import styles from './AddressManual.module.scss'
 

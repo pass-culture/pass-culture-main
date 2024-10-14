@@ -9,15 +9,15 @@ import {
 import {
   IndividualOfferContext,
   IndividualOfferContextValues,
-} from 'context/IndividualOfferContext/IndividualOfferContext'
-import { RootState } from 'store/rootReducer'
+} from 'commons/context/IndividualOfferContext/IndividualOfferContext'
+import { RootState } from 'commons/store/rootReducer'
 import {
   getIndividualOfferFactory,
   getOfferStockFactory,
   getOfferVenueFactory,
   individualOfferContextValuesFactory,
-} from 'utils/individualApiFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
+} from 'commons/utils/individualApiFactories'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { Stocks } from '../Stocks'
 

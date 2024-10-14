@@ -10,15 +10,15 @@ import {
 import {
   ALL_VENUES_OPTION,
   DEFAULT_COLLECTIVE_SEARCH_FILTERS,
-} from 'core/Offers/constants'
-import * as useNotification from 'hooks/useNotification'
-import { collectiveOfferFactory } from 'utils/collectiveApiFactories'
-import { defaultGetOffererResponseModel } from 'utils/individualApiFactories'
+} from 'commons/core/Offers/constants'
+import * as useNotification from 'commons/hooks/useNotification'
+import { collectiveOfferFactory } from 'commons/utils/collectiveApiFactories'
+import { defaultGetOffererResponseModel } from 'commons/utils/individualApiFactories'
 import {
   renderWithProviders,
   RenderWithProvidersOptions,
-} from 'utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'utils/storeFactories'
+} from 'commons/utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
 
 import {
   CollectiveOffersScreen,
@@ -74,9 +74,9 @@ const proVenuesOptions = [
   { value: 'JQ', label: 'Mon offerer - Offre numérique' },
 ]
 
-vi.mock('utils/date', async () => {
+vi.mock('commons/utils/date', async () => {
   return {
-    ...(await vi.importActual('utils/date')),
+    ...(await vi.importActual('commons/utils/date')),
     getToday: vi
       .fn()
       .mockImplementation(() => new Date('2020-12-15T12:00:00Z')),
@@ -121,7 +121,7 @@ describe('CollectiveOffersScreen', () => {
     }
 
     const notifsImport = (await vi.importActual(
-      'hooks/useNotification'
+      'commons/hooks/useNotification'
     )) as ReturnType<typeof useNotification.useNotification>
     vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
       ...notifsImport,

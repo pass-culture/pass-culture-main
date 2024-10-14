@@ -7,7 +7,7 @@ import { apiAdage } from 'apiClient/api'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
-} from 'utils/renderWithProviders'
+} from 'commons/utils/renderWithProviders'
 
 import { ContactButton, ContactButtonProps } from '../ContactButton'
 

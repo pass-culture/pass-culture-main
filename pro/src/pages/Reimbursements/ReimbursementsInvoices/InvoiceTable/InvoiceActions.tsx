@@ -1,15 +1,15 @@
 import { api } from 'apiClient/api'
 import { InvoiceResponseV2Model } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
-import { Events } from 'core/FirebaseEvents/constants'
-import { GET_DATA_ERROR_MESSAGE } from 'core/shared/constants'
-import { useNotification } from 'hooks/useNotification'
+import { Events } from 'commons/core/FirebaseEvents/constants'
+import { GET_DATA_ERROR_MESSAGE } from 'commons/core/shared/constants'
+import { useNotification } from 'commons/hooks/useNotification'
+import { downloadFile } from 'commons/utils/downloadFile'
 import fullDownloadIcon from 'icons/full-download.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { DropdownItem } from 'ui-kit/DropdownMenuWrapper/DropdownItem'
 import { DropdownMenuWrapper } from 'ui-kit/DropdownMenuWrapper/DropdownMenuWrapper'
-import { downloadFile } from 'utils/downloadFile'
 
 type InvoiceActionsProps = {
   invoice: InvoiceResponseV2Model

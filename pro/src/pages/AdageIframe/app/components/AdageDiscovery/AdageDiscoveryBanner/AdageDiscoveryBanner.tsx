@@ -1,6 +1,6 @@
 import { createRef, useEffect } from 'react'
 
-import { doesUserPreferReducedMotion } from 'utils/windowMatchMedia'
+import { doesUserPreferReducedMotion } from 'commons/utils/windowMatchMedia'
 
 import styles from './AdageDiscoveryBanner.module.scss'
 

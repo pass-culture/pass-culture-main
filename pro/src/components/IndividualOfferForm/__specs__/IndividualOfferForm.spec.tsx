@@ -12,12 +12,11 @@ import {
 import {
   IndividualOfferContextValues,
   IndividualOfferContext,
-} from 'context/IndividualOfferContext/IndividualOfferContext'
+} from 'commons/context/IndividualOfferContext/IndividualOfferContext'
 import {
   CATEGORY_STATUS,
   INDIVIDUAL_OFFER_SUBTYPE,
-} from 'core/Offers/constants'
-import { Button } from 'ui-kit/Button/Button'
+} from 'commons/core/Offers/constants'
 import {
   getIndividualOfferFactory,
   categoryFactory,
@@ -25,9 +24,10 @@ import {
   subcategoryFactory,
   venueListItemFactory,
   getOffererNameFactory,
-} from 'utils/individualApiFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'utils/storeFactories'
+} from 'commons/utils/individualApiFactories'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
+import { Button } from 'ui-kit/Button/Button'
 
 import {
   IndividualOfferForm,
@@ -69,7 +69,7 @@ const renderIndividualOfferForm = ({
   )
 }
 
-vi.mock('utils/windowMatchMedia', () => ({
+vi.mock('commons/utils/windowMatchMedia', () => ({
   doesUserPreferReducedMotion: vi.fn(() => true),
 }))
 

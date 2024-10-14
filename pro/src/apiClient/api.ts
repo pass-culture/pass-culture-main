@@ -1,4 +1,4 @@
-import { API_URL } from 'utils/config'
+import { API_URL } from 'commons/utils/config'
 
 import { AppClientAdage } from './adage/AppClientAdage'
 import { AppClient, OpenAPIConfig } from './v1'

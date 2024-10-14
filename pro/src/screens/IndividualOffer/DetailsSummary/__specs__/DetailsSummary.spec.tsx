@@ -5,19 +5,19 @@ import {
   GetIndividualOfferWithAddressResponseModel,
   SubcategoryIdEnum,
 } from 'apiClient/v1'
-import { IndividualOfferContext } from 'context/IndividualOfferContext/IndividualOfferContext'
-import { CATEGORY_STATUS } from 'core/Offers/constants'
-import { AddressResponseIsLinkedToVenueModelFactory } from 'utils/commonOffersApiFactories'
+import { IndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
+import { CATEGORY_STATUS } from 'commons/core/Offers/constants'
+import { AddressResponseIsLinkedToVenueModelFactory } from 'commons/utils/commonOffersApiFactories'
 import {
   categoryFactory,
   getIndividualOfferFactory,
   individualOfferContextValuesFactory,
   subcategoryFactory,
-} from 'utils/individualApiFactories'
+} from 'commons/utils/individualApiFactories'
 import {
   renderWithProviders,
   RenderWithProvidersOptions,
-} from 'utils/renderWithProviders'
+} from 'commons/utils/renderWithProviders'
 
 import { DetailsSummaryScreen } from '../DetailsSummary'
 

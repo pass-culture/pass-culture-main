@@ -1,6 +1,6 @@
 import { useFormik } from 'formik'
 
-import { hasProperties } from 'utils/types'
+import { hasProperties } from 'commons/utils/types'
 
 export type PriceCategoryForm = {
   label: string

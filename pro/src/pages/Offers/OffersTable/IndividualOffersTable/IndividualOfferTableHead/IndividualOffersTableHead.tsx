@@ -1,6 +1,6 @@
 import classNames from 'classnames'
 
-import { useActiveFeature } from 'hooks/useActiveFeature'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 
 import styles from './IndividualOffersTableHead.module.scss'
 

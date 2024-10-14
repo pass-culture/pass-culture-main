@@ -2,7 +2,7 @@ import { screen } from '@testing-library/react'
 import React from 'react'
 import { Route, Routes } from 'react-router-dom'
 
-import { renderWithProviders } from 'utils/renderWithProviders'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { SkipLinks } from '../SkipLinks'
 

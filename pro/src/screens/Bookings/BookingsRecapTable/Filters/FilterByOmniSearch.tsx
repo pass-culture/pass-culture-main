@@ -2,9 +2,9 @@ import cn from 'classnames'
 import { ChangeEvent } from 'react'
 
 import { useAnalytics } from 'app/App/analytics/firebase'
-import { Events } from 'core/FirebaseEvents/constants'
-import { Audience } from 'core/shared/types'
-import { SelectOption } from 'custom_types/form'
+import { Events } from 'commons/core/FirebaseEvents/constants'
+import { Audience } from 'commons/core/shared/types'
+import { SelectOption } from 'commons/custom_types/form'
 import { SelectInput } from 'ui-kit/form/Select/SelectInput'
 import { BaseInput } from 'ui-kit/form/shared/BaseInput/BaseInput'
 

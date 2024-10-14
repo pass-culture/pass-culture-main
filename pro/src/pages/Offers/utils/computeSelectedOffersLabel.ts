@@ -1,4 +1,4 @@
-import { pluralize } from 'utils/pluralize'
+import { pluralize } from 'commons/utils/pluralize'
 
 export function computeSelectedOffersLabel(offersLength: number) {
   return offersLength > 500

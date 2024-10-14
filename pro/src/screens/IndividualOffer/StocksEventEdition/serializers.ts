@@ -1,13 +1,13 @@
 import { endOfDay } from 'date-fns'
 
 import { StockCreationBodyModel, StockEditionBodyModel } from 'apiClient/v1'
-import { StockEventFormValues } from 'screens/IndividualOffer/StocksEventEdition/StockFormList/types'
 import {
   getToday,
   isDateValid,
   toISOStringWithoutMilliseconds,
-} from 'utils/date'
-import { getUtcDateTimeFromLocalDepartement } from 'utils/timezone'
+} from 'commons/utils/date'
+import { getUtcDateTimeFromLocalDepartement } from 'commons/utils/timezone'
+import { StockEventFormValues } from 'screens/IndividualOffer/StocksEventEdition/StockFormList/types'
 
 const serializeBookingLimitDatetime = (
   beginningDate: string,

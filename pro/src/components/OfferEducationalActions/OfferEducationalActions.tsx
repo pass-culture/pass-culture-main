@@ -10,31 +10,31 @@ import {
   GetCollectiveOfferTemplateResponseModel,
 } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
-import { CollectiveStatusLabel } from 'components/CollectiveStatusLabel/CollectiveStatusLabel'
 import {
   GET_COLLECTIVE_OFFER_QUERY_KEY,
   GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY,
-} from 'config/swrQueryKeys'
-import { CollectiveBookingsEvents } from 'core/FirebaseEvents/constants'
+} from 'commons/config/swrQueryKeys'
+import { CollectiveBookingsEvents } from 'commons/core/FirebaseEvents/constants'
 import {
   isCollectiveOffer,
   isCollectiveOfferTemplate,
   Mode,
-} from 'core/OfferEducational/types'
-import { useActiveFeature } from 'hooks/useActiveFeature'
-import { useNotification } from 'hooks/useNotification'
-import fullHideIcon from 'icons/full-hide.svg'
-import fullNextIcon from 'icons/full-next.svg'
-import strokeCheckIcon from 'icons/stroke-check.svg'
-import { selectCurrentOffererId } from 'store/user/selectors'
-import { Button } from 'ui-kit/Button/Button'
-import { ButtonLink } from 'ui-kit/Button/ButtonLink'
-import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
+} from 'commons/core/OfferEducational/types'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
+import { useNotification } from 'commons/hooks/useNotification'
+import { selectCurrentOffererId } from 'commons/store/user/selectors'
 import {
   FORMAT_ISO_DATE_ONLY,
   formatBrowserTimezonedDateAsUTC,
   toDateStrippedOfTimezone,
-} from 'utils/date'
+} from 'commons/utils/date'
+import { CollectiveStatusLabel } from 'components/CollectiveStatusLabel/CollectiveStatusLabel'
+import fullHideIcon from 'icons/full-hide.svg'
+import fullNextIcon from 'icons/full-next.svg'
+import strokeCheckIcon from 'icons/stroke-check.svg'
+import { Button } from 'ui-kit/Button/Button'
+import { ButtonLink } from 'ui-kit/Button/ButtonLink'
+import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 
 import style from './OfferEducationalActions.module.scss'
 

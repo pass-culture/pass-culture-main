@@ -1,7 +1,7 @@
 import { screen, within } from '@testing-library/react'
 import * as reactRedux from 'react-redux'
 
-import { renderWithProviders } from 'utils/renderWithProviders'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { Sitemap } from '../Sitemap'
 

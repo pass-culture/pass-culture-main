@@ -6,9 +6,9 @@ import { CategoryResponseModel, SubcategoryResponseModel } from 'apiClient/v1'
 import {
   IndividualOfferContext,
   IndividualOfferContextValues,
-} from 'context/IndividualOfferContext/IndividualOfferContext'
-import { subcategoryFactory } from 'utils/individualApiFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
+} from 'commons/context/IndividualOfferContext/IndividualOfferContext'
+import { subcategoryFactory } from 'commons/utils/individualApiFactories'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import {
   SuggestedSubcategories,

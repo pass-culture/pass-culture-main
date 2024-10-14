@@ -1,5 +1,5 @@
-import { Mode } from 'core/OfferEducational/types'
-import { getCollectiveOfferFactory } from 'utils/collectiveApiFactories'
+import { Mode } from 'commons/core/OfferEducational/types'
+import { getCollectiveOfferFactory } from 'commons/utils/collectiveApiFactories'
 
 import { OfferEducationalProps } from '../OfferEducational'
 

@@ -1,5 +1,5 @@
 import { AppLayout, AppLayoutProps } from 'app/AppLayout'
-import { useCurrentUser } from 'hooks/useCurrentUser'
+import { useCurrentUser } from 'commons/hooks/useCurrentUser'
 import fullBackIcon from 'icons/full-back.svg'
 import logoPassCultureProFullIcon from 'icons/logo-pass-culture-pro-full.svg'
 import logoStyles from 'styles/components/_Logo.module.scss'

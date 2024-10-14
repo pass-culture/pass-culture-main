@@ -12,30 +12,30 @@ import {
   GetCollectiveOfferTemplateResponseModel,
 } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
-import { ArchiveConfirmationModal } from 'components/ArchiveConfirmationModal/ArchiveConfirmationModal'
-import { Step, Stepper } from 'components/Stepper/Stepper'
 import {
   GET_COLLECTIVE_OFFER_QUERY_KEY,
   GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY,
-} from 'config/swrQueryKeys'
+} from 'commons/config/swrQueryKeys'
 import {
   Events,
   OFFER_FROM_TEMPLATE_ENTRIES,
-} from 'core/FirebaseEvents/constants'
-import { NOTIFICATION_LONG_SHOW_DURATION } from 'core/Notification/constants'
+} from 'commons/core/FirebaseEvents/constants'
+import { NOTIFICATION_LONG_SHOW_DURATION } from 'commons/core/Notification/constants'
 import {
   isCollectiveOffer,
   isCollectiveOfferTemplate,
-} from 'core/OfferEducational/types'
-import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
-import { createOfferFromTemplate } from 'core/OfferEducational/utils/createOfferFromTemplate'
-import { useActiveFeature } from 'hooks/useActiveFeature'
-import { useNotification } from 'hooks/useNotification'
-import { useOfferStockEditionURL } from 'hooks/useOfferEditionURL'
+} from 'commons/core/OfferEducational/types'
+import { computeURLCollectiveOfferId } from 'commons/core/OfferEducational/utils/computeURLCollectiveOfferId'
+import { createOfferFromTemplate } from 'commons/core/OfferEducational/utils/createOfferFromTemplate'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
+import { useNotification } from 'commons/hooks/useNotification'
+import { useOfferStockEditionURL } from 'commons/hooks/useOfferEditionURL'
+import { selectCurrentOffererId } from 'commons/store/user/selectors'
+import { ArchiveConfirmationModal } from 'components/ArchiveConfirmationModal/ArchiveConfirmationModal'
+import { Step, Stepper } from 'components/Stepper/Stepper'
 import fullArchiveIcon from 'icons/full-archive.svg'
 import fullMoreIcon from 'icons/full-more.svg'
 import fullShowIcon from 'icons/full-show.svg'
-import { selectCurrentOffererId } from 'store/user/selectors'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'

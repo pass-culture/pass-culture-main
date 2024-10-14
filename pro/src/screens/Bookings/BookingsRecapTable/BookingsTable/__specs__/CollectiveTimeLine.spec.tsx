@@ -10,17 +10,17 @@ import {
 } from 'apiClient/v1'
 import { CollectiveBookingCancellationReasons } from 'apiClient/v1/models/CollectiveBookingCancellationReasons'
 import * as useAnalytics from 'app/App/analytics/firebase'
-import { BOOKING_STATUS } from 'core/Bookings/constants'
-import { CollectiveBookingsEvents } from 'core/FirebaseEvents/constants'
+import { BOOKING_STATUS } from 'commons/core/Bookings/constants'
+import { CollectiveBookingsEvents } from 'commons/core/FirebaseEvents/constants'
 import {
   collectiveBookingByIdFactory,
   collectiveBookingCollectiveStockFactory,
   collectiveBookingFactory,
-} from 'utils/collectiveApiFactories'
+} from 'commons/utils/collectiveApiFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
-} from 'utils/renderWithProviders'
+} from 'commons/utils/renderWithProviders'
 
 import { CollectiveTimeLine } from '../CollectiveTimeLine'
 

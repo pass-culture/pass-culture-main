@@ -1,7 +1,7 @@
 /* istanbul ignore file */
+import { useIndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
+import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
-import { useIndividualOfferContext } from 'context/IndividualOfferContext/IndividualOfferContext'
-import { useOfferWizardMode } from 'hooks/useOfferWizardMode'
 import { ActionBar } from 'screens/IndividualOffer/ActionBar/ActionBar'
 import { DetailsSummaryScreen } from 'screens/IndividualOffer/DetailsSummary/DetailsSummary'
 import { IndivualOfferLayout } from 'screens/IndividualOffer/IndivualOfferLayout/IndivualOfferLayout'

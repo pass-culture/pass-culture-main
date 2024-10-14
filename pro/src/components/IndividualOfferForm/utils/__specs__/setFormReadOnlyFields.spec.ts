@@ -6,8 +6,8 @@ import {
   OFFER_STATUS_DRAFT,
   OFFER_STATUS_PENDING,
   OFFER_STATUS_REJECTED,
-} from 'core/Offers/constants'
-import { getIndividualOfferFactory } from 'utils/individualApiFactories'
+} from 'commons/core/Offers/constants'
+import { getIndividualOfferFactory } from 'commons/utils/individualApiFactories'
 
 import { FORM_DEFAULT_VALUES } from '../../constants'
 import { setFormReadOnlyFields } from '../setFormReadOnlyFields'

@@ -1,7 +1,6 @@
 import { Dispatch, FormEvent, SetStateAction } from 'react'
 
 import { GetOffererResponseModel, OfferStatus } from 'apiClient/v1'
-import { FormLayout } from 'components/FormLayout/FormLayout'
 import {
   ALL_CATEGORIES_OPTION,
   ALL_OFFERER_ADDRESS_OPTION,
@@ -9,12 +8,13 @@ import {
   ALL_VENUES_OPTION,
   CREATION_MODES_OPTIONS,
   DEFAULT_SEARCH_FILTERS,
-} from 'core/Offers/constants'
-import { SearchFiltersParams } from 'core/Offers/types'
-import { hasSearchFilters } from 'core/Offers/utils/hasSearchFilters'
-import { SelectOption } from 'custom_types/form'
-import { useActiveFeature } from 'hooks/useActiveFeature'
-import { useIsNewInterfaceActive } from 'hooks/useIsNewInterfaceActive'
+} from 'commons/core/Offers/constants'
+import { SearchFiltersParams } from 'commons/core/Offers/types'
+import { hasSearchFilters } from 'commons/core/Offers/utils/hasSearchFilters'
+import { SelectOption } from 'commons/custom_types/form'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
+import { useIsNewInterfaceActive } from 'commons/hooks/useIsNewInterfaceActive'
+import { FormLayout } from 'components/FormLayout/FormLayout'
 import fullRefreshIcon from 'icons/full-refresh.svg'
 import strokeCloseIcon from 'icons/stroke-close.svg'
 import { Button } from 'ui-kit/Button/Button'

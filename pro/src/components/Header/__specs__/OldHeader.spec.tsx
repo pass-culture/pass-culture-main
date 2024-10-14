@@ -3,12 +3,12 @@ import { userEvent } from '@testing-library/user-event'
 
 import { api } from 'apiClient/api'
 import * as useAnalytics from 'app/App/analytics/firebase'
-import { Events } from 'core/FirebaseEvents/constants'
-import { getOffererNameFactory } from 'utils/individualApiFactories'
+import { Events } from 'commons/core/FirebaseEvents/constants'
+import { getOffererNameFactory } from 'commons/utils/individualApiFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
-} from 'utils/renderWithProviders'
+} from 'commons/utils/renderWithProviders'
 
 import { OldHeader } from '../OldHeader'
 

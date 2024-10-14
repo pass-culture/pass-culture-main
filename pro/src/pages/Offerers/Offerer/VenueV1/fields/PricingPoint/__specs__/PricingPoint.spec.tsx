@@ -3,13 +3,13 @@ import { userEvent } from '@testing-library/user-event'
 import { Formik } from 'formik'
 
 import { api } from 'apiClient/api'
-import * as useNotification from 'hooks/useNotification'
-import { defaultGetVenue } from 'utils/collectiveApiFactories'
+import * as useNotification from 'commons/hooks/useNotification'
+import { defaultGetVenue } from 'commons/utils/collectiveApiFactories'
 import {
   defaultGetOffererVenueResponseModel,
   defaultGetOffererResponseModel,
-} from 'utils/individualApiFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
+} from 'commons/utils/individualApiFactories'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { PricingPoint, PricingPointProps } from '../PricingPoint'
 
@@ -63,7 +63,7 @@ describe('PricingPoint', () => {
     })
     const mockNotifyError = vi.fn()
     const notifsImport = (await vi.importActual(
-      'hooks/useNotification'
+      'commons/hooks/useNotification'
     )) as ReturnType<typeof useNotification.useNotification>
     vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
       ...notifsImport,

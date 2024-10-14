@@ -1,7 +1,7 @@
 import { AppLayout } from 'app/AppLayout'
+import { Mode } from 'commons/core/OfferEducational/types'
 import { canArchiveCollectiveOfferFromSummary } from 'components/ArchiveConfirmationModal/utils/canArchiveCollectiveOffer'
 import { CollectiveOfferLayout } from 'components/CollectiveOfferLayout/CollectiveOfferLayout'
-import { Mode } from 'core/OfferEducational/types'
 import { CollectiveOfferSummaryEditionScreen } from 'screens/CollectiveOfferSummaryEdition/CollectiveOfferSummaryEdition'
 import {
   MandatoryCollectiveOfferFromParamsProps,

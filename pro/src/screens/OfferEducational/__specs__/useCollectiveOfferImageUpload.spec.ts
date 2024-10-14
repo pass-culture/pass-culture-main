@@ -1,16 +1,16 @@
 import { act, renderHook } from '@testing-library/react'
 
 import { api } from 'apiClient/api'
-import { imageUploadArgsFactory } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/__tests-utils__/imageUploadArgsFactory'
-import * as useNotification from 'hooks/useNotification'
+import * as useNotification from 'commons/hooks/useNotification'
 import {
   getCollectiveOfferFactory,
   getCollectiveOfferTemplateFactory,
-} from 'utils/collectiveApiFactories'
+} from 'commons/utils/collectiveApiFactories'
+import { imageUploadArgsFactory } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/__tests-utils__/imageUploadArgsFactory'
 
 import { useCollectiveOfferImageUpload } from '../useCollectiveOfferImageUpload'
 
-vi.mock('hooks/useNotification')
+vi.mock('commons/hooks/useNotification')
 
 vi.mock('apiClient/api', () => ({
   api: {

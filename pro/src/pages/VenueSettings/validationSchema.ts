@@ -1,6 +1,6 @@
 import * as yup from 'yup'
 
-import { checkCoords } from 'utils/coords'
+import { checkCoords } from 'commons/utils/coords'
 
 export const getValidationSchema = (isVenueVirtual: boolean) =>
   yup.object().shape({

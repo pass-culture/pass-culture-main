@@ -2,7 +2,7 @@ import type { StoryObj } from '@storybook/react'
 import { Formik } from 'formik'
 import React from 'react'
 
-import { searchPatternInOptions } from 'utils/searchPatternInOptions'
+import { searchPatternInOptions } from 'commons/utils/searchPatternInOptions'
 
 import {
   SelectAutocomplete,

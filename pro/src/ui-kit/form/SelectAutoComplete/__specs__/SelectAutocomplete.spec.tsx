@@ -10,7 +10,7 @@ import { Formik } from 'formik'
 import React from 'react'
 import * as yup from 'yup'
 
-import { searchPatternInOptions } from 'utils/searchPatternInOptions'
+import { searchPatternInOptions } from 'commons/utils/searchPatternInOptions'
 
 import {
   SelectAutocompleteProps,

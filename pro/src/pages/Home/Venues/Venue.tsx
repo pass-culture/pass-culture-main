@@ -6,7 +6,7 @@ import {
   GetOffererVenueResponseModel,
 } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
-import { VenueEvents } from 'core/FirebaseEvents/constants'
+import { VenueEvents } from 'commons/core/FirebaseEvents/constants'
 import fullDisclosureClose from 'icons/full-disclosure-close.svg'
 import fullDisclosureOpen from 'icons/full-disclosure-open.svg'
 import strokeConnectIcon from 'icons/stroke-connect.svg'

@@ -6,7 +6,7 @@ import { routesSignup } from 'app/AppRouter/subroutesSignupMap'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
-} from 'utils/renderWithProviders'
+} from 'commons/utils/renderWithProviders'
 
 import { Signup } from '../Signup'
 

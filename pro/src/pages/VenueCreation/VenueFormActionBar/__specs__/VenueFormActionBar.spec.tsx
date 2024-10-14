@@ -2,9 +2,9 @@ import { screen } from '@testing-library/react'
 import { Formik } from 'formik'
 import React from 'react'
 
-import { defaultGetVenue } from 'utils/collectiveApiFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'utils/storeFactories'
+import { defaultGetVenue } from 'commons/utils/collectiveApiFactories'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
 
 import {
   VenueFormActionBar,

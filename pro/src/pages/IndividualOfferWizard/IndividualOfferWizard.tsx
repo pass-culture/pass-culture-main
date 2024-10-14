@@ -2,7 +2,7 @@
 import { Outlet, RouteObject, useLocation } from 'react-router-dom'
 
 import { AppLayout } from 'app/AppLayout'
-import { IndividualOfferContextProvider } from 'context/IndividualOfferContext/IndividualOfferContext'
+import { IndividualOfferContextProvider } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
 
 const IndividualOfferWizard = () => {
   const { pathname } = useLocation()

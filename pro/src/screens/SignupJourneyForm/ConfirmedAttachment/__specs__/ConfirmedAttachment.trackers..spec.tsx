@@ -3,16 +3,16 @@ import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
 import * as useAnalytics from 'app/App/analytics/firebase'
-import { OnboardingFormNavigationAction } from 'components/SignupJourneyFormLayout/constants'
-import { SIGNUP_JOURNEY_STEP_IDS } from 'components/SignupJourneyStepper/constants'
 import {
   SignupJourneyContext,
   SignupJourneyContextValues,
-} from 'context/SignupJourneyContext/SignupJourneyContext'
-import { Events } from 'core/FirebaseEvents/constants'
+} from 'commons/context/SignupJourneyContext/SignupJourneyContext'
+import { Events } from 'commons/core/FirebaseEvents/constants'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
+import { OnboardingFormNavigationAction } from 'components/SignupJourneyFormLayout/constants'
+import { SIGNUP_JOURNEY_STEP_IDS } from 'components/SignupJourneyStepper/constants'
 import { DEFAULT_OFFERER_FORM_VALUES } from 'screens/SignupJourneyForm/Offerer/constants'
-import { renderWithProviders } from 'utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 import { ConfirmedAttachment } from '../ConfirmedAttachment'
 

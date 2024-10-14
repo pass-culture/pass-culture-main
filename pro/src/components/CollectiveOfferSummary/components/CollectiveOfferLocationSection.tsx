@@ -5,12 +5,12 @@ import {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
 } from 'apiClient/v1'
+import { GET_VENUE_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import {
   Description,
   SummaryDescriptionList,
 } from 'components/SummaryLayout/SummaryDescriptionList'
 import { SummarySubSection } from 'components/SummaryLayout/SummarySubSection'
-import { GET_VENUE_QUERY_KEY } from 'config/swrQueryKeys'
 import { getInterventionAreaLabels } from 'pages/AdageIframe/app/components/OffersInstantSearch/OffersSearch/Offers/OfferDetails/OfferInterventionArea'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 

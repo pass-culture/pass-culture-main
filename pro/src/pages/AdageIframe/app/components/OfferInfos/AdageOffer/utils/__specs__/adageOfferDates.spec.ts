@@ -1,7 +1,7 @@
 import {
   defaultCollectiveTemplateOffer,
   defaultCollectiveOffer,
-} from 'utils/adageFactories'
+} from 'commons/utils/adageFactories'
 
 import {
   getFormattedDatesForBookableOffer,

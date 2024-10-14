@@ -17,16 +17,16 @@ import * as useAnalytics from 'app/App/analytics/firebase'
 import {
   Events,
   OFFER_FROM_TEMPLATE_ENTRIES,
-} from 'core/FirebaseEvents/constants'
-import { SENT_DATA_ERROR_MESSAGE } from 'core/shared/constants'
-import * as useNotification from 'hooks/useNotification'
+} from 'commons/core/FirebaseEvents/constants'
+import { SENT_DATA_ERROR_MESSAGE } from 'commons/core/shared/constants'
+import * as useNotification from 'commons/hooks/useNotification'
 import {
   defaultGetVenue,
   getCollectiveOfferFactory,
   getCollectiveOfferTemplateFactory,
-} from 'utils/collectiveApiFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'utils/storeFactories'
+} from 'commons/utils/collectiveApiFactories'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
 
 import {
   CollectiveOfferNavigation,
@@ -92,7 +92,7 @@ describe('CollectiveOfferNavigation', () => {
     )
 
     const notifsImport = (await vi.importActual(
-      'hooks/useNotification'
+      'commons/hooks/useNotification'
     )) as ReturnType<typeof useNotification.useNotification>
     vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
       ...notifsImport,

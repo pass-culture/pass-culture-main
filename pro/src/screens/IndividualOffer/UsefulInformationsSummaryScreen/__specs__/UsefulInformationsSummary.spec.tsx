@@ -5,17 +5,17 @@ import {
   WithdrawalTypeEnum,
   SubcategoryIdEnum,
 } from 'apiClient/v1'
-import { IndividualOfferContext } from 'context/IndividualOfferContext/IndividualOfferContext'
-import { AddressResponseIsLinkedToVenueModelFactory } from 'utils/commonOffersApiFactories'
+import { IndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
+import { AddressResponseIsLinkedToVenueModelFactory } from 'commons/utils/commonOffersApiFactories'
 import {
   getIndividualOfferFactory,
   getOfferVenueFactory,
   individualOfferContextValuesFactory,
-} from 'utils/individualApiFactories'
+} from 'commons/utils/individualApiFactories'
 import {
   renderWithProviders,
   RenderWithProvidersOptions,
-} from 'utils/renderWithProviders'
+} from 'commons/utils/renderWithProviders'
 
 import { UsefulInformationsSummaryScreen } from '../UsefulInformationsSummary'
 

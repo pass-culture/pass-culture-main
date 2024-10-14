@@ -5,9 +5,15 @@ import {
   BookingRecapResponseModel,
   CollectiveBookingResponseModel,
 } from 'apiClient/v1'
-import { OFFER_STATUS_PENDING } from 'core/Offers/constants'
-import { useActiveFeature } from 'hooks/useActiveFeature'
-import { useOfferEditionURL } from 'hooks/useOfferEditionURL'
+import { OFFER_STATUS_PENDING } from 'commons/core/Offers/constants'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
+import { useOfferEditionURL } from 'commons/hooks/useOfferEditionURL'
+import {
+  FORMAT_DD_MM_YYYY_HH_mm,
+  toDateStrippedOfTimezone,
+} from 'commons/utils/date'
+import { formatPrice } from 'commons/utils/formatPrice'
+import { pluralize } from 'commons/utils/pluralize'
 import fullErrorIcon from 'icons/full-error.svg'
 import {
   getDate,
@@ -15,9 +21,6 @@ import {
   shouldDisplayWarning,
 } from 'pages/Offers/OffersTable/Cells/OfferNameCell/utils'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
-import { FORMAT_DD_MM_YYYY_HH_mm, toDateStrippedOfTimezone } from 'utils/date'
-import { formatPrice } from 'utils/formatPrice'
-import { pluralize } from 'utils/pluralize'
 
 import styles from './BookingOfferCell.module.scss'
 

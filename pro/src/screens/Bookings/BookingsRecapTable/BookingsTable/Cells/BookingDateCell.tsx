@@ -5,7 +5,7 @@ import {
   FORMAT_DD_MM_YYYY,
   FORMAT_HH_mm,
   toDateStrippedOfTimezone,
-} from 'utils/date'
+} from 'commons/utils/date'
 
 import styles from './BookingDateCell.module.scss'
 

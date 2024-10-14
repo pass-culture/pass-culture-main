@@ -1,11 +1,11 @@
-import { BOOKING_STATUS } from 'core/Bookings/constants'
+import { BOOKING_STATUS } from 'commons/core/Bookings/constants'
+import { FORMAT_DD_MM_YYYY, FORMAT_DD_MM_YYYY_HH_mm } from 'commons/utils/date'
 import strokeCheckIcon from 'icons/stroke-check.svg'
 import strokeClockIcon from 'icons/stroke-clock.svg'
 import strokeDoubleCheckIcon from 'icons/stroke-double-check.svg'
 import strokeEuroIcon from 'icons/stroke-euro.svg'
 import strokeHourglassIcon from 'icons/stroke-hourglass.svg'
 import strokeWrongIcon from 'icons/stroke-wrong.svg'
-import { FORMAT_DD_MM_YYYY, FORMAT_DD_MM_YYYY_HH_mm } from 'utils/date'
 
 import styles from './BookingStatus.module.scss'
 

@@ -1,11 +1,11 @@
 import { screen, waitFor } from '@testing-library/react'
 import React from 'react'
 
+import { NotificationTypeEnum } from 'commons/hooks/useNotification'
+import { Notification as NotificationType } from 'commons/store/notifications/reducer'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { Notification } from 'components/Notification/Notification'
-import { NotificationTypeEnum } from 'hooks/useNotification'
-import { Notification as NotificationType } from 'store/notifications/reducer'
 import { notificationAdditionalAttributes } from 'ui-kit/NotificationToaster/NotificationToaster'
-import { renderWithProviders } from 'utils/renderWithProviders'
 
 describe('Notification', () => {
   const renderNotification = (notification: NotificationType) =>

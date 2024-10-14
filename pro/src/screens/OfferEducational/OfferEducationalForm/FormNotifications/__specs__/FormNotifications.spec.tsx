@@ -4,7 +4,7 @@ import { Formik } from 'formik'
 import React from 'react'
 import * as yup from 'yup'
 
-import { OfferEducationalFormValues } from 'core/OfferEducational/types'
+import { OfferEducationalFormValues } from 'commons/core/OfferEducational/types'
 import { Button } from 'ui-kit/Button/Button'
 
 import { FormNotifications } from '../FormNotifications'

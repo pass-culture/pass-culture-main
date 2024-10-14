@@ -10,21 +10,21 @@ import { api } from 'apiClient/api'
 import { ApiError } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
-import { SENT_DATA_ERROR_MESSAGE } from 'core/shared/constants'
+import { SENT_DATA_ERROR_MESSAGE } from 'commons/core/shared/constants'
 import {
   domtomOptions,
   mainlandInterventionOption,
   mainlandOptions,
-} from 'core/shared/interventionOptions'
-import * as useNotification from 'hooks/useNotification'
+} from 'commons/core/shared/interventionOptions'
+import * as useNotification from 'commons/hooks/useNotification'
 import {
   defaultDMSApplicationForEAC,
   defaultGetVenue,
-} from 'utils/collectiveApiFactories'
+} from 'commons/utils/collectiveApiFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
-} from 'utils/renderWithProviders'
+} from 'commons/utils/renderWithProviders'
 
 import {
   CollectiveDataEdition,
@@ -37,10 +37,10 @@ import {
 // if we only mock mainlandOptions, the mock is not use to build venueInterventionOptions, allDepartmentValues and mainlandValues
 // and the test fail...
 // the workaround I found is to mock this way :
-vi.mock('core/shared/interventionOptions', async () => {
+vi.mock('commons/core/shared/interventionOptions', async () => {
   const originalModule = await vi.importActual<
-    typeof import('core/shared/interventionOptions')
-  >('core/shared/interventionOptions')
+    typeof import('commons/core/shared/interventionOptions')
+  >('commons/core/shared/interventionOptions')
 
   const mockedMainlandOptions = [
     { value: '01', label: '01 - Ain' },

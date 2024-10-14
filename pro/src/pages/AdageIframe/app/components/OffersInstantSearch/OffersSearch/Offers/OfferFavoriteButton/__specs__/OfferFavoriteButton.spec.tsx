@@ -2,12 +2,12 @@ import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import { apiAdage } from 'apiClient/api'
-import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
 import {
   defaultAdageUser,
   defaultCollectiveTemplateOffer,
-} from 'utils/adageFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
+} from 'commons/utils/adageFactories'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
 
 import {
   OfferFavoriteButton,

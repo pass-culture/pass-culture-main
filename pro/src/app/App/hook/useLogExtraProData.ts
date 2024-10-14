@@ -3,8 +3,8 @@ import { useSelector } from 'react-redux'
 import { useLocation } from 'react-router-dom'
 
 import { useAnalytics } from 'app/App/analytics/firebase'
-import { Events } from 'core/FirebaseEvents/constants'
-import { selectCurrentOffererId } from 'store/user/selectors'
+import { Events } from 'commons/core/FirebaseEvents/constants'
+import { selectCurrentOffererId } from 'commons/store/user/selectors'
 
 export const useLogExtraProData = (): void => {
   const { logEvent } = useAnalytics()

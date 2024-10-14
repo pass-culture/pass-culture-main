@@ -3,9 +3,9 @@ import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import { api } from 'apiClient/api'
-import * as useNotification from 'hooks/useNotification'
-import { renderWithProviders } from 'utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'utils/storeFactories'
+import * as useNotification from 'commons/hooks/useNotification'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
 
 import { NewNavReviewDialog } from '../NewNavReviewDialog'
 
@@ -126,7 +126,7 @@ describe('NewNavReviewDialog', () => {
     vi.spyOn(api, 'submitNewNavReview').mockRejectedValueOnce(new Error())
 
     const notifsImport = (await vi.importActual(
-      'hooks/useNotification'
+      'commons/hooks/useNotification'
     )) as ReturnType<typeof useNotification.useNotification>
     vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
       ...notifsImport,

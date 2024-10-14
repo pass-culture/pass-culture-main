@@ -4,9 +4,9 @@ import {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
 } from 'apiClient/v1'
+import { Mode } from 'commons/core/OfferEducational/types'
 import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
 import { CollectiveOfferSummary } from 'components/CollectiveOfferSummary/CollectiveOfferSummary'
-import { Mode } from 'core/OfferEducational/types'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 

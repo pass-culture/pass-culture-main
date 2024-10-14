@@ -8,8 +8,8 @@ import {
   PostVenueProviderBody,
   VenueProviderResponse,
 } from 'apiClient/v1'
-import { GET_VENUE_PROVIDERS_QUERY_KEY } from 'config/swrQueryKeys'
-import { useNotification } from 'hooks/useNotification'
+import { GET_VENUE_PROVIDERS_QUERY_KEY } from 'commons/config/swrQueryKeys'
+import { useNotification } from 'commons/hooks/useNotification'
 import fullEditIcon from 'icons/full-edit.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'

@@ -5,11 +5,11 @@ import React from 'react'
 import { api } from 'apiClient/api'
 import { BankAccountApplicationStatus } from 'apiClient/v1'
 import * as useAnalytics from 'app/App/analytics/firebase'
+import { defaultManagedVenues } from 'commons/utils/individualApiFactories'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
 import { Notification } from 'components/Notification/Notification'
 import { LinkVenuesDialog } from 'pages/Reimbursements/BankInformations/LinkVenuesDialog'
-import { defaultManagedVenues } from 'utils/individualApiFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 vi.mock('apiClient/api', () => ({
   api: {

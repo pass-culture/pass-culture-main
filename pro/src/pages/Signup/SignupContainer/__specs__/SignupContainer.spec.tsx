@@ -7,20 +7,20 @@ import { api } from 'apiClient/api'
 import { HTTP_STATUS } from 'apiClient/helpers'
 import { ApiError } from 'apiClient/v1'
 import * as useAnalytics from 'app/App/analytics/firebase'
-import { Events } from 'core/FirebaseEvents/constants'
-import { getOffererNameFactory } from 'utils/individualApiFactories'
-import * as utils from 'utils/recaptcha'
+import { Events } from 'commons/core/FirebaseEvents/constants'
+import { getOffererNameFactory } from 'commons/utils/individualApiFactories'
+import * as utils from 'commons/utils/recaptcha'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
-} from 'utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'utils/storeFactories'
+} from 'commons/utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
 
 import { SignupContainer } from '../SignupContainer'
 
 const mockLogEvent = vi.fn()
 
-vi.mock('utils/windowMatchMedia', () => ({
+vi.mock('commons/utils/windowMatchMedia', () => ({
   doesUserPreferReducedMotion: vi.fn(() => true),
 }))
 vi.mock('apiClient/api', () => ({

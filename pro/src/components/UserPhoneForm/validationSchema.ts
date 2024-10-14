@@ -1,6 +1,6 @@
 import * as yup from 'yup'
 
-import { parseAndValidateFrenchPhoneNumber } from 'core/shared/utils/parseAndValidateFrenchPhoneNumber'
+import { parseAndValidateFrenchPhoneNumber } from 'commons/core/shared/utils/parseAndValidateFrenchPhoneNumber'
 
 export const validationSchema = yup.object().shape({
   phoneNumber: yup

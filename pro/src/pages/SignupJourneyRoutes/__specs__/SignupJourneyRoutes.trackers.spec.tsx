@@ -5,9 +5,9 @@ import { Route, Routes } from 'react-router-dom'
 
 import * as useAnalytics from 'app/App/analytics/firebase'
 import { routesSignupJourney } from 'app/AppRouter/subroutesSignupJourneyMap'
-import { Events } from 'core/FirebaseEvents/constants'
-import { renderWithProviders } from 'utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'utils/storeFactories'
+import { Events } from 'commons/core/FirebaseEvents/constants'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
 
 import { SignupJourneyRoutes } from '../SignupJourneyRoutes'
 

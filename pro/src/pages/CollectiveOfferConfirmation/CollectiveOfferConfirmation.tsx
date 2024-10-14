@@ -1,8 +1,8 @@
 import React from 'react'
 
 import { AppLayout } from 'app/AppLayout'
+import { isCollectiveOfferTemplate } from 'commons/core/OfferEducational/types'
 import { RouteLeavingGuardCollectiveOfferCreation } from 'components/RouteLeavingGuardCollectiveOfferCreation/RouteLeavingGuardCollectiveOfferCreation'
-import { isCollectiveOfferTemplate } from 'core/OfferEducational/types'
 import { CollectiveOfferConfirmationScreen } from 'screens/CollectiveOfferConfirmation/CollectiveOfferConfirmation'
 import {
   MandatoryCollectiveOfferFromParamsProps,

@@ -10,17 +10,17 @@ import {
   EventDatesInfos,
 } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
-import { Events } from 'core/FirebaseEvents/constants'
+import { Events } from 'commons/core/FirebaseEvents/constants'
+import { selectCurrentOffererId } from 'commons/store/user/selectors'
+import { FORMAT_DD_MM_YYYY, mapDayToFrench } from 'commons/utils/date'
+import { downloadFile } from 'commons/utils/downloadFile'
+import { pluralize } from 'commons/utils/pluralize'
 import strokeDeskIcon from 'icons/stroke-desk.svg'
 import { daysOfWeek } from 'pages/VenueEdition/OpeningHoursForm/OpeningHoursForm'
-import { selectCurrentOffererId } from 'store/user/selectors'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { BaseRadio } from 'ui-kit/form/shared/BaseRadio/BaseRadio'
 import { RadioButtonWithImage } from 'ui-kit/RadioButtonWithImage/RadioButtonWithImage'
-import { FORMAT_DD_MM_YYYY, mapDayToFrench } from 'utils/date'
-import { downloadFile } from 'utils/downloadFile'
-import { pluralize } from 'utils/pluralize'
 
 import style from './DownloadBookingsModal.module.scss'
 

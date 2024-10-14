@@ -4,7 +4,7 @@ import { Routes, Route, Link } from 'react-router-dom'
 
 import * as useAnalytics from 'app/App/analytics/firebase'
 import { useLogNavigation } from 'app/App/hook/useLogNavigation'
-import { renderWithProviders } from 'utils/renderWithProviders'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 const mockLogEvent = vi.fn()
 

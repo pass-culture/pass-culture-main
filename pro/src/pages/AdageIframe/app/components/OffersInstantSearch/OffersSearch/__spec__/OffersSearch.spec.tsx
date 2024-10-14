@@ -4,17 +4,17 @@ import { userEvent } from '@testing-library/user-event'
 import { AdageFrontRoles, AuthenticatedResponse } from 'apiClient/adage'
 import { api } from 'apiClient/api'
 import { StudentLevels } from 'apiClient/v1'
-import { Notification } from 'components/Notification/Notification'
-import { GET_DATA_ERROR_MESSAGE } from 'core/shared/constants'
-import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
+import { GET_DATA_ERROR_MESSAGE } from 'commons/core/shared/constants'
 import {
   defaultUseInfiniteHitsReturn,
   defaultUseStatsReturn,
-} from 'utils/adageFactories'
+} from 'commons/utils/adageFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
-} from 'utils/renderWithProviders'
+} from 'commons/utils/renderWithProviders'
+import { Notification } from 'components/Notification/Notification'
+import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
 
 import { MAIN_INDEX_ID } from '../../OffersInstantSearch'
 import { OffersSearch, SearchProps } from '../OffersSearch'

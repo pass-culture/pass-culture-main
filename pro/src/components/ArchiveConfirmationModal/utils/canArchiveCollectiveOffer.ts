@@ -7,7 +7,7 @@ import {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
 } from 'apiClient/v1'
-import { isCollectiveOfferTemplate } from 'core/OfferEducational/types'
+import { isCollectiveOfferTemplate } from 'commons/core/OfferEducational/types'
 
 // FIXME: delete the functions in this file when the ticket front is finished : https://passculture.atlassian.net/browse/PC-30662
 export function canArchiveCollectiveOffer(offer: CollectiveOfferResponseModel) {

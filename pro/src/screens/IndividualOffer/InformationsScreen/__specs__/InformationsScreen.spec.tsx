@@ -6,18 +6,18 @@ import { VenueListItemResponseModel } from 'apiClient/v1'
 import {
   IndividualOfferContext,
   IndividualOfferContextValues,
-} from 'context/IndividualOfferContext/IndividualOfferContext'
-import { REIMBURSEMENT_RULES } from 'core/Finances/constants'
-import { CATEGORY_STATUS } from 'core/Offers/constants'
-import * as filterCategories from 'screens/IndividualOffer/InformationsScreen/utils/filterCategories/filterCategories'
+} from 'commons/context/IndividualOfferContext/IndividualOfferContext'
+import { REIMBURSEMENT_RULES } from 'commons/core/Finances/constants'
+import { CATEGORY_STATUS } from 'commons/core/Offers/constants'
 import {
   categoryFactory,
   individualOfferContextValuesFactory,
   subcategoryFactory,
   venueListItemFactory,
-} from 'utils/individualApiFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'utils/storeFactories'
+} from 'commons/utils/individualApiFactories'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
+import * as filterCategories from 'screens/IndividualOffer/InformationsScreen/utils/filterCategories/filterCategories'
 
 import {
   InformationsScreen,
@@ -30,7 +30,7 @@ vi.mock('screens/IndividualOffer/Informations/utils', () => {
   }
 })
 
-vi.mock('utils/windowMatchMedia', () => ({
+vi.mock('commons/utils/windowMatchMedia', () => ({
   doesUserPreferReducedMotion: vi.fn(() => true),
 }))
 

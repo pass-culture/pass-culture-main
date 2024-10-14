@@ -1,9 +1,9 @@
 import React from 'react'
 
 import { OfferStatus } from 'apiClient/v1'
+import { CGU_URL } from 'commons/utils/config'
 import { Callout } from 'components/Callout/Callout'
 import { CalloutVariant } from 'components/Callout/types'
-import { CGU_URL } from 'utils/config'
 
 import styles from './OfferStatusBanner.module.scss'
 interface OfferStatusBannerProps {

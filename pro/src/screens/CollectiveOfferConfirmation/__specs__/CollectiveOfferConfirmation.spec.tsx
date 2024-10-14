@@ -2,7 +2,7 @@ import { screen } from '@testing-library/react'
 import React from 'react'
 
 import { CollectiveOfferStatus } from 'apiClient/v1'
-import { renderWithProviders } from 'utils/renderWithProviders'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { CollectiveOfferConfirmationScreen } from '../CollectiveOfferConfirmation'
 

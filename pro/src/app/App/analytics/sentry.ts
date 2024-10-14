@@ -9,12 +9,12 @@ import {
   useNavigationType,
 } from 'react-router-dom'
 
-import { selectCurrentUser } from 'store/user/selectors'
+import { selectCurrentUser } from 'commons/store/user/selectors'
 import {
   ENVIRONMENT_NAME,
   SENTRY_SAMPLE_RATE,
   SENTRY_SERVER_URL,
-} from 'utils/config'
+} from 'commons/utils/config'
 
 import config from '../../../../package.json'
 

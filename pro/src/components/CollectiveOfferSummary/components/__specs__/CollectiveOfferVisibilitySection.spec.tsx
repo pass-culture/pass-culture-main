@@ -8,8 +8,8 @@ import {
 import {
   defaultEducationalInstitution,
   defaultEducationalRedactor,
-} from 'utils/collectiveApiFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
+} from 'commons/utils/collectiveApiFactories'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { CollectiveOfferVisibilitySection } from '../CollectiveOfferVisibilitySection'
 

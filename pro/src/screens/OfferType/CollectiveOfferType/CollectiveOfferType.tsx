@@ -3,21 +3,21 @@ import { useSelector } from 'react-redux'
 import { useLocation } from 'react-router-dom'
 
 import { GetOffererResponseModel } from 'apiClient/v1'
-import { Callout } from 'components/Callout/Callout'
-import { CalloutVariant } from 'components/Callout/types'
-import { FormLayout } from 'components/FormLayout/FormLayout'
 import {
   COLLECTIVE_OFFER_SUBTYPE,
   OFFER_TYPES,
   COLLECTIVE_OFFER_SUBTYPE_DUPLICATE,
-} from 'core/Offers/constants'
+} from 'commons/core/Offers/constants'
+import { selectCurrentOffererId } from 'commons/store/user/selectors'
+import { getLastDmsApplicationForOfferer } from 'commons/utils/getLastCollectiveDmsApplication'
+import { Callout } from 'components/Callout/Callout'
+import { CalloutVariant } from 'components/Callout/types'
+import { FormLayout } from 'components/FormLayout/FormLayout'
 import strokeBookedIcon from 'icons/stroke-booked.svg'
 import duplicateOfferIcon from 'icons/stroke-duplicate-offer.svg'
 import strokeNewOfferIcon from 'icons/stroke-new-offer.svg'
 import strokeTemplateOfferIcon from 'icons/stroke-template-offer.svg'
-import { selectCurrentOffererId } from 'store/user/selectors'
 import { RadioButtonWithImage } from 'ui-kit/RadioButtonWithImage/RadioButtonWithImage'
-import { getLastDmsApplicationForOfferer } from 'utils/getLastCollectiveDmsApplication'
 
 import styles from '../OfferType.module.scss'
 import { OfferTypeFormValues } from '../types'

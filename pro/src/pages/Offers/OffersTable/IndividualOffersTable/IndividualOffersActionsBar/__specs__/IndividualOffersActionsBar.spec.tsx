@@ -3,9 +3,9 @@ import { userEvent } from '@testing-library/user-event'
 
 import { api } from 'apiClient/api'
 import * as useAnalytics from 'app/App/analytics/firebase'
+import { Events } from 'commons/core/FirebaseEvents/constants'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { Notification } from 'components/Notification/Notification'
-import { Events } from 'core/FirebaseEvents/constants'
-import { renderWithProviders } from 'utils/renderWithProviders'
 
 import {
   IndividualOffersActionsBar,

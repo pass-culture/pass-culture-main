@@ -4,11 +4,11 @@ import { EacFormat, OfferContactFormEnum } from 'apiClient/v1'
 import {
   getCollectiveOfferFactory,
   getCollectiveOfferTemplateFactory,
-} from 'utils/collectiveApiFactories'
+} from 'commons/utils/collectiveApiFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
-} from 'utils/renderWithProviders'
+} from 'commons/utils/renderWithProviders'
 
 import {
   CollectiveOfferSummary,

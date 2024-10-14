@@ -3,13 +3,13 @@ import { userEvent } from '@testing-library/user-event'
 import { Form, Formik } from 'formik'
 import React from 'react'
 
-import { AccessibilityEnum } from 'core/shared/types'
-import { VenueCreationFormValues } from 'pages/VenueCreation/types'
-import { Button } from 'ui-kit/Button/Button'
+import { AccessibilityEnum } from 'commons/core/shared/types'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
-} from 'utils/renderWithProviders'
+} from 'commons/utils/renderWithProviders'
+import { VenueCreationFormValues } from 'pages/VenueCreation/types'
+import { Button } from 'ui-kit/Button/Button'
 
 import { Accessibility, AccessiblityProps } from '../Accessibility'
 

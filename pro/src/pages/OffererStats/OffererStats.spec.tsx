@@ -2,14 +2,14 @@ import { screen, waitFor } from '@testing-library/react'
 import React from 'react'
 
 import { api } from 'apiClient/api'
-import * as useNotification from 'hooks/useNotification'
+import * as useNotification from 'commons/hooks/useNotification'
 import {
   defaultGetOffererResponseModel,
   defaultGetOffererVenueResponseModel,
   getOffererNameFactory,
-} from 'utils/individualApiFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'utils/storeFactories'
+} from 'commons/utils/individualApiFactories'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
 
 import { OffererStats } from './OffererStats'
 
@@ -83,7 +83,7 @@ describe('OffererStatsScreen', () => {
     const notifyError = vi.fn()
 
     const notifsImport = (await vi.importActual(
-      'hooks/useNotification'
+      'commons/hooks/useNotification'
     )) as ReturnType<typeof useNotification.useNotification>
     vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
       ...notifsImport,

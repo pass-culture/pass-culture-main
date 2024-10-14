@@ -4,9 +4,9 @@ import * as router from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { SharedCurrentUserResponseModel } from 'apiClient/v1'
-import { defaultGetOffererResponseModel } from 'utils/individualApiFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'utils/storeFactories'
+import { defaultGetOffererResponseModel } from 'commons/utils/individualApiFactories'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
 
 import { AppLayout } from '../AppLayout'
 

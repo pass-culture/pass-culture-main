@@ -5,12 +5,12 @@ import {
   OFFER_STATUS_DRAFT,
   OFFER_STATUS_PENDING,
   OFFER_STATUS_REJECTED,
-} from 'core/Offers/constants'
+} from 'commons/core/Offers/constants'
 import {
   isAllocineProviderName,
   isCinemaProviderName,
-} from 'core/Providers/utils/utils'
-import { removeTime } from 'utils/date'
+} from 'commons/core/Providers/utils/utils'
+import { removeTime } from 'commons/utils/date'
 
 import {
   STOCK_EVENT_ALLOCINE_READ_ONLY_FIELDS,

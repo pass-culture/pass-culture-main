@@ -3,7 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 import { Formik } from 'formik'
 
 import { OfferAddressType } from 'apiClient/adage'
-import { renderWithProviders } from 'utils/renderWithProviders'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { SearchFormValues } from '../../../OffersInstantSearch'
 import { ADAGE_FILTERS_DEFAULT_VALUES } from '../../../utils'

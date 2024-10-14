@@ -5,8 +5,8 @@ import { useParams } from 'react-router-dom'
 
 import { PaginationType } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
-import { setAdagePageSaved } from 'store/adageFilter/reducer'
-import { adagePageSavedSelector } from 'store/adageFilter/selectors'
+import { setAdagePageSaved } from 'commons/store/adageFilter/reducer'
+import { adagePageSavedSelector } from 'commons/store/adageFilter/selectors'
 import { Pagination } from 'ui-kit/Pagination/Pagination'
 
 interface CustomPaginationProps {

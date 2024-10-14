@@ -3,11 +3,11 @@ import useSWR from 'swr'
 
 import { AdageFrontRoles } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
-import { Breadcrumb, Crumb } from 'components/Breadcrumb/Breadcrumb'
 import {
   GET_COLLECTIVE_OFFER_QUERY_KEY,
   GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY,
-} from 'config/swrQueryKeys'
+} from 'commons/config/swrQueryKeys'
+import { Breadcrumb, Crumb } from 'components/Breadcrumb/Breadcrumb'
 import strokePassIcon from 'icons/stroke-pass.svg'
 import strokeSearchIcon from 'icons/stroke-search.svg'
 import strokeStarIcon from 'icons/stroke-star.svg'

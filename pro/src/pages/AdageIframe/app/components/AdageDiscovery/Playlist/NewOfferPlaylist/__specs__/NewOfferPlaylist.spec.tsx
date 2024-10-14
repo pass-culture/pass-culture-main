@@ -7,11 +7,11 @@ import { userEvent } from '@testing-library/user-event'
 
 import { AdageFrontRoles, AuthenticatedResponse } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
-import { GET_DATA_ERROR_MESSAGE } from 'core/shared/constants'
-import * as useNotification from 'hooks/useNotification'
+import { GET_DATA_ERROR_MESSAGE } from 'commons/core/shared/constants'
+import * as useNotification from 'commons/hooks/useNotification'
+import { defaultCollectiveTemplateOffer } from 'commons/utils/adageFactories'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
-import { defaultCollectiveTemplateOffer } from 'utils/adageFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { NewOfferPlaylist } from '../NewOfferPlaylist'
 
@@ -53,7 +53,7 @@ describe('AdageDiscovery', () => {
     })
 
     const notifsImport = (await vi.importActual(
-      'hooks/useNotification'
+      'commons/hooks/useNotification'
     )) as ReturnType<typeof useNotification.useNotification>
     vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
       ...notifsImport,

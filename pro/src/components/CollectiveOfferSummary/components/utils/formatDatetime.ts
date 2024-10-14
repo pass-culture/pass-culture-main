@@ -1,6 +1,6 @@
 import { format } from 'date-fns'
 
-import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
+import { getLocalDepartementDateTimeFromUtc } from 'commons/utils/timezone'
 
 export const formatDateTime = (
   date: string,

@@ -9,14 +9,14 @@ import {
   BankAccountResponseModel,
 } from 'apiClient/v1'
 import * as useAnalytics from 'app/App/analytics/firebase'
-import { BankInformations } from 'pages/Reimbursements/BankInformations/BankInformations'
-import { ReimbursementsContextProps } from 'pages/Reimbursements/Reimbursements'
 import {
   defaultGetOffererResponseModel,
   defaultManagedVenues,
-} from 'utils/individualApiFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'utils/storeFactories'
+} from 'commons/utils/individualApiFactories'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
+import { BankInformations } from 'pages/Reimbursements/BankInformations/BankInformations'
+import { ReimbursementsContextProps } from 'pages/Reimbursements/Reimbursements'
 
 const defaultBankAccountResponseModel: BankAccountResponseModel = {
   bic: 'bic',

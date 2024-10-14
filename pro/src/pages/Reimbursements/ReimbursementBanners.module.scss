@@ -1,9 +1,9 @@
 .banners {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  
-    &:empty {
-      display: none;
-    }
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  &:empty {
+    display: none;
   }
+}

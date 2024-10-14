@@ -2,9 +2,9 @@ import { screen } from '@testing-library/react'
 import React from 'react'
 import { Route, Routes } from 'react-router-dom'
 
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import strokeLibraryIcon from 'icons/stroke-library.svg'
 import strokeUserIcon from 'icons/stroke-user.svg'
-import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { Tabs } from '../Tabs'
 

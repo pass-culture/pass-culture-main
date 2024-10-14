@@ -1,6 +1,6 @@
 import type { StoryObj } from '@storybook/react'
 
-import { NotificationTypeEnum } from 'hooks/useNotification'
+import { NotificationTypeEnum } from 'commons/hooks/useNotification'
 
 import { NotificationToaster } from './NotificationToaster'
 

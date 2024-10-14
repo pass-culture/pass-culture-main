@@ -1,6 +1,6 @@
 import { WithdrawalTypeEnum } from 'apiClient/v1'
+import { AccessibilityEnum } from 'commons/core/shared/types'
 import { SUBCATEGORIES_FIELDS_DEFAULT_VALUES } from 'components/IndividualOfferForm/Categories/constants'
-import { AccessibilityEnum } from 'core/shared/types'
 
 import { UsefulInformationFormValues } from './types'
 

@@ -3,7 +3,7 @@ import useSWR from 'swr'
 
 import { AdagePlaylistType } from 'apiClient/adage/models/AdagePlaylistType'
 import { apiAdage } from 'apiClient/api'
-import { GET_CLASSROOM_PLAYLIST_QUERY_KEY } from 'config/swrQueryKeys'
+import { GET_CLASSROOM_PLAYLIST_QUERY_KEY } from 'commons/config/swrQueryKeys'
 
 import { TrackerElementArg } from '../../AdageDiscovery'
 import { Carousel } from '../../Carousel/Carousel'

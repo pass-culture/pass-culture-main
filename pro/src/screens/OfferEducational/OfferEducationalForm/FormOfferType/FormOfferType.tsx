@@ -1,10 +1,10 @@
 import { useFormikContext } from 'formik'
 
 import { EacFormat } from 'apiClient/adage'
+import { MAX_DETAILS_LENGTH } from 'commons/core/OfferEducational/constants'
+import { OfferEducationalFormValues } from 'commons/core/OfferEducational/types'
+import { SelectOption } from 'commons/custom_types/form'
 import { FormLayout } from 'components/FormLayout/FormLayout'
-import { MAX_DETAILS_LENGTH } from 'core/OfferEducational/constants'
-import { OfferEducationalFormValues } from 'core/OfferEducational/types'
-import { SelectOption } from 'custom_types/form'
 import { getNationalProgramsForDomains } from 'screens/OfferEducational/constants/getNationalProgramsForDomains'
 import { Select } from 'ui-kit/form/Select/Select'
 import { SelectAutocomplete } from 'ui-kit/form/SelectAutoComplete/SelectAutocomplete'

@@ -3,6 +3,7 @@ import {
   CollectiveOfferTemplateResponseModel,
   OfferAddressType,
 } from 'apiClient/adage'
+import { formatLocalTimeDateString } from 'commons/utils/timezone'
 import buildingStrokeIcon from 'icons/stroke-building.svg'
 import strokeCalendarIcon from 'icons/stroke-calendar.svg'
 import strokeDateIcon from 'icons/stroke-date.svg'
@@ -13,7 +14,6 @@ import strokeUserIcon from 'icons/stroke-user.svg'
 import { getFormattedDatesForTemplateOffer } from 'pages/AdageIframe/app/components/OfferInfos/AdageOffer/utils/adageOfferDates'
 import { isCollectiveOfferTemplate } from 'pages/AdageIframe/app/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
-import { formatLocalTimeDateString } from 'utils/timezone'
 
 import styles from './OfferSummary.module.scss'
 

@@ -1,7 +1,7 @@
 import cn from 'classnames'
 import React from 'react'
 
-import { NotificationTypeEnum } from 'hooks/useNotification'
+import { NotificationTypeEnum } from 'commons/hooks/useNotification'
 import fullErrorIcon from 'icons/full-error.svg'
 import fullInfoIcon from 'icons/full-info.svg'
 import fullValidateIcon from 'icons/full-validate.svg'

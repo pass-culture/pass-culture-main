@@ -4,12 +4,12 @@ import {
   PostOfferBodyModel,
   WithdrawalTypeEnum,
 } from 'apiClient/v1'
+import { SYNCHRONIZED_OFFER_EDITABLE_FIELDS } from 'commons/core/Offers/constants'
+import { isAllocineOffer } from 'commons/core/Providers/utils/localProvider'
+import { AccessibilityEnum } from 'commons/core/shared/types'
+import { trimStringsInObject } from 'commons/utils/trimStringsInObject'
 import { OFFER_LOCATION } from 'components/IndividualOfferForm/OfferLocation/constants'
 import { IndividualOfferFormValues } from 'components/IndividualOfferForm/types'
-import { SYNCHRONIZED_OFFER_EDITABLE_FIELDS } from 'core/Offers/constants'
-import { isAllocineOffer } from 'core/Providers/utils/localProvider'
-import { AccessibilityEnum } from 'core/shared/types'
-import { trimStringsInObject } from 'utils/trimStringsInObject'
 
 export const serializeExtraData = (
   formValues: Partial<IndividualOfferFormValues>

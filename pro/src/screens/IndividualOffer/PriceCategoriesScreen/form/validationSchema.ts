@@ -1,6 +1,6 @@
 import * as yup from 'yup'
 
-import { getNthParentFormValues } from 'utils/yupValidationTestHelpers'
+import { getNthParentFormValues } from 'commons/utils/yupValidationTestHelpers'
 
 import {
   PRICE_CATEGORY_LABEL_MAX_LENGTH,

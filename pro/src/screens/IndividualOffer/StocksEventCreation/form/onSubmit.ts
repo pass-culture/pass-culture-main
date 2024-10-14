@@ -1,14 +1,14 @@
 import { format, sub } from 'date-fns'
 
 import { api } from 'apiClient/api'
-import { StocksEvent } from 'components/StocksEventList/StocksEventList'
-import { useNotification } from 'hooks/useNotification'
-import { serializeDateTimeToUTCFromLocalDepartment } from 'screens/IndividualOffer/StocksEventEdition/serializers'
+import { useNotification } from 'commons/hooks/useNotification'
 import {
   FORMAT_ISO_DATE_ONLY,
   isDateValid,
   toISOStringWithoutMilliseconds,
-} from 'utils/date'
+} from 'commons/utils/date'
+import { StocksEvent } from 'components/StocksEventList/StocksEventList'
+import { serializeDateTimeToUTCFromLocalDepartment } from 'screens/IndividualOffer/StocksEventEdition/serializers'
 
 import {
   getDatesInInterval,

@@ -8,22 +8,22 @@ import { AppLayout } from 'app/AppLayout'
 import {
   GET_OFFERER_QUERY_KEY,
   GET_VENUES_QUERY_KEY,
-} from 'config/swrQueryKeys'
+} from 'commons/config/swrQueryKeys'
 import {
   DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
   DEFAULT_PAGE,
-} from 'core/Offers/constants'
-import { useQueryCollectiveSearchFilters } from 'core/Offers/hooks/useQuerySearchFilters'
-import { CollectiveSearchFiltersParams } from 'core/Offers/types'
-import { computeCollectiveOffersUrl } from 'core/Offers/utils/computeCollectiveOffersUrl'
-import { getCollectiveOffersSwrKeys } from 'core/Offers/utils/getCollectiveOffersSwrKeys'
-import { hasCollectiveSearchFilters } from 'core/Offers/utils/hasSearchFilters'
-import { serializeApiCollectiveFilters } from 'core/Offers/utils/serializer'
-import { useCurrentUser } from 'hooks/useCurrentUser'
-import { useIsNewInterfaceActive } from 'hooks/useIsNewInterfaceActive'
+} from 'commons/core/Offers/constants'
+import { useQueryCollectiveSearchFilters } from 'commons/core/Offers/hooks/useQuerySearchFilters'
+import { CollectiveSearchFiltersParams } from 'commons/core/Offers/types'
+import { computeCollectiveOffersUrl } from 'commons/core/Offers/utils/computeCollectiveOffersUrl'
+import { getCollectiveOffersSwrKeys } from 'commons/core/Offers/utils/getCollectiveOffersSwrKeys'
+import { hasCollectiveSearchFilters } from 'commons/core/Offers/utils/hasSearchFilters'
+import { serializeApiCollectiveFilters } from 'commons/core/Offers/utils/serializer'
+import { useCurrentUser } from 'commons/hooks/useCurrentUser'
+import { useIsNewInterfaceActive } from 'commons/hooks/useIsNewInterfaceActive'
+import { selectCurrentOffererId } from 'commons/store/user/selectors'
 import { formatAndOrderVenues } from 'repository/venuesService'
 import { TemplateCollectiveOffersScreen } from 'screens/TemplateCollectiveOffersScreen/TemplateCollectiveOffersScreen'
-import { selectCurrentOffererId } from 'store/user/selectors'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 export const TemplateCollectiveOffers = (): JSX.Element => {

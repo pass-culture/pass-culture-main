@@ -2,9 +2,9 @@ import { createRef, useEffect, useRef, useState } from 'react'
 
 import { AdagePlaylistType } from 'apiClient/adage'
 import { api, apiAdage } from 'apiClient/api'
-import { GET_DATA_ERROR_MESSAGE } from 'core/shared/constants'
-import { useIsElementVisible } from 'hooks/useIsElementVisible'
-import { useNotification } from 'hooks/useNotification'
+import { GET_DATA_ERROR_MESSAGE } from 'commons/core/shared/constants'
+import { useIsElementVisible } from 'commons/hooks/useIsElementVisible'
+import { useNotification } from 'commons/hooks/useNotification'
 import { Option } from 'pages/AdageIframe/app/types'
 
 import styles from './AdageDiscovery.module.scss'

@@ -1,9 +1,9 @@
 import { GetIndividualOfferWithAddressResponseModel } from 'apiClient/v1'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import {
   StocksEventList,
   StocksEvent,
 } from 'components/StocksEventList/StocksEventList'
-import { useActiveFeature } from 'hooks/useActiveFeature'
 
 import { EventCancellationBanner } from '../StocksEventEdition/EventCancellationBanner'
 import { getDepartmentCode } from '../utils/getDepartmentCode'

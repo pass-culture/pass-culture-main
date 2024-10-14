@@ -1,7 +1,7 @@
 import cn from 'classnames'
 import React from 'react'
 
-import { SortingMode } from 'hooks/useColumnSorting'
+import { SortingMode } from 'commons/hooks/useColumnSorting'
 import fullDownIcon from 'icons/full-down.svg'
 import fullUpIcon from 'icons/full-up.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'

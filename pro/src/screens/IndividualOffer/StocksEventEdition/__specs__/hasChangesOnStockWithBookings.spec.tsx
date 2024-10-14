@@ -1,7 +1,7 @@
 import { format } from 'date-fns'
 
+import { FORMAT_ISO_DATE_ONLY } from 'commons/utils/date'
 import { stockEventFactory } from 'screens/IndividualOffer/StocksEventEdition/StockFormList/stockEventFactory'
-import { FORMAT_ISO_DATE_ONLY } from 'utils/date'
 
 import { hasChangesOnStockWithBookings } from '../hasChangesOnStockWithBookings'
 

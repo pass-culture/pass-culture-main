@@ -2,7 +2,7 @@ import { CategoryResponseModel, SubcategoryResponseModel } from 'apiClient/v1'
 import {
   CATEGORY_STATUS,
   INDIVIDUAL_OFFER_SUBTYPE,
-} from 'core/Offers/constants'
+} from 'commons/core/Offers/constants'
 
 export const getOfferSubtypeFromParam = (
   offerType: string | null | undefined

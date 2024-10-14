@@ -10,15 +10,15 @@ import {
   VenueListItemResponseModel,
 } from 'apiClient/v1'
 import * as useAnalytics from 'app/App/analytics/firebase'
-import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
-import { Notification } from 'components/Notification/Notification'
 import {
   IndividualOfferContext,
   IndividualOfferContextValues,
-} from 'context/IndividualOfferContext/IndividualOfferContext'
-import { CATEGORY_STATUS, OFFER_WIZARD_MODE } from 'core/Offers/constants'
-import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
-import { ButtonLink } from 'ui-kit/Button/ButtonLink'
+} from 'commons/context/IndividualOfferContext/IndividualOfferContext'
+import {
+  CATEGORY_STATUS,
+  OFFER_WIZARD_MODE,
+} from 'commons/core/Offers/constants'
+import { getIndividualOfferPath } from 'commons/core/Offers/utils/getIndividualOfferUrl'
 import {
   getIndividualOfferFactory,
   categoryFactory,
@@ -26,9 +26,12 @@ import {
   subcategoryFactory,
   venueListItemFactory,
   getOffererNameFactory,
-} from 'utils/individualApiFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'utils/storeFactories'
+} from 'commons/utils/individualApiFactories'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
+import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
+import { Notification } from 'components/Notification/Notification'
+import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 
 import {
   InformationsScreen,

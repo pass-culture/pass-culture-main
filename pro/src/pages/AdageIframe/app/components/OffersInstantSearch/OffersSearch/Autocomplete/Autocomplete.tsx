@@ -22,22 +22,22 @@ import { useDispatch } from 'react-redux'
 
 import { SuggestionType } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
-import fullClearIcon from 'icons/full-clear.svg'
-import strokeBuildingIcon from 'icons/stroke-building.svg'
-import strokeClockIcon from 'icons/stroke-clock.svg'
-import strokeSearchIcon from 'icons/stroke-search.svg'
-import { useAdageUser } from 'pages/AdageIframe/app/hooks/useAdageUser'
-import { setAdageQuery } from 'store/adageFilter/reducer'
-import { Button } from 'ui-kit/Button/Button'
-import { ButtonVariant } from 'ui-kit/Button/types'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+import { setAdageQuery } from 'commons/store/adageFilter/reducer'
 import {
   ALGOLIA_API_KEY,
   ALGOLIA_APP_ID,
   ALGOLIA_COLLECTIVE_OFFERS_INDEX,
   ALGOLIA_COLLECTIVE_OFFERS_SUGGESTIONS_INDEX,
-} from 'utils/config'
-import { localStorageAvailable } from 'utils/localStorageAvailable'
+} from 'commons/utils/config'
+import { localStorageAvailable } from 'commons/utils/localStorageAvailable'
+import fullClearIcon from 'icons/full-clear.svg'
+import strokeBuildingIcon from 'icons/stroke-building.svg'
+import strokeClockIcon from 'icons/stroke-clock.svg'
+import strokeSearchIcon from 'icons/stroke-search.svg'
+import { useAdageUser } from 'pages/AdageIframe/app/hooks/useAdageUser'
+import { Button } from 'ui-kit/Button/Button'
+import { ButtonVariant } from 'ui-kit/Button/types'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './Autocomplete.module.scss'
 import { Highlight } from './Highlight'

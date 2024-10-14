@@ -1,8 +1,11 @@
 import { screen } from '@testing-library/react'
 
+import {
+  defaultAdageUser,
+  defaultCollectiveOffer,
+} from 'commons/utils/adageFactories'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
-import { defaultAdageUser, defaultCollectiveOffer } from 'utils/adageFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
 
 import {
   AdageOfferInstitutionPanel,

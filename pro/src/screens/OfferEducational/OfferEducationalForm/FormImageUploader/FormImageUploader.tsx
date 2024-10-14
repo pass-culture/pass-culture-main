@@ -1,11 +1,11 @@
 import React from 'react'
 
+import { OfferCollectiveImage } from 'commons/core/Offers/types'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
 import { UploadImageValues } from 'components/ImageUploader/ButtonImageEdit/types'
 import { ImageUploader } from 'components/ImageUploader/ImageUploader'
 import { UploaderModeEnum } from 'components/ImageUploader/types'
-import { OfferCollectiveImage } from 'core/Offers/types'
 
 export interface ImageUploaderOfferProps {
   onImageUpload: (values: OnImageUploadArgs) => void

@@ -3,16 +3,16 @@ import * as router from 'react-router-dom'
 
 import { AdageFrontRoles, AuthenticatedResponse } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
-import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
 import {
   defaultAdageUser,
   defaultCollectiveOffer,
   defaultCollectiveTemplateOffer,
-} from 'utils/adageFactories'
+} from 'commons/utils/adageFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
-} from 'utils/renderWithProviders'
+} from 'commons/utils/renderWithProviders'
+import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
 
 import { OfferInfos } from '../OfferInfos'
 

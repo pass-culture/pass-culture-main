@@ -1,7 +1,7 @@
 import React from 'react'
 
+import { MAX_DETAILS_LENGTH } from 'commons/core/OfferEducational/constants'
 import { FormLayout } from 'components/FormLayout/FormLayout'
-import { MAX_DETAILS_LENGTH } from 'core/OfferEducational/constants'
 import { PRICE_INFORMATION } from 'screens/OfferEducational/constants/labels'
 import { TextArea } from 'ui-kit/form/TextArea/TextArea'
 

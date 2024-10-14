@@ -1,8 +1,8 @@
 // This file will be replace by apiClient
 /* istanbul ignore file */
 
+import { stringify } from 'commons/utils/query-string'
 import { client } from 'repository/pcapi/pcapiClient'
-import { stringify } from 'utils/query-string'
 
 //
 // venues

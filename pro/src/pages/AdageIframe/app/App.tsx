@@ -8,9 +8,9 @@ import {
   CatalogViewBody,
 } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
-import { LOG_CATALOG_VIEW_QUERY_KEY } from 'config/swrQueryKeys'
-import { useNotification } from 'hooks/useNotification'
-import { LOGS_DATA } from 'utils/config'
+import { LOG_CATALOG_VIEW_QUERY_KEY } from 'commons/config/swrQueryKeys'
+import { useNotification } from 'commons/hooks/useNotification'
+import { LOGS_DATA } from 'commons/utils/config'
 
 import { AppLayout } from './components/AppLayout/AppLayout'
 import { LoaderPage } from './components/LoaderPage/LoaderPage'

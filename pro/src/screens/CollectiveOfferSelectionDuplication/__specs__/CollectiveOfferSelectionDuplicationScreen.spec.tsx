@@ -8,10 +8,10 @@ import { Formik } from 'formik'
 
 import { api } from 'apiClient/api'
 import { CollectiveOfferResponseModel } from 'apiClient/v1'
-import * as createFromTemplateUtils from 'core/OfferEducational/utils/createOfferFromTemplate'
-import * as useNotification from 'hooks/useNotification'
-import { collectiveOfferFactory } from 'utils/collectiveApiFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
+import * as createFromTemplateUtils from 'commons/core/OfferEducational/utils/createOfferFromTemplate'
+import * as useNotification from 'commons/hooks/useNotification'
+import { collectiveOfferFactory } from 'commons/utils/collectiveApiFactories'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { CollectiveOfferSelectionDuplication } from '../CollectiveOfferSelectionDuplicationScreen'
 
@@ -40,7 +40,7 @@ vi.mock('apiClient/api', () => ({
   },
 }))
 
-vi.mock('core/OfferEducational/utils/createOfferFromTemplate', () => ({
+vi.mock('commons/core/OfferEducational/utils/createOfferFromTemplate', () => ({
   createOfferFromTemplate: vi.fn(),
 }))
 

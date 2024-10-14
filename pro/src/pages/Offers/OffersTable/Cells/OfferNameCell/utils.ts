@@ -4,7 +4,7 @@ import {
   CollectiveBookingCollectiveStockResponseModel,
   CollectiveOffersStockResponseModel,
 } from 'apiClient/v1'
-import { FORMAT_DD_MM_YYYY, toDateStrippedOfTimezone } from 'utils/date'
+import { FORMAT_DD_MM_YYYY, toDateStrippedOfTimezone } from 'commons/utils/date'
 
 export const getRemainingTime = (
   stock:

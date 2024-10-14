@@ -12,6 +12,22 @@ import {
   StocksOrderedBy,
   OfferStatus,
 } from 'apiClient/v1'
+import { GET_OFFER_QUERY_KEY } from 'commons/config/swrQueryKeys'
+import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
+import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
+import { isOfferDisabled } from 'commons/core/Offers/utils/isOfferDisabled'
+import { SelectOption } from 'commons/custom_types/form'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
+import { SortingMode, useColumnSorting } from 'commons/hooks/useColumnSorting'
+import { useNotification } from 'commons/hooks/useNotification'
+import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
+import { usePaginationWithSearchParams } from 'commons/hooks/usePagination'
+import { getToday } from 'commons/utils/date'
+import { hasErrorCode } from 'commons/utils/error'
+import {
+  convertTimeFromVenueTimezoneToUtc,
+  getLocalDepartementDateTimeFromUtc,
+} from 'commons/utils/timezone'
 import { ConfirmDialog } from 'components/Dialog/ConfirmDialog/ConfirmDialog'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
@@ -20,16 +36,6 @@ import { FilterResultsRow } from 'components/StocksEventList/FilterResultsRow'
 import { NoResultsRow } from 'components/StocksEventList/NoResultsRow'
 import { SortArrow } from 'components/StocksEventList/SortArrow'
 import { STOCKS_PER_PAGE } from 'components/StocksEventList/StocksEventList'
-import { GET_OFFER_QUERY_KEY } from 'config/swrQueryKeys'
-import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
-import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
-import { isOfferDisabled } from 'core/Offers/utils/isOfferDisabled'
-import { SelectOption } from 'custom_types/form'
-import { useActiveFeature } from 'hooks/useActiveFeature'
-import { SortingMode, useColumnSorting } from 'hooks/useColumnSorting'
-import { useNotification } from 'hooks/useNotification'
-import { useOfferWizardMode } from 'hooks/useOfferWizardMode'
-import { usePaginationWithSearchParams } from 'hooks/usePagination'
 import fullMoreIcon from 'icons/full-more.svg'
 import fullTrashIcon from 'icons/full-trash.svg'
 import { onSubmit as onRecurrenceSubmit } from 'screens/IndividualOffer/StocksEventCreation/form/onSubmit'
@@ -45,12 +51,6 @@ import { BaseTimePicker } from 'ui-kit/form/TimePicker/BaseTimePicker'
 import { TimePicker } from 'ui-kit/form/TimePicker/TimePicker'
 import { Pagination } from 'ui-kit/Pagination/Pagination'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
-import { getToday } from 'utils/date'
-import { hasErrorCode } from 'utils/error'
-import {
-  convertTimeFromVenueTimezoneToUtc,
-  getLocalDepartementDateTimeFromUtc,
-} from 'utils/timezone'
 
 import { ActionBar } from '../ActionBar/ActionBar'
 import { DialogStockEventDeleteConfirm } from '../DialogStockDeleteConfirm/DialogStockEventDeleteConfirm'

@@ -8,15 +8,15 @@ import {
   SubcategoryResponseModel,
   VenueListItemResponseModel,
 } from 'apiClient/v1'
-import { CATEGORY_STATUS } from 'core/Offers/constants'
+import { CATEGORY_STATUS } from 'commons/core/Offers/constants'
 import {
   categoryFactory,
   getOffererNameFactory,
   subcategoryFactory,
   venueListItemFactory,
-} from 'utils/individualApiFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'utils/storeFactories'
+} from 'commons/utils/individualApiFactories'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
 
 import {
   IndividualOfferForm,

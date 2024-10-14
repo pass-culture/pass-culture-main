@@ -1,5 +1,5 @@
 import { CollectiveOfferResponseModel } from 'apiClient/v1'
-import { CollectiveSearchFiltersParams } from 'core/Offers/types'
+import { CollectiveSearchFiltersParams } from 'commons/core/Offers/types'
 import { isSameOffer } from 'pages/Offers/utils/isSameOffer'
 
 import { CollectiveOfferRow } from '../CollectiveOfferRow/CollectiveOfferRow'

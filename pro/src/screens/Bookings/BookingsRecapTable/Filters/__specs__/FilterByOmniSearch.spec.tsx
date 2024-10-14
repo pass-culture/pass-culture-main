@@ -2,8 +2,8 @@ import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
-import { Audience } from 'core/shared/types'
-import { renderWithProviders } from 'utils/renderWithProviders'
+import { Audience } from 'commons/core/shared/types'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import {
   FilterByOmniSearch,

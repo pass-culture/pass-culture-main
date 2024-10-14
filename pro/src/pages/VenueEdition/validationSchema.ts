@@ -1,6 +1,6 @@
 import * as yup from 'yup'
 
-import { isPhoneValid } from 'core/shared/utils/validation'
+import { isPhoneValid } from 'commons/core/shared/utils/validation'
 
 import { Day } from './types'
 
