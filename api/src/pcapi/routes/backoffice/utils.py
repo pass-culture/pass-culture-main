@@ -74,6 +74,9 @@ ALGOLIA_OPERATOR_DICT: dict[str, typing.Any] = {
     "NOT_IN": lambda x, y: "NOT (" + " OR ".join([f"{x}:{i}" for i in y]) + ")",
     "EQUALS": lambda x, y: f"{x}:{y}",
     "NOT_EQUALS": lambda x, y: f"NOT {x}:{y}",
+    "NUMBER_EQUALS": lambda x, y: f"{x}={y}",
+    "GREATER_THAN_OR_EQUAL_TO": lambda x, y: f"{x}>={y}",
+    "LESS_THAN": lambda x, y: f"{x}<{y}",
 }
 
 
@@ -82,6 +85,7 @@ class AdvancedSearchOperators(enum.Enum):
     NOT_EQUALS = "est différent de"
     NAME_EQUALS = "est égal à\0"  # the \0 is here to force wtforms to display EQUALS and NAME_EQUALS
     NAME_NOT_EQUALS = "est différent de\0"  # the \0 is here to force wtforms to display NOT_EQUALS and NAME_NOT_EQUALS
+    NUMBER_EQUALS = "égal"
     GREATER_THAN = "supérieur strict"
     GREATER_THAN_OR_EQUAL_TO = "supérieur ou égal"
     LESS_THAN = "inférieur strict"
@@ -409,12 +413,10 @@ def generate_algolia_search_string(
 ) -> tuple[str, set[str]]:
     filters: list[str] = []
     warnings: set[str] = set()
-
     for search_data in search_parameters:
         operator = search_data.get("operator", "")
-        if operator not in OPERATOR_DICT:
+        if operator not in ALGOLIA_OPERATOR_DICT:
             continue
-
         search_field = search_data.get("search_field")
         if not search_field:
             continue
