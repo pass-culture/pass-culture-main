@@ -324,7 +324,7 @@ SEARCH_GROUP_SPECTACLES = SearchGroup(
 # region NativeCategory
 NATIVE_CATEGORY_ABO_PLATEFORME_VIDEO = NativeCategory(
     technical_name="ABO_PLATEFORME_VIDEO",
-    label="Abonnements aux plateformes de streaming",
+    label="Plateformes de streaming",
     parents=[SEARCH_GROUP_FILMS_SERIES_CINEMA.id, SEARCH_GROUP_FILMS_DOCUMENTAIRES_SERIES.id],
 )
 NATIVE_CATEGORY_ABONNEMENTS_MUSEE = NativeCategory(
