@@ -1,4 +1,4 @@
-{% import "components/links.html" as links %}
+{% import "components/links.html" as links with context %}
 {% from "components/bookings/extra_row.html" import build_booking_toggle_extra_row_button with context %}
 {% if bookings %}
   <table class="table mb-4 get-details-bookings-view">
@@ -18,9 +18,7 @@
         <tr>
           <th scope="row">{{ build_booking_toggle_extra_row_button(booking) }}</th>
           <td>{{ booking.offerer.name | escape }}</td>
-          <td>
-            {{ links.build_offer_name_to_pc_pro_link(booking.stock.offer, is_feature_active("WIP_CONNECT_AS_EXTENDED") , has_permission("MANAGE_PRO_ENTITY")) }}
-          </td>
+          <td>{{ links.build_offer_name_to_pc_pro_link(booking.stock.offer) }}</td>
           <td>
             {{ booking.amount | format_amount }}
             {% if booking.stock.offer.isDuo and booking.quantity == 2 %}(Duo){% endif %}

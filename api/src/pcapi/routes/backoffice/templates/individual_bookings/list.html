@@ -1,7 +1,7 @@
 {% from "components/bookings/extra_row.html" import build_booking_toggle_extra_row_button with context %}
 {% from "components/bookings/extra_row.html" import build_individual_booking_extra_row with context %}
 {% import "components/forms.html" as forms with context %}
-{% import "components/links.html" as links %}
+{% import "components/links.html" as links with context %}
 {% import "components/clipboard.html" as clipboard %}
 {% from "components/turbo/lazy_modal.html" import build_lazy_modal with context %}
 {% extends "layouts/connected.html" %}
@@ -62,14 +62,14 @@
                       class="btn btn-outline-primary"
                       data-modal-selector="#overpayment-creation-modal"
                       data-mode="fetch"
-                      data-fetch-url="{{ url_for("backoffice_web.finance_incidents.get_individual_bookings_overpayment_creation_form") }}"
+                      data-fetch-url="{{ url_for('backoffice_web.finance_incidents.get_individual_bookings_overpayment_creation_form') }}"
                       data-use-confirmation-modal="true">Créer un incident</button>
               <button disabled
                       type="button"
                       class="btn btn-outline-primary"
                       data-modal-selector="#commercial-gesture-creation-modal"
                       data-mode="fetch"
-                      data-fetch-url="{{ url_for("backoffice_web.finance_incidents.get_individual_bookings_commercial_gesture_creation_form") }}"
+                      data-fetch-url="{{ url_for('backoffice_web.finance_incidents.get_individual_bookings_commercial_gesture_creation_form') }}"
                       data-use-confirmation-modal="true">Créer un geste commercial</button>
             </div>
           {% endif %}
@@ -207,9 +207,7 @@
                 <td>{{ booking.id }}</td>
                 <td>{{ booking.token }}</td>
                 <td>{{ links.build_public_user_name_to_details_link(booking.user) }}</td>
-                <td>
-                  {{ links.build_offer_name_to_pc_pro_link(offer, is_feature_active("WIP_CONNECT_AS_EXTENDED") , has_permission("MANAGE_PRO_ENTITY")) }}
-                </td>
+                <td>{{ links.build_offer_name_to_pc_pro_link(offer) }}</td>
                 <td>{{ links.build_offer_name_to_details_link(offer, text_attr="id") }}</td>
                 <td>{{ (offer.isDuo and booking.quantity == 2) | format_bool }}</td>
                 <td>{{ booking.stock.quantity }}</td>

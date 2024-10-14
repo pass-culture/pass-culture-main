@@ -1,5 +1,5 @@
 {% import "components/clipboard.html" as clipboard %}
-{% import "components/links.html" as links %}
+{% import "components/links.html" as links with context %}
 {% from "components/forms.html" import build_form_fields_group with context %}
 {% from "components/generic_modal.html" import build_modal_form with context %}
 {% from "components/presentation/details/tabs.html" import build_details_tab %}
@@ -16,9 +16,7 @@
         <div class="card-body">
           <div class="row justify-content-start align-items-center">
             <div class="col d-flex align-items-center justify-content-start">
-              <h2 class="card-title mb-3 text-primary">
-                {{ links.build_offer_name_to_pc_pro_link(offer, is_feature_active("WIP_CONNECT_AS_EXTENDED") , has_permission("MANAGE_PRO_ENTITY")) }}
-              </h2>
+              <h2 class="card-title mb-3 text-primary">{{ links.build_offer_name_to_pc_pro_link(offer) }}</h2>
               <span class="fs-5 ps-4">
                 {% if offer.lastProviderId %}
                   <span class="me-2 badge rounded-pill text-bg-secondary align-middle">

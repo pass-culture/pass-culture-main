@@ -1,5 +1,5 @@
 {% from "components/forms.html" import build_filters_form with context %}
-{% import "components/links.html" as links %}
+{% import "components/links.html" as links with context %}
 {% import "pivots/get/common.html" as common %}
 <turbo-frame id="allocine_frame">
 {{ common.build_pivot_bar("allocine", form, dst) }}
