@@ -568,7 +568,7 @@ SUBCATEGORY_SUGGESTION_BACKEND = os.environ.get(
     "SUBCATEGORY_SUGGESTION_BACKEND",
     "pcapi.core.external.subcategory_suggestion_backends.subcategory_suggestion.SubcategorySuggestionBackend",
 )
-
+SUBCATEGORY_SUGGESTION_LOCAL_TOKEN = secrets_utils.get("SUBCATEGORY_SUGGESTION_LOCAL_TOKEN")
 
 # PRO TESTS
 MAKE_PROS_BENEFICIARIES_IN_APP = bool(int(os.environ.get("MAKE_PROS_BENEFICIARIES_IN_APP", 0)))
