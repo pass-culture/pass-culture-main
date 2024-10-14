@@ -2519,37 +2519,6 @@
   resolved "https://registry.yarnpkg.com/@types/http-errors/-/http-errors-2.0.1.tgz#20172f9578b225f6c7da63446f56d4ce108d5a65"
   integrity sha512-/K3ds8TRAfBvi5vfjuz8y6+GiAYBZ0x4tXv1Av6CWBWn0IlADc+ZX9pMq7oU0fNQPnBwIZl3rmeLp6SBApbxSQ==
 
-"@types/inquirer-autocomplete-prompt@^2":
-  version "2.0.2"
-  resolved "https://registry.yarnpkg.com/@types/inquirer-autocomplete-prompt/-/inquirer-autocomplete-prompt-2.0.2.tgz#dba1fbb468e34648ce5e35a25e2bdf2c4ac49dc4"
-  integrity sha512-Y7RM1dY3KVg11JnFkaQkTT+2Cgmn9K8De/VtrTT2a5grGIoMfkQuYM5Sss+65oiuqg1h1cTsKHG8pkoPsASdbQ==
-  dependencies:
-    "@types/inquirer" "^8"
-
-"@types/inquirer-fuzzy-path@^2.3.9":
-  version "2.3.9"
-  resolved "https://registry.yarnpkg.com/@types/inquirer-fuzzy-path/-/inquirer-fuzzy-path-2.3.9.tgz#8e1c84ac5c122f0388c1334c3ad9dcd11fce9307"
-  integrity sha512-hOzDXaPDENzAioMYM520CCe09GnKQQ417v8wU95YNft0hiaL1sKJVtoyWqOODqD6CTq54b5ddSewuK3LJAvg0g==
-  dependencies:
-    "@types/inquirer" "^8"
-    "@types/inquirer-autocomplete-prompt" "^2"
-
-"@types/inquirer@^8":
-  version "8.2.10"
-  resolved "https://registry.yarnpkg.com/@types/inquirer/-/inquirer-8.2.10.tgz#9444dce2d764c35bc5bb4d742598aaa4acb6561b"
-  integrity sha512-IdD5NmHyVjWM8SHWo/kPBgtzXatwPkfwzyP3fN1jF2g9BWt5WO+8hL2F4o2GKIYsU40PpqeevuUWvkS/roXJkA==
-  dependencies:
-    "@types/through" "*"
-    rxjs "^7.2.0"
-
-"@types/inquirer@^9.0.7":
-  version "9.0.7"
-  resolved "https://registry.yarnpkg.com/@types/inquirer/-/inquirer-9.0.7.tgz#61bb8d0e42f038b9a1738b08fba7fa98ad9b4b24"
-  integrity sha512-Q0zyBupO6NxGRZut/JdmqYKOnN95Eg5V8Csg3PGKkP+FnvsUZx1jAyK7fztIszxxMuoBA6E3KXWvdZVXIpx60g==
-  dependencies:
-    "@types/through" "*"
-    rxjs "^7.2.0"
-
 "@types/json-schema@^7.0.15":
   version "7.0.15"
   resolved "https://registry.yarnpkg.com/@types/json-schema/-/json-schema-7.0.15.tgz#596a1747233694d50f6ad8a7869fcb6f56cf5841"
@@ -2742,13 +2711,6 @@
   version "2.3.3"
   resolved "https://registry.yarnpkg.com/@types/sizzle/-/sizzle-2.3.3.tgz#ff5e2f1902969d305225a047c8a0fd5c915cebef"
   integrity sha512-JYM8x9EGF163bEyhdJBpR2QX1R5naCJHC8ucJylJ3w9/CVBaskdQ8WqBf8MmQrd1kRvp/a4TS8HJ+bxzR7ZJYQ==
-
-"@types/through@*":
-  version "0.0.33"
-  resolved "https://registry.yarnpkg.com/@types/through/-/through-0.0.33.tgz#14ebf599320e1c7851e7d598149af183c6b9ea56"
-  integrity sha512-HsJ+z3QuETzP3cswwtzt2vEIiHBk/dCcHGhbmG5X3ecnwFD/lPrMpliGXxSCg03L9AhrdwA4Oz/qfspkDW+xGQ==
-  dependencies:
-    "@types/node" "*"
 
 "@types/trusted-types@*":
   version "2.0.7"
@@ -8115,7 +8077,7 @@ rxjs@^6.4.0, rxjs@^6.6.2:
   dependencies:
     tslib "^1.9.0"
 
-rxjs@^7.2.0, rxjs@^7.5.1, rxjs@^7.8.1:
+rxjs@^7.5.1, rxjs@^7.8.1:
   version "7.8.1"
   resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-7.8.1.tgz#6f6f3d99ea8044291efd92e7c7fcf562c4057543"
   integrity sha512-AA3TVj+0A2iuIoQkWEK/tqFjBq2j+6PO6Y0zJcvzLAFhEFIO3HL0vls9hWLncZbAAbK0mar7oZ4V079I/qPMxg==
