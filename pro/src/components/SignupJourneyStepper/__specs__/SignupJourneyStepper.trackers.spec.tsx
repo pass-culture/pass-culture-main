@@ -14,9 +14,9 @@ import { Events } from 'commons/core/FirebaseEvents/constants'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
 import { DEFAULT_ADDRESS_FORM_VALUES } from 'components/Address/constants'
+import { DEFAULT_OFFERER_FORM_VALUES } from 'components/SignupJourneyForm/Offerer/constants'
 import { OnboardingFormNavigationAction } from 'components/SignupJourneyFormLayout/constants'
 import { SIGNUP_JOURNEY_STEP_IDS } from 'components/SignupJourneyStepper/constants'
-import { DEFAULT_OFFERER_FORM_VALUES } from 'screens/SignupJourneyForm/Offerer/constants'
 
 import { SignupJourneyStepper } from '../SignupJourneyStepper'
 

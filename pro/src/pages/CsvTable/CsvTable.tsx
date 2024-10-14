@@ -1,8 +1,7 @@
 import React from 'react'
 
-import { CsvTableScreen } from 'screens/CsvTable/CsvTable'
-
 import { getCsvData } from './adapters/getCsvData'
+import { CsvTableScreen } from './components/CsvTable/CsvTable'
 
 const CsvTable = (): JSX.Element => {
   return (

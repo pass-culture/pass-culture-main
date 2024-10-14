@@ -9,7 +9,7 @@ import {
   formatBrowserTimezonedDateAsUTC,
   toISOStringWithoutMilliseconds,
 } from 'commons/utils/date'
-import { buildDateTime } from 'screens/IndividualOffer/StocksEventEdition/serializers'
+import { buildDateTime } from 'components/IndividualOffer/StocksEventEdition/serializers'
 
 import { OfferEducationalFormValues } from '../types'
 

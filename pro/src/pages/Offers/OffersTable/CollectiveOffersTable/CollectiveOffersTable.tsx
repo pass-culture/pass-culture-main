@@ -6,9 +6,9 @@ import { hasCollectiveSearchFilters } from 'commons/core/Offers/utils/hasSearchF
 import { SortingMode } from 'commons/hooks/useColumnSorting'
 import { Callout } from 'components/Callout/Callout'
 import { CalloutVariant } from 'components/Callout/types'
+import { CollectiveOffersSortingColumn } from 'pages/CollectiveOffers/components/CollectiveOffersScreen/CollectiveOffersScreen'
+import { NoResults } from 'pages/Offers/components/IndividualOffersScreen/NoResults/NoResults'
 import { getOffersCountToDisplay } from 'pages/Offers/domain/getOffersCountToDisplay'
-import { CollectiveOffersSortingColumn } from 'screens/CollectiveOffersScreen/CollectiveOffersScreen'
-import { NoResults } from 'screens/IndividualOffersScreen/NoResults/NoResults'
 import { BaseCheckbox } from 'ui-kit/form/shared/BaseCheckbox/BaseCheckbox'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 

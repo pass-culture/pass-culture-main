@@ -14,9 +14,9 @@ import { useCurrentUser } from 'commons/hooks/useCurrentUser'
 import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
 import { selectCurrentOffererId } from 'commons/store/user/selectors'
 import { BannerCreateOfferAdmin } from 'components/Banner/BannerCreateOfferAdmin'
-import { IndivualOfferLayout } from 'screens/IndividualOffer/IndivualOfferLayout/IndivualOfferLayout'
-import { getTitle } from 'screens/IndividualOffer/IndivualOfferLayout/utils/getTitle'
-import { InformationsScreen } from 'screens/IndividualOffer/InformationsScreen/InformationsScreen'
+import { IndivualOfferLayout } from 'components/IndividualOffer/IndivualOfferLayout/IndivualOfferLayout'
+import { getTitle } from 'components/IndividualOffer/IndivualOfferLayout/utils/getTitle'
+import { InformationsScreen } from 'components/IndividualOffer/InformationsScreen/InformationsScreen'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 export const Offer = (): JSX.Element | null => {

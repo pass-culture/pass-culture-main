@@ -11,7 +11,7 @@ import { useIsNewInterfaceActive } from 'commons/hooks/useIsNewInterfaceActive'
 import { useNotification } from 'commons/hooks/useNotification'
 import { selectCurrentOffererId } from 'commons/store/user/selectors'
 import { sortByLabel } from 'commons/utils/strings'
-import { OffererStatsScreen } from 'screens/OffererStats/OffererStatsScreen'
+import { OffererStatsScreen } from 'pages/OffererStats/OffererStats/OffererStatsScreen'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 export const OffererStats = (): JSX.Element | null => {

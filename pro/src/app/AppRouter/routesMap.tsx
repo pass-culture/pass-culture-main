@@ -135,34 +135,48 @@ export const routes: RouteConfig[] = [
   {
     lazy: () =>
       import(
-        'screens/CollectiveOfferSelectionDuplication/CollectiveOfferSelectionDuplicationScreen'
+        'pages/CollectiveOfferSelectionDuplication/CollectiveOfferSelectionDuplication'
       ),
     path: '/offre/creation/collectif/selection',
     title: 'Edition d’une offre collective',
   },
   {
     lazy: () =>
-      import('pages/CollectiveOfferStockCreation/CollectiveOfferStockCreation'),
+      import(
+        'pages/CollectiveOffer/CollectiveOfferStock/CollectiveOfferStockCreation/CollectiveOfferStockCreation'
+      ),
     path: '/offre/:offerId/collectif/stocks',
     title: 'Dates et prix - Créer une offre réservable',
   },
   {
-    lazy: () => import('pages/CollectiveOfferCreation/CollectiveOfferCreation'),
+    lazy: () =>
+      import(
+        'pages/CollectiveOffer/CollectiveOffer/CollectiveOfferCreation/CollectiveOfferCreation'
+      ),
     path: '/offre/creation/collectif',
     title: 'Détails - Créer une offre réservable',
   },
   {
-    lazy: () => import('pages/CollectiveOfferCreation/CollectiveOfferCreation'),
+    lazy: () =>
+      import(
+        'pages/CollectiveOffer/CollectiveOffer/CollectiveOfferCreation/CollectiveOfferCreation'
+      ),
     path: '/offre/creation/collectif/vitrine',
     title: 'Détails - Créer une offre collective vitrine',
   },
   {
-    lazy: () => import('pages/CollectiveOfferCreation/CollectiveOfferCreation'),
+    lazy: () =>
+      import(
+        'pages/CollectiveOffer/CollectiveOffer/CollectiveOfferCreation/CollectiveOfferCreation'
+      ),
     path: '/offre/collectif/:offerId/creation',
     title: 'Détails - Créer une offre collective vitrine',
   },
   {
-    lazy: () => import('pages/CollectiveOfferCreation/CollectiveOfferCreation'),
+    lazy: () =>
+      import(
+        'pages/CollectiveOffer/CollectiveOffer/CollectiveOfferCreation/CollectiveOfferCreation'
+      ),
     path: '/offre/collectif/vitrine/:offerId/creation',
     title: 'Edition d’une offre collective',
   },
@@ -177,7 +191,7 @@ export const routes: RouteConfig[] = [
   {
     lazy: () =>
       import(
-        'pages/CollectiveOfferSummaryCreation/CollectiveOfferSummaryCreation'
+        'pages/CollectiveOffer/CollectiveOfferSummary/CollectiveOfferSummaryCreation/CollectiveOfferSummaryCreation'
       ),
     path: '/offre/:offerId/collectif/creation/recapitulatif',
     title: 'Récapitulatif - Créer une offre réservable',
@@ -185,7 +199,7 @@ export const routes: RouteConfig[] = [
   {
     lazy: () =>
       import(
-        'pages/CollectiveOfferPreviewCreation/CollectiveOfferPreviewCreation'
+        'pages/CollectiveOffer/CollectiveOfferPreview/CollectiveOfferPreviewCreation/CollectiveOfferPreviewCreation'
       ),
     path: '/offre/:offerId/collectif/creation/apercu',
     title: 'Aperçu - Créer une offre réservable',
@@ -193,7 +207,7 @@ export const routes: RouteConfig[] = [
   {
     lazy: () =>
       import(
-        'pages/CollectiveOfferPreviewCreation/CollectiveOfferPreviewCreation'
+        'pages/CollectiveOffer/CollectiveOfferPreview/CollectiveOfferPreviewCreation/CollectiveOfferPreviewCreation'
       ),
     path: '/offre/:offerId/collectif/vitrine/creation/apercu',
     title: 'Aperçu - Créer une offre vitrine',
@@ -201,32 +215,39 @@ export const routes: RouteConfig[] = [
   {
     lazy: () =>
       import(
-        'pages/CollectiveOfferSummaryCreation/CollectiveOfferSummaryCreation'
+        'pages/CollectiveOffer/CollectiveOfferSummary/CollectiveOfferSummaryCreation/CollectiveOfferSummaryCreation'
       ),
     path: '/offre/:offerId/collectif/vitrine/creation/recapitulatif',
     title: 'Récapitulatif - Créer une offre vitrine',
   },
   {
     lazy: () =>
-      import('pages/CollectiveOfferConfirmation/CollectiveOfferConfirmation'),
+      import(
+        'pages/CollectiveOffer/CollectiveOfferConfirmation/CollectiveOfferConfirmation'
+      ),
     path: '/offre/:offerId/collectif/confirmation',
     title: 'Confirmation - Offre réservable publiée',
   },
   {
     lazy: () =>
-      import('pages/CollectiveOfferConfirmation/CollectiveOfferConfirmation'),
+      import(
+        'pages/CollectiveOffer/CollectiveOfferConfirmation/CollectiveOfferConfirmation'
+      ),
     path: '/offre/:offerId/collectif/vitrine/confirmation',
     title: 'Confirmation - Offre collective vitrine publiée',
   },
   {
-    lazy: () => import('pages/CollectiveOfferEdition/CollectiveOfferEdition'),
+    lazy: () =>
+      import(
+        'pages/CollectiveOffer/CollectiveOffer/CollectiveOfferEdition/CollectiveOfferEdition'
+      ),
     path: '/offre/:offerId/collectif/edition',
     title: 'Détails - Modifier une offre collective réservable',
   },
   {
     lazy: () =>
       import(
-        'pages/CollectiveOfferSummaryEdition/CollectiveOfferSummaryEdition'
+        'pages/CollectiveOffer/CollectiveOfferSummary/CollectiveOfferSummaryEdition/CollectiveOfferSummaryEdition'
       ),
     path: '/offre/:offerId/collectif/recapitulatif',
     title: 'Récapitulatif - Modifier une offre collective réservable',
@@ -234,7 +255,7 @@ export const routes: RouteConfig[] = [
   {
     lazy: () =>
       import(
-        'pages/CollectiveOfferPreviewEdition/CollectiveOfferPreviewEdition'
+        'pages/CollectiveOffer/CollectiveOfferPreview/CollectiveOfferPreviewEdition/CollectiveOfferPreviewEdition'
       ),
     path: '/offre/:offerId/collectif/vitrine/apercu',
     title: 'Aperçu - Prévisualisation d’une offre collective vitrine',
@@ -242,14 +263,16 @@ export const routes: RouteConfig[] = [
   {
     lazy: () =>
       import(
-        'pages/CollectiveOfferPreviewEdition/CollectiveOfferPreviewEdition'
+        'pages/CollectiveOffer/CollectiveOfferPreview/CollectiveOfferPreviewEdition/CollectiveOfferPreviewEdition'
       ),
     path: '/offre/:offerId/collectif/apercu',
     title: 'Aperçu - Prévisualisation d’une offre collective réservable',
   },
   {
     lazy: () =>
-      import('pages/CollectiveOfferStockEdition/CollectiveOfferStockEdition'),
+      import(
+        'pages/CollectiveOffer/CollectiveOfferStock/CollectiveOfferStockEdition/CollectiveOfferStockEdition'
+      ),
     path: '/offre/:offerId/collectif/stocks/edition',
     title: 'Dates et prix - Modifier une offre collective réservable',
   },
