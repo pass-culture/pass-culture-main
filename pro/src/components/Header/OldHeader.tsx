@@ -24,7 +24,7 @@ export const OldHeader = forwardRef(() => {
   const isOffererStatsActive = useActiveFeature('ENABLE_OFFERER_STATS')
   const location = useLocation()
   return (
-    <header className={styles['menu-v2']} id="header-navigation">
+    <header className={styles['menu-v2']}>
       <nav className={styles['nav']} aria-label="Menu principal">
         <div className={styles['nav-brand']}>
           <NavLink
