@@ -11,8 +11,8 @@ import {
   collectiveBookingCollectiveStockFactory,
   collectiveBookingByIdFactory,
   collectiveBookingFactory,
-} from 'utils/collectiveApiFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
+} from 'commons/utils/collectiveApiFactories'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import {
   CollectiveTableRow,
@@ -30,7 +30,7 @@ vi.mock(
 
 const scrollIntoViewMock = vi.fn()
 
-vi.mock('utils/windowMatchMedia', () => ({
+vi.mock('commons/utils/windowMatchMedia', () => ({
   doesUserPreferReducedMotion: vi.fn(),
 }))
 

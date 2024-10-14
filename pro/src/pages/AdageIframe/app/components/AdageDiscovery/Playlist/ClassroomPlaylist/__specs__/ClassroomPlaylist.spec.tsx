@@ -3,10 +3,10 @@ import { userEvent } from '@testing-library/user-event'
 
 import { AdageFrontRoles } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
-import * as useNotification from 'hooks/useNotification'
+import * as useNotification from 'commons/hooks/useNotification'
+import { defaultCollectiveOffer } from 'commons/utils/adageFactories'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
-import { defaultCollectiveOffer } from 'utils/adageFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { ClassroomPlaylist } from '../ClassroomPlaylist'
 
@@ -49,7 +49,7 @@ describe('AdageDiscover classRoomPlaylist', () => {
     })
 
     const notifsImport = (await vi.importActual(
-      'hooks/useNotification'
+      'commons/hooks/useNotification'
     )) as ReturnType<typeof useNotification.useNotification>
     vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
       ...notifsImport,

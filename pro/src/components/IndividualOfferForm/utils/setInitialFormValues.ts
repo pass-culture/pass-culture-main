@@ -2,7 +2,7 @@ import {
   GetIndividualOfferResponseModel,
   SubcategoryResponseModel,
 } from 'apiClient/v1'
-import { AccessibilityEnum } from 'core/shared/types'
+import { AccessibilityEnum } from 'commons/core/shared/types'
 import { deSerializeDurationMinutes } from 'screens/IndividualOffer/DetailsScreen/utils'
 
 import { FORM_DEFAULT_VALUES } from '../constants'

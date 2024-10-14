@@ -3,20 +3,20 @@ import { userEvent } from '@testing-library/user-event'
 
 import { api } from 'apiClient/api'
 import * as useAnalytics from 'app/App/analytics/firebase'
-import { Events } from 'core/FirebaseEvents/constants'
-import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
-import { MandatoryCollectiveOfferFromParamsProps } from 'screens/OfferEducational/useCollectiveOfferFromParams'
-import { defaultAdageUser } from 'utils/adageFactories'
+import { Events } from 'commons/core/FirebaseEvents/constants'
+import { defaultAdageUser } from 'commons/utils/adageFactories'
 import {
   defaultGetVenue,
   getCollectiveOfferFactory,
   getCollectiveOfferTemplateFactory,
-} from 'utils/collectiveApiFactories'
-import { defaultGetOffererResponseModel } from 'utils/individualApiFactories'
+} from 'commons/utils/collectiveApiFactories'
+import { defaultGetOffererResponseModel } from 'commons/utils/individualApiFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
-} from 'utils/renderWithProviders'
+} from 'commons/utils/renderWithProviders'
+import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
+import { MandatoryCollectiveOfferFromParamsProps } from 'screens/OfferEducational/useCollectiveOfferFromParams'
 
 import { CollectiveOfferPreviewCreation } from '../CollectiveOfferPreviewCreation'
 

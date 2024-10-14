@@ -3,6 +3,15 @@ import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
 import { GetIndividualOfferWithAddressResponseModel } from 'apiClient/v1'
+import { GET_MUSIC_TYPES_QUERY_KEY } from 'commons/config/swrQueryKeys'
+import { useIndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
+import {
+  OFFER_WITHDRAWAL_TYPE_LABELS,
+  OFFER_WIZARD_MODE,
+} from 'commons/core/Offers/constants'
+import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
+import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
 import { AccessibilitySummarySection } from 'components/AccessibilitySummarySection/AccessibilitySummarySection'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import {
@@ -11,15 +20,6 @@ import {
 } from 'components/SummaryLayout/SummaryDescriptionList'
 import { SummarySection } from 'components/SummaryLayout/SummarySection'
 import { SummarySubSection } from 'components/SummaryLayout/SummarySubSection'
-import { GET_MUSIC_TYPES_QUERY_KEY } from 'config/swrQueryKeys'
-import { useIndividualOfferContext } from 'context/IndividualOfferContext/IndividualOfferContext'
-import {
-  OFFER_WITHDRAWAL_TYPE_LABELS,
-  OFFER_WIZARD_MODE,
-} from 'core/Offers/constants'
-import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
-import { useActiveFeature } from 'hooks/useActiveFeature'
-import { useOfferWizardMode } from 'hooks/useOfferWizardMode'
 import { computeAddressDisplayName } from 'repository/venuesService'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 

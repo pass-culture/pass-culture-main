@@ -1,7 +1,7 @@
 import createFetchMock from 'vitest-fetch-mock'
 
+import { API_URL } from 'commons/utils/config'
 import { client } from 'repository/pcapi/pcapiClient'
-import { API_URL } from 'utils/config'
 
 const fetchMock = createFetchMock(vi)
 fetchMock.enableMocks()

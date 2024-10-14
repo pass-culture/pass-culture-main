@@ -4,14 +4,14 @@ import {
   SubcategoryResponseModel,
   WithdrawalTypeEnum,
 } from 'apiClient/v1'
-import { AccessibilityEnum } from 'core/shared/types'
+import { AccessibilityEnum } from 'commons/core/shared/types'
 import {
   getOfferVenueFactory,
   getOfferManagingOffererFactory,
   getIndividualOfferFactory,
   subcategoryFactory,
   venueListItemFactory,
-} from 'utils/individualApiFactories'
+} from 'commons/utils/individualApiFactories'
 
 import { buildAccessibilityFormValues } from '../setDefaultInitialFormValues'
 import { setInitialFormValues } from '../setInitialFormValues'

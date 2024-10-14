@@ -1,8 +1,8 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { RootState } from 'store/rootReducer'
-import { renderWithProviders } from 'utils/renderWithProviders'
+import { RootState } from 'commons/store/rootReducer'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { defaultCreationProps } from '../__tests-utils__/defaultProps'
 import {

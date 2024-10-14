@@ -4,9 +4,9 @@ import { userEvent } from '@testing-library/user-event'
 import { addDays, format } from 'date-fns'
 import { axe } from 'vitest-axe'
 
-import { FORMAT_ISO_DATE_ONLY } from 'utils/date'
-import { priceCategoryFactory } from 'utils/individualApiFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
+import { FORMAT_ISO_DATE_ONLY } from 'commons/utils/date'
+import { priceCategoryFactory } from 'commons/utils/individualApiFactories'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { RecurrenceForm, RecurrenceFormProps } from '../RecurrenceForm'
 

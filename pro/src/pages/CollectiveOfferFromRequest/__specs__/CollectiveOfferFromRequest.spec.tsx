@@ -4,13 +4,13 @@ import React from 'react'
 
 import { api } from 'apiClient/api'
 import * as useAnalytics from 'app/App/analytics/firebase'
-import * as useNotification from 'hooks/useNotification'
+import * as useNotification from 'commons/hooks/useNotification'
 import {
   getCollectiveOfferManagingOffererFactory,
   getCollectiveOfferTemplateFactory,
   getCollectiveOfferVenueFactory,
-} from 'utils/collectiveApiFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
+} from 'commons/utils/collectiveApiFactories'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { CollectiveOfferFromRequest } from '../CollectiveOfferFromRequest'
 
@@ -55,7 +55,7 @@ describe('CollectiveOfferFromRequest', () => {
 
   beforeEach(async () => {
     const notifsImport = (await vi.importActual(
-      'hooks/useNotification'
+      'commons/hooks/useNotification'
     )) as ReturnType<typeof useNotification.useNotification>
     vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
       ...notifsImport,

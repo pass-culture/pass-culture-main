@@ -1,5 +1,5 @@
-import { SelectOption } from 'custom_types/form'
-import { getYupValidationSchemaErrors } from 'utils/yupValidationTestHelpers'
+import { SelectOption } from 'commons/custom_types/form'
+import { getYupValidationSchemaErrors } from 'commons/utils/yupValidationTestHelpers'
 
 import { RecurrenceFormValues, RecurrenceType } from '../types'
 import { getValidationSchema } from '../validationSchema'

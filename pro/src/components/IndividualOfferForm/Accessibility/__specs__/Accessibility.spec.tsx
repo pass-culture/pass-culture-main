@@ -4,8 +4,8 @@ import { Form, Formik } from 'formik'
 import React from 'react'
 import * as yup from 'yup'
 
+import { AccessibilityEnum } from 'commons/core/shared/types'
 import { IndividualOfferFormValues } from 'components/IndividualOfferForm/types'
-import { AccessibilityEnum } from 'core/shared/types'
 import { Button } from 'ui-kit/Button/Button'
 
 import { Accessibility } from '../Accessibility'

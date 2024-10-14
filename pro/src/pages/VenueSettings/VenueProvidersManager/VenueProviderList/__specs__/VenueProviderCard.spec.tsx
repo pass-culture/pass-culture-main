@@ -1,9 +1,9 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { defaultGetVenue } from 'utils/collectiveApiFactories'
-import { defaultVenueProvider } from 'utils/individualApiFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
+import { defaultGetVenue } from 'commons/utils/collectiveApiFactories'
+import { defaultVenueProvider } from 'commons/utils/individualApiFactories'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { VenueProviderCard, VenueProviderCardProps } from '../VenueProviderCard'
 

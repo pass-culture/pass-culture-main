@@ -5,19 +5,19 @@ import { OfferStatus } from 'apiClient/v1'
 import {
   collectiveOfferFactory,
   listOffersVenueFactory,
-} from 'utils/collectiveApiFactories'
-import { AddressResponseIsLinkedToVenueModelFactory } from 'utils/commonOffersApiFactories'
-import { FORMAT_DD_MM_YYYY_HH_mm } from 'utils/date'
+} from 'commons/utils/collectiveApiFactories'
+import { AddressResponseIsLinkedToVenueModelFactory } from 'commons/utils/commonOffersApiFactories'
+import { FORMAT_DD_MM_YYYY_HH_mm } from 'commons/utils/date'
 import {
   getOfferVenueFactory,
   listOffersOfferFactory,
   listOffersStockFactory,
-} from 'utils/individualApiFactories'
+} from 'commons/utils/individualApiFactories'
 import {
   renderWithProviders,
   RenderWithProvidersOptions,
-} from 'utils/renderWithProviders'
-import { formatLocalTimeDateString } from 'utils/timezone'
+} from 'commons/utils/renderWithProviders'
+import { formatLocalTimeDateString } from 'commons/utils/timezone'
 
 import { OfferNameCell, OfferNameCellProps } from '../OfferNameCell'
 

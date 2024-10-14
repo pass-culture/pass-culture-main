@@ -8,14 +8,14 @@ import {
   OfferStatus,
   StockStatsResponseModel,
 } from 'apiClient/v1'
+import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
+import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
+import { useNotification } from 'commons/hooks/useNotification'
+import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { SummaryDescriptionList } from 'components/SummaryLayout/SummaryDescriptionList'
 import { SummarySection } from 'components/SummaryLayout/SummarySection'
-import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
-import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
-import { useActiveFeature } from 'hooks/useActiveFeature'
-import { useNotification } from 'hooks/useNotification'
-import { useOfferWizardMode } from 'hooks/useOfferWizardMode'
 import { getDepartmentCode } from 'screens/IndividualOffer/utils/getDepartmentCode'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 

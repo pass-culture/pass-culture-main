@@ -6,15 +6,28 @@ import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
 import { HTTP_STATUS } from 'apiClient/helpers'
-import { GET_OFFERER_QUERY_KEY } from 'config/swrQueryKeys'
-import { hasStatusCode } from 'core/OfferEducational/utils/hasStatusCode'
-import { SAVED_OFFERER_ID_KEY } from 'core/shared/constants'
-import { useActiveFeature } from 'hooks/useActiveFeature'
-import { useIsNewInterfaceActive } from 'hooks/useIsNewInterfaceActive'
+import { GET_OFFERER_QUERY_KEY } from 'commons/config/swrQueryKeys'
+import { hasStatusCode } from 'commons/core/OfferEducational/utils/hasStatusCode'
+import { SAVED_OFFERER_ID_KEY } from 'commons/core/shared/constants'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
+import { useIsNewInterfaceActive } from 'commons/hooks/useIsNewInterfaceActive'
 import {
   SIDE_NAV_MIN_HEIGHT_COLLAPSE_MEDIA_QUERY,
   useMediaQuery,
-} from 'hooks/useMediaQuery'
+} from 'commons/hooks/useMediaQuery'
+import {
+  setIsCollectiveSectionOpen,
+  setIsIndividualSectionOpen,
+} from 'commons/store/nav/reducer'
+import {
+  selectIsCollectiveSectionOpen,
+  selectIsIndividualSectionOpen,
+} from 'commons/store/nav/selector'
+import {
+  selectCurrentOffererId,
+  selectCurrentUser,
+} from 'commons/store/user/selectors'
+import { localStorageAvailable } from 'commons/utils/localStorageAvailable'
 import fullDownIcon from 'icons/full-down.svg'
 import fullUpIcon from 'icons/full-up.svg'
 import strokeCollaboratorIcon from 'icons/stroke-collaborator.svg'
@@ -24,19 +37,9 @@ import strokePhoneIcon from 'icons/stroke-phone.svg'
 import strokePieIcon from 'icons/stroke-pie.svg'
 import strokeTeacherIcon from 'icons/stroke-teacher.svg'
 import { getSavedVenueId } from 'pages/Home/Offerers/PartnerPages'
-import {
-  setIsCollectiveSectionOpen,
-  setIsIndividualSectionOpen,
-} from 'store/nav/reducer'
-import {
-  selectIsCollectiveSectionOpen,
-  selectIsIndividualSectionOpen,
-} from 'store/nav/selector'
-import { selectCurrentOffererId, selectCurrentUser } from 'store/user/selectors'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
-import { localStorageAvailable } from 'utils/localStorageAvailable'
 
 import styles from './SideNavLinks.module.scss'
 

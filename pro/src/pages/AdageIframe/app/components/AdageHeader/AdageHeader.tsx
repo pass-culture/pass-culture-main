@@ -4,7 +4,7 @@ import useSWR from 'swr'
 
 import { AdageFrontRoles, AdageHeaderLink } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
-import { GET_EDUCATIONAL_INSTITUTION_BUDGET_QUERY_KEY } from 'config/swrQueryKeys'
+import { GET_EDUCATIONAL_INSTITUTION_BUDGET_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import fullDownloadIcon from 'icons/full-download.svg'
 import logoPassCultureIcon from 'icons/logo-pass-culture.svg'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'

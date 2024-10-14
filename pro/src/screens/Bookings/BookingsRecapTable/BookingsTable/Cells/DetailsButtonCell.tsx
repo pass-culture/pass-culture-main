@@ -1,7 +1,7 @@
 import cn from 'classnames'
 
 import { useAnalytics } from 'app/App/analytics/firebase'
-import { CollectiveBookingsEvents } from 'core/FirebaseEvents/constants'
+import { CollectiveBookingsEvents } from 'commons/core/FirebaseEvents/constants'
 import fullUpIcon from 'icons/full-up.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'

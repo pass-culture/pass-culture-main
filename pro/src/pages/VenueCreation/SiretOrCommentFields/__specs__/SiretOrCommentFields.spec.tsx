@@ -3,7 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 import { Formik } from 'formik'
 import React from 'react'
 
-import * as siretApiValidate from 'core/Venue/siretApiValidate'
+import * as siretApiValidate from 'commons/core/Venue/siretApiValidate'
 import { VenueCreationFormValues } from 'pages/VenueCreation/types'
 import { VenueEditionFormValues } from 'pages/VenueEdition/types'
 import { Button } from 'ui-kit/Button/Button'
@@ -14,7 +14,7 @@ import {
 } from '../SiretOrCommentFields'
 import { generateSiretValidationSchema } from '../validationSchema'
 
-vi.mock('core/Venue/siretApiValidate')
+vi.mock('commons/core/Venue/siretApiValidate')
 
 vi.mock('apiClient/api', () => ({
   api: {

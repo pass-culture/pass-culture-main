@@ -4,10 +4,10 @@ import {
   CollectiveOfferResponseModel,
   CollectiveOfferStatus,
 } from 'apiClient/v1'
-import { CollectiveSearchFiltersParams } from 'core/Offers/types'
-import { isOfferDisabled } from 'core/Offers/utils/isOfferDisabled'
-import { useActiveFeature } from 'hooks/useActiveFeature'
-import { useOfferEditionURL } from 'hooks/useOfferEditionURL'
+import { CollectiveSearchFiltersParams } from 'commons/core/Offers/types'
+import { isOfferDisabled } from 'commons/core/Offers/utils/isOfferDisabled'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
+import { useOfferEditionURL } from 'commons/hooks/useOfferEditionURL'
 
 import { CheckboxCell } from '../../Cells/CheckboxCell'
 import { CollectiveActionsCells } from '../../Cells/CollectiveActionsCells'

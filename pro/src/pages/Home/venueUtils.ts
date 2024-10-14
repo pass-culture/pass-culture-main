@@ -3,7 +3,7 @@ import {
   GetOffererResponseModel,
   GetOffererVenueResponseModel,
 } from 'apiClient/v1'
-import { getLastCollectiveDmsApplication } from 'utils/getLastCollectiveDmsApplication'
+import { getLastCollectiveDmsApplication } from 'commons/utils/getLastCollectiveDmsApplication'
 
 export const getVirtualVenueFromOfferer = (
   offerer?: GetOffererResponseModel | null

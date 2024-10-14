@@ -3,11 +3,11 @@ import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
 import { api } from 'apiClient/api'
-import { renderWithProviders } from 'utils/renderWithProviders'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { ResetPassword } from '../ResetPassword'
 
-vi.mock('utils/recaptcha', () => ({
+vi.mock('commons/utils/recaptcha', () => ({
   initReCaptchaScript: vi.fn(() => ({ remove: vi.fn() })),
   getReCaptchaToken: vi.fn(),
 }))

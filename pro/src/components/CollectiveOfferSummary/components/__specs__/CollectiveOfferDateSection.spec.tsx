@@ -1,8 +1,8 @@
 import { screen } from '@testing-library/react'
 import React from 'react'
 
-import { getCollectiveOfferTemplateFactory } from 'utils/collectiveApiFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
+import { getCollectiveOfferTemplateFactory } from 'commons/utils/collectiveApiFactories'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import {
   CollectiveOfferDateSection,

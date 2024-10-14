@@ -2,11 +2,11 @@ import classnames from 'classnames'
 import React from 'react'
 import { useSelector } from 'react-redux'
 
+import { selectCurrentUser } from 'commons/store/user/selectors'
 import { Footer } from 'components/Footer/Footer'
 import { OldHeader } from 'components/Header/OldHeader'
 import { SkipLinks } from 'components/SkipLinks/SkipLinks'
 import fullInfoIcon from 'icons/full-info.svg'
-import { selectCurrentUser } from 'store/user/selectors'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './OldLayout.module.scss'

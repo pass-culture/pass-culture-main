@@ -7,12 +7,12 @@ import {
   BookingRecapStatus,
   CollectiveBookingResponseModel,
 } from 'apiClient/v1'
-import { Audience } from 'core/shared/types'
+import { Audience } from 'commons/core/shared/types'
 import {
   bookingRecapFactory,
   bookingRecapStockFactory,
-} from 'utils/individualApiFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
+} from 'commons/utils/individualApiFactories'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import {
   FilterByBookingStatus,

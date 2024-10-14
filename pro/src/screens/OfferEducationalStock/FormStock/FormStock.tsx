@@ -1,17 +1,17 @@
 import { useFormikContext } from 'formik'
 import React from 'react'
 
-import { FormLayout } from 'components/FormLayout/FormLayout'
 import {
   OfferEducationalStockFormValues,
   Mode,
-} from 'core/OfferEducational/types'
+} from 'commons/core/OfferEducational/types'
+import { isDateValid } from 'commons/utils/date'
+import { FormLayout } from 'components/FormLayout/FormLayout'
 import strokeCollaborator from 'icons/stroke-collaborator.svg'
 import strokeEuroIcon from 'icons/stroke-euro.svg'
 import { DatePicker } from 'ui-kit/form/DatePicker/DatePicker'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 import { TimePicker } from 'ui-kit/form/TimePicker/TimePicker'
-import { isDateValid } from 'utils/date'
 
 import {
   END_DATE_LABEL,

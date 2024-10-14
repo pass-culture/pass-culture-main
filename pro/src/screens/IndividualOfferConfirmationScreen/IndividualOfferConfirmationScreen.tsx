@@ -1,5 +1,6 @@
 import { GetIndividualOfferResponseModel } from 'apiClient/v1'
-import { OFFER_STATUS_PENDING } from 'core/Offers/constants'
+import { OFFER_STATUS_PENDING } from 'commons/core/Offers/constants'
+import { formatDateTimeParts, isDateValid } from 'commons/utils/date'
 import fullLinkIcon from 'icons/full-link.svg'
 import fullValidateIcon from 'icons/full-validate.svg'
 import fullWaitIcon from 'icons/full-wait.svg'
@@ -7,7 +8,6 @@ import { DisplayOfferInAppLink } from 'screens/IndividualOffer/SummaryScreen/Dis
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
-import { formatDateTimeParts, isDateValid } from 'utils/date'
 
 import styles from './IndividualOfferConfirmationScreen.module.scss'
 

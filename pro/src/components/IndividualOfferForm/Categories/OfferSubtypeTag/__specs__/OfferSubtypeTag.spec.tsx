@@ -1,7 +1,7 @@
 import { render } from '@testing-library/react'
 import React from 'react'
 
-import { INDIVIDUAL_OFFER_SUBTYPE } from 'core/Offers/constants'
+import { INDIVIDUAL_OFFER_SUBTYPE } from 'commons/core/Offers/constants'
 
 import { OfferSubtypeTag } from '../OfferSubtypeTag'
 

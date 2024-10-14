@@ -4,11 +4,11 @@ import { Formik } from 'formik'
 import React from 'react'
 
 import { StudentLevels } from 'apiClient/v1'
-import { buildStudentLevelsMapWithDefaultValue } from 'core/OfferEducational/utils/buildStudentLevelsMapWithDefaultValue'
+import { buildStudentLevelsMapWithDefaultValue } from 'commons/core/OfferEducational/utils/buildStudentLevelsMapWithDefaultValue'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
-} from 'utils/renderWithProviders'
+} from 'commons/utils/renderWithProviders'
 
 import { FormParticipants } from '../FormParticipants'
 import { ALL_STUDENTS_LABEL } from '../useParticipantsOptions'

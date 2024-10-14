@@ -9,8 +9,8 @@ import {
   GET_VENUE_PROVIDERS_QUERY_KEY,
   GET_VENUE_QUERY_KEY,
   GET_VENUE_TYPES_QUERY_KEY,
-} from 'config/swrQueryKeys'
-import { useActiveFeature } from 'hooks/useActiveFeature'
+} from 'commons/config/swrQueryKeys'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 import { setInitialFormValues } from './setInitialFormValues'

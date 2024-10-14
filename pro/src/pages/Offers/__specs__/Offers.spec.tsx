@@ -19,18 +19,18 @@ import {
   ALL_VENUES_OPTION,
   CREATION_MODES_OPTIONS,
   DEFAULT_SEARCH_FILTERS,
-} from 'core/Offers/constants'
-import { SearchFiltersParams } from 'core/Offers/types'
-import { computeIndividualOffersUrl } from 'core/Offers/utils/computeIndividualOffersUrl'
-import { Audience } from 'core/shared/types'
+} from 'commons/core/Offers/constants'
+import { SearchFiltersParams } from 'commons/core/Offers/types'
+import { computeIndividualOffersUrl } from 'commons/core/Offers/utils/computeIndividualOffersUrl'
+import { Audience } from 'commons/core/shared/types'
 import {
   defaultGetOffererResponseModel,
   listOffersOfferFactory,
   venueListItemFactory,
-} from 'utils/individualApiFactories'
-import { offererAddressFactory } from 'utils/offererAddressFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'utils/storeFactories'
+} from 'commons/utils/individualApiFactories'
+import { offererAddressFactory } from 'commons/utils/offererAddressFactories'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
 
 import { OffersRoute } from '../../../pages/Offers/OffersRoute'
 

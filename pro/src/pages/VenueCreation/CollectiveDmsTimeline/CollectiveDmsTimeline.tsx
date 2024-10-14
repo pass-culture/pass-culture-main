@@ -1,12 +1,12 @@
 import { DMSApplicationForEAC, DMSApplicationstatus } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
+import { Events } from 'commons/core/FirebaseEvents/constants'
+import { getDateToFrenchText } from 'commons/utils/date'
 import { Callout } from 'components/Callout/Callout'
 import { CalloutVariant } from 'components/Callout/types'
-import { Events } from 'core/FirebaseEvents/constants'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { Timeline, TimelineStepType } from 'ui-kit/Timeline/Timeline'
-import { getDateToFrenchText } from 'utils/date'
 
 import styles from './CollectiveDmsTimeline.module.scss'
 

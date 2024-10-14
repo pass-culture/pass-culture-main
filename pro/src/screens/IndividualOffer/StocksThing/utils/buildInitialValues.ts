@@ -4,9 +4,9 @@ import {
   GetIndividualOfferWithAddressResponseModel,
   GetOfferStockResponseModel,
 } from 'apiClient/v1'
+import { FORMAT_ISO_DATE_ONLY, isDateValid } from 'commons/utils/date'
+import { getLocalDepartementDateTimeFromUtc } from 'commons/utils/timezone'
 import { getDepartmentCode } from 'screens/IndividualOffer/utils/getDepartmentCode'
-import { FORMAT_ISO_DATE_ONLY, isDateValid } from 'utils/date'
-import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 
 import { STOCK_THING_FORM_DEFAULT_VALUES } from '../constants'
 import { StockThingFormValues } from '../types'

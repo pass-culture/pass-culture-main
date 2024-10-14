@@ -3,13 +3,13 @@ import React from 'react'
 
 import { api } from 'apiClient/api'
 import { OfferAddressType } from 'apiClient/v1'
-import * as useNotification from 'hooks/useNotification'
-import * as getInterventionAreaLabels from 'pages/AdageIframe/app/components/OffersInstantSearch/OffersSearch/Offers/OfferDetails/OfferInterventionArea'
+import * as useNotification from 'commons/hooks/useNotification'
 import {
   getCollectiveOfferTemplateFactory,
   defaultGetVenue,
-} from 'utils/collectiveApiFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
+} from 'commons/utils/collectiveApiFactories'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import * as getInterventionAreaLabels from 'pages/AdageIframe/app/components/OffersInstantSearch/OffersSearch/Offers/OfferDetails/OfferInterventionArea'
 
 import { CollectiveOfferLocationSection } from '../CollectiveOfferLocationSection'
 import * as formatOfferEventAddress from '../utils/formatOfferEventAddress'
@@ -29,7 +29,7 @@ describe('CollectiveOfferLocationSection', () => {
     })
 
     const notifsImport = (await vi.importActual(
-      'hooks/useNotification'
+      'commons/hooks/useNotification'
     )) as ReturnType<typeof useNotification.useNotification>
     vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
       ...notifsImport,

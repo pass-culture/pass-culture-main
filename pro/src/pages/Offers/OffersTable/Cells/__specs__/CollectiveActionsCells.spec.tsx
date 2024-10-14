@@ -5,15 +5,15 @@ import createFetchMock from 'vitest-fetch-mock'
 
 import { api } from 'apiClient/api'
 import { CollectiveOfferStatus, OfferAddressType } from 'apiClient/v1'
-import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from 'core/Offers/constants'
+import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from 'commons/core/Offers/constants'
 import {
   collectiveOfferFactory,
   getCollectiveOfferFactory,
   getCollectiveOfferTemplateFactory,
   getCollectiveOfferVenueFactory,
-} from 'utils/collectiveApiFactories'
-import * as localStorageAvailable from 'utils/localStorageAvailable'
-import { renderWithProviders } from 'utils/renderWithProviders'
+} from 'commons/utils/collectiveApiFactories'
+import * as localStorageAvailable from 'commons/utils/localStorageAvailable'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import {
   CollectiveActionsCells,

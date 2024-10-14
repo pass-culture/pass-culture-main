@@ -1,8 +1,8 @@
 import { useFormikContext } from 'formik'
 import React from 'react'
 
+import { humanizeSiret, unhumanizeSiret } from 'commons/core/Venue/utils'
 import { FormLayout } from 'components/FormLayout/FormLayout'
-import { humanizeSiret, unhumanizeSiret } from 'core/Venue/utils'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 
 import styles from './OffererForm.module.scss'

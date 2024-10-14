@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
 
-import { defaultGetBookingResponse } from 'utils/individualApiFactories'
+import { defaultGetBookingResponse } from 'commons/utils/individualApiFactories'
 
 import { BookingDetails } from '../BookingDetails'
 

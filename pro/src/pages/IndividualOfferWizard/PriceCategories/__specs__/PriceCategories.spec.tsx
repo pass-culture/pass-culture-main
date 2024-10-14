@@ -5,9 +5,9 @@ import { Routes, Route } from 'react-router-dom'
 import {
   IndividualOfferContextValues,
   IndividualOfferContext,
-} from 'context/IndividualOfferContext/IndividualOfferContext'
-import { individualOfferContextValuesFactory } from 'utils/individualApiFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
+} from 'commons/context/IndividualOfferContext/IndividualOfferContext'
+import { individualOfferContextValuesFactory } from 'commons/utils/individualApiFactories'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { PriceCategories } from '../PriceCategories'
 

@@ -7,11 +7,12 @@ import {
   BookingRecapResponseModel,
   GetIndividualOfferResponseModel,
 } from 'apiClient/v1'
-import { GET_EVENT_PRICE_CATEGORIES_AND_SCHEDULES_BY_DATE_QUERY_KEY } from 'config/swrQueryKeys'
+import { GET_EVENT_PRICE_CATEGORIES_AND_SCHEDULES_BY_DATE_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import {
   DEFAULT_PRE_FILTERS,
   EMPTY_FILTER_VALUE,
-} from 'core/Bookings/constants'
+} from 'commons/core/Bookings/constants'
+import { FORMAT_ISO_DATE_ONLY } from 'commons/utils/date'
 import strokeBookingHold from 'icons/stroke-booking-hold.svg'
 import { getFilteredIndividualBookingsAdapter } from 'pages/Bookings/adapters/getFilteredIndividualBookingsAdapter'
 import { IndividualBookingsTable } from 'screens/Bookings/BookingsRecapTable/BookingsTable/IndividualBookingsTable'
@@ -22,7 +23,6 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
-import { FORMAT_ISO_DATE_ONLY } from 'utils/date'
 
 import styles from './BookingsSummary.module.scss'
 import { DownloadBookingsModal } from './DownloadBookingsModal/DownloadBookingsModal'

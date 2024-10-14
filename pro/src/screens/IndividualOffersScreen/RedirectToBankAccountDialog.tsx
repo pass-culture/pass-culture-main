@@ -2,9 +2,9 @@ import React from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { useAnalytics } from 'app/App/analytics/firebase'
+import { Events, VenueEvents } from 'commons/core/FirebaseEvents/constants'
 import { RedirectDialog } from 'components/Dialog/RedirectDialog/RedirectDialog'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
-import { Events, VenueEvents } from 'core/FirebaseEvents/constants'
 import fullWaitIcon from 'icons/full-wait.svg'
 import strokePartyIcon from 'icons/stroke-party.svg'
 

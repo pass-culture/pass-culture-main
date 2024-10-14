@@ -1,6 +1,6 @@
 import * as yup from 'yup'
 
-import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
+import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
 
 export const MAX_STOCKS_QUANTITY = 1000000
 

@@ -1,13 +1,13 @@
 import React from 'react'
 
 import { useAnalytics } from 'app/App/analytics/firebase'
+import { BankAccountEvents } from 'commons/core/FirebaseEvents/constants'
+import { DS_BANK_ACCOUNT_PROCEDURE_ID } from 'commons/utils/config'
 import { Dialog } from 'components/Dialog/Dialog/Dialog'
-import { BankAccountEvents } from 'core/FirebaseEvents/constants'
 import fullLinkIcon from 'icons/full-link.svg'
 import strokeLinkIcon from 'icons/stroke-link.svg'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { DS_BANK_ACCOUNT_PROCEDURE_ID } from 'utils/config'
 
 import styles from './AddBankInformationsDialog.module.scss'
 

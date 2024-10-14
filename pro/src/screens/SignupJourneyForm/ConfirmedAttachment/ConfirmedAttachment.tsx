@@ -1,10 +1,10 @@
 import React from 'react'
 
 import { useAnalytics } from 'app/App/analytics/firebase'
+import { useSignupJourneyContext } from 'commons/context/SignupJourneyContext/SignupJourneyContext'
+import { Events } from 'commons/core/FirebaseEvents/constants'
 import { OnboardingFormNavigationAction } from 'components/SignupJourneyFormLayout/constants'
 import { SIGNUP_JOURNEY_STEP_IDS } from 'components/SignupJourneyStepper/constants'
-import { useSignupJourneyContext } from 'context/SignupJourneyContext/SignupJourneyContext'
-import { Events } from 'core/FirebaseEvents/constants'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 

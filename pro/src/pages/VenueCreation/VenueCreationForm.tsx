@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { useSelector } from 'react-redux'
 
 import { GetOffererResponseModel, VenueTypeResponseModel } from 'apiClient/v1'
+import { selectCurrentOffererId } from 'commons/store/user/selectors'
 import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
 import { AddressSelect } from 'components/Address/Address'
 import { Callout } from 'components/Callout/Callout'
@@ -13,7 +14,6 @@ import {
   RouteLeavingGuard,
 } from 'components/RouteLeavingGuard/RouteLeavingGuard'
 import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
-import { selectCurrentOffererId } from 'store/user/selectors'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'

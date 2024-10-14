@@ -2,8 +2,8 @@ import React from 'react'
 import { Provider } from 'react-redux'
 
 import { AppRouter } from 'app/AppRouter/AppRouter'
-import { createStore } from 'store/store'
-import { StoreProvider } from 'store/StoreProvider/StoreProvider'
+import { createStore } from 'commons/store/store'
+import { StoreProvider } from 'commons/store/StoreProvider/StoreProvider'
 
 interface RootProps {
   isAdageIframe: boolean

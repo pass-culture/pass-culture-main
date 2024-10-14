@@ -17,9 +17,12 @@ import {
 import { useCallback, useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 
-import { firebaseConfig } from 'config/firebase'
-import { useUtmQueryParams } from 'hooks/useUtmQueryParams'
-import { selectCurrentOffererId, selectCurrentUser } from 'store/user/selectors'
+import { firebaseConfig } from 'commons/config/firebase'
+import { useUtmQueryParams } from 'commons/hooks/useUtmQueryParams'
+import {
+  selectCurrentOffererId,
+  selectCurrentUser,
+} from 'commons/store/user/selectors'
 
 let firebaseApp: firebase.FirebaseApp | undefined
 let firebaseRemoteConfig: RemoteConfig | undefined

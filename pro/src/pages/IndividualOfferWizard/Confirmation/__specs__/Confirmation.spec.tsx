@@ -7,26 +7,26 @@ import {
   GetIndividualOfferWithAddressResponseModel,
   OfferStatus,
 } from 'apiClient/v1'
-import { Notification } from 'components/Notification/Notification'
 import {
   IndividualOfferContextValues,
   IndividualOfferContext,
-} from 'context/IndividualOfferContext/IndividualOfferContext'
+} from 'commons/context/IndividualOfferContext/IndividualOfferContext'
 import {
   getOfferVenueFactory,
   getIndividualOfferFactory,
   individualOfferContextValuesFactory,
-} from 'utils/individualApiFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'utils/storeFactories'
+} from 'commons/utils/individualApiFactories'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
+import { Notification } from 'components/Notification/Notification'
 
 import { Confirmation } from '../Confirmation'
 
 window.open = vi.fn()
 
-vi.mock('utils/config', async () => {
+vi.mock('commons/utils/config', async () => {
   return {
-    ...(await vi.importActual('utils/config')),
+    ...(await vi.importActual('commons/utils/config')),
     WEBAPP_URL: 'https://localhost',
   }
 })

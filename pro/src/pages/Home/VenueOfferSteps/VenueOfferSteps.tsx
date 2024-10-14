@@ -6,7 +6,7 @@ import {
   GetOffererVenueResponseModel,
 } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
-import { useActiveFeature } from 'hooks/useActiveFeature'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import fullInfoIcon from 'icons/full-info.svg'
 import fullNextIcon from 'icons/full-next.svg'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
@@ -16,8 +16,8 @@ import {
   Events,
   OFFER_FORM_NAVIGATION_IN,
   VenueEvents,
-} from '../../../core/FirebaseEvents/constants'
-import { UNAVAILABLE_ERROR_PAGE } from '../../../utils/routes'
+} from '../../../commons/core/FirebaseEvents/constants'
+import { UNAVAILABLE_ERROR_PAGE } from '../../../commons/utils/routes'
 import { Card } from '../Card'
 import {
   shouldDisplayEACInformationSectionForVenue,

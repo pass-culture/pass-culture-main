@@ -13,17 +13,17 @@ import {
   StudentLevels,
 } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
-import * as useMediaQuery from 'hooks/useMediaQuery'
-import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
+import * as useMediaQuery from 'commons/hooks/useMediaQuery'
 import {
   defaultCollectiveOffer,
   defaultUseInfiniteHitsReturn,
   defaultUseStatsReturn,
-} from 'utils/adageFactories'
+} from 'commons/utils/adageFactories'
 import {
   renderWithProviders,
   RenderWithProvidersOptions,
-} from 'utils/renderWithProviders'
+} from 'commons/utils/renderWithProviders'
+import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
 
 import { Offers, OffersProps } from '../Offers'
 
@@ -47,9 +47,9 @@ vi.mock('apiClient/api', () => ({
   },
 }))
 
-vi.mock('utils/config', async () => {
+vi.mock('commons/utils/config', async () => {
   return {
-    ...(await vi.importActual('utils/config')),
+    ...(await vi.importActual('commons/utils/config')),
     LOGS_DATA: true,
   }
 })

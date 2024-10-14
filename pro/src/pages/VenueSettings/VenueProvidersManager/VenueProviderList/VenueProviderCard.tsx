@@ -1,12 +1,12 @@
 import React from 'react'
 
 import { GetVenueResponseModel, VenueProviderResponse } from 'apiClient/v1'
-import { getProviderInfo } from 'core/Providers/utils/getProviderInfo'
+import { getProviderInfo } from 'commons/core/Providers/utils/getProviderInfo'
 import {
   isAllocineProvider,
   isCinemaProvider,
-} from 'core/Providers/utils/utils'
-import { formatLocalTimeDateString } from 'utils/timezone'
+} from 'commons/core/Providers/utils/utils'
+import { formatLocalTimeDateString } from 'commons/utils/timezone'
 
 import { AllocineProviderEdit } from './AllocineProviderEdit'
 import { CinemaProviderEdit } from './CinemaProviderEdit'

@@ -6,29 +6,29 @@ import { api } from 'apiClient/api'
 import { isErrorAPIError } from 'apiClient/helpers'
 import { VenueListItemResponseModel } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
+import { GET_OFFER_QUERY_KEY } from 'commons/config/swrQueryKeys'
+import { useIndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
+import { Events } from 'commons/core/FirebaseEvents/constants'
+import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
+import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
+import { isOfferDisabled } from 'commons/core/Offers/utils/isOfferDisabled'
+import {
+  isOfferProductBased,
+  isOfferSynchronized,
+} from 'commons/core/Offers/utils/typology'
+import { PATCH_SUCCESS_MESSAGE } from 'commons/core/shared/constants'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
+import { useNotification } from 'commons/hooks/useNotification'
+import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
+import {
+  isRecordStore,
+  useSuggestedSubcategoriesAbTest,
+} from 'commons/hooks/useSuggestedSubcategoriesAbTest'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { getFilteredVenueListByCategoryStatus } from 'components/IndividualOfferForm/utils/getFilteredVenueList'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import { RouteLeavingGuardIndividualOffer } from 'components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
 import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
-import { GET_OFFER_QUERY_KEY } from 'config/swrQueryKeys'
-import { useIndividualOfferContext } from 'context/IndividualOfferContext/IndividualOfferContext'
-import { Events } from 'core/FirebaseEvents/constants'
-import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
-import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
-import { isOfferDisabled } from 'core/Offers/utils/isOfferDisabled'
-import {
-  isOfferProductBased,
-  isOfferSynchronized,
-} from 'core/Offers/utils/typology'
-import { PATCH_SUCCESS_MESSAGE } from 'core/shared/constants'
-import { useActiveFeature } from 'hooks/useActiveFeature'
-import { useNotification } from 'hooks/useNotification'
-import { useOfferWizardMode } from 'hooks/useOfferWizardMode'
-import {
-  isRecordStore,
-  useSuggestedSubcategoriesAbTest,
-} from 'hooks/useSuggestedSubcategoriesAbTest'
 
 import { ActionBar } from '../ActionBar/ActionBar'
 import { useIndividualOfferImageUpload } from '../hooks/useIndividualOfferImageUpload'

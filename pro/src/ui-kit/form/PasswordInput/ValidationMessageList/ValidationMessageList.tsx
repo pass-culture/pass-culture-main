@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react'
 import {
   getPasswordRuleLabel,
   passwordValidationStatus,
-} from 'core/shared/utils/validation'
+} from 'commons/core/shared/utils/validation'
 import { FieldError } from 'ui-kit/form/shared/FieldError/FieldError'
 import { FieldSuccess } from 'ui-kit/form/shared/FieldSuccess/FieldSuccess'
 

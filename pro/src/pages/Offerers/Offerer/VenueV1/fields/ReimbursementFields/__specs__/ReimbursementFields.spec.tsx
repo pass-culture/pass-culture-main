@@ -6,8 +6,8 @@ import {
   GetOffererResponseModel,
   GetOffererVenueResponseModel,
 } from 'apiClient/v1'
-import { defaultGetVenue } from 'utils/collectiveApiFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
+import { defaultGetVenue } from 'commons/utils/collectiveApiFactories'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import {
   ReimbursementFields,

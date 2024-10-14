@@ -7,10 +7,10 @@ import { ApiError, OffererMemberStatus } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import * as useAnalytics from 'app/App/analytics/firebase'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
 import { Notification } from 'components/Notification/Notification'
 import { Collaborators } from 'pages/Collaborators/Collaborators'
-import { renderWithProviders } from 'utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'utils/storeFactories'
 
 vi.mock('apiClient/api', () => ({
   api: {

@@ -16,6 +16,7 @@ module.exports = {
     '**/*.svg',
     '**/*.scss',
     '**/*.md',
+    '**/*.mdx',
     '**/*.jpg',
     '**/*.png',
     'src/index.html',

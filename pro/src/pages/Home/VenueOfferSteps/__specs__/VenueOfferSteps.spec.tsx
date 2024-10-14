@@ -2,18 +2,18 @@ import { screen } from '@testing-library/react'
 import React from 'react'
 
 import {
+  defaultGetOffererVenueResponseModel,
+  defaultGetOffererResponseModel,
+} from 'commons/utils/individualApiFactories'
+import {
+  RenderWithProvidersOptions,
+  renderWithProviders,
+} from 'commons/utils/renderWithProviders'
+import {
   VenueOfferSteps,
   VenueOfferStepsProps,
 } from 'pages/Home/VenueOfferSteps/VenueOfferSteps'
 import * as venueUtils from 'pages/Home/venueUtils'
-import {
-  defaultGetOffererVenueResponseModel,
-  defaultGetOffererResponseModel,
-} from 'utils/individualApiFactories'
-import {
-  RenderWithProvidersOptions,
-  renderWithProviders,
-} from 'utils/renderWithProviders'
 
 const renderVenueOfferSteps = (
   props: VenueOfferStepsProps,

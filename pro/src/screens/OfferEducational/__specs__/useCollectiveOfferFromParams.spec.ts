@@ -5,8 +5,8 @@ import { api } from 'apiClient/api'
 import {
   getCollectiveOfferFactory,
   getCollectiveOfferTemplateFactory,
-} from 'utils/collectiveApiFactories'
-import { defaultGetOffererResponseModel } from 'utils/individualApiFactories'
+} from 'commons/utils/collectiveApiFactories'
+import { defaultGetOffererResponseModel } from 'commons/utils/individualApiFactories'
 
 import { useCollectiveOfferFromParams } from '../useCollectiveOfferFromParams'
 

@@ -3,6 +3,8 @@ import { Form, FormikProvider, useFormik } from 'formik'
 import React, { useRef } from 'react'
 import AvatarEditor, { CroppedRect, Position } from 'react-avatar-editor'
 
+import { useGetImageBitmap } from 'commons/hooks/useGetBitmap'
+import { useNotification } from 'commons/hooks/useNotification'
 import {
   ImageEditor,
   ImageEditorConfig,
@@ -10,8 +12,6 @@ import {
 import { coordonateToPosition } from 'components/ImageEditor/utils'
 import { modeValidationConstraints } from 'components/ImageUploadBrowserForm/constants'
 import { UploaderModeEnum } from 'components/ImageUploader/types'
-import { useGetImageBitmap } from 'hooks/useGetBitmap'
-import { useNotification } from 'hooks/useNotification'
 import fullDownloadIcon from 'icons/full-download.svg'
 import fullTrashIcon from 'icons/full-trash.svg'
 import { Button } from 'ui-kit/Button/Button'

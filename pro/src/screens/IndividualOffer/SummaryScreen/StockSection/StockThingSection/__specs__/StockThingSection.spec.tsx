@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react'
 
-import { getOfferStockFactory } from 'utils/individualApiFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
+import { getOfferStockFactory } from 'commons/utils/individualApiFactories'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { StockThingSection } from '../StockThingSection'
 

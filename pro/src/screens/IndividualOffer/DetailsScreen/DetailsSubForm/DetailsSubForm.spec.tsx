@@ -2,14 +2,14 @@ import { screen } from '@testing-library/react'
 import { FormikProvider, useFormik } from 'formik'
 import { Route, Routes } from 'react-router-dom'
 
-import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 import {
   IndividualOfferContext,
   IndividualOfferContextValues,
-} from 'context/IndividualOfferContext/IndividualOfferContext'
-import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
-import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
-import { renderWithProviders } from 'utils/renderWithProviders'
+} from 'commons/context/IndividualOfferContext/IndividualOfferContext'
+import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
+import { getIndividualOfferPath } from 'commons/core/Offers/utils/getIndividualOfferUrl'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 
 import { DEFAULT_DETAILS_FORM_VALUES } from '../constants'
 

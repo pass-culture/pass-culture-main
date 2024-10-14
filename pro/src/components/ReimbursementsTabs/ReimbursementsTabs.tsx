@@ -1,8 +1,8 @@
 import React from 'react'
 
 import { GetOffererResponseModel } from 'apiClient/v1'
-import { useActiveFeature } from 'hooks/useActiveFeature'
-import { useActiveStep } from 'hooks/useActiveStep'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
+import { useActiveStep } from 'commons/hooks/useActiveStep'
 import fullErrorIcon from 'icons/full-error.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { Tab, Tabs } from 'ui-kit/Tabs/Tabs'

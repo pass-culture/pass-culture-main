@@ -1,5 +1,5 @@
-import { OfferEducationalStockFormValues } from 'core/OfferEducational/types'
-import { getYupValidationSchemaErrors } from 'utils/yupValidationTestHelpers'
+import { OfferEducationalStockFormValues } from 'commons/core/OfferEducational/types'
+import { getYupValidationSchemaErrors } from 'commons/utils/yupValidationTestHelpers'
 
 import { generateValidationSchema } from '../validationSchema'
 

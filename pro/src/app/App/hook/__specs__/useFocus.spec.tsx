@@ -3,8 +3,8 @@ import { userEvent } from '@testing-library/user-event'
 import { Route, Routes } from 'react-router'
 import { Link } from 'react-router-dom'
 
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { SkipLinks } from 'components/SkipLinks/SkipLinks'
-import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { useFocus } from '../useFocus'
 

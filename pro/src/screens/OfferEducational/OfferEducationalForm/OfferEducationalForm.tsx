@@ -6,22 +6,22 @@ import {
   GetCollectiveOfferTemplateResponseModel,
   GetEducationalOffererResponseModel,
 } from 'apiClient/v1'
-import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
-import { BannerPublicApi } from 'components/Banner/BannerPublicApi'
-import { FormLayout } from 'components/FormLayout/FormLayout'
-import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import {
   isCollectiveOffer,
   Mode,
   OfferEducationalFormValues,
-} from 'core/OfferEducational/types'
-import { computeCollectiveOffersUrl } from 'core/Offers/utils/computeCollectiveOffersUrl'
-import { SelectOption } from 'custom_types/form'
-import { useNotification } from 'hooks/useNotification'
+} from 'commons/core/OfferEducational/types'
+import { computeCollectiveOffersUrl } from 'commons/core/Offers/utils/computeCollectiveOffersUrl'
+import { SelectOption } from 'commons/custom_types/form'
+import { useNotification } from 'commons/hooks/useNotification'
+import { sortByLabel } from 'commons/utils/strings'
+import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
+import { BannerPublicApi } from 'components/Banner/BannerPublicApi'
+import { FormLayout } from 'components/FormLayout/FormLayout'
+import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { sortByLabel } from 'utils/strings'
 
 import { OfferEducationalProps } from '../OfferEducational'
 

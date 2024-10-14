@@ -10,8 +10,8 @@ import {
 import {
   isAllocineProvider,
   isCinemaProvider,
-} from 'core/Providers/utils/utils'
-import { useNotification } from 'hooks/useNotification'
+} from 'commons/core/Providers/utils/utils'
+import { useNotification } from 'commons/hooks/useNotification'
 
 import { AllocineProviderForm } from './AllocineProviderForm/AllocineProviderForm'
 import { CinemaProviderForm } from './CinemaProviderForm/CinemaProviderForm'

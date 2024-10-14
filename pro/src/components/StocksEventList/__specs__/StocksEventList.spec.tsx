@@ -8,8 +8,8 @@ import {
   getIndividualOfferFactory,
   getOfferStockFactory,
   priceCategoryFactory,
-} from 'utils/individualApiFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
+} from 'commons/utils/individualApiFactories'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { StocksEventList, StocksEventListProps } from '../StocksEventList'
 
@@ -32,8 +32,8 @@ vi.mock('swr', async () => ({
 }))
 
 // Mock the date to prevent failed tests going from CET to CEST
-vi.mock('utils/date', async () => ({
-  ...(await vi.importActual('utils/date')),
+vi.mock('commons/utils/date', async () => ({
+  ...(await vi.importActual('commons/utils/date')),
   getToday: vi.fn(() => new Date('2024-01-01')),
 }))
 

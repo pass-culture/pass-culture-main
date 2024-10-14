@@ -1,8 +1,8 @@
 import React, { ReactNode } from 'react'
 
+import { AccessibilityEnum } from 'commons/core/shared/types'
 import { SummaryDescriptionList } from 'components/SummaryLayout/SummaryDescriptionList'
 import { SummarySubSection } from 'components/SummaryLayout/SummarySubSection'
-import { AccessibilityEnum } from 'core/shared/types'
 import { AccessibilityLabel } from 'ui-kit/AccessibilityLabel/AccessibilityLabel'
 
 import styles from './AccessibilitySummarySection.module.scss'

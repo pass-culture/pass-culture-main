@@ -3,10 +3,10 @@ import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
 import * as useAnalytics from 'app/App/analytics/firebase'
+import { BankAccountEvents } from 'commons/core/FirebaseEvents/constants'
+import { defaultGetOffererResponseModel } from 'commons/utils/individualApiFactories'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { AddBankAccountCallout } from 'components/Callout/AddBankAccountCallout'
-import { BankAccountEvents } from 'core/FirebaseEvents/constants'
-import { defaultGetOffererResponseModel } from 'utils/individualApiFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
 
 const mockLogEvent = vi.fn()
 

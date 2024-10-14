@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react'
 
-import { collectiveBookingFactory } from 'utils/collectiveApiFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
+import { collectiveBookingFactory } from 'commons/utils/collectiveApiFactories'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import {
   CollectiveBookingStatusCell,

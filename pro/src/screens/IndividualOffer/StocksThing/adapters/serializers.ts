@@ -5,8 +5,8 @@ import {
   getYearMonthDay,
   isDateValid,
   toISOStringWithoutMilliseconds,
-} from 'utils/date'
-import { getUtcDateTimeFromLocalDepartement } from 'utils/timezone'
+} from 'commons/utils/date'
+import { getUtcDateTimeFromLocalDepartement } from 'commons/utils/timezone'
 
 import { StockThingFormValues } from '../types'
 

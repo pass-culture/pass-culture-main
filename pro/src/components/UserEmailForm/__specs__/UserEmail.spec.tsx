@@ -2,8 +2,8 @@ import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import { api } from 'apiClient/api'
-import { renderWithProviders } from 'utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'utils/storeFactories'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
 
 import { UserEmailForm, UserEmailFormProps } from '../UserEmailForm'
 

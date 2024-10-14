@@ -4,9 +4,9 @@ import { Formik } from 'formik'
 import React from 'react'
 
 import { EacFormat } from 'apiClient/adage'
+import { defaultAdageUser } from 'commons/utils/adageFactories'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
-import { defaultAdageUser } from 'utils/adageFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { SearchFormValues } from '../../../OffersInstantSearch'
 import { LocalisationFilterStates } from '../../OffersSearch'

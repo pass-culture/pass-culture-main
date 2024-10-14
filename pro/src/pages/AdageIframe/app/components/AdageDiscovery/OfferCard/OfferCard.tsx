@@ -6,11 +6,11 @@ import {
 } from 'react-router-dom'
 
 import { CollectiveOfferTemplateResponseModel } from 'apiClient/adage'
+import { getHumanizeRelativeDistance } from 'commons/utils/getDistance'
 import strokeOfferIcon from 'icons/stroke-offer.svg'
 import { useAdageUser } from 'pages/AdageIframe/app/hooks/useAdageUser'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { Tag, TagVariant } from 'ui-kit/Tag/Tag'
-import { getHumanizeRelativeDistance } from 'utils/getDistance'
 
 import { OfferFavoriteButton } from '../../OffersInstantSearch/OffersSearch/Offers/OfferFavoriteButton/OfferFavoriteButton'
 import { getOfferTags } from '../../OffersInstantSearch/OffersSearch/Offers/utils/getOfferTags'

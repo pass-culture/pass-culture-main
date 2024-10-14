@@ -1,8 +1,8 @@
 import React from 'react'
 
 import { useAnalytics } from 'app/App/analytics/firebase'
-import { Events } from 'core/FirebaseEvents/constants'
-import { useCurrentUser } from 'hooks/useCurrentUser'
+import { Events } from 'commons/core/FirebaseEvents/constants'
+import { useCurrentUser } from 'commons/hooks/useCurrentUser'
 import fullEditIcon from 'icons/full-edit.svg'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'

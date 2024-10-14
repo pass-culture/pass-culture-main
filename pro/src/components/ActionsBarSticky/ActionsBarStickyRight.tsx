@@ -1,6 +1,6 @@
 import cn from 'classnames'
 
-import { Mode } from 'core/OfferEducational/types'
+import { Mode } from 'commons/core/OfferEducational/types'
 import fullValidateIcon from 'icons/full-validate.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 

@@ -1,15 +1,15 @@
 import { useFormikContext } from 'formik'
 import { ChangeEvent } from 'react'
 
+import { OfferEducationalFormValues } from 'commons/core/OfferEducational/types'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
+import { isDateValid } from 'commons/utils/date'
 import { Callout } from 'components/Callout/Callout'
 import { CalloutVariant } from 'components/Callout/types'
 import { FormLayout } from 'components/FormLayout/FormLayout'
-import { OfferEducationalFormValues } from 'core/OfferEducational/types'
-import { useActiveFeature } from 'hooks/useActiveFeature'
 import { DatePicker } from 'ui-kit/form/DatePicker/DatePicker'
 import { RadioGroup } from 'ui-kit/form/RadioGroup/RadioGroup'
 import { TimePicker } from 'ui-kit/form/TimePicker/TimePicker'
-import { isDateValid } from 'utils/date'
 
 import styles from './FormDates.module.scss'
 

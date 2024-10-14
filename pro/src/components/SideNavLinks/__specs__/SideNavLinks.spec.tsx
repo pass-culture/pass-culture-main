@@ -4,16 +4,16 @@ import { beforeEach, describe, expect } from 'vitest'
 import { axe } from 'vitest-axe'
 
 import { api } from 'apiClient/api'
-import * as useMediaQuery from 'hooks/useMediaQuery'
+import * as useMediaQuery from 'commons/hooks/useMediaQuery'
 import {
   defaultGetOffererResponseModel,
   defaultGetOffererVenueResponseModel,
-} from 'utils/individualApiFactories'
+} from 'commons/utils/individualApiFactories'
 import {
   renderWithProviders,
   RenderWithProvidersOptions,
-} from 'utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'utils/storeFactories'
+} from 'commons/utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
 
 import { SideNavLinks } from '../SideNavLinks'
 

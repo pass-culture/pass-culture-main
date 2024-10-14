@@ -4,7 +4,7 @@
 import React from 'react'
 import { Navigate } from 'react-router-dom'
 
-import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
+import { UNAVAILABLE_ERROR_PAGE } from 'commons/utils/routes'
 
 import { routesIndividualOfferWizard } from './subroutesIndividualOfferWizardMap'
 import { routesReimbursements } from './subroutesReimbursements'

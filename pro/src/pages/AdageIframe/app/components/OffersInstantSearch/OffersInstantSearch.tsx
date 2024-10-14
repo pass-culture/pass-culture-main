@@ -5,17 +5,17 @@ import { useSelector } from 'react-redux'
 
 import { VenueResponse } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
-import { DEFAULT_MARSEILLE_STUDENTS } from 'core/shared/constants'
-import { useActiveFeature } from 'hooks/useActiveFeature'
-import { useNotification } from 'hooks/useNotification'
-import { adageFilterSelector } from 'store/adageFilter/selectors'
-import { Spinner } from 'ui-kit/Spinner/Spinner'
+import { DEFAULT_MARSEILLE_STUDENTS } from 'commons/core/shared/constants'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
+import { useNotification } from 'commons/hooks/useNotification'
+import { adageFilterSelector } from 'commons/store/adageFilter/selectors'
 import {
   ALGOLIA_API_KEY,
   ALGOLIA_APP_ID,
   ALGOLIA_COLLECTIVE_OFFERS_INDEX,
-} from 'utils/config'
-import { isNumber } from 'utils/types'
+} from 'commons/utils/config'
+import { isNumber } from 'commons/utils/types'
+import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 import { MARSEILLE_EN_GRAND } from '../../constants'
 import { useAdageUser } from '../../hooks/useAdageUser'

@@ -9,7 +9,7 @@ import { SWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
 import * as useAnalytics from 'app/App/analytics/firebase'
-import { venueListItemFactory } from 'utils/individualApiFactories'
+import { venueListItemFactory } from 'commons/utils/individualApiFactories'
 
 import { Income, MOCK_INCOME_BY_YEAR } from './Income'
 import { IncomeResults, IncomeType } from './types'

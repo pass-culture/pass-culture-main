@@ -5,7 +5,7 @@ import {
   GetMusicTypesResponse,
   SubcategoryResponseModel,
 } from 'apiClient/v1'
-import { showOptionsTree } from 'core/Offers/categoriesSubTypes'
+import { showOptionsTree } from 'commons/core/Offers/categoriesSubTypes'
 
 const getMusicData = (
   offer: GetIndividualOfferResponseModel,

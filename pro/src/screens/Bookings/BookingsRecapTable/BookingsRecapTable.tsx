@@ -5,7 +5,7 @@ import {
   BookingRecapResponseModel,
   CollectiveBookingResponseModel,
 } from 'apiClient/v1'
-import { Audience } from 'core/shared/types'
+import { Audience } from 'commons/core/shared/types'
 
 import { isCollectiveBooking } from './BookingsTable/Cells/BookingOfferCell'
 import { CollectiveBookingsTable } from './BookingsTable/CollectiveBookingsTable'

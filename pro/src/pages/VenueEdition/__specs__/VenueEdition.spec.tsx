@@ -4,17 +4,17 @@ import { Route, Routes } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { GetVenueResponseModel } from 'apiClient/v1'
-import { defaultGetVenue } from 'utils/collectiveApiFactories'
+import { defaultGetVenue } from 'commons/utils/collectiveApiFactories'
 import {
   defaultGetOffererResponseModel,
   defaultGetOffererVenueResponseModel,
   defaultVenueProvider,
-} from 'utils/individualApiFactories'
+} from 'commons/utils/individualApiFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
-} from 'utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'utils/storeFactories'
+} from 'commons/utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
 
 import { VenueEdition } from '../VenueEdition'
 

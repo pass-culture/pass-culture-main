@@ -3,14 +3,14 @@ import {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
 } from 'apiClient/v1'
+import {
+  isCollectiveOffer,
+  isCollectiveOfferTemplate,
+} from 'commons/core/OfferEducational/types'
 import { AccessibilitySummarySection } from 'components/AccessibilitySummarySection/AccessibilitySummarySection'
 import { SummaryContent } from 'components/SummaryLayout/SummaryContent'
 import { SummaryLayout } from 'components/SummaryLayout/SummaryLayout'
 import { SummarySection } from 'components/SummaryLayout/SummarySection'
-import {
-  isCollectiveOffer,
-  isCollectiveOfferTemplate,
-} from 'core/OfferEducational/types'
 import { SynchronizedProviderInformation } from 'screens/IndividualOffer/SynchronisedProviderInfos/SynchronizedProviderInformation'
 
 import styles from './CollectiveOfferSummary.module.scss'

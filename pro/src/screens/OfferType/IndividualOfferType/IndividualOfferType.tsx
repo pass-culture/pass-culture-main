@@ -1,7 +1,7 @@
 import { useFormikContext } from 'formik'
 
+import { INDIVIDUAL_OFFER_SUBTYPE } from 'commons/core/Offers/constants'
 import { FormLayout } from 'components/FormLayout/FormLayout'
-import { INDIVIDUAL_OFFER_SUBTYPE } from 'core/Offers/constants'
 import strokeDateIcon from 'icons/stroke-date.svg'
 import thingStrokeIcon from 'icons/stroke-thing.svg'
 import strokeVirtualEventIcon from 'icons/stroke-virtual-event.svg'

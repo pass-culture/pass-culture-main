@@ -2,13 +2,13 @@ import { useEffect, useState } from 'react'
 import { CroppedRect } from 'react-avatar-editor'
 
 import { getFileFromURL } from 'apiClient/helpers'
+import { useNotification } from 'commons/hooks/useNotification'
 import {
   coordonateToPosition,
   heightCropPercentToScale,
 } from 'components/ImageEditor/utils'
 import { ImageUploadBrowserFormValues } from 'components/ImageUploadBrowserForm/types'
 import { UploaderModeEnum } from 'components/ImageUploader/types'
-import { useNotification } from 'hooks/useNotification'
 
 import { UploadImageValues } from '../types'
 

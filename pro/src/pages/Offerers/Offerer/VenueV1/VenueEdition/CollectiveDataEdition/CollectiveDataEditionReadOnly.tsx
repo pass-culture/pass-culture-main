@@ -1,10 +1,10 @@
 import React from 'react'
 
 import { GetVenueResponseModel } from 'apiClient/v1'
+import { SelectOption } from 'commons/custom_types/form'
 import { SummaryDescriptionList } from 'components/SummaryLayout/SummaryDescriptionList'
 import { SummarySection } from 'components/SummaryLayout/SummarySection'
 import { SummarySubSection } from 'components/SummaryLayout/SummarySubSection'
-import { SelectOption } from 'custom_types/form'
 import { getInterventionAreaLabels } from 'pages/AdageIframe/app/components/OffersInstantSearch/OffersSearch/Offers/OfferDetails/OfferInterventionArea'
 
 interface CollectiveDataEditionReadOnlyProps {

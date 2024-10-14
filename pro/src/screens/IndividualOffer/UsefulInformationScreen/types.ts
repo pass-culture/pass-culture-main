@@ -1,5 +1,5 @@
 import { WithdrawalTypeEnum } from 'apiClient/v1'
-import { AccessibilityFormValues } from 'core/shared/types'
+import { AccessibilityFormValues } from 'commons/core/shared/types'
 
 export type UsefulInformationFormValues = {
   isEvent?: boolean

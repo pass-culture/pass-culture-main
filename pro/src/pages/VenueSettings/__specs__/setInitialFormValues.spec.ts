@@ -1,5 +1,5 @@
 import { GetVenueResponseModel } from 'apiClient/v1'
-import { defaultGetVenue } from 'utils/collectiveApiFactories'
+import { defaultGetVenue } from 'commons/utils/collectiveApiFactories'
 
 import { setInitialFormValues } from '../setInitialFormValues'
 

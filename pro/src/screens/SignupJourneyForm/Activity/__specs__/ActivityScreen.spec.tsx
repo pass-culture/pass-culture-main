@@ -5,14 +5,14 @@ import { Route, Routes } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { Target } from 'apiClient/v1'
-import { Notification } from 'components/Notification/Notification'
-import { DEFAULT_ACTIVITY_VALUES } from 'context/SignupJourneyContext/constants'
+import { DEFAULT_ACTIVITY_VALUES } from 'commons/context/SignupJourneyContext/constants'
 import {
   SignupJourneyContext,
   SignupJourneyContextValues,
-} from 'context/SignupJourneyContext/SignupJourneyContext'
-import { renderWithProviders } from 'utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'utils/storeFactories'
+} from 'commons/context/SignupJourneyContext/SignupJourneyContext'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
+import { Notification } from 'components/Notification/Notification'
 
 import { Activity } from '../Activity'
 

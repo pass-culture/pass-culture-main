@@ -1,6 +1,6 @@
 import * as yup from 'yup'
 
-import { isOneTrue } from 'core/shared/utils/validation'
+import { isOneTrue } from 'commons/core/shared/utils/validation'
 
 export const validationSchema = yup.object().shape({
   accessibility: yup

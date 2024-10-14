@@ -12,17 +12,23 @@ import {
   StocksOrderedBy,
 } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
+import { GET_OFFER_QUERY_KEY } from 'commons/config/swrQueryKeys'
+import { Events } from 'commons/core/FirebaseEvents/constants'
+import { SortingMode, useColumnSorting } from 'commons/hooks/useColumnSorting'
+import { useNotification } from 'commons/hooks/useNotification'
+import { usePaginationWithSearchParams } from 'commons/hooks/usePagination'
+import { selectCurrentOffererId } from 'commons/store/user/selectors'
+import { formatPrice } from 'commons/utils/formatPrice'
+import { pluralize, pluralizeString } from 'commons/utils/pluralize'
+import {
+  convertTimeFromVenueTimezoneToUtc,
+  formatLocalTimeDateString,
+} from 'commons/utils/timezone'
 import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
-import { GET_OFFER_QUERY_KEY } from 'config/swrQueryKeys'
-import { Events } from 'core/FirebaseEvents/constants'
-import { SortingMode, useColumnSorting } from 'hooks/useColumnSorting'
-import { useNotification } from 'hooks/useNotification'
-import { usePaginationWithSearchParams } from 'hooks/usePagination'
 import fullTrashIcon from 'icons/full-trash.svg'
 import { serializeStockEvents } from 'pages/IndividualOfferWizard/Stocks/serializeStockEvents'
 import { AddRecurrencesButton } from 'screens/IndividualOffer/StocksEventCreation/AddRecurrencesButton'
 import { getPriceCategoryOptions } from 'screens/IndividualOffer/StocksEventEdition/getPriceCategoryOptions'
-import { selectCurrentOffererId } from 'store/user/selectors'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { BaseDatePicker } from 'ui-kit/form/DatePicker/BaseDatePicker'
@@ -34,12 +40,6 @@ import {
 import { BaseTimePicker } from 'ui-kit/form/TimePicker/BaseTimePicker'
 import { Pagination } from 'ui-kit/Pagination/Pagination'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
-import { formatPrice } from 'utils/formatPrice'
-import { pluralize, pluralizeString } from 'utils/pluralize'
-import {
-  convertTimeFromVenueTimezoneToUtc,
-  formatLocalTimeDateString,
-} from 'utils/timezone'
 
 import { FilterResultsRow } from './FilterResultsRow'
 import { NoResultsRow } from './NoResultsRow'

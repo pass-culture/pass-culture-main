@@ -4,9 +4,9 @@ import { Formik } from 'formik'
 
 import { api } from 'apiClient/api'
 import { GetIndividualOfferResponseModel } from 'apiClient/v1'
-import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
-import { getIndividualOfferFactory } from 'utils/individualApiFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
+import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
+import { getIndividualOfferFactory } from 'commons/utils/individualApiFactories'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import {
   FIRST_INITIAL_PRICE_CATEGORY,

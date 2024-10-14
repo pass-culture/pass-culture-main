@@ -1,7 +1,7 @@
 import { useField } from 'formik'
 import React, { useCallback } from 'react'
 
-import { SelectOption } from 'custom_types/form'
+import { SelectOption } from 'commons/custom_types/form'
 
 import {
   FieldLayout,

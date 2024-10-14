@@ -2,8 +2,8 @@ import { screen } from '@testing-library/react'
 import { Formik } from 'formik'
 
 import { BankAccountResponseModel } from 'apiClient/v1'
-import { defaultBankAccount } from 'utils/individualApiFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
+import { defaultBankAccount } from 'commons/utils/individualApiFactories'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { BankAccountInfos } from './BankAccountInfos'
 

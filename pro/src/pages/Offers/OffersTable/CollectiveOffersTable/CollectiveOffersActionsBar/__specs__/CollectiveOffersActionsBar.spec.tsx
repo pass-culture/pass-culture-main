@@ -8,10 +8,10 @@ import {
   CollectiveOffersStockResponseModel,
 } from 'apiClient/v1'
 import * as useAnalytics from 'app/App/analytics/firebase'
+import { Events } from 'commons/core/FirebaseEvents/constants'
+import { collectiveOfferFactory } from 'commons/utils/collectiveApiFactories'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { Notification } from 'components/Notification/Notification'
-import { Events } from 'core/FirebaseEvents/constants'
-import { collectiveOfferFactory } from 'utils/collectiveApiFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
 
 import {
   CollectiveOffersActionsBar,

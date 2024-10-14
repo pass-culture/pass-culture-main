@@ -1,8 +1,8 @@
 import { useFormikContext } from 'formik'
 import React from 'react'
 
+import { useAccessibilityOptions } from 'commons/hooks/useAccessibilityOptions'
 import { FormLayout } from 'components/FormLayout/FormLayout'
-import { useAccessibilityOptions } from 'hooks/useAccessibilityOptions'
 import { CheckboxGroup } from 'ui-kit/form/CheckboxGroup/CheckboxGroup'
 
 import styles from '../IndividualOfferForm.module.scss'

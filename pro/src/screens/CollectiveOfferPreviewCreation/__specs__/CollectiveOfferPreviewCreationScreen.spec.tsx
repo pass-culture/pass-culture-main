@@ -4,25 +4,25 @@ import { sub } from 'date-fns'
 
 import { api } from 'apiClient/api'
 import { OfferContactFormEnum } from 'apiClient/v1'
-import * as useNotification from 'hooks/useNotification'
+import * as useNotification from 'commons/hooks/useNotification'
 import {
   defaultGetVenue,
   getCollectiveOfferCollectiveStockFactory,
   getCollectiveOfferFactory,
   getCollectiveOfferTemplateFactory,
-} from 'utils/collectiveApiFactories'
-import { defaultGetOffererResponseModel } from 'utils/individualApiFactories'
+} from 'commons/utils/collectiveApiFactories'
+import { defaultGetOffererResponseModel } from 'commons/utils/individualApiFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
-} from 'utils/renderWithProviders'
+} from 'commons/utils/renderWithProviders'
 
 import {
   CollectiveOfferPreviewCreationScreen,
   CollectiveOfferSummaryCreationProps,
 } from '../CollectiveOfferPreviewCreationScreen'
 
-vi.mock('core/OfferEducational/utils/createOfferFromTemplate', () => ({
+vi.mock('commons/core/OfferEducational/utils/createOfferFromTemplate', () => ({
   createOfferFromTemplate: vi.fn(),
 }))
 
@@ -47,7 +47,7 @@ describe('CollectiveOfferConfirmation', () => {
 
   beforeEach(async () => {
     const notifsImport = (await vi.importActual(
-      'hooks/useNotification'
+      'commons/hooks/useNotification'
     )) as ReturnType<typeof useNotification.useNotification>
     vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
       ...notifsImport,

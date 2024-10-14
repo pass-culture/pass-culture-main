@@ -3,7 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 import { Route, Routes } from 'react-router'
 import { Link } from 'react-router-dom'
 
-import { renderWithProviders } from 'utils/renderWithProviders'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { usePageTitle } from '../usePageTitle'
 

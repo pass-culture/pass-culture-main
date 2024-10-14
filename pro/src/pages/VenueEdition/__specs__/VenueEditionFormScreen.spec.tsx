@@ -8,13 +8,13 @@ import { api } from 'apiClient/api'
 import { ApiError, GetVenueResponseModel } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
-import { Notification } from 'components/Notification/Notification'
-import { defaultGetVenue } from 'utils/collectiveApiFactories'
+import { defaultGetVenue } from 'commons/utils/collectiveApiFactories'
 import {
   renderWithProviders,
   RenderWithProvidersOptions,
-} from 'utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'utils/storeFactories'
+} from 'commons/utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
+import { Notification } from 'components/Notification/Notification'
 
 import { VenueEditionFormScreen } from '../VenueEditionFormScreen'
 
@@ -122,13 +122,13 @@ fetchMock.mockResponse(
   { status: 200 }
 )
 
-vi.mock('utils/windowMatchMedia', () => ({
+vi.mock('commons/utils/windowMatchMedia', () => ({
   doesUserPreferReducedMotion: vi.fn(),
 }))
 
 Element.prototype.scrollIntoView = vi.fn()
 
-vi.mock('core/Venue/siretApiValidate', () => ({
+vi.mock('commons/core/Venue/siretApiValidate', () => ({
   default: () => Promise.resolve(),
 }))
 

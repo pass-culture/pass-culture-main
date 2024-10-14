@@ -6,8 +6,8 @@ import {
   GetOffererV2StatsResponseModel,
 } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
-import { Events } from 'core/FirebaseEvents/constants'
-import { useActiveFeature } from 'hooks/useActiveFeature'
+import { Events } from 'commons/core/FirebaseEvents/constants'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import fullLinkIcon from 'icons/full-link.svg'
 import fullShowIcon from 'icons/full-show.svg'
 import strokePhoneIcon from 'icons/stroke-phone.svg'

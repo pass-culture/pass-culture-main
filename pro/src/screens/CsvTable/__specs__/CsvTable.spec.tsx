@@ -1,7 +1,7 @@
 import { screen, waitFor } from '@testing-library/react'
 import React from 'react'
 
-import { renderWithProviders } from 'utils/renderWithProviders'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { CsvTableScreen, CsvTableProps } from '../CsvTable'
 

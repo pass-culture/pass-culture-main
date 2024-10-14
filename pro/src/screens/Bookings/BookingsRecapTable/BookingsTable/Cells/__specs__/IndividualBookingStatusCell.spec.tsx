@@ -5,8 +5,8 @@ import { BookingRecapStatus } from 'apiClient/v1'
 import {
   bookingRecapFactory,
   bookingRecapStockFactory,
-} from 'utils/individualApiFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
+} from 'commons/utils/individualApiFactories'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import {
   IndividualBookingStatusCell,

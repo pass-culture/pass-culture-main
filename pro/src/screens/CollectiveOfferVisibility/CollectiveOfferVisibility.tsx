@@ -8,38 +8,38 @@ import {
   EducationalRedactor,
   GetCollectiveOfferResponseModel,
 } from 'apiClient/v1'
+import { GET_COLLECTIVE_REQUEST_INFORMATIONS_QUERY_KEY } from 'commons/config/swrQueryKeys'
+import {
+  VisibilityFormValues,
+  isCollectiveOffer,
+  Mode,
+} from 'commons/core/OfferEducational/types'
+import {
+  extractInitialVisibilityValues,
+  formatInstitutionDisplayName,
+} from 'commons/core/OfferEducational/utils/extractInitialVisibilityValues'
+import {
+  GET_DATA_ERROR_MESSAGE,
+  SENT_DATA_ERROR_MESSAGE,
+} from 'commons/core/shared/constants'
+import { SelectOption } from 'commons/custom_types/form'
+import { useNotification } from 'commons/hooks/useNotification'
+import {
+  normalizeStrForSearch,
+  searchPatternInOptions,
+  SelectOptionNormalized,
+} from 'commons/utils/searchPatternInOptions'
 import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
 import { BannerPublicApi } from 'components/Banner/BannerPublicApi'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { OfferEducationalActions } from 'components/OfferEducationalActions/OfferEducationalActions'
 import { RouteLeavingGuardCollectiveOfferCreation } from 'components/RouteLeavingGuardCollectiveOfferCreation/RouteLeavingGuardCollectiveOfferCreation'
-import { GET_COLLECTIVE_REQUEST_INFORMATIONS_QUERY_KEY } from 'config/swrQueryKeys'
-import {
-  VisibilityFormValues,
-  isCollectiveOffer,
-  Mode,
-} from 'core/OfferEducational/types'
-import {
-  extractInitialVisibilityValues,
-  formatInstitutionDisplayName,
-} from 'core/OfferEducational/utils/extractInitialVisibilityValues'
-import {
-  GET_DATA_ERROR_MESSAGE,
-  SENT_DATA_ERROR_MESSAGE,
-} from 'core/shared/constants'
-import { SelectOption } from 'custom_types/form'
-import { useNotification } from 'hooks/useNotification'
 import strokeSearch from 'icons/stroke-search.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SelectAutocomplete } from 'ui-kit/form/SelectAutoComplete/SelectAutocomplete'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
-import {
-  normalizeStrForSearch,
-  searchPatternInOptions,
-  SelectOptionNormalized,
-} from 'utils/searchPatternInOptions'
 
 import styles from './CollectiveOfferVisibility.module.scss'
 import { validationSchema } from './validationSchema'

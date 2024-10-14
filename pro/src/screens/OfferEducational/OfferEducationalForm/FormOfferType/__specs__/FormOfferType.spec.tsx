@@ -1,8 +1,8 @@
 import { screen } from '@testing-library/react'
 import { Formik } from 'formik'
 
-import { DEFAULT_EAC_FORM_VALUES } from 'core/OfferEducational/constants'
-import { renderWithProviders } from 'utils/renderWithProviders'
+import { DEFAULT_EAC_FORM_VALUES } from 'commons/core/OfferEducational/constants'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { FormOfferType, FormTypeProps } from '../FormOfferType'
 

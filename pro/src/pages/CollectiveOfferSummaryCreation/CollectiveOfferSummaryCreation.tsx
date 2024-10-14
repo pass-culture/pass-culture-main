@@ -1,9 +1,9 @@
 import React from 'react'
 
 import { AppLayout } from 'app/AppLayout'
+import { isCollectiveOffer } from 'commons/core/OfferEducational/types'
 import { CollectiveOfferLayout } from 'components/CollectiveOfferLayout/CollectiveOfferLayout'
 import { RouteLeavingGuardCollectiveOfferCreation } from 'components/RouteLeavingGuardCollectiveOfferCreation/RouteLeavingGuardCollectiveOfferCreation'
-import { isCollectiveOffer } from 'core/OfferEducational/types'
 import { CollectiveOfferSummaryCreationScreen } from 'screens/CollectiveOfferSummaryCreation/CollectiveOfferSummaryCreationScreen'
 import {
   MandatoryCollectiveOfferFromParamsProps,

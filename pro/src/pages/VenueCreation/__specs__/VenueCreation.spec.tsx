@@ -3,9 +3,9 @@ import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
 import { api } from 'apiClient/api'
-import { defaultGetOffererResponseModel } from 'utils/individualApiFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'utils/storeFactories'
+import { defaultGetOffererResponseModel } from 'commons/utils/individualApiFactories'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
 
 import { VenueCreation } from '../VenueCreation'
 
@@ -30,7 +30,7 @@ vi.mock('react-router-dom', async () => ({
     offererId: defaultGetOffererResponseModel.id.toString(),
   }),
 }))
-vi.mock('utils/windowMatchMedia', () => ({
+vi.mock('commons/utils/windowMatchMedia', () => ({
   doesUserPreferReducedMotion: vi.fn(() => true),
 }))
 

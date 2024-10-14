@@ -4,7 +4,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 
 import { App } from 'app/App/App'
 import { routes } from 'app/AppRouter/routesMap'
-import { selectActiveFeatures } from 'store/features/selectors'
+import { selectActiveFeatures } from 'commons/store/features/selectors'
 
 import { ErrorBoundary } from './ErrorBoundary'
 

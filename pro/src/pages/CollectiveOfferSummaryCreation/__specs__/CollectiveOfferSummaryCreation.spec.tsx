@@ -1,12 +1,12 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 
 import { api } from 'apiClient/api'
-import { MandatoryCollectiveOfferFromParamsProps } from 'screens/OfferEducational/useCollectiveOfferFromParams'
-import { getCollectiveOfferFactory } from 'utils/collectiveApiFactories'
+import { getCollectiveOfferFactory } from 'commons/utils/collectiveApiFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
-} from 'utils/renderWithProviders'
+} from 'commons/utils/renderWithProviders'
+import { MandatoryCollectiveOfferFromParamsProps } from 'screens/OfferEducational/useCollectiveOfferFromParams'
 
 import { CollectiveOfferSummaryCreation } from '../CollectiveOfferSummaryCreation'
 

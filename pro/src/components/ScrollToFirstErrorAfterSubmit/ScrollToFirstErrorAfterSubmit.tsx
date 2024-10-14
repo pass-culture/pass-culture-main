@@ -1,7 +1,7 @@
 import { useFormikContext } from 'formik'
 import { useEffect } from 'react'
 
-import { doesUserPreferReducedMotion } from 'utils/windowMatchMedia'
+import { doesUserPreferReducedMotion } from 'commons/utils/windowMatchMedia'
 
 const scrollToFirstError = () => {
   const firstErrorElement = document.querySelector<

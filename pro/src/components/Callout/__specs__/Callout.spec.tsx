@@ -2,8 +2,8 @@ import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { CalloutVariant } from 'components/Callout/types'
-import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { Callout, CalloutProps } from '../Callout'
 
