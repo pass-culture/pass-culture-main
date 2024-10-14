@@ -34,7 +34,7 @@ class Address(PcObject, Base, Model):
 
     @property
     def fullAddress(self) -> str:
-        return f"{self.street} - {self.postalCode} - {self.city}" if self.street else f"{self.postalCode} - {self.city}"
+        return f"{self.street} {self.postalCode} {self.city}" if self.street else f"{self.postalCode} {self.city}"
 
     __table_args__ = (
         sa.Index(

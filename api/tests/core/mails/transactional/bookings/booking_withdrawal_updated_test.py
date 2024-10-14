@@ -46,13 +46,13 @@ class SendBookingWithdrawalUpdatedTest:
     def test_send_email_for_each_ongoing_booking(
         self,
     ):
-
-        booking = BookingFactory(stock=offers_factories.EventStockFactory())
-        offer = booking.stock.offer
+        stock = offers_factories.EventStockFactory()
+        BookingFactory.create_batch(size=3, stock=stock)
+        offer = stock.offer
         # load offer
         # load venue for venue_address
         # load offerer for offerer_name
         # load booking
         BookingFactory(stock=offers_factories.EventStockFactory(offer=offer))
-        with core_testing.assert_num_queries(4):
+        with core_testing.assert_num_queries(5):
             send_email_for_each_ongoing_booking(offer)

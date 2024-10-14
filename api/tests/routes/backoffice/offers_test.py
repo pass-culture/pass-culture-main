@@ -1510,9 +1510,14 @@ class BatchOfferValidateTest(PostEndpointHelper):
             offers_factories.StockFactory(offer=offer, price=10.1)
         parameter_ids = ",".join(str(offer.id) for offer in offers)
 
-        # user_session, user, select offer (3 in 1 query), update offer (3 in 1 query), fetch feature flag WIP_ENABLE_BREVO_PRO_SUBACCOUNT (1 query)
+        # user_session
+        # user
+        # select offer (3 in 1 query)
+        # update offer (3 in 1 query)
+        # fetch feature flag WIP_ENABLE_BREVO_PRO_SUBACCOUNT
+        # fetch the venues for AO label if needed (3 in 1 query)
         response = self.post_to_endpoint(
-            authenticated_client, form={"object_ids": parameter_ids}, expected_num_queries=5
+            authenticated_client, form={"object_ids": parameter_ids}, expected_num_queries=6
         )
 
         assert response.status_code == 303

@@ -739,7 +739,10 @@ def _batch_validate_offers(offer_ids: list[int]) -> None:
             sa.orm.joinedload(offers_models.Offer.venue).load_only(
                 offerers_models.Venue.bookingEmail, offerers_models.Venue.name, offerers_models.Venue.publicName
             ),
-            sa.orm.joinedload(offers_models.Offer.offererAddress).joinedload(offerers_models.OffererAddress.address),
+            sa.orm.joinedload(offers_models.Offer.offererAddress).options(
+                sa.orm.joinedload(offerers_models.OffererAddress.address),
+                sa.orm.selectinload(offerers_models.OffererAddress.venues),
+            ),
         )
         .options(sa.orm.contains_eager(offers_models.Offer.futureOffer))
     ).all()

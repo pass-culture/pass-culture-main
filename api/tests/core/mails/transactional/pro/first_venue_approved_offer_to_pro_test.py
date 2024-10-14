@@ -72,9 +72,7 @@ class SendinblueSendFirstVenueOfferEmailTest:
 
         # offer
         # venue
-        # offererAddress
-        # Address
-        with assert_num_queries(4):
+        with assert_num_queries(2):
             new_offer_validation_email = get_first_venue_approved_offer_email_data(offer)
 
         assert new_offer_validation_email.template == TransactionalEmail.FIRST_VENUE_APPROVED_OFFER_TO_PRO.value

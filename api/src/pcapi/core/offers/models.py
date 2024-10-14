@@ -934,9 +934,14 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
 
     @property
     def fullAddress(self) -> str | None:
-        if self.offererAddress:
-            return self.offererAddress.fullAddress
-        return None
+        if self.offererAddress is None:
+            return None
+        label = self.offererAddress.label
+        if self.offererAddressId == self.venue.offererAddressId:
+            label = self.venue.common_name
+        if not label:
+            return self.offererAddress.address.fullAddress
+        return f"{label} - {self.offererAddress.address.fullAddress}"
 
 
 class ActivationCode(PcObject, Base, Model):
