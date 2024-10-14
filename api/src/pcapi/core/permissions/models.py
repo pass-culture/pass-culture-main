@@ -78,6 +78,8 @@ class Permissions(enum.Enum):
 
     MANAGE_SPECIAL_EVENTS = "gérer les opérations spéciales"
 
+    MANAGE_ACCOUNT_UPDATE_REQUEST = "instruire les demandes de modification de compte (DS)"
+
     @classmethod
     def exists(cls, name: str) -> bool:
         try:
@@ -231,6 +233,9 @@ class BackOfficeUserProfile(Base, Model):
         default={},
         server_default="{}",
     )
+
+    # instructor id on Démarches Simplifiées, used to change application status
+    dsInstructorId: str = sa.Column(sa.Text, nullable=True, unique=True)
 
     @property
     def permissions(self) -> typing.Collection[Permissions]:

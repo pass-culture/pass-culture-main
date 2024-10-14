@@ -108,6 +108,7 @@ tables_to_clean: list[flask_sqlalchemy.Model] = [
     offers_models.OfferPriceLimitationRule,
     users_models.GdprUserAnonymization,
     users_models.GdprUserDataExtract,
+    users_models.UserAccountUpdateRequest,
     users_models.SingleSignOn,
     users_models.User,
     users_models.UserSession,

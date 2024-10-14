@@ -1,0 +1,150 @@
+  query getDemarche(
+    $demarcheNumber: Int!
+    $state: DossierState
+    $first: Int
+    $last: Int
+    $before: String
+    $after: String
+    $archived: Boolean
+    $revision: ID
+    $createdSince: ISO8601DateTime
+    $updatedSince: ISO8601DateTime
+    $includeGroupeInstructeurs: Boolean = true
+    $includeAnotations: Boolean = true
+    $includeCorrections: Boolean = false
+  ) {
+    demarche(number: $demarcheNumber) {
+      id
+      number
+      groupeInstructeurs @include(if: $includeGroupeInstructeurs) {
+        ...GroupeInstructeurFragment
+      }
+      dossiers(
+        state: $state
+        first: $first
+        last: $last
+        before: $before
+        after: $after
+        archived: $archived
+        createdSince: $createdSince
+        updatedSince: $updatedSince
+        revision: $revision
+      ) {
+        pageInfo {
+          ...PageInfoFragment
+        }
+        nodes {
+          ...DossierFragment
+        }
+      }
+    }
+  }
+
+  fragment GroupeInstructeurFragment on GroupeInstructeur {
+    instructeurs {
+      id
+      email
+    }
+  }
+
+  fragment DossierFragment on Dossier {
+    __typename
+    number
+    archived
+    prefilled
+    state
+    dateDerniereModification
+    dateDepot
+    datePassageEnConstruction
+    datePassageEnInstruction
+    dateTraitement
+    dateExpiration
+    dateSuppressionParUsager
+    dateDerniereCorrectionEnAttente @include(if: $includeCorrections)
+    dateDerniereModificationChamps
+    dateDerniereModificationAnnotations
+    usager {
+      email
+    }
+    prenomMandataire
+    nomMandataire
+    deposeParUnTiers
+    demandeur {
+      __typename
+      ...PersonnePhysiqueFragment
+    }
+    champs {
+      ...ChampFragment
+      ...RootChampFragment
+    }
+    annotations @include(if: $includeAnotations) {
+      ...ChampFragment
+      ...RootChampFragment
+    }
+  }
+
+  fragment RootChampFragment on Champ {
+    ... on RepetitionChamp {
+      rows {
+        champs {
+          ...ChampFragment
+        }
+      }
+    }
+    ... on DossierLinkChamp {
+      dossier {
+        number
+        state
+      }
+    }
+  }
+
+  fragment ChampFragment on Champ {
+    __typename
+    label
+    ... on TextChamp {
+      value
+    }
+    ... on DateChamp {
+      date
+    }
+    ... on CheckboxChamp {
+      checked: value
+    }
+    ... on IntegerNumberChamp {
+      integerNumber: value
+    }
+    ... on MultipleDropDownListChamp {
+      values
+    }
+    ... on PieceJustificativeChamp {
+      files {
+        ...FileFragment
+      }
+    }
+    ... on TitreIdentiteChamp {
+      grantType
+    }
+  }
+
+  fragment PersonnePhysiqueFragment on PersonnePhysique {
+    civilite
+    nom
+    prenom
+    email
+  }
+
+
+  fragment FileFragment on File {
+    __typename
+    filename
+    contentType
+    url
+    createdAt
+  }
+
+  fragment PageInfoFragment on PageInfo {
+    hasNextPage
+    startCursor
+    endCursor
+  }

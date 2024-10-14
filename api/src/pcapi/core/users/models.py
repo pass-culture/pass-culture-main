@@ -23,6 +23,7 @@ from sqlalchemy.sql import expression
 from sqlalchemy.sql.elements import BinaryExpression
 from sqlalchemy.sql.elements import BooleanClauseList
 
+from pcapi.connectors.dms import models as dms_models
 from pcapi.core.finance.enum import DepositType
 from pcapi.core.geography.models import IrisFrance
 from pcapi.core.users import constants
@@ -34,6 +35,7 @@ from pcapi.models.deactivable_mixin import DeactivableMixin
 from pcapi.models.pc_object import PcObject
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.utils import crypto
+from pcapi.utils.db import MagicEnum
 from pcapi.utils.phone_number import ParsedPhoneNumber
 
 
@@ -1045,3 +1047,40 @@ class GdprUserAnonymization(PcObject, Base, Model):
     dateCreated: datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow, server_default=func.now())
     userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=False)
     user: orm.Mapped[User] = orm.relationship(User, foreign_keys=[userId])
+
+
+class UserAccountUpdateRequest(PcObject, Base, Model):
+    __tablename__ = "user_account_update_request"
+
+    dsApplicationId: int = sa.Column(sa.BigInteger, nullable=False, index=True, unique=True)
+    status: dms_models.GraphQLApplicationStates = sa.Column(
+        MagicEnum(dms_models.GraphQLApplicationStates), nullable=False
+    )
+    dateCreated: datetime = sa.Column(
+        sa.DateTime, nullable=False, default=datetime.utcnow, server_default=sa.func.now()
+    )
+    dateLastStatusUpdate: datetime = sa.Column(
+        sa.DateTime, nullable=True, default=datetime.utcnow, server_default=sa.func.now()
+    )
+
+    # Information about applicant, used to match with a single user
+    firstName: str = sa.Column(sa.Text, nullable=True)
+    lastName: str = sa.Column(sa.Text, nullable=True)
+    email: str = sa.Column(sa.Text, nullable=False)
+    birthDate = sa.Column(sa.Date, nullable=True)
+
+    # User found from his/her email - may be null in case of wrong email
+    userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=True)
+    user: orm.Mapped[User] = orm.relationship(User, foreign_keys=[userId])
+
+    # One or several changes may be requested
+    newEmail: str = sa.Column(sa.Text, nullable=True)
+    newPhoneNumber: str = sa.Column(sa.Text, nullable=True)
+    newFirstName: str = sa.Column(sa.Text, nullable=True)
+    newLastName: str = sa.Column(sa.Text, nullable=True)
+
+    # Ensures that all checkboxes are checked (GCU, sworn statement)
+    allConditionsChecked: bool = sa.Column(sa.Boolean, nullable=False, default=False)
+
+    # Comment added by automation to help pass Culture agent
+    automationComment: str = sa.Column(sa.Text, nullable=True)
