@@ -56,6 +56,21 @@ class Address(PcObject, Base, Model):
             "longitude",
             unique=True,
         ),
+        sa.Index(
+            # FIXME (dramelet, 14-10-2024)
+            # Our current version of sqlalchemy (1.4) doesn't handle
+            # the option `nulls_not_distinct` from postgresql dialect
+            # Hence this declaration and the raw query in the suitable migration
+            "ix_unique_complete_address_with_nulls_not_distinct",
+            "banId",
+            "inseeCode",
+            "street",
+            "postalCode",
+            "city",
+            "latitude",
+            "longitude",
+            unique=True,
+        ),
         sa.CheckConstraint('length("postalCode") = 5'),
         sa.CheckConstraint('length("inseeCode") = 5'),
         sa.CheckConstraint('length("city") <= 50'),

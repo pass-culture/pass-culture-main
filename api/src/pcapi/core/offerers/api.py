@@ -2757,7 +2757,7 @@ def get_or_create_address(location_data: LocationData, is_manual_edition: bool =
     longitude = typing.cast(decimal.Decimal, location_data["longitude"])
     street = location_data.get("street")
     city = location_data["city"]
-    ban_id = location_data.get("ban_id")
+    ban_id = None if is_manual_edition else location_data.get("ban_id")
     city_code = insee_code or postal_code
 
     department_code = utils_regions.get_department_code_from_city_code(city_code)
