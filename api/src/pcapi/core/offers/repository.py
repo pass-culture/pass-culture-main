@@ -252,6 +252,7 @@ def get_offers_details(offer_ids: list[int]) -> BaseQuery:
                 models.Product.description,
                 models.Product.last_30_days_booking,
                 models.Product.thumbCount,
+                models.Product.durationMinutes,
             )
             .joinedload(models.Product.productMediations)
         )
