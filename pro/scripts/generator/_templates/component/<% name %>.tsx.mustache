@@ -1,0 +1,22 @@
+<%# scss.yes %>
+import cn from 'classnames'
+
+import styles from './<% name %>.module.scss'
+
+<%/ scss.yes %>
+export interface <% name %>Props {
+  className?: string
+}
+
+export const <% name %> = ({ className }: <% name %>Props): JSX.Element => {
+  return (
+    <%# scss.yes %>
+    <div className={cn(styles[`<% name %>`], className)}>
+    <%/ scss.yes %>
+    <%# scss.no %>
+    <div className={className}>
+    <%/ scss.no %>
+      <h1><% name %></h1>
+    </div>
+  )
+}

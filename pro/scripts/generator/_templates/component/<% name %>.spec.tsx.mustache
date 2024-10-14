@@ -6,23 +6,23 @@ import {
   RenderWithProvidersOptions,
 } from 'utils/renderWithProviders'
 
-import { <% cname %> } from './<% cname %>'
+import { <% name %> } from './<% name %>'
 
-const render<% cname %> = (options?: RenderWithProvidersOptions) => {
-  return renderWithProviders(<<% cname %> />, { ...options })
+const render<% name %> = (options?: RenderWithProvidersOptions) => {
+  return renderWithProviders(<<% name %> />, { ...options })
 }
 
-describe('<<% cname %> />', () => {
+describe('<<% name %> />', () => {
   it('should render correctly', async () => {
-    render<% cname %>()
+    render<% name %>()
 
     expect(
-      await screen.findByRole('heading', { name: /<% cname %>/ })
+      await screen.findByRole('heading', { name: /<% name %>/ })
     ).toBeInTheDocument()
   })
 
   it('should not have accessibility violations', async () => {
-    const { container } = render<% cname %>()
+    const { container } = render<% name %>()
 
     expect(await axe(container)).toHaveNoViolations()
   })
