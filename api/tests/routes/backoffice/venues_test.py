@@ -1034,9 +1034,9 @@ class UpdateVenueTest(PostEndpointHelper):
         assert "offererAddress.address.city" not in update_snapshot  # not changed
 
     @pytest.mark.parametrize(
-        "api_adresse_patch_params,expected_insee_code",
+        "api_adresse_patch_params,expected_insee_code,ban_id",
         [
-            ({"side_effect": api_adresse.NoResultException}, None),
+            ({"side_effect": api_adresse.NoResultException}, None, "97129_hz0hwa_00044"),
             (
                 {
                     "return_value": api_adresse.AddressInfo(
@@ -1052,11 +1052,17 @@ class UpdateVenueTest(PostEndpointHelper):
                     )
                 },
                 "97129",
+                None,
             ),
         ],
     )
     def test_updating_venue_manual_address(
-        self, authenticated_client, offerer, api_adresse_patch_params, expected_insee_code
+        self,
+        authenticated_client,
+        offerer,
+        api_adresse_patch_params,
+        expected_insee_code,
+        ban_id,
     ):
         contact_email = "contact.venue@example.com"
         website = "update.venue@example.com"
@@ -1075,7 +1081,7 @@ class UpdateVenueTest(PostEndpointHelper):
             "city": "Sainte-Rose",
             "postal_code": "97115",
             "street": "Chemin de Bellevue",
-            "ban_id": "97129_hz0hwa_00044",
+            "ban_id": ban_id,
             "is_manual_address": "on",
             "booking_email": venue.bookingEmail + ".update",
             "phone_number": "+33102030456",
@@ -1103,6 +1109,7 @@ class UpdateVenueTest(PostEndpointHelper):
         assert address.inseeCode == expected_insee_code
         assert address.timezone == "America/Guadeloupe"
         assert address.isManualEdition is True
+        assert address.banId is None
 
         # should not have been updated or erased
         assert venue.contact.email == contact_email
@@ -1118,6 +1125,53 @@ class UpdateVenueTest(PostEndpointHelper):
         assert mails_testing.outbox[0]["params"]["VENUE_NAME"] == venue.common_name
         assert mails_testing.outbox[0]["params"]["VENUE_FORM_URL"] == urls.build_pc_pro_venue_link(venue)
 
+    def test_updating_venue_manual_address_with_initial_ban_id(
+        self,
+        authenticated_client,
+        offerer,
+    ):
+        contact_email = "contact.venue@example.com"
+        website = "update.venue@example.com"
+        social_medias = {"instagram": "https://instagram.com/update.venue"}
+        venue = offerers_factories.VenueFactory(
+            managingOfferer=offerer,
+            contact__email=contact_email,
+            contact__website=website,
+            contact__social_medias=social_medias,
+            offererAddress__address__banId="97129_hz0hwa_00044",
+        )
+
+        data = {
+            "name": "Musée du Rhum",
+            "public_name": "Musée du Rhum",
+            "siret": venue.managingOfferer.siren + "98765",
+            "city": "Sainte-Rose",
+            "postal_code": "97115",
+            "street": "Chemin de Bellevue",
+            "ban_id": "97129_hz0hwa_00044",
+            "is_manual_address": "on",
+            "booking_email": venue.bookingEmail + ".update",
+            "phone_number": "+33102030456",
+            "is_permanent": True,
+            "latitude": "16.306774",
+            "longitude": "-61.703636",
+            "venue_type_code": offerers_models.VenueTypeCode.CULTURAL_CENTRE.name,
+            "acceslibre_url": "https://acceslibre.beta.gouv.fr/app/slug/",
+        }
+
+        response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
+
+        assert response.status_code == 303
+        assert response.location == url_for("backoffice_web.venue.get", venue_id=venue.id, _external=True)
+
+        db.session.refresh(venue)
+        address = geography_models.Address.query.order_by(geography_models.Address.id.desc()).first()
+        offerer_address = offerers_models.OffererAddress.query.one()
+
+        assert venue.offererAddressId == offerer_address.id
+        assert address.isManualEdition is True
+        assert address.banId is None
+
     @patch(
         "pcapi.connectors.api_adresse.get_municipality_centroid",
         return_value=api_adresse.AddressInfo(
@@ -1132,7 +1186,7 @@ class UpdateVenueTest(PostEndpointHelper):
             street="unused",
         ),
     )
-    def test_update_venue_manual_address_reuses_existing_address(
+    def test_update_venue_with_address_manual_edition_clear_field_ban_id(
         self, mock_get_municipality_centroid, authenticated_client
     ):
         venue = offerers_factories.VenueFactory()
@@ -1172,9 +1226,70 @@ class UpdateVenueTest(PostEndpointHelper):
         assert venue.banId == other_venue.banId
         assert venue.timezone == "Indian/Reunion"
 
+        assert venue.offererAddress.addressId != other_venue.offererAddress.addressId
+        assert venue.offererAddress.address.isManualEdition is True
+        assert venue.offererAddress.address.street == other_venue.offererAddress.address.street
+        assert venue.offererAddress.address.city == other_venue.offererAddress.address.city
+        assert venue.offererAddress.address.banId is None
+
+    @patch(
+        "pcapi.connectors.api_adresse.get_municipality_centroid",
+        return_value=api_adresse.AddressInfo(
+            id="unused",
+            label="unused",
+            postcode="unused",
+            citycode="97411",
+            latitude=1,
+            longitude=1,
+            score=1,
+            city="Saint-Denis",
+            street="unused",
+        ),
+    )
+    def test_update_venue_manual_address_reuses_existing_manual_edited_address(
+        self, mock_get_municipality_centroid, authenticated_client
+    ):
+        venue = offerers_factories.VenueFactory()
+        offerer_address_id = venue.offererAddressId
+        other_venue = offerers_factories.VenueFactory(
+            street="1 Rue Poivre",
+            postalCode="97400",
+            city="97411",
+            latitude=-20.88756,
+            longitude=55.451442,
+            banId=None,
+            offererAddress__address__isManualEdition=True,
+            offererAddress__address__inseeCode="97411",
+        )
+
+        data = {
+            "name": venue.name,
+            "public_name": venue.publicName,
+            "siret": venue.siret,
+            "city": other_venue.city,
+            "postal_code": other_venue.postalCode,
+            "street": other_venue.street,
+            "is_manual_address": "on",
+            "booking_email": venue.bookingEmail,
+            "phone_number": venue.contact.phone_number,
+            "is_permanent": venue.isPermanent,
+            "latitude": other_venue.latitude,
+            "longitude": other_venue.longitude,
+            "venue_type_code": venue.venueTypeCode.name,
+            "acceslibre_url": "",
+        }
+
+        response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
+        assert response.status_code == 303
+
+        db.session.refresh(venue)
+
+        assert venue.banId == other_venue.banId
+        assert venue.timezone == "Indian/Reunion"
+
         assert venue.offererAddressId == offerer_address_id  # unchanged
         assert venue.offererAddress.addressId == other_venue.offererAddress.addressId
-        assert venue.offererAddress.address.isManualEdition is False
+        assert venue.offererAddress.address.isManualEdition is True
 
     @patch(
         "pcapi.connectors.api_adresse.get_municipality_centroid",
