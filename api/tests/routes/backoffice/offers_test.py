@@ -1498,6 +1498,38 @@ class ListAlgoliaOffersTest(GetEndpointHelper):
         assert len(rows) == 1
         assert rows[0]["ID"] == str(offer_to_display.id)
 
+    def test_list_offers_filter_on_price(self, authenticated_client):
+        offers_factories.OfferFactory(name="hide")
+
+        query_args = {
+            "algolia_search": "",
+            "limit": 1000,
+            "search-0-search_field": "PRICE",
+            "search-0-operator": "NUMBER_EQUALS",
+            "search-0-price": "15",
+            "search-1-search_field": "PRICE",
+            "search-1-operator": "GREATER_THAN_OR_EQUAL_TO",
+            "search-1-price": "15,12",
+            "search-2-search_field": "PRICE",
+            "search-2-operator": "LESS_THAN",
+            "search-2-price": "12.34",
+        }
+
+        with patch("pcapi.routes.backoffice.offers.blueprint.search_offer_ids", return_value=[]) as algolia_mock:
+            # no offers from algolia therefore no request to retrieve their fields
+            with assert_num_queries(self.expected_num_queries - 1):
+                response = authenticated_client.get(url_for(self.endpoint, **query_args))
+                assert response.status_code == 200
+
+            algolia_mock.assert_called_once_with(
+                query="",
+                filters="offer.prices=15 AND offer.prices>=15.12 AND offer.prices<12.34",
+                count=1001,
+            )
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 0
+
 
 class ValidateOfferTest(PostEndpointHelper):
     endpoint = "backoffice_web.offer.validate_offer"
