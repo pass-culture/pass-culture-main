@@ -1004,9 +1004,6 @@ class Offerer(
 
     _street = Column("street", Text(), nullable=True)
 
-    hasNewNavUsers: sa_orm.Mapped["bool | None"] = sa_orm.query_expression()
-    hasOldNavUsers: sa_orm.Mapped["bool | None"] = sa_orm.query_expression()
-
     def __init__(self, street: str | None = None, **kwargs: typing.Any) -> None:
         if street:
             self.street = street  # type: ignore[method-assign]

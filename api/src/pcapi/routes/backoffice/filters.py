@@ -880,10 +880,6 @@ def format_modified_info_name(info_name: str) -> str:
             return "Abonné aux emails marketing"
         case "notificationSubscriptions.marketing_push":
             return "Abonné aux notifications push"
-        case "pro_new_nav_state.newNavDate":
-            return "Date de passage sur la nouvelle interface Pro"
-        case "pro_new_nav_state.eligibilityDate":
-            return "Date d'éligibilité à la nouvelle interface Pro"
         case "confidenceRule.confidenceLevel":
             return "Validation des offres"
         case "offererAddress.addressId":

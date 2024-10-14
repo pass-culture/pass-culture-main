@@ -22,7 +22,6 @@ from pcapi.core.users.email import update as email_update
 from pcapi.models import beneficiary_import as beneficiary_import_models
 from pcapi.models import beneficiary_import_status as beneficiary_import_status_models
 from pcapi.models import db
-from pcapi.models.feature import FeatureToggle
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.pro import forms as pro_forms
@@ -30,7 +29,6 @@ from pcapi.routes.backoffice.pro_users import forms as pro_users_forms
 from pcapi.routes.backoffice.users import forms as user_forms
 from pcapi.tasks.batch_tasks import DeleteBatchUserAttributesRequest
 from pcapi.tasks.batch_tasks import delete_user_attributes_task
-from pcapi.utils import date as date_utils
 from pcapi.utils import email as email_utils
 
 
@@ -49,17 +47,13 @@ def get(user_id: int) -> utils.BackofficeResponse:
         users_api.get_pro_account_base_query(user_id)
         .options(
             sa.orm.joinedload(users_models.User.UserOfferers).load_only(offerers_models.UserOfferer.validationStatus),
-            sa.orm.joinedload(users_models.User.pro_new_nav_state),
         )
         .one_or_none()
     )
     if not user:
         flash("Cet utilisateur n'a pas de compte pro ou n'existe pas", "warning")
         return redirect(url_for("backoffice_web.pro.search_pro"), code=303)
-    if FeatureToggle.ENABLE_PRO_NEW_NAV_MODIFICATION.is_active():
-        form_class = pro_users_forms.EditProUserFormWithNewProNav
-    else:
-        form_class = pro_users_forms.EditProUserForm
+    form_class = pro_users_forms.EditProUserForm
     form = form_class(
         first_name=user.firstName,
         last_name=user.lastName,
@@ -67,20 +61,6 @@ def get(user_id: int) -> utils.BackofficeResponse:
         phone_number=user.phoneNumber,
         postal_code=user.postalCode,
         marketing_email_subscription=user.get_notification_subscriptions().marketing_email,
-        new_nav_date=(
-            date_utils.default_timezone_to_local_datetime(
-                user.pro_new_nav_state.newNavDate, date_utils.METROPOLE_TIMEZONE
-            ).strftime(date_utils.DATETIME_FIELD_FORMAT)
-            if (user.pro_new_nav_state and user.pro_new_nav_state.newNavDate)
-            else None
-        ),
-        eligibility_date=(
-            date_utils.default_timezone_to_local_datetime(
-                user.pro_new_nav_state.eligibilityDate, date_utils.METROPOLE_TIMEZONE
-            ).strftime(date_utils.DATETIME_FIELD_FORMAT)
-            if (user.pro_new_nav_state and user.pro_new_nav_state.eligibilityDate)
-            else None
-        ),
     )
     dst = url_for(".update_pro_user", user_id=user.id)
 
@@ -148,29 +128,12 @@ def update_pro_user(user_id: int) -> utils.BackofficeResponse:
     if not user:
         raise NotFound()
 
-    if FeatureToggle.ENABLE_PRO_NEW_NAV_MODIFICATION.is_active():
-        form = pro_users_forms.EditProUserFormWithNewProNav()
-    else:
-        form = pro_users_forms.EditProUserForm()
+    form = pro_users_forms.EditProUserForm()
     if not form.validate():
         dst = url_for(".update_pro_user", user_id=user_id)
         flash("Le formulaire n'est pas valide", "warning")
         return render_template("pro_user/get.html", form=form, dst=dst, user=user), 400
 
-    new_nav_pro_date = (
-        date_utils.local_datetime_to_default_timezone(form.new_nav_date.data, date_utils.METROPOLE_TIMEZONE).replace(
-            tzinfo=None
-        )
-        if hasattr(form, "new_nav_date") and form.new_nav_date.data
-        else None
-    )
-    new_nav_pro_eligibility_date = (
-        date_utils.local_datetime_to_default_timezone(
-            form.eligibility_date.data, date_utils.METROPOLE_TIMEZONE
-        ).replace(tzinfo=None)
-        if hasattr(form, "eligibility_date") and form.eligibility_date.data
-        else None
-    )
     snapshot = users_api.update_user_info(
         user,
         author=current_user,
@@ -179,8 +142,6 @@ def update_pro_user(user_id: int) -> utils.BackofficeResponse:
         phone_number=form.phone_number.data,
         postal_code=form.postal_code.data,
         marketing_email_subscription=form.marketing_email_subscription.data,
-        new_nav_pro_date=new_nav_pro_date,
-        new_nav_pro_eligibility_date=new_nav_pro_eligibility_date,
         commit=False,
     )
 
