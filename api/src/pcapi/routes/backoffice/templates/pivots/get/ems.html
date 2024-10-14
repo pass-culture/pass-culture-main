@@ -1,4 +1,4 @@
-{% import "components/links.html" as links %}
+{% import "components/links.html" as links with context %}
 {% import "pivots/get/common.html" as common %}
 <turbo-frame id="ems_frame">
 {{ common.build_pivot_bar("ems", form, dst) }}

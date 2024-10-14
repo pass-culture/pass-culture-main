@@ -2,7 +2,7 @@
 {% from "components/badges.html" import build_new_navigation_badge %}
 {% from "components/badges.html" import build_old_navigation_badge %}
 {% from "components/generic_modal.html" import build_modal_form with context %}
-{% import "components/links.html" as links %}
+{% import "components/links.html" as links with context %}
 {% from "components/turbo/lazy_modal.html" import build_lazy_modal with context %}
 {% import "components/clipboard.html" as clipboard %}
 <turbo-frame id="offerer_users_frame">
@@ -105,7 +105,7 @@
         </td>
         <td class="fw-bolder">
           {% if row.isActive and (admin_role not in row.roles) and (anonymized_role not in row.roles) %}
-            {{ links.build_connect_as_pseudo_link(row.id, "user", "/", "", "", True, has_permission("MANAGE_PRO_ENTITY") ) }}
+            {{ links.build_connect_as_pseudo_link(row.id, "user", "/", "", "") }}
           {% endif %}
         </td>
       </tr>

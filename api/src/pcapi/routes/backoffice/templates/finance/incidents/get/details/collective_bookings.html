@@ -1,4 +1,4 @@
-{% import "components/links.html" as links %}
+{% import "components/links.html" as links with context %}
 {% from "components/bookings/extra_row.html" import build_booking_toggle_extra_row_button with context %}
 {% if incident.booking_finance_incidents %}
   <table class="table mb-4 get-details-bookings-view">
@@ -24,9 +24,7 @@
           <td>{{ booking_finance_incident.collectiveBooking.educationalInstitution.name }}</td>
           <td>{{ booking_finance_incident.collectiveBooking.userName }}</td>
           <td>{{ booking_finance_incident.collectiveBooking | format_booking_status(with_badge=True) | safe }}</td>
-          <td>
-            {{ links.build_offer_name_to_pc_pro_link(booking_finance_incident.collectiveBooking.collectiveStock.collectiveOffer, is_feature_active("WIP_CONNECT_AS_EXTENDED") , has_permission("MANAGE_PRO_ENTITY")) }}
-          </td>
+          <td>{{ links.build_offer_name_to_pc_pro_link(booking_finance_incident.collectiveBooking.collectiveStock.collectiveOffer) }}</td>
           <td>{{ booking_finance_incident.collectiveBooking.dateCreated | format_date("Le %d/%m/%Y à %Hh%M") }}</td>
         </tr>
         <tr class="collapse accordion-collapse pc-booking-{{ booking_finance_incident.collectiveBooking.id }}"

@@ -2,7 +2,7 @@
 {% from "components/badges.html" import build_venue_badges with context %}
 {% from "components/forms.html" import build_form_fields_group with context %}
 {% from "components/generic_modal.html" import build_modal_form with context %}
-{% import "components/links.html" as links %}
+{% import "components/links.html" as links with context %}
 {% from "components/presentation/details/tabs.html" import build_details_tab %}
 {% from "components/presentation/details/tabs.html" import build_details_tabs_wrapper %}
 {% from "components/presentation/details/tabs.html" import build_details_tab_content %}
@@ -18,9 +18,7 @@
       <div class="card shadow">
         <div class="card-body">
           <div class="d-flex flex-fill align-items-center">
-            <h2 class="card-title text-primary">
-              {{ links.build_venue_name_to_pc_pro_link(venue, is_feature_active("WIP_CONNECT_AS_EXTENDED") , has_permission("MANAGE_PRO_ENTITY"), public_name=false) }}
-            </h2>
+            <h2 class="card-title text-primary">{{ links.build_venue_name_to_pc_pro_link(venue, public_name=false) }}</h2>
             <span class="fs-5 ps-4">{{ build_venue_badges(venue) }}</span>
             <div class="d-flex row-reverse justify-content-end flex-grow-1">
               {% if has_permission("MANAGE_PRO_ENTITY") and has_active_provider %}
@@ -340,10 +338,10 @@
                 </p>
               {% endfor %}
               <p class="mb-1">
-                {{ links.build_connect_as_pseudo_link(venue.id, "venue", "/reservations?offerVenueId="~venue.id~"", "Réservations " , "fw-bold link-primary", is_feature_active("WIP_CONNECT_AS_EXTENDED") , has_permission("MANAGE_PRO_ENTITY")) }}
+                {{ links.build_connect_as_pseudo_link(venue.id, "venue", "/reservations?offerVenueId="~venue.id~"", "Réservations " , "fw-bold link-primary") }}
               </p>
               <p class="mb-1">
-                {{ links.build_connect_as_pseudo_link(venue.id, "venue", "/offres?lieu="~venue.id~"", "Offres associées " , "fw-bold link-primary", is_feature_active("WIP_CONNECT_AS_EXTENDED") , has_permission("MANAGE_PRO_ENTITY")) }}
+                {{ links.build_connect_as_pseudo_link(venue.id, "venue", "/offres?lieu="~venue.id~"", "Offres associées " , "fw-bold link-primary") }}
               </p>
               {% set search_params = {
                               "search-0-search_field": "VENUE",
