@@ -16,6 +16,7 @@ from werkzeug.datastructures import MultiDict
 from werkzeug.exceptions import NotFound
 
 from pcapi.core.educational import adage_backends as adage_client
+from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.adage_backends.serialize import serialize_collective_offer
 from pcapi.core.finance import api as finance_api
@@ -310,43 +311,51 @@ def _batch_validate_or_reject_collective_offers(
     collective_offer_update_failed_ids: list[int] = []
 
     for collective_offer in collective_offers:
-        old_validation_status = collective_offer.validation
-        new_validation_status = validation
-        collective_offer.validation = new_validation_status
-        collective_offer.lastValidationDate = datetime.datetime.utcnow()
-        collective_offer.lastValidationType = offer_mixin.OfferValidationType.MANUAL
-        collective_offer.lastValidationAuthorUserId = current_user.id
+        with atomic():
+            old_validation_status = collective_offer.validation
+            new_validation_status = validation
+            collective_offer.validation = new_validation_status
+            collective_offer.lastValidationDate = datetime.datetime.utcnow()
+            collective_offer.lastValidationType = offer_mixin.OfferValidationType.MANUAL
+            collective_offer.lastValidationAuthorUserId = current_user.id
 
-        if validation is offer_mixin.OfferValidationStatus.APPROVED:
-            collective_offer.isActive = True
+            if validation is offer_mixin.OfferValidationStatus.APPROVED:
+                collective_offer.isActive = True
 
-        try:
-            db.session.flush()
-        except Exception:  # pylint: disable=broad-except
-            collective_offer_update_failed_ids.append(collective_offer.id)
-            continue
+            try:
+                db.session.flush()
+            except Exception:  # pylint: disable=broad-except
+                mark_transaction_as_invalid()
+                collective_offer_update_failed_ids.append(collective_offer.id)
+                continue
 
-        collective_offer_update_succeed_ids.append(collective_offer.id)
+            collective_offer_update_succeed_ids.append(collective_offer.id)
 
-        recipients = (
-            [collective_offer.venue.bookingEmail]
-            if collective_offer.venue.bookingEmail
-            else [recipient.user.email for recipient in collective_offer.venue.managingOfferer.UserOfferers]
-        )
-
-        offer_data = transactional_mails.get_email_data_from_offer(
-            collective_offer, old_validation_status, new_validation_status
-        )
-        on_commit(
-            functools.partial(
-                transactional_mails.send_offer_validation_status_update_email,
-                offer_data,
-                recipients,
+            recipients = (
+                [collective_offer.venue.bookingEmail]
+                if collective_offer.venue.bookingEmail
+                else [recipient.user.email for recipient in collective_offer.venue.managingOfferer.UserOfferers]
             )
-        )
 
-        if validation is offer_mixin.OfferValidationStatus.APPROVED and collective_offer.institutionId is not None:
-            adage_client.notify_institution_association(serialize_collective_offer(collective_offer))
+            offer_data = transactional_mails.get_email_data_from_offer(
+                collective_offer, old_validation_status, new_validation_status
+            )
+            on_commit(
+                functools.partial(
+                    transactional_mails.send_offer_validation_status_update_email,
+                    offer_data,
+                    recipients,
+                )
+            )
+
+            if validation is offer_mixin.OfferValidationStatus.APPROVED and collective_offer.institutionId is not None:
+                try:
+                    adage_client.notify_institution_association(serialize_collective_offer(collective_offer))
+                except educational_exceptions.AdageException as exp:
+                    flash(f"Erreur Adage pour l'offre {collective_offer.id}: {exp.message}")
+                    mark_transaction_as_invalid()
+                    collective_offer_update_failed_ids.append(collective_offer.id)
+                    continue
 
     if len(collective_offer_update_succeed_ids) == 1:
         flash(

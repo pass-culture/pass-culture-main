@@ -1,11 +1,13 @@
 from dataclasses import asdict
 import datetime
 from decimal import Decimal
+from unittest.mock import patch
 
 from flask import url_for
 import pytest
 
 from pcapi.core.categories import subcategories_v2 as subcategories
+from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
 from pcapi.core.finance import api as finance_api
@@ -930,6 +932,34 @@ class BatchCollectiveOffersValidateTest(PostEndpointHelper):
             educational_models.CollectiveOffer.id.in_(fake_offer_ids)
         ).all()
         assert len(non_existing_collective_offers) == 0
+
+    def test_batch_validate_collective_offers_adage_exception(self, legit_user, authenticated_client):
+
+        institution = educational_factories.EducationalInstitutionFactory()
+        collective_stock = educational_factories.CollectiveStockFactory(
+            collectiveOffer__validation=OfferValidationStatus.PENDING,
+            collectiveOffer__institution=institution,
+        )
+        collective_offer = collective_stock.collectiveOffer
+        patched_function = "pcapi.core.educational.adage_backends.notify_institution_association"
+        adage_exception = educational_exceptions.AdageException(
+            message="An error occured on adage side",
+            status_code=400,
+            response_text="some text",
+        )
+
+        with patch(patched_function, side_effect=adage_exception):
+            response = self.post_to_endpoint(
+                authenticated_client,
+                form={"object_ids": collective_offer.id},
+                follow_redirects=True,
+            )
+
+        assert response.status_code == 200
+        assert (
+            html_parser.extract_alert(response.data)
+            == f"Erreur Adage pour l'offre {collective_offer.id}: An error occured on adage side"
+        )
 
 
 class BatchCollectiveOffersRejectTest(PostEndpointHelper):
