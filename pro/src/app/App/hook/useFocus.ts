@@ -7,6 +7,12 @@ export const useFocus = (): void => {
   useEffect(() => {
     /* istanbul ignore next : E2E tested */
     document.getElementById('content-wrapper')?.scrollTo(0, 0)
-    document.getElementById('top-page')?.focus()
+
+    const backToNav = document.getElementById('back-to-nav-link')
+    if (backToNav) {
+      backToNav.focus()
+    } else {
+      document.getElementById('top-page')?.focus()
+    }
   }, [location.pathname])
 }
