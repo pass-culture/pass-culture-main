@@ -16,11 +16,11 @@ import { computeURLCollectiveOfferId } from 'commons/core/OfferEducational/utils
 import { extractInitialVisibilityValues } from 'commons/core/OfferEducational/utils/extractInitialVisibilityValues'
 import { useNotification } from 'commons/hooks/useNotification'
 import { CollectiveOfferLayout } from 'components/CollectiveOfferLayout/CollectiveOfferLayout'
-import { CollectiveOfferVisibilityScreen } from 'screens/CollectiveOfferVisibility/CollectiveOfferVisibility'
 import {
   MandatoryCollectiveOfferFromParamsProps,
   withCollectiveOfferFromParams,
-} from 'screens/OfferEducational/useCollectiveOfferFromParams'
+} from 'pages/CollectiveOffer/CollectiveOffer/components/OfferEducational/useCollectiveOfferFromParams'
+import { CollectiveOfferVisibilityScreen } from 'pages/CollectiveOfferVisibility/components/CollectiveOfferVisibility/CollectiveOfferVisibility'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 import { getEducationalInstitutions } from './getEducationalInstitutions'

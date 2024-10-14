@@ -1,6 +1,6 @@
 import { OfferAddressType } from 'apiClient/v1'
 import { defaultGetVenue } from 'commons/utils/collectiveApiFactories'
-import { EVENT_ADDRESS_SCHOOL_LABEL } from 'screens/OfferEducational/constants/labels'
+import { EVENT_ADDRESS_SCHOOL_LABEL } from 'pages/CollectiveOffer/CollectiveOffer/components/OfferEducational/constants/labels'
 
 import { formatOfferEventAddress } from '../formatOfferEventAddress'
 

@@ -8,10 +8,10 @@ import {
   isCollectiveOfferTemplate,
 } from 'commons/core/OfferEducational/types'
 import { AccessibilitySummarySection } from 'components/AccessibilitySummarySection/AccessibilitySummarySection'
+import { SynchronizedProviderInformation } from 'components/IndividualOffer/SynchronisedProviderInfos/SynchronizedProviderInformation'
 import { SummaryContent } from 'components/SummaryLayout/SummaryContent'
 import { SummaryLayout } from 'components/SummaryLayout/SummaryLayout'
 import { SummarySection } from 'components/SummaryLayout/SummarySection'
-import { SynchronizedProviderInformation } from 'screens/IndividualOffer/SynchronisedProviderInfos/SynchronizedProviderInformation'
 
 import styles from './CollectiveOfferSummary.module.scss'
 import { CollectiveOfferContactSection } from './components/CollectiveOfferContactSection'

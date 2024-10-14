@@ -8,9 +8,9 @@ import { useIndividualOfferContext } from 'commons/context/IndividualOfferContex
 import { useCurrentUser } from 'commons/hooks/useCurrentUser'
 import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
 import { selectCurrentOffererId } from 'commons/store/user/selectors'
-import { DetailsScreen } from 'screens/IndividualOffer/DetailsScreen/DetailsScreen'
-import { IndivualOfferLayout } from 'screens/IndividualOffer/IndivualOfferLayout/IndivualOfferLayout'
-import { getTitle } from 'screens/IndividualOffer/IndivualOfferLayout/utils/getTitle'
+import { DetailsScreen } from 'components/IndividualOffer/DetailsScreen/DetailsScreen'
+import { IndivualOfferLayout } from 'components/IndividualOffer/IndivualOfferLayout/IndivualOfferLayout'
+import { getTitle } from 'components/IndividualOffer/IndivualOfferLayout/utils/getTitle'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 const Details = (): JSX.Element | null => {

@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react'
 import React from 'react'
 
 import { getCollectiveOfferCollectiveStockFactory } from 'commons/utils/collectiveApiFactories'
-import { TOTAL_PRICE_LABEL } from 'screens/OfferEducationalStock/constants/labels'
+import { TOTAL_PRICE_LABEL } from 'pages/CollectiveOffer/CollectiveOfferStock/components/OfferEducationalStock/constants/labels'
 
 import {
   CollectiveOfferStockSection,

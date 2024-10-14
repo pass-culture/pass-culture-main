@@ -1,6 +1,6 @@
 import { CollectiveOfferResponseModel } from 'apiClient/v1'
 import { SortingMode } from 'commons/hooks/useColumnSorting'
-import { CollectiveOffersSortingColumn } from 'screens/CollectiveOffersScreen/CollectiveOffersScreen'
+import { CollectiveOffersSortingColumn } from 'pages/CollectiveOffers/components/CollectiveOffersScreen/CollectiveOffersScreen'
 
 const sortByDate = (dateA: string, dateB: string, mode: SortingMode) => {
   return (

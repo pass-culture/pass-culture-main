@@ -3,7 +3,7 @@ import {
   SubcategoryResponseModel,
 } from 'apiClient/v1'
 import { AccessibilityEnum } from 'commons/core/shared/types'
-import { deSerializeDurationMinutes } from 'screens/IndividualOffer/DetailsScreen/utils'
+import { deSerializeDurationMinutes } from 'components/IndividualOffer/DetailsScreen/utils'
 
 import { FORM_DEFAULT_VALUES } from '../constants'
 import { OFFER_LOCATION } from '../OfferLocation/constants'

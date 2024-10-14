@@ -22,7 +22,8 @@ import { useCurrentUser } from 'commons/hooks/useCurrentUser'
 import { useIsNewInterfaceActive } from 'commons/hooks/useIsNewInterfaceActive'
 import { selectCurrentOffererId } from 'commons/store/user/selectors'
 import { formatAndOrderVenues } from 'repository/venuesService'
-import { CollectiveOffersScreen } from 'screens/CollectiveOffersScreen/CollectiveOffersScreen'
+
+import { CollectiveOffersScreen } from './components/CollectiveOffersScreen/CollectiveOffersScreen'
 
 export const CollectiveOffers = (): JSX.Element => {
   const isNewOffersAndBookingsActive = useActiveFeature(

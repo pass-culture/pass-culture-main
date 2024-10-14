@@ -3,10 +3,10 @@ import React from 'react'
 
 import { useIndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
 import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
+import { ActionBar } from 'components/IndividualOffer/ActionBar/ActionBar'
+import { IndivualOfferLayout } from 'components/IndividualOffer/IndivualOfferLayout/IndivualOfferLayout'
+import { StocksSummaryScreen } from 'components/IndividualOffer/StocksSummaryScreen/StocksSummaryScreen'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
-import { ActionBar } from 'screens/IndividualOffer/ActionBar/ActionBar'
-import { IndivualOfferLayout } from 'screens/IndividualOffer/IndivualOfferLayout/IndivualOfferLayout'
-import { StocksSummaryScreen } from 'screens/IndividualOffer/StocksSummaryScreen/StocksSummaryScreen'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 const StocksSummary = (): JSX.Element | null => {

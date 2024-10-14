@@ -25,10 +25,10 @@ import {
   formatLocalTimeDateString,
 } from 'commons/utils/timezone'
 import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
+import { AddRecurrencesButton } from 'components/IndividualOffer/StocksEventCreation/AddRecurrencesButton'
+import { getPriceCategoryOptions } from 'components/IndividualOffer/StocksEventEdition/getPriceCategoryOptions'
 import fullTrashIcon from 'icons/full-trash.svg'
 import { serializeStockEvents } from 'pages/IndividualOfferWizard/Stocks/serializeStockEvents'
-import { AddRecurrencesButton } from 'screens/IndividualOffer/StocksEventCreation/AddRecurrencesButton'
-import { getPriceCategoryOptions } from 'screens/IndividualOffer/StocksEventEdition/getPriceCategoryOptions'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { BaseDatePicker } from 'ui-kit/form/DatePicker/BaseDatePicker'

@@ -1,7 +1,7 @@
 import { SortingMode } from 'commons/hooks/useColumnSorting'
 import { collectiveOfferFactory } from 'commons/utils/collectiveApiFactories'
 import { sortCollectiveOffers } from 'commons/utils/sortCollectiveOffers'
-import { CollectiveOffersSortingColumn } from 'screens/CollectiveOffersScreen/CollectiveOffersScreen'
+import { CollectiveOffersSortingColumn } from 'pages/CollectiveOffers/components/CollectiveOffersScreen/CollectiveOffersScreen'
 
 describe('sortCollectiveOffers', () => {
   it('should sort collective offers in a descending order', () => {

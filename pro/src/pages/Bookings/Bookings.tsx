@@ -3,7 +3,7 @@ import { useLocation } from 'react-router-dom'
 
 import { AppLayout } from 'app/AppLayout'
 import { Audience } from 'commons/core/shared/types'
-import { BookingsScreen } from 'screens/Bookings/Bookings'
+import { BookingsScreen } from 'components/Bookings/Bookings'
 
 import { getFilteredIndividualBookingsAdapter } from './adapters/getFilteredIndividualBookingsAdapter'
 import { getUserHasIndividualBookingsAdapter } from './adapters/getUserHasIndividualBookingsAdapter'

@@ -1,10 +1,10 @@
 /* istanbul ignore file */
 import { useIndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
 import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
+import { ActionBar } from 'components/IndividualOffer/ActionBar/ActionBar'
+import { DetailsSummaryScreen } from 'components/IndividualOffer/DetailsSummary/DetailsSummary'
+import { IndivualOfferLayout } from 'components/IndividualOffer/IndivualOfferLayout/IndivualOfferLayout'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
-import { ActionBar } from 'screens/IndividualOffer/ActionBar/ActionBar'
-import { DetailsSummaryScreen } from 'screens/IndividualOffer/DetailsSummary/DetailsSummary'
-import { IndivualOfferLayout } from 'screens/IndividualOffer/IndivualOfferLayout/IndivualOfferLayout'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 const DetailsSummary = (): JSX.Element | null => {

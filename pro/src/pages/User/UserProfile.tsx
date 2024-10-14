@@ -1,6 +1,6 @@
 import { AppLayout } from 'app/AppLayout'
 import { useCurrentUser } from 'commons/hooks/useCurrentUser'
-import { UserProfile } from 'screens/UserProfile/UserProfile'
+import { UserProfile } from 'pages/User/UserProfile/UserProfile'
 
 const Profile = (): JSX.Element => {
   const { currentUser } = useCurrentUser()
