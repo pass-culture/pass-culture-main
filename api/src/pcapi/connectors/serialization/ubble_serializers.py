@@ -1,11 +1,29 @@
 import contextlib
 import datetime
+import enum
 
 import pydantic.v1 as pydantic_v1
 
 from pcapi.core.fraud import models as fraud_models
-from pcapi.core.fraud.ubble import models as ubble_models
 from pcapi.core.users import models as users_models
+
+
+class UbbleIdentificationStatus(enum.Enum):
+    # ubble v2
+    PENDING = "pending"
+    CAPTURE_IN_PROGRESS = "capture_in_progress"
+    CHECKS_IN_PROGRESS = "checks_in_progress"
+    APPROVED = "approved"
+    DECLINED = "declined"
+    RETRY_REQUIRED = "retry_required"
+    REFUSED = "refused"
+    # ubble v1
+    UNINITIATED = "uninitiated"  # Identification has only been created (user has not started the verification flow)
+    INITIATED = "initiated"  # User has started the verification flow
+    PROCESSING = "processing"  # User has ended the verification flow, identification-url is not usable anymore
+    PROCESSED = "processed"  # Identification is completely processed by Ubble
+    ABORTED = "aborted"  # User has left the identification, the identification-url is no longer usable (this status is in beta test)
+    EXPIRED = "expired"  # The identification-url has expired and is no longer usable (only uninitiated and initiated identifications can become expired)
 
 
 class UbbleDeclaredData(pydantic_v1.BaseModel):
@@ -45,13 +63,12 @@ class UbbleResponseCode(pydantic_v1.BaseModel):
     response_code: int
 
 
-class UbbleIdentificationResponse(pydantic_v1.BaseModel):
+class UbbleV2IdentificationResponse(pydantic_v1.BaseModel):
     # https://docs.ubble.ai/#tag/Identity-verifications/operation/create_and_start_identity_verification
     id: str
     applicant_id: str
     user_journey_id: str
-    # TODO clean up imports
-    status: ubble_models.UbbleIdentificationStatus
+    status: UbbleIdentificationStatus
     declared_data: UbbleDeclaredData
     links: UbbleLinks = pydantic_v1.Field(alias="_links")
     documents: list[UbbleDocument]
@@ -66,7 +83,7 @@ class UbbleIdentificationResponse(pydantic_v1.BaseModel):
         return self.documents[0] if self.documents else None
 
     @property
-    def fraud_reason_codes(self) -> list[fraud_models.FraudReasonCode]:
+    def fraud_reason_codes(self) -> list["fraud_models.FraudReasonCode"]:
         return [
             fraud_models.UBBLE_REASON_CODE_MAPPING.get(
                 response_code.response_code, fraud_models.FraudReasonCode.ID_CHECK_BLOCKED_OTHER
@@ -78,7 +95,9 @@ class UbbleIdentificationResponse(pydantic_v1.BaseModel):
         use_enum_values = True
 
 
-def convert_identification_to_ubble_content(identification: UbbleIdentificationResponse) -> fraud_models.UbbleContent:
+def convert_identification_to_ubble_content(
+    identification: UbbleV2IdentificationResponse,
+) -> "fraud_models.UbbleContent":
     document = identification.document
     if not document:
         first_name, last_name = None, None
@@ -110,3 +129,137 @@ def convert_identification_to_ubble_content(identification: UbbleIdentificationR
         supported=None,
     )
     return content
+
+
+# DEPRECATED Ubble V1
+
+
+class UbbleScore(enum.Enum):
+    VALID = 1.0
+    INVALID = 0.0
+    UNDECIDABLE = -1.0
+
+
+class UbbleIdentificationObject(pydantic_v1.BaseModel):
+    # Parent class for any object defined in https://ubbleai.github.io/developer-documentation/#objects-2
+    pass
+
+
+class UbbleIdentificationAttributes(UbbleIdentificationObject):
+    # https://ubbleai.github.io/developer-documentation/#identifications
+    comment: str | None
+    created_at: datetime.datetime = pydantic_v1.Field(alias="created-at")
+    ended_at: datetime.datetime | None = pydantic_v1.Field(None, alias="ended-at")
+    identification_id: str = pydantic_v1.Field(alias="identification-id")
+    identification_url: str = pydantic_v1.Field(alias="identification-url")
+    number_of_attempts: int = pydantic_v1.Field(alias="number-of-attempts")
+    redirect_url: str = pydantic_v1.Field(alias="redirect-url")
+    score: float | None
+    started_at: datetime.datetime | None = pydantic_v1.Field(None, alias="started-at")
+    status: UbbleIdentificationStatus
+    status_updated_at: datetime.datetime = pydantic_v1.Field(alias="status-updated-at")
+    updated_at: datetime.datetime = pydantic_v1.Field(alias="updated-at")
+    user_agent: str | None = pydantic_v1.Field(None, alias="user-agent")
+    user_ip_address: str | None = pydantic_v1.Field(None, alias="user-ip-address")
+    webhook: str
+
+
+class UbbleReasonCode(UbbleIdentificationObject):
+    type: str = pydantic_v1.Field(alias="type")
+    id: int = pydantic_v1.Field(alias="id")
+
+
+class UbbleReasonCodes(UbbleIdentificationObject):
+    data: list[UbbleReasonCode]
+
+
+class UbbleIdentificationRelationships(UbbleIdentificationObject):
+    reason_codes: UbbleReasonCodes = pydantic_v1.Field(alias="reason-codes")
+
+
+class UbbleIdentificationData(pydantic_v1.BaseModel):
+    type: str
+    id: int
+    attributes: UbbleIdentificationAttributes
+    relationships: UbbleIdentificationRelationships
+
+
+class UbbleIdentificationDocuments(UbbleIdentificationObject):
+    # https://ubbleai.github.io/developer-documentation/#documents
+    birth_date: str | None = pydantic_v1.Field(None, alias="birth-date")
+    document_number: str | None = pydantic_v1.Field(None, alias="document-number")
+    document_type: str | None = pydantic_v1.Field(None, alias="document-type")
+    first_name: str | None = pydantic_v1.Field(None, alias="first-name")
+    gender: str | None = pydantic_v1.Field(None)
+    last_name: str | None = pydantic_v1.Field(None, alias="last-name")
+    married_name: str | None = pydantic_v1.Field(None, alias="married-name")
+    signed_image_front_url: str | None = pydantic_v1.Field(None, alias="signed-image-front-url")
+    signed_image_back_url: str | None = pydantic_v1.Field(None, alias="signed-image-back-url")
+
+
+class UbbleIdentificationDocumentChecks(UbbleIdentificationObject):
+    # https://ubbleai.github.io/developer-documentation/#document-checks
+    data_extracted_score: float | None = pydantic_v1.Field(None, alias="data-extracted-score")
+    expiry_date_score: float | None = pydantic_v1.Field(None, alias="expiry-date-score")
+    issue_date_score: float | None = pydantic_v1.Field(None, alias="issue-date-score")
+    live_video_capture_score: float | None = pydantic_v1.Field(None, alias="live-video-capture-score")
+    mrz_validity_score: float | None = pydantic_v1.Field(None, alias="mrz-validity-score")
+    mrz_viz_score: float | None = pydantic_v1.Field(None, alias="mrz-viz-score")
+    ove_back_score: float | None = pydantic_v1.Field(None, alias="ove-back-score")
+    ove_front_score: float | None = pydantic_v1.Field(None, alias="ove-front-score")
+    ove_score: float | None = pydantic_v1.Field(None, alias="ove-score")
+    quality_score: float | None = pydantic_v1.Field(None, alias="quality-score")
+    score: float | None = pydantic_v1.Field(None, alias="score")
+    supported: float | None = None
+    visual_back_score: float | None = pydantic_v1.Field(None, alias="visual-back-score")
+    visual_front_score: float | None = pydantic_v1.Field(None, alias="visual-front-score")
+
+
+class UbbleIdentificationFaceChecks(UbbleIdentificationObject):
+    # https://ubbleai.github.io/developer-documentation/#face-checks
+    active_liveness_score: float | None = pydantic_v1.Field(None, alias="active-liveness-score")
+    live_video_capture_score: float | None = pydantic_v1.Field(None, alias="live-video-capture-score")
+    quality_score: float | None = pydantic_v1.Field(None, alias="quality-score")
+    score: float | None = None
+
+
+class UbbleIdentificationReferenceDataChecks(UbbleIdentificationObject):
+    # https://ubbleai.github.io/developer-documentation/#reference-data-check
+    score: float | None = None
+
+
+class UbbleIdentificationDocFaceMatches(UbbleIdentificationObject):
+    # https://ubbleai.github.io/developer-documentation/#doc-face-matches
+    score: float | None = None
+
+
+class UbbleIdentificationIncluded(pydantic_v1.BaseModel):
+    type: str
+    id: int
+    attributes: UbbleIdentificationObject
+    relationships: dict | None
+
+
+class UbbleIdentificationIncludedDocuments(UbbleIdentificationIncluded):
+    attributes: UbbleIdentificationDocuments
+
+
+class UbbleIdentificationIncludedDocumentChecks(UbbleIdentificationIncluded):
+    attributes: UbbleIdentificationDocumentChecks
+
+
+class UbbleIdentificationIncludedFaceChecks(UbbleIdentificationIncluded):
+    attributes: UbbleIdentificationFaceChecks
+
+
+class UbbleIdentificationIncludedReferenceDataChecks(UbbleIdentificationIncluded):
+    attributes: UbbleIdentificationReferenceDataChecks
+
+
+class UbbleIdentificationIncludedDocFaceMatches(UbbleIdentificationIncluded):
+    attributes: UbbleIdentificationDocFaceMatches
+
+
+class UbbleIdentificationResponse(pydantic_v1.BaseModel):
+    data: UbbleIdentificationData
+    included: list[UbbleIdentificationIncluded]

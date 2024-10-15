@@ -3,10 +3,10 @@ import urllib.parse
 import uuid
 
 from pcapi import settings
+from pcapi.connectors.serialization import ubble_serializers
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.fraud.ubble import api as ubble_fraud_api
-from pcapi.core.fraud.ubble import models as ubble_fraud_models
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.users import models as users_models
 from pcapi.repository import repository
@@ -58,6 +58,6 @@ def make_identification_response(user: users_models.User, errors: list[UbbleErro
         identification_url=identification_url,
         id_document_number="123456789012",
         reason_codes=[fraud_models.UBBLE_REASON_CODE_MAPPING[error.value] for error in errors] if errors else None,
-        status=ubble_fraud_models.UbbleIdentificationStatus.PROCESSED,
-        score=ubble_fraud_models.UbbleScore.INVALID.value if errors else ubble_fraud_models.UbbleScore.VALID.value,
+        status=ubble_serializers.UbbleIdentificationStatus.PROCESSED,
+        score=ubble_serializers.UbbleScore.INVALID.value if errors else ubble_serializers.UbbleScore.VALID.value,
     )
