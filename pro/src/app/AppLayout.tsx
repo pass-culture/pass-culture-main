@@ -19,6 +19,8 @@ export const AppLayout = ({
       {children}
     </Layout>
   ) : (
-    <OldLayout layout={layout}>{children}</OldLayout>
+    <OldLayout mainHeading={mainHeading} layout={layout}>
+      {children}
+    </OldLayout>
   )
 }

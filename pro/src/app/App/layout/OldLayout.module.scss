@@ -2,6 +2,7 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/variables/_size.scss" as size;
 @use "styles/variables/_z-index.scss" as zIndex;
+@use "styles/mixins/fonts-design-system.scss" as fonts-design-system;
 
 .container {
   position: relative;
@@ -54,4 +55,10 @@
     justify-content: center;
     width: 100%;
   }
+}
+
+.main-heading {
+  @include fonts-design-system.title1;
+
+  margin-bottom: rem.torem(32px);
 }
