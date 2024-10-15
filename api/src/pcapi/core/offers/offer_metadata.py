@@ -2,8 +2,8 @@ import datetime
 import typing
 
 from pcapi.core.categories import subcategories_v2
-from pcapi.core.offerers.models import Venue
 import pcapi.core.offers.models as offers_models
+from pcapi.core.offers.utils import get_offer_address
 from pcapi.core.offers.utils import offer_app_link
 from pcapi.core.providers import constants as providers_constants
 
@@ -17,20 +17,21 @@ book_subcategories = {
 }
 
 
-def _get_metadata_from_venue(venue: Venue) -> Metadata:
+def _get_location_metadata(offer: offers_models.Offer) -> Metadata:
+    offer_address = get_offer_address(offer)
     return {
         "@type": "Place",
-        "name": venue.name,
+        "name": offer_address.label,
         "address": {
             "@type": "PostalAddress",
-            "streetAddress": venue.street,
-            "postalCode": venue.postalCode,
-            "addressLocality": venue.city,
+            "streetAddress": offer_address.street,
+            "postalCode": offer_address.postalCode,
+            "addressLocality": offer_address.city,
         },
         "geo": {
             "@type": "GeoCoordinates",
-            "latitude": str(venue.latitude),
-            "longitude": str(venue.longitude),
+            "latitude": str(offer_address.latitude),
+            "longitude": str(offer_address.longitude),
         },
     }
 
@@ -74,7 +75,7 @@ def _get_event_metadata_from_offer(offer: offers_models.Offer) -> Metadata:
         event_metadata["eventAttendanceMode"] = "OnlineEventAttendanceMode"
     else:
         event_metadata["eventAttendanceMode"] = "OfflineEventAttendanceMode"
-        event_metadata["location"] = _get_metadata_from_venue(offer.venue)
+        event_metadata["location"] = _get_location_metadata(offer)
 
     if offer.metadataFirstBeginningDatetime:
         firstBeginningDatetime: datetime.datetime = offer.metadataFirstBeginningDatetime
