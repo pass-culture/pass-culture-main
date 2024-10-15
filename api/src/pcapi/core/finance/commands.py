@@ -15,6 +15,7 @@ import pcapi.core.offers.models as offers_models
 from pcapi.models.feature import FeatureToggle
 from pcapi.notifications.internal import send_internal_message
 import pcapi.scheduled_tasks.decorators as cron_decorators
+from pcapi.scripts.pro.get_all_reimbursement import export_csv_and_send_notfication_emails
 from pcapi.utils.blueprint import Blueprint
 import pcapi.utils.date as date_utils
 
@@ -177,3 +178,8 @@ def import_ds_bank_information_applications() -> None:
             logger.info("Skipping DS %s because procedure id is empty", procedure)
             continue
         ds.import_ds_bank_information_applications(procedure_number=int(procedure))
+
+
+@blueprint.cli.command("get_all_reimbursement")
+def get_all_reimbursement() -> None:
+    export_csv_and_send_notfication_emails()

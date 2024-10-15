@@ -247,3 +247,5 @@ class TransactionalEmail(Enum):
     COMMERCIAL_GESTURE_REIMBURSEMENT = models.TemplatePro(
         id_prod=1187, id_not_prod=157, subaccount_id_prod=0, subaccount_id_not_prod=0
     )
+
+    CSV_REIMBURSEMENT = models.Template(id_prod=1392, id_not_prod=167)
