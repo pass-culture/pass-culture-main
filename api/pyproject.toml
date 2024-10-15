@@ -77,7 +77,7 @@ werkzeug = "2.0.3"
 wtforms = "3.1.2"
 wtforms-sqlalchemy = "0.4.1"
 xlsxwriter = "^3.2.0"
-zeep = "4.2.1"
+zeep = "4.3.0"
 
 [tool.poetry.group.dev]
 optional = true
