@@ -4,7 +4,7 @@ from pcapi.connectors.beneficiaries import ubble
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.fraud.ubble.api import _ubble_readable_score
 from pcapi.core.fraud.ubble.api import _ubble_result_fraud_item
-from pcapi.core.subscription.ubble import models as ubble_models
+from pcapi.core.subscription.ubble import errors as ubble_errors
 from pcapi.core.users import factories as user_factories
 
 from tests.core.subscription.test_factories import UbbleIdentificationResponseFactory
@@ -28,7 +28,7 @@ class UbbleFraudChecksTest:
         details = set(fraud_item.detail.split(" | "))
 
         expected_details = {
-            ubble_models.UBBLE_CODE_ERROR_MAPPING.get(reason_code).detail_message for reason_code in reason_codes
+            ubble_errors.UBBLE_CODE_ERROR_MAPPING.get(reason_code).detail_message for reason_code in reason_codes
         }
         expected_details.add(f"Ubble score {_ubble_readable_score(content.score)}: {content.comment}")
 

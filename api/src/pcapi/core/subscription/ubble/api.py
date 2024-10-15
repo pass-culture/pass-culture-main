@@ -28,9 +28,9 @@ import pcapi.repository as pcapi_repository
 from pcapi.tasks import ubble_tasks
 from pcapi.utils import requests as requests_utils
 
+from . import errors
 from . import exceptions
 from . import messages
-from . import models
 
 
 logger = logging.getLogger(__name__)
@@ -118,8 +118,8 @@ def get_most_relevant_ubble_error(
             sorted(
                 reason_codes,
                 key=lambda reason_code: (
-                    models.UBBLE_CODE_ERROR_MAPPING[reason_code].priority
-                    if reason_code in models.UBBLE_CODE_ERROR_MAPPING
+                    errors.UBBLE_CODE_ERROR_MAPPING[reason_code].priority
+                    if reason_code in errors.UBBLE_CODE_ERROR_MAPPING
                     else 0
                 ),
                 reverse=True,
