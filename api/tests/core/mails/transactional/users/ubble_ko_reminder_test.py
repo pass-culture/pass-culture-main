@@ -10,7 +10,7 @@ import pcapi.core.mails.testing as mails_testing
 import pcapi.core.mails.transactional.sendinblue_template_ids as sendinblue_template
 from pcapi.core.mails.transactional.users.ubble.reminder_emails import _find_users_to_remind
 from pcapi.core.mails.transactional.users.ubble.reminder_emails import send_reminders
-from pcapi.core.subscription.ubble import models as ubble_models
+from pcapi.core.subscription.ubble import errors as ubble_errors
 from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
 import pcapi.core.users.models as users_models
@@ -334,8 +334,8 @@ class SendUbbleKoReminderReminderTest:
         [
             reason_code
             for reason_code in ubble_constants.REASON_CODES_FOR_QUICK_ACTION_REMINDERS
-            if ubble_models.UBBLE_CODE_ERROR_MAPPING[reason_code].priority
-            < ubble_models.UBBLE_CODE_ERROR_MAPPING[fraud_models.FraudReasonCode.DUPLICATE_USER].priority
+            if ubble_errors.UBBLE_CODE_ERROR_MAPPING[reason_code].priority
+            < ubble_errors.UBBLE_CODE_ERROR_MAPPING[fraud_models.FraudReasonCode.DUPLICATE_USER].priority
         ],
     )
     def should_not_send_email_if_most_relevant_is_not_retryable(self, reason_code):

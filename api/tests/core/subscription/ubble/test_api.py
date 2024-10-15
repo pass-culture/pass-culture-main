@@ -883,9 +883,9 @@ class SubscriptionMessageTest:
         assert ubble_subscription_api.get_ubble_subscription_message(
             fraud_check
         ) == subscription_models.SubscriptionMessage(
-            user_message=ubble_models.UBBLE_CODE_ERROR_MAPPING[reason_code].retryable_user_message,
-            message_summary=ubble_models.UBBLE_CODE_ERROR_MAPPING[reason_code].retryable_message_summary,
-            action_hint=ubble_models.UBBLE_CODE_ERROR_MAPPING[reason_code].retryable_action_hint,
+            user_message=ubble_errors.UBBLE_CODE_ERROR_MAPPING[reason_code].retryable_user_message,
+            message_summary=ubble_errors.UBBLE_CODE_ERROR_MAPPING[reason_code].retryable_message_summary,
+            action_hint=ubble_errors.UBBLE_CODE_ERROR_MAPPING[reason_code].retryable_action_hint,
             call_to_action=subscription_models.CallToActionMessage(
                 title="Réessayer la vérification de mon identité",
                 link="passculture://verification-identite",
@@ -927,7 +927,7 @@ class SubscriptionMessageTest:
         assert ubble_subscription_api.get_ubble_subscription_message(
             fraud_check
         ) == subscription_models.SubscriptionMessage(
-            user_message=ubble_models.UBBLE_DEFAULT.not_retryable_user_message,
+            user_message=ubble_errors.UBBLE_DEFAULT.not_retryable_user_message,
             call_to_action=subscription_models.CallToActionMessage(
                 title="Accéder au site Démarches-Simplifiées",
                 link="passculture://verification-identite/demarches-simplifiees",
@@ -977,7 +977,7 @@ class SubscriptionMessageTest:
         assert ubble_subscription_api.get_ubble_subscription_message(
             fraud_check
         ) == subscription_models.SubscriptionMessage(
-            user_message=ubble_models.UBBLE_CODE_ERROR_MAPPING[reason_code].not_retryable_user_message,
+            user_message=ubble_errors.UBBLE_CODE_ERROR_MAPPING[reason_code].not_retryable_user_message,
             call_to_action=subscription_models.CallToActionMessage(
                 title="Accéder au site Démarches-Simplifiées",
                 link="passculture://verification-identite/demarches-simplifiees",

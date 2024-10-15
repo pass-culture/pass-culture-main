@@ -9,7 +9,7 @@ from pcapi.connectors.serialization import ubble_serializers
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.subscription.models import SubscriptionStepCompletionState
-import pcapi.core.subscription.ubble.models as ubble_models
+from pcapi.core.subscription.ubble import errors as ubble_errors
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
@@ -744,7 +744,7 @@ class StepperTest:
             {
                 "name": "identity-check",
                 "title": "Identification",
-                "subtitle": ubble_models.UBBLE_CODE_ERROR_MAPPING[reason_code].retryable_action_hint,
+                "subtitle": ubble_errors.UBBLE_CODE_ERROR_MAPPING[reason_code].retryable_action_hint,
                 "completionState": SubscriptionStepCompletionState.RETRY.value,
             },
             self.get_step("honor_statement_step", SubscriptionStepCompletionState.DISABLED.value),

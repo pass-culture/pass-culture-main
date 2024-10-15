@@ -6,7 +6,7 @@ from pcapi.connectors.serialization import ubble_serializers
 from pcapi.core.fraud import api as fraud_api
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.subscription import api as subscription_api
-from pcapi.core.subscription.ubble import models as ubble_subsciption_models
+from pcapi.core.subscription.ubble import errors as ubble_errors
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import models as users_models
 from pcapi.core.users import utils as users_utils
@@ -26,7 +26,7 @@ def _ubble_readable_score(score: float | None) -> str:
 
 
 def _ubble_message_from_code(code: fraud_models.FraudReasonCode) -> str:
-    return ubble_subsciption_models.UBBLE_CODE_ERROR_MAPPING[code].detail_message
+    return ubble_errors.UBBLE_CODE_ERROR_MAPPING[code].detail_message
 
 
 def _ubble_result_fraud_item(user: users_models.User, content: fraud_models.UbbleContent) -> fraud_models.FraudItem:
@@ -34,7 +34,7 @@ def _ubble_result_fraud_item(user: users_models.User, content: fraud_models.Ubbl
     reason_codes = set(content.reason_codes or [])
     detail = f"Ubble score {_ubble_readable_score(content.score)}: {content.comment}"
     for reason_code in reason_codes:
-        ubble_error = ubble_subsciption_models.UBBLE_CODE_ERROR_MAPPING.get(reason_code)
+        ubble_error = ubble_errors.UBBLE_CODE_ERROR_MAPPING.get(reason_code)
         if ubble_error:
             detail += " | " + ubble_error.detail_message
 

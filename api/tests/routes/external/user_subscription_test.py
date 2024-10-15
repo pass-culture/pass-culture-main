@@ -26,7 +26,7 @@ from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription.dms import api as dms_subscription_api
 from pcapi.core.subscription.dms import dms_internal_mailing
 from pcapi.core.subscription.ubble import api as ubble_subscription_api
-from pcapi.core.subscription.ubble import models as ubble_models
+from pcapi.core.subscription.ubble import errors as ubble_errors
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.core.users.api import get_domains_credit
@@ -1894,7 +1894,7 @@ class UbbleWebhookTest:
         db.session.refresh(ubble_fraud_check)
 
         reason_code = fraud_models.FraudReasonCode.ID_CHECK_BLOCKED_OTHER
-        ubble_error = ubble_models.UBBLE_CODE_ERROR_MAPPING[reason_code]
+        ubble_error = ubble_errors.UBBLE_CODE_ERROR_MAPPING[reason_code]
 
         assert ubble_fraud_check.status == fraud_models.FraudCheckStatus.SUSPICIOUS
         assert reason_code in ubble_fraud_check.reasonCodes
@@ -1920,7 +1920,7 @@ class UbbleWebhookTest:
         db.session.refresh(ubble_fraud_check)
 
         reason_code = fraud_models.FraudReasonCode.ID_CHECK_UNPROCESSABLE
-        ubble_error = ubble_models.UBBLE_CODE_ERROR_MAPPING[reason_code]
+        ubble_error = ubble_errors.UBBLE_CODE_ERROR_MAPPING[reason_code]
 
         assert ubble_fraud_check.status == fraud_models.FraudCheckStatus.SUSPICIOUS
         assert reason_code in ubble_fraud_check.reasonCodes
@@ -1981,7 +1981,7 @@ class UbbleWebhookTest:
         db.session.refresh(ubble_fraud_check)
 
         reason_code = fraud_models.FraudReasonCode.ID_CHECK_BLOCKED_OTHER
-        ubble_error = ubble_models.UBBLE_CODE_ERROR_MAPPING[reason_code]
+        ubble_error = ubble_errors.UBBLE_CODE_ERROR_MAPPING[reason_code]
 
         assert ubble_fraud_check.status == fraud_models.FraudCheckStatus.KO
         assert reason_code in ubble_fraud_check.reasonCodes
@@ -2058,7 +2058,7 @@ class UbbleWebhookTest:
         assert reason_code in ubble_fraud_check.reasonCodes
 
         message = ubble_subscription_api.get_ubble_subscription_message(ubble_fraud_check)
-        assert message.user_message == ubble_models.UBBLE_CODE_ERROR_MAPPING[reason_code].retryable_user_message
+        assert message.user_message == ubble_errors.UBBLE_CODE_ERROR_MAPPING[reason_code].retryable_user_message
         assert message.call_to_action.link == "passculture://verification-identite"
         assert message.call_to_action.icon == subscription_models.CallToActionIcon.RETRY
         assert message.call_to_action.title == "Réessayer la vérification de mon identité"
@@ -2136,7 +2136,7 @@ class UbbleWebhookTest:
         message = ubble_subscription_api.get_ubble_subscription_message(ubble_fraud_check)
         assert (
             message.user_message
-            == ubble_models.UBBLE_CODE_ERROR_MAPPING[
+            == ubble_errors.UBBLE_CODE_ERROR_MAPPING[
                 fraud_models.FraudReasonCode.ID_CHECK_EXPIRED
             ].retryable_user_message
         )
@@ -2209,7 +2209,7 @@ class UbbleWebhookTest:
         assert reason_code in ubble_fraud_check.reasonCodes
 
         message = ubble_subscription_api.get_ubble_subscription_message(ubble_fraud_check)
-        assert message.user_message == ubble_models.UBBLE_CODE_ERROR_MAPPING[reason_code].retryable_user_message
+        assert message.user_message == ubble_errors.UBBLE_CODE_ERROR_MAPPING[reason_code].retryable_user_message
         assert message.call_to_action.link == "passculture://verification-identite"
         assert message.call_to_action.icon == subscription_models.CallToActionIcon.RETRY
         assert message.call_to_action.title == "Réessayer la vérification de mon identité"
@@ -2244,7 +2244,7 @@ class UbbleWebhookTest:
         assert reason_code in ubble_fraud_check.reasonCodes
 
         message = ubble_subscription_api.get_ubble_subscription_message(ubble_fraud_check)
-        assert message.user_message == ubble_models.UBBLE_CODE_ERROR_MAPPING[reason_code].retryable_user_message
+        assert message.user_message == ubble_errors.UBBLE_CODE_ERROR_MAPPING[reason_code].retryable_user_message
         assert message.call_to_action.link == "passculture://verification-identite"
         assert message.call_to_action.icon == subscription_models.CallToActionIcon.RETRY
         assert message.call_to_action.title == "Réessayer la vérification de mon identité"
@@ -2313,7 +2313,7 @@ class UbbleWebhookTest:
         assert reason_code in ubble_fraud_check.reasonCodes
 
         message = ubble_subscription_api.get_ubble_subscription_message(ubble_fraud_check)
-        assert message.user_message == ubble_models.UBBLE_CODE_ERROR_MAPPING[reason_code].not_retryable_user_message
+        assert message.user_message == ubble_errors.UBBLE_CODE_ERROR_MAPPING[reason_code].not_retryable_user_message
         assert message.call_to_action.link == "passculture://verification-identite/demarches-simplifiees"
         assert message.call_to_action.icon == subscription_models.CallToActionIcon.EXTERNAL
         assert message.call_to_action.title == "Accéder au site Démarches-Simplifiées"
@@ -2389,7 +2389,7 @@ class UbbleWebhookTest:
         assert reason_code in ubble_fraud_check.reasonCodes
 
         message = ubble_subscription_api.get_ubble_subscription_message(ubble_fraud_check)
-        assert message.user_message == ubble_models.UBBLE_CODE_ERROR_MAPPING[reason_code].retryable_user_message
+        assert message.user_message == ubble_errors.UBBLE_CODE_ERROR_MAPPING[reason_code].retryable_user_message
         assert message.call_to_action.link == "passculture://verification-identite"
 
         assert len(mails_testing.outbox) == 1
@@ -2480,7 +2480,7 @@ class UbbleWebhookTest:
         assert reason_code in ubble_fraud_check.reasonCodes
 
         message = ubble_subscription_api.get_ubble_subscription_message(ubble_fraud_check)
-        assert message.user_message == ubble_models.UBBLE_CODE_ERROR_MAPPING[reason_code].retryable_user_message
+        assert message.user_message == ubble_errors.UBBLE_CODE_ERROR_MAPPING[reason_code].retryable_user_message
         assert message.call_to_action.link == "passculture://verification-identite"
         assert message.call_to_action.icon == subscription_models.CallToActionIcon.RETRY
         assert message.call_to_action.title == "Réessayer la vérification de mon identité"
