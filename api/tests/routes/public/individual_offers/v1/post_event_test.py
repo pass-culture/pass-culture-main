@@ -5,6 +5,9 @@ import decimal
 import pytest
 
 from pcapi import settings
+from pcapi.core.geography import factories as geography_factories
+from pcapi.core.offerers import factories as offerers_factories
+from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.testing import override_features
@@ -364,6 +367,102 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
             "musicType": "OTHER",
             "performer": None,
         }
+
+    def test_event_with_custom_address(self, client):
+        plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=False)
+        payload = self._get_base_payload(venue_provider.venueId)
+        address = geography_factories.AddressFactory()
+        offerer_address = offerers_factories.OffererAddressFactory(
+            address=address,
+            offerer=venue_provider.venue.managingOfferer,
+            label="My beautiful address no one knows about",
+        )
+        payload["location"] = {
+            "type": "address",
+            "venueId": venue_provider.venueId,
+            "addressId": address.id,
+            "addressLabel": "My beautiful address no one knows about",
+        }
+
+        response = client.with_explicit_token(plain_api_key).post(self.endpoint_url, json=payload)
+        assert response.status_code == 200
+        assert response.json["location"]["addressId"] == address.id
+        assert response.json["location"]["addressLabel"] == "My beautiful address no one knows about"
+        created_offer = offers_models.Offer.query.one()
+        assert created_offer.offererAddress == offerer_address
+
+    def test_event_with_custom_address_should_create_offerer_address(self, client):
+        plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=False)
+        payload = self._get_base_payload(venue_provider.venueId)
+        address = geography_factories.AddressFactory()
+
+        assert not offerers_models.OffererAddress.query.filter(
+            offerers_models.OffererAddress.addressId == address.id,
+            offerers_models.OffererAddress.label == "My beautiful address no one knows about",
+        ).one_or_none()
+
+        payload["location"] = {
+            "type": "address",
+            "venueId": venue_provider.venueId,
+            "addressId": address.id,
+            "addressLabel": "My beautiful address no one knows about",
+        }
+        response = client.with_explicit_token(plain_api_key).post(self.endpoint_url, json=payload)
+        assert response.status_code == 200
+        created_offer = offers_models.Offer.query.one()
+        offerer_address = offerers_models.OffererAddress.query.filter(
+            offerers_models.OffererAddress.addressId == address.id,
+            offerers_models.OffererAddress.label == "My beautiful address no one knows about",
+        ).one()
+        assert created_offer.offererAddress == offerer_address
+
+    def test_event_with_custom_address_should_raiser_404_because_address_does_not_exist(self, client):
+        plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=False)
+        payload = self._get_base_payload(venue_provider.venueId)
+        address = geography_factories.AddressFactory()
+        not_existing_address_id = address.id + 1
+
+        payload["location"] = {
+            "type": "address",
+            "venueId": venue_provider.venueId,
+            "addressId": not_existing_address_id,
+        }
+        response = client.with_explicit_token(plain_api_key).post(self.endpoint_url, json=payload)
+        assert response.status_code == 404
+        assert response.json == {
+            "location.AddressLocation.addressId": [f"There is no venue with id {not_existing_address_id}"]
+        }
+
+    @pytest.mark.parametrize(
+        "partial_location,expected_json",
+        [
+            ({"addressId": "coucou"}, {"location.AddressLocation.addressId": ["value is not a valid integer"]}),
+            (
+                {"addressLabel": ""},
+                {"location.AddressLocation.addressLabel": ["ensure this value has at least 1 characters"]},
+            ),
+            (
+                {"addressLabel": "a" * 201},
+                {"location.AddressLocation.addressLabel": ["ensure this value has at most 200 characters"]},
+            ),
+        ],
+    )
+    def test_event_with_custom_address_should_raiser_400_because_address_location_params_are_incorrect(
+        self, client, partial_location, expected_json
+    ):
+        plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=False)
+        payload = self._get_base_payload(venue_provider.venueId)
+        address = geography_factories.AddressFactory()
+        base_location_object = {
+            "type": "address",
+            "venueId": venue_provider.venueId,
+            "addressId": address.id,
+            "addressLabel": "My beautiful address no one knows about",
+        }
+        payload["location"] = dict(base_location_object, **partial_location)
+        response = client.with_explicit_token(plain_api_key).post(self.endpoint_url, json=payload)
+        assert response.status_code == 400
+        assert response.json == expected_json
 
     def test_event_without_ticket(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider(provider_has_ticketing_urls=False)

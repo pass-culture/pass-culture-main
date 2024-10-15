@@ -1,6 +1,7 @@
 import sqlalchemy as sqla
 from sqlalchemy import orm as sqla_orm
 
+from pcapi.core.geography import models as geography_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import exceptions as offers_exceptions
@@ -17,32 +18,22 @@ from . import constants
 from . import serialization
 
 
+def get_address_or_raise_404(address_id: int) -> geography_models.Address:
+    address = geography_models.Address.query.filter(geography_models.Address.id == address_id).one_or_none()
+
+    if not address:
+        raise api_errors.ResourceNotFoundError(
+            {"location.AddressLocation.addressId": [f"There is no venue with id {address_id}"]}
+        )
+    return address
+
+
 def get_venue_with_offerer_address(venue_id: int) -> offerers_models.Venue:
     return (
         offerers_models.Venue.query.filter(offerers_models.Venue.id == venue_id)
         .options(sqla.orm.joinedload(offerers_models.Venue.offererAddress))
         .one()
     )
-
-
-def retrieve_venue_from_location(
-    location: serialization.DigitalLocation | serialization.PhysicalLocation,
-) -> offerers_models.Venue:
-    venue = (
-        offerers_models.Venue.query.join(providers_models.VenueProvider, offerers_models.Venue.venueProviders)
-        .filter(
-            offerers_models.Venue.id == location.venue_id,
-            providers_models.VenueProvider.provider == current_api_key.provider,
-            providers_models.VenueProvider.isActive,
-        )
-        .options(sqla.orm.joinedload(offerers_models.Venue.offererAddress))
-        .one_or_none()
-    )
-    if not venue:
-        raise api_errors.ApiErrors(
-            {"venueId": ["There is no venue with this id associated to your API key"]}, status_code=404
-        )
-    return venue
 
 
 def retrieve_offer_relations_query(query: sqla_orm.Query) -> sqla_orm.Query:
@@ -97,6 +88,7 @@ def _retrieve_offer_tied_to_user_query() -> sqla_orm.Query:
         .join(providers_models.VenueProvider.provider)
         .filter(providers_models.VenueProvider.provider == current_api_key.provider)
         .filter(providers_models.VenueProvider.isActive)
+        .options(sqla_orm.joinedload(offers_models.Offer.venue))
     )
 
 
@@ -113,6 +105,7 @@ def retrieve_offers(
         .filter(offers_models.Offer.id >= firstIndex)
         .order_by(offers_models.Offer.id)
         .options(sqla.orm.contains_eager(offers_models.Offer.futureOffer))
+        .options(sqla_orm.joinedload(offers_models.Offer.venue))
     )
 
     if ids_at_provider:

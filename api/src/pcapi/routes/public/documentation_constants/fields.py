@@ -122,6 +122,8 @@ class _FIELDS:
     CITY = Field(description="City", example="Paris")
     POSTAL_CODE = Field(description="Postal Code", example="75001")
     STREET = Field(description="Street name and number", example="182 Rue Saint-Honoré")
+    ADDRESS_ID = Field(description="Address id in the pass Culture DB", example=1)
+    ADDRESS_LABEL = Field(description="Address label", example="Zénith Paris")
 
     # Offer fields
     OFFER_ID = Field(description="Offer id", example=12345)
@@ -162,6 +164,7 @@ class _FIELDS:
         example=True,
         default=True,
     )
+    OFFER_LOCATION = Field(discriminator="type", description=descriptions.OFFER_LOCATION_DESCRIPTION)
 
     # Products fields
     EANS_FILTER = Field(description="EANs list (max 100)", example="3700551782888,9782895761792")

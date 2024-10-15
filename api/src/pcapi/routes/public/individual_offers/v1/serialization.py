@@ -122,14 +122,53 @@ class AccessibilityResponse(serialization.ConfiguredBaseModel):
     visual_disability_compliant: bool | None = fields.VISUAL_DISABILITY_COMPLIANT
 
 
+class AddressLabel(pydantic_v1.ConstrainedStr):
+    min_length = 1
+    max_length = 200
+
+
+class AddressLocation(serialization.ConfiguredBaseModel):
+    """
+    If your offer location is different from the venue location
+    """
+
+    type: typing.Literal["address"] = "address"
+    venue_id: int = fields.VENUE_ID
+    address_id: int = fields.ADDRESS_ID
+    address_label: AddressLabel | None = fields.ADDRESS_LABEL
+
+    @classmethod
+    def build_from_offer(cls, offer: offers_models.Offer) -> "AddressLocation":
+        if not offer.offererAddress:
+            raise ValueError("offer.offererAddress is `None`")
+
+        if offer.offererAddress.addressId is None:
+            raise ValueError("offer.offererAddress.addressId is `None`")
+
+        return cls(
+            type="address",
+            venue_id=offer.venueId,
+            address_id=offer.offererAddress.addressId,
+            address_label=offer.offererAddress.label,  # type: ignore[arg-type]
+        )
+
+
 class PhysicalLocation(serialization.ConfiguredBaseModel):
+    """
+    If your offer location is your venue
+    """
+
     type: typing.Literal["physical"] = "physical"
-    venue_id: int = pydantic_v1.Field(..., example=1, description="List of venues is available at GET /offerer_venues")
+    venue_id: int = fields.VENUE_ID
 
 
 class DigitalLocation(serialization.ConfiguredBaseModel):
+    """
+    If your offer has no physical location as it is a digital product
+    """
+
     type: typing.Literal["digital"] = "digital"
-    venue_id: int = pydantic_v1.Field(..., example=1, description="List of venues is available at GET /offerer_venues")
+    venue_id: int = fields.VENUE_ID
     url: pydantic_v1.HttpUrl = pydantic_v1.Field(
         ...,
         description="Link users will be redirected to after booking this offer. You may include '{token}', '{email}' and/or '{offerId}' in the URL, which will be replaced respectively by the booking token (use this token to confirm the offer - see API Contremarque), the email of the user who booked the offer and the created offer id",
@@ -166,11 +205,6 @@ WITHDRAWAL_DETAILS_FIELD = pydantic_v1.Field(
     description="Further information that will be provided to attendees to ease the offer collection.",
     example="Opening hours, specific office, collection period, access code, email announcement...",
     alias="itemCollectionDetails",
-)
-LOCATION_FIELD = pydantic_v1.Field(
-    ...,
-    discriminator="type",
-    description="Location where the offer will be available or will take place. The location type must be compatible with the category",
 )
 
 
@@ -432,7 +466,7 @@ class StockEdition(BaseStockEdition):
 class ProductOfferCreation(OfferCreationBase):
     category_related_fields: product_category_creation_fields
     stock: StockCreation | None
-    location: PhysicalLocation | DigitalLocation = LOCATION_FIELD
+    location: PhysicalLocation | DigitalLocation | AddressLocation = fields.OFFER_LOCATION
 
     class Config:
         extra = "forbid"
@@ -453,7 +487,7 @@ class ProductsOfferByEanCreation(serialization.ConfiguredBaseModel):
     products: list[ProductOfferByEanCreation] = pydantic_v1.Field(
         description="List of product to create or update", max_items=500
     )
-    location: PhysicalLocation | DigitalLocation = LOCATION_FIELD
+    location: PhysicalLocation | DigitalLocation | AddressLocation = fields.OFFER_LOCATION
 
     class Config:
         extra = "forbid"
@@ -511,7 +545,7 @@ class PriceCategoriesCreation(serialization.ConfiguredBaseModel):
 class EventOfferCreation(OfferCreationBase):
     category_related_fields: event_category_creation_fields
     event_duration: int | None = fields.EVENT_DURATION
-    location: PhysicalLocation | DigitalLocation = LOCATION_FIELD
+    location: PhysicalLocation | DigitalLocation | AddressLocation = fields.OFFER_LOCATION
     has_ticket: bool = fields.EVENT_HAS_TICKET
     price_categories: list[PriceCategoryCreation] | None = fields.PRICE_CATEGORIES
     publication_date: datetime.datetime | None = fields.OFFER_PUBLICATION_DATE
@@ -703,7 +737,7 @@ class OfferResponse(serialization.ConfiguredBaseModel):
     external_ticket_office_url: str | None = EXTERNAL_TICKET_OFFICE_URL_FIELD
     image: ImageResponse | None
     enable_double_bookings: bool | None = fields.OFFER_ENABLE_DOUBLE_BOOKINGS_WITH_DEFAULT
-    location: PhysicalLocation | DigitalLocation = LOCATION_FIELD
+    location: PhysicalLocation | DigitalLocation | AddressLocation = fields.OFFER_LOCATION
     name: str = fields.OFFER_NAME
     status: offer_mixin.OfferStatus = pydantic_v1.Field(
         ...,
@@ -714,7 +748,17 @@ class OfferResponse(serialization.ConfiguredBaseModel):
     id_at_provider: str | None = fields.ID_AT_PROVIDER
 
     @classmethod
+    def get_location(cls, offer: offers_models.Offer) -> PhysicalLocation | DigitalLocation | AddressLocation:
+        if offer.isDigital:
+            return DigitalLocation.from_orm(offer)
+        if offer.offererAddressId is not None and offer.offererAddressId != offer.venue.offererAddressId:
+            return AddressLocation.build_from_offer(offer)
+
+        return PhysicalLocation.from_orm(offer)
+
+    @classmethod
     def build_offer(cls, offer: offers_models.Offer) -> "OfferResponse":
+
         return cls(
             id=offer.id,
             booking_contact=offer.bookingContact,
@@ -724,7 +768,7 @@ class OfferResponse(serialization.ConfiguredBaseModel):
             external_ticket_office_url=offer.externalTicketOfficeUrl,
             image=offer.image,  # type: ignore[arg-type]
             enable_double_bookings=offer.isDuo,
-            location=DigitalLocation.from_orm(offer) if offer.isDigital else PhysicalLocation.from_orm(offer),
+            location=cls.get_location(offer),
             name=offer.name,
             status=offer.status,
             withdrawal_details=offer.withdrawalDetails,

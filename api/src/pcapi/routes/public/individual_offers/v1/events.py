@@ -7,6 +7,7 @@ from pcapi import repository
 from pcapi.core.bookings import exceptions as booking_exceptions
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.finance import utils as finance_utils
+from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import models as offers_models
@@ -77,6 +78,16 @@ def post_event_offer(body: serialization.EventOfferCreation) -> serialization.Ev
     withdrawal_type = _deserialize_has_ticket(body.has_ticket, body.category_related_fields.subcategory_id)
     try:
         with repository.transaction():
+            offerer_address = venue.offererAddress  # default offerer_address
+
+            if body.location.type == "address":
+                address = utils.get_address_or_raise_404(body.location.address_id)
+                offerer_address = offerers_api.get_or_create_offerer_address(
+                    offerer_id=venue.managingOffererId,
+                    address_id=address.id,
+                    label=body.location.address_label,
+                )
+
             offer_body = offers_schemas.CreateOffer(
                 name=body.name,
                 subcategoryId=body.category_related_fields.subcategory_id,
@@ -97,7 +108,11 @@ def post_event_offer(body: serialization.EventOfferCreation) -> serialization.Ev
                 withdrawalType=withdrawal_type,
             )  # type: ignore[call-arg]
             created_offer = offers_api.create_offer(
-                offer_body, venue=venue, venue_provider=venue_provider, provider=current_api_key.provider
+                offer_body,
+                venue=venue,
+                venue_provider=venue_provider,
+                provider=current_api_key.provider,
+                offerer_address=offerer_address,
             )
             # To create the priceCategories, the offer needs to have an id
             db.session.flush()
