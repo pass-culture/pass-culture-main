@@ -53,8 +53,15 @@ class BaseBackend:
         """
         raise NotImplementedError()
 
-    def create_file(self, parent_folder_id: str, name: str, local_path: pathlib.Path) -> str:
-        """Create a new file and return its id."""
+    def create_file(
+        self,
+        parent_folder_id: str,
+        name: str,
+        local_path: pathlib.Path,
+        response_field: typing.Literal["id", "webContentLink"] = "id",
+    ) -> str:
+        """Create a new file and return its id by default.
+        Return file download link if response_field = 'webContentLink'."""
         raise NotImplementedError()
 
     def download_file(self, file_id: str, content_type: str | None = None) -> BytesIO:
@@ -85,8 +92,12 @@ class TestingBackend(BaseBackend):
         """
         return parent_folder_id + name
 
-    def create_file(self, parent_folder_id: str, name: str, local_path: pathlib.Path) -> str:
-        """Create a new file and return its id."""
+    def create_file(
+        self, parent_folder_id: str, name: str, local_path: pathlib.Path, response_field: str = "id"
+    ) -> str:
+        """Create a new file and return its id by default.
+        Return file download link if response_field = 'webContentLink'.
+        """
         if not local_path.exists():
             raise ValueError("The given local path should exist.")
         return parent_folder_id + name
@@ -156,19 +167,22 @@ class GoogleDriveBackend(BaseBackend):
         response = request.execute()
         return response["id"]
 
-    def create_file(self, parent_folder_id: str, name: str, local_path: pathlib.Path) -> str:
-        """Create a new file and return its id."""
+    def create_file(
+        self, parent_folder_id: str, name: str, local_path: pathlib.Path, response_field: str = "id"
+    ) -> str:
+        """Create a new file and return its id by default.
+        Return file download link if response_field = 'webContentLink'."""
         request = self.service.files().create(
             body={
                 "parents": [parent_folder_id],
                 "name": name,
             },
             media_body=MediaFileUpload(filename=str(local_path)),
-            fields="id",  # yes, it's a string, not a list
+            fields="id,webContentLink",  # yes, it's a string, not a list
             supportsAllDrives=True,
         )
         response = request.execute()
-        return response["id"]
+        return response.get(response_field, "")
 
     def download_file(self, file_id: str, content_type: str | None = None) -> BytesIO:
         """Download a file and return its content"""
