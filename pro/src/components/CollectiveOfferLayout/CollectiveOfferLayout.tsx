@@ -20,7 +20,6 @@ export interface CollectiveOfferLayoutProps {
   isTemplate?: boolean
   isFromTemplate?: boolean
   requestId?: string | null
-  isArchivable?: boolean | null
   offer?:
     | GetCollectiveOfferResponseModel
     | GetCollectiveOfferTemplateResponseModel
@@ -33,7 +32,6 @@ export const CollectiveOfferLayout = ({
   isCreation = false,
   isTemplate = false,
   requestId = null,
-  isArchivable,
   offer,
 }: CollectiveOfferLayoutProps): JSX.Element => {
   const location = useLocation()
@@ -92,7 +90,6 @@ export const CollectiveOfferLayout = ({
         offerId={navigationProps.offerId}
         isTemplate={isTemplate}
         requestId={requestId}
-        isArchivable={isArchivable}
         offer={offer}
       />
 
