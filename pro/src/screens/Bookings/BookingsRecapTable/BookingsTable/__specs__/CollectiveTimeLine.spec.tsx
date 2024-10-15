@@ -8,7 +8,7 @@ import {
   CollectiveBookingByIdResponseModel,
   CollectiveBookingResponseModel,
 } from 'apiClient/v1'
-import { CollectiveBookingCancellationReasons } from 'apiClient/v1/models/CollectiveBookingCancellationReasons'
+import { CollectiveBookingCancellationReasons } from 'apiClient/v1/api'
 import * as useAnalytics from 'app/App/analytics/firebase'
 import { BOOKING_STATUS } from 'core/Bookings/constants'
 import { CollectiveBookingsEvents } from 'core/FirebaseEvents/constants'
@@ -18,8 +18,8 @@ import {
   collectiveBookingFactory,
 } from 'utils/collectiveApiFactories'
 import {
-  RenderWithProvidersOptions,
   renderWithProviders,
+  RenderWithProvidersOptions,
 } from 'utils/renderWithProviders'
 
 import { CollectiveTimeLine } from '../CollectiveTimeLine'
