@@ -467,7 +467,7 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
         )
 
         assert response.status_code == 404
-        assert response.json == {"venueId": ["There is no venue with this id associated to your API key"]}
+        assert response.json == {"global": "Venue cannot be found"}
         assert offers_models.Offer.query.first() is None
 
     @pytest.mark.usefixtures("clean_database")
