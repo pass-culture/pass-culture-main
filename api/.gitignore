@@ -138,3 +138,5 @@ tyrion_report.html
 
 # backoffice
 !**/backoffice/**/dist
+
+/pytest.report.html
