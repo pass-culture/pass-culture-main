@@ -8,12 +8,7 @@ import styles from './Declaration.module.scss'
 
 export const Declaration = () => {
   return (
-    <AccessibilityLayout
-      mainHeading={{
-        text: 'Déclaration d’accessibilité',
-        className: styles['heading1-declaration'],
-      }}
-    >
+    <AccessibilityLayout mainHeading="Déclaration d’accessibilité">
       <ButtonLink to="/accessibilite/" icon={fullBackIcon}>
         Retour vers la page Informations d’accessibilité
       </ButtonLink>
