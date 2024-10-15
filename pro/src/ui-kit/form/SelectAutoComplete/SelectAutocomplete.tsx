@@ -3,7 +3,6 @@ import { useField, useFormikContext } from 'formik'
 import { KeyboardEventHandler, useEffect, useRef, useState } from 'react'
 
 import { SelectOption } from 'custom_types/form'
-import { getLabelString } from 'utils/getLabelString'
 
 import { BaseInput } from '../shared/BaseInput/BaseInput'
 import {
@@ -25,7 +24,6 @@ export type SelectAutocompleteProps = FieldLayoutBaseProps & {
   multi?: boolean
   options: SelectOption[]
   placeholder?: string
-  pluralLabel?: string
   resetOnOpen?: boolean
   onSearch?: (pattern: string) => void
   searchInOptions?: (options: SelectOption[], pattern: string) => SelectOption[]
@@ -48,7 +46,6 @@ export const SelectAutocomplete = ({
   multi = false,
   options,
   placeholder,
-  pluralLabel,
   smallLabel = false,
   resetOnOpen = true,
   description,
@@ -232,11 +229,10 @@ export const SelectAutocomplete = ({
     await setFieldTouched(name, true)
   }
 
-  const placeholderDisplay = Array.isArray(field.value)
-    ? (placeholder ??
-      (field.value.length > 1 && pluralLabel ? pluralLabel : label))
-    : (placeholder ?? optionsLabelById[field.value])
-
+  const selectedOptionAsPlaceholder = !Array.isArray(field.value)
+    ? optionsLabelById[field.value]
+    : ''
+  const finalPlaceholder = placeholder || selectedOptionAsPlaceholder
   return (
     <FieldLayout
       className={className}
@@ -261,7 +257,7 @@ export const SelectAutocomplete = ({
             'aria-activedescendant': `option-display-${filteredOptions[hoveredOptionIndex]?.value}`,
           })}
           onFocus={openField}
-          placeholder={getLabelString(placeholderDisplay)}
+          placeholder={finalPlaceholder}
           style={{
             paddingLeft:
               (multi && field.value.length > 0) || leftIcon ? '2.2rem' : '1rem',

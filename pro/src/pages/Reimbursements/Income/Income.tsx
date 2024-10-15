@@ -5,6 +5,7 @@ import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
 import { useAnalytics } from 'app/App/analytics/firebase'
+import { FormLayout } from 'components/FormLayout/FormLayout'
 import { GET_VENUES_QUERY_KEY } from 'config/swrQueryKeys'
 import { Events } from 'core/FirebaseEvents/constants'
 import strokeBookingHoldIcon from 'icons/stroke-booking-hold.svg'
@@ -75,7 +76,7 @@ export const Income = () => {
 
   const years = Object.keys(incomeByYear || {})
     .map(Number)
-    .sort((a, b) => a - b)
+    .sort((a, b) => b - a)
   const activeYearIncome =
     incomeByYear && activeYear ? incomeByYear[activeYear] : {}
   const activeYearHasData =
@@ -125,6 +126,7 @@ export const Income = () => {
 
   return (
     <>
+      <FormLayout.MandatoryInfo />
       <div className={styles['income-filters']}>
         {venues.length > 1 && (
           <>

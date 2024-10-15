@@ -25,7 +25,6 @@ import {
   EVENT_ADDRESS_OTHER_LABEL,
   EVENT_ADDRESS_SCHOOL_LABEL,
   INTERVENTION_AREA_LABEL,
-  INTERVENTION_AREA_PLURAL_LABEL,
 } from '../../constants/labels'
 import styles from '../OfferEducationalForm.module.scss'
 
@@ -182,7 +181,6 @@ export const FormPracticalInformation = ({
           <SelectAutocomplete
             multi
             label={INTERVENTION_AREA_LABEL}
-            pluralLabel={INTERVENTION_AREA_PLURAL_LABEL}
             name="interventionArea"
             hideTags
             options={offerInterventionOptions}

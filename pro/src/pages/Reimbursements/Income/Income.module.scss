@@ -18,8 +18,12 @@
 .income-filters {
   display: flex;
   flex-flow: row wrap;
-  margin-bottom: rem.torem(24px);
+  margin-bottom: rem.torem(20px);
   row-gap: rem.torem(10px);
+
+  @media (min-width: size.$tablet) {
+    margin-bottom: rem.torem(12px);
+  }
 }
 
 .income-filters-divider {
@@ -27,9 +31,9 @@
 
   @media (min-width: size.$tablet) {
     display: block;
-    margin: 0 rem.torem(24px);
+    margin: rem.torem(31.75px) rem.torem(24px) 0 0;
     width: rem.torem(1px);
-    height: rem.torem(40px);
+    height: rem.torem(30px);
     background: var(--color-grey-semi-dark);
   }
 }
@@ -39,10 +43,10 @@
   flex-flow: row wrap;
   flex-direction: row;
   gap: rem.torem(8px);
-  margin-left: rem.torem(8px);
 
-  @media (min-width: size.$tablet) {
-    margin-left: 0;
+  @media (width >= 634px) {
+    height: rem.torem(66.75px);
+    align-items: end;
   }
 
   li button {

@@ -37,7 +37,7 @@ const MOCK_DATA = {
 
 const LABELS = {
   error: /Erreur dans le chargement des données./,
-  venuesSelector: /Partenaires/,
+  venuesSelector: /Partenaire/,
   incomeResultsLabel: /Chiffre d’affaires total/,
   emptyScreen: /Vous n’avez aucune réservation/,
 }
