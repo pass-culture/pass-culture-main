@@ -1,5 +1,4 @@
 import { AppLayout } from 'app/AppLayout'
-import { canArchiveCollectiveOfferFromSummary } from 'components/ArchiveConfirmationModal/utils/canArchiveCollectiveOffer'
 import { CollectiveOfferLayout } from 'components/CollectiveOfferLayout/CollectiveOfferLayout'
 import { Mode } from 'core/OfferEducational/types'
 import { CollectiveOfferSummaryEditionScreen } from 'screens/CollectiveOfferSummaryEdition/CollectiveOfferSummaryEdition'
@@ -18,7 +17,6 @@ const CollectiveOfferSummaryEdition = ({
         subTitle={offer.name}
         isTemplate={isTemplate}
         offer={offer}
-        isArchivable={canArchiveCollectiveOfferFromSummary(offer)}
       >
         <CollectiveOfferSummaryEditionScreen
           offer={offer}
