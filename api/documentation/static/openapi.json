@@ -865,6 +865,46 @@
                 "title": "AccessibilityResponse",
                 "type": "object"
             },
+            "AddressLocation": {
+                "description": "When the provider wants to specify an address different from the venue address",
+                "properties": {
+                    "addressId": {
+                        "description": "Address id in the pass Culture DB",
+                        "example": 1,
+                        "title": "Addressid",
+                        "type": "integer"
+                    },
+                    "addressLabel": {
+                        "description": "Address label",
+                        "example": "Z\u00e9nith Paris",
+                        "maxLength": 200,
+                        "minLength": 1,
+                        "nullable": true,
+                        "title": "Addresslabel",
+                        "type": "string"
+                    },
+                    "type": {
+                        "default": "address",
+                        "enum": [
+                            "address"
+                        ],
+                        "title": "Type",
+                        "type": "string"
+                    },
+                    "venueId": {
+                        "description": "Venue Id. The venues list is available on [**this endpoint (`Get offerer venues`)**](#tag/Venues/operation/GetOffererVenues)",
+                        "example": 535,
+                        "title": "Venueid",
+                        "type": "integer"
+                    }
+                },
+                "required": [
+                    "venueId",
+                    "addressId"
+                ],
+                "title": "AddressLocation",
+                "type": "object"
+            },
             "AddressModel": {
                 "properties": {
                     "city": {
@@ -2151,8 +2191,8 @@
                         "type": "string"
                     },
                     "venueId": {
-                        "description": "List of venues is available at GET /offerer_venues",
-                        "example": 1,
+                        "description": "Venue Id. The venues list is available on [**this endpoint (`Get offerer venues`)**](#tag/Venues/operation/GetOffererVenues)",
+                        "example": 535,
                         "title": "Venueid",
                         "type": "integer"
                     }
@@ -2718,6 +2758,7 @@
                         "description": "Location where the offer will be available or will take place. The location type must be compatible with the category",
                         "discriminator": {
                             "mapping": {
+                                "address": "#/components/schemas/AddressLocation",
                                 "digital": "#/components/schemas/DigitalLocation",
                                 "physical": "#/components/schemas/PhysicalLocation"
                             },
@@ -2729,6 +2770,9 @@
                             },
                             {
                                 "$ref": "#/components/schemas/DigitalLocation"
+                            },
+                            {
+                                "$ref": "#/components/schemas/AddressLocation"
                             }
                         ],
                         "title": "Location"
@@ -3147,6 +3191,7 @@
                         "description": "Location where the offer will be available or will take place. The location type must be compatible with the category",
                         "discriminator": {
                             "mapping": {
+                                "address": "#/components/schemas/AddressLocation",
                                 "digital": "#/components/schemas/DigitalLocation",
                                 "physical": "#/components/schemas/PhysicalLocation"
                             },
@@ -3158,6 +3203,9 @@
                             },
                             {
                                 "$ref": "#/components/schemas/DigitalLocation"
+                            },
+                            {
+                                "$ref": "#/components/schemas/AddressLocation"
                             }
                         ],
                         "title": "Location"
@@ -5956,8 +6004,8 @@
                         "type": "string"
                     },
                     "venueId": {
-                        "description": "List of venues is available at GET /offerer_venues",
-                        "example": 1,
+                        "description": "Venue Id. The venues list is available on [**this endpoint (`Get offerer venues`)**](#tag/Venues/operation/GetOffererVenues)",
+                        "example": 535,
                         "title": "Venueid",
                         "type": "integer"
                     }
@@ -6570,6 +6618,7 @@
                         "description": "Location where the offer will be available or will take place. The location type must be compatible with the category",
                         "discriminator": {
                             "mapping": {
+                                "address": "#/components/schemas/AddressLocation",
                                 "digital": "#/components/schemas/DigitalLocation",
                                 "physical": "#/components/schemas/PhysicalLocation"
                             },
@@ -6581,6 +6630,9 @@
                             },
                             {
                                 "$ref": "#/components/schemas/DigitalLocation"
+                            },
+                            {
+                                "$ref": "#/components/schemas/AddressLocation"
                             }
                         ],
                         "title": "Location"
@@ -7066,6 +7118,7 @@
                         "description": "Location where the offer will be available or will take place. The location type must be compatible with the category",
                         "discriminator": {
                             "mapping": {
+                                "address": "#/components/schemas/AddressLocation",
                                 "digital": "#/components/schemas/DigitalLocation",
                                 "physical": "#/components/schemas/PhysicalLocation"
                             },
@@ -7077,6 +7130,9 @@
                             },
                             {
                                 "$ref": "#/components/schemas/DigitalLocation"
+                            },
+                            {
+                                "$ref": "#/components/schemas/AddressLocation"
                             }
                         ],
                         "title": "Location"
@@ -7203,6 +7259,7 @@
                         "description": "Location where the offer will be available or will take place. The location type must be compatible with the category",
                         "discriminator": {
                             "mapping": {
+                                "address": "#/components/schemas/AddressLocation",
                                 "digital": "#/components/schemas/DigitalLocation",
                                 "physical": "#/components/schemas/PhysicalLocation"
                             },
@@ -7214,6 +7271,9 @@
                             },
                             {
                                 "$ref": "#/components/schemas/DigitalLocation"
+                            },
+                            {
+                                "$ref": "#/components/schemas/AddressLocation"
                             }
                         ],
                         "title": "Location"

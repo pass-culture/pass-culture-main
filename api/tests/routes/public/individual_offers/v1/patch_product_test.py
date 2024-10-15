@@ -372,7 +372,8 @@ class PatchProductTest(PublicAPIVenueEndpointHelper, ProductEndpointHelper):
         # 5. update offer
         # 6. reload provider
         # 7. reload offer and related data (before serialization)
-        with assert_num_queries(7):
+        # 8. check venue offerer address
+        with assert_num_queries(8):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
                 "/public/offers/v1/products",
                 json={"offerId": offer_id, "name": new_name, "description": new_desc},
