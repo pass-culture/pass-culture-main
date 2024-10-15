@@ -154,21 +154,12 @@ ENTRYPOINT exec ./entrypoint.sh
 
 ######### CONSOLE #########
 
-FROM lib-dev AS pcapi-console-proxy
-
-COPY /cacert.pem /usr/local/share/ca-certificates/cacert.pem
-ENV REQUESTS_CA_BUNDLE=/usr/local/share/ca-certificates/cacert.pem
-ENV PIP_CERT=/usr/local/share/ca-certificates/cacert.pem 
-ENV CURL_CA_BUNDLE=/usr/local/share/ca-certificates/cacert.pem
-
-FROM lib-dev AS pcapi-console-default
-
-FROM pcapi-console-${network_mode} AS pcapi-console 
+FROM lib-dev AS pcapi-console
 
 USER root
 
 RUN apt update && apt install --no-install-recommends -y curl less gnupg2 && \
-    curl -s https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor > /etc/apt/trusted.gpg.d/pgsql.gpg && \
+    curl -s https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor | tee /etc/apt/trusted.gpg.d/pgsql.gpg && \
     echo "deb [signed-by=/etc/apt/trusted.gpg.d/pgsql.gpg] http://apt.postgresql.org/pub/repos/apt/ `. /etc/os-release && \
     echo $VERSION_CODENAME`-pgdg main" > /etc/apt/sources.list.d/pgdg.list && \
     echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list && \
@@ -179,7 +170,6 @@ RUN apt update && apt install --no-install-recommends -y curl less gnupg2 && \
     rm -rf /var/lib/apt/lists*
 
 USER pcapi
-
 
 ######### TESTS #########
 
