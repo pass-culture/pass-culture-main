@@ -287,7 +287,7 @@ class AllocineMovieCompany(pydantic.BaseModel):
     name: str | None = pydantic.Field(alias="company")
 
     @pydantic.field_validator("name", mode="before")
-    def get_company_from_name(cls, company: dict | None) -> str:
+    def get_company_from_name(cls, company: dict | None) -> str | None:
         return company["name"] if company else None
 
 
