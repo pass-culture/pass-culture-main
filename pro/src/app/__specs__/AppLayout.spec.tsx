@@ -98,6 +98,26 @@ describe('src | AppLayout', () => {
       ).not.toBeInTheDocument()
     })
 
+    it('should render a heading & a back to nav link when main heading text is provided', () => {
+      const headingText = 'Ceci est un titre'
+      renderWithProviders(
+        <AppLayout mainHeading={headingText}>
+          <p>Sub component</p>
+        </AppLayout>,
+        {
+          user: sharedCurrentUserFactory(),
+        }
+      )
+
+      const heading = screen.getByRole('heading', { name: headingText })
+      expect(heading).toBeInTheDocument()
+
+      const backToNavLink = screen.getByRole('link', {
+        name: 'Revenir à la barre de navigation',
+      })
+      expect(backToNavLink).toBeInTheDocument()
+    })
+
     describe('on smaller screen sizes', () => {
       beforeEach(async () => {
         await renderApp(
