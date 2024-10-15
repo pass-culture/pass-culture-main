@@ -21,10 +21,7 @@ export interface LayoutProps {
    * Name of the page to display in the main heading.
    * Make sure that only one heading is displayed per page.
    */
-  mainHeading?: {
-    text: string
-    className?: string
-  }
+  mainHeading?: string
   layout?: 'basic' | 'funnel' | 'without-nav' | 'sticky-actions'
 }
 
@@ -111,14 +108,7 @@ export const Layout = ({
               <main id="content">
                 {mainHeading && (
                   <div className={styles['main-heading-wrapper']}>
-                    <h1
-                      className={cn(
-                        styles['main-heading'],
-                        mainHeading.className
-                      )}
-                    >
-                      {mainHeading.text}
-                    </h1>
+                    <h1 className={styles['main-heading']}>{mainHeading}</h1>
                     <a
                       id="back-to-nav-link"
                       href={

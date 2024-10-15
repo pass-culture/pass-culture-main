@@ -8,12 +8,7 @@ import styles from './Commitment.module.scss'
 
 export const Commitment = () => {
   return (
-    <AccessibilityLayout
-      mainHeading={{
-        text: 'Les engagements du pass Culture pour l’accessibilité numérique',
-        className: styles['heading1-commitment'],
-      }}
-    >
+    <AccessibilityLayout mainHeading="Les engagements du pass Culture pour l’accessibilité numérique">
       <ButtonLink to="/accessibilite/" icon={fullBackIcon}>
         Retour vers la page Informations d’accessibilité
       </ButtonLink>

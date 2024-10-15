@@ -17,10 +17,7 @@ interface OldLayoutProps {
    * Name of the page to display in the main heading.
    * Make sure that only one heading is displayed per page.
    */
-  mainHeading?: {
-    text: string
-    className?: string
-  }
+  mainHeading?: string
   layout?: 'basic' | 'funnel' | 'without-nav' | 'sticky-actions'
 }
 
@@ -35,11 +32,7 @@ export const OldLayout = ({
       return null
     }
 
-    return (
-      <h1 className={classnames(styles['main-heading'], mainHeading.className)}>
-        {mainHeading.text}
-      </h1>
-    )
+    return <h1 className={styles['main-heading']}>{mainHeading}</h1>
   }
 
   return (

@@ -6,12 +6,7 @@ import styles from './MultiyearScheme.module.scss'
 
 export const MultiyearScheme = () => {
   return (
-    <AccessibilityLayout
-      mainHeading={{
-        text: 'Schéma pluriannuel d’accessibilité 2024 - 2025',
-        className: styles['heading1-scheme'],
-      }}
-    >
+    <AccessibilityLayout mainHeading="Schéma pluriannuel d’accessibilité 2024 - 2025">
       <ButtonLink to="/accessibilite/" icon={fullBackIcon}>
         Retour vers la page Informations d’accessibilité
       </ButtonLink>
