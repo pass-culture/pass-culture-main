@@ -27,7 +27,6 @@ interface Args extends SelectAutocompleteProps {
 }
 
 const defaultProps: Args = {
-  pluralLabel: 'Départements',
   name: 'departement',
   options: [
     { value: '01', label: 'Ain' },

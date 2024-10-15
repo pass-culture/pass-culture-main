@@ -41,7 +41,6 @@ describe('SelectAutocomplete', () => {
       { value: '14', label: 'Calvados' },
       { value: '15', label: 'Cantal' },
     ],
-    pluralLabel: 'Départements',
     searchInOptions: searchPatternInOptions,
   }
   const initialValues = { departement: '01', 'search-departement': '' }

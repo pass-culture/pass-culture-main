@@ -50,7 +50,6 @@ export const FormOfferType = ({
           <SelectAutocomplete
             multi
             label="Domaine artistique et culturel"
-            pluralLabel="Domaines artistiques et culturels"
             name="domains"
             options={domainsOptions}
             disabled={disableForm}

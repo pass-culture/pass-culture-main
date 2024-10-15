@@ -33,6 +33,8 @@
     background: none;
     border: none;
     display: flex;
+    white-space: normal;
+    text-align: left;
 
     &--disabled {
       cursor: default;
@@ -40,7 +42,7 @@
 
     &-icon {
       margin: rem.torem(3.2px) 0 rem.torem(1.6px) rem.torem(4.8px);
-      width: rem.torem(11.2px);
+      min-width: rem.torem(11.2px);
       height: rem.torem(11.2px);
     }
   }

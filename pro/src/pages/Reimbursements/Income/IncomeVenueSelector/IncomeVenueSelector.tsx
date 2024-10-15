@@ -36,11 +36,9 @@ export const IncomeVenueSelector = ({
       <SelectAutocomplete
         className={styles['income-venue-selector']}
         name="selectedVenues"
-        label="Partenaires"
+        label="Partenaire(s) sélectionné(s)"
         options={venues}
-        placeholder="Partenaires"
         multi
-        isLabelHidden
       />
     </FormikProvider>
   )
