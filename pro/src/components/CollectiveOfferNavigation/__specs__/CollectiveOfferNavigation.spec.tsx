@@ -1,6 +1,5 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import React from 'react'
 import * as router from 'react-router-dom'
 
 import { ApiRequestOptions } from 'apiClient/adage/core/ApiRequestOptions'
@@ -10,6 +9,7 @@ import {
   ApiError,
   CollectiveOfferResponseIdModel,
   CollectiveOfferStatus,
+  CollectiveOfferTemplateAllowedAction,
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
 } from 'apiClient/v1'
@@ -21,11 +21,14 @@ import {
 import { SENT_DATA_ERROR_MESSAGE } from 'commons/core/shared/constants'
 import * as useNotification from 'commons/hooks/useNotification'
 import {
+  getCollectiveOfferTemplateFactory,
   defaultGetVenue,
   getCollectiveOfferFactory,
-  getCollectiveOfferTemplateFactory,
 } from 'commons/utils/collectiveApiFactories'
-import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import {
+  RenderWithProvidersOptions,
+  renderWithProviders,
+} from 'commons/utils/renderWithProviders'
 import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
 
 import {
@@ -35,7 +38,8 @@ import {
 } from '../CollectiveOfferNavigation'
 
 const renderCollectiveOfferNavigation = (
-  props: CollectiveOfferNavigationProps
+  props: CollectiveOfferNavigationProps,
+  options?: RenderWithProvidersOptions
 ) =>
   renderWithProviders(<CollectiveOfferNavigation {...props} />, {
     storeOverrides: {
@@ -44,6 +48,7 @@ const renderCollectiveOfferNavigation = (
         selectedOffererId: 1,
       },
     },
+    ...options,
   })
 
 vi.mock('react-router-dom', async () => ({
@@ -69,7 +74,10 @@ describe('CollectiveOfferNavigation', () => {
   }
 
   beforeEach(async () => {
-    offer = getCollectiveOfferTemplateFactory({ isTemplate: true })
+    offer = getCollectiveOfferTemplateFactory({
+      isTemplate: true,
+      status: CollectiveOfferStatus.ACTIVE,
+    })
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
@@ -111,8 +119,7 @@ describe('CollectiveOfferNavigation', () => {
   })
 
   it('should display navigation for collective offer in creation', async () => {
-    props.offerId = 0
-    renderCollectiveOfferNavigation(props)
+    renderCollectiveOfferNavigation({ ...props, offerId: 0 })
 
     expect(screen.getByTestId('stepper')).toBeInTheDocument()
 
@@ -275,8 +282,7 @@ describe('CollectiveOfferNavigation', () => {
       ...defaultUseLocationValue,
       pathname: '/offre/${offerId}/collectif/edition',
     })
-    props.isCreatingOffer = false
-    renderCollectiveOfferNavigation(props)
+    renderCollectiveOfferNavigation({ ...props, isCreatingOffer: false })
 
     const links = await screen.findAllByRole('link')
     const tabs = await screen.findAllByRole('tab')
@@ -401,7 +407,7 @@ describe('CollectiveOfferNavigation', () => {
       ...props,
       isTemplate: true,
       isCreatingOffer: false,
-      isArchivable: true,
+      offer,
     })
 
     const archiveButton = screen.getByRole('button', {
@@ -425,7 +431,7 @@ describe('CollectiveOfferNavigation', () => {
       ...props,
       isTemplate: false,
       isCreatingOffer: false,
-      isArchivable: true,
+      offer,
     })
 
     const archiveButton = screen.getByRole('button', {
@@ -449,7 +455,6 @@ describe('CollectiveOfferNavigation', () => {
       ...props,
       isTemplate: true,
       isCreatingOffer: false,
-      isArchivable: false,
     })
 
     const archiveButton = screen.queryByRole('button', {
@@ -459,13 +464,55 @@ describe('CollectiveOfferNavigation', () => {
     expect(archiveButton).not.to.toBeInTheDocument()
   })
 
+  it('should not see archive button when FF status is enable and archive action is not possible', () => {
+    renderCollectiveOfferNavigation(
+      {
+        ...props,
+        isTemplate: true,
+        isCreatingOffer: false,
+        offer: {
+          ...offer,
+          allowedActions: [],
+        },
+      },
+      { features: ['ENABLE_COLLECTIVE_NEW_STATUSES'] }
+    )
+
+    const archiveButton = screen.queryByRole('button', {
+      name: 'Archiver',
+    })
+
+    expect(archiveButton).not.to.toBeInTheDocument()
+  })
+
+  it('should see archive button when FF status is enable and archive action is possible', () => {
+    renderCollectiveOfferNavigation(
+      {
+        ...props,
+        isTemplate: true,
+        isCreatingOffer: false,
+        offer: {
+          ...offer,
+          allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_ARCHIVE],
+        },
+      },
+      { features: ['ENABLE_COLLECTIVE_NEW_STATUSES'] }
+    )
+
+    const archiveButton = screen.getByRole('button', {
+      name: 'Archiver',
+    })
+
+    expect(archiveButton).toBeInTheDocument()
+  })
+
   it('should return an error on offer archiving when the offer id is not valid', async () => {
     renderCollectiveOfferNavigation({
       ...props,
       offerId: undefined,
       isTemplate: true,
       isCreatingOffer: false,
-      isArchivable: true,
+      offer,
     })
 
     const archiveButton = screen.getByRole('button', {
@@ -487,7 +534,7 @@ describe('CollectiveOfferNavigation', () => {
       ...props,
       isTemplate: true,
       isCreatingOffer: false,
-      isArchivable: true,
+      offer,
     })
 
     vi.spyOn(api, 'patchCollectiveOffersTemplateArchive').mockRejectedValueOnce(

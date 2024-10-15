@@ -35,6 +35,7 @@ import {
 import { localStorageAvailable } from 'commons/utils/localStorageAvailable'
 import { ArchiveConfirmationModal } from 'components/ArchiveConfirmationModal/ArchiveConfirmationModal'
 import { canArchiveCollectiveOffer } from 'components/ArchiveConfirmationModal/utils/canArchiveCollectiveOffer'
+import { isCollectiveOfferArchivable } from 'components/ArchiveConfirmationModal/utils/isCollectiveOfferArchivable'
 import { CancelCollectiveBookingModal } from 'components/CancelCollectiveBookingModal/CancelCollectiveBookingModal'
 import fullClearIcon from 'icons/full-clear.svg'
 import fullCopyIcon from 'icons/full-duplicate.svg'
@@ -87,6 +88,10 @@ export const CollectiveActionsCells = ({
 
   const isNewOffersAndBookingsActive = useActiveFeature(
     'WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE'
+  )
+
+  const areCollectiveNewStatusesEnabled = useActiveFeature(
+    'ENABLE_COLLECTIVE_NEW_STATUSES'
   )
 
   const collectiveOffersQueryKeys = getCollectiveOffersSwrKeys({
@@ -224,6 +229,11 @@ export const CollectiveActionsCells = ({
 
   const canDuplicateOffer = offer.status !== CollectiveOfferStatus.DRAFT
 
+  const canArchiveOffer = areCollectiveNewStatusesEnabled
+    ? isCollectiveOfferArchivable(offer)
+    : offer.status !== CollectiveOfferStatus.ARCHIVED &&
+      canArchiveCollectiveOffer(offer)
+
   return (
     <td
       className={cn(styles['offers-table-cell'], styles['actions-column'])}
@@ -355,31 +365,27 @@ export const CollectiveActionsCells = ({
                       </DropdownMenu.Item>
                     </>
                   )}
-                {offer.status !== CollectiveOfferStatus.ARCHIVED &&
-                  canArchiveCollectiveOffer(offer) && (
-                    <>
-                      <DropdownMenu.Separator
-                        className={cn(
-                          styles['separator'],
-                          styles['tablet-only']
-                        )}
-                      />
-                      <DropdownMenu.Item
-                        className={cn(styles['menu-item'])}
-                        onSelect={() => setIsArchivedModalOpen(true)}
-                        asChild
-                      >
-                        <div className={styles['status-filter-label']}>
-                          <Button
-                            icon={strokeThingIcon}
-                            variant={ButtonVariant.TERNARY}
-                          >
-                            Archiver
-                          </Button>
-                        </div>
-                      </DropdownMenu.Item>
-                    </>
-                  )}
+                {canArchiveOffer && (
+                  <>
+                    <DropdownMenu.Separator
+                      className={cn(styles['separator'], styles['tablet-only'])}
+                    />
+                    <DropdownMenu.Item
+                      className={cn(styles['menu-item'])}
+                      onSelect={() => setIsArchivedModalOpen(true)}
+                      asChild
+                    >
+                      <div className={styles['status-filter-label']}>
+                        <Button
+                          icon={strokeThingIcon}
+                          variant={ButtonVariant.TERNARY}
+                        >
+                          Archiver
+                        </Button>
+                      </div>
+                    </DropdownMenu.Item>
+                  </>
+                )}
               </div>
             </DropdownMenu.Content>
           </DropdownMenu.Portal>

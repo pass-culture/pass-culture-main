@@ -18,6 +18,7 @@ import { selectCurrentOffererId } from 'commons/store/user/selectors'
 import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
 import { ArchiveConfirmationModal } from 'components/ArchiveConfirmationModal/ArchiveConfirmationModal'
 import { canArchiveCollectiveOffer } from 'components/ArchiveConfirmationModal/utils/canArchiveCollectiveOffer'
+import { isCollectiveOfferArchivable } from 'components/ArchiveConfirmationModal/utils/isCollectiveOfferArchivable'
 import fullHideIcon from 'icons/full-hide.svg'
 import fullValidateIcon from 'icons/full-validate.svg'
 import strokeThingIcon from 'icons/stroke-thing.svg'
@@ -129,6 +130,10 @@ export function CollectiveOffersActionsBar({
     'ENABLE_COLLECTIVE_NEW_STATUSES'
   )
 
+  const areCollectiveNewStatusesEnabled = useActiveFeature(
+    'ENABLE_COLLECTIVE_NEW_STATUSES'
+  )
+
   const { mutate } = useSWRConfig()
 
   const collectiveOffersQueryKeys = getCollectiveOffersSwrKeys({
@@ -217,7 +222,11 @@ export function CollectiveOffersActionsBar({
 
   function openArchiveOffersDialog() {
     const shouldOpenArchiveDialog = selectedOffers.every((offer) => {
-      if (!canArchiveCollectiveOffer(offer)) {
+      const canArchiveOffer = areCollectiveNewStatusesEnabled
+        ? isCollectiveOfferArchivable(offer)
+        : canArchiveCollectiveOffer(offer)
+
+      if (!canArchiveOffer) {
         notify.error(
           'Les offres liées à des réservations en cours ne peuvent pas être archivées'
         )

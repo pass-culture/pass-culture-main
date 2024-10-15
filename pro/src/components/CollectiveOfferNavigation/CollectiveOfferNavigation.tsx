@@ -32,6 +32,8 @@ import { useNotification } from 'commons/hooks/useNotification'
 import { useOfferStockEditionURL } from 'commons/hooks/useOfferEditionURL'
 import { selectCurrentOffererId } from 'commons/store/user/selectors'
 import { ArchiveConfirmationModal } from 'components/ArchiveConfirmationModal/ArchiveConfirmationModal'
+import { canArchiveCollectiveOfferFromSummary } from 'components/ArchiveConfirmationModal/utils/canArchiveCollectiveOffer'
+import { isCollectiveOfferArchivable } from 'components/ArchiveConfirmationModal/utils/isCollectiveOfferArchivable'
 import { Step, Stepper } from 'components/Stepper/Stepper'
 import fullArchiveIcon from 'icons/full-archive.svg'
 import fullMoreIcon from 'icons/full-more.svg'
@@ -61,7 +63,6 @@ export interface CollectiveOfferNavigationProps {
   className?: string
   isTemplate: boolean
   requestId?: string | null
-  isArchivable?: boolean | null
   offer?:
     | GetCollectiveOfferResponseModel
     | GetCollectiveOfferTemplateResponseModel
@@ -75,7 +76,6 @@ export const CollectiveOfferNavigation = ({
   offerId = 0,
   className,
   requestId = null,
-  isArchivable,
   offer,
 }: CollectiveOfferNavigationProps): JSX.Element => {
   const { logEvent } = useAnalytics()
@@ -83,6 +83,9 @@ export const CollectiveOfferNavigation = ({
   const navigate = useNavigate()
   const location = useLocation()
   const isMarseilleActive = useActiveFeature('WIP_ENABLE_MARSEILLE')
+  const areCollectiveNewStatusesEnabled = useActiveFeature(
+    'ENABLE_COLLECTIVE_NEW_STATUSES'
+  )
   const selectedOffererId = useSelector(selectCurrentOffererId)
 
   const { mutate } = useSWRConfig()
@@ -236,6 +239,10 @@ export const CollectiveOfferNavigation = ({
     }
   }
 
+  const canArchiveOffer = areCollectiveNewStatusesEnabled
+    ? offer && isCollectiveOfferArchivable(offer)
+    : offer && canArchiveCollectiveOfferFromSummary(offer)
+
   return isEditingExistingOffer ? (
     <>
       <div className={styles['duplicate-offer']}>
@@ -245,7 +252,7 @@ export const CollectiveOfferNavigation = ({
           </ButtonLink>
         )}
 
-        {isArchivable && (
+        {canArchiveOffer && (
           <Button
             onClick={() => setIsArchiveModalOpen(true)}
             icon={fullArchiveIcon}
