@@ -61,10 +61,14 @@ export const Homepage = (): JSX.Element => {
   const remoteConfigData = useRemoteConfigParams()
 
   useEffect(() => {
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    api.postProFlags({
-      firebase: remoteConfigData,
-    })
+    const callApi = async () => {
+      await api.postProFlags({
+        firebase: remoteConfigData,
+      })
+    }
+    if (Object.keys(remoteConfigData).length > 0) {
+      void callApi()
+    }
   }, [remoteConfigData])
 
   const userClosedBetaTestBanner = localStorageAvailable()
