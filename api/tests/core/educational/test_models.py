@@ -638,16 +638,23 @@ class CollectiveOfferDisplayedStatusTest:
 
         return offer, stock
 
-    def test_displayed_status(self):
-        for status in (
-            CollectiveOfferDisplayedStatus.ARCHIVED,
-            CollectiveOfferDisplayedStatus.REJECTED,
-            CollectiveOfferDisplayedStatus.PENDING,
-            CollectiveOfferDisplayedStatus.DRAFT,
-            CollectiveOfferDisplayedStatus.INACTIVE,
-        ):
-            offer = factories.create_collective_offer_by_status(status)
-            assert offer.displayedStatus == status
+    @pytest.mark.parametrize("status", set(CollectiveOfferDisplayedStatus))
+    def test_displayed_status(self, status):
+        # for status in CollectiveOfferDisplayedStatus:
+        expected = status
+        if status == CollectiveOfferDisplayedStatus.CANCELLED:
+            expected = CollectiveOfferDisplayedStatus.ACTIVE
+        if status == CollectiveOfferDisplayedStatus.REIMBURSED:
+            expected = CollectiveOfferDisplayedStatus.ENDED
+
+        offer = factories.create_collective_offer_by_status(status)
+        assert offer.displayedStatus == expected
+
+    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    @pytest.mark.parametrize("status", set(CollectiveOfferDisplayedStatus))
+    def test_displayed_status_ff_on(self, status):
+        offer = factories.create_collective_offer_by_status(status)
+        assert offer.displayedStatus == status
 
     def test_displayed_status_no_booking(self):
         offer, _ = self._get_offer_and_stock()
