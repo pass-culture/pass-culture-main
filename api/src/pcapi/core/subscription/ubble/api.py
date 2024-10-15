@@ -11,6 +11,7 @@ from pydantic.v1.networks import HttpUrl
 from pcapi import settings
 from pcapi.connectors.beneficiaries import outscale
 from pcapi.connectors.beneficiaries import ubble
+from pcapi.connectors.serialization import ubble_serializers
 from pcapi.core.external.attributes import api as external_attributes_api
 import pcapi.core.external.batch as batch_notification
 from pcapi.core.external.batch import track_ubble_ko_event
@@ -18,7 +19,6 @@ from pcapi.core.fraud.exceptions import IncompatibleFraudCheckStatus
 import pcapi.core.fraud.models as fraud_models
 from pcapi.core.fraud.ubble import api as ubble_fraud_api
 import pcapi.core.fraud.ubble.constants as ubble_fraud_constants
-import pcapi.core.fraud.ubble.models as ubble_fraud_models
 import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import models as subscription_models
@@ -48,11 +48,11 @@ def update_ubble_workflow(fraud_check: fraud_models.BeneficiaryFraudCheck) -> No
 
     user: users_models.User = fraud_check.user
 
-    if status == ubble_fraud_models.UbbleIdentificationStatus.PROCESSING:
+    if status == ubble_serializers.UbbleIdentificationStatus.PROCESSING:
         fraud_check.status = fraud_models.FraudCheckStatus.PENDING
         pcapi_repository.repository.save(user, fraud_check)
 
-    elif status == ubble_fraud_models.UbbleIdentificationStatus.PROCESSED:
+    elif status == ubble_serializers.UbbleIdentificationStatus.PROCESSED:
         fraud_check = subscription_api.handle_eligibility_difference_between_declaration_and_identity_provider(
             user, fraud_check
         )
@@ -83,8 +83,8 @@ def update_ubble_workflow(fraud_check: fraud_models.BeneficiaryFraudCheck) -> No
             external_attributes_api.update_external_user(user)
 
     elif status in (
-        ubble_fraud_models.UbbleIdentificationStatus.ABORTED,
-        ubble_fraud_models.UbbleIdentificationStatus.EXPIRED,
+        ubble_serializers.UbbleIdentificationStatus.ABORTED,
+        ubble_serializers.UbbleIdentificationStatus.EXPIRED,
     ):
         fraud_check.status = fraud_models.FraudCheckStatus.CANCELED
         pcapi_repository.repository.save(fraud_check)

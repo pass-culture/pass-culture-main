@@ -14,6 +14,7 @@ import time_machine
 
 from pcapi import settings
 from pcapi.connectors.beneficiaries.educonnect import models as educonnect_models
+from pcapi.connectors.serialization import ubble_serializers
 from pcapi.core.factories import BaseFactory
 import pcapi.core.finance.api as finance_api
 import pcapi.core.finance.models as finance_models
@@ -745,7 +746,6 @@ class ExUnderageBeneficiaryWithUbbleFactory(ExUnderageBeneficiaryFactory):
         **kwargs: typing.Any,
     ) -> fraud_models.BeneficiaryFraudCheck | None:
         import pcapi.core.fraud.factories as fraud_factories
-        from pcapi.core.fraud.ubble import models as ubble_fraud_models
 
         if not create:
             return None
@@ -756,7 +756,7 @@ class ExUnderageBeneficiaryWithUbbleFactory(ExUnderageBeneficiaryFactory):
             status=fraud_models.FraudCheckStatus.OK,
             type=fraud_models.FraudCheckType.UBBLE,
             resultContent=fraud_factories.UbbleContentFactory(
-                status=ubble_fraud_models.UbbleIdentificationStatus.PROCESSED,
+                status=ubble_serializers.UbbleIdentificationStatus.PROCESSED,
                 first_name=obj.firstName,
                 last_name=obj.lastName,
                 birth_date=obj.dateOfBirth.date().isoformat(),

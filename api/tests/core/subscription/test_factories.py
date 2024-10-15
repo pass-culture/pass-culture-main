@@ -10,7 +10,7 @@ import factory
 import pytz
 
 from pcapi import settings
-from pcapi.core.fraud.ubble import models as ubble_fraud_models
+from pcapi.connectors.serialization import ubble_serializers
 
 
 class IdentificationState(Enum):
@@ -24,13 +24,13 @@ class IdentificationState(Enum):
 
 
 STATE_STATUS_MAPPING = {
-    IdentificationState.NEW: ubble_fraud_models.UbbleIdentificationStatus.UNINITIATED,
-    IdentificationState.INITIATED: ubble_fraud_models.UbbleIdentificationStatus.INITIATED,
-    IdentificationState.ABORTED: ubble_fraud_models.UbbleIdentificationStatus.ABORTED,
-    IdentificationState.PROCESSING: ubble_fraud_models.UbbleIdentificationStatus.PROCESSING,
-    IdentificationState.VALID: ubble_fraud_models.UbbleIdentificationStatus.PROCESSED,
-    IdentificationState.INVALID: ubble_fraud_models.UbbleIdentificationStatus.PROCESSED,
-    IdentificationState.UNPROCESSABLE: ubble_fraud_models.UbbleIdentificationStatus.PROCESSED,
+    IdentificationState.NEW: ubble_serializers.UbbleIdentificationStatus.UNINITIATED,
+    IdentificationState.INITIATED: ubble_serializers.UbbleIdentificationStatus.INITIATED,
+    IdentificationState.ABORTED: ubble_serializers.UbbleIdentificationStatus.ABORTED,
+    IdentificationState.PROCESSING: ubble_serializers.UbbleIdentificationStatus.PROCESSING,
+    IdentificationState.VALID: ubble_serializers.UbbleIdentificationStatus.PROCESSED,
+    IdentificationState.INVALID: ubble_serializers.UbbleIdentificationStatus.PROCESSED,
+    IdentificationState.UNPROCESSABLE: ubble_serializers.UbbleIdentificationStatus.PROCESSED,
 }
 
 
@@ -44,7 +44,7 @@ class IdentificationIncludedType(Enum):
 
 class UbbleReasonCodeFactory(factory.Factory):
     class Meta:
-        model = ubble_fraud_models.UbbleReasonCode
+        model = ubble_serializers.UbbleReasonCode
 
     class Params:
         error_code = 0
@@ -55,7 +55,7 @@ class UbbleReasonCodeFactory(factory.Factory):
 
 class UbbleReasonCodesFactory(factory.Factory):
     class Meta:
-        model = ubble_fraud_models.UbbleReasonCodes
+        model = ubble_serializers.UbbleReasonCodes
 
     class Params:
         error_codes = []
@@ -67,7 +67,7 @@ class UbbleReasonCodesFactory(factory.Factory):
 
 class UbbleIdentificationRelationshipsFactory(factory.Factory):
     class Meta:
-        model = ubble_fraud_models.UbbleIdentificationRelationships
+        model = ubble_serializers.UbbleIdentificationRelationships
         rename = {"reason_codes": "reason-codes"}
 
     class Params:
@@ -78,7 +78,7 @@ class UbbleIdentificationRelationshipsFactory(factory.Factory):
 
 class UbbleIdentificationDataAttributesFactory(factory.Factory):
     class Meta:
-        model = ubble_fraud_models.UbbleIdentificationAttributes
+        model = ubble_serializers.UbbleIdentificationAttributes
         rename = {
             "anonymized_at": "anonymized-at",
             "created_at": "created-at",
@@ -126,9 +126,9 @@ class UbbleIdentificationDataAttributesFactory(factory.Factory):
     @factory.lazy_attribute
     def score(self):
         return {
-            IdentificationState.UNPROCESSABLE: ubble_fraud_models.UbbleScore.UNDECIDABLE.value,
-            IdentificationState.INVALID: ubble_fraud_models.UbbleScore.INVALID.value,
-            IdentificationState.VALID: ubble_fraud_models.UbbleScore.VALID.value,
+            IdentificationState.UNPROCESSABLE: ubble_serializers.UbbleScore.UNDECIDABLE.value,
+            IdentificationState.INVALID: ubble_serializers.UbbleScore.INVALID.value,
+            IdentificationState.VALID: ubble_serializers.UbbleScore.VALID.value,
         }.get(self.identification_state)
 
     @factory.lazy_attribute
@@ -203,7 +203,7 @@ class UbbleIdentificationDataAttributesFactory(factory.Factory):
 
 class UbbleIdentificationDataFactory(factory.Factory):
     class Meta:
-        model = ubble_fraud_models.UbbleIdentificationData
+        model = ubble_serializers.UbbleIdentificationData
 
     class Params:
         identification_state = IdentificationState.NEW
@@ -222,7 +222,7 @@ class UbbleIdentificationDataFactory(factory.Factory):
 
 class UbbleIdentificationIncludedDocumentsAttributesFactory(factory.Factory):
     class Meta:
-        model = ubble_fraud_models.UbbleIdentificationDocuments
+        model = ubble_serializers.UbbleIdentificationDocuments
         rename = {
             "birth_date": "birth-date",
             "birth_place": "birth-place",
@@ -266,7 +266,7 @@ class UbbleIdentificationIncludedDocumentsAttributesFactory(factory.Factory):
 
 class UbbleIdentificationIncludedDocumentChecksAttributesFactory(factory.Factory):
     class Meta:
-        model = ubble_fraud_models.UbbleIdentificationDocumentChecks
+        model = ubble_serializers.UbbleIdentificationDocumentChecks
         rename = {
             "data_extracted_score": "data-extracted-score",
             "expiry_date_score": "expiry-date-score",
@@ -286,7 +286,7 @@ class UbbleIdentificationIncludedDocumentChecksAttributesFactory(factory.Factory
         identification_state = IdentificationState.VALID
 
     data_extracted_score = None
-    expiry_date_score = ubble_fraud_models.UbbleScore.VALID.value
+    expiry_date_score = ubble_serializers.UbbleScore.VALID.value
     issue_date_score = None
     live_video_capture_score = None
     mrz_validity_score = None
@@ -295,32 +295,32 @@ class UbbleIdentificationIncludedDocumentChecksAttributesFactory(factory.Factory
     ove_front_score = None
     ove_score = None
     quality_score: None
-    supported = ubble_fraud_models.UbbleScore.VALID.value
+    supported = ubble_serializers.UbbleScore.VALID.value
     visual_back_score = None
     visual_front_score = None
 
     @factory.lazy_attribute
     def score(self):
         return {
-            IdentificationState.UNPROCESSABLE: ubble_fraud_models.UbbleScore.INVALID.value,
-            IdentificationState.INVALID: ubble_fraud_models.UbbleScore.INVALID.value,
-            IdentificationState.VALID: ubble_fraud_models.UbbleScore.VALID.value,
+            IdentificationState.UNPROCESSABLE: ubble_serializers.UbbleScore.INVALID.value,
+            IdentificationState.INVALID: ubble_serializers.UbbleScore.INVALID.value,
+            IdentificationState.VALID: ubble_serializers.UbbleScore.VALID.value,
         }.get(self.identification_state)
 
 
 class UbbleIdentificationIncludedDocFaceMatchesAttributesFactory(factory.Factory):
     class Meta:
-        model = ubble_fraud_models.UbbleIdentificationDocFaceMatches
+        model = ubble_serializers.UbbleIdentificationDocFaceMatches
 
     class Params:
         identification_state = IdentificationState.VALID
 
-    score = ubble_fraud_models.UbbleScore.VALID.value
+    score = ubble_serializers.UbbleScore.VALID.value
 
 
 class UbbleIdentificationIncludedFaceChecksAttributesFactory(factory.Factory):
     class Meta:
-        model = ubble_fraud_models.UbbleIdentificationFaceChecks
+        model = ubble_serializers.UbbleIdentificationFaceChecks
         rename = {
             "active_liveness_score": "active-liveness-score",
             "live_video_capture_score": "live-video-capture-score",
@@ -333,19 +333,19 @@ class UbbleIdentificationIncludedFaceChecksAttributesFactory(factory.Factory):
     active_liveness_score = None
     live_video_capture_score = None
     quality_score = None
-    score = ubble_fraud_models.UbbleScore.VALID.value
+    score = ubble_serializers.UbbleScore.VALID.value
 
 
 class UbbleIdentificationIncludedReferenceDataChecksAttributesFactory(factory.Factory):
     class Meta:
-        model = ubble_fraud_models.UbbleIdentificationReferenceDataChecks
+        model = ubble_serializers.UbbleIdentificationReferenceDataChecks
 
-    score = ubble_fraud_models.UbbleScore.VALID.value
+    score = ubble_serializers.UbbleScore.VALID.value
 
 
 class UbbleIdentificationIncludedFactory(factory.Factory):
     class Meta:
-        model = ubble_fraud_models.UbbleIdentificationIncluded
+        model = ubble_serializers.UbbleIdentificationIncluded
         abstract = True
 
     type = None
@@ -355,7 +355,7 @@ class UbbleIdentificationIncludedFactory(factory.Factory):
 
 class UbbleIdentificationIncludedDocumentsFactory(UbbleIdentificationIncludedFactory):
     class Meta:
-        model = ubble_fraud_models.UbbleIdentificationIncludedDocuments
+        model = ubble_serializers.UbbleIdentificationIncludedDocuments
 
     type = IdentificationIncludedType.DOCUMENTS.value
     attributes = factory.SubFactory(UbbleIdentificationIncludedDocumentsAttributesFactory)
@@ -363,7 +363,7 @@ class UbbleIdentificationIncludedDocumentsFactory(UbbleIdentificationIncludedFac
 
 class UbbleIdentificationIncludedDocumentChecksFactory(UbbleIdentificationIncludedFactory):
     class Meta:
-        model = ubble_fraud_models.UbbleIdentificationIncludedDocumentChecks
+        model = ubble_serializers.UbbleIdentificationIncludedDocumentChecks
 
     type = IdentificationIncludedType.DOCUMENT_CHECKS.value
     attributes = factory.SubFactory(UbbleIdentificationIncludedDocumentChecksAttributesFactory)
@@ -371,7 +371,7 @@ class UbbleIdentificationIncludedDocumentChecksFactory(UbbleIdentificationInclud
 
 class UbbleIdentificationIncludedFaceChecksFactory(UbbleIdentificationIncludedFactory):
     class Meta:
-        model = ubble_fraud_models.UbbleIdentificationIncludedFaceChecks
+        model = ubble_serializers.UbbleIdentificationIncludedFaceChecks
 
     type = IdentificationIncludedType.FACE_CHECKS.value
     attributes = factory.SubFactory(UbbleIdentificationIncludedFaceChecksAttributesFactory)
@@ -379,7 +379,7 @@ class UbbleIdentificationIncludedFaceChecksFactory(UbbleIdentificationIncludedFa
 
 class UbbleIdentificationIncludedReferenceDataChecksFactory(UbbleIdentificationIncludedFactory):
     class Meta:
-        model = ubble_fraud_models.UbbleIdentificationIncludedReferenceDataChecks
+        model = ubble_serializers.UbbleIdentificationIncludedReferenceDataChecks
 
     type = IdentificationIncludedType.REFERENCE_DATA_CHECKS.value
     attributes = factory.SubFactory(UbbleIdentificationIncludedReferenceDataChecksAttributesFactory)
@@ -387,7 +387,7 @@ class UbbleIdentificationIncludedReferenceDataChecksFactory(UbbleIdentificationI
 
 class UbbleIdentificationIncludedDocFaceMatchesFactory(UbbleIdentificationIncludedFactory):
     class Meta:
-        model = ubble_fraud_models.UbbleIdentificationIncludedDocFaceMatches
+        model = ubble_serializers.UbbleIdentificationIncludedDocFaceMatches
 
     type = IdentificationIncludedType.DOC_FACE_MATCHES.value
     attributes = factory.SubFactory(UbbleIdentificationIncludedDocFaceMatchesAttributesFactory)
@@ -395,7 +395,7 @@ class UbbleIdentificationIncludedDocFaceMatchesFactory(UbbleIdentificationInclud
 
 class UbbleIdentificationResponseFactory(factory.Factory):
     class Meta:
-        model = ubble_fraud_models.UbbleIdentificationResponse
+        model = ubble_serializers.UbbleIdentificationResponse
 
     class Params:
         identification_state = IdentificationState.NEW
