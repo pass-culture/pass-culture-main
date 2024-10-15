@@ -1,4 +1,5 @@
 ARG network_mode=default
+
 ########## BUILDER ##########
 
 FROM python:3.11-slim AS builder
@@ -22,6 +23,8 @@ COPY ./pyproject.toml ./poetry.lock ./
 
 ENV PATH=$PATH:/home/pcapi/.local/bin
 
+########## BUILDER PROXY ##########
+
 FROM builder AS builder-proxy
 
 COPY /cacert.pem /cacert.pem
@@ -38,6 +41,8 @@ RUN python -m venv $VIRTUAL_ENV
 
 RUN REQUESTS_CA_BUNDLE=/cacert.pem PIP_CERT=/cacert.pem CURL_CA_BUNDLE=/cacert.pem poetry install --without dev --no-root
 
+########## BUILDER DEFAULT ##########
+
 FROM builder AS builder-default
 
 RUN pip install poetry
@@ -52,13 +57,15 @@ RUN python -m venv $VIRTUAL_ENV
 
 RUN poetry install --without dev --no-root
 
-########## DEV BUILDER ##########
+########## DEV BUILDER PROXY ##########
 
 FROM builder-${network_mode} AS builder-dev-proxy
 
 RUN poetry check --lock
 
 RUN REQUESTS_CA_BUNDLE=/cacert.pem PIP_CERT=/cacert.pem CURL_CA_BUNDLE=/cacert.pem poetry install --only dev
+
+########## DEV BUILDER DEFAULT ##########
 
 FROM builder-${network_mode} AS builder-dev-default
 
@@ -147,12 +154,21 @@ ENTRYPOINT exec ./entrypoint.sh
 
 ######### CONSOLE #########
 
-FROM pcapi AS pcapi-console
+FROM lib-dev AS pcapi-console-proxy
+
+COPY /cacert.pem /usr/local/share/ca-certificates/cacert.pem
+ENV REQUESTS_CA_BUNDLE=/usr/local/share/ca-certificates/cacert.pem
+ENV PIP_CERT=/usr/local/share/ca-certificates/cacert.pem 
+ENV CURL_CA_BUNDLE=/usr/local/share/ca-certificates/cacert.pem
+
+FROM lib-dev AS pcapi-console-default
+
+FROM pcapi-console-${network_mode} AS pcapi-console 
 
 USER root
 
 RUN apt update && apt install --no-install-recommends -y curl less gnupg2 && \
-    curl -s https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor | tee /etc/apt/trusted.gpg.d/pgsql.gpg && \
+    curl -s https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor > /etc/apt/trusted.gpg.d/pgsql.gpg && \
     echo "deb [signed-by=/etc/apt/trusted.gpg.d/pgsql.gpg] http://apt.postgresql.org/pub/repos/apt/ `. /etc/os-release && \
     echo $VERSION_CODENAME`-pgdg main" > /etc/apt/sources.list.d/pgdg.list && \
     echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list && \
@@ -163,6 +179,13 @@ RUN apt update && apt install --no-install-recommends -y curl less gnupg2 && \
     rm -rf /var/lib/apt/lists*
 
 USER pcapi
+
+WORKDIR /usr/src/app
+
+RUN pip install \
+    --no-cache-dir \
+    --editable .
+
 
 ######### TESTS #########
 
