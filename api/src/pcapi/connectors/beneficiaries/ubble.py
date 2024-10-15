@@ -11,7 +11,6 @@ from pcapi import settings
 from pcapi.connectors.serialization import ubble_serializers
 from pcapi.core import logging as core_logging
 from pcapi.core.fraud import models as fraud_models
-from pcapi.core.fraud.ubble import models as ubble_fraud_models
 from pcapi.core.users import models as users_models
 from pcapi.models.feature import FeatureToggle
 from pcapi.utils import requests
@@ -21,9 +20,9 @@ logger = logging.getLogger(__name__)
 
 
 INCLUDED_MODELS = {
-    "documents": ubble_fraud_models.UbbleIdentificationDocuments,
-    "document-checks": ubble_fraud_models.UbbleIdentificationDocumentChecks,
-    "reference-data-checks": ubble_fraud_models.UbbleIdentificationReferenceDataChecks,
+    "documents": ubble_serializers.UbbleIdentificationDocuments,
+    "document-checks": ubble_serializers.UbbleIdentificationDocumentChecks,
+    "reference-data-checks": ubble_serializers.UbbleIdentificationReferenceDataChecks,
 }
 
 
@@ -173,7 +172,7 @@ class UbbleV2Backend(UbbleBackend):
         )
         response.raise_for_status()
 
-        ubble_identification = parse_obj_as(ubble_serializers.UbbleIdentificationResponse, response.json())
+        ubble_identification = parse_obj_as(ubble_serializers.UbbleV2IdentificationResponse, response.json())
         ubble_content = ubble_serializers.convert_identification_to_ubble_content(ubble_identification)
 
         logger.info(
@@ -374,7 +373,7 @@ def build_url(path: str, id_: int | str | None = None) -> str:
     return base_url + path
 
 
-def _get_included_attributes(response: dict, type_: str) -> ubble_fraud_models.UbbleIdentificationObject | None:
+def _get_included_attributes(response: dict, type_: str) -> ubble_serializers.UbbleIdentificationObject | None:
     filtered = [incl for incl in response["included"] if incl["type"] == type_]
     if not filtered:
         return None
@@ -419,13 +418,13 @@ def _extract_useful_content_from_response(
     response: dict,
 ) -> fraud_models.UbbleContent:
     documents = typing.cast(
-        ubble_fraud_models.UbbleIdentificationDocuments, _get_included_attributes(response, "documents")
+        ubble_serializers.UbbleIdentificationDocuments, _get_included_attributes(response, "documents")
     )
     document_checks = typing.cast(
-        ubble_fraud_models.UbbleIdentificationDocumentChecks, _get_included_attributes(response, "document-checks")
+        ubble_serializers.UbbleIdentificationDocumentChecks, _get_included_attributes(response, "document-checks")
     )
     reference_data_checks = typing.cast(
-        ubble_fraud_models.UbbleIdentificationReferenceDataChecks,
+        ubble_serializers.UbbleIdentificationReferenceDataChecks,
         _get_included_attributes(response, "reference-data-checks"),
     )
 

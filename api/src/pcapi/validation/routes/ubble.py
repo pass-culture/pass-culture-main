@@ -9,13 +9,14 @@ import flask
 import pydantic.v1 as pydantic_v1
 
 from pcapi import settings
-from pcapi.core.fraud.ubble import models as ubble_fraud_models
+from pcapi.connectors.serialization import ubble_serializers
 from pcapi.models.api_errors import ForbiddenError
 
 
 UBBLE_SIGNATURE_RE = re.compile(r"^ts=(?P<ts>\d+),v1=(?P<v1>\S{64})$")
 
 
+# TODO move this file to serialization
 class Configuration(pydantic_v1.BaseModel):
     id: int
     name: str
@@ -23,7 +24,7 @@ class Configuration(pydantic_v1.BaseModel):
 
 class WebhookRequest(pydantic_v1.BaseModel):
     identification_id: str
-    status: ubble_fraud_models.UbbleIdentificationStatus
+    status: ubble_serializers.UbbleIdentificationStatus
     configuration: Configuration
 
 

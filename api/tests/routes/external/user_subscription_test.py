@@ -13,12 +13,12 @@ import time_machine
 from pcapi import settings
 from pcapi.connectors.dms import api as api_dms
 from pcapi.connectors.dms import models as dms_models
+from pcapi.connectors.serialization import ubble_serializers
 from pcapi.core import testing
 from pcapi.core.fraud import api as fraud_api
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.fraud.ubble import api as ubble_fraud_api
-from pcapi.core.fraud.ubble import models as ubble_fraud_models
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import messages as subscription_messages
@@ -1207,15 +1207,15 @@ class UbbleWebhookTest:
         document = list(filter(lambda included: included.type == "documents", ubble_identification_response.included))[
             0
         ].attributes
-        assert content.score == ubble_fraud_models.UbbleScore.VALID.value
+        assert content.score == ubble_serializers.UbbleScore.VALID.value
         assert content.status == test_factories.STATE_STATUS_MAPPING[notified_identification_state]
         assert content.comment == ubble_identification_response.data.attributes.comment
         assert content.last_name == document.last_name
         assert content.first_name == document.first_name
         assert str(content.birth_date) == document.birth_date
-        assert content.supported == ubble_fraud_models.UbbleScore.VALID.value
+        assert content.supported == ubble_serializers.UbbleScore.VALID.value
         assert content.document_type == document.document_type
-        assert content.expiry_date_score == ubble_fraud_models.UbbleScore.VALID.value
+        assert content.expiry_date_score == ubble_serializers.UbbleScore.VALID.value
         assert str(content.identification_id) == ubble_identification_response.data.attributes.identification_id
         assert content.id_document_number == document.document_number
         assert (
@@ -1258,7 +1258,7 @@ class UbbleWebhookTest:
         document_check = list(
             filter(lambda included: included.type == "document-checks", ubble_identification_response.included)
         )[0].attributes
-        assert content.score == ubble_fraud_models.UbbleScore.INVALID.value
+        assert content.score == ubble_serializers.UbbleScore.INVALID.value
         assert content.status == test_factories.STATE_STATUS_MAPPING[notified_identification_state]
         assert content.comment == ubble_identification_response.data.attributes.comment
         assert content.last_name == document.last_name
@@ -1303,7 +1303,7 @@ class UbbleWebhookTest:
         document_check = list(
             filter(lambda included: included.type == "document-checks", ubble_identification_response.included)
         )[0].attributes
-        assert content.score == ubble_fraud_models.UbbleScore.UNDECIDABLE.value
+        assert content.score == ubble_serializers.UbbleScore.UNDECIDABLE.value
         assert content.status == test_factories.STATE_STATUS_MAPPING[notified_identification_state]
         assert content.comment == ubble_identification_response.data.attributes.comment
         assert content.last_name == document.last_name
@@ -1368,7 +1368,7 @@ class UbbleWebhookTest:
             reasonCodes=None,
             eligibilityType=users_models.EligibilityType.AGE18,
         )
-        request_data = self._get_request_body(fraud_check, ubble_fraud_models.UbbleIdentificationStatus.PROCESSED)
+        request_data = self._get_request_body(fraud_check, ubble_serializers.UbbleIdentificationStatus.PROCESSED)
         ubble_identification_response = test_factories.UbbleIdentificationResponseFactory(
             identification_state=test_factories.IdentificationState.VALID,
             data__attributes__identification_id=str(request_data.identification_id),
@@ -1409,7 +1409,7 @@ class UbbleWebhookTest:
             reasonCodes=None,
             eligibilityType=users_models.EligibilityType.AGE18,
         )
-        request_data = self._get_request_body(fraud_check, ubble_fraud_models.UbbleIdentificationStatus.PROCESSED)
+        request_data = self._get_request_body(fraud_check, ubble_serializers.UbbleIdentificationStatus.PROCESSED)
         ubble_identification_response = test_factories.UbbleIdentificationResponseFactory(
             identification_state=test_factories.IdentificationState.VALID,
             data__attributes__identification_id=str(request_data.identification_id),
@@ -1451,7 +1451,7 @@ class UbbleWebhookTest:
             reasonCodes=None,
             eligibilityType=users_models.EligibilityType.AGE18,
         )
-        request_data = self._get_request_body(fraud_check, ubble_fraud_models.UbbleIdentificationStatus.PROCESSED)
+        request_data = self._get_request_body(fraud_check, ubble_serializers.UbbleIdentificationStatus.PROCESSED)
         ubble_identification_response = test_factories.UbbleIdentificationResponseFactory(
             identification_state=test_factories.IdentificationState.VALID,
             data__attributes__identification_id=str(request_data.identification_id),
@@ -1494,7 +1494,7 @@ class UbbleWebhookTest:
                 "last_name": None,
                 "registration_datetime": datetime.datetime.utcnow().isoformat(),
                 "score": None,
-                "status": ubble_fraud_models.UbbleIdentificationStatus.PROCESSING.value,
+                "status": ubble_serializers.UbbleIdentificationStatus.PROCESSING.value,
                 "supported": None,
             },
             status=fraud_models.FraudCheckStatus.PENDING,
@@ -1514,7 +1514,7 @@ class UbbleWebhookTest:
             eligibilityType=users_models.EligibilityType.AGE18,
         )
         repository.save(honor_fraud_check)
-        request_data = self._get_request_body(ubble_fraud_check, ubble_fraud_models.UbbleIdentificationStatus.PROCESSED)
+        request_data = self._get_request_body(ubble_fraud_check, ubble_serializers.UbbleIdentificationStatus.PROCESSED)
         return user, ubble_fraud_check, request_data
 
     def _post_webhook(self, client, ubble_mocker, request_data, ubble_identification_response):
@@ -1579,7 +1579,7 @@ class UbbleWebhookTest:
         )
         user, ubble_fraud_check, request_data = self._init_decision_test()
 
-        request_data = self._get_request_body(ubble_fraud_check, ubble_fraud_models.UbbleIdentificationStatus.PROCESSED)
+        request_data = self._get_request_body(ubble_fraud_check, ubble_serializers.UbbleIdentificationStatus.PROCESSED)
         ubble_identification_response = test_factories.UbbleIdentificationResponseFactory(
             identification_state=test_factories.IdentificationState.VALID,
             data__attributes__identification_id=str(request_data.identification_id),
@@ -1592,29 +1592,29 @@ class UbbleWebhookTest:
                     attributes__last_name=user.lastName,
                 ),
                 test_factories.UbbleIdentificationIncludedDocumentChecksFactory(
-                    attributes__data_extracted_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__expiry_date_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__issue_date_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__live_video_capture_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__mrz_validity_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__mrz_viz_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__ove_back_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__ove_front_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__ove_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__quality_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__visual_back_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__visual_front_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__data_extracted_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__expiry_date_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__issue_date_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__live_video_capture_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__mrz_validity_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__mrz_viz_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__ove_back_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__ove_front_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__ove_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__quality_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__visual_back_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__visual_front_score=ubble_serializers.UbbleScore.VALID.value,
                 ),
                 test_factories.UbbleIdentificationIncludedFaceChecksFactory(
-                    attributes__active_liveness_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__live_video_capture_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__quality_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__active_liveness_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__live_video_capture_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__quality_score=ubble_serializers.UbbleScore.VALID.value,
                 ),
                 test_factories.UbbleIdentificationIncludedDocFaceMatchesFactory(
-                    attributes__score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__score=ubble_serializers.UbbleScore.VALID.value,
                 ),
                 test_factories.UbbleIdentificationIncludedReferenceDataChecksFactory(
-                    attributes__score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__score=ubble_serializers.UbbleScore.VALID.value,
                 ),
             ],
         )
@@ -1660,29 +1660,29 @@ class UbbleWebhookTest:
                     attributes__last_name=existing_user.lastName,
                 ),
                 test_factories.UbbleIdentificationIncludedDocumentChecksFactory(
-                    attributes__data_extracted_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__expiry_date_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__issue_date_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__live_video_capture_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__mrz_validity_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__mrz_viz_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__ove_back_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__ove_front_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__ove_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__quality_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__visual_back_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__visual_front_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__data_extracted_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__expiry_date_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__issue_date_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__live_video_capture_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__mrz_validity_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__mrz_viz_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__ove_back_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__ove_front_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__ove_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__quality_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__visual_back_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__visual_front_score=ubble_serializers.UbbleScore.VALID.value,
                 ),
                 test_factories.UbbleIdentificationIncludedFaceChecksFactory(
-                    attributes__active_liveness_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__live_video_capture_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__quality_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__active_liveness_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__live_video_capture_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__quality_score=ubble_serializers.UbbleScore.VALID.value,
                 ),
                 test_factories.UbbleIdentificationIncludedDocFaceMatchesFactory(
-                    attributes__score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__score=ubble_serializers.UbbleScore.VALID.value,
                 ),
                 test_factories.UbbleIdentificationIncludedReferenceDataChecksFactory(
-                    attributes__score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__score=ubble_serializers.UbbleScore.VALID.value,
                 ),
             ],
         )
@@ -1736,29 +1736,29 @@ class UbbleWebhookTest:
                     attributes__last_name="Doe",
                 ),
                 test_factories.UbbleIdentificationIncludedDocumentChecksFactory(
-                    attributes__data_extracted_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__expiry_date_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__issue_date_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__live_video_capture_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__mrz_validity_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__mrz_viz_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__ove_back_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__ove_front_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__ove_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__quality_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__visual_back_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__visual_front_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__data_extracted_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__expiry_date_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__issue_date_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__live_video_capture_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__mrz_validity_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__mrz_viz_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__ove_back_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__ove_front_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__ove_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__quality_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__visual_back_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__visual_front_score=ubble_serializers.UbbleScore.VALID.value,
                 ),
                 test_factories.UbbleIdentificationIncludedFaceChecksFactory(
-                    attributes__active_liveness_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__live_video_capture_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__quality_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__active_liveness_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__live_video_capture_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__quality_score=ubble_serializers.UbbleScore.VALID.value,
                 ),
                 test_factories.UbbleIdentificationIncludedDocFaceMatchesFactory(
-                    attributes__score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__score=ubble_serializers.UbbleScore.VALID.value,
                 ),
                 test_factories.UbbleIdentificationIncludedReferenceDataChecksFactory(
-                    attributes__score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__score=ubble_serializers.UbbleScore.VALID.value,
                 ),
             ],
         )
@@ -1805,30 +1805,30 @@ class UbbleWebhookTest:
                     attributes__last_name="FRAUDSTER",
                 ),
                 test_factories.UbbleIdentificationIncludedDocumentChecksFactory(
-                    attributes__supported=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__data_extracted_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__expiry_date_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__issue_date_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__live_video_capture_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__mrz_validity_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__mrz_viz_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__ove_back_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__ove_front_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__ove_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__quality_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__visual_back_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__visual_front_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__supported=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__data_extracted_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__expiry_date_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__issue_date_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__live_video_capture_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__mrz_validity_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__mrz_viz_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__ove_back_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__ove_front_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__ove_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__quality_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__visual_back_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__visual_front_score=ubble_serializers.UbbleScore.VALID.value,
                 ),
                 test_factories.UbbleIdentificationIncludedFaceChecksFactory(
-                    attributes__active_liveness_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__live_video_capture_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__quality_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__active_liveness_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__live_video_capture_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__quality_score=ubble_serializers.UbbleScore.VALID.value,
                 ),
                 test_factories.UbbleIdentificationIncludedDocFaceMatchesFactory(
-                    attributes__score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__score=ubble_serializers.UbbleScore.VALID.value,
                 ),
                 test_factories.UbbleIdentificationIncludedReferenceDataChecksFactory(
-                    attributes__score=ubble_fraud_models.UbbleScore.INVALID.value,  # 0
+                    attributes__score=ubble_serializers.UbbleScore.INVALID.value,  # 0
                 ),
             ],
         )
@@ -1947,30 +1947,30 @@ class UbbleWebhookTest:
                     attributes__last_name="FRAUDSTER",
                 ),
                 test_factories.UbbleIdentificationIncludedDocumentChecksFactory(
-                    attributes__supported=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__data_extracted_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__expiry_date_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__issue_date_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__live_video_capture_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__mrz_validity_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__mrz_viz_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__ove_back_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__ove_front_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__ove_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__quality_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__visual_back_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__visual_front_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__supported=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__data_extracted_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__expiry_date_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__issue_date_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__live_video_capture_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__mrz_validity_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__mrz_viz_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__ove_back_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__ove_front_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__ove_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__quality_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__visual_back_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__visual_front_score=ubble_serializers.UbbleScore.VALID.value,
                 ),
                 test_factories.UbbleIdentificationIncludedFaceChecksFactory(
-                    attributes__active_liveness_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__live_video_capture_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__quality_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__active_liveness_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__live_video_capture_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__quality_score=ubble_serializers.UbbleScore.VALID.value,
                 ),
                 test_factories.UbbleIdentificationIncludedDocFaceMatchesFactory(
-                    attributes__score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__score=ubble_serializers.UbbleScore.VALID.value,
                 ),
                 test_factories.UbbleIdentificationIncludedReferenceDataChecksFactory(
-                    attributes__score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__score=ubble_serializers.UbbleScore.VALID.value,
                 ),
             ],
         )
@@ -1994,7 +1994,7 @@ class UbbleWebhookTest:
 
     @pytest.mark.parametrize(
         "ref_data_check_score",
-        [ubble_fraud_models.UbbleScore.VALID.value, ubble_fraud_models.UbbleScore.UNDECIDABLE.value],
+        [ubble_serializers.UbbleScore.VALID.value, ubble_serializers.UbbleScore.UNDECIDABLE.value],
     )
     def test_decision_document_not_supported(self, client, ubble_mocker, ref_data_check_score):
         user, ubble_fraud_check, request_data = self._init_decision_test()
@@ -2017,27 +2017,27 @@ class UbbleWebhookTest:
                     attributes__last_name=None,
                 ),
                 test_factories.UbbleIdentificationIncludedDocumentChecksFactory(
-                    attributes__supported=ubble_fraud_models.UbbleScore.INVALID.value,  # 0
-                    attributes__data_extracted_score=ubble_fraud_models.UbbleScore.UNDECIDABLE.value,  # -1
-                    attributes__expiry_date_score=ubble_fraud_models.UbbleScore.UNDECIDABLE.value,  # -1
-                    attributes__issue_date_score=ubble_fraud_models.UbbleScore.UNDECIDABLE.value,
-                    attributes__live_video_capture_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__mrz_validity_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__mrz_viz_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__ove_back_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__ove_front_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__ove_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__quality_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__visual_back_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__visual_front_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__supported=ubble_serializers.UbbleScore.INVALID.value,  # 0
+                    attributes__data_extracted_score=ubble_serializers.UbbleScore.UNDECIDABLE.value,  # -1
+                    attributes__expiry_date_score=ubble_serializers.UbbleScore.UNDECIDABLE.value,  # -1
+                    attributes__issue_date_score=ubble_serializers.UbbleScore.UNDECIDABLE.value,
+                    attributes__live_video_capture_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__mrz_validity_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__mrz_viz_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__ove_back_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__ove_front_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__ove_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__quality_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__visual_back_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__visual_front_score=ubble_serializers.UbbleScore.VALID.value,
                 ),
                 test_factories.UbbleIdentificationIncludedFaceChecksFactory(
-                    attributes__active_liveness_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__live_video_capture_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__quality_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__active_liveness_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__live_video_capture_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__quality_score=ubble_serializers.UbbleScore.VALID.value,
                 ),
                 test_factories.UbbleIdentificationIncludedDocFaceMatchesFactory(
-                    attributes__score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__score=ubble_serializers.UbbleScore.VALID.value,
                 ),
                 test_factories.UbbleIdentificationIncludedReferenceDataChecksFactory(
                     attributes__score=ref_data_check_score,  # 1 or -1
@@ -2066,11 +2066,11 @@ class UbbleWebhookTest:
         self._assert_email_sent(user, 385)
 
     @pytest.mark.parametrize(
-        "doc_supported", [ubble_fraud_models.UbbleScore.VALID.value, ubble_fraud_models.UbbleScore.UNDECIDABLE.value]
+        "doc_supported", [ubble_serializers.UbbleScore.VALID.value, ubble_serializers.UbbleScore.UNDECIDABLE.value]
     )
     @pytest.mark.parametrize(
         "ref_data_check_score",
-        [ubble_fraud_models.UbbleScore.VALID.value, ubble_fraud_models.UbbleScore.UNDECIDABLE.value],
+        [ubble_serializers.UbbleScore.VALID.value, ubble_serializers.UbbleScore.UNDECIDABLE.value],
     )
     def test_decision_document_expired(self, client, ubble_mocker, ref_data_check_score, doc_supported):
         user, ubble_fraud_check, request_data = self._init_decision_test()
@@ -2095,26 +2095,26 @@ class UbbleWebhookTest:
                 ),
                 test_factories.UbbleIdentificationIncludedDocumentChecksFactory(
                     attributes__supported=doc_supported,  # 1 or -1
-                    attributes__data_extracted_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__expiry_date_score=ubble_fraud_models.UbbleScore.INVALID.value,  # 0
-                    attributes__issue_date_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__live_video_capture_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__mrz_validity_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__mrz_viz_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__ove_back_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__ove_front_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__ove_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__quality_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__visual_back_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__visual_front_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__data_extracted_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__expiry_date_score=ubble_serializers.UbbleScore.INVALID.value,  # 0
+                    attributes__issue_date_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__live_video_capture_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__mrz_validity_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__mrz_viz_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__ove_back_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__ove_front_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__ove_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__quality_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__visual_back_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__visual_front_score=ubble_serializers.UbbleScore.VALID.value,
                 ),
                 test_factories.UbbleIdentificationIncludedFaceChecksFactory(
-                    attributes__active_liveness_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__live_video_capture_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__quality_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__active_liveness_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__live_video_capture_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__quality_score=ubble_serializers.UbbleScore.VALID.value,
                 ),
                 test_factories.UbbleIdentificationIncludedDocFaceMatchesFactory(
-                    attributes__score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__score=ubble_serializers.UbbleScore.VALID.value,
                 ),
                 test_factories.UbbleIdentificationIncludedReferenceDataChecksFactory(
                     attributes__score=ref_data_check_score,  # 1 or -1
@@ -2169,30 +2169,30 @@ class UbbleWebhookTest:
                     attributes__last_name="Doe",
                 ),
                 test_factories.UbbleIdentificationIncludedDocumentChecksFactory(
-                    attributes__supported=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__data_extracted_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__expiry_date_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__issue_date_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__live_video_capture_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__mrz_validity_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__mrz_viz_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__ove_back_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__ove_front_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__ove_score=ubble_fraud_models.UbbleScore.INVALID.value,
-                    attributes__quality_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__visual_back_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__visual_front_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__supported=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__data_extracted_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__expiry_date_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__issue_date_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__live_video_capture_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__mrz_validity_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__mrz_viz_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__ove_back_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__ove_front_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__ove_score=ubble_serializers.UbbleScore.INVALID.value,
+                    attributes__quality_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__visual_back_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__visual_front_score=ubble_serializers.UbbleScore.VALID.value,
                 ),
                 test_factories.UbbleIdentificationIncludedFaceChecksFactory(
-                    attributes__active_liveness_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__live_video_capture_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__quality_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__active_liveness_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__live_video_capture_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__quality_score=ubble_serializers.UbbleScore.VALID.value,
                 ),
                 test_factories.UbbleIdentificationIncludedDocFaceMatchesFactory(
-                    attributes__score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__score=ubble_serializers.UbbleScore.VALID.value,
                 ),
                 test_factories.UbbleIdentificationIncludedReferenceDataChecksFactory(
-                    attributes__score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__score=ubble_serializers.UbbleScore.VALID.value,
                 ),
             ],
         )
@@ -2273,30 +2273,30 @@ class UbbleWebhookTest:
                     attributes__last_name="Doe",
                 ),
                 test_factories.UbbleIdentificationIncludedDocumentChecksFactory(
-                    attributes__supported=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__data_extracted_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__expiry_date_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__issue_date_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__live_video_capture_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__mrz_validity_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__mrz_viz_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__ove_back_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__ove_front_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__ove_score=ubble_fraud_models.UbbleScore.INVALID.value,
-                    attributes__quality_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__visual_back_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__visual_front_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__supported=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__data_extracted_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__expiry_date_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__issue_date_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__live_video_capture_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__mrz_validity_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__mrz_viz_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__ove_back_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__ove_front_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__ove_score=ubble_serializers.UbbleScore.INVALID.value,
+                    attributes__quality_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__visual_back_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__visual_front_score=ubble_serializers.UbbleScore.VALID.value,
                 ),
                 test_factories.UbbleIdentificationIncludedFaceChecksFactory(
-                    attributes__active_liveness_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__live_video_capture_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__quality_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__active_liveness_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__live_video_capture_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__quality_score=ubble_serializers.UbbleScore.VALID.value,
                 ),
                 test_factories.UbbleIdentificationIncludedDocFaceMatchesFactory(
-                    attributes__score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__score=ubble_serializers.UbbleScore.VALID.value,
                 ),
                 test_factories.UbbleIdentificationIncludedReferenceDataChecksFactory(
-                    attributes__score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__score=ubble_serializers.UbbleScore.VALID.value,
                 ),
             ],
         )
@@ -2322,14 +2322,14 @@ class UbbleWebhookTest:
         assert mails_testing.outbox[0]["template"]["id_prod"] == 760
 
     @pytest.mark.parametrize(
-        "expiry_score", [ubble_fraud_models.UbbleScore.VALID.value, ubble_fraud_models.UbbleScore.UNDECIDABLE.value]
+        "expiry_score", [ubble_serializers.UbbleScore.VALID.value, ubble_serializers.UbbleScore.UNDECIDABLE.value]
     )
     @pytest.mark.parametrize(
-        "doc_supported", [ubble_fraud_models.UbbleScore.VALID.value, ubble_fraud_models.UbbleScore.UNDECIDABLE.value]
+        "doc_supported", [ubble_serializers.UbbleScore.VALID.value, ubble_serializers.UbbleScore.UNDECIDABLE.value]
     )
     @pytest.mark.parametrize(
         "ref_data_check_score",
-        [ubble_fraud_models.UbbleScore.VALID.value, ubble_fraud_models.UbbleScore.UNDECIDABLE.value],
+        [ubble_serializers.UbbleScore.VALID.value, ubble_serializers.UbbleScore.UNDECIDABLE.value],
     )
     def test_decision_invalid_for_another_reason(
         self, client, ubble_mocker, ref_data_check_score, doc_supported, expiry_score
@@ -2349,26 +2349,26 @@ class UbbleWebhookTest:
                 ),
                 test_factories.UbbleIdentificationIncludedDocumentChecksFactory(
                     attributes__supported=doc_supported,  # 1 or -1
-                    attributes__data_extracted_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__data_extracted_score=ubble_serializers.UbbleScore.VALID.value,
                     attributes__expiry_date_score=expiry_score,  # 1 or -1
-                    attributes__issue_date_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__live_video_capture_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__mrz_validity_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__mrz_viz_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__ove_back_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__ove_front_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__ove_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__quality_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__visual_back_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__visual_front_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__issue_date_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__live_video_capture_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__mrz_validity_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__mrz_viz_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__ove_back_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__ove_front_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__ove_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__quality_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__visual_back_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__visual_front_score=ubble_serializers.UbbleScore.VALID.value,
                 ),
                 test_factories.UbbleIdentificationIncludedFaceChecksFactory(
-                    attributes__active_liveness_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__live_video_capture_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__quality_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__active_liveness_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__live_video_capture_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__quality_score=ubble_serializers.UbbleScore.VALID.value,
                 ),
                 test_factories.UbbleIdentificationIncludedDocFaceMatchesFactory(
-                    attributes__score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__score=ubble_serializers.UbbleScore.VALID.value,
                 ),
                 test_factories.UbbleIdentificationIncludedReferenceDataChecksFactory(
                     attributes__score=ref_data_check_score,  # 1 or -1
@@ -2397,25 +2397,25 @@ class UbbleWebhookTest:
     @pytest.mark.parametrize(
         "expiry_score",
         [
-            ubble_fraud_models.UbbleScore.VALID.value,
-            ubble_fraud_models.UbbleScore.UNDECIDABLE.value,
-            ubble_fraud_models.UbbleScore.UNDECIDABLE.value,
+            ubble_serializers.UbbleScore.VALID.value,
+            ubble_serializers.UbbleScore.UNDECIDABLE.value,
+            ubble_serializers.UbbleScore.UNDECIDABLE.value,
         ],
     )
     @pytest.mark.parametrize(
         "doc_supported",
         [
-            ubble_fraud_models.UbbleScore.VALID.value,
-            ubble_fraud_models.UbbleScore.UNDECIDABLE.value,
-            ubble_fraud_models.UbbleScore.UNDECIDABLE.value,
+            ubble_serializers.UbbleScore.VALID.value,
+            ubble_serializers.UbbleScore.UNDECIDABLE.value,
+            ubble_serializers.UbbleScore.UNDECIDABLE.value,
         ],
     )
     @pytest.mark.parametrize(
         "ref_data_check_score",
         [
-            ubble_fraud_models.UbbleScore.VALID.value,
-            ubble_fraud_models.UbbleScore.UNDECIDABLE.value,
-            ubble_fraud_models.UbbleScore.UNDECIDABLE.value,
+            ubble_serializers.UbbleScore.VALID.value,
+            ubble_serializers.UbbleScore.UNDECIDABLE.value,
+            ubble_serializers.UbbleScore.UNDECIDABLE.value,
         ],
     )
     def test_decision_unprocessable(self, client, ubble_mocker, ref_data_check_score, doc_supported, expiry_score):
@@ -2440,26 +2440,26 @@ class UbbleWebhookTest:
                 ),
                 test_factories.UbbleIdentificationIncludedDocumentChecksFactory(
                     attributes__supported=doc_supported,  # 1, 0 or -1
-                    attributes__data_extracted_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__data_extracted_score=ubble_serializers.UbbleScore.VALID.value,
                     attributes__expiry_date_score=expiry_score,  # 1, 0 or -1
-                    attributes__issue_date_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__live_video_capture_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__mrz_validity_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__mrz_viz_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__ove_back_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__ove_front_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__ove_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__quality_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__visual_back_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__visual_front_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__issue_date_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__live_video_capture_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__mrz_validity_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__mrz_viz_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__ove_back_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__ove_front_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__ove_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__quality_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__visual_back_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__visual_front_score=ubble_serializers.UbbleScore.VALID.value,
                 ),
                 test_factories.UbbleIdentificationIncludedFaceChecksFactory(
-                    attributes__active_liveness_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__live_video_capture_score=ubble_fraud_models.UbbleScore.VALID.value,
-                    attributes__quality_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__active_liveness_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__live_video_capture_score=ubble_serializers.UbbleScore.VALID.value,
+                    attributes__quality_score=ubble_serializers.UbbleScore.VALID.value,
                 ),
                 test_factories.UbbleIdentificationIncludedDocFaceMatchesFactory(
-                    attributes__score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__score=ubble_serializers.UbbleScore.VALID.value,
                 ),
                 test_factories.UbbleIdentificationIncludedReferenceDataChecksFactory(
                     attributes__score=ref_data_check_score,  # 1, 0 or -1

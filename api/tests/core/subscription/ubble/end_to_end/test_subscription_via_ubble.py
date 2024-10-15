@@ -10,9 +10,9 @@ import requests_mock
 import time_machine
 
 from pcapi import settings
+from pcapi.connectors.serialization.ubble_serializers import UbbleIdentificationStatus
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
-from pcapi.core.fraud.ubble.models import UbbleIdentificationStatus
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.users import factories as users_factories

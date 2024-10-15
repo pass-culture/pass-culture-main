@@ -5,9 +5,9 @@ import pytest
 import time_machine
 
 from pcapi import settings
+from pcapi.connectors.serialization import ubble_serializers
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
-from pcapi.core.fraud.ubble import models as ubble_fraud_models
 from pcapi.core.subscription.models import SubscriptionStepCompletionState
 import pcapi.core.subscription.ubble.models as ubble_models
 from pcapi.core.testing import assert_num_queries
@@ -109,7 +109,7 @@ class NextStepTest:
             (
                 fraud_models.FraudCheckStatus.STARTED,
                 None,
-                ubble_fraud_models.UbbleIdentificationStatus.INITIATED,
+                ubble_serializers.UbbleIdentificationStatus.INITIATED,
                 "identity-check",
                 False,
                 None,
@@ -117,7 +117,7 @@ class NextStepTest:
             (
                 fraud_models.FraudCheckStatus.PENDING,
                 None,
-                ubble_fraud_models.UbbleIdentificationStatus.PROCESSING,
+                ubble_serializers.UbbleIdentificationStatus.PROCESSING,
                 "honor-statement",
                 True,
                 None,
@@ -125,7 +125,7 @@ class NextStepTest:
             (
                 fraud_models.FraudCheckStatus.OK,
                 None,
-                ubble_fraud_models.UbbleIdentificationStatus.PROCESSED,
+                ubble_serializers.UbbleIdentificationStatus.PROCESSED,
                 "honor-statement",
                 False,
                 None,
@@ -133,7 +133,7 @@ class NextStepTest:
             (
                 fraud_models.FraudCheckStatus.KO,
                 fraud_models.FraudReasonCode.AGE_TOO_OLD,
-                ubble_fraud_models.UbbleIdentificationStatus.PROCESSED,
+                ubble_serializers.UbbleIdentificationStatus.PROCESSED,
                 None,
                 False,
                 {
@@ -145,7 +145,7 @@ class NextStepTest:
             (
                 fraud_models.FraudCheckStatus.CANCELED,
                 None,
-                ubble_fraud_models.UbbleIdentificationStatus.ABORTED,
+                ubble_serializers.UbbleIdentificationStatus.ABORTED,
                 "identity-check",
                 False,
                 None,
@@ -153,7 +153,7 @@ class NextStepTest:
             (
                 fraud_models.FraudCheckStatus.SUSPICIOUS,
                 fraud_models.FraudReasonCode.ID_CHECK_NOT_SUPPORTED,
-                ubble_fraud_models.UbbleIdentificationStatus.PROCESSED,
+                ubble_serializers.UbbleIdentificationStatus.PROCESSED,
                 "identity-check",  # User can retry
                 False,
                 {
@@ -322,7 +322,7 @@ class NextStepTest:
             type=fraud_models.FraudCheckType.UBBLE,
             status=fraud_models.FraudCheckStatus.PENDING,
             resultContent=fraud_factories.UbbleContentFactory(
-                status=ubble_fraud_models.UbbleIdentificationStatus.PROCESSING
+                status=ubble_serializers.UbbleIdentificationStatus.PROCESSING
             ),
             eligibilityType=users_models.EligibilityType.AGE18,
         )
@@ -361,7 +361,7 @@ class NextStepTest:
         # ubble now confirms the status
         ubble_fraud_check.status = fraud_models.FraudCheckStatus.OK
         ubble_fraud_check.resultContent = fraud_factories.UbbleContentFactory(
-            status=ubble_fraud_models.UbbleIdentificationStatus.PROCESSED
+            status=ubble_serializers.UbbleIdentificationStatus.PROCESSED
         )
         pcapi.repository.repository.save(ubble_fraud_check)
         response = client.get("/native/v1/subscription/next_step")
@@ -512,7 +512,7 @@ class NextStepTest:
         fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
 
         ubble_content = fraud_factories.UbbleContentFactory(
-            status=ubble_fraud_models.UbbleIdentificationStatus.INITIATED
+            status=ubble_serializers.UbbleIdentificationStatus.INITIATED
         )
         fraud_factories.BeneficiaryFraudCheckFactory(
             type=fraud_models.FraudCheckType.UBBLE,
@@ -890,7 +890,7 @@ class StepperTest:
             (
                 fraud_models.FraudCheckStatus.STARTED,
                 None,
-                ubble_fraud_models.UbbleIdentificationStatus.INITIATED,
+                ubble_serializers.UbbleIdentificationStatus.INITIATED,
                 "identity-check",
                 False,
                 None,
@@ -898,7 +898,7 @@ class StepperTest:
             (
                 fraud_models.FraudCheckStatus.PENDING,
                 None,
-                ubble_fraud_models.UbbleIdentificationStatus.PROCESSING,
+                ubble_serializers.UbbleIdentificationStatus.PROCESSING,
                 "honor-statement",
                 True,
                 None,
@@ -906,7 +906,7 @@ class StepperTest:
             (
                 fraud_models.FraudCheckStatus.OK,
                 None,
-                ubble_fraud_models.UbbleIdentificationStatus.PROCESSED,
+                ubble_serializers.UbbleIdentificationStatus.PROCESSED,
                 "honor-statement",
                 False,
                 None,
@@ -914,7 +914,7 @@ class StepperTest:
             (
                 fraud_models.FraudCheckStatus.KO,
                 fraud_models.FraudReasonCode.AGE_TOO_OLD,
-                ubble_fraud_models.UbbleIdentificationStatus.PROCESSED,
+                ubble_serializers.UbbleIdentificationStatus.PROCESSED,
                 None,
                 False,
                 {
@@ -927,7 +927,7 @@ class StepperTest:
             (
                 fraud_models.FraudCheckStatus.CANCELED,
                 None,
-                ubble_fraud_models.UbbleIdentificationStatus.ABORTED,
+                ubble_serializers.UbbleIdentificationStatus.ABORTED,
                 "identity-check",
                 False,
                 None,
@@ -935,7 +935,7 @@ class StepperTest:
             (
                 fraud_models.FraudCheckStatus.SUSPICIOUS,
                 fraud_models.FraudReasonCode.ID_CHECK_NOT_SUPPORTED,
-                ubble_fraud_models.UbbleIdentificationStatus.PROCESSED,
+                ubble_serializers.UbbleIdentificationStatus.PROCESSED,
                 "identity-check",  # User can retry
                 False,
                 {
@@ -1105,7 +1105,7 @@ class StepperTest:
             type=fraud_models.FraudCheckType.UBBLE,
             status=fraud_models.FraudCheckStatus.PENDING,
             resultContent=fraud_factories.UbbleContentFactory(
-                status=ubble_fraud_models.UbbleIdentificationStatus.PROCESSING
+                status=ubble_serializers.UbbleIdentificationStatus.PROCESSING
             ),
             eligibilityType=users_models.EligibilityType.AGE18,
         )
@@ -1144,7 +1144,7 @@ class StepperTest:
         # ubble now confirms the status
         ubble_fraud_check.status = fraud_models.FraudCheckStatus.OK
         ubble_fraud_check.resultContent = fraud_factories.UbbleContentFactory(
-            status=ubble_fraud_models.UbbleIdentificationStatus.PROCESSED
+            status=ubble_serializers.UbbleIdentificationStatus.PROCESSED
         )
         pcapi.repository.repository.save(ubble_fraud_check)
         response = client.get("/native/v2/subscription/stepper")
@@ -1297,7 +1297,7 @@ class StepperTest:
         fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
 
         ubble_content = fraud_factories.UbbleContentFactory(
-            status=ubble_fraud_models.UbbleIdentificationStatus.INITIATED
+            status=ubble_serializers.UbbleIdentificationStatus.INITIATED
         )
         fraud_factories.BeneficiaryFraudCheckFactory(
             type=fraud_models.FraudCheckType.UBBLE,

@@ -2,9 +2,9 @@ import logging
 import re
 
 from pcapi import settings
+from pcapi.connectors.serialization import ubble_serializers
 from pcapi.core.fraud import api as fraud_api
 from pcapi.core.fraud import models as fraud_models
-from pcapi.core.fraud.ubble import models as ubble_fraud_models
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription.ubble import models as ubble_subsciption_models
 from pcapi.core.users import constants as users_constants
@@ -22,7 +22,7 @@ def on_ubble_result(fraud_check: fraud_models.BeneficiaryFraudCheck) -> None:
 
 
 def _ubble_readable_score(score: float | None) -> str:
-    return ubble_fraud_models.UbbleScore(score).name if score is not None else "AUCUN"
+    return ubble_serializers.UbbleScore(score).name if score is not None else "AUCUN"
 
 
 def _ubble_message_from_code(code: fraud_models.FraudReasonCode) -> str:
@@ -42,7 +42,7 @@ def _ubble_result_fraud_item(user: users_models.User, content: fraud_models.Ubbl
         status = fraud_models.FraudStatus.SUSPICIOUS
 
     # Decision from identification/score
-    if content.score == ubble_fraud_models.UbbleScore.VALID.value:
+    if content.score == ubble_serializers.UbbleScore.VALID.value:
         id_provider_detected_eligibility = subscription_api.get_id_provider_detected_eligibility(user, content)
         if id_provider_detected_eligibility:
             status = fraud_models.FraudStatus.OK
@@ -58,14 +58,14 @@ def _ubble_result_fraud_item(user: users_models.User, content: fraud_models.Ubbl
             elif age > users_constants.ELIGIBILITY_AGE_18:
                 reason_codes.add(fraud_models.FraudReasonCode.AGE_TOO_OLD)
                 detail = _ubble_message_from_code(fraud_models.FraudReasonCode.AGE_TOO_OLD).format(age=age)
-    elif content.score == ubble_fraud_models.UbbleScore.INVALID.value:
+    elif content.score == ubble_serializers.UbbleScore.INVALID.value:
         for score, reason_code in [
             (content.reference_data_check_score, fraud_models.FraudReasonCode.ID_CHECK_DATA_MATCH),
             (content.supported, fraud_models.FraudReasonCode.ID_CHECK_NOT_SUPPORTED),
             (content.expiry_date_score, fraud_models.FraudReasonCode.ID_CHECK_EXPIRED),
             (content.ove_score, fraud_models.FraudReasonCode.ID_CHECK_NOT_AUTHENTIC),
         ]:
-            if score == ubble_fraud_models.UbbleScore.INVALID.value:
+            if score == ubble_serializers.UbbleScore.INVALID.value:
                 status = fraud_models.FraudStatus.SUSPICIOUS
                 reason_codes.add(reason_code)
 
@@ -77,7 +77,7 @@ def _ubble_result_fraud_item(user: users_models.User, content: fraud_models.Ubbl
                 f" | document supported {_ubble_readable_score(content.supported)}"
                 f" | expiry-date-score {_ubble_readable_score(content.expiry_date_score)}"
             )
-    elif content.score == ubble_fraud_models.UbbleScore.UNDECIDABLE.value:
+    elif content.score == ubble_serializers.UbbleScore.UNDECIDABLE.value:
         status = fraud_models.FraudStatus.SUSPICIOUS
         # Add UNPROCESSABLE only if there are no other reason codes that would be more accurate
         if not reason_codes:

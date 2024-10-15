@@ -9,6 +9,7 @@ import pytest
 import time_machine
 
 from pcapi import settings
+from pcapi.connectors.serialization import ubble_serializers
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.fraud.exceptions import IncompatibleFraudCheckStatus
@@ -18,13 +19,12 @@ from pcapi.core.fraud.models import FraudCheckStatus
 from pcapi.core.fraud.models import FraudCheckType
 from pcapi.core.fraud.models import UbbleContent
 from pcapi.core.fraud.ubble import constants as ubble_constants
-from pcapi.core.fraud.ubble import models as ubble_fraud_models
 from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription.exceptions import BeneficiaryFraudCheckMissingException
 from pcapi.core.subscription.ubble import api as ubble_subscription_api
+from pcapi.core.subscription.ubble import errors as ubble_errors
 from pcapi.core.subscription.ubble import exceptions as ubble_exceptions
-from pcapi.core.subscription.ubble import models as ubble_models
 from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
@@ -128,32 +128,32 @@ class UbbleWorkflowTest:
         [
             (
                 IdentificationState.INITIATED,
-                ubble_fraud_models.UbbleIdentificationStatus.INITIATED,
+                ubble_serializers.UbbleIdentificationStatus.INITIATED,
                 fraud_models.FraudCheckStatus.PENDING,
             ),
             (
                 IdentificationState.PROCESSING,
-                ubble_fraud_models.UbbleIdentificationStatus.PROCESSING,
+                ubble_serializers.UbbleIdentificationStatus.PROCESSING,
                 fraud_models.FraudCheckStatus.PENDING,
             ),
             (
                 IdentificationState.VALID,
-                ubble_fraud_models.UbbleIdentificationStatus.PROCESSED,
+                ubble_serializers.UbbleIdentificationStatus.PROCESSED,
                 fraud_models.FraudCheckStatus.OK,
             ),
             (
                 IdentificationState.INVALID,
-                ubble_fraud_models.UbbleIdentificationStatus.PROCESSED,
+                ubble_serializers.UbbleIdentificationStatus.PROCESSED,
                 fraud_models.FraudCheckStatus.KO,
             ),
             (
                 IdentificationState.UNPROCESSABLE,
-                ubble_fraud_models.UbbleIdentificationStatus.PROCESSED,
+                ubble_serializers.UbbleIdentificationStatus.PROCESSED,
                 fraud_models.FraudCheckStatus.SUSPICIOUS,
             ),
             (
                 IdentificationState.ABORTED,
-                ubble_fraud_models.UbbleIdentificationStatus.ABORTED,
+                ubble_serializers.UbbleIdentificationStatus.ABORTED,
                 fraud_models.FraudCheckStatus.CANCELED,
             ),
         ],
