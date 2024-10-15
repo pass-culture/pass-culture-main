@@ -8,7 +8,9 @@ import pytest
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.finance import factories as finance_factories
+from pcapi.core.geography import factories as geography_factories
 from pcapi.core.offerers import factories as offerers_factories
+from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.providers import factories as providers_factories
@@ -23,6 +25,19 @@ from . import utils
 class PostProductByEanTest(PublicAPIVenueEndpointHelper):
     endpoint_url = "/public/offers/v1/products/ean"
     endpoint_method = "post"
+
+    @staticmethod
+    def _get_base_product(ean: str | None = None) -> tuple[str, offers_models.Product]:
+        ean = ean or "1234567890123"
+        product_provider = providers_factories.ProviderFactory()
+        product = offers_factories.ProductFactory(
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
+            extraData={"ean": ean},
+            lastProviderId=product_provider.id,
+            idAtProviders=ean,
+        )
+
+        return ean, product
 
     def test_should_raise_404_because_has_no_access_to_venue(self, client):
         plain_api_key, _ = self.setup_provider()
@@ -440,7 +455,9 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
 
     def test_400_when_quantity_is_too_big(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue()
-        product = offers_factories.ProductFactory(extraData={"ean": "1234567890123"})
+        product = offers_factories.ThingProductFactory(
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id, extraData={"ean": "1234567890123"}
+        )
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products/ean",
@@ -521,30 +538,14 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
         client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products/ean",
             json={
-                "products": [
-                    {
-                        "ean": product.extraData["ean"],
-                        "stock": {
-                            "price": 1234,
-                            "quantity": 3,
-                        },
-                    }
-                ],
+                "products": [{"ean": product.extraData["ean"], "stock": {"price": 1234, "quantity": 3}}],
                 "location": {"type": "physical", "venueId": venue.id},
             },
         )
         client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products/ean",
             json={
-                "products": [
-                    {
-                        "ean": product.extraData["ean"],
-                        "stock": {
-                            "price": 7890,
-                            "quantity": 3,
-                        },
-                    }
-                ],
+                "products": [{"ean": product.extraData["ean"], "stock": {"price": 7890, "quantity": 3}}],
                 "location": {"type": "physical", "venueId": venue.id},
             },
         )
@@ -553,6 +554,73 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
         created_stock = offers_models.Stock.query.one()
         assert created_stock.price == decimal.Decimal("78.90")
         assert created_stock.quantity == 3
+
+    def test_with_custom_address(self, client):
+        address = geography_factories.AddressFactory()
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        offerer_address = offerers_factories.OffererAddressFactory(
+            address=address,
+            offerer=venue_provider.venue.managingOfferer,
+            label="My beautiful address no one knows about",
+        )
+        ean, _ = self._get_base_product()
+
+        response = client.with_explicit_token(plain_api_key).post(
+            self.endpoint_url,
+            json={
+                "location": {
+                    "type": "address",
+                    "venueId": venue_provider.venueId,
+                    "addressId": address.id,
+                    "addressLabel": "My beautiful address no one knows about",
+                },
+                "products": [{"ean": ean, "stock": {"price": 1234, "quantity": 3}}],
+            },
+        )
+        assert response.status_code == 204
+        created_offer = offers_models.Offer.query.one()
+        assert created_offer.offererAddress == offerer_address
+
+    def test_with_custom_address_should_create_offerer_address(self, client):
+        address = geography_factories.AddressFactory()
+        ean, _ = self._get_base_product()
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+
+        response = client.with_explicit_token(plain_api_key).post(
+            self.endpoint_url,
+            json={
+                "location": {
+                    "type": "address",
+                    "venueId": venue_provider.venueId,
+                    "addressId": address.id,
+                    "addressLabel": "My beautiful address no one knows about",
+                },
+                "products": [{"ean": ean, "stock": {"price": 1234, "quantity": 3}}],
+            },
+        )
+
+        assert response.status_code == 204
+        created_offer = offers_models.Offer.query.one()
+        offerer_address = offerers_models.OffererAddress.query.filter(
+            offerers_models.OffererAddress.addressId == address.id,
+            offerers_models.OffererAddress.label == "My beautiful address no one knows about",
+        ).one()
+        assert created_offer.offererAddress == offerer_address
+
+    def test_event_with_custom_address_should_raiser_404_because_address_does_not_exist(self, client):
+        ean, _ = self._get_base_product()
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+
+        response = client.with_explicit_token(plain_api_key).post(
+            self.endpoint_url,
+            json={
+                "location": {"type": "address", "venueId": venue_provider.venueId, "addressId": -1},
+                "products": [{"ean": ean, "stock": {"price": 1234, "quantity": 3}}],
+            },
+        )
+
+        assert response.status_code == 404
+        assert response.json == {"location.AddressLocation.addressId": ["There is no venue with id -1"]}
 
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_create_and_update_offer(self, async_index_offer_ids, client):
@@ -621,14 +689,11 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
         assert created_offer.activeStocks[0].price == decimal.Decimal("98.76")
         assert created_offer.activeStocks[0].quantity == 22
 
-
-@pytest.mark.usefixtures("db_session")
-class JsonFormatTest:
     def test_invalid_json_raise_syntax_error(self, client):
-        utils.create_offerer_provider_linked_to_venue()
+        plain_api_key, _ = self.setup_provider()
 
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
-            "/public/offers/v1/products/ean",
+        response = client.with_explicit_token(plain_api_key).post(
+            self.endpoint_url,
             raw_json="""{
                 "location": {"type": "physical", "venueId": venue.id},
                 "products": [

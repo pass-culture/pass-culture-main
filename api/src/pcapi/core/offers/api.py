@@ -117,8 +117,10 @@ class StocksStats:
 def build_new_offer_from_product(
     venue: offerers_models.Venue,
     product: models.Product,
+    *,
     id_at_provider: str | None,
     provider_id: int | None,
+    offerer_address_id: int | None = None,
 ) -> models.Offer:
     return models.Offer(
         bookingEmail=venue.bookingEmail,
@@ -130,7 +132,7 @@ def build_new_offer_from_product(
         venueId=venue.id,
         subcategoryId=product.subcategoryId,
         withdrawalDetails=venue.withdrawalDetails,
-        offererAddressId=venue.offererAddressId,
+        offererAddressId=venue.offererAddressId if offerer_address_id is None else offerer_address_id,
     )
 
 

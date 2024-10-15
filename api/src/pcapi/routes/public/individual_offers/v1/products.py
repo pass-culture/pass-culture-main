@@ -31,6 +31,7 @@ from pcapi.routes.public import spectree_schemas
 from pcapi.routes.public.documentation_constants import http_responses
 from pcapi.routes.public.documentation_constants import tags
 from pcapi.routes.public.serialization import venues as venues_serialization
+from pcapi.routes.public.services import authorization
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
 from pcapi.utils import image_conversion
@@ -218,7 +219,11 @@ class CreateStockDBError(CreateStockError):
     pass
 
 
-def _create_product(venue: offerers_models.Venue, body: serialization.ProductOfferCreation) -> offers_models.Offer:
+def _create_product(
+    venue: offerers_models.Venue,
+    body: serialization.ProductOfferCreation,
+    offerer_address: offerers_models.OffererAddress | None,
+) -> offers_models.Offer:
     try:
         offer_body = offers_schemas.CreateOffer(
             name=body.name,
@@ -237,7 +242,12 @@ def _create_product(venue: offerers_models.Venue, body: serialization.ProductOff
             url=body.location.url if isinstance(body.location, serialization.DigitalLocation) else None,
             withdrawalDetails=body.withdrawal_details,
         )  # type: ignore[call-arg]
-        created_product = offers_api.create_offer(offer_body, venue=venue, provider=current_api_key.provider)
+        created_product = offers_api.create_offer(
+            offer_body,
+            venue=venue,
+            provider=current_api_key.provider,
+            offerer_address=offerer_address,
+        )
 
         # To create stocks or publishing the offer we need to flush
         # the session to get the offer id
@@ -299,11 +309,22 @@ def post_product_offer(body: serialization.ProductOfferCreation) -> serializatio
 
     Create a product in authorized categories.
     """
-    venue = utils.retrieve_venue_from_location(body.location)
+    venue_provider = authorization.get_venue_provider_or_raise_404(body.location.venue_id)
+    venue = utils.get_venue_with_offerer_address(venue_provider.venueId)
 
     try:
         with repository.transaction():
-            product = _create_product(venue=venue, body=body)
+            offerer_address = venue.offererAddress  # default offerer_address
+
+            if body.location.type == "address":
+                address = utils.get_address_or_raise_404(body.location.address_id)
+                offerer_address = offerers_api.get_or_create_offerer_address(
+                    offerer_id=venue.managingOffererId,
+                    address_id=address.id,
+                    label=body.location.address_label,
+                )
+
+            product = _create_product(venue=venue, body=body, offerer_address=offerer_address)
 
             if body.image:
                 utils.save_image(body.image, product)
@@ -354,15 +375,38 @@ def post_product_offer_by_ean(body: serialization.ProductsOfferByEanCreation) ->
     **WARNING:** As it is an asynchronous you won't be given any feedback if one or more EANs is rejected.
     To make sure that your EANs won't be rejected please use [**this endpoint**](/rest-api#tag/Product-offer-bulk-operations/operation/CheckEansAvailability)
     """
-    venue = utils.retrieve_venue_from_location(body.location)
+    venue_provider = authorization.get_venue_provider_or_raise_404(body.location.venue_id)
+    venue = utils.get_venue_with_offerer_address(venue_provider.venueId)
+    address_id = None
+    address_label = None
+
     if venue.isVirtual:
         raise api_errors.ApiErrors({"location": ["Cannot create product offer for virtual venues"]})
+
+    if body.location.type == "address":
+        address = utils.get_address_or_raise_404(body.location.address_id)
+        address_id = address.id
+        address_label = body.location.address_label
+
     serialized_products_stocks = _serialize_products_from_body(body.products)
-    _create_or_update_ean_offers.delay(serialized_products_stocks, venue.id, current_api_key.provider.id)
+    _create_or_update_ean_offers.delay(
+        serialized_products_stocks=serialized_products_stocks,
+        venue_id=venue.id,
+        provider_id=current_api_key.provider.id,
+        address_id=address_id,
+        address_label=address_label,
+    )
 
 
 @job(worker.low_queue)
-def _create_or_update_ean_offers(serialized_products_stocks: dict, venue_id: int, provider_id: int) -> None:
+def _create_or_update_ean_offers(
+    *,
+    serialized_products_stocks: dict,
+    venue_id: int,
+    provider_id: int,
+    address_id: int | None = None,
+    address_label: str | None = None,
+) -> None:
     provider = providers_models.Provider.query.filter_by(id=provider_id).one()
     venue = offerers_models.Venue.query.filter_by(id=venue_id).one()
 
@@ -379,6 +423,15 @@ def _create_or_update_ean_offers(serialized_products_stocks: dict, venue_id: int
     ean_list_to_create = ean_to_create_or_update - ean_list_to_update
     offers_to_index = []
     with repository.transaction():
+        offerer_address = venue.offererAddress  # default offerer_address
+
+        if address_id:
+            offerer_address = offerers_api.get_or_create_offerer_address(
+                offerer_id=venue.managingOffererId,
+                address_id=address_id,
+                label=address_label,
+            )
+
         if ean_list_to_create:
             created_offers = []
             existing_products = _get_existing_products(ean_list_to_create)
@@ -398,6 +451,7 @@ def _create_or_update_ean_offers(serialized_products_stocks: dict, venue_id: int
                         venue,
                         product_by_ean[ean],
                         provider,
+                        offererAddress=offerer_address,
                     )
                     created_offers.append(created_offer)
 
@@ -538,10 +592,17 @@ def _create_offer_from_product(
     venue: offerers_models.Venue,
     product: offers_models.Product,
     provider: providers_models.Provider,
+    offererAddress: offerers_models.OffererAddress,
 ) -> offers_models.Offer:
     ean = product.extraData.get("ean") if product.extraData else None
 
-    offer = offers_api.build_new_offer_from_product(venue, product, ean, provider.id)
+    offer = offers_api.build_new_offer_from_product(
+        venue,
+        product,
+        id_at_provider=ean,
+        provider_id=provider.id,
+        offerer_address_id=offererAddress.id,
+    )
 
     offer.audioDisabilityCompliant = venue.audioDisabilityCompliant
     offer.mentalDisabilityCompliant = venue.mentalDisabilityCompliant

@@ -31,6 +31,15 @@ OFFER_STATUS_FIELD_DESCRIPTION = """
 - `SOLD_OUT`: offer is validated but there is no (more) stock available for booking.
 In the case of a collective offer, there is stock for only one booking ; if the booking is canceled, it is possible to book the collective offer again.
 """
+OFFER_LOCATION_DESCRIPTION = """
+Indicates where the offer will be available or where it will take place. The location type must be compatible with the offer category.
+
+You have **three options** for the location:
+
+- `"digital"`: Use this if the offer is a digital product and does not have a physical location
+- `"physical"`: Use this if the offer will be available at your venue
+- `"address"`: Use this if the offer takes place at a different location from your venue
+"""
 
 COLLECTIVE_OFFER_STATUS_FIELD_DESCRIPTION = (
     OFFER_STATUS_FIELD_DESCRIPTION + "\n\n" + "- `ARCHIVED`: offer is archived by pro."
@@ -44,6 +53,7 @@ Booking status explanation:
 * `CANCELLED`: The booking has been cancelled by the beneficiary or by the provider
 * `REIMBURSED` The booking has been reimbursed by pass Culture to the venue
 """
+
 
 BEGINNING_DATETIME_FIELD_DESCRIPTION = "Beginning datetime of the event. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime)."
 BOOKING_LIMIT_DATETIME_FIELD_DESCRIPTION = "Datetime after which the offer can no longer be booked. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime)."
