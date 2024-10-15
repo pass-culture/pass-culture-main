@@ -385,62 +385,68 @@ def create_collective_offer_by_status(
     status: CollectiveOfferDisplayedStatus,
     **kwargs: typing.Any,
 ) -> models.CollectiveOffer:
+    now = datetime.datetime.utcnow()
+    yesterday = now - datetime.timedelta(days=1)
+    tomorrow = now + datetime.timedelta(days=1)
+
     match status.value:
         case CollectiveOfferDisplayedStatus.ARCHIVED.value:
-            kwargs["dateArchived"] = datetime.datetime.utcnow()
+            kwargs["dateArchived"] = now
             return CollectiveOfferFactory(**kwargs)
+
         case CollectiveOfferDisplayedStatus.REJECTED.value:
             kwargs["validation"] = OfferValidationStatus.REJECTED
             return CollectiveOfferFactory(**kwargs)
+
         case CollectiveOfferDisplayedStatus.PENDING.value:
             kwargs["validation"] = OfferValidationStatus.PENDING
             return CollectiveOfferFactory(**kwargs)
+
         case CollectiveOfferDisplayedStatus.ACTIVE.value:
             return CollectiveOfferFactory(**kwargs)
+
         case CollectiveOfferDisplayedStatus.INACTIVE.value:
             kwargs["isActive"] = False
             return CollectiveOfferFactory(**kwargs)
-        case CollectiveOfferDisplayedStatus.EXPIRED.value:
-            kwargs["validation"] = OfferValidationStatus.APPROVED
-            offer = CollectiveOfferFactory(**kwargs)
-            yesterday = datetime.datetime.utcnow() - datetime.timedelta(days=1)
 
-            stock = CollectiveStockFactory(beginningDatetime=yesterday, collectiveOffer=offer)
+        case CollectiveOfferDisplayedStatus.EXPIRED.value:
+            offer = CollectiveOfferFactory(**kwargs)
+            stock = CollectiveStockFactory(
+                beginningDatetime=tomorrow, bookingLimitDatetime=yesterday, collectiveOffer=offer
+            )
             PendingCollectiveBookingFactory(collectiveStock=stock)
             return offer
+
         case CollectiveOfferDisplayedStatus.PREBOOKED.value:
             offer = CollectiveOfferFactory(**kwargs)
-
-            tomorrow = datetime.datetime.utcnow() + datetime.timedelta(days=1)
             stock = CollectiveStockFactory(beginningDatetime=tomorrow, collectiveOffer=offer)
-            _booking = PendingCollectiveBookingFactory(collectiveStock=stock)
+            PendingCollectiveBookingFactory(collectiveStock=stock)
             return offer
+
         case CollectiveOfferDisplayedStatus.CANCELLED.value:
             offer = CollectiveOfferFactory(**kwargs)
-
-            tomorrow = datetime.datetime.utcnow() + datetime.timedelta(days=1)
             stock = CollectiveStockFactory(beginningDatetime=tomorrow, collectiveOffer=offer)
-            _booking = CancelledCollectiveBookingFactory(collectiveStock=stock)
+            CancelledCollectiveBookingFactory(collectiveStock=stock)
             return offer
+
         case CollectiveOfferDisplayedStatus.BOOKED.value:
             offer = CollectiveOfferFactory(**kwargs)
-
-            tomorrow = datetime.datetime.utcnow() + datetime.timedelta(days=1)
             stock = CollectiveStockFactory(beginningDatetime=tomorrow, collectiveOffer=offer)
-            _booking = ConfirmedCollectiveBookingFactory(collectiveStock=stock)
+            ConfirmedCollectiveBookingFactory(collectiveStock=stock)
             return offer
+
         case CollectiveOfferDisplayedStatus.ENDED.value:
             offer = CollectiveOfferFactory(**kwargs)
-            yesterday = datetime.datetime.utcnow() - datetime.timedelta(days=1)
             stock = CollectiveStockFactory(collectiveOffer=offer, beginningDatetime=yesterday)
-            _booking = UsedCollectiveBookingFactory(collectiveStock=stock)
+            UsedCollectiveBookingFactory(collectiveStock=stock)
             return offer
+
         case CollectiveOfferDisplayedStatus.REIMBURSED.value:
             offer = CollectiveOfferFactory(**kwargs)
-            yesterday = datetime.datetime.utcnow() - datetime.timedelta(days=1)
             stock = CollectiveStockFactory(collectiveOffer=offer, beginningDatetime=yesterday)
-            _booking = ReimbursedCollectiveBookingFactory(collectiveStock=stock)
+            ReimbursedCollectiveBookingFactory(collectiveStock=stock)
             return offer
+
         case CollectiveOfferDisplayedStatus.DRAFT.value:
             kwargs["validation"] = OfferValidationStatus.DRAFT
             return CollectiveOfferFactory(**kwargs)

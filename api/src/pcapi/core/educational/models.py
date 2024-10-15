@@ -35,6 +35,7 @@ from pcapi.core.object_storage import delete_public_object
 from pcapi.core.object_storage import store_public_object
 from pcapi.models import Base
 from pcapi.models import Model
+from pcapi.models import feature
 from pcapi.models import offer_mixin
 from pcapi.models.accessibility_mixin import AccessibilityMixin
 from pcapi.models.pc_object import PcObject
@@ -807,31 +808,45 @@ class CollectiveOffer(
 
         if self.validation == offer_mixin.OfferValidationStatus.APPROVED:
             last_booking_status = self.lastBookingStatus
+            has_booking_limit_passed = self.hasBookingLimitDatetimesPassed
+            has_started = self.hasBeginningDatetimePassed
+            has_ended = self.hasEndDatetimePassed
+            new_statuses_is_active = feature.FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active()
 
-            if last_booking_status is None:
-                # pylint: disable=using-constant-test
-                if self.is_expired:
-                    return CollectiveOfferDisplayedStatus.EXPIRED
+            match last_booking_status:
+                case None:
+                    if has_started and new_statuses_is_active:
+                        return CollectiveOfferDisplayedStatus.CANCELLED
+                    if has_booking_limit_passed:  # pylint: disable=using-constant-test
+                        return CollectiveOfferDisplayedStatus.EXPIRED
+                    return CollectiveOfferDisplayedStatus.ACTIVE
 
-                if self.hasBookingLimitDatetimesPassed:
-                    return CollectiveOfferDisplayedStatus.INACTIVE
+                case CollectiveBookingStatus.PENDING:
+                    if has_booking_limit_passed:  # pylint: disable=using-constant-test
+                        # TODO: à valider (le script d'auto cancel n'est pas encore passé)
+                        return CollectiveOfferDisplayedStatus.EXPIRED
+                    return CollectiveOfferDisplayedStatus.PREBOOKED
 
-                return CollectiveOfferDisplayedStatus.ACTIVE
+                case CollectiveBookingStatus.CONFIRMED | CollectiveBookingStatus.USED:
+                    if has_ended:  # pylint: disable=using-constant-test
+                        # TODO: à valider, l'offre est bien terminée dès que la date de fin est passée ?
+                        return CollectiveOfferDisplayedStatus.ENDED
+                    return CollectiveOfferDisplayedStatus.BOOKED
 
-            # pylint: disable=using-constant-test
-            if self.hasEndDatetimePassed:
-                if last_booking_status in {CollectiveBookingStatus.USED, CollectiveBookingStatus.CONFIRMED}:
+                case CollectiveBookingStatus.REIMBURSED:
+                    if new_statuses_is_active:
+                        return CollectiveOfferDisplayedStatus.REIMBURSED
                     return CollectiveOfferDisplayedStatus.ENDED
-                if last_booking_status == CollectiveBookingStatus.REIMBURSED:
-                    return CollectiveOfferDisplayedStatus.REIMBURSED
-                return CollectiveOfferDisplayedStatus.EXPIRED
 
-            if last_booking_status in {CollectiveBookingStatus.CONFIRMED, CollectiveBookingStatus.USED}:
-                return CollectiveOfferDisplayedStatus.BOOKED
-            if last_booking_status == CollectiveBookingStatus.PENDING:
-                return CollectiveOfferDisplayedStatus.PREBOOKED
-            if last_booking_status == CollectiveBookingStatus.CANCELLED:
-                return CollectiveOfferDisplayedStatus.CANCELLED
+                case CollectiveBookingStatus.CANCELLED:
+                    if new_statuses_is_active:
+                        # TODO: devrait on supprimer l'auto cancel ? Le cas "résa CANCELLED, date limite passée, date de début non passée" est ambigu actuellement
+                        # TODO: avec le script, il faut regarder ici cancellationReason sur le booking pour décider du statut
+                        return CollectiveOfferDisplayedStatus.CANCELLED
+                    if has_booking_limit_passed:  # pylint: disable=using-constant-test
+                        # TODO: actuellement on affiche plutôt le status INACTIVE, à décider
+                        return CollectiveOfferDisplayedStatus.EXPIRED
+                    return CollectiveOfferDisplayedStatus.ACTIVE
 
         return CollectiveOfferDisplayedStatus.ACTIVE
 

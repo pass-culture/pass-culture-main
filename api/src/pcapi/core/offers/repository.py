@@ -540,102 +540,98 @@ def _filter_collective_offers_by_statuses(query: BaseQuery, statuses: list[str] 
     on_booking_status_filter: list = []
 
     if statuses is None or len(statuses) == 0:
-        # if statuses is empty we return no orders
+        # if statuses is empty we return all orders
         return query
 
     offer_id_with_booking_status_subquery, query_with_booking = add_last_booking_status_to_collective_offer_query(query)
-    if DisplayedStatus.BOOKED.value in statuses or DisplayedStatus.PREBOOKED.value in statuses:
-        # all displayedStatus with an offer that has NOT expired
+    booking_status = offer_id_with_booking_status_subquery.c.status
 
-        allowed_booking_status = set()
-        if DisplayedStatus.BOOKED.value in statuses:
-            allowed_booking_status.update(
-                {
-                    educational_models.CollectiveBookingStatus.CONFIRMED.value,
-                    educational_models.CollectiveBookingStatus.USED.value,
-                }
-            )
-        if DisplayedStatus.PREBOOKED.value in statuses:
-            allowed_booking_status.add(educational_models.CollectiveBookingStatus.PENDING.value)
-
+    if DisplayedStatus.PREBOOKED.value in statuses:
         on_booking_status_filter.append(
             and_(
-                offer_id_with_booking_status_subquery.c.status.in_(allowed_booking_status),
+                booking_status == educational_models.CollectiveBookingStatus.PENDING.value,
+                educational_models.CollectiveOffer.hasBookingLimitDatetimesPassed == False,
+                educational_models.CollectiveOffer.isArchived == False,
+            )
+        )
+
+    if DisplayedStatus.BOOKED.value in statuses:
+        allowed_booking_status = {
+            educational_models.CollectiveBookingStatus.CONFIRMED.value,
+            educational_models.CollectiveBookingStatus.USED.value,
+        }
+        on_booking_status_filter.append(
+            and_(
+                booking_status.in_(allowed_booking_status),
                 educational_models.CollectiveOffer.hasEndDatetimePassed == False,
                 educational_models.CollectiveOffer.isArchived == False,
             )
         )
 
-    allowed_expired_booking_status: set[educational_models.CollectiveBookingStatus | None] = set()
-    if DisplayedStatus.ENDED.value in statuses or DisplayedStatus.REIMBURSED.value in statuses:
-        # all displayedStatus with an offer that has expired
-        if DisplayedStatus.ENDED.value in statuses:
-            allowed_expired_booking_status.update(
-                {educational_models.CollectiveBookingStatus.USED, educational_models.CollectiveBookingStatus.CONFIRMED}
-            )
-            if not FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active():
-                allowed_expired_booking_status.add(educational_models.CollectiveBookingStatus.REIMBURSED)
-
-        if DisplayedStatus.REIMBURSED.value in statuses:
-            allowed_expired_booking_status.add(educational_models.CollectiveBookingStatus.REIMBURSED)
+    if DisplayedStatus.ENDED.value in statuses:
+        allowed_booking_status = {
+            educational_models.CollectiveBookingStatus.CONFIRMED.value,
+            educational_models.CollectiveBookingStatus.USED.value,
+        }
+        if not FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active():
+            allowed_booking_status.add(educational_models.CollectiveBookingStatus.REIMBURSED)
 
         on_booking_status_filter.append(
             and_(
-                offer_id_with_booking_status_subquery.c.status.in_(allowed_expired_booking_status),
+                booking_status.in_(allowed_booking_status),
                 educational_models.CollectiveOffer.hasEndDatetimePassed == True,
                 educational_models.CollectiveOffer.isArchived == False,
             )
         )
 
+    if DisplayedStatus.REIMBURSED.value in statuses:
+        on_booking_status_filter.append(
+            and_(
+                booking_status == educational_models.CollectiveBookingStatus.REIMBURSED,
+                educational_models.CollectiveOffer.isArchived == False,
+            )
+        )
+
+    # EXPIRED TO FINISH
     if DisplayedStatus.EXPIRED.value in statuses:
-        allowed_expired_booking_status.update(
-            {
-                educational_models.CollectiveBookingStatus.PENDING,
-                educational_models.CollectiveBookingStatus.CANCELLED,
-            }
-        )
+        allowed_booking_status = {
+            educational_models.CollectiveBookingStatus.PENDING,
+            educational_models.CollectiveBookingStatus.CANCELLED,
+        }
 
         on_booking_status_filter.append(
             and_(
-                or_(
-                    offer_id_with_booking_status_subquery.c.status == None,
-                    offer_id_with_booking_status_subquery.c.status.in_(allowed_expired_booking_status),
-                ),
-                educational_models.CollectiveOffer.hasEndDatetimePassed == True,
+                booking_status.in_(allowed_booking_status),
+                educational_models.CollectiveOffer.hasBookingLimitDatetimesPassed == True,
                 educational_models.CollectiveOffer.isArchived == False,
             )
         )
 
+        on_collective_offer_filters.append()
+
+    # ACTIVE TO FINISH
     if DisplayedStatus.ACTIVE.value in statuses:
         on_booking_status_filter.append(
             and_(
-                offer_id_with_booking_status_subquery.c.status == None,
+                booking_status == educational_models.CollectiveBookingStatus.CANCELLED,
                 educational_models.CollectiveOffer.status == offer_mixin.CollectiveOfferStatus.ACTIVE.name,
-                educational_models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.APPROVED,
-                educational_models.CollectiveOffer.isArchived == False,
             )
         )
         on_collective_offer_filters.append(
             and_(
-                educational_models.CollectiveOffer.isArchived == False,
-                educational_models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.APPROVED,
-                # pylint: disable=comparison-with-callable
-                educational_models.CollectiveOffer.hasBookingLimitDatetimePassed == False,
+                educational_models.CollectiveOffer.hasBookingLimitDatetimesPassed == False,
                 educational_models.CollectiveOffer.status == offer_mixin.CollectiveOfferStatus.ACTIVE.name,
             )
         )
 
     if DisplayedStatus.INACTIVE.value in statuses:
         on_booking_status_filter.append(
-            and_(
-                educational_models.CollectiveOffer.status == offer_mixin.CollectiveOfferStatus.INACTIVE.name,
-                educational_models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.APPROVED,
-                educational_models.CollectiveOffer.isArchived == False,
-            )
+            educational_models.CollectiveOffer.status == offer_mixin.CollectiveOfferStatus.INACTIVE.name
         )
 
     if DisplayedStatus.ARCHIVED.value in statuses:
         on_collective_offer_filters.append(educational_models.CollectiveOffer.isArchived == True)
+
     if DisplayedStatus.REJECTED.value in statuses:
         on_collective_offer_filters.append(
             and_(
@@ -643,6 +639,7 @@ def _filter_collective_offers_by_statuses(query: BaseQuery, statuses: list[str] 
                 educational_models.CollectiveOffer.isArchived == False,
             )
         )
+
     if DisplayedStatus.PENDING.value in statuses:
         on_collective_offer_filters.append(
             and_(
