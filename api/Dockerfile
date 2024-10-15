@@ -1,5 +1,4 @@
 ARG network_mode=default
-
 ########## BUILDER ##########
 
 FROM python:3.11-slim AS builder
@@ -23,8 +22,6 @@ COPY ./pyproject.toml ./poetry.lock ./
 
 ENV PATH=$PATH:/home/pcapi/.local/bin
 
-########## BUILDER PROXY ##########
-
 FROM builder AS builder-proxy
 
 COPY /cacert.pem /cacert.pem
@@ -41,8 +38,6 @@ RUN python -m venv $VIRTUAL_ENV
 
 RUN REQUESTS_CA_BUNDLE=/cacert.pem PIP_CERT=/cacert.pem CURL_CA_BUNDLE=/cacert.pem poetry install --without dev --no-root
 
-########## BUILDER DEFAULT ##########
-
 FROM builder AS builder-default
 
 RUN pip install poetry
@@ -57,15 +52,13 @@ RUN python -m venv $VIRTUAL_ENV
 
 RUN poetry install --without dev --no-root
 
-########## DEV BUILDER PROXY ##########
+########## DEV BUILDER ##########
 
 FROM builder-${network_mode} AS builder-dev-proxy
 
 RUN poetry check --lock
 
 RUN REQUESTS_CA_BUNDLE=/cacert.pem PIP_CERT=/cacert.pem CURL_CA_BUNDLE=/cacert.pem poetry install --only dev
-
-########## DEV BUILDER DEFAULT ##########
 
 FROM builder-${network_mode} AS builder-dev-default
 
@@ -154,7 +147,7 @@ ENTRYPOINT exec ./entrypoint.sh
 
 ######### CONSOLE #########
 
-FROM lib-dev AS pcapi-console
+FROM pcapi AS pcapi-console
 
 USER root
 
