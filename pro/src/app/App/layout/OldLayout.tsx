@@ -13,11 +13,34 @@ import styles from './OldLayout.module.scss'
 
 interface OldLayoutProps {
   children?: React.ReactNode
+  /**
+   * Name of the page to display in the main heading.
+   * Make sure that only one heading is displayed per page.
+   */
+  mainHeading?: {
+    text: string
+    className?: string
+  }
   layout?: 'basic' | 'funnel' | 'without-nav' | 'sticky-actions'
 }
 
-export const OldLayout = ({ children, layout = 'basic' }: OldLayoutProps) => {
+export const OldLayout = ({
+  children,
+  mainHeading,
+  layout = 'basic',
+}: OldLayoutProps) => {
   const currentUser = useSelector(selectCurrentUser)
+  const renderMainHeading = () => {
+    if (!mainHeading) {
+      return null
+    }
+
+    return (
+      <h1 className={classnames(styles['main-heading'], mainHeading.className)}>
+        {mainHeading.text}
+      </h1>
+    )
+  }
 
   return (
     <>
@@ -39,7 +62,6 @@ export const OldLayout = ({ children, layout = 'basic' }: OldLayoutProps) => {
         </aside>
       )}
       {(layout === 'basic' || layout === 'sticky-actions') && <OldHeader />}
-
       <main
         id="content"
         className={classnames({
@@ -50,10 +72,14 @@ export const OldLayout = ({ children, layout = 'basic' }: OldLayoutProps) => {
         })}
       >
         {layout === 'funnel' || layout === 'without-nav' ? (
-          children
+          <>
+            {renderMainHeading()}
+            {children}
+          </>
         ) : (
           <div className={styles['page-content']}>
             <div className={styles['after-notification-content']}>
+              {renderMainHeading()}
               {children}
             </div>
           </div>
