@@ -32,6 +32,12 @@ OFFER_STATUS_FIELD_DESCRIPTION = """
 In the case of a collective offer, there is stock for only one booking ; if the booking is canceled, it is possible to book the collective offer again.
 """
 
+OFFER_VENUE_ADDRESS_TYPE_DESCRIPTION = """
+- `offererVenue` means a db-known venue (`venueId` field is then mandatory).
+- `other` means that the address should be specified using the `otherAddress` field (which becomes mandatory).
+- `school` means that the event takes place inside the educational institution (the other two fields becomes meaningless).
+"""
+
 COLLECTIVE_OFFER_STATUS_FIELD_DESCRIPTION = (
     OFFER_STATUS_FIELD_DESCRIPTION + "\n\n" + "- `ARCHIVED`: offer is archived by pro."
 )
