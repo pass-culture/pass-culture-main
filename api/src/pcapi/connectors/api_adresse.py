@@ -360,6 +360,7 @@ class ApiAdresseBackend(BaseBackend):
             "q": address,
             "postcode": postcode,
             "citycode": citycode,
+            "city": city,
             "autocomplete": 0,
             "limit": 1,
         }
