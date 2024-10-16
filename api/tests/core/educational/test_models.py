@@ -4,6 +4,7 @@ from unittest import mock
 
 import pytest
 from sqlalchemy import exc as sa_exc
+import time_machine
 
 from pcapi.core.educational import exceptions
 from pcapi.core.educational import factories
@@ -18,6 +19,7 @@ from pcapi.core.educational.models import HasImageMixin
 from pcapi.core.educational.models import TEMPLATE_ALLOWED_ACTIONS_BY_DISPLAYED_STATUS
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.providers.factories as providers_factories
+from pcapi.core.testing import override_features
 from pcapi.models import db
 from pcapi.models.offer_mixin import CollectiveOfferStatus
 from pcapi.models.offer_mixin import OfferValidationStatus
@@ -36,6 +38,8 @@ COLLECTIVE_OFFER_TEMPLATE_STATUS_LIST = [
     CollectiveOfferDisplayedStatus.INACTIVE,
     CollectiveOfferDisplayedStatus.ACTIVE,
 ]
+
+NEW_STATUSES = {CollectiveOfferDisplayedStatus.CANCELLED, CollectiveOfferDisplayedStatus.REIMBURSED}
 
 
 class EducationalDepositTest:
@@ -615,38 +619,129 @@ class EducationalInstitutionProgramTest:
             db.session.commit()
 
 
-class CollectiveOfferDisplayedStatusTest:
-    @pytest.mark.parametrize("status", CollectiveOfferDisplayedStatus)
-    def test_get_offer_displayed_status(self, status):
-        offer = factories.create_collective_offer_by_status(status)
+now = datetime.datetime.utcnow()
 
+
+class CollectiveOfferDisplayedStatusTest:
+    @staticmethod
+    def _get_offer_and_stock():
+        # timeline :                      ---bookingLimitDatetime---startDatetime---endDatetime---
+        # check status at each interval :  x                      x               x             x
+
+        offer = factories.CollectiveOfferFactory()
+        stock = factories.CollectiveStockFactory(
+            bookingLimitDatetime=now + datetime.timedelta(days=2),
+            beginningDatetime=now + datetime.timedelta(days=4),
+            endDatetime=now + datetime.timedelta(days=6),
+            collectiveOffer=offer,
+        )
+
+        return offer, stock
+
+    @pytest.mark.parametrize("status", set(CollectiveOfferDisplayedStatus))
+    def test_displayed_status(self, status):
+        # for status in CollectiveOfferDisplayedStatus:
+        expected = status
+        if status == CollectiveOfferDisplayedStatus.CANCELLED:
+            expected = CollectiveOfferDisplayedStatus.ACTIVE
+        if status == CollectiveOfferDisplayedStatus.REIMBURSED:
+            expected = CollectiveOfferDisplayedStatus.ENDED
+
+        offer = factories.create_collective_offer_by_status(status)
+        assert offer.displayedStatus == expected
+
+    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    @pytest.mark.parametrize("status", set(CollectiveOfferDisplayedStatus))
+    def test_displayed_status_ff_on(self, status):
+        offer = factories.create_collective_offer_by_status(status)
         assert offer.displayedStatus == status
 
-    def test_get_displayed_status_for_inactive_offer_due_to_booking_date_passed(self):
-        offer = factories.CollectiveOfferFactory()
+    def test_displayed_status_no_booking(self):
+        offer, _ = self._get_offer_and_stock()
 
-        past = datetime.datetime.utcnow() - datetime.timedelta(days=2)
-        stock = factories.CollectiveStockFactory(bookingLimitDatetime=past, collectiveOffer=offer)
+        with time_machine.travel(now + datetime.timedelta(days=1)):
+            assert offer.displayedStatus == CollectiveOfferDisplayedStatus.ACTIVE
 
-        assert offer.displayedStatus == CollectiveOfferDisplayedStatus.INACTIVE
+        for delta in (3, 5, 7):
+            with time_machine.travel(now + datetime.timedelta(days=delta)):
+                assert offer.displayedStatus == CollectiveOfferDisplayedStatus.EXPIRED
 
-        futur = datetime.datetime.utcnow() + datetime.timedelta(days=2)
-        stock.bookingLimitDatetime = futur
+    def test_displayed_status_pending_booking(self):
+        offer, stock = self._get_offer_and_stock()
+        factories.CollectiveBookingFactory(status=CollectiveBookingStatus.PENDING, collectiveStock=stock)
 
-        assert offer.displayedStatus == CollectiveOfferDisplayedStatus.ACTIVE
+        with time_machine.travel(now + datetime.timedelta(days=1)):
+            assert offer.displayedStatus == CollectiveOfferDisplayedStatus.PREBOOKED
 
-    def test_get_displayed_status_for_offer_when_in_between_beginningDatetime_endDatetime(self):
-        offer = factories.CollectiveOfferFactory()
-        yesterday = datetime.datetime.utcnow() - datetime.timedelta(days=1)
-        futur = datetime.datetime.utcnow() + datetime.timedelta(days=2)
-        stock = factories.CollectiveStockFactory(
-            collectiveOffer=offer, beginningDatetime=yesterday, endDatetime=futur, bookingLimitDatetime=futur
-        )
-        _booking = factories.UsedCollectiveBookingFactory(collectiveStock=stock)
+        for delta in (3, 5, 7):
+            with time_machine.travel(now + datetime.timedelta(days=delta)):
+                assert offer.displayedStatus == CollectiveOfferDisplayedStatus.EXPIRED
 
-        assert offer.displayedStatus == CollectiveOfferDisplayedStatus.BOOKED
+    def test_displayed_status_confirmed_booking(self):
+        offer, stock = self._get_offer_and_stock()
+        factories.CollectiveBookingFactory(status=CollectiveBookingStatus.CONFIRMED, collectiveStock=stock)
 
-    def test_get_displayed_status_for_offer_with_cancelled_booking(self):
+        for delta in (1, 3, 5):
+            with time_machine.travel(now + datetime.timedelta(days=delta)):
+                assert offer.displayedStatus == CollectiveOfferDisplayedStatus.BOOKED
+
+        with time_machine.travel(now + datetime.timedelta(days=7)):
+            assert offer.displayedStatus == CollectiveOfferDisplayedStatus.ENDED
+
+    def test_displayed_status_used_booking(self):
+        offer, stock = self._get_offer_and_stock()
+        factories.CollectiveBookingFactory(status=CollectiveBookingStatus.USED, collectiveStock=stock)
+
+        # these cases should not happen: a booking is USED after the event has ended
+        for delta in (1, 3, 5):
+            with time_machine.travel(now + datetime.timedelta(days=delta)):
+                assert offer.displayedStatus == CollectiveOfferDisplayedStatus.BOOKED
+
+        with time_machine.travel(now + datetime.timedelta(days=7)):
+            assert offer.displayedStatus == CollectiveOfferDisplayedStatus.ENDED
+
+    # REIMBURSED
+    def test_displayed_status_reimbursed_booking(self):
+        offer, stock = self._get_offer_and_stock()
+        factories.CollectiveBookingFactory(status=CollectiveBookingStatus.REIMBURSED, collectiveStock=stock)
+
+        # the cases < 7 should not happen: a booking is REIMBURSED after the event has ended
+        for delta in (1, 3, 5, 7):
+            with time_machine.travel(now + datetime.timedelta(days=delta)):
+                assert offer.displayedStatus == CollectiveOfferDisplayedStatus.ENDED
+
+    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    def test_displayed_status_reimbursed_booking_ff_on(self):
+        offer, stock = self._get_offer_and_stock()
+        factories.CollectiveBookingFactory(status=CollectiveBookingStatus.REIMBURSED, collectiveStock=stock)
+
+        # the cases < 7 should not happen: a booking is REIMBURSED after the event has ended
+        for delta in (1, 3, 5, 7):
+            with time_machine.travel(now + datetime.timedelta(days=delta)):
+                assert offer.displayedStatus == CollectiveOfferDisplayedStatus.REIMBURSED
+
+    # CANCELLED
+    def test_displayed_status_cancelled_booking(self):
+        offer, stock = self._get_offer_and_stock()
+        factories.CollectiveBookingFactory(status=CollectiveBookingStatus.CANCELLED, collectiveStock=stock)
+
+        with time_machine.travel(now + datetime.timedelta(days=1)):
+            assert offer.displayedStatus == CollectiveOfferDisplayedStatus.ACTIVE
+
+        for delta in (3, 5, 7):
+            with time_machine.travel(now + datetime.timedelta(days=delta)):
+                assert offer.displayedStatus == CollectiveOfferDisplayedStatus.EXPIRED
+
+    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    def test_displayed_status_cancelled_booking_ff_on(self):
+        offer, stock = self._get_offer_and_stock()
+        factories.CollectiveBookingFactory(status=CollectiveBookingStatus.CANCELLED, collectiveStock=stock)
+
+        for delta in (1, 3, 5, 7):
+            with time_machine.travel(now + datetime.timedelta(days=delta)):
+                assert offer.displayedStatus == CollectiveOfferDisplayedStatus.CANCELLED
+
+    def test_displayed_status_two_bookings_one_cancelled(self):
         yesterday = datetime.datetime.utcnow() - datetime.timedelta(days=1)
 
         offer = factories.CollectiveOfferFactory()
@@ -659,15 +754,28 @@ class CollectiveOfferDisplayedStatusTest:
         factories.ReimbursedCollectiveBookingFactory(collectiveStock=stock, dateCreated=datetime.datetime.utcnow())
 
         assert offer.lastBookingStatus == CollectiveBookingStatus.REIMBURSED
-        assert offer.displayedStatus == CollectiveOfferDisplayedStatus.REIMBURSED
+        assert offer.displayedStatus == CollectiveOfferDisplayedStatus.ENDED
 
 
 class CollectiveOfferAllowedActionsTest:
-    @pytest.mark.parametrize("status", CollectiveOfferDisplayedStatus)
+    @pytest.mark.parametrize("status", set(CollectiveOfferDisplayedStatus) - NEW_STATUSES)
     def test_get_offer_allowed_actions(self, status):
         offer = factories.create_collective_offer_by_status(status)
 
         assert offer.allowedActions == list(ALLOWED_ACTIONS_BY_DISPLAYED_STATUS[status])
+
+    def test_get_offer_allowed_actions_new_statuses(self):
+        offer = factories.create_collective_offer_by_status(CollectiveOfferDisplayedStatus.CANCELLED)
+        assert offer.allowedActions == list(ALLOWED_ACTIONS_BY_DISPLAYED_STATUS[CollectiveOfferDisplayedStatus.ACTIVE])
+
+        offer = factories.create_collective_offer_by_status(CollectiveOfferDisplayedStatus.REIMBURSED)
+        assert offer.allowedActions == list(ALLOWED_ACTIONS_BY_DISPLAYED_STATUS[CollectiveOfferDisplayedStatus.ENDED])
+
+    @override_features(ENABLE_COLLECTIVE_NEW_STATUSES=True)
+    def test_get_offer_allowed_actions_new_statuses_ff_on(self):
+        for status in NEW_STATUSES:
+            offer = factories.create_collective_offer_by_status(status)
+            assert offer.allowedActions == list(ALLOWED_ACTIONS_BY_DISPLAYED_STATUS[status])
 
     def test_get_ended_offer_allowed_actions(self):
         offer = factories.create_collective_offer_by_status(CollectiveOfferDisplayedStatus.ENDED)

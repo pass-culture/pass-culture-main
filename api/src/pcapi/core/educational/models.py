@@ -795,31 +795,36 @@ class CollectiveOffer(
 
         if self.validation == offer_mixin.OfferValidationStatus.APPROVED:
             last_booking_status = self.lastBookingStatus
+            is_expired = self.hasBookingLimitDatetimesPassed
+            has_ended = self.hasEndDatetimePassed
+            new_statuses_active = feature.FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active()
 
             if last_booking_status is None:
-                # pylint: disable=using-constant-test
-                if self.is_expired:
+                if is_expired:  # pylint: disable=using-constant-test
                     return CollectiveOfferDisplayedStatus.EXPIRED
-
-                if self.hasBookingLimitDatetimesPassed:
-                    return CollectiveOfferDisplayedStatus.INACTIVE
-
                 return CollectiveOfferDisplayedStatus.ACTIVE
 
-            # pylint: disable=using-constant-test
-            if self.hasEndDatetimePassed:
-                if last_booking_status in {CollectiveBookingStatus.USED, CollectiveBookingStatus.CONFIRMED}:
-                    return CollectiveOfferDisplayedStatus.ENDED
-                if last_booking_status == CollectiveBookingStatus.REIMBURSED:
-                    return CollectiveOfferDisplayedStatus.REIMBURSED
-                return CollectiveOfferDisplayedStatus.EXPIRED
+            if last_booking_status == CollectiveBookingStatus.PENDING:
+                if is_expired:  # pylint: disable=using-constant-test
+                    return CollectiveOfferDisplayedStatus.EXPIRED
+                return CollectiveOfferDisplayedStatus.PREBOOKED
 
             if last_booking_status in {CollectiveBookingStatus.CONFIRMED, CollectiveBookingStatus.USED}:
+                if has_ended:  # pylint: disable=using-constant-test
+                    return CollectiveOfferDisplayedStatus.ENDED
                 return CollectiveOfferDisplayedStatus.BOOKED
-            if last_booking_status == CollectiveBookingStatus.PENDING:
-                return CollectiveOfferDisplayedStatus.PREBOOKED
+
+            if last_booking_status == CollectiveBookingStatus.REIMBURSED:
+                if new_statuses_active:
+                    return CollectiveOfferDisplayedStatus.REIMBURSED
+                return CollectiveOfferDisplayedStatus.ENDED
+
             if last_booking_status == CollectiveBookingStatus.CANCELLED:
-                return CollectiveOfferDisplayedStatus.CANCELLED
+                if new_statuses_active:
+                    return CollectiveOfferDisplayedStatus.CANCELLED
+                if is_expired:  # pylint: disable=using-constant-test
+                    return CollectiveOfferDisplayedStatus.EXPIRED
+                return CollectiveOfferDisplayedStatus.ACTIVE
 
         return CollectiveOfferDisplayedStatus.ACTIVE
 

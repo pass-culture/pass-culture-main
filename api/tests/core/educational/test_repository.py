@@ -470,8 +470,7 @@ class FilterCollectiveOfferByStatusesTest:
         )
 
         # Then
-        assert filtered_booked_query.count() == 1
-        assert filtered_booked_query.first() == booked_offer
+        assert filtered_booked_query.one() == booked_offer
 
         # When
         filtered_pending_query = _filter_collective_offers_by_statuses(
@@ -479,8 +478,7 @@ class FilterCollectiveOfferByStatusesTest:
         )
 
         # Then
-        assert filtered_pending_query.count() == 1
-        assert filtered_pending_query.first() == pending_offer
+        assert filtered_pending_query.one() == pending_offer
 
     @pytest.mark.parametrize("status", ALL_STATUS - set([CollectiveOfferDisplayedStatus.PENDING]))
     def test_filter_by_multiple_status(self, app, status):
@@ -496,8 +494,7 @@ class FilterCollectiveOfferByStatusesTest:
         )
 
         # Then
-        assert filtered_booked_query.count() == 1
-        assert filtered_booked_query.first() == booked_offer
+        assert filtered_booked_query.one() == booked_offer
 
     @pytest.mark.parametrize("status", ALL_STATUS - set([CollectiveOfferDisplayedStatus.PENDING]))
     def test_filter_by_status(self, app, status):
@@ -511,8 +508,7 @@ class FilterCollectiveOfferByStatusesTest:
         filtered_booked_query = _filter_collective_offers_by_statuses(base_query, [status.value])
 
         # Then
-        assert filtered_booked_query.count() == 1
-        assert filtered_booked_query.first() == offer
+        assert filtered_booked_query.one() == offer
 
     @pytest.mark.parametrize("status", ALL_STATUS - {CollectiveOfferDisplayedStatus.PENDING})
     def test_filter_pending(self, app, status):
@@ -522,8 +518,7 @@ class FilterCollectiveOfferByStatusesTest:
         base_query = CollectiveOffer.query
         filtered_booked_query = _filter_collective_offers_by_statuses(base_query, ["PENDING"])
 
-        assert filtered_booked_query.count() == 1
-        assert filtered_booked_query.first() == pending_offer
+        assert filtered_booked_query.one() == pending_offer
 
     @pytest.mark.parametrize("status", ALL_STATUS - {CollectiveOfferDisplayedStatus.ACTIVE})
     def test_filter_active(self, app, status):
@@ -532,13 +527,10 @@ class FilterCollectiveOfferByStatusesTest:
 
         base_query = CollectiveOffer.query
         filtered_query = _filter_collective_offers_by_statuses(base_query, ["ACTIVE"])
-
-        assert filtered_query.count() == 1
-        assert filtered_query.first() == active_offer
+        assert filtered_query.one() == active_offer
 
         filtered_out_query = _filter_collective_offers_by_statuses(base_query, [status.value])
-        assert filtered_out_query.count() == 1
-        assert filtered_out_query.first() == other_offer
+        assert filtered_out_query.one() == other_offer
 
     def test_all_filters(self, app):
         all_offers_by_status = {s.value: create_collective_offer_by_status(s) for s in self.ALL_STATUS}
