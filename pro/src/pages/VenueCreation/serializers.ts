@@ -1,4 +1,4 @@
-import { PostVenueBodyModel } from 'apiClient/v1/models/PostVenueBodyModel'
+import { PostVenueBodyModel } from 'apiClient/v1/api'
 import { unhumanizeSiret } from 'core/Venue/utils'
 import { VenueCreationFormValues } from 'pages/VenueCreation/types'
 
