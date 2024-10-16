@@ -38,7 +38,7 @@
     "stepDefinitions": "cypress/e2e/step-definitions/**/*.ts"
   },
   "dependencies": {
-    "@algolia/autocomplete-plugin-query-suggestions": "^1.17.4",
+    "@algolia/autocomplete-plugin-query-suggestions": "^1.17.6",
     "@algolia/autocomplete-plugin-recent-searches": "^1.17.6",
     "@firebase/analytics": "^0.10.8",
     "@firebase/app": "^0.10.13",
