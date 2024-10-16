@@ -1,6 +1,7 @@
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.educational import models as educational_models
 import pcapi.core.educational.factories as educational_factories
+from pcapi.core.finance import factories as finance_factories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.users import factories as users_factories
@@ -40,6 +41,27 @@ def create_regular_pro_user_with_virtual_offer() -> dict:
     offers_factories.OfferFactory(
         name="Mon offre virtuelle", subcategoryId=subcategories.ABO_PLATEFORME_VIDEO.id, venue=virtual_venue
     )
+    return {"user": get_pro_user_helper(pro_user)}
+
+
+def create_pro_user_with_financial_data() -> dict:
+    pro_user = users_factories.ProFactory()
+    offerer_A = offerers_factories.OffererFactory()
+    offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer_A)
+    offerers_factories.VenueFactory(name="Mon Lieu", managingOfferer=offerer_A)
+    offerers_factories.VirtualVenueFactory(managingOfferer=offerer_A)
+
+    offerer_B = offerers_factories.OffererFactory(name="Structure avec informations bancaires")
+    offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer_B)
+    venue_B = offerers_factories.VenueFactory(name="Mon Lieu", managingOfferer=offerer_B)
+    offerers_factories.VirtualVenueFactory(managingOfferer=offerer_B)
+    bank_account_B = finance_factories.BankAccountFactory(offerer=offerer_B)
+    offerers_factories.VenuePricingPointLinkFactory(
+        venue=venue_B,
+        pricingPoint=venue_B,
+    )
+    finance_factories.InvoiceFactory(bankAccount=bank_account_B, reimbursementPoint=venue_B)
+
     return {"user": get_pro_user_helper(pro_user)}
 
 
