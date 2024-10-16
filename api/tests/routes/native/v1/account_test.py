@@ -2896,6 +2896,11 @@ class AnonymizeUserTest:
         assert not user.isActive
         assert users_models.GdprUserAnonymization.query.filter_by(userId=user.id).count() == 1
 
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0]["template"] == dataclasses.asdict(
+            TransactionalEmail.BENEFICIARY_PRE_ANONYMIZATION.value
+        )
+
     def test_no_deposit(self, client):
         user = users_factories.UserFactory(age=16)
 
@@ -2904,6 +2909,11 @@ class AnonymizeUserTest:
         assert response.status_code == 204
         assert not user.isActive
         assert users_models.GdprUserAnonymization.query.filter_by(userId=user.id).count() == 1
+
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0]["template"] == dataclasses.asdict(
+            TransactionalEmail.BENEFICIARY_PRE_ANONYMIZATION.value
+        )
 
     def test_pending_gdpr_extract(self, client):
         user = users_factories.BeneficiaryFactory(validatedBirthDate=date(2000, 1, 1))
@@ -2914,6 +2924,7 @@ class AnonymizeUserTest:
         assert response.status_code == 400
         assert response.json["code"] == "EXISTING_UNPROCESSED_GDPR_EXTRACT"
         assert user.isActive
+        assert not mails_testing.outbox
 
     @pytest.mark.parametrize(
         "role",
@@ -2932,6 +2943,7 @@ class AnonymizeUserTest:
         assert response.status_code == 400
         assert response.json["code"] == "NOT_ANONYMIZABLE_BENEFICIARY"
         assert user.isActive
+        assert not mails_testing.outbox
 
     def test_active_beneficiary(self, client):
         user = users_factories.BeneficiaryFactory()
@@ -2941,6 +2953,7 @@ class AnonymizeUserTest:
         assert response.status_code == 400
         assert response.json["code"] == "NOT_ANONYMIZABLE_BENEFICIARY"
         assert user.isActive
+        assert not mails_testing.outbox
 
     def test_pending_anonymization(self, client):
         user = users_factories.BeneficiaryFactory(validatedBirthDate=date(2000, 1, 1))
@@ -2951,3 +2964,4 @@ class AnonymizeUserTest:
         assert response.status_code == 400
         assert response.json["code"] == "ALREADY_HAS_PENDING_ANONYMIZATION"
         assert user.isActive
+        assert not mails_testing.outbox

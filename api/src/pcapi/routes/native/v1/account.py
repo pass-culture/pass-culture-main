@@ -1,4 +1,5 @@
 from datetime import datetime
+from functools import partial
 import logging
 
 from flask import current_app as app
@@ -12,6 +13,7 @@ import pcapi.core.bookings.exceptions as bookings_exceptions
 from pcapi.core.external.attributes import api as external_attributes_api
 from pcapi.core.fraud.phone_validation import sending_limit
 import pcapi.core.mails.transactional as transactional_mails
+from pcapi.core.mails.transactional.users.pre_anonymize_beneficiary import send_beneficiary_pre_anonymization_email
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription.dms import api as dms_subscription_api
 from pcapi.core.subscription.phone_validation import api as phone_validation_api
@@ -27,6 +29,7 @@ from pcapi.domain import password
 from pcapi.models import api_errors
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import atomic
+from pcapi.repository import on_commit
 from pcapi.repository import transaction
 from pcapi.routes.native.security import authenticated_and_active_user_required
 from pcapi.routes.native.security import authenticated_maybe_inactive_user_required
@@ -518,6 +521,8 @@ def anonymize_account(user: users_models.User) -> None:
         api.pre_anonymize_user(user, author=user)
     except exceptions.UserAlreadyHasPendingAnonymization:
         raise api_errors.ApiErrors({"code": "ALREADY_HAS_PENDING_ANONYMIZATION"})
+
+    on_commit(partial(send_beneficiary_pre_anonymization_email, user))
 
 
 @blueprint.native_route("/account/suspension_date", methods=["GET"])
