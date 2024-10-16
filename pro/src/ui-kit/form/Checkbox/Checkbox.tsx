@@ -20,6 +20,7 @@ interface CheckboxProps {
   withBorder?: boolean
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
   ariaDescribedBy?: string
+  checked?: boolean
 }
 
 export const Checkbox = ({

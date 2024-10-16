@@ -25,7 +25,7 @@ import { PATCH_SUCCESS_MESSAGE } from 'core/shared/constants'
 import { useActiveFeature } from 'hooks/useActiveFeature'
 import { useNotification } from 'hooks/useNotification'
 import { useOfferWizardMode } from 'hooks/useOfferWizardMode'
-import strokeMailIcon from 'icons/stroke-mail.svg'
+import { Checkbox } from 'ui-kit/form/Checkbox/Checkbox'
 import { getOfferConditionalFields } from 'utils/getOfferConditionalFields'
 import { localStorageAvailable } from 'utils/localStorageAvailable'
 
@@ -59,10 +59,12 @@ export const UsefulInformationScreen = ({
   const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
   const isSearchByEanEnabled = useActiveFeature('WIP_EAN_CREATION')
 
-  const [isWithdrawalMailDialogOpen, setIsWithdrawalMailDialogOpen] =
-    useState<boolean>(false)
-  const [isAddressUpdateDialogOpen, setIsAddressUpdateDialogOpen] =
-    useState<boolean>(false)
+  const [isUpdatesWarningDialogOpen, setIsUpdatesWarningDialogOpen] =
+    useState(false)
+  const [warningFieldsChanged, setWarningFieldsChanged] = useState<{
+    address: boolean
+    withdrawalInformations: boolean
+  }>({ address: false, withdrawalInformations: false })
 
   const [sendWithdrawalMail, setSendWithdrawalMail] = useState<boolean>(false)
 
@@ -104,19 +106,18 @@ export const UsefulInformationScreen = ({
         'coords',
       ])
 
-      const showWithdrawalMailDialog =
-        offer.isActive &&
-        (offer.bookingsCount ?? 0) > 0 &&
-        hasWithdrawalInformationsChanged
-      if (showWithdrawalMailDialog && !isWithdrawalMailDialogOpen) {
-        setIsWithdrawalMailDialogOpen(true)
-        return
-      }
+      setWarningFieldsChanged((fields) => ({
+        ...fields,
+        address: hasAddressChanged,
+        withdrawalInformations: hasWithdrawalInformationsChanged,
+      }))
 
-      const showAddressChangeDialog =
-        offer.isActive && (offer.bookingsCount ?? 0) > 0 && hasAddressChanged
-      if (showAddressChangeDialog && !isAddressUpdateDialogOpen) {
-        setIsAddressUpdateDialogOpen(true)
+      const showUpdatesWarningModal =
+        offer.hasPendingBookings &&
+        (hasWithdrawalInformationsChanged || hasAddressChanged)
+
+      if (showUpdatesWarningModal && !isUpdatesWarningDialogOpen) {
+        setIsUpdatesWarningDialogOpen(true)
         return
       }
     }
@@ -214,6 +215,7 @@ export const UsefulInformationScreen = ({
     onSubmit,
     validationSchema,
   })
+
   const handlePreviousStepOrBackToReadOnly = () => {
     if (mode === OFFER_WIZARD_MODE.CREATION) {
       navigate(
@@ -253,46 +255,44 @@ export const UsefulInformationScreen = ({
           dirtyForm={formik.dirty}
         />
       </Form>
-      <ConfirmDialog
-        cancelText="Ne pas envoyer"
-        confirmText="Envoyer un email"
-        onCancel={() => {
-          setIsWithdrawalMailDialogOpen(false)
-        }}
-        leftButtonAction={async () => {
-          await formik.submitForm()
-        }}
-        onConfirm={async () => {
-          setSendWithdrawalMail(true)
-          await formik.submitForm()
-        }}
-        icon={strokeMailIcon}
-        title="Souhaitez-vous prévenir les bénéficiaires de la modification des modalités de retrait ?"
-        open={isWithdrawalMailDialogOpen}
-      />
+
       <ConfirmDialog
         cancelText="Annuler"
         confirmText="Je confirme le changement"
         onCancel={() => {
-          setIsAddressUpdateDialogOpen(false)
+          setIsUpdatesWarningDialogOpen(false)
         }}
         onConfirm={async () => {
           await formik.submitForm()
         }}
-        open={isAddressUpdateDialogOpen}
-        title="Le changement d’adresse va s’impacter à l’ensemble des réservations en cours associées."
+        open={isUpdatesWarningDialogOpen}
+        title="Les changements vont s’impacter à l’ensemble des réservations en cours associées"
       >
         <div className={styles['update-oa-wrapper']}>
           <div>
-            Un email va être envoyé aux bénéficiaires ayant réservé les offres
-            concernées. Ils auront 48h pour annuler leur réservation s’ils le
-            souhaitent.
+            Vous avez modifié{' '}
+            {warningFieldsChanged.address &&
+            warningFieldsChanged.withdrawalInformations
+              ? 'les modalités de retrait et la localisation'
+              : warningFieldsChanged.address
+                ? 'la localisation'
+                : 'les modalités de retrait'}
+            .
           </div>
           <Callout variant={CalloutVariant.WARNING}>
-            Si vous souhaitez que les réservations en cours conservent
-            l’ancienne adresse, veuillez créer une nouvelle offre avec la
-            nouvelle adresse.
+            Si vous souhaitez que les réservations en cours conservent les
+            données actuelles, veuillez créer une nouvelle offre avec les
+            nouvelles informations.
           </Callout>
+          <FormLayout.Row>
+            <Checkbox
+              hideFooter
+              label={'Prévenir les jeunes par e-mail'}
+              name="shouldSendMail"
+              onChange={(evt) => setSendWithdrawalMail(evt.target.checked)}
+              checked={sendWithdrawalMail}
+            />
+          </FormLayout.Row>
         </div>
       </ConfirmDialog>
       <RouteLeavingGuardIndividualOffer
