@@ -42,3 +42,6 @@ class GetYearlyAggregatedOffererRevenueTest:
         assert result.year["2024"].revenue.total == Decimal("20.2")
         assert result.year["2024"].revenue.individual == Decimal("20.2")
         assert result.year["2024"].revenue.collective == Decimal("0.0")
+
+
+# TODO : Add tests over several years

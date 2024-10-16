@@ -23,4 +23,6 @@ class AggregatedRevenue(BaseModel):
 
 
 class YearlyAggregatedRevenue(BaseModel):
-    year: dict[str, AggregatedRevenue]
+    year: dict[
+        str, AggregatedRevenue
+    ]  # todo: add from orm to serialize by year date, and remove "year" from serialization dict
