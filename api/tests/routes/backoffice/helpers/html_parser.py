@@ -42,7 +42,7 @@ def extract_table_rows(html_content: str, parent_class: str | None = None) -> li
     thead_tr_list = thead.find_all("tr")
     assert len(thead_tr_list) == 1
 
-    for th in thead_tr_list[0].find_all("th"):
+    for th in thead_tr_list[0].find_all(["th", "td"]):
         th_text = re.sub(r"\s+", " ", th.text.strip())
         headers.append(th_text)
 

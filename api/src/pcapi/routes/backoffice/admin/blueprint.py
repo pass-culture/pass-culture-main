@@ -1,6 +1,7 @@
 from flask import flash
 from flask import redirect
 from flask import render_template
+from flask import request
 from flask import url_for
 from flask_login import current_user
 import sqlalchemy as sa
@@ -25,8 +26,33 @@ from ..forms import empty as empty_forms
 
 @blueprint.backoffice_web.route("/admin/roles", methods=["GET"])
 @atomic()
-@utils.permission_required(perm_models.Permissions.MANAGE_PERMISSIONS)
+@utils.permission_required(perm_models.Permissions.READ_PERMISSIONS)
 def get_roles() -> utils.BackofficeResponse:
+    roles = perm_api.list_roles()
+    roles.sort(key=lambda role: role.name)
+
+    roles_for_permissions = (
+        db.session.query(perm_models.Permission.name, sa.func.array_agg(perm_models.Role.name))
+        .select_from(perm_models.Permission)
+        .join(perm_models.RolePermission)
+        .join(perm_models.Role)
+        .group_by(perm_models.Permission.name)
+        .order_by(perm_models.Permission.name)
+        .all()
+    )
+
+    return render_template(
+        "admin/roles.html",
+        active_tab=request.args.get("active_tab", "matrix"),
+        roles=roles,
+        permissions=dict(roles_for_permissions),
+    )
+
+
+@blueprint.backoffice_web.route("/admin/roles-matrix", methods=["GET"])
+@atomic()
+@utils.permission_required(perm_models.Permissions.MANAGE_PERMISSIONS)
+def get_roles_management() -> utils.BackofficeResponse:
     roles = perm_api.list_roles()
     roles.sort(key=lambda role: role.name)
     permissions = perm_api.list_permissions()
@@ -41,12 +67,12 @@ def get_roles() -> utils.BackofficeResponse:
         perm_form.fill_form(permissions, role)
         perm_forms[role] = perm_form
 
-    return render_template("admin/roles.html", forms=perm_forms)
+    return render_template("admin/roles_management.html", forms=perm_forms)
 
 
 @blueprint.backoffice_web.route("/admin/roles-history", methods=["GET"])
 @atomic()
-@utils.permission_required(perm_models.Permissions.MANAGE_PERMISSIONS)
+@utils.permission_required(perm_models.Permissions.READ_PERMISSIONS)
 def get_roles_history() -> utils.BackofficeResponse:
     actions_history = (
         history_models.ActionHistory.query.filter_by(actionType=history_models.ActionType.ROLE_PERMISSIONS_CHANGED)
@@ -86,7 +112,7 @@ def update_role(role_id: int) -> utils.BackofficeResponse:
     perm_api.update_role(role_id, role_name, tuple(new_permissions_ids), author=current_user)
     flash("Les informations ont été mises à jour", "success")
 
-    return redirect(url_for(".get_roles"), code=303)
+    return redirect(url_for(".get_roles", active_tab="management"), code=303)
 
 
 @blueprint.backoffice_web.route("/admin/feature-flipping", methods=["GET"])

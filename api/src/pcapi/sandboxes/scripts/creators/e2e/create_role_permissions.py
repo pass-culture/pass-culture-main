@@ -4,7 +4,7 @@ from pcapi.core.permissions import models as perm_models
 
 ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
     "admin": [
-        perm_models.Permissions.MANAGE_PERMISSIONS,
+        perm_models.Permissions.READ_PERMISSIONS,
         perm_models.Permissions.READ_ADMIN_ACCOUNTS,
         perm_models.Permissions.MANAGE_ADMIN_ACCOUNTS,
         perm_models.Permissions.READ_TAGS,
@@ -111,6 +111,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.READ_TAGS,
     ],
     "qa": [
+        perm_models.Permissions.READ_PERMISSIONS,
         perm_models.Permissions.MANAGE_PERMISSIONS,
         perm_models.Permissions.READ_ADMIN_ACCOUNTS,
         perm_models.Permissions.MANAGE_ADMIN_ACCOUNTS,
@@ -182,12 +183,12 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.MANAGE_TECH_PARTNERS,
     ],
     "dpo": [
-        perm_models.Permissions.MANAGE_PERMISSIONS,
         perm_models.Permissions.ANONYMIZE_PUBLIC_ACCOUNT,
         perm_models.Permissions.READ_PUBLIC_ACCOUNT,
         perm_models.Permissions.EXTRACT_PUBLIC_ACCOUNT,
     ],
     "gestionnaire_des_droits": [
+        perm_models.Permissions.READ_PERMISSIONS,
         perm_models.Permissions.MANAGE_PERMISSIONS,
     ],
 }

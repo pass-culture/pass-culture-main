@@ -28,7 +28,7 @@ pytestmark = [
 
 ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
     "admin": [
-        perm_models.Permissions.MANAGE_PERMISSIONS,
+        perm_models.Permissions.READ_PERMISSIONS,
         perm_models.Permissions.READ_ADMIN_ACCOUNTS,
         perm_models.Permissions.MANAGE_ADMIN_ACCOUNTS,
         perm_models.Permissions.READ_TAGS,
@@ -134,7 +134,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
     ],
     "qa": [],
     "global_access": [
-        perm_models.Permissions.MANAGE_PERMISSIONS,
+        perm_models.Permissions.READ_PERMISSIONS,
         perm_models.Permissions.READ_ADMIN_ACCOUNTS,
         perm_models.Permissions.MANAGE_ADMIN_ACCOUNTS,
         perm_models.Permissions.FEATURE_FLIPPING,
@@ -170,7 +170,6 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
     ],
     "dpo": [
         perm_models.Permissions.READ_PUBLIC_ACCOUNT,
-        perm_models.Permissions.MANAGE_PERMISSIONS,
         perm_models.Permissions.ANONYMIZE_PUBLIC_ACCOUNT,
         perm_models.Permissions.EXTRACT_PUBLIC_ACCOUNT,
     ],
@@ -180,6 +179,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.VALIDATE_COMMERCIAL_GESTURE,
     ],
     "gestionnaire_des_droits": [
+        perm_models.Permissions.READ_PERMISSIONS,
         perm_models.Permissions.MANAGE_PERMISSIONS,
     ],
 }

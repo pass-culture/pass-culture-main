@@ -41,8 +41,7 @@ class AuthorizePageTest:
         assert response.status_code == 302
         assert response.location == url_for("backoffice_web.home", _external=True)
 
-    @override_settings(IS_TESTING=False)
-    @override_settings(IS_DEV=False)
+    @override_settings(BACKOFFICE_ROLES_WITHOUT_GOOGLE_GROUPS=0)
     @override_settings(GOOGLE_CLIENT_ID="some client id")
     @override_settings(GOOGLE_CLIENT_SECRET="some client secret")
     @patch("pcapi.routes.backoffice.auth.fetch_user_roles_from_google_workspace")
@@ -82,8 +81,7 @@ class AuthorizePageTest:
 
         assert user_role_names == expected_role_names
 
-    @override_settings(IS_TESTING=False)
-    @override_settings(IS_DEV=False)
+    @override_settings(BACKOFFICE_ROLES_WITHOUT_GOOGLE_GROUPS=0)
     @override_settings(GOOGLE_CLIENT_ID="some client id")
     @override_settings(GOOGLE_CLIENT_SECRET="some client secret")
     @patch("pcapi.routes.backoffice.auth.fetch_user_roles_from_google_workspace")
@@ -114,8 +112,7 @@ class AuthorizePageTest:
         assert response.location == url_for("backoffice_web.home", _external=True)
         assert "Successful authentication attempt" in caplog.messages
 
-    @override_settings(IS_TESTING=False)
-    @override_settings(IS_DEV=False)
+    @override_settings(BACKOFFICE_ROLES_WITHOUT_GOOGLE_GROUPS=0)
     @override_settings(GOOGLE_CLIENT_ID="some client id")
     @override_settings(GOOGLE_CLIENT_SECRET="some client secret")
     @patch("pcapi.routes.backoffice.auth.fetch_user_roles_from_google_workspace")

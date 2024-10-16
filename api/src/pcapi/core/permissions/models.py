@@ -22,6 +22,7 @@ class Permissions(enum.Enum):
     sync_enum_with_db_field function which is called when the app is deployed
     """
 
+    READ_PERMISSIONS = "visualiser la matrice des droits"
     MANAGE_PERMISSIONS = "gérer les droits"
     READ_ADMIN_ACCOUNTS = "visualiser les comptes admin"
     MANAGE_ADMIN_ACCOUNTS = "gérer les comptes admin"
@@ -32,7 +33,7 @@ class Permissions(enum.Enum):
 
     READ_PUBLIC_ACCOUNT = "visualiser un compte bénéficiaire/grand public"
     MANAGE_PUBLIC_ACCOUNT = "gérer un compte bénéficiaire/grand public"
-    ANONYMIZE_PUBLIC_ACCOUNT = "Anonymiser un compte grand public"
+    ANONYMIZE_PUBLIC_ACCOUNT = "anonymiser un compte grand public"
 
     SUSPEND_USER = "suspendre un compte jeune"
     UNSUSPEND_USER = "réactiver un compte jeune"

@@ -32,3 +32,11 @@ pre:has(code) {
     max-width: 600px !important;
   }
 }
+
+.pc-rotate-90 {
+  -webkit-transform: rotate(-90deg);
+  -moz-transform: rotate(-90deg);
+  -ms-transform: rotate(-90deg);
+  -o-transform: rotate(-90deg);
+  vertical-align: baseline;
+ }

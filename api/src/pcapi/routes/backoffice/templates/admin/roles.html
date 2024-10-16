@@ -3,42 +3,83 @@
 {% extends "layouts/admin.html" %}
 {% block main_content %}
   <div class="container">
-    <h2>Gestion des rôles</h2>
+    <h2>Rôles et permissions</h2>
     <div class="mt-4">
       {% call tabs.build_details_tabs_wrapper() %}
-        {{ tabs.build_details_tab('management', 'Gestion', True) }}
-        {{ tabs.build_details_tab('history', 'Historique') }}
+        {{ tabs.build_details_tab('matrix', 'Matrice des droits', active_tab == "matrix") }}
+        {% if has_permission("MANAGE_PERMISSIONS") %}
+          {{ tabs.build_details_tab('management', 'Gestion des droits', active_tab == "management") }}
+        {% endif %}
+        {{ tabs.build_details_tab('history', 'Historique', active_tab == "history") }}
       {% endcall %}
       {% call tabs.build_details_tabs_content_wrapper() %}
-        {% call tabs.build_details_tab_content("management", True) %}
-          {% for form in forms %}
-            <div class="card mb-4">
-              <div class="card-header"
-                   data-bs-toggle="collapse"
-                   href=".pc-collapse-{{ form.name }}"
-                   role="button">{{ form.name }}</div>
-              <div class="collapse card-collapse p-3 shadow pc-collapse-{{ form.name }}">
-                <form class=".{{ form.name }}"
-                      action="{{ url_for('.update_role', role_id=form.id) }}"
-                      method="post"
-                      name="{{ url_for('.update_role', role_id=form.id) | action_to_name }}">
-                  <div class="card-body">
-                    <div class="row">
-                      {% for form_field in forms[form] %}{{ form_field }}{% endfor %}
-                    </div>
-                    <div class="row">
-                      <div class="my-3">
-                        <button type="submit"
-                                class="btn btn-sm py-2 btn-primary">Sauvegarder les modifications</button>
-                      </div>
-                    </div>
-                  </div>
-                </form>
-              </div>
-            </div>
-          {% endfor %}
+        {% call tabs.build_details_tab_content("matrix", active_tab == "matrix") %}
+          <div class="mt-4">
+            <table class="border-1">
+              <thead>
+                <tr style="line-height: 13em;">
+                  <td>&nbsp;</td>
+                  {% for role in roles %}
+                    <td class="border-start text-nowrap pc-rotate-90"
+                        style="min-width: 2em;
+                               max-width: 2em;
+                               position: relative;
+                               top: 5em">{{ role.name }}</td>
+                  {% endfor %}
+                </tr>
+              </thead>
+              {% if not get_setting("BACKOFFICE_ROLES_WITHOUT_GOOGLE_GROUPS") %}
+                <tr>
+                  <td>&nbsp;</td>
+                  {% for role in roles %}
+                    <td class="border-start text-center">
+                      {% set link = "https://groups.google.com/a/passculture.app/g/backoffice-" + get_setting('ENV') + "-{{ role.name }}/members" %}
+                      <a href="{{ link }}"
+                         target="_blank"
+                         class="link-primary"
+                         title="Voir les membres du groupe Google">
+                        <i class="bi bi-google"></i>
+                      </a>
+                    </td>
+                  {% endfor %}
+                {% endif %}
+              </tr>
+              {% for permission, perm_roles in permissions.items() %}
+                <tr class="border-top">
+                  <td class="text-nowrap">{{ permission | format_permission_name }}</td>
+                  {% for role in roles %}
+                    <td class="border-start text-center">
+                      {% if role.name in perm_roles %}<span title="{{ role.name }}">x</span>{% endif %}
+                    </td>
+                  {% endfor %}
+                </tr>
+              {% endfor %}
+              <thead>
+                <tr class="border-top"
+                    style="line-height: 13em">
+                  <td>&nbsp;</td>
+                  {% for role in roles %}
+                    <td class="border-start text-nowrap pc-rotate-90"
+                        style="min-width: 2em;
+                               max-width: 2em;
+                               position: relative;
+                               top: 5em">{{ role.name }}</td>
+                  {% endfor %}
+                </tr>
+              </thead>
+            </table>
+          </div>
         {% endcall %}
-        {% call tabs.build_details_tab_content("history") %}
+        {% if has_permission("MANAGE_PERMISSIONS") %}
+          {% call tabs.build_details_tab_content("management", active_tab == "management") %}
+            <div class="mt-4">
+              <turbo-frame data-turbo="false" id="admin_roles_management_frame" src="{{ url_for('backoffice_web.get_roles_management') }}">
+              {{ build_loading_spinner() }}
+              </turbo-frame>
+            </div>
+          {% endcall %}
+        {% endif %}
+        {% call tabs.build_details_tab_content("history", active_tab == "history") %}
           <div class="mt-4">
             <turbo-frame data-turbo="false" id="admin_roles_history_frame" src="{{ url_for('backoffice_web.get_roles_history') }}">
             {{ build_loading_spinner() }}
