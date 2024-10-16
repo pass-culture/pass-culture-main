@@ -55,6 +55,7 @@ import pcapi.core.users.repository as users_repository
 from pcapi.models import db
 from pcapi.models import feature
 from pcapi.models import pc_object
+from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.repository import on_commit
@@ -278,8 +279,8 @@ def update_venue_location(
         "inseeCode": address.inseeCode,
     }
 
+    offerer_address = get_or_create_offerer_address(venue.managingOffererId, address.id)
     if not venue.offererAddressId:
-        offerer_address = get_or_create_offerer_address(venue.managingOffererId, address.id)
         venue_snapshot.trace_update({"offererAddressId": offerer_address.id})
         venue_snapshot.trace_update(
             snapshot_location_data,
@@ -291,13 +292,22 @@ def update_venue_location(
         db.session.flush()
     else:
         target = venue.offererAddress.address  # type: ignore[union-attr]
+        old_oa = venue.offererAddress
         venue_snapshot.trace_update(
             snapshot_location_data, target=target, field_name_template="offererAddress.address.{}"
         )
         venue_snapshot.trace_update(
-            {"addressId": address.id}, target=venue.offererAddress, field_name_template="offererAddress.{}"
+            {"addressId": address.id, "label": venue.common_name},
+            target=venue.offererAddress,
+            field_name_template="offererAddress.{}",
         )
-        update_offerer_address(venue.offererAddressId, address.id)
+        update_offerer_address_label(old_oa.id, venue.common_name)  # type: ignore[union-attr]
+
+        venue.offererAddress = offerer_address
+        try:
+            assert not old_oa.isLinkedToVenue  # type: ignore[union-attr]
+        except AssertionError:
+            raise ApiErrors(errors={"offererAddress": "l'adresse est liée à plus d'un lieu"}, status_code=400)
 
     if modifications.get("street"):
         modifications["street"] = address.street
@@ -2977,15 +2987,3 @@ def send_reminder_email_to_individual_offerers() -> None:
         transactional_mails.send_offerer_individual_subscription_reminder(offerer.UserOfferers[0].user.email)
 
     db.session.commit()
-
-
-def update_offerer_address(offerer_address_id: int, address_id: int, label: str | None = None) -> None:
-    try:
-        db.session.query(offerers_models.OffererAddress).filter_by(id=offerer_address_id).update(
-            {"addressId": address_id, "label": label}
-        )
-        db.session.flush()
-    except sa.exc.IntegrityError as exc:
-        # We shouldn't enp up here, but if so log the exception so we can investigate
-        db.session.rollback()
-        logger.exception(exc)

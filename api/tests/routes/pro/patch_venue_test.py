@@ -4,6 +4,7 @@ from unittest.mock import patch
 
 import pytest
 
+from pcapi.connectors.api_adresse import AddressInfo
 from pcapi.core import search
 from pcapi.core.external.zendesk_sell_backends import testing as zendesk_testing
 from pcapi.core.geography import factories as geography_factories
@@ -164,10 +165,13 @@ class Returns200Test:
                     "new_info": venue.offererAddress.addressId,
                     "old_info": venue_oa_address_id,
                 },
+                "offererAddress.label": {"new_info": "old name", "old_info": None},
             }
         }
         address = geography_models.Address.query.order_by(geography_models.Address.id.desc()).first()
-        offerer_address = offerers_models.OffererAddress.query.one()
+        offerer_address = offerers_models.OffererAddress.query.order_by(
+            offerers_models.OffererAddress.id.desc()
+        ).first()
 
         assert venue.offererAddressId == offerer_address.id
         assert address.street == venue.street == "3 Rue de Valois"
@@ -216,7 +220,9 @@ class Returns200Test:
         assert response.status_code == 200
         venue = offerers_models.Venue.query.one()
         address = geography_models.Address.query.order_by(geography_models.Address.id.desc()).first()
-        offerer_address = offerers_models.OffererAddress.query.one()
+        offerer_address = offerers_models.OffererAddress.query.order_by(
+            offerers_models.OffererAddress.id.desc()
+        ).first()
 
         assert venue.offererAddressId == offerer_address.id
         assert address.street == venue.street == "3 Rue de Valois"
@@ -972,3 +978,76 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json["siret"] == ["Vous ne pouvez pas supprimer le siret d'un lieu"]
+
+    @patch(
+        "pcapi.connectors.api_adresse.get_address",
+        return_value=AddressInfo(
+            id="75101_9575_00003",
+            label="2 boulevard Poissonnière",
+            city="Paris",
+            postcode="75000",
+            insee_code="75000",
+            citycode="75101",
+            latitude=48.12345,
+            longitude=2.12345,
+            department_code="75",
+            region_code="11",
+            score=0.9,
+        ),
+    )
+    def test_should_raise_on_oa_linked_to_venue_after_update(self, mock_get_address, client):
+        user_offerer = offerers_factories.UserOffererFactory()
+        address = geography_factories.AddressFactory(
+            street="1 boulevard Poissonnière", postalCode="75000", inseeCode="75000", city="Paris"
+        )
+        address_2 = geography_factories.AddressFactory(
+            street="2 boulevard Poissonnière",
+            postalCode="75000",
+            inseeCode="75000",
+            city="Paris",
+            longitude=2.12345,
+            latitude=48.12345,
+            banId="75101_9575_00003",
+        )
+        offerer_address_1 = offerers_factories.OffererAddressOfVenueFactory(
+            offerer=user_offerer.offerer, address=address
+        )
+        offerer_address_2 = offerers_factories.OffererAddressOfVenueFactory(
+            offerer=user_offerer.offerer, address=address
+        )
+        offerer_address_3 = offerers_factories.OffererAddressOfVenueFactory(
+            offerer=user_offerer.offerer, address=address_2
+        )
+
+        venue_1 = offerers_factories.VenueFactory(
+            managingOfferer=user_offerer.offerer,
+            street=address.street,
+            postalCode=address.postalCode,
+            city=address.city,
+            offererAddress=offerer_address_1,
+        )
+        venue_2 = offerers_factories.VenueFactory(
+            managingOfferer=user_offerer.offerer,
+            street=address.street,
+            postalCode=address.postalCode,
+            city=address.city,
+            offererAddress=offerer_address_1,
+        )
+        venue_data = {
+            "publicName": "Ma librairie",
+            "street": "3 Rue de Valois",
+            "banId": "75101_9575_00003",
+            "city": "Paris",
+            "latitude": 48.12345,
+            "longitude": 2.12345,
+            "postalCode": "75000",
+        }
+        auth_request = client.with_session_auth(email=user_offerer.user.email)
+        venue_id = venue_1.id
+        response = auth_request.patch("/venues/%s" % venue_id, json=venue_data)
+        assert response.status_code == 400
+
+        venue = offerers_models.Venue.query.get(venue_id)
+        assert venue.street == address.street
+        assert response.json == {"offererAddress": "l'adresse est liée à plus d'un lieu"}
+        assert len(offerers_models.OffererAddress.query.all()) == 3
