@@ -12,7 +12,14 @@
             name="{{ url_for('.update_role', role_id=form.id) | action_to_name }}">
         <div class="card-body">
           <div class="row">
-            {% for form_field in forms[form] %}{{ form_field }}{% endfor %}
+            {% for form_field in forms[form] %}
+              {% if form_field.type == "PCSwitchBooleanField" %}{{ form_field }}{% endif %}
+            {% endfor %}
+          </div>
+          <div class="row mt-4">
+            {% for form_field in forms[form] %}
+              {% if form_field.type != "PCSwitchBooleanField" %}{{ form_field }}{% endif %}
+            {% endfor %}
           </div>
           <div class="row">
             <div class="my-3">
