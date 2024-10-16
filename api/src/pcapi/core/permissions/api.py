@@ -25,7 +25,7 @@ def list_permissions() -> list[perm_models.Permission]:
 
 
 def update_role(
-    id_: int, name: str, permission_ids: typing.Iterable[int], author: users_models.User
+    id_: int, name: str, permission_ids: typing.Iterable[int], author: users_models.User, comment: str
 ) -> perm_models.Role:
     raise_error_on_empty_role_name(name)
 
@@ -50,6 +50,7 @@ def update_role(
     history_api.add_action(
         history_models.ActionType.ROLE_PERMISSIONS_CHANGED,
         author=author,
+        comment=comment,
         role_name=role.name,
         modified_info=modified_info,
     )

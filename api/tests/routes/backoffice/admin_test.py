@@ -8,6 +8,7 @@ from pcapi.core.history import models as history_models
 from pcapi.core.permissions import factories as perm_factories
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.testing import assert_num_queries
+from pcapi.core.testing import override_settings
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
@@ -102,7 +103,7 @@ class UpdateRoleTest(PostEndpointHelper):
         role_not_to_edit = perm_factories.RoleFactory(permissions=old_perms)
 
         new_perms = [perms[1], perms[3]]
-        base_form = {}
+        base_form = {"comment": "Test"}
         for perm in perms:
             base_form[perm.name] = perm in new_perms
 
@@ -153,6 +154,7 @@ class UpdateRoleTest(PostEndpointHelper):
             form={
                 perm_models.Permissions.MANAGE_PERMISSIONS.name: "on",
                 perm_models.Permissions.READ_ADMIN_ACCOUNTS.name: "on",
+                "comment": "Test",
             },
         )
         assert response.status_code == 303
@@ -160,6 +162,7 @@ class UpdateRoleTest(PostEndpointHelper):
         action = history_models.ActionHistory.query.one()
         assert action.actionType == history_models.ActionType.ROLE_PERMISSIONS_CHANGED
         assert action.authorUserId == legit_user.id
+        assert action.comment == "Test"
         assert action.extraData == {
             "role_name": role_to_edit.name,
             "modified_info": {
@@ -190,6 +193,29 @@ class UpdateRoleTest(PostEndpointHelper):
         )
         assert response.status_code == 303
 
+        assert history_models.ActionHistory.query.count() == 0
+
+    @override_settings(BACKOFFICE_ROLES_WITHOUT_GOOGLE_GROUPS=0)
+    def test_comment_is_mandatory_in_production(self, authenticated_client):
+        role_to_edit = perm_factories.RoleFactory()
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            role_id=role_to_edit.id,
+            form={
+                perm_models.Permissions.READ_OFFERS.name: "on",
+                perm_models.Permissions.READ_BOOKINGS.name: "",
+                "comment": "",
+            },
+        )
+        assert response.status_code == 303
+
+        assert (
+            html_parser.extract_alert(authenticated_client.get(response.location).data)
+            == "Les données envoyées comportent des erreurs. "
+            "Commentaire obligatoire : raison de la modification : Information obligatoire ;"
+        )
+        assert len(role_to_edit.permissions) == 0
         assert history_models.ActionHistory.query.count() == 0
 
 

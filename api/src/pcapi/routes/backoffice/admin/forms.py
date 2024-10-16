@@ -1,5 +1,6 @@
 from flask_wtf import FlaskForm
 
+from pcapi import settings
 from pcapi.core.permissions import models as perm_models
 
 from ..forms import fields
@@ -19,6 +20,12 @@ class EditPermissionForm(FlaskForm):
                 perm.name,
                 fields.PCSwitchBooleanField(perm_description),
             )
+
+        if settings.BACKOFFICE_ROLES_WITHOUT_GOOGLE_GROUPS:
+            # Do not bother developers with mandatory comment
+            cls.comment = fields.PCOptCommentField("Commentaire optionnel : raison de la modification")
+        else:
+            cls.comment = fields.PCCommentField("Commentaire obligatoire : raison de la modification")
 
     def fill_form(self, permissions: list[perm_models.Permission], role: perm_models.Role) -> None:
         for perm in permissions:

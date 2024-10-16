@@ -4,6 +4,7 @@ from flask import render_template
 from flask import request
 from flask import url_for
 from flask_login import current_user
+from markupsafe import Markup
 import sqlalchemy as sa
 from werkzeug.exceptions import NotFound
 
@@ -99,7 +100,7 @@ def update_role(role_id: int) -> utils.BackofficeResponse:
     perm_form = forms.EditPermissionForm()
     if not perm_form.validate():
         flash(utils.build_form_error_msg(perm_form), "warning")
-        return render_template("admin/roles.html"), 400
+        return redirect(url_for(".get_roles", active_tab="management"), code=303)
 
     new_permissions_ids = []
     for perm in permissions:
@@ -109,8 +110,10 @@ def update_role(role_id: int) -> utils.BackofficeResponse:
     roles = {role.id: role for role in perm_api.list_roles()}
     role_name = roles[role_id].name
 
-    perm_api.update_role(role_id, role_name, tuple(new_permissions_ids), author=current_user)
-    flash("Les informations ont été mises à jour", "success")
+    perm_api.update_role(
+        role_id, role_name, tuple(new_permissions_ids), author=current_user, comment=perm_form.comment.data
+    )
+    flash(Markup("Le rôle <b>{name}</b> a été mis à jour").format(name=role_name), "success")
 
     return redirect(url_for(".get_roles", active_tab="management"), code=303)
 
