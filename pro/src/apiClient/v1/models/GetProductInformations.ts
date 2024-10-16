@@ -3,13 +3,12 @@
 /* tslint:disable */
 /* eslint-disable */
 export type GetProductInformations = {
-  author: string;
-  description?: string | null;
-  gtlId: string;
-  id: number;
-  images: Record<string, any>;
-  name: string;
-  performer: string;
-  subcategoryId: string;
-};
-
+  author: string
+  description?: string | null
+  gtlId: string
+  id: number
+  images: Record<string, any>
+  name: string
+  performer: string
+  subcategoryId: string
+}

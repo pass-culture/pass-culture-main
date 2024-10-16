@@ -3,6 +3,5 @@
 /* tslint:disable */
 /* eslint-disable */
 export type OfferManagingOffererResponse = {
-  name: string;
-};
-
+  name: string
+}

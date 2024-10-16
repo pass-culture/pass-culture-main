@@ -7,11 +7,11 @@ import { userEvent } from '@testing-library/user-event'
 
 import { AdageFrontRoles, AuthenticatedResponse } from 'apiClient/adage'
 import { api, apiAdage } from 'apiClient/api'
-import { GET_DATA_ERROR_MESSAGE } from 'core/shared/constants'
-import * as useIsElementVisible from 'hooks/useIsElementVisible'
-import * as useNotification from 'hooks/useNotification'
+import { GET_DATA_ERROR_MESSAGE } from 'commons/core/shared/constants'
+import * as useIsElementVisible from 'commons/hooks/useIsElementVisible'
+import * as useNotification from 'commons/hooks/useNotification'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
 import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
-import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { AdageDiscovery } from '../AdageDiscovery'
 import { DOMAINS_PLAYLIST } from '../constant'
@@ -38,7 +38,7 @@ vi.mock('apiClient/api', () => ({
   },
 }))
 
-vi.mock('hooks/useIsElementVisible', () => ({
+vi.mock('commons/hooks/useIsElementVisible', () => ({
   useIsElementVisible: vi.fn(() => [false, false]),
 }))
 
@@ -62,7 +62,7 @@ describe('AdageDiscovery', () => {
 
   beforeEach(async () => {
     const notifsImport = (await vi.importActual(
-      'hooks/useNotification'
+      'commons/hooks/useNotification'
     )) as ReturnType<typeof useNotification.useNotification>
     vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
       ...notifsImport,

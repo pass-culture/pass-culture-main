@@ -2,8 +2,8 @@ import React from 'react'
 import { useLocation } from 'react-router-dom'
 
 import { AppLayout } from 'app/AppLayout'
-import { Audience } from 'core/shared/types'
-import { BookingsScreen } from 'screens/Bookings/Bookings'
+import { Audience } from 'commons/core/shared/types'
+import { BookingsScreen } from 'components/Bookings/Bookings'
 
 import { getFilteredCollectiveBookingsAdapter } from './adapters/getFilteredCollectiveBookingsAdapter'
 import { getUserHasCollectiveBookingsAdapter } from './adapters/getUserHasCollectiveBookingsAdapter'

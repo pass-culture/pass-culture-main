@@ -1,8 +1,8 @@
 import { screen } from '@testing-library/react'
 
 import { EacFormat } from 'apiClient/adage'
-import { defaultCollectiveTemplateOffer } from 'utils/adageFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
+import { defaultCollectiveTemplateOffer } from 'commons/utils/adageFactories'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import {
   AdageOfferDetailsSection,

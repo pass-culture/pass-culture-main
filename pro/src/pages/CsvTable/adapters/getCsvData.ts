@@ -1,6 +1,6 @@
 /* istanbul ignore file: DEBT, TO FIX */
-import { TableData } from 'screens/CsvTable/types'
-import { convertFromCsvToObject } from 'utils/csvConverter'
+import { convertFromCsvToObject } from 'commons/utils/csvConverter'
+import { TableData } from 'pages/CsvTable/components/CsvTable/types'
 
 export const getCsvData = (csvUrl: string): Promise<TableData | null> => {
   return new Promise((resolve, reject) => {

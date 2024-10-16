@@ -5,10 +5,10 @@ import {
   GetOffererVenueResponseModel,
   VenueTypeResponseModel,
 } from 'apiClient/v1'
-import { SelectOption } from 'custom_types/form'
+import { SelectOption } from 'commons/custom_types/form'
+import { localStorageAvailable } from 'commons/utils/localStorageAvailable'
 import { SelectInput } from 'ui-kit/form/Select/SelectInput'
 import { FieldLayout } from 'ui-kit/form/shared/FieldLayout/FieldLayout'
-import { localStorageAvailable } from 'utils/localStorageAvailable'
 
 import { PartnerPage } from './PartnerPage'
 import styles from './PartnerPages.module.scss'

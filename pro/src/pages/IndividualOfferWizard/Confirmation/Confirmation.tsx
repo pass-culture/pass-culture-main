@@ -1,8 +1,8 @@
-import { useIndividualOfferContext } from 'context/IndividualOfferContext/IndividualOfferContext'
-import { useOfferWizardMode } from 'hooks/useOfferWizardMode'
-import { IndivualOfferLayout } from 'screens/IndividualOffer/IndivualOfferLayout/IndivualOfferLayout'
-import { getTitle } from 'screens/IndividualOffer/IndivualOfferLayout/utils/getTitle'
-import { IndividualOfferConfirmationScreen } from 'screens/IndividualOfferConfirmationScreen/IndividualOfferConfirmationScreen'
+import { useIndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
+import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
+import { IndivualOfferLayout } from 'components/IndividualOffer/IndivualOfferLayout/IndivualOfferLayout'
+import { getTitle } from 'components/IndividualOffer/IndivualOfferLayout/utils/getTitle'
+import { IndividualOfferConfirmationScreen } from 'pages/IndividualOfferWizard/Confirmation/IndividualOfferConfirmationScreen/IndividualOfferConfirmationScreen'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 export const Confirmation = (): JSX.Element => {

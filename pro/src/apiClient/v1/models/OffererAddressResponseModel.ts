@@ -2,11 +2,10 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { AddressResponseModel } from './AddressResponseModel';
+import type { AddressResponseModel } from './AddressResponseModel'
 export type OffererAddressResponseModel = {
-  address: AddressResponseModel;
-  id: number;
-  label?: string | null;
-  offererId: number;
-};
-
+  address: AddressResponseModel
+  id: number
+  label?: string | null
+  offererId: number
+}

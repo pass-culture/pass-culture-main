@@ -2,7 +2,7 @@
   "compilerOptions": {
     "typeRoots": [
       "./node_modules/@types",
-      "./src/custom_types",
+      "src/commons/custom_types",
       "./node_modules"
     ],
     "plugins": [{ "name": "typescript-plugin-css-modules" }],

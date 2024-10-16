@@ -3,11 +3,10 @@
 /* tslint:disable */
 /* eslint-disable */
 export type StockEditionBodyModel = {
-  beginningDatetime?: string | null;
-  bookingLimitDatetime?: string | null;
-  id: number;
-  price?: number | null;
-  priceCategoryId?: number | null;
-  quantity?: number | null;
-};
-
+  beginningDatetime?: string | null
+  bookingLimitDatetime?: string | null
+  id: number
+  price?: number | null
+  priceCategoryId?: number | null
+  quantity?: number | null
+}

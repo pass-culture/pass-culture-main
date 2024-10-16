@@ -6,8 +6,8 @@ import {
   getDateTimeToFrenchText,
   getRangeToFrenchText,
   toDateStrippedOfTimezone,
-} from 'utils/date'
-import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
+} from 'commons/utils/date'
+import { getLocalDepartementDateTimeFromUtc } from 'commons/utils/timezone'
 
 export function getFormattedDatesForTemplateOffer(
   offer: CollectiveOfferTemplateResponseModel,

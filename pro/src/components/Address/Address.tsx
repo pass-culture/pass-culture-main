@@ -4,10 +4,10 @@ import { useDebouncedCallback } from 'use-debounce'
 
 import { apiAdresse } from 'apiClient/adresse/apiAdresse'
 import { AdresseData } from 'apiClient/adresse/types'
+import { SelectOption } from 'commons/custom_types/form'
+import { normalizeStrForAdressSearch } from 'commons/utils/searchPatternInOptions'
 import { serializeAdressData } from 'components/Address/serializer'
-import { SelectOption } from 'custom_types/form'
 import { SelectAutocomplete } from 'ui-kit/form/SelectAutoComplete/SelectAutocomplete'
-import { normalizeStrForAdressSearch } from 'utils/searchPatternInOptions'
 
 import { DEBOUNCE_TIME_BEFORE_REQUEST } from './constants'
 

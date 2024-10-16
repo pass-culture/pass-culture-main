@@ -3,6 +3,5 @@
 /* tslint:disable */
 /* eslint-disable */
 export type InviteMemberQueryModel = {
-  email: string;
-};
-
+  email: string
+}

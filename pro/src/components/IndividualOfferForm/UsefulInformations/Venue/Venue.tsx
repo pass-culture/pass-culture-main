@@ -5,13 +5,13 @@ import {
   GetOffererNameResponseModel,
   VenueListItemResponseModel,
 } from 'apiClient/v1'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import {
   IndividualOfferForm,
   IndividualOfferFormValues,
 } from 'components/IndividualOfferForm/types'
 import { buildAccessibilityFormValues } from 'components/IndividualOfferForm/utils/setDefaultInitialFormValues'
-import { useActiveFeature } from 'hooks/useActiveFeature'
 import { Select } from 'ui-kit/form/Select/Select'
 
 import { buildOffererOptions, buildVenueOptions } from './utils'

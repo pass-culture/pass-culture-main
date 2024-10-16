@@ -3,8 +3,7 @@
 /* tslint:disable */
 /* eslint-disable */
 export type GetOffererNameResponseModel = {
-  allowedOnAdage: boolean;
-  id: number;
-  name: string;
-};
-
+  allowedOnAdage: boolean
+  id: number
+  name: string
+}

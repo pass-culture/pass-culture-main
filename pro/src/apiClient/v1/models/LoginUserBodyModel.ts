@@ -3,8 +3,7 @@
 /* tslint:disable */
 /* eslint-disable */
 export type LoginUserBodyModel = {
-  captchaToken?: string | null;
-  identifier: string;
-  password: string;
-};
-
+  captchaToken?: string | null
+  identifier: string
+  password: string
+}

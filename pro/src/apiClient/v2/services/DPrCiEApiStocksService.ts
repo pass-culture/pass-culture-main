@@ -2,9 +2,9 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { UpdateVenueStocksBodyModel } from '../models/UpdateVenueStocksBodyModel';
-import type { CancelablePromise } from '../core/CancelablePromise';
-import type { BaseHttpRequest } from '../core/BaseHttpRequest';
+import type { UpdateVenueStocksBodyModel } from '../models/UpdateVenueStocksBodyModel'
+import type { CancelablePromise } from '../core/CancelablePromise'
+import type { BaseHttpRequest } from '../core/BaseHttpRequest'
 export class DPrCiEApiStocksService {
   constructor(public readonly httpRequest: BaseHttpRequest) {}
   /**
@@ -17,13 +17,13 @@ export class DPrCiEApiStocksService {
    */
   public updateStocks(
     venueId: number,
-    requestBody?: UpdateVenueStocksBodyModel,
+    requestBody?: UpdateVenueStocksBodyModel
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
       url: '/v2/venue/{venue_id}/stocks',
       path: {
-        'venue_id': venueId,
+        venue_id: venueId,
       },
       body: requestBody,
       mediaType: 'application/json',
@@ -33,6 +33,6 @@ export class DPrCiEApiStocksService {
         404: `Not Found`,
         422: `Unprocessable Entity`,
       },
-    });
+    })
   }
 }

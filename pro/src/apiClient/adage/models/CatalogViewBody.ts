@@ -3,9 +3,8 @@
 /* tslint:disable */
 /* eslint-disable */
 export type CatalogViewBody = {
-  iframeFrom: string;
-  isFromNoResult?: boolean | null;
-  queryId?: string | null;
-  source: string;
-};
-
+  iframeFrom: string
+  isFromNoResult?: boolean | null
+  queryId?: string | null
+  source: string
+}

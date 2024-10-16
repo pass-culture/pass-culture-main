@@ -3,15 +3,14 @@
 /* tslint:disable */
 /* eslint-disable */
 export type GetVenueManagingOffererResponseModel = {
-  allowedOnAdage: boolean;
-  city: string;
-  dateCreated: string;
-  demarchesSimplifieesApplicationId?: string | null;
-  id: number;
-  isValidated: boolean;
-  name: string;
-  postalCode: string;
-  siren?: string | null;
-  street?: string | null;
-};
-
+  allowedOnAdage: boolean
+  city: string
+  dateCreated: string
+  demarchesSimplifieesApplicationId?: string | null
+  id: number
+  isValidated: boolean
+  name: string
+  postalCode: string
+  siren?: string | null
+  street?: string | null
+}

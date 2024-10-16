@@ -11,7 +11,7 @@ import {
   GetVenueResponseModel,
   OfferAddressType,
 } from 'apiClient/v1'
-import { isCollectiveOffer } from 'core/OfferEducational/types'
+import { isCollectiveOffer } from 'commons/core/OfferEducational/types'
 import logoPassCultureIcon from 'icons/logo-pass-culture.svg'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'

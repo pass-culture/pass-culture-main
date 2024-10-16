@@ -3,14 +3,14 @@ import { userEvent } from '@testing-library/user-event'
 
 import { VenueTypeCode } from 'apiClient/v1'
 import * as useAnalytics from 'app/App/analytics/firebase'
-import { UploaderModeEnum } from 'components/ImageUploader/types'
-import { Events } from 'core/FirebaseEvents/constants'
+import { Events } from 'commons/core/FirebaseEvents/constants'
 import {
   defaultGetOffererResponseModel,
   defaultGetOffererVenueResponseModel,
-} from 'utils/individualApiFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'utils/storeFactories'
+} from 'commons/utils/individualApiFactories'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
+import { UploaderModeEnum } from 'components/ImageUploader/types'
 
 import { PartnerPage, PartnerPageProps } from '../PartnerPage'
 

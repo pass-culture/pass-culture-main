@@ -3,6 +3,5 @@
 /* tslint:disable */
 /* eslint-disable */
 export type LinkVenueToBankAccountBodyModel = {
-  venues_ids: Array<number>;
-};
-
+  venues_ids: Array<number>
+}

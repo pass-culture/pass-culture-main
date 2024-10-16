@@ -1,8 +1,8 @@
 import { screen } from '@testing-library/react'
 
 import { DMSApplicationstatus } from 'apiClient/v1'
-import { defaultDMSApplicationForEAC } from 'utils/collectiveApiFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
+import { defaultDMSApplicationForEAC } from 'commons/utils/collectiveApiFactories'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import {
   PartnerPageCollectiveSection,

@@ -3,7 +3,6 @@
 /* tslint:disable */
 /* eslint-disable */
 export type CollectiveOffersBookingResponseModel = {
-  booking_status: string;
-  id: number;
-};
-
+  booking_status: string
+  id: number
+}

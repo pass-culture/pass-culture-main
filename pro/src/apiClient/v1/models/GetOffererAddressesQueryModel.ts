@@ -3,6 +3,5 @@
 /* tslint:disable */
 /* eslint-disable */
 export type GetOffererAddressesQueryModel = {
-  onlyWithOffers?: boolean;
-};
-
+  onlyWithOffers?: boolean
+}

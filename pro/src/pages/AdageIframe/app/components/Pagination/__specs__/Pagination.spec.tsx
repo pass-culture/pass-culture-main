@@ -3,7 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 import * as instantSearch from 'react-instantsearch'
 
 import { apiAdage } from 'apiClient/api'
-import { renderWithProviders } from 'utils/renderWithProviders'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { CustomPagination } from '../Pagination'
 

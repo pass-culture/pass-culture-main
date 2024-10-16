@@ -2,5 +2,6 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { EventDateScheduleAndPriceCategoriesCountModel } from './EventDateScheduleAndPriceCategoriesCountModel';
-export type EventDatesInfos = Array<EventDateScheduleAndPriceCategoriesCountModel>;
+import type { EventDateScheduleAndPriceCategoriesCountModel } from './EventDateScheduleAndPriceCategoriesCountModel'
+export type EventDatesInfos =
+  Array<EventDateScheduleAndPriceCategoriesCountModel>

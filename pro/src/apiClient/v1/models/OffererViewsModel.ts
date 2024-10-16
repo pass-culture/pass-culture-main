@@ -3,7 +3,6 @@
 /* tslint:disable */
 /* eslint-disable */
 export type OffererViewsModel = {
-  eventDate: string;
-  numberOfViews: number;
-};
-
+  eventDate: string
+  numberOfViews: number
+}

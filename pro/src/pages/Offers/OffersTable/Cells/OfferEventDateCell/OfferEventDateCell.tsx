@@ -2,8 +2,11 @@ import {
   CollectiveOfferResponseModel,
   ListOffersVenueResponseModel,
 } from 'apiClient/v1'
-import { getDateTimeToFrenchText, toDateStrippedOfTimezone } from 'utils/date'
-import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
+import {
+  getDateTimeToFrenchText,
+  toDateStrippedOfTimezone,
+} from 'commons/utils/date'
+import { getLocalDepartementDateTimeFromUtc } from 'commons/utils/timezone'
 
 import styles from '../Cells.module.scss'
 

@@ -2,8 +2,8 @@ import { screen } from '@testing-library/react'
 import React from 'react'
 
 import { api } from 'apiClient/api'
-import { defaultGetOffererResponseModel } from 'utils/individualApiFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
+import { defaultGetOffererResponseModel } from 'commons/utils/individualApiFactories'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { OfferStats, OfferStatsProps } from '../OfferStats'
 

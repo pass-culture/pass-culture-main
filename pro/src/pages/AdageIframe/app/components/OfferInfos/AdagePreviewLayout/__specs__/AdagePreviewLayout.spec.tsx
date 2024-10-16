@@ -6,14 +6,14 @@ import {
   GetCollectiveOfferTemplateResponseModel,
   OfferAddressType,
 } from 'apiClient/v1'
-import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
-import { defaultAdageUser } from 'utils/adageFactories'
+import { defaultAdageUser } from 'commons/utils/adageFactories'
 import {
   defaultGetVenue,
   getCollectiveOfferFactory,
   getCollectiveOfferTemplateFactory,
-} from 'utils/collectiveApiFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
+} from 'commons/utils/collectiveApiFactories'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
 
 import { AdagePreviewLayout } from '../AdagePreviewLayout'
 

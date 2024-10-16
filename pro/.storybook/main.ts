@@ -19,17 +19,17 @@ const config: StorybookConfig = {
   staticDirs: ['../src/public'],
   framework: {
     name: '@storybook/react-vite',
-    options: {}
+    options: {},
   },
   async viteFinal(config) {
     if (config.build) {
       //  Make sure that the <use> content in svgs is not inlined which is forbidden by some browsers
-      config.build.assetsInlineLimit = 0;
+      config.build.assetsInlineLimit = 0
     }
-    return config;
+    return config
   },
   docs: {
-    defaultName: 'Documentation'
+    defaultName: 'Documentation',
   },
 }
 

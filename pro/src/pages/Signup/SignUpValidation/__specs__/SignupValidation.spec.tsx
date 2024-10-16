@@ -6,19 +6,19 @@ import { api } from 'apiClient/api'
 import { ApiError } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
-import * as useCurrentUser from 'hooks/useCurrentUser'
-import * as useNotification from 'hooks/useNotification'
+import * as useCurrentUser from 'commons/hooks/useCurrentUser'
+import * as useNotification from 'commons/hooks/useNotification'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
-} from 'utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'utils/storeFactories'
+} from 'commons/utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
 
 import { SignupValidation } from '../SignUpValidation'
 
 vi.mock('repository/pcapi/pcapi')
-vi.mock('hooks/useCurrentUser')
-vi.mock('hooks/useNotification')
+vi.mock('commons/hooks/useCurrentUser')
+vi.mock('commons/hooks/useNotification')
 
 const renderSignupValidation = (options?: RenderWithProvidersOptions) =>
   renderWithProviders(

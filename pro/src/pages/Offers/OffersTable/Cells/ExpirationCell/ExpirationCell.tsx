@@ -5,11 +5,11 @@ import {
   CollectiveOfferResponseModel,
   CollectiveOfferStatus,
 } from 'apiClient/v1'
+import { FORMAT_DD_MM_YYYY, toDateStrippedOfTimezone } from 'commons/utils/date'
+import { pluralize } from 'commons/utils/pluralize'
 import fullInfoIcon from 'icons/full-info.svg'
 import fullWaitIcon from 'icons/full-wait.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
-import { FORMAT_DD_MM_YYYY, toDateStrippedOfTimezone } from 'utils/date'
-import { pluralize } from 'utils/pluralize'
 
 import styles from './ExpirationCell.module.scss'
 

@@ -3,10 +3,13 @@ import {
   AuthenticatedResponse,
   CollectiveOfferResponseModel,
 } from 'apiClient/adage'
+import {
+  getDateTimeToFrenchText,
+  toDateStrippedOfTimezone,
+} from 'commons/utils/date'
 import fullDeskIcon from 'icons/full-desk.svg'
 import strokeTeacherIcon from 'icons/stroke-teacher.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
-import { getDateTimeToFrenchText, toDateStrippedOfTimezone } from 'utils/date'
 
 import { PrebookingButton } from '../../../OffersInstantSearch/OffersSearch/Offers/PrebookingButton/PrebookingButton'
 import { getBookableOfferInstitutionAndTeacherName } from '../utils/adageOfferInstitution'

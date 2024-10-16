@@ -2,8 +2,8 @@ import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
-import * as utils from 'utils/recaptcha'
-import { renderWithProviders } from 'utils/renderWithProviders'
+import * as utils from 'commons/utils/recaptcha'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { LostPassword } from '../LostPassword'
 

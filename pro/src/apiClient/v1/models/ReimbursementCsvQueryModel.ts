@@ -3,9 +3,8 @@
 /* tslint:disable */
 /* eslint-disable */
 export type ReimbursementCsvQueryModel = {
-  bankAccountId?: number;
-  offererId: number;
-  reimbursementPeriodBeginningDate?: string;
-  reimbursementPeriodEndingDate?: string;
-};
-
+  bankAccountId?: number
+  offererId: number
+  reimbursementPeriodBeginningDate?: string
+  reimbursementPeriodEndingDate?: string
+}

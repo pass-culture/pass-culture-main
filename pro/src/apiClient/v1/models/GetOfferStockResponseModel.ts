@@ -3,16 +3,15 @@
 /* tslint:disable */
 /* eslint-disable */
 export type GetOfferStockResponseModel = {
-  activationCodesExpirationDatetime?: string | null;
-  beginningDatetime?: string | null;
-  bookingLimitDatetime?: string | null;
-  bookingsQuantity: number;
-  hasActivationCode: boolean;
-  id: number;
-  isEventDeletable: boolean;
-  price: number;
-  priceCategoryId?: number | null;
-  quantity?: number | null;
-  remainingQuantity?: (number | string) | null;
-};
-
+  activationCodesExpirationDatetime?: string | null
+  beginningDatetime?: string | null
+  bookingLimitDatetime?: string | null
+  bookingsQuantity: number
+  hasActivationCode: boolean
+  id: number
+  isEventDeletable: boolean
+  price: number
+  priceCategoryId?: number | null
+  quantity?: number | null
+  remainingQuantity?: (number | string) | null
+}

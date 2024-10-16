@@ -3,6 +3,5 @@
 /* tslint:disable */
 /* eslint-disable */
 export type HasInvoiceQueryModel = {
-  offererId: number;
-};
-
+  offererId: number
+}

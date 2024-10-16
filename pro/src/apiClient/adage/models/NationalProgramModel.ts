@@ -6,10 +6,9 @@ export type NationalProgramModel = {
   /**
    * National program id
    */
-  id: number;
+  id: number
   /**
    * National program name
    */
-  name: string;
-};
-
+  name: string
+}

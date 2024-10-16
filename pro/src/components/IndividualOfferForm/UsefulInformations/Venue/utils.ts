@@ -2,7 +2,7 @@ import {
   GetOffererNameResponseModel,
   VenueListItemResponseModel,
 } from 'apiClient/v1'
-import { SelectOption } from 'custom_types/form'
+import { SelectOption } from 'commons/custom_types/form'
 import { computeVenueDisplayName } from 'repository/venuesService'
 
 export const buildOffererOptions = (

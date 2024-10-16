@@ -2,10 +2,9 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { CollectiveOfferResponseModel } from './CollectiveOfferResponseModel';
-import type { CollectiveOfferTemplateResponseModel } from './CollectiveOfferTemplateResponseModel';
+import type { CollectiveOfferResponseModel } from './CollectiveOfferResponseModel'
+import type { CollectiveOfferTemplateResponseModel } from './CollectiveOfferTemplateResponseModel'
 export type FavoritesResponseModel = {
-  favoritesOffer: Array<CollectiveOfferResponseModel>;
-  favoritesTemplate: Array<CollectiveOfferTemplateResponseModel>;
-};
-
+  favoritesOffer: Array<CollectiveOfferResponseModel>
+  favoritesTemplate: Array<CollectiveOfferTemplateResponseModel>
+}

@@ -1,17 +1,17 @@
 import React, { FC } from 'react'
 import { generatePath, useLocation } from 'react-router-dom'
 
-import { Step, StepPattern, Stepper } from 'components/Stepper/Stepper'
-import { useIndividualOfferContext } from 'context/IndividualOfferContext/IndividualOfferContext'
-import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
-import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
-import { useActiveFeature } from 'hooks/useActiveFeature'
-import { useActiveStep } from 'hooks/useActiveStep'
-import { useOfferWizardMode } from 'hooks/useOfferWizardMode'
+import { useIndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
+import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
+import { getIndividualOfferPath } from 'commons/core/Offers/utils/getIndividualOfferUrl'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
+import { useActiveStep } from 'commons/hooks/useActiveStep'
+import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
 import {
   getOfferSubtypeFromParam,
   isOfferSubtypeEvent,
-} from 'screens/IndividualOffer/InformationsScreen/utils/filterCategories/filterCategories'
+} from 'components/IndividualOffer/InformationsScreen/utils/filterCategories/filterCategories'
+import { Step, StepPattern, Stepper } from 'components/Stepper/Stepper'
 import { Tabs } from 'ui-kit/Tabs/Tabs'
 
 import { OFFER_WIZARD_STEP_IDS } from './constants'

@@ -1,12 +1,12 @@
 /* istanbul ignore file */
 import React from 'react'
 
+import { useIndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
+import { useOfferWizardMode } from 'commons/hooks/useOfferWizardMode'
+import { ActionBar } from 'components/IndividualOffer/ActionBar/ActionBar'
+import { BookingsSummaryScreen } from 'components/IndividualOffer/BookingsSummary/BookingsSummary'
+import { IndivualOfferLayout } from 'components/IndividualOffer/IndivualOfferLayout/IndivualOfferLayout'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
-import { useIndividualOfferContext } from 'context/IndividualOfferContext/IndividualOfferContext'
-import { useOfferWizardMode } from 'hooks/useOfferWizardMode'
-import { ActionBar } from 'screens/IndividualOffer/ActionBar/ActionBar'
-import { BookingsSummaryScreen } from 'screens/IndividualOffer/BookingsSummary/BookingsSummary'
-import { IndivualOfferLayout } from 'screens/IndividualOffer/IndivualOfferLayout/IndivualOfferLayout'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 const BookingsSummary = (): JSX.Element | null => {

@@ -3,6 +3,5 @@
 /* tslint:disable */
 /* eslint-disable */
 export type ReimbursementCsvByInvoicesModel = {
-  invoicesReferences: Array<string>;
-};
-
+  invoicesReferences: Array<string>
+}

@@ -5,9 +5,10 @@ import { useLocation } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { AppLayout } from 'app/AppLayout'
-import { EmailChangeValidationScreen } from 'screens/EmailChangeValidation/EmailChangeValidation'
-import { updateUser } from 'store/user/reducer'
-import { parse } from 'utils/query-string'
+import { updateUser } from 'commons/store/user/reducer'
+import { parse } from 'commons/utils/query-string'
+
+import { EmailChangeValidationScreen } from './components/EmailChangeValidation/EmailChangeValidation'
 
 const EmailChangeValidation = (): JSX.Element => {
   const [isSuccess, setIsSuccess] = useState<boolean | undefined>(undefined)

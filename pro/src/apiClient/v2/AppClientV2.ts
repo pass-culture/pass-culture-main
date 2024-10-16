@@ -2,17 +2,20 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { BaseHttpRequest } from './core/BaseHttpRequest';
-import type { OpenAPIConfig } from './core/OpenAPI';
-import { FetchHttpRequest } from './core/FetchHttpRequest';
-import { DPrCiEApiContremarqueService } from './services/DPrCiEApiContremarqueService';
-import { DPrCiEApiStocksService } from './services/DPrCiEApiStocksService';
-type HttpRequestConstructor = new (config: OpenAPIConfig) => BaseHttpRequest;
+import type { BaseHttpRequest } from './core/BaseHttpRequest'
+import type { OpenAPIConfig } from './core/OpenAPI'
+import { FetchHttpRequest } from './core/FetchHttpRequest'
+import { DPrCiEApiContremarqueService } from './services/DPrCiEApiContremarqueService'
+import { DPrCiEApiStocksService } from './services/DPrCiEApiStocksService'
+type HttpRequestConstructor = new (config: OpenAPIConfig) => BaseHttpRequest
 export class AppClientV2 {
-  public readonly dPrCiEApiContremarque: DPrCiEApiContremarqueService;
-  public readonly dPrCiEApiStocks: DPrCiEApiStocksService;
-  public readonly request: BaseHttpRequest;
-  constructor(config?: Partial<OpenAPIConfig>, HttpRequest: HttpRequestConstructor = FetchHttpRequest) {
+  public readonly dPrCiEApiContremarque: DPrCiEApiContremarqueService
+  public readonly dPrCiEApiStocks: DPrCiEApiStocksService
+  public readonly request: BaseHttpRequest
+  constructor(
+    config?: Partial<OpenAPIConfig>,
+    HttpRequest: HttpRequestConstructor = FetchHttpRequest
+  ) {
     this.request = new HttpRequest({
       BASE: config?.BASE ?? 'https://backend.integration.passculture.pro',
       VERSION: config?.VERSION ?? '0.1',
@@ -23,9 +26,8 @@ export class AppClientV2 {
       PASSWORD: config?.PASSWORD,
       HEADERS: config?.HEADERS,
       ENCODE_PATH: config?.ENCODE_PATH,
-    });
-    this.dPrCiEApiContremarque = new DPrCiEApiContremarqueService(this.request);
-    this.dPrCiEApiStocks = new DPrCiEApiStocksService(this.request);
+    })
+    this.dPrCiEApiContremarque = new DPrCiEApiContremarqueService(this.request)
+    this.dPrCiEApiStocks = new DPrCiEApiStocksService(this.request)
   }
 }
-

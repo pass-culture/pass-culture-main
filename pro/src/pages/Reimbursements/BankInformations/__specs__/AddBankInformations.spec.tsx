@@ -3,8 +3,8 @@ import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
 import * as useAnalytics from 'app/App/analytics/firebase'
-import { BankAccountEvents } from 'core/FirebaseEvents/constants'
-import { renderWithProviders } from 'utils/renderWithProviders'
+import { BankAccountEvents } from 'commons/core/FirebaseEvents/constants'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import { AddBankInformationsDialog } from '../AddBankInformationsDialog'
 

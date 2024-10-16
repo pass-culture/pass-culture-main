@@ -3,10 +3,9 @@
 /* tslint:disable */
 /* eslint-disable */
 export type OfferIdBody = {
-  iframeFrom: string;
-  isFromNoResult?: boolean | null;
-  offerId: number;
-  queryId?: string | null;
-  vueType?: string | null;
-};
-
+  iframeFrom: string
+  isFromNoResult?: boolean | null
+  offerId: number
+  queryId?: string | null
+  vueType?: string | null
+}

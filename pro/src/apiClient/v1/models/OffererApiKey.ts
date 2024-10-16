@@ -3,7 +3,6 @@
 /* tslint:disable */
 /* eslint-disable */
 export type OffererApiKey = {
-  maxAllowed: number;
-  prefixes: Array<string>;
-};
-
+  maxAllowed: number
+  prefixes: Array<string>
+}

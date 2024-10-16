@@ -3,8 +3,7 @@
 /* tslint:disable */
 /* eslint-disable */
 export type OffererAddressRequestModel = {
-  inseeCode: string;
-  label?: string | null;
-  street: string;
-};
-
+  inseeCode: string
+  label?: string | null
+  street: string
+}

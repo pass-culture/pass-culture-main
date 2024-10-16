@@ -4,16 +4,19 @@ import { Route, Routes } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { ListOffersOfferResponseModel, OfferStatus } from 'apiClient/v1'
-import { ALL_VENUES, DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
-import { SearchFiltersParams } from 'core/Offers/types'
-import { computeIndividualOffersUrl } from 'core/Offers/utils/computeIndividualOffersUrl'
-import { Audience } from 'core/shared/types'
+import {
+  ALL_VENUES,
+  DEFAULT_SEARCH_FILTERS,
+} from 'commons/core/Offers/constants'
+import { SearchFiltersParams } from 'commons/core/Offers/types'
+import { computeIndividualOffersUrl } from 'commons/core/Offers/utils/computeIndividualOffersUrl'
+import { Audience } from 'commons/core/shared/types'
 import {
   listOffersOfferFactory,
   venueListItemFactory,
-} from 'utils/individualApiFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'utils/storeFactories'
+} from 'commons/utils/individualApiFactories'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
 
 import { OffersRoute } from '../../../pages/Offers/OffersRoute'
 

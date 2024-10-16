@@ -5,14 +5,17 @@ import React from 'react'
 import {
   defaultGetOffererVenueResponseModel,
   defaultGetOffererResponseModel,
-} from 'utils/individualApiFactories'
+} from 'commons/utils/individualApiFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
-} from 'utils/renderWithProviders'
+} from 'commons/utils/renderWithProviders'
 
 import * as useAnalytics from '../../../../app/App/analytics/firebase'
-import { Events, VenueEvents } from '../../../../core/FirebaseEvents/constants'
+import {
+  Events,
+  VenueEvents,
+} from '../../../../commons/core/FirebaseEvents/constants'
 import * as venueUtils from '../../venueUtils'
 import { VenueOfferSteps, VenueOfferStepsProps } from '../VenueOfferSteps'
 

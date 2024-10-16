@@ -3,7 +3,6 @@
 /* tslint:disable */
 /* eslint-disable */
 export type SubcategoryResponseModel = {
-  categoryId: string;
-  id: string;
-};
-
+  categoryId: string
+  id: string
+}

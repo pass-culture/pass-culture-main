@@ -12,16 +12,16 @@ import {
   GetOffererResponseModel,
 } from 'apiClient/v1'
 import * as useAnalytics from 'app/App/analytics/firebase'
-import { formatBrowserTimezonedDateAsUTC } from 'utils/date'
+import { formatBrowserTimezonedDateAsUTC } from 'commons/utils/date'
 import {
   defaultGetOffererResponseModel,
   defaultGetOffererVenueResponseModel,
-} from 'utils/individualApiFactories'
+} from 'commons/utils/individualApiFactories'
 import {
   renderWithProviders,
   RenderWithProvidersOptions,
-} from 'utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'utils/storeFactories'
+} from 'commons/utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
 
 import { Homepage } from '../Homepage'
 
@@ -29,7 +29,7 @@ vi.mock('@firebase/remote-config', () => ({
   getValue: () => ({ asString: () => 'GE' }),
 }))
 
-vi.mock('utils/windowMatchMedia', () => ({
+vi.mock('commons/utils/windowMatchMedia', () => ({
   doesUserPreferReducedMotion: vi.fn().mockReturnValue(false),
 }))
 

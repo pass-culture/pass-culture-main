@@ -2,8 +2,8 @@ import { useLocation } from 'react-router-dom'
 
 import { CollectiveOfferResponseModel } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
+import { Events } from 'commons/core/FirebaseEvents/constants'
 import { ConfirmDialog } from 'components/Dialog/ConfirmDialog/ConfirmDialog'
-import { Events } from 'core/FirebaseEvents/constants'
 import strokeThingIcon from 'icons/stroke-thing.svg'
 
 interface OfferEducationalModalProps {

@@ -6,12 +6,12 @@ import useSWR from 'swr'
 import { api } from 'apiClient/api'
 import * as useAnalytics from 'app/App/analytics/firebase'
 import * as orejime from 'app/App/analytics/orejime'
-import { GET_OFFER_QUERY_KEY } from 'config/swrQueryKeys'
+import { GET_OFFER_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import {
   renderWithProviders,
   RenderWithProvidersOptions,
-} from 'utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'utils/storeFactories'
+} from 'commons/utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
 
 import { App } from '../App/App'
 

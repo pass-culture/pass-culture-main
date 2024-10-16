@@ -3,6 +3,5 @@
 /* tslint:disable */
 /* eslint-disable */
 export type GetTemplateIdsModel = {
-  ids: Array<number>;
-};
-
+  ids: Array<number>
+}

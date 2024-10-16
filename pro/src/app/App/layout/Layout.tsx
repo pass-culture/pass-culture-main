@@ -2,12 +2,12 @@ import cn from 'classnames'
 import React, { useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
 
+import { selectCurrentUser } from 'commons/store/user/selectors'
 import { Footer } from 'components/Footer/Footer'
 import { Header } from 'components/Header/Header'
 import { NewNavReview } from 'components/NewNavReview/NewNavReview'
 import { SkipLinks } from 'components/SkipLinks/SkipLinks'
 import fullInfoIcon from 'icons/full-info.svg'
-import { selectCurrentUser } from 'store/user/selectors'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import { LateralPanel } from './LateralPanel/LateralPanel'

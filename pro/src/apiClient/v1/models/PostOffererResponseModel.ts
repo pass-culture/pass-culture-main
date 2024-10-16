@@ -3,8 +3,7 @@
 /* tslint:disable */
 /* eslint-disable */
 export type PostOffererResponseModel = {
-  id: number;
-  name: string;
-  siren: string;
-};
-
+  id: number
+  name: string
+  siren: string
+}

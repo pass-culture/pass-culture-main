@@ -3,6 +3,5 @@
 /* tslint:disable */
 /* eslint-disable */
 export type StocksResponseModel = {
-  stocks_count: number;
-};
-
+  stocks_count: number
+}

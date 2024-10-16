@@ -5,19 +5,19 @@ import * as yup from 'yup'
 
 import { api } from 'apiClient/api'
 import { CategoryResponseModel, SubcategoryResponseModel } from 'apiClient/v1'
-import { IndividualOfferFormValues } from 'components/IndividualOfferForm/types'
 import {
   IndividualOfferContext,
   IndividualOfferContextValues,
-} from 'context/IndividualOfferContext/IndividualOfferContext'
-import { INDIVIDUAL_OFFER_SUBTYPE } from 'core/Offers/constants'
-import { Button } from 'ui-kit/Button/Button'
+} from 'commons/context/IndividualOfferContext/IndividualOfferContext'
+import { INDIVIDUAL_OFFER_SUBTYPE } from 'commons/core/Offers/constants'
 import {
   categoryFactory,
   individualOfferContextValuesFactory,
   subcategoryFactory,
-} from 'utils/individualApiFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
+} from 'commons/utils/individualApiFactories'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { IndividualOfferFormValues } from 'components/IndividualOfferForm/types'
+import { Button } from 'ui-kit/Button/Button'
 
 import { Categories, CategoriesProps } from '../Categories'
 import { CATEGORIES_DEFAULT_VALUES } from '../constants'

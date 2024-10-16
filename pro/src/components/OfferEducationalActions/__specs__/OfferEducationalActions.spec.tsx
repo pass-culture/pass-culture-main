@@ -8,17 +8,17 @@ import {
   CollectiveOfferStatus,
 } from 'apiClient/v1'
 import * as useAnalytics from 'app/App/analytics/firebase'
-import { GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY } from 'config/swrQueryKeys'
-import { CollectiveBookingsEvents } from 'core/FirebaseEvents/constants'
-import { Mode } from 'core/OfferEducational/types'
-import * as useNotification from 'hooks/useNotification'
+import { GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY } from 'commons/config/swrQueryKeys'
+import { CollectiveBookingsEvents } from 'commons/core/FirebaseEvents/constants'
+import { Mode } from 'commons/core/OfferEducational/types'
+import * as useNotification from 'commons/hooks/useNotification'
 import {
   getCollectiveOfferCollectiveStockFactory,
   getCollectiveOfferFactory,
   getCollectiveOfferTemplateFactory,
-} from 'utils/collectiveApiFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'utils/storeFactories'
+} from 'commons/utils/collectiveApiFactories'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
 
 import {
   OfferEducationalActions,
@@ -213,7 +213,7 @@ describe('OfferEducationalActions', () => {
   it('should display error message when trying to activate offer with booking limit date time in the past', async () => {
     const notifyError = vi.fn()
     const notifsImport = (await vi.importActual(
-      'hooks/useNotification'
+      'commons/hooks/useNotification'
     )) as ReturnType<typeof useNotification.useNotification>
     vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
       ...notifsImport,
@@ -241,7 +241,7 @@ describe('OfferEducationalActions', () => {
     const offerId = 12
 
     const notifsImport = (await vi.importActual(
-      'hooks/useNotification'
+      'commons/hooks/useNotification'
     )) as ReturnType<typeof useNotification.useNotification>
     vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
       ...notifsImport,

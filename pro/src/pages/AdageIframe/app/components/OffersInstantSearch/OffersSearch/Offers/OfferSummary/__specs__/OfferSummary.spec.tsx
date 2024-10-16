@@ -2,11 +2,11 @@ import { screen } from '@testing-library/react'
 import React from 'react'
 
 import { CollectiveOfferTemplateResponseModel } from 'apiClient/adage'
-import { defaultCollectiveTemplateOffer } from 'utils/adageFactories'
+import { defaultCollectiveTemplateOffer } from 'commons/utils/adageFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
-} from 'utils/renderWithProviders'
+} from 'commons/utils/renderWithProviders'
 
 import { OfferSummary, OfferSummaryProps } from '../OfferSummary'
 

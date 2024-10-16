@@ -3,8 +3,8 @@ import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import * as useAnalytics from 'app/App/analytics/firebase'
-import { SynchronizationEvents } from 'core/FirebaseEvents/constants'
-import { renderWithProviders } from 'utils/renderWithProviders'
+import { SynchronizationEvents } from 'commons/core/FirebaseEvents/constants'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
 
 import {
   CinemaProviderForm,

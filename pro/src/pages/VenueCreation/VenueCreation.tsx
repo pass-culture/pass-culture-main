@@ -8,9 +8,9 @@ import { AppLayout } from 'app/AppLayout'
 import {
   GET_OFFERER_QUERY_KEY,
   GET_VENUE_TYPES_QUERY_KEY,
-} from 'config/swrQueryKeys'
+} from 'commons/config/swrQueryKeys'
+import { selectCurrentOffererId } from 'commons/store/user/selectors'
 import { DEFAULT_FORM_VALUES } from 'pages/VenueCreation/constants'
-import { selectCurrentOffererId } from 'store/user/selectors'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 import { VenueCreationFormScreen } from './VenueCreationFormScreen'

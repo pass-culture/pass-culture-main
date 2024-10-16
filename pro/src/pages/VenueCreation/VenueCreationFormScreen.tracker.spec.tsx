@@ -6,10 +6,10 @@ import createFetchMock from 'vitest-fetch-mock'
 import { api } from 'apiClient/api'
 import { VenueTypeResponseModel } from 'apiClient/v1'
 import * as useAnalytics from 'app/App/analytics/firebase'
-import { Events } from 'core/FirebaseEvents/constants'
-import { defaultGetOffererResponseModel } from 'utils/individualApiFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
-import { sharedCurrentUserFactory } from 'utils/storeFactories'
+import { Events } from 'commons/core/FirebaseEvents/constants'
+import { defaultGetOffererResponseModel } from 'commons/utils/individualApiFactories'
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
 
 import { VenueCreationFormValues } from './types'
 import { VenueCreationFormScreen } from './VenueCreationFormScreen'
@@ -97,7 +97,7 @@ vi.spyOn(api, 'getSiretInfo').mockResolvedValue({
   legal_category_code: '1000',
 })
 
-vi.mock('core/Venue/siretApiValidate', () => ({
+vi.mock('commons/core/Venue/siretApiValidate', () => ({
   siretApiValidate: () => Promise.resolve(),
 }))
 

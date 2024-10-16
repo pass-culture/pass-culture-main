@@ -3,11 +3,10 @@
 /* tslint:disable */
 /* eslint-disable */
 export type TrackingCTAShareBody = {
-  iframeFrom: string;
-  isFromNoResult?: boolean | null;
-  offerId: number;
-  queryId?: string | null;
-  source: string;
-  vueType?: string | null;
-};
-
+  iframeFrom: string
+  isFromNoResult?: boolean | null
+  offerId: number
+  queryId?: string | null
+  source: string
+  vueType?: string | null
+}

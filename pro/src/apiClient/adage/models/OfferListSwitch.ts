@@ -3,10 +3,9 @@
 /* tslint:disable */
 /* eslint-disable */
 export type OfferListSwitch = {
-  iframeFrom: string;
-  isFromNoResult?: boolean | null;
-  isMobile?: boolean | null;
-  queryId?: string | null;
-  source: string;
-};
-
+  iframeFrom: string
+  isFromNoResult?: boolean | null
+  isMobile?: boolean | null
+  queryId?: string | null
+  source: string
+}

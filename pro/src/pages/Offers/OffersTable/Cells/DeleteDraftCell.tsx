@@ -4,15 +4,15 @@ import { useSWRConfig } from 'swr'
 import { api } from 'apiClient/api'
 import { ListOffersOfferResponseModel } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
-import { ConfirmDialog } from 'components/Dialog/ConfirmDialog/ConfirmDialog'
 import {
   Events,
   OFFER_FORM_NAVIGATION_IN,
   OFFER_FORM_NAVIGATION_MEDIUM,
-} from 'core/FirebaseEvents/constants'
-import { DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
-import { useQuerySearchFilters } from 'core/Offers/hooks/useQuerySearchFilters'
-import { useNotification } from 'hooks/useNotification'
+} from 'commons/core/FirebaseEvents/constants'
+import { DEFAULT_SEARCH_FILTERS } from 'commons/core/Offers/constants'
+import { useQuerySearchFilters } from 'commons/core/Offers/hooks/useQuerySearchFilters'
+import { useNotification } from 'commons/hooks/useNotification'
+import { ConfirmDialog } from 'components/Dialog/ConfirmDialog/ConfirmDialog'
 import fullTrashIcon from 'icons/full-trash.svg'
 import strokeTrashIcon from 'icons/stroke-trash.svg'
 import { GET_OFFERS_QUERY_KEY } from 'pages/Offers/OffersRoute'

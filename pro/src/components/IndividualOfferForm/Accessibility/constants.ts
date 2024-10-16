@@ -1,4 +1,4 @@
-import { AccessibilityEnum } from 'core/shared/types'
+import { AccessibilityEnum } from 'commons/core/shared/types'
 
 export const ACCESSIBILITY_DEFAULT_VALUES = {
   accessibility: {

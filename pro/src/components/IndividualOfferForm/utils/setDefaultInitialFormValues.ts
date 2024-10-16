@@ -2,7 +2,7 @@ import {
   GetOffererNameResponseModel,
   VenueListItemResponseModel,
 } from 'apiClient/v1'
-import { AccessibilityEnum } from 'core/shared/types'
+import { AccessibilityEnum } from 'commons/core/shared/types'
 
 import {
   FORM_DEFAULT_VALUES,

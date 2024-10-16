@@ -3,23 +3,23 @@ import useSWR, { useSWRConfig } from 'swr'
 
 import { GetCollectiveOfferResponseModel } from 'apiClient/v1'
 import { AppLayout } from 'app/AppLayout'
-import { CollectiveOfferLayout } from 'components/CollectiveOfferLayout/CollectiveOfferLayout'
 import {
   GET_COLLECTIVE_OFFER_QUERY_KEY,
   GET_EDUCATIONAL_INSTITUTIONS_QUERY_KEY,
-} from 'config/swrQueryKeys'
+} from 'commons/config/swrQueryKeys'
 import {
   isCollectiveOfferTemplate,
   isCollectiveOffer,
   Mode,
-} from 'core/OfferEducational/types'
-import { extractInitialVisibilityValues } from 'core/OfferEducational/utils/extractInitialVisibilityValues'
-import { queryParamsFromOfferer } from 'pages/Offers/utils/queryParamsFromOfferer'
-import { CollectiveOfferVisibilityScreen } from 'screens/CollectiveOfferVisibility/CollectiveOfferVisibility'
+} from 'commons/core/OfferEducational/types'
+import { extractInitialVisibilityValues } from 'commons/core/OfferEducational/utils/extractInitialVisibilityValues'
+import { CollectiveOfferLayout } from 'components/CollectiveOfferLayout/CollectiveOfferLayout'
 import {
   MandatoryCollectiveOfferFromParamsProps,
   withCollectiveOfferFromParams,
-} from 'screens/OfferEducational/useCollectiveOfferFromParams'
+} from 'pages/CollectiveOffer/CollectiveOffer/components/OfferEducational/useCollectiveOfferFromParams'
+import { CollectiveOfferVisibilityScreen } from 'pages/CollectiveOfferVisibility/components/CollectiveOfferVisibility/CollectiveOfferVisibility'
+import { queryParamsFromOfferer } from 'pages/Offers/utils/queryParamsFromOfferer'
 
 import { getEducationalInstitutions } from './getEducationalInstitutions'
 

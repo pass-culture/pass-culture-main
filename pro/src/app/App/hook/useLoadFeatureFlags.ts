@@ -3,9 +3,9 @@ import { useLocation } from 'react-router-dom'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
-import { GET_FEATURES_QUERY_KEY } from 'config/swrQueryKeys'
-import { updateFeatures } from 'store/features/reducer'
-import { selectLastLoaded } from 'store/features/selectors'
+import { GET_FEATURES_QUERY_KEY } from 'commons/config/swrQueryKeys'
+import { updateFeatures } from 'commons/store/features/reducer'
+import { selectLastLoaded } from 'commons/store/features/selectors'
 
 const THIRTY_MINUTES = 1000 * 60 * 30
 

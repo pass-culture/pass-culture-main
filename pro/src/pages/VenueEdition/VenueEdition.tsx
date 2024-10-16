@@ -12,16 +12,16 @@ import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
 import { AppLayout } from 'app/AppLayout'
-import { FormLayout } from 'components/FormLayout/FormLayout'
 import {
   GET_OFFERER_QUERY_KEY,
   GET_VENUE_QUERY_KEY,
   GET_VENUE_TYPES_QUERY_KEY,
-} from 'config/swrQueryKeys'
-import { SelectOption } from 'custom_types/form'
-import { useIsNewInterfaceActive } from 'hooks/useIsNewInterfaceActive'
+} from 'commons/config/swrQueryKeys'
+import { SelectOption } from 'commons/custom_types/form'
+import { useIsNewInterfaceActive } from 'commons/hooks/useIsNewInterfaceActive'
+import { selectCurrentOffererId } from 'commons/store/user/selectors'
+import { FormLayout } from 'components/FormLayout/FormLayout'
 import { CollectiveDataEdition } from 'pages/Offerers/Offerer/VenueV1/VenueEdition/CollectiveDataEdition/CollectiveDataEdition'
-import { selectCurrentOffererId } from 'store/user/selectors'
 import { SelectInput } from 'ui-kit/form/Select/SelectInput'
 import { FieldLayout } from 'ui-kit/form/shared/FieldLayout/FieldLayout'
 import { Spinner } from 'ui-kit/Spinner/Spinner'

@@ -7,16 +7,16 @@ import {
   GetOffererNameResponseModel,
   VenueListItemResponseModel,
 } from 'apiClient/v1'
-import { IndividualOfferFormValues } from 'components/IndividualOfferForm/types'
-import { setDefaultInitialFormValues } from 'components/IndividualOfferForm/utils/setDefaultInitialFormValues'
 import {
   getOffererNameFactory,
   venueListItemFactory,
-} from 'utils/individualApiFactories'
+} from 'commons/utils/individualApiFactories'
 import {
   renderWithProviders,
   RenderWithProvidersOptions,
-} from 'utils/renderWithProviders'
+} from 'commons/utils/renderWithProviders'
+import { IndividualOfferFormValues } from 'components/IndividualOfferForm/types'
+import { setDefaultInitialFormValues } from 'components/IndividualOfferForm/utils/setDefaultInitialFormValues'
 
 import { VENUE_DEFAULT_VALUES } from '../constants'
 import { validationSchema } from '../validationSchema'

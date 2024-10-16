@@ -1,13 +1,13 @@
 import classNames from 'classnames'
 
 import { ListOffersOfferResponseModel } from 'apiClient/v1'
-import { OFFER_STATUS_DRAFT } from 'core/Offers/constants'
-import { isOfferDisabled } from 'core/Offers/utils/isOfferDisabled'
-import { useActiveFeature } from 'hooks/useActiveFeature'
+import { OFFER_STATUS_DRAFT } from 'commons/core/Offers/constants'
+import { isOfferDisabled } from 'commons/core/Offers/utils/isOfferDisabled'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import {
   useOfferEditionURL,
   useOfferStockEditionURL,
-} from 'hooks/useOfferEditionURL'
+} from 'commons/hooks/useOfferEditionURL'
 
 import { AddressCell } from '../../Cells/AddressCell'
 import { CheckboxCell } from '../../Cells/CheckboxCell'

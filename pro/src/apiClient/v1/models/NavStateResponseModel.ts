@@ -3,7 +3,6 @@
 /* tslint:disable */
 /* eslint-disable */
 export type NavStateResponseModel = {
-  eligibilityDate?: string | null;
-  newNavDate?: string | null;
-};
-
+  eligibilityDate?: string | null
+  newNavDate?: string | null
+}

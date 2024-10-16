@@ -3,6 +3,5 @@
 /* tslint:disable */
 /* eslint-disable */
 export type SuggestedSubcategoriesResponseModel = {
-  subcategoryIds: Array<string>;
-};
-
+  subcategoryIds: Array<string>
+}

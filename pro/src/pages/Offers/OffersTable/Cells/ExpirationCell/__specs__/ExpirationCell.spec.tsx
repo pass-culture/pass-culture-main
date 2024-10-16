@@ -4,7 +4,7 @@ import {
   CollectiveOfferResponseModel,
   CollectiveOfferStatus,
 } from 'apiClient/v1'
-import { collectiveOfferFactory } from 'utils/collectiveApiFactories'
+import { collectiveOfferFactory } from 'commons/utils/collectiveApiFactories'
 
 import { ExpirationCell } from '../ExpirationCell'
 

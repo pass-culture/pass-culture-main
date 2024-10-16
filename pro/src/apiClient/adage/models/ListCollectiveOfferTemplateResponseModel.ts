@@ -2,8 +2,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { CollectiveOfferTemplateResponseModel } from './CollectiveOfferTemplateResponseModel';
+import type { CollectiveOfferTemplateResponseModel } from './CollectiveOfferTemplateResponseModel'
 export type ListCollectiveOfferTemplateResponseModel = {
-  collectiveOffers: Array<CollectiveOfferTemplateResponseModel>;
-};
-
+  collectiveOffers: Array<CollectiveOfferTemplateResponseModel>
+}

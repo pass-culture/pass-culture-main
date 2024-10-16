@@ -12,19 +12,19 @@ import {
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import * as useAnalytics from 'app/App/analytics/firebase'
-import { Notification } from 'components/Notification/Notification'
-import { CollectiveBookingsEvents } from 'core/FirebaseEvents/constants'
-import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from 'core/Offers/constants'
+import { CollectiveBookingsEvents } from 'commons/core/FirebaseEvents/constants'
+import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from 'commons/core/Offers/constants'
 import {
   collectiveOfferFactory,
   listOffersVenueFactory,
-} from 'utils/collectiveApiFactories'
-import { getToday } from 'utils/date'
-import { listOffersStockFactory } from 'utils/individualApiFactories'
+} from 'commons/utils/collectiveApiFactories'
+import { getToday } from 'commons/utils/date'
+import { listOffersStockFactory } from 'commons/utils/individualApiFactories'
 import {
   RenderWithProvidersOptions,
   renderWithProviders,
-} from 'utils/renderWithProviders'
+} from 'commons/utils/renderWithProviders'
+import { Notification } from 'components/Notification/Notification'
 
 import {
   CollectiveOfferRow,

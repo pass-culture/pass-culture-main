@@ -3,8 +3,7 @@
 /* tslint:disable */
 /* eslint-disable */
 export type AdageBaseModel = {
-  iframeFrom: string;
-  isFromNoResult?: boolean | null;
-  queryId?: string | null;
-};
-
+  iframeFrom: string
+  isFromNoResult?: boolean | null
+  queryId?: string | null
+}

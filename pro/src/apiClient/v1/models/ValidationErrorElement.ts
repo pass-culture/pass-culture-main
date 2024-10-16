@@ -6,9 +6,8 @@
  * Model of a validation error response element.
  */
 export type ValidationErrorElement = {
-  ctx?: Record<string, any>;
-  loc: Array<string>;
-  msg: string;
-  type: string;
-};
-
+  ctx?: Record<string, any>
+  loc: Array<string>
+  msg: string
+  type: string
+}
