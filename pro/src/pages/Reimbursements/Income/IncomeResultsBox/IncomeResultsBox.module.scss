@@ -8,41 +8,33 @@
   @media (min-width: size.$tablet) {
     min-width: rem.torem(300px);
   }
-}
 
-.income-results-block-title {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  text-align: left;
-  margin-bottom: rem.torem(10px);
-}
-
-.income-results-block-tooltip {
-  margin-left: rem.torem(10px);
-  min-height: auto;
-  border: 0;
-  padding: 0;
-  background: none;
-
-  svg {
-    color: var(--color-primary) !important;
+  &-title {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    text-align: left;
+    margin-bottom: rem.torem(10px);
   }
 
-  &:hover {
+  &-tooltip {
+    margin-left: rem.torem(10px);
+    min-height: auto;
+    border: 0;
+    padding: 0;
     background: none;
+
+    &-content {
+      top: calc(100% - rem.torem(10px));
+    }
   }
-}
 
-.income-results-block-tooltip-content {
-  top: calc(100% - rem.torem(10px));
-}
+  &-number {
+    @include fonts.bold;
 
-.income-results-block-number {
-  @include fonts.bold;
-
-  font-size: rem.torem(21px);
-  text-align: left;
+    font-size: rem.torem(21px);
+    text-align: left;
+  }
 }
 
 .income-results-box {
@@ -53,10 +45,10 @@
   &:first-child {
     margin-bottom: rem.torem(24px);
   }
-}
 
-.income-results-subbox {
-  display: flex;
-  flex-flow: row wrap;
-  row-gap: rem.torem(20px);
+  &-subbox {
+    display: flex;
+    flex-flow: row wrap;
+    row-gap: rem.torem(20px);
+  }
 }
