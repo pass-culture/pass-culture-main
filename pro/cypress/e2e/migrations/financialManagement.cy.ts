@@ -1,15 +1,15 @@
 describe('Financial Management - messages, links to external help page, reimbursement details', () => {
-  const login = 'activation@example.com'
+  let login: string
   const password = 'user@AZERTY123'
 
-  before(() => {
+  beforeEach(() => {
     cy.visit('/connexion')
-    // cy.request({
-    //   method: 'GET',
-    //   url: 'http://localhost:5001/sandboxes/pro/create_regular_pro_user',
-    // }).then((response) => {
-    //   login = response.body.user.email
-    // })
+    cy.request({
+      method: 'GET',
+      url: 'http://localhost:5001/sandboxes/pro/create_pro_user_with_financial_data',
+    }).then((response) => {
+      login = response.body.user.email
+    })
   })
 
   it('Check messages, reimbursement details and offerer selection change', () => {
@@ -21,10 +21,8 @@ describe('Financial Management - messages, links to external help page, reimburs
     })
 
     cy.stepLog({ message: 'I go to the "Gestion financière" page' })
-    cy.url().then((urlSource) => {
-      cy.findAllByText('Gestion financière').first().click()
-      cy.url().should('not.equal', urlSource)
-    })
+    cy.findAllByText('Gestion financière').first().click()
+    cy.url().should('contain', '/remboursements')
 
     cy.stepLog({ message: 'I can see information message about reimbursement' })
     cy.findByText("Les remboursements s'effectuent toutes les 2 à 3 semaines")
@@ -33,6 +31,14 @@ describe('Financial Management - messages, links to external help page, reimburs
     )
     cy.findByText(
       'Les offres de type événement se valident automatiquement 48h à 72h après leur date de réalisation, leurs remboursements peuvent se faire sur la quinzaine suivante.'
+    )
+
+    cy.stepLog({ message: 'no receipt results should be displayed' })
+    cy.findAllByTestId('spinner').should('not.exist')
+    cy.findAllByTestId('invoice-title-row').should('not.exist')
+    cy.findAllByTestId('invoice-item-row').should('not.exist')
+    cy.contains(
+      'Vous n’avez pas encore de justificatifs de remboursement disponibles'
     )
 
     cy.stepLog({
@@ -69,35 +75,12 @@ describe('Financial Management - messages, links to external help page, reimburs
     })
 
     cy.stepLog({
-      message:
-        'I select offerer "1 - [CB] Structure avec des coordonnées bancaires dans différents états"',
+      message: 'I select offerer "Structure avec informations bancaires"',
     })
     cy.findByTestId('offerer-select').click()
     cy.findByText(/Changer de structure/).click()
     cy.findByTestId('offerers-selection-menu')
-      .findByText(
-        '1 - [CB] Structure avec des coordonnées bancaires dans différents états'
-      )
-      .click()
-    cy.findByTestId('header-dropdown-menu-div').should('not.exist')
-    cy.findAllByTestId('spinner').should('not.exist')
-
-    cy.stepLog({ message: 'no receipt results should be displayed' })
-    cy.findAllByTestId('spinner').should('not.exist')
-    cy.findAllByTestId('invoice-title-row').should('not.exist')
-    cy.findAllByTestId('invoice-item-row').should('not.exist')
-    cy.contains(
-      'Vous n’avez pas encore de justificatifs de remboursement disponibles'
-    )
-
-    cy.stepLog({
-      message:
-        'I select offerer "0 - Structure avec justificatif et compte bancaire"',
-    })
-    cy.findByTestId('offerer-select').click()
-    cy.findByText(/Changer de structure/).click()
-    cy.findByTestId('offerers-selection-menu')
-      .findByText('0 - Structure avec justificatif et compte bancaire')
+      .findByText('Structure avec informations bancaires')
       .click()
     cy.findByTestId('header-dropdown-menu-div').should('not.exist')
     cy.findAllByTestId('spinner').should('not.exist')
@@ -115,10 +98,10 @@ describe('Financial Management - messages, links to external help page, reimburs
       [
         '',
         '',
-        'Remboursement',
+        'Trop perçu',
         'Libellé des coordonnées bancaires n°0',
-        'VIR1',
-        '',
+        'N/A',
+        '-10,00',
       ],
     ]
     const numRows = data.length - 1
@@ -156,23 +139,35 @@ describe('Financial Management - messages, links to external help page, reimburs
       redirectUrl: '/',
     })
 
-    cy.stepLog({ message: 'I go to the "Gestion financière" page' })
-    cy.url().then((urlSource) => {
-      cy.findAllByText('Gestion financière').first().click()
-      cy.url().should('not.equal', urlSource)
+    cy.stepLog({
+      message: 'I select offerer "Structure avec informations bancaires"',
     })
+    cy.findByTestId('offerer-select').click()
+    cy.findByText(/Changer de structure/).click()
+    cy.findByTestId('offerers-selection-menu')
+      .findByText('Structure avec informations bancaires')
+      .click()
+    cy.findByTestId('header-dropdown-menu-div').should('not.exist')
+    cy.findAllByTestId('spinner').should('not.exist')
+
+    cy.stepLog({ message: 'I go to the "Gestion financière" page' })
+    cy.findAllByText('Gestion financière').first().click()
+    cy.url().should('contain', '/remboursements')
 
     cy.stepLog({ message: 'I go to "Informations bancaires" view' })
     cy.findByText('Informations bancaires').click()
 
     cy.stepLog({
-      message:
-        'I remove "Lieu avec justificatif à 0€" venue from my bank account',
+      message: 'I remove "Mon Lieu" venue from my bank account',
     })
-    const venue = 'Lieu avec justificatif à 0€'
+    const venue = 'Mon Lieu'
+    cy.findByText('Aucun lieu n’est rattaché à ce compte bancaire.')
+    cy.findByText('Rattacher un lieu').click()
+    cy.findByText(venue).click()
+    cy.findByText('Enregistrer').click()
+
     cy.findByTestId('reimbursement-bank-account-linked-venues').within(() => {
       cy.contains('Lieu(x) rattaché(s) à ce compte bancaire')
-      cy.contains('Certains de vos lieux ne sont pas rattachés.')
       cy.contains(venue)
 
       cy.findByText('Modifier').click()
@@ -198,7 +193,7 @@ describe('Financial Management - messages, links to external help page, reimburs
     })
 
     cy.stepLog({
-      message: 'I add "Lieu avec justificatif à 0€" venue to my bank account',
+      message: 'I add "Mon Lieu" venue to my bank account',
     })
     cy.findByTestId('reimbursement-bank-account-linked-venues').within(() => {
       cy.findByText('Rattacher un lieu').click()
@@ -217,8 +212,7 @@ describe('Financial Management - messages, links to external help page, reimburs
     cy.wait('@patchOfferer').its('response.statusCode').should('equal', 204)
 
     cy.stepLog({
-      message:
-        '"Lieu avec justificatif à 0€" venue should be linked to my account',
+      message: '"Mon Lieu" venue should be linked to my account',
     })
     cy.findAllByTestId('global-notification-success').should(
       'contain',
@@ -227,7 +221,6 @@ describe('Financial Management - messages, links to external help page, reimburs
     cy.findAllByTestId('spinner').should('not.exist')
     cy.findByTestId('reimbursement-bank-account-linked-venues').within(() => {
       cy.contains('Lieu(x) rattaché(s) à ce compte bancaire')
-      cy.contains('Certains de vos lieux ne sont pas rattachés.')
       cy.contains(venue)
     })
   })
