@@ -29,10 +29,37 @@ pytestmark = [
 
 class GetRolesTest(GetEndpointHelper):
     endpoint = "backoffice_web.get_roles"
-    needed_permission = perm_models.Permissions.MANAGE_PERMISSIONS
+    needed_permission = perm_models.Permissions.READ_PERMISSIONS
 
     # session + current user + roles + permissions + WIP_ENABLE_OFFER_ADDRESS FF
     expected_num_queries = 5
+
+    def test_get_roles_matrix(self, authenticated_client):
+        count_roles = perm_models.Role.query.count()
+        count_permissions = perm_models.Permission.query.count()
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint))
+            assert response.status_code == 200
+
+        table_rows = html_parser.extract_table_rows(response.data)
+
+        assert len(table_rows) == count_permissions
+        assert len(table_rows[0]) == count_roles
+
+        # First row is "support pro avancé"
+        assert table_rows[0]["admin"] == ""
+        assert table_rows[0]["global_access"] == "x"
+        assert table_rows[0]["support_pro"] == ""
+        assert table_rows[0]["support_pro_n2"] == "x"
+
+
+class GetRolesManagementTest(GetEndpointHelper):
+    endpoint = "backoffice_web.get_roles_management"
+    needed_permission = perm_models.Permissions.MANAGE_PERMISSIONS
+
+    # session + current user + roles + permissions
+    expected_num_queries = 4
 
     def test_can_list_roles_and_permissions(self, authenticated_client):
         perm_factories.RoleFactory(name="test_role_1")
@@ -82,7 +109,7 @@ class UpdateRoleTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, role_id=role_to_edit.id, form=base_form)
         assert response.status_code == 303
 
-        expected_url = url_for("backoffice_web.get_roles", _external=True)
+        expected_url = url_for("backoffice_web.get_roles", active_tab="management", _external=True)
         assert response.location == expected_url
 
         role_to_edit = perm_models.Role.query.filter_by(id=role_to_edit.id).one()
@@ -168,7 +195,7 @@ class UpdateRoleTest(PostEndpointHelper):
 
 class GetRolesHistoryTest(GetEndpointHelper):
     endpoint = "backoffice_web.get_roles_history"
-    needed_permission = perm_models.Permissions.MANAGE_PERMISSIONS
+    needed_permission = perm_models.Permissions.READ_PERMISSIONS
 
     # session + current user + history
     expected_num_queries = 3

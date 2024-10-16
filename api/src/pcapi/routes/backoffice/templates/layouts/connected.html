@@ -33,7 +33,7 @@
             aria-controls="{{ pc_collapse_menu_id }}">
       <i class="bi bi-list text-white h4"></i>
     </button>
-    <a href="{{ url_for("backoffice_web.home") }}"
+    <a href="{{ url_for('backoffice_web.home') }}"
        class="card-link">
       <p class="my-0 ms-5 navbar-brand text-white btn">
         <svg width="105.532"
@@ -44,8 +44,8 @@
         Back Office
       </p>
     </a>
-    <form action="{{ url_for("backoffice_web.logout") }}"
-          name="{{ url_for("backoffice_web.logout") | action_to_name }}"
+    <form action="{{ url_for('backoffice_web.logout') }}"
+          name="{{ url_for('backoffice_web.logout') | action_to_name }}"
           method="post">
       {{ csrf_token }}
       <button type="submit"
@@ -161,7 +161,7 @@
               <div class="nav nav-pills flex-column">
                 {% call menu_section("Admin") %}
                   {{ menu_section_item('Mon compte backoffice', 'backoffice_web.bo_users.get_bo_user', user_id=current_user.id, active_tab='roles') }}
-                  {% if has_permission("MANAGE_PERMISSIONS") %}{{ menu_section_item('Gestion des rôles', 'backoffice_web.get_roles') }}{% endif %}
+                  {% if has_permission("READ_PERMISSIONS") %}{{ menu_section_item('Rôles et permissions', 'backoffice_web.get_roles') }}{% endif %}
                   {% if has_permission("READ_ADMIN_ACCOUNTS") %}
                     {{ menu_section_item('Utilisateurs BackOffice', 'backoffice_web.bo_users.search_bo_users') }}
                   {% endif %}
