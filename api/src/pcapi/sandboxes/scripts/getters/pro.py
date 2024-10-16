@@ -1,3 +1,5 @@
+from pcapi.core.bookings import models as bookings_models
+import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.educational import models as educational_models
 import pcapi.core.educational.factories as educational_factories
@@ -29,6 +31,27 @@ def create_regular_pro_user() -> dict:
     offerers_factories.VenueLabelFactory(label="Musée de France")
 
     return {"user": get_pro_user_helper(pro_user), "siren": offerer.siren}
+
+
+def create_pro_user_with_bookings() -> dict:
+    pro_user = users_factories.ProFactory()
+    offerer = offerers_factories.OffererFactory()
+    offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
+    venue = offerers_factories.VenueFactory(name="Mon Lieu", managingOfferer=offerer, isPermanent=True)
+    offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
+
+    bookings_factories.BookingFactory(token="2XTM3W", stock__offer__venue=venue)
+    bookings_factories.BookingFactory(
+        token="XUSEDX", stock__offer__venue=venue, status=bookings_models.BookingStatus.USED
+    )
+    bookings_factories.BookingFactory(token="OTHERX")
+    bookings_factories.BookingFactory(
+        token="CANCEL", stock__offer__venue=venue, status=bookings_models.BookingStatus.CANCELLED
+    )
+    bookings_factories.BookingFactory(
+        token="REIMBU", stock__offer__venue=venue, status=bookings_models.BookingStatus.REIMBURSED
+    )
+    return {"user": get_pro_user_helper(pro_user)}
 
 
 def create_regular_pro_user_with_virtual_offer() -> dict:
