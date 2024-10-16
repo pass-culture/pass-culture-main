@@ -224,8 +224,8 @@ def _check_offer_kwargs(product: models.Product, kwargs: dict[str, typing.Any]) 
         raise ValueError("SubcategoryId of the offer and the product must be the same")
     if kwargs.get("extraData") and kwargs.get("extraData") != product.extraData:
         raise ValueError("ExtraData of the offer and the product must be the same")
-    if kwargs.get("durationMinutes") and kwargs.get("durationMinutes") != product.durationMinutes:
-        raise ValueError("DurationMinutes of the offer and the product must be the same")
+    if kwargs.get("durationMinutes"):
+        raise ValueError("DurationMinutes of the offer must be None when product is given")
     if kwargs.get("description"):
         raise ValueError("Description of the offer must be None when product is given")
 
