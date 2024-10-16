@@ -1,3 +1,4 @@
+import classnames from 'classnames'
 import isEqual from 'lodash.isequal'
 import { useState, useEffect } from 'react'
 import { useSelector } from 'react-redux'
@@ -113,7 +114,7 @@ export const Income = () => {
     return (
       <div className={styles['income-error']}>
         <SvgIcon
-          className={styles['icon']}
+          className={styles['income-error-icon']}
           src={strokePageNotFoundIcon}
           viewBox="0 0 130 100"
           alt=""
@@ -142,20 +143,21 @@ export const Income = () => {
           </>
         )}
         <ul
-          className={styles['income-year-filters']}
+          className={styles['income-filters-by-year']}
           aria-label="Filtrage par année"
         >
           {years.map((year) => (
-            <li
-              key={year}
-              className={year === activeYear ? styles['active-year'] : ''}
-            >
+            <li key={year}>
               <button
                 type="button"
                 onClick={() => setActiveYear(year)}
                 aria-label={`Afficher les revenus de l'année ${year}`}
                 aria-controls="income-results"
                 aria-current={year === activeYear}
+                className={classnames(styles['income-filters-by-year-button'], {
+                  [styles['income-filters-by-year-button-active']]:
+                    year === activeYear,
+                })}
               >
                 {year}
               </button>
@@ -178,19 +180,19 @@ export const Income = () => {
         ) : (
           <div className={styles['income-no-data']}>
             <SvgIcon
-              className={styles['icon']}
+              className={styles['income-no-data-icon']}
               src={strokeBookingHoldIcon}
               alt=""
               width="128"
             />
             Vous n’avez aucune réservation sur cette période.
-            <div className={styles['text-with-link']}>
+            <div className={styles['income-no-data-text-with-link']}>
               Découvrez nos
               <ButtonLink
                 isExternal
                 opensInNewTab
                 to="https://passcultureapp.notion.site/pass-Culture-Documentation-323b1a0ec309406192d772e7d803fbd0"
-                className={styles['link']}
+                className={styles['income-no-data-text-with-link-buttonlink']}
                 onClick={() =>
                   logEvent(Events.CLICKED_BEST_PRACTICES_STUDIES, {
                     from: location.pathname,

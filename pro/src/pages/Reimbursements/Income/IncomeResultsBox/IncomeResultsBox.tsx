@@ -1,6 +1,7 @@
 import fullHelpIcon from 'icons/full-help.svg'
 import { BoxRounded } from 'ui-kit/BoxRounded/BoxRounded'
 import { Button } from 'ui-kit/Button/Button'
+import { ButtonVariant } from 'ui-kit/Button/types'
 
 import { IncomeType, IncomeResults } from '../types'
 
@@ -29,6 +30,7 @@ const IncomeResultsSubBox = ({ title, number, help }: IncomeSubBoxProps) => {
             iconAlt="À propos"
             type="button"
             hasTooltip
+            variant={ButtonVariant.SECONDARY}
           >
             {help}
           </Button>
@@ -70,7 +72,7 @@ export const IncomeResultsBox = ({ type, income }: IncomeResultsBoxProps) => {
         help={totalHelp}
       />
       {shouldDisplayIncomeDetails && (
-        <div className={styles['income-results-subbox']}>
+        <div className={styles['income-results-box-subbox']}>
           {income.individual && (
             <IncomeResultsSubBox
               title="Part individuelle"

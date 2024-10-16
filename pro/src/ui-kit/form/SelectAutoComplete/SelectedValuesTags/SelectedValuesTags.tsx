@@ -12,6 +12,7 @@ interface TagsProps {
   optionsLabelById: Record<string, string>
   selectedOptions: string[]
   removeOption: (value: string) => void
+  className?: string
 }
 
 export const SelectedValuesTags = ({
@@ -20,6 +21,7 @@ export const SelectedValuesTags = ({
   optionsLabelById,
   selectedOptions,
   removeOption,
+  className,
 }: TagsProps): JSX.Element => {
   const tagListRef = useRef<HTMLUListElement>(null)
 
@@ -35,7 +37,10 @@ export const SelectedValuesTags = ({
   }
 
   return (
-    <ul className={styles['multi-select-autocomplete-tags']} ref={tagListRef}>
+    <ul
+      className={cn(styles['multi-select-autocomplete-tags'], className)}
+      ref={tagListRef}
+    >
       {selectedOptions.map((value: string, i) => (
         <li key={`tag-${fieldName}-${value}`} className={styles['tag']}>
           <button
