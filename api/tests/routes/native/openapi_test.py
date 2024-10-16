@@ -1781,6 +1781,7 @@ def test_public_api(client):
                         "LIVRES",
                         "MEDIA_PRESSE",
                         "MUSEES_VISITES_CULTURELLES",
+                        "MUSIQUE",
                         "NONE",
                         "RENCONTRES_CONFERENCES",
                         "SPECTACLES",

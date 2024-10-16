@@ -241,17 +241,18 @@ def get_show_nodes() -> list[ShowGenre]:
 SEARCH_GROUP_ARTS_LOISIRS_CREATIFS = SearchGroup(
     technical_name="ARTS_LOISIRS_CREATIFS",
     label="Arts & loisirs créatifs",
-    position=6,
+    position=7,
 )
 SEARCH_GROUP_CARTES_JEUNES = SearchGroup(
     technical_name="CARTES_JEUNES",
     label="Cartes jeunes",
-    position=12,
+    position=13,
 )
+# FIXME (thconte, 2024-10-15): Delete this SearchGroup once app's minimal version has bumped
 SEARCH_GROUP_CD_VINYLE_MUSIQUE_EN_LIGNE = SearchGroup(
     technical_name="CD_VINYLE_MUSIQUE_EN_LIGNE",
     label="CD, vinyles, musique en ligne",
-    position=5,
+    position=6,
 )
 SEARCH_GROUP_CONCERTS_FESTIVALS = SearchGroup(
     technical_name="CONCERTS_FESTIVALS",
@@ -261,7 +262,7 @@ SEARCH_GROUP_CONCERTS_FESTIVALS = SearchGroup(
 SEARCH_GROUP_EVENEMENTS_EN_LIGNE = SearchGroup(
     technical_name="EVENEMENTS_EN_LIGNE",
     label="Évènements en ligne",
-    position=14,
+    position=15,
 )
 # FIXME (thconte, 2024-10-03): Delete this SearchGroup once app's minimal version has bumped
 SEARCH_GROUP_FILMS_SERIES_CINEMA = SearchGroup(
@@ -279,15 +280,16 @@ SEARCH_GROUP_FILMS_DOCUMENTAIRES_SERIES = SearchGroup(
     label="Films, documentaires et séries",
     position=3,
 )
+# FIXME (thconte, 2024-10-15): Delete this SearchGroup once app's minimal version has bumped
 SEARCH_GROUP_INSTRUMENTS = SearchGroup(
     technical_name="INSTRUMENTS",
     label="Instruments de musique",
-    position=10,
+    position=11,
 )
 SEARCH_GROUP_JEUX_JEUX_VIDEOS = SearchGroup(
     technical_name="JEUX_JEUX_VIDEOS",
     label="Jeux & jeux vidéos",
-    position=9,
+    position=10,
 )
 SEARCH_GROUP_LIVRES = SearchGroup(
     technical_name="LIVRES",
@@ -297,12 +299,17 @@ SEARCH_GROUP_LIVRES = SearchGroup(
 SEARCH_GROUP_MEDIA_PRESSE = SearchGroup(
     technical_name="MEDIA_PRESSE",
     label="Médias & presse",
-    position=11,
+    position=12,
 )
 SEARCH_GROUP_MUSEES_VISITES_CULTURELLES = SearchGroup(
     technical_name="MUSEES_VISITES_CULTURELLES",
     label="Musées & visites culturelles",
-    position=8,
+    position=9,
+)
+SEARCH_GROUP_MUSIQUE = SearchGroup(
+    technical_name="MUSIQUE",
+    label="Musique",
+    position=5,
 )
 SEARCH_GROUP_NONE = SearchGroup(
     technical_name="NONE",
@@ -312,12 +319,12 @@ SEARCH_GROUP_NONE = SearchGroup(
 SEARCH_GROUP_RENCONTRES_CONFERENCES = SearchGroup(
     technical_name="RENCONTRES_CONFERENCES",
     label="Conférences & rencontres",
-    position=13,
+    position=14,
 )
 SEARCH_GROUP_SPECTACLES = SearchGroup(
     technical_name="SPECTACLES",
     label="Spectacles",
-    position=7,
+    position=8,
 )
 # endregion
 
@@ -341,7 +348,7 @@ NATIVE_CATEGORY_ABONNEMENTS_SPECTACLE = NativeCategory(
 NATIVE_CATEGORY_ACHAT_LOCATION_INSTRUMENT = NativeCategory(
     technical_name="ACHAT_LOCATION_INSTRUMENT",
     label="Achat & location d'instrument",
-    parents=[SEARCH_GROUP_INSTRUMENTS.id],
+    parents=[SEARCH_GROUP_INSTRUMENTS.id, SEARCH_GROUP_MUSIQUE.id],
 )
 NATIVE_CATEGORY_ARTS_VISUELS = NativeCategory(
     technical_name="ARTS_VISUELS",
@@ -366,7 +373,7 @@ NATIVE_CATEGORY_CARTES_CINEMA = NativeCategory(
 NATIVE_CATEGORY_CD = NativeCategory(
     technical_name="CD",
     label="CD",
-    parents=[SEARCH_GROUP_CD_VINYLE_MUSIQUE_EN_LIGNE.id],
+    parents=[SEARCH_GROUP_CD_VINYLE_MUSIQUE_EN_LIGNE.id, SEARCH_GROUP_MUSIQUE.id],
     genre_type=GenreType.MUSIC,
 )
 NATIVE_CATEGORY_CONCERTS_EN_LIGNE = NativeCategory(
@@ -378,7 +385,7 @@ NATIVE_CATEGORY_CONCERTS_EN_LIGNE = NativeCategory(
 NATIVE_CATEGORY_CONCERTS_EVENEMENTS = NativeCategory(
     technical_name="CONCERTS_EVENEMENTS",
     label="Concerts, évènements",
-    parents=[SEARCH_GROUP_CONCERTS_FESTIVALS.id],
+    parents=[SEARCH_GROUP_CONCERTS_FESTIVALS.id, SEARCH_GROUP_MUSIQUE.id],
     genre_type=GenreType.MUSIC,
 )
 NATIVE_CATEGORY_CONCOURS = NativeCategory(
@@ -419,7 +426,7 @@ NATIVE_CATEGORY_EVENEMENTS_PATRIMOINE = NativeCategory(
 NATIVE_CATEGORY_FESTIVALS = NativeCategory(
     technical_name="FESTIVALS",
     label="Festivals",
-    parents=[SEARCH_GROUP_CONCERTS_FESTIVALS.id],
+    parents=[SEARCH_GROUP_CONCERTS_FESTIVALS.id, SEARCH_GROUP_MUSIQUE.id],
     genre_type=GenreType.MUSIC,
 )
 NATIVE_CATEGORY_FESTIVAL_DU_LIVRE = NativeCategory(
@@ -466,14 +473,14 @@ NATIVE_CATEGORY_MATERIELS_CREATIFS = NativeCategory(
 NATIVE_CATEGORY_MUSIQUE_EN_LIGNE = NativeCategory(
     technical_name="MUSIQUE_EN_LIGNE",
     label="Musique en ligne",
-    parents=[SEARCH_GROUP_CD_VINYLE_MUSIQUE_EN_LIGNE.id],
+    parents=[SEARCH_GROUP_CD_VINYLE_MUSIQUE_EN_LIGNE.id, SEARCH_GROUP_MUSIQUE.id],
     genre_type=GenreType.MUSIC,
 )
 NATIVE_CATEGORY_NONE = NativeCategory(technical_name="NATIVE_CATEGORY_NONE", label="None", parents=[])
 NATIVE_CATEGORY_PARTITIONS_DE_MUSIQUE = NativeCategory(
     technical_name="PARTITIONS_DE_MUSIQUE",
     label="Partitions de musique",
-    parents=[SEARCH_GROUP_INSTRUMENTS.id],
+    parents=[SEARCH_GROUP_INSTRUMENTS.id, SEARCH_GROUP_MUSIQUE.id],
 )
 NATIVE_CATEGORY_PODCAST = NativeCategory(
     technical_name="PODCAST",
@@ -547,7 +554,7 @@ NATIVE_CATEGORY_VIDEOS_ET_DOCUMENTAIRES = NativeCategory(
 NATIVE_CATEGORY_VINYLES = NativeCategory(
     technical_name="VINYLES",
     label="Vinyles et autres supports",
-    parents=[SEARCH_GROUP_CD_VINYLE_MUSIQUE_EN_LIGNE.id],
+    parents=[SEARCH_GROUP_CD_VINYLE_MUSIQUE_EN_LIGNE.id, SEARCH_GROUP_MUSIQUE.id],
     genre_type=GenreType.MUSIC,
 )
 NATIVE_CATEGORY_VISITES_CULTURELLES = NativeCategory(
