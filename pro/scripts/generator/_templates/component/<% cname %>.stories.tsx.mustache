@@ -1,0 +1,16 @@
+import { StoryObj } from '@storybook/react'
+import { withRouter } from 'storybook-addon-remix-react-router'
+
+import { <% cname %> } from './<% cname %>'
+
+export default {
+  title: 'ui-kit/<% cname %>',
+  decorators: [withRouter],
+  component: <% cname %>,
+}
+
+export const Default: StoryObj<typeof <% cname %>> = {
+  args: {
+    /* … */
+  },
+}
