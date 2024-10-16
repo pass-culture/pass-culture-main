@@ -1,5 +1,6 @@
 import logging
 
+from pcapi import repository
 from pcapi.connectors import api_adresse
 from pcapi.core.geography import models as geography_models
 from pcapi.core.geography import repository as geography_repository
@@ -172,11 +173,11 @@ def create_address(body: AddressModel) -> AddressResponse:
             latitude=body.latitude,
             longitude=body.longitude,
         )
-
-    address = offerers_api.get_or_create_address(
-        location_data=location_data,
-        is_manual_edition=ban_address is None,
-    )
+    with repository.transaction():
+        address = offerers_api.get_or_create_address(
+            location_data=location_data,
+            is_manual_edition=ban_address is None,
+        )
 
     return AddressResponse.from_orm(address)
 
