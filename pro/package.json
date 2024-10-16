@@ -50,7 +50,7 @@
     "@sentry/browser": "^8.33.0",
     "@sentry/react": "^8.34.0",
     "@zootools/email-spell-checker": "^1.12.0",
-    "chart.js": "^4.4.4",
+    "chart.js": "^4.4.5",
     "chartjs-adapter-date-fns": "^3.0.0",
     "classnames": "^2.5.1",
     "date-fns": "^4.1.0",
