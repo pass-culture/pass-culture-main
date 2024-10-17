@@ -75,4 +75,18 @@ describe('BaseTimePicker', () => {
     const surelySuggestedTime = screen.queryByText('09:30')
     expect(surelySuggestedTime).toBeInTheDocument()
   })
+
+  it('should not init input with provided value if it is invalid', () => {
+    renderBaseTimePicker({ value: 'invalid' })
+
+    const input = screen.getByPlaceholderText('HH:MM')
+    expect(input).toHaveValue('')
+  })
+
+  it('should init input with provided value and pad it if needed if it is valid', () => {
+    renderBaseTimePicker({ value: '9:00' })
+
+    const input = screen.getByPlaceholderText('HH:MM')
+    expect(input).toHaveValue('09:00')
+  })
 })

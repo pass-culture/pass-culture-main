@@ -48,6 +48,7 @@ import { Spinner } from 'ui-kit/Spinner/Spinner'
 import { getToday } from 'utils/date'
 import { hasErrorCode } from 'utils/error'
 import {
+  isValidTime,
   convertTimeFromVenueTimezoneToUtc,
   getLocalDepartementDateTimeFromUtc,
 } from 'utils/timezone'
@@ -180,8 +181,11 @@ export const StocksEventEdition = ({
       api.getStocks(
         offer.id,
         dateFilter ? dateFilter : undefined,
-        timeFilter
-          ? convertTimeFromVenueTimezoneToUtc(timeFilter, departmentCode)
+        isValidTime(timeFilter)
+          ? convertTimeFromVenueTimezoneToUtc(
+              timeFilter as string,
+              departmentCode
+            )
           : undefined,
         priceCategoryIdFilter ? Number(priceCategoryIdFilter) : undefined,
         currentSortingColumn ?? undefined,

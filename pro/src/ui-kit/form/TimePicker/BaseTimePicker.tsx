@@ -1,6 +1,8 @@
 import cn from 'classnames'
 import React, { useId } from 'react'
 
+import { isValidTime } from 'utils/timezone'
+
 import { BaseInput, BaseInputProps } from '../shared/BaseInput/BaseInput'
 
 import styles from './BaseTimePicker.module.scss'
@@ -48,7 +50,12 @@ export const BaseTimePicker = ({
   const optionsListId = useId()
   const timeOptions = getTimeOptions(suggestedTimeList)
   const hasTimeOptions = timeOptions.length > 0
-  const formattedValue = props.value ? props.value.padStart(5, '0') : ''
+
+  // When registerd, time value might be translated to '9:00'.
+  // This is a workaround to init and display the value as '09:00'.
+  const paddedValue =
+    props.value && props.value.length === 4 ? `0${props.value}` : props.value
+  const formattedValue = isValidTime(paddedValue) ? paddedValue : ''
 
   return (
     <>
