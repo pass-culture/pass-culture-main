@@ -1,0 +1,29 @@
+import { screen } from '@testing-library/react'
+import { axe } from 'vitest-axe'
+
+import {
+  renderWithProviders,
+  RenderWithProvidersOptions,
+} from 'utils/renderWithProviders'
+
+import { <% name %> } from './<% name %>'
+
+const render<% name %> = (options?: RenderWithProvidersOptions) => {
+  return renderWithProviders(<<% name %> />, { ...options })
+}
+
+describe('<<% name %> />', () => {
+  it('should render correctly', async () => {
+    render<% name %>()
+
+    expect(
+      await screen.findByRole('heading', { name: /<% name %>/ })
+    ).toBeInTheDocument()
+  })
+
+  it('should not have accessibility violations', async () => {
+    const { container } = render<% name %>()
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
+})

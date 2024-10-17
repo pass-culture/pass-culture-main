@@ -1,0 +1,11 @@
+import { <% name %> } from './<% name %>'
+
+describe('<% name %>', () => {
+  it('should display a welcome message', () => {
+    expect(<% name %>()).toBe('Hello <% name %>')
+  })
+
+  it('should display a welcome message with custom param', () => {
+    expect(<% name %>('Hey')).toBe('Hey <% name %>')
+  })
+})
