@@ -5,6 +5,7 @@ from pcapi.core.finance import factories as finance_factories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.users import factories as users_factories
+from pcapi.repository.clean_database import clean_all_database
 from pcapi.sandboxes.scripts.utils.helpers import get_pro_user_helper
 
 
@@ -15,7 +16,7 @@ def create_new_pro_user() -> dict:
 
 def create_new_pro_user_and_offerer() -> dict:
     pro_user = users_factories.ProFactory()
-    offerer = offerers_factories.OffererFactory()
+    offerer = offerers_factories.E2EOffererFactory()
     venue = offerers_factories.VenueFactory(managingOfferer=offerer, isPermanent=True)
     offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
     return {"user": get_pro_user_helper(pro_user), "siret": venue.siret}
@@ -23,7 +24,7 @@ def create_new_pro_user_and_offerer() -> dict:
 
 def create_regular_pro_user() -> dict:
     pro_user = users_factories.ProFactory()
-    offerer = offerers_factories.OffererFactory()
+    offerer = offerers_factories.E2EOffererFactory()
     offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
     offerers_factories.VenueFactory(name="Mon Lieu", managingOfferer=offerer, isPermanent=True)
     offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
@@ -34,7 +35,7 @@ def create_regular_pro_user() -> dict:
 
 def create_regular_pro_user_with_virtual_offer() -> dict:
     pro_user = users_factories.ProFactory()
-    offerer = offerers_factories.OffererFactory()
+    offerer = offerers_factories.E2EOffererFactory()
     offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
     offerers_factories.VenueFactory(name="Mon Lieu", managingOfferer=offerer, isPermanent=True)
     virtual_venue = offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
@@ -66,9 +67,9 @@ def create_pro_user_with_financial_data() -> dict:
 
 
 def create_adage_environnement() -> dict:
+    clean_all_database(reset_ids=True)
     current_year = educational_factories.EducationalCurrentYearFactory()
     next_year = educational_factories.EducationalYearFactory()
-
     offer = educational_factories.CollectiveOfferTemplateFactory(name="Mon offre collective")
 
     educational_institution = educational_factories.EducationalInstitutionFactory(
@@ -106,10 +107,11 @@ def create_adage_environnement() -> dict:
 
 def create_pro_user_with_individual_offers() -> dict:
     pro_user = users_factories.ProFactory()
-    offerer = offerers_factories.OffererFactory()
+    offerer = offerers_factories.E2EOffererFactory()
     offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
     venue = offerers_factories.VenueFactory(name="Mon Lieu", managingOfferer=offerer, isPermanent=True)
     offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
+
     offer1 = offers_factories.ThingOfferFactory(venue=venue, name="Une super offre")
     offers_factories.StockFactory(offer=offer1)
     offer2 = offers_factories.ThingOfferFactory(
@@ -156,7 +158,7 @@ def create_pro_user_with_individual_offers() -> dict:
 
 def create_pro_user_with_collective_offers() -> dict:
     pro_user = users_factories.ProFactory()
-    offerer = offerers_factories.OffererFactory()
+    offerer = offerers_factories.E2EOffererFactory()
     offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
     venue = offerers_factories.VenueFactory(name="Mon Lieu", managingOfferer=offerer, isPermanent=True)
     offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
