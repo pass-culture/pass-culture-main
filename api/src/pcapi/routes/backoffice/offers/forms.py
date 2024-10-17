@@ -61,6 +61,7 @@ class IndividualOffersAlgoliaSearchAttributes(enum.Enum):
     REGION = "Région"
     SUBCATEGORY = "Sous-catégorie"
     OFFERER = "Structure"
+    PRICE = "Prix"
     SHOW_TYPE = "Type de spectacle"
 
 
@@ -106,6 +107,7 @@ algolia_form_field_configuration = {
     "REGION": {"field": "region", "operator": ["IN", "NOT_IN"]},
     "EAN": {"field": "string", "operator": ["EQUALS", "NOT_EQUALS"]},
     "OFFERER": {"field": "offerer", "operator": ["IN", "NOT_IN"]},
+    "PRICE": {"field": "price", "operator": ["NUMBER_EQUALS", "GREATER_THAN_OR_EQUAL_TO", "LESS_THAN"]},
     "SUBCATEGORY": {"field": "subcategory", "operator": ["IN", "NOT_IN"]},
     "VENUE": {"field": "venue", "operator": ["IN", "NOT_IN"]},
     "SHOW_TYPE": {"field": "show_type", "operator": ["IN", "NOT_IN"]},
@@ -367,6 +369,7 @@ class OfferAlgoliaSearchSubForm(forms_utils.PCForm):
                 "department",
                 "region",
                 "offerer",
+                "price",
                 "string",
                 "subcategory",
                 "venue",
@@ -429,6 +432,14 @@ class OfferAlgoliaSearchSubForm(forms_utils.PCForm):
         endpoint="backoffice_web.autocomplete_offerers",
         search_inline=True,
         field_list_compatibility=True,
+    )
+    price = fields.PCDecimalField(
+        "Prix",
+        use_locale=True,
+        validators=[
+            wtforms.validators.Optional(""),
+            wtforms.validators.NumberRange(min=0, message="Doit contenir un nombre positif"),
+        ],
     )
     string = fields.PCOptStringField(
         "Texte",
