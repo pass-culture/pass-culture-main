@@ -5,7 +5,9 @@ from flask_login import login_required
 import pydantic.v1 as pydantic_v1
 import sqlalchemy.orm as sqla_orm
 
+from pcapi import settings
 from pcapi.connectors.entreprise import sirene
+import pcapi.connectors.entreprise.exceptions as entreprise_exceptions
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import exceptions
 from pcapi.core.offerers import models
@@ -13,6 +15,7 @@ from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.offerers import validation
 from pcapi.core.offerers.models import Venue
 from pcapi.models.api_errors import ApiErrors
+from pcapi.models.feature import FeatureToggle
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import offerers_serialize
 from pcapi.routes.serialization import venues_serialize
@@ -106,8 +109,12 @@ def edit_venue(venue_id: int, body: venues_serialize.EditVenueBodyModel) -> venu
 
     check_user_has_access_to_offerer(current_user, venue.managingOffererId)
     has_siret_changed = bool(body.siret and body.siret != venue.siret)
-    if body.siret and not sirene.siret_is_active(body.siret, raise_if_non_public=has_siret_changed):
-        raise ApiErrors(errors={"siret": ["SIRET is no longer active"]})
+    try:
+        if body.siret and not sirene.siret_is_active(body.siret, raise_if_non_public=has_siret_changed):
+            raise ApiErrors(errors={"siret": ["SIRET is no longer active"]})
+    except entreprise_exceptions.UnknownEntityException:
+        if settings.ENFORCE_SIRET_CHECK or not FeatureToggle.DISABLE_SIRET_CHECK.is_active():
+            raise
 
     not_venue_fields = {
         "isAccessibilityAppliedOnAllOffers",

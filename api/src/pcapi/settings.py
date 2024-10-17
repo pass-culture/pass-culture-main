@@ -516,6 +516,7 @@ BACKOFFICE_WATCH_SCSS_CHANGE = bool(int(os.environ.get("BACKOFFICE_WATCH_SCSS_CH
 SIRENE_BACKEND = os.environ.get("SIRENE_BACKEND")
 INSEE_SIRENE_API_TOKEN = secrets_utils.get("INSEE_SIRENE_API_TOKEN", "")
 INSEE_SIRENE_API_URL = os.environ.get("INSEE_SIRENE_API_URL", "https://api.insee.fr/entreprises/sirene/V3.11")
+ENFORCE_SIRET_CHECK = bool(int(os.environ.get("ENFORCE_SIRET_CHECK", 1)))
 
 # API ENTREPRISE
 ENTREPRISE_BACKEND = os.environ.get("ENTREPRISE_BACKEND")
