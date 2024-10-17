@@ -9,7 +9,11 @@ import styles from './Declaration.module.scss'
 export const Declaration = () => {
   return (
     <AccessibilityLayout mainHeading="Déclaration d’accessibilité">
-      <ButtonLink to="/accessibilite/" icon={fullBackIcon}>
+      <ButtonLink
+        to="/accessibilite/"
+        icon={fullBackIcon}
+        className={styles['back-link']}
+      >
         Retour vers la page Informations d’accessibilité
       </ButtonLink>
       <p className={styles['paragraph']}>
