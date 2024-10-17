@@ -78,13 +78,15 @@ export const isCollectiveOffer = (
   value: unknown
 ): value is GetCollectiveOfferResponseModel =>
   // Could be enhanced to check that it is also a GetCollectiveOfferTemplateResponseModel
-  hasProperty(value, 'isTemplate') && value.isTemplate === false
+  (hasProperty(value, 'isTemplate') && value.isTemplate === false) ||
+  (hasProperty(value, 'isShowcase') && value.isShowcase === false)
 
 export const isCollectiveOfferTemplate = (
   value: unknown
 ): value is GetCollectiveOfferTemplateResponseModel =>
   // Could be enhanced to check that it is also a GetCollectiveOfferTemplateResponseModel
-  hasProperty(value, 'isTemplate') && value.isTemplate === true
+  (hasProperty(value, 'isTemplate') && value.isTemplate === true) ||
+  (hasProperty(value, 'isShowcase') && value.isShowcase === true)
 
 export type VisibilityFormValues = {
   visibility: 'all' | 'one'
