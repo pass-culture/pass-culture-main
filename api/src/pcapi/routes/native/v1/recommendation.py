@@ -1,3 +1,6 @@
+import random
+import time
+
 import flask_jwt_extended
 
 import pcapi.connectors.recommendation as recommendation_api
@@ -59,3 +62,9 @@ def playlist(
             playlist_recommended_offers=[], params=serializers.RecommendationApiParams()
         )
     return serializers.PlaylistResponse.parse_raw(raw_response, content_type="application/json")
+
+
+@blueprint.native_route("/recommendation/timeout", methods=["GET"])
+@spectree_serialize(api=blueprint.api, on_success_status=204)
+def timeout_route() -> None:
+    time.sleep(round(random.uniform(1, 5), 2))
