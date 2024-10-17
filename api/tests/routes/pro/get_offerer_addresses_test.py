@@ -104,12 +104,17 @@ class Return200Test:
             address__city="Paris",
             address__banId="75107_7560_00001",
         )
-        offers_factories.OfferFactory(
-            venue__managingOfferer=offerer, offererAddress=offerer_address_1, venue__offererAddress=offerer_address_1
+        offer = offers_factories.OfferFactory(
+            venue__managingOfferer=offerer,
+            offererAddress=offerer_address_1,
+            venue__offererAddress=offerer_address_1,
+            venue__publicName="Venue public name",
         )
 
         client = client.with_session_auth(email=pro.email)
         offerer_id = offerer.id
+        offerer_address_id1 = offerer_address_1.id
+
         with assert_num_queries(self.num_queries):
             response = client.get(f"/offerers/{offerer_id}/addresses?onlyWithOffers=true")
             assert response.status_code == 200
@@ -117,9 +122,9 @@ class Return200Test:
                 {
                     "city": "Paris",
                     "departmentCode": "75",
-                    "id": offerer_address_1.id,
+                    "id": offerer_address_id1,
                     "isLinkedToVenue": True,
-                    "label": "1ere adresse",
+                    "label": "Venue public name",
                     "postalCode": "75002",
                     "street": "1 boulevard Poissonnière",
                 },
@@ -163,9 +168,13 @@ class Return200Test:
         )
 
         if linked_to_venue:
-            offerers_factories.VenueFactory(managingOfferer=offerer, offererAddress=offerer_address_1)
+            venue = offerers_factories.VenueFactory(managingOfferer=offerer, offererAddress=offerer_address_1)
         client = client.with_session_auth(email=pro.email)
         offerer_id = offerer.id
+        offerer_address_1_id = offerer_address_1.id
+        offerer_address_2_id = offerer_address_2.id
+        offerer_address_3_id = offerer_address_3.id
+        venue_public_name = venue.common_name if linked_to_venue else None
         with assert_num_queries(self.num_queries):
             response = client.get(f"/offerers/{offerer_id}/addresses")
             assert response.status_code == 200
@@ -174,16 +183,16 @@ class Return200Test:
                 {
                     "city": "Paris",
                     "departmentCode": "75",
-                    "id": offerer_address_1.id,
+                    "id": offerer_address_1_id,
                     "isLinkedToVenue": linked_to_venue,
-                    "label": "1ere adresse",
+                    "label": venue_public_name or "1ere adresse",
                     "postalCode": "75002",
                     "street": "1 boulevard Poissonnière",
                 },
                 {
                     "city": "Paris",
                     "departmentCode": "75",
-                    "id": offerer_address_2.id,
+                    "id": offerer_address_2_id,
                     "isLinkedToVenue": False,
                     "label": "2eme adresse",
                     "postalCode": "75007",
@@ -192,7 +201,7 @@ class Return200Test:
                 {
                     "city": "Paris",
                     "departmentCode": "75",
-                    "id": offerer_address_3.id,
+                    "id": offerer_address_3_id,
                     "isLinkedToVenue": False,
                     "label": "3eme adresse",
                     "postalCode": "75008",

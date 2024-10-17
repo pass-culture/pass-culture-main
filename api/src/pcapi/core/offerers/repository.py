@@ -807,20 +807,31 @@ def get_revenues_per_year(
 
 
 def get_offerer_addresses(offerer_id: int, only_with_offers: bool = False) -> BaseQuery:
-    query = models.OffererAddress.query.filter(models.OffererAddress.offererId == offerer_id).options(
-        sqla_orm.joinedload(models.OffererAddress.address).load_only(
-            geography_models.Address.street,
-            geography_models.Address.postalCode,
-            geography_models.Address.city,
-            geography_models.Address.departmentCode,
-        ),
-        sqla_orm.with_expression(models.OffererAddress._isLinkedToVenue, models.OffererAddress.isLinkedToVenue.expression),  # type: ignore[attr-defined]
+    query = (
+        models.OffererAddress.query.filter(models.OffererAddress.offererId == offerer_id)
+        .join(geography_models.Address, models.OffererAddress.addressId == geography_models.Address.id)
+        .outerjoin(models.Venue, models.Venue.offererAddressId == models.OffererAddress.id)
     )
-
     if only_with_offers:
-        query = query.join(offers_models.Offer, offers_models.Offer.offererAddressId == models.OffererAddress.id)
-    query = query.order_by(models.OffererAddress.label)
+        subquery = db.session.query(
+            sqla.select(offers_models.Offer.id, offers_models.Offer.offererAddressId)
+            .select_from(offers_models.Offer)
+            .subquery()
+        )
+        query = query.where(subquery.filter(offers_models.Offer.offererAddressId == models.OffererAddress.id).exists())
 
+    query = query.with_entities(
+        models.OffererAddress.id,
+        geography_models.Address.id.label("addressId"),
+        models.OffererAddress.label,
+        models.Venue.common_name,
+        models.Venue.id.label("venueId"),
+        geography_models.Address.street,
+        geography_models.Address.postalCode,
+        geography_models.Address.city,
+        geography_models.Address.departmentCode,
+    )
+    query = query.order_by(models.OffererAddress.label)
     return query
 
 

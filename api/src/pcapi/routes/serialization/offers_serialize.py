@@ -219,7 +219,15 @@ class ListOffersOfferResponseModelsGetterDict(GetterDict):
                 not offerer_address
             ):  # The only offers without oa neither in themselves nor in venues are the numerics ones.
                 return None
-            offererAddress = GetOffererAddressResponseModel.from_orm(offerer_address)
+            offererAddress = GetOffererAddressResponseModel(
+                id=offerer_address.id,
+                label=offerer_address.label,
+                street=offerer_address.address.street,
+                postalCode=offerer_address.address.postalCode,
+                city=offerer_address.address.city,
+                isLinkedToVenue=offerer_address._isLinkedToVenue,
+                departmentCode=offerer_address.address.departmentCode,
+            )
             label = self._obj.venue.common_name if offererAddress.isLinkedToVenue else offererAddress.label
             return AddressResponseIsLinkedToVenueModel(
                 **retrieve_address_info_from_oa(offerer_address),
@@ -449,7 +457,15 @@ class IndividualOfferResponseGetterDict(GetterDict):
             # Alternatively, might be a good idea to keep it and log a warning too
             if not offerer_address:
                 return None
-            offererAddress = GetOffererAddressResponseModel.from_orm(offerer_address)
+            offererAddress = GetOffererAddressResponseModel(
+                id=offerer_address.id,
+                label=offerer_address.label,
+                street=offerer_address.address.street,
+                postalCode=offerer_address.address.postalCode,
+                city=offerer_address.address.city,
+                isLinkedToVenue=offerer_address._isLinkedToVenue,
+                departmentCode=offerer_address.address.departmentCode,
+            )
             label = self._obj.venue.common_name if offererAddress.isLinkedToVenue else offererAddress.label
             return AddressResponseIsLinkedToVenueModel(
                 **retrieve_address_info_from_oa(offerer_address),
