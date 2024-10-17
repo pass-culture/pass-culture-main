@@ -37,6 +37,7 @@ import { Spinner } from 'ui-kit/Spinner/Spinner'
 import { formatPrice } from 'utils/formatPrice'
 import { pluralize, pluralizeString } from 'utils/pluralize'
 import {
+  isValidTime,
   convertTimeFromVenueTimezoneToUtc,
   formatLocalTimeDateString,
 } from 'utils/timezone'
@@ -114,8 +115,11 @@ export const StocksEventList = ({
     api.getStocks(
       offer.id,
       dateFilter ? dateFilter : undefined,
-      timeFilter
-        ? convertTimeFromVenueTimezoneToUtc(timeFilter, departmentCode)
+      isValidTime(timeFilter)
+        ? convertTimeFromVenueTimezoneToUtc(
+            timeFilter as string,
+            departmentCode
+          )
         : undefined,
       priceCategoryIdFilter ? Number(priceCategoryIdFilter) : undefined,
       currentSortingColumn ?? undefined,

@@ -8,6 +8,10 @@ import {
 
 import { getToday } from './date'
 
+export const timeRegex = /^([01]?[0-9]|2[0-3]):([0-5][0-9])$/
+export const isValidTime = (time?: string | null): boolean =>
+  Boolean(time && timeRegex.test(time))
+
 export const formatLocalTimeDateString = (
   dateIsoString: string | number | Date,
   departementCode?: string | null,
