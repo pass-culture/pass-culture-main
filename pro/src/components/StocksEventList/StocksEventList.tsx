@@ -21,6 +21,7 @@ import { selectCurrentOffererId } from 'commons/store/user/selectors'
 import { formatPrice } from 'commons/utils/formatPrice'
 import { pluralize, pluralizeString } from 'commons/utils/pluralize'
 import {
+  isValidTime,
   convertTimeFromVenueTimezoneToUtc,
   formatLocalTimeDateString,
 } from 'commons/utils/timezone'
@@ -100,7 +101,9 @@ export const StocksEventList = ({
     useState<number>(0)
   const [isDeleteAllLoading, setIsDeleteAllLoading] = useState(false)
   const [dateFilter, setDateFilter] = useState(searchParams.get('date'))
-  const [timeFilter, setTimeFilter] = useState(searchParams.get('time'))
+  const [timeFilter, setTimeFilter] = useState<string>(
+    searchParams.get('time') || ''
+  )
   const [priceCategoryIdFilter, setPriceCategoryIdFilter] = useState(
     searchParams.get('priceCategoryId')
   )
@@ -114,7 +117,7 @@ export const StocksEventList = ({
     api.getStocks(
       offer.id,
       dateFilter ? dateFilter : undefined,
-      timeFilter
+      isValidTime(timeFilter)
         ? convertTimeFromVenueTimezoneToUtc(timeFilter, departmentCode)
         : undefined,
       priceCategoryIdFilter ? Number(priceCategoryIdFilter) : undefined,
@@ -427,7 +430,7 @@ export const StocksEventList = ({
                         setTimeFilter(event.target.value)
                         onFilterChange()
                       }}
-                      value={timeFilter ?? ''}
+                      value={timeFilter}
                       filterVariant
                       aria-label="Filtrer par horaire"
                     />
