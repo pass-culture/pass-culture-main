@@ -742,6 +742,61 @@ def create_stock(
     return created_stock
 
 
+from pydantic import v1 as pydantic_v1
+
+
+class FieldUpdateLog(pydantic_v1.BaseModel):
+    old: typing.Any
+    new: typing.Any
+
+    # def changed(self):
+    # return old == new
+
+    # def asdict(self, *args, **kwargs):
+    # res = super().asdict(*args, **kwargs)
+    # res["old"] = self._serialize_field(self.old)
+    # res["new"] = self._serialize_field(self.new)
+
+    # return res
+
+    # def _serialize_field(self, field):
+    # try:
+    # json.dumps(field)
+    # except Exception:
+    # try:
+    # return field.id
+    # except AttributeError:
+    # return str(field)
+    # else:
+    # return field
+
+
+class StockUpdateLog(pydantic_v1.BaseModel):
+    stock_id: int
+    offer_id: int
+    user_id: int | None
+    changes: dict[int | str, FieldUpdateLog]
+
+    @property
+    def is_beginning_updated(self) -> bool:
+        return "beginningDatetime" in self.changes
+
+    # @classmethod
+    # def factory(cls, obj):
+    # try:
+    # return {
+    # name: cls.factory(field)
+    # for name, field in dict(obj).items()
+    # }
+    # except TypeError:
+    # try:
+    # return obj.id
+    # except AttributeError:
+    # if obj is None:
+    # return ''
+    # return str(obj)
+
+
 def edit_stock(
     stock: models.Stock,
     *,
@@ -752,7 +807,8 @@ def edit_stock(
     editing_provider: providers_models.Provider | None = None,
     price_category: models.PriceCategory | None | T_UNCHANGED = UNCHANGED,
     id_at_provider: str | None | T_UNCHANGED = UNCHANGED,
-) -> tuple[models.Stock | None, bool]:
+    current_user: users_models.User | None = None,
+) -> tuple[models.Stock | None, StockUpdateLog | None]:
     """If anything has changed, return the stock and whether the
     "beginning datetime" has changed. Otherwise, return `(None, False)`.
     """
@@ -760,7 +816,7 @@ def edit_stock(
 
     old_price = stock.price
     old_quantity = stock.quantity
-    modifications: dict[str, typing.Any] = {}
+    modifications = {}
 
     if beginning_datetime is not UNCHANGED or booking_limit_datetime is not UNCHANGED:
         changed_beginning = beginning_datetime if beginning_datetime is not UNCHANGED else stock.beginningDatetime
@@ -771,12 +827,12 @@ def edit_stock(
         validation.check_required_dates_for_stock(stock.offer, changed_beginning, changed_booking_limit)
 
     if price is not UNCHANGED and price is not None and price != stock.price:
-        modifications["price"] = price
+        modifications["price"] = FieldUpdateLog(old=stock.price, new=price)
         validation.check_stock_price(price, stock.offer, old_price=stock.price)
 
     if price_category is not UNCHANGED and price_category is not None and price_category is not stock.priceCategory:
-        modifications["priceCategory"] = price_category
-        modifications["price"] = price_category.price
+        modifications["priceCategory"] = FieldUpdateLog(old=stock.priceCategory, new=price_category)
+        modifications["price"] = FieldUpdateLog(old=stock.priceCategory.price, new=price_category.price)
         validation.check_stock_price(
             price_category.price,
             stock.offer,
@@ -784,18 +840,20 @@ def edit_stock(
         )
 
     if quantity is not UNCHANGED and quantity != stock.quantity:
-        modifications["quantity"] = quantity
+        modifications["quantity"] = FieldUpdateLog(old=stock.quantity, new=quantity)
         validation.check_stock_quantity(quantity, stock.dnBookedQuantity)
 
     if booking_limit_datetime is not UNCHANGED and booking_limit_datetime != stock.bookingLimitDatetime:
-        modifications["bookingLimitDatetime"] = booking_limit_datetime
+        modifications["bookingLimitDatetime"] = FieldUpdateLog(
+            old=stock.bookingLimitDatetime, new=booking_limit_datetime
+        )
         validation.check_activation_codes_expiration_datetime_on_stock_edition(
             stock.activationCodes,
             booking_limit_datetime,
         )
 
     if beginning_datetime not in (UNCHANGED, stock.beginningDatetime):
-        modifications["beginningDatetime"] = beginning_datetime
+        modifications["beginningDatetime"] = FieldUpdateLog(old=stock.beginningDatetime, new=beginning_datetime)
 
     if id_at_provider not in (UNCHANGED, stock.idAtProviders):
         if id_at_provider is not None:
@@ -804,14 +862,14 @@ def edit_stock(
                 id_at_provider,  # type: ignore[arg-type]
                 stock.id,
             )
-        modifications["idAtProviders"] = id_at_provider
+        modifications["idAtProviders"] = FieldUpdateLog(old=stock.idAtProviders, new=id_at_provider)
 
     if not modifications:
         logger.info(
             "Empty update of stock",
             extra={"offer_id": stock.offerId, "stock_id": stock.id},
         )
-        return None, False  # False is for `"beginningDatetime" in modifications`
+        return None, None
 
     if stock.offer.isFromAllocine:
         updated_fields = set(modifications)
@@ -819,7 +877,7 @@ def edit_stock(
         stock.fieldsUpdated = list(set(stock.fieldsUpdated) | updated_fields)
 
     for model_attr, value in modifications.items():
-        setattr(stock, model_attr, value)
+        setattr(stock, model_attr, value.new)
 
     if "beginningDatetime" in modifications:
         finance_api.update_finance_event_pricing_date(stock)
@@ -837,25 +895,36 @@ def edit_stock(
         "stock_dnBookedQuantity": stock.dnBookedQuantity,
     }
 
-    if (new_price := modifications.get("price", UNCHANGED)) is not UNCHANGED:
+    if (price := modifications.get("price", UNCHANGED)) is not UNCHANGED:
         log_extra_data["old_price"] = old_price
-        log_extra_data["stock_price"] = new_price
+        log_extra_data["stock_price"] = price.new
 
-    if (new_quantity := modifications.get("quantity", UNCHANGED)) is not UNCHANGED:
+    if (quantity := modifications.get("quantity", UNCHANGED)) is not UNCHANGED:
         log_extra_data["old_quantity"] = old_quantity
-        log_extra_data["stock_quantity"] = new_quantity
+        log_extra_data["stock_quantity"] = quantity.new
 
     logger.info("Successfully updated stock", extra=log_extra_data, technical_message_id="stock.updated")
 
-    return stock, "beginningDatetime" in modifications
+    user_id = current_user.id if current_user is not None else None
+    update_log = StockUpdateLog(stock_id=stock.id, offer_id=stock.offerId, user_id=user_id, changes=modifications)
+
+    return stock, update_log
 
 
-def handle_stocks_edition(edited_stocks: list[tuple[models.Stock, bool]]) -> None:
-    for stock, is_beginning_datetime_updated in edited_stocks:
-        if is_beginning_datetime_updated:
+def handle_stocks_edition(edited_stocks: list[tuple[models.Stock, StockUpdateLog]]) -> None:
+    for stock, modifications in edited_stocks:
+        if modifications.is_beginning_updated:
             bookings = bookings_repository.find_not_cancelled_bookings_by_stock(stock)
             _notify_pro_upon_stock_edit_for_event_offer(stock, bookings)
             _notify_beneficiaries_upon_stock_edit(stock, bookings)
+
+            logger.info(
+                "Stock updated with beginning datetime updated",
+                extra={
+                    "bookings_count": len(bookings),
+                    **modifications.dict(),
+                },
+            )
 
 
 def _format_publication_date(publication_date: datetime.datetime | None, timezone: str) -> datetime.datetime | None:
