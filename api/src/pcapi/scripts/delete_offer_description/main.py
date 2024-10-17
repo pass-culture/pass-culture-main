@@ -24,6 +24,14 @@ def _get_eta(end: int, current: int, elapsed_per_batch: list[int], batch_size: i
     return str_eta
 
 
+def show_timeouts() -> None:
+    statement_timeout = db.session.execute("SHOW statement_timeout").scalar()
+    lock_timeout = db.session.execute("SHOW lock_timeout").scalar()
+
+    logger.info("Current statement_timeout: %s", statement_timeout)
+    logger.info("Current lock_timeout: %s", lock_timeout)
+
+
 def delete_description(starting_id: int, ending_id: int, batch_size: int, not_dry: bool = False) -> None:
     elapsed_per_batch = []
     to_report = 0
@@ -62,5 +70,5 @@ if __name__ == "__main__":
 
     if args.starting_id > args.ending_id:
         raise ValueError('"start" must be less than "end"')
-
+    show_timeouts()
     delete_description(args.starting_id, args.ending_id, args.batch_size, args.not_dry)
