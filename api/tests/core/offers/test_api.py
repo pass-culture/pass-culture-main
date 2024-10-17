@@ -3,6 +3,7 @@ from datetime import date
 from datetime import datetime
 from datetime import timedelta
 import decimal
+from decimal import Decimal
 import logging
 import os
 import pathlib
@@ -863,9 +864,11 @@ class EditStockTest:
         assert last_record.extra == {
             "offer_id": existing_stock.offerId,
             "stock_id": existing_stock.id,
-            "old_price": 10,
-            "stock_price": 12.5,
+            "provider_id": None,
             "stock_dnBookedQuantity": 0,
+            "changes": {
+                "price": {"old_value": Decimal("10.00"), "new_value": 12.5},
+            },
         }
 
     def test_unchanged_price_is_not_tracked(self, caplog):
@@ -886,9 +889,11 @@ class EditStockTest:
         assert last_record.extra == {
             "offer_id": existing_stock.offerId,
             "stock_id": existing_stock.id,
-            "old_quantity": 15,
-            "stock_quantity": 7,
+            "provider_id": None,
             "stock_dnBookedQuantity": 0,
+            "changes": {
+                "quantity": {"old_value": 15, "new_value": 7},
+            },
         }
 
 

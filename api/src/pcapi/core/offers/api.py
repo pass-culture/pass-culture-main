@@ -760,8 +760,6 @@ def edit_stock(
     """
     validation.check_stock_is_updatable(stock, editing_provider)
 
-    old_price = stock.price
-    old_quantity = stock.quantity
     modifications: dict[str, typing.Any] = {}
 
     if beginning_datetime is not UNCHANGED or booking_limit_datetime is not UNCHANGED:
@@ -820,7 +818,9 @@ def edit_stock(
         validation.check_update_only_allowed_stock_fields_for_allocine_offer(updated_fields)
         stock.fieldsUpdated = list(set(stock.fieldsUpdated) | updated_fields)
 
+    changes = {}
     for model_attr, value in modifications.items():
+        changes[model_attr] = {"old_value": getattr(stock, model_attr), "new_value": value}
         setattr(stock, model_attr, value)
 
     if "beginningDatetime" in modifications:
@@ -837,15 +837,9 @@ def edit_stock(
         "offer_id": stock.offerId,
         "stock_id": stock.id,
         "stock_dnBookedQuantity": stock.dnBookedQuantity,
+        "provider_id": editing_provider.id if editing_provider else None,
+        "changes": {**changes},
     }
-
-    if (new_price := modifications.get("price", UNCHANGED)) is not UNCHANGED:
-        log_extra_data["old_price"] = old_price
-        log_extra_data["stock_price"] = new_price
-
-    if (new_quantity := modifications.get("quantity", UNCHANGED)) is not UNCHANGED:
-        log_extra_data["old_quantity"] = old_quantity
-        log_extra_data["stock_quantity"] = new_quantity
 
     logger.info("Successfully updated stock", extra=log_extra_data, technical_message_id="stock.updated")
 

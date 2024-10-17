@@ -1,6 +1,7 @@
 import dataclasses
 import datetime
 from decimal import Decimal
+import logging
 from unittest import mock
 from unittest.mock import patch
 
@@ -342,7 +343,7 @@ class Returns201Test:
         assert offers_models.PriceCategoryLabel.query.count() == 1
 
     @patch("pcapi.core.search.async_index_offer_ids")
-    def test_edit_one_event_stock_created_with_price_category(self, mocked_async_index_offer_ids, client):
+    def test_edit_one_event_stock_created_with_price_category(self, mocked_async_index_offer_ids, client, caplog):
         venue = offerers_factories.VenueFactory()
         offer = offers_factories.EventOfferFactory(
             isActive=False,
@@ -355,10 +356,10 @@ class Returns201Test:
         )
 
         existing_stock = offers_factories.StockFactory(offer=offer, price=10, priceCategory=old_price_category)
-        offerers_factories.UserOffererFactory(
+        user = offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
-        )
+        ).user
         beginning = datetime.datetime.utcnow() + relativedelta(days=10)
 
         stock_data = {
@@ -372,12 +373,31 @@ class Returns201Test:
                 }
             ],
         }
-        client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+        with caplog.at_level(logging.INFO):
+            response = client.with_session_auth(user.email).post("/stocks/bulk/", json=stock_data)
+
         created_stock = Stock.query.first()
         assert offer.id == created_stock.offerId
         assert len(Stock.query.all()) == 1
         assert created_stock.priceCategory == new_price_category
         assert created_stock.price == 25
+
+        target_log_message = "Successfully updated stock"
+        log = next(record for record in caplog.records if record.message == target_log_message)
+
+        changes = log.extra["changes"]
+
+        expected_updated_field = {"beginningDatetime", "bookingLimitDatetime", "priceCategory", "price"}
+        assert expected_updated_field <= set(changes)
+
+        assert changes["beginningDatetime"]["old_value"] != changes["beginningDatetime"]["new_value"]
+        assert changes["beginningDatetime"]["new_value"] == beginning
+
+        assert changes["bookingLimitDatetime"]["old_value"] != changes["bookingLimitDatetime"]["new_value"]
+        assert changes["bookingLimitDatetime"]["new_value"] == beginning
+
+        assert changes["priceCategory"]["old_value"] != changes["priceCategory"]["new_value"]
+        assert changes["priceCategory"]["new_value"] == new_price_category
 
     def test_create_one_stock_with_activation_codes(self, client):
         # Given

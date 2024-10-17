@@ -1,6 +1,7 @@
 import dataclasses
 import datetime
 import decimal
+import logging
 from unittest import mock
 
 import pytest
@@ -73,7 +74,7 @@ class PatchEventStockTest(PublicAPIVenueEndpointHelper):
         assert response.status_code == 404
 
     @mock.patch("pcapi.core.search.async_index_offer_ids")
-    def test_update_all_fields_on_date_with_price(self, mocked_async_index_offer_ids, client):
+    def test_update_all_fields_on_date_with_price(self, mocked_async_index_offer_ids, client, caplog):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         event, stock = self.setup_base_resource(venue=venue_provider.venue, provider=venue_provider.provider)
         price_category = offers_factories.PriceCategoryFactory(offer=event)
@@ -82,21 +83,21 @@ class PatchEventStockTest(PublicAPIVenueEndpointHelper):
         twenty_four_day_from_now = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(
             days=24
         )
-        response = client.with_explicit_token(plain_api_key).patch(
-            self.endpoint_url.format(event_id=event.id, stock_id=stock.id),
-            json={
-                "beginningDatetime": date_utils.utc_datetime_to_department_timezone(
-                    twenty_four_day_from_now, None
-                ).isoformat(),
-                "bookingLimitDatetime": date_utils.utc_datetime_to_department_timezone(
-                    one_week_from_now, departement_code=None
-                ).isoformat(),
-                "priceCategoryId": price_category.id,
-                "quantity": 24,
-                "id_at_provider": "hey you !",
-            },
-        )
-
+        with caplog.at_level(logging.INFO):
+            response = client.with_explicit_token(plain_api_key).patch(
+                self.endpoint_url.format(event_id=event.id, stock_id=stock.id),
+                json={
+                    "beginningDatetime": date_utils.utc_datetime_to_department_timezone(
+                        twenty_four_day_from_now, None
+                    ).isoformat(),
+                    "bookingLimitDatetime": date_utils.utc_datetime_to_department_timezone(
+                        one_week_from_now, departement_code=None
+                    ).isoformat(),
+                    "priceCategoryId": price_category.id,
+                    "quantity": 24,
+                    "id_at_provider": "hey you !",
+                },
+            )
         assert response.status_code == 200, response.json
         assert stock.bookingLimitDatetime == one_week_from_now
         assert stock.beginningDatetime == twenty_four_day_from_now
@@ -105,6 +106,19 @@ class PatchEventStockTest(PublicAPIVenueEndpointHelper):
         assert stock.quantity == 24
         assert stock.idAtProviders == "hey you !"
         mocked_async_index_offer_ids.assert_called_once()
+
+        log_message = "Successfully updated stock"
+        log = next(record for record in caplog.records if record.message == log_message)
+
+        assert log.extra["provider_id"]
+
+        changes = log.extra["changes"]
+
+        assert changes["priceCategory"]["old_value"] != changes["priceCategory"]["new_value"]
+        assert changes["priceCategory"]["new_value"].id == price_category.id
+
+        assert changes["idAtProviders"]["old_value"] != changes["idAtProviders"]["new_value"]
+        assert changes["idAtProviders"]["new_value"] == "hey you !"
 
     def test_sends_email_if_beginning_date_changes_on_edition(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
