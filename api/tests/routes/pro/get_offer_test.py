@@ -236,7 +236,7 @@ class Returns200Test:
         offer = offers_factories.OfferFactory(
             product=product, venue__managingOfferer=user_offerer.offerer, subcategoryId=subcategories.LIVRE_PAPIER.id
         )
-        offers_factories.ThingStockFactory()
+        offers_factories.ThingStockFactory(offer=offer)
         offer_id = offer.id
 
         client = client.with_session_auth(email=user_offerer.user.email)
@@ -246,6 +246,21 @@ class Returns200Test:
 
         data = response.json
         assert data["subcategoryId"] == "LIVRE_PAPIER"
+
+    def test_returns_a_movie_with_product(self, client):
+        user_offerer = offerers_factories.UserOffererFactory()
+        product = offers_factories.ProductFactory(subcategoryId=subcategories.SEANCE_CINE.id, durationMinutes=120)
+        offer = offers_factories.OfferFactory(product=product, venue__managingOfferer=user_offerer.offerer)
+        offers_factories.EventStockFactory(offer=offer)
+        offer_id = offer.id
+
+        client = client.with_session_auth(email=user_offerer.user.email)
+        with testing.assert_num_queries(self.num_queries):
+            response = client.get(f"/offers/{offer_id}")
+            assert response.status_code == 200
+
+        data = response.json
+        assert data["subcategoryId"] == subcategories.SEANCE_CINE.id
 
     @time_machine.travel("2019-10-15 00:00:00")
     def test_returns_a_thing_with_activation_code_stock(self, client):
