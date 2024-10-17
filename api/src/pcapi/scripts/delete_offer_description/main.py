@@ -5,6 +5,7 @@ import statistics
 import time
 
 import pytz
+import sqlalchemy as sa
 
 from pcapi.models import db
 
@@ -33,6 +34,8 @@ def show_timeouts() -> None:
 
 
 def delete_description(starting_id: int, ending_id: int, batch_size: int, not_dry: bool = False) -> None:
+    db.session.execute(sa.text("SET SESSION statement_timeout = '400s'"))
+    show_timeouts()
     elapsed_per_batch = []
     to_report = 0
     for i in range(starting_id, ending_id, batch_size):
