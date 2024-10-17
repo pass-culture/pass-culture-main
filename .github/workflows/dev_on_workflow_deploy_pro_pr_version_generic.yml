@@ -6,6 +6,9 @@ on:
       ENV:
         type: string
         required: true
+      environment:
+        type: string
+        required: false
       PUSH_RELEASE_TO_SENTRY:
         description: "If true, creates a release in Sentry and uploads sourcemaps"
         type: boolean
@@ -34,7 +37,9 @@ defaults:
 
 jobs:
   deploy_on_firebase:
+    name: "Deploy pro on Firebase"
     runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
     if: ${{ github.actor != 'dependabot[bot]' }}
     steps:
       - uses: actions/checkout@v4.2.1

@@ -193,6 +193,7 @@ jobs:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
     with:
       ENV: testing
+      environment: testing
       CHANNEL: "live"
       REF: ${{ github.ref }}
       CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
