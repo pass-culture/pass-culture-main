@@ -48,7 +48,7 @@ def _redirect_to_user_page(user: users_models.User) -> utils.BackofficeResponse:
 
 
 def _check_user_role_vs_backoffice_permission(user: users_models.User, unsuspend: bool = False) -> None:
-    if user.has_admin_role:
+    if user.has_admin_role or user.backoffice_profile:
         if not utils.has_current_user_permission(perm_models.Permissions.MANAGE_ADMIN_ACCOUNTS):
             raise Forbidden()
     elif user.has_any_pro_role:
