@@ -624,7 +624,7 @@ def patch_event_stock(
                 )
 
             quantity = serialization.deserialize_quantity(update_body.get("quantity", offers_api.UNCHANGED))
-            edited_stock, is_beginning_updated = offers_api.edit_stock(
+            edited_stock, modifications = offers_api.edit_stock(
                 stock_to_edit,
                 quantity=quantity + stock_to_edit.dnBookedQuantity if isinstance(quantity, int) else quantity,
                 price_category=price_category,
@@ -633,7 +633,7 @@ def patch_event_stock(
                 id_at_provider=update_body.get("id_at_provider", offers_api.UNCHANGED),
                 editing_provider=current_api_key.provider,
             )
-        offers_api.handle_stocks_edition([(stock_to_edit, is_beginning_updated)])
+        offers_api.handle_stocks_edition([(stock_to_edit, modifications.is_beginning_updated)])
     except (
         offers_exceptions.OfferCreationBaseException,
         offers_exceptions.OfferEditionBaseException,
