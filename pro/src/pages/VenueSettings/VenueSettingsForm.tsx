@@ -14,6 +14,7 @@ import { resetAddressFields } from 'components/IndividualOfferForm/utils/resetAd
 import { RouteLeavingGuardIndividualOffer } from 'components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
 import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import { SelectOption } from 'custom_types/form'
+import { useActiveFeature } from 'hooks/useActiveFeature'
 import fullBackIcon from 'icons/full-back.svg'
 import fullNextIcon from 'icons/full-next.svg'
 import { ReimbursementFields } from 'pages/Offerers/Offerer/VenueV1/fields/ReimbursementFields/ReimbursementFields'
@@ -55,6 +56,8 @@ export const VenueSettingsForm = ({
 
   const [manuallySetAddress, , { setValue: setManuallySetAddress }] =
     useField('manuallySetAddress')
+
+  const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
 
   const toggleManuallySetAddress = async () => {
     const isAddressManual = !manuallySetAddress.value
@@ -107,21 +110,27 @@ export const VenueSettingsForm = ({
                 <AddressSelect disabled={manuallySetAddress.value} />
               </FormLayout.Row>
 
-              <FormLayout.Row>
-                <Button
-                  variant={ButtonVariant.QUATERNARY}
-                  title="Renseignez l’adresse manuellement"
-                  icon={manuallySetAddress.value ? fullBackIcon : fullNextIcon}
-                  onClick={toggleManuallySetAddress}
-                >
-                  {manuallySetAddress.value ? (
-                    <>Revenir à la sélection automatique</>
-                  ) : (
-                    <>Vous ne trouvez pas votre adresse ?</>
-                  )}
-                </Button>
-              </FormLayout.Row>
-              {manuallySetAddress.value && <AddressManual />}
+              {isOfferAddressEnabled && (
+                <>
+                  <FormLayout.Row>
+                    <Button
+                      variant={ButtonVariant.QUATERNARY}
+                      title="Renseignez l’adresse manuellement"
+                      icon={
+                        manuallySetAddress.value ? fullBackIcon : fullNextIcon
+                      }
+                      onClick={toggleManuallySetAddress}
+                    >
+                      {manuallySetAddress.value ? (
+                        <>Revenir à la sélection automatique</>
+                      ) : (
+                        <>Vous ne trouvez pas votre adresse ?</>
+                      )}
+                    </Button>
+                  </FormLayout.Row>
+                  {manuallySetAddress.value && <AddressManual />}
+                </>
+              )}
             </>
           )}
         </FormLayout.Section>
