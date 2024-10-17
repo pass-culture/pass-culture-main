@@ -17,6 +17,7 @@ import { GET_VENUE_QUERY_KEY } from 'config/swrQueryKeys'
 import { Events } from 'core/FirebaseEvents/constants'
 import { PATCH_SUCCESS_MESSAGE } from 'core/shared/constants'
 import { SelectOption } from 'custom_types/form'
+import { useActiveFeature } from 'hooks/useActiveFeature'
 import { useCurrentUser } from 'hooks/useCurrentUser'
 import { useNotification } from 'hooks/useNotification'
 import fullBackIcon from 'icons/full-back.svg'
@@ -62,6 +63,8 @@ export const VenueSettingsScreen = ({
   const [isWithdrawalDialogOpen, setIsWithdrawalDialogOpen] = useState(false)
   const [isAddressChangeDialogOpen, setIsAddressChangeDialogOpen] =
     useState(false)
+
+  const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
 
   const handleCancelWithdrawalDialog = () => {
     setShouldSendMail(false)
@@ -128,7 +131,7 @@ export const VenueSettingsScreen = ({
   const onSubmit = async (values: VenueSettingsFormValues) => {
     if (
       (values.isWithdrawalAppliedOnAllOffers && !handleWithdrawalDialog()) ||
-      !handleDialogAddressChange()
+      (!handleDialogAddressChange() && isOfferAddressEnabled)
     ) {
       return
     }
@@ -236,21 +239,23 @@ export const VenueSettingsScreen = ({
           title="Souhaitez-vous prévenir les bénéficiaires de la modification des modalités de retrait ?"
           open={isWithdrawalDialogOpen}
         />
-        <ConfirmDialog
-          cancelText="Annuler"
-          confirmText="Confirmer le changement d'adresse"
-          leftButtonAction={handleCancelAddressChangeDialog}
-          onCancel={() => setIsAddressChangeDialogOpen(false)}
-          onConfirm={handleConfirmAddressChangeDialog}
-          icon={strokeErrorIcon}
-          title="Ce changement d'adresse ne va pas s'impacter sur vos offres"
-          open={isAddressChangeDialogOpen && venue.hasOffers}
-        >
-          <p>
-            Si vous souhaitez rectifier leur localisation, vous devez les
-            modifier individuellement.
-          </p>
-        </ConfirmDialog>
+        {isOfferAddressEnabled && (
+          <ConfirmDialog
+            cancelText="Annuler"
+            confirmText="Confirmer le changement d'adresse"
+            leftButtonAction={handleCancelAddressChangeDialog}
+            onCancel={() => setIsAddressChangeDialogOpen(false)}
+            onConfirm={handleConfirmAddressChangeDialog}
+            icon={strokeErrorIcon}
+            title="Ce changement d'adresse ne va pas s'impacter sur vos offres"
+            open={isAddressChangeDialogOpen && venue.hasOffers}
+          >
+            <p>
+              Si vous souhaitez rectifier leur localisation, vous devez les
+              modifier individuellement.
+            </p>
+          </ConfirmDialog>
+        )}
       </FormikProvider>
     </>
   )
