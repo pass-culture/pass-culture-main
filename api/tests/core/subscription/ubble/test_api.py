@@ -8,6 +8,8 @@ from dateutil.relativedelta import relativedelta
 import pytest
 import time_machine
 
+from pcapi import settings
+from pcapi.connectors.serialization import ubble_serializers
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.fraud.exceptions import IncompatibleFraudCheckStatus
@@ -17,13 +19,13 @@ from pcapi.core.fraud.models import FraudCheckStatus
 from pcapi.core.fraud.models import FraudCheckType
 from pcapi.core.fraud.models import UbbleContent
 from pcapi.core.fraud.ubble import constants as ubble_constants
-from pcapi.core.fraud.ubble import models as ubble_fraud_models
 from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription.exceptions import BeneficiaryFraudCheckMissingException
 from pcapi.core.subscription.ubble import api as ubble_subscription_api
+from pcapi.core.subscription.ubble import errors as ubble_errors
 from pcapi.core.subscription.ubble import exceptions as ubble_exceptions
-from pcapi.core.subscription.ubble import models as ubble_models
+from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.models import db
@@ -46,7 +48,58 @@ IMAGES_DIR = pathlib.Path(tests.__path__[0]) / "files"
 
 @pytest.mark.usefixtures("db_session")
 class UbbleWorkflowTest:
-    def test_start_ubble_workflow(self, ubble_mock):
+    @override_features(WIP_UBBLE_V2=True)
+    def test_start_ubble_workflow_v2(self, requests_mock):
+        user = users_factories.UserFactory()
+        requests_mock.post(
+            f"{settings.UBBLE_API_URL}/v2/create-and-start-idv",
+            json={
+                "id": "idv_01j9kndq7ry69dkd8j7hxrqfa8",
+                "user_journey_id": "usj_01h13smebsb2y1tyyrzx1sgma7",
+                "applicant_id": "aplt_01j9kndq6gcbj26jwh9b3njmhn",
+                "webhook_url": "https://webhook.example.com",
+                "redirect_url": "https://redirect.example.com",
+                "declared_data": {"name": "Cassandre Beaugrand"},
+                "created_on": "2024-10-07T14:16:38.908026Z",
+                "modified_on": "2024-10-07T14:16:39.106564Z",
+                "status": "pending",
+                "response_codes": [],
+                "documents": [],
+                "_links": {
+                    "self": {
+                        "href": "https://api.ubble.example.com/v2/identity-verifications/idv_01j9kndq7ry69dkd8j7hxrqfa8"
+                    },
+                    "applicant": {
+                        "href": "https://api.ubble.example.com/v2/applicants/aplt_01j9kndq6gcbj26jwh9b3njmhn"
+                    },
+                    "verification_url": {"href": "https://id.ubble.example.com/fa12e737-2a93-4608-9743-08fabd0b6f13"},
+                },
+            },
+        )
+
+        redirect_url = ubble_subscription_api.start_ubble_workflow(
+            user, "Cassandre", "Beaugrand", redirect_url="https://redirect.example.com"
+        )
+
+        assert redirect_url == "https://id.ubble.example.com/fa12e737-2a93-4608-9743-08fabd0b6f13"
+
+        fraud_check = user.beneficiaryFraudChecks[0]
+        assert fraud_check.type == fraud_models.FraudCheckType.UBBLE
+        assert fraud_check.thirdPartyId is not None
+        assert fraud_check.resultContent is not None
+        assert fraud_check.status == fraud_models.FraudCheckStatus.STARTED
+
+        ubble_request = requests_mock.last_request.json()
+        assert ubble_request["webhook_url"] == "http://localhost/webhooks/ubble/application_status"
+
+        assert push_testing.requests[0] == {
+            "can_be_asynchronously_retried": True,
+            "event_name": "user_identity_check_started",
+            "event_payload": {"type": "ubble"},
+            "user_id": user.id,
+        }
+
+    def test_start_ubble_workflow_v1(self, ubble_mock):
         user = users_factories.UserFactory()
         redirect_url = ubble_subscription_api.start_ubble_workflow(
             user, "Kid", "Paddle", redirect_url="https://example.com"
@@ -75,32 +128,32 @@ class UbbleWorkflowTest:
         [
             (
                 IdentificationState.INITIATED,
-                ubble_fraud_models.UbbleIdentificationStatus.INITIATED,
+                ubble_serializers.UbbleIdentificationStatus.INITIATED,
                 fraud_models.FraudCheckStatus.PENDING,
             ),
             (
                 IdentificationState.PROCESSING,
-                ubble_fraud_models.UbbleIdentificationStatus.PROCESSING,
+                ubble_serializers.UbbleIdentificationStatus.PROCESSING,
                 fraud_models.FraudCheckStatus.PENDING,
             ),
             (
                 IdentificationState.VALID,
-                ubble_fraud_models.UbbleIdentificationStatus.PROCESSED,
+                ubble_serializers.UbbleIdentificationStatus.PROCESSED,
                 fraud_models.FraudCheckStatus.OK,
             ),
             (
                 IdentificationState.INVALID,
-                ubble_fraud_models.UbbleIdentificationStatus.PROCESSED,
+                ubble_serializers.UbbleIdentificationStatus.PROCESSED,
                 fraud_models.FraudCheckStatus.KO,
             ),
             (
                 IdentificationState.UNPROCESSABLE,
-                ubble_fraud_models.UbbleIdentificationStatus.PROCESSED,
+                ubble_serializers.UbbleIdentificationStatus.PROCESSED,
                 fraud_models.FraudCheckStatus.SUSPICIOUS,
             ),
             (
                 IdentificationState.ABORTED,
-                ubble_fraud_models.UbbleIdentificationStatus.ABORTED,
+                ubble_serializers.UbbleIdentificationStatus.ABORTED,
                 fraud_models.FraudCheckStatus.CANCELED,
             ),
         ],
@@ -830,9 +883,9 @@ class SubscriptionMessageTest:
         assert ubble_subscription_api.get_ubble_subscription_message(
             fraud_check
         ) == subscription_models.SubscriptionMessage(
-            user_message=ubble_models.UBBLE_CODE_ERROR_MAPPING[reason_code].retryable_user_message,
-            message_summary=ubble_models.UBBLE_CODE_ERROR_MAPPING[reason_code].retryable_message_summary,
-            action_hint=ubble_models.UBBLE_CODE_ERROR_MAPPING[reason_code].retryable_action_hint,
+            user_message=ubble_errors.UBBLE_CODE_ERROR_MAPPING[reason_code].retryable_user_message,
+            message_summary=ubble_errors.UBBLE_CODE_ERROR_MAPPING[reason_code].retryable_message_summary,
+            action_hint=ubble_errors.UBBLE_CODE_ERROR_MAPPING[reason_code].retryable_action_hint,
             call_to_action=subscription_models.CallToActionMessage(
                 title="Réessayer la vérification de mon identité",
                 link="passculture://verification-identite",
@@ -874,7 +927,7 @@ class SubscriptionMessageTest:
         assert ubble_subscription_api.get_ubble_subscription_message(
             fraud_check
         ) == subscription_models.SubscriptionMessage(
-            user_message=ubble_models.UBBLE_DEFAULT.not_retryable_user_message,
+            user_message=ubble_errors.UBBLE_DEFAULT.not_retryable_user_message,
             call_to_action=subscription_models.CallToActionMessage(
                 title="Accéder au site Démarches-Simplifiées",
                 link="passculture://verification-identite/demarches-simplifiees",
@@ -924,7 +977,7 @@ class SubscriptionMessageTest:
         assert ubble_subscription_api.get_ubble_subscription_message(
             fraud_check
         ) == subscription_models.SubscriptionMessage(
-            user_message=ubble_models.UBBLE_CODE_ERROR_MAPPING[reason_code].not_retryable_user_message,
+            user_message=ubble_errors.UBBLE_CODE_ERROR_MAPPING[reason_code].not_retryable_user_message,
             call_to_action=subscription_models.CallToActionMessage(
                 title="Accéder au site Démarches-Simplifiées",
                 link="passculture://verification-identite/demarches-simplifiees",

@@ -7,7 +7,7 @@ from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.subscription import models as subscription_models
 
 from . import api
-from . import models
+from . import errors
 
 
 REDIRECT_TO_IDENTIFICATION = subscription_models.CallToActionMessage(
@@ -30,10 +30,10 @@ def get_ubble_retryable_message(
     reason_codes: list[fraud_models.FraudReasonCode], updated_at: datetime.datetime | None
 ) -> subscription_models.SubscriptionMessage:
     relevant_reason_code = api.get_most_relevant_ubble_error(reason_codes)
-    if relevant_reason_code in models.UBBLE_CODE_ERROR_MAPPING:
-        relevant_error = models.UBBLE_CODE_ERROR_MAPPING[relevant_reason_code]
+    if relevant_reason_code in errors.UBBLE_CODE_ERROR_MAPPING:
+        relevant_error = errors.UBBLE_CODE_ERROR_MAPPING[relevant_reason_code]
     else:
-        relevant_error = models.UBBLE_DEFAULT
+        relevant_error = errors.UBBLE_DEFAULT
 
     return subscription_models.SubscriptionMessage(
         user_message=relevant_error.retryable_user_message,
@@ -49,10 +49,10 @@ def get_ubble_not_retryable_message(
     fraud_check: fraud_models.BeneficiaryFraudCheck,
 ) -> subscription_models.SubscriptionMessage:
     relevant_reason_code = api.get_most_relevant_ubble_error(fraud_check.reasonCodes or [])
-    if relevant_reason_code in models.UBBLE_CODE_ERROR_MAPPING:
-        relevant_error = models.UBBLE_CODE_ERROR_MAPPING[relevant_reason_code]
+    if relevant_reason_code in errors.UBBLE_CODE_ERROR_MAPPING:
+        relevant_error = errors.UBBLE_CODE_ERROR_MAPPING[relevant_reason_code]
     else:
-        relevant_error = models.UBBLE_DEFAULT
+        relevant_error = errors.UBBLE_DEFAULT
 
     user_message = relevant_error.not_retryable_user_message
 

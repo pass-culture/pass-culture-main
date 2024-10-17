@@ -4,8 +4,10 @@ from unittest import mock
 
 import pytest
 
+from pcapi import settings
 from pcapi.connectors.beneficiaries import ubble
 from pcapi.core.fraud import models as fraud_models
+from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
 from pcapi.core.users.models import GenderEnum
 from pcapi.utils import requests
@@ -14,7 +16,105 @@ from tests.core.subscription.test_factories import UbbleIdentificationResponseFa
 from tests.test_utils import json_default
 
 
-class StartIdentificationTest:
+class StartIdentificationV2Test:
+    @override_features(WIP_UBBLE_V2=True)
+    def test_start_identification(self, requests_mock, caplog):
+        requests_mock.post(
+            f"{settings.UBBLE_API_URL}/v2/create-and-start-idv",
+            json={
+                "id": "idv_01j9kndq7ry69dkd8j7hxrqfa8",
+                "user_journey_id": "usj_01h13smebsb2y1tyyrzx1sgma7",
+                "applicant_id": "aplt_01j9kndq6gcbj26jwh9b3njmhn",
+                "webhook_url": "https://webhook.example.com",
+                "redirect_url": "https://redirect.example.com",
+                "declared_data": {"name": "Cassandre Beaugrand"},
+                "created_on": "2024-10-07T14:16:38.908026Z",
+                "modified_on": "2024-10-07T14:16:39.106564Z",
+                "status": "pending",
+                "response_codes": [],
+                "documents": [],
+                "_links": {
+                    "self": {
+                        "href": "https://api.ubble.example.com/v2/identity-verifications/idv_01j9kndq7ry69dkd8j7hxrqfa8"
+                    },
+                    "applicant": {
+                        "href": "https://api.ubble.example.com/v2/applicants/aplt_01j9kndq6gcbj26jwh9b3njmhn"
+                    },
+                    "verification_url": {"href": "https://id.ubble.example.com/fa12e737-2a93-4608-9743-08fabd0b6f13"},
+                },
+            },
+        )
+
+        with caplog.at_level(logging.INFO):
+            response = ubble.start_identification(
+                user_id=123,
+                first_name="Cassandre",
+                last_name="Beaugrand",
+                webhook_url="https://webhook.example.com",
+                redirect_url="https://redirect.example.com",
+            )
+
+        assert isinstance(response, fraud_models.UbbleContent)
+        assert requests_mock.call_count == 1
+
+        assert requests_mock.last_request.json() == {
+            "declared_data": {"name": "Cassandre Beaugrand"},
+            "webhook_url": "https://webhook.example.com",
+            "redirect_url": "https://redirect.example.com",
+        }
+
+        assert len(caplog.records) >= 2
+        record = caplog.records[2]
+        assert record.extra["identification_id"] == str(response.identification_id)
+        assert record.extra["request_type"] == "create-and-start-idv", record.extra
+        assert record.message == "Valid response from Ubble"
+
+    @override_features(WIP_UBBLE_V2=True)
+    def test_start_identification_connection_error(self, requests_mock, caplog):
+        requests_mock.post(f"{settings.UBBLE_API_URL}/v2/create-and-start-idv", exc=requests.exceptions.ConnectionError)
+
+        with pytest.raises(requests.ExternalAPIException):
+            with caplog.at_level(logging.ERROR):
+                ubble.start_identification(
+                    user_id=123,
+                    first_name="Cassandre",
+                    last_name="Beaugrand",
+                    webhook_url="https://webhook.example.com",
+                    redirect_url="https://redirect.example.com",
+                )
+
+        assert requests_mock.call_count == 1
+
+        assert len(caplog.records) == 1
+        record = caplog.records[0]
+        assert record.extra["request_type"] == "create-and-start-idv"
+        assert record.extra["error_type"] == "network"
+        assert record.message == "Ubble create-and-start-idv: Network error"
+
+    @override_features(WIP_UBBLE_V2=True)
+    def test_start_identification_http_error_status(self, requests_mock, caplog):
+        requests_mock.post(f"{settings.UBBLE_API_URL}/v2/create-and-start-idv", status_code=401)
+
+        with pytest.raises(requests.ExternalAPIException):
+            ubble.start_identification(
+                user_id=123,
+                first_name="Cassandre",
+                last_name="Beaugrand",
+                webhook_url="https://webhook.example.com",
+                redirect_url="https://redirect.example.com",
+            )
+
+        assert requests_mock.call_count == 1
+
+        assert len(caplog.records) == 1
+        record = caplog.records[0]
+        assert record.extra["status_code"] == 401
+        assert record.extra["request_type"] == "create-and-start-idv"
+        assert record.extra["error_type"] == "http"
+        assert record.message == "Ubble create-and-start-idv: Unexpected error: 401"
+
+
+class StartIdentificationV1Test:
     def test_start_identification(self, ubble_mock, caplog):
         with caplog.at_level(logging.INFO):
             response = ubble.start_identification(

@@ -6,10 +6,10 @@ import pytest
 import time_machine
 
 from pcapi import settings
+from pcapi.connectors.serialization import ubble_serializers
 import pcapi.core.fraud.api as fraud_api
 import pcapi.core.fraud.factories as fraud_factories
 import pcapi.core.fraud.models as fraud_models
-import pcapi.core.fraud.ubble.models as ubble_fraud_models
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
@@ -580,7 +580,7 @@ class HasUserPerformedIdentityCheckTest:
     def test_has_user_performed_identity_check_status_initiated(self):
         user = user = build_user_at_id_check(18)
         ubble_content = fraud_factories.UbbleContentFactory(
-            status=ubble_fraud_models.UbbleIdentificationStatus.INITIATED
+            status=ubble_serializers.UbbleIdentificationStatus.INITIATED
         )
         fraud_factories.BeneficiaryFraudCheckFactory(
             type=fraud_models.FraudCheckType.UBBLE,
