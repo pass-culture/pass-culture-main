@@ -290,7 +290,7 @@ def get_user_id_for_connect_as_base_query() -> BaseQuery:
             users_models.User.isActive.is_(True),
             ~users_models.User.has_admin_role,  # type: ignore[operator] # pylint: disable=invalid-unary-operand-type
             ~users_models.User.has_anonymized_role,  # type: ignore[operator] # pylint: disable=invalid-unary-operand-type
-            users_models.User.has_pro_role,
+            offerers_models.UserOfferer.isValidated,
         )
     )
 

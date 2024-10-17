@@ -1270,7 +1270,6 @@ class GetConnectAsProUserTest(PostEndpointHelper):
             [users_models.UserRole.PRO, users_models.UserRole.ADMIN],
             [users_models.UserRole.ADMIN],
             [users_models.UserRole.PRO, users_models.UserRole.ANONYMIZED],
-            [],
         ],
     )
     def test_connect_as_venue_without_eligible_user(self, authenticated_client, roles):
@@ -1399,7 +1398,6 @@ class GetConnectAsProUserTest(PostEndpointHelper):
             [users_models.UserRole.PRO, users_models.UserRole.ADMIN],
             [users_models.UserRole.ADMIN],
             [users_models.UserRole.PRO, users_models.UserRole.ANONYMIZED],
-            [],
         ],
     )
     def test_connect_as_offerer_without_eligible_user(self, authenticated_client, roles):
@@ -1532,7 +1530,6 @@ class GetConnectAsProUserTest(PostEndpointHelper):
             [users_models.UserRole.PRO, users_models.UserRole.ADMIN],
             [users_models.UserRole.ADMIN],
             [users_models.UserRole.PRO, users_models.UserRole.ANONYMIZED],
-            [],
         ],
     )
     def test_connect_as_offer_without_eligible_user(self, authenticated_client, roles):
@@ -1665,7 +1662,6 @@ class GetConnectAsProUserTest(PostEndpointHelper):
             [users_models.UserRole.PRO, users_models.UserRole.ADMIN],
             [users_models.UserRole.ADMIN],
             [users_models.UserRole.PRO, users_models.UserRole.ANONYMIZED],
-            [],
         ],
     )
     def test_connect_as_bank_account_without_eligible_user(self, authenticated_client, roles):
@@ -1800,7 +1796,6 @@ class GetConnectAsProUserTest(PostEndpointHelper):
             [users_models.UserRole.PRO, users_models.UserRole.ADMIN],
             [users_models.UserRole.ADMIN],
             [users_models.UserRole.PRO, users_models.UserRole.ANONYMIZED],
-            [],
         ],
     )
     def test_connect_as_collective_offer_without_eligible_user(self, authenticated_client, roles):
@@ -1936,7 +1931,6 @@ class GetConnectAsProUserTest(PostEndpointHelper):
             [users_models.UserRole.PRO, users_models.UserRole.ADMIN],
             [users_models.UserRole.ADMIN],
             [users_models.UserRole.PRO, users_models.UserRole.ANONYMIZED],
-            [],
         ],
     )
     def test_connect_as_collective_offer_template_without_eligible_user(self, authenticated_client, roles):
