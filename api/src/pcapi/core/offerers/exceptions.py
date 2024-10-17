@@ -69,6 +69,11 @@ class OffererAddressLabelAlreadyUsed(Exception):
     pass
 
 
+class OffererAddressIsLinkedToVenueException(ClientError):
+    def __init__(self) -> None:
+        super().__init__("OffererAddressIsLinkedToVenueException", "L'ancienne adresse est toujours liée à un lieu")
+
+
 class OffererAddressNotEditableException(Exception):
     pass
 
