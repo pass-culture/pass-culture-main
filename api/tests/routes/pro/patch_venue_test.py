@@ -4,6 +4,7 @@ from unittest.mock import patch
 
 import pytest
 
+import pcapi.connectors.entreprise.exceptions as entreprise_exceptions
 from pcapi.core import search
 from pcapi.core.external.zendesk_sell_backends import testing as zendesk_testing
 from pcapi.core.geography import factories as geography_factories
@@ -12,6 +13,7 @@ from pcapi.core.history import models as history_models
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
 from pcapi.core.testing import override_features
+from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import testing as external_testing
 from pcapi.utils.date import timespan_str_to_numrange
@@ -972,3 +974,35 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json["siret"] == ["Vous ne pouvez pas supprimer le siret d'un lieu"]
+
+
+@pytest.mark.parametrize(
+    "enforce_siret_check,disable_siret_check,expected_result",
+    [
+        (True, False, 400),
+        (True, True, 400),
+        (False, False, 400),
+        (False, True, 200),
+    ],
+)
+@patch(
+    "pcapi.connectors.entreprise.sirene.siret_is_active",
+    side_effect=entreprise_exceptions.UnknownEntityException(),
+)
+def test_with_inconsistent_siret(
+    mock_siret_is_active, client, enforce_siret_check, disable_siret_check, expected_result
+):
+    venue = offerers_factories.VenueFactory(siret="00112233900040", managingOfferer__siren="001122339")
+    user_offerer = offerers_factories.UserOffererFactory(offerer=venue.managingOfferer)
+
+    venue_data = populate_missing_data_from_venue({"siret": "00112233900049"}, venue)
+
+    with override_settings(ENFORCE_SIRET_CHECK=enforce_siret_check):
+        with override_features(DISABLE_SIRET_CHECK=disable_siret_check):
+            response = client.with_session_auth(email=user_offerer.user.email).patch(
+                f"/venues/{venue.id}", json=venue_data
+            )
+
+    assert response.status_code == expected_result, response.json
+    if expected_result == 400:
+        assert response.json == {"global": ["Le SIREN n’existe pas."]}
