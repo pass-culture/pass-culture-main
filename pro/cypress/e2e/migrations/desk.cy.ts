@@ -21,10 +21,9 @@ describe('Desk (Guichet) feature', () => {
     })
 
     cy.stepLog({ message: 'I go to the "Guichet" page' })
-    cy.url().then((urlSource) => {
-      cy.findAllByText('Guichet').first().click()
-      cy.url().should('not.equal', urlSource)
-    })
+    cy.findAllByText('Guichet').first().click()
+    cy.url().should('contain', '/guichet')
+
     cy.stepLog({ message: 'The identity check message is displayed' })
     cy.findByText(
       'N’oubliez pas de vérifier l’identité du bénéficiaire avant de valider la contremarque.'
@@ -56,10 +55,9 @@ describe('Desk (Guichet) feature', () => {
     })
 
     cy.stepLog({ message: 'I go to the "Guichet" page' })
-    cy.url().then((urlSource) => {
-      cy.findAllByText('Guichet').first().click()
-      cy.url().should('not.equal', urlSource)
-    })
+    cy.findAllByText('Guichet').first().click()
+    cy.url().should('contain', '/guichet')
+
     cy.stepLog({ message: 'I add this countermark "2XTM3W"' })
     cy.findByLabelText('Contremarque').type('2XTM3W')
 
@@ -80,10 +78,9 @@ describe('Desk (Guichet) feature', () => {
     })
 
     cy.stepLog({ message: 'I go to the "Guichet" page' })
-    cy.url().then((urlSource) => {
-      cy.findAllByText('Guichet').first().click()
-      cy.url().should('not.equal', urlSource)
-    })
+    cy.findAllByText('Guichet').first().click()
+    cy.url().should('contain', '/guichet')
+
     cy.stepLog({ message: 'I add this countermark "XXXXXX"' })
     cy.findByLabelText('Contremarque').type('XXXXXX')
 
@@ -104,10 +101,9 @@ describe('Desk (Guichet) feature', () => {
     })
 
     cy.stepLog({ message: 'I go to the "Guichet" page' })
-    cy.url().then((urlSource) => {
-      cy.findAllByText('Guichet').first().click()
-      cy.url().should('not.equal', urlSource)
-    })
+    cy.findAllByText('Guichet').first().click()
+    cy.url().should('contain', '/guichet')
+
     cy.stepLog({ message: 'I add this countermark "XUSEDX"' })
     cy.findByLabelText('Contremarque').type('XUSEDX')
     cy.findByText(/Cette contremarque a été validée./)
@@ -129,10 +125,8 @@ describe('Desk (Guichet) feature', () => {
     })
 
     cy.stepLog({ message: 'I go to the "Guichet" page' })
-    cy.url().then((urlSource) => {
-      cy.findAllByText('Guichet').first().click()
-      cy.url().should('not.equal', urlSource)
-    })
+    cy.findAllByText('Guichet').first().click()
+    cy.url().should('contain', '/guichet')
 
     cy.stepLog({ message: 'I add this countermark "OTHERX"' })
     cy.findByLabelText('Contremarque').type('OTHERX')
@@ -153,10 +147,8 @@ describe('Desk (Guichet) feature', () => {
     })
 
     cy.stepLog({ message: 'I go to the "Guichet" page' })
-    cy.url().then((urlSource) => {
-      cy.findAllByText('Guichet').first().click()
-      cy.url().should('not.equal', urlSource)
-    })
+    cy.findAllByText('Guichet').first().click()
+    cy.url().should('contain', '/guichet')
 
     cy.stepLog({ message: 'I add this countermark "CANCEL"' })
     cy.findByLabelText('Contremarque').type('CANCEL')
@@ -175,10 +167,8 @@ describe('Desk (Guichet) feature', () => {
     })
 
     cy.stepLog({ message: 'I go to the "Guichet" page' })
-    cy.url().then((urlSource) => {
-      cy.findAllByText('Guichet').first().click()
-      cy.url().should('not.equal', urlSource)
-    })
+    cy.findAllByText('Guichet').first().click()
+    cy.url().should('contain', '/guichet')
 
     cy.stepLog({ message: 'I add this countermark "REIMBU"' })
     cy.findByLabelText('Contremarque').type('REIMBU')
