@@ -30,6 +30,7 @@ export const AccesLibreSection = ({ venue }: AccesLibreSectionProps) => {
           to={`https://acceslibre.beta.gouv.fr/contrib/edit-infos/${venue.externalAccessibilityId}/`}
           isExternal
           icon={fullLinkIcon}
+          className={styles['edit-link']}
         >
           Éditer sur acceslibre
         </ButtonLink>
