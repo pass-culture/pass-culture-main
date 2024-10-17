@@ -409,7 +409,7 @@ class UnsuspendUserTest(PostEndpointHelper):
         assert response.status_code == 303
         assert user.isActive
 
-    def test_suspend_beneficiary_user_as_support_n2(self, client, support_n2_admin):
+    def test_unsuspend_beneficiary_user_as_support_n2(self, client, support_n2_admin):
         user = users_factories.BeneficiaryGrant18Factory(isActive=False)
 
         response = self.post_to_endpoint(
@@ -420,6 +420,30 @@ class UnsuspendUserTest(PostEndpointHelper):
 
         assert response.status_code == 403
         assert not user.isActive
+
+    # When suspended, admin user loses ADMIN role
+    @pytest.mark.parametrize("user_roles", [[users_models.UserRole.ADMIN], []])
+    def test_unsuspend_admin_user(self, client, super_admin, user_roles):
+        user = users_factories.AdminFactory(roles=user_roles, backoffice_profile__roles=[], isActive=False)
+
+        response = self.post_to_endpoint(
+            client.with_bo_session_auth(super_admin),
+            user_id=user.id,
+            form={"comment": "Test"},
+        )
+
+        assert response.status_code == 303
+
+        db.session.refresh(user)
+        assert user.isActive
+        assert user.backoffice_profile
+        assert not user.backoffice_profile.roles
+
+        assert len(user.action_history) == 1
+        assert user.action_history[0].actionType == history_models.ActionType.USER_UNSUSPENDED
+        assert user.action_history[0].authorUser == super_admin
+        assert user.action_history[0].user == user
+        assert user.action_history[0].comment == "Test"
 
 
 class GetBatchSuspendUsersFormTest(GetEndpointHelper):
