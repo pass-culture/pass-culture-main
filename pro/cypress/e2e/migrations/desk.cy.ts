@@ -110,11 +110,11 @@ describe('Desk (Guichet) feature', () => {
     })
     cy.stepLog({ message: 'I add this countermark "XUSEDX"' })
     cy.findByLabelText('Contremarque').type('XUSEDX')
-    cy.findByText('Cette contremarque a été validée.')
+    cy.findByText(/Cette contremarque a été validée./)
 
     cy.stepLog({ message: 'I invalidate the countermark' })
-    cy.findByText('Valider la contremarque').click()
-    cy.findByText('continuer').click()
+    cy.findByText('Invalider la contremarque').click()
+    cy.findByText('Continuer').click()
 
     cy.stepLog({ message: 'The countermark is invalidated' })
     cy.findByText('Contremarque invalidée !')
