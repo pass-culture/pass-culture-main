@@ -383,13 +383,13 @@ class EditStockTest:
         existing_stock = factories.StockFactory(price=10)
 
         # When
-        edited_stock, update_info = api.edit_stock(stock=existing_stock, price=5, quantity=7)
+        edited_stock, modifications = api.edit_stock(stock=existing_stock, price=5, quantity=7)
 
         # Then
         assert edited_stock == models.Stock.query.filter_by(id=existing_stock.id).first()
         assert edited_stock.price == 5
         assert edited_stock.quantity == 7
-        assert update_info is False
+        assert not modifications.is_beginning_updated
 
     @pytest.mark.parametrize(
         "init_value,edit_value",
@@ -421,7 +421,7 @@ class EditStockTest:
         )
 
         # When
-        edited_stock, update_info = api.edit_stock(
+        edited_stock, modifications = api.edit_stock(
             stock=existing_stock,
             price=12,
             quantity=77,
@@ -435,7 +435,7 @@ class EditStockTest:
         assert edited_stock.quantity == 77
         assert edited_stock.beginningDatetime == new_beginning
         assert edited_stock.bookingLimitDatetime == previous_booking_limit
-        assert update_info is True
+        assert modifications.is_beginning_updated
 
     def test_edit_event_without_beginning_update(self):
         # Given
@@ -447,7 +447,7 @@ class EditStockTest:
         )
 
         # When
-        edited_stock, update_info = api.edit_stock(
+        edited_stock, modifications = api.edit_stock(
             stock=existing_stock,
             price=10,
             quantity=7,
@@ -461,7 +461,7 @@ class EditStockTest:
         assert edited_stock.quantity == 7
         assert edited_stock.beginningDatetime == beginning
         assert edited_stock.bookingLimitDatetime == new_booking_limit
-        assert update_info is False
+        assert not modifications.is_beginning_updated
 
     def test_update_fields_updated_on_allocine_stocks(self):
         allocine_provider = providers_factories.AllocineProviderFactory()

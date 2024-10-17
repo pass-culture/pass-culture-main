@@ -1,4 +1,5 @@
 import copy
+import typing
 
 from flask_login import current_user
 import sqlalchemy as sqla
@@ -404,6 +405,7 @@ def patch_event_price_category(
                 ),
                 id_at_provider=update_body.get("id_at_provider", offers_api.UNCHANGED),
                 editing_provider=current_api_key.provider,
+                api_key_id=current_api_key.id,
             )
     except (offers_exceptions.OfferEditionBaseException, offers_exceptions.PriceCategoryCreationBaseException) as error:
         raise api_errors.ApiErrors(error.errors, status_code=400)
@@ -624,7 +626,7 @@ def patch_event_stock(
                 )
 
             quantity = serialization.deserialize_quantity(update_body.get("quantity", offers_api.UNCHANGED))
-            edited_stock, is_beginning_updated = offers_api.edit_stock(
+            edited_stock, modifications = offers_api.edit_stock(
                 stock_to_edit,
                 quantity=quantity + stock_to_edit.dnBookedQuantity if isinstance(quantity, int) else quantity,
                 price_category=price_category,
@@ -632,8 +634,9 @@ def patch_event_stock(
                 beginning_datetime=update_body.get("beginning_datetime", offers_api.UNCHANGED),
                 id_at_provider=update_body.get("id_at_provider", offers_api.UNCHANGED),
                 editing_provider=current_api_key.provider,
+                api_key_id=current_api_key.id,
             )
-        offers_api.handle_stocks_edition([(stock_to_edit, is_beginning_updated)])
+        offers_api.handle_stocks_edition([(stock_to_edit, typing.cast(offers_api.StockUpdateLog, modifications))])
     except (
         offers_exceptions.OfferCreationBaseException,
         offers_exceptions.OfferEditionBaseException,
