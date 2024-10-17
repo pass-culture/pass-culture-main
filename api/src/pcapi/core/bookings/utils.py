@@ -5,7 +5,6 @@ import typing
 
 from dateutil import tz
 
-from pcapi.models.feature import FeatureToggle
 import pcapi.utils.date as date_utils
 import pcapi.utils.postal_code as postal_code_utils
 
@@ -48,10 +47,9 @@ def _apply_departement_timezone(naive_datetime: datetime | None, departement_cod
 
 
 def convert_booking_dates_utc_to_venue_timezone(date_without_timezone: datetime, booking: "Booking") -> datetime | None:
-    if FeatureToggle.WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE.is_active():
-        if booking.offerDepartmentCode:
-            department_code = booking.offerDepartmentCode
-            return _apply_departement_timezone(naive_datetime=date_without_timezone, departement_code=department_code)
+    if booking.offerDepartmentCode:
+        department_code = booking.offerDepartmentCode
+        return _apply_departement_timezone(naive_datetime=date_without_timezone, departement_code=department_code)
     if booking.venueDepartmentCode:
         return _apply_departement_timezone(
             naive_datetime=date_without_timezone, departement_code=booking.venueDepartmentCode

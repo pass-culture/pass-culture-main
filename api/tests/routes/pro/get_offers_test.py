@@ -175,7 +175,6 @@ class Returns200Test:
             offerer_address_id=None,
         )
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     @pytest.mark.parametrize("dp", ["974", "971"])
     def should_consider_the_offer_oa_timezone_for_begining_period(self, dp, client):
         pro = users_factories.ProFactory()
@@ -191,16 +190,13 @@ class Returns200Test:
         offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.datetime(2024, 10, 10, 00, 00))
         offerer_id = offerer.id
         authenticated_client = client.with_session_auth(email=pro.email)
-        # +1 Feature flag
-        with testing.assert_num_queries(self.number_of_queries + 1):
+        with testing.assert_num_queries(self.number_of_queries):
             response = authenticated_client.get(f"/offers?offererId={offerer_id}&periodBeginningDate=2024-10-10")
-            print(response)
             if dp == "974":
                 assert response.json[0]["stocks"][0]["beginningDatetime"] == "2024-10-10T00:00:00Z"
             else:
                 assert response.json == []
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     @pytest.mark.parametrize("dp", ["974", "971"])
     def should_consider_the_offer_oa_timezone_for_ending_period(self, dp, client):
         pro = users_factories.ProFactory()
@@ -216,10 +212,8 @@ class Returns200Test:
         offers_factories.EventStockFactory(offer=offer, beginningDatetime=datetime.datetime(2024, 10, 10, 00, 00))
         offerer_id = offerer.id
         authenticated_client = client.with_session_auth(email=pro.email)
-        # +1 Feature flag
-        with testing.assert_num_queries(self.number_of_queries + 1):
+        with testing.assert_num_queries(self.number_of_queries):
             response = authenticated_client.get(f"/offers?offererId={offerer_id}&periodEndingDate=2024-10-9")
-            print(response)
             if dp == "971":
                 assert response.json[0]["stocks"][0]["beginningDatetime"] == "2024-10-10T00:00:00Z"
             else:

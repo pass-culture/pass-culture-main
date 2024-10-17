@@ -259,6 +259,7 @@ def get_offers_details(offer_ids: list[int]) -> BaseQuery:
             .options(sa_orm.with_expression(models.Product.likesCount, get_product_reaction_count_subquery()))
             .joinedload(models.Product.productMediations)
         )
+        .options(sa_orm.joinedload(models.Offer.offererAddress).joinedload(offerers_models.OffererAddress.address))
         .outerjoin(models.Offer.lastProvider)
         .options(sa_orm.contains_eager(models.Offer.lastProvider).load_only(providers_models.Provider.localClass))
         .filter(models.Offer.id.in_(offer_ids), models.Offer.validation == models.OfferValidationStatus.APPROVED)
@@ -315,20 +316,17 @@ def get_offers_by_filters(
         query = _filter_by_status(query, status)
     if period_beginning_date is not None or period_ending_date is not None:
         offer_alias = sa.orm.aliased(models.Offer)
-        # TODO: drop join  with venue once the  WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE feature is fully implemented
         stock_query = (
             models.Stock.query.join(offer_alias)
             .join(offerers_models.Venue)
             .filter(models.Stock.isSoftDeleted.is_(False))
             .filter(models.Stock.offerId == models.Offer.id)
-        )
-        target_timezone: sa.orm.Mapped[typing.Any] | sa.sql.functions.Function = offerers_models.Venue.timezone
-        if FeatureToggle.WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE.is_active():
-            stock_query = stock_query.outerjoin(
+            .outerjoin(
                 offerers_models.OffererAddress,
                 offer_alias.offererAddressId == offerers_models.OffererAddress.id,
             ).join(geography_models.Address, offerers_models.OffererAddress.addressId == geography_models.Address.id)
-            target_timezone = sa.func.coalesce(geography_models.Address.timezone, offerers_models.Venue.timezone)
+        )
+        target_timezone: sa.sql.functions.Function = sa.func.coalesce(geography_models.Address.timezone, offerers_models.Venue.timezone)
         if period_beginning_date is not None:
             stock_query = stock_query.filter(
                 sa.func.timezone(
@@ -980,17 +978,10 @@ def get_expired_offers(interval: list[datetime.datetime]) -> BaseQuery:
 def find_today_event_stock_ids_metropolitan_france(
     today_min: datetime.datetime, today_max: datetime.datetime
 ) -> set[int]:
-    if FeatureToggle.WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE.is_active():
-        not_overseas_france = sa.and_(
-            sa.not_(geography_models.Address.departmentCode.startswith("97")),
-            sa.not_(geography_models.Address.departmentCode.startswith("98")),
-        )
-    else:
-        not_overseas_france = sa.and_(
-            sa.not_(offerers_models.Venue.departementCode.startswith("97")),
-            sa.not_(offerers_models.Venue.departementCode.startswith("98")),
-        )
-
+    not_overseas_france = sa.and_(
+        sa.not_(geography_models.Address.departmentCode.startswith("97")),
+        sa.not_(geography_models.Address.departmentCode.startswith("98")),
+    )
     return _find_today_event_stock_ids_filter_by_departments(today_min, today_max, not_overseas_france)
 
 
@@ -999,14 +990,9 @@ def find_today_event_stock_ids_from_departments(
     today_max: datetime.datetime,
     postal_codes_prefixes: typing.Any,
 ) -> set[int]:
-    if FeatureToggle.WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE.is_active():
-        departments_query = sa.or_(
-            *[geography_models.Address.departmentCode.startswith(code) for code in postal_codes_prefixes]
-        )
-    else:
-        departments_query = sa.or_(
-            *[offerers_models.Venue.departementCode.startswith(code) for code in postal_codes_prefixes]
-        )
+    departments_query = sa.or_(
+        *[geography_models.Address.departmentCode.startswith(code) for code in postal_codes_prefixes]
+    )
     return _find_today_event_stock_ids_filter_by_departments(today_min, today_max, departments_query)
 
 
@@ -1022,16 +1008,13 @@ def _find_today_event_stock_ids_filter_by_departments(
         * matches the `departments_filter`.
     """
     base_query = find_event_stocks_day(today_min, today_max)
-    if FeatureToggle.WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE.is_active():
-        query = (
-            base_query.join(offers_model.Offer)
-            .join(offerers_models.OffererAddress)
-            .join(geography_models.Address)
-            .filter(departments_filter)
-            .with_entities(models.Stock.id)
-        )
-    else:
-        query = base_query.join(offerers_models.Venue).filter(departments_filter).with_entities(models.Stock.id)
+    query = (
+        base_query.join(offers_model.Offer)
+        .join(offerers_models.OffererAddress)
+        .join(geography_models.Address)
+        .filter(departments_filter)
+        .with_entities(models.Stock.id)
+    )
 
     # add stocks with a virtual Venue with an address in the departement filter to the query
     query = query.union(
@@ -1249,15 +1232,17 @@ def get_filtered_stocks(
         query = query.filter(sa.cast(models.Stock.beginningDatetime, sa.Date) == date)
     if time is not None:
         dt = datetime.datetime.combine(datetime.datetime.today(), time)
-        timezone = pytz.timezone(venue.timezone)
 
-        if FeatureToggle.WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE.is_active():
-            if offer.offererAddress:
-                timezone = pytz.timezone(offer.offererAddress.address.timezone)
-            elif venue.offererAddress:
-                timezone = pytz.timezone(venue.offererAddress.address.timezone)
+        if offer.offererAddress:
+            timezone = pytz.timezone(offer.offererAddress.address.timezone)
+        elif venue.offererAddress:
+            timezone = pytz.timezone(venue.offererAddress.address.timezone)
+        else:
+            # DO not remove the venue.timezone unless digital offers are on venue with OA.
+            timezone = pytz.timezone(venue.timezone)
         address_time = dt.replace(tzinfo=pytz.utc).astimezone(timezone).time()
 
+        # TODO(xordoquy): it still uses venue.timezone ?
         query = query.filter(
             sa.cast(
                 sa.func.timezone(

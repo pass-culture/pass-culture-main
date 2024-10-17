@@ -116,7 +116,6 @@ class FeatureToggle(enum.Enum):
     WIP_OFFERER_STATS_V2 = "Activer la nouvelle version de la page de statistiques / revenus d'une structure"
     ENABLE_COLLECTIVE_OFFERS_EXPIRATION = "Activer la mise en avant des offres collectives sur le point d'expirer"
     ENABLE_COLLECTIVE_NEW_STATUSES = "Activer les nouveaux statuts des offres collectives"
-    WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE = "Utiliser les OffererAddress comme source de données"
     WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE = (
         "Activer la nouvelle structure des offres et réservations collectives"
     )
@@ -207,7 +206,6 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_OFFERER_STATS_V2,
     FeatureToggle.WIP_SUGGESTED_SUBCATEGORIES,
     FeatureToggle.WIP_UBBLE_V2,
-    FeatureToggle.WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE,
     # Please keep alphabetic order
 )
 

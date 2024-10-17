@@ -121,7 +121,6 @@ class OffersTest:
         nb_queries = 1  # select offer
         nb_queries += 1  # select stocks
         nb_queries += 1  # select mediations
-        nb_queries += 1  # select feature
         with assert_num_queries(nb_queries):
             with assert_no_duplicated_queries():
                 response = client.get(f"/native/v1/offer/{offer_id}")
@@ -412,7 +411,6 @@ class OffersTest:
         nb_queries = 1  # select offer
         nb_queries += 1  # select stocks
         nb_queries += 1  # select mediations
-        nb_queries += 1  # select feature
         with assert_num_queries(nb_queries):
             with assert_no_duplicated_queries():
                 response = client.get(f"/native/v1/offer/{offer_id}")
@@ -850,7 +848,6 @@ class OffersV2Test:
         nb_queries = 1  # select offer
         nb_queries += 1  # select stocks
         nb_queries += 1  # select mediations
-        nb_queries += 1  # select feature
         with assert_num_queries(nb_queries):
             response = client.get(f"/native/v2/offer/{offer_id}")
 
@@ -1130,7 +1127,6 @@ class OffersV2Test:
         nb_queries = 1  # select offer
         nb_queries += 1  # select stocks
         nb_queries += 1  # select mediations
-        nb_queries += 1  # select feature
         with assert_num_queries(nb_queries):
             response = client.get(f"/native/v2/offer/{offer_id}")
 
@@ -1669,7 +1665,6 @@ class OffersV2Test:
         nb_queries = 1  # select offer
         nb_queries += 1  # select stocks
         nb_queries += 1  # select mediations
-        nb_queries += 1  # select feature
         with assert_num_queries(nb_queries):
             response = client.get(f"/native/v2/offer/{offer_id}")
 
@@ -1688,7 +1683,6 @@ class OffersV2Test:
         nb_queries = 1  # select offer
         nb_queries += 1  # select stocks
         nb_queries += 1  # select mediations
-        nb_queries += 1  # select feature
         with assert_num_queries(nb_queries):
             response = client.get(f"/native/v2/offer/{offer_id}")
 
@@ -1703,7 +1697,6 @@ class OffersV2Test:
         nb_queries = 1  # select offer
         nb_queries += 1  # select stocks
         nb_queries += 1  # select mediations
-        nb_queries += 1  # select feature
         with assert_num_queries(nb_queries):
             response = client.get(f"/native/v2/offer/{offer_id}")
 
@@ -2081,7 +2074,6 @@ class OffersStocksV2Test:
         nb_queries = 1  # select offer
         nb_queries += 1  # select stocks
         nb_queries += 1  # select mediations
-        nb_queries += 1  # select feature
         with assert_num_queries(nb_queries):
             response = client.post("/native/v2/offers/stocks", json=payload)
 
