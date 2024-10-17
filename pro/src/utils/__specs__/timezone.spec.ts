@@ -1,8 +1,27 @@
 import {
+  isValidTime,
   convertTimeFromVenueTimezoneToUtc,
   formatLocalTimeDateString,
   getDepartmentTimezone,
 } from '../timezone'
+
+describe('isValidTime', () => {
+  it('should return true for a valid time', () => {
+    const time = '12:00'
+    const toBePaddedTime = '9:00'
+    expect(isValidTime(time)).toBe(true)
+    expect(isValidTime(toBePaddedTime)).toBe(true)
+  })
+
+  it('should return false for an invalid time', () => {
+    const undefinedTime = undefined
+    const randomStringTime = ''
+    const outOfBoundTime = '24:00'
+    expect(isValidTime(undefinedTime)).toBe(false)
+    expect(isValidTime(randomStringTime)).toBe(false)
+    expect(isValidTime(outOfBoundTime)).toBe(false)
+  })
+})
 
 describe('formatLocalTimeDateString', () => {
   it('should return a formatted date with Paris departement code and specified format', () => {
