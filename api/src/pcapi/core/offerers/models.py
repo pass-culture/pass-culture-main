@@ -411,7 +411,9 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
     )
 
     offererAddressId: int = Column(BigInteger, ForeignKey("offerer_address.id"), nullable=True, index=True)
-    offererAddress: Mapped["OffererAddress | None"] = relationship("OffererAddress", foreign_keys=[offererAddressId])
+    offererAddress: Mapped["OffererAddress | None"] = relationship(
+        "OffererAddress", foreign_keys=[offererAddressId], back_populates="venues"
+    )
 
     def __init__(self, street: str | None = None, **kwargs: typing.Any) -> None:
         if street:
@@ -1265,6 +1267,7 @@ class OffererAddress(PcObject, Base, Model):
     address: sa_orm.Mapped[geography_models.Address] = sa_orm.relationship("Address", foreign_keys=[addressId])
     offererId = sa.Column(sa.BigInteger, sa.ForeignKey("offerer.id", ondelete="CASCADE"), index=True)
     offerer: sa_orm.Mapped["Offerer"] = sa_orm.relationship("Offerer", foreign_keys=[offererId])
+    venues: sa_orm.Mapped[typing.Sequence["Venue"]] = sa.orm.relationship("Venue", back_populates="offererAddress")
 
     __table_args__ = (
         # FIXME (dramelet, 04-06-2024)
@@ -1285,10 +1288,6 @@ class OffererAddress(PcObject, Base, Model):
     @isLinkedToVenue.expression  # type: ignore[no-redef]
     def isLinkedToVenue(cls) -> sa.sql.elements.BooleanClauseList:  # pylint: disable=no-self-argument
         return sa.select(1).where(Venue.offererAddressId == cls.id).exists()
-
-    @property
-    def fullAddress(self) -> str:
-        return f"{self.label} - {self.address.fullAddress}" if self.label else self.address.fullAddress
 
 
 class OffererConfidenceLevel(enum.Enum):

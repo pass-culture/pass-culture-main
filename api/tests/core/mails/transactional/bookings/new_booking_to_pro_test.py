@@ -366,7 +366,8 @@ class OffererBookingRecapTest:
         # 1 - SELECT feature (WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE)
         # 1 - SELECT external booking (might be preloaded ?)
         # 1 - SELECT activation code (might be preloaded ?)
-        with assert_num_queries(4):
+        # 1 - SELECT venues linked to the OA
+        with assert_num_queries(5):
             email_data = get_new_booking_to_pro_email_data(booking)
 
         assert not email_data.params["NEEDS_BANK_INFORMATION_REMINDER"]

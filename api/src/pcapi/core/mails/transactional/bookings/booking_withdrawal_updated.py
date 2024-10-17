@@ -39,7 +39,10 @@ def send_email_for_each_ongoing_booking(offer: Offer) -> None:
             .joinedload(Stock.offer)
             .load_only(Offer.id)
             .joinedload(Offer.offererAddress)
-            .joinedload(OffererAddress.address),
+            .options(
+                sqla.orm.joinedload(OffererAddress.address),
+                sqla.orm.selectinload(OffererAddress.venues),
+            ),
         )
     )
 
@@ -61,7 +64,7 @@ def send_email_for_each_ongoing_booking(offer: Offer) -> None:
                 user_first_name=booking.user.firstName,
                 offer_name=offer.name,
                 offer_token=booking.activationCode.code if booking.activationCode else booking.token,
-                offer_address=booking.stock.offer.offererAddress.fullAddress,
+                offer_address=booking.stock.offer.fullAddress,
             )
         )
     send_withdrawal_detail_changed_emails.delay(mails_request)
