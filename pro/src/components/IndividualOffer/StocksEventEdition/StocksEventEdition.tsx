@@ -25,6 +25,7 @@ import { usePaginationWithSearchParams } from 'commons/hooks/usePagination'
 import { getToday } from 'commons/utils/date'
 import { hasErrorCode } from 'commons/utils/error'
 import {
+  isValidTime,
   convertTimeFromVenueTimezoneToUtc,
   getLocalDepartementDateTimeFromUtc,
 } from 'commons/utils/timezone'
@@ -155,7 +156,9 @@ export const StocksEventEdition = ({
   const [isRecurrenceModalOpen, setIsRecurrenceModalOpen] = useState(false)
   const [stocksCount, setStocksCount] = useState<number | null>(null)
   const [dateFilter, setDateFilter] = useState(searchParams.get('date'))
-  const [timeFilter, setTimeFilter] = useState(searchParams.get('time'))
+  const [timeFilter, setTimeFilter] = useState<string>(
+    searchParams.get('time') || ''
+  )
   const [priceCategoryIdFilter, setPriceCategoryIdFilter] = useState(
     searchParams.get('priceCategoryId')
   )
@@ -180,7 +183,7 @@ export const StocksEventEdition = ({
       api.getStocks(
         offer.id,
         dateFilter ? dateFilter : undefined,
-        timeFilter
+        isValidTime(timeFilter)
           ? convertTimeFromVenueTimezoneToUtc(timeFilter, departmentCode)
           : undefined,
         priceCategoryIdFilter ? Number(priceCategoryIdFilter) : undefined,
@@ -529,7 +532,7 @@ export const StocksEventEdition = ({
                                 setTimeFilter(event.target.value)
                                 onFilterChange()
                               }}
-                              value={timeFilter ?? ''}
+                              value={timeFilter}
                               filterVariant
                               aria-label="Filtrer par horaire"
                             />
