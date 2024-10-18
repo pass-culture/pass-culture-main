@@ -116,6 +116,7 @@ class EducationalBookingPerYearResponse(AdageBaseResponseModel):
     id: int
     UAICode: str
     status: EducationalBookingStatus | CollectiveBookingStatus
+    cancellationReason: CollectiveBookingCancellationReasons | None
     confirmationLimitDate: datetime
     totalAmount: decimal.Decimal
     beginningDatetime: datetime
@@ -141,6 +142,7 @@ def get_collective_bookings_per_year_response(
             id=booking.id,
             UAICode=booking.educationalInstitution.institutionId,
             status=get_collective_booking_status(booking),  # type: ignore[arg-type]
+            cancellationReason=booking.cancellationReason,
             confirmationLimitDate=booking.confirmationLimitDate,
             totalAmount=booking.collectiveStock.price,
             beginningDatetime=booking.collectiveStock.beginningDatetime,
