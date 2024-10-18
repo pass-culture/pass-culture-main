@@ -195,6 +195,7 @@ ALLOWED_ACTIONS_BY_DISPLAYED_STATUS: typing.Final[
     CollectiveOfferDisplayedStatus.EXPIRED: (
         CollectiveOfferAllowedAction.CAN_EDIT_DATES,
         CollectiveOfferAllowedAction.CAN_ARCHIVE,
+        CollectiveOfferAllowedAction.CAN_DUPLICATE,
     ),
     CollectiveOfferDisplayedStatus.ENDED: (  # after 48h, cannot edit discount or cancel anymore
         CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT,
