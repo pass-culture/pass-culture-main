@@ -359,6 +359,21 @@ def create_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         processingDate=datetime.fromisoformat("2025-03-24T16:08:33+01:00"),
         state="refuse",
     )
+    # eac_with_displayed_status_cases
+    offerer = next(offerer_iterator)
+    create_venue(
+        managingOfferer=offerer,
+        name=f"reimbursementPoint {offerer.name} 57",
+        reimbursement=True,
+        adageId="123547",
+        adageInscriptionDate=datetime.utcnow() - timedelta(days=3),
+        venueEducationalStatusId=next(educational_status_iterator),
+        collectiveInterventionArea=ALL_INTERVENTION_AREA,
+        departementCode="57",
+        postalCode="57000",
+        city="Lorient",
+        siret="55208131766523",
+    )
 
 
 def create_venue(*, reimbursement: bool = False, **kwargs: typing.Any) -> offerers_models.Venue:

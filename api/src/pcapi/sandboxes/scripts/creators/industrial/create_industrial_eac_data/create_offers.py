@@ -95,6 +95,17 @@ def create_offers(
         reimbursed_booking=False,
     )
 
+    # eac_with_displayed_status_cases
+    offerer = next(o for o in offerers if o.name == "eac_with_displayed_status_cases")
+    provider = create_collective_api_provider(offerer.managedVenues)
+    create_offers_booking_corner_cases_list(
+        provider=provider,
+        offerer=offerer,
+        institutions=institutions,
+        domains=domains,
+        national_programs=national_programs,
+    )
+
     search.index_all_collective_offers_and_templates()
 
 
@@ -350,6 +361,170 @@ def add_image_to_offer(offer: educational_models.HasImageMixin, image_name: str)
         mode="rb",
     ) as file:
         offer.set_image(image=file.read(), credit="CC-BY-SA WIKIPEDIA", crop_params=DO_NOT_CROP)
+
+
+def create_offers_booking_corner_cases_list(
+    provider: providers_models.Provider,
+    offerer: offerers_models.Offerer,
+    institutions: list[educational_models.EducationalInstitution],
+    domains: list[educational_models.EducationalDomain],
+    national_programs: list[educational_models.NationalProgram],
+) -> tuple[list[educational_models.CollectiveOffer], list[educational_models.CollectiveBooking]]:
+    offers = []
+    bookings = []
+
+    current_ansco = educational_models.EducationalYear.query.filter(
+        educational_models.EducationalYear.beginningDate <= datetime.utcnow(),
+        educational_models.EducationalYear.expirationDate >= datetime.utcnow(),
+    ).one()
+    domains_iterator = cycle(domains)
+    venue_iterator = cycle(offerer.managedVenues)
+    institution_iterator = cycle(institutions)
+
+    today = datetime.utcnow()
+    future = today + timedelta(days=15)
+    far_future = today + timedelta(days=30)
+
+    past = today - timedelta(days=15)
+    early_past = today - timedelta(days=30)
+
+    yesterday = today - timedelta(days=1)
+
+    options = {
+        "Amsterdam": {
+            "bookingLimitDatetime": future,
+            "beginningDatetime": far_future,
+            "endDatetime": far_future,
+            "lastBookingStatus": None,
+        },
+        "Athènes": {
+            "bookingLimitDatetime": past,
+            "beginningDatetime": future,
+            "endDatetime": future,
+            "lastBookingStatus": None,
+        },
+        "Berlin": {
+            "bookingLimitDatetime": early_past,
+            "beginningDatetime": past,
+            "endDatetime": future,
+            "lastBookingStatus": None,
+        },
+        "Bratislava": {
+            "bookingLimitDatetime": early_past,
+            "beginningDatetime": early_past,
+            "endDatetime": early_past,
+            "lastBookingStatus": None,
+        },
+        "Bruxelles": {
+            "bookingLimitDatetime": future,
+            "beginningDatetime": far_future,
+            "endDatetime": far_future,
+            "lastBookingStatus": educational_models.CollectiveBookingStatus.PENDING,
+        },
+        "Bucarest": {
+            "bookingLimitDatetime": past,
+            "beginningDatetime": future,
+            "endDatetime": future,
+            "lastBookingStatus": educational_models.CollectiveBookingStatus.PENDING,
+        },
+        "Budapest": {
+            "bookingLimitDatetime": past,
+            "beginningDatetime": future,
+            "endDatetime": future,
+            "lastBookingStatus": educational_models.CollectiveBookingStatus.CANCELLED,
+        },
+        "Copenhague": {
+            "bookingLimitDatetime": early_past,
+            "beginningDatetime": past,
+            "endDatetime": future,
+            "lastBookingStatus": educational_models.CollectiveBookingStatus.CANCELLED,
+        },
+        "Dublin": {
+            "bookingLimitDatetime": future,
+            "beginningDatetime": far_future,
+            "endDatetime": far_future,
+            "lastBookingStatus": educational_models.CollectiveBookingStatus.CONFIRMED,
+        },
+        "Helsinki": {
+            "bookingLimitDatetime": past,
+            "beginningDatetime": future,
+            "endDatetime": future,
+            "lastBookingStatus": educational_models.CollectiveBookingStatus.CONFIRMED,
+        },
+        "La Valette": {
+            "bookingLimitDatetime": early_past,
+            "beginningDatetime": past,
+            "endDatetime": future,
+            "lastBookingStatus": educational_models.CollectiveBookingStatus.CONFIRMED,
+        },
+        "Lisbonne": {
+            "bookingLimitDatetime": early_past,
+            "beginningDatetime": yesterday,
+            "endDatetime": yesterday,
+            "lastBookingStatus": educational_models.CollectiveBookingStatus.CONFIRMED,
+        },
+        "Ljubljana": {
+            "bookingLimitDatetime": early_past,
+            "beginningDatetime": early_past,
+            "endDatetime": early_past,
+            "lastBookingStatus": educational_models.CollectiveBookingStatus.USED,
+        },
+        "Luxembourg": {
+            "bookingLimitDatetime": early_past,
+            "beginningDatetime": early_past,
+            "endDatetime": early_past,
+            "lastBookingStatus": educational_models.CollectiveBookingStatus.REIMBURSED,
+        },
+        "Madrid": {
+            "bookingLimitDatetime": future,
+            "beginningDatetime": far_future,
+            "endDatetime": far_future,
+            "lastBookingStatus": educational_models.CollectiveBookingStatus.CANCELLED,
+        },
+        "Nicosie": {
+            "bookingLimitDatetime": past,
+            "beginningDatetime": future,
+            "endDatetime": future,
+            "lastBookingStatus": educational_models.CollectiveBookingStatus.CANCELLED,
+        },
+        "Paris": {
+            "bookingLimitDatetime": early_past,
+            "beginningDatetime": past,
+            "endDatetime": future,
+            "lastBookingStatus": educational_models.CollectiveBookingStatus.CANCELLED,
+        },
+        "Prague": {
+            "bookingLimitDatetime": early_past,
+            "beginningDatetime": early_past,
+            "endDatetime": early_past,
+            "lastBookingStatus": educational_models.CollectiveBookingStatus.CANCELLED,
+        },
+    }
+
+    for city, attributes in options.items():
+        last_booking_status = attributes.pop("lastBookingStatus")
+
+        stock = educational_factories.CollectiveStockFactory(
+            collectiveOffer__name=f"La culture à {city}",
+            collectiveOffer__educational_domains=[next(domains_iterator)],
+            collectiveOffer__venue=next(venue_iterator),
+            collectiveOffer__validation=OfferValidationStatus.APPROVED,
+            collectiveOffer__bookingEmails=["toto@totoland.com"],
+            **attributes,
+        )
+        offers.append(stock.collectiveOffer)
+
+        if last_booking_status:
+            educational_factories.CollectiveBookingFactory(
+                collectiveStock=stock,
+                educationalYear=current_ansco,
+                educationalInstitution=next(institution_iterator),
+                status=last_booking_status,
+                confirmationLimitDate=attributes["bookingLimitDatetime"],
+                dateCreated=min(datetime.utcnow(), attributes["bookingLimitDatetime"] - timedelta(days=1)),
+            )
+
+    return offers, bookings
 
 
 def create_booking_base_list(
