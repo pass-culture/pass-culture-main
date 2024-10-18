@@ -122,6 +122,8 @@ class _FIELDS:
     CITY = Field(description="City", example="Paris")
     POSTAL_CODE = Field(description="Postal Code", example="75001")
     STREET = Field(description="Street name and number", example="182 Rue Saint-Honoré")
+    ADDRESS_ID = Field(description="Address id in the pass Culture DB", example=1)
+    ADDRESS_LABEL = Field(description="Address label", example="Zénith Paris")
 
     # Offer fields
     OFFER_ID = Field(description="Offer id", example=12345)
@@ -161,6 +163,10 @@ class _FIELDS:
         description="If set to true, users may book the offer for two persons. Second item will be delivered at the same price as the first one. Category must be compatible with this feature.",
         example=True,
         default=True,
+    )
+    OFFER_LOCATION = Field(
+        discriminator="type",
+        description="Location where the offer will be available or will take place. The location type must be compatible with the category",
     )
 
     # Products fields
