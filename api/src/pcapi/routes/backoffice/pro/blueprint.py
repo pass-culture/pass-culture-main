@@ -435,7 +435,7 @@ def _get_user_id_from_bank_account_id(bank_account_id: int) -> int:
 
 
 @pro_blueprint.route("/connect-as", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
+@utils.permission_required(perm_models.Permissions.CONNECT_AS_PRO)
 @atomic()
 def connect_as() -> utils.BackofficeResponse:
     form = pro_forms.ConnectAsForm()
