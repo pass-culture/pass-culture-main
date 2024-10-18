@@ -905,6 +905,7 @@ class UpdateVenueTest(PostEndpointHelper):
             contact__email=contact_email,
             contact__website=website,
             contact__social_medias=social_medias,
+            name="Venue Name",
         )
 
         data = {
@@ -931,8 +932,9 @@ class UpdateVenueTest(PostEndpointHelper):
         assert response.location == url_for("backoffice_web.venue.get", venue_id=venue.id, _external=True)
 
         db.session.refresh(venue)
-        address = geography_models.Address.query.order_by(geography_models.Address.id.desc()).first()
-        offerer_address = offerers_models.OffererAddress.query.one()
+        offerer_addresses = offerers_models.OffererAddress.query.order_by(offerers_models.OffererAddress.id.desc())
+        offerer_address, old_oa = offerer_addresses
+        address = offerer_address.address
 
         assert venue.name == data["name"]
         assert venue.publicName == data["public_name"]
@@ -949,9 +951,8 @@ class UpdateVenueTest(PostEndpointHelper):
         assert venue.venueTypeCode == offerers_models.VenueTypeCode.CREATIVE_ARTS_STORE
         assert address.inseeCode == "75101"
         assert address.isManualEdition is False
-
         assert venue.offererAddressId == offerer_address.id
-        assert offerer_address.addressId == address.id
+        assert old_oa.label == "Venue Name"
 
         # should not have been updated or erased
         assert venue.contact.email == contact_email
@@ -969,6 +970,7 @@ class UpdateVenueTest(PostEndpointHelper):
         assert update_snapshot["venueTypeCode"]["new_info"] == data["venue_type_code"]
         assert update_snapshot["offererAddress.address.latitude"]["new_info"] == data["latitude"]
         assert update_snapshot["offererAddress.address.longitude"]["new_info"] == data["longitude"]
+        assert update_snapshot["old_oa_label"]["new_info"] == "Venue Name"
 
         assert len(mails_testing.outbox) == 1
         # check that email is sent when venue is set to permanent and has no image
@@ -1011,15 +1013,13 @@ class UpdateVenueTest(PostEndpointHelper):
         assert response.location == url_for("backoffice_web.venue.get", venue_id=venue.id, _external=True)
 
         db.session.refresh(venue)
-        offerer_address = offerers_models.OffererAddress.query.one()
-        addresses = geography_models.Address.query.all()
+        offerer_addresses = offerers_models.OffererAddress.query.order_by(
+            offerers_models.OffererAddress.id.desc()
+        ).all()
+        offerer_address = offerer_addresses[0]
+        assert (len(offerer_addresses)) == 2
         assert venue.offererAddressId == offerer_address.id
-
-        assert len(addresses) == 2
-        address = [address for address in addresses if address.id == offerer_address.addressId][0]
-        assert offerer_address.addressId == address.id
         assert len(venue.action_history) == 1
-
         update_snapshot = venue.action_history[0].extraData["modified_info"]
 
         assert update_snapshot["offererAddress.addressId"]["new_info"] == offerer_address.addressId
@@ -1073,6 +1073,7 @@ class UpdateVenueTest(PostEndpointHelper):
             contact__website=website,
             contact__social_medias=social_medias,
         )
+        oa_id = venue.offererAddressId
 
         data = {
             "name": "Musée du Rhum",
@@ -1099,12 +1100,13 @@ class UpdateVenueTest(PostEndpointHelper):
         assert response.location == url_for("backoffice_web.venue.get", venue_id=venue.id, _external=True)
 
         db.session.refresh(venue)
-        address = geography_models.Address.query.order_by(geography_models.Address.id.desc()).first()
-        offerer_address = offerers_models.OffererAddress.query.one()
+        offerer_address = offerers_models.OffererAddress.query.order_by(
+            offerers_models.OffererAddress.id.desc()
+        ).first()
+        address = offerer_address.address
 
         assert venue.timezone == "America/Guadeloupe"
-
-        assert venue.offererAddressId == offerer_address.id
+        assert offerer_address.id != oa_id
         assert offerer_address.addressId == address.id
         assert address.inseeCode == expected_insee_code
         assert address.timezone == "America/Guadeloupe"
@@ -1166,8 +1168,12 @@ class UpdateVenueTest(PostEndpointHelper):
 
         db.session.refresh(venue)
         address = geography_models.Address.query.order_by(geography_models.Address.id.desc()).first()
-        offerer_address = offerers_models.OffererAddress.query.one()
+        offerer_addresses = offerers_models.OffererAddress.query.order_by(
+            offerers_models.OffererAddress.id.desc()
+        ).all()
+        offerer_address = offerer_addresses[0]
 
+        assert len(offerer_addresses) == 2
         assert venue.offererAddressId == offerer_address.id
         assert address.isManualEdition is True
         assert address.banId is None
@@ -1291,7 +1297,7 @@ class UpdateVenueTest(PostEndpointHelper):
         assert venue.banId == other_venue.banId
         assert venue.timezone == "Indian/Reunion"
 
-        assert venue.offererAddressId == offerer_address_id  # unchanged
+        assert venue.offererAddressId != offerer_address_id
         assert venue.offererAddress.addressId == other_venue.offererAddress.addressId
         assert venue.offererAddress.address.isManualEdition is True
 
@@ -1351,7 +1357,7 @@ class UpdateVenueTest(PostEndpointHelper):
         assert venue.banId == other_venue.banId
         assert venue.timezone == "Indian/Reunion"
 
-        assert venue.offererAddressId == offerer_address_id  # unchanged
+        assert venue.offererAddressId != offerer_address_id
         assert venue.offererAddress.addressId == other_venue.offererAddress.addressId
         assert venue.offererAddress.address.isManualEdition is True
 
@@ -1409,7 +1415,7 @@ class UpdateVenueTest(PostEndpointHelper):
         assert venue.banId == other_venue.banId
         assert venue.timezone == "Indian/Reunion"
 
-        assert venue.offererAddressId == offerer_address_id  # unchanged
+        assert venue.offererAddressId != offerer_address_id  # changed
         # same street and Insee code but different GPS position: new row because of manual edition
         assert venue.offererAddress.addressId != other_venue.offererAddress.addressId
         address = venue.offererAddress.address

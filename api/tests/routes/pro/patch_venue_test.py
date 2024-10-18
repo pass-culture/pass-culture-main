@@ -59,6 +59,7 @@ class Returns200Test:
         auth_request = client.with_session_auth(email=user_offerer.user.email)
         venue_id = venue.id
         venue_oa_address_id = venue.offererAddress.addressId
+        venue_oa_id = venue.offererAddressId
 
         # when
         venue_data = populate_missing_data_from_venue(
@@ -166,11 +167,23 @@ class Returns200Test:
                     "new_info": venue.offererAddress.addressId,
                     "old_info": venue_oa_address_id,
                 },
+                "offererAddress.id": {
+                    "new_info": new_venue.offererAddressId,
+                    "old_info": venue_oa_id,
+                },
+                "old_oa_label": {
+                    "new_info": "old name",
+                    "old_info": None,
+                },
             }
         }
-        address = geography_models.Address.query.order_by(geography_models.Address.id.desc()).first()
-        offerer_address = offerers_models.OffererAddress.query.one()
-
+        assert (len(offerers_models.OffererAddress.query.all())) == 2
+        offerer_address = offerers_models.OffererAddress.query.order_by(
+            offerers_models.OffererAddress.id.desc()
+        ).first()
+        old_oa = offerers_models.OffererAddress.query.get(venue_oa_id)
+        address = offerer_address.address
+        assert old_oa.label == "old name"
         assert venue.offererAddressId == offerer_address.id
         assert address.street == venue.street == "3 Rue de Valois"
         assert address.city == venue.city == "Paris"
@@ -217,9 +230,10 @@ class Returns200Test:
         # then
         assert response.status_code == 200
         venue = offerers_models.Venue.query.one()
-        address = geography_models.Address.query.order_by(geography_models.Address.id.desc()).first()
-        offerer_address = offerers_models.OffererAddress.query.one()
-
+        offerer_address = offerers_models.OffererAddress.query.order_by(
+            offerers_models.OffererAddress.id.desc()
+        ).first()
+        address = offerer_address.address
         assert venue.offererAddressId == offerer_address.id
         assert address.street == venue.street == "3 Rue de Valois"
         assert address.city == venue.city == "Paris"
@@ -306,8 +320,12 @@ class Returns200Test:
         assert response.status_code == 200
         venue = offerers_models.Venue.query.filter_by(id=venue_without_siret.id).one()
         address = geography_models.Address.query.order_by(geography_models.Address.id.desc()).first()
-        offerer_address = offerers_models.OffererAddress.query.one()
+        offerer_addresses = offerers_models.OffererAddress.query.order_by(
+            offerers_models.OffererAddress.id.desc()
+        ).all()
+        offerer_address = offerer_addresses[0]
 
+        assert len(offerer_addresses) == 2
         assert venue.offererAddressId == offerer_address.id
         assert address.street == venue.street == None  # Centroid found only, nothing to fill in street column
         assert address.city == venue.city == "Château-Chinon (Ville)"
@@ -348,6 +366,22 @@ class Returns200Test:
             "new_info": "58120",
             "old_info": "75002",
         }
+
+    def test_should_not_create_oa_when_not_updating_location(self, client):
+        user_offerer = offerers_factories.UserOffererFactory()
+        venue = offerers_factories.VenueFactory(
+            name="old name",
+            city="Lens",
+            managingOfferer=user_offerer.offerer,
+        )
+        offerer_address = venue.offererAddress
+        update_data = {"bookingEmail": "fakeemail@fake.com"}
+        auth_request = client.with_session_auth(email=user_offerer.user.email)
+        response = auth_request.patch("/venues/%s" % venue.id, json=update_data)
+
+        venue = offerers_models.Venue.query.one()
+        offerer_addresses = offerers_models.OffererAddress.query.order_by(offerers_models.OffererAddress.id).all()
+        assert len(offerer_addresses) == 1
 
     def test_edit_only_activity_parameters_and_not_venue_accessibility(self, client):
         # given

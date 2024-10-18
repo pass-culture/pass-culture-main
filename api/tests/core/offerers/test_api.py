@@ -2809,7 +2809,7 @@ class GetOffererConfidenceLevelTest:
         assert caplog.records[0].extra == {"offerer_id": venue.managingOffererId, "venue_id": venue.id}
 
 
-class GetOffererAddressTest:
+class OffererAddressTest:
     @pytest.mark.parametrize("same_label,same_address", [[True, False], [False, True], [True, True], [False, False]])
     def test_get_or_create_offerer_address(self, same_label, same_address):
         offerer = offerers_factories.OffererFactory()
@@ -2859,6 +2859,36 @@ class GetOffererAddressTest:
             assert address.postalCode == "75103"
             assert address.latitude == 40.8566
             assert address.longitude == 1.3522
+
+    def test_create_offerer_address(self):
+        offerer = offerers_factories.OffererFactory()
+        address = geography_factories.AddressFactory()
+        oa = offerers_api.create_offerer_address(offerer_id=offerer.id, address_id=address.id, label="label")
+        assert oa.offerer == offerer
+        assert oa.id
+        assert oa.label == "label"
+
+    def test_create_multiple_identic_offerer_address_with_label_null(self):
+        offerer = offerers_factories.OffererFactory()
+        address = geography_factories.AddressFactory()
+        oa = offerers_api.create_offerer_address(offerer_id=offerer.id, address_id=address.id, label=None)
+        oa_ = offerers_api.create_offerer_address(offerer_id=offerer.id, address_id=address.id, label=None)
+
+        assert oa.offerer == offerer
+        assert oa_.offerer == offerer
+        assert oa.id
+        assert oa_.id
+        assert oa.label == None
+        assert oa.address == oa_.address
+        assert oa.label == oa_.label
+        assert oa_ != oa
+
+    def test_should_not_create_multiple_oa_with_same_label(self):
+        offerer = offerers_factories.OffererFactory()
+        address = geography_factories.AddressFactory()
+        offerers_api.create_offerer_address(offerer_id=offerer.id, address_id=address.id, label="label")
+        with pytest.raises(offerers_exceptions.OffererAddressCreationError):
+            offerers_api.create_offerer_address(offerer_id=offerer.id, address_id=address.id, label="label")
 
 
 class SendReminderEmailToIndividualOfferersTest:

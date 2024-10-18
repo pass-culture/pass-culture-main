@@ -885,6 +885,8 @@ def format_modified_info_name(info_name: str) -> str:
             return "Validation des offres"
         case "offererAddress.addressId":
             return "Adresse - ID Adresse"
+        case "offererAddress.id":
+            return "OA ID"
         case "offererAddress.address.inseeCode":
             return "Adresse - Code Insee"
         case "offererAddress.address.city":
@@ -899,6 +901,8 @@ def format_modified_info_name(info_name: str) -> str:
             return "Adresse - Latitude"
         case "offererAddress.address.longitude":
             return "Adresse - Longitude"
+        case "old_oa_label":
+            return "Ancien label OA"
         case "isActive":
             return "Actif"
 
