@@ -35,8 +35,8 @@ def get_roles() -> utils.BackofficeResponse:
     roles_for_permissions = (
         db.session.query(perm_models.Permission.name, sa.func.array_agg(perm_models.Role.name))
         .select_from(perm_models.Permission)
-        .join(perm_models.RolePermission)
-        .join(perm_models.Role)
+        .outerjoin(perm_models.RolePermission)
+        .outerjoin(perm_models.Role)
         .group_by(perm_models.Permission.name)
         .order_by(perm_models.Permission.name)
         .all()

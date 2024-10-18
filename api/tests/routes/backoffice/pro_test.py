@@ -1029,9 +1029,9 @@ class CreateOffererTest(PostEndpointHelper):
         assert html_parser.extract_warnings(response.data) == ["Information obligatoire"]
 
 
-class GetConnectAsProUserTest(PostEndpointHelper):
+class ConnectAsProUserTest(PostEndpointHelper):
     endpoint = "backoffice_web.pro.connect_as"
-    needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
+    needed_permission = perm_models.Permissions.CONNECT_AS_PRO
     # session
     # current user
     # pro user data
