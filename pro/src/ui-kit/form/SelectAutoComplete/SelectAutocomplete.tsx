@@ -31,10 +31,12 @@ export type SelectAutocompleteProps = FieldLayoutBaseProps & {
   type?: 'text' | 'search'
   leftIcon?: string
   maxDisplayedOptions?: number
+  selectedValuesTagsClassName?: string
 }
 
 export const SelectAutocomplete = ({
   className,
+  selectedValuesTagsClassName,
   disabled = false,
   name,
   hideArrow,
@@ -340,6 +342,7 @@ export const SelectAutocomplete = ({
       </div>
       {Array.isArray(field.value) && !hideTags && field.value.length > 0 && (
         <SelectedValuesTags
+          className={selectedValuesTagsClassName}
           disabled={disabled}
           fieldName={name}
           optionsLabelById={optionsLabelById}

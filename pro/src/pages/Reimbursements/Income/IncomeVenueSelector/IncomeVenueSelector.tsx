@@ -34,7 +34,8 @@ export const IncomeVenueSelector = ({
   return (
     <FormikProvider value={formik}>
       <SelectAutocomplete
-        className={styles['income-venue-selector']}
+        className={styles['income-venue-select-autocomplete']}
+        selectedValuesTagsClassName={styles['income-venue-selected-tags']}
         name="selectedVenues"
         label="Partenaire(s) sélectionné(s)"
         options={venues}
