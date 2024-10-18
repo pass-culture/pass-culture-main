@@ -117,9 +117,15 @@ def update_venue(
 
     venue_snapshot = history_api.ObjectUpdateSnapshot(venue, author)
     if not venue.isVirtual:
-        update_venue_location(
-            venue, modifications, author=author, venue_snapshot=venue_snapshot, is_manual_edition=is_manual_edition
-        )
+        is_venue_location_updated = any(field in modifications for field in ("street", "city", "postalCode"))
+        assert venue.offererAddress is not None
+        old_oa = venue.offererAddress
+        new_oa = models.OffererAddress(offerer=venue.managingOfferer)
+        if is_venue_location_updated:
+            update_venue_location(
+                venue, modifications, venue_snapshot=venue_snapshot, new_oa=new_oa, is_manual_edition=is_manual_edition
+            )
+            switch_old_oa_label(old_oa=old_oa, label=venue.common_name, venue_snapshot=venue_snapshot)
 
     if contact_data:
         # target must not be None, otherwise contact_data fields will be compared to fields in Venue, which do not exist
@@ -213,8 +219,8 @@ def update_venue(
 def update_venue_location(
     venue: models.Venue,
     modifications: dict,
-    author: users_models.User,
     venue_snapshot: history_api.ObjectUpdateSnapshot,
+    new_oa: models.OffererAddress,
     is_manual_edition: bool = False,
 ) -> None:
     """
@@ -226,20 +232,20 @@ def update_venue_location(
     """
     if not any(field in modifications for field in ("street", "city", "postalCode")):
         return
-
-    street = modifications.get("street") or venue.street
-    city = modifications.get("city") or venue.city
-    postal_code = modifications.get("postalCode") or venue.postalCode
-    latitude = modifications.get("latitude") or venue.latitude
-    longitude = modifications.get("longitude") or venue.longitude
-    ban_id = modifications.get("banId") or venue.banId
+    assert venue.offererAddress is not None
+    street = modifications.get("street") or venue.offererAddress.address.street
+    city = modifications.get("city") or venue.offererAddress.address.city
+    postal_code = modifications.get("postalCode") or venue.offererAddress.address.postalCode
+    latitude = modifications.get("latitude") or venue.offererAddress.address.latitude
+    longitude = modifications.get("longitude") or venue.offererAddress.address.longitude
+    ban_id = modifications.get("banId") or venue.offererAddress.address.banId
     logger.info(
         "Updating venue location",
         extra={"venue_id": venue.id, "venue_street": street, "venue_city": city, "venue_postalCode": postal_code},
     )
 
     if not is_manual_edition:
-        address_info = api_adresse.get_address(address=street, postcode=postal_code, city=city)
+        address_info = api_adresse.get_address(address=street, postcode=postal_code, city=city)  # type: ignore[arg-type]
         location_data = LocationData(
             city=address_info.city,
             postal_code=address_info.postcode,
@@ -283,26 +289,20 @@ def update_venue_location(
     if not is_manual_edition:
         snapshot_location_data["banId"] = address.banId
 
-    if not venue.offererAddressId:
-        offerer_address = get_or_create_offerer_address(venue.managingOffererId, address.id)
-        venue_snapshot.trace_update({"offererAddressId": offerer_address.id})
-        venue_snapshot.trace_update(
-            snapshot_location_data,
-            target=geography_models.Address(),
-            field_name_template="offererAddress.address.{}",
-        )
-        venue.offererAddress = offerer_address
-        db.session.add(venue)
-        db.session.flush()
-    else:
-        target = venue.offererAddress.address  # type: ignore[union-attr]
-        venue_snapshot.trace_update(
-            snapshot_location_data, target=target, field_name_template="offererAddress.address.{}"
-        )
-        venue_snapshot.trace_update(
-            {"addressId": address.id}, target=venue.offererAddress, field_name_template="offererAddress.{}"
-        )
-        update_offerer_address(venue.offererAddressId, address.id)
+    new_oa.address = address
+    db.session.add(new_oa)
+    db.session.flush()  # flush to get the new_oa.id
+    target = venue.offererAddress.address
+    old_oa = venue.offererAddress
+    venue_snapshot.trace_update(snapshot_location_data, target=target, field_name_template="offererAddress.address.{}")
+    venue_snapshot.trace_update(
+        {"id": new_oa.id, "addressId": new_oa.addressId, "label": new_oa.label},
+        old_oa,
+        "offererAddress.{}",
+    )
+    venue.offererAddress = new_oa
+    db.session.add(venue)
+    db.session.flush()
 
     if modifications.get("street"):
         modifications["street"] = address.street
@@ -419,7 +419,7 @@ def create_venue(venue_data: venues_serialize.PostVenueBodyModel, author: users_
             ban_id=address_info.id,
         )
     )
-    offerer_address = get_or_create_offerer_address(venue_data.managingOffererId, address.id)
+    offerer_address = create_offerer_address(venue_data.managingOffererId, address.id)
     venue.offererAddressId = offerer_address.id
 
     data = venue_data.dict(by_alias=True)
@@ -2837,6 +2837,30 @@ def get_or_create_offerer_address(offerer_id: int, address_id: int, label: str |
     )
 
     return offerer_address
+
+
+def create_offerer_address(offerer_id: int, address_id: int | None, label: str | None = None) -> models.OffererAddress:
+    try:
+        offerer_address = models.OffererAddress(offererId=offerer_id, addressId=address_id, label=label)
+        db.session.add(offerer_address)
+        db.session.flush()
+    except sa.exc.IntegrityError:
+        db.session.rollback()
+        raise (exceptions.OffererAddressCreationError())
+    return offerer_address
+
+
+def switch_old_oa_label(
+    old_oa: models.OffererAddress, label: str, venue_snapshot: history_api.ObjectUpdateSnapshot
+) -> None:
+    venue_snapshot.trace_update(
+        {"label": label},
+        target=old_oa,
+        field_name_template="old_oa_label",
+    )
+    old_oa.label = label
+    db.session.add(old_oa)
+    db.session.flush()
 
 
 def create_offerer_address_from_address_api(address: offerers_schemas.AddressBodyModel) -> geography_models.Address:
