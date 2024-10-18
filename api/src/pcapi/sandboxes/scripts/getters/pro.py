@@ -1,3 +1,5 @@
+import datetime
+
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.educational import models as educational_models
 import pcapi.core.educational.factories as educational_factories
@@ -166,5 +168,36 @@ def create_pro_user_with_collective_offers() -> dict:
         venue=venue,
         subcategoryId=subcategories.SEANCE_CINE.id,
         formats=[subcategories.EacFormat.PROJECTION_AUDIOVISUELLE],
+    )
+    return {"user": get_pro_user_helper(pro_user)}
+
+
+def create_pro_user_with_collective_bookings() -> dict:
+    pro_user = users_factories.ProFactory()
+    offerer = offerers_factories.OffererFactory()
+    offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
+    venue = offerers_factories.VenueFactory(name="Mon Lieu", managingOfferer=offerer, isPermanent=True)
+    offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
+
+    collectiveStock = educational_factories.CollectiveStockFactory(
+        collectiveOffer__venue=venue,
+        collectiveOffer__name="Mon offre",
+        beginningDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=10),
+    )
+    collectiveStock_B = educational_factories.CollectiveStockFactory(
+        collectiveOffer__venue=venue, collectiveOffer__name="Mon autre offre"
+    )
+    educational_factories.CollectiveBookingFactory(collectiveStock=collectiveStock)
+    educational_factories.CollectiveBookingFactory(
+        collectiveStock__collectiveOffer__name="Encore une autre offre",
+        collectiveStock__beginningDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=10),
+        collectiveStock__collectiveOffer__venue=venue,
+        educationalInstitution__name="Autre collège",
+    )
+    educational_factories.CollectiveBookingFactory(
+        collectiveStock=collectiveStock_B, educationalInstitution__name="Autre établissement"
+    )
+    educational_factories.CollectiveBookingFactory(
+        collectiveStock=collectiveStock_B, educationalInstitution__name="Victor Hugo"
     )
     return {"user": get_pro_user_helper(pro_user)}
