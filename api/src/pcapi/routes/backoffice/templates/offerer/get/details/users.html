@@ -23,7 +23,7 @@
       <th scope="col">Prénom / Nom</th>
       <th scope="col">Email</th>
       <th scope="col">Invitation</th>
-      <th scope="col">Connect as</th>
+      {% if has_permission("CONNECT_AS_PRO") %}<th scope="col">Connect as</th>{% endif %}
     </tr>
   </thead>
   <tbody>
@@ -93,11 +93,13 @@
             Invité le {{ offerer_invitation.dateCreated | format_date_time }} par {{ links.build_pro_user_name_to_details_link(offerer_invitation.user.id, offerer_invitation.user.full_name) }}
           {% endif %}
         </td>
-        <td class="fw-bolder">
-          {% if row.isActive and (admin_role not in row.roles) and (anonymized_role not in row.roles) %}
-            {{ links.build_connect_as_pseudo_link(row.id, "user", "/", "", "") }}
-          {% endif %}
-        </td>
+        {% if has_permission("CONNECT_AS_PRO") %}
+          <td class="fw-bolder">
+            {% if row.isActive and (admin_role not in row.roles) and (anonymized_role not in row.roles) %}
+              {{ links.build_connect_as_pseudo_link(row.id, "user", "/", "", "") }}
+            {% endif %}
+          </td>
+        {% endif %}
       </tr>
     {% endfor %}
   </tbody>
