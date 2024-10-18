@@ -5,7 +5,7 @@
 {# djlint:on #}
 {% macro build_connect_as_pseudo_link(object_id, object_type, redirect, text_link, class) %}
   {% if is_feature_active("WIP_CONNECT_AS_EXTENDED") %}
-    {% if has_permission("MANAGE_PRO_ENTITY") %}
+    {% if has_permission("CONNECT_AS_PRO") %}
       {# add some randomness to ids to avoid collisions #}
       {% set randomness = _random() %}
       <form id="connect-as-form-{{ object_type }}-{{ object_id }}-{{ randomness }}"
