@@ -543,6 +543,12 @@ class ListCollectiveBookingsTest(GetEndpointHelper):
         # beginningDatetime at J+7, J+6, J+5, J+3, J+1
         assert [row["ID résa"] for row in rows] == [str(collective_bookings[idx].id) for idx in (2, 0, 3, 1, 4)]
 
+    @pytest.mark.parametrize("field", ["offerer", "venue", "cashflow_batches"])
+    def test_list_collective_bookings_by_invalid_autocomplete_id(self, authenticated_client, field):
+        response = authenticated_client.get(url_for(self.endpoint, **{field: "1)"}))
+        assert response.status_code == 400
+        assert html_parser.extract_warnings(response.data) == [f"ID invalide pour {field} : 1)"]
+
 
 class MarkCollectiveBookingAsUsedTest(PostEndpointHelper):
     endpoint = "backoffice_web.collective_bookings.mark_booking_as_used"

@@ -381,6 +381,19 @@ class PCTomSelectField(PCSelectMultipleField):
     def tomselect_items(self) -> str:
         return json.dumps([str(choice_value) for choice_value, _ in self.choices])
 
+    def pre_validate(self, form: wtforms.Form) -> None:
+        if self.data and not self.validate_choice:
+            # validate_choice is set to False when choices are not pre-loaded, in case of database search.
+            # We must ensure that object ids are numeric, to avoid potential SQL injection (only when modified in URL).
+            unacceptable = []
+            for value in self.data:
+                if isinstance(value, str) and not value.isnumeric():
+                    unacceptable.append(value)
+            if unacceptable:
+                raise ValidationError("ID invalide pour %s : %s" % (self.name, ", ".join(unacceptable)))
+
+        super().pre_validate(form)
+
 
 class PCQuerySelectMultipleField(wtforms_sqlalchemy.fields.QuerySelectMultipleField):
     widget = partial(widget, template="components/forms/select_multiple_field.html")

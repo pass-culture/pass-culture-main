@@ -641,6 +641,12 @@ class ListIndividualBookingsTest(GetEndpointHelper):
         assert "Lieux" not in str(response.data)
         assert "Partenaires culturels" in str(response.data)
 
+    @pytest.mark.parametrize("field", ["offerer", "venue", "cashflow_batches"])
+    def test_list_bookings_by_invalid_autocomplete_id(self, authenticated_client, field):
+        response = authenticated_client.get(url_for(self.endpoint, **{field: "1)"}))
+        assert response.status_code == 400
+        assert html_parser.extract_warnings(response.data) == [f"ID invalide pour {field} : 1)"]
+
 
 class MarkBookingAsUsedTest(PostEndpointHelper):
     endpoint = "backoffice_web.individual_bookings.mark_booking_as_used"
