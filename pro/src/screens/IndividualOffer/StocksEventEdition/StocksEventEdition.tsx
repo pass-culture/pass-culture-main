@@ -770,6 +770,7 @@ export const StocksEventEdition = ({
 
                             <td className={styles['data']}>
                               <QuantityInput
+                                smallLabel
                                 isLabelHidden
                                 label={
                                   mode === OFFER_WIZARD_MODE.EDITION

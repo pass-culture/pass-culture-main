@@ -1,3 +1,4 @@
+import classNames from 'classnames'
 import { useField, useFormikContext } from 'formik'
 import { useEffect, useState, useRef } from 'react'
 
@@ -23,6 +24,8 @@ export const QuantityInput = ({
   className,
   classNameFooter,
   isLabelHidden,
+  smallLabel,
+  hideFooter,
 }: QuantityInputProps) => {
   const quantityRef = useRef<HTMLInputElement>(null)
   const unlimitedRef = useRef<HTMLInputElement>(null)
@@ -74,19 +77,21 @@ export const QuantityInput = ({
     <div className={styles['quantity-input']} role="group" aria-label={label}>
       <TextInput
         refForInput={quantityRef}
-        smallLabel
+        smallLabel={smallLabel}
         name={name}
         label={label}
         isOptional
         disabled={disabled}
         type="number"
         hasDecimal={false}
-        onChange={onQuantityChange}
         className={className}
         classNameFooter={classNameFooter}
         min={1}
         max={1_000_000}
         isLabelHidden={isLabelHidden}
+        hideFooter={hideFooter}
+        step={1}
+        {...(onChange && { onChange: onQuantityChange })}
       />
       <Checkbox
         refForInput={unlimitedRef}
@@ -95,7 +100,9 @@ export const QuantityInput = ({
         name="unlimited"
         onChange={onCheckboxChange}
         checked={isUnlimited}
-        className={styles['quantity-input-checkbox']}
+        className={classNames(styles['quantity-input-checkbox'], {
+          [styles['quantity-input-checkbox-for-small-label']]: smallLabel,
+        })}
       />
     </div>
   )

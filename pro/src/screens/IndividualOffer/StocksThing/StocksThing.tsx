@@ -389,6 +389,7 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
                 />
               )}
               <QuantityInput
+                smallLabel
                 disabled={readOnlyFields.includes('remainingQuantity')}
                 onChange={onQuantityChange}
                 className={styles['field-layout-xsmall']}

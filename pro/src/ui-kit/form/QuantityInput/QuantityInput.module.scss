@@ -5,7 +5,11 @@
   flex-direction: row;
 
   &-checkbox {
-    margin-top: rem.torem(42px);
+    margin-top: rem.torem(36px);
     margin-left: rem.torem(16px);
+
+    &-for-small-label {
+      margin-top: rem.torem(42px);
+    }
   }
 }
