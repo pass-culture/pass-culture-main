@@ -1,3 +1,5 @@
+import { addDays, format } from 'date-fns'
+
 describe('Desk (Guichet) feature', () => {
   let login: string
   const password = 'user@AZERTY123'
@@ -108,9 +110,14 @@ describe('Desk (Guichet) feature', () => {
     cy.findByLabelText('Contremarque').type('TOSOON')
 
     cy.stepLog({ message: 'the countermark is rejected as invalid' })
+    const date = format(addDays(new Date(), 2), 'dd/MM/yyyy')
     cy.findByTestId('desk-message').should(
       'contain.text',
-      'Vous pourrez valider cette contremarque à partir du'
+      `Vous pourrez valider cette contremarque à partir du ${date}`
+    )
+    cy.findByTestId('desk-message').should(
+      'contain.text',
+      `une fois le délai d’annulation passé.`
     )
     cy.findByText('Valider la contremarque').should('be.disabled')
   })
