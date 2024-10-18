@@ -154,7 +154,7 @@ class UserProfileGetterDict(GetterDict):
         if key == "isEligibleForBeneficiaryUpgrade":
             return users_api.is_eligible_for_beneficiary_upgrade(user, user.eligibility)
         if key == "needsToFillCulturalSurvey":
-            return user.needsToFillCulturalSurvey and user.is_beneficiary and _is_cultural_survey_active()
+            return user.needsToFillCulturalSurvey and _is_cultural_survey_active()
         if key == "requiresIdCheck":
             return subscription_api.requires_identity_check_step(user)
         if key == "showEligibleCard":
