@@ -92,6 +92,29 @@ describe('Desk (Guichet) feature', () => {
     cy.findByText('Valider la contremarque').should('be.disabled')
   })
 
+  it('It should decline an event countermark more than 48h before', () => {
+    cy.stepLog({ message: 'I am logged in with account' })
+    cy.login({
+      email: login,
+      password: password,
+      redirectUrl: '/',
+    })
+
+    cy.stepLog({ message: 'I go to the "Guichet" page' })
+    cy.findAllByText('Guichet').first().click()
+    cy.url().should('contain', '/guichet')
+
+    cy.stepLog({ message: 'I add this countermark "TOSOON"' })
+    cy.findByLabelText('Contremarque').type('TOSOON')
+
+    cy.stepLog({ message: 'the countermark is rejected as invalid' })
+    cy.findByTestId('desk-message').should(
+      'contain.text',
+      'Vous pourrez valider cette contremarque à partir du'
+    )
+    cy.findByText('Valider la contremarque').should('be.disabled')
+  })
+
   it('Should invalidate a already used countermark', () => {
     cy.stepLog({ message: 'I am logged in with account' })
     cy.login({

@@ -40,8 +40,10 @@ def create_pro_user_with_bookings() -> dict:
     venue = offerers_factories.VenueFactory(name="Mon Lieu", managingOfferer=offerer, isPermanent=True)
     offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
     stock = offers_factories.StockFactory(offer__venue=venue)
+    stock_event = offers_factories.EventStockFactory(offer__venue=venue)
 
     bookings_factories.BookingFactory(token="2XTM3W", stock=stock, status=bookings_models.BookingStatus.CONFIRMED)
+    bookings_factories.BookingFactory(token="TOSOON", stock=stock_event, status=bookings_models.BookingStatus.CONFIRMED)
     bookings_factories.BookingFactory(token="XUSEDX", stock=stock, status=bookings_models.BookingStatus.USED)
     bookings_factories.BookingFactory(token="CANCEL", stock=stock, status=bookings_models.BookingStatus.CANCELLED)
     bookings_factories.BookingFactory(token="REIMBU", stock=stock, status=bookings_models.BookingStatus.REIMBURSED)
