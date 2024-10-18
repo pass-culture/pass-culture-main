@@ -9,7 +9,7 @@ import {
 
 import styles from './TextInput.module.scss'
 
-type TextInputProps = FieldLayoutBaseProps &
+export type TextInputProps = FieldLayoutBaseProps &
   BaseInputProps & {
     /**
      * A flag to make the input read-only.
