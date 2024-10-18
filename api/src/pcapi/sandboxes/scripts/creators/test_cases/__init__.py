@@ -183,7 +183,6 @@ def _create_offer_and_stocks_for_allocine_venues(
     for venue in venues:
         for idx, product in enumerate(products):
             movie_offer = offers_factories.OfferFactory(
-                durationMinutes=product.durationMinutes,
                 name=product.name,
                 product=product,
                 subcategoryId=subcategories_v2.SEANCE_CINE.id,

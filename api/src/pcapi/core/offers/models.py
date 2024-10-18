@@ -540,7 +540,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
         sa.DateTime, nullable=True, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow
     )
     _description = sa.Column("description", sa.Text, nullable=True)
-    durationMinutes = sa.Column(sa.Integer, nullable=True)
+    _durationMinutes = sa.Column("durationMinutes", sa.Integer, nullable=True)
     externalTicketOfficeUrl = sa.Column(sa.String, nullable=True)
     extraData: OfferExtraData | None = sa.Column("jsonData", sa_mutable.MutableDict.as_mutable(postgresql.JSONB))
     fieldsUpdated: list[str] = sa.Column(
@@ -621,6 +621,19 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
             self._description = None
         else:
             self._description = value
+
+    @property
+    def durationMinutes(self) -> int | None:
+        if self.product:
+            return self.product.durationMinutes
+        return self._durationMinutes
+
+    @durationMinutes.setter
+    def durationMinutes(self, value: int | None) -> None:
+        if self.product:
+            self._durationMinutes = None
+        else:
+            self._durationMinutes = value
 
     @property
     def isEducational(self) -> bool:
