@@ -1,5 +1,5 @@
 import { useField, useFormikContext } from 'formik'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 import { VenueListItemResponseModel } from 'apiClient/v1'
 import { AddressSelect } from 'components/Address/Address'
@@ -30,6 +30,11 @@ export const OfferLocation = ({ venue }: OfferLocationProps): JSX.Element => {
   const [showOtherAddress, setShowOtherAddress] = useState(
     formik.values.offerlocation === OFFER_LOCATION.OTHER_ADDRESS
   )
+
+  useEffect(() => {
+    setShowOtherAddress(formik.values.offerlocation === 'other')
+  }, [formik.values.offerlocation])
+
   const [manuallySetAddress, , { setValue: setManuallySetAddress }] =
     useField('manuallySetAddress')
 

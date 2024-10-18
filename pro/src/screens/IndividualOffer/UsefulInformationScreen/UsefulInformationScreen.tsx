@@ -213,6 +213,7 @@ export const UsefulInformationScreen = ({
     initialValues,
     onSubmit,
     validationSchema,
+    enableReinitialize: true,
   })
   const handlePreviousStepOrBackToReadOnly = () => {
     if (mode === OFFER_WIZARD_MODE.CREATION) {
