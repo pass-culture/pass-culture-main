@@ -3,6 +3,8 @@ import pytest
 from pcapi.core.educational.factories import CollectiveBookingFactory
 from pcapi.core.educational.factories import EducationalInstitutionFactory
 from pcapi.core.educational.factories import EducationalYearFactory
+from pcapi.core.educational.models import CollectiveBookingCancellationReasons
+from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.testing import assert_num_queries
 from pcapi.utils.date import format_into_utc_date
 
@@ -14,6 +16,7 @@ def expected_serialized_booking(booking) -> dict:
         "id": booking.id,
         "UAICode": booking.educationalInstitution.institutionId,
         "status": booking.status.value,
+        "cancellationReason": booking.cancellationReason.value if booking.cancellationReason else None,
         "confirmationLimitDate": format_into_utc_date(booking.confirmationLimitDate),
         "totalAmount": booking.collectiveStock.price,
         "beginningDatetime": format_into_utc_date(booking.collectiveStock.beginningDatetime),
@@ -41,17 +44,23 @@ class Returns200Test:
         booking1 = CollectiveBookingFactory(
             educationalYear=educationalYear,
             educationalInstitution=educationalInstitution,
-            status="CONFIRMED",
+            status=CollectiveBookingStatus.CONFIRMED,
         )
         booking2 = CollectiveBookingFactory(
             educationalYear=educationalYear,
             educationalInstitution=other_educational_institution,
-            status="PENDING",
+            status=CollectiveBookingStatus.PENDING,
         )
         booking3 = CollectiveBookingFactory(
             educationalYear=educationalYear,
             educationalInstitution=other_educational_institution,
-            status="PENDING",
+            status=CollectiveBookingStatus.PENDING,
+        )
+        booking4 = CollectiveBookingFactory(
+            educationalYear=educationalYear,
+            educationalInstitution=other_educational_institution,
+            status=CollectiveBookingStatus.CANCELLED,
+            cancellationReason=CollectiveBookingCancellationReasons.OFFERER,
         )
 
         client = client.with_eac_token()
@@ -66,6 +75,7 @@ class Returns200Test:
                 expected_serialized_booking(booking1),
                 expected_serialized_booking(booking2),
                 expected_serialized_booking(booking3),
+                expected_serialized_booking(booking4),
             ]
         }
 
