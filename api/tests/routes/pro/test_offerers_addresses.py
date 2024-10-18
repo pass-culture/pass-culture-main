@@ -326,8 +326,10 @@ class CreateOffererAddressesTest:
         assert response.status_code == 201
         content = response.json
         address = geography_models.Address.query.one()
-        offerer_address = offerers_models.OffererAddress.query.one()
-        assert offerer_address.id == pre_existing_oa.id
+        offerer_address = offerers_models.OffererAddress.query.order_by(
+            offerers_models.OffererAddress.id.desc()
+        ).first()
+        assert offerer_address.id != pre_existing_oa.id
         assert content["label"] == expected_data["label"] == None
         assert content["offererId"] == offerer_id
         assert content["address"]["id"] == address.id

@@ -1269,15 +1269,7 @@ class OffererAddress(PcObject, Base, Model):
     offerer: sa_orm.Mapped["Offerer"] = sa_orm.relationship("Offerer", foreign_keys=[offererId])
     venues: sa_orm.Mapped[typing.Sequence["Venue"]] = sa.orm.relationship("Venue", back_populates="offererAddress")
 
-    __table_args__ = (
-        # FIXME (dramelet, 04-06-2024)
-        # Our current version of sqlalchemy (1.4) doesn't handle
-        # the option `nulls_not_distinct` from postgresql dialect
-        # Hence this declaration and the raw query in the suitable migration
-        sa.Index(
-            "ix_unique_offerer_address_per_label_even_with_nulls_values", "offererId", "addressId", "label", unique=True
-        ),
-    )
+    __table_args__ = (sa.Index("ix_unique_offerer_address_per_label", "offererId", "addressId", "label", unique=True),)
 
     _isLinkedToVenue: sa_orm.Mapped["bool|None"] = sa_orm.query_expression()
 
