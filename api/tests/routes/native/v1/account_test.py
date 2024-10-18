@@ -180,7 +180,7 @@ class AccountTest:
     def test_get_user_not_beneficiary(self, client, app):
         users_factories.UserFactory(email=self.identifier)
 
-        expected_num_queries = 4  # user + beneficiary_fraud_review + deposit + booking
+        expected_num_queries = 5  # user + booking + deposit + feature + beneficiary_fraud_review
 
         client.with_token(email=self.identifier)
 
@@ -193,7 +193,7 @@ class AccountTest:
     def test_get_user_profile_empty_first_name(self, client, app):
         users_factories.UserFactory(email=self.identifier, firstName="")
 
-        expected_num_queries = 4  # user + beneficiary_fraud_review + deposit + booking
+        expected_num_queries = 5  # user + booking + deposit + feature + beneficiary_fraud_review
 
         client.with_token(email=self.identifier)
         with assert_num_queries(expected_num_queries):
@@ -208,7 +208,7 @@ class AccountTest:
     def test_get_user_profile_legacy_activity(self, client):
         users_factories.UserFactory(email=self.identifier, activity="activity not in enum")
 
-        expected_num_queries = 4  # user + beneficiary_fraud_review + deposit + booking
+        expected_num_queries = 5  # user + booking + deposit + feature + beneficiary_fraud_review
         with assert_num_queries(expected_num_queries):
             response = client.with_token(email=self.identifier).get("/native/v1/me")
 
@@ -301,57 +301,35 @@ class AccountTest:
         assert msg["popOverIcon"] is None
 
     @pytest.mark.parametrize(
-        "feature_flags,roles,needsToFillCulturalSurvey",
+        "feature_flags",
         [
-            (
-                {"ENABLE_CULTURAL_SURVEY": True, "ENABLE_NATIVE_CULTURAL_SURVEY": True},
-                [],
-                False,
-            ),
-            (
-                {"ENABLE_CULTURAL_SURVEY": True, "ENABLE_NATIVE_CULTURAL_SURVEY": False},
-                [],
-                False,
-            ),
-            (
-                {"ENABLE_CULTURAL_SURVEY": True, "ENABLE_NATIVE_CULTURAL_SURVEY": False},
-                [users_models.UserRole.BENEFICIARY],
-                True,
-            ),
-            (
-                {"ENABLE_CULTURAL_SURVEY": False, "ENABLE_NATIVE_CULTURAL_SURVEY": True},
-                [],
-                False,
-            ),
-            (
-                {"ENABLE_CULTURAL_SURVEY": False, "ENABLE_NATIVE_CULTURAL_SURVEY": True},
-                [users_models.UserRole.BENEFICIARY],
-                True,
-            ),
-            (
-                {"ENABLE_CULTURAL_SURVEY": False, "ENABLE_NATIVE_CULTURAL_SURVEY": False},
-                [],
-                False,
-            ),
-            (
-                {"ENABLE_CULTURAL_SURVEY": False, "ENABLE_NATIVE_CULTURAL_SURVEY": False},
-                [users_models.UserRole.BENEFICIARY],
-                False,
-            ),
+            {"ENABLE_CULTURAL_SURVEY": True, "ENABLE_NATIVE_CULTURAL_SURVEY": False},
+            {"ENABLE_CULTURAL_SURVEY": False, "ENABLE_NATIVE_CULTURAL_SURVEY": True},
         ],
     )
-    def test_user_should_need_to_fill_cultural_survey(self, client, feature_flags, roles, needsToFillCulturalSurvey):
-        user = users_factories.UserFactory(roles=roles)
+    def test_user_should_need_to_fill_cultural_survey(self, client, feature_flags):
+        user = users_factories.UserFactory()
 
-        expected_num_queries = 3  # user + bookings + deposit
-        expected_num_queries += 1  # beneficiary fraud review if is beneficiary else feature
+        expected_num_queries = 5  # user + booking + deposit + feature + beneficiary_fraud_review
 
         client.with_token(user.email)
         with override_features(**feature_flags):
             with assert_num_queries(expected_num_queries):
                 response = client.get("/native/v1/me")
 
-        assert response.json["needsToFillCulturalSurvey"] == needsToFillCulturalSurvey
+        assert response.json["needsToFillCulturalSurvey"] == True
+
+    @override_features(ENABLE_CULTURAL_SURVEY=False, ENABLE_NATIVE_CULTURAL_SURVEY=False)
+    def test_user_should_not_need_to_fill_cultural_survey(self, client):
+        user = users_factories.UserFactory()
+
+        expected_num_queries = 5  # user + booking + deposit + feature + beneficiary_fraud_review
+
+        client.with_token(user.email)
+        with assert_num_queries(expected_num_queries):
+            response = client.get("/native/v1/me")
+
+        assert not response.json["needsToFillCulturalSurvey"]
 
     def test_num_queries_with_next_step(self, client):
         user = users_factories.UserFactory(
@@ -394,27 +372,6 @@ class AccountTest:
             response = client.get("/native/v1/me")
             assert response.status_code == 200
 
-    def should_hide_cultural_survey_if_not_beneficiary(self, client):
-        user = users_factories.UserFactory(
-            activity=users_models.ActivityEnum.STUDENT.value,
-            dateOfBirth=datetime.utcnow() - relativedelta(years=18, days=5),
-            email=self.identifier,
-            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
-        )
-        fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user,
-            type=fraud_models.FraudCheckType.UBBLE,
-            eligibilityType=users_models.EligibilityType.AGE18,
-            status=fraud_models.FraudCheckStatus.SUSPICIOUS,
-            reasonCodes=[fraud_models.FraudReasonCode.ID_CHECK_NOT_SUPPORTED],
-        )
-        client.with_token(user.email)
-
-        response = client.get("/native/v1/me")
-        assert response.status_code == 200
-        assert response.json["needsToFillCulturalSurvey"] is False
-
     def should_display_cultural_survey_if_beneficiary(self, client):
         user = users_factories.BeneficiaryGrant18Factory()
 
@@ -434,7 +391,7 @@ class AccountTest:
         user = sso.user
         user.password = None
 
-        expected_num_queries = 5  # user(update) + user+ beneficiary_fraud_review + deposit + booking
+        expected_num_queries = 6  # user(update) + user + beneficiary_fraud_review + deposit + booking + feature
         with assert_num_queries(expected_num_queries):
             response = client.with_token(user.email).get("/native/v1/me")
             assert response.status_code == 200, response.json
@@ -1400,10 +1357,10 @@ class UpdateUserEmailTest:
         # Ensure the access token is valid
         access_token = response.json["accessToken"]
 
-        expected_num_query = 4  # user + beneficiary_fraud_review + deposit + booking
+        expected_num_queries = 5  # user + booking + deposit + feature + beneficiary_fraud_review
 
         client.auth_header = {"Authorization": f"Bearer {access_token}"}
-        with assert_num_queries(expected_num_query):
+        with assert_num_queries(expected_num_queries):
             protected_response = client.get("/native/v1/me")
             assert protected_response.status_code == 200
 
