@@ -3977,6 +3977,33 @@ def test_public_api(client):
                     "tags": [],
                 }
             },
+            "/native/v1/recommendation/timeout": {
+                "get": {
+                    "description": "",
+                    "operationId": "get__native_v1_recommendation_timeout",
+                    "parameters": [],
+                    "responses": {
+                        "204": {
+                            "description": "No Content",
+                        },
+                        "403": {
+                            "description": "Forbidden",
+                        },
+                        "422": {
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "$ref": "#/components/schemas/ValidationError",
+                                    },
+                                },
+                            },
+                            "description": "Unprocessable Entity",
+                        },
+                    },
+                    "summary": "timeout_route <GET>",
+                    "tags": [],
+                },
+            },
             "/native/v1/refresh_access_token": {
                 "post": {
                     "description": "",

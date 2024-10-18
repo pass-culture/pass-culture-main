@@ -270,6 +270,7 @@ jobs:
       image: pcapi
       commit-hash: ${{ github.event.pull_request.head.sha }}
       checksum-tag: ${{ needs.pcapi-init-job.outputs.checksum-tag }}
+      tag-latest: true
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
@@ -282,6 +283,7 @@ jobs:
       image: pcapi-console
       commit-hash: ${{ github.event.pull_request.head.sha }}
       checksum-tag: ${{ needs.pcapi-init-job.outputs.checksum-tag }}
+      tag-latest: true
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
