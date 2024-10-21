@@ -28,6 +28,7 @@ logger = logging.getLogger(__name__)
 
 
 @blueprint.backoffice_web.route("/admin/user-generator", methods=["GET"])
+@atomic()
 @utils.custom_login_required(redirect_to=".home")
 def get_generated_user() -> utils.BackofficeResponse:
     form = forms.UserGeneratorForm()
@@ -55,11 +56,13 @@ def get_generated_user() -> utils.BackofficeResponse:
 
 
 @blueprint.backoffice_web.route("/admin/user-generator", methods=["POST"])
+@atomic()
 @utils.custom_login_required(redirect_to=".home")
 def generate_user() -> utils.BackofficeResponse:
     form = forms.UserGeneratorForm()
 
     if not form.validate():
+        mark_transaction_as_invalid()
         flash(utils.build_form_error_msg(form), "warning")
         return redirect(url_for("backoffice_web.get_generated_user"), code=303)
 
@@ -72,6 +75,7 @@ def generate_user() -> utils.BackofficeResponse:
         and age >= users_constants.ELIGIBILITY_AGE_18
         and id_provider == users_generator.GeneratedIdProvider.EDUCONNECT.name
     ):
+        mark_transaction_as_invalid()
         flash("Un utilisateur de plus de 18 ans ne peut pas être identifié via Educonnect", "warning")
         return redirect(url_for("backoffice_web.get_generated_user"), code=303)
 
@@ -81,6 +85,7 @@ def generate_user() -> utils.BackofficeResponse:
         age < users_constants.ELIGIBILITY_AGE_18
         and step == users_generator.GeneratedSubscriptionStep.PHONE_VALIDATION.name
     ):
+        mark_transaction_as_invalid()
         flash("Un utilisateur de moins de 18 ans ne peut pas valider son numéro de téléphone", "warning")
         return redirect(url_for("backoffice_web.get_generated_user"), code=303)
 
@@ -111,6 +116,7 @@ def _get_user_if_exists(user_id: str | None) -> users_models.User | None:
 
 
 @blueprint.backoffice_web.route("/admin/delete", methods=["GET"])
+@atomic()
 @utils.custom_login_required(redirect_to=".home")
 def get_user_deletion_form() -> str:
     form = forms.UserDeletionForm()
@@ -126,12 +132,14 @@ def delete_user() -> utils.BackofficeResponse:
 
     form = forms.UserDeletionForm()
     if not form.validate():
+        mark_transaction_as_invalid()
         flash(utils.build_form_error_msg(form), "warning")
         return render_template("admin/users_deletion.html", form=form), 400
 
     email = form.email.data
     user = users_models.User.query.filter_by(email=email).one_or_none()
     if not user:
+        mark_transaction_as_invalid()
         flash(
             Markup("L'adresse email <b>{email}</b> n'a pas été trouvée.").format(email=email),
             "warning",
