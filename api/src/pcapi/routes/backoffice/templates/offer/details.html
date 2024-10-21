@@ -10,6 +10,7 @@
 {% extends "layouts/standard.html" %}
 {% from "components/turbo/lazy_modal.html" import build_lazy_modal with context %}
 {% block main_content %}
+  {% set extra_data = offer.product.extraData if offer.product else offer.extraData %}
   <div class="row row-cols-1 g-4 py-3">
     <div class="col">
       <div class="card shadow">
@@ -102,27 +103,27 @@
                 <p class="mb-1">
                   <span class="fw-bold">Sous-catégorie :</span> {{ offer.subcategoryId | format_offer_subcategory }}
                 </p>
-                {% if offer.extraData.gtl_id %}
+                {% if extra_data.gtl_id %}
                   <span class="fw-bold">Type de musique :</span>
-                  {{ offer.extraData.gtl_id | format_music_gtl_id }}
+                  {{ extra_data.gtl_id | format_music_gtl_id }}
                 {% endif %}
-                {% if offer.extraData.showType or offer.extraData.showSubType %}
+                {% if extra_data.showType or extra_data.showSubType %}
                   <p class="mb-1">
                     <span class="fw-bold">Type de spectacle :</span>
-                    {% if offer.extraData.showType %}
-                      {{ offer.extraData.showType | format_show_type }}
+                    {% if extra_data.showType %}
+                      {{ extra_data.showType | format_show_type }}
                     {% else %}
                       [Non renseigné]
                     {% endif %}
                     -
-                    {% if offer.extraData.showSubType %}
-                      {{ offer.extraData.showSubType | format_show_subtype }}
+                    {% if extra_data.showSubType %}
+                      {{ extra_data.showSubType | format_show_subtype }}
                     {% else %}
                       [Non renseigné]
                     {% endif %}
                   </p>
                 {% endif %}
-                {% if offer.extraData.genres %}<span class="fw-bold">Genres :</span> {{ offer.extraData.genres | format_string_list }}{% endif %}
+                {% if extra_data.genres %}<span class="fw-bold">Genres :</span> {{ extra_data.genres | format_string_list }}{% endif %}
                 {% if offer.withdrawalDetails %}
                   <p class="mb-1">
                     <span class="fw-bold">Modalités de retrait :</span> {{ offer.withdrawalDetails | replace("\n", "<br />"|safe) }}
@@ -307,7 +308,7 @@
             <div class="container">
               <div class="d-flex justify-content-between">
                 <div class="p-2 flex-shrink-1">
-                  {% if offer.idAtProvider or offer.extraData.ean %}
+                  {% if offer.idAtProvider or extra_data.ean %}
                     <h3>Informations techniques</h3>
                     <div class="fs-6">
                       {% if offer.idAtProvider %}
@@ -315,9 +316,9 @@
                           <span class="fw-bold">Identifiant chez le fournisseur :</span> {{ offer.idAtProvider }}
                         </p>
                       {% endif %}
-                      {% if offer.extraData.ean %}
+                      {% if extra_data.ean %}
                         <p class="mb-1">
-                          <span class="fw-bold">EAN :</span> {{ offer.extraData.ean }}
+                          <span class="fw-bold">EAN :</span> {{ extra_data.ean }}
                         </p>
                       {% endif %}
                     </div>
