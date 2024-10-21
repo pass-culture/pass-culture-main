@@ -8,7 +8,11 @@ import {
   IndividualOfferContextValues,
 } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
 import { REIMBURSEMENT_RULES } from 'commons/core/Finances/constants'
-import { CATEGORY_STATUS } from 'commons/core/Offers/constants'
+import {
+  CATEGORY_STATUS,
+  OFFER_WIZARD_MODE,
+} from 'commons/core/Offers/constants'
+import { AddressResponseIsLinkedToVenueModelFactory } from 'commons/utils/commonOffersApiFactories'
 import {
   categoryFactory,
   getIndividualOfferFactory,
@@ -267,5 +271,158 @@ describe('screens:IndividualOffer::UsefulInformation', () => {
       'href',
       'https://aide.passculture.app/hc/fr/articles/6043184068252'
     )
+  })
+
+  describe('ConfirmDialog', () => {
+    beforeEach(() => {
+      // Should appear only in edition mode, and if offer has pending bookings
+      vi.mock('commons/hooks/useOfferWizardMode', () => ({
+        useOfferWizardMode: vi.fn(() => OFFER_WIZARD_MODE.EDITION),
+      }))
+      props.offer.hasPendingBookings = true
+    })
+
+    afterEach(() => {
+      vi.resetAllMocks()
+      props.offer.hasPendingBookings = false
+    })
+
+    it('should display the dialog if user updated withdrawal informations', async () => {
+      renderUsefulInformationScreen(props, contextValue)
+
+      const withdrawalInformationsField = await screen.findByRole('textbox', {
+        name: /Informations de retrait/,
+      })
+
+      await userEvent.type(withdrawalInformationsField, 'Update retrait')
+
+      await userEvent.click(
+        await screen.findByRole('button', {
+          name: /Enregistrer les modifications/,
+        })
+      )
+
+      expect(
+        screen.getByText(
+          /Les changements vont s’impacter à l’ensemble des réservations en cours associées/
+        )
+      ).toBeInTheDocument()
+
+      expect(
+        screen.getByText('Vous avez modifié les modalités de retrait.')
+      ).toBeInTheDocument()
+    })
+
+    it('should display the dialog if user updated address field(s)', async () => {
+      const propsWithOfferAddress = structuredClone(props)
+      propsWithOfferAddress.offer.address =
+        AddressResponseIsLinkedToVenueModelFactory({
+          id: 666,
+          id_oa: 1337,
+          isLinkedToVenue: false,
+          isManualEdition: true,
+        })
+
+      renderUsefulInformationScreen(propsWithOfferAddress, contextValue, {
+        features: ['WIP_ENABLE_OFFER_ADDRESS'],
+      })
+
+      const cityField = await screen.findByRole('textbox', {
+        name: /Ville/,
+      })
+
+      await userEvent.type(cityField, 'Updated city')
+
+      await userEvent.click(
+        await screen.findByRole('button', {
+          name: /Enregistrer les modifications/,
+        })
+      )
+
+      expect(
+        screen.getByText(
+          /Les changements vont s’impacter à l’ensemble des réservations en cours associées/
+        )
+      ).toBeInTheDocument()
+
+      expect(
+        screen.getByText('Vous avez modifié la localisation.')
+      ).toBeInTheDocument()
+    })
+
+    it('should display the dialog if user updated both withdrawalInformations and address field(s)', async () => {
+      const propsWithOfferAddress = structuredClone(props)
+      propsWithOfferAddress.offer.address =
+        AddressResponseIsLinkedToVenueModelFactory({
+          id: 666,
+          id_oa: 1337,
+          isLinkedToVenue: false,
+          isManualEdition: true,
+        })
+
+      renderUsefulInformationScreen(propsWithOfferAddress, contextValue, {
+        features: ['WIP_ENABLE_OFFER_ADDRESS'],
+      })
+
+      const withdrawalInformationsField = await screen.findByRole('textbox', {
+        name: /Informations de retrait/,
+      })
+      const cityField = await screen.findByRole('textbox', {
+        name: /Ville/,
+      })
+
+      await userEvent.type(cityField, 'Updated city')
+      await userEvent.type(withdrawalInformationsField, 'Update retrait')
+
+      await userEvent.click(
+        await screen.findByRole('button', {
+          name: /Enregistrer les modifications/,
+        })
+      )
+
+      expect(
+        screen.getByText(
+          /Les changements vont s’impacter à l’ensemble des réservations en cours associées/
+        )
+      ).toBeInTheDocument()
+
+      expect(
+        screen.getByText(
+          'Vous avez modifié les modalités de retrait et la localisation.'
+        )
+      ).toBeInTheDocument()
+    })
+
+    it('should NOT display the dialog if offer has no pending bookings', async () => {
+      props.offer.hasPendingBookings = false
+
+      vi.spyOn(api, 'patchOffer').mockResolvedValue(
+        getIndividualOfferFactory({
+          id: 12,
+        })
+      )
+
+      renderUsefulInformationScreen(props, contextValue)
+
+      const withdrawalInformationsField = await screen.findByRole('textbox', {
+        name: /Informations de retrait/,
+      })
+
+      await userEvent.type(withdrawalInformationsField, 'Update retrait')
+
+      await userEvent.click(
+        await screen.findByRole('button', {
+          name: /Enregistrer les modifications/,
+        })
+      )
+
+      expect(
+        screen.queryByText(
+          /Les changements vont s’impacter à l’ensemble des réservations en cours associées/
+        )
+      ).not.toBeInTheDocument()
+
+      expect(api.patchOffer).toHaveBeenCalledOnce()
+    })
   })
 })
