@@ -1,4 +1,5 @@
 import datetime
+import uuid
 
 import factory.fuzzy
 
@@ -36,6 +37,16 @@ class SpecialEventResponseFactory(BaseFactory):
     user = factory.SubFactory(users_factories.BeneficiaryGrant18Factory)
     phoneNumber = factory.SelfAttribute("user.phoneNumber")
     email = factory.SelfAttribute("user.email")
+    status = models.SpecialEventResponseStatus.NEW
+
+
+class SpecialEventResponseNoUserFactory(SpecialEventResponseFactory):
+    class Meta:
+        model = models.SpecialEventResponse
+
+    user = None
+    phoneNumber = "0012345678"
+    email = factory.LazyFunction(lambda: f"non.inscrit_{uuid.uuid4()}@example.com")
 
 
 class SpecialEventAnswerFactory(BaseFactory):

@@ -122,6 +122,11 @@
      class="link-primary"
      target="_top">{{ provider[text_attr] }}</a>
 {% endmacro %}
+{% macro build_special_event_id_to_details_link(special_event, text_attr="id") %}
+  <a href="{{ url_for('backoffice_web.operations.get_event_details', special_event_id=special_event.id) }}"
+     class="link-primary"
+     target="_top">{{ special_event[text_attr] }}</a>
+{% endmacro %}
 {# ----- PC Pro links ----- #}
 {% macro build_pro_offerer_offers_link(offerer) %}
   {{ build_connect_as_pseudo_link(offerer.id, "offerer", "/offres?structure="~offerer.id~"&from-bo=true", "Offres associées", "fw-bold link-primary") }}

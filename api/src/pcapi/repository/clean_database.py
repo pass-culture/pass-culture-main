@@ -106,6 +106,10 @@ tables_to_clean: list[flask_sqlalchemy.Model] = [
     offers_models.OfferValidationSubRule,
     offers_models.OfferValidationRule,
     offers_models.OfferPriceLimitationRule,
+    operations_models.SpecialEventAnswer,
+    operations_models.SpecialEventResponse,
+    operations_models.SpecialEventQuestion,
+    operations_models.SpecialEvent,
     users_models.GdprUserAnonymization,
     users_models.GdprUserDataExtract,
     users_models.SingleSignOn,
@@ -124,10 +128,6 @@ tables_to_clean: list[flask_sqlalchemy.Model] = [
     perm_models.Role,
     history_models.ActionHistory,
     educational_models.NationalProgram,
-    operations_models.SpecialEventAnswer,
-    operations_models.SpecialEventResponse,
-    operations_models.SpecialEventQuestion,
-    operations_models.SpecialEvent,
 ]
 
 

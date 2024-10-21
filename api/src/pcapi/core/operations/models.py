@@ -1,4 +1,5 @@
 from datetime import datetime
+import enum
 
 import sqlalchemy as sa
 
@@ -7,6 +8,7 @@ from pcapi.core.users import models as users_models
 from pcapi.models import Base
 from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
+from pcapi.utils.db import MagicEnum
 
 
 class SpecialEvent(PcObject, Base, Model):
@@ -41,6 +43,13 @@ class SpecialEventQuestion(PcObject, Base, Model):
     title: str = sa.Column(sa.Text(), nullable=False)
 
 
+class SpecialEventResponseStatus(enum.Enum):
+    NEW = "NEW"
+    VALIDATED = "VALIDATED"
+    REJECTED = "REJECTED"
+    PRESELECTED = "PRESELECTED"
+
+
 class SpecialEventResponse(PcObject, Base, Model):
     """
     User response to a special event, linked with his/her answers.
@@ -58,6 +67,9 @@ class SpecialEventResponse(PcObject, Base, Model):
     dateSubmitted: datetime = sa.Column(sa.DateTime, nullable=False)
     phoneNumber: str = sa.Column(sa.Text(), nullable=True)
     email: str = sa.Column(sa.Text(), nullable=True)
+    status: SpecialEventResponseStatus = sa.Column(
+        MagicEnum(SpecialEventResponseStatus), nullable=False, default=SpecialEventResponseStatus.NEW
+    )
     userId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=True)
     user: users_models.User = sa.orm.relationship(
         "User", foreign_keys=[userId], backref=sa.orm.backref("specialEventResponses")
