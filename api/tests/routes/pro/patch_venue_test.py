@@ -179,6 +179,106 @@ class Returns200Test:
         assert offerer_address.addressId == address.id
         assert offerer_address.label is None
 
+    def test_updating_venue_location_should_create_offerer_address_instead_of_reusing_it(self, client):
+        user_offerer = offerers_factories.UserOffererFactory()
+        address_poissoniere = geography_factories.AddressFactory(
+            street="1 boulevard Poissonnière", postalCode="75000", inseeCode="75000", city="Paris"
+        )
+        offerer_address_poissonniere = offerers_factories.OffererAddressFactory(
+            offerer=user_offerer.offerer, address=address_poissoniere
+        )
+        venue_bd_poissonniere = offerers_factories.VenueFactory(
+            managingOfferer=user_offerer.offerer,
+            street=address_poissoniere.street,
+            postalCode=address_poissoniere.postalCode,
+            city=address_poissoniere.city,
+            offererAddress=offerer_address_poissonniere,
+        )
+        address_valois = geography_factories.AddressFactory(
+            street="3 Rue de Valois",
+            postalCode="75001",
+            inseeCode="75056",
+            city="Paris",
+            latitude=48.87171,
+            longitude=2.30829,
+            banId="75101_9575_00003",
+        )
+        offerer_address_valois = offerers_factories.OffererAddressFactory(
+            offerer=user_offerer.offerer,
+            address=address_valois,
+        )
+        venue_rue_de_valois = offerers_factories.VenueFactory(
+            managingOfferer=user_offerer.offerer,
+            street=address_valois.street,
+            postalCode=address_valois.postalCode,
+            city=address_valois.city,
+            offererAddress=offerer_address_valois,
+        )
+        http_client = client.with_session_auth(email=user_offerer.user.email)
+        venue_id = venue_bd_poissonniere.id
+
+        venue_data = populate_missing_data_from_venue(
+            {
+                # Default data from api adresse TestingBackend
+                "street": "3 Rue de Valois",
+                "banId": "75101_9575_00003",
+                "city": "Paris",
+                "latitude": 48.87171,
+                "longitude": 2.308289,
+                "postalCode": "75001",
+                "inseeCode": "75056",
+                "isManualEdition": False,
+            },
+            venue_bd_poissonniere,
+        )
+
+        response = http_client.patch(f"/venues/{venue_id}", json=venue_data)
+
+        assert response.status_code == 200
+        assert response.json["street"] == "3 Rue de Valois"
+        assert response.json["banId"] == "75101_9575_00003"
+        assert response.json["city"] == "Paris"
+        assert response.json["siret"] == venue_bd_poissonniere.siret
+        assert response.json["postalCode"] == "75001"
+
+        venue_bd_poissonniere = offerers_models.Venue.query.filter_by(id=venue_bd_poissonniere.id).one()
+        old_offerer_address_poissonniere = offerers_models.OffererAddress.query.filter_by(
+            id=offerer_address_poissonniere.id
+        ).one()
+        new_offerer_address_poissonniere = venue_bd_poissonniere.offererAddress
+
+        assert venue_bd_poissonniere.offererAddressId != venue_rue_de_valois.offererAddressId
+        assert venue_bd_poissonniere.offererAddress.addressId == venue_rue_de_valois.offererAddress.addressId
+        assert len(venue_bd_poissonniere.action_history) == 1
+        assert venue_bd_poissonniere.action_history[0].actionType == history_models.ActionType.INFO_MODIFIED
+        assert venue_bd_poissonniere.action_history[0].venueId == venue_bd_poissonniere.id
+        assert venue_bd_poissonniere.action_history[0].authorUser.id == user_offerer.user.id
+        assert venue_bd_poissonniere.action_history[0].extraData["modified_info"]["street"] == {
+            "new_info": "3 Rue de Valois",
+            "old_info": "1 boulevard Poissonnière",
+        }
+        assert venue_bd_poissonniere.action_history[0].extraData["modified_info"]["banId"] == {
+            "new_info": "75101_9575_00003",
+            "old_info": "75102_7560_00001",
+        }
+        assert venue_bd_poissonniere.action_history[0].extraData["modified_info"]["latitude"] == {
+            "new_info": "48.87171",
+            "old_info": "48.87004",
+        }
+        assert venue_bd_poissonniere.action_history[0].extraData["modified_info"]["longitude"] == {
+            "new_info": "2.30829",
+            "old_info": "2.3785",
+        }
+        assert venue_bd_poissonniere.action_history[0].extraData["modified_info"]["postalCode"] == {
+            "new_info": "75001",
+            "old_info": "75000",
+        }
+
+        assert old_offerer_address_poissonniere.label == venue_bd_poissonniere.common_name
+        assert new_offerer_address_poissonniere.label is None
+        assert new_offerer_address_poissonniere.id != venue_rue_de_valois.offererAddressId
+        assert new_offerer_address_poissonniere.addressId == venue_rue_de_valois.offererAddress.addressId
+
     def test_update_venue_location_with_manual_edition(self, client, requests_mock) -> None:
         user_offerer = offerers_factories.UserOffererFactory()
         address = geography_factories.AddressFactory(

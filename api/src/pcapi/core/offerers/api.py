@@ -278,26 +278,16 @@ def update_venue_location(
         "inseeCode": address.inseeCode,
     }
 
-    if not venue.offererAddressId:
-        offerer_address = get_or_create_offerer_address(venue.managingOffererId, address.id)
-        venue_snapshot.trace_update({"offererAddressId": offerer_address.id})
-        venue_snapshot.trace_update(
-            snapshot_location_data,
-            target=geography_models.Address(),
-            field_name_template="offererAddress.address.{}",
-        )
-        venue.offererAddress = offerer_address
-        db.session.add(venue)
+    new_offerer_address = create_offerer_address(venue.managingOffererId, address.id)
+    if venue.offererAddress:
+        old_offerer_address = venue.offererAddress
+        old_offerer_address.label = venue.common_name
+        db.session.add(old_offerer_address)
         db.session.flush()
-    else:
-        target = venue.offererAddress.address  # type: ignore[union-attr]
-        venue_snapshot.trace_update(
-            snapshot_location_data, target=target, field_name_template="offererAddress.address.{}"
-        )
-        venue_snapshot.trace_update(
-            {"addressId": address.id}, target=venue.offererAddress, field_name_template="offererAddress.{}"
-        )
-        update_offerer_address(venue.offererAddressId, address.id)
+
+    venue.offererAddress = new_offerer_address
+    db.session.add(venue)
+    db.session.flush()
 
     if modifications.get("street"):
         modifications["street"] = address.street
@@ -2820,6 +2810,14 @@ def get_or_create_offerer_address(offerer_id: int, address_id: int, label: str |
         .options(sa_orm.joinedload(models.OffererAddress.address))
         .one()
     )
+
+    return offerer_address
+
+
+def create_offerer_address(offerer_id: int, address_id: int, label: str | None = None) -> models.OffererAddress:
+    offerer_address = models.OffererAddress(offererId=offerer_id, addressId=address_id, label=label)
+    db.session.add(offerer_address)
+    db.session.flush()
 
     return offerer_address
 
