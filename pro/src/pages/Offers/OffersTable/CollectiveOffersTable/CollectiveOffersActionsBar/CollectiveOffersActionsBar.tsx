@@ -5,9 +5,11 @@ import { useSWRConfig } from 'swr'
 import { api } from 'apiClient/api'
 import {
   CollectiveBookingStatus,
+  CollectiveOfferAllowedAction,
   CollectiveOfferDisplayedStatus,
   CollectiveOfferResponseModel,
   CollectiveOfferStatus,
+  CollectiveOfferTemplateAllowedAction,
 } from 'apiClient/v1'
 import { NOTIFICATION_LONG_SHOW_DURATION } from 'commons/core/Notification/constants'
 import { useQueryCollectiveSearchFilters } from 'commons/core/Offers/hooks/useQuerySearchFilters'
@@ -15,10 +17,10 @@ import { getCollectiveOffersSwrKeys } from 'commons/core/Offers/utils/getCollect
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useNotification } from 'commons/hooks/useNotification'
 import { selectCurrentOffererId } from 'commons/store/user/selectors'
+import { isActionAllowedOnCollectiveOffer } from 'commons/utils/isActionAllowedOnCollectiveOffer'
 import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
 import { ArchiveConfirmationModal } from 'components/ArchiveConfirmationModal/ArchiveConfirmationModal'
 import { canArchiveCollectiveOffer } from 'components/ArchiveConfirmationModal/utils/canArchiveCollectiveOffer'
-import { isCollectiveOfferArchivable } from 'components/ArchiveConfirmationModal/utils/isCollectiveOfferArchivable'
 import fullHideIcon from 'icons/full-hide.svg'
 import fullValidateIcon from 'icons/full-validate.svg'
 import strokeThingIcon from 'icons/stroke-thing.svg'
@@ -130,10 +132,6 @@ export function CollectiveOffersActionsBar({
     'ENABLE_COLLECTIVE_NEW_STATUSES'
   )
 
-  const areCollectiveNewStatusesEnabled = useActiveFeature(
-    'ENABLE_COLLECTIVE_NEW_STATUSES'
-  )
-
   const { mutate } = useSWRConfig()
 
   const collectiveOffersQueryKeys = getCollectiveOffersSwrKeys({
@@ -222,8 +220,13 @@ export function CollectiveOffersActionsBar({
 
   function openArchiveOffersDialog() {
     const shouldOpenArchiveDialog = selectedOffers.every((offer) => {
-      const canArchiveOffer = areCollectiveNewStatusesEnabled
-        ? isCollectiveOfferArchivable(offer)
+      const canArchiveOffer = areNewStatusesEnabled
+        ? isActionAllowedOnCollectiveOffer(
+            offer,
+            offer.isShowcase
+              ? CollectiveOfferTemplateAllowedAction.CAN_ARCHIVE
+              : CollectiveOfferAllowedAction.CAN_ARCHIVE
+          )
         : canArchiveCollectiveOffer(offer)
 
       if (!canArchiveOffer) {

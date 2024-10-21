@@ -6,8 +6,10 @@ import { useSWRConfig } from 'swr'
 
 import { api } from 'apiClient/api'
 import {
+  CollectiveOfferAllowedAction,
   CollectiveOfferDisplayedStatus,
   CollectiveOfferStatus,
+  CollectiveOfferTemplateAllowedAction,
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
 } from 'apiClient/v1'
@@ -26,17 +28,19 @@ import {
   isCollectiveOfferTemplate,
 } from 'commons/core/OfferEducational/types'
 import { computeURLCollectiveOfferId } from 'commons/core/OfferEducational/utils/computeURLCollectiveOfferId'
+import { createOfferFromBookableOffer } from 'commons/core/OfferEducational/utils/createOfferFromBookableOffer'
 import { createOfferFromTemplate } from 'commons/core/OfferEducational/utils/createOfferFromTemplate'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useNotification } from 'commons/hooks/useNotification'
 import { useOfferStockEditionURL } from 'commons/hooks/useOfferEditionURL'
 import { selectCurrentOffererId } from 'commons/store/user/selectors'
+import { isActionAllowedOnCollectiveOffer } from 'commons/utils/isActionAllowedOnCollectiveOffer'
 import { ArchiveConfirmationModal } from 'components/ArchiveConfirmationModal/ArchiveConfirmationModal'
 import { canArchiveCollectiveOfferFromSummary } from 'components/ArchiveConfirmationModal/utils/canArchiveCollectiveOffer'
-import { isCollectiveOfferArchivable } from 'components/ArchiveConfirmationModal/utils/isCollectiveOfferArchivable'
 import { Step, Stepper } from 'components/Stepper/Stepper'
 import fullArchiveIcon from 'icons/full-archive.svg'
-import fullMoreIcon from 'icons/full-more.svg'
+import fullCopyIcon from 'icons/full-duplicate.svg'
+import fullPlusIcon from 'icons/full-plus.svg'
 import fullShowIcon from 'icons/full-show.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
@@ -240,8 +244,32 @@ export const CollectiveOfferNavigation = ({
   }
 
   const canArchiveOffer = areCollectiveNewStatusesEnabled
-    ? offer && isCollectiveOfferArchivable(offer)
+    ? offer &&
+      isActionAllowedOnCollectiveOffer(
+        offer,
+        isTemplate
+          ? CollectiveOfferTemplateAllowedAction.CAN_ARCHIVE
+          : CollectiveOfferAllowedAction.CAN_ARCHIVE
+      )
     : offer && canArchiveCollectiveOfferFromSummary(offer)
+
+  const canDuplicateOffer = offer
+    ? areCollectiveNewStatusesEnabled
+      ? isActionAllowedOnCollectiveOffer(
+          offer,
+          CollectiveOfferAllowedAction.CAN_DUPLICATE
+        )
+      : !isTemplate
+    : false
+
+  const canCreateBookableOffer = offer
+    ? areCollectiveNewStatusesEnabled
+      ? isActionAllowedOnCollectiveOffer(
+          offer,
+          CollectiveOfferTemplateAllowedAction.CAN_CREATE_BOOKABLE_OFFER
+        )
+      : isTemplate
+    : false
 
   return isEditingExistingOffer ? (
     <>
@@ -262,25 +290,39 @@ export const CollectiveOfferNavigation = ({
           </Button>
         )}
 
-        {isTemplate && (
+        {canDuplicateOffer && (
           <Button
             variant={ButtonVariant.TERNARY}
-            icon={fullMoreIcon}
+            icon={fullCopyIcon}
+            onClick={async () => {
+              await createOfferFromBookableOffer(navigate, notify, offerId)
+            }}
+          >
+            Dupliquer
+          </Button>
+        )}
+
+        {canCreateBookableOffer && (
+          <Button
+            variant={ButtonVariant.TERNARY}
+            icon={fullPlusIcon}
             onClick={() => {
-              logEvent(Events.CLICKED_DUPLICATE_TEMPLATE_OFFER, {
-                from: OFFER_FROM_TEMPLATE_ENTRIES.OFFER_TEMPLATE_RECAP,
-                offererId: selectedOffererId?.toString(),
-                offerId,
-                offerType: 'collective',
-              })
-              // eslint-disable-next-line @typescript-eslint/no-floating-promises
-              createOfferFromTemplate(
-                navigate,
-                notify,
-                offerId,
-                undefined,
-                isMarseilleActive
-              )
+              if (isTemplate) {
+                logEvent(Events.CLICKED_DUPLICATE_TEMPLATE_OFFER, {
+                  from: OFFER_FROM_TEMPLATE_ENTRIES.OFFER_TEMPLATE_RECAP,
+                  offererId: selectedOffererId?.toString(),
+                  offerId,
+                  offerType: 'collective',
+                })
+                // eslint-disable-next-line @typescript-eslint/no-floating-promises
+                createOfferFromTemplate(
+                  navigate,
+                  notify,
+                  offerId,
+                  undefined,
+                  isMarseilleActive
+                )
+              }
             }}
           >
             Créer une offre réservable

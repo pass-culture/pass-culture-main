@@ -9,8 +9,10 @@ import { api } from 'apiClient/api'
 import { getErrorCode, isErrorAPIError } from 'apiClient/helpers'
 import {
   CollectiveBookingStatus,
+  CollectiveOfferAllowedAction,
   CollectiveOfferResponseModel,
   CollectiveOfferStatus,
+  CollectiveOfferTemplateAllowedAction,
 } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
 import {
@@ -32,10 +34,10 @@ import {
   formatBrowserTimezonedDateAsUTC,
   isDateValid,
 } from 'commons/utils/date'
+import { isActionAllowedOnCollectiveOffer } from 'commons/utils/isActionAllowedOnCollectiveOffer'
 import { localStorageAvailable } from 'commons/utils/localStorageAvailable'
 import { ArchiveConfirmationModal } from 'components/ArchiveConfirmationModal/ArchiveConfirmationModal'
 import { canArchiveCollectiveOffer } from 'components/ArchiveConfirmationModal/utils/canArchiveCollectiveOffer'
-import { isCollectiveOfferArchivable } from 'components/ArchiveConfirmationModal/utils/isCollectiveOfferArchivable'
 import { CancelCollectiveBookingModal } from 'components/CancelCollectiveBookingModal/CancelCollectiveBookingModal'
 import fullClearIcon from 'icons/full-clear.svg'
 import fullCopyIcon from 'icons/full-duplicate.svg'
@@ -89,7 +91,6 @@ export const CollectiveActionsCells = ({
   const isNewOffersAndBookingsActive = useActiveFeature(
     'WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE'
   )
-
   const areCollectiveNewStatusesEnabled = useActiveFeature(
     'ENABLE_COLLECTIVE_NEW_STATUSES'
   )
@@ -227,12 +228,23 @@ export const CollectiveActionsCells = ({
     })
   }
 
-  const canDuplicateOffer = offer.status !== CollectiveOfferStatus.DRAFT
+  const canDuplicateOffer = areCollectiveNewStatusesEnabled
+    ? isActionAllowedOnCollectiveOffer(
+        offer,
+        offer.isShowcase
+          ? CollectiveOfferTemplateAllowedAction.CAN_CREATE_BOOKABLE_OFFER
+          : CollectiveOfferAllowedAction.CAN_DUPLICATE
+      )
+    : offer.status !== CollectiveOfferStatus.DRAFT
 
   const canArchiveOffer = areCollectiveNewStatusesEnabled
-    ? isCollectiveOfferArchivable(offer)
-    : offer.status !== CollectiveOfferStatus.ARCHIVED &&
-      canArchiveCollectiveOffer(offer)
+    ? isActionAllowedOnCollectiveOffer(
+        offer,
+        offer.isShowcase
+          ? CollectiveOfferTemplateAllowedAction.CAN_ARCHIVE
+          : CollectiveOfferAllowedAction.CAN_ARCHIVE
+      )
+    : canArchiveCollectiveOffer(offer)
 
   return (
     <td
