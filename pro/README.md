@@ -34,8 +34,7 @@ Sur linux + chrome / chromium l’application peut se charger indéfiniment un w
 - ### Lancement des tests end to end
 
   - Prérequis aux lancement des tests E2E Cypress
-    - Lancement du backend `pc start-backend`
-    - Injection des données de test `pc sandbox -n e2e`
+  - Lancement du backend `pc start-backend`
   - Lancement des tests depuis la ligne de commande `yarn test:e2e`
 
 Note, si vous lancez les tests e2e hors Docker et sous OSX, Cypress tentera de contacter le backoffice sur le localhost ipv6. Comme, par défaut, le backend écoute sur les ports en ipv4, il faudra lancer le backend avec:
