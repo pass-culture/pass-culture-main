@@ -25,3 +25,17 @@ def pro_no_bookings_since_40_days_automation() -> bool:
     return add_contacts_to_list(
         no_bookings_pro_emails, settings.SENDINBLUE_PRO_NO_BOOKINGS_40_DAYS_ID, use_pro_subaccount=True
     )
+
+
+def update_pro_contacts_list_for_live_show_churned_40_days_ago() -> bool:
+    email = [row.venue_booking_email for row in big_queries.ProLiveShowEmailChurned40DaysAgoQuery().execute()]
+    return add_contacts_to_list(
+        email, settings.SENDINBLUE_PRO_MARKETING_LIVE_SHOW_EMAIL_CHURNED_40_DAYS_AGO, use_pro_subaccount=True
+    )
+
+
+def update_pro_contacts_list_for_live_show_last_booking_40_days_ago() -> bool:
+    email = [row.venue_booking_email for row in big_queries.ProLiveShowEmailLastBooking40DaysAgoQuery().execute()]
+    return add_contacts_to_list(
+        email, settings.SENDINBLUE_PRO_MARKETING_LIVE_SHOW_EMAIL_LAST_BOOKING_40_DAYS_AGO, use_pro_subaccount=True
+    )
