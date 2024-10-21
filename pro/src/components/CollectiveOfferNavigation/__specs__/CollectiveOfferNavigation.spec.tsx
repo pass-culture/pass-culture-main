@@ -7,6 +7,7 @@ import { ApiResult } from 'apiClient/adage/core/ApiResult'
 import { api } from 'apiClient/api'
 import {
   ApiError,
+  CollectiveOfferAllowedAction,
   CollectiveOfferResponseIdModel,
   CollectiveOfferStatus,
   CollectiveOfferTemplateAllowedAction,
@@ -115,6 +116,7 @@ describe('CollectiveOfferNavigation', () => {
       isCreatingOffer: true,
       offerId: offerId,
       isTemplate: false,
+      offer: getCollectiveOfferFactory(),
     }
   })
 
@@ -342,6 +344,49 @@ describe('CollectiveOfferNavigation', () => {
     expect(duplicateOffer).toBeInTheDocument()
   })
 
+  it('should show create bookable offer if offer is template and ff is active', () => {
+    renderCollectiveOfferNavigation(
+      {
+        ...props,
+        isTemplate: true,
+        isCreatingOffer: false,
+        offer: {
+          ...offer,
+          allowedActions: [
+            CollectiveOfferTemplateAllowedAction.CAN_CREATE_BOOKABLE_OFFER,
+          ],
+        },
+      },
+      { features: ['ENABLE_COLLECTIVE_NEW_STATUSES'] }
+    )
+
+    const duplicateOffer = screen.getByRole('button', {
+      name: 'Créer une offre réservable',
+    })
+
+    expect(duplicateOffer).toBeInTheDocument()
+  })
+
+  it('should show duplicate button if offer is bookable and ff is active', () => {
+    renderCollectiveOfferNavigation(
+      {
+        ...props,
+        isTemplate: false,
+        isCreatingOffer: false,
+        offer: getCollectiveOfferFactory({
+          allowedActions: [CollectiveOfferAllowedAction.CAN_DUPLICATE],
+        }),
+      },
+      { features: ['ENABLE_COLLECTIVE_NEW_STATUSES'] }
+    )
+
+    const duplicateOffer = screen.getByRole('button', {
+      name: 'Dupliquer',
+    })
+
+    expect(duplicateOffer).toBeInTheDocument()
+  })
+
   it('should return an error when the collective offer could not be retrieved', async () => {
     vi.spyOn(api, 'getCollectiveOfferTemplate').mockRejectedValueOnce('')
 
@@ -455,13 +500,14 @@ describe('CollectiveOfferNavigation', () => {
       ...props,
       isTemplate: true,
       isCreatingOffer: false,
+      offer: { ...offer, status: CollectiveOfferStatus.ARCHIVED },
     })
 
     const archiveButton = screen.queryByRole('button', {
       name: 'Archiver',
     })
 
-    expect(archiveButton).not.to.toBeInTheDocument()
+    expect(archiveButton).not.toBeInTheDocument()
   })
 
   it('should not see archive button when FF status is enable and archive action is not possible', () => {
@@ -485,7 +531,7 @@ describe('CollectiveOfferNavigation', () => {
     expect(archiveButton).not.to.toBeInTheDocument()
   })
 
-  it('should see archive button when FF status is enable and archive action is possible', () => {
+  it('should see archive button when FF status is enable and archive action is possible for template offer', () => {
     renderCollectiveOfferNavigation(
       {
         ...props,
@@ -495,6 +541,26 @@ describe('CollectiveOfferNavigation', () => {
           ...offer,
           allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_ARCHIVE],
         },
+      },
+      { features: ['ENABLE_COLLECTIVE_NEW_STATUSES'] }
+    )
+
+    const archiveButton = screen.getByRole('button', {
+      name: 'Archiver',
+    })
+
+    expect(archiveButton).toBeInTheDocument()
+  })
+
+  it('should see archive button when FF status is enable and archive action is possible for bookable offer', () => {
+    renderCollectiveOfferNavigation(
+      {
+        ...props,
+        isTemplate: false,
+        isCreatingOffer: false,
+        offer: getCollectiveOfferFactory({
+          allowedActions: [CollectiveOfferAllowedAction.CAN_ARCHIVE],
+        }),
       },
       { features: ['ENABLE_COLLECTIVE_NEW_STATUSES'] }
     )

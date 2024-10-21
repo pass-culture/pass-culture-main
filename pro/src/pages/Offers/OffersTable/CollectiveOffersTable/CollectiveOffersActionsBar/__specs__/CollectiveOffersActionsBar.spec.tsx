@@ -4,6 +4,7 @@ import { userEvent } from '@testing-library/user-event'
 import { api } from 'apiClient/api'
 import {
   CollectiveBookingStatus,
+  CollectiveOfferAllowedAction,
   CollectiveOfferStatus,
   CollectiveOffersStockResponseModel,
 } from 'apiClient/v1'
@@ -487,6 +488,39 @@ describe('ActionsBar', () => {
         }),
       ],
     })
+
+    const archivingButton = screen.getByText('Archiver')
+    await userEvent.click(archivingButton)
+
+    expect(
+      screen.getByText(
+        'Les offres liées à des réservations en cours ne peuvent pas être archivées'
+      )
+    ).toBeInTheDocument()
+  })
+
+  it('should not archive offers on click on "Archiver" when at least one offer cannot be archived and ff is active', async () => {
+    renderActionsBar(
+      {
+        ...props,
+
+        selectedOffers: [
+          collectiveOfferFactory({
+            id: 1,
+            status: CollectiveOfferStatus.ACTIVE,
+            stocks,
+            allowedActions: [CollectiveOfferAllowedAction.CAN_ARCHIVE],
+          }),
+          collectiveOfferFactory({
+            id: 2,
+            status: CollectiveOfferStatus.PENDING,
+            stocks,
+            allowedActions: [],
+          }),
+        ],
+      },
+      ['ENABLE_COLLECTIVE_NEW_STATUSES']
+    )
 
     const archivingButton = screen.getByText('Archiver')
     await userEvent.click(archivingButton)
