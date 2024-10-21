@@ -181,7 +181,7 @@ class Returns201Test:
         assert response_dict["name"] == "Celeste"
         assert response_dict["id"] == offer.id
         assert response_dict["productId"] == offer.productId
-        assert response_dict["extraData"] == {"gtl_id": "07000000", "ean": "1234567891234"}
+        assert response_dict["extraData"] == {"ean": "1234567891234"}
         assert offer.product == product
         assert offer.description == product.description
         assert offer._description is None
