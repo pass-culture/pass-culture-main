@@ -1,0 +1,146 @@
+{% import "components/links.html" as links %}
+{% from "components/presentation/details/tabs.html" import build_details_tab %}
+{% from "components/presentation/details/tabs.html" import build_details_tabs_wrapper %}
+{% from "components/presentation/details/tabs.html" import build_details_tab_content %}
+{% from "components/presentation/details/tabs.html" import build_details_tabs_content_wrapper %}
+{% extends "layouts/standard.html" %}
+{% from "components/turbo/lazy_modal.html" import build_lazy_modal with context %}
+{% block main_content %}
+  <div class="row row-cols-1 g-4 py-3">
+    <div class="col">
+      <div class="card shadow">
+        <div class="card-body">
+          <div class="row justify-content-start align-items-center">
+            <div class="col d-flex align-items-center justify-content-start">
+              <h2 class="card-title mb-3 text-primary">{{ special_event.title }}</h2>
+            </div>
+          </div>
+          <p class="card-subtitle text-muted mb-3 h5">
+            Typeform ID :
+            <a href="https://admin.typeform.com/form/{{ special_event.externalId }}/create"
+               target="_blank"
+               title="Ouvrir dans Typeform"
+               class="link-primary">
+            {{ special_event.externalId }} <i class="bi bi-box-arrow-up-right"></i></a>
+          </p>
+          <div class="row pt-3">
+            <div class="col-4">
+              <div class="fs-6">
+                <p class="mb-1">
+                  <span class="fw-bold">Créée le :</span> {{ special_event.dateCreated | format_date_time }}
+                </p>
+                <p class="mb-1">
+                  <span class="fw-bold">Date de l'évènement :</span> {{ special_event.eventDate | format_date_time }}
+                </p>
+                <p class="mb-1">
+                  <span class="fw-bold">Nombre de candidats :</span> {{ response_rows | length }}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="mt-4">
+        {% call build_details_tabs_wrapper() %}
+          {{ build_details_tab("responses", "Candidatures", active_tab == 'responses') }}
+        {% endcall %}
+        {% call build_details_tabs_content_wrapper() %}
+          {% call build_details_tab_content("responses", active_tab == 'responses') %}
+            <table class="table mb-4 my-4">
+              <thead>
+                <tr>
+                  <th scope="col"></th>
+                  <th scope="col">Candidat</th>
+                  <th scope="col">Email</th>
+                  <th scope="col">Téléphone</th>
+                  <th scope="col">Éligibilité</th>
+                  <th scope="col">Date de réponse</th>
+                  <th scope="col">État de la candidature</th>
+                  <th scope="col">Réponses</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for row in response_rows %}
+                  {% set response = row.SpecialEventResponse %}
+                  <tr>
+                    <td>
+                      <div class="dropdown">
+                        <button type="button"
+                                data-bs-toggle="dropdown"
+                                aria-expanded="false"
+                                class="btn p-0">
+                          <i class="bi bi-three-dots-vertical"></i>
+                        </button>
+                        <ul class="dropdown-menu">
+                          {% if response.status != response.status.VALIDATED %}
+                            <li class="dropdown-item p-0">
+                              <form action="{{ url_for('backoffice_web.operations.validate_response', special_event_id=special_event.id, response_id=response.id) }}"
+                                    name="{{ url_for('backoffice_web.operations.validate_response', special_event_id=special_event.id, response_id=response.id) | action_to_name }}"
+                                    method="post">
+                                {{ csrf_token }}
+                                <button type="submit"
+                                        class="btn btn-sm d-block w-100 text-start px-3">Retenir la candidature</button>
+                              </form>
+                            </li>
+                          {% endif %}
+                          {% if response.status != response.status.PRESELECTED %}
+                            <li class="dropdown-item p-0">
+                              <form action="{{ url_for('backoffice_web.operations.preselect_response', special_event_id=special_event.id, response_id=response.id) }}"
+                                    name="{{ url_for('backoffice_web.operations.preselect_response', special_event_id=special_event.id, response_id=response.id) | action_to_name }}"
+                                    method="post">
+                                {{ csrf_token }}
+                                <button type="submit"
+                                        class="btn btn-sm d-block w-100 text-start px-3">Préselectionner la candidature</button>
+                              </form>
+                            </li>
+                          {% endif %}
+                          {% if response.status != response.status.REJECTED %}
+                            <li class="dropdown-item p-0">
+                              <form action="{{ url_for('backoffice_web.operations.reject_response', special_event_id=special_event.id, response_id=response.id) }}"
+                                    name="{{ url_for('backoffice_web.operations.reject_response', special_event_id=special_event.id, response_id=response.id) | action_to_name }}"
+                                    method="post">
+                                {{ csrf_token }}
+                                <button type="submit"
+                                        class="btn btn-sm d-block w-100 text-start px-3">Rejeter la candidature</button>
+                              </form>
+                            </li>
+                          {% endif %}
+                        </ul>
+                      </div>
+                    </td>
+                    {% if response.user %}
+                      <td>{{ links.build_public_user_name_to_details_link(response.user) }}</td>
+                      <td>{{ response.user.email }}</td>
+                      <td>{{ (response.phoneNumber or response.user.phoneNumber) | empty_string_if_null }}</td>
+                      <td>
+                        {% for role in response.user.roles %}
+                          <span class="me-2 badge rounded-pill text-bg-primary align-middle">{{ role | format_role }}</span>
+                        {% endfor %}
+                      </td>
+                    {% else %}
+                      <td>Non trouvé</td>
+                      <td>{{ response.email }}</td>
+                      <td>{{ response.phoneNumber | empty_string_if_null }}</td>
+                      <td></td>
+                    {% endif %}
+                    <td>{{ response.dateSubmitted | format_date_time }}</td>
+                    <td>{{ response.status | format_special_event_response_status }}</td>
+                    <td>
+                      {% for question in special_event.questions | sort(attribute='id') %}
+                        <span class="fw-bold">{{ question.title }}</span>
+                        <br />
+                        {{ row.full_answers.get(question.id|string) | empty_string_if_null }}
+                        <br />
+                        <br />
+                      {% endfor %}
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          {% endcall %}
+        {% endcall %}
+      </div>
+    </div>
+  </div>
+{% endblock main_content %}

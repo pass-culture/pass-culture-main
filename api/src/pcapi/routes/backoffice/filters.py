@@ -28,6 +28,7 @@ from pcapi.core.fraud import models as fraud_models
 from pcapi.core.offerers import constants as offerers_constants
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
+from pcapi.core.operations import models as operations_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import models as users_models
@@ -1299,6 +1300,20 @@ def format_finance_incident_type(incident_kind: finance_models.IncidentType) -> 
             return incident_kind.value
 
 
+def format_special_event_response_status(response_status: operations_models.SpecialEventResponseStatus) -> str:
+    match response_status:
+        case operations_models.SpecialEventResponseStatus.NEW:
+            return Markup('<span class="badge text-bg-info">Nouvelle</span>')
+        case operations_models.SpecialEventResponseStatus.VALIDATED:
+            return Markup('<span class="badge text-bg-success">Retenue</span>')
+        case operations_models.SpecialEventResponseStatus.REJECTED:
+            return Markup('<span class="badge text-bg-danger">Rejetée</span>')
+        case operations_models.SpecialEventResponseStatus.PRESELECTED:
+            return Markup('<span class="badge border border-success text-success">Préselectionnée</span>')
+        case _:
+            return response_status.value
+
+
 def field_list_get_number_from_name(field_name: str) -> str:
     return field_name.split("-")[1]
 
@@ -1413,6 +1428,7 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_finance_incident_status_badge"] = format_finance_incident_status_badge
     app.jinja_env.filters["format_finance_incident_type"] = format_finance_incident_type
     app.jinja_env.filters["format_finance_incident_type_str"] = format_finance_incident_type_str
+    app.jinja_env.filters["format_special_event_response_status"] = format_special_event_response_status
     app.jinja_env.filters["format_venue_provider_count"] = format_venue_provider_count
     app.jinja_env.filters["build_pro_link"] = build_pro_link
     app.jinja_env.filters["offer_type"] = get_offer_type

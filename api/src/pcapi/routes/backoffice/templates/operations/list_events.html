@@ -1,4 +1,5 @@
 {% from "components/generic_modal.html" import build_modal_form with context %}
+{% import "components/links.html" as links with context %}
 {% extends "layouts/connected.html" %}
 {% block page %}
   <div class="pt-3 px-5">
@@ -42,7 +43,7 @@
             {% for special_event in rows.items %}
               <tr>
                 <td></td>
-                <td>{{ special_event.id }}</td>
+                <td>{{ links.build_special_event_id_to_details_link(special_event) }}</td>
                 <td>
                   <a href="https://admin.typeform.com/form/{{ special_event.externalId }}/create"
                      target="_blank"
