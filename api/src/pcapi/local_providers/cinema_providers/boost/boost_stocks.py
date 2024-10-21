@@ -86,18 +86,20 @@ class BoostStocks(LocalProvider):
     def update_from_movie_information(
         self, offer: offers_models.Offer, movie_information: boost_serializers.Film2
     ) -> None:
-        offer.extraData = offer.extraData or offers_models.OfferExtraData()
+        offer.extraData = offers_models.OfferExtraData()
         if self.product:
             offer.name = self.product.name
             offer.durationMinutes = self.product.durationMinutes
             if self.product.extraData:
-                offer.extraData.update(self.product.extraData)
+                offer.extraData = offers_api._filter_unwanted(self.product.extraData)
         else:
             offer.name = self.showtime_details.film.titleCnc
             if movie_information.duration:
                 offer.durationMinutes = movie_information.duration
 
+        # CHECK if used somewhere. If not we can delete following lines
         offer.extraData["allocineId"] = offer.extraData.get("allocineId") or movie_information.idFilmAllocine
+        # Also, there is an index on visa but maybe unused
         if movie_information.numVisa != 0:
             offer.extraData["visa"] = offer.extraData.get("visa") or str(movie_information.numVisa)
 
