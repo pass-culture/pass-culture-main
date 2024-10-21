@@ -269,20 +269,16 @@ class BaseOfferResponseGetterDict(GetterDict):
             return [OfferStockResponse.from_orm(stock) for stock in offer.activeStocks]
 
         if key == "extraData":
-            if not offer.extraData:
-                extraData = OfferExtraDataResponse()  # type: ignore[call-arg]
-            else:
-                extraData = OfferExtraDataResponse.parse_obj(offer.extraData)
+            raw_extra_data = product.extraData if product else offer.extraData or {}
+            extra_data = OfferExtraDataResponse.parse_obj(offer.extraData)
 
-            # insert the durationMinutes in the extraData
-            extraData.durationMinutes = offer.durationMinutes
+            extra_data.durationMinutes = offer.durationMinutes
 
-            # insert the GLT labels in the extraData
-            gtl_id = offer.extraData.get("gtl_id") if offer.extraData else None
+            gtl_id = raw_extra_data.get("gtl_id")
             if gtl_id is not None:
-                extraData.gtlLabels = get_gtl_labels(gtl_id)
+                extra_data.gtlLabels = get_gtl_labels(gtl_id)
 
-            return extraData
+            return extra_data
 
         return super().get(key, default)
 
