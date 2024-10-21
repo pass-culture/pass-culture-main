@@ -145,7 +145,7 @@ class GtlLabels(BaseModel):
     level04Label: str | None
 
 
-class OfferExtraData(BaseModel):
+class OfferExtraDataResponse(BaseModel):
     allocineId: int | None
     author: str | None
     durationMinutes: int | None
@@ -270,9 +270,9 @@ class BaseOfferResponseGetterDict(GetterDict):
 
         if key == "extraData":
             if not offer.extraData:
-                extraData = OfferExtraData()  # type: ignore[call-arg]
+                extraData = OfferExtraDataResponse()  # type: ignore[call-arg]
             else:
-                extraData = OfferExtraData.parse_obj(offer.extraData)
+                extraData = OfferExtraDataResponse.parse_obj(offer.extraData)
 
             # insert the durationMinutes in the extraData
             extraData.durationMinutes = offer.durationMinutes
@@ -293,7 +293,7 @@ class BaseOfferResponse(ConfiguredBaseModel):
     description: str | None
     expense_domains: list[ExpenseDomain]
     externalTicketOfficeUrl: str | None
-    extraData: OfferExtraData | None
+    extraData: OfferExtraDataResponse | None
     isExpired: bool
     isExternalBookingsDisabled: bool
     is_forbidden_to_underage: bool
@@ -333,7 +333,7 @@ class OfferPreviewResponse(BaseModel):
 
     id: int
     durationMinutes: int | None
-    extraData: OfferExtraData | None
+    extraData: OfferExtraDataResponse | None
     image: OfferImageResponse | None
     last30DaysBookings: int | None
     name: str
