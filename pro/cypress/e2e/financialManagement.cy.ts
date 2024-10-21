@@ -11,6 +11,7 @@ describe('Financial Management - messages, links to external help page, reimburs
       login = response.body.user.email
     })
     cy.intercept({ method: 'GET', url: '/offerers/*' }).as('getOfferers')
+    cy.intercept({ method: 'GET', url: '/offerers/*/bank-accounts' }).as('getOfferersBankAccounts')
   })
 
   it('Check messages, reimbursement details and offerer selection change', () => {
@@ -180,7 +181,7 @@ describe('Financial Management - messages, links to external help page, reimburs
       cy.findByLabelText(venue).uncheck()
       cy.findByText('Enregistrer').click()
       cy.findByText('Confirmer').click()
-      cy.wait('@getOfferers').its('response.statusCode').should('equal', 200)
+      cy.wait('@getOfferersBankAccounts').its('response.statusCode').should('equal', 200)
     })
 
     cy.stepLog({ message: 'no venue should be linked to my account' })
