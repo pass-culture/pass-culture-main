@@ -2,9 +2,9 @@ import { useFormikContext } from 'formik'
 
 import {
   CollectiveBookingStatus,
-  GetEducationalOffererResponseModel,
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
+  GetEducationalOffererResponseModel,
 } from 'apiClient/v1'
 import {
   isCollectiveOffer,
@@ -18,12 +18,12 @@ import { CalloutVariant } from 'components/Callout/types'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { Select } from 'ui-kit/form/Select/Select'
 
-import { OFFERER_LABEL, VENUE_LABEL } from '../../constants/labels'
+import { VENUE_LABEL } from '../../constants/labels'
 
 import styles from './FormVenue.module.scss'
 
 interface FormVenueProps {
-  userOfferers: GetEducationalOffererResponseModel[]
+  userOfferer: GetEducationalOffererResponseModel | null
   venuesOptions: SelectOption[]
   isEligible: boolean | undefined
   mode: Mode
@@ -31,18 +31,15 @@ interface FormVenueProps {
   offer?:
     | GetCollectiveOfferResponseModel
     | GetCollectiveOfferTemplateResponseModel
-
-  onChangeOfferer: (event: string) => void
 }
 
 export const FormVenue = ({
-  userOfferers,
+  userOfferer,
   venuesOptions,
   isEligible,
   mode,
   isOfferCreated,
   offer,
-  onChangeOfferer,
 }: FormVenueProps): JSX.Element => {
   const lastBookingStatus = isCollectiveOffer(offer)
     ? offer.lastBookingStatus
@@ -59,16 +56,6 @@ export const FormVenue = ({
       disableOfferSelection &&
       disabledBookingStatus.includes(lastBookingStatus))
 
-  let offerersOptions = userOfferers.map((item) => ({
-    value: item['id'].toString(),
-    label: item['name'] as string,
-  }))
-  if (offerersOptions.length > 1) {
-    offerersOptions = [
-      { value: '', label: 'Selectionner une structure' },
-      ...offerersOptions,
-    ]
-  }
   const { values, setValues } = useFormikContext<OfferEducationalFormValues>()
 
   return (
@@ -76,18 +63,7 @@ export const FormVenue = ({
       description="Le lieu de rattachement permet d’associer votre compte bancaire pour le remboursement pass Culture."
       title="Lieu de rattachement de votre offre"
     >
-      {offerersOptions.length > 1 && (
-        <FormLayout.Row>
-          <Select
-            onChange={(e) => onChangeOfferer(e.target.value)}
-            disabled={offerersOptions.length === 1 || disableOfferSelection}
-            label={OFFERER_LABEL}
-            name="offererId"
-            options={offerersOptions}
-          />
-        </FormLayout.Row>
-      )}
-      {isEligible === false && offerersOptions.length !== 0 && (
+      {isEligible === false && userOfferer !== null && (
         <Callout
           links={[
             {
@@ -109,7 +85,7 @@ export const FormVenue = ({
           du ministère de la Culture.
         </Callout>
       )}
-      {offerersOptions.length === 0 && (
+      {userOfferer === null && (
         <Callout
           variant={CalloutVariant.INFO}
           className={styles['no-offerer-callout']}
@@ -130,7 +106,7 @@ export const FormVenue = ({
                 await setValues(
                   applyVenueDefaultsToFormValues(
                     { ...values, venueId: event.target.value },
-                    userOfferers,
+                    userOfferer,
                     isOfferCreated
                   )
                 )

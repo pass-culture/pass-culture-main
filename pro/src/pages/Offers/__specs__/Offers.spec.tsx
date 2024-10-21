@@ -6,7 +6,7 @@ import {
 } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Route, Routes } from 'react-router-dom'
-import { expect } from 'vitest'
+import { beforeEach, expect } from 'vitest'
 
 import { api } from 'apiClient/api'
 import {
@@ -120,12 +120,37 @@ describe('route Offers', () => {
   describe('filters', () => {
     it('should display only selectable categories on filters', async () => {
       await renderOffers()
-
-      expect(screen.getByRole('option', { name: 'Cinéma' })).toBeInTheDocument()
+      await waitFor(() => {
+        expect(
+          screen.getByRole('option', { name: 'Cinéma' })
+        ).toBeInTheDocument()
+      })
       expect(screen.getByRole('option', { name: 'Jeux' })).toBeInTheDocument()
       expect(
         screen.queryByRole('option', { name: 'Technique' })
       ).not.toBeInTheDocument()
+    })
+
+    it('should filter according to page query param', async () => {
+      vi.spyOn(api, 'listOffers').mockResolvedValueOnce([
+        listOffersOfferFactory({ venue: proVenues[0] }),
+        listOffersOfferFactory({ venue: proVenues[0] }),
+        listOffersOfferFactory({ venue: proVenues[0] }),
+        listOffersOfferFactory({ venue: proVenues[0] }),
+        listOffersOfferFactory({ venue: proVenues[0] }),
+        listOffersOfferFactory({ venue: proVenues[0] }),
+        listOffersOfferFactory({ venue: proVenues[0] }),
+        listOffersOfferFactory({ venue: proVenues[0] }),
+        listOffersOfferFactory({ venue: proVenues[0] }),
+        listOffersOfferFactory({ venue: proVenues[0] }),
+        listOffersOfferFactory({ venue: proVenues[0] }),
+        listOffersOfferFactory({ venue: proVenues[0] }),
+        listOffersOfferFactory({ venue: proVenues[0] }),
+        listOffersOfferFactory({ venue: proVenues[0] }),
+      ])
+      await renderOffers({ page: 2 })
+
+      expect(screen.getByText(/Page 2\/2/)).toBeInTheDocument()
     })
 
     describe('status filters', () => {
@@ -245,6 +270,14 @@ describe('route Offers', () => {
 
       it('should load offers with selected type filter', async () => {
         await renderOffers()
+        await waitFor(() => {
+          expect(
+            screen.getByRole('option', {
+              name: 'Cinéma',
+            })
+          ).toBeInTheDocument()
+        })
+
         const firstTypeOption = screen.getByRole('option', {
           name: 'Cinéma',
         })
@@ -452,6 +485,13 @@ describe('route Offers', () => {
         subcategories: [],
       })
       await renderOffers()
+      await waitFor(() => {
+        expect(
+          screen.getByRole('option', {
+            name: 'My test value',
+          })
+        ).toBeInTheDocument()
+      })
       const firstTypeOption = screen.getByRole('option', {
         name: 'My test value',
       })
@@ -775,6 +815,9 @@ describe('route Offers', () => {
   })
 
   describe('With WIP_ENABLE_OFFER_ADDRESS FF', () => {
+    beforeEach(() => {
+      vi.spyOn(api, 'getOffererAddresses').mockResolvedValueOnce(offererAddress)
+    })
     it('should display venue header without the FF', async () => {
       await renderOffers()
       expect(

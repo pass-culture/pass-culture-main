@@ -10,7 +10,6 @@ import {
 } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { Events } from 'commons/core/FirebaseEvents/constants'
-import { useIsNewInterfaceActive } from 'commons/hooks/useIsNewInterfaceActive'
 import { useNotification } from 'commons/hooks/useNotification'
 import { selectCurrentOffererId } from 'commons/store/user/selectors'
 import { ButtonImageEdit } from 'components/ImageUploader/ButtonImageEdit/ButtonImageEdit'
@@ -18,7 +17,6 @@ import { OnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/Moda
 import { UploadImageValues } from 'components/ImageUploader/ButtonImageEdit/types'
 import { ImageUploader } from 'components/ImageUploader/ImageUploader'
 import { UploaderModeEnum } from 'components/ImageUploader/types'
-import fullPlusIcon from 'icons/full-more.svg'
 import fullParametersIcon from 'icons/full-parameters.svg'
 import { postImageToVenue } from 'repository/pcapi/pcapi'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
@@ -61,7 +59,6 @@ export const VenueEditionHeader = ({
 }: VenueEditionHeaderProps) => {
   const { logEvent } = useAnalytics()
   const notify = useNotification()
-  const isNewSideBarNavigation = useIsNewInterfaceActive()
   const selectedOffererId = useSelector(selectCurrentOffererId)
 
   const venueType = venueTypes.find(
@@ -129,19 +126,11 @@ export const VenueEditionHeader = ({
 
       <div className={styles['venue-details']}>
         <div className={styles['venue-type']}>{venueType?.label}</div>
-        {isNewSideBarNavigation ? (
-          <h2 className={styles['venue-name']}>
-            {venue.isVirtual
-              ? `${offerer.name} (Offre numérique)`
-              : venue.publicName || venue.name}
-          </h2>
-        ) : (
-          <h1 className={styles['venue-name']}>
-            {venue.isVirtual
-              ? `${offerer.name} (Offre numérique)`
-              : venue.publicName || venue.name}
-          </h1>
-        )}
+        <h2 className={styles['venue-name']}>
+          {venue.isVirtual
+            ? `${offerer.name} (Offre numérique)`
+            : venue.publicName || venue.name}
+        </h2>
 
         {venue.street && (
           <address className={styles['venue-address']}>
@@ -167,17 +156,6 @@ export const VenueEditionHeader = ({
           >
             Modifier l’image
           </ButtonImageEdit>
-        )}
-
-        {!isNewSideBarNavigation && (
-          <ButtonLink
-            variant={ButtonVariant.PRIMARY}
-            icon={fullPlusIcon}
-            className={styles['venue-button']}
-            to={`/offre/creation?lieu=${venue.id}&structure=${offerer.id}`}
-          >
-            Créer une offre
-          </ButtonLink>
         )}
       </div>
     </div>

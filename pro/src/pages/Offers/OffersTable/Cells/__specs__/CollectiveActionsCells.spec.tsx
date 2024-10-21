@@ -6,6 +6,7 @@ import createFetchMock from 'vitest-fetch-mock'
 import { api } from 'apiClient/api'
 import { CollectiveOfferStatus, OfferAddressType } from 'apiClient/v1'
 import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from 'commons/core/Offers/constants'
+import * as useNotification from 'commons/hooks/useNotification'
 import {
   collectiveOfferFactory,
   getCollectiveOfferFactory,
@@ -33,6 +34,7 @@ vi.mock('react-router-dom', async () => {
 })
 
 const mockDeselectOffer = vi.fn()
+const notifyError = vi.fn()
 const renderCollectiveActionsCell = (
   props: Partial<CollectiveActionsCellsProps> = {}
 ) => {
@@ -72,6 +74,17 @@ vi.spyOn(localStorageAvailable, 'localStorageAvailable').mockImplementationOnce(
 )
 
 describe('CollectiveActionsCells', () => {
+  beforeEach(async () => {
+    const notifsImport = (await vi.importActual(
+      'commons/hooks/useNotification'
+    )) as ReturnType<typeof useNotification.useNotification>
+    vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
+      ...notifsImport,
+      error: notifyError,
+      success: vi.fn(),
+    }))
+  })
+
   it('should archive an offer on click on the action', async () => {
     renderCollectiveActionsCell({
       offer: collectiveOfferFactory({
@@ -184,6 +197,21 @@ describe('CollectiveActionsCells', () => {
       vi.spyOn(api, 'listEducationalOfferers').mockResolvedValueOnce({
         educationalOfferers: [],
       })
+    })
+
+    it('should try to duplicate a bookable with collective offer error', async () => {
+      vi.spyOn(api, 'getCollectiveOffer').mockRejectedValueOnce({})
+      renderCollectiveActionsCell({
+        offer: collectiveOfferFactory({
+          id: 200,
+        }),
+      })
+
+      await userEvent.click(screen.getByTitle('Action'))
+      await userEvent.click(screen.getByText('Dupliquer'))
+      expect(notifyError).toBeCalledWith(
+        'Une erreur est survenue lors de la récupération de votre offre'
+      )
     })
 
     it('should duplicate a bookable', async () => {

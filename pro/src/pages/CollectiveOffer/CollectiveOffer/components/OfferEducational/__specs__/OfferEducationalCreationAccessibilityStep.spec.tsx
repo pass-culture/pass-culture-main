@@ -1,8 +1,8 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { RootState } from 'commons/store/rootReducer'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
 
 import { defaultCreationProps } from '../__tests-utils__/defaultProps'
 import {
@@ -11,9 +11,21 @@ import {
 } from '../__tests-utils__/userOfferersFactory'
 import { OfferEducational, OfferEducationalProps } from '../OfferEducational'
 
+function renderComponent(props: OfferEducationalProps) {
+  const user = sharedCurrentUserFactory()
+  renderWithProviders(<OfferEducational {...props} />, {
+    user,
+    storeOverrides: {
+      user: {
+        selectedOffererId: 1,
+        currentUser: user,
+      },
+    },
+  })
+}
+
 describe('screens | OfferEducational : event address step', () => {
   let props: OfferEducationalProps
-  let store: Partial<RootState>
 
   const firstVenueId = 12
   const secondVenueId = 13
@@ -25,29 +37,20 @@ describe('screens | OfferEducational : event address step', () => {
   })
 
   it('should prefill intervention and accessibility fields with venue intervention field when selecting venue', async () => {
-    props.userOfferers = [
-      ...props.userOfferers,
-      userOffererFactory({
-        id: offererId,
-        managedVenues: [
-          managedVenueFactory({}),
-          managedVenueFactory({
-            id: 43,
-            mentalDisabilityCompliant: true,
-            motorDisabilityCompliant: true,
-            visualDisabilityCompliant: false,
-            audioDisabilityCompliant: false,
-          }),
-        ],
-      }),
-    ]
-    renderWithProviders(<OfferEducational {...props} />, {
-      storeOverrides: store,
+    props.userOfferer = userOffererFactory({
+      id: offererId,
+      managedVenues: [
+        managedVenueFactory({}),
+        managedVenueFactory({
+          id: 43,
+          mentalDisabilityCompliant: true,
+          motorDisabilityCompliant: true,
+          visualDisabilityCompliant: false,
+          audioDisabilityCompliant: false,
+        }),
+      ],
     })
-
-    const offererSelect = await screen.findByLabelText('Structure *')
-
-    await userEvent.selectOptions(offererSelect, [offererId.toString()])
+    renderComponent(props)
 
     const venuesSelect = await screen.findByLabelText('Lieu *')
     await userEvent.selectOptions(venuesSelect, ['43'])
@@ -60,29 +63,21 @@ describe('screens | OfferEducational : event address step', () => {
   })
 
   it('should prefill event address venue when selecting venue for reimbursement', async () => {
-    props.userOfferers = [
-      ...props.userOfferers,
-      userOffererFactory({
-        id: offererId,
-        managedVenues: [
-          managedVenueFactory({
-            id: firstVenueId,
-            name: 'First venue name',
-          }),
-          managedVenueFactory({
-            id: secondVenueId,
-            name: 'Second venue name',
-          }),
-        ],
-      }),
-    ]
-    renderWithProviders(<OfferEducational {...props} />, {
-      storeOverrides: store,
+    props.userOfferer = userOffererFactory({
+      id: offererId,
+      managedVenues: [
+        managedVenueFactory({
+          id: firstVenueId,
+          name: 'First venue name',
+        }),
+        managedVenueFactory({
+          id: secondVenueId,
+          name: 'Second venue name',
+        }),
+      ],
     })
 
-    const offererSelect = await screen.findByLabelText('Structure *')
-
-    await userEvent.selectOptions(offererSelect, [offererId.toString()])
+    renderComponent(props)
 
     const venuesSelect = await screen.findByLabelText('Lieu *')
     await userEvent.selectOptions(venuesSelect, [firstVenueId.toString()])

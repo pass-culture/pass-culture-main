@@ -4,12 +4,12 @@ import { useSWRConfig } from 'swr'
 import { api } from 'apiClient/api'
 import { isErrorAPIError } from 'apiClient/helpers'
 import { GetCollectiveOfferResponseModel } from 'apiClient/v1'
-import { AppLayout } from 'app/AppLayout'
+import { Layout } from 'app/App/layout/Layout'
 import { GET_COLLECTIVE_OFFER_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import {
   isCollectiveOfferTemplate,
-  OfferEducationalStockFormValues,
   Mode,
+  OfferEducationalStockFormValues,
 } from 'commons/core/OfferEducational/types'
 import { computeURLCollectiveOfferId } from 'commons/core/OfferEducational/utils/computeURLCollectiveOfferId'
 import { createPatchStockDataPayload } from 'commons/core/OfferEducational/utils/createPatchStockDataPayload'
@@ -77,7 +77,7 @@ const CollectiveOfferStockEdition = ({
   }
 
   return (
-    <AppLayout layout="sticky-actions">
+    <Layout layout="sticky-actions">
       <CollectiveOfferLayout subTitle={offer.name} isTemplate={isTemplate}>
         <OfferEducationalStock
           initialValues={initialValues}
@@ -90,7 +90,7 @@ const CollectiveOfferStockEdition = ({
           onSubmit={handleSubmitStock}
         />
       </CollectiveOfferLayout>
-    </AppLayout>
+    </Layout>
   )
 }
 

@@ -16,7 +16,6 @@ import {
 import { getIndividualOfferUrl } from 'commons/core/Offers/utils/getIndividualOfferUrl'
 import { serializeApiCollectiveFilters } from 'commons/core/Offers/utils/serializer'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
-import { useIsNewInterfaceActive } from 'commons/hooks/useIsNewInterfaceActive'
 import { useNotification } from 'commons/hooks/useNotification'
 import { useSuggestedSubcategoriesAbTest } from 'commons/hooks/useSuggestedSubcategoriesAbTest'
 import { selectCurrentOffererId } from 'commons/store/user/selectors'
@@ -34,15 +33,11 @@ import styles from './OfferType.module.scss'
 import { OfferTypeFormValues } from './types'
 
 export const OfferTypeScreen = (): JSX.Element => {
-  const isNewInterfaceActive = useIsNewInterfaceActive()
   const isSplitOfferEnabled = useActiveFeature('WIP_SPLIT_OFFER')
   const navigate = useNavigate()
   const location = useLocation()
   const queryParams = new URLSearchParams(location.search)
-  const selectedOffererId = useSelector(selectCurrentOffererId)
-  const queryOffererId = isNewInterfaceActive
-    ? selectedOffererId?.toString()
-    : queryParams.get('structure')
+  const queryOffererId = useSelector(selectCurrentOffererId)?.toString()
   const queryVenueId = queryParams.get('lieu')
 
   const notify = useNotification()

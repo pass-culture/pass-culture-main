@@ -1,5 +1,4 @@
 import { useSelector } from 'react-redux'
-import { useSearchParams } from 'react-router-dom'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
@@ -17,20 +16,12 @@ const Details = (): JSX.Element | null => {
   const mode = useOfferWizardMode()
   const { currentUser } = useCurrentUser()
   const { offer } = useIndividualOfferContext()
-  const [searchParams] = useSearchParams()
 
-  const offererIdFromQueryParam = searchParams.get('structure')
-    ? Number(searchParams.get('structure'))
-    : undefined
   const selectedOffererId = useSelector(selectCurrentOffererId)
 
   // At first we look for the offerer id in the offer,
-  // then in the query params
-  // after all we look for the selected offerer id in the redux store
-  const offererId =
-    offer?.venue.managingOfferer.id ??
-    offererIdFromQueryParam ??
-    selectedOffererId
+  // else we look for the selected offerer id in the redux store
+  const offererId = offer?.venue.managingOfferer.id ?? selectedOffererId
 
   const shouldNotFetchVenues = currentUser.isAdmin && !offererId
 

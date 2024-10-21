@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { AppLayout } from 'app/AppLayout'
+import { Layout } from 'app/App/layout/Layout'
 import { isCollectiveOffer } from 'commons/core/OfferEducational/types'
 import { CollectiveOfferLayout } from 'components/CollectiveOfferLayout/CollectiveOfferLayout'
 import { RouteLeavingGuardCollectiveOfferCreation } from 'components/RouteLeavingGuardCollectiveOfferCreation/RouteLeavingGuardCollectiveOfferCreation'
@@ -16,7 +16,7 @@ export const CollectiveOfferSummaryCreation = ({
   isTemplate,
 }: MandatoryCollectiveOfferFromParamsProps) => {
   return (
-    <AppLayout layout={'sticky-actions'}>
+    <Layout layout={'sticky-actions'}>
       <CollectiveOfferLayout
         subTitle={offer.name}
         isFromTemplate={isCollectiveOffer(offer) && Boolean(offer.templateId)}
@@ -27,7 +27,7 @@ export const CollectiveOfferSummaryCreation = ({
         <CollectiveOfferSummaryCreationScreen offer={offer} />
         <RouteLeavingGuardCollectiveOfferCreation when={false} />
       </CollectiveOfferLayout>
-    </AppLayout>
+    </Layout>
   )
 }
 

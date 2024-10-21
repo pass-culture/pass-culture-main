@@ -2,7 +2,6 @@ import classNames from 'classnames'
 import { useSelector } from 'react-redux'
 
 import { orejime } from 'app/App/analytics/orejime'
-import { useIsNewInterfaceActive } from 'commons/hooks/useIsNewInterfaceActive'
 import { selectCurrentUser } from 'commons/store/user/selectors'
 import fullLinkIcon from 'icons/full-link.svg'
 import { Button } from 'ui-kit/Button/Button'
@@ -16,11 +15,6 @@ type FooterProps = {
 }
 export const Footer = ({ layout }: FooterProps) => {
   const currentUser = useSelector(selectCurrentUser)
-  const isNewSideBarNavigation = useIsNewInterfaceActive()
-
-  if (!isNewSideBarNavigation) {
-    return
-  }
 
   return (
     <footer

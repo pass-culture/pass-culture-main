@@ -228,7 +228,6 @@ export const InformationsScreen = ({
 
   const handlePreviousStepOrBackToReadOnly = () => {
     const queryParams = new URLSearchParams(location.search)
-    const queryOffererId = queryParams.get('structure')
     const queryVenueId = queryParams.get('lieu')
     /* istanbul ignore next: DEBT, TO FIX */
     if (mode === OFFER_WIZARD_MODE.EDITION) {
@@ -242,12 +241,7 @@ export const InformationsScreen = ({
     } else {
       navigate({
         pathname: '/offre/creation',
-        search:
-          queryOffererId && queryVenueId
-            ? `lieu=${queryVenueId}&structure=${queryOffererId}`
-            : queryOffererId && !queryVenueId
-              ? `structure=${queryOffererId}`
-              : '',
+        search: queryVenueId ? `lieu=${queryVenueId}` : '',
       })
     }
   }

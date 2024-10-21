@@ -1,14 +1,14 @@
 import React from 'react'
 
-import { AppLayout } from 'app/AppLayout'
+import { Layout } from 'app/App/layout/Layout'
 
 import { OfferTypeScreen } from './OfferType/OfferType'
 
 const OfferType = (): JSX.Element => {
   return (
-    <AppLayout layout={'sticky-actions'}>
+    <Layout layout={'sticky-actions'}>
       <OfferTypeScreen />
-    </AppLayout>
+    </Layout>
   )
 }
 

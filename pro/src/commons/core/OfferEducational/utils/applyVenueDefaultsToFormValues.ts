@@ -5,12 +5,12 @@ import { OfferEducationalFormValues } from '../types'
 
 export const applyVenueDefaultsToFormValues = (
   values: OfferEducationalFormValues,
-  offerers: GetEducationalOffererResponseModel[],
+  offerer: GetEducationalOffererResponseModel | null,
   isOfferCreated: boolean
 ): OfferEducationalFormValues => {
-  const venue = offerers
-    .find(({ id }) => id.toString() === values.offererId)
-    ?.managedVenues.find(({ id }) => id.toString() === values.venueId)
+  const venue = offerer?.managedVenues.find(
+    ({ id }) => id.toString() === values.venueId
+  )
 
   if (!venue) {
     return values

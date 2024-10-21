@@ -1,7 +1,6 @@
 import { DMSApplicationForEAC, DMSApplicationstatus } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { Events } from 'commons/core/FirebaseEvents/constants'
-import { useIsNewInterfaceActive } from 'commons/hooks/useIsNewInterfaceActive'
 import { getLastCollectiveDmsApplication } from 'commons/utils/getLastCollectiveDmsApplication'
 import fullInfoIcon from 'icons/full-info.svg'
 import fullLinkIcon from 'icons/full-link.svg'
@@ -168,7 +167,6 @@ function AdageInformations({
   venueName,
 }: AdageInformationsProps) {
   const { logEvent } = useAnalytics()
-  const isNewInterfaceActive = useIsNewInterfaceActive()
   return (
     <section className={styles['details']}>
       <div>
@@ -196,7 +194,6 @@ function AdageInformations({
           onClick={() =>
             logEvent(Events.CLICKED_PAGE_FOR_ADAGE_HOME, {
               from: location.pathname,
-              isNewInterfaceActive,
             })
           }
         >

@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import { useLocation } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
-import { AppLayout } from 'app/AppLayout'
+import { OldAppLayout } from 'app/OldAppLayout'
 import { useRedirectLoggedUser } from 'commons/hooks/useRedirectLoggedUser'
 import { parse } from 'commons/utils/query-string'
 import logoPassCultureProFullIcon from 'icons/logo-pass-culture-pro-full.svg'
@@ -41,7 +41,7 @@ export const ResetPassword = (): JSX.Element => {
   })
 
   return (
-    <AppLayout layout="without-nav">
+    <OldAppLayout layout="without-nav">
       <header className={styles['logo-side']}>
         <SvgIcon
           className={logoStyles['logo-unlogged']}
@@ -79,7 +79,7 @@ export const ResetPassword = (): JSX.Element => {
           </section>
         )}
       </div>
-    </AppLayout>
+    </OldAppLayout>
   )
 }
 

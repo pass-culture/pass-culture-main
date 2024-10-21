@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { AppLayout } from 'app/AppLayout'
+import { Layout } from 'app/App/layout/Layout'
 import { isCollectiveOfferTemplate } from 'commons/core/OfferEducational/types'
 import { RouteLeavingGuardCollectiveOfferCreation } from 'components/RouteLeavingGuardCollectiveOfferCreation/RouteLeavingGuardCollectiveOfferCreation'
 import { CollectiveOfferConfirmationScreen } from 'pages/CollectiveOffer/CollectiveOfferConfirmation/CollectiveOfferConfirmation/CollectiveOfferConfirmation'
@@ -28,7 +28,7 @@ const CollectiveOfferConfirmation = ({
   }
 
   return (
-    <AppLayout>
+    <Layout>
       <CollectiveOfferConfirmationScreen
         isShowcase={offer.isTemplate}
         offerStatus={offer.status}
@@ -36,7 +36,7 @@ const CollectiveOfferConfirmation = ({
         institutionDisplayName={getInstitutionDisplayName()}
       />
       <RouteLeavingGuardCollectiveOfferCreation when={false} />
-    </AppLayout>
+    </Layout>
   )
 }
 

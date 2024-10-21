@@ -33,7 +33,6 @@ import {
 } from 'commons/core/shared/constants'
 import { SelectOption } from 'commons/custom_types/form'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
-import { useIsNewInterfaceActive } from 'commons/hooks/useIsNewInterfaceActive'
 import { useNotification } from 'commons/hooks/useNotification'
 import { selectCurrentOffererId } from 'commons/store/user/selectors'
 import { OfferEducationalActions } from 'components/OfferEducationalActions/OfferEducationalActions'
@@ -54,7 +53,7 @@ export interface OfferEducationalProps {
     | GetCollectiveOfferResponseModel
     | GetCollectiveOfferTemplateResponseModel
 
-  userOfferers: GetEducationalOffererResponseModel[]
+  userOfferer: GetEducationalOffererResponseModel | null
   mode: Mode
   isOfferBooked?: boolean
   isOfferActive?: boolean
@@ -66,14 +65,13 @@ export interface OfferEducationalProps {
 
 export const OfferEducational = ({
   offer,
-  userOfferers,
+  userOfferer,
   domainsOptions,
   nationalPrograms,
   mode,
   isOfferBooked = false,
   isTemplate,
 }: OfferEducationalProps): JSX.Element => {
-  const isNewInterfaceActive = useIsNewInterfaceActive()
   const notify = useNotification()
   const navigate = useNavigate()
   const location = useLocation()
@@ -85,17 +83,12 @@ export const OfferEducational = ({
   const isMarseilleEnabled = useActiveFeature('WIP_ENABLE_MARSEILLE')
   const { mutate } = useSWRConfig()
 
-  const {
-    structure: offererId,
-    lieu: venueId,
-    requete: requestId,
-  } = queryParamsFromOfferer(location)
+  const { lieu: venueId, requete: requestId } = queryParamsFromOfferer(location)
 
   const baseInitialValues = computeInitialValuesFromOffer(
-    userOfferers,
+    userOfferer,
     isTemplate,
     offer,
-    offererId,
     venueId,
     isMarseilleEnabled
   )
@@ -104,7 +97,7 @@ export const OfferEducational = ({
     mode === Mode.CREATION
       ? applyVenueDefaultsToFormValues(
           baseInitialValues,
-          userOfferers,
+          userOfferer,
           isOfferCreated
         )
       : baseInitialValues
@@ -185,7 +178,6 @@ export const OfferEducational = ({
   })
 
   if (
-    isNewInterfaceActive &&
     mode === Mode.CREATION &&
     formik.values.offererId !== selectedOffererId?.toString()
   ) {
@@ -212,7 +204,7 @@ export const OfferEducational = ({
         <form onSubmit={formik.handleSubmit}>
           <OfferEducationalForm
             mode={mode}
-            userOfferers={userOfferers}
+            userOfferer={userOfferer}
             domainsOptions={domainsOptions}
             nationalPrograms={nationalPrograms}
             isTemplate={isTemplate}

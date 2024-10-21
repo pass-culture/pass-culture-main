@@ -1,6 +1,6 @@
 import { Dispatch, FormEvent, SetStateAction } from 'react'
 
-import { GetOffererResponseModel, OfferStatus } from 'apiClient/v1'
+import { OfferStatus } from 'apiClient/v1'
 import {
   ALL_CATEGORIES_OPTION,
   ALL_OFFERER_ADDRESS_OPTION,
@@ -13,24 +13,19 @@ import { SearchFiltersParams } from 'commons/core/Offers/types'
 import { hasSearchFilters } from 'commons/core/Offers/utils/hasSearchFilters'
 import { SelectOption } from 'commons/custom_types/form'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
-import { useIsNewInterfaceActive } from 'commons/hooks/useIsNewInterfaceActive'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import fullRefreshIcon from 'icons/full-refresh.svg'
-import strokeCloseIcon from 'icons/stroke-close.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { PeriodSelector } from 'ui-kit/form/PeriodSelector/PeriodSelector'
 import { SelectInput } from 'ui-kit/form/Select/SelectInput'
 import { BaseInput } from 'ui-kit/form/shared/BaseInput/BaseInput'
 import { FieldLayout } from 'ui-kit/form/shared/FieldLayout/FieldLayout'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './IndividualOffersSearchFilters.module.scss'
 
 interface IndividualOffersSearchFiltersProps {
   applyFilters: (filters: SearchFiltersParams) => void
-  offerer: GetOffererResponseModel | null
-  removeOfferer: () => void
   selectedFilters: SearchFiltersParams
   setSelectedFilters: Dispatch<SetStateAction<SearchFiltersParams>>
   disableAllFilters: boolean
@@ -57,15 +52,12 @@ export const IndividualOffersSearchFilters = ({
   selectedFilters,
   setSelectedFilters,
   resetFilters,
-  offerer,
-  removeOfferer,
   disableAllFilters,
   venues,
   offererAddresses,
   categories,
   isRestrictedAsAdmin = false,
 }: IndividualOffersSearchFiltersProps): JSX.Element => {
-  const isNewInterfaceActive = useIsNewInterfaceActive()
   const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
   const areCollectiveNewStatusesEnabled = useActiveFeature(
     'ENABLE_COLLECTIVE_NEW_STATUSES'
@@ -150,23 +142,6 @@ export const IndividualOffersSearchFilters = ({
 
   return (
     <>
-      {!isNewInterfaceActive && offerer && (
-        <span className={styles['offerer-filter']}>
-          {offerer.name}
-          <button
-            onClick={removeOfferer}
-            type="button"
-            data-testid="remove-offerer-filter"
-          >
-            <SvgIcon
-              src={strokeCloseIcon}
-              alt="Supprimer le filtre par structure"
-              className={styles['offerer-close-icon']}
-            />
-          </button>
-        </span>
-      )}
-
       <form
         onSubmit={requestFilteredOffers}
         className={styles['search-filters-form']}

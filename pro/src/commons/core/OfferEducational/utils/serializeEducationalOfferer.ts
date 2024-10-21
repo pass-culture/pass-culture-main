@@ -10,10 +10,11 @@ const serializeVenues = (
       name: venue.publicName || venue.name,
     }))
 
-export const serializeEducationalOfferers = (
-  offerers: GetEducationalOffererResponseModel[]
-): GetEducationalOffererResponseModel[] =>
-  offerers.map((offerer) => ({
+export const serializeEducationalOfferer = (
+  offerer: GetEducationalOffererResponseModel
+): GetEducationalOffererResponseModel => {
+  return {
     ...offerer,
     managedVenues: serializeVenues(offerer.managedVenues),
-  }))
+  }
+}

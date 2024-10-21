@@ -7,14 +7,12 @@ describe('applyVenueDefaultsToFormValues', () => {
     const formValues = { ...DEFAULT_EAC_FORM_VALUES, venueId: '2' }
     const newFormValues = applyVenueDefaultsToFormValues(
       formValues,
-      [
-        {
-          id: 1,
-          managedVenues: [],
-          name: 'test',
-          allowedOnAdage: true,
-        },
-      ],
+      {
+        id: 1,
+        managedVenues: [],
+        name: 'test',
+        allowedOnAdage: true,
+      },
       false
     )
 
@@ -24,22 +22,20 @@ describe('applyVenueDefaultsToFormValues', () => {
   it('should return the accessibility values from the venue', () => {
     const newFormValues = applyVenueDefaultsToFormValues(
       { ...DEFAULT_EAC_FORM_VALUES, venueId: '2', offererId: '1' },
-      [
-        {
-          id: 1,
-          managedVenues: [
-            {
-              id: 2,
-              isVirtual: true,
-              name: 'test',
-              audioDisabilityCompliant: true,
-              mentalDisabilityCompliant: true,
-            },
-          ],
-          name: 'test',
-          allowedOnAdage: true,
-        },
-      ],
+      {
+        id: 1,
+        managedVenues: [
+          {
+            id: 2,
+            isVirtual: true,
+            name: 'test',
+            audioDisabilityCompliant: true,
+            mentalDisabilityCompliant: true,
+          },
+        ],
+        name: 'test',
+        allowedOnAdage: true,
+      },
       false
     )
 
@@ -59,20 +55,18 @@ describe('applyVenueDefaultsToFormValues', () => {
   it('should set disability compliance to none if no accessibility value is checked on the venue', () => {
     const newFormValues = applyVenueDefaultsToFormValues(
       { ...DEFAULT_EAC_FORM_VALUES, venueId: '2', offererId: '1' },
-      [
-        {
-          id: 1,
-          managedVenues: [
-            {
-              id: 2,
-              isVirtual: true,
-              name: 'test',
-            },
-          ],
-          name: 'test',
-          allowedOnAdage: true,
-        },
-      ],
+      {
+        id: 1,
+        managedVenues: [
+          {
+            id: 2,
+            isVirtual: true,
+            name: 'test',
+          },
+        ],
+        name: 'test',
+        allowedOnAdage: true,
+      },
       false
     )
 
@@ -92,22 +86,20 @@ describe('applyVenueDefaultsToFormValues', () => {
   it('should prefill the form values with the venue email and phone if the venue has them', () => {
     const newFormValues = applyVenueDefaultsToFormValues(
       { ...DEFAULT_EAC_FORM_VALUES, offererId: '1', venueId: '2' },
-      [
-        {
-          id: 1,
-          managedVenues: [
-            {
-              id: 2,
-              isVirtual: true,
-              name: 'test',
-              collectiveEmail: 'test@email.co',
-              collectivePhone: '00000000',
-            },
-          ],
-          name: 'test',
-          allowedOnAdage: true,
-        },
-      ],
+      {
+        id: 1,
+        managedVenues: [
+          {
+            id: 2,
+            isVirtual: true,
+            name: 'test',
+            collectiveEmail: 'test@email.co',
+            collectivePhone: '00000000',
+          },
+        ],
+        name: 'test',
+        allowedOnAdage: true,
+      },
       true
     )
 
@@ -124,22 +116,20 @@ describe('applyVenueDefaultsToFormValues', () => {
         email: 'test2@email.co',
         phone: '11111111',
       },
-      [
-        {
-          id: 1,
-          managedVenues: [
-            {
-              id: 2,
-              isVirtual: true,
-              name: 'test',
-              collectiveEmail: 'test@email.co',
-              collectivePhone: '00000000',
-            },
-          ],
-          name: 'test',
-          allowedOnAdage: true,
-        },
-      ],
+      {
+        id: 1,
+        managedVenues: [
+          {
+            id: 2,
+            isVirtual: true,
+            name: 'test',
+            collectiveEmail: 'test@email.co',
+            collectivePhone: '00000000',
+          },
+        ],
+        name: 'test',
+        allowedOnAdage: true,
+      },
       true
     )
 

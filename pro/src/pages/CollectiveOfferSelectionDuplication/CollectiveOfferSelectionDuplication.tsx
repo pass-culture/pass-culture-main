@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { CollectiveOfferResponseModel, CollectiveOfferType } from 'apiClient/v1'
-import { AppLayout } from 'app/AppLayout'
+import { Layout } from 'app/App/layout/Layout'
 import { createOfferFromTemplate } from 'commons/core/OfferEducational/utils/createOfferFromTemplate'
 import { DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS } from 'commons/core/Offers/constants'
 import { computeCollectiveOffersUrl } from 'commons/core/Offers/utils/computeCollectiveOffersUrl'
@@ -124,7 +124,7 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
   }
 
   return (
-    <AppLayout layout={'sticky-actions'}>
+    <Layout layout={'sticky-actions'}>
       <div className="container">
         <h1 className={styles['title']}>Créer une offre réservable</h1>
         <h2 className={styles['sub-title']} id="search-filter">
@@ -234,7 +234,7 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
           )}
         </div>
       </div>
-    </AppLayout>
+    </Layout>
   )
 }
 

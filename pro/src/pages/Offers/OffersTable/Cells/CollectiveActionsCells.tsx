@@ -25,7 +25,6 @@ import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from 'commons/core/Offers/constants
 import { CollectiveSearchFiltersParams } from 'commons/core/Offers/types'
 import { getCollectiveOffersSwrKeys } from 'commons/core/Offers/utils/getCollectiveOffersSwrKeys'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
-import { useIsNewInterfaceActive } from 'commons/hooks/useIsNewInterfaceActive'
 import { useNotification } from 'commons/hooks/useNotification'
 import { selectCurrentOffererId } from 'commons/store/user/selectors'
 import {
@@ -75,7 +74,6 @@ export const CollectiveActionsCells = ({
   const navigate = useNavigate()
   const notify = useNotification()
   const { logEvent } = useAnalytics()
-  const isNewInterfaceActive = useIsNewInterfaceActive()
   const selectedOffererId = useSelector(selectCurrentOffererId)
 
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -95,8 +93,7 @@ export const CollectiveActionsCells = ({
     isNewOffersAndBookingsActive,
     isInTemplateOffersPage: offer.isShowcase,
     urlSearchFilters,
-    isNewInterfaceActive,
-    selectedOffererId,
+    selectedOffererId: selectedOffererId?.toString(),
   })
 
   const { mutate } = useSWRConfig()

@@ -76,11 +76,6 @@ describe('BankInformations', () => {
         },
       ],
     })
-
-    vi.spyOn(router, 'useSearchParams').mockReturnValue([
-      new URLSearchParams({ structure: '1' }),
-      vi.fn(),
-    ])
   })
 
   it('should display the bank account section', async () => {

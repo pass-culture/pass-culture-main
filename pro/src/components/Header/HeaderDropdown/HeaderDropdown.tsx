@@ -2,7 +2,7 @@ import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import cn from 'classnames'
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { useLocation, useSearchParams } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
@@ -37,7 +37,6 @@ export const HeaderDropdown = () => {
   const { logEvent } = useAnalytics()
   const currentUser = useSelector(selectCurrentUser)
   const currentOffererId = useSelector(selectCurrentOffererId)
-  const [searchParams] = useSearchParams()
   const dispatch = useDispatch()
   const [windowWidth, setWindowWidth] = useState(window.innerWidth)
   const [subOpen, setSubOpen] = useState(false)
@@ -66,7 +65,6 @@ export const HeaderDropdown = () => {
     IN_STRUCTURE_CREATION_FUNNEL && offererOptions.length === 0
 
   const selectedOffererId =
-    searchParams.get('structure') ??
     currentOffererId ??
     getSavedOffererId(offererOptions) ??
     (offererOptions.length > 0 ? offererOptions[0]?.value : '')

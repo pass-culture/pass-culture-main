@@ -1,49 +1,28 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import { useSearchParams } from 'react-router-dom'
+import { useEffect, useMemo, useRef } from 'react'
+import { useSelector } from 'react-redux'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
 import { useRemoteConfigParams } from 'app/App/analytics/firebase'
-import { AppLayout } from 'app/AppLayout'
+import { Layout } from 'app/App/layout/Layout'
 import {
   GET_OFFERER_NAMES_QUERY_KEY,
   GET_OFFERER_QUERY_KEY,
   GET_VENUE_TYPES_QUERY_KEY,
 } from 'commons/config/swrQueryKeys'
 import { hasStatusCode } from 'commons/core/OfferEducational/utils/hasStatusCode'
-import { SAVED_OFFERER_ID_KEY } from 'commons/core/shared/constants'
-import { useCurrentUser } from 'commons/hooks/useCurrentUser'
-import { useIsNewInterfaceActive } from 'commons/hooks/useIsNewInterfaceActive'
-import { useNotification } from 'commons/hooks/useNotification'
-import { useWelcomeToTheNewBetaBanner } from 'commons/hooks/useWelcomeToTheNewBetaBanner'
-import { updateSelectedOffererId, updateUser } from 'commons/store/user/reducer'
 import { selectCurrentOffererId } from 'commons/store/user/selectors'
-import {
-  formatBrowserTimezonedDateAsUTC,
-  isDateValid,
-} from 'commons/utils/date'
-import { getSavedOffererId } from 'commons/utils/getSavedOffererId'
-import { localStorageAvailable } from 'commons/utils/localStorageAvailable'
 import { sortByLabel } from 'commons/utils/strings'
 import { AddBankAccountCallout } from 'components/Callout/AddBankAccountCallout'
 import { BankAccountHasPendingCorrectionCallout } from 'components/Callout/BankAccountHasPendingCorrectionCallout'
 import { LinkVenueCallout } from 'components/Callout/LinkVenueCallout'
 import { Newsletter } from 'components/Newsletter/Newsletter'
-import strokeCloseIcon from 'icons/stroke-close.svg'
-import { WelcomeToTheNewBetaBanner } from 'pages/Home/WelcomeToTheNewBetaBanner/WelcomeToTheNewBetaBanner'
 import { HTTP_STATUS } from 'repository/pcapi/pcapiClient'
-import { Button } from 'ui-kit/Button/Button'
-import { ButtonVariant } from 'ui-kit/Button/types'
-import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
-import screen from './assets/screen.gif'
 import styles from './Homepage.module.scss'
 import { OffererBanners } from './Offerers/OffererBanners'
 import { Offerers } from './Offerers/Offerers'
-import { ProfileAndSupport } from './ProfileAndSupport/ProfileAndSupport'
 import { StatisticsDashboard } from './StatisticsDashboard/StatisticsDashboard'
 import { VenueOfferSteps } from './VenueOfferSteps/VenueOfferSteps'
 import {
@@ -51,14 +30,7 @@ import {
   getVirtualVenueFromOfferer,
 } from './venueUtils'
 
-const HAS_CLOSED_BETA_TEST_BANNER = 'HAS_CLOSED_BETA_TEST_BANNER'
-const HAS_CLOSED_WELCOME_BETA_BANNER = 'HAS_CLOSED_WELCOME_BETA_BANNER'
-
 export const Homepage = (): JSX.Element => {
-  const dispatch = useDispatch()
-  const hasNewSideBarNavigation = useIsNewInterfaceActive()
-  const { currentUser } = useCurrentUser()
-  const notify = useNotification()
   const profileRef = useRef<HTMLElement>(null)
   const offerersRef = useRef<HTMLElement>(null)
   const remoteConfigData = useRemoteConfigParams()
@@ -73,29 +45,6 @@ export const Homepage = (): JSX.Element => {
       void callApi()
     }
   }, [remoteConfigData])
-
-  const userClosedBetaTestBanner = localStorageAvailable()
-    ? !localStorage.getItem(HAS_CLOSED_BETA_TEST_BANNER)
-    : true
-  const isEligibleToNewNav =
-    isDateValid(currentUser.navState?.eligibilityDate) &&
-    new Date(currentUser.navState.eligibilityDate) <=
-      new Date(formatBrowserTimezonedDateAsUTC(new Date()))
-
-  const showWelcomeToTheNewBetaBanner = useWelcomeToTheNewBetaBanner()
-
-  const userClosedWelcomeToTheNewBetaBanner = localStorageAvailable()
-    ? localStorage.getItem(HAS_CLOSED_WELCOME_BETA_BANNER)
-    : true
-
-  const [isNewNavEnabled, setIsNewNavEnabled] = useState(
-    !userClosedWelcomeToTheNewBetaBanner && showWelcomeToTheNewBetaBanner
-  )
-
-  const [seesNewNavAvailableBanner, setSeesNewNavAvailableBanner] = useState(
-    userClosedBetaTestBanner && !hasNewSideBarNavigation && isEligibleToNewNav
-  )
-  const [searchParams] = useSearchParams()
 
   const offererNamesQuery = useSWR([GET_OFFERER_NAMES_QUERY_KEY], () =>
     api.listOfferersNames()
@@ -114,24 +63,15 @@ export const Homepage = (): JSX.Element => {
     })) ?? []
   )
 
-  const headerOffererId = useSelector(selectCurrentOffererId)
-  const selectedOffererId = hasNewSideBarNavigation
-    ? (headerOffererId?.toString() ?? '')
-    : (searchParams.get('structure') ??
-      getSavedOffererId(offererOptions) ??
-      (offererOptions.length > 0 ? offererOptions[0]?.value : ''))
+  const selectedOffererId =
+    useSelector(selectCurrentOffererId)?.toString() ?? ''
 
+  // TODO: this may need to be in the store, as it is loaded in the header dropdown
   const selectedOffererQuery = useSWR(
-    offererNames && Boolean(selectedOffererId)
-      ? [GET_OFFERER_QUERY_KEY, selectedOffererId]
-      : null,
+    selectedOffererId ? [GET_OFFERER_QUERY_KEY, selectedOffererId] : null,
     async ([, offererIdParam]) => {
       try {
-        const offerer = await api.getOfferer(Number(offererIdParam))
-        localStorage.setItem(SAVED_OFFERER_ID_KEY, offererIdParam.toString())
-        dispatch(updateSelectedOffererId(Number(offererIdParam)))
-
-        return offerer
+        return await api.getOfferer(Number(offererIdParam))
       } catch (error) {
         if (hasStatusCode(error) && error.status === HTTP_STATUS.FORBIDDEN) {
           throw error
@@ -162,80 +102,17 @@ export const Homepage = (): JSX.Element => {
     !venueTypes
   ) {
     return (
-      <AppLayout>
+      <Layout>
         <Spinner />
-      </AppLayout>
+      </Layout>
     )
   }
 
-  async function showNewNav() {
-    try {
-      await api.postNewProNav()
-      setSeesNewNavAvailableBanner(false)
-      dispatch(
-        updateUser({
-          ...currentUser,
-          navState: {
-            newNavDate: formatBrowserTimezonedDateAsUTC(new Date()),
-            eligibilityDate: currentUser.navState?.eligibilityDate,
-          },
-        })
-      )
-      setIsNewNavEnabled(true)
-    } catch {
-      notify.error("Impossible de réaliser l'action. Réessayez plus tard")
-    }
-  }
-  function hideBanner() {
-    if (localStorageAvailable()) {
-      localStorage.setItem(HAS_CLOSED_BETA_TEST_BANNER, 'true')
-    }
-    setSeesNewNavAvailableBanner(false)
-  }
-  function onWelcomeDialogOpenChange(open: boolean) {
-    if (localStorageAvailable() && !open) {
-      localStorage.setItem(HAS_CLOSED_WELCOME_BETA_BANNER, 'true')
-    }
-  }
-
   return (
-    <AppLayout>
+    <Layout>
       <h1 className={styles['title']}>
         Bienvenue dans l’espace acteurs culturels
       </h1>
-
-      {seesNewNavAvailableBanner && (
-        <div className={styles['beta-banner']}>
-          <div className={styles['beta-banner-left']}>
-            <div className={styles['beta-banner-titles']}>
-              <div className={styles['beta-banner-title']}>
-                Une nouvelle interface sera bientôt disponible
-              </div>
-              <span>
-                Le pass Culture se modernise pour devenir plus pratique
-              </span>
-            </div>
-
-            <Button
-              onClick={showNewNav}
-              className={styles['beta-banner-activate']}
-            >
-              Activer dès maintenant
-            </Button>
-          </div>
-          <div className={styles['beta-banner-right']}>
-            <img src={screen} alt="" />
-          </div>
-          <Button
-            onClick={hideBanner}
-            className={styles['beta-banner-close']}
-            title="Fermer la bannière"
-            variant={ButtonVariant.TERNARY}
-          >
-            <SvgIcon src={strokeCloseIcon} alt="" width="24" />
-          </Button>
-        </div>
-      )}
 
       <div className={styles['reimbursements-banners']}>
         <AddBankAccountCallout offerer={selectedOfferer} />
@@ -278,23 +155,11 @@ export const Homepage = (): JSX.Element => {
         )}
 
       <section className={styles['section']} ref={profileRef}>
-        {!hasNewSideBarNavigation && <ProfileAndSupport />}
-
         <div className={styles['newsletter']}>
           <Newsletter />
         </div>
       </section>
-
-      {isNewNavEnabled && hasNewSideBarNavigation && (
-        <DialogBuilder
-          defaultOpen
-          onOpenChange={onWelcomeDialogOpenChange}
-          closeButtonClassName={styles['banner-close']}
-        >
-          <WelcomeToTheNewBetaBanner />
-        </DialogBuilder>
-      )}
-    </AppLayout>
+    </Layout>
   )
 }
 

@@ -2,7 +2,7 @@ import { useParams } from 'react-router-dom'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
-import { AppLayout } from 'app/AppLayout'
+import { Layout } from 'app/App/layout/Layout'
 import {
   GET_OFFERER_QUERY_KEY,
   GET_VENUE_LABELS_QUERY_KEY,
@@ -65,9 +65,9 @@ const VenueSettings = (): JSX.Element | null => {
     !venueProviders
   ) {
     return (
-      <AppLayout>
+      <Layout>
         <Spinner />
-      </AppLayout>
+      </Layout>
     )
   }
 
@@ -77,7 +77,7 @@ const VenueSettings = (): JSX.Element | null => {
   }))
 
   return (
-    <AppLayout>
+    <Layout>
       <VenueSettingsScreen
         initialValues={setInitialFormValues({ venue, isOfferAddressEnabled })}
         offerer={offerer}
@@ -86,7 +86,7 @@ const VenueSettings = (): JSX.Element | null => {
         venue={venue}
         venueProviders={venueProviders}
       />
-    </AppLayout>
+    </Layout>
   )
 }
 

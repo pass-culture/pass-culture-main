@@ -1,7 +1,7 @@
 import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 
-import { AppLayout } from 'app/AppLayout'
+import { Layout } from 'app/App/layout/Layout'
 import { selectCurrentOffererId } from 'commons/store/user/selectors'
 
 import styles from './Sitemap.module.scss'
@@ -10,7 +10,7 @@ export const Sitemap = () => {
   const selectedOffererId = useSelector(selectCurrentOffererId)
 
   return (
-    <AppLayout>
+    <Layout>
       <h1 className={styles['title']}>Plan du site</h1>
       <ul className={styles['sitemap-list']} data-testid="sitemap">
         <li className={styles['sitemap-list-item']}>
@@ -101,7 +101,7 @@ export const Sitemap = () => {
           </Link>
         </li>
       </ul>
-    </AppLayout>
+    </Layout>
   )
 }
 

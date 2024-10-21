@@ -1,0 +1,46 @@
+import { screen } from '@testing-library/react'
+import React from 'react'
+
+import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
+import { AccessibilityLayout } from 'pages/Accessibility/AccessibilityLayout'
+
+describe('Accessibility layout', () => {
+  it('should handle connected users', () => {
+    const user = sharedCurrentUserFactory()
+    renderWithProviders(<AccessibilityLayout>Children</AccessibilityLayout>, {
+      user,
+      storeOverrides: {
+        user: {
+          selectedOffererId: 1,
+          currentUser: user,
+        },
+      },
+    })
+    expect(screen.queryByTestId('logged-out-section')).not.toBeInTheDocument()
+
+    expect(
+      screen.queryByText('Retour à la page de connexion')
+    ).not.toBeInTheDocument()
+  })
+
+  it('should handle not connected with back button', () => {
+    renderWithProviders(
+      <AccessibilityLayout showBackToSignInButton={true}>
+        Children
+      </AccessibilityLayout>
+    )
+    expect(screen.getByTestId('logged-out-section')).toBeInTheDocument()
+    expect(
+      screen.getByText('Retour à la page de connexion')
+    ).toBeInTheDocument()
+  })
+
+  it('should handle not connected', () => {
+    renderWithProviders(<AccessibilityLayout>Children</AccessibilityLayout>)
+    expect(screen.getByTestId('logged-out-section')).toBeInTheDocument()
+    expect(
+      screen.queryByText('Retour à la page de connexion')
+    ).not.toBeInTheDocument()
+  })
+})

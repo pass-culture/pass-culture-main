@@ -14,10 +14,8 @@ import {
 import { CollectiveSearchFiltersParams } from 'commons/core/Offers/types'
 import { hasCollectiveSearchFilters } from 'commons/core/Offers/utils/hasSearchFilters'
 import { SelectOption } from 'commons/custom_types/form'
-import { useIsNewInterfaceActive } from 'commons/hooks/useIsNewInterfaceActive'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import fullRefreshIcon from 'icons/full-refresh.svg'
-import strokeCloseIcon from 'icons/stroke-close.svg'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { PeriodSelector } from 'ui-kit/form/PeriodSelector/PeriodSelector'
@@ -25,14 +23,12 @@ import { SelectInput } from 'ui-kit/form/Select/SelectInput'
 import { SelectAutocomplete } from 'ui-kit/form/SelectAutoComplete/SelectAutocomplete'
 import { BaseInput } from 'ui-kit/form/shared/BaseInput/BaseInput'
 import { FieldLayout } from 'ui-kit/form/shared/FieldLayout/FieldLayout'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './TemplateOffersSearchFilters.module.scss'
 
 interface TemplateOffersSearchFiltersProps {
   applyFilters: (filters: CollectiveSearchFiltersParams) => void
   offerer: GetOffererResponseModel | null
-  removeOfferer: () => void
   selectedFilters: CollectiveSearchFiltersParams
   setSelectedFilters: Dispatch<SetStateAction<CollectiveSearchFiltersParams>>
   disableAllFilters: boolean
@@ -74,13 +70,10 @@ export const TemplateOffersSearchFilters = ({
   setSelectedFilters,
   resetFilters,
   offerer,
-  removeOfferer,
   disableAllFilters,
   venues,
   isRestrictedAsAdmin = false,
 }: TemplateOffersSearchFiltersProps): JSX.Element => {
-  const isNewInterfaceActive = useIsNewInterfaceActive()
-
   const formats: SelectOption[] = Object.values(EacFormat).map((format) => ({
     value: format,
     label: format,
@@ -162,22 +155,6 @@ export const TemplateOffersSearchFilters = ({
 
   return (
     <>
-      {!isNewInterfaceActive && offerer && (
-        <span className="offerer-filter">
-          {offerer.name}
-          <button
-            onClick={removeOfferer}
-            type="button"
-            data-testid="remove-offerer-filter"
-          >
-            <SvgIcon
-              src={strokeCloseIcon}
-              alt="Supprimer le filtre par structure"
-              className={styles['offerer-close-icon']}
-            />
-          </button>
-        </span>
-      )}
       <form
         onSubmit={requestFilteredOffers}
         className={styles['search-filters-form']}

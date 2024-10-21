@@ -12,10 +12,9 @@ import { api } from 'apiClient/api'
 import { isErrorAPIError } from 'apiClient/helpers'
 import { OffererMemberStatus } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
-import { AppLayout } from 'app/AppLayout'
+import { Layout } from 'app/App/layout/Layout'
 import { GET_MEMBERS_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import { OffererLinkEvents } from 'commons/core/FirebaseEvents/constants'
-import { useIsNewInterfaceActive } from 'commons/hooks/useIsNewInterfaceActive'
 import { useNotification } from 'commons/hooks/useNotification'
 import { selectCurrentOffererId } from 'commons/store/user/selectors'
 import { FormLayout } from 'components/FormLayout/FormLayout'
@@ -94,25 +93,19 @@ export const Collaborators = (): JSX.Element | null => {
     }
   }, [])
 
-  const isNewInterface = useIsNewInterfaceActive()
-
-  const MAX_COLLABORATORS = isNewInterface ? 10 : 5
+  const MAX_COLLABORATORS = 10
 
   if (!offererId) {
     return null
   }
 
   return (
-    <AppLayout>
+    <Layout>
       <h1 className={styles['title']}>Collaborateurs</h1>
 
       <section className={styles['section']} ref={scrollToSection}>
-        <h2
-          className={
-            styles[isNewInterface ? 'main-list-title-new' : 'main-list-title']
-          }
-        >
-          {isNewInterface ? 'Liste des collaborateurs' : 'Collaborateurs'}
+        <h2 className={styles['main-list-title-new']}>
+          {'Liste des collaborateurs'}
         </h2>
 
         {members.length > 0 && (
@@ -206,7 +199,7 @@ export const Collaborators = (): JSX.Element | null => {
           </>
         )}
       </section>
-    </AppLayout>
+    </Layout>
   )
 }
 

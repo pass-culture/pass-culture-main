@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
-import { serializeEducationalOfferers } from 'commons/core/OfferEducational/utils/serializeEducationalOfferers'
+import { serializeEducationalOfferer } from 'commons/core/OfferEducational/utils/serializeEducationalOfferer'
 import { SENT_DATA_ERROR_MESSAGE } from 'commons/core/shared/constants'
 import { useNotification } from 'commons/hooks/useNotification'
 
@@ -25,13 +25,17 @@ export const createOfferFromTemplate = async (
       offerTemplateResponse.venue.managingOfferer.id || offererId
     const { educationalOfferers } =
       await api.listEducationalOfferers(targetOffererId)
-    const offerers = serializeEducationalOfferers(educationalOfferers)
+    const targetOfferer = educationalOfferers.find(
+      (educationalOfferer) => educationalOfferer.id === targetOffererId
+    )
+    const offerers = targetOfferer
+      ? serializeEducationalOfferer(targetOfferer)
+      : null
 
     const initialValues = computeInitialValuesFromOffer(
       offerers,
       false,
       offerTemplateResponse,
-      undefined,
       undefined,
       isMarseilleActive
     )

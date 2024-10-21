@@ -3,12 +3,12 @@ import { getCollectiveOfferFactory } from 'commons/utils/collectiveApiFactories'
 
 import { OfferEducationalProps } from '../OfferEducational'
 
-import { userOfferersFactory } from './userOfferersFactory'
+import { userOffererFactory } from './userOfferersFactory'
 
-const mockUserOfferers = userOfferersFactory([{}])
+const mockUserOfferer = userOffererFactory({})
 
 export const defaultCreationProps: OfferEducationalProps = {
-  userOfferers: mockUserOfferers,
+  userOfferer: mockUserOfferer,
   mode: Mode.CREATION,
   domainsOptions: [{ value: 1, label: 'domain1' }],
   nationalPrograms: [{ value: 1, label: 'nationalProgram1' }],
@@ -17,7 +17,7 @@ export const defaultCreationProps: OfferEducationalProps = {
 
 export const defaultEditionProps: OfferEducationalProps = {
   offer: getCollectiveOfferFactory(),
-  userOfferers: mockUserOfferers,
+  userOfferer: mockUserOfferer,
   mode: Mode.EDITION,
   domainsOptions: [{ value: 1, label: 'domain1' }],
   nationalPrograms: [{ value: 1, label: 'nationalProgram1' }],

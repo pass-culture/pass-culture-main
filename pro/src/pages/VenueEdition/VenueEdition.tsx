@@ -11,14 +11,13 @@ import {
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
-import { AppLayout } from 'app/AppLayout'
+import { Layout } from 'app/App/layout/Layout'
 import {
   GET_OFFERER_QUERY_KEY,
   GET_VENUE_QUERY_KEY,
   GET_VENUE_TYPES_QUERY_KEY,
 } from 'commons/config/swrQueryKeys'
 import { SelectOption } from 'commons/custom_types/form'
-import { useIsNewInterfaceActive } from 'commons/hooks/useIsNewInterfaceActive'
 import { selectCurrentOffererId } from 'commons/store/user/selectors'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { CollectiveDataEdition } from 'pages/Offerers/Offerer/VenueV1/VenueEdition/CollectiveDataEdition/CollectiveDataEdition'
@@ -39,7 +38,6 @@ export const VenueEdition = (): JSX.Element | null => {
   const navigate = useNavigate()
   const [selectedVenueId, setSelectedVenueId] = useState(venueId ?? '')
   const location = useLocation()
-  const isNewSideBarNavigation = useIsNewInterfaceActive()
   const selectedOffererId = useSelector(selectCurrentOffererId)
 
   const venueQuery = useSWR(
@@ -73,9 +71,9 @@ export const VenueEdition = (): JSX.Element | null => {
     !venueTypes
   ) {
     return (
-      <AppLayout>
+      <Layout>
         <Spinner />
-      </AppLayout>
+      </Layout>
     )
   }
 
@@ -97,6 +95,7 @@ export const VenueEdition = (): JSX.Element | null => {
       }),
     },
   ]
+
   const activeStep = location.pathname.includes('collectif')
     ? 'collective'
     : 'individual'
@@ -117,42 +116,40 @@ export const VenueEdition = (): JSX.Element | null => {
         : 'Page sur l’application'
 
   return (
-    <AppLayout>
+    <Layout>
       <div>
-        {isNewSideBarNavigation && (
-          <FormLayout>
-            <h1 className={styles['header']}>{titleText}</h1>
-            {venuesOptions.length > 1 && venue.isPermanent && (
-              <>
-                <FormLayout.Row>
-                  <FieldLayout
-                    label={`Sélectionnez votre page ${activeStep === 'individual' ? 'partenaire' : 'dans ADAGE'}`}
+        <FormLayout>
+          <h1 className={styles['header']}>{titleText}</h1>
+          {venuesOptions.length > 1 && venue.isPermanent && (
+            <>
+              <FormLayout.Row>
+                <FieldLayout
+                  label={`Sélectionnez votre page ${activeStep === 'individual' ? 'partenaire' : 'dans ADAGE'}`}
+                  name="venues"
+                  isOptional
+                  className={styles['select-partner-page']}
+                >
+                  <SelectInput
                     name="venues"
-                    isOptional
-                    className={styles['select-partner-page']}
-                  >
-                    <SelectInput
-                      name="venues"
-                      options={venuesOptions}
-                      value={selectedVenueId}
-                      onChange={(e) => {
-                        setSelectedVenueId(e.target.value)
-                      }}
-                    />
-                  </FieldLayout>
-                </FormLayout.Row>
-                <hr className={styles['separator']} />
-              </>
-            )}
-          </FormLayout>
-        )}
+                    options={venuesOptions}
+                    value={selectedVenueId}
+                    onChange={(e) => {
+                      setSelectedVenueId(e.target.value)
+                    }}
+                  />
+                </FieldLayout>
+              </FormLayout.Row>
+              <hr className={styles['separator']} />
+            </>
+          )}
+        </FormLayout>
         <VenueEditionHeader
           venue={venue}
           offerer={offerer}
           venueTypes={venueTypes}
         />
 
-        {(!isNewSideBarNavigation || !venue.isPermanent) && (
+        {!venue.isPermanent && (
           <Tabs
             tabs={tabs}
             selectedKey={activeStep}
@@ -168,7 +165,7 @@ export const VenueEdition = (): JSX.Element | null => {
           <Route path="*" element={<VenueEditionFormScreen venue={venue} />} />
         </Routes>
       </div>
-    </AppLayout>
+    </Layout>
   )
 }
 

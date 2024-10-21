@@ -89,6 +89,15 @@ describe('route TemplateCollectiveOffers', () => {
     })
   })
 
+  it('should display the page', async () => {
+    await renderOffers()
+
+    await waitFor(() => {
+      expect(api.getOfferer).toHaveBeenCalledWith(1)
+    })
+    expect(screen.getByText('Offres vitrines')).toBeInTheDocument()
+  })
+
   describe('filters', () => {
     describe('status filters', () => {
       it('should filter offers given status filter when clicking on "Appliquer"', async () => {

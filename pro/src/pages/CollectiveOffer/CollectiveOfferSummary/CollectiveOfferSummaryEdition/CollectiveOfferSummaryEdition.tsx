@@ -1,4 +1,4 @@
-import { AppLayout } from 'app/AppLayout'
+import { Layout } from 'app/App/layout/Layout'
 import { Mode } from 'commons/core/OfferEducational/types'
 import { canArchiveCollectiveOfferFromSummary } from 'components/ArchiveConfirmationModal/utils/canArchiveCollectiveOffer'
 import { CollectiveOfferLayout } from 'components/CollectiveOfferLayout/CollectiveOfferLayout'
@@ -13,7 +13,7 @@ const CollectiveOfferSummaryEdition = ({
   isTemplate,
 }: MandatoryCollectiveOfferFromParamsProps) => {
   return (
-    <AppLayout layout={'sticky-actions'}>
+    <Layout layout={'sticky-actions'}>
       <CollectiveOfferLayout
         subTitle={offer.name}
         isTemplate={isTemplate}
@@ -25,7 +25,7 @@ const CollectiveOfferSummaryEdition = ({
           mode={Mode.EDITION}
         />
       </CollectiveOfferLayout>
-    </AppLayout>
+    </Layout>
   )
 }
 

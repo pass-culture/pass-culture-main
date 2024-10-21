@@ -4,7 +4,6 @@ import React from 'react'
 
 import { api } from 'apiClient/api'
 import { CancelablePromise, GetOffererResponseModel } from 'apiClient/v1'
-import { SelectOption } from 'commons/custom_types/form'
 import { defaultGetOffererResponseModel } from 'commons/utils/individualApiFactories'
 import {
   renderWithProviders,
@@ -22,12 +21,9 @@ vi.mock('apiClient/api', () => ({
   },
 }))
 
-const renderOffererStatsScreen = (
-  offererOptions: SelectOption[],
-  options?: RenderWithProvidersOptions
-) => {
+const renderOffererStatsScreen = (options?: RenderWithProvidersOptions) => {
   const user = sharedCurrentUserFactory()
-  renderWithProviders(<OffererStatsScreen offererOptions={offererOptions} />, {
+  renderWithProviders(<OffererStatsScreen />, {
     user,
     storeOverrides: {
       user: {
@@ -40,21 +36,10 @@ const renderOffererStatsScreen = (
 }
 
 describe('OffererStatsScreen', () => {
-  let offererOptions: SelectOption[]
   let offerers: GetOffererResponseModel[]
   const venueId = 1
 
   beforeEach(() => {
-    offererOptions = [
-      {
-        value: '1',
-        label: 'Mon super cinéma',
-      },
-      {
-        value: '2',
-        label: 'Ma super librairie',
-      },
-    ]
     offerers = [
       {
         id: 1,
@@ -92,7 +77,7 @@ describe('OffererStatsScreen', () => {
   })
 
   it('should get first offerer venues on render', async () => {
-    renderOffererStatsScreen(offererOptions)
+    renderOffererStatsScreen()
 
     await waitFor(() => {
       expect(api.getOfferer).toHaveBeenCalledTimes(1)
@@ -105,7 +90,7 @@ describe('OffererStatsScreen', () => {
 
   it('should not display virtual venue if offerer has no digital offer', async () => {
     offerers[0].hasDigitalVenueAtLeastOneOffer = false
-    renderOffererStatsScreen(offererOptions)
+    renderOffererStatsScreen()
 
     await waitFor(() => {
       expect(api.getOfferer).toHaveBeenCalledTimes(1)
@@ -120,7 +105,7 @@ describe('OffererStatsScreen', () => {
     vi.spyOn(api, 'getOfferer').mockResolvedValue(
       defaultGetOffererResponseModel
     )
-    renderOffererStatsScreen(offererOptions)
+    renderOffererStatsScreen()
     await waitFor(() => {
       expect(api.getOfferer).toHaveBeenCalledTimes(1)
     })
@@ -130,7 +115,7 @@ describe('OffererStatsScreen', () => {
   })
 
   it('should display venue iframe when selecting a venue', async () => {
-    renderOffererStatsScreen(offererOptions)
+    renderOffererStatsScreen()
     await waitFor(() => {
       expect(api.getOfferer).toHaveBeenCalledTimes(1)
     })
@@ -143,7 +128,7 @@ describe('OffererStatsScreen', () => {
   })
 
   it('should display offerer stats when selecting all venues', async () => {
-    renderOffererStatsScreen(offererOptions)
+    renderOffererStatsScreen()
     await waitFor(() => {
       expect(api.getOfferer).toHaveBeenCalledTimes(1)
     })
@@ -153,7 +138,7 @@ describe('OffererStatsScreen', () => {
   })
 
   it('should have good wording for venues with WIP_ENABLE_OFFER_ADDRESS', async () => {
-    renderOffererStatsScreen(offererOptions, {
+    renderOffererStatsScreen({
       features: ['WIP_ENABLE_OFFER_ADDRESS'],
     })
 

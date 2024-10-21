@@ -17,7 +17,6 @@ import {
   GET_DATA_ERROR_MESSAGE,
   SAVED_OFFERER_ID_KEY,
 } from 'commons/core/shared/constants'
-import { useIsNewInterfaceActive } from 'commons/hooks/useIsNewInterfaceActive'
 import { useNotification } from 'commons/hooks/useNotification'
 import { updateSelectedOffererId, updateUser } from 'commons/store/user/reducer'
 import { selectCurrentUser } from 'commons/store/user/selectors'
@@ -61,15 +60,6 @@ export const App = (): JSX.Element | null => {
   useFirebase(consentedToFirebase)
   useLogNavigation()
   useLogExtraProData()
-
-  const isNewInterfaceActive = useIsNewInterfaceActive()
-
-  useEffect(() => {
-    document.documentElement.setAttribute(
-      'data-theme',
-      isNewInterfaceActive ? 'blue' : 'pink'
-    )
-  }, [isNewInterfaceActive])
 
   useEffect(() => {
     if (location.search.includes('logout')) {

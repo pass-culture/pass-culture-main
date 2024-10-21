@@ -121,12 +121,6 @@ describe('StatisticsDashboard', () => {
     expect(screen.getByText('Vos offres publiées')).toBeInTheDocument()
   })
 
-  it('should display the create offer button by default', async () => {
-    renderStatisticsDashboard(false)
-
-    expect(await screen.findByText(/Créer une offre/)).toBeInTheDocument()
-  })
-
   it('should display the create offer button if the user is Admin', async () => {
     renderStatisticsDashboard(false, [], true)
 

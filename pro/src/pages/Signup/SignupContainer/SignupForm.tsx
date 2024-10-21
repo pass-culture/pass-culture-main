@@ -7,7 +7,6 @@ import { BannerRGS } from 'components/Banner/BannerRGS'
 import { FormLayout } from 'components/FormLayout/FormLayout'
 import { LegalInfos } from 'components/LegalInfos/LegalInfos'
 import { ScrollToFirstErrorAfterSubmit } from 'components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
-import { CookiesFooter } from 'pages/CookiesFooter/CookiesFooter'
 import { MaybeAppUserDialog } from 'pages/Signup/SignupContainer/MaybeAppUserDialog/MaybeAppUserDialog'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -99,7 +98,6 @@ export const SignupForm = (): JSX.Element => {
           </Button>
         </div>
         <BannerRGS />
-        <CookiesFooter className={styles['cookie-footer']} />
       </FormLayout>
     </>
   )

@@ -2,20 +2,33 @@ import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
 
 import { defaultCreationProps } from '../__tests-utils__/defaultProps'
 import { OfferEducational, OfferEducationalProps } from '../OfferEducational'
 
+function renderComponent(props: OfferEducationalProps) {
+  const user = sharedCurrentUserFactory()
+  renderWithProviders(<OfferEducational {...props} />, {
+    user,
+    storeOverrides: {
+      user: {
+        selectedOffererId: 1,
+        currentUser: user,
+      },
+    },
+  })
+}
+
 describe('screens | OfferEducational : creation offer type step', () => {
   let props: OfferEducationalProps
-  let store: any
 
   beforeEach(() => {
     props = defaultCreationProps
   })
 
   it('should display the right fields and titles', async () => {
-    renderWithProviders(<OfferEducational {...props} />)
+    renderComponent(props)
 
     const formatSelect = await screen.findByLabelText('Format *')
     expect(formatSelect).toBeInTheDocument()
@@ -65,9 +78,7 @@ describe('screens | OfferEducational : creation offer type step', () => {
     })
 
     it('should require user to select a domain', async () => {
-      renderWithProviders(<OfferEducational {...props} />, {
-        storeOverrides: store,
-      })
+      renderComponent(props)
       await userEvent.click(
         await screen.findByLabelText(/Domaine artistique et culturel */)
       )
@@ -80,9 +91,7 @@ describe('screens | OfferEducational : creation offer type step', () => {
     })
 
     it('should enable user to select domains', async () => {
-      renderWithProviders(<OfferEducational {...props} />, {
-        storeOverrides: store,
-      })
+      renderComponent(props)
 
       await userEvent.click(
         await screen.findByLabelText(/Domaine artistique et culturel */)
@@ -107,9 +116,7 @@ describe('screens | OfferEducational : creation offer type step', () => {
           { value: 4, label: 'Olympiades' },
         ],
       }
-      renderWithProviders(<OfferEducational {...overridedProps} />, {
-        storeOverrides: store,
-      })
+      renderComponent(overridedProps)
       const nationalProgramsSelect = await screen.findByLabelText(
         /Dispositif national */
       )
@@ -123,8 +130,7 @@ describe('screens | OfferEducational : creation offer type step', () => {
 
   describe('formats', () => {
     it('should be able to select a format', async () => {
-      renderWithProviders(<OfferEducational {...props} />)
-
+      renderComponent(props)
       const selectFormat = await screen.findByRole('combobox', {
         name: 'Format *',
       })
@@ -143,8 +149,7 @@ describe('screens | OfferEducational : creation offer type step', () => {
 
   describe('title, description and duration inputs', () => {
     it('should require a title with less than 110 chars (and truncate longer strings)', async () => {
-      renderWithProviders(<OfferEducational {...props} />)
-
+      renderComponent(props)
       const titleMaxLength = 110
 
       const titleInput = await screen.findByLabelText('Titre de l’offre *')
@@ -174,8 +179,7 @@ describe('screens | OfferEducational : creation offer type step', () => {
     })
 
     it('should require a description with less than 1000 chars (and truncate longer strings)', async () => {
-      renderWithProviders(<OfferEducational {...props} />)
-
+      renderComponent(props)
       const descMaxLength = 1000
 
       const description = await screen.findByLabelText(/Description */)
@@ -202,8 +206,7 @@ describe('screens | OfferEducational : creation offer type step', () => {
     })
 
     it('should have a duration field with a format of hh:mm', async () => {
-      renderWithProviders(<OfferEducational {...props} />)
-
+      renderComponent(props)
       const duration = await screen.findByLabelText(/Durée */)
       expect(duration).toHaveValue('')
 

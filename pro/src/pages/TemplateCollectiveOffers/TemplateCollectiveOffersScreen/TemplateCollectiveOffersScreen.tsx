@@ -131,22 +131,6 @@ export const TemplateCollectiveOffersScreen = ({
     })
   }
 
-  const removeOfferer = () => {
-    const updatedFilters = {
-      ...initialSearchFilters,
-      offererId: DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS.offererId,
-    }
-    if (
-      initialSearchFilters.venueId ===
-        DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS.venueId &&
-      initialSearchFilters.status !==
-        DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS.status
-    ) {
-      updatedFilters.status = DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS.status
-    }
-    applyUrlFiltersAndRedirect(updatedFilters)
-  }
-
   function onSetSelectedOffer(offer: CollectiveOfferResponseModel) {
     const matchingOffer = selectedOffers.find((selectedOffer) =>
       isSameOffer(offer, selectedOffer)
@@ -171,7 +155,6 @@ export const TemplateCollectiveOffersScreen = ({
         categories={categories}
         disableAllFilters={userHasNoOffers}
         offerer={offerer}
-        removeOfferer={removeOfferer}
         resetFilters={resetFilters}
         selectedFilters={selectedFilters}
         setSelectedFilters={setSelectedFilters}

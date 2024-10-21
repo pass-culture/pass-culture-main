@@ -3,12 +3,12 @@ import { Formik } from 'formik'
 
 import { DEFAULT_EAC_FORM_VALUES } from 'commons/core/OfferEducational/constants'
 import {
-  OfferEducationalFormValues,
   Mode,
+  OfferEducationalFormValues,
 } from 'commons/core/OfferEducational/types'
 import {
-  RenderWithProvidersOptions,
   renderWithProviders,
+  RenderWithProvidersOptions,
 } from 'commons/utils/renderWithProviders'
 
 import { userOffererFactory } from '../../__tests-utils__/userOfferersFactory'
@@ -39,7 +39,7 @@ const renderOfferEducationalForm = (
 }
 
 const defaultProps: OfferEducationalFormProps = {
-  userOfferers: [userOffererFactory({})],
+  userOfferer: userOffererFactory({}),
   mode: Mode.CREATION,
   domainsOptions: [],
   nationalPrograms: [],

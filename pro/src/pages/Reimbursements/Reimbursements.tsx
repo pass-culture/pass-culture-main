@@ -4,7 +4,7 @@ import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
 import { GetOffererResponseModel } from 'apiClient/v1'
-import { AppLayout } from 'app/AppLayout'
+import { Layout } from 'app/App/layout/Layout'
 import {
   GET_OFFERER_NAMES_QUERY_KEY,
   GET_OFFERER_QUERY_KEY,
@@ -38,14 +38,14 @@ export const Reimbursements = (): JSX.Element => {
 
   if (offererNamesQuery.isLoading || offererQuery.isLoading) {
     return (
-      <AppLayout>
+      <Layout>
         <Spinner />
-      </AppLayout>
+      </Layout>
     )
   }
 
   return (
-    <AppLayout>
+    <Layout>
       <div className={styles['reimbursements-container']}>
         <h1 className={styles['title']}>Gestion financière</h1>
         <div>
@@ -54,7 +54,7 @@ export const Reimbursements = (): JSX.Element => {
           <Outlet context={{ selectedOfferer: offererQuery.data }} />
         </div>
       </div>
-    </AppLayout>
+    </Layout>
   )
 }
 

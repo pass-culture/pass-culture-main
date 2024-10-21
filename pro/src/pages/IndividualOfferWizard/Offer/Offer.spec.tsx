@@ -1,17 +1,35 @@
-import { screen } from '@testing-library/react'
+import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import React from 'react'
 import { generatePath } from 'react-router-dom'
 
+import { api } from 'apiClient/api'
 import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
 import { getIndividualOfferPath } from 'commons/core/Offers/utils/getIndividualOfferUrl'
+import { venueListItemFactory } from 'commons/utils/individualApiFactories'
 import {
-  RenderWithProvidersOptions,
   renderWithProviders,
+  RenderWithProvidersOptions,
 } from 'commons/utils/renderWithProviders'
 import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferNavigation/constants'
 
-import { Offer } from '../Offer'
+import { Offer } from './Offer'
+
+const proVenues = [
+  venueListItemFactory({
+    id: 1,
+    name: 'Ma venue',
+    offererName: 'Mon offerer',
+    publicName: undefined,
+    isVirtual: false,
+  }),
+  venueListItemFactory({
+    id: 2,
+    name: 'Ma venue virtuelle',
+    offererName: 'Mon offerer',
+    isVirtual: true,
+  }),
+]
 
 const renderOfferPage = (options?: RenderWithProvidersOptions) =>
   renderWithProviders(<Offer />, options)
@@ -39,5 +57,21 @@ describe('Offer', () => {
     expect(
       screen.queryByRole('heading', { name: 'Type d’offre' })
     ).not.toBeInTheDocument()
+  })
+
+  it('should display offer', async () => {
+    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+      offerersNames: [],
+    })
+    vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: proVenues })
+
+    renderOfferPage({
+      user: sharedCurrentUserFactory(),
+    })
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+    expect(
+      screen.getByRole('heading', { name: 'Type d’offre' })
+    ).toBeInTheDocument()
   })
 })
