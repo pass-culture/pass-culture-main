@@ -299,7 +299,8 @@ def test_serialize_offer_event():
     ),
 )
 def test_serialize_offer_distinct(extra_data, expected_distinct):
-    offer = offers_factories.OfferFactory(id=1, extraData=extra_data)
+    product = offers_factories.ProductFactory(extraData=extra_data)
+    offer = offers_factories.OfferFactory(id=1, product=product)
     serialized = algolia.AlgoliaBackend().serialize_offer(offer, 0)
     assert serialized["distinct"] == expected_distinct
 
