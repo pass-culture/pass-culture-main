@@ -403,6 +403,44 @@ class PriceCategoryResponseModel(BaseModel):
         orm_mode = True
 
 
+class IndividualOfferResponseGetterDict(GetterDict):
+    def get(self, key: str, default: Any | None = None) -> Any:
+        if key == "extraData" and self._obj.product:
+            self._obj.extraData = self._obj.product.extraData
+
+        return super().get(key, default)
+
+
+class IndividualOfferWithAddressResponseGetterDict(GetterDict):
+    def get(self, key: str, default: Any | None = None) -> Any:
+        if key == "address":
+            if not self._obj.offererAddress:
+                offerer_address = self._obj.venue.offererAddress
+            else:
+                offerer_address = self._obj.offererAddress
+            # TODO(xordoquy): the following code should be removed once the
+            # migration of offerer_address from venues is performed.
+            # Alternatively, might be a good idea to keep it and log a warning too
+            if not offerer_address:
+                return None
+            offererAddress = GetOffererAddressResponseModel(
+                id=offerer_address.id,
+                label=offerer_address.label,
+                street=offerer_address.address.street,
+                postalCode=offerer_address.address.postalCode,
+                city=offerer_address.address.city,
+                isLinkedToVenue=offerer_address._isLinkedToVenue,
+                departmentCode=offerer_address.address.departmentCode,
+            )
+            label = self._obj.venue.common_name if offererAddress.isLinkedToVenue else offererAddress.label
+            return AddressResponseIsLinkedToVenueModel(
+                **retrieve_address_info_from_oa(offerer_address),
+                label=label,
+                isLinkedToVenue=offererAddress.isLinkedToVenue,
+            )
+        return super().get(key, default)
+
+
 class GetIndividualOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
     activeMediation: GetOfferMediationResponseModel | None
     bookingContact: str | None
@@ -443,36 +481,7 @@ class GetIndividualOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
         orm_mode = True
         json_encoders = {datetime.datetime: format_into_utc_date}
         use_enum_values = True
-
-
-class IndividualOfferResponseGetterDict(GetterDict):
-    def get(self, key: str, default: Any | None = None) -> Any:
-        if key == "address":
-            if not self._obj.offererAddress:
-                offerer_address = self._obj.venue.offererAddress
-            else:
-                offerer_address = self._obj.offererAddress
-            # TODO(xordoquy): the following code should be removed once the
-            # migration of offerer_address from venues is performed.
-            # Alternatively, might be a good idea to keep it and log a warning too
-            if not offerer_address:
-                return None
-            offererAddress = GetOffererAddressResponseModel(
-                id=offerer_address.id,
-                label=offerer_address.label,
-                street=offerer_address.address.street,
-                postalCode=offerer_address.address.postalCode,
-                city=offerer_address.address.city,
-                isLinkedToVenue=offerer_address._isLinkedToVenue,
-                departmentCode=offerer_address.address.departmentCode,
-            )
-            label = self._obj.venue.common_name if offererAddress.isLinkedToVenue else offererAddress.label
-            return AddressResponseIsLinkedToVenueModel(
-                **retrieve_address_info_from_oa(offerer_address),
-                label=label,
-                isLinkedToVenue=offererAddress.isLinkedToVenue,
-            )
-        return super().get(key, default)
+        getter_dict = IndividualOfferResponseGetterDict
 
 
 class GetIndividualOfferWithAddressResponseModel(GetIndividualOfferResponseModel):
@@ -483,7 +492,7 @@ class GetIndividualOfferWithAddressResponseModel(GetIndividualOfferResponseModel
         orm_mode = True
         json_encoders = {datetime.datetime: format_into_utc_date}
         use_enum_values = True
-        getter_dict = IndividualOfferResponseGetterDict
+        getter_dict = IndividualOfferWithAddressResponseGetterDict
 
 
 class GetStocksResponseModel(ConfiguredBaseModel):
