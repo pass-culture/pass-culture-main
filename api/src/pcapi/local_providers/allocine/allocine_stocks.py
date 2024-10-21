@@ -89,16 +89,11 @@ class AllocineStocks(LocalProvider):
 
     def update_from_movie_information(self, offer: offers_models.Offer) -> None:
         offer.name = self.product.name
-        offer.extraData = offer.extraData or offers_models.OfferExtraData()
         offer.durationMinutes = self.product.durationMinutes
         offer.product = self.product
+        offer.extraData = offers_models.OfferExtraData()
         if self.product.extraData:
-            offer.extraData.update(self.product.extraData)
-
-        offer.extraData["theater"] = {
-            "allocine_movie_id": self.movie.internalId,
-            "allocine_room_id": self.room_internal_id,
-        }
+            offer.extraData = offers_api._filter_unwanted(self.product.extraData)
 
     def fill_offer_attributes(self, offer: offers_models.Offer) -> None:
         offer.venueId = self.venue.id

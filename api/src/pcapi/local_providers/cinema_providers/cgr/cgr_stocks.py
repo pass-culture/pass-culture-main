@@ -80,18 +80,19 @@ class CGRStocks(LocalProvider):
             self.fill_stock_attributes(pc_object)
 
     def update_from_movie_information(self, offer: offers_models.Offer) -> None:
-        offer.extraData = offer.extraData or offers_models.OfferExtraData()
+        offer.extraData = offers_models.OfferExtraData()
         if self.product:
             offer.name = self.product.name
             offer.description = self.product.description
             offer.durationMinutes = self.product.durationMinutes
             if self.product.extraData:
-                offer.extraData.update(self.product.extraData)
+                offer.extraData = offers_api._filter_unwanted(self.product.extraData)
         else:
             offer.name = self.film_infos.Titre
             offer.description = self.film_infos.Synopsis
             offer.durationMinutes = self.film_infos.Duree
 
+        # CHECK if necessary to keep
         offer.extraData["allocineId"] = offer.extraData.get("allocineId") or self.film_infos.IDFilmAlloCine
         if self.film_infos.NumVisa:
             offer.extraData["visa"] = offer.extraData.get("visa") or str(self.film_infos.NumVisa)

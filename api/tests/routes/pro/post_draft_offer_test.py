@@ -79,7 +79,8 @@ class Returns201Test:
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
         product = offers_factories.ProductFactory(
-            subcategoryId=subcategories.LIVRE_PAPIER.id, extraData=dict({"ean": "9782123456803"})
+            subcategoryId=subcategories.LIVRE_PAPIER.id,
+            extraData=dict({"ean": "9782123456803", "20 years anniversary box": True}),
         )
 
         data = {

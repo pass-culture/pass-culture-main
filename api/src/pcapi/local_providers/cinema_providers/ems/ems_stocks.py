@@ -164,14 +164,13 @@ class EMSStocks:
         if event.duration:
             offer.durationMinutes = event.duration
         offer.isDuo = self.is_duo
-
+        offer.extraData = {}
         if offer.product:
             offer.name = offer.product.name
             offer.description = offer.product.description
             offer.durationMinutes = offer.product.durationMinutes
             if offer.product.extraData:
-                offer.extraData = offer.extraData or offers_models.OfferExtraData()
-                offer.extraData.update(offer.product.extraData)
+                offer.extraData = offers_api._filter_unwanted(offer.product.extraData)
 
         return offer
 

@@ -114,6 +114,22 @@ class StocksStats:
     remaining_quantity: int | None
 
 
+def _filter_unwanted(extra_data: typing.Any) -> models.OfferExtraData:
+    # Offers linked to a product should use product extraData.
+    # The remaining informations are denormalized to improvde performance
+    whitelist_extra_data = {
+        "visa",
+        "allocine_id",
+        "ean",
+        "gtl_id",
+        "musicType",
+        "musicSubType",
+        "showType",
+        "showSubtypes",
+    }
+    return models.OfferExtraData(**{key: value for key, value in extra_data.items() if key in whitelist_extra_data})
+
+
 def build_new_offer_from_product(
     venue: offerers_models.Venue,
     product: models.Product,
@@ -122,7 +138,7 @@ def build_new_offer_from_product(
 ) -> models.Offer:
     return models.Offer(
         bookingEmail=venue.bookingEmail,
-        extraData=product.extraData,
+        extraData=_filter_unwanted(product.extraData),
         idAtProvider=id_at_provider,
         lastProviderId=provider_id,
         name=product.name,
@@ -221,7 +237,10 @@ def create_draft_offer(
     if feature.FeatureToggle.WIP_SUGGESTED_SUBCATEGORIES.is_active():
         venue = _get_coherent_venue_with_subcategory(venue, body.subcategory_id)
 
-    body.extra_data = _format_extra_data(body.subcategory_id, body.extra_data) or {}
+    if product:
+        body.extra_data = _filter_unwanted(product.extraData)
+    else:
+        body.extra_data = _format_extra_data(body.subcategory_id, body.extra_data) or {}
     validation.check_offer_extra_data(body.subcategory_id, body.extra_data, venue, is_from_private_api)
 
     if feature.FeatureToggle.WIP_EAN_CREATION.is_active():
