@@ -4,7 +4,7 @@ import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
 import { CollectiveOfferType } from 'apiClient/v1'
-import { AppLayout } from 'app/AppLayout'
+import { Layout } from 'app/App/layout/Layout'
 import {
   GET_OFFERER_QUERY_KEY,
   GET_VENUES_QUERY_KEY,
@@ -20,27 +20,22 @@ import { getCollectiveOffersSwrKeys } from 'commons/core/Offers/utils/getCollect
 import { hasCollectiveSearchFilters } from 'commons/core/Offers/utils/hasSearchFilters'
 import { serializeApiCollectiveFilters } from 'commons/core/Offers/utils/serializer'
 import { useCurrentUser } from 'commons/hooks/useCurrentUser'
-import { useIsNewInterfaceActive } from 'commons/hooks/useIsNewInterfaceActive'
 import { selectCurrentOffererId } from 'commons/store/user/selectors'
 import { TemplateCollectiveOffersScreen } from 'pages/TemplateCollectiveOffers/TemplateCollectiveOffersScreen/TemplateCollectiveOffersScreen'
 import { formatAndOrderVenues } from 'repository/venuesService'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
 
 export const TemplateCollectiveOffers = (): JSX.Element => {
-  const selectedOffererId = useSelector(selectCurrentOffererId)
+  const offererId = useSelector(selectCurrentOffererId)?.toString()
 
   const urlSearchFilters = useQueryCollectiveSearchFilters({
     ...DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
-    offererId: selectedOffererId?.toString() ?? 'all',
+    offererId: offererId ?? 'all',
   })
 
   const currentPageNumber = urlSearchFilters.page ?? DEFAULT_PAGE
   const navigate = useNavigate()
   const { currentUser } = useCurrentUser()
-  const isNewInterfaceActive = useIsNewInterfaceActive()
-  const offererId = isNewInterfaceActive
-    ? selectedOffererId
-    : urlSearchFilters.offererId
 
   const offererQuery = useSWR(
     [GET_OFFERER_QUERY_KEY, offererId],
@@ -82,17 +77,14 @@ export const TemplateCollectiveOffers = (): JSX.Element => {
     isNewOffersAndBookingsActive: true,
     isInTemplateOffersPage: true,
     urlSearchFilters,
-    isNewInterfaceActive,
-    selectedOffererId,
+    selectedOffererId: offererId ?? '',
   })
 
   const apiFilters: CollectiveSearchFiltersParams = {
     ...DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
     ...urlSearchFilters,
     ...(isRestrictedAsAdmin ? { status: [] } : {}),
-    ...(isNewInterfaceActive
-      ? { offererId: selectedOffererId?.toString() ?? '' }
-      : {}),
+    ...{ offererId: offererId ?? '' },
   }
   delete apiFilters.page
 
@@ -131,7 +123,7 @@ export const TemplateCollectiveOffers = (): JSX.Element => {
   )
 
   return (
-    <AppLayout>
+    <Layout>
       {offersQuery.isLoading ? (
         <Spinner />
       ) : (
@@ -148,7 +140,7 @@ export const TemplateCollectiveOffers = (): JSX.Element => {
           isRestrictedAsAdmin={isRestrictedAsAdmin}
         />
       )}
-    </AppLayout>
+    </Layout>
   )
 }
 

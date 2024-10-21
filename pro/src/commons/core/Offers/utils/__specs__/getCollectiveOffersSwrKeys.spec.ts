@@ -7,9 +7,8 @@ import {
 
 const props: GetCollectiveOffersSwrKeysProps = {
   isInTemplateOffersPage: false,
-  isNewInterfaceActive: false,
   isNewOffersAndBookingsActive: false,
-  selectedOffererId: 1,
+  selectedOffererId: '1',
   urlSearchFilters: DEFAULT_COLLECTIVE_SEARCH_FILTERS,
 }
 
@@ -42,24 +41,18 @@ describe('getCollectiveOffersSwrKeys', () => {
     ).toBeUndefined()
   })
 
-  it('should add the offerer id if the new interface is active', () => {
-    expect(getCollectiveOffersSwrKeys(props)[1].offererId).toEqual('all')
-
-    expect(
-      getCollectiveOffersSwrKeys({
-        ...props,
-        isNewInterfaceActive: true,
-      })[1].offererId
-    ).toEqual(props.selectedOffererId?.toString())
-  })
-
-  it('should consider all offerers if no offerer is specified', () => {
+  it('should return the right offerer id', () => {
     expect(
       getCollectiveOffersSwrKeys({
         ...props,
         selectedOffererId: null,
-        isNewInterfaceActive: true,
       })[1].offererId
     ).toEqual('all')
+
+    expect(
+      getCollectiveOffersSwrKeys({
+        ...props,
+      })[1].offererId
+    ).toEqual(props.selectedOffererId?.toString())
   })
 })

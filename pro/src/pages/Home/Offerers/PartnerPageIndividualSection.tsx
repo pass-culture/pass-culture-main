@@ -1,6 +1,5 @@
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { Events } from 'commons/core/FirebaseEvents/constants'
-import { useIsNewInterfaceActive } from 'commons/hooks/useIsNewInterfaceActive'
 import { useNotification } from 'commons/hooks/useNotification'
 import { WEBAPP_URL } from 'commons/utils/config'
 import { copyTextToClipboard } from 'commons/utils/copyTextToClipboard'
@@ -31,7 +30,6 @@ export function PartnerPageIndividualSection({
 }: PartnerPageIndividualSectionProps) {
   const notify = useNotification()
   const { logEvent } = useAnalytics()
-  const isNewInterfaceActive = useIsNewInterfaceActive()
   const venuePreviewLink = `${WEBAPP_URL}/lieu/${venueId}`
   const logVenueLinkClick = () => {
     logEvent(Events.CLICKED_PARTNER_BLOCK_PREVIEW_VENUE_LINK, {
@@ -84,7 +82,6 @@ export function PartnerPageIndividualSection({
           onClick={() =>
             logEvent(Events.CLICKED_PAGE_FOR_APP_HOME, {
               from: location.pathname,
-              isNewInterfaceActive,
             })
           }
         >

@@ -2,7 +2,6 @@ import classnames from 'classnames'
 import React, { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 
-import { useIsNewInterfaceActive } from 'commons/hooks/useIsNewInterfaceActive'
 import { setIsStickyBarOpen } from 'commons/store/notifications/reducer'
 
 import style from './ActionsBarSticky.module.scss'
@@ -28,15 +27,12 @@ export const ActionsBarSticky = ({
     }
   }, [dispatch])
 
-  const isNewInterfaceActive = useIsNewInterfaceActive()
-
   return (
     <div
       className={classnames(
         style['actions-bar'],
         {
-          [style['actions-bar-new-interface']]:
-            isNewInterfaceActive && hasSideNav,
+          [style['actions-bar-new-interface']]: hasSideNav,
         },
         className
       )}
@@ -44,8 +40,7 @@ export const ActionsBarSticky = ({
     >
       <div
         className={classnames(style['actions-bar-content'], {
-          [style['actions-bar-content-new-interface']]:
-            isNewInterfaceActive && hasSideNav,
+          [style['actions-bar-content-new-interface']]: hasSideNav,
         })}
       >
         {children}

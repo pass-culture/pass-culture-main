@@ -9,46 +9,48 @@ import {
   getCollectiveOfferVenueFactory,
 } from 'commons/utils/collectiveApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
 
 import { defaultEditionProps } from '../__tests-utils__/defaultProps'
 import {
-  userOfferersFactory,
   managedVenuesFactory,
+  userOffererFactory,
 } from '../__tests-utils__/userOfferersFactory'
 import { OfferEducational, OfferEducationalProps } from '../OfferEducational'
 
+function renderComponent(props: OfferEducationalProps) {
+  const user = sharedCurrentUserFactory()
+  renderWithProviders(<OfferEducational {...props} />, {
+    user,
+    storeOverrides: {
+      user: {
+        selectedOffererId: 1,
+        currentUser: user,
+      },
+    },
+  })
+}
+
 describe('screens | OfferEducational : edition offerer step', () => {
   let props: OfferEducationalProps
-  const firstvenueId = 34
-  const secondVenueId = 56
   const thirdVenueId = 67
   const fourthVenueId = 92
-  const firstOffererId = 45
   const secondOffererId = 92
 
   beforeEach(() => {
     props = defaultEditionProps
   })
 
-  it('should display offerer and venue selects as disabled (not editable) fields', async () => {
+  it('should display venue selects as disabled (not editable) fields', async () => {
     props = {
       ...props,
-      userOfferers: userOfferersFactory([
-        {
-          id: firstOffererId,
-          managedVenues: managedVenuesFactory([
-            { id: firstvenueId },
-            { id: secondVenueId },
-          ]),
-        },
-        {
-          id: secondOffererId,
-          managedVenues: managedVenuesFactory([
-            { id: thirdVenueId },
-            { id: fourthVenueId },
-          ]),
-        },
-      ]),
+      userOfferer: userOffererFactory({
+        id: secondOffererId,
+        managedVenues: managedVenuesFactory([
+          { id: thirdVenueId },
+          { id: fourthVenueId },
+        ]),
+      }),
       offer: getCollectiveOfferFactory({
         id: thirdVenueId,
         venue: {
@@ -63,18 +65,12 @@ describe('screens | OfferEducational : edition offerer step', () => {
       }),
     }
 
-    renderWithProviders(<OfferEducational {...props} />)
+    renderComponent(props)
 
     const offerTypeTitle = await screen.findByRole('heading', {
       name: 'Type d’offre',
     })
     expect(offerTypeTitle).toBeInTheDocument()
-
-    const offererSelect = await screen.findByLabelText('Structure *')
-
-    expect(offererSelect).toBeInTheDocument()
-    expect(offererSelect).toHaveValue(secondOffererId.toString())
-    expect(offererSelect).toBeDisabled()
 
     const venueSelect = await screen.findByLabelText('Lieu *')
 
@@ -83,25 +79,16 @@ describe('screens | OfferEducational : edition offerer step', () => {
     expect(venueSelect).not.toBeDisabled()
   })
 
-  it('should display offer and venue select disabled', async () => {
+  it('should display venue select disabled', async () => {
     props = {
       ...props,
-      userOfferers: userOfferersFactory([
-        {
-          id: firstOffererId,
-          managedVenues: managedVenuesFactory([
-            { id: firstvenueId },
-            { id: secondVenueId },
-          ]),
-        },
-        {
-          id: secondOffererId,
-          managedVenues: managedVenuesFactory([
-            { id: thirdVenueId },
-            { id: fourthVenueId },
-          ]),
-        },
-      ]),
+      userOfferer: userOffererFactory({
+        id: secondOffererId,
+        managedVenues: managedVenuesFactory([
+          { id: thirdVenueId },
+          { id: fourthVenueId },
+        ]),
+      }),
       offer: getCollectiveOfferFactory({
         id: thirdVenueId,
         venue: {
@@ -115,7 +102,7 @@ describe('screens | OfferEducational : edition offerer step', () => {
         lastBookingStatus: CollectiveBookingStatus.USED,
       }),
     }
-    renderWithProviders(<OfferEducational {...props} />)
+    renderComponent(props)
 
     const venueSelect = await screen.findByLabelText('Lieu *')
 
@@ -125,11 +112,9 @@ describe('screens | OfferEducational : edition offerer step', () => {
   })
 
   it('should show banner if generate from publicApi', () => {
-    const offer = getCollectiveOfferFactory({ isPublicApi: true })
-
-    renderWithProviders(
-      <OfferEducational {...props} mode={Mode.EDITION} offer={offer} />
-    )
+    props.mode = Mode.EDITION
+    props.offer = getCollectiveOfferFactory({ isPublicApi: true })
+    renderComponent(props)
     expect(
       screen.getByText('Offre importée automatiquement')
     ).toBeInTheDocument()

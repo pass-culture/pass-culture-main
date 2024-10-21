@@ -55,7 +55,6 @@ export const Validation = (): JSX.Element => {
   }[activity?.targetCustomer ?? Target.INDIVIDUAL]
 
   useEffect(() => {
-    // This is needed because `ReactRouter` is reloaded because of useIsNewInterfaceActive()
     if (offerer === null || offerer === DEFAULT_OFFERER_FORM_VALUES) {
       navigate('/parcours-inscription/identification')
       return

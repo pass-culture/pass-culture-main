@@ -2,15 +2,28 @@ import { screen, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
 
 import { defaultCreationProps } from '../__tests-utils__/defaultProps'
 import {
   managedVenueFactory,
   userOffererFactory,
-  userOfferersFactory,
 } from '../__tests-utils__/userOfferersFactory'
 import { INTERVENTION_AREA_LABEL } from '../constants/labels'
 import { OfferEducational, OfferEducationalProps } from '../OfferEducational'
+
+function renderOfferEducational(props: OfferEducationalProps) {
+  const user = sharedCurrentUserFactory()
+  renderWithProviders(<OfferEducational {...props} />, {
+    user,
+    storeOverrides: {
+      user: {
+        selectedOffererId: 1,
+        currentUser: user,
+      },
+    },
+  })
+}
 
 describe('screens | OfferEducational : event address step', () => {
   let props: OfferEducationalProps
@@ -23,7 +36,7 @@ describe('screens | OfferEducational : event address step', () => {
     })
 
     it('should display venue radio buttons with pre-selected offerer venue and a disabled select', async () => {
-      renderWithProviders(<OfferEducational {...props} />)
+      renderOfferEducational(props)
 
       expect(await screen.findByLabelText('Dans votre lieu')).toBeChecked()
       expect(
@@ -44,7 +57,7 @@ describe('screens | OfferEducational : event address step', () => {
     })
 
     it('should display text area + intervention area multiselect when user selects "other"', async () => {
-      renderWithProviders(<OfferEducational {...props} />)
+      renderOfferEducational(props)
 
       await userEvent.click(await screen.findByLabelText('Autre'))
       expect(screen.getByLabelText('Autre')).toBeChecked()
@@ -63,7 +76,7 @@ describe('screens | OfferEducational : event address step', () => {
     })
 
     it('should not display neither event venue address nor text area if user selects "school"', async () => {
-      renderWithProviders(<OfferEducational {...props} />)
+      renderOfferEducational(props)
 
       await userEvent.click(
         await screen.findByLabelText('Dans l’établissement scolaire')
@@ -92,24 +105,22 @@ describe('screens | OfferEducational : event address step', () => {
     beforeEach(() => {
       props = {
         ...defaultCreationProps,
-        userOfferers: userOfferersFactory([
-          {
-            id: 1,
-            managedVenues: [
-              managedVenueFactory({
-                id: Number(firstVenueId),
-              }),
-              managedVenueFactory({
-                id: Number(secondVenueId),
-              }),
-            ],
-          },
-        ]),
+        userOfferer: userOffererFactory({
+          id: 1,
+          managedVenues: [
+            managedVenueFactory({
+              id: Number(firstVenueId),
+            }),
+            managedVenueFactory({
+              id: Number(secondVenueId),
+            }),
+          ],
+        }),
       }
     })
 
     it('should require an offer venue selection from the user', async () => {
-      renderWithProviders(<OfferEducational {...props} />)
+      renderOfferEducational(props)
 
       // wait for page to be rendered
       const offererSelect = await screen.findByLabelText('Lieu *')
@@ -130,7 +141,7 @@ describe('screens | OfferEducational : event address step', () => {
     })
 
     it('should prefill the venue data when switching from one event adress type to offerer venue type', async () => {
-      renderWithProviders(<OfferEducational {...props} />)
+      renderOfferEducational(props)
 
       // wait for page to be rendered
       const offererSelect = await screen.findByLabelText('Lieu *')
@@ -155,29 +166,21 @@ describe('screens | OfferEducational : event address step', () => {
       const offererId = '55'
       const venueId = '42'
 
-      renderWithProviders(
-        <OfferEducational
-          {...props}
-          userOfferers={[
-            ...props.userOfferers,
-            userOffererFactory({
-              id: Number(offererId),
-              managedVenues: [
-                managedVenueFactory({}),
-                managedVenueFactory({
-                  id: Number(venueId),
-                  collectiveInterventionArea: ['01', '02'],
-                }),
-              ],
-            }),
-          ]}
-        />
-      )
-
-      const offererSelect = await screen.findByLabelText('Structure *')
-
-      await userEvent.selectOptions(offererSelect, [offererId])
-      expect(screen.queryByLabelText('Structure *')).toHaveValue(offererId)
+      renderOfferEducational({
+        ...props,
+        ...{
+          userOfferer: userOffererFactory({
+            id: Number(offererId),
+            managedVenues: [
+              managedVenueFactory({}),
+              managedVenueFactory({
+                id: Number(venueId),
+                collectiveInterventionArea: ['01', '02'],
+              }),
+            ],
+          }),
+        },
+      })
 
       const venuesSelect = await screen.findByLabelText('Lieu *')
 

@@ -3,16 +3,15 @@ import {
   waitFor,
   waitForElementToBeRemoved,
 } from '@testing-library/react'
-import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
 import { api } from 'apiClient/api'
+import { HTTP_STATUS } from 'apiClient/helpers'
 import {
   GetOffererNameResponseModel,
   GetOffererResponseModel,
 } from 'apiClient/v1'
 import * as useAnalytics from 'app/App/analytics/firebase'
-import { formatBrowserTimezonedDateAsUTC } from 'commons/utils/date'
 import {
   defaultGetOffererResponseModel,
   defaultGetOffererVenueResponseModel,
@@ -132,6 +131,22 @@ describe('Homepage', () => {
     expect(await screen.findByTestId('home-offer-steps')).toBeInTheDocument()
   })
 
+  it('the user should see the home even when not validated', async () => {
+    vi.spyOn(api, 'getOfferer').mockRejectedValue({
+      status: HTTP_STATUS.FORBIDDEN,
+    })
+
+    renderHomePage()
+    await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
+
+    expect(api.listOfferersNames).toHaveBeenCalled()
+    expect(
+      screen.getByText(
+        'Le rattachement à votre structure est en cours de traitement par les équipes du pass Culture'
+      )
+    ).toBeInTheDocument()
+  })
+
   it('the user should not see the home offer steps if they have some venues', async () => {
     renderHomePage()
     await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
@@ -220,88 +235,5 @@ describe('Homepage', () => {
         'Le rattachement à votre structure est en cours de traitement par les équipes du pass Culture'
       )
     ).toBeInTheDocument()
-  })
-
-  describe('beta banner', () => {
-    it('should not display the banner if the user is eligible but is already a beta tester', async () => {
-      renderHomePage({
-        features: ['WIP_ENABLE_PRO_SIDE_NAV'],
-        user: sharedCurrentUserFactory({
-          navState: {
-            eligibilityDate: '2020-04-03T12:00:00+04:00',
-            newNavDate: '2020-04-03T12:00:00+04:00',
-          },
-        }),
-      })
-      await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
-      expect(
-        screen.queryByText(/Une nouvelle interface sera bientôt disponible/)
-      ).not.toBeInTheDocument()
-    })
-
-    it('should not display the banner if the user has an eligiblity date in the future', async () => {
-      const now = new Date()
-      const later = now.setDate(now.getDate() + 14)
-      renderHomePage({
-        features: ['WIP_ENABLE_PRO_SIDE_NAV'],
-        user: sharedCurrentUserFactory({
-          navState: {
-            eligibilityDate: formatBrowserTimezonedDateAsUTC(later),
-          },
-        }),
-      })
-      await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
-      expect(
-        screen.queryByText(/Une nouvelle interface sera bientôt disponible/)
-      ).not.toBeInTheDocument()
-    })
-
-    it('should display the banner if the user is eligible', async () => {
-      vi.spyOn(api, 'postNewProNav').mockResolvedValue()
-
-      const oldInterfaceUser = sharedCurrentUserFactory({
-        navState: {
-          eligibilityDate: '2020-04-03T12:00:00+04:00',
-        },
-        hasSeenProTutorials: true,
-      })
-      renderHomePage({
-        features: ['WIP_ENABLE_PRO_SIDE_NAV'],
-        user: oldInterfaceUser,
-        storeOverrides: {
-          user: {
-            selectedOffererId: 1,
-            currentUser: oldInterfaceUser,
-          },
-        },
-      })
-
-      await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
-      expect(
-        screen.getByText(/Une nouvelle interface sera bientôt disponible/)
-      ).toBeInTheDocument()
-
-      await userEvent.click(screen.getByText(/Activer dès maintenant/))
-      expect(api.postNewProNav).toHaveBeenCalledTimes(1)
-      expect(
-        await screen.findByText(/Bienvenue sur la nouvelle interface/)
-      ).toBeInTheDocument()
-    })
-
-    it('should not display the banner if the user already closed the banner', async () => {
-      localStorage.setItem('HAS_CLOSED_BETA_TEST_BANNER', 'true')
-      renderHomePage({
-        features: ['WIP_ENABLE_PRO_SIDE_NAV'],
-        user: sharedCurrentUserFactory({
-          navState: {
-            eligibilityDate: '2020-04-03T12:00:00+04:00',
-          },
-        }),
-      })
-      await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
-      expect(
-        screen.queryByText(/Une nouvelle interface sera bientôt disponible/)
-      ).not.toBeInTheDocument()
-    })
   })
 })

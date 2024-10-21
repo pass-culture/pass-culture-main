@@ -7,21 +7,21 @@ import { computeInitialValuesFromOffer } from '../computeInitialValuesFromOffer'
 
 describe('computeInitialValuesFromOffer', () => {
   it('should return default values when no offer is provided', () => {
-    expect(computeInitialValuesFromOffer([], false)).toEqual(
+    expect(computeInitialValuesFromOffer(null, false)).toEqual(
       DEFAULT_EAC_FORM_VALUES
     )
   })
 
   it('should pre-set todays dates for a template offer creation initial values', () => {
     expect(
-      computeInitialValuesFromOffer([], true, undefined).beginningDate
+      computeInitialValuesFromOffer(null, true, undefined).beginningDate
     ).toEqual(formatShortDateForInput(new Date()))
   })
 
   it('should fill the time values to the start date time', () => {
     expect(
       computeInitialValuesFromOffer(
-        [],
+        null,
         true,
         getCollectiveOfferTemplateFactory({
           dates: {
@@ -35,14 +35,7 @@ describe('computeInitialValuesFromOffer', () => {
 
   it('should create a default template offer form with custom contact options', () => {
     expect(
-      computeInitialValuesFromOffer(
-        [],
-        true,
-        undefined,
-        undefined,
-        undefined,
-        false
-      )
+      computeInitialValuesFromOffer(null, true, undefined, undefined, false)
     ).toEqual(
       expect.objectContaining({
         contactOptions: { email: false, phone: false, form: false },
@@ -54,13 +47,12 @@ describe('computeInitialValuesFromOffer', () => {
   it('should create a template from an offer with offer email', () => {
     expect(
       computeInitialValuesFromOffer(
-        [],
+        null,
         true,
         getCollectiveOfferTemplateFactory({
           contactEmail: 'email@test.co',
           contactPhone: null,
         }),
-        undefined,
         undefined,
         false
       )
@@ -75,13 +67,12 @@ describe('computeInitialValuesFromOffer', () => {
   it('should create a template from an offer with offer phone', () => {
     expect(
       computeInitialValuesFromOffer(
-        [],
+        null,
         true,
         getCollectiveOfferTemplateFactory({
           contactEmail: undefined,
           contactPhone: '00000000',
         }),
-        undefined,
         undefined,
         false
       )
@@ -96,7 +87,7 @@ describe('computeInitialValuesFromOffer', () => {
   it('should create a template from an offer with offer form url', () => {
     expect(
       computeInitialValuesFromOffer(
-        [],
+        null,
         true,
         getCollectiveOfferTemplateFactory({
           contactEmail: undefined,
@@ -104,7 +95,6 @@ describe('computeInitialValuesFromOffer', () => {
           contactForm: undefined,
           contactUrl: 'http://testurl.com',
         }),
-        undefined,
         undefined,
         false
       )
@@ -119,7 +109,7 @@ describe('computeInitialValuesFromOffer', () => {
   it('should create a template from an offer with offer default form', () => {
     expect(
       computeInitialValuesFromOffer(
-        [],
+        null,
         true,
         getCollectiveOfferTemplateFactory({
           contactEmail: undefined,
@@ -127,7 +117,6 @@ describe('computeInitialValuesFromOffer', () => {
           contactForm: OfferContactFormEnum.FORM,
           contactUrl: undefined,
         }),
-        undefined,
         undefined,
         false
       )

@@ -1,7 +1,7 @@
 /* istanbul ignore file */
 import { Outlet, RouteObject, useLocation } from 'react-router-dom'
 
-import { AppLayout } from 'app/AppLayout'
+import { Layout } from 'app/App/layout/Layout'
 import { IndividualOfferContextProvider } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
 
 const IndividualOfferWizard = () => {
@@ -10,11 +10,11 @@ const IndividualOfferWizard = () => {
   const isConfirmationPage = pathname.endsWith('confirmation')
 
   return (
-    <AppLayout layout={isConfirmationPage ? 'basic' : 'sticky-actions'}>
+    <Layout layout={isConfirmationPage ? 'basic' : 'sticky-actions'}>
       <IndividualOfferContextProvider>
         <Outlet />
       </IndividualOfferContextProvider>
-    </AppLayout>
+    </Layout>
   )
 }
 

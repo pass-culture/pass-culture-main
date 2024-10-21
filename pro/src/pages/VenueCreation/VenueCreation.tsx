@@ -4,7 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
-import { AppLayout } from 'app/AppLayout'
+import { Layout } from 'app/App/layout/Layout'
 import {
   GET_OFFERER_QUERY_KEY,
   GET_VENUE_TYPES_QUERY_KEY,
@@ -48,20 +48,20 @@ export const VenueCreation = (): JSX.Element | null => {
     !venueTypes
   ) {
     return (
-      <AppLayout>
+      <Layout>
         <Spinner />
-      </AppLayout>
+      </Layout>
     )
   }
 
   return (
-    <AppLayout layout={'sticky-actions'}>
+    <Layout layout={'sticky-actions'}>
       <VenueCreationFormScreen
         initialValues={initialValues}
         offerer={offerer}
         venueTypes={venueTypes}
       />
-    </AppLayout>
+    </Layout>
   )
 }
 

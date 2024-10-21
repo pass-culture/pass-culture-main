@@ -1,4 +1,4 @@
-import { AppLayout, AppLayoutProps } from 'app/AppLayout'
+import { Layout, LayoutProps } from 'app/App/layout/Layout'
 import { useCurrentUser } from 'commons/hooks/useCurrentUser'
 import fullBackIcon from 'icons/full-back.svg'
 import logoPassCultureProFullIcon from 'icons/logo-pass-culture-pro-full.svg'
@@ -8,7 +8,7 @@ import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './AccessibilityLayout.module.scss'
 
-interface AccessibilityLayoutProps extends AppLayoutProps {
+interface AccessibilityLayoutProps extends LayoutProps {
   showBackToSignInButton?: boolean
 }
 
@@ -26,9 +26,9 @@ export const AccessibilityLayout = ({
   }
 
   return isUserConnected ? (
-    <AppLayout mainHeading={mainHeading}>{children}</AppLayout>
+    <Layout mainHeading={mainHeading}>{children}</Layout>
   ) : (
-    <AppLayout mainHeading={mainHeading} layout="without-nav">
+    <Layout mainHeading={mainHeading} layout="without-nav">
       <header className={styles['logo-side']}>
         <SvgIcon
           className={logoStyles['logo-unlogged']}
@@ -38,7 +38,7 @@ export const AccessibilityLayout = ({
           width="135"
         />
       </header>
-      <section className={styles['layout']}>
+      <section className={styles['layout']} data-testid="logged-out-section">
         <div className={styles['content']}>{children}</div>
         {showBackToSignInButton && (
           <ButtonLink
@@ -50,6 +50,6 @@ export const AccessibilityLayout = ({
           </ButtonLink>
         )}
       </section>
-    </AppLayout>
+    </Layout>
   )
 }

@@ -1,7 +1,7 @@
 import React from 'react'
 import { useLocation } from 'react-router-dom'
 
-import { AppLayout } from 'app/AppLayout'
+import { Layout } from 'app/App/layout/Layout'
 import { Audience } from 'commons/core/shared/types'
 import { BookingsScreen } from 'components/Bookings/Bookings'
 
@@ -12,14 +12,14 @@ const CollectiveBookings = (): JSX.Element => {
   const location = useLocation()
 
   return (
-    <AppLayout>
+    <Layout>
       <BookingsScreen
         audience={Audience.COLLECTIVE}
         getFilteredBookingsAdapter={getFilteredCollectiveBookingsAdapter}
         getUserHasBookingsAdapter={getUserHasCollectiveBookingsAdapter}
         locationState={location.state}
       />
-    </AppLayout>
+    </Layout>
   )
 }
 

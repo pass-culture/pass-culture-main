@@ -11,13 +11,12 @@ import {
   GET_EDUCATIONAL_OFFERERS_QUERY_KEY,
   GET_NATIONAL_PROGRAMS_QUERY_KEY,
 } from 'commons/config/swrQueryKeys'
-import { getUserOfferersFromOffer } from 'commons/core/OfferEducational/utils/getUserOfferersFromOffer'
-import { serializeEducationalOfferers } from 'commons/core/OfferEducational/utils/serializeEducationalOfferers'
+import { serializeEducationalOfferer } from 'commons/core/OfferEducational/utils/serializeEducationalOfferer'
 import { SelectOption } from 'commons/custom_types/form'
 
 type OfferEducationalFormData = {
   domains: SelectOption[]
-  offerers: GetEducationalOffererResponseModel[]
+  offerer: GetEducationalOffererResponseModel | null
   nationalPrograms: SelectOption<number>[]
 }
 
@@ -49,6 +48,11 @@ export const useOfferEducationalFormData = (
       ([, offererId]) => api.listEducationalOfferers(offererId)
     )
 
+  const selectedEducationalOfferer =
+    educationalOfferers?.educationalOfferers.find(
+      (educationalOfferer) => educationalOfferer.id === targetOffererId
+    )
+
   const domains = (educationalDomains ?? []).map((domain) => ({
     value: domain.id.toString(),
     label: domain.name,
@@ -59,12 +63,9 @@ export const useOfferEducationalFormData = (
     value: nationalProgram.id,
   }))
 
-  const offerers = educationalOfferers
-    ? getUserOfferersFromOffer(
-        serializeEducationalOfferers(educationalOfferers.educationalOfferers),
-        offer
-      )
-    : []
+  const offerer = selectedEducationalOfferer
+    ? serializeEducationalOfferer(selectedEducationalOfferer)
+    : null
 
   const isLoading =
     loadingEducationalOfferers ||
@@ -74,7 +75,7 @@ export const useOfferEducationalFormData = (
   return {
     isReady: !isLoading,
     domains: domains,
-    offerers: offerers,
+    offerer,
     nationalPrograms: programs,
   }
 }

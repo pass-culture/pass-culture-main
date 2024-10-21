@@ -5,7 +5,6 @@ import { GetOffererResponseModel, VenueTypeResponseModel } from 'apiClient/v1'
 import { useAnalytics } from 'app/App/analytics/firebase'
 import { Events } from 'commons/core/FirebaseEvents/constants'
 import { SelectOption } from 'commons/custom_types/form'
-import { useIsNewInterfaceActive } from 'commons/hooks/useIsNewInterfaceActive'
 import { RedirectDialog } from 'components/Dialog/RedirectDialog/RedirectDialog'
 import { SoftDeletedOffererWarning } from 'components/SoftDeletedOffererWarning/SoftDeletedOffererWarning'
 import fullWaitIcon from 'icons/full-wait.svg'
@@ -16,7 +15,6 @@ import { Spinner } from 'ui-kit/Spinner/Spinner'
 import { Card } from '../Card'
 
 import { OffererCreationLinks } from './OffererCreationLinks'
-import { OffererDetails } from './OffererDetails'
 import styles from './Offerers.module.scss'
 import { PartnerPages } from './PartnerPages'
 import { VenueCreationLinks } from './VenueCreationLinks'
@@ -37,8 +35,6 @@ export const Offerers = ({
   venueTypes,
 }: OfferersProps) => {
   const [openSuccessDialog, setOpenSuccessDialog] = useState(false)
-
-  const isNewInterfaceActive = useIsNewInterfaceActive()
 
   const location = useLocation()
   const [searchParams, setSearchParams] = useSearchParams()
@@ -103,17 +99,6 @@ export const Offerers = ({
             >
               <p>Vous pouvez dès à présent créer une offre.</p>
             </RedirectDialog>
-          )}
-
-          {!isNewInterfaceActive && (
-            <>
-              <h2 className={styles['title']}>Structure</h2>
-
-              <OffererDetails
-                isUserOffererValidated={isUserOffererValidated}
-                offererOptions={offererOptions}
-              />
-            </>
           )}
 
           {selectedOfferer && permanentVenues.length > 0 && (

@@ -1,4 +1,4 @@
-import { AppLayout } from 'app/AppLayout'
+import { Layout } from 'app/App/layout/Layout'
 import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
 import { AdagePreviewLayout } from 'pages/AdageIframe/app/components/OfferInfos/AdagePreviewLayout/AdagePreviewLayout'
 import {
@@ -18,7 +18,7 @@ export const CollectiveOfferPreviewEdition = ({
     : `/offre/${offer.id}/collectif/recapitulatif`
 
   return (
-    <AppLayout layout={'sticky-actions'}>
+    <Layout layout={'sticky-actions'}>
       <div>
         <h1 className={styles['title']}>Aperçu de l’offre</h1>
         <p className={styles['preview-info']}>
@@ -34,7 +34,7 @@ export const CollectiveOfferPreviewEdition = ({
           </ActionsBarSticky.Left>
         </ActionsBarSticky>
       </div>
-    </AppLayout>
+    </Layout>
   )
 }
 

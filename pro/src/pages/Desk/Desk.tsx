@@ -4,7 +4,7 @@ import React, { useId, useState } from 'react'
 import { apiContremarque } from 'apiClient/api'
 import { isErrorAPIError } from 'apiClient/helpers'
 import { GetBookingResponse } from 'apiClient/v2'
-import { AppLayout } from 'app/AppLayout'
+import { Layout } from 'app/App/layout/Layout'
 import { Callout } from 'components/Callout/Callout'
 import { Button } from 'ui-kit/Button/Button'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
@@ -143,7 +143,7 @@ export const Desk = (): JSX.Element => {
   }
 
   return (
-    <AppLayout>
+    <Layout>
       <h1 className={styles['title']}>Guichet</h1>
       <p className={styles.advice}>
         Saisissez les contremarques présentées par les bénéficiaires afin de les
@@ -212,7 +212,7 @@ export const Desk = (): JSX.Element => {
           </Callout>
         </form>
       </FormikProvider>
-    </AppLayout>
+    </Layout>
   )
 }
 

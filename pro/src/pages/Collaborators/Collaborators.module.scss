@@ -10,14 +10,6 @@
   .main-list-title {
     @include fonts-design-system.title2;
 
-    border-bottom: rem.torem(2px) solid var(--color-black);
-    margin-bottom: rem.torem(24px);
-    padding-bottom: rem.torem(8px);
-  }
-
-  .main-list-title-new {
-    @include fonts-design-system.title2;
-
     margin-top: rem.torem(26px);
     margin-bottom: rem.torem(24px);
     padding-bottom: rem.torem(8px);

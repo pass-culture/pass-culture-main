@@ -3,11 +3,10 @@ import { useNavigate } from 'react-router-dom'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
-import { AppLayout } from 'app/AppLayout'
+import { Layout } from 'app/App/layout/Layout'
 import {
   GET_CATEGORIES_QUERY_KEY,
   GET_OFFERER_ADDRESS_QUERY_KEY,
-  GET_OFFERER_QUERY_KEY,
   GET_VENUES_QUERY_KEY,
 } from 'commons/config/swrQueryKeys'
 import {
@@ -21,16 +20,16 @@ import { computeIndividualOffersUrl } from 'commons/core/Offers/utils/computeInd
 import { hasSearchFilters } from 'commons/core/Offers/utils/hasSearchFilters'
 import { serializeApiFilters } from 'commons/core/Offers/utils/serializer'
 import { Audience } from 'commons/core/shared/types'
+import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useCurrentUser } from 'commons/hooks/useCurrentUser'
-import { useIsNewInterfaceActive } from 'commons/hooks/useIsNewInterfaceActive'
 import { selectCurrentOffererId } from 'commons/store/user/selectors'
 import { sortByLabel } from 'commons/utils/strings'
-import { IndividualOffersScreen } from 'pages/Offers/components/IndividualOffersScreen/IndividualOffersScreen'
 import {
   formatAndOrderAddresses,
   formatAndOrderVenues,
 } from 'repository/venuesService'
-import { Spinner } from 'ui-kit/Spinner/Spinner'
+
+import { IndividualOffersScreen } from './components/IndividualOffersScreen/IndividualOffersScreen'
 
 export const GET_OFFERS_QUERY_KEY = 'listOffers'
 
@@ -40,20 +39,7 @@ export const OffersRoute = (): JSX.Element => {
   const navigate = useNavigate()
   const { currentUser } = useCurrentUser()
   const selectedOffererId = useSelector(selectCurrentOffererId)
-  const isNewInterfaceActive = useIsNewInterfaceActive()
-
-  const offererQuery = useSWR(
-    [
-      GET_OFFERER_QUERY_KEY,
-      isNewInterfaceActive ? selectedOffererId : urlSearchFilters.offererId,
-    ],
-    ([, offererIdParam]) =>
-      offererIdParam === DEFAULT_SEARCH_FILTERS.offererId
-        ? null
-        : api.getOfferer(Number(offererIdParam)),
-    { fallbackData: null }
-  )
-  const offerer = offererQuery.data
+  const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
 
   const categoriesQuery = useSWR(
     [GET_CATEGORIES_QUERY_KEY],
@@ -76,25 +62,22 @@ export const OffersRoute = (): JSX.Element => {
     navigate(computeIndividualOffersUrl(filters), { replace: true })
   }
 
-  const { data } = useSWR(
-    [GET_VENUES_QUERY_KEY, offerer?.id],
-    ([, offererIdParam]) => api.getVenues(null, null, offererIdParam),
-    { fallbackData: { venues: [] } }
+  const { data } = useSWR([GET_VENUES_QUERY_KEY], () =>
+    api.getVenues(null, null, selectedOffererId)
   )
-  const venues = formatAndOrderVenues(data.venues)
-
+  const venues = formatAndOrderVenues(data?.venues ?? [])
   const offererAddressQuery = useSWR(
-    [GET_OFFERER_ADDRESS_QUERY_KEY, offerer?.id],
-    ([, offererIdParam]) =>
-      offererIdParam ? api.getOffererAddresses(offererIdParam, false) : [],
+    selectedOffererId && isOfferAddressEnabled
+      ? [GET_OFFERER_ADDRESS_QUERY_KEY, selectedOffererId]
+      : null,
+    ([, offererIdParam]) => api.getOffererAddresses(offererIdParam, false),
     { fallbackData: [] }
   )
   const offererAddresses = formatAndOrderAddresses(offererAddressQuery.data)
 
-  const isFilterByVenueOrOfferer = hasSearchFilters(
-    urlSearchFilters,
-    isNewInterfaceActive ? ['venueId'] : ['venueId', 'offererId']
-  )
+  const isFilterByVenueOrOfferer = hasSearchFilters(urlSearchFilters, [
+    'venueId',
+  ])
   //  Admin users are not allowed to check all offers at once or to use the status filter for performance reasons. Unless there is a venue or offerer filter active.
   const isRestrictedAsAdmin = currentUser.isAdmin && !isFilterByVenueOrOfferer
 
@@ -102,13 +85,10 @@ export const OffersRoute = (): JSX.Element => {
     ...DEFAULT_SEARCH_FILTERS,
     ...urlSearchFilters,
     ...(isRestrictedAsAdmin ? { status: ALL_STATUS } : {}),
-    ...(isNewInterfaceActive
-      ? { offererId: selectedOffererId?.toString() ?? '' }
-      : {}),
+    ...{ offererId: selectedOffererId?.toString() ?? '' },
   }
   delete apiFilters.page
   if (
-    isNewInterfaceActive &&
     selectedOffererId &&
     selectedOffererId.toString() !== urlSearchFilters.offererId
   ) {
@@ -148,26 +128,20 @@ export const OffersRoute = (): JSX.Element => {
   const offers = offersQuery.data || []
 
   return (
-    <AppLayout>
-      {offererQuery.isLoading ? (
-        <Spinner />
-      ) : (
-        <IndividualOffersScreen
-          categories={categoriesOptions}
-          currentPageNumber={currentPageNumber}
-          currentUser={currentUser}
-          initialSearchFilters={apiFilters}
-          isLoading={offersQuery.isLoading}
-          offerer={offerer}
-          offers={offers}
-          redirectWithUrlFilters={redirectWithUrlFilters}
-          urlSearchFilters={urlSearchFilters}
-          venues={venues}
-          offererAddresses={offererAddresses}
-          isRestrictedAsAdmin={isRestrictedAsAdmin}
-        />
-      )}
-    </AppLayout>
+    <Layout>
+      <IndividualOffersScreen
+        categories={categoriesOptions}
+        currentPageNumber={currentPageNumber}
+        initialSearchFilters={apiFilters}
+        isLoading={offersQuery.isLoading}
+        offers={offers}
+        redirectWithUrlFilters={redirectWithUrlFilters}
+        urlSearchFilters={urlSearchFilters}
+        venues={venues}
+        offererAddresses={offererAddresses}
+        isRestrictedAsAdmin={isRestrictedAsAdmin}
+      />
+    </Layout>
   )
 }
 

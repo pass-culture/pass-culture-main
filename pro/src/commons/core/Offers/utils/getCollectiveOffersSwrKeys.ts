@@ -14,9 +14,8 @@ import { CollectiveSearchFiltersParams } from '../types'
 export type GetCollectiveOffersSwrKeysProps = {
   isNewOffersAndBookingsActive: boolean
   isInTemplateOffersPage: boolean
-  isNewInterfaceActive: boolean
   urlSearchFilters: CollectiveSearchFiltersParams
-  selectedOffererId: number | null
+  selectedOffererId?: string | null
 }
 
 //  Make sure that the exact same query key is used across collective offers list actions
@@ -24,8 +23,7 @@ export function getCollectiveOffersSwrKeys({
   isNewOffersAndBookingsActive,
   isInTemplateOffersPage,
   urlSearchFilters,
-  isNewInterfaceActive,
-  selectedOffererId,
+  selectedOffererId = null,
 }: GetCollectiveOffersSwrKeysProps): [string, CollectiveSearchFiltersParams] {
   const collectiveOffersListQueryKey = isNewOffersAndBookingsActive
     ? isInTemplateOffersPage
@@ -42,9 +40,7 @@ export function getCollectiveOffersSwrKeys({
   const apiFilters: CollectiveSearchFiltersParams = {
     ...defaultCollectiveFilters,
     ...urlSearchFilters,
-    ...(isNewInterfaceActive
-      ? { offererId: selectedOffererId?.toString() ?? 'all' }
-      : {}),
+    ...{ offererId: selectedOffererId ?? 'all' },
     page: undefined,
   }
 

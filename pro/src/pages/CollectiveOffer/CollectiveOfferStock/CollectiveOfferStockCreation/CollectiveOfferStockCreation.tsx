@@ -7,18 +7,18 @@ import {
   CollectiveStockResponseModel,
   GetCollectiveOfferResponseModel,
 } from 'apiClient/v1'
-import { AppLayout } from 'app/AppLayout'
+import { Layout } from 'app/App/layout/Layout'
 import {
   GET_COLLECTIVE_OFFER_QUERY_KEY,
   GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY,
   GET_COLLECTIVE_REQUEST_INFORMATIONS_QUERY_KEY,
 } from 'commons/config/swrQueryKeys'
 import {
+  EducationalOfferType,
   isCollectiveOffer,
   isCollectiveOfferTemplate,
-  OfferEducationalStockFormValues,
-  EducationalOfferType,
   Mode,
+  OfferEducationalStockFormValues,
 } from 'commons/core/OfferEducational/types'
 import { computeURLCollectiveOfferId } from 'commons/core/OfferEducational/utils/computeURLCollectiveOfferId'
 import { createPatchStockDataPayload } from 'commons/core/OfferEducational/utils/createPatchStockDataPayload'
@@ -169,7 +169,7 @@ export const CollectiveOfferStockCreation = ({
   }
 
   return (
-    <AppLayout layout={'sticky-actions'}>
+    <Layout layout={'sticky-actions'}>
       <CollectiveOfferLayout
         subTitle={offer.name}
         isFromTemplate={isCollectiveOffer(offer) && Boolean(offer.templateId)}
@@ -186,7 +186,7 @@ export const CollectiveOfferStockCreation = ({
           requestId={requestId}
         />
       </CollectiveOfferLayout>
-    </AppLayout>
+    </Layout>
   )
 }
 

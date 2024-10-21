@@ -5,7 +5,7 @@ import { Navigate, useSearchParams } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { HTTP_STATUS, isErrorAPIError } from 'apiClient/helpers'
-import { AppLayout } from 'app/AppLayout'
+import { OldAppLayout } from 'app/OldAppLayout'
 import {
   RECAPTCHA_ERROR,
   RECAPTCHA_ERROR_MESSAGE,
@@ -16,7 +16,6 @@ import { useRedirectLoggedUser } from 'commons/hooks/useRedirectLoggedUser'
 import { updateUser } from 'commons/store/user/reducer'
 import { getReCaptchaToken } from 'commons/utils/recaptcha'
 import logoPassCultureProFullIcon from 'icons/logo-pass-culture-pro-full.svg'
-import { CookiesFooter } from 'pages/CookiesFooter/CookiesFooter'
 import logoStyles from 'styles/components/_Logo.module.scss'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
@@ -107,7 +106,7 @@ export const SignIn = (): JSX.Element => {
   return shouldRedirect ? (
     <Navigate to="/" replace />
   ) : (
-    <AppLayout layout="without-nav">
+    <OldAppLayout layout="without-nav">
       <header className={styles['logo-side']}>
         <SvgIcon
           className={logoStyles['logo-unlogged']}
@@ -128,9 +127,8 @@ export const SignIn = (): JSX.Element => {
         <FormikProvider value={formik}>
           <SigninForm />
         </FormikProvider>
-        <CookiesFooter className={styles['cookies-footer']} />
       </section>
-    </AppLayout>
+    </OldAppLayout>
   )
 }
 

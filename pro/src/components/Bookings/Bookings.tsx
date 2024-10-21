@@ -22,12 +22,9 @@ import { PreFiltersParams } from 'commons/core/Bookings/types'
 import { Events } from 'commons/core/FirebaseEvents/constants'
 import { Audience } from 'commons/core/shared/types'
 import { useCurrentUser } from 'commons/hooks/useCurrentUser'
-import { useIsNewInterfaceActive } from 'commons/hooks/useIsNewInterfaceActive'
 import { useNotification } from 'commons/hooks/useNotification'
 import { selectCurrentOffererId } from 'commons/store/user/selectors'
 import { NoData } from 'components/NoData/NoData'
-import strokeLibraryIcon from 'icons/stroke-library.svg'
-import strokeUserIcon from 'icons/stroke-user.svg'
 import { ChoosePreFiltersMessage } from 'pages/Bookings/ChoosePreFiltersMessage/ChoosePreFiltersMessage'
 import { NoBookingsForPreFiltersMessage } from 'pages/Bookings/NoBookingsForPreFiltersMessage/NoBookingsForPreFiltersMessage'
 import {
@@ -35,7 +32,6 @@ import {
   formatAndOrderVenues,
 } from 'repository/venuesService'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
-import { Tabs } from 'ui-kit/Tabs/Tabs'
 
 import { stringify } from '../../commons/utils/query-string'
 
@@ -70,13 +66,12 @@ export const BookingsScreen = <
   const notify = useNotification()
   const { logEvent } = useAnalytics()
 
-  const isNewInterfaceActive = useIsNewInterfaceActive()
   const selectedOffererId = useSelector(selectCurrentOffererId)
 
   const initialAppliedFilters = {
     ...DEFAULT_PRE_FILTERS,
     ...{
-      offerId: isNewInterfaceActive ? selectedOffererId?.toString() : undefined,
+      offerId: selectedOffererId?.toString(),
     },
   }
   const [appliedPreFilters, setAppliedPreFilters] = useState<PreFiltersParams>(
@@ -87,24 +82,8 @@ export const BookingsScreen = <
     initialAppliedFilters
   )
 
-  // FIXME: Needed because `isNewInterfaceActive` can change, and the initial state won't.
-  useEffect(() => {
-    const initialFilters = {
-      ...DEFAULT_PRE_FILTERS,
-      ...{
-        offerId: isNewInterfaceActive
-          ? selectedOffererId?.toString()
-          : undefined,
-      },
-    }
-    setAppliedPreFilters(initialFilters)
-  }, [isNewInterfaceActive])
-
   const venuesQuery = useSWR(
-    [
-      GET_VENUES_QUERY_KEY,
-      isNewInterfaceActive ? selectedOffererId : undefined,
-    ],
+    [GET_VENUES_QUERY_KEY, selectedOffererId],
     ([, maybeOffererId]) => api.getVenues(undefined, false, maybeOffererId)
   )
 
@@ -116,10 +95,7 @@ export const BookingsScreen = <
   )
 
   const offererAddressQuery = useSWR(
-    [
-      GET_OFFERER_ADDRESS_QUERY_KEY,
-      isNewInterfaceActive ? selectedOffererId : undefined,
-    ],
+    [GET_OFFERER_ADDRESS_QUERY_KEY, selectedOffererId],
     ([, offererIdParam]) =>
       offererIdParam ? api.getOffererAddresses(offererIdParam, false) : [],
     { fallbackData: [] }
@@ -243,35 +219,14 @@ export const BookingsScreen = <
     )
   }
 
-  const title = isNewInterfaceActive
-    ? audience === Audience.COLLECTIVE
+  const title =
+    audience === Audience.COLLECTIVE
       ? 'Réservations collectives'
       : 'Réservations individuelles'
-    : 'Réservations'
 
   return (
     <div className="bookings-page">
       <h1 className={styles['title']}>{title}</h1>
-      {!isNewInterfaceActive && (
-        <Tabs
-          nav="Réservations individuelles et collectives"
-          selectedKey={audience}
-          tabs={[
-            {
-              label: 'Réservations individuelles',
-              url: '/reservations',
-              key: 'individual',
-              icon: strokeUserIcon,
-            },
-            {
-              label: 'Réservations collectives',
-              url: '/reservations/collectives',
-              key: 'collective',
-              icon: strokeLibraryIcon,
-            },
-          ]}
-        />
-      )}
 
       <PreFilters
         appliedPreFilters={appliedPreFilters}

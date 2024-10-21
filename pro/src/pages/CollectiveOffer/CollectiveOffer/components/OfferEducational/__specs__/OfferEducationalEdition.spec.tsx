@@ -18,7 +18,6 @@ import {
   EMAIL_LABEL,
   INTERVENTION_AREA_LABEL,
   NOTIFICATIONS_EMAIL_LABEL,
-  OFFERER_LABEL,
   TITLE_LABEL,
   VENUE_LABEL,
 } from '../constants/labels'
@@ -32,17 +31,14 @@ describe('screens | OfferEducational', () => {
   })
 
   it('should disable all fields when mode is READONLY', async () => {
-    props.userOfferers = [
-      ...props.userOfferers,
-      userOffererFactory({
-        managedVenues: [
-          managedVenueFactory({}),
-          managedVenueFactory({
-            collectiveInterventionArea: ['01', '02'],
-          }),
-        ],
-      }),
-    ]
+    props.userOfferer = userOffererFactory({
+      managedVenues: [
+        managedVenueFactory({}),
+        managedVenueFactory({
+          collectiveInterventionArea: ['01', '02'],
+        }),
+      ],
+    })
     props = {
       ...props,
       offer: getCollectiveOfferFactory({
@@ -57,7 +53,6 @@ describe('screens | OfferEducational', () => {
       screen.getByLabelText(`Format *`),
       screen.getByLabelText(`${TITLE_LABEL} *`),
       screen.getByLabelText(DURATION_LABEL, { exact: false }),
-      screen.getByLabelText(`${OFFERER_LABEL} *`),
       screen.getByLabelText(`${VENUE_LABEL} *`),
       screen.getByLabelText('Autre'), // one of every option
       screen.getByLabelText('Collège - 3e'), // one of every option

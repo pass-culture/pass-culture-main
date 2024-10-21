@@ -4,7 +4,7 @@ import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
 import { CollectiveOfferType } from 'apiClient/v1'
-import { AppLayout } from 'app/AppLayout'
+import { Layout } from 'app/App/layout/Layout'
 import {
   GET_OFFERER_QUERY_KEY,
   GET_VENUES_QUERY_KEY,
@@ -19,7 +19,6 @@ import { hasCollectiveSearchFilters } from 'commons/core/Offers/utils/hasSearchF
 import { serializeApiCollectiveFilters } from 'commons/core/Offers/utils/serializer'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import { useCurrentUser } from 'commons/hooks/useCurrentUser'
-import { useIsNewInterfaceActive } from 'commons/hooks/useIsNewInterfaceActive'
 import { selectCurrentOffererId } from 'commons/store/user/selectors'
 import { formatAndOrderVenues } from 'repository/venuesService'
 
@@ -32,20 +31,16 @@ export const CollectiveOffers = (): JSX.Element => {
 
   const navigate = useNavigate()
   const { currentUser } = useCurrentUser()
-  const isNewInterfaceActive = useIsNewInterfaceActive()
-  const selectedOffererId = useSelector(selectCurrentOffererId)
+  const offererId = useSelector(selectCurrentOffererId)?.toString()
 
   const defaultCollectiveFilters = useDefaultCollectiveSearchFilters()
 
   const urlSearchFilters = useQueryCollectiveSearchFilters({
     ...defaultCollectiveFilters,
-    offererId: selectedOffererId?.toString() ?? 'all',
+    offererId: offererId ?? 'all',
   })
 
   const currentPageNumber = urlSearchFilters.page ?? DEFAULT_PAGE
-  const offererId = isNewInterfaceActive
-    ? selectedOffererId
-    : urlSearchFilters.offererId
 
   const offererQuery = useSWR(
     [GET_OFFERER_QUERY_KEY, offererId],
@@ -74,7 +69,7 @@ export const CollectiveOffers = (): JSX.Element => {
   const isFilterByVenueOrOfferer = hasCollectiveSearchFilters(
     urlSearchFilters,
     defaultCollectiveFilters,
-    isNewInterfaceActive ? ['venueId'] : ['venueId', 'offererId']
+    ['venueId']
   )
   //  Admin users are not allowed to check all offers at once or to use the status filter for performance reasons. Unless there is a venue or offerer filter active.
   const isRestrictedAsAdmin = currentUser.isAdmin && !isFilterByVenueOrOfferer
@@ -83,17 +78,14 @@ export const CollectiveOffers = (): JSX.Element => {
     isNewOffersAndBookingsActive,
     isInTemplateOffersPage: false,
     urlSearchFilters,
-    isNewInterfaceActive,
-    selectedOffererId,
+    selectedOffererId: offererId ?? '',
   })
 
   const apiFilters: CollectiveSearchFiltersParams = {
     ...defaultCollectiveFilters,
     ...urlSearchFilters,
     ...(isRestrictedAsAdmin ? { status: [] } : {}),
-    ...(isNewInterfaceActive
-      ? { offererId: selectedOffererId?.toString() ?? 'all' }
-      : {}),
+    ...{ offererId: offererId?.toString() ?? 'all' },
   }
   delete apiFilters.page
 
@@ -132,7 +124,7 @@ export const CollectiveOffers = (): JSX.Element => {
   )
 
   return (
-    <AppLayout>
+    <Layout>
       <CollectiveOffersScreen
         currentPageNumber={currentPageNumber}
         currentUser={currentUser}
@@ -145,7 +137,7 @@ export const CollectiveOffers = (): JSX.Element => {
         venues={venues}
         isRestrictedAsAdmin={isRestrictedAsAdmin}
       />
-    </AppLayout>
+    </Layout>
   )
 }
 

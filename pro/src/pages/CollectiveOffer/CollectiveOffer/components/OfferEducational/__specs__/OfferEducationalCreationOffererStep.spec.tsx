@@ -1,14 +1,28 @@
-import { screen, waitFor } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
 
 import { defaultCreationProps } from '../__tests-utils__/defaultProps'
 import {
-  userOfferersFactory,
   managedVenuesFactory,
+  userOffererFactory,
 } from '../__tests-utils__/userOfferersFactory'
 import { OfferEducational, OfferEducationalProps } from '../OfferEducational'
+
+function renderOfferEducational(props: OfferEducationalProps) {
+  const user = sharedCurrentUserFactory()
+  renderWithProviders(<OfferEducational {...props} />, {
+    user,
+    storeOverrides: {
+      user: {
+        selectedOffererId: 1,
+        currentUser: user,
+      },
+    },
+  })
+}
 
 describe('screens | OfferEducational : creation offerer step', () => {
   let props: OfferEducationalProps
@@ -16,12 +30,12 @@ describe('screens | OfferEducational : creation offerer step', () => {
     beforeEach(() => {
       props = {
         ...defaultCreationProps,
-        userOfferers: userOfferersFactory([{}]),
+        userOfferer: userOffererFactory({}),
       }
     })
 
     it('should test eligibility and display venue input if offerer is eligible', async () => {
-      renderWithProviders(<OfferEducational {...props} />)
+      renderOfferEducational(props)
 
       expect(await screen.findByLabelText('Lieu *')).toBeInTheDocument()
     })
@@ -30,7 +44,7 @@ describe('screens | OfferEducational : creation offerer step', () => {
       renderWithProviders(
         <OfferEducational
           {...props}
-          userOfferers={userOfferersFactory([{ allowedOnAdage: false }])}
+          userOfferer={userOffererFactory({ allowedOnAdage: false })}
         />
       )
 
@@ -52,16 +66,14 @@ describe('screens | OfferEducational : creation offerer step', () => {
     beforeEach(() => {
       props = {
         ...defaultCreationProps,
-        userOfferers: userOfferersFactory([
-          {
-            managedVenues: managedVenuesFactory([{}]),
-          },
-        ]),
+        userOfferer: userOffererFactory({
+          managedVenues: managedVenuesFactory([{}]),
+        }),
       }
     })
 
     it('should display specific banner instead of place and referencing banner', async () => {
-      renderWithProviders(<OfferEducational {...props} userOfferers={[]} />)
+      renderWithProviders(<OfferEducational {...props} userOfferer={null} />)
       expect(
         await screen.findByText(
           /Vous ne pouvez pas créer d’offre collective tant que votre structure n’est pas validée./
@@ -84,16 +96,14 @@ describe('screens | OfferEducational : creation offerer step', () => {
     beforeEach(() => {
       props = {
         ...defaultCreationProps,
-        userOfferers: userOfferersFactory([
-          {
-            managedVenues: managedVenuesFactory([{}]),
-          },
-        ]),
+        userOfferer: userOffererFactory({
+          managedVenues: managedVenuesFactory([{}]),
+        }),
       }
     })
 
     it('should select venue and display the next step', async () => {
-      renderWithProviders(<OfferEducational {...props} />)
+      renderOfferEducational(props)
 
       const offerTypeTitle = await screen.findByRole('heading', {
         name: 'Type d’offre',
@@ -103,55 +113,13 @@ describe('screens | OfferEducational : creation offerer step', () => {
 
       expect(venueSelect).toBeInTheDocument()
       expect(venueSelect).toHaveValue(
-        props.userOfferers[0].managedVenues[0].id.toString()
+        props.userOfferer?.managedVenues[0].id.toString()
       )
       expect(venueSelect.children).toHaveLength(1)
       expect(venueSelect).toBeDisabled()
       expect(screen.queryByTestId('error-venueId')).not.toBeInTheDocument()
 
       expect(offerTypeTitle).toBeInTheDocument()
-    })
-  })
-
-  describe('when there is multiple offerers associated with an account', () => {
-    const firstOffererId = 1
-    const secondOffererId = 2
-    beforeEach(() => {
-      props = {
-        ...defaultCreationProps,
-        userOfferers: userOfferersFactory([
-          { id: firstOffererId },
-          { id: secondOffererId },
-        ]),
-      }
-    })
-
-    it('should require an offerer selection from the user and trigger eligibility check at selection', async () => {
-      renderWithProviders(<OfferEducational {...props} />)
-      const offererSelect = await screen.findByLabelText('Structure *')
-
-      expect(offererSelect).toBeInTheDocument()
-      expect(offererSelect).toHaveValue('')
-      expect(offererSelect.children).toHaveLength(3)
-      expect(offererSelect).toBeEnabled()
-      expect(screen.queryByTestId('error-offererId')).not.toBeInTheDocument()
-
-      await userEvent.click(offererSelect)
-      await userEvent.tab()
-
-      await waitFor(() => expect(offererSelect).toBeInTheDocument())
-      expect(
-        await screen.findByText('Veuillez sélectionner une structure')
-      ).toBeInTheDocument()
-
-      await userEvent.selectOptions(offererSelect, firstOffererId.toString())
-
-      await userEvent.click(offererSelect)
-      await userEvent.tab()
-
-      expect(
-        screen.queryByText('Veuillez sélectionner une structure')
-      ).not.toBeInTheDocument()
     })
   })
 
@@ -162,20 +130,18 @@ describe('screens | OfferEducational : creation offerer step', () => {
     beforeEach(() => {
       props = {
         ...defaultCreationProps,
-        userOfferers: userOfferersFactory([
-          {
-            managedVenues: managedVenuesFactory([
-              { name: 'Venue 1', id: venue1Id },
-              { name: 'Venue 2', id: venue2Id },
-              { name: 'A - Venue 3', id: venue3Id },
-            ]),
-          },
-        ]),
+        userOfferer: userOffererFactory({
+          managedVenues: managedVenuesFactory([
+            { name: 'Venue 1', id: venue1Id },
+            { name: 'Venue 2', id: venue2Id },
+            { name: 'A - Venue 3', id: venue3Id },
+          ]),
+        }),
       }
     })
 
     it('should require a venue selection from the user', async () => {
-      renderWithProviders(<OfferEducational {...props} />)
+      renderOfferEducational(props)
       const venueSelect = await screen.findByLabelText('Lieu *')
 
       expect(venueSelect).toHaveValue('')
@@ -213,7 +179,7 @@ describe('screens | OfferEducational : creation offerer step', () => {
     })
 
     it('should display venues by alphabeticall order', async () => {
-      renderWithProviders(<OfferEducational {...props} />)
+      renderOfferEducational(props)
       const venueSelect = await screen.findByLabelText('Lieu *')
       const venuesOptions = venueSelect.children
       expect(venuesOptions[0].textContent).toEqual('Sélectionner un lieu')

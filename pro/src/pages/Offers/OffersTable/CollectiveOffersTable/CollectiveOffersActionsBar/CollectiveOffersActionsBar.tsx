@@ -13,7 +13,6 @@ import { NOTIFICATION_LONG_SHOW_DURATION } from 'commons/core/Notification/const
 import { useQueryCollectiveSearchFilters } from 'commons/core/Offers/hooks/useQuerySearchFilters'
 import { getCollectiveOffersSwrKeys } from 'commons/core/Offers/utils/getCollectiveOffersSwrKeys'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
-import { useIsNewInterfaceActive } from 'commons/hooks/useIsNewInterfaceActive'
 import { useNotification } from 'commons/hooks/useNotification'
 import { selectCurrentOffererId } from 'commons/store/user/selectors'
 import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
@@ -121,8 +120,7 @@ export function CollectiveOffersActionsBar({
     useState(false)
   const [isArchiveDialogOpen, setIsArchiveDialogOpen] = useState(false)
 
-  const isNewInterfaceActive = useIsNewInterfaceActive()
-  const selectedOffererId = useSelector(selectCurrentOffererId)
+  const selectedOffererId = useSelector(selectCurrentOffererId)?.toString()
 
   const isNewOffersAndBookingsActive = useActiveFeature(
     'WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE'
@@ -137,7 +135,6 @@ export function CollectiveOffersActionsBar({
     isNewOffersAndBookingsActive,
     isInTemplateOffersPage: areTemplateOffers,
     urlSearchFilters,
-    isNewInterfaceActive,
     selectedOffererId,
   })
 

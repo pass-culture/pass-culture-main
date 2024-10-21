@@ -1,9 +1,8 @@
 import { useSelector } from 'react-redux'
 import { useLocation } from 'react-router-dom'
 
-import { AppLayout } from 'app/AppLayout'
+import { Layout } from 'app/App/layout/Layout'
 import { isCollectiveOffer, Mode } from 'commons/core/OfferEducational/types'
-import { useIsNewInterfaceActive } from 'commons/hooks/useIsNewInterfaceActive'
 import { selectCurrentOffererId } from 'commons/store/user/selectors'
 import { CollectiveOfferLayout } from 'components/CollectiveOfferLayout/CollectiveOfferLayout'
 import {
@@ -20,20 +19,17 @@ export const CollectiveOfferCreation = ({
   offer,
   isTemplate,
 }: OptionalCollectiveOfferFromParamsProps): JSX.Element => {
-  const isNewInterfaceActive = useIsNewInterfaceActive()
   const location = useLocation()
-  const { structure, requete: requestId } = queryParamsFromOfferer(location)
+  const { requete: requestId } = queryParamsFromOfferer(location)
   const selectedOffererId = useSelector(selectCurrentOffererId)
-  const offererId = isNewInterfaceActive
-    ? selectedOffererId?.toString()
-    : structure
+  const offererId = selectedOffererId?.toString()
   const { isReady, ...offerEducationalFormData } = useOfferEducationalFormData(
     Number(offererId),
     offer
   )
 
   return (
-    <AppLayout layout={'sticky-actions'}>
+    <Layout layout={'sticky-actions'}>
       {!isReady ? (
         <Spinner />
       ) : (
@@ -46,7 +42,7 @@ export const CollectiveOfferCreation = ({
           offer={offer}
         >
           <OfferEducational
-            userOfferers={offerEducationalFormData.offerers}
+            userOfferer={offerEducationalFormData.offerer}
             domainsOptions={offerEducationalFormData.domains}
             nationalPrograms={offerEducationalFormData.nationalPrograms}
             offer={offer}
@@ -55,7 +51,7 @@ export const CollectiveOfferCreation = ({
           />
         </CollectiveOfferLayout>
       )}
-    </AppLayout>
+    </Layout>
   )
 }
 

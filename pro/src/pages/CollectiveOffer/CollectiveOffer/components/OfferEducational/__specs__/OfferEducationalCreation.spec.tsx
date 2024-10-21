@@ -4,9 +4,9 @@ import * as router from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { GetCollectiveOfferResponseModel } from 'apiClient/v1'
-import { RootState } from 'commons/store/rootReducer'
 import { getCollectiveOfferFactory } from 'commons/utils/collectiveApiFactories'
 import { renderWithProviders } from 'commons/utils/renderWithProviders'
+import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
 
 import { defaultCreationProps } from '../__tests-utils__/defaultProps'
 import { OfferEducational, OfferEducationalProps } from '../OfferEducational'
@@ -32,9 +32,22 @@ vi.mock('commons/utils/windowMatchMedia', () => ({
   doesUserPreferReducedMotion: vi.fn(() => true),
 }))
 
+function renderComponent(props: OfferEducationalProps, route?: string) {
+  const user = sharedCurrentUserFactory()
+  renderWithProviders(<OfferEducational {...props} />, {
+    user,
+    storeOverrides: {
+      user: {
+        selectedOffererId: 1,
+        currentUser: user,
+      },
+    },
+    initialRouterEntries: route ? [route] : undefined,
+  })
+}
+
 describe('screens | OfferEducational : event address step', () => {
   let props: OfferEducationalProps
-  let store: Partial<RootState>
   let offer: GetCollectiveOfferResponseModel
   const mockNavigate = vi.fn()
 
@@ -53,9 +66,7 @@ describe('screens | OfferEducational : event address step', () => {
 
   it('should redirect to stock on submit', async () => {
     vi.spyOn(api, 'editCollectiveOffer').mockResolvedValueOnce(offer)
-
-    renderWithProviders(<OfferEducational {...props} />)
-
+    renderComponent(props)
     const buttonNextStep = screen.getByText('Enregistrer et continuer')
 
     expect(buttonNextStep).toBeInTheDocument()
@@ -67,11 +78,7 @@ describe('screens | OfferEducational : event address step', () => {
 
   it('should redirect to right url if requete params exist on submit', async () => {
     vi.spyOn(api, 'editCollectiveOffer').mockResolvedValueOnce(offer)
-
-    renderWithProviders(<OfferEducational {...props} />, {
-      storeOverrides: store,
-      initialRouterEntries: ['/offre/collectif/3/creation?requete=1'],
-    })
+    renderComponent(props, '/offre/collectif/3/creation?requete=1')
 
     const buttonNextStep = screen.getByText('Enregistrer et continuer')
 

@@ -1,10 +1,9 @@
 import { useFormikContext } from 'formik'
-import { useCallback, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
-  GetEducationalOffererResponseModel,
 } from 'apiClient/v1'
 import {
   isCollectiveOffer,
@@ -13,7 +12,6 @@ import {
 } from 'commons/core/OfferEducational/types'
 import { computeCollectiveOffersUrl } from 'commons/core/Offers/utils/computeCollectiveOffersUrl'
 import { SelectOption } from 'commons/custom_types/form'
-import { useNotification } from 'commons/hooks/useNotification'
 import { sortByLabel } from 'commons/utils/strings'
 import { ActionsBarSticky } from 'components/ActionsBarSticky/ActionsBarSticky'
 import { BannerPublicApi } from 'components/Banner/BannerPublicApi'
@@ -62,7 +60,7 @@ export type OfferEducationalFormProps = Omit<
 }
 
 export const OfferEducationalForm = ({
-  userOfferers,
+  userOfferer,
   mode,
   domainsOptions,
   nationalPrograms,
@@ -74,34 +72,22 @@ export const OfferEducationalForm = ({
   offer,
   isSubmitting,
 }: OfferEducationalFormProps): JSX.Element => {
-  const notify = useNotification()
-
   const [venuesOptions, setVenuesOptions] = useState<SelectOption[]>([])
-  const [currentOfferer, setCurrentOfferer] =
-    useState<GetEducationalOffererResponseModel | null>(null)
   const [isEligible, setIsEligible] = useState<boolean>()
 
   const { values, setFieldValue, initialValues, dirty } =
     useFormikContext<OfferEducationalFormValues>()
 
-  const onOffererChange = useCallback(
-    async (newOffererId: string) => {
-      const selectedOfferer = userOfferers.find(
-        (offerer) => offerer.id.toString() === newOffererId
-      )
-
-      if (selectedOfferer) {
-        const checkOffererEligibilityToEducationalOffer = () => {
-          if (mode === Mode.EDITION || mode === Mode.READ_ONLY) {
-            setIsEligible(true)
-            return
-          }
-          setIsEligible(selectedOfferer.allowedOnAdage)
+  useEffect(() => {
+    async function handleOffererValues() {
+      if (userOfferer) {
+        if (mode === Mode.EDITION || mode === Mode.READ_ONLY) {
+          setIsEligible(true)
+        } else {
+          setIsEligible(userOfferer.allowedOnAdage)
         }
 
-        checkOffererEligibilityToEducationalOffer()
-
-        let venuesOptions = selectedOfferer.managedVenues.map((item) => ({
+        let venuesOptions = userOfferer.managedVenues.map((item) => ({
           value: item['id'].toString(),
           label: item['name'] as string,
         }))
@@ -111,7 +97,6 @@ export const OfferEducationalForm = ({
             ...sortByLabel(venuesOptions),
           ]
         }
-        setCurrentOfferer(selectedOfferer)
         setVenuesOptions(venuesOptions)
         if (venuesOptions.length === 1) {
           await setFieldValue('venueId', venuesOptions[0].value)
@@ -120,19 +105,17 @@ export const OfferEducationalForm = ({
         }
       } else {
         setIsEligible(false)
-        setCurrentOfferer(null)
         setVenuesOptions([])
       }
-    },
-    [values.offererId, userOfferers, notify, mode]
-  )
-
-  useEffect(() => {
-    if (values.offererId) {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      onOffererChange(values.offererId)
     }
-  }, [values.offererId, userOfferers])
+
+    // as the call is async, it can create refresh issues.
+    // This is to prevent these issues
+    setTimeout(() => {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      handleOffererValues()
+    })
+  }, [userOfferer])
 
   return (
     <>
@@ -149,9 +132,8 @@ export const OfferEducationalForm = ({
           isEligible={isEligible}
           mode={mode}
           isOfferCreated={isOfferCreated}
-          userOfferers={userOfferers}
+          userOfferer={userOfferer}
           venuesOptions={venuesOptions}
-          onChangeOfferer={onOffererChange}
           offer={offer}
         />
         {isEligible && values.offererId && values.venueId ? (
@@ -173,7 +155,7 @@ export const OfferEducationalForm = ({
               />
             )}
             <FormPracticalInformation
-              currentOfferer={currentOfferer}
+              currentOfferer={userOfferer}
               venuesOptions={venuesOptions}
               disableForm={mode === Mode.READ_ONLY}
             />

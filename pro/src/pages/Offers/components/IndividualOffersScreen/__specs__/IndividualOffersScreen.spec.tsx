@@ -1,4 +1,4 @@
-import { screen, waitFor, within } from '@testing-library/react'
+import { screen, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { expect } from 'vitest'
 
@@ -8,7 +8,6 @@ import {
   ListOffersOfferResponseModel,
   OfferStatus,
   SharedCurrentUserResponseModel,
-  UserRole,
 } from 'apiClient/v1'
 import {
   ALL_OFFERER_ADDRESS_OPTION,
@@ -17,12 +16,7 @@ import {
 } from 'commons/core/Offers/constants'
 import { SearchFiltersParams } from 'commons/core/Offers/types'
 import * as useNotification from 'commons/hooks/useNotification'
-import {
-  defaultGetOffererResponseModel,
-  getOffererNameFactory,
-  getOfferManagingOffererFactory,
-  listOffersOfferFactory,
-} from 'commons/utils/individualApiFactories'
+import { listOffersOfferFactory } from 'commons/utils/individualApiFactories'
 import { offererAddressFactory } from 'commons/utils/offererAddressFactories'
 import {
   renderWithProviders,
@@ -38,19 +32,15 @@ import {
 
 const renderOffers = (
   props: IndividualOffersScreenProps,
-  options?: RenderWithProvidersOptions,
-  hasNewNav: boolean = false
+  options?: RenderWithProvidersOptions
 ) => {
+  const user = sharedCurrentUserFactory()
   renderWithProviders(<IndividualOffersScreen {...props} />, {
+    user,
     storeOverrides: {
       user: {
-        currentUser: sharedCurrentUserFactory({
-          isAdmin: false,
-          navState: {
-            newNavDate: hasNewNav ? '2021-01-01' : null,
-          },
-        }),
         selectedOffererId: 1,
+        currentUser: user,
       },
     },
     ...options,
@@ -123,17 +113,11 @@ describe('IndividualOffersScreen', () => {
   const mockNotifyPending = vi.fn()
   const mockNotifySuccess = vi.fn()
   beforeEach(async () => {
-    currentUser = sharedCurrentUserFactory({
-      isAdmin: false,
-      roles: [UserRole.PRO],
-    })
     offersRecap = [listOffersOfferFactory()]
 
     props = {
       currentPageNumber: 1,
-      currentUser,
       isLoading: false,
-      offerer: { ...defaultGetOffererResponseModel },
       offers: offersRecap,
       urlSearchFilters: DEFAULT_SEARCH_FILTERS,
       initialSearchFilters: DEFAULT_SEARCH_FILTERS,
@@ -185,7 +169,6 @@ describe('IndividualOffersScreen', () => {
 
     renderOffers({
       ...props,
-      currentUser: { ...props.currentUser, isAdmin: false },
       offers: [firstOffer, secondOffer],
     })
 
@@ -463,12 +446,7 @@ describe('IndividualOffersScreen', () => {
       })
     )
 
-    await userEvent.click(
-      screen.getByRole('heading', {
-        name: 'Offres',
-        level: 1,
-      })
-    )
+    await userEvent.click(screen.getByText('Rechercher'))
 
     expect(screen.queryByText('Afficher les offres')).not.toBeInTheDocument()
   })
@@ -481,10 +459,6 @@ describe('IndividualOffersScreen', () => {
   })
 
   describe('when user is admin', () => {
-    beforeEach(() => {
-      props.currentUser.isAdmin = true
-    })
-
     it('should not be able to check all offers for performance reasons', () => {
       renderOffers({ ...props, isRestrictedAsAdmin: true })
 
@@ -525,7 +499,6 @@ describe('IndividualOffersScreen', () => {
   })
 
   it('should disabled checkbox when offer is rejected or pending for validation', () => {
-    props.currentUser.isAdmin = false
     const offers = [
       listOffersOfferFactory({
         isActive: false,
@@ -549,36 +522,6 @@ describe('IndividualOffersScreen', () => {
     expect(screen.queryByLabelText(offers[0].name)).toBeDisabled()
     expect(screen.queryByLabelText(offers[1].name)).toBeDisabled()
     expect(screen.queryByLabelText(offers[2].name)).toBeEnabled()
-  })
-
-  it('should display the button to create an offer when user is not an admin', async () => {
-    const individualOffererNames = getOffererNameFactory()
-    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
-      offerersNames: [individualOffererNames],
-    })
-
-    props.currentUser.isAdmin = false
-
-    renderOffers(props)
-
-    expect(
-      await screen.findByRole('link', { name: 'Créer une offre' })
-    ).toBeInTheDocument()
-  })
-
-  it('should not display button to create an offer when user is not yet validated', async () => {
-    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
-      offerersNames: [],
-    })
-    renderOffers(props)
-
-    await waitFor(() => {
-      expect(api.listOfferersNames).toHaveBeenCalledTimes(1)
-    })
-
-    expect(
-      screen.queryByRole('link', { name: /Créer une offre/ })
-    ).not.toBeInTheDocument()
   })
 
   it('should display actionsBar when at least one offer is selected', async () => {
@@ -659,30 +602,6 @@ describe('IndividualOffersScreen', () => {
       expect(thirdOfferCheckbox).not.toBeChecked()
       expect(fourthOfferCheckbox).not.toBeChecked()
     })
-  })
-
-  it('should display the create offer button by default for non admins with validated offerers', async () => {
-    vi.spyOn(api, 'listOfferersNames').mockResolvedValueOnce({
-      offerersNames: [{ ...getOfferManagingOffererFactory(), id: 1 }],
-    })
-
-    renderOffers(props)
-    await waitFor(() => {
-      expect(api.listOfferersNames).toHaveBeenCalledTimes(1)
-    })
-    expect(screen.getByText(/Créer une offre/)).toBeInTheDocument()
-  })
-
-  it('should not display the create offer button', async () => {
-    vi.spyOn(api, 'listOfferersNames').mockResolvedValueOnce({
-      offerersNames: [getOffererNameFactory()],
-    })
-
-    renderOffers(props, {}, true)
-    await waitFor(() => {
-      expect(api.listOfferersNames).toHaveBeenCalledTimes(1)
-    })
-    expect(screen.queryByText(/Créer une offre/)).not.toBeInTheDocument()
   })
 
   it('should not display onboarding banner for archivage when we are in individual offer list ', () => {

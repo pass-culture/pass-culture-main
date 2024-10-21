@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { api } from 'apiClient/api'
 import { isErrorAPIError } from 'apiClient/helpers'
 import { OfferEducationalFormValues } from 'commons/core/OfferEducational/types'
-import { serializeEducationalOfferers } from 'commons/core/OfferEducational/utils/serializeEducationalOfferers'
+import { serializeEducationalOfferer } from 'commons/core/OfferEducational/utils/serializeEducationalOfferer'
 import { useNotification } from 'commons/hooks/useNotification'
 
 import { computeInitialValuesFromOffer } from './computeInitialValuesFromOffer'
@@ -15,18 +15,19 @@ export const createOfferFromBookableOffer = async (
   offerId: number
 ) => {
   let initialValues: OfferEducationalFormValues
-  let offererId = null
+  let offererId: number | null = null
   try {
     const offerResponse = await api.getCollectiveOffer(offerId)
     offererId = offerResponse.venue.managingOfferer.id
     const { educationalOfferers } = await api.listEducationalOfferers(offererId)
-    const offerers = serializeEducationalOfferers(educationalOfferers)
-
-    initialValues = computeInitialValuesFromOffer(
-      offerers,
-      false,
-      offerResponse
+    const targetOfferer = educationalOfferers.find(
+      (educationalOfferer) => educationalOfferer.id === offererId
     )
+    const offerer = targetOfferer
+      ? serializeEducationalOfferer(targetOfferer)
+      : null
+
+    initialValues = computeInitialValuesFromOffer(offerer, false, offerResponse)
   } catch {
     return notify.error(
       'Une erreur est survenue lors de la récupération de votre offre'

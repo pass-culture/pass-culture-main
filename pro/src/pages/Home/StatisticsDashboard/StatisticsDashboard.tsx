@@ -8,7 +8,6 @@ import {
   GetOffererStatsResponseModel,
 } from 'apiClient/v1'
 import { useCurrentUser } from 'commons/hooks/useCurrentUser'
-import { useIsNewInterfaceActive } from 'commons/hooks/useIsNewInterfaceActive'
 import { FORMAT_DD_MM_YYYY_HH_mm } from 'commons/utils/date'
 import fullMoreIcon from 'icons/full-more.svg'
 import strokeNoBookingIcon from 'icons/stroke-no-booking.svg'
@@ -33,11 +32,7 @@ export const StatisticsDashboard = ({ offerer }: StatisticsDashboardProps) => {
 
   const { currentUser } = useCurrentUser()
 
-  const isNewSideBarNavigation = useIsNewInterfaceActive()
-  const createOfferLink = `/offre/creation${!isNewSideBarNavigation ? `?structure=${offerer.id}` : ''}`
-
-  const displayCreateOfferButton =
-    (isNewSideBarNavigation && currentUser.isAdmin) || !isNewSideBarNavigation
+  const displayCreateOfferButton = currentUser.isAdmin
 
   useEffect(() => {
     const loadStats = async () => {
@@ -61,7 +56,7 @@ export const StatisticsDashboard = ({ offerer }: StatisticsDashboardProps) => {
         {displayCreateOfferButton && (
           <ButtonLink
             variant={ButtonVariant.PRIMARY}
-            to={createOfferLink}
+            to={'/offre/creation'}
             icon={fullMoreIcon}
           >
             Créer une offre

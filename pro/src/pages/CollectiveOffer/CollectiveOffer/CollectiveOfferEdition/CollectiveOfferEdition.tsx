@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { AppLayout } from 'app/AppLayout'
+import { Layout } from 'app/App/layout/Layout'
 import {
   isCollectiveOfferTemplate,
   Mode,
@@ -27,7 +27,7 @@ const CollectiveOfferEdition = ({
   const isOfferTemplate = isCollectiveOfferTemplate(offer)
 
   return (
-    <AppLayout layout="sticky-actions">
+    <Layout layout="sticky-actions">
       {!isReady ? (
         <Spinner />
       ) : (
@@ -37,7 +37,7 @@ const CollectiveOfferEdition = ({
           offer={offer}
         >
           <OfferEducational
-            userOfferers={offerEducationalFormData.offerers}
+            userOfferer={offerEducationalFormData.offerer}
             domainsOptions={offerEducationalFormData.domains}
             nationalPrograms={offerEducationalFormData.nationalPrograms}
             offer={offer}
@@ -50,7 +50,7 @@ const CollectiveOfferEdition = ({
           />
         </CollectiveOfferLayout>
       )}
-    </AppLayout>
+    </Layout>
   )
 }
 

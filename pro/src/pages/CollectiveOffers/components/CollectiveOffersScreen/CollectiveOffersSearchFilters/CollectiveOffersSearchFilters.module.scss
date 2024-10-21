@@ -8,34 +8,6 @@ $status-filter-margin-top: rem.torem(24px);
   margin-bottom: rem.torem(32px);
 }
 
-.offerer-filter {
-  @include fonts.caption;
-
-  align-items: center;
-  background-color: var(--color-accent-light);
-  border: none;
-  border-radius: rem.torem(24px);
-  display: flex;
-  height: rem.torem(32px);
-  justify-content: space-between;
-  margin-bottom: rem.torem(16px);
-  padding: rem.torem(5px) rem.torem(15px);
-  width: max-content;
-
-  button {
-    align-items: center;
-    background: none;
-    border: none;
-    display: flex;
-    margin-left: rem.torem(8px);
-
-    img {
-      height: rem.torem(14px);
-      width: rem.torem(14px);
-    }
-  }
-}
-
 .search-separator {
   align-items: center;
   display: flex;

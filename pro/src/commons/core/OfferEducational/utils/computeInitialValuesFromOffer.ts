@@ -1,8 +1,8 @@
 import {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
-  StudentLevels,
   GetEducationalOffererResponseModel,
+  StudentLevels,
 } from 'apiClient/v1'
 import {
   formatShortDateForInput,
@@ -12,7 +12,7 @@ import {
 } from 'commons/utils/date'
 
 import { DEFAULT_EAC_FORM_VALUES } from '../constants'
-import { OfferEducationalFormValues, isCollectiveOfferTemplate } from '../types'
+import { isCollectiveOfferTemplate, OfferEducationalFormValues } from '../types'
 
 import { buildStudentLevelsMapWithDefaultValue } from './buildStudentLevelsMapWithDefaultValue'
 
@@ -31,29 +31,24 @@ const computeDurationString = (
 }
 
 const getInitialOffererId = (
-  offerers: GetEducationalOffererResponseModel[],
+  offerer: GetEducationalOffererResponseModel | null,
   offer?:
     | GetCollectiveOfferResponseModel
-    | GetCollectiveOfferTemplateResponseModel,
-  offererIdQueryParam?: string | null
+    | GetCollectiveOfferTemplateResponseModel
 ): string => {
   if (offer !== undefined) {
     return offer.venue.managingOfferer.id.toString()
   }
 
-  if (offererIdQueryParam) {
-    return offererIdQueryParam
-  }
-
-  if (offerers.length === 1) {
-    return offerers[0].id.toString()
+  if (offerer) {
+    return offerer.id.toString()
   }
 
   return DEFAULT_EAC_FORM_VALUES.offererId
 }
 
 const getInitialVenueId = (
-  offerers: GetEducationalOffererResponseModel[],
+  offerer: GetEducationalOffererResponseModel | null,
   offererId: string,
   offer?:
     | GetCollectiveOfferResponseModel
@@ -69,12 +64,8 @@ const getInitialVenueId = (
   }
 
   if (offererId) {
-    const currentOfferer = offerers.find(
-      (offerer) => offerer.id.toString() === offererId
-    )
-
-    if (currentOfferer?.managedVenues.length === 1) {
-      return currentOfferer.managedVenues[0].id.toString()
+    if (offerer?.managedVenues.length === 1) {
+      return offerer.managedVenues[0].id.toString()
     }
   }
 
@@ -82,22 +73,17 @@ const getInitialVenueId = (
 }
 
 export const computeInitialValuesFromOffer = (
-  offerers: GetEducationalOffererResponseModel[],
+  offerer: GetEducationalOffererResponseModel | null,
   isTemplate: boolean,
   offer?:
     | GetCollectiveOfferResponseModel
     | GetCollectiveOfferTemplateResponseModel,
-  offererIdQueryParam?: string | null,
   venueIdQueryParam?: string | null,
   isMarseilleEnabled?: boolean
 ): OfferEducationalFormValues => {
-  const initialOffererId = getInitialOffererId(
-    offerers,
-    offer,
-    offererIdQueryParam
-  )
+  const initialOffererId = getInitialOffererId(offerer, offer)
   const initialVenueId = getInitialVenueId(
-    offerers,
+    offerer,
     initialOffererId,
     offer,
     venueIdQueryParam

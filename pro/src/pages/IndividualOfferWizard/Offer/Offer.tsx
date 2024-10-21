@@ -4,8 +4,8 @@ import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
 import {
-  GET_VENUES_QUERY_KEY,
   GET_OFFERER_NAMES_QUERY_KEY,
+  GET_VENUES_QUERY_KEY,
 } from 'commons/config/swrQueryKeys'
 import { useIndividualOfferContext } from 'commons/context/IndividualOfferContext/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from 'commons/core/Offers/constants'
@@ -26,19 +26,11 @@ export const Offer = (): JSX.Element | null => {
   const [searchParams] = useSearchParams()
 
   let venueId = searchParams.get('lieu')
-
-  const offererIdFromQueryParam = searchParams.get('structure')
-    ? Number(searchParams.get('structure'))
-    : undefined
   const selectedOffererId = useSelector(selectCurrentOffererId)
 
   // At first we look for the offerer id in the offer,
-  // then in the query params
-  // after all we look for the selected offerer id in the redux store
-  const offererId =
-    offer?.venue.managingOfferer.id ??
-    offererIdFromQueryParam ??
-    selectedOffererId
+  // else we look for the selected offerer id in the redux store
+  const offererId = offer?.venue.managingOfferer.id ?? selectedOffererId
 
   const shouldNotFetchVenues = currentUser.isAdmin && !offererId
 

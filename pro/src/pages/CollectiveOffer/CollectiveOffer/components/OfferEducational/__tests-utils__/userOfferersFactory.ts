@@ -44,8 +44,3 @@ export const userOffererFactory = (
     ...userOffererExtends,
   }
 }
-
-export const userOfferersFactory = (
-  userOfferersExtends: Partial<GetEducationalOffererResponseModel>[]
-): GetEducationalOffererResponseModel[] =>
-  userOfferersExtends.map(userOffererFactory)

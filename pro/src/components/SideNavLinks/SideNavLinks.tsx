@@ -10,7 +10,6 @@ import { GET_OFFERER_QUERY_KEY } from 'commons/config/swrQueryKeys'
 import { hasStatusCode } from 'commons/core/OfferEducational/utils/hasStatusCode'
 import { SAVED_OFFERER_ID_KEY } from 'commons/core/shared/constants'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
-import { useIsNewInterfaceActive } from 'commons/hooks/useIsNewInterfaceActive'
 import {
   SIDE_NAV_MIN_HEIGHT_COLLAPSE_MEDIA_QUERY,
   useMediaQuery,
@@ -59,7 +58,6 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
   const isNewCollectiveOffersStructureEnabled = useActiveFeature(
     'WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE'
   )
-  const isNewInterfaceActive = useIsNewInterfaceActive()
   const currentUser = useSelector(selectCurrentUser)
 
   const location = useLocation()
@@ -116,9 +114,6 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
   const offererId = localStorageAvailable()
     ? localStorage.getItem(SAVED_OFFERER_ID_KEY)
     : null
-  const createOfferPageUrl =
-    '/offre/creation' +
-    (!isNewInterfaceActive && offererId ? `?structure=${offererId}` : '')
 
   return (
     <div
@@ -130,7 +125,7 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
       {selectedOffererQuery.data && isUserOffererValidated && (
         <ul className={styles['nav-links-group']}>
           <li className={styles['nav-links-create-offer-wrapper']}>
-            <ButtonLink variant={ButtonVariant.PRIMARY} to={createOfferPageUrl}>
+            <ButtonLink variant={ButtonVariant.PRIMARY} to={'/offre/creation'}>
               Créer une offre
             </ButtonLink>
           </li>

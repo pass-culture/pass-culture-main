@@ -4,7 +4,6 @@ import { useSelector } from 'react-redux'
 import { api } from 'apiClient/api'
 import { SelectOption } from 'commons/custom_types/form'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
-import { useIsNewInterfaceActive } from 'commons/hooks/useIsNewInterfaceActive'
 import { selectCurrentOffererId } from 'commons/store/user/selectors'
 import { sortByLabel } from 'commons/utils/strings'
 import { OffererStatsNoResult } from 'components/OffererStatsNoResult/OffererStatsNoResult'
@@ -13,35 +12,16 @@ import { FieldLayout } from 'ui-kit/form/shared/FieldLayout/FieldLayout'
 
 import styles from './OffererStatsScreen.module.scss'
 
-interface OffererStatsScreenProps {
-  offererOptions: SelectOption[]
-}
-
-export const OffererStatsScreen = ({
-  offererOptions,
-}: OffererStatsScreenProps) => {
-  const isNewInterfaceActive = useIsNewInterfaceActive()
+export const OffererStatsScreen = () => {
   const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
-  const headerOffererId = useSelector(selectCurrentOffererId)
+  const targetOffererId = useSelector(selectCurrentOffererId)
 
   const [iframeUrl, setIframeUrl] = useState('')
-  const [selectedOffererId, setSelectedOffererId] = useState(
-    offererOptions[0].value
-  )
   const [selectedVenueId, setSelectedVenueId] = useState('all')
   const [venueOptions, setVenueOptions] = useState<SelectOption[]>([])
   const ALL_VENUES_OPTION = {
     value: 'all',
     label: isOfferAddressEnabled ? 'Tous' : 'Tous les lieux',
-  }
-
-  const targetOffererId = isNewInterfaceActive
-    ? headerOffererId
-    : selectedOffererId
-
-  const handleChangeOfferer = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedOffererId = event.target.value
-    setSelectedOffererId(selectedOffererId)
   }
   const handleChangeVenue = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedVenueId = event.target.value
@@ -64,14 +44,6 @@ export const OffererStatsScreen = ({
             }))
         )
         setVenueOptions([ALL_VENUES_OPTION, ...sortedVenueOptions])
-
-        if (
-          !isNewInterfaceActive &&
-          sortedVenueOptions.length > 0 &&
-          sortedVenueOptions[0].value.toString()
-        ) {
-          setSelectedVenueId(sortedVenueOptions[0].value.toString())
-        }
       } else {
         setVenueOptions([])
       }
@@ -108,18 +80,6 @@ export const OffererStatsScreen = ({
         Vos statistiques sont calculées et mises à jour quotidiennement dans la
         nuit.
       </p>
-
-      {!isNewInterfaceActive && (
-        <FieldLayout label="Structure" name="offererId" isOptional>
-          <SelectInput
-            onChange={handleChangeOfferer}
-            name="offererId"
-            options={offererOptions}
-            value={String(selectedOffererId)}
-            disabled={offererOptions.length <= 1}
-          />
-        </FieldLayout>
-      )}
 
       {venueOptions.length > 0 && iframeUrl ? (
         <>

@@ -11,8 +11,8 @@ import {
   defaultVenueProvider,
 } from 'commons/utils/individualApiFactories'
 import {
-  RenderWithProvidersOptions,
   renderWithProviders,
+  RenderWithProvidersOptions,
 } from 'commons/utils/renderWithProviders'
 import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
 
@@ -54,6 +54,11 @@ const baseVenue: GetVenueResponseModel = {
   publicName: 'Cinéma des iles',
   dmsToken: 'dms-token-12345',
   isPermanent: true,
+}
+
+const notValidatedVenue: GetVenueResponseModel = {
+  ...defaultGetVenue,
+  isPermanent: false,
 }
 
 describe('route VenueEdition', () => {
@@ -209,12 +214,8 @@ describe('route VenueEdition', () => {
   })
 
   it('should display the selector only for new navigation', async () => {
-    renderVenueEdition({
-      user: sharedCurrentUserFactory({
-        // a date in the futur to not have the new interface
-        navState: { newNavDate: '2225-07-29T12:18:43.087097Z' },
-      }),
-    })
+    vi.spyOn(api, 'getVenue').mockResolvedValue(notValidatedVenue)
+    renderVenueEdition()
 
     await waitForElementToBeRemoved(screen.getByTestId('spinner'))
 

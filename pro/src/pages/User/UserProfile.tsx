@@ -1,4 +1,4 @@
-import { AppLayout } from 'app/AppLayout'
+import { Layout } from 'app/App/layout/Layout'
 import { useCurrentUser } from 'commons/hooks/useCurrentUser'
 import { UserProfile } from 'pages/User/UserProfile/UserProfile'
 
@@ -6,7 +6,7 @@ const Profile = (): JSX.Element => {
   const { currentUser } = useCurrentUser()
 
   return (
-    <AppLayout>
+    <Layout>
       <UserProfile
         userIdentityInitialValues={{
           firstName: currentUser.firstName || '',
@@ -17,7 +17,7 @@ const Profile = (): JSX.Element => {
           email: currentUser.email,
         }}
       />
-    </AppLayout>
+    </Layout>
   )
 }
 
