@@ -145,10 +145,9 @@ export const FilterByBookingStatus = <
         {isToolTipVisible && (
           <div className={styles['bs-filter-tooltip']}>
             <fieldset>
-              <legend className={styles['bs-filter-label']}>
+              <legend className={styles['bs-filter-legend']}>
                 Afficher les réservations
               </legend>
-
               {bookingStatusOptions.map((bookingStatus) => (
                 <BaseCheckbox
                   key={bookingStatus.value}
@@ -157,6 +156,7 @@ export const FilterByBookingStatus = <
                   name={bookingStatus.value}
                   onChange={handleCheckboxChange}
                   label={bookingStatus.title}
+                  className={styles['bs-filter-checkbox']}
                 />
               ))}
             </fieldset>

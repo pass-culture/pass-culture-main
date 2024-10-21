@@ -12,7 +12,7 @@
   position: relative;
   margin-bottom: rem.torem(20px);
 
-  label {
+  .select-all-checkbox {
     @include fonts.caption;
   }
 }
