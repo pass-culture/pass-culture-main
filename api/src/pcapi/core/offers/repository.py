@@ -250,6 +250,7 @@ def get_offers_details(offer_ids: list[int]) -> BaseQuery:
             .load_only(
                 models.Product.id,
                 models.Product.description,
+                models.Product.extraData,
                 models.Product.last_30_days_booking,
                 models.Product.thumbCount,
                 models.Product.durationMinutes,
