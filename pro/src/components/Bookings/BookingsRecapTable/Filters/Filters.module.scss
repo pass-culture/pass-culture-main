@@ -9,7 +9,7 @@
   position: relative;
   display: inline-block;
 
-  .bs-filter-label {
+  .bs-filter-legend {
     @include fonts.caption;
 
     color: var(--color-grey-dark);
@@ -28,7 +28,7 @@
     z-index: 1;
   }
 
-  label {
+  .bs-filter-checkbox {
     @include fonts.body;
 
     display: flex;

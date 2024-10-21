@@ -10,6 +10,7 @@ import { FormLayout } from 'components/FormLayout/FormLayout'
 import { validationSchema } from 'pages/VenueSettings/VenueProvidersManager/AllocineProviderForm/validationSchema'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import { QuantityInput } from 'ui-kit/form/QuantityInput/QuantityInput'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 
 import { DuoCheckbox } from '../DuoCheckbox/DuoCheckbox'
@@ -96,16 +97,10 @@ export const AllocineProviderForm = ({
             />
           </FormLayout.Row>
           <FormLayout.Row>
-            <TextInput
-              type="number"
+            <QuantityInput
               label="Nombre de places/séance"
-              min="0"
-              name="quantity"
-              placeholder="Illimité"
-              step={1}
-              isOptional
-              hasDecimal={false}
               className={styles['nb-places-input']}
+              isOptional
             />
           </FormLayout.Row>
           <FormLayout.Row>

@@ -41,7 +41,12 @@ describe('RecurrenceForm', () => {
       format(addDays(new Date(), 1), FORMAT_ISO_DATE_ONLY)
     )
     await userEvent.type(screen.getByLabelText('Horaire 1 *'), '12:00')
-    await userEvent.type(screen.getByLabelText('Nombre de places'), '10')
+    await userEvent.type(
+      screen.getByRole('spinbutton', {
+        name: 'Nombre de places',
+      }),
+      '10'
+    )
     await userEvent.type(screen.getByLabelText('Tarif *'), '21')
     await userEvent.type(
       screen.getByLabelText('Date limite de réservation', { exact: false }),

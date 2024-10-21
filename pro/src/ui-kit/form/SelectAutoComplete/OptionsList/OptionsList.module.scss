@@ -19,7 +19,6 @@
     padding: rem.torem(8px);
   }
 
-  label,
   .label,
   .too-many-options {
     display: flex;
@@ -27,7 +26,6 @@
   }
 
   /* override cursor: default defined by browser */
-  label,
   .label,
   input[type="checkbox"] {
     cursor: pointer;

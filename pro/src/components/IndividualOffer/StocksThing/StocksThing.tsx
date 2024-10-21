@@ -30,6 +30,7 @@ import strokeEuroIcon from 'icons/stroke-euro.svg'
 import { ActionBar } from 'pages/IndividualOffer/components/ActionBar/ActionBar'
 import { Checkbox } from 'ui-kit/form/Checkbox/Checkbox'
 import { DatePicker } from 'ui-kit/form/DatePicker/DatePicker'
+import { QuantityInput } from 'ui-kit/form/QuantityInput/QuantityInput'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
 import { InfoBox } from 'ui-kit/InfoBox/InfoBox'
 
@@ -202,21 +203,18 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
     setIsDeleteConfirmVisible(false)
   }
 
-  const onChangeQuantity = async (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const quantity = event.target.value
+  const onQuantityChange = async (newQuantity: string) => {
     let remainingQuantity: number | string =
       // No need to test
       /* istanbul ignore next */
-      Number(quantity || 0) - Number(formik.values.bookingsQuantity || 0)
+      Number(newQuantity || 0) - Number(formik.values.bookingsQuantity || 0)
 
-    if (quantity === '') {
+    if (newQuantity === '') {
       remainingQuantity = 'unlimited'
     }
 
     await formik.setFieldValue(`remainingQuantity`, remainingQuantity)
-    await formik.setFieldValue(`quantity`, quantity)
+    await formik.setFieldValue(`quantity`, newQuantity)
   }
 
   const getMaximumBookingDatetime = (date: Date | undefined) => {
@@ -390,18 +388,13 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
                   className={styles['field-layout-small']}
                 />
               )}
-              <TextInput
+              <QuantityInput
                 smallLabel
-                name="quantity"
-                label="Quantité"
-                placeholder="Illimité"
-                isOptional
-                classNameFooter={styles['field-layout-footer']}
                 disabled={readOnlyFields.includes('quantity')}
-                type="number"
-                hasDecimal={false}
-                onChange={onChangeQuantity}
+                onChange={onQuantityChange}
                 className={styles['field-layout-xsmall']}
+                classNameFooter={styles['field-layout-footer']}
+                isOptional
               />
               {mode === OFFER_WIZARD_MODE.EDITION && stocks.length > 0 && (
                 <>
