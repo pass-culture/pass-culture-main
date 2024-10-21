@@ -1193,7 +1193,7 @@ def test_public_api(client):
                     "title": "OfferAccessibilityResponse",
                     "type": "object",
                 },
-                "OfferExtraData": {
+                "OfferExtraDataResponse": {
                     "properties": {
                         "allocineId": {"nullable": True, "title": "Allocineid", "type": "integer"},
                         "author": {"nullable": True, "title": "Author", "type": "string"},
@@ -1217,7 +1217,7 @@ def test_public_api(client):
                         "stageDirector": {"nullable": True, "title": "Stagedirector", "type": "string"},
                         "visa": {"nullable": True, "title": "Visa", "type": "string"},
                     },
-                    "title": "OfferExtraData",
+                    "title": "OfferExtraDataResponse",
                     "type": "object",
                 },
                 "OfferImageResponse": {
@@ -1239,9 +1239,9 @@ def test_public_api(client):
                     "properties": {
                         "durationMinutes": {"nullable": True, "title": "Durationminutes", "type": "integer"},
                         "extraData": {
-                            "anyOf": [{"$ref": "#/components/schemas/OfferExtraData"}],
+                            "anyOf": [{"$ref": "#/components/schemas/OfferExtraDataResponse"}],
                             "nullable": True,
-                            "title": "OfferExtraData",
+                            "title": "OfferExtraDataResponse",
                         },
                         "id": {"title": "Id", "type": "integer"},
                         "image": {
@@ -1293,9 +1293,9 @@ def test_public_api(client):
                             "type": "string",
                         },
                         "extraData": {
-                            "anyOf": [{"$ref": "#/components/schemas/OfferExtraData"}],
+                            "anyOf": [{"$ref": "#/components/schemas/OfferExtraDataResponse"}],
                             "nullable": True,
-                            "title": "OfferExtraData",
+                            "title": "OfferExtraDataResponse",
                         },
                         "id": {"title": "Id", "type": "integer"},
                         "image": {
@@ -1357,9 +1357,9 @@ def test_public_api(client):
                             "type": "string",
                         },
                         "extraData": {
-                            "anyOf": [{"$ref": "#/components/schemas/OfferExtraData"}],
+                            "anyOf": [{"$ref": "#/components/schemas/OfferExtraDataResponse"}],
                             "nullable": True,
-                            "title": "OfferExtraData",
+                            "title": "OfferExtraDataResponse",
                         },
                         "id": {"title": "Id", "type": "integer"},
                         "images": {
