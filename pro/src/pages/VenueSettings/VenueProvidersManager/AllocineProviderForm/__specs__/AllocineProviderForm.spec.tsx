@@ -73,10 +73,15 @@ describe('AllocineProviderForm', () => {
   it('should display the quantity field with default value set to Illimité', async () => {
     await renderAllocineProviderForm(props)
 
-    const quantityField = screen.getByLabelText(/Nombre de places\/séance/)
+    const quantityField = screen.getByRole('spinbutton', {
+      name: /Nombre de places\/séance/,
+    })
     expect(quantityField).toBeInTheDocument()
-    expect(quantityField).toHaveAttribute('placeholder', 'Illimité')
-    expect(quantityField).toHaveAttribute('step', '1')
+    const unlimitedCheckbox = screen.getByRole('checkbox', {
+      name: /Illimité/,
+    })
+    expect(unlimitedCheckbox).toBeInTheDocument()
+    expect(unlimitedCheckbox).toBeChecked()
   })
 
   it('should display the isDuo checkbox checked by default on creation', async () => {
@@ -106,7 +111,9 @@ describe('AllocineProviderForm', () => {
     const priceField = screen.getByLabelText('Prix de vente/place *', {
       exact: false,
     })
-    const quantityField = screen.getByLabelText(/Nombre de places\/séance/)
+    const quantityField = screen.getByRole('spinbutton', {
+      name: /Nombre de places\/séance/,
+    })
     const isDuoCheckbox = screen.getByLabelText(/Accepter les réservations duo/)
 
     await userEvent.type(priceField, '10')
@@ -226,8 +233,8 @@ describe('AllocineProviderForm', () => {
     })
     expect(priceField).toHaveValue(15)
 
-    const quantityField = screen.getByLabelText(/Nombre de places\/séance/, {
-      exact: false,
+    const quantityField = screen.getByRole('spinbutton', {
+      name: /Nombre de places\/séance/,
     })
     expect(quantityField).toHaveValue(50)
 
@@ -283,7 +290,9 @@ describe('AllocineProviderForm', () => {
     }
     await renderAllocineProviderForm(props)
 
-    const quantityField = screen.getByLabelText(/Nombre de places\/séance/)
+    const quantityField = screen.getByRole('spinbutton', {
+      name: /Nombre de places\/séance/,
+    })
 
     await userEvent.clear(quantityField)
     await userEvent.type(quantityField, '-1')
@@ -305,7 +314,9 @@ describe('AllocineProviderForm', () => {
     const priceField = screen.getByLabelText('Prix de vente/place *', {
       exact: false,
     })
-    const quantityField = screen.getByLabelText(/Nombre de places\/séance/)
+    const quantityField = screen.getByRole('spinbutton', {
+      name: /Nombre de places\/séance/,
+    })
     const isDuoCheckbox = screen.getByLabelText(/Accepter les réservations duo/)
 
     await userEvent.clear(priceField)

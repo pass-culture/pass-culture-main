@@ -75,6 +75,10 @@ export const OptionsList = ({
                     onChange={() => {
                       selectOption(String(value))
                     }}
+                    className={cx(
+                      baseCheckboxStyles['base-checkbox-label'],
+                      styles['label']
+                    )}
                   />
                 ) : (
                   <span

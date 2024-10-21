@@ -185,6 +185,7 @@ export const InvoiceTable = ({ invoices }: InvoiceTableProps) => {
     <>
       <div className={styles['download-actions']} aria-live="polite">
         <BaseCheckbox
+          className={styles['download-all-checkbox']}
           label="Tout sélectionner"
           checked={allInvoicesChecked !== PartialCheck.UNCHECKED}
           partialCheck={allInvoicesChecked === PartialCheck.PARTIAL}

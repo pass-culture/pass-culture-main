@@ -25,14 +25,33 @@ export type FieldLayoutBaseProps = {
    */
   isLabelHidden?: boolean
   hasLabelLineBreak?: boolean
+  /**
+   * A flag to indicate that the field is optional.
+   * It will display an asterisk next to the label.
+   */
   isOptional?: boolean
   showMandatoryAsterisk?: boolean
+  /**
+   * A custom class for the field layout,
+   * where label, description, input, and footer are displayed.
+   */
   className?: string
   classNameLabel?: string
+  /**
+   * A custom class for the footer,
+   * where errors and character count are displayed.
+   */
   classNameFooter?: string
   classNameInput?: string
   filterVariant?: boolean
+  /**
+   * A flag to display a smaller label.
+   */
   smallLabel?: boolean
+  /**
+   * A flag to hide the footer.
+   * To be used with caution, as it can affect accessibility.
+   */
   hideFooter?: boolean
   inline?: boolean
   clearButtonProps?: React.ButtonHTMLAttributes<HTMLButtonElement> & {

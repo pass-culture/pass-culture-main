@@ -203,7 +203,9 @@ describe('screens:StocksEventEdition', () => {
     expect(
       screen.getByLabelText('Date limite de réservation *')
     ).toBeInTheDocument()
-    expect(screen.getByLabelText('Quantité restante *')).toBeInTheDocument()
+    expect(
+      screen.getByRole('spinbutton', { name: 'Quantité restante *' })
+    ).toBeInTheDocument()
 
     expect(screen.getAllByText('Réservations *')[0]).toBeInTheDocument()
 
@@ -404,7 +406,10 @@ describe('screens:StocksEventEdition', () => {
       stocks_count: apiStocks.length,
     })
 
-    await userEvent.type(screen.getByLabelText('Quantité restante *'), '30')
+    await userEvent.type(
+      screen.getByRole('spinbutton', { name: 'Quantité restante *' }),
+      '30'
+    )
     await userEvent.click(
       screen.getByRole('button', { name: 'Enregistrer les modifications' })
     )
@@ -567,7 +572,10 @@ describe('screens:StocksEventEdition', () => {
       STOCKS_PER_PAGE * 5 + 10,
       '?page=3'
     )
-    await userEvent.type(screen.getByLabelText('Quantité restante *'), '30')
+    await userEvent.type(
+      screen.getByRole('spinbutton', { name: 'Quantité restante *' }),
+      '30'
+    )
 
     // should block on next page
     await userEvent.click(screen.getByRole('button', { name: 'Page suivante' }))

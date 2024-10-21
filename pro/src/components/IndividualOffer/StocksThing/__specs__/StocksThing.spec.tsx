@@ -153,7 +153,11 @@ describe('screens:StocksThing', () => {
     expect(
       screen.getByLabelText('Date limite de réservation')
     ).toBeInTheDocument()
-    expect(screen.getByLabelText('Quantité')).toBeInTheDocument()
+    expect(
+      screen.getByRole('spinbutton', {
+        name: 'Quantité',
+      })
+    ).toBeInTheDocument()
   })
 
   it('should render digital stock thing', async () => {
@@ -350,7 +354,11 @@ describe('screens:StocksThing', () => {
       )
 
       await userEvent.click(screen.getByText('Valider'))
-      expect(screen.getByLabelText('Quantité')).toBeDisabled()
+      expect(
+        screen.getByRole('spinbutton', {
+          name: 'Quantité',
+        })
+      ).toBeDisabled()
 
       const priceInput = screen.getByLabelText('Prix *')
       await userEvent.clear(priceInput)
@@ -433,7 +441,11 @@ describe('screens:StocksThing', () => {
         contextValue
       )
 
-      expect(screen.getByLabelText('Quantité')).toBeDisabled()
+      expect(
+        screen.getByRole('spinbutton', {
+          name: 'Quantité',
+        })
+      ).toBeDisabled()
       const expirationInput = screen.getByLabelText("Date d'expiration *")
       expect(expirationInput).toBeDisabled()
       expect(expirationInput).toHaveValue('2020-12-15')
@@ -472,8 +484,8 @@ describe('screens:StocksThing', () => {
     async ({ value, expectedNumber }) => {
       await renderStockThingScreen([], props, contextValue)
 
-      const quantityInput = screen.getByLabelText('Quantité', {
-        exact: false,
+      const quantityInput = screen.getByRole('spinbutton', {
+        name: 'Quantité',
       })
       await userEvent.type(quantityInput, value)
       expect(quantityInput).toHaveValue(expectedNumber)
@@ -498,7 +510,12 @@ describe('screens:StocksThing', () => {
     })
 
     await renderStockThingScreen([], props, contextValue)
-    await userEvent.type(screen.getByLabelText('Quantité'), '20')
+    await userEvent.type(
+      screen.getByRole('spinbutton', {
+        name: 'Quantité',
+      }),
+      '20'
+    )
 
     await userEvent.click(screen.getByText('Go outside !'))
 
@@ -513,7 +530,12 @@ describe('screens:StocksThing', () => {
     })
 
     await renderStockThingScreen([], props, contextValue)
-    await userEvent.type(screen.getByLabelText('Quantité'), '20')
+    await userEvent.type(
+      screen.getByRole('spinbutton', {
+        name: 'Quantité',
+      }),
+      '20'
+    )
 
     await userEvent.click(screen.getByText('Go outside !'))
     expect(

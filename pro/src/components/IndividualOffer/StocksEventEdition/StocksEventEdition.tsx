@@ -45,6 +45,7 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 import { DialogBuilder } from 'ui-kit/DialogBuilder/DialogBuilder'
 import { BaseDatePicker } from 'ui-kit/form/DatePicker/BaseDatePicker'
 import { DatePicker } from 'ui-kit/form/DatePicker/DatePicker'
+import { QuantityInput } from 'ui-kit/form/QuantityInput/QuantityInput'
 import { Select } from 'ui-kit/form/Select/Select'
 import { SelectInput } from 'ui-kit/form/Select/SelectInput'
 import { TextInput } from 'ui-kit/form/TextInput/TextInput'
@@ -768,22 +769,19 @@ export const StocksEventEdition = ({
                             </td>
 
                             <td className={styles['data']}>
-                              <TextInput
+                              <QuantityInput
                                 smallLabel
-                                name={`stocks[${index}]remainingQuantity`}
+                                isLabelHidden
+                                hideFooter
                                 label={
                                   mode === OFFER_WIZARD_MODE.EDITION
                                     ? 'Quantité restante'
                                     : 'Quantité'
                                 }
-                                isLabelHidden
-                                placeholder="Illimité"
+                                name={`stocks[${index}].remainingQuantity`}
                                 disabled={readOnlyFields.includes(
                                   'remainingQuantity'
                                 )}
-                                type="number"
-                                hasDecimal={false}
-                                hideFooter
                               />
                             </td>
 
