@@ -59,7 +59,7 @@ class Returns201Test:
         assert not offer.product
 
     @override_features(WIP_EAN_CREATION=False)
-    def test_create_offer_cd_or_vinyl_without_product_venue_record_store_should_succeed(self, client):
+    def test_create_offer_cd_without_product_venue_record_store_should_succeed(self, client):
         venue = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.RECORD_STORE)
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
@@ -106,7 +106,7 @@ class Returns201Test:
         assert offer._description is None
         assert offer.description == product.description
 
-    def test_create_offer_other_than_CD_or_vinyl_without_EAN_code_should_succeed_for_record_store(self, client):
+    def test_create_offer_other_than_cd_without_EAN_code_should_succeed_for_record_store(self, client):
         venue = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.RECORD_STORE)
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
@@ -130,7 +130,7 @@ class Returns201Test:
         assert response_dict["productId"] is None
         assert offer.product is None
 
-    def test_create_offer_cd_or_vinyl_without_EAN_code_shoud_succeed_if_venue_is_not_record_store(self, client):
+    def test_create_offer_cd_without_EAN_code_shoud_succeed_if_venue_is_not_record_store(self, client):
         venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
@@ -154,7 +154,7 @@ class Returns201Test:
         assert response_dict["productId"] is None
         assert offer.product is None
 
-    def test_create_offer_record_store_cd_or_vinyl_with_valid_ean_code(self, client):
+    def test_create_offer_record_store_cd_with_valid_ean_code(self, client):
         venue = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.RECORD_STORE)
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
@@ -308,7 +308,7 @@ class Returns400Test:
         assert response.json["subcategory"] == ["La sous-catégorie de cette offre est inconnue"]
 
     @override_features(WIP_EAN_CREATION=True)
-    def test_fail_if_venue_is_record_store_offer_is_cd_or_vinyl_without_product(self, client):
+    def test_fail_if_venue_is_record_store_offer_is_cd_without_product(self, client):
         venue = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.RECORD_STORE)
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
@@ -325,7 +325,7 @@ class Returns400Test:
         assert response.json["ean"] == ["EAN non reconnu. Assurez-vous qu'il n'y ait pas d'erreur de saisie."]
 
     @override_features(WIP_EAN_CREATION=True)
-    def test_fail_if_venue_is_record_store_offer_is_cd_or_vinyl_with_unknown_product(self, client):
+    def test_fail_if_venue_is_record_store_offer_is_cd_with_unknown_product(self, client):
         venue = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.RECORD_STORE)
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
