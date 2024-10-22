@@ -252,7 +252,7 @@ class TiteliveSearch(abc.ABC, typing.Generic[TiteliveWorkType]):
         """
         product_mediations = offers_models.ProductMediation.query.filter(
             offers_models.ProductMediation.productId == product.id,
-            offers_models.ProductMediation.lastProvider == self.provider,  # pylint: disable=comparison-with-callable
+            offers_models.ProductMediation.lastProvider == self.provider,
         )
         for product_mediation in product_mediations:
             db.session.delete(product_mediation)

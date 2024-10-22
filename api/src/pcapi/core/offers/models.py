@@ -129,14 +129,17 @@ class TiteliveImageType(enum.Enum):
     VERSO = "verso"
 
 
-class ProductMediation(PcObject, Base, Model, ProvidableMixin):
+class ProductMediation(PcObject, Base, Model):
     __tablename__ = "product_mediation"
 
+    dateModifiedAtLastProvider = sa.Column(sa.DateTime, nullable=True, default=datetime.datetime.utcnow)
+    imageType = sa.Column(sa.Enum(TiteliveImageType), nullable=False)
+    lastProviderId = sa.Column(sa.BigInteger, sa.ForeignKey("provider.id"), nullable=True)
+    lastProvider: "Provider|None" = sa.orm.relationship("Provider", foreign_keys=[lastProviderId])
     productId: int = sa.Column(
         sa.BigInteger, sa.ForeignKey("product.id", ondelete="CASCADE"), index=True, nullable=False
     )
     url: str = sa.Column(sa.String(255), nullable=False, unique=True)
-    imageType = sa.Column(sa.Enum(TiteliveImageType), nullable=False)
 
 
 class GcuCompatibilityType(enum.Enum):
