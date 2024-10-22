@@ -167,7 +167,7 @@ describe('DetailsEanSearch', () => {
         it('should display a (cumulative) error message that cannot be cleared on new inputs', async () => {
           renderDetailsEanSearch({
             isDirtyDraftOffer: true,
-            subcategoryId: 'SUPPORT_PHYSIQUE_MUSIQUE_VINYLE',
+            subcategoryId: 'SUPPORT_PHYSIQUE_MUSIQUE_CD',
           })
 
           // Input is now required.
@@ -183,7 +183,7 @@ describe('DetailsEanSearch', () => {
         it('should let the submit button enabled', async () => {
           renderDetailsEanSearch({
             isDirtyDraftOffer: true,
-            subcategoryId: 'SUPPORT_PHYSIQUE_MUSIQUE_VINYLE',
+            subcategoryId: 'SUPPORT_PHYSIQUE_MUSIQUE_CD',
           })
 
           await userEvent.type(getInput(), '9781234567897')
