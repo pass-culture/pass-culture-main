@@ -464,7 +464,6 @@ class AlgoliaBackend(base.SearchBackend):
         distinct = (
             str(extra_data.get("allocineId", "")) or extra_data.get("visa") or extra_data.get("ean") or str(offer.id)
         )
-        distinct += extra_data.get("diffusionVersion") or ""
 
         music_type_label = None
         music_type = (extra_data.get("musicType") or "").strip()
