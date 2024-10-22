@@ -20,13 +20,8 @@ if TYPE_CHECKING:
 
 @declarative_mixin
 class ProvidableMixin:
-    @declared_attr
-    def lastProviderId(cls) -> Mapped[int | None]:  # pylint: disable=no-self-argument
-        return Column(BigInteger, ForeignKey("provider.id"), nullable=True)
-
-    @declared_attr
-    def lastProvider(cls) -> Mapped["Provider | None"]:  # pylint: disable=no-self-argument
-        return relationship("Provider", foreign_keys=[cls.lastProviderId])
+    lastProviderId = Column(BigInteger, ForeignKey("provider.id"), nullable=True)
+    lastProvider: "Provider|None" = relationship("Provider", foreign_keys=[lastProviderId])
 
     idAtProviders = Column(
         String(70),
