@@ -626,7 +626,6 @@ def check_product_for_venue_and_subcategory(
 
     if subcategory_id not in [
         subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
-        subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id,
     ]:
         return
     if product is not None:
