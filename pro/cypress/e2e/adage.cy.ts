@@ -182,6 +182,14 @@ describe('ADAGE discovery', () => {
           },
         })
     ).as('searchOfferTemplate')
+    cy.intercept({
+      method: 'DELETE',
+      url: '/adage-iframe/collective/template/**/favorites',
+    }).as('delete_fav')
+    cy.intercept({
+      method: 'POST',
+      url: '/adage-iframe/logs/fav-offer/',
+    }).as('fav-offer')
   })
 
   it('It should put an offer in favorite', () => {
@@ -194,10 +202,6 @@ describe('ADAGE discovery', () => {
 
     cy.stepLog({ message: 'I add first offer to favorites' })
     cy.findByText(offerName).parent().click()
-    cy.intercept({
-      method: 'POST',
-      url: '/adage-iframe/logs/fav-offer/',
-    }).as('fav-offer')
     cy.findByTestId('favorite-inactive').click()
     cy.wait('@fav-offer', { responseTimeout: 30 * 1000 })
       .its('response.statusCode')
@@ -212,10 +216,6 @@ describe('ADAGE discovery', () => {
     cy.contains(offerName).should('be.visible')
 
     cy.stepLog({ message: 'we can remove it from favorites' })
-    cy.intercept({
-      method: 'DELETE',
-      url: '/adage-iframe/collective/template/**/favorites',
-    }).as('delete_fav')
     cy.findByTestId('favorite-active').click()
     cy.wait('@delete_fav').its('response.statusCode').should('eq', 204)
     cy.findByTestId('global-notification-success').should(

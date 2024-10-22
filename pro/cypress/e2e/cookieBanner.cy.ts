@@ -1,10 +1,3 @@
-function homePageLoaded(): void {
-  cy.findByText('Bienvenue dans l’espace acteurs culturels')
-  cy.findByText('Vos adresses')
-  cy.findByText('Ajouter un lieu')
-  cy.findAllByTestId('spinner').should('not.exist')
-}
-
 describe('Cookie management with no login', () => {
   beforeEach(() => {
     cy.visit('/connexion')
@@ -242,3 +235,10 @@ describe('Cookie management with login', () => {
     cy.get('#orejime-app-item-beamer').should('not.be.checked')
   })
 })
+
+function homePageLoaded(): void {
+  cy.findByText('Bienvenue dans l’espace acteurs culturels')
+  cy.findByText('Vos adresses')
+  cy.findByText('Ajouter un lieu')
+  cy.findAllByTestId('spinner').should('not.exist')
+}

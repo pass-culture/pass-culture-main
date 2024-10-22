@@ -79,6 +79,14 @@ describe('Signup journey with new venue', () => {
         })
     ).as('search1Address')
     cy.intercept({ method: 'GET', url: '/offerers/names' }).as('getOfferers')
+    cy.intercept({
+      method: 'GET',
+      url: '/venue-types',
+      times: 1,
+    }).as('venue-types')
+    cy.intercept({ method: 'POST', url: '/offerers/new', times: 1 }).as(
+      'createOfferer'
+    )
   })
 
   it('Should sign up with a new account, create a new offerer with an unknown SIRET', () => {
@@ -113,11 +121,7 @@ describe('Signup journey with new venue', () => {
     cy.stepLog({ message: 'I fill identification form with a public name' })
     cy.url().should('contain', '/parcours-inscription/identification')
     cy.findByLabelText('Nom public').type('First Venue')
-    cy.intercept({
-      method: 'GET',
-      url: '/venue-types',
-      times: 1,
-    }).as('venue-types')
+
     cy.findByText('Étape suivante').click()
     cy.wait('@venue-types').its('response.statusCode').should('eq', 200)
 
@@ -143,9 +147,7 @@ describe('Signup journey with new venue', () => {
     cy.url().should('contain', '/parcours-inscription/validation')
 
     cy.stepLog({ message: 'I validate the registration' })
-    cy.intercept({ method: 'POST', url: '/offerers/new', times: 1 }).as(
-      'createOfferer'
-    )
+
     cy.findByText('Valider et créer ma structure').click()
     cy.wait('@createOfferer')
 
@@ -197,7 +199,18 @@ describe('Signup journey with known venue', () => {
           body: addressInterceptionPayload,
         })
     ).as('search1Address')
+    cy.intercept(
+      'GET',
+      'https://api-adresse.data.gouv.fr/search/?limit=5&q=*'
+    ).as('search5Address')
     cy.intercept({ method: 'GET', url: '/offerers/names' }).as('getOfferers')
+    cy.intercept({
+      method: 'GET',
+      url: '/venue-types',
+      times: 1,
+    }).as('venue-types')
+    cy.intercept({ method: 'POST', url: '/offerers/new' }).as('createOfferer')
+    cy.intercept({ method: 'POST', url: '/offerers' }).as('postOfferers')
   })
 
   it('Should sign up with a new account and a known offerer, create a new offerer in the space', () => {
@@ -231,10 +244,7 @@ describe('Signup journey with known venue', () => {
 
     cy.stepLog({ message: 'I add a new offerer' })
     cy.url().should('contain', '/parcours-inscription/structure/rattachement')
-    cy.intercept(
-      'GET',
-      'https://api-adresse.data.gouv.fr/search/?limit=5&q=*'
-    ).as('search5Address')
+
     cy.findByText('Ajouter une nouvelle structure').click()
     cy.wait('@search5Address')
 
@@ -245,19 +255,11 @@ describe('Signup journey with known venue', () => {
       'val',
       '89 Rue la Boétie 75008 Pari'
     ) // To avoid being spammed by address search on each chars typed
-    cy.intercept(
-      'GET',
-      'https://api-adresse.data.gouv.fr/search/?limit=5&q=*'
-    ).as('search5Address')
+
     cy.findByLabelText('Adresse postale *').type('s') // previous search was too fast, this one raises suggestions
     cy.wait('@search5Address')
     cy.findByRole('option', { name: '89 Rue la Boétie 75008 Paris' }).click()
 
-    cy.intercept({
-      method: 'GET',
-      url: '/venue-types',
-      times: 1,
-    }).as('venue-types')
     cy.findByText('Étape suivante').click()
     cy.wait('@venue-types').its('response.statusCode').should('eq', 200)
 
@@ -286,9 +288,7 @@ describe('Signup journey with known venue', () => {
     cy.url().should('contain', '/parcours-inscription/validation')
 
     cy.stepLog({ message: 'I validate the registration' })
-    cy.intercept({ method: 'POST', url: '/offerers/new', times: 1 }).as(
-      'createOfferer'
-    )
+
     cy.findByText('Valider et créer ma structure').click()
     cy.wait('@createOfferer')
 
@@ -340,7 +340,7 @@ describe('Signup journey with known venue', () => {
 
     cy.stepLog({ message: 'I chose to join the space' })
     cy.contains('Rejoindre cet espace').click()
-    cy.intercept({ method: 'POST', url: '/offerers' }).as('postOfferers')
+
     cy.findByTestId('confirm-dialog-button-confirm').click()
     cy.wait('@postOfferers').its('response.statusCode').should('eq', 201)
     cy.contains('Accéder à votre espace').click()
