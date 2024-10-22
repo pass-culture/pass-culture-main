@@ -44,7 +44,6 @@ describe('setInitialFormValues', () => {
       venueLabel: '',
       venueType: 'Centre culturel',
       withdrawalDetails: '',
-      isWithdrawalAppliedOnAllOffers: false,
     }
 
     expect(formValues).toEqual(expectedFormValues)
@@ -92,7 +91,6 @@ describe('setInitialFormValues', () => {
       venueLabel: '',
       venueType: 'Centre culturel',
       withdrawalDetails: '',
-      isWithdrawalAppliedOnAllOffers: false,
     }
 
     expect(formValues).toEqual(expectedFormValues)
