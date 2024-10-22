@@ -11,6 +11,9 @@ describe('Financial Management - messages, links to external help page, reimburs
       login = response.body.user.email
     })
     cy.intercept({ method: 'GET', url: '/offerers/*' }).as('getOfferers')
+    cy.intercept({ method: 'PATCH', url: 'offerers/*/bank-accounts/*' }).as(
+      'patchBankAccount'
+    )
   })
 
   it('Check messages, reimbursement details and offerer selection change', () => {
@@ -213,17 +216,13 @@ describe('Financial Management - messages, links to external help page, reimburs
       cy.findByText('Rattacher un lieu').click()
     })
 
-    cy.intercept({ method: 'PATCH', url: 'offerers/*/bank-accounts/*' }).as(
-      'patchOfferer'
-    )
-
     cy.findByRole('dialog').within(() => {
       cy.findByLabelText(venue).should('not.be.checked')
       cy.findByLabelText(venue).check()
 
       cy.findByText('Enregistrer').click()
     })
-    cy.wait(['@getOfferers', '@patchOfferer']).then((interception) => {
+    cy.wait(['@getOfferers', '@patchBankAccount']).then((interception) => {
       if (interception[0].response) {
         expect(interception[0].response.statusCode).to.equal(200)
       }

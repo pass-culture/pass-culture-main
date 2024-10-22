@@ -2,7 +2,6 @@ import { addDays, format } from 'date-fns'
 
 describe('Desk (Guichet) feature', () => {
   let login: string
-  const password = 'user@AZERTY123'
 
   beforeEach(() => {
     cy.visit('/connexion')
@@ -15,16 +14,7 @@ describe('Desk (Guichet) feature', () => {
   })
 
   it('I should see help information on desk page', () => {
-    cy.stepLog({ message: 'I am logged in with account' })
-    cy.login({
-      email: login,
-      password: password,
-      redirectUrl: '/',
-    })
-
-    cy.stepLog({ message: 'I go to the "Guichet" page' })
-    cy.findAllByText('Guichet').first().click()
-    cy.url().should('contain', '/guichet')
+    goToDeskPage(login)
 
     cy.stepLog({ message: 'The identity check message is displayed' })
     cy.findByText(
@@ -49,16 +39,7 @@ describe('Desk (Guichet) feature', () => {
   })
 
   it('Should validate a countermark', () => {
-    cy.stepLog({ message: 'I am logged in with account' })
-    cy.login({
-      email: login,
-      password: password,
-      redirectUrl: '/',
-    })
-
-    cy.stepLog({ message: 'I go to the "Guichet" page' })
-    cy.findAllByText('Guichet').first().click()
-    cy.url().should('contain', '/guichet')
+    goToDeskPage(login)
 
     cy.stepLog({ message: 'I add this countermark "2XTM3W"' })
     cy.findByLabelText('Contremarque').type('2XTM3W')
@@ -72,16 +53,7 @@ describe('Desk (Guichet) feature', () => {
   })
 
   it('It should decline a non-valid countermark', () => {
-    cy.stepLog({ message: 'I am logged in with account' })
-    cy.login({
-      email: login,
-      password: password,
-      redirectUrl: '/',
-    })
-
-    cy.stepLog({ message: 'I go to the "Guichet" page' })
-    cy.findAllByText('Guichet').first().click()
-    cy.url().should('contain', '/guichet')
+    goToDeskPage(login)
 
     cy.stepLog({ message: 'I add this countermark "XXXXXX"' })
     cy.findByLabelText('Contremarque').type('XXXXXX')
@@ -95,16 +67,7 @@ describe('Desk (Guichet) feature', () => {
   })
 
   it('It should decline an event countermark more than 48h before', () => {
-    cy.stepLog({ message: 'I am logged in with account' })
-    cy.login({
-      email: login,
-      password: password,
-      redirectUrl: '/',
-    })
-
-    cy.stepLog({ message: 'I go to the "Guichet" page' })
-    cy.findAllByText('Guichet').first().click()
-    cy.url().should('contain', '/guichet')
+    goToDeskPage(login)
 
     cy.stepLog({ message: 'I add this countermark "TOSOON"' })
     cy.findByLabelText('Contremarque').type('TOSOON')
@@ -121,16 +84,7 @@ describe('Desk (Guichet) feature', () => {
   })
 
   it('Should invalidate a already used countermark', () => {
-    cy.stepLog({ message: 'I am logged in with account' })
-    cy.login({
-      email: login,
-      password: password,
-      redirectUrl: '/',
-    })
-
-    cy.stepLog({ message: 'I go to the "Guichet" page' })
-    cy.findAllByText('Guichet').first().click()
-    cy.url().should('contain', '/guichet')
+    goToDeskPage(login)
 
     cy.stepLog({ message: 'I add this countermark "XUSEDX"' })
     cy.findByLabelText('Contremarque').type('XUSEDX')
@@ -145,16 +99,7 @@ describe('Desk (Guichet) feature', () => {
   })
 
   it('Should not be able to validate an other pro countermark', () => {
-    cy.stepLog({ message: 'I am logged in with account' })
-    cy.login({
-      email: login,
-      password: password,
-      redirectUrl: '/',
-    })
-
-    cy.stepLog({ message: 'I go to the "Guichet" page' })
-    cy.findAllByText('Guichet').first().click()
-    cy.url().should('contain', '/guichet')
+    goToDeskPage(login)
 
     cy.stepLog({ message: 'I add this countermark "OTHERX"' })
     cy.findByLabelText('Contremarque').type('OTHERX')
@@ -167,16 +112,7 @@ describe('Desk (Guichet) feature', () => {
   })
 
   it('Should not be able to validate a cancelled countermark', () => {
-    cy.stepLog({ message: 'I am logged in with account' })
-    cy.login({
-      email: login,
-      password: password,
-      redirectUrl: '/',
-    })
-
-    cy.stepLog({ message: 'I go to the "Guichet" page' })
-    cy.findAllByText('Guichet').first().click()
-    cy.url().should('contain', '/guichet')
+    goToDeskPage(login)
 
     cy.stepLog({ message: 'I add this countermark "CANCEL"' })
     cy.findByLabelText('Contremarque').type('CANCEL')
@@ -187,16 +123,7 @@ describe('Desk (Guichet) feature', () => {
   })
 
   it('Should not be able to validate a reimbursed countermark', () => {
-    cy.stepLog({ message: 'I am logged in with account' })
-    cy.login({
-      email: login,
-      password: password,
-      redirectUrl: '/',
-    })
-
-    cy.stepLog({ message: 'I go to the "Guichet" page' })
-    cy.findAllByText('Guichet').first().click()
-    cy.url().should('contain', '/guichet')
+    goToDeskPage(login)
 
     cy.stepLog({ message: 'I add this countermark "REIMBU"' })
     cy.findByLabelText('Contremarque').type('REIMBU')
@@ -206,3 +133,18 @@ describe('Desk (Guichet) feature', () => {
     cy.findByText('Cette réservation a été remboursée')
   })
 })
+
+function goToDeskPage(login: string) {
+  const password = 'user@AZERTY123'
+
+  cy.stepLog({ message: 'I am logged in with account' })
+  cy.login({
+    email: login,
+    password: password,
+    redirectUrl: '/',
+  })
+
+  cy.stepLog({ message: 'I go to the "Guichet" page' })
+  cy.findAllByText('Guichet').first().click()
+  cy.url().should('contain', '/guichet')
+}

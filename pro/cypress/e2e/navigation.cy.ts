@@ -2,7 +2,7 @@ describe('Navigation', () => {
   let login = ''
   const password = 'user@AZERTY123'
 
-  before(() => {
+  beforeEach(() => {
     cy.visit('/connexion')
     cy.request({
       method: 'GET',

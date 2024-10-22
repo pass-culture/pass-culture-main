@@ -1,46 +1,5 @@
 import { addDays, format } from 'date-fns'
 
-function expectOffersAreFound(expectedResults: Array<Array<string>>) {
-  for (let rowLine = 0; rowLine < expectedResults.length - 1; rowLine++) {
-    const offerLineArray = expectedResults[rowLine + 1]
-
-    cy.findAllByTestId('offer-item-row')
-      .eq(rowLine)
-      .within(() => {
-        cy.get('td').then(($elt) => {
-          for (let column = 0; column < 5; column++) {
-            cy.wrap($elt)
-              .eq(column)
-              .then((cellValue) => {
-                if (cellValue.text().length && offerLineArray[column].length) {
-                  return cy
-                    .wrap(cellValue)
-                    .should('contain.text', offerLineArray[column])
-                } else {
-                  return true
-                }
-              })
-          }
-        })
-      })
-  }
-}
-
-function IGoToCollectivePage(login: string) {
-  const password = 'user@AZERTY123'
-
-  cy.stepLog({ message: 'I am logged in' })
-  cy.login({
-    email: login,
-    password: password,
-    redirectUrl: '/',
-  })
-  cy.findAllByTestId('spinner').should('not.exist')
-
-  cy.stepLog({ message: 'I open the "reservations/collectives" page' })
-  cy.visit('/reservations/collectives')
-}
-
 describe('Search for collective bookings', () => {
   let login: string
 
@@ -178,3 +137,44 @@ describe('Search for collective bookings', () => {
     expectOffersAreFound(expectedResults)
   })
 })
+
+function expectOffersAreFound(expectedResults: Array<Array<string>>) {
+  for (let rowLine = 0; rowLine < expectedResults.length - 1; rowLine++) {
+    const offerLineArray = expectedResults[rowLine + 1]
+
+    cy.findAllByTestId('offer-item-row')
+      .eq(rowLine)
+      .within(() => {
+        cy.get('td').then(($elt) => {
+          for (let column = 0; column < 5; column++) {
+            cy.wrap($elt)
+              .eq(column)
+              .then((cellValue) => {
+                if (cellValue.text().length && offerLineArray[column].length) {
+                  return cy
+                    .wrap(cellValue)
+                    .should('contain.text', offerLineArray[column])
+                } else {
+                  return true
+                }
+              })
+          }
+        })
+      })
+  }
+}
+
+function IGoToCollectivePage(login: string) {
+  const password = 'user@AZERTY123'
+
+  cy.stepLog({ message: 'I am logged in' })
+  cy.login({
+    email: login,
+    password: password,
+    redirectUrl: '/',
+  })
+  cy.findAllByTestId('spinner').should('not.exist')
+
+  cy.stepLog({ message: 'I open the "reservations/collectives" page' })
+  cy.visit('/reservations/collectives')
+}
