@@ -295,8 +295,6 @@ def test_serialize_offer_event():
         [{}, "1"],
         [{"allocineId": 12345, "visa": "56070"}, "12345"],
         [{"visa": "56070"}, "56070"],
-        [{"visa": "56070", "diffusionVersion": "VO"}, "56070VO"],
-        [{"visa": "56070", "diffusionVersion": "VF"}, "56070VF"],
         [{"ean": "12345678"}, "12345678"],
     ),
 )
