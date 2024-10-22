@@ -1,5 +1,6 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { expect } from 'vitest'
 
 import { api } from 'apiClient/api'
 import { VenueTypeResponseModel } from 'apiClient/v1'
@@ -62,7 +63,6 @@ const renderForm = async (options?: RenderWithProvidersOptions) => {
         bookingEmail: 'contact@lieuexemple.com',
         city: 'Ville Exemple',
         comment: 'Un lieu populaire pour les concerts et les événements',
-        isWithdrawalAppliedOnAllOffers: true,
         latitude: '48.8566',
         longitude: '2.3522',
         coords: '48.8566, 2.3522',
@@ -183,22 +183,6 @@ describe('VenueSettingsScreen', () => {
     expect(emailField).toHaveValue('contact@lieuexemple.com')
   })
 
-  it('should display the withdrawal confirm dialog when submitting with the box checked', async () => {
-    await renderForm()
-
-    await userEvent.type(
-      screen.getByLabelText('Informations de retrait'),
-      'Nouvelle infos de retrait'
-    )
-    await userEvent.click(screen.getByText('Enregistrer'))
-
-    expect(
-      screen.getByText(
-        'Souhaitez-vous prévenir les bénéficiaires de la modification des modalités de retrait ?'
-      )
-    ).toBeInTheDocument()
-  })
-
   it('should render with manual address fields when WIP_ENABLE_OFFER_ADDRESS feature is enabled', async () => {
     await renderForm({ features: ['WIP_ENABLE_OFFER_ADDRESS'] })
 
@@ -253,13 +237,11 @@ describe('VenueSettingsScreen', () => {
       comment: 'Un lieu populaire pour les concerts et les événements',
       isEmailAppliedOnAllOffers: true,
       isManualEdition: undefined,
-      isWithdrawalAppliedOnAllOffers: true,
       latitude: '48.8566',
       longitude: '2.3522',
       name: 'Lieu Exemple',
       postalCode: '75001',
       publicName: 'Lieu Exemple Public Updated',
-      shouldSendMail: false,
       street: '123 Rue Principale',
       venueLabelId: NaN,
       venueTypeCode: 'Théâtre',

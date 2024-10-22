@@ -34,6 +34,5 @@ export const setInitialFormValues = ({
     venueLabel: venue.venueLabelId?.toString() || '',
     venueType: venue.venueTypeCode,
     withdrawalDetails: venue.withdrawalDetails || '',
-    isWithdrawalAppliedOnAllOffers: false,
   }
 }
