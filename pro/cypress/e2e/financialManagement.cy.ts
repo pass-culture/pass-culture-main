@@ -11,7 +11,6 @@ describe('Financial Management - messages, links to external help page, reimburs
       login = response.body.user.email
     })
     cy.intercept({ method: 'GET', url: '/offerers/*' }).as('getOfferers')
-    cy.intercept({ method: 'GET', url: '/offerers/*/bank-accounts' }).as('getOfferersBankAccounts')
   })
 
   it('Check messages, reimbursement details and offerer selection change', () => {
@@ -140,10 +139,14 @@ describe('Financial Management - messages, links to external help page, reimburs
       password: password,
       redirectUrl: '/',
     })
+    cy.findByTestId('offerer-select')
+    cy.wait('@getOfferers').its('response.statusCode').should('equal', 200)
+    cy.findAllByTestId('spinner').should('not.exist')
 
     cy.stepLog({
       message: 'I select offerer "Structure avec informations bancaires"',
     })
+
     cy.findByTestId('offerer-select').click()
     cy.findByText(/Changer de structure/).click()
     cy.findByTestId('offerers-selection-menu')
@@ -159,6 +162,7 @@ describe('Financial Management - messages, links to external help page, reimburs
 
     cy.stepLog({ message: 'I go to "Informations bancaires" view' })
     cy.findByText('Informations bancaires').click()
+    cy.findAllByTestId('spinner').should('not.exist')
 
     cy.stepLog({
       message: 'I remove "Mon Lieu" venue from my bank account',
@@ -166,13 +170,17 @@ describe('Financial Management - messages, links to external help page, reimburs
     const venue = 'Mon Lieu'
     cy.findByText('Aucun lieu n’est rattaché à ce compte bancaire.')
     cy.findByText('Rattacher un lieu').click()
-    cy.findByText(venue).click()
-    cy.findByText('Enregistrer').click()
+
+    cy.findByRole('dialog').within(() => {
+      cy.findByText(venue).click()
+      cy.findByText('Enregistrer').click()
+    })
+    cy.wait('@getOfferers').its('response.statusCode').should('equal', 200)
+    cy.findByRole('dialog').should('not.exist')
 
     cy.findByTestId('reimbursement-bank-account-linked-venues').within(() => {
       cy.contains('Lieu(x) rattaché(s) à ce compte bancaire')
       cy.contains(venue)
-
       cy.findByText('Modifier').click()
     })
 
@@ -180,9 +188,13 @@ describe('Financial Management - messages, links to external help page, reimburs
       cy.findByLabelText(venue).should('be.checked')
       cy.findByLabelText(venue).uncheck()
       cy.findByText('Enregistrer').click()
+      cy.contains(
+        'Attention : le ou les lieux désélectionnés ne seront plus remboursés sur ce compte bancaire'
+      )
       cy.findByText('Confirmer').click()
-      cy.wait('@getOfferersBankAccounts').its('response.statusCode').should('equal', 200)
     })
+    cy.wait('@getOfferers').its('response.statusCode').should('equal', 200)
+    cy.findByRole('dialog').should('not.exist')
 
     cy.stepLog({ message: 'no venue should be linked to my account' })
     cy.findAllByTestId('global-notification-success').should(
@@ -211,7 +223,15 @@ describe('Financial Management - messages, links to external help page, reimburs
 
       cy.findByText('Enregistrer').click()
     })
-    cy.wait('@patchOfferer').its('response.statusCode').should('equal', 204)
+    cy.wait(['@getOfferers', '@patchOfferer']).then((interception) => {
+      if (interception[0].response) {
+        expect(interception[0].response.statusCode).to.equal(200)
+      }
+      if (interception[1].response) {
+        expect(interception[1].response.statusCode).to.equal(204)
+      }
+    })
+    cy.findByRole('dialog').should('not.exist')
 
     cy.stepLog({
       message: '"Mon Lieu" venue should be linked to my account',
