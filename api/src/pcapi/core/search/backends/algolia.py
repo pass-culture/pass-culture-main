@@ -12,7 +12,6 @@ import algoliasearch.http.requester
 import algoliasearch.search_client
 from flask import current_app
 import redis
-import sqlalchemy as sa
 
 from pcapi import settings
 from pcapi.core.categories import categories
@@ -483,20 +482,6 @@ class AlgoliaBackend(base.SearchBackend):
             except (ValueError, KeyError, TypeError):
                 logger.warning("bad show type encountered", extra={"offer": offer.id, "show_type": show_type})
 
-        macro_section = None
-        section = (extra_data.get("rayon") or "").strip().lower()
-        if section:
-            try:
-                macro_section = (
-                    offers_models.BookMacroSection.query.filter(
-                        sa.func.lower(offers_models.BookMacroSection.section) == section
-                    )
-                    .with_entities(offers_models.BookMacroSection.macroSection)
-                    .scalar()
-                ).strip()
-            except AttributeError:
-                macro_section = None
-
         gtl_id = extra_data.get("gtl_id")
         gtl = titelive_gtl.get_gtl(gtl_id) if gtl_id else None
 
@@ -537,7 +522,6 @@ class AlgoliaBackend(base.SearchBackend):
             "offer": {
                 "allocineId": extra_data.get("allocineId"),
                 "artist": artist.strip() or None,
-                "bookMacroSection": macro_section,
                 "dateCreated": date_created,
                 "dates": sorted(dates),
                 "description": remove_stopwords(offer.description or ""),

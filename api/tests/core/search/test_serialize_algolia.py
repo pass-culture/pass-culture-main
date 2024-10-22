@@ -28,17 +28,6 @@ pytestmark = pytest.mark.usefixtures("db_session")
 @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
 @time_machine.travel("2024-01-01T00:00:00", tick=False)
 def test_serialize_offer():
-    rayon = "Policier / Thriller format poche"  # fetched from provider
-
-    # known values (inserted using a migration)
-    # note: some might contain trailing whitespaces. Also sections are
-    # usually lowercase whilst sections from providers might be
-    # capitalized.
-    book_macro_section = offers_models.BookMacroSection.query.filter_by(
-        section="policier / thriller format poche"
-    ).one()
-    macro_section = book_macro_section.macroSection.strip()
-
     offerer_address = offerers_factories.OffererAddressFactory(
         address__departmentCode="86",
         address__postalCode="86140",
@@ -54,7 +43,6 @@ def test_serialize_offer():
             "performer": "Performer",
             "speaker": "Speaker",
             "stageDirector": "Stage Director",
-            "rayon": rayon,
         },
         rankingWeight=2,
         subcategoryId=subcategories.LIVRE_PAPIER.id,
@@ -72,7 +60,6 @@ def test_serialize_offer():
         "objectID": offer.id,
         "offer": {
             "artist": "Author Performer Speaker Stage Director",
-            "bookMacroSection": macro_section,
             "dateCreated": offer.dateCreated.timestamp(),
             "dates": [],
             "description": "livre bien lire",
@@ -128,17 +115,6 @@ def test_serialize_offer():
 @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
 @time_machine.travel("2024-01-01T00:00:00", tick=False)
 def test_serialize_offer_legacy():
-    rayon = "Policier / Thriller format poche"  # fetched from provider
-
-    # known values (inserted using a migration)
-    # note: some might contain trailing whitespaces. Also sections are
-    # usually lowercase whilst sections from providers might be
-    # capitalized.
-    book_macro_section = offers_models.BookMacroSection.query.filter_by(
-        section="policier / thriller format poche"
-    ).one()
-    macro_section = book_macro_section.macroSection.strip()
-
     offer = offers_factories.OfferFactory(
         dateCreated=datetime.datetime(2022, 1, 1, 10, 0, 0),
         name="Titre formidable",
@@ -149,7 +125,6 @@ def test_serialize_offer_legacy():
             "performer": "Performer",
             "speaker": "Speaker",
             "stageDirector": "Stage Director",
-            "rayon": rayon,
         },
         rankingWeight=2,
         subcategoryId=subcategories.LIVRE_PAPIER.id,
@@ -167,7 +142,6 @@ def test_serialize_offer_legacy():
         "objectID": offer.id,
         "offer": {
             "artist": "Author Performer Speaker Stage Director",
-            "bookMacroSection": macro_section,
             "dateCreated": offer.dateCreated.timestamp(),
             "dates": [],
             "description": "livre bien lire",
@@ -231,10 +205,6 @@ def test_serialize_offer_legacy():
         ({"genres": ["ADVENTURE", "DRAMA", "FAMILY"]}, None, None, ["ADVENTURE", "DRAMA", "FAMILY"], None),
         ({"genres": []}, None, None, [], None),
         ({"genres": None}, None, None, None, None),
-        ({"rayon": "documentaire jeunesse histoire"}, None, None, None, "Jeunesse"),
-        ({"rayon": "petits prix"}, None, None, None, "Littérature française"),
-        ({"rayon": "ce rayon n'existe pas"}, None, None, None, None),
-        ({"rayon": None}, None, None, None, None),
     ),
 )
 def test_serialize_offer_extra_data(
@@ -250,7 +220,6 @@ def test_serialize_offer_extra_data(
     assert serialized["offer"].get("musicType") == expected_music_style
     assert serialized["offer"].get("showType") == expected_show_type
     assert serialized["offer"].get("movieGenres") == expected_movie_genres
-    assert serialized["offer"].get("bookMacroSection") == expected_macro_section
 
 
 @override_settings(ALGOLIA_LAST_30_DAYS_BOOKINGS_RANGE_THRESHOLDS=[1, 2, 3, 4])
