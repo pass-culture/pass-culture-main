@@ -29,7 +29,7 @@ import { DetailsSubForm } from './DetailsSubForm/DetailsSubForm'
 import { Subcategories } from './Subcategories/Subcategories'
 import { SuggestedSubcategories } from './SuggestedSubcategories/SuggestedSubcategories'
 import { DetailsFormValues } from './types'
-import { buildVenueOptions, isSubCategoryCDOrVinyl } from './utils'
+import { buildVenueOptions, isSubCategoryCD } from './utils'
 
 const DEBOUNCE_TIME_BEFORE_REQUEST = 400
 
@@ -265,7 +265,7 @@ export const DetailsForm = ({
             <DetailsSubForm
               isEanSearchDisplayed={isEanSearchDisplayed}
               isProductBased={isProductBased}
-              isOfferCDOrVinyl={isSubCategoryCDOrVinyl(subcategoryId)}
+              isOfferCD={isSubCategoryCD(subcategoryId)}
               readOnlyFields={readOnlyFields}
               onImageUpload={onImageUpload}
               onImageDelete={onImageDelete}

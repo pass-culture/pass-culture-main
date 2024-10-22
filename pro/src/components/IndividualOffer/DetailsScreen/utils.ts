@@ -17,11 +17,8 @@ import { computeVenueDisplayName } from 'repository/venuesService'
 import { DEFAULT_DETAILS_FORM_VALUES } from './constants'
 import { DetailsFormValues } from './types'
 
-export const isSubCategoryCDOrVinyl = (subcategoryId: string): boolean => {
-  return (
-    subcategoryId === SubcategoryIdEnum.SUPPORT_PHYSIQUE_MUSIQUE_CD ||
-    subcategoryId === SubcategoryIdEnum.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE
-  )
+export const isSubCategoryCD = (subcategoryId: string): boolean => {
+  return subcategoryId === SubcategoryIdEnum.SUPPORT_PHYSIQUE_MUSIQUE_CD
 }
 
 export const hasMusicType = (
