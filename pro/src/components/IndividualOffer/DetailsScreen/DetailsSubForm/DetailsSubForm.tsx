@@ -37,7 +37,7 @@ export const ARTISTIC_INFORMATION_FIELDS = [
 export type DetailsSubFormProps = {
   isEanSearchDisplayed: boolean
   isProductBased: boolean
-  isOfferCDOrVinyl: boolean
+  isOfferCD: boolean
   readOnlyFields: string[]
   onImageUpload: (values: OnImageUploadArgs) => Promise<void>
   onImageDelete: () => Promise<void>
@@ -47,7 +47,7 @@ export type DetailsSubFormProps = {
 export const DetailsSubForm = ({
   isEanSearchDisplayed,
   isProductBased,
-  isOfferCDOrVinyl,
+  isOfferCD,
   readOnlyFields,
   onImageUpload,
   onImageDelete,
@@ -80,7 +80,7 @@ export const DetailsSubForm = ({
   // product-based offers so the form must be pre-filled with
   // the results of an EAN search.
   const displayRedirectionCallout =
-    isEanSearchDisplayed && !isProductBased && isOfferCDOrVinyl
+    isEanSearchDisplayed && !isProductBased && isOfferCD
   const displayImageUploader = !isProductBased || imageOffer
   const displayArtisticInformations = ARTISTIC_INFORMATION_FIELDS.some(
     (field) => subcategoryConditionalFields.includes(field)

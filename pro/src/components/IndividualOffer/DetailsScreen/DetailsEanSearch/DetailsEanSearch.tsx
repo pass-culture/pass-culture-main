@@ -13,7 +13,7 @@ import { Tag, TagVariant } from 'ui-kit/Tag/Tag'
 
 import { EanSearchCallout } from '../EanSearchCallout/EanSearchCallout'
 import { Product } from '../types'
-import { isSubCategoryCDOrVinyl } from '../utils'
+import { isSubCategoryCD } from '../utils'
 import { eanSearchValidationSchema } from '../validationSchema'
 
 import styles from './DetailsEanSearch.module.scss'
@@ -69,13 +69,8 @@ export const DetailsEanSearch = ({
   }, [wasCleared, productId])
 
   useEffect(() => {
-    if (
-      isDirtyDraftOfferNotProductBased &&
-      isSubCategoryCDOrVinyl(subcategoryId)
-    ) {
-      setSubcatError(
-        'Les offres de type CD ou Vinyle doivent être liées à un produit.'
-      )
+    if (isDirtyDraftOfferNotProductBased && isSubCategoryCD(subcategoryId)) {
+      setSubcatError('Les offres de type CD doivent être liées à un produit.')
     } else {
       setSubcatError(null)
     }

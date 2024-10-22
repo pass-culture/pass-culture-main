@@ -27,16 +27,13 @@ const contextValue: IndividualOfferContextValues = {
   setIsEvent: vi.fn(),
 }
 
-type RequiredProps =
-  | 'isEanSearchDisplayed'
-  | 'isProductBased'
-  | 'isOfferCDOrVinyl'
+type RequiredProps = 'isEanSearchDisplayed' | 'isProductBased' | 'isOfferCD'
 type DetailsSubFormTestProps = Partial<Pick<DetailsSubFormProps, RequiredProps>>
 
 const DetailsSubFormWrappedWithFormik = ({
   isEanSearchDisplayed = false,
   isProductBased = false,
-  isOfferCDOrVinyl = false,
+  isOfferCD = false,
 }: DetailsSubFormTestProps) => {
   const formik = useFormik({
     initialValues: {
@@ -51,7 +48,7 @@ const DetailsSubFormWrappedWithFormik = ({
       <DetailsSubForm
         isEanSearchDisplayed={isEanSearchDisplayed}
         isProductBased={isProductBased}
-        isOfferCDOrVinyl={isOfferCDOrVinyl}
+        isOfferCD={isOfferCD}
         readOnlyFields={[]}
         onImageUpload={vi.fn()}
         onImageDelete={vi.fn()}
@@ -160,13 +157,13 @@ describe('DetailsSubForm', () => {
     })
 
     describe('when the offer is non-product based', () => {
-      describe('when the offer is a CD/vinyl', () => {
+      describe('when the offer is a CD', () => {
         it('should replace conditional fields with a subcategory related error callout', () => {
           renderDetailsSubForm({
             props: {
               isEanSearchDisplayed: true,
               isProductBased: false,
-              isOfferCDOrVinyl: true,
+              isOfferCD: true,
             },
             enableEANSearch: true,
           })
