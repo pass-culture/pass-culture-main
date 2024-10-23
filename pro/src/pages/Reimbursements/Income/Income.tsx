@@ -5,19 +5,15 @@ import { useSelector } from 'react-redux'
 import useSWR from 'swr'
 
 import { api } from 'apiClient/api'
-import { useAnalytics } from 'app/App/analytics/firebase'
 import { GET_VENUES_QUERY_KEY } from 'commons/config/swrQueryKeys'
-import { Events } from 'commons/core/FirebaseEvents/constants'
 import { selectCurrentOffererId } from 'commons/store/user/selectors'
 import { FormLayout } from 'components/FormLayout/FormLayout'
-import strokeBookingHoldIcon from 'icons/stroke-booking-hold.svg'
-import strokePageNotFoundIcon from 'icons/stroke-page-not-found.svg'
 import { formatAndOrderVenues } from 'repository/venuesService'
-import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { Spinner } from 'ui-kit/Spinner/Spinner'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './Income.module.scss'
+import { IncomeError } from './IncomeError/IncomeError'
+import { IncomeNoData } from './IncomeNoData/IncomeNoData'
 import { IncomeResultsBox } from './IncomeResultsBox/IncomeResultsBox'
 import { IncomeVenueSelector } from './IncomeVenueSelector/IncomeVenueSelector'
 import { IncomeByYear } from './types'
@@ -54,7 +50,6 @@ export const MOCK_INCOME_BY_YEAR: IncomeByYear = {
 }
 
 export const Income = () => {
-  const { logEvent } = useAnalytics()
   const selectedOffererId = useSelector(selectCurrentOffererId)
   const {
     data,
@@ -68,16 +63,13 @@ export const Income = () => {
   const venues = formatAndOrderVenues(data.venues)
   const venueValues = venues.map((v) => v.value)
 
-  const [isIncomeLoading, setIsIncomeLoading] = useState(false)
+  const [isIncomeLoading, setIsIncomeLoading] = useState(true)
   const [incomeApiError] = useState<Error>()
 
   const [selectedVenues, setSelectedVenues] = useState<string[]>([])
   const [incomeByYear, setIncomeByYear] = useState<IncomeByYear>()
   const [activeYear, setActiveYear] = useState<number>()
 
-  const years = Object.keys(incomeByYear || {})
-    .map(Number)
-    .sort((a, b) => b - a)
   const activeYearIncome =
     incomeByYear && activeYear ? incomeByYear[activeYear] : {}
   const activeYearHasData =
@@ -106,67 +98,77 @@ export const Income = () => {
     }
   }, [selectedVenues, activeYear])
 
-  if (areVenuesLoading || isIncomeLoading) {
+  if (areVenuesLoading) {
     return <Spinner />
   }
 
-  if (venuesApiError || incomeApiError) {
-    return (
-      <div className={styles['income-error']}>
-        <SvgIcon
-          className={styles['income-error-icon']}
-          src={strokePageNotFoundIcon}
-          viewBox="0 0 130 100"
-          alt=""
-          width="100"
-        />
-        Erreur dans le chargement des données.
-      </div>
-    )
+  if (venuesApiError) {
+    return <IncomeError />
+  }
+
+  const hasVenuesData = venues.length > 0
+  const hasIncomeData = incomeByYear && Object.keys(incomeByYear).length > 0
+
+  if (!hasVenuesData) {
+    return <IncomeNoData type="venues" />
   }
 
   return (
     <>
       <FormLayout.MandatoryInfo />
       <div className={styles['income-filters']}>
-        {venues.length > 1 && (
+        <IncomeVenueSelector
+          venues={venues}
+          onChange={(venues) => {
+            if (!isEqual(selectedVenues, venues)) {
+              setSelectedVenues(venues)
+            }
+          }}
+        />
+        {!isIncomeLoading && !incomeApiError && hasIncomeData && (
           <>
-            <IncomeVenueSelector
-              venues={venues}
-              onChange={(venues) => {
-                if (!isEqual(selectedVenues, venues)) {
-                  setSelectedVenues(venues)
-                }
-              }}
-            />
             <span className={styles['income-filters-divider']} />
+            <ul
+              className={styles['income-filters-by-year']}
+              aria-label="Filtrage par année"
+            >
+              {Object.keys(incomeByYear)
+                .map(Number)
+                .sort((a, b) => b - a)
+                .map((year) => (
+                  <li key={year}>
+                    <button
+                      type="button"
+                      onClick={() => setActiveYear(year)}
+                      aria-label={`Afficher les revenus de l'année ${year}`}
+                      aria-controls="income-results"
+                      aria-current={year === activeYear}
+                      className={classnames(
+                        styles['income-filters-by-year-button'],
+                        {
+                          [styles['income-filters-by-year-button-active']]:
+                            year === activeYear,
+                        }
+                      )}
+                    >
+                      {year}
+                    </button>
+                  </li>
+                ))}
+            </ul>
           </>
         )}
-        <ul
-          className={styles['income-filters-by-year']}
-          aria-label="Filtrage par année"
-        >
-          {years.map((year) => (
-            <li key={year}>
-              <button
-                type="button"
-                onClick={() => setActiveYear(year)}
-                aria-label={`Afficher les revenus de l'année ${year}`}
-                aria-controls="income-results"
-                aria-current={year === activeYear}
-                className={classnames(styles['income-filters-by-year-button'], {
-                  [styles['income-filters-by-year-button-active']]:
-                    year === activeYear,
-                })}
-              >
-                {year}
-              </button>
-            </li>
-          ))}
-        </ul>
       </div>
       <div id="income-results" role="status">
-        {activeYearHasData ? (
+        {isIncomeLoading ? (
+          <Spinner />
+        ) : incomeApiError ? (
+          <IncomeError />
+        ) : !hasIncomeData ? (
+          <IncomeNoData type="income" />
+        ) : !activeYearHasData ? (
+          <IncomeNoData type="income-year" />
+        ) : (
           <div className={styles['income-results']}>
             <IncomeResultsBox
               type="aggregatedRevenue"
@@ -176,33 +178,6 @@ export const Income = () => {
               type="expectedRevenue"
               income={activeYearIncome.expectedRevenue}
             />
-          </div>
-        ) : (
-          <div className={styles['income-no-data']}>
-            <SvgIcon
-              className={styles['income-no-data-icon']}
-              src={strokeBookingHoldIcon}
-              alt=""
-              width="128"
-            />
-            Vous n’avez aucune réservation sur cette période.
-            <div className={styles['income-no-data-text-with-link']}>
-              Découvrez nos
-              <ButtonLink
-                isExternal
-                opensInNewTab
-                to="https://passcultureapp.notion.site/pass-Culture-Documentation-323b1a0ec309406192d772e7d803fbd0"
-                className={styles['income-no-data-text-with-link-buttonlink']}
-                onClick={() =>
-                  logEvent(Events.CLICKED_BEST_PRACTICES_STUDIES, {
-                    from: location.pathname,
-                  })
-                }
-              >
-                Bonnes pratiques & Études
-              </ButtonLink>
-              pour optimiser la visibilité de vos offres.
-            </div>
           </div>
         )}
       </div>
