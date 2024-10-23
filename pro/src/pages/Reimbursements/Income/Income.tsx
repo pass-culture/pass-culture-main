@@ -70,8 +70,13 @@ export const Income = () => {
   const [incomeByYear, setIncomeByYear] = useState<IncomeByYear>()
   const [activeYear, setActiveYear] = useState<number>()
 
+  const years = Object.keys(incomeByYear || {})
+    .map(Number)
+    .sort((a, b) => b - a)
+  const finalActiveYear = activeYear || years[0]
+
   const activeYearIncome =
-    incomeByYear && activeYear ? incomeByYear[activeYear] : {}
+    incomeByYear && finalActiveYear ? incomeByYear[finalActiveYear] : {}
   const activeYearHasData =
     activeYearIncome.aggregatedRevenue || activeYearIncome.expectedRevenue
 
@@ -86,17 +91,9 @@ export const Income = () => {
       setIsIncomeLoading(true)
       const incomeByYear = MOCK_INCOME_BY_YEAR
       setIncomeByYear(incomeByYear)
-
-      if (!activeYear) {
-        const years = Object.keys(incomeByYear)
-          .map(Number)
-          .sort((a, b) => a - b)
-        setActiveYear(years[years.length - 1])
-      }
-
       setIsIncomeLoading(false)
     }
-  }, [selectedVenues, activeYear])
+  }, [selectedVenues])
 
   if (areVenuesLoading) {
     return <Spinner />
@@ -132,29 +129,26 @@ export const Income = () => {
               className={styles['income-filters-by-year']}
               aria-label="Filtrage par année"
             >
-              {Object.keys(incomeByYear)
-                .map(Number)
-                .sort((a, b) => b - a)
-                .map((year) => (
-                  <li key={year}>
-                    <button
-                      type="button"
-                      onClick={() => setActiveYear(year)}
-                      aria-label={`Afficher les revenus de l'année ${year}`}
-                      aria-controls="income-results"
-                      aria-current={year === activeYear}
-                      className={classnames(
-                        styles['income-filters-by-year-button'],
-                        {
-                          [styles['income-filters-by-year-button-active']]:
-                            year === activeYear,
-                        }
-                      )}
-                    >
-                      {year}
-                    </button>
-                  </li>
-                ))}
+              {years.map((year) => (
+                <li key={year}>
+                  <button
+                    type="button"
+                    onClick={() => setActiveYear(year)}
+                    aria-label={`Afficher les revenus de l'année ${year}`}
+                    aria-controls="income-results"
+                    aria-current={year === finalActiveYear}
+                    className={classnames(
+                      styles['income-filters-by-year-button'],
+                      {
+                        [styles['income-filters-by-year-button-active']]:
+                          year === finalActiveYear,
+                      }
+                    )}
+                  >
+                    {year}
+                  </button>
+                </li>
+              ))}
             </ul>
           </>
         )}
