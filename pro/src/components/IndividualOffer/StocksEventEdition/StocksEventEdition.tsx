@@ -782,6 +782,7 @@ export const StocksEventEdition = ({
                                 disabled={readOnlyFields.includes(
                                   'remainingQuantity'
                                 )}
+                                className={styles['quantity-input']}
                               />
                             </td>
 

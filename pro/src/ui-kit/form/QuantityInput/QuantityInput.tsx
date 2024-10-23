@@ -121,6 +121,7 @@ export const QuantityInput = ({
         checked={isUnlimited}
         className={classNames(styles['quantity-input-checkbox'], {
           [styles['quantity-input-checkbox-for-small-label']]: smallLabel,
+          [styles['quantity-input-checkbox-for-hidden-label']]: isLabelHidden,
         })}
       />
     </div>
