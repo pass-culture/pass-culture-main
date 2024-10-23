@@ -1,10 +1,12 @@
 import { addDays, format } from 'date-fns'
 
-import { expectOffersOrBookingsAreFound } from '../support/helpers.ts'
+import {
+  expectOffersOrBookingsAreFound,
+  logAndGoToPage,
+} from '../support/helpers.ts'
 
 describe('Search individual offers', () => {
   let login: string
-  const password = 'user@AZERTY123'
   const venueName = 'Mon Lieu'
   const offerName1 = 'Une super offre'
   const offerName2 = 'Une offre avec ean'
@@ -29,17 +31,7 @@ describe('Search individual offers', () => {
   })
 
   it('A search with a name should display expected results', () => {
-    cy.stepLog({ message: 'I am logged in' })
-    cy.login({
-      email: login,
-      password: password,
-      redirectUrl: '/',
-    })
-    cy.url().then((urlSource) => {
-      cy.findAllByText('Offres').first().click()
-      cy.url().should('not.equal', urlSource)
-    })
-    cy.findAllByTestId('spinner').should('not.exist')
+    logAndGoToPage(login, '/offres')
 
     cy.stepLog({ message: 'I search with the text "Une super offre"' })
     cy.findByPlaceholderText('Rechercher par nom d’offre ou par EAN-13').type(
@@ -64,17 +56,7 @@ describe('Search individual offers', () => {
   it('A search with a EAN should display expected results', () => {
     const ean = '1234567891234'
 
-    cy.stepLog({ message: 'I am logged in' })
-    cy.login({
-      email: login,
-      password: password,
-      redirectUrl: '/',
-    })
-    cy.url().then((urlSource) => {
-      cy.findAllByText('Offres').first().click()
-      cy.url().should('not.equal', urlSource)
-    })
-    cy.findAllByTestId('spinner').should('not.exist')
+    logAndGoToPage(login, '/offres')
 
     cy.stepLog({ message: 'I search with the text:' + ean })
     cy.findByPlaceholderText('Rechercher par nom d’offre ou par EAN-13').type(
@@ -97,17 +79,7 @@ describe('Search individual offers', () => {
   })
 
   it('A search with "Catégories" filter should display expected results', () => {
-    cy.stepLog({ message: 'I am logged in' })
-    cy.login({
-      email: login,
-      password: password,
-      redirectUrl: '/',
-    })
-    cy.url().then((urlSource) => {
-      cy.findAllByText('Offres').first().click()
-      cy.url().should('not.equal', urlSource)
-    })
-    cy.findAllByTestId('spinner').should('not.exist')
+    logAndGoToPage(login, '/offres')
 
     cy.stepLog({ message: 'I select "Instrument de musique" in "Catégories"' })
     cy.findByLabelText('Catégories').select('Instrument de musique')
@@ -128,17 +100,7 @@ describe('Search individual offers', () => {
   })
 
   it('A search by offer status should display expected results', () => {
-    cy.stepLog({ message: 'I am logged in' })
-    cy.login({
-      email: login,
-      password: password,
-      redirectUrl: '/',
-    })
-    cy.url().then((urlSource) => {
-      cy.findAllByText('Offres').first().click()
-      cy.url().should('not.equal', urlSource)
-    })
-    cy.findAllByTestId('spinner').should('not.exist')
+    logAndGoToPage(login, '/offres')
 
     cy.stepLog({ message: 'I select "Publiée" in offer status' })
     cy.findByTestId('wrapper-status').within(() => {
@@ -166,17 +128,7 @@ describe('Search individual offers', () => {
   })
 
   it('A search by date should display expected results', () => {
-    cy.stepLog({ message: 'I am logged in' })
-    cy.login({
-      email: login,
-      password: password,
-      redirectUrl: '/',
-    })
-    cy.url().then((urlSource) => {
-      cy.findAllByText('Offres').first().click()
-      cy.url().should('not.equal', urlSource)
-    })
-    cy.findAllByTestId('spinner').should('not.exist')
+    logAndGoToPage(login, '/offres')
 
     cy.stepLog({ message: 'I select a date in one month' })
     const dateSearch = format(addDays(new Date(), 30), 'yyyy-MM-dd')
@@ -199,18 +151,7 @@ describe('Search individual offers', () => {
   })
 
   it('A search combining several filters should display expected results', () => {
-    cy.stepLog({ message: 'I am logged in' })
-    cy.login({
-      email: login,
-      password: password,
-      redirectUrl: '/',
-    })
-    cy.url().then((urlSource) => {
-      cy.findAllByText('Offres').first().click()
-      cy.url().should('not.equal', urlSource)
-    })
-
-    cy.findAllByTestId('spinner').should('not.exist')
+    logAndGoToPage(login, '/offres')
 
     cy.stepLog({ message: 'I search with the text "Livre"' })
     cy.findByPlaceholderText('Rechercher par nom d’offre ou par EAN-13').type(

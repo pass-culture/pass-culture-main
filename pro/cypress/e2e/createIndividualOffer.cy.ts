@@ -1,6 +1,7 @@
+import { logAndGoToPage } from '../support/helpers.ts'
+
 describe('Create individual offers', () => {
   let login = ''
-  const password = 'user@AZERTY123'
 
   beforeEach(() => {
     cy.visit('/connexion')
@@ -27,23 +28,14 @@ describe('Create individual offers', () => {
     cy.intercept({ method: 'GET', url: '/venues?offererId=*' }).as(
       'getVenuesForOfferer'
     )
-    cy.intercept({ method: 'POST', url: '/stocks/bulk' }).as('postStocks')
   })
 
   it('Should create an individual offer (event)', () => {
-    cy.stepLog({ message: 'I am logged in with account' })
-    cy.login({
-      email: login,
-      password: password,
-      redirectUrl: '/',
-    })
+    logAndGoToPage(login, '/offre/creation')
+
     cy.stepLog({
       message: 'I want to create "Un évènement physique daté" offer',
     })
-    cy.findAllByText('Créer une offre', { timeout: 60 * 1000 })
-      .first()
-      .click()
-
     cy.findByText('Au grand public').click()
     cy.findByText('Un évènement physique daté').click()
     cy.findByText('Étape suivante').click()
@@ -197,15 +189,7 @@ describe('Create individual offers', () => {
     const offerDesc =
       'Une quête pour obtenir la question ultime sur la vie, l’univers et tout le reste.'
 
-    cy.stepLog({ message: 'I am logged in with account' })
-    cy.login({
-      email: login,
-      password: password,
-      redirectUrl: '/',
-    })
-    cy.findAllByText('Créer une offre', { timeout: 60 * 1000 })
-      .first()
-      .click()
+    logAndGoToPage(login, '/offre/creation')
 
     cy.stepLog({ message: 'I want to create "Un bien physique" offer' })
     cy.findByText('Au grand public').click()

@@ -1,6 +1,7 @@
+import { logAndGoToPage } from '../support/helpers.ts'
+
 describe('Navigation', () => {
   let login = ''
-  const password = 'user@AZERTY123'
 
   beforeEach(() => {
     cy.visit('/connexion')
@@ -13,16 +14,7 @@ describe('Navigation', () => {
   })
 
   it('I should see the top of the page when changing page', () => {
-    cy.stepLog({ message: 'I am logged in' })
-    cy.login({
-      email: login,
-      password: password,
-      redirectUrl: '/',
-    })
-    cy.findByText('Bienvenue dans l’espace acteurs culturels')
-    cy.findByText('Vos adresses')
-    cy.findByText('Ajouter un lieu')
-    cy.findAllByTestId('spinner').should('not.exist')
+    logAndGoToPage(login, '/accueil')
 
     cy.stepLog({ message: 'I scroll to my venue' })
     cy.findByText('Votre page partenaire').scrollIntoView().should('be.visible')

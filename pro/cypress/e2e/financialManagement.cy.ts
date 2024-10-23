@@ -1,6 +1,7 @@
+import { logAndGoToPage } from '../support/helpers.ts'
+
 describe('Financial Management - messages, links to external help page, reimbursement details', () => {
   let login: string
-  const password = 'user@AZERTY123'
 
   beforeEach(() => {
     cy.visit('/connexion')
@@ -17,16 +18,7 @@ describe('Financial Management - messages, links to external help page, reimburs
   })
 
   it('Check messages, reimbursement details and offerer selection change', () => {
-    cy.stepLog({ message: 'I am logged in' })
-    cy.login({
-      email: login,
-      password: password,
-      redirectUrl: '/',
-    })
-
-    cy.stepLog({ message: 'I go to the "Gestion financière" page' })
-    cy.findAllByText('Gestion financière').first().click()
-    cy.url().should('contain', '/remboursements')
+    logAndGoToPage(login, '/remboursements')
 
     cy.stepLog({ message: 'I can see information message about reimbursement' })
     cy.findByText("Les remboursements s'effectuent toutes les 2 à 3 semaines")
@@ -136,20 +128,11 @@ describe('Financial Management - messages, links to external help page, reimburs
   })
 
   it('Automatic link venue with bank account', () => {
-    cy.stepLog({ message: 'I am logged in' })
-    cy.login({
-      email: login,
-      password: password,
-      redirectUrl: '/',
-    })
-    cy.findByTestId('offerer-select')
-    cy.wait('@getOfferers').its('response.statusCode').should('equal', 200)
-    cy.findAllByTestId('spinner').should('not.exist')
+    logAndGoToPage(login, '/remboursements')
 
     cy.stepLog({
       message: 'I select offerer "Structure avec informations bancaires"',
     })
-
     cy.findByTestId('offerer-select').click()
     cy.findByText(/Changer de structure/).click()
     cy.findByTestId('offerers-selection-menu')
@@ -158,10 +141,6 @@ describe('Financial Management - messages, links to external help page, reimburs
     cy.wait('@getOfferers').its('response.statusCode').should('equal', 200)
     cy.findByTestId('header-dropdown-menu-div').should('not.exist')
     cy.findAllByTestId('spinner').should('not.exist')
-
-    cy.stepLog({ message: 'I go to the "Gestion financière" page' })
-    cy.findAllByText('Gestion financière').first().click()
-    cy.url().should('contain', '/remboursements')
 
     cy.stepLog({ message: 'I go to "Informations bancaires" view' })
     cy.findByText('Informations bancaires').click()

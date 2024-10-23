@@ -1,54 +1,6 @@
-function siretInterceptionPayload(mySiret: string, venueName: string) {
-  return {
-    siret: mySiret,
-    name: venueName,
-    active: true,
-    address: {
-      street: '3 RUE DE VALOIS',
-      postalCode: '75001',
-      city: 'Paris',
-    },
-    ape_code: '90.03A',
-    legal_category_code: '1000',
-  }
-}
-
-const addressInterceptionPayload = {
-  type: 'FeatureCollection',
-  version: 'draft',
-  features: [
-    {
-      type: 'Feature',
-      geometry: { type: 'Point', coordinates: [2.337933, 48.863666] },
-      properties: {
-        label: '3 Rue de Valois 75001 Paris',
-        score: 0.8136893939393939,
-        housenumber: '3',
-        id: '75101_9575_00003',
-        name: '3 Rue de Valois',
-        postcode: '75001',
-        citycode: '75101',
-        x: 651428.82,
-        y: 6862829.62,
-        city: 'Paris',
-        district: 'Paris 1er Arrondissement',
-        context: '75, Paris, Île-de-France',
-        type: 'housenumber',
-        importance: 0.61725,
-        street: 'Rue de Valois',
-      },
-    },
-  ],
-  attribution: 'BAN',
-  licence: 'ETALAB-2.0',
-  query: '3 RUE DE VALOIS Paris 75001',
-  limit: 1,
-}
-
 describe('Signup journey with new venue', () => {
   let login = ''
   const mySiret = '12345678912345'
-  const password = 'user@AZERTY123'
   const venueName = 'MINISTERE DE LA CULTURE'
 
   beforeEach(() => {
@@ -90,15 +42,7 @@ describe('Signup journey with new venue', () => {
   })
 
   it('Should sign up with a new account, create a new offerer with an unknown SIRET', () => {
-    cy.stepLog({ message: 'I am logged in' })
-    cy.login({
-      email: login,
-      password: password,
-      redirectUrl: '/',
-    })
-
-    cy.stepLog({ message: 'I start offerer creation' })
-    cy.findByText('Commencer').click()
+    goToOffererCreation(login)
 
     cy.stepLog({ message: 'I specify a venue with a SIRET' })
     cy.url().should('contain', '/parcours-inscription/structure')
@@ -168,7 +112,6 @@ describe('Signup journey with new venue', () => {
 describe('Signup journey with known venue', () => {
   let login = ''
   let mySiret: string
-  const password = 'user@AZERTY123'
   const venueName = 'MINISTERE DE LA CULTURE'
 
   beforeEach(() => {
@@ -214,15 +157,7 @@ describe('Signup journey with known venue', () => {
   })
 
   it('Should sign up with a new account and a known offerer, create a new offerer in the space', () => {
-    cy.stepLog({ message: 'I am logged in' })
-    cy.login({
-      email: login,
-      password: password,
-      redirectUrl: '/',
-    })
-
-    cy.stepLog({ message: 'I start offerer creation' })
-    cy.findByText('Commencer').click()
+    goToOffererCreation(login)
 
     cy.stepLog({ message: 'I specify an offerer with a SIRET' })
     cy.url().should('contain', '/parcours-inscription/structure')
@@ -310,15 +245,7 @@ describe('Signup journey with known venue', () => {
   })
 
   it('Should sign up with a new account and a known offerer', () => {
-    cy.stepLog({ message: 'I am logged in' })
-    cy.login({
-      email: login,
-      password: password,
-      redirectUrl: '/',
-    })
-
-    cy.stepLog({ message: 'I start offerer creation' })
-    cy.findByText('Commencer').click()
+    goToOffererCreation(login)
 
     cy.stepLog({ message: 'I specify an offerer with a SIRET' })
     cy.url().should('contain', '/parcours-inscription/structure')
@@ -359,3 +286,64 @@ describe('Signup journey with known venue', () => {
     ).should('be.visible')
   })
 })
+
+function goToOffererCreation(login: string) {
+  const password = 'user@AZERTY123'
+
+  cy.stepLog({ message: 'I am logged in' })
+  cy.login({
+    email: login,
+    password: password,
+    redirectUrl: '/',
+  })
+
+  cy.stepLog({ message: 'I start offerer creation' })
+  cy.findByText('Commencer').click()
+}
+
+function siretInterceptionPayload(mySiret: string, venueName: string) {
+  return {
+    siret: mySiret,
+    name: venueName,
+    active: true,
+    address: {
+      street: '3 RUE DE VALOIS',
+      postalCode: '75001',
+      city: 'Paris',
+    },
+    ape_code: '90.03A',
+    legal_category_code: '1000',
+  }
+}
+
+const addressInterceptionPayload = {
+  type: 'FeatureCollection',
+  version: 'draft',
+  features: [
+    {
+      type: 'Feature',
+      geometry: { type: 'Point', coordinates: [2.337933, 48.863666] },
+      properties: {
+        label: '3 Rue de Valois 75001 Paris',
+        score: 0.8136893939393939,
+        housenumber: '3',
+        id: '75101_9575_00003',
+        name: '3 Rue de Valois',
+        postcode: '75001',
+        citycode: '75101',
+        x: 651428.82,
+        y: 6862829.62,
+        city: 'Paris',
+        district: 'Paris 1er Arrondissement',
+        context: '75, Paris, Île-de-France',
+        type: 'housenumber',
+        importance: 0.61725,
+        street: 'Rue de Valois',
+      },
+    },
+  ],
+  attribution: 'BAN',
+  licence: 'ETALAB-2.0',
+  query: '3 RUE DE VALOIS Paris 75001',
+  limit: 1,
+}

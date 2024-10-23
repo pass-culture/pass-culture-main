@@ -1,3 +1,5 @@
+import { homePageLoaded, logAndGoToPage } from '../support/helpers.ts'
+
 describe('Cookie management with no login', () => {
   beforeEach(() => {
     cy.visit('/connexion')
@@ -190,14 +192,9 @@ describe('Cookie management with login', () => {
     cy.clearCookies()
 
     cy.stepLog({ message: 'I am logged in with account 3' })
-    cy.get('@login3').then((login3) => {
-      cy.login({
-        email: login3.toString(),
-        password: password,
-      })
-    })
-
-    homePageLoaded()
+    cy.get('@login3').then((login3) =>
+      logAndGoToPage(login3.toString(), '/accueil')
+    )
 
     cy.stepLog({ message: 'I open the cookie management option' })
     cy.findByText('Gestion des cookies').click()
@@ -220,13 +217,9 @@ describe('Cookie management with login', () => {
     cy.clearAllSessionStorage()
 
     cy.stepLog({ message: 'I am logged in with account 3' })
-    cy.get('@login3').then((login3) => {
-      cy.login({
-        email: login3.toString(),
-        password: password,
-      })
-    })
-    homePageLoaded()
+    cy.get('@login3').then((login3) =>
+      logAndGoToPage(login3.toString(), '/accueil')
+    )
 
     cy.stepLog({ message: 'I open the cookie management option' })
     cy.findByText('Gestion des cookies').click()
@@ -235,10 +228,3 @@ describe('Cookie management with login', () => {
     cy.get('#orejime-app-item-beamer').should('not.be.checked')
   })
 })
-
-function homePageLoaded(): void {
-  cy.findByText('Bienvenue dans l’espace acteurs culturels')
-  cy.findByText('Vos adresses')
-  cy.findByText('Ajouter un lieu')
-  cy.findAllByTestId('spinner').should('not.exist')
-}

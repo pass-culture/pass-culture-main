@@ -1,8 +1,10 @@
-import { expectOffersOrBookingsAreFound } from '../support/helpers.ts'
+import {
+  expectOffersOrBookingsAreFound,
+  logAndGoToPage,
+} from '../support/helpers.ts'
 
 describe('Search collective offers', () => {
   let login: string
-  const password = 'user@AZERTY123'
   const venueName = 'Mon Lieu'
   const offerName = 'Mon offre collective'
 
@@ -20,15 +22,7 @@ describe('Search collective offers', () => {
   })
 
   it('A search with several filters should display expected results', () => {
-    cy.stepLog({ message: 'I am logged in' })
-    cy.login({
-      email: login,
-      password: password,
-      redirectUrl: '/',
-    })
-
-    cy.stepLog({ message: 'I go to Offres collectives view' })
-    cy.visit('/offres/collectives')
+    logAndGoToPage(login, '/offres/collectives')
     cy.wait('@collectiveOffers')
 
     cy.stepLog({ message: 'I select "Mon Lieu" in "Lieu"' })
