@@ -24,7 +24,7 @@ export const IncomeNoData = ({ type }: IncomeNoDataProps) => {
       />
       {!noDataAtAll ? (
         <>
-          Vous n‘avez aucune réservation sur cette période
+          Vous n’avez aucune réservation sur cette période
           <div className={styles['income-no-data-text-with-link']}>
             Découvrez nos
             <ButtonLink
@@ -44,7 +44,7 @@ export const IncomeNoData = ({ type }: IncomeNoDataProps) => {
           </div>
         </>
       ) : (
-        "Vous n'avez aucune réservation pour le moment"
+        'Vous n’avez aucune réservation pour le moment'
       )}
     </div>
   )
