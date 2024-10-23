@@ -51,7 +51,7 @@
                       data-modal-selector="#batch-cancel-booking-modal">Annuler</button>
             </div>
           {% endif %}
-          {% if has_permission("MANAGE_INCIDENTS") and is_feature_active("WIP_ENABLE_FINANCE_INCIDENT") %}
+          {% if has_permission("MANAGE_INCIDENTS") %}
             <div class="btn-group btn-group-sm"
                  data-toggle="pc-batch-confirm-btn-group"
                  data-toggle-id="table-container-individual-booking-btn-group"
@@ -95,7 +95,7 @@
               <th scope="col">Statut</th>
               <th scope="col">Crédit actif</th>
               <th scope="col">Auteur de la validation</th>
-              {% if is_feature_active("WIP_ENABLE_FINANCE_INCIDENT") %}<th scope="col">Évènement comptable</th>{% endif %}
+              <th scope="col">Évènement comptable</th>
               <th scope="col">Date de réservation</th>
               <th scope="col">Date de l'évènement</th>
               <th scope="col">Structure</th>
@@ -215,21 +215,19 @@
                 <td>{{ booking | format_booking_status(with_badge=True) | safe }}</td>
                 <td>{{ booking.deposit | format_active_deposit }}</td>
                 <td>{{ booking.validationAuthorType | format_booking_validation_author_type }}</td>
-                {% if is_feature_active("WIP_ENABLE_FINANCE_INCIDENT") %}
-                  <td class="text-center">
-                    {% if booking.incidents %}
-                      {% for booking_incident in booking.incidents %}
-                        {% if booking_incident.incident.status.name == "VALIDATED" %}
-                          <a href="{{ url_for('backoffice_web.finance_incidents.get_incident', finance_incident_id=booking_incident.incident.id) }}"
-                             class=""><i class="bi bi-exclamation-triangle-fill text-danger fs-3"
+                <td class="text-center">
+                  {% if booking.incidents %}
+                    {% for booking_incident in booking.incidents %}
+                      {% if booking_incident.incident.status.name == "VALIDATED" %}
+                        <a href="{{ url_for('backoffice_web.finance_incidents.get_incident', finance_incident_id=booking_incident.incident.id) }}"
+                           class=""><i class="bi bi-exclamation-triangle-fill text-danger fs-3"
    data-bs-toggle="tooltip"
    data-bs-placement="top"
    data-bs-title="Visualiser l'incident"></i></a>
-                        {% endif %}
-                      {% endfor %}
-                    {% endif %}
-                  </td>
-                {% endif %}
+                      {% endif %}
+                    {% endfor %}
+                  {% endif %}
+                </td>
                 <td>{{ booking.dateCreated | format_date_time }}</td>
                 <td>{{ booking.stock.beginningDatetime | format_date_time }}</td>
                 <td>{{ links.build_offerer_name_to_details_link(booking.offerer) }}</td>
@@ -241,7 +239,7 @@
         </table>
         {{ build_lazy_modal(url_for("backoffice_web.individual_bookings.get_batch_validate_individual_bookings_form") , "batch-validate-booking-modal", "eager") }}
         {{ build_lazy_modal(url_for("backoffice_web.individual_bookings.get_batch_cancel_individual_bookings_form") , "batch-cancel-booking-modal", "eager") }}
-        {% if is_feature_active("WIP_ENABLE_FINANCE_INCIDENT") and has_permission("MANAGE_INCIDENTS") %}
+        {% if has_permission("MANAGE_INCIDENTS") %}
           {{ build_lazy_modal(url_for("backoffice_web.finance_incidents.get_individual_bookings_overpayment_creation_form") , "overpayment-creation-modal", "eager") }}
           {{ build_lazy_modal(url_for("backoffice_web.finance_incidents.get_individual_bookings_commercial_gesture_creation_form") , "commercial-gesture-creation-modal", "eager") }}
         {% endif %}

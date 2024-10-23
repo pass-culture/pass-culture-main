@@ -59,7 +59,7 @@
               <th scope="col">ID offre</th>
               <th scope="col">Montant</th>
               <th scope="col">Statut</th>
-              {% if is_feature_active("WIP_ENABLE_FINANCE_INCIDENT") %}<th scope="col">Évènement comptable</th>{% endif %}
+              <th scope="col">Évènement comptable</th>
               <th scope="col">Date de réservation</th>
               <th scope="col">Date de l'évènement</th>
               <th scope="col">Structure</th>
@@ -94,7 +94,7 @@
                                  data-bs-toggle="modal"
                                  data-bs-target=".pc-validate-booking-modal-{{ collective_booking.id }}">Valider la réservation</a>
                             </li>
-                            {% if has_permission('MANAGE_INCIDENTS') and is_feature_active("WIP_ENABLE_FINANCE_INCIDENT") %}
+                            {% if has_permission('MANAGE_INCIDENTS') %}
                               <li class="dropdown-item p-0">
                                 <a class="btn btn-sm d-block w-100 text-start px-3"
                                    data-bs-toggle="modal"
@@ -107,7 +107,7 @@
                                  data-bs-toggle="modal"
                                  data-bs-target=".pc-cancel-booking-modal-{{ collective_booking.id }}">Annuler la réservation</a>
                             </li>
-                          {% elif collective_booking.isReimbursed and has_permission('MANAGE_INCIDENTS') and is_feature_active("WIP_ENABLE_FINANCE_INCIDENT") %}
+                          {% elif collective_booking.isReimbursed and has_permission('MANAGE_INCIDENTS') %}
                             <li class="dropdown-item p-0">
                               <a class="btn btn-sm d-block w-100 text-start px-3"
                                  data-bs-toggle="modal"
@@ -184,19 +184,17 @@
                 <td>{{ links.build_collective_offer_name_to_details_link(collective_offer, text_attr="id") }}</td>
                 <td>{{ collective_booking.total_amount | format_amount }}</td>
                 <td>{{ collective_booking | format_booking_status(with_badge=True) | safe }}</td>
-                {% if is_feature_active("WIP_ENABLE_FINANCE_INCIDENT") %}
-                  <td class="text-center">
-                    {% for booking_incident in collective_booking.incidents %}
-                      {% if booking_incident.incident.status.name == "VALIDATED" %}
-                        <a href="{{ url_for('backoffice_web.finance_incidents.get_incident', finance_incident_id=booking_incident.incident.id) }}"
-                           class=""><i class="bi bi-exclamation-triangle-fill text-danger fs-3"
+                <td class="text-center">
+                  {% for booking_incident in collective_booking.incidents %}
+                    {% if booking_incident.incident.status.name == "VALIDATED" %}
+                      <a href="{{ url_for('backoffice_web.finance_incidents.get_incident', finance_incident_id=booking_incident.incident.id) }}"
+                         class=""><i class="bi bi-exclamation-triangle-fill text-danger fs-3"
    data-bs-toggle="tooltip"
    data-bs-placement="top"
    data-bs-title="Visualiser l'incident"></i></a>
-                      {% endif %}
-                    {% endfor %}
-                  </td>
-                {% endif %}
+                    {% endif %}
+                  {% endfor %}
+                </td>
                 <td>{{ collective_booking.dateCreated | format_date_time }}</td>
                 <td>
                   {% if collective_booking.collectiveStock %}
@@ -213,7 +211,7 @@
             {% endfor %}
           </tbody>
         </table>
-        {% if is_feature_active("WIP_ENABLE_FINANCE_INCIDENT") and has_permission("MANAGE_INCIDENTS") %}
+        {% if has_permission("MANAGE_INCIDENTS") %}
           {% for collective_booking in rows %}
             {% if collective_booking.isReimbursed %}
               {{ build_lazy_modal(url_for("backoffice_web.finance_incidents.get_collective_booking_overpayment_creation_form", collective_booking_id=collective_booking.id) , "overpayment-creation-modal-" + collective_booking.id|string) }}

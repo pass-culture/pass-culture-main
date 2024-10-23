@@ -37,7 +37,6 @@ import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.subscription.ubble import api as ubble_subscription_api
 from pcapi.core.testing import assert_num_queries
-from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
 import pcapi.core.users.api as users_api
 import pcapi.core.users.factories as users_factories
@@ -2690,7 +2689,6 @@ def test_generate_invoice_file(clean_temp_files):
 class GenerateDebitNotesTest:
     @mock.patch("pcapi.core.finance.api._generate_debit_note_html")
     @mock.patch("pcapi.core.finance.api._store_invoice_pdf")
-    @override_features(WIP_ENABLE_FINANCE_INCIDENT=True)
     @pytest.mark.usefixtures("clean_temp_files")
     def test_when_there_is_no_debit_not_to_generate(self, _mocked1, _mocked2):
         user = users_factories.RichBeneficiaryFactory()
@@ -3539,7 +3537,6 @@ class GenerateDebitNoteHtmlTest:
         )
         assert expected_invoice_html == invoice_html
 
-    @override_features(WIP_ENABLE_FINANCE_INCIDENT=True)
     def test_basics(self, invoice_data):
         bank_account, stocks, venue = invoice_data
 
@@ -3664,7 +3661,6 @@ class GenerateInvoiceHtmlTest:
         )
         assert expected_invoice_html == invoice_html
 
-    @override_features(WIP_ENABLE_FINANCE_INCIDENT=True)
     def test_basics(self, invoice_data):
         bank_account, stocks, venue = invoice_data
         pricing_point = offerers_models.Venue.query.get(venue.current_pricing_point_id)

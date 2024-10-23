@@ -16,7 +16,6 @@ from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
-from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db
@@ -129,7 +128,6 @@ def test_generate_invoices_internal_notification(app, css_font_http_request_mock
     assert call_kwargs["icon_emoji"] == ":large_green_circle:"
 
 
-@override_features(WIP_ENABLE_FINANCE_INCIDENT=True)
 @pytest.mark.usefixtures("clean_database")
 def test_when_there_is_a_debit_note_to_generate_on_total_incident(app, css_font_http_request_mock):
     sixteen_days_ago = datetime.datetime.utcnow() - datetime.timedelta(days=16)
@@ -219,7 +217,6 @@ def test_when_there_is_a_debit_note_to_generate_on_total_incident(app, css_font_
     assert invoices[1].amount == -invoices[0].amount
 
 
-@override_features(WIP_ENABLE_FINANCE_INCIDENT=True)
 @pytest.mark.usefixtures("clean_database")
 def test_when_there_is_a_debit_note_to_generate_on_partial_incident(app, css_font_http_request_mock):
     sixteen_days_ago = datetime.datetime.utcnow() - datetime.timedelta(days=16)
