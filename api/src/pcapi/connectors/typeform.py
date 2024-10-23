@@ -43,7 +43,8 @@ class TypeformForm(pydantic_v1.BaseModel):
 
 class TypeformAnswer(pydantic_v1.BaseModel):
     field_id: str
-    text: str | None
+    choice_id: str | None = None
+    text: str | None = None
 
 
 class TypeformResponse(pydantic_v1.BaseModel):
@@ -200,7 +201,14 @@ class TypeformBackend(BaseBackend):
                     case "email":
                         email = _strip(answer["email"])
                     case "choice":
-                        answers.append(TypeformAnswer(field_id=answer["field"]["id"], text=answer["choice"]["label"]))
+                        try:
+                            answers.append(
+                                TypeformAnswer(field_id=answer["field"]["id"], text=answer["choice"]["label"])
+                            )
+                        except KeyError:
+                            answers.append(
+                                TypeformAnswer(field_id=answer["field"]["id"], choice_id=answer["choice"]["id"])
+                            )
                     case "text":
                         answers.append(TypeformAnswer(field_id=answer["field"]["id"], text=_strip(answer["text"])))
                     case _:
