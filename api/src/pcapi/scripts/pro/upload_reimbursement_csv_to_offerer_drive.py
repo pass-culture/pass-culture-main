@@ -5,6 +5,7 @@ from datetime import timedelta
 import logging
 import pathlib
 import tempfile
+from typing import Tuple
 
 import sqlalchemy as sqla
 
@@ -23,7 +24,6 @@ from pcapi.routes.serialization.reimbursement_csv_serialize import find_reimburs
 logger = logging.getLogger(__name__)
 
 
-PERIOD_IN_DAYS = 15
 OFFERER_INFORMATIONS = {
     settings.CGR_EMAIL: {"parent_folder_id": settings.CGR_GOOGLE_DRIVE_CSV_REIMBURSEMENT_ID, "structure_name": "CGR"},
     settings.KINEPOLIS_EMAIL: {
@@ -33,13 +33,26 @@ OFFERER_INFORMATIONS = {
 }
 
 
+def _get_start_and_end_datetime() -> Tuple[datetime, datetime]:
+    start_datetime = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
+    end_datetime = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
+    if date.today().day == 1:
+        start_datetime = (start_datetime - timedelta(days=1)).replace(day=16)
+    elif date.today().day == 16:
+        start_datetime = start_datetime.replace(day=1)
+    else:
+        start_datetime = start_datetime - timedelta(days=15)
+    return start_datetime, end_datetime
+
+
 def _get_csv_reimbursement_email_data(link_to_csv: str) -> models.TransactionalEmailData:
     return models.TransactionalEmailData(
-        template=TransactionalEmail.CSV_REIMBURSEMENT.value, params={"link_to_csv": link_to_csv}
+        template=TransactionalEmail.CSV_REIMBURSEMENT.value, params={"LINK_TO_CSV": link_to_csv}
     )
 
 
 def _get_all_invoices(user_id: int) -> list:
+    start_datetime, end_datetime = _get_start_and_end_datetime()
     invoices = (
         finance_models.Invoice.query.join(finance_models.Invoice.bankAccount)
         .join(finance_models.BankAccount.offerer)
@@ -50,7 +63,8 @@ def _get_all_invoices(user_id: int) -> list:
             sqla.not_(offerer_models.UserOfferer.isRejected) & sqla.not_(offerer_models.UserOfferer.isDeleted),
             offerer_models.UserOfferer.isValidated,
             finance_models.BankAccount.isActive.is_(True),
-            finance_models.Invoice.date > datetime.utcnow() - timedelta(days=PERIOD_IN_DAYS),
+            finance_models.Invoice.date >= start_datetime,
+            finance_models.Invoice.date < end_datetime,
         )
         .order_by(finance_models.Invoice.date.desc())
     ).all()
@@ -58,8 +72,9 @@ def _get_all_invoices(user_id: int) -> list:
 
 
 def _get_filename(structure_name: str) -> str:
-    period_start = (date.today() - timedelta(days=PERIOD_IN_DAYS)).strftime("%Y%m%d")
-    period_end = date.today().strftime("%Y%m%d")
+    start_datetime, end_datetime = _get_start_and_end_datetime()
+    period_start = start_datetime.date().strftime("%Y%m%d")
+    period_end = (end_datetime.date() - timedelta(days=1)).strftime("%Y%m%d")
     return f"{period_start}_{period_end}_{structure_name}_remboursements.csv"
 
 
