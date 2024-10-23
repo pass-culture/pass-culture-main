@@ -130,6 +130,10 @@ describe('Financial Management - messages, links to external help page, reimburs
   it('Automatic link venue with bank account', () => {
     logAndGoToPage(login, '/remboursements')
 
+    cy.findByTestId('offerer-select')
+    cy.wait('@getOfferers').its('response.statusCode').should('equal', 200)
+    cy.findAllByTestId('spinner').should('not.exist')
+
     cy.stepLog({
       message: 'I select offerer "Structure avec informations bancaires"',
     })
