@@ -55,6 +55,7 @@ class IndividualOffersSearchAttributes(enum.Enum):
 
 class IndividualOffersAlgoliaSearchAttributes(enum.Enum):
     CATEGORY = "Catégorie"
+    DATE = "Date"
     DEPARTMENT = "Département"
     EAN = "EAN-13"
     VENUE = "Lieu"
@@ -103,6 +104,7 @@ form_field_configuration = {
 
 algolia_form_field_configuration = {
     "CATEGORY": {"field": "category", "operator": ["IN", "NOT_IN"]},
+    "DATE": {"field": "date", "operator": ["DATE_FROM", "DATE_TO", "DATE_EQUALS"]},
     "DEPARTMENT": {"field": "department", "operator": ["IN", "NOT_IN"]},
     "REGION": {"field": "region", "operator": ["IN", "NOT_IN"]},
     "EAN": {"field": "string", "operator": ["EQUALS", "NOT_EQUALS"]},
@@ -366,14 +368,15 @@ class OfferAlgoliaSearchSubForm(forms_utils.PCForm):
             "display_configuration": algolia_form_field_configuration,
             "all_available_fields": [
                 "category",
+                "date",
                 "department",
-                "region",
                 "offerer",
                 "price",
+                "region",
+                "show_type",
                 "string",
                 "subcategory",
                 "venue",
-                "show_type",
             ],
             "sub_rule_type_field_name": "search_field",
             "operator_field_name": "operator",
@@ -411,6 +414,11 @@ class OfferAlgoliaSearchSubForm(forms_utils.PCForm):
         choices=forms_utils.choices_from_enum(subcategories.SubcategoryProLabelEnumv2),
         search_inline=True,
         field_list_compatibility=True,
+    )
+    date = fields.PCDateField(
+        validators=[
+            wtforms.validators.Optional(""),
+        ]
     )
     department = fields.PCSelectMultipleField(
         "Départements",
@@ -485,23 +493,23 @@ class BaseOfferAdvancedSearchForm(GetOffersBaseFields):
         min_entries=1,
     )
 
-    @staticmethod
-    def is_sub_search_empty(sub_search: dict[str, typing.Any]) -> bool:
+    @classmethod
+    def is_sub_search_empty(cls, sub_search: dict[str, typing.Any]) -> bool:
         field_name = sub_search.get("search_field")
         operator = sub_search.get("operator")
         if field_name:
-            field_attribute_name = form_field_configuration.get(field_name, {}).get("field", "")
-            field_data = sub_search.get(field_attribute_name)  # type: ignore[call-overload]
+            field_attribute_name = cls.form_field_configuration.get(field_name, {}).get("field", "")
+            field_data = sub_search.get(field_attribute_name)
             if field_data not in (None, []):
                 return False
             if operator in operator_no_require_value:
                 return False
         return True
 
-    @staticmethod
-    def is_search_empty(search_data: list[dict[str, typing.Any]]) -> bool:
+    @classmethod
+    def is_search_empty(cls, search_data: list[dict[str, typing.Any]]) -> bool:
         for sub_search in search_data:
-            if not BaseOfferAdvancedSearchForm.is_sub_search_empty(sub_search):
+            if not cls.is_sub_search_empty(sub_search):
                 return False
         return True
 
@@ -524,7 +532,7 @@ class BaseOfferAdvancedSearchForm(GetOffersBaseFields):
 
         for sub_search in self.search.data:
             if search_field := sub_search.get("search_field"):
-                if BaseOfferAdvancedSearchForm.is_sub_search_empty(sub_search):
+                if type(self).is_sub_search_empty(sub_search):
                     try:
                         errors.append(f"Le filtre « {IndividualOffersSearchAttributes[search_field].value} » est vide.")
                     except KeyError:
@@ -538,6 +546,7 @@ class BaseOfferAdvancedSearchForm(GetOffersBaseFields):
 
 
 class GetOfferAdvancedSearchForm(BaseOfferAdvancedSearchForm):
+    form_field_configuration = form_field_configuration
     only_validated_offerers = fields.PCSwitchBooleanField(
         "Uniquement les offres des structures validées", full_row=True
     )
@@ -549,6 +558,7 @@ class GetOfferAdvancedSearchForm(BaseOfferAdvancedSearchForm):
 
 
 class GetOfferAlgoliaSearchForm(BaseOfferAdvancedSearchForm):
+    form_field_configuration = algolia_form_field_configuration
     algolia_search = fields.PCOptStringField("Recherche", full_width=True)
     search = fields.PCFieldListField(
         fields.PCFormField(OfferAlgoliaSearchSubForm),

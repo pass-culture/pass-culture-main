@@ -1530,6 +1530,38 @@ class ListAlgoliaOffersTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 0
 
+    def test_list_offers_filter_on_date(self, authenticated_client):
+        offers_factories.OfferFactory(name="hide")
+
+        query_args = {
+            "algolia_search": "",
+            "limit": 1000,
+            "search-0-search_field": "DATE",
+            "search-0-operator": "DATE_FROM",
+            "search-0-date": "2024-10-01",
+            "search-1-search_field": "DATE",
+            "search-1-operator": "DATE_TO",
+            "search-1-date": "2024-10-01",
+            "search-2-search_field": "DATE",
+            "search-2-operator": "DATE_EQUALS",
+            "search-2-date": "2024-10-01",
+        }
+
+        with patch("pcapi.routes.backoffice.offers.blueprint.search_offer_ids", return_value=[]) as algolia_mock:
+            # no offers from algolia therefore no request to retrieve their fields
+            with assert_num_queries(self.expected_num_queries - 1):
+                response = authenticated_client.get(url_for(self.endpoint, **query_args))
+                assert response.status_code == 200
+
+            algolia_mock.assert_called_once_with(
+                query="",
+                filters="offer.date>=1727733600 AND offer.date<=1727820000 AND (offer.date>=1727733600 AND offer.date<=1727820000)",
+                count=1001,
+            )
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 0
+
 
 class ValidateOfferTest(PostEndpointHelper):
     endpoint = "backoffice_web.offer.validate_offer"

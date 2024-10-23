@@ -64,7 +64,7 @@ list_offers_blueprint = utils.child_backoffice_blueprint(
 
 logger = logging.getLogger(__name__)
 
-SEARCH_FIELD_TO_PYTHON = {
+SEARCH_FIELD_TO_PYTHON: dict[str, dict[str, typing.Any]] = {
     "ADDRESS": {
         "field": "address",
         "column": offerers_models.OffererAddress.addressId,
@@ -84,6 +84,10 @@ SEARCH_FIELD_TO_PYTHON = {
     "CREATION_DATE": {
         "field": "date",
         "column": offers_models.Offer.dateCreated,
+    },
+    "DATE": {
+        "field": "date",
+        "facet": "offer.date",
     },
     "DEPARTMENT": {
         "field": "department",
@@ -176,7 +180,10 @@ SEARCH_FIELD_TO_PYTHON = {
         "facet": "venue.id",
         "column": offers_models.Offer.venueId,
     },
-    "VALIDATION": {"field": "validation", "column": offers_models.Offer.validation},
+    "VALIDATION": {
+        "field": "validation",
+        "column": offers_models.Offer.validation,
+    },
     "VISA": {
         "field": "string",
         "column": offers_models.Offer.extraData["visa"].astext,
@@ -213,7 +220,7 @@ SEARCH_FIELD_TO_PYTHON = {
         "column": offers_models.Stock.price,
         "facet": "offer.prices",
         "subquery_join": "stock",
-        "custom_filter_all_operators": sa.and_(  # type: ignore[type-var]
+        "custom_filter_all_operators": sa.and_(
             offers_models.Stock._bookable,
             offers_models.Offer._released,
         ),
@@ -276,7 +283,6 @@ SUBQUERY_DICT: dict[str, dict[str, typing.Any]] = {
 
 
 def _get_offer_ids_algolia(form: forms.GetOfferAlgoliaSearchForm) -> list[int]:
-
     filter_str, warnings = utils.generate_algolia_search_string(
         search_parameters=form.search.data,
         fields_definition=SEARCH_FIELD_TO_PYTHON,
