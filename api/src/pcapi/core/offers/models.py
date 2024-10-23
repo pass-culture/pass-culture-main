@@ -620,6 +620,9 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
 
     @description.setter
     def description(self, value: str | None) -> None:
+        if not value:
+            self._description = None
+            return
         if self.product:
             logger.error("No description should be set on an offer with a product")
             self._description = None
@@ -634,6 +637,9 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
 
     @durationMinutes.setter
     def durationMinutes(self, value: int | None) -> None:
+        if not value:
+            self._durationMinutes = None
+            return
         if self.product:
             logger.error("No durationMinutes should be set on an offer with a product")
             self._durationMinutes = None
