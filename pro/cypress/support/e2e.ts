@@ -15,6 +15,7 @@
 
 // Import commands.js using ES2015 syntax:
 import './commands'
+import './helpers'
 import { configure } from '@testing-library/react'
 import 'cypress-fail-fast'
 

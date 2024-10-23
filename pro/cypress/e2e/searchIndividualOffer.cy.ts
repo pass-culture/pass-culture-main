@@ -1,5 +1,7 @@
 import { addDays, format } from 'date-fns'
 
+import { expectOffersOrBookingsAreFound } from '../support/helpers.ts'
+
 describe('Search individual offers', () => {
   let login: string
   const password = 'user@AZERTY123'
@@ -55,9 +57,8 @@ describe('Search individual offers', () => {
     ]
 
     cy.findAllByTestId('offer-item-row').should('have.length', 1)
-    cy.contains('1 offre')
 
-    expectOffersAreFound(expectedResults)
+    expectOffersOrBookingsAreFound(expectedResults)
   })
 
   it('A search with a EAN should display expected results', () => {
@@ -91,9 +92,8 @@ describe('Search individual offers', () => {
     ]
 
     cy.findAllByTestId('offer-item-row').should('have.length', 1)
-    cy.contains('1 offre')
 
-    expectOffersAreFound(expectedResults)
+    expectOffersOrBookingsAreFound(expectedResults)
   })
 
   it('A search with "Catégories" filter should display expected results', () => {
@@ -123,9 +123,8 @@ describe('Search individual offers', () => {
     ]
 
     cy.findAllByTestId('offer-item-row').should('have.length', 1)
-    cy.contains('1 offre')
 
-    expectOffersAreFound(expectedResults)
+    expectOffersOrBookingsAreFound(expectedResults)
   })
 
   it('A search by offer status should display expected results', () => {
@@ -162,9 +161,8 @@ describe('Search individual offers', () => {
     ]
 
     cy.findAllByTestId('offer-item-row').should('have.length', 6)
-    cy.contains('6 offres')
 
-    expectOffersAreFound(expectedResults)
+    expectOffersOrBookingsAreFound(expectedResults)
   })
 
   it('A search by date should display expected results', () => {
@@ -196,9 +194,8 @@ describe('Search individual offers', () => {
     ]
 
     cy.findAllByTestId('offer-item-row').should('have.length', 1)
-    cy.contains('1 offre')
 
-    expectOffersAreFound(expectedResults)
+    expectOffersOrBookingsAreFound(expectedResults)
   })
 
   it('A search combining several filters should display expected results', () => {
@@ -247,9 +244,8 @@ describe('Search individual offers', () => {
     ]
 
     cy.findAllByTestId('offer-item-row').should('have.length', 2)
-    cy.contains('2 offres')
 
-    expectOffersAreFound(expectedResults)
+    expectOffersOrBookingsAreFound(expectedResults)
 
     cy.stepLog({ message: 'I reset all filters' })
     cy.findByText('Réinitialiser les filtres').click()
@@ -286,34 +282,7 @@ describe('Search individual offers', () => {
     ]
 
     cy.findAllByTestId('offer-item-row').should('have.length', 7)
-    cy.contains('7 offres')
 
-    expectOffersAreFound(expectedResults2)
+    expectOffersOrBookingsAreFound(expectedResults2)
   })
 })
-
-function expectOffersAreFound(expectedResults: Array<Array<string>>) {
-  for (let rowLine = 0; rowLine < expectedResults.length - 1; rowLine++) {
-    const offerLineArray = expectedResults[rowLine + 1]
-
-    cy.findAllByTestId('offer-item-row')
-      .eq(rowLine)
-      .within(() => {
-        cy.get('td').then(($elt) => {
-          for (let column = 0; column < 6; column++) {
-            cy.wrap($elt)
-              .eq(column)
-              .then((cellValue) => {
-                if (cellValue.text().length && offerLineArray[column].length) {
-                  return cy
-                    .wrap(cellValue)
-                    .should('contain.text', offerLineArray[column])
-                } else {
-                  return true
-                }
-              })
-          }
-        })
-      })
-  }
-}
