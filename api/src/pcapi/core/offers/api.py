@@ -612,9 +612,9 @@ def batch_update_collective_offers(query: BaseQuery, update_fields: dict) -> Non
 
 
 def batch_update_collective_offers_template(query: BaseQuery, update_fields: dict) -> None:
-    allowed_validation_status = [models.OfferValidationStatus.APPROVED]
+    allowed_validation_status = {models.OfferValidationStatus.APPROVED}
     if "dateArchived" in update_fields:
-        allowed_validation_status.append(models.OfferValidationStatus.DRAFT)
+        allowed_validation_status.update((models.OfferValidationStatus.DRAFT, models.OfferValidationStatus.REJECTED))
 
     collective_offer_ids_tuples = query.filter(
         educational_models.CollectiveOfferTemplate.validation.in_(allowed_validation_status)  # type: ignore[attr-defined]
