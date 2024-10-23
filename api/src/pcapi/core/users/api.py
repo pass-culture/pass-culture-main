@@ -633,8 +633,6 @@ def update_user_info(
     validated_birth_date: datetime.date | T_UNCHANGED = UNCHANGED,
     id_piece_number: str | T_UNCHANGED = UNCHANGED,
     marketing_email_subscription: bool | T_UNCHANGED = UNCHANGED,
-    new_nav_pro_date: datetime.datetime | None | T_UNCHANGED = UNCHANGED,
-    new_nav_pro_eligibility_date: datetime.datetime | None | T_UNCHANGED = UNCHANGED,
     activity: models.ActivityEnum | T_UNCHANGED = UNCHANGED,
     commit: bool = True,
 ) -> history_api.ObjectUpdateSnapshot:
@@ -695,24 +693,6 @@ def update_user_info(
             field_name_template="notificationSubscriptions.{}",
         )
         user.set_marketing_email_subscription(marketing_email_subscription)
-    if (
-        new_nav_pro_date is not UNCHANGED or new_nav_pro_eligibility_date is not UNCHANGED
-    ) and feature.FeatureToggle.ENABLE_PRO_NEW_NAV_MODIFICATION.is_active():
-        pro_new_nav_state = user.pro_new_nav_state
-        if not pro_new_nav_state:
-            pro_new_nav_state = models.UserProNewNavState(userId=user.id)
-            user.pro_new_nav_state = pro_new_nav_state
-        if new_nav_pro_date is not UNCHANGED:
-            snapshot.set("pro_new_nav_state.newNavDate", old=pro_new_nav_state.newNavDate, new=new_nav_pro_date)
-            pro_new_nav_state.newNavDate = new_nav_pro_date
-        if new_nav_pro_eligibility_date is not UNCHANGED:
-            snapshot.set(
-                "pro_new_nav_state.eligibilityDate",
-                old=pro_new_nav_state.eligibilityDate,
-                new=new_nav_pro_eligibility_date,
-            )
-            pro_new_nav_state.eligibilityDate = new_nav_pro_eligibility_date
-        db.session.add(pro_new_nav_state)
     if activity is not UNCHANGED:
         if user.activity != activity.value:
             snapshot.set("activity", old=user.activity, new=activity.value)
@@ -903,21 +883,6 @@ def create_pro_user(pro_user: users_serialization.ProUserCreationBodyV2Model) ->
 
     db.session.add(new_pro_user)
     db.session.flush()
-    invitation = offerers_models.OffererInvitation.query.filter_by(email=new_pro_user.email).first()
-    if invitation:
-        inviter_pro_new_nav_state = models.UserProNewNavState.query.filter_by(userId=invitation.userId).one_or_none()
-        if inviter_pro_new_nav_state and inviter_pro_new_nav_state.newNavDate is not None:
-            new_nav_pro = models.UserProNewNavState(
-                userId=new_pro_user.id,
-                newNavDate=datetime.datetime.utcnow(),
-            )
-            db.session.add(new_nav_pro)
-    else:
-        new_nav_pro = models.UserProNewNavState(
-            userId=new_pro_user.id,
-            newNavDate=datetime.datetime.utcnow(),
-        )
-        db.session.add(new_nav_pro)
 
     return new_pro_user
 
@@ -1868,25 +1833,6 @@ def anonymize_user_deposits() -> None:
         synchronize_session=False,
     )
 
-    db.session.commit()
-
-
-def enable_new_pro_nav(user: models.User) -> None:
-    pro_new_nav_state = models.UserProNewNavState.query.filter(
-        models.UserProNewNavState.userId == user.id
-    ).one_or_none()
-
-    if not pro_new_nav_state or not pro_new_nav_state.eligibilityDate:
-        raise exceptions.ProUserNotEligibleForNewNav()
-
-    if pro_new_nav_state.eligibilityDate > datetime.datetime.utcnow():
-        raise exceptions.ProUserNotYetEligibleForNewNav()
-
-    if pro_new_nav_state.newNavDate:
-        return
-
-    pro_new_nav_state.newNavDate = datetime.datetime.utcnow()
-    db.session.add(pro_new_nav_state)
     db.session.commit()
 
 

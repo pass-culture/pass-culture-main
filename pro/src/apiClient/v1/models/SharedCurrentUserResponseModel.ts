@@ -3,7 +3,6 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { GenderEnum } from './GenderEnum';
-import type { NavStateResponseModel } from './NavStateResponseModel';
 import type { PhoneValidationStatusType } from './PhoneValidationStatusType';
 import type { UserRole } from './UserRole';
 export type SharedCurrentUserResponseModel = {
@@ -28,7 +27,6 @@ export type SharedCurrentUserResponseModel = {
   isImpersonated?: boolean;
   lastConnectionDate?: string | null;
   lastName?: string | null;
-  navState?: NavStateResponseModel | null;
   needsToFillCulturalSurvey?: boolean | null;
   notificationSubscriptions?: Record<string, any> | null;
   phoneNumber?: string | null;

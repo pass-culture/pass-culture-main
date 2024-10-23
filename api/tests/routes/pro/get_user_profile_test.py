@@ -83,7 +83,6 @@ class Returns200Test:
             "phoneValidationStatus": None,
             "postalCode": None,
             "roles": ["BENEFICIARY"],
-            "navState": {"eligibilityDate": None, "newNavDate": None},
             "isImpersonated": False,
         }
 

@@ -336,26 +336,11 @@ def connect_as(token: str) -> Response:
     return flask.redirect(token_data.redirect_link, code=302)
 
 
-@blueprint.pro_private_api.route("/users/new-pro-nav", methods=["POST"])
-@login_required
-@spectree_serialize(on_success_status=204, on_error_statuses=[400], api=blueprint.pro_private_schema)
-def post_new_pro_nav() -> None:
-    errors = ApiErrors()
-    errors.status_code = 400
-    try:
-        users_api.enable_new_pro_nav(user=current_user)
-    except (users_exceptions.ProUserNotEligibleForNewNav, users_exceptions.ProUserNotYetEligibleForNewNav) as exc:
-        errors.add_error("global", "Vous n'êtes pas éligible à la nouvelle navigation")
-        raise errors from exc
-
-
 @blueprint.pro_private_api.route("/users/log-new-nav-review", methods=["POST"])
 @login_required
 @spectree_serialize(on_success_status=204, api=blueprint.pro_private_schema)
 def submit_new_nav_review(body: users_serializers.SubmitReviewRequestModel) -> None:
     check_user_has_access_to_offerer(current_user, body.offererId)
-    if not users_repo.user_has_new_nav_activated(current_user):
-        raise ForbiddenError()
 
     logger.info(
         "User with new nav activated submitting review",

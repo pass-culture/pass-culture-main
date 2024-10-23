@@ -232,7 +232,7 @@ class AutocompleteBoUserTest(AutocompleteTestBase):
         users_factories.AdminFactory(firstName="Hugo", lastName="Admin")
         users_factories.AdminFactory(id=12345, firstName="Louise", lastName="Admin")
         users_factories.UserFactory(id=1234, firstName="Léo", lastName="Hugo")
-        users_factories.ProFactory(firstName="Léa", lastName="Pro", new_pro_portal__deactivate=True)
+        users_factories.ProFactory(firstName="Léa", lastName="Pro")
 
         self._test_autocomplete(authenticated_client, search_query, expected_texts)
 
