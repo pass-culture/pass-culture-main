@@ -209,7 +209,6 @@ class User(PcObject, Base, Model, DeactivableMixin):
     )
     sa.Index("ix_user_validatedBirthDate", validatedBirthDate)
     pro_flags: UserProFlags = orm.relationship("UserProFlags", back_populates="user", uselist=False)
-    pro_new_nav_state: UserProNewNavState = orm.relationship("UserProNewNavState", back_populates="user", uselist=False)
 
     gdprUserDataExtract: orm.Mapped["GdprUserDataExtract"] = orm.relationship(
         "GdprUserDataExtract", back_populates="user", foreign_keys="GdprUserDataExtract.userId"
@@ -686,14 +685,6 @@ class User(PcObject, Base, Model, DeactivableMixin):
         return cls.roles.contains([UserRole.ANONYMIZED])
 
     @property
-    def has_new_nav(self) -> bool:
-        return bool(
-            self.pro_new_nav_state
-            and self.pro_new_nav_state.newNavDate
-            and self.pro_new_nav_state.newNavDate <= datetime.utcnow()
-        )
-
-    @property
     def impersonator(self) -> "User | None":
         return getattr(self, "_impersonator", None)
 
@@ -995,22 +986,6 @@ class SingleSignOn(PcObject, Base, Model):
             name="unique_sso_user_per_sso_provider",
         ),
     )
-
-
-class UserProNewNavState(PcObject, Base, Model):
-    __tablename__ = "user_pro_new_nav_state"
-
-    userId: int = sa.Column(
-        sa.BigInteger,
-        sa.ForeignKey("user.id", ondelete="CASCADE"),
-        unique=True,
-        nullable=False,
-    )
-    user: User = orm.relationship(User, foreign_keys=[userId], back_populates="pro_new_nav_state", uselist=False)
-    # If set, it means that the user can choose to switch to the new nav from that date. Otherwise, they must stay on the old nav.
-    eligibilityDate: datetime = sa.Column(sa.DateTime, nullable=True)
-    # If set, it means that the user has switched to the new nav at that date. Otherwise, it means that they are still on the old nav
-    newNavDate: datetime = sa.Column(sa.DateTime, nullable=True)
 
 
 class GdprUserDataExtract(PcObject, Base, Model):

@@ -107,7 +107,6 @@ class FeatureToggle(enum.Enum):
     WIP_ENABLE_NATIONAL_PROGRAM_NEW_RULES_PUBLIC_API = (
         "Activer les nouvelles règles de création et d'édition d'offres collecrives pour l'API publique (collective)"
     )
-    ENABLE_PRO_NEW_NAV_MODIFICATION = "Activer la modification du statut de la navigation du portail pro"
     WIP_ENABLE_NEW_HASHING_ALGORITHM = "Activer le nouveau système de hachage des clés publiques d'API"
     WIP_ENABLE_BO_PRO_SEARCH_BY_SIMILARITY = (
         "Activer la recherche par similarité pour les structures et lieux dans le backoffice"
@@ -182,7 +181,6 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.ENABLE_EMS_INTEGRATION,
     FeatureToggle.ENABLE_IOS_OFFERS_LINK_WITH_REDIRECTION,
     FeatureToggle.ENABLE_PRO_BOOKINGS_V2,
-    FeatureToggle.ENABLE_PRO_NEW_NAV_MODIFICATION,
     FeatureToggle.ENABLE_SWITCH_ALLOCINE_SYNC_TO_EMS_SYNC,
     FeatureToggle.ENABLE_TITELIVE_MUSIC_TYPES_IN_API_OUTPUT,
     FeatureToggle.ENABLE_UBBLE_SUBSCRIPTION_LIMITATION,

@@ -65,7 +65,6 @@ class Returns200Test:
             "phoneNumber": "+33612345678",
             "postalCode": "93020",
             "roles": ["BENEFICIARY"],
-            "navState": {"eligibilityDate": None, "newNavDate": None},
         }
         assert user.lastConnectionDate > now
         assert "Failed authentication attempt" not in caplog.messages
@@ -144,7 +143,7 @@ class Returns200Test:
         assert response.json == {"captchaToken": "Ce champ est obligatoire"}
 
     @pytest.mark.usefixtures("db_session")
-    def test_whith_user_offerer_and_nav_state(self, client):
+    def test_whith_user_offerer(self, client):
         # Given
         user_offerer = offerers_factories.UserOffererFactory(
             user__lastConnectionDate=datetime.datetime.utcnow(),
@@ -160,12 +159,11 @@ class Returns200Test:
         # 2. stamp session
         # 3. fetch user for serialization
         # 4. fetch user offerer
-        # 5. fetch user pro nav state
-        # 6. fetch user offerer for discard_session
-        # 7 fetch user_session for discard_session
-        # 8 fetch user has partner page
+        # 5. fetch user offerer for discard_session
+        # 6 fetch user_session for discard_session
+        # 7 fetch user has partner page
 
-        with assert_num_queries(8):
+        with assert_num_queries(7):
             response = client.post("/users/signin", json=data)
 
         # Then
@@ -193,10 +191,6 @@ class Returns200Test:
             "phoneNumber": None,
             "postalCode": None,
             "roles": ["PRO"],
-            "navState": {
-                "eligibilityDate": format_into_utc_date(user_offerer.user.pro_new_nav_state.eligibilityDate),
-                "newNavDate": format_into_utc_date(user_offerer.user.pro_new_nav_state.newNavDate),
-            },
         }
 
 

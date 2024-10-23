@@ -26,7 +26,6 @@ def create_industrial_admin_users() -> dict[str, User]:
                 lastName="{} {}".format(departement_code, admin_count),
                 postalCode="{}100".format(departement_code),
             )
-            users_factories.UserProNewNavStateFactory(user=user)
 
             users_by_name["admin{} {}".format(departement_code, admin_count)] = user
 

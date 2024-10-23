@@ -2797,55 +2797,6 @@ class AnonymizeUserDepositsTest:
             assert deposit.expirationDate == now - relativedelta(years=10, day=1, month=1)
 
 
-class EnableNewProNavTest:
-    def test_user_without_new_nav_state_raises(self) -> None:
-        user = users_factories.ProFactory(new_pro_portal__deactivate=True)
-
-        with pytest.raises(users_exceptions.ProUserNotEligibleForNewNav):
-            users_api.enable_new_pro_nav(user)
-
-    def test_user_with_new_nav_state_not_eligible_raises(self) -> None:
-        pro = users_factories.ProFactory(new_pro_portal__eligibilityDate=None, new_pro_portal__newNavDate=None)
-
-        with pytest.raises(users_exceptions.ProUserNotEligibleForNewNav):
-            users_api.enable_new_pro_nav(pro)
-
-        assert not pro.pro_new_nav_state.newNavDate
-
-    def test_user_eligible_in_the_future_raises(self) -> None:
-        pro = users_factories.ProFactory(
-            new_pro_portal__eligibilityDate=datetime.datetime.utcnow() + datetime.timedelta(days=2),
-            new_pro_portal__newNavDate=None,
-        )
-
-        with pytest.raises(users_exceptions.ProUserNotYetEligibleForNewNav):
-            users_api.enable_new_pro_nav(pro)
-
-        assert not pro.pro_new_nav_state.newNavDate
-
-    def test_user_eligible(self) -> None:
-        pro = users_factories.ProFactory(
-            new_pro_portal__eligibilityDate=datetime.datetime.utcnow() - datetime.timedelta(days=1),
-            new_pro_portal__newNavDate=None,
-        )
-
-        users_api.enable_new_pro_nav(pro)
-
-        assert pro.pro_new_nav_state.newNavDate
-
-    def test_user_already_with_new_nav_should_not_update_date(self) -> None:
-        yesterday_date = datetime.datetime.utcnow() - datetime.timedelta(days=1)
-        pro = users_factories.ProFactory(
-            new_pro_portal__eligibilityDate=yesterday_date - datetime.timedelta(days=2),
-            new_pro_portal__newNavDate=yesterday_date,
-        )
-        assert pro.pro_new_nav_state.newNavDate == yesterday_date
-
-        users_api.enable_new_pro_nav(pro)
-
-        assert pro.pro_new_nav_state.newNavDate == yesterday_date
-
-
 class DeleteGdprExtractTest(StorageFolderManager):
     storage_folder = settings.LOCAL_STORAGE_DIR / settings.GCP_GDPR_EXTRACT_BUCKET / settings.GCP_GDPR_EXTRACT_FOLDER
 
