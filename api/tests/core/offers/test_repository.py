@@ -1520,7 +1520,8 @@ class GetFilteredCollectiveOffersTest:
         )
 
         educational_factories.CollectiveStockFactory(
-            collectiveOffer=collective_offer_expired, beginningDatetime=datetime.datetime(year=2000, month=1, day=1)
+            collectiveOffer=collective_offer_expired,
+            beginningDatetime=datetime.datetime(year=2000, month=1, day=1),
         )
 
         # expired offer with pending booking
@@ -1536,13 +1537,14 @@ class GetFilteredCollectiveOffersTest:
         educational_factories.CollectiveBookingFactory(
             collectiveStock=collective_stock_prebooked_expired,
             confirmationLimitDate=datetime.datetime(year=2000, month=1, day=1),
-            status=educational_models.CollectiveBookingStatus.PENDING.value,
+            status=educational_models.CollectiveBookingStatus.CANCELLED.value,
+            cancellationReason=educational_models.CollectiveBookingCancellationReasons.EXPIRED.value,
         )
 
         offers = repository.get_collective_offers_by_filters(
             user_id=user_offerer.userId,
             user_is_admin=False,
-            statuses=[educational_models.CollectiveOfferDisplayedStatus.EXPIRED.value],
+            statuses=[educational_models.CollectiveOfferDisplayedStatus.CANCELLED.value],
         )
         offers_list = offers.all()
         assert len(offers_list) == 2

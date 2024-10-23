@@ -541,6 +541,7 @@ def create_offers_booking_with_different_displayed_status(
             collectiveOffer__validation=OfferValidationStatus.APPROVED,
             collectiveOffer__bookingEmails=["toto@totoland.com"],
             beginningDatetime=beginning_datetime,
+            startDatetime=beginning_datetime,
             endDatetime=end_datetime,
             bookingLimitDatetime=booking_limit_datetime,
         )

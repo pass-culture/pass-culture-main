@@ -169,7 +169,7 @@ class Returns200Test:
         client = client.with_session_auth(email="user@example.com")
         offer_id = offer.id
 
-        expected_num_queries = 9
+        expected_num_queries = self.num_queries + 1  # feature flag
         # session
         # user
         # offerer
@@ -177,8 +177,6 @@ class Returns200Test:
         # collective_offer
         # google_places_info
         # feature flag
-        # collective_booking
-        # max collective_booking
         with testing.assert_num_queries(expected_num_queries):
             with testing.assert_no_duplicated_queries():
                 client.get(f"/collective/offers/{offer_id}")
@@ -198,7 +196,8 @@ class Returns200Test:
         # When
         client = client.with_session_auth(email="user@example.com")
         offer_id = offer.id
-        with assert_num_queries(self.num_queries):
+        expected_num_queries = self.num_queries + 1  # feature flag
+        with assert_num_queries(expected_num_queries):
             response = client.get(f"/collective/offers/{offer_id}")
             assert response.status_code == 200
 

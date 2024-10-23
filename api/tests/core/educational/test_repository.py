@@ -444,7 +444,6 @@ class FindByProUserTest:
 class FilterCollectiveOfferByStatusesTest:
     ALL_STATUS = {
         CollectiveOfferDisplayedStatus.PENDING,
-        CollectiveOfferDisplayedStatus.INACTIVE,
         CollectiveOfferDisplayedStatus.REJECTED,
         CollectiveOfferDisplayedStatus.PREBOOKED,
         CollectiveOfferDisplayedStatus.BOOKED,
@@ -687,7 +686,7 @@ class FilterCollectiveOfferByStatusesTest:
         base_query = CollectiveOffer.query
         # When
         filtered_inactive_query = _filter_collective_offers_by_statuses(
-            base_query, [CollectiveOfferDisplayedStatus.INACTIVE.value]
+            base_query, [CollectiveOfferDisplayedStatus.EXPIRED.value]
         )
 
         filtered_active_query = _filter_collective_offers_by_statuses(
@@ -705,7 +704,7 @@ class FilterCollectiveOfferByStatusesTest:
         base_query = CollectiveOffer.query
         # When
         filtered_inactive_query = _filter_collective_offers_by_statuses(
-            base_query, [CollectiveOfferDisplayedStatus.INACTIVE.value]
+            base_query, [CollectiveOfferDisplayedStatus.EXPIRED.value]
         )
 
         filtered_active_query = _filter_collective_offers_by_statuses(

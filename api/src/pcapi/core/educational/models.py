@@ -4,6 +4,7 @@ from datetime import timedelta
 import decimal
 from decimal import Decimal
 import enum
+import logging
 import random
 import typing
 
@@ -35,6 +36,7 @@ from pcapi.core.object_storage import delete_public_object
 from pcapi.core.object_storage import store_public_object
 from pcapi.models import Base
 from pcapi.models import Model
+from pcapi.models import feature
 from pcapi.models import offer_mixin
 from pcapi.models.accessibility_mixin import AccessibilityMixin
 from pcapi.models.pc_object import PcObject
@@ -45,6 +47,8 @@ from pcapi.utils.image_conversion import process_original_image
 from pcapi.utils.image_conversion import standardize_image
 from pcapi.utils.phone_number import ParsedPhoneNumber
 
+
+logger = logging.getLogger(__name__)
 
 BIG_NUMBER_FOR_SORTING_OFFERS = 9999
 
@@ -685,6 +689,21 @@ class CollectiveOffer(
 
         return end + timedelta(days=2) < datetime.utcnow()
 
+    @hybrid_property
+    def hasStartDatetimePassed(self) -> bool:
+        if not self.collectiveStock:
+            return False
+        return self.collectiveStock.hasStartDatetimePassed
+
+    @hasStartDatetimePassed.expression  # type: ignore[no-redef]
+    def hasStartDatetimePassed(cls) -> Exists:  # pylint: disable=no-self-argument
+        aliased_collective_stock = sa.orm.aliased(CollectiveStock)
+        return (
+            sa.exists()
+            .where(aliased_collective_stock.collectiveOfferId == cls.id)
+            .where(aliased_collective_stock.hasStartDatetimePassed.is_(True))
+        )
+
     @property
     def hasBookingLimitDatetimePassed(self) -> bool:
         if self.collectiveStock:
@@ -787,52 +806,65 @@ class CollectiveOffer(
         if self.isArchived:
             return CollectiveOfferDisplayedStatus.ARCHIVED
 
-        if self.validation == offer_mixin.OfferValidationStatus.REJECTED:
-            return CollectiveOfferDisplayedStatus.REJECTED
+        match self.validation:
+            case offer_mixin.OfferValidationStatus.DRAFT:
+                return CollectiveOfferDisplayedStatus.DRAFT
+            case offer_mixin.OfferValidationStatus.PENDING:
+                return CollectiveOfferDisplayedStatus.PENDING
+            case offer_mixin.OfferValidationStatus.REJECTED:
+                return CollectiveOfferDisplayedStatus.REJECTED
+            case offer_mixin.OfferValidationStatus.APPROVED:
+                last_booking_status = self.lastBookingStatus
+                has_booking_limit_passed = self.hasBookingLimitDatetimesPassed
+                has_started = self.hasBeginningDatetimePassed
+                has_ended = self.hasEndDatetimePassed
 
-        if self.validation == offer_mixin.OfferValidationStatus.PENDING:
-            return CollectiveOfferDisplayedStatus.PENDING
+                match last_booking_status:
+                    case None:
+                        if has_booking_limit_passed:
+                            if has_started and feature.FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active():
+                                return CollectiveOfferDisplayedStatus.CANCELLED
+                            return CollectiveOfferDisplayedStatus.EXPIRED
 
-        if self.validation == offer_mixin.OfferValidationStatus.DRAFT:
-            return CollectiveOfferDisplayedStatus.DRAFT
+                        return CollectiveOfferDisplayedStatus.ACTIVE
 
-        if not self.isActive:
-            return CollectiveOfferDisplayedStatus.INACTIVE
+                    case CollectiveBookingStatus.PENDING:
+                        # pylint: disable=using-constant-test
+                        if has_booking_limit_passed:
+                            return CollectiveOfferDisplayedStatus.EXPIRED
+                        return CollectiveOfferDisplayedStatus.PREBOOKED
 
-        if self.validation == offer_mixin.OfferValidationStatus.APPROVED:
-            last_booking_status = self.lastBookingStatus
+                    case CollectiveBookingStatus.CONFIRMED:
+                        # pylint: disable=using-constant-test
+                        if has_ended:
+                            return CollectiveOfferDisplayedStatus.ENDED
+                        return CollectiveOfferDisplayedStatus.BOOKED
 
-            if last_booking_status is None:
-                # pylint: disable=using-constant-test
-                if self.is_expired:
-                    return CollectiveOfferDisplayedStatus.EXPIRED
+                    case CollectiveBookingStatus.USED:
+                        return CollectiveOfferDisplayedStatus.ENDED
 
-                if self.hasBookingLimitDatetimesPassed:
-                    return CollectiveOfferDisplayedStatus.INACTIVE
+                    case CollectiveBookingStatus.REIMBURSED:
+                        if feature.FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active():
+                            return CollectiveOfferDisplayedStatus.REIMBURSED
+                        return CollectiveOfferDisplayedStatus.ENDED
 
-                return CollectiveOfferDisplayedStatus.ACTIVE
+                    case CollectiveBookingStatus.CANCELLED:
+                        if feature.FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active():
+                            if (
+                                self.lastBookingCancellationReason == CollectiveBookingCancellationReasons.EXPIRED
+                                and not has_started
+                            ):
+                                # There is script that set the booking status to EXPIRED when the booking is expired.
+                                # We need to distinguish between an expired booking and a cancelled booking.
+                                return CollectiveOfferDisplayedStatus.EXPIRED
+                            return CollectiveOfferDisplayedStatus.CANCELLED
 
-            # pylint: disable=using-constant-test
-            if self.hasEndDatetimePassed:
-                if last_booking_status in {CollectiveBookingStatus.USED, CollectiveBookingStatus.CONFIRMED}:
-                    return CollectiveOfferDisplayedStatus.ENDED
-                if last_booking_status == CollectiveBookingStatus.REIMBURSED:
-                    if feature.FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active():
-                        return CollectiveOfferDisplayedStatus.REIMBURSED
-                    return CollectiveOfferDisplayedStatus.ENDED
+                        # pylint: disable=using-constant-test
+                        if has_booking_limit_passed:
+                            return CollectiveOfferDisplayedStatus.EXPIRED
+                        return CollectiveOfferDisplayedStatus.ACTIVE
 
-                return CollectiveOfferDisplayedStatus.EXPIRED
-
-            if last_booking_status in {CollectiveBookingStatus.CONFIRMED, CollectiveBookingStatus.USED}:
-                return CollectiveOfferDisplayedStatus.BOOKED
-            if last_booking_status == CollectiveBookingStatus.PENDING:
-                return CollectiveOfferDisplayedStatus.PREBOOKED
-            if last_booking_status == CollectiveBookingStatus.CANCELLED:
-                if feature.FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active():
-                    return CollectiveOfferDisplayedStatus.CANCELLED
-
-                return CollectiveOfferDisplayedStatus.EXPIRED
-
+        logger.error("Incorrect status: %s %s", self.validation, last_booking_status)
         return CollectiveOfferDisplayedStatus.ACTIVE
 
     @property
@@ -920,6 +952,11 @@ class CollectiveOffer(
     def lastBookingStatus(self) -> CollectiveBookingStatus | None:
         booking = self.lastBooking
         return booking.status if booking else None
+
+    @property
+    def lastBookingCancellationReason(self) -> CollectiveBookingCancellationReasons | None:
+        booking = self.lastBooking
+        return booking.cancellationReason if booking else None
 
     @hybrid_property
     def is_expired(self) -> bool:
@@ -1365,6 +1402,14 @@ class CollectiveStock(PcObject, Base, Model):
     @hasBeginningDatetimePassed.expression  # type: ignore[no-redef]
     def hasBeginningDatetimePassed(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
         return cls.beginningDatetime <= sa.func.now()
+
+    @hybrid_property
+    def hasStartDatetimePassed(self) -> bool:
+        return self.startDatetime <= datetime.utcnow()
+
+    @hasStartDatetimePassed.expression  # type: ignore[no-redef]
+    def hasStartDatetimePassed(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
+        return cls.startDatetime <= sa.func.now()
 
     @hybrid_property
     def hasEndDatetimePassed(self) -> bool:

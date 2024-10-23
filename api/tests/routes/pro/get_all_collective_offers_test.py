@@ -148,19 +148,19 @@ class Returns200Test:
             beginningDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=5),
             bookingLimitDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=5),
             collectiveOffer__venue=venue,
-            collectiveOffer__isActive=False,
         )
 
         # When
         client = client.with_session_auth(user.email)
-        with assert_num_queries(self.expected_num_queries - 1):  # - national_program
-            response = client.get("/collective/offers?status=INACTIVE")
+        with assert_num_queries(self.expected_num_queries - 1 + 1):  # - national_program + feature flag assertion
+            response = client.get("/collective/offers?status=EXPIRED")
             assert response.status_code == 200
 
         # Then
         response_json = response.json
         assert len(response_json) == 1
         assert response_json[0]["status"] == "INACTIVE"
+        assert response_json[0]["displayedStatus"] == "EXPIRED"
         assert response_json[0]["id"] == stock.collectiveOffer.id
 
     def test_if_collective_offer_is_public_api(self, client):
@@ -366,7 +366,7 @@ class Returns200Test:
 
         # When
         client = client.with_session_auth(user.email)
-        with assert_num_queries(self.expected_num_queries - 1):  # - national_program
+        with assert_num_queries(self.expected_num_queries - 1 + 1):  # - national_program + feature flag assertion
             response = client.get("/collective/offers?periodBeginningDate=2022-10-10&periodEndingDate=2022-10-11")
             assert response.status_code == 200
 
