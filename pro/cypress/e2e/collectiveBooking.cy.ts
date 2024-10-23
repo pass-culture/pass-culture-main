@@ -1,6 +1,9 @@
 import { addDays, format } from 'date-fns'
 
-import { expectOffersOrBookingsAreFound } from '../support/helpers.ts'
+import {
+  expectOffersOrBookingsAreFound,
+  logAndGoToPage,
+} from '../support/helpers.ts'
 
 describe('Search for collective bookings', () => {
   let login: string
@@ -16,7 +19,7 @@ describe('Search for collective bookings', () => {
   })
 
   it('It should find collective bookings by offers', () => {
-    IGoToCollectivePage(login)
+    logAndGoToPage(login, '/reservations/collectives')
 
     cy.stepLog({ message: 'I display bookings' })
     cy.findByText('Afficher').click()
@@ -42,7 +45,7 @@ describe('Search for collective bookings', () => {
   })
 
   it('It should find collective bookings by establishments', () => {
-    IGoToCollectivePage(login)
+    logAndGoToPage(login, '/reservations/collectives')
 
     cy.stepLog({ message: 'I display bookings' })
     cy.findByText('Afficher').click()
@@ -75,7 +78,7 @@ describe('Search for collective bookings', () => {
   })
 
   it('It should find collective bookings by booking number', () => {
-    IGoToCollectivePage(login)
+    logAndGoToPage(login, '/reservations/collectives')
 
     cy.stepLog({ message: 'I display bookings' })
     cy.findByText('Afficher').click()
@@ -110,7 +113,7 @@ describe('Search for collective bookings', () => {
   })
 
   it('It should find collective bookings by date and by establishment', () => {
-    IGoToCollectivePage(login)
+    logAndGoToPage(login, '/reservations/collectives')
 
     const dateSearch = format(addDays(new Date(), 10), 'yyyy-MM-dd')
     cy.findByLabelText('Date de l’évènement').type(dateSearch)
@@ -139,18 +142,3 @@ describe('Search for collective bookings', () => {
     expectOffersOrBookingsAreFound(expectedResults)
   })
 })
-
-function IGoToCollectivePage(login: string) {
-  const password = 'user@AZERTY123'
-
-  cy.stepLog({ message: 'I am logged in' })
-  cy.login({
-    email: login,
-    password: password,
-    redirectUrl: '/',
-  })
-  cy.findAllByTestId('spinner').should('not.exist')
-
-  cy.stepLog({ message: 'I open the "reservations/collectives" page' })
-  cy.visit('/reservations/collectives')
-}

@@ -1,6 +1,7 @@
+import { logAndGoToPage } from '../support/helpers.ts'
+
 describe('Modify a digital individual offer', () => {
   let login: string
-  const password = 'user@AZERTY123'
 
   before(() => {
     cy.visit('/connexion')
@@ -14,18 +15,7 @@ describe('Modify a digital individual offer', () => {
   })
 
   it('I should be able to modify the url of a digital offer', function () {
-    cy.stepLog({ message: 'I am logged in' })
-    cy.login({
-      email: login,
-      password: password,
-      redirectUrl: '/',
-    })
-
-    cy.stepLog({ message: 'I go to the "Offres" page' })
-    cy.url().then((urlSource) => {
-      cy.findAllByText('Offres').first().click()
-      cy.url().should('not.equal', urlSource)
-    })
+    logAndGoToPage(login, '/offres')
 
     cy.stepLog({ message: 'I open the first offer in the list' })
     cy.findAllByTestId('offer-item-row')

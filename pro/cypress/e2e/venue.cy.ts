@@ -1,6 +1,7 @@
+import { logAndGoToPage } from '../support/helpers.ts'
+
 describe('Create and update venue', () => {
   let login: string
-  const password = 'user@AZERTY123'
   let siret: string
   let siren: string
 
@@ -23,11 +24,7 @@ describe('Create and update venue', () => {
 
   it('A pro user can add a venue without SIRET', () => {
     const venueNameWithoutSiret = 'Lieu sans Siret'
-    cy.stepLog({ message: 'I am logged in' })
-    cy.login({
-      email: login,
-      password: password,
-    })
+    logAndGoToPage(login, '/accueil')
 
     cy.stepLog({ message: 'I want to add a venue' })
     cy.findByText('Ajouter un lieu', { timeout: 60 * 1000 }).click()
@@ -114,11 +111,7 @@ describe('Create and update venue', () => {
       })
     ).as('getSiretVenue')
 
-    cy.stepLog({ message: 'I am logged in' })
-    cy.login({
-      email: login,
-      password: password,
-    })
+    logAndGoToPage(login, '/accueil')
 
     cy.stepLog({ message: 'I want to add a venue' })
     cy.findByText('Ajouter un lieu', { timeout: 60 * 1000 }).click()
@@ -154,11 +147,7 @@ describe('Create and update venue', () => {
   })
 
   it('It should update a venue', () => {
-    cy.stepLog({ message: 'I am logged in' })
-    cy.login({
-      email: login,
-      password: password,
-    })
+    logAndGoToPage(login, '/accueil')
 
     cy.stepLog({ message: 'I go to the venue page in Individual section' })
     cy.findByText('Votre page partenaire', { timeout: 60 * 1000 })

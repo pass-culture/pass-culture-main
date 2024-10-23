@@ -36,3 +36,30 @@ export function expectOffersOrBookingsAreFound(
       })
   }
 }
+
+export function logAndGoToPage(login: string, url: string) {
+  const password = 'user@AZERTY123'
+
+  cy.stepLog({ message: 'I am logged in' })
+  cy.login({
+    email: login,
+    password: password,
+    redirectUrl: '/',
+  })
+  cy.findAllByTestId('spinner').should('not.exist')
+
+  cy.stepLog({ message: 'I open the "reservations/collectives" page' })
+  cy.visit(url)
+  cy.findAllByTestId('spinner').should('not.exist')
+
+  if (url === '/accueil') {
+    homePageLoaded()
+  }
+}
+
+export function homePageLoaded() {
+  cy.findByText('Bienvenue dans l’espace acteurs culturels')
+  cy.findByText('Vos adresses')
+  cy.findByText('Ajouter un lieu')
+  cy.findAllByTestId('spinner').should('not.exist')
+}
