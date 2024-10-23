@@ -263,7 +263,7 @@ def edit_event(event_id: int, body: serialization.EventOfferEdition) -> serializ
                     if "categoryRelatedFields" in updates
                     else extra_data
                 ),
-                isActive=get_field(offer, updates, "isActive"),
+                isActive=get_field(offer, updates, "isActive", nullable=False),
                 idAtProvider=get_field(offer, updates, "idAtProvider"),
                 isDuo=get_field(offer, updates, "enableDoubleBookings", col="isDuo"),
                 withdrawalDetails=get_field(offer, updates, "itemCollectionDetails", col="withdrawalDetails"),
