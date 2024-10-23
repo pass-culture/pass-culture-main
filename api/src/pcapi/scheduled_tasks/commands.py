@@ -348,6 +348,18 @@ def pro_no_bookings_since_40_days_automation() -> None:
     pro_user_automations.pro_no_bookings_since_40_days_automation()
 
 
+@blueprint.cli.command("pro_marketing_live_show_email_churned_40_days_ago")
+@log_cron_with_transaction
+def pro_marketing_live_show_email_churned_40_days_ago() -> None:
+    pro_user_automations.update_pro_contacts_list_for_live_show_churned_40_days_ago()
+
+
+@blueprint.cli.command("pro_marketing_live_show_email_last_booking_40_days_ago")
+@log_cron_with_transaction
+def pro_marketing_live_show_email_last_booking_40_days_ago() -> None:
+    pro_user_automations.update_pro_contacts_list_for_live_show_last_booking_40_days_ago()
+
+
 @blueprint.cli.command("notify_users_bookings_not_retrieved")
 @log_cron_with_transaction
 def notify_users_bookings_not_retrieved_command() -> None:
