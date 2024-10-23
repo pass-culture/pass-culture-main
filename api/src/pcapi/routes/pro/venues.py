@@ -23,7 +23,6 @@ from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.rest import check_user_has_access_to_offerer
 from pcapi.workers.update_all_venue_offers_accessibility_job import update_all_venue_offers_accessibility_job
 from pcapi.workers.update_all_venue_offers_email_job import update_all_venue_offers_email_job
-from pcapi.workers.update_all_venue_offers_withdrawal_details_job import update_all_venue_offers_withdrawal_details_job
 
 from . import blueprint
 
@@ -120,9 +119,7 @@ def edit_venue(venue_id: int, body: venues_serialize.EditVenueBodyModel) -> venu
         "isAccessibilityAppliedOnAllOffers",
         "isEmailAppliedOnAllOffers",
         "isManualEdition",
-        "isWithdrawalAppliedOnAllOffers",
         "contact",
-        "shouldSendMail",
         "openingHours",
     }
     update_venue_attrs = body.dict(exclude=not_venue_fields, exclude_unset=True)
@@ -142,8 +139,6 @@ def edit_venue(venue_id: int, body: venues_serialize.EditVenueBodyModel) -> venu
     }
     validation.check_venue_edition(modifications, venue)
 
-    have_withdrawal_details_changes = body.withdrawalDetails != venue.withdrawalDetails
-
     venue = offerers_api.update_venue(
         venue,
         modifications,
@@ -156,11 +151,6 @@ def edit_venue(venue_id: int, body: venues_serialize.EditVenueBodyModel) -> venu
     if have_accessibility_changes and body.isAccessibilityAppliedOnAllOffers:
         edited_accessibility = {field: getattr(venue, field) for field in accessibility_fields}
         update_all_venue_offers_accessibility_job.delay(venue, edited_accessibility)
-
-    if have_withdrawal_details_changes and body.isWithdrawalAppliedOnAllOffers:
-        update_all_venue_offers_withdrawal_details_job.delay(
-            venue, body.withdrawalDetails, send_email_notification=body.shouldSendMail
-        )
 
     if body.bookingEmail and body.isEmailAppliedOnAllOffers:
         update_all_venue_offers_email_job.delay(venue, body.bookingEmail)
