@@ -35,6 +35,7 @@ from pcapi.core.object_storage import delete_public_object
 from pcapi.core.object_storage import store_public_object
 from pcapi.models import Base
 from pcapi.models import Model
+from pcapi.models import feature
 from pcapi.models import offer_mixin
 from pcapi.models.accessibility_mixin import AccessibilityMixin
 from pcapi.models.pc_object import PcObject
@@ -794,51 +795,65 @@ class CollectiveOffer(
         if self.isArchived:
             return CollectiveOfferDisplayedStatus.ARCHIVED
 
-        if self.validation == offer_mixin.OfferValidationStatus.REJECTED:
-            return CollectiveOfferDisplayedStatus.REJECTED
-
-        if self.validation == offer_mixin.OfferValidationStatus.PENDING:
-            return CollectiveOfferDisplayedStatus.PENDING
-
-        if self.validation == offer_mixin.OfferValidationStatus.DRAFT:
-            return CollectiveOfferDisplayedStatus.DRAFT
-
         if not self.isActive:
             return CollectiveOfferDisplayedStatus.INACTIVE
 
-        if self.validation == offer_mixin.OfferValidationStatus.APPROVED:
-            last_booking_status = self.lastBookingStatus
+        match self.validation:
+            case offer_mixin.OfferValidationStatus.REJECTED:
+                return CollectiveOfferDisplayedStatus.REJECTED
+            case offer_mixin.OfferValidationStatus.PENDING:
+                return CollectiveOfferDisplayedStatus.PENDING
+            case offer_mixin.OfferValidationStatus.DRAFT:
+                return CollectiveOfferDisplayedStatus.DRAFT
+            case offer_mixin.OfferValidationStatus.APPROVED:
+                last_booking_status = self.lastBookingStatus
 
-            if last_booking_status is None:
-                # pylint: disable=using-constant-test
-                if self.is_expired:
-                    return CollectiveOfferDisplayedStatus.EXPIRED
+                match last_booking_status:
+                    case None:
+                        # pylint: disable=using-constant-test
+                        if self.hasBookingLimitDatetimesPassed:
+                            if (
+                                self.hasBeginningDatetimePassed
+                                and feature.FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active()
+                            ):
+                                return CollectiveOfferDisplayedStatus.CANCELLED
+                            return CollectiveOfferDisplayedStatus.EXPIRED
+                        return CollectiveOfferDisplayedStatus.ACTIVE
+                    case CollectiveBookingStatus.PENDING:
+                        # pylint: disable=using-constant-test
+                        if self.hasBookingLimitDatetimesPassed:
+                            return CollectiveOfferDisplayedStatus.EXPIRED
+                        return CollectiveOfferDisplayedStatus.PREBOOKED
 
-                if self.hasBookingLimitDatetimesPassed:
-                    return CollectiveOfferDisplayedStatus.INACTIVE
+                    case CollectiveBookingStatus.CONFIRMED:
+                        if (
+                            self.hasEndDatetimePassed
+                            and feature.FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active()
+                        ):
+                            return CollectiveOfferDisplayedStatus.ENDED
+                        return CollectiveOfferDisplayedStatus.BOOKED
 
-                return CollectiveOfferDisplayedStatus.ACTIVE
+                    case CollectiveBookingStatus.USED:
+                        return CollectiveOfferDisplayedStatus.ENDED
 
-            # pylint: disable=using-constant-test
-            if self.hasEndDatetimePassed:
-                if last_booking_status in {CollectiveBookingStatus.USED, CollectiveBookingStatus.CONFIRMED}:
-                    return CollectiveOfferDisplayedStatus.ENDED
-                if last_booking_status == CollectiveBookingStatus.REIMBURSED:
-                    if feature.FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active():
-                        return CollectiveOfferDisplayedStatus.REIMBURSED
-                    return CollectiveOfferDisplayedStatus.ENDED
+                    case CollectiveBookingStatus.REIMBURSED:
+                        if feature.FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active():
+                            return CollectiveOfferDisplayedStatus.REIMBURSED
+                        return CollectiveOfferDisplayedStatus.ENDED
 
-                return CollectiveOfferDisplayedStatus.EXPIRED
+                    case CollectiveBookingStatus.CANCELLED:
+                        if feature.FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active():
+                            if (
+                                not self.hasBeginningDatetimePassed
+                                and self.lastBookingCancellationReason == CollectiveBookingCancellationReasons.EXPIRED
+                            ):
+                                return CollectiveOfferDisplayedStatus.EXPIRED
+                            return CollectiveOfferDisplayedStatus.CANCELLED
 
-            if last_booking_status in {CollectiveBookingStatus.CONFIRMED, CollectiveBookingStatus.USED}:
-                return CollectiveOfferDisplayedStatus.BOOKED
-            if last_booking_status == CollectiveBookingStatus.PENDING:
-                return CollectiveOfferDisplayedStatus.PREBOOKED
-            if last_booking_status == CollectiveBookingStatus.CANCELLED:
-                if feature.FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active():
-                    return CollectiveOfferDisplayedStatus.CANCELLED
-
-                return CollectiveOfferDisplayedStatus.EXPIRED
+                        # pylint: disable=using-constant-test
+                        if self.hasBookingLimitDatetimesPassed:
+                            return CollectiveOfferDisplayedStatus.EXPIRED
+                        return CollectiveOfferDisplayedStatus.ACTIVE
 
         return CollectiveOfferDisplayedStatus.ACTIVE
 
@@ -927,6 +942,11 @@ class CollectiveOffer(
     def lastBookingStatus(self) -> CollectiveBookingStatus | None:
         booking = self.lastBooking
         return booking.status if booking else None
+
+    @property
+    def lastBookingCancellationReason(self) -> CollectiveBookingCancellationReasons | None:
+        booking = self.lastBooking
+        return booking.cancellationReason if booking else None
 
     @hybrid_property
     def is_expired(self) -> bool:
