@@ -88,14 +88,6 @@ export const OffersRoute = (): JSX.Element => {
     ...{ offererId: selectedOffererId?.toString() ?? '' },
   }
   delete apiFilters.page
-  if (
-    selectedOffererId &&
-    selectedOffererId.toString() !== urlSearchFilters.offererId
-  ) {
-    setTimeout(() => {
-      redirectWithUrlFilters(apiFilters)
-    })
-  }
 
   const offersQuery = useSWR([GET_OFFERS_QUERY_KEY, apiFilters], () => {
     const {
