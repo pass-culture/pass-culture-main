@@ -15,7 +15,7 @@ import pcapi.core.offers.models as offers_models
 from pcapi.models.feature import FeatureToggle
 from pcapi.notifications.internal import send_internal_message
 import pcapi.scheduled_tasks.decorators as cron_decorators
-from pcapi.scripts.pro.get_all_reimbursement import export_csv_and_send_notfication_emails
+from pcapi.scripts.pro.upload_reimbursement_csv_to_offerer_drive import export_csv_and_send_notfication_emails
 from pcapi.utils.blueprint import Blueprint
 import pcapi.utils.date as date_utils
 
@@ -180,6 +180,6 @@ def import_ds_bank_information_applications() -> None:
         ds.import_ds_bank_information_applications(procedure_number=int(procedure))
 
 
-@blueprint.cli.command("get_all_reimbursement")
-def get_all_reimbursement() -> None:
+@blueprint.cli.command("upload_reimbursement_csv_to_offerer_drive")
+def upload_reimbursement_csv_to_offerer_drive() -> None:
     export_csv_and_send_notfication_emails()
