@@ -5,18 +5,12 @@ import { sharedCurrentUserFactory } from 'commons/utils/storeFactories'
 
 import { Footer } from '../Footer'
 
-const renderFooter = (
-  isConnected: boolean = true,
-  hasNewNav: boolean = false
-) => {
+const renderFooter = (isConnected: boolean = true) => {
   renderWithProviders(<Footer />, {
     user: isConnected
       ? sharedCurrentUserFactory({
           isAdmin: false,
           hasSeenProTutorials: true,
-          navState: {
-            newNavDate: hasNewNav ? '2021-01-01' : null,
-          },
         })
       : null,
   })
@@ -24,7 +18,7 @@ const renderFooter = (
 
 describe('Footer', () => {
   it('should  render footer', () => {
-    renderFooter(true, true)
+    renderFooter(true)
 
     expect(
       screen.queryByRole('link', { name: /CGU professionnels/ })
@@ -39,8 +33,8 @@ describe('Footer', () => {
     ).not.toBeInTheDocument()
   })
 
-  it('should render footer accessibility link when the user has the new nav', () => {
-    renderFooter(true, true)
+  it('should render footer accessibility link', () => {
+    renderFooter(true)
 
     expect(
       screen.queryByRole('link', { name: 'Accessibilité : non conforme' })

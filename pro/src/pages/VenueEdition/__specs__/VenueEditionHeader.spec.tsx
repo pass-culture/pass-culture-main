@@ -98,14 +98,10 @@ describe('PartnerPages', () => {
         },
       },
       {
-        user: sharedCurrentUserFactory({
-          navState: { newNavDate: '2002-07-29T12:18:43.087097Z' },
-        }),
+        user: sharedCurrentUserFactory(),
         storeOverrides: {
           user: {
-            currentUser: sharedCurrentUserFactory({
-              navState: { newNavDate: '2002-07-29T12:18:43.087097Z' },
-            }),
+            currentUser: sharedCurrentUserFactory(),
             selectedOffererId: 1,
           },
         },
