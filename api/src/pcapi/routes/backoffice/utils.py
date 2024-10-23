@@ -77,6 +77,9 @@ ALGOLIA_OPERATOR_DICT: dict[str, typing.Any] = {
     "NUMBER_EQUALS": lambda x, y: f"{x}={y}",
     "GREATER_THAN_OR_EQUAL_TO": lambda x, y: f"{x}>={y}",
     "LESS_THAN": lambda x, y: f"{x}<{y}",
+    "DATE_FROM": lambda x, y: f"{x}>={round(date_utils.date_to_localized_datetime(y, datetime.time.min).timestamp())}",  # type: ignore [union-attr]
+    "DATE_TO": lambda x, y: f"{x}<={round(date_utils.date_to_localized_datetime(y, datetime.time.max).timestamp())}",  # type: ignore [union-attr]
+    "DATE_EQUALS": lambda x, y: f'({ALGOLIA_OPERATOR_DICT["DATE_FROM"](x, y)} AND {ALGOLIA_OPERATOR_DICT["DATE_TO"](x, y)})',
 }
 
 
@@ -425,7 +428,6 @@ def generate_algolia_search_string(
         if not meta_field:
             warnings.add(f"La règle de recherche '{search_field}' n'est pas supportée, merci de prévenir les devs")
             continue
-
         field_value = meta_field.get("special", lambda x: x)(search_data.get(meta_field["field"]))
         filters.append(ALGOLIA_OPERATOR_DICT[operator](meta_field["facet"], field_value))
 
