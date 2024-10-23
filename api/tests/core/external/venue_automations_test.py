@@ -11,6 +11,7 @@ from pcapi.core.external.automations import venue as venue_automations
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.factories as offers_factories
+from pcapi.core.testing import override_features
 from pcapi.models.offer_mixin import OfferValidationStatus
 
 
@@ -93,6 +94,7 @@ class VenueAutomationsTest:
         assert set(results) == {venue_no_booking.bookingEmail, venue_old_booking.bookingEmail}
 
     @patch("pcapi.core.external.sendinblue.sib_api_v3_sdk.api.contacts_api.ContactsApi.import_contacts")
+    @override_features(WIP_ENABLE_BREVO_PRO_SUBACCOUNT=False)
     def test_pro_inactive_venues_automation(self, mock_import_contacts):
         offerer = offerers_factories.OffererFactory(dateValidated=datetime.utcnow() - relativedelta(days=100))
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
@@ -106,6 +108,31 @@ class VenueAutomationsTest:
                 file_body=f"EMAIL\n{venue.bookingEmail}",
                 list_ids=[settings.SENDINBLUE_PRO_INACTIVE_90_DAYS_ID],
                 notify_url=f"{settings.API_URL}/webhooks/sendinblue/importcontacts/{settings.SENDINBLUE_PRO_INACTIVE_90_DAYS_ID}/1",
+                new_list=None,
+                email_blacklist=False,
+                sms_blacklist=False,
+                update_existing_contacts=True,
+                empty_contacts_attributes=False,
+            )
+        )
+
+        assert result is True
+
+    @patch("pcapi.core.external.sendinblue.sib_api_v3_sdk.api.contacts_api.ContactsApi.import_contacts")
+    @override_features(WIP_ENABLE_BREVO_PRO_SUBACCOUNT=True)
+    def test_pro_inactive_venues_automation_with_subaccount(self, mock_import_contacts):
+        offerer = offerers_factories.OffererFactory(dateValidated=datetime.utcnow() - relativedelta(days=100))
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+        offers_factories.EventOfferFactory(venue=venue, validation=OfferValidationStatus.APPROVED)
+
+        result = venue_automations.pro_inactive_venues_automation()
+
+        mock_import_contacts.assert_called_once_with(
+            RequestContactImport(
+                file_url=None,
+                file_body=f"EMAIL\n{venue.bookingEmail}",
+                list_ids=[settings.SENDINBLUE_PRO_SUBACCOUNT_INACTIVE_90_DAYS_ID],
+                notify_url=f"{settings.API_URL}/webhooks/sendinblue/importcontacts/{settings.SENDINBLUE_PRO_SUBACCOUNT_INACTIVE_90_DAYS_ID}/1",
                 new_list=None,
                 email_blacklist=False,
                 sms_blacklist=False,
