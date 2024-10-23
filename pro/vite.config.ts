@@ -6,6 +6,7 @@ import { visualizer } from 'rollup-plugin-visualizer'
 import { defineConfig, PluginOption } from 'vite'
 import { createHtmlPlugin } from 'vite-plugin-html'
 import tsconfigPaths from 'vite-tsconfig-paths'
+import { configDefaults, coverageConfigDefaults } from 'vitest/config'
 
 // ts-unused-exports:disable-next-line
 export default defineConfig(({ mode }) => {
@@ -45,10 +46,12 @@ export default defineConfig(({ mode }) => {
       coverage: {
         reportsDirectory: '../coverage',
         reporter: ['text', 'html', 'lcov'],
+        exclude: ['**/*.stories.tsx', ...coverageConfigDefaults.exclude],
       },
       minThreads: 4,
       maxThreads: 6,
       testTimeout: 30000,
+      exclude: ['**/*.stories.tsx', ...configDefaults.exclude],
     },
     css: {
       devSourcemap: true,
