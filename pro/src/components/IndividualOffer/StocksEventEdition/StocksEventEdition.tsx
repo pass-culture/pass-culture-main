@@ -65,7 +65,6 @@ import { getSuccessMessage } from '../utils/getSuccessMessage'
 import { EventCancellationBanner } from './EventCancellationBanner'
 import { getPriceCategoryOptions } from './getPriceCategoryOptions'
 import { hasChangesOnStockWithBookings } from './hasChangesOnStockWithBookings'
-import { StockEventFormActions } from './StockEventFormActions/StockEventFormActions'
 import { STOCK_EVENT_FORM_DEFAULT_VALUES } from './StockFormList/constants'
 import {
   StockEventFormValues,
@@ -685,20 +684,6 @@ export const StocksEventEdition = ({
                         const { readOnlyFields } = stock
 
                         const beginningDate = stock.beginningDate
-                        const actions = [
-                          {
-                            callback: async () => {
-                              if (stock.bookingsQuantity > 0) {
-                                setStockToDeleteWithConfirmation(stock)
-                              } else {
-                                await onDeleteStock(stock)
-                              }
-                            },
-                            label: 'Supprimer le stock',
-                            disabled: !stock.isDeletable || isDisabled,
-                            icon: fullTrashIcon,
-                          },
-                        ]
 
                         return (
                           <tr
@@ -800,11 +785,26 @@ export const StocksEventEdition = ({
                               />
                             </td>
 
-                            {actions.length > 0 && (
-                              <td className={styles['stock-actions']}>
-                                <StockEventFormActions actions={actions} />
-                              </td>
-                            )}
+                            <td
+                              className={cn(styles['stock-actions'])}
+                              data-label="Supprimer"
+                            >
+                              <Button
+                                variant={ButtonVariant.TERNARY}
+                                disabled={!stock.isDeletable || isDisabled}
+                                onClick={async () => {
+                                  if (stock.bookingsQuantity > 0) {
+                                    setStockToDeleteWithConfirmation(stock)
+                                  } else {
+                                    await onDeleteStock(stock)
+                                  }
+                                }}
+                                icon={fullTrashIcon}
+                                hasTooltip
+                              >
+                                Supprimer
+                              </Button>
+                            </td>
                           </tr>
                         )
                       })}
