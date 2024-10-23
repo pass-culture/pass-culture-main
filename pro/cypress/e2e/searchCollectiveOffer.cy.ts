@@ -1,3 +1,5 @@
+import { expectOffersOrBookingsAreFound } from '../support/helpers.ts'
+
 describe('Search collective offers', () => {
   let login: string
   const password = 'user@AZERTY123'
@@ -40,36 +42,13 @@ describe('Search collective offers', () => {
     cy.wait('@collectiveOffers')
 
     cy.stepLog({ message: 'These 5 results should be displayed' })
-    const data = [
+    const expectedResults = [
       ['', '', 'Titre', 'Lieu', 'Établissement', 'Status'],
       ['', '', offerName, venueName, 'Tous les établissements', 'publiée'],
     ]
 
     cy.findAllByTestId('offer-item-row').should('have.length', 1)
-    cy.contains('1 offre')
 
-    for (let rowLine = 0; rowLine < 1; rowLine++) {
-      const bookLineArray = data[rowLine + 1]
-
-      cy.findAllByTestId('offer-item-row')
-        .eq(rowLine)
-        .within(() => {
-          cy.get('td').then(($elt) => {
-            for (let column = 0; column < 6; column++) {
-              cy.wrap($elt)
-                .eq(column)
-                .then((cellValue) => {
-                  if (cellValue.text().length && bookLineArray[column].length) {
-                    return cy
-                      .wrap(cellValue)
-                      .should('contain.text', bookLineArray[column])
-                  } else {
-                    return true
-                  }
-                })
-            }
-          })
-        })
-    }
+    expectOffersOrBookingsAreFound(expectedResults)
   })
 })

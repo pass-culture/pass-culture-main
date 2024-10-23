@@ -1,5 +1,7 @@
 import { addDays, format } from 'date-fns'
 
+import { expectOffersOrBookingsAreFound } from '../support/helpers.ts'
+
 describe('Search for collective bookings', () => {
   let login: string
 
@@ -36,7 +38,7 @@ describe('Search for collective bookings', () => {
       ['1', 'Mon offre', 'COLLEGE DE LA TOUR', '25 places100 €', 'confirmée'],
     ]
 
-    expectOffersAreFound(expectedResults)
+    expectOffersOrBookingsAreFound(expectedResults)
   })
 
   it('It should find collective bookings by establishments', () => {
@@ -69,7 +71,7 @@ describe('Search for collective bookings', () => {
         'confirmée',
       ],
     ]
-    expectOffersAreFound(expectedResults)
+    expectOffersOrBookingsAreFound(expectedResults)
   })
 
   it('It should find collective bookings by booking number', () => {
@@ -104,7 +106,7 @@ describe('Search for collective bookings', () => {
         'confirmée',
       ],
     ]
-    expectOffersAreFound(expectedResults)
+    expectOffersOrBookingsAreFound(expectedResults)
   })
 
   it('It should find collective bookings by date and by establishment', () => {
@@ -134,35 +136,9 @@ describe('Search for collective bookings', () => {
       ],
       ['1', 'Mon offre', 'COLLEGE DE LA TOUR', '25 places100 €', 'confirmée'],
     ]
-    expectOffersAreFound(expectedResults)
+    expectOffersOrBookingsAreFound(expectedResults)
   })
 })
-
-function expectOffersAreFound(expectedResults: Array<Array<string>>) {
-  for (let rowLine = 0; rowLine < expectedResults.length - 1; rowLine++) {
-    const offerLineArray = expectedResults[rowLine + 1]
-
-    cy.findAllByTestId('offer-item-row')
-      .eq(rowLine)
-      .within(() => {
-        cy.get('td').then(($elt) => {
-          for (let column = 0; column < 5; column++) {
-            cy.wrap($elt)
-              .eq(column)
-              .then((cellValue) => {
-                if (cellValue.text().length && offerLineArray[column].length) {
-                  return cy
-                    .wrap(cellValue)
-                    .should('contain.text', offerLineArray[column])
-                } else {
-                  return true
-                }
-              })
-          }
-        })
-      })
-  }
-}
 
 function IGoToCollectivePage(login: string) {
   const password = 'user@AZERTY123'

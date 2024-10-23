@@ -5,7 +5,9 @@
     "types": ["cypress", "@testing-library/cypress", "node"],
     "module": "nodenext",
     "strict": true,
-    "strictNullChecks": true
+    "strictNullChecks": true,
+    "allowImportingTsExtensions": true,
+    "noEmit": true
   },
   "include": ["**/*.ts"]
 }
