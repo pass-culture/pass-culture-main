@@ -313,30 +313,24 @@ def get_offers_by_filters(
         query = _filter_by_status(query, status)
     if period_beginning_date is not None or period_ending_date is not None:
         offer_alias = sa.orm.aliased(models.Offer)
-        # TODO: drop join  with venue once the  WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE feature is fully implemented
         stock_query = (
             models.Stock.query.join(offer_alias)
-            .join(offerers_models.Venue)
             .filter(models.Stock.isSoftDeleted.is_(False))
             .filter(models.Stock.offerId == models.Offer.id)
-        )
-        target_timezone = offerers_models.Venue.timezone
-        if FeatureToggle.WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE.is_active():
-            stock_query = (
-                stock_query.join(offers_model.Offer)
-                .join(
-                    offerers_models.OffererAddress,
-                    offers_model.Offer.offererAddressId == offerers_models.OffererAddress.id,
-                    isouter=True,
-                )
-                .join(geography_models.Address, offerers_models.OffererAddress.addressId == geography_models.Address.id)
-                .options(
-                    sa_orm.joinedload(offer_alias.offererAddress)
-                    .joinedload(offerers_models.OffererAddress.address)
-                    .joinedload(geography_models.Address)
-                )
+            .join(offers_model.Offer)
+            .join(
+                offerers_models.OffererAddress,
+                offers_model.Offer.offererAddressId == offerers_models.OffererAddress.id,
+                isouter=True,
             )
-            target_timezone = geography_models.Address.timezone
+            .join(geography_models.Address, offerers_models.OffererAddress.addressId == geography_models.Address.id)
+            .options(
+                sa_orm.joinedload(offer_alias.offererAddress)
+                .joinedload(offerers_models.OffererAddress.address)
+                .joinedload(geography_models.Address)
+            )
+        )
+        target_timezone = geography_models.Address.timezone
         if period_beginning_date is not None:
             stock_query = stock_query.filter(
                 sa.func.timezone(
@@ -1131,15 +1125,17 @@ def get_filtered_stocks(
         query = query.filter(sa.cast(models.Stock.beginningDatetime, sa.Date) == date)
     if time is not None:
         dt = datetime.datetime.combine(datetime.datetime.today(), time)
-        timezone = pytz.timezone(venue.timezone)
 
-        if FeatureToggle.WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE.is_active():
-            if offer.offererAddress:
-                timezone = pytz.timezone(offer.offererAddress.address.timezone)
-            elif venue.offererAddress:
-                timezone = pytz.timezone(venue.offererAddress.address.timezone)
+        # TODO(xordoquy): will be an issue with digital offers !!!
+        if offer.offererAddress:
+            timezone = pytz.timezone(offer.offererAddress.address.timezone)
+        elif venue.offererAddress:
+            timezone = pytz.timezone(venue.offererAddress.address.timezone)
+        else:
+            timezone = pytz.timezone(venue.timezone)
         address_time = dt.replace(tzinfo=pytz.utc).astimezone(timezone).time()
 
+        # TODO(xordoquy): it still uses venue.timezone ?
         query = query.filter(
             sa.cast(
                 sa.func.timezone(

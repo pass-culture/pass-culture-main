@@ -48,7 +48,6 @@ class FormatBookingHoursForEmailTest:
         )
         assert format_booking_hours_for_email(booking) == ""
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def test_should_return_hours_and_minutes_casted_in_the_venue_timezone(self):
         # When offer has no offererAddress but venue has, use the venue's offererAddress TZ
         offerer = offerers_factories.OffererFactory()
@@ -69,7 +68,6 @@ class FormatBookingHoursForEmailTest:
         assert not booking.stock.offer.offererAddressId
         assert format_booking_hours_for_email(booking) == "6h20"
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def test_should_return_hours_and_minutes_casted_in_the_offer_timezone(self):
         # When offer and venue have offererAddress use the offer's offererAddress TZ
         offerer = offerers_factories.OffererFactory()

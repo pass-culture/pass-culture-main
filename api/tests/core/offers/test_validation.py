@@ -784,7 +784,6 @@ class CheckBookingLimitDatetimeTest:
         validation.check_booking_limit_datetime(stock, beginning=None, booking_limit_datetime=booking_limit_date)
         validation.check_booking_limit_datetime(stock, beginning=beginning_date, booking_limit_datetime=None)
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def test_check_booking_limit_datetime_should_not_raise_with_timezone(self):
         venue = offerers_factories.VenueFactory(departementCode=71)
         oa = offerers_factories.OffererAddressFactory(address__departmentCode=974)

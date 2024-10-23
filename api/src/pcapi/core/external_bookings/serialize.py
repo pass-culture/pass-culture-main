@@ -7,7 +7,6 @@ import pcapi.core.bookings.models as bookings_models
 import pcapi.core.finance.utils as finance_utils
 import pcapi.core.offers.models as offers_models
 import pcapi.core.users.models as users_models
-from pcapi.models.feature import FeatureToggle
 
 
 logger = logging.getLogger(__name__)
@@ -60,15 +59,14 @@ class ExternalEventBookingRequest(pydantic_v1.BaseModel):
         )
 
         offer_address = stock.offer.offererAddress
-        if FeatureToggle.WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE.is_active() and offer_address:
-            # The label is the name of the venue, if it exists, otherwise the street is used
+        # The label is the name of the venue, if it exists, otherwise the street is used
+        address = None
+        venue_name = stock.offer.venue.name
+        department_code = None
+        if offer_address:
             address = offer_address.address.street
             venue_name = offer_address.label if offer_address.label else stock.offer.venue.name
             department_code = offer_address.address.departmentCode
-        else:
-            address = stock.offer.venue.street
-            venue_name = stock.offer.venue.name
-            department_code = stock.offer.venue.departementCode
 
         return cls(
             booking_confirmation_date=booking.cancellationLimitDate,
