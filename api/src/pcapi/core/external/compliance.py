@@ -32,7 +32,10 @@ def make_update_offer_compliance_score(payload: GetComplianceScoreRequest) -> No
         offer.extraData = offer.extraData or {}
         offer.extraData["complianceScore"] = data_score
         offer.extraData["complianceReasons"] = data_reasons
-        db.session.add(offer)
+        offer_compliance = offers_models.OfferCompliance(
+            offer=offer, compliance_score=data_score, compliance_reasons=data_reasons
+        )
+        db.session.add_all([offer_compliance, offer])
         db.session.commit()
 
 
