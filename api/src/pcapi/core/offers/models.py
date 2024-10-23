@@ -13,6 +13,7 @@ from sqlalchemy.ext import mutable as sa_mutable
 from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.ext.mutable import MutableDict
+from sqlalchemy.ext.mutable import MutableList
 import sqlalchemy.orm as sa_orm
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.elements import BinaryExpression
@@ -534,6 +535,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
     )
     bookingContact = sa.Column(sa.String(120), nullable=True)
     bookingEmail = sa.Column(sa.String(120), nullable=True)
+    compliance: sa_orm.Mapped["OfferCompliance"] = sa_orm.relationship("OfferCompliance", back_populates="offer")
     criteria: sa_orm.Mapped["Criterion"] = sa.orm.relationship(
         "Criterion", backref=db.backref("criteria", lazy="dynamic"), secondary="offer_criterion"
     )
@@ -1327,3 +1329,16 @@ class Movie:
     visa: str | None
     title: str
     extra_data: OfferExtraData | None
+
+
+class OfferCompliance(PcObject, Base, Model):
+    __tablename__ = "offer_compliance"
+    offerId: int = sa.Column(
+        sa.BigInteger, sa.ForeignKey("offer.id", ondelete="CASCADE"), index=True, nullable=False, unique=True
+    )
+    offer: sa_orm.Mapped["Offer"] = sa.orm.relationship("Offer", back_populates="compliance")
+    # Compliance_score is a score between 0 and 100. Keep it small with a smallint
+    compliance_score: int = sa.Column(sa.SmallInteger, nullable=False)
+    compliance_reasons: sa_orm.Mapped[list[str]] = sa.Column(
+        MutableList.as_mutable(postgresql.ARRAY(sa.String)), nullable=False
+    )
