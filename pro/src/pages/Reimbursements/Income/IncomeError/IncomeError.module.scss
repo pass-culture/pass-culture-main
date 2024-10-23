@@ -5,10 +5,10 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  color: var(--color-grey-semi-dark);
   text-align: center;
 
   &-icon {
     margin-bottom: rem.torem(32px);
+    color: var(--color-grey-semi-dark);
   }
 }
