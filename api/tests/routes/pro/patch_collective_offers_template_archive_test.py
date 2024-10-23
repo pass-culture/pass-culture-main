@@ -90,3 +90,27 @@ class Returns204Test:
         # Then
         assert CollectiveOfferTemplate.query.get(draft_template_offer.id).isArchived
         assert CollectiveOfferTemplate.query.get(other_template_offer.id).isArchived
+
+    def when_archiving_rejected_offers_templates(self, client):
+        rejected_template_offer = CollectiveOfferTemplateFactory(validation=OfferValidationStatus.REJECTED)
+        venue = rejected_template_offer.venue
+        other_template_offer = CollectiveOfferTemplateFactory(venue=venue)
+        offerer = venue.managingOfferer
+        offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offerer)
+        client = client.with_session_auth("pro@example.com")
+
+        data = {"ids": [rejected_template_offer.id, other_template_offer.id]}
+
+        with patch(
+            "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
+        ):
+            # 1. authentication
+            # 2. load current_user
+            # 3. retrieve all collective_order.ids to batch them in pool for update
+            # 4. update dateArchive on collective_offer
+            with assert_num_queries(4):
+                response = client.patch("/collective/offers-template/archive", json=data)
+                assert response.status_code == 204
+
+        assert CollectiveOfferTemplate.query.get(rejected_template_offer.id).isArchived
+        assert CollectiveOfferTemplate.query.get(other_template_offer.id).isArchived
