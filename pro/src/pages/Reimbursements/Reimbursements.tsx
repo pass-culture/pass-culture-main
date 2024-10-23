@@ -29,10 +29,12 @@ export const Reimbursements = (): JSX.Element => {
   )
 
   const offererQuery = useSWR(
-    [
-      GET_OFFERER_QUERY_KEY,
-      selectedOffererId || offererNamesQuery.data.offerersNames[0]?.id,
-    ],
+    offererNamesQuery.isLoading && !selectedOffererId
+      ? null
+      : [
+          GET_OFFERER_QUERY_KEY,
+          selectedOffererId || offererNamesQuery.data.offerersNames[0]?.id,
+        ],
     ([, offererId]) => api.getOfferer(Number(offererId))
   )
 
