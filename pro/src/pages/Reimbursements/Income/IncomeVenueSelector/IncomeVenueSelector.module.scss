@@ -13,6 +13,7 @@
   }
 
   @media (min-width: size.$laptop) {
-    width: calc(100vw - (size.$main-content-padding * 2) - 16.75rem)
+    width: calc(100vw - (size.$main-content-padding * 2) - 16.75rem);
+    max-width: calc(90rem - 4rem - 16.75rem);
   }
 }
