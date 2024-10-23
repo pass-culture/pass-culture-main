@@ -87,6 +87,33 @@ def create_pro_user_with_financial_data() -> dict:
     return {"user": get_pro_user_helper(pro_user)}
 
 
+def create_pro_user_with_financial_data_and_two_venues() -> dict:
+    pro_user = users_factories.ProFactory()
+    offerer_C = offerers_factories.OffererFactory()
+    offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer_C)
+    offerers_factories.VenueFactory(name="Mon Lieu", managingOfferer=offerer_C)
+    offerers_factories.VirtualVenueFactory(managingOfferer=offerer_C)
+
+    offerer_D = offerers_factories.OffererFactory(name="Structure avec informations bancaires 2")
+    offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer_D)
+    venue_C = offerers_factories.VenueFactory(name="Mon Lieu", managingOfferer=offerer_D)
+    offerers_factories.VirtualVenueFactory(managingOfferer=offerer_D)
+    venue_D = offerers_factories.VenueFactory(name="Mon Lieu 2", managingOfferer=offerer_D)
+    offerers_factories.VirtualVenueFactory(managingOfferer=offerer_D)
+    bank_account_C = finance_factories.BankAccountFactory(offerer=offerer_D)
+    offerers_factories.VenuePricingPointLinkFactory(
+        venue=venue_C,
+        pricingPoint=venue_C,
+    )
+    offerers_factories.VenuePricingPointLinkFactory(
+        venue=venue_D,
+        pricingPoint=venue_D,
+    )
+    finance_factories.InvoiceFactory(bankAccount=bank_account_C, reimbursementPoint=venue_C)
+    finance_factories.InvoiceFactory(bankAccount=bank_account_C, reimbursementPoint=venue_D)
+    return {"user": get_pro_user_helper(pro_user)}
+
+
 def create_adage_environnement() -> dict:
     current_year = educational_factories.EducationalCurrentYearFactory()
     next_year = educational_factories.EducationalYearFactory()

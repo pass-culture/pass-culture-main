@@ -1,5 +1,6 @@
 describe('Financial Management - messages, links to external help page, reimbursement details', () => {
   let login: string
+  let login2: string
   const password = 'user@AZERTY123'
 
   beforeEach(() => {
@@ -9,6 +10,12 @@ describe('Financial Management - messages, links to external help page, reimburs
       url: 'http://localhost:5001/sandboxes/pro/create_pro_user_with_financial_data',
     }).then((response) => {
       login = response.body.user.email
+    })
+    cy.request({
+      method: 'GET',
+      url: 'http://localhost:5001/sandboxes/pro/create_pro_user_with_financial_data_and_two_venues',
+    }).then((response) => {
+      login2 = response.body.user.email
     })
     cy.intercept({ method: 'GET', url: '/offerers/*' }).as('getOfferers')
   })
@@ -244,6 +251,15 @@ describe('Financial Management - messages, links to external help page, reimburs
     cy.findByTestId('reimbursement-bank-account-linked-venues').within(() => {
       cy.contains('Lieu(x) rattaché(s) à ce compte bancaire')
       cy.contains(venue)
+    })
+  })
+
+  it('No automatic link venue with bank account and several venues', () => {
+    cy.stepLog({ message: 'I am logged in' })
+    cy.login({
+      email: login2,
+      password: password,
+      redirectUrl: '/',
     })
   })
 })
