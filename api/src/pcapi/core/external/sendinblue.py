@@ -106,11 +106,14 @@ class SendinblueOptionalAttributes(Enum):
 
 
 def update_contact_email(user: users_models.User, old_email: str, new_email: str, asynchronous: bool = True) -> None:
-    contact_list_ids = (
-        [settings.SENDINBLUE_PRO_CONTACT_LIST_ID]
-        if user.has_any_pro_role
-        else [settings.SENDINBLUE_YOUNG_CONTACT_LIST_ID]
-    )
+    if user.has_any_pro_role:
+        contact_list_ids = (
+            []
+            if FeatureToggle.WIP_ENABLE_BREVO_PRO_SUBACCOUNT.is_active()
+            else [settings.SENDINBLUE_PRO_CONTACT_LIST_ID]
+        )
+    else:
+        contact_list_ids = [settings.SENDINBLUE_YOUNG_CONTACT_LIST_ID]
 
     contact_request = UpdateSendinblueContactRequest(
         email=old_email,
@@ -141,9 +144,14 @@ def update_contact_attributes(
     if cultural_survey_answers:
         formatted_attributes.update(format_cultural_survey_answers(cultural_survey_answers))
 
-    contact_list_ids = (
-        [settings.SENDINBLUE_PRO_CONTACT_LIST_ID] if attributes.is_pro else [settings.SENDINBLUE_YOUNG_CONTACT_LIST_ID]
-    )
+    if attributes.is_pro:
+        contact_list_ids = (
+            []
+            if FeatureToggle.WIP_ENABLE_BREVO_PRO_SUBACCOUNT.is_active()
+            else [settings.SENDINBLUE_PRO_CONTACT_LIST_ID]
+        )
+    else:
+        contact_list_ids = [settings.SENDINBLUE_YOUNG_CONTACT_LIST_ID]
 
     contact_request = UpdateSendinblueContactRequest(
         email=user_email,
@@ -375,7 +383,11 @@ def import_contacts_in_sendinblue(
         send_import_contacts_request(
             api_instance,
             file_body=pro_users_file_body,
-            list_ids=[settings.SENDINBLUE_PRO_CONTACT_LIST_ID],
+            list_ids=(
+                []
+                if FeatureToggle.WIP_ENABLE_BREVO_PRO_SUBACCOUNT.is_active()
+                else [settings.SENDINBLUE_PRO_CONTACT_LIST_ID]
+            ),
             email_blacklist=email_blacklist,
         )
     # send young users request

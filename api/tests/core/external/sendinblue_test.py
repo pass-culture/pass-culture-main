@@ -20,6 +20,7 @@ from pcapi.core.external.sendinblue import make_update_request
 from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
 import pcapi.core.users.testing as sendinblue_testing
+from pcapi.models.feature import FeatureToggle
 from pcapi.tasks.serialization import sendinblue_tasks
 
 from . import common_pro_attributes
@@ -287,21 +288,21 @@ class BulkImportUsersDataTest:
             "update_existing_contacts": True,
         }
 
-        expected_pro_call = RequestContactImport(
-            **expected_common_params,
-        )
-        expected_pro_call.list_ids = [settings.SENDINBLUE_YOUNG_CONTACT_LIST_ID]
-        expected_pro_call.file_body = (
-            f"{self.expected_header}\n{self.eren_expected_file_body}\n{self.armin_expected_file_body}"
-        )
-
         expected_young_call = RequestContactImport(
             **expected_common_params,
         )
-        expected_young_call.list_ids = [settings.SENDINBLUE_PRO_CONTACT_LIST_ID]
-        expected_young_call.file_body = f"{self.expected_header}\n{self.mikasa_expected_file_body}"
+        expected_young_call.list_ids = [settings.SENDINBLUE_YOUNG_CONTACT_LIST_ID]
+        expected_young_call.file_body = (
+            f"{self.expected_header}\n{self.eren_expected_file_body}\n{self.armin_expected_file_body}"
+        )
 
-        mock_import_contacts.assert_has_calls([call(expected_pro_call), call(expected_young_call)], any_order=True)
+        expected_pro_call = RequestContactImport(
+            **expected_common_params,
+        )
+        expected_pro_call.list_ids = [settings.SENDINBLUE_PRO_CONTACT_LIST_ID]
+        expected_pro_call.file_body = f"{self.expected_header}\n{self.mikasa_expected_file_body}"
+
+        mock_import_contacts.assert_has_calls([call(expected_young_call), call(expected_pro_call)], any_order=True)
 
     @pytest.mark.parametrize(
         "feature_flag,use_pro_subaccount",
@@ -412,7 +413,7 @@ class BulkImportUsersDataTest:
                     email=email,
                     use_pro_subaccount=use_pro_subaccount,
                     attributes=attributes,
-                    contact_list_ids=[SENDINBLUE_PRO_TESTING_CONTACT_LIST_ID],
+                    contact_list_ids=[] if feature_flag else [SENDINBLUE_PRO_TESTING_CONTACT_LIST_ID],
                     emailBlacklisted=False,
                 )
             )
