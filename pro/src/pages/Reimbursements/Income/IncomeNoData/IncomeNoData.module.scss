@@ -1,0 +1,22 @@
+@use "styles/mixins/_rem.scss" as rem;
+
+.income-no-data {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  &-icon {
+    margin-bottom: rem.torem(20px);
+  }
+
+  &-text-with-link {
+    display: flex;
+    margin-top: rem.torem(10px);
+    flex-wrap: wrap;
+    justify-content: center;
+
+    &-buttonlink {
+      margin: 0 rem.torem(10px);
+    }
+  }
+}
