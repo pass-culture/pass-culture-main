@@ -33,7 +33,7 @@
                   <td>&nbsp;</td>
                   {% for role in roles %}
                     <td class="border-start text-center">
-                      {% set link = "https://groups.google.com/a/passculture.app/g/backoffice-" + get_setting('ENV') + "-{{ role.name }}/members" %}
+                      {% set link = "https://groups.google.com/a/passculture.app/g/backoffice-" + get_setting('ENV') + "-" + role.name + "/members" %}
                       <a href="{{ link }}"
                          target="_blank"
                          class="link-primary"
