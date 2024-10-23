@@ -35,6 +35,10 @@
         height: rem.torem(66.75px);
         margin-left: rem.torem(24px);
         align-items: end;
+
+        &-is-only-filter {
+          margin-left: 0;
+        }
       }
 
       &-button {

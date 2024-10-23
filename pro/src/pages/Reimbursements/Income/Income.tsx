@@ -104,6 +104,7 @@ export const Income = () => {
   }
 
   const hasVenuesData = venues.length > 0
+  const hasSingleVenue = venues.length === 1
   const hasIncomeData = incomeByYear && Object.keys(incomeByYear).length > 0
 
   if (!hasVenuesData) {
@@ -112,21 +113,28 @@ export const Income = () => {
 
   return (
     <>
-      <FormLayout.MandatoryInfo />
+      {!hasSingleVenue && <FormLayout.MandatoryInfo />}
       <div className={styles['income-filters']}>
-        <IncomeVenueSelector
-          venues={venues}
-          onChange={(venues) => {
-            if (!isEqual(selectedVenues, venues)) {
-              setSelectedVenues(venues)
-            }
-          }}
-        />
+        {!hasSingleVenue && (
+          <IncomeVenueSelector
+            venues={venues}
+            onChange={(venues) => {
+              if (!isEqual(selectedVenues, venues)) {
+                setSelectedVenues(venues)
+              }
+            }}
+          />
+        )}
         {!isIncomeLoading && !incomeApiError && hasIncomeData && (
           <>
-            <span className={styles['income-filters-divider']} />
+            {!hasSingleVenue && (
+              <span className={styles['income-filters-divider']} />
+            )}
             <ul
-              className={styles['income-filters-by-year']}
+              className={classnames(styles['income-filters-by-year'], {
+                [styles['income-filters-by-year-is-only-filter']]:
+                  hasSingleVenue,
+              })}
               aria-label="Filtrage par année"
             >
               {years.map((year) => (
