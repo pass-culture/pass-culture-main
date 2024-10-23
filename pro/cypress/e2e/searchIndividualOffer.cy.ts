@@ -42,7 +42,7 @@ describe('Search individual offers', () => {
     cy.findByText('Rechercher').click()
     cy.wait('@searchOffers').its('response.statusCode').should('eq', 200)
 
-    cy.stepLog({ message: 'These results should be displayed' })
+    cy.stepLog({ message: '1 result should be displayed' })
     const expectedResults = [
       ['', '', 'Titre', 'Lieu', 'Stocks', 'Status'],
       ['', '', offerName1, venueName, '1 000', 'publiée'],
@@ -67,7 +67,7 @@ describe('Search individual offers', () => {
     cy.findByText('Rechercher').click()
     cy.wait('@searchOffers').its('response.statusCode').should('eq', 200)
 
-    cy.stepLog({ message: 'These results should be displayed' })
+    cy.stepLog({ message: '1 result should be displayed' })
     const expectedResults = [
       ['', '', 'Titre', 'Lieu', 'Stocks', 'Status'],
       ['', '', offerName2 + ean, venueName, '1 000', 'publiée'],
@@ -88,7 +88,7 @@ describe('Search individual offers', () => {
     cy.findByText('Rechercher').click()
     cy.wait('@searchOffers').its('response.statusCode').should('eq', 200)
 
-    cy.stepLog({ message: 'These results should be displayed' })
+    cy.stepLog({ message: '1 result should be displayed' })
     const expectedResults = [
       ['', '', 'Titre', 'Lieu', 'Stocks', 'Status'],
       ['', '', offerName3, venueName, '1 000', 'publiée'],
@@ -111,7 +111,7 @@ describe('Search individual offers', () => {
     cy.findByText('Rechercher').click()
     cy.wait('@searchOffers').its('response.statusCode').should('eq', 200)
 
-    cy.stepLog({ message: 'These results should be displayed' })
+    cy.stepLog({ message: 'These 6 results should be displayed' })
     const expectedResults = [
       ['', '', 'Titre', 'Lieu', 'Stocks', 'Status'],
       ['', '', offerName6, venueName, '1 000', 'publiée'],
@@ -139,7 +139,7 @@ describe('Search individual offers', () => {
     cy.findByText('Rechercher').click()
     cy.wait('@searchOffers').its('response.statusCode').should('eq', 200)
 
-    cy.stepLog({ message: 'These results should be displayed' })
+    cy.stepLog({ message: '1 result should be displayed' })
     const expectedResults = [
       ['', '', 'Titre', 'Lieu', 'Stocks', 'Status'],
       ['', '', offerName4, venueName, '1 000', 'publiée'],
@@ -210,7 +210,7 @@ describe('Search individual offers', () => {
     cy.findByLabelText('Début de la période').invoke('val').should('be.empty')
     cy.findByLabelText('Fin de la période').invoke('val').should('be.empty')
 
-    cy.stepLog({ message: 'These results should be displayed' })
+    cy.stepLog({ message: 'These 7 results should be displayed' })
     const expectedResults2 = [
       ['', '', 'Titre', 'Lieu', 'Stocks', 'Status'],
       ['', '', offerName7, venueName, '0', 'épuisée'],
