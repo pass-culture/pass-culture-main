@@ -27,17 +27,13 @@ import {
 
 const renderOffers = (
   props: CollectiveOffersScreenProps,
-  options?: RenderWithProvidersOptions,
-  hasNewNav: boolean = false
+  options?: RenderWithProvidersOptions
 ) => {
   renderWithProviders(<CollectiveOffersScreen {...props} />, {
     storeOverrides: {
       user: {
         currentUser: sharedCurrentUserFactory({
           isAdmin: false,
-          navState: {
-            newNavDate: hasNewNav ? '2021-01-01' : null,
-          },
         }),
         selectedOffererId: 1,
       },

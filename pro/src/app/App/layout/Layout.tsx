@@ -40,9 +40,7 @@ export const Layout = ({
   const isMobileScreen = useMediaQuery('(max-width: 46.5rem)')
 
   const shouldDisplayNewNavReview =
-    Boolean(currentUser?.navState?.eligibilityDate) &&
-    layout !== 'funnel' &&
-    layout !== 'without-nav'
+    layout !== 'funnel' && layout !== 'without-nav'
 
   return (
     <>

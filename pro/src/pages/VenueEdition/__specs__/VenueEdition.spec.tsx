@@ -28,10 +28,7 @@ const renderVenueEdition = (options?: RenderWithProvidersOptions) => {
       <Route path="/accueil" element={<h1>Home</h1>} />
     </Routes>,
     {
-      user: sharedCurrentUserFactory({
-        // a date in the past to have the new interface
-        navState: { newNavDate: '2002-07-29T12:18:43.087097Z' },
-      }),
+      user: sharedCurrentUserFactory(),
 
       initialRouterEntries: [
         `/structures/${defaultGetOffererResponseModel.id}/lieux/${defaultGetVenue.id}/edition`,
@@ -334,9 +331,7 @@ describe('route VenueEdition', () => {
       isPermanent: true,
     })
     renderVenueEdition({
-      user: sharedCurrentUserFactory({
-        navState: { newNavDate: '2002-07-29T12:18:43.087097Z' },
-      }),
+      user: sharedCurrentUserFactory(),
     })
     await waitForElementToBeRemoved(screen.getByTestId('spinner'))
 

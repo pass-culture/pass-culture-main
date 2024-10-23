@@ -18,8 +18,7 @@ vi.mock('apiClient/api', () => ({
 const renderStatisticsDashboard = (
   hasActiveOffer = true,
   features: string[] = [],
-  isAdmin = false,
-  hasNewNav = false
+  isAdmin = false
 ) =>
   renderWithProviders(
     <StatisticsDashboard
@@ -32,9 +31,6 @@ const renderStatisticsDashboard = (
     {
       user: sharedCurrentUserFactory({
         isAdmin,
-        navState: {
-          newNavDate: hasNewNav ? '2021-01-01' : null,
-        },
       }),
       features,
     }
@@ -128,7 +124,7 @@ describe('StatisticsDashboard', () => {
   })
 
   it("should not display the create offer button if the user isn't Admin", async () => {
-    renderStatisticsDashboard(false, [], false, true)
+    renderStatisticsDashboard(false, [], false)
 
     expect(
       await screen.findByText('à destination du grand public')
