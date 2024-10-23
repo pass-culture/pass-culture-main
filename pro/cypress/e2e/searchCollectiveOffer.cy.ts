@@ -35,7 +35,7 @@ describe('Search collective offers', () => {
     cy.findByText('Rechercher').click()
     cy.wait('@collectiveOffers')
 
-    cy.stepLog({ message: 'These 5 results should be displayed' })
+    cy.stepLog({ message: '1 result should be displayed' })
     const expectedResults = [
       ['', '', 'Titre', 'Lieu', 'Établissement', 'Status'],
       ['', '', offerName, venueName, 'Tous les établissements', 'publiée'],
