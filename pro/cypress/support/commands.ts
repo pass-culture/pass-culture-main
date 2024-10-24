@@ -59,6 +59,9 @@ Cypress.Commands.add(
     cy.get('button[type=submit]').click()
     cy.wait(['@signinUser', '@offererNames'])
 
+    if (redirectUrl && redirectUrl !== '/') {
+      cy.visit(redirectUrl)
+    }
     cy.url().should('contain', redirectUrl ?? '/accueil')
     cy.findAllByTestId('spinner', { timeout: 60 * 1000 }).should('not.exist')
   }
