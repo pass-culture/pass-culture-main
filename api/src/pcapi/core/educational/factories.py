@@ -380,72 +380,99 @@ class AdageVenueAddressFactory(BaseFactory):
 class NotImplementedStatus(BaseException):
     pass
 
+class ArchivedCollectiveOfferFactory(CollectiveOfferFactory):
+    dateArchived = datetime.datetime.utcnow()
+
+class RejectedCollectiveOfferFactory(CollectiveOfferFactory):
+    validation = OfferValidationStatus.REJECTED
+
+class PendingCollectiveOfferFactory(CollectiveOfferFactory):
+    validation = OfferValidationStatus.PENDING
+
+class DraftCollectiveOfferFactory(CollectiveOfferFactory):
+    validation = OfferValidationStatus.DRAFT
+
+class InactiveCollectiveOfferFactory(CollectiveOfferFactory):
+    isActive = False
+
+class ActiveCollectiveOfferFactory(CollectiveOfferFactory):
+    pass
+
+class ExpiredCollectiveOfferFactory(CollectiveOfferFactory):
+    validation = OfferValidationStatus.APPROVED
+
+    @factory.post_generation
+    def create_expired_stock(self, _create, _extracted, **_kwargs):
+        yesterday = datetime.datetime.utcnow() - datetime.timedelta(days=1)
+        stock = CollectiveStockFactory(beginningDatetime=yesterday, collectiveOffer=self)
+        PendingCollectiveBookingFactory(collectiveStock=stock)
+
+class PrebookedCollectiveOfferFactory(CollectiveOfferFactory):
+    @factory.post_generation
+    def create_prebooked_stock(self, _create, _extracted, **_kwargs):
+        tomorrow = datetime.datetime.utcnow() + datetime.timedelta(days=1)
+        stock = CollectiveStockFactory(beginningDatetime=tomorrow, collectiveOffer=self)
+        PendingCollectiveBookingFactory(collectiveStock=stock)
+
+class CancelledCollectiveOfferFactory(CollectiveOfferFactory):
+    @factory.post_generation
+    def create_cancelled_stock(self, _create, _extracted, **_kwargs):
+        tomorrow = datetime.datetime.utcnow() + datetime.timedelta(days=1)
+        stock = CollectiveStockFactory(beginningDatetime=tomorrow, collectiveOffer=self)
+        CancelledCollectiveBookingFactory(collectiveStock=stock)
+
+class BookedCollectiveOfferFactory(CollectiveOfferFactory):
+    @factory.post_generation
+    def create_booked_stock(self, _create, _extracted, **_kwargs):
+        tomorrow = datetime.datetime.utcnow() + datetime.timedelta(days=1)
+        stock = CollectiveStockFactory(beginningDatetime=tomorrow, collectiveOffer=self)
+        ConfirmedCollectiveBookingFactory(collectiveStock=stock)
+
+class EndedCollectiveOfferFactory(CollectiveOfferFactory):
+    @factory.post_generation
+    def create_ended_stock(self, _create, _extracted, **_kwargs):
+        yesterday = datetime.datetime.utcnow() - datetime.timedelta(days=1)
+        stock = CollectiveStockFactory(beginningDatetime=yesterday, collectiveOffer=self)
+        UsedCollectiveBookingFactory(collectiveStock=stock)
+
+class ReimbursedCollectiveOfferFactory(CollectiveOfferFactory):
+    @factory.post_generation
+    def create_reimbursed_stock(self, _create, _extracted, **_kwargs):
+        yesterday = datetime.datetime.utcnow() - datetime.timedelta(days=1)
+        stock = CollectiveStockFactory(beginningDatetime=yesterday, collectiveOffer=self)
+        ReimbursedCollectiveBookingFactory(collectiveStock=stock)
 
 def create_collective_offer_by_status(
     status: CollectiveOfferDisplayedStatus,
     **kwargs: typing.Any,
 ) -> models.CollectiveOffer:
-    match status.value:
-        case CollectiveOfferDisplayedStatus.ARCHIVED.value:
-            kwargs["dateArchived"] = datetime.datetime.utcnow()
-            return CollectiveOfferFactory(**kwargs)
-        case CollectiveOfferDisplayedStatus.REJECTED.value:
-            kwargs["validation"] = OfferValidationStatus.REJECTED
-            return CollectiveOfferFactory(**kwargs)
-        case CollectiveOfferDisplayedStatus.PENDING.value:
-            kwargs["validation"] = OfferValidationStatus.PENDING
-            return CollectiveOfferFactory(**kwargs)
-        case CollectiveOfferDisplayedStatus.ACTIVE.value:
-            return CollectiveOfferFactory(**kwargs)
-        case CollectiveOfferDisplayedStatus.INACTIVE.value:
-            kwargs["isActive"] = False
-            return CollectiveOfferFactory(**kwargs)
-        case CollectiveOfferDisplayedStatus.EXPIRED.value:
-            kwargs["validation"] = OfferValidationStatus.APPROVED
-            offer = CollectiveOfferFactory(**kwargs)
-            yesterday = datetime.datetime.utcnow() - datetime.timedelta(days=1)
-
-            stock = CollectiveStockFactory(beginningDatetime=yesterday, collectiveOffer=offer)
-            PendingCollectiveBookingFactory(collectiveStock=stock)
-            return offer
-        case CollectiveOfferDisplayedStatus.PREBOOKED.value:
-            offer = CollectiveOfferFactory(**kwargs)
-
-            tomorrow = datetime.datetime.utcnow() + datetime.timedelta(days=1)
-            stock = CollectiveStockFactory(beginningDatetime=tomorrow, collectiveOffer=offer)
-            _booking = PendingCollectiveBookingFactory(collectiveStock=stock)
-            return offer
-        case CollectiveOfferDisplayedStatus.CANCELLED.value:
-            offer = CollectiveOfferFactory(**kwargs)
-
-            tomorrow = datetime.datetime.utcnow() + datetime.timedelta(days=1)
-            stock = CollectiveStockFactory(beginningDatetime=tomorrow, collectiveOffer=offer)
-            _booking = CancelledCollectiveBookingFactory(collectiveStock=stock)
-            return offer
-        case CollectiveOfferDisplayedStatus.BOOKED.value:
-            offer = CollectiveOfferFactory(**kwargs)
-
-            tomorrow = datetime.datetime.utcnow() + datetime.timedelta(days=1)
-            stock = CollectiveStockFactory(beginningDatetime=tomorrow, collectiveOffer=offer)
-            _booking = ConfirmedCollectiveBookingFactory(collectiveStock=stock)
-            return offer
-        case CollectiveOfferDisplayedStatus.ENDED.value:
-            offer = CollectiveOfferFactory(**kwargs)
-            yesterday = datetime.datetime.utcnow() - datetime.timedelta(days=1)
-            stock = CollectiveStockFactory(collectiveOffer=offer, beginningDatetime=yesterday)
-            _booking = UsedCollectiveBookingFactory(collectiveStock=stock)
-            return offer
-        case CollectiveOfferDisplayedStatus.REIMBURSED.value:
-            offer = CollectiveOfferFactory(**kwargs)
-            yesterday = datetime.datetime.utcnow() - datetime.timedelta(days=1)
-            stock = CollectiveStockFactory(collectiveOffer=offer, beginningDatetime=yesterday)
-            _booking = ReimbursedCollectiveBookingFactory(collectiveStock=stock)
-            return offer
-        case CollectiveOfferDisplayedStatus.DRAFT.value:
-            kwargs["validation"] = OfferValidationStatus.DRAFT
-            return CollectiveOfferFactory(**kwargs)
-
-    raise NotImplementedStatus(f"Factory for {status}")
+    match status:
+        case CollectiveOfferDisplayedStatus.ARCHIVED:
+            return ArchivedCollectiveOfferFactory(**kwargs)
+        case CollectiveOfferDisplayedStatus.REJECTED:
+            return RejectedCollectiveOfferFactory(**kwargs)
+        case CollectiveOfferDisplayedStatus.PENDING:
+            return PendingCollectiveOfferFactory(**kwargs)
+        case CollectiveOfferDisplayedStatus.ACTIVE:
+            return ActiveCollectiveOfferFactory(**kwargs)
+        case CollectiveOfferDisplayedStatus.INACTIVE:
+            return InactiveCollectiveOfferFactory(**kwargs)
+        case CollectiveOfferDisplayedStatus.EXPIRED:
+            return ExpiredCollectiveOfferFactory(**kwargs)
+        case CollectiveOfferDisplayedStatus.PREBOOKED:
+            return PrebookedCollectiveOfferFactory(**kwargs)
+        case CollectiveOfferDisplayedStatus.CANCELLED:
+            return CancelledCollectiveOfferFactory(**kwargs)
+        case CollectiveOfferDisplayedStatus.BOOKED:
+            return BookedCollectiveOfferFactory(**kwargs)
+        case CollectiveOfferDisplayedStatus.ENDED:
+            return EndedCollectiveOfferFactory(**kwargs)
+        case CollectiveOfferDisplayedStatus.REIMBURSED:
+            return ReimbursedCollectiveOfferFactory(**kwargs)
+        case CollectiveOfferDisplayedStatus.DRAFT:
+            return DraftCollectiveOfferFactory(**kwargs)
+        case _:
+            raise NotImplementedStatus(f"Factory for {status}")
 
 
 def create_collective_offer_template_by_status(

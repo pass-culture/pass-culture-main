@@ -795,8 +795,6 @@ class CollectiveOffer(
         if self.isArchived:
             return CollectiveOfferDisplayedStatus.ARCHIVED
 
-        if not self.isActive:
-            return CollectiveOfferDisplayedStatus.INACTIVE
 
         match self.validation:
             case offer_mixin.OfferValidationStatus.REJECTED:
@@ -806,6 +804,10 @@ class CollectiveOffer(
             case offer_mixin.OfferValidationStatus.DRAFT:
                 return CollectiveOfferDisplayedStatus.DRAFT
             case offer_mixin.OfferValidationStatus.APPROVED:
+                if not self.isActive and not feature.FeatureToggle.ENABLE_COLLECTIVE_NEW_STATUSES.is_active():
+                    
+                    return CollectiveOfferDisplayedStatus.INACTIVE
+
                 last_booking_status = self.lastBookingStatus
 
                 match last_booking_status:
