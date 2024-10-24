@@ -753,8 +753,13 @@ def _update_underage_beneficiary_deposit_expiration_date(user: models.User) -> N
 
 
 def add_comment_to_user(user: models.User, author_user: models.User, comment: str) -> None:
-    history_api.add_action(history_models.ActionType.COMMENT, author=author_user, user=user, comment=comment)
-    db.session.commit()
+    history_api.add_action(
+        action_type=history_models.ActionType.COMMENT,
+        author=author_user,
+        user=user,
+        comment=comment,
+    )
+    db.session.flush()
 
 
 def _get_booking_credit(booking: bookings_models.Booking) -> Decimal:

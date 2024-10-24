@@ -253,7 +253,7 @@ class Returns200Test:
             "old_info": "48.87004",
         }
         assert venue.action_history[0].extraData["modified_info"]["longitude"] == {
-            "new_info": "2.308289",
+            "new_info": "2.30829",
             "old_info": "2.3785",
         }
         assert venue.action_history[0].extraData["modified_info"]["postalCode"] == {

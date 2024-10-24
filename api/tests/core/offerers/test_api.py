@@ -1836,16 +1836,6 @@ class LinkVenueToPricingPointTest:
         msg = "Ce lieu a un SIRET, vous ne pouvez donc pas choisir un autre lieu pour le calcul du barème de remboursement."
         assert error.value.errors == {"pricingPointId": [msg]}
 
-    def test_no_commit(self):
-        venue = offerers_factories.VenueWithoutSiretFactory()
-        pricing_point = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
-
-        offerers_api.link_venue_to_pricing_point(venue, pricing_point.id, commit=False)
-
-        db.session.rollback()  # test after commit() is not called
-
-        assert offerers_models.VenuePricingPointLink.query.count() == 0
-
 
 class HasVenueAtLeastOneBookableOfferTest:
     @override_features(ENABLE_VENUE_STRICT_SEARCH=True)
@@ -2839,8 +2829,8 @@ class GetOffererAddressTest:
             assert address.street == "1 rue de la paix"
             assert address.city == "Paris"
             assert address.postalCode == "75103"
-            assert address.latitude == 40.8566
-            assert address.longitude == 1.3522
+            assert address.latitude == decimal.Decimal("40.85660")
+            assert address.longitude == decimal.Decimal("1.35220")
 
 
 class SendReminderEmailToIndividualOfferersTest:

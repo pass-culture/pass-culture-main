@@ -937,11 +937,13 @@ class UpdateVenueTest(PostEndpointHelper):
 
         assert update_snapshot["street"]["new_info"] == data["street"]
         assert update_snapshot["bookingEmail"]["new_info"] == data["booking_email"]
-        assert update_snapshot["latitude"]["new_info"] == data["latitude"]
-        assert update_snapshot["longitude"]["new_info"] == data["longitude"]
+        assert update_snapshot["latitude"]["new_info"] == str(round(float(data["latitude"]), 5))
+        assert update_snapshot["longitude"]["new_info"] == str(round(float(data["longitude"]), 5))
         assert update_snapshot["venueTypeCode"]["new_info"] == data["venue_type_code"]
-        assert update_snapshot["offererAddress.address.latitude"]["new_info"] == data["latitude"]
-        assert update_snapshot["offererAddress.address.longitude"]["new_info"] == data["longitude"]
+        assert update_snapshot["offererAddress.address.latitude"]["new_info"] == str(round(float(data["latitude"]), 5))
+        assert update_snapshot["offererAddress.address.longitude"]["new_info"] == str(
+            round(float(data["longitude"]), 5)
+        )
 
         assert len(mails_testing.outbox) == 1
         # check that email is sent when venue is set to permanent and has no image
@@ -1000,10 +1002,10 @@ class UpdateVenueTest(PostEndpointHelper):
         assert update_snapshot["street"]["new_info"] == "3 Rue de Valois"
         assert update_snapshot["bookingEmail"]["new_info"] == data["booking_email"]
         assert update_snapshot["latitude"]["new_info"] == "48.87171"
-        assert update_snapshot["longitude"]["new_info"] == "2.308289"  # rounding due to Decimal column in db
+        assert update_snapshot["longitude"]["new_info"] == "2.30829"  # rounding due to Decimal column in db
         assert update_snapshot["venueTypeCode"]["new_info"] == data["venue_type_code"]
         assert update_snapshot["offererAddress.address.latitude"]["new_info"] == "48.87171"
-        assert update_snapshot["offererAddress.address.longitude"]["new_info"] == "2.308289"
+        assert update_snapshot["offererAddress.address.longitude"]["new_info"] == "2.30829"
         assert "offererAddress.address.city" not in update_snapshot  # not changed
 
     @pytest.mark.parametrize(
