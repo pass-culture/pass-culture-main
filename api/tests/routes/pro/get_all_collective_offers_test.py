@@ -366,7 +366,7 @@ class Returns200Test:
 
         # When
         client = client.with_session_auth(user.email)
-        with assert_num_queries(self.expected_num_queries - 1):  # - national_program
+        with assert_num_queries(self.expected_num_queries - 1 + 1):  # - national_program + feature flag assertion
             response = client.get("/collective/offers?periodBeginningDate=2022-10-10&periodEndingDate=2022-10-11")
             assert response.status_code == 200
 
