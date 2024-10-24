@@ -610,6 +610,7 @@ def post_price_categories(
                 price_category=existing_price_categories_by_id[data["id"]],
                 label=data.get("label", offers_api.UNCHANGED),
                 price=data.get("price", offers_api.UNCHANGED),
+                current_user_id=current_user.id,
             )
 
     return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)

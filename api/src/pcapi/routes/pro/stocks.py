@@ -1,4 +1,5 @@
 import logging
+import typing
 
 from flask_login import current_user
 from flask_login import login_required
@@ -135,7 +136,7 @@ def upsert_stocks(
     price_categories = {price_category.id: price_category for price_category in offer.priceCategories}
 
     upserted_stocks = []
-    edited_stocks_with_update_info: list[tuple[offers_models.Stock, bool]] = []
+    edited_stocks_with_update_info: list[tuple[offers_models.Stock, offers_api.StockUpdateLog]] = []
     try:
         with transaction():
             if stocks_to_edit:
@@ -149,7 +150,7 @@ def upsert_stocks(
 
                     offers_validation.check_stock_has_price_or_price_category(offer, stock_to_edit, price_categories)
 
-                    edited_stock, is_beginning_updated = offers_api.edit_stock(
+                    edited_stock, modifications = offers_api.edit_stock(
                         existing_stocks[stock_to_edit.id],
                         price=stock_to_edit.price,
                         quantity=stock_to_edit.quantity,
@@ -164,10 +165,13 @@ def upsert_stocks(
                             else None
                         ),
                         price_category=price_categories.get(stock_to_edit.price_category_id, None),
+                        current_user_id=current_user.id,
                     )
                     if edited_stock:
                         upserted_stocks.append(edited_stock)
-                        edited_stocks_with_update_info.append((edited_stock, is_beginning_updated))
+                        edited_stocks_with_update_info.append(
+                            (edited_stock, typing.cast(offers_api.StockUpdateLog, modifications))
+                        )
 
             for stock_to_create in stocks_to_create:
                 offers_validation.check_stock_has_price_or_price_category(offer, stock_to_create, price_categories)

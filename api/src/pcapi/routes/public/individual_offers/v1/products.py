@@ -933,6 +933,7 @@ def _upsert_product_stock(
         price=finance_utils.to_euros(price) if price != offers_api.UNCHANGED else offers_api.UNCHANGED,
         booking_limit_datetime=stock_update_body.get("booking_limit_datetime", offers_api.UNCHANGED),
         editing_provider=provider,
+        api_key_id=current_api_key.id,
     )
 
 
