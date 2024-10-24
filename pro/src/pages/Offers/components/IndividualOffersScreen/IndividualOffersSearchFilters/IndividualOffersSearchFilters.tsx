@@ -158,7 +158,7 @@ export const IndividualOffersSearchFilters = ({
         </FieldLayout>
         <FormLayout.Row inline>
           {isOfferAddressEnabled ? (
-            <FieldLayout label="Adresse" name="address" isOptional>
+            <FieldLayout label="Localisation" name="address" isOptional>
               <SelectInput
                 defaultOption={ALL_OFFERER_ADDRESS_OPTION}
                 onChange={storeSelectedOfferAddress}
@@ -183,7 +183,7 @@ export const IndividualOffersSearchFilters = ({
           )}
 
           {categories && (
-            <FieldLayout label="Catégories" name="categorie" isOptional>
+            <FieldLayout label="Catégorie" name="categorie" isOptional>
               <SelectInput
                 defaultOption={ALL_CATEGORIES_OPTION}
                 onChange={storeSelectedCategory}

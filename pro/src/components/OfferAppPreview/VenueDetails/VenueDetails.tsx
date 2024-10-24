@@ -19,22 +19,23 @@ export const VenueDetails = ({
 }: VenueDetailsProps): JSX.Element => {
   const { street, postalCode, city } = address || venue
 
-  const label = address ? address.label : venue.publicName || venue.name
+  const label = address ? address.label || '' : venue.publicName || venue.name
 
   const venueAddressString = computeAddressDisplayName(
     {
-      label,
       street,
       postalCode: postalCode || '',
       city: city || '',
     },
-    true
+    false
   )
 
   return (
     <div className={style['venue-details']}>
       <div className={style['section']}>
-        <div className={style['title']}>Où ?</div>
+        <div className={style['title']}>Localisation</div>
+        <div className={style['sub-title']}>Intitulé</div>
+        <div className={style['text']}>{label || '- -'}</div>
         <div className={style['sub-title']}>Adresse</div>
         <address className={style['text']}>{venueAddressString}</address>
         <div className={style['sub-title']}>Distance</div>

@@ -115,7 +115,7 @@ export const ALL_VENUES_OPTION: SelectOption = {
 }
 
 export const ALL_OFFERER_ADDRESS_OPTION: SelectOption = {
-  label: 'Toutes les adresses',
+  label: 'Toutes',
   value: ALL_OFFERER_ADDRESSES,
 }
 
