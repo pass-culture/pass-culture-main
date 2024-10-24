@@ -22,7 +22,6 @@ import { useNotification } from 'commons/hooks/useNotification'
 import { ConfirmDialog } from 'components/Dialog/ConfirmDialog/ConfirmDialog'
 import fullBackIcon from 'icons/full-back.svg'
 import strokeErrorIcon from 'icons/stroke-error.svg'
-import strokeMailIcon from 'icons/stroke-mail.svg'
 import { generateSiretValidationSchema } from 'pages/VenueCreation/SiretOrCommentFields/validationSchema'
 import { Button } from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -59,22 +58,10 @@ export const VenueSettingsScreen = ({
 
   const { currentUser } = useCurrentUser()
 
-  const [shouldSendMail, setShouldSendMail] = useState(false)
-  const [isWithdrawalDialogOpen, setIsWithdrawalDialogOpen] = useState(false)
   const [isAddressChangeDialogOpen, setIsAddressChangeDialogOpen] =
     useState(false)
 
   const isOfferAddressEnabled = useActiveFeature('WIP_ENABLE_OFFER_ADDRESS')
-
-  const handleCancelWithdrawalDialog = () => {
-    setShouldSendMail(false)
-    formik.handleSubmit()
-  }
-
-  const handleConfirmWithdrawalDialog = () => {
-    setShouldSendMail(true)
-    formik.handleSubmit()
-  }
 
   const handleCancelAddressChangeDialog = () => {
     setIsAddressChangeDialogOpen(false)
@@ -83,19 +70,6 @@ export const VenueSettingsScreen = ({
   const handleConfirmAddressChangeDialog = () => {
     setIsAddressChangeDialogOpen(true)
     formik.handleSubmit()
-  }
-
-  const handleWithdrawalDialog = () => {
-    const valueMeta = formik.getFieldMeta('withdrawalDetails')
-    if (valueMeta.touched && valueMeta.value !== valueMeta.initialValue) {
-      if (isWithdrawalDialogOpen) {
-        setIsWithdrawalDialogOpen(false)
-      } else {
-        setIsWithdrawalDialogOpen(true)
-        return false
-      }
-    }
-    return true
   }
 
   const handleDialogAddressChange = () => {
@@ -129,17 +103,14 @@ export const VenueSettingsScreen = ({
   }
 
   const onSubmit = async (values: VenueSettingsFormValues) => {
-    if (
-      (values.isWithdrawalAppliedOnAllOffers && !handleWithdrawalDialog()) ||
-      (!handleDialogAddressChange() && isOfferAddressEnabled)
-    ) {
+    if (!handleDialogAddressChange() && isOfferAddressEnabled) {
       return
     }
 
     try {
       await api.editVenue(
         venue.id,
-        serializeEditVenueBodyModel(values, !venue.siret, shouldSendMail)
+        serializeEditVenueBodyModel(values, !venue.siret)
       )
       await mutate([GET_VENUE_QUERY_KEY, String(venue.id)])
 
@@ -229,16 +200,6 @@ export const VenueSettingsScreen = ({
           />
         </form>
 
-        <ConfirmDialog
-          cancelText="Ne pas envoyer"
-          confirmText="Envoyer un email"
-          leftButtonAction={handleCancelWithdrawalDialog}
-          onCancel={() => setIsWithdrawalDialogOpen(false)}
-          onConfirm={handleConfirmWithdrawalDialog}
-          icon={strokeMailIcon}
-          title="Souhaitez-vous prévenir les bénéficiaires de la modification des modalités de retrait ?"
-          open={isWithdrawalDialogOpen}
-        />
         {isOfferAddressEnabled && (
           <ConfirmDialog
             cancelText="Annuler"

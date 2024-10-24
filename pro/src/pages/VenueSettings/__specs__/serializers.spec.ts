@@ -28,7 +28,6 @@ describe('serializeEditVenueBodyModel', () => {
       venueLabel: '',
       venueType: 'Centre culturel',
       withdrawalDetails: 'Details for withdraw',
-      isWithdrawalAppliedOnAllOffers: false,
     }
 
     payload = {
@@ -45,8 +44,6 @@ describe('serializeEditVenueBodyModel', () => {
       siret: '41816609600069',
       withdrawalDetails: 'Details for withdraw',
       isEmailAppliedOnAllOffers: true,
-      isWithdrawalAppliedOnAllOffers: false,
-      shouldSendMail: false,
       venueLabelId: !formValues.venueLabel
         ? null
         : Number(formValues.venueLabel),
@@ -56,25 +53,16 @@ describe('serializeEditVenueBodyModel', () => {
   })
 
   it('should serialize form values correctly', () => {
-    expect(serializeEditVenueBodyModel(formValues, false, false)).toEqual(
-      payload
-    )
+    expect(serializeEditVenueBodyModel(formValues, false)).toEqual(payload)
   })
 
   it('should not have siret and keep comment if called with "hideSiret"', () => {
     const noSiretPayload = structuredClone(payload)
     delete noSiretPayload.siret
 
-    expect(serializeEditVenueBodyModel(formValues, true, false)).toEqual({
+    expect(serializeEditVenueBodyModel(formValues, true)).toEqual({
       ...noSiretPayload,
       comment: 'This is a venue comment',
-    })
-  })
-
-  it('should have shouldSendMail to "true"', () => {
-    expect(serializeEditVenueBodyModel(formValues, false, true)).toEqual({
-      ...payload,
-      shouldSendMail: true,
     })
   })
 })
