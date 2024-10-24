@@ -7,7 +7,7 @@ from pcapi.routes.serialization.statistics_serialize import YearlyAggregatedReve
 from .base import BaseBackend
 
 
-class TestBackend(BaseBackend):
+class TestingBackend(BaseBackend):
     def get_yearly_aggregated_venue_revenue(self, venue_ids: list[int]) -> YearlyAggregatedRevenue:
         revenue_2024 = Revenue(
             **{
