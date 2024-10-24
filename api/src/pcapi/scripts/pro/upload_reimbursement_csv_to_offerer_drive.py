@@ -1,13 +1,8 @@
 import csv
 from datetime import date
-from datetime import datetime
-from datetime import timedelta
 import logging
 import pathlib
 import tempfile
-from typing import Tuple
-
-import sqlalchemy as sqla
 
 from pcapi import settings
 from pcapi.connectors import googledrive
@@ -24,7 +19,7 @@ from pcapi.routes.serialization.reimbursement_csv_serialize import find_reimburs
 logger = logging.getLogger(__name__)
 
 
-OFFERER_INFORMATIONS = {
+OFFERER_INFORMATION = {
     settings.CGR_EMAIL: {"parent_folder_id": settings.CGR_GOOGLE_DRIVE_CSV_REIMBURSEMENT_ID, "structure_name": "CGR"},
     settings.KINEPOLIS_EMAIL: {
         "parent_folder_id": settings.KINEPOLIS_GOOGLE_DRIVE_CSV_REIMBURSEMENT_ID,
@@ -33,26 +28,13 @@ OFFERER_INFORMATIONS = {
 }
 
 
-def _get_start_and_end_datetime() -> Tuple[datetime, datetime]:
-    start_datetime = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
-    end_datetime = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
-    if date.today().day == 1:
-        start_datetime = (start_datetime - timedelta(days=1)).replace(day=16)
-    elif date.today().day == 16:
-        start_datetime = start_datetime.replace(day=1)
-    else:
-        start_datetime = start_datetime - timedelta(days=15)
-    return start_datetime, end_datetime
-
-
 def _get_csv_reimbursement_email_data(link_to_csv: str) -> models.TransactionalEmailData:
     return models.TransactionalEmailData(
         template=TransactionalEmail.CSV_REIMBURSEMENT.value, params={"LINK_TO_CSV": link_to_csv}
     )
 
 
-def _get_all_invoices(user_id: int) -> list:
-    start_datetime, end_datetime = _get_start_and_end_datetime()
+def _get_all_invoices(user_id: int, batch_id: int) -> list:
     invoices = (
         finance_models.Invoice.query.join(finance_models.Invoice.bankAccount)
         .join(finance_models.BankAccount.offerer)
@@ -60,26 +42,22 @@ def _get_all_invoices(user_id: int) -> list:
         .filter(
             offerer_models.Offerer.isActive.is_(True),
             offerer_models.UserOfferer.userId == user_id,
-            sqla.not_(offerer_models.UserOfferer.isRejected) & sqla.not_(offerer_models.UserOfferer.isDeleted),
             offerer_models.UserOfferer.isValidated,
             finance_models.BankAccount.isActive.is_(True),
-            finance_models.Invoice.date >= start_datetime,
-            finance_models.Invoice.date < end_datetime,
         )
-        .order_by(finance_models.Invoice.date.desc())
+        .join(finance_models.Invoice.cashflows)
+        .filter(finance_models.Cashflow.batchId == batch_id)
     ).all()
     return invoices
 
 
 def _get_filename(structure_name: str) -> str:
-    start_datetime, end_datetime = _get_start_and_end_datetime()
-    period_start = start_datetime.date().strftime("%Y%m%d")
-    period_end = (end_datetime.date() - timedelta(days=1)).strftime("%Y%m%d")
-    return f"{period_start}_{period_end}_{structure_name}_remboursements.csv"
+    today_date = date.today().strftime("%Y%m%d")
+    return f"{today_date}_{structure_name}_remboursements.csv"
 
 
-def _create_and_get_csv_file(user_id: int, parent_folder_id: str, filename: str) -> str | None:
-    invoices = _get_all_invoices(user_id)
+def _create_and_get_csv_file(user_id: int, batch_id: int, parent_folder_id: str, filename: str) -> str | None:
+    invoices = _get_all_invoices(user_id, batch_id)
 
     if len(invoices) == 0:
         logger.info("Zero invoice for user", extra={"user_id": user_id})
@@ -107,14 +85,14 @@ def _create_and_get_csv_file(user_id: int, parent_folder_id: str, filename: str)
     return link_to_csv
 
 
-def export_csv_and_send_notfication_emails() -> None:
-    for email, infos in OFFERER_INFORMATIONS.items():
+def export_csv_and_send_notfication_emails(batch_id: int) -> None:
+    for email, infos in OFFERER_INFORMATION.items():
         user = user_models.User.query.filter_by(email=email).one_or_none()
         if user is None:
             logger.error("Email is not linked to any user", extra={"email": email})
             continue
         filename = _get_filename(infos["structure_name"])
-        link_to_csv = _create_and_get_csv_file(user.id, infos["parent_folder_id"], filename)
+        link_to_csv = _create_and_get_csv_file(user.id, batch_id, infos["parent_folder_id"], filename)
         if link_to_csv is not None:
             data = _get_csv_reimbursement_email_data(link_to_csv)
             mails.send(recipients=[user.email], data=data)

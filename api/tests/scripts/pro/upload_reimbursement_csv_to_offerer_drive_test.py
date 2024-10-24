@@ -10,34 +10,25 @@ from pcapi.scripts.pro.upload_reimbursement_csv_to_offerer_drive import _get_all
 
 @pytest.mark.usefixtures("db_session")
 def test_return_all_invoices_linked_to_user():
-    yesterday = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=1)
     user = ProFactory()
     offerer_A = offerers_factories.OffererFactory()
     offerers_factories.UserOffererFactory(user=user, offerer=offerer_A)
     bank_account_A = finance_factories.BankAccountFactory(offerer=offerer_A)
-    venue_A = offerers_factories.VenueFactory(managingOfferer=offerer_A)
-    invoice_A1 = finance_factories.InvoiceFactory(
-        date=yesterday, bankAccount=bank_account_A, reimbursementPoint=venue_A
-    )
-    invoice_A2 = finance_factories.InvoiceFactory(
-        date=yesterday, bankAccount=bank_account_A, reimbursementPoint=venue_A
-    )
+    batch1 = finance_factories.CashflowBatchFactory(id=1)
+    cashflow = finance_factories.CashflowFactory(batch=batch1, bankAccount=bank_account_A, amount=1)
+    invoice_A1 = finance_factories.InvoiceFactory(bankAccount=bank_account_A, cashflows=[cashflow])
+    invoice_A2 = finance_factories.InvoiceFactory(bankAccount=bank_account_A, cashflows=[cashflow])
 
-    other_venue_A = offerers_factories.VenueFactory(managingOfferer=offerer_A)
-    invoice_A3 = finance_factories.InvoiceFactory(
-        date=yesterday, bankAccount=bank_account_A, reimbursementPoint=other_venue_A
-    )
+    invoice_A3 = finance_factories.InvoiceFactory(bankAccount=bank_account_A, cashflows=[cashflow])
 
     offerer_B = offerers_factories.OffererFactory()
     offerers_factories.UserOffererFactory(user=user, offerer=offerer_B)
     bank_account_B = finance_factories.BankAccountFactory(offerer=offerer_B)
-    venue_B = offerers_factories.VenueFactory(managingOfferer=offerer_B)
-    invoice_B = finance_factories.InvoiceFactory(date=yesterday, bankAccount=bank_account_B, reimbursementPoint=venue_B)
+    invoice_B = finance_factories.InvoiceFactory(bankAccount=bank_account_B, cashflows=[cashflow])
 
-    not_linked_venue = offerers_factories.VenueFactory()
-    not_linked_invoice = finance_factories.InvoiceFactory(date=yesterday, reimbursementPoint=not_linked_venue)
+    not_linked_invoice = finance_factories.InvoiceFactory()
 
-    invoices = _get_all_invoices(user.id)
+    invoices = _get_all_invoices(user.id, 1)
     references = [invoice.reference for invoice in invoices]
 
     assert len(invoices) == 4
@@ -50,22 +41,16 @@ def test_return_all_invoices_linked_to_user():
 
 @pytest.mark.usefixtures("db_session")
 def test_return_recent_invoices():
-    yesterday = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=1)
     user = ProFactory()
     offerer = offerers_factories.OffererFactory()
     offerers_factories.UserOffererFactory(user=user, offerer=offerer)
     bank_account = finance_factories.BankAccountFactory(offerer=offerer)
-    venue = offerers_factories.VenueFactory(managingOfferer=offerer)
-    invoice_old = finance_factories.InvoiceFactory(
-        bankAccount=bank_account, reimbursementPoint=venue, date=datetime.datetime(2022, 1, 1)
-    )
-    invoice_new = finance_factories.InvoiceFactory(
-        bankAccount=bank_account,
-        reimbursementPoint=venue,
-        date=yesterday,
-    )
+    batch1 = finance_factories.CashflowBatchFactory(id=1)
+    cashflow = finance_factories.CashflowFactory(batch=batch1, bankAccount=bank_account, amount=1)
+    invoice_old = finance_factories.InvoiceFactory(bankAccount=bank_account)
+    invoice_new = finance_factories.InvoiceFactory(bankAccount=bank_account, cashflows=[cashflow])
 
-    invoices = _get_all_invoices(user.id)
+    invoices = _get_all_invoices(user.id, 1)
     references = [invoice.reference for invoice in invoices]
 
     assert len(invoices) == 1
