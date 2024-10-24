@@ -397,21 +397,26 @@ class DraftCollectiveOfferFactory(CollectiveOfferFactory):
     validation = OfferValidationStatus.DRAFT
 
 
-class InactiveCollectiveOfferFactory(CollectiveOfferFactory):
-    isActive = False
-
-
 class ActiveCollectiveOfferFactory(CollectiveOfferFactory):
     pass
 
 
-class ExpiredCollectiveOfferFactory(CollectiveOfferFactory):
+class ExpiredWithoutBookingCollectiveOfferFactory(CollectiveOfferFactory):
     validation = OfferValidationStatus.APPROVED
 
     @factory.post_generation
     def create_expired_stock(self, _create: bool, _extracted: typing.Any, **_kwargs: typing.Any) -> None:
         yesterday = datetime.datetime.utcnow() - datetime.timedelta(days=1)
-        stock = CollectiveStockFactory(beginningDatetime=yesterday, collectiveOffer=self)
+        CollectiveStockFactory(bookingLimitDatetime=yesterday, collectiveOffer=self)
+
+
+class ExpiredWithBookingCollectiveOfferFactory(CollectiveOfferFactory):
+    validation = OfferValidationStatus.APPROVED
+
+    @factory.post_generation
+    def create_expired_stock(self, _create: bool, _extracted: typing.Any, **_kwargs: typing.Any) -> None:
+        yesterday = datetime.datetime.utcnow() - datetime.timedelta(days=1)
+        stock = CollectiveStockFactory(bookingLimitDatetime=yesterday, collectiveOffer=self)
         PendingCollectiveBookingFactory(collectiveStock=stock)
 
 
@@ -423,12 +428,34 @@ class PrebookedCollectiveOfferFactory(CollectiveOfferFactory):
         PendingCollectiveBookingFactory(collectiveStock=stock)
 
 
-class CancelledCollectiveOfferFactory(CollectiveOfferFactory):
+# Cancelled offers are relevant only when the FF ENABLE_COLLECTIVE_NEW_STATUSES is active
+class CancelledWithoutBookingCollectiveOfferFactory(CollectiveOfferFactory):
     @factory.post_generation
     def create_cancelled_stock(self, _create: bool, _extracted: typing.Any, **_kwargs: typing.Any) -> None:
-        tomorrow = datetime.datetime.utcnow() + datetime.timedelta(days=1)
-        stock = CollectiveStockFactory(beginningDatetime=tomorrow, collectiveOffer=self)
-        CancelledCollectiveBookingFactory(collectiveStock=stock)
+        in_past = datetime.datetime.utcnow() - datetime.timedelta(days=4)
+        CollectiveStockFactory(beginningDatetime=in_past, collectiveOffer=self)
+
+
+# Cancelled offers are relevant only when the FF ENABLE_COLLECTIVE_NEW_STATUSES is active
+class CancelledWithBookingCollectiveOfferFactory(CollectiveOfferFactory):
+    @factory.post_generation
+    def create_cancelled_stock(self, _create: bool, _extracted: typing.Any, **_kwargs: typing.Any) -> None:
+        in_past = datetime.datetime.utcnow() - datetime.timedelta(days=4)
+        stock = CollectiveStockFactory(beginningDatetime=in_past, collectiveOffer=self)
+        CancelledCollectiveBookingFactory(
+            collectiveStock=stock, cancellationReason=models.CollectiveBookingCancellationReasons.OFFERER
+        )
+
+
+# Cancelled offers are relevant only when the FF ENABLE_COLLECTIVE_NEW_STATUSES is active
+class CancelledDueToExpirationCollectiveOfferFactory(CollectiveOfferFactory):
+    @factory.post_generation
+    def create_cancelled_stock(self, _create: bool, _extracted: typing.Any, **_kwargs: typing.Any) -> None:
+        in_past = datetime.datetime.utcnow() - datetime.timedelta(days=4)
+        stock = CollectiveStockFactory(beginningDatetime=in_past, collectiveOffer=self)
+        CancelledCollectiveBookingFactory(
+            collectiveStock=stock, cancellationReason=models.CollectiveBookingCancellationReasons.EXPIRED
+        )
 
 
 class BookedCollectiveOfferFactory(CollectiveOfferFactory):
@@ -447,6 +474,7 @@ class EndedCollectiveOfferFactory(CollectiveOfferFactory):
         UsedCollectiveBookingFactory(collectiveStock=stock)
 
 
+# Reimbursed offers are relevant only when the FF ENABLE_COLLECTIVE_NEW_STATUSES is active
 class ReimbursedCollectiveOfferFactory(CollectiveOfferFactory):
     @factory.post_generation
     def create_reimbursed_stock(self, _create: bool, _extracted: typing.Any, **_kwargs: typing.Any) -> None:
@@ -468,14 +496,12 @@ def create_collective_offer_by_status(
             return PendingCollectiveOfferFactory(**kwargs)
         case CollectiveOfferDisplayedStatus.ACTIVE:
             return ActiveCollectiveOfferFactory(**kwargs)
-        case CollectiveOfferDisplayedStatus.INACTIVE:
-            return InactiveCollectiveOfferFactory(**kwargs)
         case CollectiveOfferDisplayedStatus.EXPIRED:
-            return ExpiredCollectiveOfferFactory(**kwargs)
+            return ExpiredWithBookingCollectiveOfferFactory(**kwargs)
         case CollectiveOfferDisplayedStatus.PREBOOKED:
             return PrebookedCollectiveOfferFactory(**kwargs)
         case CollectiveOfferDisplayedStatus.CANCELLED:
-            return CancelledCollectiveOfferFactory(**kwargs)
+            return CancelledWithoutBookingCollectiveOfferFactory(**kwargs)
         case CollectiveOfferDisplayedStatus.BOOKED:
             return BookedCollectiveOfferFactory(**kwargs)
         case CollectiveOfferDisplayedStatus.ENDED:
