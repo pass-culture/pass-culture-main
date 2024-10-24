@@ -380,67 +380,80 @@ class AdageVenueAddressFactory(BaseFactory):
 class NotImplementedStatus(BaseException):
     pass
 
+
 class ArchivedCollectiveOfferFactory(CollectiveOfferFactory):
     dateArchived = datetime.datetime.utcnow()
+
 
 class RejectedCollectiveOfferFactory(CollectiveOfferFactory):
     validation = OfferValidationStatus.REJECTED
 
+
 class PendingCollectiveOfferFactory(CollectiveOfferFactory):
     validation = OfferValidationStatus.PENDING
+
 
 class DraftCollectiveOfferFactory(CollectiveOfferFactory):
     validation = OfferValidationStatus.DRAFT
 
+
 class InactiveCollectiveOfferFactory(CollectiveOfferFactory):
     isActive = False
 
+
 class ActiveCollectiveOfferFactory(CollectiveOfferFactory):
     pass
+
 
 class ExpiredCollectiveOfferFactory(CollectiveOfferFactory):
     validation = OfferValidationStatus.APPROVED
 
     @factory.post_generation
-    def create_expired_stock(self, _create, _extracted, **_kwargs):
+    def create_expired_stock(self, _create: bool, _extracted: typing.Any, **_kwargs: typing.Any) -> None:
         yesterday = datetime.datetime.utcnow() - datetime.timedelta(days=1)
         stock = CollectiveStockFactory(beginningDatetime=yesterday, collectiveOffer=self)
         PendingCollectiveBookingFactory(collectiveStock=stock)
 
+
 class PrebookedCollectiveOfferFactory(CollectiveOfferFactory):
     @factory.post_generation
-    def create_prebooked_stock(self, _create, _extracted, **_kwargs):
+    def create_prebooked_stock(self, _create: bool, _extracted: typing.Any, **_kwargs: typing.Any) -> None:
         tomorrow = datetime.datetime.utcnow() + datetime.timedelta(days=1)
         stock = CollectiveStockFactory(beginningDatetime=tomorrow, collectiveOffer=self)
         PendingCollectiveBookingFactory(collectiveStock=stock)
 
+
 class CancelledCollectiveOfferFactory(CollectiveOfferFactory):
     @factory.post_generation
-    def create_cancelled_stock(self, _create, _extracted, **_kwargs):
+    def create_cancelled_stock(self, _create: bool, _extracted: typing.Any, **_kwargs: typing.Any) -> None:
         tomorrow = datetime.datetime.utcnow() + datetime.timedelta(days=1)
         stock = CollectiveStockFactory(beginningDatetime=tomorrow, collectiveOffer=self)
         CancelledCollectiveBookingFactory(collectiveStock=stock)
 
+
 class BookedCollectiveOfferFactory(CollectiveOfferFactory):
     @factory.post_generation
-    def create_booked_stock(self, _create, _extracted, **_kwargs):
+    def create_booked_stock(self, _create: bool, _extracted: typing.Any, **_kwargs: typing.Any) -> None:
         tomorrow = datetime.datetime.utcnow() + datetime.timedelta(days=1)
         stock = CollectiveStockFactory(beginningDatetime=tomorrow, collectiveOffer=self)
         ConfirmedCollectiveBookingFactory(collectiveStock=stock)
 
+
 class EndedCollectiveOfferFactory(CollectiveOfferFactory):
     @factory.post_generation
-    def create_ended_stock(self, _create, _extracted, **_kwargs):
+    def create_ended_stock(self, _create: bool, _extracted: typing.Any, **_kwargs: typing.Any) -> None:
         yesterday = datetime.datetime.utcnow() - datetime.timedelta(days=1)
         stock = CollectiveStockFactory(beginningDatetime=yesterday, collectiveOffer=self)
         UsedCollectiveBookingFactory(collectiveStock=stock)
 
+
 class ReimbursedCollectiveOfferFactory(CollectiveOfferFactory):
     @factory.post_generation
-    def create_reimbursed_stock(self, _create, _extracted, **_kwargs):
+    def create_reimbursed_stock(self, _create: bool, _extracted: typing.Any, **_kwargs: typing.Any) -> None:
         yesterday = datetime.datetime.utcnow() - datetime.timedelta(days=1)
         stock = CollectiveStockFactory(beginningDatetime=yesterday, collectiveOffer=self)
         ReimbursedCollectiveBookingFactory(collectiveStock=stock)
+
 
 def create_collective_offer_by_status(
     status: CollectiveOfferDisplayedStatus,

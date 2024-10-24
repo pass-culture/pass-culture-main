@@ -756,4 +756,3 @@ class CollectiveOfferAllowedActionsTest:
     def test_get_offer_template_allowed_actions(self, status):
         offer = factories.create_collective_offer_template_by_status(status)
         assert offer.allowedActions == list(TEMPLATE_ALLOWED_ACTIONS_BY_DISPLAYED_STATUS[status])
-
