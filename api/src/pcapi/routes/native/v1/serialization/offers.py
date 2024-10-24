@@ -20,7 +20,6 @@ from pcapi.core.offers.models import Reason
 from pcapi.core.offers.models import ReasonMeta
 from pcapi.core.providers import constants as provider_constants
 from pcapi.core.providers.titelive_gtl import GTLS
-from pcapi.core.reactions.models import ReactionTypeEnum
 from pcapi.core.users.models import ExpenseDomain
 from pcapi.domain.movie_types import get_movie_label
 from pcapi.domain.music_types import MUSIC_SUB_TYPES_LABEL_BY_CODE
@@ -234,9 +233,9 @@ class BaseOfferResponseGetterDict(GetterDict):
         product = offer.product
         if key == "reactions_count":
             if product:
-                likes = sum(1 for reaction in product.reactions if reaction.reactionType == ReactionTypeEnum.LIKE)
+                likes = product.likesCount or 0
             else:
-                likes = sum(1 for reaction in offer.reactions if reaction.reactionType == ReactionTypeEnum.LIKE)
+                likes = offer.likesCount or 0
             return ReactionCount(likes=likes)
 
         if key == "accessibility":
