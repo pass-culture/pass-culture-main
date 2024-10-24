@@ -2,7 +2,7 @@ import { Formik } from 'formik'
 import { useState } from 'react'
 
 import { api } from 'apiClient/api'
-import { OldAppLayout } from 'app/OldAppLayout'
+import { OldLayout } from 'app/App/layout/OldLayout'
 import {
   RECAPTCHA_ERROR,
   RECAPTCHA_ERROR_MESSAGE,
@@ -44,7 +44,7 @@ export const LostPassword = (): JSX.Element => {
   }
 
   return (
-    <OldAppLayout layout="without-nav">
+    <OldLayout>
       <header className={styles['logo-side']}>
         <SvgIcon
           className={logoStyles['logo-unlogged']}
@@ -72,7 +72,7 @@ export const LostPassword = (): JSX.Element => {
           </Formik>
         )}
       </div>
-    </OldAppLayout>
+    </OldLayout>
   )
 }
 
