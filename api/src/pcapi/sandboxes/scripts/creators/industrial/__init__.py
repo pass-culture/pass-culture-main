@@ -6,6 +6,7 @@ from pcapi.sandboxes.scripts.creators.industrial.create_industrial_admin_users i
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_app_users import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_bank_accounts import create_industrial_bank_accounts
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_bookings import *
+from pcapi.sandboxes.scripts.creators.industrial.create_industrial_chronicles import create_industrial_chronicles
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_commercial_gestures import (
     create_industrial_commercial_gestures,
 )
@@ -155,6 +156,8 @@ def save_industrial_sandbox() -> None:
     create_industrial_commercial_gestures()
 
     create_special_events()
+
+    create_industrial_chronicles()
 
     # run this last as we fill out missing user offerers
     create_user_offerers()

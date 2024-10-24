@@ -397,3 +397,12 @@ class OfferPriceLimitationRuleFactory(BaseFactory):
 
     subcategoryId = subcategories.ACHAT_INSTRUMENT.id
     rate = decimal.Decimal(0.3)
+
+
+class ChronicleFactory(BaseFactory):
+    class Meta:
+        model = models.Chronicle
+
+    content = "A small chronicle content."
+    email = factory.Sequence("non-beneficiary-{}@example.com".format)
+    formId = "54c77f43519a"

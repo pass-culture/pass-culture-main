@@ -36,7 +36,7 @@ from pcapi.models.offer_mixin import ValidationMixin
 from pcapi.models.pc_object import PcObject
 from pcapi.models.providable_mixin import ProvidableMixin
 from pcapi.models.soft_deletable_mixin import SoftDeletableMixin
-from pcapi.utils.db import MagicEnum
+from pcapi.utils import db as db_utils
 
 
 logger = logging.getLogger(__name__)
@@ -153,7 +153,7 @@ class Product(PcObject, Base, Model, HasThumbMixin, ProvidableMixin):
     durationMinutes = sa.Column(sa.Integer, nullable=True)
     extraData: OfferExtraData | None = sa.Column("jsonData", sa_mutable.MutableDict.as_mutable(postgresql.JSONB))
     gcuCompatibilityType = sa.Column(
-        MagicEnum(GcuCompatibilityType),
+        db_utils.MagicEnum(GcuCompatibilityType),
         nullable=False,
         default=GcuCompatibilityType.COMPATIBLE,
         server_default=GcuCompatibilityType.COMPATIBLE.value,
@@ -1321,3 +1321,67 @@ class Movie:
     visa: str | None
     title: str
     extra_data: OfferExtraData | None
+
+
+class Chronicle(PcObject, Base, Model, DeactivableMixin):
+    __tablename__ = "chronicle"
+    age = sa.Column(sa.SmallInteger, nullable=True)
+    city = sa.Column(sa.String(100), nullable=True)
+    content = sa.Column(sa.Text, nullable=False)
+    dateCreated = sa.Column(sa.DateTime, nullable=False, default=datetime.datetime.utcnow)
+    ean = sa.Column(sa.String(13), nullable=True, index=True)
+    eanChoiceId = sa.Column(sa.String(20), nullable=True)
+    email = sa.Column(sa.String(120), nullable=False)
+    firstName = sa.Column(sa.String(128), nullable=True)
+    formId = sa.Column(sa.String(20), nullable=False)
+    isIdentityDiffusible = sa.Column(
+        sa.Boolean, nullable=False, server_default=sa.sql.expression.false(), default=False
+    )
+    isSocialMedia = sa.Column(sa.Boolean, nullable=False, server_default=sa.sql.expression.false(), default=False)
+    products: sa_orm.Mapped["Product"] = sa.orm.relationship(
+        "Product", backref="chronicles", secondary="product_chronicle"
+    )
+    offerss: sa_orm.Mapped["Offer"] = sa.orm.relationship("Offer", backref="chronicles", secondary="offer_chronicle")
+    userId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="CASCADE"), nullable=True)
+    user: sa_orm.Mapped["User"] = sa.orm.relationship("User", foreign_keys=[userId], backref="chronicles")
+
+    __content_ts_vector__ = db.Column(
+        db_utils.TSVector(),
+        db.Computed("to_tsvector('french', content)", persisted=True),
+        nullable=False,
+    )
+    __table_args__ = (sa.Index("ix_chronicle_content___ts_vector__", __content_ts_vector__, postgresql_using="gin"),)
+
+
+class ProductChronicle(PcObject, Base, Model):
+    __table_name__ = "product_chronicle"
+    productId: int = sa.Column(
+        sa.BigInteger, sa.ForeignKey("product.id", ondelete="CASCADE"), index=True, nullable=False
+    )
+    chronicleId: int = sa.Column(
+        sa.BigInteger, sa.ForeignKey("chronicle.id", ondelete="CASCADE"), index=True, nullable=False
+    )
+
+    __table_args__ = (
+        sa.UniqueConstraint(
+            "productId",
+            "chronicleId",
+            name="unique_product_chronicle_constraint",
+        ),
+    )
+
+
+class OfferChronicle(PcObject, Base, Model):
+    __table_name__ = "offer_chronicle"
+    offerId: int = sa.Column(sa.BigInteger, sa.ForeignKey("offer.id", ondelete="CASCADE"), index=True, nullable=False)
+    chronicleId: int = sa.Column(
+        sa.BigInteger, sa.ForeignKey("chronicle.id", ondelete="CASCADE"), index=True, nullable=False
+    )
+
+    __table_args__ = (
+        sa.UniqueConstraint(
+            "offerId",
+            "chronicleId",
+            name="unique_offer_chronicle_contraint",
+        ),
+    )

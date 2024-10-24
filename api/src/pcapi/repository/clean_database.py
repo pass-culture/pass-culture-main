@@ -28,6 +28,7 @@ from pcapi.models.feature import install_feature_flags
 # Order of table to clean matters because of foreign key constraints
 # They will be deleted in this order
 tables_to_clean: list[flask_sqlalchemy.Model] = [
+    offers_models.Chronicle,
     providers_models.LocalProviderEvent,
     offers_models.ActivationCode,
     providers_models.AllocineVenueProvider,

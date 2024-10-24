@@ -209,6 +209,8 @@ class TypeformBackend(BaseBackend):
                             answers.append(
                                 TypeformAnswer(field_id=answer["field"]["id"], choice_id=answer["choice"]["id"])
                             )
+                    case "number":
+                        answers.append(TypeformAnswer(field_id=answer["field"]["id"], text=str(answer["number"])))
                     case "text":
                         answers.append(TypeformAnswer(field_id=answer["field"]["id"], text=_strip(answer["text"])))
                     case _:
