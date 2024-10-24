@@ -231,7 +231,7 @@ def get_offers_data_from_top_offers(top_offers: list[dict]) -> list[dict]:
 def get_offers_details(offer_ids: list[int]) -> BaseQuery:
     return (
         models.Offer.query.options(
-            sa_orm.joinedload(models.Offer.stocks)
+            sa_orm.selectinload(models.Offer.stocks)
             .joinedload(models.Stock.priceCategory)
             .joinedload(models.PriceCategory.priceCategoryLabel)
         )
@@ -243,8 +243,8 @@ def get_offers_details(offer_ids: list[int]) -> BaseQuery:
             )
         )
         .options(sa_orm.joinedload(models.Offer.venue).joinedload(offerers_models.Venue.googlePlacesInfo))
-        .options(sa_orm.joinedload(models.Offer.mediations))
-        .options(sa_orm.joinedload(models.Offer.reactions))
+        .options(sa_orm.selectinload(models.Offer.mediations))
+        .options(sa_orm.with_expression(models.Offer.likesCount, get_offer_reaction_count_subquery()))
         .options(
             sa_orm.joinedload(models.Offer.product)
             .load_only(
@@ -255,9 +255,9 @@ def get_offers_details(offer_ids: list[int]) -> BaseQuery:
                 models.Product.thumbCount,
                 models.Product.durationMinutes,
             )
+            .options(sa_orm.with_expression(models.Product.likesCount, get_product_reaction_count_subquery()))
             .joinedload(models.Product.productMediations)
         )
-        .options(sa_orm.joinedload(models.Offer.product).joinedload(models.Product.reactions))
         .outerjoin(models.Offer.lastProvider)
         .options(sa_orm.contains_eager(models.Offer.lastProvider).load_only(providers_models.Provider.localClass))
         .filter(models.Offer.id.in_(offer_ids), models.Offer.validation == models.OfferValidationStatus.APPROVED)
@@ -994,6 +994,28 @@ def get_pending_bookings_subquery(offer_id: int) -> sa.sql.selectable.Exists:
             bookings_models.Booking.status == bookings_models.BookingStatus.CONFIRMED,
         )
         .exists()
+    )
+
+
+def get_offer_reaction_count_subquery() -> sa.sql.selectable.ScalarSelect:
+    return (
+        sa.select(sa.func.count(reactions_models.Reaction.id))
+        .select_from(reactions_models.Reaction)
+        .where(reactions_models.Reaction.offerId == models.Offer.id)
+        .where(reactions_models.Reaction.reactionType == reactions_models.ReactionTypeEnum.LIKE)
+        .correlate(models.Offer)
+        .scalar_subquery()
+    )
+
+
+def get_product_reaction_count_subquery() -> sa.sql.selectable.ScalarSelect:
+    return (
+        sa.select(sa.func.count(reactions_models.Reaction.id))
+        .select_from(reactions_models.Reaction)
+        .where(reactions_models.Reaction.productId == models.Product.id)
+        .where(reactions_models.Reaction.reactionType == reactions_models.ReactionTypeEnum.LIKE)
+        .correlate(models.Product)
+        .scalar_subquery()
     )
 
 
