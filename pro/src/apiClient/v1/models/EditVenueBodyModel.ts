@@ -16,7 +16,6 @@ export type EditVenueBodyModel = {
   isAccessibilityAppliedOnAllOffers?: boolean | null;
   isEmailAppliedOnAllOffers?: boolean | null;
   isManualEdition?: boolean | null;
-  isWithdrawalAppliedOnAllOffers?: boolean | null;
   latitude?: (number | string) | null;
   longitude?: (number | string) | null;
   mentalDisabilityCompliant?: boolean | null;
@@ -25,7 +24,6 @@ export type EditVenueBodyModel = {
   openingHours?: Array<OpeningHoursModel> | null;
   postalCode?: string | null;
   publicName?: string | null;
-  shouldSendMail?: boolean | null;
   siret?: string | null;
   street?: string | null;
   venueLabelId?: number | null;

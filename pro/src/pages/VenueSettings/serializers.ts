@@ -5,8 +5,7 @@ import { VenueSettingsFormValues } from './types'
 
 export const serializeEditVenueBodyModel = (
   formValues: VenueSettingsFormValues,
-  hideSiret: boolean,
-  shouldSendMail?: boolean
+  hideSiret: boolean
 ): EditVenueBodyModel => {
   const payload: EditVenueBodyModel = {
     banId: formValues.banId,
@@ -22,8 +21,6 @@ export const serializeEditVenueBodyModel = (
     siret: unhumanizeSiret(formValues.siret),
     withdrawalDetails: formValues.withdrawalDetails,
     isEmailAppliedOnAllOffers: true,
-    isWithdrawalAppliedOnAllOffers: formValues.isWithdrawalAppliedOnAllOffers,
-    shouldSendMail,
     venueLabelId: !formValues.venueLabel ? null : Number(formValues.venueLabel),
     venueTypeCode: formValues.venueType as VenueTypeCode,
     isManualEdition: formValues.manuallySetAddress,

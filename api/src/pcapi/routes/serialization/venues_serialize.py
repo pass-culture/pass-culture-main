@@ -338,11 +338,9 @@ class EditVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
     withdrawalDetails: offerers_schemas.VenueWithdrawalDetails | None
     isAccessibilityAppliedOnAllOffers: bool | None
     isManualEdition: bool | None
-    isWithdrawalAppliedOnAllOffers: bool | None
     isEmailAppliedOnAllOffers: bool | None
     description: offerers_schemas.VenueDescription | None
     contact: offerers_schemas.VenueContactModel | None
-    shouldSendMail: bool | None
     openingHours: list[base.OpeningHoursModel] | None
 
 

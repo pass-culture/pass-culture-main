@@ -39,7 +39,6 @@ def populate_missing_data_from_venue(venue_data: dict, venue: offerers_models.Ve
         "venueLabelId": venue.venueLabelId,
         "withdrawalDetails": venue.withdrawalDetails,
         "isEmailAppliedOnAllOffers": False,
-        "isWithdrawalAppliedOnAllOffers": False,
         "contact": {"email": "no.contact.field@is.mandatory.com"},
         **venue_data,
     }
@@ -367,75 +366,6 @@ class Returns200Test:
                 "parent_organization_id": zendesk_testing.TESTING_ZENDESK_ID_OFFERER,
             },
         ]
-
-    @patch("pcapi.routes.pro.venues.update_all_venue_offers_withdrawal_details_job.delay")
-    def test_edit_venue_withdrawal_details_with_applied_on_all_offers(
-        self, mocked_update_all_venue_offers_withdrawal_details_job, client
-    ):
-        user_offerer = offerers_factories.UserOffererFactory(user__lastConnectionDate=datetime.utcnow())
-        venue = offerers_factories.VenueFactory(
-            name="old name",
-            managingOfferer=user_offerer.offerer,
-        )
-
-        auth_request = client.with_session_auth(email=user_offerer.user.email)
-
-        venue_data = populate_missing_data_from_venue(
-            {
-                "publicName": "new public name",
-                "withdrawalDetails": "Ceci est un texte de modalités de retrait",
-                "isWithdrawalAppliedOnAllOffers": True,
-                "shouldSendMail": True,
-            },
-            venue,
-        )
-        response = auth_request.patch("/venues/%s" % venue.id, json=venue_data)
-
-        assert response.status_code == 200
-        assert venue.withdrawalDetails == "Ceci est un texte de modalités de retrait"
-
-        mocked_update_all_venue_offers_withdrawal_details_job.assert_called_once_with(
-            venue, "Ceci est un texte de modalités de retrait", send_email_notification=True
-        )
-
-        assert len(external_testing.sendinblue_requests) == 1
-        assert len(external_testing.zendesk_sell_requests) == 1
-
-        assert len(venue.action_history) == 1
-        assert venue.action_history[0].actionType == history_models.ActionType.INFO_MODIFIED
-        modified_info = venue.action_history[0].extraData["modified_info"]
-        assert modified_info["publicName"] == {"new_info": venue_data["publicName"], "old_info": "old name"}
-        assert modified_info["withdrawalDetails"] == {"new_info": venue_data["withdrawalDetails"], "old_info": None}
-
-    @patch("pcapi.routes.pro.venues.update_all_venue_offers_withdrawal_details_job.delay")
-    def test_edit_venue_withdrawal_details_with_no_email_notif(
-        self, mocked_update_all_venue_offers_withdrawal_details_job, client
-    ):
-        user_offerer = offerers_factories.UserOffererFactory()
-        venue = offerers_factories.VenueFactory(
-            name="old name",
-            managingOfferer=user_offerer.offerer,
-        )
-
-        auth_request = client.with_session_auth(email=user_offerer.user.email)
-
-        venue_data = populate_missing_data_from_venue(
-            {
-                "publicName": "new public name",
-                "withdrawalDetails": "Ceci est un texte de modalités de retrait",
-                "isWithdrawalAppliedOnAllOffers": True,
-                "shouldSendMail": False,
-            },
-            venue,
-        )
-        response = auth_request.patch("/venues/%s" % venue.id, json=venue_data)
-
-        assert response.status_code == 200
-        assert venue.withdrawalDetails == "Ceci est un texte de modalités de retrait"
-
-        mocked_update_all_venue_offers_withdrawal_details_job.assert_called_once_with(
-            venue, "Ceci est un texte de modalités de retrait", send_email_notification=False
-        )
 
     @patch("pcapi.routes.pro.venues.update_all_venue_offers_accessibility_job.delay")
     def test_edit_venue_accessibility_with_applied_on_all_offers(
