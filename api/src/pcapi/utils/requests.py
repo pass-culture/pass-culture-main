@@ -60,6 +60,7 @@ def _redact_url(url: str | None) -> str | None:
 def _wrapper(
     request_send_func: Callable,
     request: requests.PreparedRequest,
+    log_info: bool,
     **kwargs: Any,
 ) -> requests.Response:
     if not kwargs.get("timeout"):
@@ -76,45 +77,50 @@ def _wrapper(
             },
         )
         raise exc
-
-    logger.info(
-        "External service called",
-        extra={
-            "url": _redact_url(response.url),
-            "statusCode": response.status_code,
-            "duration": response.elapsed.total_seconds(),
-        },
-    )
+    if log_info:
+        logger.info(
+            "External service called",
+            extra={
+                "url": _redact_url(response.url),
+                "statusCode": response.status_code,
+                "duration": response.elapsed.total_seconds(),
+            },
+        )
     return response
 
 
-def get(url: str, disable_synchronous_retry: bool = False, **kwargs: Any) -> requests.Response:
-    with Session(disable_synchronous_retry=disable_synchronous_retry) as session:
+def get(url: str, disable_synchronous_retry: bool = False, log_info: bool = True, **kwargs: Any) -> requests.Response:
+    with Session(disable_synchronous_retry=disable_synchronous_retry, log_info=log_info) as session:
         return session.request(method="GET", url=url, **kwargs)
 
 
 def post(
-    url: str, hmac: str | None = None, disable_synchronous_retry: bool = False, **kwargs: Any
+    url: str, hmac: str | None = None, disable_synchronous_retry: bool = False, log_info: bool = True, **kwargs: Any
 ) -> requests.Response:
-    with Session(disable_synchronous_retry=disable_synchronous_retry) as session:
+    with Session(disable_synchronous_retry=disable_synchronous_retry, log_info=log_info) as session:
         if hmac:
             kwargs.setdefault("headers", {}).update({"PassCulture-Signature": hmac})
         return session.request(method="POST", url=url, **kwargs)
 
 
-def put(url: str, disable_synchronous_retry: bool = False, **kwargs: Any) -> requests.Response:
-    with Session(disable_synchronous_retry=disable_synchronous_retry) as session:
+def put(url: str, disable_synchronous_retry: bool = False, log_info: bool = True, **kwargs: Any) -> requests.Response:
+    with Session(disable_synchronous_retry=disable_synchronous_retry, log_info=log_info) as session:
         return session.request(method="PUT", url=url, **kwargs)
 
 
-def delete(url: str, disable_synchronous_retry: bool = False, **kwargs: Any) -> requests.Response:
-    with Session(disable_synchronous_retry=disable_synchronous_retry) as session:
+def delete(
+    url: str, disable_synchronous_retry: bool = False, log_info: bool = True, **kwargs: Any
+) -> requests.Response:
+    with Session(disable_synchronous_retry=disable_synchronous_retry, log_info=log_info) as session:
         return session.request(method="DELETE", url=url, **kwargs)
 
 
 class Session(requests.Session):
-    def __init__(self, *args: Any, disable_synchronous_retry: bool = False, **kwargs: Any) -> None:
+    def __init__(
+        self, *args: Any, disable_synchronous_retry: bool = False, log_info: bool = True, **kwargs: Any
+    ) -> None:
         super().__init__(*args, **kwargs)
+        self.log_info = log_info
 
         if disable_synchronous_retry:
             return
@@ -125,7 +131,7 @@ class Session(requests.Session):
         self.mount("http://", adapter)
 
     def send(self, request: requests.PreparedRequest, **kwargs: Any) -> requests.Response:
-        return _wrapper(super().send, request, **kwargs)
+        return _wrapper(super().send, request, self.log_info, **kwargs)
 
 
 class CustomZeepTransport(zeep.Transport):
