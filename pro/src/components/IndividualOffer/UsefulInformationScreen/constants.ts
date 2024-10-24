@@ -8,6 +8,7 @@ export const DEFAULT_USEFULL_INFORMATION_INTITIAL_VALUES: UsefulInformationFormV
   {
     isNational: false,
     bookingContact: '',
+    withdrawalDetails: '',
     withdrawalType: SUBCATEGORIES_FIELDS_DEFAULT_VALUES['withdrawalType'],
     withdrawalDelay: SUBCATEGORIES_FIELDS_DEFAULT_VALUES['withdrawalDelay'],
     receiveNotificationEmails: false,
