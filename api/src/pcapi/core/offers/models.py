@@ -166,6 +166,7 @@ class Product(PcObject, Base, Model, HasThumbMixin, ProvidableMixin):
         cascade="all, delete-orphan",
         passive_deletes=True,
     )
+    likesCount: sa_orm.Mapped["int"] = sa_orm.query_expression()
 
     sa.Index("product_ean_idx", extraData["ean"].astext)
     sa.Index("product_allocineId_idx", extraData["allocineId"].cast(sa.Integer))
@@ -608,6 +609,7 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
     isNonFreeOffer: sa_orm.Mapped["bool"] = sa_orm.query_expression()
     bookingsCount: sa_orm.Mapped["int"] = sa_orm.query_expression()
     hasPendingBookings: sa_orm.Mapped["bool"] = sa_orm.query_expression()
+    likesCount: sa_orm.Mapped["int"] = sa_orm.query_expression()
 
     @property
     def description(self) -> str | None:
