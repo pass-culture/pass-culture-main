@@ -31,6 +31,7 @@ class SendinblueBackendTest:
         template_id=data.template.id,
         tags=data.template.tags,
         reply_to={"email": "reply_to@example.com", "name": "Tom S."},
+        enable_unsubscribe=False,
     )
 
     def _get_backend_for_test(self):
@@ -60,6 +61,7 @@ class SendinblueBackendTest:
         assert task_param.template_id == self.expected_sent_data.template_id
         assert task_param.tags == self.expected_sent_data.tags
         assert task_param.reply_to == self.expected_sent_data.reply_to
+        assert task_param.enable_unsubscribe == self.expected_sent_data.enable_unsubscribe
 
     @patch("pcapi.core.mails.backends.sendinblue.send_transactional_email_secondary_task.delay")
     def test_send_mail_with_no_sender(self, mock_send_transactional_email_secondary_task):
@@ -79,6 +81,7 @@ class SendinblueBackendTest:
             tags=SendinblueBackendTest.data.template.tags,
             sender=None,
             reply_to=None,
+            enable_unsubscribe=False,
         )
 
         backend = self._get_backend_for_test()
@@ -94,6 +97,7 @@ class SendinblueBackendTest:
         assert task_param.tags == expected_sent_data.tags
         assert task_param.sender == expected_sent_data.sender
         assert task_param.reply_to == expected_sent_data.reply_to
+        assert task_param.enable_unsubscribe == self.expected_sent_data.enable_unsubscribe
 
 
 @pytest.mark.usefixtures("db_session")
@@ -106,6 +110,7 @@ class ToDevSendinblueBackendTest(SendinblueBackendTest):
         tags=SendinblueBackendTest.data.template.tags,
         sender=None,
         reply_to={"email": "reply_to@example.com", "name": "Tom S."},
+        enable_unsubscribe=SendinblueBackendTest.data.template.enable_unsubscribe,
     )
 
     def _get_backend_for_test(self):
@@ -204,7 +209,7 @@ class SendTest:
         assert caplog.messages[0] == (
             "An email would be sent via Sendinblue to=lucy.ellingson@example.com, avery.kelly@example.com, bcc=(): "
             "{'template': {'id_prod': 11, 'id_not_prod': 12, 'tags': ['some', 'stuff'], 'use_priority_queue': False, "
-            "'send_to_ehp': False}, "
+            "'send_to_ehp': False, 'enable_unsubscribe': False}, "
             "'reply_to': {'email': 'reply_to@example.com', 'name': 'Tom S.'}, 'params': {}}"
         )
 
@@ -264,12 +269,12 @@ class SendTest:
             )
 
     @pytest.mark.parametrize(
-        "feature_flag,template_class,expected_use_pro_subaccount",
+        "feature_flag,template_class,enable_unsubscribe,expected_use_pro_subaccount",
         [
-            (True, models.TemplatePro, True),
-            (True, models.Template, False),
-            (False, models.TemplatePro, False),
-            (False, models.Template, False),
+            (True, models.TemplatePro, True, True),
+            (True, models.Template, False, False),
+            (False, models.TemplatePro, False, False),
+            (False, models.Template, True, False),
         ],
     )
     @override_settings(IS_TESTING=True)
@@ -281,15 +286,23 @@ class SendTest:
         caplog,
         feature_flag,
         template_class,
+        enable_unsubscribe,
         expected_use_pro_subaccount,
     ):
         with override_features(WIP_ENABLE_BREVO_PRO_SUBACCOUNT=feature_flag):
             if template_class == models.TemplatePro:
                 mock_template = template_class(
-                    id_prod=1, id_not_prod=10, send_to_ehp=False, subaccount_id_prod=0, subaccount_id_not_prod=0
+                    id_prod=1,
+                    id_not_prod=10,
+                    send_to_ehp=False,
+                    subaccount_id_prod=0,
+                    subaccount_id_not_prod=0,
+                    enable_unsubscribe=enable_unsubscribe,
                 )
             else:
-                mock_template = template_class(id_prod=1, id_not_prod=10, send_to_ehp=False)
+                mock_template = template_class(
+                    id_prod=1, id_not_prod=10, send_to_ehp=False, enable_unsubscribe=enable_unsubscribe
+                )
             data = models.TransactionalEmailData(template=mock_template)
             recipients = ["lucy.ellingson@example.com", "avery.kelly@example.com"]
 
@@ -300,6 +313,6 @@ class SendTest:
             assert caplog.messages[0] == (
                 f"An email would be sent via Sendinblue {'using the PRO subaccount ' if expected_use_pro_subaccount else ''}to=lucy.ellingson@example.com, "
                 "avery.kelly@example.com, bcc=(): {'template': {'id_prod': 1, 'id_not_prod': 10, 'tags': [], 'use_priority_queue': False, "
-                f"'send_to_ehp': False{''', 'subaccount_id_prod': 0, 'subaccount_id_not_prod': 0''' if template_class==models.TemplatePro else ''}"
+                f"'send_to_ehp': False, 'enable_unsubscribe': {enable_unsubscribe}{''', 'subaccount_id_prod': 0, 'subaccount_id_not_prod': 0''' if template_class==models.TemplatePro else ''}"
                 "}, 'reply_to': None, 'params': {}}"
             )

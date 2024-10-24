@@ -62,6 +62,7 @@ class TransactionalEmailWithTemplateTest:
             template_id=TransactionalEmail.EMAIL_CONFIRMATION.value.id,
             params={"name": "Avery"},
             reply_to={"email": "support@example.com", "name": "pass Culture"},
+            enable_unsubscribe=False,
         )
         send_transactional_email(payload)
 
@@ -78,6 +79,7 @@ class TransactionalEmailWithTemplateTest:
             "email": "support@example.com",
             "name": "pass Culture",
         }
+        assert mock_send_transac_email.call_args[0][0].headers == {"X-List-Unsub": "disabled"}
 
     @patch("sib_api_v3_sdk.api.TransactionalEmailsApi.send_transac_email")
     def test_send_transactional_email_with_reply_to_success(self, mock_send_transac_email):
@@ -87,6 +89,7 @@ class TransactionalEmailWithTemplateTest:
             template_id=TransactionalEmail.EMAIL_CONFIRMATION.value.id,
             params={"name": "Avery"},
             reply_to={"email": "reply@example.com", "name": "reply"},
+            enable_unsubscribe=True,
         )
         send_transactional_email(payload)
 
@@ -100,6 +103,7 @@ class TransactionalEmailWithTemplateTest:
         assert mock_send_transac_email.call_args[0][0].to == [{"email": "avery.kelly@woobmail.com"}]
         assert mock_send_transac_email.call_args[0][0].tags is None
         assert mock_send_transac_email.call_args[0][0].reply_to == {"email": "reply@example.com", "name": "reply"}
+        assert mock_send_transac_email.call_args[0][0].headers is None
 
     @patch("sib_api_v3_sdk.api.TransactionalEmailsApi.send_transac_email")
     def test_send_transactional_email_with_template_id_success_empty_params(self, mock_send_transac_email):
@@ -125,6 +129,7 @@ class TransactionalEmailWithTemplateTest:
             "email": "support@example.com",
             "name": "pass Culture",
         }
+        assert mock_send_transac_email.call_args[0][0].headers == {"X-List-Unsub": "disabled"}
 
     @override_settings(EMAIL_BACKEND="pcapi.core.mails.backends.sendinblue.ToDevSendinblueBackend")
     @patch("pcapi.core.mails.backends.sendinblue.send_transactional_email_primary_task.delay")
@@ -155,6 +160,7 @@ class TransactionalEmailWithoutTemplateTest:
             subject="Bienvenue au pass Culture",
             html_content="Bonjour",
             reply_to=dataclasses.asdict(self.data.reply_to),
+            enable_unsubscribe=False,
         )
         send_transactional_email(payload)
 

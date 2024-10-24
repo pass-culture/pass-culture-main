@@ -49,6 +49,7 @@ class SendinblueBackend(BaseBackend):
                 subject=None,
                 html_content=None,
                 attachment=None,
+                enable_unsubscribe=data.template.enable_unsubscribe,
                 use_pro_subaccount=data.template.use_pro_subaccount,
             )
             if data.template.use_priority_queue:

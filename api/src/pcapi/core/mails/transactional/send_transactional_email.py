@@ -17,6 +17,11 @@ def send_transactional_email(payload: SendTransactionalEmailRequest) -> None:
     sender = payload.sender
     reply_to = payload.reply_to
 
+    if payload.enable_unsubscribe:
+        headers = None
+    else:
+        headers = {"X-List-Unsub": "disabled"}
+
     extra = {
         "template_id": payload.template_id,
         "subject": payload.subject,
@@ -25,7 +30,7 @@ def send_transactional_email(payload: SendTransactionalEmailRequest) -> None:
         "reply_to": payload.reply_to,
     }
 
-    send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(to=to, bcc=bcc, sender=sender, reply_to=reply_to)
+    send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(to=to, bcc=bcc, sender=sender, reply_to=reply_to, headers=headers)
 
     # Can send email with: to, sender, template_id, tags, params
 
