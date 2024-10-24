@@ -69,7 +69,7 @@ export const UsefulInformationScreen = ({
     withdrawalInformations: boolean
   }>({ address: false, withdrawalInformations: false })
 
-  const [sendWithdrawalMail, setSendWithdrawalMail] = useState<boolean>(false)
+  const [sendWithdrawalMail, setSendWithdrawalMail] = useState<boolean>(true)
 
   const isEvent = subCategories.find(
     (subcategory) => subcategory.id === offer.subcategoryId
