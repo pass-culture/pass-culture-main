@@ -269,6 +269,21 @@ class OffersTest:
 
         assert response.json["stocks"][0]["remainingQuantity"] is None
 
+    # FIXME : mageoffray (24-10-2024)
+    # delete this test once None extraData has been fixed
+    def test_get_offer_with_extra_data_as_none(self, client):
+        offer = offers_factories.OfferFactory(extraData=None)
+        offers_factories.ThingStockFactory(offer=offer, price=12.34, quantity=None)
+
+        offer_id = offer.id
+        # 1. select offer
+        # 2. select stocks
+        # 3. select mediations
+        with assert_num_queries(3):
+            with assert_no_duplicated_queries():
+                response = client.get(f"/native/v1/offer/{offer_id}")
+                assert response.status_code == 200
+
     def test_get_thing_offer(self, client):
         offer = offers_factories.OfferFactory(venue__isPermanent=True, subcategoryId=subcategories.CARTE_MUSEE.id)
         offers_factories.ThingStockFactory(offer=offer, price=12.34)

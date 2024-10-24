@@ -268,8 +268,8 @@ class BaseOfferResponseGetterDict(GetterDict):
             return [OfferStockResponse.from_orm(stock) for stock in offer.activeStocks]
 
         if key == "extraData":
-            raw_extra_data = product.extraData if product else offer.extraData or {}
-            extra_data = OfferExtraDataResponse.parse_obj(offer.extraData)
+            raw_extra_data = (product.extraData if product else offer.extraData) or {}
+            extra_data = OfferExtraDataResponse.parse_obj(raw_extra_data)
 
             extra_data.durationMinutes = offer.durationMinutes
 
