@@ -4,6 +4,7 @@ from unittest.mock import patch
 
 import pytest
 
+from pcapi.connectors.api_adresse import AddressInfo
 import pcapi.connectors.entreprise.exceptions as entreprise_exceptions
 from pcapi.core import search
 from pcapi.core.external.zendesk_sell_backends import testing as zendesk_testing
@@ -59,6 +60,7 @@ class Returns200Test:
         auth_request = client.with_session_auth(email=user_offerer.user.email)
         venue_id = venue.id
         venue_oa_address_id = venue.offererAddress.addressId
+        venue_oa_id = venue.offererAddressId
 
         # when
         venue_data = populate_missing_data_from_venue(
@@ -166,11 +168,23 @@ class Returns200Test:
                     "new_info": venue.offererAddress.addressId,
                     "old_info": venue_oa_address_id,
                 },
+                "offererAddress.id": {
+                    "new_info": new_venue.offererAddressId,
+                    "old_info": venue_oa_id,
+                },
+                "old_oa_label": {
+                    "new_info": "old name",
+                    "old_info": None,
+                },
             }
         }
-        address = geography_models.Address.query.order_by(geography_models.Address.id.desc()).first()
-        offerer_address = offerers_models.OffererAddress.query.one()
-
+        assert (len(offerers_models.OffererAddress.query.all())) == 2
+        offerer_address = offerers_models.OffererAddress.query.order_by(
+            offerers_models.OffererAddress.id.desc()
+        ).first()
+        old_oa = offerers_models.OffererAddress.query.get(venue_oa_id)
+        address = offerer_address.address
+        assert old_oa.label == "old name"
         assert venue.offererAddressId == offerer_address.id
         assert address.street == venue.street == "3 Rue de Valois"
         assert address.city == venue.city == "Paris"
@@ -217,9 +231,10 @@ class Returns200Test:
         # then
         assert response.status_code == 200
         venue = offerers_models.Venue.query.one()
-        address = geography_models.Address.query.order_by(geography_models.Address.id.desc()).first()
-        offerer_address = offerers_models.OffererAddress.query.one()
-
+        offerer_address = offerers_models.OffererAddress.query.order_by(
+            offerers_models.OffererAddress.id.desc()
+        ).first()
+        address = offerer_address.address
         assert venue.offererAddressId == offerer_address.id
         assert address.street == venue.street == "3 Rue de Valois"
         assert address.city == venue.city == "Paris"
@@ -260,6 +275,86 @@ class Returns200Test:
             "new_info": "75001",
             "old_info": "75000",
         }
+
+    @pytest.mark.parametrize("attribut_key,attribut_value", [("publicName", "Ma librairie"), ("name", "FNAC")])
+    def test_update_venue_public_name(self, attribut_key, attribut_value, client) -> None:
+        user_offerer = offerers_factories.UserOffererFactory()
+        venue = offerers_factories.VenueFactory(
+            name="old name",
+            managingOfferer=user_offerer.offerer,
+        )
+        offerer_address = venue.offererAddress
+        venue_siren = venue.managingOfferer.siren
+        venue_siret = venue.siret
+        venue_attr_value = getattr(venue, attribut_key)
+        venue_data = {
+            attribut_key: attribut_value,
+            "siret": venue_siren + "11111",
+        }
+        auth_request = client.with_session_auth(email=user_offerer.user.email)
+        response = auth_request.patch("/venues/%s" % venue.id, json=venue_data)
+
+        venue = offerers_models.Venue.query.one()
+        offerer_addresses = offerers_models.OffererAddress.query.order_by(offerers_models.OffererAddress.id).all()
+
+        assert response.status_code == 200
+        assert len(offerer_addresses) == 2
+        new_oa = offerer_addresses[-1]
+        assert getattr(venue, attribut_key) == venue_data.get(attribut_key)
+        assert venue.offererAddress.address.city == venue_data.get("city", venue.city)
+        assert venue.action_history[0].extraData["modified_info"] == {
+            attribut_key: {"new_info": attribut_value, "old_info": venue_attr_value},
+            "siret": {"new_info": venue_data["siret"], "old_info": venue_siret},
+            "offererAddress.address.banId": {
+                "new_info": "75101_9575_00003",
+                "old_info": "75102_7560_00001",
+            },
+            "offererAddress.address.inseeCode": {
+                "new_info": "75056",
+                "old_info": "75102",
+            },
+            "offererAddress.address.latitude": {
+                "new_info": "48.87171",
+                "old_info": "48.87004",
+            },
+            "offererAddress.address.longitude": {
+                "new_info": "2.308289",
+                "old_info": "2.3785",
+            },
+            "offererAddress.address.postalCode": {
+                "new_info": "75001",
+                "old_info": "75002",
+            },
+            "offererAddress.address.street": {
+                "new_info": "3 Rue de Valois",
+                "old_info": "1 boulevard Poissonnière",
+            },
+            "offererAddress.addressId": {"new_info": new_oa.addressId, "old_info": offerer_address.addressId},
+            "offererAddress.id": {
+                "new_info": new_oa.id,
+                "old_info": offerer_address.id,
+            },
+            "old_oa_label": {
+                "new_info": "old name",
+                "old_info": None,
+            },
+        }
+
+    def test_should_not_create_oa_at_update(self, client):
+        user_offerer = offerers_factories.UserOffererFactory()
+        venue = offerers_factories.VenueFactory(
+            name="old name",
+            city="Lens",
+            managingOfferer=user_offerer.offerer,
+        )
+        offerer_address = venue.offererAddress
+        update_data = {"bookingEmail": "fakeemail@fake.com"}
+        auth_request = client.with_session_auth(email=user_offerer.user.email)
+        response = auth_request.patch("/venues/%s" % venue.id, json=update_data)
+
+        venue = offerers_models.Venue.query.one()
+        offerer_addresses = offerers_models.OffererAddress.query.order_by(offerers_models.OffererAddress.id).all()
+        assert len(offerer_addresses) == 1
 
     def test_edit_only_activity_parameters_and_not_venue_accessibility(self, client):
         # given
@@ -447,6 +542,7 @@ class Returns200Test:
             managingOfferer=user_offerer.offerer,
             contact=None,
         )
+        oa = venue.offererAddress
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
 
@@ -480,6 +576,50 @@ class Returns200Test:
         assert venue.action_history[0].extraData["modified_info"] == {
             "publicName": {"new_info": venue_data["publicName"], "old_info": "old name"},
             "audioDisabilityCompliant": {"new_info": True, "old_info": False},
+            "latitude": {
+                "new_info": "48.87171",
+                "old_info": "48.87004",
+            },
+            "longitude": {
+                "new_info": "2.308289",
+                "old_info": "2.3785",
+            },
+            "offererAddress.address.banId": {
+                "new_info": "75101_9575_00003",
+                "old_info": "75102_7560_00001",
+            },
+            "offererAddress.address.inseeCode": {
+                "new_info": "75056",
+                "old_info": "75102",
+            },
+            "offererAddress.address.latitude": {
+                "new_info": "48.87171",
+                "old_info": "48.87004",
+            },
+            "offererAddress.address.longitude": {
+                "new_info": "2.308289",
+                "old_info": "2.3785",
+            },
+            "offererAddress.address.postalCode": {
+                "new_info": "75001",
+                "old_info": "75002",
+            },
+            "offererAddress.address.street": {
+                "new_info": "3 Rue de Valois",
+                "old_info": "1 boulevard Poissonnière",
+            },
+            "offererAddress.addressId": {
+                "new_info": venue.offererAddress.addressId,
+                "old_info": oa.addressId,
+            },
+            "offererAddress.id": {
+                "new_info": venue.offererAddressId,
+                "old_info": oa.id,
+            },
+            "old_oa_label": {
+                "new_info": "old name",
+                "old_info": None,
+            },
         }
 
     def test_when_siret_does_not_change(self, client) -> None:

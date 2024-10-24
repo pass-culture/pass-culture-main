@@ -223,22 +223,22 @@ def update_venue_location(
     On the other side, BO users might want to force a location to a venue, for example if the address is unknown
     for the API.
     """
-    if not any(field in modifications for field in ("street", "city", "postalCode")):
+    if not any(field in modifications for field in ("street", "city", "postalCode", "publicName", "name")):
         return
-
-    street = modifications.get("street") or venue.street
-    city = modifications.get("city") or venue.city
-    postal_code = modifications.get("postalCode") or venue.postalCode
-    latitude = modifications.get("latitude") or venue.latitude
-    longitude = modifications.get("longitude") or venue.longitude
-    ban_id = modifications.get("banId") or venue.banId
+    assert venue.offererAddress is not None
+    street = modifications.get("street") or venue.offererAddress.address.street
+    city = modifications.get("city") or venue.offererAddress.address.city
+    postal_code = modifications.get("postalCode") or venue.offererAddress.address.postalCode
+    latitude = modifications.get("latitude") or venue.offererAddress.address.latitude
+    longitude = modifications.get("longitude") or venue.offererAddress.address.longitude
+    ban_id = modifications.get("banId") or venue.offererAddress.address.banId
     logger.info(
         "Updating venue location",
         extra={"venue_id": venue.id, "venue_street": street, "venue_city": city, "venue_postalCode": postal_code},
     )
 
     if not is_manual_edition:
-        address_info = api_adresse.get_address(address=street, postcode=postal_code, city=city)
+        address_info = api_adresse.get_address(address=street, postcode=postal_code, city=city)  # type: ignore[arg-type]
         location_data = LocationData(
             city=address_info.city,
             postal_code=address_info.postcode,
@@ -278,26 +278,25 @@ def update_venue_location(
         "inseeCode": address.inseeCode,
     }
 
-    if not venue.offererAddressId:
-        offerer_address = get_or_create_offerer_address(venue.managingOffererId, address.id)
-        venue_snapshot.trace_update({"offererAddressId": offerer_address.id})
-        venue_snapshot.trace_update(
-            snapshot_location_data,
-            target=geography_models.Address(),
-            field_name_template="offererAddress.address.{}",
-        )
-        venue.offererAddress = offerer_address
-        db.session.add(venue)
-        db.session.flush()
-    else:
-        target = venue.offererAddress.address  # type: ignore[union-attr]
-        venue_snapshot.trace_update(
-            snapshot_location_data, target=target, field_name_template="offererAddress.address.{}"
-        )
-        venue_snapshot.trace_update(
-            {"addressId": address.id}, target=venue.offererAddress, field_name_template="offererAddress.{}"
-        )
-        update_offerer_address(venue.offererAddressId, address.id)
+    offerer_address = create_offerer_address(offerer_id=venue.managingOfferer.id, address_id=address.id, label=None)
+    target = venue.offererAddress.address
+    old_oa = venue.offererAddress
+    venue_snapshot.trace_update(snapshot_location_data, target=target, field_name_template="offererAddress.address.{}")
+    venue_snapshot.trace_update(
+        {"label": venue.common_name},
+        target=old_oa,
+        field_name_template="old_oa_label",
+    )
+    venue_snapshot.trace_update(
+        {"id": offerer_address.id, "addressId": offerer_address.addressId, "label": offerer_address.label},
+        old_oa,
+        "offererAddress.{}",
+    )
+    old_oa.label = venue.common_name
+    db.session.add(old_oa)
+    venue.offererAddress = offerer_address
+    db.session.add(venue)
+    db.session.flush()
 
     if modifications.get("street"):
         modifications["street"] = address.street
@@ -414,7 +413,7 @@ def create_venue(venue_data: venues_serialize.PostVenueBodyModel, author: users_
             ban_id=address_info.id,
         )
     )
-    offerer_address = get_or_create_offerer_address(venue_data.managingOffererId, address.id)
+    offerer_address = create_offerer_address(venue_data.managingOffererId, address.id)
     venue.offererAddressId = offerer_address.id
 
     data = venue_data.dict(by_alias=True)
@@ -2821,6 +2820,18 @@ def get_or_create_offerer_address(offerer_id: int, address_id: int, label: str |
         .first()
     )
 
+    return offerer_address
+
+
+def create_offerer_address(offerer_id: int, address_id: int | None, label: str | None = None) -> models.OffererAddress:
+    try:
+        offerer_address = models.OffererAddress(offererId=offerer_id, addressId=address_id, label=label)
+        db.session.add(offerer_address)
+        db.session.flush()
+    except sa.exc.IntegrityError:
+        db.session.rollback()
+        logger.error("OffererAddress creation error", extra={"offerer_id": offerer_id, "address_id": address_id})
+        raise (exceptions.OffererAddressCreationError())
     return offerer_address
 
 
