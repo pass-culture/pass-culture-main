@@ -7,7 +7,9 @@ export const isFeatureActive = (
   featureName: string
 ): boolean => {
   const features = state.features.list
-
+  if (!Array.isArray(features)) {
+    return false
+  }
   const currentFeature = features.find(
     (feature) => feature.nameKey === featureName
   )
