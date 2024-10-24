@@ -37,7 +37,7 @@ from pcapi.models.offer_mixin import ValidationMixin
 from pcapi.models.pc_object import PcObject
 from pcapi.models.providable_mixin import ProvidableMixin
 from pcapi.models.soft_deletable_mixin import SoftDeletableMixin
-from pcapi.utils.db import MagicEnum
+from pcapi.utils import db as db_utils
 
 
 logger = logging.getLogger(__name__)
@@ -153,7 +153,7 @@ class Product(PcObject, Base, Model, HasThumbMixin, ProvidableMixin):
     durationMinutes = sa.Column(sa.Integer, nullable=True)
     extraData: OfferExtraData | None = sa.Column("jsonData", sa_mutable.MutableDict.as_mutable(postgresql.JSONB))
     gcuCompatibilityType = sa.Column(
-        MagicEnum(GcuCompatibilityType),
+        db_utils.MagicEnum(GcuCompatibilityType),
         nullable=False,
         default=GcuCompatibilityType.COMPATIBLE,
         server_default=GcuCompatibilityType.COMPATIBLE.value,
