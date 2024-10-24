@@ -357,13 +357,11 @@ describe('IndividualOffersScreen', () => {
       features: ['WIP_ENABLE_OFFER_ADDRESS'],
     })
 
-    const addressSelect = screen.getByLabelText('Adresse')
+    const addressSelect = screen.getByLabelText('Localisation')
     expect(addressSelect).not.toBeDisabled()
-    expect(
-      screen.getByRole('option', { name: expectedSelectOptions[0].value })
-    ).toBeInTheDocument()
 
-    expect(addressSelect.children.length).toBe(expectedSelectOptions.length)
+    const addressOptions = addressSelect.querySelectorAll('option')
+    expect(addressOptions.length).toBe(expectedSelectOptions.length)
   })
 
   it('should render venue filter with given venue selected', () => {

@@ -177,7 +177,7 @@ export const PreFilters = ({
           <FormLayout.Row inline>
             {isOfferAddressEnabled && audience === Audience.INDIVIDUAL ? (
               <FieldLayout
-                label="Adresse"
+                label="Localisation"
                 name="address"
                 className={styles['venue-filter']}
                 isOptional

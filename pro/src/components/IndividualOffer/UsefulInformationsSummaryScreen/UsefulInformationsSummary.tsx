@@ -75,8 +75,12 @@ export function UsefulInformationsSummaryScreen({
               <SummaryDescriptionList
                 descriptions={[
                   {
+                    title: 'Intitulé',
+                    text: offer.address?.label || '-',
+                  },
+                  {
                     title: 'Adresse',
-                    text: computeAddressDisplayName(offer.address!),
+                    text: computeAddressDisplayName(offer.address!, false),
                   },
                 ]}
               />
