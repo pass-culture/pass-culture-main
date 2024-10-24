@@ -1,7 +1,7 @@
 import React from 'react'
 import { Outlet } from 'react-router-dom'
 
-import { OldAppLayout } from 'app/OldAppLayout'
+import { OldLayout } from 'app/App/layout/OldLayout'
 import { useActiveFeature } from 'commons/hooks/useActiveFeature'
 import logoPassCultureProFullIcon from 'icons/logo-pass-culture-pro-full.svg'
 import logoStyles from 'styles/components/_Logo.module.scss'
@@ -15,7 +15,7 @@ export const Signup = () => {
     'ENABLE_PRO_ACCOUNT_CREATION'
   )
   return (
-    <OldAppLayout layout="without-nav">
+    <OldLayout>
       <header className={styles['logo-side']}>
         <SvgIcon
           className={logoStyles['logo-unlogged']}
@@ -26,7 +26,7 @@ export const Signup = () => {
         />
       </header>
       {isProAccountCreationEnabled ? <Outlet /> : <SignupUnavailable />}
-    </OldAppLayout>
+    </OldLayout>
   )
 }
 

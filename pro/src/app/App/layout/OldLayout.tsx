@@ -3,8 +3,6 @@ import React from 'react'
 import { useSelector } from 'react-redux'
 
 import { selectCurrentUser } from 'commons/store/user/selectors'
-import { Footer } from 'components/Footer/Footer'
-import { OldHeader } from 'components/Header/OldHeader'
 import { SkipLinks } from 'components/SkipLinks/SkipLinks'
 import fullInfoIcon from 'icons/full-info.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
@@ -18,14 +16,9 @@ interface OldLayoutProps {
    * Make sure that only one heading is displayed per page.
    */
   mainHeading?: string
-  layout?: 'basic' | 'funnel' | 'without-nav' | 'sticky-actions'
 }
 
-export const OldLayout = ({
-  children,
-  mainHeading,
-  layout = 'basic',
-}: OldLayoutProps) => {
+export const OldLayout = ({ children, mainHeading }: OldLayoutProps) => {
   const currentUser = useSelector(selectCurrentUser)
   const renderMainHeading = () => {
     if (!mainHeading) {
@@ -54,31 +47,18 @@ export const OldLayout = ({
           </div>
         </aside>
       )}
-      {(layout === 'basic' || layout === 'sticky-actions') && <OldHeader />}
       <main
         id="content"
         className={classnames({
           page: true,
-          [styles.container]: layout === 'basic' || layout === 'sticky-actions',
-          [styles['container-sticky-actions']]: layout === 'sticky-actions',
-          [styles['container-without-nav']]: layout === 'without-nav',
+          [styles['container-without-nav']]: true,
         })}
       >
-        {layout === 'funnel' || layout === 'without-nav' ? (
-          <>
-            {renderMainHeading()}
-            {children}
-          </>
-        ) : (
-          <div className={styles['page-content']}>
-            <div className={styles['after-notification-content']}>
-              {renderMainHeading()}
-              {children}
-            </div>
-          </div>
-        )}
+        <>
+          {renderMainHeading()}
+          {children}
+        </>
       </main>
-      {layout !== 'funnel' && <Footer layout={layout} />}
     </>
   )
 }
