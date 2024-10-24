@@ -15,9 +15,9 @@ import pcapi.core.offers.models as offers_models
 from pcapi.models.feature import FeatureToggle
 from pcapi.notifications.internal import send_internal_message
 import pcapi.scheduled_tasks.decorators as cron_decorators
-from pcapi.scripts.pro.upload_reimbursement_csv_to_offerer_drive import export_csv_and_send_notfication_emails
 from pcapi.utils.blueprint import Blueprint
 import pcapi.utils.date as date_utils
+from pcapi.workers.export_csv_and_send_notfication_emails_job import export_csv_and_send_notfication_emails_job
 
 
 blueprint = Blueprint(__name__, __name__)
@@ -81,6 +81,7 @@ def generate_invoices(batch_id: int) -> None:
             ],
             icon_emoji=":large_green_circle:",
         )
+    export_csv_and_send_notfication_emails_job.delay(batch_id)
 
 
 @blueprint.cli.command("add_custom_offer_reimbursement_rule")
@@ -178,8 +179,3 @@ def import_ds_bank_information_applications() -> None:
             logger.info("Skipping DS %s because procedure id is empty", procedure)
             continue
         ds.import_ds_bank_information_applications(procedure_number=int(procedure))
-
-
-@blueprint.cli.command("upload_reimbursement_csv_to_offerer_drive")
-def upload_reimbursement_csv_to_offerer_drive() -> None:
-    export_csv_and_send_notfication_emails()
