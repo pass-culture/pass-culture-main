@@ -207,7 +207,9 @@ describe('screens:StocksEventEdition', () => {
 
     expect(screen.getAllByText('Réservations *')[0]).toBeInTheDocument()
 
-    expect(screen.getByTestId('dropdown-menu-trigger')).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: 'Supprimer' })
+    ).toBeInTheDocument()
   })
 
   it('should allow user to delete a stock', async () => {
@@ -218,8 +220,9 @@ describe('screens:StocksEventEdition', () => {
     vi.clearAllMocks()
     vi.spyOn(api, 'deleteStock').mockResolvedValue({ id: 1 })
 
-    await userEvent.click(screen.getAllByTestId('dropdown-menu-trigger')[0])
-    await userEvent.click(screen.getByTitle('Supprimer le stock'))
+    await userEvent.click(
+      screen.getAllByRole('button', { name: 'Supprimer' })[0]
+    )
 
     expect(
       await screen.findByText('Le stock a été supprimé.')
@@ -243,8 +246,9 @@ describe('screens:StocksEventEdition', () => {
     )
     vi.spyOn(api, 'deleteStock').mockResolvedValue({ id: 1 })
 
-    await userEvent.click(screen.getAllByTestId('dropdown-menu-trigger')[0])
-    await userEvent.click(screen.getByTitle('Supprimer le stock'))
+    await userEvent.click(
+      screen.getAllByRole('button', { name: 'Supprimer' })[0]
+    )
 
     await waitFor(() => {
       expect(api.deleteStock).toHaveBeenCalled()
@@ -269,8 +273,9 @@ describe('screens:StocksEventEdition', () => {
     )
     vi.spyOn(api, 'deleteStock').mockResolvedValue({ id: 1 })
 
-    await userEvent.click(screen.getAllByTestId('dropdown-menu-trigger')[0])
-    await userEvent.click(screen.getByTitle('Supprimer le stock'))
+    await userEvent.click(
+      screen.getAllByRole('button', { name: 'Supprimer' })[0]
+    )
 
     await waitFor(() => {
       expect(api.deleteStock).toHaveBeenCalled()
@@ -292,10 +297,7 @@ describe('screens:StocksEventEdition', () => {
     ])
 
     vi.spyOn(api, 'deleteStock').mockResolvedValue({ id: 1 })
-    await userEvent.click(screen.getByTestId('dropdown-menu-trigger'))
-    const deleteButton = screen.getByTitle('Supprimer le stock')
-    expect(deleteButton).toHaveAttribute('aria-disabled', 'true')
-    await userEvent.click(deleteButton)
+    await userEvent.click(screen.getByRole('button', { name: 'Supprimer' }))
     expect(api.deleteStock).not.toHaveBeenCalled()
     expect(screen.getByLabelText('Tarif *')).toHaveValue(otherPriceCategoryId)
   })
@@ -308,8 +310,7 @@ describe('screens:StocksEventEdition', () => {
     await renderStockEventScreen(apiOffer, apiStocks)
     vi.spyOn(api, 'deleteStock').mockResolvedValue({ id: 1 })
 
-    await userEvent.click(screen.getByTestId('dropdown-menu-trigger'))
-    await userEvent.click(screen.getByTitle('Supprimer le stock'))
+    await userEvent.click(screen.getByRole('button', { name: 'Supprimer' }))
     expect(
       screen.getByText('Voulez-vous supprimer cette date ?')
     ).toBeInTheDocument()
@@ -341,9 +342,12 @@ describe('screens:StocksEventEdition', () => {
       )
     )
 
-    await userEvent.click(screen.getAllByTestId('dropdown-menu-trigger')[1])
-    await userEvent.click(screen.getAllByTestId('dropdown-menu-trigger')[0])
-    await userEvent.click(screen.getByTitle('Supprimer le stock'))
+    await userEvent.click(
+      screen.getAllByRole('button', { name: 'Supprimer' })[1]
+    )
+    await userEvent.click(
+      screen.getAllByRole('button', { name: 'Supprimer' })[0]
+    )
     expect(
       screen.getByText('Voulez-vous supprimer cette date ?')
     ).toBeInTheDocument()
@@ -425,8 +429,7 @@ describe('screens:StocksEventEdition', () => {
     )
     await renderStockEventScreen(apiOffer, apiStocks)
 
-    await userEvent.click(screen.getByTestId('dropdown-menu-trigger'))
-    await userEvent.click(await screen.findByText('Supprimer le stock'))
+    await userEvent.click(screen.getByRole('button', { name: 'Supprimer' }))
 
     await userEvent.click(
       await screen.findByText('Confirmer la suppression', {
@@ -504,8 +507,7 @@ describe('screens:StocksEventEdition', () => {
     vi.spyOn(api, 'deleteStock').mockResolvedValue({ id: 1 })
     await renderStockEventScreen(apiOffer, apiStocks)
 
-    await userEvent.click(screen.getByTestId('dropdown-menu-trigger'))
-    await userEvent.click(screen.getByTitle('Supprimer le stock'))
+    await userEvent.click(screen.getByRole('button', { name: 'Supprimer' }))
     expect(
       screen.queryByText('Voulez-vous supprimer ce stock ?')
     ).not.toBeInTheDocument()
