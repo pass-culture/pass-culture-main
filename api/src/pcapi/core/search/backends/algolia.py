@@ -24,6 +24,7 @@ import pcapi.core.offerers.api as offerers_api
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.models as offers_models
 from pcapi.core.providers import titelive_gtl
+from pcapi.core.providers.constants import TITELIVE_MUSIC_GENRES_BY_GTL_ID
 from pcapi.core.search import SearchError
 from pcapi.core.search.backends import base
 from pcapi.domain.music_types import MUSIC_TYPES_LABEL_BY_CODE
@@ -466,12 +467,16 @@ class AlgoliaBackend(base.SearchBackend):
         distinct = (
             str(extra_data.get("allocineId", "")) or extra_data.get("visa") or extra_data.get("ean") or str(offer.id)
         )
+        gtl_id = extra_data.get("gtl_id")
 
-        music_type_label = None
+        music_type_labels = []
         music_type = (extra_data.get("musicType") or "").strip()
         if music_type:
+            if gtl_id and gtl_id in TITELIVE_MUSIC_GENRES_BY_GTL_ID:
+                music_type_labels.append(TITELIVE_MUSIC_GENRES_BY_GTL_ID[gtl_id])
+
             try:
-                music_type_label = MUSIC_TYPES_LABEL_BY_CODE[int(music_type)]
+                music_type_labels.append(MUSIC_TYPES_LABEL_BY_CODE[int(music_type)])
             except (ValueError, KeyError, TypeError):
                 logger.warning("bad music type encountered", extra={"offer": offer.id, "music_type": music_type})
 
@@ -497,7 +502,6 @@ class AlgoliaBackend(base.SearchBackend):
             except AttributeError:
                 macro_section = None
 
-        gtl_id = extra_data.get("gtl_id")
         gtl = titelive_gtl.get_gtl(gtl_id) if gtl_id else None
 
         gtl_code_1 = gtl_code_2 = gtl_code_3 = gtl_code_4 = None
@@ -557,7 +561,7 @@ class AlgoliaBackend(base.SearchBackend):
                 "last30DaysBookings": last_30_days_bookings,
                 "last30DaysBookingsRange": get_last_30_days_bookings_range(last_30_days_bookings),
                 "movieGenres": extra_data.get("genres"),
-                "musicType": music_type_label,
+                "musicType": music_type_labels,
                 "name": offer.name,
                 "nativeCategoryId": offer.subcategory.native_category_id,
                 "prices": sorted(prices),
@@ -602,7 +606,10 @@ class AlgoliaBackend(base.SearchBackend):
             object_to_index["offer"]["gtl_level2"] = gtl.get("level_02_label")
             object_to_index["offer"]["gtl_level3"] = gtl.get("level_03_label")
             object_to_index["offer"]["gtl_level4"] = gtl.get("level_04_label")
-        elif offer.subcategory.category.id == categories.MUSIQUE_ENREGISTREE.id and gtl_id:
+        elif gtl_id and offer.subcategory.category.id in (
+            categories.MUSIQUE_ENREGISTREE.id,
+            categories.MUSIQUE_LIVE.id,
+        ):
             gtl_label = next(
                 (music_type.label for music_type in categories.TITELIVE_MUSIC_TYPES if music_type.gtl_id == gtl_id),
                 None,
