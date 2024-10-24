@@ -12,7 +12,7 @@ export const IndividualOffersTableHead = (): JSX.Element => {
         <th colSpan={3} />
 
         <th className={styles['individual-th']}>
-          {offerAddressEnabled ? 'Adresse' : 'Lieu'}
+          {offerAddressEnabled ? 'Localisation' : 'Lieu'}
         </th>
         <th className={styles['individual-th']}>Stocks</th>
         <th className={styles['individual-th']}>Statut</th>

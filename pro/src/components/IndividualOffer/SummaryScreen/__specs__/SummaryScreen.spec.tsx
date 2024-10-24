@@ -654,10 +654,17 @@ describe('Summary', () => {
         await screen.findByText('Localisation de l’offre')
       ).toBeInTheDocument()
 
-      // Should be present in recap section and in app preview section
-      expect(
-        await screen.findAllByText('mon adresse - ma street 1 ma ville')
-      ).toHaveLength(2)
+      // Present without the colon « : » in the <VenueDetails /> component
+      expect(screen.getByText('Intitulé')).toBeInTheDocument()
+      expect(screen.getByText('Adresse')).toBeInTheDocument()
+
+      // Present with the colon « : » in the <SummaryScreen /> component
+      expect(screen.getByText('Intitulé :')).toBeInTheDocument()
+      expect(screen.getByText('Adresse :')).toBeInTheDocument()
+
+      // Both present in <VenueDetails /> and <SummaryScreen /> components
+      expect(screen.getAllByText('mon adresse')).toHaveLength(2)
+      expect(screen.getAllByText('ma street 1 ma ville')).toHaveLength(2)
     })
   })
 

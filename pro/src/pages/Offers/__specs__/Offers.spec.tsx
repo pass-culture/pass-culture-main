@@ -281,7 +281,7 @@ describe('route Offers', () => {
         const firstTypeOption = screen.getByRole('option', {
           name: 'Cinéma',
         })
-        const typeSelect = screen.getByLabelText('Catégories')
+        const typeSelect = screen.getByLabelText('Catégorie')
         await userEvent.selectOptions(typeSelect, firstTypeOption)
 
         await userEvent.click(screen.getByText('Rechercher'))
@@ -495,7 +495,7 @@ describe('route Offers', () => {
       const firstTypeOption = screen.getByRole('option', {
         name: 'My test value',
       })
-      const typeSelect = screen.getByLabelText('Catégories')
+      const typeSelect = screen.getByLabelText('Catégorie')
 
       await userEvent.selectOptions(typeSelect, firstTypeOption)
       await userEvent.click(screen.getByText('Rechercher'))
@@ -824,7 +824,7 @@ describe('route Offers', () => {
         screen.queryByRole('columnheader', { name: 'Lieu' })
       ).toBeInTheDocument()
       expect(
-        screen.queryByRole('columnheader', { name: 'Adresse' })
+        screen.queryByRole('columnheader', { name: 'Localisation' })
       ).not.toBeInTheDocument()
     })
 
@@ -834,7 +834,7 @@ describe('route Offers', () => {
         screen.queryByRole('columnheader', { name: 'Lieu' })
       ).not.toBeInTheDocument()
       expect(
-        screen.queryByRole('columnheader', { name: 'Adresse' })
+        screen.queryByRole('columnheader', { name: 'Localisation' })
       ).toBeInTheDocument()
     })
 
@@ -850,7 +850,7 @@ describe('route Offers', () => {
         screen.queryByRole('columnheader', { name: 'Lieu' })
       ).not.toBeInTheDocument()
       expect(
-        screen.queryByRole('columnheader', { name: 'Adresse' })
+        screen.queryByRole('columnheader', { name: 'Localisation' })
       ).toBeInTheDocument()
     })
 
@@ -860,7 +860,7 @@ describe('route Offers', () => {
         defaultGetOffererResponseModel
       )
       await renderOffers(DEFAULT_SEARCH_FILTERS, ['WIP_ENABLE_OFFER_ADDRESS'])
-      const offererAddressOption = screen.getByLabelText('Adresse')
+      const offererAddressOption = screen.getByLabelText('Localisation')
 
       await waitFor(() => {
         expect(within(offererAddressOption).getAllByRole('option').length).toBe(

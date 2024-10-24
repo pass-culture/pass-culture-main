@@ -304,8 +304,12 @@ export const OfferSection = ({
               <SummaryDescriptionList
                 descriptions={[
                   {
+                    title: 'Intitulé',
+                    text: offerData.address?.label,
+                  },
+                  {
                     title: 'Adresse',
-                    text: computeAddressDisplayName(offerData.address!),
+                    text: computeAddressDisplayName(offerData.address!, false),
                   },
                 ]}
               />
