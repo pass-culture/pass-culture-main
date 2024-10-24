@@ -201,14 +201,15 @@ class TypeformBackend(BaseBackend):
                     case "email":
                         email = _strip(answer["email"])
                     case "choice":
-                        try:
-                            answers.append(
-                                TypeformAnswer(field_id=answer["field"]["id"], text=answer["choice"]["label"])
+                        answers.append(
+                            TypeformAnswer(
+                                field_id=answer["field"]["id"],
+                                text=answer["choice"].get("label"),
+                                choice_id=answer["choice"]["id"],
                             )
-                        except KeyError:
-                            answers.append(
-                                TypeformAnswer(field_id=answer["field"]["id"], choice_id=answer["choice"]["id"])
-                            )
+                        )
+                    case "number":
+                        answers.append(TypeformAnswer(field_id=answer["field"]["id"], text=str(answer["number"])))
                     case "text":
                         answers.append(TypeformAnswer(field_id=answer["field"]["id"], text=_strip(answer["text"])))
                     case _:

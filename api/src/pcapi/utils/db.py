@@ -10,6 +10,7 @@ import typing
 import psycopg2.extras
 import pytz
 import sqlalchemy as sqla
+import sqlalchemy.dialects.postgresql as sqla_postgresql
 import sqlalchemy.engine as sqla_engine
 import sqlalchemy.types as sqla_types
 
@@ -90,6 +91,11 @@ class MagicEnum(sqla_types.TypeDecorator):
         if value is None:
             return None
         return self.enum_class(value)
+
+
+class TSVector(sqla_types.TypeDecorator):  # pylint: disable=abstract-method
+    impl = sqla_postgresql.TSVECTOR
+    cache_ok = True
 
 
 def make_timerange(
