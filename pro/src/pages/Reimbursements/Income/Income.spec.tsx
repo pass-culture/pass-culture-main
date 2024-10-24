@@ -40,6 +40,7 @@ const LABELS = {
   venuesSelector: /Partenaire/,
   incomeResultsLabel: /Chiffre d’affaires total/,
   emptyScreen: /Vous n’avez aucune réservation/,
+  mandatoryHelper: /\* sont obligatoires/,
 }
 
 const renderIncome = () => {
@@ -89,9 +90,19 @@ describe('Income', () => {
       })
     })
 
+    it('should display an empty screen if no venues were found', async () => {
+      vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: [] })
+      renderIncome()
+
+      await waitFor(() => {
+        expect(screen.getByText(LABELS.emptyScreen)).toBeInTheDocument()
+      })
+    })
+
     // TODO : https://passculture.atlassian.net/browse/PC-32278
     it('should attempt to fetch income data with all venues and display a loading spinner meanwhile', () => {})
     it('should display an error message if income couldnt be fetched', () => {})
+    it('should display an empty screen if no income data was found', () => {})
 
     it('should display a venue selector with all venues selected by default', async () => {
       vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: MOCK_DATA.venues })
@@ -111,6 +122,25 @@ describe('Income', () => {
             })
           ).toBeInTheDocument()
         })
+      })
+    })
+
+    it('should not display a venue selector, nor the mandatory input helper if there is only one venue', async () => {
+      vi.spyOn(api, 'getVenues').mockResolvedValue({
+        venues: [MOCK_DATA.venues[0]],
+      })
+      renderIncome()
+
+      await waitFor(() => {
+        expect(
+          screen.queryByRole('combobox', {
+            name: LABELS.venuesSelector,
+          })
+        ).not.toBeInTheDocument()
+
+        expect(
+          screen.queryByText(LABELS.mandatoryHelper)
+        ).not.toBeInTheDocument()
       })
     })
 
