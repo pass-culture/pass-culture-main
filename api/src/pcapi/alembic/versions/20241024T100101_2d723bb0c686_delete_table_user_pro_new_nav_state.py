@@ -6,7 +6,7 @@ from alembic import op
 
 # pre/post deployment: post
 # revision identifiers, used by Alembic.
-revision = "43af54dafa39"
+revision = "2d723bb0c686"
 down_revision = "7356bdbfd295"
 branch_labels: tuple[str] | None = None
 depends_on: list[str] | None = None
