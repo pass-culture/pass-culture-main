@@ -10,6 +10,7 @@ from pcapi.core.geography import factories as geography_factories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import factories as offers_factories
+from pcapi.utils import siren as siren_utils
 
 
 logger = logging.getLogger(__name__)
@@ -40,14 +41,14 @@ def _create_nc_active_offerer() -> None:
         street=address.street,
         postalCode=address.postalCode,
         city=address.city,
-        siren="NC1230001",  # NC + RID7 (experimental)
+        siren=siren_utils.rid7_to_siren("1230001"),
         allowedOnAdage=False,
     )
     venue = offerers_factories.VenueFactory(
         managingOfferer=offerer,
         pricing_point="self",
         name="Lieu avec RIDET à Nouméa",
-        siret="NC1230001001",  # NC + RIDET (experimental)
+        siret=siren_utils.ridet_to_siret("1230001001"),
         departementCode="988",
         latitude=address.latitude,
         longitude=address.longitude,
@@ -72,6 +73,8 @@ def _create_nc_active_offerer() -> None:
         user__lastName="Néo-Calédonien",
         user__email="pro1.nc@example.com",
         user__phoneNumber="+687263443",
+        user__postalCode="98800",
+        user__departementCode="988",
     )
 
     bank_account = finance_factories.BankAccountFactory(
@@ -123,14 +126,14 @@ def _create_nc_minimal_offerer() -> None:
         street=address.street,
         postalCode=address.postalCode,
         city=address.city,
-        siren="NC1230002",  # NC + RID7 (experimental)
+        siren=siren_utils.rid7_to_siren("1230002"),
         allowedOnAdage=False,
     )
     offerers_factories.VenueFactory(
         managingOfferer=offerer,
         pricing_point="self",
         name="Lieu avec RIDET à Thio",
-        siret="NC1230002001",  # NC + RIDET (experimental)
+        siret=siren_utils.ridet_to_siret("1230002001"),
         departementCode="988",
         latitude=address.latitude,
         longitude=address.longitude,
@@ -156,4 +159,6 @@ def _create_nc_minimal_offerer() -> None:
         user__lastName="Néo-Calédonien",
         user__email="pro2.nc@example.com",
         user__phoneNumber="+687442504",
+        user__postalCode="98829",
+        user__departementCode="988",
     )

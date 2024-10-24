@@ -37,7 +37,7 @@ class TestingBackend(BaseBackend):
 
     @classmethod
     def _check_siren(cls, siren: str) -> None:
-        assert len(siren) == 9
+        assert len(siren) == siren_utils.SIREN_LENGTH
         if siren == "000000000":
             raise exceptions.UnknownEntityException()
 
@@ -133,7 +133,7 @@ class TestingBackend(BaseBackend):
         )
 
     def get_siret(self, siret: str, raise_if_non_public: bool = False) -> models.SiretInfo:
-        assert len(siret) == 14
+        assert len(siret) == siren_utils.SIRET_LENGTH
 
         self._check_siren(siret[:9])
 

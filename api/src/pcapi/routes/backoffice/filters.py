@@ -1344,6 +1344,18 @@ def get_offer_type(
     return "offer"
 
 
+def siren_or_rid7_title(offerer: offerers_models.Offerer) -> str:
+    if offerer.rid7:
+        return "RID7"
+    return "SIREN"
+
+
+def siret_or_ridet_title(venue: offerers_models.Venue) -> str:
+    if venue.ridet:
+        return "RIDET"
+    return "SIRET"
+
+
 def install_template_filters(app: Flask) -> None:
     app.jinja_env.trim_blocks = True
     app.jinja_env.lstrip_blocks = True
@@ -1432,3 +1444,5 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_venue_provider_count"] = format_venue_provider_count
     app.jinja_env.filters["build_pro_link"] = build_pro_link
     app.jinja_env.filters["offer_type"] = get_offer_type
+    app.jinja_env.filters["siren_or_rid7_title"] = siren_or_rid7_title
+    app.jinja_env.filters["siret_or_ridet_title"] = siret_or_ridet_title

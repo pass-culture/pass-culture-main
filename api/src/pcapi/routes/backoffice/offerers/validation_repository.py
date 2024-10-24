@@ -17,6 +17,7 @@ from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.utils import email as email_utils
+from pcapi.utils import siren as siren_utils
 from pcapi.utils.clean_accents import clean_accents
 from pcapi.utils.regions import get_department_codes_for_region
 
@@ -97,8 +98,10 @@ def _apply_query_filters(
             if num_digits == 12:
                 query, is_venue_table_joined = _join_venue(query, is_venue_table_joined)
                 query = query.filter(offerers_models.Venue.dmsToken == sanitized_q)
-            elif num_digits == 9:
+            elif num_digits == siren_utils.SIREN_LENGTH:
                 query = query.filter(offerers_models.Offerer.siren == sanitized_q)
+            elif num_digits == siren_utils.RID7_LENGTH:
+                query = query.filter(offerers_models.Offerer.siren == siren_utils.rid7_to_siren(sanitized_q))
             elif num_digits == 5:
                 query = query.filter(offerers_models.Offerer.postalCode == sanitized_q)
             elif num_digits in (2, 3):

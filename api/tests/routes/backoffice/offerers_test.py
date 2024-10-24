@@ -2134,6 +2134,18 @@ class ListOfferersToValidateTest(GetEndpointHelper):
             rows = html_parser.extract_table_rows(response.data)
             assert {row["Nom de la structure"] for row in rows} == {"D"}
 
+        def test_list_search_by_rid7(self, authenticated_client):
+            nc_offerer = offerers_factories.NotValidatedOffererFactory(siren="NC1020304", name="Test NC")
+
+            with assert_num_queries(self.expected_num_queries):
+                response = authenticated_client.get(
+                    url_for("backoffice_web.validation.list_offerers_to_validate", q="1020304")
+                )
+                assert response.status_code == 200
+
+            rows = html_parser.extract_table_rows(response.data)
+            assert {row["Nom de la structure"] for row in rows} == {nc_offerer.name}
+
         @pytest.mark.parametrize("postal_code", ["35400", "35 400"])
         def test_list_search_by_postal_code(self, authenticated_client, offerers_to_be_validated, postal_code):
             with assert_num_queries(self.expected_num_queries):
@@ -2170,7 +2182,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
             assert {row["Nom de la structure"] for row in rows} == {"B", "D"}
             assert html_parser.extract_pagination_info(response.data) == (1, 1, 2)
 
-        @pytest.mark.parametrize("search", ["1", "1234", "123456", "1234567", "12345678", "12345678912345", "  1234"])
+        @pytest.mark.parametrize("search", ["1", "1234", "123456", "12345678", "12345678912345", "  1234"])
         def test_list_search_by_invalid_number_of_digits(self, authenticated_client, search):
             with assert_num_queries(self.expected_num_queries_when_no_query + 1):  # rollback transaction
                 response = authenticated_client.get(
@@ -2179,7 +2191,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
                 assert response.status_code == 400
 
             assert (
-                "Le nombre de chiffres ne correspond pas à un SIREN, code postal, département ou ID DMS CB"
+                "Le nombre de chiffres ne correspond pas à un SIREN, RID7, code postal, département ou ID DMS CB"
                 in response.data.decode("utf-8")
             )
 

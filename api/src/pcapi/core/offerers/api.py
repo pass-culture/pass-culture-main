@@ -67,6 +67,7 @@ from pcapi.utils import crypto
 from pcapi.utils import human_ids
 from pcapi.utils import image_conversion
 from pcapi.utils import regions as utils_regions
+from pcapi.utils import siren as siren_utils
 from pcapi.utils.clean_accents import clean_accents
 import pcapi.utils.date as date_utils
 import pcapi.utils.db as db_utils
@@ -1547,9 +1548,16 @@ def search_offerer(search_query: str, departments: typing.Iterable[str] = ()) ->
         offerers = offerers.filter(models.Offerer.departementCode.in_(departments))  # type: ignore[attr-defined]
 
     if search_query.isnumeric():
-        if len(search_query) == 9:
+        if len(search_query) == siren_utils.SIREN_LENGTH:
             offerers = offerers.filter(
                 sa.or_(models.Offerer.id == int(search_query), models.Offerer.siren == search_query)
+            )
+        elif len(search_query) == siren_utils.RID7_LENGTH:
+            offerers = offerers.filter(
+                sa.or_(
+                    models.Offerer.id == int(search_query),
+                    models.Offerer.siren == siren_utils.rid7_to_siren(search_query),
+                )
             )
         else:
             offerers = offerers.filter(models.Offerer.id == int(search_query))
@@ -1590,11 +1598,18 @@ def search_venue(search_query: str, departments: typing.Iterable[str] = ()) -> B
         venues = venues.filter(models.Venue.departementCode.in_(departments))
 
     if search_query.isnumeric():
-        if len(search_query) == 14:
+        if len(search_query) == siren_utils.SIRET_LENGTH:
             venues = venues.filter(sa.or_(models.Venue.id == int(search_query), models.Venue.siret == search_query))
         # for dmsToken containing digits only
         elif len(search_query) == 12:
             venues = venues.filter(sa.or_(models.Venue.id == int(search_query), models.Venue.dmsToken == search_query))
+        elif len(search_query) == siren_utils.RIDET_LENGTH:
+            venues = venues.filter(
+                sa.or_(
+                    models.Offerer.id == int(search_query),
+                    models.Offerer.siret == siren_utils.ridet_to_siret(search_query),
+                )
+            )
         else:
             venues = venues.filter(models.Venue.id == int(search_query))
     else:

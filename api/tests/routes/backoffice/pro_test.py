@@ -391,6 +391,18 @@ class SearchOffererTest:
             total_items=1,
         )
 
+    def test_can_search_offerer_by_rid7(self, authenticated_client):
+        nc_offerer = offerers_factories.OffererFactory(siren="NC1020304")
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, q="1020304", pro_type=TypeOptions.OFFERER.name))
+            assert response.status_code == 303
+
+        # Redirected to single result
+        assert_response_location(
+            response, "backoffice_web.offerer.get", offerer_id=nc_offerer.id, q="1020304", search_rank=1, total_items=1
+        )
+
     @override_features(WIP_ENABLE_BO_PRO_SEARCH_BY_SIMILARITY=True)
     def test_can_search_offerer_by_name(self, authenticated_client):
         self._create_offerers()
@@ -547,6 +559,18 @@ class SearchVenueTest:
             q=self.venues[3].siret,
             search_rank=1,
             total_items=1,
+        )
+
+    def test_can_search_venue_by_ridet(self, authenticated_client):
+        nc_venue = offerers_factories.VenueFactory(siret="NC1020304001XX")
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, q="1020304001", pro_type=TypeOptions.VENUE.name))
+            assert response.status_code == 303
+
+        # Redirected to single result
+        assert_response_location(
+            response, "backoffice_web.venue.get", venue_id=nc_venue.id, q="1020304001", search_rank=1, total_items=1
         )
 
     def test_can_search_venue_by_booking_email(self, authenticated_client):

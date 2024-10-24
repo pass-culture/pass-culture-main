@@ -855,6 +855,10 @@ class UpdateVenueTest(PostEndpointHelper):
             "venue_type_code": venue.venueTypeCode.name,
         }
 
+    @pytest.mark.parametrize(
+        "siren,old_siret,new_siret",
+        [("123456789", "12345678900012", "12345678900023"), ("NC1234567", "NC1234567001XX", "NC1234567002XX")],
+    )
     @patch(
         "pcapi.connectors.api_adresse.get_address",
         return_value=api_adresse.AddressInfo(
@@ -869,11 +873,13 @@ class UpdateVenueTest(PostEndpointHelper):
             street="23 Boulevard de la Madeleine",
         ),
     )
-    def test_update_venue(self, mock_get_address, authenticated_client, offerer):
+    def test_update_venue(self, mock_get_address, authenticated_client, siren, old_siret, new_siret):
+        offerer = offerers_factories.OffererFactory(siren=siren)
         contact_email = "contact.venue@example.com"
         website = "update.venue@example.com"
         social_medias = {"instagram": "https://instagram.com/update.venue"}
         venue = offerers_factories.VenueFactory(
+            siret=old_siret,
             managingOfferer=offerer,
             contact__email=contact_email,
             contact__website=website,
@@ -883,7 +889,7 @@ class UpdateVenueTest(PostEndpointHelper):
         data = {
             "name": "IKEA",
             "public_name": "Ikea city",
-            "siret": venue.managingOfferer.siren + "98765",
+            "siret": new_siret,
             "city": "Paris",
             "postal_code": "75001",
             "street": "23 Boulevard de la Madeleine",
