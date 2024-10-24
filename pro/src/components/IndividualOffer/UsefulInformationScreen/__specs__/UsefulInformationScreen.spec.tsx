@@ -231,7 +231,7 @@ describe('screens:IndividualOffer::UsefulInformation', () => {
       mentalDisabilityCompliant: false,
       motorDisabilityCompliant: true,
       name: undefined,
-      shouldSendMail: false,
+      shouldSendMail: true,
       url: undefined,
       visualDisabilityCompliant: false,
       withdrawalDelay: undefined,
