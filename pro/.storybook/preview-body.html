@@ -4,11 +4,3 @@
     max-width: 960px;
   }
 </style>
-
-<script>
-  //  Storybook lets you add a div root inside the body, but since Dialog portals are sent to the body
-  //  children, we need to apply the theme on the body tag itself.
-  document.body.onload = function () {
-    document.body.setAttribute('data-theme-storybook', 'blue')
-  }
-</script>
