@@ -16,6 +16,7 @@ import { Button } from 'ui-kit/Button/Button'
 import { ButtonLink } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 import { DatePicker } from 'ui-kit/form/DatePicker/DatePicker'
+import { QuantityInput } from 'ui-kit/form/QuantityInput/QuantityInput'
 import { RadioButton } from 'ui-kit/form/RadioButton/RadioButton'
 import { Select } from 'ui-kit/form/Select/Select'
 import { FieldError } from 'ui-kit/form/shared/FieldError/FieldError'
@@ -350,7 +351,6 @@ export const RecurrenceForm = ({
               />
               Places et tarifs par horaire
             </h2>
-
             <FieldArray
               name="quantityPerPriceCategories"
               render={(arrayHelpers) => (
@@ -358,17 +358,13 @@ export const RecurrenceForm = ({
                   {values.quantityPerPriceCategories.map(
                     (quantityPerPriceCategory, index) => (
                       <FormLayout.Row key={index} inline mdSpaceAfter>
-                        <TextInput
+                        <QuantityInput
                           label="Nombre de places"
                           name={`quantityPerPriceCategories[${index}].quantity`}
-                          type="number"
-                          step="1"
-                          isOptional
-                          placeholder="Illimité"
                           className={styles['quantity-input']}
                           hideFooter
+                          isOptional
                         />
-
                         <Select
                           label="Tarif"
                           name={`quantityPerPriceCategories[${index}].priceCategory`}

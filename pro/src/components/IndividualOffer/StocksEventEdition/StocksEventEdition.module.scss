@@ -52,11 +52,11 @@
 }
 
 .head-date {
-  width: rem.torem(160px);
+  width: rem.torem(110px);
 }
 
 .head-time {
-  width: rem.torem(105px);
+  width: rem.torem(90px);
 }
 
 .head-price {
@@ -64,19 +64,19 @@
 }
 
 .head-booking-limit-datetime {
-  width: rem.torem(160px);
+  width: rem.torem(110px);
 
   // force header to break line
   padding-right: rem.torem(4px);
 }
 
 .head-remaining-quantity {
-  width: rem.torem(90px);
+  width: rem.torem(160px);
 }
 
 .head-booking-quantity {
   white-space: nowrap;
-  width: rem.torem(120px);
+  width: rem.torem(100px);
 }
 
 .head-actions {
@@ -90,4 +90,8 @@
 
 .stock-actions {
   padding-top: rem.torem(8px);
+}
+
+.quantity-input {
+  width: 4rem;
 }

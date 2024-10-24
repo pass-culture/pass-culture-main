@@ -92,6 +92,7 @@ export const IndividualOffersTable = ({
             <>
               <div className={styles['select-all-container']}>
                 <BaseCheckbox
+                  className={styles['select-all-checkbox']}
                   checked={areAllOffersSelected}
                   partialCheck={
                     !areAllOffersSelected && isAtLeastOneOfferChecked
