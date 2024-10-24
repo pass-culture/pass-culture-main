@@ -1,17 +1,33 @@
 import { logAndGoToPage } from '../support/helpers.ts'
 
-describe('Modify a digital individual offer', () => {
+describe('Edit a digital individual offer', () => {
   let login: string
 
-  before(() => {
+  beforeEach(() => {
     cy.visit('/connexion')
     cy.request({
       method: 'GET',
       url: 'http://localhost:5001/sandboxes/pro/create_regular_pro_user_with_virtual_offer',
     }).then((response) => {
       login = response.body.user.email
+      cy.setFeatureFlags([{ name: 'WIP_SPLIT_OFFER', isActive: true }])
     })
-    cy.setFeatureFlags([{ name: 'WIP_SPLIT_OFFER', isActive: true }])
+  })
+
+  it('An edited offer is displayed with 4 tabs', function () {
+    logAndGoToPage(login, '/offre/individuelle/1/recapitulatif/details')
+
+    cy.contains('Récapitulatif')
+
+    cy.stepLog({ message: 'I check that the 4 tab are displayed' })
+    cy.findByRole('tablist').within(() => {
+      cy.findAllByRole('tab').eq(0).should('have.text', 'Détails de l’offre')
+      cy.findAllByRole('tab')
+        .eq(1)
+        .should('have.text', 'Informations pratiques')
+      cy.findAllByRole('tab').eq(2).should('have.text', 'Stock & Prix')
+      cy.findAllByRole('tab').eq(3).should('have.text', 'Réservations')
+    })
   })
 
   it('I should be able to modify the url of a digital offer', function () {
