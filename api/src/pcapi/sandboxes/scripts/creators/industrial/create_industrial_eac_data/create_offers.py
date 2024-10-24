@@ -7,6 +7,8 @@ import typing
 from typing import Optional
 from typing import TypedDict
 
+import sqlalchemy as sa
+
 from pcapi import settings
 from pcapi.core import search
 from pcapi.core.categories.subcategories_v2 import EacFormat
@@ -793,5 +795,9 @@ def create_national_programs() -> list[educational_models.NationalProgram]:
 
 
 def reset_offer_id_seq() -> None:
-    db.session.execute("ALTER SEQUENCE collective_offer_id_seq RESTART WITH 1")
-    db.session.execute("ALTER SEQUENCE collective_offer_template_id_seq RESTART WITH 1")
+    if settings.IS_DEV:
+        db.session.execute(sa.text("ALTER SEQUENCE collective_offer_id_seq RESTART WITH 1"))
+        db.session.execute(sa.text("ALTER SEQUENCE collective_offer_template_id_seq RESTART WITH 1"))
+    else:
+        db.session.execute(sa.text("SELECT reset_sequence('collective_offer_id_seq')"))
+        db.session.execute(sa.text("SELECT reset_sequence('collective_offer_template_id_seq')"))
