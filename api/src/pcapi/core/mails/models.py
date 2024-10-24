@@ -54,6 +54,7 @@ class Template:
     tags: list[str] = dataclasses.field(default_factory=list)
     use_priority_queue: bool = False
     send_to_ehp: bool = True
+    enable_unsubscribe: bool = False
 
     @property
     def id(self) -> int:

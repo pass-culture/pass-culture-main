@@ -22,4 +22,5 @@ class SendTransactionalEmailRequest(BaseModel):
     html_content: str | None = None
     attachment: dict | None = None
     reply_to: dict | None = None
+    enable_unsubscribe: bool | None = False
     use_pro_subaccount: bool | None = False  # or None to handle queued emails at deployment time

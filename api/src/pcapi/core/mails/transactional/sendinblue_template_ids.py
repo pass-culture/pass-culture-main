@@ -207,10 +207,18 @@ class TransactionalEmail(Enum):
         id_prod=587, id_not_prod=73, subaccount_id_prod=36, subaccount_id_not_prod=24
     )
     REMINDER_OFFER_CREATION_5_DAYS_AFTER_TO_PRO = models.TemplatePro(
-        id_prod=566, id_not_prod=104, subaccount_id_prod=13, subaccount_id_not_prod=13
+        id_prod=566,
+        id_not_prod=104,
+        subaccount_id_prod=13,
+        subaccount_id_not_prod=13,
+        enable_unsubscribe=True,
     )
     REMINDER_OFFER_CREATION_10_DAYS_AFTER_TO_PRO = models.TemplatePro(
-        id_prod=567, id_not_prod=105, subaccount_id_prod=12, subaccount_id_not_prod=12
+        id_prod=567,
+        id_not_prod=105,
+        subaccount_id_prod=12,
+        subaccount_id_not_prod=12,
+        enable_unsubscribe=True,
     )
     RESET_PASSWORD_TO_PRO = models.TemplatePro(
         id_prod=364, id_not_prod=47, subaccount_id_prod=5, subaccount_id_not_prod=5
