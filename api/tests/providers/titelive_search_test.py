@@ -2,7 +2,6 @@ import copy
 import datetime
 import pathlib
 import re
-import unittest
 
 import pytest
 import time_machine
@@ -859,6 +858,18 @@ class TiteliveBookSearchTest:
         self.setup_api_response_fixture(requests_mock, fixtures.BOOKS_BY_MULTIPLE_EANS_FIXTURE, eans=["1", "2"])
 
         products = TiteliveBookSearch().get_product_info_from_eans(eans=["1", "2"])
+
+        assert products[0].article[0].gencod == "9782070726370"
+        assert products[1].article[0].gencod == "9782335010046"
+        assert len(products) == 2
+
+    def test_get_information_from_titelive_multiple_ean_route_with_dict_response(self, requests_mock):
+        dict_result_response = copy.deepcopy(fixtures.BOOKS_BY_MULTIPLE_EANS_FIXTURE)
+        dict_result_response["result"] = {str(i): result for i, result in enumerate(dict_result_response["result"])}
+        self.setup_api_response_fixture(requests_mock, dict_result_response, eans=["1", "2"])
+
+        products = TiteliveBookSearch().get_product_info_from_eans(eans=["1", "2"])
+
         assert products[0].article[0].gencod == "9782070726370"
         assert products[1].article[0].gencod == "9782335010046"
         assert len(products) == 2
@@ -879,18 +890,6 @@ class TiteliveBookSearchTest:
         products = TiteliveBookSearch().get_product_info_from_eans(eans=["1", "2"])
         assert products[0].article[0].gencod == "9782335010046"
         assert len(products) == 1
-
-    @unittest.mock.patch(
-        "pcapi.core.providers.titelive_book_search.get_by_ean_list", return_value={"result": [1, 2, 3, 4, 5]}
-    )
-    def test_no_logger_called_when_titelive_returns_an_integer_as_work(
-        self, _mock_get_titelive_by_eans, caplog, requests_mock
-    ):
-        _configure_login_and_images(requests_mock)
-        products = TiteliveBookSearch().get_product_info_from_eans(eans=["1223345"])
-        assert len(products) == 0
-
-        assert len(caplog.records) == 0
 
     def test_extract_eans_from_titelive_response(self):
         eans = extract_eans_from_titelive_response(fixtures.TWO_BOOKS_RESPONSE_FIXTURE["result"])
