@@ -143,7 +143,7 @@ class Returns200Test:
         assert response.json == {"captchaToken": "Ce champ est obligatoire"}
 
     @pytest.mark.usefixtures("db_session")
-    def test_whith_user_offerer(self, client):
+    def test_with_user_offerer(self, client):
         # Given
         user_offerer = offerers_factories.UserOffererFactory(
             user__lastConnectionDate=datetime.datetime.utcnow(),
