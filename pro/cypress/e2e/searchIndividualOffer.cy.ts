@@ -78,11 +78,11 @@ describe('Search individual offers', () => {
     expectOffersOrBookingsAreFound(expectedResults)
   })
 
-  it('A search with "Catégories" filter should display expected results', () => {
+  it('A search with "Catégorie" filter should display expected results', () => {
     logAndGoToPage(login, '/offres')
 
-    cy.stepLog({ message: 'I select "Instrument de musique" in "Catégories"' })
-    cy.findByLabelText('Catégories').select('Instrument de musique')
+    cy.stepLog({ message: 'I select "Instrument de musique" in "Catégorie"' })
+    cy.findByLabelText('Catégorie').select('Instrument de musique')
 
     cy.stepLog({ message: 'I validate my filters' })
     cy.findByText('Rechercher').click()
@@ -162,8 +162,8 @@ describe('Search individual offers', () => {
     cy.findByText('Rechercher').click()
     cy.wait('@searchOffers').its('response.statusCode').should('eq', 200)
 
-    cy.stepLog({ message: 'I select "Livre" in "Catégories"' })
-    cy.findByLabelText('Catégories').select('Livre')
+    cy.stepLog({ message: 'I select "Livre" in "Catégorie"' })
+    cy.findByLabelText('Catégorie').select('Livre')
 
     cy.stepLog({ message: 'I select "Librairie 10" in "Lieu"' })
     cy.findByLabelText('Lieu').select(venueName)

@@ -79,7 +79,7 @@ describe('DetailsSummaryScreen', () => {
     renderDetailsSummaryScreen(offer)
 
     expect(screen.getAllByText('Offre de test')).toHaveLength(2)
-    expect(screen.getByText('Mon Lieu')).toBeInTheDocument()
+    expect(screen.getAllByText('Mon Lieu')).toHaveLength(2) // Both present in main section and in preview section
     expect(screen.getByText('Catégorie A')).toBeInTheDocument()
     expect(screen.getByText('1234567891234')).toBeInTheDocument()
     expect(screen.getByText(/Modifier/)).toBeInTheDocument()
