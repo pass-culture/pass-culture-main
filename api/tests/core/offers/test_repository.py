@@ -1505,405 +1505,7 @@ class ExcludeOffersFromInactiveVenueProviderTest:
 
 
 @pytest.mark.usefixtures("db_session")
-class GetStocksListFiltersTest:
-    def test_basic(self):
-        stock = factories.EventStockFactory()
-
-        # When
-        stocks = repository.get_filtered_stocks(
-            venue=stock.offer.venue,
-            offer=stock.offer,
-        )
-
-        # Then
-        assert stocks.count() == 1
-
-    def test_filtered_stock_by_price_category(self):
-        # Given
-        stock = factories.EventStockFactory()
-        factories.EventStockFactory()
-
-        # When
-        stocks = repository.get_filtered_stocks(
-            venue=stock.offer.venue,
-            offer=stock.offer,
-            price_category_id=stock.priceCategoryId,
-        )
-
-        # Then
-        assert stocks.count() == 1
-
-    def test_filtered_stock_by_date(self):
-        # Given
-        beginning_datetime = datetime.datetime(2020, 10, 15, 0, 0, 0)
-        offer = factories.OfferFactory()
-        factories.EventStockFactory(offer=offer, beginningDatetime=beginning_datetime)
-        factories.EventStockFactory(offer=offer, beginningDatetime=beginning_datetime + datetime.timedelta(days=1))
-        # When
-        stocks = repository.get_filtered_stocks(
-            venue=offer.venue,
-            offer=offer,
-            date=beginning_datetime.date(),
-        )
-
-        # Then
-        assert stocks.count() == 1
-
-    def test_filtered_stocks_by_hour(self):
-        # Given
-        beginning_datetime = datetime.datetime(2020, 10, 15, 12, 0, 0)
-        same_hour_other_day = datetime.datetime(2020, 10, 16, 12, 0, 0)
-        same_hour_other_minutes_other_day = datetime.datetime(2020, 10, 16, 12, 45, 0)
-        same_day_other_hour = datetime.datetime(2020, 10, 15, 0, 0, 0)
-        same_day_same_hour_other_minutes = datetime.datetime(2020, 10, 15, 12, 45, 0)
-
-        venue = offerers_factories.VenueFactory(timezone="Pacific/Tahiti", departementCode="987", postalCode="98700")
-        offer = factories.OfferFactory(venue=venue)
-        factories.EventStockFactory(offer=offer, beginningDatetime=beginning_datetime)
-        factories.EventStockFactory(offer=offer, beginningDatetime=same_hour_other_day)
-        factories.EventStockFactory(offer=offer, beginningDatetime=same_hour_other_minutes_other_day)
-        factories.EventStockFactory(offer=offer, beginningDatetime=same_day_other_hour)
-        factories.EventStockFactory(offer=offer, beginningDatetime=same_day_same_hour_other_minutes)
-
-        # When
-        stocks = repository.get_filtered_stocks(venue=venue, offer=offer, time=beginning_datetime.time())
-
-        # Then
-        assert stocks.count() == 2
-
-    def test_filtered_stock_by_minutes(self):
-        # Given
-        beginning_datetime = datetime.datetime(2020, 10, 15, 0, 0, 0)
-        venue = offerers_factories.VenueFactory(
-            timezone="America/Martinique", departementCode="972", postalCode="97200"
-        )
-        offer = factories.OfferFactory(venue=venue)
-        factories.EventStockFactory(offer=offer, beginningDatetime=beginning_datetime)
-        factories.EventStockFactory(offer=offer, beginningDatetime=beginning_datetime + datetime.timedelta(hours=1))
-        factories.EventStockFactory(offer=offer, beginningDatetime=beginning_datetime + datetime.timedelta(minutes=1))
-
-        # When
-        stocks = repository.get_filtered_stocks(
-            venue=venue,
-            offer=offer,
-            time=beginning_datetime.time(),
-        )
-
-        # Then
-        assert stocks.count() == 1
-
-    def test_filtered_stock_by_seconds(self):
-        # Given
-        beginning_datetime = datetime.datetime(2020, 10, 20, 1, 0, 0)
-        venue = offerers_factories.VenueFactory(timezone="Indian/Reunion", departementCode="974", postalCode="97400")
-        offer = factories.OfferFactory(venue=venue)
-        factories.EventStockFactory(offer=offer, beginningDatetime=beginning_datetime)
-        factories.EventStockFactory(
-            offer=offer,
-            beginningDatetime=beginning_datetime + datetime.timedelta(seconds=1),
-        )
-        factories.EventStockFactory(
-            offer=offer,
-            beginningDatetime=beginning_datetime + datetime.timedelta(seconds=60),
-        )
-
-        # When
-        stocks = repository.get_filtered_stocks(
-            venue=venue,
-            offer=offer,
-            time=beginning_datetime.time(),
-        )
-
-        # Then
-        assert stocks.count() == 2
-
-    @time_machine.travel("2020-02-20 01:00:00")
-    def test_filtered_stock_by_time_find_summer_and_winter_time_when_launch_in_winter(self):
-        # Given
-        beginning_datetime_1 = datetime.datetime(2021, 3, 27, 2, 0, 0)
-        beginning_datetime_2 = datetime.datetime(2021, 3, 28, 1, 0, 0)
-        beginning_datetime_3 = datetime.datetime(2021, 3, 29, 1, 0, 0)
-
-        venue = offerers_factories.VenueFactory(timezone="Europe/Paris", departementCode="78", postalCode="78220")
-
-        offer = factories.OfferFactory(venue=venue)
-        factories.EventStockFactory(offer=offer, beginningDatetime=beginning_datetime_1)
-        factories.EventStockFactory(
-            offer=offer,
-            beginningDatetime=beginning_datetime_2,
-        )
-        factories.EventStockFactory(
-            offer=offer,
-            beginningDatetime=beginning_datetime_3,
-        )
-
-        # When
-        stocks = repository.get_filtered_stocks(
-            venue=venue,
-            offer=offer,
-            time=datetime.time(2, 0, 0),
-        )
-
-        # Then
-        assert stocks.count() == 3
-
-    @time_machine.travel("2020-06-20 01:00:00")
-    def test_filtered_stock_by_time_find_summer_and_winter_time_when_launch_in_summer(self):
-        # Given
-        beginning_datetime_1 = datetime.datetime(2021, 3, 13, 11, 0, 0)
-        beginning_datetime_2 = datetime.datetime(2021, 3, 14, 10, 0, 0)
-        beginning_datetime_3 = datetime.datetime(2021, 3, 15, 10, 0, 0)
-
-        venue = offerers_factories.VenueFactory(timezone="America/Miquelon", departementCode="97", postalCode="97500")
-
-        offer = factories.OfferFactory(venue=venue)
-        factories.EventStockFactory(offer=offer, beginningDatetime=beginning_datetime_1)
-        factories.EventStockFactory(
-            offer=offer,
-            beginningDatetime=beginning_datetime_2,
-        )
-        factories.EventStockFactory(
-            offer=offer,
-            beginningDatetime=beginning_datetime_3,
-        )
-
-        # When
-        stocks = repository.get_filtered_stocks(
-            venue=venue,
-            offer=offer,
-            time=datetime.time(10, 0, 0),
-        )
-
-        # Then
-        assert stocks.count() == 3
-
-    def test_filtered_stocks_query_by_default(self):
-        # Given
-        beginning_datetime = datetime.datetime(2020, 10, 15, 0, 0, 0)
-        offer = factories.OfferFactory()
-        first_stock = factories.EventStockFactory(offer=offer, beginningDatetime=beginning_datetime)
-        second_stock = factories.EventStockFactory(
-            offer=offer, beginningDatetime=beginning_datetime + datetime.timedelta(seconds=1)
-        )
-        third_stock = factories.EventStockFactory(
-            offer=offer, beginningDatetime=beginning_datetime + datetime.timedelta(seconds=2)
-        )
-
-        # When
-        stocks = repository.get_filtered_stocks(venue=offer.venue, offer=offer)
-
-        # Then
-        assert stocks.count() == 3
-        assert stocks[0] == first_stock
-        assert stocks[1] == second_stock
-        assert stocks[2] == third_stock
-
-    def test_stock_pagination_limit_per_page(self):
-        # Given
-        beginning_datetime = datetime.datetime(2020, 10, 15, 0, 0, 0)
-        stocks_limit_per_page = 1
-        current_page = 2
-        offer = factories.OfferFactory()
-        factories.EventStockFactory(offer=offer, beginningDatetime=beginning_datetime - datetime.timedelta(seconds=1))
-        factories.EventStockFactory(offer=offer, beginningDatetime=beginning_datetime)
-        factories.EventStockFactory(offer=offer, beginningDatetime=beginning_datetime + datetime.timedelta(seconds=30))
-
-        # When
-        filtered_stocks = repository.get_filtered_stocks(
-            venue=offer.venue,
-            offer=offer,
-            order_by="BEGINNING_DATETIME",
-        )
-        stocks = repository.get_paginated_stocks(
-            stocks_query=filtered_stocks, stocks_limit_per_page=stocks_limit_per_page, page=current_page
-        )
-
-        # Then
-        assert stocks.count() == 1
-
-    def test_order_stocks_by_beginning_datetime_desc(self):
-        # Given
-        beginning_datetime = datetime.datetime(2020, 10, 15, 12, 0, 0)
-        same_hour_other_day = datetime.datetime(2020, 10, 16, 12, 0, 0)
-        same_hour_other_minutes_other_day = datetime.datetime(2020, 10, 16, 12, 45, 0)
-        same_day_other_hour = datetime.datetime(2020, 10, 15, 0, 0, 0)
-        same_day_same_hour_other_minutes = datetime.datetime(2020, 10, 15, 12, 45, 0)
-
-        offer = factories.OfferFactory()
-        stock1 = factories.EventStockFactory(offer=offer, beginningDatetime=beginning_datetime)
-        stock2 = factories.EventStockFactory(offer=offer, beginningDatetime=same_hour_other_day)
-        stock3 = factories.EventStockFactory(offer=offer, beginningDatetime=same_hour_other_minutes_other_day)
-        stock4 = factories.EventStockFactory(offer=offer, beginningDatetime=same_day_other_hour)
-        stock5 = factories.EventStockFactory(offer=offer, beginningDatetime=same_day_same_hour_other_minutes)
-
-        # When
-        stocks = repository.get_filtered_stocks(
-            venue=offer.venue,
-            offer=offer,
-            order_by="BEGINNING_DATETIME",
-            order_by_desc=True,
-        )
-
-        # Then
-        assert stocks[0] == stock3
-        assert stocks[1] == stock2
-        assert stocks[2] == stock5
-        assert stocks[3] == stock1
-        assert stocks[4] == stock4
-
-    def test_order_stocks_by_date(self):
-        beginning_datetime = datetime.datetime(2020, 10, 15, 12, 0, 0)
-        same_hour_other_day = datetime.datetime(2020, 10, 16, 12, 0, 0)
-        same_hour_other_minutes_other_day = datetime.datetime(2020, 10, 16, 12, 45, 0)
-        same_day_other_hour = datetime.datetime(2020, 10, 15, 0, 0, 0)
-        same_day_same_hour_other_minutes = datetime.datetime(2020, 10, 15, 12, 45, 0)
-
-        offer = factories.OfferFactory()
-        stock1 = factories.EventStockFactory(offer=offer, beginningDatetime=beginning_datetime)
-        stock2 = factories.EventStockFactory(offer=offer, beginningDatetime=same_hour_other_day)
-        stock3 = factories.EventStockFactory(offer=offer, beginningDatetime=same_hour_other_minutes_other_day)
-        stock4 = factories.EventStockFactory(offer=offer, beginningDatetime=same_day_other_hour)
-        stock5 = factories.EventStockFactory(offer=offer, beginningDatetime=same_day_same_hour_other_minutes)
-
-        # When
-        stocks = repository.get_filtered_stocks(
-            venue=offer.venue,
-            offer=offer,
-            order_by="DATE",
-        )
-
-        # Then
-        assert stocks.count() == 5
-        assert stocks[0] == stock1
-        assert stocks[1] == stock4
-        assert stocks[2] == stock5
-        assert stocks[3] == stock2
-        assert stocks[4] == stock3
-
-    def test_order_stocks_by_time_desc(self):
-        # Given
-        beginning_datetime = datetime.datetime(2020, 10, 15, 12, 0, 0)
-        same_hour_other_day = datetime.datetime(2020, 10, 16, 12, 0, 0)
-        same_hour_other_minutes_other_day = datetime.datetime(2020, 10, 16, 12, 45, 0)
-        same_day_other_hour = datetime.datetime(2020, 10, 15, 0, 0, 0)
-        same_day_same_hour_other_minutes = datetime.datetime(2020, 10, 15, 12, 45, 0)
-
-        offer = factories.OfferFactory()
-        stock1 = factories.EventStockFactory(offer=offer, beginningDatetime=beginning_datetime)
-        stock2 = factories.EventStockFactory(offer=offer, beginningDatetime=same_hour_other_day)
-        stock3 = factories.EventStockFactory(offer=offer, beginningDatetime=same_hour_other_minutes_other_day)
-        stock4 = factories.EventStockFactory(offer=offer, beginningDatetime=same_day_other_hour)
-        stock5 = factories.EventStockFactory(offer=offer, beginningDatetime=same_day_same_hour_other_minutes)
-
-        # When
-        stocks = repository.get_filtered_stocks(
-            venue=offer.venue,
-            offer=offer,
-            order_by="TIME",
-            order_by_desc=True,
-        )
-
-        # Then
-        assert stocks.count() == 5
-        assert stocks[0] == stock5
-        assert stocks[1] == stock3
-        assert stocks[2] == stock2
-        assert stocks[3] == stock1
-        assert stocks[4] == stock4
-
-    def test_order_stocks_by_price_category_id(self):
-        # Given
-        offer = factories.OfferFactory()
-        price_cat1 = factories.PriceCategoryFactory(offer=offer)
-        price_cat2 = factories.PriceCategoryFactory(offer=offer)
-
-        stock1 = factories.EventStockFactory(offer=offer, priceCategory=price_cat1)
-        stock2 = factories.EventStockFactory(offer=offer, priceCategory=price_cat2)
-        stock3 = factories.EventStockFactory(offer=offer, priceCategory=price_cat1)
-
-        # When
-        stocks = repository.get_filtered_stocks(
-            venue=offer.venue,
-            offer=offer,
-            order_by="PRICE_CATEGORY_ID",
-        )
-
-        # Then
-        assert stocks[0] == stock1
-        assert stocks[1] == stock3
-        assert stocks[2] == stock2
-
-    def test_order_stocks_by_booking_limit(self):
-        # Given
-        booking_limit_datetime = datetime.datetime(2020, 10, 15, 12, 0, 0)
-        same_hour_other_day = datetime.datetime(2020, 10, 16, 12, 0, 0)
-        same_hour_other_minutes_other_day = datetime.datetime(2020, 10, 16, 12, 45, 0)
-        same_day_other_hour = datetime.datetime(2020, 10, 15, 0, 0, 0)
-        same_day_same_hour_other_minutes = datetime.datetime(2020, 10, 15, 12, 45, 0)
-
-        offer = factories.OfferFactory()
-        stock1 = factories.EventStockFactory(offer=offer, bookingLimitDatetime=booking_limit_datetime)
-        stock2 = factories.EventStockFactory(offer=offer, bookingLimitDatetime=same_hour_other_day)
-        stock3 = factories.EventStockFactory(offer=offer, bookingLimitDatetime=same_hour_other_minutes_other_day)
-        stock4 = factories.EventStockFactory(offer=offer, bookingLimitDatetime=same_day_other_hour)
-        stock5 = factories.EventStockFactory(offer=offer, bookingLimitDatetime=same_day_same_hour_other_minutes)
-
-        # When
-        stocks = repository.get_filtered_stocks(
-            venue=offer.venue,
-            offer=offer,
-            order_by="BOOKING_LIMIT_DATETIME",
-        )
-
-        # Then
-        assert stocks[0] == stock4
-        assert stocks[1] == stock1
-        assert stocks[2] == stock5
-        assert stocks[3] == stock2
-        assert stocks[4] == stock3
-
-    def test_order_stocks_by_remaining_quantity_desc(self):
-        # Given
-        offer = factories.OfferFactory()
-        stock1 = factories.EventStockFactory(offer=offer, quantity=5, dnBookedQuantity=1)
-        stock2 = factories.EventStockFactory(offer=offer, quantity=6, dnBookedQuantity=3)
-        stock3 = factories.EventStockFactory(offer=offer, quantity=50, dnBookedQuantity=5)
-
-        # When
-        stocks = repository.get_filtered_stocks(
-            venue=offer.venue,
-            offer=offer,
-            order_by="REMAINING_QUANTITY",
-            order_by_desc=True,
-        )
-
-        # Then
-        assert stocks[0] == stock3
-        assert stocks[1] == stock1
-        assert stocks[2] == stock2
-
-    def test_order_stocks_by_dn_booked_quantity(self):
-        offer = factories.OfferFactory()
-        stock1 = factories.EventStockFactory(offer=offer, quantity=5, dnBookedQuantity=20)
-        stock2 = factories.EventStockFactory(offer=offer, quantity=6, dnBookedQuantity=21)
-        stock3 = factories.EventStockFactory(offer=offer, quantity=50, dnBookedQuantity=5)
-
-        # When
-        stocks = repository.get_filtered_stocks(
-            venue=offer.venue,
-            offer=offer,
-            order_by="DN_BOOKED_QUANTITY",
-        )
-
-        # Then
-        assert stocks[0] == stock3
-        assert stocks[1] == stock1
-        assert stocks[2] == stock2
-
-
-@pytest.mark.usefixtures("db_session")
 class GetStocksListFiltersWithOffererAddressAsDataSourceTest:
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def test_basic(self):
         stock = factories.EventStockFactory()
 
@@ -1916,7 +1518,6 @@ class GetStocksListFiltersWithOffererAddressAsDataSourceTest:
         # Then
         assert stocks.count() == 1
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def test_filtered_stock_by_price_category(self):
         # Given
         stock = factories.EventStockFactory()
@@ -1932,7 +1533,6 @@ class GetStocksListFiltersWithOffererAddressAsDataSourceTest:
         # Then
         assert stocks.count() == 1
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def test_filtered_stock_by_date(self):
         # Given
         beginning_datetime = datetime.datetime(2020, 10, 15, 0, 0, 0)
@@ -1949,7 +1549,6 @@ class GetStocksListFiltersWithOffererAddressAsDataSourceTest:
         # Then
         assert stocks.count() == 1
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def test_filtered_stocks_by_hour(self):
         # Given
         beginning_datetime = datetime.datetime(2020, 10, 15, 12, 0, 0)
@@ -1978,7 +1577,6 @@ class GetStocksListFiltersWithOffererAddressAsDataSourceTest:
         # Then
         assert stocks.count() == 2
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def test_filtered_stock_by_minutes(self):
         # Given
         beginning_datetime = datetime.datetime(2020, 10, 15, 0, 0, 0)
@@ -2003,7 +1601,6 @@ class GetStocksListFiltersWithOffererAddressAsDataSourceTest:
         # Then
         assert stocks.count() == 1
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def test_filtered_stock_by_seconds(self):
         # Given
         beginning_datetime = datetime.datetime(2020, 10, 20, 1, 0, 0)
@@ -2034,7 +1631,6 @@ class GetStocksListFiltersWithOffererAddressAsDataSourceTest:
         # Then
         assert stocks.count() == 2
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=False)
     @time_machine.travel("2020-02-20 01:00:00")
     def test_filtered_stock_by_time_find_summer_and_winter_time_when_launch_in_winter(self):
         # Given
@@ -2070,7 +1666,6 @@ class GetStocksListFiltersWithOffererAddressAsDataSourceTest:
         # Then
         assert stocks.count() == 3
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     @time_machine.travel("2020-06-20 01:00:00")
     def test_filtered_stock_by_time_find_summer_and_winter_time_when_launch_in_summer(self):
         # Given
@@ -2107,7 +1702,6 @@ class GetStocksListFiltersWithOffererAddressAsDataSourceTest:
         # Then
         assert stocks.count() == 3
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def test_filtered_stocks_query_by_default(self):
         # Given
         beginning_datetime = datetime.datetime(2020, 10, 15, 0, 0, 0)
@@ -2129,7 +1723,6 @@ class GetStocksListFiltersWithOffererAddressAsDataSourceTest:
         assert stocks[1] == second_stock
         assert stocks[2] == third_stock
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def test_stock_pagination_limit_per_page(self):
         # Given
         beginning_datetime = datetime.datetime(2020, 10, 15, 0, 0, 0)
@@ -2153,7 +1746,6 @@ class GetStocksListFiltersWithOffererAddressAsDataSourceTest:
         # Then
         assert stocks.count() == 1
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def test_order_stocks_by_beginning_datetime_desc(self):
         # Given
         beginning_datetime = datetime.datetime(2020, 10, 15, 12, 0, 0)
@@ -2184,7 +1776,6 @@ class GetStocksListFiltersWithOffererAddressAsDataSourceTest:
         assert stocks[3] == stock1
         assert stocks[4] == stock4
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def test_order_stocks_by_date(self):
         beginning_datetime = datetime.datetime(2020, 10, 15, 12, 0, 0)
         same_hour_other_day = datetime.datetime(2020, 10, 16, 12, 0, 0)
@@ -2214,7 +1805,6 @@ class GetStocksListFiltersWithOffererAddressAsDataSourceTest:
         assert stocks[3] == stock2
         assert stocks[4] == stock3
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def test_order_stocks_by_time_desc(self):
         # Given
         beginning_datetime = datetime.datetime(2020, 10, 15, 12, 0, 0)
@@ -2246,7 +1836,6 @@ class GetStocksListFiltersWithOffererAddressAsDataSourceTest:
         assert stocks[3] == stock1
         assert stocks[4] == stock4
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def test_order_stocks_by_price_category_id(self):
         # Given
         offer = factories.OfferFactory()
@@ -2269,7 +1858,6 @@ class GetStocksListFiltersWithOffererAddressAsDataSourceTest:
         assert stocks[1] == stock3
         assert stocks[2] == stock2
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def test_order_stocks_by_booking_limit(self):
         # Given
         booking_limit_datetime = datetime.datetime(2020, 10, 15, 12, 0, 0)
@@ -2299,7 +1887,6 @@ class GetStocksListFiltersWithOffererAddressAsDataSourceTest:
         assert stocks[3] == stock2
         assert stocks[4] == stock3
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def test_order_stocks_by_remaining_quantity_desc(self):
         # Given
         offer = factories.OfferFactory()
@@ -2320,7 +1907,6 @@ class GetStocksListFiltersWithOffererAddressAsDataSourceTest:
         assert stocks[1] == stock1
         assert stocks[2] == stock2
 
-    @override_features(WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE=True)
     def test_order_stocks_by_dn_booked_quantity(self):
         offer = factories.OfferFactory()
         stock1 = factories.EventStockFactory(offer=offer, quantity=5, dnBookedQuantity=20)

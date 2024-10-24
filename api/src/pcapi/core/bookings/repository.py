@@ -320,14 +320,9 @@ def _create_export_query(offer_id: int, event_beginning_date: date) -> BaseQuery
         # `get_batch` function needs a field called exactly `id` to work,
         # the label prevents SA from using a bad (prefixed) label for this field
         Booking.userId,
+        Address.departmentCode.label("offerDepartmentCode"),
+        VenueAddress.departmentCode.label("venueDepartmentCode"),
     )
-    if FeatureToggle.WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE.is_active():
-        with_entities += (
-            Address.departmentCode.label("offerDepartmentCode"),
-            VenueAddress.departmentCode.label("venueDepartmentCode"),
-        )
-    else:
-        with_entities += (Venue.departementCode.label("venueDepartmentCode"),)
 
     query = (
         Booking.query.join(Booking.offerer)
@@ -336,16 +331,12 @@ def _create_export_query(offer_id: int, event_beginning_date: date) -> BaseQuery
         .join(Booking.venue)
         .join(Booking.stock)
         .join(Stock.offer)
+        .outerjoin(Offer.offererAddress)
+        .outerjoin(OffererAddress.address)
+        .join(VenueOffererAddress, Venue.offererAddressId == VenueOffererAddress.id)
+        .join(VenueAddress, VenueOffererAddress.addressId == VenueAddress.id)
     )
-    timezone_column: sa.orm.Mapped[typing.Any] | sa.sql.functions.Function = Venue.timezone
-    if FeatureToggle.WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE.is_active():
-        query = (
-            query.outerjoin(Offer.offererAddress)
-            .outerjoin(OffererAddress.address)
-            .join(VenueOffererAddress, Venue.offererAddressId == VenueOffererAddress.id)
-            .join(VenueAddress, VenueOffererAddress.addressId == VenueAddress.id)
-        )
-        timezone_column = func.coalesce(Address.timezone, VenueAddress.timezone)
+    timezone_column: sa.sql.functions.Function = func.coalesce(Address.timezone, VenueAddress.timezone)
 
     query = (
         query.filter(
@@ -436,16 +427,14 @@ def _get_filtered_bookings_query(
         .join(Stock.offer)
         .join(Booking.externalBookings, isouter=True)
         .join(Booking.venue, isouter=True)
+        .outerjoin(Offer.offererAddress)
+        .outerjoin(OffererAddress.address)
+        .join(VenueOffererAddress, Venue.offererAddressId == VenueOffererAddress.id)
+        .join(VenueAddress, VenueOffererAddress.addressId == VenueAddress.id)
     )
-    timezone_column: sa.orm.Mapped[typing.Any] | sa.sql.functions.Function = Venue.timezone
-    if FeatureToggle.WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE.is_active():
-        bookings_query = (
-            bookings_query.outerjoin(Offer.offererAddress)
-            .outerjoin(OffererAddress.address)
-            .join(VenueOffererAddress, Venue.offererAddressId == VenueOffererAddress.id)
-            .join(VenueAddress, VenueOffererAddress.addressId == VenueAddress.id)
-        )
-        timezone_column = func.coalesce(Address.timezone, VenueAddress.timezone)
+    timezone_column: sa.orm.Mapped[typing.Any] | sa.sql.functions.Function = func.coalesce(
+        Address.timezone, VenueAddress.timezone
+    )
     for join_key, *join_conditions in extra_joins:
         if join_conditions:
             bookings_query = bookings_query.join(join_key, *join_conditions, isouter=True)
@@ -553,14 +542,9 @@ def _get_filtered_booking_report(
         # the label prevents SA from using a bad (prefixed) label for this field
         Booking.id.label("id"),
         Booking.userId,
+        Address.departmentCode.label("offerDepartmentCode"),
+        VenueAddress.departmentCode.label("venueDepartmentCode"),
     )
-    if FeatureToggle.WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE.is_active():
-        with_entities += (
-            Address.departmentCode.label("offerDepartmentCode"),
-            VenueAddress.departmentCode.label("venueDepartmentCode"),
-        )
-    else:
-        with_entities += (Venue.departementCode.label("venueDepartmentCode"),)
 
     bookings_query = (
         _get_filtered_bookings_query(
@@ -622,15 +606,9 @@ def _get_filtered_booking_pro(
         Stock.beginningDatetime.label("stockBeginningDatetime"),
         Booking.stockId,
         Offerer.postalCode.label("offererPostalCode"),
+        Address.departmentCode.label("offerDepartmentCode"),
+        VenueAddress.departmentCode.label("venueDepartmentCode"),
     )
-
-    if FeatureToggle.WIP_USE_OFFERER_ADDRESS_AS_DATA_SOURCE.is_active():
-        with_entities += (
-            Address.departmentCode.label("offerDepartmentCode"),
-            VenueAddress.departmentCode.label("venueDepartmentCode"),
-        )
-    else:
-        with_entities += (Venue.departementCode.label("venueDepartmentCode"),)
 
     bookings_query = (
         _get_filtered_bookings_query(
