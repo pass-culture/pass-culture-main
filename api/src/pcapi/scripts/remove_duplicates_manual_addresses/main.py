@@ -51,8 +51,13 @@ def switch_offers_to_main_offerer_address(
     duplicates_offerer_addresses = OffererAddress.query.filter(
         OffererAddress.offererId == offerer_id, OffererAddress.addressId.in_(duplicated_ids)
     ).with_entities(OffererAddress.id)
-    Offer.query.filter(Offer.offererAddressId.in_(duplicates_offerer_addresses)).update(
-        {"offererAddressId": main_offerer_address_id}, synchronize_session=False
+    offers_query = (
+        Offer.query.filter(Offer.offererAddressId.in_(duplicates_offerer_addresses))
+        .with_entities(Offer.id)
+        .yield_per(1000)
+    )
+    db.session.bulk_update_mappings(
+        Offer, [{"id": offer.id, "offererAddressId": main_offerer_address_id} for offer in offers_query]
     )
     print(f"Swith offers related to {offerer_addresses} to main offererAddressId {main_offerer_address_id}")
     db.session.flush()
