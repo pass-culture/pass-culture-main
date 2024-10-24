@@ -111,8 +111,6 @@ describe('Cookie management with no login', () => {
 })
 
 describe('Cookie management with login', () => {
-  let login = ''
-  let login2 = ''
   const password = 'user@AZERTY123'
 
   beforeEach(() => {
@@ -127,7 +125,7 @@ describe('Cookie management with login', () => {
       method: 'GET',
       url: 'http://localhost:5001/sandboxes/pro/create_regular_pro_user',
     }).then((response) => {
-      login = response.body.user.email
+      const login = response.body.user.email
       cy.stepLog({ message: 'I am logged in with account 1' })
       cy.log('login: ' + login)
       cy.login({
@@ -158,12 +156,12 @@ describe('Cookie management with login', () => {
       method: 'GET',
       url: 'http://localhost:5001/sandboxes/pro/create_regular_pro_user',
     }).then((response) => {
-      login2 = response.body.user.email
+      const login = response.body.user.email
       cy.stepLog({
         message: 'I am logged in with account 2 and no cookie selection',
       })
       cy.login({
-        email: login2,
+        email: login,
         password: password,
         refusePopupCookies: false,
       })
@@ -185,15 +183,15 @@ describe('Cookie management with login', () => {
       method: 'GET',
       url: 'http://localhost:5001/sandboxes/pro/create_regular_pro_user',
     }).then((response) => {
-      cy.wrap(response.body.user.email).as('login3')
+      cy.wrap(response.body.user.email).as('login')
     })
 
     cy.stepLog({ message: 'I clear all cookies in Browser' })
     cy.clearCookies()
 
     cy.stepLog({ message: 'I am logged in with account 3' })
-    cy.get('@login3').then((login3) =>
-      logAndGoToPage(login3.toString(), '/accueil')
+    cy.get('@login').then((login) =>
+      logAndGoToPage(login.toString(), '/accueil')
     )
 
     cy.stepLog({ message: 'I open the cookie management option' })
@@ -217,8 +215,8 @@ describe('Cookie management with login', () => {
     cy.clearAllSessionStorage()
 
     cy.stepLog({ message: 'I am logged in with account 3' })
-    cy.get('@login3').then((login3) =>
-      logAndGoToPage(login3.toString(), '/accueil')
+    cy.get('@login').then((login) =>
+      logAndGoToPage(login.toString(), '/accueil')
     )
 
     cy.stepLog({ message: 'I open the cookie management option' })
