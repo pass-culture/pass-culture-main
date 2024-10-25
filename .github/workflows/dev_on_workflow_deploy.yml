@@ -40,7 +40,7 @@ jobs:
     concurrency:
       group: deploy-pcapi-${{ inputs.environment }}
       cancel-in-progress: false
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     environment: ${{ inputs.environment }}
     permissions:
       id-token: write
@@ -133,7 +133,7 @@ jobs:
     name: "Deploy api doc on firebase"
     if: ${{ inputs.deploy_api && (inputs.environment != 'ops' && inputs.environment != 'integration') }}
     needs: deploy-api
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     environment: ${{ inputs.environment }}
     permissions:
       id-token: write
@@ -226,7 +226,7 @@ jobs:
     permissions:
       id-token: write
       contents: read
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: "Connect to cluster"
         uses: pass-culture/common-workflows/actions/teleport-connect@teleport-connect/v0.1.0

@@ -10,7 +10,7 @@ permissions: write-all
 jobs:
   check-worflow-ref:
     name: "Check worflow ref"
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Check worflow ref
         run: |
@@ -24,7 +24,7 @@ jobs:
     # Example: given branch maint/v200 and existing tags v200.0.0, v200.0.1 then output == 200.0.2
     name: "Find hotfix tag number"
     needs: check-worflow-ref
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     outputs:
       hotfixTagNumber: ${{ steps.find-hotfix-tag-number.outputs.hotfixTagNumber }}
     steps:
@@ -99,7 +99,7 @@ jobs:
       CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
 
   slack-notification:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     needs:
       - find-hotfix-tag-number
       - build-and-tag-version

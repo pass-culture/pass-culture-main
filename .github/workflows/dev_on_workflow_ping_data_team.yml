@@ -13,7 +13,7 @@ on:
 jobs:
   slack-notification:
     name: 'Send slack notification'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4.2.1
       - name: 'Authentification to Google'

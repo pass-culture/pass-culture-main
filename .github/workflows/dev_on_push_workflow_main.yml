@@ -11,7 +11,7 @@ permissions: write-all
 jobs:
   pcapi-init-job:
     name: "pcapi init job"
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     outputs:
       api-changed: ${{ steps.check-api-changes.outputs.any_modified }}
       api-documentation-changed: ${{ steps.check-api-documentation-changes.outputs.any_modified }}
@@ -113,7 +113,7 @@ jobs:
   check-folders-changes:
     # Perform all changes checks at once to remove the need for multiple checkouts accross jobs
     name: "Check changes in folders"
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     outputs:
       maintenance-site-changed: ${{ steps.check-maintenance-site-changes.outputs.any_modified }}
       db-migrations-changed: ${{ steps.check-db-migrations-changes.outputs.any_modified }}
@@ -348,7 +348,7 @@ jobs:
 
   slack-notify:
     name: "Slack notification"
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     if: ${{ failure() && github.ref == 'refs/heads/master' }}
     needs: deploy-to-testing
     steps:

@@ -29,7 +29,7 @@ on:
 
 jobs:
   check-image-resizing-deployed-version:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     outputs:
       image_resizing_deployed_version: ${{ steps.curl_version.outputs.version }}
     steps:
@@ -52,7 +52,7 @@ jobs:
     needs: check-image-resizing-folder-changes
     if: ${{ needs.check-image-resizing-folder-changes.outputs.folder_changed == 'true' }}
     environment: ${{ inputs.environment }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: 'Checkout actual repository'
         uses: actions/checkout@v4.2.1
