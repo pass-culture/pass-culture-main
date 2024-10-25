@@ -5,6 +5,7 @@ from itertools import count
 from itertools import cycle
 import typing
 from typing import Optional
+from typing import Type
 from typing import TypedDict
 
 from pcapi import settings
@@ -392,12 +393,13 @@ def create_offers_booking_with_different_displayed_status(
     four_weeks_ago = today - timedelta(days=28)
 
     yesterday = today - timedelta(days=1)
+    tomorrow = today + timedelta(days=1)
 
     class OfferAttributes(TypedDict, total=False):
         bookingLimitDatetime: datetime
         beginningDatetime: datetime
         endDatetime: datetime
-        lastBookingStatus: Optional[educational_models.CollectiveBookingStatus]
+        bookingFactory: Optional[Type[educational_factories.CollectiveBookingFactory]]
         cancellationReason: Optional[educational_models.CollectiveBookingCancellationReasons]
 
     options: dict[str, OfferAttributes] = {
@@ -406,52 +408,48 @@ def create_offers_booking_with_different_displayed_status(
             "bookingLimitDatetime": in_two_weeks,
             "beginningDatetime": in_four_weeks,
             "endDatetime": in_four_weeks,
-            "lastBookingStatus": None,
         },
         "Athènes": {
             "bookingLimitDatetime": two_weeks_ago,
             "beginningDatetime": in_two_weeks,
             "endDatetime": in_two_weeks,
-            "lastBookingStatus": None,
         },
         "Berlin": {
             "bookingLimitDatetime": four_weeks_ago,
             "beginningDatetime": two_weeks_ago,
             "endDatetime": in_two_weeks,
-            "lastBookingStatus": None,
         },
         "Bratislava": {
             "bookingLimitDatetime": four_weeks_ago,
             "beginningDatetime": four_weeks_ago,
             "endDatetime": four_weeks_ago,
-            "lastBookingStatus": None,
         },
         # with a pending booking
         "Bruxelles": {
             "bookingLimitDatetime": in_two_weeks,
             "beginningDatetime": in_four_weeks,
             "endDatetime": in_four_weeks,
-            "lastBookingStatus": educational_models.CollectiveBookingStatus.PENDING,
+            "bookingFactory": educational_factories.PendingCollectiveBookingFactory,
         },
         "Bucarest": {
             "bookingLimitDatetime": two_weeks_ago,
             "beginningDatetime": in_two_weeks,
             "endDatetime": in_two_weeks,
-            "lastBookingStatus": educational_models.CollectiveBookingStatus.PENDING,
+            "bookingFactory": educational_factories.PendingCollectiveBookingFactory,
         },
         # with a cancelled booking due to expiration
         "Budapest": {
             "bookingLimitDatetime": two_weeks_ago,
             "beginningDatetime": in_two_weeks,
             "endDatetime": in_two_weeks,
-            "lastBookingStatus": educational_models.CollectiveBookingStatus.CANCELLED,
+            "bookingFactory": educational_factories.CancelledCollectiveBookingFactory,
             "cancellationReason": educational_models.CollectiveBookingCancellationReasons.EXPIRED,
         },
         "Copenhague": {
             "bookingLimitDatetime": four_weeks_ago,
             "beginningDatetime": two_weeks_ago,
             "endDatetime": in_two_weeks,
-            "lastBookingStatus": educational_models.CollectiveBookingStatus.CANCELLED,
+            "bookingFactory": educational_factories.CancelledCollectiveBookingFactory,
             "cancellationReason": educational_models.CollectiveBookingCancellationReasons.EXPIRED,
         },
         # with a confirmed booking
@@ -459,72 +457,79 @@ def create_offers_booking_with_different_displayed_status(
             "bookingLimitDatetime": in_two_weeks,
             "beginningDatetime": in_four_weeks,
             "endDatetime": in_four_weeks,
-            "lastBookingStatus": educational_models.CollectiveBookingStatus.CONFIRMED,
+            "bookingFactory": educational_factories.ConfirmedCollectiveBookingFactory,
         },
         "Helsinki": {
             "bookingLimitDatetime": two_weeks_ago,
             "beginningDatetime": in_two_weeks,
             "endDatetime": in_two_weeks,
-            "lastBookingStatus": educational_models.CollectiveBookingStatus.CONFIRMED,
+            "bookingFactory": educational_factories.ConfirmedCollectiveBookingFactory,
         },
         "La Valette": {
             "bookingLimitDatetime": four_weeks_ago,
             "beginningDatetime": two_weeks_ago,
             "endDatetime": in_two_weeks,
-            "lastBookingStatus": educational_models.CollectiveBookingStatus.CONFIRMED,
+            "bookingFactory": educational_factories.ConfirmedCollectiveBookingFactory,
         },
         "Lisbonne": {
             "bookingLimitDatetime": four_weeks_ago,
             "beginningDatetime": yesterday,
             "endDatetime": yesterday,
-            "lastBookingStatus": educational_models.CollectiveBookingStatus.CONFIRMED,
+            "bookingFactory": educational_factories.ConfirmedCollectiveBookingFactory,
         },
         # with a used booking
         "Ljubljana": {
             "bookingLimitDatetime": four_weeks_ago,
             "beginningDatetime": four_weeks_ago,
             "endDatetime": four_weeks_ago,
-            "lastBookingStatus": educational_models.CollectiveBookingStatus.USED,
+            "bookingFactory": educational_factories.UsedCollectiveBookingFactory,
         },
         "Luxembourg": {
             "bookingLimitDatetime": four_weeks_ago,
             "beginningDatetime": four_weeks_ago,
             "endDatetime": four_weeks_ago,
-            "lastBookingStatus": educational_models.CollectiveBookingStatus.REIMBURSED,
+            "bookingFactory": educational_factories.ReimbursedCollectiveBookingFactory,
         },
         # with a cancelled booking
         "Madrid": {
             "bookingLimitDatetime": in_two_weeks,
             "beginningDatetime": in_four_weeks,
             "endDatetime": in_four_weeks,
-            "lastBookingStatus": educational_models.CollectiveBookingStatus.CANCELLED,
+            "bookingFactory": educational_factories.CancelledCollectiveBookingFactory,
             "cancellationReason": educational_models.CollectiveBookingCancellationReasons.OFFERER,
         },
         "Nicosie": {
             "bookingLimitDatetime": two_weeks_ago,
             "beginningDatetime": in_two_weeks,
             "endDatetime": in_two_weeks,
-            "lastBookingStatus": educational_models.CollectiveBookingStatus.CANCELLED,
+            "bookingFactory": educational_factories.CancelledCollectiveBookingFactory,
             "cancellationReason": educational_models.CollectiveBookingCancellationReasons.OFFERER,
         },
         "Paris": {
             "bookingLimitDatetime": four_weeks_ago,
             "beginningDatetime": two_weeks_ago,
             "endDatetime": in_two_weeks,
-            "lastBookingStatus": educational_models.CollectiveBookingStatus.CANCELLED,
+            "bookingFactory": educational_factories.CancelledCollectiveBookingFactory,
             "cancellationReason": educational_models.CollectiveBookingCancellationReasons.OFFERER,
         },
         "Prague": {
             "bookingLimitDatetime": four_weeks_ago,
             "beginningDatetime": four_weeks_ago,
             "endDatetime": four_weeks_ago,
-            "lastBookingStatus": educational_models.CollectiveBookingStatus.CANCELLED,
+            "bookingFactory": educational_factories.CancelledCollectiveBookingFactory,
             "cancellationReason": educational_models.CollectiveBookingCancellationReasons.OFFERER,
+        },
+        # with a different end date than the beginning date
+        "Reykjavik": {
+            "bookingLimitDatetime": four_weeks_ago,
+            "beginningDatetime": yesterday,
+            "endDatetime": tomorrow,
+            "bookingFactory": educational_factories.ConfirmedCollectiveBookingFactory,
         },
     }
 
     for city, attributes in options.items():
-        last_booking_status: educational_models.CollectiveBookingStatus | None = attributes["lastBookingStatus"]
+        booking_factory = attributes.get("bookingFactory", None)
         beginning_datetime: datetime = attributes["beginningDatetime"]
         end_datetime: datetime = attributes["endDatetime"]
         booking_limit_datetime: datetime = attributes["bookingLimitDatetime"]
@@ -541,13 +546,12 @@ def create_offers_booking_with_different_displayed_status(
         )
         offers.append(stock.collectiveOffer)
 
-        if last_booking_status:
+        if booking_factory:
             cancellation_reason = attributes.get("cancellationReason", None)
-            educational_factories.CollectiveBookingFactory(
+            booking_factory(
                 collectiveStock=stock,
                 educationalYear=current_ansco,
                 educationalInstitution=next(institution_iterator),
-                status=last_booking_status,
                 confirmationLimitDate=booking_limit_datetime,
                 cancellationReason=cancellation_reason,
                 dateCreated=min(datetime.utcnow(), booking_limit_datetime - timedelta(days=1)),
