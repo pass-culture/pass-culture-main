@@ -24,7 +24,7 @@ def test_get_all_music_types(client):
         {"gtl_id": "08000000", "label": "Alternatif", "canBeEvent": True},
         {"gtl_id": "09000000", "label": "Variétés", "canBeEvent": True},
         {"gtl_id": "10000000", "label": "Funk / Soul / RnB / Disco", "canBeEvent": True},
-        {"gtl_id": "11000000", "label": "Rap/ Hip Hop", "canBeEvent": True},
+        {"gtl_id": "11000000", "label": "Rap / Hip Hop", "canBeEvent": True},
         {"gtl_id": "12000000", "label": "Reggae / Ragga", "canBeEvent": True},
         {"gtl_id": "13000000", "label": "Musique du monde", "canBeEvent": True},
         {"gtl_id": "14000000", "label": "Country / Folk", "canBeEvent": True},

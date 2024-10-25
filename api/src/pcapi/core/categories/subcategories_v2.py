@@ -11,7 +11,6 @@ from pcapi.domain.book_types import BookType
 from pcapi.domain.movie_types import MOVIE_TYPES
 from pcapi.domain.movie_types import MovieType
 from pcapi.domain.music_types import MUSIC_TYPES
-from pcapi.domain.music_types import MUSIC_TYPES_LABEL_BY_CODE
 from pcapi.domain.music_types import MusicType
 from pcapi.domain.show_types import SHOW_TYPES
 from pcapi.domain.show_types import SHOW_TYPES_LABEL_BY_CODE
@@ -54,7 +53,8 @@ class GenreType(Enum):
         return [GenreTypeContent(name=value, value=value) for value in sorted(BOOK_MACRO_SECTIONS)]
 
     def music_values(self) -> list[GenreTypeContent]:
-        return [GenreTypeContent(name=value, value=value) for value in sorted(MUSIC_TYPES_LABEL_BY_CODE.values())]
+        values = [GenreTypeContent(name=music_type.name, value=music_type.label) for music_type in MUSIC_TYPES]
+        return sorted(values, key=lambda x: x.name)
 
     def show_values(self) -> list[GenreTypeContent]:
         return [GenreTypeContent(name=value, value=value) for value in sorted(SHOW_TYPES_LABEL_BY_CODE.values())]
@@ -199,10 +199,10 @@ def get_movie_nodes() -> list[MovieGenre]:
 
 
 def get_music_nodes() -> list[MusicGenre]:
-    nodes = []
-    for music_type in MUSIC_TYPES:
-        parent = MusicGenre(
+    return [
+        MusicGenre(
             label=music_type.label,
+            technical_name=music_type.name,
             parents=[
                 NATIVE_CATEGORY_CD.id,
                 NATIVE_CATEGORY_CONCERTS_EN_LIGNE.id,
@@ -212,15 +212,8 @@ def get_music_nodes() -> list[MusicGenre]:
                 NATIVE_CATEGORY_VINYLES.id,
             ],
         )
-        nodes.append(parent)
-        for music_subtype in music_type.children:
-            child = MusicGenre(
-                label=music_subtype.label,
-                parents=[parent.id],
-            )
-            nodes.append(child)
-
-    return nodes
+        for music_type in MUSIC_TYPES
+    ]
 
 
 def get_show_nodes() -> list[ShowGenre]:

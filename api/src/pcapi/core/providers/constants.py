@@ -1,6 +1,7 @@
 import enum
 import typing
 
+from pcapi.core.categories.categories import TITELIVE_MUSIC_TYPES
 from pcapi.models.feature import FeatureToggle
 
 
@@ -55,6 +56,10 @@ TITELIVE_MUSIC_GENRES_BY_GTL_ID: dict[str, str] = {
     "17000000": "AMBIANCE",
     "18000000": "ENFANTS",
     "19000000": "AUTRES",
+}
+
+TITELIVE_MUSIC_LABELS_BY_GTL_ID: dict[str, str] = {
+    music_type.gtl_id: music_type.label for music_type in TITELIVE_MUSIC_TYPES
 }
 
 GTL_ID_BY_TITELIVE_MUSIC_GENRE: dict[str, str] = {v: k for k, v in TITELIVE_MUSIC_GENRES_BY_GTL_ID.items()}
