@@ -164,7 +164,7 @@ def build_music_extra_data(
     )
 
 
-def parse_titelive_music_genre(gtl_id: str | None) -> tuple[music_types.MusicType, music_types.MusicSubType]:
+def parse_titelive_music_genre(gtl_id: str | None) -> tuple[music_types.OldMusicType, music_types.OldMusicSubType]:
     music_slug = (
         MUSIC_SLUG_BY_GTL_ID.get(gtl_id, music_types.OTHER_SHOW_TYPE_SLUG)
         if gtl_id

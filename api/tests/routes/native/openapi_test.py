@@ -1042,27 +1042,12 @@ def test_public_api(client):
                     "title": "MovieType",
                     "type": "object",
                 },
-                "MusicSubType": {
-                    "properties": {
-                        "code": {"title": "Code", "type": "integer"},
-                        "label": {"title": "Label", "type": "string"},
-                        "slug": {"title": "Slug", "type": "string"},
-                    },
-                    "required": ["code", "label", "slug"],
-                    "title": "MusicSubType",
-                    "type": "object",
-                },
                 "MusicType": {
                     "properties": {
-                        "children": {
-                            "items": {"$ref": "#/components/schemas/MusicSubType"},
-                            "title": "Children",
-                            "type": "array",
-                        },
-                        "code": {"title": "Code", "type": "integer"},
                         "label": {"title": "Label", "type": "string"},
+                        "name": {"title": "Name", "type": "string"},
                     },
-                    "required": ["code", "label", "children"],
+                    "required": ["label", "name"],
                     "title": "MusicType",
                     "type": "object",
                 },

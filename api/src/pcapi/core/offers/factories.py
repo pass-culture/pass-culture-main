@@ -131,7 +131,7 @@ def build_extra_data_from_subcategory(
             case subcategories.ExtraDataFieldEnum.VISA.value:
                 extradata[field] = fake.ean()
             case subcategories.ExtraDataFieldEnum.MUSIC_TYPE.value:
-                extradata[field] = str(random.choice(music_types.MUSIC_TYPES).code)
+                extradata[field] = str(random.choice(music_types.OLD_MUSIC_TYPES).code)
             case subcategories.ExtraDataFieldEnum.MUSIC_SUB_TYPE.value:
                 music_type_code = extradata.get(subcategories.ExtraDataFieldEnum.MUSIC_TYPE.value)
                 assert music_type_code
