@@ -66,8 +66,13 @@ export const CollectiveTimeLine = ({
   const eventDate = getDateToFrenchText(
     bookingRecap.stock.eventBeginningDatetime
   )
+
+  const eventEndDatetime = bookingRecap.stock.eventEndDatetime
+    ? bookingRecap.stock.eventEndDatetime
+    : bookingRecap.stock.eventBeginningDatetime
+
   const eventDatePlusTwoDays = getDateToFrenchText(
-    addDays(new Date(bookingRecap.stock.eventBeginningDatetime), 2).toString()
+    addDays(new Date(eventEndDatetime), 2).toString()
   )
   const eventHasPassed = isBefore(
     new Date(bookingRecap.stock.eventBeginningDatetime),
@@ -93,6 +98,15 @@ export const CollectiveTimeLine = ({
     logEvent(CollectiveBookingsEvents.CLICKED_MODIFY_BOOKING_LIMIT_DATE, {
       from: location.pathname,
     })
+  }
+
+  const getEventRangeDate = () => {
+    const endDatetime = getDateToFrenchText(eventEndDatetime)
+    if (eventDate !== endDatetime) {
+      return `Votre évènement a eu lieu du ${eventDate} au ${endDatetime}`
+    }
+
+    return `Votre évènement a eu lieu le ${eventDate}`
   }
 
   const pendingStep = {
@@ -164,25 +178,27 @@ export const CollectiveTimeLine = ({
               La réservation n’est plus annulable par l’établissement scolaire.
               <div className={styles['timeline-infobox']}>
                 <div className={styles['timeline-infobox-text']}>
-                  Votre évènement a eu lieu le {eventDate}. Vous avez jusqu’au{' '}
+                  {getEventRangeDate()}. Vous avez jusqu’au{' '}
                   {eventDatePlusTwoDays} pour modifier le prix et le nombre de
                   participants si nécessaire.
                 </div>
-                <ButtonLink
-                  variant={ButtonVariant.TERNARY}
-                  to={`/offre/${bookingRecap.stock.offerId}/collectif/stocks/edition`}
-                  icon={fullEditIcon}
-                  onClick={logModifyBookingLimitDateClick}
-                >
-                  Modifier le prix ou le nombre d’élèves
-                </ButtonLink>
-                <ButtonLink
-                  variant={ButtonVariant.TERNARY}
-                  to="https://aide.passculture.app/hc/fr/articles/4405297381788--Acteurs-Culturels-Que-faire-si-le-groupe-scolaire-n-est-pas-au-complet-ou-doit-annuler-sa-participation-"
-                  isExternal
-                >
-                  Je rencontre un problème à cette étape
-                </ButtonLink>
+                <div>
+                  <ButtonLink
+                    variant={ButtonVariant.TERNARY}
+                    to={`/offre/${bookingRecap.stock.offerId}/collectif/stocks/edition`}
+                    icon={fullEditIcon}
+                    onClick={logModifyBookingLimitDateClick}
+                  >
+                    Modifier le prix ou le nombre d’élèves
+                  </ButtonLink>
+                  <ButtonLink
+                    variant={ButtonVariant.TERNARY}
+                    to="https://aide.passculture.app/hc/fr/articles/4405297381788--Acteurs-Culturels-Que-faire-si-le-groupe-scolaire-n-est-pas-au-complet-ou-doit-annuler-sa-participation-"
+                    isExternal
+                  >
+                    Je rencontre un problème à cette étape
+                  </ButtonLink>
+                </div>
               </div>
             </>
           )}
