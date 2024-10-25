@@ -11,7 +11,7 @@ on:
 jobs:
   deploy:
     name: "Deploy maintenance site to bucket"
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4.2.1
       - name: 'Authenticate to Google Cloud'

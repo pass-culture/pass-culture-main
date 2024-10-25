@@ -34,7 +34,7 @@ env:
 jobs:
   push-docker-image:
     name: "Push ${{ inputs.image }}"
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: "Authentification to Google"
         uses: 'google-github-actions/auth@v2'

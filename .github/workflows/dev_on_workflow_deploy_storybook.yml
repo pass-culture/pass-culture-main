@@ -6,7 +6,7 @@ on:
 jobs:
   build-and-deploy-storybook:
     name: "Build and deploy Storybook"
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: "Checkout 🛎️"
         uses: actions/checkout@v4.2.1

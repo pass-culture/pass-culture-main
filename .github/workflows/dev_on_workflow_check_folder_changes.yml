@@ -20,7 +20,7 @@ on:
 jobs:
   check-folder-changes:
     name: "Check folder changes"
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     outputs:
       folder_changed: ${{ steps.folder-check-changed-files.outputs.any_modified }}
     steps:

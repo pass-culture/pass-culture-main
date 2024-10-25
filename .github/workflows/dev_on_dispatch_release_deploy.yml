@@ -19,7 +19,7 @@ permissions: write-all
 jobs:
   check-worflow-ref:
     name: "Check worflow ref"
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: "Check worflow ref"
         run: |
@@ -31,7 +31,7 @@ jobs:
 
   ask-for-review-on-slack:
     name: "Ask for deployment review on Slack"
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     needs: check-worflow-ref
     continue-on-error: true
     steps:
@@ -70,7 +70,7 @@ jobs:
     needs: check-worflow-ref
     # `deploy` is an artificial environment with protection rules, which allows a single required review instead of many
     environment:  ${{ fromJSON('["deploy", "testing"]')[github.event.inputs.target_environment == 'testing'] }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     outputs:
       APP_VERSION: ${{ steps.app-version.outputs.APP_VERSION }}
     steps:
@@ -135,7 +135,7 @@ jobs:
 
   slack-notification:
     name: "Send Slack notification"
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     if: always()
     needs:
       - version

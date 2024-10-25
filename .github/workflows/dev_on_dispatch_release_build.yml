@@ -79,7 +79,7 @@ jobs:
       - create-pro-production-release
       - create-pro-staging-release
       - create-pro-integration-release
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     env:
       MAINTENANCE_BRANCH: maint/v${{ github.event.inputs.releaseNumber }}
     steps:
@@ -93,7 +93,7 @@ jobs:
           git push origin "$MAINTENANCE_BRANCH"
 
   slack-notification:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     needs:
       - build-and-tag-version
       - create-pro-production-release

@@ -34,7 +34,7 @@ on:
 
 jobs:
   build-and-tag-version:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     env:
       GIT_CONFIG_EMAIL: github-actions-bot@passculture.app
       GIT_CONFIG_NAME: ${{ github.actor }}

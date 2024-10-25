@@ -20,7 +20,7 @@ jobs:
       status: ${{ steps.issue-check.outputs.status }}
       commit-hash: ${{ steps.get_commit_info.outputs.commit-hash }}
       commit-number: ${{ steps.get_commit_info.outputs.commit-number }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: "Authentification to Google"
         uses: 'google-github-actions/auth@v2'
@@ -74,7 +74,7 @@ jobs:
 
   # run only if previous job issue-number has set his output to the issue number
   update-jira-issues:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     needs: issue-number
     if: needs.issue-number.outputs.status != null
     steps:

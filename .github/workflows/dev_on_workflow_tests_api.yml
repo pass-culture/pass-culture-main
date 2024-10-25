@@ -26,7 +26,7 @@ defaults:
 jobs:
   quality-checks:
     name: "Quality checks"
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4.2.1
       - name: "Compute docker image name:tag"
@@ -120,7 +120,7 @@ jobs:
 
   pylint-check:
     name: "Pylint"
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4.2.1
       - name: "Compute docker image name:tag"
@@ -206,7 +206,7 @@ jobs:
       RUN_ENV: tests
       DATABASE_URL_TEST: postgresql://pytest:pytest@postgres:5432/pass_culture
       REDIS_URL: redis://redis:6379
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     services:
       postgres:
         image: postgis/postgis:15-3.4-alpine
@@ -402,7 +402,7 @@ jobs:
       # Remove this environment variable when SQLAlchemy 2.0 
       # is successfully bump
       SQLALCHEMY_WARN_20: 1
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     strategy:
       fail-fast: false
       matrix:

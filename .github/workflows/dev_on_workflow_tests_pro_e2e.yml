@@ -29,7 +29,7 @@ defaults:
 jobs:
   tests-pro-e2e-tests:
     name: "E2E tests and notifications"
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4.2.1
       - uses: technote-space/workflow-conclusion-action@v3
