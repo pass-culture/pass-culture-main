@@ -1359,13 +1359,13 @@ SQLAlchemy = ">=0.8.0"
 
 [[package]]
 name = "flask-wtf"
-version = "1.2.1"
+version = "1.2.2"
 description = "Form rendering, validation, and CSRF protection for Flask with WTForms."
 optional = false
-python-versions = ">=3.8"
+python-versions = ">=3.9"
 files = [
-    {file = "flask_wtf-1.2.1-py3-none-any.whl", hash = "sha256:fa6793f2fb7e812e0fe9743b282118e581fb1b6c45d414b8af05e659bd653287"},
-    {file = "flask_wtf-1.2.1.tar.gz", hash = "sha256:8bb269eb9bb46b87e7c8233d7e7debdf1f8b74bf90cc1789988c29b37a97b695"},
+    {file = "flask_wtf-1.2.2-py3-none-any.whl", hash = "sha256:e93160c5c5b6b571cf99300b6e01b72f9a101027cab1579901f8b10c5daf0b70"},
+    {file = "flask_wtf-1.2.2.tar.gz", hash = "sha256:79d2ee1e436cf570bccb7d916533fa18757a2f18c290accffab1b9a0b684666b"},
 ]
 
 [package.dependencies]
@@ -3006,23 +3006,6 @@ files = [
 
 [package.dependencies]
 wcwidth = "*"
-
-[[package]]
-name = "proto-plus"
-version = "1.22.3"
-description = "Beautiful, Pythonic protocol buffers."
-optional = false
-python-versions = ">=3.6"
-files = [
-    {file = "proto-plus-1.22.3.tar.gz", hash = "sha256:fdcd09713cbd42480740d2fe29c990f7fbd885a67efc328aa8be6ee3e9f76a6b"},
-    {file = "proto_plus-1.22.3-py3-none-any.whl", hash = "sha256:a49cd903bc0b6ab41f76bf65510439d56ca76f868adf0274e738bfdd096894df"},
-]
-
-[package.dependencies]
-protobuf = ">=3.19.0,<5.0.0dev"
-
-[package.extras]
-testing = ["google-api-core[grpc] (>=1.31.5)"]
 
 [[package]]
 name = "proto-plus"
@@ -5669,4 +5652,4 @@ test = ["pytest"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "66855a789d6027d069f3ce98f05496859b8a114486805fe4865103ea9a58c96b"
+content-hash = "2fcd2e5dedfaeb0baa87e8a6fc5037458fa42c693bda6c2156cdd3fe8fea0810"
