@@ -5,6 +5,7 @@ import pytest
 import time_machine
 
 from pcapi.core.offerers import factories as offerers_factories
+from pcapi.utils import siren as siren_utils
 
 from tests.test_utils import run_command
 
@@ -23,6 +24,9 @@ class CheckActiveOfferersTest:
         offerers_factories.OffererFactory(id=23 + 28 * 2, isActive=False)  # not checked because inactive
         offerers_factories.OffererFactory(id=23 + 28 * 3, tags=[tag])  # not checked because already tagged
         offerers_factories.RejectedOffererFactory(id=23 + 28 * 4, isActive=True)  # not checked because rejected
+        offerers_factories.OffererFactory(
+            id=23 + 28 * 5, siren=siren_utils.rid7_to_siren("1234567")  # not checked because RID7 not in Sirene API
+        )
 
         with time_machine.travel("2024-12-24 23:00:00"):
             run_command(app, "check_active_offerers")

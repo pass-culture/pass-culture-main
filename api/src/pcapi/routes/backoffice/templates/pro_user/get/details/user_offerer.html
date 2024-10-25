@@ -8,7 +8,10 @@
       <th scope="col">Statut du rattachement</th>
       <th scope="col">Statut structure</th>
       <th scope="col">Nom</th>
-      <th scope="col">SIREN</th>
+      <th scope="col">
+        SIREN
+        {% if user_offerers | map(attribute="offerer") | map(attribute="rid7") | any %}/ RID7{% endif %}
+      </th>
     </tr>
   </thead>
   <tbody class="table-group-divider">

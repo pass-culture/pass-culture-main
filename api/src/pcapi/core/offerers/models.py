@@ -62,6 +62,8 @@ from pcapi.models.validation_status_mixin import ValidationStatusMixin
 from pcapi.routes.native.v1.serialization.offerers import BannerMetaModel
 from pcapi.routes.native.v1.serialization.offerers import VenueTypeCode
 from pcapi.utils import crypto
+from pcapi.utils import regions as regions_utils
+from pcapi.utils import siren as siren_utils
 from pcapi.utils.date import METROPOLE_TIMEZONE
 from pcapi.utils.date import get_department_timezone
 from pcapi.utils.date import get_postal_code_timezone
@@ -751,6 +753,20 @@ class Venue(PcObject, Base, Model, HasThumbMixin, AccessibilityMixin):
         ),
     )
 
+    @property
+    def ridet(self) -> str | None:
+        if self.siret and siren_utils.is_ridet(self.siret):
+            return siren_utils.siret_to_ridet(self.siret)
+        return None
+
+    @property
+    def identifier_name(self) -> str:
+        return "RIDET" if siren_utils.is_ridet(self.siret) else "SIRET"
+
+    @property
+    def identifier(self) -> str | None:
+        return self.ridet or self.siret
+
 
 class GooglePlacesInfo(PcObject, Base, Model):
     __tablename__ = "google_places_info"
@@ -1059,6 +1075,33 @@ class Offerer(
             ),
             else_=func.substring(cls.postalCode, 1, 2),
         )
+
+    @property
+    def rid7(self) -> str | None:
+        if self.siren and siren_utils.is_rid7(self.siren):
+            return siren_utils.siren_to_rid7(self.siren)
+        return None
+
+    @property
+    def is_caledonian(self) -> bool:
+        """
+        Note that caledonian offerers may have a SIREN and be registered with their SIREN.
+        Caledonian offerers with SIREN can be checked on "Annuaire des Entreprises" or Sirene API, but cannot create
+        collective offers or apply on Adage. Check `rid7` or `is_caledonian` property depending on purpose.
+        """
+        if self.siren and siren_utils.is_rid7(self.siren):
+            return True
+        if self.postalCode.startswith(regions_utils.NEW_CALEDONIA_DEPARTMENT_CODE):
+            return True
+        return False
+
+    @property
+    def identifier_name(self) -> str:
+        return "RID7" if siren_utils.is_rid7(self.siren) else "SIREN"
+
+    @property
+    def identifier(self) -> str | None:
+        return self.rid7 or self.siren
 
     @property
     def confidenceLevel(self) -> "OffererConfidenceLevel | None":

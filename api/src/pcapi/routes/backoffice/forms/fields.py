@@ -1,7 +1,6 @@
 import datetime
 from functools import partial
 import json
-import re
 import typing
 
 import email_validator
@@ -14,6 +13,7 @@ import wtforms_sqlalchemy.fields
 
 from pcapi.core.subscription.phone_validation import exceptions as phone_validation_exceptions
 from pcapi.utils import phone_number
+from pcapi.utils import siren as siren_utils
 
 
 class PhoneNumberValidator:
@@ -32,13 +32,13 @@ class SiretValidator:
             "required": True,
             "minlength": 14,
             "maxlength": 14,
-            "pattern": r"\d{14}",
+            "pattern": siren_utils.SIRET_OR_RIDET_RE,
         }
 
     def __call__(self, form: wtforms.Form, field: wtforms.Field) -> None:
         value = field.data
-        if not re.match(r"^\d{14}$", value):
-            raise validators.ValidationError("Le SIRET doit contenir exactement 14 chiffres")
+        if value and not siren_utils.is_siret_or_ridet(value):
+            raise validators.ValidationError("Le format du SIRET ou RIDET n'est pas valide")
 
 
 def widget(field: wtforms.Field, template: str, *args: typing.Any, **kwargs: typing.Any) -> str:
@@ -191,6 +191,10 @@ class PCPhoneNumberField(PCStringField):
 
 class PCSiretField(PCStringField):
     validators = [SiretValidator()]
+
+
+class PCOptSiretField(PCSiretField):
+    validators = [validators.Optional(""), SiretValidator()]
 
 
 class PCTextareaField(wtforms.StringField):

@@ -10,6 +10,7 @@ from pcapi.core.providers.models import CDSCinemaDetails
 from pcapi.core.providers.models import CinemaProviderPivot
 from pcapi.core.providers.models import Provider
 from pcapi.models import db
+from pcapi.utils import siren as siren_utils
 
 
 class CDSCinema:
@@ -153,7 +154,7 @@ def get_cds_cinema_from_excel_row(row: dict) -> CDSCinema:
 
 
 def isValidSiret(siret: str) -> bool:
-    return len(siret) == 14 and siret.isdigit()
+    return siren_utils.is_siret_or_ridet(siret)
 
 
 def isValidToken(token: str) -> bool:

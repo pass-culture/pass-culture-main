@@ -382,34 +382,60 @@ class GetProUserOfferersTest(GetEndpointHelper):
     # session + current user + user + actions + user_offerer objects
     expected_num_queries = 5
 
-    def test_get_user_offerers(self, authenticated_client, pro_user):
-        user_offerer_validated = offerers_factories.UserOffererFactory(user=pro_user)
-        user_offerer_new = offerers_factories.NotValidatedUserOffererFactory(user=pro_user)
+    def test_get_user_offerers(self, authenticated_client):
+        pro_user = users_factories.ProFactory()
+        offerer_1 = offerers_factories.UserOffererFactory(
+            user=pro_user, dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=1)
+        ).offerer
+        offerer_2 = offerers_factories.NotValidatedUserOffererFactory(user=pro_user).offerer
         url = url_for(self.endpoint, user_id=pro_user.id)
 
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
-        content = response.data.decode("utf-8")
+        rows = html_parser.extract_table_rows(response.data, parent_class="user_offerers-tab-pane")
+        assert len(rows) == 2
 
-        offerer_1 = user_offerer_validated.offerer
-        offerer_2 = user_offerer_new.offerer
+        assert rows[0]["ID de la structure"] == str(offerer_1.id)
+        assert rows[0]["Statut du rattachement"] == "Validé"
+        assert rows[0]["Statut structure"] == "Validée"
+        assert rows[0]["Nom"] == offerer_1.name
+        assert rows[0]["SIREN"] == offerer_1.siren
 
-        assert str(offerer_1.id) in content
-        assert offerer_1.name in content
-        assert offerer_1.siren in content
+        assert rows[1]["ID de la structure"] == str(offerer_2.id)
+        assert rows[1]["Statut du rattachement"] == "Nouveau"
+        assert rows[1]["Statut structure"] == "Validée"
+        assert rows[1]["Nom"] == offerer_2.name
+        assert rows[1]["SIREN"] == offerer_2.siren
 
-        assert str(offerer_2.id) in content
-        assert offerer_2.name in content
-        assert offerer_2.siren in content
-
-    def test_no_user_offerers(self, authenticated_client, pro_user):
+    def test_get_caledonian_user_offerers(self, authenticated_client):
+        nc_offerer = offerers_factories.CaledonianOffererFactory()
+        pro_user = offerers_factories.UserOffererFactory(offerer=nc_offerer).user
         url = url_for(self.endpoint, user_id=pro_user.id)
 
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data, parent_class="user_offerers-tab-pane")
+        assert len(rows) == 1
+
+        assert rows[0]["ID de la structure"] == str(nc_offerer.id)
+        assert rows[0]["Statut du rattachement"] == "Validé"
+        assert rows[0]["Statut structure"] == "Validée"
+        assert rows[0]["Nom"] == nc_offerer.name
+        assert rows[0]["SIREN / RID7"] == nc_offerer.rid7
+
+    def test_no_user_offerers(self, authenticated_client):
+        pro_user = users_factories.ProFactory()
+        url = url_for(self.endpoint, user_id=pro_user.id)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        assert html_parser.count_table_rows(response.data, parent_class="user_offerers-tab-pane") == 0
 
     def test_get_user_offerers_in_different_offerer_status(self, authenticated_client, pro_user):
         offerers_factories.UserOffererFactory(user=pro_user, offerer=offerers_factories.PendingOffererFactory())

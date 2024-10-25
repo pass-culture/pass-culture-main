@@ -11,6 +11,7 @@ from pcapi.core.offerers import tasks as offerers_tasks
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.scheduled_tasks.decorators import log_cron_with_transaction
+from pcapi.utils import siren as siren_utils
 from pcapi.utils.blueprint import Blueprint
 
 
@@ -43,6 +44,7 @@ def check_active_offerers(dry_run: bool = False, day: int | None = None) -> None
         offerers_models.Offerer.isActive,
         sa.not_(offerers_models.Offerer.isRejected),
         offerers_models.Offerer.siren.is_not(None),
+        sa.not_(offerers_models.Offerer.siren.like(f"{siren_utils.NEW_CALEDONIA_SIREN_PREFIX}%")),
     ).options(sa.orm.load_only(offerers_models.Offerer.siren))
 
     if not FeatureToggle.ENABLE_CODIR_OFFERERS_REPORT.is_active():

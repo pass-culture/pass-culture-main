@@ -58,3 +58,61 @@ def test_is_valid_siren(digits, expected):
 def test_is_valid_siret(digits, expected):
     result = siren_utils.is_valid_siret(digits)
     assert result == expected
+
+
+@pytest.mark.parametrize(
+    "data,expected",
+    [("NC1234567", True), ("NN1234567", False), ("123456789", False), ("NCNCNCNCN", False), (None, False)],
+)
+def test_is_rid7(data, expected):
+    result = siren_utils.is_rid7(data)
+    assert result == expected
+
+
+@pytest.mark.parametrize(
+    "data,expected",
+    [
+        ("NC1234567001XX", True),
+        ("NC1234567001", False),
+        ("NN1234567890XX", False),
+        (None, False),
+    ],
+)
+def test_is_ridet(data, expected):
+    result = siren_utils.is_ridet(data)
+    assert result == expected
+
+
+@pytest.mark.parametrize(
+    "data,expected",
+    [
+        ("12345678900012", True),
+        ("123456789", False),
+        ("NC1234567001XX", True),
+        ("NC1234567001", False),
+        ("NN1234567890XX", False),
+    ],
+)
+def test_is_ridet_or_siret(data, expected):
+    result = siren_utils.is_siret_or_ridet(data)
+    assert result == expected
+
+
+def test_siren_to_rid7():
+    result = siren_utils.siren_to_rid7("NC1234567")
+    assert result == "1234567"
+
+
+def test_rid7_to_siren():
+    result = siren_utils.rid7_to_siren("1234567")
+    assert result == "NC1234567"
+
+
+def test_siret_to_ridet():
+    result = siren_utils.siret_to_ridet("NC1234567001XX")
+    assert result == "1234567001"
+
+
+def test_ridet_to_siret():
+    result = siren_utils.ridet_to_siret("1234567001")
+    assert result == "NC1234567001XX"

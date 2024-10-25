@@ -496,6 +496,27 @@ class GetVenueTest(GetEndpointHelper):
         response_text = html_parser.content_as_text(response.data)
         assert f"Validation des offres : {expected_text}" in response_text
 
+    def test_get_caledonian_venue(self, authenticated_client):
+        venue = offerers_factories.CaledonianVenueFactory()
+        url = url_for(self.endpoint, venue_id=venue.id)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        response_text = html_parser.content_as_text(response.data)
+        assert venue.name in response_text
+        assert f"Venue ID : {venue.id} " in response_text
+        assert venue.siret not in response_text
+        assert f"RIDET : {venue.ridet} " in response_text
+        assert "Région : Nouvelle-Calédonie " in response_text
+        assert f"Ville : {venue.city} " in response_text
+        assert f"Code postal : {venue.postalCode} " in response_text
+        assert f"Numéro de téléphone : {venue.contact.phone_number} " in response_text
+        assert "Peut créer une offre EAC : Non" in response_text
+        assert "Cartographié sur ADAGE" not in response_text
+        assert "ID ADAGE" not in response_text
+
 
 class GetVenueStatsDataTest:
     def test_get_stats_data(
@@ -855,6 +876,10 @@ class UpdateVenueTest(PostEndpointHelper):
             "venue_type_code": venue.venueTypeCode.name,
         }
 
+    @pytest.mark.parametrize(
+        "siren,old_siret,new_siret",
+        [("123456789", "12345678900012", "12345678900023"), ("NC1234567", "NC1234567001XX", "NC1234567002XX")],
+    )
     @patch(
         "pcapi.connectors.api_adresse.get_address",
         return_value=api_adresse.AddressInfo(
@@ -869,11 +894,13 @@ class UpdateVenueTest(PostEndpointHelper):
             street="23 Boulevard de la Madeleine",
         ),
     )
-    def test_update_venue(self, mock_get_address, authenticated_client, offerer):
+    def test_update_venue(self, mock_get_address, authenticated_client, siren, old_siret, new_siret):
+        offerer = offerers_factories.OffererFactory(siren=siren)
         contact_email = "contact.venue@example.com"
         website = "update.venue@example.com"
         social_medias = {"instagram": "https://instagram.com/update.venue"}
         venue = offerers_factories.VenueFactory(
+            siret=old_siret,
             managingOfferer=offerer,
             contact__email=contact_email,
             contact__website=website,
@@ -883,7 +910,7 @@ class UpdateVenueTest(PostEndpointHelper):
         data = {
             "name": "IKEA",
             "public_name": "Ikea city",
-            "siret": venue.managingOfferer.siren + "98765",
+            "siret": new_siret,
             "city": "Paris",
             "postal_code": "75001",
             "street": "23 Boulevard de la Madeleine",

@@ -17,6 +17,7 @@ from pcapi.routes.backoffice.forms import utils
 from pcapi.routes.backoffice.forms.constants import area_choices
 from pcapi.routes.backoffice.utils import get_regions_choices
 from pcapi.routes.backoffice.utils import has_current_user_permission
+from pcapi.utils import siren as siren_utils
 
 
 class EditVirtualVenueForm(utils.PCForm):
@@ -39,7 +40,7 @@ class EditVenueForm(EditVirtualVenueForm):
         "Nom d'usage",
         validators=(wtforms.validators.Length(max=255, message="doit contenir moins de %(max)d caractères"),),
     )
-    siret = fields.PCOptStringField("SIRET")
+    siret = fields.PCOptSiretField("SIRET")
     postal_address_autocomplete = fields.PcPostalAddressAutocomplete(
         "Adresse",
         street="street",
@@ -106,13 +107,8 @@ class EditVenueForm(EditVirtualVenueForm):
 
     def validate_siret(self, siret: fields.PCStringField) -> fields.PCStringField:
         if siret.data:
-            if len(siret.data) != 14:
-                raise validators.ValidationError("Un siret doit comporter 14 chiffres")
-
-            try:
-                int(siret.data)
-            except (ValueError, TypeError):
-                raise validators.ValidationError("Un siret doit comporter 14 chiffres")
+            if not siren_utils.is_siret_or_ridet(siret.data):
+                raise validators.ValidationError("Le format du SIRET n'est pas valide")
 
             if siret.data[:9] != self.venue.managingOfferer.siren:
                 raise validators.ValidationError(
